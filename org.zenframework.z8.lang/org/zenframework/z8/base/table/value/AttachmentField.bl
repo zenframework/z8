@@ -1,0 +1,9 @@
+import org.zenframework.z8.base.file.AttachmentProcessor;
+
+[native "org.zenframework.z8.server.base.table.value.AttachmentField"]
+
+class AttachmentField extends TextField
+{
+	public AttachmentProcessor getAttachmentProcessor();
+}
+

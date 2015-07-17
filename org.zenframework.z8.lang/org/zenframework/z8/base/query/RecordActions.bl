@@ -1,0 +1,7 @@
+[native "org.zenframework.z8.server.base.query.RecordActions"]
+enum RecordActions
+{
+	Add,
+	Copy,
+	Delete
+}

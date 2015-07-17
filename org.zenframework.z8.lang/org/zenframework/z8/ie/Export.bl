@@ -1,0 +1,22 @@
+import org.zenframework.z8.base.table.Table;
+
+[native "org.zenframework.z8.server.ie.Export"]
+class Export {
+	
+    public static string getTransportUrl(string protocol, string address);
+    
+    public void addRecordset(Table table);
+    
+    public void addRecordset(Table table, sql_bool where);
+    
+    public void setPolicy(Table table, ImportPolicy policy);
+    
+    public void setExportAttachments(bool exportAttachments);
+
+    public void setTransportUrl(string transportUrl);
+    
+    public primary[string] properties;
+
+    public void execute();
+
+}

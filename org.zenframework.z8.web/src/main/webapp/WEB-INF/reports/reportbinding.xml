@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<reports>
+	<report name="RPT_акт_сдачи_приемки.rptdesign" displayName="Акт сдачи/приемки">
+		<class>Управление_запасами.Печатные_формы.АктСдачиПриемки</class>
+	</report>
+</reports>
+

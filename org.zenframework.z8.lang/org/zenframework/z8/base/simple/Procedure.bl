@@ -1,0 +1,13 @@
+import org.zenframework.z8.base.query.Command;
+import org.zenframework.z8.base.query.Parameter;
+
+[native "org.zenframework.z8.server.base.simple.Procedure"]
+class Procedure extends Command
+{
+	virtual protected void exec(Parameter[] parameters);
+
+	protected void setProfilerStatus(string status, int workPercent);
+	protected void setProfilerText(string text);
+	
+	virtual protected void onError(exception e);
+}

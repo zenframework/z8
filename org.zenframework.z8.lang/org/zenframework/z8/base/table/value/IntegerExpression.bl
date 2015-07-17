@@ -1,0 +1,20 @@
+[native "org.zenframework.z8.server.base.table.value.IntegerExpression"]
+
+class IntegerExpression extends Expression
+{
+	stretch = false;
+
+	format = "0,000";
+
+	public void setDefault(int defaultValue);
+
+	virtual public int get();
+
+	public IntegerExpression operator = (int value);
+
+	public operator sql_int();
+
+	virtual protected sql_int expression();
+
+	public void setExpression(sql_int expression);
+}

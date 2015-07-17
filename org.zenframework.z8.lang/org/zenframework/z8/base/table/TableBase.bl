@@ -1,0 +1,11 @@
+import org.zenframework.z8.base.query.Query;
+import org.zenframework.z8.base.table.value.Link;
+
+[native "org.zenframework.z8.server.base.table.TableBase"]
+
+class TableBase extends Query
+{
+	auto private Link[] links;
+
+	public bool operator == (TableBase table);
+}

@@ -1,0 +1,8 @@
+[native "org.zenframework.z8.server.base.table.value.Join"]
+
+enum Join {
+	Inner,
+	Left,
+	Right,
+	Full
+}

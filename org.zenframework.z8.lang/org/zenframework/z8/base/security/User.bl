@@ -1,0 +1,16 @@
+import org.zenframework.z8.lang.Object;
+
+[native "org.zenframework.z8.server.security.UserInfo"]
+class User extends Object
+{
+	guid id;
+	string name;
+
+	string description;
+	string phone;
+	string email;
+	
+	SecurityGroup securityGroup;
+	
+	primary[string] parameters;
+}

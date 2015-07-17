@@ -1,0 +1,28 @@
+import org.zenframework.z8.base.table.Table;
+import org.zenframework.z8.base.table.value.StringField;
+
+[native "org.zenframework.z8.server.base.table.system.Properties"]
+
+[name "SystemProperties"]
+[displayName "Системные свойства"]
+class Properties extends Table 
+{
+	[displayName "Имя"] name;
+	[displayName "Описание"] description;
+	
+	[name "Value"]
+	[displayName "Значение"]
+	public StringField value;
+	
+	public static void setProperty(string key, string value);
+	
+	public static string getProperty(string key, string defaultValue);
+	
+	records {
+		[name "selfAddress"]
+		[description "Адрес своего объекта"]
+		[value "undefined"]
+		SelfAddress = '1A4A32F3-6966-4A44-96B3-6F75BE60131B';
+	}
+
+}

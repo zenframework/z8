@@ -1,0 +1,13 @@
+import org.zenframework.z8.base.file.FileInfo;
+import org.zenframework.z8.lang.Object;
+
+[native "org.zenframework.z8.server.ie.Message"]
+class Message extends Object {
+
+	public string getId();
+	public string getAddress();
+	public FileInfo[] getFiles();
+	public primary[string] getProperties();
+	public string getXml();
+
+}

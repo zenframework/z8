@@ -1,0 +1,142 @@
+import org.zenframework.z8.base.simple.Runnable;
+import org.zenframework.z8.base.form.Control;
+import org.zenframework.z8.base.table.value.Field;
+import org.zenframework.z8.base.table.value.Link;
+
+[native "org.zenframework.z8.server.base.query.Query"]
+class Query extends Runnable
+{
+	protected Query model;
+	
+	public guid[] filterBy;
+	
+	protected bool readOnly = false;
+	public bool visible = true;
+	public bool collapseGroups = false;
+	public bool showTotals = false;
+
+	public RecordActions[] recordActions = { RecordActions.Add, RecordActions.Copy, RecordActions.Delete };
+	
+	public ViewMode viewMode = ViewMode.Table;
+	public bool printAsList = false;
+
+	public int columns = 3;
+	public decimal width = 0.0;
+	public decimal height = 0.0;
+	
+	public Control[] formFields;
+
+	public Field[] sortFields;
+	public Field[] groupFields;	// Соответствует пункту 'Группировать по полю' в меню колонки таблицы.
+								// Не путать с groupBy - выбираемые данные не группируются.
+	
+	public Field[] searchFields;
+	public Field searchId;
+	
+	public Link[] aggregateBy;	// Поля из корневого запроса для группировки его перед выполнением основного.
+	public Field[] groupBy;		// Поля для группировки выбираемых данных.
+	
+	public ChartType chartType = ChartType.Column;
+	public Field[] chartSeries;
+
+	public Command[] commands;
+	
+	// TODO переделать потом на primary (а primary дать методы приведения к нужным типам) и назвать как parameters
+	public guid[] recordIds;
+
+	public Filter[] filters;
+	
+	public Period period;
+
+	virtual protected void onRender(Query query);
+	virtual protected Style renderRecord(Query query);
+
+	virtual protected void onCommand(Query query, Command command, guid[] recordIds);
+	virtual protected void onReport(Query query, string report, guid[] recordIds);
+	virtual protected Query onFollow(Field field, guid[] recordIds);
+
+	virtual protected void onCopy(Query query);
+
+	virtual protected void onNew(Query query, guid recordId, guid parentId);
+
+	virtual protected void beforeRead(Query query, guid parentId, Query model, guid modelRecordId);
+	virtual protected void afterRead(Query query, guid parentId, Query model, guid modelRecordId);
+
+	virtual protected void beforeCreate(Query query, guid recordId, guid parentId, Query model, guid modelRecordId);
+	virtual protected void afterCreate(Query query, guid recordId, guid parentId, Query model, guid modelRecordId);
+
+	virtual protected void beforeUpdate(Query query, guid recordId, Field[] changedFields, Query model, guid modelRecordId);
+	virtual protected void afterUpdate(Query query, guid recordId, Field[] changedFields, Query model, guid modelRecordId);
+	
+	virtual protected void beforeDestroy(Query query, guid recordId, Query model, guid modelRecordId);
+	virtual protected void afterDestroy(Query query, guid recordId, Query model, guid modelRecordId);
+	
+	public bool hasRecord(guid recordId);
+	
+	public Field getFieldById(string id);
+	public Field getFieldByName(string name);
+	
+	public int count();
+	public int count(sql_bool where);
+
+	public bool aggregate();
+	public bool aggregate(sql_bool where);
+	public bool aggregate(Field[] fields);
+	public bool aggregate(Field[] fields, sql_bool where);
+
+	public guid create();
+	public guid copy(guid recordId);
+
+	public void read();
+	public void read(sql_bool where);
+		
+	public void read(Field[] fields);
+	public void read(Field[] fields, sql_bool where);
+	public void read(Field[] fields, Field[] sortFields);
+	public void read(Field[] fields, Field[] sortFields, sql_bool where);
+
+	public bool readFirst();
+	public bool readFirst(sql_bool where);
+	
+	public bool readFirst(Field[] fields);
+	public bool readFirst(Field[] fields, sql_bool where);
+	public bool readFirst(Field[] fields, Field[] sortFields);
+	public bool readFirst(Field[] fields, Field[] sortFields, sql_bool where);
+
+	public bool readRecord(guid id);
+	public bool readRecord(guid id, Field[] fields);
+
+    public void sort(Field[] sortFields);
+    public void sort(Field[] sortFields, sql_bool where);
+    public void sort(Field[] sortFields, Field[] fields);
+    public void sort(Field[] sortFields, Field[] fields, sql_bool where);
+
+	public void group(Field[] groupFields);
+	public void group(Field[] groupFields, Field[] fields);
+	public void group(Field[] groupFields, Field[] fields, sql_bool where);
+	public void group(Field[] groupFields, Field[] fields, sql_bool where, sql_bool having);
+	public void group(Field[] groupFields, Field[] fields, Field[] sortFields);
+	public void group(Field[] groupFields, Field[] fields, Field[] sortFields, sql_bool where);
+	public void group(Field[] groupFields, Field[] fields, Field[] sortFields, sql_bool where, sql_bool having);
+
+	public bool next();
+	public guid recordId();
+
+	public void update(guid id);
+
+	public void destroy(guid id);
+	public void destroy(sql_bool where);
+
+	virtual protected sql_bool where();
+	virtual protected sql_bool having();
+	public void setWhere(sql_bool where);
+	
+	public void refresh();
+	public void refreshRecord(guid id);
+	
+	auto protected Query[] queries;
+	auto protected Field[] dataFields;
+	
+	virtual protected string getRecordFullText(guid recordId);
+
+}

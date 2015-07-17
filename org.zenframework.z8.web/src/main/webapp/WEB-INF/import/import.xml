@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Z8>
+	<external-table-bindings version="1.0">
+		<transaction name="Import_OKSM" description="Импорт данных их OKSM.dbf - Страны Мира (необходимо иметь настроенный Системный DSN для драйвера FoxPro)">
+			<binding>
+				<external-table name="OKSM">
+					<connection>
+						<parameter name="username" value=""/>
+						<parameter name="password" value=""/>
+						<parameter name="service" value="OK"/>
+						<parameter name="provider" value="jdbc:odbc"/> 
+						<parameter name="driver" value="sun.jdbc.odbc.JdbcOdbcDriver"/>
+						<parameter name="databasetype" value="simple"/>
+						<parameter name="charset" value="Cp866"/>
+					</connection>
+					<fields>
+						<field name="TYPEREC" type="string"/>
+						<field name="KOD" type="string"/>
+						<field name="NAME1" type="string"/>
+						<field name="NOMAKT" type="int"/>
+						<field name="TYPEAKT" type="string"/>
+						<field name="DATAKT" type="date"/>
+						<field name="NAME2" type="string"/>
+						<field name="ALFA2" type="string"/>
+						<field name="ALFA3" type="string"/>
+	  				</fields>
+				</external-table>
+				<internal-table name="OKSM_">
+					<fields>
+						<field name="TYPEREC"/>
+						<field name="NOMAKT"/>
+						<field name="TYPEAKT"/>
+						<field name="DATAKT"/>
+						<field name="Id1"/>
+<!--						<field name="KOD_CLIENT"/> -->
+						<field name="Name"/>
+<!--						<field name="SMOL_NAME"/> -->
+						<field name="KOLICH"/>
+						<field name="ALFA2"/>
+						<field name="ALFA3"/>
+					</fields>
+					<field-map>
+						<bind-field external="TYPEREC" internal="TYPEREC"/>
+						<bind-field external="KOD" internal="Id1"/>
+						<bind-field external="NAME1" internal="Name"/> 
+	<!--					<bind-field external="NAME1" internal="SMOL_NAME"/> -->
+						<bind-field external="NOMAKT" internal="NOMAKT"/>
+						<bind-field external="TYPEAKT" internal="TYPEAKT"/>
+						<bind-field external="DATAKT" internal="DATAKT"/>
+						<bind-field external="ALFA2" internal="ALFA2"/>
+						<bind-field external="ALFA3" internal="ALFA3"/>
+					</field-map>
+					<synchr-by-fields external="KOD" internal="Id1"/>
+				</internal-table>
+			</binding>
+<!--				
+			<binding name="Import1" description="краткое описание импорта с возможной фильтрацией данных внешней таблицы в таблицы системы Z8">
+				<external-table name="EXT_Sample">
+					<connection>
+						<parameter name="username" value=""/>
+						<parameter name="password" value=""/>
+						<parameter name="service" value="KLADR"/>
+						<parameter name="provider" value="jdbc:odbc"/> 
+						<parameter name="driver" value="sun.jdbc.odbc.JdbcOdbcDriver"/>
+						<parameter name="databasetype" value="simple"/>
+						<parameter name="charset" value="Cp866"/>
+					</connection>
+					<fields>
+						<field name="ext.field1" type="guid"/>
+						<field name="ext.field2" type="boolean"/>
+						<field name="ext.field3" type="int"/>
+						<field name="ext.field4" type="string"/>
+						<field name="ext.field5" type="date"/>
+						<field name="ext.field6" type="datetime"/>
+						<field name="ext.field7" type="datespan"/>
+						<field name="ext.field8" type="float"/>
+						<field name="ext.field9" type="binary"/>
+						<field name="ext.field10" type="text"/>
+					</fields>
+				</external-table>
+				<internal-table name="Z8_Sample1">
+					<fields>
+						<field name="int.field1"/>
+						<field name="int.field2"/>
+						<field name="int.field3"/>
+						<field name="int.field4"/>
+						<field name="int.field5"/>
+						<field name="int.field6"/>
+						<field name="int.field7"/>
+						<field name="int.field8"/>
+						<field name="int.field9"/>
+						<field name="int.field10"/>
+					</fields>
+					<field-map>
+						<bind-field external="ext.field1" internal="int.field1"/>
+						<bind-field external="ext.field2" internal="int.field2"/>
+						<bind-field external="ext.field3" internal="int.field3"/>
+					</field-map>
+					<synchr-by-fields external="ext.field1" internal="int.field1"/>
+	!-				
+					<filter-external-table>
+						<condition>
+							<field name="ext.field1"/>
+							<operation name="NOT EQUALS"/>
+							<parameter value="null" isfield="false"/>
+						</condition>
+						<condition>
+							<field name="ext.field2"/>
+							<operation name="?"/>
+							<parameter value="ext.field3" isfield="true"/>
+						</condition>
+					</filter-external-table>
+	->
+				</internal-table>
+	<!-		...		
+				<internal-table name="Z8_Sample2">
+					<fields>
+					...
+					</fields>
+					...
+					<filter-external-table>
+						<condition>
+							<field name=""/>
+							<operation name=""/>
+							<parameter value="" isfield="false"/>
+						</condition>
+						<condition>
+							<field name=""/>
+							<operation name=""/>
+							<parameter value="" isfield="true"/>
+						</condition>
+					</filter-external-table>
+				</internal-table>
+	->
+			</binding>
+-->
+		</transaction>
+<!--		...		
+		<binding name="Import2" description="краткое описание импорта с возможной фильтрацией данных внешней таблицы в таблицы системы Z8">
+		...
+		</binding>
+-->
+	</external-table-bindings>
+</Z8>

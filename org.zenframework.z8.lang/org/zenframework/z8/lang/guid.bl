@@ -1,0 +1,19 @@
+[primary "org.zenframework.z8.server.types.guid"]
+
+final class guid extends primary
+{
+	static public guid NULL = '00000000-0000-0000-0000-000000000000';
+
+	static public guid create();
+	static public guid create(int n1, int n2);
+
+	public operator string();
+	public operator sql_guid();
+
+	public void operator = (guid value);
+
+	public bool operator == (guid value);
+	public bool operator != (guid value);
+
+	static public guid parse(string value);
+}

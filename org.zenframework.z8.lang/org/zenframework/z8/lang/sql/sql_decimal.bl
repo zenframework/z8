@@ -1,0 +1,44 @@
+[primary "org.zenframework.z8.server.types.sql.sql_decimal"]
+
+final class sql_decimal extends sql_primary
+{
+	public operator ();
+
+	public sql_decimal operator + ();
+	public sql_decimal operator - ();
+	public sql_decimal operator + (sql_int value);
+	public sql_decimal operator - (sql_int value);
+	public sql_decimal operator * (sql_int value);
+	public sql_decimal operator / (sql_int value);
+	public sql_decimal operator % (sql_int value);
+	public sql_decimal operator + (sql_decimal value);
+	public sql_decimal operator - (sql_decimal value);
+	public sql_decimal operator * (sql_decimal value);
+	public sql_decimal operator / (sql_decimal value);
+	public sql_decimal operator % (sql_decimal value);
+
+	public sql_bool operator < (sql_int value);
+	public sql_bool operator > (sql_int value);
+	public sql_bool operator <= (sql_int value);
+	public sql_bool operator >= (sql_int value);
+	public sql_bool operator == (sql_int value);
+	public sql_bool operator != (sql_int value);
+	public sql_bool operator < (sql_decimal value);
+	public sql_bool operator > (sql_decimal value);
+	public sql_bool operator <= (sql_decimal value);
+	public sql_bool operator >= (sql_decimal value);
+	public sql_bool operator == (sql_decimal value);
+	public sql_bool operator != (sql_decimal value);
+
+	public sql_int sign();
+	public sql_decimal abs();
+	public sql_int ceil();
+	public sql_int floor();
+
+	public sql_decimal exp();
+	public sql_decimal ln();
+	public sql_decimal power(sql_int power);
+
+	public sql_decimal round(sql_int digits);
+	public sql_decimal truncate(sql_int digits);
+}

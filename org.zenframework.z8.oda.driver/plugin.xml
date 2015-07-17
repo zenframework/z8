@@ -1,0 +1,83 @@
+<?xml version="1.1" encoding="UTF-8"?>
+<?eclipse version="3.2"?>
+<plugin>
+
+	<extension
+		id="org.zenframework.z8.oda.driver"
+		point="org.eclipse.datatools.connectivity.oda.dataSource">
+
+		<dataSource
+			driverClass="org.zenframework.z8.oda.driver.Driver"
+			defaultDisplayName="Z8 Data Source"
+			setThreadContextClassLoader="false"
+			odaVersion="3.1"
+			id="org.zenframework.z8.oda.driver">
+
+			<properties>
+				<propertyGroup
+					defaultDisplayName="Connection Properties"
+					name="connectionProperties">
+					<property
+						type="string"
+						defaultDisplayName="Home"
+						canInherit="true"
+						name="home"/>
+					<property
+						type="string"
+						defaultDisplayName="Data Source"
+						canInherit="true"
+						name="dataSource"/>
+					<property
+						type="string"
+						defaultDisplayName="User Name"
+						canInherit="true"
+						name="user"/>
+					<property
+						isEncryptable="true"
+						type="string"
+						canInherit="true"
+						defaultDisplayName="Password"
+						name="password"/>
+				</propertyGroup>
+				<propertyVisibility name="dataSource" visibility="hide"/>
+			</properties>
+		</dataSource>
+
+		<dataSet
+			defaultDisplayName="Z8 Data Set"
+			id="org.zenframework.z8.oda.driver.DataSet">
+			<dataTypeMapping
+				nativeDataTypeCode="1"
+				odaScalarDataType="String"
+				nativeDataType="String"/>
+			<dataTypeMapping
+				nativeDataTypeCode="4"
+				odaScalarDataType="Integer"
+				nativeDataType="Integer"/>
+			<dataTypeMapping
+				nativeDataTypeCode="8"
+				odaScalarDataType="Double"
+				nativeDataType="Double"/>
+			<dataTypeMapping
+				nativeDataTypeCode="3"
+				odaScalarDataType="Decimal"
+				nativeDataType="BigDecimal"/>
+			<dataTypeMapping
+				nativeDataTypeCode="91"
+				odaScalarDataType="Date"
+				nativeDataType="Date"/>
+			<dataTypeMapping
+				nativeDataTypeCode="92"
+				odaScalarDataType="Time"
+				nativeDataType="Time"/>
+			<dataTypeMapping
+				nativeDataTypeCode="93"
+				odaScalarDataType="Timestamp"
+				nativeDataType="Timestamp"/>
+			<dataTypeMapping
+				nativeDataTypeCode="16"
+				odaScalarDataType="Boolean"
+				nativeDataType="Boolean"/>
+		</dataSet>
+	</extension>
+</plugin>

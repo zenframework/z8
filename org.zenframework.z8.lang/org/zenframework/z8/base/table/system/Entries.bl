@@ -1,0 +1,7 @@
+import org.zenframework.z8.base.table.Table;
+
+[name "SystemEntries"]
+[native "org.zenframework.z8.server.base.table.system.Entries"] 
+class Entries extends Table
+{
+}

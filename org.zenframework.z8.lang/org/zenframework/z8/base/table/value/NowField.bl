@@ -1,0 +1,7 @@
+class NowField extends DatetimeField
+{
+	public datetime getDefault()
+	{
+		return datetime.now();
+	}
+}

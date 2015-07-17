@@ -1,0 +1,91 @@
+[primary "org.zenframework.z8.server.types.decimal"]
+
+final class decimal extends primary
+{
+	static public int ROUND_UP = 0;
+	static public int ROUND_DOWN = 1;
+	static public int ROUND_CEILING = 2;
+	static public int ROUND_FLOOR = 3;
+	static public int ROUND_HALF_UP = 4;
+	static public int ROUND_HALF_DOWN = 5;
+    static public int ROUND_HALF_EVEN = 6;
+    static public int ROUND_UNNECESSARY = 7;
+
+	public operator string();
+	public operator sql_decimal();
+
+	public void operator = (int value);
+	public void operator = (decimal value);
+
+	public decimal operator + ();
+	public decimal operator - ();
+	public decimal operator + (int value);
+	public decimal operator - (int value);
+	public decimal operator * (int value);
+	public decimal operator / (int value);
+	public decimal operator % (int value);
+	public decimal operator + (decimal value);
+	public decimal operator - (decimal value);
+	public decimal operator * (decimal value);
+	public decimal operator / (decimal value);
+	public decimal operator % (decimal value);
+
+	public decimal operator += (int value);
+	public decimal operator -= (int value);
+	public decimal operator *= (int value);
+	public decimal operator /= (int value);
+	public decimal operator %= (int value);
+	public decimal operator += (decimal value);
+	public decimal operator -= (decimal value);
+	public decimal operator *= (decimal value);
+	public decimal operator /= (decimal value);
+	public decimal operator %= (decimal value);
+
+	public bool operator < (int value);
+	public bool operator > (int value);
+	public bool operator <= (int value);
+	public bool operator >= (int value);
+	public bool operator == (int value);
+	public bool operator != (int value);
+	public bool operator > (decimal value);
+	public bool operator < (decimal value);
+	public bool operator <= (decimal value);
+	public bool operator >= (decimal value);
+	public bool operator == (decimal value);
+	public bool operator != (decimal value);
+
+	public decimal abs();
+	public int signum();
+	public int ceil();
+	public int floor();
+
+	public int round();
+	public decimal round(int digits);
+	public decimal round(int digits, int mode);
+
+	public decimal sin();
+	public decimal cos();
+	public decimal tan();
+	public decimal asin();	
+	public decimal acos();	
+	public decimal atan();	
+	public decimal sinh();
+	public decimal cosh();
+	public decimal tanh();
+
+	public decimal toRadians();
+	public decimal toDegrees();
+
+	public decimal exp();
+
+	public decimal ln();
+	public decimal log10();
+
+	public decimal sqrt();
+	public decimal cbrt();
+
+	public decimal power(decimal power);
+
+	static public decimal parse(string string);
+	static public decimal parse(int doubleBit);
+}

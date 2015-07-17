@@ -1,0 +1,56 @@
+[primary "org.zenframework.z8.libs.SQLSyntax.types.sql_datetime"]
+
+final class sql_datetime extends sql_primary
+{
+	public operator ();
+
+	public sql_datetime operator + (sql_datespan value);
+	public sql_datetime operator - (sql_datespan value);
+	public sql_datespan operator - (sql_date value);
+	public sql_datespan operator - (sql_datetime value);
+
+	public sql_bool operator < (sql_date value);
+	public sql_bool operator < (sql_datetime value);
+	public sql_bool operator > (sql_date value);
+	public sql_bool operator > (sql_datetime value);
+	public sql_bool operator <= (sql_date value);
+	public sql_bool operator <= (sql_datetime value);
+	public sql_bool operator >= (sql_date value);
+	public sql_bool operator >= (sql_datetime value);
+	public sql_bool operator == (sql_date value);
+	public sql_bool operator == (sql_datetime value);
+	public sql_bool operator != (sql_date value);
+	public sql_bool operator != (sql_datetime value);
+
+	static public sql_datetime serverTime();
+
+	public sql_date toDate();
+
+	public sql_int quarter();
+	public sql_int year();
+	public sql_int month();
+	public sql_int day();
+	public sql_int weekDay();
+	public sql_int yearDay();
+	public sql_int hour();
+	public sql_int minute();
+	public sql_int second();
+
+	public void set(sql_int year, sql_int month, sql_int day, sql_int hour, sql_int minute, sql_int second);
+
+	public sql_datetime truncQuarter();
+	public sql_datetime truncYear();
+	public sql_datetime truncMonth();
+	public sql_datetime truncDay();
+	public sql_datetime truncHour();
+	public sql_datetime truncMinute();
+	public sql_datetime truncSecond();
+
+	public sql_datetime addQuarter(sql_int count);
+	public sql_datetime addYear(sql_int count);
+	public sql_datetime addMonth(sql_int count);
+	public sql_datetime addDay(sql_int count);
+	public sql_datetime addHour(sql_int count);
+	public sql_datetime addMinute(sql_int count);
+	public sql_datetime addSecond(sql_int count);
+}

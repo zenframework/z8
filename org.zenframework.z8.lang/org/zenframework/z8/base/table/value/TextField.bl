@@ -1,0 +1,15 @@
+[native "org.zenframework.z8.server.base.table.value.TextField"]
+
+class TextField extends Field
+{
+	int lines = 5;
+	
+	virtual public string getDefault();
+	public void setDefault(string defaultValue);
+
+	virtual public string get();
+	
+	public TextField operator = (string value);
+
+	public operator sql_string();
+}

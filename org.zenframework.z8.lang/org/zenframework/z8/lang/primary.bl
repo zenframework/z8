@@ -1,0 +1,17 @@
+[primary "org.zenframework.z8.server.types.primary"]
+
+class primary
+{
+
+	virtual public string toString();
+    virtual public int hashCode();
+
+    virtual public bool toBool();
+    virtual public guid toGuid();
+    virtual public date toDate();
+    virtual public datetime toDatetime();
+    virtual public datespan toDatespan();
+    virtual public decimal toDecimal();
+    virtual public int toInt();
+
+}

@@ -1,0 +1,30 @@
+import org.zenframework.z8.base.table.value.GuidField;
+import org.zenframework.z8.base.table.value.IntegerField;
+import org.zenframework.z8.base.table.value.StringField;
+import org.zenframework.z8.base.table.value.Link;
+
+[native "org.zenframework.z8.server.base.table.TreeTable"]
+
+class TreeTable extends Table
+{
+	public bool keepIntegrity = true;
+	
+	public [name "ParentId"] GuidField parentId;
+	public [name "Depth"] IntegerField depth;
+	public [name "Children"] IntegerField children;
+	public [name "Path"] StringField path;
+	
+	public [name "Root"] Link root;
+	public [name "Parent1"] Link parent1;
+	public [name "Parent2"] Link parent2;
+	public [name "Parent3"] Link parent3;
+	public [name "Parent4"] Link parent4;
+	public [name "Parent5"] Link parent5;
+	public [name "Parent6"] Link parent6;
+
+	public bool showAsGrid = false;
+	public bool parentsSelectable = true;
+
+	public guid[] getParentsOf(guid recordId);
+	public guid[] getPathTo(guid recordId);
+}

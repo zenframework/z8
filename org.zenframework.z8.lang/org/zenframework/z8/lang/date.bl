@@ -1,0 +1,77 @@
+[primary "org.zenframework.z8.server.types.date"]
+
+final class date extends primary
+{
+	static public date MIN = '31/12/1899';
+	static public date MAX = '31/12/4712';
+
+	static public date today();
+
+	public operator datetime();
+	public operator string();
+	public operator sql_date();
+
+	public void operator = (date value);
+	public datetime operator + (datespan value);
+	public datetime operator - (datespan value);
+	public datespan operator - (date value);
+	public datespan operator - (datetime value);
+
+	public bool operator < (date value);
+	public bool operator < (datetime value);
+	public bool operator > (date value);
+	public bool operator > (datetime value);
+	public bool operator <= (date value);
+	public bool operator <= (datetime value);
+	public bool operator >= (date value);
+	public bool operator >= (datetime value);
+	public bool operator == (date value);
+	public bool operator == (datetime value);
+	public bool operator != (date value);
+	public bool operator != (datetime value);
+
+	public int year();
+	public int quarter();
+	public int month();
+	public int weekOfYear();
+	public int day();
+	public int dayOfWeek();
+	public int dayOfYear();
+
+	public void set(int year, int month, int day);
+
+	public date addYear(int years);
+	public date addQuarter(int quarters);
+	public date addMonth(int months);
+	public date addDay(int days);
+
+	public date truncYear();
+	public date truncQuarter();
+	public date truncMonth();
+	public string toString(string frm);
+
+	static public date parse(string string); // dd/MM/yyyy
+
+	/**
+	* G Обозначение эры Text AD 
+	* y Год Year 1996; 96 
+	* M Месяц года Month July; Jul; 07 
+	* w Неделя года Number 27 
+	* W Неделя месяца Number 2 
+	* D День года Number 189 
+	* d День месяца Number 10 
+	* F Номер дня недели в месяце Number 2 
+	* E День недели Text Tuesday; Tue 
+	* a Маркер am/pm для 12 часового обозначения времени Text PM 
+	* H Час суток в формате 0-23 Number 0 
+	* k Час суток в формате 1-24 Number 24 
+	* K Час суток в 12ти часовом формате (am/pm) 0-11 Number 0 
+	* h Час суток в 12ти часовом формате (am/pm) 1-12 Number 12 
+	* m Минута часа Number 30 
+	* s Секунда минуты Number 55 
+	* S Миллисекунда Number 978 
+	* z Часовой пояс General time zone Pacific Standard Time; PST; GMT-08:00 
+	* Z Часовой пояс RFC 822 time zone -0800 
+	*/
+	static public date parse(string string, string frm);
+}

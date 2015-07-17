@@ -1,0 +1,675 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.1"?>
+<plugin>
+	<extension 
+		point="org.eclipse.ui.editors">
+		<editor
+        class="org.zenframework.z8.pde.editor.Z8Editor"
+        contributorClass="org.zenframework.z8.pde.editor.actions.ActionContributor"
+        default="false"
+        extensions="bl"
+        icon="icons/obj16/z8.gif"
+        id="org.zenframework.z8.pde.Z8Editor"
+        name="Z8 Editor">
+        </editor>
+	</extension>
+
+	<extension
+		point="org.eclipse.core.filebuffers.documentSetup"
+		id="Z8DocumentSetupParticipant"
+		name="Z8 Document Setup Participant">
+		<participant
+			extensions="bl"
+			class="org.zenframework.z8.pde.editor.document.DocumentSetupParticipant">
+		</participant>
+	</extension>
+   
+	<extension point="org.eclipse.ui.startup">
+		<startup class="org.zenframework.z8.pde.Startup">
+		</startup>
+	</extension>
+
+	<extension
+		point="org.eclipse.ui.perspectives">
+		<perspective
+			class="org.zenframework.z8.pde.MyPerspectiveFactory"
+			icon="icons/z8.gif"
+			name="Z8 Development"
+			id="Z8Perspective">
+		</perspective>
+	</extension>
+
+	<extension
+      point="org.eclipse.core.resources.natures"
+      id="ProjectNature"
+      name="Z8 Project Nature">
+      <runtime>
+         <run class="org.zenframework.z8.pde.Z8ProjectNature">
+         </run>
+      </runtime>
+      <builder id="ProjectBuilder"/>
+   </extension>
+   
+   	<extension
+         point="org.eclipse.ui.newWizards">
+      <category
+            name="Z8 Wizards"
+            id="org.zenframework.z8.pde.wizards">
+      </category>
+      <wizard
+            category="org.zenframework.z8.pde.wizards"
+            class="org.zenframework.z8.pde.wizards.NewProjectWizard"
+            finalPerspective="Z8Perspective"
+            hasPages="true"
+            icon="icons/z8.gif"
+            id="org.zenframework.z8.pde.wizards.ProjectWizard"
+            name="Z8 project"
+            preferredPerspectives="Z8Perspective,org.eclipse.jdt.ui.JavaPerspective,org.eclipse.jdt.ui.JavaBrowsingPerspective"
+            project="true">
+         <description>
+            New Z8 project
+         </description>
+      </wizard>
+      <primaryWizard
+            id="org.zenframework.z8.pde.wizards.ProjectWizard">
+      </primaryWizard>
+      <wizard
+            category="org.zenframework.z8.pde.wizards"
+            class="org.zenframework.z8.pde.wizards.NewClassWizard"
+            finalPerspective="Z8Perspective"
+            hasPages="true"
+            icon="icons/z8.gif"
+            id="org.zenframework.z8.pde.wizards.ClassWizard"
+            name="Z8 class"
+            preferredPerspectives="Z8Perspective,org.eclipse.jdt.ui.JavaPerspective,org.eclipse.jdt.ui.JavaBrowsingPerspective"
+            project="false">
+         <description>
+            New Z8 class
+         </description>
+      </wizard>
+      <primaryWizard
+            id="org.zenframework.z8.pde.wizards.ClassWizard">
+      </primaryWizard>
+   </extension>
+	
+	<extension
+		id="ProjectBuilder"
+		name="Z8 Project Builder"
+		point="org.eclipse.core.resources.builders">
+		<builder>
+			<run class="org.zenframework.z8.pde.build.Z8ProjectBuilder">
+			</run>
+		</builder>
+	</extension>
+
+	<extension
+		point="org.eclipse.debug.ui.debugModelPresentations">
+		<debugModelPresentation
+			class="org.zenframework.z8.pde.debug.DebugModelPresentation"
+			id="org.zenframework.z8.pde.DebugModelPresentation">
+		</debugModelPresentation>
+	</extension>
+
+	<extension
+		point="org.eclipse.debug.core.launchConfigurationTypes">
+		<launchConfigurationType
+			modes="run, debug"
+			name="Z8 Application"
+			id="org.zenframework.z8.pde.launchConfigurationType"
+			delegate="org.zenframework.z8.pde.debug.launch.LaunchDelegate"
+			sourceLocatorId="org.zenframework.z8.pde.sourceLookupDirector"
+			sourcePathComputerId="org.zenframework.z8.pde.sourcePathComputer">
+		</launchConfigurationType>
+	</extension>
+	
+
+	<extension
+		point="org.eclipse.debug.ui.launchConfigurationTypeImages">
+		<launchConfigurationTypeImage
+			icon="icons/obj16/z8.gif"
+			configTypeID="org.zenframework.z8.pde.launchConfigurationType"
+			id="org.zenframework.z8.pde.launchConfigurationTypeImage">
+		</launchConfigurationTypeImage>
+	</extension>
+
+	<extension
+		point="org.eclipse.debug.core.sourceLocators">
+		<sourceLocator
+			name="Z8 source lookup director"
+			class="org.zenframework.z8.pde.debug.launch.SourceLookupDirector"
+			id="org.zenframework.z8.pde.sourceLookupDirector">
+		</sourceLocator>
+	</extension>
+	
+	<extension
+		point="org.eclipse.debug.core.sourcePathComputers">
+		<sourcePathComputer
+			class="org.zenframework.z8.pde.debug.launch.SourcePathComputerDelegate"
+			id="org.zenframework.z8.pde.sourcePathComputer">
+		</sourcePathComputer>
+	</extension>
+
+	<extension
+		point="org.eclipse.debug.ui.launchConfigurationTabGroups">
+		<launchConfigurationTabGroup
+			type="org.zenframework.z8.pde.launchConfigurationType"
+			description="Run or debug an Z8 application"
+			class="org.zenframework.z8.pde.debug.launch.TabGroup"
+			id="org.zenframework.z8.pde.launchConfigurationTabGroup">
+		</launchConfigurationTabGroup>
+	</extension>
+
+
+	<extension
+		point="org.eclipse.ui.contexts">
+		<context
+			name="Debugging Z8"
+			description="Debugging Z8"
+			id="org.zenframework.z8.pde.Context"
+			parentId="org.eclipse.debug.ui.debugging">
+		</context>
+	</extension>
+
+	<extension
+		point="org.eclipse.debug.ui.debugModelContextBindings">
+		<modelContextBinding
+			debugModelId="org.zenframework.z8.pde.DebugModelPresentation"
+			contextId="org.zenframework.z8.pde.Context">
+		</modelContextBinding>
+	</extension>
+
+   <extension
+         point="org.eclipse.debug.core.breakpoints">
+      <breakpoint
+            markerType="org.zenframework.z8.pde.jdxLineBreakpointMarker"
+            class="org.zenframework.z8.pde.debug.breakpoints.JDXLineBreakpoint"
+            id="jdxLineBreakpoint"
+            name="Java Line Breakpoints">
+      </breakpoint>
+      <breakpoint
+            markerType="org.zenframework.z8.pde.jdxClassPrepareBreakpointMarker"
+            class="org.zenframework.z8.pde.debug.breakpoints.JDXClassPrepareBreakpoint"
+            id="jdxClassPrepareBreakpoint"
+            name="Java Class Load Breakpoints">
+      </breakpoint>      
+      <breakpoint
+            markerType="org.zenframework.z8.pde.jdxPatternBreakpointMarker"
+            class="org.zenframework.z8.pde.debug.breakpoints.JDXPatternBreakpoint"
+            id="jdxPatternBreakpoint"
+            name="Java Line Breakpoints">
+      </breakpoint>
+      <breakpoint
+            markerType="org.zenframework.z8.pde.jdxTargetPatternBreakpointMarker"
+            class="org.zenframework.z8.pde.debug.breakpoints.JDXTargetPatternBreakpoint"
+            id="jdxTargetPatternBreakpoint"
+            name="Java Line Breakpoints">
+      </breakpoint>
+      <breakpoint
+            markerType="org.zenframework.z8.pde.jdxExceptionBreakpointMarker"
+            class="org.zenframework.z8.pde.debug.breakpoints.JDXExceptionBreakpoint"
+            id="jdxExceptionBreakpoint"
+            name="Java Exception Breakpoints">
+      </breakpoint>
+      <breakpoint
+            markerType="org.zenframework.z8.pde.jdxWatchpointMarker"
+            class="org.zenframework.z8.pde.debug.breakpoints.JDXWatchpoint"
+            id="jdxWatchpoint"
+            name="Java Watchpoints">
+      </breakpoint>
+      <breakpoint
+            markerType="org.zenframework.z8.pde.jdxMethodBreakpointMarker"
+            class="org.zenframework.z8.pde.debug.breakpoints.JDXMethodBreakpoint"
+            id="jdxMethodBreakpoint"
+            name="Java Method Breakpoints">
+      </breakpoint>
+      <breakpoint
+            markerType="org.zenframework.z8.pde.jdxMethodEntryBreakpointMarker"
+            class="org.zenframework.z8.pde.debug.breakpoints.JDXMethodEntryBreakpoint"
+            id="jdxMethodEntryBreakpoint"
+            name="Java Method Breakpoints">
+      </breakpoint>
+      <breakpoint
+            markerType="org.zenframework.z8.pde.jdxStratumLineBreakpointMarker"
+            class="org.zenframework.z8.pde.debug.breakpoints.JDXStratumLineBreakpoint"
+            id="jdxStratumLineBreakpointMarker"
+            name="Java Line Breakpoints">
+      </breakpoint>
+   </extension>
+   <extension
+         id="jdxBreakpointMarker"
+         point="org.eclipse.core.resources.markers">
+      <super
+            type="org.eclipse.debug.core.breakpointMarker">
+      </super>
+   </extension>
+   <extension
+         id="jdxClassPrepareBreakpointMarker"
+         point="org.eclipse.core.resources.markers">
+      <super
+            type="org.zenframework.z8.pde.jdxBreakpointMarker">
+      </super>
+      <persistent
+            value="true">
+      </persistent>
+   </extension>   
+   <extension
+         id="commonJDXLineBreakpointMarker"
+         point="org.eclipse.core.resources.markers">
+      <super
+            type="org.zenframework.z8.pde.jdxBreakpointMarker">
+      </super>
+      <super
+            type="org.eclipse.debug.core.lineBreakpointMarker">
+      </super>
+      <persistent
+            value="true">
+      </persistent>
+      <attribute
+            name="org.zenframework.z8.pde.typeName">
+      </attribute>
+      <attribute
+            name="org.zenframework.z8.pde.installCount">
+      </attribute>
+      <attribute
+            name="org.zenframework.z8.pde.hitCount">
+      </attribute>
+      <attribute
+            name="org.zenframework.z8.pde.expired">
+      </attribute>
+   </extension>
+   <extension
+         id="jdxLineBreakpointMarker"
+         point="org.eclipse.core.resources.markers">
+      <super
+            type="org.zenframework.z8.pde.commonJDXLineBreakpointMarker">
+      </super>
+      <persistent
+            value="true">
+      </persistent>
+   </extension>
+   <extension
+         id="jdxPatternBreakpointMarker"
+         point="org.eclipse.core.resources.markers">
+      <super
+            type="org.zenframework.z8.pde.commonJDXLineBreakpointMarker">
+      </super>
+      <persistent
+            value="true">
+      </persistent>
+      <attribute
+            name="org.zenframework.z8.pde.pattern">
+      </attribute>
+      <attribute
+            name="org.zenframework.z8.pde.sourceName">
+      </attribute>
+   </extension>
+   <extension
+         id="jdxTargetPatternBreakpointMarker"
+         point="org.eclipse.core.resources.markers">
+      <super
+            type="org.zenframework.z8.pde.commonJDXLineBreakpointMarker">
+      </super>
+      <persistent
+            value="true">
+      </persistent>
+      <attribute
+            name="org.zenframework.z8.pde.sourceName">
+      </attribute>
+   </extension>
+   <extension
+         id="jdxExceptionBreakpointMarker"
+         point="org.eclipse.core.resources.markers">
+      <super
+            type="org.zenframework.z8.pde.jdxBreakpointMarker">
+      </super>
+      <persistent
+            value="true">
+      </persistent>
+      <attribute
+            name="org.zenframework.z8.pde.caught">
+      </attribute>
+      <attribute
+            name="org.zenframework.z8.pde.uncaught">
+      </attribute>
+      <attribute
+            name="org.zenframework.z8.pde.checked">
+      </attribute>
+   </extension>
+   <extension
+         id="jdxWatchpointMarker"
+         point="org.eclipse.core.resources.markers">
+      <super
+            type="org.zenframework.z8.pde.jdxLineBreakpointMarker">
+      </super>
+      <persistent
+            value="true">
+      </persistent>
+      <attribute
+            name="org.zenframework.z8.pde.fieldName">
+      </attribute>
+      <attribute
+            name="org.zenframework.z8.pde.access">
+      </attribute>
+      <attribute
+            name="org.zenframework.z8.pde.modification">
+      </attribute>
+      <attribute
+            name="org.zenframework.z8.pde.auto_disabled">
+      </attribute>
+   </extension>
+   <extension
+         id="jdxMethodBreakpointMarker"
+         point="org.eclipse.core.resources.markers">
+      <super
+            type="org.zenframework.z8.pde.jdxLineBreakpointMarker">
+      </super>
+      <persistent
+            value="true">
+      </persistent>
+      <attribute
+            name="org.zenframework.z8.pde.methodName">
+      </attribute>
+      <attribute
+            name="org.zenframework.z8.pde.methodSignature">
+      </attribute>
+      <attribute
+            name="org.zenframework.z8.pde.entry">
+      </attribute>
+      <attribute
+            name="org.zenframework.z8.pde.exit">
+      </attribute>
+      <attribute
+            name="org.zenframework.z8.pde.native">
+      </attribute>
+   </extension>
+   <extension
+         id="jdxMethodEntryBreakpointMarker"
+         point="org.eclipse.core.resources.markers">
+      <super
+            type="org.zenframework.z8.pde.jdxLineBreakpointMarker">
+      </super>
+      <persistent
+            value="true">
+      </persistent>
+      <attribute
+            name="org.zenframework.z8.pde.methodName">
+      </attribute>
+      <attribute
+            name="org.zenframework.z8.pde.methodSignature">
+      </attribute>
+   </extension>
+   <extension
+         id="jdxStratumLineBreakpointMarker"
+         point="org.eclipse.core.resources.markers">
+      <super
+            type="org.zenframework.z8.pde.commonJDXLineBreakpointMarker">
+      </super>
+      <persistent
+            value="true">
+      </persistent>
+      <attribute
+            name="org.zenframework.z8.pde.stratum">
+      </attribute>
+      <attribute
+            name="org.zenframework.z8.pde.sourceName">
+      </attribute>
+      <attribute
+            name="org.zenframework.z8.pde.sourcePath">
+      </attribute>
+      <attribute
+            name="org.zenframework.z8.pde.pattern">
+      </attribute>
+   </extension>
+ 
+	<extension point="org.eclipse.core.runtime.adapters">
+		<factory 
+			class="org.zenframework.z8.pde.debug.BreakpointAdapterFactory" 
+			adaptableType="org.zenframework.z8.pde.editor.Z8Editor">
+			<adapter type="org.eclipse.debug.ui.actions.IToggleBreakpointsTarget"/>
+         </factory>
+	</extension>     	
+
+	<extension
+		point="org.eclipse.ui.editorActions">
+		<editorContribution
+			targetID="org.zenframework.z8.pde.Z8Editor"
+			id="org.zenframework.z8.pde.Z8Editor.BreakpointRulerActions">
+			<action
+				label="Toggle &amp;Breakpoint"
+				class="org.eclipse.debug.ui.actions.RulerToggleBreakpointActionDelegate"
+				actionID="RulerDoubleClick"
+				id="org.zenframework.z8.pde.Z8Editor.ManageBreakpointRulerAction">
+			</action>
+		</editorContribution>
+   </extension>
+   
+   <extension
+         point="org.eclipse.ui.views">
+      <category
+            id="org.zenframework.z8.pde.views"
+            name="Z8 Views"/>
+      <view
+            id="org.zenframework.z8.pde.views.classes"
+            name="Z8 Classes"
+            icon="icons/class.bmp"
+            class="org.zenframework.z8.pde.navigator.ClassesNavigator"
+            category="org.zenframework.z8.pde.views"
+            allowMultiple="true"/>
+      <view
+            id="org.zenframework.z8.pde.views.views.hierarchy"
+            name="Z8 Hierarchy"
+            icon="icons/class.bmp"
+            class="org.zenframework.z8.pde.navigator.HierarchyNavigator"
+            category="org.zenframework.z8.pde.views"
+            allowMultiple="true"/>
+   </extension>
+   
+   <extension
+        point="org.eclipse.ui.decorators">
+	    <decorator
+           class="org.zenframework.z8.pde.navigator.Z8LabelProvider"
+           id="org.zenframework.z8.pde.navigator.decorator"
+           label="Z8 Decorator"
+           lightweight="true"
+           state="true">
+         <description>
+            Z8 items decorator.
+         </description>
+    	</decorator>
+	</extension>
+	
+	<extension point = "org.eclipse.ui.preferencePages">
+    	<page id="org.zenframework.z8.pde.preferences.PreferencePage"
+	    	class="org.zenframework.z8.pde.preferences.PreferencePage"
+        	name="Z8"
+        	>
+    	</page>
+     <page
+           category="org.zenframework.z8.pde.preferences.PreferencePage"
+           class="org.zenframework.z8.pde.preferences.EditorPreferencePage"
+           id="org.zenframework.z8.pde.page1"
+           name="Editor">
+     </page>
+	</extension>
+	
+ 	<extension
+         point="org.eclipse.ui.menus">
+ 	<menuContribution
+            locationURI="menu:org.eclipse.ui.main.menu?after=window">
+
+      </menuContribution>
+</extension>
+ 	
+ 	
+ 	
+ 	<extension point = "org.eclipse.ui.actionSets">
+	   <actionSet id="org.zenframework.z8.pde.ActionSet"
+		   label="Действия Z8"
+		   visible="true">
+		   <menu
+               label="Z8"
+               path="additions"
+               id="org.zenframework.z8.pde.Menu">
+               <separator name="group1"/> 
+       	   </menu>
+		   <action id="org.zenframework.z8.pde.merge"
+			   menubarPath="org.zenframework.z8.pde.Menu/group1"
+			   label="Конфигурирование проектов"
+			   tooltip="Конфигурирование проектов"
+			   class="org.zenframework.z8.pde.MergeAction"
+			   definitionId="org.zenframework.z8.pde.merge">
+		   </action>
+		   <action id="org.zenframework.z8.pde.imports"
+			   menubarPath="org.zenframework.z8.pde.Menu/group1"
+			   label="Организация импортов"
+			   tooltip="Организация импортов"
+			   class="org.zenframework.z8.pde.OrganizeAllImportsAction"
+			   definitionId="org.zenframework.z8.pde.imports">
+		   </action>
+		    <action id="org.zenframework.z8.pde.clearOrphaned"
+			   menubarPath="org.zenframework.z8.pde.Menu/group1"
+			   label="Удаление неиспользуемого кода"
+			   tooltip="Удаление неиспользуемого кода"
+			   class="org.zenframework.z8.pde.ClearOrphanedCodeAction"
+			   definitionId="org.zenframework.z8.pde.clearOrphaned">
+		   </action>
+      <action
+            class="org.zenframework.z8.pde.OrganizeAllImportsAction"
+            definitionId="org.zenframework.z8.pde.createguid"
+            id="org.zenframework.z8.pde.createguid"
+            label="GUID"
+            style="push">
+      </action>
+	   </actionSet>
+   </extension>
+  <extension
+        point="org.eclipse.ui.editors.documentProviders">
+     <provider
+           class="org.eclipse.ui.editors.text.FileDocumentProvider"
+           id="org.zenframework.z8.pde.provider1"
+           extensions=".bl"> 
+     </provider>
+  </extension>
+ 
+<extension  
+  point="org.eclipse.ui.navigator.navigatorContent">
+ <navigatorContent
+       activeByDefault="true"
+       contentProvider="org.zenframework.z8.pde.navigator.NewTreeContentProvider"
+       icon="icons/class.bmp"
+       id="orgperwepwr"
+       labelProvider="org.zenframework.z8.pde.navigator.Z8LabelProvider"
+       name="pdeext"
+       priority="normal">       
+  <triggerPoints>
+
+              <and>
+                <instanceof
+                    value="org.eclipse.core.resources.IFile">
+              </instanceof>
+              
+              </and>
+              </triggerPoints>
+  <commonWizard
+        type="new"
+        wizardId="org.zenframework.z8.pde.wizards.ProjectWizard">
+     <enablement></enablement>
+  </commonWizard>
+  <commonWizard
+        type="new"
+        wizardId="org.zenframework.z8.pde.wizards.ClassWizard">
+     <enablement></enablement>
+  </commonWizard>
+              </navigatorContent>
+ <actionProvider
+       class="org.zenframework.z8.pde.navigator.ActionProvider"
+       id="org.zenframework.z8.pde.navigator.ActionProvider"
+       priority="highest">
+  <enablement>
+       <or>
+          <instanceof
+                value="org.eclipse.core.resources.IResource">
+          </instanceof>
+          <instanceof
+                value="org.zenframework.z8.compiler.core.ILanguageElement">
+          </instanceof>
+       </or>
+    </enablement>
+ </actionProvider>
+</extension>
+
+<extension
+         point="org.eclipse.ui.navigator.viewer">
+       <viewerContentBinding 
+             viewerId="org.eclipse.ui.navigator.ProjectExplorer">
+            <includes>
+                <contentExtension pattern="orgperwepwr" />
+            </includes>
+       </viewerContentBinding>
+   </extension> 
+   
+<extension
+         point="org.eclipse.ui.navigator.viewer">
+       <viewerActionBinding 
+             viewerId="org.eclipse.ui.navigator.ProjectExplorer">
+            <includes>
+                <actionExtension pattern="org.zenframework.z8.pde.navigator.ActionProvider" />
+            </includes>
+       </viewerActionBinding>
+   </extension>
+<extension
+      point="org.eclipse.ui.editors.markerAnnotationSpecification">
+   <specification
+         annotationImageProvider="org.zenframework.z8.pde.editor.OverrideAnnotationImageProvider"
+         annotationType="org.zenframework.z8.pde.OverrideAnnotation"
+         icon="icons/ovr16/over_co.gif"
+            label="Z8 Override Indicator"
+            textPreferenceKey="bloverrideIndicator"
+            textPreferenceValue="false"
+            highlightPreferenceKey="bloverrideIndicatorHighlighting"
+            highlightPreferenceValue="false"
+            contributesToHeader="false"
+            overviewRulerPreferenceKey="bloverrideIndicatorInOverviewRuler"
+            overviewRulerPreferenceValue="false"
+            verticalRulerPreferenceKey="bloverrideIndicatorInVerticalRuler"
+            verticalRulerPreferenceValue="true"
+            colorPreferenceKey="bloverrideIndicatorColor"
+            colorPreferenceValue="180,207,205"
+            presentationLayer="3"
+            showInNextPrevDropdownToolbarActionKey="blshowoverrideIndicatorInNextPrevDropdownToolbarAction"
+            showInNextPrevDropdownToolbarAction="false"
+            isGoToNextNavigationTargetKey="blisOverrideIndicatorGoToNextNavigationTarget"
+	        isGoToNextNavigationTarget="false"
+            isGoToPreviousNavigationTargetKey="blisOverrideIndicatorGoToPreviousNavigationTarget"
+	        isGoToPreviousNavigationTarget="false"
+            textStylePreferenceKey="bloverrideIndicatorTextStyle"
+            textStylePreferenceValue="SQUIGGLES">
+   </specification>
+</extension>
+<extension
+      point="org.eclipse.ui.editors.annotationTypes">
+   <type
+         name="org.zenframework.z8.pde.OverrideAnnotation">
+   </type>
+</extension>
+<extension
+      point="org.eclipse.ui.editorActions">
+   <editorContribution
+         id="org.zenframework.z8.pde.editorContribution1"
+         targetID="org.zenframework.z8.pde.Z8Editor">
+      <action
+            actionID="RulerClick"
+            class="org.zenframework.z8.pde.editor.RulerClickActionDelegate"
+            id="org.zenframework.z8.pde.action1"
+            label="Open Ruler Action"
+            style="push">
+      </action>
+   </editorContribution>
+</extension>
+<extension
+      point="org.eclipse.jdt.launching.vmInstallTypes">
+</extension>
+  
+
+   
+</plugin>

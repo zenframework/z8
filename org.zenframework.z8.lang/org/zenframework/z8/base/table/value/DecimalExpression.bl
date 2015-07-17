@@ -1,0 +1,20 @@
+[native "org.zenframework.z8.server.base.table.value.DecimalExpression"]
+
+class DecimalExpression extends Expression
+{
+	stretch = false;
+
+	format = "0,000.00";
+
+	public void setDefault(decimal defaultValue);
+
+	virtual public decimal get();
+
+	public operator sql_decimal();
+
+	virtual protected sql_decimal expression();
+
+	public DecimalExpression operator = (decimal value);
+
+	public void setExpression(sql_decimal expression);
+}

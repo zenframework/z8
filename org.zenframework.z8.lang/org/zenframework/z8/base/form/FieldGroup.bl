@@ -1,0 +1,13 @@
+/*
+Назначение: группа элементов управления в интерфейсе формы.
+Описание: группа элементов управления в интерфейсе формы.
+Область применения: применяется в классе Query.
+*/
+[native "org.zenframework.z8.server.base.form.FieldGroup"]
+
+class FieldGroup extends Control
+{
+	public int columns = 3;
+	
+	public Control[] controls;
+}

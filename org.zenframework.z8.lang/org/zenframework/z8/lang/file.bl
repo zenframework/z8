@@ -1,0 +1,15 @@
+[primary "org.zenframework.z8.server.types.file"]
+
+final class file extends primary
+{
+	public void operator = (file file);
+	public void operator = (string path);
+	
+	public string getPath();
+	
+	public string read();
+	public string read(encoding charset);
+	
+	public void write(string content);
+	public void write(string content, encoding charset);
+}

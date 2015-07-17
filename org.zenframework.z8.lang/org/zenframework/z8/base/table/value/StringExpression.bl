@@ -1,0 +1,16 @@
+[native "org.zenframework.z8.server.base.table.value.StringExpression"]
+
+class StringExpression extends Expression
+{
+	public void setDefault(string defaultValue);
+
+	virtual public string get();
+
+	public StringExpression operator = (string value);
+
+	public operator sql_string();
+
+	virtual protected sql_string expression();
+
+	public void setExpression(sql_string expression);
+}

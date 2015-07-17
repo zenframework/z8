@@ -1,0 +1,20 @@
+[native "org.zenframework.z8.server.base.table.value.DatetimeExpression"]
+
+class DatetimeExpression extends Expression
+{
+	stretch = false;
+
+	format = "d/m/Y G:i:s"; // http://php.net/manual/ru/function.date.php
+
+	public void setDefault(datetime defaultValue);
+
+	virtual public datetime get();
+
+	public DatetimeExpression operator = (datetime value);
+
+	public operator sql_datetime();
+
+	virtual protected sql_datetime expression();
+
+	public void setExpression(sql_datetime expression);
+}

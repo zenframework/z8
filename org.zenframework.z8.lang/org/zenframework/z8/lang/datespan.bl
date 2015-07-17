@@ -1,0 +1,43 @@
+[primary "org.zenframework.z8.server.types.datespan"]
+
+final class datespan extends primary
+{
+	public operator string();
+	public operator sql_datespan();
+
+	public void operator = (datespan value);
+	public datespan operator + (datespan value);
+	public datetime operator + (date value);
+	public datetime operator + (datetime value);
+	public datespan operator - (datespan value);
+	public datespan operator += (datespan value);
+	public datespan operator -= (datespan value);
+
+	public bool operator < (datespan value);
+	public bool operator > (datespan value);
+	public bool operator <= (datespan value);
+	public bool operator >= (datespan value);
+	public bool operator == (datespan value);
+	public bool operator != (datespan value);
+
+	public int days();
+	public int hours();
+	public int minutes();
+	public int seconds();
+	public int milliseconds();
+	public int totalHours();
+	public int totalMinutes();
+	public int totalSeconds();
+
+	public void setTotalHours(int hours);
+	public void setTotalMinutes(int minutes);
+	public void setTotalSeconds(int seconds);
+	public void set(int days, int hours, int minutes, int seconds);
+	public void set(int days, int hours, int minutes, int seconds, int milliseconds);
+
+	public void truncDay();
+	public void truncHour();
+	public void truncMinute();
+	public string toString(string frm);
+	static public datespan parse(string string);
+}

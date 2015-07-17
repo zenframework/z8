@@ -1,0 +1,16 @@
+[native "org.zenframework.z8.server.base.table.value.GuidExpression"]
+
+class GuidExpression extends Expression
+{
+	virtual public guid get();
+
+	public GuidExpression operator = (guid value);
+
+	public void setDefault(guid defaultValue);
+
+	public operator sql_guid();
+
+	virtual protected sql_guid expression();
+
+	public void setExpression(sql_guid expression);
+}

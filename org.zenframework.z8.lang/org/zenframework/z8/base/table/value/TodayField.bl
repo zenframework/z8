@@ -1,0 +1,12 @@
+
+class TodayField extends DateField
+{
+	int daysPlus = 0;
+	int monthsPlus = 0;
+	int yearsPlus = 0;
+	
+	public date getDefault()
+	{
+		return date.today().addDay(daysPlus).addMonth(monthsPlus).addMonth(yearsPlus);
+	}
+}

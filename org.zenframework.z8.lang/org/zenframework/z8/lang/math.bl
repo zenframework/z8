@@ -1,0 +1,71 @@
+[native "org.zenframework.z8.server.types.math"]
+
+final class math
+{
+	static public int max(int a, int b);
+	static public decimal max(int a, decimal b);
+	static public decimal max(decimal a, int b);
+	static public decimal max(decimal a, decimal b);
+	static public int min(int a, int b);
+	static public decimal min(int a, decimal b);
+	static public decimal min(decimal a, int b);
+	static public decimal min(decimal a, decimal b);
+	static public date max(date a, date b);
+	static public datetime max(datetime a, date b);
+	static public datetime max(date a, datetime b);
+	static public datetime max(datetime a, datetime b);
+	static public date min(date a, date b);
+	static public datetime min(datetime a, date b);
+	static public datetime min(date a, datetime b);
+	static public datetime min(datetime a, datetime b);
+
+    /**
+     * Returns sqrt(<i>x</i><sup>2</sup>&nbsp;+<i>y</i><sup>2</sup>)
+     * without intermediate overflow or underflow.
+     *
+     * <p>Special cases:
+     * <ul>
+     *
+     * <li> If either argument is infinite, then the result
+     * is positive infinity.
+     *
+     * <li> If either argument is NaN and neither argument is infinite,
+     * then the result is NaN.
+     *
+     * </ul>
+     *
+     * <p>The computed result must be within 1 ulp of the exact
+     * result.  If one parameter is held constant, the results must be
+     * semi-monotonic in the other parameter.
+     *
+     * @param x a value
+     * @param y a value
+     * @return sqrt(<i>x</i><sup>2</sup>&nbsp;+<i>y</i><sup>2</sup>)
+     * without intermediate overflow or underflow
+     * @since 1.5
+     */
+	static public decimal hypot(decimal x, decimal y);
+
+    /**
+     * Returns a <code>double</code> value with a positive sign, greater 
+     * than or equal to <code>0.0</code> and less than <code>1.0</code>. 
+     * Returned values are chosen pseudorandomly with (approximately) 
+     * uniform distribution from that range. 
+     * 
+     * <p>When this method is first called, it creates a single new
+     * pseudorandom-number generator, exactly as if by the expression
+     * <blockquote><pre>new java.util.Random</pre></blockquote> This
+     * new pseudorandom-number generator is used thereafter for all
+     * calls to this method and is used nowhere else.
+     * 
+     * <p>This method is properly synchronized to allow correct use by
+     * more than one thread. However, if many threads need to generate
+     * pseudorandom numbers at a great rate, it may reduce contention
+     * for each thread to have its own pseudorandom-number generator.
+     *  
+     * @return  a pseudorandom <code>double</code> greater than or equal 
+     * to <code>0.0</code> and less than <code>1.0</code>.
+     * @see     java.util.Random#nextDouble()
+     */
+	static public decimal random();
+}

@@ -1,0 +1,5 @@
+[native "org.zenframework.z8.server.base.table.value.CountExpression"]
+
+final class CountExpression extends IntegerExpression {
+	public Field field;
+}

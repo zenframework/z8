@@ -1,0 +1,43 @@
+[primary "org.zenframework.z8.server.types.sql.sql_date"]
+
+final class sql_date extends sql_primary
+{
+	public operator ();
+
+	public operator sql_datetime();
+
+	public sql_datetime operator + (sql_datespan value);
+	public sql_datetime operator - (sql_datespan value);
+	public sql_datespan operator - (sql_date value);
+	public sql_datespan operator - (sql_datetime value);
+
+	public sql_bool operator < (sql_date value);
+	public sql_bool operator < (sql_datetime value);
+	public sql_bool operator > (sql_date value);
+	public sql_bool operator > (sql_datetime value);
+	public sql_bool operator <= (sql_date value);
+	public sql_bool operator <= (sql_datetime value);
+	public sql_bool operator >= (sql_date value);
+	public sql_bool operator >= (sql_datetime value);
+	public sql_bool operator == (sql_date value);
+	public sql_bool operator == (sql_datetime value);
+	public sql_bool operator != (sql_date value);
+	public sql_bool operator != (sql_datetime value);
+
+	public sql_int quarter();
+	public sql_int year();
+	public sql_int month();
+	public sql_int day();
+	public sql_int weekDay();
+	public sql_int yearDay();
+
+	public void set(sql_int year, sql_int month, sql_int day);
+
+	public sql_date truncQuarter();
+	public sql_date truncYear();
+	public sql_date truncMonth();
+	public sql_date addQuarter(sql_int count);
+	public sql_date addYear(sql_int count);
+	public sql_date addMonth(sql_int count);
+	public sql_date addDay(sql_int count);
+}

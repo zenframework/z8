@@ -1,0 +1,56 @@
+[primary "org.zenframework.z8.server.types.sql.sql_string"]
+
+final class sql_string extends sql_primary
+{
+	public operator ();
+
+	public sql_string operator + (sql_string value);
+
+	public sql_bool operator < (sql_string value);
+	public sql_bool operator > (sql_string value);
+	public sql_bool operator <= (sql_string value);
+	public sql_bool operator >= (sql_string value);
+	public sql_bool operator == (sql_string value);
+	public sql_bool operator != (sql_string value);
+
+	public sql_bool isInt();
+	public sql_bool isNumeric();
+
+	public sql_int toInt();
+	public sql_decimal toDecimal();
+	public sql_date toDate();
+	public sql_datetime toDatetime();
+
+	public sql_bool isEmpty();
+
+	public sql_int length();
+
+	public sql_int indexOf(sql_string pattern);
+	public sql_int indexOf(sql_string pattern, sql_int position);
+
+	public sql_bool contains(sql_string pattern);
+	public sql_bool contains(sql_string pattern, sql_int position);
+
+	public sql_int patIndexOf(sql_string reg_exp);
+
+	public sql_bool like(sql_string pattern);
+	public sql_bool like(sql_string pattern, sql_string escape);
+
+	public sql_string toLower();
+	public sql_string toUpper();
+
+	public sql_string trimLeft();
+	public sql_string trimRight();
+	public sql_string trimAll();
+
+	public sql_string padLeft(sql_int length);
+	public sql_string padLeft(sql_int length, sql_string pattern);
+	public sql_string padRight(sql_int length);
+	public sql_string padRight(sql_int length, sql_string pattern);
+
+	public sql_string replace(sql_string pattern, sql_string replacement);
+
+	public sql_string substring(sql_int position, sql_int count);
+
+	public sql_string reverse();
+}

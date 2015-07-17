@@ -1,0 +1,16 @@
+[native "org.zenframework.z8.server.base.table.value.DatespanExpression"]
+
+class DatespanExpression extends Expression
+{
+	public void setDefault(datespan defaultValue);
+
+	virtual public datespan get();
+	
+	public DatespanExpression operator = (datespan value);
+
+	public operator sql_datespan();
+
+	virtual protected sql_datespan expression();
+
+	public void setExpression(sql_datespan expression);
+}

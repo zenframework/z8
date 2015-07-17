@@ -1,0 +1,84 @@
+[primary "org.zenframework.z8.server.types.integer"]
+
+final class int extends primary
+{
+	static public int MIN_VALUE = -0x7fffffffffffffff;
+	static public int MAX_VALUE =  0x7fffffffffffffff; 
+
+	public operator decimal();
+	public operator string();
+	public operator sql_int();
+
+	public void operator = (int value);
+	public int operator+();
+	public int operator-();
+	public int operator + (int value);
+	public int operator - (int value);
+	public int operator * (int value);
+	public int operator / (int value);
+	public int operator % (int value);
+
+	public decimal operator + (decimal value);
+	public decimal operator - (decimal value);
+	public decimal operator * (decimal value);
+	public decimal operator / (decimal value);
+	public decimal operator % (decimal value);
+
+	public int operator += (int value);
+	public int operator -= (int value);
+	public int operator *= (int value);
+	public int operator /= (int value);
+	public int operator %= (int value);
+
+	public bool operator < (int value);
+	public bool operator > (int value);
+	public bool operator <= (int value);
+	public bool operator >= (int value);
+	public bool operator == (int value);
+	public bool operator != (int value);
+	public bool operator < (decimal value);
+	public bool operator > (decimal value);
+	public bool operator <= (decimal value);
+	public bool operator >= (decimal value);
+	public bool operator == (decimal value);
+	public bool operator != (decimal value);
+
+	public int abs();
+	public int signum();
+
+	public int and(int x);
+	public int or(int x);
+	public int xor(int x);
+	public int not();
+
+	public decimal sin();
+	public decimal cos();
+	public decimal tan();
+	public decimal asin();	
+	public decimal acos();	
+	public decimal atan();	
+	public decimal sinh();
+	public decimal cosh();
+	public decimal tanh();
+
+	public decimal toRadians();
+	public decimal toDegrees();
+
+	public decimal exp();
+
+	public decimal ln();
+	public decimal log10();
+
+	public decimal sqrt();
+	public decimal cbrt();
+
+	public decimal power(decimal power);
+
+	public int leftShift(int _bit);
+	public int rightShift(int _bit);
+
+	public string toString(int radix);
+
+	static public int parse(string string);
+	static public int parse(string string, int radix);
+}

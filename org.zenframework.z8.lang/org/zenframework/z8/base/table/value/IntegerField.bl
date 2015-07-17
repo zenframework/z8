@@ -1,0 +1,18 @@
+[native "org.zenframework.z8.server.base.table.value.IntegerField"]
+
+class IntegerField extends Field
+{
+	stretch = false;
+
+	format = "0,000";
+
+	virtual public int getDefault();
+	public void setDefault(int defaultValue);
+
+	public operator sql_int();
+
+	virtual public int get();
+	
+	public IntegerField operator = (int value);
+	
+}

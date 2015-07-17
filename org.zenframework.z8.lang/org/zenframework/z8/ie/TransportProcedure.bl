@@ -1,0 +1,16 @@
+import org.zenframework.z8.base.simple.Procedure;
+
+[native "org.zenframework.z8.server.ie.TransportProcedure"]
+class TransportProcedure extends Procedure {
+	
+	public static final string SelfAddressProperty;
+	
+	protected TransportContext context;
+	
+	virtual protected void init();
+
+	virtual protected void beforeExport(Message message);
+
+	virtual protected void afterImport(Message message);
+
+}

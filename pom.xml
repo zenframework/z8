@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+    <modelVersion>4.0.0</modelVersion>
+    <name>Z8 Platform</name>
+    <groupId>org.zenframework.z8</groupId>
+    <artifactId>org.zenframework.z8</artifactId>
+    <version>1.0.0</version>
+    <packaging>pom</packaging>
+
+    <properties>
+
+        <!-- Кодировка исходных кодов -->
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+
+        <!-- Версии зависимостей -->
+        <junit.version>3.8.1</junit.version>
+        <eclipse.core.version>[3.7.0,3.11.0)</eclipse.core.version>
+        <eclipse.text.version>[3.5.0,)</eclipse.text.version>
+        <birt.version>4.4.0</birt.version>
+        
+        <!-- Версии плагинов -->
+        <tycho.version>0.21.0</tycho.version>
+
+    </properties>
+
+    <modules>
+        <module>org.zenframework.z8.auth</module>
+        <module>org.zenframework.z8.compiler</module>
+        <module>org.zenframework.z8.lang</module>
+        <module>org.zenframework.z8-maven-plugin</module>
+        <module>org.zenframework.z8.pde</module>
+        <module>org.zenframework.z8.oda.driver</module>
+        <module>org.zenframework.z8.server</module>
+        <module>org.zenframework.z8.servlet</module>
+        <module>org.zenframework.z8.web</module>
+        <module>org.zenframework.z8.xml</module>
+    </modules>
+
+    <profiles>
+        <profile>
+            <id>modules-pde</id>
+            <modules>
+                <module>org.zenframework.z8.oda.designer</module>
+            </modules>
+        </profile>
+        <profile>
+            <id>modules-webapp</id>
+            <modules>
+                <module>org.zenframework.z8.webapp</module>
+            </modules>
+        </profile>
+    </profiles>
+
+    <!--<distributionManagement>
+        <repository>
+            <id>z8-repository</id>
+            <url>git:master:https://github.com/zenframework/repository.git</url>
+        </repository>
+    </distributionManagement>-->
+
+    <repositories>
+        <repository>
+            <id>ivk-repository</id>
+            <url>svn:https://bugs.ivk.ru:8888/svn/maven_repository/</url>
+        </repository>
+        <repository>
+            <id>jboss-repository</id>
+            <url>https://repository.jboss.org/nexus/content/repositories/thirdparty-releases/</url>
+        </repository>
+        <repository>
+            <id>luna-repository</id>
+            <layout>p2</layout>
+            <url>http://download.eclipse.org/releases/luna</url>
+        </repository>
+        <repository>
+            <id>clojars.org</id>
+            <url>http://clojars.org/repo</url>
+        </repository>
+    </repositories>
+
+    <dependencies>
+
+        <!-- Testing -->
+        <!-- <dependency> <groupId>junit</groupId> <artifactId>junit</artifactId> <version>${junit.version}</version> <scope>test</scope> 
+            </dependency> -->
+
+    </dependencies>
+
+    <build>
+
+        <pluginManagement>
+            <plugins>
+                <!-- <plugin> <groupId>org.codehaus.mojo</groupId> <artifactId>native2ascii-maven-plugin</artifactId> <version>1.0-beta-1</version> 
+                    <executions> <execution> <id>n2s2</id> <goals> <goal>native2ascii</goal> </goals> <configuration> <encoding>UTF8</encoding> <workDir>${project.build.directory}/classes</workDir> 
+                    </configuration> </execution> <execution> <id>n2s3</id> <goals> <goal>native2ascii</goal> </goals> <configuration> <encoding>UTF8</encoding> 
+                    <workDir>${project.build.directory}/classes</workDir> </configuration> </execution> </executions> </plugin> -->
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-compiler-plugin</artifactId>
+                    <version>2.3.2</version>
+                    <configuration>
+                        <source>1.6</source>
+                        <target>1.6</target>
+                        <encoding>UTF-8</encoding>
+                        <fork>true</fork>
+                        <meminitial>128m</meminitial>
+                        <maxmem>512m</maxmem>
+                    </configuration>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-jar-plugin</artifactId>
+                    <version>2.5</version>
+                    <configuration>
+                        <useDefaultManifestFile>true</useDefaultManifestFile>
+                    </configuration>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-source-plugin</artifactId>
+                    <version>2.3</version>
+                    <executions>
+                        <execution>
+                            <id>attach-sources</id>
+                            <goals>
+                                <goal>jar</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+
+        <!--<extensions>
+            <extension>
+				<groupId>ar.com.synergian</groupId>
+				<artifactId>wagon-git</artifactId>
+				<version>0.2.5</version>
+			</extension>
+        </extensions>-->
+
+    </build>
+
+</project>

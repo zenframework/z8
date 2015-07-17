@@ -1,0 +1,17 @@
+[native "org.zenframework.z8.server.base.table.value.DateField"]
+
+class DateField extends Field
+{
+	stretch = false;
+
+	format = "d/m/Y"; // http://php.net/manual/ru/function.date.php
+
+	virtual public date getDefault();	// default value: date.MIN_VALUE
+	public void setDefault(date defaultValue);
+
+	public operator sql_date();
+
+	virtual public date get();
+	
+	public DateField operator = (date value);
+}

@@ -1,0 +1,43 @@
+import org.zenframework.z8.base.table.value.DatetimeField;
+import org.zenframework.z8.base.table.value.GuidField;
+import org.zenframework.z8.base.table.value.StringField;
+import org.zenframework.z8.base.table.value.TextField;
+import org.zenframework.z8.base.table.value.BoolExpression;
+
+[native "org.zenframework.z8.server.base.table.Table"]
+
+class Table extends TableBase
+{
+	public [name "RecordId"] GuidField recordId;
+
+	public [name "Id"][displayName "Код"] StringField id;
+	id.length = 15;
+	id.width = 15;
+	id.stretch = false;
+	
+	public [name "Id1"][displayName "Код1"] StringField id1;
+	id1.length = 15;
+	id1.width = 15;
+	id1.stretch = false;
+	
+	public [name "Name"][displayName "Наименование"] StringField name;
+	name.length = 50;
+	name.width = 20;
+	
+	public [name "Description"][displayName "Описание"] TextField description;
+
+	public [name "Locked"][displayName "Заблокирована"] BoolExpression locked;
+	locked.readOnly = false;
+
+	public [displayName "Создана"] DatetimeField createdAt;
+	createdAt.readOnly = true;
+	
+	public [displayName "Создал"]  GuidField createdBy;
+	createdBy.readOnly = true;
+	
+	public [displayName "Изменена"] DatetimeField modifiedAt;
+	modifiedAt.readOnly = true;
+	
+	public [displayName "Изменил"] GuidField modifiedBy;
+	modifiedBy.readOnly = true;
+}

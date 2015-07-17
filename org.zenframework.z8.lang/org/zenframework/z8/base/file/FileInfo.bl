@@ -1,0 +1,12 @@
+import org.zenframework.z8.lang.Object;
+
+[native "org.zenframework.z8.server.base.file.FileInfo"]
+
+public class FileInfo extends Object {
+    public string name;
+    public string path;
+    public guid id;
+
+    static public FileInfo[] parse(string json);
+    static public string toJson(FileInfo[] files);
+}

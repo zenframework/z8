@@ -1,0 +1,40 @@
+[primary "org.zenframework.z8.server.types.sql.sql_integer"]
+
+final class sql_int extends sql_primary
+{
+	public operator ();
+
+	public operator sql_decimal();
+
+	public sql_int operator-();
+	public sql_int operator+();
+
+	public sql_int operator + (sql_int value);
+	public sql_int operator - (sql_int value);
+	public sql_int operator * (sql_int value);
+	public sql_int operator / (sql_int value);
+	public sql_int operator % (sql_int value);
+
+	public sql_decimal operator + (sql_decimal value);
+	public sql_decimal operator - (sql_decimal value);
+	public sql_decimal operator * (sql_decimal value);
+	public sql_decimal operator / (sql_decimal value);
+	public sql_decimal operator % (sql_decimal value);
+
+	public sql_bool operator < (sql_int value);
+	public sql_bool operator > (sql_int value);
+	public sql_bool operator <= (sql_int value);
+	public sql_bool operator >= (sql_int value);
+	public sql_bool operator == (sql_int value);
+	public sql_bool operator != (sql_int value);
+	public sql_bool operator < (sql_decimal value);
+	public sql_bool operator > (sql_decimal value);
+	public sql_bool operator <= (sql_decimal value);
+	public sql_bool operator >= (sql_decimal value);
+	public sql_bool operator == (sql_decimal value);
+	public sql_bool operator != (sql_decimal value);
+
+	public sql_int sign();
+	public sql_int abs();
+	public sql_int power(sql_int power);
+}

@@ -1,0 +1,56 @@
+import org.zenframework.z8.base.table.value.TextField;
+import org.zenframework.z8.base.table.value.Link;
+import org.zenframework.z8.base.table.Table;
+import org.zenframework.z8.base.table.value.StringField;
+
+[native "org.zenframework.z8.server.base.table.system.Users"]
+
+[name "SystemUsers"]
+[displayName "Пользователи"]
+class Users extends Table 
+{
+	SecurityGroups securityGroups;
+	
+	[name "SecurityGroup"]
+	Link securityGroup = securityGroups;
+	
+	[displayName "Имя"] name;
+	[displayName "Описание"] description;
+	
+	[name "Phone"]
+	[displayName "Телефон"]
+	public StringField phone;
+
+	[name "Email"]
+	[displayName "email"]
+	public StringField email;
+
+	[name "Settings"]
+	[displayName "Настройки"]
+	public TextField settings;
+	
+	virtual protected bool getParameters(guid id, string login, primary[string] parameters);
+	
+	records
+	{
+		[name "System"]
+		[description "Системный вход"]
+		[securityGroup SecurityGroups.Administators]
+		System = '00000000-0000-0000-0000-000000000001';
+
+		[name "Admin"]
+		[description "Администратор системы"]
+		[securityGroup SecurityGroups.Administators]
+		Administrator = '00000000-0000-0000-0000-000000000002';
+	}
+	
+	formFields = 
+	{
+		id,
+		name,
+		description,
+		phone,
+		email,
+		settings
+	};
+}

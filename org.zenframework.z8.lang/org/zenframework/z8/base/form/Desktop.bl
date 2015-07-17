@@ -1,0 +1,19 @@
+/*
+Назначение: базовый класс рабочего стола.
+Описание: рабочий стол используется для вынесения на него некоторых классов системы доступных на выполнение пользователю в начале его работы.
+Область применения: может применяться в самом же классе Desktop (для определения подчинённых рабочих столов).
+*/
+import org.zenframework.z8.base.simple.Runnable;
+import org.zenframework.z8.base.query.Query;
+import org.zenframework.z8.lang.Object;
+
+[native "org.zenframework.z8.server.base.form.Desktop"]
+
+class Desktop extends Object
+{
+	virtual protected void checkAccess();
+
+	auto private Runnable[] runnables;
+	auto private Desktop[] subDesktops;
+	auto private Query[] dataSets;
+}

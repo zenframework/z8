@@ -1,0 +1,36 @@
+[primary "org.zenframework.z8.server.types.sql.sql_datespan"]
+
+final class sql_datespan extends sql_primary
+{
+	public operator ();
+
+	public sql_datetime operator + (sql_date value);
+	public sql_datetime operator + (sql_datetime value);
+	public sql_datespan operator + (sql_datespan value);
+	public sql_datespan operator - (sql_datespan value);
+
+	public sql_bool operator < (sql_datespan value);
+	public sql_bool operator > (sql_datespan value);
+	public sql_bool operator <= (sql_datespan value);
+	public sql_bool operator >= (sql_datespan value);
+	public sql_bool operator == (sql_datespan value);
+	public sql_bool operator != (sql_datespan value);
+
+	public sql_int day();
+	public sql_int hour();
+	public sql_int minute();
+	public sql_int second();
+
+	public sql_int totalHours();
+	public sql_int totalMinutes();
+	public sql_int totalSeconds();
+
+	public sql_datespan truncHour();
+	public sql_datespan truncMinute();
+	public sql_datespan truncSecond();
+
+	public sql_datespan addDay(sql_int count);
+	public sql_datespan addHour(sql_int count);
+	public sql_datespan addMinute(sql_int count);
+	public sql_datespan addSecond(sql_int count);
+}

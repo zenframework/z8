@@ -1,0 +1,42 @@
+import org.zenframework.z8.base.json.JsonArray;
+import org.zenframework.z8.base.json.JsonObject;
+import org.zenframework.z8.base.security.User;
+[native "org.zenframework.z8.server.runtime.OBJECT"]
+
+class Object {
+    static public string Name = "name";
+	static public string DisplayName = "displayName";
+	static public string Description = "description";
+	static public string Label = "label";
+	static public string Icon = "icon";
+
+	static public bool isNull(Object object);
+
+	static public User user();
+	static public void log(string text);
+	static public void showMessage(string text);
+	static public JsonObject getWriter();
+
+	static public int currentTimeMillis();
+	static public void wait(int millis);
+
+	static public void addAttribute(Object object, string attribute, string value);
+	static public void removeAttribute(Object object, string attribute);
+
+	virtual protected void constructor();
+
+	public string id();
+	public string name();
+	public string displayName();
+	public string className();
+
+	public void sendFile(file file);
+
+	public bool equals(Object value);
+	public bool operator == (Object object);
+	public bool operator != (Object object);
+
+	virtual public string toString();
+
+	virtual protected JsonArray response(string[string] parameters);
+}

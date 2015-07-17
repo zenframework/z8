@@ -1,0 +1,15 @@
+[native "org.zenframework.z8.server.base.table.value.BoolField"]
+
+class BoolField extends Field
+{
+	width = 5; 
+	stretch = false;
+
+	public bool defaultValue = false;
+
+	public operator sql_bool();
+
+	virtual public bool get();
+	
+	public BoolField operator = (bool value);
+}

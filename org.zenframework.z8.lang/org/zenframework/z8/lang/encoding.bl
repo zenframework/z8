@@ -1,0 +1,19 @@
+[native "org.zenframework.z8.server.types.encoding"]
+
+enum encoding
+{
+	Default,
+
+	KOI8R,
+	USASCII,
+	UTF8,
+	UTF16,
+	UTF16BE,
+	UTF16LE,
+	Windows1250,
+	Windows1251,
+	Windows1252,
+	Windows1253,
+	Windows1254,
+	Windows1257
+}

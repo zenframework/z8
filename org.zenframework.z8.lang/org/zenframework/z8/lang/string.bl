@@ -1,0 +1,72 @@
+[primary "org.zenframework.z8.server.types.string"]
+
+final class string extends primary
+{
+	public operator sql_string();
+
+	public operator exception();
+
+	public void operator = (string value);
+	public string operator + (string value);
+	public string operator += (string value);
+
+	public bool operator < (string value);
+	public bool operator > (string value);
+	public bool operator <= (string value);
+	public bool operator >= (string value);
+	public bool operator == (string value);
+	public bool operator != (string value);
+
+	public int length();
+
+	public bool isEmpty();
+
+	public int compare(string anotherString);
+	public int compareNoCase(string anotherString);
+
+	public int indexOf(string subString);
+	public int indexOf(string subString, int offset);
+
+	public int lastIndexOf(string subString);
+	public int lastIndexOf(string subString, int offset);
+
+	public bool startsWith(string prefix);
+	public bool startsWith(string prefix, int offset);
+
+	public bool endsWith(string suffix);
+
+	public string charAt(int index);
+
+	public string substring(int index);
+	public string substring(int index, int count);
+
+	public string left(int count);
+	public string right(int count);
+
+	public string trim();
+	public string trimLeft();
+	public string trimRight();
+
+	public string padLeft(int length);
+	public string padLeft(int length, string padding);
+	public string padRight(int length);
+	public string padRight(int length, string padding);
+
+	public string insert(int pos, string what);
+	public string replace(int pos, int len, string replacement);
+
+	public bool matches(string regex);
+
+	public string replaceFirst(string regex, string replacement);
+	public string replaceAll(string regex, string replacement);
+
+	public string[] split(string regex);
+	public string[] split(string regex, int limit);
+
+	public string toLowerCase();
+	public string toUpperCase();
+
+	public string format(string[] frm); // {n} <=> [n]
+
+	static public string replicate(string str, int count);
+}

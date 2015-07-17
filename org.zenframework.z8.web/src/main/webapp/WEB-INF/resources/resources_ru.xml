@@ -1,0 +1,187 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+<properties>
+    <comment>Файл ресурсов общей библиотеки для русского языка</comment>
+
+	<!-- bool -->
+	<entry key="bool.true">да</entry>
+	<entry key="bool.false">нет</entry>
+		
+	<!-- Field -->
+	<entry key="Field.readException">Ошибка чтения поля {0}</entry>
+
+	<!-- Query -->
+	<entry key="Query.readError">Ошибка чтения базы данных.\nОбновите данные и повторите операцию.</entry>
+
+	<!-- Table -->
+	<entry key="Table.recordId">UID</entry>
+	<entry key="Table.createdAt">Создана</entry>
+	<entry key="Table.modifiedAt">Изменена</entry>
+	<entry key="Table.createdBy">Создал</entry>
+	<entry key="Table.modifiedBy">Изменил</entry>
+	<entry key="Table.scope">Область видимости</entry>
+
+	<entry key="Table.id">Код</entry>
+	<entry key="Table.id1">Код1</entry>
+	<entry key="Table.InsalesId">Код Insales</entry>
+	<entry key="Table.name">Наименование</entry>
+	<entry key="Table.description">Описание</entry>
+	<entry key="Table.locked">Заблокирована</entry>
+	<entry key="Table.isDefault">Умолчание</entry>
+	<entry key="Table.attachments">Файлы</entry>
+	<entry key="Table.users">Пользователи</entry>
+
+	<!-- TreeTable -->
+	<entry key="TreeTable.parentId">parent id</entry>
+	<entry key="TreeTable.depth">depth</entry>
+	<entry key="TreeTable.children">children</entry>
+	<entry key="TreeTable.path">path</entry>
+
+	<!-- Users -->
+	<entry key="Users.title">Пользователи</entry>
+	<entry key="Users.name">Имя</entry>
+	<entry key="Users.description">Описание</entry>
+	<entry key="Users.password">Пароль</entry>
+	<entry key="Users.securityGroup">Группа безопасности</entry>
+	<entry key="Users.company">Организация</entry>
+	<entry key="Users.phone">Телефон</entry>
+	<entry key="Users.email">email</entry>
+	<entry key="Users.blocked">Блокирован</entry>
+	<entry key="Users.settings">Настройки</entry>
+
+	<entry key="Users.name.default">User</entry>
+    
+    <!-- Properties -->
+    <entry key="Properties.title">Системные свойства</entry>
+    <entry key="Properties.value">Значение</entry>
+    
+    <!-- Export messasges -->
+    <entry key="ExportMessages.title">Экспортируемые сообщения</entry>
+    <entry key="ExportMessages.address">Адрес</entry>
+    <entry key="ExportMessages.protocol">Протокол</entry>
+    <entry key="ExportMessages.message">Сообщение</entry>
+    <entry key="ExportMessages.ordinal">Номер</entry>
+
+	<!-- Entries -->
+	<entry key="Entries.title">Компоненты</entry>
+	<entry key="Entries.javaClass">Системное имя</entry>
+	<entry key="Entries.name">Имя</entry>
+
+	<!-- UserEntries -->
+	<entry key="UserEntries.title">Компоненты</entry>
+	<entry key="UserEntries.user">Пользователь</entry>
+	<entry key="UserEntries.entry">Компонент</entry>
+	<entry key="UserEntries.position">Позиция</entry>
+		
+	<!-- UserEntryPoints -->
+	<entry key="UserEntryPoints.title">Пользователи</entry>
+
+	<!-- BuiltinUsers -->
+	<entry key="BuiltinUsers.System.name">System</entry>
+	<entry key="BuiltinUsers.System.description">Системный вход</entry>
+	<entry key="BuiltinUsers.Administrator.name">Admin</entry>
+	<entry key="BuiltinUsers.Administrator.description">Администратор системы</entry>
+
+	<!-- SecurityGroup -->
+	<entry key="SecurityGroup.administrators">Администраторы</entry>
+	<entry key="SecurityGroup.users">Пользователи</entry>
+
+	<!-- SecurityGroups -->
+	<entry key="SecurityGroups.title">Группы безопасности</entry>
+	<entry key="SecurityGroups.name">Группа</entry>
+	
+	<!-- SecurityGroup -->
+	<entry key="SecurityGroup.administrators">Администраторы</entry>
+	<entry key="SecurityGroup.users">Пользователи</entry>
+
+	<!-- SystemEventsType -->
+
+	<entry key="SystemEventsType.title">Типы системных событий</entry>
+	<entry key="SystemEventsType.name">Событие</entry>
+
+	<!-- Locks -->
+
+	<entry key="Locks.title">Locks</entry>
+	<entry key="Locks.class">Class</entry>
+	<entry key="Locks.schema">Schema</entry>
+
+	<!-- Tasks -->
+	<entry key="Tasks.title">Задачи</entry>
+	<entry key="Tasks.from">С</entry>
+	<entry key="Tasks.till">По</entry>
+	<entry key="Tasks.repeat">Повтор (секунд)</entry>
+	<entry key="Tasks.active">Активна</entry>
+	<entry key="Tasks.lastStarted">Последний запуск</entry>
+
+	<!-- Jobs -->
+	<entry key="Jobs.title">Задачи</entry>
+
+	<!-- TaskLogs -->
+	<entry key="TaskLogs.title">Назначенные задачи</entry>
+	<entry key="TaskLogs.started">Старт</entry>
+	<entry key="TaskLogs.finished">Финиш</entry>
+
+	<!-- RecordsMergerJob -->
+	<entry key="RecordsMergerJob.tablesChanged">Изменено {0} таблиц.</entry>
+	
+	<!-- SystemTools -->
+	<entry key="SystemTools.title">Администрирование</entry>
+	<entry key="ImportDesktop.title">Импорт данных</entry>
+
+	<!-- SystemSequences -->
+	<entry key="Sequences.title">Последовательности</entry>
+	<entry key="Sequences.value">Значение</entry>
+
+	<!-- Sequencer -->
+	<entry key="Sequencer.notInitialized">Sequencer не инициализирован. Используйте статические методы Sequencer.next() и Sequencer.reset().</entry>
+
+	<!-- Operation -->
+	<entry key="Operation.not">не</entry>
+	<entry key="Operation.and">и</entry>
+	<entry key="Operation.or">или</entry>
+	<entry key="Operation.beginsWith">начинается с</entry>
+	<entry key="Operation.endsWith">оканчивается на</entry>
+	<entry key="Operation.contains">содержит</entry>
+
+	<!-- Procedure -->
+	<entry key="Procedure.rollback">Отменены все возможные изменения в данных, произошедшие в ходе выполнения задачи.</entry>
+	<entry key="Procedure.jobError">Выполнение задачи прервано из-за возникшей ошибки:\n{0}</entry>
+
+	<!-- Reports -->
+	<entry key="Report.groupTotal">Итого по </entry>
+	<entry key="Report.groupGrandTotal">Всего</entry>
+
+	<!-- Exceptions -->
+	<entry key="Exception.accessDenied">Неверный логин или пароль для входа</entry>
+	<entry key="Exception.unknownDataType">Неизвестный тип данных "{0}"</entry>
+	<entry key="Exception.maskParse">Значение не соответствует маске. Значение: "{0}". Маска: "{1}"</entry>
+    <entry key="Exception.resourceNotFound">Ресурс не найден. Ключ: {0}</entry>
+	<entry key="Exception.fileNotFound">Файл не найден: {0}</entry>
+
+	<entry key="Exception.wrongParentNode">Неверный родительский узел.</entry>
+
+	<entry key="Exception.allPortsBusy">Запуск сервера приложений не возможен. Все порты заданного диапазона уже заняты.</entry>
+
+	<entry key="Exception.childRecordFound">Ошибка. Была произведена попытка удаления записи, на которую ссылается другая запись.</entry>
+    <entry key="Exception.unknownDatabase">Неподдерживаемая база данных</entry>
+	
+	<!-- Generator -->
+	<entry key="Generator.displayName">Генерация схемы данных</entry>
+    <entry key="Generator.recreatringTable">Таблица "{0}" ({1}) требует регенерации</entry>
+	<entry key="Generator.droppingTable">Таблица "{0}" требует удаления</entry>
+    <entry key="Generator.createTableError">Ошибка. Таблица "{0}"({1}) - генерация не выполнена.\nТекст ошибки: {2}</entry>
+    <entry key="Generator.packTableError">Ошибка. Таблица "{0}"({1}) - паковка не выполнена.\nТекст ошибки: {2}</entry>
+	<entry key="Generator.dropTableError">Ошибка. Таблица "{0}" - удаление  не выполнено.\nТекст ошибки: {1}</entry>
+    <entry key="Generator.dropForeignKeyError">Ошибка. Таблица "{0}" - удаление внешнего ключа {1} закончилось неудачей.\nТекст ошибки: {2}</entry>
+	<entry key="Generator.dropIndexError">Ошибка. Таблица "{0}" - удаление индекса {1} закончилось неудачей.\nТекст ошибки: {2}</entry>
+	<entry key="Generator.createForeignKeyError">Ошибка. Таблица "{0}"({1}) - создание внешнего ключа на таблицу "{2}"({3}) закончилось неудачей.\nТекст ошибки: {4}</entry>
+    <entry key="Generator.createUniqueIndexError">Ошибка. Таблица "{1}"({2}) - создание уникального индекса "{0}" не выполнено.\nТекст ошибки: {3}</entry>
+    <entry key="Generator.createIndexError">Ошибка. Таблица "{1}"({2}) - создание индекса "{0}" не выполнено.\nТекст ошибки: {3}</entry>
+    <entry key="Generator.insertRecordsError">Изменение записи, ключ {0} в таблице "{1}"({2}), закончилось неудачей.\nТекст ошибки: {3}</entry>
+
+	<entry key="Messenger.supportAddress"></entry>
+	<entry key="Messenger.smsAlertAddress"></entry>
+    
+    <entry key="Search.errorIndexUndefined">Не определен поисковый индекс для запроса {0}</entry>
+
+</properties>

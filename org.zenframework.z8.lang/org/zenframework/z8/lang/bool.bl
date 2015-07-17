@@ -1,0 +1,17 @@
+[primary "org.zenframework.z8.server.types.bool"]
+
+final class bool extends primary
+{
+	public operator string();
+	public operator sql_bool();
+
+	public void operator = (bool value);
+	public bool operator == (bool value);
+	public bool operator != (bool value);
+
+	public bool operator ! ();
+	public bool operator & (bool value);
+	public bool operator | (bool value);
+
+	static public bool parse(string string);
+}

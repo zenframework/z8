@@ -1,0 +1,67 @@
+import org.zenframework.z8.base.table.SortDirection;
+import org.zenframework.z8.base.query.Query;
+import org.zenframework.z8.base.query.FollowPolicy;
+import org.zenframework.z8.base.query.Formula;
+import org.zenframework.z8.base.form.Control;
+import org.zenframework.z8.base.table.Sequencer;
+
+[native "org.zenframework.z8.server.base.table.value.Field"]
+
+class Field extends Control
+{
+	public bool visible = true; 	// should be renamed to something like 'showInTable' later
+	public bool hidden = false; 	// never show the field. Useful for fields serving as part of the formula of other fields
+	public bool readOnly = false;
+	public bool selectable = true;
+	
+	public string format;
+	
+	public int width = 0;			// ширина поля формы или колонки в символах
+	public int column = 0;			// индекс колонки
+	public int columnWidth = 0;		// ширина поля колонки в символах, если 0 - используется width
+	public int labelWidth = 0;		// ширина подписи поля формы
+	public bool stretch = true;
+
+	public bool showLabel = true;
+
+	public Query editWith;
+	public bool anchor = false;		// подчеркивать при наведении курсора
+	public FollowPolicy anchorPolicy = FollowPolicy.Default;
+
+	public bool required = false;
+	public bool indexed = false;
+	public bool unique = false;
+	
+	public SortDirection sortDirection = SortDirection.Asc;
+	public Aggregation aggregation = Aggregation.None;
+	public Aggregation totals = Aggregation.None;
+
+	public Field[] dependencies;
+	public Field[] columns;
+	public Control[][guid] fieldsToShow;
+	
+	public Formula[] evaluations;
+	
+	public bool isNull();
+	public sql_bool sqlIsNull();
+
+	public Sequencer getSequencer();
+
+	public binary binary();
+	public bool bool();
+	public guid guid();
+	public date date();
+	public datetime datetime();
+	public datespan datespan();
+	public decimal decimal();
+	public int int();
+	public string string();
+	
+	// Оператор закомментирован, чтобы можно было сравнивать поля как объекты
+	// При необходимости сравнить два поля, например, в where, нужно привести одно из них к sql_<...> типу
+	//public sql_bool operator == (Field field);
+	
+	// Тоже не просто так закомментирован!
+	//public void operator = (Field field);
+	
+}

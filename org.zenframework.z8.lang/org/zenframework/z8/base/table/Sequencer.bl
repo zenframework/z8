@@ -1,0 +1,23 @@
+import org.zenframework.z8.lang.Object;
+
+[native "org.zenframework.z8.server.base.Table.Values.Sequencer"]
+
+class Sequencer extends Object
+{
+	static public int next(string key); 									// defaultValue = 0, increment = 1
+	static public int next(string key, int defaultValue);					// increment = 1
+	static public int next(string key, int defaultValue, int increment);
+
+	static public void reset(string key);
+
+	/**
+	* Following methods should only be used when the sequencer object is 
+	* returned by Field.getSequencer() method.
+	*/
+
+	public int next(); 									// defaultValue = 0, increment = 1
+	public int next(int defaultValue);					// increment = 1
+	public int next(int defaultValue, int increment);
+
+	public void reset();
+}
