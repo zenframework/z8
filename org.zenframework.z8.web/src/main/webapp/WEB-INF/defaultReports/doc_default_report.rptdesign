@@ -299,47 +299,17 @@
     </page-setup>
     <body>
         <grid id="35">
-            <property name="width">7.760416666666667in</property>
-            <column id="36">
-                <property name="width">1.15625in</property>
-            </column>
-            <column id="37">
-                <property name="width">5.15625in</property>
-            </column>
-            <column id="38">
-                <property name="width">1.4479166666666667in</property>
-            </column>
+            <property name="width">100%</property>
+            <column id="37"/>
             <row id="39">
-                <cell id="40">
-                    <label name="CaptionLeft" id="43">
-                        <property name="fontSize">large</property>
-                        <property name="fontVariant">normal</property>
-                        <property name="textAlign">center</property>
-                        <property name="lineHeight">normal</property>
-                        <property name="pageBreakAfter">auto</property>
-                        <property name="canShrink">false</property>
-                        <property name="height">20pt</property>
-                    </label>
-                </cell>
                 <cell id="41">
                     <label name="CaptionCenter" id="34">
                         <property name="fontSize">large</property>
                         <property name="fontVariant">normal</property>
-                        <property name="textAlign">center</property>
+                        <property name="textAlign">left</property>
                         <property name="lineHeight">normal</property>
                         <property name="pageBreakAfter">auto</property>
-                        <property name="canShrink">false</property>
-                        <property name="height">20pt</property>
-                    </label>
-                </cell>
-                <cell id="42">
-                    <label name="CaptionRight" id="44">
-                        <property name="fontSize">large</property>
-                        <property name="fontVariant">normal</property>
-                        <property name="textAlign">center</property>
-                        <property name="lineHeight">normal</property>
-                        <property name="pageBreakAfter">auto</property>
-                        <property name="canShrink">false</property>
+                        <property name="canShrink">true</property>
                         <property name="height">20pt</property>
                     </label>
                 </cell>

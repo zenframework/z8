@@ -255,15 +255,13 @@
             <column id="36"/>
             <row id="39">
                 <cell id="40">
-                    <property name="colSpan">1</property>
-                    <property name="rowSpan">1</property>
                     <label name="CaptionCenter" id="34">
                         <property name="fontSize">large</property>
                         <property name="fontVariant">normal</property>
-                        <property name="textAlign">center</property>
+                        <property name="textAlign">left</property>
                         <property name="lineHeight">normal</property>
                         <property name="pageBreakAfter">auto</property>
-                        <property name="canShrink">false</property>
+                        <property name="canShrink">true</property>
                         <property name="height">20pt</property>
                     </label>
                 </cell>
