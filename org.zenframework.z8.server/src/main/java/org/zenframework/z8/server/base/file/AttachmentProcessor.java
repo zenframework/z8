@@ -81,15 +81,18 @@ public class AttachmentProcessor extends OBJECT {
         Files filesTable = new Files.CLASS<Files>().get();
 
         for (FileInfo file : files) {
-            setPathIfEmpty(target, file);
-            if (file.id != null && !file.id.isNull()) {
-                filesTable.recordId.get().set(file.id);
+            boolean idIsNull = file.id == null || file.id.isNull();
+            if (idIsNull || !filesTable.hasRecord(file.id)) {
+                if (!idIsNull) {
+                    filesTable.recordId.get().set(file.id);
+                }
+                setPathIfEmpty(target, file);
+                filesTable.name.get().set(file.name);
+                filesTable.file.get().set(file.getInputStream());
+                filesTable.path.get().set(file.path);
+                filesTable.target.get().set(target);
+                file.id = filesTable.create();
             }
-            filesTable.name.get().set(file.name);
-            filesTable.file.get().set(file.getInputStream());
-            filesTable.path.get().set(file.path);
-            filesTable.target.get().set(target);
-            file.id = filesTable.create();
         }
 
         return files;

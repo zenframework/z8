@@ -10,7 +10,6 @@ import org.zenframework.z8.ie.xml.ExportEntry;
 import org.zenframework.z8.server.base.file.FileInfo;
 import org.zenframework.z8.server.base.simple.Procedure;
 import org.zenframework.z8.server.base.table.Table;
-import org.zenframework.z8.server.base.table.system.Files;
 import org.zenframework.z8.server.base.table.system.Properties;
 import org.zenframework.z8.server.base.table.value.AttachmentField;
 import org.zenframework.z8.server.base.table.value.Field;
@@ -183,13 +182,11 @@ public class TransportProcedure extends Procedure {
                 String json = attField.get().string().get();
                 Collection<FileInfo> attachments = FileInfo.parseArray(json);
 
-                Files files = new Files.CLASS<Files>().get();
-
                 Collection<FileInfo> filesToAdd = new ArrayList<FileInfo>();
 
                 for (FileInfo attachment : attachments) {
                     for (FileInfo file : message.getFiles()) {
-                        if (attachment.id.equals(file.id) && !files.hasRecord(file.id))
+                        if (attachment.id.equals(file.id) && !filesToAdd.contains(file))
                             filesToAdd.add(file);
                     }
                 }
