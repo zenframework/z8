@@ -2270,7 +2270,7 @@ public class Query extends Runnable {
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
     public bool z8_readRecord(guid id, RCollection fieldClasses) {
-        return new bool(readRecord(id, (Collection) fieldClasses));
+        return new bool(readRecord(id, (RCollection<Field.CLASS<Field>>) fieldClasses));
     }
 
     public bool z8_readFirst() {
