@@ -2,7 +2,7 @@
     <wb-module deploy-name="z8-web">
         <wb-resource deploy-path="/" source-path="/target/m2e-wtp/web-resources"/>
         <wb-resource deploy-path="/" source-path="/src/main/webapp" tag="defaultRootSource"/>
-        <property name="context-root" value="z8-web"/>
         <property name="java-output-path" value="/z8-web/target/classes"/>
+        <property name="context-root" value="org.zenframework.z8.web"/>
     </wb-module>
 </project-modules>

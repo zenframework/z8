@@ -2,31 +2,31 @@
     <wb-module deploy-name="z8-webapp">
         <wb-resource deploy-path="/" source-path="/target/m2e-wtp/web-resources"/>
         <wb-resource deploy-path="/" source-path="/src/main/webapp" tag="defaultRootSource"/>
-        <dependent-module archiveName="z8-servlet-1.0.0.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/z8-servlet/z8-servlet">
+        <dependent-module archiveName="org.zenframework.z8.servlet-1.0.0.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/org.zenframework.z8.servlet/org.zenframework.z8.servlet">
             <dependency-type>uses</dependency-type>
         </dependent-module>
-        <dependent-module archiveName="z8-lang-1.0.0.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/z8-lang/z8-lang">
+        <dependent-module archiveName="org.zenframework.z8.lang-1.0.0.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/org.zenframework.z8.lang/org.zenframework.z8.lang">
             <dependency-type>uses</dependency-type>
         </dependent-module>
-        <dependent-module archiveName="z8-server-1.0.0.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/z8-server/z8-server">
+        <dependent-module archiveName="org.zenframework.z8.server-1.0.0.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/org.zenframework.z8.server/org.zenframework.z8.server">
             <dependency-type>uses</dependency-type>
         </dependent-module>
-        <dependent-module archiveName="z8-auth-1.0.0.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/z8-auth/z8-auth">
+        <dependent-module archiveName="org.zenframework.z8.auth-1.0.0.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/org.zenframework.z8.auth/org.zenframework.z8.auth">
             <dependency-type>uses</dependency-type>
         </dependent-module>
-        <dependent-module archiveName="z8-xml-1.0.0.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/z8-xml/z8-xml">
+        <dependent-module archiveName="org.zenframework.z8.xml-1.0.0.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/org.zenframework.z8.xml/org.zenframework.z8.xml">
             <dependency-type>uses</dependency-type>
         </dependent-module>
-        <dependent-module archiveName="z8-oda-driver-1.0.0.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/z8-oda-driver/z8-oda-driver">
+        <dependent-module archiveName="org.zenframework.z8.oda.driver-1.0.0.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/org.zenframework.z8.oda.driver/org.zenframework.z8.oda.driver">
             <dependency-type>uses</dependency-type>
         </dependent-module>
-        <dependent-module deploy-path="/" handle="module:/overlay/prj/z8-web?includes=**/**&amp;excludes=META-INF/MANIFEST.MF">
+        <dependent-module deploy-path="/" handle="module:/overlay/prj/org.zenframework.z8.web?includes=**/**&amp;excludes=META-INF/MANIFEST.MF">
             <dependency-type>consumes</dependency-type>
         </dependent-module>
         <dependent-module deploy-path="/" handle="module:/overlay/slf/?includes=**/**&amp;excludes=META-INF/MANIFEST.MF">
             <dependency-type>consumes</dependency-type>
         </dependent-module>
-        <property name="context-root" value="z8-webapp"/>
         <property name="java-output-path" value="/z8-webapp/target/classes"/>
+        <property name="context-root" value="org.zenframework.z8.webapp"/>
     </wb-module>
 </project-modules>

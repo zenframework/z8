@@ -3,8 +3,8 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.6"/>
 	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
 	<classpathentry kind="src" path="src/main/java/"/>
-	<classpathentry exported="true" kind="lib" path="target/lib/z8-compiler.jar"/>
-	<classpathentry exported="true" kind="lib" path="target/lib/z8-server.jar" sourcepath="/z8-server/src/main/java"/>
+	<classpathentry exported="true" kind="lib" path="target/lib/org.zenframework.z8.compiler.jar"/>
+	<classpathentry exported="true" kind="lib" path="target/lib/org.zenframework.z8.server.jar"/>
 	<classpathentry exported="true" kind="lib" path="target/lib/tools.jar"/>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>
