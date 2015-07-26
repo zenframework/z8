@@ -29,7 +29,7 @@ import org.zenframework.z8.server.security.Digest_utils;
 import org.zenframework.z8.server.types.encoding;
 import org.zenframework.z8.web.server.Adapter;
 import org.zenframework.z8.web.server.JsonAdapter;
-import org.zenframework.z8.web.server.PDFCacheAdapter;
+import org.zenframework.z8.web.server.ConverterAdapter;
 import org.zenframework.z8.web.server.TrustedAuthAdapter;
 
 public class Servlet extends HttpServlet {
@@ -97,7 +97,7 @@ public class Servlet extends HttpServlet {
         adapters.clear();
         adapters.add(new JsonAdapter(this));
         adapters.add(new TrustedAuthAdapter(this));
-        adapters.add(new PDFCacheAdapter(this));
+        adapters.add(new ConverterAdapter(this));
         
         for (Adapter adapter : adapters) {
             adapter.start();

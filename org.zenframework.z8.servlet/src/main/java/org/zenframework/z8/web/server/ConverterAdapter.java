@@ -7,6 +7,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintStream;
 import java.io.UnsupportedEncodingException;
+import java.net.ConnectException;
 import java.net.URLDecoder;
 import java.util.Arrays;
 import java.util.List;
@@ -21,11 +22,10 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
-import org.artofsolving.jodconverter.OfficeDocumentConverter;
-import org.artofsolving.jodconverter.office.DefaultOfficeManagerConfiguration;
-import org.artofsolving.jodconverter.office.OfficeManager;
+import org.apache.commons.lang.SystemUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.mozilla.universalchardet.UniversalDetector;
-
 import org.zenframework.z8.server.base.file.FileInfo;
 import org.zenframework.z8.server.base.table.system.Properties;
 import org.zenframework.z8.server.engine.ISession;
@@ -38,34 +38,36 @@ import org.zenframework.z8.server.types.string;
 import org.zenframework.z8.server.utils.IOUtils;
 import org.zenframework.z8.web.servlet.Servlet;
 
-/**
- * Created with IntelliJ IDEA.
- * User: volkov
- * Date: 29.10.14
- * Time: 13:57
- * To change this template use File | Settings | File Templates.
- */
-public class PDFCacheAdapter extends Adapter implements Properties.Listener {
+import com.artofsolving.jodconverter.DocumentConverter;
+import com.artofsolving.jodconverter.openoffice.connection.OpenOfficeConnection;
+import com.artofsolving.jodconverter.openoffice.connection.SocketOpenOfficeConnection;
+import com.artofsolving.jodconverter.openoffice.converter.OpenOfficeDocumentConverter;
 
-    private final String CACHE_FOLDER_NAME = "pdf.cache";
+/**
+ * Created with IntelliJ IDEA. User: volkov Date: 29.10.14 Time: 13:57 To change
+ * this template use File | Settings | File Templates.
+ */
+public class ConverterAdapter extends Adapter implements Properties.Listener {
+
+    private static final Log LOG = LogFactory.getLog(ConverterAdapter.class);
+
+    private static final String CACHE_FOLDER_NAME = "pdf.cache";
+
+    private static final String OFFICE_EXEC_EXT = SystemUtils.OS_NAME.toLowerCase().startsWith("windows") ? ".exe" : ".bin";
+    private static final String OFFICE_EXEC_REL_PATH = "program/soffice" + OFFICE_EXEC_EXT;
 
     private int OFFICE_PORT = 8100;
 
     private volatile File officeHome;
-    private volatile OfficeManager officeManager;
-    private volatile OfficeDocumentConverter pdfConverter;
+    private volatile OpenOfficeConnection officeConnection;
+    private volatile DocumentConverter pdfConverter;
+    private Process officeProcess;
 
     private final static List<String> convertableExtensions = Arrays.asList("doc", "docx", "xls", "xlsx", "ppt", "pptx",
             "odt", "odp", "ods", "odf", "odg", "wpd", "sxw", "sxi", "sxc", "sxd", "stw", "tif", "tiff", "vsd");
 
-    public PDFCacheAdapter(Servlet servlet) {
+    public ConverterAdapter(Servlet servlet) {
         super(servlet);
-    }
-
-    private File getOfficeHome() {
-        if(officeHome == null)
-            officeHome = new File(Properties.getProperty(ServletRuntime.LibreOfficeDirectoryProperty));
-        return officeHome;
     }
 
     @Override
@@ -75,21 +77,40 @@ public class PDFCacheAdapter extends Adapter implements Properties.Listener {
             stopOfficeManager();
         }
     }
- 
+
     private void startOfficeManager() {
-        if(officeManager == null) {
-            officeManager = new DefaultOfficeManagerConfiguration().setOfficeHome(getOfficeHome())
-                    .setPortNumber(this.OFFICE_PORT).buildOfficeManager();
-            officeManager.start();
-            pdfConverter = new OfficeDocumentConverter(officeManager);
+        if (officeConnection == null) {
+            officeConnection = new SocketOpenOfficeConnection(OFFICE_PORT);
+            try {
+                officeConnection.connect();
+            } catch (ConnectException e) {
+                File sofficeBin = new File(getOfficeHome(), OFFICE_EXEC_REL_PATH);
+                try {
+                    if (sofficeBin.exists()) {
+                        officeProcess = Runtime.getRuntime().exec(
+                                "\"" + getOfficeHome()
+                                        + "/program/soffice\" -headless -accept=\"socket,host=127.0.0.1,port=" + OFFICE_PORT
+                                        + ";urp;\" -nofirststartwizard");
+                    } else {
+                        LOG.warn("Incorrect Office home. File " + sofficeBin + " doesn't exist. Can't start soffice process");
+                    }
+                    officeConnection.connect();
+                } catch (IOException e1) {
+                    throw new RuntimeException("Can't open OpenOffice connection", e);
+                }
+            }
+            pdfConverter = new OpenOfficeDocumentConverter(officeConnection);
         }
     }
 
     private void stopOfficeManager() {
-        if(officeManager != null) {
-            officeManager.stop();
-            officeManager = null;
+        if (officeConnection != null) {
+            officeConnection.disconnect();
+            officeConnection = null;
             pdfConverter = null;
+        }
+        if (officeProcess != null) {
+            officeProcess.destroy();
         }
     }
 
@@ -184,8 +205,14 @@ public class PDFCacheAdapter extends Adapter implements Properties.Listener {
         return convertedFile;
     }
 
+    private File getOfficeHome() {
+        if (officeHome == null)
+            officeHome = new File(Properties.getProperty(ServletRuntime.LibreOfficeDirectoryProperty));
+        return officeHome;
+    }
+
     private void initJODConverter() {
-        if (officeManager != null)
+        if (officeConnection != null)
             return;
 
         synchronized (this) {
