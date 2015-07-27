@@ -64,8 +64,7 @@ public final class bool extends primary {
 
     @Override
     public String toString() {
-        loadResources();
-        return m_value ? trueString : falseString;
+        return Boolean.toString(m_value);
     }
 
     public boolean get() {
