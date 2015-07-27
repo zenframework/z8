@@ -63,6 +63,7 @@ Export-Package: org.zenframework.z8.pde;
  org.zenframework.z8.server.config,
  org.zenframework.z8.server.db,
  org.zenframework.z8.server.engine,
+ org.zenframework.z8.server.resources,
  org.zenframework.z8.server.runtime,
  org.zenframework.z8.server.security,
  org.zenframework.z8.server.types,
