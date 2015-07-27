@@ -22,33 +22,7 @@
 
     <build>
 
-        <sourceDirectory>${basedir}/.java</sourceDirectory>
-
         <plugins>
-            <plugin>
-                <artifactId>maven-compiler-plugin</artifactId>
-            </plugin>
-            <plugin>
-                <artifactId>maven-jar-plugin</artifactId>
-            </plugin>
-            <plugin>
-                <artifactId>maven-assembly-plugin</artifactId>
-                <version>2.4.1</version>
-                <configuration>
-                    <descriptors>
-                        <descriptor>bl-assembly.xml</descriptor>
-                    </descriptors>
-                </configuration>
-                <executions>
-                    <execution>
-                        <id>bl-assembly</id>
-                        <phase>compile</phase>
-                        <goals>
-                            <goal>single</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
             <plugin>
                 <groupId>org.zenframework.z8</groupId>
                 <artifactId>z8-maven-plugin</artifactId>
@@ -61,12 +35,43 @@
                         </goals>
                     </execution>
                     <execution>
+                        <id>archive-bl</id>
+                        <goals>
+                            <goal>archive-bl</goal>
+                        </goals>
+                    </execution>
+                    <execution>
                         <id>clean</id>
                         <goals>
                             <goal>clean</goal>
                         </goals>
                     </execution>
                 </executions>
+            </plugin>
+            <!-- TODO m2e connector -->
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>build-helper-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>add-source</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>add-source</goal>
+                        </goals>
+                        <configuration>
+                            <sources>
+                                <source>${basedir}/.java/</source>
+                            </sources>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <artifactId>maven-compiler-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <artifactId>maven-jar-plugin</artifactId>
             </plugin>
         </plugins>
 
