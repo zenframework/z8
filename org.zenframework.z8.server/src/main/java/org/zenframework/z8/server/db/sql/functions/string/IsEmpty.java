@@ -14,7 +14,7 @@ import org.zenframework.z8.server.db.sql.expressions.Group;
 import org.zenframework.z8.server.db.sql.expressions.Operation;
 import org.zenframework.z8.server.db.sql.expressions.Or;
 import org.zenframework.z8.server.db.sql.expressions.Rel;
-import org.zenframework.z8.server.types.integer;
+import org.zenframework.z8.server.db.sql.functions.IsNull;
 import org.zenframework.z8.server.types.string;
 
 public class IsEmpty extends SqlToken {
@@ -35,8 +35,8 @@ public class IsEmpty extends SqlToken {
 
     @Override
     public String format(DatabaseVendor vendor, FormatOptions options, boolean logicalContext) {
-        SqlToken t = new Group(new Or(new Rel(new Length(value), Operation.Eq, new SqlConst(new integer(0))), new Rel(
-                new Group(value), Operation.Eq, new SqlConst(new string("")))));
+        SqlToken value = new Group(this.value);
+        SqlToken t = new Group(new Or(new IsNull(value), new Rel(value, Operation.Eq, new SqlConst(new string("")))));
         return t.format(vendor, options, logicalContext);
     }
 
