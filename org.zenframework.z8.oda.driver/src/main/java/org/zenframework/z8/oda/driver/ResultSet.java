@@ -10,10 +10,10 @@ import org.eclipse.datatools.connectivity.oda.IClob;
 import org.eclipse.datatools.connectivity.oda.IResultSet;
 import org.eclipse.datatools.connectivity.oda.IResultSetMetaData;
 import org.eclipse.datatools.connectivity.oda.OdaException;
-
 import org.zenframework.z8.server.base.model.actions.ReadAction;
 import org.zenframework.z8.server.base.model.sql.Select;
 import org.zenframework.z8.server.base.table.value.IValue;
+import org.zenframework.z8.server.resources.Resources;
 import org.zenframework.z8.server.types.bool;
 import org.zenframework.z8.server.types.date;
 import org.zenframework.z8.server.types.datetime;
@@ -88,7 +88,7 @@ public class ResultSet implements IResultSet {
             }
         }
         else if(value instanceof bool) {
-            return ((bool)value).get() ? "��" : "���";
+            return ((bool)value).get() ? Resources.get("bool.true") : Resources.get("bool.false");
         }
 
         return value.toString();
