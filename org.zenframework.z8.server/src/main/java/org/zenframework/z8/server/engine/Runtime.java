@@ -2,8 +2,10 @@ package org.zenframework.z8.server.engine;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.Collection;
 import java.util.Enumeration;
 
+import org.zenframework.z8.server.base.simple.Runnable;
 import org.zenframework.z8.server.logs.Trace;
 import org.zenframework.z8.server.runtime.AbstractRuntime;
 import org.zenframework.z8.server.runtime.IRuntime;
@@ -28,10 +30,11 @@ public class Runtime extends AbstractRuntime {
 
     private static final String Z8RuntimePath = "META-INF/z8.runtime";
 
+    @SuppressWarnings({ "rawtypes", "unchecked" })
     private Runtime() {
-        // Загрузка базового runtime-класса
+        // Load base runtime-class
         mergeWith(new ServerRuntime());
-        // Загрузка runtime-классов из других модулей
+        // Load other modules runtime-classes
         Enumeration<URL> resources;
         try {
             resources = getClass().getClassLoader().getResources(Z8RuntimePath);
@@ -48,6 +51,11 @@ public class Runtime extends AbstractRuntime {
             } catch (Exception e) {
                 Trace.logError("Can't load runtime-class from resource " + resource, e);
             }
+        }
+        // Run activators
+        Collection<Runnable.CLASS<? extends Runnable>> activators = (Collection) activators();
+        for (Runnable.CLASS<? extends Runnable> activator : activators) {
+            activator.get().run();
         }
     }
 

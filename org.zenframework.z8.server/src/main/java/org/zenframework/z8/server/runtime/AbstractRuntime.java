@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.List;
 
 import org.zenframework.z8.server.base.simple.Procedure;
+import org.zenframework.z8.server.base.simple.Runnable;
 import org.zenframework.z8.server.base.table.Table;
 import org.zenframework.z8.server.base.table.system.Property;
 
@@ -13,6 +14,7 @@ public abstract class AbstractRuntime implements IRuntime {
     private List<CLASS<? extends Table>> tables = new ArrayList<CLASS<? extends Table>>();
     private List<CLASS<? extends OBJECT>> entries = new ArrayList<CLASS<? extends OBJECT>>();
     private List<CLASS<? extends Procedure>> jobs = new ArrayList<CLASS<? extends Procedure>>();
+    private List<CLASS<? extends Runnable>> activators = new ArrayList<CLASS<? extends Runnable>>();
     private List<Property> properties = new ArrayList<Property>();
 
     @Override
@@ -28,6 +30,11 @@ public abstract class AbstractRuntime implements IRuntime {
     @Override
     public Collection<CLASS<? extends Procedure>> jobs() {
         return jobs;
+    }
+
+    @Override
+    public Collection<CLASS<? extends Runnable>> activators() {
+        return activators;
     }
 
     @Override
@@ -83,6 +90,14 @@ public abstract class AbstractRuntime implements IRuntime {
         jobs.add(cls);
     }
     
+    protected void addActivator(CLASS<? extends Runnable> cls) {
+        for (CLASS<? extends Runnable> activator : activators) {
+            if (activator.classId().equals(cls.classId()))
+                return;
+        }
+        activators.add(cls);
+    }
+    
     protected void addProperty(Property property) {
         if (!properties.contains(property))
             properties.add(property);
@@ -97,6 +112,9 @@ public abstract class AbstractRuntime implements IRuntime {
         }
         for (CLASS<? extends OBJECT> entry : runtime.entries()) {
             addEntry(entry);
+        }
+        for (CLASS<? extends Runnable> activator : runtime.activators()) {
+            addActivator(activator);
         }
         for (Property property : runtime.properties()) {
             addProperty(property);

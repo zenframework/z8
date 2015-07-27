@@ -3,7 +3,7 @@ package org.zenframework.z8.server.base.simple;
 import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.runtime.OBJECT;
 
-public class Runnable extends OBJECT {
+public class Runnable extends OBJECT implements java.lang.Runnable {
     public static class CLASS<T extends Runnable> extends OBJECT.CLASS<T> {
         public CLASS(IObject container) {
             super(container);
@@ -21,6 +21,10 @@ public class Runnable extends OBJECT {
         super(container);
     }
 
-    public void run() {}
+    @Override
+    public void run() {
+        z8_run();
+    }
 
+    public void z8_run() {}
 }

@@ -110,8 +110,14 @@ public class DBGenerator {
             boolean doDropTable, ILogger logger, Collection<Desktop.CLASS<? extends Desktop>> entries) {
         List<TableGenerator> generators = getTableGenerators(tables, existingTables, logger);
 
-        int total = 4 * generators.size();
+        int total = 6 * generators.size();
         float progress = 0.0f;
+
+        for (TableGenerator generator : generators) {
+            generator.beforeGenerate();
+            progress++;
+            logger.progress(Math.round(progress / total * 100));
+        }
 
         for (TableGenerator generator : generators) {
             generator.create(connection);
@@ -145,6 +151,12 @@ public class DBGenerator {
 
         for (TableGenerator generator : generators) {
             generator.createForeignKeys();
+            progress++;
+            logger.progress(Math.round(progress / total * 100));
+        }
+
+        for (TableGenerator generator : generators) {
+            generator.afterGenerate();
             progress++;
             logger.progress(Math.round(progress / total * 100));
         }

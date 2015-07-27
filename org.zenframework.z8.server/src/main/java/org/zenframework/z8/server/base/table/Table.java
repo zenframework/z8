@@ -220,4 +220,17 @@ public class Table extends TableBase {
 
         super.beforeUpdate(data, recordId, fields, model, modelRecordId);
     }
+
+    public void beforeGenerate() {
+        z8_beforeGenerate();
+    }
+
+    public void afterGenerate() {
+        z8_afterGenerate();
+    }
+
+    public void z8_beforeGenerate() {}
+
+    public void z8_afterGenerate() {}
+
 }

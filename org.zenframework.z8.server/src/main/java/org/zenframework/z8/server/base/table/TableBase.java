@@ -2,6 +2,7 @@ package org.zenframework.z8.server.base.table;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
@@ -14,6 +15,7 @@ import org.zenframework.z8.server.base.table.value.Link;
 import org.zenframework.z8.server.db.generator.IForeignKey;
 import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.runtime.RCollection;
+import org.zenframework.z8.server.runtime.RLinkedHashMap;
 import org.zenframework.z8.server.types.guid;
 import org.zenframework.z8.server.types.primary;
 
@@ -95,6 +97,10 @@ public class TableBase extends Query implements ITable {
     public void initStaticRecords() {}
 
     public void addRecord(guid key, Map<IField, primary> values) {
+        for (Map<IField, primary> record : staticRecords) {
+            if (key.equals(record.get(primaryKey())))
+                return;
+        }
         values.put(primaryKey(), key);
         staticRecords.add(values);
     }
@@ -112,6 +118,14 @@ public class TableBase extends Query implements ITable {
             }
         }
         return fields;
+    }
+
+    public void z8_addRecord(guid recordId, RLinkedHashMap<Field.CLASS<? extends Field>, primary> values) {
+        Map<IField, primary> vals = new HashMap<IField, primary>();
+        for (Map.Entry<Field.CLASS<? extends Field>, primary> entry : values.entrySet()) {
+            vals.put(entry.getKey().get(), entry.getValue());
+        }
+        addRecord(recordId, vals);
     }
 
 }

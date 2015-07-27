@@ -40,4 +40,8 @@ class Table extends TableBase
 	
 	public [displayName "Изменил"] GuidField modifiedBy;
 	modifiedBy.readOnly = true;
+	
+	protected virtual void beforeGenerate();
+
+	protected virtual void afterGenerate();
 }

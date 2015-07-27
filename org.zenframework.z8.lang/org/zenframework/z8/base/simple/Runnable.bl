@@ -1,9 +1,10 @@
 import org.zenframework.z8.lang.Object;
 
-[native "org.zenframework.z8.server.base.simple.RRunnable"]
+[native "org.zenframework.z8.server.base.simple.Runnable"]
 
 class Runnable extends Object
 {
 	protected string HelpPage;
 	
+	public virtual void run();
 }
