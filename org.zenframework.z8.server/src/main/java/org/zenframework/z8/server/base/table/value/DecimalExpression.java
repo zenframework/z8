@@ -28,6 +28,8 @@ public class DecimalExpression extends Expression {
         format.set(Format.decimal);
         stretch.set(false);
 
+        aggregation = Aggregation.Sum;
+
         setDefault(new decimal());
     }
 

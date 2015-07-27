@@ -28,6 +28,8 @@ public class IntegerExpression extends Expression {
         format.set(Format.integer);
         stretch.set(false);
 
+        aggregation = Aggregation.Sum;
+
         setDefault(new integer());
     }
 
