@@ -7,6 +7,7 @@ public class StartupCodeLines {
     public String addTable = null;
     public String addEntry = null;
     public String addJob = null;
+    public String addActivator = null;
 
     public StartupCodeLines() {}
 
@@ -14,6 +15,7 @@ public class StartupCodeLines {
         addTable = null;
         addEntry = null;
         addJob = null;
+        addActivator = null;
     }
 
     private String getJavaNew(IType type) {
@@ -43,6 +45,12 @@ public class StartupCodeLines {
 
         if(attribute != null) {
             addEntry = "addEntry(" + getJavaNew(type) + ");";
+        }
+
+        attribute = type.getAttribute(IAttribute.Activator);
+
+        if(attribute != null) {
+            addActivator = "addActivator(" + getJavaNew(type) + ");";
         }
     }
 }

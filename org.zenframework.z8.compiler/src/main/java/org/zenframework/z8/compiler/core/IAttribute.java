@@ -10,6 +10,7 @@ public interface IAttribute extends ILanguageElement {
     final static String Primary = "primary";
     final static String Native = "native";
     final static String Generatable = "generatable";
+    final static String Activator = "activator";
     final static String Entry = "entry";
     final static String Job = "job";
 

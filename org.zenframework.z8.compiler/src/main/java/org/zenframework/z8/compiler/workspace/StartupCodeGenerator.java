@@ -84,6 +84,7 @@ public class StartupCodeGenerator {
         String addTable = "";
         String addJob = "";
         String addEntry = "";
+        String addActivator = "";
 
         for (CompilationUnit compilationUnit : compilationUnits) {
             StartupCodeLines startupCodeLines = compilationUnit.getStartupCodeLines();
@@ -99,6 +100,10 @@ public class StartupCodeGenerator {
             if (startupCodeLines.addEntry != null) {
                 addEntry += "\t\t" + startupCodeLines.addEntry + '\n';
             }
+
+            if (startupCodeLines.addActivator != null) {
+                addActivator += "\t\t" + startupCodeLines.addActivator + '\n';
+            }
         }
 
         String className = getRuntimeClassSimpleName(project);
@@ -110,7 +115,8 @@ public class StartupCodeGenerator {
                    '\t' + '{' + '\n' +
                        addTable + "\n\n" +
                        addEntry + "\n\n" +
-                       addJob + '\n' + '\t' + '}' + "\n" + "}";
+                       addJob + "\n\n" +
+                       addActivator + "\n\t}\n}";
     }
 
 }
