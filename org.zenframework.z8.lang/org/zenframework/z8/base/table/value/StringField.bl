@@ -2,6 +2,8 @@
 
 class StringField extends Field
 {
+	aggregation = Aggregation.Sum;
+
 	public int length = 30;
 
 	public int minLength = 0;

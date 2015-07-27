@@ -2,6 +2,8 @@
 
 class StringExpression extends Expression
 {
+	aggregation = Aggregation.Sum;
+
 	public void setDefault(string defaultValue);
 
 	virtual public string get();
