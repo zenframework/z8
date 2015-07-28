@@ -5,11 +5,7 @@ import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.runtime.OBJECT;
 import org.zenframework.z8.server.runtime.RCollection;
 import org.zenframework.z8.server.types.bool;
-import org.zenframework.z8.server.types.date;
-import org.zenframework.z8.server.types.datetime;
 import org.zenframework.z8.server.types.decimal;
-import org.zenframework.z8.server.types.exception;
-import org.zenframework.z8.server.types.guid;
 import org.zenframework.z8.server.types.integer;
 import org.zenframework.z8.server.types.primary;
 import org.zenframework.z8.server.types.string;
@@ -104,18 +100,12 @@ public class JsonObject extends OBJECT {
     public JsonObject.CLASS<? extends JsonObject> z8_put(string name, primary value) {
         if (value instanceof bool) {
             object.put(name.get(), ((bool) value).get());
-        } else if (value instanceof date || value instanceof datetime) {
-            object.put(name.get(), ((date) value).get().toString());
         } else if (value instanceof decimal) {
             object.put(name.get(), ((decimal) value).get());
-        } else if (value instanceof guid) {
-            object.put(name.get(), ((guid) value).toString());
         } else if (value instanceof integer) {
             object.put(name.get(), ((integer) value).get());
-        } else if (value instanceof string) {
-            object.put(name.get(), ((string) value).get());
         } else {
-            throw new exception("Unsupported primary type " + value.getClass().getSimpleName());
+            object.put(name.get(), value.toString());
         }
         return (JsonObject.CLASS<? extends JsonObject>) getCLASS();
     }
