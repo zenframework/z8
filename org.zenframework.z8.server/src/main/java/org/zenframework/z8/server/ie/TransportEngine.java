@@ -1,6 +1,5 @@
 package org.zenframework.z8.server.ie;
 
-import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -16,10 +15,10 @@ import org.zenframework.z8.server.runtime.ServerRuntime;
 
 public class TransportEngine implements Properties.Listener {
 
+    @SuppressWarnings("unused")
     private static final Log LOG = LogFactory.getLog(TransportEngine.class);
 
-    private static final List<Transport> TRANSPORTS = Arrays.<Transport> asList(new NullTransport(), new FileTransport(),
-            new JmsTransport());
+    private static final List<Transport> TRANSPORTS = Arrays.<Transport> asList(new FileTransport(), new JmsTransport());
     private static final Map<String, Transport> PROTOCOL_TRANSPORTS;
     private static TransportEngine INSTANCE;
 
@@ -80,24 +79,6 @@ public class TransportEngine implements Properties.Listener {
         }
     }
 
-    public void send(Message message, URI transportUri) {
-        message.setAddress(transportUri.getHost());
-        String protocol = transportUri.getScheme();
-        Transport transport = TransportEngine.getInstance().getTransport(protocol);
-        if (transport == null || transport.usePersistency()) {
-            ExportMessages.addMessage(message, protocol);
-        } else {
-            try {
-                // TODO Как-то надо передавать контекст
-                transport.connect(null);
-                transport.send(message);
-            } catch (TransportException e) {
-                LOG.error("Can't send message '" + message.getId() + "' to " + transportUri, e);
-                transport.close();
-            }
-        }
-    }
-
     public static TransportEngine getInstance() {
         if (INSTANCE == null) {
             INSTANCE = new TransportEngine();
@@ -114,9 +95,6 @@ public class TransportEngine implements Properties.Listener {
             if (s.length() > 0) {
                 protocols.add(s);
             }
-        }
-        if (!protocols.contains(NullTransport.PROTOCOL)) {
-            protocols.add(NullTransport.PROTOCOL);
         }
         return protocols;
     }

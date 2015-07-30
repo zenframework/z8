@@ -4,8 +4,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 
-import javax.xml.bind.JAXBException;
-
 import org.zenframework.z8.ie.xml.ExportEntry;
 import org.zenframework.z8.server.base.file.FileInfo;
 import org.zenframework.z8.server.base.simple.Procedure;
@@ -48,6 +46,25 @@ public class TransportProcedure extends Procedure {
         }
     }
 
+    private static class PreserveExportMessagesListener implements Properties.Listener {
+
+        @Override
+        public void onPropertyChange(String key, String value) {
+            if (ServerRuntime.PreserveExportMessagesProperty.equalsKey(key)) {
+                preserveExportMessages = Boolean.parseBoolean(Properties
+                        .getProperty(ServerRuntime.PreserveExportMessagesProperty));
+            }
+        }
+
+    }
+
+    static {
+        Properties.addListener(new PreserveExportMessagesListener());
+    }
+
+    private static volatile boolean preserveExportMessages = Boolean.parseBoolean(Properties
+            .getProperty(ServerRuntime.PreserveExportMessagesProperty));
+
     protected final TransportContext.CLASS<TransportContext> context = new TransportContext.CLASS<TransportContext>();
     protected final TransportEngine engine = TransportEngine.getInstance();
 
@@ -69,80 +86,85 @@ public class TransportProcedure extends Procedure {
     @Override
     protected void z8_exec(RCollection<Parameter.CLASS<? extends Parameter>> parameters) {
 
-        if (!context.get().hasProperty(SelfAddressProperty)) {
-            //log("Transport context property '" + SelfAddressProperty + "' is not set");
-            //return;
+        String selfAddress = context.get().getProperty(SelfAddressProperty);
+        if (selfAddress == null) {
             throw new RuntimeException("Transport context property '" + SelfAddressProperty + "' is not set");
         }
 
-        // Отправка внутренней очереди
+        // Обработка внутренней очереди
         Connection connection = ConnectionManager.get();
-        ExportMessages messages = new ExportMessages.CLASS<ExportMessages>().get();
+        ExportMessages messages = ExportMessages.instance();
         messages.read(messages.getDataFields(), Arrays.<Field> asList(messages.ordinal.get()), new sql_bool(new Unary(
-                Operation.Not, new SqlField(messages.sent.get()))));
-        // TODO Сохранять значение локально и обновлять через listener
-        boolean preserveMessages = Boolean
-                .parseBoolean(Properties.getProperty(ServerRuntime.PreserveExportMessagesProperty));
+                Operation.Not, new SqlField(messages.processed.get()))));
         while (messages.next()) {
-            Transport transport = engine.getTransport(messages.getProtocol());
-            if (transport != null) {
-                try {
-                    transport.connect(context.get());
-                    Message.CLASS<Message> message = messages.getMessage();
-                    z8_beforeExport(message);
-                    connection.beginTransaction();
-                    if (preserveMessages) {
-                        messages.sent.get().set(new bool(true));
+            try {
+                Message.CLASS<Message> message = messages.getMessage();
+                Transport transport = engine.getTransport(messages.getProtocol());
+                boolean myMessage = message.get().getAddress().equals(selfAddress);
+                connection.beginTransaction();
+                if (myMessage | transport != null) {
+                    // Если сообщение свое или может быть отправлено, пометить или удалить сообщение
+                    if (preserveExportMessages) {
+                        messages.processed.get().set(new bool(true));
                         messages.update(messages.recordId());
                     } else {
                         messages.destroy(messages.recordId());
                     }
-                    transport.send(message.get());
-                    transport.commit();
-                    connection.commit();
-                } catch (JAXBException e) {
-                    log("Transport messsage '" + messages.recordId() + "' is broken", e);
-                } catch (TransportException e) {
-                    transport.close();
-                    connection.rollback();
-                    log("Can't export message '" + messages.recordId() + "'. Connection rolled back", e);
                 }
+                if (myMessage) {
+                    // Если сообщение свое, импортировать
+                    Trace.logEvent("Receive IE message [" + message.get().getId() + "] by " + messages.getUrl());
+                    ApplicationServer.disableEvents();
+                    try {
+                        importRecords(message.get());
+                    } finally {
+                        ApplicationServer.enableEvents();
+                    }
+                    z8_afterImport(message);
+                } else {
+                    // Если сообщение чужое, отправить подходящим транспортом
+                    if (transport != null) {
+                        z8_beforeExport(message);
+                        transport.connect(context.get());
+                        try {
+                            transport.send(message.get());
+                            transport.commit();
+                        } catch (TransportException e) {
+                            transport.close();
+                            throw e;
+                        }
+                    }
+                }
+                connection.commit();
+            } catch (Throwable e) {
+                connection.rollback();
+                log("Transport messsage '" + messages.recordId() + "' is broken", e);
+                messages.setError(messages.recordId(), e.getMessage());
             }
         }
 
         // Чтение входящих сообщений
         for (Transport transport : engine.getEnabledTransports()) {
             try {
-                ApplicationServer.disableEvents();
                 transport.connect(context.get());
                 for (Message message = transport.receive(); message != null; message = transport.receive()) {
                     try {
-                        Trace.logEvent("Receive IE message [" + message.getId() + "] by "
-                                + transport.getUrl(message.getAddress()));
-                        connection.beginTransaction();
-                        if (message != null && !(transport instanceof NullTransport)) {
-                            importRecords(transport, message);
-                        }
-                        z8_afterImport((Message.CLASS<Message>) message.getMessageClass());
-                        connection.commit();
+                        messages.addMessage(message, transport.getProtocol());
                         transport.commit();
                     } catch (Throwable e) {
-                        connection.rollback();
+                        log("Can't save incoming message " + message.getId() + " from '" + transport.getUrl(message.getAddress()) + "'", e);
                         transport.rollback();
-                        throw new RuntimeException(e);
                     }
                 }
             } catch (TransportException e) {
                 log("Can't import message via protocol '" + transport.getProtocol() + "'", e);
                 transport.close();
-            } finally {
-                ApplicationServer.enableEvents();
             }
         }
 
     }
 
-    private void importRecords(Transport transport, Message message) {
+    private void importRecords(Message message) {
 
         // Импорт записей
         for (ExportEntry.Records.Record record : message.getExportEntry().getRecords().getRecord()) {

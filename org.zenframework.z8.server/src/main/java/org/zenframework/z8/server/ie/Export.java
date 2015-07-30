@@ -32,6 +32,8 @@ import org.zenframework.z8.server.types.sql.sql_bool;
 
 public class Export extends OBJECT {
 
+    private static final String NULL_PROTOCOL = "null";
+    
     public static class CLASS<T extends Export> extends OBJECT.CLASS<T> {
 
         public CLASS() {
@@ -57,7 +59,7 @@ public class Export extends OBJECT {
     private final Map<String, ImportPolicy> policies = new HashMap<String, ImportPolicy>();
     private final List<Table> recordsets = new LinkedList<Table>();
     private boolean exportAttachments = false;
-    private String transportUrl;
+    private URI transportUrl;
 
     public Export() {
         this(null);
@@ -102,23 +104,37 @@ public class Export extends OBJECT {
     }
 
     public String getTransportUrl() {
-        return transportUrl;
+        return transportUrl.toString();
     }
 
     public void setTransportUrl(String transportUrl) {
-        this.transportUrl = transportUrl;
+        try {
+            this.transportUrl = new URI(transportUrl);
+        } catch (URISyntaxException e) {
+            throw new RuntimeException("Incorrect transport URL [" + transportUrl + "]", e);
+        }
     }
 
     public void execute() {
         RecordsSorter recordsSorter = new RecordsSorter();
         Message message = new Message();
         try {
-            for (Table recordset : recordsets) {
-                while (recordset.next()) {
-                    exportRecord(recordset, message, getPolicy(recordset.classId()), recordsSorter, 0);
+            String protocol = transportUrl.getScheme();
+            if (!protocol.equals(NULL_PROTOCOL)) {
+                // Если протокол НЕ "null", экспортировать записи БД
+                for (Table recordset : recordsets) {
+                    while (recordset.next()) {
+                        exportRecord(recordset, message, getPolicy(recordset.classId()), recordsSorter, 0);
+                    }
+                }
+                // Сортировка записей в соответствии со ссылками по foreign keys и parentId
+                Collections.sort(message.getExportEntry().getRecords().getRecord(), recordsSorter.getComparator());
+                Trace.logEvent("Sorted records:");
+                for (ExportEntry.Records.Record record : message.getExportEntry().getRecords().getRecord()) {
+                    Trace.logEvent(record.getTable() + '[' + record.getRecordId() + ']');
                 }
             }
-            // Свойства экспорта
+            // Свойства экспортируются для любого протокола
             if (!properties.isEmpty()) {
                 ExportEntry.Properties properties = new ExportEntry.Properties();
                 for (Map.Entry<string, primary> entry : this.properties.entrySet()) {
@@ -130,13 +146,9 @@ public class Export extends OBJECT {
                 }
                 message.getExportEntry().setProperties(properties);
             }
-            // Сортировка записей в соответствии со ссылками по foreign keys
-            Collections.sort(message.getExportEntry().getRecords().getRecord(), recordsSorter.getComparator());
-            Trace.logEvent("Sorted records:");
-            for (ExportEntry.Records.Record record : message.getExportEntry().getRecords().getRecord()) {
-                Trace.logEvent(record.getTable() + '[' + record.getRecordId() + ']');
-            }
-            TransportEngine.getInstance().send(message, new URI(transportUrl));
+            // Запись сообщения в таблицу ExportMessages
+            message.setAddress(transportUrl.getHost());
+            ExportMessages.instance().addMessage(message, transportUrl.getScheme());
         } catch (Exception e) {
             throw new exception("Can't marshal records", e);
         }
