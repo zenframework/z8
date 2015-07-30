@@ -1,17 +1,27 @@
 package org.zenframework.z8.server.ie;
 
+import java.util.Arrays;
+
 import javax.xml.bind.JAXBException;
 
 import org.zenframework.z8.server.base.table.Table;
 import org.zenframework.z8.server.base.table.value.BoolField;
+import org.zenframework.z8.server.base.table.value.Field;
 import org.zenframework.z8.server.base.table.value.IntegerField;
 import org.zenframework.z8.server.base.table.value.TextField;
+import org.zenframework.z8.server.db.sql.SqlField;
+import org.zenframework.z8.server.db.sql.SqlToken;
+import org.zenframework.z8.server.db.sql.expressions.And;
+import org.zenframework.z8.server.db.sql.expressions.Operation;
+import org.zenframework.z8.server.db.sql.expressions.Rel;
+import org.zenframework.z8.server.db.sql.expressions.Unary;
 import org.zenframework.z8.server.resources.Resources;
 import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.types.bool;
 import org.zenframework.z8.server.types.guid;
 import org.zenframework.z8.server.types.integer;
 import org.zenframework.z8.server.types.string;
+import org.zenframework.z8.server.types.sql.sql_string;
 
 public class ExportMessages extends Table {
 
@@ -39,7 +49,8 @@ public class ExportMessages extends Table {
 
     static public class strings {
         public final static String Title = "ExportMessages.title";
-        public final static String Address = "ExportMessages.address";
+        public final static String Sender = "ExportMessages.sender";
+        public final static String Receiver = "ExportMessages.receiver";
         public final static String Protocol = "ExportMessages.protocol";
         public final static String Message = "ExportMessages.message";
         public final static String Ordinal = "ExportMessages.ordinal";
@@ -56,11 +67,12 @@ public class ExportMessages extends Table {
         super(container);
     }
 
-    public void addMessage(Message message, String protocol) {
+    public void addMessage(Message message, String protocol, String sender) {
         String xml = "<xml marshalling error>";
         try {
             xml = IeUtil.marshalExportEntry(message.getExportEntry());
-            this.id.get().set(new string(message.getAddress()));
+            this.id.get().set(new string(sender));
+            this.id1.get().set(new string(message.getAddress()));
             this.name.get().set(new string(protocol));
             this.message.get().set(xml);
             this.ordinal.get().set(new integer(this.ordinal.get().getSequencer().next()));
@@ -77,8 +89,12 @@ public class ExportMessages extends Table {
         update(messageId);
     }
 
-    public String getAddress() {
+    public String getSender() {
         return id.get().get().toString();
+    }
+
+    public String getReceiver() {
+        return id1.get().get().toString();
     }
 
     public String getProtocol() {
@@ -86,13 +102,13 @@ public class ExportMessages extends Table {
     }
 
     public String getUrl() {
-        return getProtocol() + "://" + getAddress();
+        return getProtocol() + "://" + getReceiver();
     }
 
     public Message.CLASS<Message> getMessage() throws JAXBException {
         Message.CLASS<Message> message = new Message.CLASS<Message>();
         message.get().setId(recordId().toUUID());
-        message.get().setAddress(getAddress());
+        message.get().setAddress(getReceiver());
         message.get().setExportEntry(IeUtil.unmarshalExportEntry(this.message.get().get().toString()));
         return message;
     }
@@ -100,8 +116,8 @@ public class ExportMessages extends Table {
     @Override
     public void constructor2() {
         super.constructor2();
-        id.setDisplayName(Resources.get(strings.Address));
-        id1.get().hidden.set(true);
+        id.setDisplayName(Resources.get(strings.Sender));
+        id1.setDisplayName(Resources.get(strings.Receiver));
         name.setDisplayName(Resources.get(strings.Protocol));
         ordinal.setName("Ordinal");
         ordinal.setIndex("ordinal");
@@ -125,6 +141,22 @@ public class ExportMessages extends Table {
     
     public static ExportMessages instance() {
         return new CLASS<ExportMessages>().get();
+    }
+
+    public void readExportMessages(String selfAddress) {
+        SqlToken notProcessedNotError = new And(
+                new Unary(Operation.Not, new SqlField(processed.get())),
+                new Unary(Operation.Not, new SqlField(error.get())));
+        SqlToken fromMe = new Rel(id.get(), Operation.Eq, new sql_string(selfAddress));
+        read(getDataFields(), Arrays.<Field> asList(ordinal.get()), new And(notProcessedNotError, fromMe));
+    }
+
+    public void readImportMessages(String selfAddress) {
+        SqlToken notProcessedNotError = new And(
+                new Unary(Operation.Not, new SqlField(processed.get())),
+                new Unary(Operation.Not, new SqlField(error.get())));
+        SqlToken forMe = new Rel(id1.get(), Operation.Eq, new sql_string(selfAddress));
+        read(getDataFields(), Arrays.<Field> asList(ordinal.get()), new And(notProcessedNotError, forMe));
     }
 
 }

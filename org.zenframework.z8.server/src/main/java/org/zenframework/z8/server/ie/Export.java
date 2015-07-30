@@ -56,17 +56,21 @@ public class Export extends OBJECT {
 
     public final RLinkedHashMap<string, primary> properties = new RLinkedHashMap<string, primary>();
 
+    protected final TransportContext.CLASS<TransportContext> context = new TransportContext.CLASS<TransportContext>();
+
     private final Map<String, ImportPolicy> policies = new HashMap<String, ImportPolicy>();
     private final List<Table> recordsets = new LinkedList<Table>();
     private boolean exportAttachments = false;
     private URI transportUrl;
 
-    public Export() {
-        this(null);
-    }
-
     public Export(IObject container) {
         super(container);
+    }
+
+    @Override
+    public void constructor2() {
+        super.constructor2();
+        z8_init();
     }
 
     public void addRecordset(Table table) {
@@ -148,7 +152,8 @@ public class Export extends OBJECT {
             }
             // Запись сообщения в таблицу ExportMessages
             message.setAddress(transportUrl.getHost());
-            ExportMessages.instance().addMessage(message, transportUrl.getScheme());
+            ExportMessages.instance().addMessage(message, transportUrl.getScheme(),
+                    context.get().getProperty(TransportContext.SelfAddressProperty));
         } catch (Exception e) {
             throw new exception("Can't marshal records", e);
         }
@@ -178,6 +183,8 @@ public class Export extends OBJECT {
         setTransportUrl(transportUrl.get());
     }
 
+    public void z8_init() {}
+    
     public void z8_execute() {
         execute();
     }

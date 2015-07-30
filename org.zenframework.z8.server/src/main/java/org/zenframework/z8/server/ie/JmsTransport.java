@@ -52,7 +52,7 @@ public class JmsTransport extends AbstractTransport implements ExceptionListener
             try {
                 String jmsFactoryClass = Properties.getProperty(ServerRuntime.ConnectionFactoryProperty);
                 String jmsUrl = Properties.getProperty(ServerRuntime.ConnectionUrlProperty);
-                String selfAddress = context.getProperty(TransportProcedure.SelfAddressProperty);
+                String selfAddress = context.getProperty(TransportContext.SelfAddressProperty);
                 ConnectionFactory connectionFactory = getConnectionFactory(jmsFactoryClass, jmsUrl);
                 connection = connectionFactory.createConnection();
                 connection.start();

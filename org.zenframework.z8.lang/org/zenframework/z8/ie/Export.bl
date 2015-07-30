@@ -17,6 +17,10 @@ class Export {
     
     public primary[string] properties;
 
+    protected TransportContext context;
+
+    virtual protected void init();
+
     public void execute();
 
 }
