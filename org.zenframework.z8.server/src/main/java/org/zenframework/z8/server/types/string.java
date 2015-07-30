@@ -2,6 +2,8 @@ package org.zenframework.z8.server.types;
 
 import java.io.UnsupportedEncodingException;
 import java.text.MessageFormat;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
 import org.zenframework.z8.server.db.DatabaseVendor;
@@ -15,7 +17,11 @@ public final class string extends primary {
 
     private String m_value = "";
 
-    public string() {}
+    private Pattern pattern = null;
+    private Matcher matcher = null;
+
+    public string() {
+    }
 
     public string(string str) {
         set(str);
@@ -31,17 +37,16 @@ public final class string extends primary {
 
     public string(byte[] str, encoding charset) {
         try {
-            if(str != null) {
+            if (str != null) {
                 set(new String(str, charset.toString()));
             }
-        }
-        catch(UnsupportedEncodingException e) {
+        } catch (UnsupportedEncodingException e) {
             throw new exception(e);
         }
     }
 
     public string(char ch) {
-        set(((Character)ch).toString());
+        set(((Character) ch).toString());
     }
 
     @Override
@@ -56,8 +61,7 @@ public final class string extends primary {
     public byte[] getBytes(encoding charset) {
         try {
             return m_value.getBytes(charset.toString());
-        }
-        catch(UnsupportedEncodingException e) {
+        } catch (UnsupportedEncodingException e) {
             throw new exception(e);
         }
     }
@@ -101,7 +105,7 @@ public final class string extends primary {
     public String toDbConstant(DatabaseVendor vendor) {
         String string = toDbString(vendor);
 
-        if(vendor == DatabaseVendor.SqlServer) {
+        if (vendor == DatabaseVendor.SqlServer) {
             return "N'" + string + "'";
         }
 
@@ -124,14 +128,14 @@ public final class string extends primary {
 
     @Override
     public boolean equals(Object object) {
-        if(m_value != null && m_value.equals(object)) {
+        if (m_value != null && m_value.equals(object)) {
             return true;
         }
-        
-        if(object instanceof string) {
-            string string = (string)object;
 
-            if(m_value == null || m_value.isEmpty()) {
+        if (object instanceof string) {
+            string string = (string) object;
+
+            if (m_value == null || m_value.isEmpty()) {
                 return string.m_value == null || string.m_value.isEmpty();
             }
 
@@ -148,7 +152,7 @@ public final class string extends primary {
     public String trimLeft() {
         int pos = 0;
 
-        while(pos < m_value.length() && m_value.charAt(pos) <= ' ') {
+        while (pos < m_value.length() && m_value.charAt(pos) <= ' ') {
             pos++;
         }
         return pos > 0 ? m_value.substring(pos) : m_value;
@@ -157,7 +161,7 @@ public final class string extends primary {
     public String trimRight() {
         int length = m_value.length();
 
-        while(0 < length && m_value.charAt(length - 1) <= ' ') {
+        while (0 < length && m_value.charAt(length - 1) <= ' ') {
             length--;
         }
         return length < m_value.length() ? m_value.substring(0, length) : m_value;
@@ -256,8 +260,7 @@ public final class string extends primary {
     public string z8_charAt(integer index) {
         try {
             return new string(m_value.charAt(index.getInt()));
-        }
-        catch(IndexOutOfBoundsException e) {
+        } catch (IndexOutOfBoundsException e) {
             throw new exception(e);
         }
     }
@@ -265,8 +268,7 @@ public final class string extends primary {
     public string z8_substring(integer index) {
         try {
             return new string(m_value.substring(index.getInt()));
-        }
-        catch(IndexOutOfBoundsException e) {
+        } catch (IndexOutOfBoundsException e) {
             throw new exception(e);
         }
     }
@@ -274,11 +276,10 @@ public final class string extends primary {
     public string z8_substring(integer index, integer count) {
         try {
             int end = (index.getInt() + count.getInt());
-            if(end >= m_value.length())
+            if (end >= m_value.length())
                 end = m_value.length();
             return new string(m_value.substring(index.getInt(), end));
-        }
-        catch(IndexOutOfBoundsException e) {
+        } catch (IndexOutOfBoundsException e) {
             throw new exception(e);
         }
     }
@@ -286,8 +287,7 @@ public final class string extends primary {
     public string z8_left(integer count) {
         try {
             return z8_substring(new integer(0), count);
-        }
-        catch(IndexOutOfBoundsException e) {
+        } catch (IndexOutOfBoundsException e) {
             throw new exception(e);
         }
     }
@@ -295,11 +295,10 @@ public final class string extends primary {
     public string z8_right(integer count) {
         try {
             int start = m_value.length() - count.getInt();
-            if(start < 0)
+            if (start < 0)
                 start = 0;
             return z8_substring(new integer(start));
-        }
-        catch(IndexOutOfBoundsException e) {
+        } catch (IndexOutOfBoundsException e) {
             throw new exception(e);
         }
     }
@@ -307,8 +306,7 @@ public final class string extends primary {
     public string z8_trim() {
         try {
             return new string(m_value.trim());
-        }
-        catch(IndexOutOfBoundsException e) {
+        } catch (IndexOutOfBoundsException e) {
             throw new exception(e);
         }
     }
@@ -316,8 +314,7 @@ public final class string extends primary {
     public string z8_trimLeft() {
         try {
             return new string(trimLeft());
-        }
-        catch(IndexOutOfBoundsException e) {
+        } catch (IndexOutOfBoundsException e) {
             throw new exception(e);
         }
     }
@@ -325,8 +322,7 @@ public final class string extends primary {
     public string z8_trimRight() {
         try {
             return new string(trimRight());
-        }
-        catch(IndexOutOfBoundsException e) {
+        } catch (IndexOutOfBoundsException e) {
             throw new exception(e);
         }
     }
@@ -339,21 +335,20 @@ public final class string extends primary {
         try {
             int len = length.getInt();
 
-            if(m_value.length() >= len) {
+            if (m_value.length() >= len) {
                 return new string(m_value.substring(0, len));
             }
 
             String s = "";
 
-            for(int i = 0; i < len - m_value.length(); i++) {
+            for (int i = 0; i < len - m_value.length(); i++) {
                 s += padding.m_value;
             }
 
             s = s.substring(0, len - m_value.length());
 
             return new string(s + m_value);
-        }
-        catch(IndexOutOfBoundsException e) {
+        } catch (IndexOutOfBoundsException e) {
             throw new exception(e);
         }
     }
@@ -366,20 +361,19 @@ public final class string extends primary {
         try {
             int len = length.getInt();
 
-            if(m_value.length() >= len) {
+            if (m_value.length() >= len) {
                 return new string(m_value.substring(m_value.length() - len, m_value.length()));
             }
 
             String s = m_value;
 
-            while(s.length() < len) {
+            while (s.length() < len) {
                 s += padding.m_value;
             }
             s = s.substring(0, len);
 
             return new string(s);
-        }
-        catch(IndexOutOfBoundsException e) {
+        } catch (IndexOutOfBoundsException e) {
             throw new exception(e);
         }
     }
@@ -388,8 +382,7 @@ public final class string extends primary {
         try {
             int i = index.getInt();
             return new string(m_value.substring(0, i) + what.m_value + m_value.substring(i));
-        }
-        catch(IndexOutOfBoundsException e) {
+        } catch (IndexOutOfBoundsException e) {
             throw new exception(e);
         }
     }
@@ -398,8 +391,7 @@ public final class string extends primary {
         try {
             int i = index.getInt();
             return new string(m_value.substring(0, i) + replacement.m_value + m_value.substring(i + length.getInt()));
-        }
-        catch(IndexOutOfBoundsException e) {
+        } catch (IndexOutOfBoundsException e) {
             throw new exception(e);
         }
     }
@@ -407,8 +399,47 @@ public final class string extends primary {
     public bool z8_matches(string regex) {
         try {
             return new bool(m_value.matches(regex.m_value));
+        } catch (PatternSyntaxException e) {
+            throw new exception(e);
         }
-        catch(PatternSyntaxException e) {
+    }
+
+    public void z8_setupMatcher(string regex) {
+        try {
+            if (regex != null) {
+                pattern = Pattern.compile(regex.m_value);
+                matcher = pattern.matcher(m_value);
+            }
+            else {
+                pattern = null;
+                matcher = null;
+            }
+        } catch (PatternSyntaxException e) {
+            throw new exception(e);
+        }
+    }
+
+    public bool z8_next() {
+        try {
+            if (matcher == null)
+                return new bool(false);
+
+            return new bool(matcher.find());
+        } catch (PatternSyntaxException e) {
+            throw new exception(e);
+        }
+    }
+
+    public string z8_getGroup(integer groupNumber) {
+        try {
+            if (matcher == null)
+                throw new exception("Matcher is null");
+
+            if (matcher.group(groupNumber.getInt()) != null)
+                return new string(matcher.group(groupNumber.getInt()));
+
+            throw new exception("No such group");
+        } catch (PatternSyntaxException e) {
             throw new exception(e);
         }
     }
@@ -416,8 +447,7 @@ public final class string extends primary {
     public string z8_replaceFirst(string regex, string replacement) {
         try {
             return new string(m_value.replaceFirst(regex.m_value, replacement.m_value));
-        }
-        catch(PatternSyntaxException e) {
+        } catch (PatternSyntaxException e) {
             throw new exception(e);
         }
     }
@@ -425,8 +455,7 @@ public final class string extends primary {
     public string z8_replaceAll(string regex, string replacement) {
         try {
             return new string(m_value.replaceAll(regex.m_value, replacement.m_value));
-        }
-        catch(PatternSyntaxException e) {
+        } catch (PatternSyntaxException e) {
             throw new exception(e);
         }
     }
@@ -441,12 +470,11 @@ public final class string extends primary {
 
             String[] parts = m_value.split(regex.m_value, limit.getInt());
 
-            for(String s : parts) {
+            for (String s : parts) {
                 result.add(new string(s));
             }
             return result;
-        }
-        catch(PatternSyntaxException e) {
+        } catch (PatternSyntaxException e) {
             throw new exception(e);
         }
     }
@@ -466,12 +494,12 @@ public final class string extends primary {
 
     static public string z8_replicate(string str, integer count) {
         String s = "";
-        for(int i = 0; i < count.getInt(); i++) {
+        for (int i = 0; i < count.getInt(); i++) {
             s += str.m_value;
         }
         return new string(s);
     }
-    
+
     public static string[] convertArray(String... strings) {
         string[] result = new string[strings.length];
         for (int i = 0; i < strings.length; i++) {
@@ -489,7 +517,7 @@ public final class string extends primary {
     }
 
     private String fromResources(String str) {
-        if(str.startsWith("$") && str.endsWith("$")) {
+        if (str.startsWith("$") && str.endsWith("$")) {
             return Resources.get(str.substring(1, str.length() - 1));
         }
         return str;

@@ -56,6 +56,9 @@ final class string extends primary
 	public string replace(int pos, int len, string replacement);
 
 	public bool matches(string regex);
+	public void setupMatcher(string regex);
+	public bool next();
+	public string getGroup(int groupNumber);
 
 	public string replaceFirst(string regex, string replacement);
 	public string replaceAll(string regex, string replacement);
