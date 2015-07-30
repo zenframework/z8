@@ -8,7 +8,6 @@ import org.zenframework.z8.server.base.file.FileInfo;
 import org.zenframework.z8.server.base.file.FilesFactory;
 import org.zenframework.z8.server.base.table.Table;
 import org.zenframework.z8.server.base.table.value.BinaryField;
-import org.zenframework.z8.server.base.table.value.GuidField;
 import org.zenframework.z8.server.base.table.value.StringField;
 import org.zenframework.z8.server.db.sql.SqlToken;
 import org.zenframework.z8.server.db.sql.expressions.Operation;
@@ -56,7 +55,6 @@ public class Files extends Table {
     }
 
     public StringField.CLASS<StringField> path = new StringField.CLASS<StringField>(this);
-    public GuidField.CLASS<GuidField> target = new GuidField.CLASS<GuidField>(this);
     public BinaryField.CLASS<BinaryField> file = new BinaryField.CLASS<BinaryField>(this);
 
     public Files() {
@@ -74,10 +72,6 @@ public class Files extends Table {
         name.setDisplayName(Resources.get(Files.strings.Name));
         name.get().length.set(512);
 
-        target.setName(names.Target);
-        target.setIndex("target");
-        target.setDisplayName(Resources.get(strings.Target));
-
         file.setName(names.File);
         file.setIndex("file");
         file.setDisplayName(Resources.get(strings.File));
@@ -87,11 +81,14 @@ public class Files extends Table {
         path.setDisplayName(Resources.get(strings.Path));
         path.get().length.set(512);
 
-        registerDataField(target);
         registerDataField(file);
         registerDataField(path);
     }
 
+    public static Files instance() {
+        return new Files.CLASS<Files>().get();
+    }
+    
     public static InputStream getInputStream(FileInfo fileInfo) throws IOException {
         Files table = new Files.CLASS<Files>().get();
 

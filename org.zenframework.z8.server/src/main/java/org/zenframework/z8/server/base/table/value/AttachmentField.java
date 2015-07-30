@@ -1,7 +1,6 @@
 package org.zenframework.z8.server.base.table.value;
 
 import org.zenframework.z8.server.base.file.AttachmentProcessor;
-import org.zenframework.z8.server.base.table.Table;
 import org.zenframework.z8.server.runtime.IObject;
 
 public class AttachmentField extends TextField {
@@ -24,12 +23,12 @@ public class AttachmentField extends TextField {
     }
 
     public AttachmentProcessor getAttachmentProcessor() {
-        return new AttachmentProcessor((Table) getOwner(), this);
+        return new AttachmentProcessor(this);
     }
 
     public AttachmentProcessor.CLASS<? extends AttachmentProcessor> z8_getAttachmentProcessor() {
         AttachmentProcessor.CLASS<AttachmentProcessor> processor = new AttachmentProcessor.CLASS<AttachmentProcessor>();
-        processor.get().set((Table) getOwner(), this);
+        processor.get().set(this);
         return processor;
     }
 }

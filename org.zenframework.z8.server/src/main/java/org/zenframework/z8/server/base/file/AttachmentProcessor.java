@@ -35,23 +35,21 @@ public class AttachmentProcessor extends OBJECT {
         }
     }
 
-    private Table table;
     private AttachmentField field;
 
     public AttachmentProcessor(IObject container) {
         super(container);
     }
 
-    public AttachmentProcessor(Table table, AttachmentField field) {
-        set(table, field);
+    public AttachmentProcessor(AttachmentField field) {
+        set(field);
     }
 
     public Table getTable() {
-        return table;
+        return (Table) field.getOwner();
     }
 
-    public void set(Table table, AttachmentField field) {
-        this.table = table;
+    public void set(AttachmentField field) {
         this.field = field;
     }
 
@@ -90,7 +88,6 @@ public class AttachmentProcessor extends OBJECT {
                 filesTable.name.get().set(file.name);
                 filesTable.file.get().set(file.getInputStream());
                 filesTable.path.get().set(file.path);
-                filesTable.target.get().set(target);
                 file.id = filesTable.create();
             }
         }
@@ -130,7 +127,7 @@ public class AttachmentProcessor extends OBJECT {
 
     private void setPathIfEmpty(guid recordId, FileInfo fileInfo) {
         if (fileInfo.path.isEmpty()) {
-            String path = FileUtils.getFile(file.StorageFolder, getTable().classId(), recordId.toString(), fileInfo.name.get())
+            String path = FileUtils.getFile(file.StorageFolder, getTable().classId(), recordId.toString(), field.name(), fileInfo.name.get())
                     .toString();
             fileInfo.path = new string(path);
         }

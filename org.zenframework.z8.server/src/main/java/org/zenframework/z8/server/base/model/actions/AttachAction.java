@@ -5,7 +5,6 @@ import java.util.List;
 import org.zenframework.z8.server.base.file.AttachmentProcessor;
 import org.zenframework.z8.server.base.file.FileInfo;
 import org.zenframework.z8.server.base.query.Query;
-import org.zenframework.z8.server.base.table.Table;
 import org.zenframework.z8.server.base.table.value.AttachmentField;
 import org.zenframework.z8.server.base.table.value.Field;
 import org.zenframework.z8.server.json.Json;
@@ -32,7 +31,7 @@ public class AttachAction extends Action {
 
         Field field = fieldId != null ? query.findFieldById(fieldId) : null;
         
-        AttachmentProcessor processor = new AttachmentProcessor((Table)query, (AttachmentField)field);
+        AttachmentProcessor processor = new AttachmentProcessor((AttachmentField) field);
 
         JsonArray data = new JsonArray();
         
