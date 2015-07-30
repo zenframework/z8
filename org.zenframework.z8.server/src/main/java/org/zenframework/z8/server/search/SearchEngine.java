@@ -88,7 +88,7 @@ public class SearchEngine extends OBJECT {
 
     public void rebuildIndex(String indexId) {
         SearchIndex index = getIndex(indexId);
-        Collection<Table> tables = CLASS.asList(Runtime.instance().tables());
+        Collection<Table> tables = CLASS.asList(Runtime.instance().tables(), true);
         index.clearIndex();
         for (Table table : tables) {
             updateIndex(index, table);

@@ -197,7 +197,7 @@ public class User implements IUser {
             }
         }
 
-        return result != null ? (Users) result.get() : null;
+        return result != null ? (Users) result.newInstance() : null;
     }
 
     private void readInfo(String login, String password, Database database) {
