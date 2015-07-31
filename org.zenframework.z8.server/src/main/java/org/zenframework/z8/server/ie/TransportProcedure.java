@@ -108,7 +108,7 @@ public class TransportProcedure extends Procedure {
                 if (transport != null) {
                     beginProcessMessage(messages);
                     z8_beforeExport(message);
-                    transport.connect(context.get());
+                    transport.connect();
                     try {
                         transport.send(message.get());
                         transport.commit();
@@ -128,7 +128,7 @@ public class TransportProcedure extends Procedure {
         // Чтение входящих сообщений
         for (Transport transport : engine.getEnabledTransports(context.get())) {
             try {
-                transport.connect(context.get());
+                transport.connect();
                 for (Message message = transport.receive(); message != null; message = transport.receive()) {
                     try {
                         connection.beginTransaction();

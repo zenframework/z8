@@ -31,7 +31,7 @@ public class TransportEngine implements Properties.Listener {
             String transportId = transportId(context, protocol);
             transport = transports.get(transportId);
             if (transport == null) {
-                transport = createTransport(protocol);
+                transport = createTransport(context, protocol);
                 transports.put(transportId, transport);
             }
         }
@@ -99,11 +99,11 @@ public class TransportEngine implements Properties.Listener {
         return context.getProperty(TransportContext.SelfAddressProperty) + '/' + protocol;
     }
     
-    private static Transport createTransport(String protocol) {
+    private static Transport createTransport(TransportContext context, String protocol) {
         if (JmsTransport.PROTOCOL.equals(protocol)) {
-            return new JmsTransport();
+            return new JmsTransport(context);
         } else if (FileTransport.PROTOCOL.equals(protocol)) {
-            return new FileTransport();
+            return new FileTransport(context);
         } else {
             return null;
         }

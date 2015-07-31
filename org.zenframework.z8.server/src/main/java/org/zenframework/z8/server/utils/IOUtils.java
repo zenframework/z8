@@ -1,11 +1,14 @@
 package org.zenframework.z8.server.utils;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.io.Reader;
 import java.net.URL;
@@ -82,17 +85,37 @@ public class IOUtils {
         }
         return builder.toString();
     }
-    
+
     public static String readText(InputStream in) throws IOException {
         return readText(in, Charset.defaultCharset());
     }
-    
+
     public static String readText(URL resource) throws IOException {
         InputStream in = resource.openStream();
         try {
             return readText(in);
         } finally {
             in.close();
+        }
+    }
+
+    public static byte[] objectToBytes(Object object) {
+        try {
+            ByteArrayOutputStream out = new ByteArrayOutputStream();
+            ObjectOutputStream objOut = new ObjectOutputStream(out);
+            objOut.writeObject(object);
+            objOut.close();
+            return out.toByteArray();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+    
+    public static Object bytesToObject(byte buf[]) {
+        try {
+            return new ObjectInputStream(new ByteArrayInputStream(buf)).readObject();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
     }
 

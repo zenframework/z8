@@ -4,6 +4,8 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.UUID;
 
+import javax.xml.bind.JAXBException;
+
 import org.zenframework.z8.ie.xml.ExportEntry;
 import org.zenframework.z8.server.base.file.FileInfo;
 import org.zenframework.z8.server.runtime.IObject;
@@ -37,22 +39,39 @@ public class Message extends OBJECT implements Serializable {
         
     }
 
+    public static Message instance() {
+        return instance(UUID.randomUUID());
+    }
+
+    public static Message instance(UUID id) {
+        Message message = new Message.CLASS<Message>().get();
+        message.id = id;
+        return message;
+    }
+
     private UUID id;
     private String address;
     private ExportEntry exportEntry;
-    private RCollection<FileInfo> files = new RCollection<FileInfo>();
+    private final RCollection<FileInfo> files = new RCollection<FileInfo>(true);
 
-    public Message(IObject container) {
+    private Message(IObject container) {
         super(container);
-        id = UUID.randomUUID();
     }
 
-    public Message() {
-        id = UUID.randomUUID();
+    public UUID getId() {
+        return id;
     }
 
-    public Message(UUID id) {
+    public void setId(UUID id) {
         this.id = id;
+    }
+    
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
     }
 
     public ExportEntry getExportEntry() {
@@ -60,6 +79,7 @@ public class Message extends OBJECT implements Serializable {
             exportEntry = new ExportEntry();
             exportEntry.setRecords(new ExportEntry.Records());
             exportEntry.setFiles(new ExportEntry.Files());
+            exportEntry.setProperties(new ExportEntry.Properties());
         }
         return exportEntry;
     }
@@ -72,44 +92,9 @@ public class Message extends OBJECT implements Serializable {
         return files;
     }
 
-    public RLinkedHashMap<string, primary> getProperties() {
-        RLinkedHashMap<string, primary> properties = new RLinkedHashMap<string, primary>();
-        if (exportEntry.getProperties() != null) {
-            for (ExportEntry.Properties.Property property : exportEntry.getProperties().getProperty()) {
-                properties.put(new string(property.getKey()), primary.create(property.getType(), property.getValue()));
-            }
-        }
-        return properties;
-    }
-
     public void setFiles(List<FileInfo> files) {
         this.files.clear();
         this.files.addAll(files);
-    }
-
-    public String getAddress() {
-        return address;
-    }
-
-    public void setAddress(String address) {
-        this.address = address;
-    }
-
-    public UUID getId() {
-        return id;
-    }
-
-    public void setId(UUID id) {
-        this.id = id;
-    }
-    
-    public CLASS<Message> getMessageClass() {
-        Message.CLASS<Message> messageClass = new Message.CLASS<Message>();
-        messageClass.get().address = address;
-        messageClass.get().exportEntry = exportEntry;
-        messageClass.get().files = files;
-        messageClass.get().id = id;
-        return messageClass;
     }
 
     public guid z8_getId() {
@@ -120,18 +105,26 @@ public class Message extends OBJECT implements Serializable {
         return new string(address);
     }
 
-    public RCollection<FileInfo> z8_getFiles() {
-        return files;
+    public RCollection<FileInfo.CLASS<FileInfo>> z8_getFiles() {
+        RCollection<FileInfo.CLASS<FileInfo>> fileInfos = new RCollection<FileInfo.CLASS<FileInfo>>();
+        for (ExportEntry.Files.File file : getExportEntry().getFiles().getFile()) {
+            fileInfos.add(IeUtil.fileToFileInfoCLASS(file));
+        }
+        return fileInfos;
     }
     
     public RLinkedHashMap<string, primary> z8_getProperties() {
-        return getProperties();
+        RLinkedHashMap<string, primary> properties = new RLinkedHashMap<string, primary>();
+        for (ExportEntry.Properties.Property property : getExportEntry().getProperties().getProperty()) {
+            properties.put(new string(property.getKey()), primary.create(property.getType(), property.getValue()));
+        }
+        return properties;
     }
 
     public string z8_getXml() {
         try {
-            return new string(IeUtil.marshalExportEntry(exportEntry));
-        } catch (Exception e) {
+            return new string(IeUtil.marshalExportEntry(getExportEntry()));
+        } catch (JAXBException e) {
             throw new exception(e);
         }
     }

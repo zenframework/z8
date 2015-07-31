@@ -1,6 +1,7 @@
 package org.zenframework.z8.server.ie;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
@@ -8,9 +9,12 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.io.Reader;
+import java.util.Collection;
 import java.util.UUID;
 
 import org.zenframework.z8.ie.xml.ExportEntry;
+import org.zenframework.z8.server.base.file.FileInfo;
+import org.zenframework.z8.server.base.file.FilesFactory;
 import org.zenframework.z8.server.base.table.system.Files;
 import org.zenframework.z8.server.base.table.system.Properties;
 import org.zenframework.z8.server.logs.Trace;
@@ -33,8 +37,12 @@ public class FileTransport extends AbstractTransport {
     
     private Message lastReceived = null;
 
+    public FileTransport(TransportContext context) {
+        super(context);
+    }
+
     @Override
-    public void connect(TransportContext context) throws TransportException {}
+    public void connect() throws TransportException {}
 
     @Override
     public void close() {}
@@ -58,8 +66,7 @@ public class FileTransport extends AbstractTransport {
         }
         // write files
         for (ExportEntry.Files.File file : message.getExportEntry().getFiles().getFile()) {
-            outFile = new File(messageFolder, file.getPath());
-            outFile.getParentFile().mkdirs();
+            outFile = new File(messageFolder, file.getId());
             try {
                 InputStream in = Files.getInputStream(IeUtil.fileToFileInfo(file));
                 OutputStream out = new FileOutputStream(outFile);
@@ -102,7 +109,7 @@ public class FileTransport extends AbstractTransport {
                 for (File messageFolder : addresseeFolder.listFiles()) {
                     if (messageFolder.isDirectory()) {
                         try {
-                            Message message = new Message(UUID.fromString(messageFolder.getName()));
+                            Message message = Message.instance(UUID.fromString(messageFolder.getName()));
                             message.setAddress(messageFolder.getParentFile().getName());
                             File entryFile = new File(messageFolder, EXPORT_ENTRY);
                             if (entryFile.exists()) {
@@ -111,6 +118,37 @@ public class FileTransport extends AbstractTransport {
                                     in = new FileReader(entryFile);
                                     ExportEntry entry = IeUtil.unmarshalExportEntry(in);
                                     message.setExportEntry(entry);
+                                    // add files
+                                    Collection<FileInfo> fileInfos = IeUtil.filesToFileInfos(entry.getFiles().getFile());
+                                    for (FileInfo fileInfo : fileInfos) {
+                                        File file = new File(messageFolder, fileInfo.id.toString());
+                                        fileInfo.file = FilesFactory.createFileItem(fileInfo.name.get());
+                                        InputStream is = null;
+                                        OutputStream os = null;
+                                        try {
+                                            is = new FileInputStream(file);
+                                            os = fileInfo.file.getOutputStream();
+                                            IOUtils.copy(is, os);
+                                            message.getFiles().add(fileInfo);
+                                        } catch (IOException e) {
+                                            Trace.logError("Can't import attachment " + fileInfo, e);
+                                        } finally {
+                                            if (is != null) {
+                                                try {
+                                                    is.close();
+                                                } catch (IOException e) {
+                                                    Trace.logError("Can't close input stream from file " + file, e);
+                                                }
+                                            }
+                                            if (os != null) {
+                                                try {
+                                                    os.close();
+                                                } catch (IOException e) {
+                                                    Trace.logError("Can't close output stream to file item " + fileInfo.file, e);
+                                                }
+                                            }
+                                        }
+                                    }
                                     lastReceived = message;
                                     return message;
                                 } catch (Exception e) {

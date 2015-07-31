@@ -3,14 +3,13 @@ package org.zenframework.z8.server.ie;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import javax.xml.datatype.DatatypeConfigurationException;
+import javax.xml.bind.JAXBException;
 
 import org.zenframework.z8.ie.xml.ExportEntry;
 import org.zenframework.z8.server.base.file.FileInfo;
@@ -121,7 +120,7 @@ public class Export extends OBJECT {
 
     public void execute() {
         RecordsSorter recordsSorter = new RecordsSorter();
-        Message message = new Message();
+        Message message = Message.instance();
         try {
             String protocol = transportUrl.getScheme();
             if (!protocol.equals(NULL_PROTOCOL)) {
@@ -154,7 +153,7 @@ public class Export extends OBJECT {
             message.setAddress(transportUrl.getHost());
             ExportMessages.instance().addMessage(message, transportUrl.getScheme(),
                     context.get().getProperty(TransportContext.SelfAddressProperty));
-        } catch (Exception e) {
+        } catch (JAXBException e) {
             throw new exception("Can't marshal records", e);
         }
     }
@@ -184,7 +183,7 @@ public class Export extends OBJECT {
     }
 
     public void z8_init() {}
-    
+
     public void z8_execute() {
         execute();
     }
@@ -197,8 +196,7 @@ public class Export extends OBJECT {
         }
     }
 
-    private void exportRecord(Table recordSet, Message message, ImportPolicy policy, RecordsSorter recordsSorter, int level)
-            throws DatatypeConfigurationException {
+    private void exportRecord(Table recordSet, Message message, ImportPolicy policy, RecordsSorter recordsSorter, int level) {
         guid recordId = recordSet.recordId();
         String table = recordSet.classId();
         if (!recordsSorter.contains(table, recordId) && !IeUtil.isBuiltinRecord(recordId)) {
@@ -213,7 +211,7 @@ public class Export extends OBJECT {
             // Вложения
             if (isExportAttachments()) {
                 for (AttachmentField attField : recordSet.getAttachments()) {
-                    Collection<FileInfo> fileInfos = FileInfo.parseArray(attField.get().string().get());
+                    List<FileInfo> fileInfos = FileInfo.parseArray(attField.get().string().get());
                     message.getExportEntry().getFiles().getFile()
                             .addAll(IeUtil.fileInfosToFiles(fileInfos, policy == null ? null : policy.getSelfPolicy()));
                 }

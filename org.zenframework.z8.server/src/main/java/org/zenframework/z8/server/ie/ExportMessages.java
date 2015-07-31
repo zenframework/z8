@@ -67,20 +67,13 @@ public class ExportMessages extends Table {
         super(container);
     }
 
-    public void addMessage(Message message, String protocol, String sender) {
-        String xml = "<xml marshalling error>";
-        try {
-            xml = IeUtil.marshalExportEntry(message.getExportEntry());
-            this.id.get().set(new string(sender));
-            this.id1.get().set(new string(message.getAddress()));
-            this.name.get().set(new string(protocol));
-            this.message.get().set(xml);
-            this.ordinal.get().set(new integer(this.ordinal.get().getSequencer().next()));
-            create(new guid(message.getId()));
-        } catch (Exception e) {
-            throw new RuntimeException("Can't add export message '" + message.getId() + "' to '" + message.getAddress()
-                    + "':\n" + xml, e);
-        }
+    public void addMessage(Message message, String protocol, String sender) throws JAXBException {
+        this.id.get().set(new string(sender));
+        this.id1.get().set(new string(message.getAddress()));
+        this.name.get().set(new string(protocol));
+        this.ordinal.get().set(new integer(this.ordinal.get().getSequencer().next()));
+        this.message.get().set(new string(IeUtil.marshalExportEntry(message.getExportEntry())));
+        create(new guid(message.getId()));
     }
     
     public void setError(guid messageId, String description) {

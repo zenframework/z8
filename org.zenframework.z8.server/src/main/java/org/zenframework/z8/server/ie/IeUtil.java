@@ -3,11 +3,10 @@ package org.zenframework.z8.server.ie;
 import java.io.Reader;
 import java.io.StringReader;
 import java.io.StringWriter;
-import java.io.UnsupportedEncodingException;
 import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
+import java.util.List;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
@@ -34,8 +33,8 @@ public class IeUtil {
     private static final String RECORD_ID = "recordId";
     private static final JAXBContext JAXB_CONTEXT;
 
-    private static final Collection<String> TO_STRING_FIELDS = Arrays.asList("createdAt", "modifiedAt", "createdBy",
-            "modifiedBy", "id", "id1", "name", "description", "locked", "attachments");
+    private static final List<String> TO_STRING_FIELDS = Arrays.asList("createdAt", "modifiedAt", "createdBy",
+            "modifiedBy", "id", "id1", "name", "description", "locked");
 
     static {
         try {
@@ -106,23 +105,27 @@ public class IeUtil {
     }
 
     public static FileInfo fileToFileInfo(ExportEntry.Files.File file) {
-        FileInfo fileInfo = new FileInfo();
-        fileInfo.name.set(file.getName());
-        fileInfo.path.set(file.getPath());
-        fileInfo.id.set(file.getId());
+        return fileToFileInfoCLASS(file).get();
+    }
+
+    public static FileInfo.CLASS<FileInfo> fileToFileInfoCLASS(ExportEntry.Files.File file) {
+        FileInfo.CLASS<FileInfo> fileInfo = new FileInfo.CLASS<FileInfo>();
+        fileInfo.get().name.set(file.getName());
+        fileInfo.get().path.set(file.getPath());
+        fileInfo.get().id.set(file.getId());
         return fileInfo;
     }
 
-    public static Collection<ExportEntry.Files.File> fileInfosToFiles(Collection<FileInfo> fileInfos, ImportPolicy policy) {
-        Collection<ExportEntry.Files.File> files = new ArrayList<ExportEntry.Files.File>(fileInfos.size());
+    public static List<ExportEntry.Files.File> fileInfosToFiles(List<FileInfo> fileInfos, ImportPolicy policy) {
+        List<ExportEntry.Files.File> files = new ArrayList<ExportEntry.Files.File>(fileInfos.size());
         for (FileInfo fileInfo : fileInfos) {
             files.add(fileInfoToFile(fileInfo, policy));
         }
         return files;
     }
 
-    public static Collection<FileInfo> filesToFileInfos(Collection<ExportEntry.Files.File> files) {
-        Collection<FileInfo> fileInfos = new ArrayList<FileInfo>(files.size());
+    public static List<FileInfo> filesToFileInfos(List<ExportEntry.Files.File> files) {
+        List<FileInfo> fileInfos = new ArrayList<FileInfo>(files.size());
         for (ExportEntry.Files.File file : files) {
             fileInfos.add(fileToFileInfo(file));
         }
@@ -179,12 +182,12 @@ public class IeUtil {
                 || BuiltinUsers.Administrator.guid().equals(recordId);
     }
 
-    public static void marshalExportEntry(ExportEntry entry, Writer out) throws JAXBException, UnsupportedEncodingException {
+    public static void marshalExportEntry(ExportEntry entry, Writer out) throws JAXBException {
         Marshaller marshaller = getMarshaller(JAXB_CONTEXT);
         marshaller.marshal(entry, out);
     }
 
-    public static String marshalExportEntry(ExportEntry entry) throws JAXBException, UnsupportedEncodingException {
+    public static String marshalExportEntry(ExportEntry entry) throws JAXBException {
         StringWriter out = new StringWriter();
         marshalExportEntry(entry, out);
         return out.toString();

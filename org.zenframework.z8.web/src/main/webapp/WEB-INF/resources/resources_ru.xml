@@ -57,10 +57,13 @@
     
     <!-- Export messasges -->
     <entry key="ExportMessages.title">Экспортируемые сообщения</entry>
-    <entry key="ExportMessages.address">Адрес</entry>
+    <entry key="ExportMessages.sender">Отправитель</entry>
+    <entry key="ExportMessages.receiver">Получатель</entry>
     <entry key="ExportMessages.protocol">Протокол</entry>
     <entry key="ExportMessages.message">Сообщение</entry>
     <entry key="ExportMessages.ordinal">Номер</entry>
+    <entry key="ExportMessages.processed">Обработано</entry>
+    <entry key="ExportMessages.error">Ошибка</entry>
 
 	<!-- Entries -->
 	<entry key="Entries.title">Компоненты</entry>

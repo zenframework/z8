@@ -1,8 +1,10 @@
 package org.zenframework.z8.server.ie;
 
 import java.io.IOException;
-import java.util.Collection;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.Hashtable;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.jms.Connection;
@@ -15,15 +17,18 @@ import javax.jms.MessageConsumer;
 import javax.jms.MessageProducer;
 import javax.jms.ObjectMessage;
 import javax.jms.Session;
+import javax.jms.StreamMessage;
 import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 
 import org.zenframework.z8.server.base.file.FileInfo;
+import org.zenframework.z8.server.base.file.FilesFactory;
 import org.zenframework.z8.server.base.table.system.Files;
 import org.zenframework.z8.server.base.table.system.Properties;
 import org.zenframework.z8.server.logs.Trace;
 import org.zenframework.z8.server.runtime.ServerRuntime;
+import org.zenframework.z8.server.utils.IOUtils;
 
 public class JmsTransport extends AbstractTransport implements ExceptionListener, Properties.Listener {
 
@@ -36,6 +41,10 @@ public class JmsTransport extends AbstractTransport implements ExceptionListener
     private Destination self;
     private MessageConsumer consumer = null;
 
+    public JmsTransport(TransportContext context) {
+        super(context);
+    }
+
     @Override
     public void onPropertyChange(String key, String value) {
         if (ServerRuntime.ConnectionFactoryProperty.equalsKey(key) || ServerRuntime.ConnectionUrlProperty.equalsKey(key)) {
@@ -44,7 +53,7 @@ public class JmsTransport extends AbstractTransport implements ExceptionListener
     }
 
     @Override
-    public void connect(TransportContext context) throws TransportException {
+    public void connect() throws TransportException {
         if (propertyChanged.getAndSet(false)) {
             close();
         }
@@ -100,16 +109,15 @@ public class JmsTransport extends AbstractTransport implements ExceptionListener
     @Override
     public void send(Message message) throws TransportException {
         try {
-            prepareFiles(message);
             Destination destination = session.createQueue(message.getAddress());
             MessageProducer producer = session.createProducer(destination);
             producer.setDeliveryMode(DeliveryMode.PERSISTENT);
-            javax.jms.Message jmsMessage = session.createObjectMessage(message);
+            javax.jms.Message jmsMessage = createObjectMessage(session, message);
             jmsMessage.setJMSReplyTo(self);
             producer.send(jmsMessage);
             session.commit();
             Trace.logEvent("Send IE message [" + message.getId() + "] to " + getUrl(message.getAddress()));
-        } catch (JMSException e) {
+        } catch (Exception e) {
             throw new TransportException("Can't send IE message [" + message.getId() + "] to '" + message.getAddress()
                     + "' by JMS transport", e);
         }
@@ -132,27 +140,11 @@ public class JmsTransport extends AbstractTransport implements ExceptionListener
 
     @Override
     public Message receive() throws TransportException {
-        Message message = null;
         try {
-            javax.jms.Message jmsMessage = consumer.receive(100);
-            if (jmsMessage != null) {
-                if (jmsMessage instanceof ObjectMessage) {
-                    Object messageObject = ((ObjectMessage) jmsMessage).getObject();
-                    if (messageObject instanceof Message) {
-                        message = (Message) messageObject;
-                    } else if (messageObject != null) {
-                        Trace.logError(new Exception("Incorrect JMS message type: "
-                                + messageObject.getClass().getCanonicalName()));
-                    }
-                } else {
-                    Trace.logError(new Exception("Incorrect JMS message object type: "
-                            + jmsMessage.getClass().getCanonicalName()));
-                }
-            }
-        } catch (JMSException e) {
+            return parseObjectMessage(consumer.receive(100));
+        } catch (Exception e) {
             throw new TransportException("Can't receive JMS message", e);
         }
-        return message;
     }
 
     @Override
@@ -196,15 +188,109 @@ public class JmsTransport extends AbstractTransport implements ExceptionListener
         }
     }
 
-    private static void prepareFiles(Message message) {
-        Collection<FileInfo> fileInfos = IeUtil.filesToFileInfos(message.getExportEntry().getFiles().getFile());
+    private static javax.jms.Message createObjectMessage(Session session, Message message) throws JMSException, IOException {
+        List<FileInfo> fileInfos = IeUtil.filesToFileInfos(message.getExportEntry().getFiles().getFile());
         for (FileInfo fileInfo : fileInfos) {
-            try {
-                message.getFiles().add(Files.getFile(fileInfo));
-            } catch (IOException e) {
-                Trace.logError("Can't export file " + fileInfo, e);
+            message.getFiles().add(Files.getFile(fileInfo));
+        }
+        return session.createObjectMessage(message);
+    }
+
+    private static Message parseObjectMessage(javax.jms.Message jmsMessage) throws JMSException {
+        if (jmsMessage != null) {
+            if (jmsMessage instanceof ObjectMessage) {
+                Object messageObject = ((ObjectMessage) jmsMessage).getObject();
+                if (messageObject instanceof Message) {
+                    return (Message) messageObject;
+                } else if (messageObject != null) {
+                    Trace.logError(new Exception("Incorrect JMS message type: "
+                            + messageObject.getClass().getCanonicalName()));
+                }
+            } else {
+                Trace.logError(new Exception("Incorrect JMS message object type: "
+                        + jmsMessage.getClass().getCanonicalName()));
             }
         }
+        return null;
+    }
+
+    @SuppressWarnings("unused")
+    private static javax.jms.Message createStreamMessage(Session session, Message message) throws JMSException, IOException {
+        //javax.jms.Message jmsMessage = session.createObjectMessage(message);
+        StreamMessage streamMessage = session.createStreamMessage();
+        // write message object
+        byte[] buff = IOUtils.objectToBytes(message);
+        streamMessage.writeInt(buff.length);
+        streamMessage.writeBytes(buff);
+        List<FileInfo> fileInfos = IeUtil.filesToFileInfos(message.getExportEntry().getFiles().getFile());
+        for (FileInfo fileInfo : fileInfos) {
+            fileInfo = Files.getFile(fileInfo);
+            // write file length
+            streamMessage.writeLong(fileInfo.file.getSize());
+            // write file contents
+            InputStream in = fileInfo.file.getInputStream();
+            buff = new byte[IOUtils.DefaultBufferSize];
+            try {
+                int count;
+                while ((count = in.read(buff)) != -1) {
+                    if (count > 0) {
+                        streamMessage.writeBytes(buff, 0, count);
+                    }
+                }
+            } finally {
+                in.close();
+            }
+        }
+        return streamMessage;
+    }
+
+    @SuppressWarnings("unused")
+    private static Message parseStreamMessage(javax.jms.Message jmsMessage) throws JMSException, IOException {
+        if (jmsMessage == null)
+            return null;
+        if (jmsMessage instanceof StreamMessage) {
+            StreamMessage streamMessage = (StreamMessage) jmsMessage;
+            // read message object
+            byte[] buff = new byte[streamMessage.readInt()];
+            int count = streamMessage.readBytes(buff);
+            if (count < buff.length) {
+                throw new IOException("Unexpected eof");
+            }
+            Object messageObject = IOUtils.bytesToObject(buff);
+            if (messageObject instanceof Message) {
+                Message message = (Message) messageObject;
+                message.setFiles(IeUtil.filesToFileInfos(message.getExportEntry().getFiles().getFile()));
+                for (FileInfo fileInfo : message.getFiles()) {
+                    fileInfo.file = FilesFactory.createFileItem(fileInfo.name.get());
+                    // read file size
+                    long size = streamMessage.readLong();
+                    buff = new byte[IOUtils.DefaultBufferSize];
+                    OutputStream out = fileInfo.file.getOutputStream();
+                    try {
+                        while (size > 0) {
+                            count = streamMessage.readBytes(buff);
+                            if (count < IOUtils.DefaultBufferSize) {
+                                throw new IOException("Unexpected eof");
+                            }
+                            out.write(buff);
+                            size -= count;
+                            if (size > 0 && size < buff.length) {
+                                buff = new byte[(int) size];
+                            }
+                        }
+                    } finally {
+                        out.close();
+                    }
+                }
+                return message;
+            } else if (messageObject != null) {
+                Trace.logError(new Exception("Incorrect JMS message object type: "
+                        + messageObject.getClass().getCanonicalName()));
+            }
+        } else {
+            Trace.logError(new Exception("Incorrect JMS message type: " + jmsMessage));
+        }
+        return null;
     }
 
 }
