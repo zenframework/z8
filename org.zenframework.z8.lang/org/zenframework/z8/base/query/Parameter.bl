@@ -1,9 +1,8 @@
-import org.zenframework.z8.base.table.value.Field;
+import org.zenframework.z8.base.table.value.FieldType;
 import org.zenframework.z8.lang.Object;
 
 [native "org.zenframework.z8.server.base.view.command.Parameter"]
-class Parameter extends Object
-{
+class Parameter extends Object {
 	public string text;
 	
 	public bool bool();
@@ -11,14 +10,18 @@ class Parameter extends Object
 	public date date();
 	public datetime datetime();
 	public decimal decimal();
-	public file file();
 	public int int();
 	public string string();
 	
-	static public Parameter create(string text, Query query);
-	static public Parameter create(string text, Field field);
-	static public Parameter create(string text, Query query, Field field);
-	static public Parameter create(string text, Query query, Field field, guid value);
+	public bool[] boolArray();
+	public guid[] guidArray();
+	public date[] dateArray();
+	public datetime[] datetimeArray();
+	public decimal[] decimalArray();
+	public int[] intArray();
+	public string[] stringArray();
+
+	static public Parameter create(string text, FieldType type);
 
 	static public Parameter create(string text, bool value);
 	static public Parameter create(string text, date value);

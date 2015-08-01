@@ -29,8 +29,10 @@ class Field extends Control
 	public FollowPolicy anchorPolicy = FollowPolicy.Default;
 
 	public bool required = false;
+
 	public bool indexed = false;
 	public bool unique = false;
+	public Field[] indexFields;
 	
 	public SortDirection sortDirection = SortDirection.Asc;
 	public Aggregation aggregation = Aggregation.None;

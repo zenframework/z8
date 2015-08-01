@@ -72,7 +72,7 @@ public class TableBase extends Query implements ITable {
         List<IField> result = new ArrayList<IField>();
 
         for(Field field : getDataFields()) {
-            if(field.indexed.get() && !field.unique.get() && !(field instanceof Link)) {
+            if((field.indexed.get() || !field.indexFields.isEmpty()) && !field.unique.get() && !(field instanceof Link)) {
                 result.add(field);
             }
         }

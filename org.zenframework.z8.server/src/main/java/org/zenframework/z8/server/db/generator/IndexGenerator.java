@@ -13,6 +13,7 @@ import org.zenframework.z8.server.db.DatabaseVendor;
 import org.zenframework.z8.server.db.Statement;
 import org.zenframework.z8.server.engine.Database;
 import org.zenframework.z8.server.exceptions.db.UnknownDatabaseException;
+import org.zenframework.z8.server.runtime.CLASS;
 
 class IndexGenerator {
     private Table table;
@@ -33,11 +34,20 @@ class IndexGenerator {
 
         String sql = "CREATE " + (unique ? "UNIQUE " : "") + "INDEX "
                 + vendor.quote((unique ? "UNQ_" : "IDX_") + table.name() + "_" + id) + " " + "ON "
-                + database.tableName(table.name()) + "(" + vendor.quote(field.name()) + ")" + getTableSpace(connection);
+                + database.tableName(table.name()) + "(" + formatIndexFields(vendor) + ")" + getTableSpace(connection);
 
         Statement.executeUpdate(connection, sql);
     }
 
+    private String formatIndexFields(DatabaseVendor vendor) {
+        String result = vendor.quote(this.field.name());
+        
+        for(Field field : CLASS.asList(this.field.indexFields))
+            result += ", " + vendor.quote(field.name());
+        
+        return result;
+    }
+    
     static void dropIndex(Connection conn, String tableName, String indexName, boolean unique) throws SQLException {
         switch(conn.vendor()) {
         case Postgres:

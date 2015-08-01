@@ -78,6 +78,8 @@ abstract public class Field extends Control implements IValue, IField {
     public bool indexed = new bool(false);
     public bool unique = new bool(false);
 
+    public RCollection<Field.CLASS<? extends Field>> indexFields = new RCollection<Field.CLASS<? extends Field>>(true);
+
     public RCollection<Formula.CLASS<? extends Formula>> evaluations = new RCollection<Formula.CLASS<? extends Formula>>(
             true);
 
