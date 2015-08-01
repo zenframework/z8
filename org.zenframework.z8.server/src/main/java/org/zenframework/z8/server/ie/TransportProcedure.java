@@ -70,7 +70,7 @@ public class TransportProcedure extends Procedure {
     @Override
     protected void z8_exec(RCollection<Parameter.CLASS<? extends Parameter>> parameters) {
 
-        String selfAddress = context.get().getProperty(TransportContext.SelfAddressProperty);
+        String selfAddress = context.get().check().getProperty(TransportContext.SelfAddressProperty);
         Connection connection = ConnectionManager.get();
         ExportMessages messages = ExportMessages.instance();
         Files filesTable = Files.instance();
