@@ -92,15 +92,10 @@
 
         <!-- JODConverter -->
         <dependency>
-            <groupId>com.artofsolving</groupId>
-            <artifactId>jodconverter</artifactId>
-            <version>2.2.1</version>
+            <groupId>org.artofsolving.jodconverter</groupId>
+            <artifactId>jodconverter-core</artifactId>
+            <version>3.0-beta-4-jahia2</version>
             <scope>compile</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.json</groupId>
-            <artifactId>json</artifactId>
-            <version>20090211</version>
         </dependency>
 
         <dependency>

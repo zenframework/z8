@@ -11,6 +11,10 @@
 
     <properties>
 
+        <!-- Sources version -->
+        <compiler.source.version>1.6</compiler.source.version>
+        <compiler.target.version>1.5</compiler.target.version>
+
         <!-- Кодировка исходных кодов -->
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
@@ -71,8 +75,8 @@
             <url>http://download.eclipse.org/releases/luna</url>
         </repository>
         <repository>
-            <id>clojars.org</id>
-            <url>http://clojars.org/repo</url>
+            <id>maven-us.nuxeo.org</id>
+            <url>https://maven-us.nuxeo.org/nexus/content/repositories/public/</url>
         </repository>
     </repositories>
 
@@ -97,8 +101,8 @@
                     <artifactId>maven-compiler-plugin</artifactId>
                     <version>2.3.2</version>
                     <configuration>
-                        <source>1.6</source>
-                        <target>1.6</target>
+                        <source>${compiler.source.version}</source>
+                        <target>${compiler.target.version}</target>
                         <encoding>UTF-8</encoding>
                         <fork>true</fork>
                         <meminitial>128m</meminitial>
