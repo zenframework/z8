@@ -1,2 +1,5 @@
 target
 .java
+.classpath
+.project
+.settings
