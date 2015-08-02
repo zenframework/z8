@@ -264,12 +264,12 @@ public class JmsTransport extends AbstractTransport implements ExceptionListener
                     fileInfo.file = FilesFactory.createFileItem(fileInfo.name.get());
                     // read file size
                     long size = streamMessage.readLong();
-                    buff = new byte[IOUtils.DefaultBufferSize];
+                    buff = new byte[(int) Math.min(size, IOUtils.DefaultBufferSize)];
                     OutputStream out = fileInfo.file.getOutputStream();
                     try {
                         while (size > 0) {
                             count = streamMessage.readBytes(buff);
-                            if (count < IOUtils.DefaultBufferSize) {
+                            if (count < buff.length) {
                                 throw new IOException("Unexpected eof");
                             }
                             out.write(buff);
