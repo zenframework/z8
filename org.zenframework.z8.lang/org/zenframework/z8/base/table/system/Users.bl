@@ -17,6 +17,10 @@ class Users extends Table
 	[displayName "Имя"] name;
 	[displayName "Описание"] description;
 	
+	[name "Password"]
+	[displayName "Пароль"]
+	public StringField password;
+	
 	[name "Phone"]
 	[displayName "Телефон"]
 	public StringField phone;
