@@ -981,7 +981,7 @@ public class Query extends Runnable {
         return result;
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     public Collection<Control.CLASS<? extends Control>> controls() {
         if (formFields.isEmpty()) {
             return (Collection) dataFields();
@@ -1203,7 +1203,7 @@ public class Query extends Runnable {
     }
 
     @Override
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     public void onInitialized() {
         super.onInitialized();
 
@@ -2242,12 +2242,12 @@ public class Query extends Runnable {
         return recordId();
     }
     
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     public Field.CLASS<? extends Field> z8_getFieldById(string id) {
         return (Field.CLASS) getFieldById(id.get()).getCLASS();
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     public Field.CLASS<? extends Field> z8_getFieldByName(string name) {
         return (Field.CLASS) getFieldByName(name.get()).getCLASS();
     }

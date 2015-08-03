@@ -30,17 +30,17 @@ public class Desktop extends OBJECT {
         super(container);
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     public Collection<Runnable.CLASS> getRunnables() {
         return (Collection)runnables;
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     public Collection<Desktop.CLASS> getSubDesktops() {
         return (Collection)subDesktops;
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     public Collection<Query.CLASS> getDataSets() {
         return (Collection)dataSets;
     }

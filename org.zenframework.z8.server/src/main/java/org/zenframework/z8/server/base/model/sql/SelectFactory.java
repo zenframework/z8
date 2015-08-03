@@ -74,7 +74,7 @@ public class SelectFactory {
         return !getGroupFields().isEmpty();
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     private Select create() {
         Select subselect = null;
         groupedSelectFields = null;

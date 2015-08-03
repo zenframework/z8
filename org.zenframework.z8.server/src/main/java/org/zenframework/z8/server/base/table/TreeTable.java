@@ -72,6 +72,7 @@ public class TreeTable extends Table {
 
     public bool keepIntegrity = new bool(true);
     
+    @SuppressWarnings("rawtypes")
     private Link.CLASS[] parentLinks = { parent1, parent2, parent3, parent4, parent5, parent6 };
 
     public TreeTable(IObject container) {

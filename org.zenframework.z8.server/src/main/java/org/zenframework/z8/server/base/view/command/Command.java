@@ -63,7 +63,7 @@ public class Command extends Runnable implements ICommand {
         return id().hashCode() - object.id().hashCode();
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     public Collection<Parameter.CLASS<Parameter>> parameters() {
         return (Collection)parameters;
     }

@@ -17,6 +17,7 @@ import org.zenframework.z8.server.base.query.Query;
 import org.zenframework.z8.server.base.table.ITable;
 import org.zenframework.z8.server.base.table.Table;
 import org.zenframework.z8.server.base.table.TreeTable;
+import org.zenframework.z8.server.base.table.system.Users;
 import org.zenframework.z8.server.base.table.value.Field;
 import org.zenframework.z8.server.base.table.value.GuidField;
 import org.zenframework.z8.server.base.table.value.IField;
@@ -580,7 +581,7 @@ public class TableGenerator {
         }
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     private void createStaticRecord(Map<IField, primary> record) {
         Field primaryKey = table().primaryKey();
         Field parentKey = table().parentKey();
@@ -594,7 +595,7 @@ public class TableGenerator {
 
         Set<Field> fields = (Set) record.keySet();
 
-        Query query = table();
+        Query table = table();
 
         try {
             if (!findRecord(recordId)) {
@@ -602,7 +603,7 @@ public class TableGenerator {
                     primary value = record.get(field);
                     field.set(value);
                 }
-                query.create(recordId, parentId, guid.NULL);
+                table.create(recordId, parentId, guid.NULL);
             } else {
                 Iterator<Field> i = fields.iterator();
                 while (i.hasNext()) {
@@ -614,8 +615,8 @@ public class TableGenerator {
                         i.remove();
                     }
                 }
-                if (!BuiltinUsers.System.guid().equals(recordId) && !BuiltinUsers.Administrator.guid().equals(recordId)) {
-                    Update update = new Update(query, fields, recordId);
+                if (!(table instanceof Users) || !BuiltinUsers.System.guid().equals(recordId) && !BuiltinUsers.Administrator.guid().equals(recordId)) {
+                    Update update = new Update(table, fields, recordId);
                     update.execute();
                 }
             }
