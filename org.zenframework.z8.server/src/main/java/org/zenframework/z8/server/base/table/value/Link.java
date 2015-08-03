@@ -33,7 +33,7 @@ public class Link extends GuidField implements ILink, IForeignKey {
     }
 
     @Override
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     public void onInitialized() {
         super.onInitialized();
 
@@ -92,7 +92,7 @@ public class Link extends GuidField implements ILink, IForeignKey {
         }
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     public void operatorAssign(Query.CLASS<? extends Query> data) {
         query = (Query.CLASS)data;
     }

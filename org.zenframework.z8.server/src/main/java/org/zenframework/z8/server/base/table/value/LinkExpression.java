@@ -75,7 +75,7 @@ public class LinkExpression extends GuidExpression implements ILink, IForeignKey
         }
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     public void operatorAssign(Query.CLASS<? extends Query> data) {
         query = (Query.CLASS)data;
     }

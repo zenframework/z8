@@ -529,7 +529,7 @@ public class ReadAction extends Action {
         return fields;
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     private Collection<Field> getUsedFields(SqlToken token) {
         Collection<Field> result = new LinkedHashSet<Field>();
 

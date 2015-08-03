@@ -235,10 +235,12 @@ public class Json {
         return z8_getFilter(field, new string("eq"), value);
     }
 
+    @SuppressWarnings("rawtypes")
     public static JsonObject.CLASS<JsonObject> z8_getFilter(string field, RCollection values) {
         return z8_getFilter(field, new string("eq"), values);
     }
 
+    @SuppressWarnings("rawtypes")
     public static JsonObject.CLASS<JsonObject> z8_getFilter(Field.CLASS<? extends Field> field, RCollection values) {
         return z8_getFilter(field, new string("eq"), values);
     }
@@ -251,10 +253,12 @@ public class Json {
         return z8_getFilter(field.get().z8_id(), operator, value);
     }
 
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     public static JsonObject.CLASS<JsonObject> z8_getFilter(string field, string operator, RCollection values) {
         return z8_getFilter(field, operator, encode(values));
     }
 
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     public static JsonObject.CLASS<JsonObject> z8_getFilter(Field.CLASS<? extends Field> field, string operator, RCollection values) {
         return z8_getFilter(field, operator, encode(values));
     }

@@ -36,9 +36,9 @@ public class FieldGroup extends Control {
     public Collection<Field.CLASS<Field>> fields() {
         Collection<Field.CLASS<Field>> result = new LinkedHashSet<Field.CLASS<Field>>();
 
-        for(Control.CLASS control : controls) {
+        for(Control.CLASS<? extends Control> control : controls) {
             if(control instanceof Field.CLASS) {
-                result.add((Field.CLASS)control);
+                result.add((Field.CLASS<Field>)control);
             }
             else if(control instanceof FieldGroup.CLASS) {
                 FieldGroup group = (FieldGroup)control.get();
@@ -52,7 +52,7 @@ public class FieldGroup extends Control {
         return result;
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     public Collection<Control.CLASS<Control>> controls() {
         return (Collection)controls;
     }
