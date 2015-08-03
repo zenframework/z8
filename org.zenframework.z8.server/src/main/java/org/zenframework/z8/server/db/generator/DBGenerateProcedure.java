@@ -37,7 +37,7 @@ public class DBGenerateProcedure extends Procedure {
     }
 
     @Override
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     protected void z8_exec() {
         super.z8_exec();
 
@@ -75,7 +75,7 @@ public class DBGenerateProcedure extends Procedure {
         reportProgress(100);
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     private Collection<Table.CLASS<? extends Table>> getTables() {
         Map<String, Table.CLASS<? extends Table>> nameToClass = new HashMap<String, Table.CLASS<? extends Table>>();
         Collection<Table.CLASS<? extends Table>> tables = (Collection) Runtime.instance().tables();

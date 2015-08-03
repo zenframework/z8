@@ -122,7 +122,7 @@ public class MetaAction extends ReadAction {
         return result.isEmpty() ? null : result;
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     private Collection<Control> collectControls() {
         Query query = getQuery();
 
