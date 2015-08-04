@@ -95,7 +95,7 @@ public class ExportMessages extends Table {
     }
 
     public String getUrl() {
-        return getProtocol() + "://" + getReceiver();
+        return getProtocol() + ":" + getReceiver();
     }
 
     public Message.CLASS<Message> getMessage() throws JAXBException {

@@ -32,7 +32,7 @@ import org.zenframework.z8.server.types.sql.sql_bool;
 public class Export extends OBJECT {
 
     private static final String NULL_PROTOCOL = "null";
-    
+
     public static class CLASS<T extends Export> extends OBJECT.CLASS<T> {
 
         public CLASS() {
@@ -60,7 +60,7 @@ public class Export extends OBJECT {
     private final Map<String, ImportPolicy> policies = new HashMap<String, ImportPolicy>();
     private final List<Table> recordsets = new LinkedList<Table>();
     private boolean exportAttachments = false;
-    private URI transportUrl;
+    private String transportUrl;
 
     public Export(IObject container) {
         super(container);
@@ -107,22 +107,18 @@ public class Export extends OBJECT {
     }
 
     public String getTransportUrl() {
-        return transportUrl.toString();
+        return transportUrl;
     }
 
     public void setTransportUrl(String transportUrl) {
-        try {
-            this.transportUrl = new URI(transportUrl);
-        } catch (URISyntaxException e) {
-            throw new RuntimeException("Incorrect transport URL [" + transportUrl + "]", e);
-        }
+        this.transportUrl = transportUrl;
     }
 
     public void execute() {
         RecordsSorter recordsSorter = new RecordsSorter();
         Message message = Message.instance();
         try {
-            String protocol = transportUrl.getScheme();
+            String protocol = getProtocol();
             if (!protocol.equals(NULL_PROTOCOL)) {
                 // Если протокол НЕ "null", экспортировать записи БД
                 for (Table recordset : recordsets) {
@@ -150,8 +146,8 @@ public class Export extends OBJECT {
                 message.getExportEntry().setProperties(properties);
             }
             // Запись сообщения в таблицу ExportMessages
-            message.setAddress(transportUrl.getHost());
-            ExportMessages.instance().addMessage(message, transportUrl.getScheme(),
+            message.setAddress(getAddress());
+            ExportMessages.instance().addMessage(message, protocol,
                     context.get().getProperty(TransportContext.SelfAddressProperty));
         } catch (JAXBException e) {
             throw new exception("Can't marshal records", e);
@@ -159,7 +155,7 @@ public class Export extends OBJECT {
     }
 
     public static URI getTransportUrl(String protocol, String address) throws URISyntaxException {
-        return new URI(protocol + "://" + address);
+        return new URI(protocol + ":" + address);
     }
 
     public void z8_addRecordset(Table.CLASS<? extends Table> cls) {
@@ -245,6 +241,16 @@ public class Export extends OBJECT {
                 }
             }
         }
+    }
+
+    private String getProtocol() {
+        int pos = transportUrl.indexOf(':');
+        return pos > 0 ? transportUrl.substring(0, pos) : null;
+    }
+
+    private String getAddress() {
+        int pos = transportUrl.indexOf(':');
+        return pos > 0 ? transportUrl.substring(pos + 1) : null;
     }
 
     private static String getSpaces(int level) {
