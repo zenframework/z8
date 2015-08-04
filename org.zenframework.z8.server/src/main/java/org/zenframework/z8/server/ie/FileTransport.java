@@ -21,7 +21,7 @@ import org.zenframework.z8.server.logs.Trace;
 import org.zenframework.z8.server.runtime.ServerRuntime;
 import org.zenframework.z8.server.utils.IOUtils;
 
-public class FileTransport extends AbstractTransport {
+public class FileTransport extends AbstractTransport implements Properties.Listener {
 
     public static final String PROTOCOL = "file";
 
@@ -30,15 +30,24 @@ public class FileTransport extends AbstractTransport {
     private static final String IN_ARCH = "in_arch";
     private static final String EXPORT_ENTRY = "export-entry.xml";
 
-    private static final File root = new File(Properties.getProperty(ServerRuntime.FolderProperty));
-    private static final File in = new File(root, IN);
-    private static final File out = new File(root, OUT);
-    private static final File inArch = new File(root, IN_ARCH);
+    private File root = new File(Properties.getProperty(ServerRuntime.FolderProperty));
+    private File in = new File(root, IN);
+    private File out = new File(root, OUT);
+    private File inArch = new File(root, IN_ARCH);
     
     private Message lastReceived = null;
 
     public FileTransport(TransportContext context) {
         super(context);
+        initFolders(Properties.getProperty(ServerRuntime.FolderProperty));
+        Properties.addListener(this);
+    }
+
+    @Override
+    public void onPropertyChange(String key, String value) {
+        if (ServerRuntime.FolderProperty.equalsKey(key)) {
+            initFolders(value);
+        }
     }
 
     @Override
@@ -174,6 +183,13 @@ public class FileTransport extends AbstractTransport {
             }
         }
         return null;
+    }
+
+    private void initFolders(String root) {
+        this.root = new File(root);
+        in = new File(root, IN);
+        out = new File(root, OUT);
+        inArch = new File(root, IN_ARCH);
     }
 
     private static File getMessageFolder(File parent, Message message) {

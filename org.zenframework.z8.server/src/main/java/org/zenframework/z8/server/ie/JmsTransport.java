@@ -16,8 +16,10 @@ import javax.jms.JMSException;
 import javax.jms.MessageConsumer;
 import javax.jms.MessageProducer;
 import javax.jms.ObjectMessage;
+import javax.jms.Queue;
 import javax.jms.Session;
 import javax.jms.StreamMessage;
+import javax.jms.Topic;
 import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
@@ -43,6 +45,7 @@ public class JmsTransport extends AbstractTransport implements ExceptionListener
 
     public JmsTransport(TransportContext context) {
         super(context);
+        Properties.addListener(this);
     }
 
     @Override
@@ -141,7 +144,17 @@ public class JmsTransport extends AbstractTransport implements ExceptionListener
     @Override
     public Message receive() throws TransportException {
         try {
-            return parseObjectMessage(consumer.receive(100));
+            javax.jms.Message jmsMessage = consumer.receive(100);
+            Message message = parseObjectMessage(jmsMessage);
+            if (message != null) {
+                Destination sender = jmsMessage.getJMSReplyTo();
+                if (sender instanceof Queue) {
+                    message.setSender(((Queue) sender).getQueueName());
+                } else if (sender instanceof Topic) {
+                    message.setSender(((Topic) sender).getTopicName());
+                }
+            }
+            return message;
         } catch (Exception e) {
             throw new TransportException("Can't receive JMS message", e);
         }

@@ -54,6 +54,8 @@ public class Message extends OBJECT implements Serializable {
     private ExportEntry exportEntry;
     private final RCollection<FileInfo> files = new RCollection<FileInfo>(true);
 
+    private transient String sender;
+
     private Message(IObject container) {
         super(container);
     }
@@ -65,13 +67,21 @@ public class Message extends OBJECT implements Serializable {
     public void setId(UUID id) {
         this.id = id;
     }
-    
+
     public String getAddress() {
         return address;
     }
 
     public void setAddress(String address) {
         this.address = address;
+    }
+
+    public String getSender() {
+        return sender;
+    }
+
+    public void setSender(String sender) {
+        this.sender = sender;
     }
 
     public ExportEntry getExportEntry() {
@@ -103,6 +113,10 @@ public class Message extends OBJECT implements Serializable {
 
     public string z8_getAddress() {
         return new string(address);
+    }
+
+    public string z8_getSender() {
+        return new string(sender);
     }
 
     public RCollection<FileInfo.CLASS<FileInfo>> z8_getFiles() {

@@ -140,8 +140,10 @@ public class ExportMessages extends Table {
         SqlToken notProcessedNotError = new And(
                 new Unary(Operation.Not, new SqlField(processed.get())),
                 new Unary(Operation.Not, new SqlField(error.get())));
-        SqlToken fromMe = new Rel(id.get(), Operation.Eq, new sql_string(selfAddress));
-        read(getDataFields(), Arrays.<Field> asList(ordinal.get()), new And(notProcessedNotError, fromMe));
+        SqlToken fromMeNotForMe = new And(
+                new Rel(id.get(), Operation.Eq, new sql_string(selfAddress)),
+                new Rel(id1.get(), Operation.NotEq, new sql_string(selfAddress)));
+        read(getDataFields(), Arrays.<Field> asList(ordinal.get()), new And(notProcessedNotError, fromMeNotForMe));
     }
 
     public void readImportMessages(String selfAddress) {

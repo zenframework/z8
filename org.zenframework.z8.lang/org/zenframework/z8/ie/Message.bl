@@ -6,6 +6,7 @@ class Message extends Object {
 
 	public string getId();
 	public string getAddress();
+	public string getSender();
 	public FileInfo[] getFiles();
 	public primary[string] getProperties();
 	public string getXml();

@@ -132,7 +132,7 @@ public class TransportProcedure extends Procedure {
                 for (Message message = transport.receive(); message != null; message = transport.receive()) {
                     try {
                         connection.beginTransaction();
-                        messages.addMessage(message, transport.getProtocol(), selfAddress);
+                        messages.addMessage(message, transport.getProtocol(), message.getSender());
                         importFiles(message, filesTable);
                         connection.commit();
                         transport.commit();
