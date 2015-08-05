@@ -91,15 +91,13 @@ public class SearchEngine extends OBJECT {
         Collection<Table> tables = CLASS.asList(Runtime.instance().tables(), true);
         index.clearIndex();
         for (Table table : tables) {
-            updateIndex(index, table);
+            if (indexId.equals(table.getAttribute(IObject.SearchIndex)))
+                updateIndex(index, table);
         }
-        index.commit();
     }
     
     public void updateIndex(Query query) {
-        SearchIndex index = getIndex(query);
-        updateIndex(index, query);
-        index.commit();
+        updateIndex(getIndex(query), query);
     }
     
     private void updateIndex(SearchIndex index, Query query) {
@@ -107,6 +105,7 @@ public class SearchEngine extends OBJECT {
         while (query.next()) {
             index.updateDocument(query.getSearchId().get().toString(), query.getRecordFullText());
         }
+        index.commit();
     }
 
     private SearchIndex getIndex(Query query) {
