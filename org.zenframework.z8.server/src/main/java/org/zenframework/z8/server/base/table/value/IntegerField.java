@@ -59,6 +59,10 @@ public class IntegerField extends Field {
         return new sql_integer(new SqlField(this));
     }
 
+    public void set(long value) {
+        set(new integer(value));
+    }
+
     @Override
     public primary get() {
         return z8_get();

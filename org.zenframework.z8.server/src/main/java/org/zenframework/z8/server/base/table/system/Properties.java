@@ -248,6 +248,7 @@ public class Properties extends TreeTable {
                     properties.update(property.getId());
                 }
             }
+            properties.repairTree();
         }
 
     }

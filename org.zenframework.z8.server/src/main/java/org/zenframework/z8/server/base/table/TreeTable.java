@@ -11,6 +11,8 @@ import org.zenframework.z8.server.base.table.value.GuidField;
 import org.zenframework.z8.server.base.table.value.IntegerField;
 import org.zenframework.z8.server.base.table.value.Link;
 import org.zenframework.z8.server.base.table.value.StringField;
+import org.zenframework.z8.server.db.sql.expressions.Operation;
+import org.zenframework.z8.server.db.sql.expressions.Rel;
 import org.zenframework.z8.server.resources.Resources;
 import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.runtime.RCollection;
@@ -18,6 +20,7 @@ import org.zenframework.z8.server.types.bool;
 import org.zenframework.z8.server.types.guid;
 import org.zenframework.z8.server.types.integer;
 import org.zenframework.z8.server.types.string;
+import org.zenframework.z8.server.types.sql.sql_guid;
 
 public class TreeTable extends Table {
     static public class names {
@@ -217,6 +220,15 @@ public class TreeTable extends Table {
     private void readExistingRecord(guid parentId, Collection<Field> fields) {
         if (!readRecord(parentId, fields)) {
             throw new RuntimeException(Query.strings.ReadError);
+        }
+    }
+
+    protected void repairTree() {
+        TreeTable counter = (TreeTable) getCLASS().newInstance();
+        read(Arrays.<Field>asList(recordId.get()));
+        while (next()) {
+            children.get().set(new integer(counter.count(new Rel(counter.parentId.get(), Operation.Eq, new sql_guid(recordId())))));
+            update(recordId());
         }
     }
 
