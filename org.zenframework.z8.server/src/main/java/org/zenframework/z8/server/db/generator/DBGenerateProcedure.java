@@ -64,7 +64,7 @@ public class DBGenerateProcedure extends Procedure {
                 DBGenerator generator = new DBGenerator(connection);
                 generator.run(tables, entries, jobs, true, logger, true);
             } catch (Throwable e) {
-                logger.message(e.toString());
+                logger.error(e);
             }
         } catch (Throwable e) {
             logger.error(e);

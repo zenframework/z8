@@ -99,8 +99,15 @@ public abstract class AbstractRuntime implements IRuntime {
     }
     
     protected void addProperty(Property property) {
-        if (!properties.contains(property))
+        if (!properties.contains(property)) {
+            for (int i = 0; i < properties.size(); i++) {
+                if (property.getKey().compareTo(properties.get(i).getKey()) < 0) {
+                    properties.add(i, property);
+                    return;
+                }
+            }
             properties.add(property);
+        }
     }
 
     protected void mergeWith(IRuntime runtime) {

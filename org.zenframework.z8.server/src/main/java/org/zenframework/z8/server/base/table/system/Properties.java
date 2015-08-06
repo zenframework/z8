@@ -9,13 +9,16 @@ import java.util.Map;
 
 import org.zenframework.z8.server.base.query.Query;
 import org.zenframework.z8.server.base.table.Table;
+import org.zenframework.z8.server.base.table.TreeTable;
 import org.zenframework.z8.server.base.table.value.StringField;
 import org.zenframework.z8.server.db.generator.DBGenerator;
 import org.zenframework.z8.server.db.sql.SqlToken;
 import org.zenframework.z8.server.db.sql.expressions.Operation;
+import org.zenframework.z8.server.db.sql.expressions.Or;
 import org.zenframework.z8.server.db.sql.expressions.Rel;
 import org.zenframework.z8.server.engine.ApplicationServer;
 import org.zenframework.z8.server.engine.Runtime;
+import org.zenframework.z8.server.logs.Trace;
 import org.zenframework.z8.server.resources.Resources;
 import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.runtime.RCollection;
@@ -25,23 +28,13 @@ import org.zenframework.z8.server.types.guid;
 import org.zenframework.z8.server.types.string;
 import org.zenframework.z8.server.types.sql.sql_string;
 
-public class Properties extends Table {
+public class Properties extends TreeTable {
 
     public static final String TableName = "SystemProperties";
     public static final int PropertyNameMaxLength = 256;
     public static final int PropertyValueMaxLength = 1024;
 
     private static final Collection<Listener> Listeners = Collections.synchronizedCollection(new LinkedList<Listener>());
-
-    private static final Map<String, String> defaultValues = new HashMap<String, String>();
-
-    //private static final Properties properties = new CLASS<Properties>().get();
-
-    static {
-        for (Property property : Runtime.instance().properties()) {
-            defaultValues.put(property.getKey(), property.getDefaultValue());
-        }
-    }
 
     public static interface Listener {
 
@@ -92,10 +85,10 @@ public class Properties extends Table {
     @Override
     public void constructor2() {
         super.constructor2();
-        id.get().visible = new bool(false);
+        id.get().length.set(PropertyNameMaxLength);
         id1.get().visible = new bool(false);
+        name.get().visible = new bool(false);
         name.get().length.set(PropertyNameMaxLength);
-        name.get().unique.set(true);
         value.setName("Value");
         value.setIndex("value");
         value.setDisplayName(Resources.get(strings.Value));
@@ -107,8 +100,7 @@ public class Properties extends Table {
     public static void setProperty(String key, String value) {
         if (ApplicationServer.defaultDatabase().isSystemInstalled()) {
             Properties properties = new CLASS<Properties>().get();
-            SqlToken where = new Rel(properties.name.get(), Operation.Eq, new sql_string(key));
-            if (!properties.readFirst(where)) {
+            if (!properties.readFirst(properties.getWhere(key))) {
                 throw new RuntimeException("Property [" + key + "] is not registered");
             } else {
                 properties.value.get().set(value);
@@ -138,12 +130,15 @@ public class Properties extends Table {
     }
 
     public static Map<String, String> getProperties() {
-        Map<String, String> values = new HashMap<String, String>(defaultValues);
+        Map<String, String> values = new HashMap<String, String>();
+        for (Property property : Runtime.instance().properties()) {
+            values.put(property.getKey(), property.getDefaultValue());
+        }
         if (ApplicationServer.defaultDatabase().isSystemInstalled()) {
             Properties properties = new CLASS<Properties>().get();
             properties.read();
             while (properties.next()) {
-                values.put(properties.name.get().string().get(), properties.value.get().string().get());
+                values.put(properties.id.get().string().get(), properties.value.get().string().get());
             }
         }
         return values;
@@ -178,17 +173,49 @@ public class Properties extends Table {
     public void z8_afterUpdate(Query.CLASS<? extends Query> query, guid recordId, RCollection changedFields,
             Query.CLASS<? extends Query> model, guid modelRecordId) {
         if (changedFields.contains(value) && readRecord(recordId)) {
-            firePropertyChange(name.get().string().get(), value.get().string().get());
+            firePropertyChange(id.get().string().get(), value.get().string().get());
         }
     }
 
+    private SqlToken getWhere(String key) {
+        return new Or(new Rel(id.get(), Operation.Eq, new sql_string(key)), new Rel(name.get(), Operation.Eq, new sql_string(key)));
+    }
+
+    private guid getParentId(Map<String, guid> ids, String key) {
+        int pos = key.lastIndexOf('.');
+        if (pos < 0)
+            return guid.NULL;
+        String parentKey = key.substring(0, pos);
+        if (ids.containsKey(parentKey))
+            return ids.get(parentKey);
+        guid parentRecordId = guid.create(0, parentKey.hashCode());
+        boolean exists = hasRecord(parentRecordId);
+        guid grandParentRecordId = getParentId(ids, parentKey);
+        id.get().set(parentKey);
+        name.get().set(parentKey);
+        description.get().set("");
+        value.get().set("");
+        parentId.get().set(grandParentRecordId);
+        if (!exists) {
+            recordId.get().set(parentRecordId);
+            create();
+        } else {
+            update(parentRecordId);
+        }
+        ids.put(parentKey, parentRecordId);
+        return parentRecordId;
+    }
+
     private static String getPropertyFromDb(String key) {
-        if (ApplicationServer.defaultDatabase().isSystemInstalled()) {
-            Properties properties = new CLASS<Properties>().get();
-            SqlToken where = new Rel(properties.name.get(), Operation.Eq, new sql_string(key));
-            if (properties.readFirst(where)) {
-                return properties.value.get().string().get();
+        try {
+            if (ApplicationServer.defaultDatabase().isSystemInstalled()) {
+                Properties properties = new CLASS<Properties>().get();
+                if (properties.readFirst(properties.getWhere(key))) {
+                    return properties.value.get().string().get();
+                }
             }
+        } catch (Throwable e) {
+            Trace.logError("Can't read property '" + key + "' from database", e);
         }
         return null;
     }
@@ -205,10 +232,14 @@ public class Properties extends Table {
         @Override
         public void onDbGenerated() {
             Properties properties = new CLASS<Properties>().get();
+            Map<String, guid> ids = new HashMap<String, guid>();
             for (Property property : Runtime.instance().properties()) {
                 boolean exists = properties.readRecord(property.getId());
+                guid parentId = properties.getParentId(ids, property.getKey());
+                properties.id.get().set(property.getKey());
                 properties.name.get().set(property.getKey());
                 properties.description.get().set(property.getDescription());
+                properties.parentId.get().set(parentId);
                 if (!exists) {
                     properties.recordId.get().set(property.getId());
                     properties.value.get().set(property.getDefaultValue());
