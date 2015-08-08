@@ -93,4 +93,16 @@ public class Property extends OBJECT {
         }
     }
 
+    public guid z8_getId() {
+        return getId();
+    }
+
+    public string z8_getKey() {
+        return new string(getKey());
+    }
+
+    public string z8_getDefaultValue() {
+        return new string(getDefaultValue());
+    }
+
 }

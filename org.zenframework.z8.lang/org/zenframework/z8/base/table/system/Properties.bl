@@ -19,7 +19,7 @@ class Properties extends Table
 	public static string getProperty(string key, string defaultValue);
 	
     public static string getProperty(string key);
-    
+
 	records {
 		[name "selfAddress"]
 		[description "Адрес своего объекта"]

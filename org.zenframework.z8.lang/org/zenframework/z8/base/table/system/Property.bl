@@ -1,0 +1,8 @@
+[native "org.zenframework.z8.server.base.table.system.Property"]
+class Property {
+
+	public guid getId();
+	public string getKey();
+	public string getDefaultValue();
+
+}
