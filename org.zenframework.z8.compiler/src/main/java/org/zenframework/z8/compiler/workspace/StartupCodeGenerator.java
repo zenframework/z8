@@ -12,14 +12,14 @@ public class StartupCodeGenerator {
     private static final String RuntimePostfix = "Runtime";
     private static final String RuntimePackage = "org.zenframework.z8.";
 
-    public static final IPath Z8RuntimePath = new Path("META-INF/z8.runtime");
+    public static final IPath Z8BlRuntimePath = new Path("META-INF/z8_bl.runtime");
 
     static public boolean generate(Project project) {
         try {
             // генерация runtime-класса
             generateResource(project, getRuntimeJavaPath(project), getRuntimeClassContent(project));
             // генерация META-INF/z8.runtime
-            generateResource(project, Z8RuntimePath, getRuntimeClassQualifiedName(project));
+            generateResource(project, Z8BlRuntimePath, getRuntimeClassQualifiedName(project));
             return true;
         } catch (FileException e) {
             project.error(e);

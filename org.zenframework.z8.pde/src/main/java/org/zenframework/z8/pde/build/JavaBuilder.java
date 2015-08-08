@@ -418,7 +418,7 @@ public class JavaBuilder {
             list.add(sourcePath.toString());
         }
         
-        list.add(project.getOutputPath().append(StartupCodeGenerator.Z8RuntimePath).toString());
+        list.add(project.getOutputPath().append(StartupCodeGenerator.Z8BlRuntimePath).toString());
 
         return list.toArray(new String[list.size()]);
     }

@@ -164,7 +164,7 @@ public class Main {
         }
 
         sources.append("\"" + project.getOutputPath().append(StartupCodeGenerator.getRuntimeJavaPath(project)) + "\"\n");
-        sources.append("\"" + project.getOutputPath().append(StartupCodeGenerator.Z8RuntimePath) + "\"");
+        sources.append("\"" + project.getOutputPath().append(StartupCodeGenerator.Z8BlRuntimePath) + "\"");
 
         try {
             outputPath = outputPath.append("javafiles.lst");
