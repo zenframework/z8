@@ -9,6 +9,8 @@ import org.zenframework.z8.server.types.string;
 
 public class Property extends OBJECT {
 
+    private static final String DEFAULT_VALUE = "defaultValue";
+
     public static class CLASS<T extends Property> extends OBJECT.CLASS<T> {
 
         public CLASS() {
@@ -29,67 +31,62 @@ public class Property extends OBJECT {
 
     }
 
-    private guid id;
-    private string key;
-    private string defaultValue;
-    private string description = new string("");
-
     public Property(IObject container) {
         super(container);
     }
     
     public Property(String id, String key, String defaultValue, String description) {
-        this.id = new guid(id);
-        this.key = new string(key);
-        this.defaultValue = new string(defaultValue);
-        this.description = new string(description);
+        setAttribute(IObject.Guid, new guid(id).toString());
+        setAttribute(IObject.Name, key);
+        setAttribute(DEFAULT_VALUE, defaultValue);
+        setAttribute(IObject.Description, description);
     }
 
     public guid getId() {
-        return id;
+        return new guid(getAttribute(IObject.Guid));
     }
 
     public String getKey() {
-        return key.get();
+        return getAttribute(IObject.Name);
     }
     
     public boolean equalsKey(String key) {
-        return this.key.equals(key);
+        return getKey().equals(key);
     }
 
     public String getDefaultValue() {
-        return defaultValue.get();
+        return getAttribute(DEFAULT_VALUE);
     }
 
     public String getDescription() {
-        return description.get();
+        return getAttribute(IObject.Description);
     }
 
     @Override
     public int hashCode() {
-        return id.hashCode();
+        return getId().hashCode();
     }
 
     @Override
     public boolean equals(Object obj) {
-        return obj instanceof Property && id.equals(((Property) obj).id);
+        return obj instanceof Property && getId().equals(((Property) obj).getId());
     }
 
     @Override
     public String toString() {
-        return new StringBuilder(1024).append("Property[").append(id).append(", ").append(key).append(", ")
-                .append(defaultValue).append(", ").append(description).append(']').toString();
+        return new StringBuilder(1024).append("Property[").append(getId()).append(", ").append(getKey()).append(", ")
+                .append(getDefaultValue()).append(", ").append(getDescription()).append(']').toString();
     }
 
     public void operatorAssign(RCollection<string> data) {
         if (data.size() < 3 || data.size() > 4) {
             throw new exception("Incorrect property definition: " + data);
         }
-        id = new guid(data.get(0).get());
-        key = data.get(1);
-        defaultValue = data.get(2);
+        setAttribute(IObject.Guid, new guid(data.get(0).get()).toString());
+        setAttribute(IObject.Name, data.get(1).get());
+        setAttribute(DEFAULT_VALUE, data.get(2).get());
         if (data.size() > 3) {
-            description = data.get(3);
+            setAttribute(IObject.Description, data.get(3).get());
         }
     }
 
@@ -99,6 +96,10 @@ public class Property extends OBJECT {
 
     public string z8_getKey() {
         return new string(getKey());
+    }
+
+    public string z8_getDescription() {
+        return new string(getDescription());
     }
 
     public string z8_getDefaultValue() {

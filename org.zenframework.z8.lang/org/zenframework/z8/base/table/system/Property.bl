@@ -3,6 +3,8 @@ class Property {
 
 	public guid getId();
 	public string getKey();
+	public string getDescription();
 	public string getDefaultValue();
 
+	Property operator = (primary[] idKeyValueDesc);
 }

@@ -1367,7 +1367,7 @@ public class Query extends Runnable {
             System.out.println("Model inconsistency. No root query detected. " + this);
         } else if (references.size() > 1) {
             if (model == null) {
-                System.out.println("Model inconsistency. Multiple root queries detected. ");
+                System.out.println("Model inconsistency. Multiple root queries detected in " + classId());
 
                 for (Query.CLASS<? extends Query> query : references) {
                     System.out.println("\t" + query.get());
