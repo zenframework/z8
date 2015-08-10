@@ -21,7 +21,7 @@ import org.zenframework.z8.compiler.cmd.Main;
 @Mojo(name = "compile-bl", defaultPhase = LifecyclePhase.GENERATE_SOURCES, requiresDependencyResolution = ResolutionScope.COMPILE)
 public class Z8CompileMojo extends Z8AbstractMojo {
 
-    private static final List<String> RESOURCES_INCLUDES = Arrays.asList("META-INF/z8.runtime");
+    private static final List<String> RESOURCES_INCLUDES = Arrays.asList("META-INF/z8.runtime", "META-INF/z8_bl.runtime");
 
     @Parameter(defaultValue = "${basedir}/.java")
     protected String outputPath;
