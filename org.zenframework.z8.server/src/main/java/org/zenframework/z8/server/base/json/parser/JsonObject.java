@@ -11,6 +11,7 @@ import org.zenframework.z8.server.types.primary;
 import org.zenframework.z8.server.types.string;
 
 public class JsonObject extends OBJECT {
+
     public static class CLASS<T extends JsonObject> extends OBJECT.CLASS<T> {
         public CLASS(IObject container) {
             super(container);
@@ -28,6 +29,11 @@ public class JsonObject extends OBJECT {
 
     public JsonObject(IObject container) {
         super(container);
+    }
+
+    public JsonObject(IObject container, org.zenframework.z8.server.json.parser.JsonObject jsonObject) {
+        super(container);
+        set(jsonObject);
     }
 
     public void set(org.zenframework.z8.server.json.parser.JsonObject object) {
