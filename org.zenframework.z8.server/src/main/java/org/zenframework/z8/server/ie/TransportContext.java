@@ -78,7 +78,7 @@ public class TransportContext extends OBJECT implements Serializable {
     }
 
     public String getProperty(String key) {
-        return properties.get(new string(key)).get();
+        return properties.z8_get(new string(key)).get();
     }
 
     public void setProperty(String key, String value) {
