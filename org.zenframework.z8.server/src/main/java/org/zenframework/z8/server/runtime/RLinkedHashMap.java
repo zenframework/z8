@@ -3,7 +3,6 @@ package org.zenframework.z8.server.runtime;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import org.zenframework.z8.server.exceptions.UnsupportedParameterException;
 import org.zenframework.z8.server.types.bool;
 import org.zenframework.z8.server.types.integer;
 
@@ -69,8 +68,8 @@ public class RLinkedHashMap<Key, Value> extends LinkedHashMap<Key, Value> {
     }
 
     public Value z8_get(Key key) {
-        if(containsKey(key)) {
-            throw new UnsupportedParameterException();
+        if(!containsKey(key)) {
+            throw new RuntimeException("Key '" + key + "' was not found");
         }
         return get(key);
     }

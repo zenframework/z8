@@ -13,6 +13,10 @@ import org.zenframework.z8.server.types.string;
 public class JsonObject extends OBJECT {
 
     public static class CLASS<T extends JsonObject> extends OBJECT.CLASS<T> {
+        public CLASS() {
+            this(null);
+        }
+
         public CLASS(IObject container) {
             super(container);
             setJavaClass(JsonObject.class);
@@ -134,7 +138,7 @@ public class JsonObject extends OBJECT {
         object.put(field.id(), field.get());
         return (JsonObject.CLASS<? extends JsonObject>) getCLASS();
     }
-    
+
     @SuppressWarnings("unchecked")
     public JsonObject.CLASS<? extends JsonObject> z8_remove(string name) {
         object.remove(name.get());

@@ -36,14 +36,14 @@ public class Property extends OBJECT {
     }
     
     public Property(String id, String key, String defaultValue, String description) {
-        setAttribute(IObject.Guid, new guid(id).toString());
+        setAttribute(IObject.ObjectId, new guid(id).toString());
         setAttribute(IObject.Name, key);
         setAttribute(DEFAULT_VALUE, defaultValue);
         setAttribute(IObject.Description, description);
     }
 
     public guid getId() {
-        return new guid(getAttribute(IObject.Guid));
+        return new guid(getAttribute(IObject.ObjectId));
     }
 
     public String getKey() {
@@ -82,7 +82,7 @@ public class Property extends OBJECT {
         if (data.size() < 3 || data.size() > 4) {
             throw new exception("Incorrect property definition: " + data);
         }
-        setAttribute(IObject.Guid, new guid(data.get(0).get()).toString());
+        setAttribute(IObject.ObjectId, new guid(data.get(0).get()).toString());
         setAttribute(IObject.Name, data.get(1).get());
         setAttribute(DEFAULT_VALUE, data.get(2).get());
         if (data.size() > 3) {

@@ -13,7 +13,12 @@ import org.zenframework.z8.server.types.primary;
 import org.zenframework.z8.server.types.string;
 
 public class JsonArray extends OBJECT {
+
     public static class CLASS<T extends JsonArray> extends OBJECT.CLASS<T> {
+        public CLASS() {
+            this(null);
+        }
+
         public CLASS(IObject container) {
             super(container);
             setJavaClass(JsonArray.class);

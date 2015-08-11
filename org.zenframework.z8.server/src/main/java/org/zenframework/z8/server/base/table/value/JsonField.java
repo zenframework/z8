@@ -37,7 +37,7 @@ public class JsonField extends TextField {
     }
     
     @SuppressWarnings("unchecked")
-    public TextField.CLASS<? extends TextField> operatorAssign(JsonObject.CLASS<JsonObject> value) {
+    public TextField.CLASS<? extends TextField> operatorAssign(JsonObject.CLASS<? extends JsonObject> value) {
         set(value.get().getInternalObject());
         return (TextField.CLASS<? extends TextField>) this.getCLASS();
     }

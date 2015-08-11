@@ -6,7 +6,7 @@ import org.zenframework.z8.server.request.INamedObject;
 
 public interface IObject extends INamedObject {
 
-    static final public String Guid = "guid";
+    static final public String ObjectId = "objectId";
     static final public String DisplayName = "displayName";
     static final public String Description = "description";
     static final public String Label = "label";

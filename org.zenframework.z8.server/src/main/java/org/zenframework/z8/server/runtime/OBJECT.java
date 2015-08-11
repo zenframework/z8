@@ -13,6 +13,7 @@ import org.zenframework.z8.server.security.IUser;
 import org.zenframework.z8.server.security.UserInfo;
 import org.zenframework.z8.server.types.bool;
 import org.zenframework.z8.server.types.file;
+import org.zenframework.z8.server.types.guid;
 import org.zenframework.z8.server.types.integer;
 import org.zenframework.z8.server.types.string;
 
@@ -74,6 +75,10 @@ public class OBJECT extends RequestTarget implements IObject {
         }
 
         return id;
+    }
+
+    public guid objectId() {
+        return new guid(getAttribute(ObjectId));
     }
 
     @Override
@@ -252,6 +257,10 @@ public class OBJECT extends RequestTarget implements IObject {
 
     public string z8_id() {
         return new string(id());
+    }
+
+    public guid z8_objectId() {
+        return objectId();
     }
 
     public string z8_name() {
