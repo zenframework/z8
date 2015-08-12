@@ -8,6 +8,8 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.Map;
 
+import org.zenframework.z8.server.types.guid;
+
 /**
  * A JSONArray is an ordered sequence of values. Its external text form is a
  * string wrapped in square brackets with commas separating the values. The
@@ -238,6 +240,10 @@ public class JsonArray {
         }
     }
 
+    public guid getGuid(int index) throws JsonException {
+        Object object = get(index);
+        return object instanceof guid ? (guid) object : new guid(object.toString());
+    }
     /**
      * Get the JSONArray associated with an index.
      * 

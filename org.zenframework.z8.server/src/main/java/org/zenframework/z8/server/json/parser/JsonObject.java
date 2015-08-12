@@ -21,6 +21,7 @@ import org.zenframework.z8.server.types.date;
 import org.zenframework.z8.server.types.datetime;
 import org.zenframework.z8.server.types.decimal;
 import org.zenframework.z8.server.types.file;
+import org.zenframework.z8.server.types.guid;
 import org.zenframework.z8.server.types.integer;
 import org.zenframework.z8.server.types.string;
 
@@ -597,6 +598,10 @@ public class JsonObject {
      *             if the key is not found or if the value cannot be converted
      *             to a long.
      */
+    public long getLong(string key) throws JsonException {
+        return getLong(key.get());
+    }
+
     public long getLong(String key) throws JsonException {
         Object object = get(key);
         try {
@@ -607,6 +612,14 @@ public class JsonObject {
         }
     }
 
+    public guid getGuid(string key) throws JsonException {
+        return getGuid(key.get());
+    }
+
+    public guid getGuid(String key) throws JsonException {
+        Object object = get(key);
+        return object instanceof guid ? (guid) object : new guid(object.toString());
+    }
     /**
      * Get an array of field names from a JSONObject.
      *
@@ -1551,26 +1564,22 @@ public class JsonObject {
             return "null";
         } 
         
-        // TODO Навести порядок
-        
         // convert primary to Java native
         if (value instanceof bool) {
-            value = ((bool) value).get();
+            return Boolean.toString(((bool) value).get());
         } else if (value instanceof integer) {
-            value = ((integer) value).get();
+            return numberToString(((integer) value).get());
         } else if (value instanceof decimal) {
-            value = ((decimal) value).get();
+            return numberToString(((decimal) value).get());
         } else if (value instanceof date) {
             date d = (date) value;
             boolean minMax = d.equals(date.MIN) || d.equals(date.MAX);
-            value = minMax ? "" : value.toString();
+            return quote(minMax ? "" : value.toString());
         } else if (value instanceof datetime) {
             datetime dt = (datetime) value;
             boolean minMax = dt.equals(datetime.MIN) || dt.equals(datetime.MAX);
-            value = minMax ? "" : value.toString();
-        }
-
-        if (value instanceof JsonString) {
+            return quote(minMax ? "" : value.toString());
+        } else if (value instanceof JsonString) {
             return ((JsonString)value).toJSONString();
         } else if (value instanceof Number) {
             return numberToString((Number)value);

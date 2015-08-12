@@ -339,14 +339,6 @@ public class OBJECT extends RequestTarget implements IObject {
         return new bool(this != object.get());
     }
 
-    static public void z8_addAttribute(OBJECT.CLASS<? extends OBJECT> object, string attribute, string value) {
-        object.setAttribute(attribute.get(), value.get());
-    }
-
-    static public void z8_removeAttribute(OBJECT.CLASS<? extends OBJECT> object, string attribute) {
-        object.removeAttribute(attribute.get());
-    }
-
     public void write(JsonObject writer) {
         writer.put(Json.text, displayName());
         writer.put(Json.description, description());

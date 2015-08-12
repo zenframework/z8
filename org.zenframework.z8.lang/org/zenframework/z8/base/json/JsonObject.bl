@@ -18,6 +18,7 @@ public class JsonObject extends Object {
     public int getInt(string name);
     public decimal getDecimal(string name);
     public bool getBool(string name);
+    public guid getGuid(string name);
 
     public JsonArray getJsonArray(string name);
     public JsonObject getJsonObject(string name);

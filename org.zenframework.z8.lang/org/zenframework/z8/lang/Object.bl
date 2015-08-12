@@ -22,9 +22,6 @@ class Object {
 	static public int currentTimeMillis();
 	static public void wait(int millis);
 
-	static public void addAttribute(Object object, string attribute, string value);
-	static public void removeAttribute(Object object, string attribute);
-
 	virtual protected void constructor();
 
 	public guid objectId();

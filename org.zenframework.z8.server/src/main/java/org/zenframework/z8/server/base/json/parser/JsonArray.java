@@ -73,6 +73,10 @@ public class JsonArray extends OBJECT {
         return new bool(array.getBoolean(i.getInt()));
     }
 
+    public guid z8_getGuid(integer i) {
+        return array.getGuid(i.getInt());
+    }
+
     public JsonArray.CLASS<? extends JsonArray> z8_getJsonArray(integer i) {
         org.zenframework.z8.server.json.parser.JsonArray array = this.array.getJsonArray(i.getInt());
         JsonArray.CLASS<? extends JsonArray> cls = new JsonArray.CLASS<JsonArray>(null);

@@ -6,6 +6,7 @@ import org.zenframework.z8.server.runtime.OBJECT;
 import org.zenframework.z8.server.runtime.RCollection;
 import org.zenframework.z8.server.types.bool;
 import org.zenframework.z8.server.types.decimal;
+import org.zenframework.z8.server.types.guid;
 import org.zenframework.z8.server.types.integer;
 import org.zenframework.z8.server.types.primary;
 import org.zenframework.z8.server.types.string;
@@ -92,6 +93,10 @@ public class JsonObject extends OBJECT {
         return new bool(object.getBoolean(name));
     }
 
+    public guid z8_getGuid(string name) {
+        return object.getGuid(name);
+    }
+
     public JsonArray.CLASS<? extends JsonArray> z8_getJsonArray(string name) {
         org.zenframework.z8.server.json.parser.JsonArray array = this.object.getJsonArray(name);
         JsonArray.CLASS<? extends JsonArray> cls = new JsonArray.CLASS<JsonArray>(null);
@@ -108,15 +113,7 @@ public class JsonObject extends OBJECT {
 
     @SuppressWarnings("unchecked")
     public JsonObject.CLASS<? extends JsonObject> z8_put(string name, primary value) {
-        if (value instanceof bool) {
-            object.put(name.get(), ((bool) value).get());
-        } else if (value instanceof decimal) {
-            object.put(name.get(), ((decimal) value).get());
-        } else if (value instanceof integer) {
-            object.put(name.get(), ((integer) value).get());
-        } else {
-            object.put(name.get(), value.toString());
-        }
+        object.put(name,  value);
         return (JsonObject.CLASS<? extends JsonObject>) getCLASS();
     }
 
