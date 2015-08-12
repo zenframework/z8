@@ -209,8 +209,8 @@ public class OrganizeAllImportsAction implements IWorkbenchWindowActionDelegate 
                     }
                 });
                 dialog.setInput(otherCompilationUnits);
-                dialog.setTitle("Организовать импорты");
-                dialog.setMessage("Выберите подходящий import для " + compilationUnit.getName());
+                dialog.setTitle("РћСЂРіР°РЅРёР·РѕРІР°С‚СЊ РёРјРїРѕСЂС‚С‹");
+                dialog.setMessage("Р’С‹Р±РµСЂРёС‚Рµ РїРѕРґС…РѕРґСЏС‰РёР№ import РґР»СЏ " + compilationUnit.getName());
                 dialog.setInitialSelections(new Object[] { otherCompilationUnits.get(0) });
                 int open = dialog.open();
                 if(Dialog.CANCEL == open)
