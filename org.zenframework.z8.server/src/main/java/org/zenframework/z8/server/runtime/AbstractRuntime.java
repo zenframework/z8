@@ -4,36 +4,36 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import org.zenframework.z8.server.base.simple.Activator;
 import org.zenframework.z8.server.base.simple.Procedure;
-import org.zenframework.z8.server.base.simple.Runnable;
 import org.zenframework.z8.server.base.table.Table;
 import org.zenframework.z8.server.base.table.system.Property;
 
 public abstract class AbstractRuntime implements IRuntime {
 
-    private List<CLASS<? extends Table>> tables = new ArrayList<CLASS<? extends Table>>();
-    private List<CLASS<? extends OBJECT>> entries = new ArrayList<CLASS<? extends OBJECT>>();
-    private List<CLASS<? extends Procedure>> jobs = new ArrayList<CLASS<? extends Procedure>>();
-    private List<CLASS<? extends Runnable>> activators = new ArrayList<CLASS<? extends Runnable>>();
+    private List<Table.CLASS<? extends Table>> tables = new ArrayList<Table.CLASS<? extends Table>>();
+    private List<OBJECT.CLASS<? extends OBJECT>> entries = new ArrayList<OBJECT.CLASS<? extends OBJECT>>();
+    private List<Procedure.CLASS<? extends Procedure>> jobs = new ArrayList<Procedure.CLASS<? extends Procedure>>();
+    private List<Activator.CLASS<? extends Activator>> activators = new ArrayList<Activator.CLASS<? extends Activator>>();
     private List<Property> properties = new ArrayList<Property>();
 
     @Override
-    public Collection<CLASS<? extends Table>> tables() {
+    public Collection<Table.CLASS<? extends Table>> tables() {
         return tables;
     }
 
     @Override
-    public Collection<CLASS<? extends OBJECT>> entries() {
+    public Collection<OBJECT.CLASS<? extends OBJECT>> entries() {
         return entries;
     }
 
     @Override
-    public Collection<CLASS<? extends Procedure>> jobs() {
+    public Collection<Procedure.CLASS<? extends Procedure>> jobs() {
         return jobs;
     }
 
     @Override
-    public Collection<CLASS<? extends Runnable>> activators() {
+    public Collection<Activator.CLASS<? extends Activator>> activators() {
         return activators;
     }
 
@@ -43,22 +43,22 @@ public abstract class AbstractRuntime implements IRuntime {
     }
 
     @Override
-    public CLASS<? extends Table> getTable(String name) {
-        return get(name, tables);
+    public Table.CLASS<? extends Table> getTable(String name) {
+        return AbstractRuntime.<Table.CLASS<? extends Table>>get(name, tables);
     }
 
     @Override
-    public CLASS<? extends OBJECT> getEntry(String name) {
-        return get(name, entries);
+    public OBJECT.CLASS<? extends OBJECT> getEntry(String name) {
+        return AbstractRuntime.<OBJECT.CLASS<? extends OBJECT>>get(name, entries);
     }
 
     @Override
-    public CLASS<? extends Procedure> getJob(String name) {
-        return get(name, jobs);
+    public Procedure.CLASS<? extends Procedure> getJob(String name) {
+        return AbstractRuntime.<Procedure.CLASS<? extends Procedure>>get(name, jobs);
     }
 
-    private static <T extends IObject> CLASS<? extends T> get(String name, Collection<CLASS<? extends T>> list) {
-        for (CLASS<? extends T> cls : list) {
+    private static <T extends OBJECT.CLASS<? extends OBJECT>> T get(String name, List<T> list) {
+        for (T cls : list) {
             if (name.equals(cls.classId())) {
                 return cls;
             }
@@ -66,7 +66,7 @@ public abstract class AbstractRuntime implements IRuntime {
         return null;
     }
     
-    protected void addTable(CLASS<? extends Table> cls) {
+    protected void addTable(Table.CLASS<? extends Table> cls) {
         for (CLASS<? extends Table> table : tables) {
             if (table.classId().equals(cls.classId()))
                 return;
@@ -74,7 +74,7 @@ public abstract class AbstractRuntime implements IRuntime {
         tables.add(cls);
     }
     
-    protected void addEntry(CLASS<? extends OBJECT> cls) {
+    protected void addEntry(OBJECT.CLASS<? extends OBJECT> cls) {
         for (CLASS<? extends OBJECT> entry : entries) {
             if (entry.classId().equals(cls.classId()))
                 return;
@@ -82,7 +82,7 @@ public abstract class AbstractRuntime implements IRuntime {
         entries.add(cls);
     }
 
-    protected void addJob(CLASS<? extends Procedure> cls) {
+    protected void addJob(Procedure.CLASS<? extends Procedure> cls) {
         for (CLASS<? extends Procedure> job : jobs) {
             if (job.classId().equals(cls.classId()))
                 return;
@@ -90,8 +90,8 @@ public abstract class AbstractRuntime implements IRuntime {
         jobs.add(cls);
     }
     
-    protected void addActivator(CLASS<? extends Runnable> cls) {
-        for (CLASS<? extends Runnable> activator : activators) {
+    protected void addActivator(Activator.CLASS<? extends Activator> cls) {
+        for (CLASS<? extends Activator> activator : activators) {
             if (activator.classId().equals(cls.classId()))
                 return;
         }
@@ -111,16 +111,16 @@ public abstract class AbstractRuntime implements IRuntime {
     }
 
     protected void mergeWith(IRuntime runtime) {
-        for (CLASS<? extends Table> table : runtime.tables()) {
+        for (Table.CLASS<? extends Table> table : runtime.tables()) {
             addTable(table);
         }
-        for (CLASS<? extends Procedure> job : runtime.jobs()) {
+        for (Procedure.CLASS<? extends Procedure> job : runtime.jobs()) {
             addJob(job);
         }
-        for (CLASS<? extends OBJECT> entry : runtime.entries()) {
+        for (OBJECT.CLASS<? extends OBJECT> entry : runtime.entries()) {
             addEntry(entry);
         }
-        for (CLASS<? extends Runnable> activator : runtime.activators()) {
+        for (Activator.CLASS<? extends Activator> activator : runtime.activators()) {
             addActivator(activator);
         }
         for (Property property : runtime.properties()) {

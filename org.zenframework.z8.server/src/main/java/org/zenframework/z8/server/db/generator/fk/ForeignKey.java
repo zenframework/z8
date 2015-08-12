@@ -66,7 +66,7 @@ public class ForeignKey {
 
     @SuppressWarnings("unchecked")
     private CLASS<Table> findTable() {
-        Collection<CLASS<? extends Table>> tables = Runtime.instance().tables();
+        Collection<Table.CLASS<? extends Table>> tables = Runtime.instance().tables();
 
         for(CLASS<? extends Table> table : tables) {
             if(table.name().equalsIgnoreCase(tableName)) {

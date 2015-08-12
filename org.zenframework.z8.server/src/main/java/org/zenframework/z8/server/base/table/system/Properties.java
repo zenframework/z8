@@ -8,10 +8,10 @@ import java.util.LinkedList;
 import java.util.Map;
 
 import org.zenframework.z8.server.base.query.Query;
+import org.zenframework.z8.server.base.simple.Activator;
 import org.zenframework.z8.server.base.table.Table;
 import org.zenframework.z8.server.base.table.TreeTable;
 import org.zenframework.z8.server.base.table.value.StringField;
-import org.zenframework.z8.server.db.generator.DBGenerator;
 import org.zenframework.z8.server.db.sql.SqlToken;
 import org.zenframework.z8.server.db.sql.expressions.Operation;
 import org.zenframework.z8.server.db.sql.expressions.Or;
@@ -66,7 +66,6 @@ public class Properties extends TreeTable {
             setJavaClass(Properties.class);
             setName(TableName);
             setDisplayName(Resources.get(strings.Title));
-            DBGenerator.addListener(new DbGeneratorListener());
         }
 
         @Override
@@ -227,11 +226,29 @@ public class Properties extends TreeTable {
         }
     }
 
-    private static class DbGeneratorListener implements DBGenerator.Listener {
+    public static class PropertiesActivator extends Activator {
+
+        public static class CLASS<T extends PropertiesActivator> extends Activator.CLASS<T> {
+            public CLASS(IObject container) {
+                super(container);
+                setJavaClass(PropertiesActivator.class);
+                setAttribute(Native, PropertiesActivator.class.getCanonicalName());
+            }
+
+            @Override
+            public Object newObject(IObject container) {
+                return new PropertiesActivator(container);
+            }
+        }
+
+        
+        public PropertiesActivator(IObject container) {
+            super(container);
+        }
 
         @Override
-        public void onDbGenerated() {
-            Properties properties = new CLASS<Properties>().get();
+        public void afterDbGenerated() {
+            Properties properties = new Properties.CLASS<Properties>().get();
             Map<String, guid> ids = new HashMap<String, guid>();
             for (Property property : Runtime.instance().properties()) {
                 boolean exists = properties.readRecord(property.getId());
