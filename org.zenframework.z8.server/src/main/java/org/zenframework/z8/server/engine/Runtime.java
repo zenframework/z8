@@ -5,7 +5,7 @@ import java.net.URL;
 import java.util.Collection;
 import java.util.Enumeration;
 
-import org.zenframework.z8.server.base.simple.Runnable;
+import org.zenframework.z8.server.base.simple.Activator;
 import org.zenframework.z8.server.logs.Trace;
 import org.zenframework.z8.server.runtime.AbstractRuntime;
 import org.zenframework.z8.server.runtime.IRuntime;
@@ -49,9 +49,9 @@ public class Runtime extends AbstractRuntime {
             throw new RuntimeException("Can't load " + Z8RuntimePath + " resources", e);
         }
         // Run activators
-        Collection<Runnable.CLASS<? extends Runnable>> activators = (Collection) activators();
-        for (Runnable.CLASS<? extends Runnable> activator : activators) {
-            activator.get().run();
+        Collection<Activator.CLASS<? extends Activator>> activators = (Collection) activators();
+        for (Activator.CLASS<? extends Activator> activator : activators) {
+            activator.get().onInitialize();
         }
     }
 

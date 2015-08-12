@@ -3,15 +3,15 @@ package org.zenframework.z8.server.db.generator;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
 import org.zenframework.z8.server.base.form.Desktop;
+import org.zenframework.z8.server.base.simple.Activator;
 import org.zenframework.z8.server.base.simple.Procedure;
 import org.zenframework.z8.server.base.table.Table;
 import org.zenframework.z8.server.db.Connection;
+import org.zenframework.z8.server.engine.Runtime;
 import org.zenframework.z8.server.exceptions.UnsupportedParameterException;
 import org.zenframework.z8.server.resources.Resources;
 import org.zenframework.z8.server.utils.ErrorUtils;
@@ -23,22 +23,6 @@ public class DBGenerator {
 
     public DBGenerator(Connection connection) {
         this.connection = connection;
-    }
-
-    public static interface Listener {
-
-        void onDbGenerated();
-
-    }
-
-    private static final Collection<Listener> Listeners = Collections.synchronizedCollection(new LinkedList<Listener>());
-
-    public static void addListener(Listener listener) {
-        Listeners.add(listener);
-    }
-
-    public static void removeListener(Listener listener) {
-        Listeners.remove(listener);
     }
 
     public GenerateType check(Collection<Table.CLASS<? extends Table>> tables, Map<String, TableDescription> existingTables,
@@ -192,9 +176,8 @@ public class DBGenerator {
     }
 
     private static void fireDbGenerated() {
-        Collection<Listener> listeners = new ArrayList<Listener>(Listeners);
-        for (Listener listener : listeners) {
-            listener.onDbGenerated();
+        for (Activator.CLASS<? extends Activator> activator : Runtime.instance().activators()) {
+            activator.get().afterDbGenerated();
         }
     }
 

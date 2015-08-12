@@ -5,11 +5,14 @@ import org.zenframework.z8.server.runtime.OBJECT;
 import org.zenframework.z8.server.runtime.RCollection;
 import org.zenframework.z8.server.types.exception;
 import org.zenframework.z8.server.types.guid;
+import org.zenframework.z8.server.types.primary;
 import org.zenframework.z8.server.types.string;
 
 public class Property extends OBJECT {
 
-    private static final String DEFAULT_VALUE = "defaultValue";
+    public static final String Key = IObject.Name;
+    public static final String Description = IObject.Description;
+    public static final String DefaultValue = "defaultValue";
 
     public static class CLASS<T extends Property> extends OBJECT.CLASS<T> {
 
@@ -34,12 +37,12 @@ public class Property extends OBJECT {
     public Property(IObject container) {
         super(container);
     }
-    
+
     public Property(String id, String key, String defaultValue, String description) {
         setAttribute(IObject.ObjectId, new guid(id).toString());
-        setAttribute(IObject.Name, key);
-        setAttribute(DEFAULT_VALUE, defaultValue);
-        setAttribute(IObject.Description, description);
+        setAttribute(Key, key);
+        setAttribute(DefaultValue, defaultValue);
+        setAttribute(Description, description);
     }
 
     public guid getId() {
@@ -47,19 +50,19 @@ public class Property extends OBJECT {
     }
 
     public String getKey() {
-        return getAttribute(IObject.Name);
+        return getAttribute(Key);
     }
-    
+
     public boolean equalsKey(String key) {
         return getKey().equals(key);
     }
 
     public String getDefaultValue() {
-        return getAttribute(DEFAULT_VALUE);
+        return getAttribute(DefaultValue);
     }
 
     public String getDescription() {
-        return getAttribute(IObject.Description);
+        return getAttribute(Description);
     }
 
     @Override
@@ -78,31 +81,40 @@ public class Property extends OBJECT {
                 .append(getDefaultValue()).append(", ").append(getDescription()).append(']').toString();
     }
 
-    public void operatorAssign(RCollection<string> data) {
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+    public static Property.CLASS<? extends Property> z8_getProperty(RCollection data) {
+        Property.CLASS<Property> property = new Property.CLASS<Property>();
+        RCollection<primary> values = (RCollection<primary>) data;
         if (data.size() < 3 || data.size() > 4) {
             throw new exception("Incorrect property definition: " + data);
         }
-        setAttribute(IObject.ObjectId, new guid(data.get(0).get()).toString());
-        setAttribute(IObject.Name, data.get(1).get());
-        setAttribute(DEFAULT_VALUE, data.get(2).get());
+        property.setAttribute(IObject.ObjectId, new guid(values.get(0).toString()).toString());
+        property.setAttribute(Key, values.get(1).toString());
+        property.setAttribute(DefaultValue, values.get(2).toString());
         if (data.size() > 3) {
-            setAttribute(IObject.Description, data.get(3).get());
+            property.setAttribute(Description, data.get(3).toString());
         }
+        return property;
     }
 
-    public guid z8_getId() {
-        return getId();
+    public Property.CLASS<? extends Property> z8_getProperty(guid id, string key, primary defaultValue, string description) {
+        Property.CLASS<Property> property = new Property.CLASS<Property>();
+        property.setAttribute(IObject.ObjectId, new guid(id).toString());
+        property.setAttribute(Key, key.get());
+        property.setAttribute(DefaultValue, defaultValue.toString());
+        property.setAttribute(Description, description.get());
+        return property;
     }
 
-    public string z8_getKey() {
+    public string z8_key() {
         return new string(getKey());
     }
 
-    public string z8_getDescription() {
+    public string z8_description() {
         return new string(getDescription());
     }
 
-    public string z8_getDefaultValue() {
+    public string z8_defaultValue() {
         return new string(getDefaultValue());
     }
 

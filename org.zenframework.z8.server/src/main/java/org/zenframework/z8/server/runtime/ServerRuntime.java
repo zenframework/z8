@@ -51,6 +51,8 @@ public class ServerRuntime extends AbstractRuntime {
 
         addEntry(new SystemTools.CLASS<SystemTools>(null));
 
+        addActivator(new Properties.PropertiesActivator.CLASS<Properties.PropertiesActivator>(null));
+
         addProperty(PreserveExportMessagesProperty);
         addProperty(EnableProtocolsProperty);
         addProperty(SelfAddressDefaultProperty);
