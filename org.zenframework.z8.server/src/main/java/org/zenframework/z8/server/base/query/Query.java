@@ -2252,6 +2252,10 @@ public class Query extends Runnable {
         return (Field.CLASS) getFieldByName(name.get()).getCLASS();
     }
 
+    public void z8_setFieldAttribute(Field.CLASS<? extends Field> field, string attribute, primary value) {
+        field.get().setAttribute(attribute.get(), value.toString());
+    }
+
     public guid z8_create() {
         return create();
     }
