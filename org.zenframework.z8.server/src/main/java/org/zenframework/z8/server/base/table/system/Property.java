@@ -97,7 +97,7 @@ public class Property extends OBJECT {
         return property;
     }
 
-    public Property.CLASS<? extends Property> z8_getProperty(guid id, string key, primary defaultValue, string description) {
+    public static Property.CLASS<? extends Property> z8_getProperty(guid id, string key, primary defaultValue, string description) {
         Property.CLASS<Property> property = new Property.CLASS<Property>();
         property.setAttribute(IObject.ObjectId, new guid(id).toString());
         property.setAttribute(Key, key.get());
