@@ -62,6 +62,8 @@ public class SearchEngine extends OBJECT {
     }
 
     public void updateRecord(Query query, String recordId) {
+        query.saveState();
+        
         if (query.readFirst(query.getSearchFields(), new Rel(query.getSearchId(), Operation.Eq, new sql_string(recordId)))) {
             String fullText = query.getRecordFullText();
             if (fullText != null && !fullText.isEmpty()) {
@@ -72,6 +74,8 @@ public class SearchEngine extends OBJECT {
                 index.commit();
             }
         }
+        
+        query.restoreState();
     }
 
     public void deleteRecord(Query query, String recordId) {
@@ -101,11 +105,15 @@ public class SearchEngine extends OBJECT {
     }
     
     private void updateIndex(SearchIndex index, Query query) {
+        query.saveState();
+        
         query.read(query.getSearchFields());
         while (query.next()) {
             index.updateDocument(query.getSearchId().get().toString(), query.getRecordFullText());
         }
         index.commit();
+        
+        query.restoreState();
     }
 
     private SearchIndex getIndex(Query query) {
