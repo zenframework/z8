@@ -35,6 +35,12 @@
                         </goals>
                     </execution>
                     <execution>
+                        <id>add-generated</id>
+                        <goals>
+                            <goal>add-generated</goal>
+                        </goals>
+                    </execution>
+                    <execution>
                         <id>archive-bl</id>
                         <goals>
                             <goal>archive-bl</goal>

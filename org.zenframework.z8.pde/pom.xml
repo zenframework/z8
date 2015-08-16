@@ -42,6 +42,15 @@
 
     <build>
 		
+        <resources>
+            <resource>
+                <directory>${basedir}</directory>
+                <includes>
+                    <include>lifecycle-mapping-metadata.xml</include>
+                </includes>
+            </resource>
+        </resources>
+
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
