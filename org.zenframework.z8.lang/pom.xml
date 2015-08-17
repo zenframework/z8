@@ -35,6 +35,12 @@
                         </goals>
                     </execution>
                     <execution>
+                        <id>add-generated</id>
+                        <goals>
+                            <goal>add-generated</goal>
+                        </goals>
+                    </execution>
+                    <execution>
                         <id>archive-bl</id>
                         <goals>
                             <goal>archive-bl</goal>
@@ -45,25 +51,6 @@
                         <goals>
                             <goal>clean</goal>
                         </goals>
-                    </execution>
-                </executions>
-            </plugin>
-            <!-- TODO m2e connector -->
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>build-helper-maven-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>add-source</id>
-                        <phase>generate-sources</phase>
-                        <goals>
-                            <goal>add-source</goal>
-                        </goals>
-                        <configuration>
-                            <sources>
-                                <source>${basedir}/.java/</source>
-                            </sources>
-                        </configuration>
                     </execution>
                 </executions>
             </plugin>

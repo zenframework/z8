@@ -1,7 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?eclipse version="3.1"?>
 <plugin>
-	<extension 
+
+	<extension
+		point="org.eclipse.m2e.core.lifecycleMappingMetadataSource">
+	</extension>
+
+	<extension
 		point="org.eclipse.ui.editors">
 		<editor
         class="org.zenframework.z8.pde.editor.Z8Editor"

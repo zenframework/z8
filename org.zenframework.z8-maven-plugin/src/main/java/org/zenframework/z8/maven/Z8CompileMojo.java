@@ -9,7 +9,6 @@ import java.util.Set;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.maven.artifact.Artifact;
-import org.apache.maven.model.Resource;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
@@ -20,8 +19,6 @@ import org.zenframework.z8.compiler.cmd.Main;
 
 @Mojo(name = "compile-bl", defaultPhase = LifecyclePhase.GENERATE_SOURCES, requiresDependencyResolution = ResolutionScope.COMPILE)
 public class Z8CompileMojo extends Z8AbstractMojo {
-
-    private static final List<String> RESOURCES_INCLUDES = Arrays.asList("META-INF/z8.runtime", "META-INF/z8_bl.runtime");
 
     @Parameter(defaultValue = "${basedir}/.java")
     protected String outputPath;
@@ -81,14 +78,6 @@ public class Z8CompileMojo extends Z8AbstractMojo {
                 }
             }
         }
-
-        // Add generated java sources
-        project.addCompileSourceRoot(outputPath);
-        // Add generated resources
-        Resource resource = new Resource();
-        resource.setDirectory(outputPath);
-        resource.setIncludes(RESOURCES_INCLUDES);
-        project.addResource(resource);
 
     }
 

@@ -43,11 +43,13 @@ public class OBJECT extends RequestTarget implements IObject {
 
     public OBJECT() {
         this(null);
+        setAttribute(IObject.ObjectId, guid.NULL.toString());
     }
 
     public OBJECT(IObject container) {
         super(null);
         this.container = container;
+        setAttribute(IObject.ObjectId, guid.NULL.toString());
     }
 
     @Override
