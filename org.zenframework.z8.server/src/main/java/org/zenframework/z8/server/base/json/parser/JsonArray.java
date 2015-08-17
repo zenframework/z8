@@ -171,4 +171,10 @@ public class JsonArray extends OBJECT {
         return new string(array.toString());
     }
 
+    public static JsonArray.CLASS<JsonArray> getJsonObject(org.zenframework.z8.server.json.parser.JsonArray json) {
+        JsonArray.CLASS<JsonArray> jsonArray = new JsonArray.CLASS<JsonArray>(null);
+        jsonArray.get().set(json);
+        return jsonArray;
+    }
+
 }

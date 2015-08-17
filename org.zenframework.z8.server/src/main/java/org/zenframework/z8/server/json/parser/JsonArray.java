@@ -62,7 +62,7 @@ public class JsonArray {
     /**
      * The arrayList where the JSONArray's properties are kept.
      */
-    private ArrayList<Object> myArrayList;
+    private final ArrayList<Object> myArrayList;
 
     /**
      * Construct an empty JSONArray.
@@ -801,6 +801,10 @@ public class JsonArray {
         Object o = opt(index);
         this.myArrayList.remove(index);
         return o;
+    }
+
+    public void clear() {
+        this.myArrayList.clear();
     }
 
     /**
