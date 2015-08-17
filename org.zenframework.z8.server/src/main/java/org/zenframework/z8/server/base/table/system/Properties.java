@@ -11,7 +11,7 @@ import org.zenframework.z8.server.base.query.Query;
 import org.zenframework.z8.server.base.simple.Activator;
 import org.zenframework.z8.server.base.table.Table;
 import org.zenframework.z8.server.base.table.TreeTable;
-import org.zenframework.z8.server.base.table.value.StringField;
+import org.zenframework.z8.server.base.table.value.TextField;
 import org.zenframework.z8.server.db.sql.SqlToken;
 import org.zenframework.z8.server.db.sql.expressions.Operation;
 import org.zenframework.z8.server.db.sql.expressions.Or;
@@ -75,7 +75,7 @@ public class Properties extends TreeTable {
 
     }
 
-    public final StringField.CLASS<StringField> value = new StringField.CLASS<StringField>(this);
+    public final TextField.CLASS<TextField> value = new TextField.CLASS<TextField>(this);
 
     private Properties(IObject container) {
         super(container);
@@ -92,7 +92,6 @@ public class Properties extends TreeTable {
         value.setIndex("value");
         value.setDisplayName(Resources.get(strings.Value));
         value.setGendb_updatable(false);
-        value.get().length.set(PropertyValueMaxLength);
         registerDataField(value);
     }
 
