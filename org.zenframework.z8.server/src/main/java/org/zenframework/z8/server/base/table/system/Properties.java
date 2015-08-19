@@ -92,6 +92,8 @@ public class Properties extends TreeTable {
         value.setIndex("value");
         value.setDisplayName(Resources.get(strings.Value));
         value.setGendb_updatable(false);
+        value.get().colspan.set(3);
+        description.get().colspan.set(3);
         registerDataField(value);
     }
 
