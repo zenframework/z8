@@ -82,6 +82,13 @@ public class RLinkedHashMap<Key, Value> extends LinkedHashMap<Key, Value> {
         return new RCollection<Value>(values());
     }
 
+    public Value z8_remove(Key key) {
+        if(!containsKey(key)) {
+            throw new RuntimeException("Key '" + key + "' was not found");
+        }
+        return remove(key);
+    }
+
     @Override
     public void clear() {
         modified();

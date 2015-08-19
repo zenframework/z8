@@ -152,4 +152,10 @@ public class JsonObject extends OBJECT {
         return new string(object.toString());
     }
 
+    public static JsonObject.CLASS<JsonObject> getJsonObject(org.zenframework.z8.server.json.parser.JsonObject json) {
+        JsonObject.CLASS<JsonObject> jsonObject = new JsonObject.CLASS<JsonObject>(null);
+        jsonObject.get().set(json);
+        return jsonObject;
+    }
+
 }
