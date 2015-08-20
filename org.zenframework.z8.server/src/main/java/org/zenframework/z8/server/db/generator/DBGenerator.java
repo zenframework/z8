@@ -98,12 +98,6 @@ public class DBGenerator {
         float progress = 0.0f;
 
         for (TableGenerator generator : generators) {
-            generator.beforeGenerate();
-            progress++;
-            logger.progress(Math.round(progress / total * 100));
-        }
-
-        for (TableGenerator generator : generators) {
             generator.create(connection);
             progress++;
             logger.progress(Math.round(progress / total * 100));
@@ -135,12 +129,6 @@ public class DBGenerator {
 
         for (TableGenerator generator : generators) {
             generator.createForeignKeys();
-            progress++;
-            logger.progress(Math.round(progress / total * 100));
-        }
-
-        for (TableGenerator generator : generators) {
-            generator.afterGenerate();
             progress++;
             logger.progress(Math.round(progress / total * 100));
         }
