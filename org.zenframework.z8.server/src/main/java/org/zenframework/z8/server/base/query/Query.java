@@ -2359,6 +2359,11 @@ public class Query extends Runnable {
     }
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
+    public void z8_group(RCollection groupByClasses, sql_bool where) {
+        read1(null, null, groupByClasses, where, null);
+    }
+
+    @SuppressWarnings({ "rawtypes", "unchecked" })
     public void z8_group(RCollection groupByClasses, RCollection fieldClasses) {
         read1(fieldClasses, null, groupByClasses, null, null);
     }
