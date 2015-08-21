@@ -97,6 +97,8 @@ public class DBGenerator {
         int total = 6 * generators.size();
         float progress = 0.0f;
 
+        fireBeforeDbGenerated();
+
         for (TableGenerator generator : generators) {
             generator.create(connection);
             progress++;
@@ -133,7 +135,7 @@ public class DBGenerator {
             logger.progress(Math.round(progress / total * 100));
         }
 
-        fireDbGenerated();
+        fireAfterDbGenerated();
 
         logger.progress(100);
     }
@@ -163,7 +165,13 @@ public class DBGenerator {
         return generators;
     }
 
-    private static void fireDbGenerated() {
+    private static void fireBeforeDbGenerated() {
+        for (Activator.CLASS<? extends Activator> activator : Runtime.instance().activators()) {
+            activator.get().beforeDbGenerated();
+        }
+    }
+
+    private static void fireAfterDbGenerated() {
         for (Activator.CLASS<? extends Activator> activator : Runtime.instance().activators()) {
             activator.get().afterDbGenerated();
         }

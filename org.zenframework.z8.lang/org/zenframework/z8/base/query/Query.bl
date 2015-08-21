@@ -57,7 +57,7 @@ class Query extends Runnable
 
 	virtual protected void onCopy(Query query);
 
-	virtual protected void onNew(Query query, guid recordId, guid parentId);
+	virtual protected void onNew(Query query, guid recordId, guid parentId, guid modelRecordId);
 
 	virtual protected void beforeRead(Query query, guid parentId, Query model, guid modelRecordId);
 	virtual protected void afterRead(Query query, guid parentId, Query model, guid modelRecordId);

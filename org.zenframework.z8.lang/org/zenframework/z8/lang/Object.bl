@@ -33,8 +33,8 @@ class Object {
 	public void sendFile(file file);
 
 	public bool equals(Object value);
-//	public bool operator == (Object object);
-//	public bool operator != (Object object);
+	public bool operator == (Object object);
+	public bool operator != (Object object);
 
 	virtual public string toString();
 

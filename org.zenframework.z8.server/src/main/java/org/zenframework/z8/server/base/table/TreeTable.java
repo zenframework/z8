@@ -348,6 +348,10 @@ public class TreeTable extends Table {
         return new RCollection<guid>(parents);
     }
 
+    public RCollection<guid> z8_getPath() {
+        return new RCollection<guid>(parsePath(this.path.get().z8_get().get()));
+    }
+
     private void changeParent(guid recordId, guid parentId) {
         saveState();
         this.parentId.get().set(parentId);

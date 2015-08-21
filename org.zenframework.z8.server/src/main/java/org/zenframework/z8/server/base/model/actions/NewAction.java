@@ -25,6 +25,7 @@ public class NewAction extends Action {
 
         guid recordId = guid.create();
         guid parentId = getParentIdParameter();
+        guid modelRecordId = getRecordIdParameter();
         
         Field backwardLink = actionParameters().keyField;
 
@@ -32,7 +33,7 @@ public class NewAction extends Action {
             backwardLink.set(getRecordIdParameter());
         }
 
-        Collection<Field> fields = run(query, recordId, parentId);
+        Collection<Field> fields = run(query, recordId, parentId, modelRecordId);
 
         initLinks(fields);
 
@@ -116,10 +117,10 @@ public class NewAction extends Action {
         return fields;
     }
 
-    static public Collection<Field> run(Query query, guid recordId, guid parentId) {
+    static public Collection<Field> run(Query query, guid recordId, guid parentId, guid modelRecordId) {
         Collection<Field> fields = query.getRootQuery().getDataFields();
 
-        query.onNew(recordId, parentId != null ? parentId : guid.NULL);
+        query.onNew(recordId, parentId != null ? parentId : guid.NULL, modelRecordId);
 
         initFields(fields, recordId, parentId);
 
