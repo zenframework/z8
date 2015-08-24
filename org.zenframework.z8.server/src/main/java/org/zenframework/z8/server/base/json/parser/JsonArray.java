@@ -42,7 +42,8 @@ public class JsonArray extends OBJECT {
     }
 
     public void operatorAssign(string source) {
-        array = new org.zenframework.z8.server.json.parser.JsonArray(source.get());
+        array = source.isEmpty() ? new org.zenframework.z8.server.json.parser.JsonArray()
+                : new org.zenframework.z8.server.json.parser.JsonArray(source.get());
     }
 
     public org.zenframework.z8.server.json.parser.JsonArray getInternalArray() {
@@ -175,6 +176,10 @@ public class JsonArray extends OBJECT {
         JsonArray.CLASS<JsonArray> jsonArray = new JsonArray.CLASS<JsonArray>(null);
         jsonArray.get().set(json);
         return jsonArray;
+    }
+
+    public static JsonArray.CLASS<JsonArray> z8_newJsonArray(string source) {
+        return getJsonArray(new org.zenframework.z8.server.json.parser.JsonArray(source.get()));
     }
 
 }
