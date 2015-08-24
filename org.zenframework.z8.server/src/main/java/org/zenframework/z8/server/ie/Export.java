@@ -245,7 +245,7 @@ public class Export extends OBJECT {
 
     private String getProtocol() {
         int pos = transportUrl.indexOf(':');
-        return pos > 0 ? transportUrl.substring(0, pos) : null;
+        return pos > 0 ? transportUrl.substring(0, pos) : NULL_PROTOCOL;
     }
 
     private String getAddress() {

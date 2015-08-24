@@ -99,14 +99,6 @@ public class TableGenerator {
         return connection.vendor();
     }
 
-    public void beforeGenerate() {
-        table().beforeGenerate();
-    }
-    
-    public void afterGenerate() {
-        table().afterGenerate();
-    }
-    
     public void create(Connection connection) {
         this.connection = connection;
 

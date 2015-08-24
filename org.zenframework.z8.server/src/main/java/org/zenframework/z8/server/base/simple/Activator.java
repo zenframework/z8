@@ -26,11 +26,17 @@ public class Activator extends OBJECT {
         z8_onInitialize();
     }
 
+    public void beforeDbGenerated() {
+        z8_beforeDbGenerated();
+    }
+
     public void afterDbGenerated() {
         z8_afterDbGenerated();
     }
 
     public void z8_onInitialize() {}
+
+    public void z8_beforeDbGenerated() {}
 
     public void z8_afterDbGenerated() {}
 

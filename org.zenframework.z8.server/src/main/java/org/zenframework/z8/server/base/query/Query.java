@@ -176,25 +176,25 @@ public class Query extends Runnable {
         return (Query.CLASS<? extends Query>) this.getCLASS();
     }
 
-    public void onNew(guid recordId, guid parentId) {
+    public void onNew(guid recordId, guid parentId, guid modelRecordId) {
         if (contextQuery != null) {
-            contextQuery.onNew(this, recordId, parentId);
+            contextQuery.onNew(this, recordId, parentId, modelRecordId);
         }
 
         if (contextQuery != this) {
-            onNew(this, recordId, parentId);
+            onNew(this, recordId, parentId, modelRecordId);
         }
 
         Query rootQuery = getRootQuery();
 
         if (rootQuery != this) {
-            rootQuery.onNew(rootQuery, recordId, parentId);
+            rootQuery.onNew(rootQuery, recordId, parentId, modelRecordId);
         }
     }
 
-    protected void onNew(Query data, guid recordId, guid parentId) {
+    protected void onNew(Query data, guid recordId, guid parentId, guid modelRecordId) {
         if (ApplicationServer.events())
-            z8_onNew(data.myClass(), recordId, parentId);
+            z8_onNew(data.myClass(), recordId, parentId, modelRecordId);
     }
 
     public void onCopy() {
@@ -709,13 +709,13 @@ public class Query extends Runnable {
     }
 
     public guid create(guid recordId, guid parentId, guid modelRecordId) {
-        NewAction.run(this, recordId, parentId);
+        NewAction.run(this, recordId, parentId, modelRecordId);
         return insert(recordId, parentId, modelRecordId);
     }
 
     public guid copy(guid recordId) {
         guid parentId = getParentId();
-        guid newRecordId = CopyAction.run(this, recordId, parentId);
+        guid newRecordId = CopyAction.run(this, recordId, parentId, guid.NULL);
         return insert(newRecordId, parentId, getModelRecordId(newRecordId));
     }
 
@@ -2410,7 +2410,7 @@ public class Query extends Runnable {
         return new bool(next());
     }
 
-    public void z8_onNew(Query.CLASS<? extends Query> query, guid recordId, guid parentId) {}
+    public void z8_onNew(Query.CLASS<? extends Query> query, guid recordId, guid parentId, guid modelRecordId) {}
 
     public void z8_onCopy(Query.CLASS<? extends Query> query) {}
 

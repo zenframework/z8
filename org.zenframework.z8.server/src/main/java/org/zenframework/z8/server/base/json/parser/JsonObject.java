@@ -46,7 +46,8 @@ public class JsonObject extends OBJECT {
     }
 
     public void operatorAssign(string source) {
-        object = new org.zenframework.z8.server.json.parser.JsonObject(source.get());
+        object = source.isEmpty() ? new org.zenframework.z8.server.json.parser.JsonObject()
+                : new org.zenframework.z8.server.json.parser.JsonObject(source.get());
     }
 
     public org.zenframework.z8.server.json.parser.JsonObject getInternalObject() {
@@ -113,7 +114,7 @@ public class JsonObject extends OBJECT {
 
     @SuppressWarnings("unchecked")
     public JsonObject.CLASS<? extends JsonObject> z8_put(string name, primary value) {
-        object.put(name,  value);
+        object.put(name, value);
         return (JsonObject.CLASS<? extends JsonObject>) getCLASS();
     }
 
@@ -156,6 +157,10 @@ public class JsonObject extends OBJECT {
         JsonObject.CLASS<JsonObject> jsonObject = new JsonObject.CLASS<JsonObject>(null);
         jsonObject.get().set(json);
         return jsonObject;
+    }
+
+    public static JsonObject.CLASS<JsonObject> z8_newJsonObject(string source) {
+        return getJsonObject(new org.zenframework.z8.server.json.parser.JsonObject(source.get()));
     }
 
 }

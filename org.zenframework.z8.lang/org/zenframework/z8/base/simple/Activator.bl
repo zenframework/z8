@@ -5,6 +5,7 @@ class Activator extends Object {
 
 	public virtual void onInitialize();
 
+	public virtual void beforeDbGenerated();
 	public virtual void afterDbGenerated();
 
 }

@@ -27,4 +27,6 @@ class TreeTable extends Table
 
 	public guid[] getParentsOf(guid recordId);
 	public guid[] getPathTo(guid recordId);
+	
+	public guid[] getPath();
 }

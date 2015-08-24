@@ -31,4 +31,6 @@ public class JsonObject extends Object {
     
     public JsonObject remove(string name);
 
+	public static JsonObject newJsonObject(string source);
+
 }

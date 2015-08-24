@@ -29,4 +29,6 @@ public class JsonArray extends Object {
     
     public JsonArray remove(int index);
 
+	public static JsonObject newJsonArray(string source);
+
 }
