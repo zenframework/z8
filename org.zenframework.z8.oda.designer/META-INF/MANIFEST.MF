@@ -14,5 +14,10 @@ Require-Bundle: org.zenframework.z8.pde;bundle-version="1.0.0",
  org.eclipse.datatools.connectivity.oda,
  org.eclipse.datatools.connectivity.oda.design.ui,
  org.eclipse.datatools.connectivity.oda.profile
-Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-ActivationPolicy: lazy
+Export-Package: org.zenframework.z8.oda.designer,
+ org.zenframework.z8.oda.designer.plugin,
+ org.zenframework.z8.oda.designer.plugin.icons,
+ org.zenframework.z8.oda.designer.ui.preferences,
+ org.zenframework.z8.oda.designer.ui.wizards
