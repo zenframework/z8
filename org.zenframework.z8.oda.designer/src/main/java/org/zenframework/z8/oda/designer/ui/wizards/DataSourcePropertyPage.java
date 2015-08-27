@@ -35,7 +35,6 @@ public class DataSourcePropertyPage extends DataSourceEditorPage {
         pageHelper.initCustomControl(customConnectionProps);
 
         enableAllControls(getControl(), isSessionEditable());
-        pageHelper.resetTestButton();
     }
 
 }

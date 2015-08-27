@@ -12,7 +12,7 @@ import org.eclipse.datatools.connectivity.oda.OdaException;
 import org.eclipse.datatools.connectivity.oda.design.DataSetDesign;
 import org.eclipse.datatools.connectivity.oda.design.DataSourceDesign;
 import org.eclipse.datatools.connectivity.oda.design.ui.designsession.DesignSessionUtil;
-
+import org.zenframework.z8.oda.designer.plugin.Plugin;
 import org.zenframework.z8.oda.driver.Driver;
 
 class MetaDataRetriever {
@@ -42,7 +42,6 @@ class MetaDataRetriever {
 
         }
         catch(OdaException e) {}
-
     }
 
     IParameterMetaData getParameterMetaData() {
