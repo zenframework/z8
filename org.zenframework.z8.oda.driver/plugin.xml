@@ -19,25 +19,9 @@
 					name="connectionProperties">
 					<property
 						type="string"
-						defaultDisplayName="Home"
-						canInherit="true"
-						name="home"/>
-					<property
-						type="string"
 						defaultDisplayName="Data Source"
 						canInherit="true"
 						name="dataSource"/>
-					<property
-						type="string"
-						defaultDisplayName="User Name"
-						canInherit="true"
-						name="user"/>
-					<property
-						isEncryptable="true"
-						type="string"
-						canInherit="true"
-						defaultDisplayName="Password"
-						name="password"/>
 				</propertyGroup>
 				<propertyVisibility name="dataSource" visibility="hide"/>
 			</properties>

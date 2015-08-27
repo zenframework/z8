@@ -11,6 +11,7 @@ import org.eclipse.datatools.connectivity.oda.util.manifest.ManifestExplorer;
 public class Driver implements IDriver {
     static String ODA_DATA_SOURCE_ID = "org.zenframework.z8.oda.driver";
 
+    
     @Override
     public IConnection getConnection(String dataSourceType) throws OdaException {
         return new OdaConnection();
