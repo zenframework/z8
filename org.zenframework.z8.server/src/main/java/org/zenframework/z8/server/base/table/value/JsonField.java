@@ -1,7 +1,10 @@
 package org.zenframework.z8.server.base.table.value;
 
+import org.zenframework.z8.server.base.json.Json;
+import org.zenframework.z8.server.base.json.parser.JsonArray;
 import org.zenframework.z8.server.base.json.parser.JsonObject;
 import org.zenframework.z8.server.runtime.IObject;
+import org.zenframework.z8.server.types.primary;
 
 public class JsonField extends TextField {
 
@@ -22,23 +25,41 @@ public class JsonField extends TextField {
         super(container);
     }
 
-    public org.zenframework.z8.server.json.parser.JsonObject getJson() {
-        return new org.zenframework.z8.server.json.parser.JsonObject(get().toString());
+    public org.zenframework.z8.server.json.Json getJson() {
+        return new org.zenframework.z8.server.json.Json(get().toString());
     }
 
-    public void set(org.zenframework.z8.server.json.parser.JsonObject json) {
-        set(json.toString());        
+    public void set(org.zenframework.z8.server.json.Json json) {
+        set(json.toString());
     }
 
-    public JsonObject.CLASS<JsonObject> z8_getJson() {
-        JsonObject.CLASS<JsonObject> jsonObject = new JsonObject.CLASS<JsonObject>(null);
-        jsonObject.get().set(getJson());
-        return jsonObject;
+    public Json.CLASS<Json> z8_getJson() {
+        Json.CLASS<Json> json = new Json.CLASS<Json>(null);
+        json.get().set(getJson());
+        return json;
     }
     
     @SuppressWarnings("unchecked")
+    public TextField.CLASS<? extends TextField> operatorAssign(primary value) {
+        set(value);
+        return (TextField.CLASS<? extends TextField>) this.getCLASS();
+    }
+
+    @SuppressWarnings("unchecked")
     public TextField.CLASS<? extends TextField> operatorAssign(JsonObject.CLASS<? extends JsonObject> value) {
-        set(value.get().getInternalObject());
+        set(value.get().getInternalObject().toString());
+        return (TextField.CLASS<? extends TextField>) this.getCLASS();
+    }
+
+    @SuppressWarnings("unchecked")
+    public TextField.CLASS<? extends TextField> operatorAssign(JsonArray.CLASS<? extends JsonArray> value) {
+        set(value.get().getInternalArray().toString());
+        return (TextField.CLASS<? extends TextField>) this.getCLASS();
+    }
+
+    @SuppressWarnings("unchecked")
+    public TextField.CLASS<? extends TextField> operatorAssign(Json.CLASS<? extends Json> value) {
+        set(value.get().getInternalJson());
         return (TextField.CLASS<? extends TextField>) this.getCLASS();
     }
 

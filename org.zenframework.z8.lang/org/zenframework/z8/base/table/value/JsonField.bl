@@ -1,9 +1,14 @@
 import org.zenframework.z8.base.json.JsonObject;
+import org.zenframework.z8.base.json.JsonArray;
+import org.zenframework.z8.base.json.Json;
 
 [native "org.zenframework.z8.server.base.table.value.JsonField"]
 class JsonField extends TextField
 {
-	public JsonObject getJson();
+	public Json getJson();
 
+	public JsonField operator = (primary value);
 	public JsonField operator = (JsonObject value);
+	public JsonField operator = (JsonArray value);
+	public JsonField operator = (Json value);
 }

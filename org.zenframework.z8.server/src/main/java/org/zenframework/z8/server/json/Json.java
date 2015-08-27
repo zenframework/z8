@@ -1,10 +1,18 @@
 package org.zenframework.z8.server.json;
 
-import org.zenframework.z8.server.base.json.parser.JsonObject;
-import org.zenframework.z8.server.base.table.value.Field;
+import java.util.Collection;
+import java.util.Map;
+
 import org.zenframework.z8.server.json.parser.JsonArray;
-import org.zenframework.z8.server.runtime.RCollection;
-import org.zenframework.z8.server.types.primary;
+import org.zenframework.z8.server.json.parser.JsonException;
+import org.zenframework.z8.server.json.parser.JsonObject;
+import org.zenframework.z8.server.json.parser.JsonTokener;
+import org.zenframework.z8.server.types.bool;
+import org.zenframework.z8.server.types.date;
+import org.zenframework.z8.server.types.datetime;
+import org.zenframework.z8.server.types.decimal;
+import org.zenframework.z8.server.types.guid;
+import org.zenframework.z8.server.types.integer;
 import org.zenframework.z8.server.types.string;
 
 public class Json {
@@ -227,69 +235,125 @@ public class Json {
     final static public string create = new string("create");
     final static public string destroy = new string("destroy");
 
-    public static JsonObject.CLASS<JsonObject> z8_getFilter(string field, primary value) {
-        return z8_getFilter(field, new string("eq"), value);
+    private Object object;
+
+    public Json() {
+        this(null);
     }
 
-    public static JsonObject.CLASS<JsonObject> z8_getFilter(Field.CLASS<? extends Field> field, primary value) {
-        return z8_getFilter(field, new string("eq"), value);
-    }
-
-    @SuppressWarnings("rawtypes")
-    public static JsonObject.CLASS<JsonObject> z8_getFilter(string field, RCollection values) {
-        return z8_getFilter(field, new string("eq"), values);
-    }
-
-    @SuppressWarnings("rawtypes")
-    public static JsonObject.CLASS<JsonObject> z8_getFilter(Field.CLASS<? extends Field> field, RCollection values) {
-        return z8_getFilter(field, new string("eq"), values);
-    }
-
-    public static JsonObject.CLASS<JsonObject> z8_getFilter(string field, string operator, primary value) {
-        return z8_getFilter(field, operator, value, new string("and"));
-    }
-
-    public static JsonObject.CLASS<JsonObject> z8_getFilter(Field.CLASS<? extends Field> field, string operator, primary value) {
-        return z8_getFilter(field.get().z8_id(), operator, value);
-    }
-
-    @SuppressWarnings({ "unchecked", "rawtypes" })
-    public static JsonObject.CLASS<JsonObject> z8_getFilter(string field, string operator, RCollection values) {
-        return z8_getFilter(field, operator, encode(values));
-    }
-
-    @SuppressWarnings({ "unchecked", "rawtypes" })
-    public static JsonObject.CLASS<JsonObject> z8_getFilter(Field.CLASS<? extends Field> field, string operator, RCollection values) {
-        return z8_getFilter(field, operator, encode(values));
-    }
-
-    public static JsonObject.CLASS<JsonObject> z8_getFilter(string field, string operator, primary value, string andOr) {
-        JsonObject.CLASS<JsonObject> filter = new JsonObject.CLASS<JsonObject>(null);
-        filter.get().z8_put(Json.property, field);
-        filter.get().z8_put(Json.operator, operator);
-        filter.get().z8_put(Json.value, value);
-        filter.get().z8_put(Json.andOr, andOr);
-        return filter;
-    }
-
-    public static JsonObject.CLASS<JsonObject> z8_getFilter(Field.CLASS<? extends Field> field, string operator, primary value, string andOr) {
-        return z8_getFilter(field.get().z8_id(), operator, value, andOr);
-    }
-
-    public static JsonObject.CLASS<JsonObject> z8_getFilter(string field, string operator, RCollection<primary> values, string andOr) {
-        return z8_getFilter(field, operator, encode(values), andOr);
-    }
-
-    public static JsonObject.CLASS<JsonObject> z8_getFilter(Field.CLASS<? extends Field> field, string operator, RCollection<primary> values, string andOr) {
-        return z8_getFilter(field, operator, encode(values), andOr);
-    }
-
-    private static string encode(RCollection<primary> values) {
-        JsonArray array = new JsonArray();
-        for (primary value : values) {
-            array.put(value);
+    public Json(Object object) {
+        if (object == null || object.equals(null)) {
+            this.object = org.zenframework.z8.server.json.parser.JsonObject.NULL;
+        } else if (object instanceof String) {
+            String str = (String) object;
+            JsonTokener tokener = new JsonTokener(str);
+            char c = tokener.nextClean();
+            tokener.back();
+            if (c == '{') {
+                this.object = new org.zenframework.z8.server.json.parser.JsonObject(tokener);
+            } else if (c == '[') {
+                this.object = new JsonArray(tokener);
+            } else {
+                this.object = object;
+            }
+        } else if (object instanceof bool) {
+            this.object = ((bool) object).get();
+        } else if (object instanceof integer) {
+            this.object = ((integer) object).get();
+        } else if (object instanceof decimal) {
+            this.object = ((decimal) object).get();
+        } else if (object instanceof date) {
+            this.object = ((date) object).get();
+        } else if (object instanceof datetime) {
+            this.object = ((datetime) object).get();
+        } else if (object instanceof Map) {
+            this.object = new org.zenframework.z8.server.json.parser.JsonObject((Map<?, ?>) object);
+        } else if (object instanceof Collection) {
+            this.object = new JsonArray((Collection<?>) object);
+        } else if (object.getClass().isArray()) {
+            this.object = new JsonArray(object);
+        } else {
+            this.object = object;
         }
-        return new string(array.toString());
+    }
+
+    public Object get() {
+        return object;
+    }
+
+    public String getString() throws JsonException {
+        return object == org.zenframework.z8.server.json.parser.JsonObject.NULL ? null : object.toString();
+    }
+
+    public boolean getBoolean() throws JsonException {
+        if (object.equals(Boolean.FALSE) || (object instanceof String && ((String) object).equalsIgnoreCase("false"))) {
+            return false;
+        } else if (object.equals(Boolean.TRUE) || (object instanceof String && ((String) object).equalsIgnoreCase("true"))) {
+            return true;
+        }
+        throw new JsonException("Is not a Boolean.");
+    }
+
+    public double getDouble() throws JsonException {
+        try {
+            return object instanceof Number ? ((Number) object).doubleValue() : Double.parseDouble((String) object);
+        } catch (Exception e) {
+            throw new JsonException("Is not a number.");
+        }
+    }
+
+    public int getInt() throws JsonException {
+        try {
+            return object instanceof Number ? ((Number) object).intValue() : Integer.parseInt((String) object);
+        } catch (Exception e) {
+            throw new JsonException("Is not an int.");
+        }
+    }
+
+    public JsonArray getJsonArray() throws JsonException {
+        if (object instanceof JsonArray) {
+            return (JsonArray) object;
+        }
+        throw new JsonException("Is not a JSONArray.");
+    }
+
+    public JsonObject getJsonObject() throws JsonException {
+        if (object instanceof JsonObject) {
+            return (JsonObject) object;
+        }
+        throw new JsonException("Is not a JSONObject.");
+    }
+
+    public long getLong() throws JsonException {
+        try {
+            return object instanceof Number ? ((Number) object).longValue() : Long.parseLong((String) object);
+        } catch (Exception e) {
+            throw new JsonException("Is not a long.");
+        }
+    }
+
+    public guid getGuid() throws JsonException {
+        return object instanceof guid ? (guid) object : new guid(object.toString());
+    }
+
+    public Json put(Object value) throws JsonException {
+        this.object = value;
+        return this;
+    }
+
+    public Json put(Collection<?> value) throws JsonException {
+        this.object = new JsonArray(value);
+        return this;
+    }
+
+    public Json put(Map<?, ?> value) throws JsonException {
+        this.object = new org.zenframework.z8.server.json.parser.JsonObject(value);
+        return this;
+    }
+
+    @Override
+    public String toString() {
+        return object.toString();
     }
 
 }

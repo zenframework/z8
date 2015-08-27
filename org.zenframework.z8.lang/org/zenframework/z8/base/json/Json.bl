@@ -1,212 +1,230 @@
+import org.zenframework.z8.lang.Object;
 import org.zenframework.z8.base.table.value.Field;
-[native "org.zenframework.z8.server.json.Json"]
 
-public class Json {
+[native "org.zenframework.z8.server.base.json.Json"]
+public class Json extends Object {
 
-    static public string eventId = "eventId";
+    static public string eventId;
 
-    static public string id = "id";
-    static public string index = "index";
+    static public string id;
+    static public string index;
 
-    static public string sessionId = "sessionId";
-    static public string serverId = "serverId";
-    static public string service = "service";
-    static public string retry = "retry";
+    static public string sessionId;
+    static public string serverId;
+    static public string service;
+    static public string retry;
 
-    static public string upload = "upload";
+    static public string upload;
 
-    static public string user = "user";
-    static public string name = "name";
-    static public string displayName = "displayName";
-    static public string login = "login";
-    static public string password = "password";
-    static public string newPassword = "newPassword";
+    static public string user;
+    static public string name;
+    static public string displayName;
+    static public string login;
+    static public string password;
+    static public string newPassword;
 
-    static public string components = "components";
-    static public string settings = "settings";
+    static public string components;
+    static public string settings;
 
-    static public string isQuery = "isQuery";
-    static public string isJob = "isJob";
-    static public string isSection = "isSection";
+    static public string isQuery;
+    static public string isJob;
+    static public string isSection;
 
-    static public string info = "info";
-    static public string messages = "messages";
-    static public string get = "get";
-    static public string send = "send";
-    static public string users = "users";
-    static public string recipient = "recipient";
-    static public string sender = "sender";
+    static public string info;
+    static public string messages;
+    static public string get;
+    static public string send;
+    static public string users;
+    static public string recipient;
+    static public string sender;
 
-    static public string requestId = "requestId";
-    static public string requestUrl = "requestUrl";
-    static public string formToOpen = "formToOpen";
-    static public string formId = "formId";
-    static public string message = "message";
-    static public string success = "success";
-    static public string status = "status";
+    static public string requestId;
+    static public string requestUrl;
+    static public string formToOpen;
+    static public string formId;
+    static public string message;
+    static public string success;
+    static public string status;
 
-    static public string serverType = "serverType";
-    static public string aggregation = "aggregation";
-    static public string readOnly = "readOnly";
-    static public string writeAccess = "writeAccess";
-    static public string deleteAccess = "deleteAccess";
-    static public string importAccess = "importAccess";
+    static public string serverType;
+    static public string aggregation;
+    static public string readOnly;
+    static public string writeAccess;
+    static public string deleteAccess;
+    static public string importAccess;
 
-    static public string visible = "visible";
-    static public string hidden = "hidden";
-    static public string hidable = "hidable";
-    static public string formula = "formula";
-    static public string evaluations = "evaluations";
-    static public string dependencies = "dependencies";
-    static public string width = "width";
-    static public string height = "height";
-    static public string length = "length";
-    static public string size = "size";
-    static public string lines = "lines";
-    static public string stretch = "stretch";
-    static public string priority = "priority";
-    static public string required = "required";
-    static public string period = "period";
-    static public string min = "min";
-    static public string max = "max";
+    static public string visible;
+    static public string hidden;
+    static public string hidable;
+    static public string formula;
+    static public string evaluations;
+    static public string dependencies;
+    static public string width;
+    static public string height;
+    static public string length;
+    static public string size;
+    static public string lines;
+    static public string stretch;
+    static public string priority;
+    static public string required;
+    static public string period;
+    static public string min;
+    static public string max;
 
-    static public string row = "row";
-    static public string column = "column";
-    static public string items = "items";
+    static public string row;
+    static public string column;
+    static public string items;
 
-    static public string columnWidth = "columnWidth";
-    static public string labelWidth = "labelWidth";
+    static public string columnWidth;
+    static public string labelWidth;
 
-    static public string link = "link";
-    static public string editWith = "editWith";
-    static public string editWithText = "editWithText";
+    static public string link;
+    static public string editWith;
+    static public string editWithText;
 
-    static public string grid = "grid";
-    static public string tree = "tree";
-    static public string parentsSelectable = "parentsSelectable";
+    static public string grid;
+    static public string tree;
+    static public string parentsSelectable;
 
-    static public string key = "key";
-    static public string field = "field";
-    static public string value = "value";
-    static public string type = "type";
-    static public string query = "query";
-    static public string table = "table";
+    static public string key;
+    static public string field;
+    static public string value;
+    static public string type;
+    static public string query;
+    static public string table;
 
-    static public string external = "external";
-    static public string internal = "internal";
+    static public string external;
+    static public string internal;
 
-    static public string queryId = "queryId";
-    static public string groupId = "groupId";
-    static public string fieldId = "fieldId";
-    static public string linkId = "linkId";
-    static public string recordId = "recordId";
-    static public string parentId = "parentId";
-    static public string linked = "linked";
-    static public string linkedVia = "linkedVia";
-    static public string depth = "depth";
-    static public string anchor = "anchor";
-    static public string anchorPolicy = "anchorPolicy";
-    static public string lookupFields = "lookupFields";
-    static public string ids = "ids";
+    static public string queryId;
+    static public string groupId;
+    static public string fieldId;
+    static public string linkId;
+    static public string recordId;
+    static public string parentId;
+    static public string linked;
+    static public string linkedVia;
+    static public string depth;
+    static public string anchor;
+    static public string anchorPolicy;
+    static public string lookupFields;
+    static public string ids;
 
-    static public string property = "property";
-    static public string record = "record";
-    static public string lookup = "lookup";
-    static public string sort = "sort";
-    static public string groupBy = "groupBy";
-    static public string totalsBy = "totalsBy";
-    static public string dir = "dir";
-    static public string direction = "direction";
-    static public string groupDir = "groupDir";
-    static public string groupValue = "groupValue";
-    static public string groups = "groups";
+    static public string property;
+    static public string record;
+    static public string lookup;
+    static public string sort;
+    static public string groupBy;
+    static public string totalsBy;
+    static public string dir;
+    static public string direction;
+    static public string groupDir;
+    static public string groupValue;
+    static public string groups;
 
-    static public string filterBy = "filterBy";
+    static public string filterBy;
 
-    static public string filter = "filter";
-    static public string filter1 = "filter1";
-    static public string comparison = "comparison";
-    static public string andOr = "andOr";
+    static public string filter;
+    static public string filter1;
+    static public string comparison;
+    static public string andOr;
 
-    static public string primaryKey = "primaryKey";
-    static public string parentKey = "parentKey";
-    static public string children = "children";
-    static public string lockKey = "lockKey";
-    static public string attachments = "attachments";
+    static public string primaryKey;
+    static public string parentKey;
+    static public string children;
+    static public string lockKey;
+    static public string attachments;
 
-    static public string action = "xaction";
-    static public string data = "data";
-    static public string summaryData = "summaryData";
-    static public string totalsData = "totalsData";
-    static public string command = "command";
+    static public string action;
+    static public string data;
+    static public string summaryData;
+    static public string totalsData;
+    static public string command;
 
-    static public string format = "format";
-    static public string report = "report";
-    static public string options = "options";
+    static public string format;
+    static public string report;
+    static public string options;
 
-    static public string pageFormat = "pageFormat";
-    static public string pageOrientation = "pageOrientation";
+    static public string pageFormat;
+    static public string pageOrientation;
 
-    static public string leftMargin = "leftMargin";
-    static public string rightMargin = "rightMargin";
-    static public string topMargin = "topMargin";
-    static public string bottomMargin = "bottomMargin";
+    static public string leftMargin;
+    static public string rightMargin;
+    static public string topMargin;
+    static public string bottomMargin;
 
-    static public string total = "total";
-    static public string start = "start";
-    static public string finish = "finish";
-    static public string limit = "limit";
-    static public string count = "count";
+    static public string total;
+    static public string start;
+    static public string finish;
+    static public string limit;
+    static public string count;
 
-    static public string log = "log";
-    static public string file = "file";
-    static public string files = "files";
-    static public string source = "source";
-    static public string target = "target";
-    static public string image = "image";
-    static public string time = "time";
+    static public string log;
+    static public string file;
+    static public string files;
+    static public string source;
+    static public string target;
+    static public string image;
+    static public string time;
 
-    static public string fields = "fields";
-    static public string section = "section";
-    static public string controls = "controls";
-    static public string actions = "actions";
-    static public string columns = "columns";
-    static public string backwards = "backwards";
-    static public string commands = "commands";
-    static public string parameters = "parameters";
-    static public string reports = "reports";
-    static public string collapseGroups = "collapseGroups";
-    static public string showTotals = "showTotals";
-    static public string viewMode = "viewMode";
-    static public string fieldsToShow = "fieldsToShow";
+    static public string fields;
+    static public string section;
+    static public string controls;
+    static public string actions;
+    static public string columns;
+    static public string backwards;
+    static public string commands;
+    static public string parameters;
+    static public string reports;
+    static public string collapseGroups;
+    static public string showTotals;
+    static public string viewMode;
+    static public string fieldsToShow;
 
-    static public string chartType = "chartType";
-    static public string chartSeries = "chartSeries";
+    static public string chartType;
+    static public string chartSeries;
 
-    static public string style = "style";
-    static public string color = "color";
-    static public string background = "background";
-    static public string bold = "bold";
+    static public string style;
+    static public string color;
+    static public string background;
+    static public string bold;
 
-    static public string jobId = "jobId";
-    static public string done = "done";
-    static public string totalWork = "totalWork";
-    static public string worked = "worked";
-    static public string feedback = "feedback";
+    static public string jobId;
+    static public string done;
+    static public string totalWork;
+    static public string worked;
+    static public string feedback;
 
-    static public string text = "text";
-    static public string description = "description";
-    static public string label = "label";
-    static public string header = "header";
-    static public string colspan = "colspan";
-    static public string rowspan = "rowspan";
-    static public string showLabel = "showLabel";
-    static public string icon = "icon";
-    static public string help = "help";
+    static public string text;
+    static public string description;
+    static public string label;
+    static public string header;
+    static public string colspan;
+    static public string rowspan;
+    static public string showLabel;
+    static public string icon;
+    static public string help;
 
-    static public string expanded = "expanded";
-    static public string loaded = "loaded";
-    static public string leaf = "leaf";
+    static public string expanded;
+    static public string loaded;
+    static public string leaf;
+
+	public void operator = (string value);
+
+    public string getString();
+    public int getInt();
+    public decimal getDecimal();
+    public bool getBool();
+    public guid getGuid();
+
+    public JsonArray getJsonArray();
+    public JsonObject getJsonObject();
+
+    public JsonArray put(primary value);
+    public JsonArray put(JsonArray value);
+    public JsonArray put(JsonObject value);
+
+	static public Json getJson(string value);
 
     static public JsonObject getFilter(string field, primary value);
     static public JsonObject getFilter(Field field, primary value);

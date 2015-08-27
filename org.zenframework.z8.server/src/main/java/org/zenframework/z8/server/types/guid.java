@@ -12,9 +12,9 @@ import org.zenframework.z8.server.types.sql.sql_guid;
 public class guid extends primary implements Serializable {
     private static final long serialVersionUID = 57247032014966596L;
 
-    private static final String nullValue = "00000000-0000-0000-0000-000000000000";
+    private static final UUID nullValue = UUID.fromString("00000000-0000-0000-0000-000000000000");
 
-    private String m_value;
+    private UUID m_value;
 
     static final public guid NULL = new guid() {
         private static final long serialVersionUID = -7903861384935876679L;
@@ -34,11 +34,15 @@ public class guid extends primary implements Serializable {
     }
     
     public guid(UUID guid) {
-        set(guid != null ? guid.toString() : nullValue);
+        set(guid != null ? guid : nullValue);
     }
 
     public guid(String guid) {
-        set(guid != null ? guid : nullValue);
+        if (guid != null) {
+            set(guid);
+        } else {
+            set(nullValue);
+        }
     }
 
     public guid(byte[] data) {
@@ -73,15 +77,19 @@ public class guid extends primary implements Serializable {
 
     @Override
     public String toString() {
-        return toString(true);
+        return m_value.toString().toUpperCase();
     }
 
     public String toString(boolean useDelimiter) {
-        return useDelimiter ? m_value : m_value.replace("-", "");
+        return (useDelimiter ? m_value.toString() : m_value.toString().replace("-", "")).toUpperCase();
     }
 
-    public UUID toUUID() {
-        return UUID.fromString(toString());
+    public UUID get() {
+        return m_value;
+    }
+
+    public void set(UUID value) {
+        m_value = value;
     }
 
     public void set(guid value) {
@@ -90,18 +98,14 @@ public class guid extends primary implements Serializable {
 
     public void set(String value) {
         if(value == null || value.trim().equals("") || value.trim().equals("0")) {
-            m_value = defaultValue().toString(true);
+            m_value = nullValue;
         }
         else {
             if(value.length() == 32) {
-                m_value = value.substring(0, 8) + "-" + value.substring(8, 12) + "-" + value.substring(12, 16) + "-"
+                value = value.substring(0, 8) + "-" + value.substring(8, 12) + "-" + value.substring(12, 16) + "-"
                         + value.substring(16, 20) + "-" + value.substring(20, 32);
             }
-            else {
-                m_value = value;
-            }
-
-            m_value = m_value.toUpperCase();
+            m_value = UUID.fromString(value);
         }
     }
 

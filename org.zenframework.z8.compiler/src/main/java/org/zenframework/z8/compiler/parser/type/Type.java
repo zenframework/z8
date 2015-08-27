@@ -452,7 +452,7 @@ public class Type extends AbstractType {
         String base = getBaseType() == null ? BuiltinNative.OBJECT : getBaseType().getJavaName();
 
         codeGenerator.indent();
-        codeGenerator.append("@SuppressWarnings(\"unchecked\")");
+        codeGenerator.append("@SuppressWarnings(\"all\")");
         codeGenerator.breakLine();
         codeGenerator.indent();
         codeGenerator.append("public class " + getJavaName() + " extends " + base);
