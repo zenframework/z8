@@ -43,7 +43,6 @@ public class Loader {
      *  outerClassName is the canonical name of the top level class
      *  __number is the name of the inner class
      */
-
     private static String innerClassPrefix = "__";
 
     static private CLASS<?> doLoadClass(String className) {

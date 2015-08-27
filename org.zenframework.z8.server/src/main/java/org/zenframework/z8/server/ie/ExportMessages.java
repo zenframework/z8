@@ -100,7 +100,7 @@ public class ExportMessages extends Table {
 
     public Message.CLASS<Message> getMessage() throws JAXBException {
         Message.CLASS<Message> message = new Message.CLASS<Message>();
-        message.get().setId(recordId().toUUID());
+        message.get().setId(recordId().get());
         message.get().setAddress(getReceiver());
         message.get().setExportEntry(IeUtil.unmarshalExportEntry(this.message.get().get().toString()));
         return message;

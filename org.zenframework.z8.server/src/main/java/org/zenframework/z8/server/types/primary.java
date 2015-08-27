@@ -1,9 +1,13 @@
 package org.zenframework.z8.server.types;
 
+import java.io.File;
+import java.io.Serializable;
+import java.math.BigDecimal;
+import java.util.GregorianCalendar;
+import java.util.UUID;
+
 import org.zenframework.z8.server.db.DatabaseVendor;
 import org.zenframework.z8.server.db.FieldType;
-
-import java.io.Serializable;
 
 public class primary implements Serializable {
     private static final long serialVersionUID = -5451269487666667578L;
@@ -74,6 +78,58 @@ public class primary implements Serializable {
 
     public integer integer() {
         return (integer)this;
+    }
+
+    public static Object unwrap(Object o) {
+        if (o instanceof binary) {
+            return ((binary) o).getBytes();
+        } else if (o instanceof bool) {
+            return ((bool) o).get();
+        } else if (o instanceof date) {
+            return ((date) o).get();
+        } else if (o instanceof datespan) {
+            return ((datespan) o).get();
+        } else if (o instanceof datetime) {
+            return ((datetime) o).get();
+        } else if (o instanceof decimal) {
+            return ((decimal) o).get();
+        } else if (o instanceof file) {
+            return ((file) o).get();
+        } else if (o instanceof guid) {
+            return ((guid) o).get();
+        } else if (o instanceof integer) {
+            return ((integer) o).get();
+        } else if (o instanceof string) {
+            return ((string) o).get();
+        } else {
+            return o;
+        }
+    }
+
+    public static primary wrap(Object o) {
+        if (o instanceof primary) {
+            return (primary) o;
+        } else if (o instanceof byte[] || o instanceof Byte[]) {
+            return new binary((byte[]) o);
+        } else if (o instanceof Boolean) {
+            return new bool((Boolean) o);
+        } else if (o instanceof GregorianCalendar) {
+            return new datetime((GregorianCalendar) o);
+        } else if (o instanceof Float || o instanceof Double) {
+            return new decimal((Double) o);
+        } else if (o instanceof BigDecimal) {
+            return new decimal((BigDecimal) o);
+        } else if (o instanceof File) {
+            return new file((File) o);
+        } else if (o instanceof UUID) {
+            return new guid((UUID) o);
+        } else if (o instanceof Byte || o instanceof Short || o instanceof Integer || o instanceof Long) {
+            return new integer((Long) o);
+        } else if (o instanceof String) {
+            return new string((String) o);
+        } else {
+            throw new UnsupportedOperationException();
+        }
     }
 
     static public primary create(FieldType type) {

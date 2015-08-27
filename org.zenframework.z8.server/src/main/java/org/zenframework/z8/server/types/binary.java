@@ -106,7 +106,7 @@ public class binary extends primary {
         return size;
     }
 
-    private byte[] getBytes() {
+    public byte[] getBytes() {
         try {
             ByteArrayOutputStream output = new ByteArrayOutputStream();
             try {

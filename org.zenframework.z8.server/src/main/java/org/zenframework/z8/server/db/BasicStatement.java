@@ -128,7 +128,7 @@ public abstract class BasicStatement implements IStatement {
             break;
         }
         case Postgres:
-            statement.setObject(position, value.toUUID());
+            statement.setObject(position, value.get());
             break;
         default:
             statement.setString(position, value.toDbString(vendor()));
