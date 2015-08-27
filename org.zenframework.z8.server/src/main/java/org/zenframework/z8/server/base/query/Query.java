@@ -511,11 +511,7 @@ public class Query extends Runnable {
         Collection<String> classNames = birtXMLReader.getDataSets();
 
         for (String className : classNames) {
-            if (className.endsWith(".CLASS")) {
-                int index = className.lastIndexOf(".CLASS");
-                className = className.substring(0, index);
-            }
-
+            className = className.split(";")[0];
             result.add((Query) Loader.getInstance(className));
         }
 
