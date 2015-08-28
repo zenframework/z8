@@ -3,10 +3,9 @@ package org.zenframework.z8.server.runtime;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.zenframework.z8.server.base.json.parser.JsonArray;
 import org.zenframework.z8.server.engine.ApplicationServer;
 import org.zenframework.z8.server.json.Json;
-import org.zenframework.z8.server.json.parser.JsonArray;
-import org.zenframework.z8.server.json.parser.JsonObject;
 import org.zenframework.z8.server.request.INamedObject;
 import org.zenframework.z8.server.request.RequestTarget;
 import org.zenframework.z8.server.security.IUser;
@@ -37,7 +36,6 @@ public class OBJECT extends RequestTarget implements IObject {
     private CLASS<? extends OBJECT> cls = null;
 
     private Map<String, String> attributes = new HashMap<String, String>();
-    public org.zenframework.z8.server.base.json.parser.JsonArray.CLASS<? extends org.zenframework.z8.server.base.json.parser.JsonArray> response = null;
 
     public bool accessible = new bool(true);
 
@@ -341,7 +339,7 @@ public class OBJECT extends RequestTarget implements IObject {
         return new bool(this != object.get());
     }
 
-    public void write(JsonObject writer) {
+    public void write(org.zenframework.z8.server.json.parser.JsonObject writer) {
         writer.put(Json.text, displayName());
         writer.put(Json.description, description());
         writer.put(Json.icon, icon());
@@ -349,8 +347,8 @@ public class OBJECT extends RequestTarget implements IObject {
     }
     
     @Override
-    public void writeResponse(JsonObject writer) throws Throwable {
-        JsonArray response = response();
+    public void writeResponse(org.zenframework.z8.server.json.parser.JsonObject writer) throws Throwable {
+        org.zenframework.z8.server.json.parser.JsonArray response = response();
         if (response != null) {
             writer.put(Json.data, response);
         }
@@ -372,21 +370,19 @@ public class OBJECT extends RequestTarget implements IObject {
         return writer;
     }
     
-    public JsonArray response() {
-        if (response == null) {
-            RLinkedHashMap<string, string> parameters = convertParameters(getParameters());
-            response = z8_response(parameters);
-            if (parameters.isModified()) {
-                Map<String, String> baseParams = getParameters();
-                for (Map.Entry<string, string> entry : parameters.entrySet()) {
-                    baseParams.put(entry.getKey().get(), entry.getValue().get());
-                }
+    public org.zenframework.z8.server.json.parser.JsonArray response() {
+        RLinkedHashMap<string, string> parameters = convertParameters(getParameters());
+        JsonArray.CLASS<? extends JsonArray> response = z8_response(parameters);
+        if (parameters.isModified()) {
+            Map<String, String> baseParams = getParameters();
+            for (Map.Entry<string, string> entry : parameters.entrySet()) {
+                baseParams.put(entry.getKey().get(), entry.getValue().get());
             }
         }
         return response != null ? response.get().getInternalArray() : null;
     }
     
-    public org.zenframework.z8.server.base.json.parser.JsonArray.CLASS<? extends org.zenframework.z8.server.base.json.parser.JsonArray> z8_response(RLinkedHashMap<string, string> parameters) {
+    public JsonArray.CLASS<? extends JsonArray> z8_response(RLinkedHashMap<string, string> parameters) {
         return null;
     }
 

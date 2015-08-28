@@ -6,6 +6,13 @@ final class file extends primary
 	public void operator = (string path);
 	
 	public string getPath();
+	public string getName();
+	public string getBaseName();
+	public string getExtension();
+
+	public bool isDirectory();
+	public string[] list();
+	public file[] listFiles();
 	
 	public string read();
 	public string read(encoding charset);
