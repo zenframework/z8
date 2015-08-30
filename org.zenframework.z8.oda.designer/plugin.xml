@@ -55,23 +55,6 @@
 		</dataSetUI>
 	</extension>
    
-	<extension
-		point="org.eclipse.ui.propertyPages">
-		<page
-			id="org.zenframework.z8.oda.driver"
-			name="Z8 Data Source"
-			class="org.zenframework.z8.oda.designer.ui.wizards.DataSourcePropertyPage">
-			<enabledWhen>
-				<instanceof
-					value="org.eclipse.datatools.connectivity.IConnectionProfile">
-				</instanceof>
-			</enabledWhen>
-			<filter
-				name="org.eclipse.datatools.profile.property.id"
-				value="org.zenframework.z8.oda.driver"/>
-			</page>
-	</extension>
-
  	<extension
  		point="org.eclipse.ui.preferencePages">
 		<page

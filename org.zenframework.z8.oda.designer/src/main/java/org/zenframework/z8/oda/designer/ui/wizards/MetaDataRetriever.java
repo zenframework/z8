@@ -2,7 +2,6 @@ package org.zenframework.z8.oda.designer.ui.wizards;
 
 import java.util.Properties;
 
-import org.eclipse.datatools.connectivity.oda.IAdvancedQuery;
 import org.eclipse.datatools.connectivity.oda.IConnection;
 import org.eclipse.datatools.connectivity.oda.IDriver;
 import org.eclipse.datatools.connectivity.oda.IParameterMetaData;
@@ -12,7 +11,6 @@ import org.eclipse.datatools.connectivity.oda.OdaException;
 import org.eclipse.datatools.connectivity.oda.design.DataSetDesign;
 import org.eclipse.datatools.connectivity.oda.design.DataSourceDesign;
 import org.eclipse.datatools.connectivity.oda.design.ui.designsession.DesignSessionUtil;
-import org.zenframework.z8.oda.designer.plugin.Plugin;
 import org.zenframework.z8.oda.driver.Driver;
 
 class MetaDataRetriever {
@@ -36,10 +34,7 @@ class MetaDataRetriever {
 
             paramMeta = query.getParameterMetaData();
 
-            if(query instanceof IAdvancedQuery) {
-                resultMeta = query.getMetaData();
-            }
-
+            resultMeta = query.getMetaData();
         }
         catch(OdaException e) {}
     }
