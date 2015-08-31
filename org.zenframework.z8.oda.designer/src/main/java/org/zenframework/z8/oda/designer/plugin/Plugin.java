@@ -1,5 +1,6 @@
 package org.zenframework.z8.oda.designer.plugin;
 
+import java.io.File;
 import java.text.MessageFormat;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
@@ -7,6 +8,7 @@ import java.util.ResourceBundle;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
+import org.zenframework.z8.pde.preferences.PreferencePageConsts;
 
 public class Plugin extends AbstractUIPlugin {
     public static final String PLUGIN_ID = "org.zenframework.z8.oda.designer";
@@ -14,6 +16,10 @@ public class Plugin extends AbstractUIPlugin {
     private static Plugin plugin;
 
     private ResourceBundle resourceBundle = null;
+
+    static public File getWebInfPath() {
+        return new File(org.zenframework.z8.pde.Plugin.getPreferenceString(PreferencePageConsts.ATTR_WEB_INF_PATH));
+    }
 
     public Plugin() {}
 

@@ -2,54 +2,19 @@ package org.zenframework.z8.oda.driver;
 
 import java.util.Properties;
 
-import org.eclipse.core.runtime.Path;
 import org.eclipse.datatools.connectivity.oda.IConnection;
 import org.eclipse.datatools.connectivity.oda.IDataSetMetaData;
 import org.eclipse.datatools.connectivity.oda.IQuery;
 import org.eclipse.datatools.connectivity.oda.OdaException;
 
-import org.zenframework.z8.oda.driver.connection.Connection;
-import org.zenframework.z8.server.config.SystemProperty;
-import org.zenframework.z8.server.engine.ApplicationServer;
-import org.zenframework.z8.server.security.IUser;
-
 import com.ibm.icu.util.ULocale;
 
 public class OdaConnection implements IConnection {
-    private Connection m_connection = null;
+    private boolean isOpen = false;
 
     @Override
     public void open(Properties connectionProperties) throws OdaException {
-        String url = getUrl();
-        String login = null;
-        String password = null;
-
-        if(Connection.isInRuntimeMode()) {
-            IUser user = ApplicationServer.getUser();
-            login = user.name();
-            password = user.password();
-        }
-        else {
-            login = (String)connectionProperties.get(Constants.User);
-            password = (String)connectionProperties.get(Constants.Password);
-        }
-
-        if(login == null)
-            login = "";
-        if(password == null)
-            password = "";
-
-        m_connection = Connection.connect(url, login, password);
-    }
-
-    public String getUrl() {
-        String path = System.getProperty(SystemProperty.WebInfPath);
-
-        if(path != null) {
-            Path webInfPath = new Path(path);
-            return webInfPath.removeLastSegments(1).toString();
-        }
-        return null;
+        isOpen = true; 
     }
 
     @Override
@@ -57,12 +22,12 @@ public class OdaConnection implements IConnection {
 
     @Override
     public void close() throws OdaException {
-        Connection.disconnect(m_connection);
+        isOpen = false;
     }
 
     @Override
     public boolean isOpen() throws OdaException {
-        return m_connection != null;
+        return isOpen;
     }
 
     @Override
@@ -72,7 +37,7 @@ public class OdaConnection implements IConnection {
 
     @Override
     public IQuery newQuery(String dataSetType) throws OdaException {
-        return new OdaQuery(m_connection);
+        return new OdaQuery();
     }
 
     @Override

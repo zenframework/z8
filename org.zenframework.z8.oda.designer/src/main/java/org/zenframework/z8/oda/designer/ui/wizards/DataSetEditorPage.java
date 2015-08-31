@@ -1,17 +1,19 @@
 package org.zenframework.z8.oda.designer.ui.wizards;
 
+import java.io.File;
 import java.sql.Types;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.Iterator;
-import java.util.Properties;
+import java.util.List;
 
-import org.eclipse.core.runtime.Path;
 import org.eclipse.datatools.connectivity.oda.IParameterMetaData;
 import org.eclipse.datatools.connectivity.oda.IResultSetMetaData;
 import org.eclipse.datatools.connectivity.oda.OdaException;
 import org.eclipse.datatools.connectivity.oda.design.DataSetDesign;
 import org.eclipse.datatools.connectivity.oda.design.DataSetParameters;
-import org.eclipse.datatools.connectivity.oda.design.DataSourceDesign;
 import org.eclipse.datatools.connectivity.oda.design.DesignFactory;
 import org.eclipse.datatools.connectivity.oda.design.ParameterDefinition;
 import org.eclipse.datatools.connectivity.oda.design.ParameterMode;
@@ -37,13 +39,10 @@ import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeItem;
 import org.eclipse.ui.PlatformUI;
-
 import org.zenframework.z8.oda.designer.ExceptionHandler;
 import org.zenframework.z8.oda.designer.plugin.Plugin;
-import org.zenframework.z8.oda.driver.Constants;
 import org.zenframework.z8.oda.driver.OdaQuery;
-import org.zenframework.z8.oda.driver.connection.Connection;
-import org.zenframework.z8.pde.preferences.PreferencePageConsts;
+import org.zenframework.z8.oda.driver.RuntimeLoader;
 import org.zenframework.z8.server.base.form.Desktop;
 import org.zenframework.z8.server.base.query.Query;
 import org.zenframework.z8.server.base.table.value.IValue;
@@ -66,21 +65,14 @@ public class DataSetEditorPage extends DataSetWizardPage {
         registry.put(COLUMN_ICON, ImageDescriptor.createFromFile(Plugin.class, "icons/column.gif"));
     }
 
-    boolean selected = false;
-    private Connection connection = null;
-
     private String dataSetClassName;
-    private String formerDataSetClassName;
-
+    private DataSetDesign dataSetDesign = null;
+    
     private Tree tables = null;
     private Table fields = null;
 
-    private DataSetDesign dataSetDesign;
-
     private static String DEFAULT_MESSAGE = Plugin.getResourceString("dataset.select.data.object");
     private static String ERROR_MESSAGE = Plugin.getResourceString("dataset.no.data.object.selected");
-
-    Properties properties = new Properties();
 
     public DataSetEditorPage(String pageName) {
         super(pageName);
@@ -89,48 +81,25 @@ public class DataSetEditorPage extends DataSetWizardPage {
     private void readPreferences() {}
 
     private void prepareConnection(DataSetDesign dataSetDesign) {
-        try {
-            connection = connect(dataSetDesign);
-        }
-        catch(Exception e) {
-            ExceptionHandler.showException(PlatformUI.getWorkbench().getDisplay().getActiveShell(),
-                    Plugin.getResourceString("exceptionHandler.title.error"), e.getLocalizedMessage(), e);
-        }
     }
 
-    public Connection connect(DataSetDesign dataSetDesign) throws OdaException {
-        DataSourceDesign dataSourceDesign = dataSetDesign.getDataSourceDesign();
+    private File getUrl() {
+        File path = Plugin.getWebInfPath();
 
-        properties = DesignSessionUtil.getEffectiveDataSourceProperties(dataSourceDesign);
+        if(path.toString().isEmpty())
+            throw new RuntimeException("WEB-INF path is not set. See Preferences - Z8 Property Page");
 
-        return Connection.connect(getUrl(), getLogin(), getPassword());
+        return path;
     }
 
-    static public String getUrl() {
-        Path webInfPath = new Path(org.zenframework.z8.pde.Plugin.getPreferenceString(PreferencePageConsts.ATTR_WEB_INF_PATH));
-
-        if(webInfPath.isEmpty()) {
-            return "WEB-INF path is not set. See Preferences - Z8 Property Page";
-        }
-
-        return webInfPath.removeLastSegments(1).toString();
-    }
-
-    private String getLogin() {
-        return properties.getProperty(Constants.User, "");
-    }
-
-    private String getPassword() {
-        return properties.getProperty(Constants.Password, "");
+    private DataSetDesign getDataSetDesign() {
+        return dataSetDesign == null ? getInitializationDesign() : dataSetDesign;
     }
 
     @Override
     public void createPageCustomControl(Composite parent) {
-        dataSetDesign = getInitializationDesign();
-        formerDataSetClassName = dataSetDesign.getQueryText();
-
         readPreferences();
-        prepareConnection(dataSetDesign);
+        prepareConnection(getDataSetDesign());
         setControl(createPageControl(parent));
         initializeControl();
     }
@@ -205,9 +174,10 @@ public class DataSetEditorPage extends DataSetWizardPage {
         fieldsData.heightHint = 150;
         fields.setLayoutData(fieldsData);
 
+        addFetchDbObjectListener();
+
         initializeTree();
 
-        addFetchDbObjectListener();
         return tablesComposite;
     }
 
@@ -215,16 +185,42 @@ public class DataSetEditorPage extends DataSetWizardPage {
         return JFaceResources.getImageRegistry().get(name);
     }
 
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+    private Desktop.CLASS[] getDesktops() throws Throwable {
+        List<Desktop.CLASS> desktops = new ArrayList<Desktop.CLASS>();
+
+        for(CLASS cls : RuntimeLoader.getRuntime(getUrl()).entries()) {
+            if(cls != null && cls.instanceOf(Desktop.class))
+                desktops.add((Desktop.CLASS)cls);
+        }
+            
+        Desktop.CLASS[] result = desktops.toArray(new Desktop.CLASS[0]);
+
+        Comparator<Desktop.CLASS> comparator = new Comparator<Desktop.CLASS>() {
+            @Override
+            public int compare(Desktop.CLASS o1, Desktop.CLASS o2) {
+                return o1.displayName().compareTo(o2.displayName());
+            }
+        };
+
+        Arrays.sort(result, comparator);
+        return result;
+    }
+    
     @SuppressWarnings("rawtypes")
     private void initializeTree() {
         TreeItem root = new TreeItem(tables, SWT.NONE);
-        root.setText(dataSetDesign.getDataSourceDesign().getName());
+        root.setText(getDataSetDesign().getDataSourceDesign().getName());
         root.setImage(getImage(ROOT_ICON));
 
-        Desktop.CLASS[] desktops = connection.getUserProfile(getLogin()).getDesktops();
+        try {
+            Desktop.CLASS[] desktops = getDesktops();
 
-        for(Desktop.CLASS desktop : desktops) {
-            initializeDesktop(root, desktop);
+            for(Desktop.CLASS desktop : desktops) {
+                initializeDesktop(root, desktop);
+            }
+        } catch(Throwable e) {
+            throw new RuntimeException(e);
         }
     }
 
@@ -260,7 +256,9 @@ public class DataSetEditorPage extends DataSetWizardPage {
         item.setData(new DesktopTreeData(desktopClass));
 
         Desktop desktop = (Desktop)desktopClass.get();
-
+        String currentClass = getCurrentDataSetClassName(); 
+        
+        
         Collection<Desktop.CLASS> desktopClasses = desktop.getSubDesktops();
         Collection<Query.CLASS> dataSetClasses = desktop.getDataSets();
 
@@ -273,28 +271,28 @@ public class DataSetEditorPage extends DataSetWizardPage {
             dataSetItem.setText(dataSetClass.displayName());
             dataSetItem.setImage(getImage(TABLE_ICON));
             dataSetItem.setData(new DataSetTreeData(dataSetClass));
-
-            if(!selected && dataSetClass.getClass().getCanonicalName().equals(formerDataSetClassName)) {
-                tables.select(dataSetItem);
-                initFields(dataSetItem);
-                selected = true;
-            }
+            dataSetItem.setExpanded(true);
+            
+            if(dataSetClass.classId().equals(currentClass))
+                dataSetItem.getParent().select(dataSetItem);
         }
     }
 
+    private String getCurrentDataSetClassName() {
+        String text = getDataSetDesign().getQueryText();
+        return text.split(";")[0];
+    }
+    
     @Override
     protected DataSetDesign collectDataSetDesign(DataSetDesign design) {
-        dataSetClassName = getDataSetClassName();
+        dataSetClassName = getSelectedDataSetClassName();
 
-        if(!dataSetClassName.equals(formerDataSetClassName)) {
-            design.setQueryText(dataSetClassName);
-            MetaDataRetriever retriever = new MetaDataRetriever(design);
-            IResultSetMetaData resultsetMeta = retriever.getResultSetMetaData();
-            IParameterMetaData paramMeta = retriever.getParameterMetaData();
-            saveDataSetDesign(design, resultsetMeta, paramMeta);
-            formerDataSetClassName = design.getQueryText();
-            retriever.close();
-        }
+        design.setQueryText(dataSetClassName + ";" + getUrl());
+        MetaDataRetriever retriever = new MetaDataRetriever(design);
+        IResultSetMetaData resultsetMeta = retriever.getResultSetMetaData();
+        IParameterMetaData paramMeta = retriever.getParameterMetaData();
+        saveDataSetDesign(design, resultsetMeta, paramMeta);
+        retriever.close();
 
         return design;
     }
@@ -380,6 +378,7 @@ public class DataSetEditorPage extends DataSetWizardPage {
                             TableItem root = new TableItem(fields, SWT.NONE);
                             root.setText(name);
                             root.setImage(getImage(COLUMN_ICON));
+                            root.setData(field);
                         }
                     }
                 }
@@ -393,11 +392,11 @@ public class DataSetEditorPage extends DataSetWizardPage {
 
     @Override
     protected boolean canLeave() {
-        return getSelection() instanceof DataSetTreeData;
+        return !getSelectedDataSetClassName().isEmpty(); //getSelection() instanceof DataSetTreeData;
     }
 
     private Object getSelection() {
-        TreeItem[] selection = tables.getSelection();
+        TreeItem[] selection = tables != null ? tables.getSelection() : null;
 
         if(selection != null && selection.length > 0) {
             return selection[0].getData();
@@ -406,14 +405,14 @@ public class DataSetEditorPage extends DataSetWizardPage {
         return null;
     }
 
-    private String getDataSetClassName() {
+    private String getSelectedDataSetClassName() {
         Object data = getSelection();
 
         if(data instanceof DataSetTreeData) {
             return ((DataSetTreeData)data).get().classId();
         }
 
-        return null;
+        return getCurrentDataSetClassName();
     }
 
     @Override
@@ -430,9 +429,6 @@ public class DataSetEditorPage extends DataSetWizardPage {
 
     @Override
     protected void cleanup() {
-        if(connection != null) {
-            Connection.disconnect(connection);
-        }
         dataSetDesign = null;
     }
 }

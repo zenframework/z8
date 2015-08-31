@@ -46,10 +46,6 @@ public class DataSourceWizardPage extends org.eclipse.datatools.connectivity.oda
     @Override
     public void refresh() {
         enableAllControls(getControl(), isSessionEditable());
-
-        if(pageHelper != null) {
-            pageHelper.resetTestButton();
-        }
     }
 
 }

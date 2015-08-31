@@ -19,5 +19,4 @@ Bundle-ActivationPolicy: lazy
 Export-Package: org.zenframework.z8.oda.designer,
  org.zenframework.z8.oda.designer.plugin,
  org.zenframework.z8.oda.designer.plugin.icons,
- org.zenframework.z8.oda.designer.ui.preferences,
  org.zenframework.z8.oda.designer.ui.wizards

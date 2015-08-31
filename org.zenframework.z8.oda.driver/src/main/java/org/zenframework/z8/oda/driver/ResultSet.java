@@ -31,6 +31,9 @@ public class ResultSet implements IResultSet {
     boolean eof = false;
 
     public ResultSet(ReadAction action) throws OdaException {
+        if(action == null)
+            throw new OdaException("Report generation is not supported in design mode.");
+        
         cursor = action.getCursor();
         columns = OdaQuery.getColumns(action);
     }
@@ -54,8 +57,10 @@ public class ResultSet implements IResultSet {
 
     @Override
     public void close() throws OdaException {
-        cursor.close();
-        cursor = null;
+        if(cursor != null) {
+            cursor.close();
+            cursor = null;
+        }
     }
 
     @Override

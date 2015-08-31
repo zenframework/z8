@@ -21,9 +21,7 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPreferencePage;
-
 import org.zenframework.z8.pde.Plugin;
-import org.zenframework.z8.server.config.SystemProperty;
 
 public class PreferencePage extends org.eclipse.jface.preference.PreferencePage implements IWorkbenchPreferencePage {
     private Label lbl_tomcatHome;
@@ -195,7 +193,7 @@ public class PreferencePage extends org.eclipse.jface.preference.PreferencePage 
     private void validatePage() {
         String tomcatMemoryBound = txt_tomcatMemoryBound.getText();
         if(!tomcatMemoryBound.matches("[0-9]*")) {
-            setErrorMessage("Введите число в поле Tomcat Memory Bound");
+            setErrorMessage("пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅ Tomcat Memory Bound");
             setValid(false);
             return;
         }
@@ -203,7 +201,7 @@ public class PreferencePage extends org.eclipse.jface.preference.PreferencePage 
         String tomcatHome = txt_tomcatHome.getText();
         if(tomcatHome.length() > 0) {
             if(!new File(tomcatHome).exists()) {
-                setErrorMessage("Указан не существующий путь к Tomcat Home");
+                setErrorMessage("пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅ Tomcat Home");
                 setValid(false);
                 return;
             }
@@ -211,7 +209,7 @@ public class PreferencePage extends org.eclipse.jface.preference.PreferencePage 
         String webInfPath = txt_webinfPath.getText();
         if(webInfPath.length() > 0) {
             if(!new File(webInfPath).exists()) {
-                setErrorMessage("Указан не существующий путь к WebInf");
+                setErrorMessage("пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅ WebInf");
                 setValid(false);
                 return;
             }
@@ -228,9 +226,6 @@ public class PreferencePage extends org.eclipse.jface.preference.PreferencePage 
         String webInfPath = txt_webinfPath.getText();
 
         doGetPreferenceStore().setValue(PreferencePageConsts.ATTR_WEB_INF_PATH, webInfPath);
-
-        System.setProperty(SystemProperty.WebInfPath, webInfPath);
-
     }
 
     @Override

@@ -44,11 +44,8 @@ import org.eclipse.ui.part.FileEditorInput;
 import org.eclipse.ui.part.MultiEditorInput;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
-
 import org.zenframework.z8.pde.debug.model.JDXDebugOptionsManager;
 import org.zenframework.z8.pde.editor.document.DocScanner;
-import org.zenframework.z8.pde.preferences.PreferencePageConsts;
-import org.zenframework.z8.server.config.SystemProperty;
 
 public class Plugin extends AbstractUIPlugin {
     static final public String PLUGIN_ID = "org.zenframework.z8.pde";
@@ -216,9 +213,6 @@ public class Plugin extends AbstractUIPlugin {
     @Override
     public void start(BundleContext context) throws Exception {
         super.start(context);
-
-        String webInfPath = Plugin.getPreferenceString(PreferencePageConsts.ATTR_WEB_INF_PATH);
-        System.setProperty(SystemProperty.WebInfPath, webInfPath);
 
         JDXDebugOptionsManager.getDefault().startup();
     }

@@ -29,6 +29,13 @@ public class SystemTools extends Desktop {
         }
     }
 
+    public UserEntriesView.CLASS<UserEntriesView> userEntries = new UserEntriesView.CLASS<UserEntriesView>(this);
+    public TaskLogs.CLASS<TaskLogs> taskLogs = new TaskLogs.CLASS<TaskLogs>(this);
+    public Sequences.CLASS<Sequences> sequences = new Sequences.CLASS<Sequences>(this);
+    public DBGenerateProcedure.CLASS<DBGenerateProcedure> generator = new DBGenerateProcedure.CLASS<DBGenerateProcedure>(this);
+    public Properties.CLASS<Properties> properties = new Properties.CLASS<Properties>(this);
+    public ExportMessages.CLASS<ExportMessages> exportMessages = new ExportMessages.CLASS<ExportMessages>(this);
+
     public SystemTools(IObject container) {
         super(container);
     }
@@ -37,11 +44,17 @@ public class SystemTools extends Desktop {
     public void constructor2() {
         super.constructor2();
 
-        runnables.add(new UserEntriesView.CLASS<UserEntriesView>(this));
-        runnables.add(new TaskLogs.CLASS<TaskLogs>(this));
-        runnables.add(new Sequences.CLASS<Sequences>(this));
-        runnables.add(new DBGenerateProcedure.CLASS<DBGenerateProcedure>(this));
-        runnables.add(new Properties.CLASS<Properties>(this));
-        runnables.add(new ExportMessages.CLASS<ExportMessages>(this));
+        runnables.add(userEntries);
+        runnables.add(taskLogs);
+        runnables.add(sequences);
+        runnables.add(generator);
+        runnables.add(properties);
+        runnables.add(exportMessages);
+
+        dataSets.add(userEntries);
+        dataSets.add(taskLogs);
+        dataSets.add(sequences);
+        dataSets.add(properties);
+        dataSets.add(exportMessages);
     }
 }

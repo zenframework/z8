@@ -1,5 +1,6 @@
 package org.zenframework.z8.oda.driver;
 
+import java.io.File;
 import java.math.BigDecimal;
 import java.sql.Date;
 import java.sql.Time;
@@ -15,15 +16,13 @@ import org.eclipse.datatools.connectivity.oda.IResultSetMetaData;
 import org.eclipse.datatools.connectivity.oda.OdaException;
 import org.eclipse.datatools.connectivity.oda.SortSpec;
 import org.eclipse.datatools.connectivity.oda.spec.QuerySpecification;
-
-import org.zenframework.z8.oda.driver.connection.Connection;
 import org.zenframework.z8.server.base.model.actions.ReadAction;
 import org.zenframework.z8.server.base.query.Query;
 import org.zenframework.z8.server.base.table.value.Field;
 import org.zenframework.z8.server.base.table.value.IValue;
 
+
 public class OdaQuery implements IQuery {
-    private Connection connection = null;
     private ReadAction dataSet = null;
     private Map<Object, Object> context = null;
 
@@ -39,23 +38,30 @@ public class OdaQuery implements IQuery {
                 values.add(field);
             }
         }
-
+        
         return values.toArray(new IValue[0]);
     }
 
-    public OdaQuery(Connection connection) {
-        this.connection = connection;
+    public OdaQuery() {
     }
 
     @Override
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     public void prepare(String queryText) throws OdaException {
-        if(context != null) {
-            dataSet = (ReadAction)context.get(queryText);
-        }
+        String[] parameters = queryText.split(";");
+        String name = parameters[0];
+        File path = new File(parameters[1]);
+
+        if(context != null)
+            dataSet = (ReadAction)context.get(name);
 
         if(dataSet == null) {
-            Query query = connection.getDataSet(queryText);
-            dataSet = new ReadAction(query);
+            try {
+                Query.CLASS<Query> queryClass = (Query.CLASS)RuntimeLoader.loadClass(name, path);
+                dataSet = new ReadAction(queryClass.get());
+            } catch(Throwable e) {
+                throw new OdaException(e);
+            }
         }
     }
 
@@ -67,7 +73,6 @@ public class OdaQuery implements IQuery {
 
     @Override
     public void close() throws OdaException {
-        connection = null;
         dataSet = null;
         context = null;
     }

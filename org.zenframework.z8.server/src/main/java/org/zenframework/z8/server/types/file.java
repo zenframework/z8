@@ -223,4 +223,5 @@ public class file extends primary implements Serializable {
     public void z8_write(string content, encoding charset) {
         write(content.get(), charset);
     }
+
 }

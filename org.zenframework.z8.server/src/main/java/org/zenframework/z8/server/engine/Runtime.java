@@ -16,34 +16,35 @@ public class Runtime extends AbstractRuntime {
 
     private static IRuntime runtime;
 
-    static {
-        runtime = new Runtime();
-    }
-
     static public IRuntime instance() {
+        if(runtime == null)
+            runtime = new Runtime();
         return runtime;
-    }
-
-    static public void set(IRuntime runtime) {
-        Runtime.runtime = runtime;
     }
 
     private static final String Z8RuntimePath = "META-INF/z8.runtime";
     private static final String Z8BlRuntimePath = "META-INF/z8_bl.runtime";
 
+    public Runtime() {
+        this(null);
+    }
+    
     @SuppressWarnings({ "rawtypes", "unchecked" })
-    private Runtime() {
+    public Runtime(ClassLoader classLoader) {
+        if(classLoader == null)        
+            classLoader =  getClass().getClassLoader();
+        
         // Load base runtime-class
         mergeWith(new ServerRuntime());
         try {
             // Load other modules runtime-classes
-            Enumeration<URL> resources = getClass().getClassLoader().getResources(Z8RuntimePath);
+            Enumeration<URL> resources = classLoader.getResources(Z8RuntimePath);
             while (resources.hasMoreElements()) {
-                loadRuntime(resources.nextElement());
+                loadRuntime(resources.nextElement(), classLoader);
             }
-            resources = getClass().getClassLoader().getResources(Z8BlRuntimePath);
+            resources = classLoader.getResources(Z8BlRuntimePath);
             while (resources.hasMoreElements()) {
-                loadRuntime(resources.nextElement());
+                loadRuntime(resources.nextElement(), classLoader);
             }
         } catch (IOException e) {
             throw new RuntimeException("Can't load " + Z8RuntimePath + " resources", e);
@@ -55,13 +56,13 @@ public class Runtime extends AbstractRuntime {
         }
     }
 
-    private void loadRuntime(URL resource) {
+    private void loadRuntime(URL resource, ClassLoader classLoader) {
         try {
             String className = IOUtils.readText(resource);
-            IRuntime runtime = (IRuntime) Class.forName(className).newInstance();
+            IRuntime runtime = (IRuntime) classLoader.loadClass(className).newInstance();
             mergeWith(runtime);
             Trace.logEvent("Runtime class '" + className + "' loaded");
-        } catch (Exception e) {
+        } catch (Throwable e) {
             Trace.logError("Can't load runtime-class from resource " + resource, e);
         }
     }
