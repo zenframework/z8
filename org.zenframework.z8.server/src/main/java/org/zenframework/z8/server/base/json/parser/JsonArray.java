@@ -3,10 +3,7 @@ package org.zenframework.z8.server.base.json.parser;
 import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.runtime.OBJECT;
 import org.zenframework.z8.server.types.bool;
-import org.zenframework.z8.server.types.date;
-import org.zenframework.z8.server.types.datetime;
 import org.zenframework.z8.server.types.decimal;
-import org.zenframework.z8.server.types.exception;
 import org.zenframework.z8.server.types.guid;
 import org.zenframework.z8.server.types.integer;
 import org.zenframework.z8.server.types.primary;
@@ -94,21 +91,7 @@ public class JsonArray extends OBJECT {
 
     @SuppressWarnings("unchecked")
     public JsonArray.CLASS<? extends JsonArray> z8_put(primary value) {
-        if (value instanceof bool) {
-            array.put(((bool) value).get());
-        } else if (value instanceof date || value instanceof datetime) {
-            array.put(((date) value).get().toString());
-        } else if (value instanceof decimal) {
-            array.put(((decimal) value).get());
-        } else if (value instanceof guid) {
-            array.put(((guid) value).toString());
-        } else if (value instanceof integer) {
-            array.put(((integer) value).get());
-        } else if (value instanceof string) {
-            array.put(((string) value).get());
-        } else {
-            throw new exception("Unsupported primary type " + value.getClass().getSimpleName());
-        }
+        array.put(primary.unwrap(value));
         return (JsonArray.CLASS<? extends JsonArray>) getCLASS();
     }
 
@@ -126,21 +109,7 @@ public class JsonArray extends OBJECT {
 
     @SuppressWarnings("unchecked")
     public JsonArray.CLASS<? extends JsonArray> z8_put(integer index, primary value) {
-        if (value instanceof bool) {
-            array.put(index.getInt(), ((bool) value).get());
-        } else if (value instanceof date || value instanceof datetime) {
-            array.put(index.getInt(), ((date) value).get().toString());
-        } else if (value instanceof decimal) {
-            array.put(index.getInt(), ((decimal) value).get());
-        } else if (value instanceof guid) {
-            array.put(index.getInt(), ((guid) value).toString());
-        } else if (value instanceof integer) {
-            array.put(index.getInt(), ((integer) value).get());
-        } else if (value instanceof string) {
-            array.put(index.getInt(), ((string) value).get());
-        } else {
-            throw new exception("Unsupported primary type " + value.getClass().getSimpleName());
-        }
+        array.put(index.getInt(), primary.unwrap(value));
         return (JsonArray.CLASS<? extends JsonArray>) getCLASS();
     }
 

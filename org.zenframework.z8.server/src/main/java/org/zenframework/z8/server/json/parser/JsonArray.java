@@ -577,7 +577,7 @@ public class JsonArray extends ArrayList<Object> {
      */
     public JsonArray put(Object value) {
         JsonObject.testValidity(value);
-        super.add(value);
+        super.add(JsonObject.wrap(value));
         return this;
     }
 
@@ -640,9 +640,9 @@ public class JsonArray extends ArrayList<Object> {
             super.set(index, value);
         } else {
             while (index != length()) {
-                put(JsonObject.NULL);
+                super.add(JsonObject.NULL);
             }
-            put(value);
+            super.add(JsonObject.wrap(value));
         }
         return this;
     }

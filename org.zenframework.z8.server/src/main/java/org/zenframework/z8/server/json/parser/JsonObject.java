@@ -1058,7 +1058,7 @@ public class JsonObject extends HashMap<String, Object> {
         }
         if (value != null) {
             testValidity(value);
-            super.put(key, value);
+            super.put(key, wrap(value));
         } else {
             remove(key);
         }
