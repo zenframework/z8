@@ -69,13 +69,10 @@ public class IeUtil {
         for (Field f : recordSet.getPrimaryFields()) {
             if (!RECORD_ID.equals(f.id()) && f.exportable()
                     && (exportAttachments || !(AttachmentField.class.isAssignableFrom(f.getClass())))) {
-                String value = f.get().toString();
-                if (!value.equals("")) {
-                    Records.Record.Field field = new Records.Record.Field();
-                    field.setId(f.id());
-                    field.setValue(value);
-                    record.getField().add(field);
-                }
+                Records.Record.Field field = new Records.Record.Field();
+                field.setId(f.id());
+                field.setValue(f.get().toString());
+                record.getField().add(field);
             }
         }
         return record;
