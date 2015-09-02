@@ -50,13 +50,13 @@ public class OdaQuery implements IQuery {
     public void prepare(String queryText) throws OdaException {
         String[] parameters = queryText.split(";");
         String name = parameters[0];
-        File path = new File(parameters[1]);
 
         if(context != null)
             dataSet = (ReadAction)context.get(name);
 
         if(dataSet == null) {
             try {
+                File path = new File(parameters[1]);
                 Query.CLASS<Query> queryClass = (Query.CLASS)RuntimeLoader.loadClass(name, path);
                 dataSet = new ReadAction(queryClass.get());
             } catch(Throwable e) {

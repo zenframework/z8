@@ -85,7 +85,14 @@ public class Connection {
         return !isCurrent() ? owner.isAlive() : false;
     }
 
+    public boolean isClosed() {
+        return connection == null;
+    }
+
     public void use() {
+        if(isClosed())
+            reconnect();
+        
         owner = Thread.currentThread();
         initClientInfo();
     }
