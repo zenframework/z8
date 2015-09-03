@@ -100,7 +100,7 @@ public class primary implements Serializable {
         } else if (o instanceof file) {
             return ((file) o).get();
         } else if (o instanceof guid) {
-            return ((guid) o).get();
+            return ((guid) o).toString();
         } else if (o instanceof integer) {
             return ((integer) o).get();
         } else if (o instanceof string) {
