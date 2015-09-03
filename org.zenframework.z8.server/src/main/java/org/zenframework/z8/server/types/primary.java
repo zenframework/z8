@@ -86,11 +86,15 @@ public class primary implements Serializable {
         } else if (o instanceof bool) {
             return ((bool) o).get();
         } else if (o instanceof date) {
-            return ((date) o).get();
+            date d = (date) o;
+            boolean minMax = d.equals(date.MIN) || d.equals(date.MAX);
+            return minMax ? "" : d.toString();
         } else if (o instanceof datespan) {
             return ((datespan) o).get();
         } else if (o instanceof datetime) {
-            return ((datetime) o).get();
+            datetime dt = (datetime) o;
+            boolean minMax = dt.equals(datetime.MIN) || dt.equals(datetime.MAX);
+            return minMax ? "" : dt.toString();
         } else if (o instanceof decimal) {
             return ((decimal) o).get();
         } else if (o instanceof file) {
