@@ -91,7 +91,7 @@ public class JsonArray extends OBJECT {
 
     @SuppressWarnings("unchecked")
     public JsonArray.CLASS<? extends JsonArray> z8_put(primary value) {
-        array.put(primary.unwrap(value));
+        array.put(value);
         return (JsonArray.CLASS<? extends JsonArray>) getCLASS();
     }
 
@@ -109,7 +109,7 @@ public class JsonArray extends OBJECT {
 
     @SuppressWarnings("unchecked")
     public JsonArray.CLASS<? extends JsonArray> z8_put(integer index, primary value) {
-        array.put(index.getInt(), primary.unwrap(value));
+        array.put(index.getInt(), value);
         return (JsonArray.CLASS<? extends JsonArray>) getCLASS();
     }
 

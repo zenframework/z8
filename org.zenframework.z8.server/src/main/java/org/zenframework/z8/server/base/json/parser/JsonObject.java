@@ -114,7 +114,7 @@ public class JsonObject extends OBJECT {
 
     @SuppressWarnings("unchecked")
     public JsonObject.CLASS<? extends JsonObject> z8_put(string name, primary value) {
-        object.put(name, primary.unwrap(value));
+        object.put(name, value);
         return (JsonObject.CLASS<? extends JsonObject>) getCLASS();
     }
 

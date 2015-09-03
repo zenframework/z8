@@ -439,6 +439,12 @@ public class JsonObject extends HashMap<String, Object> {
         return string;
     }
 
+    
+    @Override
+    public Object get(Object key) {
+        return primary.unwrap(super.get(key));
+    }
+
     /**
      * Get the boolean value associated with a key.
      *
