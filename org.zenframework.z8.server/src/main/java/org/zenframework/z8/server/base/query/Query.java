@@ -864,6 +864,24 @@ public class Query extends Runnable {
         UpdateAction.run(this, id, fields, getModelRecordId(id));
     }
 
+    public void update(SqlToken where) {
+        Collection<Field> changedFields = getChangedFields();
+        
+        Collection<Field> fields = new ArrayList<Field>();
+        fields.add(primaryKey());
+
+        read(fields, where);
+
+        while (next()) {
+            guid id = recordId();
+            UpdateAction.run(this, id, changedFields, getModelRecordId(id), false);
+        }
+        
+        for(Field field : changedFields)
+            field.reset();
+
+    }
+
     public void destroy(guid id) {
         DestroyAction.run(this, id, getModelRecordId(id));
     }
@@ -2392,6 +2410,10 @@ public class Query extends Runnable {
 
     public void z8_update(guid id) {
         update(id);
+    }
+
+    public void z8_update(sql_bool where) {
+        update(where);
     }
 
     public void z8_destroy(guid id) {
