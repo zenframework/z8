@@ -1,4 +1,4 @@
-[primary "org.zenframework.z8.libs.SQLSyntax.types.sql_datetime"]
+[primary "org.zenframework.z8.server.types.sql.sql_datetime"]
 
 final class sql_datetime extends sql_primary
 {
