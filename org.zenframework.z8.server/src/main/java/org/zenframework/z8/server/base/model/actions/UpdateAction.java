@@ -58,7 +58,7 @@ public class UpdateAction extends Action {
             new Update(query, changedFields, keyValue).execute();
 
             if(keyValue != null)
-                query.afterUpdate(keyValue, fields, model, modelRecordId);
+                query.afterUpdate(keyValue, changedFields, model, modelRecordId);
 
             if(resetChangedFields) {
                 for(Field field : fields)
