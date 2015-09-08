@@ -13,7 +13,7 @@
 
         <!-- Sources version -->
         <compiler.source.version>1.6</compiler.source.version>
-        <compiler.target.version>1.7</compiler.target.version>
+        <compiler.target.version>1.6</compiler.target.version>
 
         <!-- z8 versions -->
         <z8.pde.version>1.0.1</z8.pde.version>

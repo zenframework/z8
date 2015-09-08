@@ -6,6 +6,8 @@ import org.zenframework.z8.base.json.Json;
 class JsonField extends TextField
 {
 	public Json getJson();
+	public JsonObject getJsonObject();
+	public JsonArray getJsonArray();
 
 	public JsonField operator = (primary value);
 	public JsonField operator = (JsonObject value);

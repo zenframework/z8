@@ -337,23 +337,13 @@ public class Json {
     }
 
     public Json put(Object value) throws JsonException {
-        this.object = value;
-        return this;
-    }
-
-    public Json put(Collection<?> value) throws JsonException {
-        this.object = new JsonArray(value);
-        return this;
-    }
-
-    public Json put(Map<?, ?> value) throws JsonException {
-        this.object = new org.zenframework.z8.server.json.parser.JsonObject(value);
+        this.object = JsonObject.wrap(value);
         return this;
     }
 
     @Override
     public String toString() {
-        return object.toString();
+        return JsonObject.valueToString(object);
     }
 
 }

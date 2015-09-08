@@ -29,8 +29,16 @@ public class JsonField extends TextField {
         return new org.zenframework.z8.server.json.Json(get().toString());
     }
 
-    public void set(org.zenframework.z8.server.json.Json json) {
-        set(json.toString());
+    public org.zenframework.z8.server.json.parser.JsonObject getJsonObject() {
+        return new org.zenframework.z8.server.json.parser.JsonObject(get().toString());
+    }
+
+    public org.zenframework.z8.server.json.parser.JsonArray getJsonArray() {
+        return new org.zenframework.z8.server.json.parser.JsonArray(get().toString());
+    }
+
+    public void set(Object object) {
+        set(org.zenframework.z8.server.json.parser.JsonObject.wrap(object).toString());
     }
 
     public Json.CLASS<Json> z8_getJson() {
@@ -39,9 +47,21 @@ public class JsonField extends TextField {
         return json;
     }
     
+    public JsonObject.CLASS<? extends JsonObject> z8_getJsonObject() {
+        JsonObject.CLASS<JsonObject> json = new JsonObject.CLASS<JsonObject>(null);
+        json.get().set(getJsonObject());
+        return json;
+    }
+    
+    public JsonArray.CLASS<? extends JsonArray> z8_getJsonArray() {
+        JsonArray.CLASS<JsonArray> json = new JsonArray.CLASS<JsonArray>(null);
+        json.get().set(getJsonArray());
+        return json;
+    }
+    
     @SuppressWarnings("unchecked")
     public TextField.CLASS<? extends TextField> operatorAssign(primary value) {
-        set(value);
+        set(org.zenframework.z8.server.json.parser.JsonObject.valueToString(value));
         return (TextField.CLASS<? extends TextField>) this.getCLASS();
     }
 
