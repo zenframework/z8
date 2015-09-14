@@ -89,15 +89,12 @@ public class ConverterAdapter extends Adapter {
             downloadFile(session.getServerInfo(), fileInfo, absolutePath);
         }
         
-        if(converter == null)
-            converter = new FileConverter(new File(super.getServlet().getServletPath(), CACHE_FOLDER_NAME));
-
-        if (preview && converter.isConvertableToPDFFileExtension(absolutePath)) {
+        if (preview && getConverter().isConvertableToPDFFileExtension(absolutePath)) {
             absolutePath = getConvertedPDF(absolutePath);
         }
 
         if (preview) {
-            if (converter.isConvertableToPDFFileExtension(absolutePath)) {
+            if (getConverter().isConvertableToPDFFileExtension(absolutePath)) {
                 absolutePath = getConvertedPDF(absolutePath);
                 response.addHeader("Content-Type", "application/pdf");
             } else {
@@ -131,14 +128,7 @@ public class ConverterAdapter extends Adapter {
     }
 
     public File getConvertedPDF(File srcFile) throws IOException {
-        /*File convertedFile = new File(relativePath
-                + ".pdf");
-        if (!convertedFile.exists()) {
-            convertFileToPDF(srcFile, convertedFile);
-        }*/
-        if(converter == null)
-            converter = new FileConverter(new File(super.getServlet().getServletPath(), CACHE_FOLDER_NAME));
-        return converter.getConvertedPDF(srcFile);
+        return getConverter().getConvertedPDF(srcFile);
     }
 
     public File getConvertedEML(File relativePath, File srcFile) throws IOException {
@@ -286,6 +276,13 @@ public class ConverterAdapter extends Adapter {
                 } catch (IOException e) {}
             }
         }
+    }
+    
+    private FileConverter getConverter(){
+        if(converter == null)
+            converter = new FileConverter(new File(super.getServlet().getServletPath(), CACHE_FOLDER_NAME));
+        
+        return converter;
     }
 
 }
