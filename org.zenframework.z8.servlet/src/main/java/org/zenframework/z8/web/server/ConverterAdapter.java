@@ -8,7 +8,6 @@ import java.io.OutputStream;
 import java.io.PrintStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -20,15 +19,11 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.artofsolving.jodconverter.OfficeDocumentConverter;
-import org.artofsolving.jodconverter.office.DefaultOfficeManagerConfiguration;
-import org.artofsolving.jodconverter.office.OfficeManager;
 import org.mozilla.universalchardet.UniversalDetector;
+import org.zenframework.z8.server.base.file.FileConverter;
 import org.zenframework.z8.server.base.file.FileInfo;
-import org.zenframework.z8.server.base.table.system.Properties;
 import org.zenframework.z8.server.engine.ISession;
 import org.zenframework.z8.server.engine.ServerInfo;
 import org.zenframework.z8.server.json.Json;
@@ -43,49 +38,19 @@ import org.zenframework.z8.web.servlet.Servlet;
  * Created with IntelliJ IDEA. User: volkov Date: 29.10.14 Time: 13:57 To change
  * this template use File | Settings | File Templates.
  */
-public class ConverterAdapter extends Adapter implements Properties.Listener {
+public class ConverterAdapter extends Adapter {
 
     @SuppressWarnings("unused")
     private static final Log LOG = LogFactory.getLog(ConverterAdapter.class);
 
     private static final String CACHE_FOLDER_NAME = "pdf.cache";
+    
+    private FileConverter converter = null;
 
-    private static final int OFFICE_PORT = 8100;
-
-    private volatile File officeHome;
-    private volatile OfficeManager officeManager;
-    private volatile OfficeDocumentConverter pdfConverter;
-
-    private final static List<String> convertableExtensions = Arrays.asList("doc", "docx", "xls", "xlsx", "ppt", "pptx",
-            "odt", "odp", "ods", "odf", "odg", "wpd", "sxw", "sxi", "sxc", "sxd", "stw", "tif", "tiff", "vsd");
+    
 
     public ConverterAdapter(Servlet servlet) {
         super(servlet);
-    }
-
-    @Override
-    public void onPropertyChange(String key, String value) {
-        if (ServletRuntime.LibreOfficeDirectoryProperty.equalsKey(key)) {
-            officeHome = new File(value);
-            stopOfficeManager();
-        }
-    }
-
-    private void startOfficeManager() {
-        if(officeManager == null) {
-            officeManager = new DefaultOfficeManagerConfiguration().setOfficeHome(getOfficeHome())
-                    .setPortNumber(OFFICE_PORT).buildOfficeManager();
-            officeManager.start();
-            pdfConverter = new OfficeDocumentConverter(officeManager);
-        }
-    }
-
-    private void stopOfficeManager() {
-        if(officeManager != null) {
-            officeManager.stop();
-            officeManager = null;
-            pdfConverter = null;
-        }
     }
 
     @Override
@@ -95,7 +60,8 @@ public class ConverterAdapter extends Adapter implements Properties.Listener {
 
     @Override
     public void stop() {
-        stopOfficeManager();
+        converter.stopOfficeManager();
+        converter = null;
     }
 
     @Override
@@ -113,7 +79,7 @@ public class ConverterAdapter extends Adapter implements Properties.Listener {
         File absolutePath = new File(super.getServlet().getServletPath(), requestURI);
 
         boolean preview = request.getParameter("preview") != null;
-
+        
         if (!absolutePath.exists()) {
 
             FileInfo fileInfo = new FileInfo();
@@ -122,14 +88,17 @@ public class ConverterAdapter extends Adapter implements Properties.Listener {
             fileInfo.id = new guid(parameters.get(Json.recordId));
             downloadFile(session.getServerInfo(), fileInfo, absolutePath);
         }
+        
+        if(converter == null)
+            converter = new FileConverter(new File(super.getServlet().getServletPath(), CACHE_FOLDER_NAME));
 
-        if (preview && isConvertableToPDFFileExtension(absolutePath)) {
-            absolutePath = getConvertedPDF(relativePath, absolutePath);
+        if (preview && converter.isConvertableToPDFFileExtension(absolutePath)) {
+            absolutePath = getConvertedPDF(absolutePath);
         }
 
         if (preview) {
-            if (isConvertableToPDFFileExtension(absolutePath)) {
-                absolutePath = getConvertedPDF(relativePath, absolutePath);
+            if (converter.isConvertableToPDFFileExtension(absolutePath)) {
+                absolutePath = getConvertedPDF(absolutePath);
                 response.addHeader("Content-Type", "application/pdf");
             } else {
                 String contentType = determContentType(absolutePath);
@@ -161,13 +130,15 @@ public class ConverterAdapter extends Adapter implements Properties.Listener {
         }
     }
 
-    public File getConvertedPDF(File relativePath, File srcFile) throws IOException {
-        File convertedFile = new File(new File(super.getServlet().getServletPath(), CACHE_FOLDER_NAME), relativePath
+    public File getConvertedPDF(File srcFile) throws IOException {
+        /*File convertedFile = new File(relativePath
                 + ".pdf");
         if (!convertedFile.exists()) {
             convertFileToPDF(srcFile, convertedFile);
-        }
-        return convertedFile;
+        }*/
+        if(converter == null)
+            converter = new FileConverter(new File(super.getServlet().getServletPath(), CACHE_FOLDER_NAME));
+        return converter.getConvertedPDF(srcFile);
     }
 
     public File getConvertedEML(File relativePath, File srcFile) throws IOException {
@@ -179,21 +150,6 @@ public class ConverterAdapter extends Adapter implements Properties.Listener {
         return convertedFile;
     }
 
-    private File getOfficeHome() {
-        if (officeHome == null)
-            officeHome = new File(Properties.getProperty(ServletRuntime.LibreOfficeDirectoryProperty));
-        return officeHome;
-    }
-
-    private void initJODConverter() {
-        if (officeManager != null)
-            return;
-
-        synchronized (this) {
-            startOfficeManager();
-        }
-    }
-
     private void sendFileToResponse(HttpServletResponse response, File file) throws IOException {
         FileInputStream input = new FileInputStream(file);
         OutputStream output = response.getOutputStream();
@@ -203,11 +159,6 @@ public class ConverterAdapter extends Adapter implements Properties.Listener {
             output.close();
             input.close();
         }
-    }
-
-    private void convertFileToPDF(File sourceFile, File convertedPDF) {
-        initJODConverter();
-        pdfConverter.convert(sourceFile, convertedPDF);
     }
 
     private static void convertEmlToTxt(File sourceFile, File convertedTxt) {
@@ -239,12 +190,6 @@ public class ConverterAdapter extends Adapter implements Properties.Listener {
                 out.close();
             }
         }
-    }
-
-    private boolean isConvertableToPDFFileExtension(File srcFile) {
-        String fileName = srcFile.getName();
-        String extension = FilenameUtils.getExtension(fileName).toLowerCase();
-        return convertableExtensions.contains(extension);
     }
 
     private String determContentType(File file) {
