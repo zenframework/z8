@@ -17,7 +17,8 @@ import com.google.common.io.Files;
 
 public class FileConverter implements Properties.Listener {
     private static final int OFFICE_PORT = 8100;
-    private final static List<String> convertableExtensions = Arrays.asList("doc", "docx", "xls", "xlsx", "ppt", "pptx",
+    private final static List<String> convertableExtensions = Arrays.asList("doc", "docx", "xls", "xlsx", "ppt",
+            "pptx",
             "odt", "odp", "ods", "odf", "odg", "wpd", "sxw", "sxi", "sxc", "sxd", "stw", "tif", "tiff", "vsd");
 
     private final FilesStorage pdfStorage;
@@ -40,31 +41,34 @@ public class FileConverter implements Properties.Listener {
         }
         return convertedFile;
     }
-    
+
     public boolean isConvertableToPDFFileExtension(File file) {
         return isConvertableToPDFFileExtension(file.getName());
     }
-    
+
     public boolean isConvertableToPDFFileExtension(String fileName) {
         String extension = FilenameUtils.getExtension(fileName).toLowerCase();
         return convertableExtensions.contains(extension);
     }
-    
+
     public int getPagesCount(File srcFile) throws IOException {
+        if (!isConvertableToPDFFileExtension(srcFile))
+            return 1;
+
         File pdfFile = getConvertedPDF(srcFile);
         PDDocument doc = PDDocument.load(pdfFile);
         return doc.getNumberOfPages();
     }
-    
-    public String getPath(){
+
+    public String getPath() {
         return pdfStorage.getRootPath();
     }
-    
+
     private void convertFileToPDF(File sourceFile, File convertedPDF) {
         initJODConverter();
         pdfConverter.convert(sourceFile, convertedPDF);
     }
-    
+
     private void initJODConverter() {
         if (officeManager != null)
             return;
@@ -73,7 +77,7 @@ public class FileConverter implements Properties.Listener {
             startOfficeManager();
         }
     }
-    
+
     @Override
     public void onPropertyChange(String key, String value) {
         if (ServerRuntime.LibreOfficeDirectoryProperty.equalsKey(key)) {
@@ -81,24 +85,24 @@ public class FileConverter implements Properties.Listener {
             stopOfficeManager();
         }
     }
-    
+
     private void startOfficeManager() {
-        if(officeManager == null) {
+        if (officeManager == null) {
             officeManager = new DefaultOfficeManagerConfiguration().setOfficeHome(getOfficeHome())
                     .setPortNumber(OFFICE_PORT).buildOfficeManager();
             officeManager.start();
             pdfConverter = new OfficeDocumentConverter(officeManager);
         }
     }
-    
+
     public void stopOfficeManager() {
-        if(officeManager != null) {
+        if (officeManager != null) {
             officeManager.stop();
             officeManager = null;
             pdfConverter = null;
         }
     }
-    
+
     private File getOfficeHome() {
         if (officeHome == null)
             officeHome = new File(Properties.getProperty(ServerRuntime.LibreOfficeDirectoryProperty));
