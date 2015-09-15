@@ -52,6 +52,10 @@ public class FilesStorage {
     public File getFile(String fileName) {
         return root != null ? new File(root, fileName) : new File(fileName);
     }
+    
+    public String getRootPath(){
+        return root.getAbsolutePath();
+    }
 
     public file z8_getFile(string fileName) {
         return new file(getFile(fileName.get()));

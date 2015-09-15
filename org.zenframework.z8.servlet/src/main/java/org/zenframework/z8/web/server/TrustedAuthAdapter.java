@@ -8,6 +8,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.eclipse.emf.ecore.xml.type.internal.DataValue.Base64;
 import org.zenframework.z8.server.base.table.system.Properties;
 import org.zenframework.z8.server.engine.ISession;
 import org.zenframework.z8.web.servlet.Servlet;
@@ -38,7 +39,7 @@ public class TrustedAuthAdapter extends Adapter implements Properties.Listener {
     @Override
     public void service(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
         ISession session = null;
-        String login = request.getParameter(PARAM_LOGIN);
+        String login = new String(Base64.decode(request.getParameter(PARAM_LOGIN)), "UTF-8");
         String error = null;
         if (login != null) {
             try {

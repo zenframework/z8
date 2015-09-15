@@ -31,6 +31,9 @@ public class ServerRuntime extends AbstractRuntime {
             "z8.transport.jms.connectionUrl", "tcp://localhost:61616?trace=false&soTimeout=60000", "URL для подключения к JMS-серверу");
     public static final Property FileItemSizeThresholdProperty = new Property("CDF0A743-F95F-4235-AD3D-D40F589A68DF",
             "z8.files.fileItemSizeThreshold", "10485760", "Порог выгрузки файла на диск (по умолчанию 10М)");
+    
+    public static final Property LibreOfficeDirectoryProperty = new Property("AA1B9A42-DB3B-45C0-BD0D-CC13EC1BA6BE",
+            "z8.servlet.libreOfficeDirectory", "C:/Program Files (x86)/LibreOffice 4.0", "Путь к каталогу установки LibreOffice");
 
     public ServerRuntime() {
         addTable(new Users.CLASS<Users>(null));
