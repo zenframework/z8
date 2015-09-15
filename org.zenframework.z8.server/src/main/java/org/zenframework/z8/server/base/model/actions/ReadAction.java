@@ -117,16 +117,16 @@ public class ReadAction extends Action {
         Collection<Link> aggregateBy = parameters.aggregateBy != null ? parameters.aggregateBy : query
                 .collectAggregateByFields();
 
+        for (Field field : fields) {
+            addSelectField(field);
+        }
+
         for (Link field : aggregateBy) {
             addAggregateByField(field);
         }
 
         for (Field field : groupBy) {
             addGroupByField(field);
-        }
-
-        for (Field field : fields) {
-            addSelectField(field);
         }
 
         for (Field field : sortFields) {
