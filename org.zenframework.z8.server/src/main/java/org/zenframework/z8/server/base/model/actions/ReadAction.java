@@ -117,16 +117,24 @@ public class ReadAction extends Action {
         Collection<Link> aggregateBy = parameters.aggregateBy != null ? parameters.aggregateBy : query
                 .collectAggregateByFields();
 
-        for (Field field : fields) {
-            addSelectField(field);
-        }
-
         for (Link field : aggregateBy) {
             addAggregateByField(field);
         }
 
         for (Field field : groupBy) {
             addGroupByField(field);
+        }
+
+        for (Field field : fields) {
+            addSelectField(field);
+        }
+
+        for (Link field : aggregateBy) {
+            addSelectField(field);
+        }
+
+        for (Field field : groupBy) {
+            addSelectField(field);
         }
 
         for (Field field : sortFields) {
@@ -376,17 +384,13 @@ public class ReadAction extends Action {
     }
 
     private void addGroupByField(Field field) {
-        if (field != null) {
+        if (field != null)
             groupBy.add(field);
-            addSelectField(field);
-        }
     }
 
     private void addAggregateByField(Link link) {
-        if (link != null) {
+        if (link != null)
             aggregateBy.add(link);
-            addSelectField(link);
-        }
     }
 
     private void addSelectField(Field field) {
