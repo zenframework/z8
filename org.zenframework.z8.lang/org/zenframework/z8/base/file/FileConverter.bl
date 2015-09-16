@@ -1,0 +1,12 @@
+import org.zenframework.z8.base.table.value.AttachmentField;
+import org.zenframework.z8.lang.Object;
+
+[native "org.zenframework.z8.server.base.file.FileConverter"]
+public class FileConverter extends Object {
+    static public bool isConvertableToPDFFileExtension(string fileName);
+    
+    public file getConvertedPDF(file srcFile);
+    
+    public int getPagesCount(file srcFile);
+    public int getAttachmentsPagesCount(guid recordId, AttachmentField attachments);
+}

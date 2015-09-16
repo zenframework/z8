@@ -89,13 +89,13 @@ public class ConverterAdapter extends Adapter {
             downloadFile(session.getServerInfo(), fileInfo, absolutePath);
         }
         
-        if (preview && getConverter().isConvertableToPDFFileExtension(absolutePath)) {
-            absolutePath = getConvertedPDF(absolutePath);
+        if (preview && FileConverter.isConvertableToPDFFileExtension(absolutePath)) {
+            absolutePath = getConvertedPDF(relativePath, absolutePath);
         }
 
         if (preview) {
-            if (getConverter().isConvertableToPDFFileExtension(absolutePath)) {
-                absolutePath = getConvertedPDF(absolutePath);
+            if (FileConverter.isConvertableToPDFFileExtension(absolutePath)) {
+                absolutePath = getConvertedPDF(relativePath, absolutePath);
                 response.addHeader("Content-Type", "application/pdf");
             } else {
                 String contentType = determContentType(absolutePath);
@@ -127,8 +127,8 @@ public class ConverterAdapter extends Adapter {
         }
     }
 
-    public File getConvertedPDF(File srcFile) throws IOException {
-        return getConverter().getConvertedPDF(srcFile);
+    public File getConvertedPDF(File relativePath, File srcFile) throws IOException {
+        return getConverter().getConvertedPDF(relativePath.getPath(), srcFile);
     }
 
     public File getConvertedEML(File relativePath, File srcFile) throws IOException {
