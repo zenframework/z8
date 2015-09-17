@@ -22,6 +22,7 @@ public class file extends primary implements Serializable {
     public static final String StorageFolderName = "storage";
     public static final String CacheFolderName = "pdf.cache";
     public static final String LuceneFolderName = "lucene";
+    public static final String UnconvertedFolderName = "unconverted";
 
     private File file;
 

@@ -68,7 +68,7 @@ public class FileConverter extends OBJECT implements Properties.Listener {
     public FileConverter(IObject container) {
         super(container);
 
-        pdfStorage = new FilesStorage(Files.createTempDir());
+        pdfStorage = new FilesStorage(new File(file.BaseFolder, file.CacheFolderName));
     }
 
     public File getConvertedPDF(String relativePath, File srcFile) {
@@ -120,22 +120,29 @@ public class FileConverter extends OBJECT implements Properties.Listener {
         return new integer(getPagesCount(srcFile.get()));
     }
 
-    public integer z8_getAttachmentsPagesCount(guid recordId, AttachmentField.CLASS<? extends AttachmentField> attachments) {
+    public integer z8_getAttachmentsPagesCount(guid recordId,
+            AttachmentField.CLASS<? extends AttachmentField> attachments) {
         try {
             AttachmentProcessor processor = attachments.get().getAttachmentProcessor();
             Collection<FileInfo> fileInfos = processor.read(recordId);
 
             int result = 0;
-            File tempDir = Files.createTempDir();
-            tempDir.deleteOnExit();
+            File unconvertedDir = new File(file.BaseFolder, file.UnconvertedFolderName);
+            if(unconvertedDir.exists() && ! unconvertedDir.isDirectory())
+                unconvertedDir.delete();
+            if(!unconvertedDir.exists())
+                unconvertedDir.mkdirs();
+            unconvertedDir.deleteOnExit();
 
             for (FileInfo fileInfo : fileInfos) {
                 fileInfo = org.zenframework.z8.server.base.table.system.Files.getFile(fileInfo);
                 FileItem fileItem = fileInfo.file;
 
-                File tempFile = new File(tempDir, fileInfo.name.get());
-                tempFile.deleteOnExit();
-                fileItem.write(tempFile);
+                File tempFile = new File(unconvertedDir, fileInfo.id.get().toString() + "-" + fileInfo.name.get());
+                if (!tempFile.exists()) {
+                    tempFile.deleteOnExit();
+                    fileItem.write(tempFile);
+                }
 
                 result += getPagesCount(tempFile);
             }
