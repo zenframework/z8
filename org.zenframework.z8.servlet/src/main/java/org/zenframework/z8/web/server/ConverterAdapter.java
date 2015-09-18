@@ -29,6 +29,7 @@ import org.zenframework.z8.server.engine.ServerInfo;
 import org.zenframework.z8.server.json.Json;
 import org.zenframework.z8.server.logs.Trace;
 import org.zenframework.z8.server.types.encoding;
+import org.zenframework.z8.server.types.file;
 import org.zenframework.z8.server.types.guid;
 import org.zenframework.z8.server.types.string;
 import org.zenframework.z8.server.utils.IOUtils;
@@ -43,8 +44,6 @@ public class ConverterAdapter extends Adapter {
     @SuppressWarnings("unused")
     private static final Log LOG = LogFactory.getLog(ConverterAdapter.class);
 
-    private static final String CACHE_FOLDER_NAME = "pdf.cache";
-    
     private FileConverter converter = null;
 
     
@@ -89,13 +88,13 @@ public class ConverterAdapter extends Adapter {
             downloadFile(session.getServerInfo(), fileInfo, absolutePath);
         }
         
-        if (preview && getConverter().isConvertableToPDFFileExtension(absolutePath)) {
-            absolutePath = getConvertedPDF(absolutePath);
+        if (preview && FileConverter.isConvertableToPDFFileExtension(absolutePath)) {
+            absolutePath = getConvertedPDF(relativePath, absolutePath);
         }
 
         if (preview) {
-            if (getConverter().isConvertableToPDFFileExtension(absolutePath)) {
-                absolutePath = getConvertedPDF(absolutePath);
+            if (FileConverter.isConvertableToPDFFileExtension(absolutePath)) {
+                absolutePath = getConvertedPDF(relativePath, absolutePath);
                 response.addHeader("Content-Type", "application/pdf");
             } else {
                 String contentType = determContentType(absolutePath);
@@ -127,12 +126,12 @@ public class ConverterAdapter extends Adapter {
         }
     }
 
-    public File getConvertedPDF(File srcFile) throws IOException {
-        return getConverter().getConvertedPDF(srcFile);
+    public File getConvertedPDF(File relativePath, File srcFile) throws IOException {
+        return getConverter().getConvertedPDF(relativePath.getPath(), srcFile);
     }
 
     public File getConvertedEML(File relativePath, File srcFile) throws IOException {
-        File convertedFile = new File(new File(super.getServlet().getServletPath(), CACHE_FOLDER_NAME), relativePath
+        File convertedFile = new File(new File(super.getServlet().getServletPath(), file.CacheFolderName), relativePath
                 + ".txt");
         if (!convertedFile.exists()) {
             convertEmlToTxt(srcFile, convertedFile);
@@ -280,7 +279,7 @@ public class ConverterAdapter extends Adapter {
     
     private FileConverter getConverter(){
         if(converter == null)
-            converter = new FileConverter(new File(super.getServlet().getServletPath(), CACHE_FOLDER_NAME));
+            converter = new FileConverter(new File(super.getServlet().getServletPath(), file.CacheFolderName));
         
         return converter;
     }
