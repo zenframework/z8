@@ -96,7 +96,7 @@ public class OrganizeImportsAction extends TextEditorAction {
                 });
                 dialog.setInput(otherCompilationUnits);
                 dialog.setTitle("Organize imports");
-                dialog.setMessage("Выберите подходящий import");
+                dialog.setMessage("Р’С‹Р±РµСЂРёС‚Рµ РїРѕРґС…РѕРґСЏС‰РёР№ import");
                 dialog.setInitialSelections(new Object[] { otherCompilationUnits[0] });
                 int open = dialog.open();
                 if(Dialog.CANCEL == open)
