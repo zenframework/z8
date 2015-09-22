@@ -29,6 +29,8 @@ public class ServerRuntime extends AbstractRuntime {
             "Класс-фабрика для получения JMS-соединений");
     public static final Property ConnectionUrlProperty = new Property("7CAF19ED-71A5-480F-A2D3-95C5B22B4CA6",
             "z8.transport.jms.connectionUrl", "tcp://localhost:61616?trace=false&soTimeout=60000", "URL для подключения к JMS-серверу");
+    public static final Property WsEndpointProperty = new Property("E90D5A9C-6C4A-48A2-BA3C-34E2F69DEF11",
+            "z8.transport.ws.endpoint", "http://localhost:9898/transport", "URL транспортного web-сервиса");
     public static final Property FileItemSizeThresholdProperty = new Property("CDF0A743-F95F-4235-AD3D-D40F589A68DF",
             "z8.files.fileItemSizeThreshold", "10485760", "Порог выгрузки файла на диск (по умолчанию 10М)");
     
@@ -62,7 +64,9 @@ public class ServerRuntime extends AbstractRuntime {
         addProperty(FolderProperty);
         addProperty(ConnectionFactoryProperty);
         addProperty(ConnectionUrlProperty);
+        addProperty(WsEndpointProperty);
         addProperty(FileItemSizeThresholdProperty);
+        addProperty(LibreOfficeDirectoryProperty);
     }
 
 }
