@@ -982,13 +982,7 @@ public class ReadAction extends Action {
     }
 
     private void writeGroupTotals(JsonObject writer, Field groupField) throws SQLException {
-        JsonArray dataArr = new JsonArray();
-
-        Query query = getQuery();
-
-        for (Field primaryKey : query.primaryKeys()) {
-            primaryKey.aggregation = Aggregation.Count;
-        }
+        JsonArray data = new JsonArray();
 
         Select select = cursor();
 
@@ -1008,16 +1002,16 @@ public class ReadAction extends Action {
         frame.aggregate();
 
         while (frame.next()) {
-            JsonObject fieldObj = new JsonObject();
+            JsonObject fieldData = new JsonObject();
 
             for (Field field : frame.getFields()) {
-                field.writeData(fieldObj);
+                field.writeData(fieldData);
             }
 
-            dataArr.put(fieldObj);
+            data.put(fieldData);
         }
 
-        writer.put(Json.data, dataArr);
+        writer.put(Json.data, data);
     }
 
     private Groupping writeFrame(JsonObject writer) throws SQLException {
@@ -1029,7 +1023,7 @@ public class ReadAction extends Action {
 
         FramedSelect frame = frame();
 
-        JsonArray dataArr = new JsonArray();
+        JsonArray data = new JsonArray();
 
         try {
             frame.saveState();
@@ -1037,7 +1031,7 @@ public class ReadAction extends Action {
             frame.open();
 
             while (frame.next()) {
-                JsonObject dataObj = new JsonObject();
+                JsonObject fieldData = new JsonObject();
 
                 primary[] group = !hasRecords ? groups.firstGroup : groups.lastGroup;
 
@@ -1048,7 +1042,7 @@ public class ReadAction extends Action {
                         group[index] = field.get();
                     }
 
-                    field.writeData(dataObj);
+                    field.writeData(fieldData);
                 }
 
                 hasRecords = true;
@@ -1056,17 +1050,17 @@ public class ReadAction extends Action {
                 Style style = query.renderRecord();
 
                 if (style != null) {
-                    style.write(dataObj);
+                    style.write(fieldData);
                 }
 
-                dataArr.put(dataObj);
+                data.put(fieldData);
             }
         } finally {
             frame.restoreState();
             frame.close();
         }
 
-        writer.put(Json.data, dataArr);
+        writer.put(Json.data, data);
 
         return hasRecords && groups.fields.length != 0 ? groups : null;
     }
@@ -1095,7 +1089,7 @@ public class ReadAction extends Action {
         }
     }
 
-    private void writeSummary(JsonObject writer, Groupping groups) throws SQLException {
+    private void writeSummary(JsonObject json, Groupping groups) throws SQLException {
         sortFields.clear();
 
         Field groupField = groups.fields[0];
@@ -1137,11 +1131,11 @@ public class ReadAction extends Action {
 
                 for (Field field : summary.getFields()) {
                     if (field == groupField) {
-                        writer.put(Json.groupValue, groupField.get());
+                        obj.put(Json.groupValue, groupField.get());
                     } else if (field == expression) {
-                        writer.put(groupField.id(), expression.get());
+                        obj.put(groupField.id(), expression.get());
                     } else if (field == count) {
-                        writer.put(Json.total, count.get());
+                        obj.put(Json.total, count.get());
                     } else if (field.aggregation != Aggregation.Min
                             && field.aggregation != Aggregation.Max
                             && (field.type() == FieldType.Integer || field.type() == FieldType.Decimal || field.aggregation == Aggregation.Count)) {
@@ -1149,10 +1143,10 @@ public class ReadAction extends Action {
                     }
                 }
 
-                writer.put(groupField.get().toString(), obj);
+                summaryObj.put(groupField.get().toString(), obj);
             }
 
-            writer.put(Json.summaryData, summaryObj);
+            json.put(Json.summaryData, summaryObj);
         } finally {
             summary.close();
         }
@@ -1193,10 +1187,6 @@ public class ReadAction extends Action {
                 writeCount(writer);
 
                 Groupping groups = writeFrame(writer);
-
-                for (Field primaryKey : query.primaryKeys()) {
-                    primaryKey.aggregation = Aggregation.Count;
-                }
 
                 if (query.showTotals.get()) {
                     writeTotals(writer);
