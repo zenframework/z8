@@ -12,6 +12,7 @@ import org.zenframework.z8.server.base.table.value.Field;
 import org.zenframework.z8.server.base.table.value.GuidField;
 import org.zenframework.z8.server.base.table.value.ILink;
 import org.zenframework.z8.server.base.table.value.IValue;
+import org.zenframework.z8.server.base.table.value.Link;
 import org.zenframework.z8.server.db.BasicSelect;
 import org.zenframework.z8.server.db.Connection;
 import org.zenframework.z8.server.db.ConnectionManager;
@@ -22,11 +23,13 @@ import org.zenframework.z8.server.db.sql.FormatOptions;
 import org.zenframework.z8.server.db.sql.SqlField;
 import org.zenframework.z8.server.db.sql.SqlToken;
 import org.zenframework.z8.server.db.sql.expressions.And;
+import org.zenframework.z8.server.db.sql.expressions.Group;
 import org.zenframework.z8.server.db.sql.expressions.Operation;
 import org.zenframework.z8.server.db.sql.expressions.Rel;
 import org.zenframework.z8.server.engine.ApplicationServer;
 import org.zenframework.z8.server.engine.Database;
 import org.zenframework.z8.server.types.primary;
+import org.zenframework.z8.server.types.sql.sql_bool;
 import org.zenframework.z8.server.utils.ArrayUtils;
 
 public class Select {
@@ -274,9 +277,13 @@ public class Select {
             if(name != null) {
                 Field field = (Field)link;
                 
+                sql_bool joinOn = link instanceof Link ? ((Link)link).joinOn : null;
+                
                 Query query = link.getQuery().getRootQuery();
                 GuidField primaryKey = (GuidField) query.primaryKey();
                 SqlToken token = new Rel(link.sql_guid(), Operation.Eq, primaryKey.sql_guid());
+                if(joinOn != null)
+                    token = new And(token, new Group(joinOn));
 
                 boolean aggregated = field.isAggregated();
                 field.setAggregated(false);

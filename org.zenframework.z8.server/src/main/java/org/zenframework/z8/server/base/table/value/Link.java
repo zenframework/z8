@@ -6,6 +6,7 @@ import org.zenframework.z8.server.db.generator.IForeignKey;
 import org.zenframework.z8.server.json.Json;
 import org.zenframework.z8.server.json.parser.JsonObject;
 import org.zenframework.z8.server.runtime.IObject;
+import org.zenframework.z8.server.types.sql.sql_bool;
 
 public class Link extends GuidField implements ILink, IForeignKey {
     public static class CLASS<T extends Link> extends GuidField.CLASS<T> {
@@ -23,6 +24,7 @@ public class Link extends GuidField implements ILink, IForeignKey {
     }
 
     public Join join = Join.Left;
+    public sql_bool joinOn = null;
     
     public Link.CLASS<? extends Link> filter = null;
 
