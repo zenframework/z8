@@ -138,7 +138,10 @@ public class CompoundStatement extends LanguageElement implements IStatement {
         for(int i = 0; i < elements.size(); i++) {
             ILanguageElement element = elements.get(i);
 
-            assert (element instanceof IStatement);
+            if(!(element instanceof IStatement)) {
+                setError(element.getPosition(), "Syntax error");
+                return false;
+            }
             IStatement statement = (IStatement)element;
 
             boolean returnsOnAllControlPaths = statement.returnsOnAllControlPaths();
