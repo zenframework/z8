@@ -107,11 +107,6 @@ public class FileTransport extends AbstractTransport implements Properties.Liste
     }
 
     @Override
-    public boolean usePersistency() {
-        return false;
-    }
-
-    @Override
     public Message receive() {
         for (File addresseeFolder : in.listFiles()) {
             if (addresseeFolder.isDirectory()) {

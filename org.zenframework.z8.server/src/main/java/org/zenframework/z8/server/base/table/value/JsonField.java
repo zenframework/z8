@@ -26,15 +26,21 @@ public class JsonField extends TextField {
     }
 
     public org.zenframework.z8.server.json.Json getJson() {
-        return new org.zenframework.z8.server.json.Json(get().toString());
+        String value = get().toString();
+        return value.isEmpty() ? new org.zenframework.z8.server.json.Json()
+                : new org.zenframework.z8.server.json.Json(value);
     }
 
     public org.zenframework.z8.server.json.parser.JsonObject getJsonObject() {
-        return new org.zenframework.z8.server.json.parser.JsonObject(get().toString());
+        String value = get().toString();
+        return value.isEmpty() ? new org.zenframework.z8.server.json.parser.JsonObject()
+                : new org.zenframework.z8.server.json.parser.JsonObject(get().toString());
     }
 
     public org.zenframework.z8.server.json.parser.JsonArray getJsonArray() {
-        return new org.zenframework.z8.server.json.parser.JsonArray(get().toString());
+        String value = get().toString();
+        return value.isEmpty() ? new org.zenframework.z8.server.json.parser.JsonArray()
+                : new org.zenframework.z8.server.json.parser.JsonArray(get().toString());
     }
 
     public void set(Object object) {
@@ -46,19 +52,19 @@ public class JsonField extends TextField {
         json.get().set(getJson());
         return json;
     }
-    
+
     public JsonObject.CLASS<? extends JsonObject> z8_getJsonObject() {
         JsonObject.CLASS<JsonObject> json = new JsonObject.CLASS<JsonObject>(null);
         json.get().set(getJsonObject());
         return json;
     }
-    
+
     public JsonArray.CLASS<? extends JsonArray> z8_getJsonArray() {
         JsonArray.CLASS<JsonArray> json = new JsonArray.CLASS<JsonArray>(null);
         json.get().set(getJsonArray());
         return json;
     }
-    
+
     @SuppressWarnings("unchecked")
     public TextField.CLASS<? extends TextField> operatorAssign(primary value) {
         set(org.zenframework.z8.server.json.parser.JsonObject.valueToString(value));

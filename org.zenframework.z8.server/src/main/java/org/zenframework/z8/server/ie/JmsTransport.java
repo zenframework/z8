@@ -132,11 +132,6 @@ public class JmsTransport extends AbstractTransport implements ExceptionListener
     }
 
     @Override
-    public boolean usePersistency() {
-        return true;
-    }
-
-    @Override
     public void onException(JMSException e) {
         Trace.logError("JMS exception occured", e);
     }

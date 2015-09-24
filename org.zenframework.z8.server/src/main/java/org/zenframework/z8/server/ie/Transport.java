@@ -18,8 +18,6 @@ public interface Transport {
 
     String getUrl(String address);
 
-    boolean usePersistency();
-
     void init();
 
     void shutdown();

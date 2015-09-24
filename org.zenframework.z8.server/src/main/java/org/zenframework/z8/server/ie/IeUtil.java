@@ -1,5 +1,7 @@
 package org.zenframework.z8.server.ie;
 
+import java.io.IOException;
+import java.io.OutputStream;
 import java.io.Reader;
 import java.io.StringReader;
 import java.io.StringWriter;
@@ -14,10 +16,12 @@ import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 
+import org.apache.commons.codec.binary.Base64;
 import org.zenframework.z8.ie.xml.ExportEntry;
 import org.zenframework.z8.ie.xml.ExportEntry.Records;
 import org.zenframework.z8.ie.xml.ObjectFactory;
 import org.zenframework.z8.server.base.file.FileInfo;
+import org.zenframework.z8.server.base.file.FilesFactory;
 import org.zenframework.z8.server.base.query.Query;
 import org.zenframework.z8.server.base.table.value.AttachmentField;
 import org.zenframework.z8.server.base.table.value.Field;
@@ -125,6 +129,40 @@ public class IeUtil {
         List<FileInfo> fileInfos = new ArrayList<FileInfo>(files.size());
         for (ExportEntry.Files.File file : files) {
             fileInfos.add(fileToFileInfo(file));
+        }
+        return fileInfos;
+    }
+
+    public static ExportEntry.Files fileInfosToXmlFiles(List<FileInfo> fileInfos) {
+        ExportEntry.Files files = new ExportEntry.Files();
+        while (!fileInfos.isEmpty()) {
+            FileInfo fileInfo = fileInfos.remove(0);
+            ExportEntry.Files.File file = new ExportEntry.Files.File();
+            file.setId(fileInfo.id.toString());
+            file.setName(fileInfo.name.get());
+            file.setPath(fileInfo.path.get());
+            file.setValue(Base64.encodeBase64String(fileInfo.file.get()));
+            files.getFile().add(file);
+        }
+        return files;
+    }
+
+    public static List<FileInfo> xmlFilesToFileInfos(ExportEntry.Files files) throws IOException {
+        List<FileInfo> fileInfos = new ArrayList<FileInfo>(files.getFile().size());
+        for (ExportEntry.Files.File file : files.getFile()) {
+            FileInfo fileInfo = new FileInfo();
+            fileInfo.name.set(file.getName());
+            fileInfo.path.set(file.getPath());
+            fileInfo.id.set(file.getId());
+            fileInfo.file = FilesFactory.createFileItem(file.getName());
+            OutputStream out = fileInfo.file.getOutputStream();
+            try {
+                out.write(Base64.decodeBase64(file.getValue()));
+                file.setValue("");
+            } finally {
+                out.close();
+            }
+            fileInfos.add(fileInfo);
         }
         return fileInfos;
     }
