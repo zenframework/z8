@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Z8 ODA Driver
 Bundle-SymbolicName: org.zenframework.z8.oda.driver;singleton:=true
-Bundle-Version: 1.0.0
+Bundle-Version: 1.1.0
 Bundle-ClassPath: .
 Bundle-Activator: org.zenframework.z8.oda.driver.Plugin
 Bundle-Vendor: ZENFRAMEWORK.ORG
