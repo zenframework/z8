@@ -72,6 +72,7 @@ class Query extends Runnable
 	virtual protected void afterDestroy(Query query, guid recordId, Query model, guid modelRecordId);
 	
 	public bool hasRecord(guid recordId);
+	public bool hasRecord(sql_bool where);
 	
 	public Field getFieldById(string id);
 	public Field getFieldByName(string name);

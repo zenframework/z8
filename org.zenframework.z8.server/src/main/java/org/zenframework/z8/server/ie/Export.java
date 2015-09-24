@@ -147,8 +147,8 @@ public class Export extends OBJECT {
             }
             // Запись сообщения в таблицу ExportMessages
             message.setAddress(getAddress());
-            ExportMessages.instance().addMessage(message, protocol,
-                    context.get().getProperty(TransportContext.SelfAddressProperty));
+            message.setSender(context.get().getProperty(TransportContext.SelfAddressProperty));
+            ExportMessages.instance().addMessage(message, protocol);
         } catch (JAXBException e) {
             throw new exception("Can't marshal records", e);
         }

@@ -578,6 +578,10 @@ public class Query extends Runnable {
         return readRecord(recordId, Arrays.asList(primaryKey()));
     }
 
+    public boolean hasRecord(SqlToken where) {
+        return readFirst(Arrays.asList(primaryKey()), where);
+    }
+
     public int count() {
         return count(null);
     }
@@ -2225,6 +2229,10 @@ public class Query extends Runnable {
 
     public bool z8_hasRecord(guid recordId) {
         return new bool(hasRecord(recordId));
+    }
+
+    public bool z8_hasRecord(sql_bool where) {
+        return new bool(hasRecord(where));
     }
 
     public integer z8_count() {

@@ -6,7 +6,7 @@
     <name>Z8 Platform</name>
     <groupId>org.zenframework.z8</groupId>
     <artifactId>org.zenframework.z8</artifactId>
-    <version>1.0.0</version>
+    <version>1.1.0</version>
     <packaging>pom</packaging>
 
     <properties>
@@ -26,6 +26,7 @@
         <eclipse.core.version>[3.7.0,3.11.0)</eclipse.core.version>
         <eclipse.text.version>[3.5.0,)</eclipse.text.version>
         <birt.version>4.4.0</birt.version>
+        <cxf.version>2.6.0</cxf.version>
         
         <!-- Версии плагинов -->
         <tycho.version>0.21.0</tycho.version>

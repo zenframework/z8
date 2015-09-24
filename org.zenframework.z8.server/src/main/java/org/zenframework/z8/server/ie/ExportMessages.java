@@ -67,8 +67,8 @@ public class ExportMessages extends Table {
         super(container);
     }
 
-    public void addMessage(Message message, String protocol, String sender) throws JAXBException {
-        this.id.get().set(new string(sender));
+    public void addMessage(Message message, String protocol) throws JAXBException {
+        this.id.get().set(new string(message.getSender()));
         this.id1.get().set(new string(message.getAddress()));
         this.name.get().set(new string(protocol));
         this.ordinal.get().set(new integer(this.ordinal.get().getSequencer().next()));

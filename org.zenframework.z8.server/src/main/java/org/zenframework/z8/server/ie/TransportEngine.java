@@ -8,11 +8,11 @@ import java.util.Map;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.zenframework.z8.server.base.table.system.Properties;
+import org.zenframework.z8.server.ie.ws.WsTransport;
 import org.zenframework.z8.server.runtime.ServerRuntime;
 
 public class TransportEngine implements Properties.Listener {
 
-    @SuppressWarnings("unused")
     private static final Log LOG = LogFactory.getLog(TransportEngine.class);
 
     private static TransportEngine INSTANCE;
@@ -32,7 +32,12 @@ public class TransportEngine implements Properties.Listener {
             transport = transports.get(transportId);
             if (transport == null) {
                 transport = createTransport(context, protocol);
-                transports.put(transportId, transport);
+                if (transport != null) {
+                    transports.put(transportId, transport);
+                    transport.init();
+                } else {
+                    LOG.warn("Unknown transport protocol '" + protocol + "'");
+                }
             }
         }
         return transport;
@@ -59,13 +64,6 @@ public class TransportEngine implements Properties.Listener {
                 enabledProtocols.clear();
                 enabledProtocols.addAll(getEnabledProtocols(value));
             }
-            start();
-        }
-    }
-
-    private synchronized void start() {
-        for (Transport t : transports.values()) {
-            t.init();
         }
     }
 
@@ -78,7 +76,6 @@ public class TransportEngine implements Properties.Listener {
     public static TransportEngine getInstance() {
         if (INSTANCE == null) {
             INSTANCE = new TransportEngine();
-            INSTANCE.start();
         }
         return INSTANCE;
     }
@@ -104,6 +101,8 @@ public class TransportEngine implements Properties.Listener {
             return new JmsTransport(context);
         } else if (FileTransport.PROTOCOL.equals(protocol)) {
             return new FileTransport(context);
+        } else if (WsTransport.PROTOCOL.equals(protocol)) {
+            return new WsTransport(context);
         } else {
             return null;
         }
