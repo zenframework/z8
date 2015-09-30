@@ -9,7 +9,6 @@ import org.zenframework.z8.server.base.query.Query;
 import org.zenframework.z8.server.base.query.QueryUtils;
 import org.zenframework.z8.server.base.query.Style;
 import org.zenframework.z8.server.base.table.value.Field;
-import org.zenframework.z8.server.base.table.value.Link;
 import org.zenframework.z8.server.json.Json;
 import org.zenframework.z8.server.json.parser.JsonArray;
 import org.zenframework.z8.server.json.parser.JsonObject;
@@ -70,8 +69,7 @@ public class CopyAction extends Action {
     }
 
     static private boolean canCopy(Field field) {
-        return !field.isPrimaryKey() && !field.unique.get()
-                && (!field.system.get() || field instanceof Link || field.isParentKey());
+        return !field.isPrimaryKey() && !field.unique.get();
     }
 
     static public guid run(Query query, guid sourceId, guid parentId, guid modelRecordId) {
