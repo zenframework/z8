@@ -29,6 +29,8 @@ public class IntegerField extends Field {
         setDefault(new integer());
         format.set(Format.integer);
         stretch.set(false);
+        
+        aggregation = Aggregation.Sum;
     }
 
     public integer z8_getDefault() {

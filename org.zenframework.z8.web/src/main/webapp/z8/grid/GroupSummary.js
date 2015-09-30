@@ -284,7 +284,7 @@ Z8.grid.GroupSummary.Calculations =
 
 	max: function(v, record, field, data)
 	{
-		return null;
+		return undefined;
 /*
 		var v = record.data[field];
 		var max = data[field+'max'] === undefined ? (data[field+'max'] = v) : data[field+'max'];
@@ -294,7 +294,7 @@ Z8.grid.GroupSummary.Calculations =
 
 	min: function(v, record, field, data)
 	{
-		return null;
+		return undefined;
 /*
 		var v = record.data[field];
 		var min = data[field+'min'] === undefined ? (data[field+'min'] = v) : data[field+'min'];

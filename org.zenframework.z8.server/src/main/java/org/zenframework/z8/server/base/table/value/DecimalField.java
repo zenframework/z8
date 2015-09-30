@@ -33,6 +33,8 @@ public class DecimalField extends Field {
         setDefault(new decimal());
         format.set(Format.decimal);
         stretch.set(false);
+        
+        aggregation = Aggregation.Sum;
     }
 
     public decimal z8_getDefault() {

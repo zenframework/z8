@@ -72,9 +72,10 @@ Z8.grid.AttachmentsStatusColumn = Ext.extend(Z8.grid.StatusColumn,
 	renderer: function(value, metadata, record, rowIndex, colIndex, store)
 	{
 		var cls = '';
-		if(store.filesProperty != null && !Z8.isEmpty(record.data[store.filesProperty]))
-		{
-			cls = 'silk-attach';
+		if(store.filesProperty != null) {
+			var data = record.data[store.filesProperty];
+			if(!Z8.isEmpty(data) && data != '[]')
+				cls = 'silk-attach';
 		}
 
 		return '<div unselectable="on" style="margin-left:' + (colIndex == 0 ? -18 : -6) + 'px; margin-top:-3px; width:22px; height: 16px" class="' + cls + '">' + Z8.emptyString + '</div>';

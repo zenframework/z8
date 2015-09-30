@@ -372,7 +372,16 @@ Z8.view.GridView = Ext.extend(Z8.Panel,
 		this.grid.stopEditing();
 		var record = this.grid.getSelectedRecord();
 
-		var uploadDialog = new Z8.view.UploadDialog({ title: 'Присоединить файл', params: { table: this.getStore().query.name, recordId: record.id, upload: this.getStore().query.name + '/' + record.id } });
+		var store = this.getStore();
+		
+		var params = { 
+			requestId: store.query.requestId, 
+			recordId: record.id, 
+			xaction: 'attach',
+			field: store.filesProperty
+		};
+		
+		var uploadDialog = new Z8.view.UploadDialog({ title: 'Присоединить файл', params: params });
 		uploadDialog.on('ok', this.onFileAttached.createDelegate(this, [record.id], true), this);
 		uploadDialog.show();
 	},
@@ -384,38 +393,43 @@ Z8.view.GridView = Ext.extend(Z8.Panel,
 		
 		if(record != null)
 		{
-			var files = record.data[store.filesProperty];
-			files = Z8.isEmpty(files) ? [] : eval(files);
-			files = files.concat(newFiles);
-			
-			record.beginEdit();
-			record.set(store.filesProperty, Ext.encode(files));
-			record.endEdit();
+			record.data[store.filesProperty] = Ext.encode(newFiles);
+			record.store.fireEvent('update', record.store, record, Ext.data.Record.EDIT);
 		}
 	},	
 	
 	onFileRemoved: function(menu, item)
 	{
 		var store = this.getStore();
-
 		var record = this.grid.getSelectedRecord();
 
-		var files = record.data[store.filesProperty];
-		files = Z8.isEmpty(files) ? [] : eval(files);
-		
-		for(var i = 0; i < files.length; i++)
-		{
-			if(files[i].name == item.file.name)
-			{
-				files[i].deleted = true;
+		var params = { 
+        	xaction: 'detach',
+            field: store.filesProperty,
+            requestId: store.query.requestId,
+            recordId: record.id,
+            data: Ext.encode([item.file.id])
+		};
+
+		var onSuccess = function(result) {
+			var files = eval(record.data[store.filesProperty]); 
+			var result = [];
+			
+			for(var i = 0; i < files.length; i++) {
+				if(files[i].id != item.file.id)
+					result.push(files[i]);
 			}
+			
+			record.data[store.filesProperty] = Z8.isEmpty(result) ? '' : Ext.encode(result);
+			record.store.fireEvent('update', record.store, record, Ext.data.Record.EDIT);
+			menu.initialize(result);
+			if(Z8.isEmpty(result))
+				menu.hide();
 		}
 		
-		record.beginEdit();
-		record.set(store.filesProperty, files.length != 0 ? Ext.encode(files) : '');
-		record.endEdit();
+		var onError = this.onDataError;
 		
-		menu.initialize(files);
+		Z8.Ajax.request(store.query.requestId, onSuccess, onError, params, this);
 	},
 	
 	onPrint: function(button, format, report)

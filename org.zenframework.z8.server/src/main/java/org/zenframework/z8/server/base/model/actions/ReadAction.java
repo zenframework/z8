@@ -153,8 +153,11 @@ public class ReadAction extends Action {
             addSelectField(query.parentKey());
             addSelectField(query.parentKeys());
             addSelectField(query.children());
-            addSelectField(query.lockKey());
-            addSelectField(query.attachmentField());
+            
+            if(parameters.requestId != null) {
+                addSelectField(query.lockKey());
+                addSelectField(query.attachmentField());
+            }
         }
     }
 
@@ -1009,7 +1012,10 @@ public class ReadAction extends Action {
             JsonObject fieldData = new JsonObject();
 
             for (Field field : frame.getFields()) {
-                field.writeData(fieldData);
+                if(field.aggregation != Aggregation.Min
+                        && field.aggregation != Aggregation.Max
+                        && (field.type() == FieldType.Integer || field.type() == FieldType.Decimal || field.aggregation == Aggregation.Count))
+                    field.writeData(fieldData);
             }
 
             data.put(fieldData);
@@ -1140,7 +1146,7 @@ public class ReadAction extends Action {
                         obj.put(groupField.id(), expression.get());
                     } else if (field == count) {
                         obj.put(Json.total, count.get());
-                    } else if (field.aggregation != Aggregation.Min
+                    } else if(field.aggregation != Aggregation.Min
                             && field.aggregation != Aggregation.Max
                             && (field.type() == FieldType.Integer || field.type() == FieldType.Decimal || field.aggregation == Aggregation.Count)) {
                         field.writeData(obj);

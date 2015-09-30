@@ -65,7 +65,7 @@ import org.zenframework.z8.server.types.guid;
 import org.zenframework.z8.server.types.integer;
 import org.zenframework.z8.server.types.primary;
 import org.zenframework.z8.server.types.string;
-import org.zenframework.z8.server.types.sql.sql_bool;;
+import org.zenframework.z8.server.types.sql.sql_bool;
 
 public class Query extends Runnable {
     static public class strings {
@@ -1175,7 +1175,8 @@ public class Query extends Runnable {
     }
 
     public AttachmentField attachmentField() {
-        return null;
+        AttachmentField.CLASS<? extends AttachmentField> cls = z8_attachmentField();
+        return cls != null ? cls.get() : null;
     }
 
     public Field[] parentKeys() {
@@ -2215,6 +2216,10 @@ public class Query extends Runnable {
 
     // ////////////////////////////////////////////////////////////////////////////////////////////////
 
+    public AttachmentField.CLASS<? extends AttachmentField> z8_attachmentField() {
+        return null;
+    }
+    
     public sql_bool z8_having() {
         return new True();
     }
