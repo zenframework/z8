@@ -31,8 +31,10 @@ public class WsTransport extends AbstractTransport {
 
     @Override
     public void shutdown() {
-        endpoint.stop();
-        endpoint = null;
+        if (endpoint != null) {
+            endpoint.stop();
+            endpoint = null;
+        }
     }
 
     @Override
