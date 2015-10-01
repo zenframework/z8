@@ -44,6 +44,9 @@ class Field extends Control
 	
 	public Formula[] evaluations;
 	
+	public FieldType getType();
+	public string getTypeName();
+	
 	public bool isNull();
 	public sql_bool sqlIsNull();
 

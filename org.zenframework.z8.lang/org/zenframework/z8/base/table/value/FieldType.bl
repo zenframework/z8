@@ -1,6 +1,7 @@
 [native "org.zenframework.z8.server.db.FieldType"]
 
 enum FieldType {
+    None,
     Guid,
     Boolean,
     Integer,
@@ -8,5 +9,9 @@ enum FieldType {
     Date,
     Datetime,
     Datespan,
-    Decimal
+    Decimal,
+    Binary,
+    Text,
+    File,
+    Null
 }
