@@ -1,6 +1,5 @@
 package org.zenframework.z8.server.base.table.value;
 
-import org.zenframework.z8.server.base.json.Json;
 import org.zenframework.z8.server.base.json.parser.JsonArray;
 import org.zenframework.z8.server.base.json.parser.JsonObject;
 import org.zenframework.z8.server.runtime.IObject;
@@ -25,12 +24,6 @@ public class JsonField extends TextField {
         super(container);
     }
 
-    public org.zenframework.z8.server.json.Json getJson() {
-        String value = get().toString();
-        return value.isEmpty() ? new org.zenframework.z8.server.json.Json()
-                : new org.zenframework.z8.server.json.Json(value);
-    }
-
     public org.zenframework.z8.server.json.parser.JsonObject getJsonObject() {
         String value = get().toString();
         return value.isEmpty() ? new org.zenframework.z8.server.json.parser.JsonObject()
@@ -41,16 +34,6 @@ public class JsonField extends TextField {
         String value = get().toString();
         return value.isEmpty() ? new org.zenframework.z8.server.json.parser.JsonArray()
                 : new org.zenframework.z8.server.json.parser.JsonArray(get().toString());
-    }
-
-    public void set(Object object) {
-        set(org.zenframework.z8.server.json.parser.JsonObject.wrap(object).toString());
-    }
-
-    public Json.CLASS<Json> z8_getJson() {
-        Json.CLASS<Json> json = new Json.CLASS<Json>(null);
-        json.get().set(getJson());
-        return json;
     }
 
     public JsonObject.CLASS<? extends JsonObject> z8_getJsonObject() {
@@ -80,12 +63,6 @@ public class JsonField extends TextField {
     @SuppressWarnings("unchecked")
     public TextField.CLASS<? extends TextField> operatorAssign(JsonArray.CLASS<? extends JsonArray> value) {
         set(value.get().getInternalArray().toString());
-        return (TextField.CLASS<? extends TextField>) this.getCLASS();
-    }
-
-    @SuppressWarnings("unchecked")
-    public TextField.CLASS<? extends TextField> operatorAssign(Json.CLASS<? extends Json> value) {
-        set(value.get().getInternalJson());
         return (TextField.CLASS<? extends TextField>) this.getCLASS();
     }
 

@@ -209,23 +209,6 @@ public class Json extends Object {
     static public string loaded;
     static public string leaf;
 
-	public void operator = (string value);
-
-    public string getString();
-    public int getInt();
-    public decimal getDecimal();
-    public bool getBool();
-    public guid getGuid();
-
-    public JsonArray getJsonArray();
-    public JsonObject getJsonObject();
-
-    public JsonArray put(primary value);
-    public JsonArray put(JsonArray value);
-    public JsonArray put(JsonObject value);
-
-	static public Json getJson(string value);
-
     static public JsonObject getFilter(string field, primary value);
     static public JsonObject getFilter(Field field, primary value);
     static public JsonObject getFilter(string field, primary[] values);

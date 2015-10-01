@@ -1,18 +1,9 @@
 package org.zenframework.z8.server.base.json;
 
-import org.zenframework.z8.server.base.json.parser.JsonArray;
 import org.zenframework.z8.server.base.json.parser.JsonObject;
 import org.zenframework.z8.server.base.table.value.Field;
-import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.runtime.OBJECT;
 import org.zenframework.z8.server.runtime.RCollection;
-import org.zenframework.z8.server.types.bool;
-import org.zenframework.z8.server.types.date;
-import org.zenframework.z8.server.types.datespan;
-import org.zenframework.z8.server.types.datetime;
-import org.zenframework.z8.server.types.decimal;
-import org.zenframework.z8.server.types.guid;
-import org.zenframework.z8.server.types.integer;
 import org.zenframework.z8.server.types.primary;
 import org.zenframework.z8.server.types.string;
 
@@ -235,125 +226,6 @@ public class Json extends OBJECT {
     final static public string update = org.zenframework.z8.server.json.Json.update;
     final static public string create = org.zenframework.z8.server.json.Json.create;
     final static public string destroy = org.zenframework.z8.server.json.Json.destroy;
-
-    public static class CLASS<T extends Json> extends OBJECT.CLASS<T> {
-        public CLASS() {
-            this(null);
-        }
-
-        public CLASS(IObject container) {
-            super(container);
-            setJavaClass(Json.class);
-            setAttribute(Native, Json.class.getCanonicalName());
-        }
-
-        @Override
-        public Object newObject(IObject container) {
-            return new Json(container);
-        }
-    }
-
-    public Json(IObject container) {
-        super(container);
-    }
-
-    private org.zenframework.z8.server.json.Json json = new org.zenframework.z8.server.json.Json();
-
-    public org.zenframework.z8.server.json.Json getInternalJson() {
-        return json;
-    }
-
-    public void set(org.zenframework.z8.server.json.Json json) {
-        this.json = json;
-    }
-
-    public void operatorAssign(string source) {
-        json = new org.zenframework.z8.server.json.Json(source.get());
-    }
-
-    public string z8_getString() {
-        return new string(json.getString());
-    }
-
-    public integer z8_getInt() {
-        return new integer(json.getInt());
-    }
-
-    public decimal z8_getDecimal() {
-        return new decimal(json.getDouble());
-    }
-
-    public bool z8_getBool() {
-        return new bool(json.getBoolean());
-    }
-
-    public guid z8_getGuid() {
-        return json.getGuid();
-    }
-
-    public JsonArray.CLASS<? extends JsonArray> z8_getJsonArray() {
-        return JsonArray.getJsonArray(json.getJsonArray());
-    }
-
-    public JsonObject.CLASS<? extends JsonObject> z8_getJsonObject() {
-        return JsonObject.getJsonObject(json.getJsonObject());
-    }
-
-    @SuppressWarnings("unchecked")
-    public JsonObject.CLASS<? extends JsonObject> z8_put(primary value) {
-        if (value instanceof bool) {
-            json.put(((bool) value).get());
-        } else if (value instanceof date) {
-            json.put(((date) value).get());
-        } else if (value instanceof datespan) {
-            json.put(((datespan) value).get());
-        } else if (value instanceof datetime) {
-            json.put(((datetime) value).get());
-        } else if (value instanceof decimal) {
-            json.put(((decimal) value).get());
-        } else if (value instanceof guid) {
-            json.put(value);
-        } else if (value instanceof integer) {
-            json.put(((integer) value).get());
-        } else if (value instanceof string) {
-            json.put(((string) value).get());
-        } else {
-            throw new UnsupportedOperationException("Unsupported type " + value.getClass());
-        }
-        return (JsonObject.CLASS<? extends JsonObject>) getCLASS();
-    }
-
-    @SuppressWarnings("unchecked")
-    public JsonObject.CLASS<? extends JsonObject> z8_put(string name, JsonArray.CLASS<? extends JsonArray> value) {
-        json.put(value.get().getInternalArray());
-        return (JsonObject.CLASS<? extends JsonObject>) getCLASS();
-    }
-
-    @SuppressWarnings("unchecked")
-    public JsonObject.CLASS<? extends JsonObject> z8_put(string name, JsonObject.CLASS<? extends JsonObject> value) {
-        json.put(value.get().getInternalObject());
-        return (JsonObject.CLASS<? extends JsonObject>) getCLASS();
-    }
-
-    @Override
-    public String toString() {
-        return json.toString();
-    }
-
-    @Override
-    public string z8_toString() {
-        return new string(json.toString());
-    }
-
-    public static Json.CLASS<Json> getJson(org.zenframework.z8.server.json.Json value) {
-        Json.CLASS<Json> json = new Json.CLASS<Json>(null);
-        json.get().json = value;
-        return json;
-    }
-
-    public static Json.CLASS<Json> z8_getJson(string value) {
-        return getJson(new org.zenframework.z8.server.json.Json(value.get()));
-    }
 
     public static JsonObject.CLASS<JsonObject> z8_getFilter(string field, primary value) {
         return z8_getFilter(field, new string("eq"), value);
