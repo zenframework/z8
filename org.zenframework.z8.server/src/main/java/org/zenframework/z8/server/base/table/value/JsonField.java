@@ -56,13 +56,13 @@ public class JsonField extends TextField {
 
     @SuppressWarnings("unchecked")
     public TextField.CLASS<? extends TextField> operatorAssign(JsonObject.CLASS<? extends JsonObject> value) {
-        set(value.get().getInternalObject().toString());
+        set(value.get().getInternalObject().isEmpty() ? "" : value.get().getInternalObject().toString());
         return (TextField.CLASS<? extends TextField>) this.getCLASS();
     }
 
     @SuppressWarnings("unchecked")
     public TextField.CLASS<? extends TextField> operatorAssign(JsonArray.CLASS<? extends JsonArray> value) {
-        set(value.get().getInternalArray().toString());
+        set(value.get().getInternalArray().isEmpty() ? "" : value.get().getInternalArray().toString());
         return (TextField.CLASS<? extends TextField>) this.getCLASS();
     }
 
