@@ -98,10 +98,4 @@ public class TaskLogs extends Table {
 
         links.add(task);
     }
-    
-    @Override
-    public AttachmentField attachmentField() {
-        return files.get();
-    }
-    
 }

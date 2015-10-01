@@ -1045,6 +1045,11 @@ public class Query extends Runnable {
         return result;
     }
 
+    public AttachmentField getAttachmentField() {
+        Collection<AttachmentField> attachmentFields = getAttachments();
+        return attachmentFields.isEmpty() ? null : attachmentFields.iterator().next();
+    }
+
     public void registerDataField(Field.CLASS<?> field) {
         assert (field.instanceOf(Field.class));
         dataFields.add(field);
@@ -1172,11 +1177,6 @@ public class Query extends Runnable {
         }
 
         return null;
-    }
-
-    public AttachmentField attachmentField() {
-        AttachmentField.CLASS<? extends AttachmentField> cls = z8_attachmentField();
-        return cls != null ? cls.get() : null;
     }
 
     public Field[] parentKeys() {
@@ -1999,8 +1999,8 @@ public class Query extends Runnable {
             writer.put(Json.lockKey, lockKey.id());
         }
 
-        Field attachments = attachmentField();
-
+        AttachmentField attachments = getAttachmentField();
+        
         if (attachments != null && fields.contains(attachments)) {
             writer.put(Json.attachments, attachments.id());
         }
@@ -2216,10 +2216,6 @@ public class Query extends Runnable {
 
     // ////////////////////////////////////////////////////////////////////////////////////////////////
 
-    public AttachmentField.CLASS<? extends AttachmentField> z8_attachmentField() {
-        return null;
-    }
-    
     public sql_bool z8_having() {
         return new True();
     }

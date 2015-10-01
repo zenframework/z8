@@ -156,7 +156,7 @@ public class ReadAction extends Action {
             
             if(parameters.requestId != null) {
                 addSelectField(query.lockKey());
-                addSelectField(query.attachmentField());
+                addSelectField(query.getAttachmentField());
             }
         }
     }
