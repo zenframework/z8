@@ -30,6 +30,8 @@ public class JsonObject extends Object {
     public JsonObject put(Field field);
     
     public JsonObject remove(string name);
+	
+	public string toString(int indentFactor);
 
 	public static JsonObject newJsonObject(string source);
 

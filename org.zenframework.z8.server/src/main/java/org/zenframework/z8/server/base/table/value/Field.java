@@ -443,6 +443,10 @@ abstract public class Field extends Control implements IValue, IField {
         return new string(toString());
     }
 
+    public primary z8_primary() {
+        return get();
+    }
+
     public binary z8_binary() {
         return binary();
     }

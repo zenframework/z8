@@ -2,6 +2,7 @@ package org.zenframework.z8.server.base.json.parser;
 
 import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.runtime.OBJECT;
+import org.zenframework.z8.server.runtime.RCollection;
 import org.zenframework.z8.server.types.bool;
 import org.zenframework.z8.server.types.decimal;
 import org.zenframework.z8.server.types.guid;
@@ -131,6 +132,34 @@ public class JsonArray extends OBJECT {
         return (JsonArray.CLASS<? extends JsonArray>) getCLASS();
     }
 
+    public RCollection<guid> z8_toGuidArray() {
+        return new RCollection<guid>(array.toArray(new guid[array.size()]));
+    }
+
+    public RCollection<string> z8_toStringArray() {
+        return new RCollection<string>(array.toArray(new string[array.size()]));
+    }
+
+    public RCollection<JsonArray.CLASS<? extends JsonArray>> z8_toJsonArrayArray() {
+        RCollection<JsonArray.CLASS<? extends JsonArray>> jsonArrayArray = new RCollection<JsonArray.CLASS<? extends JsonArray>>();
+        for (int i = 0; i < array.size(); i++) {
+            JsonArray.CLASS<? extends JsonArray> jsonArray = new JsonArray.CLASS<JsonArray>();
+            jsonArray.get().set(array.getJsonArray(i));
+            jsonArrayArray.add(jsonArray);
+        }
+        return jsonArrayArray;
+    }
+
+    public RCollection<JsonObject.CLASS<? extends JsonObject>> z8_toJsonObjectArray() {
+        RCollection<JsonObject.CLASS<? extends JsonObject>> jsonObjectArray = new RCollection<JsonObject.CLASS<? extends JsonObject>>();
+        for (int i = 0; i < array.size(); i++) {
+            JsonObject.CLASS<? extends JsonObject> jsonObject = new JsonObject.CLASS<JsonObject>();
+            jsonObject.get().set(array.getJsonObject(i));
+            jsonObjectArray.add(jsonObject);
+        }
+        return jsonObjectArray;
+    }
+
     @Override
     public String toString() {
         return array.toString();
@@ -141,6 +170,10 @@ public class JsonArray extends OBJECT {
         return new string(array.toString());
     }
 
+    public string z8_toString(integer indentFactor) {
+        return new string(array.toString(indentFactor.getInt()));
+    }
+
     public static JsonArray.CLASS<JsonArray> getJsonArray(org.zenframework.z8.server.json.parser.JsonArray json) {
         JsonArray.CLASS<JsonArray> jsonArray = new JsonArray.CLASS<JsonArray>(null);
         jsonArray.get().set(json);
@@ -149,6 +182,33 @@ public class JsonArray extends OBJECT {
 
     public static JsonArray.CLASS<JsonArray> z8_newJsonArray(string source) {
         return getJsonArray(new org.zenframework.z8.server.json.parser.JsonArray(source.get()));
+    }
+
+    @SuppressWarnings("rawtypes")
+    public static JsonArray.CLASS<? extends JsonArray> z8_fromPrimaryArray(RCollection array) {
+        JsonArray.CLASS<? extends JsonArray> jsonArray = new JsonArray.CLASS<JsonArray>();
+        jsonArray.get().set(new org.zenframework.z8.server.json.parser.JsonArray(array));
+        return jsonArray;
+    }
+
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+    public static JsonArray.CLASS<? extends JsonArray> z8_fromJsonArrayArray(RCollection array) {
+        RCollection<JsonArray.CLASS<? extends JsonArray>> jsonArrayArray = (RCollection<JsonArray.CLASS<? extends JsonArray>>) array;
+        JsonArray.CLASS<? extends JsonArray> jsonArray = new JsonArray.CLASS<JsonArray>();
+        for (JsonArray.CLASS<? extends JsonArray> ja : jsonArrayArray) {
+            jsonArray.get().array.put(ja.get().array);
+        }
+        return jsonArray;
+    }
+
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+    public static JsonArray.CLASS<? extends JsonArray> z8_fromJsonObjectArray(RCollection array) {
+        RCollection<JsonObject.CLASS<? extends JsonObject>> jsonObjectArray = (RCollection<JsonObject.CLASS<? extends JsonObject>>) array;
+        JsonArray.CLASS<? extends JsonArray> jsonArray = new JsonArray.CLASS<JsonArray>();
+        for (JsonObject.CLASS<? extends JsonObject> jo : jsonObjectArray) {
+            jsonArray.get().array.put(jo.get().getInternalObject());
+        }
+        return jsonArray;
     }
 
 }

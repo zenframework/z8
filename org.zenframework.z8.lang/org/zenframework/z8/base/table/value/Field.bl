@@ -52,6 +52,7 @@ class Field extends Control
 
 	public Sequencer getSequencer();
 
+	public primary primary();
 	public binary binary();
 	public bool bool();
 	public guid guid();

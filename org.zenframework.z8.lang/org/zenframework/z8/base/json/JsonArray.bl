@@ -28,7 +28,18 @@ public class JsonArray extends Object {
     public JsonArray put(int index, JsonObject value);
     
     public JsonArray remove(int index);
+    
+    public guid[] toGuidArray();
+    public string[] toStringArray();
+    public JsonArray[] toJsonArrayArray();
+    public JsonObject[] toJsonObjectArray();
 
-	public static JsonObject newJsonArray(string source);
+	public string toString(int indentFactor);
+
+	public static JsonArray newJsonArray(string source);
+
+	public static JsonArray fromPrimaryArray(primary[] array);
+	public static JsonArray fromJsonArrayArray(JsonArray[] array);
+	public static JsonArray fromJsonObjectArray(JsonObject[] array);
 
 }
