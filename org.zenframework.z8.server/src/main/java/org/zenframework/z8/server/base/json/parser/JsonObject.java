@@ -5,6 +5,8 @@ import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.runtime.OBJECT;
 import org.zenframework.z8.server.runtime.RCollection;
 import org.zenframework.z8.server.types.bool;
+import org.zenframework.z8.server.types.date;
+import org.zenframework.z8.server.types.datetime;
 import org.zenframework.z8.server.types.decimal;
 import org.zenframework.z8.server.types.guid;
 import org.zenframework.z8.server.types.integer;
@@ -98,6 +100,14 @@ public class JsonObject extends OBJECT {
         return object.getGuid(name);
     }
 
+    public date z8_getDate(string name) {
+        return date.z8_parse(z8_getString(name));
+    }
+
+    public datetime z8_getDatetime(string name) {
+        return datetime.z8_parse(z8_getString(name));
+    }
+
     public JsonArray.CLASS<? extends JsonArray> z8_getJsonArray(string name) {
         org.zenframework.z8.server.json.parser.JsonArray array = this.object.getJsonArray(name);
         JsonArray.CLASS<? extends JsonArray> cls = new JsonArray.CLASS<JsonArray>(null);
@@ -130,11 +140,9 @@ public class JsonObject extends OBJECT {
         return (JsonObject.CLASS<? extends JsonObject>) getCLASS();
     }
 
-    @SuppressWarnings("unchecked")
     public JsonObject.CLASS<? extends JsonObject> z8_put(Field.CLASS<? extends Field> fieldClass) {
         Field field = fieldClass.get();
-        object.put(field.id(), field.get());
-        return (JsonObject.CLASS<? extends JsonObject>) getCLASS();
+        return z8_put(field.z8_id(), field.get());
     }
 
     @SuppressWarnings("unchecked")
