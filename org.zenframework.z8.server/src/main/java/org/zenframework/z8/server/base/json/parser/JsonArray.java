@@ -196,7 +196,7 @@ public class JsonArray extends OBJECT {
         RCollection<JsonArray.CLASS<? extends JsonArray>> jsonArrayArray = (RCollection<JsonArray.CLASS<? extends JsonArray>>) array;
         JsonArray.CLASS<? extends JsonArray> jsonArray = new JsonArray.CLASS<JsonArray>();
         for (JsonArray.CLASS<? extends JsonArray> ja : jsonArrayArray) {
-            jsonArray.get().array.put(ja.get().array);
+            jsonArray.get().getInternalArray().put(ja.get().getInternalArray());
         }
         return jsonArray;
     }
@@ -206,7 +206,7 @@ public class JsonArray extends OBJECT {
         RCollection<JsonObject.CLASS<? extends JsonObject>> jsonObjectArray = (RCollection<JsonObject.CLASS<? extends JsonObject>>) array;
         JsonArray.CLASS<? extends JsonArray> jsonArray = new JsonArray.CLASS<JsonArray>();
         for (JsonObject.CLASS<? extends JsonObject> jo : jsonObjectArray) {
-            jsonArray.get().array.put(jo.get().getInternalObject());
+            jsonArray.get().getInternalArray().put(jo.get().getInternalObject());
         }
         return jsonArray;
     }
