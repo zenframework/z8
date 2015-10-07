@@ -656,14 +656,34 @@ public class Query extends Runnable {
         return myFields;
     }
 
+/*
+    public Statement batchStatement = null;
+
+    public boolean isBatching() {
+        return batchStatement != null;
+    }
+    
+    public void startBatch() {
+        batchStatement = new BatchStatement();
+        batchStatement.statement()..
+    }
+    
+    public void finishBatch() {
+        batchStatement.executeBatch();
+        batchStatement.close();
+    }
+*/
     public void executeInsert(Collection<Field> fields) {
         Query rootQuery = getRootQuery();
 
-        Insert insert = null;
-
-        insert = new Insert(rootQuery, fields);
+        Insert insert = new Insert(rootQuery, fields);
 
         try {
+/*
+            if(isBatching())
+                batchStatement.addBatch(insert);
+            else
+*/
             insert.execute();
         } catch (SQLException e) {
             throw new RuntimeException(e);
@@ -2280,7 +2300,11 @@ public class Query extends Runnable {
     }
 
     public guid z8_create() {
-        return create();
+        try {
+            return create();
+        } catch(Throwable e) {
+            throw new exception(e);
+        }
     }
 
     public guid z8_copy(guid recordId) {

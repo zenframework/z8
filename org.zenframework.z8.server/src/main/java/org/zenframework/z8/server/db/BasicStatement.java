@@ -88,10 +88,11 @@ public abstract class BasicStatement implements IStatement {
     }
 
     @Override
-    public void close() {
+    synchronized public void close() {
         try {
             if(statement != null && !statement.isClosed()) {
                 statement.close();
+                statement = null;
             }
         }
         catch(SQLException e) {
