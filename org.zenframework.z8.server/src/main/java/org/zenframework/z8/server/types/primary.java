@@ -6,6 +6,7 @@ import java.math.BigDecimal;
 import java.util.GregorianCalendar;
 import java.util.UUID;
 
+import org.apache.commons.codec.binary.Base64;
 import org.zenframework.z8.server.db.DatabaseVendor;
 import org.zenframework.z8.server.db.FieldType;
 
@@ -82,7 +83,7 @@ public class primary implements Serializable {
 
     public static Object unwrap(Object o) {
         if (o instanceof binary) {
-            return ((binary) o).getBytes();
+            return Base64.encodeBase64(((binary) o).getBytes());
         } else if (o instanceof bool) {
             return ((bool) o).get();
         } else if (o instanceof date) {

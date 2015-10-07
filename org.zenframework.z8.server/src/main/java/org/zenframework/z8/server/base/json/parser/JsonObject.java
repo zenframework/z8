@@ -1,9 +1,11 @@
 package org.zenframework.z8.server.base.json.parser;
 
+import org.apache.commons.codec.binary.Base64;
 import org.zenframework.z8.server.base.table.value.Field;
 import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.runtime.OBJECT;
 import org.zenframework.z8.server.runtime.RCollection;
+import org.zenframework.z8.server.types.binary;
 import org.zenframework.z8.server.types.bool;
 import org.zenframework.z8.server.types.date;
 import org.zenframework.z8.server.types.datetime;
@@ -106,6 +108,10 @@ public class JsonObject extends OBJECT {
 
     public datetime z8_getDatetime(string name) {
         return datetime.z8_parse(z8_getString(name));
+    }
+
+    public binary z8_getBinary(string name) {
+        return new binary(Base64.decodeBase64(object.getString(name)));
     }
 
     public JsonArray.CLASS<? extends JsonArray> z8_getJsonArray(string name) {

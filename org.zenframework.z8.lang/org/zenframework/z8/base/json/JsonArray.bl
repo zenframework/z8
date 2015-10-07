@@ -15,6 +15,7 @@ public class JsonArray extends Object {
     public decimal getDecimal(int i);
     public bool getBool(int i);
     public guid getGuid(int i);
+    public binary getBinary(int i);
 
     public JsonArray getJsonArray(int i);
     public JsonObject getJsonObject(int i);

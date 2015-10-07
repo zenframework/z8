@@ -1,8 +1,10 @@
 package org.zenframework.z8.server.base.json.parser;
 
+import org.apache.commons.codec.binary.Base64;
 import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.runtime.OBJECT;
 import org.zenframework.z8.server.runtime.RCollection;
+import org.zenframework.z8.server.types.binary;
 import org.zenframework.z8.server.types.bool;
 import org.zenframework.z8.server.types.decimal;
 import org.zenframework.z8.server.types.guid;
@@ -74,6 +76,10 @@ public class JsonArray extends OBJECT {
 
     public guid z8_getGuid(integer i) {
         return array.getGuid(i.getInt());
+    }
+
+    public binary z8_getBinary(integer i) {
+        return new binary(Base64.decodeBase64(array.getString(i.getInt())));
     }
 
     public JsonArray.CLASS<? extends JsonArray> z8_getJsonArray(integer i) {

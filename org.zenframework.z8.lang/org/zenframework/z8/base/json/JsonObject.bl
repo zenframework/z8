@@ -21,6 +21,7 @@ public class JsonObject extends Object {
     public guid getGuid(string name);
     public date getDate(string name);
     public datetime getDatetime(string name);
+    public binary getBinary(string name);
 
     public JsonArray getJsonArray(string name);
     public JsonObject getJsonObject(string name);
