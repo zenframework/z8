@@ -52,7 +52,11 @@ public class Runtime extends AbstractRuntime {
         // Run activators
         Collection<Activator.CLASS<? extends Activator>> activators = (Collection) activators();
         for (Activator.CLASS<? extends Activator> activator : activators) {
-            activator.get().onInitialize();
+            try {
+                activator.get().onInitialize();
+            } catch(Throwable e) {
+                Trace.logError("Plugin initialization error.", e);
+            }
         }
     }
 
