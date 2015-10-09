@@ -26,6 +26,7 @@ class Object {
 
 	public guid objectId();
 	public string id();
+	public string index();
 	public string name();
 	public string displayName();
 	public string className();
