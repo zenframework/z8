@@ -38,4 +38,8 @@ public class JsonObject extends Object {
 
 	public static JsonObject newJsonObject(string source);
 
+	public static JsonObject fromPrimaryMap(primary[primary] map);
+	public static JsonObject fromJsonArrayMap(JsonArray[primary] map);
+	public static JsonObject fromJsonObjectMap(JsonObject[primary] map);
+
 }

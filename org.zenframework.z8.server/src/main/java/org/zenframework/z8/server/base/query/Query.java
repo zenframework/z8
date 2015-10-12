@@ -2307,6 +2307,14 @@ public class Query extends Runnable {
         }
     }
 
+    public guid z8_create(guid recordId) {
+        try {
+            return create(recordId);
+        } catch(Throwable e) {
+            throw new exception(e);
+        }
+    }
+
     public guid z8_copy(guid recordId) {
         return copy(recordId);
     }

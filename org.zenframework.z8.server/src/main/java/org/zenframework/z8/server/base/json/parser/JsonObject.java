@@ -1,10 +1,13 @@
 package org.zenframework.z8.server.base.json.parser;
 
+import java.util.Map;
+
 import org.apache.commons.codec.binary.Base64;
 import org.zenframework.z8.server.base.table.value.Field;
 import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.runtime.OBJECT;
 import org.zenframework.z8.server.runtime.RCollection;
+import org.zenframework.z8.server.runtime.RLinkedHashMap;
 import org.zenframework.z8.server.types.binary;
 import org.zenframework.z8.server.types.bool;
 import org.zenframework.z8.server.types.date;
@@ -179,6 +182,33 @@ public class JsonObject extends OBJECT {
 
     public static JsonObject.CLASS<JsonObject> z8_newJsonObject(string source) {
         return getJsonObject(new org.zenframework.z8.server.json.parser.JsonObject(source.get()));
+    }
+
+    @SuppressWarnings("rawtypes")
+    public static JsonObject.CLASS<? extends JsonObject> z8_fromPrimaryMap(RLinkedHashMap map) {
+        JsonObject.CLASS<? extends JsonObject> jsonObject = new JsonObject.CLASS<JsonObject>();
+        jsonObject.get().set(new org.zenframework.z8.server.json.parser.JsonObject(map));
+        return jsonObject;
+    }
+
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+    public static JsonObject.CLASS<? extends JsonObject> z8_fromJsonArrayMap(RLinkedHashMap map) {
+        RLinkedHashMap<primary, JsonArray.CLASS<? extends JsonArray>> jsonArrayMap = (RLinkedHashMap<primary, JsonArray.CLASS<? extends JsonArray>>) map;
+        JsonObject.CLASS<? extends JsonObject> jsonObject = new JsonObject.CLASS<JsonObject>();
+        for (Map.Entry<primary, JsonArray.CLASS<? extends JsonArray>> ja : jsonArrayMap.entrySet()) {
+            jsonObject.get().getInternalObject().put(ja.getKey().toString(), ja.getValue().get().getInternalArray());
+        }
+        return jsonObject;
+    }
+
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+    public static JsonObject.CLASS<? extends JsonObject> z8_fromJsonObjectMap(RLinkedHashMap map) {
+        RLinkedHashMap<primary, JsonObject.CLASS<? extends JsonObject>> jsonObjectMap = (RLinkedHashMap<primary, JsonObject.CLASS<? extends JsonObject>>) map;
+        JsonObject.CLASS<? extends JsonObject> jsonObject = new JsonObject.CLASS<JsonObject>();
+        for (Map.Entry<primary, JsonObject.CLASS<? extends JsonObject>> jo : jsonObjectMap.entrySet()) {
+            jsonObject.get().getInternalObject().put(jo.getKey().toString(), jo.getValue().get().getInternalObject());
+        }
+        return jsonObject;
     }
 
 }
