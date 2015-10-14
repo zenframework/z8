@@ -139,11 +139,19 @@ public class JsonArray extends OBJECT {
     }
 
     public RCollection<guid> z8_toGuidArray() {
-        return new RCollection<guid>(array.toArray(new guid[array.size()]));
+        RCollection<guid> result = new RCollection<guid>();
+        for (int i = 0; i < array.size(); i++) {
+            result.add(array.getGuid(i));
+        }
+        return result;
     }
 
     public RCollection<string> z8_toStringArray() {
-        return new RCollection<string>(array.toArray(new string[array.size()]));
+        RCollection<string> result = new RCollection<string>();
+        for (int i = 0; i < array.size(); i++) {
+            result.add(new string(array.getString(i)));
+        }
+        return result;
     }
 
     public RCollection<JsonArray.CLASS<? extends JsonArray>> z8_toJsonArrayArray() {
