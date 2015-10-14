@@ -186,7 +186,7 @@ public class JsonArray extends OBJECT {
         return jsonArray;
     }
 
-    public static JsonArray.CLASS<JsonArray> z8_newJsonArray(string source) {
+    public static JsonArray.CLASS<JsonArray> z8_parse(string source) {
         return getJsonArray(new org.zenframework.z8.server.json.parser.JsonArray(source.get()));
     }
 

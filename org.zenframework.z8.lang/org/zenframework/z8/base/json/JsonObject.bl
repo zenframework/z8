@@ -36,7 +36,7 @@ public class JsonObject extends Object {
 	
 	public string toString(int indentFactor);
 
-	public static JsonObject newJsonObject(string source);
+	public static JsonObject parse(string source);
 
 	public static JsonObject fromPrimaryMap(primary[primary] map);
 	public static JsonObject fromJsonArrayMap(JsonArray[primary] map);
