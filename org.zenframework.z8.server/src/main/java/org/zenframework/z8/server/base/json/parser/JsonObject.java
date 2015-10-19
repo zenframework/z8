@@ -180,7 +180,7 @@ public class JsonObject extends OBJECT {
         return jsonObject;
     }
 
-    public static JsonObject.CLASS<JsonObject> z8_newJsonObject(string source) {
+    public static JsonObject.CLASS<JsonObject> z8_parse(string source) {
         return getJsonObject(new org.zenframework.z8.server.json.parser.JsonObject(source.get()));
     }
 

@@ -37,7 +37,7 @@ public class JsonArray extends Object {
 
 	public string toString(int indentFactor);
 
-	public static JsonArray newJsonArray(string source);
+	public static JsonArray parse(string source);
 
 	public static JsonArray fromPrimaryArray(primary[] array);
 	public static JsonArray fromJsonArrayArray(JsonArray[] array);

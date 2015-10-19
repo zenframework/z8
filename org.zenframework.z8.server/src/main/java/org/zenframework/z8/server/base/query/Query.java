@@ -582,6 +582,14 @@ public class Query extends Runnable {
         return readFirst(Arrays.asList(primaryKey()), where);
     }
 
+    public RCollection<guid> findRecords(SqlToken where) {
+        RCollection<guid> records = new RCollection<guid>();
+        read(Arrays.asList(primaryKey()), where);
+        while (next())
+            records.add(primaryKey().guid());
+        return records;
+    }
+
     public int count() {
         return count(null);
     }
@@ -2254,6 +2262,10 @@ public class Query extends Runnable {
 
     public bool z8_hasRecord(sql_bool where) {
         return new bool(hasRecord(where));
+    }
+
+    public RCollection<guid> z8_findRecords(sql_bool where) {
+        return findRecords(where);
     }
 
     public integer z8_count() {
