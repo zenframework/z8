@@ -263,6 +263,10 @@ public class OBJECT extends RequestTarget implements IObject {
         return objectId();
     }
 
+    public string z8_index() {
+        return new string(getIndex());
+    }
+
     public string z8_name() {
         return new string(name());
     }

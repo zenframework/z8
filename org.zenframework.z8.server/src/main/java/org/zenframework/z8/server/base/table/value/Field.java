@@ -107,6 +107,13 @@ abstract public class Field extends Control implements IValue, IField {
     		set(field.get().get());
     	}
     */
+
+    @SuppressWarnings("unchecked")
+    public Field.CLASS<Field> operatorAssign(primary value) {
+        set(value);
+        return (Field.CLASS<Field>) getCLASS();
+    }
+
     @Override
     public String toString() {
         return get().toString();

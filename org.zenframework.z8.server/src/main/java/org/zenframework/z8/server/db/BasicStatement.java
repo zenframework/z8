@@ -7,6 +7,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.sql.Types;
+import java.util.ConcurrentModificationException;
 
 import org.zenframework.z8.server.engine.Database;
 import org.zenframework.z8.server.logs.Trace;
@@ -92,11 +93,16 @@ public abstract class BasicStatement implements IStatement {
         try {
             if(statement != null && !statement.isClosed()) {
                 statement.close();
-                statement = null;
             }
         }
         catch(SQLException e) {
             Trace.logError(e);
+        }
+        catch(ConcurrentModificationException e) {
+            Trace.logError(e);
+        }
+        finally {
+            statement = null;
         }
     }
 

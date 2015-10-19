@@ -15,6 +15,7 @@ public class JsonArray extends Object {
     public decimal getDecimal(int i);
     public bool getBool(int i);
     public guid getGuid(int i);
+    public binary getBinary(int i);
 
     public JsonArray getJsonArray(int i);
     public JsonObject getJsonObject(int i);
@@ -36,7 +37,7 @@ public class JsonArray extends Object {
 
 	public string toString(int indentFactor);
 
-	public static JsonArray newJsonArray(string source);
+	public static JsonArray parse(string source);
 
 	public static JsonArray fromPrimaryArray(primary[] array);
 	public static JsonArray fromJsonArrayArray(JsonArray[] array);

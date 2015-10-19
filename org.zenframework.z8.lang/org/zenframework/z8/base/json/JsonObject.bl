@@ -21,6 +21,7 @@ public class JsonObject extends Object {
     public guid getGuid(string name);
     public date getDate(string name);
     public datetime getDatetime(string name);
+    public binary getBinary(string name);
 
     public JsonArray getJsonArray(string name);
     public JsonObject getJsonObject(string name);
@@ -35,6 +36,10 @@ public class JsonObject extends Object {
 	
 	public string toString(int indentFactor);
 
-	public static JsonObject newJsonObject(string source);
+	public static JsonObject parse(string source);
+
+	public static JsonObject fromPrimaryMap(primary[primary] map);
+	public static JsonObject fromJsonArrayMap(JsonArray[primary] map);
+	public static JsonObject fromJsonObjectMap(JsonObject[primary] map);
 
 }

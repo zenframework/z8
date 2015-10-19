@@ -3,7 +3,6 @@ package org.zenframework.z8.server.base.table.value;
 import org.zenframework.z8.server.base.json.parser.JsonArray;
 import org.zenframework.z8.server.base.json.parser.JsonObject;
 import org.zenframework.z8.server.runtime.IObject;
-import org.zenframework.z8.server.types.primary;
 
 public class JsonField extends TextField {
 
@@ -46,12 +45,6 @@ public class JsonField extends TextField {
         JsonArray.CLASS<JsonArray> json = new JsonArray.CLASS<JsonArray>(null);
         json.get().set(getJsonArray());
         return json;
-    }
-
-    @SuppressWarnings("unchecked")
-    public TextField.CLASS<? extends TextField> operatorAssign(primary value) {
-        set(org.zenframework.z8.server.json.parser.JsonObject.valueToString(value));
-        return (TextField.CLASS<? extends TextField>) this.getCLASS();
     }
 
     @SuppressWarnings("unchecked")

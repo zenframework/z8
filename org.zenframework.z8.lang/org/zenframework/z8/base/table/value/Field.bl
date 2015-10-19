@@ -70,4 +70,6 @@ class Field extends Control
 	// Тоже не просто так закомментирован!
 	//public void operator = (Field field);
 	
+	public Field operator = (primary value);
+
 }

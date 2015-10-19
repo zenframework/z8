@@ -74,6 +74,8 @@ class Query extends Runnable
 	public bool hasRecord(guid recordId);
 	public bool hasRecord(sql_bool where);
 	
+	public guid[] findRecords(sql_bool where);
+	
 	public Field getFieldById(string id);
 	public Field getFieldByName(string name);
 	
@@ -88,6 +90,7 @@ class Query extends Runnable
 	public bool aggregate(Field[] fields, sql_bool where);
 
 	public guid create();
+	public guid create(guid recordId);
 	public guid copy(guid recordId);
 
 	public void read();

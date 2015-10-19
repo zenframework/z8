@@ -1,8 +1,10 @@
 package org.zenframework.z8.server.base.json.parser;
 
+import org.apache.commons.codec.binary.Base64;
 import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.runtime.OBJECT;
 import org.zenframework.z8.server.runtime.RCollection;
+import org.zenframework.z8.server.types.binary;
 import org.zenframework.z8.server.types.bool;
 import org.zenframework.z8.server.types.decimal;
 import org.zenframework.z8.server.types.guid;
@@ -76,6 +78,10 @@ public class JsonArray extends OBJECT {
         return array.getGuid(i.getInt());
     }
 
+    public binary z8_getBinary(integer i) {
+        return new binary(Base64.decodeBase64(array.getString(i.getInt())));
+    }
+
     public JsonArray.CLASS<? extends JsonArray> z8_getJsonArray(integer i) {
         org.zenframework.z8.server.json.parser.JsonArray array = this.array.getJsonArray(i.getInt());
         JsonArray.CLASS<? extends JsonArray> cls = new JsonArray.CLASS<JsonArray>(null);
@@ -133,11 +139,19 @@ public class JsonArray extends OBJECT {
     }
 
     public RCollection<guid> z8_toGuidArray() {
-        return new RCollection<guid>(array.toArray(new guid[array.size()]));
+        RCollection<guid> result = new RCollection<guid>();
+        for (int i = 0; i < array.size(); i++) {
+            result.add(array.getGuid(i));
+        }
+        return result;
     }
 
     public RCollection<string> z8_toStringArray() {
-        return new RCollection<string>(array.toArray(new string[array.size()]));
+        RCollection<string> result = new RCollection<string>();
+        for (int i = 0; i < array.size(); i++) {
+            result.add(new string(array.getString(i)));
+        }
+        return result;
     }
 
     public RCollection<JsonArray.CLASS<? extends JsonArray>> z8_toJsonArrayArray() {
@@ -180,7 +194,7 @@ public class JsonArray extends OBJECT {
         return jsonArray;
     }
 
-    public static JsonArray.CLASS<JsonArray> z8_newJsonArray(string source) {
+    public static JsonArray.CLASS<JsonArray> z8_parse(string source) {
         return getJsonArray(new org.zenframework.z8.server.json.parser.JsonArray(source.get()));
     }
 
