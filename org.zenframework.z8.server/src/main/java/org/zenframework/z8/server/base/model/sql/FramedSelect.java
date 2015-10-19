@@ -20,10 +20,6 @@ public class FramedSelect extends Select {
     int start = -1;
     int limit = -1;
 
-    public FramedSelect(int start, int limit) {
-        this(null, start, limit);
-    }
-
     public FramedSelect(Select select, int start, int limit) {
         super(select);
 
@@ -36,23 +32,32 @@ public class FramedSelect extends Select {
 
     @Override
     protected String sql(FormatOptions options) {
-        Collection<Field> orderByFields = getOrderBy();
-
-        Expression frameExpression = getFrameExpression(options, orderByFields, isGrouped());
-        getFields().add(frameExpression);
-
-        setOrderBy(null);
-
-        setSubselect(new Select(this));
-
-        setRootQuery(null);
-        setLinks(null);
+        DatabaseVendor vendor = database().vendor();
         
-        setGroupBy(null);
-        setWhere(getFrameWhere(frameExpression, start, limit));
-        setHaving(null);
-
-        return super.sql(options);
+        if(vendor != DatabaseVendor.Postgres) {
+            Collection<Field> orderByFields = getOrderBy();
+    
+            Expression frameExpression = getFrameExpression(options, orderByFields, isGrouped());
+            getFields().add(frameExpression);
+    
+            setOrderBy(null);
+    
+            setSubselect(new Select(this));
+    
+            setRootQuery(null);
+            setLinks(null);
+            
+            setGroupBy(null);
+            setWhere(getFrameWhere(frameExpression, start, limit));
+            setHaving(null);
+    
+            return super.sql(options);
+        } else {
+            String sql = super.sql(options);
+            
+            sql += "\nlimit " + limit + " offset " + (start - 1);
+            return sql;
+        }
     }
 
     private Expression getFrameExpression(FormatOptions options, Collection<Field> orderBy, boolean grouped) {
