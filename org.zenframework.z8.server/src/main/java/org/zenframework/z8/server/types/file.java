@@ -127,12 +127,12 @@ public class file extends primary implements Serializable {
 
     public void operatorAssign(string pathName) {
         file = new File(pathName.get());
-        if (file.isAbsolute()) {
-            throw new RuntimeException(
-                    "Only relative file path can be applied to objects of class 'file'. + \n'\\folder\\file.name' - correct\n'c:\\folder\\file.name' - incorrect");
-        }
-        file = new File(new File(BaseFolder, FilesFolderName), file.getPath());
-        file.getParentFile().mkdirs();
+
+        if (!file.isAbsolute())
+            file = new File(new File(BaseFolder, FilesFolderName), file.getPath());
+            
+        if(!file.isDirectory())
+            file.getParentFile().mkdirs();
     }
 
     public string z8_getPath() {
