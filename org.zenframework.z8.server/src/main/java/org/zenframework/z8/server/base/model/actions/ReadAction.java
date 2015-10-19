@@ -1004,7 +1004,7 @@ public class ReadAction extends Action {
             select.setGroupBy(ArrayUtils.collection(groupField));
         }
 
-        Select frame = new FramedSelect(select, 1, 50);
+        Select frame = new FramedSelect(select, 0, 50);
 
         frame.aggregate();
 

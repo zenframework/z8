@@ -55,7 +55,7 @@ public class FramedSelect extends Select {
         } else {
             String sql = super.sql(options);
             
-            sql += "\nlimit " + limit + " offset " + (start - 1);
+            sql += "\nlimit " + (limit != -1 ? limit : "all")  + " offset " + (start - 1);
             return sql;
         }
     }
