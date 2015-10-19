@@ -29,6 +29,7 @@ Z8 =
 	startProperty: 'start',
 	limitProperty: 'limit',
 	lookupProperty: 'lookup',
+	lookupFieldsProperty: 'lookupFields',
 	lookupIdProperty: 'lookupId',
 
 	defaultPageCount: 50,

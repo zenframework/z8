@@ -912,7 +912,7 @@ Z8.form.SearchBox = Ext.extend(Ext.form.TriggerField,
 		var params = {};
 		
 		params[Z8.lookupProperty] = lookup;
-		params[Z8.lookupIdProperty] = this.fieldId;
+		params[Z8.lookupFieldsProperty] = Ext.encode([this.fieldId]);
 
 		params[Z8.startProperty] = 0;
 		params[Z8.limitProperty] = Z8.defaultPageCount;
