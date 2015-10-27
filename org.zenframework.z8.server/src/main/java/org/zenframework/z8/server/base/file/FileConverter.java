@@ -96,12 +96,22 @@ public class FileConverter extends OBJECT implements Properties.Listener {
     }
 
     public int getPagesCount(File srcFile) throws IOException {
+        return getPagesCount(srcFile.getName(), srcFile);
+    }
+
+    public int getPagesCount(String relativePath, File srcFile) throws IOException {
         if (!isConvertableToPDFFileExtension(srcFile))
             return 1;
 
-        File pdfFile = getConvertedPDF(srcFile);
-        PDDocument doc = PDDocument.load(pdfFile);
-        return doc.getNumberOfPages();
+        PDDocument doc = null;
+        try {
+            File pdfFile = getConvertedPDF(relativePath, srcFile);
+            doc = PDDocument.load(pdfFile);
+            return doc.getNumberOfPages();
+        } finally {
+            if (doc != null)
+                doc.close();
+        }
     }
 
     public String getPath() {
@@ -128,9 +138,9 @@ public class FileConverter extends OBJECT implements Properties.Listener {
 
             int result = 0;
             File unconvertedDir = new File(file.BaseFolder, file.UnconvertedFolderName);
-            if(unconvertedDir.exists() && ! unconvertedDir.isDirectory())
+            if (unconvertedDir.exists() && !unconvertedDir.isDirectory())
                 unconvertedDir.delete();
-            if(!unconvertedDir.exists())
+            if (!unconvertedDir.exists())
                 unconvertedDir.mkdirs();
             unconvertedDir.deleteOnExit();
 
