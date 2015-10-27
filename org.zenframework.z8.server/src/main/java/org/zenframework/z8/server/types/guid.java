@@ -55,7 +55,7 @@ public class guid extends primary implements Serializable {
     }
 
     static public guid create() {
-        return new guid(UUID.randomUUID().toString());
+        return new guid(UUID.randomUUID());
     }
     
     static public guid create(long n1, long n2) {
