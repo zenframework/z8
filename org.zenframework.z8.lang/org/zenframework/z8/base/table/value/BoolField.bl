@@ -5,7 +5,8 @@ class BoolField extends Field
 	width = 5; 
 	stretch = false;
 
-	public bool defaultValue = false;
+    virtual public bool getDefault();
+    public void setDefault(bool defaultValue);
 
 	public operator sql_bool();
 

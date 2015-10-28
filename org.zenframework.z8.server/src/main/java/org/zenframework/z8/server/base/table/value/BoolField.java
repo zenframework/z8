@@ -5,6 +5,7 @@ import org.zenframework.z8.server.db.FieldType;
 import org.zenframework.z8.server.db.sql.SqlField;
 import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.types.bool;
+import org.zenframework.z8.server.types.integer;
 import org.zenframework.z8.server.types.primary;
 import org.zenframework.z8.server.types.sql.sql_bool;
 
@@ -45,6 +46,15 @@ public class BoolField extends Field {
         return name;
     }
 
+    public bool z8_getDefault() {
+        return (bool)super.getDefault();
+    }
+    
+    @Override
+    public primary getDefault() {
+        return z8_getDefault();
+    }
+    
     public sql_bool sql_bool() {
         return new sql_bool(new SqlField(this));
     }
