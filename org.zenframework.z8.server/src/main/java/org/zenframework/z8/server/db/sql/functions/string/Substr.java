@@ -17,6 +17,10 @@ public class Substr extends StringFunction {
     private SqlToken position;
     private SqlToken length;
 
+    public Substr(SqlToken string, SqlToken position) {
+        this(string, position, null);
+    }
+    
     public Substr(SqlToken string, SqlToken position, SqlToken length) {
         this.string = string;
         this.position = new Add(position, Operation.Add, new SqlConst(new integer(1)));

@@ -15,7 +15,7 @@ import org.zenframework.z8.server.db.sql.functions.conversion.StrToInt;
 import org.zenframework.z8.server.db.sql.functions.conversion.ToDate;
 import org.zenframework.z8.server.db.sql.functions.conversion.ToDatetime;
 import org.zenframework.z8.server.db.sql.functions.conversion.ToDecimal;
-import org.zenframework.z8.server.db.sql.functions.string.Instr;
+import org.zenframework.z8.server.db.sql.functions.string.IndexOf;
 import org.zenframework.z8.server.db.sql.functions.string.IsEmpty;
 import org.zenframework.z8.server.db.sql.functions.string.LPad;
 import org.zenframework.z8.server.db.sql.functions.string.LTrim;
@@ -24,7 +24,7 @@ import org.zenframework.z8.server.db.sql.functions.string.Like;
 import org.zenframework.z8.server.db.sql.functions.string.Lower;
 import org.zenframework.z8.server.db.sql.functions.string.RPad;
 import org.zenframework.z8.server.db.sql.functions.string.RTrim;
-import org.zenframework.z8.server.db.sql.functions.string.RegExp_Instr;
+import org.zenframework.z8.server.db.sql.functions.string.RegIndexOf;
 import org.zenframework.z8.server.db.sql.functions.string.Replace;
 import org.zenframework.z8.server.db.sql.functions.string.Reverse;
 import org.zenframework.z8.server.db.sql.functions.string.Substr;
@@ -99,11 +99,11 @@ public class sql_string extends sql_primary {
     }
 
     public sql_integer z8_indexOf(sql_string pattern, sql_integer position) {
-        return new sql_integer(new Instr(this, pattern, position));
+        return new sql_integer(new IndexOf(this, pattern, position));
     }
 
     public sql_integer z8_patIndexOf(sql_string reg_exp) {
-        return new sql_integer(new RegExp_Instr(this, reg_exp));
+        return new sql_integer(new RegIndexOf(this, reg_exp));
     }
 
     public sql_bool z8_like(sql_string pattern) {

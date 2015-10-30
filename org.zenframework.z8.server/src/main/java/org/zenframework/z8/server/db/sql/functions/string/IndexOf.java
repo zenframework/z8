@@ -51,6 +51,7 @@ public class IndexOf extends SqlToken {
                 where.format(vendor, options, logicalContext) + ", " + 
                 from.format(vendor, options, logicalContext) + ") - 1";
         } else if(vendor == DatabaseVendor.Postgres) {
+            where = from != null ? new Substr(where, from) : where;
             result = "position(" + what.format(vendor, options, logicalContext) + " in " + 
                 where.format(vendor, options, logicalContext) + ") - 1";
         } else
