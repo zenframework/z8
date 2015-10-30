@@ -31,4 +31,6 @@ class Parameter extends Object {
 	static public Parameter create(string text, string value);
 	static public Parameter create(string text, guid value);
 	static public Parameter create(string text, file value);
+
+	static public Parameter create(string text, Query query);
 }

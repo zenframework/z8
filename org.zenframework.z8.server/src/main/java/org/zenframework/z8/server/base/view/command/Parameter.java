@@ -1,6 +1,7 @@
 package org.zenframework.z8.server.base.view.command;
 
 import org.zenframework.z8.server.base.model.command.IParameter;
+import org.zenframework.z8.server.base.query.Query;
 import org.zenframework.z8.server.db.FieldType;
 import org.zenframework.z8.server.json.Json;
 import org.zenframework.z8.server.json.parser.JsonArray;
@@ -43,6 +44,8 @@ public class Parameter extends OBJECT implements IParameter {
     private FieldType type = FieldType.None;
     private Object value = new string();
 
+    private String queryId = null;
+    
     public Parameter(IObject container) {
         super(container);
     }
@@ -144,6 +147,8 @@ public class Parameter extends OBJECT implements IParameter {
         writer.put(Json.text, text);
         writer.put(Json.serverType, getType().toString());
         writer.put(Json.value, value);
+
+        writer.put(Json.queryId, queryId);
     }
 
     @SuppressWarnings("rawtypes")
@@ -231,4 +236,10 @@ public class Parameter extends OBJECT implements IParameter {
         return parameter;
     }
 
+    static public Parameter.CLASS<? extends Parameter> z8_create(string name, Query.CLASS<? extends Query> queryCls)
+    {
+        Parameter.CLASS<? extends Parameter> parameter = z8_create(name, new guid());
+        parameter.get().queryId = queryCls.classId(); 
+        return parameter;
+    }
 }
