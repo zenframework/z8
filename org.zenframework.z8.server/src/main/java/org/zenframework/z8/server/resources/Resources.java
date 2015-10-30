@@ -1,9 +1,5 @@
 package org.zenframework.z8.server.resources;
 
-import org.zenframework.z8.server.config.SystemProperty;
-import org.zenframework.z8.server.locale.Locale;
-import org.zenframework.z8.server.logs.Trace;
-
 import java.io.File;
 import java.io.FileFilter;
 import java.io.FileInputStream;
@@ -13,10 +9,11 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.zenframework.z8.server.config.SystemProperty;
+import org.zenframework.z8.server.logs.Trace;
+
 public class Resources {
     public static String DefaultLanguage = "ru";
-
-    public static Locale locale = new Locale();
 
     private static Resources instance;
 
@@ -39,10 +36,10 @@ public class Resources {
     }
 
     private String getString(String key) {
-        Properties props = boundles.get(locale.getUserLanguage());
+        Properties props = boundles.get(DefaultLanguage);
 
         if(props == null) {
-            throw new RuntimeException("No resource boundles found for '" + locale.getUserLanguage() + "'.");
+            throw new RuntimeException("No resource boundles found for '" + DefaultLanguage + "'.");
         }
 
         String value = props.getProperty(key);
