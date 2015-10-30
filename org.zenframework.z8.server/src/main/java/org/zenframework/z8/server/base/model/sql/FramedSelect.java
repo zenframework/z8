@@ -28,7 +28,12 @@ public class FramedSelect extends Select {
     }
 
     @Override
-    protected void aggregateFields(Collection<Field> fields) {}
+    protected void aggregateFields(Collection<Field> fields) {
+        DatabaseVendor vendor = database().vendor();
+        
+        if(vendor == DatabaseVendor.Postgres)
+            super.aggregateFields(fields);
+    }
 
     @Override
     protected String sql(FormatOptions options) {
