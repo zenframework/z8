@@ -41,19 +41,19 @@ public class IndexOf extends SqlToken {
             from = from != null ? new Add(from, Operation.Add, new SqlConst(new integer(1))) : 
                 new SqlConst(new integer(1));
 
-            result = "instr(" + what.format(vendor, options, logicalContext) + ", " + 
-                where.format(vendor, options, logicalContext) + ", " + 
-                from.format(vendor, options, logicalContext) + ") - 1";
+            result = "instr(" + what.format(vendor, options) + ", " + 
+                where.format(vendor, options) + ", " + 
+                from.format(vendor, options) + ") - 1";
         } else if(vendor == DatabaseVendor.SqlServer) {
             from = from != null ? from : new SqlConst(new integer(0));
 
-            result = "charIndex(" + what.format(vendor, options, logicalContext) + ", " + 
-                where.format(vendor, options, logicalContext) + ", " + 
-                from.format(vendor, options, logicalContext) + ") - 1";
+            result = "charIndex(" + what.format(vendor, options) + ", " + 
+                where.format(vendor, options) + ", " + 
+                from.format(vendor, options) + ") - 1";
         } else if(vendor == DatabaseVendor.Postgres) {
             where = from != null ? new Substr(where, from) : where;
-            result = "position(" + what.format(vendor, options, logicalContext) + " in " + 
-                where.format(vendor, options, logicalContext) + ") - 1";
+            result = "position(" + what.format(vendor, options) + " in " + 
+                where.format(vendor, options) + ") - 1";
         } else
             throw new UnknownDatabaseException();
 

@@ -33,9 +33,9 @@ public class Replace extends StringFunction {
         case SqlServer:
         case Postgres:
             return "replace(" + 
-                string.format(vendor, options, logicalContext) + ", " +
-                pattern.format(vendor, options, logicalContext) + ", " +
-                replacement.format(vendor, options, logicalContext) + ")";
+                string.format(vendor, options) + ", " +
+                pattern.format(vendor, options) + ", " +
+                replacement.format(vendor, options) + ")";
         default:
             throw new UnknownDatabaseException();
         }

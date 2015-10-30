@@ -34,12 +34,12 @@ public class RegIndexOf extends SqlToken {
         
         if(vendor == DatabaseVendor.Oracle) {
             result = "RegExp_instr(" +
-                pattern.format(vendor, options, logicalContext) + ", " +
-                string.format(vendor, options, logicalContext) + ") - 1";
+                pattern.format(vendor, options) + ", " +
+                string.format(vendor, options) + ") - 1";
         } else if(vendor == DatabaseVendor.SqlServer) {
             result = "patIndex(" +
-                    pattern.format(vendor, options, logicalContext) + ", " +
-                    string.format(vendor, options, logicalContext) + ") - 1";
+                    pattern.format(vendor, options) + ", " +
+                    string.format(vendor, options) + ") - 1";
         } else
             throw new UnknownDatabaseException();
 
