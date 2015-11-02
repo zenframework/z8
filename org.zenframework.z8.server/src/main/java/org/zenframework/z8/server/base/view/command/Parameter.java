@@ -236,9 +236,10 @@ public class Parameter extends OBJECT implements IParameter {
         return parameter;
     }
 
+    @SuppressWarnings("unchecked")
     static public Parameter.CLASS<? extends Parameter> z8_create(string name, Query.CLASS<? extends Query> queryCls)
     {
-        Parameter.CLASS<? extends Parameter> parameter = z8_create(name, new guid());
+        Parameter.CLASS<Parameter> parameter = (Parameter.CLASS<Parameter>)z8_create(name, new guid());
         parameter.get().queryId = queryCls.classId(); 
         return parameter;
     }
