@@ -18,6 +18,7 @@ class Object {
 	static public void log(string text);
 	static public void showMessage(string text);
 	static public JsonObject getWriter();
+    static public string[string] requestParameters();
 
 	static public int currentTimeMillis();
 	static public void wait(int millis);

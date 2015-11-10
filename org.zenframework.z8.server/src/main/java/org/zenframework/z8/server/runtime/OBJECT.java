@@ -358,7 +358,7 @@ public class OBJECT extends RequestTarget implements IObject {
         }
     }
 
-    private RLinkedHashMap<string, string> convertParameters(Map<String, String> parameters) {
+    static private RLinkedHashMap<string, string> convertParameters(Map<String, String> parameters) {
         RLinkedHashMap<string, string> result = new RLinkedHashMap<string, string>();
         
         for(String key : parameters.keySet()) {
@@ -366,6 +366,10 @@ public class OBJECT extends RequestTarget implements IObject {
         }
         
         return result;
+    }
+    
+    static public RLinkedHashMap<string, string> z8_requestParameters() {
+        return convertParameters(getParameters());
     }
     
     static public org.zenframework.z8.server.base.json.parser.JsonObject.CLASS<? extends org.zenframework.z8.server.base.json.parser.JsonObject> z8_getWriter() {
