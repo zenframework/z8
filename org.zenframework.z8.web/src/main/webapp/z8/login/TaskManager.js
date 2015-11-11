@@ -51,7 +51,7 @@ Z8.desktop.TaskManager = Ext.extend(Ext.util.MixedCollection,
 		
 		task.on('destroy', this.onDestroy, this);
 		
-		Z8.viewport.centerPanel.add(task);
+		Z8.viewport.desktopBody.add(task);
 		task.deferLayout = true;
 
 		this.activate(task);
@@ -166,7 +166,7 @@ Z8.desktop.TaskManager = Ext.extend(Ext.util.MixedCollection,
 		
 		task.setVisible(true);
 
-		Z8.viewport.centerPanel.doLayout(true, false);
+		Z8.viewport.desktopBody.doLayout(true, false);
 
 		this.fireEvent('activate', task, index);
 	},

@@ -8,9 +8,6 @@ Z8.desktop.Desktop = Ext.extend(Ext.Viewport,
 	
 	defaults: { border:false, frame:false },
 
-	centerPanel: null,
-	eastPanel: null,
-
 	initComponent: function()
 	{
 		Z8.desktop.Desktop.superclass.initComponent.call(this);
@@ -19,12 +16,7 @@ Z8.desktop.Desktop = Ext.extend(Ext.Viewport,
 		
 		this.userSettings = Z8.getUserSettings();
 		
-		this.createHelper();
-
-		this.eastPanel = new Ext.Container({ region: 'east', width: 300, split: true, layout: 'vbox', layoutConfig: { align: 'stretch' }, items: this.helper, hidden: !this.userSettings.showhelper });
-		this.centerPanel = new Ext.Container({ flex:1, region: 'center', layout: 'vbox', layoutConfig: { align: 'stretch' } });
-
-		this.desktopBody = new Ext.Container({ flex: 1, layout: 'border', cls: 'z8-desktop-body', layoutConfig: { align: 'stretch' }, items: [this.centerPanel, this.eastPanel] });
+		this.desktopBody = new Ext.Container({ flex: 1, layout: 'vbox', cls: 'z8-desktop-body', layoutConfig: { align: 'stretch' } });
 		
 		var titleBar = new Ext.Container({ cls: 'z8-bar z8-title-bar', layout: 'hbox', layoutConfig: { overflowHandler: 'HorizontalMenu', align: 'stretch', pack: 'end' }, items: this.createTitleBarItems() });
 		this.menuBar = new Ext.Container({ cls: 'z8-bar z8-menu-bar', layout: 'hbox', layoutConfig: { overflowHandler: 'HorizontalMenu', align: 'stretch' }, items: this.createMenuBarItems() });
@@ -67,8 +59,6 @@ Z8.desktop.Desktop = Ext.extend(Ext.Viewport,
 			Z8.TaskManager.register(this.dashboardPanel, this.dashboardPanel.id, false);
 			Z8.TaskManager.activate(this.dashboardPanel, this.dashboardPanel.id);
 		}
-		
-		Z8.TaskManager.on('activate', this.onTaskActivate, this);
 	},
 	
 	afterRender: function()
@@ -108,21 +98,6 @@ Z8.desktop.Desktop = Ext.extend(Ext.Viewport,
 
 		var profile = new Z8.Button({ iconCls: 'icon-factory', text: 'Наше предприятие', handler: this.onProfile });
 
-		var help = new Z8.SplitButton({
-			iconCls: 'icon-help',
-			text: 'Помощь',
-			scope: this,
-			handler: this.onHelp,
-			menu: new Z8.menu.MulticolumnMenu(
-			{
-				items: [
-					{ text: 'Справка', handler: this.onHelp, scope: this },
-					{ text: 'Приступая к работе', handler: this.onShowHelper, scope: this }
-				]
-			})
-
-		});
-		
 		var exit = new Z8.Button({ iconCls: 'icon-exit', text: 'Выход', handler: this.onExit });
 		var spacer = new Ext.Container({ margins: {top: 0, right: 0, bottom: 0, left: 70} });
 		
@@ -135,46 +110,9 @@ Z8.desktop.Desktop = Ext.extend(Ext.Viewport,
 			items.push(profile);
 		}
 		
-		items = items.concat([ help, exit, spacer]);
+		items = items.concat([ exit, spacer]);
 		
 		return items;
-	},
-	
-	onTaskActivate: function(task, index)
-	{
-		if(task.query && this.helper)
-		{
-			var helperUrl = Z8.getRequestUrl() + '/helper/' + cyr2lat(task.query.requestId) + '.html';
-			this.helper.loadUrl(helperUrl);
-		}
-		else if (index == 0)
-		{
-			this.helper.onInitShow(false);
-		}
-	},
-	
-	createHelper: function()
-	{
-		if(this.helper == null)
-		{
-			this.helper = new Z8.Helper.Panel({ flex: 1 });
-			this.helper.on('close', this.onCloseHelper, this);
-		}			
-	},
-	
-	onShowHelper: function()
-	{
-		if(!this.eastPanel.isVisible())
-		{
-			this.eastPanel.setVisible(true);
-			this.desktopBody.doLayout(false, true);
-		}
-	},
-
-	onCloseHelper: function()
-	{
-		this.eastPanel.setVisible(false);
-		this.desktopBody.doLayout(false, true);
 	},
 	
 	createMenuBarItems: function()
@@ -522,10 +460,6 @@ Z8.desktop.Desktop = Ext.extend(Ext.Viewport,
 	
 	onDestroy: function()
 	{
-		Z8.TaskManager.un('activate', this.onTaskActivate, this);
-	
-		this.helper = null;
-		
 		Z8.desktop.Desktop.superclass.onDestroy.call(this);
 	}
 });
