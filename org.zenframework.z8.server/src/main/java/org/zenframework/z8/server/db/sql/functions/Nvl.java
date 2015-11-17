@@ -28,10 +28,10 @@ public class Nvl extends SqlToken {
     public String format(DatabaseVendor vendor, FormatOptions options, boolean logicalContext) {
         switch(vendor) {
         case Oracle:
-        case Postgres:
             return "nvl(" + param1.format(vendor, options) + "," + param2.format(vendor, options, logicalContext) + ")";
         case SqlServer:
             return "isNull(" + param1.format(vendor, options) + "," + param2.format(vendor, options, logicalContext) + ")";
+        case Postgres:
         default:
             throw new UnknownDatabaseException();
         }
