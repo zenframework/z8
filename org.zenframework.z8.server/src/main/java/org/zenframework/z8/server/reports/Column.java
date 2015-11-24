@@ -23,8 +23,6 @@ public class Column {
     private Column parent;
     private List<Column> subcolumns = new ArrayList<Column>();
 
-    private TotalsInfo[] totals = new TotalsInfo[1];
-
     public Column() {
         this(null, 0);
     }
@@ -245,46 +243,14 @@ public class Column {
     }
 
     public Aggregation getAggregation() {
-        return field != null ? field.totals : Aggregation.None;
-    }
-
-    public TotalsInfo[] getTotals() {
-        return totals;
-    }
-
-    public void setTotalsDepth(int depth) {
-        totals = new TotalsInfo[depth];
+        if(field == null)
+            return Aggregation.None;
+        
+        FieldType type = field.type();
+        return type != FieldType.String && type != FieldType.Text && type != FieldType.Boolean ? field.aggregation : Aggregation.None;
     }
 
     public boolean hasAggregation() {
         return getAggregation() != Aggregation.None;
-    }
-
-    public String getTotal(int index) {
-        assert (!isIndentation());
-
-        if(hasAggregation() && totals != null && index < totals.length && totals[index] != null) {
-            return totals[index].format(field);
-        }
-        return "";
-    }
-
-    public void updateTotals() {
-        if(!isIndentation() && hasAggregation()) {
-            for(int i = 0; i < totals.length; i++) {
-                if(totals[i] == null) {
-                    totals[i] = new TotalsInfo(getAggregation());
-                }
-                totals[i].update(field);
-            }
-        }
-    }
-
-    public void resetTotals(int index) {
-        if(!isIndentation() && hasAggregation()) {
-            for(int i = index; i < totals.length; i++) {
-                totals[i] = null;
-            }
-        }
     }
 }

@@ -72,7 +72,7 @@ public class FramedSelect extends Select {
     private SqlToken getFrameWhere(Expression frameExpression, int start, int limit) {
         SqlToken left = new Rel(frameExpression, Operation.GE, new sql_integer(start));
         SqlToken right = new Rel(frameExpression, Operation.LT, new sql_integer(start + limit));
-        return limit != -1 ? new And(left, right) : left;
+        return limit > 0 ? new And(left, right) : left;
     }
 }
 

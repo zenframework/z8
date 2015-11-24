@@ -51,7 +51,6 @@ import org.eclipse.birt.report.model.elements.interfaces.IGroupElementModel;
 import org.eclipse.birt.report.model.elements.interfaces.IMasterPageModel;
 import org.eclipse.birt.report.model.elements.interfaces.IStyleModel;
 import org.eclipse.birt.report.model.elements.interfaces.ITableColumnModel;
-
 import org.zenframework.z8.server.base.model.actions.ReadAction;
 import org.zenframework.z8.server.base.table.value.Field;
 import org.zenframework.z8.server.resources.Resources;
@@ -584,7 +583,7 @@ public class BirtReportRunner {
             String groupName = "";
 
             if(groupField != null)
-                expression += "row[" + '"' + groupField.displayName() + '"' + "]";
+                expression += "row[" + '"' + groupField.id() + '"' + "]";
             else
                 expression = "1";
 
@@ -678,6 +677,7 @@ public class BirtReportRunner {
                         setCellFormat(cell, column);
 
                         String aggregation = getAggregation(column);
+                        
                         if(aggregation != null) {
                             String name = column.getName();
                             ComputedColumn computedColumn = StructureFactory.createComputedColumn();
