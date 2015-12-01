@@ -29,7 +29,6 @@ import org.zenframework.z8.server.db.sql.functions.string.Replace;
 import org.zenframework.z8.server.db.sql.functions.string.Reverse;
 import org.zenframework.z8.server.db.sql.functions.string.Substr;
 import org.zenframework.z8.server.db.sql.functions.string.Upper;
-import org.zenframework.z8.server.types.integer;
 import org.zenframework.z8.server.types.string;
 
 public class sql_string extends sql_primary {
@@ -95,11 +94,11 @@ public class sql_string extends sql_primary {
     }
 
     public sql_integer z8_indexOf(sql_string pattern) {
-        return z8_indexOf(pattern, new sql_integer(new integer(0)));
+        return z8_indexOf(pattern, null);
     }
 
     public sql_integer z8_indexOf(sql_string pattern, sql_integer position) {
-        return new sql_integer(new IndexOf(this, pattern, position));
+        return new sql_integer(new IndexOf(pattern, this, position));
     }
 
     public sql_integer z8_patIndexOf(sql_string reg_exp) {
