@@ -30,7 +30,8 @@ public class IndexOf extends SqlToken {
     public void collectFields(Collection<IValue> fields) {
         this.what.collectFields(fields);
         this.where.collectFields(fields);
-        this.from.collectFields(fields);
+        if(from != null)
+            this.from.collectFields(fields);
     }
 
     @Override
