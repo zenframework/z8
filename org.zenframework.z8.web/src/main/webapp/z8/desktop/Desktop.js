@@ -53,12 +53,9 @@ Z8.desktop.Desktop = Ext.extend(Ext.Viewport,
 
 		this.add(panel);
 		
-		if(chartsOn != null)
-		{
-			this.dashboardPanel = new Z8.desktop.Dashboard({id: 'desktopId', flex: 1});
-			Z8.TaskManager.register(this.dashboardPanel, this.dashboardPanel.id, false);
-			Z8.TaskManager.activate(this.dashboardPanel, this.dashboardPanel.id);
-		}
+		this.dashboardPanel = new Z8.desktop.Dashboard({id: 'desktopId', flex: 1});
+		Z8.TaskManager.register(this.dashboardPanel, this.dashboardPanel.id, false);
+		Z8.TaskManager.activate(this.dashboardPanel, this.dashboardPanel.id);
 	},
 	
 	afterRender: function()
@@ -69,10 +66,7 @@ Z8.desktop.Desktop = Ext.extend(Ext.Viewport,
     
     onLogoClick: function()
     {
-    	if(chartsOn != null)
-    	{
-    		this.onShowDesktop();
-    	}
+   		this.onShowDesktop();
     },
 	
 	userName: function()
@@ -87,14 +81,11 @@ Z8.desktop.Desktop = Ext.extend(Ext.Viewport,
 		items.push({ text: 'Настройки', handler: this.onSettings, scope: this });
 		items.push({ text: 'Изменить пароль', handler: this.onChangePassword, scope: this });
 		
-		if(chartsOn != null)
-		{
-			items.push({ text: 'Рабочий стол', handler: this.onShowDesktop, scope: this });
-		}
+		items.push({ text: 'Рабочий стол', handler: this.onShowDesktop, scope: this });
 		
 		var settingsMenu = new Z8.menu.MulticolumnMenu({ items: items });
 		
-		var settings = new Z8.SplitButton({ iconCls: 'icon-profile', text: Z8.user.login, menu: settingsMenu, handler: chartsOn != null ? this.onShowDesktop : this.onSettings, scope:this });
+		var settings = new Z8.SplitButton({ iconCls: 'icon-profile', text: Z8.user.login, menu: settingsMenu, handler: this.onShowDesktop, scope:this });
 
 		var profile = new Z8.Button({ iconCls: 'icon-factory', text: 'Наше предприятие', handler: this.onProfile });
 
