@@ -154,7 +154,12 @@ public class FileConverter extends OBJECT implements Properties.Listener {
                     fileItem.write(tempFile);
                 }
 
-                result += getPagesCount(tempFile);
+                try{
+                    result += getPagesCount(tempFile);
+                } catch(IOException e){
+                    e.printStackTrace();
+                    result += 1;
+                }
             }
 
             return new integer(result);
