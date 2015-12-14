@@ -22,14 +22,14 @@ Z8.chart.ChartPanel = Ext.extend(Z8.Panel,
 
 		this.label = new Ext.form.Label({ text: '', flex: 1, margins: { top: 5, left: 20, right: 0, bottom: 0 } });
 		this.refreshButton = new Z8.Button({ tooltip: 'Обновить', cls: 'x-chart-panel-btn', overCls: 'x-chart-panel-btn-over', iconCls: 'silk-arrow-refresh-grey', margins: { top: 0, left: 0, right: 10, bottom: 0 }, plain: true, height: 20, width: 20, handler: this.onRefresh, scope:this });
-		this.printButton = new Z8.Button({ tooltip: 'Изображение', cls: 'x-chart-panel-btn', overCls: 'x-chart-panel-btn-over', iconCls: 'silk-printer-grey', margins: { top: 0, left: 0, right: 10, bottom: 0 }, plain: true, height: 20, width: 20, handler: this.onPrint, scope:this });
+//		this.printButton = new Z8.Button({ tooltip: 'Изображение', cls: 'x-chart-panel-btn', overCls: 'x-chart-panel-btn-over', iconCls: 'silk-printer-grey', margins: { top: 0, left: 0, right: 10, bottom: 0 }, plain: true, height: 20, width: 20, handler: this.onPrint, scope:this });
 		this.settingsButton = new Z8.Button({ tooltip: 'Настроить', cls: 'x-chart-panel-btn', overCls: 'x-chart-panel-btn-over', iconCls: 'silk-cog', margins: { top: 0, left: 0, right: 10, bottom: 0 }, plain: true, height: 20, width: 20, handler: this.onSettings, scope:this });
 		this.clearButton = new Z8.Button({ tooltip: 'Удалить', cls: 'x-chart-panel-btn', overCls: 'x-chart-panel-btn-over', iconCls: 'silk-cross-grey', margins: { top: 0, left: 0, right: 20, bottom: 0  }, plain: true, height: 20, width: 20, handler: this.onClear, scope:this });
 		this.toolbar = new Ext.Container({ height: 25, layout: 'hbox', cls: 'x-chart-panel-header', layoutConfig: { align: 'middle', pack: 'start' } });
 
 		this.toolbar.add(this.label);
 		this.toolbar.add(this.refreshButton);
-		this.toolbar.add(this.printButton);
+//		this.toolbar.add(this.printButton);
 		this.toolbar.add(this.settingsButton);
 		this.toolbar.add(this.clearButton);
 		
@@ -285,8 +285,8 @@ Z8.chart.ChartPanel = Ext.extend(Z8.Panel,
 
 	updateButtons: function()
 	{
-		this.printButton.setVisible(this.chartConfig != null);
-		this.toolbar.doLayout(true, true);
+		//this.printButton.setVisible(this.chartConfig != null);
+		//this.toolbar.doLayout(true, true);
 	},
 
 	
@@ -331,7 +331,10 @@ Z8.chart.ChartPanel = Ext.extend(Z8.Panel,
 	
 	onRefresh: function()
 	{
-		this.setChartConfig(this.chartConfig);
+		if(this.grid != null)
+			this.grid.getStore().reload();
+		else
+			this.setChartConfig(this.chartConfig);
 	},
 
 	onPrint: function()

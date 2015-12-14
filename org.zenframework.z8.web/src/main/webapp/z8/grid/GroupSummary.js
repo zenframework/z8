@@ -324,7 +324,7 @@ Z8.grid.HybridSummary = Ext.extend(Z8.grid.GroupSummary,
 		var store = this.grid.getStore();
 		var reader = store.reader;
 		var json = reader.jsonData;
-		var fields = reader.recordType.prototype.fields;
+		var fields = reader.recordType.prototype.fields.items;
 			
 		if(json && json.summaryData)
 		{
@@ -334,7 +334,15 @@ Z8.grid.HybridSummary = Ext.extend(Z8.grid.GroupSummary,
 				
 				if(group.comparableValue == data.groupValue)
 				{
-					return reader.extractValues(data, fields.items, fields.length);
+					var result = {};
+					
+					for(var i in fields) {
+						var field = fields[i];
+						if(field.serverType == Z8.ServerTypes.Integer || field.serverType == Z8.ServerTypes.Float)
+							result[field.name] = data[field.name];
+					}
+
+					return result;
 				}
 			}
 		}
