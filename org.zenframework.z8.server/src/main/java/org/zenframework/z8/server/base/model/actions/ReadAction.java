@@ -1012,9 +1012,7 @@ public class ReadAction extends Action {
             JsonObject fieldData = new JsonObject();
 
             for (Field field : frame.getFields()) {
-                if(field.aggregation != Aggregation.Min
-                        && field.aggregation != Aggregation.Max
-                        && (field.type() == FieldType.Integer || field.type() == FieldType.Decimal || field.aggregation == Aggregation.Count))
+                if(field.aggregation != Aggregation.None && field.type() != FieldType.Boolean)
                     field.writeData(fieldData);
             }
 
@@ -1085,11 +1083,8 @@ public class ReadAction extends Action {
 
             while (totals.next()) {
                 for (Field field : totals.getFields()) {
-                    if (field.aggregation != Aggregation.Min
-                            && field.aggregation != Aggregation.Max
-                            && (field.type() == FieldType.Integer || field.type() == FieldType.Decimal || field.aggregation == Aggregation.Count)) {
+                    if (field.aggregation != Aggregation.None && field.type() != FieldType.Boolean)
                         field.writeData(fieldObj);
-                    }
                 }
             }
 
@@ -1146,9 +1141,7 @@ public class ReadAction extends Action {
                         obj.put(groupField.id(), expression.get());
                     } else if (field == count) {
                         obj.put(Json.total, count.get());
-                    } else if(field.aggregation != Aggregation.Min
-                            && field.aggregation != Aggregation.Max
-                            && (field.type() == FieldType.Integer || field.type() == FieldType.Decimal || field.aggregation == Aggregation.Count)) {
+                    } else if(field.aggregation != Aggregation.None && field.type() != FieldType.Boolean) {
                         field.writeData(obj);
                     }
                 }
