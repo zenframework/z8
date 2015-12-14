@@ -208,7 +208,7 @@ Z8.view.ChartPreviewPanel = Ext.extend(Z8.Panel,
 		this.pieChart = new Ext.form.Radio({  x: 30, y: 173, checked: chartType == 'PieChart', boxLabel: 'Pie chart', name: 'chartType', inputValue: 'PieChart', handler: this.onTypeChanged, scope: this });
 		
 		if(this.showTable)
-			this.tableChart = new Ext.form.Radio({  x: 30, y: 198, checked: chartType == 'Table', boxLabel: 'Table chart', name: 'chartType', inputValue: 'Table', handler: this.onTypeChanged, scope: this });
+			this.tableChart = new Ext.form.Radio({  x: 30, y: 198, checked: chartType == 'Table', boxLabel: 'Table', name: 'chartType', inputValue: 'Table', handler: this.onTypeChanged, scope: this });
 
 		this.chartContainer = new Ext.Panel({ x: 170, y: 47, width: 420, height: 300, bodyBorder: false, border: true, style: 'border-width: 1px;' });
 
