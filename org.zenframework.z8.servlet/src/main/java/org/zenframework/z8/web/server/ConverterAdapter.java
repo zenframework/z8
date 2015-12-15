@@ -147,7 +147,9 @@ public class ConverterAdapter extends Adapter {
         try {
             IOUtils.copy(input, output);
         } catch(IOException e) {
-            if(e.getClass().getCanonicalName().endsWith("ClientAbortException"))
+            String className = e.getClass().getCanonicalName();
+            Trace.logEvent(className);
+            if(className.endsWith("ClientAbortException"))
                 Trace.logEvent("ClientAbortException: " + file.getPath());
             else
                 throw e;
