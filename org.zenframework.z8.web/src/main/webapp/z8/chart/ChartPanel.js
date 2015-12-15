@@ -146,9 +146,11 @@ Z8.chart.ChartPanel = Ext.extend(Z8.Panel,
 			{
 				Ext.removeNode(children[i]);
 			}
-		}
+		} else if(this.grid != null)
+			this.grid.destroy();
 
 		this.chart = null;
+		this.grid = null;
 	},
 	
 	draw: function()

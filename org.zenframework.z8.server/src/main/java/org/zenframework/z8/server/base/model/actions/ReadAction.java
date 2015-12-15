@@ -1187,7 +1187,8 @@ public class ReadAction extends Action {
             beforeRead();
 
             if (totalsBy == null) {
-                writeCount(writer);
+                if(getStartParameter() != -1)
+                    writeCount(writer);
 
                 Groupping groups = writeFrame(writer);
 
