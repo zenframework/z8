@@ -146,6 +146,11 @@ public class ConverterAdapter extends Adapter {
         OutputStream output = response.getOutputStream();
         try {
             IOUtils.copy(input, output);
+        } catch(IOException e) {
+            if(e.getClass().getCanonicalName().endsWith("ClientAbortException"))
+                Trace.logEvent("ClientAbortException: " + file.getPath());
+            else
+                throw e;
         } finally {
             output.close();
             input.close();
