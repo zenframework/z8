@@ -2,8 +2,6 @@ package org.zenframework.z8.server.base.table.value;
 
 import java.sql.SQLException;
 import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
 
 import org.zenframework.z8.server.base.form.Control;
 import org.zenframework.z8.server.base.form.FieldGroup;
@@ -94,6 +92,8 @@ abstract public class Field extends Control implements IValue, IField {
     private Select cursor = null;
     private Query owner = null;
 
+    public int position = -1;
+    
     protected Field(IObject container) {
         super(container);
     }
@@ -307,8 +307,7 @@ abstract public class Field extends Control implements IValue, IField {
                 evalObj.put(Json.field, formula.field.id());
                 evalObj.put(Json.formula, formula.formula.formula());
 
-                Set<IValue> fields = new HashSet<IValue>();
-                formula.formula.collectFields(fields);
+                Collection<IValue> fields = formula.formula.getUsedFields();
 
                 JsonArray fieldsArr = new JsonArray();
                 for(IValue field : fields) {

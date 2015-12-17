@@ -16,6 +16,8 @@ public class CLASS<TYPE extends IObject> extends OBJECT implements IClass<TYPE> 
     private TYPE object = null;
     private int stage = Constructor;
 
+    Constructor<?> constructor = null;
+
     private List<IClass<TYPE>> references = null;
 
     static public <T extends IObject> List<T> asList(
@@ -203,7 +205,8 @@ public class CLASS<TYPE extends IObject> extends OBJECT implements IClass<TYPE> 
     @SuppressWarnings("unchecked")
     public TYPE newInstance() {
         try {
-            Constructor<?> constructor = getClass().getDeclaredConstructor(IObject.class);
+            if(constructor == null)
+                constructor = getClass().getDeclaredConstructor(IObject.class);
             org.zenframework.z8.server.runtime.CLASS<TYPE> cls = (org.zenframework.z8.server.runtime.CLASS<TYPE>) constructor.newInstance(getContainer());
             return cls.get();
         } catch (Throwable e) {

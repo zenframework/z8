@@ -26,9 +26,9 @@ import org.zenframework.z8.server.db.sql.expressions.Operation;
 import org.zenframework.z8.server.db.sql.expressions.Rel;
 import org.zenframework.z8.server.engine.ApplicationServer;
 import org.zenframework.z8.server.engine.Database;
+import org.zenframework.z8.server.logs.Trace;
 import org.zenframework.z8.server.types.primary;
 import org.zenframework.z8.server.types.sql.sql_bool;
-import org.zenframework.z8.server.utils.ArrayUtils;
 
 public class Select {
     private static String SelectAlias = "S";
@@ -96,9 +96,16 @@ public class Select {
 
     public void setFields(Collection<Field> fields) {
         this.fields = fields == null ? new ArrayList<Field>() : fields;
+        
+        int position = 0;
+        for(Field field : this.fields) {
+            field.position = position;
+            position++;
+        }
     }
 
     public void addField(Field field) {
+        field.position = fields.size();
         fields.add(field);
     }
 
@@ -327,19 +334,22 @@ public class Select {
         Connection connection = ConnectionManager.get(database);
 
         String sql = sql(new FormatOptions());
-
-        /*		System.out.println("\n\n");
-        		System.out.println(sql);
-        */
+        
+        boolean traceSql = ApplicationServer.config().getTraceSql();
+        long startAt = traceSql ? System.currentTimeMillis() : 0;
+        
         try {
             cursor = BasicSelect.cursor(connection, sql);
         } catch(Throwable e) {
             close();
-            System.out.println(e.getMessage());
-            System.out.println(sql);
+            Trace.logError(e);
+            Trace.logEvent(sql);
             throw new RuntimeException(e);
         }
 
+        if(traceSql)
+            Trace.logEvent("\n" + sql + "\n" + "Execution time: " + (System.currentTimeMillis() - startAt) + " ms\n");
+        
         activate();
     }
 
@@ -405,13 +415,7 @@ public class Select {
     }
 
     public primary get(Field field) throws SQLException {
-        return get(getFieldPosition(field), field.type());
-    }
-
-    private int getFieldPosition(Field field) {
-        int index = ArrayUtils.indexOf(fields.toArray(new Field[0]), field);
-        assert (index != -1);
-        return index + 1;
+        return get(field.position + 1, field.type());
     }
 
     protected primary get(int index, FieldType fieldType) throws SQLException {

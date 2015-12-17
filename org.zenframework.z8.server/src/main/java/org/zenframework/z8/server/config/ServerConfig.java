@@ -16,14 +16,17 @@ abstract public class ServerConfig extends Properties {
 
     public static final String ServerId = "serverId";
 
-    public static final String property_authsrv_addr = "authsrv_addr";
-    public static final String property_authsrv_port = "authsrv_port";
+    public static final String AuthorityCenterHost = "authsrv_addr";
+    public static final String AuthorityCenterPort = "authsrv_port";
+    public static final String TraceSql = "TraceSql";
 
     private String workingPath;
 
     protected String serverId;
     protected String authorityCenterHost;
     protected int authorityCenterPort;
+    
+    protected boolean traceSql;
 
     protected ServerConfig() {
         this(configurationFileName);
@@ -47,13 +50,19 @@ abstract public class ServerConfig extends Properties {
     protected void init() {
         serverId = getProperty(ServerId, guid.create().toString());
 
-        authorityCenterHost = getProperty(property_authsrv_addr, Rmi.localhost);
-        authorityCenterPort = getProperty(property_authsrv_port, Rmi.defaultPort);
+        authorityCenterHost = getProperty(AuthorityCenterHost, Rmi.localhost);
+        authorityCenterPort = getProperty(AuthorityCenterPort, Rmi.defaultPort);
+        traceSql = getProperty(TraceSql, false);
     }
 
     @Override
-    public final String getProperty(String key, String defaultValue) {
-        return super.getProperty(key, defaultValue);
+    public synchronized Object put(Object key, Object value) {
+        String stringKey = (String)key;
+        return super.put(stringKey.toUpperCase(), value);
+    }
+
+    public String getProperty(String key) {
+        return super.getProperty(key.toUpperCase());
     }
 
     public final boolean getProperty(String key, boolean defaultValue) {
@@ -99,4 +108,9 @@ abstract public class ServerConfig extends Properties {
     public final void setAuthorityCenterPort(int authorityCenterPort) {
         this.authorityCenterPort = authorityCenterPort;
     }
+    
+    public final boolean getTraceSql() {
+        return traceSql;
+    }
+
 }

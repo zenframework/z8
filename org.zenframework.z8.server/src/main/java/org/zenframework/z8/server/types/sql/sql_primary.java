@@ -31,6 +31,11 @@ public class sql_primary extends SqlToken {
     }
 
     @Override
+    public Collection<IValue> getUsedFields() {
+        return token.getUsedFields();
+    }
+
+    @Override
     public String format(DatabaseVendor vendor, FormatOptions options, boolean logicalContext) {
         return token.format(vendor, options, logicalContext);
     }

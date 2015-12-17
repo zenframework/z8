@@ -94,9 +94,8 @@ public class RequestDispatcher implements Runnable {
 
             processRequest(request, response, requestId);
 
-            if(!Dashboard.Id.equals(requestId) && !Json.settings.equals(requestId)) {
+            if(!Dashboard.Id.equals(requestId) && !Json.settings.equals(requestId))
                 Trace.logEvent(request.toString() + "\n\t\t " + (System.currentTimeMillis() - t) + "ms; " + getMemoryUsage());
-            }
         }
     }
 
@@ -126,7 +125,7 @@ public class RequestDispatcher implements Runnable {
         }
         else {
             OBJECT object = requestId != null ? Loader.getInstance(requestId) : null;
-
+            
             if(object != null && object.response() != null) {
                 object.processRequest(response);
             } else if(object == null || object instanceof Query) {
