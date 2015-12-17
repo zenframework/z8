@@ -81,13 +81,14 @@ public final class ApplicationServerMain {
 
     // DO NOT CHANGE this method name OR parameters! Used in method.invoke (see Z8 project WebApp, class org.zenframework.z8.web.servlet.Servlet)
     public static void start(ServerConfig config) throws RemoteException {
-        new ApplicationServer((AppServerConfig)config);
+        Rmi.applicationServer = new ApplicationServer((AppServerConfig)config);
     }
 
     // DO NOT CHANGE this method name OR parameters! Used in method.invoke (see Z8 project WebApp, class org.zenframework.z8.web.servlet.Servlet)
     public static void stop(ServerConfig config) throws MalformedURLException, RemoteException, NotBoundException {
-        IServer server = Rmi.connect(Rmi.localhost, ((AppServerConfig)config).getApplicationServerPort(),
-                IApplicationServer.Name);
+        IServer server = Rmi.connect(Rmi.localhost, ((AppServerConfig)config).getApplicationServerPort(), IApplicationServer.Name);
         server.stop();
+        
+        Rmi.applicationServer = null;
     }
 }
