@@ -80,6 +80,7 @@ Z8.desktop.Desktop = Ext.extend(Ext.Viewport,
 		var items = [];
 		items.push({ text: 'Настройки', handler: this.onSettings, scope: this });
 		items.push({ text: 'Изменить пароль', handler: this.onChangePassword, scope: this });
+		items.push({ text: 'Изменить email', handler: this.onChangeEmail, scope: this });
 		
 		items.push({ text: 'Рабочий стол', handler: this.onShowDesktop, scope: this });
 		
@@ -362,6 +363,11 @@ Z8.desktop.Desktop = Ext.extend(Ext.Viewport,
 		new Z8.view.ChangePasswordDialog().show();
 	},
 	
+ 	onChangeEmail: function()
+	{
+		new Z8.view.ChangeEmailDialog().show();
+	},
+
 	onShowDesktop: function(button)
 	{
 		Z8.TaskManager.activate(this.dashboardPanel);
