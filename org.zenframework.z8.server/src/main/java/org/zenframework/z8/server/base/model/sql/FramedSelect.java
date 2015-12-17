@@ -28,14 +28,6 @@ public class FramedSelect extends Select {
     }
 
     @Override
-    protected void aggregateFields(Collection<Field> fields) {
-        DatabaseVendor vendor = database().vendor();
-        
-        if(vendor == DatabaseVendor.Postgres)
-            super.aggregateFields(fields);
-    }
-
-    @Override
     protected String sql(FormatOptions options) {
         DatabaseVendor vendor = database().vendor();
         
@@ -106,9 +98,7 @@ class SqlRowNumber extends SqlToken {
                 String name = null;
 
                 if(grouped) {
-                    field.aggregate();
                     name = new SqlField(field).format(vendor, options);
-                    field.disaggregate();
                 }
                 else {
                     name = field.format(vendor, options);

@@ -1,6 +1,5 @@
 package org.zenframework.z8.server.db.sql;
 
-import java.util.ArrayList;
 import java.util.Collection;
 
 import org.zenframework.z8.server.base.table.value.Aggregation;
@@ -47,42 +46,25 @@ public class SqlField extends SqlToken {
     @Override
     public String format(DatabaseVendor vendor, FormatOptions options, boolean logicalContext)
             throws UnknownDatabaseException {
-        Aggregation aggregation = field.isAggregated() ? field.getAggregation() : Aggregation.None;
+        Aggregation aggregation = options.isAggregationEnabled() ? field.getAggregation() : Aggregation.None;
 
-        Collection<IValue> fields = getUsedFields();
-        Collection<IValue> aggregatedFields = new ArrayList<IValue>();
-
-        for(IValue value : fields) {
-            Field field = (Field)value;
-
-            if(field.isAggregated()) {
-                aggregatedFields.add(field);
-                field.setAggregated(false);
-            }
-        }
-
+        options.disableAggregation();
         SqlToken token = getToken(vendor, options, logicalContext, aggregation);
-        String result = aggregate(token, aggregation).format(vendor, options, logicalContext);
+        options.enableAggregation();
 
-        aggregate(aggregatedFields);
-
-        return result;
+        return aggregate(token, aggregation).format(vendor, options, logicalContext);
     }
 
     private SqlToken getToken(DatabaseVendor vendor, FormatOptions options, boolean logicalContext, Aggregation aggregation) {
-        boolean isAliased = options.getFieldAlias(field) != null;
         String alias = field.format(vendor, options);
 
-        if(field.type() == FieldType.Boolean) {
+        if(field.type() == FieldType.Boolean)
             return new SqlStringToken(alias + (logicalContext ? "=1" : ""));
-        }
 
         SqlToken result = new SqlStringToken(alias);
 
-        if(!isAliased && aggregation != Aggregation.None && aggregation != Aggregation.Count && aggregation != Aggregation.Array
-                && field.type() == FieldType.Guid) {
+        if(field.type() == FieldType.Guid && (aggregation == Aggregation.Min || aggregation == Aggregation.Max))
             return new ToChar(result);
-        }
 
         return result;
     }
@@ -112,12 +94,6 @@ public class SqlField extends SqlToken {
         }
         default:
             return token;
-        }
-    }
-
-    private void aggregate(Collection<IValue> fields) {
-        for(IValue field : fields) {
-            ((Field)field).setAggregated(true);
         }
     }
 

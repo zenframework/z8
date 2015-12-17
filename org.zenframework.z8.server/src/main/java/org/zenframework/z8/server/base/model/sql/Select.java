@@ -7,11 +7,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.zenframework.z8.server.base.query.Query;
-import org.zenframework.z8.server.base.table.value.Aggregation;
 import org.zenframework.z8.server.base.table.value.Field;
 import org.zenframework.z8.server.base.table.value.GuidField;
 import org.zenframework.z8.server.base.table.value.ILink;
-import org.zenframework.z8.server.base.table.value.IValue;
 import org.zenframework.z8.server.base.table.value.Link;
 import org.zenframework.z8.server.db.BasicSelect;
 import org.zenframework.z8.server.db.Connection;
@@ -101,9 +99,6 @@ public class Select {
     }
 
     public void addField(Field field) {
-        if(isGrouped())
-            field.aggregate(isAggregated);
-
         fields.add(field);
     }
 
@@ -169,25 +164,23 @@ public class Select {
     
     protected String sql(FormatOptions options) {
         String from = formatFrom(options);
+        boolean isGrouped = isGrouped();
         
-        if(isGrouped()) {
-            aggregateFields(fields);
-        }
-
+        if(!isGrouped)
+            options.disableAggregation();
+            
         String fields = formatFields(options);
+        String orderBy = formatOrderBy(options);
 
-        disaggregateFields(this.fields);
+        if(!isGrouped)
+            options.enableAggregation();
 
-        String result = "select" + fields + from + formatWhere(options) + formatGroupBy(options)
-                + formatHaving(options);
+        options.disableAggregation();
 
-        if(isGrouped()) {
-            aggregateFields(orderBy);
-        }
+        String result = "select" + fields + from + formatWhere(options) + formatGroupBy(options) 
+                + formatHaving(options) + orderBy;
 
-        result += formatOrderBy(options);
-
-        disaggregateFields(this.fields);
+        options.enableAggregation();
 
         updateAliases(options);
 
@@ -198,25 +191,11 @@ public class Select {
         Collection<Field> result = new ArrayList<Field>();
 
         for(Field field : fields) {
-            if(field.aggregation != Aggregation.None || (isAggregated && field.totals != Aggregation.None)
-                    || groupBy.contains(field)) {
+            if(field.isAggregated() || groupBy.contains(field))
                 result.add(field);
-            }
         }
 
         return result;
-    }
-
-    protected void aggregateFields(Collection<Field> fields) {
-        for(Field field : fields) {
-            field.aggregate(isAggregated);
-        }
-    }
-
-    protected void disaggregateFields(Collection<Field> fields) {
-        for(Field field : fields) {
-            field.disaggregate();
-        }
     }
 
     private void updateAliases(FormatOptions options) {
@@ -275,8 +254,6 @@ public class Select {
             String name = link.getQuery().name();
             
             if(name != null) {
-                Field field = (Field)link;
-                
                 sql_bool joinOn = link instanceof Link ? ((Link)link).joinOn : null;
                 
                 Query query = link.getQuery().getRootQuery();
@@ -285,12 +262,11 @@ public class Select {
                 if(joinOn != null)
                     token = new And(token, new Group(joinOn));
 
-                boolean aggregated = field.isAggregated();
-                field.setAggregated(false);
+                options.disableAggregation();
                 
                 join += "\n\t" + link.getJoin() + " join " + queryName(query) + " on " + token.format(vendor(), options, true);
 
-                field.setAggregated(aggregated);
+                options.enableAggregation();
             }
         }
         
@@ -303,16 +279,14 @@ public class Select {
         return "\nfrom " + result;
     }
 
-    @SuppressWarnings({ "unchecked", "rawtypes" })
-    protected String formatWhere(FormatOptions options) {
+    private String formatWhere(FormatOptions options) {
         if(where == null)
             return "";
 
-        disaggregateFields((Collection)where.getUsedFields());
         return "\n" + "where" + "\n\t" + where.format(vendor(), options, true);
     }
 
-    protected String formatOrderBy(FormatOptions options) {
+    private String formatOrderBy(FormatOptions options) {
         assert (orderBy != null);
 
         String result = "";
@@ -324,7 +298,7 @@ public class Select {
         return result.isEmpty() ? "" : ("\norder by\n\t" + result);
     }
 
-    protected String formatGroupBy(FormatOptions options) {
+    private String formatGroupBy(FormatOptions options) {
         String result = "";
 
         for(Field field : groupBy) {
@@ -335,14 +309,8 @@ public class Select {
     }
 
     protected String formatHaving(FormatOptions options) {
-        if(having == null) {
+        if(having == null)
             return "";
-        }
-
-        for(IValue value : having.getUsedFields()) {
-            Field field = (Field)value;
-            field.aggregate();
-        }
 
         return "\n" + "having" + "\n\t" + having.format(vendor(), options, true);
     }

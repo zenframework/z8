@@ -8,6 +8,7 @@ import java.util.List;
 
 import org.zenframework.z8.server.base.model.actions.ReadAction;
 import org.zenframework.z8.server.base.query.Query;
+import org.zenframework.z8.server.base.table.value.Aggregation;
 import org.zenframework.z8.server.base.table.value.Expression;
 import org.zenframework.z8.server.base.table.value.Field;
 import org.zenframework.z8.server.base.table.value.ILink;
@@ -151,7 +152,7 @@ public class SelectFactory {
 
         for(Field field : action.getSelectFields()) {
             if(field.getOwner() == action.getRootQuery() || field.getOwner() == action.getQuery()) {
-                if(field.aggregate()) {
+                if(field.getAggregation() != Aggregation.None) {
                     result.add(field);
                 }
             }
@@ -186,18 +187,15 @@ public class SelectFactory {
         for(Field field : action.getSelectFields()) {
             if(checkField(field)) {
                 if(grouped) {
-                    if(groupFields.contains(field) || field.aggregate()) {
+                    if(groupFields.contains(field) || field.isAggregated())
                         fields.add(field);
-                    }
                 }
                 else if(isAggregated) {
-                    if(field.aggregate(isAggregated)) {
+                    if(field.isAggregated())
                         fields.add(field);
-                    }
                 }
-                else {
+                else
                     fields.add(field);
-                }
             }
         }
 

@@ -3,7 +3,6 @@ package org.zenframework.z8.server.base.model.sql;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import org.zenframework.z8.server.base.table.value.Aggregation;
 import org.zenframework.z8.server.base.table.value.Field;
 import org.zenframework.z8.server.db.sql.FormatOptions;
 
@@ -42,9 +41,8 @@ public class AggregatingSelect extends Select {
         Collection<Field> result = new ArrayList<Field>();
 
         for(Field field : getFields()) {
-            if(field.aggregation != Aggregation.None || field.totals != Aggregation.None) {
+            if(field.isAggregated())
                 result.add(field);
-            }
         }
 
         return result;

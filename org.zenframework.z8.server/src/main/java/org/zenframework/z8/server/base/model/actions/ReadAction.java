@@ -1214,7 +1214,6 @@ public class ReadAction extends Action {
         } else if (field.aggregation == aggregation) {
             return field;
         } else {
-            field.aggregation = Aggregation.None;
             Expression expression = new Expression(new SqlField(field), type);
             expression.aggregation = aggregation;
             return expression;
