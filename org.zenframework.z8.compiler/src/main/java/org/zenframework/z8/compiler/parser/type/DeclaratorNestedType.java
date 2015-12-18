@@ -137,7 +137,7 @@ public class DeclaratorNestedType extends AbstractType {
 
         IVariableType type = super.getVariableType();
 
-        codeGenerator.append(" = " + type.getJavaNew(true) + ";");
+        codeGenerator.append(" = " + type.getJavaNew(getStaticContext()) + ";");
         codeGenerator.breakLine();
 
         IAttribute[] attributes = getAttributes();

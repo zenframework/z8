@@ -198,11 +198,7 @@ public abstract class LanguageElement implements ILanguageElement {
         if(!staticContext) {
             IMethod method = getDeclaringMethod();
 
-            if(method != null) {
-                return method.isStatic();
-            }
-
-            return false;
+            return method != null ? method.isStatic() : false;
         }
 
         return true;
