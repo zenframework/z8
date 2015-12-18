@@ -94,19 +94,16 @@ public class RequestDispatcher implements Runnable {
 
             processRequest(request, response, requestId);
 
-            if(!Dashboard.Id.equals(requestId) && !Json.settings.equals(requestId)) {
-                Trace.logEvent(request.toString() + "; " + (System.currentTimeMillis() - t) + "ms; " + getMemoryUsage());
-            }
+            if(!Dashboard.Id.equals(requestId) && !Json.settings.equals(requestId))
+                Trace.logEvent(request.toString() + "\n\t\t " + (System.currentTimeMillis() - t) + "ms; " + getMemoryUsage());
         }
     }
 
     private static String getMemoryUsage() {
         MemoryMXBean memoryMxBean = ManagementFactory.getMemoryMXBean();
         MemoryUsage heap = memoryMxBean.getHeapMemoryUsage();
-        MemoryUsage nonHeap = memoryMxBean.getNonHeapMemoryUsage();
 
-        return "heap: " + (heap.getUsed() >> 10) + " of " + (heap.getCommitted() >> 10) + "K; " + "non-heap: "
-                + (nonHeap.getUsed() >> 10) + " of " + (nonHeap.getCommitted() >> 10) + "K";
+        return (heap.getUsed() >> 20) + "/" + (heap.getCommitted() >> 20) + "M";
     }
 
     private void processRequest(IRequest request, IResponse response, String requestId) throws Throwable {
@@ -128,7 +125,7 @@ public class RequestDispatcher implements Runnable {
         }
         else {
             OBJECT object = requestId != null ? Loader.getInstance(requestId) : null;
-
+            
             if(object != null && object.response() != null) {
                 object.processRequest(response);
             } else if(object == null || object instanceof Query) {

@@ -16,7 +16,6 @@ import org.zenframework.z8.server.engine.Database;
 import org.zenframework.z8.server.engine.IAuthorityCenter;
 import org.zenframework.z8.server.engine.IServer;
 import org.zenframework.z8.server.engine.ISession;
-import org.zenframework.z8.server.engine.Rmi;
 import org.zenframework.z8.server.engine.RmiServer;
 import org.zenframework.z8.server.engine.ServerInfo;
 import org.zenframework.z8.server.engine.ServiceType;
@@ -44,7 +43,7 @@ public class AuthorityCenter extends RmiServer implements IAuthorityCenter {
 	private UserManager userManager;
 	private SessionManager sessionManager;
 
-	private AuthorityCenter(ServerConfig config) throws RemoteException {
+	public AuthorityCenter(ServerConfig config) throws RemoteException {
 		super(config.getAuthorityCenterPort(), IAuthorityCenter.Name);
 
 		this.config = config;
@@ -54,25 +53,18 @@ public class AuthorityCenter extends RmiServer implements IAuthorityCenter {
 		        + System.getProperty("file.separator") + "raas.config");
 
 		Digest_utils.initialize(config);
+
+        instance = this;
+        
+        start();
 	}
 
 	static public ServerConfig config() {
 		return instance.config;
 	}
 
-	static public AuthorityCenter instance() {
+	static public AuthorityCenter get() {
 		return instance;
-	}
-
-	static public void start(ServerConfig config) throws RemoteException {
-		instance = new AuthorityCenter(config);
-		instance.start();
-	}
-
-	static public void stop(ServerConfig config) throws RemoteException {
-		IServer server = Rmi.connect(Rmi.localhost,
-		        config.getAuthorityCenterPort(), IAuthorityCenter.Name);
-		server.stop();
 	}
 
 	@Override

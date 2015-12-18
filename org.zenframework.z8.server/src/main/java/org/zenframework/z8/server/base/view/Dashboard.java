@@ -37,13 +37,14 @@ public class Dashboard extends RequestTarget {
         String login = parameters.get(Json.login);
         String newPassword = parameters.get(Json.newPassword);
         String password = parameters.get(Json.password);
+        String email = parameters.get(Json.email);
 
-        if(login != null) {
+        if(login != null)
             writeLoginInfo(writer);
-        }
-        else if(newPassword != null) {
+        else if(newPassword != null)
             changePassword(password, newPassword);
-        }
+        else if(email != null)
+            changeEmail(email);
         else {
             String id = parameters.get("menu");
 
@@ -68,6 +69,16 @@ public class Dashboard extends RequestTarget {
 
         users.password.get().set(new string(newPassword));
         users.update(user.id());
+    }
+
+    private void changeEmail(String email) {
+        IUser user = ApplicationServer.getUser();
+
+        if(!user.email().equalsIgnoreCase(email)) {
+            Users users = new Users.CLASS<Users>().get();
+            users.email.get().set(new string(email));
+            users.update(user.id());
+        }
     }
 
     private void writeDesktopData(JsonObject writer, Desktop desktop, String displayName) {
@@ -128,6 +139,8 @@ public class Dashboard extends RequestTarget {
         userObj.put(Json.id, user.id());
         userObj.put(Json.name, user.description());
         userObj.put(Json.login, user.name());
+        userObj.put(Json.email, user.email());
+        userObj.put(Json.phone, user.phone());
         userObj.put(Json.settings, user.settings());
 
         JsonArray compsArr = new JsonArray();

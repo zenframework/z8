@@ -68,18 +68,19 @@ public class Request extends IRequest {
         String result = "";
         
         for(String key : parameters.keySet()) {
-            if(!Json.data.equals(key)) {
+            if(!Json.data.equals(key) && !Json.requestId.equals(key)) {
                 String value = parameters.get(key);
                 result += (result.isEmpty() ? "" : ", ") + key + "=" + (value != null ? value : "");
             }
         }
         
-        return StringUtils.unescapeJava("{" + result + "}");
+        String[] requestId = parameters.get(Json.requestId).split("\\.");
+        return StringUtils.unescapeJava(requestId[requestId.length - 1] + "={" + result + "}");
     }
     
     @Override
     public String toString() {
-        return "request=" + parametersAsString() + ", user=" + session.user().name() + ", schema=" + session.database().schema();
+        return parametersAsString() + ", user=" + session.user().name() + ", schema=" + session.database().schema();
     }
 
 }

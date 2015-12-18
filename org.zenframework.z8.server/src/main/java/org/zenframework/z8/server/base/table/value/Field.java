@@ -2,8 +2,6 @@ package org.zenframework.z8.server.base.table.value;
 
 import java.sql.SQLException;
 import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
 
 import org.zenframework.z8.server.base.form.Control;
 import org.zenframework.z8.server.base.form.FieldGroup;
@@ -70,9 +68,6 @@ abstract public class Field extends Control implements IValue, IField {
     public Aggregation aggregation = Aggregation.None;
     public Aggregation totals = Aggregation.None;
 
-    private boolean aggregated = false;
-    private boolean aggregatedTotals = false;
-
     public Query.CLASS<? extends Query> editWith = null;
 
     public bool required = new bool(false);
@@ -97,6 +92,8 @@ abstract public class Field extends Control implements IValue, IField {
     private Select cursor = null;
     private Query owner = null;
 
+    public int position = -1;
+    
     protected Field(IObject container) {
         super(container);
     }
@@ -138,40 +135,11 @@ abstract public class Field extends Control implements IValue, IField {
     }
 
     public boolean isAggregated() {
-        return aggregated;
+        return aggregation != Aggregation.None;
     }
-
+    
     public Aggregation getAggregation() {
-        if(aggregated) {
-            if(aggregatedTotals) {
-                return totals != Aggregation.None ? totals : aggregation;
-            }
-
-            return aggregation;
-        }
-
-        return Aggregation.None;
-    }
-
-    public void setAggregated(boolean aggregated) {
-        this.aggregated = aggregated;
-    }
-
-    public boolean aggregate() {
-        return aggregate(false);
-    }
-
-    public boolean aggregate(boolean useTotals) {
-        if(aggregation != Aggregation.None || (useTotals && totals != Aggregation.None)) {
-            aggregated = true;
-            aggregatedTotals = useTotals;
-        }
-        return aggregated;
-    }
-
-    public void disaggregate() {
-        aggregated = false;
-        aggregatedTotals = false;
+        return aggregation;
     }
 
     public void setOwner(Query owner) {
@@ -327,12 +295,8 @@ abstract public class Field extends Control implements IValue, IField {
         writer.put(Json.labelWidth, labelWidth);
         writer.put(Json.stretch, stretch);
 
-        if(totals != Aggregation.None) {
-            writer.put(Json.aggregation, totals.toString());
-        }
-        else if(aggregation != Aggregation.None) {
+        if(aggregation != Aggregation.None)
             writer.put(Json.aggregation, aggregation.toString());
-        }
 
         if(!evaluations.isEmpty()) {
             JsonArray evalsArr = new JsonArray();
@@ -343,8 +307,7 @@ abstract public class Field extends Control implements IValue, IField {
                 evalObj.put(Json.field, formula.field.id());
                 evalObj.put(Json.formula, formula.formula.formula());
 
-                Set<IValue> fields = new HashSet<IValue>();
-                formula.formula.collectFields(fields);
+                Collection<IValue> fields = formula.formula.getUsedFields();
 
                 JsonArray fieldsArr = new JsonArray();
                 for(IValue field : fields) {

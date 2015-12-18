@@ -523,28 +523,20 @@ public class ReadAction extends Action {
     }
 
     private Collection<Field> getUsedFields(Field field) {
-        Collection<Field> fields = null;
-
         if (field instanceof Expression) {
             Expression expression = (Expression) field;
-            fields = getUsedFields(expression.expression());
-        } else {
-            fields = getFormulaFields(field);
-            fields.add(field);
+            return getUsedFields(expression.expression());
         }
+
+        Collection<Field> fields = getFormulaFields(field);
+        fields.add(field);
 
         return fields;
     }
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
     private Collection<Field> getUsedFields(SqlToken token) {
-        Collection<Field> result = new LinkedHashSet<Field>();
-
-        if (token != null) {
-            token.collectFields((Collection) result);
-        }
-
-        return result;
+        return token != null ? (Collection)token.getUsedFields() : new LinkedHashSet<Field>();
     }
 
     private void getFormulaFields(Field field, Collection<Field> result, Set<Field> processedFields) {
@@ -1012,9 +1004,7 @@ public class ReadAction extends Action {
             JsonObject fieldData = new JsonObject();
 
             for (Field field : frame.getFields()) {
-                if(field.aggregation != Aggregation.Min
-                        && field.aggregation != Aggregation.Max
-                        && (field.type() == FieldType.Integer || field.type() == FieldType.Decimal || field.aggregation == Aggregation.Count))
+                if(field.aggregation != Aggregation.None && field.type() != FieldType.Boolean)
                     field.writeData(fieldData);
             }
 
@@ -1085,11 +1075,8 @@ public class ReadAction extends Action {
 
             while (totals.next()) {
                 for (Field field : totals.getFields()) {
-                    if (field.aggregation != Aggregation.Min
-                            && field.aggregation != Aggregation.Max
-                            && (field.type() == FieldType.Integer || field.type() == FieldType.Decimal || field.aggregation == Aggregation.Count)) {
+                    if (field.aggregation != Aggregation.None && field.type() != FieldType.Boolean)
                         field.writeData(fieldObj);
-                    }
                 }
             }
 
@@ -1146,9 +1133,7 @@ public class ReadAction extends Action {
                         obj.put(groupField.id(), expression.get());
                     } else if (field == count) {
                         obj.put(Json.total, count.get());
-                    } else if(field.aggregation != Aggregation.Min
-                            && field.aggregation != Aggregation.Max
-                            && (field.type() == FieldType.Integer || field.type() == FieldType.Decimal || field.aggregation == Aggregation.Count)) {
+                    } else if(field.aggregation != Aggregation.None && field.type() != FieldType.Boolean) {
                         field.writeData(obj);
                     }
                 }
@@ -1194,7 +1179,8 @@ public class ReadAction extends Action {
             beforeRead();
 
             if (totalsBy == null) {
-                writeCount(writer);
+                if(getStartParameter() != -1)
+                    writeCount(writer);
 
                 Groupping groups = writeFrame(writer);
 

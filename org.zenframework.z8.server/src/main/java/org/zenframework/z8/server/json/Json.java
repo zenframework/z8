@@ -22,6 +22,8 @@ public interface Json {
     string login = new string("login");
     string password = new string("password");
     string newPassword = new string("newPassword");
+    string email = new string("email");
+    string phone = new string("phone");
 
     string components = new string("components");
     string settings = new string("settings");

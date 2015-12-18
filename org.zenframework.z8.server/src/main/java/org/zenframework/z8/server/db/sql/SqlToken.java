@@ -8,6 +8,8 @@ import org.zenframework.z8.server.db.DatabaseVendor;
 import org.zenframework.z8.server.db.FieldType;
 
 abstract public class SqlToken {
+    private Collection<IValue> usedFields = null;
+    
     public String format(DatabaseVendor vendor, FormatOptions options) {
         return format(vendor, options, false);
     }
@@ -22,9 +24,11 @@ abstract public class SqlToken {
     }
 
     public Collection<IValue> getUsedFields() {
-        Collection<IValue> result = new HashSet<IValue>();
-        collectFields(result);
-        return result;
+        if(usedFields == null) {
+            usedFields = new HashSet<IValue>();
+            collectFields(usedFields);
+        }
+        return usedFields;
     }
 
     public boolean isNumeric() {

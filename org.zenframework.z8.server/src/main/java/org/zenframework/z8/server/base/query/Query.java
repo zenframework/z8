@@ -6,10 +6,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.regex.Pattern;
 
 import org.zenframework.z8.server.base.form.Control;
@@ -1695,8 +1693,7 @@ public class Query extends Runnable {
             Expression expression = (Expression) field;
             SqlToken token = expression.expression();
 
-            Set<IValue> values = new HashSet<IValue>();
-            token.collectFields(values);
+            Collection<IValue> values = token.getUsedFields();
 
             for (IValue value : values) {
                 if (query.findFieldById(value.id()) == null) {

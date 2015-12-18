@@ -20,20 +20,20 @@ Z8.chart.ChartPanel = Ext.extend(Z8.Panel,
 	{
 		Z8.chart.ChartPanel.superclass.initComponent.call(this);
 
-		this.label = new Ext.form.Label({ text: '', flex: 1, margins: { top: 10, left: 20, right: 0, bottom: 0 } });
+		this.label = new Ext.form.Label({ text: '', flex: 1, margins: { top: 5, left: 20, right: 0, bottom: 0 } });
 		this.refreshButton = new Z8.Button({ tooltip: 'Обновить', cls: 'x-chart-panel-btn', overCls: 'x-chart-panel-btn-over', iconCls: 'silk-arrow-refresh-grey', margins: { top: 0, left: 0, right: 10, bottom: 0 }, plain: true, height: 20, width: 20, handler: this.onRefresh, scope:this });
-		this.printButton = new Z8.Button({ tooltip: 'Изображение', cls: 'x-chart-panel-btn', overCls: 'x-chart-panel-btn-over', iconCls: 'silk-printer-grey', margins: { top: 0, left: 0, right: 10, bottom: 0 }, plain: true, height: 20, width: 20, handler: this.onPrint, scope:this });
+//		this.printButton = new Z8.Button({ tooltip: 'Изображение', cls: 'x-chart-panel-btn', overCls: 'x-chart-panel-btn-over', iconCls: 'silk-printer-grey', margins: { top: 0, left: 0, right: 10, bottom: 0 }, plain: true, height: 20, width: 20, handler: this.onPrint, scope:this });
 		this.settingsButton = new Z8.Button({ tooltip: 'Настроить', cls: 'x-chart-panel-btn', overCls: 'x-chart-panel-btn-over', iconCls: 'silk-cog', margins: { top: 0, left: 0, right: 10, bottom: 0 }, plain: true, height: 20, width: 20, handler: this.onSettings, scope:this });
 		this.clearButton = new Z8.Button({ tooltip: 'Удалить', cls: 'x-chart-panel-btn', overCls: 'x-chart-panel-btn-over', iconCls: 'silk-cross-grey', margins: { top: 0, left: 0, right: 20, bottom: 0  }, plain: true, height: 20, width: 20, handler: this.onClear, scope:this });
 		this.toolbar = new Ext.Container({ height: 25, layout: 'hbox', cls: 'x-chart-panel-header', layoutConfig: { align: 'middle', pack: 'start' } });
 
 		this.toolbar.add(this.label);
 		this.toolbar.add(this.refreshButton);
-		this.toolbar.add(this.printButton);
+//		this.toolbar.add(this.printButton);
 		this.toolbar.add(this.settingsButton);
 		this.toolbar.add(this.clearButton);
 		
-		this.chartContainer = new Ext.Container({ flex: 1 });
+		this.chartContainer = new Ext.Container({ flex: 1, layout: 'fit' });
 		
 		this.add(this.toolbar);
 		this.add(this.chartContainer);
@@ -90,13 +90,15 @@ Z8.chart.ChartPanel = Ext.extend(Z8.Panel,
 			filter = this.chartConfig.dataSource.filter;
 		}
 		
-		var params = 
-		{
-			xaction: 'read',
-			totalsBy: this.getXAxes().id,
-			aggregation: Ext.encode(this.getYAxesIds()),
+		var params = {
 			filter1: filter != null ? Ext.encode(filter) : null
 		};
+		
+		if(this.chartConfig.chartType != 'Table') {
+			params.xaction = 'read';
+			params.totalsBy = this.getXAxes().id;
+			params.aggregation = Ext.encode(this.getYAxesIds());
+		}
 		
 		var requestId = this.query != null ? this.query.requestId : this.chartConfig.dataSource.id;
 		
@@ -109,7 +111,11 @@ Z8.chart.ChartPanel = Ext.extend(Z8.Panel,
 	{
 		this.refreshButton.setBusy(false);
 		
-		this.chartData = this.getDataTable(result.data);
+		if(this.chartConfig.chartType != 'Table')
+			this.chartData = this.getDataTable(result.data);
+		else
+			this.chartData = result;
+
 		this.drawChart();
 	},
 	
@@ -140,9 +146,11 @@ Z8.chart.ChartPanel = Ext.extend(Z8.Panel,
 			{
 				Ext.removeNode(children[i]);
 			}
-		}
+		} else if(this.grid != null)
+			this.grid.destroy();
 
 		this.chart = null;
+		this.grid = null;
 	},
 	
 	draw: function()
@@ -151,18 +159,28 @@ Z8.chart.ChartPanel = Ext.extend(Z8.Panel,
 		{
 			if(this.chartConfig != null && this.chartData != null)
 			{
-				if(this.chart == null)
-				{
-					this.chart = new google.visualization.ChartWrapper({ options: { fontName: 'Segoe UI', fontSize: 11, is3D: true } });
-				}
-				
 				this.label.setText(this.chartConfig.chartName);
 
-				this.chart.setContainerId(this.chartContainer.id);
-				this.chart.setChartType(this.chartConfig.chartType);
-		//		this.chart.setOption('series', this.getSeriesOptions());
-				this.chart.setDataTable(this.chartData);
-				this.chart.draw();
+				if(this.chartConfig.chartType != 'Table') {
+					if(this.chart == null)
+					{
+						this.chart = new google.visualization.ChartWrapper({ options: { fontName: 'Segoe UI', fontSize: 11, is3D: true } });
+					}
+					
+	
+					this.chart.setContainerId(this.chartContainer.id);
+					this.chart.setChartType(this.chartConfig.chartType);
+			//		this.chart.setOption('series', this.getSeriesOptions());
+					this.chart.setDataTable(this.chartData);
+					this.chart.draw();
+				} else {
+					if(this.grid != null)
+						this.grid.destroy();
+					
+					this.grid = createGrid(this.chartData, { editable: false, border: false });
+					this.chartContainer.add(this.grid);
+					this.chartContainer.doLayout();
+				}
 			}
 		}
 		else
@@ -269,8 +287,8 @@ Z8.chart.ChartPanel = Ext.extend(Z8.Panel,
 
 	updateButtons: function()
 	{
-		this.printButton.setVisible(this.chartConfig != null);
-		this.toolbar.doLayout(true, true);
+		//this.printButton.setVisible(this.chartConfig != null);
+		//this.toolbar.doLayout(true, true);
 	},
 
 	
@@ -299,7 +317,7 @@ Z8.chart.ChartPanel = Ext.extend(Z8.Panel,
 
 		var steps = [];
 		
-		steps.push(new Z8.view.ChartPreviewPanel({ config: config }));
+		steps.push(new Z8.view.ChartPreviewPanel({ config: config, showTable: this.query == null }));
 		
 		if(this.query == null)
 		{
@@ -315,7 +333,10 @@ Z8.chart.ChartPanel = Ext.extend(Z8.Panel,
 	
 	onRefresh: function()
 	{
-		this.setChartConfig(this.chartConfig);
+		if(this.grid != null)
+			this.grid.getStore().reload();
+		else
+			this.setChartConfig(this.chartConfig);
 	},
 
 	onPrint: function()

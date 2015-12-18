@@ -61,6 +61,11 @@ Z8.view.WizardWindow = Ext.extend(Z8.Window,
 
 	isLastStep: function()
 	{
+		var step = this.getCurrentStep();
+		
+		if(step.isLast != null && step.isLast())
+			return true;
+		
 		return this.currentStep == this.steps.length - 1;
 	},
 	
@@ -167,7 +172,14 @@ Z8.view.ChartPreviewPanel = Ext.extend(Z8.Panel,
 		['2016',  1030,      540]
 	]),
 
-	chartOptions: { 
+ 	gridData: [ 
+		['2013',  1000,      400],
+		['2014',  1170,      460],
+		['2015',  660,       1120],
+		['2016',  1030,      540]
+	],
+
+ 	chartOptions: { 
 		title: '', 
 		fontName: 'Segoe UI', 
 		fontSize: 11, 
@@ -194,9 +206,15 @@ Z8.view.ChartPreviewPanel = Ext.extend(Z8.Panel,
 		this.steppedAreaChart = new Ext.form.Radio({ x: 30, y: 123, checked: chartType == 'SteppedAreaChart', boxLabel: 'Stepped area chart', name: 'chartType', inputValue: 'SteppedAreaChart', handler: this.onTypeChanged, scope: this });
 		this.lineChart = new Ext.form.Radio({ x: 30, y: 148, checked: chartType == 'LineChart', boxLabel: 'Line chart', name: 'chartType', inputValue: 'LineChart', handler: this.onTypeChanged, scope: this });
 		this.pieChart = new Ext.form.Radio({  x: 30, y: 173, checked: chartType == 'PieChart', boxLabel: 'Pie chart', name: 'chartType', inputValue: 'PieChart', handler: this.onTypeChanged, scope: this });
+		
+		if(this.showTable)
+			this.tableChart = new Ext.form.Radio({  x: 30, y: 198, checked: chartType == 'Table', boxLabel: 'Table', name: 'chartType', inputValue: 'Table', handler: this.onTypeChanged, scope: this });
 
 		this.chartContainer = new Ext.Panel({ x: 170, y: 47, width: 420, height: 300, bodyBorder: false, border: true, style: 'border-width: 1px;' });
 
+		var grid = this.createGrid({ x: 170, y: 47, width: 420, height: 300 });
+		this.gridContainer = new Ext.Panel({ x: 170, y: 47, width: 420, height: 300, bodyBorder: false, border: true, items: grid, style: 'border-width: 1px;', hidden: true });
+		
 		this.add(this.chartNameLabel);
 		this.add(this.chartName);
 
@@ -206,17 +224,51 @@ Z8.view.ChartPreviewPanel = Ext.extend(Z8.Panel,
 		this.add(this.steppedAreaChart);
 		this.add(this.lineChart);
 		this.add(this.pieChart);
+		
+		if(this.showTable)
+			this.add(this.tableChart);
 
 		this.add(this.chartContainer);
+		this.add(this.gridContainer);
 		
 		this.chartName.on('change', this.onNameChanged, this);
 		this.chartContainer.on('afterrender', this.onChartContainerReady, this);
 	},
 	
+	createGrid: function(config) {
+		var yearColumn = { dataIndex: 'year', header: 'Год', width: 450 };
+		var salesColumn = { dataIndex: 'sales', header: 'Продажи', width: 100 };
+		var expendsColumn = { dataIndex: 'expends', header: 'Затраты', width: 100 };
+		var selModel = new Ext.grid.CheckboxSelectionModel({ singleSelect: false });
+		
+		var store = new Ext.data.ArrayStore({ fields: ['year', 'sales', 'expends'], idIndex: 0, data: this.gridData });
+
+		var colModel = new Ext.grid.ColumnModel({
+			defaults: { sortable: true },
+			columns: [ selModel, yearColumn, salesColumn, expendsColumn ]
+		});
+		
+		config = Ext.apply(config || {}, {
+			border: false,
+			store: store,
+			colModel: colModel,
+			viewConfig: { forceFit: true },
+		    sm: selModel
+		});
+		
+		return new Ext.grid.GridPanel(config);
+	},
+
 	onChartContainerReady: function()
 	{
+		var type = this.barChart.getGroupValue();
+		
+		this.chartContainer.setVisible(type != 'Table');
+		this.gridContainer.setVisible(type == 'Table');
+		
 		this.chart.setContainerId(this.chartContainer.body.id);
 		this.chart.setOption('title', this.chartName.getValue());
+		this.chart.setOption('width', '100%');
 		this.chart.setChartType(this.barChart.getGroupValue());
 		this.chart.setDataTable(this.data);
 		this.chart.draw();
@@ -226,7 +278,12 @@ Z8.view.ChartPreviewPanel = Ext.extend(Z8.Panel,
 	{
 		if(checked)
 		{
-			this.chart.setChartType(field.inputValue);
+			var type = field.inputValue;
+			
+			this.chartContainer.setVisible(type != 'Table');
+			this.gridContainer.setVisible(type == 'Table');
+
+			this.chart.setChartType(type);
 			this.chart.draw();
 		}
 	},
@@ -292,6 +349,10 @@ Z8.view.ChartDataSourcePanel = Ext.extend(Z8.Panel,
 		this.dataSource.on('select', this.onDataSourceChanged, this);
 	},
 
+	isLast: function() {
+		return this.config.chartType == 'Table';
+	},
+	
 	onActivate: function()
 	{
 		if(this.config.conture != null && !this.activated)

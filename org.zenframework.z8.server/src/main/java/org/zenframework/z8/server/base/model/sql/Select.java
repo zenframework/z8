@@ -7,11 +7,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.zenframework.z8.server.base.query.Query;
-import org.zenframework.z8.server.base.table.value.Aggregation;
 import org.zenframework.z8.server.base.table.value.Field;
 import org.zenframework.z8.server.base.table.value.GuidField;
 import org.zenframework.z8.server.base.table.value.ILink;
-import org.zenframework.z8.server.base.table.value.IValue;
 import org.zenframework.z8.server.base.table.value.Link;
 import org.zenframework.z8.server.db.BasicSelect;
 import org.zenframework.z8.server.db.Connection;
@@ -28,9 +26,9 @@ import org.zenframework.z8.server.db.sql.expressions.Operation;
 import org.zenframework.z8.server.db.sql.expressions.Rel;
 import org.zenframework.z8.server.engine.ApplicationServer;
 import org.zenframework.z8.server.engine.Database;
+import org.zenframework.z8.server.logs.Trace;
 import org.zenframework.z8.server.types.primary;
 import org.zenframework.z8.server.types.sql.sql_bool;
-import org.zenframework.z8.server.utils.ArrayUtils;
 
 public class Select {
     private static String SelectAlias = "S";
@@ -98,12 +96,16 @@ public class Select {
 
     public void setFields(Collection<Field> fields) {
         this.fields = fields == null ? new ArrayList<Field>() : fields;
+        
+        int position = 0;
+        for(Field field : this.fields) {
+            field.position = position;
+            position++;
+        }
     }
 
     public void addField(Field field) {
-        if(isGrouped())
-            field.aggregate(isAggregated);
-
+        field.position = fields.size();
         fields.add(field);
     }
 
@@ -169,25 +171,23 @@ public class Select {
     
     protected String sql(FormatOptions options) {
         String from = formatFrom(options);
+        boolean isGrouped = isGrouped();
         
-        if(isGrouped()) {
-            aggregateFields(fields);
-        }
-
+        if(!isGrouped)
+            options.disableAggregation();
+            
         String fields = formatFields(options);
+        String orderBy = formatOrderBy(options);
 
-        disaggregateFields(this.fields);
+        if(!isGrouped)
+            options.enableAggregation();
 
-        String result = "select" + fields + from + formatWhere(options) + formatGroupBy(options)
-                + formatHaving(options);
+        options.disableAggregation();
 
-        if(isGrouped()) {
-            aggregateFields(orderBy);
-        }
+        String result = "select" + fields + from + formatWhere(options) + formatGroupBy(options) 
+                + formatHaving(options) + orderBy;
 
-        result += formatOrderBy(options);
-
-        disaggregateFields(this.fields);
+        options.enableAggregation();
 
         updateAliases(options);
 
@@ -198,25 +198,11 @@ public class Select {
         Collection<Field> result = new ArrayList<Field>();
 
         for(Field field : fields) {
-            if(field.aggregation != Aggregation.None || (isAggregated && field.totals != Aggregation.None)
-                    || groupBy.contains(field)) {
+            if(field.isAggregated() || groupBy.contains(field))
                 result.add(field);
-            }
         }
 
         return result;
-    }
-
-    protected void aggregateFields(Collection<Field> fields) {
-        for(Field field : fields) {
-            field.aggregate(isAggregated);
-        }
-    }
-
-    protected void disaggregateFields(Collection<Field> fields) {
-        for(Field field : fields) {
-            field.disaggregate();
-        }
     }
 
     private void updateAliases(FormatOptions options) {
@@ -275,8 +261,6 @@ public class Select {
             String name = link.getQuery().name();
             
             if(name != null) {
-                Field field = (Field)link;
-                
                 sql_bool joinOn = link instanceof Link ? ((Link)link).joinOn : null;
                 
                 Query query = link.getQuery().getRootQuery();
@@ -285,12 +269,11 @@ public class Select {
                 if(joinOn != null)
                     token = new And(token, new Group(joinOn));
 
-                boolean aggregated = field.isAggregated();
-                field.setAggregated(false);
+                options.disableAggregation();
                 
                 join += "\n\t" + link.getJoin() + " join " + queryName(query) + " on " + token.format(vendor(), options, true);
 
-                field.setAggregated(aggregated);
+                options.enableAggregation();
             }
         }
         
@@ -303,16 +286,14 @@ public class Select {
         return "\nfrom " + result;
     }
 
-    @SuppressWarnings({ "unchecked", "rawtypes" })
-    protected String formatWhere(FormatOptions options) {
+    private String formatWhere(FormatOptions options) {
         if(where == null)
             return "";
 
-        disaggregateFields((Collection)where.getUsedFields());
         return "\n" + "where" + "\n\t" + where.format(vendor(), options, true);
     }
 
-    protected String formatOrderBy(FormatOptions options) {
+    private String formatOrderBy(FormatOptions options) {
         assert (orderBy != null);
 
         String result = "";
@@ -324,7 +305,7 @@ public class Select {
         return result.isEmpty() ? "" : ("\norder by\n\t" + result);
     }
 
-    protected String formatGroupBy(FormatOptions options) {
+    private String formatGroupBy(FormatOptions options) {
         String result = "";
 
         for(Field field : groupBy) {
@@ -335,14 +316,8 @@ public class Select {
     }
 
     protected String formatHaving(FormatOptions options) {
-        if(having == null) {
+        if(having == null)
             return "";
-        }
-
-        for(IValue value : having.getUsedFields()) {
-            Field field = (Field)value;
-            field.aggregate();
-        }
 
         return "\n" + "having" + "\n\t" + having.format(vendor(), options, true);
     }
@@ -359,19 +334,22 @@ public class Select {
         Connection connection = ConnectionManager.get(database);
 
         String sql = sql(new FormatOptions());
-
-        /*		System.out.println("\n\n");
-        		System.out.println(sql);
-        */
+        
+        boolean traceSql = ApplicationServer.config().getTraceSql();
+        long startAt = traceSql ? System.currentTimeMillis() : 0;
+        
         try {
             cursor = BasicSelect.cursor(connection, sql);
         } catch(Throwable e) {
             close();
-            System.out.println(e.getMessage());
-            System.out.println(sql);
+            Trace.logError(e);
+            Trace.logEvent(sql);
             throw new RuntimeException(e);
         }
 
+        if(traceSql)
+            Trace.logEvent("\n" + sql + "\n" + "Execution time: " + (System.currentTimeMillis() - startAt) + " ms\n");
+        
         activate();
     }
 
@@ -437,13 +415,7 @@ public class Select {
     }
 
     public primary get(Field field) throws SQLException {
-        return get(getFieldPosition(field), field.type());
-    }
-
-    private int getFieldPosition(Field field) {
-        int index = ArrayUtils.indexOf(fields.toArray(new Field[0]), field);
-        assert (index != -1);
-        return index + 1;
+        return get(field.position + 1, field.type());
     }
 
     protected primary get(int index, FieldType fieldType) throws SQLException {

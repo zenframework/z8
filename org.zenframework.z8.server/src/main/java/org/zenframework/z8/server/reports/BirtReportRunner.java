@@ -426,8 +426,8 @@ public class BirtReportRunner {
 
             try {
                 float fontSize = BirtUnitsConverter.convertToPoints(style.getFontSize());
-                style.setProperty(IStyleModel.FONT_SIZE_PROP,
-                        "" + Math.max(fontSize * scaleFactor, ReportConstants.MINIMAL_FONT_SIZE) + "pt");
+                style.setProperty(IStyleModel.FONT_SIZE_PROP, 
+                        "" + Math.max(fontSize * Math.min(scaleFactor, 1), ReportConstants.MINIMAL_FONT_SIZE) + "pt");
             }
             catch(SemanticException e) {}
 
@@ -814,34 +814,7 @@ public class BirtReportRunner {
                         * (options.getPageWidth() - options.getHorizontalMargins() - options.m_pageOverlapping)
                         + pageOverlapping;
 
-                if(paperWidth < tableWidth) {
-                    if(options.scaleContent) {
-                        scaleFactor = paperWidth / tableWidth;
-                    }
-                    else {
-                        float width = 0;
-
-                        for(Column column : getColumns()) {
-                            width += column.getWidth();
-
-                            if(width >= paperWidth) {
-                                Column parent = column.getParent();
-
-                                while(parent != null) {
-                                    parent.removeColumn(column);
-
-                                    if(parent.hasSubcolumns()) {
-                                        break;
-                                    }
-
-                                    column = parent;
-                                    parent = column.getParent();
-                                }
-                            }
-                        }
-                    }
-
-                }
+                scaleFactor = paperWidth / tableWidth;
                 pageWidth = options.pagesWide * options.getPageWidth();
             }
             else {

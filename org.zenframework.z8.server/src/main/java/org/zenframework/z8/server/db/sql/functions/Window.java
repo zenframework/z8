@@ -9,11 +9,13 @@ import org.zenframework.z8.server.db.sql.FormatOptions;
 import org.zenframework.z8.server.db.sql.SqlToken;
 import org.zenframework.z8.server.exceptions.db.UnknownDatabaseException;
 
-public class Array extends SqlToken {
+public class Window extends SqlToken {
     private SqlToken token;
+    private String name;
 
-    public Array(SqlToken token) {
+    protected Window(SqlToken token, String name) {
         this.token = token;
+        this.name = name;
     }
 
     @Override
@@ -24,18 +26,14 @@ public class Array extends SqlToken {
     @Override
     public String format(DatabaseVendor vendor, FormatOptions options, boolean logicalContext)
             throws UnknownDatabaseException {
-        StringBuilder str = new StringBuilder();
-        switch (vendor) {
-        case Oracle:
-            str.append("collect");
-            break;
-        case Postgres:
-            str.append("array_agg");
-            break;
-        default:
-            throw new UnknownDatabaseException();
-        }
-        return str.append('(').append(token.format(vendor, options)).append(')').toString();
+        String result = options.isAggregationEnabled() ? name + "(" : "";
+
+        options.disableAggregation();
+        result += token.format(vendor, options);
+        options.enableAggregation();
+        
+        result += options.isAggregationEnabled() ? ")" : "";
+        return result;
     }
 
     @Override
