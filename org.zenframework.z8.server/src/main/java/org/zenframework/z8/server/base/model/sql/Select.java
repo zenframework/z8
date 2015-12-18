@@ -325,7 +325,7 @@ public class Select {
     public void aggregate() {
         isAggregated = true;
 
-        fields = getAggregatedFields();
+        setFields(getAggregatedFields());
 
         open();
     }
