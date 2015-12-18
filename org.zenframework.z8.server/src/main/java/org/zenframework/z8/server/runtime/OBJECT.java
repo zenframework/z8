@@ -394,4 +394,7 @@ public class OBJECT extends RequestTarget implements IObject {
         return null;
     }
 
+    public void z8_setAttribute(string attribute, string value) {
+        setAttribute(attribute.get(), value.get());
+    }
 }

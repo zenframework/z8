@@ -11,6 +11,7 @@ class Object {
 	static public string Description = "description";
 	static public string Label = "label";
 	static public string Icon = "icon";
+    static public string Index = "index";
 
 	static public bool isNull(Object object);
 
@@ -31,6 +32,8 @@ class Object {
 	public string name();
 	public string displayName();
 	public string className();
+
+    public void setAttribute(string attribute, string value);
 
 	public void sendFile(file file);
 
