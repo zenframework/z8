@@ -8,7 +8,6 @@ import java.util.Map;
 import org.zenframework.z8.server.base.file.FileInfo;
 import org.zenframework.z8.server.engine.ISession;
 import org.zenframework.z8.server.json.Json;
-import org.zenframework.z8.server.utils.StringUtils;
 
 public class Request extends IRequest {
     private Map<String, String> parameters = new HashMap<String, String>();
@@ -75,7 +74,7 @@ public class Request extends IRequest {
         }
         
         String[] requestId = parameters.get(Json.requestId).split("\\.");
-        return StringUtils.unescapeJava(requestId[requestId.length - 1] + "={" + result + "}");
+        return requestId[requestId.length - 1] + "={" + result + "}";
     }
     
     @Override

@@ -33,7 +33,7 @@ class Object {
 	public string displayName();
 	public string className();
 
-    public void setAttribute(string attribute, string value);
+    public void setAttribute(string attribute, primary value);
 
 	public void sendFile(file file);
 

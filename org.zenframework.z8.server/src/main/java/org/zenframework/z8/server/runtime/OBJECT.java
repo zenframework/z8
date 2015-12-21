@@ -14,6 +14,7 @@ import org.zenframework.z8.server.types.bool;
 import org.zenframework.z8.server.types.file;
 import org.zenframework.z8.server.types.guid;
 import org.zenframework.z8.server.types.integer;
+import org.zenframework.z8.server.types.primary;
 import org.zenframework.z8.server.types.string;
 
 public class OBJECT extends RequestTarget implements IObject {
@@ -394,7 +395,7 @@ public class OBJECT extends RequestTarget implements IObject {
         return null;
     }
 
-    public void z8_setAttribute(string attribute, string value) {
-        setAttribute(attribute.get(), value.get());
+    public void z8_setAttribute(string attribute, primary value) {
+        setAttribute(attribute.get(), value.toString());
     }
 }
