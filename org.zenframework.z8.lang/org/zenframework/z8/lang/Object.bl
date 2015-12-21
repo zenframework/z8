@@ -34,6 +34,7 @@ class Object {
 	public string className();
 
     public void setAttribute(string attribute, primary value);
+	public void removeAttribute(string attribute);
 
 	public void sendFile(file file);
 
