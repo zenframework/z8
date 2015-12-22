@@ -778,7 +778,11 @@ Z8.grid.GridView = Ext.extend(Ext.grid.GroupingView,
 			
 			if(totalsData != null)
 			{
-				value = totalsData[colModel.getDataIndex(i)];
+				var dataIndex = colModel.getDataIndex(i);
+				var field = this.grid.getStore().fields.item(dataIndex);
+				
+				if(field != null && (field.serverType == Z8.ServerTypes.Integer || field.serverType == Z8.ServerTypes.Float))
+					value = totalsData[dataIndex];
 				
 				if(value == null)
 				{
