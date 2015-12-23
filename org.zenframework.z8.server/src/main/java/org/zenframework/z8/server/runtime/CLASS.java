@@ -100,9 +100,11 @@ public class CLASS<TYPE extends IObject> extends OBJECT implements IClass<TYPE> 
     }
 
     public/* final */TYPE get(int stage) {
-        if (object == null) {
-            create(getContainer(), stage);
-        }
+        if(object != null && this.stage >= stage)
+            return object;
+        
+        if (object == null)
+            create(getContainer());
 
         callConstructors(stage);
 
@@ -167,14 +169,10 @@ public class CLASS<TYPE extends IObject> extends OBJECT implements IClass<TYPE> 
         }
     }
 
-    private void create(IObject container, int stage) {
-        assert (object == null);
-
+    private void create(IObject container) {
         try {
             object = constructObject(container);
             object.setCLASS(this);
-
-            callConstructors(stage);
         } catch (Throwable e) {
             Trace.logError(e);
             throw new RuntimeException(e);
@@ -182,7 +180,7 @@ public class CLASS<TYPE extends IObject> extends OBJECT implements IClass<TYPE> 
     }
 
     private void callConstructors(int stage) {
-        if (object != null && this.stage < Constructor1 && stage >= Constructor1) {
+        if (this.stage < Constructor1 && stage >= Constructor1) {
             this.stage = Constructor1;
             object.constructor1();
             object.setAttributes(getAttributes());
@@ -192,7 +190,7 @@ public class CLASS<TYPE extends IObject> extends OBJECT implements IClass<TYPE> 
     }
 
     private void callConstructor2(int stage) {
-        if (object != null && this.stage < Constructor2 && stage >= Constructor2) {
+        if (this.stage < Constructor2 && stage >= Constructor2) {
             this.stage = Constructor2;
             object.constructor2();
             object.onInitialized();
