@@ -189,7 +189,6 @@ public class ReadAction extends Action {
             }
     
             collectFilters();
-            collectLinkFilters();
     
             guid recordId = getRecordIdParameter();
             guid filterBy = getFilterByParameter();
@@ -478,26 +477,6 @@ public class ReadAction extends Action {
         }
 
         return queries;
-    }
-
-    private void collectLinkFilters() {
-        for (Field field : selectFields) {
-            if (field instanceof Link) {
-                Link link = (Link) field;
-
-                if (link.filter != null) {
-                    Link filter = link.filter.get();
-
-                    guid value = (guid) filter.get();
-
-                    if (!guid.NULL.equals(value)) {
-                        SqlToken left = new Rel(link, Operation.Eq, value.sql_guid());
-                        SqlToken right = new Rel(link, Operation.Eq, guid.NULL.sql_guid());
-                        addFilter(new Group(new Or(left, right)));
-                    }
-                }
-            }
-        }
     }
 
     private void collectFilters() {

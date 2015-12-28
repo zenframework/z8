@@ -5,9 +5,6 @@ import org.zenframework.z8.base.query.Query;
 class Link extends GuidField
 {
 	Join join = Join.Left;
-	sql_bool joinOn;
-	
-	public Link filter;
 	
 	public void operator = (Query data);
 }
