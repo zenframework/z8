@@ -66,7 +66,6 @@ abstract public class Field extends Control implements IValue, IField {
 
     public SortDirection sortDirection = SortDirection.Asc;
     public Aggregation aggregation = Aggregation.None;
-    public Aggregation totals = Aggregation.None;
 
     public Query.CLASS<? extends Query> editWith = null;
 

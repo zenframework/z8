@@ -36,7 +36,6 @@ class Field extends Control
 	
 	public SortDirection sortDirection = SortDirection.Asc;
 	public Aggregation aggregation = Aggregation.None;
-	public Aggregation totals = Aggregation.None;
 
 	public Field[] dependencies;
 	public Field[] columns;
