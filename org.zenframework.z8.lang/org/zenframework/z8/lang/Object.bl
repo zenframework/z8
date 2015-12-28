@@ -4,15 +4,6 @@ import org.zenframework.z8.base.security.User;
 
 [native "org.zenframework.z8.server.runtime.OBJECT"]
 class Object {
-	
-	static public string ObjectId = "objectId";
-	static public string Name = "name";
-	static public string DisplayName = "displayName";
-	static public string Description = "description";
-	static public string Label = "label";
-	static public string Icon = "icon";
-    static public string Index = "index";
-
 	static public bool isNull(Object object);
 
 	static public User user();

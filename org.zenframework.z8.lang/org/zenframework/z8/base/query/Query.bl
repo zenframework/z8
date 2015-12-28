@@ -79,8 +79,6 @@ class Query extends Runnable
 	public Field getFieldById(string id);
 	public Field getFieldByName(string name);
 	
-	protected void setFieldAttribute(Field field, string attribute, primary value);
-
 	public int count();
 	public int count(sql_bool where);
 
