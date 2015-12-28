@@ -279,8 +279,6 @@ public class Member extends LanguageElement implements IMember {
     @Override
     public void getStaticConstructor(CodeGenerator codeGenerator) {
         if(isStatic()) {
-            getConstructorCode(codeGenerator);
-
             if(initializer != null) {
                 initializer.getConstructor2(codeGenerator);
             }
