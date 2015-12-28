@@ -26,6 +26,7 @@ import org.zenframework.z8.server.engine.ApplicationServer;
 import org.zenframework.z8.server.engine.Database;
 import org.zenframework.z8.server.logs.Trace;
 import org.zenframework.z8.server.types.primary;
+import org.zenframework.z8.server.utils.ArrayUtils;
 
 public class Select {
     private static String SelectAlias = "S";
@@ -93,16 +94,9 @@ public class Select {
 
     public void setFields(Collection<Field> fields) {
         this.fields = fields == null ? new ArrayList<Field>() : fields;
-        
-        int position = 0;
-        for(Field field : this.fields) {
-            field.position = position;
-            position++;
-        }
     }
 
     public void addField(Field field) {
-        field.position = fields.size();
         fields.add(field);
     }
 
@@ -408,9 +402,14 @@ public class Select {
     }
 
     public primary get(Field field) throws SQLException {
-        return get(field.position + 1, field.type());
+        return get(getFieldPosition(field), field.type());
     }
 
+    private int getFieldPosition(Field field) {
+        int index = ArrayUtils.indexOf(fields, field);
+        return index + 1;
+    }
+    
     protected primary get(int index, FieldType fieldType) throws SQLException {
         return getCursor().get(index, fieldType);
     }

@@ -19,6 +19,21 @@ public class ArrayUtils {
         return -1;
     }
 
+    static public <Type> int indexOf(Collection<Type> objects, Type object) {
+        if(objects == null)
+            return -1;
+
+        int index = 0;
+        
+        for(Type o : objects) {
+            if(o == object)
+                return index;
+            index++;
+        }
+        
+        return -1;
+    }
+    
     static public <Type> Type[] prepend(Type[] objects, Type object) {
         return insert(objects, object, 0);
     }
