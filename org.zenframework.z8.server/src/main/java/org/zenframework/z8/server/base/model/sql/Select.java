@@ -26,7 +26,6 @@ import org.zenframework.z8.server.engine.ApplicationServer;
 import org.zenframework.z8.server.engine.Database;
 import org.zenframework.z8.server.logs.Trace;
 import org.zenframework.z8.server.types.primary;
-import org.zenframework.z8.server.utils.ArrayUtils;
 
 public class Select {
     private class FieldState {
@@ -428,16 +427,7 @@ public class Select {
     }
 
     public primary get(Field field) throws SQLException {
-        return get(getFieldPosition(field), field.type());
-    }
-
-    private int getFieldPosition(Field field) {
-        if (field.position != -1)
-            return field.position + 1;
-
-        int index = ArrayUtils.indexOf(fields, field);
-        field.position = index;
-        return index + 1;
+        return get(field.position + 1, field.type());
     }
 
     protected primary get(int index, FieldType fieldType) throws SQLException {
