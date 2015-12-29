@@ -29,11 +29,30 @@ import org.zenframework.z8.server.types.primary;
 import org.zenframework.z8.server.utils.ArrayUtils;
 
 public class Select {
+    private class FieldState {
+        private final primary value;
+        private final int position;
+
+        public FieldState(primary value, int position) {
+            super();
+            this.value = value;
+            this.position = position;
+        }
+
+        public primary getValue() {
+            return value;
+        }
+
+        public int getPosition() {
+            return position;
+        }
+    }
+
     private static String SelectAlias = "S";
     private static String FieldAlias = "F";
 
     private Collection<Field> fields = new ArrayList<Field>();
-    
+
     private Query rootQuery = null;
     private Collection<ILink> links = new ArrayList<ILink>();
 
@@ -50,16 +69,16 @@ public class Select {
     private Database database;
     private Cursor cursor;
 
-    private Map<Field, primary> changedFields = new HashMap<Field, primary>();
+    private Map<Field, FieldState> changedFields = new HashMap<Field, FieldState>();
 
     public Select() {
         this(null);
     }
 
     public Select(Select select) {
-        if(select != null) {
+        if (select != null) {
             database = select.database;
-            
+
             fields = select.fields;
 
             rootQuery = select.rootQuery;
@@ -82,9 +101,9 @@ public class Select {
     }
 
     public Database database() {
-        if(database == null)
+        if (database == null)
             database = ApplicationServer.database();
-        
+
         return database;
     }
 
@@ -94,9 +113,16 @@ public class Select {
 
     public void setFields(Collection<Field> fields) {
         this.fields = fields == null ? new ArrayList<Field>() : fields;
+
+        int position = 0;
+        for (Field field : this.fields) {
+            field.position = position;
+            position++;
+        }
     }
 
     public void addField(Field field) {
+        field.position = fields.size();
         fields.add(field);
     }
 
@@ -153,29 +179,29 @@ public class Select {
     }
 
     protected void setAggregated(boolean isAggregated) {
-        this.isAggregated = isAggregated ;
+        this.isAggregated = isAggregated;
     }
 
     protected boolean isAggregated() {
         return isAggregated;
     }
-    
+
     protected String sql(FormatOptions options) {
         String from = formatFrom(options);
         boolean isGrouped = isGrouped();
-        
-        if(!isGrouped)
+
+        if (!isGrouped)
             options.disableAggregation();
-            
+
         String fields = formatFields(options);
         String orderBy = formatOrderBy(options);
 
-        if(!isGrouped)
+        if (!isGrouped)
             options.enableAggregation();
 
         options.disableAggregation();
 
-        String result = "select" + fields + from + formatWhere(options) + formatGroupBy(options) 
+        String result = "select" + fields + from + formatWhere(options) + formatGroupBy(options)
                 + formatHaving(options) + orderBy;
 
         options.enableAggregation();
@@ -188,8 +214,8 @@ public class Select {
     private Collection<Field> getAggregatedFields() {
         Collection<Field> result = new ArrayList<Field>();
 
-        for(Field field : fields) {
-            if(field.isAggregated() || groupBy.contains(field))
+        for (Field field : fields) {
+            if (field.isAggregated() || groupBy.contains(field))
                 result.add(field);
         }
 
@@ -198,7 +224,7 @@ public class Select {
 
     private void updateAliases(FormatOptions options) {
         int index = 0;
-        for(Field field : fields) {
+        for (Field field : fields) {
             options.setFieldAlias(field, getAlias() + "." + getFieldAlias(index));
             index++;
         }
@@ -225,14 +251,14 @@ public class Select {
     }
 
     protected String formatFields(FormatOptions options) {
-        if(fields.isEmpty()) {
+        if (fields.isEmpty()) {
             return "\n\tcount(0)" + " as " + getFieldAlias(0);
         }
 
         String result = "";
 
         int index = 0;
-        for(Field field : fields) {
+        for (Field field : fields) {
             result += (result.isEmpty() ? "" : ", ") + "\n\t" + formatField(field, index, vendor(), options);
             index++;
         }
@@ -242,31 +268,33 @@ public class Select {
     private String queryName(Query query) {
         Database database = database();
         DatabaseVendor vendor = vendor();
-        return query != null ? database.tableName(query.name()) + (vendor == DatabaseVendor.SqlServer ? " as " : " ") + query.getAlias() : "";
+        return query != null ? database.tableName(query.name()) + (vendor == DatabaseVendor.SqlServer ? " as " : " ")
+                + query.getAlias() : "";
     }
-    
+
     protected String formatFrom(FormatOptions options) {
         String join = "";
-        
-        for(ILink link : links) {
+
+        for (ILink link : links) {
             String name = link.getQuery().name();
-            
-            if(name != null) {
+
+            if (name != null) {
                 Query query = link.getQuery().getRootQuery();
                 GuidField primaryKey = (GuidField) query.primaryKey();
                 SqlToken token = new Rel(link.sql_guid(), Operation.Eq, primaryKey.sql_guid());
 
                 options.disableAggregation();
-                
-                join += "\n\t" + link.getJoin() + " join " + queryName(query) + " on " + token.format(vendor(), options, true);
+
+                join += "\n\t" + link.getJoin() + " join " + queryName(query) + " on "
+                        + token.format(vendor(), options, true);
 
                 options.enableAggregation();
             }
         }
-        
+
         String result = queryName(rootQuery) + join;
 
-        if(select != null) {
+        if (select != null) {
             result += (result.isEmpty() ? "" : ", ") + "(" + select.sql(options) + ") " + select.getAlias();
         }
 
@@ -274,7 +302,7 @@ public class Select {
     }
 
     private String formatWhere(FormatOptions options) {
-        if(where == null)
+        if (where == null)
             return "";
 
         return "\n" + "where" + "\n\t" + where.format(vendor(), options, true);
@@ -285,7 +313,7 @@ public class Select {
 
         String result = "";
 
-        for(Field field : orderBy) {
+        for (Field field : orderBy) {
             result += (result.isEmpty() ? "" : ", ") + aggregate(field, vendor(), options) + " " + field.sortDirection;
         }
 
@@ -295,7 +323,7 @@ public class Select {
     private String formatGroupBy(FormatOptions options) {
         String result = "";
 
-        for(Field field : groupBy) {
+        for (Field field : groupBy) {
             result += (result.isEmpty() ? "" : ", ") + getFieldName(field, vendor(), options);
         }
 
@@ -303,7 +331,7 @@ public class Select {
     }
 
     protected String formatHaving(FormatOptions options) {
-        if(having == null)
+        if (having == null)
             return "";
 
         return "\n" + "having" + "\n\t" + having.format(vendor(), options, true);
@@ -321,36 +349,34 @@ public class Select {
         Connection connection = ConnectionManager.get(database);
 
         String sql = sql(new FormatOptions());
-        
+
         boolean traceSql = ApplicationServer.config().getTraceSql();
         long startAt = traceSql ? System.currentTimeMillis() : 0;
-        
+
         try {
             cursor = BasicSelect.cursor(connection, sql);
-        } catch(Throwable e) {
+        } catch (Throwable e) {
             close();
             Trace.logError(e);
             Trace.logEvent(sql);
             throw new RuntimeException(e);
         }
 
-        if(traceSql)
+        if (traceSql)
             Trace.logEvent("\n" + sql + "\n" + "Execution time: " + (System.currentTimeMillis() - startAt) + " ms\n");
-        
+
         activate();
     }
 
     public void close() {
-        if(cursor != null) {
+        if (cursor != null) {
             cursor.close();
         }
     }
 
     public void saveState() {
-        for(Field field : fields) {
-            if(field.changed()) {
-                changedFields.put(field, field.get());
-            }
+        for (Field field : fields) {
+            changedFields.put(field, new FieldState(field.get(), field.position));
 
             field.setCursor(null);
             field.reset();
@@ -358,23 +384,23 @@ public class Select {
     }
 
     public void restoreState() {
-        activate();
-
-        for(Field field : fields) {
-            if(changedFields.containsKey(field)) {
-                field.set(changedFields.get(field));
+        for (Field field : fields) {
+            if (changedFields.containsKey(field)) {
+                FieldState fieldState = changedFields.get(field);
+                field.set(fieldState.getValue());
+                field.position = fieldState.getPosition();
             }
         }
 
         changedFields.clear();
+
+        activate();
     }
 
     private void activate() {
-        for(Field field : fields) {
+        for (Field field : fields) {
             field.setCursor(this);
         }
-
-        changedFields.clear();
     }
 
     protected Cursor getCursor() {
@@ -384,7 +410,7 @@ public class Select {
     public boolean next() {
         try {
             return getCursor().next();
-        } catch(SQLException e) {
+        } catch (SQLException e) {
             throw new RuntimeException(e);
         }
     }
@@ -392,7 +418,7 @@ public class Select {
     public boolean isAfterLast() {
         try {
             return getCursor().isAfterLast();
-        } catch(SQLException e) {
+        } catch (SQLException e) {
             throw new RuntimeException(e);
         }
     }
@@ -406,10 +432,14 @@ public class Select {
     }
 
     private int getFieldPosition(Field field) {
+        if (field.position != -1)
+            return field.position + 1;
+
         int index = ArrayUtils.indexOf(fields, field);
+        field.position = index;
         return index + 1;
     }
-    
+
     protected primary get(int index, FieldType fieldType) throws SQLException {
         return getCursor().get(index, fieldType);
     }
