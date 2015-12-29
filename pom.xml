@@ -6,7 +6,7 @@
     <name>Z8 Platform</name>
     <groupId>org.zenframework.z8</groupId>
     <artifactId>org.zenframework.z8</artifactId>
-    <version>1.1.0</version>
+    <version>1.1.1</version>
     <packaging>pom</packaging>
 
     <properties>
@@ -16,7 +16,7 @@
         <compiler.target.version>1.6</compiler.target.version>
 
         <!-- z8 versions -->
-        <z8.pde.version>1.0.1</z8.pde.version>
+        <z8.pde.version>1.1.1</z8.pde.version>
         
         <!-- Кодировка исходных кодов -->
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

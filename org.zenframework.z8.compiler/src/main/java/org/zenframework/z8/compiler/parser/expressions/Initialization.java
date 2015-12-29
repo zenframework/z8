@@ -174,6 +174,10 @@ public abstract class Initialization extends LanguageElement {
         return true;
     }
 
+    public boolean requiresAllocation() {
+        return right == null || typeCast.getContext() != null;
+    }
+    
     @Override
     public void getCode(CodeGenerator codeGenerator) {
         if(right != null) {

@@ -2,7 +2,6 @@
 
 final class file extends primary
 {
-	public void operator = (file file);
 	public void operator = (string path);
 	
 	public string getPath();

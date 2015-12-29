@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Z8 Development Tools
 Bundle-SymbolicName: org.zenframework.z8.pde; singleton:=true
-Bundle-Version: 1.1.0
+Bundle-Version: 1.1.1
 Bundle-ClassPath: .,
  target/lib/org.zenframework.z8.compiler.jar,
  target/lib/org.zenframework.z8.server.jar,

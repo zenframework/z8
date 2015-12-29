@@ -431,7 +431,7 @@ public abstract class AbstractType extends LanguageElement implements IType {
 
     @Override
     public String getConstructionStage() {
-        return constructionStage;
+        return constructionStage == BuiltinNative.Constructor2 ? "" : constructionStage;
     }
 
     protected void setupNativeAttribute() {

@@ -1,7 +1,6 @@
 package org.zenframework.z8.compiler.parser.type.members;
 
 import org.eclipse.text.edits.TextEdit;
-
 import org.zenframework.z8.compiler.core.CodeGenerator;
 import org.zenframework.z8.compiler.core.IAttribute;
 import org.zenframework.z8.compiler.core.IInitializer;
@@ -14,6 +13,7 @@ import org.zenframework.z8.compiler.core.IType;
 import org.zenframework.z8.compiler.core.IVariable;
 import org.zenframework.z8.compiler.core.IVariableType;
 import org.zenframework.z8.compiler.parser.LanguageElement;
+import org.zenframework.z8.compiler.parser.expressions.Initialization;
 import org.zenframework.z8.compiler.parser.grammar.lexer.Lexer;
 import org.zenframework.z8.compiler.parser.variable.VariableType;
 import org.zenframework.z8.compiler.workspace.CompilationUnit;
@@ -297,13 +297,19 @@ public class Member extends LanguageElement implements IMember {
     }
 
     private void getConstructorCode(CodeGenerator codeGenerator) {
-        if(!getVariableType().isEnum() && !(initializer instanceof IType)) {
-            codeGenerator.indent();
-            codeGenerator.getCompilationUnit().importType(variableType.getType());
+        if(getVariableType().isEnum() || initializer instanceof IType)
+            return;
 
+        codeGenerator.getCompilationUnit().importType(variableType.getType());
+
+        Initialization initialization = (Initialization)initializer;
+        
+        if(initialization == null || initialization.requiresAllocation()) {
+            codeGenerator.indent();
+    
             codeGenerator.append(getJavaName() + " = ");
             codeGenerator.append(variableType.getJavaNew(getStaticContext()));
-
+    
             codeGenerator.append(';');
             codeGenerator.breakLine();
         }

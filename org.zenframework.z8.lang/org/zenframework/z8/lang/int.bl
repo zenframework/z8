@@ -9,7 +9,6 @@ final class int extends primary
 	public operator string();
 	public operator sql_int();
 
-	public void operator = (int value);
 	public int operator+();
 	public int operator-();
 	public int operator + (int value);

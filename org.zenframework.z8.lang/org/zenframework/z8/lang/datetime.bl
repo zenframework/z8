@@ -9,9 +9,6 @@ final class datetime extends primary
 	public operator string();
 	public operator sql_datetime();
 
-	public void operator = (date value);
-	public void operator = (datetime value);
-
 	public datetime operator + (datespan value);
 	public datetime operator - (datespan value);
 	public datespan operator - (date value);

@@ -6,7 +6,6 @@ final class string extends primary
 
 	public operator exception();
 
-	public void operator = (string value);
 	public string operator + (string value);
 	public string operator += (string value);
 

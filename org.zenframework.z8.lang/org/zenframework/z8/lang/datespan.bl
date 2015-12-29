@@ -5,7 +5,6 @@ final class datespan extends primary
 	public operator string();
 	public operator sql_datespan();
 
-	public void operator = (datespan value);
 	public datespan operator + (datespan value);
 	public datetime operator + (date value);
 	public datetime operator + (datetime value);

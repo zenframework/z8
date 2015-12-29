@@ -1,7 +1,6 @@
 package org.zenframework.z8.compiler.parser.statements;
 
 import org.eclipse.text.edits.TextEdit;
-
 import org.zenframework.z8.compiler.core.CodeGenerator;
 import org.zenframework.z8.compiler.core.ILanguageElement;
 import org.zenframework.z8.compiler.core.IMethod;
@@ -11,7 +10,6 @@ import org.zenframework.z8.compiler.core.IToken;
 import org.zenframework.z8.compiler.core.IType;
 import org.zenframework.z8.compiler.core.IVariable;
 import org.zenframework.z8.compiler.core.IVariableType;
-import org.zenframework.z8.compiler.parser.expressions.ArrayInitializer;
 import org.zenframework.z8.compiler.parser.expressions.Initialization;
 import org.zenframework.z8.compiler.parser.expressions.QualifiedName;
 import org.zenframework.z8.compiler.parser.grammar.lexer.Lexer;
@@ -154,24 +152,26 @@ public class Declarator extends Initialization implements IVariable, IStatement 
         IVariableType variableType = getVariableType();
 
         codeGenerator.getCompilationUnit().importType(variableType.getType());
-        codeGenerator.append(variableType.getDeclaringJavaName() + " " + getJavaName());
+        codeGenerator.append(variableType.getDeclaringJavaName() + " ");
+        
+        if(declareOnly) {
+            codeGenerator.append(getJavaName());
+            return;
+        }
 
-        if(!declareOnly) {
-            codeGenerator.append(" = " + variableType.getJavaNew(true));
+        if(requiresAllocation()) {
+            codeGenerator.append(getJavaName() + " = " + variableType.getJavaNew(true));
 
-            ILanguageElement initializer = getRightElement();
+            ILanguageElement right = getRightElement();
 
-            if(initializer != null) {
+            if(right != null) {
                 codeGenerator.append(";");
                 codeGenerator.breakLine();
-
-                if(!(initializer instanceof ArrayInitializer)) {
-                    codeGenerator.indent();
-                }
+                codeGenerator.indent();
             }
-
-            super.getCode(codeGenerator);
         }
+
+        super.getCode(codeGenerator);
     }
 
     @Override

@@ -14,9 +14,6 @@ final class decimal extends primary
 	public operator string();
 	public operator sql_decimal();
 
-	public void operator = (int value);
-	public void operator = (decimal value);
-
 	public decimal operator + ();
 	public decimal operator - ();
 	public decimal operator + (int value);

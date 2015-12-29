@@ -15,7 +15,7 @@ public class TransportContext extends OBJECT implements Serializable {
 
     private static final long serialVersionUID = 3103056587172568570L;
 
-    public static final String SelfAddressProperty = "selfAddress";
+    public static final string SelfAddressProperty = new string("selfAddress");
 
     public static class CLASS<T extends TransportContext> extends OBJECT.CLASS<T> {
         public CLASS() {
@@ -73,16 +73,16 @@ public class TransportContext extends OBJECT implements Serializable {
         return this;
     }
 
-    public boolean hasProperty(String key) {
-        return properties.containsKey(new string(key));
+    public boolean hasProperty(string key) {
+        return properties.containsKey(key);
     }
 
-    public String getProperty(String key) {
-        return properties.z8_get(new string(key)).get();
+    public String getProperty(string key) {
+        return properties.z8_get(key).get();
     }
 
-    public void setProperty(String key, String value) {
-        properties.put(new string(key), new string(value));
+    public void setProperty(string key, String value) {
+        properties.put(key, new string(value));
     }
 
     @SuppressWarnings("unchecked")

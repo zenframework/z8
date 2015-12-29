@@ -11,7 +11,6 @@ import org.zenframework.z8.compiler.core.IMethod;
 import org.zenframework.z8.compiler.core.IType;
 import org.zenframework.z8.compiler.core.ITypeCast;
 import org.zenframework.z8.compiler.core.IVariableType;
-import org.zenframework.z8.compiler.parser.expressions.Constant;
 import org.zenframework.z8.compiler.parser.variable.VariableType;
 import org.zenframework.z8.compiler.workspace.CompilationUnit;
 
@@ -168,16 +167,16 @@ public class TypeCast implements ITypeCast {
         }
 
         IMethod operator = getOperator();
-        IVariableType target = getTarget();
+//        IVariableType target = getTarget();
         
-        boolean needNew = newValue && operator == null && target.extendsPrimary() && 
-                !target.getType().getUserName().equals(Primary.Primary) && !(element instanceof Constant);
+//        boolean needNew = newValue && operator == null && target.extendsPrimary() && 
+//                !target.getType().getUserName().equals(Primary.Primary) && !(element instanceof Constant);
 
-        if(needNew) {
+/*        if(needNew) {
             codeGenerator.getCompilationUnit().importType(getTarget().getType());
             codeGenerator.append("new " + getTarget().getJavaName() + "(");
         }
-
+*/
         element.getCode(codeGenerator);
 
         if(operator != null) {
@@ -189,10 +188,10 @@ public class TypeCast implements ITypeCast {
             codeGenerator.append(operator.getJavaName() + "()");
         }
 
-        if(needNew) {
+/*        if(needNew) {
             codeGenerator.append(')');
         }
-
+*/
         if(method != null) {
             codeGenerator.append(')');
         }

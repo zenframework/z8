@@ -169,12 +169,14 @@ public class MemberInit extends Initialization implements IInitializer {
     @Override
     public void getConstructor2(CodeGenerator codeGenerator) {
         if(!getVariableType().isReference() || !isConstructor1Assignment()) {
-            codeGenerator.indent();
-
-            super.getCode(codeGenerator);
-
-            codeGenerator.append(";");
-            codeGenerator.breakLine();
+            if(getRightElement() != null) {
+                codeGenerator.indent();
+    
+                super.getCode(codeGenerator);
+    
+                codeGenerator.append(";");
+                codeGenerator.breakLine();
+            }
         }
 
         IAttribute[] attributes = getAttributes();
