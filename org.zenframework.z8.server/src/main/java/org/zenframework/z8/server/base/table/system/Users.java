@@ -37,7 +37,6 @@ public class Users extends Table {
         public final static String Phone = "Phone";
         public final static String Email = "Email";
         public final static String Settings = "Settings";
-        public final static String Supervisor = "Supervisor";
     }
 
     static public class strings {
@@ -54,6 +53,19 @@ public class Users extends Table {
         public final static String DefaultName = "Users.name.default";
     }
 
+    static public class displayNames {
+        public final static String Name = Resources.get(strings.Name);
+        public final static String Password = Resources.get(strings.Password);
+        public final static String SecurityGroup = Resources.get(strings.SecurityGroup);
+        public final static String Blocked = Resources.get(strings.Blocked);
+        public final static String Phone = Resources.get(strings.Phone);
+        public final static String Email = Resources.get(strings.Email);
+        public final static String Settings = Resources.get(strings.Settings);
+        public final static String DefaultName = Resources.get(strings.DefaultName);
+        public final static String Title = Resources.get(strings.Title);
+        public final static String Description = Resources.get(strings.Description);
+    }
+    
     public static class CLASS<T extends Users> extends Table.CLASS<T> {
         public CLASS() {
             this(null);
@@ -63,7 +75,7 @@ public class Users extends Table {
             super(container);
             setJavaClass(Users.class);
             setName(TableName);
-            setDisplayName(Resources.get(Users.strings.Title));
+            setDisplayName(displayNames.Title);
         }
 
         @Override
@@ -88,7 +100,7 @@ public class Users extends Table {
                 super(container);
                 setJavaClass(PasswordField.class);
                 setName(names.Password);
-                setDisplayName(Resources.get(Users.strings.Password));
+                setDisplayName(displayNames.Password);
                 setIndex("password");
             }
 
@@ -136,7 +148,7 @@ public class Users extends Table {
             Users users = (Users)getContainer();
             if(users.recordId.get().guid().equals(guid.NULL))
                 return new string("");
-            String userName = Resources.get(Users.strings.DefaultName) + getSequencer().next();
+            String userName = displayNames.DefaultName + getSequencer().next();
 
             return new string(userName);
         }
@@ -157,30 +169,31 @@ public class Users extends Table {
         super.constructor2();
 
         securityGroups.setIndex("securityGroups");
-        name.setDisplayName(Resources.get(Users.strings.Name));
+        
+        name.setDisplayName(displayNames.Name);
         name.setGendb_updatable(false);
         
-        description.setDisplayName(Resources.get(strings.Description));
+        description.setDisplayName(displayNames.Description);
 
         securityGroup.setName(names.SecurityGroup);
         securityGroup.setIndex("securityGroup");
-        securityGroup.setDisplayName(Resources.get(strings.SecurityGroup));
+        securityGroup.setDisplayName(displayNames.SecurityGroup);
 
         phone.setName(names.Phone);
         phone.setIndex("phone");
-        phone.setDisplayName(Resources.get(strings.Phone));
+        phone.setDisplayName(displayNames.Phone);
 
         email.setName(names.Email);
         email.setIndex("email");
-        email.setDisplayName(Resources.get(strings.Email));
+        email.setDisplayName(displayNames.Email);
 
         blocked.setName(names.Blocked);
         blocked.setIndex("blocked");
-        blocked.setDisplayName(Resources.get(strings.Blocked));
+        blocked.setDisplayName(displayNames.Blocked);
 
         settings.setName(names.Settings);
         settings.setIndex("settings");
-        settings.setDisplayName(Resources.get(strings.Settings));
+        settings.setDisplayName(displayNames.Settings);
 
         id.get().visible = new bool(false);
         id1.get().visible = new bool(false);
@@ -225,17 +238,6 @@ public class Users extends Table {
         }
     }
 
-    @Override
-    public void z8_beforeCreate(Query.CLASS<? extends Query> query, guid recordId, guid parentId,
-            Query.CLASS<? extends Query> model, guid modelRecordId) {
-        super.z8_beforeCreate(query, recordId, parentId, model, modelRecordId);
-        // TODO В чём глубокий смысл данной проверки ???
-        if(guid.NULL.equals(recordId) || BuiltinUsers.System.guid().equals(recordId)
-                || BuiltinUsers.Administrator.guid().equals(recordId)) {
-            return;
-        }
-    }
-
     @SuppressWarnings("rawtypes")
     @Override
     public void z8_beforeUpdate(Query.CLASS<? extends Query> query, guid recordId, RCollection changedFields,
@@ -256,7 +258,7 @@ public class Users extends Table {
         super.z8_beforeDestroy(query, recordId, model, modelRecordId);
 
         if(BuiltinUsers.Administrator.guid().equals(recordId) || BuiltinUsers.System.guid().equals(recordId))
-            throw new exception("Unable to delete builtin user !");
+            throw new exception("Unable to delete builtin user!");
     }
     
     public boolean getExtraParameters(IUser user, RLinkedHashMap<string, primary> parameters) {

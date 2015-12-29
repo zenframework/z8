@@ -61,7 +61,6 @@ import org.zenframework.z8.server.types.decimal;
 import org.zenframework.z8.server.types.exception;
 import org.zenframework.z8.server.types.guid;
 import org.zenframework.z8.server.types.integer;
-import org.zenframework.z8.server.types.primary;
 import org.zenframework.z8.server.types.string;
 import org.zenframework.z8.server.types.sql.sql_bool;
 
@@ -641,7 +640,7 @@ public class Query extends Runnable {
         Collection<Field> fields = query.getDataFields();
 
         for (Field field : fields) {
-            if (field.getOwner() == query) {
+            if (field.owner() == query) {
                 if (!field.changed()) {
                     field.set(field.getDefault());
                 }
@@ -1601,7 +1600,7 @@ public class Query extends Runnable {
         Collection<Query> route = getRoute(field);
 
         if (route == null) {
-            return getRouteByOwners(field.getOwner());
+            return getRouteByOwners(field.owner());
         }
 
         Collection<ILink> path = new ArrayList<ILink>();
@@ -2080,7 +2079,7 @@ public class Query extends Runnable {
             field.writeMeta(fieldObj);
 
             Collection<ILink> path = getPath(field);
-            Query owner = field.getOwner();
+            Query owner = field.owner();
 
             fieldObj.put(Json.depth, path.size());
 
@@ -2512,7 +2511,7 @@ public class Query extends Runnable {
             return null;
         }
 
-        Class<?> cls = field.getOwner().getClass();
+        Class<?> cls = field.owner().getClass();
 
         String classId = cls.getCanonicalName();
 

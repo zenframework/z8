@@ -89,7 +89,6 @@ abstract public class Field extends Control implements IValue, IField {
     private Sequencer sequencer = null;
 
     private Select cursor = null;
-    private Query owner = null;
     
     public int position = -1;
 
@@ -141,12 +140,8 @@ abstract public class Field extends Control implements IValue, IField {
         return aggregation;
     }
 
-    public void setOwner(Query owner) {
-        this.owner = owner;
-    }
-
-    public Query getOwner() {
-        return owner;
+    public Query owner() {
+        return (Query)getOwner();
     }
 
     public Collection<Field.CLASS<? extends Field>> columns() {
@@ -181,7 +176,7 @@ abstract public class Field extends Control implements IValue, IField {
         String alias = options.getFieldAlias(this);
 
         if(alias == null) {
-            Query data = getOwner();
+            Query data = owner();
             return data.getAlias() + '.' + vendor.quote(name());
         }
 

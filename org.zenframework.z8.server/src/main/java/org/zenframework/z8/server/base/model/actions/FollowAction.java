@@ -45,7 +45,7 @@ public class FollowAction extends MetaAction {
         Query query = actionParameters.query.onFollow(field, ids);
 
         if(query == null) {
-            throw new RuntimeException("No query to follow for field '" + field.getOwner().toString() + '.'
+            throw new RuntimeException("No query to follow for field '" + field.owner().toString() + '.'
                     + field.displayName() + "'.");
         }
 

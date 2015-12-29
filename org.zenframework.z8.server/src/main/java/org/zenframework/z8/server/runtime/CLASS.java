@@ -66,6 +66,13 @@ public class CLASS<TYPE extends IObject> extends OBJECT implements IClass<TYPE> 
         this.object.setIndex(getIndex());
     }
 
+    public void setOwner(IObject owner) {
+        super.setOwner(owner);
+
+        if (object != null)
+            object.setOwner(owner);
+    }
+    
     @Override
     public List<IClass<TYPE>> getReferences() {
         if (references == null) {
@@ -173,6 +180,7 @@ public class CLASS<TYPE extends IObject> extends OBJECT implements IClass<TYPE> 
         try {
             object = constructObject(container);
             object.setCLASS(this);
+            object.setOwner(getOwner());
         } catch (Throwable e) {
             Trace.logError(e);
             throw new RuntimeException(e);

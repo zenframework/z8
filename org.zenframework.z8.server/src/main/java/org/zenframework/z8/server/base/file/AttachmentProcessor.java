@@ -46,7 +46,7 @@ public class AttachmentProcessor extends OBJECT {
     }
 
     public Table getTable() {
-        return (Table) field.getOwner();
+        return (Table) field.owner();
     }
 
     public void set(AttachmentField field) {

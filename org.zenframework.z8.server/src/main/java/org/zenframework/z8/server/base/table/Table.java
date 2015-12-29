@@ -25,7 +25,6 @@ public class Table extends TableBase {
         public final static String CreatedBy = "CreatedBy";
         public final static String ModifiedAt = "ModifiedAt";
         public final static String ModifiedBy = "ModifiedBy";
-        public final static String Scope = "Scope";
 
         public final static String Id = "Id";
         public final static String Id1 = "Id1";
@@ -41,14 +40,26 @@ public class Table extends TableBase {
         public final static String CreatedBy = "Table.createdBy";
         public final static String ModifiedAt = "Table.modifiedAt";
         public final static String ModifiedBy = "Table.modifiedBy";
-        public final static String Scope = "Table.scope";
 
         public final static String Id = "Table.id";
         public final static String Id1 = "Table.id1";
         public final static String Name = "Table.name";
         public final static String Description = "Table.description";
         public final static String Locked = "Table.locked";
-        public final static String IsDefault = "Table.isDefault";
+    }
+
+    static public class displayNames {
+        public final static String RecordId = Resources.get(strings.RecordId);
+        public final static String CreatedAt = Resources.get(strings.CreatedAt);
+        public final static String CreatedBy = Resources.get(strings.CreatedBy);
+        public final static String ModifiedAt = Resources.get(strings.ModifiedAt);
+        public final static String ModifiedBy = Resources.get(strings.ModifiedBy);
+
+        public final static String Id = Resources.get(strings.Id);
+        public final static String Id1 = Resources.get(strings.Id1);
+        public final static String Name = Resources.get(strings.Name);
+        public final static String Description = Resources.get(strings.Description);
+        public final static String Locked = Resources.get(strings.Locked);
     }
 
     public static class CLASS<T extends Table> extends TableBase.CLASS<T> {
@@ -96,6 +107,9 @@ public class Table extends TableBase {
 
         public lockedExpression(IObject container) {
             super(container);
+
+            system = new bool(true);
+            readOnly = new bool(false);
         }
 
         @Override
@@ -120,27 +134,27 @@ public class Table extends TableBase {
 
         id.setName(names.Id);
         id.setIndex("id");
-        id.setDisplayName(Resources.get(strings.Id));
+        id.setDisplayName(displayNames.Id);
         id.get().length.set(IdLength);
         id.get().width.set(IdLength);
         id.get().stretch.set(false);
 
         id1.setName(names.Id1);
         id1.setIndex("id1");
-        id1.setDisplayName(Resources.get(strings.Id1));
+        id1.setDisplayName(displayNames.Id1);
         id1.get().length = new integer(Id1Length);
         id1.get().width.set(Id1Length);
         id1.get().stretch.set(false);
 
         name.setName(names.Name);
         name.setIndex("name");
-        name.setDisplayName(Resources.get(strings.Name));
+        name.setDisplayName(displayNames.Name);
         name.get().length = new integer(NameLength);
         name.get().width.set(NameWidth);
 
         description.setName(names.Description);
         description.setIndex("description");
-        description.setDisplayName(Resources.get(strings.Description));
+        description.setDisplayName(displayNames.Description);
 
         lockedField.setName(names.Locked);
         lockedField.setIndex("locked");
@@ -149,8 +163,6 @@ public class Table extends TableBase {
 
         locked.setIndex("lockedExpression");
         locked.setDisplayName(Resources.get(strings.Locked));
-        locked.get().system = new bool(true);
-        locked.get().readOnly = new bool(false);
 
         recordId.setName(names.RecordId);
         recordId.setIndex("recordId");
@@ -160,22 +172,22 @@ public class Table extends TableBase {
 
         createdAt.setName(names.CreatedAt);
         createdAt.setIndex("createdAt");
-        createdAt.setDisplayName(Resources.get(strings.CreatedAt));
+        createdAt.setDisplayName(displayNames.CreatedAt);
         createdAt.get().system = new bool(true);
 
         createdBy.setName(names.CreatedBy);
         createdBy.setIndex("createdBy");
-        createdBy.setDisplayName(Resources.get(strings.CreatedBy));
+        createdBy.setDisplayName(displayNames.CreatedBy);
         createdBy.get().system = new bool(true);
 
         modifiedAt.setName(names.ModifiedAt);
         modifiedAt.setIndex("modifiedAt");
-        modifiedAt.setDisplayName(Resources.get(strings.ModifiedAt));
+        modifiedAt.setDisplayName(displayNames.ModifiedAt);
         modifiedAt.get().system = new bool(true);
 
         modifiedBy.setName(names.ModifiedBy);
         modifiedBy.setIndex("modifiedBy");
-        modifiedBy.setDisplayName(Resources.get(strings.ModifiedBy));
+        modifiedBy.setDisplayName(displayNames.ModifiedBy);
         modifiedBy.get().system = new bool(true);
 
         registerDataField(recordId);

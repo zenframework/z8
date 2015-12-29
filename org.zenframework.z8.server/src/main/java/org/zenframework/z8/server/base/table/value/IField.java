@@ -1,5 +1,6 @@
 package org.zenframework.z8.server.base.table.value;
 
+import org.zenframework.z8.server.base.query.Query;
 import org.zenframework.z8.server.db.DatabaseVendor;
 import org.zenframework.z8.server.db.FieldType;
 import org.zenframework.z8.server.types.primary;
@@ -18,4 +19,6 @@ public interface IField {
     public primary getDefaultValue();
 
     public String sqlType(DatabaseVendor vendor);
+    
+    public Query owner();
 }

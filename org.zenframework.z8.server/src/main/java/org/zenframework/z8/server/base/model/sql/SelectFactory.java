@@ -151,7 +151,7 @@ public class SelectFactory {
         result.addAll(aggregateBy);
 
         for(Field field : action.getSelectFields()) {
-            if(field.getOwner() == action.getRootQuery() || field.getOwner() == action.getQuery()) {
+            if(field.owner() == action.getRootQuery() || field.owner() == action.getQuery()) {
                 if(field.getAggregation() != Aggregation.None) {
                     result.add(field);
                 }
@@ -167,7 +167,7 @@ public class SelectFactory {
         }
 
         for(Link link : aggregateBy) {
-            Query owner = link.getOwner();
+            Query owner = link.owner();
             Collection<ILink> path = owner.getPath(field);
 
             if(!path.isEmpty()) {

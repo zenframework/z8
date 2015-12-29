@@ -24,7 +24,7 @@ public class QueryUtils {
 
         for(ILink link : links) {
             Field field = (Field)link;
-            queries.add(field.getOwner());
+            queries.add(field.owner());
         }
 
         return queries;

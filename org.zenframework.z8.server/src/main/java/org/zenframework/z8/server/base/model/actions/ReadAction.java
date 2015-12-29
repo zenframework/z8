@@ -334,7 +334,7 @@ public class ReadAction extends Action {
     }
 
     private Collection<ILink> getLinks(Field field) {
-        Query owner = field.getOwner();
+        Query owner = field.owner();
         
         if(!(field instanceof Expression) || getQuery().getPath(owner).size() != 0)
             return getLinks(owner);
@@ -406,7 +406,7 @@ public class ReadAction extends Action {
                     for(ILink link : links)
                        selectFields.add((Field)link);
 
-                    Query owner = field.getOwner();
+                    Query owner = field.owner();
                     Field primaryKey = owner.primaryKey();
 
                     if (primaryKey != null) {
@@ -449,9 +449,9 @@ public class ReadAction extends Action {
                     Field linkField = (Field)link;
                     if(linkField instanceof Expression) {
                         for(Field usedField : getUsedFields(linkField))
-                            queries.add(usedField.getOwner());
+                            queries.add(usedField.owner());
                     } else
-                        queries.add(linkField.getOwner());
+                        queries.add(linkField.owner());
                 }
             }
 
@@ -463,7 +463,7 @@ public class ReadAction extends Action {
         Collection<Query> queries = new LinkedHashSet<Query>();
 
         for (Field field : fields) {
-            queries.add(field.getOwner());
+            queries.add(field.owner());
         }
 
         return queries;

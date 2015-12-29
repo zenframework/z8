@@ -33,7 +33,8 @@ public class OBJECT extends RequestTarget implements IObject {
 
     private String id;
 
-    private IObject container;
+    private IObject container = null;
+    private IObject owner = null;
     private CLASS<? extends OBJECT> cls = null;
 
     private Map<String, String> attributes = new HashMap<String, String>();
@@ -169,6 +170,14 @@ public class OBJECT extends RequestTarget implements IObject {
         this.container = container;
     }
 
+    public IObject getOwner() {
+        return owner;
+    }
+
+    public void setOwner(IObject owner) {
+        this.owner = owner;
+    }
+    
     @Override
     public CLASS<? extends OBJECT> getCLASS() {
         return cls;

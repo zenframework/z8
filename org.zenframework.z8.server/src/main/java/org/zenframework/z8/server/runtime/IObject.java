@@ -48,8 +48,10 @@ public interface IObject extends INamedObject {
     public void setForeignKey(boolean foreignKey);
 
     public IObject getContainer();
-
     public void setContainer(IObject container);
+
+    public IObject getOwner();
+    public void setOwner(IObject owner);
 
     public IClass<? extends IObject> getCLASS();
 

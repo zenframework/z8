@@ -9,7 +9,8 @@ public interface ILink extends IObject {
     
     public Query.CLASS<Query> query();
     public Query getQuery();
-    public Query getOwner();
+
+    public Query owner();
     
     public ITable getReferencedTable();
     public IField getReferer();
