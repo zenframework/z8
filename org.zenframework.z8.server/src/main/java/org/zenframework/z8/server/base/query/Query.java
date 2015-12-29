@@ -146,7 +146,6 @@ public class Query extends Runnable {
     protected Select cursor;
 
     private List<Select> state = new ArrayList<Select>();
-    private List<Map<Field, primary>> fieldState = new ArrayList<Map<Field, primary>>();
 
     protected Query() {
         this(null);
@@ -966,21 +965,11 @@ public class Query extends Runnable {
     }
 
     public void saveState() {
-        Map<Field, primary> fields = new HashMap<Field, primary>();
-
-        state.add(cursor);
-        fieldState.add(fields);
-
-        for (Field field : getDataFields()) {
-            if (field.changed()) {
-                fields.put(field, field.get());
-                field.reset();
-            }
-        }
-
         if (cursor != null) {
             cursor.saveState();
         }
+        
+        state.add(cursor);
 
         cursor = null;
     }
@@ -994,12 +983,6 @@ public class Query extends Runnable {
 
         if (cursor != null) {
             cursor.restoreState();
-        }
-
-        Map<Field, primary> fields = fieldState.remove(fieldState.size() - 1);
-
-        for (Field field : fields.keySet()) {
-            field.set(fields.get(field));
         }
     }
 

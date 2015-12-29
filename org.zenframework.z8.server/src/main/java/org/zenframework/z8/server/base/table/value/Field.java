@@ -90,6 +90,8 @@ abstract public class Field extends Control implements IValue, IField {
 
     private Select cursor = null;
     private Query owner = null;
+    
+    public int position = -1;
 
     protected Field(IObject container) {
         super(container);
