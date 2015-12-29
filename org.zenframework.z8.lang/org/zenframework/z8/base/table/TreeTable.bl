@@ -14,13 +14,13 @@ class TreeTable extends Table
 	public [name "Children"] IntegerField children;
 	public [name "Path"] StringField path;
 	
-	public [name "Root"] Link root;
-	public [name "Parent1"] Link parent1;
-	public [name "Parent2"] Link parent2;
-	public [name "Parent3"] Link parent3;
-	public [name "Parent4"] Link parent4;
-	public [name "Parent5"] Link parent5;
-	public [name "Parent6"] Link parent6;
+	public [name "Root"] [foreignKey false] Link root;
+	public [name "Parent1"] [foreignKey false] Link parent1;
+	public [name "Parent2"] [foreignKey false] Link parent2;
+	public [name "Parent3"] [foreignKey false] Link parent3;
+	public [name "Parent4"] [foreignKey false] Link parent4;
+	public [name "Parent5"] [foreignKey false] Link parent5;
+	public [name "Parent6"] [foreignKey false] Link parent6;
 
 	public bool showAsGrid = false;
 	public bool parentsSelectable = true;
