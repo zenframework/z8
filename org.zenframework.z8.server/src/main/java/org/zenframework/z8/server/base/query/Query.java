@@ -967,17 +967,21 @@ public class Query extends Runnable {
     private static class FieldState {
         private Field field;
         private primary value;
+        private boolean changed;
         
         public FieldState(Field field) {
             this.field = field;
-            if (field.changed()) {
+            
+            changed = field.changed();
+            
+            if (changed) {
                 value = field.get();
                 field.reset();
             }
         }
         
         public void restore() {
-            if(value != null)
+            if(changed)
                 field.set(value);
         }
     }
