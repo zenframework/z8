@@ -353,18 +353,24 @@ public class Select {
     }
 
     private class FieldState {
-        private final Field field;
-        private final int position;
+        private Field field;
+        private primary value;
+        private int position;
 
         public FieldState(Field field) {
             this.field = field;
             this.position = field.position;
+            if(field.changed()) {
+                this.value = field.get();
+                field.reset();
+            }
             field.setCursor(null);
-            field.reset();
         }
 
         public void restore() {
             field.position= position;
+            if(value != null)
+                field.set(value);
         }
     }
 
