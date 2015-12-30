@@ -31,6 +31,12 @@ public class Select {
     private class FieldState {
         private final primary value;
         private final int position;
+        
+        public FieldState(int position) {
+            super();
+            this.value = null;
+            this.position = position;
+        }
 
         public FieldState(primary value, int position) {
             super();
@@ -375,7 +381,10 @@ public class Select {
 
     public void saveState() {
         for (Field field : fields) {
-            changedFields.put(field, new FieldState(field.get(), field.position));
+            if(field.changed())
+                changedFields.put(field, new FieldState(field.get(), field.position));
+            else
+                changedFields.put(field, new FieldState(field.position));
 
             field.setCursor(null);
             field.reset();
@@ -386,7 +395,9 @@ public class Select {
         for (Field field : fields) {
             if (changedFields.containsKey(field)) {
                 FieldState fieldState = changedFields.get(field);
-                field.set(fieldState.getValue());
+                primary value = fieldState.getValue(); 
+                if(value != null )
+                    field.set(value);
                 field.position = fieldState.getPosition();
             }
         }
