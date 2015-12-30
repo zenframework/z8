@@ -61,6 +61,7 @@ import org.zenframework.z8.server.types.decimal;
 import org.zenframework.z8.server.types.exception;
 import org.zenframework.z8.server.types.guid;
 import org.zenframework.z8.server.types.integer;
+import org.zenframework.z8.server.types.primary;
 import org.zenframework.z8.server.types.string;
 import org.zenframework.z8.server.types.sql.sql_bool;
 
@@ -143,8 +144,6 @@ public class Query extends Runnable {
     private Database cachedDatabase;
 
     protected Select cursor;
-
-    private List<Select> state = new ArrayList<Select>();
 
     protected Query() {
         this(null);
@@ -963,26 +962,68 @@ public class Query extends Runnable {
         return cursor.isAfterLast();
     }
 
-    public void saveState() {
-        if (cursor != null) {
-            cursor.saveState();
+    private List<State> states = new ArrayList<State>();
+    
+    private static class FieldState {
+        Field field;
+        primary value;
+        
+        FieldState(Field field) {
+            this.field = field;
+            if (field.changed()) {
+                value = field.get();
+                field.reset();
+            }
         }
         
-        state.add(cursor);
+        void restore() {
+            if(value != null)
+                field.set(value);
+        }
+    }
+    
+    private static class State {
+        Select cursor;
+        Collection<FieldState> fieldStates = new ArrayList<FieldState>();
+        
+        State(Collection<Field> fields, Select cursor) {
+            this.cursor = cursor;
+            
+            for (Field field : fields)
+                fieldStates.add(new FieldState(field));
+        }
+        
+        Select cursor() {
+            return cursor;
+        }
+        
+        void restore() {
+            for (FieldState state : fieldStates)
+                state.restore();
+        }
+    }
+    
+    public void saveState() {
+        states.add(new State(getDataFields(), cursor));
+ 
+        if (cursor != null)
+            cursor.saveState();
 
         cursor = null;
     }
 
     public void restoreState() {
-        if (cursor != null) {
+        if (cursor != null)
             cursor.close();
-        }
 
-        cursor = state.remove(state.size() - 1);
+        State state = states.remove(states.size() - 1);
 
-        if (cursor != null) {
+        cursor = state.cursor();
+
+        if (cursor != null)
             cursor.restoreState();
-        }
+
+        state.restore();
     }
 
     public Collection<Field.CLASS<? extends Field>> dataFields() {

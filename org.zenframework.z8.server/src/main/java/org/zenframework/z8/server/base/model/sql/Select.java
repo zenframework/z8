@@ -3,8 +3,6 @@ package org.zenframework.z8.server.base.model.sql;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
 
 import org.zenframework.z8.server.base.query.Query;
 import org.zenframework.z8.server.base.table.value.Field;
@@ -28,31 +26,6 @@ import org.zenframework.z8.server.logs.Trace;
 import org.zenframework.z8.server.types.primary;
 
 public class Select {
-    private class FieldState {
-        private final Field field;
-        private final primary value;
-        private final int position;
-
-        public FieldState(Field field, primary value, int position) {
-            super();
-            this.field = field;
-            this.value = value;
-            this.position = position;
-        }
-
-        public primary getValue() {
-            return value;
-        }
-
-        public int getPosition() {
-            return position;
-        }
-
-        public Field getField() {
-            return field;
-        }
-    }
-
     private static String SelectAlias = "S";
     private static String FieldAlias = "F";
 
@@ -379,22 +352,30 @@ public class Select {
         }
     }
 
-    public void saveState() {
-        for (Field field : fields) {
-            fieldStates.add(new FieldState(field, field.changed() ? field.get() : null, field.position));
+    private class FieldState {
+        private final Field field;
+        private final int position;
+
+        public FieldState(Field field) {
+            this.field = field;
+            this.position = field.position;
             field.setCursor(null);
             field.reset();
         }
+
+        public void restore() {
+            field.position= position;
+        }
+    }
+
+    public void saveState() {
+        for (Field field : fields)
+            fieldStates.add(new FieldState(field));
     }
 
     public void restoreState() {
-        for (FieldState fieldState : fieldStates) {
-            Field field = fieldState.getField();
-            primary value = fieldState.getValue();
-            if (value != null)
-                field.set(value);
-            field.position = fieldState.getPosition();
-        }
+        for (FieldState state : fieldStates)
+            state.restore();
 
         fieldStates.clear();
 
