@@ -965,10 +965,10 @@ public class Query extends Runnable {
     private List<State> states = new ArrayList<State>();
     
     private static class FieldState {
-        Field field;
-        primary value;
+        private Field field;
+        private primary value;
         
-        FieldState(Field field) {
+        public FieldState(Field field) {
             this.field = field;
             if (field.changed()) {
                 value = field.get();
@@ -976,28 +976,28 @@ public class Query extends Runnable {
             }
         }
         
-        void restore() {
+        public void restore() {
             if(value != null)
                 field.set(value);
         }
     }
     
     private static class State {
-        Select cursor;
-        Collection<FieldState> fieldStates = new ArrayList<FieldState>();
+        private Select cursor;
+        private Collection<FieldState> fieldStates = new ArrayList<FieldState>();
         
-        State(Collection<Field> fields, Select cursor) {
+        public State(Collection<Field> fields, Select cursor) {
             this.cursor = cursor;
             
             for (Field field : fields)
                 fieldStates.add(new FieldState(field));
         }
         
-        Select cursor() {
+        public Select cursor() {
             return cursor;
         }
         
-        void restore() {
+        public void restore() {
             for (FieldState state : fieldStates)
                 state.restore();
         }
