@@ -29,17 +29,13 @@ import org.zenframework.z8.server.types.primary;
 
 public class Select {
     private class FieldState {
+        private final Field field;
         private final primary value;
         private final int position;
-        
-        public FieldState(int position) {
-            super();
-            this.value = null;
-            this.position = position;
-        }
 
-        public FieldState(primary value, int position) {
+        public FieldState(Field field, primary value, int position) {
             super();
+            this.field = field;
             this.value = value;
             this.position = position;
         }
@@ -50,6 +46,10 @@ public class Select {
 
         public int getPosition() {
             return position;
+        }
+
+        public Field getField() {
+            return field;
         }
     }
 
@@ -74,7 +74,7 @@ public class Select {
     private Database database;
     private Cursor cursor;
 
-    private Map<Field, FieldState> changedFields = new HashMap<Field, FieldState>();
+    private Collection<FieldState> fieldStates = new ArrayList<FieldState>();
 
     public Select() {
         this(null);
@@ -381,28 +381,22 @@ public class Select {
 
     public void saveState() {
         for (Field field : fields) {
-            if(field.changed())
-                changedFields.put(field, new FieldState(field.get(), field.position));
-            else
-                changedFields.put(field, new FieldState(field.position));
-
+            fieldStates.add(new FieldState(field, field.changed() ? field.get() : null, field.position));
             field.setCursor(null);
             field.reset();
         }
     }
 
     public void restoreState() {
-        for (Field field : fields) {
-            if (changedFields.containsKey(field)) {
-                FieldState fieldState = changedFields.get(field);
-                primary value = fieldState.getValue(); 
-                if(value != null )
-                    field.set(value);
-                field.position = fieldState.getPosition();
-            }
+        for (FieldState fieldState : fieldStates) {
+            Field field = fieldState.getField();
+            primary value = fieldState.getValue();
+            if (value != null)
+                field.set(value);
+            field.position = fieldState.getPosition();
         }
 
-        changedFields.clear();
+        fieldStates.clear();
 
         activate();
     }
