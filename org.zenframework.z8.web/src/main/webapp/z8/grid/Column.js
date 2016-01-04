@@ -166,6 +166,32 @@ Z8.grid.ButtonColumn = Ext.extend(Z8.grid.StatusColumn,
 	}
 });
 
+Z8.grid.DecoratedColumn = Ext.extend(Ext.grid.NumberColumn, 
+{
+    constructor: function(cfg){
+        Z8.grid.DecoratedColumn.superclass.constructor.call(this, cfg);
+        this.renderer = this.myRenderer;
+        this.scope = this;
+    },
+
+	myRenderer: function(value, metadata, record, rowIndex, colIndex, store)
+	{
+		var result = '';
+		
+		if(value != 0)
+			result += '<div style="color:' + (value < 0 ? 'red' : 'green') + '">';
+		
+		result += Ext.util.Format.number(value, this.format);
+		
+		if(value != 0)
+			result += '</div>';
+		
+		return result;
+//		return '<div unselectable="on" style="margin-left:' + (colIndex == 0 ? -18 : -6) + 'px; margin-top:-3px; width:22px; height: 16px" class="' + cls + '">' + Z8.emptyString + '</div>';
+	}
+});
+
 Ext.grid.Column.types.lockStatusColumn = Z8.grid.LockStatusColumn;
 Ext.grid.Column.types.attachmentsStatusColumn = Z8.grid.AttachmentsStatusColumn;
 Ext.grid.Column.types.buttonColumn = Z8.grid.ButtonColumn;
+Ext.grid.Column.types.decoratedColumn = Z8.grid.DecoratedColumn;

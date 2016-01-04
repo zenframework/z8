@@ -1,3 +1,9 @@
+//Z8.decoratedFields = {
+//	'org.zenframework.z8.server.base.table.system.Sequences': {
+//		'value': true
+//	}
+//};
+
 function createColumns(query, editable)
 {
 	var columns = [];
@@ -6,6 +12,8 @@ function createColumns(query, editable)
 	var fields = query.getColumns();
 
 	var counted = false;
+	
+	var decoratedFields = (Z8.decoratedFields || {})[query.requestId] || {};
 	
 	for(var i = 0; i < fields.length; i++)
 	{
@@ -19,6 +27,9 @@ function createColumns(query, editable)
 			column.editor.parentQuery = query;
 		}
 
+		if(decoratedFields[field.id] != null)
+			column.xtype = 'decoratedColumn';
+		
 		if(field.aggregation == 'count')
 		{
 			if(!counted)
