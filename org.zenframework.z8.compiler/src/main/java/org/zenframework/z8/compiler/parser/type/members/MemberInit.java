@@ -148,15 +148,13 @@ public class MemberInit extends Initialization implements IInitializer {
     public void getCode(CodeGenerator codeGenerator) {}
 
     private boolean isConstructor1Assignment() {
-        ILanguageElement right = getRightElement();
-
-        return right != null && (right.isQualifiedName() || right.isOperatorNew()) && getOperator() != null
-                && getOperator().getId() == IToken.ASSIGN;
+        return getVariableType().isReference() && getOperator() != null && 
+                getOperator().getId() == IToken.ASSIGN;
     }
 
     @Override
     public void getConstructor1(CodeGenerator codeGenerator) {
-        if(isConstructor1Assignment()) {
+        if(getRightElement() != null && isConstructor1Assignment()) {
             codeGenerator.indent();
 
             super.getCode(codeGenerator);
@@ -168,15 +166,13 @@ public class MemberInit extends Initialization implements IInitializer {
 
     @Override
     public void getConstructor2(CodeGenerator codeGenerator) {
-        if(!getVariableType().isReference() || !isConstructor1Assignment()) {
-            if(getRightElement() != null) {
-                codeGenerator.indent();
-    
-                super.getCode(codeGenerator);
-    
-                codeGenerator.append(";");
-                codeGenerator.breakLine();
-            }
+        if(getRightElement() != null && !isConstructor1Assignment()) {
+            codeGenerator.indent();
+
+            super.getCode(codeGenerator);
+
+            codeGenerator.append(";");
+            codeGenerator.breakLine();
         }
 
         IAttribute[] attributes = getAttributes();
