@@ -15,6 +15,7 @@ import java.net.URL;
 import java.nio.channels.FileChannel;
 import java.nio.charset.Charset;
 
+import org.mozilla.universalchardet.UniversalDetector;
 import org.zenframework.z8.server.logs.Trace;
 
 public class IOUtils {
@@ -116,6 +117,33 @@ public class IOUtils {
             return new ObjectInputStream(new ByteArrayInputStream(buf)).readObject();
         } catch (Exception e) {
             throw new RuntimeException(e);
+        }
+    }
+
+    public static String determineEncoding(File file, String defaultCharset) {
+        UniversalDetector detector = new UniversalDetector(null);
+        // Reset detector before using
+        detector.reset();
+        // Buffer
+        InputStream in = null;
+        try {
+            in = new FileInputStream(file);
+            byte[] buf = new byte[1024];
+            for (int n = in.read(buf); n >= 0 && !detector.isDone(); n = in.read(buf)) {
+                detector.handleData(buf, 0, n);
+            }
+            detector.dataEnd();
+            return detector.getDetectedCharset();
+        } catch (Exception e) {
+            Trace.logError("Can't detect encoding of '" + file.getAbsolutePath() + "'", e);
+            return defaultCharset;
+        } finally {
+            detector.reset();
+            if (in != null) {
+                try {
+                    in.close();
+                } catch (IOException e) {}
+            }
         }
     }
 
