@@ -23,6 +23,8 @@ import org.zenframework.z8.ie.xml.ObjectFactory;
 import org.zenframework.z8.server.base.file.FileInfo;
 import org.zenframework.z8.server.base.file.FilesFactory;
 import org.zenframework.z8.server.base.query.Query;
+import org.zenframework.z8.server.base.table.Table;
+import org.zenframework.z8.server.base.table.system.Users;
 import org.zenframework.z8.server.base.table.value.AttachmentField;
 import org.zenframework.z8.server.base.table.value.Field;
 import org.zenframework.z8.server.logs.Trace;
@@ -37,8 +39,8 @@ public class IeUtil {
     private static final String RECORD_ID = "recordId";
     private static final JAXBContext JAXB_CONTEXT;
 
-    private static final List<String> TO_STRING_FIELDS = Arrays.asList("createdAt", "modifiedAt", "createdBy",
-            "modifiedBy", "id", "id1", "name", "description", "locked");
+    private static final List<String> TO_STRING_FIELDS = Arrays.asList("createdAt", "modifiedAt", "createdBy", "modifiedBy",
+            "id", "id1", "name", "description", "locked");
 
     static {
         try {
@@ -212,9 +214,9 @@ public class IeUtil {
         return null;
     }
 
-    public static boolean isBuiltinRecord(guid recordId) {
-        return guid.NULL.equals(recordId) || BuiltinUsers.System.guid().equals(recordId)
-                || BuiltinUsers.Administrator.guid().equals(recordId);
+    public static boolean isBuiltinRecord(Table table, guid recordId) {
+        return guid.NULL.equals(recordId) || table instanceof Users
+                && (BuiltinUsers.System.guid().equals(recordId) || BuiltinUsers.Administrator.guid().equals(recordId));
     }
 
     public static void marshalExportEntry(ExportEntry entry, Writer out) throws JAXBException {

@@ -195,7 +195,7 @@ public class Export extends OBJECT {
     private void exportRecord(Table recordSet, Message message, ImportPolicy policy, RecordsSorter recordsSorter, int level) {
         guid recordId = recordSet.recordId();
         String table = recordSet.classId();
-        if (!recordsSorter.contains(table, recordId) && !IeUtil.isBuiltinRecord(recordId)) {
+        if (!recordsSorter.contains(table, recordId) && !IeUtil.isBuiltinRecord(recordSet, recordId)) {
             if (policies.containsKey(recordSet.classId())) {
                 policy = policies.get(recordSet.classId());
             }
