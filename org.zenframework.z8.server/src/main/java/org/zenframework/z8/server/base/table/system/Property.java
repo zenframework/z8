@@ -26,10 +26,12 @@ public class Property extends OBJECT {
     static {
         try {
             InputStream in = Property.class.getClassLoader().getResourceAsStream(PROPERTIES_RESOURCE);
-            try {
-                DEFAULT_PROPERTIES.load(in);
-            } finally {
-                in.close();
+            if (in != null) {
+                try {
+                    DEFAULT_PROPERTIES.load(in);
+                } finally {
+                    in.close();
+                }
             }
         } catch (Throwable e) {
             LOG.warn("Can't load default properties from classpath", e);
