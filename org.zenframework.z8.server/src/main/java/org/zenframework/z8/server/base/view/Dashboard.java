@@ -51,7 +51,7 @@ public class Dashboard extends RequestTarget {
             if(id != null) {
                 Desktop desktop = (Desktop)Loader.getInstance(id);
 
-                JsonObject dataObj = new JsonObject();
+                JsonArray dataObj = new JsonArray();
                 writeDesktop(dataObj, desktop);
                 writer.put(Json.data, dataObj);
             }
@@ -81,7 +81,7 @@ public class Dashboard extends RequestTarget {
         }
     }
 
-    private void writeDesktopData(JsonObject writer, Desktop desktop, String displayName) {
+    private void writeDesktopData(JsonArray writer, Desktop desktop, String displayName) {
         Map<String, IForm> forms = ApplicationServer.getUser().forms();
 
         Collection<CLASS<?>> runnables = new ArrayList<CLASS<?>>();
@@ -95,17 +95,21 @@ public class Dashboard extends RequestTarget {
         }
 
         if(!runnables.isEmpty()) {
+            JsonObject object = new JsonObject();
             JsonArray runsArr = new JsonArray();
 
             for(CLASS<?> cls : runnables) {
                 writeData(runsArr, cls);
             }
 
-            writer.put(displayName, runsArr);
+            object.put(Json.text, displayName);
+            object.put(Json.items, runsArr);
+            
+            writer.put(object);
         }
     }
 
-    private void writeDesktop(JsonObject writer, Desktop desktop) {
+    private void writeDesktop(JsonArray writer, Desktop desktop) {
         writeDesktopData(writer, desktop, "");
 
         for(CLASS<?> cls : desktop.getSubDesktops()) {

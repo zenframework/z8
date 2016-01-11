@@ -134,7 +134,8 @@ Z8.desktop.MenuItem = Ext.extend(Z8.desktop.BaseMenuItem,
 		var menuItems = [];
 		var pBlock;
 		
-		Ext.iterate(this.menuContent, function(block, items){
+		Ext.each(this.menuContent, function(item, index){
+			var block = item.text;
 			
 			if(block != '')
 			{
@@ -144,7 +145,7 @@ Z8.desktop.MenuItem = Ext.extend(Z8.desktop.BaseMenuItem,
 				pBlock = null;
 			}
 			
-			Ext.each(items, function(item, index){
+			Ext.each(item.items, function(item, index){
 				menuItems.push({type: 'item', key: item.id, value: item, text: item.text, parent: pBlock, state: true});
 			});
 		});
