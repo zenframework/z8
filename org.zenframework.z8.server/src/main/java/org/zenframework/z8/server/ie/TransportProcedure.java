@@ -155,7 +155,7 @@ public class TransportProcedure extends Procedure {
         for (ExportEntry.Records.Record record : message.getExportEntry().getRecords().getRecord()) {
             Table table = (Table) Loader.getInstance(record.getTable());
             guid recordId = new guid(record.getRecordId());
-            if (!IeUtil.isBuiltinRecord(recordId)) {
+            if (!IeUtil.isBuiltinRecord(table, recordId)) {
                 if (table.hasRecord(recordId)) {
                     // Если запись уже существует
                     ImportPolicy policy = ImportPolicy.getPolicy(record.getPolicy());

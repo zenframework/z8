@@ -1,5 +1,9 @@
 package org.zenframework.z8.server.base.table.system;
 
+import java.io.InputStream;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.runtime.OBJECT;
 import org.zenframework.z8.server.runtime.RCollection;
@@ -10,9 +14,29 @@ import org.zenframework.z8.server.types.string;
 
 public class Property extends OBJECT {
 
+    private static final Log LOG = LogFactory.getLog(Property.class);
+
+    private static final String PROPERTIES_RESOURCE = "postfactor.properties";
+    private static final java.util.Properties DEFAULT_PROPERTIES = new java.util.Properties();
+
     public static final String Key = IObject.Name;
     public static final String Description = IObject.Description;
     public static final String DefaultValue = "defaultValue";
+
+    static {
+        try {
+            InputStream in = Property.class.getClassLoader().getResourceAsStream(PROPERTIES_RESOURCE);
+            if (in != null) {
+                try {
+                    DEFAULT_PROPERTIES.load(in);
+                } finally {
+                    in.close();
+                }
+            }
+        } catch (Throwable e) {
+            LOG.warn("Can't load default properties from classpath", e);
+        }
+    }
 
     public static class CLASS<T extends Property> extends OBJECT.CLASS<T> {
 
@@ -58,7 +82,7 @@ public class Property extends OBJECT {
     }
 
     public String getDefaultValue() {
-        return getAttribute(DefaultValue);
+        return DEFAULT_PROPERTIES.getProperty(getKey(), getAttribute(DefaultValue));
     }
 
     public String getDescription() {
@@ -97,7 +121,8 @@ public class Property extends OBJECT {
         return property;
     }
 
-    public static Property.CLASS<? extends Property> z8_getProperty(guid id, string key, primary defaultValue, string description) {
+    public static Property.CLASS<? extends Property> z8_getProperty(guid id, string key, primary defaultValue,
+            string description) {
         Property.CLASS<Property> property = new Property.CLASS<Property>();
         property.setAttribute(IObject.ObjectId, new guid(id).toString());
         property.setAttribute(Key, key.get());

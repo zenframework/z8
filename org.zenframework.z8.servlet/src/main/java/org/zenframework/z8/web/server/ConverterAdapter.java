@@ -21,7 +21,6 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.mozilla.universalchardet.UniversalDetector;
 import org.zenframework.z8.server.base.file.FileConverter;
 import org.zenframework.z8.server.base.file.FileInfo;
 import org.zenframework.z8.server.engine.ISession;
@@ -102,7 +101,7 @@ public class ConverterAdapter extends Adapter {
                 String contentType = determContentType(absolutePath);
                 if (contentType != null) {
                     if (contentType.startsWith("text/")) {
-                        String encoding = determineEncoding(absolutePath);
+                        String encoding = IOUtils.determineEncoding(absolutePath, "UTF-8");
                         contentType += "; charset=" + encoding;
                     } else if (contentType.equals("message/rfc822")) {
                         absolutePath = getConvertedEML(relativePath, absolutePath);
@@ -259,33 +258,6 @@ public class ConverterAdapter extends Adapter {
         return sb.toString();
     }
 
-    private String determineEncoding(File file) {
-        UniversalDetector detector = new UniversalDetector(null);
-        // Reset detector before using
-        detector.reset();
-        // Buffer
-        InputStream in = null;
-        try {
-            in = new FileInputStream(file);
-            byte[] buf = new byte[1024];
-            for (int n = in.read(buf); n >= 0 && !detector.isDone(); n = in.read(buf)) {
-                detector.handleData(buf, 0, n);
-            }
-            detector.dataEnd();
-            return detector.getDetectedCharset();
-        } catch (Exception e) {
-            Trace.logError("Can't detect encoding of '" + file.getAbsolutePath() + "'", e);
-            return "UTF-8";
-        } finally {
-            detector.reset();
-            if (in != null) {
-                try {
-                    in.close();
-                } catch (IOException e) {}
-            }
-        }
-    }
-    
     private FileConverter getConverter(){
         if(converter == null)
             converter = new FileConverter(new File(super.getServlet().getServletPath(), file.CacheFolderName));
