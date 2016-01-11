@@ -177,17 +177,19 @@ Z8.grid.DecoratedColumn = Ext.extend(Ext.grid.NumberColumn,
 	myRenderer: function(value, metadata, record, rowIndex, colIndex, store)
 	{
 		var result = '';
+		var cls = 'x-grid-eq';
+		var color = 'black';
+
+		if(value != 0) {
+			cls = value < 0 ? 'x-grid-down' : 'x-grid-up';
+			color = value < 0 ? 'red' : 'yellow';
+		}
 		
-		if(value != 0)
-			result += '<div style="color:' + (value < 0 ? 'red' : 'green') + '">';
-		
+		result = '<div class="' + cls + '">';
 		result += Ext.util.Format.number(value, this.format);
-		
-		if(value != 0)
-			result += '</div>';
+		result += '</div>';
 		
 		return result;
-//		return '<div unselectable="on" style="margin-left:' + (colIndex == 0 ? -18 : -6) + 'px; margin-top:-3px; width:22px; height: 16px" class="' + cls + '">' + Z8.emptyString + '</div>';
 	}
 });
 
