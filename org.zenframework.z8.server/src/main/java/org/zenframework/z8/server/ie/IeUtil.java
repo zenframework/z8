@@ -8,6 +8,7 @@ import java.io.StringWriter;
 import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 
 import javax.xml.bind.JAXBContext;
@@ -65,14 +66,15 @@ public class IeUtil {
         return str.toString();
     }
 
-    public static ExportEntry.Records.Record tableToRecord(Query recordSet, ImportPolicy policy, boolean exportAttachments) {
+    public static ExportEntry.Records.Record tableToRecord(Query recordSet, Collection<Field> fields, ImportPolicy policy,
+            boolean exportAttachments) {
         Records.Record record = new Records.Record();
         record.setTable(recordSet.classId());
         record.setRecordId(recordSet.recordId().toString());
         if (policy != null) {
             record.setPolicy(policy.name());
         }
-        for (Field f : recordSet.getPrimaryFields()) {
+        for (Field f : fields) {
             if (!RECORD_ID.equals(f.id()) && f.exportable()
                     && (exportAttachments || !(AttachmentField.class.isAssignableFrom(f.getClass())))) {
                 Records.Record.Field field = new Records.Record.Field();
