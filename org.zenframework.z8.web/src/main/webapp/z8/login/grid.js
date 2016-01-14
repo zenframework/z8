@@ -1,8 +1,8 @@
-//Z8.decoratedFields = {
-//	'org.zenframework.z8.server.base.table.system.Sequences': {
-//		'value': true
-//	}
-//};
+/*Z8.decoratedFields = {
+	'org.zenframework.z8.server.base.table.system.Sequences': {
+		'value': true
+	}
+};*/
 
 function createColumns(query, editable)
 {

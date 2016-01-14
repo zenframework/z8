@@ -77,7 +77,7 @@ Z8.grid.GroupSummary = Ext.extend(Ext.util.Observable,
 			
 			if(cf.summaryType || cf.summaryRenderer)
 			{
-				p.value = (cf.summaryRenderer || c.renderer)(o.data[c.name], p, o);
+				p.value = (cf.summaryRenderer || c.renderer).call(cf.scope || cf, o.data[c.name], p, o);
 			}
 			else
 			{
