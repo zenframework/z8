@@ -50,9 +50,9 @@ public class Sequencer extends OBJECT {
     }
 
     static private long next(String key, long defaultValue, long increment) {
-        synchronized (getSync(key)) {
-            Connection connection = ConnectionManager.get();
+        Connection connection = ConnectionManager.get();
 
+        synchronized (getSync(key)) {
             String id = "id" + Integer.toString(key.hashCode()).replace('-', '_');
 
             Sequences sequences = new Sequences.CLASS<Sequences>().get();
