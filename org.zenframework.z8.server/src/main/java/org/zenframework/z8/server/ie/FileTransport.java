@@ -34,7 +34,7 @@ public class FileTransport extends AbstractTransport implements Properties.Liste
     private File in = new File(root, IN);
     private File out = new File(root, OUT);
     private File inArch = new File(root, IN_ARCH);
-    
+
     private Message lastReceived = null;
 
     public FileTransport(TransportContext context) {
@@ -58,7 +58,7 @@ public class FileTransport extends AbstractTransport implements Properties.Liste
 
     @Override
     public void send(Message message) {
-        File messageFolder = getMessageFolder(out, message);
+        File messageFolder = getMessageFolderOut(out, message);
         messageFolder.mkdirs();
         // write export-entry.xml
         File outFile = new File(messageFolder, EXPORT_ENTRY);
@@ -92,10 +92,17 @@ public class FileTransport extends AbstractTransport implements Properties.Liste
     }
 
     @Override
-    public void commit() {
-        File archFile = getMessageFolder(inArch, lastReceived);
-        archFile.getParentFile().mkdirs();
-        IOUtils.moveFolder(getMessageFolder(in, lastReceived), archFile, true);
+    public void commit() throws TransportException {
+        if (lastReceived != null) {
+            File inFile = getMessageFolderIn(in, lastReceived);
+            File archFile = getMessageFolderIn(inArch, lastReceived);
+            archFile.getParentFile().mkdirs();
+            if (IOUtils.moveFolder(inFile, archFile, true))
+                lastReceived = null;
+            else
+                throw new TransportException("Committing incoming message '" + lastReceived.getId()
+                        + "' failed: can't move folder '" + inFile + "' to '" + archFile + "'");
+        }
     }
 
     @Override
@@ -114,7 +121,8 @@ public class FileTransport extends AbstractTransport implements Properties.Liste
                     if (messageFolder.isDirectory()) {
                         try {
                             Message message = Message.instance(UUID.fromString(messageFolder.getName()));
-                            message.setAddress(messageFolder.getParentFile().getName());
+                            message.setAddress(context.getProperty(TransportContext.SelfAddressProperty));
+                            message.setSender(messageFolder.getParentFile().getName());
                             File entryFile = new File(messageFolder, EXPORT_ENTRY);
                             if (entryFile.exists()) {
                                 Reader in = null;
@@ -148,7 +156,8 @@ public class FileTransport extends AbstractTransport implements Properties.Liste
                                                 try {
                                                     os.close();
                                                 } catch (IOException e) {
-                                                    Trace.logError("Can't close output stream to file item " + fileInfo.file, e);
+                                                    Trace.logError(
+                                                            "Can't close output stream to file item " + fileInfo.file, e);
                                                 }
                                             }
                                         }
@@ -169,9 +178,6 @@ public class FileTransport extends AbstractTransport implements Properties.Liste
                             }
                         } catch (Exception e) {
                             Trace.logError("Can't import entry from '" + messageFolder + "'", e);
-                        } finally {
-                            IOUtils.moveFolder(messageFolder, new File(inArch, addresseeFolder.getName() + '/'
-                                    + messageFolder.getName()), true);
                         }
                     }
                 }
@@ -187,8 +193,12 @@ public class FileTransport extends AbstractTransport implements Properties.Liste
         inArch = new File(root, IN_ARCH);
     }
 
-    private static File getMessageFolder(File parent, Message message) {
-        return new File(parent, message.getAddress() + '/' + message.getId().toString());
+    private static File getMessageFolderIn(File parent, Message message) {
+        return new File(parent, message.getSender() + File.separatorChar + message.getId().toString());
+    }
+
+    private static File getMessageFolderOut(File parent, Message message) {
+        return new File(parent, message.getAddress() + File.separatorChar + message.getId().toString());
     }
 
 }

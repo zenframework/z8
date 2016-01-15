@@ -20,6 +20,8 @@ import org.zenframework.z8.server.logs.Trace;
 
 public class IOUtils {
 
+    private static final String OS_NAME = System.getProperty("os.name").toLowerCase();
+
     final public static int DefaultBufferSize = 1024 * 1024;
 
     private IOUtils() {/* hide constructor */}
@@ -50,19 +52,32 @@ public class IOUtils {
     public static boolean moveFolder(File src, File dest, boolean trace) {
         InputStream in = null;
         try {
-            StringBuilder cmd = new StringBuilder();
-            cmd.append("cmd /C move /Y \"").append(src.getAbsolutePath()).append("\" \"").append(dest.getAbsolutePath())
-                    .append("\"");
-            Process proc = Runtime.getRuntime().exec(cmd.toString());
+            dest.getParentFile().mkdirs();
+            ProcessBuilder cmd;
+            String charset;
+            if (OS_NAME.startsWith("win")) {
+                cmd = new ProcessBuilder("cmd", "/C", "move", "/Y", src.getAbsolutePath(), dest.getAbsolutePath());
+                charset = "cp866";
+            } else if (OS_NAME.startsWith("linux")) {
+                cmd = new ProcessBuilder("mv", src.getAbsolutePath(), dest.getAbsolutePath());
+                charset = "UTF-8";
+            } else {
+                if (trace) {
+                    Trace.logError("Move '" + src + "' to '" + dest + "' failed", new UnsupportedOperationException(
+                            "Unsupported OS '" + OS_NAME + "'"));
+                }
+                return false;
+            }
+            Process proc = cmd.start();
             if (trace) {
-                in = proc.getInputStream();
+                in = proc.getErrorStream();
                 ByteArrayOutputStream out = new ByteArrayOutputStream(1024);
                 copy(in, out);
-                Trace.logEvent("Moving '" + src + "' to '" + dest + "':\r\n" + new String(out.toByteArray(), "cp866"));
+                Trace.logEvent("Moving '" + src + "' to '" + dest + "':\r\n" + new String(out.toByteArray(), charset));
             } else {
                 proc.waitFor();
             }
-            return true;
+            return dest.exists();
         } catch (Exception e) {
             Trace.logError("Move '" + src + "' to '" + dest + "' failed", e);
             return false;
@@ -111,7 +126,7 @@ public class IOUtils {
             throw new RuntimeException(e);
         }
     }
-    
+
     public static Object bytesToObject(byte buf[]) {
         try {
             return new ObjectInputStream(new ByteArrayInputStream(buf)).readObject();
