@@ -12,8 +12,6 @@ import org.zenframework.z8.server.base.simple.Procedure;
 import org.zenframework.z8.server.base.table.Table;
 import org.zenframework.z8.server.db.Connection;
 import org.zenframework.z8.server.engine.Runtime;
-import org.zenframework.z8.server.exceptions.UnsupportedParameterException;
-import org.zenframework.z8.server.resources.Resources;
 import org.zenframework.z8.server.utils.ErrorUtils;
 
 public class DBGenerator {
@@ -23,57 +21,6 @@ public class DBGenerator {
 
     public DBGenerator(Connection connection) {
         this.connection = connection;
-    }
-
-    public GenerateType check(Collection<Table.CLASS<? extends Table>> tables, Map<String, TableDescription> existingTables,
-            ILogger logger) {
-        List<TableGenerator> generators = getTableGenerators(tables, existingTables, logger);
-
-        GenerateType genType = new GenerateType();
-
-        for (TableGenerator table : generators)
-            switch (table.getAction()) {
-            case None:
-                break;
-            case Create:
-                genType.setLite();
-                logger.message(Resources.format("Generator.recreatringTable", table.displayName(), table.name()));
-                break;
-            case Alter:
-            case Recreate: {
-                GeneratorAction type = table.checkAlter();
-                if (type != GeneratorAction.None) {
-                    if (type == GeneratorAction.Alter) {
-                        genType.setLite();
-                    } else if (type == GeneratorAction.Recreate) {
-                        genType.setFull();
-                    }
-                    logger.message(Resources.format("Generator.tableRegeneration",
-                            new Object[] { table.displayName(), table.name() }));
-                }
-                break;
-            }
-
-            default:
-                throw new UnsupportedParameterException();
-            }
-
-        for (String sTableExisting : existingTables.keySet()) {
-            boolean bDrop = existingTables.get(sTableExisting).isView();
-
-            for (Table.CLASS<? extends Table> table : tables) {
-                if (table.name().equalsIgnoreCase(sTableExisting)) {
-                    bDrop = false;
-                    break;
-                }
-            }
-
-            if (bDrop) {
-                genType.setOlds();
-                logger.message(Resources.format("Generator.droppingTable", new Object[] { sTableExisting }));
-            }
-        }
-        return genType;
     }
 
     public void run(Collection<Table.CLASS<? extends Table>> tables, Collection<Desktop.CLASS<? extends Desktop>> entries,
