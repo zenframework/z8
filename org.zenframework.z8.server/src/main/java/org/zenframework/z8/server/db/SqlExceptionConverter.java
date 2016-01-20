@@ -29,9 +29,10 @@ public class SqlExceptionConverter {
     static private void postgres(SQLException e) throws RuntimeException {
         String state = e.getSQLState();
 
-        if("42P01".equals(state)) {
+        if("42P01".equals(state) || "42704".equals(state))
             throw new ObjectNotFoundException(ErrorUtils.getMessage(e), e.getSQLState(), e.getErrorCode());
-        }
+        else if("42P16".equals(state))
+            throw new ObjectAlreadyExistException(ErrorUtils.getMessage(e), e.getSQLState(), e.getErrorCode());
     }
 
     static private void oracle(SQLException e) throws RuntimeException {

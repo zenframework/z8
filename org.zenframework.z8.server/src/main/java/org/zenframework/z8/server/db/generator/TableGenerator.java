@@ -198,7 +198,7 @@ public class TableGenerator {
         for (Field field : table().getTableFields()) {
             ColumnDescGen columndesc = dbFields.get(field.name());
 
-            if (null == columndesc) {
+            if (columndesc == null) {
                 dbFieldsAlter.add(new ColumnDescAlter(field, FieldAction.Create, true));
                 result = GeneratorAction.Alter;
                 continue;
@@ -213,20 +213,20 @@ public class TableGenerator {
                 break;
             }
 
-            ColumnDescAlter fieldDesc = null;
+//            ColumnDescAlter fieldDesc = null;
 
             if (field.type() == FieldType.Decimal || field.type() == FieldType.String) {
                 int size = field.size();
                 int scale = field.scale();
 
                 if (size != columndesc.size || scale != columndesc.scale) {
-                    if (size >= columndesc.size && scale >= columndesc.scale) {
-                        fieldDesc = new ColumnDescAlter(field, FieldAction.Alter, columndesc.nullable);
-                        result = GeneratorAction.Alter;
-                    } else {
-                        result = GeneratorAction.Recreate;
-                        break;
-                    }
+//                    if (size >= columndesc.size && scale >= columndesc.scale) {
+//                        fieldDesc = new ColumnDescAlter(field, FieldAction.Alter, columndesc.nullable);
+//                        result = GeneratorAction.Alter;
+//                    } else {
+                    result = GeneratorAction.Recreate;
+                    break;
+//                    }
                 }
             }
 
@@ -240,21 +240,23 @@ public class TableGenerator {
                 }
             }
 
-            if (!columndesc.defaultValue.trim().equalsIgnoreCase(defaultValue) || field.type() == FieldType.String) {
-                if (fieldDesc == null) {
+            if (!columndesc.defaultValue.trim().equalsIgnoreCase(defaultValue)) {
+/*                if (fieldDesc == null) {
                     fieldDesc = new ColumnDescAlter(field, FieldAction.Default, columndesc.nullable);
                 } else {
                     fieldDesc.action = FieldAction.AlterDefault;
                 }
 
-                result = GeneratorAction.Alter;
+                result = GeneratorAction.Alter; */
+                result = GeneratorAction.Recreate;
+                break;
             }
 
-            if (fieldDesc != null)
-                dbFieldsAlter.add(fieldDesc);
+/*            if (fieldDesc != null)
+                dbFieldsAlter.add(fieldDesc); */
         }
 
-        if (GeneratorAction.Recreate != result) {
+        if (result != GeneratorAction.Recreate) {
             for (ColumnDescGen field : dbFields.values()) {
                 if (!field.DescExist) {
                     result = GeneratorAction.Recreate;
@@ -448,7 +450,8 @@ public class TableGenerator {
     public void createPrimaryKey() {
         try {
             new PrimaryKeyGenerator(table()).run(connection);
-        } catch (ObjectAlreadyExistException e) {} catch (SQLException e) {
+        } catch (ObjectAlreadyExistException e) {
+        } catch (SQLException e) {
             logger.error(
                     e,
                     Resources.format(
@@ -490,55 +493,32 @@ public class TableGenerator {
     }
 
     private void packIndex() {
-        int c = 0;
-
+        int index = 0;
         for (IField field : table().getIndices()) {
-            while (true) {
-                try {
-                    createIndex(field, c);
-                    break;
-                } catch (ObjectAlreadyExistException e) {
-                    c++;
-                }
+            try {
+                index++;
+                new IndexGenerator(table(), (Field) field, index, false).run(connection);
+            } catch (SQLException e) {
+                logger.error(
+                        e,
+                        Resources.format("Generator.createIndexError", field.displayName(),
+                                table().displayName(), table().name(), ErrorUtils.getMessage(e)));
             }
-            c++;
-        }
-    }
-
-    private void createIndex(IField field, int id) {
-        try {
-            new IndexGenerator(table(), (Field) field, id, false).run(connection);
-        } catch (SQLException e) {
-            logger.error(
-                    e,
-                    Resources.format("Generator.createIndexError", field.displayName(),
-                            table().displayName(), table().name(), ErrorUtils.getMessage(e)));
         }
     }
 
     private void packUnique() {
-        int c = 0;
+        int index = 0;
         for (IField field : table().getUniqueIndices()) {
-            while (true) {
-                try {
-                    createUnique(field, c);
-                    break;
-                } catch (ObjectAlreadyExistException e) {
-                    c++;
-                }
+            try {
+                index++;
+                new IndexGenerator(table(), (Field) field, index, true).run(connection);
+            } catch (SQLException e) {
+                logger.error(
+                        e,
+                        Resources.format("Generator.createUniqueIndexError", field.displayName(),
+                                table().displayName(), table().name()));
             }
-            c++;
-        }
-    }
-
-    private void createUnique(IField field, int id) {
-        try {
-            new IndexGenerator(table(), (Field) field, id, true).run(connection);
-        } catch (SQLException e) {
-            logger.error(
-                    e,
-                    Resources.format("Generator.createUniqueIndexError", field.displayName(),
-                            table().displayName(), table().name()));
         }
     }
 
@@ -687,42 +667,37 @@ public class TableGenerator {
         for(ForeignKey fk : fks) {
             try {
                 fk.drop(connection);
+            } catch(ObjectNotFoundException e) {
             } catch (SQLException e) {
                 logger.error(e, Resources.format("Generator.dropForeignKeyError", fk.table, fk.name, ErrorUtils.getMessage(e)));
             }
         }
     }
 
-    static void dropIdxs(Connection connection, TableDescription _tableindb, ILogger showMessage) {
-        Collection<Index> del_idxs = new LinkedList<Index>();
-        Collection<Index> Idxs = _tableindb.getIndexes();
-        for (Index idx : Idxs)
+    static void dropIdxs(Connection connection, TableDescription dbTable, ILogger showMessage) {
+        for (Index idx : dbTable.getIndexes()) {
             try {
-                IndexGenerator.dropIndex(connection, idx.tableName, idx.name, false);
-                del_idxs.add(idx);
+                IndexGenerator.dropIndex(connection, idx.tableName, idx.name);
+            } catch(ObjectNotFoundException e) {
             } catch (SQLException e) {
                 showMessage.error(
                         e,
                         Resources.format("Generator.dropIndexError",
                                 idx.tableName, idx.name, ErrorUtils.getMessage(e)));
             }
-        Idxs.removeAll(del_idxs);
+        }
 
-        Collection<Index> del_uidxs = new LinkedList<Index>();
-        Idxs = _tableindb.getUniqueIndexes();
-        for (Index idx : Idxs) {
+        for (Index idx : dbTable.getUniqueIndexes()) {
             try {
-                IndexGenerator.dropIndex(connection, idx.tableName, idx.name, true);
-                del_uidxs.add(idx);
+                IndexGenerator.dropIndex(connection, idx.tableName, idx.name);
+            } catch(ObjectNotFoundException e) {
             } catch (SQLException e) {
                 showMessage.error(
                         e,
                         Resources.format("Generator.dropIndexError",
-                                new Object[] { idx.tableName, idx.name, ErrorUtils.getMessage(e) }));
+                                idx.tableName, idx.name, ErrorUtils.getMessage(e)));
             }
         }
-
-        Idxs.removeAll(del_uidxs);
     }
 
     static void dropTable(Connection connection, String tableName) throws SQLException {

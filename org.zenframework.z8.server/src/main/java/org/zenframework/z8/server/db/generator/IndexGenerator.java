@@ -48,7 +48,7 @@ class IndexGenerator {
         return result;
     }
     
-    static void dropIndex(Connection conn, String tableName, String indexName, boolean unique) throws SQLException {
+    static void dropIndex(Connection conn, String tableName, String indexName) throws SQLException {
         switch(conn.vendor()) {
         case Postgres:
         case Oracle:

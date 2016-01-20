@@ -11,6 +11,8 @@ import java.util.Map;
 import org.zenframework.z8.server.db.BasicSelect;
 import org.zenframework.z8.server.db.Connection;
 import org.zenframework.z8.server.db.Cursor;
+import org.zenframework.z8.server.db.DatabaseVendor;
+import org.zenframework.z8.server.db.FieldType;
 import org.zenframework.z8.server.db.Statement;
 import org.zenframework.z8.server.exceptions.db.UnknownDatabaseException;
 import org.zenframework.z8.server.types.guid;
@@ -182,7 +184,13 @@ public class DataSchema {
             int length = cursor.getInteger(4).getInt();
             int scale = cursor.getInteger(5).getInt();
             boolean nullable = cursor.getBoolean(6).get();
-            String defaultValue = cursor.getString(7).get();
+            String defaultValue = cursor.getString(7).get().replace("::" + typeName, "");
+                   
+            if(FieldType.Date.vendorType(DatabaseVendor.Postgres).equals(typeName))
+                defaultValue = defaultValue.replace("::text", "").replace(", ", ",");
+
+            if(FieldType.Text.vendorType(DatabaseVendor.Postgres).equals(typeName) && defaultValue.isEmpty())
+                defaultValue = "null";
 
             tables.get(tableName).addField(new Column(fieldName, typeName, length, scale, nullable, defaultValue));
         }
@@ -296,13 +304,29 @@ public class DataSchema {
         }
 
         case Postgres: {
-            sql = "select " + "tables.relname as table, " + "indexes.relname as index, " + "columns.attname as column "
-                    + "from " + "pg_class tables, " + "pg_class indexes, " + "pg_namespace owners, " + "pg_index root, "
-                    + "pg_attribute columns " + "where " + "tables.oid = root.indrelid and "
-                    + "indexes.oid = root.indexrelid and " + "owners.oid = tables.relnamespace and "
-                    + "tables.oid = columns.attrelid and " + "columns.attnum = ANY(root.indkey) and "
-                    + "tables.relkind = 'r' and " + "not root.indisprimary and " + "owners.nspname = '"
-                    + connection.database().schema() + "'";
+            sql = 
+                "select " + 
+                    "indexes.relname as index, " + 
+                    "tables.relname as table, " + 
+                    "columns.attname as column " + 
+                "from " + 
+                    "pg_class tables, " + 
+                    "pg_class indexes, " + 
+                    "pg_namespace owners, " + 
+                    "pg_index root, " + 
+                    "pg_attribute columns " +
+                "where " + 
+                    "tables.oid = root.indrelid and " + 
+                    "indexes.oid = root.indexrelid and " + 
+                    "owners.oid = tables.relnamespace and " +
+                    "tables.oid = columns.attrelid and " + 
+                    "columns.attnum = ANY(root.indkey) and " + 
+                    "tables.relkind = 'r' and " + 
+                    "root.indisunique = '" + (unique ? "t" : "f") + "' and " +
+                    "not root.indisprimary and " + 
+                    "owners.nspname = '" + connection.database().schema() + "'";
+            
+
             break;
         }
 

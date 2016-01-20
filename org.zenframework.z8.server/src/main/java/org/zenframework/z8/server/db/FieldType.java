@@ -170,7 +170,7 @@ public enum FieldType {
             else if(vendor == DatabaseVendor.SqlServer)
                 return "DATETIME";
             else if(vendor == DatabaseVendor.Postgres)
-                return "timestamp";
+                return "timestamp without time zone";
         }
         else if(this == Decimal) {
             if(vendor == DatabaseVendor.Oracle)
