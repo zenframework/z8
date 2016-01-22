@@ -4,6 +4,7 @@ import org.zenframework.z8.lang.Object;
 
 public class FileInfo extends Object {
     public string name;
+    public string type;
     public string path;
     public guid id;
 

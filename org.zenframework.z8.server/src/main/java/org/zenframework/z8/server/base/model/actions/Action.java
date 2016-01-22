@@ -70,6 +70,10 @@ public abstract class Action extends RequestTarget {
         return getRequestParameter(Json.field);
     }
 
+    public String getTypeParameter() {
+        return getRequestParameter(Json.type);
+    }
+
     public guid getFilterByParameter() {
         String recordId = getRequestParameter(Json.filterBy);
         return recordId != null ? new guid(recordId) : null;
