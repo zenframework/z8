@@ -101,6 +101,7 @@ public class IeUtil {
     public static ExportEntry.Files.File fileInfoToFile(FileInfo fileInfo, ImportPolicy policy) {
         ExportEntry.Files.File file = new ExportEntry.Files.File();
         file.setName(fileInfo.name.get());
+        file.setType(fileInfo.type.get());
         file.setPath(fileInfo.path.get());
         file.setId(fileInfo.id.toString());
         if (policy != null) {
@@ -116,6 +117,7 @@ public class IeUtil {
     public static FileInfo.CLASS<FileInfo> fileToFileInfoCLASS(ExportEntry.Files.File file) {
         FileInfo.CLASS<FileInfo> fileInfo = new FileInfo.CLASS<FileInfo>();
         fileInfo.get().name.set(file.getName());
+        fileInfo.get().type.set(file.getType());
         fileInfo.get().path.set(file.getPath());
         fileInfo.get().id.set(file.getId());
         return fileInfo;
@@ -144,6 +146,7 @@ public class IeUtil {
             ExportEntry.Files.File file = new ExportEntry.Files.File();
             file.setId(fileInfo.id.toString());
             file.setName(fileInfo.name.get());
+            file.setType(fileInfo.type.get());
             file.setPath(fileInfo.path.get());
             file.setValue(Base64.encodeBase64String(fileInfo.file.get()));
             files.getFile().add(file);
@@ -156,6 +159,7 @@ public class IeUtil {
         for (ExportEntry.Files.File file : files.getFile()) {
             FileInfo fileInfo = new FileInfo();
             fileInfo.name.set(file.getName());
+            fileInfo.type.set(file.getType());
             fileInfo.path.set(file.getPath());
             fileInfo.id.set(file.getId());
             fileInfo.file = FilesFactory.createFileItem(file.getName());

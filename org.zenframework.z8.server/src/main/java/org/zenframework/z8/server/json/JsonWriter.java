@@ -142,6 +142,7 @@ public class JsonWriter {
     public void write(FileInfo value) {
         startObject();
         writeProperty(Json.name, value.name);
+        writeProperty(Json.type, value.type);
         writeProperty(Json.path, value.path);
         writeProperty(Json.id, value.id);
         finishObject();

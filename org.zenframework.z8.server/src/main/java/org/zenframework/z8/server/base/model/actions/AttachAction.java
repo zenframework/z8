@@ -28,14 +28,15 @@ public class AttachAction extends Action {
         Query query = getRootQuery();
         guid target = getRecordIdParameter();
         String fieldId = getFieldParameter();
-
+        String type = getTypeParameter();
+        
         Field field = fieldId != null ? query.findFieldById(fieldId) : null;
         
         AttachmentProcessor processor = new AttachmentProcessor((AttachmentField) field);
 
         JsonArray data = new JsonArray();
         
-        for(FileInfo file : processor.update(target, files))
+        for(FileInfo file : processor.update(target, files, type))
             data.put(file.toJsonObject());
 
         writer.put(Json.data, data);

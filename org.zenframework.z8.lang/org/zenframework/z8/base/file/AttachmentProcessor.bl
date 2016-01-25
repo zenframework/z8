@@ -5,5 +5,8 @@ import org.zenframework.z8.lang.Object;
 class AttachmentProcessor extends Object {
 	
     public FileInfo[] create(guid recordId, FileInfo[] files);
+    public FileInfo[] create(guid recordId, FileInfo[] files, string type);
+
     public FileInfo[] update(guid recordId, FileInfo[] files);
+    public FileInfo[] update(guid recordId, FileInfo[] files, string type);
 }

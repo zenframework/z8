@@ -75,7 +75,7 @@ public class AttachmentProcessor extends OBJECT {
         getTable().update(recordId);
     }
 
-    public Collection<FileInfo> create(guid target, Collection<FileInfo> files) {
+    public Collection<FileInfo> create(guid target, Collection<FileInfo> files, String type) {
         Files filesTable = new Files.CLASS<Files>().get();
 
         for (FileInfo file : files) {
@@ -88,6 +88,7 @@ public class AttachmentProcessor extends OBJECT {
                 filesTable.name.get().set(file.name);
                 filesTable.file.get().set(file.getInputStream());
                 filesTable.path.get().set(file.path);
+                file.type = new string(type);
                 file.id = filesTable.create();
             }
         }
@@ -95,10 +96,10 @@ public class AttachmentProcessor extends OBJECT {
         return files;
     }
 
-    public Collection<FileInfo> update(guid target, Collection<FileInfo> files) {
+    public Collection<FileInfo> update(guid target, Collection<FileInfo> files, String type) {
         Collection<FileInfo> result = getExisitingFiles(target);
 
-        files = create(target, files);
+        files = create(target, files, type);
 
         result.addAll(files);
         save(result, target);
@@ -135,14 +136,24 @@ public class AttachmentProcessor extends OBJECT {
 
     public RCollection<? extends FileInfo.CLASS<? extends FileInfo>> z8_create(guid target,
             RCollection<? extends FileInfo.CLASS<? extends FileInfo>> classes) {
+        return z8_create(target, classes, new string());
+    }
+
+    public RCollection<? extends FileInfo.CLASS<? extends FileInfo>> z8_create(guid target,
+            RCollection<? extends FileInfo.CLASS<? extends FileInfo>> classes, string type) {
         Collection<FileInfo> files = CLASS.asList(classes);
-        return toCollection(create(target, files));
+        return toCollection(create(target, files, type.get()));
     }
 
     public RCollection<? extends FileInfo.CLASS<? extends FileInfo>> z8_update(guid target,
             RCollection<? extends FileInfo.CLASS<? extends FileInfo>> classes) {
+        return z8_update(target, classes, new string());
+    }
+
+    public RCollection<? extends FileInfo.CLASS<? extends FileInfo>> z8_update(guid target,
+            RCollection<? extends FileInfo.CLASS<? extends FileInfo>> classes, string type) {
         Collection<FileInfo> files = CLASS.asList(classes);
-        return toCollection(update(target, files));
+        return toCollection(update(target, files, type.get()));
     }
 
     private RCollection<? extends FileInfo.CLASS<? extends FileInfo>> toCollection(Collection<FileInfo> files) {

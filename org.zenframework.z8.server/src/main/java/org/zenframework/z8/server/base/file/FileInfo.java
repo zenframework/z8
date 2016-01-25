@@ -24,6 +24,7 @@ public class FileInfo extends OBJECT implements Serializable {
 
     public string name = new string();
     public string path = new string();
+    public string type = new string();
     public guid id = new guid();
 
     public FileItem file;
@@ -69,12 +70,25 @@ public class FileInfo extends OBJECT implements Serializable {
         this.file = file;
     }
 
+    protected FileInfo(JsonObject json) {
+        super();
+        set(json);
+    }
+
     public void set(FileInfo fileInfo) {
         this.path = fileInfo.path;
         this.name = fileInfo.name;
+        this.type = fileInfo.type;
         this.id = fileInfo.id;
 
         this.file = fileInfo.file;
+    }
+
+    protected void set(JsonObject json) {
+        path = new string(json.getString(json.has(Json.file) ? Json.file : Json.path));
+        name = new string(json.has(Json.name) ? json.getString(Json.name) : "");
+        type = new string(json.has(Json.type) ? json.getString(Json.type) : "");
+        id = new guid(json.has(Json.id) ? json.getString(Json.id) : "");
     }
 
     public static List<FileInfo> parseArray(String json) {
@@ -101,17 +115,13 @@ public class FileInfo extends OBJECT implements Serializable {
     }
 
     public static FileInfo parse(JsonObject json) {
-
-        FileInfo fileInfo = new FileInfo();
-        fileInfo.path = new string(json.getString(json.has(Json.file) ? Json.file : Json.path));
-        fileInfo.name = new string(json.has(Json.name) ? json.getString(Json.name) : "");
-        fileInfo.id = new guid(json.has(Json.id) ? json.getString(Json.id) : "");
-        return fileInfo;
+        return new FileInfo(json);
     }
 
     public JsonObject toJsonObject() {
         JsonObject json = new JsonObject();
         json.put(Json.name, name);
+        json.put(Json.type, type);
         json.put(Json.path, path);
         json.put(Json.id, id);
         return json;
@@ -126,10 +136,7 @@ public class FileInfo extends OBJECT implements Serializable {
             JsonObject object = array.getJsonObject(index);
 
             FileInfo.CLASS<FileInfo> fileInfo = new FileInfo.CLASS<FileInfo>();
-
-            fileInfo.get().path = new string(object.getString(object.has(Json.file) ? Json.file : Json.path));
-            fileInfo.get().name = new string(object.has(Json.name) ? object.getString(Json.name) : "");
-            fileInfo.get().id = new guid(object.has(Json.id) ? object.getString(Json.id) : "");
+            fileInfo.get().set(object);
 
             result.add(fileInfo);
         }
@@ -165,5 +172,4 @@ public class FileInfo extends OBJECT implements Serializable {
             throw new RuntimeException(e);
         }
     }
-
 }
