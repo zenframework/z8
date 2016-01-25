@@ -170,10 +170,12 @@ public class OBJECT extends RequestTarget implements IObject {
         this.container = container;
     }
 
+    @Override
     public IObject getOwner() {
         return owner;
     }
 
+    @Override
     public void setOwner(IObject owner) {
         this.owner = owner;
     }
