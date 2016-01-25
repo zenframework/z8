@@ -7,8 +7,12 @@ class TransportProcedure extends Procedure {
 	
 	virtual protected void init();
 
-	virtual protected void beforeExport(Message message);
+	virtual protected void beforeImport(Message message);
 
 	virtual protected void afterImport(Message message);
+
+	virtual protected void beforeExport(Message message);
+
+	virtual protected void afterExport(Message message);
 
 }

@@ -92,7 +92,11 @@ public class JmsTransport extends AbstractTransport implements ExceptionListener
     @Override
     public void rollback() throws TransportException {
         try {
-            session.rollback();
+            if (session != null) {
+                session.rollback();
+            } else {
+                throw new JMSException("Session is null");
+            }
         } catch (JMSException e) {
             throw new TransportException("Can't rollback JMS session", e);
         }
@@ -140,17 +144,21 @@ public class JmsTransport extends AbstractTransport implements ExceptionListener
     public Message receive() throws TransportException {
         try {
             javax.jms.Message jmsMessage = consumer.receive(100);
-            Message message = parseObjectMessage(jmsMessage);
-            if (message != null) {
-                Destination sender = jmsMessage.getJMSReplyTo();
-                if (sender instanceof Queue) {
-                    message.setSender(((Queue) sender).getQueueName());
-                } else if (sender instanceof Topic) {
-                    message.setSender(((Topic) sender).getTopicName());
-                }
+            String messageId = jmsMessage.getJMSMessageID();
+            Destination senderDest = jmsMessage.getJMSReplyTo();
+            String sender = null;
+            if (senderDest instanceof Queue) {
+                sender = ((Queue) senderDest).getQueueName();
+            } else if (senderDest instanceof Topic) {
+                sender = ((Topic) senderDest).getTopicName();
             }
-            return message;
-        } catch (Exception e) {
+            try {
+                return parseObjectMessage(jmsMessage, sender);
+            } catch (JMSException e) {
+                throw new TransportException("Can't parse JMS message " + messageId + " from "
+                        + (sender == null ? "<unknown>" : sender), e);
+            }
+        } catch (JMSException e) {
             throw new TransportException("Can't receive JMS message", e);
         }
     }
@@ -160,26 +168,26 @@ public class JmsTransport extends AbstractTransport implements ExceptionListener
         if (consumer != null) {
             try {
                 consumer.close();
-                consumer = null;
             } catch (JMSException e) {
                 Trace.logError("Can't close JMS message consumer", e);
             }
+            consumer = null;
         }
         if (session != null) {
             try {
                 session.close();
-                session = null;
             } catch (JMSException e) {
                 Trace.logError("Can't close JMS session", e);
             }
+            session = null;
         }
         if (connection != null) {
             try {
                 connection.close();
-                connection = null;
             } catch (JMSException e) {
                 Trace.logError("Can't close JMS connection", e);
             }
+            connection = null;
         }
         self = null;
     }
@@ -204,11 +212,12 @@ public class JmsTransport extends AbstractTransport implements ExceptionListener
         return session.createObjectMessage(message);
     }
 
-    private static Message parseObjectMessage(javax.jms.Message jmsMessage) throws JMSException {
+    private static Message parseObjectMessage(javax.jms.Message jmsMessage, String sender) throws JMSException {
         if (jmsMessage != null) {
             if (jmsMessage instanceof ObjectMessage) {
                 Object messageObject = ((ObjectMessage) jmsMessage).getObject();
                 if (messageObject instanceof Message) {
+                    ((Message) messageObject).setSender(sender);
                     return (Message) messageObject;
                 } else if (messageObject != null) {
                     Trace.logError(new Exception("Incorrect JMS message type: "

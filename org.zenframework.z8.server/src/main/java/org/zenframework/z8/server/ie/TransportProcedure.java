@@ -83,6 +83,7 @@ public class TransportProcedure extends Procedure {
                 connection.beginTransaction();
                 beginProcessMessage(messages);
                 Trace.logEvent("Receive IE message [" + message.get().getId() + "] by " + messages.getUrl());
+                z8_beforeImport(message);
                 ApplicationServer.disableEvents();
                 try {
                     importRecords(message.get());
@@ -112,6 +113,7 @@ public class TransportProcedure extends Procedure {
                     try {
                         transport.send(message.get());
                         transport.commit();
+                        z8_afterExport(message);
                     } catch (TransportException e) {
                         transport.close();
                         throw e;
@@ -120,8 +122,7 @@ public class TransportProcedure extends Procedure {
                 connection.commit();
             } catch (Throwable e) {
                 connection.rollback();
-                log("Transport messsage '" + messages.recordId() + "' is broken", e);
-                messages.setError(messages.recordId(), e.getMessage());
+                log("Can't send messsage '" + messages.recordId() + "'", e);
             }
         }
 
@@ -207,8 +208,12 @@ public class TransportProcedure extends Procedure {
 
     protected void z8_init() {}
 
+    protected void z8_beforeImport(Message.CLASS<? extends Message> message) {}
+
     protected void z8_afterImport(Message.CLASS<? extends Message> message) {}
 
     protected void z8_beforeExport(Message.CLASS<? extends Message> message) {}
+
+    protected void z8_afterExport(Message.CLASS<? extends Message> message) {}
 
 }
