@@ -232,10 +232,9 @@ public class User implements IUser {
         try {
             if (!users.getExtraParameters(this, parameters))
                 throw new AccessDeniedException();
-        } catch (AccessDeniedException e) {
-            throw e;
         } catch (Throwable e) {
             Trace.logError(e);
+            throw new AccessDeniedException();            
         }
     }
 
