@@ -22,7 +22,7 @@ public class AppServerConfig extends ServerConfig {
     protected void init() {
         super.init();
 
-        applicationServerPort = getProperty(property_srvapp_port, Rmi.defaultPort);
+        applicationServerPort = getProperty(property_srvapp_port, Rmi.randomPort());
 
         supportedServices = new HashSet<String>();
         String support_services = getProperty(property_support_services, "");
@@ -34,7 +34,7 @@ public class AppServerConfig extends ServerConfig {
     }
 
     public final int getApplicationServerPort() {
-        return Rmi.applicationServer == null ? applicationServerPort : Rmi.randomPort();
+        return applicationServerPort;
     }
 
     public final void setApplicationServerPort(int applicationServerPort) {

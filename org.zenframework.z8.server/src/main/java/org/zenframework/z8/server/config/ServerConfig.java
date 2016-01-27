@@ -51,7 +51,7 @@ abstract public class ServerConfig extends Properties {
         serverId = getProperty(ServerId, guid.create().toString());
 
         authorityCenterHost = getProperty(AuthorityCenterHost, Rmi.localhost);
-        authorityCenterPort = getProperty(AuthorityCenterPort, Rmi.defaultPort);
+        authorityCenterPort = getProperty(AuthorityCenterPort, Rmi.randomPort());
         traceSql = getProperty(TraceSql, false);
     }
 
@@ -102,7 +102,7 @@ abstract public class ServerConfig extends Properties {
     }
 
     public final int getAuthorityCenterPort() {
-        return Rmi.authorityCenter == null ? authorityCenterPort : Rmi.randomPort();
+        return authorityCenterPort;
     }
 
     public final void setAuthorityCenterPort(int authorityCenterPort) {
