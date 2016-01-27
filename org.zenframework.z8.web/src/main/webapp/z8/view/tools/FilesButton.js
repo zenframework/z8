@@ -107,6 +107,6 @@ Z8.view.FilesButtonMenu = Ext.extend(Z8.menu.MulticolumnMenu,
 	
 	onFileOpen: function(item)
 	{
-		Z8.FileViewer.show(item.file.path, item.file.name);
+		Z8.FileViewer.show(item.file.file, item.file.name);
 	}
 });
