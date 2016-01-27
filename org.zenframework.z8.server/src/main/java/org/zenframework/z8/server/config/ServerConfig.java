@@ -102,7 +102,7 @@ abstract public class ServerConfig extends Properties {
     }
 
     public final int getAuthorityCenterPort() {
-        return authorityCenterPort;
+        return Rmi.authorityCenter == null ? authorityCenterPort : Rmi.randomPort();
     }
 
     public final void setAuthorityCenterPort(int authorityCenterPort) {

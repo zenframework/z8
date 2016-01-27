@@ -34,7 +34,7 @@ public class AppServerConfig extends ServerConfig {
     }
 
     public final int getApplicationServerPort() {
-        return applicationServerPort;
+        return Rmi.applicationServer == null ? applicationServerPort : Rmi.randomPort();
     }
 
     public final void setApplicationServerPort(int applicationServerPort) {

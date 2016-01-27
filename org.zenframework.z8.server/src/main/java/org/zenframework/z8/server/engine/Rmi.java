@@ -17,6 +17,10 @@ public class Rmi {
         return "rmi://" + host + ":" + port + "/" + name;
     }
 
+    static public int randomPort() {
+        return (int)(System.nanoTime() % 10000);
+    }
+    
     static public IServer connect(String host, int port, String name) throws RemoteException {
         if(IApplicationServer.Name.equals(name) && applicationServer != null)
             return applicationServer;
