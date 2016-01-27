@@ -144,20 +144,23 @@ public class JmsTransport extends AbstractTransport implements ExceptionListener
     public Message receive() throws TransportException {
         try {
             javax.jms.Message jmsMessage = consumer.receive(100);
-            String messageId = jmsMessage.getJMSMessageID();
-            Destination senderDest = jmsMessage.getJMSReplyTo();
-            String sender = null;
-            if (senderDest instanceof Queue) {
-                sender = ((Queue) senderDest).getQueueName();
-            } else if (senderDest instanceof Topic) {
-                sender = ((Topic) senderDest).getTopicName();
+            if (jmsMessage != null) {
+                String messageId = jmsMessage.getJMSMessageID();
+                Destination senderDest = jmsMessage.getJMSReplyTo();
+                String sender = null;
+                if (senderDest instanceof Queue) {
+                    sender = ((Queue) senderDest).getQueueName();
+                } else if (senderDest instanceof Topic) {
+                    sender = ((Topic) senderDest).getTopicName();
+                }
+                try {
+                    return parseObjectMessage(jmsMessage, sender);
+                } catch (JMSException e) {
+                    throw new TransportException("Can't parse JMS message " + messageId + " from "
+                            + (sender == null ? "<unknown>" : sender), e);
+                }
             }
-            try {
-                return parseObjectMessage(jmsMessage, sender);
-            } catch (JMSException e) {
-                throw new TransportException("Can't parse JMS message " + messageId + " from "
-                        + (sender == null ? "<unknown>" : sender), e);
-            }
+            return null;
         } catch (JMSException e) {
             throw new TransportException("Can't receive JMS message", e);
         }
@@ -213,22 +216,19 @@ public class JmsTransport extends AbstractTransport implements ExceptionListener
     }
 
     private static Message parseObjectMessage(javax.jms.Message jmsMessage, String sender) throws JMSException {
-        if (jmsMessage != null) {
-            if (jmsMessage instanceof ObjectMessage) {
-                Object messageObject = ((ObjectMessage) jmsMessage).getObject();
-                if (messageObject instanceof Message) {
-                    ((Message) messageObject).setSender(sender);
-                    return (Message) messageObject;
-                } else if (messageObject != null) {
-                    Trace.logError(new Exception("Incorrect JMS message type: "
-                            + messageObject.getClass().getCanonicalName()));
-                }
+        if (jmsMessage instanceof ObjectMessage) {
+            Object messageObject = ((ObjectMessage) jmsMessage).getObject();
+            if (messageObject instanceof Message) {
+                ((Message) messageObject).setSender(sender);
+                return (Message) messageObject;
+            } else if (messageObject == null) {
+                return null;
             } else {
-                Trace.logError(new Exception("Incorrect JMS message object type: "
-                        + jmsMessage.getClass().getCanonicalName()));
+                throw new JMSException("Incorrect JMS message type: " + messageObject.getClass().getCanonicalName());
             }
+        } else {
+            throw new JMSException("Incorrect JMS message object type: " + jmsMessage.getClass().getCanonicalName());
         }
-        return null;
     }
 
     @SuppressWarnings("unused")
@@ -263,8 +263,6 @@ public class JmsTransport extends AbstractTransport implements ExceptionListener
 
     @SuppressWarnings("unused")
     private static Message parseStreamMessage(javax.jms.Message jmsMessage) throws JMSException, IOException {
-        if (jmsMessage == null)
-            return null;
         if (jmsMessage instanceof StreamMessage) {
             StreamMessage streamMessage = (StreamMessage) jmsMessage;
             // read message object
@@ -300,14 +298,14 @@ public class JmsTransport extends AbstractTransport implements ExceptionListener
                     }
                 }
                 return message;
-            } else if (messageObject != null) {
-                Trace.logError(new Exception("Incorrect JMS message object type: "
-                        + messageObject.getClass().getCanonicalName()));
+            } else if (messageObject == null) {
+                return null;
+            } else {
+                throw new JMSException("Incorrect JMS message object type: " + messageObject.getClass().getCanonicalName());
             }
         } else {
-            Trace.logError(new Exception("Incorrect JMS message type: " + jmsMessage));
+            throw new JMSException("Incorrect JMS message type: " + jmsMessage);
         }
-        return null;
     }
 
 }
