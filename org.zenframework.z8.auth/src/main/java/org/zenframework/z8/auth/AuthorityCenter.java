@@ -21,7 +21,6 @@ import org.zenframework.z8.server.engine.ServerInfo;
 import org.zenframework.z8.server.engine.Session;
 import org.zenframework.z8.server.exceptions.AccessDeniedException;
 import org.zenframework.z8.server.logs.Trace;
-import org.zenframework.z8.server.security.Digest_utils;
 import org.zenframework.z8.server.security.IUser;
 import org.zenframework.z8.server.security.User;
 
@@ -50,8 +49,6 @@ public class AuthorityCenter extends RmiServer implements IAuthorityCenter {
 
 		System.setProperty(SystemProperty.RAAS, config.getWorkingPath()
 		        + System.getProperty("file.separator") + "raas.config");
-
-		Digest_utils.initialize(config);
 
         instance = this;
         

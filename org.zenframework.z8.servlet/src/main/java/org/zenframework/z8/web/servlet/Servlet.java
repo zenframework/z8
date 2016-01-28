@@ -16,20 +16,16 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.zenframework.z8.auth.AuthorityCenterMain;
-import org.zenframework.z8.server.config.AppServerConfig;
-import org.zenframework.z8.server.config.AuthCenterConfig;
 import org.zenframework.z8.server.config.ServerConfig;
 import org.zenframework.z8.server.config.SystemProperty;
-import org.zenframework.z8.server.config.WebServerConfig;
 import org.zenframework.z8.server.engine.ApplicationServerMain;
 import org.zenframework.z8.server.engine.IAuthorityCenter;
 import org.zenframework.z8.server.engine.Rmi;
 import org.zenframework.z8.server.logs.Trace;
-import org.zenframework.z8.server.security.Digest_utils;
 import org.zenframework.z8.server.types.encoding;
 import org.zenframework.z8.web.server.Adapter;
-import org.zenframework.z8.web.server.JsonAdapter;
 import org.zenframework.z8.web.server.ConverterAdapter;
+import org.zenframework.z8.web.server.JsonAdapter;
 import org.zenframework.z8.web.server.TrustedAuthAdapter;
 
 public class Servlet extends HttpServlet {
@@ -48,16 +44,14 @@ public class Servlet extends HttpServlet {
 
     private final List<Adapter> adapters = new ArrayList<Adapter>();
 
-    private WebServerConfig webServerConfig = null;
-    private AuthCenterConfig authorityCenterConfig = null;
-    private AppServerConfig applicationServerConfig = null;
+    private ServerConfig config = null;
 
     static public IAuthorityCenter getAuthorityCenter() {
         return authorityCenter;
     }
 
-    public WebServerConfig config() {
-        return webServerConfig;
+    public ServerConfig config() {
+        return config;
     }
 
     @Override
@@ -67,23 +61,16 @@ public class Servlet extends HttpServlet {
 
         System.setProperty(SystemProperty.ConfigFilePath, context.getRealPath("WEB-INF"));
 
-        webServerConfig = new WebServerConfig();
-        Digest_utils.initialize(webServerConfig);
+        config = new ServerConfig();
 
         try {
-            if (webServerConfig.doRunAllServers()) {
-                if (!webServerConfig.dontRunAuthCenter()) {
-                    authorityCenterConfig = new AuthCenterConfig();
-                    startServer(AuthorityService, authorityCenterConfig);
-                }
-                if (!webServerConfig.dontRunAppServer()) {
-                    applicationServerConfig = new AppServerConfig();
-                    startServer(ApplicationServer, applicationServerConfig);
-                }
+            if (config.runAllServers()) {
+                startServer(AuthorityService, config);
+                startServer(ApplicationServer, config);
             }
 
-            authorityCenter = (IAuthorityCenter) Rmi.connect(webServerConfig.getAuthorityCenterHost(),
-                    webServerConfig.getAuthorityCenterPort(), IAuthorityCenter.Name);
+            authorityCenter = (IAuthorityCenter) Rmi.connect(config.getAuthorityCenterHost(),
+                    config.getAuthorityCenterPort(), IAuthorityCenter.Name);
         } catch (Throwable e) {
             try {
                 Trace.logError(e);
@@ -144,16 +131,12 @@ public class Servlet extends HttpServlet {
 
     @Override
     public void destroy() {
-        if (webServerConfig.doRunAllServers()) {
-            if (!webServerConfig.dontRunAppServer()) {
-                stopServer(ApplicationServer, applicationServerConfig);
-            }
-            if (!webServerConfig.dontRunAuthCenter()) {
-                stopServer(AuthorityService, authorityCenterConfig);
-            }
+        if (config.runAllServers()) {
+            stopServer(ApplicationServer, config);
+            stopServer(AuthorityService, config);
         }
 
-        webServerConfig = null;
+        config = null;
         
         for (Adapter adapter : adapters) {
             adapter.stop();

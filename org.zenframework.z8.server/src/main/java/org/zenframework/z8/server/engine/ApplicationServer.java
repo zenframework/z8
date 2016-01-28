@@ -10,13 +10,12 @@ import java.lang.management.RuntimeMXBean;
 import java.rmi.RemoteException;
 
 import org.apache.commons.fileupload.FileItem;
-
 import org.zenframework.z8.server.base.file.FileInfo;
 import org.zenframework.z8.server.base.file.FilesFactory;
 import org.zenframework.z8.server.base.job.scheduler.Scheduler;
 import org.zenframework.z8.server.base.table.system.Files;
 import org.zenframework.z8.server.base.xml.GNode;
-import org.zenframework.z8.server.config.AppServerConfig;
+import org.zenframework.z8.server.config.ServerConfig;
 import org.zenframework.z8.server.ie.TransportEngine;
 import org.zenframework.z8.server.logs.Trace;
 import org.zenframework.z8.server.request.IMonitor;
@@ -24,7 +23,6 @@ import org.zenframework.z8.server.request.IRequest;
 import org.zenframework.z8.server.request.IResponse;
 import org.zenframework.z8.server.request.Request;
 import org.zenframework.z8.server.request.RequestProcessor;
-import org.zenframework.z8.server.security.Digest_utils;
 import org.zenframework.z8.server.security.IUser;
 import org.zenframework.z8.server.types.file;
 import org.zenframework.z8.server.types.guid;
@@ -39,7 +37,7 @@ public class ApplicationServer extends RmiServer implements IApplicationServer {
 
     private IAuthorityCenter authorityCenter = null;
 
-    private AppServerConfig config;
+    private ServerConfig config;
 
     static private ThreadLocal<IRequest> currentRequest = new ThreadLocal<IRequest>();
 
@@ -47,14 +45,12 @@ public class ApplicationServer extends RmiServer implements IApplicationServer {
         return instance;
     }
 
-    protected ApplicationServer(AppServerConfig config) throws RemoteException {
+    protected ApplicationServer(ServerConfig config) throws RemoteException {
         super(config.getApplicationServerPort(), IApplicationServer.Name);
 
         Id = config.getServerId();
 
         this.config = config;
-
-        Digest_utils.initialize(config);
 
         instance = this;
         instance.start();
@@ -64,8 +60,8 @@ public class ApplicationServer extends RmiServer implements IApplicationServer {
         return instance.authorityCenter;
     }
 
-    static public AppServerConfig config() {
-        return instance != null ? instance.config : new AppServerConfig();
+    static public ServerConfig config() {
+        return instance.config;
     }
 
     static public Database defaultDatabase() {
