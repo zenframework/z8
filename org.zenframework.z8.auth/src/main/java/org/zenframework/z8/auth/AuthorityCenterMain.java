@@ -64,7 +64,7 @@ public final class AuthorityCenterMain
 	// DO NOT CHANGE method name OR parameters! Used in method.invoke (see Z8
 	// project WebApp, class org.zenframework.z8.web.servlet.Servlet)
 	public static void start(ServerConfig config) throws RemoteException {
-		Rmi.authorityCenter = new AuthorityCenter(config);
+		new AuthorityCenter(config);
 	}
 
 	// DO NOT CHANGE method name OR parameters! Used in method.invoke (see Z8
@@ -74,7 +74,5 @@ public final class AuthorityCenterMain
         
 	    IServer server = Rmi.connect(Rmi.localhost, config.getAuthorityCenterPort(), IAuthorityCenter.Name);
         server.stop();
-
-        Rmi.authorityCenter = null;
 	}
 }
