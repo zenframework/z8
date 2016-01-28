@@ -200,8 +200,10 @@ public class TableGenerator {
 
             if (columndesc == null) {
                 dbFieldsAlter.add(new ColumnDescAlter(field, FieldAction.Create, true));
-                result = GeneratorAction.Alter;
-                continue;
+//                result = GeneratorAction.Alter;
+//                continue;
+                result = GeneratorAction.Recreate;
+                break;
             }
 
             columndesc.DescExist = true;
