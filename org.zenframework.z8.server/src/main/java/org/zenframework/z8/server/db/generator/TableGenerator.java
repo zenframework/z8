@@ -142,20 +142,6 @@ public class TableGenerator {
         }
     }
 
-    public void createEmptyTable() {
-        table = (Table) tableClass.get();
-
-        try {
-            createTable(name());
-            createPrimaryKey();
-            packIndex();
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        } finally {
-            table = null;
-        }
-    }
-
     public void createForeignKeys() {
         try {
             packFK();

@@ -9,7 +9,15 @@ import org.zenframework.z8.server.exceptions.db.UnknownDatabaseException;
 import org.zenframework.z8.server.utils.ErrorUtils;
 
 public class SqlExceptionConverter {
+    static public void rethrowIfKnown(DatabaseVendor type, SQLException e) throws SQLException {
+        rethrow(type, e, false);
+    }
+    
     static public void rethrow(DatabaseVendor type, SQLException e) throws SQLException {
+        rethrow(type, e, true);
+    }
+    
+    static public void rethrow(DatabaseVendor type, SQLException e, boolean rethrowUnknown) throws SQLException {
         switch(type) {
         case Oracle:
             oracle(e);
@@ -23,9 +31,32 @@ public class SqlExceptionConverter {
         default:
             throw new UnknownDatabaseException();
         }
-        throw e;
+        
+        if(rethrowUnknown)
+            throw e;
     }
 
+    static public boolean isKnownException(DatabaseVendor type, SQLException e) throws SQLException {
+        switch(type) {
+        case Oracle:
+            oracle(e);
+            break;
+        case SqlServer:
+            sqlServer(e);
+            break;
+        case Postgres:
+            return isKnownPostgres(e);
+        default:
+            throw new UnknownDatabaseException();
+        }
+        return false;
+    }
+
+    static private boolean isKnownPostgres(SQLException e) {
+        String state = e.getSQLState();
+        return "42P01".equals(state) || "42704".equals(state) || "42P16".equals(state);
+    }
+    
     static private void postgres(SQLException e) throws RuntimeException {
         String state = e.getSQLState();
 

@@ -129,6 +129,8 @@ public class Connection {
         String sqlState = exception.getSQLState();
         int errorCode = exception.getErrorCode();
         
+        SqlExceptionConverter.rethrowIfKnown(database.vendor(), exception);
+            
         System.out.println(message + "( error code: " + errorCode + "; sqlState: " + sqlState + ") - reconnecting...");
 
         /* 
