@@ -9,8 +9,6 @@ public interface IServer extends Remote, Serializable {
 
     public void stop() throws RemoteException;
 
-    public String[] services() throws RemoteException;
-
     public String id() throws RemoteException;
 
     public String netAddress() throws RemoteException;

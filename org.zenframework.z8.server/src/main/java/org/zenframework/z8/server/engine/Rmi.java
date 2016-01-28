@@ -18,7 +18,13 @@ public class Rmi {
     }
 
     static public int randomPort() {
-        return (int)(System.nanoTime() % 10000);
+        long time = System.nanoTime() / 100;
+        int port = (int)(time % 100000);
+        
+        if(port >= 65535)
+            port = (int)(port * 65536.0f / 100000);
+        
+        return port;
     }
     
     static public IServer connect(String host, int port, String name) throws RemoteException {

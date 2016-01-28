@@ -45,11 +45,6 @@ public abstract class RmiServer extends UnicastRemoteObject implements IServer {
     }
 
     @Override
-    public String[] services() throws RemoteException {
-        return new String[0];
-    }
-
-    @Override
     public String id() throws RemoteException {
         return null;
     }

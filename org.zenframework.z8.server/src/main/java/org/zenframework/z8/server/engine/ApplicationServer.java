@@ -41,8 +41,6 @@ public class ApplicationServer extends RmiServer implements IApplicationServer {
 
     private AppServerConfig config;
 
-    private boolean hasRegisteredOnAuthorityCenter = false;
-
     static private ThreadLocal<IRequest> currentRequest = new ThreadLocal<IRequest>();
 
     static public ApplicationServer get() {
@@ -137,11 +135,6 @@ public class ApplicationServer extends RmiServer implements IApplicationServer {
     }
 
     @Override
-    public String[] services() throws RemoteException {
-        return config.services();
-    }
-
-    @Override
     public String id() throws RemoteException {
         return Id;
     }
@@ -165,7 +158,6 @@ public class ApplicationServer extends RmiServer implements IApplicationServer {
         authorityCenter = (IAuthorityCenter) Rmi.connect(config.getAuthorityCenterHost(), config.getAuthorityCenterPort(),
                 IAuthorityCenter.Name);
         authorityCenter.register(this);
-        hasRegisteredOnAuthorityCenter = true;
 
         // В новой версии birt-runtime 4.4.0 не нужно, и даже вредно!
         //System.setProperty(SystemProperty.BIRT_HOME, workingPath());
@@ -190,11 +182,6 @@ public class ApplicationServer extends RmiServer implements IApplicationServer {
         } catch (RemoteException e) {
             Trace.logError(e);
         }
-    }
-
-    @Override
-    public boolean hasRegisteredOnAuthorityCenter() throws RemoteException {
-        return hasRegisteredOnAuthorityCenter;
     }
 
     @Override

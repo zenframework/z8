@@ -14,14 +14,12 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.FileUploadException;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
-
 import org.zenframework.z8.server.base.file.FileInfo;
 import org.zenframework.z8.server.base.file.FilesFactory;
 import org.zenframework.z8.server.base.xml.GNode;
 import org.zenframework.z8.server.engine.IApplicationServer;
 import org.zenframework.z8.server.engine.IAuthorityCenter;
 import org.zenframework.z8.server.engine.ISession;
-import org.zenframework.z8.server.engine.ServiceType;
 import org.zenframework.z8.server.exceptions.AccessDeniedException;
 import org.zenframework.z8.server.json.Json;
 import org.zenframework.z8.server.logs.Trace;
@@ -64,26 +62,11 @@ public abstract class Adapter {
             }
             else if(sessionId != null) {
                 String serverId = parameters.get(Json.serverId);
-                String action = parameters.get(Json.action);
-                String service = parameters.get(Json.service);
 
-                if(serverId != null) {
+                if(serverId != null)
                     session = Servlet.getAuthorityCenter().getServer(sessionId, serverId);
-                }
-                else {
-                    ServiceType serviceType = null;
-
-                    if((service != null && service.equalsIgnoreCase(ServiceType.Report.toString()))
-                            || (action != null && action.equalsIgnoreCase(ServiceType.Report.toString()))) {
-                        serviceType = ServiceType.Report;
-                    }
-
-                    if((service != null && service.equalsIgnoreCase(ServiceType.Import.toString()))
-                            || (action != null && action.equalsIgnoreCase(ServiceType.Import.toString()))) {
-                        serviceType = ServiceType.Import;
-                    }
-                    session = Servlet.getAuthorityCenter().getServer(sessionId, serviceType);
-                }
+                else
+                    session = Servlet.getAuthorityCenter().getServer(sessionId);
             }
 
             if(session == null)

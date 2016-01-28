@@ -19,8 +19,6 @@ public interface IAuthorityCenter extends IServer {
 
     ISession getServer(String sessionId, String serverId) throws RemoteException;
 
-    ISession getServer(String sessionId, ServiceType serviceType) throws RemoteException;
-
     void register(IServer server) throws RemoteException;
 
     void unregister(IServer server) throws RemoteException;
