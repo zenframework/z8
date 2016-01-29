@@ -19,7 +19,6 @@ public class binary extends primary {
     private static final long serialVersionUID = -5161828489385386903L;
 
     private InputStream stream;
-    private long size = -1;
 
     public binary() {
         this(new byte[0]);
@@ -56,9 +55,7 @@ public class binary extends primary {
     private void set(binary binary) {
         if(this.stream != binary.stream) {
             close();
-            
             this.stream = binary.stream;
-            this.size = binary.size;
         }
     }
 
@@ -75,7 +72,6 @@ public class binary extends primary {
             close();
             
             this.stream = stream;
-            this.size = IOUtils.streamSize(stream);
         }
     }
     
@@ -93,17 +89,10 @@ public class binary extends primary {
             if(stream != null) {
                 stream.close();
                 stream = null;
-                size = -1;
             }
         } catch(IOException e) {
             throw new exception(e);
         }
-    }
-
-    public long getSize() {
-        if(size == -1)
-            size = getBytes().length;
-        return size;
     }
 
     public byte[] getBytes() {
