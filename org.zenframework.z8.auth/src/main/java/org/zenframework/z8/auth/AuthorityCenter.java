@@ -18,11 +18,9 @@ import org.zenframework.z8.server.engine.IServer;
 import org.zenframework.z8.server.engine.ISession;
 import org.zenframework.z8.server.engine.RmiServer;
 import org.zenframework.z8.server.engine.ServerInfo;
-import org.zenframework.z8.server.engine.ServiceType;
 import org.zenframework.z8.server.engine.Session;
 import org.zenframework.z8.server.exceptions.AccessDeniedException;
 import org.zenframework.z8.server.logs.Trace;
-import org.zenframework.z8.server.security.Digest_utils;
 import org.zenframework.z8.server.security.IUser;
 import org.zenframework.z8.server.security.User;
 
@@ -51,8 +49,6 @@ public class AuthorityCenter extends RmiServer implements IAuthorityCenter {
 
 		System.setProperty(SystemProperty.RAAS, config.getWorkingPath()
 		        + System.getProperty("file.separator") + "raas.config");
-
-		Digest_utils.initialize(config);
 
         instance = this;
         
@@ -102,7 +98,7 @@ public class AuthorityCenter extends RmiServer implements IAuthorityCenter {
 
 	@Override
     public synchronized void register(IServer server) throws RemoteException {
-		ServerInfo info = new ServerInfo(server, server.services(), server.id(), server.netAddress());
+		ServerInfo info = new ServerInfo(server, server.id(), server.netAddress());
 		servers.add(info);
 		Trace.logError("AC: application server has been started at " + info.getAddress(), null);
 	}
@@ -184,33 +180,19 @@ public class AuthorityCenter extends RmiServer implements IAuthorityCenter {
         return null;
     }
 	
-
-	private ServerInfo getFirstServer(ServiceType serviceType) {
-		for (ServerInfo server : servers) {
-			if (serviceType == null || server.supportService(serviceType.toString()))
-			    return server;
-		}
-
-		return servers.size() > 0 ? servers.get(0) : null;
-	}
-
 	@Override
-    public ISession getServer(String sessionId) throws RemoteException {
-		return getServer(sessionId, (ServiceType) null);
-	}
-
-	@Override
-    public synchronized ISession getServer(String sessionId, ServiceType serviceType)
-	        throws RemoteException {
+    public synchronized ISession getServer(String sessionId) throws RemoteException {
 		Session session = sessionManager.get(sessionId);
 
-		ServerInfo info = getFirstServer(serviceType);
+		if(servers.size() == 0)
+		    return null;
 		
-		if (info == null)
-			return null;
+		ServerInfo info = servers.get(0);
 		
-		servers.remove(info);
-		servers.add(info);
+        if(servers.size() > 1) {
+            servers.remove(info);
+            servers.add(info);
+        }
 
 		session.setServerInfo(info);
 		return session;

@@ -6,7 +6,6 @@ import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.util.StringTokenizer;
 
-import org.zenframework.z8.server.config.AuthCenterConfig;
 import org.zenframework.z8.server.config.ServerConfig;
 import org.zenframework.z8.server.config.SystemProperty;
 import org.zenframework.z8.server.engine.IAuthorityCenter;
@@ -36,14 +35,14 @@ public final class AuthorityCenterMain
 		}
 		if (bStart) {
 			try {
-				start(new AuthCenterConfig());
+			    start(new ServerConfig());
 			} catch (Throwable e) {
 				try {
 					Trace.logError(e);
 				} catch (Throwable ex) {
 				}
 				try {
-					stop(new AuthCenterConfig());
+					stop(new ServerConfig());
 				} catch (Throwable ex) {
 				}
 				System.exit(-1);
@@ -51,7 +50,7 @@ public final class AuthorityCenterMain
 		}
 		if (bStop) {
 			try {
-				stop(new AuthCenterConfig());
+				stop(new ServerConfig());
 			} catch (Throwable e) {
 				try {
 					Trace.logError(e);
@@ -65,7 +64,7 @@ public final class AuthorityCenterMain
 	// DO NOT CHANGE method name OR parameters! Used in method.invoke (see Z8
 	// project WebApp, class org.zenframework.z8.web.servlet.Servlet)
 	public static void start(ServerConfig config) throws RemoteException {
-		Rmi.authorityCenter = new AuthorityCenter(config);
+		new AuthorityCenter(config);
 	}
 
 	// DO NOT CHANGE method name OR parameters! Used in method.invoke (see Z8
@@ -75,7 +74,5 @@ public final class AuthorityCenterMain
         
 	    IServer server = Rmi.connect(Rmi.localhost, config.getAuthorityCenterPort(), IAuthorityCenter.Name);
         server.stop();
-
-        Rmi.authorityCenter = null;
 	}
 }

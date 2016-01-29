@@ -84,6 +84,11 @@ public class ServerConfig extends Properties {
         return value != null && !value.isEmpty() ? value : defaultValue;
     }
 
+    public final String getProperty(String key, String defaultValue) {
+        String value = getProperty(key);
+        return value != null && !value.isEmpty() ? value : defaultValue;
+    }
+
     public final boolean getProperty(String key, boolean defaultValue) {
         String value = getProperty(key);
         return value != null ? Boolean.parseBoolean(value) : defaultValue;

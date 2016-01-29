@@ -10,8 +10,6 @@ public interface IApplicationServer extends IServer {
 
     public static final String Name = "z8-application-server";
 
-    public boolean hasRegisteredOnAuthorityCenter() throws RemoteException;
-
     public GNode processRequest(ISession session, GNode request) throws RemoteException;
 
     public FileInfo download(String filePath) throws RemoteException;

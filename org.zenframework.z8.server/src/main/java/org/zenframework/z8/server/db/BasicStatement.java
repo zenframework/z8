@@ -1,5 +1,6 @@
 package org.zenframework.z8.server.db;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigInteger;
 import java.sql.PreparedStatement;
@@ -190,11 +191,15 @@ public abstract class BasicStatement implements IStatement {
     }
 
     public void setBinary(int position, binary value) throws SQLException {
-        value = value != null ? value : new binary();
-
-        long size = value.getSize();
-        InputStream stream = value.get();
-
-        statement.setBinaryStream(position, stream, size);
+        try {
+            value = value != null ? value : new binary();
+            InputStream stream = value.get();
+            
+            long size = stream.available();
+    
+            statement.setBinaryStream(position, stream, size);
+        } catch(IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

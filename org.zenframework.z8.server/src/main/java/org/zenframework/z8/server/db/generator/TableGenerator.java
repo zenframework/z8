@@ -142,20 +142,6 @@ public class TableGenerator {
         }
     }
 
-    public void createEmptyTable() {
-        table = (Table) tableClass.get();
-
-        try {
-            createTable(name());
-            createPrimaryKey();
-            packIndex();
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        } finally {
-            table = null;
-        }
-    }
-
     public void createForeignKeys() {
         try {
             packFK();
@@ -200,8 +186,10 @@ public class TableGenerator {
 
             if (columndesc == null) {
                 dbFieldsAlter.add(new ColumnDescAlter(field, FieldAction.Create, true));
-                result = GeneratorAction.Alter;
-                continue;
+//                result = GeneratorAction.Alter;
+//                continue;
+                result = GeneratorAction.Recreate;
+                break;
             }
 
             columndesc.DescExist = true;

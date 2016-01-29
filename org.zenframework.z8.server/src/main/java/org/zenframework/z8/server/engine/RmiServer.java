@@ -34,6 +34,8 @@ public abstract class RmiServer extends UnicastRemoteObject implements IServer {
             address = null;
             Trace.logError(e);
         }
+        
+        Rmi.register(this);
     }
 
     public int getPort() {
@@ -42,11 +44,6 @@ public abstract class RmiServer extends UnicastRemoteObject implements IServer {
 
     public String getName() {
         return name;
-    }
-
-    @Override
-    public String[] services() throws RemoteException {
-        return new String[0];
     }
 
     @Override
@@ -92,6 +89,8 @@ public abstract class RmiServer extends UnicastRemoteObject implements IServer {
 
     @Override
     public void stop() throws RemoteException {
+        Rmi.unregister(this);
+
         String url = Rmi.url(Rmi.localhost, port, name);
         try {
             Naming.unbind(url);
