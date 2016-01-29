@@ -74,6 +74,7 @@ public class ServerConfig extends Properties {
         return super.put(stringKey.toUpperCase(), value);
     }
 
+    @Override
     public String getProperty(String key) {
         return super.getProperty(key.toUpperCase());
     }

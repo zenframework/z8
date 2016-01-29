@@ -56,7 +56,7 @@
     <entry key="Properties.value">Значение</entry>
     
     <!-- Export messasges -->
-    <entry key="ExportMessages.title">Экспортируемые сообщения</entry>
+    <entry key="ExportMessages.title">Очередь сообщений</entry>
     <entry key="ExportMessages.sender">Отправитель</entry>
     <entry key="ExportMessages.receiver">Получатель</entry>
     <entry key="ExportMessages.protocol">Протокол</entry>

@@ -66,6 +66,7 @@ public class CLASS<TYPE extends IObject> extends OBJECT implements IClass<TYPE> 
         this.object.setIndex(getIndex());
     }
 
+    @Override
     public void setOwner(IObject owner) {
         super.setOwner(owner);
 
