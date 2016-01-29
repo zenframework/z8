@@ -5,11 +5,9 @@ import java.util.Collection;
 import java.util.List;
 
 import org.apache.commons.io.FileUtils;
-
 import org.zenframework.z8.server.base.table.Table;
 import org.zenframework.z8.server.base.table.system.Files;
 import org.zenframework.z8.server.base.table.value.AttachmentField;
-import org.zenframework.z8.server.json.JsonWriter;
 import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.runtime.OBJECT;
 import org.zenframework.z8.server.runtime.RCollection;
@@ -64,14 +62,7 @@ public class AttachmentProcessor extends OBJECT {
     }
 
     private void save(Collection<FileInfo> files, guid recordId) {
-        JsonWriter writer = new JsonWriter();
-
-        writer.startArray();
-        for (FileInfo file : files)
-            writer.write(file);
-        writer.finishArray();
-
-        getField().set(new string(writer.toString()));
+        getField().set(new string(FileInfo.toJson(files)));
         getTable().update(recordId);
     }
 

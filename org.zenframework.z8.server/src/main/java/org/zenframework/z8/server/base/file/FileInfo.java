@@ -5,17 +5,17 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import org.apache.commons.fileupload.FileItem;
-
 import org.zenframework.z8.server.json.Json;
-import org.zenframework.z8.server.json.JsonWriter;
 import org.zenframework.z8.server.json.parser.JsonArray;
 import org.zenframework.z8.server.json.parser.JsonObject;
 import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.runtime.OBJECT;
 import org.zenframework.z8.server.runtime.RCollection;
+import org.zenframework.z8.server.types.datetime;
 import org.zenframework.z8.server.types.guid;
 import org.zenframework.z8.server.types.string;
 
@@ -25,7 +25,10 @@ public class FileInfo extends OBJECT implements Serializable {
     public string name = new string();
     public string path = new string();
     public string type = new string();
+    public datetime time = new datetime();
     public guid id = new guid();
+    
+    public JsonObject json;
 
     public FileItem file;
 
@@ -78,6 +81,7 @@ public class FileInfo extends OBJECT implements Serializable {
     public void set(FileInfo fileInfo) {
         this.path = fileInfo.path;
         this.name = fileInfo.name;
+        this.time = fileInfo.time;
         this.type = fileInfo.type;
         this.id = fileInfo.id;
 
@@ -87,8 +91,11 @@ public class FileInfo extends OBJECT implements Serializable {
     protected void set(JsonObject json) {
         path = new string(json.getString(json.has(Json.file) ? Json.file : Json.path));
         name = new string(json.has(Json.name) ? json.getString(Json.name) : "");
+        time = new datetime(json.has(Json.time) ? json.getString(Json.time) : "");
         type = new string(json.has(Json.type) ? json.getString(Json.type) : "");
         id = new guid(json.has(Json.id) ? json.getString(Json.id) : "");
+        
+        this.json = json;
     }
 
     public static List<FileInfo> parseArray(String json) {
@@ -103,15 +110,13 @@ public class FileInfo extends OBJECT implements Serializable {
         return result;
     }
 
-    public static String toJson(List<FileInfo> fileInfos) {
-        JsonWriter writer = new JsonWriter();
-
-        writer.startArray();
+    public static String toJson(Collection<FileInfo> fileInfos) {
+        JsonArray array = new JsonArray();
+       
         for (FileInfo file : fileInfos)
-            writer.write(file);
-        writer.finishArray();
+            array.add(file.toJsonObject());
 
-        return writer.toString();
+        return array.toString();
     }
 
     public static FileInfo parse(JsonObject json) {
@@ -119,11 +124,14 @@ public class FileInfo extends OBJECT implements Serializable {
     }
 
     public JsonObject toJsonObject() {
-        JsonObject json = new JsonObject();
-        json.put(Json.name, name);
-        json.put(Json.type, type);
-        json.put(Json.path, path);
-        json.put(Json.id, id);
+        if(json == null) {
+            json = new JsonObject();
+            json.put(Json.name, name);
+//            json.put(Json.time, time);
+            json.put(Json.type, type);
+            json.put(Json.path, path);
+            json.put(Json.id, id);
+        }
         return json;
     }
     

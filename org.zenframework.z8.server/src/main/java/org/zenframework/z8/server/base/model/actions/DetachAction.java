@@ -37,7 +37,12 @@ public class DetachAction extends Action {
         
         AttachmentProcessor processor = new AttachmentProcessor((AttachmentField) field);
 
-        writer.put(Json.data, new JsonArray(processor.remove(target, files)));
+        JsonArray data = new JsonArray();
+        
+        for(FileInfo file : processor.remove(target, files))
+            data.put(file.toJsonObject());
+        
+        writer.put(Json.data, data);
 
     }
 

@@ -456,6 +456,10 @@ abstract public class Field extends Control implements IValue, IField {
         return new bool(isNull());
     }
 
+    public bool z8_isChanged() {
+        return new bool(changed());
+    }
+
     public Sequencer.CLASS<? extends Sequencer> z8_getSequencer() {
         return (Sequencer.CLASS<?>)getSequencer().getCLASS();
     }
