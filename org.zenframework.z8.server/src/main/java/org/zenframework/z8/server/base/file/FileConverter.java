@@ -26,6 +26,9 @@ import org.zenframework.z8.server.types.string;
 
 import com.google.common.io.Files;
 
+// TODO FileConverter must be singleton
+// TODO Properties.addListener()
+
 public class FileConverter extends OBJECT implements Properties.Listener {
 
     private static final String PDF_EXT = ".pdf";
