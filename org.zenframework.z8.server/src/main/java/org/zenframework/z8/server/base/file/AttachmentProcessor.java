@@ -2,10 +2,10 @@ package org.zenframework.z8.server.base.file;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
 
 import org.apache.commons.io.FileUtils;
-
 import org.zenframework.z8.server.base.table.Table;
 import org.zenframework.z8.server.base.table.system.Files;
 import org.zenframework.z8.server.base.table.value.AttachmentField;
@@ -111,6 +111,18 @@ public class AttachmentProcessor extends OBJECT {
         return getExisitingFiles(recordId);
     }
 
+    public Collection<FileInfo> read(guid recordId, String type) {
+        List<FileInfo> files = getExisitingFiles(recordId);
+        if (type != null) {
+            Iterator<FileInfo> i = files.iterator();
+            while (i.hasNext()) {
+                if (!type.equals(i.next().type.get()))
+                    i.remove();
+            }
+        }
+        return files;
+    }
+
     public Collection<FileInfo> remove(guid target, Collection<FileInfo> files) {
         Files filesTable = new Files.CLASS<Files>().get();
         Collection<FileInfo> result = getExisitingFiles(target);
@@ -132,6 +144,14 @@ public class AttachmentProcessor extends OBJECT {
                     .toString();
             fileInfo.path = new string(path);
         }
+    }
+
+    public RCollection<? extends FileInfo.CLASS<? extends FileInfo>> z8_read(guid recordId) {
+        return toCollection(read(recordId));
+    }
+
+    public RCollection<? extends FileInfo.CLASS<? extends FileInfo>> z8_read(guid recordId, string type) {
+        return toCollection(read(recordId, type.get()));
     }
 
     public RCollection<? extends FileInfo.CLASS<? extends FileInfo>> z8_create(guid target,
