@@ -234,7 +234,8 @@ public class User implements IUser {
                 throw new AccessDeniedException();
         } catch (Throwable e) {
             Trace.logError(e);
-            throw new AccessDeniedException();            
+            if(!BuiltinUsers.Administrator.guid().equals(id) && !BuiltinUsers.System.guid().equals(id))
+                throw new AccessDeniedException();            
         }
     }
 
