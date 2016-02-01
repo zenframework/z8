@@ -1,14 +1,15 @@
 package org.zenframework.z8.server.base.file;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
-import java.util.List;
 
 import org.apache.commons.io.FileUtils;
 import org.zenframework.z8.server.base.table.Table;
 import org.zenframework.z8.server.base.table.system.Files;
 import org.zenframework.z8.server.base.table.value.AttachmentField;
+import org.zenframework.z8.server.base.table.value.Field;
 import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.runtime.OBJECT;
 import org.zenframework.z8.server.runtime.RCollection;
@@ -56,10 +57,14 @@ public class AttachmentProcessor extends OBJECT {
         return field;
     }
 
-    private List<FileInfo> getExisitingFiles(guid recordId) {
-        if(getTable().readRecord(recordId)) 
+    public Collection<FileInfo> read(guid recordId) {
+        if (getTable().readRecord(recordId, Arrays.<Field>asList(getField()))) 
             return FileInfo.parseArray(getField().string().get());
         return new ArrayList<FileInfo>();
+    }
+
+    public Collection<FileInfo> read(guid recordId, String type) {
+        return filterByType(read(recordId), type);
     }
 
     private void save(Collection<FileInfo> files, guid recordId) {
@@ -89,7 +94,7 @@ public class AttachmentProcessor extends OBJECT {
     }
 
     public Collection<FileInfo> update(guid target, Collection<FileInfo> files, String type) {
-        Collection<FileInfo> result = getExisitingFiles(target);
+        Collection<FileInfo> result = read(target);
 
         files = create(target, files, type);
 
@@ -99,25 +104,9 @@ public class AttachmentProcessor extends OBJECT {
         return result;
     }
 
-    public Collection<FileInfo> read(guid recordId) {
-        return getExisitingFiles(recordId);
-    }
-
-    public Collection<FileInfo> read(guid recordId, String type) {
-        List<FileInfo> files = getExisitingFiles(recordId);
-        if (type != null) {
-            Iterator<FileInfo> i = files.iterator();
-            while (i.hasNext()) {
-                if (!type.equals(i.next().type.get()))
-                    i.remove();
-            }
-        }
-        return files;
-    }
-
     public Collection<FileInfo> remove(guid target, Collection<FileInfo> files) {
         Files filesTable = new Files.CLASS<Files>().get();
-        Collection<FileInfo> result = getExisitingFiles(target);
+        Collection<FileInfo> result = read(target);
 
         for(FileInfo file: files){
             filesTable.destroy(file.id);
@@ -136,6 +125,14 @@ public class AttachmentProcessor extends OBJECT {
                     .toString();
             fileInfo.path = new string(path);
         }
+    }
+
+    public RCollection<? extends FileInfo.CLASS<? extends FileInfo>> z8_get() {
+        return toCollection(FileInfo.parseArray(getField().string().get()));
+    }
+
+    public RCollection<? extends FileInfo.CLASS<? extends FileInfo>> z8_get(string type) {
+        return toCollection(filterByType(FileInfo.parseArray(getField().string().get()), type.get()));
     }
 
     public RCollection<? extends FileInfo.CLASS<? extends FileInfo>> z8_read(guid recordId) {
@@ -179,4 +176,16 @@ public class AttachmentProcessor extends OBJECT {
 
         return result;
     }
+    
+    private Collection<FileInfo> filterByType(Collection<FileInfo> files, String type) {
+        if (type != null) {
+            Iterator<FileInfo> i = files.iterator();
+            while (i.hasNext()) {
+                if (!type.equals(i.next().type.get()))
+                    i.remove();
+            }
+        }
+        return files;
+    }
+
 }
