@@ -1111,6 +1111,11 @@ public class JsonObject extends HashMap<String, Object> {
         return this;
     }
 
+    public JsonObject putAll(JsonObject obj) {
+        this.putAll((Map<String, Object>) obj);
+        return this;
+    }
+
     /**
      * Produce a string in double quotes with backslash sequences in all the
      * right places. A backslash will be inserted within </, producing <\/,

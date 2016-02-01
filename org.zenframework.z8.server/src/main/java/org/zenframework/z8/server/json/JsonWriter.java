@@ -4,7 +4,6 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.zenframework.z8.server.base.file.FileInfo;
 import org.zenframework.z8.server.base.table.value.IValue;
 import org.zenframework.z8.server.db.FieldType;
 import org.zenframework.z8.server.engine.ApplicationServer;
@@ -139,15 +138,6 @@ public class JsonWriter {
         write(Boolean.toString(value), false);
     }
 
-    public void write(FileInfo value) {
-        startObject();
-        writeProperty(Json.name, value.name);
-        writeProperty(Json.type, value.type);
-        writeProperty(Json.path, value.path);
-        writeProperty(Json.id, value.id);
-        finishObject();
-    }
-
     public void write(primary value) {
         if (value == null) {
             write("null", false);
@@ -271,12 +261,6 @@ public class JsonWriter {
 
     public void writeProperty(String name, boolean value) {
         writeProperty(name, Boolean.toString(value), false);
-    }
-
-    public void writeProperty(String name, FileInfo value) {
-        name = quoteName ? JsonObject.quote(name) : name;
-        stream.append(comma() + name + ":");
-        write(value);
     }
 
     public void writeNull(String name) {
