@@ -138,7 +138,7 @@ public class FileConverter extends OBJECT implements Properties.Listener {
         try {
             AttachmentProcessor processor = attachments.get().getAttachmentProcessor();
             Collection<FileInfo> fileInfos = processor.read(recordId);
-
+    
             int result = 0;
             File unconvertedDir = new File(file.BaseFolder, file.UnconvertedFolderName);
             if (unconvertedDir.exists() && !unconvertedDir.isDirectory())
@@ -146,17 +146,17 @@ public class FileConverter extends OBJECT implements Properties.Listener {
             if (!unconvertedDir.exists())
                 unconvertedDir.mkdirs();
             unconvertedDir.deleteOnExit();
-
+    
             for (FileInfo fileInfo : fileInfos) {
                 fileInfo = org.zenframework.z8.server.base.table.system.Files.getFile(fileInfo);
                 FileItem fileItem = fileInfo.file;
-
+    
                 File tempFile = new File(unconvertedDir, fileInfo.id.get().toString() + "-" + fileInfo.name.get());
                 if (!tempFile.exists()) {
                     tempFile.deleteOnExit();
                     fileItem.write(tempFile);
                 }
-
+    
                 try{
                     result += getPagesCount(tempFile);
                 } catch(IOException e){
@@ -164,10 +164,10 @@ public class FileConverter extends OBJECT implements Properties.Listener {
                     result += 1;
                 }
             }
-
+    
             return new integer(result);
-        } catch (Exception e) {
-            throw new exception("Не удалось выполнить подсчёт листов", e);
+        } catch(Throwable e) {
+            throw new RuntimeException(e);
         }
     }
 
