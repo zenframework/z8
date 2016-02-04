@@ -26,6 +26,8 @@ public class Year extends SqlToken {
     @Override
     public String format(DatabaseVendor vendor, FormatOptions options, boolean logicalContext) {
         switch(vendor) {
+        case Postgres:
+            return "date_part('year', " + param1.format(vendor, options) + ")";
         case Oracle:
             return new ToNumber(new SqlStringToken("TO_CHAR(" + param1.format(vendor, options) + ", 'YYYY')")).format(
                     vendor, options);
