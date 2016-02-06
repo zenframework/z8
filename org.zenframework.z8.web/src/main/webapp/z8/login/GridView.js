@@ -378,6 +378,7 @@ Z8.view.GridView = Ext.extend(Z8.Panel,
 			requestId: store.query.requestId, 
 			recordId: record.id, 
 			xaction: 'attach',
+			queryId: this.query.queryId,
 			field: store.filesProperty
 		};
 		
@@ -407,6 +408,7 @@ Z8.view.GridView = Ext.extend(Z8.Panel,
         	xaction: 'detach',
             field: store.filesProperty,
             requestId: store.query.requestId,
+			queryId: this.query.queryId,
             recordId: record.id,
             data: Ext.encode([item.file.id])
 		};
