@@ -38,7 +38,7 @@ public class RequestProcessor {
             RequestDispatcher dispatcher = new RequestDispatcher(request, response);
 
             info = new RequestInfo();
-            info.thread = new Thread(dispatcher);
+            info.thread = new Thread(dispatcher, request.getParameter(Json.ip));
             info.request = request;
             info.response = response;
 

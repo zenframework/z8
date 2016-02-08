@@ -108,6 +108,8 @@ public abstract class Adapter {
                 parameters.put(name, values.length != 0 ? values[0] : null);
             }
         }
+        
+        parameters.put(Json.ip.get(), request.getRemoteAddr());
     }
 
     protected List<FileItem> parseMultipartRequest(HttpServletRequest request) {

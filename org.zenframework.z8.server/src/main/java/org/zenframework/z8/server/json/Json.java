@@ -13,6 +13,7 @@ public interface Json {
     string serverId = new string("serverId");
     string service = new string("service");
     string retry = new string("retry");
+    string ip = new string("ip");
 
     string upload = new string("upload");
 
