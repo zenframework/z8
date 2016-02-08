@@ -64,7 +64,7 @@ public class Servlet extends HttpServlet {
         config = new ServerConfig();
 
         try {
-            if (config.runAllServers()) {
+            if (!config.webServerStandalone()) {
                 startServer(AuthorityService, config);
                 startServer(ApplicationServer, config);
             }
@@ -131,7 +131,7 @@ public class Servlet extends HttpServlet {
 
     @Override
     public void destroy() {
-        if (config.runAllServers()) {
+        if (!config.webServerStandalone()) {
             stopServer(ApplicationServer, config);
             stopServer(AuthorityService, config);
         }

@@ -21,7 +21,7 @@ public class Scheduler implements Runnable {
     private List<Task> tasks = new ArrayList<Task>();
 
     public static void start() {
-        if (scheduler == null) {
+        if (scheduler == null && ApplicationServer.config().schedulerEnabled()) {
             scheduler = new Scheduler();
         }
     }

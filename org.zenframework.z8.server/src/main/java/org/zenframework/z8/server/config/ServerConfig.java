@@ -18,8 +18,10 @@ public class ServerConfig extends Properties {
     public static final String ApplicationServerIdProperty = "application.server.id";
     public static final String ApplicationServerPortProperty = "application.server.port";
 
-    public static final String WebServerRunAllProperty = "runservers";
+    public static final String WebServerStandaloneProperty = "web.server.standalone";
 
+    public static final String SchedulerEnabledProperty = "scheduler.enabled";
+    
     public static final String TraceSqlProperty = "trace.sql";
 
     
@@ -31,7 +33,9 @@ public class ServerConfig extends Properties {
     private static String applicationServerId;
     private static int applicationServerPort;
 
-    private static boolean runAllServers;
+    private static boolean webServerStandalone;
+    
+    private static boolean schedulerEnabled;
 
     private static boolean traceSql;
 
@@ -63,9 +67,11 @@ public class ServerConfig extends Properties {
         
         applicationServerPort = getProperty(ApplicationServerPortProperty, Rmi.randomPort());
 
-        runAllServers = getProperty(WebServerRunAllProperty, false);
+        webServerStandalone = getProperty(WebServerStandaloneProperty, false);
         
         traceSql = getProperty(TraceSqlProperty, false);
+        
+        schedulerEnabled = getProperty(SchedulerEnabledProperty, true);
     }
 
     @Override
@@ -86,7 +92,7 @@ public class ServerConfig extends Properties {
 
     public final boolean getProperty(String key, boolean defaultValue) {
         String value = getProperty(key);
-        return value != null ? Boolean.parseBoolean(value) : defaultValue;
+        return value != null && !value.isEmpty() ? Boolean.parseBoolean(value) : defaultValue;
     }
 
     public final int getProperty(String key, int defaultValue) {
@@ -131,7 +137,11 @@ public class ServerConfig extends Properties {
         return traceSql;
     }
 
-    public final boolean runAllServers() {
-        return runAllServers;
+    public final boolean webServerStandalone() {
+        return webServerStandalone;
+    }
+
+    public final boolean schedulerEnabled() {
+        return schedulerEnabled;
     }
 }
