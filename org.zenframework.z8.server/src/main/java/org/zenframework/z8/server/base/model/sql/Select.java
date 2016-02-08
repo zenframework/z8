@@ -253,6 +253,8 @@ public class Select {
     protected String formatFrom(FormatOptions options) {
         String join = "";
 
+        String root = select != null ? "(" + select.sql(options) + ") " + select.getAlias() : null;
+
         for (ILink link : links) {
             String name = link.getQuery().name();
 
@@ -270,13 +272,7 @@ public class Select {
             }
         }
 
-        String result = queryName(rootQuery) + join;
-
-        if (select != null) {
-            result += (result.isEmpty() ? "" : ", ") + "(" + select.sql(options) + ") " + select.getAlias();
-        }
-
-        return "\nfrom " + result;
+        return "\nfrom " + (root != null ? root: queryName(rootQuery)) + join;
     }
 
     private String formatWhere(FormatOptions options) {

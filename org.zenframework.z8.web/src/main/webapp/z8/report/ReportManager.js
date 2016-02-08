@@ -54,15 +54,13 @@ Z8.ReportManager =
 		var columns = grid.getColumnModel().getColumnsBy(function(c){ return !c.hidden; });
 		var reportColumns = [];
 		
-		for(var i = 0; i < columns.length; i++)
-		{
+		for(var i = 0; i < columns.length; i++) {
 			var column = columns[i];
 			var store = grid.getStore();
 			var dataIndex = column.dataIndex;
 			
-			if ( ! Z8.isEmpty(column.dataIndex) ) {
+			if(!Z8.isEmpty(column.dataIndex) && column.dataIndex != query.lockKey)
 				reportColumns.push({ id: column.dataIndex, width: column.width });
-			}
 		}
 		
 		params.format = format;

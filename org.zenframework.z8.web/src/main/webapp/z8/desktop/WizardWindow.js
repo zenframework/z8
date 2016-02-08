@@ -425,14 +425,11 @@ Z8.view.ChartDataSourcePanel = Ext.extend(Z8.Panel,
 	{
 		var data = [];
 		
-		Ext.iterate(result.data, function(key, value)
-		{
-			for(var i = 0; i < value.length; i++)
-			{
+		Ext.iterate(result.data, function(value, index) {
+			value = value.items != null ? value.items : value;
+			for(var i = 0; i < value.length; i++) {
 				if(!value[i].isJob)	
-				{
 					data.push([value[i].id, value[i].text]);
-				}
 			}
 		});
 		

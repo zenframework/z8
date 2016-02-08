@@ -58,7 +58,7 @@ public class ConverterAdapter extends Adapter {
 
     @Override
     public void stop() {
-        if(converter == null) {
+        if(converter != null) {
             converter.stopOfficeManager();
             converter = null;
         }
