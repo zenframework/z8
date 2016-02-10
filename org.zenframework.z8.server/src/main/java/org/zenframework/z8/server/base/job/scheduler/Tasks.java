@@ -155,7 +155,7 @@ public class Tasks extends Table {
 
     @Override
     protected void afterUpdate(Query data, guid recordId, Collection<Field> fields, Query model, guid modelRecordId) {
-        if (fields.size() != 1 || !fields.contains(lastStarted.get())) {
+        if (!fields.contains(lastStarted.get())) {
             Scheduler.reset();
         }
     }
