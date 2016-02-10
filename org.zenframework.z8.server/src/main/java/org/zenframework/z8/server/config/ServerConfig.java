@@ -85,6 +85,7 @@ public class ServerConfig extends Properties {
         return super.getProperty(key.toUpperCase());
     }
 
+    @Override
     public final String getProperty(String key, String defaultValue) {
         String value = getProperty(key);
         return value != null && !value.isEmpty() ? value : defaultValue;
