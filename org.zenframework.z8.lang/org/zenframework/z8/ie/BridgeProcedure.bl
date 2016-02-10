@@ -1,0 +1,14 @@
+import org.zenframework.z8.base.simple.Procedure;
+
+[native "org.zenframework.z8.server.ie.BridgeProcedure"]
+class BridgeProcedure extends Procedure {
+	
+	protected TransportContext context;
+	
+	virtual protected void init();
+
+	virtual protected void beforeTransfer(Message message);
+
+	virtual protected void afterTransfer(Message message);
+
+}

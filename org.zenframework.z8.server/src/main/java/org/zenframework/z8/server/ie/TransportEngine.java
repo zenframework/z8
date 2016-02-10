@@ -26,7 +26,7 @@ public class TransportEngine implements Properties.Listener {
     }
 
     public synchronized Transport getTransport(TransportContext context, String protocol) {
-        Transport transport= null;
+        Transport transport = null;
         if (enabledProtocols.contains(protocol)) {
             String transportId = transportId(context, protocol);
             transport = transports.get(transportId);
