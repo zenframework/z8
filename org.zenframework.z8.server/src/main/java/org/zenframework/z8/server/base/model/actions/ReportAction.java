@@ -106,6 +106,11 @@ public class ReportAction extends Action {
                 result.add(field);
             }
         }
+        
+        for(Field field: groupFields) {
+            if(!result.contains(field))
+                result.add(field);
+        }
 
         return result;
     }
