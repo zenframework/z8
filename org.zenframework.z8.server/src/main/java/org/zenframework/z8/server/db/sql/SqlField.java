@@ -56,17 +56,14 @@ public class SqlField extends SqlToken {
     }
 
     private SqlToken getToken(DatabaseVendor vendor, FormatOptions options, boolean logicalContext, Aggregation aggregation) {
-        String alias = field.format(vendor, options);
-
-        if(field.type() == FieldType.Boolean)
-            return new SqlStringToken(alias + (logicalContext ? "=1" : ""));
-
-        SqlToken result = new SqlStringToken(alias);
-
         if(field.type() == FieldType.Guid && (aggregation == Aggregation.Min || aggregation == Aggregation.Max))
-            return new ToChar(result);
+            return new ToChar(field);
 
-        return result;
+        String alias = field.format(vendor, options);
+        if(field.type() == FieldType.Boolean)
+            alias += logicalContext ? "=1" : "";
+        
+        return new SqlStringToken(alias);
     }
 
     private SqlToken aggregate(SqlToken token, Aggregation aggregation) {
