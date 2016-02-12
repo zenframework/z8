@@ -20,6 +20,7 @@ public class BridgeProcedure extends Procedure {
             super(container);
             setJavaClass(BridgeProcedure.class);
             setAttribute(Native, BridgeProcedure.class.getCanonicalName());
+            setAttribute(Job, "");
         }
 
         @Override
@@ -46,40 +47,42 @@ public class BridgeProcedure extends Procedure {
     @Override
     protected void z8_exec(RCollection<Parameter.CLASS<? extends Parameter>> parameters) {
 
-        String uri = Properties.getProperty(ServerRuntime.BridgeUrlsProperty);
-        URI bridgeUri;
-        try {
-            bridgeUri = new URI(uri);
-        } catch (URISyntaxException e) {
-            throw new RuntimeException("Incorrect bridge URI '" + uri + "'", e);
-        }
-        context.get().setProperty(TransportContext.SelfAddressProperty, bridgeUri.getHost());
-        context.get().check();
-        Transport transIn = engine.getTransport(context.get(), bridgeUri.getScheme());
-        Transport transOut = engine.getTransport(context.get(), bridgeUri.getPath().substring(1));
-
-        if (transIn != null && transOut != null) {
+        for (String uri : Properties.getProperty(ServerRuntime.BridgeUrlsProperty).split("\\,")) {
+            URI bridgeUri;
             try {
-                transIn.connect();
-                transOut.connect();
-                for (Message message = transIn.receive(); message != null; message = transIn.receive()) {
-                    try {
-                        z8_beforeTransfer((Message.CLASS<Message>) message.getCLASS());
-                        transOut.send(message);
-                        transIn.commit();
-                        transOut.commit();
-                        z8_afterTransfer((Message.CLASS<Message>) message.getCLASS());
-                    } catch (Throwable e) {
-                        log("Can't transfer message '" + message.getId() + "' from '" + transIn.getUrl(message.getAddress())
-                                + "' to '" + transOut.getUrl(message.getAddress()) + "'", e);
-                        transOut.rollback();
-                        transIn.rollback();
+                bridgeUri = new URI(uri.trim());
+            } catch (URISyntaxException e) {
+                throw new RuntimeException("Incorrect bridge URI '" + uri + "'", e);
+            }
+            context.get().setProperty(TransportContext.SelfAddressProperty, bridgeUri.getHost());
+            context.get().check();
+            Transport transIn = engine.getTransport(context.get(), bridgeUri.getScheme());
+            Transport transOut = engine.getTransport(context.get(), bridgeUri.getPath().substring(1));
+
+            if (transIn != null && transOut != null) {
+                try {
+                    transIn.connect();
+                    transOut.connect();
+                    for (Message message = transIn.receive(); message != null; message = transIn.receive()) {
+                        try {
+                            z8_beforeTransfer((Message.CLASS<Message>) message.getCLASS());
+                            transOut.send(message);
+                            transIn.commit();
+                            transOut.commit();
+                            z8_afterTransfer((Message.CLASS<Message>) message.getCLASS());
+                        } catch (Throwable e) {
+                            log("Can't transfer message '" + message.getId() + "' from '"
+                                    + transIn.getUrl(message.getAddress()) + "' to '"
+                                    + transOut.getUrl(message.getAddress()) + "'", e);
+                            transOut.rollback();
+                            transIn.rollback();
+                        }
                     }
+                } catch (TransportException e) {
+                    log("Can't create '" + transIn.getProtocol() + "-to-" + transOut.getProtocol() + "' bridge", e);
+                    transIn.close();
+                    transOut.close();
                 }
-            } catch (TransportException e) {
-                log("Can't create '" + transIn.getProtocol() + "-to-" + transOut.getProtocol() + "' bridge", e);
-                transIn.close();
-                transOut.close();
             }
         }
 
