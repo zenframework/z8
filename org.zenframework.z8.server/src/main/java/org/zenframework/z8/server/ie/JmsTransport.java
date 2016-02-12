@@ -62,7 +62,8 @@ public class JmsTransport extends AbstractTransport implements ExceptionListener
     @Override
     public void onPropertyChange(String key, String value) {
         if (ServerRuntime.JmsConnectionFactoryProperty.equalsKey(key)
-                || ServerRuntime.JmsConnectionUrlProperty.equalsKey(key) || ServerRuntime.JmsModeProperty.equalsKey(key)) {
+                || ServerRuntime.JmsConnectionUrlProperty.equalsKey(key)
+                || ServerRuntime.JmsModeProperty.equalsKey(key)) {
             propertyChanged.set(true);
         }
     }
@@ -143,7 +144,7 @@ public class JmsTransport extends AbstractTransport implements ExceptionListener
             default:
                 throw new UnsupportedOperationException("Unsupported JMS send mode '" + mode + "'");
             }
-            jmsMessage.setObjectProperty(PROP_MODE, mode);
+            jmsMessage.setStringProperty(PROP_MODE, mode.toString());
             jmsMessage.setJMSReplyTo(self);
             producer.send(jmsMessage);
             Trace.logEvent("Send IE message [" + message.getId() + "] to " + getUrl(message.getAddress()));
@@ -177,7 +178,7 @@ public class JmsTransport extends AbstractTransport implements ExceptionListener
                     sender = ((Topic) senderDest).getTopicName();
                 }
                 try {
-                    Mode mode = jmsMessage.propertyExists(PROP_MODE) ? (Mode) jmsMessage.getObjectProperty(PROP_MODE)
+                    Mode mode = jmsMessage.propertyExists(PROP_MODE) ? getMode(jmsMessage.getStringProperty(PROP_MODE))
                             : DEFAULT_MODE;
                     switch (mode) {
                     case OBJECT:
@@ -240,7 +241,8 @@ public class JmsTransport extends AbstractTransport implements ExceptionListener
         }
     }
 
-    private static javax.jms.Message createObjectMessage(Session session, Message message) throws JMSException, IOException {
+    private static javax.jms.Message createObjectMessage(Session session, Message message) throws JMSException,
+            IOException {
         List<FileInfo> fileInfos = IeUtil.filesToFileInfos(message.getExportEntry().getFiles().getFile());
         for (FileInfo fileInfo : fileInfos) {
             message.getFiles().add(Files.getFile(fileInfo));
@@ -264,7 +266,8 @@ public class JmsTransport extends AbstractTransport implements ExceptionListener
         }
     }
 
-    private static javax.jms.Message createStreamMessage(Session session, Message message) throws JMSException, IOException {
+    private static javax.jms.Message createStreamMessage(Session session, Message message) throws JMSException,
+            IOException {
         StreamMessage streamMessage = session.createStreamMessage();
         // write message object
         byte[] buff = IOUtils.objectToBytes(message);
@@ -336,7 +339,8 @@ public class JmsTransport extends AbstractTransport implements ExceptionListener
             } else if (messageObject == null) {
                 return null;
             } else {
-                throw new JMSException("Incorrect JMS message object type: " + messageObject.getClass().getCanonicalName());
+                throw new JMSException("Incorrect JMS message object type: "
+                        + messageObject.getClass().getCanonicalName());
             }
         } else {
             throw new JMSException("Incorrect JMS message type: " + jmsMessage);

@@ -131,7 +131,7 @@ public class Export extends OBJECT {
         RecordsSorter recordsSorter = new RecordsSorter();
         List<ExportEntry.Records.Record> records = new LinkedList<ExportEntry.Records.Record>();
         List<ExportEntry.Files.File> files = new LinkedList<ExportEntry.Files.File>();
-        List<ExportEntry.Properties.Property> properties = new LinkedList<ExportEntry.Properties.Property>();
+        List<ExportEntry.Properties.Property> props = new LinkedList<ExportEntry.Properties.Property>();
 
         try {
             String protocol = getProtocol();
@@ -157,7 +157,7 @@ public class Export extends OBJECT {
                     property.setKey(entry.getKey().get());
                     property.setValue(entry.getValue().toString());
                     property.setType(entry.getValue().type().toString());
-                    properties.add(property);
+                    props.add(property);
                 }
             }
             // Запись сообщений в таблицу ExportMessages
@@ -178,7 +178,7 @@ public class Export extends OBJECT {
             message.setAddress(getAddress());
             message.setSender(sender);
             message.getExportEntry().getRecords().getRecord().addAll(records);
-            message.getExportEntry().getProperties().getProperty().addAll(properties);
+            message.getExportEntry().getProperties().getProperty().addAll(props);
             if (!sendFilesSeparately) {
                 message.getExportEntry().getFiles().getFile().addAll(files);
             }
