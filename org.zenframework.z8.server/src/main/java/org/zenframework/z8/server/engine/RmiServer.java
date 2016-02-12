@@ -42,6 +42,7 @@ public abstract class RmiServer extends UnicastRemoteObject implements IServer {
         return port;
     }
 
+    @Override
     public String getName() {
         return name;
     }

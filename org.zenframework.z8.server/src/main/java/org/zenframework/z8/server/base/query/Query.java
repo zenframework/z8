@@ -1327,6 +1327,7 @@ public class Query extends Runnable {
         return owners().size();
     }
 
+    @Override
     public Query getOwner() {
         return getOwnersCount() == 1 ? owners().iterator().next().get() : null;
     }
