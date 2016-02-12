@@ -173,12 +173,13 @@ public class Connection {
 
     public void commit() {
         try {
-            if(transactionCount != 0) {
+            if(transactionCount == 0)
+                throw new RuntimeException("Transactions count == 0");
+            if(transactionCount == 1) {
                 connection.commit();
-                if(transactionCount - 1 == 0)
-                    setAutoCommit(true);
-                transactionCount--;
+                setAutoCommit(true);
             }
+            transactionCount--;
         } catch(SQLException e) {
             throw new RuntimeException(e);
         }
@@ -186,12 +187,13 @@ public class Connection {
 
     public void rollback() {
         try {
-            if(transactionCount != 0) {
+            if(transactionCount == 0)
+                throw new RuntimeException("Transactions count == 0");
+            if(transactionCount == 1) {
                 connection.rollback();
-                if(transactionCount - 1 == 0)
-                    setAutoCommit(true);
-                transactionCount--;
+                setAutoCommit(true);
             }
+            transactionCount--;
         } catch(SQLException e) {
             throw new RuntimeException(e);
         }
