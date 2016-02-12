@@ -139,13 +139,6 @@ public class Tasks extends Table {
 
         links.add(job);
         links.add(user);
-
-        /*{
-            LinkedHashMap<Field, primary> record = new LinkedHashMap<Field, primary>();
-            record.put(job.get(), TransportProcedure.PROCEDURE_ID);
-            record.put(repeat.get(), new integer(10));
-            addRecord(EXPORT_TASK_ID, record);
-        }*/
     }
 
     @Override
