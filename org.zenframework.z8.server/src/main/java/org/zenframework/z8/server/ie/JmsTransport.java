@@ -36,12 +36,23 @@ public class JmsTransport extends AbstractTransport implements ExceptionListener
 
     public static final String PROTOCOL = "jms";
 
+    private static final String PROP_MODE = "mode";
+
+    private static enum Mode {
+
+        OBJECT, STREAM
+
+    }
+
+    private static final Mode DEFAULT_MODE = Mode.OBJECT;
+
     private AtomicBoolean propertyChanged = new AtomicBoolean(false);
 
     private Connection connection;
     private Session session;
     private Destination self;
     private MessageConsumer consumer = null;
+    private Mode mode;
 
     public JmsTransport(TransportContext context) {
         super(context);
@@ -50,7 +61,8 @@ public class JmsTransport extends AbstractTransport implements ExceptionListener
 
     @Override
     public void onPropertyChange(String key, String value) {
-        if (ServerRuntime.ConnectionFactoryProperty.equalsKey(key) || ServerRuntime.ConnectionUrlProperty.equalsKey(key)) {
+        if (ServerRuntime.JmsConnectionFactoryProperty.equalsKey(key)
+                || ServerRuntime.JmsConnectionUrlProperty.equalsKey(key) || ServerRuntime.JmsModeProperty.equalsKey(key)) {
             propertyChanged.set(true);
         }
     }
@@ -62,8 +74,8 @@ public class JmsTransport extends AbstractTransport implements ExceptionListener
         }
         if (connection == null) {
             try {
-                String jmsFactoryClass = Properties.getProperty(ServerRuntime.ConnectionFactoryProperty);
-                String jmsUrl = Properties.getProperty(ServerRuntime.ConnectionUrlProperty);
+                String jmsFactoryClass = Properties.getProperty(ServerRuntime.JmsConnectionFactoryProperty);
+                String jmsUrl = Properties.getProperty(ServerRuntime.JmsConnectionUrlProperty);
                 String selfAddress = context.getProperty(TransportContext.SelfAddressProperty);
                 ConnectionFactory connectionFactory = getConnectionFactory(jmsFactoryClass, jmsUrl);
                 connection = connectionFactory.createConnection();
@@ -72,6 +84,7 @@ public class JmsTransport extends AbstractTransport implements ExceptionListener
                 session = connection.createSession(true, -1 /* arg not used */);
                 self = session.createQueue(selfAddress);
                 consumer = session.createConsumer(self);
+                mode = getMode(Properties.getProperty(ServerRuntime.JmsModeProperty));
                 Trace.logEvent("JMS transport: Connected to '" + jmsUrl + "'");
                 Trace.logEvent("JMS Transport: Listening to '" + selfAddress + "'");
             } catch (JMSException e) {
@@ -119,10 +132,20 @@ public class JmsTransport extends AbstractTransport implements ExceptionListener
             Destination destination = session.createQueue(message.getAddress());
             MessageProducer producer = session.createProducer(destination);
             producer.setDeliveryMode(DeliveryMode.PERSISTENT);
-            javax.jms.Message jmsMessage = createObjectMessage(session, message);
+            javax.jms.Message jmsMessage;
+            switch (mode) {
+            case OBJECT:
+                jmsMessage = createObjectMessage(session, message);
+                break;
+            case STREAM:
+                jmsMessage = createStreamMessage(session, message);
+                break;
+            default:
+                throw new UnsupportedOperationException("Unsupported JMS send mode '" + mode + "'");
+            }
+            jmsMessage.setObjectProperty(PROP_MODE, mode);
             jmsMessage.setJMSReplyTo(self);
             producer.send(jmsMessage);
-            session.commit();
             Trace.logEvent("Send IE message [" + message.getId() + "] to " + getUrl(message.getAddress()));
         } catch (Exception e) {
             throw new TransportException("Can't send IE message [" + message.getId() + "] to '" + message.getAddress()
@@ -154,7 +177,17 @@ public class JmsTransport extends AbstractTransport implements ExceptionListener
                     sender = ((Topic) senderDest).getTopicName();
                 }
                 try {
-                    return parseObjectMessage(jmsMessage, sender);
+                    Mode mode = jmsMessage.propertyExists(PROP_MODE) ? (Mode) jmsMessage.getObjectProperty(PROP_MODE)
+                            : DEFAULT_MODE;
+                    switch (mode) {
+                    case OBJECT:
+                        return parseObjectMessage(jmsMessage, sender);
+                    case STREAM:
+                        return parseStreamMessage(jmsMessage, sender);
+                    default:
+                        break;
+
+                    }
                 } catch (JMSException e) {
                     throw new TransportException("Can't parse JMS message " + messageId + " from "
                             + (sender == null ? "<unknown>" : sender), e);
@@ -231,9 +264,7 @@ public class JmsTransport extends AbstractTransport implements ExceptionListener
         }
     }
 
-    @SuppressWarnings("unused")
     private static javax.jms.Message createStreamMessage(Session session, Message message) throws JMSException, IOException {
-        //javax.jms.Message jmsMessage = session.createObjectMessage(message);
         StreamMessage streamMessage = session.createStreamMessage();
         // write message object
         byte[] buff = IOUtils.objectToBytes(message);
@@ -261,40 +292,44 @@ public class JmsTransport extends AbstractTransport implements ExceptionListener
         return streamMessage;
     }
 
-    @SuppressWarnings("unused")
-    private static Message parseStreamMessage(javax.jms.Message jmsMessage) throws JMSException, IOException {
+    private static Message parseStreamMessage(javax.jms.Message jmsMessage, String sender) throws JMSException {
         if (jmsMessage instanceof StreamMessage) {
             StreamMessage streamMessage = (StreamMessage) jmsMessage;
             // read message object
             byte[] buff = new byte[streamMessage.readInt()];
             int count = streamMessage.readBytes(buff);
             if (count < buff.length) {
-                throw new IOException("Unexpected eof");
+                throw new RuntimeException("Unexpected eof");
             }
             Object messageObject = IOUtils.bytesToObject(buff);
             if (messageObject instanceof Message) {
                 Message message = (Message) messageObject;
+                message.setSender(sender);
                 message.setFiles(IeUtil.filesToFileInfos(message.getExportEntry().getFiles().getFile()));
                 for (FileInfo fileInfo : message.getFiles()) {
                     fileInfo.file = FilesFactory.createFileItem(fileInfo.name.get());
                     // read file size
                     long size = streamMessage.readLong();
                     buff = new byte[(int) Math.min(size, IOUtils.DefaultBufferSize)];
-                    OutputStream out = fileInfo.file.getOutputStream();
                     try {
-                        while (size > 0) {
-                            count = streamMessage.readBytes(buff);
-                            if (count < buff.length) {
-                                throw new IOException("Unexpected eof");
+                        OutputStream out = fileInfo.file.getOutputStream();
+                        try {
+                            while (size > 0) {
+                                count = streamMessage.readBytes(buff);
+                                if (count < buff.length) {
+                                    throw new IOException("Unexpected eof");
+                                }
+                                out.write(buff);
+                                size -= count;
+                                if (size > 0 && size < buff.length) {
+                                    buff = new byte[(int) size];
+                                }
                             }
-                            out.write(buff);
-                            size -= count;
-                            if (size > 0 && size < buff.length) {
-                                buff = new byte[(int) size];
-                            }
+                        } finally {
+                            out.close();
                         }
-                    } finally {
-                        out.close();
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
                     }
                 }
                 return message;
@@ -306,6 +341,10 @@ public class JmsTransport extends AbstractTransport implements ExceptionListener
         } else {
             throw new JMSException("Incorrect JMS message type: " + jmsMessage);
         }
+    }
+
+    private static Mode getMode(String mode) {
+        return mode == null || mode.isEmpty() ? Mode.OBJECT : Mode.valueOf(mode.toUpperCase());
     }
 
 }

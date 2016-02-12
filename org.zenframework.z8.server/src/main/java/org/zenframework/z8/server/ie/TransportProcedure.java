@@ -27,6 +27,7 @@ public class TransportProcedure extends Procedure {
             super(container);
             setJavaClass(TransportProcedure.class);
             setAttribute(Native, TransportProcedure.class.getCanonicalName());
+            setAttribute(Job, "");
         }
 
         @Override

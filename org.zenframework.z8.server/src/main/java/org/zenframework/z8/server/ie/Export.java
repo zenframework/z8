@@ -16,6 +16,7 @@ import org.zenframework.z8.ie.xml.ExportEntry;
 import org.zenframework.z8.server.base.file.FileInfo;
 import org.zenframework.z8.server.base.table.Table;
 import org.zenframework.z8.server.base.table.TreeTable;
+import org.zenframework.z8.server.base.table.system.Properties;
 import org.zenframework.z8.server.base.table.value.AttachmentField;
 import org.zenframework.z8.server.base.table.value.Field;
 import org.zenframework.z8.server.db.generator.IForeignKey;
@@ -25,6 +26,7 @@ import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.runtime.OBJECT;
 import org.zenframework.z8.server.runtime.RCollection;
 import org.zenframework.z8.server.runtime.RLinkedHashMap;
+import org.zenframework.z8.server.runtime.ServerRuntime;
 import org.zenframework.z8.server.types.bool;
 import org.zenframework.z8.server.types.exception;
 import org.zenframework.z8.server.types.guid;
@@ -129,40 +131,60 @@ public class Export extends OBJECT {
 
     public void execute() {
         RecordsSorter recordsSorter = new RecordsSorter();
-        Message message = Message.instance();
+        List<ExportEntry.Records.Record> records = new LinkedList<ExportEntry.Records.Record>();
+        List<ExportEntry.Files.File> files = new LinkedList<ExportEntry.Files.File>();
+        List<ExportEntry.Properties.Property> properties = new LinkedList<ExportEntry.Properties.Property>();
+
         try {
             String protocol = getProtocol();
             if (!protocol.equals(NULL_PROTOCOL)) {
                 // Если протокол НЕ "null", экспортировать записи БД
                 for (RecordsetEntry recordsetEntry : recordsetEntries) {
                     while (recordsetEntry.recordset.next()) {
-                        exportRecord(recordsetEntry, message, getPolicy(recordsetEntry.recordset.classId()), recordsSorter,
-                                0);
+                        exportRecord(recordsetEntry, records, files, getPolicy(recordsetEntry.recordset.classId()),
+                                recordsSorter, 0);
                     }
                 }
                 // Сортировка записей в соответствии со ссылками по foreign keys и parentId
-                Collections.sort(message.getExportEntry().getRecords().getRecord(), recordsSorter.getComparator());
+                Collections.sort(records, recordsSorter.getComparator());
                 Trace.logEvent("Sorted records:");
-                for (ExportEntry.Records.Record record : message.getExportEntry().getRecords().getRecord()) {
+                for (ExportEntry.Records.Record record : records) {
                     Trace.logEvent(record.getTable() + '[' + record.getRecordId() + ']');
                 }
             }
             // Свойства экспортируются для любого протокола
             if (!properties.isEmpty()) {
-                ExportEntry.Properties properties = new ExportEntry.Properties();
                 for (Map.Entry<string, primary> entry : this.properties.entrySet()) {
                     ExportEntry.Properties.Property property = new ExportEntry.Properties.Property();
                     property.setKey(entry.getKey().get());
                     property.setValue(entry.getValue().toString());
                     property.setType(entry.getValue().type().toString());
-                    properties.getProperty().add(property);
+                    properties.add(property);
                 }
-                message.getExportEntry().setProperties(properties);
             }
-            // Запись сообщения в таблицу ExportMessages
+            // Запись сообщений в таблицу ExportMessages
+            String sender = context.get().getProperty(TransportContext.SelfAddressProperty);
+            boolean sendFilesSeparately = Boolean.parseBoolean(Properties
+                    .getProperty(ServerRuntime.SendFilesSeparatelyProperty));
+            ExportMessages exportMessages = ExportMessages.instance();
+            if (sendFilesSeparately) {
+                for (ExportEntry.Files.File file : files) {
+                    Message message = Message.instance();
+                    message.setAddress(getAddress());
+                    message.setSender(sender);
+                    message.getExportEntry().getFiles().getFile().add(file);
+                    exportMessages.addMessage(message, protocol);
+                }
+            }
+            Message message = Message.instance();
             message.setAddress(getAddress());
-            message.setSender(context.get().getProperty(TransportContext.SelfAddressProperty));
-            ExportMessages.instance().addMessage(message, protocol);
+            message.setSender(sender);
+            message.getExportEntry().getRecords().getRecord().addAll(records);
+            message.getExportEntry().getProperties().getProperty().addAll(properties);
+            if (!sendFilesSeparately) {
+                message.getExportEntry().getFiles().getFile().addAll(files);
+            }
+            exportMessages.addMessage(message, protocol);
         } catch (JAXBException e) {
             throw new exception("Can't marshal records", e);
         }
@@ -216,8 +238,8 @@ public class Export extends OBJECT {
         }
     }
 
-    private void exportRecord(RecordsetEntry recordsetEntry, Message message, ImportPolicy policy,
-            RecordsSorter recordsSorter, int level) {
+    private void exportRecord(RecordsetEntry recordsetEntry, List<ExportEntry.Records.Record> records,
+            List<ExportEntry.Files.File> files, ImportPolicy policy, RecordsSorter recordsSorter, int level) {
         guid recordId = recordsetEntry.recordset.recordId();
         String table = recordsetEntry.recordset.classId();
         if (!recordsSorter.contains(table, recordId) && !IeUtil.isBuiltinRecord(recordsetEntry.recordset, recordId)) {
@@ -227,18 +249,17 @@ public class Export extends OBJECT {
             Trace.logEvent(getSpaces(level) + "Export record " + recordsetEntry.recordset.name() + '[' + recordId + ']');
             ExportEntry.Records.Record record = IeUtil.tableToRecord(recordsetEntry.recordset, recordsetEntry.fields,
                     policy == null ? null : policy.getSelfPolicy(), isExportAttachments());
-            message.getExportEntry().getRecords().getRecord().add(record);
+            records.add(record);
             recordsSorter.addRecord(table, recordId);
             // Вложения
             if (isExportAttachments()) {
                 for (AttachmentField attField : recordsetEntry.recordset.getAttachments()) {
                     List<FileInfo> fileInfos = FileInfo.parseArray(attField.get().string().get());
-                    message.getExportEntry().getFiles().getFile()
-                            .addAll(IeUtil.fileInfosToFiles(fileInfos, policy == null ? null : policy.getSelfPolicy()));
+                    files.addAll(IeUtil.fileInfosToFiles(fileInfos, policy == null ? null : policy.getSelfPolicy()));
                 }
             }
             // Ссылки на другие таблицы
-            // TODO Переделать через links
+            // TODO Переделать через links, проверять атрибут exportable
             for (IForeignKey fkey : recordsetEntry.recordset.getForeignKeys()) {
                 if (fkey.getReferencedTable() instanceof Table) {
                     Trace.logEvent(getSpaces(level + 1) + fkey.getFieldDescriptor().name() + " --> "
@@ -248,7 +269,7 @@ public class Export extends OBJECT {
                     Table refRecord = (Table) Loader.getInstance(((Table) fkey.getReferencedTable()).classId());
                     guid refGuid = recordsetEntry.recordset.getFieldByName(fkey.getFieldDescriptor().name()).guid();
                     if (refRecord.readRecord(refGuid, refRecord.getPrimaryFields())) {
-                        exportRecord(new RecordsetEntry(refRecord, refRecord.getPrimaryFields()), message,
+                        exportRecord(new RecordsetEntry(refRecord, refRecord.getPrimaryFields()), records, files,
                                 policy == null ? null : policy.getRelationsPolicy(), recordsSorter, level + 1);
                         recordsSorter.addLink(table, recordId, refRecord.classId(), refGuid);
                     }
@@ -260,7 +281,7 @@ public class Export extends OBJECT {
                 if (!guid.NULL.equals(parentId)) {
                     TreeTable parentRecord = (TreeTable) Loader.getInstance(recordsetEntry.recordset.classId());
                     if (parentRecord.readRecord(parentId, parentRecord.getPrimaryFields())) {
-                        exportRecord(new RecordsetEntry(parentRecord, parentRecord.getPrimaryFields()), message,
+                        exportRecord(new RecordsetEntry(parentRecord, parentRecord.getPrimaryFields()), records, files,
                                 policy == null ? null : policy.getRelationsPolicy(), recordsSorter, level + 1);
                         recordsSorter.addLink(table, recordId, table, parentId);
                     }

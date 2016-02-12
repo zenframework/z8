@@ -30,7 +30,7 @@ public class FileTransport extends AbstractTransport implements Properties.Liste
     private static final String IN_ARCH = "in_arch";
     private static final String EXPORT_ENTRY = "export-entry.xml";
 
-    private File root = new File(Properties.getProperty(ServerRuntime.FolderProperty));
+    private File root = new File(Properties.getProperty(ServerRuntime.FileFolderProperty));
     private File in = new File(root, IN);
     private File out = new File(root, OUT);
     private File inArch = new File(root, IN_ARCH);
@@ -39,13 +39,13 @@ public class FileTransport extends AbstractTransport implements Properties.Liste
 
     public FileTransport(TransportContext context) {
         super(context);
-        initFolders(Properties.getProperty(ServerRuntime.FolderProperty));
+        initFolders(Properties.getProperty(ServerRuntime.FileFolderProperty));
         Properties.addListener(this);
     }
 
     @Override
     public void onPropertyChange(String key, String value) {
-        if (ServerRuntime.FolderProperty.equalsKey(key)) {
+        if (ServerRuntime.FileFolderProperty.equalsKey(key)) {
             initFolders(value);
         }
     }
