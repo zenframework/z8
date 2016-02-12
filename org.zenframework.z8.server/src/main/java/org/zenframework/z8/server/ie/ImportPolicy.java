@@ -19,7 +19,7 @@ public enum ImportPolicy {
      */
     OVERRIDE_AND_KEEP_RELATIONS(OVERRIDE, KEEP, true);
 
-    public static final ImportPolicy DEFAULT = OVERRIDE;
+    public static final ImportPolicy DEFAULT = KEEP;
 
     private final ImportPolicy selfPolicy;
     private final ImportPolicy relationsPolicy;
