@@ -46,7 +46,7 @@ public class ReportAction extends Action {
     private Collection<ReadAction> actions = new ArrayList<ReadAction>();
 
     private Collection<Field> groupFields;
-    private Collection<Field> fields;
+    private Collection<Field> columns;
     private Collection<guid> ids;
 
     public ReportAction(ActionParameters parameters) {
@@ -83,8 +83,10 @@ public class ReportAction extends Action {
         else {
             groupFields = parameters.groupFields;
             parameters.groupFields = null;
-            fields = parameters.fields = getColumns();
 
+            columns = getColumns();
+            parameters.fields = getFields();
+            
             ReadAction action = new ReadAction(parameters);
             actions.add(action);
         }
@@ -106,7 +108,20 @@ public class ReportAction extends Action {
                 result.add(field);
             }
         }
+        
+        return result;
+    }
 
+    private Collection<Field> getFields() {
+        Collection<Field> result = new ArrayList<Field>();
+        
+        result.addAll(columns);
+        
+        for(Field field: groupFields) {
+            if(!result.contains(field))
+                result.add(field);
+        }
+        
         return result;
     }
 
@@ -158,7 +173,7 @@ public class ReportAction extends Action {
 
         BirtReportRunner reportRunner = new BirtReportRunner(reportOptions);
 
-        String reportId = report != null ? reportRunner.execute() : reportRunner.execute(fields, groupFields);
+        String reportId = report != null ? reportRunner.execute() : reportRunner.execute(columns, groupFields);
 
         writer.put(Json.source, reportId);
         writer.put(Json.serverId, ApplicationServer.Id);

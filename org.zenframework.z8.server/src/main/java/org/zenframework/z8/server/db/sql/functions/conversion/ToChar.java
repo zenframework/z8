@@ -33,6 +33,9 @@ public class ToChar extends SqlToken {
         case Oracle:
             return "TO_NCHAR(" + value.format(vendor, options) + ")";
         case Postgres:
+            if(value.type() == FieldType.Guid)
+                return "cast(" + value.format(vendor, options) + "as varchar)";
+            
             return "CONVERT_FROM(" + value.format(vendor, options) + ", 'UTF8')";
         case SqlServer:
             return "Cast(" + value.format(vendor, options) + " as nvarchar(max))";
