@@ -36,8 +36,6 @@ import org.zenframework.z8.server.types.sql.sql_bool;
 
 public class Export extends OBJECT {
 
-    private static final String NULL_PROTOCOL = "null";
-
     public static class CLASS<T extends Export> extends OBJECT.CLASS<T> {
 
         public CLASS() {
@@ -137,7 +135,7 @@ public class Export extends OBJECT {
 
         try {
             String protocol = getProtocol();
-            if (!protocol.equals(NULL_PROTOCOL)) {
+            if (!protocol.equals(TransportEngine.NULL_PROTOCOL)) {
                 // Если протокол НЕ "null", экспортировать записи БД
                 for (RecordsetEntry recordsetEntry : recordsetEntries) {
                     while (recordsetEntry.recordset.next()) {
@@ -292,7 +290,7 @@ public class Export extends OBJECT {
 
     private String getProtocol() {
         int pos = transportUrl.indexOf(':');
-        return pos > 0 ? transportUrl.substring(0, pos) : NULL_PROTOCOL;
+        return pos > 0 ? transportUrl.substring(0, pos) : TransportEngine.NULL_PROTOCOL;
     }
 
     private String getAddress() {

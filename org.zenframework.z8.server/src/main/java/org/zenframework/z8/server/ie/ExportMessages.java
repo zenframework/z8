@@ -13,8 +13,10 @@ import org.zenframework.z8.server.db.sql.SqlField;
 import org.zenframework.z8.server.db.sql.SqlToken;
 import org.zenframework.z8.server.db.sql.expressions.And;
 import org.zenframework.z8.server.db.sql.expressions.Operation;
+import org.zenframework.z8.server.db.sql.expressions.Or;
 import org.zenframework.z8.server.db.sql.expressions.Rel;
 import org.zenframework.z8.server.db.sql.expressions.Unary;
+import org.zenframework.z8.server.db.sql.functions.string.IsEmpty;
 import org.zenframework.z8.server.resources.Resources;
 import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.types.bool;
@@ -75,7 +77,7 @@ public class ExportMessages extends Table {
         this.message.get().set(new string(IeUtil.marshalExportEntry(message.getExportEntry())));
         create(new guid(message.getId()));
     }
-    
+
     public void setError(guid messageId, String description) {
         this.error.get().set(new bool(true));
         this.description.get().set(new string(description));
@@ -131,25 +133,25 @@ public class ExportMessages extends Table {
         registerDataField(error);
         registerDataField(message);
     }
-    
+
     public static ExportMessages instance() {
         return new CLASS<ExportMessages>().get();
     }
 
     public void readExportMessages(String selfAddress) {
-        SqlToken notProcessedNotError = new And(
-                new Unary(Operation.Not, new SqlField(processed.get())),
-                new Unary(Operation.Not, new SqlField(error.get())));
-        SqlToken fromMeNotForMe = new And(
-                new Rel(id.get(), Operation.Eq, new sql_string(selfAddress)),
-                new Rel(id1.get(), Operation.NotEq, new sql_string(selfAddress)));
-        read(getDataFields(), Arrays.<Field> asList(ordinal.get()), new And(notProcessedNotError, fromMeNotForMe));
+        SqlToken notProcessedNotError = new And(new Unary(Operation.Not, new SqlField(processed.get())), new Unary(
+                Operation.Not, new SqlField(error.get())));
+        SqlToken fromMeNotForMe = new And(new Rel(id.get(), Operation.Eq, new sql_string(selfAddress)), new Rel(id1.get(),
+                Operation.NotEq, new sql_string(selfAddress)));
+        SqlToken nullProtocols = new Or(new IsEmpty(new SqlField(name.get())), new Rel(name.get(), Operation.Eq,
+                new sql_string(TransportEngine.NULL_PROTOCOL)));
+        read(getDataFields(), Arrays.<Field> asList(ordinal.get()), new And(new And(notProcessedNotError, fromMeNotForMe),
+                new Unary(Operation.Not, nullProtocols)));
     }
 
     public void readImportMessages(String selfAddress) {
-        SqlToken notProcessedNotError = new And(
-                new Unary(Operation.Not, new SqlField(processed.get())),
-                new Unary(Operation.Not, new SqlField(error.get())));
+        SqlToken notProcessedNotError = new And(new Unary(Operation.Not, new SqlField(processed.get())), new Unary(
+                Operation.Not, new SqlField(error.get())));
         SqlToken forMe = new Rel(id1.get(), Operation.Eq, new sql_string(selfAddress));
         read(getDataFields(), Arrays.<Field> asList(ordinal.get()), new And(notProcessedNotError, forMe));
     }
