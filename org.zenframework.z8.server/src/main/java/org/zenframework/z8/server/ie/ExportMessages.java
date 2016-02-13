@@ -113,6 +113,7 @@ public class ExportMessages extends Table {
         super.constructor2();
         id.setDisplayName(Resources.get(strings.Sender));
         id1.setDisplayName(Resources.get(strings.Receiver));
+        createdAt.get().system.set(false);
         name.setDisplayName(Resources.get(strings.Protocol));
         ordinal.setName("Ordinal");
         ordinal.setIndex("ordinal");

@@ -15,8 +15,8 @@
 
 	<!-- Table -->
 	<entry key="Table.recordId">UID</entry>
-	<entry key="Table.createdAt">Создана</entry>
-	<entry key="Table.modifiedAt">Изменена</entry>
+	<entry key="Table.createdAt">Создано</entry>
+	<entry key="Table.modifiedAt">Изменено</entry>
 	<entry key="Table.createdBy">Создал</entry>
 	<entry key="Table.modifiedBy">Изменил</entry>
 	<entry key="Table.scope">Область видимости</entry>
