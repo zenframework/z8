@@ -1,8 +1,5 @@
 package org.zenframework.z8.server.base.table.value;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import org.zenframework.z8.server.base.table.system.Sequences;
 import org.zenframework.z8.server.db.Connection;
 import org.zenframework.z8.server.db.ConnectionManager;
@@ -17,7 +14,7 @@ import org.zenframework.z8.server.types.sql.sql_string;
 
 public class Sequencer extends OBJECT {
     final static public String ProcedureName = "NextInSequence";
-
+    
     public static class CLASS<T extends Sequencer> extends OBJECT.CLASS<T> {
         public CLASS(IObject container) {
             super(container);
@@ -31,7 +28,7 @@ public class Sequencer extends OBJECT {
         }
     }
 
-    private static final Map<String, Object> syncs = new HashMap<String, Object>();
+    private static Object lock = new Object();
 
     private String key = null;
 
@@ -52,7 +49,7 @@ public class Sequencer extends OBJECT {
     static private long next(String key, long defaultValue, long increment) {
         Connection connection = ConnectionManager.get();
 
-        synchronized (getSync(key)) {
+        synchronized (lock) {
             String id = "id" + Integer.toString(key.hashCode()).replace('-', '_');
 
             Sequences sequences = new Sequences.CLASS<Sequences>().get();
@@ -87,15 +84,6 @@ public class Sequencer extends OBJECT {
 
             return result;
         }
-    }
-
-    private synchronized static Object getSync(String key) {
-        Object sync = syncs.get(key);
-        if (sync == null) {
-            sync = new Object();
-            syncs.put(key, sync);
-        }
-        return sync;
     }
 
     public void setKey(String key) {
