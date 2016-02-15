@@ -42,7 +42,7 @@ public class Sequencer extends OBJECT {
         sequences.destroy(where);
     }
 
-    static synchronized private long next(String key, long defaultValue, long increment) {
+    static private long next(String key, long defaultValue, long increment) {
         String id = "id" + Integer.toString(key.hashCode()).replace('-', '_');
 
         Sequences sequences = new Sequences.CLASS<Sequences>().get();
