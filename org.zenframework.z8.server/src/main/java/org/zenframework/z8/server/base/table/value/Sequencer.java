@@ -1,8 +1,6 @@
 package org.zenframework.z8.server.base.table.value;
 
 import org.zenframework.z8.server.base.table.system.Sequences;
-import org.zenframework.z8.server.db.Connection;
-import org.zenframework.z8.server.db.ConnectionManager;
 import org.zenframework.z8.server.db.sql.SqlToken;
 import org.zenframework.z8.server.db.sql.expressions.Operation;
 import org.zenframework.z8.server.db.sql.expressions.Rel;
@@ -28,8 +26,6 @@ public class Sequencer extends OBJECT {
         }
     }
 
-    private static Object lock = new Object();
-
     private String key = null;
 
     private integer defaultValue = new integer(1);
@@ -46,44 +42,31 @@ public class Sequencer extends OBJECT {
         sequences.destroy(where);
     }
 
-    static private long next(String key, long defaultValue, long increment) {
-        Connection connection = ConnectionManager.get();
+    static synchronized private long next(String key, long defaultValue, long increment) {
+        String id = "id" + Integer.toString(key.hashCode()).replace('-', '_');
 
-        synchronized (lock) {
-            String id = "id" + Integer.toString(key.hashCode()).replace('-', '_');
+        Sequences sequences = new Sequences.CLASS<Sequences>().get();
+        IntegerField valueField = sequences.value.get();
+        StringField idField = sequences.id.get();
+        TextField descriptionField = sequences.description.get();
 
-            Sequences sequences = new Sequences.CLASS<Sequences>().get();
-            IntegerField valueField = sequences.value.get();
-            StringField idField = sequences.id.get();
-            TextField descriptionField = sequences.description.get();
+        SqlToken where = new Rel(sequences.id.get(), Operation.Eq, new sql_string(id));
 
-            SqlToken where = new Rel(sequences.id.get(), Operation.Eq, new sql_string(id));
+        long result = defaultValue;
 
-            long result = defaultValue;
+        if (sequences.readFirst(where)) {
+            result = valueField.integer().get() + Math.max(increment, 1);
 
-            try {
-                connection.beginTransaction();
-
-                if (sequences.readFirst(where)) {
-                    result = valueField.integer().get() + Math.max(increment, 1);
-
-                    valueField.set(new integer(result));
-                    sequences.update(sequences.recordId());
-                } else {
-                    idField.set(new string(id));
-                    valueField.set(new integer(result));
-                    descriptionField.set(new string(key));
-                    sequences.create();
-                }
-
-                connection.commit();
-            } catch (Throwable e) {
-                connection.rollback();
-                throw new RuntimeException(e);
-            }
-
-            return result;
+            valueField.set(new integer(result));
+            sequences.update(sequences.recordId());
+        } else {
+            idField.set(new string(id));
+            valueField.set(new integer(result));
+            descriptionField.set(new string(key));
+            sequences.create();
         }
+
+        return result;
     }
 
     public void setKey(String key) {
