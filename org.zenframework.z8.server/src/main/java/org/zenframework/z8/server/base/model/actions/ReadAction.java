@@ -42,6 +42,7 @@ import org.zenframework.z8.server.db.sql.functions.string.Lower;
 import org.zenframework.z8.server.json.Json;
 import org.zenframework.z8.server.json.parser.JsonArray;
 import org.zenframework.z8.server.json.parser.JsonObject;
+import org.zenframework.z8.server.logs.Trace;
 import org.zenframework.z8.server.search.SearchEngine;
 import org.zenframework.z8.server.types.bool;
 import org.zenframework.z8.server.types.guid;
@@ -847,12 +848,16 @@ public class ReadAction extends Action {
 
         for (String fieldId : JsonObject.getNames(record)) {
             Field field = query.findFieldById(fieldId);
-            String text = record.getString(fieldId);
-
-            if (text != null && !text.isEmpty()) {
-                primary value = primary.create(field.type(), text);
-                field.set(value);
-            }
+            
+            if(field != null) {
+                String text = record.getString(fieldId);
+    
+                if (text != null && !text.isEmpty()) {
+                    primary value = primary.create(field.type(), text);
+                    field.set(value);
+                }
+            } else
+                Trace.logEvent("ReadAction.initFields(): field '" + fieldId + "' cannot be found.");
         }
     }
 
