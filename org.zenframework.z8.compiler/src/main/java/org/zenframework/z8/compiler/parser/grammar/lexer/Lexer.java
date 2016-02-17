@@ -456,6 +456,14 @@ public class Lexer {
             buffer.advance(position, 2);
             return new OperatorToken(IToken.MOD_ASSIGN, new Position(start, 2));
         }
+        else if(first == '&' && second == '&') {
+            buffer.advance(position, 2);
+            return new OperatorToken(IToken.AND, new Position(start, 2));
+        }
+        else if(first == '|' && second == '|') {
+            buffer.advance(position, 2);
+            return new OperatorToken(IToken.OR, new Position(start, 2));
+        }
         else if(first == '^' && second == '=') {
             buffer.advance(position, 2);
             return new OperatorToken(IToken.CARET_ASSIGN, new Position(start, 2));
