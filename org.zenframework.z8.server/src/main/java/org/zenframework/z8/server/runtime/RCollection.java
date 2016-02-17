@@ -105,6 +105,7 @@ public class RCollection<TYPE> extends ArrayList<TYPE> {
             for(T item : items) {
                 if(!contains(item)) {
                     itemsToAdd.add(item);
+                    hashes.add(item);
                 }
             }
         }

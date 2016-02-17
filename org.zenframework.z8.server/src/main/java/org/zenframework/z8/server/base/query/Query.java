@@ -354,7 +354,12 @@ public class Query extends Runnable {
         }
 
         if (hasAttribute(IObject.SearchIndex)) {
-            SearchEngine.INSTANCE.updateRecord(this, recordId.toString());
+            for(Field.CLASS<? extends Field> field : changedFields) {
+                if(searchFields.contains(field)) {
+                    SearchEngine.INSTANCE.updateRecord(this, recordId.toString());
+                    break;
+                }
+            }
         }
 
         if (ApplicationServer.events())
