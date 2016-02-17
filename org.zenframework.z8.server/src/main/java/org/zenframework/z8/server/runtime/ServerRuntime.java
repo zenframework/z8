@@ -26,6 +26,8 @@ public class ServerRuntime extends AbstractRuntime {
             "z8.transport.sendFilesSeparately", "true", "Отправлять вложения отдельными сообщениями");
     public static final Property SelfAddressDefaultProperty = new Property("7370AF2A-AA31-49E7-84AA-E000DAF78235",
             "z8.transport.selfAddressDefault", "", "Адрес по умолчанию");
+    public static final Property ExportRecordsMaxProperty = new Property("FAB69475-114C-4C39-8401-A03C42608BBE",
+            "z8.transport.exportRecordsMax", "1000", "Максимальное количество записей в сообщении экспорта");
     public static final Property FileFolderProperty = new Property("3D524DE7-0AF3-40FE-8FF7-C4A073D1F834",
             "z8.transport.file.folder", "C:/z8/transport", "Каталог для обмена по протоколу file");
     public static final Property JmsConnectionFactoryProperty = new Property("5CACA325-B353-43C0-917C-B9A20C21C64E",
@@ -76,6 +78,7 @@ public class ServerRuntime extends AbstractRuntime {
         addProperty(PreserveExportMessagesProperty);
         addProperty(EnableProtocolsProperty);
         addProperty(SendFilesSeparatelyProperty);
+        addProperty(ExportRecordsMaxProperty);
         addProperty(SelfAddressDefaultProperty);
         addProperty(FileFolderProperty);
         addProperty(JmsConnectionFactoryProperty);

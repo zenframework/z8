@@ -1,5 +1,7 @@
 package org.zenframework.z8.server.ie;
 
+import java.io.File;
+import java.io.FileWriter;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Arrays;
@@ -12,6 +14,8 @@ import java.util.Map;
 
 import javax.xml.bind.JAXBException;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.zenframework.z8.ie.xml.ExportEntry;
 import org.zenframework.z8.server.base.file.FileInfo;
 import org.zenframework.z8.server.base.table.Table;
@@ -20,7 +24,6 @@ import org.zenframework.z8.server.base.table.system.Properties;
 import org.zenframework.z8.server.base.table.value.AttachmentField;
 import org.zenframework.z8.server.base.table.value.Field;
 import org.zenframework.z8.server.db.generator.IForeignKey;
-import org.zenframework.z8.server.logs.Trace;
 import org.zenframework.z8.server.request.Loader;
 import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.runtime.OBJECT;
@@ -35,6 +38,8 @@ import org.zenframework.z8.server.types.string;
 import org.zenframework.z8.server.types.sql.sql_bool;
 
 public class Export extends OBJECT {
+
+    private static final Log LOG = LogFactory.getLog(Export.class);
 
     public static class CLASS<T extends Export> extends OBJECT.CLASS<T> {
 
@@ -136,18 +141,21 @@ public class Export extends OBJECT {
         try {
             String protocol = getProtocol();
             if (!protocol.equals(TransportEngine.NULL_PROTOCOL)) {
+                int exportRecordsMax = Integer.parseInt(Properties.getProperty(ServerRuntime.ExportRecordsMaxProperty));
                 // Если протокол НЕ "null", экспортировать записи БД
                 for (RecordsetEntry recordsetEntry : recordsetEntries) {
                     while (recordsetEntry.recordset.next()) {
                         exportRecord(recordsetEntry, records, files, getPolicy(recordsetEntry.recordset.classId()),
-                                recordsSorter, 0);
+                                recordsSorter, exportRecordsMax, 0);
                     }
                 }
                 // Сортировка записей в соответствии со ссылками по foreign keys и parentId
                 Collections.sort(records, recordsSorter.getComparator());
-                Trace.logEvent("Sorted records:");
-                for (ExportEntry.Records.Record record : records) {
-                    Trace.logEvent(record.getTable() + '[' + record.getRecordId() + ']');
+                if (LOG.isDebugEnabled()) {
+                    LOG.debug("Sorted records:");
+                    for (ExportEntry.Records.Record record : records) {
+                        LOG.debug(record.getTable() + '[' + record.getRecordId() + ']');
+                    }
                 }
             }
             // Свойства экспортируются для любого протокола
@@ -237,14 +245,18 @@ public class Export extends OBJECT {
     }
 
     private void exportRecord(RecordsetEntry recordsetEntry, List<ExportEntry.Records.Record> records,
-            List<ExportEntry.Files.File> files, ImportPolicy policy, RecordsSorter recordsSorter, int level) {
+            List<ExportEntry.Files.File> files, ImportPolicy policy, RecordsSorter recordsSorter, int exportRecordsMax,
+            int level) {
+        checkExportRecordsMax(records, exportRecordsMax);
         guid recordId = recordsetEntry.recordset.recordId();
         String table = recordsetEntry.recordset.classId();
         if (!recordsSorter.contains(table, recordId) && !IeUtil.isBuiltinRecord(recordsetEntry.recordset, recordId)) {
             if (policies.containsKey(recordsetEntry.recordset.classId())) {
                 policy = policies.get(recordsetEntry.recordset.classId());
             }
-            Trace.logEvent(getSpaces(level) + "Export record " + recordsetEntry.recordset.name() + '[' + recordId + ']');
+            if (LOG.isDebugEnabled()) {
+                LOG.debug(getSpaces(level) + "Export record " + recordsetEntry.recordset.name() + '[' + recordId + ']');
+            }
             ExportEntry.Records.Record record = IeUtil.tableToRecord(recordsetEntry.recordset, recordsetEntry.fields,
                     policy == null ? null : policy.getSelfPolicy(), isExportAttachments());
             records.add(record);
@@ -260,15 +272,21 @@ public class Export extends OBJECT {
             // TODO Переделать через links, проверять атрибут exportable
             for (IForeignKey fkey : recordsetEntry.recordset.getForeignKeys()) {
                 if (fkey.getReferencedTable() instanceof Table) {
-                    Trace.logEvent(getSpaces(level + 1) + fkey.getFieldDescriptor().name() + " --> "
-                            + fkey.getReferencedTable().name() + '['
-                            + recordsetEntry.recordset.getFieldByName(fkey.getFieldDescriptor().name()).guid().toString()
-                            + ']');
+                    if (LOG.isDebugEnabled()) {
+                        LOG.debug(getSpaces(level + 1)
+                                + fkey.getFieldDescriptor().name()
+                                + " --> "
+                                + fkey.getReferencedTable().name()
+                                + '['
+                                + recordsetEntry.recordset.getFieldByName(fkey.getFieldDescriptor().name()).guid()
+                                        .toString() + ']');
+                    }
                     Table refRecord = (Table) Loader.getInstance(((Table) fkey.getReferencedTable()).classId());
                     guid refGuid = recordsetEntry.recordset.getFieldByName(fkey.getFieldDescriptor().name()).guid();
                     if (refRecord.readRecord(refGuid, refRecord.getPrimaryFields())) {
                         exportRecord(new RecordsetEntry(refRecord, refRecord.getPrimaryFields()), records, files,
-                                policy == null ? null : policy.getRelationsPolicy(), recordsSorter, level + 1);
+                                policy == null ? null : policy.getRelationsPolicy(), recordsSorter, exportRecordsMax,
+                                level + 1);
                         recordsSorter.addLink(table, recordId, refRecord.classId(), refGuid);
                     }
                 }
@@ -280,7 +298,8 @@ public class Export extends OBJECT {
                     TreeTable parentRecord = (TreeTable) Loader.getInstance(recordsetEntry.recordset.classId());
                     if (parentRecord.readRecord(parentId, parentRecord.getPrimaryFields())) {
                         exportRecord(new RecordsetEntry(parentRecord, parentRecord.getPrimaryFields()), records, files,
-                                policy == null ? null : policy.getRelationsPolicy(), recordsSorter, level + 1);
+                                policy == null ? null : policy.getRelationsPolicy(), recordsSorter, exportRecordsMax,
+                                level + 1);
                         recordsSorter.addLink(table, recordId, table, parentId);
                     }
                 }
@@ -302,6 +321,23 @@ public class Export extends OBJECT {
         char buf[] = new char[level * 4];
         Arrays.fill(buf, ' ');
         return new String(buf);
+    }
+
+    private static void checkExportRecordsMax(List<ExportEntry.Records.Record> records, int exportRecordsMax) {
+        if (records.size() > exportRecordsMax) {
+            File file = null;
+            try {
+                ExportEntry exportEntry = new ExportEntry();
+                exportEntry.setRecords(new ExportEntry.Records());
+                exportEntry.getRecords().getRecord().addAll(records);
+                file = File.createTempFile("z8-export-", ".xml");
+                IeUtil.marshalExportEntry(exportEntry, new FileWriter(file));
+            } catch (Throwable e) {
+                LOG.error("Can't write export entry to file", e);
+            }
+            throw new RuntimeException("Export of " + records.size() + " records (max " + exportRecordsMax + ") failed."
+                    + (file != null ? " Export entry is written to '" + file + "'" : ""));
+        }
     }
 
     private static class RecordsetEntry {
