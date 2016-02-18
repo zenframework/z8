@@ -378,9 +378,11 @@ Z8.view.GridView = Ext.extend(Z8.Panel,
 			requestId: store.query.requestId, 
 			recordId: record.id, 
 			xaction: 'attach',
-			queryId: this.query.queryId,
 			field: store.filesProperty
 		};
+
+		if(this.query.queryId != null)
+			params.queryId = this.query.queryId;
 		
 		var uploadDialog = new Z8.view.UploadDialog({ title: 'Присоединить файл', params: params });
 		uploadDialog.on('ok', this.onFileAttached.createDelegate(this, [record.id], true), this);
@@ -408,10 +410,12 @@ Z8.view.GridView = Ext.extend(Z8.Panel,
         	xaction: 'detach',
             field: store.filesProperty,
             requestId: store.query.requestId,
-			queryId: this.query.queryId,
             recordId: record.id,
             data: Ext.encode([item.file.id])
 		};
+
+		if(this.query.queryId != null)
+			params.queryId = this.query.queryId;
 
 		var onSuccess = function(result) {
 			var files = eval(record.data[store.filesProperty]); 
