@@ -1,11 +1,6 @@
 package org.zenframework.z8.server.ie;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-
 import org.zenframework.z8.server.types.guid;
-
 import junit.framework.TestCase;
 
 public class RecordsSorterTest extends TestCase {
@@ -33,15 +28,7 @@ public class RecordsSorterTest extends TestCase {
         sorter.addLink("", guid(4), "", guid(3));
         sorter.addLink("", guid(3), "", guid(6));
         sorter.addLink("", guid(4), "", guid(8));
-        List<RecordsSorter.Record> sorted = sorter.getSorted();
-        System.out.println("Sorted in " + sorter.getCount() + " steps: " + sorted);
-        List<RecordsSorter.Record> checked = new ArrayList<RecordsSorter.Record>(sorted.size());
-        for (RecordsSorter.Record record : sorted) {
-            for (RecordsSorter.Record link : sorter.getLinks(record)) {
-                assertTrue(checked.contains(link));
-            }
-            checked.add(record);
-        }
+        System.out.println(sorter.getSorted());
     }
     
     private static guid guid(int c) {

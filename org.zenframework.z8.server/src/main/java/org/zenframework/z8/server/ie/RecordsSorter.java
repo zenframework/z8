@@ -1,7 +1,6 @@
 package org.zenframework.z8.server.ie;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -16,27 +15,17 @@ import org.zenframework.z8.server.types.guid;
 public class RecordsSorter {
 
     private final Map<Record, Collection<Record>> recordsRelations = new HashMap<Record, Collection<Record>>();
-    private int count = 0;
 
     public void addLink(String sourceTable, guid sourceRecordId, String targetTable, guid targetRecordId) {
         Record source = new Record(sourceTable, sourceRecordId);
         Record target = new Record(targetTable, targetRecordId);
-        Collection<Record> rels = recordsRelations.get(source);
+        Collection<Record> rels = recordsRelations.get(target);
         if (rels == null) {
             rels = new LinkedList<Record>();
-            recordsRelations.put(source, rels);
+            recordsRelations.put(target, rels);
         }
-        if (!rels.contains(target)) {
-            rels.add(target);
-        }
-    }
-
-    public Collection<Record> getLinks(Record record) {
-        Collection<Record> links = recordsRelations.get(record);
-        if (links != null) {
-            return links;
-        } else {
-            return Collections.emptyList();
+        if (!rels.contains(source)) {
+            rels.add(source);
         }
     }
 
@@ -52,7 +41,6 @@ public class RecordsSorter {
     }
 
     public List<Record> getSorted() {
-        count = 0;
         Trace.logEvent("Export tree: " + recordsRelations);
         // Последовательно ищем вершины ориентированного графа, не имеющие исходящих ребёр (связей с другими записями),
         // исключаем их из исходного списка relations и добавляем в sorted.
@@ -73,30 +61,26 @@ public class RecordsSorter {
         return new RecordsComparator(getSorted());
     }
 
-    public int getCount() {
-        return count;
-    }
-
-    private Record findOutside(Map<Record, Collection<Record>> recordsRelations) {
-        Record outsideRecord = null;
-        for (Map.Entry<Record, Collection<Record>> record : recordsRelations.entrySet()) {
-            count++;
-            if (record.getValue().isEmpty()) {
-                outsideRecord = record.getKey();
-                break;
+    private static Record findOutside(Map<Record, Collection<Record>> recordsRelations) {
+        for (Record record : recordsRelations.keySet()) {
+            Record relation = null;
+            for (Map.Entry<Record, Collection<Record>> recordRelations : recordsRelations.entrySet()) {
+                for (Record rel : recordRelations.getValue()) {
+                    if (record.equals(rel)) {
+                        relation = rel;
+                        break;
+                    }
+                }
+                if (relation != null) {
+                    break;
+                }
+            }
+            if (relation == null) {
+                return record;
             }
         }
-        if (outsideRecord != null) {
-            recordsRelations.remove(outsideRecord);
-            for (Collection<Record> relations : recordsRelations.values()) {
-                count++;
-                relations.remove(outsideRecord);
-            }
-            return outsideRecord;
-        } else {
-            throw new exception(
-                    "Ошибка экспорта: не удалось найти конечную запись. В базе данных есть циклическая зависимость. Обратитесь к системному администратору.");
-        }
+        throw new exception(
+                "Ошибка экспорта: не удалось найти конечную запись. В базе данных есть циклическая зависимость. Обратитесь к системному администратору.");
     }
 
     public static class Record {
