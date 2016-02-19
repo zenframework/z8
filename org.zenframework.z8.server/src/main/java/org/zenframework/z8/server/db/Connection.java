@@ -16,12 +16,15 @@ public class Connection {
     static public int TransactionRepeatableRead = java.sql.Connection.TRANSACTION_REPEATABLE_READ;
     static public int TransactionSerializable = java.sql.Connection.TRANSACTION_SERIALIZABLE;
 
+    static public int MaxIdleTime = 20 * 60 * 1000; // 20 min
+            
     private Database database = null;
     private java.sql.Connection connection = null;
     private Thread owner = null;
 
     private int transactionCount = 0;
-
+    private long lastUsed = System.currentTimeMillis();
+    
     static private java.sql.Connection newConnection(Database database) {
         try {
             Class.forName(database.driver());
@@ -85,6 +88,10 @@ public class Connection {
         return !isCurrent() ? owner.isAlive() : false;
     }
 
+    public boolean isUnused() {
+        return !isInUse() && System.currentTimeMillis() - lastUsed >= MaxIdleTime;
+    }
+
     public boolean isClosed() {
         return connection == null;
     }
@@ -92,6 +99,8 @@ public class Connection {
     public void use() {
         if(isClosed())
             reconnect();
+        
+        lastUsed = System.currentTimeMillis();
         
         owner = Thread.currentThread();
         initClientInfo();

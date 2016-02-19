@@ -2,6 +2,7 @@ package org.zenframework.z8.server.db;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -28,24 +29,27 @@ public class ConnectionManager {
         }
 
         for(Connection connection : connections) {
-            if(connection.isCurrent()) {
+            if(connection.isCurrent())
                 return connection;
-            }
+        }
+
+        Iterator<Connection> iterator = connections.iterator();
+        while(iterator.hasNext()) {
+            if(iterator.next().isUnused())
+                iterator.remove();
         }
 
         for(Connection connection : connections) {
             if(!connection.isInUse()) {
                 connection.use();
-                connections.remove(connection);
-                connections.add(connection);
                 return connection;
             }
         }
 
         Connection connection = Connection.connect(database);
         connections.add(connection);
-
         connection.use();
+        
         return connection;
     }
 }
