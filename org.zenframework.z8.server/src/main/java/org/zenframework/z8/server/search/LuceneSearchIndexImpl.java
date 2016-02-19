@@ -111,7 +111,7 @@ public class LuceneSearchIndexImpl implements SearchIndex {
     public boolean updateDocument(String recordId, String fullText) {
         try {
             writer.updateDocument(getRecordIdTerm(recordId), getDocument(recordId, fullText));
-            LOG.debug("Document " + recordId + " updated: '" + fullText + "'");
+            LOG.debug("Document " + recordId + " updated.");
             return true;
         } catch (IOException e) {
             LOG.error("Can't update document '" + recordId + "'", e);

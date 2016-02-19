@@ -90,13 +90,27 @@ public class SearchEngine extends OBJECT {
                 50);
     }
 
+    private Table findTable(String index) {
+        Collection<Table.CLASS<? extends Table>> classes = Runtime.instance().tables();
+        
+        for (Table.CLASS<? extends Table> cls : classes) {
+            if (index.equals(cls.getAttribute(IObject.SearchIndex))) {
+                Table table = cls.newInstance();
+                if(!table.searchFields.isEmpty())
+                    return table;
+            }
+        }
+        
+        return null;
+    }
+    
     public void rebuildIndex(String indexId) {
-        SearchIndex index = getIndex(indexId);
-        Collection<Table> tables = CLASS.asList(Runtime.instance().tables(), true);
-        index.clearIndex();
-        for (Table table : tables) {
-            if (indexId.equals(table.getAttribute(IObject.SearchIndex)))
-                updateIndex(index, table);
+        Table table = findTable(indexId);
+
+        if(table != null) {
+            SearchIndex index = getIndex(indexId);
+            index.clearIndex();
+            updateIndex(index, table);
         }
     }
     
@@ -105,12 +119,18 @@ public class SearchEngine extends OBJECT {
     }
     
     private void updateIndex(SearchIndex index, Query query) {
+        Collection<Field> fields = query.getSearchFields();
+
+        if(fields.isEmpty())
+            return;
+        
         query.saveState();
         
-        query.read(query.getSearchFields());
-        while (query.next()) {
+        query.read(fields);
+
+        while (query.next())
             index.updateDocument(query.getSearchId().get().toString(), query.getRecordFullText());
-        }
+
         index.commit();
         
         query.restoreState();
