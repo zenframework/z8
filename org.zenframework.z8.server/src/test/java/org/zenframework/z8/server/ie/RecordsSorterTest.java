@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.zenframework.z8.server.types.guid;
-
 import junit.framework.TestCase;
 
 public class RecordsSorterTest extends TestCase {
