@@ -253,7 +253,7 @@ public class Export extends OBJECT {
         }
     }
 
-    private void exportRecord(RecordsetEntry recordsetEntry, List<ExportEntry.Records.Record> records,
+    private boolean exportRecord(RecordsetEntry recordsetEntry, List<ExportEntry.Records.Record> records,
             List<ExportEntry.Files.File> files, ImportPolicy policy, RecordsSorter recordsSorter, int exportRecordsMax,
             int level) {
         checkExportRecordsMax(records, exportRecordsMax);
@@ -293,10 +293,11 @@ public class Export extends OBJECT {
                     Table refRecord = (Table) Loader.getInstance(((Table) fkey.getReferencedTable()).classId());
                     guid refGuid = recordsetEntry.recordset.getFieldByName(fkey.getFieldDescriptor().name()).guid();
                     if (refRecord.readRecord(refGuid, refRecord.getPrimaryFields())) {
-                        exportRecord(new RecordsetEntry(refRecord, refRecord.getPrimaryFields()), records, files,
+                        if (exportRecord(new RecordsetEntry(refRecord, refRecord.getPrimaryFields()), records, files,
                                 policy == null ? null : policy.getRelationsPolicy(), recordsSorter, exportRecordsMax,
-                                level + 1);
-                        recordsSorter.addLink(table, recordId, refRecord.classId(), refGuid);
+                                level + 1)) {
+                            recordsSorter.addLink(table, recordId, refRecord.classId(), refGuid);
+                        }
                     }
                 }
             }
@@ -306,14 +307,17 @@ public class Export extends OBJECT {
                 if (!guid.NULL.equals(parentId)) {
                     TreeTable parentRecord = (TreeTable) Loader.getInstance(recordsetEntry.recordset.classId());
                     if (parentRecord.readRecord(parentId, parentRecord.getPrimaryFields())) {
-                        exportRecord(new RecordsetEntry(parentRecord, parentRecord.getPrimaryFields()), records, files,
+                        if (exportRecord(new RecordsetEntry(parentRecord, parentRecord.getPrimaryFields()), records, files,
                                 policy == null ? null : policy.getRelationsPolicy(), recordsSorter, exportRecordsMax,
-                                level + 1);
-                        recordsSorter.addLink(table, recordId, table, parentId);
+                                level + 1)) {
+                            recordsSorter.addLink(table, recordId, table, parentId);
+                        }
                     }
                 }
             }
+            return true;
         }
+        return false;
     }
 
     private String getProtocol() {
@@ -357,6 +361,11 @@ public class Export extends OBJECT {
         RecordsetEntry(Table recordset, Collection<Field> fields) {
             this.recordset = recordset;
             this.fields = fields;
+        }
+
+        @Override
+        public String toString() {
+            return recordset.name();
         }
 
     }

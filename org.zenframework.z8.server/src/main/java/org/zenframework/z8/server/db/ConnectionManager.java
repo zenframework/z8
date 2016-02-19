@@ -35,8 +35,11 @@ public class ConnectionManager {
 
         Iterator<Connection> iterator = connections.iterator();
         while(iterator.hasNext()) {
-            if(iterator.next().isUnused())
+            Connection connection = iterator.next();
+            if(connection.isUnused()) {
+                connection.safeClose();
                 iterator.remove();
+            }
         }
 
         for(Connection connection : connections) {
@@ -48,8 +51,8 @@ public class ConnectionManager {
 
         Connection connection = Connection.connect(database);
         connections.add(connection);
+
         connection.use();
-        
         return connection;
     }
 }

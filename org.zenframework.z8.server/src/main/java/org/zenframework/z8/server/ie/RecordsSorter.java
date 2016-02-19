@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -61,10 +62,9 @@ public class RecordsSorter {
         List<Record> sorted = new LinkedList<Record>();
         while (!recordsRelations.isEmpty()) {
             // Ищем конечную запись
-            Record outside = findOutside(recordsRelations);
-            // Удаляем её из исходного списка и помещаем в конец отсортированного списка
-            recordsRelations.remove(outside);
-            sorted.add(outside);
+            Collection<Record> outside = findOutside(recordsRelations);
+            // Помещаем её в конец отсортированного списка
+            sorted.addAll(outside);
         }
         return sorted;
     }
@@ -77,26 +77,26 @@ public class RecordsSorter {
         return count;
     }
 
-    private Record findOutside(Map<Record, Collection<Record>> recordsRelations) {
-        Record outsideRecord = null;
-        for (Map.Entry<Record, Collection<Record>> record : recordsRelations.entrySet()) {
+    private Collection<Record> findOutside(Map<Record, Collection<Record>> recordsRelations) {
+        Collection<Record> outsideRecords = new LinkedList<Record>();
+        Iterator<Map.Entry<Record, Collection<Record>>> it = recordsRelations.entrySet().iterator();
+        while (it.hasNext()) {
+            Map.Entry<Record, Collection<Record>> entry = it.next();
+            if (entry.getValue().isEmpty()) {
+                outsideRecords.add(entry.getKey());
+                it.remove();
+            }
             count++;
-            if (record.getValue().isEmpty()) {
-                outsideRecord = record.getKey();
-                break;
-            }
         }
-        if (outsideRecord != null) {
-            recordsRelations.remove(outsideRecord);
-            for (Collection<Record> relations : recordsRelations.values()) {
-                count++;
-                relations.remove(outsideRecord);
-            }
-            return outsideRecord;
-        } else {
+        if (outsideRecords.isEmpty()) {
             throw new exception(
                     "Ошибка экспорта: не удалось найти конечную запись. В базе данных есть циклическая зависимость. Обратитесь к системному администратору.");
         }
+        for (Collection<Record> relations : recordsRelations.values()) {
+            relations.removeAll(outsideRecords);
+            count++;
+        }
+        return outsideRecords;
     }
 
     public static class Record {
