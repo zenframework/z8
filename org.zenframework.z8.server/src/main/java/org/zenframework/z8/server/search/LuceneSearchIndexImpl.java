@@ -34,6 +34,8 @@ public class LuceneSearchIndexImpl implements SearchIndex {
     private static final String FIELD_RECORD_ID = "recordId";
     private static final String FIELD_FULL_TEXT = "fullText";
 
+    private static final int TRIM_LEN = 100;
+
     private final Analyzer analyzer;
     private final Directory directory;
     private final IndexWriter writer;
@@ -111,7 +113,7 @@ public class LuceneSearchIndexImpl implements SearchIndex {
     public boolean updateDocument(String recordId, String fullText) {
         try {
             writer.updateDocument(getRecordIdTerm(recordId), getDocument(recordId, fullText));
-            LOG.debug("Document " + recordId + " updated.");
+            LOG.debug("Document " + recordId + " updated: '" + trimByLength(fullText) + "'");
             return true;
         } catch (IOException e) {
             LOG.error("Can't update document '" + recordId + "'", e);
@@ -140,6 +142,10 @@ public class LuceneSearchIndexImpl implements SearchIndex {
         } catch (IOException e) {
             throw new RuntimeException("Can't create index in '" + file.LuceneFolder + "'", e);
         }
+    }
+
+    private static String trimByLength(String str) {
+        return str != null && str.length() > TRIM_LEN ? str.substring(0, TRIM_LEN) + " ..." : str;
     }
 
 }

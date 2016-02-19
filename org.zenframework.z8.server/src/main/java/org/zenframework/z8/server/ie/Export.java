@@ -33,6 +33,7 @@ import org.zenframework.z8.server.runtime.ServerRuntime;
 import org.zenframework.z8.server.types.bool;
 import org.zenframework.z8.server.types.exception;
 import org.zenframework.z8.server.types.guid;
+import org.zenframework.z8.server.types.integer;
 import org.zenframework.z8.server.types.primary;
 import org.zenframework.z8.server.types.string;
 import org.zenframework.z8.server.types.sql.sql_bool;
@@ -69,6 +70,7 @@ public class Export extends OBJECT {
     private final List<RecordsetEntry> recordsetEntries = new LinkedList<RecordsetEntry>();
     private boolean exportAttachments = false;
     private String transportUrl;
+    private int exportRecordsMax = Integer.parseInt(Properties.getProperty(ServerRuntime.ExportRecordsMaxProperty));
 
     public Export(IObject container) {
         super(container);
@@ -132,6 +134,10 @@ public class Export extends OBJECT {
         this.transportUrl = transportUrl;
     }
 
+    public void setExportRecordsMax(int exportRecordsMax) {
+        this.exportRecordsMax = exportRecordsMax;
+    }
+
     public void execute() {
         RecordsSorter recordsSorter = new RecordsSorter();
         List<ExportEntry.Records.Record> records = new LinkedList<ExportEntry.Records.Record>();
@@ -141,7 +147,6 @@ public class Export extends OBJECT {
         try {
             String protocol = getProtocol();
             if (!protocol.equals(TransportEngine.NULL_PROTOCOL)) {
-                int exportRecordsMax = Integer.parseInt(Properties.getProperty(ServerRuntime.ExportRecordsMaxProperty));
                 // Если протокол НЕ "null", экспортировать записи БД
                 for (RecordsetEntry recordsetEntry : recordsetEntries) {
                     while (recordsetEntry.recordset.next()) {
@@ -228,6 +233,10 @@ public class Export extends OBJECT {
 
     public void z8_setTransportUrl(string transportUrl) {
         setTransportUrl(transportUrl.get());
+    }
+
+    public void z8_setExportRecordsMax(integer exportRecordsMax) {
+        setExportRecordsMax(exportRecordsMax.getInt());
     }
 
     public void z8_init() {}

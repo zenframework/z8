@@ -20,6 +20,8 @@ class Export {
 
     public void setTransportUrl(string transportUrl);
     
+    public void setExportRecordsMax(int exportRecordsMax);
+    
     public primary[string] properties;
 
     protected TransportContext context;
