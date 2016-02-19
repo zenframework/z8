@@ -63,7 +63,7 @@ public class Connection {
         this.connection = connection;
     }
 
-    private void safeClose() {
+    public void safeClose() {
         try {
             if (connection != null) {
                 connection.close();
