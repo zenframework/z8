@@ -28,7 +28,6 @@ public class datetime extends primary {
     protected GregorianCalendar m_value = new GregorianCalendar();
 
     public datetime() {
-        nullMilliSec();
     }
 
     public datetime(int year, int month, int day) {
@@ -99,7 +98,6 @@ public class datetime extends primary {
 
     private void set(long millisec) {
         m_value.setTimeInMillis(millisec);
-        nullMilliSec();
     }
 
     public void set(datetime date) {
@@ -115,15 +113,13 @@ public class datetime extends primary {
     }
 
     public void set(java.sql.Date datetime) {
-        if(datetime != null) {
+        if(datetime != null)
             set(datetime.getTime());
-        }
     }
 
     public void set(java.util.Date datetime) {
-        if(datetime != null) {
+        if(datetime != null)
             set(datetime.getTime());
-        }
     }
 
     public boolean set(int year, int month, int day, int hour, int minute, int second) {
@@ -558,19 +554,15 @@ public class datetime extends primary {
         return new string(toStringTime());
     }
 
-    public string z8_toString(string frm) {
-        return new string(format(frm.get()));
+    public string z8_toString(string format) {
+        return new string(format(format.get()));
     }
 
     static public datetime z8_parse(string string) {
         return new datetime(string.get());
     }
 
-    static public datetime z8_parse(string string, string frm) {
-        return new datetime(string.get(), frm.get());
-    }
-    
-    private void nullMilliSec() {
-        m_value.set(GregorianCalendar.MILLISECOND, 0);
+    static public datetime z8_parse(string string, string format) {
+        return new datetime(string.get(), format.get());
     }
 }
