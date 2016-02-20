@@ -3,10 +3,14 @@ package org.zenframework.z8.server.base.table.system;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicBoolean;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.zenframework.z8.server.base.query.Query;
 import org.zenframework.z8.server.base.simple.Activator;
 import org.zenframework.z8.server.base.table.Table;
@@ -18,12 +22,12 @@ import org.zenframework.z8.server.db.sql.expressions.Or;
 import org.zenframework.z8.server.db.sql.expressions.Rel;
 import org.zenframework.z8.server.engine.ApplicationServer;
 import org.zenframework.z8.server.engine.Runtime;
-import org.zenframework.z8.server.logs.Trace;
 import org.zenframework.z8.server.resources.Resources;
 import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.runtime.RCollection;
 import org.zenframework.z8.server.runtime.RLinkedHashMap;
 import org.zenframework.z8.server.types.bool;
+import org.zenframework.z8.server.types.datetime;
 import org.zenframework.z8.server.types.guid;
 import org.zenframework.z8.server.types.string;
 import org.zenframework.z8.server.types.sql.sql_string;
@@ -34,12 +38,42 @@ public class Properties extends TreeTable {
     public static final int PropertyNameMaxLength = 256;
     public static final int PropertyValueMaxLength = 1024;
 
+    private static final Log LOG = LogFactory.getLog(Properties.class);
+
+    private static final Thread PropertiesUpdater = new Thread() {
+        
+        @Override
+        public void run() {
+            datetime lastCheck = new datetime(new Date());
+            Active.set(true);
+            while (Active.get()) {
+                try {
+                    
+                } catch (Throwable e) {
+                    LOG.error("Can't update Z8 properties values", e);
+                }
+            }
+        }
+
+    };
+
+    private static final AtomicBoolean Active = new AtomicBoolean(false);
+
+    private static final Map<String, string> PropertiesCache = Collections.synchronizedMap(new HashMap<String, string>());
     private static final Collection<Listener> Listeners = Collections.synchronizedCollection(new LinkedList<Listener>());
 
     public static interface Listener {
 
         void onPropertyChange(String key, String value);
 
+    }
+
+    public static void startUpdater() {
+        PropertiesUpdater.start();
+    }
+
+    public static void stopUpdater() {
+        Active.set(false);
     }
 
     public static void addListener(Listener listener) {
@@ -215,7 +249,7 @@ public class Properties extends TreeTable {
                 }
             }
         } catch (Throwable e) {
-            Trace.logError("Can't read property '" + key + "' from database", e);
+            LOG.error("Can't read property '" + key + "' from database", e);
         }
         return null;
     }
