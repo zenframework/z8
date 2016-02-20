@@ -222,6 +222,10 @@ abstract public class Field extends Control implements IValue, IField {
         setDefault(primary.clone(value));
     }
 
+    public String searchValue() {
+        return get().toString();
+    }
+
     @Override
     public boolean changed() {
         return changed;

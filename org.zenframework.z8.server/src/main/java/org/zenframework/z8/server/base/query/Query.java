@@ -1804,14 +1804,14 @@ public class Query extends Runnable {
     public String getRecordFullText() {
         List<Field> searchFields = getSearchFields();
 
-        String str = "";
+        String result = "";
 
         for (Field field : searchFields) {
             if(field.type() != FieldType.Guid)
-                str += field.get().toString() + ' ';
+                result += (result.isEmpty() ? "" : " ") + field.searchValue();
         }
         
-        return str;
+        return result;
     }
     
     public Field getSearchId() {

@@ -59,7 +59,7 @@ public class AttachmentProcessor extends OBJECT {
 
     public Collection<FileInfo> read(guid recordId) {
         if (getTable().readRecord(recordId, Arrays.<Field>asList(getField()))) 
-            return FileInfo.parseArray(getField().string().get());
+            return get();
         return new ArrayList<FileInfo>();
     }
 
@@ -127,12 +127,16 @@ public class AttachmentProcessor extends OBJECT {
         }
     }
 
+    public Collection<FileInfo> get() {
+        return FileInfo.parseArray(getField().string().get());
+    }
+
     public RCollection<? extends FileInfo.CLASS<? extends FileInfo>> z8_get() {
-        return toCollection(FileInfo.parseArray(getField().string().get()));
+        return toCollection(get());
     }
 
     public RCollection<? extends FileInfo.CLASS<? extends FileInfo>> z8_get(string type) {
-        return toCollection(filterByType(FileInfo.parseArray(getField().string().get()), type.get()));
+        return toCollection(filterByType(get(), type.get()));
     }
 
     public RCollection<? extends FileInfo.CLASS<? extends FileInfo>> z8_read(guid recordId) {
