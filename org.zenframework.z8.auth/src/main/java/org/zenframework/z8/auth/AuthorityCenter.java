@@ -93,7 +93,7 @@ public class AuthorityCenter extends RmiServer implements IAuthorityCenter {
 			Trace.logError(e);
 		}
 
-		Trace.logError("AC: authority center stopped - " + netAddress(), null);
+		Trace.logEvent("AC: authority center stopped - " + netAddress());
 	}
 
 	@Override
