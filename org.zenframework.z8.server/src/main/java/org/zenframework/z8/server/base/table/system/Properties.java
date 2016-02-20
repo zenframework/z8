@@ -3,7 +3,6 @@ package org.zenframework.z8.server.base.table.system;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
@@ -27,7 +26,6 @@ import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.runtime.RCollection;
 import org.zenframework.z8.server.runtime.RLinkedHashMap;
 import org.zenframework.z8.server.types.bool;
-import org.zenframework.z8.server.types.datetime;
 import org.zenframework.z8.server.types.guid;
 import org.zenframework.z8.server.types.string;
 import org.zenframework.z8.server.types.sql.sql_string;
@@ -44,7 +42,6 @@ public class Properties extends TreeTable {
         
         @Override
         public void run() {
-            datetime lastCheck = new datetime(new Date());
             Active.set(true);
             while (Active.get()) {
                 try {
@@ -59,7 +56,6 @@ public class Properties extends TreeTable {
 
     private static final AtomicBoolean Active = new AtomicBoolean(false);
 
-    private static final Map<String, string> PropertiesCache = Collections.synchronizedMap(new HashMap<String, string>());
     private static final Collection<Listener> Listeners = Collections.synchronizedCollection(new LinkedList<Listener>());
 
     public static interface Listener {
