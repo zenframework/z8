@@ -72,8 +72,7 @@ public class AuthorityCenter extends RmiServer implements IAuthorityCenter {
 		sessionManager = new SessionManager();
 		sessionManager.start(config);
 
-		Trace.logEvent("AC: authority center started on " + netAddress()
-		        + "; DB schema: " + database.schema());
+		Trace.logEvent("AC: authority center started at '" + netAddress() + "'");
 	}
 
 	@Override
@@ -93,14 +92,14 @@ public class AuthorityCenter extends RmiServer implements IAuthorityCenter {
 			Trace.logError(e);
 		}
 
-		Trace.logEvent("AC: authority center stopped - " + netAddress());
+		Trace.logEvent("AC: authority center has been stopped at '" + netAddress() + "'");
 	}
 
 	@Override
     public synchronized void register(IServer server) throws RemoteException {
 		ServerInfo info = new ServerInfo(server, server.id(), server.netAddress());
 		servers.add(info);
-		Trace.logError("AC: application server has been started at " + info.getAddress(), null);
+		Trace.logEvent("AC: application server started at '" + info.getAddress() + "'");
 	}
 
 	@Override
@@ -108,7 +107,7 @@ public class AuthorityCenter extends RmiServer implements IAuthorityCenter {
 		for (ServerInfo info : servers.toArray(new ServerInfo[servers.size()])) {
 			if (info.getServer().equals(server)) {
 				servers.remove(info);
-				Trace.logError("AC: application server has been stopped - " + info.getAddress(), null);
+				Trace.logEvent("AC: application server has been stopped at '" + info.getAddress() + "'");
 				break;
 			}
 		}
