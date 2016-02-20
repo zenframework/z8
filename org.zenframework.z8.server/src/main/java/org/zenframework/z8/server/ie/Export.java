@@ -157,7 +157,7 @@ public class Export extends OBJECT {
                 // Сортировка записей в соответствии со ссылками по foreign keys и parentId
                 Collections.sort(records, recordsSorter.getComparator());
                 if (LOG.isDebugEnabled()) {
-                    LOG.debug("Sorted records:");
+                    LOG.debug(records.size() + " records sorted in " + recordsSorter.getCount() + " steps:");
                     for (ExportEntry.Records.Record record : records) {
                         LOG.debug(record.getTable() + '[' + record.getRecordId() + ']');
                     }

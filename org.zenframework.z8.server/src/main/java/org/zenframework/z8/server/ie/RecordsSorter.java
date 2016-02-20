@@ -61,10 +61,8 @@ public class RecordsSorter {
         Map<Record, Collection<Record>> recordsRelations = new HashMap<Record, Collection<Record>>(this.recordsRelations);
         List<Record> sorted = new LinkedList<Record>();
         while (!recordsRelations.isEmpty()) {
-            // Ищем конечную запись
-            Collection<Record> outside = findOutside(recordsRelations);
-            // Помещаем её в конец отсортированного списка
-            sorted.addAll(outside);
+            // Ищем конечную запись и помещаем её в конец отсортированного списка
+            sorted.addAll(findOutside(recordsRelations));
         }
         return sorted;
     }

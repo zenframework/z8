@@ -32,7 +32,7 @@ public class RecordsSorterTest extends TestCase {
         addLinks(sorter, 28, 6, 20, 29);
         addLinks(sorter, 29, 4, 6, 19);
         List<RecordsSorter.Record> sorted = sorter.getSorted();
-        System.out.println("Sorted in " + sorter.getCount() + " steps: " + sorted);
+        System.out.println(sorted.size() + " sorted in " + sorter.getCount() + " steps: " + sorted);
         List<RecordsSorter.Record> checked = new ArrayList<RecordsSorter.Record>(sorted.size());
         for (RecordsSorter.Record record : sorted) {
             for (RecordsSorter.Record link : sorter.getLinks(record)) {
