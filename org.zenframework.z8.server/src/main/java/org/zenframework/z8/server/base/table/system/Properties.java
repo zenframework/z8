@@ -14,7 +14,10 @@ import org.zenframework.z8.server.base.query.Query;
 import org.zenframework.z8.server.base.simple.Activator;
 import org.zenframework.z8.server.base.table.Table;
 import org.zenframework.z8.server.base.table.TreeTable;
+import org.zenframework.z8.server.base.table.value.Field;
 import org.zenframework.z8.server.base.table.value.TextField;
+import org.zenframework.z8.server.db.Connection;
+import org.zenframework.z8.server.db.ConnectionManager;
 import org.zenframework.z8.server.db.sql.SqlToken;
 import org.zenframework.z8.server.db.sql.expressions.Operation;
 import org.zenframework.z8.server.db.sql.expressions.Or;
@@ -128,26 +131,25 @@ public class Properties extends TreeTable {
     }
 
     public static void setProperty(String key, String value) {
-        if (ApplicationServer.defaultDatabase().isSystemInstalled()) {
-            Properties properties = new CLASS<Properties>().get();
-            if (!properties.readFirst(properties.getWhere(key))) {
-                throw new RuntimeException("Property [" + key + "] is not registered");
-            } else {
-                properties.value.get().set(value);
-                properties.update(properties.recordId());
-            }
-        } else {
+        if (!ApplicationServer.defaultDatabase().isSystemInstalled())
             throw new RuntimeException("Can not set property [" + key + "=" + value + "]. System is not installed");
-        }
+            
+        Properties properties = new CLASS<Properties>().get();
+        
+        if (!properties.readFirst(properties.getWhere(key)))
+            throw new RuntimeException("Property [" + key + "] is not registered");
+
+        properties.value.get().set(value);
+        properties.update(properties.recordId());
     }
 
     public static String getProperty(String key) {
         String dbValue = getPropertyFromDb(key);
-        if (dbValue == null) {
+
+        if (dbValue == null)
             throw new RuntimeException("Property [" + key + "] does not exists");
-        } else {
-            return dbValue;
-        }
+
+        return dbValue;
     }
 
     public static String getProperty(String key, String defaultValue) {
@@ -161,16 +163,26 @@ public class Properties extends TreeTable {
 
     public static Map<String, String> getProperties() {
         Map<String, String> values = new HashMap<String, String>();
-        for (Property property : Runtime.instance().properties()) {
+        
+        for (Property property : Runtime.instance().properties())
             values.put(property.getKey(), property.getDefaultValue());
-        }
+
         if (ApplicationServer.defaultDatabase().isSystemInstalled()) {
             Properties properties = new CLASS<Properties>().get();
-            properties.read();
-            while (properties.next()) {
-                values.put(properties.id.get().string().get(), properties.value.get().string().get());
-            }
+
+            Field id = properties.id.get();
+            Field value = properties.value.get();
+            
+            Collection<Field> fields = new ArrayList<Field>();
+            fields.add(id);
+            fields.add(value);
+
+            properties.read(fields);
+            
+            while (properties.next())
+                values.put(id.string().get(), value.string().get());
         }
+
         return values;
     }
 
@@ -239,9 +251,20 @@ public class Properties extends TreeTable {
     private static String getPropertyFromDb(String key) {
         try {
             if (ApplicationServer.defaultDatabase().isSystemInstalled()) {
-                Properties properties = new CLASS<Properties>().get();
-                if (properties.readFirst(properties.getWhere(key))) {
-                    return properties.value.get().string().get();
+
+                Connection connection = ConnectionManager.get();
+                
+                try {
+                    Properties properties = new CLASS<Properties>().get();
+                    
+                    Field value = properties.value.get();
+                    Collection<Field> fields = new ArrayList<Field>();
+                    fields.add(value);
+                    
+                    if (properties.readFirst(fields, properties.getWhere(key)))
+                        return value.string().get();
+                } finally {
+                    connection.release();
                 }
             }
         } catch (Throwable e) {

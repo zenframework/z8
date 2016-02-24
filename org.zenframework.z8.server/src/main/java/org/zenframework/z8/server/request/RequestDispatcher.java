@@ -103,7 +103,7 @@ public class RequestDispatcher implements Runnable {
         MemoryMXBean memoryMxBean = ManagementFactory.getMemoryMXBean();
         MemoryUsage heap = memoryMxBean.getHeapMemoryUsage();
 
-        return (heap.getUsed() >> 20) + "/" + (heap.getCommitted() >> 20) + "M";
+        return (heap.getUsed() >> 20) + " of " + (heap.getCommitted() >> 20) + "M";
     }
 
     private void processRequest(IRequest request, IResponse response, String requestId) throws Throwable {

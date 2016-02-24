@@ -30,9 +30,8 @@ public class CLASS<TYPE extends IObject> extends OBJECT implements IClass<TYPE> 
         List<T> result = new ArrayList<T>();
 
         if (collection != null) {
-            for (org.zenframework.z8.server.runtime.CLASS<? extends T> cls : collection) {
+            for (org.zenframework.z8.server.runtime.CLASS<? extends T> cls : collection)
                 result.add((T) (createNewInstances ? cls.newInstance() : cls.get()));
-            }
         }
 
         return result;
@@ -50,7 +49,6 @@ public class CLASS<TYPE extends IObject> extends OBJECT implements IClass<TYPE> 
     @Override
     @SuppressWarnings("unchecked")
     final public void setJavaClass(Class<?> cls) {
-        assert (object == null);
         javaClass = (Class<TYPE>)cls;
     }
 
@@ -76,21 +74,18 @@ public class CLASS<TYPE extends IObject> extends OBJECT implements IClass<TYPE> 
     
     @Override
     public List<IClass<TYPE>> getReferences() {
-        if (references == null) {
+        if (references == null)
             references = new ArrayList<IClass<TYPE>>();
-        }
 
         return references;
     }
 
     public void addReference(IClass<TYPE> reference) {
-        if (references == null) {
+        if (references == null)
             references = new ArrayList<IClass<TYPE>>();
-        }
 
-        if (!references.contains(reference)) {
+        if (!references.contains(reference))
             references.add(reference);
-        }
     }
 
     public boolean instanceOf(Class<?> cls) {
@@ -126,32 +121,29 @@ public class CLASS<TYPE extends IObject> extends OBJECT implements IClass<TYPE> 
 
     @Override
     public void setAttribute(String key, String value) {
-        if (object != null) {
+        if (object != null)
             object.setAttribute(key, value);
-        }
+
         super.setAttribute(key, value);
     }
 
     @Override
     public void removeAttribute(String key) {
-        if (object != null) {
+        if (object != null)
             object.removeAttribute(key);
-        }
+
         super.removeAttribute(key);
     }
 
     @Override
     public boolean hasAttribute(String key) {
-        return (object != null ? object.hasAttribute(key) : super.hasAttribute(key));
+        return object != null ? object.hasAttribute(key) : super.hasAttribute(key);
     }
 
     @Override
     public String displayName() {
         String name = super.displayName();
-        if (name == null || name.isEmpty()) {
-            return getJavaClass().getSimpleName();
-        }
-        return name;
+        return name == null || name.isEmpty() ? getJavaClass().getSimpleName() : name;
     }
 
     public Object newObject(IObject container) {
@@ -162,9 +154,8 @@ public class CLASS<TYPE extends IObject> extends OBJECT implements IClass<TYPE> 
     private TYPE constructObject(IObject container) throws Exception {
         TYPE object = (TYPE) newObject(container);
 
-        if (object != null) {
+        if (object != null)
             return object;
-        }
 
         try {
             Constructor<TYPE> constructor = javaClass.getDeclaredConstructor(IObject.class);
@@ -203,7 +194,6 @@ public class CLASS<TYPE extends IObject> extends OBJECT implements IClass<TYPE> 
             this.stage = Constructor2;
             object.constructor2();
             object.onInitialized();
-
             object.constructor();
         }
     }
@@ -224,8 +214,6 @@ public class CLASS<TYPE extends IObject> extends OBJECT implements IClass<TYPE> 
 
     @Override
     public String classId() {
-        assert (javaClass != null);
         return javaClass.getCanonicalName();
     }
-
 }

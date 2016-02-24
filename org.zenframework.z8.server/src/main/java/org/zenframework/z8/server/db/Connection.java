@@ -16,7 +16,7 @@ public class Connection {
     static public int TransactionRepeatableRead = java.sql.Connection.TRANSACTION_REPEATABLE_READ;
     static public int TransactionSerializable = java.sql.Connection.TRANSACTION_SERIALIZABLE;
 
-    static public int MaxIdleTime = 20 * 60 * 1000; // 20 min
+    static public int MaxIdleTime = 2 * 60 * 1000; // 2 min
             
     private Database database = null;
     private java.sql.Connection connection = null;
@@ -32,24 +32,8 @@ public class Connection {
             java.sql.Connection connection = DriverManager.getConnection(database.connection(), database.user(),
                     database.password());
 
-            if (database.vendor() == DatabaseVendor.SqlServer) {
-                connection.setTransactionIsolation(TransactionReadUncommitted);
-
-                //				PreparedStatement statement = connection.prepareStatement("set transaction isolation level snapshot");
-                //				statement.execute();
-                //				statement.close();
-            }
-
-            if (database.vendor() == DatabaseVendor.Postgres) {
-/*                PreparedStatement statement = connection.prepareStatement("Alter user " + database.user()
-                        + " set search_path to '" + database.schema() + "'");
-                statement.execute();
-                statement.close();*/
-            }
-
             return connection;
         } catch (Throwable e) {
-            Trace.logError(e);
             throw new RuntimeException(e);
         }
     }
@@ -81,11 +65,15 @@ public class Connection {
     }
 
     public boolean isCurrent() {
-        return owner.equals(Thread.currentThread());
+        return Thread.currentThread().equals(owner);
+    }
+
+    private boolean isAlive() {
+        return owner != null && owner.isAlive();
     }
 
     public boolean isInUse() {
-        return !isCurrent() ? owner.isAlive() : false;
+        return !isCurrent() ? isAlive() : false;
     }
 
     public boolean isUnused() {
@@ -106,6 +94,10 @@ public class Connection {
         initClientInfo();
     }
 
+    public void release() {
+        owner = null;
+    }
+    
     private void initClientInfo() {
         try {
             connection.setClientInfo("ApplicationName", owner.getName());

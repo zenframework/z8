@@ -5,6 +5,8 @@ import java.security.Principal;
 import javax.security.auth.login.LoginException;
 
 import org.zenframework.z8.auth.AuthorityCenter;
+import org.zenframework.z8.server.db.Connection;
+import org.zenframework.z8.server.db.ConnectionManager;
 import org.zenframework.z8.server.security.IUser;
 import org.zenframework.z8.server.security.User;
 
@@ -20,12 +22,17 @@ public class LoginModule extends LoginModuleBase
 		for (Principal p : subject.getPrincipals()) {
 			Z8Principal principal = (Z8Principal) p;
 
-			IUser user = User.load(principal.getName(),
-			        principal.getPassword(), false, AuthorityCenter.database());
+			Connection connection = ConnectionManager.get();
+			
+			try {
+			    IUser user = User.load(principal.getName(), principal.getPassword(), false, AuthorityCenter.database());
+	            AuthorityCenter.getUserManager().add(user);
+	            loggedIn = true;
+	            return true;
+			} finally {
+			    connection.release();
+			}
 
-			AuthorityCenter.getUserManager().add(user);
-			loggedIn = true;
-			return true;
 		}
 
 		return super.login();

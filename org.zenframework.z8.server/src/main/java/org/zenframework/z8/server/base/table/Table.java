@@ -16,7 +16,6 @@ import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.types.bool;
 import org.zenframework.z8.server.types.datetime;
 import org.zenframework.z8.server.types.guid;
-import org.zenframework.z8.server.types.integer;
 
 public class Table extends TableBase {
     static public class names {
@@ -142,14 +141,14 @@ public class Table extends TableBase {
         id1.setName(names.Id1);
         id1.setIndex("id1");
         id1.setDisplayName(displayNames.Id1);
-        id1.get().length = new integer(Id1Length);
+        id1.get().length.set(Id1Length);
         id1.get().width.set(Id1Length);
         id1.get().stretch.set(false);
 
         name.setName(names.Name);
         name.setIndex("name");
         name.setDisplayName(displayNames.Name);
-        name.get().length = new integer(NameLength);
+        name.get().length.set(NameLength);
         name.get().width.set(NameWidth);
 
         description.setName(names.Description);
@@ -159,7 +158,7 @@ public class Table extends TableBase {
         lockedField.setName(names.Locked);
         lockedField.setIndex("locked");
         lockedField.setDisplayName(Resources.get(strings.Locked));
-        lockedField.get().system = new bool(true);
+        lockedField.get().system.set(true);
 
         locked.setIndex("lockedExpression");
         locked.setDisplayName(Resources.get(strings.Locked));
@@ -168,27 +167,27 @@ public class Table extends TableBase {
         recordId.setIndex("recordId");
         recordId.setDisplayName(Resources.get(strings.RecordId));
         recordId.setAttribute(PrimaryKey, "");
-        recordId.get().system = new bool(true);
+        recordId.get().system.set(true);
 
         createdAt.setName(names.CreatedAt);
         createdAt.setIndex("createdAt");
         createdAt.setDisplayName(displayNames.CreatedAt);
-        createdAt.get().system = new bool(true);
+        createdAt.get().system.set(true);
 
         createdBy.setName(names.CreatedBy);
         createdBy.setIndex("createdBy");
         createdBy.setDisplayName(displayNames.CreatedBy);
-        createdBy.get().system = new bool(true);
+        createdBy.get().system.set(true);
 
         modifiedAt.setName(names.ModifiedAt);
         modifiedAt.setIndex("modifiedAt");
         modifiedAt.setDisplayName(displayNames.ModifiedAt);
-        modifiedAt.get().system = new bool(true);
+        modifiedAt.get().system.set(true);
 
         modifiedBy.setName(names.ModifiedBy);
         modifiedBy.setIndex("modifiedBy");
         modifiedBy.setDisplayName(displayNames.ModifiedBy);
-        modifiedBy.get().system = new bool(true);
+        modifiedBy.get().system.set(true);
 
         registerDataField(recordId);
         registerDataField(createdAt);
@@ -226,11 +225,9 @@ public class Table extends TableBase {
             modifiedBy.get().set(getUser().id());
         }
 
-        if(fields.contains(locked.get())) {
+        if(fields.contains(locked.get()))
             lockedField.get().set(locked.get().get());
-        }
 
         super.beforeUpdate(data, recordId, fields, model, modelRecordId);
     }
-
 }

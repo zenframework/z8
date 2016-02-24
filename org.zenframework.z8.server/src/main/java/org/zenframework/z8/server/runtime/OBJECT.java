@@ -39,8 +39,6 @@ public class OBJECT extends RequestTarget implements IObject {
 
     private Map<String, String> attributes = new HashMap<String, String>();
 
-    public bool accessible = new bool(true);
-
     public OBJECT() {
         this(null);
         setAttribute(IObject.ObjectId, guid.NULL.toString());
@@ -59,7 +57,6 @@ public class OBJECT extends RequestTarget implements IObject {
 
     @Override
     public String classId() {
-        assert (cls != null);
         return cls.classId();
     }
 
