@@ -1038,7 +1038,9 @@ Z8.form.SearchBox = Ext.extend(Ext.form.TriggerField,
 				var onSuccess = this.createStore.createDelegate(this, [null, null, lookup, forceExpand], true);
 				var onError = Ext.onError;
 				var params = this.getParams(lookup, forceExpand);
-				params.filterBy = this.valueId;
+				
+				if(!Ext.isEmpty(this.valueId))
+					params.filterBy = this.valueId;
 				
 				Z8.Ajax.request(this.queryId, onSuccess, onError, params, this);
 			}
