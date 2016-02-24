@@ -17,9 +17,8 @@ public class ConnectionManager {
     }
 
     public static synchronized Connection get(Database database) {
-        if(database == null) {
+        if(database == null)
             database = ApplicationServer.database();
-        }
 
         List<Connection> connections = schemas.get(database.schema());
 
