@@ -1192,7 +1192,7 @@ public class Query extends Runnable {
     }
 
     public String getAlias() {
-        return "T" + hashCode();
+        return "T" + Math.abs((id() + hashCode()).hashCode());
     }
 
     @Override

@@ -331,8 +331,7 @@ public class Select {
             cursor = BasicSelect.cursor(connection, sql);
         } catch (Throwable e) {
             close();
-            Trace.logError(e);
-            Trace.logEvent(sql);
+            Trace.logError(sql, e);
             throw new RuntimeException(e);
         }
 
