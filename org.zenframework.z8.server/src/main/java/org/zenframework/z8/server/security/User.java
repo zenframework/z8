@@ -247,18 +247,17 @@ public class User implements IUser {
         fields.add(userEntries.entries.get().id.get());
         fields.add(userEntries.entries.get().name.get());
 
+        Collection<Field> sortFields = new ArrayList<Field>();
+        sortFields.add(userEntries.position.get());
+        
         SqlToken first = new Rel(userEntries.user.get(), Operation.Eq, userEntries.users.get().recordId.get());
-
         SqlToken second = new Rel(userEntries.entry.get(), Operation.Eq, userEntries.entries.get().recordId.get());
-
         SqlToken third = new Rel(new Lower(userEntries.users.get().name.get()), Operation.Eq, new sql_string(
                 name().toLowerCase()));
 
         SqlToken where = new And(new And(first, second), third);
 
-        userEntries.sortFields.add(userEntries.position);
-
-        userEntries.read(fields, where);
+        userEntries.read(fields, sortFields, where);
 
         List<Component> components = new ArrayList<Component>();
 
