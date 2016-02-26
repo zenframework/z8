@@ -115,7 +115,12 @@ public class FileTransport extends AbstractTransport implements Properties.Liste
 
     @Override
     public Message receive() {
-        for (File addresseeFolder : in.listFiles()) {
+        File[] files = in.listFiles();
+        
+        if(files == null)
+            throw new RuntimeException("FileTransport.receive(): '" + in.getPath() + "' is not a directory.");
+        
+        for (File addresseeFolder : files) {
             if (addresseeFolder.isDirectory()) {
                 for (File messageFolder : addresseeFolder.listFiles()) {
                     if (messageFolder.isDirectory()) {
