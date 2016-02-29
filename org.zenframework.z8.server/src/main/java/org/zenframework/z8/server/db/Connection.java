@@ -238,14 +238,14 @@ public class Connection {
         }
     }
 
-    public void executeUpdate(BasicStatement statement) throws SQLException {
+    public int executeUpdate(BasicStatement statement) throws SQLException {
         try {
-            statement.statement().executeUpdate();
+            return statement.statement().executeUpdate();
         } catch (SQLException e) {
             checkAndReconnect(e);
             statement.safeClose();
             statement.prepare();
-            statement.statement().executeUpdate();
+            return statement.statement().executeUpdate();
         }
     }
 }
