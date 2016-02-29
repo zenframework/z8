@@ -95,7 +95,8 @@ public class Connection {
     }
 
     public void release() {
-        owner = null;
+        if (transactionCount == 0)
+            owner = null;
     }
     
     private void initClientInfo() {
