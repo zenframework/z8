@@ -6,7 +6,11 @@ import java.util.Collection;
 import java.util.Enumeration;
 
 import org.zenframework.z8.server.base.simple.Activator;
+import org.zenframework.z8.server.base.table.Table;
+import org.zenframework.z8.server.db.generator.IForeignKey;
+import org.zenframework.z8.server.json.parser.JsonObject;
 import org.zenframework.z8.server.logs.Trace;
+import org.zenframework.z8.server.request.Loader;
 import org.zenframework.z8.server.runtime.AbstractRuntime;
 import org.zenframework.z8.server.runtime.IRuntime;
 import org.zenframework.z8.server.runtime.ServerRuntime;
@@ -56,6 +60,28 @@ public class Runtime extends AbstractRuntime {
                 activator.get().onInitialize();
             } catch(Throwable e) {
                 Trace.logError("Plugin initialization error.", e);
+            }
+        }
+    }
+
+    public static JsonObject getTablesStructure() {
+        JsonObject structure = new JsonObject();
+        for (Table.CLASS<? extends Table> tableClass : runtime.tables()) {
+            fillStructure(structure, tableClass);
+        }
+        return structure;
+    }
+
+    @SuppressWarnings("unchecked")
+    private static void fillStructure(JsonObject structure, Table.CLASS<? extends Table> tableClass) {
+        if (!structure.has(tableClass.classId())) {
+            JsonObject table = new JsonObject();
+            structure.put(tableClass.classId(), table);
+            for (IForeignKey fkey : tableClass.get().getForeignKeys()) {
+                String fieldIndex = tableClass.get().getFieldByName(fkey.getFieldDescriptor().name()).getIndex();
+                table.put(fieldIndex, ((Table) fkey.getReferencedTable()).classId());
+                fillStructure(structure,
+                        (Table.CLASS<? extends Table>) Loader.loadClass(((Table) fkey.getReferencedTable()).classId()));
             }
         }
     }

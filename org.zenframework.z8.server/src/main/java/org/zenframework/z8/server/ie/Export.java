@@ -154,8 +154,10 @@ public class Export extends OBJECT {
                                 recordsSorter, exportRecordsMax, 0);
                     }
                 }
-                // Сортировка записей в соответствии со ссылками по foreign keys и parentId
-                Collections.sort(records, recordsSorter.getComparator());
+                if (RecordsSorter.getSortingMode().onExport) {
+                    // Сортировка записей в соответствии со ссылками по foreign keys и parentId
+                    Collections.sort(records, recordsSorter.getComparator());
+                }
                 if (LOG.isDebugEnabled()) {
                     LOG.debug(records.size() + " records sorted in " + recordsSorter.getCount() + " steps:");
                     for (ExportEntry.Records.Record record : records) {

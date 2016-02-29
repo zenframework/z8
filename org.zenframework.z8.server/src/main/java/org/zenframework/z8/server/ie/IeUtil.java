@@ -25,7 +25,6 @@ import org.zenframework.z8.server.base.file.FileInfo;
 import org.zenframework.z8.server.base.file.FilesFactory;
 import org.zenframework.z8.server.base.query.Query;
 import org.zenframework.z8.server.base.table.Table;
-import org.zenframework.z8.server.base.table.system.Users;
 import org.zenframework.z8.server.base.table.value.AttachmentField;
 import org.zenframework.z8.server.base.table.value.Field;
 import org.zenframework.z8.server.logs.Trace;
@@ -221,8 +220,9 @@ public class IeUtil {
     }
 
     public static boolean isBuiltinRecord(Table table, guid recordId) {
-        return guid.NULL.equals(recordId) || table instanceof Users
-                && (BuiltinUsers.System.guid().equals(recordId) || BuiltinUsers.Administrator.guid().equals(recordId));
+        // TODO Разобраться, почему для таблицы-наследника Users не работает
+        return guid.NULL.equals(recordId) || /*table instanceof Users
+                &&*/ (BuiltinUsers.System.guid().equals(recordId) || BuiltinUsers.Administrator.guid().equals(recordId));
     }
 
     public static void marshalExportEntry(ExportEntry entry, Writer out) throws JAXBException {

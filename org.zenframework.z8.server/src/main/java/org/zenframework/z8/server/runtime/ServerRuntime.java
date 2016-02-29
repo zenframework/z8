@@ -28,6 +28,9 @@ public class ServerRuntime extends AbstractRuntime {
             "z8.transport.selfAddressDefault", "", "Адрес по умолчанию");
     public static final Property ExportRecordsMaxProperty = new Property("FAB69475-114C-4C39-8401-A03C42608BBE",
             "z8.transport.exportRecordsMax", "1000", "Максимальное количество записей в сообщении экспорта");
+    public static final Property RecordsSortingModeProperty = new Property("FA9D7410-050B-43BB-9F7A-B151F5BCD091",
+            "z8.transport.recordsSortingMode", "always",
+            "Режим сортировки записей при импорте/экспорте (on_export, on_import, always)");
     public static final Property FileFolderProperty = new Property("3D524DE7-0AF3-40FE-8FF7-C4A073D1F834",
             "z8.transport.file.folder", "C:/z8/transport", "Каталог для обмена по протоколу file");
     public static final Property JmsConnectionFactoryProperty = new Property("5CACA325-B353-43C0-917C-B9A20C21C64E",
@@ -37,8 +40,7 @@ public class ServerRuntime extends AbstractRuntime {
             "z8.transport.jms.connectionUrl", "tcp://localhost:61616?trace=false&soTimeout=60000",
             "URL для подключения к JMS-серверу");
     public static final Property JmsModeProperty = new Property("543A3B9F-04F0-4697-AEBA-ABBF5693865B",
-            "z8.transport.jms.mode", "object",
-            "Режим передачи сообщений через JMS (object, stream). По умолчанию - object");
+            "z8.transport.jms.mode", "object", "Режим передачи сообщений через JMS (object, stream). По умолчанию - object");
     public static final Property WsEndpointProperty = new Property("E90D5A9C-6C4A-48A2-BA3C-34E2F69DEF11",
             "z8.transport.ws.endpoint", "http://localhost:9898/transport", "URL транспортного web-сервиса");
     public static final Property BridgeUrlsProperty = new Property("3E7DF5E2-8D71-41FC-AEBD-422CBDD0729E",
