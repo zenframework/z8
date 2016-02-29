@@ -81,6 +81,7 @@ public class ServerRuntime extends AbstractRuntime {
         addProperty(EnableProtocolsProperty);
         addProperty(SendFilesSeparatelyProperty);
         addProperty(ExportRecordsMaxProperty);
+        addProperty(RecordsSortingModeProperty);
         addProperty(SelfAddressDefaultProperty);
         addProperty(FileFolderProperty);
         addProperty(JmsConnectionFactoryProperty);
