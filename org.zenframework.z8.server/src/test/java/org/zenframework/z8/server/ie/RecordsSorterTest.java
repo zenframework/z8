@@ -2,18 +2,21 @@ package org.zenframework.z8.server.ie;
 
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 
 import junit.framework.TestCase;
 
 import org.zenframework.z8.ie.xml.ExportEntry;
-import org.zenframework.z8.server.base.table.Table;
 import org.zenframework.z8.server.json.parser.JsonObject;
-import org.zenframework.z8.server.request.Loader;
 import org.zenframework.z8.server.types.guid;
 import org.zenframework.z8.server.utils.IOUtils;
 
 public class RecordsSorterTest extends TestCase {
+
+    private static Collection<guid> BUILTIN_RECORDS = Arrays.asList(new guid("00000000-0000-0000-0000-000000000000"),
+            new guid("00000000-0000-0000-0000-000000000001"), new guid("00000000-0000-0000-0000-000000000002"));
 
     public RecordsSorterTest(String name) {
         super(name);
@@ -56,7 +59,7 @@ public class RecordsSorterTest extends TestCase {
                 if (tableInfo.has(field.getId())) {
                     String linkTable = tableInfo.getString(field.getId());
                     guid linkId = new guid(field.getValue());
-                    if (!IeUtil.isBuiltinRecord((Table) Loader.getInstance(linkTable), linkId)) {
+                    if (!BUILTIN_RECORDS.contains(linkId)) {
                         sorter.addLink(record.getTable(), recordId, linkTable, linkId);
                     }
                 }
