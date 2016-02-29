@@ -827,12 +827,12 @@ public class Query extends Runnable {
         return fields;
     }
 
-    public void update(guid id) {
+    public int update(guid id) {
         Collection<Field> fields = getChangedFields();
-        UpdateAction.run(this, id, fields, getModelRecordId(id));
+        return UpdateAction.run(this, id, fields, getModelRecordId(id));
     }
 
-    public void update(SqlToken where) {
+    public int update(SqlToken where) {
         Collection<Field> changedFields = getChangedFields();
         
         Collection<Field> fields = new ArrayList<Field>();
@@ -840,30 +840,37 @@ public class Query extends Runnable {
 
         read(fields, where);
 
+        int result = 0;
+        
         while (next()) {
             guid id = recordId();
-            UpdateAction.run(this, id, changedFields, getModelRecordId(id), false);
+            result += UpdateAction.run(this, id, changedFields, getModelRecordId(id), false);
         }
         
         for(Field field : changedFields)
             field.reset();
 
+        return result;
     }
 
-    public void destroy(guid id) {
-        DestroyAction.run(this, id, getModelRecordId(id));
+    public int destroy(guid id) {
+        return DestroyAction.run(this, id, getModelRecordId(id));
     }
 
-    public void destroy(SqlToken where) {
+    public int destroy(SqlToken where) {
         Collection<Field> fields = new ArrayList<Field>();
         fields.add(primaryKey());
 
         read(fields, where);
 
+        int result = 0;
+
         while (next()) {
             guid id = recordId();
-            DestroyAction.run(this, id, getModelRecordId(id));
+            result += DestroyAction.run(this, id, getModelRecordId(id));
         }
+        
+        return result;
     }
 
     private boolean readRecord(guid id, RCollection<Field.CLASS<Field>> fieldClasses) {
@@ -2332,20 +2339,20 @@ public class Query extends Runnable {
         read1(fieldClasses, sortClasses, groupClasses, where, having);
     }
 
-    public void z8_update(guid id) {
-        update(id);
+    public integer z8_update(guid id) {
+        return new integer(update(id));
     }
 
-    public void z8_update(sql_bool where) {
-        update(where);
+    public integer z8_update(sql_bool where) {
+        return new integer(update(where));
     }
 
-    public void z8_destroy(guid id) {
-        destroy(id);
+    public integer z8_destroy(guid id) {
+        return new integer(destroy(id));
     }
 
-    public void z8_destroy(sql_bool where) {
-        destroy(where);
+    public integer z8_destroy(sql_bool where) {
+        return new integer(destroy(where));
     }
 
     public bool z8_next() {

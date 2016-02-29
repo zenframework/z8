@@ -11,6 +11,7 @@ import org.zenframework.z8.server.base.simple.Activator;
 import org.zenframework.z8.server.base.simple.Procedure;
 import org.zenframework.z8.server.base.table.Table;
 import org.zenframework.z8.server.db.Connection;
+import org.zenframework.z8.server.engine.ApplicationServer;
 import org.zenframework.z8.server.engine.Runtime;
 import org.zenframework.z8.server.utils.ErrorUtils;
 
@@ -28,10 +29,14 @@ public class DBGenerator {
             boolean doCreateEntries) {
         logger.progress(0);
 
+        ApplicationServer.disableEvents();
+
         try {
             run(tables, DataSchema.getTables(connection, "%"), doDropTables, logger, entries);
         } catch (SQLException e) {
             logger.error(e);
+        } finally {
+            ApplicationServer.enableEvents();
         }
 
         logger.progress(100);
@@ -81,6 +86,8 @@ public class DBGenerator {
             progress++;
             logger.progress(Math.round(progress / total * 100));
         }
+
+        logger.message("Control sum: " + Runtime.version());
 
         fireAfterDbGenerated();
 

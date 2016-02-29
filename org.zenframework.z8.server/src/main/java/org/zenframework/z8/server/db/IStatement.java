@@ -18,7 +18,7 @@ public interface IStatement {
 
     public ResultSet executeQuery() throws SQLException;
 
-    public void executeUpdate() throws SQLException;
+    public int executeUpdate() throws SQLException;
 
     public void close();
 }

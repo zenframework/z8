@@ -14,4 +14,23 @@ public class StringUtils {
         }
         return properties.getProperty("key");
     }
+    
+    public static String padLeft(String str, int size, char padChar) {
+        int pads = size - str.length();
+        return pads > 0 ? padding(pads, padChar).concat(str) : str;
+    }
+
+    public static String padRight(String str, int size, char padChar) {
+        int pads = size - str.length();
+        return pads > 0 ? str.concat(padding(pads, padChar)) : str;
+    }
+    
+    private static String padding(int repeat, char padChar) {
+        final char[] buf = new char[repeat];
+    
+        for (int i = 0; i < buf.length; i++)
+            buf[i] = padChar;
+
+        return new String(buf);
+    }    
 }

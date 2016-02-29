@@ -151,6 +151,8 @@ public class ApplicationServer extends RmiServer implements IApplicationServer {
 
         super.start();
 
+        checkSchemaVersion();
+        
         authorityCenter = (IAuthorityCenter) Rmi.connect(config.getAuthorityCenterHost(), config.getAuthorityCenterPort(),
                 IAuthorityCenter.Name);
         authorityCenter.register(this);
@@ -164,6 +166,11 @@ public class ApplicationServer extends RmiServer implements IApplicationServer {
         Scheduler.start();
     }
 
+    private void checkSchemaVersion() {
+        String version = Runtime.version();
+        System.out.println("Runtime schema version: " + version);
+    }
+    
     @Override
     public void stop() throws RemoteException {
         Scheduler.stop();

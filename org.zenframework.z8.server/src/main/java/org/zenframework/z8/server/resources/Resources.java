@@ -39,13 +39,13 @@ public class Resources {
         Properties props = boundles.get(DefaultLanguage);
 
         if(props == null) {
-            throw new RuntimeException("No resource boundles found for '" + DefaultLanguage + "'.");
+            return "${" + key + "}";
         }
 
         String value = props.getProperty(key);
 
         if(value == null) {
-            return key; //TODO:throw new ResourceNotFoundException(key);
+            return "${" + key + "}"; //TODO:throw new ResourceNotFoundException(key);
         }
 
         return value;

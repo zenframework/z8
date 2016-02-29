@@ -21,4 +21,7 @@ public interface IField {
     public String sqlType(DatabaseVendor vendor);
     
     public Query owner();
+    
+    public primary get();
+    public void set(primary value);
 }

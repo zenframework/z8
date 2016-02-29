@@ -118,38 +118,30 @@ public class ReadAction extends Action {
         Collection<Link> aggregateBy = parameters.aggregateBy != null ? parameters.aggregateBy : query
                 .collectAggregateByFields();
 
-        for (Link field : aggregateBy) {
+        for (Link field : aggregateBy)
             addAggregateByField(field);
-        }
 
-        for (Field field : groupBy) {
+        for (Field field : groupBy)
             addGroupByField(field);
-        }
 
-        for (Field field : fields) {
+        for (Field field : fields)
             addSelectField(field);
-        }
 
-        for (Link field : aggregateBy) {
+        for (Link field : aggregateBy)
             addSelectField(field);
-        }
 
-        for (Field field : groupBy) {
+        for (Field field : groupBy)
             addSelectField(field);
-        }
 
-        for (Field field : sortFields) {
+        for (Field field : sortFields)
             addSortField(field);
-        }
 
-        for (Field field : groupFields) {
+        for (Field field : groupFields)
             addGroupField(field);
-        }
 
         if (hasPrimaryKeys()) {
-            for (Field primaryKey : query.primaryKeys()) {
+            for (Field primaryKey : query.primaryKeys())
                 addSelectField(primaryKey);
-            }
 
             addSelectField(query.parentKey());
             addSelectField(query.parentKeys());
@@ -182,12 +174,10 @@ public class ReadAction extends Action {
     
                 Query contextRoot = context.getRootQuery();
     
-                if (contextRoot != null) {
+                if (contextRoot != null)
                     addFilter(contextRoot.where());
-                }
-            } else {
+            } else
                 addFilter(query.where());
-            }
     
             collectFilters();
     
@@ -207,9 +197,8 @@ public class ReadAction extends Action {
             }
     
             String[] lookupFields = getLookupFields();
-            if (lookupFields.length != 0) {
+            if (lookupFields.length != 0)
                 addLikeFilter(lookupFields, getLookupParameter());
-            }
     
             for (Filter filter : getFieldFilters()) {
                 // TODO Разобраться с WHERE и HAVING
@@ -220,11 +209,10 @@ public class ReadAction extends Action {
 //                }
             }
     
-            if (isGrouped()) {
+            if (isGrouped())
                 addGroupFilter(getFilter1());
-            } else {
+            else
                 addFilter(getFilter1());
-            }
         }
     }
 
@@ -266,9 +254,8 @@ public class ReadAction extends Action {
         for (Field field : fields) {
             Collection<Query> queries = fieldToQueries.get(field);
 
-            if (queries != null) {
+            if (queries != null)
                 result.addAll(queries);
-            }
         }
 
         return result;
@@ -277,9 +264,8 @@ public class ReadAction extends Action {
     public Collection<Query> getFilterQueries() {
         Collection<Query> queries = new HashSet<Query>();
 
-        for (Field field : filterFields) {
+        for (Field field : filterFields)
             queries.addAll(fieldToQueries.get(field));
-        }
 
         return queries;
     }
@@ -287,9 +273,8 @@ public class ReadAction extends Action {
     public Collection<Query> getGroupFilterQueries() {
         Collection<Query> queries = new HashSet<Query>();
 
-        for (Field field : groupFilterFields) {
+        for (Field field : groupFilterFields)
             queries.addAll(fieldToQueries.get(field));
-        }
 
         return queries;
     }
@@ -297,13 +282,11 @@ public class ReadAction extends Action {
     public SqlToken getFilter() {
         SqlToken result = null;
 
-        for (SqlToken filter : filters) {
+        for (SqlToken filter : filters)
             result = result == null ? filter : new And(result, filter);
-        }
 
-        if (result != null && !(result instanceof Group)) {
+        if (result != null && !(result instanceof Group))
             result = new Group(result);
-        }
 
         return result;
     }
@@ -311,13 +294,11 @@ public class ReadAction extends Action {
     public SqlToken getGroupFilter() {
         SqlToken result = null;
 
-        for (SqlToken filter : groupFilters) {
+        for (SqlToken filter : groupFilters)
             result = result == null ? filter : new And(result, filter);
-        }
 
-        if (result != null && !(result instanceof Group)) {
+        if (result != null && !(result instanceof Group))
             result = new Group(result);
-        }
 
         return result;
     }
@@ -356,10 +337,10 @@ public class ReadAction extends Action {
                 Collection<Field> usedFields = getUsedFields((Field)link);
                 Collection<Query> owners = getOwners(usedFields);
                 
-                for(Query owner : owners) {
+                for(Query owner : owners)
                     links.addAll(getLinks(owner));
-                }
             }
+
             links.add(link);
         }
         
@@ -371,17 +352,15 @@ public class ReadAction extends Action {
     public Collection<ILink> getLinks(Collection<Query> queries) {
         Collection<ILink> links = new LinkedHashSet<ILink>();
 
-        for (Query query : queries) {
+        for (Query query : queries)
             links.addAll(getLinks(query));
-        }
 
         return links;
     }
 
     private boolean checkAggregation(Field field) {
-        if (!groupBy.isEmpty()) {
+        if (!groupBy.isEmpty())
             return field.aggregation != Aggregation.None || groupBy.contains(field);
-        }
 
         return true;
     }
@@ -410,9 +389,8 @@ public class ReadAction extends Action {
                     Query owner = field.owner();
                     Field primaryKey = owner.primaryKey();
 
-                    if (primaryKey != null) {
+                    if (primaryKey != null)
                         selectFields.add(primaryKey);
-                    }
                 }
             }
 
@@ -421,9 +399,8 @@ public class ReadAction extends Action {
     }
 
     private void addSelectField(Field[] fields) {
-        for (Field field : fields) {
+        for (Field field : fields)
             addSelectField(field);
-        }
     }
 
     private void addSortField(Field field) {
@@ -463,9 +440,8 @@ public class ReadAction extends Action {
     private Collection<Query> getOwners(Collection<Field> fields) {
         Collection<Query> queries = new LinkedHashSet<Query>();
 
-        for (Field field : fields) {
+        for (Field field : fields)
             queries.add(field.owner());
-        }
 
         return queries;
     }
@@ -473,9 +449,8 @@ public class ReadAction extends Action {
     private Collection<Query> getAllQueries() {
         Collection<Query> queries = new HashSet<Query>();
 
-        for (Collection<Query> query : fieldToQueries.values()) {
+        for (Collection<Query> query : fieldToQueries.values())
             queries.addAll(query);
-        }
 
         return queries;
     }
@@ -493,9 +468,8 @@ public class ReadAction extends Action {
         if (filter != null && !(filter instanceof True) && !filters.contains(filter)) {
             Collection<Field> fields = getUsedFields(filter);
 
-            for (Field field : fields) {
+            for (Field field : fields)
                 collectUsedQueries(field);
-            }
 
             filterFields.addAll(fields);
             filters.add(filter);
@@ -520,9 +494,8 @@ public class ReadAction extends Action {
     }
 
     private void getFormulaFields(Field field, Collection<Field> result, Set<Field> processedFields) {
-        if (processedFields == null) {
+        if (processedFields == null)
             processedFields = new LinkedHashSet<Field>();
-        }
 
         if (!processedFields.contains(field)) {
             processedFields.add(field);
@@ -565,9 +538,8 @@ public class ReadAction extends Action {
     }
 
     private void addLikeFilter(String[] fields, String lookup) {
-        if(fields.length == 0 || lookup == null || lookup.isEmpty()) {
+        if(fields.length == 0 || lookup == null || lookup.isEmpty())
             return;
-        }
         
         Query query = getQuery(); 
         
@@ -592,9 +564,8 @@ public class ReadAction extends Action {
 
     protected Field getFieldById(String id) {
         for (Field field : selectFields) {
-            if (field.id().equals(id)) {
+            if (field.id().equals(id))
                 return field;
-            }
         }
         return null;
     }
@@ -602,9 +573,8 @@ public class ReadAction extends Action {
     protected Collection<Field> parseFields(String jsonData) {
         Collection<Field> result = new ArrayList<Field>();
 
-        if (jsonData.charAt(0) != '[') {
+        if (jsonData.charAt(0) != '[')
             jsonData = "[" + jsonData + "]";
-        }
 
         JsonArray fields = new JsonArray(jsonData);
 
@@ -615,9 +585,8 @@ public class ReadAction extends Action {
 
             Field field = query.findFieldById(fieldId);
 
-            if (field != null) {
+            if (field != null)
                 result.add(field);
-            }
         }
 
         return result;
@@ -658,9 +627,8 @@ public class ReadAction extends Action {
 
         String filterData = getFilterParameter();
 
-        if (filterData == null) {
+        if (filterData == null)
             return result;
-        }
 
         JsonArray filters = new JsonArray(filterData);
 
@@ -672,7 +640,9 @@ public class ReadAction extends Action {
                 String values = filter.getString(Json.value);
                 String comparison = filter.has(Json.comparison) ? filter.getString(Json.comparison) :
                     filter.has(Json.operator) ? filter.getString(Json.operator) : null;
+ 
                 Filter flt = getFieldFilter(fields, values, comparison);
+                
                 if (flt != null)
                     result.add(flt);
             }
@@ -683,15 +653,17 @@ public class ReadAction extends Action {
     
     protected Filter getFieldFilter(String fields, String values, String comparison) {
         Operation operation = comparison != null ? Operation.fromString(comparison) : null;
+
         if (Json.__search_text__.equals(fields)) {
             if (values.isEmpty())
                 return null;
+        
             Query query = getQuery();
             Collection<String> foundIds = SearchEngine.INSTANCE.searchRecords(query, StringUtils.unescapeJava(values));
+            
             return new Filter(Arrays.asList(query.getSearchId()), operation, foundIds);
-        } else {
+        } else
             return new Filter(parseFields(fields), operation, parseValues(values));
-        }
     }
 
     protected String parseJsonProperty(JsonObject json, string property) {
@@ -704,9 +676,8 @@ public class ReadAction extends Action {
 
         String result = fieldFilter != null && !fieldFilter.isEmpty() ? fieldFilter : "";
 
-        if (filter1Text == null || filter1Text.isEmpty()) {
+        if (filter1Text == null || filter1Text.isEmpty())
             return result;
-        }
 
         return !result.isEmpty() ? result + " " + Operation.And.toReadableString() + " " + filter1Text : result;
     }
@@ -716,9 +687,8 @@ public class ReadAction extends Action {
 
         String filterData = getFilterParameter();
 
-        if (filterData == null) {
+        if (filterData == null)
             return result;
-        }
 
         JsonArray filters = new JsonArray(filterData);
 
@@ -734,11 +704,10 @@ public class ReadAction extends Action {
 
                 Filter f = new Filter(fields, operation, values);
 
-                if (result == null) {
+                if (result == null)
                     result = f.toString();
-                } else {
+                else
                     result += " " + Operation.And.toReadableString() + " " + f.toString();
-                }
             }
         }
 
@@ -748,9 +717,8 @@ public class ReadAction extends Action {
     protected String getFilter1Text() {
         String filter1 = getFilter1Parameter();
 
-        if (filter1 == null || filter1.isEmpty()) {
+        if (filter1 == null || filter1.isEmpty())
             return null;
-        }
 
         String result = null;
 
@@ -771,19 +739,17 @@ public class ReadAction extends Action {
 
                 Filter f = new Filter(fields, operation, values);
 
-                if (index == 0) {
-                    result = f.toString();
-                } else {
+                if (index != 0) {
                     String andOr = parseJsonProperty(filter, Json.andOr);
 
-                    if ("and".equals(andOr)) {
+                    if("and".equals(andOr))
                         result += " " + Operation.And.toReadableString() + f.toString();
-                    } else if ("or".equals(andOr)) {
+                    else if ("or".equals(andOr))
                         result += " " + Operation.Or.toReadableString() + f.toString();
-                    } else {
-                        assert (false);
-                    }
-                }
+                    else
+                        throw new RuntimeException("Read.getFilter1Text() unknown token '" +  andOr + "'");
+                } else
+                    result = f.toString();
             }
         }
 
@@ -793,9 +759,8 @@ public class ReadAction extends Action {
     protected SqlToken getFilter1() {
         String filter1 = getFilter1Parameter();
 
-        if (filter1 == null || filter1.isEmpty()) {
+        if (filter1 == null || filter1.isEmpty())
             return null;
-        }
 
         SqlToken result = null;
 
@@ -816,19 +781,17 @@ public class ReadAction extends Action {
 
                 SqlToken token = new Filter(fields, operation, values).where();
 
-                if (index == 0) {
-                    result = token;
-                } else {
+                if(index != 0) {
                     String andOr = parseJsonProperty(filter, Json.andOr);
 
-                    if ("and".equals(andOr)) {
+                    if ("and".equals(andOr))
                         result = new And(result, token);
-                    } else if ("or".equals(andOr)) {
+                    else if ("or".equals(andOr))
                         result = new Or(result, token);
-                    } else {
-                        assert (false);
-                    }
-                }
+                    else
+                        throw new RuntimeException("Read.getFilter1() unknown token '" +  andOr + "'");
+                } else
+                    result = token;
             }
         }
 
@@ -838,9 +801,8 @@ public class ReadAction extends Action {
     private void initFields() {
         String recordData = getRecordParameter();
 
-        if (recordData == null || recordData.isEmpty()) {
+        if (recordData == null || recordData.isEmpty())
             return;
-        }
 
         JsonObject record = new JsonObject(recordData);
 
@@ -864,21 +826,15 @@ public class ReadAction extends Action {
     private void initPeriod() {
         String json = getPeriodParameter();
 
-        if (json == null || json.isEmpty()) {
-            return;
-        }
-
-        getQuery().setPeriod(Period.parse(json));
+        if (json != null && !json.isEmpty())
+            getQuery().setPeriod(Period.parse(json));
     }
 
     private void initQuery() {
         String json = getGridParameter();
 
-        if (json == null) {
-            return;
-        }
-
-        getQuery().showAsGrid.set(new bool(json));
+        if (json != null)
+            getQuery().showAsGrid.set(new bool(json));
     }
 
     public Select getCursor() {
@@ -976,9 +932,8 @@ public class ReadAction extends Action {
             summary.setGroupBy(ArrayUtils.collection(groupField));
 
             select = summary;
-        } else {
+        } else
             select.setGroupBy(ArrayUtils.collection(groupField));
-        }
 
         Select frame = new FramedSelect(select, 1, 50);
 
@@ -1022,9 +977,8 @@ public class ReadAction extends Action {
                 for (Field field : getSelectFields()) {
                     int index = ArrayUtils.indexOf(groups.fields, field);
 
-                    if (index != -1) {
+                    if (index != -1)
                         group[index] = field.get();
-                    }
 
                     field.writeData(fieldData);
                 }
@@ -1033,9 +987,8 @@ public class ReadAction extends Action {
 
                 Style style = query.renderRecord();
 
-                if (style != null) {
+                if (style != null)
                     style.write(fieldData);
-                }
 
                 data.put(fieldData);
             }
@@ -1089,13 +1042,11 @@ public class ReadAction extends Action {
         Field expression = createAggregatedExpression(groupField, groupField.aggregation, groupField.type());
         Field count = createAggregatedExpression(groupField, Aggregation.Count, FieldType.Integer);
 
-        if (expression != null && expression != groupField) {
+        if (expression != null && expression != groupField)
             select.addField(expression);
-        }
 
-        if (count != groupField) {
+        if (count != groupField)
             select.addField(count);
-        }
 
         JsonObject summaryObj = new JsonObject();
 
@@ -1111,15 +1062,14 @@ public class ReadAction extends Action {
                 JsonObject obj = new JsonObject();
 
                 for (Field field : summary.getFields()) {
-                    if (field == groupField) {
+                    if (field == groupField)
                         obj.put(Json.groupValue, groupField.get());
-                    } else if (field == expression) {
+                    else if (field == expression)
                         obj.put(groupField.id(), expression.get());
-                    } else if (field == count) {
+                    else if (field == count)
                         obj.put(Json.total, count.get());
-                    } else if(field.aggregation != Aggregation.None && field.type() != FieldType.Boolean) {
+                    else if(field.aggregation != Aggregation.None && field.type() != FieldType.Boolean)
                         field.writeData(obj);
-                    }
                 }
 
                 summaryObj.put(groupField.get().toString(), obj);
@@ -1168,17 +1118,13 @@ public class ReadAction extends Action {
 
                 Groupping groups = writeFrame(writer);
 
-                if (query.showTotals.get()) {
+                if (query.showTotals.get())
                     writeTotals(writer);
-                }
 
-                if (groups != null) {
+                if (groups != null)
                     writeSummary(writer, groups);
-                }
-            } else {
+            } else
                 writeGroupTotals(writer, totalsBy);
-            }
-
         } finally {
             afterRead();
         }

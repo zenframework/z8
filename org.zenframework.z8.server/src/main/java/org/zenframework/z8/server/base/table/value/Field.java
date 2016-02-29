@@ -471,4 +471,10 @@ abstract public class Field extends Control implements IValue, IField {
     public sql_bool z8_sqlIsNull() {
         return new sql_bool(new IsNull(new SqlField(this)));
     }
+    
+    public int controlSum() {
+        String name = name() + " " + sqlType(DatabaseVendor.Postgres);
+        return Math.abs(name.hashCode());
+    }
+    
 }

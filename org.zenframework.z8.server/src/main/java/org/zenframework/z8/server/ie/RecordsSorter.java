@@ -10,7 +10,9 @@ import java.util.List;
 import java.util.Map;
 
 import org.zenframework.z8.ie.xml.ExportEntry;
+import org.zenframework.z8.server.base.table.system.Properties;
 import org.zenframework.z8.server.logs.Trace;
+import org.zenframework.z8.server.runtime.ServerRuntime;
 import org.zenframework.z8.server.types.exception;
 import org.zenframework.z8.server.types.guid;
 
@@ -88,13 +90,30 @@ public class RecordsSorter {
         }
         if (outsideRecords.isEmpty()) {
             throw new exception(
-                    "Ошибка экспорта: не удалось найти конечную запись. В базе данных есть циклическая зависимость. Обратитесь к системному администратору.");
+                    "Ошибка экспорта: не удалось найти конечную запись. В базе данных есть циклическая зависимость. Обратитесь к системному администратору.\n"
+                            + recordsToString(recordsRelations));
         }
         for (Collection<Record> relations : recordsRelations.values()) {
             relations.removeAll(outsideRecords);
             count++;
         }
         return outsideRecords;
+    }
+
+    public void printRecords() {
+        System.out.println(recordsToString(recordsRelations));
+    }
+
+    public static SortingMode getSortingMode() {
+        return SortingMode.valueOf(Properties.getProperty(ServerRuntime.RecordsSortingModeProperty).toUpperCase());
+    }
+
+    private String recordsToString(Map<Record, Collection<Record>> recordsRelations) {
+        StringBuilder str = new StringBuilder();
+        for (Map.Entry<Record, Collection<Record>> entry : recordsRelations.entrySet()) {
+            str.append(entry.getKey()).append(" --> ").append(entry.getValue()).append('\n');
+        }
+        return str.toString();
     }
 
     public static class Record {
@@ -125,6 +144,20 @@ public class RecordsSorter {
         @Override
         public String toString() {
             return table + '[' + recordId + ']';
+        }
+
+    }
+
+    public static enum SortingMode {
+        
+        ON_EXPORT(true, false), ON_IMPORT(false, true), ALWAYS(true, true);
+        
+        public final boolean onExport;
+        public final boolean onImport;
+        
+        private SortingMode(boolean onExport, boolean onImport) {
+            this.onExport = onExport;
+            this.onImport = onImport;
         }
 
     }

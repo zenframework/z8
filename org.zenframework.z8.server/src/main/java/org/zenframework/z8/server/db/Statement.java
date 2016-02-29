@@ -16,15 +16,17 @@ public class Statement extends BasicStatement {
 /*    public void execute() throws SQLException {
     }
 */
-    public static void executeUpdate(Connection connection, String sql) throws SQLException {
+    public static int executeUpdate(Connection connection, String sql) throws SQLException {
         Statement statement = new Statement(connection);
         statement.prepare(sql);
         try {
-            statement.executeUpdate();
+            return statement.executeUpdate();
         }
         catch(SQLException e) {
             SqlExceptionConverter.rethrow(statement.vendor(), e);
         }
+        
+        return 0;
     }
 
 }

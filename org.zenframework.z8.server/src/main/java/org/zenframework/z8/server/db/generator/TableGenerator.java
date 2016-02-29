@@ -1,20 +1,14 @@
 package org.zenframework.z8.server.db.generator;
 
 import java.sql.SQLException;
-import java.text.MessageFormat;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.zenframework.z8.server.base.model.sql.CountingSelect;
-import org.zenframework.z8.server.base.model.sql.Insert;
-import org.zenframework.z8.server.base.model.sql.Update;
 import org.zenframework.z8.server.base.query.Query;
-import org.zenframework.z8.server.base.table.ITable;
 import org.zenframework.z8.server.base.table.Table;
 import org.zenframework.z8.server.base.table.TreeTable;
 import org.zenframework.z8.server.base.table.system.Users;
@@ -81,9 +75,8 @@ public class TableGenerator {
     }
 
     public Table table() {
-        if (table == null) {
+        if (table == null)
             table = (Table) tableClass.newInstance();
-        }
         return table;
     }
 
@@ -129,10 +122,7 @@ public class TableGenerator {
                 assert (false);
             }
         } catch (SQLException e) {
-            logger.error(
-                    e,
-                    Resources.format("Generator.createTableError", displayName(),
-                            "[" + connection.schema() + "]." + name(), ErrorUtils.getMessage(e)));
+            logger.error(e, Resources.format("Generator.createTableError", displayName(), "[" + connection.schema() + "]." + name(), ErrorUtils.getMessage(e)));
         } finally {
             this.table = null;
 
@@ -277,14 +267,14 @@ public class TableGenerator {
         Statement.executeUpdate(connection, sql);
     }
 
-    static void dropAllKeys(Connection connection, TableDescription tableindb, ILogger showMessage) throws SQLException {
-        dropFKs(connection, tableindb.getRelations(), showMessage);
-        dropIdxs(connection, tableindb, showMessage);
+    static void dropAllKeys(Connection connection, TableDescription tableindb, ILogger logger) throws SQLException {
+        dropFKs(connection, tableindb.getRelations(), logger);
+        dropIdxs(connection, tableindb, logger);
     }
 
-    static void dropReferencesKeys(Connection connection, TableDescription tableindb, ILogger showMessage)
+    static void dropReferencesKeys(Connection connection, TableDescription tableindb, ILogger logger)
             throws SQLException {
-        dropFKs(connection, tableindb.getRelationsFromPK(), showMessage);
+        dropFKs(connection, tableindb.getRelationsFromPK(), logger);
     }
 
     private String getFieldForCreate(Field field) {
@@ -440,12 +430,7 @@ public class TableGenerator {
             new PrimaryKeyGenerator(table()).run(connection);
         } catch (ObjectAlreadyExistException e) {
         } catch (SQLException e) {
-            logger.error(
-                    e,
-                    Resources.format(
-                            "Generator.createUniqueIndexError",
-                            displayName(), "[" + connection.schema() + "]." + name(),
-                                    ErrorUtils.getMessage(e)));
+            logger.error(e, Resources.format("Generator.createUniqueIndexError", displayName(), "[" + connection.schema() + "]." + name(), ErrorUtils.getMessage(e)));
         } finally {
             this.table = null;
         }
@@ -472,11 +457,7 @@ public class TableGenerator {
         try {
             new ForeignKeyGenerator(new ForeignKey(name(), fk, c)).run(connection);
         } catch (SQLException e) {
-            logger.error(
-                    e,
-                    Resources.format("Generator.createForeignKeyError", table().displayName(),
-                            table().name(), fk.getReferencedTable().displayName(), fk.getReferencedTable().name(),
-                            ErrorUtils.getMessage(e)));
+            logger.error(e, Resources.format("Generator.createForeignKeyError", table().displayName(), table().name(), fk.getReferencedTable().displayName(), fk.getReferencedTable().name(), ErrorUtils.getMessage(e)));
         }
     }
 
@@ -487,10 +468,7 @@ public class TableGenerator {
                 index++;
                 new IndexGenerator(table(), (Field) field, index, false).run(connection);
             } catch (SQLException e) {
-                logger.error(
-                        e,
-                        Resources.format("Generator.createIndexError", field.displayName(),
-                                table().displayName(), table().name(), ErrorUtils.getMessage(e)));
+                logger.error(e, Resources.format("Generator.createIndexError", field.displayName(), table().displayName(), table().name(), ErrorUtils.getMessage(e)));
             }
         }
     }
@@ -502,10 +480,7 @@ public class TableGenerator {
                 index++;
                 new IndexGenerator(table(), (Field) field, index, true).run(connection);
             } catch (SQLException e) {
-                logger.error(
-                        e,
-                        Resources.format("Generator.createUniqueIndexError", field.displayName(),
-                                table().displayName(), table().name()));
+                logger.error(e, Resources.format("Generator.createUniqueIndexError", field.displayName(), table().displayName(), table().name()));
             }
         }
     }
@@ -513,31 +488,11 @@ public class TableGenerator {
     private void createNullRecord() {
         Query query = table();
 
-        Collection<Field> fields = query.getDataFields();
-
         try {
-            if (!findRecord(guid.NULL)) {
-                Insert insert = new Insert(query, fields);
-                insert.execute();
-            } else {
-                for (Field field : fields) {
-                    field.set(null);
-                }
-
-                Update update = new Update(query, fields, guid.NULL);
-                update.execute();
-
-                for (Field field : fields) {
-                    field.reset();
-                }
-            }
-        } catch (SQLException e) {
-            logger.error(
-                    e,
-                    formatTableName(table())
-                            + ": "
-                            + Resources.format("Generator.insertRecordsError", guid.NULL.toString(),
-                                    table().displayName(), table().name(), ErrorUtils.getMessage(e)));
+            if (!findRecord(guid.NULL))
+                query.create(guid.NULL);
+        } catch (Throwable e) {
+            logger.error(e, Resources.format("Generator.insertRecordsError", guid.NULL.toString(), table().displayName(), table().name(), ErrorUtils.getMessage(e)));
         }
     }
 
@@ -553,44 +508,30 @@ public class TableGenerator {
             parentId = guid.NULL;
         }
 
-        Set<Field> fields = (Set) record.keySet();
+        Collection<Field> fields = (Collection)record.keySet();
 
         Query table = table();
 
         try {
-            if (!findRecord(recordId)) {
+            if(!findRecord(recordId)) {
                 for (Field field : fields) {
                     primary value = record.get(field);
                     field.set(value);
                 }
                 table.create(recordId, parentId, guid.NULL);
             } else {
-                Iterator<Field> i = fields.iterator();
-                while (i.hasNext()) {
-                    Field field = i.next();
+                for (Field field : fields) {
                     if (field.gendb_updatable()) {
                         primary value = record.get(field);
                         field.set(value);
-                    } else {
-                        i.remove();
                     }
                 }
-                if (!(table instanceof Users) || !BuiltinUsers.System.guid().equals(recordId) && !BuiltinUsers.Administrator.guid().equals(recordId)) {
-                    Update update = new Update(table, fields, recordId);
-                    update.execute();
-                }
-            }
 
-            for (Field field : fields) {
-                field.reset();
+                if (!(table instanceof Users) || !BuiltinUsers.System.guid().equals(recordId) && !BuiltinUsers.Administrator.guid().equals(recordId))
+                    table.update(recordId);
             }
         } catch (SQLException e) {
-            logger.error(
-                    e,
-                    formatTableName(table())
-                            + ": "
-                            + Resources.format("Generator.insertRecordsError", recordId.toString(),
-                                    table().displayName(), table().name(), ErrorUtils.getMessage(e)));
+            logger.error(e, Resources.format("Generator.insertRecordsError", recordId.toString(), table().displayName(), table().name(), ErrorUtils.getMessage(e)));
         }
 
     }
@@ -647,10 +588,6 @@ public class TableGenerator {
         }
     }
 
-    private String formatTableName(ITable table) {
-        return new MessageFormat("\"{0}\" ({1})").format(new Object[] { table.displayName(), table.name() });
-    }
-
     static void dropFKs(Connection connection, Collection<ForeignKey> fks, ILogger logger) {
         for(ForeignKey fk : fks) {
             try {
@@ -662,16 +599,13 @@ public class TableGenerator {
         }
     }
 
-    static void dropIdxs(Connection connection, TableDescription dbTable, ILogger showMessage) {
+    static void dropIdxs(Connection connection, TableDescription dbTable, ILogger logger) {
         for (Index idx : dbTable.getIndexes()) {
             try {
                 IndexGenerator.dropIndex(connection, idx.tableName, idx.name);
             } catch(ObjectNotFoundException e) {
             } catch (SQLException e) {
-                showMessage.error(
-                        e,
-                        Resources.format("Generator.dropIndexError",
-                                idx.tableName, idx.name, ErrorUtils.getMessage(e)));
+                logger.error(e, Resources.format("Generator.dropIndexError", idx.tableName, idx.name, ErrorUtils.getMessage(e)));
             }
         }
 
@@ -680,10 +614,7 @@ public class TableGenerator {
                 IndexGenerator.dropIndex(connection, idx.tableName, idx.name);
             } catch(ObjectNotFoundException e) {
             } catch (SQLException e) {
-                showMessage.error(
-                        e,
-                        Resources.format("Generator.dropIndexError",
-                                idx.tableName, idx.name, ErrorUtils.getMessage(e)));
+                logger.error(e, Resources.format("Generator.dropIndexError", idx.tableName, idx.name, ErrorUtils.getMessage(e)));
             }
         }
     }

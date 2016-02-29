@@ -127,11 +127,11 @@ class Query extends Runnable
 	public bool next();
 	public guid recordId();
 
-	public void update(guid id);
-    public void update(sql_bool where);
+	public int update(guid id);
+    public int update(sql_bool where);
 
-	public void destroy(guid id);
-	public void destroy(sql_bool where);
+	public int destroy(guid id);
+	public int destroy(sql_bool where);
 
 	virtual protected sql_bool where();
 	virtual protected sql_bool having();

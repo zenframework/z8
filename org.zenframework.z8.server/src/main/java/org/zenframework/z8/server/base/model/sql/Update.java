@@ -99,11 +99,11 @@ public class Update extends Statement {
         }
     }
 
-    public void execute() {
+    public int execute() {
 
         try {
             prepare(sql);
-            executeUpdate();
+            return executeUpdate();
         } catch (Throwable e) {
             System.out.println(sql());
 

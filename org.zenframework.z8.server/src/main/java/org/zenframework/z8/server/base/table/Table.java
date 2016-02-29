@@ -230,4 +230,13 @@ public class Table extends TableBase {
 
         super.beforeUpdate(data, recordId, fields, model, modelRecordId);
     }
+    
+    public int controlSum() {
+        int result = 0;
+
+        for(Field field: getPrimaryFields())
+            result += field.controlSum();
+
+        return Math.abs(result);
+    }
 }

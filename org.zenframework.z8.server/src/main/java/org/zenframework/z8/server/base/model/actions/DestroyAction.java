@@ -32,15 +32,19 @@ public class DestroyAction extends Action {
         }
     }
 
-    static public void run(Query query, guid id, guid modelRecordId) {
+    static public int run(Query query, guid id, guid modelRecordId) {
+        int result = 0;
+        
         if(!guid.NULL.equals(id)) {
             Query model = Query.getModel(query);
 
             query.beforeDestroy(id, model, modelRecordId);
 
-            new Delete(query, id).execute();
+            result = new Delete(query, id).execute();
 
             query.afterDestroy(id, model, modelRecordId);
         }
+        
+        return result;
     }
 }

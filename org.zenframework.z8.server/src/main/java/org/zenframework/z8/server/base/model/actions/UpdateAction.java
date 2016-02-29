@@ -42,11 +42,13 @@ public class UpdateAction extends Action {
         }
     }
 
-    static public void run(Query query, guid keyValue, Collection<Field> fields, guid modelRecordId) {
-        run(query, keyValue, fields, modelRecordId, true);
+    static public int run(Query query, guid keyValue, Collection<Field> fields, guid modelRecordId) {
+        return run(query, keyValue, fields, modelRecordId, true);
     }
 
-    static public void run(Query query, guid keyValue, Collection<Field> fields, guid modelRecordId, boolean resetChangedFields) {
+    static public int run(Query query, guid keyValue, Collection<Field> fields, guid modelRecordId, boolean resetChangedFields) {
+        int result = 0;
+        
         if(!fields.isEmpty() && (keyValue == null || !keyValue.equals(guid.NULL))) {
             Query model = Query.getModel(query);
 
@@ -55,7 +57,7 @@ public class UpdateAction extends Action {
 
             Collection<Field> changedFields = query.getRootQuery().getChangedFields();
 
-            new Update(query, changedFields, keyValue).execute();
+            result = new Update(query, changedFields, keyValue).execute();
 
             if(keyValue != null)
                 query.afterUpdate(keyValue, changedFields, model, modelRecordId);
@@ -65,5 +67,7 @@ public class UpdateAction extends Action {
                     field.reset();
             }
         }
+        
+        return result;
     }
 }

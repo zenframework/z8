@@ -22,7 +22,7 @@ public class Delete {
         this.recordId = recordId;
     }
 
-    public void execute() {
+    public int execute() {
         Query rootQuery = query.getRootQuery();
         Field primaryKey = rootQuery.primaryKey();
 
@@ -36,7 +36,7 @@ public class Delete {
                 + recordId.sql_guid().format(vendor, new FormatOptions(), true);
 
         try {
-            Statement.executeUpdate(connection, sql);
+           return Statement.executeUpdate(connection, sql);
         } catch (Throwable e) {
             System.out.println(sql);
 

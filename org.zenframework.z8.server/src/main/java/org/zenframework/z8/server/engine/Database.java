@@ -93,42 +93,48 @@ public class Database implements Serializable {
     public String tableName(String name) {
         return vendor.quote(schema()) + "." + vendor.quote(name);
     }
-    
-    public synchronized boolean isSystemInstalled() {
-        if (systemInstalled)
-            return systemInstalled;
 
+    public boolean tableExists(String name) {
         String sql = null;
 
         DatabaseVendor vendor = vendor();
 
         if (vendor == DatabaseVendor.SqlServer) {
-            sql = "SELECT COUNT(TABLE_NAME) FROM INFORMATION_SCHEMA.COLUMNS "
-                    + "WHERE TABLE_NAME = '" + Users.TableName
-                    + "' AND TABLE_CATALOG = '" + schema() + "'";
+            sql = "SELECT COUNT(TABLE_NAME) FROM INFORMATION_SCHEMA.COLUMNS " +
+                    "WHERE TABLE_NAME = " + vendor.quote(name) + " AND " + 
+                    "TABLE_CATALOG = " + vendor.quote(schema());
         } else if (vendor == DatabaseVendor.Postgres) {
-            sql = "SELECT COUNT(table_name) FROM information_schema.tables "
-                    + "WHERE table_name = '" + Users.TableName
-                    + "' AND table_schema = '" + schema() + "'";
+            sql = "SELECT COUNT(table_name) FROM information_schema.tables " +
+                    "WHERE table_name = " + vendor.quote(name) + " AND " +
+                    "table_schema = " + vendor.quote(schema());
         } else if (vendor == DatabaseVendor.Oracle) {
-            sql = "SELECT COUNT(TABLE_NAME) FROM ALL_TAB_COLUMNS "
-                    + "WHERE TABLE_NAME = '" + Users.TableName
-                    + "' AND OWNER = '" + schema().toUpperCase() + "'";
+            sql = "SELECT COUNT(TABLE_NAME) FROM ALL_TAB_COLUMNS " +
+                    "WHERE TABLE_NAME = " + vendor.quote(name) + " AND " +
+                    "OWNER = " + vendor.quote(schema());
         }
 
         Cursor cursor = null;
+        
         try {
             cursor = BasicSelect.cursor(ConnectionManager.get(this), sql);
-            return systemInstalled = cursor.next()
-                    && cursor.getInteger(1).get() != 0;
+            return cursor.next() && cursor.getInteger(1).get() != 0;
         } catch (SQLException e) {
             Trace.logError(e);
             throw new RuntimeException(e);
         } finally {
-            if (cursor != null) {
+            if (cursor != null)
                 cursor.close();
-            }
         }
     }
+    
+    public boolean isSystemInstalled() {
+        if (systemInstalled)
+            return systemInstalled;
 
+        return systemInstalled = tableExists(Users.TableName);
+    }
+    
+/*    public String version() {
+        
+    }*/
 }

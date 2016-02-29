@@ -74,8 +74,8 @@ public abstract class BasicStatement implements IStatement {
     }
 
     @Override
-    public void executeUpdate() throws SQLException {
-        connection.executeUpdate(this);
+    public int executeUpdate() throws SQLException {
+        return connection.executeUpdate(this);
     }
 
     @Override

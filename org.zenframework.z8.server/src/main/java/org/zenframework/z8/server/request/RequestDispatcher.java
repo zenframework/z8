@@ -26,6 +26,9 @@ public class RequestDispatcher implements Runnable {
     private IRequest request;
     private IResponse response;
 
+    static private int count = 0;
+    static private long secs = 0;
+    
     public RequestDispatcher(IRequest request, IResponse response) {
         this.request = request;
         this.response = response;
@@ -37,6 +40,15 @@ public class RequestDispatcher implements Runnable {
             ApplicationServer.setRequest(request);
 
             dispatch();
+            
+            count++;
+            
+            if(count % 10000 == 0) {
+                long secs1 = System.currentTimeMillis();
+                System.out.println(count + " in " + (secs1 - secs) / 1000 + " seconds");
+                secs = secs1;
+            } else if(count == 1)
+                secs = System.currentTimeMillis();
         }
         catch(Throwable exception) {
             if(!Dashboard.Id.equals(request.id())) {

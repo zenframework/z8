@@ -1,9 +1,6 @@
 package org.zenframework.z8.server.ie;
 
-import org.zenframework.z8.ie.xml.ExportEntry;
-import org.zenframework.z8.server.base.file.FileInfo;
 import org.zenframework.z8.server.base.simple.Procedure;
-import org.zenframework.z8.server.base.table.Table;
 import org.zenframework.z8.server.base.table.system.Files;
 import org.zenframework.z8.server.base.table.system.Properties;
 import org.zenframework.z8.server.base.view.command.Parameter;
@@ -11,7 +8,6 @@ import org.zenframework.z8.server.db.Connection;
 import org.zenframework.z8.server.db.ConnectionManager;
 import org.zenframework.z8.server.engine.ApplicationServer;
 import org.zenframework.z8.server.logs.Trace;
-import org.zenframework.z8.server.request.Loader;
 import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.runtime.RCollection;
 import org.zenframework.z8.server.runtime.ServerRuntime;
@@ -87,7 +83,7 @@ public class TransportProcedure extends Procedure {
                 z8_beforeImport(message);
                 ApplicationServer.disableEvents();
                 try {
-                    importRecords(message.get());
+                    Import.importRecords(message.get());
                 } finally {
                     ApplicationServer.enableEvents();
                 }
@@ -135,7 +131,7 @@ public class TransportProcedure extends Procedure {
                     try {
                         connection.beginTransaction();
                         messages.addMessage(message, transport.getProtocol());
-                        importFiles(message, filesTable);
+                        Import.importFiles(message, filesTable);
                         connection.commit();
                         transport.commit();
                     } catch (Throwable e) {
@@ -152,52 +148,6 @@ public class TransportProcedure extends Procedure {
 
     }
 
-    private void importRecords(Message message) {
-        // Импорт записей
-        for (ExportEntry.Records.Record record : message.getExportEntry().getRecords().getRecord()) {
-            Table table = (Table) Loader.getInstance(record.getTable());
-            guid recordId = new guid(record.getRecordId());
-            if (!IeUtil.isBuiltinRecord(table, recordId)) {
-                if (table.hasRecord(recordId)) {
-                    // Если запись уже существует
-                    ImportPolicy policy = ImportPolicy.getPolicy(record.getPolicy());
-                    if (policy.isOverride()) {
-                        // Если запись должна быть обновлена согласно политике,
-                        // обновить
-                        Trace.logEvent("Import: update record " + IeUtil.toString(record));
-                        IeUtil.fillTableRecord(table, record);
-                        table.update(recordId);
-                    } else {
-                        // Если запись не должна быть обновлена, ничего не
-                        // делать
-                        Trace.logEvent("Import: skip record " + IeUtil.toString(record));
-                    }
-                } else {
-                    // Если запись не существует, создать
-                    Trace.logEvent("Import: create record " + IeUtil.toString(record));
-                    IeUtil.fillTableRecord(table, record);
-                    table.create(recordId);
-                }
-            }
-        }
-    }
-
-    private static void importFiles(Message message, Files filesTable) {
-        for (FileInfo file : message.getFiles()) {
-            boolean idIsNull = file.id == null || file.id.isNull();
-            if (idIsNull || !filesTable.hasRecord(file.id)) {
-                if (!idIsNull) {
-                    filesTable.recordId.get().set(file.id);
-                }
-                filesTable.name.get().set(file.name);
-                filesTable.file.get().set(file.getInputStream());
-                filesTable.path.get().set(file.path);
-                file.id = filesTable.create();
-            }
-        }
-
-    }
-    
     private static void beginProcessMessage(ExportMessages messages) {
         if (preserveExportMessages) {
             messages.processed.get().set(new bool(true));

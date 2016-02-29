@@ -9,6 +9,7 @@ import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.types.bool;
 import org.zenframework.z8.server.types.exception;
 import org.zenframework.z8.server.types.guid;
+import org.zenframework.z8.server.types.integer;
 import org.zenframework.z8.server.types.primary;
 import org.zenframework.z8.server.types.string;
 
@@ -76,12 +77,12 @@ public class Entries extends Table {
     }
 
     @Override
-    public void z8_destroy(guid id) {
+    public integer z8_destroy(guid id) {
         if(id.equals(SystemTools.Id.guid())) {
             throw new exception("Unable to delete builtin system entrypoint !");
         }
 
-        super.z8_destroy(id);
+        return super.z8_destroy(id);
     }
 
 }
