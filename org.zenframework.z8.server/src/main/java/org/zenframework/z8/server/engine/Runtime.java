@@ -6,11 +6,13 @@ import java.util.Collection;
 import java.util.Enumeration;
 
 import org.zenframework.z8.server.base.simple.Activator;
+import org.zenframework.z8.server.base.table.Table;
 import org.zenframework.z8.server.logs.Trace;
 import org.zenframework.z8.server.runtime.AbstractRuntime;
 import org.zenframework.z8.server.runtime.IRuntime;
 import org.zenframework.z8.server.runtime.ServerRuntime;
 import org.zenframework.z8.server.utils.IOUtils;
+import org.zenframework.z8.server.utils.StringUtils;
 
 public class Runtime extends AbstractRuntime {
 
@@ -71,4 +73,15 @@ public class Runtime extends AbstractRuntime {
         }
     }
 
+    public static String version() {
+        int controlSum = 0;
+
+        for(Table.CLASS<? extends Table> cls: instance().tables()) {
+            Table table = cls.newInstance();
+            controlSum += table.controlSum();
+        }
+        
+        String version = StringUtils.padLeft("" + Math.abs(controlSum), 10, '0');
+        return version.substring(0, 3) + "." + version.substring(3, 6) + "." + version.substring(6);
+    }
 }
