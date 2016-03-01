@@ -10,9 +10,11 @@ import org.zenframework.z8.server.base.form.Desktop;
 import org.zenframework.z8.server.base.simple.Activator;
 import org.zenframework.z8.server.base.simple.Procedure;
 import org.zenframework.z8.server.base.table.Table;
+import org.zenframework.z8.server.base.table.system.Properties;
 import org.zenframework.z8.server.db.Connection;
 import org.zenframework.z8.server.engine.ApplicationServer;
 import org.zenframework.z8.server.engine.Runtime;
+import org.zenframework.z8.server.runtime.ServerRuntime;
 import org.zenframework.z8.server.utils.ErrorUtils;
 
 public class DBGenerator {
@@ -87,7 +89,9 @@ public class DBGenerator {
             logger.progress(Math.round(progress / total * 100));
         }
 
-        logger.message("Control sum: " + Runtime.version());
+        String version = Runtime.version();
+        Properties.setProperty(ServerRuntime.DbSchemeControlSumProperty, version);
+        logger.message("Control sum: " + version);
 
         fireAfterDbGenerated();
 

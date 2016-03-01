@@ -130,6 +130,10 @@ public class Properties extends TreeTable {
         registerDataField(value);
     }
 
+    public static void setProperty(Property property, String value) {
+        setProperty(property.getKey(), value);
+    }
+
     public static void setProperty(String key, String value) {
         if (!ApplicationServer.defaultDatabase().isSystemInstalled())
             throw new RuntimeException("Can not set property [" + key + "=" + value + "]. System is not installed");

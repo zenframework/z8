@@ -101,16 +101,16 @@ public class Database implements Serializable {
 
         if (vendor == DatabaseVendor.SqlServer) {
             sql = "SELECT COUNT(TABLE_NAME) FROM INFORMATION_SCHEMA.COLUMNS " +
-                    "WHERE TABLE_NAME = " + vendor.quote(name) + " AND " + 
-                    "TABLE_CATALOG = " + vendor.quote(schema());
+                    "WHERE TABLE_NAME = '" + name + "' AND " + 
+                    "TABLE_CATALOG = '" + schema() + "'";
         } else if (vendor == DatabaseVendor.Postgres) {
             sql = "SELECT COUNT(table_name) FROM information_schema.tables " +
-                    "WHERE table_name = " + vendor.quote(name) + " AND " +
-                    "table_schema = " + vendor.quote(schema());
+                    "WHERE table_name = '" + name + "' AND " +
+                    "table_schema = '" + schema() + "'";
         } else if (vendor == DatabaseVendor.Oracle) {
             sql = "SELECT COUNT(TABLE_NAME) FROM ALL_TAB_COLUMNS " +
-                    "WHERE TABLE_NAME = " + vendor.quote(name) + " AND " +
-                    "OWNER = " + vendor.quote(schema());
+                    "WHERE TABLE_NAME = '" + name + "' AND " +
+                    "OWNER = '" + schema() + "'";
         }
 
         Cursor cursor = null;
