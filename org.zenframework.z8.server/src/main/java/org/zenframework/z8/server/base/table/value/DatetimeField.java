@@ -3,6 +3,7 @@ package org.zenframework.z8.server.base.table.value;
 import org.zenframework.z8.server.db.DatabaseVendor;
 import org.zenframework.z8.server.db.FieldType;
 import org.zenframework.z8.server.db.sql.SqlField;
+import org.zenframework.z8.server.engine.ApplicationServer;
 import org.zenframework.z8.server.format.Format;
 import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.types.datetime;
@@ -38,7 +39,7 @@ public class DatetimeField extends Field {
 
     @Override
     public primary getDefault() {
-        return z8_getDefault();
+        return ApplicationServer.events() ? z8_getDefault() : super.getDefault();
     }
 
     @Override

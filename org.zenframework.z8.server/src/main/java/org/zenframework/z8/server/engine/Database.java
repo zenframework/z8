@@ -135,6 +135,6 @@ public class Database implements Serializable {
     }
     
 /*    public String version() {
-        
+        return ServerRuntime.DbSchemeControlSumProperty.get.
     }*/
 }

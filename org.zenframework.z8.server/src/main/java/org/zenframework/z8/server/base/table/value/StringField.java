@@ -3,6 +3,7 @@ package org.zenframework.z8.server.base.table.value;
 import org.zenframework.z8.server.db.DatabaseVendor;
 import org.zenframework.z8.server.db.FieldType;
 import org.zenframework.z8.server.db.sql.SqlField;
+import org.zenframework.z8.server.engine.ApplicationServer;
 import org.zenframework.z8.server.json.Json;
 import org.zenframework.z8.server.json.parser.JsonObject;
 import org.zenframework.z8.server.runtime.IObject;
@@ -44,7 +45,7 @@ public class StringField extends Field {
 
     @Override
     public primary getDefault() {
-        return z8_getDefault();
+        return ApplicationServer.events() ? z8_getDefault() : super.getDefault();
     }
 
     @Override

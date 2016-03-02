@@ -48,7 +48,7 @@ public class DBGenerator {
             boolean doDropTable, ILogger logger, Collection<Desktop.CLASS<? extends Desktop>> entries) {
         List<TableGenerator> generators = getTableGenerators(tables, existingTables, logger);
 
-        int total = 6 * generators.size();
+        int total = 4 * generators.size();
         float progress = 0.0f;
 
         fireBeforeDbGenerated();
