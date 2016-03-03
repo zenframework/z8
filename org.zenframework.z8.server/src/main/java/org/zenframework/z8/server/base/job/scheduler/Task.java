@@ -25,8 +25,6 @@ public class Task {
 
     public boolean isRunning = false;
     
-    private int executionCount = 0;
-
     public Task(guid id) {
         this.id = id;
     }
@@ -45,11 +43,6 @@ public class Task {
         return false;
     }
 
-    @Override
-    public String toString() {
-        return name + "-" + (executionCount + 1);
-    }
-    
     public boolean readyToStart() {
         long now = new datetime().getTicks();
 
@@ -59,7 +52,6 @@ public class Task {
 
     public void start() throws Throwable {
         isRunning = true;
-        executionCount++;
 
         datetime lastStarted = new datetime();
 

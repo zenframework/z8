@@ -80,6 +80,7 @@ public class WhileStatement extends LanguageElement implements IStatement {
 
     @Override
     public boolean returnsOnAllControlPaths() {
+        ((IStatement)statement).returnsOnAllControlPaths();
         return false;
     }
 

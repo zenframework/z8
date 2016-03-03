@@ -87,6 +87,7 @@ public class ForStatement extends LanguageElement implements IStatement {
 
     @Override
     public boolean returnsOnAllControlPaths() {
+        ((IStatement)statement).returnsOnAllControlPaths();
         return false;
     }
 

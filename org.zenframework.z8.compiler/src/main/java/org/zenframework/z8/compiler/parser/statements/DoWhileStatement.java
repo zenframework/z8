@@ -75,8 +75,8 @@ public class DoWhileStatement extends LanguageElement implements IStatement {
 
     @Override
     public boolean returnsOnAllControlPaths() {
-        IStatement s = (IStatement)statement;
-        return s.returnsOnAllControlPaths();
+        ((IStatement)statement).returnsOnAllControlPaths();
+        return false;
     }
 
     @Override

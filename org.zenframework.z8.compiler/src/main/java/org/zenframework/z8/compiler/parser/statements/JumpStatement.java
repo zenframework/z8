@@ -123,7 +123,7 @@ public class JumpStatement extends LanguageElement implements IStatement {
         }
 
         setError(getPosition(), (jump.getId() == IToken.CONTINUE ? "continue" : "break")
-                + " cannot be used outside a loop");
+                + " cannot be used outside of a loop");
         return false;
     }
 

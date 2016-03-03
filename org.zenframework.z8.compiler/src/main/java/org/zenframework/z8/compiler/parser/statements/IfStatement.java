@@ -103,12 +103,12 @@ public class IfStatement extends LanguageElement implements IStatement {
 
     @Override
     public boolean returnsOnAllControlPaths() {
-        if(elseStatement == null)
-        {
-            return false;
-        }
+    	boolean result = ((IStatement)ifStatement).returnsOnAllControlPaths();
         
-        return ((IStatement)ifStatement).returnsOnAllControlPaths() && ((IStatement)elseStatement).returnsOnAllControlPaths();
+    	if(elseStatement != null)
+    		return result && ((IStatement)elseStatement).returnsOnAllControlPaths();
+	
+    	return false;
     }
 
     @Override

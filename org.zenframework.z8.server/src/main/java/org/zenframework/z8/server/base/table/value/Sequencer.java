@@ -1,5 +1,8 @@
 package org.zenframework.z8.server.base.table.value;
 
+import java.util.ArrayList;
+import java.util.Collection;
+
 import org.zenframework.z8.server.base.table.system.Sequences;
 import org.zenframework.z8.server.db.sql.SqlToken;
 import org.zenframework.z8.server.db.sql.expressions.Operation;
@@ -50,11 +53,14 @@ public class Sequencer extends OBJECT {
         StringField idField = sequences.id.get();
         TextField descriptionField = sequences.description.get();
 
-        SqlToken where = new Rel(sequences.id.get(), Operation.Eq, new sql_string(id));
+        SqlToken where = new Rel(idField, Operation.Eq, new sql_string(id));
 
         long result = defaultValue;
 
-        if (sequences.readFirst(where)) {
+        Collection<Field> fields = new ArrayList<Field>();
+        fields.add(valueField);
+        
+        if (sequences.readFirst(fields, where)) {
             result = valueField.integer().get() + Math.max(increment, 1);
 
             valueField.set(new integer(result));
