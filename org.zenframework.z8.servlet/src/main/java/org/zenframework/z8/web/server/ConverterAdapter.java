@@ -34,10 +34,6 @@ import org.zenframework.z8.server.types.string;
 import org.zenframework.z8.server.utils.IOUtils;
 import org.zenframework.z8.web.servlet.Servlet;
 
-/**
- * Created with IntelliJ IDEA. User: volkov Date: 29.10.14 Time: 13:57 To change
- * this template use File | Settings | File Templates.
- */
 public class ConverterAdapter extends Adapter {
 
     @SuppressWarnings("unused")

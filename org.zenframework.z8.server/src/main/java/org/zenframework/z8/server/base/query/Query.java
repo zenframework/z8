@@ -146,6 +146,7 @@ public class Query extends Runnable {
     private Database cachedDatabase;
 
     protected Select cursor;
+    protected ReadLock readLock = ReadLock.None;
 
     protected Query() {
         this(null);
@@ -523,6 +524,14 @@ public class Query extends Runnable {
         return (guid) primaryKey().get();
     }
 
+    public ReadLock getReadLock() {
+        return readLock;
+    }
+    
+    public void setReadLock(ReadLock readLock) {
+        this.readLock = readLock;
+    }
+    
     public boolean hasRecord(guid recordId) {
         return readRecord(recordId, Arrays.asList(primaryKey()));
     }

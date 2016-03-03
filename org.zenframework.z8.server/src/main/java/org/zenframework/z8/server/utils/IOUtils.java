@@ -43,9 +43,8 @@ public class IOUtils {
         byte[] buff = new byte[DefaultBufferSize];
         int count;
         while ((count = inp.read(buff)) != -1) {
-            if (count > 0) {
+            if (count > 0)
                 out.write(buff, 0, count);
-            }
         }
     }
 

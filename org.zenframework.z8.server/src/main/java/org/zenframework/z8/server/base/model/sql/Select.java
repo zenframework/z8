@@ -180,7 +180,7 @@ public class Select {
         options.disableAggregation();
 
         String result = "select" + fields + from + formatWhere(options) + formatGroupBy(options)
-                + formatHaving(options) + orderBy;
+                + formatHaving(options) + orderBy + " " + rootQuery.getReadLock();
 
         options.enableAggregation();
 

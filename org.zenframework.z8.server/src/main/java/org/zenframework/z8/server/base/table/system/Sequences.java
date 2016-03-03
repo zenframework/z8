@@ -1,5 +1,6 @@
 package org.zenframework.z8.server.base.table.system;
 
+import org.zenframework.z8.server.base.query.ReadLock;
 import org.zenframework.z8.server.base.table.Table;
 import org.zenframework.z8.server.base.table.value.IntegerField;
 import org.zenframework.z8.server.resources.Resources;
@@ -66,5 +67,7 @@ public class Sequences extends Table {
         description.get().width = new integer(100);
 
         sortFields.add(description);
+        
+        readLock = ReadLock.Update;
     }
 }
