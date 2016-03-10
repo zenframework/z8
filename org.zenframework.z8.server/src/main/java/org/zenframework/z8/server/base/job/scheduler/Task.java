@@ -74,7 +74,7 @@ public class Task {
                 obj.put(Json.size, 0);
                 obj.put(Json.time, new datetime());
                 obj.put(Json.name, "log.txt");
-                obj.put(Json.file, fileName);
+                obj.put(Json.path, fileName);
                 writer.put(obj);
                 
                 String attachments = writer.toString();
