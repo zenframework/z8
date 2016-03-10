@@ -63,8 +63,8 @@ public class ConverterAdapter extends Adapter {
     @Override
     protected void service(ISession session, Map<String, String> parameters, List<FileInfo> files,
             HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
-        // Корректная обработка ссылки относительно корня приложения
-    	String encodedUrl = request.getRequestURI().replaceAll("\\+", "%2b");
+
+    	String encodedUrl = request.getRequestURI().replaceAll("\\+", "%2b"); // URLDecoder.decode заменяет '+' на ' ' 
         String requestUrl = URLDecoder.decode(encodedUrl, encoding.Default.toString());
         String contextPath = request.getContextPath() + '/';
 
