@@ -64,15 +64,16 @@ public class ConverterAdapter extends Adapter {
     protected void service(ISession session, Map<String, String> parameters, List<FileInfo> files,
             HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
         // Корректная обработка ссылки относительно корня приложения
-        String requestURI = URLDecoder.decode(request.getRequestURI(), encoding.Default.toString());
+    	String encodedUrl = request.getRequestURI().replaceAll("\\+", "%2b");
+        String requestUrl = URLDecoder.decode(encodedUrl, encoding.Default.toString());
         String contextPath = request.getContextPath() + '/';
 
-        if (requestURI.startsWith(contextPath)) {
-            requestURI = requestURI.substring(contextPath.length());
+        if (requestUrl.startsWith(contextPath)) {
+            requestUrl = requestUrl.substring(contextPath.length());
         }
 
-        File relativePath = new File(requestURI);
-        File absolutePath = new File(super.getServlet().getServletPath(), requestURI);
+        File relativePath = new File(requestUrl);
+        File absolutePath = new File(super.getServlet().getServletPath(), requestUrl);
 
         boolean preview = request.getParameter("preview") != null;
         
