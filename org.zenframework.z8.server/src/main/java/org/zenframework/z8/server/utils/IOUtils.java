@@ -44,6 +44,7 @@ public class IOUtils {
 	        if(autoClose) {
     			input.close();
     			output.close();
+    			autoClose = false;
 	        }
     	} finally {        
     		if(autoClose) {
