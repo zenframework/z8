@@ -2,6 +2,8 @@ package org.zenframework.z8.server.base.file;
 
 import java.io.IOException;
 import java.io.InputStream;
+//import java.io.ObjectInputStream;
+//import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -18,166 +20,208 @@ import org.zenframework.z8.server.runtime.RCollection;
 import org.zenframework.z8.server.types.datetime;
 import org.zenframework.z8.server.types.guid;
 import org.zenframework.z8.server.types.string;
+//import org.zenframework.z8.server.utils.IOUtils;
 
 public class FileInfo extends OBJECT implements Serializable {
-    private static final long serialVersionUID = -4474455212423780540L;
+	private static final long serialVersionUID = -4474455212423780540L;
 
-    public string name = new string();
-    public string path = new string();
-    public string type = new string();
-    public datetime time = new datetime();
-    public guid id = new guid();
-    
-    public JsonObject json;
+	public string name = new string();
+	public string path = new string();
+	public string type = new string();
+	public datetime time = new datetime();
+	public guid id = new guid();
 
-    public FileItem file;
+	public JsonObject json;
 
-    public static class CLASS<T extends FileInfo> extends OBJECT.CLASS<T> {
-        public CLASS() {
-            this(null);
-        }
+	public FileItem file;
 
-        public CLASS(IObject container) {
-            super(container);
-            setJavaClass(FileInfo.class);
-            setAttribute(Native, FileInfo.class.getCanonicalName());
-        }
+	public static class CLASS<T extends FileInfo> extends OBJECT.CLASS<T> {
+		public CLASS() {
+			this(null);
+		}
 
-        @Override
-        public Object newObject(IObject container) {
-            return new FileInfo(container);
-        }
-    }
+		public CLASS(IObject container) {
+			super(container);
+			setJavaClass(FileInfo.class);
+			setAttribute(Native, FileInfo.class.getCanonicalName());
+		}
 
-    public FileInfo() {
-        super();
-    }
+		@Override
+		public Object newObject(IObject container) {
+			return new FileInfo(container);
+		}
+	}
 
-    public FileInfo(String id) {
-        super();
-        this.id = new guid(id);
-    }
+	public FileInfo() {
+		super();
+	}
 
-    public FileInfo(IObject container) {
-        super(container);
-    }
+	public FileInfo(String id) {
+		super();
+		this.id = new guid(id);
+	}
 
-    public FileInfo(FileItem file) throws IOException {
-        this(file, null);
-    }
+	public FileInfo(IObject container) {
+		super(container);
+	}
 
-    public FileInfo(FileItem file, String path) throws IOException {
-        super();
-        this.path = new string(path);
-        this.name = new string(file.getName());
-        this.file = file;
-    }
+	public FileInfo(FileItem file) throws IOException {
+		this(file, null);
+	}
 
-    protected FileInfo(JsonObject json) {
-        super();
-        set(json);
-    }
+	public FileInfo(FileItem file, String path) throws IOException {
+		super();
+		this.path = new string(path);
+		this.name = new string(file.getName());
+		this.file = file;
+	}
 
-    public void set(FileInfo fileInfo) {
-        this.path = fileInfo.path;
-        this.name = fileInfo.name;
-        this.time = fileInfo.time;
-        this.type = fileInfo.type;
-        this.id = fileInfo.id;
+	protected FileInfo(JsonObject json) {
+		super();
+		set(json);
+	}
 
-        this.file = fileInfo.file;
-    }
+	public void set(FileInfo fileInfo) {
+		this.path = fileInfo.path;
+		this.name = fileInfo.name;
+		this.time = fileInfo.time;
+		this.type = fileInfo.type;
+		this.id = fileInfo.id;
 
-    protected void set(JsonObject json) {
-        path = new string(json.getString(json.has(Json.file) ? Json.file : Json.path));
-        name = new string(json.has(Json.name) ? json.getString(Json.name) : "");
-        time = new datetime(json.has(Json.time) ? json.getString(Json.time) : "");
-        type = new string(json.has(Json.type) ? json.getString(Json.type) : "");
-        id = new guid(json.has(Json.id) ? json.getString(Json.id) : "");
-        
-        this.json = json;
-    }
+		this.file = fileInfo.file;
+	}
 
-    public static List<FileInfo> parseArray(String json) {
-        List<FileInfo> result = new ArrayList<FileInfo>();
+	protected void set(JsonObject json) {
+		path = new string(json.getString(json.has(Json.file) ? Json.file : Json.path));
+		name = new string(json.has(Json.name) ? json.getString(Json.name) : "");
+		time = new datetime(json.has(Json.time) ? json.getString(Json.time) : "");
+		type = new string(json.has(Json.type) ? json.getString(Json.type) : "");
+		id = new guid(json.has(Json.id) ? json.getString(Json.id) : "");
 
-        if (!json.isEmpty()) {
-            JsonArray array = new JsonArray(json);
+		this.json = json;
+	}
 
-            for (int i = 0; i < array.length(); i++)
-                result.add(parse(array.getJsonObject(i)));
-        }
-        return result;
-    }
+	public static List<FileInfo> parseArray(String json) {
+		List<FileInfo> result = new ArrayList<FileInfo>();
 
-    public static String toJson(Collection<FileInfo> fileInfos) {
-        JsonArray array = new JsonArray();
-       
-        for (FileInfo file : fileInfos)
-            array.add(file.toJsonObject());
+		if(!json.isEmpty()) {
+			JsonArray array = new JsonArray(json);
 
-        return array.toString();
-    }
+			for(int i = 0; i < array.length(); i++)
+				result.add(parse(array.getJsonObject(i)));
+		}
+		return result;
+	}
 
-    public static FileInfo parse(JsonObject json) {
-        return new FileInfo(json);
-    }
+	public static String toJson(Collection<FileInfo> fileInfos) {
+		JsonArray array = new JsonArray();
 
-    public JsonObject toJsonObject() {
-        if(json == null) {
-            json = new JsonObject();
-            json.put(Json.name, name);
-//            json.put(Json.time, time);
-            json.put(Json.type, type);
-            json.put(Json.path, path);
-            json.put(Json.id, id);
-        }
-        return json;
-    }
-    
-    public static RCollection<FileInfo.CLASS<? extends FileInfo>> z8_parse(string json) {
-        RCollection<FileInfo.CLASS<? extends FileInfo>> result = new RCollection<FileInfo.CLASS<? extends FileInfo>>();
+		for(FileInfo file : fileInfos)
+			array.add(file.toJsonObject());
 
-        JsonArray array = new JsonArray(json.get());
+		return array.toString();
+	}
 
-        for (int index = 0; index < array.length(); index++) {
-            JsonObject object = array.getJsonObject(index);
+	public static FileInfo parse(JsonObject json) {
+		return new FileInfo(json);
+	}
 
-            FileInfo.CLASS<FileInfo> fileInfo = new FileInfo.CLASS<FileInfo>();
-            fileInfo.get().set(object);
+	public JsonObject toJsonObject() {
+		if(json == null) {
+			json = new JsonObject();
+			json.put(Json.name, name);
+			// json.put(Json.time, time);
+			json.put(Json.type, type);
+			json.put(Json.path, path);
+			json.put(Json.id, id);
+		}
+		return json;
+	}
 
-            result.add(fileInfo);
-        }
-        return result;
-    }
+	public static RCollection<FileInfo.CLASS<? extends FileInfo>> z8_parse(string json) {
+		RCollection<FileInfo.CLASS<? extends FileInfo>> result = new RCollection<FileInfo.CLASS<? extends FileInfo>>();
 
-    static public string z8_toJson(RCollection<FileInfo.CLASS<? extends FileInfo>> classes) {
-        return new string(toJson(CLASS.asList(classes)));
-    }
+		JsonArray array = new JsonArray(json.get());
 
-    @Override
-    public int hashCode() {
-        return id != null ? id.hashCode() : 0;
-    }
+		for(int index = 0; index < array.length(); index++) {
+			JsonObject object = array.getJsonObject(index);
 
-    @Override
-    public boolean equals(Object object) {
-        return object instanceof FileInfo && id != null && id.equals(((FileInfo) object).id);
-    }
+			FileInfo.CLASS<FileInfo> fileInfo = new FileInfo.CLASS<FileInfo>();
+			fileInfo.get().set(object);
 
-    public InputStream getInputStream() {
-        try {
-            return file.getInputStream();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
+			result.add(fileInfo);
+		}
+		return result;
+	}
 
-    public OutputStream getOutputStream() {
-        try {
-            return file.getOutputStream();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
+	static public string z8_toJson(RCollection<FileInfo.CLASS<? extends FileInfo>> classes) {
+		return new string(toJson(CLASS.asList(classes)));
+	}
+
+	@Override
+	public int hashCode() {
+		return id != null ? id.hashCode() : 0;
+	}
+
+	@Override
+	public boolean equals(Object object) {
+		return object instanceof FileInfo && id != null && id.equals(((FileInfo)object).id);
+	}
+
+	public InputStream getInputStream() {
+		try {
+			return file.getInputStream();
+		} catch(IOException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	public OutputStream getOutputStream() {
+		try {
+			return file.getOutputStream();
+		} catch(IOException e) {
+			throw new RuntimeException(e);
+		}
+	}
+/*
+	private void writeObject(ObjectOutputStream outputStream) throws IOException {
+		outputStream.writeObject(name);
+		outputStream.writeObject(path);
+		outputStream.writeObject(type);
+		outputStream.writeObject(time);
+		outputStream.writeObject(id);
+
+		outputStream.writeBoolean(file != null);
+
+		if(file != null) {
+			InputStream inputStream = file.getInputStream();
+
+			try {
+				IOUtils.copy(inputStream, outputStream, false);
+			} finally {
+				IOUtils.closeQuietly(inputStream);
+			}
+		}
+	}
+
+	private void readObject(ObjectInputStream inputStream) throws IOException, ClassNotFoundException {
+		name = (string)inputStream.readObject();
+		path = (string)inputStream.readObject();
+		type = (string)inputStream.readObject();
+		time = (datetime)inputStream.readObject();
+		id = (guid)inputStream.readObject();
+
+		if(inputStream.readBoolean()) {
+			file = FilesFactory.createFileItem(name.get());
+
+			OutputStream outputStream = file.getOutputStream();
+
+			try {
+				IOUtils.copy(inputStream, outputStream, false);
+			} finally {
+				IOUtils.closeQuietly(outputStream);
+			}
+		}
+	}
+*/
 }
