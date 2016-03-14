@@ -139,7 +139,7 @@ public abstract class BasicStatement implements IStatement {
             statement.setObject(position, value.get());
             break;
         default:
-            statement.setString(position, value.toDbString(vendor()));
+            statement.setString(position, value.toString(true));
         }
     }
 
@@ -182,12 +182,10 @@ public abstract class BasicStatement implements IStatement {
 
         double d = value.getDouble();
 
-        if(-0.1 < d && d < 0.1) {
+        if(Math.abs(d) < 0.1)
             statement.setDouble(position, d);
-        }
-        else {
+        else
             statement.setBigDecimal(position, value.get());
-        }
     }
 
     public void setBinary(int position, binary value) throws SQLException {

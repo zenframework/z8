@@ -3,8 +3,6 @@ package org.zenframework.z8.server.engine;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.lang.management.ManagementFactory;
 import java.lang.management.RuntimeMXBean;
 import java.rmi.RemoteException;
@@ -16,6 +14,7 @@ import org.zenframework.z8.server.base.job.scheduler.Scheduler;
 import org.zenframework.z8.server.base.table.system.Files;
 import org.zenframework.z8.server.base.xml.GNode;
 import org.zenframework.z8.server.config.ServerConfig;
+import org.zenframework.z8.server.db.ConnectionManager;
 import org.zenframework.z8.server.ie.TransportEngine;
 import org.zenframework.z8.server.logs.Trace;
 import org.zenframework.z8.server.request.IMonitor;
@@ -190,18 +189,13 @@ public class ApplicationServer extends RmiServer implements IApplicationServer {
     @Override
     public FileInfo download(String filePath) throws RemoteException {
         File f = new File(file.BaseFolder, filePath);
+        
         FileItem fileItem = FilesFactory.createFileItem(f.getName());
+
         try {
             FileInfo info = new FileInfo(fileItem, f.toString());
-            InputStream in = new FileInputStream(f);
-            OutputStream out = info.getOutputStream();
-            try {
-                IOUtils.copy(in, out);
-                return info;
-            } finally {
-                in.close();
-                out.close();
-            }
+            IOUtils.copy(new FileInputStream(f), info.getOutputStream());
+        	return info;
         } catch (IOException e) {
             throw new RemoteException(e.getMessage(), e);
         }
@@ -209,7 +203,9 @@ public class ApplicationServer extends RmiServer implements IApplicationServer {
 
     @Override
     public FileInfo download(FileInfo fileInfo) throws IOException {
-        return Files.getFile(fileInfo);
+        FileInfo result = Files.getFile(fileInfo);
+        ConnectionManager.release();
+        return result;
     }
 
     @Override

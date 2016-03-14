@@ -8,6 +8,7 @@ import org.zenframework.z8.ie.xml.ExportEntry;
 import org.zenframework.z8.server.base.file.FileInfo;
 import org.zenframework.z8.server.base.table.Table;
 import org.zenframework.z8.server.base.table.system.Files;
+import org.zenframework.z8.server.db.generator.IForeignKey;
 import org.zenframework.z8.server.engine.Runtime;
 import org.zenframework.z8.server.json.parser.JsonObject;
 import org.zenframework.z8.server.request.Loader;
@@ -91,8 +92,32 @@ public class Import {
 
     private static JsonObject getStructure() {
         if (STRUCTURE == null) {
-            STRUCTURE = Runtime.getTablesStructure();
+            STRUCTURE = getTablesStructure();
         }
         return STRUCTURE;
     }
+    
+    public static JsonObject getTablesStructure() {
+        JsonObject structure = new JsonObject();
+        for (Table.CLASS<? extends Table> tableClass : Runtime.instance().tables()) {
+            fillStructure(structure, tableClass);
+        }
+        return structure;
+    }
+
+    @SuppressWarnings("unchecked")
+    private static void fillStructure(JsonObject structure, Table.CLASS<? extends Table> tableClass) {
+        if (!structure.has(tableClass.classId())) {
+            JsonObject jsonTable = new JsonObject();
+            structure.put(tableClass.classId(), jsonTable);
+            Table table = tableClass.newInstance();
+            for (IForeignKey fkey : table.getForeignKeys()) {
+                String fieldIndex = table.getFieldByName(fkey.getFieldDescriptor().name()).getIndex();
+                jsonTable.put(fieldIndex, ((Table) fkey.getReferencedTable()).classId());
+                fillStructure(structure,
+                        (Table.CLASS<? extends Table>) Loader.loadClass(((Table) fkey.getReferencedTable()).classId()));
+            }
+        }
+    }
+    
 }

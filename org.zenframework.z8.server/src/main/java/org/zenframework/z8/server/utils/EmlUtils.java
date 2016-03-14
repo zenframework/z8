@@ -1,4 +1,4 @@
-package org.zenframework.z8.web.server;
+package org.zenframework.z8.server.utils;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -10,7 +10,7 @@ import javax.mail.Multipart;
 import javax.mail.Part;
 import javax.mail.internet.MimeUtility;
 
-public class EmlUtil {
+public class EmlUtils {
 
     public static String QUOTED_PRINTABLE_BEGINNING = "=?";
     public static String QUOTED_PRINTABLE_BEGINNING_EXPRESSION = "=\\?";
@@ -20,11 +20,11 @@ public class EmlUtil {
     public static String QUOTED_PRINTABLE_ENDING_EXPRESSION = "\\?=";
     public static String QUOTED_PRINTABLE_SPACE = "=20";
 
-    private EmlUtil() {}
+    private EmlUtils() {}
 
     public static String parsePartDocText(Part p) throws MessagingException, IOException {
         if (p.isMimeType("text/html")) {
-            String text = EmlUtil.decode((String) p.getContent());
+            String text = decode((String) p.getContent());
             text = text.replaceAll("<.*?>", "").trim();
             text = text.replaceAll("((\r\n)+ +(\r\n)+)+", "\r\n");
             text = text.replaceAll("( )+", " ");

@@ -33,7 +33,7 @@ public class DBGenerateProcedure extends Procedure {
 
     public DBGenerateProcedure(IObject container) {
         super(container);
-        setUseTransaction(false);
+        useTransaction.set(false);
     }
 
     @Override

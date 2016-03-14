@@ -55,7 +55,7 @@ public class TransportProcedure extends Procedure {
 
     public TransportProcedure(IObject container) {
         super(container);
-        setUseTransaction(false);
+        useTransaction.set(false);
     }
 
     @Override

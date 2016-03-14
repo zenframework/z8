@@ -1,0 +1,8 @@
+import org.zenframework.z8.lang.Object;
+
+[native "org.zenframework.z8.server.base.simple.Transaction"]
+class Transaction extends Object {
+	virtual protected void trasaction();
+
+	public void run();
+}

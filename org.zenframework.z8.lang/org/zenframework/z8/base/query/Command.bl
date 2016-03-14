@@ -7,6 +7,8 @@ class Command extends Runnable
 	public string text;
 	public string icon;
 	
+	public bool useTransaction = true;
+	
 	public Parameter[] parameters;
 	
 	static public Command create(string id, string text);

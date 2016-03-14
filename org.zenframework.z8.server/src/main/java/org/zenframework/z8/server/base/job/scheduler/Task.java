@@ -25,6 +25,8 @@ public class Task {
 
     public boolean isRunning = false;
     
+    private int executionCount = 0;
+
     public Task(guid id) {
         this.id = id;
     }
@@ -34,6 +36,11 @@ public class Task {
         return id.hashCode();
     }
     
+    @Override
+    public String toString() {
+        return name + "-" + (executionCount + 1);
+    }
+
     @Override
     public boolean equals(Object object) {
         if(object instanceof Task) {
@@ -52,6 +59,7 @@ public class Task {
 
     public void start() throws Throwable {
         isRunning = true;
+        executionCount++;
 
         datetime lastStarted = new datetime();
 

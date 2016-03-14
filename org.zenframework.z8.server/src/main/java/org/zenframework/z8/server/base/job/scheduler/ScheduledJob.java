@@ -33,6 +33,7 @@ public class ScheduledJob implements Runnable {
     public void run() {
         Map<String, String> parameters = new HashMap<String, String>();
         parameters.put(Json.requestId.get(), task.jobId);
+        parameters.put(Json.scheduled.get(), "");
         
         List<FileInfo> files = new ArrayList<FileInfo>();
         

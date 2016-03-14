@@ -1,217 +1,163 @@
 package org.zenframework.z8.server.base.file;
 
 import java.io.File;
-import java.io.IOException;
+import java.io.FileInputStream;
+import java.io.InputStream;
+import java.io.PrintStream;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.List;
 
-import org.apache.commons.fileupload.FileItem;
+import javax.mail.Session;
+import javax.mail.internet.MimeMessage;
+
 import org.apache.commons.io.FilenameUtils;
-import org.apache.pdfbox.pdmodel.PDDocument;
 import org.artofsolving.jodconverter.OfficeDocumentConverter;
 import org.artofsolving.jodconverter.office.DefaultOfficeManagerConfiguration;
 import org.artofsolving.jodconverter.office.OfficeManager;
 import org.zenframework.z8.server.base.table.system.Properties;
-import org.zenframework.z8.server.base.table.value.AttachmentField;
-import org.zenframework.z8.server.runtime.IObject;
-import org.zenframework.z8.server.runtime.OBJECT;
+import org.zenframework.z8.server.logs.Trace;
 import org.zenframework.z8.server.runtime.ServerRuntime;
-import org.zenframework.z8.server.types.bool;
-import org.zenframework.z8.server.types.file;
-import org.zenframework.z8.server.types.guid;
-import org.zenframework.z8.server.types.integer;
-import org.zenframework.z8.server.types.string;
+import org.zenframework.z8.server.utils.EmlUtils;
+import org.zenframework.z8.server.utils.IOUtils;
 
-import com.google.common.io.Files;
+public class FileConverter implements Properties.Listener {
 
-// TODO FileConverter must be singleton
-// TODO Properties.addListener()
+	private static final String PdfExtension = ".pdf";
+	private static final String TxtExtension = ".txt";
 
-public class FileConverter extends OBJECT implements Properties.Listener {
+	private static final int OFFICE_PORT = 8100;
+	private final static List<String> pdfExtensions = Arrays.asList("pdf", "doc", "docx", "xls", "xlsx", "ppt", "pptx", "odt", "odp", "ods", "odf", "odg", "wpd", "sxw", "sxi", "sxc", "sxd", "stw", "tif", "tiff", "vsd", "jpg");
 
-    private static final String PDF_EXT = ".pdf";
+	private final static List<String> txtExtensions = Arrays.asList("eml", "mime");
 
-    public static class CLASS<T extends FileConverter> extends OBJECT.CLASS<T> {
-        public CLASS() {
-            this(null);
-        }
+	private final FilesStorage storage;
+	private volatile File officeHome;
+	private volatile OfficeManager officeManager;
+	private volatile OfficeDocumentConverter pdfConverter;
 
-        public CLASS(IObject container) {
-            super(container);
-            setJavaClass(FileConverter.class);
-            setAttribute(Native, FileConverter.class.getCanonicalName());
-        }
+	public FileConverter(File storageRoot) {
+		super();
+		storage = new FilesStorage(storageRoot);
+	}
 
-        @Override
-        public Object newObject(IObject container) {
-            return new FileConverter(container);
-        }
-    }
+	public File getConvertedPdf(String relativePath, File srcFile) {
+		return getConvertedFile(relativePath, srcFile, PdfExtension);
+	}
 
-    private static final int OFFICE_PORT = 8100;
-    private final static List<String> convertableExtensions = Arrays.asList("pdf", "doc", "docx", "xls", "xlsx", "ppt",
-            "pptx", "odt", "odp", "ods", "odf", "odg", "wpd", "sxw", "sxi", "sxc", "sxd", "stw", "tif", "tiff", "vsd");
+	public File getConvertedTxt(String relativePath, File srcFile) {
+		return getConvertedFile(relativePath, srcFile, TxtExtension);
+	}
 
-    private final FilesStorage pdfStorage;
-    private volatile File officeHome;
-    private volatile OfficeManager officeManager;
-    private volatile OfficeDocumentConverter pdfConverter;
+	private File getConvertedFile(String relativePath, File srcFile, String extension) {
+		if(srcFile.getName().endsWith(extension))
+			return srcFile;
 
-    public FileConverter(File pdfStorageRoot) {
-        super();
-        pdfStorage = new FilesStorage(pdfStorageRoot);
-    }
+		File convertedFile = storage.getFile(relativePath + extension);
 
-    public FileConverter() {
-        this(Files.createTempDir());
-    }
+		if(!convertedFile.exists()) {
+			if(TxtExtension.equalsIgnoreCase(extension))
+				convertFileToTxt(srcFile, convertedFile);
+			else if(PdfExtension.equalsIgnoreCase(extension))
+				convertFileToPdf(srcFile, convertedFile);
+		}
 
-    public FileConverter(IObject container) {
-        super(container);
+		return convertedFile;
+	}
 
-        pdfStorage = new FilesStorage(new File(file.BaseFolder, file.CacheFolderName));
-    }
+	public static boolean isConvertableToPdf(File file) {
+		return isConvertableToPdf(file.getName());
+	}
 
-    public File getConvertedPDF(String relativePath, File srcFile) {
-        if (srcFile.getName().endsWith(PDF_EXT))
-            return srcFile;
+	public static boolean isConvertableToPdf(String fileName) {
+		String extension = FilenameUtils.getExtension(fileName).toLowerCase();
+		return pdfExtensions.contains(extension);
+	}
 
-        File convertedFile = pdfStorage.getFile(relativePath + PDF_EXT);
-        if (!convertedFile.exists()) {
-            convertFileToPDF(srcFile, convertedFile);
-        }
-        return convertedFile;
-    }
+	public static boolean isConvertableToTxt(File file) {
+		return isConvertableToTxt(file.getName());
+	}
 
-    public File getConvertedPDF(File srcFile) {
-        return getConvertedPDF(srcFile.getName(), srcFile);
-    }
+	public static boolean isConvertableToTxt(String fileName) {
+		String extension = FilenameUtils.getExtension(fileName).toLowerCase();
+		return txtExtensions.contains(extension);
+	}
 
-    public static boolean isConvertableToPDFFileExtension(File file) {
-        return isConvertableToPDFFileExtension(file.getName());
-    }
+	public String getPath() {
+		return storage.getRootPath();
+	}
 
-    public static boolean isConvertableToPDFFileExtension(String fileName) {
-        String extension = FilenameUtils.getExtension(fileName).toLowerCase();
-        return convertableExtensions.contains(extension);
-    }
+	private void convertFileToTxt(File sourceFile, File convertedFile) {
+		convertedFile.getParentFile().mkdirs();
+		
+		java.util.Properties props = new java.util.Properties();
+		props.put("mail.host", "smtp.dummydomain.com");
+		props.put("mail.transport.protocol", "smtp");
 
-    public int getPagesCount(File srcFile) throws IOException {
-        return getPagesCount(srcFile.getName(), srcFile);
-    }
+		Session mailSession = Session.getDefaultInstance(props, null);
+		
+		InputStream in = null;
+		PrintStream out = null;
+		
+		try {
+			in = new FileInputStream(sourceFile);
+			out = new PrintStream(convertedFile, "UTF-8");
+			MimeMessage message = new MimeMessage(mailSession, in);
+			out.println("Тема : " + message.getSubject());
+			out.println("Отправитель : " + message.getFrom()[0]);
+			out.println("----------------------------");
+			out.println("Сообщение :");
+			out.print(EmlUtils.parsePartDocText(message));
+		} catch(Exception e) {
+			Trace.logError("Can't convert EML to TXT", e);
+		} finally {
+			IOUtils.closeQuietly(in);
+			IOUtils.closeQuietly(out);
+		}
+	}
 
-    public int getPagesCount(String relativePath, File srcFile) throws IOException {
-        if (!isConvertableToPDFFileExtension(srcFile))
-            return 1;
+	private void convertFileToPdf(File sourceFile, File convertedFile) {
+		initJODConverter();
+		pdfConverter.convert(sourceFile, convertedFile);
+	}
 
-        PDDocument doc = null;
-        try {
-            File pdfFile = getConvertedPDF(relativePath, srcFile);
-            doc = PDDocument.load(pdfFile);
-            return doc.getNumberOfPages();
-        } finally {
-            if (doc != null)
-                doc.close();
-        }
-    }
+	public void close() {
+		stopOfficeManager();
+	}
+	
+	private void initJODConverter() {
+		if(officeManager != null)
+			return;
 
-    public String getPath() {
-        return pdfStorage.getRootPath();
-    }
+		startOfficeManager();
+	}
 
-    public static bool z8_isConvertableToPDFFileExtension(string fileName) {
-        return new bool(isConvertableToPDFFileExtension(fileName.get()));
-    }
+	@Override
+	public void onPropertyChange(String key, String value) {
+		if(ServerRuntime.LibreOfficeDirectoryProperty.equalsKey(key)) {
+			officeHome = new File(value);
+			close();
+		}
+	}
 
-    public file z8_getConvertedPDF(file srcFile) {
-        return new file(getConvertedPDF(srcFile.get()));
-    }
+	synchronized private void startOfficeManager() {
+		if(officeManager == null) {
+			officeManager = new DefaultOfficeManagerConfiguration().setOfficeHome(getOfficeHome()).setPortNumber(OFFICE_PORT).buildOfficeManager();
+			officeManager.start();
+			pdfConverter = new OfficeDocumentConverter(officeManager);
+		}
+	}
 
-    public integer z8_getPagesCount(file srcFile) throws IOException {
-        return new integer(getPagesCount(srcFile.get()));
-    }
+	synchronized private void stopOfficeManager() {
+		if(officeManager != null) {
+			pdfConverter = null;
+			officeManager.stop();
+			officeManager = null;
+		}
+	}
 
-    public integer z8_getAttachmentsPagesCount(guid recordId,
-            AttachmentField.CLASS<? extends AttachmentField> attachments) {
-        try {
-            AttachmentProcessor processor = attachments.get().getAttachmentProcessor();
-            Collection<FileInfo> fileInfos = processor.read(recordId);
-    
-            int result = 0;
-            File unconvertedDir = new File(file.BaseFolder, file.UnconvertedFolderName);
-            if (unconvertedDir.exists() && !unconvertedDir.isDirectory())
-                unconvertedDir.delete();
-            if (!unconvertedDir.exists())
-                unconvertedDir.mkdirs();
-            unconvertedDir.deleteOnExit();
-    
-            for (FileInfo fileInfo : fileInfos) {
-                fileInfo = org.zenframework.z8.server.base.table.system.Files.getFile(fileInfo);
-                FileItem fileItem = fileInfo.file;
-    
-                File tempFile = new File(unconvertedDir, fileInfo.id.get().toString() + "-" + fileInfo.name.get());
-                if (!tempFile.exists()) {
-                    tempFile.deleteOnExit();
-                    fileItem.write(tempFile);
-                }
-    
-                try{
-                    result += getPagesCount(tempFile);
-                } catch(IOException e){
-                    e.printStackTrace();
-                    result += 1;
-                }
-            }
-    
-            return new integer(result);
-        } catch(Throwable e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    private void convertFileToPDF(File sourceFile, File convertedPDF) {
-        initJODConverter();
-        pdfConverter.convert(sourceFile, convertedPDF);
-    }
-
-    private void initJODConverter() {
-        if (officeManager != null)
-            return;
-
-        synchronized (this) {
-            startOfficeManager();
-        }
-    }
-
-    @Override
-    public void onPropertyChange(String key, String value) {
-        if (ServerRuntime.LibreOfficeDirectoryProperty.equalsKey(key)) {
-            officeHome = new File(value);
-            stopOfficeManager();
-        }
-    }
-
-    private void startOfficeManager() {
-        if (officeManager == null) {
-            officeManager = new DefaultOfficeManagerConfiguration().setOfficeHome(getOfficeHome())
-                    .setPortNumber(OFFICE_PORT).buildOfficeManager();
-            officeManager.start();
-            pdfConverter = new OfficeDocumentConverter(officeManager);
-        }
-    }
-
-    public void stopOfficeManager() {
-        if (officeManager != null) {
-            officeManager.stop();
-            officeManager = null;
-            pdfConverter = null;
-        }
-    }
-
-    private File getOfficeHome() {
-        if (officeHome == null)
-            officeHome = new File(Properties.getProperty(ServerRuntime.LibreOfficeDirectoryProperty));
-        return officeHome;
-    }
+	private File getOfficeHome() {
+		if(officeHome == null)
+			officeHome = new File(Properties.getProperty(ServerRuntime.LibreOfficeDirectoryProperty));
+		return officeHome;
+	}
 }

@@ -10,11 +10,11 @@ import java.util.Map;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-public class CollectionsUtil {
+public class CollectionUtils {
 
-    private static final Log LOG = LogFactory.getLog(CollectionsUtil.class);
+    private static final Log LOG = LogFactory.getLog(CollectionUtils.class);
 
-    private CollectionsUtil() {}
+    private CollectionUtils() {}
 
     public static boolean equals(Object o1, Object o2, String compareKey) {
         return equals(o1, o2, compareKey, 0);

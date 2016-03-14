@@ -120,11 +120,6 @@ public final class decimal extends primary {
     }
 
     @Override
-    public String toDbString(DatabaseVendor dbtype) {
-        return toString();
-    }
-
-    @Override
     public int hashCode() {
         return m_value.hashCode();
     }

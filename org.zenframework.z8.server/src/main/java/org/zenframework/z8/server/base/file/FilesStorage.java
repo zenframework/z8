@@ -32,19 +32,13 @@ public class FilesStorage {
         return save(new ByteArrayInputStream(data), fileName);
     }
 
-    public File save(InputStream stream, String fileName) throws IOException {
+    public File save(InputStream inputStream, String fileName) throws IOException {
         File result = file.getUniqueFileName(root, fileName);
 
-        File f = getFile(result.toString());
-        f.getParentFile().mkdirs();
+        File file = getFile(result.toString());
+        file.getParentFile().mkdirs();
 
-        FileOutputStream output = new FileOutputStream(f);
-
-        try {
-            IOUtils.copy(stream, output);
-        } finally {
-            output.close();
-        }
+        IOUtils.copy(inputStream, new FileOutputStream(file));
 
         return result;
     }

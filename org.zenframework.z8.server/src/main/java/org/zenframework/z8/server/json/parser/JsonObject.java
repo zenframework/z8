@@ -1539,7 +1539,7 @@ public class JsonObject extends HashMap<String, Object> {
                 return new JsonObject((Map<?, ?>) object);
             }
             if (object instanceof primary) {
-                return primary.unwrap(object);
+                return JsonUtils.unwrap(object);
             }
             Package objectPackage = object.getClass().getPackage();
             String objectPackageName = (objectPackage != null ? objectPackage.getName() : "");

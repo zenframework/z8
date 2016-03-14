@@ -4,6 +4,7 @@ import java.util.Map;
 
 import org.apache.commons.codec.binary.Base64;
 import org.zenframework.z8.server.base.table.value.Field;
+import org.zenframework.z8.server.json.parser.JsonUtils;
 import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.runtime.OBJECT;
 import org.zenframework.z8.server.runtime.RCollection;
@@ -133,7 +134,7 @@ public class JsonObject extends OBJECT {
 
     @SuppressWarnings("unchecked")
     public JsonObject.CLASS<? extends JsonObject> z8_put(string name, primary value) {
-        object.put(name, primary.unwrap(value));
+        object.put(name, JsonUtils.unwrap(value));
         return (JsonObject.CLASS<? extends JsonObject>) getCLASS();
     }
 
@@ -210,5 +211,4 @@ public class JsonObject extends OBJECT {
         }
         return jsonObject;
     }
-
 }

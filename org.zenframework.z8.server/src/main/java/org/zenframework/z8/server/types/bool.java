@@ -95,11 +95,6 @@ public final class bool extends primary {
     }
 
     @Override
-    public String toDbString(DatabaseVendor dbtype) {
-        return toDbConstant(dbtype);
-    }
-
-    @Override
     public int hashCode() {
         return Boolean.valueOf(m_value).hashCode();
     }

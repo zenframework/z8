@@ -127,16 +127,6 @@ public class guid extends primary implements Serializable {
     }
 
     @Override
-    public String toDbString(DatabaseVendor dbtype) {
-        switch(dbtype) {
-        case Oracle:
-            return toString(false);
-        default:
-            return toString(true);
-        }
-    }
-
-    @Override
     public int hashCode() {
         return m_value.hashCode();
     }

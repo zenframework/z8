@@ -10,6 +10,7 @@ import org.zenframework.z8.auth.AuthorityCenterMain;
 import org.zenframework.z8.server.config.ServerConfig;
 import org.zenframework.z8.server.engine.ApplicationServer;
 import org.zenframework.z8.server.engine.ApplicationServerMain;
+import org.zenframework.z8.server.ie.Import;
 import org.zenframework.z8.server.json.parser.JsonObject;
 
 public class RuntimeInfo {
@@ -30,7 +31,7 @@ public class RuntimeInfo {
             if (cmd.hasOption(OPT_STRUCTURE)) {
                 AuthorityCenterMain.start(config);
                 ApplicationServerMain.start(config);
-                JsonObject structure = org.zenframework.z8.server.engine.Runtime.getTablesStructure();
+                JsonObject structure = Import.getTablesStructure();
                 System.out.println(structure.toString(4));
                 ApplicationServer.get().stop();
                 AuthorityCenter.get().stop();

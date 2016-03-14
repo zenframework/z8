@@ -9,6 +9,7 @@ import java.util.Map;
 
 import org.zenframework.z8.server.base.model.sql.CountingSelect;
 import org.zenframework.z8.server.base.query.Query;
+import org.zenframework.z8.server.base.query.ReadLock;
 import org.zenframework.z8.server.base.table.Table;
 import org.zenframework.z8.server.base.table.TreeTable;
 import org.zenframework.z8.server.base.table.system.Users;
@@ -540,6 +541,7 @@ public class TableGenerator {
         CountingSelect select = new CountingSelect();
 
         Query query = table();
+        query.setReadLock(ReadLock.None);
         Field primaryKey = query.primaryKey();
         sql_bool where = new sql_bool(new Rel(primaryKey, Operation.Eq, new sql_guid(recordId)));
 

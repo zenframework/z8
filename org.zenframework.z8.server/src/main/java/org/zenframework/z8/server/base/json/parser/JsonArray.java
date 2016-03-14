@@ -1,6 +1,7 @@
 package org.zenframework.z8.server.base.json.parser;
 
 import org.apache.commons.codec.binary.Base64;
+import org.zenframework.z8.server.json.parser.JsonUtils;
 import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.runtime.OBJECT;
 import org.zenframework.z8.server.runtime.RCollection;
@@ -98,7 +99,7 @@ public class JsonArray extends OBJECT {
 
     @SuppressWarnings("unchecked")
     public JsonArray.CLASS<? extends JsonArray> z8_put(primary value) {
-        array.put(primary.unwrap(value));
+        array.put(JsonUtils.unwrap(value));
         return (JsonArray.CLASS<? extends JsonArray>) getCLASS();
     }
 
@@ -116,7 +117,7 @@ public class JsonArray extends OBJECT {
 
     @SuppressWarnings("unchecked")
     public JsonArray.CLASS<? extends JsonArray> z8_put(integer index, primary value) {
-        array.put(index.getInt(), primary.unwrap(value));
+        array.put(index.getInt(), JsonUtils.unwrap(value));
         return (JsonArray.CLASS<? extends JsonArray>) getCLASS();
     }
 

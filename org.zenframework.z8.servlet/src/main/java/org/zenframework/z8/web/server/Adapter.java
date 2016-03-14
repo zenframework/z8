@@ -28,132 +28,121 @@ import org.zenframework.z8.web.servlet.Servlet;
 
 public abstract class Adapter {
 
-    private Servlet servlet;
+	private Servlet servlet;
 
-    protected Adapter(Servlet servlet) {
-        this.servlet = servlet;
-    }
+	protected Adapter(Servlet servlet) {
+		this.servlet = servlet;
+	}
 
-    protected Servlet getServlet() {
-        return servlet;
-    }
+	protected Servlet getServlet() {
+		return servlet;
+	}
 
-    public void service(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
-        try {
-            ISession session = null;
+	public void service(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
+		try {
+			ISession session = null;
 
-            Map<String, String> parameters = new HashMap<String, String>();
-            List<FileInfo> files = new ArrayList<FileInfo>();
+			Map<String, String> parameters = new HashMap<String, String>();
+			List<FileInfo> files = new ArrayList<FileInfo>();
 
-            parseRequest(request, parameters, files);
+			parseRequest(request, parameters, files);
 
-            String login = parameters.get(Json.login);
-            String password = parameters.get(Json.password);
-            String sessionId = parameters.get(Json.sessionId);
-            
-            if(login != null && password != null) {
+			String login = parameters.get(Json.login);
+			String password = parameters.get(Json.password);
+			String sessionId = parameters.get(Json.sessionId);
 
-                if(login.isEmpty() || login.length() > IAuthorityCenter.MaxLoginLength
-                        || password.length() > IAuthorityCenter.MaxPasswordLength) {
-                    throw new AccessDeniedException();
-                }
+			if(login != null && password != null) {
 
-                session = Servlet.getAuthorityCenter().login(login, password);
-            }
-            else if(sessionId != null) {
-                String serverId = parameters.get(Json.serverId);
+				if(login.isEmpty() || login.length() > IAuthorityCenter.MaxLoginLength || password.length() > IAuthorityCenter.MaxPasswordLength)
+					throw new AccessDeniedException();
 
-                if(serverId != null)
-                    session = Servlet.getAuthorityCenter().getServer(sessionId, serverId);
-                else
-                    session = Servlet.getAuthorityCenter().getServer(sessionId);
-            }
+				session = Servlet.getAuthorityCenter().login(login, password);
+			} else if(sessionId != null) {
+				String serverId = parameters.get(Json.serverId);
 
-            if(session == null)
-            {
-                throw new AccessDeniedException();
-            }
-            
-            service(session, parameters, files, request, response);
-        }
-        catch(AccessDeniedException e) {
-            processAccessDenied(response);
-        }
-        catch(Throwable e) {
-            Trace.logError(e);
-            processError(response, e);
-        }
-    }
+				if(serverId != null)
+					session = Servlet.getAuthorityCenter().getServer(sessionId, serverId);
+				else
+					session = Servlet.getAuthorityCenter().getServer(sessionId);
+			}
 
-    private void parseRequest(HttpServletRequest request, Map<String, String> parameters, List<FileInfo> files)
-            throws IOException {
-        if(ServletFileUpload.isMultipartContent(request)) {
-            List<FileItem> fileItems = parseMultipartRequest(request);
+			if(session == null)
+				throw new AccessDeniedException();
 
-            for(FileItem fileItem : fileItems) {
-                if(fileItem.isFormField()) {
-                    parameters.put(fileItem.getFieldName(), fileItem.getString(encoding.Default.toString()));
-                }
-                else {
-                    files.add(new FileInfo(fileItem));
-                }
-            }
-        }
-        else {
-            @SuppressWarnings("unchecked")
-            Map<String, String[]> requestParameters = request.getParameterMap();
+			service(session, parameters, files, request, response);
+		} catch(AccessDeniedException e) {
+			processAccessDenied(response);
+		} catch(Throwable e) {
+			Trace.logError(e);
+			processError(response, e);
+		}
+	}
 
-            for(String name : requestParameters.keySet()) {
-                String[] values = requestParameters.get(name);
-                parameters.put(name, values.length != 0 ? values[0] : null);
-            }
-        }
-        
-        parameters.put(Json.ip.get(), request.getRemoteAddr());
-    }
+	private void parseRequest(HttpServletRequest request, Map<String, String> parameters, List<FileInfo> files) throws IOException {
+		if(ServletFileUpload.isMultipartContent(request)) {
+			List<FileItem> fileItems = parseMultipartRequest(request);
 
-    protected List<FileItem> parseMultipartRequest(HttpServletRequest request) {
-        ServletFileUpload upload = new ServletFileUpload(FilesFactory.getFileItemFactory());
+			for(FileItem fileItem : fileItems) {
+				if(fileItem.isFormField())
+					parameters.put(fileItem.getFieldName(), fileItem.getString(encoding.Default.toString()));
+				else
+					files.add(new FileInfo(fileItem));
+			}
+		} else {
+			@SuppressWarnings("unchecked")
+			Map<String, String[]> requestParameters = request.getParameterMap();
 
-        try {
-            return upload.parseRequest(request);
-        }
-        catch(FileUploadException e) {
-            throw new RuntimeException(e);
-        }
-    }
+			for(String name : requestParameters.keySet()) {
+				String[] values = requestParameters.get(name);
+				parameters.put(name, values.length != 0 ? values[0] : null);
+			}
+		}
 
-    public void start() {}
+		parameters.put(Json.ip.get(), request.getRemoteAddr());
+	}
 
-    public void stop() {}
+	protected List<FileItem> parseMultipartRequest(HttpServletRequest request) {
+		ServletFileUpload upload = new ServletFileUpload(FilesFactory.getFileItemFactory());
 
-    abstract public boolean canHandleRequest(HttpServletRequest request);
-    
-    protected void processError(HttpServletResponse response, Throwable e) throws IOException, ServletException {
-        response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-        writeResponse(response, (e.getMessage() != null ? e.getMessage() : "null").getBytes(encoding.Default.toString()));
-    }
+		try {
+			return upload.parseRequest(request);
+		} catch(FileUploadException e) {
+			throw new RuntimeException(e);
+		}
+	}
 
+	public void start() {
+	}
 
-    protected void writeResponse(HttpServletResponse response, byte[] content) throws IOException {
-        response.setContentType("text/html;charset=" + encoding.Default.toString());
+	public void stop() {
+	}
 
-        OutputStream out = response.getOutputStream();
-        out.write(content);
-        out.flush();
-        out.close();
-    }
+	abstract public boolean canHandleRequest(HttpServletRequest request);
 
-    protected void processAccessDenied(HttpServletResponse response) throws IOException {}
+	protected void processError(HttpServletResponse response, Throwable e) throws IOException, ServletException {
+		response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+		writeResponse(response, (e.getMessage() != null ? e.getMessage() : "Internal server error").getBytes(encoding.Default.toString()));
+	}
 
-    protected void service(ISession session, Map<String, String> parameters, List<FileInfo> files, HttpServletRequest request,
-            HttpServletResponse response) throws IOException, ServletException {
-        GNode node = new GNode(parameters, files);
+	protected void writeResponse(HttpServletResponse response, byte[] content) throws IOException {
+		response.setContentType("text/html;charset=" + encoding.Default.toString());
 
-        IApplicationServer server = session.getServerInfo().getAppServer();
-        node = server.processRequest(session, node);
+		OutputStream out = response.getOutputStream();
+		out.write(content);
+		out.flush();
+		out.close();
+	}
 
-        if(response != null)
-            writeResponse(response, node.getBytes());
-    }
+	protected void processAccessDenied(HttpServletResponse response) throws IOException {
+	}
+
+	protected void service(ISession session, Map<String, String> parameters, List<FileInfo> files, HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
+		GNode node = new GNode(parameters, files);
+
+		IApplicationServer server = session.getServerInfo().getAppServer();
+		node = server.processRequest(session, node);
+
+		if(response != null)
+			writeResponse(response, node.getBytes());
+	}
 }

@@ -2,6 +2,7 @@ package org.zenframework.z8.server.utils;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.Closeable;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -12,7 +13,6 @@ import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.io.Reader;
 import java.net.URL;
-import java.nio.channels.FileChannel;
 import java.nio.charset.Charset;
 
 import org.mozilla.universalchardet.UniversalDetector;
@@ -26,30 +26,34 @@ public class IOUtils {
 
     private IOUtils() {/* hide constructor */}
 
-    public static long streamSize(InputStream stream) {
-        if (stream instanceof FileInputStream) {
-            try {
-                FileChannel channel = ((FileInputStream) stream).getChannel();
-                return channel.size();
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-        }
-
-        return -1;
+    public static void copy(InputStream input, OutputStream output) throws IOException {
+    	copy(input, output, true);
     }
 
-    public static void copy(InputStream inp, OutputStream out) throws IOException {
-        byte[] buff = new byte[DefaultBufferSize];
-        int count;
-        while ((count = inp.read(buff)) != -1) {
-            if (count > 0)
-                out.write(buff, 0, count);
-        }
+    public static void copy(InputStream input, OutputStream output, boolean autoClose) throws IOException {
+    	try {
+	        int count = 0;
+	        byte[] buffer = new byte[DefaultBufferSize];
+	        
+	        
+	        while ((count = input.read(buffer)) != -1) {
+	            if (count > 0)
+	            	output.write(buffer, 0, count);
+	        }
+	        
+	        if(autoClose) {
+    			input.close();
+    			output.close();
+	        }
+    	} finally {        
+    		if(autoClose) {
+    			closeQuietly(input);
+    			closeQuietly(output);
+    		}
+    	}
     }
 
     public static boolean moveFolder(File src, File dest, boolean trace) {
-        InputStream in = null;
         try {
             dest.getParentFile().mkdirs();
             ProcessBuilder cmd;
@@ -69,26 +73,26 @@ public class IOUtils {
             }
             Process proc = cmd.start();
             if (trace) {
-                in = proc.getErrorStream();
+            	InputStream in = proc.getErrorStream();
                 ByteArrayOutputStream out = new ByteArrayOutputStream(1024);
                 copy(in, out);
                 Trace.logEvent("Moving '" + src + "' to '" + dest + "':\r\n" + new String(out.toByteArray(), charset));
-            } else {
+            } else
                 proc.waitFor();
-            }
+
             return dest.exists();
         } catch (Exception e) {
             Trace.logError("Move '" + src + "' to '" + dest + "' failed", e);
             return false;
-        } finally {
-            if (in != null) {
-                try {
-                    in.close();
-                } catch (IOException e) {
-                    Trace.logError("Can't close 'cmd' process InputStream", e);
-                }
-            }
         }
+    }
+    
+    public static void closeQuietly(Closeable closable) {
+    	try {
+    		if(closable != null)
+    			closable.close();
+    	} catch(Throwable e) {
+    	}
     }
 
     public static String readText(InputStream in, Charset charset) throws IOException {

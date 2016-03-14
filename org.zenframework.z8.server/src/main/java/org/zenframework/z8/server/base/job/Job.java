@@ -10,7 +10,6 @@ import org.zenframework.z8.server.engine.ApplicationServer;
 import org.zenframework.z8.server.json.Json;
 import org.zenframework.z8.server.json.parser.JsonObject;
 import org.zenframework.z8.server.request.RequestTarget;
-import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.types.guid;
 
 public class Job extends RequestTarget {
@@ -48,7 +47,7 @@ public class Job extends RequestTarget {
     }
     
     public boolean scheduled() {
-        return procedure.getAttribute(IObject.Job) != null;
+        return getParameters().get(Json.scheduled) != null;
     }
 
     @Override

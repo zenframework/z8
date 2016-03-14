@@ -84,11 +84,6 @@ public final class integer extends primary {
     }
 
     @Override
-    public String toDbString(DatabaseVendor dbtype) {
-        return toDbConstant(dbtype);
-    }
-
-    @Override
     public int hashCode() {
         return new Long(value).hashCode();
     }

@@ -34,7 +34,7 @@ public class BridgeProcedure extends Procedure {
 
     public BridgeProcedure(IObject container) {
         super(container);
-        setUseTransaction(false);
+        useTransaction.set(false);
     }
 
     @Override

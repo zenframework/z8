@@ -77,14 +77,9 @@ public class FileTransport extends AbstractTransport implements Properties.Liste
         for (ExportEntry.Files.File file : message.getExportEntry().getFiles().getFile()) {
             outFile = new File(messageFolder, file.getId());
             try {
-                InputStream in = Files.getInputStream(IeUtil.fileToFileInfo(file));
-                OutputStream out = new FileOutputStream(outFile);
-                try {
-                    IOUtils.copy(in, out);
-                } finally {
-                    in.close();
-                    out.close();
-                }
+            	InputStream in = Files.getInputStream(IeUtil.fileToFileInfo(file));
+            	OutputStream out = new FileOutputStream(outFile);
+                IOUtils.copy(in, out);
             } catch (IOException e) {
                 Trace.logError("Can't write file '" + outFile + "'", e);
             }
@@ -140,31 +135,14 @@ public class FileTransport extends AbstractTransport implements Properties.Liste
                                     for (FileInfo fileInfo : fileInfos) {
                                         File file = new File(messageFolder, fileInfo.id.toString());
                                         fileInfo.file = FilesFactory.createFileItem(fileInfo.name.get());
-                                        InputStream is = null;
-                                        OutputStream os = null;
-                                        try {
-                                            is = new FileInputStream(file);
-                                            os = fileInfo.file.getOutputStream();
-                                            IOUtils.copy(is, os);
-                                            message.getFiles().add(fileInfo);
+                                    	
+                                    	try {
+                                    		InputStream is = new FileInputStream(file);
+                                    		OutputStream os = fileInfo.file.getOutputStream();
+                                        	IOUtils.copy(is, os);
+                                        	message.getFiles().add(fileInfo);
                                         } catch (IOException e) {
-                                            Trace.logError("Can't import attachment " + fileInfo, e);
-                                        } finally {
-                                            if (is != null) {
-                                                try {
-                                                    is.close();
-                                                } catch (IOException e) {
-                                                    Trace.logError("Can't close input stream from file " + file, e);
-                                                }
-                                            }
-                                            if (os != null) {
-                                                try {
-                                                    os.close();
-                                                } catch (IOException e) {
-                                                    Trace.logError(
-                                                            "Can't close output stream to file item " + fileInfo.file, e);
-                                                }
-                                            }
+                                        	Trace.logError("Can't import attachment " + fileInfo, e);
                                         }
                                     }
                                     lastReceived = message;
@@ -172,13 +150,7 @@ public class FileTransport extends AbstractTransport implements Properties.Liste
                                 } catch (Exception e) {
                                     Trace.logError("Can't unmarshal file '" + entryFile + "'", e);
                                 } finally {
-                                    if (in != null) {
-                                        try {
-                                            in.close();
-                                        } catch (IOException e) {
-                                            Trace.logError("Can't close file '" + entryFile + "'", e);
-                                        }
-                                    }
+                                    IOUtils.closeQuietly(in);
                                 }
                             }
                         } catch (Exception e) {

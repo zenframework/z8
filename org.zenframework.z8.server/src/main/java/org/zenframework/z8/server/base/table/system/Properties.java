@@ -16,7 +16,6 @@ import org.zenframework.z8.server.base.table.Table;
 import org.zenframework.z8.server.base.table.TreeTable;
 import org.zenframework.z8.server.base.table.value.Field;
 import org.zenframework.z8.server.base.table.value.TextField;
-import org.zenframework.z8.server.db.Connection;
 import org.zenframework.z8.server.db.ConnectionManager;
 import org.zenframework.z8.server.db.sql.SqlToken;
 import org.zenframework.z8.server.db.sql.expressions.Operation;
@@ -256,8 +255,6 @@ public class Properties extends TreeTable {
         try {
             if (ApplicationServer.defaultDatabase().isSystemInstalled()) {
 
-                Connection connection = ConnectionManager.get();
-                
                 try {
                     Properties properties = new CLASS<Properties>().get();
                     
@@ -268,7 +265,7 @@ public class Properties extends TreeTable {
                     if (properties.readFirst(fields, properties.getWhere(key)))
                         return value.string().get();
                 } finally {
-                    connection.release();
+                    ConnectionManager.release();
                 }
             }
         } catch (Throwable e) {

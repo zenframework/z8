@@ -131,7 +131,13 @@ public class Database implements Serializable {
         if (systemInstalled)
             return systemInstalled;
 
-        return systemInstalled = tableExists(Users.TableName);
+        try {
+        	systemInstalled = tableExists(Users.TableName);
+        } catch(Throwable e) {
+        	Trace.logError(e);
+        }
+
+    	return systemInstalled;
     }
     
 /*    public String version() {

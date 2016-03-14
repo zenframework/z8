@@ -172,11 +172,6 @@ public final class datespan extends primary {
     }
 
     @Override
-    public String toDbString(DatabaseVendor dbtype) {
-        return toDbConstant(dbtype);
-    }
-
-    @Override
     public int hashCode() {
         return new Long(m_ticks).hashCode();
     }

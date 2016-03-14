@@ -164,11 +164,6 @@ public final class date extends primary {
     }
 
     @Override
-    public String toDbString(DatabaseVendor vendor) {
-        return toString();
-    }
-
-    @Override
     public int hashCode() {
         return m_value.hashCode();
     }

@@ -103,18 +103,13 @@ public final class string extends primary {
 
     @Override
     public String toDbConstant(DatabaseVendor vendor) {
-        String string = toDbString(vendor);
+        String string = m_value.replaceAll("'", "''");
 
         if (vendor == DatabaseVendor.SqlServer) {
             return "N'" + string + "'";
         }
 
         return "'" + string + "'";
-    }
-
-    @Override
-    public String toDbString(DatabaseVendor dbtype) {
-        return m_value.replaceAll("'", "''");
     }
 
     public boolean isEmpty() {

@@ -14,5 +14,7 @@ class AttachmentProcessor extends Object {
 
     public FileInfo[] update(guid recordId, FileInfo[] files);
     public FileInfo[] update(guid recordId, FileInfo[] files, string type);
+    
+    public int getPageCount(guid recordId);
 
 }

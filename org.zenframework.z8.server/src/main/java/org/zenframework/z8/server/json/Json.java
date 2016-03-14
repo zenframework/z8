@@ -205,6 +205,7 @@ public interface Json {
     string totalWork = new string("totalWork");
     string worked = new string("worked");
     string feedback = new string("feedback");
+    string scheduled = new string("scheduled");
 
     string text = new string("text");
     string description = new string("description");

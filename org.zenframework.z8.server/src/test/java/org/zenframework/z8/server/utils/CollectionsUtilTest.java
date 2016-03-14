@@ -11,7 +11,7 @@ public class CollectionsUtilTest extends TestCase {
     }
 
     public void testEqualsMaps() throws Exception {
-        assertTrue(CollectionsUtil.equals(new JsonObject("{ a: 'b', c: [1, 2, { a: 'e', f: 3 }], d: true }"),
+        assertTrue(CollectionUtils.equals(new JsonObject("{ a: 'b', c: [1, 2, { a: 'e', f: 3 }], d: true }"),
                 new JsonObject("{ d: true, c: [2, { f: 3, a: 'e' }, 1], a: 'b' }"), "a"));
     }
 

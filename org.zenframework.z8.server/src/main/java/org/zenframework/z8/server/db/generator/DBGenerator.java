@@ -89,11 +89,11 @@ public class DBGenerator {
             logger.progress(Math.round(progress / total * 100));
         }
 
+        fireAfterDbGenerated();
+
         String version = Runtime.version();
         Properties.setProperty(ServerRuntime.DbSchemeControlSumProperty, version);
         logger.message("Control sum: " + version);
-
-        fireAfterDbGenerated();
 
         logger.progress(100);
     }

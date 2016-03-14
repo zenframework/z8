@@ -1,19 +1,15 @@
 package org.zenframework.z8.server.types;
 
 import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
-import java.math.BigInteger;
 
 import org.zenframework.z8.server.db.DatabaseVendor;
 import org.zenframework.z8.server.db.FieldType;
 import org.zenframework.z8.server.types.sql.sql_binary;
-import org.zenframework.z8.server.utils.IOUtils;
 
 public class binary extends primary {
     private static final long serialVersionUID = -5161828489385386903L;
@@ -70,7 +66,6 @@ public class binary extends primary {
     private void set(InputStream stream) {
         if(this.stream != stream) {
             close();
-            
             this.stream = stream;
         }
     }
@@ -95,21 +90,6 @@ public class binary extends primary {
         }
     }
 
-    public byte[] getBytes() {
-        try {
-            ByteArrayOutputStream output = new ByteArrayOutputStream();
-            try {
-                IOUtils.copy(stream, output);
-                return output.toByteArray();
-            } finally {
-                stream.reset();
-                output.close();
-            }
-        } catch (IOException e) {
-            throw new exception(e);
-        }
-    }
-
     @Override
     public FieldType type() {
         return FieldType.Binary;
@@ -117,37 +97,12 @@ public class binary extends primary {
 
     @Override
     public String toDbConstant(DatabaseVendor dbtype) {
-        byte[] bytes = getBytes();
-
         switch (dbtype) {
             case Postgres:
             case Oracle:
-                return bytes.length != 0 ? "'" + new BigInteger(bytes).toString(16) + "'" : "null";
-
-            case SqlServer: {
-                String hex = new BigInteger(bytes).toString(16);
-
-                if (hex.length() % 2 == 1)
-                    hex = "0" + hex;
-
-                return "0x" + hex;
-            }
-
+                return "null";
             default:
-                return "'" + getString() + "'";
-        }
-    }
-
-    @Override
-    public String toDbString(DatabaseVendor dbtype) {
-        return getString();
-    }
-
-    public String getString() {
-        try {
-            return new String(getBytes(), encoding.Default.toString());
-        } catch (UnsupportedEncodingException e) {
-            throw new RuntimeException(e);
+                return "''";
         }
     }
 

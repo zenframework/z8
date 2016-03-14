@@ -29,132 +29,130 @@ import org.zenframework.z8.web.server.JsonAdapter;
 import org.zenframework.z8.web.server.TrustedAuthAdapter;
 
 public class Servlet extends HttpServlet {
-    
-    private static final long serialVersionUID = 6442937554115725675L;
-    
-    private static final Collection<String> IGNORE_EXCEPTIONS = Arrays.asList("org.apache.catalina.connector.ClientAbortException");
 
-    static private String ApplicationServer = ApplicationServerMain.class.getCanonicalName();
-    static private String AuthorityService = AuthorityCenterMain.class.getCanonicalName();
+	private static final long serialVersionUID = 6442937554115725675L;
 
-    static private String Start = "start";
-    static private String Stop = "stop";
+	private static final Collection<String> IGNORE_EXCEPTIONS = Arrays.asList("org.apache.catalina.connector.ClientAbortException");
 
-    private static IAuthorityCenter authorityCenter = null;
+	static private String ApplicationServer = ApplicationServerMain.class.getCanonicalName();
+	static private String AuthorityService = AuthorityCenterMain.class.getCanonicalName();
 
-    private final List<Adapter> adapters = new ArrayList<Adapter>();
+	static private String Start = "start";
+	static private String Stop = "stop";
 
-    private ServerConfig config = null;
+	private static IAuthorityCenter authorityCenter = null;
 
-    static public IAuthorityCenter getAuthorityCenter() {
-        return authorityCenter;
-    }
+	private final List<Adapter> adapters = new ArrayList<Adapter>();
 
-    public ServerConfig config() {
-        return config;
-    }
+	private ServerConfig config = null;
 
-    @Override
-    public void init(ServletConfig servletConfig) throws ServletException {
+	static public IAuthorityCenter getAuthorityCenter() {
+		return authorityCenter;
+	}
 
-        ServletContext context = servletConfig.getServletContext();
+	public ServerConfig config() {
+		return config;
+	}
 
-        System.setProperty(SystemProperty.ConfigFilePath, context.getRealPath("WEB-INF"));
+	@Override
+	public void init(ServletConfig servletConfig) throws ServletException {
 
-        config = new ServerConfig();
+		ServletContext context = servletConfig.getServletContext();
 
-        try {
-            if (!config.webServerStandalone()) {
-                startServer(AuthorityService, config);
-                startServer(ApplicationServer, config);
-            }
+		System.setProperty(SystemProperty.ConfigFilePath, context.getRealPath("WEB-INF"));
 
-            authorityCenter = (IAuthorityCenter) Rmi.connect(config.getAuthorityCenterHost(),
-                    config.getAuthorityCenterPort(), IAuthorityCenter.Name);
-        } catch (Throwable e) {
-            try {
-                Trace.logError(e);
-            } catch (Throwable ex) {}
+		config = new ServerConfig();
 
-            destroy();
-            throw new ServletException(e);
-        }
+		try {
+			if(!config.webServerStandalone()) {
+				startServer(AuthorityService, config);
+				startServer(ApplicationServer, config);
+			}
 
-        // TODO Вынести в web.xml
-        adapters.clear();
-        adapters.add(new JsonAdapter(this));
-        adapters.add(new TrustedAuthAdapter(this));
-        adapters.add(new ConverterAdapter(this));
-        
-        for (Adapter adapter : adapters) {
-            adapter.start();
-        }
+			authorityCenter = (IAuthorityCenter) Rmi.connect(config.getAuthorityCenterHost(), config.getAuthorityCenterPort(), IAuthorityCenter.Name);
+		} catch(Throwable e) {
+			try {
+				Trace.logError(e);
+			} catch(Throwable ex) {
+			}
 
-        super.init(servletConfig);
-    }
+			destroy();
+			throw new ServletException(e);
+		}
 
-    @Override
-    protected void service(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        Adapter adapter = getAdapter(request);
-        request.setCharacterEncoding(encoding.Default.toString());
-        try {
-            adapter.service(request, response);
-        } catch(IOException e) {
-            if (!IGNORE_EXCEPTIONS.contains(e.getClass().getCanonicalName())) {
-                throw e;
-            }
-        }
-    }
+		adapters.clear();
+		adapters.add(new JsonAdapter(this));
+		adapters.add(new TrustedAuthAdapter(this));
+		adapters.add(new ConverterAdapter(this));
 
-    public File getWebInfPath() {
-        return new File(getServletContext().getRealPath("WEB-INF"));
-    }
+		for(Adapter adapter : adapters)
+			adapter.start();
 
-    private void startServer(String server, ServerConfig options) {
-        call(server, Start, options);
-    }
+		super.init(servletConfig);
+	}
 
-    private void stopServer(String server, ServerConfig options) {
-        call(server, Stop, options);
-    }
+	@Override
+	protected void service(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		Adapter adapter = getAdapter(request);
+		request.setCharacterEncoding(encoding.Default.toString());
+		try {
+			adapter.service(request, response);
+		} catch(IOException e) {
+			String className = e.getClass().getCanonicalName();
+			if(IGNORE_EXCEPTIONS.contains(className))
+				Trace.logEvent(className);
+			else
+				throw e;
+		}
+	}
 
-    private void call(String className, String methodName, ServerConfig options) {
-        try {
-            ClassLoader loader = getClass().getClassLoader();
-            Class<? extends Object> cls = loader.loadClass(className);
-            Method method = cls.getDeclaredMethod(methodName, ServerConfig.class);
-            method.invoke(null, options);
-        } catch (Exception e) {
-            Trace.logError(e);
-        }
-    }
+	public File getWebInfPath() {
+		return new File(getServletContext().getRealPath("WEB-INF"));
+	}
 
-    @Override
-    public void destroy() {
-        if (!config.webServerStandalone()) {
-            stopServer(ApplicationServer, config);
-            stopServer(AuthorityService, config);
-        }
+	private void startServer(String server, ServerConfig options) {
+		call(server, Start, options);
+	}
 
-        config = null;
-        
-        for (Adapter adapter : adapters) {
-            adapter.stop();
-        }
+	private void stopServer(String server, ServerConfig options) {
+		call(server, Stop, options);
+	}
 
-        super.destroy();
-    }
+	private void call(String className, String methodName, ServerConfig options) {
+		try {
+			ClassLoader loader = getClass().getClassLoader();
+			Class<? extends Object> cls = loader.loadClass(className);
+			Method method = cls.getDeclaredMethod(methodName, ServerConfig.class);
+			method.invoke(null, options);
+		} catch(Exception e) {
+			Trace.logError(e);
+		}
+	}
 
-    private Adapter getAdapter(HttpServletRequest request) {
-        for (Adapter adapter : adapters) {
-            if (adapter.canHandleRequest(request)) {
-                return adapter;
-            }
-        }
-        return null;
-    }
+	@Override
+	public void destroy() {
+		if(!config.webServerStandalone()) {
+			stopServer(ApplicationServer, config);
+			stopServer(AuthorityService, config);
+		}
 
-    public String getServletPath() {
-        return getServletContext().getRealPath("") + "\\WEB-INF";
-    }
+		config = null;
+
+		for(Adapter adapter : adapters)
+			adapter.stop();
+
+		super.destroy();
+	}
+
+	private Adapter getAdapter(HttpServletRequest request) {
+		for(Adapter adapter : adapters) {
+			if(adapter.canHandleRequest(request))
+				return adapter;
+		}
+		return null;
+	}
+
+	public String getServletPath() {
+		return getServletContext().getRealPath("") + "\\WEB-INF";
+	}
 }

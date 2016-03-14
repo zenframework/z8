@@ -22,7 +22,6 @@ public class file extends primary implements Serializable {
     public static final String StorageFolderName = "storage";
     public static final String CacheFolderName = "pdf.cache";
     public static final String LuceneFolderName = "lucene";
-    public static final String UnconvertedFolderName = "unconverted";
 
     private File file;
 
@@ -181,13 +180,8 @@ public class file extends primary implements Serializable {
         try {
             FileInputStream input = new FileInputStream(file);
             ByteArrayOutputStream output = new ByteArrayOutputStream();
-            try {
-                IOUtils.copy(input, output);
-                return new string(output.toByteArray(), charset);
-            } finally {
-                input.close();
-                output.close();
-            }
+            IOUtils.copy(input, output);
+            return new string(output.toByteArray(), charset);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

@@ -7,10 +7,7 @@ import java.util.Enumeration;
 
 import org.zenframework.z8.server.base.simple.Activator;
 import org.zenframework.z8.server.base.table.Table;
-import org.zenframework.z8.server.db.generator.IForeignKey;
-import org.zenframework.z8.server.json.parser.JsonObject;
 import org.zenframework.z8.server.logs.Trace;
-import org.zenframework.z8.server.request.Loader;
 import org.zenframework.z8.server.runtime.AbstractRuntime;
 import org.zenframework.z8.server.runtime.IRuntime;
 import org.zenframework.z8.server.runtime.ServerRuntime;
@@ -65,29 +62,6 @@ public class Runtime extends AbstractRuntime {
         }
     }
 
-    public static JsonObject getTablesStructure() {
-        JsonObject structure = new JsonObject();
-        for (Table.CLASS<? extends Table> tableClass : runtime.tables()) {
-            fillStructure(structure, tableClass);
-        }
-        return structure;
-    }
-
-    @SuppressWarnings("unchecked")
-    private static void fillStructure(JsonObject structure, Table.CLASS<? extends Table> tableClass) {
-        if (!structure.has(tableClass.classId())) {
-            JsonObject jsonTable = new JsonObject();
-            structure.put(tableClass.classId(), jsonTable);
-            Table table = tableClass.newInstance();
-            for (IForeignKey fkey : table.getForeignKeys()) {
-                String fieldIndex = table.getFieldByName(fkey.getFieldDescriptor().name()).getIndex();
-                jsonTable.put(fieldIndex, ((Table) fkey.getReferencedTable()).classId());
-                fillStructure(structure,
-                        (Table.CLASS<? extends Table>) Loader.loadClass(((Table) fkey.getReferencedTable()).classId()));
-            }
-        }
-    }
-
     private void loadRuntime(URL resource, ClassLoader classLoader) {
         try {
             String className = IOUtils.readText(resource);
@@ -108,6 +82,6 @@ public class Runtime extends AbstractRuntime {
         }
         
         String version = StringUtils.padLeft("" + Math.abs(controlSum), 10, '0');
-        return version.substring(0, 3) + "." + version.substring(3, 6) + "." + version.substring(6);
+        return version.substring(0, 1) + "." + version.substring(1, 4) + "." + version.substring(4, 7) + "." + version.substring(7);
     }
 }

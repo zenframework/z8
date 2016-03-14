@@ -11,6 +11,7 @@ import org.zenframework.z8.server.json.parser.JsonObject;
 import org.zenframework.z8.server.request.INamedObject;
 import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.runtime.RCollection;
+import org.zenframework.z8.server.types.bool;
 import org.zenframework.z8.server.types.guid;
 import org.zenframework.z8.server.types.string;
 
@@ -37,6 +38,8 @@ public class Command extends Runnable implements ICommand {
     public string description = new string();
     public string icon = new string();
 
+    public bool useTransaction = new bool(true);
+    
     public RCollection<Parameter.CLASS<? extends Parameter>> parameters = new RCollection<Parameter.CLASS<? extends Parameter>>();
 
     public Command(IObject container) {
