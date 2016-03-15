@@ -15,6 +15,7 @@ import org.artofsolving.jodconverter.OfficeDocumentConverter;
 import org.artofsolving.jodconverter.office.DefaultOfficeManagerConfiguration;
 import org.artofsolving.jodconverter.office.OfficeManager;
 import org.zenframework.z8.server.base.table.system.Properties;
+import org.zenframework.z8.server.config.ServerConfig;
 import org.zenframework.z8.server.logs.Trace;
 import org.zenframework.z8.server.runtime.ServerRuntime;
 import org.zenframework.z8.server.utils.EmlUtils;
@@ -156,8 +157,14 @@ public class FileConverter implements Properties.Listener {
 	}
 
 	private File getOfficeHome() {
-		if(officeHome == null)
-			officeHome = new File(Properties.getProperty(ServerRuntime.LibreOfficeDirectoryProperty));
+		if(officeHome == null) {
+			String path = new ServerConfig().fileConverter();
+			
+			if(path.isEmpty())
+				path = Properties.getProperty(ServerRuntime.LibreOfficeDirectoryProperty);
+
+			officeHome = new File(path);
+		}
 		return officeHome;
 	}
 }

@@ -24,6 +24,7 @@ public class ServerConfig extends Properties {
     public static final String SchedulerEnabledProperty = "scheduler.enabled";
     
     public static final String TraceSqlProperty = "trace.sql";
+    public static final String FileConverter = "file.converter";
 
     
     private static String workingPath;
@@ -40,6 +41,7 @@ public class ServerConfig extends Properties {
     private static boolean schedulerEnabled;
 
     private static boolean traceSql;
+    private static String fileConverter;
 
     public ServerConfig() {
         this(configurationFileName);
@@ -73,6 +75,7 @@ public class ServerConfig extends Properties {
         webServerStartAuthorityCenter = getProperty(WebServerStartAuthorityCenterProperty, true);
         
         traceSql = getProperty(TraceSqlProperty, false);
+        fileConverter = getProperty(TraceSqlProperty, "");
         
         schedulerEnabled = getProperty(SchedulerEnabledProperty, true);
     }
@@ -151,5 +154,9 @@ public class ServerConfig extends Properties {
 
     public final boolean schedulerEnabled() {
         return schedulerEnabled;
+    }
+
+    public final String fileConverter() {
+        return fileConverter;
     }
 }
