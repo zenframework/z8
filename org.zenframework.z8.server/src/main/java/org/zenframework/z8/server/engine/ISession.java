@@ -11,10 +11,6 @@ public interface ISession extends Serializable {
 
     public ServerInfo getServerInfo();
 
-    public Database database();
-
-    public void setDatabase(Database database);
-
     public long getTimeCreate();
 
     public long getLastAccessTime();

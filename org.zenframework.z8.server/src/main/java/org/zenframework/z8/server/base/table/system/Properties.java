@@ -134,7 +134,7 @@ public class Properties extends TreeTable {
     }
 
     public static void setProperty(String key, String value) {
-        if (!ApplicationServer.defaultDatabase().tableExists(Properties.TableName))
+        if (!ApplicationServer.database().tableExists(Properties.TableName))
             throw new RuntimeException("Can not set property [" + key + "=" + value + "]. System is not installed");
             
         Properties properties = new CLASS<Properties>().get();
@@ -170,7 +170,7 @@ public class Properties extends TreeTable {
         for (Property property : Runtime.instance().properties())
             values.put(property.getKey(), property.getDefaultValue());
 
-        if (ApplicationServer.defaultDatabase().isSystemInstalled()) {
+        if (ApplicationServer.database().isSystemInstalled()) {
             Properties properties = new CLASS<Properties>().get();
 
             Field id = properties.id.get();
@@ -253,7 +253,7 @@ public class Properties extends TreeTable {
 
     private static String getPropertyFromDb(String key) {
         try {
-            if (ApplicationServer.defaultDatabase().isSystemInstalled()) {
+            if (ApplicationServer.database().isSystemInstalled()) {
 
                 try {
                     Properties properties = new CLASS<Properties>().get();

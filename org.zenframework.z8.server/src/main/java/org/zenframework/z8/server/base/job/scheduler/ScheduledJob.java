@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.zenframework.z8.server.base.file.FileInfo;
-import org.zenframework.z8.server.engine.ApplicationServer;
 import org.zenframework.z8.server.engine.Session;
 import org.zenframework.z8.server.json.Json;
 import org.zenframework.z8.server.logs.Trace;
@@ -40,7 +39,7 @@ public class ScheduledJob implements Runnable {
             task.start();
 
             IUser user = User.load(task.login);
-            request = new Request(parameters, files, new Session("", user, ApplicationServer.defaultDatabase()));
+            request = new Request(parameters, files, new Session("", user));
             response = new Response();
 
             new RequestDispatcher(request, response).run();

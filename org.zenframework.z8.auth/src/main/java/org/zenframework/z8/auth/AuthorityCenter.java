@@ -126,7 +126,6 @@ public class AuthorityCenter extends RmiServer implements IAuthorityCenter {
 		return doLogin(login, null);
 	}
 
-
 	@Override
 	public ISession login(String login, String password) throws RemoteException {
 		if(password == null)

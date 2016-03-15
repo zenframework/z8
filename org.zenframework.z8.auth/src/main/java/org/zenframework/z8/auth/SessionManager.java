@@ -55,7 +55,7 @@ public class SessionManager
 	public Session create(IUser user) {
 		String id = guid.create().toString();
 
-		Session session = new Session(id, user, AuthorityCenter.database());
+		Session session = new Session(id, user);
 
 		sessions.put(id, session);
 

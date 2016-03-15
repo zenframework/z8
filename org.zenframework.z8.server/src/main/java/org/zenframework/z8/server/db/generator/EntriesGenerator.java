@@ -8,7 +8,6 @@ import org.zenframework.z8.server.base.form.Desktop;
 import org.zenframework.z8.server.base.table.system.Entries;
 import org.zenframework.z8.server.base.table.system.UserEntries;
 import org.zenframework.z8.server.base.table.value.Field;
-import org.zenframework.z8.server.db.Connection;
 import org.zenframework.z8.server.db.sql.SqlToken;
 import org.zenframework.z8.server.db.sql.expressions.Operation;
 import org.zenframework.z8.server.db.sql.expressions.Rel;
@@ -17,15 +16,11 @@ import org.zenframework.z8.server.types.guid;
 import org.zenframework.z8.server.types.sql.sql_guid;
 
 public class EntriesGenerator {
-    private Connection connection;
-
-    public EntriesGenerator(Connection connection) {
-        this.connection = connection;
+    public EntriesGenerator() {
     }
 
     public Component[] readComponents() {
         Entries entries = new Entries.CLASS<Entries>().get();
-        entries.setDatabase(connection.database());
 
         Collection<Field> fields = new ArrayList<Field>();
         fields.add(entries.id.get());

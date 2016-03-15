@@ -13,17 +13,13 @@ public class Session implements ISession {
     private long createdAt;
     private long lastAccessTime;
 
-    private Database database = null;
-
-    public Session(Database database) {
-        this("system", User.system(), database);
+    public Session() {
+        this("system", User.system());
     }
 
-    public Session(String id, IUser user, Database database) {
+    public Session(String id, IUser user) {
         this.id = id;
         this.user = user;
-        this.database = database;
-
         this.createdAt = System.currentTimeMillis();
 
         access();
@@ -60,15 +56,5 @@ public class Session implements ISession {
 
     public synchronized void access() {
         lastAccessTime = System.currentTimeMillis();
-    }
-
-    @Override
-    public Database database() {
-        return database;
-    }
-
-    @Override
-    public void setDatabase(Database database) {
-        this.database = database;
     }
 }

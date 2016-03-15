@@ -41,7 +41,6 @@ import org.zenframework.z8.server.db.sql.expressions.Group;
 import org.zenframework.z8.server.db.sql.expressions.True;
 import org.zenframework.z8.server.db.sql.functions.InVector;
 import org.zenframework.z8.server.engine.ApplicationServer;
-import org.zenframework.z8.server.engine.Database;
 import org.zenframework.z8.server.json.Json;
 import org.zenframework.z8.server.json.parser.JsonArray;
 import org.zenframework.z8.server.json.parser.JsonObject;
@@ -141,9 +140,6 @@ public class Query extends Runnable {
 
     private SqlToken where = null;
     private SqlToken having = null;
-
-    private Database database;
-    private Database cachedDatabase;
 
     protected Select cursor;
     protected ReadLock readLock = ReadLock.None;
@@ -775,24 +771,6 @@ public class Query extends Runnable {
         return cursor.next();
     }
 
-    public Database getDatabase() {
-        return database;
-    }
-
-    public void setDatabase(Database database) {
-        this.database = database;
-    }
-
-    private void setDatabase() {
-        if (database != null)
-            cachedDatabase = ApplicationServer.setDatabase(database);
-    }
-
-    private void restoreDatabase() {
-        if (database != null)
-            ApplicationServer.setDatabase(cachedDatabase);
-    }
-
     protected boolean readFirst(Collection<Field> fields, Collection<Field> sortFields, Collection<Field> groupFields,
             SqlToken where, SqlToken having) {
         read(fields, sortFields, groupFields, where, having);
@@ -801,26 +779,21 @@ public class Query extends Runnable {
 
     protected void read(Collection<Field> fields, Collection<Field> sortFields, Collection<Field> groupFields,
             SqlToken where, SqlToken having) {
-        try {
-            setDatabase();
 
-            ActionParameters parameters = new ActionParameters();
-            parameters.query = this;
-            parameters.fields = fields;
-            parameters.sortFields = sortFields;
-            parameters.groupBy = groupFields;
+        ActionParameters parameters = new ActionParameters();
+        parameters.query = this;
+        parameters.fields = fields;
+        parameters.sortFields = sortFields;
+        parameters.groupBy = groupFields;
 
-            ReadAction action = new ReadAction(parameters);
-            action.addFilter(where);
-            action.addGroupFilter(having);
+        ReadAction action = new ReadAction(parameters);
+        action.addFilter(where);
+        action.addGroupFilter(having);
 
-            if (cursor != null)
-                cursor.close();
+        if (cursor != null)
+            cursor.close();
 
-            cursor = action.getCursor();
-        } finally {
-            restoreDatabase();
-        }
+        cursor = action.getCursor();
     }
 
     public Collection<Field> getChangedFields() {

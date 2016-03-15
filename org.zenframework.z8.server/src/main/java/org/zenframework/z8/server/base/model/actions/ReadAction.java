@@ -852,9 +852,7 @@ public class ReadAction extends Action {
     }
 
     private Select cursor() {
-        Select select = SelectFactory.create(this).cursor();
-        select.setDatabase(getQuery().getDatabase());
-        return select;
+        return SelectFactory.create(this).cursor();
     }
 
     public CountingSelect getCounter() {
@@ -868,15 +866,11 @@ public class ReadAction extends Action {
     }
 
     private CountingSelect counter() {
-        CountingSelect select = SelectFactory.create(this).count();
-        select.setDatabase(getQuery().getDatabase());
-        return select;
+        return SelectFactory.create(this).count();
     }
 
     private FramedSelect frame() {
-        FramedSelect select = SelectFactory.create(this).frame();
-        select.setDatabase(getQuery().getDatabase());
-        return select;
+        return SelectFactory.create(this).frame();
     }
 
     public AggregatingSelect getTotals() {
@@ -894,9 +888,7 @@ public class ReadAction extends Action {
     }
 
     private AggregatingSelect totals() {
-        AggregatingSelect select = SelectFactory.create(this).aggregate();
-        select.setDatabase(getQuery().getDatabase());
-        return select;
+        return SelectFactory.create(this).aggregate();
     }
 
     private void writeCount(JsonObject writer) throws SQLException {

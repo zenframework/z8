@@ -61,7 +61,7 @@ public class Scheduler implements Runnable {
 	}
 
 	private synchronized void initializeTasks() {
-		if(!ApplicationServer.defaultDatabase().isSystemInstalled() || !resetPending)
+		if(!ApplicationServer.database().isSystemInstalled() || !resetPending)
 			return;
 
 		Tasks tasksTable = new Tasks.CLASS<Tasks>(null).get();

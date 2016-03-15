@@ -74,15 +74,8 @@ public class Select {
         }
     }
 
-    public void setDatabase(Database database) {
-        this.database = database;
-    }
-
     public Database database() {
-        if (database == null)
-            database = ApplicationServer.database();
-
-        return database;
+    	return ApplicationServer.database();
     }
 
     public DatabaseVendor vendor() {

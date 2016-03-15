@@ -61,19 +61,15 @@ public class ApplicationServer extends RmiServer implements IApplicationServer {
     }
 
     static public ServerConfig config() {
-        return instance.config;
-    }
-
-    static public Database defaultDatabase() {
-        return new Database(config());
+        return instance != null ? instance.config : new ServerConfig();
     }
 
     static public IRequest getRequest() {
         IRequest request = currentRequest.get();
 
-        if (request == null) {
-            request = new Request(new Session(defaultDatabase()));
-        }
+        if (request == null)
+            request = new Request(new Session());
+
         return request;
     }
 
@@ -86,24 +82,7 @@ public class ApplicationServer extends RmiServer implements IApplicationServer {
     }
 
     static public Database database() {
-        return getRequest().getSession().database();
-    }
-
-    static public Database setDatabase(Database database) {
-        Database oldDatabase = database();
-        database = database != null ? database : defaultDatabase();
-
-        IRequest request = currentRequest.get();
-
-        if (request != null) {
-            request.getSession().setDatabase(database);
-        }
-
-        return oldDatabase;
-    }
-
-    static public boolean isDefaultDatabase() {
-        return defaultDatabase().schema().equalsIgnoreCase(database().schema());
+        return new Database(config());
     }
 
     static public IUser getUser() {
@@ -111,11 +90,10 @@ public class ApplicationServer extends RmiServer implements IApplicationServer {
     }
 
     static public void setRequest(IRequest request) {
-        if (request != null) {
+        if (request != null)
             currentRequest.set(request);
-        } else {
+        else
             currentRequest.remove();
-        }
     }
 
     static public void disableEvents() {
@@ -232,7 +210,6 @@ public class ApplicationServer extends RmiServer implements IApplicationServer {
         IResponse response = request.getResponse();
 
         setRequest(request);
-        setDatabase(session.database());
 
         new RequestProcessor().processRequest(request, response);
 

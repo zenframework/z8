@@ -72,7 +72,7 @@ public class DBGenerator {
         }
 
         try {
-            new EntriesGenerator(connection).run(entries, logger);
+            new EntriesGenerator().run(entries, logger);
         } catch (Throwable e) {
             logger.error(e, ErrorUtils.getMessage(e));
         }

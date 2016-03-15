@@ -288,7 +288,6 @@ public class User implements IUser {
     @Override
     public void save(Database database) {
         Users users = new Users.CLASS<Users>().get();
-        users.setDatabase(database);
 
         users.settings.get().set(new string(settings));
         users.update(id);
