@@ -19,7 +19,7 @@ public class ServerConfig extends Properties {
     public static final String ApplicationServerPortProperty = "application.server.port";
 
     public static final String WebServerStartApplicationServerProperty = "web.server.start.application.server";
-    public static final String WebServerStartAuthorityCenterProperty = "web.server.authority.center";
+    public static final String WebServerStartAuthorityCenterProperty = "web.server.start.authority.center";
 
     public static final String SchedulerEnabledProperty = "scheduler.enabled";
     
