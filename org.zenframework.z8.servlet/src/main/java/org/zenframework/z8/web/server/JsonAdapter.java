@@ -52,7 +52,7 @@ public class JsonAdapter extends Adapter {
 		FilesStorage storage = getFilesStorage();
 
 		if(parameters.get(Json.serverId) != null)
-			storage.save(serverInfo.getAppServer().download(filePath).getInputStream(), filePath);
+			storage.save(serverInfo.getApplicationServer().download(filePath).getInputStream(), filePath);
 		else
 			storage.save(Base64.decodeBase64(parameters.get(Json.image)), filePath);
 

@@ -139,7 +139,7 @@ public abstract class Adapter {
 	protected void service(ISession session, Map<String, String> parameters, List<FileInfo> files, HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
 		GNode node = new GNode(parameters, files);
 
-		IApplicationServer server = session.getServerInfo().getAppServer();
+		IApplicationServer server = session.getServerInfo().getApplicationServer();
 		node = server.processRequest(session, node);
 
 		if(response != null)

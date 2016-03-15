@@ -23,6 +23,7 @@ import org.zenframework.z8.server.request.IResponse;
 import org.zenframework.z8.server.request.Request;
 import org.zenframework.z8.server.request.RequestProcessor;
 import org.zenframework.z8.server.security.IUser;
+import org.zenframework.z8.server.security.User;
 import org.zenframework.z8.server.types.file;
 import org.zenframework.z8.server.types.guid;
 import org.zenframework.z8.server.utils.IOUtils;
@@ -202,10 +203,24 @@ public class ApplicationServer extends RmiServer implements IApplicationServer {
     }
 
     @Override
-    public FileInfo download(FileInfo fileInfo) throws IOException {
-        FileInfo result = Files.getFile(fileInfo);
-        ConnectionManager.release();
-        return result;
+    public IUser login(String login) {
+    	return User.load(login);
+    }
+
+    @Override
+    public IUser login(String login, String password) {
+    	return User.load(login, password);
+    }
+    
+    @Override
+    public FileInfo download(FileInfo fileInfo) throws RemoteException {
+        try {
+        	FileInfo result = Files.getFile(fileInfo);
+        	ConnectionManager.release();
+        	return result;
+        } catch (IOException e) {
+            throw new RemoteException(e.getMessage(), e);
+        }
     }
 
     @Override

@@ -1,10 +1,10 @@
 package org.zenframework.z8.server.engine;
 
+import java.rmi.RemoteException;
+
 import org.zenframework.z8.server.base.file.FileInfo;
 import org.zenframework.z8.server.base.xml.GNode;
-
-import java.io.IOException;
-import java.rmi.RemoteException;
+import org.zenframework.z8.server.security.IUser;
 
 public interface IApplicationServer extends IServer {
 
@@ -14,6 +14,9 @@ public interface IApplicationServer extends IServer {
 
     public FileInfo download(String filePath) throws RemoteException;
 
-    public FileInfo download(FileInfo fileInfo) throws IOException;
+    public FileInfo download(FileInfo fileInfo) throws RemoteException;
+    
+    public IUser login(String login) throws RemoteException;
+    public IUser login(String login, String password) throws RemoteException;
 
 }

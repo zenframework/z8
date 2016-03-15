@@ -161,17 +161,24 @@ public class User implements IUser {
         this.companies.addAll(Arrays.asList(companies));
     }
 
-    static public IUser load(String login, String password, boolean trusted, Database database) {
+    static public IUser load(String login) {
         User user = new User();
-        user.readInfo(login, password, database);
-        if (!trusted && (password == null || !password.equals(user.password()) || user.blocked())) {
-            throw new AccessDeniedException();
-        }
-        user.readComponents(database);
+        user.readInfo(login);
 
-        if (user.securityGroup == SecurityGroup.Administrators) {
+        user.readComponents();
+
+        if (user.securityGroup == SecurityGroup.Administrators)
             user.addSystemTools();
-        }
+
+        return user;
+    }
+
+    static public IUser load(String login, String password) {
+        IUser user = load(login);
+
+        if (password == null || !password.equals(user.password()) || user.blocked())
+            throw new AccessDeniedException();
+
         return user;
     }
 
@@ -200,9 +207,8 @@ public class User implements IUser {
         return result != null ? (Users) result.newInstance() : null;
     }
 
-    private void readInfo(String login, String password, Database database) {
+    private void readInfo(String login) {
         Users users = getUsers();
-        users.setDatabase(database);
 
         Collection<Field> fields = new ArrayList<Field>();
         fields.add(users.recordId.get());
@@ -239,9 +245,8 @@ public class User implements IUser {
         }
     }
 
-    private void readComponents(Database database) {
+    private void readComponents() {
         UserEntries userEntries = new UserEntries.CLASS<UserEntries>().get();
-        userEntries.setDatabase(database);
 
         Collection<Field> fields = new ArrayList<Field>();
         fields.add(userEntries.entries.get().id.get());

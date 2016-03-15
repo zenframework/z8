@@ -11,9 +11,8 @@ public interface IAuthorityCenter extends IServer {
     int MaxLoginLength = 32;
     int MaxPasswordLength = 32;
 
+    ISession login(String userName) throws RemoteException;
     ISession login(String userName, String password) throws RemoteException;
-
-    ISession getTrustedSession(String userName) throws RemoteException;
 
     ISession getServer(String sessionId) throws RemoteException;
 

@@ -19,7 +19,7 @@ public class ServerInfo implements Serializable {
         return server;
     }
 
-    public IApplicationServer getAppServer() {
+    public IApplicationServer getApplicationServer() {
         return (IApplicationServer)server;
     }
 

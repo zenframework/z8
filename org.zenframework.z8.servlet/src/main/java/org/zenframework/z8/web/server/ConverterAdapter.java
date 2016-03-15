@@ -108,7 +108,7 @@ public class ConverterAdapter extends Adapter {
 	}
 
 	private void downloadFile(ServerInfo serverInfo, FileInfo fileInfo, File path) throws IOException {
-		FileInfo downloadedFileInfo = serverInfo.getAppServer().download(fileInfo);
+		FileInfo downloadedFileInfo = serverInfo.getApplicationServer().download(fileInfo);
 
 		if(downloadedFileInfo != null)
 			FileUtils.copyInputStreamToFile(downloadedFileInfo.getInputStream(), path);
