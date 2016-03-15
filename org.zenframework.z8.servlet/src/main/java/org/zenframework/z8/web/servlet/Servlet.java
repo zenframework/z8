@@ -4,8 +4,6 @@ import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.List;
 
 import javax.servlet.ServletConfig;
@@ -31,8 +29,6 @@ import org.zenframework.z8.web.server.TrustedAuthAdapter;
 public class Servlet extends HttpServlet {
 
 	private static final long serialVersionUID = 6442937554115725675L;
-
-	private static final Collection<String> IGNORE_EXCEPTIONS = Arrays.asList("org.apache.catalina.connector.ClientAbortException");
 
 	static private String ApplicationServer = ApplicationServerMain.class.getCanonicalName();
 	static private String AuthorityCenter = AuthorityCenterMain.class.getCanonicalName();
@@ -96,15 +92,7 @@ public class Servlet extends HttpServlet {
 	protected void service(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		Adapter adapter = getAdapter(request);
 		request.setCharacterEncoding(encoding.Default.toString());
-		try {
-			adapter.service(request, response);
-		} catch(IOException e) {
-			String className = e.getClass().getCanonicalName();
-			if(IGNORE_EXCEPTIONS.contains(className))
-				Trace.logEvent(className);
-			else
-				throw e;
-		}
+		adapter.service(request, response);
 	}
 
 	public File getWebInfPath() {
