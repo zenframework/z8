@@ -35,7 +35,7 @@ public class Servlet extends HttpServlet {
 	private static final Collection<String> IGNORE_EXCEPTIONS = Arrays.asList("org.apache.catalina.connector.ClientAbortException");
 
 	static private String ApplicationServer = ApplicationServerMain.class.getCanonicalName();
-	static private String AuthorityService = AuthorityCenterMain.class.getCanonicalName();
+	static private String AuthorityCenter = AuthorityCenterMain.class.getCanonicalName();
 
 	static private String Start = "start";
 	static private String Stop = "stop";
@@ -64,10 +64,11 @@ public class Servlet extends HttpServlet {
 		config = new ServerConfig();
 
 		try {
-			if(!config.webServerStandalone()) {
-				startServer(AuthorityService, config);
+			if(config.webServerStartAuthorityCenter())
+				startServer(AuthorityCenter, config);
+
+			if(config.webServerStartApplicationServer())
 				startServer(ApplicationServer, config);
-			}
 
 			authorityCenter = (IAuthorityCenter) Rmi.connect(config.getAuthorityCenterHost(), config.getAuthorityCenterPort(), IAuthorityCenter.Name);
 		} catch(Throwable e) {
@@ -131,10 +132,11 @@ public class Servlet extends HttpServlet {
 
 	@Override
 	public void destroy() {
-		if(!config.webServerStandalone()) {
+		if(config.webServerStartApplicationServer())
 			stopServer(ApplicationServer, config);
-			stopServer(AuthorityService, config);
-		}
+
+		if(config.webServerStartAuthorityCenter())
+			stopServer(AuthorityCenter, config);
 
 		config = null;
 

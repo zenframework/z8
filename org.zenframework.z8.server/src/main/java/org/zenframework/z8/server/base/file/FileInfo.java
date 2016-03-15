@@ -2,8 +2,8 @@ package org.zenframework.z8.server.base.file;
 
 import java.io.IOException;
 import java.io.InputStream;
-//import java.io.ObjectInputStream;
-//import java.io.ObjectOutputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -20,7 +20,7 @@ import org.zenframework.z8.server.runtime.RCollection;
 import org.zenframework.z8.server.types.datetime;
 import org.zenframework.z8.server.types.guid;
 import org.zenframework.z8.server.types.string;
-//import org.zenframework.z8.server.utils.IOUtils;
+import org.zenframework.z8.server.utils.IOUtils;
 
 public class FileInfo extends OBJECT implements Serializable {
 	private static final long serialVersionUID = -4474455212423780540L;
@@ -183,7 +183,7 @@ public class FileInfo extends OBJECT implements Serializable {
 			throw new RuntimeException(e);
 		}
 	}
-/*
+
 	private void writeObject(ObjectOutputStream outputStream) throws IOException {
 		outputStream.writeObject(name);
 		outputStream.writeObject(path);
@@ -223,5 +223,4 @@ public class FileInfo extends OBJECT implements Serializable {
 			}
 		}
 	}
-*/
 }

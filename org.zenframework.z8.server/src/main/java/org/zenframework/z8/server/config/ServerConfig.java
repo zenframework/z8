@@ -18,7 +18,8 @@ public class ServerConfig extends Properties {
     public static final String ApplicationServerIdProperty = "application.server.id";
     public static final String ApplicationServerPortProperty = "application.server.port";
 
-    public static final String WebServerStandaloneProperty = "web.server.standalone";
+    public static final String WebServerStartApplicationServerProperty = "web.server.start.application.server";
+    public static final String WebServerStartAuthorityCenterProperty = "web.server.authority.center";
 
     public static final String SchedulerEnabledProperty = "scheduler.enabled";
     
@@ -33,7 +34,8 @@ public class ServerConfig extends Properties {
     private static String applicationServerId;
     private static int applicationServerPort;
 
-    private static boolean webServerStandalone;
+    private static boolean webServerStartApplicationServer;
+    private static boolean webServerStartAuthorityCenter;
     
     private static boolean schedulerEnabled;
 
@@ -67,7 +69,8 @@ public class ServerConfig extends Properties {
         
         applicationServerPort = getProperty(ApplicationServerPortProperty, Rmi.randomPort());
 
-        webServerStandalone = getProperty(WebServerStandaloneProperty, false);
+        webServerStartApplicationServer = getProperty(WebServerStartApplicationServerProperty, true);
+        webServerStartAuthorityCenter = getProperty(WebServerStartAuthorityCenterProperty, true);
         
         traceSql = getProperty(TraceSqlProperty, false);
         
@@ -138,8 +141,12 @@ public class ServerConfig extends Properties {
         return traceSql;
     }
 
-    public final boolean webServerStandalone() {
-        return webServerStandalone;
+    public final boolean webServerStartApplicationServer() {
+        return webServerStartApplicationServer;
+    }
+
+    public final boolean webServerStartAuthorityCenter() {
+        return webServerStartAuthorityCenter;
     }
 
     public final boolean schedulerEnabled() {
