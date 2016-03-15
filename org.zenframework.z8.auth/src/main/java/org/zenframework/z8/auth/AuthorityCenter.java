@@ -5,14 +5,10 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import javax.security.auth.Subject;
-import javax.security.auth.login.LoginContext;
-import javax.security.auth.login.LoginException;
-
-import org.zenframework.z8.auth.loginmodule.Z8Principal;
 import org.zenframework.z8.server.config.ServerConfig;
 import org.zenframework.z8.server.config.SystemProperty;
 import org.zenframework.z8.server.engine.Database;
+import org.zenframework.z8.server.engine.IApplicationServer;
 import org.zenframework.z8.server.engine.IAuthorityCenter;
 import org.zenframework.z8.server.engine.IServer;
 import org.zenframework.z8.server.engine.ISession;
@@ -28,15 +24,12 @@ public class AuthorityCenter extends RmiServer implements IAuthorityCenter {
 
 	private static final long serialVersionUID = -3444119932500940143L;
 
-	static private String LoginContext = "Z8LoginContext";
-
 	static private AuthorityCenter instance;
 
 	private ServerConfig config;
 	private Database database;
 
-	private List<ServerInfo> servers = Collections
-	        .synchronizedList(new ArrayList<ServerInfo>());
+	private List<ServerInfo> servers = Collections.synchronizedList(new ArrayList<ServerInfo>());
 
 	private UserManager userManager;
 	private SessionManager sessionManager;
@@ -47,12 +40,11 @@ public class AuthorityCenter extends RmiServer implements IAuthorityCenter {
 		this.config = config;
 		database = new Database(config);
 
-		System.setProperty(SystemProperty.RAAS, config.getWorkingPath()
-		        + System.getProperty("file.separator") + "raas.config");
+		System.setProperty(SystemProperty.RAAS, config.getWorkingPath() + System.getProperty("file.separator") + "raas.config");
 
-        instance = this;
-        
-        start();
+		instance = this;
+
+		start();
 	}
 
 	static public ServerConfig config() {
@@ -64,7 +56,7 @@ public class AuthorityCenter extends RmiServer implements IAuthorityCenter {
 	}
 
 	@Override
-    public void start() throws RemoteException {
+	public void start() throws RemoteException {
 		super.start();
 
 		userManager = new UserManager(config);
@@ -76,11 +68,11 @@ public class AuthorityCenter extends RmiServer implements IAuthorityCenter {
 	}
 
 	@Override
-    public void stop() throws RemoteException {
-		for (ServerInfo info : servers.toArray(new ServerInfo[servers.size()])) {
+	public void stop() throws RemoteException {
+		for(ServerInfo info : servers.toArray(new ServerInfo[servers.size()])) {
 			try {
 				info.getServer().stop();
-			} catch (RemoteException e) {
+			} catch(RemoteException e) {
 			}
 		}
 
@@ -88,7 +80,7 @@ public class AuthorityCenter extends RmiServer implements IAuthorityCenter {
 
 		try {
 			super.stop();
-		} catch (RemoteException e) {
+		} catch(RemoteException e) {
 			Trace.logError(e);
 		}
 
@@ -96,16 +88,16 @@ public class AuthorityCenter extends RmiServer implements IAuthorityCenter {
 	}
 
 	@Override
-    public synchronized void register(IServer server) throws RemoteException {
+	public synchronized void register(IServer server) throws RemoteException {
 		ServerInfo info = new ServerInfo(server, server.id(), server.netAddress());
 		servers.add(info);
 		Trace.logEvent("AC: application server started at '" + info.getAddress() + "'");
 	}
 
 	@Override
-    public synchronized void unregister(IServer server) throws RemoteException {
-		for (ServerInfo info : servers.toArray(new ServerInfo[servers.size()])) {
-			if (info.getServer().equals(server)) {
+	public synchronized void unregister(IServer server) throws RemoteException {
+		for(ServerInfo info : servers.toArray(new ServerInfo[servers.size()])) {
+			if(info.getServer().equals(server)) {
 				servers.remove(info);
 				Trace.logEvent("AC: application server has been stopped at '" + info.getAddress() + "'");
 				break;
@@ -121,89 +113,69 @@ public class AuthorityCenter extends RmiServer implements IAuthorityCenter {
 		return instance.userManager;
 	}
 
-	public void checkCredentials(String login, String password)
-	        throws AccessDeniedException {
-		if (login.isEmpty()
-		        || login.length() > IAuthorityCenter.MaxLoginLength
-		        || (password != null && password.length() > IAuthorityCenter.MaxPasswordLength)) {
-			throw new AccessDeniedException();
-		}
-
+	private IApplicationServer getLoginServer() {
 		try {
-			Subject subject = new Subject();
-			subject.getPrincipals().add(new Z8Principal(login, password));
-
-			LoginContext loginContext = new LoginContext(LoginContext, subject);
-			loginContext.login();
-			loginContext.logout();
-		} catch (LoginException e) {
+			return instance.servers.get(0).getApplicationServer();
+		} catch(Throwable e) {
 			throw new AccessDeniedException();
 		}
 	}
-
-	@Override
-    public ISession login(String login, String password) throws RemoteException {
-		IUser user = User.system();
-
-		if (database.isSystemInstalled()) {
-			checkCredentials(login, password);
-			user = userManager.get(login);
-		}
-
-		if (user == null) {
-			throw new AccessDeniedException();
-		}
-
-		Session session = sessionManager.create(user);
-
-        if(servers.size() != 0)
-            return getServer(session.id());
-
-        return null;
-	}
-
-	@Override
-    public ISession getTrustedSession(String userName) throws RemoteException {
-		IUser user = User.system();
-		if (database.isSystemInstalled()) {
-			user = User.load(userName, null, true, database());
-		}
-		if (user == null) {
-			throw new AccessDeniedException();
-		}
-		Session session = sessionManager.create(user);
-
-        if(servers.size() != 0)
-            return getServer(session.id());
-
-        return null;
-    }
 	
 	@Override
-    public synchronized ISession getServer(String sessionId) throws RemoteException {
+	public ISession login(String login) throws RemoteException {
+		return doLogin(login, null);
+	}
+
+
+	@Override
+	public ISession login(String login, String password) throws RemoteException {
+		if(password == null)
+			throw new AccessDeniedException();
+		
+		return doLogin(login, password);
+	}
+
+	private ISession doLogin(String login, String password) throws RemoteException {
+		IUser user = User.system();
+
+		if(database.isSystemInstalled()) {
+			IApplicationServer loginServer = getLoginServer();
+			user = password != null ? loginServer.login(login, password) : loginServer.login(login);
+			AuthorityCenter.getUserManager().add(user);
+		}
+
+		Session session = sessionManager.create(user);
+
+		if(servers.size() != 0)
+			return getServer(session.id());
+
+		return null;
+	}
+
+	@Override
+	public synchronized ISession getServer(String sessionId) throws RemoteException {
 		Session session = sessionManager.get(sessionId);
 
 		if(servers.size() == 0)
-		    return null;
-		
+			return null;
+
 		ServerInfo info = servers.get(0);
-		
-        if(servers.size() > 1) {
-            servers.remove(info);
-            servers.add(info);
-        }
+
+		if(servers.size() > 1) {
+			servers.remove(info);
+			servers.add(info);
+		}
 
 		session.setServerInfo(info);
 		return session;
 	}
 
 	@Override
-    public synchronized ISession getServer(String sessionId, String serverId)
-	        throws RemoteException {
+	public synchronized ISession getServer(String sessionId, String serverId) throws RemoteException {
 		Session session = sessionManager.get(sessionId);
 
-		for (ServerInfo info : servers) {
-			if (info.getId().equals(serverId)) {
+		for(ServerInfo info : servers) {
+			if(info.getId().equals(serverId)) {
 				session.setServerInfo(info);
 				return session;
 			}
@@ -213,7 +185,7 @@ public class AuthorityCenter extends RmiServer implements IAuthorityCenter {
 	}
 
 	@Override
-    public void save(IUser user) throws RemoteException {
+	public void save(IUser user) throws RemoteException {
 		user.save(database);
 	}
 

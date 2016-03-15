@@ -65,9 +65,8 @@ public class SessionManager
 	synchronized void drop(String id) {
 		Session session = sessions.get(id);
 
-		if (session != null) {
+		if (session != null)
 			sessions.remove(id);
-		}
 	}
 
 	public void checkTimeout() {
