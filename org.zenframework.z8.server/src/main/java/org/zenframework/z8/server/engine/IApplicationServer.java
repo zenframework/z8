@@ -12,8 +12,6 @@ public interface IApplicationServer extends IServer {
 
     public GNode processRequest(ISession session, GNode request) throws RemoteException;
 
-//    public FileInfo download(String filePath) throws RemoteException;
-
     public FileInfo download(FileInfo fileInfo) throws RemoteException;
     
     public IUser login(String login) throws RemoteException;

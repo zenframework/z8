@@ -11,11 +11,11 @@ import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathFactory;
 
+import org.apache.commons.io.FileUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-
-import org.zenframework.z8.server.engine.ApplicationServer;
+import org.zenframework.z8.server.base.file.Folders;
 
 public class ReportBindingFileReader {
     private Document doc = null;
@@ -23,8 +23,7 @@ public class ReportBindingFileReader {
     XPathExpression expr;
 
     public ReportBindingFileReader() {
-        File file = new File(new File(ApplicationServer.workingPath(), ReportConstants.DEFAULT_REPORT_FOLDER),
-                ReportConstants.REPORT_BINDING_FILENAME);
+        File file = FileUtils.getFile(Folders.Base, Folders.Reports, Reports.Bindings);
 
         try {
             DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();

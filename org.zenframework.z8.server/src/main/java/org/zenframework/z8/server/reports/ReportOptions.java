@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.commons.io.FileUtils;
 import org.eclipse.birt.core.exception.BirtException;
 import org.eclipse.birt.core.framework.Platform;
 import org.eclipse.birt.report.engine.api.EngineConfig;
@@ -13,15 +14,12 @@ import org.eclipse.birt.report.engine.api.IReportEngineFactory;
 import org.eclipse.birt.report.model.api.DesignConfig;
 import org.eclipse.birt.report.model.api.IDesignEngine;
 import org.eclipse.birt.report.model.api.IDesignEngineFactory;
-
+import org.zenframework.z8.server.base.file.Folders;
 import org.zenframework.z8.server.base.model.actions.ReadAction;
-import org.zenframework.z8.server.engine.ApplicationServer;
-import org.zenframework.z8.server.exceptions.UnsupportedParameterException;
 
 public class ReportOptions {
-    private String format = ReportConstants.FORMAT_PDF;
-
-    public int indentGroupsBy = ReportConstants.DEFAULT_GROUP_INDENTATION;
+    private String format = Reports.Pdf;
+    public int indentGroupsBy = Reports.DefaultGroupIndentation;
 
     public boolean markGroupLevel = true;
 
@@ -39,10 +37,10 @@ public class ReportOptions {
 
     public boolean splitContent = false;
 
-    public int m_pageOverlapping = ReportConstants.DEFAULT_PAGE_OVERLAPPING;
+    public int m_pageOverlapping = Reports.DefaultPageOverlapping;
 
-    public String reportFolder = ReportConstants.DEFAULT_DYN_REPORT_FOLDER;
-    public String reportTemplate = ReportConstants.DEFAULT_REPORT_DESIGN;
+    public String reportFolder = Folders.ReportDefaults;
+    public String reportTemplate = Reports.DefaultDesign;
 
     public Collection<ReadAction> actions = null;
 
@@ -58,12 +56,8 @@ public class ReportOptions {
     private static IReportEngine reportEngine = null;
     private static IDesignEngine designEngine = null;
 
-    static private File getBaseFolder() {
-        return ApplicationServer.workingPath();
-    }
-
     static public File getReportOutputFolder() {
-        File folder = new File(getBaseFolder(), ReportConstants.ReportOutputFolder);
+        File folder = new File(Folders.Base, Folders.ReportsOutput);
         folder.mkdirs();
         return folder;
     }
@@ -118,36 +112,19 @@ public class ReportOptions {
         this.format = format;
     }
 
-    public void setFormat(ReportType type) {
-        switch(type) {
-        case PDF:
-            format = ReportConstants.FORMAT_PDF;
-            break;
-        case RTF:
-            format = ReportConstants.FORMAT_WORD;
-            break;
-        case XLS:
-            format = ReportConstants.FORMAT_EXCEL;
-            break;
-        default:
-            throw new UnsupportedParameterException();
-        }
-    }
-
     private String getReportDesignFileName(String format) {
-        return format + '_' + reportTemplate;
+        return format + '.' + Reports.DesignExtension;
     }
 
     public File getReportDesign() {
         String fileName = getReportDesignFileName(getFormat());
 
-        File file = new File(new File(ApplicationServer.workingPath(), reportFolder), fileName);
+        File file = FileUtils.getFile(Folders.Base, reportFolder, fileName);
 
-        if(file.exists()) {
+        if(file.exists())
             return file;
-        }
 
-        return new File(new File(ApplicationServer.workingPath(), reportFolder), reportTemplate);
+        return FileUtils.getFile(Folders.Base, reportFolder, reportTemplate);
     }
 
     public float getPageWidth() {
@@ -207,7 +184,7 @@ public class ReportOptions {
     }
 
     public String documentName() {
-        String name = headers.get(ReportConstants.FIRSTPAGE_CAPTIONCENTER);
+        String name = headers.get(Reports.FIRSTPAGE_CAPTIONCENTER);
 
         return name != null ? name : "report";
     }

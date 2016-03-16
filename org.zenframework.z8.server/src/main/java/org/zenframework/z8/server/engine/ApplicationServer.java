@@ -167,21 +167,6 @@ public class ApplicationServer extends RmiServer implements IApplicationServer {
     	return User.load(login, password);
     }
     
-/*    @Override
-    public FileInfo download(String filePath) throws RemoteException {
-        File f = new File(Folders.Base, filePath);
-        
-        FileItem fileItem = FilesFactory.createFileItem(f.getName());
-
-        try {
-            FileInfo info = new FileInfo(fileItem, f.toString());
-            IOUtils.copy(new FileInputStream(f), info.getOutputStream());
-        	return info;
-        } catch (IOException e) {
-            throw new RemoteException(e.getMessage(), e);
-        }
-    }
-*/
     @Override
     public FileInfo download(FileInfo fileInfo) throws RemoteException {
         try {

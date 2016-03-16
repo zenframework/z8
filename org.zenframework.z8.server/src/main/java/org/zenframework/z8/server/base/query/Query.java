@@ -10,6 +10,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
 
+import org.apache.commons.io.FileUtils;
+import org.zenframework.z8.server.base.file.Folders;
 import org.zenframework.z8.server.base.form.Control;
 import org.zenframework.z8.server.base.form.FieldGroup;
 import org.zenframework.z8.server.base.model.actions.ActionParameters;
@@ -47,7 +49,6 @@ import org.zenframework.z8.server.json.parser.JsonObject;
 import org.zenframework.z8.server.logs.Trace;
 import org.zenframework.z8.server.reports.BirtFileReader;
 import org.zenframework.z8.server.reports.ReportBindingFileReader;
-import org.zenframework.z8.server.reports.ReportConstants;
 import org.zenframework.z8.server.reports.ReportInfo;
 import org.zenframework.z8.server.request.IMonitor;
 import org.zenframework.z8.server.request.Loader;
@@ -454,7 +455,7 @@ public class Query extends Runnable {
     }
 
     private Collection<Query> getReportQueries(String report, Collection<guid> recordIds) {
-        File reportFile = new File(new File(ApplicationServer.workingPath(), ReportConstants.DEFAULT_REPORT_FOLDER), report);
+        File reportFile = FileUtils.getFile(Folders.Base, Folders.Reports, report);
 
         BirtFileReader birtXMLReader = new BirtFileReader(reportFile.getAbsolutePath());
 

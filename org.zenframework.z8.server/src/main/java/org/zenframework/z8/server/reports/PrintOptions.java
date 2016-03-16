@@ -19,10 +19,10 @@ public class PrintOptions {
 
     public ReportOptions getReportOptions(String captionCenter, Collection<ReadAction> actions, String reportFolder,
             String reportTemplate) {
-        ReportOptions reportOptions = new ReportOptions();
-        reportOptions.actions = actions;
-        reportOptions.reportFolder = reportFolder;
-        reportOptions.reportTemplate = reportTemplate;
+        ReportOptions options = new ReportOptions();
+        options.actions = actions;
+        options.reportFolder = reportFolder;
+        options.reportTemplate = reportTemplate;
 
         float width = PageFormat.pageWidth(pageFormat);
         float height = PageFormat.pageHeight(pageFormat);
@@ -33,15 +33,15 @@ public class PrintOptions {
             width = t;
         }
 
-        reportOptions.setPageHeight(BirtUnitsConverter.convertToPoints(height, DesignChoiceConstants.UNITS_MM));
-        reportOptions.setPageWidth(BirtUnitsConverter.convertToPoints(width, DesignChoiceConstants.UNITS_MM));
-        reportOptions.setLeftMargin(BirtUnitsConverter.convertToPoints(leftMargin, DesignChoiceConstants.UNITS_MM));
-        reportOptions.setRightMargin(BirtUnitsConverter.convertToPoints(rightMargin, DesignChoiceConstants.UNITS_MM));
-        reportOptions.setTopMargin(BirtUnitsConverter.convertToPoints(topMargin, DesignChoiceConstants.UNITS_MM));
-        reportOptions.setBottomMargin(BirtUnitsConverter.convertToPoints(bottomMargin, DesignChoiceConstants.UNITS_MM));
+        options.setPageHeight(BirtUnitsConverter.convertToPoints(height, DesignChoiceConstants.UNITS_MM));
+        options.setPageWidth(BirtUnitsConverter.convertToPoints(width, DesignChoiceConstants.UNITS_MM));
+        options.setLeftMargin(BirtUnitsConverter.convertToPoints(leftMargin, DesignChoiceConstants.UNITS_MM));
+        options.setRightMargin(BirtUnitsConverter.convertToPoints(rightMargin, DesignChoiceConstants.UNITS_MM));
+        options.setTopMargin(BirtUnitsConverter.convertToPoints(topMargin, DesignChoiceConstants.UNITS_MM));
+        options.setBottomMargin(BirtUnitsConverter.convertToPoints(bottomMargin, DesignChoiceConstants.UNITS_MM));
 
-        reportOptions.headers.put(ReportConstants.FIRSTPAGE_CAPTIONCENTER, captionCenter);
+        options.headers.put(Reports.FIRSTPAGE_CAPTIONCENTER, captionCenter);
 
-        return reportOptions;
+        return options;
     }
 }

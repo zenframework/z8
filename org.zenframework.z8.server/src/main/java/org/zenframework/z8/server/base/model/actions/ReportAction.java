@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import org.zenframework.z8.server.base.file.Folders;
 import org.zenframework.z8.server.base.query.Query;
 import org.zenframework.z8.server.base.table.value.Field;
 import org.zenframework.z8.server.engine.ApplicationServer;
@@ -14,7 +15,7 @@ import org.zenframework.z8.server.reports.BirtReportRunner;
 import org.zenframework.z8.server.reports.PageFormat;
 import org.zenframework.z8.server.reports.PageOrientation;
 import org.zenframework.z8.server.reports.PrintOptions;
-import org.zenframework.z8.server.reports.ReportConstants;
+import org.zenframework.z8.server.reports.Reports;
 import org.zenframework.z8.server.reports.ReportOptions;
 import org.zenframework.z8.server.types.guid;
 import org.zenframework.z8.server.types.integer;
@@ -147,14 +148,13 @@ public class ReportAction extends Action {
 
         String report = getReportParameter();
 
-        String reportFolder = ReportConstants.DEFAULT_REPORT_FOLDER;
+        String reportFolder = Folders.Reports;
         String reportTemplate = report;
         String reportCaption = "";
 
         if(report == null) {
-            assert (actions.size() == 1);
-            reportTemplate = ReportConstants.DEFAULT_REPORT_DESIGN;
-            reportFolder = ReportConstants.DEFAULT_DYN_REPORT_FOLDER;
+            reportTemplate = Reports.DefaultDesign;
+            reportFolder = Folders.ReportDefaults;
             reportCaption = getReportHeader();
 
             JsonObject object = new JsonObject(getOptionsParameter());
