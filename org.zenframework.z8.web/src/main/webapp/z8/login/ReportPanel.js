@@ -203,7 +203,6 @@ Z8.view.ReportPanel = Ext.extend(Z8.Panel,
 		};
 	
 		Z8.FileViewer.show(params.source);		
-//		Z8.FileViewer.download(params);
 	},
 
 	scrollToLastReportMsg: function()

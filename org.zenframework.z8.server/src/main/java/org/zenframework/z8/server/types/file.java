@@ -9,7 +9,7 @@ import java.io.IOException;
 import java.io.Serializable;
 
 import org.apache.commons.io.FilenameUtils;
-import org.zenframework.z8.server.engine.ApplicationServer;
+import org.zenframework.z8.server.base.file.Folders;
 import org.zenframework.z8.server.runtime.RCollection;
 import org.zenframework.z8.server.utils.IOUtils;
 
@@ -18,17 +18,7 @@ public class file extends primary implements Serializable {
 
     private static final long serialVersionUID = 7150824619911286312L;
 
-    public static final String FilesFolderName = "files";
-    public static final String StorageFolderName = "storage";
-    public static final String CacheFolderName = "pdf.cache";
-    public static final String LuceneFolderName = "lucene";
-
     private File file;
-
-    public static File BaseFolder = ApplicationServer.workingPath();
-    public static File FilesFolder = new File(FilesFolderName);
-    public static File StorageFolder = new File(StorageFolderName);
-    public static File LuceneFolder = new File(BaseFolder, LuceneFolderName);
 
     public file() {}
 
@@ -113,8 +103,8 @@ public class file extends primary implements Serializable {
     public String getRelativePath() {
         String path = getPath();
 
-        if (path.startsWith(BaseFolder.getPath())) {
-            return path.substring(BaseFolder.getPath().length() + 1);
+        if (path.startsWith(Folders.Base.getPath())) {
+            return path.substring(Folders.Base.getPath().length() + 1);
         }
 
         return path;
@@ -128,7 +118,7 @@ public class file extends primary implements Serializable {
         file = new File(pathName.get());
 
         if (!file.isAbsolute())
-            file = new File(new File(BaseFolder, FilesFolderName), file.getPath());
+            file = new File(new File(Folders.Base, Folders.Files), file.getPath());
             
         if(!file.isDirectory())
             file.getParentFile().mkdirs();
@@ -194,7 +184,7 @@ public class file extends primary implements Serializable {
     public void write(String content, encoding charset) {
         try {
             if (file == null) {
-                File folder = new File(BaseFolder, FilesFolder.getPath());
+                File folder = new File(Folders.Base, Folders.Files);
                 folder.mkdirs();
 
                 file = File.createTempFile("tmp", ".txt", folder);

@@ -17,7 +17,6 @@ import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.runtime.OBJECT;
 import org.zenframework.z8.server.runtime.RCollection;
 import org.zenframework.z8.server.types.datetime;
-import org.zenframework.z8.server.types.file;
 import org.zenframework.z8.server.types.guid;
 import org.zenframework.z8.server.types.integer;
 import org.zenframework.z8.server.types.string;
@@ -126,7 +125,7 @@ public class AttachmentProcessor extends OBJECT {
 	private void setPathIfEmpty(guid recordId, FileInfo fileInfo) {
 		if(fileInfo.path.isEmpty()) {
 			datetime time = new datetime();
-			String path = FileUtils.getFile(file.StorageFolder, time.format("yyyy.MM.dd"), getTable().classId(), recordId.toString(), field.name(), time.format("HH-mm-ss"), fileInfo.name.get()).toString();
+			String path = FileUtils.getFile(Folders.Storage, time.format("yyyy.MM.dd"), getTable().classId(), recordId.toString(), field.name(), time.format("HH-mm-ss"), fileInfo.name.get()).toString();
 			fileInfo.path = new string(path);
 		}
 	}
@@ -165,7 +164,7 @@ public class AttachmentProcessor extends OBJECT {
 
 	private int getPageCount(FileInfo fileInfo) throws IOException {
 		String relativePath = fileInfo.path.get();
-		File absolutePath = new File(file.BaseFolder, relativePath);
+		File absolutePath = new File(Folders.Base, relativePath);
 
 		if(!FileConverter.isConvertableToPdf(absolutePath))
 			return 1;
@@ -173,7 +172,7 @@ public class AttachmentProcessor extends OBJECT {
 		if(!absolutePath.exists())
 			FileUtils.copyInputStreamToFile(Files.getInputStream(fileInfo), absolutePath);
 
-		FileConverter fileConverter = new FileConverter(new File(file.BaseFolder, file.CacheFolderName));
+		FileConverter fileConverter = new FileConverter(FileStorage.cache());
 		File pdfFile = fileConverter.getConvertedPdf(relativePath, absolutePath);
 
 		return PdfUtils.getPageCount(pdfFile);

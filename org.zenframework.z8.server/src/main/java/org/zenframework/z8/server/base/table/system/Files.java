@@ -1,5 +1,7 @@
 package org.zenframework.z8.server.base.table.system;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
@@ -7,6 +9,7 @@ import java.util.Collection;
 
 import org.zenframework.z8.server.base.file.FileInfo;
 import org.zenframework.z8.server.base.file.FilesFactory;
+import org.zenframework.z8.server.base.file.Folders;
 import org.zenframework.z8.server.base.table.Table;
 import org.zenframework.z8.server.base.table.value.BinaryField;
 import org.zenframework.z8.server.base.table.value.Field;
@@ -108,8 +111,25 @@ public class Files extends Table {
 		return null;
 	}
 
+	
 	public static FileInfo getFile(FileInfo fileInfo) throws IOException {
-		InputStream inputStream = getInputStream(fileInfo);
+/*		File path = new File(Folders.Base, fileInfo.path.get());
+		
+		if(!path.exists()) {
+			InputStream inputStream = getInputStream(fileInfo);
+
+			if(inputStream == null)
+				return null;
+			
+			FileUtils.copyInputStreamToFile(inputStream, path);
+		}
+		
+		fileInfo.file = new InputOnlyFileItem(path, fileInfo.name.get());
+		return fileInfo;
+*/
+		File path = new File(Folders.Base, fileInfo.path.get());
+	
+		InputStream inputStream = !path.exists() ? getInputStream(fileInfo) : new FileInputStream(path);
 
 		if(inputStream == null)
 			return null;

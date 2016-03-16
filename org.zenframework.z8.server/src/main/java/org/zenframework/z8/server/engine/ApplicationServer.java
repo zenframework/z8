@@ -1,15 +1,12 @@
 package org.zenframework.z8.server.engine;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.lang.management.ManagementFactory;
 import java.lang.management.RuntimeMXBean;
 import java.rmi.RemoteException;
 
-import org.apache.commons.fileupload.FileItem;
 import org.zenframework.z8.server.base.file.FileInfo;
-import org.zenframework.z8.server.base.file.FilesFactory;
 import org.zenframework.z8.server.base.job.scheduler.Scheduler;
 import org.zenframework.z8.server.base.table.system.Files;
 import org.zenframework.z8.server.base.xml.GNode;
@@ -24,9 +21,7 @@ import org.zenframework.z8.server.request.Request;
 import org.zenframework.z8.server.request.RequestProcessor;
 import org.zenframework.z8.server.security.IUser;
 import org.zenframework.z8.server.security.User;
-import org.zenframework.z8.server.types.file;
 import org.zenframework.z8.server.types.guid;
-import org.zenframework.z8.server.utils.IOUtils;
 
 public class ApplicationServer extends RmiServer implements IApplicationServer {
     private static final long serialVersionUID = 7035837292407422257L;
@@ -135,9 +130,6 @@ public class ApplicationServer extends RmiServer implements IApplicationServer {
                 IAuthorityCenter.Name);
         authorityCenter.register(this);
 
-        // В новой версии birt-runtime 4.4.0 не нужно, и даже вредно!
-        //System.setProperty(SystemProperty.BIRT_HOME, workingPath());
-
         RuntimeMXBean mxBean = ManagementFactory.getRuntimeMXBean();
         System.out.println("INFO: JVM startup options: " + mxBean.getInputArguments().toString());
 
@@ -166,8 +158,18 @@ public class ApplicationServer extends RmiServer implements IApplicationServer {
     }
 
     @Override
+    public IUser login(String login) {
+    	return User.load(login);
+    }
+
+    @Override
+    public IUser login(String login, String password) {
+    	return User.load(login, password);
+    }
+    
+/*    @Override
     public FileInfo download(String filePath) throws RemoteException {
-        File f = new File(file.BaseFolder, filePath);
+        File f = new File(Folders.Base, filePath);
         
         FileItem fileItem = FilesFactory.createFileItem(f.getName());
 
@@ -179,17 +181,7 @@ public class ApplicationServer extends RmiServer implements IApplicationServer {
             throw new RemoteException(e.getMessage(), e);
         }
     }
-
-    @Override
-    public IUser login(String login) {
-    	return User.load(login);
-    }
-
-    @Override
-    public IUser login(String login, String password) {
-    	return User.load(login, password);
-    }
-    
+*/
     @Override
     public FileInfo download(FileInfo fileInfo) throws RemoteException {
         try {

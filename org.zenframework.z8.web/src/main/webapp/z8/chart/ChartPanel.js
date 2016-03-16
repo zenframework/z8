@@ -339,7 +339,7 @@ Z8.chart.ChartPanel = Ext.extend(Z8.Panel,
 			this.setChartConfig(this.chartConfig);
 	},
 
-	onPrint: function()
+/*	onPrint: function()
 	{
  		var svg = Ext.DomQuery.selectNode('svg', this.getEl().dom);
  		var canvas = document.createElement('canvas');
@@ -358,7 +358,7 @@ Z8.chart.ChartPanel = Ext.extend(Z8.Panel,
 		
 		Ext.removeNode(canvas);
 	},
-	
+*/	
 	onSettingsChanged: function(wizard)
 	{
 		this.setChartConfig(wizard.chartConfig);

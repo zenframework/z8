@@ -1,34 +1,9 @@
-Z8.FileViewer = 
-{
-	download: function(info, title, format)
-	{
-		var params = {};
-		
-		if(info.serverId != null)
-		{
-			params.path = info.source;
-			params.serverId = info.serverId;
-		}
-		else
-		{
-			params.path = info.source;
-			params.image = info.base64;
-		}
-
-		Z8.Ajax.request(0, this.onDownload.createDelegate(this, [title, format], true), Ext.emptyFn, params, this);
-	},		
-
-	onDownload: function(info, title, format)
-	{
-		this.show(info.source, title, format);
-	},
-
+Z8.FileViewer = {
 	forceDownload: function(url) {
 		
 		Z8.PageManager.unregBeforeUnload();
 		
-		try
-		{
+		try {
 			Ext.destroy(Ext.get('downloadIframe'));
 		}
 		catch(e) {}
@@ -46,10 +21,13 @@ Z8.FileViewer =
 		Z8.PageManager.regBeforeUnload();
 	},
 
-	show: function(source, title, format)
-	{
+	download: function(info, title, format) {
+		var url = Z8.getRequestUrl() + '/' + info.source + '?sessionId=' + Z8.sessionId + '&serverId=' + info.serverId;
+		this.forceDownload(url);
+	},		
+
+	show: function(source, title, format) {
 		var url = Z8.getRequestUrl() + '/' + source + '?sessionId=' + Z8.sessionId;
-		
 		this.forceDownload(url);
 	}
 };

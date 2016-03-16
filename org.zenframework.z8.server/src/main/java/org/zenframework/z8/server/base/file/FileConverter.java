@@ -31,14 +31,19 @@ public class FileConverter implements Properties.Listener {
 
 	private final static List<String> txtExtensions = Arrays.asList("eml", "mime");
 
-	private final FilesStorage storage;
+	private final FileStorage storage;
 	private volatile File officeHome;
 	private volatile OfficeManager officeManager;
 	private volatile OfficeDocumentConverter pdfConverter;
 
-	public FileConverter(File storageRoot) {
+	public FileConverter(File path) {
 		super();
-		storage = new FilesStorage(storageRoot);
+		this.storage = new FileStorage(path);
+	}
+
+	public FileConverter(FileStorage storage) {
+		super();
+		this.storage = storage;
 	}
 
 	public File getConvertedPdf(String relativePath, File srcFile) {

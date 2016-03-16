@@ -8,155 +8,160 @@ import org.zenframework.z8.server.logs.Trace;
 import org.zenframework.z8.server.types.guid;
 
 public class ServerConfig extends Properties {
-    private static final long serialVersionUID = 3564936578688816088L;
+	private static final long serialVersionUID = 3564936578688816088L;
 
-    public static final String configurationFileName = "project.xml";
+	public static final String configurationFileName = "project.xml";
 
-    public static final String AuthorityCenterHostProperty = "authority.center.host";
-    public static final String AuthorityCenterPortProperty = "authority.center.port";
+	public static final String AuthorityCenterHostProperty = "authority.center.host";
+	public static final String AuthorityCenterPortProperty = "authority.center.port";
+	public static final String AuthorityCenterSessionTimeoutProperty = "authority.center.session.timeout";
 
-    public static final String ApplicationServerIdProperty = "application.server.id";
-    public static final String ApplicationServerPortProperty = "application.server.port";
+	public static final String ApplicationServerIdProperty = "application.server.id";
+	public static final String ApplicationServerPortProperty = "application.server.port";
 
-    public static final String WebServerStartApplicationServerProperty = "web.server.start.application.server";
-    public static final String WebServerStartAuthorityCenterProperty = "web.server.start.authority.center";
+	public static final String WebServerStartApplicationServerProperty = "web.server.start.application.server";
+	public static final String WebServerStartAuthorityCenterProperty = "web.server.start.authority.center";
 
-    public static final String SchedulerEnabledProperty = "scheduler.enabled";
-    
-    public static final String TraceSqlProperty = "trace.sql";
-    public static final String FileConverterProperty = "file.converter";
+	public static final String SchedulerEnabledProperty = "scheduler.enabled";
 
-    
-    private static String workingPath;
+	public static final String TraceSqlProperty = "trace.sql";
+	public static final String FileConverterProperty = "file.converter";
 
-    private static String authorityCenterHost;
-    private static int authorityCenterPort;
-    
-    private static String applicationServerId;
-    private static int applicationServerPort;
+	private static String workingPath;
 
-    private static boolean webServerStartApplicationServer;
-    private static boolean webServerStartAuthorityCenter;
-    
-    private static boolean schedulerEnabled;
+	private static String authorityCenterHost;
+	private static int authorityCenterPort;
+	private static int authorityCenterSessionTimeout;
 
-    private static boolean traceSql;
-    private static String fileConverter;
+	private static String applicationServerId;
+	private static int applicationServerPort;
 
-    public ServerConfig() {
-        this(configurationFileName);
-    }
+	private static boolean webServerStartApplicationServer;
+	private static boolean webServerStartAuthorityCenter;
 
-    public ServerConfig(String fileProject) {
-        if(workingPath != null)
-            return;
-        
-        workingPath = System.getProperty(SystemProperty.ConfigFilePath);
+	private static boolean schedulerEnabled;
 
-        if(workingPath != null && workingPath.lastIndexOf(System.getProperty("file.separator")) != workingPath.length() - 1)
-            workingPath += System.getProperty("file.separator");
+	private static boolean traceSql;
+	private static String fileConverter;
 
-        if(workingPath == null)
-            workingPath = "";
+	public ServerConfig() {
+		this(configurationFileName);
+	}
 
-        load(fileProject);
-        init();
-    }
+	public ServerConfig(String fileProject) {
+		if(workingPath != null)
+			return;
 
-    protected void init() {
-        applicationServerId = getProperty(ApplicationServerIdProperty, guid.create().toString());
+		workingPath = System.getProperty(SystemProperty.ConfigFilePath);
 
-        authorityCenterHost = getProperty(AuthorityCenterHostProperty, Rmi.localhost);
-        authorityCenterPort = getProperty(AuthorityCenterPortProperty, Rmi.randomPort());
-        
-        applicationServerPort = getProperty(ApplicationServerPortProperty, Rmi.randomPort());
+		if(workingPath != null && workingPath.lastIndexOf(System.getProperty("file.separator")) != workingPath.length() - 1)
+			workingPath += System.getProperty("file.separator");
 
-        webServerStartApplicationServer = getProperty(WebServerStartApplicationServerProperty, true);
-        webServerStartAuthorityCenter = getProperty(WebServerStartAuthorityCenterProperty, true);
-        
-        traceSql = getProperty(TraceSqlProperty, false);
-        fileConverter = getProperty(FileConverterProperty, "");
-        
-        schedulerEnabled = getProperty(SchedulerEnabledProperty, true);
-    }
+		if(workingPath == null)
+			workingPath = "";
 
-    @Override
-    public synchronized Object put(Object key, Object value) {
-        String stringKey = (String)key;
-        return super.put(stringKey.toUpperCase(), value);
-    }
+		load(fileProject);
+		init();
+	}
 
-    @Override
-    public String getProperty(String key) {
-        return super.getProperty(key.toUpperCase());
-    }
+	protected void init() {
+		applicationServerId = getProperty(ApplicationServerIdProperty, guid.create().toString());
 
-    @Override
-    public final String getProperty(String key, String defaultValue) {
-        String value = getProperty(key);
-        return value != null && !value.isEmpty() ? value : defaultValue;
-    }
+		authorityCenterHost = getProperty(AuthorityCenterHostProperty, Rmi.localhost);
+		authorityCenterPort = getProperty(AuthorityCenterPortProperty, Rmi.randomPort());
+		authorityCenterSessionTimeout = getProperty(AuthorityCenterSessionTimeoutProperty, 24 * 60);
 
-    public final boolean getProperty(String key, boolean defaultValue) {
-        String value = getProperty(key);
-        return value != null && !value.isEmpty() ? Boolean.parseBoolean(value) : defaultValue;
-    }
+		applicationServerPort = getProperty(ApplicationServerPortProperty, Rmi.randomPort());
 
-    public final int getProperty(String key, int defaultValue) {
-        try {
-            return Integer.parseInt(getProperty(key));
-        } catch(NumberFormatException e) {
-            return defaultValue;
-        }
-    }
+		webServerStartApplicationServer = getProperty(WebServerStartApplicationServerProperty, true);
+		webServerStartAuthorityCenter = getProperty(WebServerStartAuthorityCenterProperty, true);
 
-    protected void load(String fileProject) {
-        try {
-            loadFromXML(new FileInputStream(workingPath + fileProject));
-        }
-        catch(Exception e) {
-            Trace.logError(e);
-            this.clear();
-        }
-    }
+		traceSql = getProperty(TraceSqlProperty, false);
+		fileConverter = getProperty(FileConverterProperty, "");
 
-    public final String getWorkingPath() {
-        return workingPath;
-    }
+		schedulerEnabled = getProperty(SchedulerEnabledProperty, true);
+	}
 
-    public final String getServerId() {
-        return applicationServerId;
-    }
+	@Override
+	public synchronized Object put(Object key, Object value) {
+		String stringKey = (String)key;
+		return super.put(stringKey.toUpperCase(), value);
+	}
 
-    public final String getAuthorityCenterHost() {
-        return authorityCenterHost;
-    }
+	@Override
+	public String getProperty(String key) {
+		return super.getProperty(key.toUpperCase());
+	}
 
-    public final int getAuthorityCenterPort() {
-        return authorityCenterPort;
-    }
+	@Override
+	public final String getProperty(String key, String defaultValue) {
+		String value = getProperty(key);
+		return value != null && !value.isEmpty() ? value : defaultValue;
+	}
 
-    public final int getApplicationServerPort() {
-        return applicationServerPort;
-    }
+	public final boolean getProperty(String key, boolean defaultValue) {
+		String value = getProperty(key);
+		return value != null && !value.isEmpty() ? Boolean.parseBoolean(value) : defaultValue;
+	}
 
-    public final boolean getTraceSql() {
-        return traceSql;
-    }
+	public final int getProperty(String key, int defaultValue) {
+		try {
+			return Integer.parseInt(getProperty(key));
+		} catch(NumberFormatException e) {
+			return defaultValue;
+		}
+	}
 
-    public final boolean webServerStartApplicationServer() {
-        return webServerStartApplicationServer;
-    }
+	protected void load(String fileProject) {
+		try {
+			loadFromXML(new FileInputStream(workingPath + fileProject));
+		} catch(Exception e) {
+			Trace.logError(e);
+			this.clear();
+		}
+	}
 
-    public final boolean webServerStartAuthorityCenter() {
-        return webServerStartAuthorityCenter;
-    }
+	public final String getWorkingPath() {
+		return workingPath;
+	}
 
-    public final boolean schedulerEnabled() {
-        return schedulerEnabled;
-    }
+	public final String getServerId() {
+		return applicationServerId;
+	}
 
-    public final String fileConverter() {
-        return fileConverter;
-    }
+	public final String getAuthorityCenterHost() {
+		return authorityCenterHost;
+	}
+
+	public final int getAuthorityCenterPort() {
+		return authorityCenterPort;
+	}
+
+	public final int getSessionTimeout() {
+		return authorityCenterSessionTimeout;
+	}
+
+	public final int getApplicationServerPort() {
+		return applicationServerPort;
+	}
+
+	public final boolean getTraceSql() {
+		return traceSql;
+	}
+
+	public final boolean webServerStartApplicationServer() {
+		return webServerStartApplicationServer;
+	}
+
+	public final boolean webServerStartAuthorityCenter() {
+		return webServerStartAuthorityCenter;
+	}
+
+	public final boolean schedulerEnabled() {
+		return schedulerEnabled;
+	}
+
+	public final String fileConverter() {
+		return fileConverter;
+	}
 }

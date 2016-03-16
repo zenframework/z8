@@ -14,24 +14,19 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.zenframework.z8.server.base.file.FileConverter;
 import org.zenframework.z8.server.base.file.FileInfo;
+import org.zenframework.z8.server.base.file.Folders;
 import org.zenframework.z8.server.engine.ISession;
 import org.zenframework.z8.server.engine.ServerInfo;
 import org.zenframework.z8.server.json.Json;
 import org.zenframework.z8.server.types.encoding;
-import org.zenframework.z8.server.types.file;
 import org.zenframework.z8.server.types.guid;
 import org.zenframework.z8.server.types.string;
 import org.zenframework.z8.server.utils.IOUtils;
 import org.zenframework.z8.web.servlet.Servlet;
 
 public class ConverterAdapter extends Adapter {
-	@SuppressWarnings("unused")
-	private static final Log LOG = LogFactory.getLog(ConverterAdapter.class);
-
 	private FileConverter converter = null;
 
 	public ConverterAdapter(Servlet servlet) {
@@ -58,9 +53,8 @@ public class ConverterAdapter extends Adapter {
 		String requestUrl = URLDecoder.decode(encodedUrl, encoding.Default.toString());
 		String contextPath = request.getContextPath() + '/';
 
-		if(requestUrl.startsWith(contextPath)) {
+		if(requestUrl.startsWith(contextPath))
 			requestUrl = requestUrl.substring(contextPath.length());
-		}
 
 		File relativePath = new File(requestUrl);
 		File absolutePath = new File(super.getServlet().getServletPath(), requestUrl);
@@ -70,7 +64,7 @@ public class ConverterAdapter extends Adapter {
 		if(!absolutePath.exists()) {
 			FileInfo fileInfo = new FileInfo();
 			fileInfo.path = new string(relativePath.toString());
-			fileInfo.name = new string(absolutePath.getName());
+			fileInfo.name = new string(relativePath.getName());
 			fileInfo.id = new guid(parameters.get(Json.recordId));
 			downloadFile(session.getServerInfo(), fileInfo, absolutePath);
 		}
@@ -89,7 +83,7 @@ public class ConverterAdapter extends Adapter {
 			response.addHeader("Content-Disposition", getContentDisposition(request, absolutePath.getName()));
 		}
 
-		sendFileToResponse(response, absolutePath);
+		IOUtils.copy(new FileInputStream(absolutePath), response.getOutputStream());
 	}
 
 	private String getContentType(File file) {
@@ -121,10 +115,6 @@ public class ConverterAdapter extends Adapter {
 
 	public File getConvertedTxt(File relativePath, File srcFile) throws IOException {
 		return getConverter().getConvertedTxt(relativePath.getPath(), srcFile);
-	}
-
-	private void sendFileToResponse(HttpServletResponse response, File file) throws IOException {
-		IOUtils.copy(new FileInputStream(file), response.getOutputStream());
 	}
 
 	private String getContentDisposition(HttpServletRequest request, String fileName) throws UnsupportedEncodingException {
@@ -190,7 +180,7 @@ public class ConverterAdapter extends Adapter {
 
 	private FileConverter getConverter() {
 		if(converter == null)
-			converter = new FileConverter(new File(super.getServlet().getServletPath(), file.CacheFolderName));
+			converter = new FileConverter(new File(super.getServlet().getServletPath(), Folders.Cache));
 
 		return converter;
 	}

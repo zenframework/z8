@@ -23,9 +23,8 @@ import org.apache.lucene.search.TopScoreDocCollector;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.MMapDirectory;
 import org.apache.lucene.util.Version;
-
+import org.zenframework.z8.server.base.file.Folders;
 import org.zenframework.z8.server.runtime.RCollection;
-import org.zenframework.z8.server.types.file;
 
 public class LuceneSearchIndexImpl implements SearchIndex {
 
@@ -137,10 +136,12 @@ public class LuceneSearchIndexImpl implements SearchIndex {
     }
 
     private static Directory getMMapDirectory(String indexId) {
-        try {
-            return new MMapDirectory(new File(file.LuceneFolder, indexId));
+    	File folder = new File(Folders.Base, Folders.Lucene);
+
+    	try {
+            return new MMapDirectory(new File(folder, indexId));
         } catch (IOException e) {
-            throw new RuntimeException("Can't create index in '" + file.LuceneFolder + "'", e);
+            throw new RuntimeException("Can't create index in '" + folder + "'", e);
         }
     }
 

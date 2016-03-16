@@ -112,9 +112,8 @@ public class Monitor extends RequestTarget implements IMonitor {
         refreshObj.put(Json.queries, new JsonArray(queries));
 
         JsonObject recordsObj = new JsonObject();
-        for(String queryId : records.keySet()) {
+        for(String queryId : records.keySet())
             recordsObj.put(queryId, new JsonArray(records.get(queryId)));
-        }
         
         refreshObj.put(Json.records, recordsObj);
 
@@ -122,9 +121,8 @@ public class Monitor extends RequestTarget implements IMonitor {
 
         writer.put(Json.serverId, ApplicationServer.Id);
 
-        if (outputFile != null) {
-            writer.put(Json.source, outputFile.getRelativePath().replace('\\', '/'));
-        }
+        if (outputFile != null)
+			writer.put(Json.source, outputFile.getRelativePath().replace('\\', '/'));
 
         writer.writeInfo(getMessages(), logFile);
         
