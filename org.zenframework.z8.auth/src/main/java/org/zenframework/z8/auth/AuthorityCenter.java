@@ -153,7 +153,7 @@ public class AuthorityCenter extends RmiServer implements IAuthorityCenter {
 			server.getServer().id();
 			return true;
 		} catch(ConnectException e) {
-			return true;
+			return false;
 		}
 	}
 	
