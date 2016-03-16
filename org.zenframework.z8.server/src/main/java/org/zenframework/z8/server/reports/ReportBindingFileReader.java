@@ -23,12 +23,10 @@ public class ReportBindingFileReader {
     XPathExpression expr;
 
     public ReportBindingFileReader() {
-        File file = FileUtils.getFile(Folders.Base, Folders.Reports, Reports.Bindings);
-
         try {
             DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-            DocumentBuilder db;
-            db = dbf.newDocumentBuilder();
+            DocumentBuilder db = dbf.newDocumentBuilder();
+            File file = FileUtils.getFile(Folders.Base, Folders.Reports, Reports.Bindings);
             doc = db.parse(file);
 
             XPathFactory factory = XPathFactory.newInstance();

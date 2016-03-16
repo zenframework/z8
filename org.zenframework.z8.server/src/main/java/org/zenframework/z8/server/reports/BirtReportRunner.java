@@ -924,7 +924,7 @@ public class BirtReportRunner {
 				try {
 					output = new FileOutputStream(splittedFile);
 					input = new FileInputStream(outputFile);
-					SplitReport.splitReport(options, input, output);
+					PdfSplitter.split(options, input, output);
 				} finally {
 					IOUtils.closeQuietly(output);
 					IOUtils.closeQuietly(input);
@@ -984,8 +984,9 @@ public class BirtReportRunner {
 	}
 
 	private void run(IReportRunnable runnable, File outputFile) throws RuntimeException {
+		IRunAndRenderTask task = null;
 		try {
-			IRunAndRenderTask task = options.reportEngine().createRunAndRenderTask(runnable);
+			task = options.reportEngine().createRunAndRenderTask(runnable);
 
 			HashMap<String, Object> contextMap = new HashMap<String, Object>();
 
@@ -1007,9 +1008,11 @@ public class BirtReportRunner {
 
 			task.setRenderOption(options);
 			task.run();
-			task.close();
 		} catch(EngineException e) {
 			throw new RuntimeException(e);
+		} finally {
+			if(task != null)
+				task.close();
 		}
 	}
 

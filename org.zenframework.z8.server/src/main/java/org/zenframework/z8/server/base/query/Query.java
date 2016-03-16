@@ -457,7 +457,7 @@ public class Query extends Runnable {
     private Collection<Query> getReportQueries(String report, Collection<guid> recordIds) {
         File reportFile = FileUtils.getFile(Folders.Base, Folders.Reports, report);
 
-        BirtFileReader birtXMLReader = new BirtFileReader(reportFile.getAbsolutePath());
+        BirtFileReader birtXMLReader = new BirtFileReader(reportFile);
 
         Collection<Query> result = new ArrayList<Query>();
 

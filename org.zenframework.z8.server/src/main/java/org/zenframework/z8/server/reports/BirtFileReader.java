@@ -19,79 +19,69 @@ import org.w3c.dom.NodeList;
 import org.zenframework.z8.server.resources.Resources;
 
 public class BirtFileReader {
-    private Document doc = null;
-    XPath xpath = null;
-    XPathExpression expr;
+	private Document doc = null;
+	XPath xpath = null;
+	XPathExpression expr;
 
-    public BirtFileReader(String filepath) {
-        File file = new File(filepath);
+	public BirtFileReader(File file) {
+		try {
+			DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+			DocumentBuilder db = dbf.newDocumentBuilder();
+			doc = db.parse(file);
+		} catch(IOException e) {
+			throw new RuntimeException(Resources.format("Exception.fileNotFound", file.getName()), e);
+		} catch(Exception e) {
+			throw new RuntimeException(e);
+		}
 
-        DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-        DocumentBuilder db;
-        try {
-            db = dbf.newDocumentBuilder();
-            doc = db.parse(file);
-        }
-        catch(IOException e) {
-            throw new RuntimeException(Resources.format("Exception.fileNotFound",
-                    file.getName()), e);
-        }
-        catch(Exception e) {
-            throw new RuntimeException(e);
-        }
+		XPathFactory factory = XPathFactory.newInstance();
+		xpath = factory.newXPath();
+	}
 
-        XPathFactory factory = XPathFactory.newInstance();
-        xpath = factory.newXPath();
-    }
+	private List<String> getResult(XPathExpression expr) {
+		List<String> ret = new ArrayList<String>();
+		try {
+			Object result = expr.evaluate(doc, XPathConstants.NODESET);
+			NodeList nodes = (NodeList)result;
+			for(int i = 0; i < nodes.getLength(); i++) {
+				Node node = nodes.item(i);
+				ret.add(node.getNodeValue());
+			}
+		} catch(Exception e) {
+			throw new RuntimeException(e);
+		}
+		return ret;
+	}
 
-    private List<String> getResult(XPathExpression expr) {
-        List<String> ret = new ArrayList<String>();
-        try {
-            Object result = expr.evaluate(doc, XPathConstants.NODESET);
-            NodeList nodes = (NodeList)result;
-            for(int i = 0; i < nodes.getLength(); i++) {
-                Node node = nodes.item(i);
-                ret.add(node.getNodeValue());
-            }
-        }
-        catch(Exception e) {
-            throw new RuntimeException(e);
-        }
-        return ret;
-    }
+	public String getDataSourceName() {
+		String strExpr = "//oda-data-source/@name";
+		try {
+			expr = xpath.compile(strExpr);
+		} catch(Exception e) {
+			throw new RuntimeException(e);
+		}
+		return getResult(expr).size() != 0 ? getResult(expr).iterator().next() : "";
+	}
 
-    public String getDataSourceName() {
-        String strExpr = "//oda-data-source/@name";
-        try {
-            expr = xpath.compile(strExpr);
-        }
-        catch(Exception e) {
-            throw new RuntimeException(e);
-        }
-        return getResult(expr).size() != 0 ? getResult(expr).iterator().next() : "";
-    }
+	public List<String> getDataSets() {
+		String strExpr = "//oda-data-set/xml-property[@name='queryText']/text()";
 
-    public List<String> getDataSets() {
-        String strExpr = "//oda-data-set/xml-property[@name='queryText']/text()";
+		try {
+			expr = xpath.compile(strExpr);
+		} catch(Exception e) {
+			throw new RuntimeException(e);
+		}
+		return getResult(expr);
+	}
 
-        try {
-            expr = xpath.compile(strExpr);
-        }
-        catch(Exception e) {
-            throw new RuntimeException(e);
-        }
-        return getResult(expr);
-    }
+	public String getDataSetName(int datasetNum) {
+		String strExpr = "//oda-data-set[" + (datasetNum + 1) + "]/xml-property[@name='queryText']/text()";
 
-    public String getDataSetName(int datasetNum) {
-        String strExpr = "//oda-data-set[" + (datasetNum + 1) + "]/xml-property[@name='queryText']/text()";
-
-        try {
-            expr = xpath.compile(strExpr);
-        }
-        catch(Exception e) {
-            throw new RuntimeException(e);
-        }
-        return getResult(expr).size() != 0 ? getResult(expr).iterator().next() : "";
-    }
+		try {
+			expr = xpath.compile(strExpr);
+		} catch(Exception e) {
+			throw new RuntimeException(e);
+		}
+		return getResult(expr).size() != 0 ? getResult(expr).iterator().next() : "";
+	}
 }
