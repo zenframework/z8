@@ -16,7 +16,7 @@ import org.zenframework.z8.server.logs.Trace;
 import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.runtime.OBJECT;
 import org.zenframework.z8.server.runtime.RCollection;
-import org.zenframework.z8.server.types.date;
+import org.zenframework.z8.server.types.datetime;
 import org.zenframework.z8.server.types.file;
 import org.zenframework.z8.server.types.guid;
 import org.zenframework.z8.server.types.integer;
@@ -78,16 +78,16 @@ public class AttachmentProcessor extends OBJECT {
 		getTable().update(recordId);
 	}
 
-	public Collection<FileInfo> create(guid target, Collection<FileInfo> files, String type) {
+	public Collection<FileInfo> create(guid attachTo, Collection<FileInfo> files, String type) {
 		Files filesTable = new Files.CLASS<Files>().get();
 
 		for(FileInfo file : files) {
 			boolean idIsNull = file.id == null || file.id.isNull();
 			if(idIsNull || !filesTable.hasRecord(file.id)) {
-				if(!idIsNull) {
+				if(!idIsNull)
 					filesTable.recordId.get().set(file.id);
-				}
-				setPathIfEmpty(target, file);
+
+				setPathIfEmpty(attachTo, file);
 				filesTable.name.get().set(file.name);
 				filesTable.file.get().set(file.getInputStream());
 				filesTable.path.get().set(file.path);
@@ -99,13 +99,13 @@ public class AttachmentProcessor extends OBJECT {
 		return files;
 	}
 
-	public Collection<FileInfo> update(guid target, Collection<FileInfo> files, String type) {
-		Collection<FileInfo> result = read(target);
+	public Collection<FileInfo> update(guid attachTo, Collection<FileInfo> files, String type) {
+		Collection<FileInfo> result = read(attachTo);
 
-		files = create(target, files, type);
+		files = create(attachTo, files, type);
 
 		result.addAll(files);
-		save(result, target);
+		save(result, attachTo);
 
 		return result;
 	}
@@ -114,20 +114,19 @@ public class AttachmentProcessor extends OBJECT {
 		Files filesTable = new Files.CLASS<Files>().get();
 		Collection<FileInfo> result = read(target);
 
-		for(FileInfo file : files) {
+		for(FileInfo file : files)
 			filesTable.destroy(file.id);
-		}
 
 		result.removeAll(files);
 		save(result, target);
 
 		return result;
-
 	}
 
 	private void setPathIfEmpty(guid recordId, FileInfo fileInfo) {
 		if(fileInfo.path.isEmpty()) {
-			String path = FileUtils.getFile(file.StorageFolder, new date().format("yyyy.MM.dd"), getTable().classId(), recordId.toString(), field.name(), fileInfo.name.get()).toString();
+			datetime time = new datetime();
+			String path = FileUtils.getFile(file.StorageFolder, time.format("yyyy.MM.dd"), getTable().classId(), recordId.toString(), field.name(), time.format("HH-mm-ss"), fileInfo.name.get()).toString();
 			fileInfo.path = new string(path);
 		}
 	}

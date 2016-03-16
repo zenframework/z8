@@ -1,5 +1,6 @@
 package org.zenframework.z8.auth;
 
+import java.rmi.ConnectException;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -69,7 +70,7 @@ public class AuthorityCenter extends RmiServer implements IAuthorityCenter {
 
 	@Override
 	public void stop() throws RemoteException {
-		for(ServerInfo info : servers.toArray(new ServerInfo[servers.size()])) {
+		for(ServerInfo info : servers.toArray(new ServerInfo[0])) {
 			try {
 				info.getServer().stop();
 			} catch(RemoteException e) {
@@ -144,48 +145,46 @@ public class AuthorityCenter extends RmiServer implements IAuthorityCenter {
 		}
 
 		Session session = sessionManager.create(user);
-
-		if(servers.size() != 0)
-			return getServer(session.id());
-
-		return null;
+		return getServer(session.id());
 	}
 
-	@Override
-	public synchronized ISession getServer(String sessionId) throws RemoteException {
-		Session session = sessionManager.get(sessionId);
-
-		if(servers.size() == 0)
-			return null;
-
-		ServerInfo info = servers.get(0);
-
-		if(servers.size() > 1) {
-			servers.remove(info);
-			servers.add(info);
+	private boolean isAlive(ServerInfo server) throws RemoteException {
+		try {
+			server.getServer().id();
+			return true;
+		} catch(ConnectException e) {
+			return true;
 		}
-
-		session.setServerInfo(info);
-		return session;
 	}
-
+	
+	public ISession getServer(String sessionId) throws RemoteException {
+		return getServer(sessionId, null);
+	}
+	
 	@Override
 	public synchronized ISession getServer(String sessionId, String serverId) throws RemoteException {
 		Session session = sessionManager.get(sessionId);
 
-		for(ServerInfo info : servers) {
-			if(info.getId().equals(serverId)) {
-				session.setServerInfo(info);
+		ServerInfo[] servers = this.servers.toArray(new ServerInfo[0]);
+		
+		for(ServerInfo server : servers) {
+			if(!isAlive(server)) {
+				unregister(server.getServer());
+				continue;
+			}
+			
+			if(serverId == null || server.getId().equals(serverId)) {
+				session.setServerInfo(server);
+				
+				if(serverId == null && this.servers.size() > 1) {	
+					this.servers.remove(server);
+					this.servers.add(server);
+				}
+
 				return session;
 			}
 		}
 
 		return null;
 	}
-
-	@Override
-	public void save(IUser user) throws RemoteException {
-		user.save(database);
-	}
-
 }

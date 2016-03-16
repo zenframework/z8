@@ -59,11 +59,7 @@ public abstract class Adapter {
 				session = Servlet.getAuthorityCenter().login(login, password);
 			} else if(sessionId != null) {
 				String serverId = parameters.get(Json.serverId);
-
-				if(serverId != null)
-					session = Servlet.getAuthorityCenter().getServer(sessionId, serverId);
-				else
-					session = Servlet.getAuthorityCenter().getServer(sessionId);
+				session = Servlet.getAuthorityCenter().getServer(sessionId, serverId);
 			}
 
 			if(session == null)
