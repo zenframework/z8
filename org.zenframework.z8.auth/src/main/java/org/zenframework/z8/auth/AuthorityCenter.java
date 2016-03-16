@@ -116,7 +116,7 @@ public class AuthorityCenter extends RmiServer implements IAuthorityCenter {
 
 	private IApplicationServer getLoginServer() {
 		try {
-			return instance.servers.get(0).getApplicationServer();
+			return findServer(null).getApplicationServer();
 		} catch(Throwable e) {
 			throw new AccessDeniedException();
 		}
@@ -157,14 +157,7 @@ public class AuthorityCenter extends RmiServer implements IAuthorityCenter {
 		}
 	}
 	
-	public ISession getServer(String sessionId) throws RemoteException {
-		return getServer(sessionId, null);
-	}
-	
-	@Override
-	public synchronized ISession getServer(String sessionId, String serverId) throws RemoteException {
-		Session session = sessionManager.get(sessionId);
-
+	private ServerInfo findServer(String serverId) throws RemoteException {
 		ServerInfo[] servers = this.servers.toArray(new ServerInfo[0]);
 		
 		for(ServerInfo server : servers) {
@@ -174,17 +167,31 @@ public class AuthorityCenter extends RmiServer implements IAuthorityCenter {
 			}
 			
 			if(serverId == null || server.getId().equals(serverId)) {
-				session.setServerInfo(server);
-				
 				if(serverId == null && this.servers.size() > 1) {	
 					this.servers.remove(server);
 					this.servers.add(server);
 				}
 
-				return session;
+				return server;
 			}
 		}
-
+		
 		return null;
+	}
+	
+	public ISession getServer(String sessionId) throws RemoteException {
+		return getServer(sessionId, null);
+	}
+	
+	@Override
+	public synchronized ISession getServer(String sessionId, String serverId) throws RemoteException {
+		Session session = sessionManager.get(sessionId);
+		ServerInfo server = findServer(serverId);
+
+		if(server == null)
+			return null;
+		
+		session.setServerInfo(server);
+		return session;
 	}
 }
