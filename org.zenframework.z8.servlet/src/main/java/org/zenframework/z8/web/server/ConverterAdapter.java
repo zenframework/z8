@@ -5,8 +5,6 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -23,7 +21,6 @@ import org.zenframework.z8.server.base.file.FileInfo;
 import org.zenframework.z8.server.engine.ISession;
 import org.zenframework.z8.server.engine.ServerInfo;
 import org.zenframework.z8.server.json.Json;
-import org.zenframework.z8.server.logs.Trace;
 import org.zenframework.z8.server.types.encoding;
 import org.zenframework.z8.server.types.file;
 import org.zenframework.z8.server.types.guid;
@@ -32,8 +29,6 @@ import org.zenframework.z8.server.utils.IOUtils;
 import org.zenframework.z8.web.servlet.Servlet;
 
 public class ConverterAdapter extends Adapter {
-	private static final Collection<String> IgnoredExceptions = Arrays.asList("org.apache.catalina.connector.ClientAbortException");
-
 	@SuppressWarnings("unused")
 	private static final Log LOG = LogFactory.getLog(ConverterAdapter.class);
 
@@ -129,15 +124,7 @@ public class ConverterAdapter extends Adapter {
 	}
 
 	private void sendFileToResponse(HttpServletResponse response, File file) throws IOException {
-		try {
-			IOUtils.copy(new FileInputStream(file), response.getOutputStream());
-		} catch(IOException e) {
-			String className = e.getClass().getCanonicalName();
-			if(IgnoredExceptions.contains(className))
-				Trace.logEvent(className);
-			else
-				throw e;
-		}
+		IOUtils.copy(new FileInputStream(file), response.getOutputStream());
 	}
 
 	private String getContentDisposition(HttpServletRequest request, String fileName) throws UnsupportedEncodingException {
