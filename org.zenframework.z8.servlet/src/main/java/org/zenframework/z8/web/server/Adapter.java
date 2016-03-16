@@ -3,6 +3,8 @@ package org.zenframework.z8.web.server;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -27,6 +29,8 @@ import org.zenframework.z8.server.types.encoding;
 import org.zenframework.z8.web.servlet.Servlet;
 
 public abstract class Adapter {
+
+    private static final Collection<String> IgnoredExceptions = Arrays.asList("org.apache.catalina.connector.ClientAbortException");
 
 	private Servlet servlet;
 
@@ -69,8 +73,12 @@ public abstract class Adapter {
 		} catch(AccessDeniedException e) {
 			processAccessDenied(response);
 		} catch(Throwable e) {
-			Trace.logError(e);
-			processError(response, e);
+            String className = e.getClass().getCanonicalName();
+            if(!IgnoredExceptions.contains(className)) {
+                Trace.logError(e);
+                processError(response, e);
+            } else
+                Trace.logEvent(className);
 		}
 	}
 
