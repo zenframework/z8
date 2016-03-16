@@ -77,8 +77,7 @@ public abstract class Adapter {
             if(!IgnoredExceptions.contains(className)) {
                 Trace.logError(e);
                 processError(response, e);
-            } else
-                Trace.logEvent(className);
+            }
 		}
 	}
 
