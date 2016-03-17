@@ -27,14 +27,14 @@ public class FileConverter implements Properties.Listener {
 	private static final String TxtExtension = ".txt";
 
 	private static final int OFFICE_PORT = 8100;
-	private final static List<String> pdfExtensions = Arrays.asList("pdf", "doc", "docx", "xls", "xlsx", "ppt", "pptx", "odt", "odp", "ods", "odf", "odg", "wpd", "sxw", "sxi", "sxc", "sxd", "stw", "tif", "tiff", "vsd", "jpg");
+	private static final List<String> pdfExtensions = Arrays.asList("pdf", "doc", "docx", "xls", "xlsx", "ppt", "pptx", "odt", "odp", "ods", "odf", "odg", "wpd", "sxw", "sxi", "sxc", "sxd", "stw", "tif", "tiff", "vsd", "jpg");
 
-	private final static List<String> txtExtensions = Arrays.asList("eml", "mime");
+	private static final List<String> txtExtensions = Arrays.asList("eml", "mime");
 
 	private final FileStorage storage;
-	private volatile File officeHome;
-	private volatile OfficeManager officeManager;
-	private volatile OfficeDocumentConverter pdfConverter;
+	
+	private static File officeHome;
+	private static OfficeManager officeManager;
 
 	public FileConverter(File path) {
 		super();
@@ -122,19 +122,17 @@ public class FileConverter implements Properties.Listener {
 	}
 
 	private void convertFileToPdf(File sourceFile, File convertedFile) {
-		initJODConverter();
-		pdfConverter.convert(sourceFile, convertedFile);
+		getOfficeDocumentConverter().convert(sourceFile, convertedFile);
 	}
 
 	public void close() {
 		stopOfficeManager();
 	}
 	
-	private void initJODConverter() {
-		if(officeManager != null)
-			return;
-
-		startOfficeManager();
+	private OfficeDocumentConverter getOfficeDocumentConverter() {
+		if(officeManager == null)
+			startOfficeManager();
+		return new OfficeDocumentConverter(officeManager);
 	}
 
 	@Override
@@ -149,13 +147,11 @@ public class FileConverter implements Properties.Listener {
 		if(officeManager == null) {
 			officeManager = new DefaultOfficeManagerConfiguration().setOfficeHome(getOfficeHome()).setPortNumber(OFFICE_PORT).buildOfficeManager();
 			officeManager.start();
-			pdfConverter = new OfficeDocumentConverter(officeManager);
 		}
 	}
 
 	synchronized private void stopOfficeManager() {
 		if(officeManager != null) {
-			pdfConverter = null;
 			officeManager.stop();
 			officeManager = null;
 		}
