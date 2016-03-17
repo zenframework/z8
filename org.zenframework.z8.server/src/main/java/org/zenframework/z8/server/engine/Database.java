@@ -136,7 +136,7 @@ public class Database implements Serializable {
         } catch(Throwable e) {
         	Trace.logError(e);
         } finally {
-        	ConnectionManager.release();
+        	ConnectionManager.release(this);
         }
 
     	return systemInstalled;
