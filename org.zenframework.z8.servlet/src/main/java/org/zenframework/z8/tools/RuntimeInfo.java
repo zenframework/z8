@@ -52,5 +52,4 @@ public class RuntimeInfo {
         options.addOption(OPT_STRUCTURE, false, "Prints tables structure in JSON format");
         return options;
     }
-
 }

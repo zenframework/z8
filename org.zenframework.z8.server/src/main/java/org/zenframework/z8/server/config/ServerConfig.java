@@ -1,10 +1,10 @@
 package org.zenframework.z8.server.config;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.util.Properties;
 
 import org.zenframework.z8.server.engine.Rmi;
-import org.zenframework.z8.server.logs.Trace;
 import org.zenframework.z8.server.types.guid;
 
 public class ServerConfig extends Properties {
@@ -27,7 +27,7 @@ public class ServerConfig extends Properties {
 	public static final String TraceSqlProperty = "trace.sql";
 	public static final String FileConverterProperty = "file.converter";
 
-	private static String workingPath;
+	private static File workingPath;
 
 	private static String authorityCenterHost;
 	private static int authorityCenterPort;
@@ -45,22 +45,21 @@ public class ServerConfig extends Properties {
 	private static String fileConverter;
 
 	public ServerConfig() {
-		this(configurationFileName);
+		this(null);
 	}
 
-	public ServerConfig(String fileProject) {
+	public ServerConfig(String configFile) {
+		if(configFile == null)
+			configFile = configurationFileName;
+		
 		if(workingPath != null)
 			return;
 
-		workingPath = System.getProperty(SystemProperty.ConfigFilePath);
+		String configFilePath = System.getProperty(SystemProperty.ConfigFilePath);
+		String absolutePath = new File(configFilePath == null ? "" : configFilePath).getAbsolutePath();
+		workingPath = new File(absolutePath);
 
-		if(workingPath != null && workingPath.lastIndexOf(System.getProperty("file.separator")) != workingPath.length() - 1)
-			workingPath += System.getProperty("file.separator");
-
-		if(workingPath == null)
-			workingPath = "";
-
-		load(fileProject);
+		load(new File(workingPath, configFile));
 		init();
 	}
 
@@ -112,16 +111,15 @@ public class ServerConfig extends Properties {
 		}
 	}
 
-	protected void load(String fileProject) {
+	protected void load(File config) {
 		try {
-			loadFromXML(new FileInputStream(workingPath + fileProject));
-		} catch(Exception e) {
-			Trace.logError(e);
-			this.clear();
+			loadFromXML(new FileInputStream(config));
+		} catch(Throwable e) {
+			throw new RuntimeException();
 		}
 	}
 
-	public final String getWorkingPath() {
+	public final File getWorkingPath() {
 		return workingPath;
 	}
 

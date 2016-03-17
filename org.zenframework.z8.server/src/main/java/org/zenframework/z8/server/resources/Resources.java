@@ -9,7 +9,7 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.zenframework.z8.server.config.SystemProperty;
+import org.zenframework.z8.server.base.file.Folders;
 import org.zenframework.z8.server.logs.Trace;
 
 public class Resources {
@@ -57,12 +57,10 @@ public class Resources {
     }
 
     public boolean load(final String language) {
-        if(boundles.containsKey(language)) {
+        if(boundles.containsKey(language))
             return true;
-        }
 
-        String configFileFolder = System.getProperty(SystemProperty.ConfigFilePath);
-        File resourcesFolder = new File(configFileFolder != null ? configFileFolder : "", "resources");
+        File resourcesFolder = new File(Folders.Base, "resources");
 
         String os_name = System.getProperty("os.name");
         Trace.logEvent("Loading resource boundles for '" + language + "'. System locale: '"

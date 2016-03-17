@@ -109,7 +109,7 @@ public class ApplicationServer extends RmiServer implements IApplicationServer {
     }
 
     static public File workingPath() {
-        return new File(instance.config.getWorkingPath());
+        return config().getWorkingPath();
     }
 
     static public String naming() {

@@ -7,7 +7,6 @@ import java.util.Collections;
 import java.util.List;
 
 import org.zenframework.z8.server.config.ServerConfig;
-import org.zenframework.z8.server.config.SystemProperty;
 import org.zenframework.z8.server.engine.Database;
 import org.zenframework.z8.server.engine.IApplicationServer;
 import org.zenframework.z8.server.engine.IAuthorityCenter;
@@ -40,8 +39,6 @@ public class AuthorityCenter extends RmiServer implements IAuthorityCenter {
 
 		this.config = config;
 		database = new Database(config);
-
-		System.setProperty(SystemProperty.RAAS, config.getWorkingPath() + System.getProperty("file.separator") + "raas.config");
 
 		instance = this;
 
