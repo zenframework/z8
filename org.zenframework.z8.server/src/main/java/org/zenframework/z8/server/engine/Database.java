@@ -135,6 +135,8 @@ public class Database implements Serializable {
         	systemInstalled = tableExists(Users.TableName);
         } catch(Throwable e) {
         	Trace.logError(e);
+        } finally {
+        	ConnectionManager.release();
         }
 
     	return systemInstalled;
