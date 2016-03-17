@@ -7,7 +7,6 @@ import java.util.Collections;
 import java.util.List;
 
 import org.zenframework.z8.server.config.ServerConfig;
-import org.zenframework.z8.server.engine.Database;
 import org.zenframework.z8.server.engine.IApplicationServer;
 import org.zenframework.z8.server.engine.IAuthorityCenter;
 import org.zenframework.z8.server.engine.IServer;
@@ -18,7 +17,6 @@ import org.zenframework.z8.server.engine.Session;
 import org.zenframework.z8.server.exceptions.AccessDeniedException;
 import org.zenframework.z8.server.logs.Trace;
 import org.zenframework.z8.server.security.IUser;
-import org.zenframework.z8.server.security.User;
 
 public class AuthorityCenter extends RmiServer implements IAuthorityCenter {
 
@@ -27,7 +25,6 @@ public class AuthorityCenter extends RmiServer implements IAuthorityCenter {
 	static private AuthorityCenter instance;
 
 	private ServerConfig config;
-	private Database database;
 
 	private List<ServerInfo> servers = Collections.synchronizedList(new ArrayList<ServerInfo>());
 
@@ -38,8 +35,6 @@ public class AuthorityCenter extends RmiServer implements IAuthorityCenter {
 		super(config.getAuthorityCenterPort(), IAuthorityCenter.Name);
 
 		this.config = config;
-		database = new Database(config);
-
 		instance = this;
 
 		start();
@@ -103,10 +98,6 @@ public class AuthorityCenter extends RmiServer implements IAuthorityCenter {
 		}
 	}
 
-	static public Database database() {
-		return instance.database;
-	}
-
 	static public UserManager getUserManager() {
 		return instance.userManager;
 	}
@@ -133,13 +124,9 @@ public class AuthorityCenter extends RmiServer implements IAuthorityCenter {
 	}
 
 	private ISession doLogin(String login, String password) throws RemoteException {
-		IUser user = User.system();
-
-		if(database.isSystemInstalled()) {
-			IApplicationServer loginServer = getLoginServer();
-			user = password != null ? loginServer.login(login, password) : loginServer.login(login);
-			AuthorityCenter.getUserManager().add(user);
-		}
+		IApplicationServer loginServer = getLoginServer();
+		IUser user = password != null ? loginServer.login(login, password) : loginServer.login(login);
+		AuthorityCenter.getUserManager().add(user);
 
 		Session session = sessionManager.create(user);
 		return getServer(session.id());

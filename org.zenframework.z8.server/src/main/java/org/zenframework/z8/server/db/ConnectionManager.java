@@ -56,7 +56,7 @@ public class ConnectionManager {
 	}
 
 	public static synchronized void release() {
-		release(ApplicationServer.database());
+		release(null);
 	}
 
 	public static synchronized void release(Database database) {

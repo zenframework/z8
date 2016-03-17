@@ -12,11 +12,13 @@ import org.zenframework.z8.server.base.table.system.SystemTools;
 import org.zenframework.z8.server.base.table.system.UserEntries;
 import org.zenframework.z8.server.base.table.system.Users;
 import org.zenframework.z8.server.base.table.value.Field;
+import org.zenframework.z8.server.db.ConnectionManager;
 import org.zenframework.z8.server.db.sql.SqlToken;
 import org.zenframework.z8.server.db.sql.expressions.And;
 import org.zenframework.z8.server.db.sql.expressions.Operation;
 import org.zenframework.z8.server.db.sql.expressions.Rel;
 import org.zenframework.z8.server.db.sql.functions.string.Lower;
+import org.zenframework.z8.server.engine.ApplicationServer;
 import org.zenframework.z8.server.engine.Database;
 import org.zenframework.z8.server.engine.Runtime;
 import org.zenframework.z8.server.exceptions.AccessDeniedException;
@@ -30,266 +32,270 @@ import org.zenframework.z8.server.types.string;
 import org.zenframework.z8.server.types.sql.sql_string;
 
 public class User implements IUser {
-    private static final long serialVersionUID = -4955893424674255525L;
+	private static final long serialVersionUID = -4955893424674255525L;
 
-    private guid id;
+	private guid id;
 
-    private String name;
-    private String password;
-    SecurityGroup securityGroup = SecurityGroup.Users;
+	private String name;
+	private String password;
+	SecurityGroup securityGroup = SecurityGroup.Users;
 
-    private String description;
-    private String phone;
-    private String email;
-    private boolean blocked;
+	private String description;
+	private String phone;
+	private String email;
+	private boolean blocked;
 
-    private String settings;
+	private String settings;
 
-    private List<Component> components = new ArrayList<Component>();
-    private List<guid> companies = new ArrayList<guid>();
-    private Map<String, IForm> forms = new HashMap<String, IForm>();
+	private List<Component> components = new ArrayList<Component>();
+	private List<guid> companies = new ArrayList<guid>();
+	private Map<String, IForm> forms = new HashMap<String, IForm>();
 
-    private RLinkedHashMap<string, primary> parameters = new RLinkedHashMap<string, primary>();
+	private RLinkedHashMap<string, primary> parameters = new RLinkedHashMap<string, primary>();
 
-    static public IUser system() {
-        guid id = BuiltinUsers.System.guid();
-        String login = Resources.get("BuiltinUsers.System.name");
-        String description = Resources.get("BuiltinUsers.System.description");
-        String password = "";
-        boolean blocked = false;
+	static public IUser system() {
+		guid id = BuiltinUsers.System.guid();
+		String login = Resources.get("BuiltinUsers.System.name");
+		String description = Resources.get("BuiltinUsers.System.description");
+		String password = "";
+		boolean blocked = false;
 
-        User user = new User();
+		User user = new User();
 
-        user.id = id;
-        user.name = login;
-        user.password = password;
-        user.description = description;
-        user.blocked = blocked;
+		user.id = id;
+		user.name = login;
+		user.password = password;
+		user.description = description;
+		user.blocked = blocked;
 
-        user.settings = "";
-        user.phone = "";
-        user.email = "";
-        user.securityGroup = SecurityGroup.Administrators;
+		user.settings = "";
+		user.phone = "";
+		user.email = "";
+		user.securityGroup = SecurityGroup.Administrators;
 
-        user.setComponents(new Component[] { new Component(null, SystemTools.class.getCanonicalName(), Resources
-                .get(SystemTools.strings.Title)) });
+		user.setComponents(new Component[] { new Component(null, SystemTools.class.getCanonicalName(), Resources.get(SystemTools.strings.Title)) });
 
-        return user;
-    }
+		return user;
+	}
 
-    public User() {}
+	public User() {
+	}
 
-    @Override
-    public guid id() {
-        return id;
-    }
+	@Override
+	public guid id() {
+		return id;
+	}
 
-    @Override
-    public String name() {
-        return name;
-    }
+	@Override
+	public String name() {
+		return name;
+	}
 
-    @Override
-    public String password() {
-        return password;
-    }
+	@Override
+	public String password() {
+		return password;
+	}
 
-    @Override
-    public SecurityGroup securityGroup() {
-        return securityGroup;
-    }
+	@Override
+	public SecurityGroup securityGroup() {
+		return securityGroup;
+	}
 
-    @Override
-    public String description() {
-        return description;
-    }
+	@Override
+	public String description() {
+		return description;
+	}
 
-    @Override
-    public String phone() {
-        return phone;
-    }
+	@Override
+	public String phone() {
+		return phone;
+	}
 
-    @Override
-    public String email() {
-        return email;
-    }
+	@Override
+	public String email() {
+		return email;
+	}
 
-    @Override
-    public boolean blocked() {
-        return blocked;
-    }
+	@Override
+	public boolean blocked() {
+		return blocked;
+	}
 
-    @Override
-    public Component[] components() {
-        if (forms.isEmpty()) {
-            return components.toArray(new Component[0]);
-        } else {
-            Collection<Component> components = new ArrayList<Component>();
+	@Override
+	public Component[] components() {
+		if(forms.isEmpty()) {
+			return components.toArray(new Component[0]);
+		} else {
+			Collection<Component> components = new ArrayList<Component>();
 
-            for (IForm form : forms.values()) {
-                if (form.getOwnerId().isEmpty() && form.getAccess().getRead()) {
-                    components.add(new Component(null, form.getId(), form.getName()));
-                }
-            }
+			for(IForm form : forms.values()) {
+				if(form.getOwnerId().isEmpty() && form.getAccess().getRead()) {
+					components.add(new Component(null, form.getId(), form.getName()));
+				}
+			}
 
-            return components.toArray(new Component[0]);
-        }
-    }
+			return components.toArray(new Component[0]);
+		}
+	}
 
-    public guid[] companies() {
-        return companies.toArray(new guid[0]);
-    }
+	public guid[] companies() {
+		return companies.toArray(new guid[0]);
+	}
 
-    @Override
-    public Map<String, IForm> forms() {
-        return forms;
-    }
+	@Override
+	public Map<String, IForm> forms() {
+		return forms;
+	}
 
-    @Override
-    public Map<string, primary> parameters() {
-        return parameters;
-    }
+	@Override
+	public Map<string, primary> parameters() {
+		return parameters;
+	}
 
-    @Override
-    public void setComponents(Component[] components) {
-        this.components.clear();
-        this.components.addAll(Arrays.asList(components));
-    }
+	@Override
+	public void setComponents(Component[] components) {
+		this.components.clear();
+		this.components.addAll(Arrays.asList(components));
+	}
 
-    public void setCompanies(guid[] companies) {
-        this.companies.clear();
-        this.companies.addAll(Arrays.asList(companies));
-    }
+	public void setCompanies(guid[] companies) {
+		this.companies.clear();
+		this.companies.addAll(Arrays.asList(companies));
+	}
 
-    static public IUser load(String login) {
-        User user = new User();
-        user.readInfo(login);
+	static public IUser load(String login) {
+		if(!ApplicationServer.database().isSystemInstalled())
+			return User.system();
 
-        user.readComponents();
+		User user = new User();
+		user.readInfo(login);
 
-        if (user.securityGroup == SecurityGroup.Administrators)
-            user.addSystemTools();
+		user.readComponents();
 
-        return user;
-    }
+		if(user.securityGroup == SecurityGroup.Administrators)
+			user.addSystemTools();
 
-    static public IUser load(String login, String password) {
-        IUser user = load(login);
+		ConnectionManager.release();
 
-        if (password == null || !password.equals(user.password()) || user.blocked())
-            throw new AccessDeniedException();
+		return user;
+	}
 
-        return user;
-    }
+	static public IUser load(String login, String password) {
+		IUser user = load(login);
 
-    private void addSystemTools() {
-        for (Component component : components) {
-            if (component.className().equals(SystemTools.class.getCanonicalName())) {
-                return;
-            }
-        }
+		if(password == null || !password.equals(user.password()) || user.blocked())
+			throw new AccessDeniedException();
 
-        components.add(new Component(null, SystemTools.class.getCanonicalName(), Resources.get(SystemTools.strings.Title)));
-    }
+		return user;
+	}
 
-    @SuppressWarnings("unchecked")
-    private Users getUsers() {
-        CLASS<? extends Users> result = null;
-        Class<?> cls = Users.class;
+	private void addSystemTools() {
+		for(Component component : components) {
+			if(component.className().equals(SystemTools.class.getCanonicalName())) {
+				return;
+			}
+		}
 
-        for (CLASS<? extends Table> table : Runtime.instance().tables()) {
-            if (table.instanceOf(cls)) {
-                result = (CLASS<? extends Users>) table;
-                cls = result.getJavaClass();
-            }
-        }
+		components.add(new Component(null, SystemTools.class.getCanonicalName(), Resources.get(SystemTools.strings.Title)));
+	}
 
-        return result != null ? (Users) result.newInstance() : null;
-    }
+	@SuppressWarnings("unchecked")
+	private Users getUsers() {
+		CLASS<? extends Users> result = null;
+		Class<?> cls = Users.class;
 
-    private void readInfo(String login) {
-        Users users = getUsers();
+		for(CLASS<? extends Table> table : Runtime.instance().tables()) {
+			if(table.instanceOf(cls)) {
+				result = (CLASS<? extends Users>)table;
+				cls = result.getJavaClass();
+			}
+		}
 
-        Collection<Field> fields = new ArrayList<Field>();
-        fields.add(users.recordId.get());
-        fields.add(users.password.get());
-        users.password.get().mask = false;
-        fields.add(users.settings.get());
-        fields.add(users.phone.get());
-        fields.add(users.email.get());
-        fields.add(users.securityGroup.get());
+		return result != null ? (Users)result.newInstance() : null;
+	}
 
-        SqlToken where = new Rel(new Lower(users.name.get()), Operation.Eq, new sql_string(login.toLowerCase()));
+	private void readInfo(String login) {
+		Users users = getUsers();
 
-        users.read(fields, where);
+		Collection<Field> fields = new ArrayList<Field>();
+		fields.add(users.recordId.get());
+		fields.add(users.password.get());
+		users.password.get().mask = false;
+		fields.add(users.settings.get());
+		fields.add(users.phone.get());
+		fields.add(users.email.get());
+		fields.add(users.securityGroup.get());
 
-        if (users.next()) {
-            this.id = users.recordId.get().guid();
-            this.name = login;
-            this.password = users.password.get().string().get();
-            this.settings = users.settings.get().string().get();
-            this.phone = users.phone.get().string().get();
-            this.email = users.email.get().string().get();
-            this.securityGroup = SecurityGroup.fromGuid(users.securityGroup.get().guid());
-        } else {
-            throw new AccessDeniedException();
-        }
+		SqlToken where = new Rel(new Lower(users.name.get()), Operation.Eq, new sql_string(login.toLowerCase()));
 
-        try {
-            if (!users.getExtraParameters(this, parameters))
-                throw new AccessDeniedException();
-        } catch (Throwable e) {
-            Trace.logError(e);
-            if(!BuiltinUsers.Administrator.guid().equals(id) && !BuiltinUsers.System.guid().equals(id))
-                throw new AccessDeniedException();            
-        }
-    }
+		users.read(fields, where);
 
-    private void readComponents() {
-        UserEntries userEntries = new UserEntries.CLASS<UserEntries>().get();
+		if(users.next()) {
+			this.id = users.recordId.get().guid();
+			this.name = login;
+			this.password = users.password.get().string().get();
+			this.settings = users.settings.get().string().get();
+			this.phone = users.phone.get().string().get();
+			this.email = users.email.get().string().get();
+			this.securityGroup = SecurityGroup.fromGuid(users.securityGroup.get().guid());
+		} else {
+			throw new AccessDeniedException();
+		}
 
-        Collection<Field> fields = new ArrayList<Field>();
-        fields.add(userEntries.entries.get().id.get());
-        fields.add(userEntries.entries.get().name.get());
+		try {
+			if(!users.getExtraParameters(this, parameters))
+				throw new AccessDeniedException();
+		} catch(Throwable e) {
+			Trace.logError(e);
+			if(!BuiltinUsers.Administrator.guid().equals(id) && !BuiltinUsers.System.guid().equals(id))
+				throw new AccessDeniedException();
+		}
+	}
 
-        Collection<Field> sortFields = new ArrayList<Field>();
-        sortFields.add(userEntries.position.get());
-        
-        SqlToken first = new Rel(userEntries.user.get(), Operation.Eq, userEntries.users.get().recordId.get());
-        SqlToken second = new Rel(userEntries.entry.get(), Operation.Eq, userEntries.entries.get().recordId.get());
-        SqlToken third = new Rel(new Lower(userEntries.users.get().name.get()), Operation.Eq, new sql_string(
-                name().toLowerCase()));
+	private void readComponents() {
+		UserEntries userEntries = new UserEntries.CLASS<UserEntries>().get();
 
-        SqlToken where = new And(new And(first, second), third);
+		Collection<Field> fields = new ArrayList<Field>();
+		fields.add(userEntries.entries.get().id.get());
+		fields.add(userEntries.entries.get().name.get());
 
-        userEntries.read(fields, sortFields, where);
+		Collection<Field> sortFields = new ArrayList<Field>();
+		sortFields.add(userEntries.position.get());
 
-        List<Component> components = new ArrayList<Component>();
+		SqlToken first = new Rel(userEntries.user.get(), Operation.Eq, userEntries.users.get().recordId.get());
+		SqlToken second = new Rel(userEntries.entry.get(), Operation.Eq, userEntries.entries.get().recordId.get());
+		SqlToken third = new Rel(new Lower(userEntries.users.get().name.get()), Operation.Eq, new sql_string(name().toLowerCase()));
 
-        while (userEntries.next()) {
-            String className = userEntries.entries.get().id.get().string().get();
-            String title = userEntries.entries.get().name.get().string().get();
-            components.add(new Component(null, className, title));
-        }
+		SqlToken where = new And(new And(first, second), third);
 
-        setComponents(components.toArray(new Component[0]));
-    }
+		userEntries.read(fields, sortFields, where);
 
-    @Override
-    public String settings() {
-        return settings;
-    }
+		List<Component> components = new ArrayList<Component>();
 
-    @Override
-    public void setSettings(String settings) {
-        this.settings = settings;
-    }
+		while(userEntries.next()) {
+			String className = userEntries.entries.get().id.get().string().get();
+			String title = userEntries.entries.get().name.get().string().get();
+			components.add(new Component(null, className, title));
+		}
 
-    @Override
-    public void save(Database database) {
-        Users users = new Users.CLASS<Users>().get();
+		setComponents(components.toArray(new Component[0]));
+	}
 
-        users.settings.get().set(new string(settings));
-        users.update(id);
-    }
+	@Override
+	public String settings() {
+		return settings;
+	}
+
+	@Override
+	public void setSettings(String settings) {
+		this.settings = settings;
+	}
+
+	@Override
+	public void save(Database database) {
+		Users users = new Users.CLASS<Users>().get();
+
+		users.settings.get().set(new string(settings));
+		users.update(id);
+	}
 }
