@@ -35,6 +35,7 @@ public class FileConverter implements Properties.Listener {
 	
 	private static File officeHome;
 	private static OfficeManager officeManager;
+	private static Object lock = new Object();
 
 	public FileConverter(File path) {
 		super();
@@ -122,7 +123,9 @@ public class FileConverter implements Properties.Listener {
 	}
 
 	private void convertFileToPdf(File sourceFile, File convertedFile) {
-		getOfficeDocumentConverter().convert(sourceFile, convertedFile);
+		synchronized (lock) {
+			getOfficeDocumentConverter().convert(sourceFile, convertedFile);
+		}
 	}
 
 	public void close() {
