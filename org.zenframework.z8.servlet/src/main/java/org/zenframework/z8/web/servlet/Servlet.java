@@ -1,8 +1,8 @@
 package org.zenframework.z8.web.servlet;
 
-import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Method;
+import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -36,18 +36,29 @@ public class Servlet extends HttpServlet {
 	static private String Start = "start";
 	static private String Stop = "stop";
 
-	private static IAuthorityCenter authorityCenter = null;
+	static private IAuthorityCenter authorityCenter = null;
+	static private ServerConfig config = null;
+	static private Object lock = new Object();
 
 	private final List<Adapter> adapters = new ArrayList<Adapter>();
 
-	private ServerConfig config = null;
-
-	static public IAuthorityCenter getAuthorityCenter() {
-		return authorityCenter;
+	static public ServerConfig config() {
+		if(config == null)
+			config = new ServerConfig();
+		return config;
 	}
 
-	public ServerConfig config() {
-		return config;
+	static public IAuthorityCenter getAuthorityCenter() throws RemoteException {
+		if(authorityCenter != null)
+			return authorityCenter;
+					
+		synchronized(lock) {
+			if(authorityCenter != null)
+				return authorityCenter;
+
+			ServerConfig config = config();
+			return authorityCenter = (IAuthorityCenter) Rmi.connect(config.getAuthorityCenterHost(), config.getAuthorityCenterPort(), IAuthorityCenter.Name);
+		}
 	}
 
 	@Override
@@ -57,16 +68,14 @@ public class Servlet extends HttpServlet {
 
 		System.setProperty(SystemProperty.ConfigFilePath, context.getRealPath("WEB-INF"));
 
-		config = new ServerConfig();
-
+		ServerConfig config = config();
+		
 		try {
 			if(config.webServerStartAuthorityCenter())
 				startServer(AuthorityCenter, config);
 
 			if(config.webServerStartApplicationServer())
 				startServer(ApplicationServer, config);
-
-			authorityCenter = (IAuthorityCenter) Rmi.connect(config.getAuthorityCenterHost(), config.getAuthorityCenterPort(), IAuthorityCenter.Name);
 		} catch(Throwable e) {
 			try {
 				Trace.logError(e);
@@ -93,10 +102,6 @@ public class Servlet extends HttpServlet {
 		Adapter adapter = getAdapter(request);
 		request.setCharacterEncoding(encoding.Default.toString());
 		adapter.service(request, response);
-	}
-
-	public File getWebInfPath() {
-		return new File(getServletContext().getRealPath("WEB-INF"));
 	}
 
 	private void startServer(String server, ServerConfig options) {
@@ -143,6 +148,6 @@ public class Servlet extends HttpServlet {
 	}
 
 	public String getServletPath() {
-		return getServletContext().getRealPath("") + "\\WEB-INF";
+		return getServletContext().getRealPath("WEB-INF");
 	}
 }
