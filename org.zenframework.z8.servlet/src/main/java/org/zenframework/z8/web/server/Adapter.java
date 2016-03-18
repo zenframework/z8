@@ -14,6 +14,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.fileupload.FileItem;
+import org.apache.commons.fileupload.FileUploadBase.FileSizeLimitExceededException;
 import org.apache.commons.fileupload.FileUploadException;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.zenframework.z8.server.base.file.FileInfo;
@@ -25,6 +26,7 @@ import org.zenframework.z8.server.engine.ISession;
 import org.zenframework.z8.server.exceptions.AccessDeniedException;
 import org.zenframework.z8.server.json.Json;
 import org.zenframework.z8.server.logs.Trace;
+import org.zenframework.z8.server.resources.Resources;
 import org.zenframework.z8.server.types.encoding;
 import org.zenframework.z8.web.servlet.Servlet;
 
@@ -107,8 +109,15 @@ public abstract class Adapter {
 	protected List<FileItem> parseMultipartRequest(HttpServletRequest request) {
 		ServletFileUpload upload = new ServletFileUpload(FilesFactory.getFileItemFactory());
 
+		int fileSizeMax = Servlet.config().webServerFileSizeMax();
+		
+		if(fileSizeMax > 0)
+			upload.setFileSizeMax(fileSizeMax * 1024 * 1024);
+
 		try {
 			return upload.parseRequest(request);
+		} catch(FileSizeLimitExceededException e) {
+			throw new RuntimeException(Resources.format("Exception.fileSizeLimitExceeded", e.getFileName(), fileSizeMax));
 		} catch(FileUploadException e) {
 			throw new RuntimeException(e);
 		}

@@ -156,31 +156,30 @@
 
 	<!-- Exceptions -->
 	<entry key="Exception.accessDenied">Неверный логин или пароль для входа</entry>
-	<entry key="Exception.unknownDataType">Неизвестный тип данных "{0}"</entry>
-	<entry key="Exception.maskParse">Значение не соответствует маске. Значение: "{0}". Маска: "{1}"</entry>
+	<entry key="Exception.unknownDataType">Неизвестный тип данных ''{0}''</entry>
+	<entry key="Exception.maskParse">Значение не соответствует маске. Значение: ''{0}''. Маска: ''{1}''</entry>
     <entry key="Exception.resourceNotFound">Ресурс не найден. Ключ: {0}</entry>
 	<entry key="Exception.fileNotFound">Файл не найден: {0}</entry>
+	<entry key="Exception.fileSizeLimitExceeded">Размер файла ''{0}'' превышает допустимый {1}Mb</entry>
 
 	<entry key="Exception.wrongParentNode">Неверный родительский узел.</entry>
-
-	<entry key="Exception.allPortsBusy">Запуск сервера приложений не возможен. Все порты заданного диапазона уже заняты.</entry>
 
 	<entry key="Exception.childRecordFound">Ошибка. Была произведена попытка удаления записи, на которую ссылается другая запись.</entry>
     <entry key="Exception.unknownDatabase">Неподдерживаемая база данных</entry>
 	
 	<!-- Generator -->
 	<entry key="Generator.displayName">Генерация схемы данных</entry>
-    <entry key="Generator.recreatringTable">Таблица "{0}" ({1}) требует регенерации</entry>
-	<entry key="Generator.droppingTable">Таблица "{0}" требует удаления</entry>
-    <entry key="Generator.createTableError">Ошибка. Таблица "{0}"({1}) - генерация не выполнена.\nТекст ошибки: {2}</entry>
-    <entry key="Generator.packTableError">Ошибка. Таблица "{0}"({1}) - паковка не выполнена.\nТекст ошибки: {2}</entry>
-	<entry key="Generator.dropTableError">Ошибка. Таблица "{0}" - удаление  не выполнено.\nТекст ошибки: {1}</entry>
-    <entry key="Generator.dropForeignKeyError">Ошибка. Таблица "{0}" - удаление внешнего ключа {1} закончилось неудачей.\nТекст ошибки: {2}</entry>
-	<entry key="Generator.dropIndexError">Ошибка. Таблица "{0}" - удаление индекса {1} закончилось неудачей.\nТекст ошибки: {2}</entry>
-	<entry key="Generator.createForeignKeyError">Ошибка. Таблица "{0}"({1}) - создание внешнего ключа на таблицу "{2}"({3}) закончилось неудачей.\nТекст ошибки: {4}</entry>
+    <entry key="Generator.recreatringTable">Таблица ''{0}''({1}) требует регенерации</entry>
+	<entry key="Generator.droppingTable">Таблица ''{0}'' требует удаления</entry>
+    <entry key="Generator.createTableError">Ошибка. Таблица ''{0}''({1}) - генерация не выполнена.\nТекст ошибки: {2}</entry>
+    <entry key="Generator.packTableError">Ошибка. Таблица ''{0}''({1}) - паковка не выполнена.\nТекст ошибки: {2}</entry>
+	<entry key="Generator.dropTableError">Ошибка. Таблица ''{0}'' - удаление  не выполнено.\nТекст ошибки: {1}</entry>
+    <entry key="Generator.dropForeignKeyError">Ошибка. Таблица ''{0}'' - удаление внешнего ключа {1} закончилось неудачей.\nТекст ошибки: {2}</entry>
+	<entry key="Generator.dropIndexError">Ошибка. Таблица ''{0}'' - удаление индекса {1} закончилось неудачей.\nТекст ошибки: {2}</entry>
+	<entry key="Generator.createForeignKeyError">Ошибка. Таблица ''{0}''({1}) - создание внешнего ключа на таблицу ''{2}''({3}) закончилось неудачей.\nТекст ошибки: {4}</entry>
     <entry key="Generator.createUniqueIndexError">Ошибка. Таблица "{1}"({2}) - создание уникального индекса "{0}" не выполнено.\nТекст ошибки: {3}</entry>
-    <entry key="Generator.createIndexError">Ошибка. Таблица "{1}"({2}) - создание индекса "{0}" не выполнено.\nТекст ошибки: {3}</entry>
-    <entry key="Generator.insertRecordsError">Изменение записи, ключ {0} в таблице "{1}"({2}), закончилось неудачей.\nТекст ошибки: {3}</entry>
+    <entry key="Generator.createIndexError">Ошибка. Таблица ''{1}''({2}) - создание индекса ''{0}'' не выполнено.\nТекст ошибки: {3}</entry>
+    <entry key="Generator.insertRecordsError">Изменение записи, ключ {0} в таблице ''{1}''({2}), закончилось неудачей.\nТекст ошибки: {3}</entry>
 
 	<entry key="Messenger.supportAddress"></entry>
 	<entry key="Messenger.smsAlertAddress"></entry>

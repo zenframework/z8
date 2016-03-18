@@ -52,8 +52,7 @@ public class Resources {
     }
 
     static public String format(String key, Object... format) {
-        MessageFormat form = new MessageFormat(get(key));
-        return form.format(format);
+        return MessageFormat.format(get(key), format);
     }
 
     public boolean load(final String language) {

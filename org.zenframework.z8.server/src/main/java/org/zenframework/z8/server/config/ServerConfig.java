@@ -21,7 +21,8 @@ public class ServerConfig extends Properties {
 
 	public static final String WebServerStartApplicationServerProperty = "web.server.start.application.server";
 	public static final String WebServerStartAuthorityCenterProperty = "web.server.start.authority.center";
-
+	public static final String WebServerFileSizeMaxProperty = "web.server.file.size.max";
+	
 	public static final String SchedulerEnabledProperty = "scheduler.enabled";
 
 	public static final String TraceSqlProperty = "trace.sql";
@@ -38,7 +39,8 @@ public class ServerConfig extends Properties {
 
 	private static boolean webServerStartApplicationServer;
 	private static boolean webServerStartAuthorityCenter;
-
+	private static int webServerFileSizeMax;
+	
 	private static boolean schedulerEnabled;
 
 	private static boolean traceSql;
@@ -74,7 +76,8 @@ public class ServerConfig extends Properties {
 
 		webServerStartApplicationServer = getProperty(WebServerStartApplicationServerProperty, true);
 		webServerStartAuthorityCenter = getProperty(WebServerStartAuthorityCenterProperty, true);
-
+		webServerFileSizeMax = getProperty(WebServerFileSizeMaxProperty, 5);
+		
 		traceSql = getProperty(TraceSqlProperty, false);
 		fileConverter = getProperty(FileConverterProperty, "");
 
@@ -153,6 +156,10 @@ public class ServerConfig extends Properties {
 
 	public final boolean webServerStartAuthorityCenter() {
 		return webServerStartAuthorityCenter;
+	}
+
+	public final int webServerFileSizeMax() {
+		return webServerFileSizeMax;
 	}
 
 	public final boolean schedulerEnabled() {
