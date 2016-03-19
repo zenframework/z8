@@ -1,5 +1,8 @@
 package org.zenframework.z8.server.ie;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import org.zenframework.z8.server.base.simple.Procedure;
 import org.zenframework.z8.server.base.table.system.Files;
 import org.zenframework.z8.server.base.table.system.Properties;
@@ -13,6 +16,7 @@ import org.zenframework.z8.server.runtime.RCollection;
 import org.zenframework.z8.server.runtime.ServerRuntime;
 import org.zenframework.z8.server.types.bool;
 import org.zenframework.z8.server.types.guid;
+import org.zenframework.z8.server.utils.IOUtils;
 
 public class TransportProcedure extends Procedure {
 
@@ -98,26 +102,42 @@ public class TransportProcedure extends Procedure {
 
         // Обработка внутренней исходящей очереди
         messages.readExportMessages(selfAddress);
+
+        Set<Transport> deadTransports = new HashSet<Transport>();
+        
         while (messages.next()) {
+            Transport transport = engine.getTransport(context.get(), messages.getProtocol());
+            
+            if (transport == null || deadTransports.contains(transport))
+            	continue;
+            
             try {
-                Message.CLASS<Message> message = messages.getMessage();
-                Transport transport = engine.getTransport(context.get(), messages.getProtocol());
+            	transport.connect(); // это долго, если сервера нет или сдох
+            } catch(TransportException e) {
+            	log("Can't import message via protocol '" + transport.getProtocol() + "'", e);
+            	IOUtils.closeQuietly(transport);
+            	deadTransports.add(transport);
+            	continue;
+            }
+
+            try {
                 connection.beginTransaction();
-                if (transport != null) {
-                    beginProcessMessage(messages);
-                    z8_beforeExport(message);
-                    transport.connect();
-                    try {
-                        transport.send(message.get());
-                        transport.commit();
-                        z8_afterExport(message);
-                    } catch (TransportException e) {
-                        transport.close();
-                        throw e;
-                    }
-                }
+
+                beginProcessMessage(messages);
+
+                Message.CLASS<Message> message = messages.getMessage();
+                
+                z8_beforeExport(message);
+
+                transport.send(message.get());
+                transport.commit();
+
+                z8_afterExport(message);
+
                 connection.commit();
             } catch (Throwable e) {
+            	if(e instanceof TransportException)
+            		IOUtils.closeQuietly(transport);
                 connection.rollback();
                 log("Can't send messsage '" + messages.recordId() + "'", e);
             }
