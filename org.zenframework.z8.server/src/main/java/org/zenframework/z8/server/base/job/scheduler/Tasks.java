@@ -17,9 +17,6 @@ import org.zenframework.z8.server.types.guid;
 import org.zenframework.z8.server.types.integer;
 
 public class Tasks extends Table {
-
-    //private static final guid EXPORT_TASK_ID = new guid("F52E24BC-5BF8-49AD-B3B7-6F8B37C8E9EE");
-
     final static public String TableName = "SystemTasks";
 
     static public class names {
@@ -157,5 +154,4 @@ public class Tasks extends Table {
     protected void afterDestroy(Query data, guid recordId, Query model, guid modelRecordId) {
         Scheduler.reset();
     }
-
 }

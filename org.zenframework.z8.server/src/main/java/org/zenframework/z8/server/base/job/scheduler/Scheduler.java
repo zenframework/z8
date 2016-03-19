@@ -21,9 +21,8 @@ public class Scheduler implements Runnable {
 	private List<Task> tasks = new ArrayList<Task>();
 
 	public static void start() {
-		if(scheduler == null && ApplicationServer.config().schedulerEnabled()) {
+		if(scheduler == null && ApplicationServer.config().schedulerEnabled())
 			scheduler = new Scheduler();
-		}
 	}
 
 	public static void stop() {
@@ -56,6 +55,7 @@ public class Scheduler implements Runnable {
 			try {
 				Thread.sleep(1 * 1000);
 			} catch(InterruptedException e) {
+				break;
 			}
 		}
 	}

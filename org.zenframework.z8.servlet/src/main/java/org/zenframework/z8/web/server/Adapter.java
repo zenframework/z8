@@ -155,6 +155,6 @@ public abstract class Adapter {
 		node = server.processRequest(session, node);
 
 		if(response != null)
-			writeResponse(response, node.getBytes());
+			writeResponse(response, node.getContent());
 	}
 }

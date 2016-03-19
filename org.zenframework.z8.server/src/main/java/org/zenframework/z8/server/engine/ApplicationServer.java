@@ -180,9 +180,6 @@ public class ApplicationServer extends RmiServer implements IApplicationServer {
 
     @Override
     public GNode processRequest(ISession session, GNode node) throws RemoteException {
-
-        GNode result = new GNode();
-
         IRequest request = new Request(node.getAttributes(), node.getFiles(), session);
         IResponse response = request.getResponse();
 
@@ -192,8 +189,6 @@ public class ApplicationServer extends RmiServer implements IApplicationServer {
 
         setRequest(null);
 
-        result.set(response.getContent());
-
-        return result;
+        return new GNode(response.getContent());
     }
 }

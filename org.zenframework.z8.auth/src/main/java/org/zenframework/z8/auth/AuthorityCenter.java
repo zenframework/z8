@@ -62,14 +62,14 @@ public class AuthorityCenter extends RmiServer implements IAuthorityCenter {
 
 	@Override
 	public void stop() throws RemoteException {
+		sessionManager.stop();
+
 		for(ServerInfo info : servers.toArray(new ServerInfo[0])) {
 			try {
 				info.getServer().stop();
 			} catch(RemoteException e) {
 			}
 		}
-
-		sessionManager.stop();
 
 		try {
 			super.stop();
