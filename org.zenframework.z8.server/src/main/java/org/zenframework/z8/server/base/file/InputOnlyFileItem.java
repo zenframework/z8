@@ -10,78 +10,91 @@ import java.io.UnsupportedEncodingException;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.FileItemHeaders;
 
-public class InputOnlyFileItem implements FileItem
-{
-	private static final long serialVersionUID = -2878883966271701862L;
+public class InputOnlyFileItem implements FileItem {
 
-	private File file;
-	private String name;
-	
-	public InputOnlyFileItem(File file, String name) {
-		this.file = file;
-		this.name = name;
-	}
-	
-	public String getName() {
-		return name;
-	}
+    private static final long serialVersionUID = -2878883966271701862L;
 
-	public InputStream getInputStream() throws IOException {
-		return new FileInputStream(file);
-	}
+    private File file;
+    private String name;
 
-	public FileItemHeaders getHeaders() {
-		return null;
-	}
+    public InputOnlyFileItem(File file, String name) {
+        this.file = file;
+        this.name = name;
+    }
 
-	public void setHeaders(FileItemHeaders headers) {
-	}
+    @Override
+    public String getName() {
+        return name;
+    }
 
-	public String getContentType() {
-		return null;
-	}
+    @Override
+    public InputStream getInputStream() throws IOException {
+        return new FileInputStream(file);
+    }
 
-	public boolean isInMemory() {
-		return false;
-	}
+    @Override
+    public FileItemHeaders getHeaders() {
+        return null;
+    }
 
-	public long getSize() {
-		return file.length();
-	}
+    @Override
+    public void setHeaders(FileItemHeaders headers) {}
 
-	public byte[] get() {
-		return null;
-	}
+    @Override
+    public String getContentType() {
+        return null;
+    }
 
-	public String getString(String encoding) throws UnsupportedEncodingException {
-		return null;
-	}
+    @Override
+    public boolean isInMemory() {
+        return false;
+    }
 
-	public String getString() {
-		return null;
-	}
+    @Override
+    public long getSize() {
+        return file.length();
+    }
 
-	public void write(File file) throws Exception {
-	}
+    @Override
+    public byte[] get() {
+        return null;
+    }
 
-	public void delete() {
-	}
+    @Override
+    public String getString(String encoding) throws UnsupportedEncodingException {
+        return null;
+    }
 
-	public String getFieldName() {
-		return null;
-	}
+    @Override
+    public String getString() {
+        return null;
+    }
 
-	public void setFieldName(String name) {
-	}
+    @Override
+    public void write(File file) throws Exception {}
 
-	public boolean isFormField() {
-		return false;
-	}
+    @Override
+    public void delete() {}
 
-	public void setFormField(boolean state) {
-	}
+    @Override
+    public String getFieldName() {
+        return null;
+    }
 
-	public OutputStream getOutputStream() throws IOException {
-		return null;
-	}
+    @Override
+    public void setFieldName(String name) {}
+
+    @Override
+    public boolean isFormField() {
+        return false;
+    }
+
+    @Override
+    public void setFormField(boolean state) {}
+
+    @Override
+    public OutputStream getOutputStream() throws IOException {
+        return null;
+    }
+
 }
