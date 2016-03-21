@@ -16,7 +16,6 @@ import org.zenframework.z8.server.runtime.RCollection;
 import org.zenframework.z8.server.runtime.ServerRuntime;
 import org.zenframework.z8.server.types.bool;
 import org.zenframework.z8.server.types.guid;
-import org.zenframework.z8.server.utils.IOUtils;
 
 public class TransportProcedure extends Procedure {
 
@@ -104,20 +103,20 @@ public class TransportProcedure extends Procedure {
         messages.readExportMessages(selfAddress);
 
         Set<Transport> deadTransports = new HashSet<Transport>();
-        
+
         while (messages.next()) {
             Transport transport = engine.getTransport(context.get(), messages.getProtocol());
-            
+
             if (transport == null || deadTransports.contains(transport))
-            	continue;
-            
+                continue;
+
             try {
-            	transport.connect(); // это долго, если сервера нет или сдох
-            } catch(TransportException e) {
-            	log("Can't import message via protocol '" + transport.getProtocol() + "'", e);
-            	IOUtils.closeQuietly(transport);
-            	deadTransports.add(transport);
-            	continue;
+                transport.connect(); // это долго, если сервера нет или сдох
+            } catch (TransportException e) {
+                log("Can't import message via protocol '" + transport.getProtocol() + "'", e);
+                transport.close();
+                deadTransports.add(transport);
+                continue;
             }
 
             try {
@@ -126,7 +125,7 @@ public class TransportProcedure extends Procedure {
                 beginProcessMessage(messages);
 
                 Message.CLASS<Message> message = messages.getMessage();
-                
+
                 z8_beforeExport(message);
 
                 transport.send(message.get());
@@ -136,8 +135,8 @@ public class TransportProcedure extends Procedure {
 
                 connection.commit();
             } catch (Throwable e) {
-            	if(e instanceof TransportException)
-            		IOUtils.closeQuietly(transport);
+                if (e instanceof TransportException)
+                    transport.close();
                 connection.rollback();
                 log("Can't send messsage '" + messages.recordId() + "'", e);
             }
@@ -155,7 +154,8 @@ public class TransportProcedure extends Procedure {
                         connection.commit();
                         transport.commit();
                     } catch (Throwable e) {
-                        log("Can't save incoming message " + message.getId() + " from '" + transport.getUrl(message.getAddress()) + "'", e);
+                        log("Can't save incoming message " + message.getId() + " from '"
+                                + transport.getUrl(message.getAddress()) + "'", e);
                         connection.rollback();
                         transport.rollback();
                     }

@@ -1,8 +1,6 @@
 package org.zenframework.z8.server.ie;
 
-import java.io.Closeable;
-
-public interface Transport extends Closeable {
+public interface Transport {
 
     void connect() throws TransportException;
 
