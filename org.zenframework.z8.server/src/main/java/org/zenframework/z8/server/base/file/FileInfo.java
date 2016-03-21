@@ -23,7 +23,15 @@ import org.zenframework.z8.server.types.string;
 import org.zenframework.z8.server.utils.IOUtils;
 
 public class FileInfo extends OBJECT implements Serializable {
+
 	private static final long serialVersionUID = -4474455212423780540L;
+	private static final byte FILE_INFO_VERSION = 1;
+	
+	private static final String PROP_DEFAULT_READ = "z8.serialization.FileInfo.defaultReadObject";
+	private static final String PROP_DEFAULT_WRITE = "z8.serialization.FileInfo.defaultWriteObject";
+
+	private static final boolean DEFAULT_READ = Boolean.parseBoolean(System.getProperty(PROP_DEFAULT_READ));
+	private static final boolean DEFAULT_WRITE = Boolean.parseBoolean(System.getProperty(PROP_DEFAULT_WRITE));
 
 	public string name = new string();
 	public string path = new string();
@@ -31,9 +39,9 @@ public class FileInfo extends OBJECT implements Serializable {
 	public datetime time = new datetime();
 	public guid id = new guid();
 
-	public JsonObject json;
+	public transient JsonObject json;
 
-	public FileItem file;
+	public transient FileItem file;
 
 	public static class CLASS<T extends FileInfo> extends OBJECT.CLASS<T> {
 		public CLASS() {
@@ -104,10 +112,10 @@ public class FileInfo extends OBJECT implements Serializable {
 	public static List<FileInfo> parseArray(String json) {
 		List<FileInfo> result = new ArrayList<FileInfo>();
 
-		if(!json.isEmpty()) {
+		if (!json.isEmpty()) {
 			JsonArray array = new JsonArray(json);
 
-			for(int i = 0; i < array.length(); i++)
+			for (int i = 0; i < array.length(); i++)
 				result.add(parse(array.getJsonObject(i)));
 		}
 		return result;
@@ -116,7 +124,7 @@ public class FileInfo extends OBJECT implements Serializable {
 	public static String toJson(Collection<FileInfo> fileInfos) {
 		JsonArray array = new JsonArray();
 
-		for(FileInfo file : fileInfos)
+		for (FileInfo file : fileInfos)
 			array.add(file.toJsonObject());
 
 		return array.toString();
@@ -127,7 +135,7 @@ public class FileInfo extends OBJECT implements Serializable {
 	}
 
 	public JsonObject toJsonObject() {
-		if(json == null) {
+		if (json == null) {
 			json = new JsonObject();
 			json.put(Json.name, name);
 			// json.put(Json.time, time);
@@ -143,7 +151,7 @@ public class FileInfo extends OBJECT implements Serializable {
 
 		JsonArray array = new JsonArray(json.get());
 
-		for(int index = 0; index < array.length(); index++) {
+		for (int index = 0; index < array.length(); index++) {
 			JsonObject object = array.getJsonObject(index);
 
 			FileInfo.CLASS<FileInfo> fileInfo = new FileInfo.CLASS<FileInfo>();
@@ -165,13 +173,13 @@ public class FileInfo extends OBJECT implements Serializable {
 
 	@Override
 	public boolean equals(Object object) {
-		return object instanceof FileInfo && id != null && id.equals(((FileInfo)object).id);
+		return object instanceof FileInfo && id != null && id.equals(((FileInfo) object).id);
 	}
 
 	public InputStream getInputStream() {
 		try {
-			return file.getInputStream();
-		} catch(IOException e) {
+			return file == null ? null : file.getInputStream();
+		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}
 	}
@@ -179,21 +187,20 @@ public class FileInfo extends OBJECT implements Serializable {
 	public OutputStream getOutputStream() {
 		try {
 			return file.getOutputStream();
-		} catch(IOException e) {
+		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}
 	}
 
 	private void writeObject(ObjectOutputStream outputStream) throws IOException {
-		outputStream.writeObject(name);
-		outputStream.writeObject(path);
-		outputStream.writeObject(type);
-		outputStream.writeObject(time);
-		outputStream.writeObject(id);
+		outputStream.defaultWriteObject();
+		if (DEFAULT_WRITE)
+			return;
 
+		outputStream.writeByte(FILE_INFO_VERSION);
 		outputStream.writeBoolean(file != null);
 
-		if(file != null) {
+		if (file != null) {
 			InputStream inputStream = file.getInputStream();
 
 			try {
@@ -205,13 +212,13 @@ public class FileInfo extends OBJECT implements Serializable {
 	}
 
 	private void readObject(ObjectInputStream inputStream) throws IOException, ClassNotFoundException {
-		name = (string)inputStream.readObject();
-		path = (string)inputStream.readObject();
-		type = (string)inputStream.readObject();
-		time = (datetime)inputStream.readObject();
-		id = (guid)inputStream.readObject();
+		inputStream.defaultReadObject();
+		if (DEFAULT_READ)
+			return;
 
-		if(inputStream.readBoolean()) {
+		// Read FileInfo version - for future use
+		inputStream.readByte();
+		if (inputStream.readBoolean()) {
 			file = FilesFactory.createFileItem(name.get());
 
 			OutputStream outputStream = file.getOutputStream();
@@ -223,4 +230,5 @@ public class FileInfo extends OBJECT implements Serializable {
 			}
 		}
 	}
+
 }
