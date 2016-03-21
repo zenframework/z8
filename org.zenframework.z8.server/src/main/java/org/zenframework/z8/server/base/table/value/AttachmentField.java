@@ -35,6 +35,7 @@ public class AttachmentField extends TextField {
         return processor;
     }
     
+    @Override
     public String searchValue() {
         Collection<FileInfo> files = getAttachmentProcessor().get();
         
