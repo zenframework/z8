@@ -4,6 +4,7 @@ import org.zenframework.z8.server.base.model.command.IParameter;
 import org.zenframework.z8.server.base.view.command.Command;
 import org.zenframework.z8.server.db.Connection;
 import org.zenframework.z8.server.db.ConnectionManager;
+import org.zenframework.z8.server.json.JsonWriter;
 import org.zenframework.z8.server.json.parser.JsonObject;
 
 public class CommandAction extends Action {
@@ -12,7 +13,7 @@ public class CommandAction extends Action {
 	}
 
 	@Override
-	public void writeResponse(JsonObject writer) {
+	public void writeResponse(JsonWriter writer) {
 		Command command = getQuery().getCommand(getCommandParameter());
 
 		JsonObject object = new JsonObject(getParametersParameter());

@@ -44,8 +44,7 @@ import org.zenframework.z8.server.db.sql.expressions.True;
 import org.zenframework.z8.server.db.sql.functions.InVector;
 import org.zenframework.z8.server.engine.ApplicationServer;
 import org.zenframework.z8.server.json.Json;
-import org.zenframework.z8.server.json.parser.JsonArray;
-import org.zenframework.z8.server.json.parser.JsonObject;
+import org.zenframework.z8.server.json.JsonWriter;
 import org.zenframework.z8.server.logs.Trace;
 import org.zenframework.z8.server.reports.BirtFileReader;
 import org.zenframework.z8.server.reports.ReportBindingFileReader;
@@ -1838,14 +1837,14 @@ public class Query extends Runnable {
         return CLASS.asList(chartSeries());
     }
 
-    public void writeMeta(JsonObject writer, Collection<Field> fields) {
+    public void writeMeta(JsonWriter writer, Collection<Field> fields) {
         Query rootQuery = getRootQuery();
 
         String name = rootQuery != null ? rootQuery.name() : null;
 
-        writer.put(Json.id, id());
-        writer.put(Json.name, name);
-        writer.put(Json.icon, icon());
+        writer.writeProperty(Json.id, id());
+        writer.writeProperty(Json.name, name);
+        writer.writeProperty(Json.icon, icon());
 
         writeRecordActions(writer);
 
@@ -1867,60 +1866,64 @@ public class Query extends Runnable {
         boolean importAccess = access != null ? access.getImport() : true;
 
         // visuals
-        writer.put(Json.text, displayName());
+        writer.writeProperty(Json.text, displayName());
 
-        writer.put(Json.readOnly, hasGroupBy || rootQuery == null ? true : readOnly());
-        writer.put(Json.writeAccess, writeAccess);
-        writer.put(Json.deleteAccess, deleteAccess);
-        writer.put(Json.importAccess, importAccess);
+        writer.writeProperty(Json.readOnly, hasGroupBy || rootQuery == null ? true : readOnly());
+        writer.writeProperty(Json.writeAccess, writeAccess);
+        writer.writeProperty(Json.deleteAccess, deleteAccess);
+        writer.writeProperty(Json.importAccess, importAccess);
 
-        writer.put(Json.showTotals, showTotals);
-        writer.put(Json.columns, columns);
-        writer.put(Json.viewMode, viewMode.toString());
-        writer.put(Json.width, width);
-        writer.put(Json.height, height);
+        writer.writeProperty(Json.showTotals, showTotals);
+        writer.writeProperty(Json.columns, columns);
+        writer.writeProperty(Json.viewMode, viewMode.toString());
+        writer.writeProperty(Json.width, width);
+        writer.writeProperty(Json.height, height);
     }
 
-    private void writeRecordActions(JsonObject writer) {
-        JsonArray actionsArr = new JsonArray();
+    private void writeRecordActions(JsonWriter writer) {
+        writer.startArray(Json.actions);
 
         for (RecordActions action : recordActions)
-            actionsArr.put(action.toString());
+            writer.write(action.toString());
         
-        writer.put(Json.actions, actionsArr);
+        writer.finishArray();
     }
 
-    private void writeKeys(JsonObject writer, Collection<Field> fields) {
+    private void writeKeys(JsonWriter writer, Collection<Field> fields) {
         Field primaryKey = primaryKey();
 
         if (primaryKey != null && fields.contains(primaryKey))
-            writer.put(Json.primaryKey, primaryKey.id());
+            writer.writeProperty(Json.primaryKey, primaryKey.id());
 
         Field lockKey = lockKey();
 
         if (lockKey != null && fields.contains(lockKey))
-            writer.put(Json.lockKey, lockKey.id());
+            writer.writeProperty(Json.lockKey, lockKey.id());
 
         AttachmentField attachments = getAttachmentField();
         
         if (attachments != null && fields.contains(attachments))
-            writer.put(Json.attachments, attachments.id());
+            writer.writeProperty(Json.attachments, attachments.id());
 
         Field parentKey = parentKey();
 
         if (parentKey != null && fields.contains(parentKey) && showAsTree()) {
-            writer.put(Json.parentKey, parentKey().id());
-            writer.put(Json.parentId, guid.NULL.toString());
+            writer.writeProperty(Json.parentKey, parentKey().id());
+            writer.writeProperty(Json.parentId, guid.NULL.toString());
 
-            writer.put(Json.children, children().id());
-            writer.put(Json.parentsSelectable, parentsSelectable);
+            writer.writeProperty(Json.children, children().id());
+            writer.writeProperty(Json.parentsSelectable, parentsSelectable);
         }
 
-        if (!recordIds.isEmpty())
-            writer.put(Json.ids, new JsonArray(recordIds));
+        if (!recordIds.isEmpty()) {
+        	writer.startArray(Json.ids);
+        	for(guid id : recordIds)
+        		writer.write(id);
+            writer.finishArray();
+        }
     }
 
-    private boolean writeGroupByFields(JsonObject writer, Collection<Field> fields) {
+    private boolean writeGroupByFields(JsonWriter writer, Collection<Field> fields) {
         Collection<? extends Field> groupByFields = collectGroupByFields();
 
         if (groupByFields.isEmpty())
@@ -1929,14 +1932,12 @@ public class Query extends Runnable {
         if (groupByFields.isEmpty())
             return false;
 
-        JsonArray groupsArr = new JsonArray();
+        writer.startArray(Json.groups);
 
-        for (Field field : groupByFields) {
-            assert (fields.contains(field));
-            groupsArr.put(field.id());
-        }
+        for (Field field : groupByFields)
+            writer.write(field.id());
 
-        writer.put(Json.groups, groupsArr);
+        writer.finishArray();
 
         return true;
     }
@@ -1961,31 +1962,31 @@ public class Query extends Runnable {
         return false;
     }
 
-    private void writeFields(JsonObject writer, Collection<Field> fields) {
-        JsonArray fieldsArr = new JsonArray();
+    private void writeFields(JsonWriter writer, Collection<Field> fields) {
+        writer.startArray(Json.fields);
 
         for (Field field : fields) {
-            JsonObject fieldObj = new JsonObject();
-            field.writeMeta(fieldObj);
+            writer.startObject();
+            field.writeMeta(writer);
 
             Collection<ILink> path = getPath(field);
             Query owner = field.owner();
 
-            fieldObj.put(Json.depth, path.size());
+            writer.writeProperty(Json.depth, path.size());
 
             boolean readOnly = false;
             boolean required = false;
 
             if (!path.isEmpty()) {
                 String linkId = path.toArray(new ILink[0])[path.size() - 1].id();
-                fieldObj.put(Json.linked, true);
-                fieldObj.put(Json.linkId, linkId);
-                fieldObj.put(Json.linkedVia, owner.primaryKey().id());
-                fieldObj.put(Json.groupId, owner.id());
+                writer.writeProperty(Json.linked, true);
+                writer.writeProperty(Json.linkId, linkId);
+                writer.writeProperty(Json.linkedVia, owner.primaryKey().id());
+                writer.writeProperty(Json.groupId, owner.id());
 
                 if (field.editWith == null) {
-                    fieldObj.put(Json.editWith, owner.classId());
-                    fieldObj.put(Json.editWithText, owner.displayName());
+                	writer.writeProperty(Json.editWith, owner.classId());
+                	writer.writeProperty(Json.editWithText, owner.displayName());
                 }
 
                 readOnly = hasReadOnlyLinks(path) || !field.selectable.get();
@@ -1995,98 +1996,100 @@ public class Query extends Runnable {
                 required = !readOnly && field.required.get();
             }
 
-            fieldObj.put(Json.required, required);
-            fieldObj.put(Json.readOnly, readOnly);
+            writer.writeProperty(Json.required, required);
+            writer.writeProperty(Json.readOnly, readOnly);
 
             Collection<Query> owners = QueryUtils.getOwners(path);
             owners.add(owner);
 
             Collection<Filter> filters = QueryUtils.getFilters(owners);
 
-            JsonArray filtersArr = new JsonArray();
+            writer.startArray(Json.filter);
 
             for (Filter filter : filters) {
-                JsonObject filterObj = new JsonObject();
-                filter.write(filterObj);
-                filtersArr.put(filterObj);
+                writer.startObject();
+                filter.write(writer);
+                writer.finishObject();
             }
 
-            fieldObj.put(Json.filter, filtersArr);
+            writer.finishArray();
 
             if (field.editWith != null) {
-                fieldObj.put(Json.editWith, field.editWith.classId());
-                fieldObj.put(Json.editWithText, field.editWith.displayName());
+            	writer.writeProperty(Json.editWith, field.editWith.classId());
+            	writer.writeProperty(Json.editWithText, field.editWith.displayName());
             }
 
-            fieldsArr.put(fieldObj);
+            writer.finishObject();
         }
 
-        writer.put(Json.fields, fieldsArr);
+        writer.finishArray();
     }
 
-    private void writeOwners(JsonObject writer) {
-        JsonArray bwdArr = new JsonArray();
-
+    private void writeOwners(JsonWriter writer) {
+        writer.startArray(Json.backwards);
         for (Query owner : getOwners())
-            writeOwnerMeta(bwdArr, owner);
-
-        writer.put(Json.backwards, bwdArr);
+            writeOwnerMeta(writer, owner);
+        writer.finishArray();
     }
 
-    private void writeReports(JsonObject writer) {
+    private void writeReports(JsonWriter writer) {
         Collection<ReportInfo> reports = getReports();
-        JsonArray reportsArr = new JsonArray();
+
+        writer.startArray(Json.reports);
         for (ReportInfo report : reports) {
-            JsonObject reportObj = new JsonObject();
-            reportObj.put(Json.id, report.fileName());
-            reportObj.put(Json.text, report.displayName());
-            reportsArr.put(reportObj);
+            writer.startObject();
+            writer.writeProperty(Json.id, report.fileName());
+            writer.writeProperty(Json.text, report.displayName());
+            writer.finishObject();
         }
-        writer.put(Json.reports, reportsArr);
+        writer.finishArray();
     }
 
-    private void writeCharts(JsonObject writer) {
-        writer.put(Json.chartType, chartType.toString());
+    private void writeCharts(JsonWriter writer) {
+        writer.writeProperty(Json.chartType, chartType.toString());
 
         Collection<Field> series = getChartSeries();
-        JsonArray fieldsArr = new JsonArray();
+
+        writer.startArray(Json.chartSeries);
 
         for (Field field : series)
-            fieldsArr.put(field.id());
+            writer.write(field.id());
 
-        writer.put(Json.chartSeries, fieldsArr);
+        writer.finishArray();
     }
 
-    private void writeCommands(JsonObject writer) {
-        JsonArray commandsArr = new JsonArray();
+    private void writeCommands(JsonWriter writer) {
+        writer.startArray(Json.commands);
+
         for (ICommand command : getCommands()) {
-            JsonObject commandObj = new JsonObject();
-            command.write(commandObj);
-            commandsArr.put(commandObj);
+            writer.startObject();
+            command.write(writer);
+            writer.finishObject();
         }
-        writer.put(Json.commands, commandsArr);
+        
+        writer.finishArray();
     }
 
-    private void writePeriod(JsonObject writer) {
+    private void writePeriod(JsonWriter writer) {
         if (period != null) {
-            JsonObject periodObj = new JsonObject();
-            periodObj.put(Json.period, period.get().type.toString());
-            periodObj.put(Json.start, period.get().start);
-            periodObj.put(Json.finish, period.get().finish);
-            writer.put(Json.period, periodObj);
+            writer.startObject(Json.period);
+            writer.writeProperty(Json.period, period.get().type.toString());
+            writer.writeProperty(Json.start, period.get().start);
+            writer.writeProperty(Json.finish, period.get().finish);
+            writer.finishObject();
         }
     }
 
-    private void writeOwnerMeta(JsonArray writer, Query owner) {
+    private void writeOwnerMeta(JsonWriter writer, Query owner) {
         while (owner != null) {
             Query ownerRoot = owner.getRootQuery();
 
             if (ownerRoot != null && owner.visible.get()) {
-                JsonObject obj = new JsonObject();
-                obj.put(Json.text, owner.getRootQuery().displayName());
-                obj.put(Json.queryId, owner.id());
-                obj.put(Json.icon, owner.getRootQuery().icon());
-                writer.put(obj);
+                writer.startObject();
+                writer.writeProperty(Json.text, owner.getRootQuery().displayName());
+                writer.writeProperty(Json.queryId, owner.id());
+                writer.writeProperty(Json.icon, owner.getRootQuery().icon());
+                writer.finishObject();
             }
 
             int ownersCount = owner.getOwnersCount();

@@ -9,8 +9,7 @@ import org.zenframework.z8.server.base.form.FieldGroup;
 import org.zenframework.z8.server.base.query.Query;
 import org.zenframework.z8.server.base.table.value.Field;
 import org.zenframework.z8.server.json.Json;
-import org.zenframework.z8.server.json.parser.JsonArray;
-import org.zenframework.z8.server.json.parser.JsonObject;
+import org.zenframework.z8.server.json.JsonWriter;
 import org.zenframework.z8.server.types.guid;
 
 public class MetaAction extends ReadAction {
@@ -22,19 +21,19 @@ public class MetaAction extends ReadAction {
     }
 
     @Override
-    public void writeResponse(JsonObject writer) throws Throwable {
+    public void writeResponse(JsonWriter writer) throws Throwable {
         ActionParameters actionParameters = actionParameters();
         Map<String, String> requestParameters = actionParameters.requestParameters;
 
         Query query = getQuery();
 
-        writer.put(Json.isQuery, true);
+        writer.writeProperty(Json.isQuery, true);
 
-        writer.put(Json.queryId, requestParameters.get(Json.queryId));
+        writer.writeProperty(Json.queryId, requestParameters.get(Json.queryId));
 
         if(actionParameters.link != null) {
-            writer.put(Json.fieldId, requestParameters.get(Json.fieldId));
-            writer.put(Json.linkId, actionParameters.link.id());
+            writer.writeProperty(Json.fieldId, requestParameters.get(Json.fieldId));
+            writer.writeProperty(Json.linkId, actionParameters.link.id());
         }
 
         Collection<Field> fields = getSelectFields();
@@ -43,7 +42,6 @@ public class MetaAction extends ReadAction {
         writeSortFields(writer, actionParameters.sortFields);
         writeGroupFields(writer, actionParameters.groupFields);
 
-        writeSections(writer, fields);
         writeSections(writer, fields);
 
         requestParameters.put(Json.start.get(), StartValue);
@@ -58,27 +56,23 @@ public class MetaAction extends ReadAction {
         super.writeResponse(writer);
     }
 
-    private void writeSortFields(JsonObject writer, Collection<Field> sortFields) {
+    private void writeSortFields(JsonWriter writer, Collection<Field> sortFields) {
         if(!sortFields.isEmpty()) {
             Field field = sortFields.iterator().next();
 
-            writer.put(Json.sort, field.id());
-            writer.put(Json.direction, field.sortDirection.toString());
+            writer.writeProperty(Json.sort, field.id());
+            writer.writeProperty(Json.direction, field.sortDirection.toString());
         }
     }
 
-    private void writeGroupFields(JsonObject writer, Collection<Field> groupFields) {
+    private void writeGroupFields(JsonWriter writer, Collection<Field> groupFields) {
         if(!groupFields.isEmpty()) {
-            JsonArray groupArr = new JsonArray();
+            writer.startArray(Json.groupBy);
 
-            for(Field field : groupFields) {
-                groupArr.put(field.id());
-                // writer.writeProperty(Json.groupDir,
-                // field.sortDirection.toString());
-                // writer.writeProperty(Json.collapseGroups,
-                // collapseGroups);
-            }
-            writer.put(Json.groupBy, groupArr);
+            for(Field field : groupFields)
+                writer.write(field.id());
+
+            writer.finishArray();
         }
     }
 
@@ -151,43 +145,41 @@ public class MetaAction extends ReadAction {
         return controls;
     }
 
-    private void writeSections(JsonObject writer, Collection<Field> fields) {
+    private void writeSections(JsonWriter writer, Collection<Field> fields) {
         Section section = getSections(null, fields);
 
-        if(section == null) {
+        if(section == null)
             return;
-        }
 
-        JsonObject sectionObj = new JsonObject();
-        writeSection(sectionObj, section);
-        writer.put(Json.section, sectionObj);
+        writer.startObject(Json.section);
+        writeSection(writer, section);
+        writer.finishObject();
     }
 
-    private void writeSection(JsonObject writer, Section section) {
-        if(section.group != null) {
+    private void writeSection(JsonWriter writer, Section section) {
+        if(section.group != null)
             section.group.writeMeta(writer);
-        }
 
-        writer.put(Json.isSection, true);
+        writer.writeProperty(Json.isSection, true);
 
-        JsonArray controlsArr = new JsonArray();
+        writer.startArray(Json.controls);
 
         for(Object control : section.controls) {
             if(control instanceof Field) {
                 Field field = (Field)control;
                 if(!field.system.get()) {
-                    JsonObject obj = new JsonObject();
-                    obj.put(Json.id, field.id());
-                    controlsArr.put(obj);
+                    writer.startObject();
+                    writer.writeProperty(Json.id, field.id());
+                    writer.finishObject();
                 }
             }
             else if(control instanceof Section) {
-                JsonObject obj = new JsonObject();
-                writeSection(obj, (Section)control);
-                controlsArr.put(obj);
+                writer.startObject();
+                writeSection(writer, (Section)control);
+                writer.finishObject();
             }
         }
 
-        writer.put(Json.controls, controlsArr);
+        writer.finishArray();
     }
 }

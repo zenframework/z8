@@ -5,7 +5,7 @@ import java.util.LinkedHashSet;
 
 import org.zenframework.z8.server.base.table.value.Field;
 import org.zenframework.z8.server.json.Json;
-import org.zenframework.z8.server.json.parser.JsonObject;
+import org.zenframework.z8.server.json.JsonWriter;
 import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.runtime.RCollection;
 import org.zenframework.z8.server.types.integer;
@@ -62,8 +62,8 @@ public class FieldGroup extends Control {
     }
 
     @Override
-    public void writeMeta(JsonObject writer) {
+    public void writeMeta(JsonWriter writer) {
         super.writeMeta(writer);
-        writer.put(Json.columns, columns);
+        writer.writeProperty(Json.columns, columns);
     }
 }

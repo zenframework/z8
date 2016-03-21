@@ -15,8 +15,6 @@ import org.zenframework.z8.server.base.view.Dashboard;
 import org.zenframework.z8.server.engine.ApplicationServer;
 import org.zenframework.z8.server.json.Json;
 import org.zenframework.z8.server.json.JsonWriter;
-import org.zenframework.z8.server.json.parser.JsonArray;
-import org.zenframework.z8.server.json.parser.JsonObject;
 import org.zenframework.z8.server.logs.Trace;
 import org.zenframework.z8.server.runtime.OBJECT;
 import org.zenframework.z8.server.security.IUser;
@@ -55,13 +53,11 @@ public class RequestDispatcher implements Runnable {
                 Trace.logError(request.toString(), exception);
             }
 
-            JsonObject writer = new JsonObject();
-            writer.put(Json.requestId, request.id());
-            writer.put(Json.success, false);
-            writer.put(Json.type, "event");
-
-            writer.put(Json.data, new JsonArray());
-
+            JsonWriter writer = new JsonWriter();
+            writer.startResponse(request.id(), false);
+            writer.startArray(Json.data);
+            writer.finishArray();            
+            
             IMonitor monitor = request.getMonitor();
             monitor.print(ErrorUtils.getMessage(exception));
             monitor.log(exception);
@@ -73,6 +69,8 @@ public class RequestDispatcher implements Runnable {
                 Trace.logError(e);
             }
 
+            writer.finishResponse();
+            
             response.setContent(writer.toString());
         }
         finally {

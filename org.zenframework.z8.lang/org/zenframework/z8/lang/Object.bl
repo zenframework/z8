@@ -1,5 +1,5 @@
+import org.zenframework.z8.base.json.JsonWriter;
 import org.zenframework.z8.base.json.JsonArray;
-import org.zenframework.z8.base.json.JsonObject;
 import org.zenframework.z8.base.security.User;
 
 [native "org.zenframework.z8.server.runtime.OBJECT"]
@@ -9,7 +9,7 @@ class Object {
 	static public User user();
 	static public void log(string text);
 	static public void showMessage(string text);
-	static public JsonObject getWriter();
+	static public JsonWriter getWriter();
     static public string[string] requestParameters();
 
 	static public int currentTimeMillis();

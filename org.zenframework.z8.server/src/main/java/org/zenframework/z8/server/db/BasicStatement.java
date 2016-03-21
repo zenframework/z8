@@ -24,8 +24,8 @@ import org.zenframework.z8.server.types.integer;
 import org.zenframework.z8.server.types.string;
 
 public abstract class BasicStatement implements IStatement {
-    private Connection connection;
-
+	private Connection connection;
+   
     protected String sql;
     protected PreparedStatement statement;
 

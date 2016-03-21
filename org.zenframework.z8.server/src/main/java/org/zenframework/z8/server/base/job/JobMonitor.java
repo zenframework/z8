@@ -2,7 +2,7 @@ package org.zenframework.z8.server.base.job;
 
 import org.zenframework.z8.server.engine.ApplicationServer;
 import org.zenframework.z8.server.json.Json;
-import org.zenframework.z8.server.json.parser.JsonObject;
+import org.zenframework.z8.server.json.JsonWriter;
 import org.zenframework.z8.server.request.Monitor;
 
 public class JobMonitor extends Monitor {
@@ -59,25 +59,24 @@ public class JobMonitor extends Monitor {
     }
 
     @Override
-    public void writeResponse(JsonObject writer) {
+    public void writeResponse(JsonWriter writer) {
         synchronized(mutex) {
             boolean isDone = isDone();
 
-            writer.put(Json.jobId, id());
+            writer.writeProperty(Json.jobId, id());
 
-            writer.put(Json.done, isDone);
-            writer.put(Json.totalWork, totalWork);
-            writer.put(Json.worked, worked);
+            writer.writeProperty(Json.done, isDone);
+            writer.writeProperty(Json.totalWork, totalWork);
+            writer.writeProperty(Json.worked, worked);
 
-            writer.put(Json.serverId, ApplicationServer.Id);
+            writer.writeProperty(Json.serverId, ApplicationServer.Id);
             writer.writeInfo(getMessages(), isDone ? getLog() : null);
 
             collectLogMessages();
             clearMessages();
 
-            if(isDone) {
+            if(isDone)
                 Job.removeMonitor(this);
-            }
         }
     }
 }

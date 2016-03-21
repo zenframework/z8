@@ -6,8 +6,7 @@ import org.zenframework.z8.server.base.model.command.ICommand;
 import org.zenframework.z8.server.base.model.command.IParameter;
 import org.zenframework.z8.server.base.simple.Runnable;
 import org.zenframework.z8.server.json.Json;
-import org.zenframework.z8.server.json.parser.JsonArray;
-import org.zenframework.z8.server.json.parser.JsonObject;
+import org.zenframework.z8.server.json.JsonWriter;
 import org.zenframework.z8.server.request.INamedObject;
 import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.runtime.RCollection;
@@ -84,22 +83,22 @@ public class Command extends Runnable implements ICommand {
     }
 
     @Override
-    public void write(JsonObject writer) {
-        writer.put(Json.id, id);
-        writer.put(Json.text, text);
-        writer.put(Json.description, description);
-        writer.put(Json.icon, icon);
+    public void write(JsonWriter writer) {
+        writer.writeProperty(Json.id, id);
+        writer.writeProperty(Json.text, text);
+        writer.writeProperty(Json.description, description);
+        writer.writeProperty(Json.icon, icon);
 
-        JsonArray paramsArr = new JsonArray();
+        writer.startArray(Json.parameters);
 
         for(Parameter.CLASS<?> cls : parameters) {
             Parameter parameter = (Parameter)cls.get();
-            JsonObject paramObj = new JsonObject();
-            parameter.write(paramObj);
-            paramsArr.put(paramObj);
+            writer.startObject();
+            parameter.write(writer);
+            writer.finishObject();
         }
 
-        writer.put(Json.parameters, paramsArr);
+        writer.finishArray();
     }
 
     static public Command.CLASS<? extends Command> z8_create(string id, string text) {

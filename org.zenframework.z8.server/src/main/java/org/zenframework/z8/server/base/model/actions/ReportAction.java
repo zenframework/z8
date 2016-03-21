@@ -9,14 +9,15 @@ import org.zenframework.z8.server.base.query.Query;
 import org.zenframework.z8.server.base.table.value.Field;
 import org.zenframework.z8.server.engine.ApplicationServer;
 import org.zenframework.z8.server.json.Json;
+import org.zenframework.z8.server.json.JsonWriter;
 import org.zenframework.z8.server.json.parser.JsonArray;
 import org.zenframework.z8.server.json.parser.JsonObject;
 import org.zenframework.z8.server.reports.BirtReportRunner;
 import org.zenframework.z8.server.reports.PageFormat;
 import org.zenframework.z8.server.reports.PageOrientation;
 import org.zenframework.z8.server.reports.PrintOptions;
-import org.zenframework.z8.server.reports.Reports;
 import org.zenframework.z8.server.reports.ReportOptions;
+import org.zenframework.z8.server.reports.Reports;
 import org.zenframework.z8.server.types.guid;
 import org.zenframework.z8.server.types.integer;
 
@@ -143,7 +144,7 @@ public class ReportAction extends Action {
     }
 
     @Override
-    public void writeResponse(JsonObject writer) {
+    public void writeResponse(JsonWriter writer) {
         PrintOptions printOptions = new PrintOptions();
 
         String report = getReportParameter();
@@ -175,7 +176,7 @@ public class ReportAction extends Action {
 
         String reportId = report != null ? reportRunner.execute() : reportRunner.execute(columns, groupFields);
 
-        writer.put(Json.source, reportId);
-        writer.put(Json.serverId, ApplicationServer.Id);
+        writer.writeProperty(Json.source, reportId);
+        writer.writeProperty(Json.serverId, ApplicationServer.Id);
     }
 }

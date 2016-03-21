@@ -6,6 +6,7 @@ import java.util.Map;
 import org.zenframework.z8.server.base.json.parser.JsonArray;
 import org.zenframework.z8.server.engine.ApplicationServer;
 import org.zenframework.z8.server.json.Json;
+import org.zenframework.z8.server.json.JsonWriter;
 import org.zenframework.z8.server.request.INamedObject;
 import org.zenframework.z8.server.request.RequestTarget;
 import org.zenframework.z8.server.security.IUser;
@@ -352,19 +353,18 @@ public class OBJECT extends RequestTarget implements IObject {
         return new bool(this != object.get());
     }
 
-    public void write(org.zenframework.z8.server.json.parser.JsonObject writer) {
-        writer.put(Json.text, displayName());
-        writer.put(Json.description, description());
-        writer.put(Json.icon, icon());
-        writer.put(Json.id, classId());
+    public void write(JsonWriter writer) {
+        writer.writeProperty(Json.text, displayName());
+        writer.writeProperty(Json.description, description());
+        writer.writeProperty(Json.icon, icon());
+        writer.writeProperty(Json.id, classId());
     }
     
     @Override
-    public void writeResponse(org.zenframework.z8.server.json.parser.JsonObject writer) throws Throwable {
+    public void writeResponse(JsonWriter writer) throws Throwable {
         org.zenframework.z8.server.json.parser.JsonArray response = response();
-        if (response != null) {
-            writer.put(Json.data, response);
-        }
+        if (response != null)
+            writer.writeProperty(Json.data, response);
     }
 
     static private RLinkedHashMap<string, string> convertParameters(Map<String, String> parameters) {
@@ -381,8 +381,8 @@ public class OBJECT extends RequestTarget implements IObject {
         return convertParameters(getParameters());
     }
     
-    static public org.zenframework.z8.server.base.json.parser.JsonObject.CLASS<? extends org.zenframework.z8.server.base.json.parser.JsonObject> z8_getWriter() {
-        org.zenframework.z8.server.base.json.parser.JsonObject.CLASS<org.zenframework.z8.server.base.json.parser.JsonObject> writer = new org.zenframework.z8.server.base.json.parser.JsonObject.CLASS<org.zenframework.z8.server.base.json.parser.JsonObject>(null);    
+    static public org.zenframework.z8.server.base.json.JsonWriter.CLASS<? extends org.zenframework.z8.server.base.json.JsonWriter> z8_getWriter() {
+        org.zenframework.z8.server.base.json.JsonWriter.CLASS<org.zenframework.z8.server.base.json.JsonWriter> writer = new org.zenframework.z8.server.base.json.JsonWriter.CLASS<org.zenframework.z8.server.base.json.JsonWriter>(null);    
         writer.get().set(ApplicationServer.getRequest().getResponse().getWriter());
         return writer;
     }

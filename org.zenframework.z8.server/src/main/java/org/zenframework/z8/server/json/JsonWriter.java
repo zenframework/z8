@@ -5,8 +5,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.zenframework.z8.server.base.table.value.IValue;
-import org.zenframework.z8.server.db.FieldType;
 import org.zenframework.z8.server.engine.ApplicationServer;
+import org.zenframework.z8.server.json.parser.JsonArray;
 import org.zenframework.z8.server.json.parser.JsonObject;
 import org.zenframework.z8.server.runtime.RCollection;
 import org.zenframework.z8.server.types.bool;
@@ -162,14 +162,17 @@ public class JsonWriter {
 
     public void write(RCollection<primary> value) {
         startArray();
-        for (primary v : value) {
+        for (primary v : value)
             write(v);
-        }
         finishArray();
     }
     
-    public void write(JsonObject object) {
-        // TODO
+    public void write(JsonObject value) {
+        write(value.toString(), false);
+    }
+
+    public void write(JsonArray value) {
+        write(value.toString(), false);
     }
 
     public void writeProperty(string name, String value) {
@@ -212,13 +215,7 @@ public class JsonWriter {
     }
 
     public void writeProperty(IValue field) {
-        FieldType type = field.type();
-
-        if (type == FieldType.Boolean || type == FieldType.Integer || type == FieldType.Decimal) {
-            writeProperty(field.id(), field.get());
-        } else {
-            writeProperty(field.id(), field.get());
-        }
+        writeProperty(JsonObject.quote(field.id()), field.get());
     }
 
     public void writeProperty(string name, double value) {
@@ -267,6 +264,22 @@ public class JsonWriter {
         writeProperty(name, "null", false);
     }
 
+    public void writeProperty(string name, JsonObject value) {
+        writeProperty(name.get(), value);
+    }
+
+    public void writeProperty(String name, JsonObject value) {
+        writeProperty(name, value.toString(), false);
+    }
+
+    public void writeProperty(string name, JsonArray value) {
+        writeProperty(name.get(), value);
+    }
+
+    public void writeProperty(String name, JsonArray value) {
+        writeProperty(name, value.toString(), false);
+    }
+
     public void startResponse(String requestId, boolean success) {
         startObject();
         writeProperty(new string(Json.requestId), requestId);
@@ -293,9 +306,8 @@ public class JsonWriter {
         startObject(Json.info);
 
         startArray(Json.messages);
-        for (String message : messages) {
+        for (String message : messages)
             write(message);
-        }
         finishArray();
 
         if (log != null) {

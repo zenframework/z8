@@ -5,7 +5,7 @@ import org.zenframework.z8.server.db.FieldType;
 import org.zenframework.z8.server.db.sql.SqlField;
 import org.zenframework.z8.server.db.sql.functions.conversion.ToChar;
 import org.zenframework.z8.server.json.Json;
-import org.zenframework.z8.server.json.parser.JsonObject;
+import org.zenframework.z8.server.json.JsonWriter;
 import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.types.integer;
 import org.zenframework.z8.server.types.sql.sql_string;
@@ -53,9 +53,9 @@ public class TextField extends StringField {
     }
 
     @Override
-    public void writeMeta(JsonObject writer) {
+    public void writeMeta(JsonWriter writer) {
         super.writeMeta(writer);
 
-        writer.put(Json.lines, lines);
+        writer.writeProperty(Json.lines, lines);
     }
 }

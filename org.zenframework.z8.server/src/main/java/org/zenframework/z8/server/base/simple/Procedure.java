@@ -7,7 +7,7 @@ import org.zenframework.z8.server.db.Connection;
 import org.zenframework.z8.server.db.ConnectionManager;
 import org.zenframework.z8.server.engine.ApplicationServer;
 import org.zenframework.z8.server.json.Json;
-import org.zenframework.z8.server.json.parser.JsonObject;
+import org.zenframework.z8.server.json.JsonWriter;
 import org.zenframework.z8.server.logs.Trace;
 import org.zenframework.z8.server.request.IRequest;
 import org.zenframework.z8.server.resources.Resources;
@@ -137,12 +137,12 @@ public class Procedure extends Command implements java.lang.Runnable {
 	}
 
 	@Override
-	public void write(JsonObject writer) {
+	public void write(JsonWriter writer) {
 		id.set(classId());
 		text.set(displayName());
 		description.set(description());
 
-		writer.put(Json.isJob, true);
+		writer.writeProperty(Json.isJob, true);
 
 		super.write(writer);
 	}

@@ -12,8 +12,8 @@ import java.util.Map.Entry;
 import org.zenframework.z8.server.engine.ApplicationServer;
 import org.zenframework.z8.server.engine.ISession;
 import org.zenframework.z8.server.json.Json;
+import org.zenframework.z8.server.json.JsonWriter;
 import org.zenframework.z8.server.json.parser.JsonArray;
-import org.zenframework.z8.server.json.parser.JsonObject;
 import org.zenframework.z8.server.request.RequestTarget;
 import org.zenframework.z8.server.resources.Resources;
 import org.zenframework.z8.server.security.IUser;
@@ -68,7 +68,7 @@ public class Messenger extends RequestTarget {
 
     @Override
     @SuppressWarnings("unchecked")
-    public void writeResponse(JsonObject writer) {
+    public void writeResponse(JsonWriter writer) {
         IUser user = ApplicationServer.getUser();
         String userName = user.name();
 
@@ -83,11 +83,13 @@ public class Messenger extends RequestTarget {
 
             Entry<String, UserOnlineInfo>[] entries = usersOnline.entrySet().toArray(new Entry[0]);
 
-            for(Entry<String, UserOnlineInfo> userOnline : entries) {
+            for(Entry<String, UserOnlineInfo> userOnline : entries)
                 activeUsers.add(userOnline.getKey());
-            }
 
-            writer.put(Json.users, new JsonArray(activeUsers));
+            writer.startArray(Json.users);
+            for(String activeUser : activeUsers)
+            	writer.write(activeUser);
+            writer.finishArray();
 
             List<Message> messages = null;
 
@@ -96,16 +98,16 @@ public class Messenger extends RequestTarget {
                 newMessages.remove(userName);
             }
 
-            JsonArray msgArray = new JsonArray();
             if(messages != null) {
+                writer.startArray(Json.message);
                 for(Message message : messages) {
-                    JsonObject msgObject = new JsonObject();
-                    msgObject.put(Json.sender, message.sender);
-                    msgObject.put(Json.text, message.text);
-                    msgArray.put(msgObject);
+                    writer.startObject();
+                    writer.writeProperty(Json.sender, message.sender);
+                    writer.writeProperty(Json.text, message.text);
+                    writer.finishObject();
                 }
+                writer.finishArray();
             }
-            writer.put(Json.message, msgArray);
         }
         else if(Json.send.equals(type)) {
             JsonArray recipients = new JsonArray(requestParameters.get(Json.recipient));
