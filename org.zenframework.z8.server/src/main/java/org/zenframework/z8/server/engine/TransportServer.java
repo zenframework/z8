@@ -2,12 +2,10 @@ package org.zenframework.z8.server.engine;
 
 import java.rmi.RemoteException;
 
-import javax.xml.bind.JAXBException;
-
 import org.zenframework.z8.server.config.ServerConfig;
 import org.zenframework.z8.server.ie.ExportMessages;
 import org.zenframework.z8.server.ie.Message;
-import org.zenframework.z8.server.ie.TransportException;
+import org.zenframework.z8.server.logs.Trace;
 
 public class TransportServer extends RmiServer implements ITransportServer {
 
@@ -31,12 +29,18 @@ public class TransportServer extends RmiServer implements ITransportServer {
 	}
 
 	@Override
-	public void sendMessage(String sender, Message message) throws TransportException {
+	public void start() throws RemoteException {
+		super.start();
+		Trace.logEvent("TS: transport server started at '" + netAddress() + "'");
+	}
+
+	@Override
+	public void sendMessage(String sender, Message message) throws RemoteException {
 		message.setSender(sender);
 		try {
 			new ExportMessages.CLASS<ExportMessages>().get().addMessage(message, "rmi");
-		} catch (JAXBException e) {
-			throw new TransportException("Can't import message '" + message.getId() + "' from '" + sender + "'", e);
+		} catch (Throwable e) {
+			throw new RemoteException("Can't import message '" + message.getId() + "' from '" + sender + "'", e);
 		}
 	}
 

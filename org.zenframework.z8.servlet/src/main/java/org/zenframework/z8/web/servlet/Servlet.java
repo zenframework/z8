@@ -83,6 +83,9 @@ public class Servlet extends HttpServlet {
 
 			if(config.webServerStartApplicationServer())
 				startServer(ApplicationServer, config);
+
+			if(config.webServerStartTransportServer())
+				startServer(TransportServer, config);
 		} catch(Throwable e) {
 			try {
 				Trace.logError(e);

@@ -26,7 +26,7 @@ public class RmiTransport extends AbstractTransport {
 			ITransportServer server = (ITransportServer) Rmi.connect(address.host, address.port, ITransportServer.Name);
 			server.sendMessage(context.getProperty(TransportContext.SelfAddressProperty), message);
 		} catch (RemoteException e) {
-			throw new TransportException("Can't send message to '" + message.getAddress());
+			throw new TransportException("Can't send message to '" + message.getAddress(), e);
 		}
 	}
 
