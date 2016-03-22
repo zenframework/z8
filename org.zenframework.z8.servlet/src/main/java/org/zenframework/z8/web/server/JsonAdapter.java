@@ -36,7 +36,7 @@ public class JsonAdapter extends Adapter {
 		writer.finishArray();
 		writer.finishResponse();
 
-		writeResponse(response, writer.toString().getBytes(encoding.Default.toString()), status);
+		writeResponse(response, writer.toString().getBytes(encoding.Default.toString()));
 	}
 
 	@Override

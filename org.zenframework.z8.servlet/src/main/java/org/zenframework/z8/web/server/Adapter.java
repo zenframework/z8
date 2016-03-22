@@ -109,7 +109,7 @@ public abstract class Adapter {
 	protected List<FileItem> parseMultipartRequest(HttpServletRequest request) {
 		ServletFileUpload upload = new ServletFileUpload(FilesFactory.getFileItemFactory());
 
-		int fileSizeMax = Servlet.config().webServerFileSizeMax();
+		long fileSizeMax = Servlet.config().webServerFileSizeMax();
 		
 		if(fileSizeMax > 0)
 			upload.setFileSizeMax(fileSizeMax * 1024 * 1024);
@@ -132,11 +132,11 @@ public abstract class Adapter {
 	abstract public boolean canHandleRequest(HttpServletRequest request);
 
 	protected void processError(HttpServletResponse response, Throwable e) throws IOException, ServletException {
-		writeResponse(response, (e.getMessage() != null ? e.getMessage() : "Internal server error").getBytes(encoding.Default.toString()), HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+		response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+		writeResponse(response, (e.getMessage() != null ? e.getMessage() : "Internal server error").getBytes(encoding.Default.toString()));
 	}
 
-	protected void writeResponse(HttpServletResponse response, byte[] content, int status) throws IOException {
-		response.setStatus(status);
+	protected void writeResponse(HttpServletResponse response, byte[] content) throws IOException {
 		response.setContentType("text/html;charset=" + encoding.Default.toString());
 
 		OutputStream out = response.getOutputStream();
@@ -155,6 +155,6 @@ public abstract class Adapter {
 		node = server.processRequest(session, node);
 
 		if(response != null)
-			writeResponse(response, node.getContent(), HttpServletResponse.SC_OK);
+			writeResponse(response, node.getContent());
 	}
 }
