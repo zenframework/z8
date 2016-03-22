@@ -20,6 +20,7 @@ import org.zenframework.z8.server.types.datetime;
 import org.zenframework.z8.server.types.guid;
 import org.zenframework.z8.server.types.integer;
 import org.zenframework.z8.server.types.string;
+import org.zenframework.z8.server.utils.IOUtils;
 import org.zenframework.z8.server.utils.PdfUtils;
 
 public class AttachmentProcessor extends OBJECT {
@@ -170,7 +171,7 @@ public class AttachmentProcessor extends OBJECT {
 			return 1;
 
 		if(!absolutePath.exists())
-			FileUtils.copyInputStreamToFile(Files.getInputStream(fileInfo), absolutePath);
+			IOUtils.copy(Files.getInputStream(fileInfo), absolutePath);
 
 		FileConverter fileConverter = new FileConverter(new File(Folders.Base, Folders.Cache));
 		File pdfFile = fileConverter.getConvertedPdf(relativePath, absolutePath);

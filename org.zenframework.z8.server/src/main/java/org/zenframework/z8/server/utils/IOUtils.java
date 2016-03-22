@@ -5,6 +5,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.Closeable;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -25,6 +26,20 @@ public class IOUtils {
     final public static int DefaultBufferSize = 1024 * 1024;
 
     private IOUtils() {/* hide constructor */}
+
+    public static void copy(InputStream input, File file) throws IOException {
+   		copy(input, file, true);
+    }
+
+    public static void copy(InputStream input, File file, boolean autoClose) throws IOException {
+    	try {
+        	file.getParentFile().mkdirs();
+    		copy(input, new FileOutputStream(file), autoClose);
+    	} finally {
+    		if(autoClose)
+    			closeQuietly(input);
+    	}
+    }
 
     public static void copy(InputStream input, OutputStream output) throws IOException {
     	copy(input, output, true);

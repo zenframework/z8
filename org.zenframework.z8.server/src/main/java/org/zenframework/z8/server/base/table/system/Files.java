@@ -7,7 +7,6 @@ import java.io.InputStream;
 import java.util.Arrays;
 import java.util.Collection;
 
-import org.apache.commons.io.FileUtils;
 import org.zenframework.z8.server.base.file.FileInfo;
 import org.zenframework.z8.server.base.file.FilesFactory;
 import org.zenframework.z8.server.base.file.Folders;
@@ -127,7 +126,7 @@ public class Files extends Table {
 				InputStream inputStream = getInputStream(fileInfo);
 				if(inputStream == null)
 					return null;
-				FileUtils.copyInputStreamToFile(inputStream, path);
+				IOUtils.copy(inputStream, path);
 			}
 			fileInfo.file = new InputOnlyFileItem(path, fileInfo.name.get());
 			return fileInfo;

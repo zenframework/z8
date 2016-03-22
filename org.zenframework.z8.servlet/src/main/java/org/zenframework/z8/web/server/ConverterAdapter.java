@@ -13,7 +13,6 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.io.FileUtils;
 import org.zenframework.z8.server.base.file.FileConverter;
 import org.zenframework.z8.server.base.file.FileInfo;
 import org.zenframework.z8.server.base.file.Folders;
@@ -104,7 +103,7 @@ public class ConverterAdapter extends Adapter {
 		FileInfo downloadedFileInfo = serverInfo.getApplicationServer().download(fileInfo);
 
 		if(downloadedFileInfo != null)
-			FileUtils.copyInputStreamToFile(downloadedFileInfo.getInputStream(), path);
+			IOUtils.copy(downloadedFileInfo.getInputStream(), path);
 		else
 			throw new IOException("File '" + fileInfo.path.get() + "' does not exist");
 	}
