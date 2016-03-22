@@ -27,10 +27,8 @@ public class JsonAdapter extends Adapter {
 	private void writeError(HttpServletResponse response, String errorText, int status) throws IOException {
 		JsonWriter writer = new JsonWriter();
 
-		if(errorText == null || errorText.isEmpty()) {
+		if(errorText == null || errorText.isEmpty())
 			errorText = "Internal server error.";
-			status = HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
-		}
 
 		writer.startResponse(null, false, status);
 		writer.writeInfo(errorText);
@@ -38,7 +36,7 @@ public class JsonAdapter extends Adapter {
 		writer.finishArray();
 		writer.finishResponse();
 
-		writeResponse(response, writer.toString().getBytes(encoding.Default.toString()));
+		writeResponse(response, writer.toString().getBytes(encoding.Default.toString()), status);
 	}
 
 	@Override
@@ -49,6 +47,6 @@ public class JsonAdapter extends Adapter {
 
 	@Override
 	protected void processError(HttpServletResponse response, Throwable ex) throws IOException {
-		writeError(response, ex.getMessage(), 0);
+		writeError(response, ex.getMessage(), HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 	}
 }

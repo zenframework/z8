@@ -132,11 +132,11 @@ public abstract class Adapter {
 	abstract public boolean canHandleRequest(HttpServletRequest request);
 
 	protected void processError(HttpServletResponse response, Throwable e) throws IOException, ServletException {
-		response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-		writeResponse(response, (e.getMessage() != null ? e.getMessage() : "Internal server error").getBytes(encoding.Default.toString()));
+		writeResponse(response, (e.getMessage() != null ? e.getMessage() : "Internal server error").getBytes(encoding.Default.toString()), HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 	}
 
-	protected void writeResponse(HttpServletResponse response, byte[] content) throws IOException {
+	protected void writeResponse(HttpServletResponse response, byte[] content, int status) throws IOException {
+		response.setStatus(status);
 		response.setContentType("text/html;charset=" + encoding.Default.toString());
 
 		OutputStream out = response.getOutputStream();
@@ -155,6 +155,6 @@ public abstract class Adapter {
 		node = server.processRequest(session, node);
 
 		if(response != null)
-			writeResponse(response, node.getContent());
+			writeResponse(response, node.getContent(), HttpServletResponse.SC_OK);
 	}
 }
