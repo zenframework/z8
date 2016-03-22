@@ -16,6 +16,8 @@ public class Connection {
     static public int TransactionRepeatableRead = java.sql.Connection.TRANSACTION_REPEATABLE_READ;
     static public int TransactionSerializable = java.sql.Connection.TRANSACTION_SERIALIZABLE;
 
+    static private final int DefaultFetchSize = 1000;
+    
     static public int MaxIdleTime = 2 * 60 * 1000; // 2 min
             
     private Database database = null;
@@ -133,7 +135,7 @@ public class Connection {
         
         SqlExceptionConverter.rethrowIfKnown(database.vendor(), exception);
             
-        System.out.println(message + "( error code: " + errorCode + "; sqlState: " + sqlState + ") - reconnecting...");
+        System.out.println(message + "(error code: " + errorCode + "; sqlState: " + sqlState + ") - reconnecting...");
 
         /* 
             Postgres; Class 08 — Connection Exception
@@ -228,14 +230,20 @@ public class Connection {
         }
     }
 
+    private ResultSet doExecuteQuery(BasicStatement statement) throws SQLException {
+    	PreparedStatement preparedStatement = statement.statement();
+    	preparedStatement.setFetchSize(DefaultFetchSize);
+        return preparedStatement.executeQuery();
+    }
+    
     public ResultSet executeQuery(BasicStatement statement) throws SQLException {
         try {
-            return statement.statement().executeQuery();
+            return doExecuteQuery(statement);
         } catch (SQLException e) {
             checkAndReconnect(e);
             statement.safeClose();
             statement.prepare();
-            return statement.statement().executeQuery();
+            return doExecuteQuery(statement);
         }
     }
 

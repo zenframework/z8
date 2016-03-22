@@ -1,7 +1,7 @@
 package org.zenframework.z8.server.base.form;
 
 import org.zenframework.z8.server.json.Json;
-import org.zenframework.z8.server.json.parser.JsonObject;
+import org.zenframework.z8.server.json.JsonWriter;
 import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.runtime.OBJECT;
 import org.zenframework.z8.server.types.bool;
@@ -30,14 +30,14 @@ public class Control extends OBJECT {
     public bool showLabel = new bool(true);
     public bool hidable = new bool(false);
 
-    public void writeMeta(JsonObject writer) {
-        writer.put(Json.id, id());
-        writer.put(Json.header, displayName());
-        writer.put(Json.description, description());
-        writer.put(Json.label, label());
-        writer.put(Json.rowspan, rowspan);
-        writer.put(Json.colspan, colspan);
-        writer.put(Json.showLabel, showLabel);
-        writer.put(Json.hidable, hidable);
+    public void writeMeta(JsonWriter writer) {
+        writer.writeProperty(Json.id, id());
+        writer.writeProperty(Json.header, displayName());
+        writer.writeProperty(Json.description, description());
+        writer.writeProperty(Json.label, label());
+        writer.writeProperty(Json.rowspan, rowspan);
+        writer.writeProperty(Json.colspan, colspan);
+        writer.writeProperty(Json.showLabel, showLabel);
+        writer.writeProperty(Json.hidable, hidable);
     }
 }

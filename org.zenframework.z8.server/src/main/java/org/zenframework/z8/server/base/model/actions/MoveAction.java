@@ -2,8 +2,7 @@ package org.zenframework.z8.server.base.model.actions;
 
 import org.zenframework.z8.server.base.table.TreeTable;
 import org.zenframework.z8.server.json.Json;
-import org.zenframework.z8.server.json.parser.JsonArray;
-import org.zenframework.z8.server.json.parser.JsonObject;
+import org.zenframework.z8.server.json.JsonWriter;
 import org.zenframework.z8.server.types.guid;
 
 public class MoveAction extends Action {
@@ -12,7 +11,7 @@ public class MoveAction extends Action {
     }
 
     @Override
-    public void writeResponse(JsonObject writer) {
+    public void writeResponse(JsonWriter writer) {
         TreeTable table = (TreeTable)getRootQuery();
 
         guid recordId = getRecordIdParameter();
@@ -20,6 +19,7 @@ public class MoveAction extends Action {
 
         table.move(recordId, parentId);
 
-        writer.put(Json.data, new JsonArray());
+        writer.startArray(Json.data);
+        writer.finishArray();
     }
 }

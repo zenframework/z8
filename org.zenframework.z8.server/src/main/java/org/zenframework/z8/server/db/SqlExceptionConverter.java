@@ -36,34 +36,15 @@ public class SqlExceptionConverter {
             throw e;
     }
 
-    static public boolean isKnownException(DatabaseVendor type, SQLException e) throws SQLException {
-        switch(type) {
-        case Oracle:
-            oracle(e);
-            break;
-        case SqlServer:
-            sqlServer(e);
-            break;
-        case Postgres:
-            return isKnownPostgres(e);
-        default:
-            throw new UnknownDatabaseException();
-        }
-        return false;
-    }
-
-    static private boolean isKnownPostgres(SQLException e) {
-        String state = e.getSQLState();
-        return "42P01".equals(state) || "42704".equals(state) || "42P16".equals(state);
-    }
-    
-    static private void postgres(SQLException e) throws RuntimeException {
+    static private void postgres(SQLException e) throws SQLException {
         String state = e.getSQLState();
 
         if("42P01".equals(state) || "42704".equals(state))
             throw new ObjectNotFoundException(ErrorUtils.getMessage(e), e.getSQLState(), e.getErrorCode());
         else if("42P16".equals(state))
             throw new ObjectAlreadyExistException(ErrorUtils.getMessage(e), e.getSQLState(), e.getErrorCode());
+        else if("53200".equals(state)) // Ran out of memory retrieving query results
+        	throw e;
     }
 
     static private void oracle(SQLException e) throws RuntimeException {

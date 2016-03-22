@@ -7,8 +7,7 @@ import org.zenframework.z8.server.base.model.sql.Select;
 import org.zenframework.z8.server.base.table.value.Field;
 import org.zenframework.z8.server.base.table.value.GuidField;
 import org.zenframework.z8.server.json.Json;
-import org.zenframework.z8.server.json.parser.JsonArray;
-import org.zenframework.z8.server.json.parser.JsonObject;
+import org.zenframework.z8.server.json.JsonWriter;
 
 public class ReadRecordAction extends ReadAction {
     public ReadRecordAction(ActionParameters parameters) {
@@ -16,7 +15,7 @@ public class ReadRecordAction extends ReadAction {
     }
 
     @Override
-    public void writeResponse(JsonObject writer) throws Throwable {
+    public void writeResponse(JsonWriter writer) throws Throwable {
         Select cursor = getCursor();
 
         try {
@@ -31,23 +30,23 @@ public class ReadRecordAction extends ReadAction {
                 fields.add(field);
             }
 
-            JsonArray fieldsArr = new JsonArray();
+            writer.startArray(Json.fields);
             for(Field field : fields) {
-                JsonObject metaObj = new JsonObject();
-                field.writeMeta(metaObj);
-                fieldsArr.put(metaObj);
+            	writer.startObject();
+                field.writeMeta(writer);
+                writer.finishObject();
             }
-            writer.put(Json.fields, fieldsArr);
+            writer.finishArray();
 
-            JsonArray dataArr = new JsonArray();
+            writer.startArray(Json.data);
             if(cursor.next()) {
                 for(Field field : fields) {
-                    JsonObject dataObj = new JsonObject();
-                    field.writeData(dataObj);
-                    dataArr.put(dataObj);
+                    writer.startObject();
+                    field.writeData(writer);
+                    writer.finishObject();
                 }
             }
-            writer.put(Json.data, dataArr);
+            writer.finishArray();
         }
         finally {
             cursor.close();

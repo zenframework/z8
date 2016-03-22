@@ -272,31 +272,14 @@ public class JmsTransport extends AbstractTransport implements ExceptionListener
 		streamMessage.writeBytes(buff);
 		List<FileInfo> fileInfos = IeUtil.filesToFileInfos(message.getExportEntry().getFiles().getFile());
 
-		//        byte[] buffer = new byte[IOUtils.DefaultBufferSize];
+		buff = new byte[IOUtils.DefaultBufferSize];
 
 		for (FileInfo fileInfo : fileInfos) {
-
-			/*        	
-			        	InputStream inputStream = Files.getInputStream(fileInfo);
-			            streamMessage.writeLong(inputStream.available());
-			            try {
-			                int count;
-			                while ((count = inputStream.read(buffer)) != -1) {
-			                    if (count > 0) {
-			                        streamMessage.writeBytes(buffer, 0, count);
-			                    }
-			                }
-			            } finally {
-			            	inputStream.close();
-			            }
-			*/
-
 			fileInfo = Files.getFile(fileInfo);
 			// write file length
 			streamMessage.writeLong(fileInfo.file.getSize());
 			// write file contents
 			InputStream in = fileInfo.file.getInputStream();
-			buff = new byte[IOUtils.DefaultBufferSize];
 			try {
 				int count;
 				while ((count = in.read(buff)) != -1) {

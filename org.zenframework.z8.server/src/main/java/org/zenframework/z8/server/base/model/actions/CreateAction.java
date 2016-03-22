@@ -8,6 +8,7 @@ import org.zenframework.z8.server.base.query.QueryUtils;
 import org.zenframework.z8.server.base.query.Style;
 import org.zenframework.z8.server.base.table.value.Field;
 import org.zenframework.z8.server.json.Json;
+import org.zenframework.z8.server.json.JsonWriter;
 import org.zenframework.z8.server.json.parser.JsonArray;
 import org.zenframework.z8.server.json.parser.JsonObject;
 import org.zenframework.z8.server.types.guid;
@@ -18,16 +19,13 @@ public class CreateAction extends Action {
     }
 
     @Override
-    public void writeResponse(JsonObject writer) {
+    public void writeResponse(JsonWriter writer) {
         Field backwardLink = actionParameters().keyField;
 
         String jsonData = getDataParameter();
 
-        JsonArray fieldsArr = new JsonArray();
-
-        if(jsonData.charAt(0) == '{') {
+        if(jsonData.charAt(0) == '{')
             jsonData = "[" + jsonData + "]";
-        }
 
         JsonArray records = new JsonArray(jsonData);
 
@@ -37,7 +35,7 @@ public class CreateAction extends Action {
         Field primaryKey = rootQuery.primaryKey();
         Field parentKey = rootQuery.parentKey();
 
-        assert (primaryKey != null);
+        writer.startArray(Json.data);
 
         for(int index = 0; index < records.length(); index++) {
             JsonObject record = (JsonObject)records.get(index);
@@ -65,24 +63,22 @@ public class CreateAction extends Action {
             query.insert(recordId, parentId, modelRecordId != null ? modelRecordId : recordId);
 
             if(query.readRecord(recordId, fields)) {
-                JsonObject fieldObj = new JsonObject();
+                writer.startObject();
 
-                for(Field field : fields) {
-                    field.writeData(fieldObj);
-                }
+                for(Field field : fields)
+                    field.writeData(writer);
 
                 Style style = query.renderRecord();
 
-                if(style != null) {
-                    style.write(fieldObj);
-                }
+                if(style != null)
+                    style.write(writer);
 
-                fieldsArr.put(fieldObj);
+                writer.finishObject();
             }
             
             primaryKey.set(guid.NULL);
         }
 
-        writer.put(Json.data, fieldsArr);
+        writer.finishArray();
     }
 }

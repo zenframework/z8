@@ -5,7 +5,6 @@ import java.io.Writer;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -14,13 +13,10 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.ResourceBundle;
 
-import org.zenframework.z8.server.engine.ApplicationServer;
-import org.zenframework.z8.server.json.Json;
 import org.zenframework.z8.server.types.bool;
 import org.zenframework.z8.server.types.date;
 import org.zenframework.z8.server.types.datetime;
 import org.zenframework.z8.server.types.decimal;
-import org.zenframework.z8.server.types.file;
 import org.zenframework.z8.server.types.guid;
 import org.zenframework.z8.server.types.integer;
 import org.zenframework.z8.server.types.primary;
@@ -1590,22 +1586,6 @@ public class JsonObject extends HashMap<String, Object> {
         } catch (IOException exception) {
             throw new JsonException(exception);
         }
-    }
-
-    public void putInfo(String message) {
-        JsonObject infoObj = new JsonObject();
-        infoObj.put(Json.messages, new JsonArray(Arrays.asList(message)));
-        put(Json.info, infoObj);
-    }
-
-    public void writeInfo(String[] messages, file log) {
-        JsonObject infoObj = new JsonObject();
-        infoObj.put(Json.messages.get(), new JsonArray(messages));
-        if (log != null) {
-            infoObj.put(Json.serverId, ApplicationServer.get().id());
-            infoObj.put(Json.log, log.getRelativePath());
-        }
-        put(Json.info, infoObj);
     }
 
 }

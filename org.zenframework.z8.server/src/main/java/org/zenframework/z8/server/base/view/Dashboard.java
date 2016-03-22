@@ -11,7 +11,7 @@ import org.zenframework.z8.server.base.table.system.Users;
 import org.zenframework.z8.server.engine.ApplicationServer;
 import org.zenframework.z8.server.exceptions.AccessDeniedException;
 import org.zenframework.z8.server.json.Json;
-import org.zenframework.z8.server.json.parser.JsonArray;
+import org.zenframework.z8.server.json.JsonWriter;
 import org.zenframework.z8.server.json.parser.JsonObject;
 import org.zenframework.z8.server.logs.Trace;
 import org.zenframework.z8.server.request.Loader;
@@ -31,7 +31,7 @@ public class Dashboard extends RequestTarget {
     }
 
     @Override
-    public void writeResponse(JsonObject writer) {
+    public void writeResponse(JsonWriter writer) {
         Map<String, String> parameters = getParameters();
 
         String login = parameters.get(Json.login);
@@ -51,9 +51,9 @@ public class Dashboard extends RequestTarget {
             if(id != null) {
                 Desktop desktop = (Desktop)Loader.getInstance(id);
 
-                JsonArray dataObj = new JsonArray();
-                writeDesktop(dataObj, desktop);
-                writer.put(Json.data, dataObj);
+                writer.startArray(Json.data);
+                writeDesktop(writer, desktop);
+                writer.finishArray();
             }
         }
     }
@@ -81,7 +81,7 @@ public class Dashboard extends RequestTarget {
         }
     }
 
-    private void writeDesktopData(JsonArray writer, Desktop desktop, String displayName) {
+    private void writeDesktopData(JsonWriter writer, Desktop desktop, String displayName) {
         Map<String, IForm> forms = ApplicationServer.getUser().forms();
 
         Collection<CLASS<?>> runnables = new ArrayList<CLASS<?>>();
@@ -89,27 +89,25 @@ public class Dashboard extends RequestTarget {
         for(CLASS<?> cls : desktop.getRunnables()) {
             IForm form = forms.get(cls.classId());
 
-            if((form != null && form.getAccess().getRead()) || forms.isEmpty()) {
+            if((form != null && form.getAccess().getRead()) || forms.isEmpty())
                 runnables.add(cls);
-            }
         }
 
         if(!runnables.isEmpty()) {
-            JsonObject object = new JsonObject();
-            JsonArray runsArr = new JsonArray();
+            writer.startObject();
 
-            for(CLASS<?> cls : runnables) {
-                writeData(runsArr, cls);
-            }
-
-            object.put(Json.text, displayName);
-            object.put(Json.items, runsArr);
+            writer.writeProperty(Json.text, displayName);
             
-            writer.put(object);
+            writer.startArray(Json.items);
+            for(CLASS<?> cls : runnables)
+                writeData(writer, cls);
+            writer.finishArray();
+            
+            writer.finishObject();
         }
     }
 
-    private void writeDesktop(JsonArray writer, Desktop desktop) {
+    private void writeDesktop(JsonWriter writer, Desktop desktop) {
         writeDesktopData(writer, desktop, "");
 
         for(CLASS<?> cls : desktop.getSubDesktops()) {
@@ -133,46 +131,43 @@ public class Dashboard extends RequestTarget {
         return list.toArray(new CLASS[0]);
     }
 
-    protected void writeLoginInfo(JsonObject writer) {
+    protected void writeLoginInfo(JsonWriter writer) {
         IUser user = ApplicationServer.getUser();
 
-        writer.put(Json.sessionId, ApplicationServer.getSession().id());
+        writer.writeProperty(Json.sessionId, ApplicationServer.getSession().id());
 
-        JsonObject userObj = new JsonObject();
+        writer.startObject(Json.user);
 
-        userObj.put(Json.id, user.id());
-        userObj.put(Json.name, user.description());
-        userObj.put(Json.login, user.name());
-        userObj.put(Json.email, user.email());
-        userObj.put(Json.phone, user.phone());
-        userObj.put(Json.settings, user.settings());
+        writer.writeProperty(Json.id, user.id());
+        writer.writeProperty(Json.name, user.description());
+        writer.writeProperty(Json.login, user.name());
+        writer.writeProperty(Json.email, user.email());
+        writer.writeProperty(Json.phone, user.phone());
+        writer.writeProperty(Json.settings, user.settings());
 
-        JsonArray compsArr = new JsonArray();
-        for(CLASS<?> cls : loadComponents(user.components())) {
-            writeData(compsArr, cls);
-        }
-        userObj.put(Json.components, compsArr);
+        writer.startArray(Json.components);
+        for(CLASS<?> cls : loadComponents(user.components()))
+            writeData(writer, cls);
+        writer.finishArray();
 
-        JsonObject paramsObj = new JsonObject();
+        writer.startObject(Json.parameters);
         Map<string, primary> parameters = user.parameters();
-        for(string key : parameters.keySet()) {
-            paramsObj.put(key.get(), parameters.get(key));
-        }
-        userObj.put(Json.parameters, paramsObj);
+        for(string key : parameters.keySet())
+            writer.writeProperty(JsonObject.quote(key.get()), parameters.get(key));
+        writer.finishObject();
     
-        writer.put(Json.user, userObj);
+        writer.finishObject();
     }
 
-    private void writeData(JsonArray writer, CLASS<?> cls) {
-        JsonObject dataObj = new JsonObject();
+    private void writeData(JsonWriter writer, CLASS<?> cls) {
+        writer.startObject();
 
         if(cls.instanceOf(Procedure.class)) {
             Procedure procedure = (Procedure)cls.newInstance();
-            procedure.write(dataObj);
-        } else {
-            cls.write(dataObj);
-        }
+            procedure.write(writer);
+        } else
+            cls.write(writer);
 
-        writer.put(dataObj);
+        writer.finishObject();
     }
 }

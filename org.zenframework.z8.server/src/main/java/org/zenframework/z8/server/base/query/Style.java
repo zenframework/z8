@@ -1,7 +1,7 @@
 package org.zenframework.z8.server.base.query;
 
 import org.zenframework.z8.server.json.Json;
-import org.zenframework.z8.server.json.parser.JsonObject;
+import org.zenframework.z8.server.json.JsonWriter;
 import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.runtime.OBJECT;
 
@@ -35,12 +35,12 @@ public class Style extends OBJECT {
     }
 
     @Override
-    public void write(JsonObject writer) {
+    public void write(JsonWriter writer) {
         if(!isDefault()) {
-            JsonObject styleObj = new JsonObject();
-            styleObj.put(Json.color, color.toString());
-            styleObj.put(Json.background, background.toString());
-            writer.put(Json.style, styleObj);
+            writer.startObject(Json.style);
+            writer.writeProperty(Json.color, color.toString());
+            writer.writeProperty(Json.background, background.toString());
+            writer.finishObject();
         }
     }
 

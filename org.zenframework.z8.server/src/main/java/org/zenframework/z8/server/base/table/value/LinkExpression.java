@@ -4,7 +4,7 @@ import org.zenframework.z8.server.base.query.Query;
 import org.zenframework.z8.server.base.table.ITable;
 import org.zenframework.z8.server.db.generator.IForeignKey;
 import org.zenframework.z8.server.json.Json;
-import org.zenframework.z8.server.json.parser.JsonObject;
+import org.zenframework.z8.server.json.JsonWriter;
 import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.types.bool;
 
@@ -62,16 +62,16 @@ public class LinkExpression extends GuidExpression implements ILink, IForeignKey
     }
 
     @Override
-    public void writeMeta(JsonObject writer) {
+    public void writeMeta(JsonWriter writer) {
         super.writeMeta(writer);
-        writer.put(Json.link, true);
+        writer.writeProperty(Json.link, true);
 
         Query query = getQuery();
 
         if(query != null) {
-            writer.put(Json.queryId, query.id());
-            writer.put(Json.linkedVia, query.primaryKey().id());
-            writer.put(Json.text, query.displayName());
+            writer.writeProperty(Json.queryId, query.id());
+            writer.writeProperty(Json.linkedVia, query.primaryKey().id());
+            writer.writeProperty(Json.text, query.displayName());
         }
     }
 

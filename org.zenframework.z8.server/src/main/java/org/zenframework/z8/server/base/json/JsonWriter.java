@@ -1,6 +1,7 @@
 package org.zenframework.z8.server.base.json;
 
 import org.zenframework.z8.server.base.table.value.Field;
+import org.zenframework.z8.server.json.parser.JsonObject;
 import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.runtime.OBJECT;
 import org.zenframework.z8.server.runtime.RCollection;
@@ -38,7 +39,7 @@ public class JsonWriter extends OBJECT {
     }
     
     public CLASS<JsonWriter> z8_startObject(string name) {
-        writer.startObject(name.get());
+        writer.startObject(JsonObject.quote(name.get()));
         return (CLASS<JsonWriter>) this.getCLASS();
     }
 
@@ -53,7 +54,7 @@ public class JsonWriter extends OBJECT {
     }
 
     public CLASS<JsonWriter> z8_startArray(string name) {
-        writer.startArray(name.get());
+        writer.startArray(JsonObject.quote(name.get()));
         return (CLASS<JsonWriter>) this.getCLASS();
     }
 
@@ -83,12 +84,12 @@ public class JsonWriter extends OBJECT {
     }
 
     public CLASS<JsonWriter> z8_writeProperty(string name, string value) {
-        writer.writeProperty(name.get(), value.get(), true);
+        writer.writeProperty(JsonObject.quote(name.get()), value.get(), true);
         return (CLASS<JsonWriter>) this.getCLASS();
     }
 
     public CLASS<JsonWriter> z8_writeProperty(string name, primary value) {
-        writer.writeProperty(name.get(), value);
+        writer.writeProperty(JsonObject.quote(name.get()), value);
         return (CLASS<JsonWriter>) this.getCLASS();
     }
 

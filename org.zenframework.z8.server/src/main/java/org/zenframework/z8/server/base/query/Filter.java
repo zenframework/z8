@@ -2,8 +2,7 @@ package org.zenframework.z8.server.base.query;
 
 import org.zenframework.z8.server.base.table.value.GuidField;
 import org.zenframework.z8.server.json.Json;
-import org.zenframework.z8.server.json.parser.JsonArray;
-import org.zenframework.z8.server.json.parser.JsonObject;
+import org.zenframework.z8.server.json.JsonWriter;
 import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.runtime.OBJECT;
 import org.zenframework.z8.server.runtime.RCollection;
@@ -31,13 +30,13 @@ public class Filter extends OBJECT {
     }
 
     @Override
-    public void write(JsonObject writer) {
-        JsonArray fieldsArr = new JsonArray();
-        for(GuidField.CLASS<? extends GuidField> field : fields) {
-            fieldsArr.put(field.id());
-        }
-        writer.put(Json.fields, fieldsArr);
-        writer.put(Json.value, value.id());
+    public void write(JsonWriter writer) {
+        writer.startArray(Json.fields);
+        for(GuidField.CLASS<? extends GuidField> field : fields)
+            writer.write(field.id());
+        writer.finishArray();
+        
+        writer.writeProperty(Json.value, value.id());
     }
 
 }

@@ -3,8 +3,7 @@ package org.zenframework.z8.server.base.model.actions;
 import org.zenframework.z8.server.base.query.Query;
 import org.zenframework.z8.server.db.FieldType;
 import org.zenframework.z8.server.json.Json;
-import org.zenframework.z8.server.json.parser.JsonArray;
-import org.zenframework.z8.server.json.parser.JsonObject;
+import org.zenframework.z8.server.json.JsonWriter;
 
 public class ModelAction extends Action {
     public ModelAction(ActionParameters parameters) {
@@ -12,78 +11,78 @@ public class ModelAction extends Action {
     }
 
     @Override
-    public void writeResponse(JsonObject writer) {
+    public void writeResponse(JsonWriter writer) {
         Query query = getQuery();
 
         if(query.getContext() != null) {
             query = query.getContext();
         }
 
-        writer.put(Json.isQuery, true);
+        writer.writeProperty(Json.isQuery, true);
 
-        writer.put(Json.readOnly, true);
+        writer.writeProperty(Json.readOnly, true);
 
-        writer.put(Json.primaryKey, Json.id);
-        writer.put(Json.parentKey, Json.parentId);
-        writer.put(Json.children, Json.children);
+        writer.writeProperty(Json.primaryKey, Json.id);
+        writer.writeProperty(Json.parentKey, Json.parentId);
+        writer.writeProperty(Json.children, Json.children);
 
-        JsonArray fieldsArray = new JsonArray();
+        writer.startArray(Json.fields);
 
-        JsonObject idObj = new JsonObject();
-        idObj.put(Json.id, Json.id);
-        idObj.put(Json.serverType, FieldType.String.toString());
-        fieldsArray.put(idObj);
+        writer.startObject();
+        writer.writeProperty(Json.id, Json.id);
+        writer.writeProperty(Json.serverType, FieldType.String.toString());
+        writer.finishObject();
 
-        JsonObject parentIdObj = new JsonObject();
-        parentIdObj.put(Json.id, Json.parentId);
-        parentIdObj.put(Json.serverType, FieldType.String.toString());
-        fieldsArray.put(parentIdObj);
+        writer.startObject();
+        writer.writeProperty(Json.id, Json.parentId);
+        writer.writeProperty(Json.serverType, FieldType.String.toString());
+        writer.finishObject();
 
-        JsonObject nameObj = new JsonObject();
-        nameObj.put(Json.id, Json.name);
-        nameObj.put(Json.serverType, FieldType.String.toString());
-        fieldsArray.put(nameObj);
+        writer.startObject();
+        writer.writeProperty(Json.id, Json.name);
+        writer.writeProperty(Json.serverType, FieldType.String.toString());
+        writer.finishObject();
 
-        JsonObject displayNameObj = new JsonObject();
-        displayNameObj.put(Json.id, Json.displayName);
-        displayNameObj.put(Json.serverType, FieldType.String.toString());
-        fieldsArray.put(displayNameObj);
+        writer.startObject();
+        writer.writeProperty(Json.id, Json.displayName);
+        writer.writeProperty(Json.serverType, FieldType.String.toString());
+        writer.finishObject();
 
-        JsonObject childrenObj = new JsonObject();
-        childrenObj.put(Json.id, Json.children);
-        childrenObj.put(Json.serverType, FieldType.Integer.toString());
-        fieldsArray.put(childrenObj);
+        writer.startObject();
+        writer.writeProperty(Json.id, Json.children);
+        writer.writeProperty(Json.serverType, FieldType.Integer.toString());
+        writer.finishObject();
 
-        writer.put(Json.fields, fieldsArray);
+        writer.finishArray();
 
-        writer.put(Json.sort, Json.displayName);
+        writer.writeProperty(Json.sort, Json.displayName);
 
-        JsonObject sectionObj = new JsonObject();
+        writer.startObject(Json.section);
         
-        sectionObj.put(Json.isSection, true);
+        writer.writeProperty(Json.isSection, true);
         
-        JsonArray controlsArr = new JsonArray();
+        writer.startArray(Json.controls);
         
-        displayNameObj = new JsonObject();
-        displayNameObj.put(Json.id, Json.displayName);
-        displayNameObj.put(Json.header, "Display Name");
-        controlsArr.put(displayNameObj);
+        writer.startObject();
+        writer.writeProperty(Json.id, Json.displayName);
+        writer.writeProperty(Json.header, "Display Name");
+        writer.finishObject();
 
-        nameObj = new JsonObject();
-        nameObj.put(Json.id, Json.name);
-        nameObj.put(Json.header, "Name");
-        controlsArr.put(nameObj);
+        writer.startObject();
+        writer.writeProperty(Json.id, Json.name);
+        writer.writeProperty(Json.header, "Name");
+        writer.finishObject();
 
-        idObj = new JsonObject();
-        idObj.put(Json.id, Json.id);
-        idObj.put(Json.header, "Id");
-        controlsArr.put(idObj);
+        writer.startObject();
+        writer.writeProperty(Json.id, Json.id);
+        writer.writeProperty(Json.header, "Id");
+        writer.finishObject();
         
-        sectionObj.put(Json.controls, controlsArr);
+        writer.finishArray();
         
-        writer.put(Json.section, sectionObj);
+        writer.finishObject();
 
-        JsonArray dataArr = new JsonArray();
+        writer.startArray(Json.data);
 
         String parentId = actionParameters().requestParameters.get(Json.parentId);
 
@@ -93,25 +92,25 @@ public class ModelAction extends Action {
             query = query.findQueryById(parentId);
 
             for(Query subquery : query.getQueries()) {
-                JsonObject queryObj = new JsonObject();
-                queryObj.put(Json.id, subquery.id());
-                queryObj.put(Json.parentId, parentId);
-                queryObj.put(Json.name, subquery.name());
-                queryObj.put(Json.displayName, subquery.displayName());
-                queryObj.put(Json.children, subquery.queries().size());
-                dataArr.put(queryObj);
+                writer.startObject();
+                writer.writeProperty(Json.id, subquery.id());
+                writer.writeProperty(Json.parentId, parentId);
+                writer.writeProperty(Json.name, subquery.name());
+                writer.writeProperty(Json.displayName, subquery.displayName());
+                writer.writeProperty(Json.children, subquery.queries().size());
+                writer.finishObject();
             }
         }
         else {
-            JsonObject queryObj = new JsonObject();
-            queryObj.put(Json.id, query.id());
-            queryObj.put(Json.parentId, "");
-            queryObj.put(Json.name, query.name());
-            queryObj.put(Json.displayName, query.displayName());
-            queryObj.put(Json.children, query.queries().size());
-            dataArr.put(queryObj);
+            writer.startObject();
+            writer.writeProperty(Json.id, query.id());
+            writer.writeProperty(Json.parentId, "");
+            writer.writeProperty(Json.name, query.name());
+            writer.writeProperty(Json.displayName, query.displayName());
+            writer.writeProperty(Json.children, query.queries().size());
+            writer.finishObject();
         }
 
-        writer.put(Json.data, dataArr);
+        writer.finishArray();
     }
 }

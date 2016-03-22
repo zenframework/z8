@@ -8,6 +8,7 @@ import org.zenframework.z8.server.base.model.command.IParameter;
 import org.zenframework.z8.server.base.simple.Procedure;
 import org.zenframework.z8.server.engine.ApplicationServer;
 import org.zenframework.z8.server.json.Json;
+import org.zenframework.z8.server.json.JsonWriter;
 import org.zenframework.z8.server.json.parser.JsonObject;
 import org.zenframework.z8.server.request.RequestTarget;
 import org.zenframework.z8.server.types.guid;
@@ -51,16 +52,16 @@ public class Job extends RequestTarget {
     }
 
     @Override
-    public void writeResponse(JsonObject writer) {
+    public void writeResponse(JsonWriter writer) {
         setParameters();
 
         if(!scheduled()) {
             thread = new Thread(procedure, procedure.displayName());
             thread.start();
     
-            writer.put(Json.jobId, monitor.id());
-            writer.put(Json.serverId, ApplicationServer.get().id());
-            writer.put(Json.text, procedure.displayName());
+            writer.writeProperty(Json.jobId, monitor.id());
+            writer.writeProperty(Json.serverId, ApplicationServer.get().id());
+            writer.writeProperty(Json.text, procedure.displayName());
         } else {
             procedure.run();
             isDone = true;

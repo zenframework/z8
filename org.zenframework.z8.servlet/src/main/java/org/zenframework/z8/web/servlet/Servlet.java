@@ -2,7 +2,6 @@ package org.zenframework.z8.web.servlet;
 
 import java.io.IOException;
 import java.lang.reflect.Method;
-import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,6 +19,7 @@ import org.zenframework.z8.server.engine.ApplicationServerMain;
 import org.zenframework.z8.server.engine.IAuthorityCenter;
 import org.zenframework.z8.server.engine.Rmi;
 import org.zenframework.z8.server.engine.TransportServerMain;
+import org.zenframework.z8.server.exceptions.AccessDeniedException;
 import org.zenframework.z8.server.logs.Trace;
 import org.zenframework.z8.server.types.encoding;
 import org.zenframework.z8.web.server.Adapter;
@@ -50,7 +50,7 @@ public class Servlet extends HttpServlet {
 		return config;
 	}
 
-	static public IAuthorityCenter getAuthorityCenter() throws RemoteException {
+	static public IAuthorityCenter getAuthorityCenter() {
 		if(authorityCenter != null)
 			return authorityCenter;
 					
@@ -59,7 +59,12 @@ public class Servlet extends HttpServlet {
 				return authorityCenter;
 
 			ServerConfig config = config();
-			return authorityCenter = (IAuthorityCenter) Rmi.connect(config.getAuthorityCenterHost(), config.getAuthorityCenterPort(), IAuthorityCenter.Name);
+			
+			try {
+				return authorityCenter = (IAuthorityCenter) Rmi.connect(config.getAuthorityCenterHost(), config.getAuthorityCenterPort(), IAuthorityCenter.Name);
+			} catch(Throwable e) {
+				throw new AccessDeniedException();
+			}
 		}
 	}
 

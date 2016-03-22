@@ -101,7 +101,7 @@ Z8.messenger.Messenger = Ext.extend(Ext.util.Observable,
 	
 	updateMessages: function(messages)
 	{
-		if( (messages.length != 0) && (Z8.viewport.messenger.messengerWindow.isVisible() == false) )
+		if(!Z8.isEmpty(messages) && Z8.viewport.messenger.messengerWindow.isVisible() == false)
 		{
 			if (this.blinker)
 			{

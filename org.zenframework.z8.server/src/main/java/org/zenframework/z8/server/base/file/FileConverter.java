@@ -31,7 +31,7 @@ public class FileConverter implements Properties.Listener {
 
 	private static final List<String> txtExtensions = Arrays.asList("eml", "mime");
 
-	private final FileStorage storage;
+	private File storage;
 	
 	private static File officeHome;
 	private static OfficeManager officeManager;
@@ -39,13 +39,13 @@ public class FileConverter implements Properties.Listener {
 
 	public FileConverter(File path) {
 		super();
-		this.storage = new FileStorage(path);
+//		this.storage = new FileStorage(path);
 	}
 
-	public FileConverter(FileStorage storage) {
-		super();
-		this.storage = storage;
-	}
+//	public FileConverter(FileStorage storage) {
+//		super();
+//		this.storage = storage;
+//	}
 
 	public File getConvertedPdf(String relativePath, File srcFile) {
 		return getConvertedFile(relativePath, srcFile, PdfExtension);
@@ -59,7 +59,7 @@ public class FileConverter implements Properties.Listener {
 		if(srcFile.getName().endsWith(extension))
 			return srcFile;
 
-		File convertedFile = storage.getFile(relativePath + extension);
+		File convertedFile = new File(storage, relativePath + extension);
 
 		if(!convertedFile.exists()) {
 			if(TxtExtension.equalsIgnoreCase(extension))
@@ -87,10 +87,6 @@ public class FileConverter implements Properties.Listener {
 	public static boolean isConvertableToTxt(String fileName) {
 		String extension = FilenameUtils.getExtension(fileName).toLowerCase();
 		return txtExtensions.contains(extension);
-	}
-
-	public String getPath() {
-		return storage.getRootPath();
 	}
 
 	private void convertFileToTxt(File sourceFile, File convertedFile) {

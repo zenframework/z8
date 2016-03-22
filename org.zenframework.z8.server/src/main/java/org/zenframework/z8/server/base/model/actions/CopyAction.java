@@ -10,7 +10,7 @@ import org.zenframework.z8.server.base.query.QueryUtils;
 import org.zenframework.z8.server.base.query.Style;
 import org.zenframework.z8.server.base.table.value.Field;
 import org.zenframework.z8.server.json.Json;
-import org.zenframework.z8.server.json.parser.JsonArray;
+import org.zenframework.z8.server.json.JsonWriter;
 import org.zenframework.z8.server.json.parser.JsonObject;
 import org.zenframework.z8.server.types.guid;
 import org.zenframework.z8.server.types.primary;
@@ -21,7 +21,8 @@ public class CopyAction extends Action {
     }
 
     @Override
-    public void writeResponse(JsonObject writer) {
+    public void writeResponse(JsonWriter
+    		writer) {
         Query query = getQuery();
 
         guid sourceRecordId = getSourceParameter();
@@ -49,23 +50,19 @@ public class CopyAction extends Action {
             }
         }
 
-        JsonArray arr = new JsonArray();
+        writer.startArray(Json.data);
+        writer.startObject();
 
-        JsonObject obj = new JsonObject();
-
-        for(Field field : fields) {
-            field.writeData(obj);
-        }
+        for(Field field : fields)
+            field.writeData(writer);
 
         Style style = query.renderRecord();
 
-        if(style != null) {
-            style.write(obj);
-        }
+        if(style != null)
+            style.write(writer);
 
-        arr.put(obj);
-
-        writer.put(Json.data, obj);
+        writer.finishObject();
+        writer.finishArray();
     }
 
     static private boolean canCopy(Field field) {

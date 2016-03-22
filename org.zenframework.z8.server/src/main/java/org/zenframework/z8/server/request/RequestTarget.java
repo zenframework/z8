@@ -4,8 +4,7 @@ import java.util.Map;
 
 import org.zenframework.z8.server.base.model.NamedObject;
 import org.zenframework.z8.server.engine.ApplicationServer;
-import org.zenframework.z8.server.json.Json;
-import org.zenframework.z8.server.json.parser.JsonObject;
+import org.zenframework.z8.server.json.JsonWriter;
 
 public abstract class RequestTarget extends NamedObject implements IRequestTarget {
     static public IRequest request() {
@@ -22,11 +21,9 @@ public abstract class RequestTarget extends NamedObject implements IRequestTarge
 
     @Override
     public void processRequest(IResponse response) throws Throwable {
-        JsonObject writer = new JsonObject();
+        JsonWriter writer = new JsonWriter();
 
-        writer.put(Json.requestId, id());
-        writer.put(Json.success, true);
-        writer.put(Json.type, "event");
+        writer.startResponse(id(), true);
 
         response.setWriter(writer);
 
@@ -37,6 +34,8 @@ public abstract class RequestTarget extends NamedObject implements IRequestTarge
         if(monitor != this)
             monitor.writeResponse(writer);
 
+        writer.finishResponse();
+        
         response.setContent(writer.toString());
     }
 }

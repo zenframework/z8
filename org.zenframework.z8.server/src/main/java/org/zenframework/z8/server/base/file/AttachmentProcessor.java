@@ -172,7 +172,7 @@ public class AttachmentProcessor extends OBJECT {
 		if(!absolutePath.exists())
 			FileUtils.copyInputStreamToFile(Files.getInputStream(fileInfo), absolutePath);
 
-		FileConverter fileConverter = new FileConverter(FileStorage.cache());
+		FileConverter fileConverter = new FileConverter(new File(Folders.Base, Folders.Cache));
 		File pdfFile = fileConverter.getConvertedPdf(relativePath, absolutePath);
 
 		return PdfUtils.getPageCount(pdfFile);
