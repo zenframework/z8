@@ -33,6 +33,14 @@ public class FileInfo extends OBJECT implements Serializable {
 	private static final boolean DEFAULT_READ = Boolean.parseBoolean(System.getProperty(PROP_DEFAULT_READ));
 	private static final boolean DEFAULT_WRITE = Boolean.parseBoolean(System.getProperty(PROP_DEFAULT_WRITE));
 
+	public static boolean isDefaultRead() {
+		return DEFAULT_READ;
+	}
+
+	public static boolean isDefaultWrite() {
+		return DEFAULT_WRITE;
+	}
+
 	public string name = new string();
 	public string path = new string();
 	public string type = new string();
@@ -217,7 +225,9 @@ public class FileInfo extends OBJECT implements Serializable {
 			return;
 
 		// Read FileInfo version - for future use
-		inputStream.readByte();
+		@SuppressWarnings("unused")
+		byte version = inputStream.readByte();
+		
 		if (inputStream.readBoolean()) {
 			file = FilesFactory.createFileItem(name.get());
 

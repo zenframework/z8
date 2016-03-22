@@ -10,12 +10,10 @@ import org.zenframework.z8.server.runtime.ServerRuntime;
 public class FilesFactory {
 
     private static class FilesListener implements Properties.Listener {
-
         @Override
         public void onPropertyChange(String key, String value) {
-            if (ServerRuntime.FileItemSizeThresholdProperty.equalsKey(key)) {
+            if (ServerRuntime.FileItemSizeThresholdProperty.equalsKey(key))
                 FilesFactory.fileItemFactory.setSizeThreshold(Integer.parseInt(value));
-            }
         }
         
     }
@@ -24,7 +22,7 @@ public class FilesFactory {
         Properties.addListener(new FilesListener());
     }
 
-    private static DiskFileItemFactory fileItemFactory = new DiskFileItemFactory(Integer.parseInt(Properties.getProperty(ServerRuntime.FileItemSizeThresholdProperty)), null);
+    private static DiskFileItemFactory fileItemFactory = new DiskFileItemFactory();
     
     public static FileItemFactory getFileItemFactory() {
         return fileItemFactory;

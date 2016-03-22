@@ -7,9 +7,11 @@ import java.io.InputStream;
 import java.util.Arrays;
 import java.util.Collection;
 
+import org.apache.commons.io.FileUtils;
 import org.zenframework.z8.server.base.file.FileInfo;
 import org.zenframework.z8.server.base.file.FilesFactory;
 import org.zenframework.z8.server.base.file.Folders;
+import org.zenframework.z8.server.base.file.InputOnlyFileItem;
 import org.zenframework.z8.server.base.table.Table;
 import org.zenframework.z8.server.base.table.value.BinaryField;
 import org.zenframework.z8.server.base.table.value.Field;
@@ -100,7 +102,7 @@ public class Files extends Table {
 
 		SqlToken where = new Rel(table.path.get(), Operation.Eq, fileInfo.path.sql_string());
 
-		guid recordId = fileInfo.id; 
+		guid recordId = fileInfo.id;
 
 		Field file = table.file.get();
 		Collection<Field> fields = Arrays.asList(file);
@@ -111,34 +113,25 @@ public class Files extends Table {
 		return null;
 	}
 
-	
 	public static FileInfo getFile(FileInfo fileInfo) throws IOException {
-/*		File path = new File(Folders.Base, fileInfo.path.get());
-		
-		if(!path.exists()) {
-			InputStream inputStream = getInputStream(fileInfo);
-
+		File path = new File(Folders.Base, fileInfo.path.get());
+		if(FileInfo.isDefaultWrite()) {
+			InputStream inputStream = !path.exists() ? getInputStream(fileInfo) : new FileInputStream(path);
 			if(inputStream == null)
 				return null;
-			
-			FileUtils.copyInputStreamToFile(inputStream, path);
+			fileInfo.file = FilesFactory.createFileItem(fileInfo.name.get());
+			IOUtils.copy(inputStream, fileInfo.getOutputStream());
+			return fileInfo;
+		} else {
+			if(!path.exists()) {
+				InputStream inputStream = getInputStream(fileInfo);
+				if(inputStream == null)
+					return null;
+				FileUtils.copyInputStreamToFile(inputStream, path);
+			}
+			fileInfo.file = new InputOnlyFileItem(path, fileInfo.name.get());
+			return fileInfo;
 		}
-		
-		fileInfo.file = new InputOnlyFileItem(path, fileInfo.name.get());
-		return fileInfo;
-*/
-		File path = new File(Folders.Base, fileInfo.path.get());
-	
-		InputStream inputStream = !path.exists() ? getInputStream(fileInfo) : new FileInputStream(path);
-
-		if(inputStream == null)
-			return null;
-
-		fileInfo.file = FilesFactory.createFileItem(fileInfo.name.get());
-
-       	IOUtils.copy(inputStream, fileInfo.getOutputStream());
-        
-		return fileInfo;
 	}
 
 }
