@@ -119,7 +119,7 @@ public class Monitor extends RequestTarget implements IMonitor {
 
         writer.put(Json.refresh, refreshObj);
 
-        writer.put(Json.serverId, ApplicationServer.Id);
+        writer.put(Json.serverId, ApplicationServer.get().id());
 
         if (outputFile != null)
 			writer.put(Json.source, outputFile.getRelativePath().replace('\\', '/'));

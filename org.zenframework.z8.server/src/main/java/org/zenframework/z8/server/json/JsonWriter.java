@@ -299,7 +299,7 @@ public class JsonWriter {
         finishArray();
 
         if (log != null) {
-            writeProperty(new string(Json.serverId), ApplicationServer.Id);
+            writeProperty(new string(Json.serverId), ApplicationServer.get().id());
             writeProperty(new string(Json.log), log.getRelativePath());
         }
 
@@ -314,4 +314,5 @@ public class JsonWriter {
     public String toString() {
         return stream.toString();
     }
+
 }

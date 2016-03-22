@@ -176,6 +176,7 @@ public class ReportAction extends Action {
         String reportId = report != null ? reportRunner.execute() : reportRunner.execute(columns, groupFields);
 
         writer.put(Json.source, reportId);
-        writer.put(Json.serverId, ApplicationServer.Id);
+        writer.put(Json.serverId, ApplicationServer.get().id());
     }
+
 }

@@ -19,6 +19,7 @@ import org.zenframework.z8.server.config.SystemProperty;
 import org.zenframework.z8.server.engine.ApplicationServerMain;
 import org.zenframework.z8.server.engine.IAuthorityCenter;
 import org.zenframework.z8.server.engine.Rmi;
+import org.zenframework.z8.server.engine.TransportServerMain;
 import org.zenframework.z8.server.logs.Trace;
 import org.zenframework.z8.server.types.encoding;
 import org.zenframework.z8.web.server.Adapter;
@@ -32,6 +33,7 @@ public class Servlet extends HttpServlet {
 
 	static private String ApplicationServer = ApplicationServerMain.class.getCanonicalName();
 	static private String AuthorityCenter = AuthorityCenterMain.class.getCanonicalName();
+	static private String TransportServer = TransportServerMain.class.getCanonicalName();
 
 	static private String Start = "start";
 	static private String Stop = "stop";
@@ -130,6 +132,9 @@ public class Servlet extends HttpServlet {
 
 		if(config.webServerStartAuthorityCenter())
 			stopServer(AuthorityCenter, config);
+
+		if(config.webServerStartTransportServer())
+			stopServer(TransportServer, config);
 
 		config = null;
 

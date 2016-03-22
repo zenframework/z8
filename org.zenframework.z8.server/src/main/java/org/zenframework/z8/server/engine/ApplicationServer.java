@@ -21,174 +21,172 @@ import org.zenframework.z8.server.request.Request;
 import org.zenframework.z8.server.request.RequestProcessor;
 import org.zenframework.z8.server.security.IUser;
 import org.zenframework.z8.server.security.User;
-import org.zenframework.z8.server.types.guid;
 
 public class ApplicationServer extends RmiServer implements IApplicationServer {
-    private static final long serialVersionUID = 7035837292407422257L;
 
-    static public String Id = guid.create().toString();
+	private static final long serialVersionUID = 7035837292407422257L;
 
-    private static ApplicationServer instance = null;
+	private static final ThreadLocal<IRequest> currentRequest = new ThreadLocal<IRequest>();
 
-    private IAuthorityCenter authorityCenter = null;
+	private static ApplicationServer INSTANCE = null;
 
-    private ServerConfig config;
+	private final String id;
+	private final ServerConfig config;
 
-    static private ThreadLocal<IRequest> currentRequest = new ThreadLocal<IRequest>();
+	private IAuthorityCenter authorityCenter = null;
 
-    static public ApplicationServer get() {
-        return instance;
-    }
+	private ApplicationServer(ServerConfig config) throws RemoteException {
+		super(config.getApplicationServerPort(), IApplicationServer.Name);
+		this.id = config.getServerId();
+		this.config = config;
+	}
 
-    protected ApplicationServer(ServerConfig config) throws RemoteException {
-        super(config.getApplicationServerPort(), IApplicationServer.Name);
+	@Override
+	public String id() {
+		return id;
+	}
 
-        Id = config.getServerId();
+	@Override
+	public void start() throws RemoteException {
+		super.start();
 
-        this.config = config;
+		checkSchemaVersion();
 
-        instance = this;
-        instance.start();
-    }
+		authorityCenter = (IAuthorityCenter) Rmi.connect(config.getAuthorityCenterHost(), config.getAuthorityCenterPort(),
+				IAuthorityCenter.Name);
+		authorityCenter.register(this);
 
-    static public IAuthorityCenter getAuthorityCenter() {
-        return instance.authorityCenter;
-    }
+		RuntimeMXBean mxBean = ManagementFactory.getRuntimeMXBean();
+		System.out.println("INFO: JVM startup options: " + mxBean.getInputArguments().toString());
+	}
 
-    static public ServerConfig config() {
-        return instance != null ? instance.config : new ServerConfig();
-    }
+	@Override
+	public void stop() throws RemoteException {
+		Scheduler.stop();
+		TransportEngine.getInstance().stop();
+		try {
+			authorityCenter.unregister(this);
+		} catch (RemoteException e) {
+			Trace.logError(e);
+		}
+		try {
+			super.stop();
+		} catch (RemoteException e) {
+			Trace.logError(e);
+		}
+	}
 
-    static public IRequest getRequest() {
-        IRequest request = currentRequest.get();
+	@Override
+	public IUser login(String login) {
+		return User.load(login);
+	}
 
-        if (request == null)
-            request = new Request(new Session());
+	@Override
+	public IUser login(String login, String password) {
+		return User.load(login, password);
+	}
 
-        return request;
-    }
+	@Override
+	public FileInfo download(FileInfo fileInfo) throws RemoteException {
+		try {
+			FileInfo result = Files.getFile(fileInfo);
+			ConnectionManager.release();
+			return result;
+		} catch (IOException e) {
+			throw new RemoteException(e.getMessage(), e);
+		}
+	}
 
-    static public ISession getSession() {
-        return getRequest().getSession();
-    }
+	@Override
+	public GNode processRequest(ISession session, GNode node) throws RemoteException {
+		IRequest request = new Request(node.getAttributes(), node.getFiles(), session);
+		IResponse response = request.getResponse();
 
-    static public IMonitor getMonitor() {
-        return getRequest().getMonitor();
-    }
+		setRequest(request);
 
-    static public Database database() {
-        return new Database(config());
-    }
+		new RequestProcessor().processRequest(request, response);
 
-    static public IUser getUser() {
-        return getSession().user();
-    }
+		setRequest(null);
 
-    static public void setRequest(IRequest request) {
-        if (request != null)
-            currentRequest.set(request);
-        else
-            currentRequest.remove();
-    }
+		return new GNode(response.getContent());
+	}
 
-    static public void disableEvents() {
-        getRequest().disableEvents();
-    }
+	public static void start(ServerConfig config) throws RemoteException {
+		if (INSTANCE == null) {
+			INSTANCE = new ApplicationServer(config);
+			INSTANCE.start();
+			Scheduler.start();
+		}
+	}
 
-    static public void enableEvents() {
-        getRequest().enableEvents();
-    }
+	public static ApplicationServer get() {
+		return INSTANCE;
+	}
 
-    static public boolean events() {
-        return getRequest().events();
-    }
+	public static IAuthorityCenter getAuthorityCenter() {
+		return INSTANCE.authorityCenter;
+	}
 
-    @Override
-    public String id() throws RemoteException {
-        return Id;
-    }
+	public static ServerConfig config() {
+		return INSTANCE != null ? INSTANCE.config : new ServerConfig();
+	}
 
-    static public File workingPath() {
-        return config().getWorkingPath();
-    }
+	public static IRequest getRequest() {
+		IRequest request = currentRequest.get();
+		if (request == null)
+			request = new Request(new Session());
+		return request;
+	}
 
-    static public String naming() {
-        try {
-            return instance.netAddress();
-        } catch (RemoteException e) {}
-        return "not defined";
-    }
+	public static ISession getSession() {
+		return getRequest().getSession();
+	}
 
-    @Override
-    public void start() throws RemoteException {
+	public static IMonitor getMonitor() {
+		return getRequest().getMonitor();
+	}
 
-        super.start();
+	public static Database database() {
+		return new Database(config());
+	}
 
-        checkSchemaVersion();
-        
-        authorityCenter = (IAuthorityCenter) Rmi.connect(config.getAuthorityCenterHost(), config.getAuthorityCenterPort(),
-                IAuthorityCenter.Name);
-        authorityCenter.register(this);
+	public static IUser getUser() {
+		return getSession().user();
+	}
 
-        RuntimeMXBean mxBean = ManagementFactory.getRuntimeMXBean();
-        System.out.println("INFO: JVM startup options: " + mxBean.getInputArguments().toString());
+	public static void setRequest(IRequest request) {
+		if (request != null)
+			currentRequest.set(request);
+		else
+			currentRequest.remove();
+	}
 
-        Scheduler.start();
-    }
+	public static void disableEvents() {
+		getRequest().disableEvents();
+	}
 
-    private void checkSchemaVersion() {
-        String version = Runtime.version();
-        System.out.println("Runtime schema version: " + version);
-    }
-    
-    @Override
-    public void stop() throws RemoteException {
-        Scheduler.stop();
-        TransportEngine.getInstance().stop();
-        try {
-            authorityCenter.unregister(this);
-        } catch (RemoteException e) {
-            Trace.logError(e);
-        }
-        try {
-            super.stop();
-        } catch (RemoteException e) {
-            Trace.logError(e);
-        }
-    }
+	public static void enableEvents() {
+		getRequest().enableEvents();
+	}
 
-    @Override
-    public IUser login(String login) {
-    	return User.load(login);
-    }
+	public static boolean events() {
+		return getRequest().events();
+	}
 
-    @Override
-    public IUser login(String login, String password) {
-    	return User.load(login, password);
-    }
-    
-    @Override
-    public FileInfo download(FileInfo fileInfo) throws RemoteException {
-        try {
-        	FileInfo result = Files.getFile(fileInfo);
-        	ConnectionManager.release();
-        	return result;
-        } catch (IOException e) {
-            throw new RemoteException(e.getMessage(), e);
-        }
-    }
+	public static File workingPath() {
+		return config().getWorkingPath();
+	}
 
-    @Override
-    public GNode processRequest(ISession session, GNode node) throws RemoteException {
-        IRequest request = new Request(node.getAttributes(), node.getFiles(), session);
-        IResponse response = request.getResponse();
+	public static String naming() {
+		try {
+			return INSTANCE.netAddress();
+		} catch (RemoteException e) {}
+		return "not defined";
+	}
 
-        setRequest(request);
+	private void checkSchemaVersion() {
+		String version = Runtime.version();
+		System.out.println("Runtime schema version: " + version);
+	}
 
-        new RequestProcessor().processRequest(request, response);
-
-        setRequest(null);
-
-        return new GNode(response.getContent());
-    }
 }

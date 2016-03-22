@@ -59,7 +59,7 @@ public class Job extends RequestTarget {
             thread.start();
     
             writer.put(Json.jobId, monitor.id());
-            writer.put(Json.serverId, ApplicationServer.Id);
+            writer.put(Json.serverId, ApplicationServer.get().id());
             writer.put(Json.text, procedure.displayName());
         } else {
             procedure.run();

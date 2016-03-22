@@ -22,7 +22,7 @@ public class AuthorityCenter extends RmiServer implements IAuthorityCenter {
 
 	private static final long serialVersionUID = -3444119932500940143L;
 
-	static private AuthorityCenter instance;
+	private static AuthorityCenter INSTANCE;
 
 	private ServerConfig config;
 
@@ -31,21 +31,20 @@ public class AuthorityCenter extends RmiServer implements IAuthorityCenter {
 	private UserManager userManager;
 	private SessionManager sessionManager;
 
-	public AuthorityCenter(ServerConfig config) throws RemoteException {
+	private AuthorityCenter(ServerConfig config) throws RemoteException {
 		super(config.getAuthorityCenterPort(), IAuthorityCenter.Name);
-
 		this.config = config;
-		instance = this;
-
-		start();
 	}
 
-	static public ServerConfig config() {
-		return instance.config;
+	public static void start(ServerConfig config) throws RemoteException {
+		if (INSTANCE == null) {
+			INSTANCE = new AuthorityCenter(config);
+			INSTANCE.start();
+		}
 	}
 
-	static public AuthorityCenter get() {
-		return instance;
+	public static AuthorityCenter get() {
+		return INSTANCE;
 	}
 
 	@Override
@@ -98,18 +97,6 @@ public class AuthorityCenter extends RmiServer implements IAuthorityCenter {
 		}
 	}
 
-	static public UserManager getUserManager() {
-		return instance.userManager;
-	}
-
-	private IApplicationServer getLoginServer() {
-		try {
-			return findServer(null).getApplicationServer();
-		} catch(Throwable e) {
-			throw new AccessDeniedException();
-		}
-	}
-	
 	@Override
 	public ISession login(String login) throws RemoteException {
 		return doLogin(login, null);
@@ -123,6 +110,29 @@ public class AuthorityCenter extends RmiServer implements IAuthorityCenter {
 		return doLogin(login, password);
 	}
 
+	@Override
+	public synchronized ISession getServer(String sessionId, String serverId) throws RemoteException {
+		Session session = sessionManager.get(sessionId);
+		ServerInfo server = findServer(serverId);
+
+		if(server == null)
+			return null;
+		
+		session.setServerInfo(server);
+		return session;
+	}
+	public static UserManager getUserManager() {
+		return INSTANCE.userManager;
+	}
+
+	private IApplicationServer getLoginServer() {
+		try {
+			return findServer(null).getApplicationServer();
+		} catch(Throwable e) {
+			throw new AccessDeniedException();
+		}
+	}
+	
 	private ISession doLogin(String login, String password) throws RemoteException {
 		IApplicationServer loginServer = getLoginServer();
 		IUser user = password != null ? loginServer.login(login, password) : loginServer.login(login);
@@ -163,19 +173,8 @@ public class AuthorityCenter extends RmiServer implements IAuthorityCenter {
 		return null;
 	}
 	
-	public ISession getServer(String sessionId) throws RemoteException {
+	private ISession getServer(String sessionId) throws RemoteException {
 		return getServer(sessionId, null);
 	}
 	
-	@Override
-	public synchronized ISession getServer(String sessionId, String serverId) throws RemoteException {
-		Session session = sessionManager.get(sessionId);
-		ServerInfo server = findServer(serverId);
-
-		if(server == null)
-			return null;
-		
-		session.setServerInfo(server);
-		return session;
-	}
 }

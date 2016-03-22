@@ -2,24 +2,24 @@ package org.zenframework.z8.server.ie;
 
 public interface Transport {
 
-    void connect() throws TransportException;
+	void connect() throws TransportException;
 
-    void close();
+	void close();
 
-    void send(Message bean) throws TransportException;
+	void send(Message bean) throws TransportException;
 
-    Message receive() throws TransportException;
+	Message receive() throws TransportException;
 
-    void commit() throws TransportException;
+	void commit() throws TransportException;
 
-    void rollback() throws TransportException;
+	void rollback() throws TransportException;
 
-    String getProtocol();
+	String getProtocol();
 
-    String getUrl(String address);
+	String getUrl(String address);
 
-    void init();
+	void init();
 
-    void shutdown();
+	void shutdown();
 
 }

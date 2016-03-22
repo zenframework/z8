@@ -1602,7 +1602,7 @@ public class JsonObject extends HashMap<String, Object> {
         JsonObject infoObj = new JsonObject();
         infoObj.put(Json.messages.get(), new JsonArray(messages));
         if (log != null) {
-            infoObj.put(Json.serverId, ApplicationServer.Id);
+            infoObj.put(Json.serverId, ApplicationServer.get().id());
             infoObj.put(Json.log, log.getRelativePath());
         }
         put(Json.info, infoObj);

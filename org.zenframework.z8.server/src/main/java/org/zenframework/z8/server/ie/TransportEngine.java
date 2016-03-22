@@ -13,101 +13,103 @@ import org.zenframework.z8.server.runtime.ServerRuntime;
 
 public class TransportEngine implements Properties.Listener {
 
-    public static final String NULL_PROTOCOL = "null";
+	public static final String NULL_PROTOCOL = "null";
 
-    private static final Log LOG = LogFactory.getLog(TransportEngine.class);
+	private static final Log LOG = LogFactory.getLog(TransportEngine.class);
 
-    private static TransportEngine INSTANCE;
+	private static TransportEngine INSTANCE;
 
-    private final List<String> enabledProtocols = getEnabledProtocols(Properties
-            .getProperty(ServerRuntime.EnableProtocolsProperty));
-    private final Map<String, Transport> transports = new HashMap<String, Transport>();
+	private final List<String> enabledProtocols = getEnabledProtocols(Properties
+			.getProperty(ServerRuntime.EnableProtocolsProperty));
+	private final Map<String, Transport> transports = new HashMap<String, Transport>();
 
-    private TransportEngine() {
-        Properties.addListener(this);
-    }
+	private TransportEngine() {
+		Properties.addListener(this);
+	}
 
-    public synchronized Transport getTransport(TransportContext context, String protocol) {
-        Transport transport = null;
-        if (enabledProtocols.contains(protocol)) {
-            String transportId = transportId(context, protocol);
-            transport = transports.get(transportId);
-            if (transport == null) {
-                transport = createTransport(context, protocol);
-                if (transport != null) {
-                    transports.put(transportId, transport);
-                    transport.init();
-                } else {
-                    LOG.warn("Unknown transport protocol '" + protocol + "'");
-                }
-            }
-        }
-        return transport;
-    }
+	public synchronized Transport getTransport(TransportContext context, String protocol) {
+		Transport transport = null;
+		if (enabledProtocols.contains(protocol)) {
+			String transportId = transportId(context, protocol);
+			transport = transports.get(transportId);
+			if (transport == null) {
+				transport = createTransport(context, protocol);
+				if (transport != null) {
+					transports.put(transportId, transport);
+					transport.init();
+				} else {
+					LOG.warn("Unknown transport protocol '" + protocol + "'");
+				}
+			}
+		}
+		return transport;
+	}
 
-    public synchronized List<String> getEnabledProtocols() {
-        return new ArrayList<String>(enabledProtocols);
-    }
-    
-    public List<Transport> getEnabledTransports(TransportContext context) {
-        List<String> protocols = getEnabledProtocols();
-        List<Transport> transports = new ArrayList<Transport>(protocols.size());
-        for (String protocol : protocols) {
-            transports.add(getTransport(context, protocol));
-        }
-        return transports;
-    }
+	public synchronized List<String> getEnabledProtocols() {
+		return new ArrayList<String>(enabledProtocols);
+	}
 
-    @Override
-    public void onPropertyChange(String key, String value) {
-        if (ServerRuntime.EnableProtocolsProperty.equalsKey(key)) {
-            stop();
-            synchronized (enabledProtocols) {
-                enabledProtocols.clear();
-                enabledProtocols.addAll(getEnabledProtocols(value));
-            }
-        }
-    }
+	public List<Transport> getEnabledTransports(TransportContext context) {
+		List<String> protocols = getEnabledProtocols();
+		List<Transport> transports = new ArrayList<Transport>(protocols.size());
+		for (String protocol : protocols) {
+			transports.add(getTransport(context, protocol));
+		}
+		return transports;
+	}
 
-    public synchronized void stop() {
-        for (Transport t : transports.values()) {
-            t.shutdown();
-        }
-    }
+	@Override
+	public void onPropertyChange(String key, String value) {
+		if (ServerRuntime.EnableProtocolsProperty.equalsKey(key)) {
+			stop();
+			synchronized (enabledProtocols) {
+				enabledProtocols.clear();
+				enabledProtocols.addAll(getEnabledProtocols(value));
+			}
+		}
+	}
 
-    public static TransportEngine getInstance() {
-        if (INSTANCE == null) {
-            INSTANCE = new TransportEngine();
-        }
-        return INSTANCE;
-    }
+	public synchronized void stop() {
+		for (Transport t : transports.values()) {
+			t.shutdown();
+		}
+	}
 
-    private static List<String> getEnabledProtocols(String list) {
-        String strs[] = list.split("\\,");
-        List<String> protocols = new ArrayList<String>(strs.length);
-        for (String s : strs) {
-            s = s.trim().toLowerCase();
-            if (s.length() > 0) {
-                protocols.add(s);
-            }
-        }
-        return protocols;
-    }
+	public static TransportEngine getInstance() {
+		if (INSTANCE == null) {
+			INSTANCE = new TransportEngine();
+		}
+		return INSTANCE;
+	}
 
-    private static String transportId(TransportContext context, String protocol) {
-        return context.getProperty(TransportContext.SelfAddressProperty) + '/' + protocol;
-    }
-    
-    private static Transport createTransport(TransportContext context, String protocol) {
-        if (JmsTransport.PROTOCOL.equals(protocol)) {
-            return new JmsTransport(context);
-        } else if (FileTransport.PROTOCOL.equals(protocol)) {
-            return new FileTransport(context);
-        } else if (WsTransport.PROTOCOL.equals(protocol)) {
-            return new WsTransport(context);
-        } else {
-            return null;
-        }
-    }
+	private static List<String> getEnabledProtocols(String list) {
+		String strs[] = list.split("\\,");
+		List<String> protocols = new ArrayList<String>(strs.length);
+		for (String s : strs) {
+			s = s.trim().toLowerCase();
+			if (s.length() > 0) {
+				protocols.add(s);
+			}
+		}
+		return protocols;
+	}
+
+	private static String transportId(TransportContext context, String protocol) {
+		return context.getProperty(TransportContext.SelfAddressProperty) + '/' + protocol;
+	}
+
+	private static Transport createTransport(TransportContext context, String protocol) {
+		if (RmiTransport.PROTOCOL.equals(protocol)) {
+			return new RmiTransport(context);
+		} else if (JmsTransport.PROTOCOL.equals(protocol)) {
+			return new JmsTransport(context);
+		} else if (FileTransport.PROTOCOL.equals(protocol)) {
+			return new FileTransport(context);
+		} else if (WsTransport.PROTOCOL.equals(protocol)) {
+			return new WsTransport(context);
+		} else {
+			return null;
+		}
+	}
 
 }

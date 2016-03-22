@@ -21,6 +21,7 @@ public class ServerConfig extends Properties {
 
 	public static final String WebServerStartApplicationServerProperty = "web.server.start.application.server";
 	public static final String WebServerStartAuthorityCenterProperty = "web.server.start.authority.center";
+	public static final String WebServerStartTransportServerProperty = "web.server.start.transport.server";
 	public static final String WebServerFileSizeMaxProperty = "web.server.file.size.max";
 	
 	public static final String SchedulerEnabledProperty = "scheduler.enabled";
@@ -28,23 +29,24 @@ public class ServerConfig extends Properties {
 	public static final String TraceSqlProperty = "trace.sql";
 	public static final String FileConverterProperty = "file.converter";
 
-	private static File workingPath;
+	private File workingPath;
 
-	private static String authorityCenterHost;
-	private static int authorityCenterPort;
-	private static int authorityCenterSessionTimeout;
+	private String authorityCenterHost;
+	private int authorityCenterPort;
+	private int authorityCenterSessionTimeout;
 
-	private static String applicationServerId;
-	private static int applicationServerPort;
+	private String applicationServerId;
+	private int applicationServerPort;
 
-	private static boolean webServerStartApplicationServer;
-	private static boolean webServerStartAuthorityCenter;
-	private static int webServerFileSizeMax;
+	private boolean webServerStartApplicationServer;
+	private boolean webServerStartAuthorityCenter;
+	private boolean webServerStartTransportServer;
+	private int webServerFileSizeMax;
 	
-	private static boolean schedulerEnabled;
+	private boolean schedulerEnabled;
 
-	private static boolean traceSql;
-	private static String fileConverter;
+	private boolean traceSql;
+	private String fileConverter;
 
 	public ServerConfig() {
 		this(null);
@@ -76,6 +78,7 @@ public class ServerConfig extends Properties {
 
 		webServerStartApplicationServer = getProperty(WebServerStartApplicationServerProperty, true);
 		webServerStartAuthorityCenter = getProperty(WebServerStartAuthorityCenterProperty, true);
+		webServerStartTransportServer = getProperty(WebServerStartTransportServerProperty, true);
 		webServerFileSizeMax = getProperty(WebServerFileSizeMaxProperty, 5);
 		
 		traceSql = getProperty(TraceSqlProperty, false);
@@ -158,6 +161,10 @@ public class ServerConfig extends Properties {
 		return webServerStartAuthorityCenter;
 	}
 
+	public final boolean webServerStartTransportServer() {
+		return webServerStartTransportServer;
+	}
+
 	public final int webServerFileSizeMax() {
 		return webServerFileSizeMax;
 	}
@@ -169,4 +176,5 @@ public class ServerConfig extends Properties {
 	public final String fileConverter() {
 		return fileConverter;
 	}
+
 }
