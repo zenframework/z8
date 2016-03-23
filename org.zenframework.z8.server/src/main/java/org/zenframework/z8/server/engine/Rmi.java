@@ -24,13 +24,19 @@ public class Rmi {
 	private static Registry REGISTRY;
 
 	public static void init(ServerConfig config) throws RemoteException, UnknownHostException {
-		HOST = InetAddress.getLocalHost().getHostAddress();
-		PORT = config.getRegistryPort();
-		try {
-			REGISTRY = LocateRegistry.createRegistry(PORT);
-			LOG.trace("RMI registry created at port " + PORT);
-		} catch (RemoteException e) {
-			REGISTRY = LocateRegistry.getRegistry(PORT);
+		PORT = config.getAuthorityCenterPort();
+		if (config.getAuthorityCenterHost().isEmpty()) {
+			HOST = InetAddress.getLocalHost().getHostAddress();
+			try {
+				REGISTRY = LocateRegistry.createRegistry(PORT);
+				LOG.trace("RMI registry created at port " + PORT);
+			} catch (RemoteException e) {
+				REGISTRY = LocateRegistry.getRegistry(PORT);
+				LOG.trace("RMI registry located at port " + PORT);
+			}
+		} else {
+			HOST = config.getAuthorityCenterHost();
+			REGISTRY = LocateRegistry.getRegistry(HOST, PORT);
 			LOG.trace("RMI registry located at port " + PORT);
 		}
 	}

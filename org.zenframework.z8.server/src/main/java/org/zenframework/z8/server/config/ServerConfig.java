@@ -13,8 +13,6 @@ public class ServerConfig extends Properties {
 
 	public static final String ConfigurationFileName = "project.xml";
 
-	public static final String RegistryPortProperty = "registry.port";
-
 	public static final String AuthorityCenterHostProperty = "authority.center.host";
 	public static final String AuthorityCenterPortProperty = "authority.center.port";
 	public static final String AuthorityCenterSessionTimeoutProperty = "authority.center.session.timeout";
@@ -33,8 +31,6 @@ public class ServerConfig extends Properties {
 
 	private final File configFile;
 
-	private final int registryPort;
-	
 	private final String authorityCenterHost;
 	private final int authorityCenterPort;
 	private final int authorityCenterSessionTimeout;
@@ -60,12 +56,10 @@ public class ServerConfig extends Properties {
 			throw new RuntimeException();
 		}
 
-		registryPort = getProperty(RegistryPortProperty, Registry.REGISTRY_PORT);
-		
 		applicationServerId = getProperty(ApplicationServerIdProperty, guid.create().toString());
 
 		authorityCenterHost = getProperty(AuthorityCenterHostProperty, "");
-		authorityCenterPort = getProperty(AuthorityCenterPortProperty, registryPort);
+		authorityCenterPort = getProperty(AuthorityCenterPortProperty, Registry.REGISTRY_PORT);
 		authorityCenterSessionTimeout = getProperty(AuthorityCenterSessionTimeoutProperty, 24 * 60);
 
 		webServerStartApplicationServer = getProperty(WebServerStartApplicationServerProperty, true);
@@ -119,10 +113,6 @@ public class ServerConfig extends Properties {
 
 	public final String getServerId() {
 		return applicationServerId;
-	}
-
-	public int getRegistryPort() {
-		return registryPort;
 	}
 
 	public final String getAuthorityCenterHost() {
