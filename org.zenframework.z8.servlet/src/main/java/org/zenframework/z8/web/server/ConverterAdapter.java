@@ -102,10 +102,17 @@ public class ConverterAdapter extends Adapter {
 	private void downloadFile(ServerInfo serverInfo, FileInfo fileInfo, File path) throws IOException {
 		FileInfo downloadedFileInfo = serverInfo.getApplicationServer().download(fileInfo);
 
-		if(downloadedFileInfo != null)
-			IOUtils.copy(downloadedFileInfo.getInputStream(), path);
-		else
-			throw new IOException("File '" + fileInfo.path.get() + "' does not exist");
+		/* 
+		 * The storage folder may be shared between servlet and application server, 
+		 * so the previuos call could already put a copy of the file there
+		*/
+		
+		if(!path.exists()) {
+			if(downloadedFileInfo != null)
+				IOUtils.copy(downloadedFileInfo.getInputStream(), path);
+			else
+				throw new IOException("File '" + fileInfo.path.get() + "' does not exist");
+		}
 	}
 
 	public File getConvertedPdf(File relativePath, File srcFile) throws IOException {
