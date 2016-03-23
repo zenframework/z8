@@ -12,8 +12,6 @@ public interface IServer extends Remote, Serializable {
 
 	public String id() throws RemoteException;
 
-	public String getName() throws RemoteException;
-
-	public String netAddress() throws RemoteException;
+	public String getUrl() throws RemoteException;
 
 }

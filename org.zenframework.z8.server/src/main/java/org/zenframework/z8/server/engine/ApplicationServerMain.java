@@ -32,6 +32,8 @@ public final class ApplicationServerMain {
 	
 			ServerConfig config = new ServerConfig(cmd.hasOption(Config) ? cmd.getOptionValue(Config) : null);
 
+			Rmi.init(config);
+			
 			if(!cmd.hasOption(Stop))
 				start(config);
 			else
@@ -51,7 +53,7 @@ public final class ApplicationServerMain {
 	// DO NOT CHANGE this method name OR parameters! Used in method.invoke (see
 	// Z8 project WebApp, class org.zenframework.z8.web.servlet.Servlet)
 	public static void stop(ServerConfig config) throws MalformedURLException, RemoteException, NotBoundException {
-		IServer server = Rmi.connect(Rmi.localhost, config.getApplicationServerPort(), IApplicationServer.Name);
+		IServer server = Rmi.get(IApplicationServer.class);
 		server.stop();
 	}
 

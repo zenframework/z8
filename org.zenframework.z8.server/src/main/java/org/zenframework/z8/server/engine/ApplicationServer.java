@@ -6,9 +6,11 @@ import java.lang.management.ManagementFactory;
 import java.lang.management.RuntimeMXBean;
 import java.rmi.RemoteException;
 
+import org.zenframework.z8.server.base.file.FileConverter;
 import org.zenframework.z8.server.base.file.FileInfo;
 import org.zenframework.z8.server.base.job.scheduler.Scheduler;
 import org.zenframework.z8.server.base.table.system.Files;
+import org.zenframework.z8.server.base.table.system.Properties;
 import org.zenframework.z8.server.base.xml.GNode;
 import org.zenframework.z8.server.config.ServerConfig;
 import org.zenframework.z8.server.db.ConnectionManager;
@@ -19,6 +21,7 @@ import org.zenframework.z8.server.request.IRequest;
 import org.zenframework.z8.server.request.IResponse;
 import org.zenframework.z8.server.request.Request;
 import org.zenframework.z8.server.request.RequestProcessor;
+import org.zenframework.z8.server.runtime.ServerRuntime;
 import org.zenframework.z8.server.security.IUser;
 import org.zenframework.z8.server.security.User;
 
@@ -36,7 +39,7 @@ public class ApplicationServer extends RmiServer implements IApplicationServer {
 	private IAuthorityCenter authorityCenter = null;
 
 	private ApplicationServer(ServerConfig config) throws RemoteException {
-		super(config.getApplicationServerPort(), IApplicationServer.Name);
+		super(IApplicationServer.class);
 		this.id = config.getServerId();
 		this.config = config;
 	}
@@ -52,8 +55,7 @@ public class ApplicationServer extends RmiServer implements IApplicationServer {
 
 		checkSchemaVersion();
 
-		authorityCenter = (IAuthorityCenter) Rmi.connect(config.getAuthorityCenterHost(), config.getAuthorityCenterPort(),
-				IAuthorityCenter.Name);
+		authorityCenter = Rmi.get(IAuthorityCenter.class, config.getAuthorityCenterHost(), config.getAuthorityCenterPort());
 		authorityCenter.register(this);
 
 		RuntimeMXBean mxBean = ManagementFactory.getRuntimeMXBean();
@@ -116,6 +118,11 @@ public class ApplicationServer extends RmiServer implements IApplicationServer {
 			INSTANCE = new ApplicationServer(config);
 			INSTANCE.start();
 			Scheduler.start();
+			String officeHome = config.getOfficeHome();
+			if (officeHome.isEmpty()) {
+				officeHome = Properties.getProperty(ServerRuntime.LibreOfficeDirectoryProperty);
+			}
+			FileConverter.startOfficeManager(officeHome);
 		}
 	}
 
@@ -128,7 +135,7 @@ public class ApplicationServer extends RmiServer implements IApplicationServer {
 	}
 
 	public static ServerConfig config() {
-		return INSTANCE != null ? INSTANCE.config : new ServerConfig();
+		return INSTANCE.config;
 	}
 
 	public static IRequest getRequest() {
@@ -175,13 +182,6 @@ public class ApplicationServer extends RmiServer implements IApplicationServer {
 
 	public static File workingPath() {
 		return config().getWorkingPath();
-	}
-
-	public static String naming() {
-		try {
-			return INSTANCE.netAddress();
-		} catch (RemoteException e) {}
-		return "not defined";
 	}
 
 	private void checkSchemaVersion() {

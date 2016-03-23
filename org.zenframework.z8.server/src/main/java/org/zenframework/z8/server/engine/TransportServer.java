@@ -14,7 +14,7 @@ public class TransportServer extends RmiServer implements ITransportServer {
 	private static TransportServer INSTANCE;
 
 	private TransportServer(ServerConfig config) throws RemoteException {
-		super(config.getAuthorityCenterPort(), ITransportServer.Name);
+		super(ITransportServer.class);
 	}
 
 	public static void start(ServerConfig config) throws RemoteException {
@@ -31,7 +31,7 @@ public class TransportServer extends RmiServer implements ITransportServer {
 	@Override
 	public void start() throws RemoteException {
 		super.start();
-		Trace.logEvent("TS: transport server started at '" + netAddress() + "'");
+		Trace.logEvent("TS: transport server started at '" + getUrl() + "'");
 	}
 
 	@Override

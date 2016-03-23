@@ -3,31 +3,33 @@ package org.zenframework.z8.server.engine;
 import java.io.Serializable;
 
 public class ServerInfo implements Serializable {
-    private static final long serialVersionUID = 5011706173964296365L;
 
-    private IServer server;
-    private String id;
-    private String address;
+	private static final long serialVersionUID = 5011706173964296365L;
 
-    public ServerInfo(IServer server, String id, String netAddress) {
-        this.server = server;
-        this.id = id;
-        this.address = netAddress;
-    }
+	private final IServer server;
+	private final String id;
+	private final String url;
 
-    public IServer getServer() {
-        return server;
-    }
+	public ServerInfo(IServer server, String id, String url) {
+		this.server = server;
+		this.id = id;
+		this.url = url;
+	}
 
-    public IApplicationServer getApplicationServer() {
-        return (IApplicationServer)server;
-    }
+	public IServer getServer() {
+		return server;
+	}
 
-    public String getId() {
-        return id;
-    }
+	public IApplicationServer getApplicationServer() {
+		return (IApplicationServer) server;
+	}
 
-    public String getAddress() {
-        return address;
-    }
+	public String getId() {
+		return id;
+	}
+
+	public String getUrl() {
+		return url;
+	}
+
 }

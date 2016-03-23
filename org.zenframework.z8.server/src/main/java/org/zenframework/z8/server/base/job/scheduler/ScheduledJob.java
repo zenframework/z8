@@ -19,45 +19,46 @@ import org.zenframework.z8.server.security.IUser;
 import org.zenframework.z8.server.security.User;
 
 public class ScheduledJob implements Runnable {
-    IRequest request = null;
-    IResponse response = null;
-    Task task = null;
 
-    public ScheduledJob(Task task) {
-        this.task = task;
-    }
+	IRequest request = null;
+	IResponse response = null;
+	Task task = null;
 
-    @Override
-    public void run() {
-        Map<String, String> parameters = new HashMap<String, String>();
-        parameters.put(Json.requestId.get(), task.jobId);
-        parameters.put(Json.scheduled.get(), "");
-        
-        List<FileInfo> files = new ArrayList<FileInfo>();
-        
-        try {
-            task.start();
+	public ScheduledJob(Task task) {
+		this.task = task;
+	}
 
-            IUser user = User.load(task.login);
-            request = new Request(parameters, files, new Session("", user));
-            response = new Response();
+	@Override
+	public void run() {
+		Map<String, String> parameters = new HashMap<String, String>();
+		parameters.put(Json.requestId.get(), task.jobId);
+		parameters.put(Json.scheduled.get(), "");
 
-            new RequestDispatcher(request, response).run();
-        } catch(Throwable e) {
-            Trace.logError(e);
-            IMonitor monitor = getMonitor();
-            if(monitor != null)
-                monitor.log(e);
-        } finally {
-            try {
-                task.stop(getMonitor());
-            } catch(Throwable e) {
-                Trace.logError(e);
-            }
-        }
-    }
-    
-    private IMonitor getMonitor() {
-        return request != null ? request.getMonitor() : null;
-    }
+		List<FileInfo> files = new ArrayList<FileInfo>();
+
+		try {
+			task.start();
+
+			IUser user = User.load(task.login);
+			request = new Request(parameters, files, new Session("", user));
+			response = new Response();
+
+			new RequestDispatcher(request, response).run();
+		} catch (Throwable e) {
+			Trace.logError(e);
+			IMonitor monitor = getMonitor();
+			if (monitor != null)
+				monitor.log(e);
+		} finally {
+			try {
+				task.stop(getMonitor());
+			} catch (Throwable e) {
+				Trace.logError(e);
+			}
+		}
+	}
+
+	private IMonitor getMonitor() {
+		return request != null ? request.getMonitor() : null;
+	}
 }

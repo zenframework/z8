@@ -2,8 +2,8 @@ package org.zenframework.z8.auth;
 
 import java.rmi.ConnectException;
 import java.rmi.RemoteException;
-import java.util.ArrayList;
 import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 
 import org.zenframework.z8.server.config.ServerConfig;
@@ -26,13 +26,13 @@ public class AuthorityCenter extends RmiServer implements IAuthorityCenter {
 
 	private ServerConfig config;
 
-	private List<ServerInfo> servers = Collections.synchronizedList(new ArrayList<ServerInfo>());
+	private List<ServerInfo> servers = Collections.synchronizedList(new LinkedList<ServerInfo>());
 
 	private UserManager userManager;
 	private SessionManager sessionManager;
 
 	private AuthorityCenter(ServerConfig config) throws RemoteException {
-		super(config.getAuthorityCenterPort(), IAuthorityCenter.Name);
+		super(IAuthorityCenter.class);
 		this.config = config;
 	}
 
@@ -56,42 +56,41 @@ public class AuthorityCenter extends RmiServer implements IAuthorityCenter {
 		sessionManager = new SessionManager();
 		sessionManager.start(config);
 
-		Trace.logEvent("AC: authority center started at '" + netAddress() + "'");
+		Trace.logEvent("AC: authority center started at '" + getUrl() + "'");
 	}
 
 	@Override
 	public void stop() throws RemoteException {
 		sessionManager.stop();
 
-		for(ServerInfo info : servers.toArray(new ServerInfo[0])) {
+		for (ServerInfo info : servers.toArray(new ServerInfo[0])) {
 			try {
 				info.getServer().stop();
-			} catch(RemoteException e) {
-			}
+			} catch (RemoteException e) {}
 		}
 
 		try {
 			super.stop();
-		} catch(RemoteException e) {
+		} catch (RemoteException e) {
 			Trace.logError(e);
 		}
 
-		Trace.logEvent("AC: authority center has been stopped at '" + netAddress() + "'");
+		Trace.logEvent("AC: authority center has been stopped at '" + getUrl() + "'");
 	}
 
 	@Override
 	public synchronized void register(IServer server) throws RemoteException {
-		ServerInfo info = new ServerInfo(server, server.id(), server.netAddress());
+		ServerInfo info = new ServerInfo(server, server.id(), server.getUrl());
 		servers.add(info);
-		Trace.logEvent("AC: application server started at '" + info.getAddress() + "'");
+		Trace.logEvent("AC: application server started at '" + info.getUrl() + "'");
 	}
 
 	@Override
 	public synchronized void unregister(IServer server) throws RemoteException {
-		for(ServerInfo info : servers.toArray(new ServerInfo[servers.size()])) {
-			if(info.getServer().equals(server)) {
+		for (ServerInfo info : servers.toArray(new ServerInfo[servers.size()])) {
+			if (info.getServer().equals(server)) {
 				servers.remove(info);
-				Trace.logEvent("AC: application server has been stopped at '" + info.getAddress() + "'");
+				Trace.logEvent("AC: application server has been stopped at '" + info.getUrl() + "'");
 				break;
 			}
 		}
@@ -104,9 +103,9 @@ public class AuthorityCenter extends RmiServer implements IAuthorityCenter {
 
 	@Override
 	public ISession login(String login, String password) throws RemoteException {
-		if(password == null)
+		if (password == null)
 			throw new AccessDeniedException();
-		
+
 		return doLogin(login, password);
 	}
 
@@ -115,12 +114,13 @@ public class AuthorityCenter extends RmiServer implements IAuthorityCenter {
 		Session session = sessionManager.get(sessionId);
 		ServerInfo server = findServer(serverId);
 
-		if(server == null)
+		if (server == null)
 			return null;
-		
+
 		session.setServerInfo(server);
 		return session;
 	}
+
 	public static UserManager getUserManager() {
 		return INSTANCE.userManager;
 	}
@@ -128,12 +128,13 @@ public class AuthorityCenter extends RmiServer implements IAuthorityCenter {
 	private IApplicationServer getLoginServer() {
 		try {
 			return findServer(null).getApplicationServer();
-		} catch(Throwable e) {
+		} catch (Throwable e) {
 			throw new AccessDeniedException();
 		}
 	}
-	
-	private ISession doLogin(String login, String password) throws RemoteException {
+
+	private ISession doLogin(String login, String password)
+	        throws RemoteException {
 		IApplicationServer loginServer = getLoginServer();
 		IUser user = password != null ? loginServer.login(login, password) : loginServer.login(login);
 		AuthorityCenter.getUserManager().add(user);
@@ -146,22 +147,22 @@ public class AuthorityCenter extends RmiServer implements IAuthorityCenter {
 		try {
 			server.getServer().id();
 			return true;
-		} catch(ConnectException e) {
+		} catch (ConnectException e) {
 			return false;
 		}
 	}
-	
+
 	private ServerInfo findServer(String serverId) throws RemoteException {
 		ServerInfo[] servers = this.servers.toArray(new ServerInfo[0]);
-		
-		for(ServerInfo server : servers) {
-			if(!isAlive(server)) {
+
+		for (ServerInfo server : servers) {
+			if (!isAlive(server)) {
 				unregister(server.getServer());
 				continue;
 			}
-			
-			if(serverId == null || server.getId().equals(serverId)) {
-				if(serverId == null && this.servers.size() > 1) {	
+
+			if (serverId == null || server.getId().equals(serverId)) {
+				if (serverId == null && this.servers.size() > 1) {
 					this.servers.remove(server);
 					this.servers.add(server);
 				}
@@ -169,12 +170,12 @@ public class AuthorityCenter extends RmiServer implements IAuthorityCenter {
 				return server;
 			}
 		}
-		
+
 		return null;
 	}
-	
+
 	private ISession getServer(String sessionId) throws RemoteException {
 		return getServer(sessionId, null);
 	}
-	
+
 }

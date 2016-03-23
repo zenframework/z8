@@ -10,7 +10,6 @@ import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.Options;
 import org.zenframework.z8.server.config.ServerConfig;
 import org.zenframework.z8.server.engine.IAuthorityCenter;
-import org.zenframework.z8.server.engine.IServer;
 import org.zenframework.z8.server.engine.Rmi;
 import org.zenframework.z8.server.logs.Trace;
 
@@ -35,6 +34,8 @@ public final class AuthorityCenterMain {
 
 			ServerConfig config = new ServerConfig(cmd.hasOption(Config) ? cmd.getOptionValue(Config) : null);
 
+			Rmi.init(config);
+			
 			if(!cmd.hasOption(Stop))
 				start(config);
 			else
@@ -54,7 +55,7 @@ public final class AuthorityCenterMain {
 	// DO NOT CHANGE method name OR parameters! Used in method.invoke (see Z8
 	// project WebApp, class org.zenframework.z8.web.servlet.Servlet)
 	public static void stop(ServerConfig config) throws MalformedURLException, RemoteException, NotBoundException {
-		IServer server = Rmi.connect(Rmi.localhost, config.getAuthorityCenterPort(), IAuthorityCenter.Name);
+		IAuthorityCenter server = Rmi.get(IAuthorityCenter.class);
 		server.stop();
 	}
 

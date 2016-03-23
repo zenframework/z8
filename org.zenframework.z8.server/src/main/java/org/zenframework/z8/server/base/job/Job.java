@@ -14,84 +14,86 @@ import org.zenframework.z8.server.request.RequestTarget;
 import org.zenframework.z8.server.types.guid;
 
 public class Job extends RequestTarget {
-    private static Map<String, JobMonitor> monitors = Collections.synchronizedMap(new HashMap<String, JobMonitor>());
 
-    private Procedure procedure;
-    private Thread thread;
-    private JobMonitor monitor;
-    private boolean isDone = false;
+	private static Map<String, JobMonitor> monitors = Collections.synchronizedMap(new HashMap<String, JobMonitor>());
 
-    static public JobMonitor getMonitor(String id) {
-        return monitors.get(id);
-    }
+	private final Procedure procedure;
 
-    static public JobMonitor createMonitor(Job job) {
-        JobMonitor monitor = new JobMonitor(job, guid.create().toString());
-        ApplicationServer.getRequest().setMonitor(monitor);
-        monitors.put(monitor.id(), monitor);
-        return monitor;
-    }
+	private Thread thread;
+	private JobMonitor monitor;
+	private boolean isDone = false;
 
-    static public void removeMonitor(JobMonitor monitor) {
-        monitors.remove(monitor.id());
-    }
+	public Job(Procedure procedure) {
+		super(procedure.classId());
+		this.procedure = procedure;
+		monitor = createMonitor(this);
+	}
 
-    public Job(Procedure procedure) {
-        super(procedure.classId());
-        this.procedure = procedure;
+	public Thread getThread() {
+		return thread;
+	}
 
-        monitor = createMonitor(this);
-    }
+	public boolean scheduled() {
+		return getParameters().get(Json.scheduled) != null;
+	}
 
-    public Thread getThread() {
-        return thread;
-    }
-    
-    public boolean scheduled() {
-        return getParameters().get(Json.scheduled) != null;
-    }
+	@Override
+	public void writeResponse(JsonWriter writer) {
+		setParameters();
 
-    @Override
-    public void writeResponse(JsonWriter writer) {
-        setParameters();
+		if (!scheduled()) {
+			thread = new Thread(procedure, procedure.displayName());
+			thread.start();
 
-        if(!scheduled()) {
-            thread = new Thread(procedure, procedure.displayName());
-            thread.start();
-    
-            writer.writeProperty(Json.jobId, monitor.id());
-            writer.writeProperty(Json.serverId, ApplicationServer.get().id());
-            writer.writeProperty(Json.text, procedure.displayName());
-        } else {
-            procedure.run();
-            isDone = true;
-            removeMonitor(monitor);
-        }
-    }
+			writer.writeProperty(Json.jobId, monitor.id());
+			writer.writeProperty(Json.serverId, ApplicationServer.get().id());
+			writer.writeProperty(Json.text, procedure.displayName());
+		} else {
+			procedure.run();
+			isDone = true;
+			removeMonitor(monitor);
+		}
+	}
 
-    private void setParameters() {
-        String data = getParameters().get(Json.parameters);
+	public boolean isDone() {
+		return scheduled() ? isDone : !thread.isAlive();
+	}
 
-        if(data == null) {
-            return;
-        }
+	private void setParameters() {
+		String data = getParameters().get(Json.parameters);
 
-        JsonObject object = new JsonObject(data);
+		if (data == null) {
+			return;
+		}
 
-        if(object != null) {
-            String[] names = JsonObject.getNames(object);
+		JsonObject object = new JsonObject(data);
 
-            if(names != null) {
-                for(String parameterId : names) {
-                    IParameter parameter = procedure.getParameter(parameterId);
-                    String value = object.getString(parameterId);
-                    parameter.parse(value);
-                }
-            }
-        }
-    }
+		if (object != null) {
+			String[] names = JsonObject.getNames(object);
 
-    public boolean isDone() {
-        return scheduled() ? isDone : !thread.isAlive();
-    }
+			if (names != null) {
+				for (String parameterId : names) {
+					IParameter parameter = procedure.getParameter(parameterId);
+					String value = object.getString(parameterId);
+					parameter.parse(value);
+				}
+			}
+		}
+	}
+
+	static public JobMonitor getMonitor(String id) {
+		return monitors.get(id);
+	}
+
+	static public void removeMonitor(JobMonitor monitor) {
+		monitors.remove(monitor.id());
+	}
+
+	static private JobMonitor createMonitor(Job job) {
+		JobMonitor monitor = new JobMonitor(job, guid.create().toString());
+		ApplicationServer.getRequest().setMonitor(monitor);
+		monitors.put(monitor.id(), monitor);
+		return monitor;
+	}
+
 }

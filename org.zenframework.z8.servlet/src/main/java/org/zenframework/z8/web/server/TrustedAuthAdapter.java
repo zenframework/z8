@@ -43,7 +43,7 @@ public class TrustedAuthAdapter extends Adapter implements Properties.Listener {
         String error = null;
         if (login != null) {
             try {
-                session = Servlet.getAuthorityCenter().login(login);
+                session = servlet.getAuthorityCenter().login(login);
             } catch (Throwable e) {
                 error = e.getMessage();
             }

@@ -2,94 +2,86 @@ package org.zenframework.z8.server.config;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.rmi.registry.Registry;
 import java.util.Properties;
 
-import org.zenframework.z8.server.engine.Rmi;
 import org.zenframework.z8.server.types.guid;
 
 public class ServerConfig extends Properties {
+
 	private static final long serialVersionUID = 3564936578688816088L;
 
-	public static final String configurationFileName = "project.xml";
+	public static final String ConfigurationFileName = "project.xml";
+
+	public static final String RegistryPortProperty = "registry.port";
 
 	public static final String AuthorityCenterHostProperty = "authority.center.host";
 	public static final String AuthorityCenterPortProperty = "authority.center.port";
 	public static final String AuthorityCenterSessionTimeoutProperty = "authority.center.session.timeout";
 
 	public static final String ApplicationServerIdProperty = "application.server.id";
-	public static final String ApplicationServerPortProperty = "application.server.port";
 
 	public static final String WebServerStartApplicationServerProperty = "web.server.start.application.server";
 	public static final String WebServerStartAuthorityCenterProperty = "web.server.start.authority.center";
 	public static final String WebServerStartTransportServerProperty = "web.server.start.transport.server";
 	public static final String WebServerFileSizeMaxProperty = "web.server.file.size.max";
-	
+
 	public static final String SchedulerEnabledProperty = "scheduler.enabled";
 
 	public static final String TraceSqlProperty = "trace.sql";
-	public static final String FileConverterProperty = "file.converter";
+	public static final String OfficeHomeProperty = "office.home";
 
-	private File workingPath;
+	private final File configFile;
 
-	private String authorityCenterHost;
-	private int authorityCenterPort;
-	private int authorityCenterSessionTimeout;
-
-	private String applicationServerId;
-	private int applicationServerPort;
-
-	private boolean webServerStartApplicationServer;
-	private boolean webServerStartAuthorityCenter;
-	private boolean webServerStartTransportServer;
-	private int webServerFileSizeMax;
+	private final int registryPort;
 	
-	private boolean schedulerEnabled;
+	private final String authorityCenterHost;
+	private final int authorityCenterPort;
+	private final int authorityCenterSessionTimeout;
 
-	private boolean traceSql;
-	private String fileConverter;
+	private final String applicationServerId;
 
-	public ServerConfig() {
-		this(null);
-	}
+	private final boolean webServerStartApplicationServer;
+	private final boolean webServerStartAuthorityCenter;
+	private final boolean webServerStartTransportServer;
+	private final int webServerFileSizeMax;
 
-	public ServerConfig(String configFile) {
-		if(configFile == null)
-			configFile = configurationFileName;
+	private final boolean schedulerEnabled;
+
+	private final boolean traceSql;
+	private String officeHome;
+
+	public ServerConfig(String configFilePath) {
+		configFile = new File(configFilePath != null ? configFilePath : ConfigurationFileName);
+
+		try {
+			loadFromXML(new FileInputStream(configFile));
+		} catch (Throwable e) {
+			throw new RuntimeException();
+		}
+
+		registryPort = getProperty(RegistryPortProperty, Registry.REGISTRY_PORT);
 		
-		if(workingPath != null)
-			return;
-
-		String configFilePath = System.getProperty(SystemProperty.ConfigFilePath);
-		String absolutePath = new File(configFilePath == null ? "" : configFilePath).getAbsolutePath();
-		workingPath = new File(absolutePath);
-
-		load(new File(workingPath, configFile));
-		init();
-	}
-
-	protected void init() {
 		applicationServerId = getProperty(ApplicationServerIdProperty, guid.create().toString());
 
-		authorityCenterHost = getProperty(AuthorityCenterHostProperty, Rmi.localhost);
-		authorityCenterPort = getProperty(AuthorityCenterPortProperty, Rmi.randomPort());
+		authorityCenterHost = getProperty(AuthorityCenterHostProperty, "");
+		authorityCenterPort = getProperty(AuthorityCenterPortProperty, registryPort);
 		authorityCenterSessionTimeout = getProperty(AuthorityCenterSessionTimeoutProperty, 24 * 60);
-
-		applicationServerPort = getProperty(ApplicationServerPortProperty, Rmi.randomPort());
 
 		webServerStartApplicationServer = getProperty(WebServerStartApplicationServerProperty, true);
 		webServerStartAuthorityCenter = getProperty(WebServerStartAuthorityCenterProperty, true);
 		webServerStartTransportServer = getProperty(WebServerStartTransportServerProperty, true);
 		webServerFileSizeMax = getProperty(WebServerFileSizeMaxProperty, 5);
-		
+
 		traceSql = getProperty(TraceSqlProperty, false);
-		fileConverter = getProperty(FileConverterProperty, "");
+		officeHome = getProperty(OfficeHomeProperty, "");
 
 		schedulerEnabled = getProperty(SchedulerEnabledProperty, true);
 	}
 
 	@Override
 	public synchronized Object put(Object key, Object value) {
-		String stringKey = (String)key;
+		String stringKey = (String) key;
 		return super.put(stringKey.toUpperCase(), value);
 	}
 
@@ -112,25 +104,25 @@ public class ServerConfig extends Properties {
 	public final int getProperty(String key, int defaultValue) {
 		try {
 			return Integer.parseInt(getProperty(key));
-		} catch(NumberFormatException e) {
+		} catch (NumberFormatException e) {
 			return defaultValue;
 		}
 	}
 
-	protected void load(File config) {
-		try {
-			loadFromXML(new FileInputStream(config));
-		} catch(Throwable e) {
-			throw new RuntimeException();
-		}
+	public final File getConfigFile() {
+		return configFile;
 	}
 
 	public final File getWorkingPath() {
-		return workingPath;
+		return configFile.getParentFile();
 	}
 
 	public final String getServerId() {
 		return applicationServerId;
+	}
+
+	public int getRegistryPort() {
+		return registryPort;
 	}
 
 	public final String getAuthorityCenterHost() {
@@ -143,10 +135,6 @@ public class ServerConfig extends Properties {
 
 	public final int getSessionTimeout() {
 		return authorityCenterSessionTimeout;
-	}
-
-	public final int getApplicationServerPort() {
-		return applicationServerPort;
 	}
 
 	public final boolean getTraceSql() {
@@ -169,12 +157,12 @@ public class ServerConfig extends Properties {
 		return webServerFileSizeMax;
 	}
 
-	public final boolean schedulerEnabled() {
+	public final boolean isSchedulerEnabled() {
 		return schedulerEnabled;
 	}
 
-	public final String fileConverter() {
-		return fileConverter;
+	public final String getOfficeHome() {
+		return officeHome;
 	}
 
 }

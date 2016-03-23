@@ -15,6 +15,7 @@ import org.zenframework.z8.server.types.guid;
 import org.zenframework.z8.server.utils.ErrorUtils;
 
 public class Monitor extends RequestTarget implements IMonitor {
+
 	private file outputFile;
 	private file logFile;
 
@@ -53,7 +54,7 @@ public class Monitor extends RequestTarget implements IMonitor {
 
 	@Override
 	public void log(String text) {
-		if(logFile == null) {
+		if (logFile == null) {
 			logFile = new file();
 		}
 
@@ -69,7 +70,7 @@ public class Monitor extends RequestTarget implements IMonitor {
 	public String[] getMessages() {
 		String[] result = new String[monitorMessages.size()];
 
-		for(int i = 0; i < monitorMessages.size(); i++) {
+		for (int i = 0; i < monitorMessages.size(); i++) {
 			result[i] = monitorMessages.get(i).text();
 		}
 
@@ -82,7 +83,7 @@ public class Monitor extends RequestTarget implements IMonitor {
 
 	@Override
 	public void refresh(String queryId) {
-		if(!queries.contains(queryId)) {
+		if (!queries.contains(queryId)) {
 			queries.add(queryId);
 			records.remove(queryId);
 		}
@@ -90,15 +91,15 @@ public class Monitor extends RequestTarget implements IMonitor {
 
 	@Override
 	public void refresh(String queryId, guid recordId) {
-		if(!queries.contains(queryId)) {
+		if (!queries.contains(queryId)) {
 			List<guid> ids = records.get(queryId);
 
-			if(ids == null) {
+			if (ids == null) {
 				ids = new ArrayList<guid>();
 				records.put(queryId, ids);
 			}
 
-			if(!ids.contains(recordId)) {
+			if (!ids.contains(recordId)) {
 				ids.add(recordId);
 			}
 		}
@@ -108,27 +109,28 @@ public class Monitor extends RequestTarget implements IMonitor {
 	public void writeResponse(JsonWriter writer) {
 		writer.startObject(Json.refresh);
 
-			writer.startArray(Json.queries);
-			for(String query : queries)
-				writer.write(query);
+		writer.startArray(Json.queries);
+		for (String query : queries)
+			writer.write(query);
+		writer.finishArray();
+
+		writer.startObject(Json.records);
+		for (String queryId : records.keySet()) {
+			writer.startArray(JsonObject.quote(queryId));
+			for (guid id : records.get(queryId))
+				writer.write(id.toString());
 			writer.finishArray();
-	
-			writer.startObject(Json.records);
-			for(String queryId : records.keySet()) {
-				writer.startArray(JsonObject.quote(queryId));
-				for(guid id : records.get(queryId))
-					writer.write(id.toString());
-				writer.finishArray();
-			}
-			writer.finishObject();
+		}
+		writer.finishObject();
 
 		writer.finishObject();
 
 		writer.writeProperty(Json.serverId, ApplicationServer.get().id());
 
-		if(outputFile != null)
+		if (outputFile != null)
 			writer.writeProperty(Json.source, outputFile.getRelativePath().replace('\\', '/'));
 
 		writer.writeInfo(getMessages(), logFile);
 	}
+
 }

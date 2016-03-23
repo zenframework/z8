@@ -6,77 +6,78 @@ import org.zenframework.z8.server.json.JsonWriter;
 import org.zenframework.z8.server.request.Monitor;
 
 public class JobMonitor extends Monitor {
-    private Job job;
-    private int totalWork = 100;
-    private int worked = 0;
 
-    private Object mutex = new Object();
+	private final Job job;
+	private int totalWork = 100;
+	private int worked = 0;
 
-    public JobMonitor(Job job, String id) {
-        super(id);
-        this.job = job;
-    }
+	private Object mutex = new Object();
 
-    public Job getJob() {
-        return job;
-    }
-    
-    public int getTotalWork() {
-        return totalWork;
-    }
+	public JobMonitor(Job job, String id) {
+		super(id);
+		this.job = job;
+	}
 
-    public void setTotalWork(int totalWork) {
-        this.totalWork = totalWork;
-    }
+	public Job getJob() {
+		return job;
+	}
 
-    public int getWorked() {
-        return worked;
-    }
+	public int getTotalWork() {
+		return totalWork;
+	}
 
-    public void setWorked(int worked) {
-        this.worked = worked;
-    }
+	public void setTotalWork(int totalWork) {
+		this.totalWork = totalWork;
+	}
 
-    @Override
-    public void print(String text) {
-        synchronized(mutex) {
-            super.print(text);
+	public int getWorked() {
+		return worked;
+	}
 
-            if(job != null && job.scheduled()) {
-                log(text);
-            }
-        }
-    }
+	public void setWorked(int worked) {
+		this.worked = worked;
+	}
 
-    public void logMessages() {
-        synchronized(mutex) {
-            collectLogMessages();
-        }
-    }
+	@Override
+	public void print(String text) {
+		synchronized (mutex) {
+			super.print(text);
 
-    public boolean isDone() {
-        return job != null ? job.isDone() : true;
-    }
+			if (job != null && job.scheduled()) {
+				log(text);
+			}
+		}
+	}
 
-    @Override
-    public void writeResponse(JsonWriter writer) {
-        synchronized(mutex) {
-            boolean isDone = isDone();
+	public void logMessages() {
+		synchronized (mutex) {
+			collectLogMessages();
+		}
+	}
 
-            writer.writeProperty(Json.jobId, id());
+	public boolean isDone() {
+		return job != null ? job.isDone() : true;
+	}
 
-            writer.writeProperty(Json.done, isDone);
-            writer.writeProperty(Json.totalWork, totalWork);
-            writer.writeProperty(Json.worked, worked);
+	@Override
+	public void writeResponse(JsonWriter writer) {
+		synchronized (mutex) {
+			boolean isDone = isDone();
 
-            writer.writeProperty(Json.serverId, ApplicationServer.get().id());
-            writer.writeInfo(getMessages(), isDone ? getLog() : null);
+			writer.writeProperty(Json.jobId, id());
 
-            collectLogMessages();
-            clearMessages();
+			writer.writeProperty(Json.done, isDone);
+			writer.writeProperty(Json.totalWork, totalWork);
+			writer.writeProperty(Json.worked, worked);
 
-            if(isDone)
-                Job.removeMonitor(this);
-        }
-    }
+			writer.writeProperty(Json.serverId, ApplicationServer.get().id());
+			writer.writeInfo(getMessages(), isDone ? getLog() : null);
+
+			collectLogMessages();
+			clearMessages();
+
+			if (isDone)
+				Job.removeMonitor(this);
+		}
+	}
 }

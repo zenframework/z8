@@ -34,7 +34,7 @@ public abstract class Adapter {
 
     private static final Collection<String> IgnoredExceptions = Arrays.asList("org.apache.catalina.connector.ClientAbortException");
 
-	private Servlet servlet;
+    protected Servlet servlet;
 
 	protected Adapter(Servlet servlet) {
 		this.servlet = servlet;
@@ -62,10 +62,10 @@ public abstract class Adapter {
 				if(login.isEmpty() || login.length() > IAuthorityCenter.MaxLoginLength || password.length() > IAuthorityCenter.MaxPasswordLength)
 					throw new AccessDeniedException();
 
-				session = Servlet.getAuthorityCenter().login(login, password);
+				session = servlet.getAuthorityCenter().login(login, password);
 			} else if(sessionId != null) {
 				String serverId = parameters.get(Json.serverId);
-				session = Servlet.getAuthorityCenter().getServer(sessionId, serverId);
+				session = servlet.getAuthorityCenter().getServer(sessionId, serverId);
 			}
 
 			if(session == null)
@@ -109,7 +109,7 @@ public abstract class Adapter {
 	protected List<FileItem> parseMultipartRequest(HttpServletRequest request) {
 		ServletFileUpload upload = new ServletFileUpload(FilesFactory.getFileItemFactory());
 
-		long fileSizeMax = Servlet.config().webServerFileSizeMax();
+		long fileSizeMax = servlet.getConfig().webServerFileSizeMax();
 		
 		if(fileSizeMax > 0)
 			upload.setFileSizeMax(fileSizeMax * 1024 * 1024);

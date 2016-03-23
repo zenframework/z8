@@ -1,5 +1,6 @@
 package org.zenframework.z8.web.servlet;
 
+import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -12,13 +13,12 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.zenframework.z8.auth.AuthorityCenterMain;
+import org.zenframework.z8.auth.AuthorityCenter;
 import org.zenframework.z8.server.config.ServerConfig;
-import org.zenframework.z8.server.config.SystemProperty;
-import org.zenframework.z8.server.engine.ApplicationServerMain;
+import org.zenframework.z8.server.engine.ApplicationServer;
 import org.zenframework.z8.server.engine.IAuthorityCenter;
 import org.zenframework.z8.server.engine.Rmi;
-import org.zenframework.z8.server.engine.TransportServerMain;
+import org.zenframework.z8.server.engine.TransportServer;
 import org.zenframework.z8.server.exceptions.AccessDeniedException;
 import org.zenframework.z8.server.logs.Trace;
 import org.zenframework.z8.server.types.encoding;
@@ -31,41 +31,23 @@ public class Servlet extends HttpServlet {
 
 	private static final long serialVersionUID = 6442937554115725675L;
 
-	static private String ApplicationServer = ApplicationServerMain.class.getCanonicalName();
-	static private String AuthorityCenter = AuthorityCenterMain.class.getCanonicalName();
-	static private String TransportServer = TransportServerMain.class.getCanonicalName();
+	static private final String ApplicationServerClass = ApplicationServer.class.getCanonicalName();
+	static private final String AuthorityCenterClass = AuthorityCenter.class.getCanonicalName();
+	static private final String TransportServerClass = TransportServer.class.getCanonicalName();
 
-	static private String Start = "start";
-	static private String Stop = "stop";
-
-	static private IAuthorityCenter authorityCenter = null;
-	static private ServerConfig config = null;
-	static private Object lock = new Object();
+	static private final String Start = "start";
+	static private final String Stop = "stop";
 
 	private final List<Adapter> adapters = new ArrayList<Adapter>();
+	private ServerConfig config;
+	private IAuthorityCenter authorityCenter;
 
-	static public ServerConfig config() {
-		if(config == null)
-			config = new ServerConfig();
+	public ServerConfig getConfig() {
 		return config;
 	}
 
-	static public IAuthorityCenter getAuthorityCenter() {
-		if(authorityCenter != null)
-			return authorityCenter;
-					
-		synchronized(lock) {
-			if(authorityCenter != null)
-				return authorityCenter;
-
-			ServerConfig config = config();
-			
-			try {
-				return authorityCenter = (IAuthorityCenter) Rmi.connect(config.getAuthorityCenterHost(), config.getAuthorityCenterPort(), IAuthorityCenter.Name);
-			} catch(Throwable e) {
-				throw new AccessDeniedException();
-			}
-		}
+	public IAuthorityCenter getAuthorityCenter() {
+		return authorityCenter;
 	}
 
 	@Override
@@ -73,27 +55,33 @@ public class Servlet extends HttpServlet {
 
 		ServletContext context = servletConfig.getServletContext();
 
-		System.setProperty(SystemProperty.ConfigFilePath, context.getRealPath("WEB-INF"));
+		ServerConfig config = new ServerConfig(context.getRealPath("WEB-INF" + File.separator
+				+ ServerConfig.ConfigurationFileName));
 
-		ServerConfig config = config();
-		
 		try {
-			if(config.webServerStartAuthorityCenter())
-				startServer(AuthorityCenter, config);
+			Rmi.init(config);
+			if (config.webServerStartAuthorityCenter())
+				startServer(AuthorityCenterClass, config);
 
-			if(config.webServerStartApplicationServer())
-				startServer(ApplicationServer, config);
+			if (config.webServerStartApplicationServer())
+				startServer(ApplicationServerClass, config);
 
-			if(config.webServerStartTransportServer())
-				startServer(TransportServer, config);
-		} catch(Throwable e) {
+			if (config.webServerStartTransportServer())
+				startServer(TransportServerClass, config);
+		} catch (Throwable e) {
 			try {
 				Trace.logError(e);
-			} catch(Throwable ex) {
-			}
+			} catch (Throwable ex) {}
 
 			destroy();
 			throw new ServletException(e);
+		}
+
+		try {
+			authorityCenter = Rmi.get(IAuthorityCenter.class, config.getAuthorityCenterHost(),
+					config.getAuthorityCenterPort());
+		} catch (Throwable e) {
+			throw new AccessDeniedException();
 		}
 
 		adapters.clear();
@@ -101,7 +89,7 @@ public class Servlet extends HttpServlet {
 		adapters.add(new TrustedAuthAdapter(this));
 		adapters.add(new ConverterAdapter(this));
 
-		for(Adapter adapter : adapters)
+		for (Adapter adapter : adapters)
 			adapter.start();
 
 		super.init(servletConfig);
@@ -128,33 +116,33 @@ public class Servlet extends HttpServlet {
 			Class<? extends Object> cls = loader.loadClass(className);
 			Method method = cls.getDeclaredMethod(methodName, ServerConfig.class);
 			method.invoke(null, options);
-		} catch(Exception e) {
+		} catch (Exception e) {
 			Trace.logError(e);
 		}
 	}
 
 	@Override
 	public void destroy() {
-		if(config.webServerStartApplicationServer())
-			stopServer(ApplicationServer, config);
+		if (config.webServerStartApplicationServer())
+			stopServer(ApplicationServerClass, config);
 
-		if(config.webServerStartAuthorityCenter())
-			stopServer(AuthorityCenter, config);
+		if (config.webServerStartAuthorityCenter())
+			stopServer(AuthorityCenterClass, config);
 
-		if(config.webServerStartTransportServer())
-			stopServer(TransportServer, config);
+		if (config.webServerStartTransportServer())
+			stopServer(TransportServerClass, config);
 
 		config = null;
 
-		for(Adapter adapter : adapters)
+		for (Adapter adapter : adapters)
 			adapter.stop();
 
 		super.destroy();
 	}
 
 	private Adapter getAdapter(HttpServletRequest request) {
-		for(Adapter adapter : adapters) {
-			if(adapter.canHandleRequest(request))
+		for (Adapter adapter : adapters) {
+			if (adapter.canHandleRequest(request))
 				return adapter;
 		}
 		return null;

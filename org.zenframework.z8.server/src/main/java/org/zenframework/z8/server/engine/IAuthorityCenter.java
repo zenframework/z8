@@ -4,8 +4,6 @@ import java.rmi.RemoteException;
 
 public interface IAuthorityCenter extends IServer {
 
-    String Name = "z8-authority-center";
-
     int MaxLoginLength = 32;
     int MaxPasswordLength = 32;
 
@@ -16,4 +14,5 @@ public interface IAuthorityCenter extends IServer {
 
     void register(IServer server) throws RemoteException;
     void unregister(IServer server) throws RemoteException;
+
 }

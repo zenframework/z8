@@ -9,7 +9,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.zenframework.z8.server.config.SystemProperty;
 import org.zenframework.z8.server.engine.Runtime;
 import org.zenframework.z8.server.runtime.CLASS;
 import org.zenframework.z8.server.runtime.IObject;
@@ -21,16 +20,12 @@ public class RuntimeLoader extends URLClassLoader {
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
     static public CLASS loadClass(String name, File path) throws Throwable {
-        System.setProperty(SystemProperty.ConfigFilePath, path.toString());
-
         ClassLoader classLoader = getClassLoader(path);
         Class cls = classLoader.loadClass(name.replaceAll(".__", "\\$__") + "$CLASS");
         return (CLASS)cls.getDeclaredConstructor(IObject.class).newInstance(new OBJECT());
     }
     
     static public Runtime getRuntime(File path) throws Throwable {
-        System.setProperty(SystemProperty.ConfigFilePath, path.toString());
-
         Runtime runtime = runtimes.get(path.toString());
         
         if(runtime != null)
@@ -66,7 +61,8 @@ public class RuntimeLoader extends URLClassLoader {
     
     static private URL[] getJars(File dir) throws Throwable {
         FilenameFilter filter = new FilenameFilter() {
-            public boolean accept(File dir, String name) {
+            @Override
+			public boolean accept(File dir, String name) {
                 return name.toLowerCase().endsWith(".jar");
             }
         };

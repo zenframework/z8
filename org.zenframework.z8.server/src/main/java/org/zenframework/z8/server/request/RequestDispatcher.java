@@ -21,8 +21,9 @@ import org.zenframework.z8.server.security.IUser;
 import org.zenframework.z8.server.utils.ErrorUtils;
 
 public class RequestDispatcher implements Runnable {
-    private IRequest request;
-    private IResponse response;
+
+	private final IRequest request;
+    private final IResponse response;
 
     static private int count = 0;
     static private long secs = 0;

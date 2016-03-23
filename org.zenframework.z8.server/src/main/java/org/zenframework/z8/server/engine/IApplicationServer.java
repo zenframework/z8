@@ -8,8 +8,6 @@ import org.zenframework.z8.server.security.IUser;
 
 public interface IApplicationServer extends IServer {
 
-    public static final String Name = "z8-application-server";
-
     public GNode processRequest(ISession session, GNode request) throws RemoteException;
 
     public FileInfo download(FileInfo fileInfo) throws RemoteException;

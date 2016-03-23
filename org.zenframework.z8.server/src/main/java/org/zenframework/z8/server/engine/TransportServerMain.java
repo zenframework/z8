@@ -51,7 +51,7 @@ public final class TransportServerMain {
 	// DO NOT CHANGE method name OR parameters! Used in method.invoke (see Z8
 	// project WebApp, class org.zenframework.z8.web.servlet.Servlet)
 	public static void stop(ServerConfig config) throws MalformedURLException, RemoteException, NotBoundException {
-		IServer server = Rmi.connect(Rmi.localhost, config.getAuthorityCenterPort(), ITransportServer.Name);
+		IServer server = Rmi.get(ITransportServer.class);
 		server.stop();
 	}
 
