@@ -22,39 +22,32 @@ public class AuthorityCenter extends RmiServer implements IAuthorityCenter {
 
 	private static final long serialVersionUID = -3444119932500940143L;
 
-	private static AuthorityCenter INSTANCE;
-
-	private ServerConfig config;
+	private static ServerConfig Config;
 
 	private List<ServerInfo> servers = Collections.synchronizedList(new LinkedList<ServerInfo>());
 
 	private UserManager userManager;
 	private SessionManager sessionManager;
 
-	private AuthorityCenter(ServerConfig config) throws RemoteException {
+	private AuthorityCenter() throws RemoteException {
 		super(IAuthorityCenter.class);
-		this.config = config;
 	}
 
 	public static void start(ServerConfig config) throws RemoteException {
-		if (INSTANCE == null) {
-			INSTANCE = new AuthorityCenter(config);
-			INSTANCE.start();
+		if (Config == null) {
+			Config = config;
+			new AuthorityCenter().start();
 		}
-	}
-
-	public static AuthorityCenter get() {
-		return INSTANCE;
 	}
 
 	@Override
 	public void start() throws RemoteException {
 		super.start();
 
-		userManager = new UserManager(config);
+		userManager = new UserManager(Config);
 
 		sessionManager = new SessionManager();
-		sessionManager.start(config);
+		sessionManager.start(Config);
 
 		Trace.logEvent("AC: authority center started at '" + getUrl() + "'");
 	}
@@ -121,10 +114,6 @@ public class AuthorityCenter extends RmiServer implements IAuthorityCenter {
 		return session;
 	}
 
-	public static UserManager getUserManager() {
-		return INSTANCE.userManager;
-	}
-
 	private IApplicationServer getLoginServer() {
 		try {
 			return findServer(null).getApplicationServer();
@@ -137,7 +126,7 @@ public class AuthorityCenter extends RmiServer implements IAuthorityCenter {
 	        throws RemoteException {
 		IApplicationServer loginServer = getLoginServer();
 		IUser user = password != null ? loginServer.login(login, password) : loginServer.login(login);
-		AuthorityCenter.getUserManager().add(user);
+		userManager.add(user);
 
 		Session session = sessionManager.create(user);
 		return getServer(session.id());

@@ -125,7 +125,7 @@ public class Monitor extends RequestTarget implements IMonitor {
 
 		writer.finishObject();
 
-		writer.writeProperty(Json.serverId, ApplicationServer.get().id());
+		writer.writeProperty(Json.serverId, ApplicationServer.Id());
 
 		if (outputFile != null)
 			writer.writeProperty(Json.source, outputFile.getRelativePath().replace('\\', '/'));

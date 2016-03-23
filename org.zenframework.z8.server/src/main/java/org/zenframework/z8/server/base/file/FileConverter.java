@@ -97,7 +97,11 @@ public class FileConverter {
 		return txtExtensions.contains(extension);
 	}
 
-	public static void startOfficeManager(String officeHome) {
+	public static void startOfficeManager() {
+		startOfficeManager(Properties.getProperty(ServerRuntime.LibreOfficeDirectoryProperty));
+	}
+
+	private static void startOfficeManager(String officeHome) {
 		if (listener == null) {
 			listener = new Listener();
 			Properties.addListener(listener);
@@ -151,10 +155,6 @@ public class FileConverter {
 
 	private void convertFileToPdf(File sourceFile, File convertedFile) {
 		getOfficeDocumentConverter().convert(sourceFile, convertedFile);
-	}
-
-	public void close() {
-		stopOfficeManager();
 	}
 
 	private OfficeDocumentConverter getOfficeDocumentConverter() {

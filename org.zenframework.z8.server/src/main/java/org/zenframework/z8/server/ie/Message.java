@@ -50,11 +50,10 @@ public class Message extends OBJECT implements Serializable {
     }
 
     private UUID id;
+    private String sender;
     private String address;
     private ExportEntry exportEntry;
     private final RCollection<FileInfo> files = new RCollection<FileInfo>(true);
-
-    private transient String sender;
 
     private Message(IObject container) {
         super(container);

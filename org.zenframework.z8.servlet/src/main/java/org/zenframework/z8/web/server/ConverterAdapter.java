@@ -26,10 +26,12 @@ import org.zenframework.z8.server.utils.IOUtils;
 import org.zenframework.z8.web.servlet.Servlet;
 
 public class ConverterAdapter extends Adapter {
+
 	private FileConverter converter = null;
 
 	public ConverterAdapter(Servlet servlet) {
 		super(servlet);
+		FileConverter.startOfficeManager();
 	}
 
 	@Override
@@ -39,10 +41,7 @@ public class ConverterAdapter extends Adapter {
 
 	@Override
 	public void stop() {
-		if(converter != null) {
-			converter.close();
-			converter = null;
-		}
+		FileConverter.stopOfficeManager();
 	}
 
 	@Override

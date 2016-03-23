@@ -10,7 +10,6 @@ import org.zenframework.z8.server.base.file.FileConverter;
 import org.zenframework.z8.server.base.file.FileInfo;
 import org.zenframework.z8.server.base.job.scheduler.Scheduler;
 import org.zenframework.z8.server.base.table.system.Files;
-import org.zenframework.z8.server.base.table.system.Properties;
 import org.zenframework.z8.server.base.xml.GNode;
 import org.zenframework.z8.server.config.ServerConfig;
 import org.zenframework.z8.server.db.ConnectionManager;
@@ -21,7 +20,6 @@ import org.zenframework.z8.server.request.IRequest;
 import org.zenframework.z8.server.request.IResponse;
 import org.zenframework.z8.server.request.Request;
 import org.zenframework.z8.server.request.RequestProcessor;
-import org.zenframework.z8.server.runtime.ServerRuntime;
 import org.zenframework.z8.server.security.IUser;
 import org.zenframework.z8.server.security.User;
 
@@ -31,22 +29,18 @@ public class ApplicationServer extends RmiServer implements IApplicationServer {
 
 	private static final ThreadLocal<IRequest> currentRequest = new ThreadLocal<IRequest>();
 
-	private static ApplicationServer INSTANCE = null;
-
-	private final String id;
-	private final ServerConfig config;
+	private static ServerConfig Config = null;
+	private static String Id = null;
 
 	private IAuthorityCenter authorityCenter = null;
 
-	private ApplicationServer(ServerConfig config) throws RemoteException {
+	private ApplicationServer() throws RemoteException {
 		super(IApplicationServer.class);
-		this.id = config.getServerId();
-		this.config = config;
 	}
 
 	@Override
 	public String id() {
-		return id;
+		return Id;
 	}
 
 	@Override
@@ -55,7 +49,7 @@ public class ApplicationServer extends RmiServer implements IApplicationServer {
 
 		checkSchemaVersion();
 
-		authorityCenter = Rmi.get(IAuthorityCenter.class, config.getAuthorityCenterHost(), config.getAuthorityCenterPort());
+		authorityCenter = Rmi.get(IAuthorityCenter.class, Config.getAuthorityCenterHost(), Config.getAuthorityCenterPort());
 		authorityCenter.register(this);
 
 		RuntimeMXBean mxBean = ManagementFactory.getRuntimeMXBean();
@@ -114,28 +108,21 @@ public class ApplicationServer extends RmiServer implements IApplicationServer {
 	}
 
 	public static void start(ServerConfig config) throws RemoteException {
-		if (INSTANCE == null) {
-			INSTANCE = new ApplicationServer(config);
-			INSTANCE.start();
+		if (Config == null) {
+			Config = config;
+			Id = config.getServerId();
+			new ApplicationServer().start();;
 			Scheduler.start();
-			String officeHome = config.getOfficeHome();
-			if (officeHome.isEmpty()) {
-				officeHome = Properties.getProperty(ServerRuntime.LibreOfficeDirectoryProperty);
-			}
-			FileConverter.startOfficeManager(officeHome);
+			FileConverter.startOfficeManager();
 		}
 	}
 
-	public static ApplicationServer get() {
-		return INSTANCE;
-	}
-
-	public static IAuthorityCenter getAuthorityCenter() {
-		return INSTANCE.authorityCenter;
+	public static String Id() {
+		return Id;
 	}
 
 	public static ServerConfig config() {
-		return INSTANCE.config;
+		return Config;
 	}
 
 	public static IRequest getRequest() {

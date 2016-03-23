@@ -27,7 +27,6 @@ public class ServerConfig extends Properties {
 	public static final String SchedulerEnabledProperty = "scheduler.enabled";
 
 	public static final String TraceSqlProperty = "trace.sql";
-	public static final String OfficeHomeProperty = "office.home";
 
 	private final File configFile;
 
@@ -45,7 +44,6 @@ public class ServerConfig extends Properties {
 	private final boolean schedulerEnabled;
 
 	private final boolean traceSql;
-	private String officeHome;
 
 	public ServerConfig(String configFilePath) {
 		configFile = new File(configFilePath != null ? configFilePath : ConfigurationFileName);
@@ -68,7 +66,6 @@ public class ServerConfig extends Properties {
 		webServerFileSizeMax = getProperty(WebServerFileSizeMaxProperty, 5);
 
 		traceSql = getProperty(TraceSqlProperty, false);
-		officeHome = getProperty(OfficeHomeProperty, "");
 
 		schedulerEnabled = getProperty(SchedulerEnabledProperty, true);
 	}
@@ -149,10 +146,6 @@ public class ServerConfig extends Properties {
 
 	public final boolean isSchedulerEnabled() {
 		return schedulerEnabled;
-	}
-
-	public final String getOfficeHome() {
-		return officeHome;
 	}
 
 }
