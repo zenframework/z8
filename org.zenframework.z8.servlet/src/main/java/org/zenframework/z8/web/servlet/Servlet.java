@@ -43,12 +43,29 @@ public class Servlet extends HttpServlet {
 	private ServerConfig config;
 	private IAuthorityCenter authorityCenter;
 
+	private final Object lock = new Object();
+
 	public ServerConfig getConfig() {
 		return config;
 	}
 
 	public IAuthorityCenter getAuthorityCenter() {
-		return authorityCenter;
+		if (authorityCenter != null)
+			return authorityCenter;
+
+		synchronized (lock) {
+			if (authorityCenter != null)
+				return authorityCenter;
+
+			try {
+				authorityCenter = Rmi.get(IAuthorityCenter.class, config.getAuthorityCenterHost(),
+						config.getAuthorityCenterPort());
+				getServletContext().setAttribute(IAuthorityCenter.class.getSimpleName(), authorityCenter);
+				return authorityCenter;
+			} catch (Throwable e) {
+				throw new AccessDeniedException();
+			}
+		}
 	}
 
 	@Override
@@ -77,14 +94,6 @@ public class Servlet extends HttpServlet {
 
 			destroy();
 			throw new ServletException(e);
-		}
-
-		try {
-			authorityCenter = Rmi.get(IAuthorityCenter.class, config.getAuthorityCenterHost(),
-					config.getAuthorityCenterPort());
-			context.setAttribute(IAuthorityCenter.class.getSimpleName(), authorityCenter);
-		} catch (Throwable e) {
-			throw new AccessDeniedException();
 		}
 
 		adapters.clear();
