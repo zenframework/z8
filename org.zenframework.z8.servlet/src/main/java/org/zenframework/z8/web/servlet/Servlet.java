@@ -82,6 +82,7 @@ public class Servlet extends HttpServlet {
 		try {
 			authorityCenter = Rmi.get(IAuthorityCenter.class, config.getAuthorityCenterHost(),
 					config.getAuthorityCenterPort());
+			context.setAttribute(IAuthorityCenter.class.getSimpleName(), authorityCenter);
 		} catch (Throwable e) {
 			throw new AccessDeniedException();
 		}
