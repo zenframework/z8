@@ -28,6 +28,7 @@ public class RuntimeInfo {
             ServerConfig config = null;
             if (cmd.hasOption(OPT_CONFIG)) {
                 config = new ServerConfig(cmd.getOptionValue(OPT_CONFIG));
+            	Rmi.init(config);
             }
             if (cmd.hasOption(OPT_STRUCTURE)) {
                 AuthorityCenter.start(config);

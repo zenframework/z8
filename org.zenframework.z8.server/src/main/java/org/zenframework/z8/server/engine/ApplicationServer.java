@@ -1,14 +1,21 @@
 package org.zenframework.z8.server.engine;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.lang.management.ManagementFactory;
 import java.lang.management.RuntimeMXBean;
 import java.rmi.RemoteException;
 
 import org.zenframework.z8.server.base.file.FileConverter;
 import org.zenframework.z8.server.base.file.FileInfo;
+import org.zenframework.z8.server.base.file.FilesFactory;
+import org.zenframework.z8.server.base.file.Folders;
+import org.zenframework.z8.server.base.file.InputOnlyFileItem;
 import org.zenframework.z8.server.base.job.scheduler.Scheduler;
+import org.zenframework.z8.server.base.query.Query;
 import org.zenframework.z8.server.base.table.system.Files;
 import org.zenframework.z8.server.base.xml.GNode;
 import org.zenframework.z8.server.config.ServerConfig;
@@ -18,10 +25,13 @@ import org.zenframework.z8.server.logs.Trace;
 import org.zenframework.z8.server.request.IMonitor;
 import org.zenframework.z8.server.request.IRequest;
 import org.zenframework.z8.server.request.IResponse;
+import org.zenframework.z8.server.request.Loader;
 import org.zenframework.z8.server.request.Request;
 import org.zenframework.z8.server.request.RequestProcessor;
 import org.zenframework.z8.server.security.IUser;
 import org.zenframework.z8.server.security.User;
+import org.zenframework.z8.server.types.guid;
+import org.zenframework.z8.server.utils.IOUtils;
 
 public class ApplicationServer extends RmiServer implements IApplicationServer {
 
@@ -85,9 +95,10 @@ public class ApplicationServer extends RmiServer implements IApplicationServer {
 	@Override
 	public FileInfo download(FileInfo fileInfo) throws RemoteException {
 		try {
-			FileInfo result = Files.getFile(fileInfo);
-			ConnectionManager.release();
-			return result;
+			if (fileInfo.path.get().startsWith("table/"))
+				return downloadFromTable(fileInfo);
+			else
+				return downloadFromStorage(fileInfo);
 		} catch (IOException e) {
 			throw new RemoteException(e.getMessage(), e);
 		}
@@ -111,7 +122,8 @@ public class ApplicationServer extends RmiServer implements IApplicationServer {
 		if (Config == null) {
 			Config = config;
 			Id = config.getServerId();
-			new ApplicationServer().start();;
+			new ApplicationServer().start();
+			;
 			Scheduler.start();
 			FileConverter.startOfficeManager();
 		}
@@ -174,6 +186,46 @@ public class ApplicationServer extends RmiServer implements IApplicationServer {
 	private void checkSchemaVersion() {
 		String version = Runtime.version();
 		System.out.println("Runtime schema version: " + version);
+	}
+
+	private FileInfo downloadFromStorage(FileInfo fileInfo) throws IOException {
+		FileInfo result = Files.getFile(fileInfo);
+		ConnectionManager.release();
+		return result;
+	}
+
+	private static FileInfo downloadFromTable(FileInfo fileInfo) throws IOException {
+		File path = new File(Folders.Base, fileInfo.path.get());
+		if (FileInfo.isDefaultWrite()) {
+			InputStream inputStream = !path.exists() ? getTableFieldInputStream(fileInfo) : new FileInputStream(path);
+			if (inputStream == null)
+				return null;
+			fileInfo.file = FilesFactory.createFileItem(fileInfo.name.get());
+			IOUtils.copy(inputStream, fileInfo.getOutputStream());
+			return fileInfo;
+		} else {
+			if (!path.exists()) {
+				InputStream inputStream = getTableFieldInputStream(fileInfo);
+				if (inputStream == null)
+					return null;
+				IOUtils.copy(inputStream, path);
+			}
+			fileInfo.file = new InputOnlyFileItem(path, fileInfo.name.get());
+			return fileInfo;
+		}
+
+	}
+
+	private static InputStream getTableFieldInputStream(FileInfo fileInfo) throws IOException {
+		String path[] = fileInfo.path.get().split("/");
+		if (path.length != 4)
+			throw new IOException("Incorrect path '" + fileInfo.path + "'");
+		Query query = (Query) Loader.getInstance(path[1]);
+		if (query.readRecord(new guid(path[2]))) {
+			return new ByteArrayInputStream(query.getFieldByName(path[3]).get().toString().getBytes());
+		} else {
+			throw new IOException("Incorrect path '" + fileInfo.path + "'");
+		}
 	}
 
 }

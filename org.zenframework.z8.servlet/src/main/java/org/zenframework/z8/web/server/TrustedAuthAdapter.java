@@ -11,6 +11,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.eclipse.emf.ecore.xml.type.internal.DataValue.Base64;
 import org.zenframework.z8.server.base.table.system.Properties;
 import org.zenframework.z8.server.engine.ISession;
+import org.zenframework.z8.server.engine.Rmi;
 import org.zenframework.z8.web.servlet.Servlet;
 
 public class TrustedAuthAdapter extends Adapter implements Properties.Listener {
@@ -43,7 +44,7 @@ public class TrustedAuthAdapter extends Adapter implements Properties.Listener {
         String error = null;
         if (login != null) {
             try {
-                session = servlet.getAuthorityCenter().login(login);
+                session = Rmi.getAuthorityCenter().login(login);
             } catch (Throwable e) {
                 error = e.getMessage();
             }

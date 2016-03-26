@@ -4,7 +4,7 @@ import org.zenframework.z8.base.table.Table;
 [native "org.zenframework.z8.server.ie.Export"]
 class Export {
 	
-    public static string getTransportUrl(string protocol, string address);
+    public static string getExportUrl(string protocol, string address);
     
     public void addRecordset(Table table);
     
@@ -18,7 +18,7 @@ class Export {
     
     public void setExportAttachments(bool exportAttachments);
 
-    public void setTransportUrl(string transportUrl);
+    public void setExportUrl(string exportUrl);
     
     public void setExportRecordsMax(int exportRecordsMax);
     

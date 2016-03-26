@@ -6,7 +6,7 @@ public interface Transport {
 
 	void close();
 
-	void send(Message bean) throws TransportException;
+	void send(Message bean, String transportAddress) throws TransportException;
 
 	Message receive() throws TransportException;
 

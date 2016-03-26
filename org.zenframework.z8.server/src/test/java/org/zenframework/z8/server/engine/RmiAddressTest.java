@@ -1,10 +1,9 @@
 package org.zenframework.z8.server.engine;
 
-import java.rmi.registry.Registry;
-
-import org.zenframework.z8.server.ie.TransportException;
-
 import junit.framework.TestCase;
+
+import org.zenframework.z8.server.config.ServerConfig;
+import org.zenframework.z8.server.ie.TransportException;
 
 public class RmiAddressTest extends TestCase {
 
@@ -13,12 +12,12 @@ public class RmiAddressTest extends TestCase {
 	}
 
 	public void testRmiAddress() throws Exception {
-		assertRmiAddress("rmi://qweqwe:123#asd", "qweqwe", 123, "asd");
-		assertRmiAddress("rmi:qweqwe:123#asd", "qweqwe", 123, "asd");
-		assertRmiAddress("qweqwe:123#asd", "qweqwe", 123, "asd");
+		assertRmiAddress("rmi://qweqwe:123/asd", "qweqwe", 123, "asd");
+		assertRmiAddress("rmi:qweqwe:123/asd", "qweqwe", 123, "asd");
+		assertRmiAddress("qweqwe:123/asd", "qweqwe", 123, "asd");
 		assertRmiAddress("qweqwe:123", "qweqwe", 123, null);
-		assertRmiAddress("qweqwe#asd", "qweqwe", Registry.REGISTRY_PORT, "asd");
-		assertRmiAddress("qweqwe", "qweqwe", Registry.REGISTRY_PORT, null);
+		assertRmiAddress("qweqwe/asd", "qweqwe", ServerConfig.RegistryPortDefault, "asd");
+		assertRmiAddress("qweqwe", "qweqwe", ServerConfig.RegistryPortDefault, null);
 	}
 
 	private static void assertRmiAddress(String address, String host, int port, String id) throws TransportException {

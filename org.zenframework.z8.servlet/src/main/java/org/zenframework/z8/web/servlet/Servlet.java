@@ -17,10 +17,8 @@ import org.zenframework.z8.auth.AuthorityCenter;
 import org.zenframework.z8.server.base.table.system.Properties;
 import org.zenframework.z8.server.config.ServerConfig;
 import org.zenframework.z8.server.engine.ApplicationServer;
-import org.zenframework.z8.server.engine.IAuthorityCenter;
 import org.zenframework.z8.server.engine.Rmi;
 import org.zenframework.z8.server.engine.TransportServer;
-import org.zenframework.z8.server.exceptions.AccessDeniedException;
 import org.zenframework.z8.server.logs.Trace;
 import org.zenframework.z8.server.types.encoding;
 import org.zenframework.z8.web.server.Adapter;
@@ -41,32 +39,6 @@ public class Servlet extends HttpServlet {
 
 	private final List<Adapter> adapters = new ArrayList<Adapter>();
 	private ServerConfig config;
-	private IAuthorityCenter authorityCenter;
-
-	private final Object lock = new Object();
-
-	public ServerConfig getConfig() {
-		return config;
-	}
-
-	public IAuthorityCenter getAuthorityCenter() {
-		if (authorityCenter != null)
-			return authorityCenter;
-
-		synchronized (lock) {
-			if (authorityCenter != null)
-				return authorityCenter;
-
-			try {
-				authorityCenter = Rmi.get(IAuthorityCenter.class, config.getAuthorityCenterHost(),
-						config.getAuthorityCenterPort());
-				getServletContext().setAttribute(IAuthorityCenter.class.getSimpleName(), authorityCenter);
-				return authorityCenter;
-			} catch (Throwable e) {
-				throw new AccessDeniedException();
-			}
-		}
-	}
 
 	@Override
 	public void init(ServletConfig servletConfig) throws ServletException {
@@ -163,4 +135,5 @@ public class Servlet extends HttpServlet {
 	public String getServletPath() {
 		return getServletContext().getRealPath("WEB-INF");
 	}
+
 }

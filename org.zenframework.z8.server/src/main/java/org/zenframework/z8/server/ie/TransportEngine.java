@@ -13,8 +13,6 @@ import org.zenframework.z8.server.runtime.ServerRuntime;
 
 public class TransportEngine implements Properties.Listener {
 
-	public static final String NULL_PROTOCOL = "null";
-
 	private static final Log LOG = LogFactory.getLog(TransportEngine.class);
 
 	private static TransportEngine INSTANCE;

@@ -127,9 +127,9 @@ public class JmsTransport extends AbstractTransport implements ExceptionListener
 	}
 
 	@Override
-	public void send(Message message) throws TransportException {
+	public void send(Message message, String transportAddress) throws TransportException {
 		try {
-			Destination destination = session.createQueue(message.getAddress());
+			Destination destination = session.createQueue(transportAddress);
 			MessageProducer producer = session.createProducer(destination);
 			producer.setDeliveryMode(DeliveryMode.PERSISTENT);
 			javax.jms.Message jmsMessage;
@@ -146,10 +146,10 @@ public class JmsTransport extends AbstractTransport implements ExceptionListener
 			jmsMessage.setStringProperty(PROP_MODE, mode.toString());
 			jmsMessage.setJMSReplyTo(self);
 			producer.send(jmsMessage);
-			Trace.logEvent("Send IE message [" + message.getId() + "] to " + getUrl(message.getAddress()));
+			Trace.logEvent("Send IE message [" + message.getId() + "] to " + getUrl(transportAddress));
 		} catch (Exception e) {
 			throw new TransportException("Can't send IE message [" + message.getId() + "] to '" + message.getAddress()
-					+ "' by JMS transport", e);
+					+ "' by " + getUrl(transportAddress), e);
 		}
 	}
 
@@ -179,14 +179,17 @@ public class JmsTransport extends AbstractTransport implements ExceptionListener
 				try {
 					Mode mode = jmsMessage.propertyExists(PROP_MODE) ? getMode(jmsMessage.getStringProperty(PROP_MODE))
 							: DEFAULT_MODE;
+					Message message = null;
 					switch (mode) {
 					case OBJECT:
-						return parseObjectMessage(jmsMessage, sender);
+						message = parseObjectMessage(jmsMessage);
 					case STREAM:
-						return parseStreamMessage(jmsMessage, sender);
+						message = parseStreamMessage(jmsMessage);
 					default:
 						break;
-
+					}
+					if (message.getSender() == null) {
+						message.setSender(sender);
 					}
 				} catch (JMSException e) {
 					throw new TransportException("Can't parse JMS message " + messageId + " from "
@@ -248,11 +251,10 @@ public class JmsTransport extends AbstractTransport implements ExceptionListener
 		return session.createObjectMessage(message);
 	}
 
-	private static Message parseObjectMessage(javax.jms.Message jmsMessage, String sender) throws JMSException {
+	private static Message parseObjectMessage(javax.jms.Message jmsMessage) throws JMSException {
 		if (jmsMessage instanceof ObjectMessage) {
 			Object messageObject = ((ObjectMessage) jmsMessage).getObject();
 			if (messageObject instanceof Message) {
-				((Message) messageObject).setSender(sender);
 				return (Message) messageObject;
 			} else if (messageObject == null) {
 				return null;
@@ -294,7 +296,7 @@ public class JmsTransport extends AbstractTransport implements ExceptionListener
 		return streamMessage;
 	}
 
-	private static Message parseStreamMessage(javax.jms.Message jmsMessage, String sender) throws JMSException {
+	private static Message parseStreamMessage(javax.jms.Message jmsMessage) throws JMSException {
 		if (jmsMessage instanceof StreamMessage) {
 			StreamMessage streamMessage = (StreamMessage) jmsMessage;
 			// read message object
@@ -306,7 +308,6 @@ public class JmsTransport extends AbstractTransport implements ExceptionListener
 			Object messageObject = IOUtils.bytesToObject(buff);
 			if (messageObject instanceof Message) {
 				Message message = (Message) messageObject;
-				message.setSender(sender);
 				message.setFiles(IeUtil.filesToFileInfos(message.getExportEntry().getFiles().getFile()));
 				for (FileInfo fileInfo : message.getFiles()) {
 					fileInfo.file = FilesFactory.createFileItem(fileInfo.name.get());

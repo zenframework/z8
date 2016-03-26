@@ -21,11 +21,11 @@ public class RmiTransport extends AbstractTransport {
 	public void close() {}
 
 	@Override
-	public void send(Message message) throws TransportException {
-		RmiAddress address = new RmiAddress(message.getAddress());
+	public void send(Message message, String transportAddress) throws TransportException {
+		RmiAddress address = new RmiAddress(transportAddress);
 		try {
 			ITransportServer server = (ITransportServer) Rmi.get(ITransportServer.class, address.host, address.port);
-			server.sendMessage(context.getProperty(TransportContext.SelfAddressProperty), message);
+			server.sendMessage(message);
 		} catch (RemoteException e) {
 			throw new TransportException("Can't send message to '" + message.getAddress(), e);
 		}

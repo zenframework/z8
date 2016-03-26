@@ -6,6 +6,6 @@ import org.zenframework.z8.server.ie.Message;
 
 public interface ITransportServer extends IServer {
 
-	void sendMessage(String sender, Message message) throws RemoteException;
+	void sendMessage(Message message) throws RemoteException;
 
 }

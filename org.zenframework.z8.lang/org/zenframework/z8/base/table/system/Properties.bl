@@ -5,8 +5,8 @@ import org.zenframework.z8.base.table.value.StringField;
 
 [name "SystemProperties"]
 [displayName "Системные свойства"]
-class Properties extends Table 
-{
+class Properties extends Table {
+
 	[displayName "Имя"] name;
 	[displayName "Описание"] description;
 	

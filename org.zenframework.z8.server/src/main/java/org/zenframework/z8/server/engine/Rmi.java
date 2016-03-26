@@ -12,32 +12,64 @@ import java.util.Map;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.zenframework.z8.server.config.ServerConfig;
+import org.zenframework.z8.server.exceptions.AccessDeniedException;
 import org.zenframework.z8.server.utils.ErrorUtils;
 
 public class Rmi {
 
 	private static final Log LOG = LogFactory.getLog(Rmi.class);
 
-	private static final Map<String, IServer> servers = new HashMap<String, IServer>();
-	private static String HOST;
-	private static int PORT;
-	private static Registry REGISTRY;
+	private static final Map<String, IServer> Servers = new HashMap<String, IServer>();
+	private static final Object Lock = new Object();
+
+	private static ServerConfig Config;
+	private static String Host;
+	private static int Port;
+	private static Registry Registry;
+
+	private static IAuthorityCenter AuthorityCenter;
 
 	public static void init(ServerConfig config) throws RemoteException, UnknownHostException {
-		PORT = config.getAuthorityCenterPort();
+		if (Config != null)
+			return;
+
+		Config = config;
+		Port = config.getAuthorityCenterPort();
 		if (config.getAuthorityCenterHost().isEmpty()) {
-			HOST = InetAddress.getLocalHost().getHostAddress();
+			Host = InetAddress.getLocalHost().getHostAddress();
 			try {
-				REGISTRY = LocateRegistry.createRegistry(PORT);
-				LOG.trace("RMI registry created at port " + PORT);
+				Registry = LocateRegistry.createRegistry(Port);
+				LOG.trace("RMI registry created at port " + Port);
 			} catch (RemoteException e) {
-				REGISTRY = LocateRegistry.getRegistry(PORT);
-				LOG.trace("RMI registry located at port " + PORT);
+				Registry = LocateRegistry.getRegistry(Port);
+				LOG.trace("RMI registry located at port " + Port);
 			}
 		} else {
-			HOST = config.getAuthorityCenterHost();
-			REGISTRY = LocateRegistry.getRegistry(HOST, PORT);
-			LOG.trace("RMI registry located at port " + PORT);
+			Host = config.getAuthorityCenterHost();
+			Registry = LocateRegistry.getRegistry(Host, Port);
+			LOG.trace("RMI registry located at port " + Port);
+		}
+	}
+
+	public static ServerConfig getConfig() {
+		return Config;
+	}
+
+	public static IAuthorityCenter getAuthorityCenter() {
+		if (AuthorityCenter != null)
+			return AuthorityCenter;
+
+		synchronized (Lock) {
+			if (AuthorityCenter != null)
+				return AuthorityCenter;
+
+			try {
+				AuthorityCenter = get(IAuthorityCenter.class, Config.getAuthorityCenterHost(),
+						Config.getAuthorityCenterPort());
+				return AuthorityCenter;
+			} catch (Throwable e) {
+				throw new AccessDeniedException();
+			}
 		}
 	}
 
@@ -46,38 +78,38 @@ public class Rmi {
 	}
 
 	public static int getPort() {
-		return PORT;
+		return Port;
 	}
 
 	public static String register(Class<? extends IServer> serverClass, IServer server) throws RemoteException {
 		String name = serverClass.getSimpleName();
-		servers.put(url(HOST, PORT, name), server);
+		Servers.put(url(Host, Port, name), server);
 		if (server.id() != null)
 			name += '/' + server.id();
-		REGISTRY.rebind(name, server);
-		return url(HOST, PORT, name);
+		Registry.rebind(name, server);
+		return url(Host, Port, name);
 	}
 
 	public static void unregister(Class<? extends IServer> serverClass, IServer server) throws RemoteException {
 		String name = serverClass.getSimpleName();
-		servers.remove(url(HOST, PORT, name));
+		Servers.remove(url(Host, Port, name));
 		if (server.id() != null)
 			name += '/' + server.id();
 		try {
-			REGISTRY.unbind(name);
+			Registry.unbind(name);
 		} catch (NotBoundException e) {}
 	}
 
 	public static <T extends IServer> T get(Class<T> serverClass) throws RemoteException {
-		return get(serverClass, HOST, PORT);
+		return get(serverClass, Host, Port);
 	}
 
 	@SuppressWarnings("unchecked")
 	public static <T extends IServer> T get(Class<T> serverClass, String host, int port) throws RemoteException {
 		if (host == null || host.isEmpty())
-			host = HOST;
-		if (HOST.equals(host) && PORT == port) {
-			T server = (T) servers.get(url(host, port, serverClass.getSimpleName()));
+			host = Host;
+		if (Host.equals(host) && Port == port) {
+			T server = (T) Servers.get(url(host, port, serverClass.getSimpleName()));
 			if (server != null)
 				return server;
 		}

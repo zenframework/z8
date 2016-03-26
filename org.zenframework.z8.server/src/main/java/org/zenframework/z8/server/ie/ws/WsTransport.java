@@ -44,12 +44,12 @@ public class WsTransport extends AbstractTransport {
 	public void close() {}
 
 	@Override
-	public void send(Message message) throws TransportException {
+	public void send(Message message, String transportAddress) throws TransportException {
 		JaxWsProxyFactoryBean factory = new JaxWsProxyFactoryBean();
 		factory.getInInterceptors().add(new LoggingInInterceptor());
 		factory.getOutInterceptors().add(new LoggingOutInterceptor());
 		factory.setServiceClass(TransportService.class);
-		factory.setAddress(message.getAddress());
+		factory.setAddress(transportAddress);
 		message.getExportEntry().setFiles(IeUtil.fileInfosToXmlFiles(message.getFiles()));
 		TransportService client = (TransportService) factory.create();
 		client.sendMessage(message.getId(), message.getSender(), message.getExportEntry());

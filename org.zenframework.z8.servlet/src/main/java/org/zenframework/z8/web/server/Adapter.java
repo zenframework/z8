@@ -23,6 +23,7 @@ import org.zenframework.z8.server.base.xml.GNode;
 import org.zenframework.z8.server.engine.IApplicationServer;
 import org.zenframework.z8.server.engine.IAuthorityCenter;
 import org.zenframework.z8.server.engine.ISession;
+import org.zenframework.z8.server.engine.Rmi;
 import org.zenframework.z8.server.exceptions.AccessDeniedException;
 import org.zenframework.z8.server.json.Json;
 import org.zenframework.z8.server.logs.Trace;
@@ -62,10 +63,10 @@ public abstract class Adapter {
 				if(login.isEmpty() || login.length() > IAuthorityCenter.MaxLoginLength || password.length() > IAuthorityCenter.MaxPasswordLength)
 					throw new AccessDeniedException();
 
-				session = servlet.getAuthorityCenter().login(login, password);
+				session = Rmi.getAuthorityCenter().login(login, password);
 			} else if(sessionId != null) {
 				String serverId = parameters.get(Json.serverId);
-				session = servlet.getAuthorityCenter().getServer(sessionId, serverId);
+				session = Rmi.getAuthorityCenter().getServer(sessionId, serverId);
 			}
 
 			if(session == null)
@@ -109,7 +110,7 @@ public abstract class Adapter {
 	protected List<FileItem> parseMultipartRequest(HttpServletRequest request) {
 		ServletFileUpload upload = new ServletFileUpload(FilesFactory.getFileItemFactory());
 
-		long fileSizeMax = servlet.getConfig().webServerFileSizeMax();
+		long fileSizeMax = Rmi.getConfig().webServerFileSizeMax();
 		
 		if(fileSizeMax > 0)
 			upload.setFileSizeMax(fileSizeMax * 1024 * 1024);

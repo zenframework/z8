@@ -61,8 +61,8 @@ public class FileTransport extends AbstractTransport implements Properties.Liste
 	public void close() {}
 
 	@Override
-	public void send(Message message) {
-		File messageFolder = getMessageFolderOut(out, message);
+	public void send(Message message, String transportAddress) {
+		File messageFolder = getMessageFolderOut(out, transportAddress, message.getId());
 		messageFolder.mkdirs();
 		// write export-entry.xml
 		File outFile = new File(messageFolder, EXPORT_ENTRY);
@@ -71,7 +71,7 @@ public class FileTransport extends AbstractTransport implements Properties.Liste
 			writer = new PrintWriter(outFile, IeUtil.XML_ENCODING);
 			IeUtil.marshalExportEntry(message.getExportEntry(), writer);
 		} catch (Exception e) {
-			Trace.logError("Can't export entries to '" + message.getAddress() + "'", e);
+			Trace.logError("Can't export entries to '" + transportAddress + "'", e);
 		} finally {
 			if (writer != null) {
 				writer.close();
@@ -178,8 +178,8 @@ public class FileTransport extends AbstractTransport implements Properties.Liste
 		return new File(parent, message.getSender() + File.separatorChar + message.getId().toString());
 	}
 
-	private static File getMessageFolderOut(File parent, Message message) {
-		return new File(parent, message.getAddress() + File.separatorChar + message.getId().toString());
+	private static File getMessageFolderOut(File parent, String address, UUID id) {
+		return new File(parent, address + File.separatorChar + id.toString());
 	}
 
 }

@@ -35,12 +35,11 @@ public class TransportServer extends RmiServer implements ITransportServer {
 	}
 
 	@Override
-	public void sendMessage(String sender, Message message) throws RemoteException {
-		message.setSender(sender);
+	public void sendMessage(Message message) throws RemoteException {
 		try {
-			new ExportMessages.CLASS<ExportMessages>().get().addMessage(message, "rmi");
+			new ExportMessages.CLASS<ExportMessages>().get().addMessage(message, getUrl());
 		} catch (Throwable e) {
-			throw new RemoteException("Can't import message '" + message.getId() + "' from '" + sender + "'", e);
+			throw new RemoteException("Can't import message '" + message.getId() + "' from '" + message.getSender() + "'", e);
 		}
 	}
 

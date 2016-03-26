@@ -59,11 +59,20 @@
     <entry key="ExportMessages.title">Очередь сообщений</entry>
     <entry key="ExportMessages.sender">Отправитель</entry>
     <entry key="ExportMessages.receiver">Получатель</entry>
-    <entry key="ExportMessages.protocol">Протокол</entry>
+    <entry key="ExportMessages.transportUrl">Транспорт</entry>
     <entry key="ExportMessages.message">Сообщение</entry>
     <entry key="ExportMessages.ordinal">Номер</entry>
     <entry key="ExportMessages.processed">Обработано</entry>
     <entry key="ExportMessages.error">Ошибка</entry>
+
+    <!-- Transport routes -->
+    <entry key="TransportRoutes.title">Маршруты</entry>
+    <entry key="TransportRoutes.receiver">Получатель</entry>
+    <entry key="TransportRoutes.priority">Приоритет</entry>
+    <entry key="TransportRoutes.protocol">Протокол</entry>
+    <entry key="TransportRoutes.address">Адрес</entry>
+    <entry key="TransportRoutes.active">Активен</entry>
+    <entry key="TransportRoutes.error">Ошибка</entry>
 
 	<!-- Entries -->
 	<entry key="Entries.title">Компоненты</entry>

@@ -17,7 +17,7 @@ public abstract class AbstractTransport implements Transport {
 
     @Override
     public String getUrl(String address) {
-        return new StringBuilder(20).append(getProtocol()).append(":").append(address).toString();
+        return IeUtil.getUrl(getProtocol(), address);
     }
 
 }

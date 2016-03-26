@@ -5,6 +5,7 @@ import org.zenframework.z8.server.base.job.scheduler.TaskLogs;
 import org.zenframework.z8.server.base.table.system.view.UserEntriesView;
 import org.zenframework.z8.server.db.generator.DBGenerateProcedure;
 import org.zenframework.z8.server.ie.ExportMessages;
+import org.zenframework.z8.server.ie.TransportRoutes;
 import org.zenframework.z8.server.resources.Resources;
 import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.types.guid;
@@ -29,12 +30,13 @@ public class SystemTools extends Desktop {
         }
     }
 
-    public UserEntriesView.CLASS<UserEntriesView> userEntries = new UserEntriesView.CLASS<UserEntriesView>(this);
-    public TaskLogs.CLASS<TaskLogs> taskLogs = new TaskLogs.CLASS<TaskLogs>(this);
-    public Sequences.CLASS<Sequences> sequences = new Sequences.CLASS<Sequences>(this);
-    public DBGenerateProcedure.CLASS<DBGenerateProcedure> generator = new DBGenerateProcedure.CLASS<DBGenerateProcedure>(this);
-    public Properties.CLASS<Properties> properties = new Properties.CLASS<Properties>(this);
-    public ExportMessages.CLASS<ExportMessages> exportMessages = new ExportMessages.CLASS<ExportMessages>(this);
+    public final UserEntriesView.CLASS<UserEntriesView> userEntries = new UserEntriesView.CLASS<UserEntriesView>(this);
+    public final TaskLogs.CLASS<TaskLogs> taskLogs = new TaskLogs.CLASS<TaskLogs>(this);
+    public final Sequences.CLASS<Sequences> sequences = new Sequences.CLASS<Sequences>(this);
+    public final DBGenerateProcedure.CLASS<DBGenerateProcedure> generator = new DBGenerateProcedure.CLASS<DBGenerateProcedure>(this);
+    public final Properties.CLASS<Properties> properties = new Properties.CLASS<Properties>(this);
+    public final ExportMessages.CLASS<ExportMessages> exportMessages = new ExportMessages.CLASS<ExportMessages>(this);
+    public final TransportRoutes.CLASS<TransportRoutes> transportRoutes = new TransportRoutes.CLASS<TransportRoutes>(this);
 
     public SystemTools(IObject container) {
         super(container);
@@ -50,6 +52,7 @@ public class SystemTools extends Desktop {
         runnables.add(generator);
         runnables.add(properties);
         runnables.add(exportMessages);
+        runnables.add(transportRoutes);
 
         dataSets.add(userEntries);
         dataSets.add(taskLogs);

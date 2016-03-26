@@ -2,7 +2,6 @@ package org.zenframework.z8.server.config;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.rmi.registry.Registry;
 import java.util.Properties;
 
 import org.zenframework.z8.server.types.guid;
@@ -27,6 +26,8 @@ public class ServerConfig extends Properties {
 	public static final String SchedulerEnabledProperty = "scheduler.enabled";
 
 	public static final String TraceSqlProperty = "trace.sql";
+
+	public static final int RegistryPortDefault = 9999;
 
 	private final File configFile;
 
@@ -57,7 +58,7 @@ public class ServerConfig extends Properties {
 		applicationServerId = getProperty(ApplicationServerIdProperty, guid.create().toString());
 
 		authorityCenterHost = getProperty(AuthorityCenterHostProperty, "");
-		authorityCenterPort = getProperty(AuthorityCenterPortProperty, Registry.REGISTRY_PORT);
+		authorityCenterPort = getProperty(AuthorityCenterPortProperty, RegistryPortDefault);
 		authorityCenterSessionTimeout = getProperty(AuthorityCenterSessionTimeoutProperty, 24 * 60);
 
 		webServerStartApplicationServer = getProperty(WebServerStartApplicationServerProperty, true);

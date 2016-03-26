@@ -24,7 +24,7 @@ public class TransportServiceImpl implements TransportService {
         try {
             message.setFiles(IeUtil.xmlFilesToFileInfos(exportEntry.getFiles()));
             message.setExportEntry(exportEntry);
-            new ExportMessages.CLASS<ExportMessages>(null).get().addMessage(message, WsTransport.PROTOCOL);
+            new ExportMessages.CLASS<ExportMessages>(null).get().addMessage(message, endpoint);
         } catch (Exception e) {
             throw new TransportException("Can't send IE message " + message.getId() + " from " + message.getSender()
                     + " to " + message.getAddress(), e);
