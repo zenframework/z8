@@ -45,7 +45,7 @@ public class Servlet extends HttpServlet {
 
 		ServletContext context = servletConfig.getServletContext();
 
-		ServerConfig config = new ServerConfig(context.getRealPath("WEB-INF" + File.separator
+		config = new ServerConfig(context.getRealPath("WEB-INF" + File.separator
 				+ ServerConfig.ConfigurationFileName));
 		Properties.setServerConfig(config);
 
