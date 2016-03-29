@@ -59,7 +59,7 @@ public final class ServerMain {
 			ServerConfig config = new ServerConfig(cmd.hasOption(ConfigOpt) ? cmd.getOptionValue(ConfigOpt) : null);
 
 			Properties.setServerConfig(config);
-			Rmi.init(config);
+			Z8Context.init(config);
 
 			if (!cmd.hasOption(StopOpt)) {
 				Method startMethod = serverClass.getMethod("start", ServerConfig.class);

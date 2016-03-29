@@ -35,6 +35,8 @@ public class ServerConfig extends Properties {
 
 	public static final int RegistryPortDefault = 7852;
 
+	public static final String OfficeHomeProperty = "office.home";
+
 	private final File configFile;
 
 	private final int rmiRegistryPort;
@@ -57,6 +59,8 @@ public class ServerConfig extends Properties {
 	private final boolean schedulerEnabled;
 
 	private final boolean traceSql;
+
+	private final String officeHome;
 
 	public ServerConfig(String configFilePath) {
 		configFile = new File(configFilePath != null ? configFilePath : ConfigurationFileName);
@@ -87,6 +91,8 @@ public class ServerConfig extends Properties {
 		traceSql = getProperty(TraceSqlProperty, false);
 
 		schedulerEnabled = getProperty(SchedulerEnabledProperty, true);
+		
+		officeHome = getProperty(OfficeHomeProperty, "C:/Program Files (x86)/LibreOffice 4.0");
 	}
 
 	@Override
@@ -181,6 +187,10 @@ public class ServerConfig extends Properties {
 
 	public final boolean isSchedulerEnabled() {
 		return schedulerEnabled;
+	}
+
+	public String getOfficeHome() {
+		return officeHome;
 	}
 
 }

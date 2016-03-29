@@ -13,28 +13,18 @@ import java.util.Map;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.zenframework.z8.server.config.ServerConfig;
-import org.zenframework.z8.server.exceptions.AccessDeniedException;
 
 public class Rmi {
 
 	private static final Log LOG = LogFactory.getLog(Rmi.class);
 
 	private static final Map<String, IServer> Servers = new HashMap<String, IServer>();
-	private static final Object Lock = new Object();
 
-	private static ServerConfig Config;
 	private static String Host;
 	private static int Port;
 	private static Registry Registry;
 
-	private static IAuthorityCenter AuthorityCenter;
-
 	public static void init(ServerConfig config) throws RemoteException, UnknownHostException {
-		if (Config != null)
-			return;
-
-		Config = config;
-
 		Port = config.getRmiRegistryPort();
 		Host = InetAddress.getLocalHost().getHostAddress();
 
@@ -44,29 +34,6 @@ public class Rmi {
 		} catch (RemoteException e) {
 			Registry = LocateRegistry.getRegistry(Port);
 			LOG.trace("RMI registry located at " + Host + ':' + Port);
-		}
-
-	}
-
-	public static ServerConfig getConfig() {
-		return Config;
-	}
-
-	public static IAuthorityCenter getAuthorityCenter() {
-		if (AuthorityCenter != null)
-			return AuthorityCenter;
-
-		synchronized (Lock) {
-			if (AuthorityCenter != null)
-				return AuthorityCenter;
-
-			try {
-				AuthorityCenter = get(IAuthorityCenter.class, Config.getAuthorityCenterHost(),
-						Config.getAuthorityCenterPort());
-				return AuthorityCenter;
-			} catch (Throwable e) {
-				throw new AccessDeniedException();
-			}
 		}
 	}
 

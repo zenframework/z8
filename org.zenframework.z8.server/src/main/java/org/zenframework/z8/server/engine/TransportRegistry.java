@@ -12,7 +12,7 @@ public class TransportRegistry extends RmiServer implements ITransportRegistry {
 
 	private static TransportRegistry INSTANCE;
 
-	private final IKeyValue<String, String> store = new FileKeyValue(new File(Rmi.getConfig().getWorkingPath(),
+	private final IKeyValue<String, String> store = new FileKeyValue(new File(Z8Context.getConfig().getWorkingPath(),
 			"transport-servers.xml"));
 
 	protected TransportRegistry() throws RemoteException {

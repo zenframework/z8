@@ -16,8 +16,7 @@ import org.apache.commons.logging.LogFactory;
 import org.artofsolving.jodconverter.OfficeDocumentConverter;
 import org.artofsolving.jodconverter.office.DefaultOfficeManagerConfiguration;
 import org.artofsolving.jodconverter.office.OfficeManager;
-import org.zenframework.z8.server.base.table.system.Properties;
-import org.zenframework.z8.server.runtime.ServerRuntime;
+import org.zenframework.z8.server.engine.Z8Context;
 import org.zenframework.z8.server.utils.EmlUtils;
 import org.zenframework.z8.server.utils.IOUtils;
 
@@ -34,22 +33,9 @@ public class FileConverter {
 
 	private static final List<String> txtExtensions = Arrays.asList("eml", "mime");
 
-	private static Listener listener;
 	private static OfficeManager officeManager;
 
 	private final File storage;
-
-	private static class Listener implements Properties.Listener {
-
-		@Override
-		public void onPropertyChange(String key, String value) {
-			if (ServerRuntime.LibreOfficeDirectoryProperty.getKey().equals(key)) {
-				stopOfficeManager();
-				startOfficeManager(value);
-			}
-		}
-
-	}
 
 	public FileConverter(File storage) {
 		this.storage = storage;
@@ -98,14 +84,10 @@ public class FileConverter {
 	}
 
 	public static void startOfficeManager() {
-		startOfficeManager(Properties.getProperty(ServerRuntime.LibreOfficeDirectoryProperty));
+		startOfficeManager(Z8Context.getConfig().getOfficeHome());
 	}
 
 	private static void startOfficeManager(String officeHome) {
-		if (listener == null) {
-			listener = new Listener();
-			Properties.addListener(listener);
-		}
 		if (officeManager == null) {
 			try {
 				officeManager = new DefaultOfficeManagerConfiguration().setOfficeHome(officeHome).setPortNumber(OFFICE_PORT)

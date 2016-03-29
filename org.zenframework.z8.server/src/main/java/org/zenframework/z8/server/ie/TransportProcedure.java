@@ -16,6 +16,7 @@ import org.zenframework.z8.server.engine.ApplicationServer;
 import org.zenframework.z8.server.engine.ITransportRegistry;
 import org.zenframework.z8.server.engine.ITransportService;
 import org.zenframework.z8.server.engine.Rmi;
+import org.zenframework.z8.server.engine.Z8Context;
 import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.runtime.RCollection;
 import org.zenframework.z8.server.runtime.ServerRuntime;
@@ -83,16 +84,16 @@ public class TransportProcedure extends Procedure {
 		TransportRoutes transportRoutes = null;
 		Files filesTable = Files.instance();
 
-		final String transportRegistryHost = Rmi.getConfig().getTransportRegistryHost();
-		final int transportRegistryPort = Rmi.getConfig().getTransportRegistryPort();
+		final String transportRegistryHost = Z8Context.getConfig().getTransportRegistryHost();
+		final int transportRegistryPort = Z8Context.getConfig().getTransportRegistryPort();
 
 		if (!transportRegistryHost.isEmpty()) {
 			try {
 				Rmi.get(ITransportService.class).checkRegistration(selfAddress);
 			} catch (Exception e) {
 				LOG.error("Can't check transport server registrationa for '" + selfAddress + "' in central registry '"
-						+ Rmi.getConfig().getTransportRegistryHost() + ':' + Rmi.getConfig().getTransportRegistryPort()
-						+ "'", e);
+						+ Z8Context.getConfig().getTransportRegistryHost() + ':'
+						+ Z8Context.getConfig().getTransportRegistryPort() + "'", e);
 			}
 		} else {
 			transportRoutes = TransportRoutes.instance();

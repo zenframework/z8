@@ -1,6 +1,5 @@
 package org.zenframework.z8.server.engine;
 
-import java.io.File;
 import java.io.IOException;
 import java.lang.management.ManagementFactory;
 import java.lang.management.RuntimeMXBean;
@@ -29,7 +28,8 @@ public class ApplicationServer extends RmiServer implements IApplicationServer {
 
 	private static final ThreadLocal<IRequest> currentRequest = new ThreadLocal<IRequest>();
 
-	private static ServerConfig Config = null;
+	private static ApplicationServer INSTANCE = null;
+
 	private static String Id = null;
 
 	private IAuthorityCenter authorityCenter = null;
@@ -49,7 +49,8 @@ public class ApplicationServer extends RmiServer implements IApplicationServer {
 
 		checkSchemaVersion();
 
-		authorityCenter = Rmi.get(IAuthorityCenter.class, Config.getAuthorityCenterHost(), Config.getAuthorityCenterPort());
+		authorityCenter = Rmi.get(IAuthorityCenter.class, Z8Context.getConfig().getAuthorityCenterHost(), Z8Context
+				.getConfig().getAuthorityCenterPort());
 		authorityCenter.register(this);
 
 		RuntimeMXBean mxBean = ManagementFactory.getRuntimeMXBean();
@@ -108,10 +109,10 @@ public class ApplicationServer extends RmiServer implements IApplicationServer {
 	}
 
 	public static void start(ServerConfig config) throws RemoteException {
-		if (Config == null) {
-			Config = config;
+		if (INSTANCE == null) {
 			Id = config.getServerId();
-			new ApplicationServer().start();
+			INSTANCE = new ApplicationServer();
+			INSTANCE.start();
 			Scheduler.start();
 			FileConverter.startOfficeManager();
 		}
@@ -119,10 +120,6 @@ public class ApplicationServer extends RmiServer implements IApplicationServer {
 
 	public static String Id() {
 		return Id;
-	}
-
-	public static ServerConfig config() {
-		return Config;
 	}
 
 	public static IRequest getRequest() {
@@ -141,7 +138,7 @@ public class ApplicationServer extends RmiServer implements IApplicationServer {
 	}
 
 	public static Database database() {
-		return new Database(config());
+		return new Database(Z8Context.getConfig());
 	}
 
 	public static IUser getUser() {
@@ -165,10 +162,6 @@ public class ApplicationServer extends RmiServer implements IApplicationServer {
 
 	public static boolean events() {
 		return getRequest().events();
-	}
-
-	public static File workingPath() {
-		return config().getWorkingPath();
 	}
 
 	private void checkSchemaVersion() {

@@ -70,9 +70,9 @@ public class TransportService extends RmiServer implements ITransportService {
 		public void run() {
 			while (true) {
 				try {
-					Rmi.get(ITransportRegistry.class, Rmi.getConfig().getTransportRegistryHost(),
-							Rmi.getConfig().getTransportRegistryPort()).registerTransportServer(address,
-							Rmi.getConfig().getRmiRegistryPort());
+					Rmi.get(ITransportRegistry.class, Z8Context.getConfig().getTransportRegistryHost(),
+							Z8Context.getConfig().getTransportRegistryPort()).registerTransportServer(address,
+							Z8Context.getConfig().getRmiRegistryPort());
 					break;
 				} catch (Exception e) {
 					LOG.debug("Can't register transport server for '" + address + "'. Retrying...", e);

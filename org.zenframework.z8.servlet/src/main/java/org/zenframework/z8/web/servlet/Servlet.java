@@ -25,6 +25,7 @@ import org.zenframework.z8.server.engine.ITransportService;
 import org.zenframework.z8.server.engine.Rmi;
 import org.zenframework.z8.server.engine.TransportRegistry;
 import org.zenframework.z8.server.engine.TransportService;
+import org.zenframework.z8.server.engine.Z8Context;
 import org.zenframework.z8.server.logs.Trace;
 import org.zenframework.z8.server.types.encoding;
 import org.zenframework.z8.web.server.Adapter;
@@ -53,15 +54,16 @@ public class Servlet extends HttpServlet {
 
 	@Override
 	public void init(ServletConfig servletConfig) throws ServletException {
+		super.init(servletConfig);
 
-		ServletContext context = servletConfig.getServletContext();
+		ServletContext context = getServletContext();
 
 		config = new ServerConfig(context.getRealPath("WEB-INF" + File.separator
 				+ ServerConfig.ConfigurationFileName));
 		Properties.setServerConfig(config);
 
 		try {
-			Rmi.init(config);
+			Z8Context.init(config);
 			if (config.webServerStartAuthorityCenter())
 				startServer(AuthorityCenterClass, config);
 			if (config.webServerStartApplicationServer())
@@ -71,10 +73,7 @@ public class Servlet extends HttpServlet {
 			if (config.webServerStartTransportRegistry())
 				startServer(TransportRegistryClass, config);
 		} catch (Throwable e) {
-			try {
-				Trace.logError(e);
-			} catch (Throwable ex) {}
-
+			Trace.logError(e);
 			destroy();
 			throw new ServletException(e);
 		}
@@ -86,8 +85,6 @@ public class Servlet extends HttpServlet {
 
 		for (Adapter adapter : adapters)
 			adapter.start();
-
-		super.init(servletConfig);
 	}
 
 	@Override

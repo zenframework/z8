@@ -10,6 +10,7 @@ import org.zenframework.z8.server.base.table.value.Field;
 import org.zenframework.z8.server.base.table.value.IntegerField;
 import org.zenframework.z8.server.base.table.value.StringField;
 import org.zenframework.z8.server.engine.ApplicationServer;
+import org.zenframework.z8.server.engine.Z8Context;
 import org.zenframework.z8.server.types.guid;
 
 public class Scheduler implements Runnable {
@@ -21,19 +22,19 @@ public class Scheduler implements Runnable {
 	private List<Task> tasks = new ArrayList<Task>();
 
 	public static void start() {
-		if(scheduler == null && ApplicationServer.config().isSchedulerEnabled())
+		if (scheduler == null && Z8Context.getConfig().isSchedulerEnabled())
 			scheduler = new Scheduler();
 	}
 
 	public static void stop() {
-		if(scheduler != null) {
+		if (scheduler != null) {
 			scheduler.thread.interrupt();
 			scheduler = null;
 		}
 	}
 
 	public static void reset() {
-		if(scheduler != null)
+		if (scheduler != null)
 			scheduler.resetPending = true;
 	}
 
@@ -44,24 +45,24 @@ public class Scheduler implements Runnable {
 
 	@Override
 	public void run() {
-		while(scheduler != null) {
+		while (scheduler != null) {
 			initializeTasks();
 
-			for(Task task : tasks) {
-				if(task.readyToStart())
+			for (Task task : tasks) {
+				if (task.readyToStart())
 					startJob(task);
 			}
 
 			try {
 				Thread.sleep(1 * 1000);
-			} catch(InterruptedException e) {
+			} catch (InterruptedException e) {
 				break;
 			}
 		}
 	}
 
 	private synchronized void initializeTasks() {
-		if(!ApplicationServer.database().isSystemInstalled() || !resetPending)
+		if (!ApplicationServer.database().isSystemInstalled() || !resetPending)
 			return;
 
 		Tasks tasksTable = new Tasks.CLASS<Tasks>(null).get();
@@ -90,12 +91,12 @@ public class Scheduler implements Runnable {
 
 		List<Task> result = new ArrayList<Task>();
 
-		while(tasksTable.next()) {
+		while (tasksTable.next()) {
 			guid taskId = tasksTable.recordId();
 			Task task = new Task(taskId);
 
 			int index = tasks.indexOf(task);
-			if(index != -1)
+			if (index != -1)
 				task = tasks.get(index);
 
 			task.jobId = jobId.string().get();
