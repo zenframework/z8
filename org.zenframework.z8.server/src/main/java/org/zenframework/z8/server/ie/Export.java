@@ -41,7 +41,7 @@ public class Export extends OBJECT {
 	private static final Log LOG = LogFactory.getLog(Export.class);
 
 	public static final String LOCAL_PROTOCOL = "local";
-	public static final String REMOTE_PROTOCOL = "local";
+	public static final String REMOTE_PROTOCOL = "remote";
 
 	public static class CLASS<T extends Export> extends OBJECT.CLASS<T> {
 
@@ -129,6 +129,16 @@ public class Export extends OBJECT {
 
 	public String getExportUrl() {
 		return exportUrl;
+	}
+
+	public String getProtocol() {
+		int pos = exportUrl.indexOf(':');
+		return pos > 0 ? exportUrl.substring(0, pos) : LOCAL_PROTOCOL;
+	}
+
+	public String getAddress() {
+		int pos = exportUrl.indexOf(':');
+		return pos > 0 ? exportUrl.substring(pos + 1) : null;
 	}
 
 	public void setExportUrl(String exportUrl) {
@@ -316,16 +326,6 @@ public class Export extends OBJECT {
 			return true;
 		}
 		return false;
-	}
-
-	private String getProtocol() {
-		int pos = exportUrl.indexOf(':');
-		return pos > 0 ? exportUrl.substring(0, pos) : LOCAL_PROTOCOL;
-	}
-
-	private String getAddress() {
-		int pos = exportUrl.indexOf(':');
-		return pos > 0 ? exportUrl.substring(pos + 1) : null;
 	}
 
 	private static String getSpaces(int level) {

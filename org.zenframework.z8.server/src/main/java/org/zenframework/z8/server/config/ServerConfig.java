@@ -12,6 +12,8 @@ public class ServerConfig extends Properties {
 
 	public static final String ConfigurationFileName = "project.xml";
 
+	public static final String RmiRegistryPortProperty = "rmi.registry.port";
+
 	public static final String AuthorityCenterHostProperty = "authority.center.host";
 	public static final String AuthorityCenterPortProperty = "authority.center.port";
 	public static final String AuthorityCenterSessionTimeoutProperty = "authority.center.session.timeout";
@@ -27,10 +29,11 @@ public class ServerConfig extends Properties {
 
 	public static final String TraceSqlProperty = "trace.sql";
 
-	public static final int RegistryPortDefault = 9999;
+	public static final int RegistryPortDefault = 7852;
 
 	private final File configFile;
 
+	private final int rmiRegistryPort;
 	private final String authorityCenterHost;
 	private final int authorityCenterPort;
 	private final int authorityCenterSessionTimeout;
@@ -56,6 +59,8 @@ public class ServerConfig extends Properties {
 		}
 
 		applicationServerId = getProperty(ApplicationServerIdProperty, guid.create().toString());
+
+		rmiRegistryPort = getProperty(RmiRegistryPortProperty, RegistryPortDefault);
 
 		authorityCenterHost = getProperty(AuthorityCenterHostProperty, "");
 		authorityCenterPort = getProperty(AuthorityCenterPortProperty, RegistryPortDefault);
@@ -111,6 +116,10 @@ public class ServerConfig extends Properties {
 
 	public final String getServerId() {
 		return applicationServerId;
+	}
+
+	public int getRmiRegistryPort() {
+		return rmiRegistryPort;
 	}
 
 	public final String getAuthorityCenterHost() {

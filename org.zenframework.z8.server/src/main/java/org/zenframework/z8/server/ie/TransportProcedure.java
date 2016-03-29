@@ -1,7 +1,11 @@
 package org.zenframework.z8.server.ie;
 
+import java.net.URI;
+import java.util.Arrays;
 import java.util.List;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.zenframework.z8.server.base.simple.Procedure;
 import org.zenframework.z8.server.base.table.system.Files;
 import org.zenframework.z8.server.base.table.system.Properties;
@@ -9,7 +13,9 @@ import org.zenframework.z8.server.base.view.command.Parameter;
 import org.zenframework.z8.server.db.Connection;
 import org.zenframework.z8.server.db.ConnectionManager;
 import org.zenframework.z8.server.engine.ApplicationServer;
-import org.zenframework.z8.server.logs.Trace;
+import org.zenframework.z8.server.engine.ITransportRegistry;
+import org.zenframework.z8.server.engine.ITransportServer;
+import org.zenframework.z8.server.engine.Rmi;
 import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.runtime.RCollection;
 import org.zenframework.z8.server.runtime.ServerRuntime;
@@ -17,6 +23,8 @@ import org.zenframework.z8.server.types.bool;
 import org.zenframework.z8.server.types.guid;
 
 public class TransportProcedure extends Procedure {
+
+	private static final Log LOG = LogFactory.getLog(TransportProcedure.class);
 
 	public static final guid PROCEDURE_ID = new guid("E43F94C6-E918-405D-898C-B915CC51FFDF");
 
@@ -40,6 +48,8 @@ public class TransportProcedure extends Procedure {
 		public void onPropertyChange(String key, String value) {
 			if (ServerRuntime.PreserveExportMessagesProperty.equalsKey(key)) {
 				preserveExportMessages = Boolean.parseBoolean(value);
+			} else if (ServerRuntime.TransportCentralRegistryProperty.equalsKey(key)) {
+				transportCentralRegistry = value;
 			}
 		}
 
@@ -51,6 +61,8 @@ public class TransportProcedure extends Procedure {
 
 	private static volatile boolean preserveExportMessages = Boolean.parseBoolean(Properties
 			.getProperty(ServerRuntime.PreserveExportMessagesProperty));
+	private static volatile String transportCentralRegistry = Properties
+			.getProperty(ServerRuntime.TransportCentralRegistryProperty);
 
 	protected final TransportContext.CLASS<TransportContext> context = new TransportContext.CLASS<TransportContext>();
 	protected final TransportEngine engine = TransportEngine.getInstance();
@@ -71,9 +83,20 @@ public class TransportProcedure extends Procedure {
 
 		String selfAddress = context.get().check().getProperty(TransportContext.SelfAddressProperty);
 		Connection connection = ConnectionManager.get();
-		ExportMessages messages = ExportMessages.instance();
-		TransportRoutes transportRoutes = TransportRoutes.instance();
+		final ExportMessages messages = ExportMessages.instance();
+		TransportRoutes transportRoutes = null;
 		Files filesTable = Files.instance();
+
+		if (transportCentralRegistry != null) {
+			try {
+				Rmi.get(ITransportServer.class).checkRegistration(selfAddress, transportCentralRegistry);
+			} catch (Exception e) {
+				LOG.error("Can't check transport server registrationa for '" + selfAddress + "' in central '"
+						+ transportCentralRegistry + "'", e);
+			}
+		} else {
+			transportRoutes = TransportRoutes.instance();
+		}
 
 		// Обработка внутренней входящей очереди
 		messages.readImportMessages(selfAddress);
@@ -82,7 +105,7 @@ public class TransportProcedure extends Procedure {
 				Message.CLASS<Message> message = messages.getMessage();
 				connection.beginTransaction();
 				beginProcessMessage(messages, null);
-				Trace.logEvent("Receive IE message [" + message.get().getId() + "] by " + messages.getTransportUrl());
+				LOG.debug("Receive IE message [" + message.get().getId() + "] by " + messages.getTransportUrl());
 				z8_beforeImport(message);
 				ApplicationServer.disableEvents();
 				try {
@@ -101,14 +124,43 @@ public class TransportProcedure extends Procedure {
 
 		// Обработка внутренней исходящей очереди
 		messages.readExportMessages(selfAddress);
-		transportRoutes.checkInactiveRoutes();
+		if (transportRoutes != null) {
+			transportRoutes.checkInactiveRoutes();
+		}
 
 		while (messages.next()) {
-			List<TransportRoutes.Route> routes = transportRoutes.readActiveRoutes(messages.getReceiver());
+			List<AbstractRoute> routes;
+			if (transportRoutes != null) {
+				routes = transportRoutes.readActiveRoutes(messages.getReceiver());
+			} else {
+				routes = Arrays.<AbstractRoute> asList(new AbstractRoute() {
 
-			for (TransportRoutes.Route route : routes) {
+					@Override
+					public String getReceiver() {
+						return messages.getReceiver();
+					}
 
-				Transport transport = engine.getTransport(context.get(), route.protocol);
+					@Override
+					public String getProtocol() {
+						return RmiTransport.PROTOCOL;
+					}
+
+					@Override
+					public String getAddress() {
+						try {
+							return Rmi.get(ITransportRegistry.class, new URI(transportCentralRegistry))
+									.getTransportServerAddress(getReceiver());
+						} catch (Exception e) {
+							throw new RuntimeException("Can't get transport address for '" + getReceiver() + "'", e);
+						}
+					}
+
+				});
+			}
+
+			for (AbstractRoute route : routes) {
+
+				Transport transport = engine.getTransport(context.get(), route.getProtocol());
 				if (transport == null)
 					continue;
 				try {
@@ -116,7 +168,9 @@ public class TransportProcedure extends Procedure {
 				} catch (TransportException e) {
 					log("Can't import message via protocol '" + transport.getProtocol() + "'", e);
 					transport.close();
-					transportRoutes.disableRoute(route.routeId, e.getMessage());
+					if (transportRoutes != null) {
+						transportRoutes.disableRoute(route.getRouteId(), e.getMessage());
+					}
 					continue;
 				}
 
@@ -125,7 +179,7 @@ public class TransportProcedure extends Procedure {
 					beginProcessMessage(messages, route.getTransportUrl());
 					Message.CLASS<Message> message = messages.getMessage();
 					z8_beforeExport(message);
-					transport.send(message.get(), route.address);
+					transport.send(message.get(), route.getAddress());
 					transport.commit();
 					z8_afterExport(message);
 					connection.commit();
@@ -135,7 +189,9 @@ public class TransportProcedure extends Procedure {
 					log("Can't send messsage '" + messages.recordId() + "'", e);
 					if (e instanceof TransportException) {
 						transport.close();
-						transportRoutes.disableRoute(route.routeId, e.getMessage());
+						if (transportRoutes != null) {
+							transportRoutes.disableRoute(route.getRouteId(), e.getMessage());
+						}
 					}
 				}
 			}
