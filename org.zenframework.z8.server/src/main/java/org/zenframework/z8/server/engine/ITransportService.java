@@ -4,7 +4,7 @@ import java.rmi.RemoteException;
 
 import org.zenframework.z8.server.ie.Message;
 
-public interface ITransportServer extends IServer {
+public interface ITransportService extends IServer {
 
 	void checkRegistration(String selfAddress, String transportCentralRegistry) throws RemoteException;
 

@@ -14,28 +14,28 @@ import org.zenframework.z8.server.ie.ExportMessages;
 import org.zenframework.z8.server.ie.Message;
 import org.zenframework.z8.server.logs.Trace;
 
-public class TransportServer extends RmiServer implements ITransportServer {
+public class TransportService extends RmiServer implements ITransportService {
 
 	private static final long serialVersionUID = 6031141331643514419L;
 
-	private static final Log LOG = LogFactory.getLog(TransportServer.class);
+	private static final Log LOG = LogFactory.getLog(TransportService.class);
 
-	private static TransportServer INSTANCE;
+	private static TransportService INSTANCE;
 
 	private final Collection<String> registered = Collections.synchronizedCollection(new LinkedList<String>());
 
-	private TransportServer(ServerConfig config) throws RemoteException {
-		super(ITransportServer.class);
+	private TransportService(ServerConfig config) throws RemoteException {
+		super(ITransportService.class);
 	}
 
 	public static void start(ServerConfig config) throws RemoteException {
 		if (INSTANCE == null) {
-			INSTANCE = new TransportServer(config);
+			INSTANCE = new TransportService(config);
 			INSTANCE.start();
 		}
 	}
 
-	public static TransportServer get() {
+	public static TransportService get() {
 		return INSTANCE;
 	}
 

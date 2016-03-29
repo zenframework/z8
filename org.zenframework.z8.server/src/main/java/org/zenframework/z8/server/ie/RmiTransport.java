@@ -1,6 +1,6 @@
 package org.zenframework.z8.server.ie;
 
-import org.zenframework.z8.server.engine.ITransportServer;
+import org.zenframework.z8.server.engine.ITransportService;
 import org.zenframework.z8.server.engine.Rmi;
 import org.zenframework.z8.server.engine.RmiAddress;
 
@@ -22,7 +22,7 @@ public class RmiTransport extends AbstractTransport {
 	public void send(Message message, String transportAddress) throws TransportException {
 		RmiAddress address = new RmiAddress(transportAddress);
 		try {
-			ITransportServer server = (ITransportServer) Rmi.get(ITransportServer.class, address.host, address.port);
+			ITransportService server = (ITransportService) Rmi.get(ITransportService.class, address.host, address.port);
 			server.sendMessage(message);
 		} catch (Exception e) {
 			throw new TransportException("Can't send message to '" + message.getAddress(), e);

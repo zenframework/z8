@@ -14,7 +14,7 @@ import org.zenframework.z8.server.db.Connection;
 import org.zenframework.z8.server.db.ConnectionManager;
 import org.zenframework.z8.server.engine.ApplicationServer;
 import org.zenframework.z8.server.engine.ITransportRegistry;
-import org.zenframework.z8.server.engine.ITransportServer;
+import org.zenframework.z8.server.engine.ITransportService;
 import org.zenframework.z8.server.engine.Rmi;
 import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.runtime.RCollection;
@@ -89,7 +89,7 @@ public class TransportProcedure extends Procedure {
 
 		if (transportCentralRegistry != null) {
 			try {
-				Rmi.get(ITransportServer.class).checkRegistration(selfAddress, transportCentralRegistry);
+				Rmi.get(ITransportService.class).checkRegistration(selfAddress, transportCentralRegistry);
 			} catch (Exception e) {
 				LOG.error("Can't check transport server registrationa for '" + selfAddress + "' in central '"
 						+ transportCentralRegistry + "'", e);

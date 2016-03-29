@@ -22,7 +22,8 @@ public class ServerConfig extends Properties {
 
 	public static final String WebServerStartApplicationServerProperty = "web.server.start.application.server";
 	public static final String WebServerStartAuthorityCenterProperty = "web.server.start.authority.center";
-	public static final String WebServerStartTransportServerProperty = "web.server.start.transport.server";
+	public static final String WebServerStartTransportServiceProperty = "web.server.start.transport.service";
+	public static final String WebServerStartTransportRegistryProperty = "web.server.start.transport.registry";
 	public static final String WebServerFileSizeMaxProperty = "web.server.file.size.max";
 
 	public static final String SchedulerEnabledProperty = "scheduler.enabled";
@@ -42,7 +43,8 @@ public class ServerConfig extends Properties {
 
 	private final boolean webServerStartApplicationServer;
 	private final boolean webServerStartAuthorityCenter;
-	private final boolean webServerStartTransportServer;
+	private final boolean webServerStartTransportService;
+	private final boolean webServerStartTransportRegistry;
 	private final int webServerFileSizeMax;
 
 	private final boolean schedulerEnabled;
@@ -68,7 +70,8 @@ public class ServerConfig extends Properties {
 
 		webServerStartApplicationServer = getProperty(WebServerStartApplicationServerProperty, true);
 		webServerStartAuthorityCenter = getProperty(WebServerStartAuthorityCenterProperty, true);
-		webServerStartTransportServer = getProperty(WebServerStartTransportServerProperty, true);
+		webServerStartTransportService = getProperty(WebServerStartTransportServiceProperty, true);
+		webServerStartTransportRegistry = getProperty(WebServerStartTransportRegistryProperty, false);
 		webServerFileSizeMax = getProperty(WebServerFileSizeMaxProperty, 5);
 
 		traceSql = getProperty(TraceSqlProperty, false);
@@ -146,8 +149,12 @@ public class ServerConfig extends Properties {
 		return webServerStartAuthorityCenter;
 	}
 
-	public final boolean webServerStartTransportServer() {
-		return webServerStartTransportServer;
+	public final boolean webServerStartTransportService() {
+		return webServerStartTransportService;
+	}
+
+	public final boolean webServerStartTransportRegistry() {
+		return webServerStartTransportRegistry;
 	}
 
 	public final int webServerFileSizeMax() {
