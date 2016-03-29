@@ -1,12 +1,14 @@
 package org.zenframework.z8.server.base.view.command;
 
+import java.util.Collection;
+
 import org.zenframework.z8.server.base.model.command.IParameter;
 import org.zenframework.z8.server.base.query.Query;
 import org.zenframework.z8.server.base.table.value.Field;
 import org.zenframework.z8.server.db.FieldType;
 import org.zenframework.z8.server.json.Json;
+import org.zenframework.z8.server.json.JsonWriter;
 import org.zenframework.z8.server.json.parser.JsonArray;
-import org.zenframework.z8.server.json.parser.JsonObject;
 import org.zenframework.z8.server.request.INamedObject;
 import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.runtime.OBJECT;
@@ -43,7 +45,7 @@ public class Parameter extends OBJECT implements IParameter {
     public string text = new string();
 
     private FieldType type = FieldType.None;
-    private Object value = new string();
+    private Object value = new string(); // primary or  RCollection<primary>
 
     private String queryId = null;
     private String fieldId = null;
@@ -143,15 +145,23 @@ public class Parameter extends OBJECT implements IParameter {
         throw new RuntimeException("Unsupported parameter type: '" + type + "'");
     }
 
-    @Override
-    public void write(JsonObject writer) {
-        writer.put(Json.id, text);
-        writer.put(Json.text, text);
-        writer.put(Json.serverType, getType().toString());
-        writer.put(Json.value, value);
+	@Override
+    @SuppressWarnings("unchecked")
+    public void write(JsonWriter writer) {
+        writer.writeProperty(Json.id, text);
+        writer.writeProperty(Json.text, text);
+        writer.writeProperty(Json.serverType, getType().toString());
+        
+        if(value instanceof RCollection) {
+        	writer.startArray(Json.value);
+        	for(primary item : (Collection<primary>)value)
+        		writer.write(item);
+        	writer.finishArray();
+        } else
+        	writer.writeProperty(Json.value, (primary)value);
 
-        writer.put(Json.queryId, queryId);
-        writer.put(Json.fieldId, fieldId);
+        writer.writeProperty(Json.queryId, queryId);
+        writer.writeProperty(Json.fieldId, fieldId);
     }
 
     @SuppressWarnings("rawtypes")
