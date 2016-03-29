@@ -1,7 +1,5 @@
 package org.zenframework.z8.server.engine;
 
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.rmi.RemoteException;
 import java.util.Collection;
 import java.util.Collections;
@@ -46,9 +44,9 @@ public class TransportService extends RmiServer implements ITransportService {
 	}
 
 	@Override
-	public void checkRegistration(String selfAddress, String transportCentralRegistry) throws RemoteException {
+	public void checkRegistration(String selfAddress) throws RemoteException {
 		if (!registered.contains(selfAddress)) {
-			new Registrator(selfAddress, transportCentralRegistry).start();
+			new Registrator(selfAddress).start();
 		}
 	}
 
@@ -64,36 +62,30 @@ public class TransportService extends RmiServer implements ITransportService {
 	private static class Registrator extends Thread {
 
 		final String address;
-		final String transportCentralRegistry;
 
-		Registrator(String address, String transportCentralRegistry) {
+		Registrator(String address) {
 			super("TransportRegistrator-" + address);
 			this.address = address;
-			this.transportCentralRegistry = transportCentralRegistry;
 			setDaemon(true);
 		}
 
 		@Override
 		public void run() {
-			try {
-				URI transportRegistryUri = new URI(transportCentralRegistry);
-				while (true) {
+			while (true) {
+				try {
+					Rmi.get(ITransportRegistry.class, Rmi.getConfig().getTransportRegistryHost(),
+							Rmi.getConfig().getTransportRegistryPort()).registerTransportServer(address,
+							Rmi.getConfig().getRmiRegistryPort());
+					break;
+				} catch (Exception e) {
+					LOG.debug("Can't register transport server for '" + address + "'. Retrying...", e);
 					try {
-						Rmi.get(ITransportRegistry.class, transportRegistryUri).registerTransportServer(address,
-								Rmi.getConfig().getRmiRegistryPort());
+						Thread.sleep(10000);
+					} catch (InterruptedException e1) {
+						LOG.error("Can't register transport server for '" + address + "'. Thread interrupted", e1);
 						break;
-					} catch (Exception e) {
-						LOG.debug("Can't register transport server for '" + address + "'. Retrying...", e);
-						try {
-							Thread.sleep(10000);
-						} catch (InterruptedException e1) {
-							LOG.error("Can't register transport server for '" + address + "'. Thread interrupted", e1);
-							break;
-						}
 					}
 				}
-			} catch (URISyntaxException e) {
-				LOG.error("Can't register address '" + address + "'", e);
 			}
 		}
 

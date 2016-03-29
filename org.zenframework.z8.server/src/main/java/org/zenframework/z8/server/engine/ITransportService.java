@@ -6,7 +6,7 @@ import org.zenframework.z8.server.ie.Message;
 
 public interface ITransportService extends IServer {
 
-	void checkRegistration(String selfAddress, String transportCentralRegistry) throws RemoteException;
+	void checkRegistration(String selfAddress) throws RemoteException;
 
 	void sendMessage(Message message) throws RemoteException;
 

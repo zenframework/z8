@@ -1,6 +1,6 @@
 package org.zenframework.z8.server.ie;
 
-import java.net.URI;
+import java.rmi.RemoteException;
 import java.util.Arrays;
 import java.util.List;
 
@@ -46,11 +46,8 @@ public class TransportProcedure extends Procedure {
 
 		@Override
 		public void onPropertyChange(String key, String value) {
-			if (ServerRuntime.PreserveExportMessagesProperty.equalsKey(key)) {
+			if (ServerRuntime.PreserveExportMessagesProperty.equalsKey(key))
 				preserveExportMessages = Boolean.parseBoolean(value);
-			} else if (ServerRuntime.TransportCentralRegistryProperty.equalsKey(key)) {
-				transportCentralRegistry = value;
-			}
 		}
 
 	}
@@ -61,8 +58,6 @@ public class TransportProcedure extends Procedure {
 
 	private static volatile boolean preserveExportMessages = Boolean.parseBoolean(Properties
 			.getProperty(ServerRuntime.PreserveExportMessagesProperty));
-	private static volatile String transportCentralRegistry = Properties
-			.getProperty(ServerRuntime.TransportCentralRegistryProperty);
 
 	protected final TransportContext.CLASS<TransportContext> context = new TransportContext.CLASS<TransportContext>();
 	protected final TransportEngine engine = TransportEngine.getInstance();
@@ -83,16 +78,21 @@ public class TransportProcedure extends Procedure {
 
 		String selfAddress = context.get().check().getProperty(TransportContext.SelfAddressProperty);
 		Connection connection = ConnectionManager.get();
+
 		final ExportMessages messages = ExportMessages.instance();
 		TransportRoutes transportRoutes = null;
 		Files filesTable = Files.instance();
 
-		if (transportCentralRegistry != null) {
+		final String transportRegistryHost = Rmi.getConfig().getTransportRegistryHost();
+		final int transportRegistryPort = Rmi.getConfig().getTransportRegistryPort();
+
+		if (!transportRegistryHost.isEmpty()) {
 			try {
-				Rmi.get(ITransportService.class).checkRegistration(selfAddress, transportCentralRegistry);
+				Rmi.get(ITransportService.class).checkRegistration(selfAddress);
 			} catch (Exception e) {
-				LOG.error("Can't check transport server registrationa for '" + selfAddress + "' in central '"
-						+ transportCentralRegistry + "'", e);
+				LOG.error("Can't check transport server registrationa for '" + selfAddress + "' in central registry '"
+						+ Rmi.getConfig().getTransportRegistryHost() + ':' + Rmi.getConfig().getTransportRegistryPort()
+						+ "'", e);
 			}
 		} else {
 			transportRoutes = TransportRoutes.instance();
@@ -148,9 +148,9 @@ public class TransportProcedure extends Procedure {
 					@Override
 					public String getAddress() {
 						try {
-							return Rmi.get(ITransportRegistry.class, new URI(transportCentralRegistry))
+							return Rmi.get(ITransportRegistry.class, transportRegistryHost, transportRegistryPort)
 									.getTransportServerAddress(getReceiver());
-						} catch (Exception e) {
+						} catch (RemoteException e) {
 							throw new RuntimeException("Can't get transport address for '" + getReceiver() + "'", e);
 						}
 					}

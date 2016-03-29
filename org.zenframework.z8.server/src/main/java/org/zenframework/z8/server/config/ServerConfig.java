@@ -18,6 +18,9 @@ public class ServerConfig extends Properties {
 	public static final String AuthorityCenterPortProperty = "authority.center.port";
 	public static final String AuthorityCenterSessionTimeoutProperty = "authority.center.session.timeout";
 
+	public static final String TransportRegistryHostProperty = "transport.registry.host";
+	public static final String TransportRegistryPortProperty = "transport.registry.port";
+
 	public static final String ApplicationServerIdProperty = "application.server.id";
 
 	public static final String WebServerStartApplicationServerProperty = "web.server.start.application.server";
@@ -35,9 +38,13 @@ public class ServerConfig extends Properties {
 	private final File configFile;
 
 	private final int rmiRegistryPort;
+
 	private final String authorityCenterHost;
 	private final int authorityCenterPort;
 	private final int authorityCenterSessionTimeout;
+
+	private final String transportRegistryHost;
+	private final int transportRegistryPort;
 
 	private final String applicationServerId;
 
@@ -67,6 +74,9 @@ public class ServerConfig extends Properties {
 		authorityCenterHost = getProperty(AuthorityCenterHostProperty, "");
 		authorityCenterPort = getProperty(AuthorityCenterPortProperty, RegistryPortDefault);
 		authorityCenterSessionTimeout = getProperty(AuthorityCenterSessionTimeoutProperty, 24 * 60);
+
+		transportRegistryHost = getProperty(TransportRegistryHostProperty, "");
+		transportRegistryPort = getProperty(TransportRegistryPortProperty, RegistryPortDefault);
 
 		webServerStartApplicationServer = getProperty(WebServerStartApplicationServerProperty, true);
 		webServerStartAuthorityCenter = getProperty(WebServerStartAuthorityCenterProperty, true);
@@ -135,6 +145,14 @@ public class ServerConfig extends Properties {
 
 	public final int getSessionTimeout() {
 		return authorityCenterSessionTimeout;
+	}
+
+	public final String getTransportRegistryHost() {
+		return transportRegistryHost;
+	}
+
+	public final int getTransportRegistryPort() {
+		return transportRegistryPort;
 	}
 
 	public final boolean getTraceSql() {

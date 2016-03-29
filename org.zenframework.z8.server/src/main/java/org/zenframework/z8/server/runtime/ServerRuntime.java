@@ -22,8 +22,6 @@ public class ServerRuntime extends AbstractRuntime {
 	public static final Property DbSchemeControlSumProperty = new Property("C0CDFF6D-9357-41FA-94B1-61D131CC0C09",
 			"z8.database.schemeControlSum", "000.000.0000", "Контрольная сумма схемы базы данных");
 
-	public static final Property TransportCentralRegistryProperty = new Property("43701372-20FA-4F90-81D2-0E9C27C9FA29",
-			"z8.transport.centralRegistry", "", "URL центра регистрации транспортных серверов");
 	public static final Property PreserveExportMessagesProperty = new Property("8D9C727A-34FC-4DCD-9AB0-5A2AF8E676E0",
 			"z8.transport.preserveExportMessages", "false", "Сохранять локальную очередь экспортируемых сообщений");
 	public static final Property EnableProtocolsProperty = new Property("222A95B9-05BC-4AF3-8425-323D8B1A1B73",
@@ -87,7 +85,6 @@ public class ServerRuntime extends AbstractRuntime {
 		addJob(new TransportProcedure.CLASS<TransportProcedure>(null));
 		addJob(new BridgeProcedure.CLASS<BridgeProcedure>(null));
 
-		addProperty(TransportCentralRegistryProperty);
 		addProperty(DbSchemeControlSumProperty);
 		addProperty(PreserveExportMessagesProperty);
 		addProperty(EnableProtocolsProperty);
