@@ -12,6 +12,8 @@ public class ServerConfig extends Properties {
 
 	public static final String ConfigurationFileName = "project.xml";
 
+	public static final String RmiRegistryPortProperty = "rmi.registry.port";
+
 	public static final String AuthorityCenterHostProperty = "authority.center.host";
 	public static final String AuthorityCenterPortProperty = "authority.center.port";
 	public static final String AuthorityCenterSessionTimeoutProperty = "authority.center.session.timeout";
@@ -20,17 +22,19 @@ public class ServerConfig extends Properties {
 
 	public static final String WebServerStartApplicationServerProperty = "web.server.start.application.server";
 	public static final String WebServerStartAuthorityCenterProperty = "web.server.start.authority.center";
-	public static final String WebServerStartTransportServerProperty = "web.server.start.transport.server";
+	public static final String WebServerStartTransportServiceProperty = "web.server.start.transport.service";
+	public static final String WebServerStartTransportRegistryProperty = "web.server.start.transport.registry";
 	public static final String WebServerFileSizeMaxProperty = "web.server.file.size.max";
 
 	public static final String SchedulerEnabledProperty = "scheduler.enabled";
 
 	public static final String TraceSqlProperty = "trace.sql";
 
-	public static final int RegistryPortDefault = 9999;
+	public static final int RegistryPortDefault = 7852;
 
 	private final File configFile;
 
+	private final int rmiRegistryPort;
 	private final String authorityCenterHost;
 	private final int authorityCenterPort;
 	private final int authorityCenterSessionTimeout;
@@ -39,7 +43,8 @@ public class ServerConfig extends Properties {
 
 	private final boolean webServerStartApplicationServer;
 	private final boolean webServerStartAuthorityCenter;
-	private final boolean webServerStartTransportServer;
+	private final boolean webServerStartTransportService;
+	private final boolean webServerStartTransportRegistry;
 	private final int webServerFileSizeMax;
 
 	private final boolean schedulerEnabled;
@@ -57,13 +62,16 @@ public class ServerConfig extends Properties {
 
 		applicationServerId = getProperty(ApplicationServerIdProperty, guid.create().toString());
 
+		rmiRegistryPort = getProperty(RmiRegistryPortProperty, RegistryPortDefault);
+
 		authorityCenterHost = getProperty(AuthorityCenterHostProperty, "");
 		authorityCenterPort = getProperty(AuthorityCenterPortProperty, RegistryPortDefault);
 		authorityCenterSessionTimeout = getProperty(AuthorityCenterSessionTimeoutProperty, 24 * 60);
 
 		webServerStartApplicationServer = getProperty(WebServerStartApplicationServerProperty, true);
 		webServerStartAuthorityCenter = getProperty(WebServerStartAuthorityCenterProperty, true);
-		webServerStartTransportServer = getProperty(WebServerStartTransportServerProperty, true);
+		webServerStartTransportService = getProperty(WebServerStartTransportServiceProperty, true);
+		webServerStartTransportRegistry = getProperty(WebServerStartTransportRegistryProperty, false);
 		webServerFileSizeMax = getProperty(WebServerFileSizeMaxProperty, 5);
 
 		traceSql = getProperty(TraceSqlProperty, false);
@@ -113,6 +121,10 @@ public class ServerConfig extends Properties {
 		return applicationServerId;
 	}
 
+	public int getRmiRegistryPort() {
+		return rmiRegistryPort;
+	}
+
 	public final String getAuthorityCenterHost() {
 		return authorityCenterHost;
 	}
@@ -137,8 +149,12 @@ public class ServerConfig extends Properties {
 		return webServerStartAuthorityCenter;
 	}
 
-	public final boolean webServerStartTransportServer() {
-		return webServerStartTransportServer;
+	public final boolean webServerStartTransportService() {
+		return webServerStartTransportService;
+	}
+
+	public final boolean webServerStartTransportRegistry() {
+		return webServerStartTransportRegistry;
 	}
 
 	public final int webServerFileSizeMax() {

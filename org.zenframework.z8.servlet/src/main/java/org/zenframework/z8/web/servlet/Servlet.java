@@ -18,7 +18,8 @@ import org.zenframework.z8.server.base.table.system.Properties;
 import org.zenframework.z8.server.config.ServerConfig;
 import org.zenframework.z8.server.engine.ApplicationServer;
 import org.zenframework.z8.server.engine.Rmi;
-import org.zenframework.z8.server.engine.TransportServer;
+import org.zenframework.z8.server.engine.TransportRegistry;
+import org.zenframework.z8.server.engine.TransportService;
 import org.zenframework.z8.server.logs.Trace;
 import org.zenframework.z8.server.types.encoding;
 import org.zenframework.z8.web.server.Adapter;
@@ -32,7 +33,8 @@ public class Servlet extends HttpServlet {
 
 	static private final String ApplicationServerClass = ApplicationServer.class.getCanonicalName();
 	static private final String AuthorityCenterClass = AuthorityCenter.class.getCanonicalName();
-	static private final String TransportServerClass = TransportServer.class.getCanonicalName();
+	static private final String TransportServiceClass = TransportService.class.getCanonicalName();
+	static private final String TransportRegistryClass = TransportRegistry.class.getCanonicalName();
 
 	static private final String Start = "start";
 	static private final String Stop = "stop";
@@ -53,12 +55,12 @@ public class Servlet extends HttpServlet {
 			Rmi.init(config);
 			if (config.webServerStartAuthorityCenter())
 				startServer(AuthorityCenterClass, config);
-
 			if (config.webServerStartApplicationServer())
 				startServer(ApplicationServerClass, config);
-
-			if (config.webServerStartTransportServer())
-				startServer(TransportServerClass, config);
+			if (config.webServerStartTransportService())
+				startServer(TransportServiceClass, config);
+			if (config.webServerStartTransportRegistry())
+				startServer(TransportRegistryClass, config);
 		} catch (Throwable e) {
 			try {
 				Trace.logError(e);
@@ -109,12 +111,12 @@ public class Servlet extends HttpServlet {
 	public void destroy() {
 		if (config.webServerStartApplicationServer())
 			stopServer(ApplicationServerClass, config);
-
 		if (config.webServerStartAuthorityCenter())
 			stopServer(AuthorityCenterClass, config);
-
-		if (config.webServerStartTransportServer())
-			stopServer(TransportServerClass, config);
+		if (config.webServerStartTransportService())
+			stopServer(TransportServiceClass, config);
+		if (config.webServerStartTransportRegistry())
+			stopServer(TransportRegistryClass, config);
 
 		config = null;
 

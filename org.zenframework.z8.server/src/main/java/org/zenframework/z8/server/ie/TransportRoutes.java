@@ -50,16 +50,16 @@ public class TransportRoutes extends Table {
 
 	}
 
-	public class Route {
+	private class RecordRoute extends AbstractRoute {
 
-		public final guid routeId;
-		public final String receiver;
-		public final String protocol;
-		public final String address;
-		public final int priority;
-		public final boolean active;
+		private final guid routeId;
+		private final String receiver;
+		private final String protocol;
+		private final String address;
+		private final int priority;
+		private final boolean active;
 
-		private Route() {
+		private RecordRoute() {
 			this.routeId = recordId();
 			this.receiver = id.get().get().string().get();
 			this.protocol = id1.get().get().string().get();
@@ -68,8 +68,34 @@ public class TransportRoutes extends Table {
 			this.active = TransportRoutes.this.active.get().get().bool().get();
 		}
 
-		public String getTransportUrl() {
-			return IeUtil.getUrl(protocol, address);
+		@Override
+		public guid getRouteId() {
+			return routeId;
+		}
+
+		@Override
+		public String getReceiver() {
+			return receiver;
+		}
+
+		@Override
+		public String getProtocol() {
+			return protocol;
+		}
+
+		@Override
+		public String getAddress() {
+			return address;
+		}
+
+		@Override
+		public int getPriority() {
+			return priority;
+		}
+
+		@Override
+		public boolean isActive() {
+			return active;
 		}
 
 	}
@@ -135,12 +161,12 @@ public class TransportRoutes extends Table {
 		return readFirst(where);
 	}
 
-	public List<Route> readActiveRoutes(String receiver) {
+	public List<AbstractRoute> readActiveRoutes(String receiver) {
 		sort(Arrays.<Field> asList(priority.get()), new And(new Rel(this.id.get(), Operation.Eq, new sql_string(receiver)),
 				this.active.get().sql_bool()));
-		List<Route> routes = new LinkedList<TransportRoutes.Route>();
+		List<AbstractRoute> routes = new LinkedList<AbstractRoute>();
 		while (next()) {
-			routes.add(new Route());
+			routes.add(new RecordRoute());
 		}
 		return routes;
 	}
