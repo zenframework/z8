@@ -8,15 +8,15 @@ import org.zenframework.z8.server.config.ServerConfig;
 import org.zenframework.z8.server.utils.FileKeyValue;
 import org.zenframework.z8.server.utils.IKeyValue;
 
-public class TransportRegistry extends RmiServer implements ITransportRegistry {
+public class TransportCenter extends RmiServer implements ITransportCenter {
 
-	private static TransportRegistry INSTANCE;
+	private static TransportCenter INSTANCE;
 
 	private final IKeyValue<String, String> store = new FileKeyValue(new File(Z8Context.getConfig().getWorkingPath(),
 			"transport-servers.xml"));
 
-	protected TransportRegistry() throws RemoteException {
-		super(ITransportRegistry.class);
+	protected TransportCenter() throws RemoteException {
+		super(ITransportCenter.class);
 	}
 
 	private static final long serialVersionUID = 5894774801318237091L;
@@ -37,7 +37,7 @@ public class TransportRegistry extends RmiServer implements ITransportRegistry {
 
 	public static void start(ServerConfig config) throws RemoteException {
 		if (INSTANCE == null) {
-			INSTANCE = new TransportRegistry();
+			INSTANCE = new TransportCenter();
 			INSTANCE.start();
 		}
 	}

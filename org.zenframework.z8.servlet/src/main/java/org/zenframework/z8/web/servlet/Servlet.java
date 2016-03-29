@@ -20,10 +20,10 @@ import org.zenframework.z8.server.config.ServerConfig;
 import org.zenframework.z8.server.engine.ApplicationServer;
 import org.zenframework.z8.server.engine.IApplicationServer;
 import org.zenframework.z8.server.engine.IAuthorityCenter;
-import org.zenframework.z8.server.engine.ITransportRegistry;
+import org.zenframework.z8.server.engine.ITransportCenter;
 import org.zenframework.z8.server.engine.ITransportService;
 import org.zenframework.z8.server.engine.Rmi;
-import org.zenframework.z8.server.engine.TransportRegistry;
+import org.zenframework.z8.server.engine.TransportCenter;
 import org.zenframework.z8.server.engine.TransportService;
 import org.zenframework.z8.server.engine.Z8Context;
 import org.zenframework.z8.server.logs.Trace;
@@ -40,12 +40,12 @@ public class Servlet extends HttpServlet {
 	static private final String ApplicationServerClass = ApplicationServer.class.getCanonicalName();
 	static private final String AuthorityCenterClass = AuthorityCenter.class.getCanonicalName();
 	static private final String TransportServiceClass = TransportService.class.getCanonicalName();
-	static private final String TransportRegistryClass = TransportRegistry.class.getCanonicalName();
+	static private final String TransportRegistryClass = TransportCenter.class.getCanonicalName();
 
 	static private final String ApplicationServerName = Rmi.getName(IApplicationServer.class);
 	static private final String AuthorityCenterName = Rmi.getName(IAuthorityCenter.class);
 	static private final String TransportServiceName = Rmi.getName(ITransportService.class);
-	static private final String TransportRegistryName = Rmi.getName(ITransportRegistry.class);
+	static private final String TransportRegistryName = Rmi.getName(ITransportCenter.class);
 
 	static private final String StartMethod = "start";
 
@@ -70,7 +70,7 @@ public class Servlet extends HttpServlet {
 				startServer(ApplicationServerClass, config);
 			if (config.webServerStartTransportService())
 				startServer(TransportServiceClass, config);
-			if (config.webServerStartTransportRegistry())
+			if (config.webServerStartTransportCenter())
 				startServer(TransportRegistryClass, config);
 		} catch (Throwable e) {
 			Trace.logError(e);
@@ -121,7 +121,7 @@ public class Servlet extends HttpServlet {
 			stopServer(AuthorityCenterName, config);
 		if (config.webServerStartTransportService())
 			stopServer(TransportServiceName, config);
-		if (config.webServerStartTransportRegistry())
+		if (config.webServerStartTransportCenter())
 			stopServer(TransportRegistryName, config);
 
 		config = null;

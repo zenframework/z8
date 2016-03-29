@@ -13,7 +13,7 @@ import org.zenframework.z8.server.base.view.command.Parameter;
 import org.zenframework.z8.server.db.Connection;
 import org.zenframework.z8.server.db.ConnectionManager;
 import org.zenframework.z8.server.engine.ApplicationServer;
-import org.zenframework.z8.server.engine.ITransportRegistry;
+import org.zenframework.z8.server.engine.ITransportCenter;
 import org.zenframework.z8.server.engine.ITransportService;
 import org.zenframework.z8.server.engine.Rmi;
 import org.zenframework.z8.server.engine.Z8Context;
@@ -84,16 +84,16 @@ public class TransportProcedure extends Procedure {
 		TransportRoutes transportRoutes = null;
 		Files filesTable = Files.instance();
 
-		final String transportRegistryHost = Z8Context.getConfig().getTransportRegistryHost();
-		final int transportRegistryPort = Z8Context.getConfig().getTransportRegistryPort();
+		final String transportRegistryHost = Z8Context.getConfig().getTransportCenterHost();
+		final int transportRegistryPort = Z8Context.getConfig().getTransportCenterPort();
 
 		if (!transportRegistryHost.isEmpty()) {
 			try {
 				Rmi.get(ITransportService.class).checkRegistration(selfAddress);
 			} catch (Exception e) {
 				LOG.error("Can't check transport server registrationa for '" + selfAddress + "' in central registry '"
-						+ Z8Context.getConfig().getTransportRegistryHost() + ':'
-						+ Z8Context.getConfig().getTransportRegistryPort() + "'", e);
+						+ Z8Context.getConfig().getTransportCenterHost() + ':'
+						+ Z8Context.getConfig().getTransportCenterPort() + "'", e);
 			}
 		} else {
 			transportRoutes = TransportRoutes.instance();
@@ -149,7 +149,7 @@ public class TransportProcedure extends Procedure {
 					@Override
 					public String getAddress() {
 						try {
-							return Rmi.get(ITransportRegistry.class, transportRegistryHost, transportRegistryPort)
+							return Rmi.get(ITransportCenter.class, transportRegistryHost, transportRegistryPort)
 									.getTransportServerAddress(getReceiver());
 						} catch (RemoteException e) {
 							throw new RuntimeException("Can't get transport address for '" + getReceiver() + "'", e);
