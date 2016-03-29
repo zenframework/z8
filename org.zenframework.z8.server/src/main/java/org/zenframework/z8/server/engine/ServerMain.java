@@ -16,7 +16,8 @@ public final class ServerMain {
 
 		authcenter("org.zenframework.z8.server.engine.IAuthorityCenter", "org.zenframework.z8.auth.AuthorityCenter"),
 		appserver("org.zenframework.z8.server.engine.IApplicationServer", "org.zenframework.z8.server.engine.ApplicationServer"),
-		transport("org.zenframework.z8.server.engine.ITransportServer", "org.zenframework.z8.server.engine.TransportServer");
+		tservice("org.zenframework.z8.server.engine.ITransportService", "org.zenframework.z8.server.engine.TransportService"),
+		tcenter("org.zenframework.z8.server.engine.ITransportCenter", "org.zenframework.z8.server.engine.TransportCenter");
 
 		final String interfaceName;
 		final String className;

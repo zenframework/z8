@@ -31,7 +31,6 @@ public class ConverterAdapter extends Adapter {
 
 	public ConverterAdapter(Servlet servlet) {
 		super(servlet);
-		FileConverter.startOfficeManager();
 	}
 
 	@Override

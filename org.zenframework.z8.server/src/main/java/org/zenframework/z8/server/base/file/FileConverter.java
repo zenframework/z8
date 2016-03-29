@@ -83,15 +83,11 @@ public class FileConverter {
 		return txtExtensions.contains(extension);
 	}
 
-	public static void startOfficeManager() {
-		startOfficeManager(Z8Context.getConfig().getOfficeHome());
-	}
-
-	private static void startOfficeManager(String officeHome) {
+	private static void startOfficeManager() {
 		if (officeManager == null) {
 			try {
-				officeManager = new DefaultOfficeManagerConfiguration().setOfficeHome(officeHome).setPortNumber(OFFICE_PORT)
-						.buildOfficeManager();
+				officeManager = new DefaultOfficeManagerConfiguration().setOfficeHome(Z8Context.getConfig().getOfficeHome())
+						.setPortNumber(OFFICE_PORT).buildOfficeManager();
 				officeManager.start();
 			} catch (Throwable e) {
 				LOG.error("Could not start office manager", e);
@@ -140,6 +136,7 @@ public class FileConverter {
 	}
 
 	private OfficeDocumentConverter getOfficeDocumentConverter() {
+		startOfficeManager();
 		return new OfficeDocumentConverter(officeManager);
 	}
 

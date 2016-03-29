@@ -5,7 +5,6 @@ import java.lang.management.ManagementFactory;
 import java.lang.management.RuntimeMXBean;
 import java.rmi.RemoteException;
 
-import org.zenframework.z8.server.base.file.FileConverter;
 import org.zenframework.z8.server.base.file.FileInfo;
 import org.zenframework.z8.server.base.job.scheduler.Scheduler;
 import org.zenframework.z8.server.base.table.system.Files;
@@ -114,7 +113,6 @@ public class ApplicationServer extends RmiServer implements IApplicationServer {
 			INSTANCE = new ApplicationServer();
 			INSTANCE.start();
 			Scheduler.start();
-			FileConverter.startOfficeManager();
 		}
 	}
 
