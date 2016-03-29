@@ -3,6 +3,7 @@ package org.zenframework.z8.web.servlet;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Method;
+import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -17,6 +18,10 @@ import org.zenframework.z8.auth.AuthorityCenter;
 import org.zenframework.z8.server.base.table.system.Properties;
 import org.zenframework.z8.server.config.ServerConfig;
 import org.zenframework.z8.server.engine.ApplicationServer;
+import org.zenframework.z8.server.engine.IApplicationServer;
+import org.zenframework.z8.server.engine.IAuthorityCenter;
+import org.zenframework.z8.server.engine.ITransportRegistry;
+import org.zenframework.z8.server.engine.ITransportService;
 import org.zenframework.z8.server.engine.Rmi;
 import org.zenframework.z8.server.engine.TransportRegistry;
 import org.zenframework.z8.server.engine.TransportService;
@@ -36,8 +41,12 @@ public class Servlet extends HttpServlet {
 	static private final String TransportServiceClass = TransportService.class.getCanonicalName();
 	static private final String TransportRegistryClass = TransportRegistry.class.getCanonicalName();
 
-	static private final String Start = "start";
-	static private final String Stop = "stop";
+	static private final String ApplicationServerName = Rmi.getName(IApplicationServer.class);
+	static private final String AuthorityCenterName = Rmi.getName(IAuthorityCenter.class);
+	static private final String TransportServiceName = Rmi.getName(ITransportService.class);
+	static private final String TransportRegistryName = Rmi.getName(ITransportRegistry.class);
+
+	static private final String StartMethod = "start";
 
 	private final List<Adapter> adapters = new ArrayList<Adapter>();
 	private ServerConfig config;
@@ -88,35 +97,35 @@ public class Servlet extends HttpServlet {
 		adapter.service(request, response);
 	}
 
-	private void startServer(String server, ServerConfig options) {
-		call(server, Start, options);
-	}
-
-	private void stopServer(String server, ServerConfig options) {
-		call(server, Stop, options);
-	}
-
-	private void call(String className, String methodName, ServerConfig options) {
+	private void startServer(String className, ServerConfig options) {
 		try {
 			ClassLoader loader = getClass().getClassLoader();
 			Class<? extends Object> cls = loader.loadClass(className);
-			Method method = cls.getDeclaredMethod(methodName, ServerConfig.class);
+			Method method = cls.getDeclaredMethod(StartMethod, ServerConfig.class);
 			method.invoke(null, options);
 		} catch (Exception e) {
-			Trace.logError(e);
+			Trace.logError("Can't start server", e);
+		}
+	}
+
+	private void stopServer(String server, ServerConfig options) {
+		try {
+			Rmi.get(server).stop();
+		} catch (RemoteException e) {
+			Trace.logError("Can't stop server", e);
 		}
 	}
 
 	@Override
 	public void destroy() {
 		if (config.webServerStartApplicationServer())
-			stopServer(ApplicationServerClass, config);
+			stopServer(ApplicationServerName, config);
 		if (config.webServerStartAuthorityCenter())
-			stopServer(AuthorityCenterClass, config);
+			stopServer(AuthorityCenterName, config);
 		if (config.webServerStartTransportService())
-			stopServer(TransportServiceClass, config);
+			stopServer(TransportServiceName, config);
 		if (config.webServerStartTransportRegistry())
-			stopServer(TransportRegistryClass, config);
+			stopServer(TransportRegistryName, config);
 
 		config = null;
 

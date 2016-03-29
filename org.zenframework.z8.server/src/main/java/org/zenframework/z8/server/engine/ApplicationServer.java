@@ -112,7 +112,6 @@ public class ApplicationServer extends RmiServer implements IApplicationServer {
 			Config = config;
 			Id = config.getServerId();
 			new ApplicationServer().start();
-			;
 			Scheduler.start();
 			FileConverter.startOfficeManager();
 		}

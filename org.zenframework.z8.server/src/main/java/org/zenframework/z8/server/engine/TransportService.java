@@ -33,10 +33,6 @@ public class TransportService extends RmiServer implements ITransportService {
 		}
 	}
 
-	public static TransportService get() {
-		return INSTANCE;
-	}
-
 	@Override
 	public void start() throws RemoteException {
 		super.start();
@@ -46,6 +42,7 @@ public class TransportService extends RmiServer implements ITransportService {
 	@Override
 	public void checkRegistration(String selfAddress) throws RemoteException {
 		if (!registered.contains(selfAddress)) {
+			registered.add(selfAddress);
 			new Registrator(selfAddress).start();
 		}
 	}

@@ -105,32 +105,44 @@ public class Rmi {
 		return get(serverClass, Host, Port);
 	}
 
+	public static IServer get(String name) throws RemoteException {
+		return get(name, Host, Port);
+	}
+
 	@SuppressWarnings("unchecked")
 	public static <T extends IServer> T get(Class<T> serverClass, String host, int port) throws RemoteException {
+		return (T) get(getName(serverClass), host, port);
+	}
+
+	public static IServer get(String name, String host, int port) throws RemoteException {
 		if (host == null || host.isEmpty())
 			host = Host;
 		try {
 			if (Host.equals(host)) {
 				if (Port == port) {
-					T server = (T) Servers.get(url(host, port, getName(serverClass)));
+					IServer server = (IServer) Servers.get(url(host, port, name));
 					if (server != null)
 						return server;
 				}
-				return (T) Registry.lookup(getName(serverClass));
+				return (IServer) Registry.lookup(name);
 			} else {
-				return (T) LocateRegistry.getRegistry(host, port).lookup(getName(serverClass));
+				return (IServer) LocateRegistry.getRegistry(host, port).lookup(name);
 			}
 		} catch (NotBoundException e) {
-			throw new RemoteException("Object " + getName(serverClass) + " is not bound", e);
+			throw new RemoteException("Object " + name + " is not bound", e);
 		}
 	}
 
 	@SuppressWarnings("unchecked")
 	public static <T extends IServer> T get(Class<T> serverClass, URI uri) throws RemoteException {
+		return (T) get(uri);
+	}
+
+	public static IServer get(URI uri) throws RemoteException {
 		try {
-			return (T) LocateRegistry.getRegistry(uri.getHost(), uri.getPort()).lookup(uri.getPath());
+			return (IServer) LocateRegistry.getRegistry(uri.getHost(), uri.getPort()).lookup(uri.getPath());
 		} catch (NotBoundException e) {
-			throw new RemoteException("Object " + getName(serverClass) + " is not bound", e);
+			throw new RemoteException("Object '" + uri + "' is not bound", e);
 		}
 	}
 
