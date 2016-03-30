@@ -10,6 +10,8 @@ public class RmiAddress {
 	public final String id;
 
 	public RmiAddress(String address) throws TransportException {
+		if (address == null)
+			throw new RuntimeException("Incorrect RMI address '" + address + "'");
 		if (address.startsWith("rmi://"))
 			address = address.substring(6);
 		if (address.startsWith("rmi:"))
@@ -22,7 +24,7 @@ public class RmiAddress {
 					portAndId < 0 ? address.length() : portAndId));
 			id = portAndId < 0 ? null : address.substring(portAndId + 1);
 		} catch (Throwable e) {
-			throw new TransportException("Can't parse RMI address '" + address + "'", e);
+			throw new RuntimeException("Incorrect RMI address '" + address + "'", e);
 		}
 	}
 
