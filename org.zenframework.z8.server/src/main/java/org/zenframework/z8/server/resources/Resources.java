@@ -45,7 +45,7 @@ public class Resources {
         String value = props.getProperty(key);
 
         if(value == null) {
-            return "${" + key + "}"; //TODO:throw new ResourceNotFoundException(key);
+            return "${" + key + "}";
         }
 
         return value;
