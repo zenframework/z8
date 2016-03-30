@@ -1,5 +1,7 @@
 package org.zenframework.z8.server.engine;
 
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.rmi.RemoteException;
 import java.util.Collection;
 import java.util.Collections;
@@ -9,6 +11,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.zenframework.z8.server.config.ServerConfig;
 import org.zenframework.z8.server.ie.ExportMessages;
+import org.zenframework.z8.server.ie.IeUtil;
 import org.zenframework.z8.server.ie.Message;
 import org.zenframework.z8.server.logs.Trace;
 
@@ -49,8 +52,15 @@ public class TransportService extends RmiServer implements ITransportService {
 
 	@Override
 	public void sendMessage(Message message) throws RemoteException {
+		String url = getUrl();
 		try {
-			new ExportMessages.CLASS<ExportMessages>().get().addMessage(message, getUrl());
+			URI uri = new URI(url);
+			url = IeUtil.getUrl(uri.getScheme(), uri.getHost());
+		} catch (URISyntaxException e) {
+			LOG.debug("Can't parse URI '" + url + "'", e);
+		}
+		try {
+			new ExportMessages.CLASS<ExportMessages>().get().addMessage(message, url);
 		} catch (Throwable e) {
 			throw new RemoteException("Can't import message '" + message.getId() + "' from '" + message.getSender() + "'", e);
 		}

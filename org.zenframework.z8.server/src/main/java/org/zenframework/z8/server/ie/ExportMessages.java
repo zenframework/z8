@@ -85,9 +85,9 @@ public class ExportMessages extends Table {
 		create(new guid(message.getId()));
 	}
 
-	public void setError(guid messageId, String description) {
+	public void setError(guid messageId, Throwable e) {
 		this.error.get().set(new bool(true));
-		this.description.get().set(new string(description));
+		this.description.get().set(new string(e.getMessage()));
 		update(messageId);
 	}
 

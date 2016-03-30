@@ -119,7 +119,7 @@ public class TransportProcedure extends Procedure {
 			} catch (Throwable e) {
 				connection.rollback();
 				log("Transport messsage '" + messages.recordId() + "' is broken", e);
-				messages.setError(messages.recordId(), e.getMessage());
+				messages.setError(messages.recordId(), e);
 			}
 		}
 
@@ -187,7 +187,7 @@ public class TransportProcedure extends Procedure {
 					break;
 				} catch (Throwable e) {
 					connection.rollback();
-					messages.setError(messages.recordId(), e.getMessage());
+					messages.setError(messages.recordId(), e);
 					log("Can't send messsage '" + messages.recordId() + "'", e);
 					if (e instanceof TransportException) {
 						transport.close();
