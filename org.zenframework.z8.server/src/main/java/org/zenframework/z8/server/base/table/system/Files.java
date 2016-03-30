@@ -3,6 +3,7 @@ package org.zenframework.z8.server.base.table.system;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FilterInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
@@ -24,6 +25,7 @@ import org.zenframework.z8.server.request.Loader;
 import org.zenframework.z8.server.resources.Resources;
 import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.types.guid;
+import org.zenframework.z8.server.types.string;
 import org.zenframework.z8.server.utils.IOUtils;
 
 public class Files extends Table {
@@ -101,7 +103,7 @@ public class Files extends Table {
 		return new Files.CLASS<Files>().get();
 	}
 
-	public static InputStream getInputStream(FileInfo fileInfo) throws IOException {
+	public static NamedInputStream getInputStream(FileInfo fileInfo) throws IOException {
 		Files table = new Files.CLASS<Files>().get();
 
 		SqlToken where = new Rel(table.path.get(), Operation.Eq, fileInfo.path.sql_string());
@@ -109,10 +111,11 @@ public class Files extends Table {
 		guid recordId = fileInfo.id;
 
 		Field file = table.file.get();
-		Collection<Field> fields = Arrays.asList(file);
+		Field name = table.name.get();
+		Collection<Field> fields = Arrays.asList(file, name);
 
 		if(recordId != null && !recordId.isNull() && table.readRecord(recordId, fields) || table.readFirst(fields, where))
-			return file.binary().get();
+			return new NamedInputStream(file.binary().get(), name.string().get());
 
 		return null;
 	}
@@ -127,18 +130,20 @@ public class Files extends Table {
 	private static FileInfo getFileFromStorage(FileInfo fileInfo) throws IOException {
 		File path = new File(Folders.Base, fileInfo.path.get());
 		if(FileInfo.isDefaultWrite()) {
-			InputStream inputStream = !path.exists() ? getInputStream(fileInfo) : new FileInputStream(path);
+			NamedInputStream inputStream = !path.exists() ? getInputStream(fileInfo) : new NamedInputStream(new FileInputStream(path), path.getName());
 			if(inputStream == null)
 				return null;
 			fileInfo.file = FilesFactory.createFileItem(fileInfo.name.get());
 			IOUtils.copy(inputStream, fileInfo.getOutputStream());
+			fileInfo.name = new string(inputStream.getName());
 			return fileInfo;
 		} else {
 			if(!path.exists()) {
-				InputStream inputStream = getInputStream(fileInfo);
+				NamedInputStream inputStream = getInputStream(fileInfo);
 				if(inputStream == null)
 					return null;
 				IOUtils.copy(inputStream, path);
+				fileInfo.name = new string(inputStream.getName());
 			}
 			fileInfo.file = new InputOnlyFileItem(path, fileInfo.name.get());
 			return fileInfo;
@@ -148,18 +153,20 @@ public class Files extends Table {
 	private static FileInfo getFileFromTable(FileInfo fileInfo) throws IOException {
 		File path = new File(Folders.Base, fileInfo.path.get());
 		if(FileInfo.isDefaultWrite()) {
-			InputStream inputStream = !path.exists() ? getTableFieldInputStream(fileInfo) : new FileInputStream(path);
+			NamedInputStream inputStream = !path.exists() ? getTableFieldInputStream(fileInfo) : new NamedInputStream(new FileInputStream(path), path.getName());
 			if(inputStream == null)
 				return null;
 			fileInfo.file = FilesFactory.createFileItem(fileInfo.name.get());
 			IOUtils.copy(inputStream, fileInfo.getOutputStream());
+			fileInfo.name = new string(inputStream.getName());
 			return fileInfo;
 		} else {
 			if(!path.exists()) {
-				InputStream inputStream = getTableFieldInputStream(fileInfo);
+				NamedInputStream inputStream = getTableFieldInputStream(fileInfo);
 				if(inputStream == null)
 					return null;
 				IOUtils.copy(inputStream, path);
+				fileInfo.name = new string(inputStream.getName());
 			}
 			fileInfo.file = new InputOnlyFileItem(path, fileInfo.name.get());
 			return fileInfo;
@@ -167,17 +174,33 @@ public class Files extends Table {
 
 	}
 
-	private static InputStream getTableFieldInputStream(FileInfo fileInfo) throws IOException {
-		File field = new File(fileInfo.path.get());
+	private static NamedInputStream getTableFieldInputStream(FileInfo fileInfo) throws IOException {
+		File fileName = new File(fileInfo.path.get());
+		File field = fileName.getParentFile();
 		File recordId = field.getParentFile();
 		File table = recordId.getParentFile();
 		Query query = (Query)Loader.getInstance(table.getName());
 		Field dataField = query.getFieldByName(field.getName());
 		if(query.readRecord(new guid(recordId.getName()), Arrays.asList(dataField))) {
-			return new ByteArrayInputStream(dataField.get().toString().getBytes());
+			return new NamedInputStream(new ByteArrayInputStream(dataField.get().toString().getBytes()), fileName.getName());
 		} else {
 			throw new IOException("Incorrect path '" + fileInfo.path + "'");
 		}
+	}
+
+	public static class NamedInputStream extends FilterInputStream {
+
+		private final String name;
+
+		private NamedInputStream(InputStream in, String name) {
+			super(in);
+			this.name = name;
+		}
+
+		public String getName() {
+			return name;
+		}
+
 	}
 
 }

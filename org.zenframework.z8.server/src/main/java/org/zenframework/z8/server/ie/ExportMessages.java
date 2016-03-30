@@ -198,7 +198,7 @@ public class ExportMessages extends Table {
 	private String getAttachment(UUID id) {
 		JsonArray writer = new JsonArray();
 		JsonObject obj = new JsonObject();
-		String fileName = "table/org.zenframework.z8.server.ie.ExportMessages/" + id + "/Xml";
+		String fileName = "table/org.zenframework.z8.server.ie.ExportMessages/" + id + "/Xml/message.xml";
 		obj.put(Json.size, 0);
 		obj.put(Json.time, new datetime());
 		obj.put(Json.name, "message.xml");

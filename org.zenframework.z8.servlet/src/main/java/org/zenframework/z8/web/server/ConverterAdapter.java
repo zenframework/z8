@@ -58,12 +58,14 @@ public class ConverterAdapter extends Adapter {
 
 		boolean preview = request.getParameter("preview") != null;
 
+		FileInfo fileInfo = null;
+		
 		if(!absolutePath.exists()) {
-			FileInfo fileInfo = new FileInfo();
+			fileInfo = new FileInfo();
 			fileInfo.path = new string(relativePath.toString());
 			fileInfo.name = new string(relativePath.getName());
 			fileInfo.id = new guid(parameters.get(Json.recordId));
-			downloadFile(session.getServerInfo(), fileInfo, absolutePath);
+			fileInfo = downloadFile(session.getServerInfo(), fileInfo, absolutePath);
 		}
 
 		if(preview) {
@@ -77,7 +79,8 @@ public class ConverterAdapter extends Adapter {
 				response.addHeader("Content-Type", getContentType(absolutePath));
 		} else {
 			response.addHeader("Content-Type", "application/*");
-			response.addHeader("Content-Disposition", getContentDisposition(request, absolutePath.getName()));
+			String name = fileInfo != null ? fileInfo.name.get() : absolutePath.getName();
+			response.addHeader("Content-Disposition", getContentDisposition(request, name));
 		}
 
 		IOUtils.copy(new FileInputStream(absolutePath), response.getOutputStream());
@@ -97,7 +100,7 @@ public class ConverterAdapter extends Adapter {
 		return contentType;
 	}
 
-	private void downloadFile(ServerInfo serverInfo, FileInfo fileInfo, File path) throws IOException {
+	private FileInfo downloadFile(ServerInfo serverInfo, FileInfo fileInfo, File path) throws IOException {
 		FileInfo downloadedFileInfo = serverInfo.getApplicationServer().download(fileInfo);
 
 		/* 
@@ -111,6 +114,8 @@ public class ConverterAdapter extends Adapter {
 			else
 				throw new IOException("File '" + fileInfo.path.get() + "' does not exist");
 		}
+		
+		return downloadedFileInfo;
 	}
 
 	public File getConvertedPdf(File relativePath, File srcFile) throws IOException {
