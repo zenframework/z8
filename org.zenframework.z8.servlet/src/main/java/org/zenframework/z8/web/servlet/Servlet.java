@@ -66,12 +66,12 @@ public class Servlet extends HttpServlet {
 			Z8Context.init(config);
 			if (config.webServerStartAuthorityCenter())
 				startServer(AuthorityCenterClass, config);
+			if (config.webServerStartTransportCenter())
+				startServer(TransportRegistryClass, config);
 			if (config.webServerStartApplicationServer())
 				startServer(ApplicationServerClass, config);
 			if (config.webServerStartTransportService())
 				startServer(TransportServiceClass, config);
-			if (config.webServerStartTransportCenter())
-				startServer(TransportRegistryClass, config);
 		} catch (Throwable e) {
 			Trace.logError(e);
 			destroy();
