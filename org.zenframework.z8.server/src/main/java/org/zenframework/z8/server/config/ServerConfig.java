@@ -19,9 +19,6 @@ public class ServerConfig extends Properties {
 	public static final String AuthorityCenterPortProperty = "authority.center.port";
 	public static final String AuthorityCenterSessionTimeoutProperty = "authority.center.session.timeout";
 
-	public static final String TransportCenterHostProperty = "transport.center.host";
-	public static final String TransportCenterPortProperty = "transport.center.port";
-
 	public static final String ApplicationServerIdProperty = "application.server.id";
 
 	public static final String WebServerStartApplicationServerProperty = "web.server.start.application.server";
@@ -45,9 +42,6 @@ public class ServerConfig extends Properties {
 	private final String authorityCenterHost;
 	private final int authorityCenterPort;
 	private final int authorityCenterSessionTimeout;
-
-	private final String transportCenterHost;
-	private final int transportCenterPort;
 
 	private final String applicationServerId;
 
@@ -79,9 +73,6 @@ public class ServerConfig extends Properties {
 		authorityCenterHost = getProperty(AuthorityCenterHostProperty, "");
 		authorityCenterPort = getProperty(AuthorityCenterPortProperty, RegistryPortDefault);
 		authorityCenterSessionTimeout = getProperty(AuthorityCenterSessionTimeoutProperty, 24 * 60);
-
-		transportCenterHost = getProperty(TransportCenterHostProperty, "");
-		transportCenterPort = getProperty(TransportCenterPortProperty, RegistryPortDefault);
 
 		webServerStartApplicationServer = getProperty(WebServerStartApplicationServerProperty, true);
 		webServerStartAuthorityCenter = getProperty(WebServerStartAuthorityCenterProperty, true);
@@ -156,14 +147,6 @@ public class ServerConfig extends Properties {
 
 	public final int getSessionTimeout() {
 		return authorityCenterSessionTimeout;
-	}
-
-	public final String getTransportCenterHost() {
-		return transportCenterHost;
-	}
-
-	public final int getTransportCenterPort() {
-		return transportCenterPort;
 	}
 
 	public final boolean getTraceSql() {

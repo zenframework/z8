@@ -1,7 +1,6 @@
 package org.zenframework.z8.server.engine;
 
 import java.net.InetAddress;
-import java.net.URI;
 import java.net.UnknownHostException;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
@@ -38,7 +37,11 @@ public class Rmi {
 	}
 
 	public static String url(String host, int port, String name) {
-		return "rmi://" + host + ":" + port + "/" + name;
+		StringBuilder str = new StringBuilder();
+		str.append("rmi://").append(host).append(':').append(port).append('/');
+		if (name != null)
+			str.append(name);
+		return str.toString();
 	}
 
 	public static String getName(Class<?> cls) {
@@ -101,15 +104,21 @@ public class Rmi {
 	}
 
 	@SuppressWarnings("unchecked")
-	public static <T extends IServer> T get(Class<T> serverClass, URI uri) throws RemoteException {
-		return (T) get(uri);
+	public static <T extends IServer> T get(Class<T> serverClass, RmiAddress rmiAddress) throws RemoteException {
+		try {
+			return (T) LocateRegistry.getRegistry(rmiAddress.getHost(), rmiAddress.getPort()).lookup(
+					getName(serverClass));
+		} catch (NotBoundException e) {
+			throw new RemoteException("Object '" + rmiAddress.getName() + "' is not bound", e);
+		}
 	}
 
-	public static IServer get(URI uri) throws RemoteException {
+	public static IServer get(RmiAddress rmiAddress) throws RemoteException {
 		try {
-			return (IServer) LocateRegistry.getRegistry(uri.getHost(), uri.getPort()).lookup(uri.getPath());
+			return (IServer) LocateRegistry.getRegistry(rmiAddress.getHost(), rmiAddress.getPort()).lookup(
+					rmiAddress.getName());
 		} catch (NotBoundException e) {
-			throw new RemoteException("Object '" + uri + "' is not bound", e);
+			throw new RemoteException("Object '" + rmiAddress.getName() + "' is not bound", e);
 		}
 	}
 

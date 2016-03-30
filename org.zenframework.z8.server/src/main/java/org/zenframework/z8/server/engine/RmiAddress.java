@@ -1,15 +1,14 @@
 package org.zenframework.z8.server.engine;
 
 import org.zenframework.z8.server.config.ServerConfig;
-import org.zenframework.z8.server.ie.TransportException;
 
 public class RmiAddress {
 
-	public final String host;
-	public final int port;
-	public final String id;
+	private final String host;
+	private final int port;
+	private final String name;
 
-	public RmiAddress(String address) throws TransportException {
+	public RmiAddress(String address) {
 		if (address == null)
 			throw new RuntimeException("Incorrect RMI address '" + address + "'");
 		if (address.startsWith("rmi://"))
@@ -18,19 +17,31 @@ public class RmiAddress {
 			address = address.substring(4);
 		try {
 			int hostAndPort = address.indexOf(':');
-			int portAndId = address.indexOf('/');
-			host = address.substring(0, hostAndPort < 0 ? (portAndId < 0 ? address.length() : portAndId) : hostAndPort);
+			int portAndName = address.indexOf('/');
+			host = address.substring(0, hostAndPort < 0 ? (portAndName < 0 ? address.length() : portAndName) : hostAndPort);
 			port = hostAndPort < 0 ? ServerConfig.RegistryPortDefault : Integer.parseInt(address.substring(hostAndPort + 1,
-					portAndId < 0 ? address.length() : portAndId));
-			id = portAndId < 0 ? null : address.substring(portAndId + 1);
+					portAndName < 0 ? address.length() : portAndName));
+			name = portAndName < 0 ? null : address.substring(portAndName + 1);
 		} catch (Throwable e) {
 			throw new RuntimeException("Incorrect RMI address '" + address + "'", e);
 		}
 	}
 
+	public String getHost() {
+		return host;
+	}
+
+	public int getPort() {
+		return port;
+	}
+
+	public String getName() {
+		return name;
+	}
+
 	@Override
 	public String toString() {
-		return Rmi.url(host, port, id);
+		return Rmi.url(host, port, name);
 	}
 
 }

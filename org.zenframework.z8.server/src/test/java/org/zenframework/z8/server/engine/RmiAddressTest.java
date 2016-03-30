@@ -20,11 +20,11 @@ public class RmiAddressTest extends TestCase {
 		assertRmiAddress("qweqwe", "qweqwe", ServerConfig.RegistryPortDefault, null);
 	}
 
-	private static void assertRmiAddress(String address, String host, int port, String id) throws TransportException {
+	private static void assertRmiAddress(String address, String host, int port, String name) throws TransportException {
 		RmiAddress rmiAddress = new RmiAddress(address);
-		assertEquals(host, rmiAddress.host);
-		assertEquals(port, rmiAddress.port);
-		assertEquals(id, rmiAddress.id);
+		assertEquals(host, rmiAddress.getHost());
+		assertEquals(port, rmiAddress.getPort());
+		assertEquals(name, rmiAddress.getName());
 	}
 
 }

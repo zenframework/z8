@@ -16,7 +16,7 @@ import org.zenframework.z8.server.engine.ApplicationServer;
 import org.zenframework.z8.server.engine.ITransportCenter;
 import org.zenframework.z8.server.engine.ITransportService;
 import org.zenframework.z8.server.engine.Rmi;
-import org.zenframework.z8.server.engine.Z8Context;
+import org.zenframework.z8.server.engine.RmiAddress;
 import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.runtime.RCollection;
 import org.zenframework.z8.server.runtime.ServerRuntime;
@@ -84,16 +84,14 @@ public class TransportProcedure extends Procedure {
 		TransportRoutes transportRoutes = null;
 		Files filesTable = Files.instance();
 
-		final String transportRegistryHost = Z8Context.getConfig().getTransportCenterHost();
-		final int transportRegistryPort = Z8Context.getConfig().getTransportCenterPort();
+		final String transportRegistry = Properties.getProperty(ServerRuntime.TransportCenterAddressProperty).trim();
 
-		if (!transportRegistryHost.isEmpty()) {
+		if (!transportRegistry.isEmpty()) {
 			try {
 				Rmi.get(ITransportService.class).checkRegistration(selfAddress);
 			} catch (Exception e) {
-				LOG.error("Can't check transport server registrationa for '" + selfAddress + "' in central registry '"
-						+ Z8Context.getConfig().getTransportCenterHost() + ':'
-						+ Z8Context.getConfig().getTransportCenterPort() + "'", e);
+				LOG.error("Can't check transport server registrationa for '" + selfAddress + "' in transport center '"
+						+ transportRegistry + "'", e);
 			}
 		} else {
 			transportRoutes = TransportRoutes.instance();
@@ -153,7 +151,7 @@ public class TransportProcedure extends Procedure {
 					@Override
 					public String getAddress() {
 						try {
-							return Rmi.get(ITransportCenter.class, transportRegistryHost, transportRegistryPort)
+							return Rmi.get(ITransportCenter.class, new RmiAddress(transportRegistry))
 									.getTransportServerAddress(getReceiver());
 						} catch (RemoteException e) {
 							throw new RuntimeException("Can't get transport address for '" + getReceiver() + "'", e);
