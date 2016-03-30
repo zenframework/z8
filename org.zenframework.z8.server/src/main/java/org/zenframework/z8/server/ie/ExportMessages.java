@@ -105,9 +105,7 @@ public class ExportMessages extends Table {
 		return name.get().get().string().get();
 	}
 
-	public Message.CLASS<Message> readMessage(guid messageId) throws JAXBException {
-		if (!readRecord(messageId, getDataFields()))
-			return null;
+	public Message.CLASS<Message> getMessage() throws JAXBException {
 		Message.CLASS<Message> message = new Message.CLASS<Message>();
 		message.get().setId(recordId().get());
 		message.get().setAddress(getReceiver());
@@ -191,6 +189,10 @@ public class ExportMessages extends Table {
 			ids.add(recordId());
 		}
 		return ids;
+	}
+
+	public boolean readMessage(guid messageId) {
+		return readRecord(messageId, getDataFields());
 	}
 
 	private String getAttachment(UUID id) {

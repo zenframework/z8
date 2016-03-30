@@ -102,8 +102,10 @@ public class TransportProcedure extends Procedure {
 		// Обработка внутренней входящей очереди
 		List<guid> ids = messages.getImportMessages(selfAddress);
 		for (guid id : ids) {
+			if (!messages.readMessage(id))
+				continue;
 			try {
-				Message.CLASS<Message> message = messages.readMessage(id);
+				Message.CLASS<Message> message = messages.getMessage();
 				connection.beginTransaction();
 				beginProcessMessage(messages, null);
 				LOG.debug("Receive IE message [" + message.get().getId() + "] by " + messages.getTransportUrl());
@@ -118,8 +120,8 @@ public class TransportProcedure extends Procedure {
 				connection.commit();
 			} catch (Throwable e) {
 				connection.rollback();
-				log("Transport messsage '" + messages.recordId() + "' is broken", e);
-				messages.setError(messages.recordId(), e);
+				log("Transport messsage '" + id + "' is broken", e);
+				messages.setError(id, e);
 			}
 		}
 
@@ -130,6 +132,8 @@ public class TransportProcedure extends Procedure {
 		}
 
 		for (guid id : ids) {
+			if (!messages.readMessage(id))
+				continue;
 			List<AbstractRoute> routes;
 			if (transportRoutes != null) {
 				routes = transportRoutes.readActiveRoutes(messages.getReceiver());
@@ -178,7 +182,7 @@ public class TransportProcedure extends Procedure {
 				try {
 					connection.beginTransaction();
 					beginProcessMessage(messages, route.getTransportUrl());
-					Message.CLASS<Message> message = messages.readMessage(id);
+					Message.CLASS<Message> message = messages.getMessage();
 					z8_beforeExport(message);
 					transport.send(message.get(), route.getAddress());
 					transport.commit();
@@ -187,8 +191,8 @@ public class TransportProcedure extends Procedure {
 					break;
 				} catch (Throwable e) {
 					connection.rollback();
-					messages.setError(messages.recordId(), e);
-					log("Can't send messsage '" + messages.recordId() + "'", e);
+					messages.setError(id, e);
+					log("Can't send messsage '" + id + "'", e);
 					if (e instanceof TransportException) {
 						transport.close();
 						if (transportRoutes != null) {
