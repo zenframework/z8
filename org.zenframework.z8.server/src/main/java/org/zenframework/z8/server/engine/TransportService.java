@@ -55,7 +55,7 @@ public class TransportService extends RmiServer implements ITransportService {
 		String url = getUrl();
 		try {
 			URI uri = new URI(url);
-			url = IeUtil.getUrl(uri.getScheme(), uri.getHost());
+			url = IeUtil.getUrl(uri.getScheme(), uri.getHost() + ':' + uri.getPort());
 		} catch (URISyntaxException e) {
 			LOG.debug("Can't parse URI '" + url + "'", e);
 		}

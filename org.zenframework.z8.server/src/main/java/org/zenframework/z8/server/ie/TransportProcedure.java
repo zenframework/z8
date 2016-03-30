@@ -100,10 +100,10 @@ public class TransportProcedure extends Procedure {
 		}
 
 		// Обработка внутренней входящей очереди
-		messages.readImportMessages(selfAddress);
-		while (messages.next()) {
+		List<guid> ids = messages.getImportMessages(selfAddress);
+		for (guid id : ids) {
 			try {
-				Message.CLASS<Message> message = messages.getMessage();
+				Message.CLASS<Message> message = messages.readMessage(id);
 				connection.beginTransaction();
 				beginProcessMessage(messages, null);
 				LOG.debug("Receive IE message [" + message.get().getId() + "] by " + messages.getTransportUrl());
@@ -124,12 +124,12 @@ public class TransportProcedure extends Procedure {
 		}
 
 		// Обработка внутренней исходящей очереди
-		messages.readExportMessages(selfAddress);
+		ids = messages.getExportMessages(selfAddress);
 		if (transportRoutes != null) {
 			transportRoutes.checkInactiveRoutes();
 		}
 
-		while (messages.next()) {
+		for (guid id : ids) {
 			List<AbstractRoute> routes;
 			if (transportRoutes != null) {
 				routes = transportRoutes.readActiveRoutes(messages.getReceiver());
@@ -178,7 +178,7 @@ public class TransportProcedure extends Procedure {
 				try {
 					connection.beginTransaction();
 					beginProcessMessage(messages, route.getTransportUrl());
-					Message.CLASS<Message> message = messages.getMessage();
+					Message.CLASS<Message> message = messages.readMessage(id);
 					z8_beforeExport(message);
 					transport.send(message.get(), route.getAddress());
 					transport.commit();

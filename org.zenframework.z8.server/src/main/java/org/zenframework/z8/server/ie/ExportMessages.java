@@ -1,6 +1,8 @@
 package org.zenframework.z8.server.ie;
 
 import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.UUID;
 
 import javax.xml.bind.JAXBException;
@@ -103,7 +105,9 @@ public class ExportMessages extends Table {
 		return name.get().get().string().get();
 	}
 
-	public Message.CLASS<Message> getMessage() throws JAXBException {
+	public Message.CLASS<Message> readMessage(guid messageId) throws JAXBException {
+		if (!readRecord(messageId, getDataFields()))
+			return null;
 		Message.CLASS<Message> message = new Message.CLASS<Message>();
 		message.get().setId(recordId().get());
 		message.get().setAddress(getReceiver());
@@ -140,34 +144,51 @@ public class ExportMessages extends Table {
 		attachment.setName("Attachment");
 		attachment.setIndex("attachment");
 		attachment.get().readOnly = new bool(true);
+
 		registerDataField(ordinal);
 		registerDataField(processed);
 		registerDataField(error);
 		registerDataField(message);
 		registerDataField(attachment);
+
+		registerFormField(ordinal);
+		registerFormField(processed);
+		registerFormField(error);
+		registerFormField(attachment);
 	}
 
 	public static ExportMessages instance() {
 		return new CLASS<ExportMessages>().get();
 	}
 
-	public void readExportMessages(String selfAddress) {
+	public List<guid> getExportMessages(String selfAddress) {
 		SqlToken notProcessedNotError = new And(new Unary(Operation.Not, new SqlField(processed.get())), new Unary(
 				Operation.Not, new SqlField(error.get())));
 		SqlToken fromMeNotForMe = new And(new Rel(id.get(), Operation.Eq, new sql_string(selfAddress)), new Rel(id1.get(),
 				Operation.NotEq, new sql_string(selfAddress)));
-		read(getDataFields(), Arrays.<Field> asList(ordinal.get()), new And(notProcessedNotError, fromMeNotForMe));
+		read(Arrays.<Field> asList(recordId.get()), Arrays.<Field> asList(ordinal.get()), new And(notProcessedNotError,
+				fromMeNotForMe));
+		List<guid> ids = new LinkedList<guid>();
+		while (next()) {
+			ids.add(recordId());
+		}
+		return ids;
 	}
 
-	public void readImportMessages(String selfAddress) {
+	public List<guid> getImportMessages(String selfAddress) {
 		SqlToken notProcessedNotError = new And(new Unary(Operation.Not, new SqlField(processed.get())), new Unary(
 				Operation.Not, new SqlField(error.get())));
 		SqlToken forMe = new Rel(id1.get(), Operation.Eq, new sql_string(selfAddress));
-		read(getDataFields(), Arrays.<Field> asList(ordinal.get()), new And(notProcessedNotError, forMe));
+		read(Arrays.<Field> asList(recordId.get()), Arrays.<Field> asList(ordinal.get()), new And(notProcessedNotError,
+				forMe));
+		List<guid> ids = new LinkedList<guid>();
+		while (next()) {
+			ids.add(recordId());
+		}
+		return ids;
 	}
 
 	private String getAttachment(UUID id) {
-		//file logFile = monitor != null ? monitor.getLog() : null;
 		JsonArray writer = new JsonArray();
 		JsonObject obj = new JsonObject();
 		String fileName = "table/org.zenframework.z8.server.ie.ExportMessages/" + id + "/Xml";
