@@ -28,7 +28,7 @@ import org.zenframework.z8.server.utils.IOUtils;
 
 public class Files extends Table {
 
-	private static final String TABLE_PREFIX = "table/";
+	private static final String TABLE_PREFIX = "table";
 
 	public static final String TableName = "SystemFiles";
 
