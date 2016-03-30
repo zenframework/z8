@@ -15,7 +15,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.zenframework.z8.auth.AuthorityCenter;
-import org.zenframework.z8.server.base.table.system.Properties;
 import org.zenframework.z8.server.config.ServerConfig;
 import org.zenframework.z8.server.engine.ApplicationServer;
 import org.zenframework.z8.server.engine.IApplicationServer;
@@ -60,7 +59,6 @@ public class Servlet extends HttpServlet {
 
 		config = new ServerConfig(context.getRealPath("WEB-INF" + File.separator
 				+ ServerConfig.ConfigurationFileName));
-		Properties.setServerConfig(config);
 
 		try {
 			Z8Context.init(config);

@@ -24,6 +24,7 @@ import org.zenframework.z8.server.db.sql.expressions.Or;
 import org.zenframework.z8.server.db.sql.expressions.Rel;
 import org.zenframework.z8.server.engine.ApplicationServer;
 import org.zenframework.z8.server.engine.Runtime;
+import org.zenframework.z8.server.engine.Z8Context;
 import org.zenframework.z8.server.resources.Resources;
 import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.runtime.RCollection;
@@ -40,8 +41,6 @@ public class Properties extends TreeTable {
 	public static final int PropertyValueMaxLength = 1024;
 
 	private static final Log LOG = LogFactory.getLog(Properties.class);
-
-	private static final ServerConfig Config = null;
 
 	private static final Thread PropertiesUpdater = new Thread() {
 
@@ -130,10 +129,6 @@ public class Properties extends TreeTable {
 		value.get().colspan.set(3);
 		description.get().colspan.set(3);
 		registerDataField(value);
-	}
-
-	public static void setServerConfig(ServerConfig config) {
-
 	}
 
 	public static void setProperty(Property property, String value) {
@@ -260,8 +255,9 @@ public class Properties extends TreeTable {
 	}
 
 	private static String getPropertyFromDb(String key) {
-		if (Config != null) {
-			String value = Config.getProperty(key);
+		ServerConfig config = Z8Context.getConfig();
+		if (config != null) {
+			String value = config.getProperty(key);
 			if (value != null)
 				return value;
 		}

@@ -6,7 +6,6 @@ import org.apache.commons.cli.BasicParser;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.Options;
-import org.zenframework.z8.server.base.table.system.Properties;
 import org.zenframework.z8.server.config.ServerConfig;
 import org.zenframework.z8.server.logs.Trace;
 
@@ -58,8 +57,6 @@ public final class ServerMain {
 			Class<? extends IServer> serverClass = getClass(serverType.className);
 			
 			ServerConfig config = new ServerConfig(cmd.hasOption(ConfigOpt) ? cmd.getOptionValue(ConfigOpt) : null);
-
-			Properties.setServerConfig(config);
 			Z8Context.init(config);
 
 			if (!cmd.hasOption(StopOpt)) {
