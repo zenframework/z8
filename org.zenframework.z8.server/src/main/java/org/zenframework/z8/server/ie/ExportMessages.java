@@ -151,6 +151,11 @@ public class ExportMessages extends Table {
 		registerDataField(message);
 		registerDataField(attachment);
 
+		registerFormField(createdAt);
+		registerFormField(id);
+		registerFormField(id1);
+		registerFormField(name);
+		registerFormField(description);
 		registerFormField(ordinal);
 		registerFormField(processed);
 		registerFormField(error);
