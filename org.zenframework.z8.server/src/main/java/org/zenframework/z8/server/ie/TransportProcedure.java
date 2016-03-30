@@ -187,6 +187,7 @@ public class TransportProcedure extends Procedure {
 					break;
 				} catch (Throwable e) {
 					connection.rollback();
+					messages.setError(messages.recordId(), e.getMessage());
 					log("Can't send messsage '" + messages.recordId() + "'", e);
 					if (e instanceof TransportException) {
 						transport.close();
