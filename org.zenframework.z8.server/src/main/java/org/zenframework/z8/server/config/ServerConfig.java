@@ -2,6 +2,7 @@ package org.zenframework.z8.server.config;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.util.Properties;
 
 import org.zenframework.z8.server.types.guid;
@@ -130,7 +131,11 @@ public class ServerConfig extends Properties {
 	}
 
 	public final File getWorkingPath() {
-		return configFile.getParentFile();
+		try {
+			return configFile.getCanonicalFile().getParentFile();
+		} catch(IOException e) {
+			throw new RuntimeException(e);
+		}
 	}
 
 	public final String getServerId() {
