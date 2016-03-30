@@ -3,6 +3,7 @@ package org.zenframework.z8.server.engine;
 import java.io.File;
 import java.rmi.RemoteException;
 import java.rmi.server.RemoteServer;
+import java.rmi.server.ServerNotActiveException;
 
 import org.zenframework.z8.server.config.ServerConfig;
 import org.zenframework.z8.server.utils.FileKeyValue;
@@ -23,8 +24,16 @@ public class TransportCenter extends RmiServer implements ITransportCenter {
 
 	@Override
 	public void registerTransportServer(String address, int localRegistryPort) throws RemoteException {
+		String clientHost;
 		try {
-			store.set(address, RemoteServer.getClientHost() + ':' + localRegistryPort);
+			// Try detect remote client host
+			clientHost = RemoteServer.getClientHost();
+		} catch (ServerNotActiveException e) {
+			// If ServerNotActiveException, transport center was called locally
+			clientHost = Z8Context.getConfig().getTransportCenterHost();
+		}
+		try {
+			store.set(address, clientHost + ':' + localRegistryPort);
 		} catch (Exception e) {
 			throw new RemoteException("Can't register transport server '" + address + "'", e);
 		}
