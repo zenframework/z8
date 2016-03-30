@@ -118,7 +118,7 @@ public class Files extends Table {
 	}
 
 	public static FileInfo getFile(FileInfo fileInfo) throws IOException {
-		if (fileInfo.path.get().startsWith(TABLE_PREFIX))
+		if(fileInfo.path.get().startsWith(TABLE_PREFIX))
 			return getFileFromTable(fileInfo);
 		else
 			return getFileFromStorage(fileInfo);
@@ -147,17 +147,17 @@ public class Files extends Table {
 
 	private static FileInfo getFileFromTable(FileInfo fileInfo) throws IOException {
 		File path = new File(Folders.Base, fileInfo.path.get());
-		if (FileInfo.isDefaultWrite()) {
+		if(FileInfo.isDefaultWrite()) {
 			InputStream inputStream = !path.exists() ? getTableFieldInputStream(fileInfo) : new FileInputStream(path);
-			if (inputStream == null)
+			if(inputStream == null)
 				return null;
 			fileInfo.file = FilesFactory.createFileItem(fileInfo.name.get());
 			IOUtils.copy(inputStream, fileInfo.getOutputStream());
 			return fileInfo;
 		} else {
-			if (!path.exists()) {
+			if(!path.exists()) {
 				InputStream inputStream = getTableFieldInputStream(fileInfo);
-				if (inputStream == null)
+				if(inputStream == null)
 					return null;
 				IOUtils.copy(inputStream, path);
 			}
@@ -168,12 +168,13 @@ public class Files extends Table {
 	}
 
 	private static InputStream getTableFieldInputStream(FileInfo fileInfo) throws IOException {
-		String path[] = fileInfo.path.get().split("/");
-		if (path.length != 4)
-			throw new IOException("Incorrect path '" + fileInfo.path + "'");
-		Query query = (Query) Loader.getInstance(path[1]);
-		if (query.readRecord(new guid(path[2]))) {
-			return new ByteArrayInputStream(query.getFieldByName(path[3]).get().toString().getBytes());
+		File field = new File(fileInfo.path.get());
+		File recordId = field.getParentFile();
+		File table = recordId.getParentFile();
+		Query query = (Query)Loader.getInstance(table.getName());
+		Field dataField = query.getFieldByName(field.getName());
+		if(query.readRecord(new guid(recordId.getName()), Arrays.asList(dataField))) {
+			return new ByteArrayInputStream(dataField.get().toString().getBytes());
 		} else {
 			throw new IOException("Incorrect path '" + fileInfo.path + "'");
 		}
