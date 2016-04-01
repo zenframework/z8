@@ -27,6 +27,7 @@ public class JsonArray extends Object {
     public JsonArray put(int index, primary value);
     public JsonArray put(int index, JsonArray value);
     public JsonArray put(int index, JsonObject value);
+    public JsonArray insert(int index, JsonObject value);
     
     public JsonArray remove(int index);
     

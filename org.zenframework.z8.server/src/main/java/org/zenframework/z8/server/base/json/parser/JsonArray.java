@@ -120,6 +120,12 @@ public class JsonArray extends OBJECT {
         array.put(index.getInt(), JsonUtils.unwrap(value));
         return (JsonArray.CLASS<? extends JsonArray>) getCLASS();
     }
+    
+    @SuppressWarnings("unchecked")
+    public JsonArray.CLASS<? extends JsonArray> z8_insert(integer index, JsonObject.CLASS<? extends JsonObject> value) {
+        array.insert(index.getInt(), value.get().getInternalObject());
+        return (JsonArray.CLASS<? extends JsonArray>) getCLASS();
+    }
 
     @SuppressWarnings("unchecked")
     public JsonArray.CLASS<? extends JsonArray> z8_put(integer index, JsonArray.CLASS<? extends JsonArray> value) {
