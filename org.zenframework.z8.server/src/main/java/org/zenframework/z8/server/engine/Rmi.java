@@ -68,7 +68,9 @@ public class Rmi {
 			name += '/' + server.id();
 		try {
 			Registry.unbind(name);
-		} catch (NotBoundException e) {}
+		} catch (NotBoundException e) {
+			LOG.error("Can't unbind object '" + name + "'", e);
+		}
 	}
 
 	public static <T extends IServer> T get(Class<T> serverClass) throws RemoteException {

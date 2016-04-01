@@ -1,7 +1,5 @@
 package org.zenframework.z8.server.ie;
 
-import java.rmi.RemoteException;
-import java.util.Arrays;
 import java.util.List;
 
 import org.apache.commons.logging.Log;
@@ -81,20 +79,18 @@ public class TransportProcedure extends Procedure {
 		Connection connection = ConnectionManager.get();
 
 		final ExportMessages messages = ExportMessages.instance();
-		TransportRoutes transportRoutes = null;
+		TransportRoutes transportRoutes = TransportRoutes.instance();
 		Files filesTable = Files.instance();
 
-		final String transportRegistry = Properties.getProperty(ServerRuntime.TransportCenterAddressProperty).trim();
+		final String transportCenter = Properties.getProperty(ServerRuntime.TransportCenterAddressProperty).trim();
 
-		if (!transportRegistry.isEmpty()) {
+		if (!transportCenter.isEmpty()) {
 			try {
 				Rmi.get(ITransportService.class).checkRegistration(selfAddress);
 			} catch (Exception e) {
 				LOG.error("Can't check transport server registrationa for '" + selfAddress + "' in transport center '"
-						+ transportRegistry + "'", e);
+						+ transportCenter + "'", e);
 			}
-		} else {
-			transportRoutes = TransportRoutes.instance();
 		}
 
 		// Обработка внутренней входящей очереди
@@ -125,43 +121,27 @@ public class TransportProcedure extends Procedure {
 
 		// Обработка внутренней исходящей очереди
 		ids = messages.getExportMessages(selfAddress);
-		if (transportRoutes != null) {
-			transportRoutes.checkInactiveRoutes();
-		}
+		transportRoutes.checkInactiveRoutes();
 
 		for (guid id : ids) {
 			if (!messages.readMessage(id))
 				continue;
-			List<AbstractRoute> routes;
-			if (transportRoutes != null) {
-				routes = transportRoutes.readActiveRoutes(messages.getReceiver());
-			} else {
-				routes = Arrays.<AbstractRoute> asList(new AbstractRoute() {
+			List<TransportRoute> routes;
+			routes = transportRoutes.readActiveRoutes(messages.getReceiver());
 
-					@Override
-					public String getReceiver() {
-						return messages.getReceiver();
+			if (routes.isEmpty()) {
+				try {
+					routes = Rmi.get(ITransportCenter.class, new RmiAddress(transportCenter))
+							.getTransportRoutes(messages.getReceiver());
+					for (TransportRoute route : routes) {
+						transportRoutes.setRoute(route);
 					}
-
-					@Override
-					public String getProtocol() {
-						return RmiTransport.PROTOCOL;
-					}
-
-					@Override
-					public String getAddress() {
-						try {
-							return Rmi.get(ITransportCenter.class, new RmiAddress(transportRegistry))
-									.getTransportServerAddress(getReceiver());
-						} catch (RemoteException e) {
-							throw new RuntimeException("Can't get transport address for '" + getReceiver() + "'", e);
-						}
-					}
-
-				});
+				} catch (Exception e) {
+					LOG.error("Can't get routes from transport center '" + transportCenter + "'", e);
+				}
 			}
 
-			for (AbstractRoute route : routes) {
+			for (TransportRoute route : routes) {
 
 				Transport transport = engine.getTransport(context.get(), route.getProtocol());
 				if (transport == null)
@@ -171,9 +151,7 @@ public class TransportProcedure extends Procedure {
 				} catch (TransportException e) {
 					log("Can't import message via protocol '" + transport.getProtocol() + "'", e);
 					transport.close();
-					if (transportRoutes != null) {
-						transportRoutes.disableRoute(route.getRouteId(), e.getMessage());
-					}
+					transportRoutes.disableRoute(route.getRouteId(), e.getMessage());
 					continue;
 				}
 
@@ -193,9 +171,7 @@ public class TransportProcedure extends Procedure {
 					log("Can't send messsage '" + id + "'", e);
 					if (e instanceof TransportException) {
 						transport.close();
-						if (transportRoutes != null) {
-							transportRoutes.disableRoute(route.getRouteId(), e.getMessage());
-						}
+						transportRoutes.disableRoute(route.getRouteId(), e.getMessage());
 					}
 				}
 			}

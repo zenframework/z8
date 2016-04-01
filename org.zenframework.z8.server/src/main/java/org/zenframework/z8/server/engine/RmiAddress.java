@@ -1,5 +1,7 @@
 package org.zenframework.z8.server.engine;
 
+import java.net.URISyntaxException;
+
 import org.zenframework.z8.server.config.ServerConfig;
 
 public class RmiAddress {
@@ -8,9 +10,9 @@ public class RmiAddress {
 	private final int port;
 	private final String name;
 
-	public RmiAddress(String address) {
+	public RmiAddress(String address) throws URISyntaxException {
 		if (address == null)
-			throw new RuntimeException("Incorrect RMI address '" + address + "'");
+			throw new URISyntaxException(address, "Address is null");
 		if (address.startsWith("rmi://"))
 			address = address.substring(6);
 		if (address.startsWith("rmi:"))
@@ -23,7 +25,7 @@ public class RmiAddress {
 					portAndName < 0 ? address.length() : portAndName));
 			name = portAndName < 0 ? null : address.substring(portAndName + 1);
 		} catch (Throwable e) {
-			throw new RuntimeException("Incorrect RMI address '" + address + "'", e);
+			throw new URISyntaxException(address, e.getClass().getName() + ": " + e.getMessage());
 		}
 	}
 

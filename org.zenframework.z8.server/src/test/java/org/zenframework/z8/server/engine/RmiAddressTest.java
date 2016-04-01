@@ -1,9 +1,10 @@
 package org.zenframework.z8.server.engine;
 
+import java.net.URISyntaxException;
+
 import junit.framework.TestCase;
 
 import org.zenframework.z8.server.config.ServerConfig;
-import org.zenframework.z8.server.ie.TransportException;
 
 public class RmiAddressTest extends TestCase {
 
@@ -20,7 +21,7 @@ public class RmiAddressTest extends TestCase {
 		assertRmiAddress("qweqwe", "qweqwe", ServerConfig.RegistryPortDefault, null);
 	}
 
-	private static void assertRmiAddress(String address, String host, int port, String name) throws TransportException {
+	private static void assertRmiAddress(String address, String host, int port, String name) throws URISyntaxException {
 		RmiAddress rmiAddress = new RmiAddress(address);
 		assertEquals(host, rmiAddress.getHost());
 		assertEquals(port, rmiAddress.getPort());

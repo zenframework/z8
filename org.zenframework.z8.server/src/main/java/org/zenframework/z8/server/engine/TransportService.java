@@ -35,7 +35,12 @@ public class TransportService extends RmiServer implements ITransportService, Pr
 
 	private TransportService(ServerConfig config) throws RemoteException {
 		super(ITransportService.class);
-		transportCenter = getRmiAddress(Properties.getProperty(ServerRuntime.TransportCenterAddressProperty));
+		try {
+			transportCenter = getRmiAddress(Properties.getProperty(ServerRuntime.TransportCenterAddressProperty));
+		} catch (URISyntaxException e) {
+			LOG.error("Can't get transport center address", e);
+		}
+		Properties.addListener(this);
 	}
 
 	public static void start(ServerConfig config) throws RemoteException {
@@ -48,13 +53,12 @@ public class TransportService extends RmiServer implements ITransportService, Pr
 	@Override
 	public void onPropertyChange(String key, String value) {
 		if (ServerRuntime.TransportCenterAddressProperty.equalsKey(key)) {
-			transportCenter = getRmiAddress(value);
-			synchronized (registrators) {
-				for (Registrator registrator : registrators) {
-					registrator.active.set(false);
-				}
-				registrators.clear();
+			try {
+				transportCenter = getRmiAddress(value);
+			} catch (URISyntaxException e) {
+				LOG.error("Can't get transport center address", e);
 			}
+			stopRegistrators();
 			Collection<String> addrs;
 			synchronized (registered) {
 				addrs = new ArrayList<String>(registered);
@@ -70,6 +74,12 @@ public class TransportService extends RmiServer implements ITransportService, Pr
 	public void start() throws RemoteException {
 		super.start();
 		Trace.logEvent("TS: transport server started at '" + getUrl() + "'");
+	}
+
+	@Override
+	public void stop() throws RemoteException {
+		super.stop();
+		stopRegistrators();
 	}
 
 	@Override
@@ -100,6 +110,16 @@ public class TransportService extends RmiServer implements ITransportService, Pr
 		}
 	}
 
+	private void stopRegistrators() {
+		synchronized (registrators) {
+			for (Registrator registrator : registrators) {
+				registrator.active.set(false);
+				registrator.interrupt();
+			}
+			registrators.clear();
+		}
+	}
+
 	private static <T> boolean addIfNotContains(Collection<T> coll, T obj) {
 		synchronized (coll) {
 			if (coll.contains(obj))
@@ -109,7 +129,7 @@ public class TransportService extends RmiServer implements ITransportService, Pr
 		}
 	}
 
-	private static RmiAddress getRmiAddress(String addr) {
+	private static RmiAddress getRmiAddress(String addr) throws URISyntaxException {
 		addr = addr.trim();
 		return addr != null && !addr.isEmpty() ? new RmiAddress(addr) : null;
 	}
@@ -131,7 +151,7 @@ public class TransportService extends RmiServer implements ITransportService, Pr
 		public void run() {
 			while (active.get()) {
 				try {
-					Rmi.get(ITransportCenter.class, transportCenter).registerTransportServer(address,
+					Rmi.get(ITransportCenter.class, transportCenter).registerTransportService(address,
 							Z8Context.getConfig().getRmiRegistryPort());
 					active.set(false);
 				} catch (Exception e) {
@@ -140,7 +160,6 @@ public class TransportService extends RmiServer implements ITransportService, Pr
 						Thread.sleep(10000);
 					} catch (InterruptedException e1) {
 						LOG.error("Can't register transport server for '" + address + "'. Thread interrupted", e1);
-						break;
 					}
 				}
 			}

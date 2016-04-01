@@ -39,12 +39,12 @@ public class Servlet extends HttpServlet {
 	static private final String ApplicationServerClass = ApplicationServer.class.getCanonicalName();
 	static private final String AuthorityCenterClass = AuthorityCenter.class.getCanonicalName();
 	static private final String TransportServiceClass = TransportService.class.getCanonicalName();
-	static private final String TransportRegistryClass = TransportCenter.class.getCanonicalName();
+	static private final String TransportCenterClass = TransportCenter.class.getCanonicalName();
 
 	static private final String ApplicationServerName = Rmi.getName(IApplicationServer.class);
 	static private final String AuthorityCenterName = Rmi.getName(IAuthorityCenter.class);
 	static private final String TransportServiceName = Rmi.getName(ITransportService.class);
-	static private final String TransportRegistryName = Rmi.getName(ITransportCenter.class);
+	static private final String TransportCenterName = Rmi.getName(ITransportCenter.class);
 
 	static private final String StartMethod = "start";
 
@@ -65,7 +65,7 @@ public class Servlet extends HttpServlet {
 			if (config.webServerStartAuthorityCenter())
 				startServer(AuthorityCenterClass, config);
 			if (config.webServerStartTransportCenter())
-				startServer(TransportRegistryClass, config);
+				startServer(TransportCenterClass, config);
 			if (config.webServerStartApplicationServer())
 				startServer(ApplicationServerClass, config);
 			if (config.webServerStartTransportService())
@@ -120,7 +120,7 @@ public class Servlet extends HttpServlet {
 		if (config.webServerStartTransportService())
 			stopServer(TransportServiceName, config);
 		if (config.webServerStartTransportCenter())
-			stopServer(TransportRegistryName, config);
+			stopServer(TransportCenterName, config);
 
 		config = null;
 

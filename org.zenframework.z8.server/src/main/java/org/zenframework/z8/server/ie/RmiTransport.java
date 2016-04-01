@@ -24,8 +24,8 @@ public class RmiTransport extends AbstractTransport {
 
 	@Override
 	public void send(Message message, String transportAddress) throws TransportException {
-		RmiAddress address = new RmiAddress(transportAddress);
 		try {
+			RmiAddress address = new RmiAddress(transportAddress);
 			List<FileInfo> fileInfos = IeUtil.filesToFileInfos(message.getExportEntry().getFiles().getFile());
 			for (FileInfo fileInfo : fileInfos) {
 				message.getFiles().add(Files.getFile(fileInfo));
@@ -33,7 +33,7 @@ public class RmiTransport extends AbstractTransport {
 			ITransportService server = (ITransportService) Rmi.get(ITransportService.class, address);
 			server.sendMessage(message);
 		} catch (Exception e) {
-			throw new TransportException("Can't send message to '" + message.getAddress(), e);
+			throw new TransportException("Can't send message to '" + message.getAddress() + "'", e);
 		}
 	}
 

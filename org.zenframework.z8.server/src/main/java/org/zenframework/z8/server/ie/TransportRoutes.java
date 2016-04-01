@@ -50,56 +50,6 @@ public class TransportRoutes extends Table {
 
 	}
 
-	private class RecordRoute extends AbstractRoute {
-
-		private final guid routeId;
-		private final String receiver;
-		private final String protocol;
-		private final String address;
-		private final int priority;
-		private final boolean active;
-
-		private RecordRoute() {
-			this.routeId = recordId();
-			this.receiver = id.get().get().string().get();
-			this.protocol = id1.get().get().string().get();
-			this.address = name.get().get().string().get();
-			this.priority = TransportRoutes.this.priority.get().get().integer().getInt();
-			this.active = TransportRoutes.this.active.get().get().bool().get();
-		}
-
-		@Override
-		public guid getRouteId() {
-			return routeId;
-		}
-
-		@Override
-		public String getReceiver() {
-			return receiver;
-		}
-
-		@Override
-		public String getProtocol() {
-			return protocol;
-		}
-
-		@Override
-		public String getAddress() {
-			return address;
-		}
-
-		@Override
-		public int getPriority() {
-			return priority;
-		}
-
-		@Override
-		public boolean isActive() {
-			return active;
-		}
-
-	}
-
 	static public class strings {
 		public final static String Title = "TransportRoutes.title";
 		public final static String Receiver = "TransportRoutes.receiver";
@@ -161,27 +111,33 @@ public class TransportRoutes extends Table {
 		return readFirst(where);
 	}
 
-	public List<AbstractRoute> readActiveRoutes(String receiver) {
+	public List<TransportRoute> readActiveRoutes(String receiver) {
 		sort(Arrays.<Field> asList(priority.get()), new And(new Rel(this.id.get(), Operation.Eq, new sql_string(receiver)),
 				this.active.get().sql_bool()));
-		List<AbstractRoute> routes = new LinkedList<AbstractRoute>();
+		List<TransportRoute> routes = new LinkedList<TransportRoute>();
 		while (next()) {
-			routes.add(new RecordRoute());
+			routes.add(new TransportRoute(recordId(), id.get().get().string().get(), id1.get().get().string().get(), name
+					.get().get().string().get(), TransportRoutes.this.priority.get().get().integer().getInt(),
+					TransportRoutes.this.active.get().get().bool().get()));
 		}
 		return routes;
 	}
 
-	public boolean setRoute(String receiver, String protocol, String address, int priority) {
+	public guid setRoute(TransportRoute route) {
+		return setRoute(route.getReceiver(), route.getProtocol(), route.getAddress(), route.getPriority(), route.isActive());
+	}
+
+	public guid setRoute(String receiver, String protocol, String address, int priority, boolean active) {
 		this.priority.get().set(priority);
+		this.active.get().set(new bool(active));
 		if (readRoute(receiver, protocol, address)) {
 			update(recordId());
-			return false;
+			return recordId();
 		} else {
 			this.id.get().set(receiver);
 			this.id1.get().set(protocol);
 			this.name.get().set(address);
-			create();
-			return true;
+			return create();
 		}
 	}
 
@@ -222,8 +178,8 @@ public class TransportRoutes extends Table {
 		return new bool(readRoute(receiver.get(), protocol.get(), address.get()));
 	}
 
-	public bool z8_setRoute(string receiver, string protocol, string address, integer priority) {
-		return new bool(setRoute(receiver.get(), protocol.get(), address.get(), priority.getInt()));
+	public guid z8_setRoute(string receiver, string protocol, string address, integer priority, bool active) {
+		return setRoute(receiver.get(), protocol.get(), address.get(), priority.getInt(), active.get());
 	}
 
 	public bool z8_disableRoute(guid routeId, string description) {
