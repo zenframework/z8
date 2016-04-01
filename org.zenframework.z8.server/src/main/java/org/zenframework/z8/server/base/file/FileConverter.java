@@ -29,7 +29,7 @@ public class FileConverter {
 
 	private static final int OFFICE_PORT = 8100;
 	private static final List<String> pdfExtensions = Arrays.asList("pdf", "doc", "docx", "xls", "xlsx", "ppt", "pptx",
-			"odt", "odp", "ods", "odf", "odg", "wpd", "sxw", "sxi", "sxc", "sxd", "stw", "tif", "tiff", "vsd", "jpg");
+			"odt", "odp", "ods", "odf", "odg", "wpd", "sxw", "sxi", "sxc", "sxd", "stw", "tif", "tiff", "vsd", "jpg", "jpeg");
 
 	private static final List<String> txtExtensions = Arrays.asList("eml", "mime");
 

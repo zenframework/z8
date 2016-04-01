@@ -37,6 +37,7 @@ public abstract class RmiServer extends UnicastRemoteObject implements IServer {
 
 	@Override
 	public void stop() throws RemoteException {
+		unexportObject(this, true);
 		Rmi.unregister(serverClass, this);
 		url = null;
 	}
