@@ -596,7 +596,7 @@ public class JsonArray extends ArrayList<Object> {
     public JsonArray put(int index, Collection<Object> value) throws JsonException {
         return put(index, (Object) (value instanceof JsonArray ? value : new JsonArray(value)));
     }
-
+    
     /**
      * Put a value in the JSONArray, where the value will be a JSONObject which
      * is produced from a Map.
@@ -644,6 +644,23 @@ public class JsonArray extends ArrayList<Object> {
             }
             super.add(JsonObject.wrap(value));
         }
+        return this;
+    }
+    
+    /**
+     * Insert a value to the JSONArray, before selected position. This increases the array's length by one.
+     * 
+     * @param index
+     *            The subscript.
+     * @param value
+     *            A Collection value.
+     * @return this.
+     * @throws JsonException
+     *             If the index is negative or if the value is not finite.
+     */
+    public JsonArray insert(int index, Object value) {
+        JsonObject.testValidity(value);
+        super.add(index, JsonObject.wrap(value));
         return this;
     }
 
