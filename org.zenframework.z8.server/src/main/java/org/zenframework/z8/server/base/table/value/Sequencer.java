@@ -45,7 +45,15 @@ public class Sequencer extends OBJECT {
         sequences.destroy(where);
     }
 
-    static private long next(String key, long defaultValue, long increment) {
+    static public long next(String key) {
+        return next(key, 1L);
+    }
+
+    static public long next(String key, long defaultValue) {
+        return next(key, defaultValue, 1L);
+    }
+
+    static public long next(String key, long defaultValue, long increment) {
         String id = "id" + Integer.toString(key.hashCode()).replace('-', '_');
 
         Sequences sequences = new Sequences.CLASS<Sequences>().get();

@@ -12,6 +12,7 @@ import org.zenframework.z8.server.base.table.value.AttachmentField;
 import org.zenframework.z8.server.base.table.value.BoolField;
 import org.zenframework.z8.server.base.table.value.Field;
 import org.zenframework.z8.server.base.table.value.IntegerField;
+import org.zenframework.z8.server.base.table.value.Sequencer;
 import org.zenframework.z8.server.base.table.value.TextField;
 import org.zenframework.z8.server.db.sql.SqlField;
 import org.zenframework.z8.server.db.sql.SqlToken;
@@ -81,7 +82,7 @@ public class ExportMessages extends Table {
 		this.id1.get().set(new string(message.getAddress()));
 		if (protocol != null && !protocol.isEmpty())
 			this.name.get().set(new string(protocol));
-		this.ordinal.get().set(new integer(this.ordinal.get().getSequencer().next()));
+		this.ordinal.get().set(new integer(Sequencer.next(message.getSender() + "->" + message.getAddress())));
 		this.message.get().set(new string(IeUtil.marshalExportEntry(message.getExportEntry())));
 		this.attachment.get().set(getAttachment(message.getId()));
 		create(new guid(message.getId()));
