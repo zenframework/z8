@@ -3,7 +3,7 @@
 	final int endStack = 100;
 	final int newState = 101;
 
-	final int YYMAXDEPTH = 200;
+	final int YYMAXDEPTH = 1000;
 	final int YYREDMAX  = 1000;
 	final int PCYYFLAG = -1000;
 	final int WAS0ERR = 0;
