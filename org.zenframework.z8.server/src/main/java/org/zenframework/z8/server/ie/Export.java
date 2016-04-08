@@ -156,8 +156,10 @@ public class Export extends OBJECT {
 		List<ExportEntry.Properties.Property> props = new LinkedList<ExportEntry.Properties.Property>();
 
 		try {
-			if (!LOCAL_PROTOCOL.equals(getProtocol())) {
-				// Если протокол НЕ "null", экспортировать записи БД
+		    String exportProtocol = getProtocol();
+		    boolean local = LOCAL_PROTOCOL.equals(exportProtocol);
+			if (!local) {
+				// Если протокол НЕ "local", экспортировать записи БД
 				for (RecordsetEntry recordsetEntry : recordsetEntries) {
 					while (recordsetEntry.recordset.next()) {
 						exportRecord(recordsetEntry, records, files, getPolicy(recordsetEntry.recordset.classId()),
@@ -190,11 +192,12 @@ public class Export extends OBJECT {
 			boolean sendFilesSeparately = Boolean.parseBoolean(Properties
 					.getProperty(ServerRuntime.SendFilesSeparatelyProperty));
 			ExportMessages exportMessages = ExportMessages.instance();
-			if (sendFilesSeparately) {
+			if (sendFilesSeparately && !local) {
 				for (ExportEntry.Files.File file : files) {
 					Message message = Message.instance();
 					message.setAddress(getAddress());
 					message.setSender(sender);
+					message.setExportProtocol(exportProtocol);
 					message.getExportEntry().getFiles().getFile().add(file);
 					exportMessages.addMessage(message, null);
 				}
@@ -202,9 +205,10 @@ public class Export extends OBJECT {
 			Message message = Message.instance();
 			message.setAddress(getAddress());
 			message.setSender(sender);
+			message.setExportProtocol(exportProtocol);
 			message.getExportEntry().getRecords().getRecord().addAll(records);
 			message.getExportEntry().getProperties().getProperty().addAll(props);
-			if (!sendFilesSeparately) {
+			if (!sendFilesSeparately && !local) {
 				message.getExportEntry().getFiles().getFile().addAll(files);
 			}
 			exportMessages.addMessage(message, null);
