@@ -8,10 +8,12 @@ import java.util.UUID;
 import javax.xml.bind.JAXBException;
 
 import org.zenframework.z8.server.base.table.Table;
+import org.zenframework.z8.server.base.table.value.Aggregation;
 import org.zenframework.z8.server.base.table.value.AttachmentField;
 import org.zenframework.z8.server.base.table.value.BoolField;
 import org.zenframework.z8.server.base.table.value.Field;
 import org.zenframework.z8.server.base.table.value.IntegerField;
+import org.zenframework.z8.server.base.table.value.Sequencer;
 import org.zenframework.z8.server.base.table.value.TextField;
 import org.zenframework.z8.server.db.sql.SqlField;
 import org.zenframework.z8.server.db.sql.SqlToken;
@@ -76,12 +78,13 @@ public class ExportMessages extends Table {
 		super(container);
 	}
 
-	public void addMessage(Message message, String protocol) throws JAXBException {
+	public void addMessage(Message message, String transportInfo) throws JAXBException {
 		this.id.get().set(new string(message.getSender()));
 		this.id1.get().set(new string(message.getAddress()));
-		if (protocol != null && !protocol.isEmpty())
-			this.name.get().set(new string(protocol));
-		this.ordinal.get().set(new integer(this.ordinal.get().getSequencer().next()));
+		this.name.get().set(new string(message.getExportProtocol()));
+		if (transportInfo != null)
+		    this.description.get().set(new string(transportInfo));
+		this.ordinal.get().set(new integer(nextOrdinal(message)));
 		this.message.get().set(new string(IeUtil.marshalExportEntry(message.getExportEntry())));
 		this.attachment.get().set(getAttachment(message.getId()));
 		create(new guid(message.getId()));
@@ -128,6 +131,7 @@ public class ExportMessages extends Table {
 		ordinal.setIndex("ordinal");
 		ordinal.setDisplayName(Resources.get(strings.Ordinal));
 		ordinal.get().unique.set(true);
+		ordinal.get().aggregation = Aggregation.Max;
 		processed.setName("Sent");
 		processed.setIndex("sent");
 		processed.setDisplayName(Resources.get(strings.Processed));
@@ -165,11 +169,11 @@ public class ExportMessages extends Table {
 	}
 
 	public List<guid> getExportMessages(String selfAddress) {
-		SqlToken notProcessedNotError = new And(new Unary(Operation.Not, new SqlField(processed.get())), new Unary(
-				Operation.Not, new SqlField(error.get())));
+		SqlToken notProcessedNotErrorNotLocal = new And(new And(new Unary(Operation.Not, new SqlField(processed.get())), new Unary(
+				Operation.Not, new SqlField(error.get()))), new Rel(name.get(), Operation.NotEq, new sql_string(Export.LOCAL_PROTOCOL)));
 		SqlToken fromMeNotForMe = new And(new Rel(id.get(), Operation.Eq, new sql_string(selfAddress)), new Rel(id1.get(),
 				Operation.NotEq, new sql_string(selfAddress)));
-		read(Arrays.<Field> asList(recordId.get()), Arrays.<Field> asList(ordinal.get()), new And(notProcessedNotError,
+		read(Arrays.<Field> asList(recordId.get()), Arrays.<Field> asList(ordinal.get()), new And(notProcessedNotErrorNotLocal,
 				fromMeNotForMe));
 		List<guid> ids = new LinkedList<guid>();
 		while (next()) {
@@ -205,6 +209,10 @@ public class ExportMessages extends Table {
 		obj.put(Json.path, fileName);
 		writer.put(obj);
 		return writer.toString();
+	}
+
+	private long nextOrdinal(Message message) {
+		return Sequencer.next(message.getSender() + "->" + message.getAddress(), 1000000L);
 	}
 
 }

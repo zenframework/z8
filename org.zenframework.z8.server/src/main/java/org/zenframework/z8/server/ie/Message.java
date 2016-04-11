@@ -52,6 +52,7 @@ public class Message extends OBJECT implements Serializable {
     private UUID id;
     private String sender;
     private String address;
+    private String exportProtocol;
     private ExportEntry exportEntry;
     private final RCollection<FileInfo> files = new RCollection<FileInfo>(true);
 
@@ -81,6 +82,14 @@ public class Message extends OBJECT implements Serializable {
 
     public void setSender(String sender) {
         this.sender = sender;
+    }
+
+    public String getExportProtocol() {
+        return exportProtocol;
+    }
+
+    public void setExportProtocol(String exportProtocol) {
+        this.exportProtocol = exportProtocol;
     }
 
     public ExportEntry getExportEntry() {
