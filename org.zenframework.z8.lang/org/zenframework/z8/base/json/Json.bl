@@ -121,6 +121,7 @@ public class Json extends Object {
     static public string groupDir;
     static public string groupValue;
     static public string groups;
+    static public string __search_text__;
 
     static public string filterBy;
 
