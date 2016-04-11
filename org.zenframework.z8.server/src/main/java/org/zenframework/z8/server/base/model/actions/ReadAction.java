@@ -1122,14 +1122,14 @@ public class ReadAction extends Action {
 	}
 
 	private Field createAggregatedExpression(final Field field, Aggregation aggregation, FieldType type) {
-		if(aggregation == Aggregation.None) {
+		if(aggregation == Aggregation.None)
 			return null;
-		} else if(field.aggregation == aggregation) {
+		
+		if(field.aggregation == aggregation)
 			return field;
-		} else {
-			Expression expression = new Expression(new SqlField(field), type);
-			expression.aggregation = aggregation;
-			return expression;
-		}
+
+		Expression expression = new Expression(new SqlField(field), type);
+		expression.aggregation = aggregation;
+		return expression;
 	}
 }
