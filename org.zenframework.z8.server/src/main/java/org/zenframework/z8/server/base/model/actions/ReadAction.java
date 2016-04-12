@@ -18,6 +18,7 @@ import org.zenframework.z8.server.base.model.sql.Select;
 import org.zenframework.z8.server.base.model.sql.SelectFactory;
 import org.zenframework.z8.server.base.query.Period;
 import org.zenframework.z8.server.base.query.Query;
+import org.zenframework.z8.server.base.query.ReadLock;
 import org.zenframework.z8.server.base.query.Style;
 import org.zenframework.z8.server.base.table.value.Aggregation;
 import org.zenframework.z8.server.base.table.value.Expression;
@@ -1097,6 +1098,7 @@ public class ReadAction extends Action {
 		Field totalsBy = actionParameters().totalsBy;
 
 		Query query = getQuery();
+        query.setReadLock(ReadLock.None);
 
 		try {
 			beforeRead();
@@ -1120,14 +1122,14 @@ public class ReadAction extends Action {
 	}
 
 	private Field createAggregatedExpression(final Field field, Aggregation aggregation, FieldType type) {
-		if(aggregation == Aggregation.None) {
+		if(aggregation == Aggregation.None)
 			return null;
-		} else if(field.aggregation == aggregation) {
+		
+		if(field.aggregation == aggregation)
 			return field;
-		} else {
-			Expression expression = new Expression(new SqlField(field), type);
-			expression.aggregation = aggregation;
-			return expression;
-		}
+
+		Expression expression = new Expression(new SqlField(field), type);
+		expression.aggregation = aggregation;
+		return expression;
 	}
 }
