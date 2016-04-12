@@ -130,6 +130,8 @@ public class ExportMessages extends Table {
 		ordinal.setName("Ordinal");
 		ordinal.setIndex("ordinal");
 		ordinal.setDisplayName(Resources.get(strings.Ordinal));
+		ordinal.get().indexFields.add(id);
+		ordinal.get().indexFields.add(id1);
 		ordinal.get().unique.set(true);
 		ordinal.get().aggregation = Aggregation.Max;
 		processed.setName("Sent");
