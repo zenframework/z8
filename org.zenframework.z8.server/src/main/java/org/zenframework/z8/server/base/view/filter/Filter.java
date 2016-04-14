@@ -183,18 +183,20 @@ public class Filter {
         return result;
     }
     
-    protected static Filter getFieldFilter(Query query, String field, String values, String comparison) {
+    protected static Filter getFieldFilter(Query query, String name, String values, String comparison) {
         Operation operation = comparison != null ? Operation.fromString(comparison) : null;
 
-        if(Json.__search_text__.equals(field)) {
+        if(Json.__search_text__.equals(name)) {
             if(values.isEmpty())
                 return null;
 
             Collection<String> foundIds = SearchEngine.INSTANCE.searchRecords(query, StringUtils.unescapeJava(values));
 
             return new Filter(query.getSearchId(), operation, foundIds);
-        } else
-            return new Filter(query.findFieldById(field), operation, parseValues(values));
+        } else {
+            Field field = query.findFieldById(name);
+            return field != null ? new Filter(field, operation, parseValues(values)) : null;
+        }
     }
     
     public static Collection<Filter> parse(String json, Query query){
