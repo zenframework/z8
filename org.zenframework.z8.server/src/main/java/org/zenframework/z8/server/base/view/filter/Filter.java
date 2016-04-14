@@ -4,14 +4,13 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import org.zenframework.z8.server.base.query.Query;
 import org.zenframework.z8.server.base.table.value.Field;
 import org.zenframework.z8.server.db.FieldType;
 import org.zenframework.z8.server.db.sql.SqlField;
 import org.zenframework.z8.server.db.sql.SqlToken;
 import org.zenframework.z8.server.db.sql.expressions.And;
-import org.zenframework.z8.server.db.sql.expressions.Group;
 import org.zenframework.z8.server.db.sql.expressions.Operation;
-import org.zenframework.z8.server.db.sql.expressions.Or;
 import org.zenframework.z8.server.db.sql.expressions.Rel;
 import org.zenframework.z8.server.db.sql.expressions.True;
 import org.zenframework.z8.server.db.sql.expressions.Unary;
@@ -19,7 +18,11 @@ import org.zenframework.z8.server.db.sql.functions.InVector;
 import org.zenframework.z8.server.db.sql.functions.datetime.TruncDay;
 import org.zenframework.z8.server.db.sql.functions.string.Like;
 import org.zenframework.z8.server.db.sql.functions.string.Lower;
+import org.zenframework.z8.server.json.Json;
+import org.zenframework.z8.server.json.parser.JsonArray;
+import org.zenframework.z8.server.json.parser.JsonObject;
 import org.zenframework.z8.server.resources.Resources;
+import org.zenframework.z8.server.search.SearchEngine;
 import org.zenframework.z8.server.types.bool;
 import org.zenframework.z8.server.types.date;
 import org.zenframework.z8.server.types.decimal;
@@ -27,30 +30,21 @@ import org.zenframework.z8.server.types.guid;
 import org.zenframework.z8.server.types.integer;
 import org.zenframework.z8.server.types.string;
 import org.zenframework.z8.server.types.sql.sql_string;
+import org.zenframework.z8.server.utils.StringUtils;
 
 public class Filter {
-    private Collection<Field> fields;
+    private Field field;
     private Operation operation;
     private String[] values;
 
-    public Filter(Collection<Field> fields, Operation operation, Collection<String> values) {
-        this.fields = fields;
+    public Filter(Field field, Operation operation, Collection<String> values) {
+        this.field = field;
         this.values = values.toArray(new String[0]);
         this.operation = operation;
     }
 
     public SqlToken where() {
-        SqlToken result = null;
-
-        for(Field field : fields) {
-            SqlToken where = where(field);
-
-            if(where != null) {
-                result = result == null ? where : new Or(result, where);
-            }
-        }
-
-        return fields.size() > 1 ? new Group(result) : result;
+        return where(field);
     }
 
     List<guid> getGuidValues() {
@@ -156,13 +150,73 @@ public class Filter {
 
     @Override
     public String toString() {
-        String result = "";
+        return toString(field);
+    }
 
-        for(Field field : fields) {
-            String where = toString(field);
+    protected static Collection<String> parseValues(String jsonData) {
+        Collection<String> result = new ArrayList<String>();
 
-            if(where != null) {
-                result += result.isEmpty() ? where : " or " + where;
+        if(jsonData.isEmpty()) {
+            result.add("");
+            return result;
+        }
+
+        char startChar = jsonData.charAt(0);
+
+        if(startChar == '[') { // array or guids
+            JsonArray values = new JsonArray(jsonData);
+
+            for(int index = 0; index < values.length(); index++) {
+                String value = values.getString(index);
+                result.add(value);
+            }
+        } else if(startChar == '{') { // Period
+            JsonObject values = new JsonObject(jsonData);
+            String start = values.getString(Json.start);
+            String finish = values.getString(Json.finish);
+
+            result.add(start);
+            result.add(finish);
+        } else
+            result.add(jsonData);
+
+        return result;
+    }
+    
+    protected static Filter getFieldFilter(Query query, String field, String values, String comparison) {
+        Operation operation = comparison != null ? Operation.fromString(comparison) : null;
+
+        if(Json.__search_text__.equals(field)) {
+            if(values.isEmpty())
+                return null;
+
+            Collection<String> foundIds = SearchEngine.INSTANCE.searchRecords(query, StringUtils.unescapeJava(values));
+
+            return new Filter(query.getSearchId(), operation, foundIds);
+        } else
+            return new Filter(query.findFieldById(field), operation, parseValues(values));
+    }
+    
+    public static Collection<Filter> parse(String json, Query query){
+        List<Filter> result = new ArrayList<Filter>();
+
+        if(json == null)
+            return result;
+
+        JsonArray filters = new JsonArray(json);
+
+        for(int index = 0; index < filters.length(); index++) {
+            JsonObject filter = (JsonObject)filters.get(index);
+
+            if(filter.has(Json.value)) {
+                String fields = filter.getString(filter.has(Json.field) ? Json.field : Json.property);
+                String values = filter.getString(Json.value);
+                String comparison = filter.has(Json.comparison) ? filter.getString(Json.comparison) : filter.has(Json.operator) ? filter.getString(Json.operator) : null;
+
+                Filter flt = getFieldFilter(query, fields, values, comparison);
+
+                if(flt != null)
+                    result.add(flt);
             }
         }
 
