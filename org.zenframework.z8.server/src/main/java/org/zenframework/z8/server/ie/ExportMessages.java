@@ -87,7 +87,11 @@ public class ExportMessages extends Table {
 		this.ordinal.get().set(new integer(nextOrdinal(message)));
 		this.message.get().set(new string(IeUtil.marshalExportEntry(message.getExportEntry())));
 		this.attachment.get().set(getAttachment(message.getId()));
-		create(new guid(message.getId()));
+		guid recordId = new guid(message.getId());
+		if (hasRecord(recordId))
+			update(recordId);
+		else
+			create(recordId);
 	}
 
 	public void setError(guid messageId, Throwable e) {
