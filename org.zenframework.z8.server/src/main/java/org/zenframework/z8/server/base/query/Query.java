@@ -36,6 +36,7 @@ import org.zenframework.z8.server.base.table.value.IValue;
 import org.zenframework.z8.server.base.table.value.Link;
 import org.zenframework.z8.server.base.table.value.LinkExpression;
 import org.zenframework.z8.server.base.view.command.Command;
+import org.zenframework.z8.server.base.view.filter.Filter;
 import org.zenframework.z8.server.db.FieldType;
 import org.zenframework.z8.server.db.sql.SqlToken;
 import org.zenframework.z8.server.db.sql.expressions.And;
@@ -88,7 +89,8 @@ public class Query extends Runnable {
 
     public bool readOnly = new bool(false);
 
-    public bool showAsGrid = new bool(true); // to show treeTable as an ordinary table
+    public bool showAsGrid = new bool(true); // to show treeTable as an ordinary
+                                             // table
     public ViewMode viewMode = ViewMode.Table;
 
     public bool showTotals = new bool(false);
@@ -116,7 +118,8 @@ public class Query extends Runnable {
 
     public RCollection<Field.CLASS<? extends Field>> chartSeries = new RCollection<Field.CLASS<? extends Field>>(true);
 
-    public RCollection<Command.CLASS<? extends Command>> commands = new RCollection<Command.CLASS<? extends Command>>(true);
+    public RCollection<Command.CLASS<? extends Command>> commands = new RCollection<Command.CLASS<? extends Command>>(
+            true);
 
     public RCollection<guid> recordIds = new RCollection<guid>();
 
@@ -124,8 +127,6 @@ public class Query extends Runnable {
 
     public RCollection<Link.CLASS<? extends Link>> aggregateBy = new RCollection<Link.CLASS<? extends Link>>(true);
     public RCollection<Field.CLASS<? extends Field>> groupBy = new RCollection<Field.CLASS<? extends Field>>(true);
-
-    public RCollection<Filter.CLASS<? extends Filter>> filters = new RCollection<Filter.CLASS<? extends Filter>>(true);
 
     public Period.CLASS<? extends Period> period = null;
 
@@ -326,8 +327,8 @@ public class Query extends Runnable {
             changedFields.add((Field.CLASS<? extends Field>) field.getCLASS());
 
         if (hasAttribute(IObject.SearchIndex) && !searchFields.isEmpty()) {
-            for(Field.CLASS<? extends Field> field : changedFields) {
-                if(searchFields.contains(field)) {
+            for (Field.CLASS<? extends Field> field : changedFields) {
+                if (searchFields.contains(field)) {
                     SearchEngine.INSTANCE.updateRecord(this, recordId.toString());
                     break;
                 }
@@ -523,11 +524,11 @@ public class Query extends Runnable {
     public ReadLock getReadLock() {
         return readLock;
     }
-    
+
     public void setReadLock(ReadLock readLock) {
         this.readLock = readLock;
     }
-    
+
     public boolean hasRecord(guid recordId) {
         return readRecord(recordId, Arrays.asList(primaryKey()));
     }
@@ -611,34 +612,34 @@ public class Query extends Runnable {
         return myFields;
     }
 
-/*
-    public Statement batchStatement = null;
+    /*
+        public Statement batchStatement = null;
 
-    public boolean isBatching() {
-        return batchStatement != null;
-    }
-    
-    public void startBatch() {
-        batchStatement = new BatchStatement();
-        batchStatement.statement()..
-    }
-    
-    public void finishBatch() {
-        batchStatement.executeBatch();
-        batchStatement.close();
-    }
-*/
+        public boolean isBatching() {
+            return batchStatement != null;
+        }
+        
+        public void startBatch() {
+            batchStatement = new BatchStatement();
+            batchStatement.statement()..
+        }
+        
+        public void finishBatch() {
+            batchStatement.executeBatch();
+            batchStatement.close();
+        }
+    */
     public void executeInsert(Collection<Field> fields) {
         Query rootQuery = getRootQuery();
 
         Insert insert = new Insert(rootQuery, fields);
 
         try {
-/*
-            if(isBatching())
-                batchStatement.addBatch(insert);
-            else
-*/
+            /*
+                        if(isBatching())
+                            batchStatement.addBatch(insert);
+                        else
+            */
             insert.execute();
         } catch (SQLException e) {
             throw new RuntimeException(e);
@@ -816,20 +817,20 @@ public class Query extends Runnable {
 
     public int update(SqlToken where) {
         Collection<Field> changedFields = getChangedFields();
-        
+
         Collection<Field> fields = new ArrayList<Field>();
         fields.add(primaryKey());
 
         read(fields, where);
 
         int result = 0;
-        
+
         while (next()) {
             guid id = recordId();
             result += UpdateAction.run(this, id, changedFields, getModelRecordId(id), false);
         }
-        
-        for(Field field : changedFields)
+
+        for (Field field : changedFields)
             field.reset();
 
         return result;
@@ -851,7 +852,7 @@ public class Query extends Runnable {
             guid id = recordId();
             result += DestroyAction.run(this, id, getModelRecordId(id));
         }
-        
+
         return result;
     }
 
@@ -891,53 +892,53 @@ public class Query extends Runnable {
     }
 
     private List<State> states = new ArrayList<State>();
-    
+
     private static class FieldState {
         private Field field;
         private primary value;
         private boolean changed;
-        
+
         public FieldState(Field field) {
             this.field = field;
-            
+
             changed = field.changed();
-            
+
             if (changed) {
                 value = field.get();
                 field.reset();
             }
         }
-        
+
         public void restore() {
-            if(changed)
+            if (changed)
                 field.set(value);
         }
     }
-    
+
     private static class State {
         private Select cursor;
         private Collection<FieldState> fieldStates = new ArrayList<FieldState>();
-        
+
         public State(Collection<Field> fields, Select cursor) {
             this.cursor = cursor;
-            
+
             for (Field field : fields)
                 fieldStates.add(new FieldState(field));
         }
-        
+
         public Select cursor() {
             return cursor;
         }
-        
+
         public void restore() {
             for (FieldState state : fieldStates)
                 state.restore();
         }
     }
-    
+
     public void saveState() {
         states.add(new State(getDataFields(), cursor));
- 
+
         if (cursor != null)
             cursor.saveState();
 
@@ -1003,7 +1004,7 @@ public class Query extends Runnable {
     public List<Control> getControls() {
         return CLASS.asList(controls());
     }
-    
+
     public List<Field> getSearchFields() {
         return CLASS.asList(searchFields);
     }
@@ -1061,9 +1062,31 @@ public class Query extends Runnable {
         }
         return where;
     }
+    
+    final public void addWhere(String json) {
+        addWhere(parseWhere(json));
+    }
+    
+    final public void addWhere(SqlToken where) {
+        this.where = new And(where(), where);
+    }
+    
+    final public void setWhere(String json) {
+        setWhere(parseWhere(json));
+    }
 
     final public void setWhere(SqlToken where) {
         this.where = where;
+    }
+    
+    private SqlToken parseWhere(String json) {
+        Collection<Filter> filters = Filter.parse(json, this);
+        SqlToken result = null;
+        for (Filter filter : filters) {
+            SqlToken where = filter.where();
+            result = result == null ? where : new And(result, where);
+        }
+        return result;
     }
 
     public Collection<Field> getSortFields() {
@@ -1080,10 +1103,6 @@ public class Query extends Runnable {
 
     public Collection<Field> getGroupByFields() {
         return CLASS.asList(groupBy);
-    }
-
-    public Collection<Filter> getFilters() {
-        return CLASS.asList(filters);
     }
 
     private RCollection<guid> getGuidCollection(Collection<guid> guids) {
@@ -1196,7 +1215,7 @@ public class Query extends Runnable {
             model.get().setContext(this);
     }
 
-    //////////////////////////////////////////////////////////////////////////////////////////////////
+    // ////////////////////////////////////////////////////////////////////////////////////////////////
     // IQuery
 
     @Override
@@ -1254,15 +1273,15 @@ public class Query extends Runnable {
 
     public Query getRootQuery() {
         Query[] rootQueries = getRootQueries();
-        
-        if(rootQueries.length != 1)
+
+        if (rootQueries.length != 1)
             return null;
-        
+
         Query rootQuery = rootQueries[0];
-        
-        if(rootQuery == this)
+
+        if (rootQuery == this)
             return rootQuery;
-        
+
         return rootQuery.getRootQuery();
     }
 
@@ -1339,10 +1358,10 @@ public class Query extends Runnable {
         if (references.size() > 1) {
             if (model == null) {
                 String message = "Model inconsistency. Multiple root queries detected in " + classId();
-                
+
                 for (Query.CLASS<? extends Query> query : references)
-                    message +=("\n\t" + query.get());
-                
+                    message += ("\n\t" + query.get());
+
                 Trace.logEvent(message);
 
             }
@@ -1796,13 +1815,13 @@ public class Query extends Runnable {
         String result = "";
 
         for (Field field : searchFields) {
-            if(field.type() != FieldType.Guid)
+            if (field.type() != FieldType.Guid)
                 result += (result.isEmpty() ? "" : " ") + field.searchValue();
         }
-        
+
         return result;
     }
-    
+
     public Field getSearchId() {
         return searchId != null ? searchId.get() : primaryKey();
     }
@@ -1885,7 +1904,7 @@ public class Query extends Runnable {
 
         for (RecordActions action : recordActions)
             writer.write(action.toString());
-        
+
         writer.finishArray();
     }
 
@@ -1901,7 +1920,7 @@ public class Query extends Runnable {
             writer.writeProperty(Json.lockKey, lockKey.id());
 
         AttachmentField attachments = getAttachmentField();
-        
+
         if (attachments != null && fields.contains(attachments))
             writer.writeProperty(Json.attachments, attachments.id());
 
@@ -1916,9 +1935,9 @@ public class Query extends Runnable {
         }
 
         if (!recordIds.isEmpty()) {
-        	writer.startArray(Json.ids);
-        	for(guid id : recordIds)
-        		writer.write(id);
+            writer.startArray(Json.ids);
+            for (guid id : recordIds)
+                writer.write(id);
             writer.finishArray();
         }
     }
@@ -1985,8 +2004,8 @@ public class Query extends Runnable {
                 writer.writeProperty(Json.groupId, owner.id());
 
                 if (field.editWith == null) {
-                	writer.writeProperty(Json.editWith, owner.classId());
-                	writer.writeProperty(Json.editWithText, owner.displayName());
+                    writer.writeProperty(Json.editWith, owner.classId());
+                    writer.writeProperty(Json.editWithText, owner.displayName());
                 }
 
                 readOnly = hasReadOnlyLinks(path) || !field.selectable.get();
@@ -1999,24 +2018,9 @@ public class Query extends Runnable {
             writer.writeProperty(Json.required, required);
             writer.writeProperty(Json.readOnly, readOnly);
 
-            Collection<Query> owners = QueryUtils.getOwners(path);
-            owners.add(owner);
-
-            Collection<Filter> filters = QueryUtils.getFilters(owners);
-
-            writer.startArray(Json.filter);
-
-            for (Filter filter : filters) {
-                writer.startObject();
-                filter.write(writer);
-                writer.finishObject();
-            }
-
-            writer.finishArray();
-
             if (field.editWith != null) {
-            	writer.writeProperty(Json.editWith, field.editWith.classId());
-            	writer.writeProperty(Json.editWithText, field.editWith.displayName());
+                writer.writeProperty(Json.editWith, field.editWith.classId());
+                writer.writeProperty(Json.editWithText, field.editWith.displayName());
             }
 
             writer.finishObject();
@@ -2066,7 +2070,7 @@ public class Query extends Runnable {
             command.write(writer);
             writer.finishObject();
         }
-        
+
         writer.finishArray();
     }
 
@@ -2119,9 +2123,27 @@ public class Query extends Runnable {
     public sql_bool z8_where() {
         return new True();
     }
+    
+    public void z8_addWhere(sql_bool where) {
+        addWhere(where);
+    }
+
+    public void z8_addWhere(string filter) {
+        Collection<Filter> filters = Filter.parse(filter.get(), this);
+        SqlToken result = null;
+        for (Filter f : filters) {
+            SqlToken where = f.where();
+            result = result == null ? where : new And(result, where);
+        }
+        addWhere(result);
+    }
 
     public void z8_setWhere(sql_bool where) {
         setWhere(where);
+    }
+
+    public void z8_setWhere(string json) {
+        setWhere(json.get());
     }
 
     public bool z8_hasRecord(guid recordId) {
@@ -2164,7 +2186,7 @@ public class Query extends Runnable {
     public guid z8_recordId() {
         return recordId();
     }
-    
+
     @SuppressWarnings({ "unchecked", "rawtypes" })
     public Field.CLASS<? extends Field> z8_getFieldById(string id) {
         return (Field.CLASS) getFieldById(id.get()).getCLASS();
@@ -2178,7 +2200,7 @@ public class Query extends Runnable {
     public guid z8_create() {
         try {
             return create();
-        } catch(Throwable e) {
+        } catch (Throwable e) {
             throw new exception(e);
         }
     }
@@ -2186,7 +2208,7 @@ public class Query extends Runnable {
     public guid z8_create(guid recordId) {
         try {
             return create(recordId);
-        } catch(Throwable e) {
+        } catch (Throwable e) {
             throw new exception(e);
         }
     }
@@ -2345,48 +2367,61 @@ public class Query extends Runnable {
         return new bool(next());
     }
 
-    public void z8_onNew(Query.CLASS<? extends Query> query, guid recordId, guid parentId, guid modelRecordId) {}
+    public void z8_onNew(Query.CLASS<? extends Query> query, guid recordId, guid parentId, guid modelRecordId) {
+    }
 
-    public void z8_onCopy(Query.CLASS<? extends Query> query) {}
+    public void z8_onCopy(Query.CLASS<? extends Query> query) {
+    }
 
     public void z8_beforeRead(Query.CLASS<? extends Query> query, guid parentId, Query.CLASS<? extends Query> model,
-            guid modelRecordId) {}
+            guid modelRecordId) {
+    }
 
     public void z8_afterRead(Query.CLASS<? extends Query> query, guid parentId, Query.CLASS<? extends Query> model,
-            guid modelRecordId) {}
+            guid modelRecordId) {
+    }
 
     public void z8_beforeCreate(Query.CLASS<? extends Query> query, guid recordId, guid parentId,
-            Query.CLASS<? extends Query> model, guid modelRecordId) {}
+            Query.CLASS<? extends Query> model, guid modelRecordId) {
+    }
 
     public void z8_afterCreate(Query.CLASS<? extends Query> query, guid recordId, guid parentId,
-            Query.CLASS<? extends Query> model, guid modelRecordId) {}
+            Query.CLASS<? extends Query> model, guid modelRecordId) {
+    }
 
     @SuppressWarnings("rawtypes")
     public void z8_beforeUpdate(Query.CLASS<? extends Query> query, guid recordId, RCollection changedFields,
-            Query.CLASS<? extends Query> model, guid modelRecordId) {}
+            Query.CLASS<? extends Query> model, guid modelRecordId) {
+    }
 
     @SuppressWarnings("rawtypes")
     public void z8_afterUpdate(Query.CLASS<? extends Query> query, guid recordId, RCollection changedFields,
-            Query.CLASS<? extends Query> model, guid modelRecordId) {}
+            Query.CLASS<? extends Query> model, guid modelRecordId) {
+    }
 
     public void z8_beforeDestroy(Query.CLASS<? extends Query> query, guid recordId, Query.CLASS<? extends Query> model,
-            guid modelRecordId) {}
+            guid modelRecordId) {
+    }
 
     public void z8_afterDestroy(Query.CLASS<? extends Query> query, guid recordId, Query.CLASS<? extends Query> model,
-            guid modelRecordId) {}
+            guid modelRecordId) {
+    }
 
     @SuppressWarnings("rawtypes")
     public void z8_onCommand(Query.CLASS<? extends Query> query, Command.CLASS<? extends Command> command,
-            RCollection recordIds) {}
+            RCollection recordIds) {
+    }
 
-    public void z8_onRender(Query.CLASS<? extends Query> query) {}
+    public void z8_onRender(Query.CLASS<? extends Query> query) {
+    }
 
     public Style.CLASS<? extends Style> z8_renderRecord(Query.CLASS<? extends Query> query) {
         return null;
     }
 
     @SuppressWarnings("rawtypes")
-    public void z8_onReport(Query.CLASS<? extends Query> query, string report, RCollection recordIds) {}
+    public void z8_onReport(Query.CLASS<? extends Query> query, string report, RCollection recordIds) {
+    }
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
     public Query.CLASS<? extends Query> z8_onFollow(Field.CLASS<? extends Field> fieldClass, RCollection recordIds) {
