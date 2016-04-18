@@ -133,10 +133,14 @@ class Query extends Runnable
 
 	virtual protected sql_bool where();
 	virtual protected sql_bool having();
+	
 	public void addWhere(sql_bool where);
-    public void addWhere(string where);
+    public void addWhere(string where);         //[{property: "a", value: "u"}] или {property: "a", value: "u"}
+    public void addWhere(string[] where);       //{property: "a", value: "u"}
+	
 	public void setWhere(sql_bool where);
 	public void setWhere(string where);
+	public void setWhere(string[] where);
 	
 	public void refresh();
 	public void refreshRecord(guid id);

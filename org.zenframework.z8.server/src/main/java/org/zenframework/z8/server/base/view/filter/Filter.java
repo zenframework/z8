@@ -201,6 +201,17 @@ public class Filter {
         }
     }
 
+    public static Collection<Filter> parse(Collection<string> json, Query query) {
+        List<Filter> result = new ArrayList<Filter>();
+
+        if (json == null)
+            return result;
+
+        JsonArray filters = new JsonArray(json);
+
+        return parse(filters, query);
+    }
+
     public static Collection<Filter> parse(String json, Query query) {
         List<Filter> result = new ArrayList<Filter>();
 
@@ -212,8 +223,15 @@ public class Filter {
 
         JsonArray filters = new JsonArray(json);
 
-        for (int index = 0; index < filters.length(); index++) {
-            JsonObject filter = (JsonObject) filters.get(index);
+        return parse(filters, query);
+    }
+
+    private static Collection<Filter> parse(JsonArray json, Query query) {
+        List<Filter> result = new ArrayList<Filter>();
+
+        for (int index = 0; index < json.length(); index++) {
+            Object obj = json.get(index);
+            JsonObject filter = obj instanceof JsonObject ? (JsonObject) obj : new JsonObject(obj.toString());
 
             if (filter.has(Json.value)) {
                 String fields = filter.getString(filter.has(Json.field) ? Json.field : Json.property);

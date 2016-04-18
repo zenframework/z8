@@ -1064,7 +1064,11 @@ public class Query extends Runnable {
     }
     
     final public void addWhere(String json) {
-        addWhere(parseWhere(json));
+        addWhere(parseWhere(Filter.parse(json, this)));
+    }
+    
+    final public void addWhere(Collection<string> json) {
+        addWhere(parseWhere(Filter.parse(json, this)));
     }
     
     final public void addWhere(SqlToken where) {
@@ -1072,15 +1076,18 @@ public class Query extends Runnable {
     }
     
     final public void setWhere(String json) {
-        setWhere(parseWhere(json));
+        setWhere(parseWhere(Filter.parse(json, this)));
+    }
+    
+    final public void setWhere(Collection<string> json) {
+        setWhere(parseWhere(Filter.parse(json, this)));
     }
 
     final public void setWhere(SqlToken where) {
         this.where = where;
     }
     
-    private SqlToken parseWhere(String json) {
-        Collection<Filter> filters = Filter.parse(json, this);
+    private SqlToken parseWhere(Collection<Filter> filters) {
         SqlToken result = null;
         for (Filter filter : filters) {
             SqlToken where = filter.where();
@@ -2128,14 +2135,12 @@ public class Query extends Runnable {
         addWhere(where);
     }
 
-    public void z8_addWhere(string filter) {
-        Collection<Filter> filters = Filter.parse(filter.get(), this);
-        SqlToken result = null;
-        for (Filter f : filters) {
-            SqlToken where = f.where();
-            result = result == null ? where : new And(result, where);
-        }
-        addWhere(result);
+    public void z8_addWhere(string json) {
+        addWhere(json.get());
+    }
+    
+    public void z8_addWhere(RCollection<string> json) {
+        addWhere(json);
     }
 
     public void z8_setWhere(sql_bool where) {
@@ -2144,6 +2149,10 @@ public class Query extends Runnable {
 
     public void z8_setWhere(string json) {
         setWhere(json.get());
+    }
+    
+    public void z8_setWhere(RCollection<string> json) {
+        setWhere(json);
     }
 
     public bool z8_hasRecord(guid recordId) {
