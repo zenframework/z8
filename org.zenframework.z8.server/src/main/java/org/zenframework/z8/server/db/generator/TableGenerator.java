@@ -97,15 +97,8 @@ public class TableGenerator {
         this.connection = connection;
 
         try {
-            if (action == GeneratorAction.Alter) {
+            if (action == GeneratorAction.Alter)
                 action = checkAlter();
-            }
-
-            if (action != GeneratorAction.Create) {
-                try {
-                    dropAllKeys(connection, dbTable, logger);
-                } catch (ObjectNotFoundException e) {}
-            }
 
             switch (action) {
             case None:
@@ -268,14 +261,10 @@ public class TableGenerator {
         Statement.executeUpdate(connection, sql);
     }
 
-    static void dropAllKeys(Connection connection, TableDescription tableindb, ILogger logger) throws SQLException {
-        dropFKs(connection, tableindb.getRelations(), logger);
-        dropIdxs(connection, tableindb, logger);
-    }
-
-    static void dropReferencesKeys(Connection connection, TableDescription tableindb, ILogger logger)
-            throws SQLException {
-        dropFKs(connection, tableindb.getRelationsFromPK(), logger);
+    public void dropAllKeys(Connection connection) {
+        this.connection = connection;
+        dropFKs(connection, dbTable.getRelations(), logger);
+        dropIdxs(connection, dbTable, logger);
     }
 
     private String getFieldForCreate(Field field) {
@@ -400,9 +389,7 @@ public class TableGenerator {
         try {
             createTable(name);
             moveData(name);
-            dropReferencesKeys(connection, dbTable, logger);
             dropTable(connection, table().name());
-            dbTable.onRecreateTable();
         } catch (SQLException e) {
             dropTable(connection, name);
             throw e;

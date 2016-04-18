@@ -12,7 +12,6 @@ public class TableDescription {
     private Collection<Index> indices = new ArrayList<Index>();
     private Collection<Index> uniqueIndices = new ArrayList<Index>();
     private Collection<ForeignKey> links = new HashSet<ForeignKey>();
-    private Collection<ForeignKey> linksFromPK = new HashSet<ForeignKey>();
 
     public TableDescription(String name, boolean isView) {
         this.name = name;
@@ -47,17 +46,6 @@ public class TableDescription {
         return links;
     }
 
-    public Collection<ForeignKey> getRelationsFromPK() {
-        return linksFromPK;
-    }
-
-    public void onRecreateTable() {
-        primaryKey = null;
-        links.clear();
-        indices.clear();
-        uniqueIndices.clear();
-    }
-
     void addField(Column field) {
         columns.add(field);
     }
@@ -76,9 +64,5 @@ public class TableDescription {
 
     void addLink(ForeignKey relation) {
         links.add(relation);
-    }
-
-    void addLinkFromPK(ForeignKey relation) {
-        linksFromPK.add(relation);
     }
 }

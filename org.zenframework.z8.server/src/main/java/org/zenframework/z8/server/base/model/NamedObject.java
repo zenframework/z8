@@ -3,8 +3,8 @@ package org.zenframework.z8.server.base.model;
 import org.zenframework.z8.server.request.INamedObject;
 
 public class NamedObject implements INamedObject {
-    private String id;
-    private String name;
+    protected String id;
+    protected String name;
 
     public NamedObject(String id) {
         this(id, null);
