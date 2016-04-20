@@ -32,8 +32,6 @@ public class OBJECT extends RequestTarget implements IObject {
         }
     }
 
-    private String id;
-
     private IObject container = null;
     private IObject owner = null;
     private CLASS<? extends OBJECT> cls = null;
@@ -53,7 +51,7 @@ public class OBJECT extends RequestTarget implements IObject {
 
     @Override
     public int compareTo(INamedObject object) {
-        return id().hashCode() - object.id().hashCode();
+        return id() == object.id() ? 0 : 1;
     }
 
     @Override

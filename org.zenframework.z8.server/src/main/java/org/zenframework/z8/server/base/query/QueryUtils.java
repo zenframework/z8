@@ -30,16 +30,6 @@ public class QueryUtils {
         return queries;
     }
 
-    static public Collection<Filter> getFilters(Collection<Query> queries) {
-        Collection<Filter> filters = new ArrayList<Filter>();
-
-        for(Query query : queries) {
-            filters.addAll(query.getFilters());
-        }
-
-        return filters;
-    }
-
     static public void setFieldValue(Field field, String value) {
         FieldType type = field.type();
 

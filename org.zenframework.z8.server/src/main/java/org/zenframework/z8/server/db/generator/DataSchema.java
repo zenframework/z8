@@ -55,22 +55,6 @@ public class DataSchema {
                 tables.get(relation.table).addLink(relation);
             }
         }
-        for(ForeignKey relation : getForeignKeysFromPK(connection, tablePattern)) {
-            if(tables.containsKey(relation.table)) {
-                for(ForeignKey p : tables.get(relation.table).getRelations()) {
-                    if(p.name.equals(relation.name)) {
-                        TableDescription table = tables.get(relation.referenceTable);
-                        if(table != null) {
-                            table.addLinkFromPK(p);
-                            break;
-                        }
-                    }
-                }
-            }
-            else {
-                tables.get(relation.referenceTable).addLinkFromPK(relation);
-            }
-        }
         return tables;
     }
 
@@ -396,73 +380,6 @@ public class DataSchema {
 
         Collection<ForeignKey> foreignKeys = new LinkedList<ForeignKey>();
 
-        Cursor cursor = BasicSelect.cursor(connection, sql);
-
-        while(cursor.next()) {
-            foreignKeys.add(new ForeignKey(cursor.getString(1).get(), cursor.getString(2).get(), cursor.getString(3).get(),
-                    cursor.getString(4).get(), cursor.getString(5).get()));
-        }
-
-        cursor.close();
-
-        return foreignKeys;
-    }
-
-    static private Iterable<ForeignKey> getForeignKeysFromPK(Connection connection, String tableLike) throws SQLException {
-        String sql;
-
-        switch(connection.vendor()) {
-        case Oracle: {
-            sql = "SELECT TO_NCHAR(pk.TABLE_NAME) PK_TABNAME, TO_NCHAR(pkCols.COLUMN_NAME) PK_COLNAME, TO_NCHAR(fk.TABLE_NAME) FK_TABNAME      ,"
-                    + " TO_NCHAR(fkCols.COLUMN_NAME) FK_COLNAME ,"
-                    + " TO_NCHAR(fk.CONSTRAINT_NAME) CONSTRAINT_NAME"
-                    + "  FROM"
-                    + " (SELECT CONSTRAINT_NAME,"
-                    + "   constraint_type      ,"
-                    + "   TABLE_NAME           ,"
-                    + "   R_CONSTRAINT_NAME"
-                    + "    FROM user_constraints a"
-                    + "   WHERE constraint_type = 'R'"
-                    + " ) fk                   ,"
-                    + " (SELECT CONSTRAINT_NAME,"
-                    + "   constraint_type      ,"
-                    + "   TABLE_NAME           ,"
-                    + "   R_CONSTRAINT_NAME"
-                    + "    FROM user_constraints a"
-                    + "   WHERE constraint_type = 'P'"
-                    + " AND lower(TABLE_NAME) LIKE lower('"
-                    + tableLike
-                    + "')"
-                    + " ) pk                    ,"
-                    + " user_cons_columns fkCols,"
-                    + " user_cons_columns pkCols"
-                    + " WHERE fk.R_CONSTRAINT_NAME = pk.CONSTRAINT_NAME"
-                    + " AND fk.CONSTRAINT_NAME       = fkCols.CONSTRAINT_NAME"
-                    + " AND pk.CONSTRAINT_NAME       = pkCols.CONSTRAINT_NAME";
-            break;
-        }
-        case SqlServer: {
-            sql = "select CAST(pk.TABLE_NAME as nvarchar(255)) PK_TABNAME, CAST(pk.COLUMN_NAME as nvarchar(255)) PK_COLNAME, CAST(fk.TABLE_NAME as nvarchar(255)) FK_TABNAME, CAST(fk.COLUMN_NAME as nvarchar(255)) FK_COLNAME, CAST(fk.CONSTRAINT_NAME as nvarchar(255)) CONSTRAINT_NAME "
-                    + " from INFORMATION_SCHEMA.KEY_COLUMN_USAGE fk, "
-                    + " INFORMATION_SCHEMA.REFERENTIAL_CONSTRAINTS refc, INFORMATION_SCHEMA.KEY_COLUMN_USAGE pk "
-                    + " where fk.CONSTRAINT_NAME=refc.CONSTRAINT_NAME and refc.UNIQUE_CONSTRAINT_NAME=pk.CONSTRAINT_NAME "
-                    + " and lower(pk.TABLE_NAME) like lower('" + tableLike + "')";
-            break;
-        }
-        case Postgres: {
-            sql = "select pk.table_name, pk.column_name, fk.table_name, fk.column_name, fk.constraint_name " + "from "
-                    + "information_schema.key_column_usage fk, " + "information_schema.referential_constraints refc, "
-                    + "information_schema.key_column_usage pk " + "where "
-                    + "fk.constraint_name = refc.constraint_name and "
-                    + "refc.unique_constraint_name = pk.constraint_name and " + "fk.constraint_schema = '"
-                    + connection.database().schema() + "'";
-            break;
-        }
-        default:
-            throw new UnknownDatabaseException();
-        }
-
-        Collection<ForeignKey> foreignKeys = new LinkedList<ForeignKey>();
         Cursor cursor = BasicSelect.cursor(connection, sql);
 
         while(cursor.next()) {

@@ -2,12 +2,10 @@ package org.zenframework.z8.server.base.model.actions;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -45,14 +43,12 @@ import org.zenframework.z8.server.json.JsonWriter;
 import org.zenframework.z8.server.json.parser.JsonArray;
 import org.zenframework.z8.server.json.parser.JsonObject;
 import org.zenframework.z8.server.logs.Trace;
-import org.zenframework.z8.server.search.SearchEngine;
 import org.zenframework.z8.server.types.bool;
 import org.zenframework.z8.server.types.guid;
 import org.zenframework.z8.server.types.primary;
 import org.zenframework.z8.server.types.string;
 import org.zenframework.z8.server.types.sql.sql_string;
 import org.zenframework.z8.server.utils.ArrayUtils;
-import org.zenframework.z8.server.utils.StringUtils;
 
 public class ReadAction extends Action {
 	private static final Collection<Field> emptyFieldList = new ArrayList<Field>();
@@ -201,7 +197,8 @@ public class ReadAction extends Action {
 			if(lookupFields.length != 0)
 				addLikeFilter(lookupFields, getLookupParameter());
 
-			for(Filter filter : getFieldFilters()) {
+			Collection<Filter> filters = Filter.parse(getFilterParameter(), query);
+			for(Filter filter : filters) {
 				// if (isGrouped()) {
 				// addGroupFilter(filter.where());
 				// } else {
@@ -562,36 +559,6 @@ public class ReadAction extends Action {
 			addFilter(new Group(filter));
 	}
 
-	protected Field getFieldById(String id) {
-		for(Field field : selectFields) {
-			if(field.id().equals(id))
-				return field;
-		}
-		return null;
-	}
-
-	protected Collection<Field> parseFields(String jsonData) {
-		Collection<Field> result = new ArrayList<Field>();
-
-		if(jsonData.charAt(0) != '[')
-			jsonData = "[" + jsonData + "]";
-
-		JsonArray fields = new JsonArray(jsonData);
-
-		Query query = getQuery();
-
-		for(int index = 0; index < fields.length(); index++) {
-			String fieldId = fields.getString(index);
-
-			Field field = query.findFieldById(fieldId);
-
-			if(field != null)
-				result.add(field);
-		}
-
-		return result;
-	}
-
 	protected Collection<String> parseValues(String jsonData) {
 		Collection<String> result = new ArrayList<String>();
 
@@ -620,49 +587,6 @@ public class ReadAction extends Action {
 			result.add(jsonData);
 
 		return result;
-	}
-
-	protected Collection<Filter> getFieldFilters() {
-		List<Filter> result = new ArrayList<Filter>();
-
-		String filterData = getFilterParameter();
-
-		if(filterData == null)
-			return result;
-
-		JsonArray filters = new JsonArray(filterData);
-
-		for(int index = 0; index < filters.length(); index++) {
-			JsonObject filter = (JsonObject)filters.get(index);
-
-			if(filter.has(Json.value)) {
-				String fields = filter.getString(filter.has(Json.field) ? Json.field : Json.property);
-				String values = filter.getString(Json.value);
-				String comparison = filter.has(Json.comparison) ? filter.getString(Json.comparison) : filter.has(Json.operator) ? filter.getString(Json.operator) : null;
-
-				Filter flt = getFieldFilter(fields, values, comparison);
-
-				if(flt != null)
-					result.add(flt);
-			}
-		}
-
-		return result;
-	}
-
-	protected Filter getFieldFilter(String fields, String values, String comparison) {
-		Operation operation = comparison != null ? Operation.fromString(comparison) : null;
-
-		if(Json.__search_text__.equals(fields)) {
-			if(values.isEmpty())
-				return null;
-
-			Query query = getQuery();
-			Collection<String> foundIds = SearchEngine.INSTANCE.searchRecords(query, StringUtils.unescapeJava(values));
-
-			return new Filter(Arrays.asList(query.getSearchId()), operation, foundIds);
-		} else
-			return new Filter(parseFields(fields), operation, parseValues(values));
 	}
 
 	protected String parseJsonProperty(JsonObject json, string property) {
@@ -695,12 +619,12 @@ public class ReadAction extends Action {
 			JsonObject filter = (JsonObject)filters.get(index);
 
 			if(filter.has(Json.value)) {
-				Collection<Field> fields = parseFields(filter.getString(filter.has(Json.field) ? Json.field : Json.property));
+				Field field = getQuery().findFieldById(filter.getString(filter.has(Json.field) ? Json.field : Json.property));
 				Collection<String> values = parseValues(filter.getString(Json.value));
 				String comparison = filter.has(Json.comparison) ? filter.getString(Json.comparison) : filter.has(Json.operator) ? filter.getString(Json.operator) : null;
 				Operation operation = comparison != null ? Operation.fromString(comparison) : null;
 
-				Filter f = new Filter(fields, operation, values);
+				Filter f = new Filter(field, operation, values);
 
 				if(result == null)
 					result = f.toString();
@@ -731,11 +655,11 @@ public class ReadAction extends Action {
 			String operator = parseJsonProperty(filter, Json.operator);
 
 			if(fieldId != null && value != null && operator != null) {
-				Collection<Field> fields = parseFields(fieldId);
+				Field field = getQuery().findFieldById(fieldId);
 				Collection<String> values = parseValues(value);
 				Operation operation = Operation.fromString(operator);
 
-				Filter f = new Filter(fields, operation, values);
+				Filter f = new Filter(field, operation, values);
 
 				if(index != 0) {
 					String andOr = parseJsonProperty(filter, Json.andOr);
@@ -773,11 +697,11 @@ public class ReadAction extends Action {
 			String operator = parseJsonProperty(filter, Json.operator);
 
 			if(fieldId != null && value != null && operator != null) {
-				Collection<Field> fields = parseFields(fieldId);
+			    Field field = getQuery().findFieldById(fieldId);
 				Collection<String> values = parseValues(value);
 				Operation operation = Operation.fromString(operator);
 
-				SqlToken token = new Filter(fields, operation, values).where();
+				SqlToken token = new Filter(field, operation, values).where();
 
 				if(index != 0) {
 					String andOr = parseJsonProperty(filter, Json.andOr);
