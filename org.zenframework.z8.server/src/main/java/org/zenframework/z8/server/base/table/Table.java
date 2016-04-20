@@ -24,6 +24,7 @@ public class Table extends TableBase {
         public final static String CreatedBy = "CreatedBy";
         public final static String ModifiedAt = "ModifiedAt";
         public final static String ModifiedBy = "ModifiedBy";
+        public final static String Archive = "Archive";
 
         public final static String Id = "Id";
         public final static String Id1 = "Id1";
@@ -39,6 +40,7 @@ public class Table extends TableBase {
         public final static String CreatedBy = "Table.createdBy";
         public final static String ModifiedAt = "Table.modifiedAt";
         public final static String ModifiedBy = "Table.modifiedBy";
+        public final static String Archive = "Table.archive";
 
         public final static String Id = "Table.id";
         public final static String Id1 = "Table.id1";
@@ -53,6 +55,7 @@ public class Table extends TableBase {
         public final static String CreatedBy = Resources.get(strings.CreatedBy);
         public final static String ModifiedAt = Resources.get(strings.ModifiedAt);
         public final static String ModifiedBy = Resources.get(strings.ModifiedBy);
+        public final static String Archive = Resources.get(strings.Archive);
 
         public final static String Id = Resources.get(strings.Id);
         public final static String Id1 = Resources.get(strings.Id1);
@@ -81,6 +84,8 @@ public class Table extends TableBase {
 
     public GuidField.CLASS<? extends GuidField> createdBy = new GuidField.CLASS<GuidField>(this);
     public GuidField.CLASS<? extends GuidField> modifiedBy = new GuidField.CLASS<GuidField>(this);
+
+    public BoolField.CLASS<? extends BoolField> archive = new BoolField.CLASS<BoolField>(this);
 
     public StringField.CLASS<? extends StringField> id = new StringField.CLASS<StringField>(this);
     public StringField.CLASS<? extends StringField> id1 = new StringField.CLASS<StringField>(this);
@@ -189,11 +194,17 @@ public class Table extends TableBase {
         modifiedBy.setDisplayName(displayNames.ModifiedBy);
         modifiedBy.get().system.set(true);
 
+        archive.setName(names.Archive);
+        archive.setIndex("archive");
+        archive.setDisplayName(displayNames.Archive);
+        archive.get().system.set(true);
+
         registerDataField(recordId);
         registerDataField(createdAt);
         registerDataField(modifiedAt);
         registerDataField(createdBy);
         registerDataField(modifiedBy);
+        registerDataField(archive);
 
         registerDataField(id);
         registerDataField(id1);
