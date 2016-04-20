@@ -19,6 +19,7 @@
 	<entry key="Table.modifiedAt">Изменено</entry>
 	<entry key="Table.createdBy">Создал</entry>
 	<entry key="Table.modifiedBy">Изменил</entry>
+	<entry key="archive">Архив</entry>
 	<entry key="Table.scope">Область видимости</entry>
 
 	<entry key="Table.id">Код</entry>
