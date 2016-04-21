@@ -81,13 +81,29 @@ public class ExportMessages extends Table {
 	public void addMessage(Message message, String transportInfo) throws JAXBException {
 		this.id.get().set(new string(message.getSender()));
 		this.id1.get().set(new string(message.getAddress()));
-		this.name.get().set(new string(message.getExportProtocol()));
-		if (transportInfo != null)
-		    this.description.get().set(new string(transportInfo));
+		if (Export.LOCAL_PROTOCOL.equals(message.getExportProtocol()))
+			this.name.get().set(new string(Export.LOCAL_PROTOCOL));
+		else if (transportInfo != null)
+			this.name.get().set(new string(transportInfo));
 		this.ordinal.get().set(new integer(nextOrdinal(message)));
 		this.message.get().set(new string(IeUtil.marshalExportEntry(message.getExportEntry())));
 		this.attachment.get().set(getAttachment(message.getId()));
-		create(new guid(message.getId()));
+		guid recordId = new guid(message.getId());
+		if (hasRecord(recordId))
+			update(recordId);
+		else
+			create(recordId);
+	}
+
+	public void processCurrentMessage(String transportUrl, boolean preserveExportMessages) {
+		if (preserveExportMessages) {
+			if (transportUrl != null)
+				name.get().set(transportUrl);
+			processed.get().set(new bool(true));
+			update(recordId());
+		} else {
+			destroy(recordId());
+		}
 	}
 
 	public void setError(guid messageId, Throwable e) {

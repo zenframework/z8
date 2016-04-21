@@ -33,7 +33,8 @@ public class RmiTransport extends AbstractTransport {
 			ITransportService server = (ITransportService) Rmi.get(ITransportService.class, address);
 			server.sendMessage(message);
 		} catch (Exception e) {
-			throw new TransportException("Can't send message to '" + message.getAddress() + "'", e);
+			throw new TransportException("Can't send message '" + message.getId() + "' to '" + message.getAddress()
+					+ "' via '" + transportAddress + "'. " + e.getCause() + ": " + e.getMessage(), e);
 		}
 	}
 

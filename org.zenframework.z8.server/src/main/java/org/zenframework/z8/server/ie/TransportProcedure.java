@@ -18,7 +18,6 @@ import org.zenframework.z8.server.engine.RmiAddress;
 import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.runtime.RCollection;
 import org.zenframework.z8.server.runtime.ServerRuntime;
-import org.zenframework.z8.server.types.bool;
 import org.zenframework.z8.server.types.guid;
 
 public class TransportProcedure extends Procedure {
@@ -101,7 +100,7 @@ public class TransportProcedure extends Procedure {
 			try {
 				Message.CLASS<Message> message = messages.getMessage();
 				connection.beginTransaction();
-				beginProcessMessage(messages, null);
+				messages.processCurrentMessage(null, preserveExportMessages);
 				LOG.debug("Receive IE message [" + message.get().getId() + "] by " + messages.getTransportUrl());
 				z8_beforeImport(message);
 				ApplicationServer.disableEvents();
@@ -157,7 +156,7 @@ public class TransportProcedure extends Procedure {
 
 				try {
 					connection.beginTransaction();
-					beginProcessMessage(messages, route.getTransportUrl());
+					messages.processCurrentMessage(route.getTransportUrl(), preserveExportMessages);
 					Message.CLASS<Message> message = messages.getMessage();
 					z8_beforeExport(message);
 					transport.send(message.get(), route.getAddress());
@@ -168,7 +167,7 @@ public class TransportProcedure extends Procedure {
 				} catch (Throwable e) {
 					connection.rollback();
 					messages.setError(id, e);
-					log("Can't send messsage '" + id + "'", e);
+					log("Can't send message '" + id + "' via '" + route.getAddress() + "'", e);
 					if (e instanceof TransportException) {
 						transport.close();
 						transportRoutes.disableRoute(route.getRouteId(), e.getMessage());
@@ -201,17 +200,6 @@ public class TransportProcedure extends Procedure {
 			}
 		}
 
-	}
-
-	private static void beginProcessMessage(ExportMessages messages, String transportUrl) {
-		if (preserveExportMessages) {
-			if (transportUrl != null)
-				messages.name.get().set(transportUrl);
-			messages.processed.get().set(new bool(true));
-			messages.update(messages.recordId());
-		} else {
-			messages.destroy(messages.recordId());
-		}
 	}
 
 	protected void z8_init() {}
