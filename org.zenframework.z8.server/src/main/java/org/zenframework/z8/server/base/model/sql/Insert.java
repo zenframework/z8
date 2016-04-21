@@ -16,73 +16,69 @@ import org.zenframework.z8.server.logs.Trace;
 import org.zenframework.z8.server.types.primary;
 
 public class Insert extends Statement {
-    private Query query;
-    private Collection<Field> fields;
+	private Query query;
+	private Collection<Field> fields;
 
-    public Insert(Query query, Collection<Field> fields) {
-        super(ConnectionManager.get());
-        
-        this.query = query;
+	public Insert(Query query, Collection<Field> fields) {
+		super(ConnectionManager.get());
 
-        this.fields = new ArrayList<Field>();
+		this.query = query;
 
-        for(Field field : fields) {
-            if(!(field instanceof Expression)) {
-                this.fields.add(field);
-            }
-        }
-        
-        sql = buildSql();
-    }
+		this.fields = new ArrayList<Field>();
 
-    private String buildSql() {
-        Database database = database();
-        DatabaseVendor vendor = vendor();
+		for(Field field : fields) {
+			if(!(field instanceof Expression)) {
+				this.fields.add(field);
+			}
+		}
 
-        String insertFields = "";
-        String insertValues = "";
+		sql = buildSql();
+	}
 
-        for(Field field : fields) {
-            insertFields += (insertFields.isEmpty() ? "" : ", ") + vendor.quote(field.name());
-            insertValues += (insertValues.isEmpty() ? "" : ", ") + "?";
-        }
+	private String buildSql() {
+		Database database = database();
+		DatabaseVendor vendor = vendor();
 
-        return "insert into " + database.tableName(query.getRootQuery().name()) + " " + "(" + insertFields + ") values ("
-                + insertValues + ")";
-    }
-    
-    public void execute() throws SQLException {
-        try {
-            prepare(sql);
-            executeUpdate();
-        }
-        catch(Throwable e) {
-            System.out.println(sql());
+		String insertFields = "";
+		String insertValues = "";
 
-            for(Field field : fields) {
-                System.out.println(field.name() + ": " + field.get());
-            }
+		for(Field field : fields) {
+			insertFields += (insertFields.isEmpty() ? "" : ", ") + vendor.quote(field.name());
+			insertValues += (insertValues.isEmpty() ? "" : ", ") + "?";
+		}
 
-            Trace.logError(e);
+		return "insert into " + database.tableName(query.getRootQuery().name()) + " " + "(" + insertFields + ") values (" + insertValues + ")";
+	}
 
-            throw new RuntimeException(e);
-        }
-        finally {
-            close();
-        }
-    }
+	public void execute() throws SQLException {
+		try {
+			prepare(sql);
+			executeUpdate();
+		} catch(Throwable e) {
+			System.out.println(sql());
 
-    @Override
-    public void prepare(String sql) throws SQLException {
-        
-        super.prepare(sql);
+			for(Field field : fields)
+				System.out.println(field.name() + ": " + field.get());
 
-        int position = 1;
+			Trace.logError(e);
 
-        for(Field field : fields) {
-            primary value = field.get();
-            DbUtil.addParameter(this, position, field.type(), value);
-            position++;
-        }
-    }
+			throw new RuntimeException(e);
+		} finally {
+			close();
+		}
+	}
+
+	@Override
+	public void prepare(String sql) throws SQLException {
+
+		super.prepare(sql);
+
+		int position = 1;
+
+		for(Field field : fields) {
+			primary value = field.get();
+			DbUtil.addParameter(this, position, field.type(), value);
+			position++;
+		}
+	}
 }

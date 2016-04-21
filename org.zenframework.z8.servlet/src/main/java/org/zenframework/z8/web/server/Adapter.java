@@ -14,7 +14,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.fileupload.FileItem;
-import org.apache.commons.fileupload.FileUploadBase.FileSizeLimitExceededException;
 import org.apache.commons.fileupload.FileUploadException;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.zenframework.z8.server.base.file.FileInfo;
@@ -29,10 +28,10 @@ import org.zenframework.z8.server.json.Json;
 import org.zenframework.z8.server.logs.Trace;
 import org.zenframework.z8.server.resources.Resources;
 import org.zenframework.z8.server.types.encoding;
+import org.zenframework.z8.server.utils.NumericUtils;
 import org.zenframework.z8.web.servlet.Servlet;
 
 public abstract class Adapter {
-
 	private static final Collection<String> IgnoredExceptions = Arrays
 			.asList("org.apache.catalina.connector.ClientAbortException");
 
@@ -91,11 +90,16 @@ public abstract class Adapter {
 		if (ServletFileUpload.isMultipartContent(request)) {
 			List<FileItem> fileItems = parseMultipartRequest(request);
 
+			long fileSizeMaxMB = Z8Context.getConfig().webServerFileSizeMax();
+			long fileSizeMax = fileSizeMaxMB > 0 ? fileSizeMaxMB * NumericUtils.Megabyte : Long.MAX_VALUE;
+
 			for (FileItem fileItem : fileItems) {
-				if (fileItem.isFormField())
-					parameters.put(fileItem.getFieldName(), fileItem.getString(encoding.Default.toString()));
-				else
+				if (!fileItem.isFormField()) {
+					if(fileItem.getSize() > fileSizeMax)
+						throw new RuntimeException(Resources.format("Exception.fileSizeLimitExceeded", fileItem.getName(), fileSizeMaxMB));
 					files.add(new FileInfo(fileItem));
+				} else
+					parameters.put(fileItem.getFieldName(), fileItem.getString(encoding.Default.toString()));
 			}
 		} else {
 			@SuppressWarnings("unchecked")
@@ -113,15 +117,8 @@ public abstract class Adapter {
 	protected List<FileItem> parseMultipartRequest(HttpServletRequest request) {
 		ServletFileUpload upload = new ServletFileUpload(FilesFactory.getFileItemFactory());
 
-		long fileSizeMax = Z8Context.getConfig().webServerFileSizeMax();
-
-		if (fileSizeMax > 0)
-			upload.setFileSizeMax(fileSizeMax * 1024 * 1024);
-
 		try {
 			return upload.parseRequest(request);
-		} catch (FileSizeLimitExceededException e) {
-			throw new RuntimeException(Resources.format("Exception.fileSizeLimitExceeded", e.getFileName(), fileSizeMax));
 		} catch (FileUploadException e) {
 			throw new RuntimeException(e);
 		}
