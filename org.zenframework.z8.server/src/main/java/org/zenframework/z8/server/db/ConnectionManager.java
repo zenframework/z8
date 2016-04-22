@@ -71,7 +71,7 @@ public class ConnectionManager {
 		for(Connection connection : connections) {
 			if(connection.isCurrent()) {
 				connection.release();
-				return;
+				break;
 			}
 		}
 
