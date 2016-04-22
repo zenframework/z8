@@ -79,6 +79,8 @@ public class ExportMessages extends Table {
 	}
 
 	public void addMessage(Message message, String transportInfo) throws JAXBException {
+		guid recordId = new guid(message.getId());
+		boolean exists = hasRecord(recordId);
 		this.id.get().set(new string(message.getSender()));
 		this.id1.get().set(new string(message.getAddress()));
 		if (Export.LOCAL_PROTOCOL.equals(message.getExportProtocol()))
@@ -88,8 +90,7 @@ public class ExportMessages extends Table {
 		this.ordinal.get().set(new integer(nextOrdinal(message)));
 		this.message.get().set(new string(IeUtil.marshalExportEntry(message.getExportEntry())));
 		this.attachment.get().set(getAttachment(message.getId()));
-		guid recordId = new guid(message.getId());
-		if (hasRecord(recordId))
+		if (exists)
 			update(recordId);
 		else
 			create(recordId);
