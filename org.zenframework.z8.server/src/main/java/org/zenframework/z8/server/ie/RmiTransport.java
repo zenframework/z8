@@ -1,5 +1,6 @@
 package org.zenframework.z8.server.ie;
 
+import java.io.IOException;
 import java.rmi.RemoteException;
 import java.util.List;
 
@@ -41,6 +42,8 @@ public class RmiTransport extends AbstractTransport {
 			server.sendMessage(message);
 		} catch (RemoteException e) {
 			Throwable cause = e.getCause();
+			if (cause instanceof IOException)
+				throw new TransportException(cause);
 			if (cause instanceof RuntimeException)
 				throw (RuntimeException) cause;
 			if (cause instanceof Error)
