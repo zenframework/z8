@@ -1,0 +1,21 @@
+import org.zenframework.z8.base.table.value.Field;
+
+[native "org.zenframework.z8.server.ie.RecordsetExportPolicy"]
+class RecordsetExportPolicy {
+	
+	public void setImportPolicy(ImportPolicy importPolicy);
+	public void setImportPolicy(Field field, ImportPolicy importPolicy);
+	public void setImportPolicy(guid recordId, ImportPolicy importPolicy);
+	public void setImportPolicy(guid recordId, Field field, ImportPolicy importPolicy);
+
+	public ImportPolicy getDefaultImportPolicy(guid recordId);
+	public ImportPolicy getImportPolicy(guid recordId, Field field);
+
+	public void setExportAttachments(bool exportAttachments);
+	public void setExportAttachments(Field field, bool exportAttachments);
+	public void setExportAttachments(guid recordId, bool exportAttachments);
+	public void setExportAttachments(guid recordId, Field field, bool exportAttachments);
+
+	public bool isExportAttachments(guid recordId, Field field);
+
+}
