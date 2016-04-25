@@ -132,7 +132,11 @@ public class FileConverter {
 	}
 
 	private void convertFileToPdf(File sourceFile, File convertedFile) {
-		getOfficeDocumentConverter().convert(sourceFile, convertedFile);
+		try {
+			getOfficeDocumentConverter().convert(sourceFile, convertedFile);
+		} catch (NullPointerException e) {
+			throw new RuntimeException("Can't start office process '" + Z8Context.getConfig().getOfficeHome() + "'", e);
+		}
 	}
 
 	private OfficeDocumentConverter getOfficeDocumentConverter() {
