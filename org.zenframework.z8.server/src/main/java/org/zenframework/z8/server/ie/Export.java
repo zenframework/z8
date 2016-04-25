@@ -28,7 +28,6 @@ import org.zenframework.z8.server.runtime.OBJECT;
 import org.zenframework.z8.server.runtime.RCollection;
 import org.zenframework.z8.server.runtime.RLinkedHashMap;
 import org.zenframework.z8.server.runtime.ServerRuntime;
-import org.zenframework.z8.server.types.bool;
 import org.zenframework.z8.server.types.exception;
 import org.zenframework.z8.server.types.guid;
 import org.zenframework.z8.server.types.integer;
@@ -67,9 +66,9 @@ public class Export extends OBJECT {
 
 	protected final TransportContext.CLASS<TransportContext> context = new TransportContext.CLASS<TransportContext>();
 
-	private final Map<String, ImportPolicy> policies = new HashMap<String, ImportPolicy>();
+	private final Map<String, RecordsetExportPolicy> exportPolicies = new HashMap<String, RecordsetExportPolicy>();
+	private final RecordsetExportPolicy defaultExportPolicy = new RecordsetExportPolicy.CLASS<RecordsetExportPolicy>().get();
 	private final List<RecordsetEntry> recordsetEntries = new LinkedList<RecordsetEntry>();
-	private boolean exportAttachments = false;
 	private String exportUrl;
 	private int exportRecordsMax = Integer.parseInt(Properties.getProperty(ServerRuntime.ExportRecordsMaxProperty));
 
@@ -103,28 +102,8 @@ public class Export extends OBJECT {
 		recordsetEntries.add(new RecordsetEntry(table, fields));
 	}
 
-	public void setPolicy(Table table, ImportPolicy policy) {
-		policies.put(table.classId(), policy);
-	}
-
-	public void setPolicy(String tableClass, ImportPolicy policy) {
-		policies.put(tableClass, policy);
-	}
-
-	public ImportPolicy getPolicy(Table table) {
-		return getPolicy(table.classId());
-	}
-
-	public ImportPolicy getPolicy(String tableClass) {
-		return policies.containsKey(tableClass) ? policies.get(tableClass) : ImportPolicy.DEFAULT;
-	}
-
-	public boolean isExportAttachments() {
-		return exportAttachments;
-	}
-
-	public void setExportAttachments(boolean exportAttachments) {
-		this.exportAttachments = exportAttachments;
+	public void setExportPolicy(Table table, RecordsetExportPolicy tablePolicy) {
+		exportPolicies.put(table.classId(), tablePolicy);
 	}
 
 	public String getExportUrl() {
@@ -156,13 +135,14 @@ public class Export extends OBJECT {
 		List<ExportEntry.Properties.Property> props = new LinkedList<ExportEntry.Properties.Property>();
 
 		try {
-		    String exportProtocol = getProtocol();
-		    boolean local = LOCAL_PROTOCOL.equals(exportProtocol);
+			String exportProtocol = getProtocol();
+			boolean local = LOCAL_PROTOCOL.equals(exportProtocol);
 			if (!local) {
 				// Если протокол НЕ "local", экспортировать записи БД
 				for (RecordsetEntry recordsetEntry : recordsetEntries) {
 					while (recordsetEntry.recordset.next()) {
-						exportRecord(recordsetEntry, records, files, getPolicy(recordsetEntry.recordset.classId()),
+						exportRecord(recordsetEntry, records, files, exportPolicies.containsKey(recordsetEntry.recordset
+								.classId()) ? exportPolicies.get(recordsetEntry.recordset.classId()) : defaultExportPolicy,
 								recordsSorter, exportRecordsMax, 0);
 					}
 				}
@@ -239,12 +219,9 @@ public class Export extends OBJECT {
 		addRecordset(cls.get(), CLASS.asList(fields), where);
 	}
 
-	public void z8_setPolicy(Table.CLASS<? extends Table> cls, ImportPolicy policy) {
-		setPolicy(cls.get(), policy);
-	}
-
-	public void z8_setExportAttachments(bool exportAttachments) {
-		setExportAttachments(exportAttachments.get());
+	public void z8_setExportPolicy(Table.CLASS<? extends Table> cls,
+			RecordsetExportPolicy.CLASS<? extends RecordsetExportPolicy> policy) {
+		setExportPolicy(cls.get(), policy.get());
 	}
 
 	public void z8_setExportUrl(string exportUrl) {
@@ -265,28 +242,25 @@ public class Export extends OBJECT {
 		return new string(getExportUrl(protocol.get(), address.get()));
 	}
 
-	private boolean exportRecord(RecordsetEntry recordsetEntry, List<ExportEntry.Records.Record> records,
-			List<ExportEntry.Files.File> files, ImportPolicy policy, RecordsSorter recordsSorter, int exportRecordsMax,
-			int level) {
+	private static boolean exportRecord(RecordsetEntry recordsetEntry, List<ExportEntry.Records.Record> records,
+			List<ExportEntry.Files.File> files, RecordsetExportPolicy exportPolicy, RecordsSorter recordsSorter,
+			int exportRecordsMax, int level) {
 		checkExportRecordsMax(records, exportRecordsMax);
 		guid recordId = recordsetEntry.recordset.recordId();
 		String table = recordsetEntry.recordset.classId();
 		if (!recordsSorter.contains(table, recordId) && !IeUtil.isBuiltinRecord(recordsetEntry.recordset, recordId)) {
-			if (policies.containsKey(recordsetEntry.recordset.classId())) {
-				policy = policies.get(recordsetEntry.recordset.classId());
-			}
 			if (LOG.isDebugEnabled()) {
 				LOG.debug(getSpaces(level) + "Export record " + recordsetEntry.recordset.name() + '[' + recordId + ']');
 			}
 			ExportEntry.Records.Record record = IeUtil.tableToRecord(recordsetEntry.recordset, recordsetEntry.fields,
-					policy == null ? null : policy.getSelfPolicy(), isExportAttachments());
+					exportPolicy);
 			records.add(record);
 			recordsSorter.addRecord(table, recordId);
 			// Вложения
-			if (isExportAttachments()) {
-				for (AttachmentField attField : recordsetEntry.recordset.getAttachments()) {
+			for (AttachmentField attField : recordsetEntry.recordset.getAttachments()) {
+				if (exportPolicy.isExportAttachments(recordId, attField)) {
 					List<FileInfo> fileInfos = FileInfo.parseArray(attField.get().string().get());
-					files.addAll(IeUtil.fileInfosToFiles(fileInfos, policy == null ? null : policy.getSelfPolicy()));
+					files.addAll(IeUtil.fileInfosToFiles(fileInfos, exportPolicy.getImportPolicy(recordId, attField)));
 				}
 			}
 			// Ссылки на другие таблицы
@@ -306,8 +280,7 @@ public class Export extends OBJECT {
 					guid refGuid = recordsetEntry.recordset.getFieldByName(fkey.getFieldDescriptor().name()).guid();
 					if (refRecord.readRecord(refGuid, refRecord.getPrimaryFields())) {
 						if (exportRecord(new RecordsetEntry(refRecord, refRecord.getPrimaryFields()), records, files,
-								policy == null ? null : policy.getRelationsPolicy(), recordsSorter, exportRecordsMax,
-								level + 1)) {
+								exportPolicy, recordsSorter, exportRecordsMax, level + 1)) {
 							recordsSorter.addLink(table, recordId, refRecord.classId(), refGuid);
 						}
 					}
@@ -320,8 +293,7 @@ public class Export extends OBJECT {
 					TreeTable parentRecord = (TreeTable) Loader.getInstance(recordsetEntry.recordset.classId());
 					if (parentRecord.readRecord(parentId, parentRecord.getPrimaryFields())) {
 						if (exportRecord(new RecordsetEntry(parentRecord, parentRecord.getPrimaryFields()), records, files,
-								policy == null ? null : policy.getRelationsPolicy(), recordsSorter, exportRecordsMax,
-								level + 1)) {
+								exportPolicy, recordsSorter, exportRecordsMax, level + 1)) {
 							recordsSorter.addLink(table, recordId, table, parentId);
 						}
 					}
