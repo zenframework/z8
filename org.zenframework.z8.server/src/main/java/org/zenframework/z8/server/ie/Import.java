@@ -53,12 +53,10 @@ public class Import {
 			if (!IeUtil.isBuiltinRecord(table, recordId)) {
 				if (table.hasRecord(recordId)) {
 					// Если запись уже существует
-					ImportPolicy policy = ImportPolicy.getPolicy(record.getPolicy());
-					if (policy.isOverride()) {
+					if (IeUtil.fillTableRecord(table, record, false)) {
 						// Если запись должна быть обновлена согласно политике,
 						// обновить
 						LOG.debug("Import: update record " + IeUtil.toString(record));
-						IeUtil.fillTableRecord(table, record);
 						table.update(recordId);
 					} else {
 						// Если запись не должна быть обновлена, ничего не
@@ -68,7 +66,7 @@ public class Import {
 				} else {
 					// Если запись не существует, создать
 					LOG.debug("Import: create record " + IeUtil.toString(record));
-					IeUtil.fillTableRecord(table, record);
+					IeUtil.fillTableRecord(table, record, true);
 					table.create(recordId);
 				}
 			}

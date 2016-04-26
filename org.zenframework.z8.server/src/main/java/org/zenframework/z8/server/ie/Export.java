@@ -73,6 +73,11 @@ public class Export extends OBJECT {
 	private String exportUrl;
 	private int exportRecordsMax = Integer.parseInt(Properties.getProperty(ServerRuntime.ExportRecordsMaxProperty));
 
+	private RecordsSorter recordsSorter;
+	private List<ExportEntry.Records.Record> records;
+	private List<ExportEntry.Files.File> files;
+	private List<ExportEntry.Properties.Property> props;
+
 	public Export(IObject container) {
 		super(container);
 	}
@@ -109,7 +114,7 @@ public class Export extends OBJECT {
 	}
 
 	public void setExportRules(Table table, RecordsetExportRules exportRules) {
-		this.exportRules.put(table.classId(), exportRules);
+		this.exportRules.put(getTableClassId(table), exportRules);
 	}
 
 	public String getExportUrl() {
@@ -135,10 +140,10 @@ public class Export extends OBJECT {
 	}
 
 	public void execute() {
-		RecordsSorter recordsSorter = new RecordsSorter();
-		List<ExportEntry.Records.Record> records = new LinkedList<ExportEntry.Records.Record>();
-		List<ExportEntry.Files.File> files = new LinkedList<ExportEntry.Files.File>();
-		List<ExportEntry.Properties.Property> props = new LinkedList<ExportEntry.Properties.Property>();
+		recordsSorter = new RecordsSorter();
+		records = new LinkedList<ExportEntry.Records.Record>();
+		files = new LinkedList<ExportEntry.Files.File>();
+		props = new LinkedList<ExportEntry.Properties.Property>();
 
 		try {
 			String exportProtocol = getProtocol();
@@ -147,9 +152,7 @@ public class Export extends OBJECT {
 				// Если протокол НЕ "local", экспортировать записи БД
 				for (RecordsetEntry recordsetEntry : recordsetEntries) {
 					while (recordsetEntry.recordset.next()) {
-						exportRecord(recordsetEntry, records, files, exportRules.containsKey(recordsetEntry.recordset
-								.classId()) ? exportRules.get(recordsetEntry.recordset.classId()) : defaultExportRules,
-								recordsSorter, exportRecordsMax, 0);
+						exportRecord(recordsetEntry, 0);
 					}
 				}
 				if (RecordsSorter.getSortingMode().onExport) {
@@ -252,25 +255,25 @@ public class Export extends OBJECT {
 		return new string(getExportUrl(protocol.get(), address.get()));
 	}
 
-	private static boolean exportRecord(RecordsetEntry recordsetEntry, List<ExportEntry.Records.Record> records,
-			List<ExportEntry.Files.File> files, RecordsetExportRules exportRules, RecordsSorter recordsSorter,
-			int exportRecordsMax, int level) {
+	private boolean exportRecord(RecordsetEntry recordsetEntry, int level) {
 		checkExportRecordsMax(records, exportRecordsMax);
 		guid recordId = recordsetEntry.recordset.recordId();
-		String table = recordsetEntry.recordset.classId();
+		String table = getTableClassId(recordsetEntry.recordset);
+		RecordsetExportRules recordsetExportRules = exportRules.containsKey(table) ? exportRules.get(table)
+				: defaultExportRules;
 		if (!recordsSorter.contains(table, recordId) && !IeUtil.isBuiltinRecord(recordsetEntry.recordset, recordId)) {
 			if (LOG.isDebugEnabled()) {
 				LOG.debug(getSpaces(level) + "Export record " + recordsetEntry.recordset.name() + '[' + recordId + ']');
 			}
-			ExportEntry.Records.Record record = IeUtil.tableToRecord(recordsetEntry.recordset, recordsetEntry.fields,
-					exportRules);
+			ExportEntry.Records.Record record = IeUtil.getRecord(table, recordId, recordsetEntry.fields,
+					recordsetExportRules);
 			records.add(record);
 			recordsSorter.addRecord(table, recordId);
 			// Вложения
 			for (AttachmentField attField : recordsetEntry.recordset.getAttachments()) {
-				if (exportRules.isExportAttachments(recordId, attField)) {
+				if (recordsetExportRules.isExportAttachments(recordId, attField)) {
 					List<FileInfo> fileInfos = FileInfo.parseArray(attField.get().string().get());
-					files.addAll(IeUtil.fileInfosToFiles(fileInfos, exportRules.getImportPolicy(recordId, attField)));
+					files.addAll(IeUtil.fileInfosToFiles(fileInfos, recordsetExportRules.getImportPolicy(recordId, attField)));
 				}
 			}
 			// Ссылки на другие таблицы
@@ -289,9 +292,8 @@ public class Export extends OBJECT {
 					Table refRecord = (Table) Loader.getInstance(((Table) fkey.getReferencedTable()).classId());
 					guid refGuid = recordsetEntry.recordset.getFieldByName(fkey.getFieldDescriptor().name()).guid();
 					if (refRecord.readRecord(refGuid, refRecord.getPrimaryFields())) {
-						if (exportRecord(new RecordsetEntry(refRecord, refRecord.getPrimaryFields()), records, files,
-								exportRules, recordsSorter, exportRecordsMax, level + 1)) {
-							recordsSorter.addLink(table, recordId, refRecord.classId(), refGuid);
+						if (exportRecord(new RecordsetEntry(refRecord, refRecord.getPrimaryFields()), level + 1)) {
+							recordsSorter.addLink(table, recordId, getTableClassId(refRecord), refGuid);
 						}
 					}
 				}
@@ -302,8 +304,7 @@ public class Export extends OBJECT {
 				if (!guid.NULL.equals(parentId)) {
 					TreeTable parentRecord = (TreeTable) Loader.getInstance(recordsetEntry.recordset.classId());
 					if (parentRecord.readRecord(parentId, parentRecord.getPrimaryFields())) {
-						if (exportRecord(new RecordsetEntry(parentRecord, parentRecord.getPrimaryFields()), records, files,
-								exportRules, recordsSorter, exportRecordsMax, level + 1)) {
+						if (exportRecord(new RecordsetEntry(parentRecord, parentRecord.getPrimaryFields()), level + 1)) {
 							recordsSorter.addLink(table, recordId, table, parentId);
 						}
 					}
@@ -335,6 +336,13 @@ public class Export extends OBJECT {
 			throw new RuntimeException("Export of " + records.size() + " records (max " + exportRecordsMax + ") failed."
 					+ (file != null ? " Export entry is written to '" + file + "'" : ""));
 		}
+	}
+
+	private static String getTableClassId(Table table) {
+		Class<?> cls = table.getClass();
+		while (cls != null && cls.getSuperclass() != Table.class)
+			cls = cls.getSuperclass();
+		return (cls == null ? table.getClass() : cls).getCanonicalName();
 	}
 
 	private static class RecordsetEntry {

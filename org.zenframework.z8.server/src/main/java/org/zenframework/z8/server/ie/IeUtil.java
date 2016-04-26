@@ -59,32 +59,38 @@ public class IeUtil {
 	public static String toString(ExportEntry.Records.Record record) {
 		StringBuilder str = new StringBuilder(1024);
 		str.append(record.getTable()).append(" [").append("recordId: ").append(record.getRecordId());
+		String policy = record.getPolicy();
+		if (policy != null && !policy.isEmpty())
+			str.append(" (").append(policy).append(')');
 		for (String id : TO_STRING_FIELDS) {
 			ExportEntry.Records.Record.Field field = findField(record, id);
 			if (field != null) {
 				str.append(", ").append(id).append(": ").append(field.getValue());
+				policy = field.getPolicy();
+				if (policy != null && !policy.isEmpty())
+					str.append(" (").append(policy).append(')');
 			}
 		}
 		str.append(']');
 		return str.toString();
 	}
 
-	public static ExportEntry.Records.Record tableToRecord(Query recordSet, Collection<Field> fields,
+	public static ExportEntry.Records.Record getRecord(String tableClass, guid recordId, Collection<Field> fields,
 			RecordsetExportRules exportRules) {
-		ImportPolicy defaultImportPolicy = exportRules.getDefaultImportPolicy(recordSet.recordId());
+		ImportPolicy defaultImportPolicy = exportRules.getDefaultImportPolicy(recordId);
 		Records.Record record = new Records.Record();
-		record.setTable(recordSet.classId());
-		record.setRecordId(recordSet.recordId().toString());
+		record.setTable(tableClass);
+		record.setRecordId(recordId.toString());
 		record.setPolicy(defaultImportPolicy.name());
 		for (Field f : fields) {
 			if (!RECORD_ID.equals(f.id())
 					&& f.exportable()
-					&& (exportRules.isExportAttachments(recordSet.recordId(), f) || !(AttachmentField.class
+					&& (exportRules.isExportAttachments(recordId, f) || !(AttachmentField.class
 							.isAssignableFrom(f.getClass())))) {
 				Records.Record.Field field = new Records.Record.Field();
 				field.setId(f.id());
 				field.setValue(f.get().toString());
-				ImportPolicy fieldImportPolicy = exportRules.getImportPolicy(recordSet.recordId(), f);
+				ImportPolicy fieldImportPolicy = exportRules.getImportPolicy(recordId, f);
 				if (fieldImportPolicy != defaultImportPolicy)
 					field.setPolicy(fieldImportPolicy.name());
 				record.getField().add(field);
@@ -93,16 +99,25 @@ public class IeUtil {
 		return record;
 	}
 
-	public static void fillTableRecord(Query recordSet, ExportEntry.Records.Record record) {
+	public static boolean fillTableRecord(Query recordSet, ExportEntry.Records.Record record, boolean newRecord) {
+		String policy = record.getPolicy();
+		ImportPolicy recordPolicy = policy == null || policy.isEmpty() ? ImportPolicy.DEFAULT : ImportPolicy.valueOf(policy);
+		boolean hasUpdatedFields = false;
 		for (ExportEntry.Records.Record.Field xmlField : record.getField()) {
 			Field field = recordSet.getFieldById(xmlField.getId());
 			if (field != null) {
-				field.set(primary.create(field.type(), xmlField.getValue()));
+				policy = xmlField.getPolicy();
+				ImportPolicy fieldPolicy = policy == null || policy.isEmpty() ? recordPolicy : ImportPolicy.valueOf(policy);
+				if (newRecord || fieldPolicy == ImportPolicy.OVERRIDE) {
+					field.set(primary.create(field.type(), xmlField.getValue()));
+					hasUpdatedFields = true;
+				}
 			} else {
 				Trace.logEvent("WARNING: Incorrect record format. Table '" + recordSet.classId() + "' has no field '"
 						+ xmlField.getId() + "'");
 			}
 		}
+		return hasUpdatedFields;
 	}
 
 	public static ExportEntry.Files.File fileInfoToFile(FileInfo fileInfo, ImportPolicy policy) {
