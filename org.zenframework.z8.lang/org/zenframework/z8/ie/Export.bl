@@ -14,7 +14,9 @@ class Export {
     
     public void addRecordset(Table table, Field[] fields, sql_bool where);
     
-    public void setExportPolicy(Table table, RecordsetExportPolicy policy);
+    public void setDefaults(ImportPolicy importPolicy, bool exportAttachments);
+    
+    public void setExportRules(Table table, RecordsetExportRules rules);
     
     public void setExportUrl(string exportUrl);
     

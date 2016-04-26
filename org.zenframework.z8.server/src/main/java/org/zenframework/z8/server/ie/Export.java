@@ -28,6 +28,7 @@ import org.zenframework.z8.server.runtime.OBJECT;
 import org.zenframework.z8.server.runtime.RCollection;
 import org.zenframework.z8.server.runtime.RLinkedHashMap;
 import org.zenframework.z8.server.runtime.ServerRuntime;
+import org.zenframework.z8.server.types.bool;
 import org.zenframework.z8.server.types.exception;
 import org.zenframework.z8.server.types.guid;
 import org.zenframework.z8.server.types.integer;
@@ -66,9 +67,9 @@ public class Export extends OBJECT {
 
 	protected final TransportContext.CLASS<TransportContext> context = new TransportContext.CLASS<TransportContext>();
 
-	private final Map<String, RecordsetExportPolicy> exportPolicies = new HashMap<String, RecordsetExportPolicy>();
-	private final RecordsetExportPolicy defaultExportPolicy = new RecordsetExportPolicy.CLASS<RecordsetExportPolicy>().get();
+	private final Map<String, RecordsetExportRules> exportRules = new HashMap<String, RecordsetExportRules>();
 	private final List<RecordsetEntry> recordsetEntries = new LinkedList<RecordsetEntry>();
+	private final RecordsetExportRules defaultExportRules = new RecordsetExportRules.CLASS<RecordsetExportRules>().get();
 	private String exportUrl;
 	private int exportRecordsMax = Integer.parseInt(Properties.getProperty(ServerRuntime.ExportRecordsMaxProperty));
 
@@ -102,8 +103,13 @@ public class Export extends OBJECT {
 		recordsetEntries.add(new RecordsetEntry(table, fields));
 	}
 
-	public void setExportPolicy(Table table, RecordsetExportPolicy tablePolicy) {
-		exportPolicies.put(table.classId(), tablePolicy);
+	public void setDefaults(ImportPolicy importPolicy, boolean exportAttachments) {
+		defaultExportRules.setImportPolicy(importPolicy);
+		defaultExportRules.setExportAttachments(exportAttachments);
+	}
+
+	public void setExportRules(Table table, RecordsetExportRules exportRules) {
+		this.exportRules.put(table.classId(), exportRules);
 	}
 
 	public String getExportUrl() {
@@ -141,8 +147,8 @@ public class Export extends OBJECT {
 				// Если протокол НЕ "local", экспортировать записи БД
 				for (RecordsetEntry recordsetEntry : recordsetEntries) {
 					while (recordsetEntry.recordset.next()) {
-						exportRecord(recordsetEntry, records, files, exportPolicies.containsKey(recordsetEntry.recordset
-								.classId()) ? exportPolicies.get(recordsetEntry.recordset.classId()) : defaultExportPolicy,
+						exportRecord(recordsetEntry, records, files, exportRules.containsKey(recordsetEntry.recordset
+								.classId()) ? exportRules.get(recordsetEntry.recordset.classId()) : defaultExportRules,
 								recordsSorter, exportRecordsMax, 0);
 					}
 				}
@@ -219,9 +225,13 @@ public class Export extends OBJECT {
 		addRecordset(cls.get(), CLASS.asList(fields), where);
 	}
 
-	public void z8_setExportPolicy(Table.CLASS<? extends Table> cls,
-			RecordsetExportPolicy.CLASS<? extends RecordsetExportPolicy> policy) {
-		setExportPolicy(cls.get(), policy.get());
+	public void z8_setDefaults(ImportPolicy importPolicy, bool exportAttachments) {
+		setDefaults(importPolicy, exportAttachments.get());
+	}
+
+	public void z8_setExportRules(Table.CLASS<? extends Table> cls,
+			RecordsetExportRules.CLASS<? extends RecordsetExportRules> exportRules) {
+		setExportRules(cls.get(), exportRules.get());
 	}
 
 	public void z8_setExportUrl(string exportUrl) {
@@ -243,7 +253,7 @@ public class Export extends OBJECT {
 	}
 
 	private static boolean exportRecord(RecordsetEntry recordsetEntry, List<ExportEntry.Records.Record> records,
-			List<ExportEntry.Files.File> files, RecordsetExportPolicy exportPolicy, RecordsSorter recordsSorter,
+			List<ExportEntry.Files.File> files, RecordsetExportRules exportPolicy, RecordsSorter recordsSorter,
 			int exportRecordsMax, int level) {
 		checkExportRecordsMax(records, exportRecordsMax);
 		guid recordId = recordsetEntry.recordset.recordId();

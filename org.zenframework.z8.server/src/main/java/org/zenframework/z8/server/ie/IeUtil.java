@@ -70,7 +70,7 @@ public class IeUtil {
 	}
 
 	public static ExportEntry.Records.Record tableToRecord(Query recordSet, Collection<Field> fields,
-			RecordsetExportPolicy exportPolicy) {
+			RecordsetExportRules exportPolicy) {
 		ImportPolicy defaultImportPolicy = exportPolicy.getDefaultImportPolicy(recordSet.recordId());
 		Records.Record record = new Records.Record();
 		record.setTable(recordSet.classId());

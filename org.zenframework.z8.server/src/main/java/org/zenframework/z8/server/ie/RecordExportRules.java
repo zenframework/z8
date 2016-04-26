@@ -5,7 +5,7 @@ import java.util.Map;
 
 import org.zenframework.z8.server.base.table.value.Field;
 
-public class RecordExportPolicy {
+public class RecordExportRules {
 
 	private final Map<String, ImportPolicy> fieldsPolicies = new HashMap<String, ImportPolicy>();
 	private final Map<String, Boolean> exportAttachments = new HashMap<String, Boolean>();
