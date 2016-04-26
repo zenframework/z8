@@ -48,11 +48,11 @@ public class RecordsetExportRules extends OBJECT {
 	}
 
 	public void setImportPolicy(guid recordId, ImportPolicy importPolicy) {
-		getOrCreateRecordExportPolicy(recordId).setDefaultImportPolicy(importPolicy);
+		getOrCreateRecordExportRules(recordId).setDefaultImportPolicy(importPolicy);
 	}
 
 	public void setImportPolicy(guid recordId, Field field, ImportPolicy importPolicy) {
-		getOrCreateRecordExportPolicy(recordId).setImportPolicy(field, importPolicy);
+		getOrCreateRecordExportRules(recordId).setImportPolicy(field, importPolicy);
 	}
 
 	public ImportPolicy getDefaultImportPolicy(guid recordId) {
@@ -74,11 +74,11 @@ public class RecordsetExportRules extends OBJECT {
 	}
 
 	public void setExportAttachments(guid recordId, boolean exportAttachments) {
-		getOrCreateRecordExportPolicy(recordId).setDefaultExportAttachments(exportAttachments);
+		getOrCreateRecordExportRules(recordId).setDefaultExportAttachments(exportAttachments);
 	}
 
 	public void setExportAttachments(guid recordId, Field field, boolean exportAttachments) {
-		getOrCreateRecordExportPolicy(recordId).setExportAttachments(field, exportAttachments);
+		getOrCreateRecordExportRules(recordId).setExportAttachments(field, exportAttachments);
 	}
 
 	public boolean isExportAttachments(guid recordId, Field field) {
@@ -127,13 +127,13 @@ public class RecordsetExportRules extends OBJECT {
 		return new bool(isExportAttachments(recordId, field.get()));
 	}
 
-	private RecordExportRules getOrCreateRecordExportPolicy(guid recordId) {
-		RecordExportRules policy = exportRules.get(recordId);
-		if (policy == null) {
-			policy = new RecordExportRules();
-			exportRules.put(recordId, policy);
+	private RecordExportRules getOrCreateRecordExportRules(guid recordId) {
+		RecordExportRules rules = exportRules.get(recordId);
+		if (rules == null) {
+			rules = new RecordExportRules();
+			exportRules.put(recordId, rules);
 		}
-		return policy;
+		return rules;
 	}
 
 	// 1) defaultImportPolicy, defaultExportAttachments

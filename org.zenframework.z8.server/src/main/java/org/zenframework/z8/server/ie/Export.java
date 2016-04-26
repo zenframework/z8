@@ -253,7 +253,7 @@ public class Export extends OBJECT {
 	}
 
 	private static boolean exportRecord(RecordsetEntry recordsetEntry, List<ExportEntry.Records.Record> records,
-			List<ExportEntry.Files.File> files, RecordsetExportRules exportPolicy, RecordsSorter recordsSorter,
+			List<ExportEntry.Files.File> files, RecordsetExportRules exportRules, RecordsSorter recordsSorter,
 			int exportRecordsMax, int level) {
 		checkExportRecordsMax(records, exportRecordsMax);
 		guid recordId = recordsetEntry.recordset.recordId();
@@ -263,14 +263,14 @@ public class Export extends OBJECT {
 				LOG.debug(getSpaces(level) + "Export record " + recordsetEntry.recordset.name() + '[' + recordId + ']');
 			}
 			ExportEntry.Records.Record record = IeUtil.tableToRecord(recordsetEntry.recordset, recordsetEntry.fields,
-					exportPolicy);
+					exportRules);
 			records.add(record);
 			recordsSorter.addRecord(table, recordId);
 			// Вложения
 			for (AttachmentField attField : recordsetEntry.recordset.getAttachments()) {
-				if (exportPolicy.isExportAttachments(recordId, attField)) {
+				if (exportRules.isExportAttachments(recordId, attField)) {
 					List<FileInfo> fileInfos = FileInfo.parseArray(attField.get().string().get());
-					files.addAll(IeUtil.fileInfosToFiles(fileInfos, exportPolicy.getImportPolicy(recordId, attField)));
+					files.addAll(IeUtil.fileInfosToFiles(fileInfos, exportRules.getImportPolicy(recordId, attField)));
 				}
 			}
 			// Ссылки на другие таблицы
@@ -290,7 +290,7 @@ public class Export extends OBJECT {
 					guid refGuid = recordsetEntry.recordset.getFieldByName(fkey.getFieldDescriptor().name()).guid();
 					if (refRecord.readRecord(refGuid, refRecord.getPrimaryFields())) {
 						if (exportRecord(new RecordsetEntry(refRecord, refRecord.getPrimaryFields()), records, files,
-								exportPolicy, recordsSorter, exportRecordsMax, level + 1)) {
+								exportRules, recordsSorter, exportRecordsMax, level + 1)) {
 							recordsSorter.addLink(table, recordId, refRecord.classId(), refGuid);
 						}
 					}
@@ -303,7 +303,7 @@ public class Export extends OBJECT {
 					TreeTable parentRecord = (TreeTable) Loader.getInstance(recordsetEntry.recordset.classId());
 					if (parentRecord.readRecord(parentId, parentRecord.getPrimaryFields())) {
 						if (exportRecord(new RecordsetEntry(parentRecord, parentRecord.getPrimaryFields()), records, files,
-								exportPolicy, recordsSorter, exportRecordsMax, level + 1)) {
+								exportRules, recordsSorter, exportRecordsMax, level + 1)) {
 							recordsSorter.addLink(table, recordId, table, parentId);
 						}
 					}

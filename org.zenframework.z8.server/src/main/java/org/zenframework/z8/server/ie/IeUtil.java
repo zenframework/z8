@@ -70,8 +70,8 @@ public class IeUtil {
 	}
 
 	public static ExportEntry.Records.Record tableToRecord(Query recordSet, Collection<Field> fields,
-			RecordsetExportRules exportPolicy) {
-		ImportPolicy defaultImportPolicy = exportPolicy.getDefaultImportPolicy(recordSet.recordId());
+			RecordsetExportRules exportRules) {
+		ImportPolicy defaultImportPolicy = exportRules.getDefaultImportPolicy(recordSet.recordId());
 		Records.Record record = new Records.Record();
 		record.setTable(recordSet.classId());
 		record.setRecordId(recordSet.recordId().toString());
@@ -79,12 +79,12 @@ public class IeUtil {
 		for (Field f : fields) {
 			if (!RECORD_ID.equals(f.id())
 					&& f.exportable()
-					&& (exportPolicy.isExportAttachments(recordSet.recordId(), f) || !(AttachmentField.class
+					&& (exportRules.isExportAttachments(recordSet.recordId(), f) || !(AttachmentField.class
 							.isAssignableFrom(f.getClass())))) {
 				Records.Record.Field field = new Records.Record.Field();
 				field.setId(f.id());
 				field.setValue(f.get().toString());
-				ImportPolicy fieldImportPolicy = exportPolicy.getImportPolicy(recordSet.recordId(), f);
+				ImportPolicy fieldImportPolicy = exportRules.getImportPolicy(recordSet.recordId(), f);
 				if (fieldImportPolicy != defaultImportPolicy)
 					field.setPolicy(fieldImportPolicy.name());
 				record.getField().add(field);
