@@ -1,7 +1,6 @@
 package org.zenframework.z8.server.ie;
 
 import java.util.Arrays;
-import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -150,7 +149,7 @@ public class TransportRoutes extends Table {
 	public void checkInactiveRoutes() {
 		int timeout = Integer.parseInt(Properties.getProperty(ServerRuntime.InactiveRouteTimeoutProperty));
 		read(new And(new Unary(Operation.Not, this.active.get().sql_bool()), new Rel(this.modifiedAt.get(), Operation.LT,
-				new sql_datetime(new datetime(new Date()).addMinute(-timeout)))));
+				new sql_datetime(new datetime().addMinute(-timeout)))));
 		while (next()) {
 			this.active.get().set(new bool(true));
 			this.description.get().set("");
