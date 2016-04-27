@@ -339,10 +339,12 @@ public class Export extends OBJECT {
 	}
 
 	private static String getTableClassId(Table table) {
-		Class<?> cls = table.getClass();
-		while (cls != null && cls.getSuperclass() != Table.class)
-			cls = cls.getSuperclass();
-		return (cls == null ? table.getClass() : cls).getCanonicalName();
+		// TODO Find [generatable] class 
+		//Class<?> cls = table.getClass();
+		//while (cls != null && cls.getSuperclass() != Table.class)
+		//	cls = cls.getSuperclass();
+		//return (cls == null ? table.getClass() : cls).getCanonicalName();
+		return table.classId();
 	}
 
 	private static class RecordsetEntry {
