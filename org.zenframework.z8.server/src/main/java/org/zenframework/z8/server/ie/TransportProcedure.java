@@ -115,7 +115,7 @@ public class TransportProcedure extends Procedure {
 			} catch (Throwable e) {
 				connection.rollback();
 				log("Transport messsage '" + id + "' is broken", e);
-				messages.setError(id, e);
+				messages.setError(true, id, e);
 			}
 		}
 
@@ -167,7 +167,7 @@ public class TransportProcedure extends Procedure {
 					break;
 				} catch (Throwable e) {
 					connection.rollback();
-					messages.setError(id, e);
+					messages.setError(false, id, e);
 					log("Can't send message '" + id + "' via '" + route.getAddress() + "'", e);
 					if (e instanceof TransportException) {
 						transport.close();

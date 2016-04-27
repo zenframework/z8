@@ -132,8 +132,8 @@ public class ExportMessages extends Table {
 		}
 	}
 
-	public void setError(guid messageId, Throwable e) {
-		this.error.get().set(new bool(true));
+	public void setError(boolean error, guid messageId, Throwable e) {
+		this.error.get().set(new bool(error));
 		this.description.get().set(new string(e.getMessage()));
 		update(messageId);
 	}
@@ -242,7 +242,7 @@ public class ExportMessages extends Table {
 	}
 
 	private long nextOrdinal(Message message) {
-		return Sequencer.next(message.getSender() + "->" + message.getAddress(), 1000000L);
+		return Sequencer.next(message.getSender() + "->" + message.getAddress());
 	}
 
 }
