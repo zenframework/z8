@@ -41,9 +41,8 @@ public class TextField extends StringField {
     public String sqlType(DatabaseVendor vendor) {
         String name = type().vendorType(vendor);
 
-        if(vendor == DatabaseVendor.SqlServer) {
+        if(vendor == DatabaseVendor.SqlServer)
             return name + "(MAX)";
-        }
         return name;
     }
 
@@ -55,7 +54,6 @@ public class TextField extends StringField {
     @Override
     public void writeMeta(JsonWriter writer) {
         super.writeMeta(writer);
-
         writer.writeProperty(Json.lines, lines);
     }
 }

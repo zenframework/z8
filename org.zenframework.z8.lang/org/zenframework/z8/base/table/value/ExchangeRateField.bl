@@ -1,5 +1,4 @@
-class ExchangeRateField extends DecimalField
-{
+class ExchangeRateField extends DecimalField {
 	format = "0,000.00000";
 
 	precision = 10;

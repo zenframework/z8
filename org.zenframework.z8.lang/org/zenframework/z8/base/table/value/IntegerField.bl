@@ -1,7 +1,6 @@
 [native "org.zenframework.z8.server.base.table.value.IntegerField"]
 
-class IntegerField extends Field
-{
+class IntegerField extends Field {
 	aggregation = Aggregation.Sum;
 
 	stretch = false;

@@ -1,7 +1,6 @@
 [native "org.zenframework.z8.server.base.table.value.DatespanExpression"]
 
-class DatespanExpression extends Expression
-{
+class DatespanExpression extends Expression {
 	public void setDefault(datespan defaultValue);
 
 	virtual public datespan get();

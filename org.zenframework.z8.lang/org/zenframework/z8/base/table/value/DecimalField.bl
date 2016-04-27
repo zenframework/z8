@@ -1,7 +1,6 @@
 [native "org.zenframework.z8.server.base.table.value.DecimalField"]
 
-class DecimalField extends Field
-{
+class DecimalField extends Field {
 	aggregation = Aggregation.Sum;
 
 	stretch = false;

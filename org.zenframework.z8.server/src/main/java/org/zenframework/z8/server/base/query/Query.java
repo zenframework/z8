@@ -26,6 +26,7 @@ import org.zenframework.z8.server.base.model.sql.Select;
 import org.zenframework.z8.server.base.simple.Runnable;
 import org.zenframework.z8.server.base.table.Table;
 import org.zenframework.z8.server.base.table.TreeTable;
+import org.zenframework.z8.server.base.table.value.AttachmentExpression;
 import org.zenframework.z8.server.base.table.value.AttachmentField;
 import org.zenframework.z8.server.base.table.value.Expression;
 import org.zenframework.z8.server.base.table.value.Field;
@@ -1009,17 +1010,17 @@ public class Query extends Runnable {
         return CLASS.asList(searchFields);
     }
 
-    public Collection<AttachmentField> getAttachments() {
-        Collection<AttachmentField> result = new ArrayList<AttachmentField>();
+    public Collection<Field> getAttachments() {
+        Collection<Field> result = new ArrayList<Field>();
         for (Field field : getDataFields()) {
-            if (field instanceof AttachmentField)
-                result.add((AttachmentField) field);
+            if (field instanceof AttachmentField || field instanceof AttachmentExpression)
+                result.add(field);
         }
         return result;
     }
 
-    public AttachmentField getAttachmentField() {
-        Collection<AttachmentField> attachmentFields = getAttachments();
+    public Field getAttachmentField() {
+        Collection<Field> attachmentFields = getAttachments();
         return attachmentFields.isEmpty() ? null : attachmentFields.iterator().next();
     }
 
@@ -1926,7 +1927,7 @@ public class Query extends Runnable {
         if (lockKey != null && fields.contains(lockKey))
             writer.writeProperty(Json.lockKey, lockKey.id());
 
-        AttachmentField attachments = getAttachmentField();
+        Field attachments = getAttachmentField();
 
         if (attachments != null && fields.contains(attachments))
             writer.writeProperty(Json.attachments, attachments.id());

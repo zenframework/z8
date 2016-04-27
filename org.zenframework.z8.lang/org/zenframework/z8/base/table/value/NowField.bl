@@ -1,7 +1,5 @@
-class NowField extends DatetimeField
-{
-	public datetime getDefault()
-	{
+class NowField extends DatetimeField {
+	public datetime getDefault() {
 		return datetime.now();
 	}
 }

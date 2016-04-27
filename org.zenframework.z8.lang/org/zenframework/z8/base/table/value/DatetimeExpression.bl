@@ -1,7 +1,6 @@
 [native "org.zenframework.z8.server.base.table.value.DatetimeExpression"]
 
-class DatetimeExpression extends Expression
-{
+class DatetimeExpression extends Expression {
 	stretch = false;
 
 	format = "d/m/Y G:i:s"; // http://php.net/manual/ru/function.date.php

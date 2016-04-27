@@ -1,7 +1,6 @@
 [native "org.zenframework.z8.server.base.table.value.StringField"]
 
-class StringField extends Field
-{
+class StringField extends Field {
 	aggregation = Aggregation.Sum;
 
 	public int length = 30;

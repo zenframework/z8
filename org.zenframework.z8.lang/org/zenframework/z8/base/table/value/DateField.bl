@@ -1,7 +1,6 @@
 [native "org.zenframework.z8.server.base.table.value.DateField"]
 
-class DateField extends Field
-{
+class DateField extends Field {
 	stretch = false;
 
 	format = "d/m/Y"; // http://php.net/manual/ru/function.date.php

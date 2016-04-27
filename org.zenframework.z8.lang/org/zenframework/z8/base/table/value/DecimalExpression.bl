@@ -1,7 +1,6 @@
 [native "org.zenframework.z8.server.base.table.value.DecimalExpression"]
 
-class DecimalExpression extends Expression
-{
+class DecimalExpression extends Expression {
 	aggregation = Aggregation.Sum;
 
 	stretch = false;

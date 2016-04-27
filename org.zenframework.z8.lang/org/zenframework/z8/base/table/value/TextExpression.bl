@@ -1,13 +1,13 @@
-[native "org.zenframework.z8.server.base.table.value.StringExpression"]
+[native "org.zenframework.z8.server.base.table.value.TextExpression"]
 
-class StringExpression extends Expression {
-	aggregation = Aggregation.Sum;
+class TextExpression extends Expression {
+	aggregation = Aggregation.None;
 
 	public void setDefault(string defaultValue);
 
 	virtual public string get();
 
-	public StringExpression operator = (string value);
+	public TextExpression operator = (string value);
 
 	public operator sql_string();
 

@@ -1,7 +1,6 @@
 [native "org.zenframework.z8.server.base.table.value.IntegerExpression"]
 
-class IntegerExpression extends Expression
-{
+class IntegerExpression extends Expression {
 	aggregation = Aggregation.Sum;
 
 	stretch = false;

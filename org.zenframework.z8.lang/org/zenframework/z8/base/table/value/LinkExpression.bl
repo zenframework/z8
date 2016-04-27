@@ -2,7 +2,6 @@ import org.zenframework.z8.base.query.Query;
 
 [native "org.zenframework.z8.server.base.table.value.LinkExpression"]
 [foreignKey false]
-class LinkExpression extends GuidExpression
-{
+class LinkExpression extends GuidExpression {
 	public void operator = (Query data);
 }

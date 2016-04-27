@@ -2,8 +2,7 @@ import org.zenframework.z8.base.query.Query;
 
 [native "org.zenframework.z8.server.base.table.value.Link"]
 [foreignKey true]
-class Link extends GuidField
-{
+class Link extends GuidField {
 	Join join = Join.Left;
 	
 	public void operator = (Query data);

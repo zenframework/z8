@@ -1,7 +1,6 @@
 [native "org.zenframework.z8.server.base.table.value.BoolExpression"]
 
-class BoolExpression extends Expression
-{
+class BoolExpression extends Expression {
 	width = 5; 
 	stretch = false;
 

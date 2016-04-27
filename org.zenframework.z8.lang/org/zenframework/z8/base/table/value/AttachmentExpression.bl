@@ -1,0 +1,4 @@
+[native "org.zenframework.z8.server.base.table.value.AttachmentExpression"]
+
+class AttachmentExpression extends TextExpression {
+}

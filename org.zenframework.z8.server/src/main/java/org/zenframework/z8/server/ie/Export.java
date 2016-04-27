@@ -19,7 +19,6 @@ import org.zenframework.z8.server.base.file.FileInfo;
 import org.zenframework.z8.server.base.table.Table;
 import org.zenframework.z8.server.base.table.TreeTable;
 import org.zenframework.z8.server.base.table.system.Properties;
-import org.zenframework.z8.server.base.table.value.AttachmentField;
 import org.zenframework.z8.server.base.table.value.Field;
 import org.zenframework.z8.server.db.generator.IForeignKey;
 import org.zenframework.z8.server.request.Loader;
@@ -270,7 +269,7 @@ public class Export extends OBJECT {
 			records.add(record);
 			recordsSorter.addRecord(table, recordId);
 			// Вложения
-			for (AttachmentField attField : recordsetEntry.recordset.getAttachments()) {
+			for (Field attField : recordsetEntry.recordset.getAttachments()) {
 				if (recordsetExportRules.isExportAttachments(recordId, attField)) {
 					List<FileInfo> fileInfos = FileInfo.parseArray(attField.get().string().get());
 					files.addAll(IeUtil.fileInfosToFiles(fileInfos, recordsetExportRules.getImportPolicy(recordId, attField)));

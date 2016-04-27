@@ -1,7 +1,6 @@
 [native "org.zenframework.z8.server.base.table.value.GuidExpression"]
 
-class GuidExpression extends Expression
-{
+class GuidExpression extends Expression {
 	virtual public guid get();
 
 	public GuidExpression operator = (guid value);
