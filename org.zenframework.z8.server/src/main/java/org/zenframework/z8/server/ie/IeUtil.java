@@ -23,14 +23,11 @@ import org.zenframework.z8.ie.xml.ExportEntry.Records;
 import org.zenframework.z8.ie.xml.ObjectFactory;
 import org.zenframework.z8.server.base.file.FileInfo;
 import org.zenframework.z8.server.base.file.FilesFactory;
-import org.zenframework.z8.server.base.query.Query;
 import org.zenframework.z8.server.base.table.Table;
 import org.zenframework.z8.server.base.table.value.AttachmentField;
 import org.zenframework.z8.server.base.table.value.Field;
-import org.zenframework.z8.server.logs.Trace;
 import org.zenframework.z8.server.security.BuiltinUsers;
 import org.zenframework.z8.server.types.guid;
-import org.zenframework.z8.server.types.primary;
 
 public class IeUtil {
 
@@ -85,8 +82,8 @@ public class IeUtil {
 		for (Field f : fields) {
 			if (!RECORD_ID.equals(f.id())
 					&& f.exportable()
-					&& (exportRules.isExportAttachments(recordId, f) || !(AttachmentField.class
-							.isAssignableFrom(f.getClass())))) {
+					&& (exportRules.isExportAttachments(recordId, f) || !(AttachmentField.class.isAssignableFrom(f
+							.getClass())))) {
 				Records.Record.Field field = new Records.Record.Field();
 				field.setId(f.id());
 				field.setValue(f.get().toString());
@@ -97,27 +94,6 @@ public class IeUtil {
 			}
 		}
 		return record;
-	}
-
-	public static boolean fillTableRecord(Query recordSet, ExportEntry.Records.Record record, boolean newRecord) {
-		String policy = record.getPolicy();
-		ImportPolicy recordPolicy = policy == null || policy.isEmpty() ? ImportPolicy.DEFAULT : ImportPolicy.valueOf(policy);
-		boolean hasUpdatedFields = false;
-		for (ExportEntry.Records.Record.Field xmlField : record.getField()) {
-			Field field = recordSet.getFieldById(xmlField.getId());
-			if (field != null) {
-				policy = xmlField.getPolicy();
-				ImportPolicy fieldPolicy = policy == null || policy.isEmpty() ? recordPolicy : ImportPolicy.valueOf(policy);
-				if (newRecord || fieldPolicy == ImportPolicy.OVERRIDE) {
-					field.set(primary.create(field.type(), xmlField.getValue()));
-					hasUpdatedFields = true;
-				}
-			} else {
-				Trace.logEvent("WARNING: Incorrect record format. Table '" + recordSet.classId() + "' has no field '"
-						+ xmlField.getId() + "'");
-			}
-		}
-		return hasUpdatedFields;
 	}
 
 	public static ExportEntry.Files.File fileInfoToFile(FileInfo fileInfo, ImportPolicy policy) {

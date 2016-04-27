@@ -3,27 +3,22 @@ package org.zenframework.z8.server.ie;
 public enum ImportPolicy {
 
     /**
-     * Если импортируемая запись существует, не менять
+     * Если импортируемое запись существует, не менять
      */
-    KEEP(false),
+    KEEP,
 
     /**
      * Если импортируемая запись существует, обновить
      */
-    OVERRIDE(true);
+    OVERRIDE,
+    
+    /**
+     * Если импортируемая запись существует, агрегировать текущее и новое значения поля
+     */
+    AGGREGATE;
 
     public static final ImportPolicy DEFAULT = KEEP;
 
-    private final boolean override;
-
-    private ImportPolicy(boolean override) {
-        this.override = override;
-    }
-
-    public boolean isOverride() {
-        return override;
-    }
-    
     public static ImportPolicy getPolicy(String policy) {
         return policy == null ? ImportPolicy.DEFAULT : ImportPolicy.valueOf(policy);
     }

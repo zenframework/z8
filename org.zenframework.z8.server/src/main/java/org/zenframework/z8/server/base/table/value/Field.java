@@ -75,7 +75,8 @@ abstract public class Field extends Control implements IValue, IField {
 
 	public RCollection<Field.CLASS<? extends Field>> indexFields = new RCollection<Field.CLASS<? extends Field>>(true);
 
-	public RCollection<Formula.CLASS<? extends Formula>> evaluations = new RCollection<Formula.CLASS<? extends Formula>>(true);
+	public RCollection<Formula.CLASS<? extends Formula>> evaluations = new RCollection<Formula.CLASS<? extends Formula>>(
+			true);
 
 	public RCollection<Field.CLASS<? extends Field>> dependencies = new RCollection<Field.CLASS<? extends Field>>(true);
 	public RCollection<Field.CLASS<? extends Field>> columns = new RCollection<Field.CLASS<? extends Field>>(true);
@@ -103,7 +104,7 @@ abstract public class Field extends Control implements IValue, IField {
 	@SuppressWarnings("unchecked")
 	public Field.CLASS<Field> operatorAssign(primary value) {
 		set(value);
-		return (Field.CLASS<Field>)getCLASS();
+		return (Field.CLASS<Field>) getCLASS();
 	}
 
 	@Override
@@ -139,7 +140,7 @@ abstract public class Field extends Control implements IValue, IField {
 
 	@Override
 	public Query owner() {
-		return (Query)getOwner();
+		return (Query) getOwner();
 	}
 
 	public Collection<Field.CLASS<? extends Field>> columns() {
@@ -170,10 +171,18 @@ abstract public class Field extends Control implements IValue, IField {
 		return !isPrimaryKey() && !isParentKey();
 	}
 
+	public String importPolicy() {
+		return getAttribute(IObject.FieldImportPolicy);
+	}
+
+	public String importAggregator() {
+		return getAttribute(IObject.FieldImportAggregator);
+	}
+
 	public String format(DatabaseVendor vendor, FormatOptions options) {
 		String alias = options.getFieldAlias(this);
 
-		if(alias == null) {
+		if (alias == null) {
 			Query data = owner();
 			return data.getAlias() + '.' + vendor.quote(name());
 		}
@@ -201,7 +210,7 @@ abstract public class Field extends Control implements IValue, IField {
 	protected primary internalGet() {
 		try {
 			return (changed || cursor == null || cursor.isClosed()) ? getDefaultValue() : read();
-		} catch(SQLException e) {
+		} catch (SQLException e) {
 			throw new RuntimeException(e);
 		}
 	}
@@ -211,7 +220,7 @@ abstract public class Field extends Control implements IValue, IField {
 
 	@Override
 	public void set(primary value) {
-		if(!changed) {
+		if (!changed) {
 			originalValue = this.value;
 			changed = true;
 		}
@@ -228,7 +237,7 @@ abstract public class Field extends Control implements IValue, IField {
 	}
 
 	public void reset() {
-		if(changed) {
+		if (changed) {
 			value = originalValue;
 			changed = false;
 		}
@@ -257,13 +266,13 @@ abstract public class Field extends Control implements IValue, IField {
 	}
 
 	public Sequencer getSequencer() {
-		if(sequencer == null) {
+		if (sequencer == null) {
 			Sequencer.CLASS<Sequencer> cls = new Sequencer.CLASS<Sequencer>(this);
 			sequencer = cls.get();
 
 			String containerName = getContainer().getAttribute(Name);
 
-			if(containerName == null) {
+			if (containerName == null) {
 				containerName = getContainer().classId();
 			}
 
@@ -290,13 +299,13 @@ abstract public class Field extends Control implements IValue, IField {
 		writer.writeProperty(Json.labelWidth, labelWidth);
 		writer.writeProperty(Json.stretch, stretch);
 
-		if(aggregation != Aggregation.None)
+		if (aggregation != Aggregation.None)
 			writer.writeProperty(Json.aggregation, aggregation.toString());
 
-		if(!evaluations.isEmpty()) {
+		if (!evaluations.isEmpty()) {
 			writer.startArray(Json.evaluations);
 
-			for(Formula formula : getEvaluations()) {
+			for (Formula formula : getEvaluations()) {
 				writer.startObject();
 
 				writer.writeProperty(Json.field, formula.field.id());
@@ -306,37 +315,37 @@ abstract public class Field extends Control implements IValue, IField {
 
 				writer.startArray(Json.fields);
 
-				for(IValue field : fields)
+				for (IValue field : fields)
 					writer.write(field.id());
 
 				writer.finishArray();
-				
+
 				writer.finishObject();
 			}
 
 			writer.finishArray();
 		}
 
-		if(!dependencies.isEmpty()) {
+		if (!dependencies.isEmpty()) {
 			writer.startArray(Json.dependencies);
 
-			for(Field.CLASS<?> cls : dependencies)
+			for (Field.CLASS<?> cls : dependencies)
 				writer.write(cls.id());
 
 			writer.finishArray();
 		}
 
-		if(!fieldsToShow.isEmpty()) {
+		if (!fieldsToShow.isEmpty()) {
 			writer.startObject(Json.fieldsToShow);
 
-			for(guid key : fieldsToShow.keySet()) {
+			for (guid key : fieldsToShow.keySet()) {
 				writer.startArray(JsonObject.quote(key.toString()));
 
-				for(Control.CLASS<?> field : fieldsToShow.get(key)) {
-					if(field.instanceOf(FieldGroup.class)) {
-						FieldGroup group = (FieldGroup)field.get();
+				for (Control.CLASS<?> field : fieldsToShow.get(key)) {
+					if (field.instanceOf(FieldGroup.class)) {
+						FieldGroup group = (FieldGroup) field.get();
 
-						for(Control.CLASS<?> groupField : group.controls)
+						for (Control.CLASS<?> groupField : group.controls)
 							writer.write(groupField.id());
 					}
 
@@ -359,39 +368,39 @@ abstract public class Field extends Control implements IValue, IField {
 	}
 
 	public binary binary() {
-		return (binary)get();
+		return (binary) get();
 	}
 
 	public bool bool() {
-		return (bool)get();
+		return (bool) get();
 	}
 
 	public guid guid() {
-		return (guid)get();
+		return (guid) get();
 	}
 
 	public date date() {
-		return (date)get();
+		return (date) get();
 	}
 
 	public datetime datetime() {
-		return (datetime)get();
+		return (datetime) get();
 	}
 
 	public datespan datespan() {
-		return (datespan)get();
+		return (datespan) get();
 	}
 
 	public decimal decimal() {
-		return (decimal)get();
+		return (decimal) get();
 	}
 
 	public integer integer() {
-		return (integer)get();
+		return (integer) get();
 	}
 
 	public string string() {
-		return (string)get();
+		return (string) get();
 	}
 
 	public FieldType z8_getType() {
@@ -460,7 +469,7 @@ abstract public class Field extends Control implements IValue, IField {
 	}
 
 	public Sequencer.CLASS<? extends Sequencer> z8_getSequencer() {
-		return (Sequencer.CLASS<?>)getSequencer().getCLASS();
+		return (Sequencer.CLASS<?>) getSequencer().getCLASS();
 	}
 
 	public sql_bool z8_sqlIsNull() {

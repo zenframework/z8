@@ -24,6 +24,8 @@ public interface IObject extends INamedObject {
     static final public String ForeignKey = "foreignKey";
     static final public String SearchIndex = "searchIndex";
     static final public String UniqueField = "uniqueField";
+    static final public String FieldImportPolicy = "importPolicy";
+    static final public String FieldImportAggregator = "importAggregator";
 
     public String classId();
 
