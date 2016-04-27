@@ -81,9 +81,10 @@ public class TransportProcedure extends Procedure {
 		TransportRoutes transportRoutes = TransportRoutes.instance();
 		Files filesTable = Files.instance();
 
-		final String transportCenter = Properties.getProperty(ServerRuntime.TransportCenterAddressProperty).trim();
+		String transportCenter = Properties.getProperty(ServerRuntime.TransportCenterAddressProperty).trim();
+		boolean registerInTransportCenter = Boolean.parseBoolean(Properties.getProperty(ServerRuntime.RegisterInTransportCenterProperty));
 
-		if (!transportCenter.isEmpty()) {
+		if (registerInTransportCenter && !transportCenter.isEmpty()) {
 			try {
 				Rmi.get(ITransportService.class).checkRegistration(selfAddress);
 			} catch (Exception e) {

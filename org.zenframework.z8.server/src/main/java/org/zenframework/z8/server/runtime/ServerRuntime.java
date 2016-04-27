@@ -24,12 +24,14 @@ public class ServerRuntime extends AbstractRuntime {
 
 	public static final Property TransportCenterAddressProperty = new Property("9FCF5C13-DDF3-4B0C-8572-AF4DFEF7D6B6",
 			"z8.transport.transportCenterAddress", "", "Адрес (хост:порт) транспортного центра");
+	public static final Property RegisterInTransportCenterProperty = new Property("1090E6CD-0B18-4599-8687-87EF7A888848",
+			"z8.transport.registerInTransportCenter", "true", "Регистрироваться в транспортном центре (true / false)");
 	public static final Property PreserveExportMessagesProperty = new Property("8D9C727A-34FC-4DCD-9AB0-5A2AF8E676E0",
-			"z8.transport.preserveExportMessages", "false", "Сохранять локальную очередь экспортируемых сообщений");
+			"z8.transport.preserveExportMessages", "false", "Сохранять локальную очередь экспортируемых сообщений (true / false)");
 	public static final Property EnableProtocolsProperty = new Property("222A95B9-05BC-4AF3-8425-323D8B1A1B73",
 			"z8.transport.enableProtocols", "", "Список (через ',') протоколов, инициализируемых при старте");
 	public static final Property SendFilesSeparatelyProperty = new Property("8D177260-BF65-4D2B-A0A9-04082F2C5DB0",
-			"z8.transport.sendFilesSeparately", "true", "Отправлять вложения отдельными сообщениями");
+			"z8.transport.sendFilesSeparately", "true", "Отправлять вложения отдельными сообщениями (true / false)");
 	public static final Property SelfAddressDefaultProperty = new Property("7370AF2A-AA31-49E7-84AA-E000DAF78235",
 			"z8.transport.selfAddressDefault", "", "Адрес по умолчанию");
 	public static final Property ExportRecordsMaxProperty = new Property("FAB69475-114C-4C39-8401-A03C42608BBE",
