@@ -31,6 +31,11 @@ public class Scheduler implements Runnable {
 	public static void stop() {
 		if (scheduler != null) {
 			scheduler.thread.interrupt();
+			while (scheduler.countRunningTasks() > 0) {
+				try {
+					Thread.sleep(100);
+				} catch (InterruptedException e) {}
+			}
 			scheduler = null;
 		}
 	}
@@ -125,6 +130,14 @@ public class Scheduler implements Runnable {
 		thread.start();
 
 		return job;
+	}
+
+	private int countRunningTasks() {
+		int count = 0;
+		for (Task task : tasks)
+			if (task.isRunning)
+				count++;
+		return count;
 	}
 
 }

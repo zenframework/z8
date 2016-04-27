@@ -47,9 +47,9 @@ public class DBGenerateProcedure extends Procedure {
             return;
         }
         
-        Scheduler.stop();
-
         reportProgress(0);
+        Scheduler.stop();
+        reportProgress(Resources.get("Generator.schedulerStopped"), 0);
 
         Logger logger = new Logger();
 
@@ -72,7 +72,7 @@ public class DBGenerateProcedure extends Procedure {
 
         Scheduler.start();
 
-        reportProgress(100);
+        reportProgress(Resources.get("Generator.schedulerStarted"), 100);
     }
 
     @SuppressWarnings({ "unchecked", "rawtypes" })

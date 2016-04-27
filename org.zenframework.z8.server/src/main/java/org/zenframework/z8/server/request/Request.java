@@ -20,6 +20,7 @@ public class Request extends IRequest {
 
 	public Request(ISession session) {
 		this.session = session;
+		this.monitor = new Monitor();
 	}
 
 	public Request(Map<String, String> parameters, List<FileInfo> files, ISession session) {
