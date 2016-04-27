@@ -24,6 +24,7 @@ import org.zenframework.z8.server.utils.IOUtils;
 import org.zenframework.z8.server.utils.PdfUtils;
 
 public class AttachmentProcessor extends OBJECT {
+
 	public static class CLASS<T extends AttachmentProcessor> extends OBJECT.CLASS<T> {
 		public CLASS() {
 			this(null);
@@ -64,7 +65,7 @@ public class AttachmentProcessor extends OBJECT {
 	}
 
 	public Collection<FileInfo> read(guid recordId) {
-		if(getTable().readRecord(recordId, Arrays.<Field> asList(getField())))
+		if (getTable().readRecord(recordId, Arrays.<Field> asList(getField())))
 			return get();
 		return new ArrayList<FileInfo>();
 	}
@@ -81,10 +82,10 @@ public class AttachmentProcessor extends OBJECT {
 	public Collection<FileInfo> create(guid attachTo, Collection<FileInfo> files, String type) {
 		Files filesTable = new Files.CLASS<Files>().get();
 
-		for(FileInfo file : files) {
+		for (FileInfo file : files) {
 			boolean idIsNull = file.id == null || file.id.isNull();
-			if(idIsNull || !filesTable.hasRecord(file.id)) {
-				if(!idIsNull)
+			if (idIsNull || !filesTable.hasRecord(file.id)) {
+				if (!idIsNull)
 					filesTable.recordId.get().set(file.id);
 
 				setPathIfEmpty(attachTo, file);
@@ -114,7 +115,7 @@ public class AttachmentProcessor extends OBJECT {
 		Files filesTable = new Files.CLASS<Files>().get();
 		Collection<FileInfo> result = read(target);
 
-		for(FileInfo file : files)
+		for (FileInfo file : files)
 			filesTable.destroy(file.id);
 
 		result.removeAll(files);
@@ -124,9 +125,10 @@ public class AttachmentProcessor extends OBJECT {
 	}
 
 	private void setPathIfEmpty(guid recordId, FileInfo fileInfo) {
-		if(fileInfo.path.isEmpty()) {
+		if (fileInfo.path.isEmpty()) {
 			datetime time = new datetime();
-			String path = FileUtils.getFile(Folders.Storage, time.format("yyyy.MM.dd"), getTable().classId(), recordId.toString(), field.name(), time.format("HH-mm-ss"), fileInfo.name.get()).toString();
+			String path = FileUtils.getFile(Folders.Storage, time.format("yyyy.MM.dd"), getTable().classId(),
+					recordId.toString(), field.name(), time.format("HH-mm-ss"), fileInfo.name.get()).toString();
 			fileInfo.path = new string(path);
 		}
 	}
@@ -136,10 +138,10 @@ public class AttachmentProcessor extends OBJECT {
 	}
 
 	private Collection<FileInfo> filterByType(Collection<FileInfo> files, String type) {
-		if(type != null) {
+		if (type != null) {
 			Iterator<FileInfo> i = files.iterator();
-			while(i.hasNext()) {
-				if(!type.equals(i.next().type.get()))
+			while (i.hasNext()) {
+				if (!type.equals(i.next().type.get()))
 					i.remove();
 			}
 		}
@@ -151,10 +153,10 @@ public class AttachmentProcessor extends OBJECT {
 
 		Collection<FileInfo> fileInfos = read(recordId);
 
-		for(FileInfo fileInfo : fileInfos) {
+		for (FileInfo fileInfo : fileInfos) {
 			try {
 				result += getPageCount(fileInfo);
-			} catch(IOException e) {
+			} catch (IOException e) {
 				Trace.logEvent("AttachmentProcessor.getPageCount('" + fileInfo.path + "'): '" + e.getMessage());
 				result += 1;
 			}
@@ -167,10 +169,10 @@ public class AttachmentProcessor extends OBJECT {
 		String relativePath = fileInfo.path.get();
 		File absolutePath = new File(Folders.Base, relativePath);
 
-		if(!FileConverter.isConvertableToPdf(absolutePath))
+		if (!FileConverter.isConvertableToPdf(absolutePath))
 			return 1;
 
-		if(!absolutePath.exists())
+		if (!absolutePath.exists())
 			IOUtils.copy(Files.getInputStream(fileInfo), absolutePath);
 
 		FileConverter fileConverter = new FileConverter(new File(Folders.Base, Folders.Cache));
@@ -195,20 +197,24 @@ public class AttachmentProcessor extends OBJECT {
 		return toCollection(read(recordId, type.get()));
 	}
 
-	public RCollection<? extends FileInfo.CLASS<? extends FileInfo>> z8_create(guid target, RCollection<? extends FileInfo.CLASS<? extends FileInfo>> classes) {
+	public RCollection<? extends FileInfo.CLASS<? extends FileInfo>> z8_create(guid target,
+			RCollection<? extends FileInfo.CLASS<? extends FileInfo>> classes) {
 		return z8_create(target, classes, new string());
 	}
 
-	public RCollection<? extends FileInfo.CLASS<? extends FileInfo>> z8_create(guid target, RCollection<? extends FileInfo.CLASS<? extends FileInfo>> classes, string type) {
+	public RCollection<? extends FileInfo.CLASS<? extends FileInfo>> z8_create(guid target,
+			RCollection<? extends FileInfo.CLASS<? extends FileInfo>> classes, string type) {
 		Collection<FileInfo> files = CLASS.asList(classes);
 		return toCollection(create(target, files, type.get()));
 	}
 
-	public RCollection<? extends FileInfo.CLASS<? extends FileInfo>> z8_update(guid target, RCollection<? extends FileInfo.CLASS<? extends FileInfo>> classes) {
+	public RCollection<? extends FileInfo.CLASS<? extends FileInfo>> z8_update(guid target,
+			RCollection<? extends FileInfo.CLASS<? extends FileInfo>> classes) {
 		return z8_update(target, classes, new string());
 	}
 
-	public RCollection<? extends FileInfo.CLASS<? extends FileInfo>> z8_update(guid target, RCollection<? extends FileInfo.CLASS<? extends FileInfo>> classes, string type) {
+	public RCollection<? extends FileInfo.CLASS<? extends FileInfo>> z8_update(guid target,
+			RCollection<? extends FileInfo.CLASS<? extends FileInfo>> classes, string type) {
 		Collection<FileInfo> files = CLASS.asList(classes);
 		return toCollection(update(target, files, type.get()));
 	}
@@ -216,7 +222,7 @@ public class AttachmentProcessor extends OBJECT {
 	private RCollection<? extends FileInfo.CLASS<? extends FileInfo>> toCollection(Collection<FileInfo> files) {
 		RCollection<FileInfo.CLASS<? extends FileInfo>> result = new RCollection<FileInfo.CLASS<? extends FileInfo>>();
 
-		for(FileInfo file : files) {
+		for (FileInfo file : files) {
 			FileInfo.CLASS<FileInfo> cls = new FileInfo.CLASS<FileInfo>();
 			cls.get().set(file);
 			result.add(cls);
@@ -228,4 +234,5 @@ public class AttachmentProcessor extends OBJECT {
 	public integer z8_getPageCount(guid recordId) {
 		return new integer(getPageCount(recordId));
 	}
+
 }

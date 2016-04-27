@@ -37,6 +37,7 @@ public class SystemTools extends Desktop {
     public final Properties.CLASS<Properties> properties = new Properties.CLASS<Properties>(this);
     public final ExportMessages.CLASS<ExportMessages> exportMessages = new ExportMessages.CLASS<ExportMessages>(this);
     public final TransportRoutes.CLASS<TransportRoutes> transportRoutes = new TransportRoutes.CLASS<TransportRoutes>(this);
+    public final Files.CLASS<Files> files = new Files.CLASS<Files>(this);
 
     public SystemTools(IObject container) {
         super(container);
@@ -53,11 +54,14 @@ public class SystemTools extends Desktop {
         runnables.add(properties);
         runnables.add(exportMessages);
         runnables.add(transportRoutes);
+        runnables.add(files);
 
         dataSets.add(userEntries);
         dataSets.add(taskLogs);
         dataSets.add(sequences);
         dataSets.add(properties);
         dataSets.add(exportMessages);
+        dataSets.add(transportRoutes);
+        dataSets.add(files);
     }
 }

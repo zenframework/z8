@@ -15,6 +15,7 @@ import org.zenframework.z8.server.base.file.Folders;
 import org.zenframework.z8.server.base.file.InputOnlyFileItem;
 import org.zenframework.z8.server.base.query.Query;
 import org.zenframework.z8.server.base.table.Table;
+import org.zenframework.z8.server.base.table.value.AttachmentExpression;
 import org.zenframework.z8.server.base.table.value.BinaryField;
 import org.zenframework.z8.server.base.table.value.Field;
 import org.zenframework.z8.server.base.table.value.StringField;
@@ -36,17 +37,12 @@ public class Files extends Table {
 
 	static public class names {
 		public final static String File = "File";
-		public final static String Target = "Target";
-		public final static String Table = "Table";
 		public final static String Path = "Path";
 	}
 
 	static public class strings {
 		public final static String Title = "Files.title";
 		public final static String Name = "Files.name";
-		public final static String File = "Files.file";
-		public final static String Target = "Files.target";
-		public final static String Table = "Files.table";
 		public final static String Path = "Files.path";
 	}
 
@@ -68,8 +64,42 @@ public class Files extends Table {
 		}
 	}
 
+	public static class FileAttachmentExpression extends AttachmentExpression {
+
+		public static class CLASS<T extends FileAttachmentExpression> extends AttachmentExpression.CLASS<T> {
+			public CLASS(IObject container) {
+				super(container);
+				setJavaClass(FileAttachmentExpression.class);
+			}
+
+			@Override
+			public Object newObject(IObject container) {
+				return new FileAttachmentExpression(container);
+			}
+		}
+
+		public FileAttachmentExpression(IObject container) {
+			super(container);
+		}
+
+		@SuppressWarnings("unchecked")
+		@Override
+		protected String attachmentName() {
+			Files container = ((Files.CLASS<Files>) getContainer().getCLASS()).get();
+			return container.name.get().get().string().get();
+		}
+
+		@Override
+		protected String contentFieldName() {
+			return "File";
+		}
+
+	}
+
 	public StringField.CLASS<StringField> path = new StringField.CLASS<StringField>(this);
 	public BinaryField.CLASS<BinaryField> file = new BinaryField.CLASS<BinaryField>(this);
+	public FileAttachmentExpression.CLASS<FileAttachmentExpression> attachment = new FileAttachmentExpression.CLASS<Files.FileAttachmentExpression>(
+			this);
 
 	public Files() {
 		this(null);
@@ -88,15 +118,22 @@ public class Files extends Table {
 
 		file.setName(names.File);
 		file.setIndex("file");
-		file.setDisplayName(Resources.get(strings.File));
 
 		path.setName(names.Path);
 		path.setIndex("path");
 		path.setDisplayName(Resources.get(strings.Path));
 		path.get().length.set(512);
 
+		attachment.setIndex("attachment");
+
 		registerDataField(file);
 		registerDataField(path);
+		registerDataField(attachment);
+
+		registerFormField(createdAt);
+		registerFormField(name);
+		registerFormField(description);
+		registerFormField(path);
 	}
 
 	public static Files instance() {
@@ -114,14 +151,14 @@ public class Files extends Table {
 		Field name = table.name.get();
 		Collection<Field> fields = Arrays.asList(file, name);
 
-		if(recordId != null && !recordId.isNull() && table.readRecord(recordId, fields) || table.readFirst(fields, where))
+		if (recordId != null && !recordId.isNull() && table.readRecord(recordId, fields) || table.readFirst(fields, where))
 			return new NamedInputStream(file.binary().get(), name.string().get());
 
 		return null;
 	}
 
 	public static FileInfo getFile(FileInfo fileInfo) throws IOException {
-		if(fileInfo.path.get().startsWith(TABLE_PREFIX))
+		if (fileInfo.path.get().startsWith(TABLE_PREFIX))
 			return getFileFromTable(fileInfo);
 		else
 			return getFileFromStorage(fileInfo);
@@ -129,18 +166,19 @@ public class Files extends Table {
 
 	private static FileInfo getFileFromStorage(FileInfo fileInfo) throws IOException {
 		File path = new File(Folders.Base, fileInfo.path.get());
-		if(FileInfo.isDefaultWrite()) {
-			NamedInputStream inputStream = !path.exists() ? getInputStream(fileInfo) : new NamedInputStream(new FileInputStream(path), path.getName());
-			if(inputStream == null)
+		if (FileInfo.isDefaultWrite()) {
+			NamedInputStream inputStream = !path.exists() ? getInputStream(fileInfo) : new NamedInputStream(
+					new FileInputStream(path), path.getName());
+			if (inputStream == null)
 				return null;
 			fileInfo.file = FilesFactory.createFileItem(fileInfo.name.get());
 			IOUtils.copy(inputStream, fileInfo.getOutputStream());
 			fileInfo.name = new string(inputStream.getName());
 			return fileInfo;
 		} else {
-			if(!path.exists()) {
+			if (!path.exists()) {
 				NamedInputStream inputStream = getInputStream(fileInfo);
-				if(inputStream == null)
+				if (inputStream == null)
 					return null;
 				IOUtils.copy(inputStream, path);
 				fileInfo.name = new string(inputStream.getName());
@@ -152,18 +190,19 @@ public class Files extends Table {
 
 	private static FileInfo getFileFromTable(FileInfo fileInfo) throws IOException {
 		File path = new File(Folders.Base, fileInfo.path.get());
-		if(FileInfo.isDefaultWrite()) {
-			NamedInputStream inputStream = !path.exists() ? getTableFieldInputStream(fileInfo) : new NamedInputStream(new FileInputStream(path), path.getName());
-			if(inputStream == null)
+		if (FileInfo.isDefaultWrite()) {
+			NamedInputStream inputStream = !path.exists() ? getTableFieldInputStream(fileInfo) : new NamedInputStream(
+					new FileInputStream(path), path.getName());
+			if (inputStream == null)
 				return null;
 			fileInfo.file = FilesFactory.createFileItem(fileInfo.name.get());
 			IOUtils.copy(inputStream, fileInfo.getOutputStream());
 			fileInfo.name = new string(inputStream.getName());
 			return fileInfo;
 		} else {
-			if(!path.exists()) {
+			if (!path.exists()) {
 				NamedInputStream inputStream = getTableFieldInputStream(fileInfo);
-				if(inputStream == null)
+				if (inputStream == null)
 					return null;
 				IOUtils.copy(inputStream, path);
 				fileInfo.name = new string(inputStream.getName());
@@ -179,10 +218,16 @@ public class Files extends Table {
 		File field = fileName.getParentFile();
 		File recordId = field.getParentFile();
 		File table = recordId.getParentFile();
-		Query query = (Query)Loader.getInstance(table.getName());
+		Query query = (Query) Loader.getInstance(table.getName());
 		Field dataField = query.getFieldByName(field.getName());
-		if(query.readRecord(new guid(recordId.getName()), Arrays.asList(dataField))) {
-			return new NamedInputStream(new ByteArrayInputStream(dataField.get().toString().getBytes()), fileName.getName());
+		if (query.readRecord(new guid(recordId.getName()), Arrays.asList(dataField))) {
+			InputStream in;
+			if (dataField instanceof BinaryField) {
+				in = ((BinaryField) dataField).get().binary().get();
+			} else {
+				in = new ByteArrayInputStream(dataField.get().toString().getBytes());
+			}
+			return new NamedInputStream(in, fileName.getName());
 		} else {
 			throw new IOException("Incorrect path '" + fileInfo.path + "'");
 		}

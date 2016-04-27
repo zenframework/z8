@@ -75,6 +75,11 @@
     <entry key="TransportRoutes.active">Активен</entry>
     <entry key="TransportRoutes.error">Ошибка</entry>
 
+    <!-- Files -->
+    <entry key="Files.title">Файлы</entry>
+    <entry key="Files.name">Имя файла</entry>
+    <entry key="Files.path">Путь к файлу в кэше</entry>
+
 	<!-- Entries -->
 	<entry key="Entries.title">Компоненты</entry>
 	<entry key="Entries.javaClass">Системное имя</entry>

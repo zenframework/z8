@@ -3,13 +3,12 @@ package org.zenframework.z8.server.ie;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.UUID;
 
 import javax.xml.bind.JAXBException;
 
 import org.zenframework.z8.server.base.table.Table;
 import org.zenframework.z8.server.base.table.value.Aggregation;
-import org.zenframework.z8.server.base.table.value.AttachmentField;
+import org.zenframework.z8.server.base.table.value.AttachmentExpression;
 import org.zenframework.z8.server.base.table.value.BoolField;
 import org.zenframework.z8.server.base.table.value.Field;
 import org.zenframework.z8.server.base.table.value.IntegerField;
@@ -21,13 +20,9 @@ import org.zenframework.z8.server.db.sql.expressions.And;
 import org.zenframework.z8.server.db.sql.expressions.Operation;
 import org.zenframework.z8.server.db.sql.expressions.Rel;
 import org.zenframework.z8.server.db.sql.expressions.Unary;
-import org.zenframework.z8.server.json.Json;
-import org.zenframework.z8.server.json.parser.JsonArray;
-import org.zenframework.z8.server.json.parser.JsonObject;
 import org.zenframework.z8.server.resources.Resources;
 import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.types.bool;
-import org.zenframework.z8.server.types.datetime;
 import org.zenframework.z8.server.types.guid;
 import org.zenframework.z8.server.types.integer;
 import org.zenframework.z8.server.types.string;
@@ -57,6 +52,36 @@ public class ExportMessages extends Table {
 
 	}
 
+	public static class MessageAttachmentExpression extends AttachmentExpression {
+
+		public static class CLASS<T extends MessageAttachmentExpression> extends AttachmentExpression.CLASS<T> {
+			public CLASS(IObject container) {
+				super(container);
+				setJavaClass(MessageAttachmentExpression.class);
+			}
+
+			@Override
+			public Object newObject(IObject container) {
+				return new MessageAttachmentExpression(container);
+			}
+		}
+
+		public MessageAttachmentExpression(IObject container) {
+			super(container);
+		}
+
+		@Override
+		protected String attachmentName() {
+			return "message.xml";
+		}
+
+		@Override
+		protected String contentFieldName() {
+			return "Xml";
+		}
+
+	}
+
 	static public class strings {
 		public final static String Title = "ExportMessages.title";
 		public final static String Sender = "ExportMessages.sender";
@@ -72,7 +97,8 @@ public class ExportMessages extends Table {
 	public TextField.CLASS<TextField> message = new TextField.CLASS<TextField>(this);
 	public BoolField.CLASS<BoolField> processed = new BoolField.CLASS<BoolField>(this);
 	public BoolField.CLASS<BoolField> error = new BoolField.CLASS<BoolField>(this);
-	public AttachmentField.CLASS<AttachmentField> attachment = new AttachmentField.CLASS<AttachmentField>(this);
+	public MessageAttachmentExpression.CLASS<MessageAttachmentExpression> attachment = new MessageAttachmentExpression.CLASS<MessageAttachmentExpression>(
+			this);
 
 	private ExportMessages(IObject container) {
 		super(container);
@@ -89,7 +115,6 @@ public class ExportMessages extends Table {
 			this.name.get().set(new string(transportInfo));
 		this.ordinal.get().set(new integer(nextOrdinal(message)));
 		this.message.get().set(new string(IeUtil.marshalExportEntry(message.getExportEntry())));
-		this.attachment.get().set(getAttachment(message.getId()));
 		if (exists)
 			update(recordId);
 		else
@@ -162,9 +187,7 @@ public class ExportMessages extends Table {
 		message.setDisplayName(Resources.get(strings.Message));
 		message.get().colspan.set(3);
 		message.get().visible = new bool(false);
-		attachment.setName("Attachment");
 		attachment.setIndex("attachment");
-		attachment.get().readOnly = new bool(true);
 
 		registerDataField(ordinal);
 		registerDataField(processed);
@@ -180,7 +203,6 @@ public class ExportMessages extends Table {
 		registerFormField(ordinal);
 		registerFormField(processed);
 		registerFormField(error);
-		registerFormField(attachment);
 	}
 
 	public static ExportMessages instance() {
@@ -188,12 +210,13 @@ public class ExportMessages extends Table {
 	}
 
 	public List<guid> getExportMessages(String selfAddress) {
-		SqlToken notProcessedNotErrorNotLocal = new And(new And(new Unary(Operation.Not, new SqlField(processed.get())), new Unary(
-				Operation.Not, new SqlField(error.get()))), new Rel(name.get(), Operation.NotEq, new sql_string(Export.LOCAL_PROTOCOL)));
+		SqlToken notProcessedNotErrorNotLocal = new And(new And(new Unary(Operation.Not, new SqlField(processed.get())),
+				new Unary(Operation.Not, new SqlField(error.get()))), new Rel(name.get(), Operation.NotEq, new sql_string(
+				Export.LOCAL_PROTOCOL)));
 		SqlToken fromMeNotForMe = new And(new Rel(id.get(), Operation.Eq, new sql_string(selfAddress)), new Rel(id1.get(),
 				Operation.NotEq, new sql_string(selfAddress)));
-		read(Arrays.<Field> asList(recordId.get()), Arrays.<Field> asList(ordinal.get()), new And(notProcessedNotErrorNotLocal,
-				fromMeNotForMe));
+		read(Arrays.<Field> asList(recordId.get()), Arrays.<Field> asList(ordinal.get()), new And(
+				notProcessedNotErrorNotLocal, fromMeNotForMe));
 		List<guid> ids = new LinkedList<guid>();
 		while (next()) {
 			ids.add(recordId());
@@ -216,18 +239,6 @@ public class ExportMessages extends Table {
 
 	public boolean readMessage(guid messageId) {
 		return readRecord(messageId, getDataFields());
-	}
-
-	private String getAttachment(UUID id) {
-		JsonArray writer = new JsonArray();
-		JsonObject obj = new JsonObject();
-		String fileName = "table/org.zenframework.z8.server.ie.ExportMessages/" + id + "/Xml/message.xml";
-		obj.put(Json.size, 0);
-		obj.put(Json.time, new datetime());
-		obj.put(Json.name, "message.xml");
-		obj.put(Json.path, fileName);
-		writer.put(obj);
-		return writer.toString();
 	}
 
 	private long nextOrdinal(Message message) {
