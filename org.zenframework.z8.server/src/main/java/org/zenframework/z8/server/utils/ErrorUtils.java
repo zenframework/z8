@@ -2,11 +2,10 @@ package org.zenframework.z8.server.utils;
 
 public class ErrorUtils {
     static public String getMessage(Throwable throwable) {
-        String message = throwable.getMessage();
+        String message = throwable instanceof RuntimeException ? throwable.getCause().getMessage() : throwable.getMessage();
 
-        if(message == null || message.isEmpty()) {
-            message = "Internal server error.";
-        }
+        if(message == null || message.isEmpty())
+            return "Internal server error.";
         
         return message;
     }
