@@ -107,7 +107,9 @@ public class ReadAction extends Action {
 		initPeriod();
 		initQuery();
 
-		Query query = getQuery();
+        beforeRead();
+
+        Query query = getQuery();
 
 		Collection<Field> fields = parameters.fields != null && !parameters.fields.isEmpty() ? parameters.fields : query.getFormFields();
 		Collection<Field> sortFields = parameters.sortFields != null ? parameters.sortFields : emptyFieldList;
@@ -761,8 +763,6 @@ public class ReadAction extends Action {
 
 	public Select getCursor() {
 		try {
-			beforeRead();
-
 			Select cursor = cursor();
 			cursor.open();
 
@@ -779,7 +779,6 @@ public class ReadAction extends Action {
 
 	public CountingSelect getCounter() {
 		try {
-			beforeRead();
 			return counter();
 		} finally {
 			afterRead();
@@ -797,8 +796,6 @@ public class ReadAction extends Action {
 
 	public AggregatingSelect getTotals() {
 		try {
-			beforeRead();
-
 			AggregatingSelect select = totals();
 			select.open();
 
@@ -1025,8 +1022,6 @@ public class ReadAction extends Action {
         query.setReadLock(ReadLock.None);
 
 		try {
-			beforeRead();
-
 			if(totalsBy == null) {
 				if(getStartParameter() != -1 || getLimitParameter() != -1)
 					writeCount(writer);
