@@ -163,42 +163,41 @@ public class JmsTransport extends AbstractTransport implements ExceptionListener
 		Trace.logError("JMS exception occured", e);
 	}
 
+	private static String getSender(javax.jms.Message jmsMessage) throws JMSException {
+		Destination senderDest = jmsMessage.getJMSReplyTo();
+		
+		if (senderDest instanceof Queue)
+			return ((Queue) senderDest).getQueueName();
+		else if (senderDest instanceof Topic)
+			return ((Topic) senderDest).getTopicName();
+		
+		return null;
+	}
+	
 	@Override
 	public Message receive() throws TransportException {
 		try {
 			javax.jms.Message jmsMessage = consumer.receive(100);
-			if (jmsMessage != null) {
-				String messageId = jmsMessage.getJMSMessageID();
-				Destination senderDest = jmsMessage.getJMSReplyTo();
-				String sender = null;
-				if (senderDest instanceof Queue) {
-					sender = ((Queue) senderDest).getQueueName();
-				} else if (senderDest instanceof Topic) {
-					sender = ((Topic) senderDest).getTopicName();
+
+			if (jmsMessage == null)
+				return null;
+			
+			try {
+				Mode mode = jmsMessage.propertyExists(PROP_MODE) ? getMode(jmsMessage.getStringProperty(PROP_MODE)) : DEFAULT_MODE;
+
+				switch (mode) {
+				case OBJECT:
+					return parseObjectMessage(jmsMessage);
+				case STREAM:
+					return parseStreamMessage(jmsMessage);
+				default:
+					throw new RuntimeException("Unknown jmsMessage mode");
 				}
-				try {
-					Mode mode = jmsMessage.propertyExists(PROP_MODE) ? getMode(jmsMessage.getStringProperty(PROP_MODE))
-							: DEFAULT_MODE;
-					Message message = null;
-					switch (mode) {
-					case OBJECT:
-						message = parseObjectMessage(jmsMessage);
-						break;
-					case STREAM:
-						message = parseStreamMessage(jmsMessage);
-						break;
-					default:
-						break;
-					}
-					if (message.getSender() == null) {
-						message.setSender(sender);
-					}
-				} catch (JMSException e) {
-					throw new TransportException("Can't parse JMS message " + messageId + " from "
-							+ (sender == null ? "<unknown>" : sender), e);
-				}
+			} catch (JMSException e) {
+				String id = jmsMessage.getJMSMessageID();
+				String sender = getSender(jmsMessage);
+				throw new TransportException("Can't parse JMS message " + id + " from " + (sender == null ? "<unknown>" : sender), e);
 			}
-			return null;
 		} catch (JMSException e) {
 			throw new TransportException("Can't receive JMS message", e);
 		}
@@ -256,16 +255,17 @@ public class JmsTransport extends AbstractTransport implements ExceptionListener
 	private static Message parseObjectMessage(javax.jms.Message jmsMessage) throws JMSException {
 		if (jmsMessage instanceof ObjectMessage) {
 			Object messageObject = ((ObjectMessage) jmsMessage).getObject();
+
 			if (messageObject instanceof Message) {
-				return (Message) messageObject;
-			} else if (messageObject == null) {
+				Message message = (Message) messageObject;
+				message.setSender(getSender(jmsMessage));
+				return message;
+			} else if (messageObject == null)
 				return null;
-			} else {
+			else
 				throw new JMSException("Incorrect JMS message type: " + messageObject.getClass().getCanonicalName());
-			}
-		} else {
+		} else
 			throw new JMSException("Incorrect JMS message object type: " + jmsMessage.getClass().getCanonicalName());
-		}
 	}
 
 	private static javax.jms.Message createStreamMessage(Session session, Message message) throws JMSException, IOException {
@@ -337,6 +337,7 @@ public class JmsTransport extends AbstractTransport implements ExceptionListener
 						throw new RuntimeException(e);
 					}
 				}
+				message.setSender(getSender(jmsMessage));
 				return message;
 			} else if (messageObject == null) {
 				return null;
