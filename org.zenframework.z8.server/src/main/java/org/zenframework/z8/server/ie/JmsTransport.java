@@ -183,8 +183,10 @@ public class JmsTransport extends AbstractTransport implements ExceptionListener
 					switch (mode) {
 					case OBJECT:
 						message = parseObjectMessage(jmsMessage);
+						break;
 					case STREAM:
 						message = parseStreamMessage(jmsMessage);
+						break;
 					default:
 						break;
 					}
