@@ -88,23 +88,22 @@ public class Export extends OBJECT {
 	}
 
 	public void addRecordset(Table table) {
-		table.read(table.getPrimaryFields());
-		recordsetEntries.add(new RecordsetEntry(table, table.getPrimaryFields()));
+		addRecordset(table, table.getPrimaryFields(), null);
 	}
 
 	public void addRecordset(Table table, Collection<Field> fields) {
-		table.read(fields);
-		recordsetEntries.add(new RecordsetEntry(table, fields));
+	    addRecordset(table, fields, null);
 	}
 
 	public void addRecordset(Table table, sql_bool where) {
-		table.read(table.getPrimaryFields(), where);
-		recordsetEntries.add(new RecordsetEntry(table, table.getPrimaryFields()));
+	    addRecordset(table, table.getPrimaryFields(), where);
 	}
 
 	public void addRecordset(Table table, Collection<Field> fields, sql_bool where) {
-		table.read(fields, where);
-		recordsetEntries.add(new RecordsetEntry(table, fields));
+	    if(table.exportable()) {
+	        table.read(fields, where);
+	        recordsetEntries.add(new RecordsetEntry(table, fields));
+		}
 	}
 
 	public void setDefaults(ImportPolicy importPolicy, boolean exportAttachments) {
