@@ -12,26 +12,26 @@ import org.zenframework.z8.server.ie.TransportException;
 
 public class TransportServiceImpl implements TransportService {
 
-    private final String endpoint;
+	private final String endpoint;
 
-    public TransportServiceImpl(String endpoint) {
-        this.endpoint = endpoint;
-    }
+	public TransportServiceImpl(String endpoint) {
+		this.endpoint = endpoint;
+	}
 
-    @Override
-    public void sendMessage(UUID id, String sender, ExportEntry exportEntry) throws TransportException {
-        Message message = Message.instance(id);
-        message.setAddress(endpoint);
-        message.setSender(sender);
-        try {
-            message.setFiles(IeUtil.xmlFilesToFileInfos(exportEntry.getFiles()));
-            message.setExportEntry(exportEntry);
-            new ExportMessages.CLASS<ExportMessages>(null).get().addMessage(message, endpoint);
+	@Override
+	public void sendMessage(UUID id, String sender, ExportEntry exportEntry) throws TransportException {
+		Message message = Message.instance(id);
+		message.setAddress(endpoint);
+		message.setSender(sender);
+		try {
+			message.setFiles(IeUtil.xmlFilesToFileInfos(exportEntry.getFiles()));
+			message.setExportEntry(exportEntry);
+			new ExportMessages.CLASS<ExportMessages>(null).get().addMessage(message, endpoint, ExportMessages.Direction.IN);
 			Import.importFiles(message, Files.instance());
-        } catch (Exception e) {
-            throw new TransportException("Can't send IE message " + message.getId() + " from " + message.getSender()
-                    + " to " + message.getAddress(), e);
-        }
-    }
+		} catch (Exception e) {
+			throw new TransportException("Can't send IE message " + message.getId() + " from " + message.getSender()
+					+ " to " + message.getAddress(), e);
+		}
+	}
 
 }

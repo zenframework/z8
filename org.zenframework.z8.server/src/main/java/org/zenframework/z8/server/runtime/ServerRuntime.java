@@ -32,8 +32,10 @@ public class ServerRuntime extends AbstractRuntime {
 			"z8.transport.enableProtocols", "", "Список (через ',') протоколов, инициализируемых при старте");
 	public static final Property SendFilesSeparatelyProperty = new Property("8D177260-BF65-4D2B-A0A9-04082F2C5DB0",
 			"z8.transport.sendFilesSeparately", "true", "Отправлять вложения отдельными сообщениями (true / false)");
-	public static final Property SelfAddressDefaultProperty = new Property("7370AF2A-AA31-49E7-84AA-E000DAF78235",
-			"z8.transport.selfAddressDefault", "", "Адрес по умолчанию");
+	public static final Property LazyFilesProperty = new Property("620324BB-AE31-4EDD-9293-E15F8C354279",
+			"z8.transport.lazyFiles", "true", "Отложенная отправка файлов по запросу (true / false)");
+	public static final Property InstanceIdProperty = new Property("7370AF2A-AA31-49E7-84AA-E000DAF78235",
+			"z8.transport.selfAddressDefault", "", "Идентификатор экземпляра (адрес по умолчанию)");
 	public static final Property ExportRecordsMaxProperty = new Property("FAB69475-114C-4C39-8401-A03C42608BBE",
 			"z8.transport.exportRecordsMax", "1000", "Максимальное количество записей в сообщении экспорта");
 	public static final Property RecordsSortingModeProperty = new Property("FA9D7410-050B-43BB-9F7A-B151F5BCD091",
@@ -90,10 +92,11 @@ public class ServerRuntime extends AbstractRuntime {
 		addProperty(PreserveExportMessagesProperty);
 		addProperty(EnableProtocolsProperty);
 		addProperty(SendFilesSeparatelyProperty);
+		addProperty(LazyFilesProperty);
 		addProperty(ExportRecordsMaxProperty);
 		addProperty(RecordsSortingModeProperty);
 		addProperty(InactiveRouteTimeoutProperty);
-		addProperty(SelfAddressDefaultProperty);
+		addProperty(InstanceIdProperty);
 		addProperty(FileFolderProperty);
 		addProperty(JmsConnectionFactoryProperty);
 		addProperty(JmsConnectionUrlProperty);

@@ -4,6 +4,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 
 import org.zenframework.z8.server.base.simple.Procedure;
+import org.zenframework.z8.server.base.table.system.Files;
 import org.zenframework.z8.server.base.table.system.Properties;
 import org.zenframework.z8.server.base.view.command.Parameter;
 import org.zenframework.z8.server.runtime.IObject;
@@ -47,6 +48,8 @@ public class BridgeProcedure extends Procedure {
 	@Override
 	protected void z8_exec(RCollection<Parameter.CLASS<? extends Parameter>> parameters) {
 
+		Files filesTable = Files.instance();
+
 		for (String uri : Properties.getProperty(ServerRuntime.BridgeUrlsProperty).split("\\,")) {
 			String uris[] = uri.split("/");
 			if (uris.length != 2)
@@ -69,6 +72,8 @@ public class BridgeProcedure extends Procedure {
 					transOut.connect();
 					for (Message message = transIn.receive(); message != null; message = transIn.receive()) {
 						try {
+							message.getFiles().addAll(
+									IeUtil.filesToFileInfos(message.getExportEntry().getFiles().getFile(), filesTable));
 							z8_beforeTransfer((Message.CLASS<Message>) message.getCLASS());
 							transOut.send(message, outUri.getHost());
 							transIn.commit();

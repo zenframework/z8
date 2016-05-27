@@ -10,6 +10,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.zenframework.z8.server.base.file.FileInfo;
 import org.zenframework.z8.server.base.table.system.Files;
 import org.zenframework.z8.server.base.table.system.Properties;
 import org.zenframework.z8.server.config.ServerConfig;
@@ -103,10 +104,19 @@ public class TransportService extends RmiServer implements ITransportService, Pr
 			LOG.debug("Can't parse URI '" + url + "'", e);
 		}
 		try {
-			new ExportMessages.CLASS<ExportMessages>().get().addMessage(message, url);
+			new ExportMessages.CLASS<ExportMessages>().get().addMessage(message, url, ExportMessages.Direction.IN);
 			Import.importFiles(message, Files.instance());
 		} catch (Throwable e) {
 			throw new RemoteException("Can't import message '" + message.getId() + "' from '" + message.getSender() + "'", e);
+		}
+	}
+
+	@Override
+	public FileInfo readFile(FileInfo fileInfo) throws RemoteException {
+		try {
+			return Files.instance().getFile(fileInfo);
+		} catch (Exception e) {
+			throw new RemoteException("Can't get file " + fileInfo, e);
 		}
 	}
 

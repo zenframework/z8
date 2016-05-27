@@ -3,6 +3,7 @@ package org.zenframework.z8.web.server;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.List;
@@ -15,6 +16,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.zenframework.z8.server.base.file.FileConverter;
 import org.zenframework.z8.server.base.file.FileInfo;
+import org.zenframework.z8.server.base.file.FileInfoNotFoundException;
 import org.zenframework.z8.server.base.file.Folders;
 import org.zenframework.z8.server.engine.ISession;
 import org.zenframework.z8.server.engine.ServerInfo;
@@ -44,13 +46,14 @@ public class ConverterAdapter extends Adapter {
 	}
 
 	@Override
-	protected void service(ISession session, Map<String, String> parameters, List<FileInfo> files, HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
+	protected void service(ISession session, Map<String, String> parameters, List<FileInfo> files,
+			HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException, FileInfoNotFoundException {
 		// URLDecoder.decode заменяет '+' на ' '
-		String encodedUrl = request.getRequestURI().replaceAll("\\+", "%2b"); 
+		String encodedUrl = request.getRequestURI().replaceAll("\\+", "%2b");
 		String requestUrl = URLDecoder.decode(encodedUrl, encoding.Default.toString());
 		String contextPath = request.getContextPath() + '/';
 
-		if(requestUrl.startsWith(contextPath))
+		if (requestUrl.startsWith(contextPath))
 			requestUrl = requestUrl.substring(contextPath.length());
 
 		File relativePath = new File(requestUrl);
@@ -59,8 +62,8 @@ public class ConverterAdapter extends Adapter {
 		boolean preview = request.getParameter("preview") != null;
 
 		FileInfo fileInfo = null;
-		
-		if(!absolutePath.exists()) {
+
+		if (!absolutePath.exists()) {
 			fileInfo = new FileInfo();
 			fileInfo.path = new string(relativePath.toString());
 			fileInfo.name = new string(relativePath.getName());
@@ -68,11 +71,11 @@ public class ConverterAdapter extends Adapter {
 			fileInfo = downloadFile(session.getServerInfo(), fileInfo, absolutePath);
 		}
 
-		if(preview) {
-			if(FileConverter.isConvertableToPdf(absolutePath)) {
+		if (preview) {
+			if (FileConverter.isConvertableToPdf(absolutePath)) {
 				absolutePath = getConvertedPdf(relativePath, absolutePath);
 				response.addHeader("Content-Type", "application/pdf");
-			} else if(FileConverter.isConvertableToTxt(absolutePath)) {
+			} else if (FileConverter.isConvertableToTxt(absolutePath)) {
 				absolutePath = getConvertedTxt(relativePath, absolutePath);
 				response.addHeader("Content-Type", "text/plain; charset=UTF-8");
 			} else
@@ -89,10 +92,10 @@ public class ConverterAdapter extends Adapter {
 	private String getContentType(File file) {
 		String contentType = getServlet().getServletContext().getMimeType(file.getName().toLowerCase());
 
-		if(contentType == null)
+		if (contentType == null)
 			return "text/plain";
 
-		if(contentType.startsWith("text/")) {
+		if (contentType.startsWith("text/")) {
 			String encoding = IOUtils.determineEncoding(file, "UTF-8");
 			contentType += "; charset=" + encoding;
 		}
@@ -100,21 +103,23 @@ public class ConverterAdapter extends Adapter {
 		return contentType;
 	}
 
-	private FileInfo downloadFile(ServerInfo serverInfo, FileInfo fileInfo, File path) throws IOException {
+	private FileInfo downloadFile(ServerInfo serverInfo, FileInfo fileInfo, File path) throws IOException,
+			FileInfoNotFoundException {
 		FileInfo downloadedFileInfo = serverInfo.getApplicationServer().download(fileInfo);
 
 		/* 
 		 * The storage folder may be shared between servlet and application server, 
 		 * so the previuos call could already put a copy of the file there
 		*/
-		
-		if(!path.exists()) {
-			if(downloadedFileInfo != null)
-				IOUtils.copy(downloadedFileInfo.getInputStream(), path);
+
+		if (!path.exists()) {
+			InputStream in = downloadedFileInfo == null ? null : downloadedFileInfo.getInputStream();
+			if (in != null)
+				IOUtils.copy(in, path);
 			else
 				throw new IOException("File '" + fileInfo.path.get() + "' does not exist");
 		}
-		
+
 		return downloadedFileInfo;
 	}
 
@@ -129,33 +134,32 @@ public class ConverterAdapter extends Adapter {
 	private String getContentDisposition(HttpServletRequest request, String fileName) throws UnsupportedEncodingException {
 		String agent = request.getHeader("USER-AGENT").toLowerCase();
 
-		if(agent == null)
+		if (agent == null)
 			return "attachment;filename=\"" + MimeUtility.encodeText(fileName, "utf8", "B") + "\"";
 
-		if(agent.contains("msie"))
+		if (agent.contains("msie"))
 			return "attachment;filename=\"" + toHexString(fileName) + "\"";
 
-		if(agent.contains("opera")) {
+		if (agent.contains("opera")) {
 			int version = -1;
 
 			try {
 				int prefixIndex = agent.indexOf("opera ");
 
-				if(prefixIndex == -1)
+				if (prefixIndex == -1)
 					prefixIndex = agent.indexOf("opera/");
 
 				int startIndex = prefixIndex + "opera/".length();
 				int stopIndex = agent.indexOf(".", startIndex);
 
-				if(stopIndex == -1) {
+				if (stopIndex == -1) {
 					stopIndex = agent.indexOf(" ", startIndex);
 				}
 
 				version = new Integer(agent.substring(startIndex, stopIndex)).intValue();
-			} catch(Exception ex) {
-			}
+			} catch (Exception ex) {}
 
-			if(version < 9 && version > -1)
+			if (version < 9 && version > -1)
 				// Opera 8.x and before
 				return "attachment;filename=\"" + fileName + "\"";
 			else
@@ -169,16 +173,16 @@ public class ConverterAdapter extends Adapter {
 	private String toHexString(String s) throws UnsupportedEncodingException {
 		StringBuffer sb = new StringBuffer();
 
-		for(int i = 0; i < s.length(); i++) {
+		for (int i = 0; i < s.length(); i++) {
 			char c = s.charAt(i);
 
-			if(0 <= c && c <= 255 && !Character.isWhitespace(c)) {
+			if (0 <= c && c <= 255 && !Character.isWhitespace(c)) {
 				sb.append(c);
 			} else {
 				byte[] bytes = Character.toString(c).getBytes("utf8");
-				for(int j = 0; j < bytes.length; j++) {
+				for (int j = 0; j < bytes.length; j++) {
 					int k = bytes[j];
-					if(k < 0)
+					if (k < 0)
 						k += 256;
 					sb.append("%" + Integer.toHexString(k).toUpperCase());
 				}
@@ -188,7 +192,7 @@ public class ConverterAdapter extends Adapter {
 	}
 
 	private FileConverter getConverter() {
-		if(converter == null)
+		if (converter == null)
 			converter = new FileConverter(new File(super.getServlet().getServletPath(), Folders.Cache));
 
 		return converter;
