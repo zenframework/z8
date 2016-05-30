@@ -35,11 +35,10 @@
 
     <modules>
         <module>org.zenframework.z8.auth</module>
+        <module>org.zenframework.z8.boot</module>
         <module>org.zenframework.z8.compiler</module>
         <module>org.zenframework.z8.lang</module>
         <module>org.zenframework.z8-maven-plugin</module>
-        <module>org.zenframework.z8.pde</module>
-        <module>org.zenframework.z8.oda.driver</module>
         <module>org.zenframework.z8.server</module>
         <module>org.zenframework.z8.servlet</module>
         <module>org.zenframework.z8.web</module>
@@ -50,6 +49,8 @@
         <profile>
             <id>modules-pde</id>
             <modules>
+                <module>org.zenframework.z8.pde</module>
+                <module>org.zenframework.z8.oda.driver</module>
                 <module>org.zenframework.z8.oda.designer</module>
             </modules>
         </profile>
