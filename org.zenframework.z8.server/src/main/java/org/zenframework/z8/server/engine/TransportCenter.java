@@ -1,9 +1,6 @@
 package org.zenframework.z8.server.engine;
 
 import java.io.File;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.net.URISyntaxException;
 import java.rmi.RemoteException;
 import java.rmi.server.RemoteServer;
@@ -41,17 +38,17 @@ public class TransportCenter extends RmiServer implements ITransportCenter {
 		try {
 			// Try detect remote client host
 			clientHost = RemoteServer.getClientHost();
-		} catch (ServerNotActiveException e) {
+		} catch(ServerNotActiveException e) {
 			// If ServerNotActiveException, transport center was called locally
 			try {
 				clientHost = new RmiAddress(Properties.getProperty(ServerRuntime.TransportCenterAddressProperty)).getHost();
-			} catch (URISyntaxException e1) {
+			} catch(URISyntaxException e1) {
 				throw new RemoteException("Can't register transport server '" + receiver + "'", e);
 			}
 		}
 		try {
 			store.setRoute(receiver, clientHost + ':' + localRegistryPort);
-		} catch (Exception e) {
+		} catch(Exception e) {
 			throw new RemoteException("Can't register transport server '" + receiver + "'", e);
 		}
 	}
@@ -62,21 +59,13 @@ public class TransportCenter extends RmiServer implements ITransportCenter {
 	}
 
 	public static void start(ServerConfig config) throws RemoteException {
-		if (INSTANCE == null) {
+		if(INSTANCE == null) {
 			INSTANCE = new TransportCenter();
 			INSTANCE.start();
 		}
 	}
 
-    private void writeObject(ObjectOutputStream out)  throws IOException {
-    	serialize(out);
-    }
-    
-    private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
-    	deserialize(in);
-    }
-
-    private static enum StoreMode {
+	private static enum StoreMode {
 
 		FILE, TABLE
 
@@ -92,8 +81,7 @@ public class TransportCenter extends RmiServer implements ITransportCenter {
 
 	private static class FileStore implements Store {
 
-		private final IKeyValue<String, String> store = new FileKeyValue(new File(Z8Context.getConfig().getWorkingPath(),
-				"transport-servers.xml"));
+		private final IKeyValue<String, String> store = new FileKeyValue(new File(Z8Context.getConfig().getWorkingPath(), "transport-servers.xml"));
 
 		@Override
 		public void setRoute(String receiver, String address) {
@@ -118,7 +106,7 @@ public class TransportCenter extends RmiServer implements ITransportCenter {
 
 		@Override
 		public List<TransportRoute> getRoutes(String receiver) {
-			return transportRoutes.readActiveRoutes(receiver);
+			return transportRoutes.readActiveRoutes(receiver, null);
 		}
 
 	}

@@ -4,6 +4,8 @@ import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.zenframework.z8.server.base.table.Table;
 import org.zenframework.z8.server.base.table.system.Properties;
 import org.zenframework.z8.server.base.table.value.BoolField;
@@ -14,6 +16,9 @@ import org.zenframework.z8.server.db.sql.expressions.And;
 import org.zenframework.z8.server.db.sql.expressions.Operation;
 import org.zenframework.z8.server.db.sql.expressions.Rel;
 import org.zenframework.z8.server.db.sql.expressions.Unary;
+import org.zenframework.z8.server.engine.ITransportCenter;
+import org.zenframework.z8.server.engine.Rmi;
+import org.zenframework.z8.server.engine.RmiAddress;
 import org.zenframework.z8.server.resources.Resources;
 import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.runtime.ServerRuntime;
@@ -26,6 +31,8 @@ import org.zenframework.z8.server.types.sql.sql_datetime;
 import org.zenframework.z8.server.types.sql.sql_string;
 
 public class TransportRoutes extends Table {
+
+	private static final Log LOG = LogFactory.getLog(TransportRoutes.class);
 
 	public static final String TableName = "SystemTransportRoutes";
 
@@ -110,7 +117,7 @@ public class TransportRoutes extends Table {
 		return readFirst(where);
 	}
 
-	public List<TransportRoute> readActiveRoutes(String receiver) {
+	public List<TransportRoute> readActiveRoutes(String receiver, String transportCenter) {
 		sort(Arrays.<Field> asList(priority.get()), new And(new Rel(this.id.get(), Operation.Eq, new sql_string(receiver)),
 				this.active.get().sql_bool()));
 		List<TransportRoute> routes = new LinkedList<TransportRoute>();
@@ -118,6 +125,16 @@ public class TransportRoutes extends Table {
 			routes.add(new TransportRoute(recordId(), id.get().get().string().get(), id1.get().get().string().get(), name
 					.get().get().string().get(), TransportRoutes.this.priority.get().get().integer().getInt(),
 					TransportRoutes.this.active.get().get().bool().get()));
+		}
+		if (routes.isEmpty() && transportCenter != null && !transportCenter.isEmpty()) {
+			try {
+				routes = Rmi.get(ITransportCenter.class, new RmiAddress(transportCenter)).getTransportRoutes(receiver);
+				for (TransportRoute route : routes) {
+					setRoute(route);
+				}
+			} catch (Exception e) {
+				LOG.error("Can't get routes from transport center '" + transportCenter + "'", e);
+			}
 		}
 		return routes;
 	}

@@ -23,6 +23,7 @@ import org.zenframework.z8.server.db.sql.expressions.Unary;
 import org.zenframework.z8.server.resources.Resources;
 import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.types.bool;
+import org.zenframework.z8.server.types.datetime;
 import org.zenframework.z8.server.types.guid;
 import org.zenframework.z8.server.types.integer;
 import org.zenframework.z8.server.types.string;
@@ -82,6 +83,22 @@ public class ExportMessages extends Table {
 
 	}
 
+	public static enum Direction {
+
+		IN("in_"), OUT("out_");
+
+		private final String prefix;
+
+		private Direction(String prefix) {
+			this.prefix = prefix;
+		}
+
+		public String getPrefix() {
+			return prefix;
+		}
+
+	}
+
 	static public class strings {
 		public final static String Title = "ExportMessages.title";
 		public final static String Sender = "ExportMessages.sender";
@@ -104,7 +121,7 @@ public class ExportMessages extends Table {
 		super(container);
 	}
 
-	public void addMessage(Message message, String transportInfo) throws JAXBException {
+	public void addMessage(Message message, String transportInfo, Direction direction) throws JAXBException {
 		guid recordId = new guid(message.getId());
 		boolean exists = hasRecord(recordId);
 		this.id.get().set(new string(message.getSender()));
@@ -113,7 +130,7 @@ public class ExportMessages extends Table {
 			this.name.get().set(new string(Export.LOCAL_PROTOCOL));
 		else if (transportInfo != null)
 			this.name.get().set(new string(transportInfo));
-		this.ordinal.get().set(new integer(nextOrdinal(message)));
+		this.ordinal.get().set(new integer(nextOrdinal(message, direction)));
 		this.message.get().set(new string(IeUtil.marshalExportEntry(message.getExportEntry())));
 		if (exists)
 			update(recordId);
@@ -134,7 +151,7 @@ public class ExportMessages extends Table {
 
 	public void setError(boolean error, guid messageId, Throwable e) {
 		this.error.get().set(new bool(error));
-		this.description.get().set(new string(e.getMessage()));
+		this.description.get().set(new string(new datetime() + " " + e.getClass() + ": " + e.getMessage()));
 		update(messageId);
 	}
 
@@ -241,8 +258,8 @@ public class ExportMessages extends Table {
 		return readRecord(messageId, getDataFields());
 	}
 
-	private long nextOrdinal(Message message) {
-		return Sequencer.next(message.getSender() + "->" + message.getAddress());
+	private long nextOrdinal(Message message, Direction direction) {
+		return Sequencer.next(direction.getPrefix() + message.getAddress());
 	}
 
 }

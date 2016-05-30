@@ -4,8 +4,8 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
+import org.zenframework.z8.server.engine.RmiIO;
 import org.zenframework.z8.server.engine.RmiSerializable;
-import org.zenframework.z8.server.rmi.RmiIO;
 
 public class Component implements RmiSerializable {
     private static final long serialVersionUID = 3995824646818479932L;

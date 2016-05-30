@@ -8,6 +8,7 @@ import java.lang.management.RuntimeMXBean;
 import java.rmi.RemoteException;
 
 import org.zenframework.z8.server.base.file.FileInfo;
+import org.zenframework.z8.server.base.file.FileInfoNotFoundException;
 import org.zenframework.z8.server.base.job.scheduler.Scheduler;
 import org.zenframework.z8.server.base.table.system.Files;
 import org.zenframework.z8.server.base.xml.GNode;
@@ -59,7 +60,7 @@ public class ApplicationServer extends RmiServer implements IApplicationServer {
 	}
 
 	@Override
-	public void stop() throws RemoteException {
+	public void stop() {
 		Scheduler.stop();
 		TransportEngine.getInstance().stop();
 		try {
@@ -85,18 +86,16 @@ public class ApplicationServer extends RmiServer implements IApplicationServer {
 	}
 
 	@Override
-	public FileInfo download(FileInfo fileInfo) throws RemoteException {
+	public FileInfo download(FileInfo fileInfo) throws IOException, FileInfoNotFoundException {
 		try {
-			FileInfo result = Files.getFile(fileInfo);
+			return Files.instance().getFile(fileInfo);
+		} finally {
 			ConnectionManager.release();
-			return result;
-		} catch (IOException e) {
-			throw new RemoteException(e.getMessage(), e);
 		}
 	}
 
 	@Override
-	public GNode processRequest(ISession session, GNode node) throws RemoteException {
+	public GNode processRequest(ISession session, GNode node) {
 		IRequest request = new Request(node.getAttributes(), node.getFiles(), session);
 		IResponse response = request.getResponse();
 
@@ -169,11 +168,4 @@ public class ApplicationServer extends RmiServer implements IApplicationServer {
 		System.out.println("Runtime schema version: " + version);
 	}
 
-    private void writeObject(ObjectOutputStream out) throws IOException {
-    	serialize(out);
-    }
-    
-    private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
-    	deserialize(in);
-    }
 }

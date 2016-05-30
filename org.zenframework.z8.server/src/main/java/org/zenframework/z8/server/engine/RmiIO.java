@@ -1,4 +1,4 @@
-package org.zenframework.z8.server.rmi;
+package org.zenframework.z8.server.engine;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -19,7 +19,6 @@ import java.util.Map;
 import java.util.UUID;
 
 import org.zenframework.z8.rmi.ObjectIO;
-import org.zenframework.z8.server.engine.RmiSerializable;
 import org.zenframework.z8.server.types.bool;
 import org.zenframework.z8.server.types.date;
 import org.zenframework.z8.server.types.datespan;

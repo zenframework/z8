@@ -1023,13 +1023,19 @@ public class Query extends Runnable {
     }
 
     public void registerDataField(Field.CLASS<?> field) {
-        assert (field.instanceOf(Field.class));
         dataFields.add(field);
     }
 
+    public void unregisterDataField(Field.CLASS<?> field) {
+        dataFields.remove(field);
+    }
+
     public void registerFormField(Field.CLASS<?> field) {
-        assert (field.instanceOf(Field.class));
         formFields.add(field);
+    }
+
+    public void unregisterFormField(Field.CLASS<?> field) {
+        formFields.remove(field);
     }
 
     public boolean isShared() {

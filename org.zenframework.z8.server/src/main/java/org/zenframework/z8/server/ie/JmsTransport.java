@@ -8,7 +8,6 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.util.Hashtable;
-import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.jms.Connection;
@@ -29,6 +28,7 @@ import javax.naming.InitialContext;
 import javax.naming.NamingException;
 
 import org.zenframework.z8.server.base.file.FileInfo;
+import org.zenframework.z8.server.base.file.FileInfoNotFoundException;
 import org.zenframework.z8.server.base.file.FilesFactory;
 import org.zenframework.z8.server.base.table.system.Files;
 import org.zenframework.z8.server.base.table.system.Properties;
@@ -117,6 +117,16 @@ public class JmsTransport extends AbstractTransport implements ExceptionListener
 		} catch (JMSException e) {
 			throw new TransportException("Can't rollback JMS session", e);
 		}
+	}
+
+	@Override
+	public boolean isSynchronousRequestSupported() {
+		return false;
+	}
+
+	@Override
+	public FileInfo readFileSynchronously(FileInfo fileInfo, String transportAddress) throws TransportException {
+		throw new UnsupportedOperationException();
 	}
 
 	@Override
@@ -249,10 +259,6 @@ public class JmsTransport extends AbstractTransport implements ExceptionListener
 	}
 
 	private static javax.jms.Message createObjectMessage(Session session, Message message) throws JMSException, IOException {
-		List<FileInfo> fileInfos = IeUtil.filesToFileInfos(message.getExportEntry().getFiles().getFile());
-		for (FileInfo fileInfo : fileInfos) {
-			message.getFiles().add(Files.getFile(fileInfo));
-		}
 		return session.createObjectMessage(message);
 	}
 
@@ -298,14 +304,15 @@ public class JmsTransport extends AbstractTransport implements ExceptionListener
 		byte[] buff = objectToBytes(message);
 		streamMessage.writeInt(buff.length);
 		streamMessage.writeBytes(buff);
-		List<FileInfo> fileInfos = IeUtil.filesToFileInfos(message.getExportEntry().getFiles().getFile());
 
 		buff = new byte[IOUtils.DefaultBufferSize];
-
-		for (FileInfo fileInfo : fileInfos) {
-			fileInfo = Files.getFile(fileInfo);
+		Files files = Files.instance();
+		for (FileInfo fileInfo : message.getFiles()) {
+			try {
+				fileInfo = files.getFile(fileInfo);
+			} catch (FileInfoNotFoundException e) {}
 			// write file length
-			streamMessage.writeLong(fileInfo.file.getSize());
+			streamMessage.writeLong(fileInfo.file == null ? 0L : fileInfo.file.getSize());
 			// write file contents
 			InputStream in = fileInfo.file.getInputStream();
 			try {
@@ -319,6 +326,7 @@ public class JmsTransport extends AbstractTransport implements ExceptionListener
 				in.close();
 			}
 		}
+
 		return streamMessage;
 	}
 
@@ -334,32 +342,36 @@ public class JmsTransport extends AbstractTransport implements ExceptionListener
 			Object messageObject = bytesToObject(buff);
 			if (messageObject instanceof Message) {
 				Message message = (Message) messageObject;
-				message.setFiles(IeUtil.filesToFileInfos(message.getExportEntry().getFiles().getFile()));
-				for (FileInfo fileInfo : message.getFiles()) {
-					fileInfo.file = FilesFactory.createFileItem(fileInfo.name.get());
-					// read file size
-					long size = streamMessage.readLong();
-					buff = new byte[(int) Math.min(size, IOUtils.DefaultBufferSize)];
-					try {
-						OutputStream out = fileInfo.file.getOutputStream();
-						try {
-							while (size > 0) {
-								count = streamMessage.readBytes(buff);
-								if (count < buff.length) {
-									throw new IOException("Unexpected eof");
-								}
-								out.write(buff);
-								size -= count;
-								if (size > 0 && size < buff.length) {
-									buff = new byte[(int) size];
+				try {
+					message.setFiles(IeUtil.filesToFileInfos(message.getExportEntry().getFiles().getFile(), null));
+					if (streamMessage.readBoolean()) {
+						for (FileInfo fileInfo : message.getFiles()) {
+							// read file size
+							long size = streamMessage.readLong();
+							if (size > 0) {
+								fileInfo.file = FilesFactory.createFileItem(fileInfo.name.get());
+								buff = new byte[(int) Math.min(size, IOUtils.DefaultBufferSize)];
+								OutputStream out = fileInfo.file.getOutputStream();
+								try {
+									while (size > 0) {
+										count = streamMessage.readBytes(buff);
+										if (count < buff.length) {
+											throw new IOException("Unexpected eof");
+										}
+										out.write(buff);
+										size -= count;
+										if (size > 0 && size < buff.length) {
+											buff = new byte[(int) size];
+										}
+									}
+								} finally {
+									out.close();
 								}
 							}
-						} finally {
-							out.close();
 						}
-					} catch (IOException e) {
-						throw new RuntimeException(e);
 					}
+				} catch (IOException e) {
+					throw new RuntimeException(e);
 				}
 				message.setSender(getSender(jmsMessage));
 				return message;

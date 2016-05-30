@@ -15,8 +15,8 @@ import java.util.zip.Deflater;
 import java.util.zip.Inflater;
 
 import org.zenframework.z8.server.base.file.FileInfo;
+import org.zenframework.z8.server.engine.RmiIO;
 import org.zenframework.z8.server.engine.RmiSerializable;
-import org.zenframework.z8.server.rmi.RmiIO;
 import org.zenframework.z8.server.types.encoding;
 
 public class GNode implements RmiSerializable, Serializable {

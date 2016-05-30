@@ -5,9 +5,9 @@ import javax.xml.ws.Endpoint;
 import org.apache.cxf.interceptor.LoggingInInterceptor;
 import org.apache.cxf.interceptor.LoggingOutInterceptor;
 import org.apache.cxf.jaxws.JaxWsProxyFactoryBean;
+import org.zenframework.z8.server.base.file.FileInfo;
 import org.zenframework.z8.server.base.table.system.Properties;
 import org.zenframework.z8.server.ie.AbstractTransport;
-import org.zenframework.z8.server.ie.IeUtil;
 import org.zenframework.z8.server.ie.Message;
 import org.zenframework.z8.server.ie.TransportContext;
 import org.zenframework.z8.server.ie.TransportException;
@@ -50,7 +50,8 @@ public class WsTransport extends AbstractTransport {
 		factory.getOutInterceptors().add(new LoggingOutInterceptor());
 		factory.setServiceClass(TransportService.class);
 		factory.setAddress(transportAddress);
-		message.getExportEntry().setFiles(IeUtil.fileInfosToXmlFiles(message.getFiles()));
+		//message.getExportEntry().setFiles(IeUtil.fileInfosToXmlFiles(message.getFiles()));
+		// TODO WS send files
 		TransportService client = (TransportService) factory.create();
 		client.sendMessage(message.getId(), message.getSender(), message.getExportEntry());
 	}
@@ -65,6 +66,18 @@ public class WsTransport extends AbstractTransport {
 
 	@Override
 	public void rollback() throws TransportException {}
+
+	@Override
+	public boolean isSynchronousRequestSupported() {
+		// TODO return true
+		return false;
+	}
+
+	@Override
+	public FileInfo readFileSynchronously(FileInfo fileInfo, String transportAddress) throws TransportException {
+		// TODO WS read file synchronously
+		throw new UnsupportedOperationException();
+	}
 
 	@Override
 	public String getProtocol() {

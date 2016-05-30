@@ -15,7 +15,6 @@ import java.util.UUID;
 import org.zenframework.z8.ie.xml.ExportEntry;
 import org.zenframework.z8.server.base.file.FileInfo;
 import org.zenframework.z8.server.base.file.FilesFactory;
-import org.zenframework.z8.server.base.table.system.Files;
 import org.zenframework.z8.server.base.table.system.Properties;
 import org.zenframework.z8.server.logs.Trace;
 import org.zenframework.z8.server.runtime.ServerRuntime;
@@ -78,14 +77,14 @@ public class FileTransport extends AbstractTransport implements Properties.Liste
 			}
 		}
 		// write files
-		for (ExportEntry.Files.File file : message.getExportEntry().getFiles().getFile()) {
-			outFile = new File(messageFolder, file.getId());
-			try {
-				InputStream in = Files.getInputStream(IeUtil.fileToFileInfo(file));
-				OutputStream out = new FileOutputStream(outFile);
-				IOUtils.copy(in, out);
-			} catch (IOException e) {
-				Trace.logError("Can't write file '" + outFile + "'", e);
+		for (FileInfo file : message.getFiles()) {
+			if (file.file != null) {
+				outFile = new File(messageFolder, file.id.toString());
+				try {
+					IOUtils.copy(file.getInputStream(), new FileOutputStream(outFile));
+				} catch (IOException e) {
+					Trace.logError("Can't write file '" + outFile + "'", e);
+				}
 			}
 		}
 	}
@@ -106,6 +105,16 @@ public class FileTransport extends AbstractTransport implements Properties.Liste
 
 	@Override
 	public void rollback() throws TransportException {}
+
+	@Override
+	public boolean isSynchronousRequestSupported() {
+		return false;
+	}
+
+	@Override
+	public FileInfo readFileSynchronously(FileInfo fileInfo, String transportAddress) throws TransportException {
+		throw new UnsupportedOperationException();
+	}
 
 	@Override
 	public String getProtocol() {
@@ -135,7 +144,8 @@ public class FileTransport extends AbstractTransport implements Properties.Liste
 									ExportEntry entry = IeUtil.unmarshalExportEntry(in);
 									message.setExportEntry(entry);
 									// add files
-									Collection<FileInfo> fileInfos = IeUtil.filesToFileInfos(entry.getFiles().getFile());
+									Collection<FileInfo> fileInfos = IeUtil.filesToFileInfos(entry.getFiles().getFile(),
+											null);
 									for (FileInfo fileInfo : fileInfos) {
 										File file = new File(messageFolder, fileInfo.id.toString());
 										fileInfo.file = FilesFactory.createFileItem(fileInfo.name.get());

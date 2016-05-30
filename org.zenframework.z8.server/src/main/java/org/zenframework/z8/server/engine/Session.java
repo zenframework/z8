@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
-import org.zenframework.z8.server.rmi.RmiIO;
 import org.zenframework.z8.server.security.IUser;
 import org.zenframework.z8.server.security.User;
 

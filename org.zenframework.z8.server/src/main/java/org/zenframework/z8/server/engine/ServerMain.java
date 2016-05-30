@@ -9,7 +9,6 @@ import org.apache.commons.cli.Options;
 import org.zenframework.z8.rmi.ObjectIO;
 import org.zenframework.z8.server.config.ServerConfig;
 import org.zenframework.z8.server.logs.Trace;
-import org.zenframework.z8.server.rmi.RmiIO;
 
 public final class ServerMain {
 

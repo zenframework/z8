@@ -1,8 +1,5 @@
 package org.zenframework.z8.server.engine;
 
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.rmi.RemoteException;
@@ -13,6 +10,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.zenframework.z8.server.base.file.FileInfo;
 import org.zenframework.z8.server.base.table.system.Files;
 import org.zenframework.z8.server.base.table.system.Properties;
 import org.zenframework.z8.server.config.ServerConfig;
@@ -106,10 +104,19 @@ public class TransportService extends RmiServer implements ITransportService, Pr
 			LOG.debug("Can't parse URI '" + url + "'", e);
 		}
 		try {
-			new ExportMessages.CLASS<ExportMessages>().get().addMessage(message, url);
+			new ExportMessages.CLASS<ExportMessages>().get().addMessage(message, url, ExportMessages.Direction.IN);
 			Import.importFiles(message, Files.instance());
 		} catch (Throwable e) {
 			throw new RemoteException("Can't import message '" + message.getId() + "' from '" + message.getSender() + "'", e);
+		}
+	}
+
+	@Override
+	public FileInfo readFile(FileInfo fileInfo) throws RemoteException {
+		try {
+			return Files.instance().getFile(fileInfo);
+		} catch (Exception e) {
+			throw new RemoteException("Can't get file " + fileInfo, e);
 		}
 	}
 
@@ -137,15 +144,7 @@ public class TransportService extends RmiServer implements ITransportService, Pr
 		return addr != null && !addr.isEmpty() ? new RmiAddress(addr) : null;
 	}
 
-    private void writeObject(ObjectOutputStream out)  throws IOException {
-    	serialize(out);
-    }
-    
-    private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
-    	deserialize(in);
-    }
-
-    private static class Registrator extends Thread {
+	private static class Registrator extends Thread {
 
 		final AtomicBoolean active = new AtomicBoolean(true);
 		final RmiAddress transportCenter;
@@ -179,3 +178,4 @@ public class TransportService extends RmiServer implements ITransportService, Pr
 	}
 
 }
+

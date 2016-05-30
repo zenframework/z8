@@ -32,17 +32,21 @@ public class AttachmentExpression extends TextExpression {
 	@Override
 	public string z8_get() {
 		Query container = ((Query.CLASS<Query>) getContainer().getCLASS()).get();
-		JsonArray arr = new JsonArray();
-		JsonObject obj = new JsonObject();
-		String fileName = new StringBuilder(1024).append("table/").append(container.classId()).append('/')
-				.append(container.recordId()).append('/').append(contentFieldName()).append('/').append(attachmentName())
-				.toString();
-		obj.put(Json.size, attachmentSize());
-		obj.put(Json.time, attachmentDatetime());
-		obj.put(Json.name, attachmentName());
-		obj.put(Json.path, fileName);
-		arr.put(obj);
-		return new string(arr.toString());
+		String attachmentName = attachmentName();
+		if (attachmentName != null) {
+			JsonArray arr = new JsonArray();
+			JsonObject obj = new JsonObject();
+			String fileName = new StringBuilder(1024).append("table/").append(container.classId()).append('/')
+					.append(container.recordId()).append('/').append(contentFieldName()).append('/')
+					.append(attachmentName()).toString();
+			obj.put(Json.size, attachmentSize());
+			obj.put(Json.time, attachmentDatetime());
+			obj.put(Json.name, attachmentName);
+			obj.put(Json.path, fileName);
+			arr.put(obj);
+			return new string(arr.toString());
+		}
+		return new string("");
 	}
 
 	protected int attachmentSize() {

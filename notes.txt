@@ -1,0 +1,19 @@
+Eclipse (m2e) error "Artifact has not been packaged yet" workaround
+Open "Window / Preferences", "Maven / Lifecycle Mappings", press "Open workspace lifecycle mapping metadata"
+Add:
+
+<pluginExecution>
+  <pluginExecutionFilter>
+    <groupId>org.apache.maven.plugins</groupId>
+    <artifactId>maven-dependency-plugin</artifactId>
+    <versionRange>2.8</versionRange>
+    <goals>
+      <goal>copy-dependencies</goal>
+    </goals>
+  </pluginExecutionFilter>
+  <action>
+    <ignore />
+  </action>
+</pluginExecution>
+
+Save file, open "Window / Preferences", "Maven / Lifecycle Mappings", press "Reload workspace lifecycle mapping metadata"

@@ -11,11 +11,12 @@ import java.util.Collection;
 import java.util.List;
 
 import org.apache.commons.fileupload.FileItem;
+import org.zenframework.z8.server.engine.RmiIO;
 import org.zenframework.z8.server.engine.RmiSerializable;
 import org.zenframework.z8.server.json.Json;
 import org.zenframework.z8.server.json.parser.JsonArray;
 import org.zenframework.z8.server.json.parser.JsonObject;
-import org.zenframework.z8.server.rmi.RmiIO;
+import org.zenframework.z8.server.resources.Resources;
 import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.runtime.OBJECT;
 import org.zenframework.z8.server.runtime.RCollection;
@@ -41,15 +42,48 @@ public class FileInfo extends OBJECT implements RmiSerializable, Serializable {
 		return DEFAULT_WRITE;
 	}
 
+	public string instanceId = new string();
 	public string name = new string();
 	public string path = new string();
 	public string type = new string();
 	public datetime time = new datetime();
 	public guid id = new guid();
 
+	public transient FileItem file;
+	public transient Status status = Status.LOCAL;
+
 	public transient JsonObject json;
 
-	public transient FileItem file;
+	public static enum Status {
+
+		LOCAL("Files.status.local", ""), REMOTE("Files.status.remote", "remote"), REQUEST_SENT("Files.status.requestSent",
+				"requestSent");
+
+		private final String id;
+		private final String value;
+
+		private Status(String id, String value) {
+			this.id = id;
+			this.value = value;
+		}
+
+		public String getValue() {
+			return value;
+		}
+
+		public String getText() {
+			return Resources.get(id);
+		}
+
+		public static Status getStatus(String value) {
+			for (Status status : values()) {
+				if (status.value.equals(value))
+					return status;
+			}
+			return LOCAL;
+		}
+
+	}
 
 	public static class CLASS<T extends FileInfo> extends OBJECT.CLASS<T> {
 		public CLASS() {
@@ -82,14 +116,23 @@ public class FileInfo extends OBJECT implements RmiSerializable, Serializable {
 	}
 
 	public FileInfo(FileItem file) throws IOException {
-		this(file, null);
+		this(file, null, null);
 	}
 
-	public FileInfo(FileItem file, String path) throws IOException {
+	public FileInfo(FileItem file, String instanceId, String path) {
 		super();
+		this.instanceId = new string(instanceId);
 		this.path = new string(path);
 		this.name = new string(file.getName());
 		this.file = file;
+	}
+
+	public FileInfo(guid id, String name, String instanceId, String path) {
+		super();
+		this.id = id;
+		this.instanceId = new string(instanceId);
+		this.path = new string(path);
+		this.name = new string(name);
 	}
 
 	protected FileInfo(JsonObject json) {
@@ -98,13 +141,15 @@ public class FileInfo extends OBJECT implements RmiSerializable, Serializable {
 	}
 
 	public void set(FileInfo fileInfo) {
-		this.path = fileInfo.path;
+		this.instanceId = fileInfo.instanceId;
 		this.name = fileInfo.name;
-		this.time = fileInfo.time;
+		this.path = fileInfo.path;
 		this.type = fileInfo.type;
+		this.time = fileInfo.time;
 		this.id = fileInfo.id;
-
 		this.file = fileInfo.file;
+		this.status = fileInfo.status;
+		this.json = fileInfo.json;
 	}
 
 	protected void set(JsonObject json) {
@@ -113,6 +158,7 @@ public class FileInfo extends OBJECT implements RmiSerializable, Serializable {
 		time = new datetime(json.has(Json.time) ? json.getString(Json.time) : "");
 		type = new string(json.has(Json.type) ? json.getString(Json.type) : "");
 		id = new guid(json.has(Json.id) ? json.getString(Json.id) : "");
+		instanceId = new string(json.has(Json.instanceId) ? json.getString(Json.instanceId) : "");
 
 		this.json = json;
 	}
@@ -150,6 +196,7 @@ public class FileInfo extends OBJECT implements RmiSerializable, Serializable {
 			json.put(Json.type, type);
 			json.put(Json.path, path);
 			json.put(Json.id, id);
+			json.put(Json.instanceId, instanceId);
 		}
 		return json;
 	}
@@ -184,6 +231,11 @@ public class FileInfo extends OBJECT implements RmiSerializable, Serializable {
 		return object instanceof FileInfo && id != null && id.equals(((FileInfo) object).id);
 	}
 
+	@Override
+	public String toString() {
+		return toJsonObject().toString();
+	}
+
 	public InputStream getInputStream() {
 		try {
 			return file == null ? null : file.getInputStream();
@@ -194,7 +246,7 @@ public class FileInfo extends OBJECT implements RmiSerializable, Serializable {
 
 	public OutputStream getOutputStream() {
 		try {
-			return file.getOutputStream();
+			return file == null ? null : file.getOutputStream();
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}
@@ -285,7 +337,7 @@ public class FileInfo extends OBJECT implements RmiSerializable, Serializable {
 		// Read FileInfo version - for future use
 		@SuppressWarnings("unused")
 		byte version = inputStream.readByte();
-		
+
 		if (inputStream.readBoolean()) {
 			file = FilesFactory.createFileItem(name.get());
 

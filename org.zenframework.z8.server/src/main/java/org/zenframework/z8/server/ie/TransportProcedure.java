@@ -11,10 +11,8 @@ import org.zenframework.z8.server.base.view.command.Parameter;
 import org.zenframework.z8.server.db.Connection;
 import org.zenframework.z8.server.db.ConnectionManager;
 import org.zenframework.z8.server.engine.ApplicationServer;
-import org.zenframework.z8.server.engine.ITransportCenter;
 import org.zenframework.z8.server.engine.ITransportService;
 import org.zenframework.z8.server.engine.Rmi;
-import org.zenframework.z8.server.engine.RmiAddress;
 import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.runtime.RCollection;
 import org.zenframework.z8.server.runtime.ServerRuntime;
@@ -82,7 +80,8 @@ public class TransportProcedure extends Procedure {
 		Files filesTable = Files.instance();
 
 		String transportCenter = Properties.getProperty(ServerRuntime.TransportCenterAddressProperty).trim();
-		boolean registerInTransportCenter = Boolean.parseBoolean(Properties.getProperty(ServerRuntime.RegisterInTransportCenterProperty));
+		boolean registerInTransportCenter = Boolean.parseBoolean(Properties
+				.getProperty(ServerRuntime.RegisterInTransportCenterProperty));
 
 		if (registerInTransportCenter && !transportCenter.isEmpty()) {
 			try {
@@ -106,7 +105,7 @@ public class TransportProcedure extends Procedure {
 				z8_beforeImport(message);
 				ApplicationServer.disableEvents();
 				try {
-					Import.importRecords(message.get());
+					Import.importMessage(message.get());
 				} finally {
 					ApplicationServer.enableEvents();
 				}
@@ -114,7 +113,7 @@ public class TransportProcedure extends Procedure {
 				connection.commit();
 			} catch (Throwable e) {
 				connection.rollback();
-				log("Transport messsage '" + id + "' is broken", e);
+				log("Can't import messsage '" + id + "'", e);
 				messages.setError(true, id, e);
 			}
 		}
@@ -126,20 +125,7 @@ public class TransportProcedure extends Procedure {
 		for (guid id : ids) {
 			if (!messages.readMessage(id))
 				continue;
-			List<TransportRoute> routes;
-			routes = transportRoutes.readActiveRoutes(messages.getReceiver());
-
-			if (routes.isEmpty()) {
-				try {
-					routes = Rmi.get(ITransportCenter.class, new RmiAddress(transportCenter))
-							.getTransportRoutes(messages.getReceiver());
-					for (TransportRoute route : routes) {
-						transportRoutes.setRoute(route);
-					}
-				} catch (Exception e) {
-					LOG.error("Can't get routes from transport center '" + transportCenter + "'", e);
-				}
-			}
+			List<TransportRoute> routes = transportRoutes.readActiveRoutes(messages.getReceiver(), transportCenter);
 
 			for (TransportRoute route : routes) {
 
@@ -156,9 +142,13 @@ public class TransportProcedure extends Procedure {
 				}
 
 				try {
+					Message.CLASS<Message> message = messages.getMessage();
+					message.get()
+							.getFiles()
+							.addAll(IeUtil.filesToFileInfos(message.get().getExportEntry().getFiles().getFile(), message
+									.get().isSendFilesContent() ? filesTable : null));
 					connection.beginTransaction();
 					messages.processCurrentMessage(route.getTransportUrl(), preserveExportMessages);
-					Message.CLASS<Message> message = messages.getMessage();
 					z8_beforeExport(message);
 					transport.send(message.get(), route.getAddress());
 					transport.commit();
@@ -167,8 +157,8 @@ public class TransportProcedure extends Procedure {
 					break;
 				} catch (Throwable e) {
 					connection.rollback();
-					messages.setError(false, id, e);
 					log("Can't send message '" + id + "' via '" + route.getAddress() + "'", e);
+					messages.setError(false, id, e);
 					if (e instanceof TransportException) {
 						transport.close();
 						transportRoutes.disableRoute(route.getRouteId(), e.getMessage());
@@ -184,7 +174,7 @@ public class TransportProcedure extends Procedure {
 				for (Message message = transport.receive(); message != null; message = transport.receive()) {
 					try {
 						connection.beginTransaction();
-						messages.addMessage(message, transport.getUrl(message.getSender()));
+						messages.addMessage(message, transport.getUrl(message.getSender()), ExportMessages.Direction.IN);
 						Import.importFiles(message, filesTable);
 						connection.commit();
 						transport.commit();

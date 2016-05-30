@@ -2,11 +2,10 @@ package org.zenframework.z8.server.ie;
 
 import java.io.Serializable;
 
-import org.zenframework.z8.server.base.table.system.Properties;
+import org.zenframework.z8.server.engine.Z8Context;
 import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.runtime.OBJECT;
 import org.zenframework.z8.server.runtime.RLinkedHashMap;
-import org.zenframework.z8.server.runtime.ServerRuntime;
 import org.zenframework.z8.server.types.bool;
 import org.zenframework.z8.server.types.exception;
 import org.zenframework.z8.server.types.string;
@@ -35,23 +34,6 @@ public class TransportContext extends OBJECT implements Serializable {
 
     }
 
-    private static class SelfAddressDefaultListener implements Properties.Listener {
-
-        @Override
-        public void onPropertyChange(String key, String value) {
-            if (ServerRuntime.SelfAddressDefaultProperty.equalsKey(key)) {
-                selfAddressDefault = value;
-            }
-        }
-
-    }
-
-    static {
-        Properties.addListener(new SelfAddressDefaultListener());
-    }
-
-    private static volatile String selfAddressDefault = Properties.getProperty(ServerRuntime.SelfAddressDefaultProperty);
-
     private final RLinkedHashMap<string, string> properties = new RLinkedHashMap<string, string>();
 
     public TransportContext(IObject container) {
@@ -61,8 +43,9 @@ public class TransportContext extends OBJECT implements Serializable {
     @Override
     public void constructor2() {
         super.constructor2();
-        if (selfAddressDefault != null && !selfAddressDefault.isEmpty()) {
-            setProperty(SelfAddressProperty, selfAddressDefault);
+        String instanceId = Z8Context.getInstanceId();
+        if (instanceId != null && !instanceId.isEmpty()) {
+            setProperty(SelfAddressProperty, instanceId);
         }
     }
 
