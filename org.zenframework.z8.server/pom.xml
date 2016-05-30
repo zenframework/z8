@@ -28,6 +28,12 @@
         <!-- TODO: Разделить server -->
         <dependency>
             <groupId>org.zenframework.z8</groupId>
+            <artifactId>org.zenframework.z8.boot</artifactId>
+            <version>${project.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.zenframework.z8</groupId>
             <artifactId>org.zenframework.z8.xml</artifactId>
             <version>${project.version}</version>
             <scope>provided</scope>
