@@ -4,14 +4,12 @@ import java.io.Serializable;
 
 import org.zenframework.z8.server.security.IUser;
 
-public interface ISession extends Serializable {
+public interface ISession extends RmiSerializable, Serializable {
     public String id();
 
     public IUser user();
 
     public ServerInfo getServerInfo();
-
-    public long getTimeCreate();
 
     public long getLastAccessTime();
 }

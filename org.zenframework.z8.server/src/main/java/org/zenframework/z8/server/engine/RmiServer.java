@@ -1,5 +1,8 @@
 package org.zenframework.z8.server.engine;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 
@@ -7,13 +10,11 @@ public abstract class RmiServer extends UnicastRemoteObject implements IServer {
 
 	private static final long serialVersionUID = -1200219220297838398L;
 
-	private final Class<? extends IServer> serverClass;
-	private final String hostOS;
-	private String url;
+	private transient final Class<? extends IServer> serverClass;
+	private transient String url;
 
 	protected RmiServer(Class<? extends IServer> serverClass) throws RemoteException {
 		this.serverClass = serverClass;
-		this.hostOS = System.getProperty("os.name");
 	}
 
 	@Override
@@ -24,10 +25,6 @@ public abstract class RmiServer extends UnicastRemoteObject implements IServer {
 	@Override
 	public String getUrl() throws RemoteException {
 		return url;
-	}
-
-	public String hostOS() {
-		return hostOS;
 	}
 
 	@Override
@@ -42,4 +39,9 @@ public abstract class RmiServer extends UnicastRemoteObject implements IServer {
 		url = null;
 	}
 
+	public void serialize(ObjectOutputStream out) throws IOException {
+	}
+	
+	public void deserialize(ObjectInputStream in) throws IOException, ClassNotFoundException {
+	}	
 }

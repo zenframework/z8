@@ -13,8 +13,6 @@ import org.zenframework.z8.server.runtime.RCollection;
 import org.zenframework.z8.server.types.sql.sql_string;
 
 public final class string extends primary {
-    private static final long serialVersionUID = 5705610441445823015L;
-
     private String m_value = "";
 
     private Pattern pattern = null;

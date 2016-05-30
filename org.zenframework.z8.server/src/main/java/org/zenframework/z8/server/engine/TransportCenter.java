@@ -1,6 +1,9 @@
 package org.zenframework.z8.server.engine;
 
 import java.io.File;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.net.URISyntaxException;
 import java.rmi.RemoteException;
 import java.rmi.server.RemoteServer;
@@ -65,7 +68,15 @@ public class TransportCenter extends RmiServer implements ITransportCenter {
 		}
 	}
 
-	private static enum StoreMode {
+    private void writeObject(ObjectOutputStream out)  throws IOException {
+    	serialize(out);
+    }
+    
+    private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
+    	deserialize(in);
+    }
+
+    private static enum StoreMode {
 
 		FILE, TABLE
 

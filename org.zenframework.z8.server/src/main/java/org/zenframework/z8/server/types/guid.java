@@ -1,6 +1,5 @@
 package org.zenframework.z8.server.types;
 
-import java.io.Serializable;
 import java.math.BigInteger;
 import java.util.UUID;
 
@@ -9,16 +8,12 @@ import org.zenframework.z8.server.db.FieldType;
 import org.zenframework.z8.server.exceptions.UnsupportedException;
 import org.zenframework.z8.server.types.sql.sql_guid;
 
-public class guid extends primary implements Serializable {
-    private static final long serialVersionUID = 57247032014966596L;
-
+public class guid extends primary {
     private static final UUID nullValue = UUID.fromString("00000000-0000-0000-0000-000000000000");
 
     private UUID m_value;
 
     static final public guid NULL = new guid() {
-        private static final long serialVersionUID = -7903861384935876679L;
-
         @Override
         public void set(String guid) {
             throw new UnsupportedException();

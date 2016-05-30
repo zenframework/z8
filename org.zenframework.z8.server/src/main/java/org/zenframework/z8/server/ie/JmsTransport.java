@@ -1,7 +1,11 @@
 package org.zenframework.z8.server.ie;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.util.Hashtable;
 import java.util.List;
@@ -268,10 +272,30 @@ public class JmsTransport extends AbstractTransport implements ExceptionListener
 			throw new JMSException("Incorrect JMS message object type: " + jmsMessage.getClass().getCanonicalName());
 	}
 
+	static public byte[] objectToBytes(Object object) {
+		try {
+			ByteArrayOutputStream out = new ByteArrayOutputStream();
+			ObjectOutputStream objOut = new ObjectOutputStream(out);
+			objOut.writeObject(object);
+			objOut.close();
+			return out.toByteArray();
+		} catch(Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	static public Object bytesToObject(byte buf[]) {
+		try {
+			return new ObjectInputStream(new ByteArrayInputStream(buf)).readObject();
+		} catch(Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
+
 	private static javax.jms.Message createStreamMessage(Session session, Message message) throws JMSException, IOException {
 		StreamMessage streamMessage = session.createStreamMessage();
 		// write message object
-		byte[] buff = IOUtils.objectToBytes(message);
+		byte[] buff = objectToBytes(message);
 		streamMessage.writeInt(buff.length);
 		streamMessage.writeBytes(buff);
 		List<FileInfo> fileInfos = IeUtil.filesToFileInfos(message.getExportEntry().getFiles().getFile());
@@ -307,7 +331,7 @@ public class JmsTransport extends AbstractTransport implements ExceptionListener
 			if (count < buff.length) {
 				throw new RuntimeException("Unexpected eof");
 			}
-			Object messageObject = IOUtils.bytesToObject(buff);
+			Object messageObject = bytesToObject(buff);
 			if (messageObject instanceof Message) {
 				Message message = (Message) messageObject;
 				message.setFiles(IeUtil.filesToFileInfos(message.getExportEntry().getFiles().getFile()));

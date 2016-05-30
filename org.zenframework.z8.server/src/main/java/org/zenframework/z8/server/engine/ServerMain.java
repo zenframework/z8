@@ -6,8 +6,10 @@ import org.apache.commons.cli.BasicParser;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.Options;
+import org.zenframework.z8.rmi.ObjectIO;
 import org.zenframework.z8.server.config.ServerConfig;
 import org.zenframework.z8.server.logs.Trace;
+import org.zenframework.z8.server.rmi.RmiIO;
 
 public final class ServerMain {
 
@@ -44,6 +46,8 @@ public final class ServerMain {
 
 	public static void main(String[] args) {
 		try {
+			ObjectIO.initialize(new RmiIO());
+			
 			CommandLineParser parser = new BasicParser();
 			CommandLine cmd = parser.parse(Options, args);
 

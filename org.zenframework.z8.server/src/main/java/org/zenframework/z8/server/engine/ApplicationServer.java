@@ -1,6 +1,8 @@
 package org.zenframework.z8.server.engine;
 
 import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.lang.management.ManagementFactory;
 import java.lang.management.RuntimeMXBean;
 import java.rmi.RemoteException;
@@ -31,7 +33,7 @@ public class ApplicationServer extends RmiServer implements IApplicationServer {
 
 	private static String Id = null;
 
-	private IAuthorityCenter authorityCenter = null;
+	private transient IAuthorityCenter authorityCenter = null;
 
 	private ApplicationServer() throws RemoteException {
 		super(IApplicationServer.class);
@@ -167,4 +169,11 @@ public class ApplicationServer extends RmiServer implements IApplicationServer {
 		System.out.println("Runtime schema version: " + version);
 	}
 
+    private void writeObject(ObjectOutputStream out) throws IOException {
+    	serialize(out);
+    }
+    
+    private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
+    	deserialize(in);
+    }
 }

@@ -57,8 +57,6 @@ import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.runtime.OBJECT;
 import org.zenframework.z8.server.runtime.RCollection;
 import org.zenframework.z8.server.search.SearchEngine;
-import org.zenframework.z8.server.security.IAccess;
-import org.zenframework.z8.server.security.IForm;
 import org.zenframework.z8.server.types.bool;
 import org.zenframework.z8.server.types.decimal;
 import org.zenframework.z8.server.types.exception;
@@ -1718,14 +1716,6 @@ public class Query extends Runnable {
         return !rootQuery.showAsGrid.get();
     }
 
-    private IAccess getAccess() {
-        Map<String, IForm> forms = ApplicationServer.getUser().forms();
-
-        IForm form = forms.get(contextQuery != null ? contextQuery.classId() : classId());
-
-        return form != null ? form.getAccess() : null;
-    }
-
     private boolean readOnly() {
         if (contextQuery != null && contextQuery.readOnly.get())
             return true;
@@ -1886,19 +1876,10 @@ public class Query extends Runnable {
         writeCommands(writer);
         writePeriod(writer);
 
-        IAccess access = getAccess();
-
-        boolean writeAccess = access != null ? access.getWrite() : true;
-        boolean deleteAccess = access != null ? access.getDelete() : true;
-        boolean importAccess = access != null ? access.getImport() : true;
-
         // visuals
         writer.writeProperty(Json.text, displayName());
 
         writer.writeProperty(Json.readOnly, hasGroupBy || rootQuery == null ? true : readOnly());
-        writer.writeProperty(Json.writeAccess, writeAccess);
-        writer.writeProperty(Json.deleteAccess, deleteAccess);
-        writer.writeProperty(Json.importAccess, importAccess);
 
         writer.writeProperty(Json.showTotals, showTotals);
         writer.writeProperty(Json.columns, columns);

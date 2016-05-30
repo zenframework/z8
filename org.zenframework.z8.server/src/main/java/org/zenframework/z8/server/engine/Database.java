@@ -1,6 +1,5 @@
 package org.zenframework.z8.server.engine;
 
-import java.io.Serializable;
 import java.sql.SQLException;
 import java.util.Properties;
 
@@ -12,9 +11,7 @@ import org.zenframework.z8.server.db.DatabaseVendor;
 import org.zenframework.z8.server.logs.Trace;
 import org.zenframework.z8.server.types.encoding;
 
-public class Database implements Serializable {
-
-    private static final long serialVersionUID = 6331151694463344646L;
+public class Database {
 
     private String schema = null;
     private String user = null;

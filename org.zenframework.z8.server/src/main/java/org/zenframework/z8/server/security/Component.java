@@ -1,8 +1,13 @@
 package org.zenframework.z8.server.security;
 
-import java.io.Serializable;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 
-public class Component implements Serializable {
+import org.zenframework.z8.server.engine.RmiSerializable;
+import org.zenframework.z8.server.rmi.RmiIO;
+
+public class Component implements RmiSerializable {
     private static final long serialVersionUID = 3995824646818479932L;
 
     private String id;
@@ -49,5 +54,23 @@ public class Component implements Serializable {
         buffer.append(this.className);
         return buffer.toString().hashCode();
     }
-
+    
+    @Override
+	public void serialize(ObjectOutputStream out) throws IOException {
+		out.writeLong(serialVersionUID);
+		
+		RmiIO.writeString(out, id);
+		RmiIO.writeString(out, className);
+		RmiIO.writeString(out, title);
+	}
+	
+    @Override
+	public void deserialize(ObjectInputStream in) throws IOException, ClassNotFoundException {	
+		@SuppressWarnings("unused")
+		long version = in.readLong();
+		
+		id = RmiIO.readString(in);
+		className = RmiIO.readString(in);
+		title = RmiIO.readString(in);
+	}
 }

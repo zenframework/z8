@@ -15,11 +15,8 @@ public class RLinkedHashMap<Key, Value> extends LinkedHashMap<Key, Value> {
     public RLinkedHashMap() {}
 
     public RLinkedHashMap(Key[] keys, Value[] values) {
-        assert (keys.length == values.length);
-
-        for(int i = 0; i < keys.length; i++) {
+        for(int i = 0; i < keys.length; i++)
             put(keys[i], values[i]);
-        }
     }
 
     public void operatorAssign(Object map) {

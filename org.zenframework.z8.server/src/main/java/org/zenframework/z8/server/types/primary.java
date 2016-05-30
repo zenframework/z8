@@ -1,13 +1,20 @@
 package org.zenframework.z8.server.types;
 
-import java.io.Serializable;
-
 import org.zenframework.z8.server.db.DatabaseVendor;
 import org.zenframework.z8.server.db.FieldType;
 
-public class primary implements Serializable {
-	private static final long serialVersionUID = -5451269487666667578L;
+public class primary {
 
+	static public final int Binary = 0;
+	static public final int Bool = 1;
+	static public final int Date = 2;
+	static public final int Datespan = 3;
+	static public final int Datetime = 4;
+	static public final int Decimal = 5;
+	static public final int Guid = 6;
+	static public final int Integer = 7;
+	static public final int String = 8;
+	
 	public primary defaultValue() {
 		throw new UnsupportedOperationException();
 	}

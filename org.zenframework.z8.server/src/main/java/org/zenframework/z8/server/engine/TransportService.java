@@ -1,5 +1,8 @@
 package org.zenframework.z8.server.engine;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.rmi.RemoteException;
@@ -134,7 +137,15 @@ public class TransportService extends RmiServer implements ITransportService, Pr
 		return addr != null && !addr.isEmpty() ? new RmiAddress(addr) : null;
 	}
 
-	private static class Registrator extends Thread {
+    private void writeObject(ObjectOutputStream out)  throws IOException {
+    	serialize(out);
+    }
+    
+    private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
+    	deserialize(in);
+    }
+
+    private static class Registrator extends Thread {
 
 		final AtomicBoolean active = new AtomicBoolean(true);
 		final RmiAddress transportCenter;

@@ -12,8 +12,6 @@ import org.zenframework.z8.server.db.sql.functions.conversion.ToDate;
 import org.zenframework.z8.server.types.sql.sql_date;
 
 public final class date extends primary {
-    private static final long serialVersionUID = -3654726446335142477L;
-
     private GregorianCalendar m_value = new GregorianCalendar();
 
     final static public String defaultMask = "dd/MM/yyyy";
@@ -58,9 +56,9 @@ public final class date extends primary {
         if(s != null && !s.isEmpty()) {
             String[] values = s.split(" ")[0].split("/");
     
-            int day = Integer.parseInt(values[0]);
-            int month = Integer.parseInt(values[1]);
-            int year = Integer.parseInt(values[2]);
+            int day = java.lang.Integer.parseInt(values[0]);
+            int month = java.lang.Integer.parseInt(values[1]);
+            int year = java.lang.Integer.parseInt(values[2]);
     
             set(year, month, day);
         } else

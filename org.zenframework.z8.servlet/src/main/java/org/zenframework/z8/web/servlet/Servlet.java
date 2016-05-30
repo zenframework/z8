@@ -15,6 +15,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.zenframework.z8.auth.AuthorityCenter;
+import org.zenframework.z8.rmi.ObjectIO;
 import org.zenframework.z8.server.config.ServerConfig;
 import org.zenframework.z8.server.engine.ApplicationServer;
 import org.zenframework.z8.server.engine.IApplicationServer;
@@ -26,6 +27,7 @@ import org.zenframework.z8.server.engine.TransportCenter;
 import org.zenframework.z8.server.engine.TransportService;
 import org.zenframework.z8.server.engine.Z8Context;
 import org.zenframework.z8.server.logs.Trace;
+import org.zenframework.z8.server.rmi.RmiIO;
 import org.zenframework.z8.server.types.encoding;
 import org.zenframework.z8.web.server.Adapter;
 import org.zenframework.z8.web.server.ConverterAdapter;
@@ -54,6 +56,8 @@ public class Servlet extends HttpServlet {
 	@Override
 	public void init(ServletConfig servletConfig) throws ServletException {
 		super.init(servletConfig);
+
+		ObjectIO.initialize(new RmiIO());
 
 		ServletContext context = getServletContext();
 

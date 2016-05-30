@@ -37,11 +37,7 @@ public class Rmi {
 	}
 
 	public static String url(String host, int port, String name) {
-		StringBuilder str = new StringBuilder();
-		str.append("rmi://").append(host).append(':').append(port).append('/');
-		if (name != null)
-			str.append(name);
-		return str.toString();
+		return "rmi://" + host + ':' + port + '/' + (name != null ? name : "");
 	}
 
 	public static String getName(Class<?> cls) {

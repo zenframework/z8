@@ -5,8 +5,6 @@ import org.zenframework.z8.server.db.FieldType;
 import org.zenframework.z8.server.types.sql.sql_integer;
 
 public final class integer extends primary {
-    private static final long serialVersionUID = -4008043894306519115L;
-
     static public integer MIN_VALUE = new integer(Long.MIN_VALUE + 1); // 0x8000000000000000  + 1 = -0x7fffffffffffffff
     static public integer MAX_VALUE = new integer(Long.MAX_VALUE); // 0x7fffffffffffffff
 

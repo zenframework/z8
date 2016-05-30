@@ -1,5 +1,8 @@
 package org.zenframework.z8.auth;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.rmi.ConnectException;
 import java.rmi.RemoteException;
 import java.util.Collections;
@@ -120,23 +123,21 @@ public class AuthorityCenter extends RmiServer implements IAuthorityCenter
 		return session;
 	}
 
-	private IApplicationServer getLoginServer() {
-		try {
-			return findServer(null).getApplicationServer();
-		} catch (Throwable e) {
-			throw new AccessDeniedException();
-		}
-	}
-
 	private ISession doLogin(String login, String password)
 	        throws RemoteException {
-		IApplicationServer loginServer = getLoginServer();
+		ServerInfo serverInfo = findServer(null);
+		
+		if(serverInfo == null)
+			throw new AccessDeniedException();
+		
+		IApplicationServer loginServer = serverInfo.getApplicationServer();
 		IUser user = password != null ? loginServer.login(login, password)
 		        : loginServer.login(login);
 		userManager.add(user);
 
 		Session session = sessionManager.create(user);
-		return getServer(session.id());
+		session.setServerInfo(serverInfo);
+		return session;
 	}
 
 	private boolean isAlive(ServerInfo server) throws RemoteException {
@@ -170,8 +171,11 @@ public class AuthorityCenter extends RmiServer implements IAuthorityCenter
 		return null;
 	}
 
-	private ISession getServer(String sessionId) throws RemoteException {
-		return getServer(sessionId, null);
-	}
-
+    private void writeObject(ObjectOutputStream out)  throws IOException {
+    	serialize(out);
+    }
+    
+    private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
+    	deserialize(in);
+    }
 }

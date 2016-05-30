@@ -11,9 +11,11 @@ import java.util.Collection;
 import java.util.List;
 
 import org.apache.commons.fileupload.FileItem;
+import org.zenframework.z8.server.engine.RmiSerializable;
 import org.zenframework.z8.server.json.Json;
 import org.zenframework.z8.server.json.parser.JsonArray;
 import org.zenframework.z8.server.json.parser.JsonObject;
+import org.zenframework.z8.server.rmi.RmiIO;
 import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.runtime.OBJECT;
 import org.zenframework.z8.server.runtime.RCollection;
@@ -22,11 +24,9 @@ import org.zenframework.z8.server.types.guid;
 import org.zenframework.z8.server.types.string;
 import org.zenframework.z8.server.utils.IOUtils;
 
-public class FileInfo extends OBJECT implements Serializable {
+public class FileInfo extends OBJECT implements RmiSerializable, Serializable {
+	private static final long serialVersionUID = -2542688680678439014L;
 
-	private static final long serialVersionUID = -4474455212423780540L;
-	private static final byte FILE_INFO_VERSION = 1;
-	
 	private static final String PROP_DEFAULT_READ = "z8.serialization.FileInfo.defaultReadObject";
 	private static final String PROP_DEFAULT_WRITE = "z8.serialization.FileInfo.defaultWriteObject";
 
@@ -200,7 +200,7 @@ public class FileInfo extends OBJECT implements Serializable {
 		}
 	}
 
-	private void writeObject(ObjectOutputStream outputStream) throws IOException {
+/*	private void writeObject(ObjectOutputStream outputStream) throws IOException {
 		outputStream.defaultWriteObject();
 		if (DEFAULT_WRITE)
 			return;
@@ -218,8 +218,66 @@ public class FileInfo extends OBJECT implements Serializable {
 			}
 		}
 	}
+*/
+	
+    private void writeObject(ObjectOutputStream out)  throws IOException {
+    	serialize(out);
+    }
+    
+    private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
+    	deserialize(in);
+    }
 
-	private void readObject(ObjectInputStream inputStream) throws IOException, ClassNotFoundException {
+    public void serialize(ObjectOutputStream out) throws IOException {
+		out.writeLong(serialVersionUID);
+	
+		RmiIO.writeString(out, name);
+		RmiIO.writeString(out, path);
+		RmiIO.writeString(out, type);
+		RmiIO.writeDatetime(out, time);
+		RmiIO.writeGuid(out, id);
+
+		out.writeBoolean(file != null);
+	
+		if (file != null) {
+			InputStream in = file.getInputStream();
+	
+			long size = in.available();
+			out.writeLong(size);
+
+			try {
+				IOUtils.copyLarge(in, out, size, false);
+			} finally {
+				IOUtils.closeQuietly(in);
+			}
+		}
+	}
+
+	public void deserialize(ObjectInputStream in) throws IOException, ClassNotFoundException {
+		@SuppressWarnings("unused")
+		long version = in.readLong();
+		
+		name = new string(RmiIO.readString(in));
+		path = new string(RmiIO.readString(in));
+		type = new string(RmiIO.readString(in));
+		time = RmiIO.readDatetime(in);
+		id = RmiIO.readGuid(in);
+
+		if(in.readBoolean()) {
+			long size = in.readLong();
+			
+			file = FilesFactory.createFileItem(name.get());
+			OutputStream out = file.getOutputStream();
+	
+			try {
+				IOUtils.copyLarge(in, out, size, false);
+			} finally {
+				IOUtils.closeQuietly(out);
+			}
+		}
+	}
+
+/*	private void readObject(ObjectInputStream inputStream) throws IOException, ClassNotFoundException {
 		inputStream.defaultReadObject();
 		if (DEFAULT_READ)
 			return;
@@ -240,5 +298,5 @@ public class FileInfo extends OBJECT implements Serializable {
 			}
 		}
 	}
-
+*/
 }
