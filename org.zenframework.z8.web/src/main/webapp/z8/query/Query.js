@@ -235,21 +235,21 @@ Z8.query.Query = Ext.extend(Ext.util.Observable,
 	
 	canAdd: function()
 	{
-		return this.writeAccess && this.actions.indexOf('add') != -1;
+		return this.actions.indexOf('add') != -1;
 	},
 	
 	canCopy: function()
 	{
-		return this.writeAccess && this.actions.indexOf('copy') != -1;
+		return this.actions.indexOf('copy') != -1;
 	},
 	
 	canDelete: function()
 	{
-		return this.deleteAccess && this.actions.indexOf('delete') != -1;
+		return this.actions.indexOf('delete') != -1;
 	},
 	
 	canImport: function()
 	{
-		return this.importAccess;
+		return false;
 	}
 });
