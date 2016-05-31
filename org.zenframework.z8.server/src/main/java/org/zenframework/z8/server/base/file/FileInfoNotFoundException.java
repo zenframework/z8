@@ -6,7 +6,12 @@ public class FileInfoNotFoundException extends Exception {
 
 	private static final long serialVersionUID = 7648359491931705877L;
 
-	private final boolean retryLater;
+	private boolean retryLater;
+
+	public FileInfoNotFoundException() {
+		super();
+		retryLater = false;
+	}
 
 	public FileInfoNotFoundException(FileInfo fileInfo, boolean retryLater) {
 		super(Resources.format(retryLater ? "Files.retryLater" : "Files.notFound", fileInfo));
