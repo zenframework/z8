@@ -10,6 +10,9 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URL;
 import java.nio.charset.Charset;
+import java.util.zip.DataFormatException;
+import java.util.zip.Deflater;
+import java.util.zip.Inflater;
 
 import org.mozilla.universalchardet.UniversalDetector;
 import org.zenframework.z8.server.logs.Trace;
@@ -158,6 +161,48 @@ public class IOUtils {
 		}
 	}
 
+	static public byte[] zip(byte[] bytes) {
+		if(bytes == null)
+			return null;
+		
+		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+
+		Deflater deflater = new Deflater();
+		deflater.setInput(bytes);
+		deflater.finish();
+
+		byte[] buffer = new byte[32768];
+		while(!deflater.finished()) {
+			int count = deflater.deflate(buffer);
+			outputStream.write(buffer, 0, count);
+		}
+
+		return outputStream.toByteArray();
+	}
+
+	static public byte[] unzip(byte[] bytes) {
+		if(bytes == null)
+			return null;
+		
+		Inflater inflater = new Inflater();
+		inflater.setInput(bytes);
+
+		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+		
+		byte[] buffer = new byte[32768];
+
+		while(!inflater.finished()) {
+			try {
+				int count = inflater.inflate(buffer);
+				outputStream.write(buffer, 0, count);
+			} catch(DataFormatException e) {
+				throw new RuntimeException(e);
+			}
+		}
+
+		return outputStream.toByteArray();
+	}
+	
 	static public boolean moveFolder(File src, File dest, boolean trace) {
 		try {
 			dest.getParentFile().mkdirs();

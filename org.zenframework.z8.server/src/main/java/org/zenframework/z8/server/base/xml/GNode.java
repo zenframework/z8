@@ -1,5 +1,6 @@
 package org.zenframework.z8.server.base.xml;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -10,14 +11,13 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.zip.DataFormatException;
-import java.util.zip.Deflater;
-import java.util.zip.Inflater;
 
 import org.zenframework.z8.server.base.file.FileInfo;
 import org.zenframework.z8.server.engine.RmiIO;
 import org.zenframework.z8.server.engine.RmiSerializable;
 import org.zenframework.z8.server.types.encoding;
+import org.zenframework.z8.server.utils.IOUtils;
+import org.zenframework.z8.server.utils.NumericUtils;
 
 public class GNode implements RmiSerializable, Serializable {
 	private static final long serialVersionUID = 6229467644994428114L;
@@ -28,7 +28,7 @@ public class GNode implements RmiSerializable, Serializable {
 
 	public GNode() {
 	}
-	
+
 	public GNode(String content) {
 		try {
 			this.content = content.getBytes(encoding.Default.toString());
@@ -54,97 +54,68 @@ public class GNode implements RmiSerializable, Serializable {
 		return files;
 	}
 
-	private byte[] deflate(byte[] bytes) {
-		if(bytes == null)
-			return null;
-		
-		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-
-		Deflater deflater = new Deflater();
-		deflater.setInput(bytes);
-		deflater.finish();
-
-		byte[] buffer = new byte[32768];
-		while(!deflater.finished()) {
-			int count = deflater.deflate(buffer);
-			outputStream.write(buffer, 0, count);
-		}
-
-		return outputStream.toByteArray();
+	private void writeObject(ObjectOutputStream out) throws IOException {
+		serialize(out);
 	}
 
-	private byte[] inflate(byte[] bytes) {
-		if(bytes == null)
-			return null;
-		
-		Inflater inflater = new Inflater();
-		inflater.setInput(bytes);
+	private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
+		deserialize(in);
+	}
 
-		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-		
-		byte[] buffer = new byte[32768];
+	public void serialize(ObjectOutputStream out) throws IOException {
+		out.writeLong(serialVersionUID);
 
-		while(!inflater.finished()) {
-			try {
-				int count = inflater.inflate(buffer);
-				outputStream.write(buffer, 0, count);
-			} catch(DataFormatException e) {
-				throw new RuntimeException(e);
+		ByteArrayOutputStream bytes = new ByteArrayOutputStream(32 * NumericUtils.Kilobyte);
+		ObjectOutputStream objects = new ObjectOutputStream(bytes);
+
+		RmiIO.writeBytes(objects, content);
+
+		objects.writeInt(attributes != null ? attributes.size() : -1);
+		if(attributes != null) {
+			for(String key : attributes.keySet()) {
+				RmiIO.writeString(objects, key);
+				RmiIO.writeString(objects, attributes.get(key));
 			}
 		}
 
-		return outputStream.toByteArray();
-	}
-	
-    private void writeObject(ObjectOutputStream out)  throws IOException {
-    	serialize(out);
-    }
-    
-    private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
-    	deserialize(in);
-    }
+		objects.close();
 
-    public void serialize(ObjectOutputStream out) throws IOException {
-		out.writeLong(serialVersionUID);
-		
-		RmiIO.writeBytes(out, deflate(content));
+		RmiIO.writeBytes(out, IOUtils.zip(bytes.toByteArray()));
 
 		out.writeInt(files != null ? files.size() : -1);
 		if(files != null) {
-			for(FileInfo file : files) 
+			for(FileInfo file : files)
 				out.writeObject(file);
 		}
 
-		out.writeInt(attributes != null ? attributes.size() : -1);
-		if(attributes != null) {
-			for(String key : attributes.keySet()) {
-				RmiIO.writeString(out, key);
-				RmiIO.writeString(out, attributes.get(key));
-			}
-		}
 	}
-	
+
 	public void deserialize(ObjectInputStream in) throws IOException, ClassNotFoundException {
 		@SuppressWarnings("unused")
 		long version = in.readLong();
-		
-		content = inflate(RmiIO.readBytes(in));
 
-		int count = in.readInt();
+		ByteArrayInputStream bytes = new ByteArrayInputStream(IOUtils.unzip(RmiIO.readBytes(in)));
+		ObjectInputStream objects = new ObjectInputStream(bytes);
+
+		content = RmiIO.readBytes(objects);
+
+		int count = objects.readInt();
+		if(count != -1) {
+			attributes = new HashMap<String, String>();
+			for(int i = 0; i < count; i++) {
+				String key = RmiIO.readString(objects);
+				String value = RmiIO.readString(objects);
+				attributes.put(key, value);
+			}
+		}
+
+		objects.close();
+
+		count = in.readInt();
 		if(count != -1) {
 			files = new ArrayList<FileInfo>();
 			for(int i = 0; i < count; i++)
 				files.add((FileInfo)in.readObject());
-		}
-		
-		count = in.readInt();
-		if(count != -1) {
-			attributes = new HashMap<String, String>();
-			for(int i = 0; i < count; i++) {
-				String key = RmiIO.readString(in);
-				String value = RmiIO.readString(in);
-				attributes.put(key, value);
-			}
 		}
 	}
 }

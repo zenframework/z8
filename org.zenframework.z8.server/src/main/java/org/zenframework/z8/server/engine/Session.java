@@ -1,11 +1,15 @@
 package org.zenframework.z8.server.engine;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
 import org.zenframework.z8.server.security.IUser;
 import org.zenframework.z8.server.security.User;
+import org.zenframework.z8.server.utils.IOUtils;
+import org.zenframework.z8.server.utils.NumericUtils;
 
 public class Session implements ISession {
 	private static final long serialVersionUID = -6111053710062684661L;
@@ -72,10 +76,17 @@ public class Session implements ISession {
 	public void serialize(ObjectOutputStream out) throws IOException {
 		out.writeLong(serialVersionUID);
 
-		RmiIO.writeString(out, id);
+		ByteArrayOutputStream bytes = new ByteArrayOutputStream(32 * NumericUtils.Kilobyte);
+		ObjectOutputStream objects = new ObjectOutputStream(bytes);
 
-		out.writeObject(user);
-		out.writeObject(serverInfo);
+		RmiIO.writeString(objects, id);
+
+		objects.writeObject(user);
+		objects.writeObject(serverInfo);
+
+		objects.close();
+
+		RmiIO.writeBytes(out, IOUtils.zip(bytes.toByteArray()));
 	}
 
 	@Override
@@ -83,9 +94,14 @@ public class Session implements ISession {
 		@SuppressWarnings("unused")
 		long version = in.readLong();
 
-		id = RmiIO.readString(in);
+		ByteArrayInputStream bytes = new ByteArrayInputStream(IOUtils.unzip(RmiIO.readBytes(in)));
+		ObjectInputStream objects = new ObjectInputStream(bytes);
 
-		user = (IUser)in.readObject();
-		serverInfo = (ServerInfo)in.readObject();
+		id = RmiIO.readString(objects);
+
+		user = (IUser)objects.readObject();
+		serverInfo = (ServerInfo)objects.readObject();
+		
+		objects.close();
 	}
 }

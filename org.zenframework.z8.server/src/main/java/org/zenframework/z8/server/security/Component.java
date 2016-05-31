@@ -14,6 +14,9 @@ public class Component implements RmiSerializable {
     private String className;
     private String title;
 
+    public Component() {
+    }
+    
     public Component(String id, String className, String title) {
         this.id = id;
         this.className = className;
