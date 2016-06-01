@@ -1,13 +1,19 @@
 package org.zenframework.z8.server.ie;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.List;
 import java.util.UUID;
 
-import javax.xml.bind.JAXBException;
-
 import org.zenframework.z8.ie.xml.ExportEntry;
 import org.zenframework.z8.server.base.file.FileInfo;
+import org.zenframework.z8.server.engine.ApplicationServer;
+import org.zenframework.z8.server.engine.RmiIO;
+import org.zenframework.z8.server.engine.RmiSerializable;
 import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.runtime.OBJECT;
 import org.zenframework.z8.server.runtime.RCollection;
@@ -16,8 +22,10 @@ import org.zenframework.z8.server.types.exception;
 import org.zenframework.z8.server.types.guid;
 import org.zenframework.z8.server.types.primary;
 import org.zenframework.z8.server.types.string;
+import org.zenframework.z8.server.utils.IOUtils;
+import org.zenframework.z8.server.utils.NumericUtils;
 
-public class Message extends OBJECT implements Serializable {
+public class Message extends OBJECT implements RmiSerializable, Serializable {
 
 	private static final long serialVersionUID = 3103056587172568570L;
 
@@ -48,11 +56,15 @@ public class Message extends OBJECT implements Serializable {
 	}
 
 	public static Message instance() {
-		return instance(UUID.randomUUID());
+		return newInstance(UUID.randomUUID());
 	}
 
-	public static Message instance(UUID id) {
-		Message message = new Message.CLASS<Message>().get();
+	static public Message newInstance() {
+		return new Message.CLASS<Message>().get();
+	}
+	
+	public static Message newInstance(UUID id) {
+		Message message = Message.newInstance();
 		message.id = id;
 		return message;
 	}
@@ -61,12 +73,13 @@ public class Message extends OBJECT implements Serializable {
 	private String sender;
 	private String address;
 	private String exportProtocol;
+	
 	private ExportEntry exportEntry;
-	private final RCollection<FileInfo> files = new RCollection<FileInfo>(true);
+	private RCollection<FileInfo> files = new RCollection<FileInfo>(true);
 
-	private transient RLinkedHashMap<string, primary> properties = null;
+	private RLinkedHashMap<string, primary> properties = null;
 
-	private Message(IObject container) {
+	public Message(IObject container) {
 		super(container);
 	}
 
@@ -143,6 +156,118 @@ public class Message extends OBJECT implements Serializable {
 		return props.containsKey(PROP_SEND_FILES_CONTENT) && props.get(PROP_SEND_FILES_CONTENT).bool().get();
 	}
 
+	protected void beforeImport() {
+		z8_beforeImport();
+	}
+	
+	public void z8_beforeImport() {
+	}
+	
+	protected void afterImport() {
+		z8_afterImport();
+	}
+	
+	public void z8_afterImport() {
+	}
+	
+	protected void beforeExport() {
+		z8_beforeExport();
+	}
+	
+	public void z8_beforeExport() {
+	}
+	
+	protected void afterExport() {
+		z8_afterExport();
+	}
+	
+	public void z8_afterExport() {
+	}
+
+	public void runImport(String url, boolean preserve) {
+		ExportMessages.processed(new guid(id), url, preserve);
+		
+		beforeImport();
+		
+		ApplicationServer.disableEvents();
+		try {
+			Import.importMessage(this);
+		} finally {
+			ApplicationServer.enableEvents();
+		}
+		
+		afterImport();
+	}
+
+
+	public void runExport(Transport transport, TransportRoute route, boolean preserve) throws TransportException {
+		ExportMessages.processed(new guid(id), route.getTransportUrl(), preserve);
+
+		try {
+			getFiles().addAll(IeUtil.filesToFileInfos(getExportEntry().getFiles().getFile(), isSendFilesContent()));
+
+			beforeExport();
+			transport.send(this, route.getAddress());
+			afterExport();
+		} catch(TransportException e) {
+			throw e;
+		} catch(Throwable e) {
+			throw new RuntimeException(e);
+		}
+	}
+	
+	public void setError(boolean isError, Throwable e) {
+		ExportMessages.setError(this, isError, e);
+	}
+
+	private void writeObject(ObjectOutputStream out) throws IOException {
+		serialize(out);
+	}
+
+	private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
+		deserialize(in);
+	}
+	
+	@Override
+	public void serialize(ObjectOutputStream out) throws IOException {
+		out.writeLong(serialVersionUID);
+
+		ByteArrayOutputStream bytes = new ByteArrayOutputStream(256 * NumericUtils.Kilobyte);
+		ObjectOutputStream objects = new ObjectOutputStream(bytes);
+		
+		RmiIO.writeUUID(objects, id);
+		RmiIO.writeString(objects, sender);
+		RmiIO.writeString(objects, address);
+		RmiIO.writeString(objects, exportProtocol);
+		RmiIO.writeString(objects, IeUtil.marshalExportEntry(getExportEntry()));
+		
+		objects.close();
+
+		RmiIO.writeBytes(out, IOUtils.zip(bytes.toByteArray()));
+		
+		out.writeObject(files);
+	}
+
+	@Override
+	@SuppressWarnings("unchecked")
+	public void deserialize(ObjectInputStream in) throws IOException, ClassNotFoundException {
+		@SuppressWarnings("unused")
+		long version = in.readLong();
+
+		ByteArrayInputStream bytes = new ByteArrayInputStream(IOUtils.unzip(RmiIO.readBytes(in)));
+		ObjectInputStream objects = new ObjectInputStream(bytes);
+
+		id = RmiIO.readUUID(objects);
+		sender = RmiIO.readString(objects);
+		address = RmiIO.readString(objects);
+		exportProtocol = RmiIO.readString(objects);
+		exportEntry = IeUtil.unmarshalExportEntry(RmiIO.readString(objects));
+		
+		objects.close();
+
+		files = (RCollection<FileInfo>)in.readObject();
+	}
+
 	public guid z8_getId() {
 		return new guid(id);
 	}
@@ -170,9 +295,8 @@ public class Message extends OBJECT implements Serializable {
 	public string z8_getXml() {
 		try {
 			return new string(IeUtil.marshalExportEntry(getExportEntry()));
-		} catch (JAXBException e) {
+		} catch (Throwable e) {
 			throw new exception(e);
 		}
 	}
-
 }

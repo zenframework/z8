@@ -72,12 +72,14 @@ public class Import {
 
 	}
 
-	public static void importFiles(Message message, Files filesTable) {
+	public static void importFiles(Message message) {
+		Files files = Files.newInstance();
+
 		for (FileInfo fileInfo : message.getFiles()) {
-			filesTable.addFile(fileInfo);
+			files.addFile(fileInfo);
 			if (fileInfo.file == null) {
 				try {
-					filesTable.getFile(fileInfo);
+					files.getFile(fileInfo);
 				} catch (Throwable e) {
 					LOG.warn("Can't get remote file " + fileInfo, e);
 				}

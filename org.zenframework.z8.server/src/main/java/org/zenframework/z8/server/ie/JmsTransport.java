@@ -306,7 +306,7 @@ public class JmsTransport extends AbstractTransport implements ExceptionListener
 		streamMessage.writeBytes(buff);
 
 		buff = new byte[IOUtils.DefaultBufferSize];
-		Files files = Files.instance();
+		Files files = Files.newInstance();
 		for (FileInfo fileInfo : message.getFiles()) {
 			try {
 				fileInfo = files.getFile(fileInfo);
@@ -343,7 +343,7 @@ public class JmsTransport extends AbstractTransport implements ExceptionListener
 			if (messageObject instanceof Message) {
 				Message message = (Message) messageObject;
 				try {
-					message.setFiles(IeUtil.filesToFileInfos(message.getExportEntry().getFiles().getFile(), null));
+					message.setFiles(IeUtil.filesToFileInfos(message.getExportEntry().getFiles().getFile(), false));
 					if (streamMessage.readBoolean()) {
 						for (FileInfo fileInfo : message.getFiles()) {
 							// read file size

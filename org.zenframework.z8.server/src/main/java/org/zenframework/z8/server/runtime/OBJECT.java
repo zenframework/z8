@@ -1,10 +1,14 @@
 package org.zenframework.z8.server.runtime;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.zenframework.z8.server.base.json.parser.JsonArray;
 import org.zenframework.z8.server.engine.ApplicationServer;
+import org.zenframework.z8.server.engine.RmiSerializable;
 import org.zenframework.z8.server.json.Json;
 import org.zenframework.z8.server.json.JsonWriter;
 import org.zenframework.z8.server.request.INamedObject;
@@ -18,7 +22,7 @@ import org.zenframework.z8.server.types.integer;
 import org.zenframework.z8.server.types.primary;
 import org.zenframework.z8.server.types.string;
 
-public class OBJECT extends RequestTarget implements IObject {
+public class OBJECT extends RequestTarget implements IObject, RmiSerializable {
     public static class CLASS<T extends OBJECT> extends org.zenframework.z8.server.runtime.CLASS<T> {
         public CLASS(IObject container) {
             super(container);
@@ -365,7 +369,15 @@ public class OBJECT extends RequestTarget implements IObject {
             writer.writeProperty(Json.data, response);
     }
 
-    static private RLinkedHashMap<string, string> convertParameters(Map<String, String> parameters) {
+	@Override
+	public void serialize(ObjectOutputStream stream) throws IOException {
+	}
+
+	@Override
+	public void deserialize(ObjectInputStream stream) throws IOException, ClassNotFoundException {
+	}
+
+	static private RLinkedHashMap<string, string> convertParameters(Map<String, String> parameters) {
         RLinkedHashMap<string, string> result = new RLinkedHashMap<string, string>();
         
         for(String key : parameters.keySet()) {

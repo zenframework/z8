@@ -1,6 +1,5 @@
 package org.zenframework.z8.server.engine;
 
-import java.net.URI;
 import java.net.URISyntaxException;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
@@ -14,10 +13,11 @@ import org.zenframework.z8.server.base.file.FileInfo;
 import org.zenframework.z8.server.base.table.system.Files;
 import org.zenframework.z8.server.base.table.system.Properties;
 import org.zenframework.z8.server.config.ServerConfig;
-import org.zenframework.z8.server.ie.ExportMessages;
-import org.zenframework.z8.server.ie.IeUtil;
+import org.zenframework.z8.server.db.Connection;
+import org.zenframework.z8.server.db.ConnectionManager;
 import org.zenframework.z8.server.ie.Import;
 import org.zenframework.z8.server.ie.Message;
+import org.zenframework.z8.server.ie.TransportProcedure;
 import org.zenframework.z8.server.logs.Trace;
 import org.zenframework.z8.server.runtime.ServerRuntime;
 
@@ -96,17 +96,16 @@ public class TransportService extends RmiServer implements ITransportService, Pr
 
 	@Override
 	public void sendMessage(Message message) throws RemoteException {
-		String url = getUrl();
+		Connection connection = ConnectionManager.get();
+		connection.beginTransaction();
+
 		try {
-			URI uri = new URI(url);
-			url = IeUtil.getUrl(uri.getScheme(), uri.getHost() + ':' + uri.getPort());
-		} catch (URISyntaxException e) {
-			LOG.debug("Can't parse URI '" + url + "'", e);
-		}
-		try {
-			new ExportMessages.CLASS<ExportMessages>().get().addMessage(message, url, ExportMessages.Direction.IN);
-			Import.importFiles(message, Files.instance());
+			TransportProcedure.importMessage(message);
+			Import.importFiles(message);
+			connection.commit();
 		} catch (Throwable e) {
+			connection.rollback();
+			Trace.logError(e);
 			throw new RemoteException("Can't import message '" + message.getId() + "' from '" + message.getSender() + "'", e);
 		}
 	}
@@ -114,7 +113,7 @@ public class TransportService extends RmiServer implements ITransportService, Pr
 	@Override
 	public FileInfo readFile(FileInfo fileInfo) throws RemoteException {
 		try {
-			return Files.instance().getFile(fileInfo);
+			return Files.newInstance().getFile(fileInfo);
 		} catch (Exception e) {
 			throw new RemoteException("Can't get file " + fileInfo, e);
 		}

@@ -1,17 +1,22 @@
 package org.zenframework.z8.server.ie;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.Serializable;
 
+import org.zenframework.z8.server.engine.RmiIO;
+import org.zenframework.z8.server.engine.RmiSerializable;
 import org.zenframework.z8.server.types.guid;
 
-public class TransportRoute implements Serializable {
+public class TransportRoute implements RmiSerializable, Serializable {
 
 	private static final long serialVersionUID = -2215330098958924695L;
 
-	private final guid routeId;
-	private final String receiver;
-	private final String protocol;
-	private final String address;
+	private guid routeId;
+	private String receiver;
+	private String protocol;
+	private String address;
 
 	private int priority = 0;
 	private boolean active = true;
@@ -75,4 +80,33 @@ public class TransportRoute implements Serializable {
 		return address;
 	}
 
+	private void writeObject(ObjectOutputStream out) throws IOException {
+		serialize(out);
+	}
+
+	private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
+		deserialize(in);
+	}
+
+	@Override
+	public void serialize(ObjectOutputStream out) throws IOException {
+		RmiIO.writeGuid(out, routeId);
+		RmiIO.writeString(out, receiver);
+		RmiIO.writeString(out, protocol);
+		RmiIO.writeString(out, address);
+
+		out.writeInt(priority);
+		out.writeBoolean(active);
+	}
+
+	@Override
+	public void deserialize(ObjectInputStream in) throws IOException, ClassNotFoundException {
+		routeId = RmiIO.readGuid(in);
+		receiver = RmiIO.readString(in);
+		protocol = RmiIO.readString(in);
+		address = RmiIO.readString(in);
+
+		priority = in.readInt();
+		active = in.readBoolean();
+	}
 }

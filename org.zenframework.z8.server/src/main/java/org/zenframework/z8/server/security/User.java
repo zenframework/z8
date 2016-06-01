@@ -1,5 +1,7 @@
 package org.zenframework.z8.server.security;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -33,6 +35,8 @@ import org.zenframework.z8.server.types.primary;
 import org.zenframework.z8.server.types.string;
 import org.zenframework.z8.server.types.sql.sql_string;
 import org.zenframework.z8.server.utils.ArrayUtils;
+import org.zenframework.z8.server.utils.IOUtils;
+import org.zenframework.z8.server.utils.NumericUtils;
 
 public class User implements IUser {
 	private static final long serialVersionUID = -4955893424674255525L;
@@ -284,62 +288,58 @@ public class User implements IUser {
 	public void serialize(ObjectOutputStream out) throws IOException {
 		out.writeLong(serialVersionUID);
 		
-		RmiIO.writeGuid(out, id);
+		ByteArrayOutputStream bytes = new ByteArrayOutputStream(32 * NumericUtils.Kilobyte);
+		ObjectOutputStream objects = new ObjectOutputStream(bytes);
 
-		RmiIO.writeString(out, name);
-		RmiIO.writeString(out, password);
+		RmiIO.writeGuid(objects, id);
+
+		RmiIO.writeString(objects, name);
+		RmiIO.writeString(objects, password);
 		
-		RmiIO.writeGuid(out, securityGroup.guid());
+		RmiIO.writeGuid(objects, securityGroup.guid());
 
-		RmiIO.writeString(out, description);
-		RmiIO.writeString(out, phone);
-		RmiIO.writeString(out, email);
+		RmiIO.writeString(objects, description);
+		RmiIO.writeString(objects, phone);
+		RmiIO.writeString(objects, email);
 		
-		out.writeBoolean(blocked);
+		objects.writeBoolean(blocked);
 
-		RmiIO.writeString(out, settings);
+		RmiIO.writeString(objects, settings);
 
-		out.writeInt(components.size());
-		for(Component component : components) 
-			out.writeObject(component);
+		objects.writeObject(components);
+		objects.writeObject(parameters);
+		
+		objects.close();
 
-		out.writeInt(parameters.size());
-		for(string key : parameters.keySet()) {
-			RmiIO.writeString(out, key);
-			RmiIO.writePrimary(out, parameters.get(key));
-		}
+		RmiIO.writeBytes(out, IOUtils.zip(bytes.toByteArray()));
 	}
 	
-    @Override
+	@Override
+    @SuppressWarnings({ "unchecked", "rawtypes" })
 	public void deserialize(ObjectInputStream in) throws IOException, ClassNotFoundException {	
 		@SuppressWarnings("unused")
 		long version = in.readLong();
 		
-		id = RmiIO.readGuid(in);
+		ByteArrayInputStream bytes = new ByteArrayInputStream(IOUtils.unzip(RmiIO.readBytes(in)));
+		ObjectInputStream objects = new ObjectInputStream(bytes);
 
-		name = RmiIO.readString(in);
-		password = RmiIO.readString(in);
-		securityGroup = SecurityGroup.fromGuid(RmiIO.readGuid(in));
+		id = RmiIO.readGuid(objects);
+
+		name = RmiIO.readString(objects);
+		password = RmiIO.readString(objects);
+		securityGroup = SecurityGroup.fromGuid(RmiIO.readGuid(objects));
 		
-		description = RmiIO.readString(in);
-		phone = RmiIO.readString(in);
-		email = RmiIO.readString(in);
+		description = RmiIO.readString(objects);
+		phone = RmiIO.readString(objects);
+		email = RmiIO.readString(objects);
 		
 		blocked = in.readBoolean();
 
-		settings = RmiIO.readString(in);
+		settings = RmiIO.readString(objects);
 
-		int count = in.readInt();
-		components = new ArrayList<Component>();
-		for(int i = 0; i < count; i++)
-			components.add((Component)in.readObject());
+		components = (Collection)objects.readObject();
+		parameters = (RLinkedHashMap)objects.readObject();
 		
-		count = in.readInt();
-		parameters = new RLinkedHashMap<string, primary>();
-		for(int i = 0; i < count; i++) {
-			string key = new string(RmiIO.readString(in));
-			primary value = RmiIO.readPrimary(in);
-			parameters.put(key, value);
-		}
+		objects.close();
 	}
 }

@@ -13,12 +13,16 @@ import java.rmi.dgc.VMID;
 import java.rmi.server.ObjID;
 import java.rmi.server.RemoteObjectInvocationHandler;
 import java.rmi.server.UID;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
+import org.eclipse.core.resources.IContainer;
 import org.zenframework.z8.rmi.ObjectIO;
+import org.zenframework.z8.server.runtime.CLASS;
+import org.zenframework.z8.server.runtime.OBJECT;
 import org.zenframework.z8.server.types.bool;
 import org.zenframework.z8.server.types.date;
 import org.zenframework.z8.server.types.datespan;
@@ -75,10 +79,6 @@ public class RmiIO extends ObjectIO {
 		} catch(Throwable e) {
 			throw new RuntimeException(e);
 		}
-	}
-
-	static private RmiSerializable newSerializable(String name) {
-		return (RmiSerializable)newObject(name, null, null);
 	}
 
 	static public void writeBool(ObjectOutputStream out, bool value) throws IOException {
@@ -170,6 +170,12 @@ public class RmiIO extends ObjectIO {
 		} else if(value instanceof Object[]) {
 			out.writeInt(RmiSerializable.Array);
 			writeArray(out, (Object[])value);
+		} else if(value instanceof Collection) {
+			out.writeInt(RmiSerializable.Collection);
+			writeCollection(out, (Collection<?>)value);
+		} else if(value instanceof Map) {
+			out.writeInt(RmiSerializable.Map);
+			writeMap(out, (Map<?, ?>)value);
 		} else if(replacement instanceof Proxy) {
 			out.writeInt(RmiSerializable.Proxy);
 			writeProxy(out, (Proxy)replacement, value);
@@ -182,6 +188,9 @@ public class RmiIO extends ObjectIO {
 		} else if(value instanceof Lease) {
 			out.writeInt(RmiSerializable.Lease);
 			writeLease(out, (Lease)value);
+		} else if(value instanceof OBJECT) {
+			out.writeInt(RmiSerializable.OBJECT);
+			writeOBJECT(out, (OBJECT)value);
 		} else if(value instanceof RmiSerializable) {
 			out.writeInt(RmiSerializable.Self);
 			writeSerializable(out, (RmiSerializable)value);
@@ -190,8 +199,13 @@ public class RmiIO extends ObjectIO {
 	}
 
 	private void writeSerializable(ObjectOutputStream out, RmiSerializable serializable) throws IOException {
-		writeString(out, serializable.getClass().getCanonicalName());
+		writeClass(out, serializable);
 		serializable.serialize(out);
+	}
+
+	private void writeOBJECT(ObjectOutputStream out, OBJECT object) throws IOException {
+		writeClass(out, object.getCLASS());
+		object.serialize(out);
 	}
 
 	private void writeProxy(ObjectOutputStream out, Proxy proxy, Object object) throws IOException {
@@ -200,15 +214,39 @@ public class RmiIO extends ObjectIO {
 		UnicastRef unicastRef = (UnicastRef)handler.getRef();
 		LiveRef liveRef = unicastRef.getLiveRef();
 		
-		writeString(out, object.getClass().getCanonicalName());
+		writeClass(out, object);
 		liveRef.write(out, true);
 	}
 
 	private void writeArray(ObjectOutputStream out, Object[] array) throws IOException {
 		out.writeInt(array.length);
-		writeString(out, array.getClass().getComponentType().getCanonicalName());
+		writeClass(out, array);
 		for(Object object : array)
 			writeObject(out, object, object);
+	}
+
+	private void writeCollection(ObjectOutputStream out, Collection<?> collection) throws IOException {
+		out.writeInt(collection != null ? collection.size() : -1);
+		
+		if(collection == null)
+			return;
+		
+		writeClass(out, collection);
+		for(Object object : collection)
+			writeObject(out, object, object);
+	}
+
+	private void writeMap(ObjectOutputStream out, Map<?, ?> map) throws IOException {
+		out.writeInt(map != null ? map.size() : -1);
+		
+		if(map == null)
+			return;
+
+		writeClass(out, map);
+		for(Object key : map.keySet()) {
+			out.writeObject(key);
+			out.writeObject(map.get(key));
+		}
 	}
 
 	private void writeObjID(ObjectOutputStream out, ObjID object) throws IOException {
@@ -222,8 +260,15 @@ public class RmiIO extends ObjectIO {
 		out.writeLong(lease.getValue());
 	}
 
+	private void writeClass(ObjectOutputStream out, Object object) throws IOException {
+		Class<?> cls = object.getClass();
+		if(object instanceof Object[])
+			cls = cls.getComponentType();
+		writeString(out, cls.getCanonicalName());
+	}
+	
 	private void writeException(ObjectOutputStream out, Throwable object) throws IOException {
-		writeString(out, object.getClass().getCanonicalName());
+		writeClass(out, object);
 		writeString(out, object.getMessage());
 	}
 	
@@ -315,6 +360,10 @@ public class RmiIO extends ObjectIO {
 			return readPrimary(in);
 		else if(id == RmiSerializable.Array)
 			return readArray(in);
+		else if(id == RmiSerializable.Collection)
+			return readCollection(in);
+		else if(id == RmiSerializable.Map)
+			return readMap(in);
 		else if(id == RmiSerializable.Proxy)
 			return readProxy(in);
 		else if(id == RmiSerializable.Exception)
@@ -323,6 +372,8 @@ public class RmiIO extends ObjectIO {
 			return readObjID(in);
 		else if(id == RmiSerializable.Lease)
 			return readLease(in);
+		else if(id == RmiSerializable.OBJECT)
+			return readOBJECT(in);
 		else if(id == RmiSerializable.Self)
 			return readSerializable(in);
 		
@@ -331,9 +382,9 @@ public class RmiIO extends ObjectIO {
 
 	private Object readArray(ObjectInputStream in) throws IOException, ClassNotFoundException {
 		int length = in.readInt();
-		String componentClass = readString(in);
+		String cls = readClass(in);
 		
-		Object[] array = (Object[])Array.newInstance(getClass(componentClass), length);
+		Object[] array = (Object[])Array.newInstance(getClass(cls), length);
 		
 		for(int i = 0; i < length; i++)
 			array[i] = readObject(in);
@@ -341,19 +392,68 @@ public class RmiIO extends ObjectIO {
 		return array;
 	}
 
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	private Object readCollection(ObjectInputStream in) throws IOException, ClassNotFoundException {
+		int length = in.readInt();
+		
+		if(length == -1)
+			return null;
+		
+		String cls = readClass(in);
+		
+		Collection collection = (Collection<?>)newObject(cls, null, null);
+		
+		for(int i = 0; i < length; i++)
+			collection.add(readObject(in));
+
+		return collection;
+	}
+
+	
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	private Object readMap(ObjectInputStream in) throws IOException, ClassNotFoundException {
+		int count = in.readInt();
+
+		if(count == -1)
+			return null;
+
+		String cls = readClass(in);
+
+		Map map = (Map<?, ?>)newObject(cls, null, null);
+		
+		for(int i = 0; i < count; i++) {
+			Object key = in.readObject();
+			Object value = in.readObject();
+			map.put(key, value);
+		}
+		
+		return map;
+	}
+	
 	private Object readSerializable(ObjectInputStream in) throws IOException, ClassNotFoundException {
-		String className = readString(in);
-		RmiSerializable serializable = newSerializable(className);
+		String cls = readClass(in);
+		RmiSerializable serializable = (RmiSerializable)newObject(cls, null, null);
 		serializable.deserialize(in);
 		return serializable;
 	}
 
+	private Object readOBJECT(ObjectInputStream in) throws IOException, ClassNotFoundException {
+		CLASS<?> cls = (CLASS<?>)newObject(readClass(in), new Class<?>[] { IContainer.class }, new Object[] { null });
+		RmiSerializable serializable = (RmiSerializable)cls.newObject(null);
+		serializable.deserialize(in);
+		return serializable;
+	}
+
+	private String readClass(ObjectInputStream in) throws IOException, ClassNotFoundException {
+		return readString(in);
+	}
+	
 	private Object readProxy(ObjectInputStream in) throws IOException, ClassNotFoundException {
-		String className = readString(in);
+		String cls = readClass(in);
 		LiveRef liveRef = LiveRef.read(in, true);
 
 		RemoteObjectInvocationHandler handler = new RemoteObjectInvocationHandler(new UnicastRef(liveRef));
-		return Proxy.newProxyInstance(this.getClass().getClassLoader(), getClass(className).getInterfaces(), handler);
+		return Proxy.newProxyInstance(this.getClass().getClassLoader(), getClass(cls).getInterfaces(), handler);
 	}
 
 	private Object readObjID(ObjectInputStream in) throws IOException, ClassNotFoundException {
@@ -369,8 +469,8 @@ public class RmiIO extends ObjectIO {
 	}
 
 	protected Object readException(ObjectInputStream in) throws IOException, ClassNotFoundException {
-		String className = readString(in);
+		String cls = readClass(in);
 		String message = readString(in);
-		return newObject(className, new Class<?>[] { String.class }, new Object[] { message });
+		return newObject(cls, new Class<?>[] { String.class }, new Object[] { message });
 	}
 }

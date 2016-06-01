@@ -86,7 +86,7 @@ public class ApplicationServer extends RmiServer implements IApplicationServer {
 	@Override
 	public FileInfo download(FileInfo fileInfo) throws IOException, FileInfoNotFoundException {
 		try {
-			return Files.instance().getFile(fileInfo);
+			return Files.newInstance().getFile(fileInfo);
 		} finally {
 			ConnectionManager.release();
 		}

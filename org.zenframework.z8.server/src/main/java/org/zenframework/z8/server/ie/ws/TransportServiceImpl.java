@@ -3,7 +3,6 @@ package org.zenframework.z8.server.ie.ws;
 import java.util.UUID;
 
 import org.zenframework.z8.ie.xml.ExportEntry;
-import org.zenframework.z8.server.base.table.system.Files;
 import org.zenframework.z8.server.ie.ExportMessages;
 import org.zenframework.z8.server.ie.IeUtil;
 import org.zenframework.z8.server.ie.Import;
@@ -20,14 +19,14 @@ public class TransportServiceImpl implements TransportService {
 
 	@Override
 	public void sendMessage(UUID id, String sender, ExportEntry exportEntry) throws TransportException {
-		Message message = Message.instance(id);
+		Message message = Message.newInstance(id);
 		message.setAddress(endpoint);
 		message.setSender(sender);
 		try {
 			message.setFiles(IeUtil.xmlFilesToFileInfos(exportEntry.getFiles()));
 			message.setExportEntry(exportEntry);
 			new ExportMessages.CLASS<ExportMessages>(null).get().addMessage(message, endpoint, ExportMessages.Direction.IN);
-			Import.importFiles(message, Files.instance());
+			Import.importFiles(message);
 		} catch (Exception e) {
 			throw new TransportException("Can't send IE message " + message.getId() + " from " + message.getSender()
 					+ " to " + message.getAddress(), e);

@@ -133,7 +133,7 @@ public class FileTransport extends AbstractTransport implements Properties.Liste
 				for (File messageFolder : addresseeFolder.listFiles()) {
 					if (messageFolder.isDirectory()) {
 						try {
-							Message message = Message.instance(UUID.fromString(messageFolder.getName()));
+							Message message = Message.newInstance(UUID.fromString(messageFolder.getName()));
 							message.setAddress(context.getProperty(TransportContext.SelfAddressProperty));
 							message.setSender(messageFolder.getParentFile().getName());
 							File entryFile = new File(messageFolder, EXPORT_ENTRY);
@@ -145,7 +145,7 @@ public class FileTransport extends AbstractTransport implements Properties.Liste
 									message.setExportEntry(entry);
 									// add files
 									Collection<FileInfo> fileInfos = IeUtil.filesToFileInfos(entry.getFiles().getFile(),
-											null);
+											false);
 									for (FileInfo fileInfo : fileInfos) {
 										File file = new File(messageFolder, fileInfo.id.toString());
 										fileInfo.file = FilesFactory.createFileItem(fileInfo.name.get());

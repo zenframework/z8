@@ -251,26 +251,6 @@ public class FileInfo extends OBJECT implements RmiSerializable, Serializable {
 			throw new RuntimeException(e);
 		}
 	}
-
-/*	private void writeObject(ObjectOutputStream outputStream) throws IOException {
-		outputStream.defaultWriteObject();
-		if (DEFAULT_WRITE)
-			return;
-
-		outputStream.writeByte(FILE_INFO_VERSION);
-		outputStream.writeBoolean(file != null);
-
-		if (file != null) {
-			InputStream inputStream = file.getInputStream();
-
-			try {
-				IOUtils.copy(inputStream, outputStream, false);
-			} finally {
-				IOUtils.closeQuietly(inputStream);
-			}
-		}
-	}
-*/
 	
     private void writeObject(ObjectOutputStream out)  throws IOException {
     	serialize(out);
@@ -328,27 +308,4 @@ public class FileInfo extends OBJECT implements RmiSerializable, Serializable {
 			}
 		}
 	}
-
-/*	private void readObject(ObjectInputStream inputStream) throws IOException, ClassNotFoundException {
-		inputStream.defaultReadObject();
-		if (DEFAULT_READ)
-			return;
-
-		// Read FileInfo version - for future use
-		@SuppressWarnings("unused")
-		byte version = inputStream.readByte();
-
-		if (inputStream.readBoolean()) {
-			file = FilesFactory.createFileItem(name.get());
-
-			OutputStream outputStream = file.getOutputStream();
-
-			try {
-				IOUtils.copy(inputStream, outputStream, false);
-			} finally {
-				IOUtils.closeQuietly(outputStream);
-			}
-		}
-	}
-*/
 }

@@ -197,6 +197,10 @@ public class Files extends Table {
 	public final FileAttachmentExpression.CLASS<FileAttachmentExpression> attachment = new FileAttachmentExpression.CLASS<FileAttachmentExpression>(
 			this);
 
+	static public Files newInstance() {
+		return new Files.CLASS<Files>().get();
+	}
+	
 	public Files(IObject container) {
 		super(container);
 	}
@@ -245,10 +249,6 @@ public class Files extends Table {
 		commands.add(Command.z8_create(CommandRequestFile, new string(Resources.get("Files.command.requestFile"))));
 		commands.add(Command.z8_create(CommandSendFile, new string(Resources.get("Files.command.sendFile")),
 				SendFileParameters));
-	}
-
-	public static Files instance() {
-		return new Files.CLASS<Files>().get();
 	}
 
 	public FileInfo getFile(FileInfo fileInfo) throws IOException, FileInfoNotFoundException {

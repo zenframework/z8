@@ -189,7 +189,7 @@ public class Export extends OBJECT {
 				}
 			}
 			// Запись сообщений в таблицу ExportMessages
-			ExportMessages exportMessages = ExportMessages.instance();
+			ExportMessages exportMessages = new ExportMessages.CLASS<ExportMessages>().get();
 			if (sendFilesSeparately && !local) {
 				for (ExportEntry.Files.File file : files) {
 					Message message = Message.instance();

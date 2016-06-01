@@ -10,6 +10,13 @@ class Message extends Object {
 
 	public static final string TYPE_FILE_REQUEST;
 	public static final string TYPE_FILE_RESPONSE;
+
+
+	virtual protected void beforeImport();
+	virtual protected void afterImport();
+
+	virtual protected void beforeExport();
+	virtual protected void afterExport();
 	
 	public string getId();
 	public string getAddress();

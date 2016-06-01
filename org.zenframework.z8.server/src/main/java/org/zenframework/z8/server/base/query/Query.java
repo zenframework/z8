@@ -529,7 +529,12 @@ public class Query extends Runnable {
     }
 
     public boolean hasRecord(guid recordId) {
-        return readRecord(recordId, Arrays.asList(primaryKey()));
+    	try {
+	    	saveState();
+	        return readRecord(recordId, Arrays.asList(primaryKey()));
+    	} finally {
+    		restoreState();
+    	}
     }
 
     public boolean hasRecord(SqlToken where) {
@@ -549,9 +554,13 @@ public class Query extends Runnable {
     }
 
     public int count(SqlToken where) {
-        ReadAction action = new ReadAction(this);
-        action.addFilter(where);
-        return action.getCounter().count();
+    	try {
+	        ReadAction action = new ReadAction(this);
+	        action.addFilter(where);
+	        return action.getCounter().count();
+    	} finally {
+    		restoreState();
+    	}
     }
 
     public boolean aggregate() {

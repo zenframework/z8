@@ -80,7 +80,7 @@ public class AttachmentProcessor extends OBJECT {
 	}
 
 	public Collection<FileInfo> create(guid attachTo, Collection<FileInfo> files, String type) {
-		Files filesTable = new Files.CLASS<Files>().get();
+		Files filesTable = Files.newInstance();
 
 		for (FileInfo file : files) {
 			boolean idIsNull = file.id == null || file.id.isNull();
@@ -110,7 +110,7 @@ public class AttachmentProcessor extends OBJECT {
 	}
 
 	public Collection<FileInfo> remove(guid target, Collection<FileInfo> files) {
-		Files filesTable = new Files.CLASS<Files>().get();
+		Files filesTable = Files.newInstance();
 		Collection<FileInfo> result = read(target);
 
 		for (FileInfo file : files)
@@ -171,7 +171,7 @@ public class AttachmentProcessor extends OBJECT {
 			return 1;
 
 		try {
-			Files.instance().getFile(fileInfo);
+			Files.newInstance().getFile(fileInfo);
 		} catch (FileInfoNotFoundException e) {
 			return 1;
 		}

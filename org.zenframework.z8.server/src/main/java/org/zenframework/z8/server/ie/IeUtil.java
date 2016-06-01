@@ -123,11 +123,11 @@ public class IeUtil {
 		return file;
 	}
 
-	public static FileInfo fileToFileInfo(ExportEntry.Files.File file, Files filesTable) throws IOException {
+	public static FileInfo fileToFileInfo(ExportEntry.Files.File file, boolean extractFiles) throws IOException {
 		FileInfo fileInfo = fileToFileInfoCLASS(file).get();
-		if (filesTable != null) {
+		if (extractFiles) {
 			try {
-				fileInfo = filesTable.getFile(fileInfo);
+				fileInfo = Files.newInstance().getFile(fileInfo);
 			} catch (FileInfoNotFoundException e) {}
 		}
 		return fileInfo;
@@ -152,10 +152,10 @@ public class IeUtil {
 		return files;
 	}
 
-	public static List<FileInfo> filesToFileInfos(List<ExportEntry.Files.File> files, Files filesTable) throws IOException {
+	public static List<FileInfo> filesToFileInfos(List<ExportEntry.Files.File> files, boolean extractFiles) throws IOException {
 		List<FileInfo> fileInfos = new ArrayList<FileInfo>(files.size());
 		for (ExportEntry.Files.File file : files) {
-			fileInfos.add(fileToFileInfo(file, filesTable));
+			fileInfos.add(fileToFileInfo(file, extractFiles));
 		}
 		return fileInfos;
 	}
@@ -256,26 +256,34 @@ public class IeUtil {
 		marshaller.marshal(entry, out);
 	}
 
-	public static String marshalExportEntry(ExportEntry entry) throws JAXBException {
-		StringWriter out = new StringWriter();
-		marshalExportEntry(entry, out);
-		return out.toString();
-	}
-
-	public static ExportEntry unmarshalExportEntry(Reader in) throws JAXBException {
-		Unmarshaller unmarshaller = getUnmarshaller(JAXB_CONTEXT);
-		Object result = unmarshaller.unmarshal(in);
-		if (result instanceof JAXBElement) {
-			result = ((JAXBElement<?>) result).getValue();
-		}
-		if (result instanceof ExportEntry) {
-			return (ExportEntry) result;
-		} else {
-			throw new JAXBException("Incorrect ExportEntry class: " + result.getClass());
+	public static String marshalExportEntry(ExportEntry entry) {
+		try {
+			StringWriter out = new StringWriter();
+			marshalExportEntry(entry, out);
+			return out.toString();
+		} catch(JAXBException e) {
+			throw new RuntimeException(e);
 		}
 	}
 
-	public static ExportEntry unmarshalExportEntry(String str) throws JAXBException {
+	public static ExportEntry unmarshalExportEntry(Reader in) {
+		try {
+			Unmarshaller unmarshaller = getUnmarshaller(JAXB_CONTEXT);
+			Object result = unmarshaller.unmarshal(in);
+		
+			if (result instanceof JAXBElement)
+				result = ((JAXBElement<?>) result).getValue();
+
+			if (result instanceof ExportEntry)
+				return (ExportEntry) result;
+
+			throw new RuntimeException("Incorrect ExportEntry class: " + result.getClass());
+		} catch(JAXBException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	public static ExportEntry unmarshalExportEntry(String str) {
 		return unmarshalExportEntry(new StringReader(str));
 	}
 
