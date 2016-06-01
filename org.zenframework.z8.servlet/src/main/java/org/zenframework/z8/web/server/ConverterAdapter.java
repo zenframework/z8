@@ -47,7 +47,8 @@ public class ConverterAdapter extends Adapter {
 
 	@Override
 	protected void service(ISession session, Map<String, String> parameters, List<FileInfo> files,
-			HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException, FileInfoNotFoundException {
+			HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException,
+			FileInfoNotFoundException {
 		// URLDecoder.decode заменяет '+' на ' '
 		String encodedUrl = request.getRequestURI().replaceAll("\\+", "%2b");
 		String requestUrl = URLDecoder.decode(encodedUrl, encoding.Default.toString());
@@ -73,11 +74,11 @@ public class ConverterAdapter extends Adapter {
 
 		if (preview) {
 			if (FileConverter.isConvertableToPdf(absolutePath)) {
-				absolutePath = getConvertedPdf(relativePath, absolutePath);
+				absolutePath = getConverter().getConvertedPdf(relativePath.getPath(), absolutePath);
 				response.addHeader("Content-Type", "application/pdf");
-			} else if (FileConverter.isConvertableToTxt(absolutePath)) {
-				absolutePath = getConvertedTxt(relativePath, absolutePath);
-				response.addHeader("Content-Type", "text/plain; charset=UTF-8");
+			//} else if (FileConverter.isConvertableToTxt(absolutePath)) {
+			//	absolutePath = getConvertedTxt(relativePath, absolutePath);
+			//	response.addHeader("Content-Type", "text/plain; charset=UTF-8");
 			} else
 				response.addHeader("Content-Type", getContentType(absolutePath));
 		} else {
@@ -121,14 +122,6 @@ public class ConverterAdapter extends Adapter {
 		}
 
 		return downloadedFileInfo;
-	}
-
-	public File getConvertedPdf(File relativePath, File srcFile) throws IOException {
-		return getConverter().getConvertedPdf(relativePath.getPath(), srcFile);
-	}
-
-	public File getConvertedTxt(File relativePath, File srcFile) throws IOException {
-		return getConverter().getConvertedTxt(relativePath.getPath(), srcFile);
 	}
 
 	private String getContentDisposition(HttpServletRequest request, String fileName) throws UnsupportedEncodingException {

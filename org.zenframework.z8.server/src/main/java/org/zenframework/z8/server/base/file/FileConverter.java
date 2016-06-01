@@ -25,14 +25,13 @@ public class FileConverter {
 	private static final Log LOG = LogFactory.getLog(FileConverter.class);
 
 	private static final String PdfExtension = ".pdf";
-	private static final String TxtExtension = ".txt";
 
 	private static final int OFFICE_PORT = 8100;
-	private static final List<String> pdfExtensions = Arrays
-			.asList("pdf", "doc", "docx", "xls", "xlsx", "ppt", "pptx", "odt", "odp", "ods", "odf", "odg", "wpd", "sxw",
-					"sxi", "sxc", "sxd", "stw", "tif", "tiff", "vsd", "jpg", "jpeg");
 
-	private static final List<String> txtExtensions = Arrays.asList("eml", "mime");
+	private static final List<String> imageExtensions = Arrays.asList("tif", "tiff", "jpg", "jpeg");
+	private static final List<String> officeExtensions = Arrays.asList("pdf", "txt", "doc", "docx", "xls", "xlsx", "ppt",
+			"pptx", "odt", "odp", "ods", "odf", "odg", "wpd", "sxw", "sxi", "sxc", "sxd", "stw", "vsd");
+	private static final List<String> emailExtensions = Arrays.asList("eml", "mime");
 
 	private static OfficeManager officeManager;
 
@@ -43,24 +42,19 @@ public class FileConverter {
 	}
 
 	public File getConvertedPdf(String relativePath, File srcFile) {
-		return getConvertedFile(relativePath, srcFile, PdfExtension);
-	}
-
-	public File getConvertedTxt(String relativePath, File srcFile) {
-		return getConvertedFile(relativePath, srcFile, TxtExtension);
-	}
-
-	private File getConvertedFile(String relativePath, File srcFile, String extension) {
-		if (srcFile.getName().endsWith(extension))
+		if (srcFile.getName().endsWith(PdfExtension))
 			return srcFile;
 
-		File convertedFile = new File(storage, relativePath + extension);
+		String extension = FilenameUtils.getExtension(srcFile.getName()).toLowerCase();
+		File convertedFile = new File(storage, relativePath + PdfExtension);
 
 		if (!convertedFile.exists()) {
-			if (TxtExtension.equalsIgnoreCase(extension))
-				convertFileToTxt(srcFile, convertedFile);
-			else if (PdfExtension.equalsIgnoreCase(extension))
-				convertFileToPdf(srcFile, convertedFile);
+			if (imageExtensions.contains(extension))
+				convertImageToPdf(srcFile, convertedFile);
+			else if (emailExtensions.contains(extension))
+				convertEmailToPdf(srcFile, convertedFile);
+			else if (officeExtensions.contains(extension))
+				convertOfficeToPdf(srcFile, convertedFile);
 		}
 
 		return convertedFile;
@@ -72,16 +66,8 @@ public class FileConverter {
 
 	public static boolean isConvertableToPdf(String fileName) {
 		String extension = FilenameUtils.getExtension(fileName).toLowerCase();
-		return pdfExtensions.contains(extension);
-	}
-
-	public static boolean isConvertableToTxt(File file) {
-		return isConvertableToTxt(file.getName());
-	}
-
-	public static boolean isConvertableToTxt(String fileName) {
-		String extension = FilenameUtils.getExtension(fileName).toLowerCase();
-		return txtExtensions.contains(extension);
+		return imageExtensions.contains(extension) || officeExtensions.contains(extension)
+				|| emailExtensions.contains(extension);
 	}
 
 	private static void startOfficeManager() {
@@ -104,7 +90,11 @@ public class FileConverter {
 		}
 	}
 
-	private void convertFileToTxt(File sourceFile, File convertedFile) {
+	private void convertImageToPdf(File sourceFile, File convertedFile) {
+
+	}
+
+	private void convertEmailToPdf(File sourceFile, File convertedFile) {
 		convertedFile.getParentFile().mkdirs();
 
 		java.util.Properties props = new java.util.Properties();
@@ -113,12 +103,14 @@ public class FileConverter {
 
 		Session mailSession = Session.getDefaultInstance(props, null);
 
+		File tempFile = null;
 		InputStream in = null;
 		PrintStream out = null;
 
 		try {
+			tempFile = File.createTempFile("z8-temp-", '-' + sourceFile.getName() + ".");
 			in = new FileInputStream(sourceFile);
-			out = new PrintStream(convertedFile, "UTF-8");
+			out = new PrintStream(tempFile, "UTF-8");
 			MimeMessage message = new MimeMessage(mailSession, in);
 			out.println("Тема : " + message.getSubject());
 			out.println("Отправитель : " + message.getFrom()[0]);
@@ -131,9 +123,43 @@ public class FileConverter {
 			IOUtils.closeQuietly(in);
 			IOUtils.closeQuietly(out);
 		}
+
+		if (tempFile != null && tempFile.exists()) {
+			convertOfficeToPdf(tempFile, convertedFile);
+			tempFile.delete();
+		}
 	}
 
-	private void convertFileToPdf(File sourceFile, File convertedFile) {
+	/*private void convertEmailToTxt(File sourceFile, File convertedFile) {
+		// Create a document and add a page to it
+	    PDDocument document = new PDDocument();
+	    PDPage page1 = new PDPage(PDRectangle.A4);
+	        // PDRectangle.LETTER and others are also possible
+	    PDRectangle rect = page1.getMediaBox();
+	        // rect can be used to get the page width and height
+	    document.addPage(page1);
+	
+	    // Create a new font object selecting one of the PDF base fonts
+	    PDFont fontPlain = PDType1Font.HELVETICA;
+	    PDFont fontBold = PDType1Font.HELVETICA_BOLD;
+	    PDFont fontItalic = PDType1Font.HELVETICA_OBLIQUE;
+	    PDFont fontMono = PDType1Font.COURIER;
+	
+	    // Start a new content stream which will "hold" the to be created content
+	    PDPageContentStream cos = new PDPageContentStream(document, page1);
+	
+	    int line = 0;
+	
+	    // Define a text content stream using the selected font, move the cursor and draw some text
+	    cos.beginText();
+	    cos.setFont(fontPlain, 12);
+	    cos.newLineAtOffset(100, rect.getHeight() - 50*(++line));
+	    cos.showText("Hello World");
+	    cos.endText();
+	    cos.close();
+	}*/
+
+	private void convertOfficeToPdf(File sourceFile, File convertedFile) {
 		try {
 			getOfficeDocumentConverter().convert(sourceFile, convertedFile);
 		} catch (NullPointerException e) {
