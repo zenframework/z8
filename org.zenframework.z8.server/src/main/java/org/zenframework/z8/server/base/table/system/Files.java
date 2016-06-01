@@ -317,10 +317,10 @@ public class Files extends Table {
 			fileInfo.id = recordId();
 			fileInfo.name = name.get().get().string();
 			string instanceId = id.get().get().string();
-			if (!instanceId.isEmpty()) {
+			fileInfo.status = getStatus();
+			if (!instanceId.isEmpty())
 				fileInfo.instanceId = instanceId;
-				fileInfo.status = getStatus();
-			} else {
+			if (fileInfo.status == FileInfo.Status.LOCAL) {
 				IOUtils.copy(file.get().get().binary().get(), path);
 				fillFileInfoFile(fileInfo, path);
 				return true;
