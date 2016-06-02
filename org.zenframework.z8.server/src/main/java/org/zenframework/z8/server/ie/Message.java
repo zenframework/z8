@@ -192,6 +192,7 @@ public class Message extends OBJECT implements RmiSerializable, Serializable {
 		ApplicationServer.disableEvents();
 		try {
 			Import.importMessage(this);
+			Import.importFiles(this);
 		} finally {
 			ApplicationServer.enableEvents();
 		}
@@ -216,8 +217,8 @@ public class Message extends OBJECT implements RmiSerializable, Serializable {
 		}
 	}
 	
-	public void setError(boolean isError, Throwable e) {
-		ExportMessages.setError(this, isError, e);
+	public void setError(Throwable e) {
+		ExportMessages.setError(this, e);
 	}
 
 	private void writeObject(ObjectOutputStream out) throws IOException {

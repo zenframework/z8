@@ -103,7 +103,12 @@ public class TransportProcedure extends Procedure {
 		List<guid> ids = messages.getImportMessages(selfAddress);
 		for (guid id : ids) {
 			Message message = messages.getMessage(id, newMessage());
-			importMessage(message);
+			try {
+				importMessage(message);
+			} catch(Throwable e) {
+				Trace.logError(e);
+				break;
+			}
 		}
 
 		// Обработка внутренней исходящей очереди
@@ -170,7 +175,7 @@ public class TransportProcedure extends Procedure {
 
 	}
 
-	static public void importMessage(Message message) {
+	static public void importMessage(Message message) throws Throwable {
 		Connection connection = ConnectionManager.get();
 		
 		try {
@@ -179,8 +184,7 @@ public class TransportProcedure extends Procedure {
 			connection.commit();
 		} catch (Throwable e) {
 			connection.rollback();
-			message.setError(true, e);
-			Trace.logError("Can't receive messsage '" + message.getId() + "'", e);
+			throw new RuntimeException(e);
 		}
 	}
 
@@ -193,7 +197,7 @@ public class TransportProcedure extends Procedure {
 			connection.commit();
 		} catch (Throwable e) {
 			connection.rollback();
-			message.setError(false, e);
+			message.setError(e);
 			Trace.logError("Can't send message '" + message.getId() + "' via '" + route.getAddress() + "'", e);
 		}
 	}

@@ -151,10 +151,10 @@ public class ExportMessages extends Table {
 		}
 	}
 
-	static public void setError(Message message, boolean isError, Throwable e) {
+	static public void setError(Message message, Throwable e) {
 		ExportMessages messages = new ExportMessages.CLASS<ExportMessages>().get();
 
-		messages.error.get().set(new bool(isError));
+		messages.error.get().set(new bool(true));
 		messages.description.get().set(new string(new datetime() + " " + e.getClass() + ": " + e.getMessage()));
 		messages.update(new guid(message.getId()));
 	}

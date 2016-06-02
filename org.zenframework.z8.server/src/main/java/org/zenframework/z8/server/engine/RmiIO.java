@@ -19,9 +19,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-import org.eclipse.core.resources.IContainer;
 import org.zenframework.z8.rmi.ObjectIO;
 import org.zenframework.z8.server.runtime.CLASS;
+import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.runtime.OBJECT;
 import org.zenframework.z8.server.types.bool;
 import org.zenframework.z8.server.types.date;
@@ -204,7 +204,7 @@ public class RmiIO extends ObjectIO {
 	}
 
 	private void writeOBJECT(ObjectOutputStream out, OBJECT object) throws IOException {
-		writeClass(out, object.getCLASS());
+		writeClass(out, object);
 		object.serialize(out);
 	}
 
@@ -438,7 +438,7 @@ public class RmiIO extends ObjectIO {
 	}
 
 	private Object readOBJECT(ObjectInputStream in) throws IOException, ClassNotFoundException {
-		CLASS<?> cls = (CLASS<?>)newObject(readClass(in), new Class<?>[] { IContainer.class }, new Object[] { null });
+		CLASS<?> cls = (CLASS<?>)newObject(readClass(in) + "$CLASS", new Class<?>[] { IObject.class }, new Object[] { null });
 		RmiSerializable serializable = (RmiSerializable)cls.newObject(null);
 		serializable.deserialize(in);
 		return serializable;

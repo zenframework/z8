@@ -13,9 +13,6 @@ import org.zenframework.z8.server.base.file.FileInfo;
 import org.zenframework.z8.server.base.table.system.Files;
 import org.zenframework.z8.server.base.table.system.Properties;
 import org.zenframework.z8.server.config.ServerConfig;
-import org.zenframework.z8.server.db.Connection;
-import org.zenframework.z8.server.db.ConnectionManager;
-import org.zenframework.z8.server.ie.Import;
 import org.zenframework.z8.server.ie.Message;
 import org.zenframework.z8.server.ie.TransportProcedure;
 import org.zenframework.z8.server.logs.Trace;
@@ -96,15 +93,9 @@ public class TransportService extends RmiServer implements ITransportService, Pr
 
 	@Override
 	public void sendMessage(Message message) throws RemoteException {
-		Connection connection = ConnectionManager.get();
-		connection.beginTransaction();
-
 		try {
 			TransportProcedure.importMessage(message);
-			Import.importFiles(message);
-			connection.commit();
 		} catch (Throwable e) {
-			connection.rollback();
 			Trace.logError(e);
 			throw new RemoteException("Can't import message '" + message.getId() + "' from '" + message.getSender() + "'", e);
 		}
