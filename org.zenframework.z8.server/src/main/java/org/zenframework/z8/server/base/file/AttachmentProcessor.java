@@ -12,6 +12,7 @@ import org.zenframework.z8.server.base.table.Table;
 import org.zenframework.z8.server.base.table.system.Files;
 import org.zenframework.z8.server.base.table.value.AttachmentField;
 import org.zenframework.z8.server.base.table.value.Field;
+import org.zenframework.z8.server.engine.Z8Context;
 import org.zenframework.z8.server.logs.Trace;
 import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.runtime.OBJECT;
@@ -20,7 +21,6 @@ import org.zenframework.z8.server.types.datetime;
 import org.zenframework.z8.server.types.guid;
 import org.zenframework.z8.server.types.integer;
 import org.zenframework.z8.server.types.string;
-import org.zenframework.z8.server.utils.IOUtils;
 import org.zenframework.z8.server.utils.PdfUtils;
 
 public class AttachmentProcessor extends OBJECT {
@@ -80,7 +80,7 @@ public class AttachmentProcessor extends OBJECT {
 	}
 
 	public Collection<FileInfo> create(guid attachTo, Collection<FileInfo> files, String type) {
-		Files filesTable = new Files.CLASS<Files>().get();
+		Files filesTable = Files.newInstance();
 
 		for (FileInfo file : files) {
 			boolean idIsNull = file.id == null || file.id.isNull();
@@ -89,11 +89,9 @@ public class AttachmentProcessor extends OBJECT {
 					filesTable.recordId.get().set(file.id);
 
 				setPathIfEmpty(attachTo, file);
-				filesTable.name.get().set(file.name);
-				filesTable.file.get().set(file.getInputStream());
-				filesTable.path.get().set(file.path);
+				file.instanceId = new string(Z8Context.getInstanceId());
 				file.type = new string(type);
-				file.id = filesTable.create();
+				filesTable.addFile(file);
 			}
 		}
 
@@ -112,7 +110,7 @@ public class AttachmentProcessor extends OBJECT {
 	}
 
 	public Collection<FileInfo> remove(guid target, Collection<FileInfo> files) {
-		Files filesTable = new Files.CLASS<Files>().get();
+		Files filesTable = Files.newInstance();
 		Collection<FileInfo> result = read(target);
 
 		for (FileInfo file : files)
@@ -167,16 +165,19 @@ public class AttachmentProcessor extends OBJECT {
 
 	private int getPageCount(FileInfo fileInfo) throws IOException {
 		String relativePath = fileInfo.path.get();
-		File absolutePath = new File(Folders.Base, relativePath);
+		File path = new File(Folders.Base, relativePath);
 
-		if (!FileConverter.isConvertableToPdf(absolutePath))
+		if (!FileConverter.isConvertableToPdf(path))
 			return 1;
 
-		if (!absolutePath.exists())
-			IOUtils.copy(Files.getInputStream(fileInfo), absolutePath);
+		try {
+			Files.newInstance().getFile(fileInfo);
+		} catch (FileInfoNotFoundException e) {
+			return 1;
+		}
 
 		FileConverter fileConverter = new FileConverter(new File(Folders.Base, Folders.Cache));
-		File pdfFile = fileConverter.getConvertedPdf(relativePath, absolutePath);
+		File pdfFile = fileConverter.getConvertedPdf(relativePath, path);
 
 		return PdfUtils.getPageCount(pdfFile);
 	}

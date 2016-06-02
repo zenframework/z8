@@ -1,143 +1,165 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
-    <modelVersion>4.0.0</modelVersion>
-    <artifactId>org.zenframework.z8.server</artifactId>
-    <name>Z8 Server</name>
-    <packaging>jar</packaging>
+	<modelVersion>4.0.0</modelVersion>
+	<artifactId>org.zenframework.z8.server</artifactId>
+	<name>Z8 Server</name>
+	<packaging>jar</packaging>
 
-    <parent>
-        <groupId>org.zenframework.z8</groupId>
-        <artifactId>org.zenframework.z8</artifactId>
-        <version>1.1.1</version>
-    </parent>
+	<parent>
+		<groupId>org.zenframework.z8</groupId>
+		<artifactId>org.zenframework.z8</artifactId>
+		<version>1.1.1</version>
+	</parent>
 
-    <properties>
-    </properties>
+	<properties>
+	</properties>
 
-    <dependencies>
+	<dependencies>
 
-        <!-- TODO: Проверить, нужны ли эти зависимости -->
-        <!-- <dependency> <groupId>com.sun.mail</groupId> <artifactId>pop3</artifactId> 
-            <version>1.5.2</version> <scope>compile</scope> </dependency> <dependency> 
-            <groupId>com.sun.mail</groupId> <artifactId>smtp</artifactId> <version>1.5.2</version> 
-            <scope>compile</scope> </dependency> -->
+		<!-- TODO: Проверить, нужны ли эти зависимости -->
+		<!-- <dependency> <groupId>com.sun.mail</groupId> <artifactId>pop3</artifactId> 
+			<version>1.5.2</version> <scope>compile</scope> </dependency> <dependency> 
+			<groupId>com.sun.mail</groupId> <artifactId>smtp</artifactId> <version>1.5.2</version> 
+			<scope>compile</scope> </dependency> -->
 
-        <!-- Зависимости сделаны provided, т.к. они нужны только для web-приложения, 
-            а от server'а зависят другие компоненты -->
-        <!-- TODO: Разделить server -->
-        <dependency>
-            <groupId>org.zenframework.z8</groupId>
-            <artifactId>org.zenframework.z8.xml</artifactId>
-            <version>${project.version}</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>javax.jms</groupId>
-            <artifactId>jms</artifactId>
-            <version>1.1</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>javax.mail</groupId>
-            <artifactId>mail</artifactId>
-            <version>1.4.7</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.eclipse.birt.runtime</groupId>
-            <artifactId>org.eclipse.birt.runtime</artifactId>
-            <version>${birt.version}</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>commons-logging</groupId>
-            <artifactId>commons-logging</artifactId>
-            <version>1.0</version>
-        </dependency>
-        <dependency>
-            <groupId>commons-fileupload</groupId>
-            <artifactId>commons-fileupload</artifactId>
-            <version>1.3.1</version>
-            <scope>compile</scope>
-        </dependency>
+		<!-- Зависимости сделаны provided, т.к. они нужны только для web-приложения, 
+			а от server'а зависят другие компоненты -->
+		<!-- TODO: Разделить server -->
+		<dependency>
+			<groupId>org.zenframework.z8</groupId>
+			<artifactId>org.zenframework.z8.boot</artifactId>
+			<version>${project.version}</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.zenframework.z8</groupId>
+			<artifactId>org.zenframework.z8.xml</artifactId>
+			<version>${project.version}</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>javax.jms</groupId>
+			<artifactId>jms</artifactId>
+			<version>1.1</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>javax.mail</groupId>
+			<artifactId>mail</artifactId>
+			<version>1.4.7</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.eclipse.birt.runtime</groupId>
+			<artifactId>org.eclipse.birt.runtime</artifactId>
+			<version>${birt.version}</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>commons-logging</groupId>
+			<artifactId>commons-logging</artifactId>
+			<version>1.0</version>
+		</dependency>
+		<dependency>
+			<groupId>commons-fileupload</groupId>
+			<artifactId>commons-fileupload</artifactId>
+			<version>1.3.1</version>
+			<scope>compile</scope>
+		</dependency>
 
-        <!--Lucene -->
-        <dependency>
-            <groupId>org.apache.lucene</groupId>
-            <artifactId>lucene-core</artifactId>
-            <version>4.8.1</version>
-        </dependency>
+		<!--Lucene -->
+		<dependency>
+			<groupId>org.apache.lucene</groupId>
+			<artifactId>lucene-core</artifactId>
+			<version>4.8.1</version>
+		</dependency>
 
-        <dependency>
-            <groupId>org.apache.lucene</groupId>
-            <artifactId>lucene-analyzers-common</artifactId>
-            <version>4.8.1</version>
-        </dependency>
+		<dependency>
+			<groupId>org.apache.lucene</groupId>
+			<artifactId>lucene-analyzers-common</artifactId>
+			<version>4.8.1</version>
+		</dependency>
 
-        <dependency>
-            <groupId>org.apache.lucene</groupId>
-            <artifactId>lucene-queryparser</artifactId>
-            <version>4.8.1</version>
-        </dependency>
+		<dependency>
+			<groupId>org.apache.lucene</groupId>
+			<artifactId>lucene-queryparser</artifactId>
+			<version>4.8.1</version>
+		</dependency>
 
-        <!-- JODConverter -->
-        <dependency>
-            <groupId>org.artofsolving.jodconverter</groupId>
-            <artifactId>jodconverter-core</artifactId>
-            <version>3.0-beta-4-jahia2</version>
-            <scope>compile</scope>
-        </dependency>
+		<!-- JODConverter -->
+		<dependency>
+			<groupId>org.artofsolving.jodconverter</groupId>
+			<artifactId>jodconverter-core</artifactId>
+			<version>3.0-beta-4-jahia2</version>
+			<scope>compile</scope>
+		</dependency>
 
-        <dependency>
-            <groupId>com.googlecode.juniversalchardet</groupId>
-            <artifactId>juniversalchardet</artifactId>
-            <version>1.0.3</version>
-        </dependency>
+		<dependency>
+			<groupId>com.googlecode.juniversalchardet</groupId>
+			<artifactId>juniversalchardet</artifactId>
+			<version>1.0.3</version>
+		</dependency>
 
-        <!-- GOOGLE -->
-        <dependency>
-            <groupId>com.google.guava</groupId>
-            <artifactId>guava</artifactId>
-            <version>r05</version>
-        </dependency>
+		<!-- GOOGLE -->
+		<dependency>
+			<groupId>com.google.guava</groupId>
+			<artifactId>guava</artifactId>
+			<version>r05</version>
+		</dependency>
 
-        <!-- PDF -->
-        <dependency>
-            <groupId>org.apache.pdfbox</groupId>
-            <artifactId>pdfbox</artifactId>
-            <version>1.8.10</version>
-        </dependency>
+		<!-- PDF -->
+		<dependency>
+			<groupId>org.apache.pdfbox</groupId>
+			<artifactId>pdfbox</artifactId>
+			<version>2.0.1</version>
+		</dependency>
 
-        <!-- Apache CXF -->
-        <dependency>
-            <groupId>org.apache.cxf</groupId>
-            <artifactId>cxf-rt-frontend-jaxws</artifactId>
-            <version>${cxf.version}</version>
-        </dependency>
-        <!-- Conflicts with birt runtime -->
-        <!-- <dependency>
-            <groupId>org.apache.cxf</groupId>
-            <artifactId>cxf-rt-transports-http-jetty</artifactId>
-            <version>${cxf.version}</version>
-        </dependency> -->
+		<!-- Java Advanced Imaging API -->
+		<dependency>
+			<groupId>com.github.jai-imageio</groupId>
+			<artifactId>jai-imageio-core</artifactId>
+			<version>1.3.1</version>
+		</dependency>
+		
+		<!-- Apache CXF -->
+		<dependency>
+			<groupId>org.apache.cxf</groupId>
+			<artifactId>cxf-rt-frontend-jaxws</artifactId>
+			<version>${cxf.version}</version>
+		</dependency>
+		<!-- Conflicts with birt runtime -->
+		<!-- <dependency> <groupId>org.apache.cxf</groupId> <artifactId>cxf-rt-transports-http-jetty</artifactId> 
+			<version>${cxf.version}</version> </dependency> -->
 
-    </dependencies>
+	</dependencies>
 
-    <build>
+	<build>
 
-        <plugins>
-            <plugin>
-                <artifactId>maven-compiler-plugin</artifactId>
-            </plugin>
-            <plugin>
-                <artifactId>maven-jar-plugin</artifactId>
-            </plugin>
-            <plugin>
-                <artifactId>maven-source-plugin</artifactId>
-            </plugin>
-        </plugins>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<configuration>
+					<source>${compiler.source.version}</source>
+					<target>${compiler.target.version}</target>
+					<encoding>UTF-8</encoding>
+					<fork>true</fork>
+					<meminitial>128m</meminitial>
+					<maxmem>512m</maxmem>
+					<compilerArgs>
+						<arg>-Xbootclasspath/p:${basedir}/../org.zenframework.z8.boot/target/org.zenframework.z8.boot-${project.version}.jar</arg>
+					</compilerArgs>
+				</configuration>
+			</plugin>
+			<plugin>
+				<artifactId>maven-jar-plugin</artifactId>
+			</plugin>
+			<plugin>
+				<artifactId>maven-source-plugin</artifactId>
+			</plugin>
+		</plugins>
 
-    </build>
+	</build>
 
 </project>

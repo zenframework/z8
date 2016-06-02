@@ -6,17 +6,14 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.Serializable;
 
 import org.apache.commons.io.FilenameUtils;
 import org.zenframework.z8.server.base.file.Folders;
 import org.zenframework.z8.server.runtime.RCollection;
 import org.zenframework.z8.server.utils.IOUtils;
 
-public class file extends primary implements Serializable {
+public class file extends primary {
     public static final String EOL = "\r\n";
-
-    private static final long serialVersionUID = 7150824619911286312L;
 
     private File file;
 

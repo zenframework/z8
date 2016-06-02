@@ -22,12 +22,15 @@ import org.zenframework.z8.ie.xml.ExportEntry;
 import org.zenframework.z8.ie.xml.ExportEntry.Records;
 import org.zenframework.z8.ie.xml.ObjectFactory;
 import org.zenframework.z8.server.base.file.FileInfo;
+import org.zenframework.z8.server.base.file.FileInfoNotFoundException;
 import org.zenframework.z8.server.base.file.FilesFactory;
 import org.zenframework.z8.server.base.table.Table;
+import org.zenframework.z8.server.base.table.system.Files;
 import org.zenframework.z8.server.base.table.value.AttachmentField;
 import org.zenframework.z8.server.base.table.value.Field;
 import org.zenframework.z8.server.security.BuiltinUsers;
 import org.zenframework.z8.server.types.guid;
+import org.zenframework.z8.server.types.string;
 
 public class IeUtil {
 
@@ -73,20 +76,30 @@ public class IeUtil {
 	}
 
 	public static ExportEntry.Records.Record getRecord(String tableClass, guid recordId, Collection<Field> fields,
-			RecordsetExportRules exportRules) {
+			RecordsetExportRules exportRules, String defaultInstanceId) {
 		ImportPolicy defaultImportPolicy = exportRules.getDefaultImportPolicy(recordId);
 		Records.Record record = new Records.Record();
 		record.setTable(tableClass);
 		record.setRecordId(recordId.toString());
 		record.setPolicy(defaultImportPolicy.name());
 		for (Field f : fields) {
-			if (!RECORD_ID.equals(f.id())
-					&& f.exportable()
-					&& (exportRules.isExportAttachments(recordId, f) || !(AttachmentField.class.isAssignableFrom(f
-							.getClass())))) {
+			boolean isAttachmentField = AttachmentField.class.isAssignableFrom(f.getClass());
+			if (!RECORD_ID.equals(f.id()) && f.exportable()
+					&& (exportRules.isExportAttachments(recordId, f) || !isAttachmentField)) {
+				String value = f.get().toString();
+				if (isAttachmentField) {
+					Collection<FileInfo> files = FileInfo.parseArray(value);
+					for (FileInfo file : files) {
+						if (file.instanceId == null || file.instanceId.isEmpty()) {
+							file.instanceId = new string(defaultInstanceId);
+							file.json = null;
+						}
+					}
+					value = FileInfo.toJson(files);
+				}
 				Records.Record.Field field = new Records.Record.Field();
 				field.setId(f.id());
-				field.setValue(f.get().toString());
+				field.setValue(value);
 				ImportPolicy fieldImportPolicy = exportRules.getImportPolicy(recordId, f);
 				if (fieldImportPolicy != defaultImportPolicy)
 					field.setPolicy(fieldImportPolicy.name());
@@ -96,20 +109,28 @@ public class IeUtil {
 		return record;
 	}
 
-	public static ExportEntry.Files.File fileInfoToFile(FileInfo fileInfo, ImportPolicy policy) {
+	public static ExportEntry.Files.File fileInfoToFile(FileInfo fileInfo, ImportPolicy policy, String defaultInstanceId) {
 		ExportEntry.Files.File file = new ExportEntry.Files.File();
 		file.setName(fileInfo.name.get());
 		file.setType(fileInfo.type.get());
 		file.setPath(fileInfo.path.get());
 		file.setId(fileInfo.id.toString());
+		file.setInstanceId(fileInfo.instanceId != null && !fileInfo.instanceId.isEmpty() ? fileInfo.instanceId.get()
+				: defaultInstanceId);
 		if (policy != null) {
 			file.setPolicy(policy.name());
 		}
 		return file;
 	}
 
-	public static FileInfo fileToFileInfo(ExportEntry.Files.File file) {
-		return fileToFileInfoCLASS(file).get();
+	public static FileInfo fileToFileInfo(ExportEntry.Files.File file, boolean extractFiles) throws IOException {
+		FileInfo fileInfo = fileToFileInfoCLASS(file).get();
+		if (extractFiles) {
+			try {
+				fileInfo = Files.newInstance().getFile(fileInfo);
+			} catch (FileInfoNotFoundException e) {}
+		}
+		return fileInfo;
 	}
 
 	public static FileInfo.CLASS<FileInfo> fileToFileInfoCLASS(ExportEntry.Files.File file) {
@@ -118,31 +139,35 @@ public class IeUtil {
 		fileInfo.get().type.set(file.getType());
 		fileInfo.get().path.set(file.getPath());
 		fileInfo.get().id.set(file.getId());
+		fileInfo.get().instanceId.set(file.getInstanceId());
 		return fileInfo;
 	}
 
-	public static List<ExportEntry.Files.File> fileInfosToFiles(List<FileInfo> fileInfos, ImportPolicy policy) {
+	public static List<ExportEntry.Files.File> fileInfosToFiles(List<FileInfo> fileInfos, ImportPolicy policy,
+			String defaultInstanceId) {
 		List<ExportEntry.Files.File> files = new ArrayList<ExportEntry.Files.File>(fileInfos.size());
 		for (FileInfo fileInfo : fileInfos) {
-			files.add(fileInfoToFile(fileInfo, policy));
+			files.add(fileInfoToFile(fileInfo, policy, defaultInstanceId));
 		}
 		return files;
 	}
 
-	public static List<FileInfo> filesToFileInfos(List<ExportEntry.Files.File> files) {
+	public static List<FileInfo> filesToFileInfos(List<ExportEntry.Files.File> files, boolean extractFiles) throws IOException {
 		List<FileInfo> fileInfos = new ArrayList<FileInfo>(files.size());
 		for (ExportEntry.Files.File file : files) {
-			fileInfos.add(fileToFileInfo(file));
+			fileInfos.add(fileToFileInfo(file, extractFiles));
 		}
 		return fileInfos;
 	}
 
-	public static ExportEntry.Files fileInfosToXmlFiles(List<FileInfo> fileInfos) {
+	public static ExportEntry.Files fileInfosToXmlFiles(List<FileInfo> fileInfos, String defaultInstanceId) {
 		ExportEntry.Files files = new ExportEntry.Files();
 		while (!fileInfos.isEmpty()) {
 			FileInfo fileInfo = fileInfos.remove(0);
 			ExportEntry.Files.File file = new ExportEntry.Files.File();
 			file.setId(fileInfo.id.toString());
+			file.setInstanceId(fileInfo.instanceId != null && !fileInfo.instanceId.isEmpty() ? fileInfo.instanceId.get()
+					: defaultInstanceId);
 			file.setName(fileInfo.name.get());
 			file.setType(fileInfo.type.get());
 			file.setPath(fileInfo.path.get());
@@ -160,6 +185,7 @@ public class IeUtil {
 			fileInfo.type.set(file.getType());
 			fileInfo.path.set(file.getPath());
 			fileInfo.id.set(file.getId());
+			fileInfo.instanceId.set(file.getInstanceId());
 			fileInfo.file = FilesFactory.createFileItem(file.getName());
 			OutputStream out = fileInfo.file.getOutputStream();
 			try {
@@ -230,26 +256,34 @@ public class IeUtil {
 		marshaller.marshal(entry, out);
 	}
 
-	public static String marshalExportEntry(ExportEntry entry) throws JAXBException {
-		StringWriter out = new StringWriter();
-		marshalExportEntry(entry, out);
-		return out.toString();
-	}
-
-	public static ExportEntry unmarshalExportEntry(Reader in) throws JAXBException {
-		Unmarshaller unmarshaller = getUnmarshaller(JAXB_CONTEXT);
-		Object result = unmarshaller.unmarshal(in);
-		if (result instanceof JAXBElement) {
-			result = ((JAXBElement<?>) result).getValue();
-		}
-		if (result instanceof ExportEntry) {
-			return (ExportEntry) result;
-		} else {
-			throw new JAXBException("Incorrect ExportEntry class: " + result.getClass());
+	public static String marshalExportEntry(ExportEntry entry) {
+		try {
+			StringWriter out = new StringWriter();
+			marshalExportEntry(entry, out);
+			return out.toString();
+		} catch(JAXBException e) {
+			throw new RuntimeException(e);
 		}
 	}
 
-	public static ExportEntry unmarshalExportEntry(String str) throws JAXBException {
+	public static ExportEntry unmarshalExportEntry(Reader in) {
+		try {
+			Unmarshaller unmarshaller = getUnmarshaller(JAXB_CONTEXT);
+			Object result = unmarshaller.unmarshal(in);
+		
+			if (result instanceof JAXBElement)
+				result = ((JAXBElement<?>) result).getValue();
+
+			if (result instanceof ExportEntry)
+				return (ExportEntry) result;
+
+			throw new RuntimeException("Incorrect ExportEntry class: " + result.getClass());
+		} catch(JAXBException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	public static ExportEntry unmarshalExportEntry(String str) {
 		return unmarshalExportEntry(new StringReader(str));
 	}
 

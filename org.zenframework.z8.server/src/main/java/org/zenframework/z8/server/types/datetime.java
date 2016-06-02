@@ -12,8 +12,6 @@ import org.zenframework.z8.server.db.sql.functions.conversion.ToDatetime;
 import org.zenframework.z8.server.types.sql.sql_datetime;
 
 public class datetime extends primary {
-    private static final long serialVersionUID = 5475514004830244356L;
-
     final static public String defaultMask = "dd/MM/yyyy HH:mm:ss";
     final static public String defaultMaskDate = "dd/MM/yyyy";
     final static public String defaultMaskTime = "HH:mm:ss";

@@ -10,8 +10,6 @@ import org.zenframework.z8.server.exceptions.MaskParseException;
 import org.zenframework.z8.server.types.sql.sql_decimal;
 
 public final class decimal extends primary {
-    private static final long serialVersionUID = 7406482022192052029L;
-
     static public integer ROUND_UP = new integer(BigDecimal.ROUND_UP);
     static public integer ROUND_DOWN = new integer(BigDecimal.ROUND_DOWN);
     static public integer ROUND_CEILING = new integer(BigDecimal.ROUND_CEILING);
@@ -111,7 +109,7 @@ public final class decimal extends primary {
         case SqlServer: {
             int scale = (scale() == 0 ? 1 : scale());
             int precision = ((precision() + scale) > maxPrecision ? maxPrecision - scale : precision()) + scale;
-            return "CONVERT([numeric](" + Integer.toString(precision) + "," + Integer.toString(scale) + "),(" + toString()
+            return "CONVERT([numeric](" + java.lang.Integer.toString(precision) + "," + java.lang.Integer.toString(scale) + "),(" + toString()
                     + "),(0))";
         }
         default:
@@ -201,7 +199,7 @@ public final class decimal extends primary {
         BigDecimal divisor = x.get();
 
         MathContext mc = new MathContext((int)Math.min(precision() + (long)Math.ceil(10.0 * divisor.precision() / 3.0),
-                Integer.MAX_VALUE));
+        		java.lang.Integer.MAX_VALUE));
 
         try {
             return new decimal(m_value.divide(divisor, mc));

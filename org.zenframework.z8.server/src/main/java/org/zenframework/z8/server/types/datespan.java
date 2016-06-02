@@ -9,8 +9,6 @@ import org.zenframework.z8.server.format.DatespanFormat;
 import org.zenframework.z8.server.types.sql.sql_datespan;
 
 public final class datespan extends primary {
-    private static final long serialVersionUID = -8389890681355639095L;
-
     private long m_ticks = 0;
 
     static final public long TicksPerSecond = 1000;

@@ -18,7 +18,6 @@ import org.zenframework.z8.server.request.Loader;
 import org.zenframework.z8.server.request.RequestTarget;
 import org.zenframework.z8.server.runtime.CLASS;
 import org.zenframework.z8.server.security.Component;
-import org.zenframework.z8.server.security.IForm;
 import org.zenframework.z8.server.security.IUser;
 import org.zenframework.z8.server.types.primary;
 import org.zenframework.z8.server.types.string;
@@ -82,16 +81,10 @@ public class Dashboard extends RequestTarget {
     }
 
     private void writeDesktopData(JsonWriter writer, Desktop desktop, String displayName) {
-        Map<String, IForm> forms = ApplicationServer.getUser().forms();
-
         Collection<CLASS<?>> runnables = new ArrayList<CLASS<?>>();
 
-        for(CLASS<?> cls : desktop.getRunnables()) {
-            IForm form = forms.get(cls.classId());
-
-            if((form != null && form.getAccess().getRead()) || forms.isEmpty())
-                runnables.add(cls);
-        }
+        for(CLASS<?> cls : desktop.getRunnables())
+        	runnables.add(cls);
 
         if(!runnables.isEmpty()) {
             writer.startObject();
@@ -116,7 +109,7 @@ public class Dashboard extends RequestTarget {
         }
     }
 
-    private CLASS<?>[] loadComponents(Component[] components) {
+    private CLASS<?>[] loadComponents(Collection<Component> components) {
         List<CLASS<?>> list = new ArrayList<CLASS<?>>();
 
         for(Component component : components) {

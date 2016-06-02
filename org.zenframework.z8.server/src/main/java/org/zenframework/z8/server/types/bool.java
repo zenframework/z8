@@ -7,8 +7,6 @@ import org.zenframework.z8.server.resources.Resources;
 import org.zenframework.z8.server.types.sql.sql_bool;
 
 public final class bool extends primary {
-    private static final long serialVersionUID = -3543123896274213819L;
-
     private boolean m_value = false;
 
     public static class strings {

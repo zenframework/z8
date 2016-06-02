@@ -8,6 +8,7 @@ public interface Json {
 
     string id = new string("id");
     string index = new string("index");
+    string instanceId = new string("instanceId");
 
     string sessionId = new string("sessionId");
     string serverId = new string("serverId");

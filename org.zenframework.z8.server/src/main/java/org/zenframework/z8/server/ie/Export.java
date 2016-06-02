@@ -69,13 +69,16 @@ public class Export extends OBJECT {
 	private final Map<String, RecordsetExportRules> exportRules = new HashMap<String, RecordsetExportRules>();
 	private final List<RecordsetEntry> recordsetEntries = new LinkedList<RecordsetEntry>();
 	private final RecordsetExportRules defaultExportRules = new RecordsetExportRules.CLASS<RecordsetExportRules>().get();
+
+	private final List<ExportEntry.Records.Record> records = new LinkedList<ExportEntry.Records.Record>();
+	private final List<ExportEntry.Files.File> files = new LinkedList<ExportEntry.Files.File>();
+	private final List<ExportEntry.Properties.Property> props = new LinkedList<ExportEntry.Properties.Property>();
+
 	private String exportUrl;
 	private int exportRecordsMax = Integer.parseInt(Properties.getProperty(ServerRuntime.ExportRecordsMaxProperty));
-
-	private RecordsSorter recordsSorter;
-	private List<ExportEntry.Records.Record> records;
-	private List<ExportEntry.Files.File> files;
-	private List<ExportEntry.Properties.Property> props;
+	private boolean sendFilesSeparately = Boolean.parseBoolean(Properties
+			.getProperty(ServerRuntime.SendFilesSeparatelyProperty));
+	private boolean sendFilesContent = !Boolean.parseBoolean(Properties.getProperty(ServerRuntime.LazyFilesProperty));
 
 	public Export(IObject container) {
 		super(container);
@@ -100,10 +103,19 @@ public class Export extends OBJECT {
 	}
 
 	public void addRecordset(Table table, Collection<Field> fields, sql_bool where) {
-	    if(table.exportable()) {
-	        table.read(fields, where);
-	        recordsetEntries.add(new RecordsetEntry(table, fields));
+		if (table.exportable()) {
+			table.read(fields, where);
+			recordsetEntries.add(new RecordsetEntry(table, fields));
 		}
+	}
+
+	public void addFile(FileInfo fileInfo) {
+		addFile(fileInfo, ImportPolicy.DEFAULT);
+	}
+
+	public void addFile(FileInfo fileInfo, ImportPolicy importPolicy) {
+		files.add(IeUtil.fileInfoToFile(fileInfo, importPolicy,
+				context.get().getProperty(TransportContext.SelfAddressProperty)));
 	}
 
 	public void setDefaults(ImportPolicy importPolicy, boolean exportAttachments) {
@@ -137,20 +149,25 @@ public class Export extends OBJECT {
 		this.exportRecordsMax = exportRecordsMax;
 	}
 
-	public void execute() {
-		recordsSorter = new RecordsSorter();
-		records = new LinkedList<ExportEntry.Records.Record>();
-		files = new LinkedList<ExportEntry.Files.File>();
-		props = new LinkedList<ExportEntry.Properties.Property>();
+	public void setSendFilesSeparately(boolean sendFilesSeparately) {
+		this.sendFilesSeparately = sendFilesSeparately;
+	}
 
+	public void setSendFilesContent(boolean sendFilesContent) {
+		this.sendFilesContent = sendFilesContent;
+	}
+
+	public void execute() {
+		RecordsSorter recordsSorter = new RecordsSorter();
 		try {
 			String exportProtocol = getProtocol();
 			boolean local = LOCAL_PROTOCOL.equals(exportProtocol);
+			String sender = context.get().getProperty(TransportContext.SelfAddressProperty);
 			if (!local) {
 				// Если протокол НЕ "local", экспортировать записи БД
 				for (RecordsetEntry recordsetEntry : recordsetEntries) {
 					while (recordsetEntry.recordset.next()) {
-						exportRecord(recordsetEntry, 0);
+						exportRecord(recordsSorter, recordsetEntry, sender, 0);
 					}
 				}
 				if (RecordsSorter.getSortingMode().onExport) {
@@ -167,18 +184,11 @@ public class Export extends OBJECT {
 			// Свойства экспортируются для любого протокола
 			if (!properties.isEmpty()) {
 				for (Map.Entry<string, primary> entry : this.properties.entrySet()) {
-					ExportEntry.Properties.Property property = new ExportEntry.Properties.Property();
-					property.setKey(entry.getKey().get());
-					property.setValue(entry.getValue().toString());
-					property.setType(entry.getValue().type().toString());
-					props.add(property);
+					props.add(getProperty(entry.getKey(), entry.getValue()));
 				}
 			}
 			// Запись сообщений в таблицу ExportMessages
-			String sender = context.get().getProperty(TransportContext.SelfAddressProperty);
-			boolean sendFilesSeparately = Boolean.parseBoolean(Properties
-					.getProperty(ServerRuntime.SendFilesSeparatelyProperty));
-			ExportMessages exportMessages = ExportMessages.instance();
+			ExportMessages exportMessages = new ExportMessages.CLASS<ExportMessages>().get();
 			if (sendFilesSeparately && !local) {
 				for (ExportEntry.Files.File file : files) {
 					Message message = Message.instance();
@@ -186,7 +196,10 @@ public class Export extends OBJECT {
 					message.setSender(sender);
 					message.setExportProtocol(exportProtocol);
 					message.getExportEntry().getFiles().getFile().add(file);
-					exportMessages.addMessage(message, null);
+					if (sendFilesContent)
+						message.getExportEntry().getProperties().getProperty()
+								.add(getProperty(Message.PROP_SEND_FILES_CONTENT, new bool(true)));
+					exportMessages.addMessage(message, null, ExportMessages.Direction.OUT);
 				}
 			}
 			Message message = Message.instance();
@@ -197,8 +210,10 @@ public class Export extends OBJECT {
 			message.getExportEntry().getProperties().getProperty().addAll(props);
 			if (!sendFilesSeparately && !local) {
 				message.getExportEntry().getFiles().getFile().addAll(files);
+				message.getExportEntry().getProperties().getProperty()
+						.add(getProperty(Message.PROP_SEND_FILES_CONTENT, new bool(true)));
 			}
-			exportMessages.addMessage(message, null);
+			exportMessages.addMessage(message, null, ExportMessages.Direction.OUT);
 		} catch (JAXBException e) {
 			throw new exception("Can't marshal records", e);
 		}
@@ -226,6 +241,14 @@ public class Export extends OBJECT {
 		addRecordset(cls.get(), CLASS.asList(fields), where);
 	}
 
+	public void z8_addFile(FileInfo.CLASS<? extends FileInfo> fileInfo) {
+		addFile(fileInfo.get());
+	}
+
+	public void z8_addFile(FileInfo.CLASS<? extends FileInfo> fileInfo, ImportPolicy importPolicy) {
+		addFile(fileInfo.get(), importPolicy);
+	}
+
 	public void z8_setDefaults(ImportPolicy importPolicy, bool exportAttachments) {
 		setDefaults(importPolicy, exportAttachments.get());
 	}
@@ -243,6 +266,14 @@ public class Export extends OBJECT {
 		setExportRecordsMax(exportRecordsMax.getInt());
 	}
 
+	public void z8_setSendFilesSeparately(bool sendFilesSeparately) {
+		setSendFilesSeparately(sendFilesSeparately.get());
+	}
+
+	public void z8_setSendFilesContent(bool sendFilesContent) {
+		setSendFilesContent(sendFilesContent.get());
+	}
+
 	public void z8_init() {}
 
 	public void z8_execute() {
@@ -253,7 +284,7 @@ public class Export extends OBJECT {
 		return new string(getExportUrl(protocol.get(), address.get()));
 	}
 
-	private boolean exportRecord(RecordsetEntry recordsetEntry, int level) {
+	private boolean exportRecord(RecordsSorter recordsSorter, RecordsetEntry recordsetEntry, String sender, int level) {
 		checkExportRecordsMax(records, exportRecordsMax);
 		guid recordId = recordsetEntry.recordset.recordId();
 		String table = getTableClassId(recordsetEntry.recordset);
@@ -264,14 +295,15 @@ public class Export extends OBJECT {
 				LOG.debug(getSpaces(level) + "Export record " + recordsetEntry.recordset.name() + '[' + recordId + ']');
 			}
 			ExportEntry.Records.Record record = IeUtil.getRecord(table, recordId, recordsetEntry.fields,
-					recordsetExportRules);
+					recordsetExportRules, sender);
 			records.add(record);
 			recordsSorter.addRecord(table, recordId);
 			// Вложения
 			for (Field attField : recordsetEntry.recordset.getAttachments()) {
 				if (recordsetExportRules.isExportAttachments(recordId, attField)) {
 					List<FileInfo> fileInfos = FileInfo.parseArray(attField.get().string().get());
-					files.addAll(IeUtil.fileInfosToFiles(fileInfos, recordsetExportRules.getImportPolicy(recordId, attField)));
+					files.addAll(IeUtil.fileInfosToFiles(fileInfos,
+							recordsetExportRules.getImportPolicy(recordId, attField), sender));
 				}
 			}
 			// Ссылки на другие таблицы
@@ -290,7 +322,8 @@ public class Export extends OBJECT {
 					Table refRecord = (Table) Loader.getInstance(((Table) fkey.getReferencedTable()).classId());
 					guid refGuid = recordsetEntry.recordset.getFieldByName(fkey.getFieldDescriptor().name()).guid();
 					if (refRecord.readRecord(refGuid, refRecord.getPrimaryFields())) {
-						if (exportRecord(new RecordsetEntry(refRecord, refRecord.getPrimaryFields()), level + 1)) {
+						if (exportRecord(recordsSorter, new RecordsetEntry(refRecord, refRecord.getPrimaryFields()), sender,
+								level + 1)) {
 							recordsSorter.addLink(table, recordId, getTableClassId(refRecord), refGuid);
 						}
 					}
@@ -302,7 +335,8 @@ public class Export extends OBJECT {
 				if (!guid.NULL.equals(parentId)) {
 					TreeTable parentRecord = (TreeTable) Loader.getInstance(recordsetEntry.recordset.classId());
 					if (parentRecord.readRecord(parentId, parentRecord.getPrimaryFields())) {
-						if (exportRecord(new RecordsetEntry(parentRecord, parentRecord.getPrimaryFields()), level + 1)) {
+						if (exportRecord(recordsSorter, new RecordsetEntry(parentRecord, parentRecord.getPrimaryFields()),
+								sender, level + 1)) {
 							recordsSorter.addLink(table, recordId, table, parentId);
 						}
 					}
@@ -343,6 +377,14 @@ public class Export extends OBJECT {
 		//	cls = cls.getSuperclass();
 		//return (cls == null ? table.getClass() : cls).getCanonicalName();
 		return table.classId();
+	}
+
+	private static ExportEntry.Properties.Property getProperty(string key, primary value) {
+		ExportEntry.Properties.Property property = new ExportEntry.Properties.Property();
+		property.setKey(key.get());
+		property.setValue(value.toString());
+		property.setType(value.type().toString());
+		return property;
 	}
 
 	private static class RecordsetEntry {

@@ -23,6 +23,7 @@ import org.zenframework.z8.server.db.sql.expressions.Unary;
 import org.zenframework.z8.server.resources.Resources;
 import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.types.bool;
+import org.zenframework.z8.server.types.datetime;
 import org.zenframework.z8.server.types.guid;
 import org.zenframework.z8.server.types.integer;
 import org.zenframework.z8.server.types.string;
@@ -82,6 +83,22 @@ public class ExportMessages extends Table {
 
 	}
 
+	public static enum Direction {
+
+		IN("in_"), OUT("out_");
+
+		private final String prefix;
+
+		private Direction(String prefix) {
+			this.prefix = prefix;
+		}
+
+		public String getPrefix() {
+			return prefix;
+		}
+
+	}
+
 	static public class strings {
 		public final static String Title = "ExportMessages.title";
 		public final static String Sender = "ExportMessages.sender";
@@ -104,38 +121,42 @@ public class ExportMessages extends Table {
 		super(container);
 	}
 
-	public void addMessage(Message message, String transportInfo) throws JAXBException {
+	public void addMessage(Message message, String transportInfo, Direction direction) throws JAXBException {
 		guid recordId = new guid(message.getId());
-		boolean exists = hasRecord(recordId);
 		this.id.get().set(new string(message.getSender()));
 		this.id1.get().set(new string(message.getAddress()));
 		if (Export.LOCAL_PROTOCOL.equals(message.getExportProtocol()))
 			this.name.get().set(new string(Export.LOCAL_PROTOCOL));
 		else if (transportInfo != null)
 			this.name.get().set(new string(transportInfo));
-		this.ordinal.get().set(new integer(nextOrdinal(message)));
+		this.ordinal.get().set(new integer(nextOrdinal(message, direction)));
 		this.message.get().set(new string(IeUtil.marshalExportEntry(message.getExportEntry())));
-		if (exists)
+
+		if (hasRecord(recordId))
 			update(recordId);
 		else
 			create(recordId);
 	}
 
-	public void processCurrentMessage(String transportUrl, boolean preserveExportMessages) {
-		if (preserveExportMessages) {
+	static public void processed(guid id, String transportUrl, boolean preserve) {
+		ExportMessages messages = new ExportMessages.CLASS<ExportMessages>().get();
+		
+		if (preserve) {
 			if (transportUrl != null)
-				name.get().set(transportUrl);
-			processed.get().set(new bool(true));
-			update(recordId());
+				messages.name.get().set(transportUrl);
+			messages.processed.get().set(new bool(true));
+			messages.update(id);
 		} else {
-			destroy(recordId());
+			messages.destroy(id);
 		}
 	}
 
-	public void setError(boolean error, guid messageId, Throwable e) {
-		this.error.get().set(new bool(error));
-		this.description.get().set(new string(e.getMessage()));
-		update(messageId);
+	static public void setError(Message message, boolean isError, Throwable e) {
+		ExportMessages messages = new ExportMessages.CLASS<ExportMessages>().get();
+
+		messages.error.get().set(new bool(isError));
+		messages.description.get().set(new string(new datetime() + " " + e.getClass() + ": " + e.getMessage()));
+		messages.update(new guid(message.getId()));
 	}
 
 	public String getSender() {
@@ -148,15 +169,6 @@ public class ExportMessages extends Table {
 
 	public String getTransportUrl() {
 		return name.get().get().string().get();
-	}
-
-	public Message.CLASS<Message> getMessage() throws JAXBException {
-		Message.CLASS<Message> message = new Message.CLASS<Message>();
-		message.get().setId(recordId().get());
-		message.get().setAddress(getReceiver());
-		message.get().setSender(getSender());
-		message.get().setExportEntry(IeUtil.unmarshalExportEntry(this.message.get().get().toString()));
-		return message;
 	}
 
 	@Override
@@ -205,10 +217,6 @@ public class ExportMessages extends Table {
 		registerFormField(error);
 	}
 
-	public static ExportMessages instance() {
-		return new CLASS<ExportMessages>().get();
-	}
-
 	public List<guid> getExportMessages(String selfAddress) {
 		SqlToken notProcessedNotErrorNotLocal = new And(new And(new Unary(Operation.Not, new SqlField(processed.get())),
 				new Unary(Operation.Not, new SqlField(error.get()))), new Rel(name.get(), Operation.NotEq, new sql_string(
@@ -241,8 +249,18 @@ public class ExportMessages extends Table {
 		return readRecord(messageId, getDataFields());
 	}
 
-	private long nextOrdinal(Message message) {
-		return Sequencer.next(message.getSender() + "->" + message.getAddress());
+	private long nextOrdinal(Message message, Direction direction) {
+		return Sequencer.next(direction.getPrefix() + message.getAddress());
 	}
+	
+	public Message getMessage(guid id, Message message) {
+		if(!readRecord(id, getDataFields()))
+			return null;
 
+		message.setId(recordId().get());
+		message.setAddress(getReceiver());
+		message.setSender(getSender());
+		message.setExportEntry(IeUtil.unmarshalExportEntry(this.message.get().get().toString()));
+		return message;
+	}
 }

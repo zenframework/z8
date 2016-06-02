@@ -41,6 +41,12 @@
         <!-- Project dependencies -->
         <dependency>
             <groupId>org.zenframework.z8</groupId>
+            <artifactId>org.zenframework.z8.boot</artifactId>
+            <version>${project.version}</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.zenframework.z8</groupId>
             <artifactId>org.zenframework.z8.lang</artifactId>
             <version>${project.version}</version>
             <scope>compile</scope>

@@ -69,6 +69,8 @@ public class BridgeProcedure extends Procedure {
 					transOut.connect();
 					for (Message message = transIn.receive(); message != null; message = transIn.receive()) {
 						try {
+							message.getFiles().addAll(
+									IeUtil.filesToFileInfos(message.getExportEntry().getFiles().getFile(), true));
 							z8_beforeTransfer((Message.CLASS<Message>) message.getCLASS());
 							transOut.send(message, outUri.getHost());
 							transIn.commit();

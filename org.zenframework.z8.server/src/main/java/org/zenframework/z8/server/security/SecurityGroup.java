@@ -1,11 +1,8 @@
 package org.zenframework.z8.server.security;
 
-import java.io.Serializable;
-
 import org.zenframework.z8.server.types.guid;
 
-public enum SecurityGroup implements Serializable {
-
+public enum SecurityGroup {
     Users(guids.Users),
     Administrators(guids.Administrators);
 

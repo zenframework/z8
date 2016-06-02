@@ -1,9 +1,12 @@
 package org.zenframework.z8.server.security;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -20,6 +23,7 @@ import org.zenframework.z8.server.db.sql.expressions.Rel;
 import org.zenframework.z8.server.db.sql.functions.string.Lower;
 import org.zenframework.z8.server.engine.ApplicationServer;
 import org.zenframework.z8.server.engine.Database;
+import org.zenframework.z8.server.engine.RmiIO;
 import org.zenframework.z8.server.engine.Runtime;
 import org.zenframework.z8.server.exceptions.AccessDeniedException;
 import org.zenframework.z8.server.logs.Trace;
@@ -30,6 +34,9 @@ import org.zenframework.z8.server.types.guid;
 import org.zenframework.z8.server.types.primary;
 import org.zenframework.z8.server.types.string;
 import org.zenframework.z8.server.types.sql.sql_string;
+import org.zenframework.z8.server.utils.ArrayUtils;
+import org.zenframework.z8.server.utils.IOUtils;
+import org.zenframework.z8.server.utils.NumericUtils;
 
 public class User implements IUser {
 	private static final long serialVersionUID = -4955893424674255525L;
@@ -38,7 +45,7 @@ public class User implements IUser {
 
 	private String name;
 	private String password;
-	SecurityGroup securityGroup = SecurityGroup.Users;
+	private SecurityGroup securityGroup = SecurityGroup.Users;
 
 	private String description;
 	private String phone;
@@ -47,10 +54,7 @@ public class User implements IUser {
 
 	private String settings;
 
-	private List<Component> components = new ArrayList<Component>();
-	private List<guid> companies = new ArrayList<guid>();
-	private Map<String, IForm> forms = new HashMap<String, IForm>();
-
+	private Collection<Component> components = new ArrayList<Component>();
 	private RLinkedHashMap<string, primary> parameters = new RLinkedHashMap<string, primary>();
 
 	static public IUser system() {
@@ -73,7 +77,7 @@ public class User implements IUser {
 		user.email = "";
 		user.securityGroup = SecurityGroup.Administrators;
 
-		user.setComponents(new Component[] { new Component(null, SystemTools.class.getCanonicalName(), Resources.get(SystemTools.strings.Title)) });
+		user.setComponents(ArrayUtils.collection(new Component(null, SystemTools.class.getCanonicalName(), Resources.get(SystemTools.strings.Title))));
 
 		return user;
 	}
@@ -122,45 +126,18 @@ public class User implements IUser {
 	}
 
 	@Override
-	public Component[] components() {
-		if(forms.isEmpty()) {
-			return components.toArray(new Component[0]);
-		} else {
-			Collection<Component> components = new ArrayList<Component>();
-
-			for(IForm form : forms.values()) {
-				if(form.getOwnerId().isEmpty() && form.getAccess().getRead()) {
-					components.add(new Component(null, form.getId(), form.getName()));
-				}
-			}
-
-			return components.toArray(new Component[0]);
-		}
-	}
-
-	public guid[] companies() {
-		return companies.toArray(new guid[0]);
+	public Collection<Component> components() {
+		return components;
 	}
 
 	@Override
-	public Map<String, IForm> forms() {
-		return forms;
+	public void setComponents(Collection<Component> components) {
+		this.components = components;
 	}
 
 	@Override
 	public Map<string, primary> parameters() {
 		return parameters;
-	}
-
-	@Override
-	public void setComponents(Component[] components) {
-		this.components.clear();
-		this.components.addAll(Arrays.asList(components));
-	}
-
-	public void setCompanies(guid[] companies) {
-		this.companies.clear();
-		this.companies.addAll(Arrays.asList(companies));
 	}
 
 	static public IUser load(String login) {
@@ -278,7 +255,7 @@ public class User implements IUser {
 			components.add(new Component(null, className, title));
 		}
 
-		setComponents(components.toArray(new Component[0]));
+		setComponents(components);
 	}
 
 	@Override
@@ -297,5 +274,72 @@ public class User implements IUser {
 
 		users.settings.get().set(new string(settings));
 		users.update(id);
+	}
+	
+    private void writeObject(ObjectOutputStream out)  throws IOException {
+    	serialize(out);
+    }
+    
+    private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
+    	deserialize(in);
+    }
+
+    @Override
+	public void serialize(ObjectOutputStream out) throws IOException {
+		out.writeLong(serialVersionUID);
+		
+		ByteArrayOutputStream bytes = new ByteArrayOutputStream(32 * NumericUtils.Kilobyte);
+		ObjectOutputStream objects = new ObjectOutputStream(bytes);
+
+		RmiIO.writeGuid(objects, id);
+
+		RmiIO.writeString(objects, name);
+		RmiIO.writeString(objects, password);
+		
+		RmiIO.writeGuid(objects, securityGroup.guid());
+
+		RmiIO.writeString(objects, description);
+		RmiIO.writeString(objects, phone);
+		RmiIO.writeString(objects, email);
+		
+		objects.writeBoolean(blocked);
+
+		RmiIO.writeString(objects, settings);
+
+		objects.writeObject(components);
+		objects.writeObject(parameters);
+		
+		objects.close();
+
+		RmiIO.writeBytes(out, IOUtils.zip(bytes.toByteArray()));
+	}
+	
+	@Override
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+	public void deserialize(ObjectInputStream in) throws IOException, ClassNotFoundException {	
+		@SuppressWarnings("unused")
+		long version = in.readLong();
+		
+		ByteArrayInputStream bytes = new ByteArrayInputStream(IOUtils.unzip(RmiIO.readBytes(in)));
+		ObjectInputStream objects = new ObjectInputStream(bytes);
+
+		id = RmiIO.readGuid(objects);
+
+		name = RmiIO.readString(objects);
+		password = RmiIO.readString(objects);
+		securityGroup = SecurityGroup.fromGuid(RmiIO.readGuid(objects));
+		
+		description = RmiIO.readString(objects);
+		phone = RmiIO.readString(objects);
+		email = RmiIO.readString(objects);
+		
+		blocked = in.readBoolean();
+
+		settings = RmiIO.readString(objects);
+
+		components = (Collection)objects.readObject();
+		parameters = (RLinkedHashMap)objects.readObject();
+		
+		objects.close();
 	}
 }

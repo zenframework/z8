@@ -12,8 +12,6 @@ import org.zenframework.z8.server.db.FieldType;
 import org.zenframework.z8.server.types.sql.sql_binary;
 
 public class binary extends primary {
-    private static final long serialVersionUID = -5161828489385386903L;
-
     private InputStream stream;
 
     public binary() {

@@ -6,6 +6,7 @@ import java.lang.management.RuntimeMXBean;
 import java.rmi.RemoteException;
 
 import org.zenframework.z8.server.base.file.FileInfo;
+import org.zenframework.z8.server.base.file.FileInfoNotFoundException;
 import org.zenframework.z8.server.base.job.scheduler.Scheduler;
 import org.zenframework.z8.server.base.table.system.Files;
 import org.zenframework.z8.server.base.xml.GNode;
@@ -31,7 +32,7 @@ public class ApplicationServer extends RmiServer implements IApplicationServer {
 
 	private static String Id = null;
 
-	private IAuthorityCenter authorityCenter = null;
+	private transient IAuthorityCenter authorityCenter = null;
 
 	private ApplicationServer() throws RemoteException {
 		super(IApplicationServer.class);
@@ -57,7 +58,7 @@ public class ApplicationServer extends RmiServer implements IApplicationServer {
 	}
 
 	@Override
-	public void stop() throws RemoteException {
+	public void stop() {
 		Scheduler.stop();
 		TransportEngine.getInstance().stop();
 		try {
@@ -83,18 +84,16 @@ public class ApplicationServer extends RmiServer implements IApplicationServer {
 	}
 
 	@Override
-	public FileInfo download(FileInfo fileInfo) throws RemoteException {
+	public FileInfo download(FileInfo fileInfo) throws IOException, FileInfoNotFoundException {
 		try {
-			FileInfo result = Files.getFile(fileInfo);
+			return Files.newInstance().getFile(fileInfo);
+		} finally {
 			ConnectionManager.release();
-			return result;
-		} catch (IOException e) {
-			throw new RemoteException(e.getMessage(), e);
 		}
 	}
 
 	@Override
-	public GNode processRequest(ISession session, GNode node) throws RemoteException {
+	public GNode processRequest(ISession session, GNode node) {
 		IRequest request = new Request(node.getAttributes(), node.getFiles(), session);
 		IResponse response = request.getResponse();
 

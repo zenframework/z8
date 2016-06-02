@@ -3,6 +3,7 @@ package org.zenframework.z8.server.ie;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
+import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -18,6 +19,7 @@ import org.zenframework.z8.server.logs.Trace;
 import org.zenframework.z8.server.request.Loader;
 import org.zenframework.z8.server.types.guid;
 import org.zenframework.z8.server.types.primary;
+import org.zenframework.z8.server.types.string;
 
 public class Import {
 
@@ -25,7 +27,21 @@ public class Import {
 
 	private static JsonObject STRUCTURE = null;
 
-	public static void importRecords(Message message) {
+	public static void importMessage(Message message) {
+
+		// Обработка специальных свойств
+		Map<string, primary> properties = message.getProperties();
+		string type = properties.containsKey(Message.PROP_TYPE) ? properties.get(Message.PROP_TYPE).string() : null;
+		if (Message.TYPE_FILE_REQUEST.equals(type)) {
+			FileInfo fileInfo = new FileInfo();
+			fileInfo.id = properties.get(Message.PROP_RECORD_ID).guid();
+			fileInfo.path = properties.get(Message.PROP_FILE_PATH).string();
+			try {
+				Files.sendFile(fileInfo, message.getSender());
+			} catch (Throwable e) {
+				LOG.error("Can't send file " + fileInfo + " to '" + message.getSender(), e);
+			}
+		}
 
 		// Сортировка записей
 		if (RecordsSorter.getSortingMode().onImport) {
@@ -56,17 +72,17 @@ public class Import {
 
 	}
 
-	public static void importFiles(Message message, Files filesTable) {
-		for (FileInfo file : message.getFiles()) {
-			boolean idIsNull = file.id == null || file.id.isNull();
-			if (idIsNull || !filesTable.hasRecord(file.id)) {
-				if (!idIsNull) {
-					filesTable.recordId.get().set(file.id);
+	public static void importFiles(Message message) {
+		Files files = Files.newInstance();
+
+		for (FileInfo fileInfo : message.getFiles()) {
+			files.addFile(fileInfo);
+			if (fileInfo.file == null) {
+				try {
+					files.getFile(fileInfo);
+				} catch (Throwable e) {
+					LOG.warn("Can't get remote file " + fileInfo, e);
 				}
-				filesTable.name.get().set(file.name);
-				filesTable.file.get().set(file.getInputStream());
-				filesTable.path.get().set(file.path);
-				file.id = filesTable.create();
 			}
 		}
 	}

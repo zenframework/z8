@@ -4,6 +4,20 @@ import org.zenframework.z8.lang.Object;
 [native "org.zenframework.z8.server.ie.Message"]
 class Message extends Object {
 
+	public static final string PROP_TYPE;
+	public static final string PROP_RECORD_ID;
+	public static final string PROP_FILE_PATH;
+
+	public static final string TYPE_FILE_REQUEST;
+	public static final string TYPE_FILE_RESPONSE;
+
+
+	virtual protected void beforeImport();
+	virtual protected void afterImport();
+
+	virtual protected void beforeExport();
+	virtual protected void afterExport();
+	
 	public string getId();
 	public string getAddress();
 	public string getSender();
