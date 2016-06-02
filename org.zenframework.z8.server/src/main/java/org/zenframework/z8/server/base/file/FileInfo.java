@@ -252,37 +252,38 @@ public class FileInfo extends OBJECT implements RmiSerializable, Serializable {
 		}
 	}
 
-/*	private void writeObject(ObjectOutputStream outputStream) throws IOException {
-		outputStream.defaultWriteObject();
-		if (DEFAULT_WRITE)
-			return;
+	/*	private void writeObject(ObjectOutputStream outputStream) throws IOException {
+			outputStream.defaultWriteObject();
+			if (DEFAULT_WRITE)
+				return;
 
-		outputStream.writeByte(FILE_INFO_VERSION);
-		outputStream.writeBoolean(file != null);
+			outputStream.writeByte(FILE_INFO_VERSION);
+			outputStream.writeBoolean(file != null);
 
-		if (file != null) {
-			InputStream inputStream = file.getInputStream();
+			if (file != null) {
+				InputStream inputStream = file.getInputStream();
 
-			try {
-				IOUtils.copy(inputStream, outputStream, false);
-			} finally {
-				IOUtils.closeQuietly(inputStream);
+				try {
+					IOUtils.copy(inputStream, outputStream, false);
+				} finally {
+					IOUtils.closeQuietly(inputStream);
+				}
 			}
 		}
-	}
-*/
-	
-    private void writeObject(ObjectOutputStream out)  throws IOException {
-    	serialize(out);
-    }
-    
-    private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
-    	deserialize(in);
-    }
+	*/
 
-    public void serialize(ObjectOutputStream out) throws IOException {
+	private void writeObject(ObjectOutputStream out) throws IOException {
+		serialize(out);
+	}
+
+	private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
+		deserialize(in);
+	}
+
+	@Override
+	public void serialize(ObjectOutputStream out) throws IOException {
 		out.writeLong(serialVersionUID);
-	
+
 		RmiIO.writeString(out, name);
 		RmiIO.writeString(out, path);
 		RmiIO.writeString(out, type);
@@ -290,10 +291,10 @@ public class FileInfo extends OBJECT implements RmiSerializable, Serializable {
 		RmiIO.writeGuid(out, id);
 
 		out.writeBoolean(file != null);
-	
+
 		if (file != null) {
 			InputStream in = file.getInputStream();
-	
+
 			long size = in.available();
 			out.writeLong(size);
 
@@ -305,22 +306,23 @@ public class FileInfo extends OBJECT implements RmiSerializable, Serializable {
 		}
 	}
 
+	@Override
 	public void deserialize(ObjectInputStream in) throws IOException, ClassNotFoundException {
 		@SuppressWarnings("unused")
 		long version = in.readLong();
-		
+
 		name = new string(RmiIO.readString(in));
 		path = new string(RmiIO.readString(in));
 		type = new string(RmiIO.readString(in));
 		time = RmiIO.readDatetime(in);
 		id = RmiIO.readGuid(in);
 
-		if(in.readBoolean()) {
+		if (in.readBoolean()) {
 			long size = in.readLong();
-			
+
 			file = FilesFactory.createFileItem(name.get());
 			OutputStream out = file.getOutputStream();
-	
+
 			try {
 				IOUtils.copyLarge(in, out, size, false);
 			} finally {
@@ -329,26 +331,27 @@ public class FileInfo extends OBJECT implements RmiSerializable, Serializable {
 		}
 	}
 
-/*	private void readObject(ObjectInputStream inputStream) throws IOException, ClassNotFoundException {
-		inputStream.defaultReadObject();
-		if (DEFAULT_READ)
-			return;
+	/*	private void readObject(ObjectInputStream inputStream) throws IOException, ClassNotFoundException {
+			inputStream.defaultReadObject();
+			if (DEFAULT_READ)
+				return;
 
-		// Read FileInfo version - for future use
-		@SuppressWarnings("unused")
-		byte version = inputStream.readByte();
+			// Read FileInfo version - for future use
+			@SuppressWarnings("unused")
+			byte version = inputStream.readByte();
 
-		if (inputStream.readBoolean()) {
-			file = FilesFactory.createFileItem(name.get());
+			if (inputStream.readBoolean()) {
+				file = FilesFactory.createFileItem(name.get());
 
-			OutputStream outputStream = file.getOutputStream();
+				OutputStream outputStream = file.getOutputStream();
 
-			try {
-				IOUtils.copy(inputStream, outputStream, false);
-			} finally {
-				IOUtils.closeQuietly(outputStream);
+				try {
+					IOUtils.copy(inputStream, outputStream, false);
+				} finally {
+					IOUtils.closeQuietly(outputStream);
+				}
 			}
 		}
-	}
-*/
+	*/
+
 }

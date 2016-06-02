@@ -249,7 +249,7 @@ public class IOUtils {
 				detector.handleData(buf, 0, n);
 			}
 			detector.dataEnd();
-			return detector.getDetectedCharset();
+			return detector.getDetectedCharset() != null ? detector.getDetectedCharset() : defaultCharset;
 		} catch(Exception e) {
 			Trace.logError("Can't detect encoding of '" + file.getAbsolutePath() + "'", e);
 			return defaultCharset;
