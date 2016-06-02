@@ -1,0 +1,17 @@
+import org.zenframework.z8.base.table.value.Link;
+import org.zenframework.z8.base.table.Table;
+
+[native "org.zenframework.z8.server.base.table.system.SystemAddresses"]
+
+[name "SystemAdresses"]
+[displayName "Системные адреса"]
+class SystemAddresses extends Table {
+	Users users;
+	
+	[name "UserId"]
+	Link user = users;
+	
+	[displayName "Адрес"] id;
+	id.length = 256;
+	id.unique = true;
+}

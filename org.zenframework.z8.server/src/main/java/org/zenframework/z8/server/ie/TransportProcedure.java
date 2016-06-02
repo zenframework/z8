@@ -197,8 +197,12 @@ public class TransportProcedure extends Procedure {
 			connection.commit();
 		} catch (Throwable e) {
 			connection.rollback();
+			Trace.logError(e);
+
+			if(e instanceof TransportException)
+				throw (TransportException)e;
+			
 			message.setError(e);
-			Trace.logError("Can't send message '" + message.getId() + "' via '" + route.getAddress() + "'", e);
 		}
 	}
 	

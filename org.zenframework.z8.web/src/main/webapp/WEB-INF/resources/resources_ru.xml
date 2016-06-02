@@ -19,7 +19,7 @@
 	<entry key="Table.modifiedAt">Изменено</entry>
 	<entry key="Table.createdBy">Создал</entry>
 	<entry key="Table.modifiedBy">Изменил</entry>
-	<entry key="archive">Архив</entry>
+	<entry key="Table.archive">Архив</entry>
 	<entry key="Table.scope">Область видимости</entry>
 
 	<entry key="Table.id">Код</entry>
@@ -52,6 +52,11 @@
 
 	<entry key="Users.name.default">User</entry>
     
+	<!-- SystemAddresses -->
+	<entry key="SystemAddresses.title">Системные адреса</entry>
+	<entry key="SystemAddresses.id">Адрес</entry>
+	<entry key="SystemAddresses.user">Пользователь</entry>
+
     <!-- Properties -->
     <entry key="Properties.title">Системные свойства</entry>
     <entry key="Properties.value">Значение</entry>

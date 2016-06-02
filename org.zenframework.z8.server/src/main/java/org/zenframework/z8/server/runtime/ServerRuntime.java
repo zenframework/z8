@@ -9,6 +9,7 @@ import org.zenframework.z8.server.base.table.system.Properties;
 import org.zenframework.z8.server.base.table.system.Property;
 import org.zenframework.z8.server.base.table.system.SecurityGroups;
 import org.zenframework.z8.server.base.table.system.Sequences;
+import org.zenframework.z8.server.base.table.system.SystemAddresses;
 import org.zenframework.z8.server.base.table.system.SystemTools;
 import org.zenframework.z8.server.base.table.system.UserEntries;
 import org.zenframework.z8.server.base.table.system.Users;
@@ -68,6 +69,7 @@ public class ServerRuntime extends AbstractRuntime {
 		addTable(new Sequences.CLASS<Sequences>(null));
 		addTable(new Entries.CLASS<Entries>(null));
 
+		addTable(new SystemAddresses.CLASS<SystemAddresses>(null));
 		addTable(new UserEntries.CLASS<UserEntries>(null));
 
 		addTable(new Jobs.CLASS<Jobs>(null));

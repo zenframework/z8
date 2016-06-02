@@ -28,6 +28,7 @@ import org.zenframework.z8.server.types.guid;
 import org.zenframework.z8.server.types.integer;
 import org.zenframework.z8.server.types.string;
 import org.zenframework.z8.server.types.sql.sql_string;
+import org.zenframework.z8.server.utils.ErrorUtils;
 
 public class ExportMessages extends Table {
 
@@ -155,7 +156,7 @@ public class ExportMessages extends Table {
 		ExportMessages messages = new ExportMessages.CLASS<ExportMessages>().get();
 
 		messages.error.get().set(new bool(true));
-		messages.description.get().set(new string(new datetime() + " " + e.getClass() + ": " + e.getMessage()));
+		messages.description.get().set(new string(new datetime() + " " + ": '" + ErrorUtils.getMessage(e) + "' " + e.getClass()));
 		messages.update(new guid(message.getId()));
 	}
 

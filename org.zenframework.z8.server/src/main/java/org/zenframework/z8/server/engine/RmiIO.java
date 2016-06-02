@@ -185,6 +185,9 @@ public class RmiIO extends ObjectIO {
 		} else if(value instanceof ObjID) {
 			out.writeInt(RmiSerializable.ObjID);
 			writeObjID(out, (ObjID)value);
+		} else if(value instanceof VMID) {
+			out.writeInt(RmiSerializable.VMID);
+			writeVMID(out, (VMID)value);
 		} else if(value instanceof Lease) {
 			out.writeInt(RmiSerializable.Lease);
 			writeLease(out, (Lease)value);
@@ -253,10 +256,13 @@ public class RmiIO extends ObjectIO {
 		object.write(out);
 	}
 
-	private void writeLease(ObjectOutputStream out, Lease lease) throws IOException {
-		VMID vmid = lease.getVMID();
+	private void writeVMID(ObjectOutputStream out, VMID vmid) throws IOException {
 		vmid.uid.write(out);
 		writeBytes(out, vmid.addr);
+	}
+
+	private void writeLease(ObjectOutputStream out, Lease lease) throws IOException {
+		writeVMID(out, lease.getVMID());
 		out.writeLong(lease.getValue());
 	}
 
@@ -370,6 +376,8 @@ public class RmiIO extends ObjectIO {
 			return readException(in);
 		else if(id == RmiSerializable.ObjID)
 			return readObjID(in);
+		else if(id == RmiSerializable.VMID)
+			return readVMID(in);
 		else if(id == RmiSerializable.Lease)
 			return readLease(in);
 		else if(id == RmiSerializable.OBJECT)
@@ -456,14 +464,19 @@ public class RmiIO extends ObjectIO {
 		return Proxy.newProxyInstance(this.getClass().getClassLoader(), getClass(cls).getInterfaces(), handler);
 	}
 
-	private Object readObjID(ObjectInputStream in) throws IOException, ClassNotFoundException {
+	private ObjID readObjID(ObjectInputStream in) throws IOException, ClassNotFoundException {
 		return ObjID.read(in);
 	}
 
-	private Object readLease(ObjectInputStream in) throws IOException, ClassNotFoundException {
+	private VMID readVMID(ObjectInputStream in) throws IOException, ClassNotFoundException {
 		VMID vmid = new VMID();
 		vmid.uid = UID.read(in);
 		vmid.addr = readBytes(in);
+		return vmid;
+	}
+
+	private Lease readLease(ObjectInputStream in) throws IOException, ClassNotFoundException {
+		VMID vmid = readVMID(in);
 		long duration = in.readLong();
 		return new Lease(vmid, duration);
 	}

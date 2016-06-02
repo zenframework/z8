@@ -110,7 +110,7 @@ public class Import {
 			}
 		}
 
-		boolean exists = table.readRecord(recordId, aggregatedFields);
+		boolean exists = aggregatedFields.isEmpty() ? table.hasRecord(recordId) : table.readRecord(recordId, aggregatedFields);
 
 		boolean hasUpdatedFields = false;
 		for (ExportEntry.Records.Record.Field xmlField : record.getField()) {
