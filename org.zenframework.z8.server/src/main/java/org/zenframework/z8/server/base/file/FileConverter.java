@@ -91,7 +91,7 @@ public class FileConverter {
 	}
 
 	private void convertImageToPdf(File sourceFile, File convertedFile) {
-
+		convertOfficeToPdf(sourceFile, convertedFile);
 	}
 
 	private void convertEmailToPdf(File sourceFile, File convertedFile) {
