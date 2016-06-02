@@ -555,6 +555,7 @@ public class Query extends Runnable {
 
     public int count(SqlToken where) {
     	try {
+    		saveState();
 	        ReadAction action = new ReadAction(this);
 	        action.addFilter(where);
 	        return action.getCounter().count();

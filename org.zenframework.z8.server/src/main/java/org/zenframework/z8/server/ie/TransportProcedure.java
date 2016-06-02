@@ -111,7 +111,12 @@ public class TransportProcedure extends Procedure {
 		transportRoutes.checkInactiveRoutes();
 
 		for (guid id : ids) {
-			List<TransportRoute> routes = transportRoutes.readActiveRoutes(messages.getReceiver(), transportCenter);
+
+			Message message = messages.getMessage(id, newMessage());
+			if (message == null)
+				continue;
+
+			List<TransportRoute> routes = transportRoutes.readActiveRoutes(message.getAddress(), transportCenter);
 
 			for (TransportRoute route : routes) {
 
@@ -128,7 +133,6 @@ public class TransportProcedure extends Procedure {
 				}
 
 				try {
-					Message message = messages.getMessage(id, newMessage());
 					exportMessage(message, transport, route);
 					transport.commit();
 					break;
@@ -137,6 +141,7 @@ public class TransportProcedure extends Procedure {
 					transportRoutes.disableRoute(route.getRouteId(), e.getMessage());
 				}
 			}
+		
 		}
 
 		// Чтение входящих сообщений

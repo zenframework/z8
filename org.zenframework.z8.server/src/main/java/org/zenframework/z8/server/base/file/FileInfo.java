@@ -49,10 +49,10 @@ public class FileInfo extends OBJECT implements RmiSerializable, Serializable {
 	public datetime time = new datetime();
 	public guid id = new guid();
 
-	public transient FileItem file;
-	public transient Status status = Status.LOCAL;
+	public FileItem file;
+	public Status status = Status.LOCAL;
 
-	public transient JsonObject json;
+	public JsonObject json;
 
 	public static enum Status {
 
@@ -260,9 +260,11 @@ public class FileInfo extends OBJECT implements RmiSerializable, Serializable {
     	deserialize(in);
     }
 
-    public void serialize(ObjectOutputStream out) throws IOException {
+    @Override
+	public void serialize(ObjectOutputStream out) throws IOException {
 		out.writeLong(serialVersionUID);
-	
+
+		RmiIO.writeString(out, instanceId);
 		RmiIO.writeString(out, name);
 		RmiIO.writeString(out, path);
 		RmiIO.writeString(out, type);
@@ -285,10 +287,12 @@ public class FileInfo extends OBJECT implements RmiSerializable, Serializable {
 		}
 	}
 
+	@Override
 	public void deserialize(ObjectInputStream in) throws IOException, ClassNotFoundException {
 		@SuppressWarnings("unused")
 		long version = in.readLong();
 		
+		instanceId = new string(RmiIO.readString(in));
 		name = new string(RmiIO.readString(in));
 		path = new string(RmiIO.readString(in));
 		type = new string(RmiIO.readString(in));
