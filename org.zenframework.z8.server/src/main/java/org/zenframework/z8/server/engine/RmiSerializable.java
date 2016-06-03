@@ -18,7 +18,8 @@ public interface RmiSerializable {
 	public static final int Proxy = 2000;
 	public static final int Exception = 2001;
 	public static final int ObjID = 2002;
-	public static final int Lease = 2003;
+	public static final int VMID = 2003;
+	public static final int Lease = 2004;
 	
 	public void serialize(ObjectOutputStream stream) throws IOException;
 	public void deserialize(ObjectInputStream stream) throws IOException, ClassNotFoundException;

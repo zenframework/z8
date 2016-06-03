@@ -192,6 +192,7 @@ public class Message extends OBJECT implements RmiSerializable, Serializable {
 		ApplicationServer.disableEvents();
 		try {
 			Import.importMessage(this);
+			Import.importFiles(this);
 		} finally {
 			ApplicationServer.enableEvents();
 		}
@@ -200,24 +201,18 @@ public class Message extends OBJECT implements RmiSerializable, Serializable {
 	}
 
 
-	public void runExport(Transport transport, TransportRoute route, boolean preserve) throws TransportException {
+	public void runExport(Transport transport, TransportRoute route, boolean preserve) throws TransportException, IOException {
 		ExportMessages.processed(new guid(id), route.getTransportUrl(), preserve);
 
-		try {
-			getFiles().addAll(IeUtil.filesToFileInfos(getExportEntry().getFiles().getFile(), isSendFilesContent()));
+		getFiles().addAll(IeUtil.filesToFileInfos(getExportEntry().getFiles().getFile(), isSendFilesContent()));
 
-			beforeExport();
-			transport.send(this, route.getAddress());
-			afterExport();
-		} catch(TransportException e) {
-			throw e;
-		} catch(Throwable e) {
-			throw new RuntimeException(e);
-		}
+		beforeExport();
+		transport.send(this, route.getAddress());
+		afterExport();
 	}
 	
-	public void setError(boolean isError, Throwable e) {
-		ExportMessages.setError(this, isError, e);
+	public void setError(Throwable e) {
+		ExportMessages.setError(this, e);
 	}
 
 	private void writeObject(ObjectOutputStream out) throws IOException {

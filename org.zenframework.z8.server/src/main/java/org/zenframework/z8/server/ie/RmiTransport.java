@@ -2,7 +2,6 @@ package org.zenframework.z8.server.ie;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.rmi.RemoteException;
 
 import org.zenframework.z8.server.base.file.FileInfo;
 import org.zenframework.z8.server.engine.ITransportService;
@@ -27,22 +26,8 @@ public class RmiTransport extends AbstractTransport {
 	public void send(Message message, String transportAddress) throws TransportException {
 		try {
 			getServer(transportAddress).sendMessage(message);
-		} catch (RemoteException e) {
-			Throwable cause = e.getCause();
-			if (cause instanceof IOException)
-				throw new TransportException("Can't message '" + message.getId() + "' to '" + message.getAddress()
-						+ "' via '" + transportAddress + "'. " + e.getCause() + ": " + e.getMessage(), cause);
-			if (cause instanceof RuntimeException)
-				throw (RuntimeException) cause;
-			if (cause instanceof Error)
-				throw (Error) cause;
-			throw new RuntimeException(cause);
-		} catch (IOException e) {
-			throw new TransportException("Can't message '" + message.getId() + "' to '" + message.getAddress() + "' via '"
-					+ transportAddress + "'. " + e.getCause() + ": " + e.getMessage(), e);
-		} catch (URISyntaxException e) {
-			throw new TransportException("Can't message '" + message.getId() + "' to '" + message.getAddress() + "' via '"
-					+ transportAddress + "'. " + e.getCause() + ": " + e.getMessage(), e);
+		} catch(Throwable e) {
+			throw new TransportException(e);
 		}
 	}
 

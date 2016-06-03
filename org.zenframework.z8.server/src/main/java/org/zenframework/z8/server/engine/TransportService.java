@@ -12,14 +12,15 @@ import org.apache.commons.logging.LogFactory;
 import org.zenframework.z8.server.base.file.FileInfo;
 import org.zenframework.z8.server.base.table.system.Files;
 import org.zenframework.z8.server.base.table.system.Properties;
+import org.zenframework.z8.server.base.table.system.SystemAddresses;
 import org.zenframework.z8.server.config.ServerConfig;
-import org.zenframework.z8.server.db.Connection;
-import org.zenframework.z8.server.db.ConnectionManager;
-import org.zenframework.z8.server.ie.Import;
 import org.zenframework.z8.server.ie.Message;
 import org.zenframework.z8.server.ie.TransportProcedure;
 import org.zenframework.z8.server.logs.Trace;
+import org.zenframework.z8.server.request.IRequest;
+import org.zenframework.z8.server.request.Request;
 import org.zenframework.z8.server.runtime.ServerRuntime;
+import org.zenframework.z8.server.security.IUser;
 
 public class TransportService extends RmiServer implements ITransportService, Properties.Listener {
 
@@ -96,17 +97,20 @@ public class TransportService extends RmiServer implements ITransportService, Pr
 
 	@Override
 	public void sendMessage(Message message) throws RemoteException {
-		Connection connection = ConnectionManager.get();
-		connection.beginTransaction();
+		String address = message.getAddress();
+
+		IUser user = SystemAddresses.getDefaultUser(address);
+		IRequest request = new Request(new Session("", user));
+		
+		ApplicationServer.setRequest(request);
 
 		try {
 			TransportProcedure.importMessage(message);
-			Import.importFiles(message);
-			connection.commit();
 		} catch (Throwable e) {
-			connection.rollback();
 			Trace.logError(e);
 			throw new RemoteException("Can't import message '" + message.getId() + "' from '" + message.getSender() + "'", e);
+		} finally {
+			ApplicationServer.setRequest(request);
 		}
 	}
 
