@@ -1,137 +1,170 @@
 package org.zenframework.z8.server.utils;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Properties;
 
 import javax.mail.MessagingException;
 import javax.mail.Multipart;
 import javax.mail.Part;
+import javax.mail.Session;
+import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeUtility;
 
 public class EmlUtils {
 
-    public static String QUOTED_PRINTABLE_BEGINNING = "=?";
-    public static String QUOTED_PRINTABLE_BEGINNING_EXPRESSION = "=\\?";
-    public static String QUOTED_PRINTABLE_MIDDLE_EXPRESSION = "\\?[BQ]\\?";
-    public static String QUOTED_PRINTABLE_ENDING = "?=";
-    public static String BASE64_ENDING = "=?=";
-    public static String QUOTED_PRINTABLE_ENDING_EXPRESSION = "\\?=";
-    public static String QUOTED_PRINTABLE_SPACE = "=20";
+	public static String QUOTED_PRINTABLE_BEGINNING = "=?";
+	public static String QUOTED_PRINTABLE_BEGINNING_EXPRESSION = "=\\?";
+	public static String QUOTED_PRINTABLE_MIDDLE_EXPRESSION = "\\?[BQ]\\?";
+	public static String QUOTED_PRINTABLE_ENDING = "?=";
+	public static String BASE64_ENDING = "=?=";
+	public static String QUOTED_PRINTABLE_ENDING_EXPRESSION = "\\?=";
+	public static String QUOTED_PRINTABLE_SPACE = "=20";
 
-    private EmlUtils() {}
+	private EmlUtils() {}
 
-    public static String parsePartDocText(Part p) throws MessagingException, IOException {
-        if (p.isMimeType("text/html")) {
-            String text = decode((String) p.getContent());
-            text = text.replaceAll("<.*?>", "").trim();
-            text = text.replaceAll("((\r\n)+ +(\r\n)+)+", "\r\n");
-            text = text.replaceAll("( )+", " ");
-            text = text.replaceAll("(\r\n)+", "\r\n");
-            return text;
-        }
-        if (p.isMimeType("text/*")) {
-            return decode((String) p.getContent());
-        }
-        if (p.isMimeType("multipart/alternative")) {
-            // prefer plain text over html text
-            Multipart mp = (Multipart) p.getContent();
-            String text = null;
-            for (int i = 0; i < mp.getCount(); i++) {
-                Part bp = mp.getBodyPart(i);
-                if (bp.isMimeType("text/html")) {
-                    if (text == null) {
-                        text = parsePartDocText(bp);
-                    }
-                } else if (bp.isMimeType("text/plain")) {
-                    String s = parsePartDocText(bp);
-                    if (s != null) {
-                        return s;
-                    }
-                } else {
-                    return parsePartDocText(bp);
-                }
-            }
-            return text;
-        } else if (p.isMimeType("multipart/*")) {
-            Multipart mp = (Multipart) p.getContent();
-            for (int i = 0; i < mp.getCount(); i++) {
-                String s = parsePartDocText(mp.getBodyPart(i));
-                if (s != null) {
-                    return s;
-                }
-            }
-        }
-        return null;
-    }
+	public static String emailToString(File sourceFile) throws IOException {
+		Properties props = new Properties();
+		props.put("mail.host", "smtp.dummydomain.com");
+		props.put("mail.transport.protocol", "smtp");
 
-    private static String decode(String src) {
-        if (src == null)
-            return null;
+		Session mailSession = Session.getDefaultInstance(props, null);
 
-        List<String> forDecode = new LinkedList<String>();
-        int position = 0;
+		StringBuilder str = new StringBuilder();
+		InputStream in = null;
 
-        //Эта замена нужна, т.к. в корректных quoted-printable строках такие пробелы должны игнорироваться
-        src = src.replaceAll(QUOTED_PRINTABLE_ENDING_EXPRESSION + "\\s*" + QUOTED_PRINTABLE_BEGINNING_EXPRESSION,
-                QUOTED_PRINTABLE_ENDING + QUOTED_PRINTABLE_BEGINNING);
+		try {
+			in = new FileInputStream(sourceFile);
+			MimeMessage message = new MimeMessage(mailSession, in);
+			str.append("Тема : ").append(message.getSubject()).append('\n');
+			str.append("Отправитель : ").append(message.getFrom()[0]).append('\n');
+			str.append("----------------------------").append('\n');
+			str.append("Сообщение :").append('\n');
+			str.append(EmlUtils.parsePartDocText(message)).append('\n');
+		} catch (MessagingException e) {
+			throw new IOException(e);
+		} finally {
+			IOUtils.closeQuietly(in);
+		}
 
-        while (position < src.length()) {
-            Pair<Integer, String> tmp = getStringPart(src.substring(position));
-            position += tmp.first;
-            forDecode.add(tmp.second);
-        }
+		return str.toString();
+	}
 
-        StringBuilder forReturn = new StringBuilder();
+	private static String parsePartDocText(Part p) throws MessagingException, IOException {
+		if (p.isMimeType("text/html")) {
+			String text = decode((String) p.getContent());
+			text = text.replaceAll("<.*?>", "").trim();
+			text = text.replaceAll("((\r\n)+ +(\r\n)+)+", "\r\n");
+			text = text.replaceAll("( )+", " ");
+			text = text.replaceAll("(\r\n)+", "\r\n");
+			return text;
+		}
+		if (p.isMimeType("text/*")) {
+			return decode((String) p.getContent());
+		}
+		if (p.isMimeType("multipart/alternative")) {
+			// prefer plain text over html text
+			Multipart mp = (Multipart) p.getContent();
+			String text = null;
+			for (int i = 0; i < mp.getCount(); i++) {
+				Part bp = mp.getBodyPart(i);
+				if (bp.isMimeType("text/html")) {
+					if (text == null) {
+						text = parsePartDocText(bp);
+					}
+				} else if (bp.isMimeType("text/plain")) {
+					String s = parsePartDocText(bp);
+					if (s != null) {
+						return s;
+					}
+				} else {
+					return parsePartDocText(bp);
+				}
+			}
+			return text;
+		} else if (p.isMimeType("multipart/*")) {
+			Multipart mp = (Multipart) p.getContent();
+			for (int i = 0; i < mp.getCount(); i++) {
+				String s = parsePartDocText(mp.getBodyPart(i));
+				if (s != null) {
+					return s;
+				}
+			}
+		}
+		return null;
+	}
 
-        for (String part : forDecode) {
-            try {
-                forReturn.append(MimeUtility.decodeText(part));
-            } catch (UnsupportedEncodingException e) {}
-        }
+	private static String decode(String src) {
+		if (src == null)
+			return null;
 
-        return forReturn.toString();
-    }
+		List<String> forDecode = new LinkedList<String>();
+		int position = 0;
 
-    private static Pair<Integer, String> getStringPart(String src) {
-        Pair<Integer, String> forReturn = new Pair<Integer, String>();
+		//Эта замена нужна, т.к. в корректных quoted-printable строках такие пробелы должны игнорироваться
+		src = src.replaceAll(QUOTED_PRINTABLE_ENDING_EXPRESSION + "\\s*" + QUOTED_PRINTABLE_BEGINNING_EXPRESSION,
+				QUOTED_PRINTABLE_ENDING + QUOTED_PRINTABLE_BEGINNING);
 
-        if (src.startsWith(QUOTED_PRINTABLE_BEGINNING)) {
-            int beginIndex = getQPStartIndex(src.substring(QUOTED_PRINTABLE_BEGINNING.length()))
-                    + QUOTED_PRINTABLE_BEGINNING.length();
-            int endIndex = getQPEndIndex(src);
+		while (position < src.length()) {
+			Pair<Integer, String> tmp = getStringPart(src.substring(position));
+			position += tmp.first;
+			forDecode.add(tmp.second);
+		}
 
-            forReturn.first = beginIndex < endIndex ? beginIndex : endIndex;
-            forReturn.second = src.substring(0, forReturn.first);
-            forReturn.second = beginIndex <= endIndex ? forReturn.second : forReturn.second.replaceAll("\\s",
-                    QUOTED_PRINTABLE_SPACE).concat(QUOTED_PRINTABLE_ENDING);
-            forReturn.first += beginIndex <= endIndex ? 0 : QUOTED_PRINTABLE_ENDING.length();
-        } else {
-            forReturn.first = getQPStartIndex(src);
-            forReturn.second = src.substring(0, forReturn.first);
-        }
+		StringBuilder forReturn = new StringBuilder();
 
-        return forReturn;
-    }
+		for (String part : forDecode) {
+			try {
+				forReturn.append(MimeUtility.decodeText(part));
+			} catch (UnsupportedEncodingException e) {}
+		}
 
-    private static class Pair<T1, T2> {
-        T1 first;
-        T2 second;
-    }
+		return forReturn.toString();
+	}
 
-    private static int getQPEndIndex(String src) {
-        src = src.replaceFirst(QUOTED_PRINTABLE_MIDDLE_EXPRESSION, "___");
-        int forReturn = src.indexOf(QUOTED_PRINTABLE_ENDING);
-        return forReturn == -1 ? src.length() : forReturn;
-    }
+	private static Pair<Integer, String> getStringPart(String src) {
+		Pair<Integer, String> forReturn = new Pair<Integer, String>();
 
-    private static int getQPStartIndex(String src) {
-        int base64Index = src.indexOf(BASE64_ENDING);
-        int forReturn = src.indexOf(QUOTED_PRINTABLE_BEGINNING);
-        if (forReturn == base64Index)
-            forReturn = src.indexOf(QUOTED_PRINTABLE_BEGINNING, forReturn + 1);
-        return forReturn == -1 ? src.length() : forReturn;
-    }
+		if (src.startsWith(QUOTED_PRINTABLE_BEGINNING)) {
+			int beginIndex = getQPStartIndex(src.substring(QUOTED_PRINTABLE_BEGINNING.length()))
+					+ QUOTED_PRINTABLE_BEGINNING.length();
+			int endIndex = getQPEndIndex(src);
+
+			forReturn.first = beginIndex < endIndex ? beginIndex : endIndex;
+			forReturn.second = src.substring(0, forReturn.first);
+			forReturn.second = beginIndex <= endIndex ? forReturn.second : forReturn.second.replaceAll("\\s",
+					QUOTED_PRINTABLE_SPACE).concat(QUOTED_PRINTABLE_ENDING);
+			forReturn.first += beginIndex <= endIndex ? 0 : QUOTED_PRINTABLE_ENDING.length();
+		} else {
+			forReturn.first = getQPStartIndex(src);
+			forReturn.second = src.substring(0, forReturn.first);
+		}
+
+		return forReturn;
+	}
+
+	private static class Pair<T1, T2> {
+		T1 first;
+		T2 second;
+	}
+
+	private static int getQPEndIndex(String src) {
+		src = src.replaceFirst(QUOTED_PRINTABLE_MIDDLE_EXPRESSION, "___");
+		int forReturn = src.indexOf(QUOTED_PRINTABLE_ENDING);
+		return forReturn == -1 ? src.length() : forReturn;
+	}
+
+	private static int getQPStartIndex(String src) {
+		int base64Index = src.indexOf(BASE64_ENDING);
+		int forReturn = src.indexOf(QUOTED_PRINTABLE_BEGINNING);
+		if (forReturn == base64Index)
+			forReturn = src.indexOf(QUOTED_PRINTABLE_BEGINNING, forReturn + 1);
+		return forReturn == -1 ? src.length() : forReturn;
+	}
 
 }

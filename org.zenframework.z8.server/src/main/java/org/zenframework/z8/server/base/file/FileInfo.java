@@ -26,6 +26,7 @@ import org.zenframework.z8.server.types.string;
 import org.zenframework.z8.server.utils.IOUtils;
 
 public class FileInfo extends OBJECT implements RmiSerializable, Serializable {
+
 	private static final long serialVersionUID = -2542688680678439014L;
 
 	private static final String PROP_DEFAULT_READ = "z8.serialization.FileInfo.defaultReadObject";
@@ -251,16 +252,16 @@ public class FileInfo extends OBJECT implements RmiSerializable, Serializable {
 			throw new RuntimeException(e);
 		}
 	}
-	
-    private void writeObject(ObjectOutputStream out)  throws IOException {
-    	serialize(out);
-    }
-    
-    private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
-    	deserialize(in);
-    }
 
-    @Override
+	private void writeObject(ObjectOutputStream out) throws IOException {
+		serialize(out);
+	}
+
+	private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
+		deserialize(in);
+	}
+
+	@Override
 	public void serialize(ObjectOutputStream out) throws IOException {
 		out.writeLong(serialVersionUID);
 
@@ -272,10 +273,10 @@ public class FileInfo extends OBJECT implements RmiSerializable, Serializable {
 		RmiIO.writeGuid(out, id);
 
 		out.writeBoolean(file != null);
-	
+
 		if (file != null) {
 			InputStream in = file.getInputStream();
-	
+
 			long size = in.available();
 			out.writeLong(size);
 
@@ -299,12 +300,12 @@ public class FileInfo extends OBJECT implements RmiSerializable, Serializable {
 		time = RmiIO.readDatetime(in);
 		id = RmiIO.readGuid(in);
 
-		if(in.readBoolean()) {
+		if (in.readBoolean()) {
 			long size = in.readLong();
-			
+
 			file = FilesFactory.createFileItem(name.get());
 			OutputStream out = file.getOutputStream();
-	
+
 			try {
 				IOUtils.copyLarge(in, out, size, false);
 			} finally {
@@ -312,4 +313,5 @@ public class FileInfo extends OBJECT implements RmiSerializable, Serializable {
 			}
 		}
 	}
+
 }
