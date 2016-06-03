@@ -57,7 +57,7 @@ public class PdfUtils {
 		try {
 			Font font = new Font(BaseFont.createFont(
 					new File(Z8Context.getWorkingPath(), "fonts/times.ttf").getCanonicalPath(), BaseFont.IDENTITY_H,
-					BaseFont.EMBEDDED));
+					BaseFont.EMBEDDED), 14);
 			PdfWriter.getInstance(document, new FileOutputStream(file));
 			document.open();
 			document.add(new Paragraph(text, font));
