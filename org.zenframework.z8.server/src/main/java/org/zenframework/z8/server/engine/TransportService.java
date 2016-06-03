@@ -12,7 +12,7 @@ import org.apache.commons.logging.LogFactory;
 import org.zenframework.z8.server.base.file.FileInfo;
 import org.zenframework.z8.server.base.table.system.Files;
 import org.zenframework.z8.server.base.table.system.Properties;
-import org.zenframework.z8.server.base.table.system.SystemAddresses;
+import org.zenframework.z8.server.base.table.system.SystemDomains;
 import org.zenframework.z8.server.config.ServerConfig;
 import org.zenframework.z8.server.ie.Message;
 import org.zenframework.z8.server.ie.TransportProcedure;
@@ -99,7 +99,7 @@ public class TransportService extends RmiServer implements ITransportService, Pr
 	public void sendMessage(Message message) throws RemoteException {
 		String address = message.getAddress();
 
-		IUser user = SystemAddresses.getDefaultUser(address);
+		IUser user = SystemDomains.getDefaultUser(address);
 		IRequest request = new Request(new Session("", user));
 		
 		ApplicationServer.setRequest(request);

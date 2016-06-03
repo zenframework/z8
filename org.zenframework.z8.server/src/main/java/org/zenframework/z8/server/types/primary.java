@@ -1,9 +1,13 @@
 package org.zenframework.z8.server.types;
 
+import java.io.Serializable;
+
 import org.zenframework.z8.server.db.DatabaseVendor;
 import org.zenframework.z8.server.db.FieldType;
 
-public class primary {
+public class primary implements Serializable {
+
+	private static final long serialVersionUID = -6139111122281366413L;
 
 	static public final int Binary = 0;
 	static public final int Bool = 1;

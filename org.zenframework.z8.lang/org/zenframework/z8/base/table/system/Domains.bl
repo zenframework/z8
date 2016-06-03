@@ -1,0 +1,28 @@
+import org.zenframework.z8.base.table.value.StringExpression;
+import org.zenframework.z8.base.table.value.BoolField;
+import org.zenframework.z8.base.table.value.Link;
+import org.zenframework.z8.base.table.Table;
+
+[native "org.zenframework.z8.server.base.table.system.SystemDomains"]
+
+[name "SystemDomains"]
+[displayName "Домены"]
+class Domains extends Table {
+
+	Users users;
+	
+	[name "UserId"]
+	Link user = users;
+	
+	[displayName "Адрес"] id;
+	id.length = 256;
+	id.unique = true;
+	
+	[name "Owner"]
+	[displayName "Владелец"]
+	BoolField owner;
+
+	[displayName "URL экспорта"]
+	StringExpression exportUrl;
+
+}

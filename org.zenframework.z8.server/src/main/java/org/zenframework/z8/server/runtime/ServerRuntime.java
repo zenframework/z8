@@ -9,7 +9,7 @@ import org.zenframework.z8.server.base.table.system.Properties;
 import org.zenframework.z8.server.base.table.system.Property;
 import org.zenframework.z8.server.base.table.system.SecurityGroups;
 import org.zenframework.z8.server.base.table.system.Sequences;
-import org.zenframework.z8.server.base.table.system.SystemAddresses;
+import org.zenframework.z8.server.base.table.system.SystemDomains;
 import org.zenframework.z8.server.base.table.system.SystemTools;
 import org.zenframework.z8.server.base.table.system.UserEntries;
 import org.zenframework.z8.server.base.table.system.Users;
@@ -23,6 +23,9 @@ public class ServerRuntime extends AbstractRuntime {
 	public static final Property DbSchemeControlSumProperty = new Property("C0CDFF6D-9357-41FA-94B1-61D131CC0C09",
 			"z8.database.schemeControlSum", "000.000.0000", "Контрольная сумма схемы базы данных");
 
+	public static final Property InstanceIdProperty = new Property("7370AF2A-AA31-49E7-84AA-E000DAF78236",
+			"z8.instanceId", "", "Идентификатор экземпляра");
+
 	public static final Property TransportCenterAddressProperty = new Property("9FCF5C13-DDF3-4B0C-8572-AF4DFEF7D6B6",
 			"z8.transport.transportCenterAddress", "", "Адрес (хост:порт) транспортного центра");
 	public static final Property RegisterInTransportCenterProperty = new Property("1090E6CD-0B18-4599-8687-87EF7A888848",
@@ -35,8 +38,6 @@ public class ServerRuntime extends AbstractRuntime {
 			"z8.transport.sendFilesSeparately", "true", "Отправлять вложения отдельными сообщениями (true / false)");
 	public static final Property LazyFilesProperty = new Property("620324BB-AE31-4EDD-9293-E15F8C354279",
 			"z8.transport.lazyFiles", "true", "Отложенная отправка файлов по запросу (true / false)");
-	public static final Property InstanceIdProperty = new Property("7370AF2A-AA31-49E7-84AA-E000DAF78235",
-			"z8.transport.selfAddressDefault", "", "Идентификатор экземпляра (адрес по умолчанию)");
 	public static final Property ExportRecordsMaxProperty = new Property("FAB69475-114C-4C39-8401-A03C42608BBE",
 			"z8.transport.exportRecordsMax", "1000", "Максимальное количество записей в сообщении экспорта");
 	public static final Property RecordsSortingModeProperty = new Property("FA9D7410-050B-43BB-9F7A-B151F5BCD091",
@@ -69,7 +70,7 @@ public class ServerRuntime extends AbstractRuntime {
 		addTable(new Sequences.CLASS<Sequences>(null));
 		addTable(new Entries.CLASS<Entries>(null));
 
-		addTable(new SystemAddresses.CLASS<SystemAddresses>(null));
+		addTable(new SystemDomains.CLASS<SystemDomains>(null));
 		addTable(new UserEntries.CLASS<UserEntries>(null));
 
 		addTable(new Jobs.CLASS<Jobs>(null));
@@ -89,8 +90,9 @@ public class ServerRuntime extends AbstractRuntime {
 		addJob(new TransportProcedure.CLASS<TransportProcedure>(null));
 		addJob(new BridgeProcedure.CLASS<BridgeProcedure>(null));
 
-		addProperty(TransportCenterAddressProperty);
 		addProperty(DbSchemeControlSumProperty);
+		addProperty(InstanceIdProperty);
+		addProperty(TransportCenterAddressProperty);
 		addProperty(PreserveExportMessagesProperty);
 		addProperty(EnableProtocolsProperty);
 		addProperty(SendFilesSeparatelyProperty);
@@ -98,7 +100,6 @@ public class ServerRuntime extends AbstractRuntime {
 		addProperty(ExportRecordsMaxProperty);
 		addProperty(RecordsSortingModeProperty);
 		addProperty(InactiveRouteTimeoutProperty);
-		addProperty(InstanceIdProperty);
 		addProperty(FileFolderProperty);
 		addProperty(JmsConnectionFactoryProperty);
 		addProperty(JmsConnectionUrlProperty);

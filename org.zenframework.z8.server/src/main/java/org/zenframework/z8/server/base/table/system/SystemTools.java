@@ -38,7 +38,7 @@ public class SystemTools extends Desktop {
     public final ExportMessages.CLASS<ExportMessages> exportMessages = new ExportMessages.CLASS<ExportMessages>(this);
     public final TransportRoutes.CLASS<TransportRoutes> transportRoutes = new TransportRoutes.CLASS<TransportRoutes>(this);
     public final Files.CLASS<Files> files = new Files.CLASS<Files>(this);
-    public final SystemAddresses.CLASS<SystemAddresses> addresses = new SystemAddresses.CLASS<SystemAddresses>(this);
+    public final SystemDomains.CLASS<SystemDomains> addresses = new SystemDomains.CLASS<SystemDomains>(this);
 
     public SystemTools(IObject container) {
         super(container);

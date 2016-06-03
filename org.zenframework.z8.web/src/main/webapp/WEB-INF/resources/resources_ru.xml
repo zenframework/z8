@@ -52,10 +52,12 @@
 
 	<entry key="Users.name.default">User</entry>
     
-	<!-- SystemAddresses -->
-	<entry key="SystemAddresses.title">Системные адреса</entry>
-	<entry key="SystemAddresses.id">Адрес</entry>
-	<entry key="SystemAddresses.user">Пользователь</entry>
+	<!-- SystemDomains -->
+	<entry key="SystemDomains.title">Домены</entry>
+	<entry key="SystemDomains.id">Id</entry>
+	<entry key="SystemDomains.user">Системный пользователь</entry>
+	<entry key="SystemDomains.owner">Владелец</entry>
+	<entry key="SystemDomains.exportUrl">URL экспорта</entry>
 
     <!-- Properties -->
     <entry key="Properties.title">Системные свойства</entry>
