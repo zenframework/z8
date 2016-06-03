@@ -112,10 +112,9 @@ public class Files extends Table {
 			super(container);
 		}
 
-		@SuppressWarnings("unchecked")
 		@Override
 		public guid z8_get() {
-			Files container = ((Files.CLASS<Files>) getContainer().getCLASS()).get();
+			Files container = (Files) getContainer();
 			return container.recordId();
 		}
 
@@ -139,10 +138,9 @@ public class Files extends Table {
 			super(container);
 		}
 
-		@SuppressWarnings("unchecked")
 		@Override
 		public string z8_get() {
-			Files container = ((Files.CLASS<Files>) getContainer().getCLASS()).get();
+			Files container = (Files) getContainer();
 			return new string(container.getStatus().getText());
 		}
 
@@ -166,10 +164,9 @@ public class Files extends Table {
 			super(container);
 		}
 
-		@SuppressWarnings("unchecked")
 		@Override
 		protected String attachmentName() {
-			Files container = ((Files.CLASS<Files>) getContainer().getCLASS()).get();
+			Files container = (Files) getContainer();
 			File path = new File(Folders.Base, container.path.get().get().string().get());
 			return container.getStatus() == FileInfo.Status.LOCAL || path.exists() ? container.name.get().get().string()
 					.get() : null;
@@ -200,7 +197,7 @@ public class Files extends Table {
 	static public Files newInstance() {
 		return new Files.CLASS<Files>().get();
 	}
-	
+
 	public Files(IObject container) {
 		super(container);
 	}

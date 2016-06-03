@@ -21,6 +21,7 @@ import org.zenframework.z8.server.security.User;
 import org.zenframework.z8.server.types.sql.sql_string;
 
 public class SystemDomains extends Table {
+
 	public static final String TableName = "SystemDomains";
 
 	static public class names {
@@ -68,7 +69,7 @@ public class SystemDomains extends Table {
 
 			@Override
 			public Object newObject(IObject container) {
-				return new SystemDomains(container);
+				return new ExportUrlExpression(container);
 			}
 		}
 
@@ -78,9 +79,9 @@ public class SystemDomains extends Table {
 
 		@Override
 		protected sql_string z8_expression() {
-			@SuppressWarnings("unchecked")
-			SystemDomains container = ((SystemDomains.CLASS<SystemDomains>)this.getContainer()).get();
-			return container.owner.get().sql_bool().z8_IIF(new sql_string(Export.LOCAL_PROTOCOL), new sql_string(Export.REMOTE_PROTOCOL))
+			SystemDomains container = (SystemDomains) this.getContainer();
+			return container.owner.get().sql_bool()
+					.z8_IIF(new sql_string(Export.LOCAL_PROTOCOL), new sql_string(Export.REMOTE_PROTOCOL))
 					.operatorAdd(new sql_string(":")).operatorAdd(container.id.get().sql_string());
 		}
 
@@ -89,7 +90,8 @@ public class SystemDomains extends Table {
 	public final Users.CLASS<Users> users = new Users.CLASS<Users>(this);
 	public final Link.CLASS<Link> user = new Link.CLASS<Link>(this);
 	public final BoolField.CLASS<BoolField> owner = new BoolField.CLASS<BoolField>(this);
-	public final ExportUrlExpression.CLASS<ExportUrlExpression> exportUrl = new ExportUrlExpression.CLASS<ExportUrlExpression>(this);
+	public final ExportUrlExpression.CLASS<ExportUrlExpression> exportUrl = new ExportUrlExpression.CLASS<ExportUrlExpression>(
+			this);
 
 	static public SystemDomains newInstance() {
 		return new SystemDomains.CLASS<SystemDomains>().get();
@@ -107,6 +109,8 @@ public class SystemDomains extends Table {
 	@Override
 	public void constructor2() {
 		super.constructor2();
+
+		//setExportable(false);
 
 		users.setIndex("users");
 
@@ -151,7 +155,7 @@ public class SystemDomains extends Table {
 
 		SqlToken where = new Rel(new Lower(id), Operation.Eq, new sql_string(address.toLowerCase()));
 
-		if(!domains.readFirst(fields, where))
+		if (!domains.readFirst(fields, where))
 			return null;
 
 		return User.load(name.string().get());

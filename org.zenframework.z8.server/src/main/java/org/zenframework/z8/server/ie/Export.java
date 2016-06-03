@@ -95,11 +95,11 @@ public class Export extends OBJECT {
 	}
 
 	public void addRecordset(Table table, Collection<Field> fields) {
-	    addRecordset(table, fields, null);
+		addRecordset(table, fields, null);
 	}
 
 	public void addRecordset(Table table, sql_bool where) {
-	    addRecordset(table, table.getPrimaryFields(), where);
+		addRecordset(table, table.getPrimaryFields(), where);
 	}
 
 	public void addRecordset(Table table, Collection<Field> fields, sql_bool where) {
@@ -309,7 +309,8 @@ public class Export extends OBJECT {
 			// Ссылки на другие таблицы
 			// TODO Переделать через links, проверять атрибут exportable
 			for (IForeignKey fkey : recordsetEntry.recordset.getForeignKeys()) {
-				if (fkey.getReferencedTable() instanceof Table) {
+				if (((Field) fkey).exportable() && fkey.getReferencedTable() instanceof Table
+						&& ((Table) fkey.getReferencedTable()).exportable()) {
 					if (LOG.isDebugEnabled()) {
 						LOG.debug(getSpaces(level + 1)
 								+ fkey.getFieldDescriptor().name()
