@@ -21,6 +21,9 @@ public class TransportRoute implements RmiSerializable, Serializable {
 	private int priority = 0;
 	private boolean active = true;
 
+	public TransportRoute() {
+	}
+	
 	public TransportRoute(String address, String protocol, String transportAddress) {
 		this.routeId = guid.create();
 		this.receiver = address;

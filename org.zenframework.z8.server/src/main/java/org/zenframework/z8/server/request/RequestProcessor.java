@@ -55,7 +55,6 @@ public class RequestProcessor {
                 info.thread.join(10 * 1000);
             }
             catch(InterruptedException e) {
-                System.out.println(info.thread.getName() + " has been interrupted");
             }
         }
 
