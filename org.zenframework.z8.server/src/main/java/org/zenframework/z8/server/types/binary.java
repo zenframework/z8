@@ -12,104 +12,107 @@ import org.zenframework.z8.server.db.FieldType;
 import org.zenframework.z8.server.types.sql.sql_binary;
 
 public class binary extends primary {
-    private InputStream stream;
 
-    public binary() {
-        this(new byte[0]);
-    }
+	private static final long serialVersionUID = -6993940737401994151L;
 
-    public binary(byte[] data) {
-        set(data);
-    }
+	private InputStream stream;
 
-    public binary(InputStream stream) {
-        set(stream);
-    }
+	public binary() {
+		this(new byte[0]);
+	}
 
-    public binary(binary binary) {
-        set(binary);
-    }
+	public binary(byte[] data) {
+		set(data);
+	}
 
-    public binary(File file) {
-        set(file);
-    }
+	public binary(InputStream stream) {
+		set(stream);
+	}
 
-    public binary(string string) {
-        set(string != null ? string.getBytes(encoding.Default) : new byte[0]);
-    }
+	public binary(binary binary) {
+		set(binary);
+	}
 
-    public binary(String s) {
-        this(new string(s));
-    }
+	public binary(File file) {
+		set(file);
+	}
 
-    private void set(byte[] bytes) {
-        set(new ByteArrayInputStream(bytes));
-    }
+	public binary(string string) {
+		set(string != null ? string.getBytes(encoding.Default) : new byte[0]);
+	}
 
-    private void set(binary binary) {
-        if(this.stream != binary.stream) {
-            close();
-            this.stream = binary.stream;
-        }
-    }
+	public binary(String s) {
+		this(new string(s));
+	}
 
-    private void set(File file) {
-        try {
-            set(new FileInputStream(file));
-        } catch (FileNotFoundException e) {
-            throw new RuntimeException(e);
-        }
-    }
+	private void set(byte[] bytes) {
+		set(new ByteArrayInputStream(bytes));
+	}
 
-    private void set(InputStream stream) {
-        if(this.stream != stream) {
-            close();
-            this.stream = stream;
-        }
-    }
-    
-    public InputStream get() {
-        return stream;
-    }
+	private void set(binary binary) {
+		if (this.stream != binary.stream) {
+			close();
+			this.stream = binary.stream;
+		}
+	}
 
-    @Override
-    public binary defaultValue() {
-        return new binary();
-    }
+	private void set(File file) {
+		try {
+			set(new FileInputStream(file));
+		} catch (FileNotFoundException e) {
+			throw new RuntimeException(e);
+		}
+	}
 
-    private void close() {
-        try {
-            if(stream != null) {
-                stream.close();
-                stream = null;
-            }
-        } catch(IOException e) {
-            throw new exception(e);
-        }
-    }
+	private void set(InputStream stream) {
+		if (this.stream != stream) {
+			close();
+			this.stream = stream;
+		}
+	}
 
-    @Override
-    public FieldType type() {
-        return FieldType.Binary;
-    }
+	public InputStream get() {
+		return stream;
+	}
 
-    @Override
-    public String toDbConstant(DatabaseVendor dbtype) {
-        switch (dbtype) {
-            case Postgres:
-            case Oracle:
-                return "null";
-            default:
-                return "''";
-        }
-    }
+	@Override
+	public binary defaultValue() {
+		return new binary();
+	}
 
-    @Override
-    public String toString() {
-        return "binary value";
-    }
+	private void close() {
+		try {
+			if (stream != null) {
+				stream.close();
+				stream = null;
+			}
+		} catch (IOException e) {
+			throw new exception(e);
+		}
+	}
 
-    public sql_binary sql_binary() {
-        return new sql_binary(this);
-    }
+	@Override
+	public FieldType type() {
+		return FieldType.Binary;
+	}
+
+	@Override
+	public String toDbConstant(DatabaseVendor dbtype) {
+		switch (dbtype) {
+		case Postgres:
+		case Oracle:
+			return "null";
+		default:
+			return "''";
+		}
+	}
+
+	@Override
+	public String toString() {
+		return "binary value";
+	}
+
+	public sql_binary sql_binary() {
+		return new sql_binary(this);
+	}
 }
