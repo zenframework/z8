@@ -8,11 +8,12 @@ class TransportRoutes extends Table {
 
 	public string getAddress();
 	public string getProtocol();
-	public string getReceiver();
+	public string getDomain();
 	public string getUrl();
 	
-	public bool readRoute(string receiver, string protocol, string address);
-	public bool setRoute(string receiver, string protocol, string address, int priority, bool active);
+	public bool readRoute(string domain, string protocol, string address);
+	public bool readRoute(guid domain, string protocol, string address);
+	public bool setRoute(guid routeId, guid domainId, string domain, string protocol, string address, int priority, bool active);
 	public bool disableRoute(guid routeId, string description);
 
 }

@@ -14,30 +14,18 @@ public class TransportRoute implements RmiSerializable, Serializable {
 	private static final long serialVersionUID = -2215330098958924695L;
 
 	private guid routeId;
-	private String receiver;
+	private guid domainId;
+	private String domain;
 	private String protocol;
 	private String address;
 
 	private int priority = 0;
 	private boolean active = true;
 
-	public TransportRoute(String address, String protocol, String transportAddress) {
-		this.routeId = guid.create();
-		this.receiver = address;
-		this.protocol = protocol;
-		this.address = transportAddress;
-	}
-
-	public TransportRoute(guid routeId, String receiver, String protocol, String address) {
+	public TransportRoute(guid routeId, guid domainId, String domain, String protocol, String address, int priority, boolean active) {
 		this.routeId = routeId;
-		this.receiver = receiver;
-		this.protocol = protocol;
-		this.address = address;
-	}
-
-	public TransportRoute(guid routeId, String receiver, String protocol, String address, int priority, boolean active) {
-		this.routeId = routeId;
-		this.receiver = receiver;
+		this.domainId = domainId;
+		this.domain = domain;
 		this.protocol = protocol;
 		this.address = address;
 		this.priority = priority;
@@ -46,6 +34,10 @@ public class TransportRoute implements RmiSerializable, Serializable {
 
 	public guid getRouteId() {
 		return routeId;
+	}
+
+	public guid getDomainId() {
+		return domainId;
 	}
 
 	public int getPriority() {
@@ -68,8 +60,8 @@ public class TransportRoute implements RmiSerializable, Serializable {
 		return IeUtil.getUrl(getProtocol(), getAddress());
 	}
 
-	public String getReceiver() {
-		return receiver;
+	public String getDomain() {
+		return domain;
 	}
 
 	public String getProtocol() {
@@ -91,7 +83,8 @@ public class TransportRoute implements RmiSerializable, Serializable {
 	@Override
 	public void serialize(ObjectOutputStream out) throws IOException {
 		RmiIO.writeGuid(out, routeId);
-		RmiIO.writeString(out, receiver);
+		RmiIO.writeGuid(out, domainId);
+		RmiIO.writeString(out, domain);
 		RmiIO.writeString(out, protocol);
 		RmiIO.writeString(out, address);
 
@@ -102,7 +95,8 @@ public class TransportRoute implements RmiSerializable, Serializable {
 	@Override
 	public void deserialize(ObjectInputStream in) throws IOException, ClassNotFoundException {
 		routeId = RmiIO.readGuid(in);
-		receiver = RmiIO.readString(in);
+		domainId = RmiIO.readGuid(in);
+		domain = RmiIO.readString(in);
 		protocol = RmiIO.readString(in);
 		address = RmiIO.readString(in);
 

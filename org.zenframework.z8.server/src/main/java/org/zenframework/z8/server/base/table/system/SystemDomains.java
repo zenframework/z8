@@ -33,6 +33,7 @@ public class SystemDomains extends Table {
 		public final static String Title = "SystemDomains.title";
 		public final static String Id = "SystemDomains.id";
 		public final static String User = "SystemDomains.user";
+		public final static String UserDesc = "SystemDomains.userDesc";
 		public final static String Owner = "SystemDomains.owner";
 		public final static String ExportUrl = "SystemDomains.exportUrl";
 	}
@@ -88,7 +89,7 @@ public class SystemDomains extends Table {
 	}
 
 	public final Users.CLASS<Users> users = new Users.CLASS<Users>(this);
-	public final Link.CLASS<Link> user = new Link.CLASS<Link>(this);
+	public final Link.CLASS<Link> userLink = new Link.CLASS<Link>(this);
 	public final BoolField.CLASS<BoolField> owner = new BoolField.CLASS<BoolField>(this);
 	public final ExportUrlExpression.CLASS<ExportUrlExpression> exportUrl = new ExportUrlExpression.CLASS<ExportUrlExpression>(
 			this);
@@ -103,14 +104,12 @@ public class SystemDomains extends Table {
 
 	@Override
 	public void constructor1() {
-		user.get(CLASS.Constructor1).operatorAssign(users);
+		userLink.get(CLASS.Constructor1).operatorAssign(users);
 	}
 
 	@Override
 	public void constructor2() {
 		super.constructor2();
-
-		//setExportable(false);
 
 		users.setIndex("users");
 
@@ -118,9 +117,12 @@ public class SystemDomains extends Table {
 		id.get().length.set(256);
 		id.get().unique.set(true);
 
-		user.setName(names.User);
-		user.setIndex("user");
-		user.setDisplayName(Resources.get(strings.User));
+		userLink.setName(names.User);
+		userLink.setIndex("userLink");
+		userLink.setExportable(false);
+
+		users.get().name.setDisplayName(Resources.get(strings.User));
+		users.get().description.setDisplayName(Resources.get(strings.UserDesc));
 
 		owner.setName(names.Owner);
 		owner.setIndex("owner");
@@ -129,7 +131,7 @@ public class SystemDomains extends Table {
 		exportUrl.setIndex("exportUrl");
 		exportUrl.setDisplayName(Resources.get(strings.ExportUrl));
 
-		registerDataField(user);
+		registerDataField(userLink);
 		registerDataField(owner);
 		registerDataField(exportUrl);
 
@@ -141,7 +143,7 @@ public class SystemDomains extends Table {
 
 		queries.add(users);
 
-		links.add(user);
+		links.add(userLink);
 	}
 
 	static public IUser getDefaultUser(String address) {

@@ -43,14 +43,14 @@ public class FileConverter {
 		Properties.addListener(new ConverterListener());
 	}
 
-	private static final String pdfExtension = "pdf";
-
 	private static final int OFFICE_PORT = 8100;
 
 	private static final List<String> textExtensions = Collections.synchronizedList(new LinkedList<String>());
 	private static final List<String> imageExtensions = Collections.synchronizedList(new LinkedList<String>());
 	private static final List<String> emailExtensions = Collections.synchronizedList(new LinkedList<String>());
 	private static final List<String> officeExtensions = Collections.synchronizedList(new LinkedList<String>());
+
+	public static final String PDF_EXTENSION = "pdf";
 
 	private static OfficeManager officeManager;
 
@@ -61,10 +61,10 @@ public class FileConverter {
 	}
 
 	public File getConvertedPdf(String relativePath, File srcFile) {
-		if (srcFile.getName().endsWith('.' + pdfExtension))
+		if (srcFile.getName().endsWith('.' + PDF_EXTENSION))
 			return srcFile;
 
-		File convertedFile = new File(storage, relativePath + '.' + pdfExtension);
+		File convertedFile = new File(storage, relativePath + '.' + PDF_EXTENSION);
 
 		if (!convertedFile.exists()) {
 			convertedFile.getParentFile().mkdirs();
@@ -92,7 +92,7 @@ public class FileConverter {
 
 	public static boolean isConvertableToPdf(String fileName) {
 		String extension = FilenameUtils.getExtension(fileName).toLowerCase();
-		return pdfExtension.equals(extension) || getTextExtensions().contains(extension)
+		return PDF_EXTENSION.equals(extension) || getTextExtensions().contains(extension)
 				|| getImageExtensions().contains(extension) || getOfficeExtensions().contains(extension)
 				|| getEmailExtensions().contains(extension);
 	}

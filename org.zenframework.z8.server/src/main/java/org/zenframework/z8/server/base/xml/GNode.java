@@ -60,6 +60,7 @@ public class GNode implements RmiSerializable, Serializable {
 		deserialize(in);
 	}
 
+	@Override
 	public void serialize(ObjectOutputStream out) throws IOException {
 		out.writeLong(serialVersionUID);
 
@@ -77,6 +78,7 @@ public class GNode implements RmiSerializable, Serializable {
 		out.writeObject(files);
 	}
 
+	@Override
 	@SuppressWarnings("unchecked")
 	public void deserialize(ObjectInputStream in) throws IOException, ClassNotFoundException {
 		@SuppressWarnings("unused")

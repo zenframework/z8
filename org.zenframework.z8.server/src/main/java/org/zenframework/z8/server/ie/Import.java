@@ -10,7 +10,7 @@ import org.apache.commons.logging.LogFactory;
 import org.zenframework.z8.ie.xml.ExportEntry;
 import org.zenframework.z8.server.base.file.FileInfo;
 import org.zenframework.z8.server.base.table.Table;
-import org.zenframework.z8.server.base.table.system.Files;
+import org.zenframework.z8.server.base.table.system.SystemFiles;
 import org.zenframework.z8.server.base.table.value.Field;
 import org.zenframework.z8.server.db.generator.IForeignKey;
 import org.zenframework.z8.server.engine.Runtime;
@@ -37,7 +37,7 @@ public class Import {
 			fileInfo.id = properties.get(Message.PROP_RECORD_ID).guid();
 			fileInfo.path = properties.get(Message.PROP_FILE_PATH).string();
 			try {
-				Files.sendFile(fileInfo, message.getSender());
+				SystemFiles.sendFile(fileInfo, message.getSender());
 			} catch (Throwable e) {
 				LOG.error("Can't send file " + fileInfo + " to '" + message.getSender(), e);
 			}
@@ -73,7 +73,7 @@ public class Import {
 	}
 
 	public static void importFiles(Message message) {
-		Files files = Files.newInstance();
+		SystemFiles files = SystemFiles.newInstance();
 
 		for (FileInfo fileInfo : message.getFiles()) {
 			files.addFile(fileInfo);

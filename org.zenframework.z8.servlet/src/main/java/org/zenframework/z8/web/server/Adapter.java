@@ -17,7 +17,6 @@ import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.FileUploadException;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.zenframework.z8.server.base.file.FileInfo;
-import org.zenframework.z8.server.base.file.FileInfoNotFoundException;
 import org.zenframework.z8.server.base.file.FilesFactory;
 import org.zenframework.z8.server.base.xml.GNode;
 import org.zenframework.z8.server.engine.IApplicationServer;
@@ -149,7 +148,7 @@ public abstract class Adapter {
 	protected void processAccessDenied(HttpServletResponse response) throws IOException {}
 
 	protected void service(ISession session, Map<String, String> parameters, List<FileInfo> files,
-			HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException, FileInfoNotFoundException {
+			HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
 		GNode node = new GNode(parameters, files);
 
 		IApplicationServer server = session.getServerInfo().getApplicationServer();

@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.rmi.RemoteException;
 
 import org.zenframework.z8.server.base.file.FileInfo;
-import org.zenframework.z8.server.base.file.FileInfoNotFoundException;
 import org.zenframework.z8.server.base.xml.GNode;
 import org.zenframework.z8.server.security.IUser;
 
@@ -12,7 +11,7 @@ public interface IApplicationServer extends IServer {
 
 	public GNode processRequest(ISession session, GNode request) throws RemoteException;
 
-	public FileInfo download(FileInfo fileInfo) throws RemoteException, FileInfoNotFoundException, IOException;
+	public FileInfo download(FileInfo fileInfo) throws RemoteException, IOException;
 
 	public IUser login(String login) throws RemoteException;
 

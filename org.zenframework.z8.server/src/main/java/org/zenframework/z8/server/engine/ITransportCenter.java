@@ -9,6 +9,6 @@ public interface ITransportCenter extends IServer {
 
 	void registerTransportService(String receiver, int localRegistryPort) throws RemoteException;
 
-	List<TransportRoute> getTransportRoutes(String receiver) throws RemoteException;
+	List<TransportRoute> getTransportRoutes(String domain) throws RemoteException;
 
 }

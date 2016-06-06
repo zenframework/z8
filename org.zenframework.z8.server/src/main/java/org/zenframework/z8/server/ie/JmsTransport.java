@@ -28,10 +28,9 @@ import javax.naming.InitialContext;
 import javax.naming.NamingException;
 
 import org.zenframework.z8.server.base.file.FileInfo;
-import org.zenframework.z8.server.base.file.FileInfoNotFoundException;
 import org.zenframework.z8.server.base.file.FilesFactory;
-import org.zenframework.z8.server.base.table.system.Files;
 import org.zenframework.z8.server.base.table.system.Properties;
+import org.zenframework.z8.server.base.table.system.SystemFiles;
 import org.zenframework.z8.server.logs.Trace;
 import org.zenframework.z8.server.runtime.ServerRuntime;
 import org.zenframework.z8.server.utils.IOUtils;
@@ -306,11 +305,9 @@ public class JmsTransport extends AbstractTransport implements ExceptionListener
 		streamMessage.writeBytes(buff);
 
 		buff = new byte[IOUtils.DefaultBufferSize];
-		Files files = Files.newInstance();
+		SystemFiles files = SystemFiles.newInstance();
 		for (FileInfo fileInfo : message.getFiles()) {
-			try {
-				fileInfo = files.getFile(fileInfo);
-			} catch (FileInfoNotFoundException e) {}
+			fileInfo = files.getFile(fileInfo);
 			// write file length
 			streamMessage.writeLong(fileInfo.file == null ? 0L : fileInfo.file.getSize());
 			// write file contents

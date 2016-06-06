@@ -22,10 +22,9 @@ import org.zenframework.z8.ie.xml.ExportEntry;
 import org.zenframework.z8.ie.xml.ExportEntry.Records;
 import org.zenframework.z8.ie.xml.ObjectFactory;
 import org.zenframework.z8.server.base.file.FileInfo;
-import org.zenframework.z8.server.base.file.FileInfoNotFoundException;
+import org.zenframework.z8.server.base.file.Files;
 import org.zenframework.z8.server.base.file.FilesFactory;
 import org.zenframework.z8.server.base.table.Table;
-import org.zenframework.z8.server.base.table.system.Files;
 import org.zenframework.z8.server.base.table.value.AttachmentField;
 import org.zenframework.z8.server.base.table.value.Field;
 import org.zenframework.z8.server.security.BuiltinUsers;
@@ -125,11 +124,8 @@ public class IeUtil {
 
 	public static FileInfo fileToFileInfo(ExportEntry.Files.File file, boolean extractFiles) throws IOException {
 		FileInfo fileInfo = fileToFileInfoCLASS(file).get();
-		if (extractFiles) {
-			try {
-				fileInfo = Files.newInstance().getFile(fileInfo);
-			} catch (FileInfoNotFoundException e) {}
-		}
+		if (extractFiles)
+			fileInfo = Files.newInstance().getFile(fileInfo);
 		return fileInfo;
 	}
 

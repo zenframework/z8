@@ -16,11 +16,11 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.zenframework.z8.server.base.file.FileConverter;
 import org.zenframework.z8.server.base.file.FileInfo;
-import org.zenframework.z8.server.base.file.FileInfoNotFoundException;
 import org.zenframework.z8.server.base.file.Folders;
 import org.zenframework.z8.server.engine.ISession;
 import org.zenframework.z8.server.engine.ServerInfo;
 import org.zenframework.z8.server.json.Json;
+import org.zenframework.z8.server.resources.Resources;
 import org.zenframework.z8.server.types.encoding;
 import org.zenframework.z8.server.types.guid;
 import org.zenframework.z8.server.types.string;
@@ -47,8 +47,7 @@ public class ConverterAdapter extends Adapter {
 
 	@Override
 	protected void service(ISession session, Map<String, String> parameters, List<FileInfo> files,
-			HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException,
-			FileInfoNotFoundException {
+			HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
 		// URLDecoder.decode заменяет '+' на ' '
 		String encodedUrl = request.getRequestURI().replaceAll("\\+", "%2b");
 		String requestUrl = URLDecoder.decode(encodedUrl, encoding.Default.toString());
@@ -76,9 +75,9 @@ public class ConverterAdapter extends Adapter {
 			if (FileConverter.isConvertableToPdf(absolutePath)) {
 				absolutePath = getConverter().getConvertedPdf(relativePath.getPath(), absolutePath);
 				response.addHeader("Content-Type", "application/pdf");
-			//} else if (FileConverter.isConvertableToTxt(absolutePath)) {
-			//	absolutePath = getConvertedTxt(relativePath, absolutePath);
-			//	response.addHeader("Content-Type", "text/plain; charset=UTF-8");
+				//} else if (FileConverter.isConvertableToTxt(absolutePath)) {
+				//	absolutePath = getConvertedTxt(relativePath, absolutePath);
+				//	response.addHeader("Content-Type", "text/plain; charset=UTF-8");
 			} else
 				response.addHeader("Content-Type", getContentType(absolutePath));
 		} else {
@@ -104,8 +103,7 @@ public class ConverterAdapter extends Adapter {
 		return contentType;
 	}
 
-	private FileInfo downloadFile(ServerInfo serverInfo, FileInfo fileInfo, File path) throws IOException,
-			FileInfoNotFoundException {
+	private FileInfo downloadFile(ServerInfo serverInfo, FileInfo fileInfo, File path) throws IOException {
 		FileInfo downloadedFileInfo = serverInfo.getApplicationServer().download(fileInfo);
 
 		/* 
@@ -118,7 +116,8 @@ public class ConverterAdapter extends Adapter {
 			if (in != null)
 				IOUtils.copy(in, path);
 			else
-				throw new IOException("File '" + fileInfo.path.get() + "' does not exist");
+				throw new IOException(Resources.format(fileInfo.status == FileInfo.Status.REQUEST_SENT ? "Files.retryLater"
+						: "Files.notFound", fileInfo));
 		}
 
 		return downloadedFileInfo;

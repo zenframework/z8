@@ -6,9 +6,8 @@ import java.lang.management.RuntimeMXBean;
 import java.rmi.RemoteException;
 
 import org.zenframework.z8.server.base.file.FileInfo;
-import org.zenframework.z8.server.base.file.FileInfoNotFoundException;
+import org.zenframework.z8.server.base.file.Files;
 import org.zenframework.z8.server.base.job.scheduler.Scheduler;
-import org.zenframework.z8.server.base.table.system.Files;
 import org.zenframework.z8.server.base.xml.GNode;
 import org.zenframework.z8.server.config.ServerConfig;
 import org.zenframework.z8.server.db.ConnectionManager;
@@ -84,7 +83,7 @@ public class ApplicationServer extends RmiServer implements IApplicationServer {
 	}
 
 	@Override
-	public FileInfo download(FileInfo fileInfo) throws IOException, FileInfoNotFoundException {
+	public FileInfo download(FileInfo fileInfo) throws IOException {
 		try {
 			return Files.newInstance().getFile(fileInfo);
 		} finally {

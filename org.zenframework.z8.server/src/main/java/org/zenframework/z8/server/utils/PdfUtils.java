@@ -19,6 +19,7 @@ import com.lowagie.text.Font;
 import com.lowagie.text.Image;
 import com.lowagie.text.Paragraph;
 import com.lowagie.text.pdf.BaseFont;
+import com.lowagie.text.pdf.PdfContentByte;
 import com.lowagie.text.pdf.PdfReader;
 import com.lowagie.text.pdf.PdfWriter;
 import com.lowagie.text.pdf.RandomAccessFileOrArray;
@@ -105,6 +106,31 @@ public class PdfUtils {
 			return TIFF_MAGIC_NUMBERS.contains(in.readInt());
 		} finally {
 			in.close();
+		}
+	}
+
+	public static void doMerge(List<File> sourceFiles, File mergedFile) throws IOException {
+		Document document = new Document();
+		try {
+			PdfWriter writer = PdfWriter.getInstance(document, new FileOutputStream(mergedFile));
+			document.open();
+			PdfContentByte cb = writer.getDirectContent();
+			for (File file : sourceFiles) {
+				InputStream in = new FileInputStream(file);
+				try {
+					PdfReader reader = new PdfReader(in);
+					for (int i = 1; i <= reader.getNumberOfPages(); i++) {
+						document.newPage();
+						cb.addTemplate(writer.getImportedPage(reader, i), 0, 0);
+					}
+				} finally {
+					in.close();
+				}
+			}
+		} catch (DocumentException e) {
+			throw new IOException(e);
+		} finally {
+			document.close();
 		}
 	}
 

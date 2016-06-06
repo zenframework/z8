@@ -3,6 +3,7 @@ package org.zenframework.z8.server.base.table.system;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
@@ -12,7 +13,6 @@ import java.util.List;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.zenframework.z8.server.base.file.FileInfo;
-import org.zenframework.z8.server.base.file.FileInfoNotFoundException;
 import org.zenframework.z8.server.base.file.FilesFactory;
 import org.zenframework.z8.server.base.file.Folders;
 import org.zenframework.z8.server.base.file.InputOnlyFileItem;
@@ -51,9 +51,9 @@ import org.zenframework.z8.server.types.string;
 import org.zenframework.z8.server.types.sql.sql_string;
 import org.zenframework.z8.server.utils.IOUtils;
 
-public class Files extends Table {
+public class SystemFiles extends Table {
 
-	private static final Log LOG = LogFactory.getLog(Files.class);
+	private static final Log LOG = LogFactory.getLog(SystemFiles.class);
 
 	private static final String TABLE_PREFIX = "table";
 
@@ -76,21 +76,21 @@ public class Files extends Table {
 		public final static String Attachment = "Files.attachment";
 	}
 
-	public static class CLASS<T extends Files> extends Table.CLASS<T> {
+	public static class CLASS<T extends SystemFiles> extends Table.CLASS<T> {
 		public CLASS() {
 			this(null);
 		}
 
 		public CLASS(IObject container) {
 			super(container);
-			setJavaClass(Files.class);
+			setJavaClass(SystemFiles.class);
 			setName(TableName);
 			setDisplayName(Resources.get(strings.Title));
 		}
 
 		@Override
 		public Object newObject(IObject container) {
-			return new Files(container);
+			return new SystemFiles(container);
 		}
 	}
 
@@ -114,7 +114,7 @@ public class Files extends Table {
 
 		@Override
 		public guid z8_get() {
-			Files container = (Files) getContainer();
+			SystemFiles container = (SystemFiles) getContainer();
 			return container.recordId();
 		}
 
@@ -140,7 +140,7 @@ public class Files extends Table {
 
 		@Override
 		public string z8_get() {
-			Files container = (Files) getContainer();
+			SystemFiles container = (SystemFiles) getContainer();
 			return new string(container.getStatus().getText());
 		}
 
@@ -166,7 +166,7 @@ public class Files extends Table {
 
 		@Override
 		protected String attachmentName() {
-			Files container = (Files) getContainer();
+			SystemFiles container = (SystemFiles) getContainer();
 			File path = new File(Folders.Base, container.path.get().get().string().get());
 			return container.getStatus() == FileInfo.Status.LOCAL || path.exists() ? container.name.get().get().string()
 					.get() : null;
@@ -194,11 +194,11 @@ public class Files extends Table {
 	public final FileAttachmentExpression.CLASS<FileAttachmentExpression> attachment = new FileAttachmentExpression.CLASS<FileAttachmentExpression>(
 			this);
 
-	static public Files newInstance() {
-		return new Files.CLASS<Files>().get();
+	static public SystemFiles newInstance() {
+		return new SystemFiles.CLASS<SystemFiles>().get();
 	}
 
-	public Files(IObject container) {
+	public SystemFiles(IObject container) {
 		super(container);
 	}
 
@@ -248,7 +248,7 @@ public class Files extends Table {
 				SendFileParameters));
 	}
 
-	public FileInfo getFile(FileInfo fileInfo) throws IOException, FileInfoNotFoundException {
+	public FileInfo getFile(FileInfo fileInfo) throws IOException {
 		File path = new File(Folders.Base, fileInfo.path.get());
 		if (path.exists()) {
 			fileInfo.name = new string(path.getName());
@@ -367,12 +367,12 @@ public class Files extends Table {
 		}
 	}
 
-	private void fillFileInfoFromRemote(FileInfo fileInfo, File path) throws IOException, FileInfoNotFoundException {
+	private void fillFileInfoFromRemote(FileInfo fileInfo, File path) throws IOException {
 		if (fileInfo.instanceId == null || fileInfo.instanceId.isEmpty()
 				|| fileInfo.instanceId.get().equals(Z8Context.getInstanceId()))
-			throw new FileInfoNotFoundException(fileInfo, false);
+			throw new FileNotFoundException(fileInfo.path.get());
 
-		TransportRoutes transportRoutes = TransportRoutes.instance();
+		TransportRoutes transportRoutes = TransportRoutes.newInstance();
 		TransportEngine engine = TransportEngine.getInstance();
 		TransportContext context = new TransportContext.CLASS<TransportContext>().get();
 		List<TransportRoute> routes = transportRoutes.readActiveRoutes(fileInfo.instanceId.get(),
@@ -414,9 +414,8 @@ public class Files extends Table {
 				this.path.get().set(fileInfo.path);
 				fileInfo.id = create();
 			}
+			fileInfo.status = FileInfo.Status.REQUEST_SENT;
 		}
-
-		throw new FileInfoNotFoundException(fileInfo, true);
 	}
 
 	private static void fillFileInfoFile(FileInfo fileInfo, File path) throws IOException {

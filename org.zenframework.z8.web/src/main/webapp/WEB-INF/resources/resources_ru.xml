@@ -56,6 +56,7 @@
 	<entry key="SystemDomains.title">Домены</entry>
 	<entry key="SystemDomains.id">Id</entry>
 	<entry key="SystemDomains.user">Системный пользователь</entry>
+	<entry key="SystemDomains.userDesc">Системный пользователь (описание)</entry>
 	<entry key="SystemDomains.owner">Владелец</entry>
 	<entry key="SystemDomains.exportUrl">URL экспорта</entry>
 
@@ -75,7 +76,7 @@
 
     <!-- Transport routes -->
     <entry key="TransportRoutes.title">Маршруты</entry>
-    <entry key="TransportRoutes.receiver">Получатель</entry>
+    <entry key="TransportRoutes.domain">Домен</entry>
     <entry key="TransportRoutes.priority">Приоритет</entry>
     <entry key="TransportRoutes.protocol">Протокол</entry>
     <entry key="TransportRoutes.address">Адрес</entry>

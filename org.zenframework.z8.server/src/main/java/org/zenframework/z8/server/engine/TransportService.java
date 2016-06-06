@@ -10,7 +10,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.zenframework.z8.server.base.file.FileInfo;
-import org.zenframework.z8.server.base.table.system.Files;
+import org.zenframework.z8.server.base.file.Files;
 import org.zenframework.z8.server.base.table.system.Properties;
 import org.zenframework.z8.server.base.table.system.SystemDomains;
 import org.zenframework.z8.server.config.ServerConfig;

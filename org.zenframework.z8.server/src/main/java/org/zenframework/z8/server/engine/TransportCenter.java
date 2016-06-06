@@ -9,11 +9,17 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.zenframework.z8.server.base.table.system.Properties;
+import org.zenframework.z8.server.base.table.system.SystemDomains;
 import org.zenframework.z8.server.config.ServerConfig;
+import org.zenframework.z8.server.db.sql.expressions.Operation;
+import org.zenframework.z8.server.db.sql.expressions.Rel;
 import org.zenframework.z8.server.ie.TransportRoute;
 import org.zenframework.z8.server.ie.RmiTransport;
 import org.zenframework.z8.server.ie.TransportRoutes;
 import org.zenframework.z8.server.runtime.ServerRuntime;
+import org.zenframework.z8.server.types.exception;
+import org.zenframework.z8.server.types.guid;
+import org.zenframework.z8.server.types.sql.sql_string;
 import org.zenframework.z8.server.utils.FileKeyValue;
 import org.zenframework.z8.server.utils.IKeyValue;
 
@@ -38,28 +44,28 @@ public class TransportCenter extends RmiServer implements ITransportCenter {
 		try {
 			// Try detect remote client host
 			clientHost = RemoteServer.getClientHost();
-		} catch(ServerNotActiveException e) {
+		} catch (ServerNotActiveException e) {
 			// If ServerNotActiveException, transport center was called locally
 			try {
 				clientHost = new RmiAddress(Properties.getProperty(ServerRuntime.TransportCenterAddressProperty)).getHost();
-			} catch(URISyntaxException e1) {
+			} catch (URISyntaxException e1) {
 				throw new RemoteException("Can't register transport server '" + receiver + "'", e);
 			}
 		}
 		try {
 			store.setRoute(receiver, clientHost + ':' + localRegistryPort);
-		} catch(Exception e) {
+		} catch (Exception e) {
 			throw new RemoteException("Can't register transport server '" + receiver + "'", e);
 		}
 	}
 
 	@Override
-	public List<TransportRoute> getTransportRoutes(String receiver) throws RemoteException {
-		return store.getRoutes(receiver);
+	public List<TransportRoute> getTransportRoutes(String domain) throws RemoteException {
+		return store.getRoutes(domain);
 	}
 
 	public static void start(ServerConfig config) throws RemoteException {
-		if(INSTANCE == null) {
+		if (INSTANCE == null) {
 			INSTANCE = new TransportCenter();
 			INSTANCE.start();
 		}
@@ -73,40 +79,45 @@ public class TransportCenter extends RmiServer implements ITransportCenter {
 
 	private static interface Store {
 
-		void setRoute(String receiver, String address);
+		void setRoute(String domain, String address);
 
-		List<TransportRoute> getRoutes(String receiver);
+		List<TransportRoute> getRoutes(String domain);
 
 	}
 
 	private static class FileStore implements Store {
 
-		private final IKeyValue<String, String> store = new FileKeyValue(new File(Z8Context.getConfig().getWorkingPath(), "transport-servers.xml"));
+		private final IKeyValue<String, String> store = new FileKeyValue(new File(Z8Context.getConfig().getWorkingPath(),
+				"transport-servers.xml"));
 
 		@Override
-		public void setRoute(String receiver, String address) {
-			store.set(receiver, address);
+		public void setRoute(String domain, String address) {
+			store.set(domain, address);
 		}
 
 		@Override
-		public List<TransportRoute> getRoutes(final String receiver) {
-			return Arrays.<TransportRoute> asList(new TransportRoute(receiver, RmiTransport.PROTOCOL, store.get(receiver)));
+		public List<TransportRoute> getRoutes(final String domain) {
+			return Arrays.<TransportRoute> asList(new TransportRoute(guid.create(), guid.create(), domain,
+					RmiTransport.PROTOCOL, store.get(domain), 0, true));
 		}
 
 	}
 
 	private static class TableStore implements Store {
 
-		final TransportRoutes transportRoutes = TransportRoutes.instance();
+		final SystemDomains domains = SystemDomains.newInstance();
+		final TransportRoutes transportRoutes = TransportRoutes.newInstance();
 
 		@Override
-		public void setRoute(String receiver, String address) {
-			transportRoutes.setRoute(receiver, RmiTransport.PROTOCOL, address, 0, true);
+		public void setRoute(String domain, String address) {
+			if (!domains.hasRecord(new Rel(domains.id.get(), Operation.Eq, new sql_string(domain))))
+				throw new exception("Domain '" + domain + "' does not exist");
+			transportRoutes.setRoute(guid.create(), domains.recordId(), domain, RmiTransport.PROTOCOL, address, 0, true);
 		}
 
 		@Override
-		public List<TransportRoute> getRoutes(String receiver) {
-			return transportRoutes.readActiveRoutes(receiver, null);
+		public List<TransportRoute> getRoutes(String domain) {
+			return transportRoutes.readActiveRoutes(domain, null);
 		}
 
 	}

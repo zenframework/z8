@@ -1,7 +1,5 @@
 package org.zenframework.z8.server.base.file;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -9,11 +7,10 @@ import java.util.Iterator;
 
 import org.apache.commons.io.FileUtils;
 import org.zenframework.z8.server.base.table.Table;
-import org.zenframework.z8.server.base.table.system.Files;
+import org.zenframework.z8.server.base.table.system.SystemFiles;
 import org.zenframework.z8.server.base.table.value.AttachmentField;
 import org.zenframework.z8.server.base.table.value.Field;
 import org.zenframework.z8.server.engine.Z8Context;
-import org.zenframework.z8.server.logs.Trace;
 import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.runtime.OBJECT;
 import org.zenframework.z8.server.runtime.RCollection;
@@ -21,7 +18,6 @@ import org.zenframework.z8.server.types.datetime;
 import org.zenframework.z8.server.types.guid;
 import org.zenframework.z8.server.types.integer;
 import org.zenframework.z8.server.types.string;
-import org.zenframework.z8.server.utils.PdfUtils;
 
 public class AttachmentProcessor extends OBJECT {
 
@@ -42,6 +38,7 @@ public class AttachmentProcessor extends OBJECT {
 		}
 	}
 
+	private Files files;
 	private AttachmentField field;
 
 	public AttachmentProcessor(IObject container) {
@@ -80,7 +77,7 @@ public class AttachmentProcessor extends OBJECT {
 	}
 
 	public Collection<FileInfo> create(guid attachTo, Collection<FileInfo> files, String type) {
-		Files filesTable = Files.newInstance();
+		SystemFiles filesTable = SystemFiles.newInstance();
 
 		for (FileInfo file : files) {
 			boolean idIsNull = file.id == null || file.id.isNull();
@@ -110,7 +107,7 @@ public class AttachmentProcessor extends OBJECT {
 	}
 
 	public Collection<FileInfo> remove(guid target, Collection<FileInfo> files) {
-		Files filesTable = Files.newInstance();
+		SystemFiles filesTable = SystemFiles.newInstance();
 		Collection<FileInfo> result = read(target);
 
 		for (FileInfo file : files)
@@ -148,38 +145,11 @@ public class AttachmentProcessor extends OBJECT {
 
 	public int getPageCount(guid recordId) {
 		int result = 0;
-
 		Collection<FileInfo> fileInfos = read(recordId);
-
 		for (FileInfo fileInfo : fileInfos) {
-			try {
-				result += getPageCount(fileInfo);
-			} catch (IOException e) {
-				Trace.logEvent("AttachmentProcessor.getPageCount('" + fileInfo.path + "'): '" + e.getMessage());
-				result += 1;
-			}
+			result += getFiles().getPageCount(fileInfo);
 		}
-
 		return result;
-	}
-
-	private int getPageCount(FileInfo fileInfo) throws IOException {
-		String relativePath = fileInfo.path.get();
-		File path = new File(Folders.Base, relativePath);
-
-		if (!FileConverter.isConvertableToPdf(path))
-			return 1;
-
-		try {
-			Files.newInstance().getFile(fileInfo);
-		} catch (FileInfoNotFoundException e) {
-			return 1;
-		}
-
-		FileConverter fileConverter = new FileConverter(new File(Folders.Base, Folders.Cache));
-		File pdfFile = fileConverter.getConvertedPdf(relativePath, path);
-
-		return PdfUtils.getPageCount(pdfFile);
 	}
 
 	public RCollection<? extends FileInfo.CLASS<? extends FileInfo>> z8_get() {
@@ -220,6 +190,10 @@ public class AttachmentProcessor extends OBJECT {
 		return toCollection(update(target, files, type.get()));
 	}
 
+	public integer z8_getPageCount(guid recordId) {
+		return new integer(getPageCount(recordId));
+	}
+
 	private RCollection<? extends FileInfo.CLASS<? extends FileInfo>> toCollection(Collection<FileInfo> files) {
 		RCollection<FileInfo.CLASS<? extends FileInfo>> result = new RCollection<FileInfo.CLASS<? extends FileInfo>>();
 
@@ -232,8 +206,10 @@ public class AttachmentProcessor extends OBJECT {
 		return result;
 	}
 
-	public integer z8_getPageCount(guid recordId) {
-		return new integer(getPageCount(recordId));
+	private Files getFiles() {
+		if (files == null)
+			files = Files.newInstance();
+		return files;
 	}
 
 }

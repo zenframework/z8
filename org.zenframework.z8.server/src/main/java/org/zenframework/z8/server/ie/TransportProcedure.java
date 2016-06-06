@@ -84,7 +84,7 @@ public class TransportProcedure extends Procedure {
 
 		ExportMessages messages = new ExportMessages.CLASS<ExportMessages>().get();
 
-		TransportRoutes transportRoutes = TransportRoutes.instance();
+		TransportRoutes transportRoutes = TransportRoutes.newInstance();
 
 		String transportCenter = Properties.getProperty(ServerRuntime.TransportCenterAddressProperty).trim();
 		boolean registerInTransportCenter = Boolean.parseBoolean(Properties
