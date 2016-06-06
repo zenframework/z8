@@ -9,252 +9,254 @@ import org.zenframework.z8.server.format.DatespanFormat;
 import org.zenframework.z8.server.types.sql.sql_datespan;
 
 public final class datespan extends primary {
-    private long m_ticks = 0;
 
-    static final public long TicksPerSecond = 1000;
-    static final public long TicksPerMinute = TicksPerSecond * 60;
-    static final public long TicksPerHour = TicksPerMinute * 60;
-    static final public long TicksPerDay = TicksPerHour * 24;
+	private static final long serialVersionUID = -9105266490701041179L;
 
-    static final public String defaultMask = "dd HH:mm:ss";
+	private long m_ticks = 0;
 
-    public datespan() {}
+	static final public long TicksPerSecond = 1000;
+	static final public long TicksPerMinute = TicksPerSecond * 60;
+	static final public long TicksPerHour = TicksPerMinute * 60;
+	static final public long TicksPerDay = TicksPerHour * 24;
 
-    public datespan(long ticks) {
-        set(ticks);
-    }
+	static final public String defaultMask = "dd HH:mm:ss";
 
-    public datespan(integer ticks) {
-        set(ticks.get());
-    }
+	public datespan() {}
 
-    public datespan(datespan dateSpan) {
-        set(dateSpan.m_ticks);
-    }
+	public datespan(long ticks) {
+		set(ticks);
+	}
 
-    public datespan(String s) {
-        try {
-            set(new DatespanFormat(defaultMask).parse(s));
-        }
-        catch(ParseException e) {
-            throw new MaskParseException(new string(s), defaultMask);
-        }
-    }
+	public datespan(integer ticks) {
+		set(ticks.get());
+	}
 
-    public datespan(int days, int hours, int minutes, int seconds) {
-        this(days, hours, minutes, seconds, 0);
-    }
+	public datespan(datespan dateSpan) {
+		set(dateSpan.m_ticks);
+	}
 
-    public datespan(int days, int hours, int minutes, int seconds, long milliseconds) {
-        set(days, hours, minutes, seconds, milliseconds);
-    }
+	public datespan(String s) {
+		try {
+			set(new DatespanFormat(defaultMask).parse(s));
+		} catch (ParseException e) {
+			throw new MaskParseException(new string(s), defaultMask);
+		}
+	}
 
-    @Override
-    public datespan defaultValue() {
-        return new datespan();
-    }
+	public datespan(int days, int hours, int minutes, int seconds) {
+		this(days, hours, minutes, seconds, 0);
+	}
 
-    public long get() {
-        return m_ticks;
-    }
+	public datespan(int days, int hours, int minutes, int seconds, long milliseconds) {
+		set(days, hours, minutes, seconds, milliseconds);
+	}
 
-    public void set(datespan span) {
-        set(span.m_ticks);
-    }
+	@Override
+	public datespan defaultValue() {
+		return new datespan();
+	}
 
-    public void set(int Day, int Hour, int Minute, int Second, long Millisecond) {
-        set(Day * TicksPerDay + Hour * TicksPerHour + Minute * TicksPerMinute + Second * TicksPerSecond + Millisecond);
-    }
+	public long get() {
+		return m_ticks;
+	}
 
-    public void set(long ticks) {
-        m_ticks = ticks;
-    }
+	public void set(datespan span) {
+		set(span.m_ticks);
+	}
 
-    public long days() {
-        return m_ticks / TicksPerDay;
-    }
+	public void set(int Day, int Hour, int Minute, int Second, long Millisecond) {
+		set(Day * TicksPerDay + Hour * TicksPerHour + Minute * TicksPerMinute + Second * TicksPerSecond + Millisecond);
+	}
 
-    public long hours() {
-        return m_ticks / TicksPerHour % 24;
-    }
+	public void set(long ticks) {
+		m_ticks = ticks;
+	}
 
-    public long minutes() {
-        return m_ticks / TicksPerMinute % 60;
-    }
+	public long days() {
+		return m_ticks / TicksPerDay;
+	}
 
-    public long Seconds() {
-        return m_ticks / TicksPerSecond % 60;
-    }
+	public long hours() {
+		return m_ticks / TicksPerHour % 24;
+	}
 
-    public long milliseconds() {
-        return m_ticks;
-    }
+	public long minutes() {
+		return m_ticks / TicksPerMinute % 60;
+	}
 
-    public integer z8_days() {
-        return new integer(days());
-    }
+	public long Seconds() {
+		return m_ticks / TicksPerSecond % 60;
+	}
 
-    public integer z8_hours() {
-        return new integer(hours());
-    }
+	public long milliseconds() {
+		return m_ticks;
+	}
 
-    public integer z8_minutes() {
-        return new integer(minutes());
-    }
+	public integer z8_days() {
+		return new integer(days());
+	}
 
-    public integer z8_seconds() {
-        return new integer(Seconds());
-    }
+	public integer z8_hours() {
+		return new integer(hours());
+	}
 
-    public integer z8_milliseconds() {
-        return new integer(milliseconds());
-    }
+	public integer z8_minutes() {
+		return new integer(minutes());
+	}
 
-    public integer z8_totalHours() {
-        return new integer(m_ticks / TicksPerHour);
-    }
+	public integer z8_seconds() {
+		return new integer(Seconds());
+	}
 
-    public integer z8_totalMinutes() {
-        return new integer(m_ticks / TicksPerMinute);
-    }
+	public integer z8_milliseconds() {
+		return new integer(milliseconds());
+	}
 
-    public integer z8_totalSeconds() {
-        return new integer(m_ticks / TicksPerSecond);
-    }
+	public integer z8_totalHours() {
+		return new integer(m_ticks / TicksPerHour);
+	}
 
-    public void z8_setTotalHours(integer x) {
-        m_ticks = x.get() * TicksPerHour;
-    }
+	public integer z8_totalMinutes() {
+		return new integer(m_ticks / TicksPerMinute);
+	}
 
-    public void z8_setTotalMinutes(integer x) {
-        m_ticks = x.get() * TicksPerMinute;
-    }
+	public integer z8_totalSeconds() {
+		return new integer(m_ticks / TicksPerSecond);
+	}
 
-    public void z8_setTotalSeconds(integer x) {
-        m_ticks = x.get() * TicksPerSecond;
-    }
+	public void z8_setTotalHours(integer x) {
+		m_ticks = x.get() * TicksPerHour;
+	}
 
-    public void z8_set(integer Day, integer Hour, integer Minute, integer Second) {
-        set(Day.getInt(), Hour.getInt(), Minute.getInt(), Second.getInt(), 0);
-    }
+	public void z8_setTotalMinutes(integer x) {
+		m_ticks = x.get() * TicksPerMinute;
+	}
 
-    public void z8_set(integer Day, integer Hour, integer Minute, integer Second, integer Millisecond) {
-        set(Day.getInt(), Hour.getInt(), Minute.getInt(), Second.getInt(), Millisecond.get());
-    }
+	public void z8_setTotalSeconds(integer x) {
+		m_ticks = x.get() * TicksPerSecond;
+	}
 
-    public void z8_truncDay() {
-        set((int)days(), 0, 0, 0, 0);
-    }
+	public void z8_set(integer Day, integer Hour, integer Minute, integer Second) {
+		set(Day.getInt(), Hour.getInt(), Minute.getInt(), Second.getInt(), 0);
+	}
 
-    public void z8_truncHour() {
-        set((int)days(), (int)hours(), 0, 0, 0);
-    }
+	public void z8_set(integer Day, integer Hour, integer Minute, integer Second, integer Millisecond) {
+		set(Day.getInt(), Hour.getInt(), Minute.getInt(), Second.getInt(), Millisecond.get());
+	}
 
-    public void z8_truncMinute() {
-        set((int)days(), (int)hours(), (int)minutes(), 0, 0);
-    }
+	public void z8_truncDay() {
+		set((int) days(), 0, 0, 0, 0);
+	}
 
-    @Override
-    public FieldType type() {
-        return FieldType.Datespan;
-    }
+	public void z8_truncHour() {
+		set((int) days(), (int) hours(), 0, 0, 0);
+	}
 
-    @Override
-    public String toDbConstant(DatabaseVendor dbtype) {
-        switch(dbtype) {
-        case SqlServer:
-            return "(" + z8_milliseconds().toString() + ")";
-        default:
-            return z8_milliseconds().toString();
-        }
-    }
+	public void z8_truncMinute() {
+		set((int) days(), (int) hours(), (int) minutes(), 0, 0);
+	}
 
-    @Override
-    public int hashCode() {
-        return new Long(m_ticks).hashCode();
-    }
+	@Override
+	public FieldType type() {
+		return FieldType.Datespan;
+	}
 
-    @Override
-    public boolean equals(Object object) {
-        if(object instanceof datespan) {
-            datespan datespan = (datespan)object;
-            return m_ticks == datespan.m_ticks;
-        }
-        return false;
-    }
+	@Override
+	public String toDbConstant(DatabaseVendor dbtype) {
+		switch (dbtype) {
+		case SqlServer:
+			return "(" + z8_milliseconds().toString() + ")";
+		default:
+			return z8_milliseconds().toString();
+		}
+	}
 
-    public String format(String frm) {
-        return new DatespanFormat(frm).format(this).toString();
-    }
+	@Override
+	public int hashCode() {
+		return new Long(m_ticks).hashCode();
+	}
 
-    @Override
-    public String toString() {
-        return format(defaultMask);
-    }
+	@Override
+	public boolean equals(Object object) {
+		if (object instanceof datespan) {
+			datespan datespan = (datespan) object;
+			return m_ticks == datespan.m_ticks;
+		}
+		return false;
+	}
 
-    public string z8_toString(string frm) {
-        return new string(format(frm.get()));
-    }
+	public String format(String frm) {
+		return new DatespanFormat(frm).format(this).toString();
+	}
 
-    public sql_datespan sql_datespan() {
-        return new sql_datespan(this);
-    }
+	@Override
+	public String toString() {
+		return format(defaultMask);
+	}
 
-    public void operatorAssign(datespan value) {
-        set(value);
-    }
+	public string z8_toString(string frm) {
+		return new string(format(frm.get()));
+	}
 
-    public datetime operatorAdd(date x) {
-        return operatorAdd(x.datetime());
-    }
+	public sql_datespan sql_datespan() {
+		return new sql_datespan(this);
+	}
 
-    public datetime operatorAdd(datetime x) {
-        return new datetime(x.get().getTimeInMillis() + milliseconds());
-    }
+	public void operatorAssign(datespan value) {
+		set(value);
+	}
 
-    public datespan operatorAdd(datespan x) {
-        return new datespan(milliseconds() + x.milliseconds());
-    }
+	public datetime operatorAdd(date x) {
+		return operatorAdd(x.datetime());
+	}
 
-    public datespan operatorSub(datespan x) {
-        return new datespan(milliseconds() - x.milliseconds());
-    }
+	public datetime operatorAdd(datetime x) {
+		return new datetime(x.get().getTimeInMillis() + milliseconds());
+	}
 
-    public datespan operatorAddAssign(datespan x) {
-        set(operatorAdd(x));
-        return this;
-    }
+	public datespan operatorAdd(datespan x) {
+		return new datespan(milliseconds() + x.milliseconds());
+	}
 
-    public datespan operatorSubAssign(datespan x) {
-        set(operatorSub(x));
-        return this;
-    }
+	public datespan operatorSub(datespan x) {
+		return new datespan(milliseconds() - x.milliseconds());
+	}
 
-    public bool operatorEqu(datespan x) {
-        return new bool(milliseconds() == x.milliseconds());
-    }
+	public datespan operatorAddAssign(datespan x) {
+		set(operatorAdd(x));
+		return this;
+	}
 
-    public bool operatorNotEqu(datespan x) {
-        return new bool(milliseconds() != x.milliseconds());
-    }
+	public datespan operatorSubAssign(datespan x) {
+		set(operatorSub(x));
+		return this;
+	}
 
-    public bool operatorLess(datespan x) {
-        return new bool(milliseconds() < x.milliseconds());
-    }
+	public bool operatorEqu(datespan x) {
+		return new bool(milliseconds() == x.milliseconds());
+	}
 
-    public bool operatorMore(datespan x) {
-        return new bool(milliseconds() > x.milliseconds());
-    }
+	public bool operatorNotEqu(datespan x) {
+		return new bool(milliseconds() != x.milliseconds());
+	}
 
-    public bool operatorLessEqu(datespan x) {
-        return new bool(milliseconds() <= x.milliseconds());
-    }
+	public bool operatorLess(datespan x) {
+		return new bool(milliseconds() < x.milliseconds());
+	}
 
-    public bool operatorMoreEqu(datespan x) {
-        return new bool(milliseconds() >= x.milliseconds());
-    }
+	public bool operatorMore(datespan x) {
+		return new bool(milliseconds() > x.milliseconds());
+	}
 
-    static public datespan z8_parse(string string) {
-        return new datespan(string.get());
-    }
+	public bool operatorLessEqu(datespan x) {
+		return new bool(milliseconds() <= x.milliseconds());
+	}
+
+	public bool operatorMoreEqu(datespan x) {
+		return new bool(milliseconds() >= x.milliseconds());
+	}
+
+	static public datespan z8_parse(string string) {
+		return new datespan(string.get());
+	}
 }

@@ -13,197 +13,200 @@ import org.zenframework.z8.server.runtime.RCollection;
 import org.zenframework.z8.server.utils.IOUtils;
 
 public class file extends primary {
-    public static final String EOL = "\r\n";
 
-    private File file;
+	private static final long serialVersionUID = -5250938909367581442L;
 
-    public file() {}
+	public static final String EOL = "\r\n";
 
-    static class FileParts {
-        String folder;
-        String name;
-        String extension;
+	private File file;
 
-        FileParts(File file) {
-            folder = file.getParent();
+	public file() {}
 
-            String name = file.getName().replace('/', '-').replace('\\', '-').replace(':', '-').replace('\n', ' ');
+	static class FileParts {
+		String folder;
+		String name;
+		String extension;
 
-            int index = name.lastIndexOf('.');
-            this.name = index != -1 ? name.substring(0, index) : name;
-            this.extension = index != -1 ? name.substring(index) : "";
-        }
-    }
+		FileParts(File file) {
+			folder = file.getParent();
 
-    static public File getUniqueFileName(File path) {
-        return getUniqueFileName(null, path);
-    }
+			String name = file.getName().replace('/', '-').replace('\\', '-').replace(':', '-').replace('\n', ' ');
 
-    static public File getUniqueFileName(File root, String path) {
-        return getUniqueFileName(root, new File(path));
-    }
+			int index = name.lastIndexOf('.');
+			this.name = index != -1 ? name.substring(0, index) : name;
+			this.extension = index != -1 ? name.substring(index) : "";
+		}
+	}
 
-    static public File getUniqueFileName(File root, File path) {
-        FileParts parts = new FileParts(path);
+	static public File getUniqueFileName(File path) {
+		return getUniqueFileName(null, path);
+	}
 
-        int index = 0;
+	static public File getUniqueFileName(File root, String path) {
+		return getUniqueFileName(root, new File(path));
+	}
 
-        while (true) {
-            String suffix = index != 0 ? (" (" + index + ")") : "";
-            File file = new File(parts.folder, parts.name + suffix + parts.extension);
-            File fileToCheck = root != null ? new File(root, file.getPath()) : file;
+	static public File getUniqueFileName(File root, File path) {
+		FileParts parts = new FileParts(path);
 
-            if (!fileToCheck.exists())
-                return file;
+		int index = 0;
 
-            index++;
-        }
-    }
+		while (true) {
+			String suffix = index != 0 ? (" (" + index + ")") : "";
+			File file = new File(parts.folder, parts.name + suffix + parts.extension);
+			File fileToCheck = root != null ? new File(root, file.getPath()) : file;
 
-    public file(file file) {
-        this.file = file.file;
-    }
+			if (!fileToCheck.exists())
+				return file;
 
-    public file(String path) {
-        this(new File(path));
-    }
+			index++;
+		}
+	}
 
-    public file(File path) {
-        file = path;
-    }
+	public file(file file) {
+		this.file = file.file;
+	}
 
-    public File get() {
-        return file;
-    }
+	public file(String path) {
+		this(new File(path));
+	}
 
-    @Override
-    public int hashCode() {
-        return file != null ? file.hashCode() : 0;
-    }
+	public file(File path) {
+		file = path;
+	}
 
-    @Override
-    public boolean equals(Object object) {
-        return object instanceof file && file != null && file.equals(((file) object).file);
-    }
+	public File get() {
+		return file;
+	}
 
-    public String getFullPath() {
-        if (file != null) {
-            return file.getPath();
-        }
-        return "";
-    }
+	@Override
+	public int hashCode() {
+		return file != null ? file.hashCode() : 0;
+	}
 
-    public String getPath() {
-        return file != null ? file.getPath() : "";
-    }
+	@Override
+	public boolean equals(Object object) {
+		return object instanceof file && file != null && file.equals(((file) object).file);
+	}
 
-    public String getRelativePath() {
-        String path = getPath();
+	public String getFullPath() {
+		if (file != null) {
+			return file.getPath();
+		}
+		return "";
+	}
 
-        if (path.startsWith(Folders.Base.getPath())) {
-            return path.substring(Folders.Base.getPath().length() + 1);
-        }
+	public String getPath() {
+		return file != null ? file.getPath() : "";
+	}
 
-        return path;
-    }
+	public String getRelativePath() {
+		String path = getPath();
 
-    public void operatorAssign(file value) {
-        file = value.file;
-    }
+		if (path.startsWith(Folders.Base.getPath())) {
+			return path.substring(Folders.Base.getPath().length() + 1);
+		}
 
-    public void operatorAssign(string pathName) {
-        file = new File(pathName.get());
+		return path;
+	}
 
-        if (!file.isAbsolute())
-            file = new File(new File(Folders.Base, Folders.Files), file.getPath());
-            
-        if(!file.isDirectory())
-            file.getParentFile().mkdirs();
-    }
+	public void operatorAssign(file value) {
+		file = value.file;
+	}
 
-    public string z8_getPath() {
-        return new string(getRelativePath());
-    }
+	public void operatorAssign(string pathName) {
+		file = new File(pathName.get());
 
-    public string z8_getName() {
-        return new string(file.getName());
-    }
+		if (!file.isAbsolute())
+			file = new File(new File(Folders.Base, Folders.Files), file.getPath());
 
-    public string z8_getBaseName() {
-        return new string(FilenameUtils.getBaseName(file.getName()));
-    }
+		if (!file.isDirectory())
+			file.getParentFile().mkdirs();
+	}
 
-    public string z8_getExtension() {
-        return new string(FilenameUtils.getExtension(file.getName()));
-    }
+	public string z8_getPath() {
+		return new string(getRelativePath());
+	}
 
-    public bool z8_isDirectory() {
-        return new bool(file.isDirectory());
-    }
+	public string z8_getName() {
+		return new string(file.getName());
+	}
 
-    public RCollection<string> z8_list() {
-        String[] files = this.file.list();
-        RCollection<string> z8files = new RCollection<string>(files.length, false);
-        for (String file : files) {
-            z8files.add(new string(file));
-        }
-        return z8files;
-    }
+	public string z8_getBaseName() {
+		return new string(FilenameUtils.getBaseName(file.getName()));
+	}
 
-    public RCollection<file> z8_listFiles() {
-        File[] files = this.file.listFiles();
-        RCollection<file> z8files = new RCollection<file>(files.length, false);
-        for (File file : files) {
-            z8files.add(new file(file));
-        }
-        return z8files;
-    }
+	public string z8_getExtension() {
+		return new string(FilenameUtils.getExtension(file.getName()));
+	}
 
-    public string z8_read() {
-        return z8_read(encoding.UTF8);
-    }
+	public bool z8_isDirectory() {
+		return new bool(file.isDirectory());
+	}
 
-    public string z8_read(encoding charset) {
-        try {
-            FileInputStream input = new FileInputStream(file);
-            ByteArrayOutputStream output = new ByteArrayOutputStream();
-            IOUtils.copy(input, output);
-            return new string(output.toByteArray(), charset);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
+	public RCollection<string> z8_list() {
+		String[] files = this.file.list();
+		RCollection<string> z8files = new RCollection<string>(files.length, false);
+		for (String file : files) {
+			z8files.add(new string(file));
+		}
+		return z8files;
+	}
 
-    public void write(String content) {
-        write(content, encoding.Default);
-    }
+	public RCollection<file> z8_listFiles() {
+		File[] files = this.file.listFiles();
+		RCollection<file> z8files = new RCollection<file>(files.length, false);
+		for (File file : files) {
+			z8files.add(new file(file));
+		}
+		return z8files;
+	}
 
-    public void write(String content, encoding charset) {
-        try {
-            if (file == null) {
-                File folder = new File(Folders.Base, Folders.Files);
-                folder.mkdirs();
+	public string z8_read() {
+		return z8_read(encoding.UTF8);
+	}
 
-                file = File.createTempFile("tmp", ".txt", folder);
-                file.deleteOnExit();
-            }
+	public string z8_read(encoding charset) {
+		try {
+			FileInputStream input = new FileInputStream(file);
+			ByteArrayOutputStream output = new ByteArrayOutputStream();
+			IOUtils.copy(input, output);
+			return new string(output.toByteArray(), charset);
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
+	}
 
-            FileOutputStream output = new FileOutputStream(file, true);
-            output.write(content.getBytes(charset.toString()));
-            output.close();
-        } catch (FileNotFoundException e) {
-            throw new RuntimeException(e);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
+	public void write(String content) {
+		write(content, encoding.Default);
+	}
 
-    public void z8_write(string content) {
-        write(content.get());
-    }
+	public void write(String content, encoding charset) {
+		try {
+			if (file == null) {
+				File folder = new File(Folders.Base, Folders.Files);
+				folder.mkdirs();
 
-    public void z8_write(string content, encoding charset) {
-        write(content.get(), charset);
-    }
+				file = File.createTempFile("tmp", ".txt", folder);
+				file.deleteOnExit();
+			}
+
+			FileOutputStream output = new FileOutputStream(file, true);
+			output.write(content.getBytes(charset.toString()));
+			output.close();
+		} catch (FileNotFoundException e) {
+			throw new RuntimeException(e);
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	public void z8_write(string content) {
+		write(content.get());
+	}
+
+	public void z8_write(string content, encoding charset) {
+		write(content.get(), charset);
+	}
 
 }
