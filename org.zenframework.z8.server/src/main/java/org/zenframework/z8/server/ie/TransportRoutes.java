@@ -161,9 +161,11 @@ public class TransportRoutes extends Table {
 		return readFirst(where);
 	}
 
-	public List<TransportRoute> readActiveRoutes(String domain, String transportCenter) {
-		sort(Arrays.<Field> asList(priority.get()), new And(new Rel(this.domains.get().id.get(), Operation.Eq,
-				new sql_string(domain)), this.active.get().sql_bool()));
+	public List<TransportRoute> readRoutes(String domain, String transportCenter, boolean activeOnly) {
+		SqlToken where = new Rel(this.domains.get().id.get(), Operation.Eq, new sql_string(domain));
+		if (activeOnly)
+			where = new And(where, this.active.get().sql_bool());
+		sort(Arrays.<Field> asList(priority.get()), where);
 		List<TransportRoute> routes = new LinkedList<TransportRoute>();
 		while (next()) {
 			routes.add(new TransportRoute(recordId(), domainLink.get().get().guid(), domains.get().id.get().get().string()

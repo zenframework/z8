@@ -6,6 +6,8 @@ import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
+import java.rmi.server.RemoteServer;
+import java.rmi.server.ServerNotActiveException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -117,6 +119,16 @@ public class Rmi {
 					rmiAddress.getName());
 		} catch (NotBoundException e) {
 			throw new RemoteException("Object '" + rmiAddress.getName() + "' is not bound", e);
+		}
+	}
+
+	public static String getClientHost() {
+		try {
+			// Try detect remote client host
+			return RemoteServer.getClientHost();
+		} catch (ServerNotActiveException e) {
+			// If ServerNotActiveException, server object was called locally
+			return null;
 		}
 	}
 

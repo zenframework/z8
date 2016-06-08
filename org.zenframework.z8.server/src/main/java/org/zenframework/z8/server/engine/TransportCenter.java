@@ -3,8 +3,6 @@ package org.zenframework.z8.server.engine;
 import java.io.File;
 import java.net.URISyntaxException;
 import java.rmi.RemoteException;
-import java.rmi.server.RemoteServer;
-import java.rmi.server.ServerNotActiveException;
 import java.util.Arrays;
 import java.util.List;
 
@@ -13,8 +11,8 @@ import org.zenframework.z8.server.base.table.system.SystemDomains;
 import org.zenframework.z8.server.config.ServerConfig;
 import org.zenframework.z8.server.db.sql.expressions.Operation;
 import org.zenframework.z8.server.db.sql.expressions.Rel;
-import org.zenframework.z8.server.ie.TransportRoute;
 import org.zenframework.z8.server.ie.RmiTransport;
+import org.zenframework.z8.server.ie.TransportRoute;
 import org.zenframework.z8.server.ie.TransportRoutes;
 import org.zenframework.z8.server.runtime.ServerRuntime;
 import org.zenframework.z8.server.types.exception;
@@ -40,16 +38,14 @@ public class TransportCenter extends RmiServer implements ITransportCenter {
 
 	@Override
 	public void registerTransportService(String receiver, int localRegistryPort) throws RemoteException {
-		String clientHost;
-		try {
-			// Try detect remote client host
-			clientHost = RemoteServer.getClientHost();
-		} catch (ServerNotActiveException e) {
-			// If ServerNotActiveException, transport center was called locally
+		String clientHost = Rmi.getClientHost();
+		if (clientHost == null) {
+			String transportCenterAddress = Properties.getProperty(ServerRuntime.TransportCenterAddressProperty);
 			try {
-				clientHost = new RmiAddress(Properties.getProperty(ServerRuntime.TransportCenterAddressProperty)).getHost();
-			} catch (URISyntaxException e1) {
-				throw new RemoteException("Can't register transport server '" + receiver + "'", e);
+				clientHost = new RmiAddress(transportCenterAddress).getHost();
+			} catch (URISyntaxException e) {
+				throw new RemoteException("Can't register local transport server '" + receiver + "' with address '"
+						+ transportCenterAddress + "'", e);
 			}
 		}
 		try {
@@ -117,7 +113,7 @@ public class TransportCenter extends RmiServer implements ITransportCenter {
 
 		@Override
 		public List<TransportRoute> getRoutes(String domain) {
-			return transportRoutes.readActiveRoutes(domain, null);
+			return transportRoutes.readRoutes(domain, null, false);
 		}
 
 	}

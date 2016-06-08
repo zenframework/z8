@@ -11,7 +11,6 @@ import java.util.UUID;
 
 import org.zenframework.z8.ie.xml.ExportEntry;
 import org.zenframework.z8.server.base.file.FileInfo;
-import org.zenframework.z8.server.engine.ApplicationServer;
 import org.zenframework.z8.server.engine.RmiIO;
 import org.zenframework.z8.server.engine.RmiSerializable;
 import org.zenframework.z8.server.runtime.IObject;
@@ -52,28 +51,12 @@ public class Message extends OBJECT implements RmiSerializable, Serializable {
 		public Object newObject(IObject container) {
 			return new Message(container);
 		}
-
 	}
 
-	public static Message instance() {
-		return newInstance(UUID.randomUUID());
-	}
-
-	static public Message newInstance() {
-		return new Message.CLASS<Message>().get();
-	}
-	
-	public static Message newInstance(UUID id) {
-		Message message = Message.newInstance();
-		message.id = id;
-		return message;
-	}
-
-	private UUID id;
+	private UUID id = UUID.randomUUID();
 	private String sender;
 	private String address;
-	private String exportProtocol;
-	
+
 	private ExportEntry exportEntry;
 	private RCollection<FileInfo> files = new RCollection<FileInfo>(true);
 
@@ -105,14 +88,6 @@ public class Message extends OBJECT implements RmiSerializable, Serializable {
 
 	public void setSender(String sender) {
 		this.sender = sender;
-	}
-
-	public String getExportProtocol() {
-		return exportProtocol;
-	}
-
-	public void setExportProtocol(String exportProtocol) {
-		this.exportProtocol = exportProtocol;
 	}
 
 	public ExportEntry getExportEntry() {
@@ -159,61 +134,26 @@ public class Message extends OBJECT implements RmiSerializable, Serializable {
 	protected void beforeImport() {
 		z8_beforeImport();
 	}
-	
-	public void z8_beforeImport() {
-	}
-	
+
+	public void z8_beforeImport() {}
+
 	protected void afterImport() {
 		z8_afterImport();
 	}
-	
-	public void z8_afterImport() {
-	}
-	
+
+	public void z8_afterImport() {}
+
 	protected void beforeExport() {
 		z8_beforeExport();
 	}
-	
-	public void z8_beforeExport() {
-	}
-	
+
+	public void z8_beforeExport() {}
+
 	protected void afterExport() {
 		z8_afterExport();
 	}
-	
-	public void z8_afterExport() {
-	}
 
-	public void runImport(String url, boolean preserve) {
-		ExportMessages.processed(new guid(id), url, preserve);
-		
-		beforeImport();
-		
-		ApplicationServer.disableEvents();
-		try {
-			Import.importMessage(this);
-			Import.importFiles(this);
-		} finally {
-			ApplicationServer.enableEvents();
-		}
-		
-		afterImport();
-	}
-
-
-	public void runExport(Transport transport, TransportRoute route, boolean preserve) throws TransportException, IOException {
-		ExportMessages.processed(new guid(id), route.getTransportUrl(), preserve);
-
-		getFiles().addAll(IeUtil.filesToFileInfos(getExportEntry().getFiles().getFile(), isSendFilesContent()));
-
-		beforeExport();
-		transport.send(this, route.getAddress());
-		afterExport();
-	}
-	
-	public void setError(Throwable e) {
-		ExportMessages.setError(this, e);
-	}
+	public void z8_afterExport() {}
 
 	private void writeObject(ObjectOutputStream out) throws IOException {
 		serialize(out);
@@ -222,24 +162,23 @@ public class Message extends OBJECT implements RmiSerializable, Serializable {
 	private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
 		deserialize(in);
 	}
-	
+
 	@Override
 	public void serialize(ObjectOutputStream out) throws IOException {
 		out.writeLong(serialVersionUID);
 
 		ByteArrayOutputStream bytes = new ByteArrayOutputStream(256 * NumericUtils.Kilobyte);
 		ObjectOutputStream objects = new ObjectOutputStream(bytes);
-		
+
 		RmiIO.writeUUID(objects, id);
 		RmiIO.writeString(objects, sender);
 		RmiIO.writeString(objects, address);
-		RmiIO.writeString(objects, exportProtocol);
 		RmiIO.writeString(objects, IeUtil.marshalExportEntry(getExportEntry()));
-		
+
 		objects.close();
 
 		RmiIO.writeBytes(out, IOUtils.zip(bytes.toByteArray()));
-		
+
 		out.writeObject(files);
 	}
 
@@ -255,12 +194,11 @@ public class Message extends OBJECT implements RmiSerializable, Serializable {
 		id = RmiIO.readUUID(objects);
 		sender = RmiIO.readString(objects);
 		address = RmiIO.readString(objects);
-		exportProtocol = RmiIO.readString(objects);
 		exportEntry = IeUtil.unmarshalExportEntry(RmiIO.readString(objects));
-		
+
 		objects.close();
 
-		files = (RCollection<FileInfo>)in.readObject();
+		files = (RCollection<FileInfo>) in.readObject();
 	}
 
 	public guid z8_getId() {
@@ -294,4 +232,5 @@ public class Message extends OBJECT implements RmiSerializable, Serializable {
 			throw new exception(e);
 		}
 	}
+
 }

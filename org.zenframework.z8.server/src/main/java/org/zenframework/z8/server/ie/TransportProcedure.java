@@ -1,11 +1,13 @@
 package org.zenframework.z8.server.ie;
 
+import java.util.Collection;
 import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.zenframework.z8.server.base.simple.Procedure;
 import org.zenframework.z8.server.base.table.system.Properties;
+import org.zenframework.z8.server.base.table.system.SystemDomains;
 import org.zenframework.z8.server.base.view.command.Parameter;
 import org.zenframework.z8.server.db.Connection;
 import org.zenframework.z8.server.db.ConnectionManager;
@@ -37,23 +39,6 @@ public class TransportProcedure extends Procedure {
 		}
 	}
 
-	private static class PreserveExportMessagesListener implements Properties.Listener {
-
-		@Override
-		public void onPropertyChange(String key, String value) {
-			if (ServerRuntime.PreserveExportMessagesProperty.equalsKey(key))
-				preserveExportMessages = Boolean.parseBoolean(value);
-		}
-
-	}
-
-	static {
-		Properties.addListener(new PreserveExportMessagesListener());
-	}
-
-	private static volatile boolean preserveExportMessages = Boolean.parseBoolean(Properties
-			.getProperty(ServerRuntime.PreserveExportMessagesProperty));
-
 	protected final TransportContext.CLASS<TransportContext> context = new TransportContext.CLASS<TransportContext>();
 	protected final TransportEngine engine = TransportEngine.getInstance();
 
@@ -68,21 +53,14 @@ public class TransportProcedure extends Procedure {
 		z8_init();
 	}
 
-	private Message newMessage() {
-		return z8_newMessage().get();
-	}
-	
-	public Message.CLASS<? extends Message> z8_newMessage() {
-		return new Message.CLASS<Message>();
-	}
-	
 	@Override
 	protected void z8_exec(RCollection<Parameter.CLASS<? extends Parameter>> parameters) {
 
 		String selfAddress = context.get().check().getProperty(TransportContext.SelfAddressProperty);
+		Collection<String> localAddresses = SystemDomains.newInstance().getLocalAddresses();
 		Connection connection = ConnectionManager.get();
 
-		ExportMessages messages = new ExportMessages.CLASS<ExportMessages>().get();
+		ExportMessages messages = ExportMessages.newInstance();
 
 		TransportRoutes transportRoutes = TransportRoutes.newInstance();
 
@@ -102,26 +80,26 @@ public class TransportProcedure extends Procedure {
 		// Обработка внутренней входящей очереди
 		List<guid> ids = messages.getImportMessages(selfAddress);
 		for (guid id : ids) {
-			Message message = messages.getMessage(id, newMessage());
+			Message message = messages.getMessage(id);
 			try {
-				importMessage(message);
-			} catch(Throwable e) {
+				Import.importMessage(messages, message, null);
+			} catch (Throwable e) {
 				Trace.logError(e);
 				break;
 			}
 		}
 
 		// Обработка внутренней исходящей очереди
-		ids = messages.getExportMessages(selfAddress);
+		ids = messages.getExportMessages(selfAddress, localAddresses);
 		transportRoutes.checkInactiveRoutes();
 
 		for (guid id : ids) {
 
-			Message message = messages.getMessage(id, newMessage());
+			Message message = messages.getMessage(id);
 			if (message == null)
 				continue;
 
-			List<TransportRoute> routes = transportRoutes.readActiveRoutes(message.getAddress(), transportCenter);
+			List<TransportRoute> routes = transportRoutes.readRoutes(message.getAddress(), transportCenter, false);
 
 			for (TransportRoute route : routes) {
 
@@ -138,7 +116,7 @@ public class TransportProcedure extends Procedure {
 				}
 
 				try {
-					exportMessage(message, transport, route);
+					exportMessage(messages, message, transport, route);
 					transport.commit();
 					break;
 				} catch (TransportException e) {
@@ -146,7 +124,7 @@ public class TransportProcedure extends Procedure {
 					transportRoutes.disableRoute(route.getRouteId(), e.getMessage());
 				}
 			}
-		
+
 		}
 
 		// Чтение входящих сообщений
@@ -175,36 +153,30 @@ public class TransportProcedure extends Procedure {
 
 	}
 
-	static public void importMessage(Message message) throws Throwable {
-		Connection connection = ConnectionManager.get();
-		
-		try {
-			connection.beginTransaction();
-			message.runImport(null, preserveExportMessages);
-			connection.commit();
-		} catch (Throwable e) {
-			connection.rollback();
-			throw new RuntimeException(e);
-		}
-	}
+	protected void z8_init() {}
 
-	static public void exportMessage(Message message, Transport transport, TransportRoute route) throws TransportException {
+	private static void exportMessage(ExportMessages messages, Message message, Transport transport, TransportRoute route)
+			throws TransportException {
 		Connection connection = ConnectionManager.get();
-		
+
 		try {
 			connection.beginTransaction();
-			message.runExport(transport, route, preserveExportMessages);
+			messages.processed(new guid(message.getId()), route.getTransportUrl());
+			message.getFiles().addAll(
+					IeUtil.filesToFileInfos(message.getExportEntry().getFiles().getFile(), message.isSendFilesContent()));
+			message.beforeExport();
+			transport.send(message, route.getAddress());
+			message.afterExport();
 			connection.commit();
 		} catch (Throwable e) {
 			connection.rollback();
 			Trace.logError(e);
 
-			if(e instanceof TransportException)
-				throw (TransportException)e;
-			
-			message.setError(e);
+			if (e instanceof TransportException)
+				throw (TransportException) e;
+
+			messages.setError(message, e);
 		}
 	}
-	
-	protected void z8_init() {}
+
 }

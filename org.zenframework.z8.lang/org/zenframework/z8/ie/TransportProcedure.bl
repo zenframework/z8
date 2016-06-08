@@ -6,5 +6,5 @@ class TransportProcedure extends Procedure {
 	protected TransportContext context;
 	
 	virtual protected void init();
-	virtual protected Message newMessage();
+
 }

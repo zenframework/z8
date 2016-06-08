@@ -2,6 +2,8 @@ package org.zenframework.z8.server.types;
 
 import java.io.UnsupportedEncodingException;
 import java.text.MessageFormat;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
@@ -494,7 +496,7 @@ public final class string extends primary {
 		return new string(s);
 	}
 
-	public static string[] convertArray(String... strings) {
+	public static string[] wrap(String... strings) {
 		string[] result = new string[strings.length];
 		for (int i = 0; i < strings.length; i++) {
 			result[i] = new string(strings[i]);
@@ -502,10 +504,26 @@ public final class string extends primary {
 		return result;
 	}
 
-	public static String[] convertArray(string... strings) {
+	public static String[] unwrap(string... strings) {
 		String[] result = new String[strings.length];
 		for (int i = 0; i < strings.length; i++) {
 			result[i] = strings[i].get();
+		}
+		return result;
+	}
+
+	public static Collection<string> wrap(Collection<String> strings) {
+		Collection<string> result = new ArrayList<string>(strings.size());
+		for (String str : strings) {
+			result.add(new string(str));
+		}
+		return result;
+	}
+
+	public static Collection<String> unwrap(Collection<string> strings) {
+		Collection<String> result = new ArrayList<String>(strings.size());
+		for (string str : strings) {
+			result.add(str.get());
 		}
 		return result;
 	}
