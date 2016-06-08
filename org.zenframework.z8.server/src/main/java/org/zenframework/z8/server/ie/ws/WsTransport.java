@@ -53,7 +53,8 @@ public class WsTransport extends AbstractTransport {
 		//message.getExportEntry().setFiles(IeUtil.fileInfosToXmlFiles(message.getFiles()));
 		// TODO WS send files
 		TransportService client = (TransportService) factory.create();
-		client.sendMessage(message.getId(), message.getSender(), message.getExportEntry());
+		client.sendMessage(message.getCLASS().classId(), message.getId(), message.getSender(), message.getAddress(),
+				message.getExportEntry());
 	}
 
 	@Override

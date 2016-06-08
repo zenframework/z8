@@ -5,38 +5,29 @@ import org.zenframework.z8.base.table.Table;
 [native "org.zenframework.z8.server.ie.Export"]
 class Export {
 	
-    public static string getExportUrl(string protocol, string address);
-    
+	public primary[string] properties;
+	protected TransportContext context;
+
     public void addRecordset(Table table);
-    
     public void addRecordset(Table table, Field[] fields);
-    
     public void addRecordset(Table table, sql_bool where);
-    
     public void addRecordset(Table table, Field[] fields, sql_bool where);
     
     public void addFile(FileInfo fileInfo);
-
     public void addFile(FileInfo fileInfo, ImportPolicy importPolicy);
 
     public void setDefaults(ImportPolicy importPolicy, bool exportAttachments);
-    
     public void setExportRules(Table table, RecordsetExportRules rules);
-    
-    public void setExportUrl(string exportUrl);
-    
     public void setExportRecordsMax(int exportRecordsMax);
     
 	public void setSendFilesSeparately(bool sendFilesSeparately);
-
 	public void setSendFilesContent(bool sendFilesContent);
 	
-    public primary[string] properties;
-
-    protected TransportContext context;
+	public void setAddress(string address);
+	
+    public void execute();
 
     virtual protected void init();
-
-    public void execute();
+    virtual protected Message newMessage();
 
 }

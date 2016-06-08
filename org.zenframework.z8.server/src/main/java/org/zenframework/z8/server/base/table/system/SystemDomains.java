@@ -1,23 +1,21 @@
 package org.zenframework.z8.server.base.table.system;
 
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.LinkedList;
 
 import org.zenframework.z8.server.base.table.Table;
 import org.zenframework.z8.server.base.table.value.BoolField;
 import org.zenframework.z8.server.base.table.value.Field;
 import org.zenframework.z8.server.base.table.value.Link;
-import org.zenframework.z8.server.base.table.value.StringExpression;
-import org.zenframework.z8.server.base.table.value.StringField;
 import org.zenframework.z8.server.db.sql.SqlToken;
 import org.zenframework.z8.server.db.sql.expressions.Operation;
 import org.zenframework.z8.server.db.sql.expressions.Rel;
 import org.zenframework.z8.server.db.sql.functions.string.Lower;
-import org.zenframework.z8.server.ie.Export;
 import org.zenframework.z8.server.resources.Resources;
 import org.zenframework.z8.server.runtime.IObject;
-import org.zenframework.z8.server.security.IUser;
 import org.zenframework.z8.server.security.User;
+import org.zenframework.z8.server.types.sql.sql_bool;
 import org.zenframework.z8.server.types.sql.sql_string;
 
 public class SystemDomains extends Table {
@@ -56,43 +54,9 @@ public class SystemDomains extends Table {
 		}
 	}
 
-	public static class ExportUrlExpression extends StringExpression {
-
-		public static class CLASS<T extends ExportUrlExpression> extends StringExpression.CLASS<T> {
-			public CLASS() {
-				this(null);
-			}
-
-			public CLASS(IObject container) {
-				super(container);
-				setJavaClass(ExportUrlExpression.class);
-			}
-
-			@Override
-			public Object newObject(IObject container) {
-				return new ExportUrlExpression(container);
-			}
-		}
-
-		public ExportUrlExpression(IObject container) {
-			super(container);
-		}
-
-		@Override
-		protected sql_string z8_expression() {
-			SystemDomains container = (SystemDomains) this.getContainer();
-			return container.owner.get().sql_bool()
-					.z8_IIF(new sql_string(Export.LOCAL_PROTOCOL), new sql_string(Export.REMOTE_PROTOCOL))
-					.operatorAdd(new sql_string(":")).operatorAdd(container.id.get().sql_string());
-		}
-
-	}
-
 	public final Users.CLASS<Users> users = new Users.CLASS<Users>(this);
 	public final Link.CLASS<Link> userLink = new Link.CLASS<Link>(this);
 	public final BoolField.CLASS<BoolField> owner = new BoolField.CLASS<BoolField>(this);
-	public final ExportUrlExpression.CLASS<ExportUrlExpression> exportUrl = new ExportUrlExpression.CLASS<ExportUrlExpression>(
-			this);
 
 	static public SystemDomains newInstance() {
 		return new SystemDomains.CLASS<SystemDomains>().get();
@@ -127,39 +91,55 @@ public class SystemDomains extends Table {
 		owner.setName(names.Owner);
 		owner.setIndex("owner");
 		owner.setDisplayName(Resources.get(strings.Owner));
-
-		exportUrl.setIndex("exportUrl");
-		exportUrl.setDisplayName(Resources.get(strings.ExportUrl));
+		userLink.setExportable(false);
 
 		registerDataField(userLink);
 		registerDataField(owner);
-		registerDataField(exportUrl);
 
 		registerFormField(id);
 		registerFormField(users.get().name);
 		registerFormField(users.get().description);
 		registerFormField(owner);
-		registerFormField(exportUrl);
 
 		queries.add(users);
 
 		links.add(userLink);
 	}
 
-	static public IUser getDefaultUser(String address) {
-		SystemDomains domains = newInstance();
-
-		StringField name = domains.users.get().name.get();
-		StringField id = domains.id.get();
-
-		Collection<Field> fields = new ArrayList<Field>();
-		fields.add(name);
-
-		SqlToken where = new Rel(new Lower(id), Operation.Eq, new sql_string(address.toLowerCase()));
-
-		if (!domains.readFirst(fields, where))
+	public Domain getDomain(String address) {
+		if (!readFirst(Arrays.<Field> asList(id.get(), users.get().name.get()), getWhere(address)))
 			return null;
-
-		return User.load(name.string().get());
+		return getDomain();
 	}
+
+	public boolean isOwner(String address) {
+		return readFirst(Arrays.<Field> asList(owner.get()), getWhere(address)) && owner.get().get().bool().get();
+	}
+
+	public Collection<Domain> getLocalDomains() {
+		read(Arrays.<Field> asList(id.get(), users.get().name.get()), new Rel(owner.get(), Operation.Eq, new sql_bool(true)));
+		Collection<Domain> domains = new LinkedList<Domain>();
+		while (next()) {
+			domains.add(getDomain());
+		}
+		return domains;
+	}
+
+	public Collection<String> getLocalAddresses() {
+		read(Arrays.<Field> asList(id.get()), new Rel(owner.get(), Operation.Eq, new sql_bool(true)));
+		Collection<String> domains = new LinkedList<String>();
+		while (next()) {
+			domains.add(id.get().get().string().get());
+		}
+		return domains;
+	}
+
+	private Domain getDomain() {
+		return new Domain(recordId(), id.get().get().string().get(), User.load(this.users.get().name.get().string().get()));
+	}
+
+	private SqlToken getWhere(String address) {
+		return new Rel(new Lower(id.get()), Operation.Eq, new sql_string(address.toLowerCase()));
+	}
+
 }

@@ -19,6 +19,7 @@ import org.zenframework.z8.server.base.file.FileInfo;
 import org.zenframework.z8.server.base.table.Table;
 import org.zenframework.z8.server.base.table.TreeTable;
 import org.zenframework.z8.server.base.table.system.Properties;
+import org.zenframework.z8.server.base.table.system.SystemDomains;
 import org.zenframework.z8.server.base.table.value.Field;
 import org.zenframework.z8.server.db.generator.IForeignKey;
 import org.zenframework.z8.server.request.Loader;
@@ -74,7 +75,7 @@ public class Export extends OBJECT {
 	private final List<ExportEntry.Files.File> files = new LinkedList<ExportEntry.Files.File>();
 	private final List<ExportEntry.Properties.Property> props = new LinkedList<ExportEntry.Properties.Property>();
 
-	private String exportUrl;
+	private String address;
 	private int exportRecordsMax = Integer.parseInt(Properties.getProperty(ServerRuntime.ExportRecordsMaxProperty));
 	private boolean sendFilesSeparately = Boolean.parseBoolean(Properties
 			.getProperty(ServerRuntime.SendFilesSeparatelyProperty));
@@ -127,22 +128,12 @@ public class Export extends OBJECT {
 		this.exportRules.put(getTableClassId(table), exportRules);
 	}
 
-	public String getExportUrl() {
-		return exportUrl;
-	}
-
-	public String getProtocol() {
-		int pos = exportUrl.indexOf(':');
-		return pos > 0 ? exportUrl.substring(0, pos) : LOCAL_PROTOCOL;
-	}
-
 	public String getAddress() {
-		int pos = exportUrl.indexOf(':');
-		return pos > 0 ? exportUrl.substring(pos + 1) : null;
+		return address;
 	}
 
-	public void setExportUrl(String exportUrl) {
-		this.exportUrl = exportUrl;
+	public void setAddress(String address) {
+		this.address = address;
 	}
 
 	public void setExportRecordsMax(int exportRecordsMax) {
@@ -160,8 +151,7 @@ public class Export extends OBJECT {
 	public void execute() {
 		RecordsSorter recordsSorter = new RecordsSorter();
 		try {
-			String exportProtocol = getProtocol();
-			boolean local = LOCAL_PROTOCOL.equals(exportProtocol);
+			boolean local = SystemDomains.newInstance().isOwner(address);
 			String sender = context.get().getProperty(TransportContext.SelfAddressProperty);
 			if (!local) {
 				// Если протокол НЕ "local", экспортировать записи БД
@@ -188,13 +178,12 @@ public class Export extends OBJECT {
 				}
 			}
 			// Запись сообщений в таблицу ExportMessages
-			ExportMessages exportMessages = new ExportMessages.CLASS<ExportMessages>().get();
+			ExportMessages exportMessages = ExportMessages.newInstance();
 			if (sendFilesSeparately && !local) {
 				for (ExportEntry.Files.File file : files) {
-					Message message = Message.instance();
+					Message message = z8_newMessage().get();
 					message.setAddress(getAddress());
 					message.setSender(sender);
-					message.setExportProtocol(exportProtocol);
 					message.getExportEntry().getFiles().getFile().add(file);
 					if (sendFilesContent)
 						message.getExportEntry().getProperties().getProperty()
@@ -202,10 +191,9 @@ public class Export extends OBJECT {
 					exportMessages.addMessage(message, null, ExportMessages.Direction.OUT);
 				}
 			}
-			Message message = Message.instance();
+			Message message = z8_newMessage().get();
 			message.setAddress(getAddress());
 			message.setSender(sender);
-			message.setExportProtocol(exportProtocol);
 			message.getExportEntry().getRecords().getRecord().addAll(records);
 			message.getExportEntry().getProperties().getProperty().addAll(props);
 			if (!sendFilesSeparately && !local) {
@@ -258,8 +246,8 @@ public class Export extends OBJECT {
 		setExportRules(cls.get(), exportRules.get());
 	}
 
-	public void z8_setExportUrl(string exportUrl) {
-		setExportUrl(exportUrl.get());
+	public void z8_setAddress(string address) {
+		setAddress(address.get());
 	}
 
 	public void z8_setExportRecordsMax(integer exportRecordsMax) {
@@ -275,6 +263,10 @@ public class Export extends OBJECT {
 	}
 
 	public void z8_init() {}
+
+	public Message.CLASS<? extends Message> z8_newMessage() {
+		return new Message.CLASS<Message>();
+	}
 
 	public void z8_execute() {
 		execute();

@@ -303,7 +303,7 @@ public class SystemFiles extends Table {
 		Export export = new Export.CLASS<Export>().get();
 		export.setSendFilesSeparately(false);
 		export.setSendFilesContent(true);
-		export.setExportUrl(Export.getExportUrl(Export.REMOTE_PROTOCOL, address));
+		export.setAddress(address);
 		export.properties.put(Message.PROP_TYPE, Message.TYPE_FILE_CONTENT);
 		export.addFile(fileInfo);
 		export.execute();
@@ -375,8 +375,8 @@ public class SystemFiles extends Table {
 		TransportRoutes transportRoutes = TransportRoutes.newInstance();
 		TransportEngine engine = TransportEngine.getInstance();
 		TransportContext context = new TransportContext.CLASS<TransportContext>().get();
-		List<TransportRoute> routes = transportRoutes.readActiveRoutes(fileInfo.instanceId.get(),
-				Properties.getProperty(ServerRuntime.TransportCenterAddressProperty).trim());
+		List<TransportRoute> routes = transportRoutes.readRoutes(fileInfo.instanceId.get(),
+				Properties.getProperty(ServerRuntime.TransportCenterAddressProperty).trim(), true);
 
 		// Try to get file synchronously
 		for (TransportRoute route : routes) {
@@ -400,7 +400,7 @@ public class SystemFiles extends Table {
 		if (fileInfo.status != FileInfo.Status.REQUEST_SENT) {
 			// Send asynchronous request
 			Export export = new Export.CLASS<Export>().get();
-			export.setExportUrl(Export.getExportUrl(Export.REMOTE_PROTOCOL, fileInfo.instanceId.get()));
+			export.setAddress(fileInfo.instanceId.get());
 			export.properties.put(Message.PROP_TYPE, Message.TYPE_FILE_REQUEST);
 			export.properties.put(Message.PROP_RECORD_ID, fileInfo.id);
 			export.properties.put(Message.PROP_FILE_PATH, fileInfo.path);

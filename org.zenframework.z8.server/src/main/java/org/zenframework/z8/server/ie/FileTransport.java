@@ -9,14 +9,19 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.io.Reader;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.UUID;
 
+import org.apache.commons.io.comparator.NameFileComparator;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.zenframework.z8.ie.xml.ExportEntry;
 import org.zenframework.z8.server.base.file.FileInfo;
 import org.zenframework.z8.server.base.file.FilesFactory;
 import org.zenframework.z8.server.base.table.system.Properties;
 import org.zenframework.z8.server.logs.Trace;
+import org.zenframework.z8.server.request.Loader;
 import org.zenframework.z8.server.runtime.ServerRuntime;
 import org.zenframework.z8.server.utils.IOUtils;
 
@@ -24,10 +29,15 @@ public class FileTransport extends AbstractTransport implements Properties.Liste
 
 	public static final String PROTOCOL = "file";
 
+	private static final Log LOG = LogFactory.getLog(FileTransport.class);
+
 	private static final String IN = "in";
 	private static final String OUT = "out";
 	private static final String IN_ARCH = "in_arch";
 	private static final String EXPORT_ENTRY = "export-entry.xml";
+	private static final String PROPERTIES = "message.properties";
+
+	private static final String PROP_CLASS_ID = "z8.ie.message.classId";
 
 	private File root = new File(Properties.getProperty(ServerRuntime.FileFolderProperty));
 	private File in = new File(root, IN);
@@ -124,6 +134,7 @@ public class FileTransport extends AbstractTransport implements Properties.Liste
 	@Override
 	public Message receive() {
 		File[] files = in.listFiles();
+		Arrays.sort(files, NameFileComparator.NAME_INSENSITIVE_COMPARATOR);
 
 		if (files == null)
 			throw new RuntimeException("FileTransport.receive(): '" + in.getPath() + "' is not a directory.");
@@ -133,9 +144,7 @@ public class FileTransport extends AbstractTransport implements Properties.Liste
 				for (File messageFolder : addresseeFolder.listFiles()) {
 					if (messageFolder.isDirectory()) {
 						try {
-							Message message = Message.newInstance(UUID.fromString(messageFolder.getName()));
-							message.setAddress(context.getProperty(TransportContext.SelfAddressProperty));
-							message.setSender(messageFolder.getParentFile().getName());
+							Message message = getMessage(messageFolder);
 							File entryFile = new File(messageFolder, EXPORT_ENTRY);
 							if (entryFile.exists()) {
 								Reader in = null;
@@ -144,12 +153,10 @@ public class FileTransport extends AbstractTransport implements Properties.Liste
 									ExportEntry entry = IeUtil.unmarshalExportEntry(in);
 									message.setExportEntry(entry);
 									// add files
-									Collection<FileInfo> fileInfos = IeUtil.filesToFileInfos(entry.getFiles().getFile(),
-											false);
+									Collection<FileInfo> fileInfos = IeUtil.filesToFileInfos(entry.getFiles().getFile(), false);
 									for (FileInfo fileInfo : fileInfos) {
 										File file = new File(messageFolder, fileInfo.id.toString());
 										fileInfo.file = FilesFactory.createFileItem(fileInfo.name.get());
-
 										try {
 											InputStream is = new FileInputStream(file);
 											OutputStream os = fileInfo.file.getOutputStream();
@@ -161,8 +168,6 @@ public class FileTransport extends AbstractTransport implements Properties.Liste
 									}
 									lastReceived = message;
 									return message;
-								} catch (Exception e) {
-									Trace.logError("Can't unmarshal file '" + entryFile + "'", e);
 								} finally {
 									IOUtils.closeQuietly(in);
 								}
@@ -190,6 +195,37 @@ public class FileTransport extends AbstractTransport implements Properties.Liste
 
 	private static File getMessageFolderOut(File parent, String address, UUID id) {
 		return new File(parent, address + File.separatorChar + id.toString());
+	}
+
+	private Message getMessage(File messageFolder) {
+		String classId = null;
+
+		File propsFile = new File(messageFolder, PROPERTIES);
+		if (propsFile.exists()) {
+			try {
+				java.util.Properties props = new java.util.Properties();
+				InputStream in = new FileInputStream(propsFile);
+				try {
+					props.loadFromXML(in);
+				} finally {
+					IOUtils.closeQuietly(in);
+				}
+				classId = props.getProperty(PROP_CLASS_ID);
+			} catch (Throwable e) {
+				LOG.warn("Can't get " + PROP_CLASS_ID + " from '" + messageFolder + "'", e);
+			}
+		}
+
+		if (classId == null)
+			classId = Message.class.getCanonicalName();
+
+		Message message = (Message) Loader.getInstance(classId);
+		String[] folderName = messageFolder.getName().split("_");
+		message.setId(UUID.fromString(folderName.length < 2 ? folderName[0] : folderName[1]));
+		message.setAddress(context.getProperty(TransportContext.SelfAddressProperty));
+		message.setSender(messageFolder.getParentFile().getName());
+
+		return message;
 	}
 
 }

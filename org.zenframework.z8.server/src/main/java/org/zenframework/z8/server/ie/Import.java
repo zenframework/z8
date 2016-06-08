@@ -12,7 +12,10 @@ import org.zenframework.z8.server.base.file.FileInfo;
 import org.zenframework.z8.server.base.table.Table;
 import org.zenframework.z8.server.base.table.system.SystemFiles;
 import org.zenframework.z8.server.base.table.value.Field;
+import org.zenframework.z8.server.db.Connection;
+import org.zenframework.z8.server.db.ConnectionManager;
 import org.zenframework.z8.server.db.generator.IForeignKey;
+import org.zenframework.z8.server.engine.ApplicationServer;
 import org.zenframework.z8.server.engine.Runtime;
 import org.zenframework.z8.server.json.parser.JsonObject;
 import org.zenframework.z8.server.logs.Trace;
@@ -27,7 +30,28 @@ public class Import {
 
 	private static JsonObject STRUCTURE = null;
 
-	public static void importMessage(Message message) {
+	public static void importMessage(ExportMessages messages, Message message, String transportUrl) throws Throwable {
+		Connection connection = ConnectionManager.get();
+		try {
+			connection.beginTransaction();
+			messages.processed(new guid(message.getId()), transportUrl);
+			message.beforeImport();
+			ApplicationServer.disableEvents();
+			try {
+				importRecords(message);
+				importFiles(message);
+			} finally {
+				ApplicationServer.enableEvents();
+			}
+			message.afterImport();
+			connection.commit();
+		} catch (Throwable e) {
+			connection.rollback();
+			throw new RuntimeException(e);
+		}
+	}
+
+	public static void importRecords(Message message) {
 
 		// Обработка специальных свойств
 		Map<string, primary> properties = message.getProperties();

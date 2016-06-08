@@ -1,4 +1,3 @@
-import org.zenframework.z8.base.table.value.StringExpression;
 import org.zenframework.z8.base.table.value.BoolField;
 import org.zenframework.z8.base.table.value.Link;
 import org.zenframework.z8.base.table.Table;
@@ -21,8 +20,5 @@ class Domains extends Table {
 	[name "Owner"]
 	[displayName "Владелец"]
 	BoolField owner;
-
-	[displayName "URL экспорта"]
-	StringExpression exportUrl;
 
 }
