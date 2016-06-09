@@ -73,6 +73,7 @@
     <entry key="ExportMessages.ordinal">Номер</entry>
     <entry key="ExportMessages.processed">Обработано</entry>
     <entry key="ExportMessages.error">Ошибка</entry>
+    <entry key="ExportMessages.classId">Класс сообщения</entry>
 
     <!-- Transport routes -->
     <entry key="TransportRoutes.title">Маршруты</entry>

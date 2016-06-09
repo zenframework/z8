@@ -66,7 +66,7 @@ public class WsTransport extends AbstractTransport {
 	public void commit() throws TransportException {}
 
 	@Override
-	public void rollback() throws TransportException {}
+	public void rollback() {}
 
 	@Override
 	public boolean isSynchronousRequestSupported() {

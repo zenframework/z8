@@ -1,7 +1,6 @@
 package org.zenframework.z8.server.engine;
 
 import java.io.File;
-import java.net.URISyntaxException;
 import java.rmi.RemoteException;
 import java.util.Arrays;
 import java.util.List;
@@ -38,17 +37,10 @@ public class TransportCenter extends RmiServer implements ITransportCenter {
 
 	@Override
 	public void registerTransportService(String receiver, int localRegistryPort) throws RemoteException {
-		String clientHost = Rmi.getClientHost();
-		if (clientHost == null) {
-			String transportCenterAddress = Properties.getProperty(ServerRuntime.TransportCenterAddressProperty);
-			try {
-				clientHost = new RmiAddress(transportCenterAddress).getHost();
-			} catch (URISyntaxException e) {
-				throw new RemoteException("Can't register local transport server '" + receiver + "' with address '"
-						+ transportCenterAddress + "'", e);
-			}
-		}
 		try {
+			String clientHost = Rmi.getClientHost();
+			if (clientHost == null)
+				clientHost = new RmiAddress(Properties.getProperty(ServerRuntime.TransportCenterAddressProperty)).getHost();
 			store.setRoute(receiver, clientHost + ':' + localRegistryPort);
 		} catch (Exception e) {
 			throw new RemoteException("Can't register transport server '" + receiver + "'", e);

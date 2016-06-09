@@ -131,6 +131,11 @@ public class Message extends OBJECT implements RmiSerializable, Serializable {
 		return props.containsKey(PROP_SEND_FILES_CONTENT) && props.get(PROP_SEND_FILES_CONTENT).bool().get();
 	}
 
+	@Override
+	public String toString() {
+		return new StringBuilder().append(id).append(':').append(sender).append("->").append(address).toString();
+	}
+
 	protected void beforeImport() {
 		z8_beforeImport();
 	}

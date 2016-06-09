@@ -148,12 +148,12 @@ public class ExportMessages extends Table {
 		super(container);
 	}
 
-	public void addMessage(Message message, String transportUrl, Direction direction) throws JAXBException {
+	public void addMessage(Message message, String transportInfo, Direction direction) throws JAXBException {
 		guid recordId = new guid(message.getId());
 		this.id.get().set(new string(message.getSender()));
 		this.id1.get().set(new string(message.getAddress()));
-		if (transportUrl != null)
-			this.name.get().set(new string(transportUrl));
+		if (transportInfo != null)
+			this.name.get().set(new string(transportInfo));
 		this.ordinal.get().set(new integer(nextOrdinal(message, direction)));
 		this.classId.get().set(new string(message.classId()));
 		this.message.get().set(new string(IeUtil.marshalExportEntry(message.getExportEntry())));
@@ -164,12 +164,12 @@ public class ExportMessages extends Table {
 			create(recordId);
 	}
 
-	public void processed(guid id, String transportUrl) {
+	public void processed(guid id, String transportInfo) {
 		ExportMessages messages = new ExportMessages.CLASS<ExportMessages>().get();
 
 		if (preserveExportMessages) {
-			if (transportUrl != null)
-				messages.name.get().set(transportUrl);
+			if (transportInfo != null)
+				messages.name.get().set(transportInfo);
 			messages.processed.get().set(new bool(true));
 			messages.update(id);
 		} else {

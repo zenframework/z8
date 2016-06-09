@@ -91,7 +91,7 @@ public class SystemDomains extends Table {
 		owner.setName(names.Owner);
 		owner.setIndex("owner");
 		owner.setDisplayName(Resources.get(strings.Owner));
-		userLink.setExportable(false);
+		owner.setExportable(false);
 
 		registerDataField(userLink);
 		registerDataField(owner);

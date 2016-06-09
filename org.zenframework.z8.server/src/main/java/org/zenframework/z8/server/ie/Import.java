@@ -30,11 +30,11 @@ public class Import {
 
 	private static JsonObject STRUCTURE = null;
 
-	public static void importMessage(ExportMessages messages, Message message, String transportUrl) throws Throwable {
+	public static void importMessage(ExportMessages messages, Message message, String transportInfo) throws Throwable {
 		Connection connection = ConnectionManager.get();
 		try {
 			connection.beginTransaction();
-			messages.processed(new guid(message.getId()), transportUrl);
+			messages.processed(new guid(message.getId()), transportInfo);
 			message.beforeImport();
 			ApplicationServer.disableEvents();
 			try {

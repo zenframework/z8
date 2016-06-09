@@ -15,8 +15,10 @@ import org.zenframework.z8.server.base.table.system.Properties;
 import org.zenframework.z8.server.base.table.system.SystemDomains;
 import org.zenframework.z8.server.config.ServerConfig;
 import org.zenframework.z8.server.ie.ExportMessages;
+import org.zenframework.z8.server.ie.IeUtil;
 import org.zenframework.z8.server.ie.Import;
 import org.zenframework.z8.server.ie.Message;
+import org.zenframework.z8.server.ie.RmiTransport;
 import org.zenframework.z8.server.logs.Trace;
 import org.zenframework.z8.server.request.IRequest;
 import org.zenframework.z8.server.request.Request;
@@ -103,7 +105,9 @@ public class TransportService extends RmiServer implements ITransportService, Pr
 
 		ApplicationServer.setRequest(request);
 		try {
-			Import.importMessage(ExportMessages.newInstance(), message, Rmi.getClientHost());
+			String clientHost = Rmi.getClientHost();
+			Import.importMessage(ExportMessages.newInstance(), message,
+					IeUtil.getUrl(RmiTransport.PROTOCOL, clientHost != null ? clientHost : "localhost"));
 		} catch (Throwable e) {
 			Trace.logError(e);
 			throw new RemoteException("Can't import message '" + message.getId() + "' from '" + message.getSender() + "'", e);
@@ -179,4 +183,3 @@ public class TransportService extends RmiServer implements ITransportService, Pr
 	}
 
 }
-

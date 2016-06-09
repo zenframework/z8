@@ -13,7 +13,6 @@ import org.zenframework.z8.server.db.Connection;
 import org.zenframework.z8.server.db.ConnectionManager;
 import org.zenframework.z8.server.engine.ITransportService;
 import org.zenframework.z8.server.engine.Rmi;
-import org.zenframework.z8.server.logs.Trace;
 import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.runtime.RCollection;
 import org.zenframework.z8.server.runtime.ServerRuntime;
@@ -58,7 +57,6 @@ public class TransportProcedure extends Procedure {
 
 		String selfAddress = context.get().check().getProperty(TransportContext.SelfAddressProperty);
 		Collection<String> localAddresses = SystemDomains.newInstance().getLocalAddresses();
-		Connection connection = ConnectionManager.get();
 
 		ExportMessages messages = ExportMessages.newInstance();
 
@@ -84,7 +82,7 @@ public class TransportProcedure extends Procedure {
 			try {
 				Import.importMessage(messages, message, null);
 			} catch (Throwable e) {
-				Trace.logError(e);
+				LOG.error("Can't import message '" + message + "'", e);
 				break;
 			}
 		}
@@ -109,15 +107,14 @@ public class TransportProcedure extends Procedure {
 				try {
 					transport.connect(); // это долго, если сервера нет или сдох
 				} catch (TransportException e) {
-					log("Can't import message via protocol '" + transport.getProtocol() + "'", e);
+					log("Can't connect to '" + route.getDomain() + "' via '" + route.getTransportUrl() + "'", e);
 					transport.close();
 					transportRoutes.disableRoute(route.getRouteId(), e.getMessage());
 					continue;
 				}
 
 				try {
-					exportMessage(messages, message, transport, route);
-					transport.commit();
+					sendMessage(messages, message, transport, route);
 					break;
 				} catch (TransportException e) {
 					transport.close();
@@ -132,18 +129,7 @@ public class TransportProcedure extends Procedure {
 			try {
 				transport.connect();
 				for (Message message = transport.receive(); message != null; message = transport.receive()) {
-					try {
-						connection.beginTransaction();
-						messages.addMessage(message, transport.getUrl(message.getSender()), ExportMessages.Direction.IN);
-						Import.importFiles(message);
-						connection.commit();
-						transport.commit();
-					} catch (Throwable e) {
-						log("Can't save incoming message " + message.getId() + " from '"
-								+ transport.getUrl(message.getAddress()) + "'", e);
-						connection.rollback();
-						transport.rollback();
-					}
+					receiveMessage(messages, message, transport);
 				}
 			} catch (TransportException e) {
 				log("Can't import message via protocol '" + transport.getProtocol() + "'", e);
@@ -155,10 +141,9 @@ public class TransportProcedure extends Procedure {
 
 	protected void z8_init() {}
 
-	private static void exportMessage(ExportMessages messages, Message message, Transport transport, TransportRoute route)
+	private static void sendMessage(ExportMessages messages, Message message, Transport transport, TransportRoute route)
 			throws TransportException {
 		Connection connection = ConnectionManager.get();
-
 		try {
 			connection.beginTransaction();
 			messages.processed(new guid(message.getId()), route.getTransportUrl());
@@ -167,15 +152,33 @@ public class TransportProcedure extends Procedure {
 			message.beforeExport();
 			transport.send(message, route.getAddress());
 			message.afterExport();
+			transport.commit();
 			connection.commit();
 		} catch (Throwable e) {
+			transport.rollback();
 			connection.rollback();
-			Trace.logError(e);
+			LOG.error("Can't send message '" + message + "' via '" + route.getTransportUrl() + "'", e);
 
 			if (e instanceof TransportException)
 				throw (TransportException) e;
 
 			messages.setError(message, e);
+		}
+	}
+
+	private static void receiveMessage(ExportMessages messages, Message message, Transport transport)
+			throws TransportException {
+		Connection connection = ConnectionManager.get();
+		try {
+			connection.beginTransaction();
+			messages.addMessage(message, transport.getProtocol(), ExportMessages.Direction.IN);
+			Import.importFiles(message);
+			transport.commit();
+			connection.commit();
+		} catch (Throwable e) {
+			connection.rollback();
+			transport.rollback();
+			LOG.error("Can't import message '" + message + "' from '" + transport.getUrl(message.getAddress()) + "'", e);
 		}
 	}
 

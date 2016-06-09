@@ -114,7 +114,7 @@ public class FileTransport extends AbstractTransport implements Properties.Liste
 	}
 
 	@Override
-	public void rollback() throws TransportException {}
+	public void rollback() {}
 
 	@Override
 	public boolean isSynchronousRequestSupported() {

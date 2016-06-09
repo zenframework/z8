@@ -14,7 +14,7 @@ public interface Transport {
 
 	void commit() throws TransportException;
 
-	void rollback() throws TransportException;
+	void rollback();
 
 	boolean isSynchronousRequestSupported();
 

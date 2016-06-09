@@ -27,6 +27,8 @@ import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.zenframework.z8.server.base.file.FileInfo;
 import org.zenframework.z8.server.base.file.FilesFactory;
 import org.zenframework.z8.server.base.table.system.Properties;
@@ -36,6 +38,8 @@ import org.zenframework.z8.server.runtime.ServerRuntime;
 import org.zenframework.z8.server.utils.IOUtils;
 
 public class JmsTransport extends AbstractTransport implements ExceptionListener, Properties.Listener {
+
+	private static final Log LOG = LogFactory.getLog(JmsTransport.class);
 
 	public static final String PROTOCOL = "jms";
 
@@ -106,15 +110,12 @@ public class JmsTransport extends AbstractTransport implements ExceptionListener
 	}
 
 	@Override
-	public void rollback() throws TransportException {
+	public void rollback() {
 		try {
-			if (session != null) {
+			if (session != null)
 				session.rollback();
-			} else {
-				throw new JMSException("Session is null");
-			}
 		} catch (JMSException e) {
-			throw new TransportException("Can't rollback JMS session", e);
+			LOG.error("Can't rollback JMS session", e);
 		}
 	}
 
@@ -178,15 +179,15 @@ public class JmsTransport extends AbstractTransport implements ExceptionListener
 
 	private static String getSender(javax.jms.Message jmsMessage) throws JMSException {
 		Destination senderDest = jmsMessage.getJMSReplyTo();
-		
+
 		if (senderDest instanceof Queue)
 			return ((Queue) senderDest).getQueueName();
 		else if (senderDest instanceof Topic)
 			return ((Topic) senderDest).getTopicName();
-		
+
 		return null;
 	}
-	
+
 	@Override
 	public Message receive() throws TransportException {
 		try {
@@ -194,9 +195,10 @@ public class JmsTransport extends AbstractTransport implements ExceptionListener
 
 			if (jmsMessage == null)
 				return null;
-			
+
 			try {
-				Mode mode = jmsMessage.propertyExists(PROP_MODE) ? getMode(jmsMessage.getStringProperty(PROP_MODE)) : DEFAULT_MODE;
+				Mode mode = jmsMessage.propertyExists(PROP_MODE) ? getMode(jmsMessage.getStringProperty(PROP_MODE))
+						: DEFAULT_MODE;
 
 				switch (mode) {
 				case OBJECT:
@@ -209,7 +211,8 @@ public class JmsTransport extends AbstractTransport implements ExceptionListener
 			} catch (JMSException e) {
 				String id = jmsMessage.getJMSMessageID();
 				String sender = getSender(jmsMessage);
-				throw new TransportException("Can't parse JMS message " + id + " from " + (sender == null ? "<unknown>" : sender), e);
+				throw new TransportException("Can't parse JMS message " + id + " from "
+						+ (sender == null ? "<unknown>" : sender), e);
 			}
 		} catch (JMSException e) {
 			throw new TransportException("Can't receive JMS message", e);
@@ -284,7 +287,7 @@ public class JmsTransport extends AbstractTransport implements ExceptionListener
 			objOut.writeObject(object);
 			objOut.close();
 			return out.toByteArray();
-		} catch(Exception e) {
+		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
 	}
@@ -292,7 +295,7 @@ public class JmsTransport extends AbstractTransport implements ExceptionListener
 	static public Object bytesToObject(byte buf[]) {
 		try {
 			return new ObjectInputStream(new ByteArrayInputStream(buf)).readObject();
-		} catch(Exception e) {
+		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
 	}
