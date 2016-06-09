@@ -13,7 +13,6 @@ import org.eclipse.core.resources.IResourceDeltaVisitor;
 import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
-
 import org.zenframework.z8.compiler.workspace.Folder;
 import org.zenframework.z8.compiler.workspace.Project;
 import org.zenframework.z8.compiler.workspace.Resource;
@@ -34,7 +33,7 @@ public class WorkspaceInitializer {
                         IResource resource = delta.getResource();
                         IProject iProject = resource.getProject();
 
-                        if(resource instanceof IWorkspaceRoot) {
+                        if(resource instanceof IWorkspaceRoot || !isZ8Project(iProject)) {
                             return true;
                         }
 
