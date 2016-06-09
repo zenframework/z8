@@ -29,7 +29,7 @@
         <cxf.version>2.6.0</cxf.version>
         
         <!-- Версии плагинов -->
-        <tycho.version>0.21.0</tycho.version>
+        <tycho.version>0.24.0</tycho.version>
 
     </properties>
 
