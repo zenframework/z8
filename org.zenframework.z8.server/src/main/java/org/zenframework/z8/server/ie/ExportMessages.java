@@ -1,5 +1,6 @@
 package org.zenframework.z8.server.ie;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedList;
@@ -10,6 +11,7 @@ import javax.xml.bind.JAXBException;
 import org.zenframework.z8.ie.xml.ExportEntry;
 import org.zenframework.z8.server.base.table.Table;
 import org.zenframework.z8.server.base.table.system.Properties;
+import org.zenframework.z8.server.base.table.system.SystemDomains;
 import org.zenframework.z8.server.base.table.value.Aggregation;
 import org.zenframework.z8.server.base.table.value.AttachmentExpression;
 import org.zenframework.z8.server.base.table.value.BoolField;
@@ -260,19 +262,57 @@ public class ExportMessages extends Table {
 		registerFormField(error);
 	}
 
-	public List<guid> getExportMessages(String selfAddress, Collection<String> localAddresses) {
-		SqlToken notProcessedNotErrorNotLocal = new And(new And(new Unary(Operation.Not, new SqlField(processed.get())),
-				new Unary(Operation.Not, new SqlField(error.get()))), new Unary(Operation.Not, new InVector(id1.get(),
-				string.wrap(localAddresses))));
-		SqlToken fromMeNotForMe = new And(new Rel(id.get(), Operation.Eq, new sql_string(selfAddress)), new Rel(id1.get(),
-				Operation.NotEq, new sql_string(selfAddress)));
-		read(Arrays.<Field> asList(recordId.get()), Arrays.<Field> asList(ordinal.get()), new And(
-				notProcessedNotErrorNotLocal, fromMeNotForMe));
-		List<guid> ids = new LinkedList<guid>();
+	public Collection<String> getAddresses(String sender) {
+		Collection<String> locals = SystemDomains.newInstance().getLocalAddresses();
+
+		Collection<String> result = new ArrayList<String>();
+
+		Field addressField = id1.get();
+		Collection<Field> fields = Arrays.<Field> asList(addressField);
+		
+		group(fields, fields, null);
+
 		while (next()) {
-			ids.add(recordId());
+			String address = addressField.string().get();
+			if(!address.equals(sender) && !locals.contains(address))
+				result.add(address);
 		}
-		return ids;
+		
+		return result;
+	}
+
+	public List<guid> getExportMessages(String sender) {
+		return getExportMessages(sender, null);
+	}
+
+	public List<guid> getExportMessages(String sender, String address) {
+		List<guid> result = new LinkedList<guid>();
+
+		Collection<String> locals = SystemDomains.newInstance().getLocalAddresses();
+
+		Field senderField = id.get();
+		Field addressField = id1.get();
+		
+		SqlToken notProcessed = new Unary(Operation.Not, processed.get());
+		SqlToken notLocal = new Unary(Operation.Not, new InVector(addressField, string.wrap(locals)));
+		SqlToken senderEq = new Rel(senderField, Operation.Eq, new sql_string(sender));
+
+		SqlToken where = new And(new And(notProcessed, notLocal), senderEq);
+		
+		if(address != null) { 
+			SqlToken addressEq = new Rel(addressField, Operation.Eq, new sql_string(address));
+			where = new And(where, addressEq);
+		}
+		
+		Collection<Field> fields = Arrays.<Field> asList(recordId.get());
+		Collection<Field> orderBy = Arrays.<Field> asList(ordinal.get());
+		
+		read(fields, orderBy, where);
+		
+		while (next())
+			result.add(recordId());
+		
+		return result;
 	}
 
 	public List<guid> getImportMessages(String selfAddress) {
