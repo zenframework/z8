@@ -15,8 +15,8 @@
         <compiler.source.version>1.6</compiler.source.version>
         <compiler.target.version>1.6</compiler.target.version>
 
-        <!-- z8 versions -->
-        <z8.pde.version>1.1.1</z8.pde.version>
+        <!-- z8 build configuration -->
+        <z8.oda.driver.packaging>jar</z8.oda.driver.packaging>
         
         <!-- Кодировка исходных кодов -->
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -39,6 +39,7 @@
         <module>org.zenframework.z8.compiler</module>
         <module>org.zenframework.z8.lang</module>
         <module>org.zenframework.z8-maven-plugin</module>
+        <module>org.zenframework.z8.oda.driver</module>
         <module>org.zenframework.z8.server</module>
         <module>org.zenframework.z8.servlet</module>
         <module>org.zenframework.z8.web</module>
@@ -46,20 +47,66 @@
     </modules>
 
     <profiles>
+
         <profile>
             <id>modules-pde</id>
+            <properties>
+                <z8.oda.driver.packaging>eclipse-plugin</z8.oda.driver.packaging>
+            </properties>
             <modules>
                 <module>org.zenframework.z8.pde</module>
-                <module>org.zenframework.z8.oda.driver</module>
                 <module>org.zenframework.z8.oda.designer</module>
             </modules>
         </profile>
+
         <profile>
             <id>modules-webapp</id>
             <modules>
                 <module>org.zenframework.z8.webapp</module>
             </modules>
         </profile>
+
+		<profile>
+			<id>details</id>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-help-plugin</artifactId>
+						<version>2.2</version>
+						<executions>
+							<execution>
+								<id>active-profiles</id>
+								<phase>initialize</phase>
+								<goals>
+									<goal>active-profiles</goal>
+									<goal>effective-settings</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-antrun-plugin</artifactId>
+						<version>1.7</version>
+						<executions>
+							<execution>
+								<phase>validate</phase>
+								<goals>
+									<goal>run</goal>
+								</goals>
+								<configuration>
+									<tasks>
+										<echoproperties />
+									</tasks>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+
     </profiles>
 
     <!--<distributionManagement>
@@ -134,6 +181,12 @@
                             </goals>
                         </execution>
                     </executions>
+                </plugin>
+                <plugin>
+                    <groupId>org.eclipse.tycho</groupId>
+                    <artifactId>tycho-maven-plugin</artifactId>
+                    <version>${tycho.version}</version>
+                    <extensions>true</extensions>
                 </plugin>
             </plugins>
         </pluginManagement>
