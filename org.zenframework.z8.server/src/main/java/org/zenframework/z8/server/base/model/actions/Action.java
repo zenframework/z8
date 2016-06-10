@@ -20,6 +20,7 @@ public abstract class Action extends RequestTarget {
     static public final String destroyAction = "destroy";
     static public final String moveAction = "move";
     static public final String reportAction = "report";
+    static public final String previewAction = "preview";
     static public final String commandAction = "command";
     static public final String followAction = "follow";
     static public final String readRecordAction = "readRecord";

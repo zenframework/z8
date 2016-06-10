@@ -63,6 +63,9 @@ public class ActionFactory {
         else if(Action.reportAction.equals(actionName)) {
             return new ReportAction(actionParameters);
         }
+        else if(Action.previewAction.equals(actionName)) {
+            return new PreviewAction(actionParameters);
+        }
         else if(Action.followAction.equals(actionName)) {
             return new FollowAction(actionParameters);
         }

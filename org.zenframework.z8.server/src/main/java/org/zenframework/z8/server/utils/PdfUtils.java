@@ -109,7 +109,7 @@ public class PdfUtils {
 		}
 	}
 
-	public static void doMerge(List<File> sourceFiles, File mergedFile) throws IOException {
+	public static void merge(List<File> sourceFiles, File mergedFile) throws IOException {
 		Document document = new Document();
 		try {
 			PdfWriter writer = PdfWriter.getInstance(document, new FileOutputStream(mergedFile));
