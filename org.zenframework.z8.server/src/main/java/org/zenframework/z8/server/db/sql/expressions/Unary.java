@@ -2,10 +2,12 @@ package org.zenframework.z8.server.db.sql.expressions;
 
 import java.util.Collection;
 
+import org.zenframework.z8.server.base.table.value.Field;
 import org.zenframework.z8.server.base.table.value.IValue;
 import org.zenframework.z8.server.db.DatabaseVendor;
 import org.zenframework.z8.server.db.FieldType;
 import org.zenframework.z8.server.db.sql.FormatOptions;
+import org.zenframework.z8.server.db.sql.SqlField;
 import org.zenframework.z8.server.db.sql.SqlToken;
 import org.zenframework.z8.server.db.sql.functions.If;
 import org.zenframework.z8.server.exceptions.UnsupportedException;
@@ -13,36 +15,37 @@ import org.zenframework.z8.server.exceptions.db.UnknownDatabaseException;
 import org.zenframework.z8.server.types.sql.sql_integer;
 
 public class Unary extends SqlToken {
-    private Operation sqlOper;
-    private SqlToken left;
+    private Operation operation;
+    private SqlToken token;
 
-    public Unary(Operation oper, SqlToken l) {
-        sqlOper = oper;
-        left = l;
+    public Unary(Operation operation, Field field) {
+        this(operation, new SqlField(field));
+    }
+
+    public Unary(Operation operation, SqlToken token) {
+        this.operation = operation;
+        this.token = token;
     }
 
     @Override
     public void collectFields(Collection<IValue> fields) {
-        if(left != null) {
-            left.collectFields(fields);
-        }
+        if(token != null)
+            token.collectFields(fields);
     }
 
     @Override
     public String format(DatabaseVendor vendor, FormatOptions options, boolean logicalContext)
             throws UnknownDatabaseException {
-        switch(sqlOper) {
+        switch(operation) {
         case Not: {
             SqlToken t = new UNOTToken();
-            if(!logicalContext) {
+            if(!logicalContext)
                 t = new If(t, new sql_integer(1), new sql_integer(0));
-            }
             return t.format(vendor, options, logicalContext);
         }
 
-        case Minus: {
-            return "(-" + left.format(vendor, options) + ")";
-        }
+        case Minus:
+            return "(-" + token.format(vendor, options) + ")";
 
         default:
             throw new UnsupportedException();
@@ -50,7 +53,7 @@ public class Unary extends SqlToken {
     }
 
     private String sign() {
-        switch(sqlOper) {
+        switch(operation) {
         case Not:
             return "!";
         case Minus:
@@ -62,18 +65,18 @@ public class Unary extends SqlToken {
 
     @Override
     public String formula() {
-        return sign() + left.formula();
+        return sign() + token.formula();
     }
 
     @Override
     public FieldType type() {
-        switch(sqlOper) {
+        switch(operation) {
         case Not: {
             return FieldType.Boolean;
         }
 
         case Minus: {
-            return left.type();
+            return token.type();
         }
 
         default:
@@ -84,7 +87,7 @@ public class Unary extends SqlToken {
     private class UNOTToken extends SqlToken {
         @Override
         public String format(DatabaseVendor vendor, FormatOptions options, boolean logicalContext) {
-            return "not(" + left.format(vendor, options, true) + ")";
+            return "not(" + token.format(vendor, options, true) + ")";
         }
 
         @Override
