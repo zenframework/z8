@@ -63,7 +63,7 @@ public class ServerConfig extends Properties {
 		try {
 			loadFromXML(new FileInputStream(configFile));
 		} catch (Throwable e) {
-			throw new RuntimeException();
+			throw new RuntimeException(e);
 		}
 
 		applicationServerId = getProperty(ApplicationServerIdProperty, guid.create().toString());
