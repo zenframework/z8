@@ -35,10 +35,10 @@ import org.zenframework.z8.server.types.bool;
 import org.zenframework.z8.server.types.datetime;
 import org.zenframework.z8.server.types.guid;
 import org.zenframework.z8.server.types.integer;
-import org.zenframework.z8.server.types.primary;
 import org.zenframework.z8.server.types.string;
 import org.zenframework.z8.server.types.sql.sql_string;
 import org.zenframework.z8.server.utils.ErrorUtils;
+import org.zenframework.z8.server.utils.StringUtils;
 
 public class ExportMessages extends Table {
 
@@ -114,7 +114,8 @@ public class ExportMessages extends Table {
 		public final static String Title = "ExportMessages.title";
 		public final static String Sender = "ExportMessages.sender";
 		public final static String Receiver = "ExportMessages.receiver";
-		public final static String Group = "ExportMessages.group";
+		public final static String Info = "ExportMessages.info";
+		public final static String Transport = "ExportMessages.transport";
 		public final static String Message = "ExportMessages.message";
 		public final static String Ordinal = "ExportMessages.ordinal";
 		public final static String ClassId = "ExportMessages.classId";
@@ -152,13 +153,13 @@ public class ExportMessages extends Table {
 		super(container);
 	}
 
-	public void addMessage(Message message, Direction direction) throws JAXBException {
+	public void addMessage(Message message, String transportInfo, Direction direction) throws JAXBException {
 		guid recordId = new guid(message.getId());
-		primary group = message.getProperties().get(Message.PROP_GROUP);
 		this.id.get().set(new string(message.getSender()));
 		this.id1.get().set(new string(message.getAddress()));
-		if (group != null)
-			this.name.get().set(group);
+		this.name.get().set(StringUtils.cut(message.getInfo(), this.name.get().length.getInt()));
+		if (transportInfo != null)
+			this.description.get().set(new string(transportInfo));
 		this.ordinal.get().set(new integer(nextOrdinal(message, direction)));
 		this.classId.get().set(new string(message.classId()));
 		this.message.get().set(new string(IeUtil.marshalExportEntry(message.getExportEntry())));
@@ -174,7 +175,7 @@ public class ExportMessages extends Table {
 
 		if (preserveExportMessages) {
 			if (transportInfo != null)
-				messages.name.get().set(transportInfo);
+				messages.description.get().set(transportInfo);
 			messages.processed.get().set(new bool(true));
 			messages.update(id);
 		} else {
@@ -215,8 +216,10 @@ public class ExportMessages extends Table {
 
 		createdAt.get().system.set(false);
 
-		name.setDisplayName(Resources.get(strings.Group));
-		name.get().length = new integer(256);
+		name.setDisplayName(Resources.get(strings.Info));
+		name.get().length = new integer(1024);
+
+		description.setDisplayName(Resources.get(strings.Transport));
 
 		ordinal.setName("Ordinal");
 		ordinal.setIndex("ordinal");

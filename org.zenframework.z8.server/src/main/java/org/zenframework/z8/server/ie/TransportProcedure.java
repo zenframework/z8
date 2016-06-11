@@ -15,6 +15,7 @@ import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.runtime.RCollection;
 import org.zenframework.z8.server.runtime.ServerRuntime;
 import org.zenframework.z8.server.types.guid;
+import org.zenframework.z8.server.utils.ErrorUtils;
 
 public class TransportProcedure extends Procedure {
 
@@ -106,7 +107,7 @@ public class TransportProcedure extends Procedure {
 				} catch (TransportException e) {
 					log("Can't connect to '" + route.getDomain() + "' via '" + route.getTransportUrl() + "'", e);
 					transport.close();
-					transportRoutes.disableRoute(route.getRouteId(), e.getMessage());
+					transportRoutes.disableRoute(route.getRouteId(), ErrorUtils.getMessage(e));
 					continue;
 				}
 
@@ -168,7 +169,7 @@ public class TransportProcedure extends Procedure {
 		Connection connection = ConnectionManager.get();
 		try {
 			connection.beginTransaction();
-			messages.addMessage(message, ExportMessages.Direction.IN);
+			messages.addMessage(message, transport.getProtocol(), ExportMessages.Direction.IN);
 			Import.importFiles(message);
 			transport.commit();
 			connection.commit();

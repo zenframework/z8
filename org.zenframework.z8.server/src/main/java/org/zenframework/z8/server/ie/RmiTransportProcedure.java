@@ -30,7 +30,7 @@ public class RmiTransportProcedure extends Procedure {
 
 	public static final guid PROCEDURE_ID = new guid("E43F94C6-E918-405D-898C-B915CC51FFDF");
 
-	public static final ExportMessages messages = ExportMessages.newInstance();
+	public final ExportMessages messages = ExportMessages.newInstance();
 
 	public final TransportContext.CLASS<TransportContext> context = new TransportContext.CLASS<TransportContext>();
 
@@ -59,7 +59,7 @@ public class RmiTransportProcedure extends Procedure {
 		z8_init();
 	}
 
-	public static class TransportThread extends Thread {
+	public class TransportThread extends Thread {
 		private String address;
 		private String sender;
 
@@ -79,7 +79,7 @@ public class RmiTransportProcedure extends Procedure {
 				if (message == null)
 					continue;
 
-				RmiTransportProcedure.sendMessage(message);
+				RmiTransportProcedure.this.sendMessage(message);
 			}
 		}
 	}
@@ -126,7 +126,7 @@ public class RmiTransportProcedure extends Procedure {
 
 	protected void z8_init() {}
 
-	public static void sendMessage(Message message) {
+	public void sendMessage(Message message) {
 		Connection connection = ConnectionManager.get();
 		try {
 			connection.beginTransaction();

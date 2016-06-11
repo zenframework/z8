@@ -25,7 +25,8 @@ public class WsTransport extends AbstractTransport {
 
 	@Override
 	public void init() {
-		endpoint = Endpoint.publish(Properties.getProperty(ServerRuntime.WsEndpointProperty), new TransportServiceImpl());
+		endpoint = Endpoint.publish(Properties.getProperty(ServerRuntime.WsEndpointProperty), new TransportServiceImpl(
+				context.getProperty(TransportContext.SelfAddressProperty)));
 	}
 
 	@Override

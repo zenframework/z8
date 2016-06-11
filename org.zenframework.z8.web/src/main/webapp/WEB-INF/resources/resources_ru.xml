@@ -68,7 +68,8 @@
     <entry key="ExportMessages.title">Очередь сообщений</entry>
     <entry key="ExportMessages.sender">Отправитель</entry>
     <entry key="ExportMessages.receiver">Получатель</entry>
-    <entry key="ExportMessages.group">Группа</entry>
+    <entry key="ExportMessages.info">Информация</entry>
+    <entry key="ExportMessages.transport">Транспорт</entry>
     <entry key="ExportMessages.message">Сообщение</entry>
     <entry key="ExportMessages.ordinal">Номер</entry>
     <entry key="ExportMessages.processed">Обработано</entry>

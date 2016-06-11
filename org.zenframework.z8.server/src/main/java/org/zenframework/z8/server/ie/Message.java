@@ -127,6 +127,20 @@ public class Message extends OBJECT implements RmiSerializable, Serializable {
 		return properties;
 	}
 
+	public String getInfo() {
+		primary type = getProperties().get(Message.PROP_TYPE);
+		primary group = getProperties().get(Message.PROP_GROUP);
+		StringBuilder str = new StringBuilder();
+		if (type != null)
+			str.append(type);
+		if (group != null) {
+			if (str.length() > 0)
+				str.append(" : ");
+			str.append(group);
+		}
+		return str.toString();
+	}
+
 	public boolean isSendFilesContent() {
 		RLinkedHashMap<string, primary> props = getProperties();
 		return props.containsKey(PROP_SEND_FILES_CONTENT) && props.get(PROP_SEND_FILES_CONTENT).bool().get();
