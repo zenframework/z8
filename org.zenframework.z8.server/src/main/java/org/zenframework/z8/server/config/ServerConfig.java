@@ -128,7 +128,9 @@ public class ServerConfig extends Properties {
 
 	public final File getWorkingPath() {
 		try {
-			return configFile.getCanonicalFile().getParentFile();
+			File workingPath = configFile.getCanonicalFile();
+			workingPath.mkdirs();
+			return workingPath.getParentFile();
 		} catch(IOException e) {
 			throw new RuntimeException(e);
 		}
