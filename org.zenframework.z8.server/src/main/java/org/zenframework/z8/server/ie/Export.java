@@ -149,10 +149,12 @@ public class Export extends OBJECT {
 	}
 
 	public void execute() {
-		RecordsSorter recordsSorter = new RecordsSorter();
+		if (address == null || address.isEmpty())
+			throw new exception("Export address is not set");
+		String sender = context.get().check().getProperty(TransportContext.SelfAddressProperty);
 		try {
 			boolean local = SystemDomains.newInstance().isOwner(address);
-			String sender = context.get().getProperty(TransportContext.SelfAddressProperty);
+			RecordsSorter recordsSorter = new RecordsSorter();
 			if (!local) {
 				// Если протокол НЕ "local", экспортировать записи БД
 				for (RecordsetEntry recordsetEntry : recordsetEntries) {
