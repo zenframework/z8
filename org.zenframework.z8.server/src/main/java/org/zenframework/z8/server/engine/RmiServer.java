@@ -10,7 +10,8 @@ public abstract class RmiServer extends UnicastRemoteObject implements IServer {
 	private transient final Class<? extends IServer> serverClass;
 	private transient String url;
 
-	protected RmiServer(Class<? extends IServer> serverClass) throws RemoteException {
+	protected RmiServer(int unicastPort, Class<? extends IServer> serverClass) throws RemoteException {
+		super(unicastPort);
 		this.serverClass = serverClass;
 	}
 

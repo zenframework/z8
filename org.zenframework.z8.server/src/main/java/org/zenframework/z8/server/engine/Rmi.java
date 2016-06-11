@@ -30,7 +30,7 @@ public class Rmi {
 		Host = InetAddress.getLocalHost().getHostAddress();
 
 		try {
-			Registry = LocateRegistry.createRegistry(Port, new Z8RmiClientSocketFactory(), new Z8RmiServerSocketFactory());
+			Registry = LocateRegistry.createRegistry(Port);
 			LOG.trace("RMI registry created at " + Host + ':' + Port);
 		} catch (RemoteException e) {
 			Registry = LocateRegistry.getRegistry(Port);

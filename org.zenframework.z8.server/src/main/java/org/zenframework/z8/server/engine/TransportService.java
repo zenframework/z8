@@ -40,8 +40,8 @@ public class TransportService extends RmiServer implements ITransportService, Pr
 
 	private volatile RmiAddress transportCenter;
 
-	private TransportService(ServerConfig config) throws RemoteException {
-		super(ITransportService.class);
+	private TransportService(int unicastPort) throws RemoteException {
+		super(unicastPort, ITransportService.class);
 		try {
 			transportCenter = getRmiAddress(Properties.getProperty(ServerRuntime.TransportCenterAddressProperty));
 		} catch (URISyntaxException e) {
@@ -52,7 +52,7 @@ public class TransportService extends RmiServer implements ITransportService, Pr
 
 	public static void start(ServerConfig config) throws RemoteException {
 		if (INSTANCE == null) {
-			INSTANCE = new TransportService(config);
+			INSTANCE = new TransportService(config.getUnicastTransportServicePort());
 			INSTANCE.start();
 		}
 	}

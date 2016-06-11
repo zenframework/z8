@@ -18,13 +18,20 @@ public class ServerConfig extends Properties {
 	public static final String ConfigurationFileName = "project.xml";
 
 	public static final String RmiRegistryPortProperty = "rmi.registry.port";
-	public static final String RmiServersPortRange = "rmi.servers.portRange";
+
+	public static final String UnicastAuthorityCenterPortProperty = "unicast.authority.center.port";
+	public static final String UnicastApplicationServerPortProperty = "unicast.application.server.port";
+	public static final String UnicastTransportCenterPortProperty = "unicast.transport.center.port";
+	public static final String UnicastTransportServicePortProperty = "unicast.transport.service.port";
 
 	public static final String AuthorityCenterHostProperty = "authority.center.host";
 	public static final String AuthorityCenterPortProperty = "authority.center.port";
 	public static final String AuthorityCenterSessionTimeoutProperty = "authority.center.session.timeout";
 
 	public static final String ApplicationServerIdProperty = "application.server.id";
+
+	public static final String TransportCenterPortProperty = "transport.center.port";
+	public static final String TrnasportServicePortProperty = "transport.service.port";
 
 	public static final String WebServerStartApplicationServerProperty = "web.server.start.application.server";
 	public static final String WebServerStartAuthorityCenterProperty = "web.server.start.authority.center";
@@ -44,7 +51,11 @@ public class ServerConfig extends Properties {
 	private final File configFile;
 
 	private final int rmiRegistryPort;
-	private final PortRange rmiServersPortRange;
+
+	private final int unicastAuthorityCenterPort;
+	private final int unicastApplicationServerPort;
+	private final int unicastTransportCenterPort;
+	private final int unicastTransportServicePort;
 
 	private final String authorityCenterHost;
 	private final int authorityCenterPort;
@@ -79,7 +90,11 @@ public class ServerConfig extends Properties {
 		applicationServerId = getProperty(ApplicationServerIdProperty, guid.create().toString());
 
 		rmiRegistryPort = getProperty(RmiRegistryPortProperty, RegistryPortDefault);
-		rmiServersPortRange = getProperty(RmiServersPortRange, ServersPortRangeDefault);
+
+		unicastAuthorityCenterPort = getProperty(UnicastAuthorityCenterPortProperty, 0);
+		unicastApplicationServerPort = getProperty(UnicastApplicationServerPortProperty, 0);
+		unicastTransportCenterPort = getProperty(UnicastTransportCenterPortProperty, 0);
+		unicastTransportServicePort = getProperty(UnicastTransportServicePortProperty, 0);
 
 		authorityCenterHost = getProperty(AuthorityCenterHostProperty, "");
 		authorityCenterPort = getProperty(AuthorityCenterPortProperty, RegistryPortDefault);
@@ -156,8 +171,20 @@ public class ServerConfig extends Properties {
 		return rmiRegistryPort;
 	}
 
-	public PortRange getRmiServersPortRange() {
-		return rmiServersPortRange;
+	public int getUnicastAuthorityCenterPort() {
+		return unicastAuthorityCenterPort;
+	}
+
+	public int getUnicastApplicationServerPort() {
+		return unicastApplicationServerPort;
+	}
+
+	public int getUnicastTransportCenterPort() {
+		return unicastTransportCenterPort;
+	}
+
+	public int getUnicastTransportServicePort() {
+		return unicastTransportServicePort;
 	}
 
 	public final String getAuthorityCenterHost() {

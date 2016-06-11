@@ -30,8 +30,8 @@ public class TransportCenter extends RmiServer implements ITransportCenter {
 
 	private final Store store;
 
-	protected TransportCenter() throws RemoteException {
-		super(ITransportCenter.class);
+	protected TransportCenter(int unicastPort) throws RemoteException {
+		super(unicastPort, ITransportCenter.class);
 		store = STORE_MODE == StoreMode.TABLE ? new TableStore() : new FileStore();
 	}
 
@@ -54,7 +54,7 @@ public class TransportCenter extends RmiServer implements ITransportCenter {
 
 	public static void start(ServerConfig config) throws RemoteException {
 		if (INSTANCE == null) {
-			INSTANCE = new TransportCenter();
+			INSTANCE = new TransportCenter(config.getUnicastTransportCenterPort());
 			INSTANCE.start();
 		}
 	}

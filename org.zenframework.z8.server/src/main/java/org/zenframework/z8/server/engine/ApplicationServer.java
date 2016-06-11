@@ -33,8 +33,8 @@ public class ApplicationServer extends RmiServer implements IApplicationServer {
 
 	private transient IAuthorityCenter authorityCenter = null;
 
-	private ApplicationServer() throws RemoteException {
-		super(IApplicationServer.class);
+	private ApplicationServer(int unicastPort) throws RemoteException {
+		super(unicastPort, IApplicationServer.class);
 	}
 
 	@Override
@@ -108,7 +108,7 @@ public class ApplicationServer extends RmiServer implements IApplicationServer {
 	public static void start(ServerConfig config) throws RemoteException {
 		if (INSTANCE == null) {
 			Id = config.getServerId();
-			INSTANCE = new ApplicationServer();
+			INSTANCE = new ApplicationServer(config.getUnicastApplicationServerPort());
 			INSTANCE.start();
 			Scheduler.start();
 		}
