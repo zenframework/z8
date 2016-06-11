@@ -5,11 +5,15 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Properties;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.zenframework.z8.server.types.guid;
 
 public class ServerConfig extends Properties {
 
 	private static final long serialVersionUID = 3564936578688816088L;
+
+	private static final Log LOG = LogFactory.getLog(ServerConfig.class);
 
 	public static final String ConfigurationFileName = "project.xml";
 
@@ -58,6 +62,7 @@ public class ServerConfig extends Properties {
 	private final String officeHome;
 
 	public ServerConfig(String configFilePath) {
+		LOG.info("Server config path: " + configFilePath);
 		configFile = new File(configFilePath != null ? configFilePath : ConfigurationFileName);
 
 		try {
