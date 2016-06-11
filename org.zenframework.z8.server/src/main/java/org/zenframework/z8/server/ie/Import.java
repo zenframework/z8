@@ -30,7 +30,7 @@ public class Import {
 
 	private static JsonObject STRUCTURE = null;
 
-	public static void importMessage(ExportMessages messages, Message message, String transportInfo) throws Throwable {
+	public static void importMessage(ExportMessages messages, Message message, String transportInfo) throws ImportException {
 		Connection connection = ConnectionManager.get();
 		try {
 			connection.beginTransaction();
@@ -47,7 +47,8 @@ public class Import {
 			connection.commit();
 		} catch (Throwable e) {
 			connection.rollback();
-			throw new RuntimeException(e);
+			LOG.error("Can't import message " + message, e);
+			throw new ImportException("Can't import message " + message, e);
 		}
 	}
 

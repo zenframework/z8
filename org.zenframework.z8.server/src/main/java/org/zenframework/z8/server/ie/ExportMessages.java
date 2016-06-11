@@ -138,6 +138,7 @@ public class ExportMessages extends Table {
 	private static volatile boolean preserveExportMessages = Boolean.parseBoolean(Properties
 			.getProperty(ServerRuntime.PreserveExportMessagesProperty));
 
+	public final SystemDomains.CLASS<SystemDomains> domains = new SystemDomains.CLASS<SystemDomains>(this);
 	public final IntegerField.CLASS<IntegerField> ordinal = new IntegerField.CLASS<IntegerField>(this);
 	public final StringField.CLASS<StringField> classId = new StringField.CLASS<StringField>(this);
 	public final TextField.CLASS<TextField> message = new TextField.CLASS<TextField>(this);
@@ -263,21 +264,21 @@ public class ExportMessages extends Table {
 	}
 
 	public Collection<String> getAddresses(String sender) {
-		Collection<String> locals = SystemDomains.newInstance().getLocalAddresses();
+		Collection<String> locals = domains.get().getLocalAddresses();
 
 		Collection<String> result = new ArrayList<String>();
 
 		Field addressField = id1.get();
 		Collection<Field> fields = Arrays.<Field> asList(addressField);
-		
+
 		group(fields, fields, null);
 
 		while (next()) {
 			String address = addressField.string().get();
-			if(!address.equals(sender) && !locals.contains(address))
+			if (!address.equals(sender) && !locals.contains(address))
 				result.add(address);
 		}
-		
+
 		return result;
 	}
 
@@ -288,30 +289,31 @@ public class ExportMessages extends Table {
 	public List<guid> getExportMessages(String sender, String address) {
 		List<guid> result = new LinkedList<guid>();
 
-		Collection<String> locals = SystemDomains.newInstance().getLocalAddresses();
+		Collection<String> locals = domains.get().getLocalAddresses();
 
 		Field senderField = id.get();
 		Field addressField = id1.get();
-		
-		SqlToken notProcessed = new Unary(Operation.Not, processed.get());
+
+		SqlToken notProcessedNotError = new And(new Unary(Operation.Not, new SqlField(processed.get())), new Unary(
+				Operation.Not, new SqlField(error.get())));
 		SqlToken notLocal = new Unary(Operation.Not, new InVector(addressField, string.wrap(locals)));
 		SqlToken senderEq = new Rel(senderField, Operation.Eq, new sql_string(sender));
 
-		SqlToken where = new And(new And(notProcessed, notLocal), senderEq);
-		
-		if(address != null) { 
+		SqlToken where = new And(new And(notProcessedNotError, notLocal), senderEq);
+
+		if (address != null) {
 			SqlToken addressEq = new Rel(addressField, Operation.Eq, new sql_string(address));
 			where = new And(where, addressEq);
 		}
-		
+
 		Collection<Field> fields = Arrays.<Field> asList(recordId.get());
 		Collection<Field> orderBy = Arrays.<Field> asList(ordinal.get());
-		
+
 		read(fields, orderBy, where);
-		
+
 		while (next())
 			result.add(recordId());
-		
+
 		return result;
 	}
 
