@@ -18,6 +18,7 @@ public class ServerConfig extends Properties {
 	public static final String ConfigurationFileName = "project.xml";
 
 	public static final String RmiRegistryPortProperty = "rmi.registry.port";
+	public static final String RmiServersPortRange = "rmi.servers.portRange";
 
 	public static final String AuthorityCenterHostProperty = "authority.center.host";
 	public static final String AuthorityCenterPortProperty = "authority.center.port";
@@ -36,12 +37,14 @@ public class ServerConfig extends Properties {
 	public static final String TraceSqlProperty = "trace.sql";
 
 	public static final int RegistryPortDefault = 7852;
+	public static final PortRange ServersPortRangeDefault = PortRange.parsePortRange("15000-35530");
 
 	public static final String OfficeHomeProperty = "office.home";
 
 	private final File configFile;
 
 	private final int rmiRegistryPort;
+	private final PortRange rmiServersPortRange;
 
 	private final String authorityCenterHost;
 	private final int authorityCenterPort;
@@ -76,6 +79,7 @@ public class ServerConfig extends Properties {
 		applicationServerId = getProperty(ApplicationServerIdProperty, guid.create().toString());
 
 		rmiRegistryPort = getProperty(RmiRegistryPortProperty, RegistryPortDefault);
+		rmiServersPortRange = getProperty(RmiServersPortRange, ServersPortRangeDefault);
 
 		authorityCenterHost = getProperty(AuthorityCenterHostProperty, "");
 		authorityCenterPort = getProperty(AuthorityCenterPortProperty, RegistryPortDefault);
@@ -124,6 +128,14 @@ public class ServerConfig extends Properties {
 		}
 	}
 
+	public final PortRange getProperty(String key, PortRange defaultValue) {
+		try {
+			return PortRange.parsePortRange(getProperty(key));
+		} catch (Throwable e) {
+			return defaultValue;
+		}
+	}
+
 	public final File getConfigFile() {
 		return configFile;
 	}
@@ -142,6 +154,10 @@ public class ServerConfig extends Properties {
 
 	public int getRmiRegistryPort() {
 		return rmiRegistryPort;
+	}
+
+	public PortRange getRmiServersPortRange() {
+		return rmiServersPortRange;
 	}
 
 	public final String getAuthorityCenterHost() {
