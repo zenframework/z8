@@ -29,6 +29,7 @@ public class Message extends OBJECT implements RmiSerializable, Serializable {
 	private static final long serialVersionUID = 3103056587172568570L;
 
 	public static final string PROP_TYPE = new string("message.type");
+	public static final string PROP_GROUP = new string("message.group");
 	public static final string PROP_RECORD_ID = new string("message.recordId");
 	public static final string PROP_FILE_PATH = new string("message.filePath");
 	public static final string PROP_SEND_FILES_CONTENT = new string("message.sendFilesContent");

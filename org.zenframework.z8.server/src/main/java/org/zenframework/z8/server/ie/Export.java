@@ -190,7 +190,7 @@ public class Export extends OBJECT {
 					if (sendFilesContent)
 						message.getExportEntry().getProperties().getProperty()
 								.add(getProperty(Message.PROP_SEND_FILES_CONTENT, new bool(true)));
-					exportMessages.addMessage(message, null, ExportMessages.Direction.OUT);
+					exportMessages.addMessage(message, ExportMessages.Direction.OUT);
 				}
 			}
 			Message message = z8_newMessage().get();
@@ -203,7 +203,7 @@ public class Export extends OBJECT {
 				message.getExportEntry().getProperties().getProperty()
 						.add(getProperty(Message.PROP_SEND_FILES_CONTENT, new bool(true)));
 			}
-			exportMessages.addMessage(message, null, ExportMessages.Direction.OUT);
+			exportMessages.addMessage(message, ExportMessages.Direction.OUT);
 		} catch (JAXBException e) {
 			throw new exception("Can't marshal records", e);
 		}

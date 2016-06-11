@@ -168,7 +168,7 @@ public class TransportProcedure extends Procedure {
 		Connection connection = ConnectionManager.get();
 		try {
 			connection.beginTransaction();
-			messages.addMessage(message, transport.getProtocol(), ExportMessages.Direction.IN);
+			messages.addMessage(message, ExportMessages.Direction.IN);
 			Import.importFiles(message);
 			transport.commit();
 			connection.commit();

@@ -12,12 +12,6 @@ import org.zenframework.z8.server.request.Loader;
 
 public class TransportServiceImpl implements TransportService {
 
-	private final String endpoint;
-
-	public TransportServiceImpl(String endpoint) {
-		this.endpoint = endpoint;
-	}
-
 	@Override
 	public void sendMessage(String messageClass, UUID id, String sender, String address, ExportEntry exportEntry)
 			throws TransportException {
@@ -28,7 +22,7 @@ public class TransportServiceImpl implements TransportService {
 		try {
 			message.setFiles(IeUtil.xmlFilesToFileInfos(exportEntry.getFiles()));
 			message.setExportEntry(exportEntry);
-			ExportMessages.newInstance().addMessage(message, endpoint, ExportMessages.Direction.IN);
+			ExportMessages.newInstance().addMessage(message, ExportMessages.Direction.IN);
 			Import.importFiles(message);
 		} catch (Exception e) {
 			throw new TransportException("Can't send IE message " + message.getId() + " from " + message.getSender()

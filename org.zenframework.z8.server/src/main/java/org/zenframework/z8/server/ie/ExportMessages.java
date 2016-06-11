@@ -35,6 +35,7 @@ import org.zenframework.z8.server.types.bool;
 import org.zenframework.z8.server.types.datetime;
 import org.zenframework.z8.server.types.guid;
 import org.zenframework.z8.server.types.integer;
+import org.zenframework.z8.server.types.primary;
 import org.zenframework.z8.server.types.string;
 import org.zenframework.z8.server.types.sql.sql_string;
 import org.zenframework.z8.server.utils.ErrorUtils;
@@ -113,7 +114,7 @@ public class ExportMessages extends Table {
 		public final static String Title = "ExportMessages.title";
 		public final static String Sender = "ExportMessages.sender";
 		public final static String Receiver = "ExportMessages.receiver";
-		public final static String TransportUrl = "ExportMessages.transportUrl";
+		public final static String Group = "ExportMessages.group";
 		public final static String Message = "ExportMessages.message";
 		public final static String Ordinal = "ExportMessages.ordinal";
 		public final static String ClassId = "ExportMessages.classId";
@@ -151,12 +152,13 @@ public class ExportMessages extends Table {
 		super(container);
 	}
 
-	public void addMessage(Message message, String transportInfo, Direction direction) throws JAXBException {
+	public void addMessage(Message message, Direction direction) throws JAXBException {
 		guid recordId = new guid(message.getId());
+		primary group = message.getProperties().get(Message.PROP_GROUP);
 		this.id.get().set(new string(message.getSender()));
 		this.id1.get().set(new string(message.getAddress()));
-		if (transportInfo != null)
-			this.name.get().set(new string(transportInfo));
+		if (group != null)
+			this.name.get().set(group);
 		this.ordinal.get().set(new integer(nextOrdinal(message, direction)));
 		this.classId.get().set(new string(message.classId()));
 		this.message.get().set(new string(IeUtil.marshalExportEntry(message.getExportEntry())));
@@ -213,7 +215,7 @@ public class ExportMessages extends Table {
 
 		createdAt.get().system.set(false);
 
-		name.setDisplayName(Resources.get(strings.TransportUrl));
+		name.setDisplayName(Resources.get(strings.Group));
 		name.get().length = new integer(256);
 
 		ordinal.setName("Ordinal");
