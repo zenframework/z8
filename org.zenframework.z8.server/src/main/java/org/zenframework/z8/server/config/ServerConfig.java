@@ -62,12 +62,14 @@ public class ServerConfig extends Properties {
 	private final String officeHome;
 
 	public ServerConfig(String configFilePath) {
-		LOG.info("Server config path: " + configFilePath);
 		configFile = new File(configFilePath != null ? configFilePath : ConfigurationFileName);
 
 		try {
+			getWorkingPath().mkdirs();
+			LOG.info("Server config path: " + configFile.getCanonicalPath());
 			loadFromXML(new FileInputStream(configFile));
 		} catch (Throwable e) {
+			LOG.info("Server config path: " + configFilePath);
 			throw new RuntimeException(e);
 		}
 
@@ -128,9 +130,7 @@ public class ServerConfig extends Properties {
 
 	public final File getWorkingPath() {
 		try {
-			File workingPath = configFile.getCanonicalFile();
-			workingPath.mkdirs();
-			return workingPath.getParentFile();
+			return configFile.getCanonicalFile().getParentFile();
 		} catch(IOException e) {
 			throw new RuntimeException(e);
 		}
