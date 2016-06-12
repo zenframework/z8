@@ -29,12 +29,16 @@ public class Rmi {
 		Port = config.getRmiRegistryPort();
 		Host = InetAddress.getLocalHost().getHostAddress();
 
-		try {
-			Registry = LocateRegistry.createRegistry(Port);
-			LOG.trace("RMI registry created at " + Host + ':' + Port);
-		} catch (RemoteException e) {
-			Registry = LocateRegistry.getRegistry(Port);
-			LOG.trace("RMI registry located at " + Host + ':' + Port);
+		LOG.info("RMI enabled: " + (Port >= 0));
+
+		if (Port >= 0) {
+			try {
+				Registry = LocateRegistry.createRegistry(Port);
+				LOG.info("RMI registry created at " + Host + ':' + Port);
+			} catch (RemoteException e) {
+				Registry = LocateRegistry.getRegistry(Port);
+				LOG.info("RMI registry located at " + Host + ':' + Port);
+			}
 		}
 	}
 
@@ -55,7 +59,8 @@ public class Rmi {
 		Servers.put(url(Host, Port, name), server);
 		if (server.id() != null)
 			name += '/' + server.id();
-		Registry.rebind(name, server);
+		if (Registry != null)
+			Registry.rebind(name, server);
 		return url(Host, Port, name);
 	}
 
@@ -64,10 +69,12 @@ public class Rmi {
 		Servers.remove(url(Host, Port, name));
 		if (server.id() != null)
 			name += '/' + server.id();
-		try {
-			Registry.unbind(name);
-		} catch (NotBoundException e) {
-			LOG.error("Can't unbind object '" + name + "'", e);
+		if (Registry != null) {
+			try {
+				Registry.unbind(name);
+			} catch (NotBoundException e) {
+				LOG.error("Can't unbind object '" + name + "'", e);
+			}
 		}
 	}
 

@@ -3,15 +3,14 @@ package org.zenframework.z8.server.engine;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 
-public abstract class RmiServer extends UnicastRemoteObject implements IServer {
+public abstract class RmiServer implements IServer {
 
-	private static final long serialVersionUID = -1200219220297838398L;
-
+	private transient final int unicastPort;
 	private transient final Class<? extends IServer> serverClass;
 	private transient String url;
 
 	protected RmiServer(int unicastPort, Class<? extends IServer> serverClass) throws RemoteException {
-		super(unicastPort);
+		this.unicastPort = unicastPort;
 		this.serverClass = serverClass;
 	}
 
@@ -27,12 +26,15 @@ public abstract class RmiServer extends UnicastRemoteObject implements IServer {
 
 	@Override
 	public void start() throws RemoteException {
+		if (unicastPort >= 0)
+			UnicastRemoteObject.exportObject(this, unicastPort);
 		url = Rmi.register(serverClass, this);
 	}
 
 	@Override
 	public void stop() throws RemoteException {
-		unexportObject(this, true);
+		if (unicastPort >= 0)
+			UnicastRemoteObject.unexportObject(this, true);
 		Rmi.unregister(serverClass, this);
 		url = null;
 	}
