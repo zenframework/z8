@@ -58,11 +58,10 @@ public class DBGenerateProcedure extends Procedure {
 
             Collection<Table.CLASS<? extends Table>> tables = getTables();
             Collection<Desktop.CLASS<? extends Desktop>> entries = (Collection) Runtime.instance().entries();
-            Collection<Procedure.CLASS<? extends Procedure>> jobs = (Collection) Runtime.instance().jobs();
 
             try {
                 DBGenerator generator = new DBGenerator(connection);
-                generator.run(tables, entries, jobs, true, logger, true);
+                generator.run(tables, entries, logger);
             } catch (Throwable e) {
                 logger.error(e);
             }

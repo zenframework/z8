@@ -18,13 +18,14 @@ import org.zenframework.z8.server.types.sql.sql_guid;
 import org.zenframework.z8.server.types.sql.sql_string;
 
 public class JobGenerator {
-    public void run(ILogger logger) {
+
+	public void run(ILogger logger) {
         Collection<Procedure.CLASS<? extends Procedure>> jobs = Runtime.instance().jobs();
 
         Jobs jobsTable = new Jobs.CLASS<Jobs>().get();
         Tasks tasksTable = new Tasks.CLASS<Tasks>().get();
 
-        for(Procedure.CLASS<? extends Procedure> jobClass : jobs) {
+        for (Procedure.CLASS<? extends Procedure> jobClass : jobs) {
             String classId = jobClass.classId();
             guid jobRecordId;
 
@@ -32,6 +33,8 @@ public class JobGenerator {
 
             jobsTable.id.get().set(new string(classId));
             jobsTable.name.get().set(new string(jobClass.displayName()));
+            if (jobClass.hasAttribute(IObject.Settings))
+                jobsTable.description.get().set(jobClass.getAttribute(IObject.Settings));
 
             if(jobsTable.next()) {
                 jobRecordId = jobsTable.recordId();
@@ -52,6 +55,6 @@ public class JobGenerator {
                 }
             }
         }
-
     }
+
 }

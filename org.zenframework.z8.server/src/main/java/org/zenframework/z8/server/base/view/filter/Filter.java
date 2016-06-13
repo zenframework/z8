@@ -47,11 +47,20 @@ public class Filter {
         return where(field);
     }
 
-    List<guid> getGuidValues() {
+    private List<guid> getGuidValues() {
         List<guid> result = new ArrayList<guid>();
 
         for (String value : values)
             result.add(new guid(value));
+
+        return result;
+    }
+
+    private List<string> getStringValues() {
+        List<string> result = new ArrayList<string>();
+
+        for (String value : values)
+            result.add(new string(value));
 
         return result;
     }
@@ -99,7 +108,16 @@ public class Filter {
             }
         }
         else if (type == FieldType.String || type == FieldType.Text) {
-            if (operation == null || operation == Operation.BeginsWith || operation == Operation.EndsWith
+            if (values.length != 1) {
+                List<string> strings = getStringValues();
+
+                SqlToken result = new InVector(field, strings);
+
+                if (operation == Operation.Not || operation == Operation.NotEq)
+                    result = new Unary(Operation.Not, result);
+
+                return result;
+            } else if (operation == null || operation == Operation.BeginsWith || operation == Operation.EndsWith
                     || operation == Operation.Contains) {
                 if (value.isEmpty()) {
                     return new True();
@@ -226,7 +244,7 @@ public class Filter {
         return parse(filters, query);
     }
 
-    private static Collection<Filter> parse(JsonArray json, Query query) {
+    public static Collection<Filter> parse(JsonArray json, Query query) {
         List<Filter> result = new ArrayList<Filter>();
 
         for (int index = 0; index < json.length(); index++) {

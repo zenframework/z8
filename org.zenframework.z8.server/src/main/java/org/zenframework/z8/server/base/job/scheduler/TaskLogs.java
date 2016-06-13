@@ -88,6 +88,7 @@ public class TaskLogs extends Table {
 
         registerFormField(tasks.get().jobs.get().name);
         registerFormField(tasks.get().users.get().name);
+        registerFormField(tasks.get().description);
         registerFormField(tasks.get().from);
         registerFormField(tasks.get().till);
         registerFormField(tasks.get().repeat);

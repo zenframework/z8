@@ -11,36 +11,37 @@ import org.zenframework.z8.server.db.Connection;
 import org.zenframework.z8.server.db.ConnectionManager;
 import org.zenframework.z8.server.engine.ITransportService;
 import org.zenframework.z8.server.engine.Rmi;
+import org.zenframework.z8.server.json.parser.JsonArray;
 import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.runtime.RCollection;
 import org.zenframework.z8.server.runtime.ServerRuntime;
 import org.zenframework.z8.server.types.guid;
+import org.zenframework.z8.server.types.string;
 import org.zenframework.z8.server.utils.ErrorUtils;
 
-public class TransportProcedure extends Procedure {
+public class TransportSendProcedure extends Procedure {
 
-	private static final Log LOG = LogFactory.getLog(TransportProcedure.class);
+	private static final Log LOG = LogFactory.getLog(TransportSendProcedure.class);
 
-	public static final guid PROCEDURE_ID = new guid("E43F94C6-E918-405D-898C-B915CC51FFDF");
-
-	public static class CLASS<T extends TransportProcedure> extends Procedure.CLASS<T> {
+	public static class CLASS<T extends TransportSendProcedure> extends Procedure.CLASS<T> {
 		public CLASS(IObject container) {
 			super(container);
-			setJavaClass(TransportProcedure.class);
-			setAttribute(Native, TransportProcedure.class.getCanonicalName());
+			setJavaClass(TransportSendProcedure.class);
+			setAttribute(Native, TransportSendProcedure.class.getCanonicalName());
 			setAttribute(Job, "");
 		}
 
 		@Override
 		public Object newObject(IObject container) {
-			return new TransportProcedure(container);
+			return new TransportSendProcedure(container);
 		}
 	}
 
+	protected final ExportMessages messages = ExportMessages.newInstance();
 	protected final TransportContext.CLASS<TransportContext> context = new TransportContext.CLASS<TransportContext>();
 	protected final TransportEngine engine = TransportEngine.getInstance();
 
-	public TransportProcedure(IObject container) {
+	public TransportSendProcedure(IObject container) {
 		super(container);
 		useTransaction.set(false);
 	}
@@ -55,6 +56,7 @@ public class TransportProcedure extends Procedure {
 	protected void z8_exec(RCollection<Parameter.CLASS<? extends Parameter>> parameters) {
 
 		String selfAddress = context.get().check().getProperty(TransportContext.SelfAddressProperty);
+		JsonArray configuration = new JsonArray(((string) getParameter(IObject.Settings).get()).get());
 
 		ExportMessages messages = ExportMessages.newInstance();
 
@@ -86,7 +88,7 @@ public class TransportProcedure extends Procedure {
 		}
 
 		// Обработка внутренней исходящей очереди
-		ids = messages.getExportMessages(selfAddress);
+		ids = messages.getExportMessages(selfAddress, configuration);
 		transportRoutes.checkInactiveRoutes();
 
 		for (guid id : ids) {
@@ -122,19 +124,6 @@ public class TransportProcedure extends Procedure {
 
 		}
 
-		// Чтение входящих сообщений
-		for (Transport transport : engine.getEnabledTransports(context.get())) {
-			try {
-				transport.connect();
-				for (Message message = transport.receive(); message != null; message = transport.receive()) {
-					receiveMessage(messages, message, transport);
-				}
-			} catch (TransportException e) {
-				log("Can't import message via protocol '" + transport.getProtocol() + "'", e);
-				transport.close();
-			}
-		}
-
 	}
 
 	protected void z8_init() {}
@@ -161,22 +150,6 @@ public class TransportProcedure extends Procedure {
 				throw (TransportException) e;
 
 			messages.setError(message, e);
-		}
-	}
-
-	private static void receiveMessage(ExportMessages messages, Message message, Transport transport)
-			throws TransportException {
-		Connection connection = ConnectionManager.get();
-		try {
-			connection.beginTransaction();
-			messages.addMessage(message, transport.getProtocol(), ExportMessages.Direction.IN);
-			Import.importFiles(message);
-			transport.commit();
-			connection.commit();
-		} catch (Throwable e) {
-			connection.rollback();
-			transport.rollback();
-			LOG.error("Can't import message '" + message + "' from '" + transport.getUrl(message.getAddress()) + "'", e);
 		}
 	}
 

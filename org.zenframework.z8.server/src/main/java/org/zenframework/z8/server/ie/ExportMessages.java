@@ -9,6 +9,7 @@ import java.util.List;
 import javax.xml.bind.JAXBException;
 
 import org.zenframework.z8.ie.xml.ExportEntry;
+import org.zenframework.z8.server.base.query.Query;
 import org.zenframework.z8.server.base.table.Table;
 import org.zenframework.z8.server.base.table.system.Properties;
 import org.zenframework.z8.server.base.table.system.SystemDomains;
@@ -20,6 +21,7 @@ import org.zenframework.z8.server.base.table.value.IntegerField;
 import org.zenframework.z8.server.base.table.value.Sequencer;
 import org.zenframework.z8.server.base.table.value.StringField;
 import org.zenframework.z8.server.base.table.value.TextField;
+import org.zenframework.z8.server.base.view.filter.Filter;
 import org.zenframework.z8.server.db.sql.SqlField;
 import org.zenframework.z8.server.db.sql.SqlToken;
 import org.zenframework.z8.server.db.sql.expressions.And;
@@ -27,6 +29,7 @@ import org.zenframework.z8.server.db.sql.expressions.Operation;
 import org.zenframework.z8.server.db.sql.expressions.Rel;
 import org.zenframework.z8.server.db.sql.expressions.Unary;
 import org.zenframework.z8.server.db.sql.functions.InVector;
+import org.zenframework.z8.server.json.parser.JsonArray;
 import org.zenframework.z8.server.request.Loader;
 import org.zenframework.z8.server.resources.Resources;
 import org.zenframework.z8.server.runtime.IObject;
@@ -287,11 +290,11 @@ public class ExportMessages extends Table {
 		return result;
 	}
 
-	public List<guid> getExportMessages(String sender) {
-		return getExportMessages(sender, null);
+	public List<guid> getExportMessages(String sender, JsonArray filters) {
+		return getExportMessages(sender, null, null);
 	}
 
-	public List<guid> getExportMessages(String sender, String address) {
+	public List<guid> getExportMessages(String sender, String address, JsonArray filters) {
 		List<guid> result = new LinkedList<guid>();
 
 		Collection<String> locals = domains.get().getLocalAddresses();
@@ -303,9 +306,11 @@ public class ExportMessages extends Table {
 				Operation.Not, new SqlField(error.get())));
 		SqlToken notLocal = new Unary(Operation.Not, new InVector(addressField, string.wrap(locals)));
 		SqlToken senderEq = new Rel(senderField, Operation.Eq, new sql_string(sender));
-
 		SqlToken where = new And(new And(notProcessedNotError, notLocal), senderEq);
-
+		
+		if (filters != null)
+			where = new And(where, Query.parseWhere(Filter.parse(filters, this)));
+		
 		if (address != null) {
 			SqlToken addressEq = new Rel(addressField, Operation.Eq, new sql_string(address));
 			where = new And(where, addressEq);
