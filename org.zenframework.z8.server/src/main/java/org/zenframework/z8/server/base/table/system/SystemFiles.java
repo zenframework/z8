@@ -2,7 +2,6 @@ package org.zenframework.z8.server.base.table.system;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
@@ -13,7 +12,6 @@ import java.util.List;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.zenframework.z8.server.base.file.FileInfo;
-import org.zenframework.z8.server.base.file.FilesFactory;
 import org.zenframework.z8.server.base.file.Folders;
 import org.zenframework.z8.server.base.file.InputOnlyFileItem;
 import org.zenframework.z8.server.base.query.Query;
@@ -422,12 +420,7 @@ public class SystemFiles extends Table {
 	}
 
 	private static void fillFileInfoFile(FileInfo fileInfo, File path) throws IOException {
-		if (FileInfo.isDefaultWrite()) {
-			fileInfo.file = FilesFactory.createFileItem(fileInfo.name.get());
-			IOUtils.copy(new FileInputStream(path), fileInfo.getOutputStream());
-		} else {
-			fileInfo.file = new InputOnlyFileItem(path, fileInfo.name.get());
-		}
+		fileInfo.file = new InputOnlyFileItem(path, fileInfo.name.get());
 	}
 
 }

@@ -29,26 +29,13 @@ public class FileInfo extends OBJECT implements RmiSerializable, Serializable {
 
 	private static final long serialVersionUID = -2542688680678439014L;
 
-	private static final String PROP_DEFAULT_READ = "z8.serialization.FileInfo.defaultReadObject";
-	private static final String PROP_DEFAULT_WRITE = "z8.serialization.FileInfo.defaultWriteObject";
-
-	private static final boolean DEFAULT_READ = Boolean.parseBoolean(System.getProperty(PROP_DEFAULT_READ));
-	private static final boolean DEFAULT_WRITE = Boolean.parseBoolean(System.getProperty(PROP_DEFAULT_WRITE));
-
-	public static boolean isDefaultRead() {
-		return DEFAULT_READ;
-	}
-
-	public static boolean isDefaultWrite() {
-		return DEFAULT_WRITE;
-	}
-
 	public string instanceId = new string();
 	public string name = new string();
 	public string path = new string();
 	public string type = new string();
 	public datetime time = new datetime();
 	public guid id = new guid();
+	public string description = new string();
 
 	public FileItem file;
 	public Status status = Status.LOCAL;
@@ -150,6 +137,7 @@ public class FileInfo extends OBJECT implements RmiSerializable, Serializable {
 		this.id = fileInfo.id;
 		this.file = fileInfo.file;
 		this.status = fileInfo.status;
+		this.description = fileInfo.description;
 		this.json = fileInfo.json;
 	}
 
@@ -160,6 +148,7 @@ public class FileInfo extends OBJECT implements RmiSerializable, Serializable {
 		type = new string(json.has(Json.type) ? json.getString(Json.type) : "");
 		id = new guid(json.has(Json.id) ? json.getString(Json.id) : "");
 		instanceId = new string(json.has(Json.instanceId) ? json.getString(Json.instanceId) : "");
+		description = new string(json.has(Json.description) ? json.getString(Json.description) : "");
 
 		this.json = json;
 	}
@@ -198,6 +187,7 @@ public class FileInfo extends OBJECT implements RmiSerializable, Serializable {
 			json.put(Json.path, path);
 			json.put(Json.id, id);
 			json.put(Json.instanceId, instanceId);
+			json.put(Json.description, description);
 		}
 		return json;
 	}
