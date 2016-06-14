@@ -644,16 +644,21 @@ Z8.tree.TreePanel = Ext.extend(Ext.tree.TreePanel,
 		this.syncFocusEl(0);
 	},
 
-	appendChild: function(node, nodes) {
+	appendChild: function(node, nodes, doSort) {
 		node.appendChild(nodes);
 		
-		var id = this.lastSortedColumn || this.store.query.sort || "";
-		var index = this.colModel.getIndexById(id);
+		var tree = this.store.query.showAsTree == null || this.store.query.showAsTree;
 
-		if(index != -1) {
-			var column = this.getColumnAt(index); 
-			this.doSort(index, column.sortDirection);
-		}
+		if(tree) {
+			var id = this.lastSortedColumn || this.store.query.sort || "";
+			var index = this.colModel.getIndexById(id);
+			if(index != -1) {
+				var column = this.getColumnAt(index); 
+				this.doSort(index, column.sortDirection);
+			}
+		} else
+			this.updateHeaderSortState();
+
 	},
 	
 	onUpdate: function(store, record)
