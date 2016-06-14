@@ -17,6 +17,7 @@ import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.runtime.OBJECT;
 import org.zenframework.z8.server.runtime.RCollection;
 import org.zenframework.z8.server.runtime.RLinkedHashMap;
+import org.zenframework.z8.server.types.datetime;
 import org.zenframework.z8.server.types.exception;
 import org.zenframework.z8.server.types.guid;
 import org.zenframework.z8.server.types.primary;
@@ -55,6 +56,7 @@ public class Message extends OBJECT implements RmiSerializable, Serializable {
 	}
 
 	private UUID id = UUID.randomUUID();
+	private datetime time = new datetime();
 	private String sender;
 	private String address;
 
@@ -73,6 +75,14 @@ public class Message extends OBJECT implements RmiSerializable, Serializable {
 
 	public void setId(UUID id) {
 		this.id = id;
+	}
+
+	public datetime getTime() {
+		return time;
+	}
+
+	public void setTime(datetime time) {
+		this.time = time;
 	}
 
 	public String getAddress() {
@@ -191,6 +201,7 @@ public class Message extends OBJECT implements RmiSerializable, Serializable {
 		ObjectOutputStream objects = new ObjectOutputStream(bytes);
 
 		RmiIO.writeUUID(objects, id);
+		RmiIO.writeDatetime(objects, time);
 		RmiIO.writeString(objects, sender);
 		RmiIO.writeString(objects, address);
 		RmiIO.writeString(objects, IeUtil.marshalExportEntry(getExportEntry()));
@@ -212,6 +223,7 @@ public class Message extends OBJECT implements RmiSerializable, Serializable {
 		ObjectInputStream objects = new ObjectInputStream(bytes);
 
 		id = RmiIO.readUUID(objects);
+		time = RmiIO.readDatetime(objects);
 		sender = RmiIO.readString(objects);
 		address = RmiIO.readString(objects);
 		exportEntry = IeUtil.unmarshalExportEntry(RmiIO.readString(objects));

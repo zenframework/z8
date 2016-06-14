@@ -184,6 +184,7 @@
 	<entry key="Operation.beginsWith">начинается с</entry>
 	<entry key="Operation.endsWith">оканчивается на</entry>
 	<entry key="Operation.contains">содержит</entry>
+	<entry key="Operation.inVector">в</entry>
 
 	<!-- Procedure -->
 	<entry key="Procedure.rollback">Отменены все возможные изменения в данных, произошедшие в ходе выполнения задачи.</entry>

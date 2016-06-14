@@ -75,22 +75,10 @@ public class TransportSendProcedure extends Procedure {
 			}
 		}
 
-		// Обработка внутренней входящей очереди
-		List<guid> ids = messages.getImportMessages(selfAddress);
-		for (guid id : ids) {
-			Message message = messages.getMessage(id);
-			try {
-				Import.importMessage(messages, message, null);
-			} catch (Throwable e) {
-				LOG.error("Can't import message '" + message + "'", e);
-				break;
-			}
-		}
-
-		// Обработка внутренней исходящей очереди
-		ids = messages.getExportMessages(selfAddress, configuration);
 		transportRoutes.checkInactiveRoutes();
 
+		// Обработка внутренней исходящей очереди
+		List<guid> ids = messages.getExportMessages(selfAddress, configuration);
 		for (guid id : ids) {
 
 			Message message = messages.getMessage(id);

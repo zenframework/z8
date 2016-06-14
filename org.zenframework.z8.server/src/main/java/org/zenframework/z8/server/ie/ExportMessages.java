@@ -291,7 +291,7 @@ public class ExportMessages extends Table {
 	}
 
 	public List<guid> getExportMessages(String sender, JsonArray filters) {
-		return getExportMessages(sender, null, null);
+		return getExportMessages(sender, null, filters);
 	}
 
 	public List<guid> getExportMessages(String sender, String address, JsonArray filters) {
@@ -357,6 +357,7 @@ public class ExportMessages extends Table {
 			classId = Message.class.getCanonicalName();
 		Message message = (Message) Loader.getInstance(classId);
 		message.setId(recordId().get());
+		message.setTime(createdAt.get().datetime());
 		message.setAddress(getReceiver());
 		message.setSender(getSender());
 		message.setExportEntry(exportEntry);

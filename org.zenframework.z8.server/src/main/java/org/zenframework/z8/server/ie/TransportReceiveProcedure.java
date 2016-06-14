@@ -1,5 +1,7 @@
 package org.zenframework.z8.server.ie;
 
+import java.util.List;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.zenframework.z8.server.base.simple.Procedure;
@@ -8,6 +10,7 @@ import org.zenframework.z8.server.db.Connection;
 import org.zenframework.z8.server.db.ConnectionManager;
 import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.runtime.RCollection;
+import org.zenframework.z8.server.types.guid;
 
 public class TransportReceiveProcedure extends Procedure {
 
@@ -45,6 +48,8 @@ public class TransportReceiveProcedure extends Procedure {
 	@Override
 	protected void z8_exec(RCollection<Parameter.CLASS<? extends Parameter>> parameters) {
 
+		String selfAddress = context.get().check().getProperty(TransportContext.SelfAddressProperty);
+
 		// Чтение входящих сообщений
 		for (Transport transport : engine.getEnabledTransports(context.get())) {
 			try {
@@ -55,6 +60,18 @@ public class TransportReceiveProcedure extends Procedure {
 			} catch (TransportException e) {
 				log("Can't import message via protocol '" + transport.getProtocol() + "'", e);
 				transport.close();
+			}
+		}
+
+		// Обработка внутренней входящей очереди
+		List<guid> ids = messages.getImportMessages(selfAddress);
+		for (guid id : ids) {
+			Message message = messages.getMessage(id);
+			try {
+				Import.importMessage(messages, message, null);
+			} catch (Throwable e) {
+				LOG.error("Can't import message '" + message + "'", e);
+				break;
 			}
 		}
 
