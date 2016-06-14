@@ -184,12 +184,10 @@ public class Attribute extends LanguageElement implements IAttribute {
         }
 
         if(name.equals(IAttribute.Job)) {
-            if(getValueString().length() > MaxScheduledAttributeValueLength) {
-                getCompilationUnit().error(valueToken.getPosition(), "The attribute " + name + " must be no longer than " + MaxScheduledAttributeValueLength + " symbols");
-                return false;
-            }
-
-            if(!checkTypeAttribute(IAttribute.Job)) {
+            try {
+                Integer.parseInt(getValueString());
+            } catch (NumberFormatException e) {
+                getCompilationUnit().error(valueToken.getPosition(), "The attribute " + name + " must be integer");
                 return false;
             }
         }
