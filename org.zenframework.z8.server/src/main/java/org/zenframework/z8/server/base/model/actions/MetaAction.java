@@ -20,6 +20,7 @@ public class MetaAction extends ReadAction {
 		super(actionParameters);
 	}
 
+	@Override
 	protected void initialize() {
 		ActionParameters actionParameters = actionParameters();
 		Map<String, String> requestParameters = actionParameters.requestParameters;
