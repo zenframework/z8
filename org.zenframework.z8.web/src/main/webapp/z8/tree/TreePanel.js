@@ -658,7 +658,6 @@ Z8.tree.TreePanel = Ext.extend(Ext.tree.TreePanel,
 			}
 		} else
 			this.updateHeaderSortState();
-
 	},
 	
 	onUpdate: function(store, record)
