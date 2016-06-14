@@ -551,7 +551,7 @@ Z8.tree.TreePanel = Ext.extend(Ext.tree.TreePanel,
 			var records = result.records;
 			var nodes = this.createNodes(records, newRecord);
 			store.add(records);
-			node.appendChild(nodes);
+			this.appendChild(node, nodes);
 
 			if(parameter == SelectAdded)
 			{
@@ -640,11 +640,22 @@ Z8.tree.TreePanel = Ext.extend(Ext.tree.TreePanel,
 	{
 		this.root.removeAll(true);
 		var nodes = this.createNodes(this.getStore().data.items);
-		this.root.appendChild(nodes);
-		this.updateHeaderSortState();
+		this.appendChild(this.root, nodes);
 		this.syncFocusEl(0);
 	},
 
+	appendChild: function(node, nodes) {
+		node.appendChild(nodes);
+		
+		var id = this.lastSortedColumn || this.store.query.sort || "";
+		var index = this.colModel.getIndexById(id);
+
+		if(index != -1) {
+			var column = this.getColumnAt(index); 
+			this.doSort(index, column.sortDirection);
+		}
+	},
+	
 	onUpdate: function(store, record)
 	{
 		var node = this.getRowIndex(record);
@@ -1139,7 +1150,7 @@ Z8.tree.TreePanel = Ext.extend(Ext.tree.TreePanel,
 			}
 			else
 			{
-				this.root.cascade(this.sortNode, null, [column, true]);
+				this.root.cascade(this.sortNode, null, [column, false]);
 			}
 			
 			this.updateHeaderSortState();
@@ -1177,7 +1188,7 @@ Z8.tree.TreePanel = Ext.extend(Ext.tree.TreePanel,
 					var value1 = record1.get(column.id);
 					var value2 = record2.get(column.id);
 					
-					var asc = column.sortDirection == 'ASC';
+					var asc = column.sortDirection.toUpperCase() == 'ASC';
 					
 					if(value1 < value2)
 					{
@@ -1234,20 +1245,15 @@ Z8.tree.TreePanel = Ext.extend(Ext.tree.TreePanel,
 
 	updateHeaderSortState : function()
 	{
-		if(this.lastSortedColumn)
-		{
+		if(this.lastSortedColumn) {
 			var index = this.colModel.getIndexById(this.lastSortedColumn);
 			
-			if(index != -1)
-			{
+			if(index != -1) {
 				var column = this.colModel.getColumnAt(index);
 				this.updateSortIcon(index, column.sortDirection);
 			}
-		}
-		else
-		{
+		} else
 			this.updateSortIcon(-1);
-		}
 	},
 
 	updateSortIcon : function(index, dir)
