@@ -5,7 +5,6 @@ import org.zenframework.z8.server.db.FieldType;
 import org.zenframework.z8.server.db.sql.SqlField;
 import org.zenframework.z8.server.engine.ApplicationServer;
 import org.zenframework.z8.server.runtime.IObject;
-import org.zenframework.z8.server.types.bool;
 import org.zenframework.z8.server.types.guid;
 import org.zenframework.z8.server.types.primary;
 import org.zenframework.z8.server.types.sql.sql_guid;
@@ -27,7 +26,7 @@ public class GuidField extends Field {
     public GuidField(IObject container) {
         super(container);
         setDefault(new guid());
-        system = new bool(true);
+        system.set(true);
     }
 
     public guid z8_getDefault() {
