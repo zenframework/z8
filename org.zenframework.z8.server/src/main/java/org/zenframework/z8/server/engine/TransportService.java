@@ -1,5 +1,6 @@
 package org.zenframework.z8.server.engine;
 
+import java.io.IOException;
 import java.net.URISyntaxException;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
@@ -17,6 +18,7 @@ import org.zenframework.z8.server.config.ServerConfig;
 import org.zenframework.z8.server.ie.ExportMessages;
 import org.zenframework.z8.server.ie.IeUtil;
 import org.zenframework.z8.server.ie.Import;
+import org.zenframework.z8.server.ie.ImportException;
 import org.zenframework.z8.server.ie.Message;
 import org.zenframework.z8.server.ie.RmiTransport;
 import org.zenframework.z8.server.logs.Trace;
@@ -38,8 +40,8 @@ public class TransportService extends RmiServer implements ITransportService, Pr
 
 	private volatile RmiAddress transportCenter;
 
-	private TransportService(ServerConfig config) throws RemoteException {
-		super(ITransportService.class);
+	private TransportService(int unicastPort) throws RemoteException {
+		super(unicastPort, ITransportService.class);
 		try {
 			transportCenter = getRmiAddress(Properties.getProperty(ServerRuntime.TransportCenterAddressProperty));
 		} catch (URISyntaxException e) {
@@ -50,7 +52,7 @@ public class TransportService extends RmiServer implements ITransportService, Pr
 
 	public static void start(ServerConfig config) throws RemoteException {
 		if (INSTANCE == null) {
-			INSTANCE = new TransportService(config);
+			INSTANCE = new TransportService(config.getUnicastTransportServicePort());
 			INSTANCE.start();
 		}
 	}
@@ -99,7 +101,7 @@ public class TransportService extends RmiServer implements ITransportService, Pr
 	}
 
 	@Override
-	public void sendMessage(Message message) throws RemoteException {
+	public void sendMessage(Message message) throws ImportException {
 		IUser user = SystemDomains.newInstance().getDomain(message.getAddress()).getSystemUser();
 		IRequest request = new Request(new Session("", user));
 
@@ -108,21 +110,14 @@ public class TransportService extends RmiServer implements ITransportService, Pr
 			String clientHost = Rmi.getClientHost();
 			Import.importMessage(ExportMessages.newInstance(), message,
 					IeUtil.getUrl(RmiTransport.PROTOCOL, clientHost != null ? clientHost : "localhost"));
-		} catch (Throwable e) {
-			Trace.logError(e);
-			throw new RemoteException("Can't import message '" + message.getId() + "' from '" + message.getSender() + "'", e);
 		} finally {
 			ApplicationServer.setRequest(null);
 		}
 	}
 
 	@Override
-	public FileInfo readFile(FileInfo fileInfo) throws RemoteException {
-		try {
-			return Files.newInstance().getFile(fileInfo);
-		} catch (Exception e) {
-			throw new RemoteException("Can't get file " + fileInfo, e);
-		}
+	public FileInfo readFile(FileInfo fileInfo) throws IOException {
+		return Files.newInstance().getFile(fileInfo);
 	}
 
 	private void stopRegistrators() {

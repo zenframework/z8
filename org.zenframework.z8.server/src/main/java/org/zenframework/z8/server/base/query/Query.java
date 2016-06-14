@@ -1102,7 +1102,7 @@ public class Query extends Runnable {
         this.where = where;
     }
     
-    private SqlToken parseWhere(Collection<Filter> filters) {
+    public static SqlToken parseWhere(Collection<Filter> filters) {
         SqlToken result = null;
         for (Filter filter : filters) {
             SqlToken where = filter.where();

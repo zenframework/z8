@@ -17,6 +17,7 @@ import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.runtime.OBJECT;
 import org.zenframework.z8.server.runtime.RCollection;
 import org.zenframework.z8.server.runtime.RLinkedHashMap;
+import org.zenframework.z8.server.types.datetime;
 import org.zenframework.z8.server.types.exception;
 import org.zenframework.z8.server.types.guid;
 import org.zenframework.z8.server.types.primary;
@@ -29,6 +30,7 @@ public class Message extends OBJECT implements RmiSerializable, Serializable {
 	private static final long serialVersionUID = 3103056587172568570L;
 
 	public static final string PROP_TYPE = new string("message.type");
+	public static final string PROP_GROUP = new string("message.group");
 	public static final string PROP_RECORD_ID = new string("message.recordId");
 	public static final string PROP_FILE_PATH = new string("message.filePath");
 	public static final string PROP_SEND_FILES_CONTENT = new string("message.sendFilesContent");
@@ -54,6 +56,7 @@ public class Message extends OBJECT implements RmiSerializable, Serializable {
 	}
 
 	private UUID id = UUID.randomUUID();
+	private datetime time = new datetime();
 	private String sender;
 	private String address;
 
@@ -72,6 +75,14 @@ public class Message extends OBJECT implements RmiSerializable, Serializable {
 
 	public void setId(UUID id) {
 		this.id = id;
+	}
+
+	public datetime getTime() {
+		return time;
+	}
+
+	public void setTime(datetime time) {
+		this.time = time;
 	}
 
 	public String getAddress() {
@@ -126,6 +137,20 @@ public class Message extends OBJECT implements RmiSerializable, Serializable {
 		return properties;
 	}
 
+	public String getInfo() {
+		primary type = getProperties().get(Message.PROP_TYPE);
+		primary group = getProperties().get(Message.PROP_GROUP);
+		StringBuilder str = new StringBuilder();
+		if (type != null)
+			str.append(type);
+		if (group != null) {
+			if (str.length() > 0)
+				str.append(" : ");
+			str.append(group);
+		}
+		return str.toString();
+	}
+
 	public boolean isSendFilesContent() {
 		RLinkedHashMap<string, primary> props = getProperties();
 		return props.containsKey(PROP_SEND_FILES_CONTENT) && props.get(PROP_SEND_FILES_CONTENT).bool().get();
@@ -176,6 +201,7 @@ public class Message extends OBJECT implements RmiSerializable, Serializable {
 		ObjectOutputStream objects = new ObjectOutputStream(bytes);
 
 		RmiIO.writeUUID(objects, id);
+		RmiIO.writeDatetime(objects, time);
 		RmiIO.writeString(objects, sender);
 		RmiIO.writeString(objects, address);
 		RmiIO.writeString(objects, IeUtil.marshalExportEntry(getExportEntry()));
@@ -197,6 +223,7 @@ public class Message extends OBJECT implements RmiSerializable, Serializable {
 		ObjectInputStream objects = new ObjectInputStream(bytes);
 
 		id = RmiIO.readUUID(objects);
+		time = RmiIO.readDatetime(objects);
 		sender = RmiIO.readString(objects);
 		address = RmiIO.readString(objects);
 		exportEntry = IeUtil.unmarshalExportEntry(RmiIO.readString(objects));

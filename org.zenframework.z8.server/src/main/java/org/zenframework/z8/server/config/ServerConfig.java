@@ -5,21 +5,33 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Properties;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.zenframework.z8.server.types.guid;
 
 public class ServerConfig extends Properties {
 
 	private static final long serialVersionUID = 3564936578688816088L;
 
+	private static final Log LOG = LogFactory.getLog(ServerConfig.class);
+
 	public static final String ConfigurationFileName = "project.xml";
 
 	public static final String RmiRegistryPortProperty = "rmi.registry.port";
+
+	public static final String UnicastAuthorityCenterPortProperty = "unicast.authority.center.port";
+	public static final String UnicastApplicationServerPortProperty = "unicast.application.server.port";
+	public static final String UnicastTransportCenterPortProperty = "unicast.transport.center.port";
+	public static final String UnicastTransportServicePortProperty = "unicast.transport.service.port";
 
 	public static final String AuthorityCenterHostProperty = "authority.center.host";
 	public static final String AuthorityCenterPortProperty = "authority.center.port";
 	public static final String AuthorityCenterSessionTimeoutProperty = "authority.center.session.timeout";
 
 	public static final String ApplicationServerIdProperty = "application.server.id";
+
+	public static final String TransportCenterPortProperty = "transport.center.port";
+	public static final String TrnasportServicePortProperty = "transport.service.port";
 
 	public static final String WebServerStartApplicationServerProperty = "web.server.start.application.server";
 	public static final String WebServerStartAuthorityCenterProperty = "web.server.start.authority.center";
@@ -32,12 +44,18 @@ public class ServerConfig extends Properties {
 	public static final String TraceSqlProperty = "trace.sql";
 
 	public static final int RegistryPortDefault = 7852;
+	public static final PortRange ServersPortRangeDefault = PortRange.parsePortRange("15000-35530");
 
 	public static final String OfficeHomeProperty = "office.home";
 
 	private final File configFile;
 
 	private final int rmiRegistryPort;
+
+	private final int unicastAuthorityCenterPort;
+	private final int unicastApplicationServerPort;
+	private final int unicastTransportCenterPort;
+	private final int unicastTransportServicePort;
 
 	private final String authorityCenterHost;
 	private final int authorityCenterPort;
@@ -61,14 +79,22 @@ public class ServerConfig extends Properties {
 		configFile = new File(configFilePath != null ? configFilePath : ConfigurationFileName);
 
 		try {
+			getWorkingPath().mkdirs();
+			LOG.info("Server config path: " + configFile.getCanonicalPath());
 			loadFromXML(new FileInputStream(configFile));
 		} catch (Throwable e) {
-			throw new RuntimeException();
+			LOG.info("Server config path: " + configFilePath);
+			throw new RuntimeException(e);
 		}
 
 		applicationServerId = getProperty(ApplicationServerIdProperty, guid.create().toString());
 
 		rmiRegistryPort = getProperty(RmiRegistryPortProperty, RegistryPortDefault);
+
+		unicastAuthorityCenterPort = getProperty(UnicastAuthorityCenterPortProperty, 0);
+		unicastApplicationServerPort = getProperty(UnicastApplicationServerPortProperty, 0);
+		unicastTransportCenterPort = getProperty(UnicastTransportCenterPortProperty, 0);
+		unicastTransportServicePort = getProperty(UnicastTransportServicePortProperty, 0);
 
 		authorityCenterHost = getProperty(AuthorityCenterHostProperty, "");
 		authorityCenterPort = getProperty(AuthorityCenterPortProperty, RegistryPortDefault);
@@ -117,6 +143,14 @@ public class ServerConfig extends Properties {
 		}
 	}
 
+	public final PortRange getProperty(String key, PortRange defaultValue) {
+		try {
+			return PortRange.parsePortRange(getProperty(key));
+		} catch (Throwable e) {
+			return defaultValue;
+		}
+	}
+
 	public final File getConfigFile() {
 		return configFile;
 	}
@@ -135,6 +169,22 @@ public class ServerConfig extends Properties {
 
 	public int getRmiRegistryPort() {
 		return rmiRegistryPort;
+	}
+
+	public int getUnicastAuthorityCenterPort() {
+		return unicastAuthorityCenterPort;
+	}
+
+	public int getUnicastApplicationServerPort() {
+		return unicastApplicationServerPort;
+	}
+
+	public int getUnicastTransportCenterPort() {
+		return unicastTransportCenterPort;
+	}
+
+	public int getUnicastTransportServicePort() {
+		return unicastTransportServicePort;
 	}
 
 	public final String getAuthorityCenterHost() {

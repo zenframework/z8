@@ -1,5 +1,6 @@
 package org.zenframework.z8.server.types;
 
+import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.GregorianCalendar;
@@ -302,6 +303,10 @@ public class datetime extends primary {
 
 	public String format(String format) {
 		return new SimpleDateFormat(format).format(m_value.getTime());
+	}
+
+	public String format(DateFormat format) {
+		return format.format(m_value.getTime());
 	}
 
 	@Override

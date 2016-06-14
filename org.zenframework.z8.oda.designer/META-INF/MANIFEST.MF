@@ -6,8 +6,8 @@ Bundle-Version: 1.1.1
 Bundle-ClassPath: .
 Bundle-Activator: org.zenframework.z8.oda.designer.plugin.Plugin
 Bundle-Vendor: ZENFRAMEWORK.ORG
-Require-Bundle: org.zenframework.z8.pde;bundle-version="1.0.0",
- org.zenframework.z8.oda.driver;bundle-version="1.0.0",
+Require-Bundle: org.zenframework.z8.pde;bundle-version="1.1.1",
+ org.zenframework.z8.oda.driver;bundle-version="1.1.1",
  org.eclipse.ui,
  org.eclipse.core.runtime,
  org.eclipse.jface.text,

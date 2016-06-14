@@ -68,7 +68,8 @@
     <entry key="ExportMessages.title">Очередь сообщений</entry>
     <entry key="ExportMessages.sender">Отправитель</entry>
     <entry key="ExportMessages.receiver">Получатель</entry>
-    <entry key="ExportMessages.transportUrl">Транспорт</entry>
+    <entry key="ExportMessages.info">Информация</entry>
+    <entry key="ExportMessages.transport">Транспорт</entry>
     <entry key="ExportMessages.message">Сообщение</entry>
     <entry key="ExportMessages.ordinal">Номер</entry>
     <entry key="ExportMessages.processed">Обработано</entry>
@@ -144,15 +145,18 @@
 	<entry key="Locks.schema">Schema</entry>
 
 	<!-- Tasks -->
+	<entry key="Tasks.settings">Настройки</entry>
 	<entry key="Tasks.title">Задачи</entry>
 	<entry key="Tasks.from">С</entry>
 	<entry key="Tasks.till">По</entry>
 	<entry key="Tasks.repeat">Повтор (секунд)</entry>
 	<entry key="Tasks.active">Активна</entry>
 	<entry key="Tasks.lastStarted">Последний запуск</entry>
+	<entry key="Tasks.error.noJob">Не выбран тип процедура</entry>
 
 	<!-- Jobs -->
 	<entry key="Jobs.title">Задачи</entry>
+	<entry key="Jobs.defaultSettings">Настройки по умолчанию</entry>
 
 	<!-- TaskLogs -->
 	<entry key="TaskLogs.title">Назначенные задачи</entry>
@@ -180,6 +184,7 @@
 	<entry key="Operation.beginsWith">начинается с</entry>
 	<entry key="Operation.endsWith">оканчивается на</entry>
 	<entry key="Operation.contains">содержит</entry>
+	<entry key="Operation.inVector">в</entry>
 
 	<!-- Procedure -->
 	<entry key="Procedure.rollback">Отменены все возможные изменения в данных, произошедшие в ходе выполнения задачи.</entry>

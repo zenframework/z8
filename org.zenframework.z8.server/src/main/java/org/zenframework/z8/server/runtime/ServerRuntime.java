@@ -15,7 +15,9 @@ import org.zenframework.z8.server.base.table.system.UserEntries;
 import org.zenframework.z8.server.base.table.system.Users;
 import org.zenframework.z8.server.ie.BridgeProcedure;
 import org.zenframework.z8.server.ie.ExportMessages;
-import org.zenframework.z8.server.ie.TransportProcedure;
+import org.zenframework.z8.server.ie.RmiTransportProcedure;
+import org.zenframework.z8.server.ie.TransportReceiveProcedure;
+import org.zenframework.z8.server.ie.TransportSendProcedure;
 import org.zenframework.z8.server.ie.TransportRoutes;
 
 public class ServerRuntime extends AbstractRuntime {
@@ -59,8 +61,6 @@ public class ServerRuntime extends AbstractRuntime {
 			"z8.transport.jms.mode", "object", "Режим передачи сообщений через JMS (object, stream). По умолчанию - object");
 	public static final Property WsEndpointProperty = new Property("E90D5A9C-6C4A-48A2-BA3C-34E2F69DEF11",
 			"z8.transport.ws.endpoint", "http://localhost:9898/transport", "URL транспортного web-сервиса");
-	public static final Property BridgeUrlsProperty = new Property("3E7DF5E2-8D71-41FC-AEBD-422CBDD0729E",
-			"z8.transport.bridgeUrls", "jms:ActiveMQ.DLQ/file:ActiveMQ.DLQ", "Список URL транспортного моста");
 
 	public static final Property FileItemSizeThresholdProperty = new Property("CDF0A743-F95F-4235-AD3D-D40F589A68DF",
 			"z8.files.fileItemSizeThreshold", "10485760", "Порог выгрузки файла на диск (по умолчанию 10М)");
@@ -100,7 +100,9 @@ public class ServerRuntime extends AbstractRuntime {
 
 		addActivator(new Properties.PropertiesActivator.CLASS<Properties.PropertiesActivator>(null));
 
-		addJob(new TransportProcedure.CLASS<TransportProcedure>(null));
+		addJob(new TransportSendProcedure.CLASS<TransportSendProcedure>(null));
+		addJob(new TransportReceiveProcedure.CLASS<TransportReceiveProcedure>(null));
+		addJob(new RmiTransportProcedure.CLASS<RmiTransportProcedure>(null));
 		addJob(new BridgeProcedure.CLASS<BridgeProcedure>(null));
 
 		addProperty(DbSchemeControlSumProperty);
@@ -118,7 +120,6 @@ public class ServerRuntime extends AbstractRuntime {
 		addProperty(JmsConnectionUrlProperty);
 		addProperty(JmsModeProperty);
 		addProperty(WsEndpointProperty);
-		addProperty(BridgeUrlsProperty);
 		addProperty(FileItemSizeThresholdProperty);
 		addProperty(FileConverterTextExtensionsProperty);
 		addProperty(FileConverterImageExtensionsProperty);

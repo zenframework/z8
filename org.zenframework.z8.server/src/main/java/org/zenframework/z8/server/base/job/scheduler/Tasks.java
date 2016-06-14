@@ -1,5 +1,6 @@
 package org.zenframework.z8.server.base.job.scheduler;
 
+import java.util.Arrays;
 import java.util.Collection;
 
 import org.zenframework.z8.server.base.query.Query;
@@ -13,6 +14,7 @@ import org.zenframework.z8.server.base.table.value.Link;
 import org.zenframework.z8.server.resources.Resources;
 import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.types.bool;
+import org.zenframework.z8.server.types.exception;
 import org.zenframework.z8.server.types.guid;
 import org.zenframework.z8.server.types.integer;
 
@@ -33,11 +35,13 @@ public class Tasks extends Table {
 
     static public class strings {
         public final static String Title = "Tasks.title";
+        public final static String Settings = "Tasks.settings";
         public final static String From = "Tasks.from";
         public final static String Till = "Tasks.till";
         public final static String Repeat = "Tasks.repeat";
         public final static String Active = "Tasks.active";
         public final static String LastStarted = "Tasks.lastStarted";
+        public final static String ErrorNoJob = "Tasks.error.noJob";
     }
 
     public static class CLASS<T extends Table> extends Table.CLASS<T> {
@@ -82,6 +86,8 @@ public class Tasks extends Table {
 
         users.setIndex("users");
 
+        description.setDisplayName(Resources.get(strings.Settings));
+
         job.setName(names.Job);
         job.setIndex("job");
 
@@ -125,6 +131,7 @@ public class Tasks extends Table {
 
         registerFormField(jobs.get().name);
         registerFormField(users.get().name);
+        registerFormField(description);
         registerFormField(from);
         registerFormField(till);
         registerFormField(repeat);
@@ -139,6 +146,15 @@ public class Tasks extends Table {
     }
 
     @Override
+	protected void beforeCreate(Query data, guid recordId, guid parentId, Query model, guid modelRecordId) {
+		super.beforeCreate(data, recordId, parentId, model, modelRecordId);
+		Jobs jobs = new Jobs.CLASS<Jobs>().get();
+		if (!jobs.readRecord(job.get().guid(), Arrays.<Field>asList(jobs.description.get())))
+			throw new exception(Resources.get(strings.ErrorNoJob));
+		description.get().set(jobs.description.get().string());
+	}
+
+	@Override
     protected void afterCreate(Query data, guid recordId, guid parentId, Query model, guid modelRecordId) {
         Scheduler.reset();
     }

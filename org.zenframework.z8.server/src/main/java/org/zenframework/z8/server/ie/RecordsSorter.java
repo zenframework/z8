@@ -14,7 +14,6 @@ import org.zenframework.z8.ie.xml.ExportEntry;
 import org.zenframework.z8.server.base.table.system.Properties;
 import org.zenframework.z8.server.logs.Trace;
 import org.zenframework.z8.server.runtime.ServerRuntime;
-import org.zenframework.z8.server.types.exception;
 import org.zenframework.z8.server.types.guid;
 
 public class RecordsSorter {
@@ -59,7 +58,7 @@ public class RecordsSorter {
 		return new ArrayList<RecordsSorter.Record>(recordsRelations.keySet());
 	}
 
-	public List<Record> getSorted() {
+	public List<Record> getSorted() throws SorterException {
 		count = 0;
 		Trace.logEvent("Export tree: " + recordsRelations);
 		// Последовательно ищем вершины ориентированного графа, не имеющие исходящих ребёр (связей с другими записями),
@@ -74,7 +73,7 @@ public class RecordsSorter {
 		return sorted;
 	}
 
-	public Comparator<ExportEntry.Records.Record> getComparator() {
+	public Comparator<ExportEntry.Records.Record> getComparator() throws SorterException {
 		return new RecordsComparator(getSorted());
 	}
 
@@ -82,7 +81,7 @@ public class RecordsSorter {
 		return count;
 	}
 
-	private Collection<Record> findOutside(Map<Record, Collection<Record>> recordsRelations) {
+	private Collection<Record> findOutside(Map<Record, Collection<Record>> recordsRelations) throws SorterException {
 		Collection<Record> outsideRecords = new LinkedList<Record>();
 		Iterator<Map.Entry<Record, Collection<Record>>> it = recordsRelations.entrySet().iterator();
 		while (it.hasNext()) {
@@ -94,7 +93,7 @@ public class RecordsSorter {
 			count++;
 		}
 		if (outsideRecords.isEmpty()) {
-			throw new exception(
+			throw new SorterException(
 					"Ошибка экспорта: не удалось найти конечную запись. В базе данных есть циклическая зависимость. Обратитесь к системному администратору.\n"
 							+ recordsToString(recordsRelations));
 		}

@@ -106,8 +106,7 @@ public class Rmi {
 	@SuppressWarnings("unchecked")
 	public static <T extends IServer> T get(Class<T> serverClass, RmiAddress rmiAddress) throws RemoteException {
 		try {
-			return (T) LocateRegistry.getRegistry(rmiAddress.getHost(), rmiAddress.getPort()).lookup(
-					getName(serverClass));
+			return (T) LocateRegistry.getRegistry(rmiAddress.getHost(), rmiAddress.getPort()).lookup(getName(serverClass));
 		} catch (NotBoundException e) {
 			throw new RemoteException("Object '" + rmiAddress.getName() + "' is not bound", e);
 		}

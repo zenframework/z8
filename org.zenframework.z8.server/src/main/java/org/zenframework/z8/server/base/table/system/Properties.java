@@ -29,7 +29,6 @@ import org.zenframework.z8.server.resources.Resources;
 import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.runtime.RCollection;
 import org.zenframework.z8.server.runtime.RLinkedHashMap;
-import org.zenframework.z8.server.types.bool;
 import org.zenframework.z8.server.types.guid;
 import org.zenframework.z8.server.types.string;
 import org.zenframework.z8.server.types.sql.sql_string;
@@ -118,16 +117,24 @@ public class Properties extends TreeTable {
 	@Override
 	public void constructor2() {
 		super.constructor2();
+
 		id.get().length.set(PropertyNameMaxLength);
-		id1.get().visible = new bool(false);
-		name.get().visible = new bool(false);
+		
+		id1.get().visible.set(false);
+		
+		name.get().visible.set(false);
 		name.get().length.set(PropertyNameMaxLength);
+		
 		value.setName("Value");
 		value.setIndex("value");
 		value.setDisplayName(Resources.get(strings.Value));
 		value.setGendb_updatable(false);
 		value.get().colspan.set(3);
+		
 		description.get().colspan.set(3);
+		
+		sortFields.add(id);
+		
 		registerDataField(value);
 	}
 

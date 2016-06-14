@@ -38,6 +38,8 @@ public class Servlet extends HttpServlet {
 
 	private static final long serialVersionUID = 6442937554115725675L;
 
+	static private final String ParamWorkingPath = "working-path";
+
 	static private final String ApplicationServerClass = ApplicationServer.class.getCanonicalName();
 	static private final String AuthorityCenterClass = AuthorityCenter.class.getCanonicalName();
 	static private final String TransportServiceClass = TransportService.class.getCanonicalName();
@@ -61,8 +63,11 @@ public class Servlet extends HttpServlet {
 
 		ServletContext context = getServletContext();
 
-		config = new ServerConfig(context.getRealPath("WEB-INF" + File.separator
-				+ ServerConfig.ConfigurationFileName));
+		String workingPath = servletConfig.getInitParameter(ParamWorkingPath);
+		if (workingPath == null)
+			workingPath = context.getRealPath("WEB-INF");
+
+		config = new ServerConfig(workingPath + File.separator + ServerConfig.ConfigurationFileName);
 
 		try {
 			Z8Context.init(config);

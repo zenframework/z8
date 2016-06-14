@@ -4,16 +4,13 @@ import java.net.URI;
 import java.net.URISyntaxException;
 
 import org.zenframework.z8.server.base.simple.Procedure;
-import org.zenframework.z8.server.base.table.system.Properties;
 import org.zenframework.z8.server.base.view.command.Parameter;
+import org.zenframework.z8.server.json.parser.JsonArray;
 import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.runtime.RCollection;
-import org.zenframework.z8.server.runtime.ServerRuntime;
-import org.zenframework.z8.server.types.guid;
+import org.zenframework.z8.server.types.string;
 
 public class BridgeProcedure extends Procedure {
-
-	public static final guid PROCEDURE_ID = new guid("3394E6B4-F5B2-48A4-B881-7BDB8EC1C6FD");
 
 	public static class CLASS<T extends BridgeProcedure> extends Procedure.CLASS<T> {
 		public CLASS(IObject container) {
@@ -21,6 +18,7 @@ public class BridgeProcedure extends Procedure {
 			setJavaClass(BridgeProcedure.class);
 			setAttribute(Native, BridgeProcedure.class.getCanonicalName());
 			setAttribute(Job, "");
+			setAttribute(Settings, "['jms:ActiveMQ.DLQ/file:ActiveMQ.DLQ']");
 		}
 
 		@Override
@@ -47,16 +45,19 @@ public class BridgeProcedure extends Procedure {
 	@Override
 	protected void z8_exec(RCollection<Parameter.CLASS<? extends Parameter>> parameters) {
 
-		for (String uri : Properties.getProperty(ServerRuntime.BridgeUrlsProperty).split("\\,")) {
-			String uris[] = uri.split("/");
+		JsonArray settings = new JsonArray(((string) getParameter(IObject.Settings).get()).get());
+
+		for (int i = 0; i < settings.size(); i++) {
+			String setting = settings.getString(i);
+			String uris[] = setting.split("/");
 			if (uris.length != 2)
-				throw new RuntimeException("Incorrect bridge URI '" + uri + "'");
+				throw new RuntimeException("Incorrect bridge setting '" + setting + "'");
 			URI inUri, outUri;
 			try {
 				inUri = new URI(uris[0].trim());
 				outUri = new URI(uris[1].trim());
 			} catch (URISyntaxException e) {
-				throw new RuntimeException("Incorrect bridge URI '" + uri + "'", e);
+				throw new RuntimeException("Incorrect bridge setting '" + setting + "'", e);
 			}
 			context.get().setProperty(TransportContext.SelfAddressProperty, inUri.getHost());
 			context.get().check();

@@ -1,7 +1,7 @@
 import org.zenframework.z8.base.simple.Procedure;
 
-[native "org.zenframework.z8.server.ie.TransportProcedure"]
-class TransportProcedure extends Procedure {
+[native "org.zenframework.z8.server.ie.RmiTransportProcedure"]
+class RmiTransportProcedure extends Procedure {
 	
 	protected TransportContext context;
 	

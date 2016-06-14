@@ -37,6 +37,10 @@ public class StringUtils {
 		return list;
 	}
 
+	public static String cut(String str, int maxLength) {
+		return str != null && str.length() > maxLength ? str.substring(0, maxLength) : str;
+	}
+
 	private static String padding(int repeat, char padChar) {
 		final char[] buf = new char[repeat];
 

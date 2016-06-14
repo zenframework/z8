@@ -5,6 +5,7 @@ import org.zenframework.z8.lang.Object;
 class Message extends Object {
 
 	public static final string PROP_TYPE;
+	public static final string PROP_GROUP;
 	public static final string PROP_RECORD_ID;
 	public static final string PROP_FILE_PATH;
 

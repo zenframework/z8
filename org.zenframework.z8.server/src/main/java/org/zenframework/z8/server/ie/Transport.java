@@ -8,7 +8,7 @@ public interface Transport {
 
 	void close();
 
-	void send(Message message, String transportAddress) throws TransportException;
+	void send(Message message, String transportAddress) throws TransportException, ImportException;
 
 	Message receive() throws TransportException;
 

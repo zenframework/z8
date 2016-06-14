@@ -1,0 +1,10 @@
+import org.zenframework.z8.base.simple.Procedure;
+
+[native "org.zenframework.z8.server.ie.TransportReceiveProcedure"]
+class TransportReceiveProcedure extends Procedure {
+	
+	protected TransportContext context;
+	
+	virtual protected void init();
+
+}

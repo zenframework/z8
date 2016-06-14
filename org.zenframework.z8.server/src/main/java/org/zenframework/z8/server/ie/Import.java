@@ -30,7 +30,7 @@ public class Import {
 
 	private static JsonObject STRUCTURE = null;
 
-	public static void importMessage(ExportMessages messages, Message message, String transportInfo) throws Throwable {
+	public static void importMessage(ExportMessages messages, Message message, String transportInfo) throws ImportException {
 		Connection connection = ConnectionManager.get();
 		try {
 			connection.beginTransaction();
@@ -47,11 +47,12 @@ public class Import {
 			connection.commit();
 		} catch (Throwable e) {
 			connection.rollback();
-			throw new RuntimeException(e);
+			LOG.error("Can't import message " + message, e);
+			throw new ImportException("Can't import message " + message, e);
 		}
 	}
 
-	public static void importRecords(Message message) {
+	public static void importRecords(Message message) throws ImportException {
 
 		// Обработка специальных свойств
 		Map<string, primary> properties = message.getProperties();
@@ -76,7 +77,7 @@ public class Import {
 				for (ExportEntry.Records.Record.Field field : record.getField()) {
 					JsonObject tableInfo = getStructure().getJsonObject(record.getTable());
 					if (tableInfo == null)
-						throw new RuntimeException("No structure for '" + record.getTable() + "'");
+						throw new ImportException("No structure for '" + record.getTable() + "'");
 					if (tableInfo.has(field.getId())) {
 						String linkTableName = tableInfo.getString(field.getId());
 						Table linkTable = (Table) Loader.getInstance(record.getTable());
@@ -87,7 +88,11 @@ public class Import {
 					}
 				}
 			}
-			Collections.sort(message.getExportEntry().getRecords().getRecord(), sorter.getComparator());
+			try {
+				Collections.sort(message.getExportEntry().getRecords().getRecord(), sorter.getComparator());
+			} catch (SorterException e) {
+				throw new ImportException(e.getMessage(), e);
+			}
 		}
 
 		// Импорт записей
@@ -111,7 +116,7 @@ public class Import {
 		}
 	}
 
-	private static void updateTableRecord(Table table, ExportEntry.Records.Record record) {
+	private static void updateTableRecord(Table table, ExportEntry.Records.Record record) throws ImportException {
 
 		guid recordId = new guid(record.getRecordId());
 
@@ -134,7 +139,8 @@ public class Import {
 			}
 		}
 
-		boolean exists = aggregatedFields.isEmpty() ? table.hasRecord(recordId) : table.readRecord(recordId, aggregatedFields);
+		boolean exists = aggregatedFields.isEmpty() ? table.hasRecord(recordId) : table.readRecord(recordId,
+				aggregatedFields);
 
 		boolean hasUpdatedFields = false;
 		for (ExportEntry.Records.Record.Field xmlField : record.getField()) {
@@ -152,14 +158,14 @@ public class Import {
 					if (aggregator == null || aggregator.isEmpty())
 						aggregator = field.importAggregator();
 					if (aggregator == null || aggregator.isEmpty())
-						throw new RuntimeException("Can't aggregate " + field.id()
+						throw new ImportException("Can't aggregate " + field.id()
 								+ " values. Import aggregator is not defined");
 					try {
 						ImportAggregator importAggregator = (ImportAggregator) Class.forName(aggregator).newInstance();
 						field.set(importAggregator.aggregate(field.get(), primary.create(field.type(), xmlField.getValue())));
 						hasUpdatedFields = true;
 					} catch (Exception e) {
-						throw new RuntimeException("Can't aggregate " + field.id() + " values", e);
+						throw new ImportException("Can't aggregate " + field.id() + " values", e);
 					}
 				}
 			} else {

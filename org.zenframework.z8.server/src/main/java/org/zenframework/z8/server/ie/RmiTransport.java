@@ -23,10 +23,12 @@ public class RmiTransport extends AbstractTransport {
 	public void close() {}
 
 	@Override
-	public void send(Message message, String transportAddress) throws TransportException {
+	public void send(Message message, String transportAddress) throws TransportException, ImportException {
 		try {
 			getServer(transportAddress).sendMessage(message);
-		} catch(Throwable e) {
+		} catch (ImportException e) {
+			throw e;
+		} catch (Throwable e) {
 			throw new TransportException(e);
 		}
 	}

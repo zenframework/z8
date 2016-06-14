@@ -29,14 +29,14 @@ public class AuthorityCenter extends RmiServer implements IAuthorityCenter {
 	private transient UserManager userManager;
 	private transient SessionManager sessionManager;
 
-	private AuthorityCenter() throws RemoteException {
-		super(IAuthorityCenter.class);
+	private AuthorityCenter(int unicastPort) throws RemoteException {
+		super(unicastPort, IAuthorityCenter.class);
 	}
 
 	public static void start(ServerConfig config) throws RemoteException {
 		if(Config == null) {
 			Config = config;
-			new AuthorityCenter().start();
+			new AuthorityCenter(Config.getUnicastAuthorityCenterPort()).start();
 		}
 	}
 
