@@ -16,6 +16,7 @@ import org.zenframework.z8.compiler.parser.expressions.Postfix;
 import org.zenframework.z8.compiler.parser.expressions.QualifiedName;
 import org.zenframework.z8.compiler.parser.grammar.lexer.ABC;
 import org.zenframework.z8.compiler.parser.grammar.lexer.token.ConstantToken;
+import org.zenframework.z8.compiler.parser.grammar.lexer.token.IntegerToken;
 import org.zenframework.z8.compiler.parser.type.Enum;
 import org.zenframework.z8.compiler.parser.type.Type;
 import org.zenframework.z8.compiler.parser.type.members.Record;
@@ -183,13 +184,9 @@ public class Attribute extends LanguageElement implements IAttribute {
             }
         }
 
-        if(name.equals(IAttribute.Job)) {
-            try {
-                Integer.parseInt(getValueString());
-            } catch (NumberFormatException e) {
-                getCompilationUnit().error(valueToken.getPosition(), "The attribute " + name + " must be integer");
-                return false;
-            }
+        if (name.equals(IAttribute.Job) && valueToken != null && !(valueToken instanceof IntegerToken)) {
+            getCompilationUnit().error(valueToken.getPosition(), "The attribute " + name + " must be integer");
+            return false;
         }
 
         if(name.equals(IAttribute.Name) && value != null) {
