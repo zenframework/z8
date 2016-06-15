@@ -25,6 +25,7 @@ public class GuidExpression extends Expression {
         super(container);
 
         setDefault(new guid());
+        system.set(true);
     }
 
     @Override
