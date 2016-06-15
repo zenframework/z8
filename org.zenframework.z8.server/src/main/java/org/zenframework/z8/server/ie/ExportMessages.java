@@ -308,7 +308,7 @@ public class ExportMessages extends Table {
 		SqlToken senderEq = new Rel(senderField, Operation.Eq, new sql_string(sender));
 		SqlToken where = new And(new And(notProcessedNotError, notLocal), senderEq);
 		
-		if (filters != null)
+		if (filters != null && !filters.isEmpty())
 			where = new And(where, Query.parseWhere(Filter.parse(filters, this)));
 		
 		if (address != null) {
