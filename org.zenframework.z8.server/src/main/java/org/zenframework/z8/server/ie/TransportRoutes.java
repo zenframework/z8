@@ -202,13 +202,14 @@ public class TransportRoutes extends Table {
 	public guid setRoute(guid routeId, String domain, String protocol, String address, int priority, boolean active) {
 		if (!domains.get().readFirst(new Rel(domains.get().id.get(), Operation.Eq, new sql_string(domain))))
 			throw new exception("Domain '" + domain + "' does not exist");
+		guid domainId = domains.get().recordId();
 		this.priority.get().set(priority);
 		this.active.get().set(new bool(active));
 		if (readRoute(domain, protocol, address)) {
 			update(recordId());
 			return recordId();
 		} else {
-			this.domainLink.get().set(domains.get().recordId());
+			this.domainLink.get().set(domainId);
 			this.id1.get().set(protocol);
 			this.name.get().set(address);
 			this.recordId.get().set(routeId);
