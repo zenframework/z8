@@ -16,8 +16,7 @@ import org.zenframework.z8.server.base.table.system.Users;
 import org.zenframework.z8.server.ie.BridgeProcedure;
 import org.zenframework.z8.server.ie.ExportMessages;
 import org.zenframework.z8.server.ie.RmiTransportProcedure;
-import org.zenframework.z8.server.ie.TransportReceiveProcedure;
-import org.zenframework.z8.server.ie.TransportSendProcedure;
+import org.zenframework.z8.server.ie.TransportProcedure;
 import org.zenframework.z8.server.ie.TransportRoutes;
 
 public class ServerRuntime extends AbstractRuntime {
@@ -100,8 +99,7 @@ public class ServerRuntime extends AbstractRuntime {
 
 		addActivator(new Properties.PropertiesActivator.CLASS<Properties.PropertiesActivator>(null));
 
-		addJob(new TransportSendProcedure.CLASS<TransportSendProcedure>(null));
-		addJob(new TransportReceiveProcedure.CLASS<TransportReceiveProcedure>(null));
+		addJob(new TransportProcedure.CLASS<TransportProcedure>(null));
 		addJob(new RmiTransportProcedure.CLASS<RmiTransportProcedure>(null));
 		addJob(new BridgeProcedure.CLASS<BridgeProcedure>(null));
 

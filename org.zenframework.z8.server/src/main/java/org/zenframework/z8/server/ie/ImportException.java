@@ -4,6 +4,10 @@ public class ImportException extends Exception {
 
 	private static final long serialVersionUID = -8358080684149010654L;
 
+	public ImportException() {
+		super();
+	}
+
 	public ImportException(String message) {
 		super(message);
 	}
