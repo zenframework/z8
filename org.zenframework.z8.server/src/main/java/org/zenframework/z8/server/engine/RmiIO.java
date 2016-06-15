@@ -34,6 +34,7 @@ import org.zenframework.z8.server.types.guid;
 import org.zenframework.z8.server.types.integer;
 import org.zenframework.z8.server.types.primary;
 import org.zenframework.z8.server.types.string;
+import org.zenframework.z8.server.utils.ErrorUtils;
 import org.zenframework.z8.server.utils.IOUtils;
 
 import sun.rmi.server.UnicastRef;
@@ -285,7 +286,7 @@ public class RmiIO extends ObjectIO {
 
 	private void writeException(ObjectOutputStream out, Throwable object) throws IOException {
 		writeClass(out, object);
-		writeString(out, object.getMessage());
+		writeString(out, ErrorUtils.getMessage(object));
 	}
 
 	static public bool readBool(ObjectInputStream in) throws IOException {
