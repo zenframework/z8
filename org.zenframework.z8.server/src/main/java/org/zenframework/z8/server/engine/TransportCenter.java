@@ -6,17 +6,12 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.zenframework.z8.server.base.table.system.Properties;
-import org.zenframework.z8.server.base.table.system.SystemDomains;
 import org.zenframework.z8.server.config.ServerConfig;
-import org.zenframework.z8.server.db.sql.expressions.Operation;
-import org.zenframework.z8.server.db.sql.expressions.Rel;
 import org.zenframework.z8.server.ie.RmiTransport;
 import org.zenframework.z8.server.ie.TransportRoute;
 import org.zenframework.z8.server.ie.TransportRoutes;
 import org.zenframework.z8.server.runtime.ServerRuntime;
-import org.zenframework.z8.server.types.exception;
 import org.zenframework.z8.server.types.guid;
-import org.zenframework.z8.server.types.sql.sql_string;
 import org.zenframework.z8.server.utils.FileKeyValue;
 import org.zenframework.z8.server.utils.IKeyValue;
 
@@ -85,22 +80,19 @@ public class TransportCenter extends RmiServer implements ITransportCenter {
 
 		@Override
 		public List<TransportRoute> getRoutes(final String domain) {
-			return Arrays.<TransportRoute> asList(new TransportRoute(guid.create(), guid.create(), domain,
-					RmiTransport.PROTOCOL, store.get(domain), 0, true));
+			return Arrays.<TransportRoute> asList(new TransportRoute(guid.create(), domain, RmiTransport.PROTOCOL, store
+					.get(domain), 0, true));
 		}
 
 	}
 
 	private static class TableStore implements Store {
 
-		final SystemDomains domains = SystemDomains.newInstance();
 		final TransportRoutes transportRoutes = TransportRoutes.newInstance();
 
 		@Override
 		public void setRoute(String domain, String address) {
-			if (!domains.hasRecord(new Rel(domains.id.get(), Operation.Eq, new sql_string(domain))))
-				throw new exception("Domain '" + domain + "' does not exist");
-			transportRoutes.setRoute(guid.create(), domains.recordId(), domain, RmiTransport.PROTOCOL, address, 0, true);
+			transportRoutes.setRoute(guid.create(), domain, RmiTransport.PROTOCOL, address, 0, true);
 		}
 
 		@Override
