@@ -26,6 +26,7 @@ import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.runtime.ServerRuntime;
 import org.zenframework.z8.server.types.bool;
 import org.zenframework.z8.server.types.datetime;
+import org.zenframework.z8.server.types.exception;
 import org.zenframework.z8.server.types.guid;
 import org.zenframework.z8.server.types.integer;
 import org.zenframework.z8.server.types.string;
@@ -168,9 +169,9 @@ public class TransportRoutes extends Table {
 		sort(Arrays.<Field> asList(priority.get()), where);
 		List<TransportRoute> routes = new LinkedList<TransportRoute>();
 		while (next()) {
-			routes.add(new TransportRoute(recordId(), domainLink.get().get().guid(), domains.get().id.get().get().string()
-					.get(), id1.get().get().string().get(), name.get().get().string().get(), TransportRoutes.this.priority
-					.get().get().integer().getInt(), TransportRoutes.this.active.get().get().bool().get()));
+			routes.add(new TransportRoute(recordId(), domains.get().id.get().get().string().get(), id1.get().get().string()
+					.get(), name.get().get().string().get(), TransportRoutes.this.priority.get().get().integer().getInt(),
+					TransportRoutes.this.active.get().get().bool().get()));
 		}
 		if (routes.isEmpty() && transportCenter != null && !transportCenter.isEmpty()) {
 			try {
@@ -186,8 +187,8 @@ public class TransportRoutes extends Table {
 	}
 
 	public guid setRoute(TransportRoute route) {
-		return setRoute(route.getRouteId(), route.getDomainId(), route.getDomain(), route.getProtocol(), route.getAddress(),
-				route.getPriority(), route.isActive());
+		return setRoute(route.getRouteId(), route.getDomain(), route.getProtocol(), route.getAddress(), route.getPriority(),
+				route.isActive());
 	}
 
 	/*public guid setRoute(String domain, String protocol, String address, int priority, boolean active) {
@@ -198,13 +199,10 @@ public class TransportRoutes extends Table {
 		}
 	}*/
 
-	public guid setRoute(guid routeId, guid domainId, String domain, String protocol, String address, int priority,
-			boolean active) {
-		if (!domains.get().hasRecord(domainId)) {
-			domains.get().id.get().set(new string(domain));
-			domains.get().recordId.get().set(domainId);
-			domains.get().create();
-		}
+	public guid setRoute(guid routeId, String domain, String protocol, String address, int priority, boolean active) {
+		if (!domains.get().readFirst(new Rel(domains.get().id.get(), Operation.Eq, new sql_string(domain))))
+			throw new exception("Domain '" + domain + "' does not exist");
+		guid domainId = domains.get().recordId();
 		this.priority.get().set(priority);
 		this.active.get().set(new bool(active));
 		if (readRoute(domain, protocol, address)) {
@@ -260,9 +258,9 @@ public class TransportRoutes extends Table {
 		return new bool(readRoute(domain, protocol.get(), address.get()));
 	}
 
-	public guid z8_setRoute(guid routeId, guid domainId, string domain, string protocol, string address, integer priority,
+	public guid z8_setRoute(guid routeId, string domain, string protocol, string address, integer priority,
 			bool active) {
-		return setRoute(routeId, domainId, domain.get(), protocol.get(), address.get(), priority.getInt(), active.get());
+		return setRoute(routeId, domain.get(), protocol.get(), address.get(), priority.getInt(), active.get());
 	}
 
 	public bool z8_disableRoute(guid routeId, string description) {

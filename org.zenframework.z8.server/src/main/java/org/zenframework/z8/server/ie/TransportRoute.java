@@ -14,7 +14,6 @@ public class TransportRoute implements RmiSerializable, Serializable {
 	private static final long serialVersionUID = -2215330098958924695L;
 
 	private guid routeId;
-	private guid domainId;
 	private String domain;
 	private String protocol;
 	private String address;
@@ -24,9 +23,8 @@ public class TransportRoute implements RmiSerializable, Serializable {
 
 	public TransportRoute() {}
 	
-	public TransportRoute(guid routeId, guid domainId, String domain, String protocol, String address, int priority, boolean active) {
+	public TransportRoute(guid routeId, String domain, String protocol, String address, int priority, boolean active) {
 		this.routeId = routeId;
-		this.domainId = domainId;
 		this.domain = domain;
 		this.protocol = protocol;
 		this.address = address;
@@ -36,10 +34,6 @@ public class TransportRoute implements RmiSerializable, Serializable {
 
 	public guid getRouteId() {
 		return routeId;
-	}
-
-	public guid getDomainId() {
-		return domainId;
 	}
 
 	public int getPriority() {
@@ -85,7 +79,6 @@ public class TransportRoute implements RmiSerializable, Serializable {
 	@Override
 	public void serialize(ObjectOutputStream out) throws IOException {
 		RmiIO.writeGuid(out, routeId);
-		RmiIO.writeGuid(out, domainId);
 		RmiIO.writeString(out, domain);
 		RmiIO.writeString(out, protocol);
 		RmiIO.writeString(out, address);
@@ -97,7 +90,6 @@ public class TransportRoute implements RmiSerializable, Serializable {
 	@Override
 	public void deserialize(ObjectInputStream in) throws IOException, ClassNotFoundException {
 		routeId = RmiIO.readGuid(in);
-		domainId = RmiIO.readGuid(in);
 		domain = RmiIO.readString(in);
 		protocol = RmiIO.readString(in);
 		address = RmiIO.readString(in);
