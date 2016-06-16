@@ -1,6 +1,8 @@
 package org.zenframework.z8.server.base.model.actions;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.zenframework.z8.server.base.file.AttachmentProcessor;
 import org.zenframework.z8.server.base.file.FileInfo;
@@ -9,8 +11,10 @@ import org.zenframework.z8.server.base.table.value.AttachmentField;
 import org.zenframework.z8.server.base.table.value.Field;
 import org.zenframework.z8.server.json.Json;
 import org.zenframework.z8.server.json.JsonWriter;
+import org.zenframework.z8.server.json.parser.JsonObject;
 import org.zenframework.z8.server.request.IRequest;
 import org.zenframework.z8.server.types.guid;
+import org.zenframework.z8.server.types.string;
 
 public class AttachAction extends Action {
 
@@ -27,7 +31,15 @@ public class AttachAction extends Action {
         Query query = getRootQuery();
         guid target = getRecordIdParameter();
         String fieldId = getFieldParameter();
-        String type = getTypeParameter();
+
+        JsonObject json = new JsonObject(getDetailsParameter());
+        Map<string, string> details = new HashMap<string, string>();
+        
+        for(String name : JsonObject.getNames(json))
+        	details.put(new string(name), new string(json.getString(name)));
+        
+        for(FileInfo file : files)
+        	file.details.putAll(details);
         
         Field field = fieldId != null ? query.findFieldById(fieldId) : null;
         
@@ -35,7 +47,7 @@ public class AttachAction extends Action {
 
         writer.startArray(Json.data);
         
-        for(FileInfo file : processor.update(target, files, type))
+        for(FileInfo file : processor.update(target, files))
             writer.write(file.toJsonObject());
 
         writer.finishArray();

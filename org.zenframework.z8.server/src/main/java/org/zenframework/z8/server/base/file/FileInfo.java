@@ -20,8 +20,10 @@ import org.zenframework.z8.server.resources.Resources;
 import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.runtime.OBJECT;
 import org.zenframework.z8.server.runtime.RCollection;
+import org.zenframework.z8.server.runtime.RLinkedHashMap;
 import org.zenframework.z8.server.types.datetime;
 import org.zenframework.z8.server.types.guid;
+import org.zenframework.z8.server.types.integer;
 import org.zenframework.z8.server.types.string;
 import org.zenframework.z8.server.utils.IOUtils;
 
@@ -29,13 +31,17 @@ public class FileInfo extends OBJECT implements RmiSerializable, Serializable {
 
 	private static final long serialVersionUID = -2542688680678439014L;
 
-	public string instanceId = new string();
 	public string name = new string();
 	public string path = new string();
-	public string type = new string();
 	public datetime time = new datetime();
+	public integer size = new integer();
 	public guid id = new guid();
-	public string description = new string();
+	public string instanceId = new string();
+
+	public RLinkedHashMap<string, string> details = new RLinkedHashMap<string, string>();
+	
+//	public string type = new string();
+//	public string description = new string();
 
 	public FileItem file;
 	public Status status = Status.LOCAL;
@@ -132,12 +138,12 @@ public class FileInfo extends OBJECT implements RmiSerializable, Serializable {
 		this.instanceId = fileInfo.instanceId;
 		this.name = fileInfo.name;
 		this.path = fileInfo.path;
-		this.type = fileInfo.type;
 		this.time = fileInfo.time;
+		this.size = fileInfo.size;
 		this.id = fileInfo.id;
 		this.file = fileInfo.file;
 		this.status = fileInfo.status;
-		this.description = fileInfo.description;
+		this.details = fileInfo.details;
 		this.json = fileInfo.json;
 	}
 
@@ -145,10 +151,9 @@ public class FileInfo extends OBJECT implements RmiSerializable, Serializable {
 		path = new string(json.getString(json.has(Json.file) ? Json.file : Json.path));
 		name = new string(json.has(Json.name) ? json.getString(Json.name) : "");
 		time = new datetime(json.has(Json.time) ? json.getString(Json.time) : "");
-		type = new string(json.has(Json.type) ? json.getString(Json.type) : "");
+		size = new integer(json.has(Json.size) ? json.getString(Json.size) : "");
 		id = new guid(json.has(Json.id) ? json.getString(Json.id) : "");
 		instanceId = new string(json.has(Json.instanceId) ? json.getString(Json.instanceId) : "");
-		description = new string(json.has(Json.description) ? json.getString(Json.description) : "");
 
 		this.json = json;
 	}
@@ -182,12 +187,12 @@ public class FileInfo extends OBJECT implements RmiSerializable, Serializable {
 		if (json == null) {
 			json = new JsonObject();
 			json.put(Json.name, name);
-			// json.put(Json.time, time);
-			json.put(Json.type, type);
+			json.put(Json.time, time);
+			json.put(Json.size, size);
 			json.put(Json.path, path);
 			json.put(Json.id, id);
 			json.put(Json.instanceId, instanceId);
-			json.put(Json.description, description);
+			json.put(Json.details, this.details);
 		}
 		return json;
 	}
@@ -258,8 +263,8 @@ public class FileInfo extends OBJECT implements RmiSerializable, Serializable {
 		RmiIO.writeString(out, instanceId);
 		RmiIO.writeString(out, name);
 		RmiIO.writeString(out, path);
-		RmiIO.writeString(out, type);
 		RmiIO.writeDatetime(out, time);
+		RmiIO.writeInteger(out, size);
 		RmiIO.writeGuid(out, id);
 
 		out.writeBoolean(file != null);
@@ -286,7 +291,7 @@ public class FileInfo extends OBJECT implements RmiSerializable, Serializable {
 		instanceId = new string(RmiIO.readString(in));
 		name = new string(RmiIO.readString(in));
 		path = new string(RmiIO.readString(in));
-		type = new string(RmiIO.readString(in));
+		size = RmiIO.readInteger(in);
 		time = RmiIO.readDatetime(in);
 		id = RmiIO.readGuid(in);
 

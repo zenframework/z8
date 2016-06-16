@@ -96,7 +96,7 @@ public class datetime extends primary {
 		return m_value.getTimeInMillis();
 	}
 
-	private void set(long millisec) {
+	public void set(long millisec) {
 		m_value.setTimeInMillis(millisec);
 	}
 

@@ -44,6 +44,7 @@ import org.zenframework.z8.server.resources.Resources;
 import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.runtime.RCollection;
 import org.zenframework.z8.server.runtime.ServerRuntime;
+import org.zenframework.z8.server.types.datetime;
 import org.zenframework.z8.server.types.guid;
 import org.zenframework.z8.server.types.string;
 import org.zenframework.z8.server.types.sql.sql_string;
@@ -275,6 +276,8 @@ public class SystemFiles extends Table {
 			path.get().set(fileInfo.path);
 			if (fileInfo.id == null || fileInfo.id.isNull())
 				fileInfo.id = guid.create();
+			if (fileInfo.time != null && !fileInfo.time.equals(datetime.MIN))
+				createdAt.get().set(fileInfo.time);
 			create(fileInfo.id);
 		} else if (getStatus() != FileInfo.Status.LOCAL && fileInfo.file != null) {
 			id1.get().set(new string(FileInfo.Status.LOCAL.getValue()));

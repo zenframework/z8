@@ -49,11 +49,9 @@
                                     <xsd:simpleContent>
                                         <xsd:extension base="xsd:string">
                                             <xsd:attribute name="name" type="xsd:string" use="required" />
-                                            <xsd:attribute name="type" type="xsd:string" use="required" />
                                             <xsd:attribute name="path" type="xsd:string" use="required" />
-                                            <xsd:attribute name="time" type="xsd:dateTime" use="required" />
-                                            <xsd:attribute name="size" type="xsd:int" use="required" />
                                             <xsd:attribute name="id" type="xsd:string" use="required" />
+                                            <xsd:attribute name="time" type="xsd:long" use="optional" />
                                             <xsd:attribute name="instanceId" type="xsd:string" use="optional" />
                                             <xsd:attribute name="policy" type="xsd:string" use="optional" />
                                         </xsd:extension>

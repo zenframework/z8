@@ -174,6 +174,7 @@ public interface Json {
     string target = new string("target");
     string image = new string("image");
     string time = new string("time");
+    string details = new string("details");
 
     string refresh = new string("refresh");
     string queries = new string("queries");
