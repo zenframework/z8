@@ -3,7 +3,7 @@ import org.zenframework.z8.lang.Object;
 [native "org.zenframework.z8.server.base.file.AttachmentProcessor"]
 class AttachmentProcessor extends Object {
 	
-    public FileInfo[] get();
+    static public FileInfo[] parse(string json);
 
     public FileInfo[] read(guid recordId);
 

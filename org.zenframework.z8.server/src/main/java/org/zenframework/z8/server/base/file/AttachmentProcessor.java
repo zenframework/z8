@@ -62,7 +62,7 @@ public class AttachmentProcessor extends OBJECT {
 
 	public Collection<FileInfo> read(guid recordId) {
 		if (getTable().readRecord(recordId, Arrays.<Field> asList(getField())))
-			return get();
+	        return FileInfo.parseArray(getField().string().get());
 		return new ArrayList<FileInfo>();
 	}
 
@@ -122,10 +122,6 @@ public class AttachmentProcessor extends OBJECT {
 		}
 	}
 
-	public Collection<FileInfo> get() {
-		return FileInfo.parseArray(getField().string().get());
-	}
-
 	public int getPageCount(guid recordId) {
 		int result = 0;
 		Collection<FileInfo> fileInfos = read(recordId);
@@ -135,8 +131,8 @@ public class AttachmentProcessor extends OBJECT {
 		return result;
 	}
 
-	public RCollection<? extends FileInfo.CLASS<? extends FileInfo>> z8_get() {
-		return toCollection(get());
+	static public RCollection<? extends FileInfo.CLASS<? extends FileInfo>> z8_parse(string json) {
+	    return toCollection(FileInfo.parseArray(json.get()));
 	}
 
 	public RCollection<? extends FileInfo.CLASS<? extends FileInfo>> z8_read(guid recordId) {
@@ -159,7 +155,7 @@ public class AttachmentProcessor extends OBJECT {
 		return new integer(getPageCount(recordId));
 	}
 
-	private RCollection<? extends FileInfo.CLASS<? extends FileInfo>> toCollection(Collection<FileInfo> files) {
+	static private RCollection<? extends FileInfo.CLASS<? extends FileInfo>> toCollection(Collection<FileInfo> files) {
 		RCollection<FileInfo.CLASS<? extends FileInfo>> result = new RCollection<FileInfo.CLASS<? extends FileInfo>>();
 
 		for (FileInfo file : files) {
