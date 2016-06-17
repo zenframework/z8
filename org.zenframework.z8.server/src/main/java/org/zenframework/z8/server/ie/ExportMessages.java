@@ -8,7 +8,6 @@ import java.util.List;
 
 import javax.xml.bind.JAXBException;
 
-import org.zenframework.z8.ie.xml.ExportEntry;
 import org.zenframework.z8.server.base.query.Query;
 import org.zenframework.z8.server.base.table.Table;
 import org.zenframework.z8.server.base.table.system.Properties;
@@ -165,7 +164,7 @@ public class ExportMessages extends Table {
 			this.description.get().set(new string(transportInfo));
 		this.ordinal.get().set(new integer(nextOrdinal(message, direction)));
 		this.classId.get().set(new string(message.classId()));
-		this.message.get().set(new string(IeUtil.marshalExportEntry(message.getExportEntry())));
+		this.message.get().set(new string(message.getXml()));
 
 		if (hasRecord(recordId))
 			update(recordId);
@@ -351,7 +350,7 @@ public class ExportMessages extends Table {
 	public Message getMessage(guid id) {
 		if (!readRecord(id, getDataFields()))
 			return null;
-		ExportEntry exportEntry = IeUtil.unmarshalExportEntry(this.message.get().get().toString());
+		String xml = this.message.get().get().toString();
 		String classId = this.classId.get().get().string().get();
 		if (classId == null || classId.isEmpty())
 			classId = Message.class.getCanonicalName();
@@ -360,7 +359,7 @@ public class ExportMessages extends Table {
 		message.setTime(createdAt.get().datetime());
 		message.setAddress(getReceiver());
 		message.setSender(getSender());
-		message.setExportEntry(exportEntry);
+		message.setXml(xml);
 		return message;
 	}
 

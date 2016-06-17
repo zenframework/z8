@@ -46,8 +46,8 @@ public class Import {
 			message.afterImport();
 			connection.commit();
 		} catch (Throwable e) {
-			connection.rollback();
 			LOG.error("Can't import message " + message, e);
+			connection.rollback();
 			throw new ImportException("Can't import message " + message, e);
 		}
 	}
