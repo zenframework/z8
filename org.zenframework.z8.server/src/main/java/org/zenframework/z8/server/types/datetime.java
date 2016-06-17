@@ -80,16 +80,20 @@ public class datetime extends primary {
 		for (int i = 0; i < formats.length; i++) {
 			try {
 				set(s, new SimpleDateFormat(formats[i]));
+				return;
 			} catch (Throwable e) {}
 		}
+		set(MIN);
 	}
 
 	public datetime(String s, DateFormat[] formats) {
 		for (int i = 0; i < formats.length; i++) {
 			try {
 				set(s, formats[i]);
+				return;
 			} catch (Throwable e) {}
 		}
+		set(MIN);
 	}
 
 	@Override
