@@ -114,7 +114,7 @@ public class TransportProcedure extends Procedure {
 					} catch (TransportException e) {
 						log("Can't connect to '" + route.getDomain() + "' via '" + route.getTransportUrl() + "'", e);
 						transport.close();
-						transportRoutes.disableRoute(route.getRouteId(), ErrorUtils.getMessage(e));
+						transportRoutes.disableRoute(route, ErrorUtils.getMessage(e));
 						continue;
 					}
 
@@ -123,7 +123,7 @@ public class TransportProcedure extends Procedure {
 						break;
 					} catch (TransportException e) {
 						transport.close();
-						transportRoutes.disableRoute(route.getRouteId(), e.getMessage());
+						transportRoutes.disableRoute(route, e.getMessage());
 					}
 				}
 

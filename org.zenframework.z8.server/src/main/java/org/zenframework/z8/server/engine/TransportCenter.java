@@ -11,7 +11,6 @@ import org.zenframework.z8.server.ie.RmiTransport;
 import org.zenframework.z8.server.ie.TransportRoute;
 import org.zenframework.z8.server.ie.TransportRoutes;
 import org.zenframework.z8.server.runtime.ServerRuntime;
-import org.zenframework.z8.server.types.guid;
 import org.zenframework.z8.server.utils.FileKeyValue;
 import org.zenframework.z8.server.utils.IKeyValue;
 
@@ -80,8 +79,8 @@ public class TransportCenter extends RmiServer implements ITransportCenter {
 
 		@Override
 		public List<TransportRoute> getRoutes(final String domain) {
-			return Arrays.<TransportRoute> asList(new TransportRoute(guid.create(), domain, RmiTransport.PROTOCOL, store
-					.get(domain), 0, true));
+			return Arrays.<TransportRoute> asList(new TransportRoute(domain, RmiTransport.PROTOCOL, store.get(domain), 0,
+					true));
 		}
 
 	}
@@ -92,7 +91,7 @@ public class TransportCenter extends RmiServer implements ITransportCenter {
 
 		@Override
 		public void setRoute(String domain, String address) {
-			transportRoutes.setRoute(guid.create(), domain, RmiTransport.PROTOCOL, address, 0, true);
+			transportRoutes.setRoute(domain, RmiTransport.PROTOCOL, address, 0, true);
 		}
 
 		@Override

@@ -395,7 +395,7 @@ public class SystemFiles extends Table {
 			} catch (TransportException e) {
 				LOG.info("Can't get remote file '" + fileInfo + "' from '" + route.getTransportUrl() + "'", e);
 				transport.close();
-				transportRoutes.disableRoute(route.getRouteId(), ErrorUtils.getMessage(e));
+				transportRoutes.disableRoute(route, ErrorUtils.getMessage(e));
 				continue;
 			}
 		}
