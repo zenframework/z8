@@ -16,9 +16,10 @@ public class datetime extends primary {
 
 	private static final long serialVersionUID = -5362639596768531077L;
 
-	final static public String defaultMask = "dd/MM/yyyy HH:mm:ss";
-	final static public String defaultMaskDate = "dd/MM/yyyy";
-	final static public String defaultMaskTime = "HH:mm:ss";
+	final static public DateFormat[] defaultMasks = { new SimpleDateFormat("dd/MM/yyyy HH:mm:ss"),
+			new SimpleDateFormat("dd-MM-yyyy'T'HH:mm:ss"), new SimpleDateFormat("dd.MM.yyy HH:mm:ss") };
+	final static public DateFormat defaultMaskDate = new SimpleDateFormat("dd/MM/yyyy");
+	final static public DateFormat defaultMaskTime = new SimpleDateFormat("HH:mm:ss");
 
 	final static public datetime MIN = new datetime(1899, 12, 31);
 	final static public datetime MAX = new datetime(4712, 12, 31);
@@ -68,14 +69,22 @@ public class datetime extends primary {
 	}
 
 	public datetime(String s) {
-		this(s, defaultMask);
+		this(s, defaultMasks);
 	}
 
 	public datetime(String s, String format) {
-		set(s, format);
+		set(s, new SimpleDateFormat(format));
 	}
 
 	public datetime(String s, String[] formats) {
+		for (int i = 0; i < formats.length; i++) {
+			try {
+				set(s, new SimpleDateFormat(formats[i]));
+			} catch (Throwable e) {}
+		}
+	}
+
+	public datetime(String s, DateFormat[] formats) {
 		for (int i = 0; i < formats.length; i++) {
 			try {
 				set(s, formats[i]);
@@ -142,12 +151,12 @@ public class datetime extends primary {
 	}
 
 	@SuppressWarnings("deprecation")
-	public void set(String s, String format) {
+	public void set(String s, DateFormat format) {
 		try {
 			if (s == null || s.isEmpty()) {
 				set(datetime.MIN);
 			} else {
-				java.util.Date date = new SimpleDateFormat(format).parse(s);
+				java.util.Date date = format.parse(s);
 				set(1900 + date.getYear(), date.getMonth() + 1, date.getDate(), date.getHours(), date.getMinutes(),
 						date.getSeconds());
 			}
@@ -290,7 +299,7 @@ public class datetime extends primary {
 
 	@Override
 	public String toString() {
-		return format(defaultMask);
+		return format(defaultMasks[0]);
 	}
 
 	public String toStringDate() {
