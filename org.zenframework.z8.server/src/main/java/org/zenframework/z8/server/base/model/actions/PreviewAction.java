@@ -10,7 +10,6 @@ import org.zenframework.z8.server.base.file.FileInfo;
 import org.zenframework.z8.server.base.file.Files;
 import org.zenframework.z8.server.base.file.Folders;
 import org.zenframework.z8.server.base.query.Query;
-import org.zenframework.z8.server.base.table.value.AttachmentField;
 import org.zenframework.z8.server.base.table.value.Field;
 import org.zenframework.z8.server.engine.ApplicationServer;
 import org.zenframework.z8.server.engine.Z8Context;
@@ -29,18 +28,16 @@ public class PreviewAction extends Action {
 
 	@Override
 	public void writeResponse(JsonWriter writer) throws Throwable {
-		// TODO Create record preview based on template
-
 		String requestId = actionParameters().requestId;
 		guid recordId = getRecordIdParameter();
 		Query query = getQuery();
 		String fieldId = getFieldParameter();
-		AttachmentField field = (AttachmentField) query.getFieldById(fieldId);
+		Field field = query.getFieldById(fieldId);
 
 		if (!query.readRecord(recordId, Arrays.<Field> asList(field)))
 			throw new RuntimeException("Record '" + recordId + "' does not exist in '" + query.getIndex() + "'");
 
-		Collection<FileInfo> attachments = field.getAttachmentProcessor().get();
+		Collection<FileInfo> attachments = FileInfo.parseArray(field.string().get());
 
 		if (attachments.size() == 0)
 			throw new RuntimeException("'" + actionParameters().requestId + "." + fieldId + "' is empty");

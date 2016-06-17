@@ -3,7 +3,6 @@ package org.zenframework.z8.server.base.file;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Iterator;
 
 import org.apache.commons.io.FileUtils;
 import org.zenframework.z8.server.base.table.Table;
@@ -63,12 +62,8 @@ public class AttachmentProcessor extends OBJECT {
 
 	public Collection<FileInfo> read(guid recordId) {
 		if (getTable().readRecord(recordId, Arrays.<Field> asList(getField())))
-			return get();
+	        return FileInfo.parseArray(getField().string().get());
 		return new ArrayList<FileInfo>();
-	}
-
-	public Collection<FileInfo> read(guid recordId, String type) {
-		return filterByType(read(recordId), type);
 	}
 
 	private void save(Collection<FileInfo> files, guid recordId) {
@@ -76,7 +71,7 @@ public class AttachmentProcessor extends OBJECT {
 		getTable().update(recordId);
 	}
 
-	public Collection<FileInfo> create(guid attachTo, Collection<FileInfo> files, String type) {
+	public Collection<FileInfo> create(guid attachTo, Collection<FileInfo> files) {
 		SystemFiles filesTable = SystemFiles.newInstance();
 
 		for (FileInfo file : files) {
@@ -87,7 +82,6 @@ public class AttachmentProcessor extends OBJECT {
 
 				setPathIfEmpty(attachTo, file);
 				file.instanceId = new string(Z8Context.getInstanceId());
-				file.type = new string(type);
 				filesTable.addFile(file);
 			}
 		}
@@ -95,10 +89,10 @@ public class AttachmentProcessor extends OBJECT {
 		return files;
 	}
 
-	public Collection<FileInfo> update(guid attachTo, Collection<FileInfo> files, String type) {
+	public Collection<FileInfo> update(guid attachTo, Collection<FileInfo> files) {
 		Collection<FileInfo> result = read(attachTo);
 
-		files = create(attachTo, files, type);
+		files = create(attachTo, files);
 
 		result.addAll(files);
 		save(result, attachTo);
@@ -128,21 +122,6 @@ public class AttachmentProcessor extends OBJECT {
 		}
 	}
 
-	public Collection<FileInfo> get() {
-		return FileInfo.parseArray(getField().string().get());
-	}
-
-	private Collection<FileInfo> filterByType(Collection<FileInfo> files, String type) {
-		if (type != null) {
-			Iterator<FileInfo> i = files.iterator();
-			while (i.hasNext()) {
-				if (!type.equals(i.next().type.get()))
-					i.remove();
-			}
-		}
-		return files;
-	}
-
 	public int getPageCount(guid recordId) {
 		int result = 0;
 		Collection<FileInfo> fileInfos = read(recordId);
@@ -152,49 +131,31 @@ public class AttachmentProcessor extends OBJECT {
 		return result;
 	}
 
-	public RCollection<? extends FileInfo.CLASS<? extends FileInfo>> z8_get() {
-		return toCollection(get());
-	}
-
-	public RCollection<? extends FileInfo.CLASS<? extends FileInfo>> z8_get(string type) {
-		return toCollection(filterByType(get(), type.get()));
+	static public RCollection<? extends FileInfo.CLASS<? extends FileInfo>> z8_parse(string json) {
+	    return toCollection(FileInfo.parseArray(json.get()));
 	}
 
 	public RCollection<? extends FileInfo.CLASS<? extends FileInfo>> z8_read(guid recordId) {
 		return toCollection(read(recordId));
 	}
 
-	public RCollection<? extends FileInfo.CLASS<? extends FileInfo>> z8_read(guid recordId, string type) {
-		return toCollection(read(recordId, type.get()));
-	}
-
 	public RCollection<? extends FileInfo.CLASS<? extends FileInfo>> z8_create(guid target,
 			RCollection<? extends FileInfo.CLASS<? extends FileInfo>> classes) {
-		return z8_create(target, classes, new string());
-	}
-
-	public RCollection<? extends FileInfo.CLASS<? extends FileInfo>> z8_create(guid target,
-			RCollection<? extends FileInfo.CLASS<? extends FileInfo>> classes, string type) {
 		Collection<FileInfo> files = CLASS.asList(classes);
-		return toCollection(create(target, files, type.get()));
+		return toCollection(create(target, files));
 	}
 
 	public RCollection<? extends FileInfo.CLASS<? extends FileInfo>> z8_update(guid target,
 			RCollection<? extends FileInfo.CLASS<? extends FileInfo>> classes) {
-		return z8_update(target, classes, new string());
-	}
-
-	public RCollection<? extends FileInfo.CLASS<? extends FileInfo>> z8_update(guid target,
-			RCollection<? extends FileInfo.CLASS<? extends FileInfo>> classes, string type) {
 		Collection<FileInfo> files = CLASS.asList(classes);
-		return toCollection(update(target, files, type.get()));
+		return toCollection(update(target, files));
 	}
 
 	public integer z8_getPageCount(guid recordId) {
 		return new integer(getPageCount(recordId));
 	}
 
-	private RCollection<? extends FileInfo.CLASS<? extends FileInfo>> toCollection(Collection<FileInfo> files) {
+	static private RCollection<? extends FileInfo.CLASS<? extends FileInfo>> toCollection(Collection<FileInfo> files) {
 		RCollection<FileInfo.CLASS<? extends FileInfo>> result = new RCollection<FileInfo.CLASS<? extends FileInfo>>();
 
 		for (FileInfo file : files) {

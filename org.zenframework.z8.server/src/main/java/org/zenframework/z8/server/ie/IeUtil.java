@@ -111,7 +111,7 @@ public class IeUtil {
 	public static ExportEntry.Files.File fileInfoToFile(FileInfo fileInfo, ImportPolicy policy, String defaultInstanceId) {
 		ExportEntry.Files.File file = new ExportEntry.Files.File();
 		file.setName(fileInfo.name.get());
-		file.setType(fileInfo.type.get());
+		file.setTime(fileInfo.time.getTicks());
 		file.setPath(fileInfo.path.get());
 		file.setId(fileInfo.id.toString());
 		file.setInstanceId(fileInfo.instanceId != null && !fileInfo.instanceId.isEmpty() ? fileInfo.instanceId.get()
@@ -132,7 +132,7 @@ public class IeUtil {
 	public static FileInfo.CLASS<FileInfo> fileToFileInfoCLASS(ExportEntry.Files.File file) {
 		FileInfo.CLASS<FileInfo> fileInfo = new FileInfo.CLASS<FileInfo>();
 		fileInfo.get().name.set(file.getName());
-		fileInfo.get().type.set(file.getType());
+		fileInfo.get().time.set(file.getTime());
 		fileInfo.get().path.set(file.getPath());
 		fileInfo.get().id.set(file.getId());
 		fileInfo.get().instanceId.set(file.getInstanceId());
@@ -165,7 +165,7 @@ public class IeUtil {
 			file.setInstanceId(fileInfo.instanceId != null && !fileInfo.instanceId.isEmpty() ? fileInfo.instanceId.get()
 					: defaultInstanceId);
 			file.setName(fileInfo.name.get());
-			file.setType(fileInfo.type.get());
+			file.setTime(fileInfo.time.getTicks());
 			file.setPath(fileInfo.path.get());
 			file.setValue(Base64.encodeBase64String(fileInfo.file.get()));
 			files.getFile().add(file);
@@ -178,7 +178,7 @@ public class IeUtil {
 		for (ExportEntry.Files.File file : files.getFile()) {
 			FileInfo fileInfo = new FileInfo();
 			fileInfo.name.set(file.getName());
-			fileInfo.type.set(file.getType());
+			fileInfo.time.set(file.getTime());
 			fileInfo.path.set(file.getPath());
 			fileInfo.id.set(file.getId());
 			fileInfo.instanceId.set(file.getInstanceId());

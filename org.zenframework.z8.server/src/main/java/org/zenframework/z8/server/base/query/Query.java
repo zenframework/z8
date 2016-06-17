@@ -11,6 +11,7 @@ import java.util.Map;
 import java.util.regex.Pattern;
 
 import org.apache.commons.io.FileUtils;
+import org.zenframework.z8.server.base.file.FileInfo;
 import org.zenframework.z8.server.base.file.Folders;
 import org.zenframework.z8.server.base.form.Control;
 import org.zenframework.z8.server.base.form.FieldGroup;
@@ -1823,6 +1824,20 @@ public class Query extends Runnable {
         return fields;
     }
 
+    private String getSearchValue(Field field) {
+        if(field instanceof AttachmentField) {
+            Collection<FileInfo> files = FileInfo.parseArray(field.string().get());
+            
+            String result = "";
+            
+            for(FileInfo file : files)
+                result += (result.isEmpty() ? "" : " ") + file.name;
+
+            return result;
+        }
+        return field.get().toString();
+    }
+    
     public String getRecordFullText() {
         List<Field> searchFields = getSearchFields();
 
@@ -1830,7 +1845,7 @@ public class Query extends Runnable {
 
         for (Field field : searchFields) {
             if (field.type() != FieldType.Guid)
-                result += (result.isEmpty() ? "" : " ") + field.searchValue();
+                result += (result.isEmpty() ? "" : " ") + getSearchValue(field);
         }
 
         return result;
