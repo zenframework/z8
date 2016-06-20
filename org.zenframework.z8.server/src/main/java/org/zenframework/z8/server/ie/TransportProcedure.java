@@ -102,7 +102,7 @@ public class TransportProcedure extends Procedure {
 				if (message == null)
 					continue;
 
-				List<TransportRoute> routes = transportRoutes.readRoutes(message.getAddress(), transportCenter, false);
+				List<TransportRoute> routes = transportRoutes.readRoutes(message.getAddress(), transportCenter, true);
 
 				for (TransportRoute route : routes) {
 
@@ -154,7 +154,7 @@ public class TransportProcedure extends Procedure {
 					Import.importMessage(messages, message, null);
 				} catch (Throwable e) {
 					LOG.error("Can't import message '" + message + "'", e);
-					break;
+					messages.setError(message, e);
 				}
 			}
 
