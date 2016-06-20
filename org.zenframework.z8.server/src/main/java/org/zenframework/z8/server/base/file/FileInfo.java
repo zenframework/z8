@@ -39,9 +39,9 @@ public class FileInfo extends OBJECT implements RmiSerializable, Serializable {
 	public string instanceId = new string();
 
 	public RLinkedHashMap<string, string> details = new RLinkedHashMap<string, string>();
-	
-//	public string type = new string();
-//	public string description = new string();
+
+	//	public string type = new string();
+	//	public string description = new string();
 
 	public FileItem file;
 	public Status status = Status.LOCAL;
@@ -159,14 +159,15 @@ public class FileInfo extends OBJECT implements RmiSerializable, Serializable {
 	}
 
 	public static List<FileInfo> parseArray(String json) {
+		return parse(new JsonArray(json));
+	}
+
+	public static List<FileInfo> parse(JsonArray array) {
 		List<FileInfo> result = new ArrayList<FileInfo>();
 
-		if (!json.isEmpty()) {
-			JsonArray array = new JsonArray(json);
+		for (int i = 0; i < array.length(); i++)
+			result.add(new FileInfo(array.getJsonObject(i)));
 
-			for (int i = 0; i < array.length(); i++)
-				result.add(parse(array.getJsonObject(i)));
-		}
 		return result;
 	}
 
@@ -177,10 +178,6 @@ public class FileInfo extends OBJECT implements RmiSerializable, Serializable {
 			array.add(file.toJsonObject());
 
 		return array.toString();
-	}
-
-	public static FileInfo parse(JsonObject json) {
-		return new FileInfo(json);
 	}
 
 	public JsonObject toJsonObject() {
@@ -198,12 +195,15 @@ public class FileInfo extends OBJECT implements RmiSerializable, Serializable {
 	}
 
 	public static RCollection<FileInfo.CLASS<? extends FileInfo>> z8_parse(string json) {
+		return z8_parse(org.zenframework.z8.server.base.json.parser.JsonArray.z8_parse(json));
+	}
+
+	public static RCollection<FileInfo.CLASS<? extends FileInfo>> z8_parse(
+			org.zenframework.z8.server.base.json.parser.JsonArray.CLASS<? extends org.zenframework.z8.server.base.json.parser.JsonArray> array) {
 		RCollection<FileInfo.CLASS<? extends FileInfo>> result = new RCollection<FileInfo.CLASS<? extends FileInfo>>();
 
-		JsonArray array = new JsonArray(json.get());
-
-		for (int index = 0; index < array.length(); index++) {
-			JsonObject object = array.getJsonObject(index);
+		for (int index = 0; index < array.get().z8_length().get(); index++) {
+			JsonObject object = array.get().getInternalArray().getJsonObject(index);
 
 			FileInfo.CLASS<FileInfo> fileInfo = new FileInfo.CLASS<FileInfo>();
 			fileInfo.get().set(object);
@@ -211,6 +211,13 @@ public class FileInfo extends OBJECT implements RmiSerializable, Serializable {
 			result.add(fileInfo);
 		}
 		return result;
+	}
+
+	public static FileInfo.CLASS<? extends FileInfo> z8_parse(
+			org.zenframework.z8.server.base.json.parser.JsonObject.CLASS<? extends org.zenframework.z8.server.base.json.parser.JsonObject> object) {
+		FileInfo.CLASS<FileInfo> fileInfo = new FileInfo.CLASS<FileInfo>();
+		fileInfo.get().set(object.get().getInternalObject());
+		return fileInfo;
 	}
 
 	static public string z8_toJson(RCollection<FileInfo.CLASS<? extends FileInfo>> classes) {
@@ -287,7 +294,7 @@ public class FileInfo extends OBJECT implements RmiSerializable, Serializable {
 	public void deserialize(ObjectInputStream in) throws IOException, ClassNotFoundException {
 		@SuppressWarnings("unused")
 		long version = in.readLong();
-		
+
 		instanceId = new string(RmiIO.readString(in));
 		name = new string(RmiIO.readString(in));
 		path = new string(RmiIO.readString(in));
