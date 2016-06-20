@@ -8,6 +8,7 @@ import org.zenframework.z8.server.base.form.FieldGroup;
 import org.zenframework.z8.server.base.model.sql.Select;
 import org.zenframework.z8.server.base.query.Formula;
 import org.zenframework.z8.server.base.query.Query;
+import org.zenframework.z8.server.base.table.value.aggregator.Aggregator;
 import org.zenframework.z8.server.db.DatabaseVendor;
 import org.zenframework.z8.server.db.FieldType;
 import org.zenframework.z8.server.db.sql.FormatOptions;
@@ -81,6 +82,8 @@ abstract public class Field extends Control implements IValue, IField {
 	public RCollection<Field.CLASS<? extends Field>> dependencies = new RCollection<Field.CLASS<? extends Field>>(true);
 	public RCollection<Field.CLASS<? extends Field>> columns = new RCollection<Field.CLASS<? extends Field>>(true);
 	public RLinkedHashMap<guid, RCollection<Control.CLASS<? extends Control>>> fieldsToShow = new RLinkedHashMap<guid, RCollection<Control.CLASS<? extends Control>>>();
+
+	public Aggregator.CLASS<? extends Aggregator> aggregator = null;
 
 	private primary value = null;
 	private primary originalValue = null;
@@ -173,10 +176,6 @@ abstract public class Field extends Control implements IValue, IField {
 
 	public String importPolicy() {
 		return getAttribute(IObject.FieldImportPolicy);
-	}
-
-	public String importAggregator() {
-		return getAttribute(IObject.FieldImportAggregator);
 	}
 
 	public String format(DatabaseVendor vendor, FormatOptions options) {
