@@ -3,7 +3,6 @@ package org.zenframework.z8.server.base.table.value.aggregator;
 import org.zenframework.z8.server.base.json.parser.JsonArray;
 import org.zenframework.z8.server.base.json.parser.JsonObject;
 import org.zenframework.z8.server.runtime.IObject;
-import org.zenframework.z8.server.runtime.OBJECT;
 import org.zenframework.z8.server.types.bool;
 import org.zenframework.z8.server.types.integer;
 import org.zenframework.z8.server.types.primary;
@@ -11,7 +10,7 @@ import org.zenframework.z8.server.types.string;
 
 public class JsonArrayAggregator extends Aggregator {
 
-	public static class CLASS<T extends Aggregator> extends OBJECT.CLASS<T> {
+	public static class CLASS<T extends JsonArrayAggregator> extends Aggregator.CLASS<T> {
 
 		public CLASS() {
 			this(null);
@@ -44,7 +43,7 @@ public class JsonArrayAggregator extends Aggregator {
 			if (!contains(newArray, obj) && z8_keepElement(obj).get())
 				newArray.get().z8_put(obj);
 		}
-		return new string(newArray.toString());
+		return new string(newArray.get().toString());
 	}
 
 	public bool z8_keepElement(JsonObject.CLASS<? extends JsonObject> obj) {
