@@ -193,9 +193,10 @@ public class TransportRoutes extends Table {
 	}*/
 
 	public guid setRoute(String domain, String protocol, String address, int priority, boolean active) {
-		if (!domains.get().readFirst(new Rel(domains.get().id.get(), Operation.Eq, new sql_string(domain))))
+		SystemDomains domains = SystemDomains.newInstance();
+		if (!domains.readFirst(new Rel(domains.id.get(), Operation.Eq, new sql_string(domain))))
 			throw new exception("Domain '" + domain + "' does not exist");
-		guid domainId = domains.get().recordId();
+		guid domainId = domains.recordId();
 		this.priority.get().set(priority);
 		this.active.get().set(new bool(active));
 		if (readRoute(domain, protocol, address)) {
@@ -214,6 +215,7 @@ public class TransportRoutes extends Table {
 	}
 
 	public boolean disableRoute(String domain, String protocol, String address, String description) {
+		active.get().set(new bool(false));
 		return update(getWhere(domain, protocol, address)) > 0;
 	}
 

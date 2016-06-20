@@ -96,7 +96,7 @@ public class TransportCenter extends RmiServer implements ITransportCenter {
 
 		@Override
 		public List<TransportRoute> getRoutes(String domain) {
-			return transportRoutes.readRoutes(domain, null, false);
+			return transportRoutes.readRoutes(domain, null, true);
 		}
 
 	}
