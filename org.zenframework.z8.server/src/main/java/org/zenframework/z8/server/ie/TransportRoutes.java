@@ -163,9 +163,8 @@ public class TransportRoutes extends Table {
 		sort(Arrays.<Field> asList(priority.get()), where);
 		List<TransportRoute> routes = new LinkedList<TransportRoute>();
 		while (next()) {
-			routes.add(new TransportRoute(domains.get().id.get().get().string().get(), id1.get().get().string().get(), name
-					.get().get().string().get(), TransportRoutes.this.priority.get().get().integer().getInt(),
-					TransportRoutes.this.active.get().get().bool().get()));
+			routes.add(new TransportRoute(domains.get().id.get().string().get(), id1.get().string().get(), name.get()
+					.string().get(), priority.get().integer().getInt(), active.get().bool().get()));
 		}
 		if (routes.isEmpty() && transportCenter != null && !transportCenter.isEmpty()) {
 			try {
@@ -199,15 +198,17 @@ public class TransportRoutes extends Table {
 		guid domainId = domains.recordId();
 		this.priority.get().set(priority);
 		this.active.get().set(new bool(active));
+		guid routeId;
 		if (readRoute(domain, protocol, address)) {
-			update(recordId());
-			return recordId();
+			routeId = recordId();
+			update(routeId);
 		} else {
 			this.domainLink.get().set(domainId);
 			this.id1.get().set(protocol);
 			this.name.get().set(address);
-			return create();
+			routeId = create();
 		}
+		return routeId;
 	}
 
 	public boolean disableRoute(TransportRoute route, String description) {

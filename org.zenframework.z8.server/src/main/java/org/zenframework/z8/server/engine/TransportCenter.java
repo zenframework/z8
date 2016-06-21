@@ -87,16 +87,14 @@ public class TransportCenter extends RmiServer implements ITransportCenter {
 
 	private static class TableStore implements Store {
 
-		final TransportRoutes transportRoutes = TransportRoutes.newInstance();
-
 		@Override
 		public void setRoute(String domain, String address) {
-			transportRoutes.setRoute(domain, RmiTransport.PROTOCOL, address, 0, true);
+			TransportRoutes.newInstance().setRoute(domain, RmiTransport.PROTOCOL, address, 0, true);
 		}
 
 		@Override
 		public List<TransportRoute> getRoutes(String domain) {
-			return transportRoutes.readRoutes(domain, null, true);
+			return TransportRoutes.newInstance().readRoutes(domain, null, true);
 		}
 
 	}

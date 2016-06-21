@@ -96,7 +96,7 @@ public class RequestDispatcher implements Runnable {
 		}
 	}
 
-	private static String getMemoryUsage() {
+	public static String getMemoryUsage() {
 		MemoryMXBean memoryMxBean = ManagementFactory.getMemoryMXBean();
 		MemoryUsage heap = memoryMxBean.getHeapMemoryUsage();
 
