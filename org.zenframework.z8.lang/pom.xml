@@ -1,70 +1,70 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
-    <modelVersion>4.0.0</modelVersion>
-    <artifactId>org.zenframework.z8.lang</artifactId>
-    <name>Z8 Language</name>
+	<modelVersion>4.0.0</modelVersion>
+	<artifactId>org.zenframework.z8.lang</artifactId>
+	<name>Z8 Language</name>
 
-    <parent>
-        <groupId>org.zenframework.z8</groupId>
-        <artifactId>org.zenframework.z8</artifactId>
-        <version>1.1.1</version>
-    </parent>
+	<parent>
+		<groupId>org.zenframework.z8</groupId>
+		<artifactId>org.zenframework.z8</artifactId>
+		<version>${z8.version}</version>
+	</parent>
 
-    <dependencies>
-        <dependency>
-            <groupId>org.zenframework.z8</groupId>
-            <artifactId>org.zenframework.z8.server</artifactId>
-            <version>${project.version}</version>
-            <scope>compile</scope>
-        </dependency>
-    </dependencies>
+	<dependencies>
+		<dependency>
+			<groupId>org.zenframework.z8</groupId>
+			<artifactId>org.zenframework.z8.server</artifactId>
+			<version>${project.version}</version>
+			<scope>compile</scope>
+		</dependency>
+	</dependencies>
 
-    <build>
+	<build>
 
-        <plugins>
-            <plugin>
-                <groupId>org.zenframework.z8</groupId>
-                <artifactId>z8-maven-plugin</artifactId>
-                <version>${project.version}</version>
-                <executions>
-                    <execution>
-                        <id>compile-bl</id>
-                        <goals>
-                            <goal>compile-bl</goal>
-                        </goals>
-                    </execution>
-                    <execution>
-                        <id>add-generated</id>
-                        <goals>
-                            <goal>add-generated</goal>
-                        </goals>
-                    </execution>
-                    <execution>
-                        <id>archive-bl</id>
-                        <goals>
-                            <goal>archive-bl</goal>
-                        </goals>
-                    </execution>
-                    <execution>
-                        <id>clean</id>
-                        <goals>
-                            <goal>clean</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <artifactId>maven-compiler-plugin</artifactId>
-            </plugin>
-            <plugin>
-                <artifactId>maven-jar-plugin</artifactId>
-            </plugin>
-            <plugin>
-                <artifactId>maven-source-plugin</artifactId>
-            </plugin>
-        </plugins>
+		<plugins>
+			<plugin>
+				<groupId>org.zenframework.z8</groupId>
+				<artifactId>z8-maven-plugin</artifactId>
+				<version>${project.version}</version>
+				<executions>
+					<execution>
+						<id>compile-bl</id>
+						<goals>
+							<goal>compile-bl</goal>
+						</goals>
+					</execution>
+					<execution>
+						<id>add-generated</id>
+						<goals>
+							<goal>add-generated</goal>
+						</goals>
+					</execution>
+					<execution>
+						<id>archive-bl</id>
+						<goals>
+							<goal>archive-bl</goal>
+						</goals>
+					</execution>
+					<execution>
+						<id>clean</id>
+						<goals>
+							<goal>clean</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<artifactId>maven-compiler-plugin</artifactId>
+			</plugin>
+			<plugin>
+				<artifactId>maven-jar-plugin</artifactId>
+			</plugin>
+			<plugin>
+				<artifactId>maven-source-plugin</artifactId>
+			</plugin>
+		</plugins>
 
-    </build>
+	</build>
 
 </project>

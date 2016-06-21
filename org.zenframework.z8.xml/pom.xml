@@ -1,73 +1,67 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
-    <modelVersion>4.0.0</modelVersion>
-    <artifactId>org.zenframework.z8.xml</artifactId>
-    <name>Z8 XML API</name>
-    <packaging>jar</packaging>
+	<modelVersion>4.0.0</modelVersion>
+	<artifactId>org.zenframework.z8.xml</artifactId>
+	<name>Z8 XML API</name>
+	<packaging>jar</packaging>
 
-    <parent>
-        <groupId>org.zenframework.z8</groupId>
-        <artifactId>org.zenframework.z8</artifactId>
-        <version>1.1.1</version>
-    </parent>
+	<parent>
+		<groupId>org.zenframework.z8</groupId>
+		<artifactId>org.zenframework.z8</artifactId>
+		<version>${z8.version}</version>
+	</parent>
 
-    <properties>
-    </properties>
+	<build>
 
-    <dependencies>
-    </dependencies>
+		<plugins>
+			<plugin>
+				<artifactId>maven-compiler-plugin</artifactId>
+			</plugin>
+			<plugin>
+				<artifactId>maven-jar-plugin</artifactId>
+			</plugin>
+			<plugin>
+				<artifactId>maven-source-plugin</artifactId>
+			</plugin>
+			<plugin>
+				<groupId>org.jvnet.jaxb2.maven2</groupId>
+				<artifactId>maven-jaxb2-plugin</artifactId>
+				<version>0.12.3</version>
+				<configuration>
+					<schemaDirectory>src/main/resources/xsd</schemaDirectory>
+				</configuration>
+				<executions>
+					<execution>
+						<id>generate-z8-ie</id>
+						<goals>
+							<goal>generate</goal>
+						</goals>
+						<configuration>
+							<generatePackage>org.zenframework.z8.ie.xml</generatePackage>
+							<schemaIncludes>
+								<include>z8-ie.xsd</include>
+							</schemaIncludes>
+							<generateDirectory>${project.build.directory}/generated-sources/z8-ie-xml</generateDirectory>
+						</configuration>
+					</execution>
+					<execution>
+						<id>generate-z8-runtime</id>
+						<goals>
+							<goal>generate</goal>
+						</goals>
+						<configuration>
+							<generatePackage>org.zenframework.z8.runtime.xml</generatePackage>
+							<schemaIncludes>
+								<include>z8-runtime.xsd</include>
+							</schemaIncludes>
+							<generateDirectory>${project.build.directory}/generated-sources/z8-runtime-xml</generateDirectory>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
 
-    <build>
-
-        <plugins>
-            <plugin>
-                <artifactId>maven-compiler-plugin</artifactId>
-            </plugin>
-            <plugin>
-                <artifactId>maven-jar-plugin</artifactId>
-            </plugin>
-            <plugin>
-                <artifactId>maven-source-plugin</artifactId>
-            </plugin>
-            <plugin>
-                <groupId>org.jvnet.jaxb2.maven2</groupId>
-                <artifactId>maven-jaxb2-plugin</artifactId>
-                <version>0.12.3</version>
-                <configuration>
-                    <schemaDirectory>src/main/resources/xsd</schemaDirectory>
-                </configuration>
-                <executions>
-                    <execution>
-                        <id>generate-z8-ie</id>
-                        <goals>
-                            <goal>generate</goal>
-                        </goals>
-                        <configuration>
-                            <generatePackage>org.zenframework.z8.ie.xml</generatePackage>
-                            <schemaIncludes>
-                                <include>z8-ie.xsd</include>
-                            </schemaIncludes>
-                            <generateDirectory>${project.build.directory}/generated-sources/z8-ie-xml</generateDirectory>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>generate-z8-runtime</id>
-                        <goals>
-                            <goal>generate</goal>
-                        </goals>
-                        <configuration>
-                            <generatePackage>org.zenframework.z8.runtime.xml</generatePackage>
-                            <schemaIncludes>
-                                <include>z8-runtime.xsd</include>
-                            </schemaIncludes>
-                            <generateDirectory>${project.build.directory}/generated-sources/z8-runtime-xml</generateDirectory>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-        </plugins>
-
-    </build>
+	</build>
 
 </project>
