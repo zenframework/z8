@@ -6,11 +6,14 @@
 	<name>Z8 Platform</name>
 	<groupId>org.zenframework.z8</groupId>
 	<artifactId>org.zenframework.z8</artifactId>
-	<version>1.1.1</version>
+	<version>${z8.version}</version>
 	<packaging>pom</packaging>
 
 	<properties>
 
+		<!-- Z8 project version -->
+		<z8.version>1.1.1</z8.version>
+		
 		<!-- Sources version -->
 		<compiler.source.version>1.6</compiler.source.version>
 		<compiler.target.version>1.6</compiler.target.version>
