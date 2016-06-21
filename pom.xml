@@ -52,6 +52,13 @@
 	<profiles>
 
 		<profile>
+			<id>snapshot</id>
+			<properties>
+				<z8.version>1.2.0-SNAPSHOT</z8.version>
+			</properties>
+		</profile>
+
+		<profile>
 			<id>modules-pde</id>
 			<properties>
 				<z8.oda.driver.packaging>eclipse-plugin</z8.oda.driver.packaging>
