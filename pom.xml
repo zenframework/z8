@@ -13,7 +13,7 @@
 
 		<!-- Z8 project version -->
 		<z8.version>1.1.1</z8.version>
-		
+
 		<!-- Sources version -->
 		<compiler.source.version>1.6</compiler.source.version>
 		<compiler.target.version>1.6</compiler.target.version>
@@ -124,6 +124,10 @@
 			<id>z8-repository</id>
 			<url>http://repo-zenfw.rhcloud.com/repository/internal/</url>
 		</repository>
+		<snapshotRepository>
+			<id>z8-snapshots</id>
+			<url>http://repo-zenfw.rhcloud.com/repository/snapshots/</url>
+		</snapshotRepository>
 	</distributionManagement>
 
 	<repositories>
@@ -140,32 +144,7 @@
 			<id>maven-us.nuxeo.org</id>
 			<url>https://maven-us.nuxeo.org/nexus/content/repositories/public/</url>
 		</repository>
-		<repository>
-			<id>z8-repository</id>
-			<name>Z8 Archiva Managed Internal Repository</name>
-			<url>http://repo-zenfw.rhcloud.com/repository/internal/</url>
-			<releases>
-				<enabled>true</enabled>
-			</releases>
-			<snapshots>
-				<enabled>false</enabled>
-			</snapshots>
-		</repository>
 	</repositories>
-
-	<pluginRepositories>
-		<pluginRepository>
-			<id>z8-repository</id>
-			<name>Z8 Archiva Managed Internal Repository</name>
-			<url>http://repo-zenfw.rhcloud.com/repository/internal/</url>
-			<releases>
-				<enabled>true</enabled>
-			</releases>
-			<snapshots>
-				<enabled>false</enabled>
-			</snapshots>
-		</pluginRepository>
-	</pluginRepositories>
 
 	<dependencies>
 
