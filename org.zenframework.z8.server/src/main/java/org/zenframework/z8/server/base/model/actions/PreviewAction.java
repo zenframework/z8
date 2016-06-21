@@ -32,7 +32,10 @@ public class PreviewAction extends Action {
 		guid recordId = getRecordIdParameter();
 		Query query = getQuery();
 		String fieldId = getFieldParameter();
-		Field field = query.getFieldById(fieldId);
+		Field field = query.findFieldById(fieldId);
+
+		if (field == null)
+			throw new RuntimeException("Field '" + fieldId + "' does not exist in query '" + requestId + "'");
 
 		if (!query.readRecord(recordId, Arrays.<Field> asList(field)))
 			throw new RuntimeException("Record '" + recordId + "' does not exist in '" + query.getIndex() + "'");
@@ -41,7 +44,7 @@ public class PreviewAction extends Action {
 
 		if (attachments.size() == 0)
 			throw new RuntimeException("'" + actionParameters().requestId + "." + fieldId + "' is empty");
-		
+
 		List<File> converted = new ArrayList<File>(attachments.size());
 		Files files = Files.newInstance();
 		String previewRelativePath = null;
