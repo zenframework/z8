@@ -301,7 +301,7 @@ public class JsonObject extends HashMap<String, Object> {
      *                duplicated key.
      */
     public JsonObject(String source) throws JsonException {
-        this(new JsonTokener(source));
+        this(new JsonTokener(source == null || source.trim().isEmpty() ? "{}" : source));
     }
 
     /**

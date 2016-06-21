@@ -26,6 +26,7 @@ import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.runtime.ServerRuntime;
 import org.zenframework.z8.server.types.bool;
 import org.zenframework.z8.server.types.datetime;
+import org.zenframework.z8.server.types.exception;
 import org.zenframework.z8.server.types.guid;
 import org.zenframework.z8.server.types.integer;
 import org.zenframework.z8.server.types.string;
@@ -148,17 +149,11 @@ public class TransportRoutes extends Table {
 	}
 
 	public boolean readRoute(guid domain, String protocol, String address) {
-		SqlToken where = new And(new And(new Rel(this.domainLink.get(), Operation.Eq, new sql_guid(domain)), new Rel(
-				this.id1.get(), Operation.Eq, new sql_string(protocol))), new Rel(this.name.get(), Operation.Eq,
-				new sql_string(address)));
-		return readFirst(where);
+		return readFirst(getWhere(domain, protocol, address));
 	}
 
 	public boolean readRoute(String domain, String protocol, String address) {
-		SqlToken where = new And(new And(new Rel(this.domains.get().id.get(), Operation.Eq, new sql_string(domain)),
-				new Rel(this.id1.get(), Operation.Eq, new sql_string(protocol))), new Rel(this.name.get(), Operation.Eq,
-				new sql_string(address)));
-		return readFirst(where);
+		return readFirst(getWhere(domain, protocol, address));
 	}
 
 	public List<TransportRoute> readRoutes(String domain, String transportCenter, boolean activeOnly) {
@@ -168,9 +163,8 @@ public class TransportRoutes extends Table {
 		sort(Arrays.<Field> asList(priority.get()), where);
 		List<TransportRoute> routes = new LinkedList<TransportRoute>();
 		while (next()) {
-			routes.add(new TransportRoute(recordId(), domainLink.get().get().guid(), domains.get().id.get().get().string()
-					.get(), id1.get().get().string().get(), name.get().get().string().get(), TransportRoutes.this.priority
-					.get().get().integer().getInt(), TransportRoutes.this.active.get().get().bool().get()));
+			routes.add(new TransportRoute(domains.get().id.get().string().get(), id1.get().string().get(), name.get()
+					.string().get(), priority.get().integer().getInt(), active.get().bool().get()));
 		}
 		if (routes.isEmpty() && transportCenter != null && !transportCenter.isEmpty()) {
 			try {
@@ -186,8 +180,7 @@ public class TransportRoutes extends Table {
 	}
 
 	public guid setRoute(TransportRoute route) {
-		return setRoute(route.getRouteId(), route.getDomainId(), route.getDomain(), route.getProtocol(), route.getAddress(),
-				route.getPriority(), route.isActive());
+		return setRoute(route.getDomain(), route.getProtocol(), route.getAddress(), route.getPriority(), route.isActive());
 	}
 
 	/*public guid setRoute(String domain, String protocol, String address, int priority, boolean active) {
@@ -198,31 +191,33 @@ public class TransportRoutes extends Table {
 		}
 	}*/
 
-	public guid setRoute(guid routeId, guid domainId, String domain, String protocol, String address, int priority,
-			boolean active) {
-		if (!domains.get().hasRecord(domainId)) {
-			domains.get().id.get().set(new string(domain));
-			domains.get().recordId.get().set(domainId);
-			domains.get().create();
-		}
+	public guid setRoute(String domain, String protocol, String address, int priority, boolean active) {
+		SystemDomains domains = SystemDomains.newInstance();
+		if (!domains.readFirst(new Rel(domains.id.get(), Operation.Eq, new sql_string(domain))))
+			throw new exception("Domain '" + domain + "' does not exist");
+		guid domainId = domains.recordId();
 		this.priority.get().set(priority);
 		this.active.get().set(new bool(active));
+		guid routeId;
 		if (readRoute(domain, protocol, address)) {
-			update(recordId());
-			return recordId();
+			routeId = recordId();
+			update(routeId);
 		} else {
 			this.domainLink.get().set(domainId);
 			this.id1.get().set(protocol);
 			this.name.get().set(address);
-			this.recordId.get().set(routeId);
-			return create();
+			routeId = create();
 		}
+		return routeId;
 	}
 
-	public boolean disableRoute(guid routeId, String description) {
-		this.active.get().set(new bool(false));
-		this.description.get().set(new string(description));
-		return update(routeId) > 0;
+	public boolean disableRoute(TransportRoute route, String description) {
+		return disableRoute(route.getDomain(), route.getProtocol(), route.getAddress(), description);
+	}
+
+	public boolean disableRoute(String domain, String protocol, String address, String description) {
+		active.get().set(new bool(false));
+		return update(getWhere(domain, protocol, address)) > 0;
 	}
 
 	public void checkInactiveRoutes() {
@@ -260,17 +255,27 @@ public class TransportRoutes extends Table {
 		return new bool(readRoute(domain, protocol.get(), address.get()));
 	}
 
-	public guid z8_setRoute(guid routeId, guid domainId, string domain, string protocol, string address, integer priority,
-			bool active) {
-		return setRoute(routeId, domainId, domain.get(), protocol.get(), address.get(), priority.getInt(), active.get());
+	public guid z8_setRoute(string domain, string protocol, string address, integer priority, bool active) {
+		return setRoute(domain.get(), protocol.get(), address.get(), priority.getInt(), active.get());
 	}
 
-	public bool z8_disableRoute(guid routeId, string description) {
-		return new bool(disableRoute(routeId, description.get()));
+	public bool z8_disableRoute(string domain, string protocol, string address, string description) {
+		return new bool(disableRoute(domain.get(), protocol.get(), address.get(), description.get()));
 	}
 
 	public static TransportRoutes newInstance() {
 		return new CLASS<TransportRoutes>().get();
+	}
+
+	private SqlToken getWhere(String domain, String protocol, String address) {
+		return new And(new And(new Rel(this.domains.get().id.get(), Operation.Eq, new sql_string(domain)), new Rel(
+				this.id1.get(), Operation.Eq, new sql_string(protocol))), new Rel(this.name.get(), Operation.Eq,
+				new sql_string(address)));
+	}
+
+	private SqlToken getWhere(guid domain, String protocol, String address) {
+		return new And(new And(new Rel(this.domainLink.get(), Operation.Eq, new sql_guid(domain)), new Rel(this.id1.get(),
+				Operation.Eq, new sql_string(protocol))), new Rel(this.name.get(), Operation.Eq, new sql_string(address)));
 	}
 
 }

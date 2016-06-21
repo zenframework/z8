@@ -1,0 +1,3 @@
+
+[native "org.zenframework.z8.server.base.table.value.aggregator.AttachmentsAggregator"]
+class AttachmentsAggregator extends JsonArrayAggregator {}

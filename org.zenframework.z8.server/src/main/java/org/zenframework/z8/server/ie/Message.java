@@ -17,6 +17,7 @@ import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.runtime.OBJECT;
 import org.zenframework.z8.server.runtime.RCollection;
 import org.zenframework.z8.server.runtime.RLinkedHashMap;
+import org.zenframework.z8.server.types.datetime;
 import org.zenframework.z8.server.types.exception;
 import org.zenframework.z8.server.types.guid;
 import org.zenframework.z8.server.types.primary;
@@ -36,6 +37,7 @@ public class Message extends OBJECT implements RmiSerializable, Serializable {
 
 	public static final string TYPE_FILE_REQUEST = new string("file.request");
 	public static final string TYPE_FILE_CONTENT = new string("file.content");
+	public static final string TYPE_FILE_REFERENCE = new string("file.reference");
 
 	public static class CLASS<T extends Message> extends OBJECT.CLASS<T> {
 		public CLASS() {
@@ -55,9 +57,11 @@ public class Message extends OBJECT implements RmiSerializable, Serializable {
 	}
 
 	private UUID id = UUID.randomUUID();
+	private datetime time = new datetime();
 	private String sender;
 	private String address;
 
+	private String xml;
 	private ExportEntry exportEntry;
 	private RCollection<FileInfo> files = new RCollection<FileInfo>(true);
 
@@ -73,6 +77,14 @@ public class Message extends OBJECT implements RmiSerializable, Serializable {
 
 	public void setId(UUID id) {
 		this.id = id;
+	}
+
+	public datetime getTime() {
+		return time;
+	}
+
+	public void setTime(datetime time) {
+		this.time = time;
 	}
 
 	public String getAddress() {
@@ -91,7 +103,22 @@ public class Message extends OBJECT implements RmiSerializable, Serializable {
 		this.sender = sender;
 	}
 
+	public String getXml() {
+		if (xml == null && exportEntry != null) {
+			xml = IeUtil.marshalExportEntry(exportEntry);
+		}
+		return xml;
+	}
+
+	public void setXml(String xml) {
+		this.xml = xml;
+		this.exportEntry = null;
+	}
+
 	public ExportEntry getExportEntry() {
+		if (exportEntry == null && xml != null) {
+			exportEntry = IeUtil.unmarshalExportEntry(xml);
+		}
 		if (exportEntry == null) {
 			exportEntry = new ExportEntry();
 			exportEntry.setRecords(new ExportEntry.Records());
@@ -103,6 +130,7 @@ public class Message extends OBJECT implements RmiSerializable, Serializable {
 
 	public void setExportEntry(ExportEntry exportEntry) {
 		this.exportEntry = exportEntry;
+		this.xml = null;
 	}
 
 	public List<FileInfo> getFiles() {
@@ -191,9 +219,10 @@ public class Message extends OBJECT implements RmiSerializable, Serializable {
 		ObjectOutputStream objects = new ObjectOutputStream(bytes);
 
 		RmiIO.writeUUID(objects, id);
+		RmiIO.writeDatetime(objects, time);
 		RmiIO.writeString(objects, sender);
 		RmiIO.writeString(objects, address);
-		RmiIO.writeString(objects, IeUtil.marshalExportEntry(getExportEntry()));
+		RmiIO.writeString(objects, getXml());
 
 		objects.close();
 
@@ -212,9 +241,10 @@ public class Message extends OBJECT implements RmiSerializable, Serializable {
 		ObjectInputStream objects = new ObjectInputStream(bytes);
 
 		id = RmiIO.readUUID(objects);
+		time = RmiIO.readDatetime(objects);
 		sender = RmiIO.readString(objects);
 		address = RmiIO.readString(objects);
-		exportEntry = IeUtil.unmarshalExportEntry(RmiIO.readString(objects));
+		xml = RmiIO.readString(objects);
 
 		objects.close();
 
@@ -247,7 +277,7 @@ public class Message extends OBJECT implements RmiSerializable, Serializable {
 
 	public string z8_getXml() {
 		try {
-			return new string(IeUtil.marshalExportEntry(getExportEntry()));
+			return new string(getXml());
 		} catch (Throwable e) {
 			throw new exception(e);
 		}

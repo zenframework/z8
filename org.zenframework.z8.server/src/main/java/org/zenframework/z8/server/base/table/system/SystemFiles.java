@@ -2,7 +2,6 @@ package org.zenframework.z8.server.base.table.system;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
@@ -13,7 +12,6 @@ import java.util.List;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.zenframework.z8.server.base.file.FileInfo;
-import org.zenframework.z8.server.base.file.FilesFactory;
 import org.zenframework.z8.server.base.file.Folders;
 import org.zenframework.z8.server.base.file.InputOnlyFileItem;
 import org.zenframework.z8.server.base.query.Query;
@@ -46,6 +44,7 @@ import org.zenframework.z8.server.resources.Resources;
 import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.runtime.RCollection;
 import org.zenframework.z8.server.runtime.ServerRuntime;
+import org.zenframework.z8.server.types.datetime;
 import org.zenframework.z8.server.types.guid;
 import org.zenframework.z8.server.types.string;
 import org.zenframework.z8.server.types.sql.sql_string;
@@ -277,6 +276,8 @@ public class SystemFiles extends Table {
 			path.get().set(fileInfo.path);
 			if (fileInfo.id == null || fileInfo.id.isNull())
 				fileInfo.id = guid.create();
+			if (fileInfo.time != null && !fileInfo.time.equals(datetime.MIN))
+				createdAt.get().set(fileInfo.time);
 			create(fileInfo.id);
 		} else if (getStatus() != FileInfo.Status.LOCAL && fileInfo.file != null) {
 			id1.get().set(new string(FileInfo.Status.LOCAL.getValue()));
@@ -394,7 +395,7 @@ public class SystemFiles extends Table {
 			} catch (TransportException e) {
 				LOG.info("Can't get remote file '" + fileInfo + "' from '" + route.getTransportUrl() + "'", e);
 				transport.close();
-				transportRoutes.disableRoute(route.getRouteId(), ErrorUtils.getMessage(e));
+				transportRoutes.disableRoute(route, ErrorUtils.getMessage(e));
 				continue;
 			}
 		}
@@ -422,12 +423,7 @@ public class SystemFiles extends Table {
 	}
 
 	private static void fillFileInfoFile(FileInfo fileInfo, File path) throws IOException {
-		if (FileInfo.isDefaultWrite()) {
-			fileInfo.file = FilesFactory.createFileItem(fileInfo.name.get());
-			IOUtils.copy(new FileInputStream(path), fileInfo.getOutputStream());
-		} else {
-			fileInfo.file = new InputOnlyFileItem(path, fileInfo.name.get());
-		}
+		fileInfo.file = new InputOnlyFileItem(path, fileInfo.name.get());
 	}
 
 }

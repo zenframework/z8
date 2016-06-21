@@ -1,5 +1,6 @@
 package org.zenframework.z8.server.types;
 
+import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.GregorianCalendar;
@@ -17,7 +18,8 @@ public final class date extends primary {
 
 	private GregorianCalendar m_value = new GregorianCalendar();
 
-	final static public String defaultMask = "dd/MM/yyyy";
+	final static public DateFormat defaultMasks[] = { new SimpleDateFormat("dd/MM/yyyy"),
+			new SimpleDateFormat("dd-MM-yyyy"), new SimpleDateFormat("dd.MM.yyyy") };
 	final static public date MIN = new date(1899, 12, 31);
 	final static public date MAX = new date(4712, 12, 31);
 
@@ -56,28 +58,35 @@ public final class date extends primary {
 	}
 
 	public date(String s) {
-		if (s != null && !s.isEmpty()) {
-			String[] values = s.split(" ")[0].split("/");
-
-			int day = java.lang.Integer.parseInt(values[0]);
-			int month = java.lang.Integer.parseInt(values[1]);
-			int year = java.lang.Integer.parseInt(values[2]);
-
-			set(year, month, day);
-		} else
-			set(MIN);
+		this(s, defaultMasks);
 	}
 
 	public date(String s, String format) {
+		set(s, new SimpleDateFormat(format));
+	}
+
+	public date(String s, DateFormat format) {
 		set(s, format);
 	}
 
 	public date(String s, String[] formats) {
 		for (int i = 0; i < formats.length; i++) {
 			try {
-				set(s, formats[i]);
+				set(s, new SimpleDateFormat(formats[i]));
+				return;
 			} catch (Throwable e) {}
 		}
+		set(MIN);
+	}
+
+	public date(String s, DateFormat[] formats) {
+		for (int i = 0; i < formats.length; i++) {
+			try {
+				set(s, formats[i]);
+				return;
+			} catch (Throwable e) {}
+		}
+		set(MIN);
 	}
 
 	@Override
@@ -128,12 +137,12 @@ public final class date extends primary {
 	}
 
 	@SuppressWarnings("deprecation")
-	public void set(String s, String format) {
+	public void set(String s, DateFormat format) {
 		try {
 			if (s.isEmpty()) {
 				set(date.MIN);
 			} else {
-				java.util.Date date = new SimpleDateFormat(format).parse(s);
+				java.util.Date date = format.parse(s);
 				set(1900 + date.getYear(), date.getMonth() + 1, date.getDate());
 			}
 		} catch (ParseException e) {
@@ -143,11 +152,15 @@ public final class date extends primary {
 
 	@Override
 	public String toString() {
-		return format(defaultMask);
+		return format(defaultMasks[0]);
 	}
 
 	public String format(String format) {
-		return new SimpleDateFormat(format).format(m_value.getTime());
+		return format(new SimpleDateFormat(format));
+	}
+
+	public String format(DateFormat format) {
+		return format.format(m_value.getTime());
 	}
 
 	@Override

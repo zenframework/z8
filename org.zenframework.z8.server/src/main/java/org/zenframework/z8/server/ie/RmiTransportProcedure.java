@@ -28,11 +28,8 @@ public class RmiTransportProcedure extends Procedure {
 
 	private static final Log LOG = LogFactory.getLog(RmiTransportProcedure.class);
 
-	public static final guid PROCEDURE_ID = new guid("E43F94C6-E918-405D-898C-B915CC51FFDF");
-
-	public final ExportMessages messages = ExportMessages.newInstance();
-
-	public final TransportContext.CLASS<TransportContext> context = new TransportContext.CLASS<TransportContext>();
+	protected final ExportMessages messages = ExportMessages.newInstance();
+	protected final TransportContext.CLASS<TransportContext> context = new TransportContext.CLASS<TransportContext>();
 
 	public static class CLASS<T extends RmiTransportProcedure> extends Procedure.CLASS<T> {
 		public CLASS(IObject container) {
@@ -71,7 +68,7 @@ public class RmiTransportProcedure extends Procedure {
 
 		@Override
 		public void run() {
-			Collection<guid> ids = messages.getExportMessages(sender, address);
+			Collection<guid> ids = messages.getExportMessages(sender, address, null);
 
 			for (guid id : ids) {
 				Message message = messages.getMessage(id);

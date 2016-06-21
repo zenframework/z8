@@ -19,7 +19,7 @@ public final class datespan extends primary {
 	static final public long TicksPerHour = TicksPerMinute * 60;
 	static final public long TicksPerDay = TicksPerHour * 24;
 
-	static final public String defaultMask = "dd HH:mm:ss";
+	static final public DatespanFormat defaultMask = new DatespanFormat("dd HH:mm:ss");
 
 	public datespan() {}
 
@@ -37,9 +37,9 @@ public final class datespan extends primary {
 
 	public datespan(String s) {
 		try {
-			set(new DatespanFormat(defaultMask).parse(s));
+			set(defaultMask.parse(s));
 		} catch (ParseException e) {
-			throw new MaskParseException(new string(s), defaultMask);
+			throw new MaskParseException(new string(s), defaultMask.toString());
 		}
 	}
 
@@ -187,6 +187,10 @@ public final class datespan extends primary {
 
 	public String format(String frm) {
 		return new DatespanFormat(frm).format(this).toString();
+	}
+
+	public String format(DatespanFormat frm) {
+		return frm.format(this).toString();
 	}
 
 	@Override

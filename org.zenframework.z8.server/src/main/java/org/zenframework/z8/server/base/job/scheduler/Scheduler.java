@@ -9,6 +9,7 @@ import org.zenframework.z8.server.base.table.value.DatetimeField;
 import org.zenframework.z8.server.base.table.value.Field;
 import org.zenframework.z8.server.base.table.value.IntegerField;
 import org.zenframework.z8.server.base.table.value.StringField;
+import org.zenframework.z8.server.base.table.value.TextField;
 import org.zenframework.z8.server.engine.ApplicationServer;
 import org.zenframework.z8.server.engine.Database;
 import org.zenframework.z8.server.engine.Z8Context;
@@ -77,6 +78,7 @@ public class Scheduler implements Runnable {
 
 		Collection<Field> fields = new ArrayList<Field>();
 
+		TextField settings = tasksTable.description.get();
 		DatetimeField from = tasksTable.from.get();
 		DatetimeField till = tasksTable.till.get();
 		IntegerField repeat = tasksTable.repeat.get();
@@ -86,6 +88,7 @@ public class Scheduler implements Runnable {
 		StringField jobName = tasksTable.jobs.get().name.get();
 		StringField login = tasksTable.users.get().name.get();
 
+		fields.add(settings);
 		fields.add(from);
 		fields.add(till);
 		fields.add(repeat);
@@ -111,6 +114,7 @@ public class Scheduler implements Runnable {
 			task.name = jobName.string().get();
 			task.login = login.string().get();
 			task.from = from.datetime();
+			task.settings = settings.string().get();
 			task.till = till.datetime();
 			task.lastStarted = lastStarted.datetime();
 			task.repeat = repeat.integer().getInt();

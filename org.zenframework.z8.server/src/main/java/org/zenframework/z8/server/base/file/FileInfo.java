@@ -20,8 +20,10 @@ import org.zenframework.z8.server.resources.Resources;
 import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.runtime.OBJECT;
 import org.zenframework.z8.server.runtime.RCollection;
+import org.zenframework.z8.server.runtime.RLinkedHashMap;
 import org.zenframework.z8.server.types.datetime;
 import org.zenframework.z8.server.types.guid;
+import org.zenframework.z8.server.types.integer;
 import org.zenframework.z8.server.types.string;
 import org.zenframework.z8.server.utils.IOUtils;
 
@@ -29,26 +31,17 @@ public class FileInfo extends OBJECT implements RmiSerializable, Serializable {
 
 	private static final long serialVersionUID = -2542688680678439014L;
 
-	private static final String PROP_DEFAULT_READ = "z8.serialization.FileInfo.defaultReadObject";
-	private static final String PROP_DEFAULT_WRITE = "z8.serialization.FileInfo.defaultWriteObject";
-
-	private static final boolean DEFAULT_READ = Boolean.parseBoolean(System.getProperty(PROP_DEFAULT_READ));
-	private static final boolean DEFAULT_WRITE = Boolean.parseBoolean(System.getProperty(PROP_DEFAULT_WRITE));
-
-	public static boolean isDefaultRead() {
-		return DEFAULT_READ;
-	}
-
-	public static boolean isDefaultWrite() {
-		return DEFAULT_WRITE;
-	}
-
-	public string instanceId = new string();
 	public string name = new string();
 	public string path = new string();
-	public string type = new string();
 	public datetime time = new datetime();
+	public integer size = new integer();
 	public guid id = new guid();
+	public string instanceId = new string();
+
+	public RLinkedHashMap<string, string> details = new RLinkedHashMap<string, string>();
+
+	//	public string type = new string();
+	//	public string description = new string();
 
 	public FileItem file;
 	public Status status = Status.LOCAL;
@@ -145,11 +138,12 @@ public class FileInfo extends OBJECT implements RmiSerializable, Serializable {
 		this.instanceId = fileInfo.instanceId;
 		this.name = fileInfo.name;
 		this.path = fileInfo.path;
-		this.type = fileInfo.type;
 		this.time = fileInfo.time;
+		this.size = fileInfo.size;
 		this.id = fileInfo.id;
 		this.file = fileInfo.file;
 		this.status = fileInfo.status;
+		this.details = fileInfo.details;
 		this.json = fileInfo.json;
 	}
 
@@ -157,7 +151,7 @@ public class FileInfo extends OBJECT implements RmiSerializable, Serializable {
 		path = new string(json.getString(json.has(Json.file) ? Json.file : Json.path));
 		name = new string(json.has(Json.name) ? json.getString(Json.name) : "");
 		time = new datetime(json.has(Json.time) ? json.getString(Json.time) : "");
-		type = new string(json.has(Json.type) ? json.getString(Json.type) : "");
+		size = new integer(json.has(Json.size) ? json.getString(Json.size) : "");
 		id = new guid(json.has(Json.id) ? json.getString(Json.id) : "");
 		instanceId = new string(json.has(Json.instanceId) ? json.getString(Json.instanceId) : "");
 
@@ -165,14 +159,15 @@ public class FileInfo extends OBJECT implements RmiSerializable, Serializable {
 	}
 
 	public static List<FileInfo> parseArray(String json) {
+		return parse(new JsonArray(json));
+	}
+
+	public static List<FileInfo> parse(JsonArray array) {
 		List<FileInfo> result = new ArrayList<FileInfo>();
 
-		if (!json.isEmpty()) {
-			JsonArray array = new JsonArray(json);
+		for (int i = 0; i < array.length(); i++)
+			result.add(new FileInfo(array.getJsonObject(i)));
 
-			for (int i = 0; i < array.length(); i++)
-				result.add(parse(array.getJsonObject(i)));
-		}
 		return result;
 	}
 
@@ -185,30 +180,30 @@ public class FileInfo extends OBJECT implements RmiSerializable, Serializable {
 		return array.toString();
 	}
 
-	public static FileInfo parse(JsonObject json) {
-		return new FileInfo(json);
-	}
-
 	public JsonObject toJsonObject() {
 		if (json == null) {
 			json = new JsonObject();
 			json.put(Json.name, name);
-			// json.put(Json.time, time);
-			json.put(Json.type, type);
+			json.put(Json.time, time);
+			json.put(Json.size, size);
 			json.put(Json.path, path);
 			json.put(Json.id, id);
 			json.put(Json.instanceId, instanceId);
+			json.put(Json.details, this.details);
 		}
 		return json;
 	}
 
 	public static RCollection<FileInfo.CLASS<? extends FileInfo>> z8_parse(string json) {
+		return z8_parse(org.zenframework.z8.server.base.json.parser.JsonArray.z8_parse(json));
+	}
+
+	public static RCollection<FileInfo.CLASS<? extends FileInfo>> z8_parse(
+			org.zenframework.z8.server.base.json.parser.JsonArray.CLASS<? extends org.zenframework.z8.server.base.json.parser.JsonArray> array) {
 		RCollection<FileInfo.CLASS<? extends FileInfo>> result = new RCollection<FileInfo.CLASS<? extends FileInfo>>();
 
-		JsonArray array = new JsonArray(json.get());
-
-		for (int index = 0; index < array.length(); index++) {
-			JsonObject object = array.getJsonObject(index);
+		for (int index = 0; index < array.get().z8_length().get(); index++) {
+			JsonObject object = array.get().getInternalArray().getJsonObject(index);
 
 			FileInfo.CLASS<FileInfo> fileInfo = new FileInfo.CLASS<FileInfo>();
 			fileInfo.get().set(object);
@@ -216,6 +211,13 @@ public class FileInfo extends OBJECT implements RmiSerializable, Serializable {
 			result.add(fileInfo);
 		}
 		return result;
+	}
+
+	public static FileInfo.CLASS<? extends FileInfo> z8_parse(
+			org.zenframework.z8.server.base.json.parser.JsonObject.CLASS<? extends org.zenframework.z8.server.base.json.parser.JsonObject> object) {
+		FileInfo.CLASS<FileInfo> fileInfo = new FileInfo.CLASS<FileInfo>();
+		fileInfo.get().set(object.get().getInternalObject());
+		return fileInfo;
 	}
 
 	static public string z8_toJson(RCollection<FileInfo.CLASS<? extends FileInfo>> classes) {
@@ -268,8 +270,8 @@ public class FileInfo extends OBJECT implements RmiSerializable, Serializable {
 		RmiIO.writeString(out, instanceId);
 		RmiIO.writeString(out, name);
 		RmiIO.writeString(out, path);
-		RmiIO.writeString(out, type);
 		RmiIO.writeDatetime(out, time);
+		RmiIO.writeInteger(out, size);
 		RmiIO.writeGuid(out, id);
 
 		out.writeBoolean(file != null);
@@ -292,11 +294,11 @@ public class FileInfo extends OBJECT implements RmiSerializable, Serializable {
 	public void deserialize(ObjectInputStream in) throws IOException, ClassNotFoundException {
 		@SuppressWarnings("unused")
 		long version = in.readLong();
-		
+
 		instanceId = new string(RmiIO.readString(in));
 		name = new string(RmiIO.readString(in));
 		path = new string(RmiIO.readString(in));
-		type = new string(RmiIO.readString(in));
+		size = RmiIO.readInteger(in);
 		time = RmiIO.readDatetime(in);
 		id = RmiIO.readGuid(in);
 

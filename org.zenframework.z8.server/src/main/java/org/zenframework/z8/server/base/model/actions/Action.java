@@ -75,6 +75,10 @@ public abstract class Action extends RequestTarget {
         return getRequestParameter(Json.type);
     }
 
+    public String getDetailsParameter() {
+        return getRequestParameter(Json.details);
+    }
+
     public guid getFilterByParameter() {
         String recordId = getRequestParameter(Json.filterBy);
         return recordId != null ? new guid(recordId) : null;

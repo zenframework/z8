@@ -187,9 +187,12 @@ public class Export extends OBJECT {
 					message.setAddress(getAddress());
 					message.setSender(sender);
 					message.getExportEntry().getFiles().getFile().add(file);
+					List<ExportEntry.Properties.Property> props = message.getExportEntry().getProperties().getProperty();
 					if (sendFilesContent)
-						message.getExportEntry().getProperties().getProperty()
-								.add(getProperty(Message.PROP_SEND_FILES_CONTENT, new bool(true)));
+						props.add(getProperty(Message.PROP_SEND_FILES_CONTENT, new bool(true)));
+					props.add(getProperty(Message.PROP_TYPE, sendFilesContent ? Message.TYPE_FILE_CONTENT
+							: Message.TYPE_FILE_REFERENCE));
+					props.add(getProperty(Message.PROP_GROUP, new string(file.getPath())));
 					exportMessages.addMessage(message, null, ExportMessages.Direction.OUT);
 				}
 			}

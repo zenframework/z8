@@ -8,7 +8,6 @@ import java.util.Map;
 
 import org.zenframework.z8.server.base.form.Desktop;
 import org.zenframework.z8.server.base.simple.Activator;
-import org.zenframework.z8.server.base.simple.Procedure;
 import org.zenframework.z8.server.base.table.Table;
 import org.zenframework.z8.server.base.table.system.Properties;
 import org.zenframework.z8.server.db.Connection;
@@ -26,15 +25,13 @@ public class DBGenerator {
         this.connection = connection;
     }
 
-    public void run(Collection<Table.CLASS<? extends Table>> tables, Collection<Desktop.CLASS<? extends Desktop>> entries,
-            Collection<Procedure.CLASS<? extends Procedure>> jobs, boolean doDropTables, ILogger logger,
-            boolean doCreateEntries) {
+    public void run(Collection<Table.CLASS<? extends Table>> tables, Collection<Desktop.CLASS<? extends Desktop>> entries, ILogger logger) {
         logger.progress(0);
 
         ApplicationServer.disableEvents();
 
         try {
-            run(tables, DataSchema.getTables(connection, "%"), doDropTables, logger, entries);
+            run(tables, DataSchema.getTables(connection, "%"), logger, entries);
         } catch (SQLException e) {
             logger.error(e);
         } finally {
@@ -44,8 +41,8 @@ public class DBGenerator {
         logger.progress(100);
     }
 
-    public void run(Collection<Table.CLASS<? extends Table>> tables, Map<String, TableDescription> existingTables,
-            boolean doDropTable, ILogger logger, Collection<Desktop.CLASS<? extends Desktop>> entries) {
+    private void run(Collection<Table.CLASS<? extends Table>> tables, Map<String, TableDescription> existingTables,
+            ILogger logger, Collection<Desktop.CLASS<? extends Desktop>> entries) {
         List<TableGenerator> generators = getTableGenerators(tables, existingTables, logger);
 
         int total = 5 * generators.size();

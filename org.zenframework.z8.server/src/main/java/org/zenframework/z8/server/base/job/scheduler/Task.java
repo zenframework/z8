@@ -16,6 +16,7 @@ public class Task {
     public String jobId;
     public String login;
     public String name;
+    public String settings;
     public datetime from = new datetime();
     public datetime till = new datetime().addDay(30);
     public int repeat = 1;

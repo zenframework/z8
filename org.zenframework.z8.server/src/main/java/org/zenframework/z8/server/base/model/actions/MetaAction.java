@@ -13,173 +13,179 @@ import org.zenframework.z8.server.json.JsonWriter;
 import org.zenframework.z8.server.types.guid;
 
 public class MetaAction extends ReadAction {
-    public static final String StartValue = "0";
-    public static final String LimitValue = "50";
+	public static final String StartValue = "0";
+	public static final String LimitValue = "50";
 
-    public MetaAction(ActionParameters actionParameters) {
-        super(actionParameters);
-    }
+	public MetaAction(ActionParameters actionParameters) {
+		super(actionParameters);
+	}
 
-    @Override
-    public void writeResponse(JsonWriter writer) throws Throwable {
-        ActionParameters actionParameters = actionParameters();
-        Map<String, String> requestParameters = actionParameters.requestParameters;
+	@Override
+	protected void initialize() {
+		ActionParameters actionParameters = actionParameters();
+		Map<String, String> requestParameters = actionParameters.requestParameters;
 
-        Query query = getQuery();
+		Query query = getQuery();
+		if(query.showAsTree())
+			requestParameters.put(Json.parentId.get(), guid.NULL.toString());
+		
+		super.initialize();
+	}
 
-        writer.writeProperty(Json.isQuery, true);
+	@Override
+	public void writeResponse(JsonWriter writer) throws Throwable {
+		ActionParameters actionParameters = actionParameters();
+		Map<String, String> requestParameters = actionParameters.requestParameters;
 
-        writer.writeProperty(Json.queryId, requestParameters.get(Json.queryId));
+		Query query = getQuery();
 
-        if(actionParameters.link != null) {
-            writer.writeProperty(Json.fieldId, requestParameters.get(Json.fieldId));
-            writer.writeProperty(Json.linkId, actionParameters.link.id());
-        }
+		writer.writeProperty(Json.isQuery, true);
 
-        Collection<Field> fields = getSelectFields();
-        query.writeMeta(writer, fields);
+		writer.writeProperty(Json.queryId, requestParameters.get(Json.queryId));
 
-        writeSortFields(writer, actionParameters.sortFields);
-        writeGroupFields(writer, actionParameters.groupFields);
+		if(actionParameters.link != null) {
+			writer.writeProperty(Json.fieldId, requestParameters.get(Json.fieldId));
+			writer.writeProperty(Json.linkId, actionParameters.link.id());
+		}
 
-        writeSections(writer, fields);
+		Collection<Field> fields = getSelectFields();
+		query.writeMeta(writer, fields);
 
-        requestParameters.put(Json.start.get(), StartValue);
-        requestParameters.put(Json.limit.get(), LimitValue);
+		writeSortFields(writer, actionParameters.sortFields);
+		writeGroupFields(writer, actionParameters.groupFields);
 
-        requestParameters.put(Json.limit.get(), LimitValue);
+		writeSections(writer, fields);
 
-        if(query.showAsTree()) {
-            requestParameters.put(Json.parentId.get(), guid.NULL.toString());
-        }
+		requestParameters.put(Json.start.get(), StartValue);
+		requestParameters.put(Json.limit.get(), LimitValue);
 
-        super.writeResponse(writer);
-    }
+		requestParameters.put(Json.limit.get(), LimitValue);
 
-    private void writeSortFields(JsonWriter writer, Collection<Field> sortFields) {
-        if(!sortFields.isEmpty()) {
-            Field field = sortFields.iterator().next();
+		super.writeResponse(writer);
+	}
 
-            writer.writeProperty(Json.sort, field.id());
-            writer.writeProperty(Json.direction, field.sortDirection.toString());
-        }
-    }
+	private void writeSortFields(JsonWriter writer, Collection<Field> sortFields) {
+		if(!sortFields.isEmpty()) {
+			Field field = sortFields.iterator().next();
 
-    private void writeGroupFields(JsonWriter writer, Collection<Field> groupFields) {
-        if(!groupFields.isEmpty()) {
-            writer.startArray(Json.groupBy);
+			writer.writeProperty(Json.sort, field.id());
+			writer.writeProperty(Json.direction, field.sortDirection.toString());
+		}
+	}
 
-            for(Field field : groupFields)
-                writer.write(field.id());
+	private void writeGroupFields(JsonWriter writer, Collection<Field> groupFields) {
+		if(!groupFields.isEmpty()) {
+			writer.startArray(Json.groupBy);
 
-            writer.finishArray();
-        }
-    }
+			for(Field field : groupFields)
+				writer.write(field.id());
 
-    class Section {
-        FieldGroup group = null;
-        Collection<Object> controls = new ArrayList<Object>();
+			writer.finishArray();
+		}
+	}
 
-        Section(FieldGroup group) {
-            this.group = group;
-        }
+	class Section {
+		FieldGroup group = null;
+		Collection<Object> controls = new ArrayList<Object>();
 
-        void add(Object control) {
-            controls.add(control);
-        }
+		Section(FieldGroup group) {
+			this.group = group;
+		}
 
-        boolean isEmpty() {
-            return controls.isEmpty();
-        }
-    }
+		void add(Object control) {
+			controls.add(control);
+		}
 
-    private Section getSections(FieldGroup group, Collection<Field> fields) {
-        Section result = new Section(group);
+		boolean isEmpty() {
+			return controls.isEmpty();
+		}
+	}
 
-        Collection<Control> controls = group == null ? collectControls() : group.getControls();
+	private Section getSections(FieldGroup group, Collection<Field> fields) {
+		Section result = new Section(group);
 
-        for(Control control : controls) {
-            if(control instanceof Field) {
-                if(fields.contains(control)) {
-                    result.add(control);
-                }
-            }
-            else if(control instanceof FieldGroup) {
-                Section section = getSections((FieldGroup)control, fields);
+		Collection<Control> controls = group == null ? collectControls() : group.getControls();
 
-                if(section != null) {
-                    result.add(section);
-                }
-            }
-        }
+		for(Control control : controls) {
+			if(control instanceof Field) {
+				if(fields.contains(control)) {
+					result.add(control);
+				}
+			} else if(control instanceof FieldGroup) {
+				Section section = getSections((FieldGroup)control, fields);
 
-        return result.isEmpty() ? null : result;
-    }
+				if(section != null) {
+					result.add(section);
+				}
+			}
+		}
 
-    @SuppressWarnings({ "unchecked", "rawtypes" })
-    private Collection<Control> collectControls() {
-        Query query = getQuery();
+		return result.isEmpty() ? null : result;
+	}
 
-        if(actionParameters().link != null) {
-            return (Collection)getSelectFields();
-        }
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	private Collection<Control> collectControls() {
+		Query query = getQuery();
 
-        Collection<Control> controls = new ArrayList<Control>();
+		if(actionParameters().link != null) {
+			return (Collection)getSelectFields();
+		}
 
-        Query context = query.getContext();
+		Collection<Control> controls = new ArrayList<Control>();
 
-        if(context != null) {
-            controls = context.getControls();
-        }
+		Query context = query.getContext();
 
-        if(controls.isEmpty()) {
-            controls = query.getControls();
-        }
+		if(context != null) {
+			controls = context.getControls();
+		}
 
-        Query rootQuery = query.getRootQuery();
+		if(controls.isEmpty()) {
+			controls = query.getControls();
+		}
 
-        if(controls.isEmpty() && rootQuery != query) {
-            controls = rootQuery.getControls();
-        }
+		Query rootQuery = query.getRootQuery();
 
-        return controls;
-    }
+		if(controls.isEmpty() && rootQuery != query) {
+			controls = rootQuery.getControls();
+		}
 
-    private void writeSections(JsonWriter writer, Collection<Field> fields) {
-        Section section = getSections(null, fields);
+		return controls;
+	}
 
-        if(section == null)
-            return;
+	private void writeSections(JsonWriter writer, Collection<Field> fields) {
+		Section section = getSections(null, fields);
 
-        writer.startObject(Json.section);
-        writeSection(writer, section);
-        writer.finishObject();
-    }
+		if(section == null)
+			return;
 
-    private void writeSection(JsonWriter writer, Section section) {
-        if(section.group != null)
-            section.group.writeMeta(writer);
+		writer.startObject(Json.section);
+		writeSection(writer, section);
+		writer.finishObject();
+	}
 
-        writer.writeProperty(Json.isSection, true);
+	private void writeSection(JsonWriter writer, Section section) {
+		if(section.group != null)
+			section.group.writeMeta(writer);
 
-        writer.startArray(Json.controls);
+		writer.writeProperty(Json.isSection, true);
 
-        for(Object control : section.controls) {
-            if(control instanceof Field) {
-                Field field = (Field)control;
-                if(!field.system.get()) {
-                    writer.startObject();
-                    writer.writeProperty(Json.id, field.id());
-                    writer.finishObject();
-                }
-            }
-            else if(control instanceof Section) {
-                writer.startObject();
-                writeSection(writer, (Section)control);
-                writer.finishObject();
-            }
-        }
+		writer.startArray(Json.controls);
 
-        writer.finishArray();
-    }
+		for(Object control : section.controls) {
+			if(control instanceof Field) {
+				Field field = (Field)control;
+				if(!field.system.get()) {
+					writer.startObject();
+					writer.writeProperty(Json.id, field.id());
+					writer.finishObject();
+				}
+			} else if(control instanceof Section) {
+				writer.startObject();
+				writeSection(writer, (Section)control);
+				writer.finishObject();
+			}
+		}
+
+		writer.finishArray();
+	}
 }

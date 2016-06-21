@@ -11,17 +11,23 @@ import org.zenframework.z8.server.db.Connection;
 import org.zenframework.z8.server.db.ConnectionManager;
 import org.zenframework.z8.server.engine.ITransportService;
 import org.zenframework.z8.server.engine.Rmi;
+import org.zenframework.z8.server.json.parser.JsonArray;
+import org.zenframework.z8.server.json.parser.JsonObject;
 import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.runtime.RCollection;
 import org.zenframework.z8.server.runtime.ServerRuntime;
 import org.zenframework.z8.server.types.guid;
+import org.zenframework.z8.server.types.string;
 import org.zenframework.z8.server.utils.ErrorUtils;
 
 public class TransportProcedure extends Procedure {
 
 	private static final Log LOG = LogFactory.getLog(TransportProcedure.class);
 
-	public static final guid PROCEDURE_ID = new guid("E43F94C6-E918-405D-898C-B915CC51FFDF");
+	private static final String CONFIG_SEND = "send";
+	private static final String CONFIG_RECEIVE = "receive";
+	private static final String CONFIG_ENABLED = "enabled";
+	private static final String CONFIG_FILTERS = "filters";
 
 	public static class CLASS<T extends TransportProcedure> extends Procedure.CLASS<T> {
 		public CLASS(IObject container) {
@@ -37,6 +43,7 @@ public class TransportProcedure extends Procedure {
 		}
 	}
 
+	protected final ExportMessages messages = ExportMessages.newInstance();
 	protected final TransportContext.CLASS<TransportContext> context = new TransportContext.CLASS<TransportContext>();
 	protected final TransportEngine engine = TransportEngine.getInstance();
 
@@ -56,6 +63,16 @@ public class TransportProcedure extends Procedure {
 
 		String selfAddress = context.get().check().getProperty(TransportContext.SelfAddressProperty);
 
+		JsonObject configuration = new JsonObject(((string) getParameter(IObject.Settings).get()).get());
+
+		JsonObject sendConfig = configuration.has(CONFIG_SEND) ? configuration.getJsonObject(CONFIG_SEND) : new JsonObject();
+		boolean sendEnabled = sendConfig.has(CONFIG_ENABLED) ? sendConfig.getBoolean(CONFIG_ENABLED) : true;
+
+		JsonArray sendFilters = sendConfig.has(CONFIG_FILTERS) ? sendConfig.getJsonArray(CONFIG_FILTERS) : null;
+		JsonObject receiveConfig = configuration.has(CONFIG_RECEIVE) ? configuration.getJsonObject(CONFIG_RECEIVE)
+				: new JsonObject();
+		boolean receiveEnabled = receiveConfig.has(CONFIG_ENABLED) ? receiveConfig.getBoolean(CONFIG_ENABLED) : true;
+
 		ExportMessages messages = ExportMessages.newInstance();
 
 		TransportRoutes transportRoutes = TransportRoutes.newInstance();
@@ -73,66 +90,74 @@ public class TransportProcedure extends Procedure {
 			}
 		}
 
-		// Обработка внутренней входящей очереди
-		List<guid> ids = messages.getImportMessages(selfAddress);
-		for (guid id : ids) {
-			Message message = messages.getMessage(id);
-			try {
-				Import.importMessage(messages, message, null);
-			} catch (Throwable e) {
-				LOG.error("Can't import message '" + message + "'", e);
-				break;
-			}
-		}
-
-		// Обработка внутренней исходящей очереди
-		ids = messages.getExportMessages(selfAddress);
 		transportRoutes.checkInactiveRoutes();
 
-		for (guid id : ids) {
+		if (sendEnabled) {
 
-			Message message = messages.getMessage(id);
-			if (message == null)
-				continue;
+			// Обработка внутренней исходящей очереди
+			List<guid> ids = messages.getExportMessages(selfAddress, sendFilters);
+			for (guid id : ids) {
 
-			List<TransportRoute> routes = transportRoutes.readRoutes(message.getAddress(), transportCenter, false);
-
-			for (TransportRoute route : routes) {
-
-				Transport transport = engine.getTransport(context.get(), route.getProtocol());
-				if (transport == null)
+				Message message = messages.getMessage(id);
+				if (message == null)
 					continue;
-				try {
-					transport.connect(); // это долго, если сервера нет или сдох
-				} catch (TransportException e) {
-					log("Can't connect to '" + route.getDomain() + "' via '" + route.getTransportUrl() + "'", e);
-					transport.close();
-					transportRoutes.disableRoute(route.getRouteId(), ErrorUtils.getMessage(e));
-					continue;
+
+				List<TransportRoute> routes = transportRoutes.readRoutes(message.getAddress(), transportCenter, true);
+
+				for (TransportRoute route : routes) {
+
+					Transport transport = engine.getTransport(context.get(), route.getProtocol());
+					if (transport == null)
+						continue;
+					try {
+						transport.connect(); // это долго, если сервера нет или сдох
+					} catch (TransportException e) {
+						log("Can't connect to '" + route.getDomain() + "' via '" + route.getTransportUrl() + "'", e);
+						transport.close();
+						transportRoutes.disableRoute(route, ErrorUtils.getMessage(e));
+						continue;
+					}
+
+					try {
+						sendMessage(messages, message, transport, route);
+						break;
+					} catch (TransportException e) {
+						transport.close();
+						transportRoutes.disableRoute(route, e.getMessage());
+					}
 				}
 
-				try {
-					sendMessage(messages, message, transport, route);
-					break;
-				} catch (TransportException e) {
-					transport.close();
-					transportRoutes.disableRoute(route.getRouteId(), e.getMessage());
-				}
 			}
 
 		}
 
-		// Чтение входящих сообщений
-		for (Transport transport : engine.getEnabledTransports(context.get())) {
-			try {
-				transport.connect();
-				for (Message message = transport.receive(); message != null; message = transport.receive()) {
-					receiveMessage(messages, message, transport);
+		if (receiveEnabled) {
+
+			// Чтение входящих сообщений
+			for (Transport transport : engine.getEnabledTransports(context.get())) {
+				try {
+					transport.connect();
+					for (Message message = transport.receive(); message != null; message = transport.receive()) {
+						receiveMessage(messages, message, transport);
+					}
+				} catch (TransportException e) {
+					log("Can't import message via protocol '" + transport.getProtocol() + "'", e);
+					transport.close();
 				}
-			} catch (TransportException e) {
-				log("Can't import message via protocol '" + transport.getProtocol() + "'", e);
-				transport.close();
 			}
+
+			// Обработка внутренней входящей очереди
+			List<guid> ids = messages.getImportMessages(selfAddress);
+			for (guid id : ids) {
+				Message message = messages.getMessage(id);
+				try {
+					Import.importMessage(messages, message, null);
+				} catch (Throwable e) {
+					LOG.error("Can't import message '" + message + "'", e);
+					messages.setError(message, e);
+				}
+			}
+
 		}
 
 	}

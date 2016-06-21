@@ -9,6 +9,8 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.io.Reader;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.UUID;
@@ -20,9 +22,9 @@ import org.zenframework.z8.ie.xml.ExportEntry;
 import org.zenframework.z8.server.base.file.FileInfo;
 import org.zenframework.z8.server.base.file.FilesFactory;
 import org.zenframework.z8.server.base.table.system.Properties;
-import org.zenframework.z8.server.logs.Trace;
 import org.zenframework.z8.server.request.Loader;
 import org.zenframework.z8.server.runtime.ServerRuntime;
+import org.zenframework.z8.server.types.datetime;
 import org.zenframework.z8.server.utils.IOUtils;
 
 public class FileTransport extends AbstractTransport implements Properties.Listener {
@@ -31,20 +33,25 @@ public class FileTransport extends AbstractTransport implements Properties.Liste
 
 	private static final Log LOG = LogFactory.getLog(FileTransport.class);
 
+	private static final DateFormat TIME_FORMAT = new SimpleDateFormat("YYYYMMdd-HHmmss-SSS");
+
 	private static final String IN = "in";
 	private static final String OUT = "out";
 	private static final String IN_ARCH = "in_arch";
+	private static final String TEMP = "temp";
 	private static final String EXPORT_ENTRY = "export-entry.xml";
 	private static final String PROPERTIES = "message.properties";
 
 	private static final String PROP_CLASS_ID = "z8.ie.message.classId";
+	private static final String PROP_TIME = "z8.ie.message.time";
 
-	private File root = new File(Properties.getProperty(ServerRuntime.FileFolderProperty));
-	private File in = new File(root, IN);
-	private File out = new File(root, OUT);
-	private File inArch = new File(root, IN_ARCH);
+	private File in;
+	private File out;
+	private File inArch;
+	private File temp;
 
-	private Message lastReceived = null;
+	private File lastReceived = null;
+	private File lastSent = null;
 
 	public FileTransport(TransportContext context) {
 		super(context);
@@ -70,9 +77,26 @@ public class FileTransport extends AbstractTransport implements Properties.Liste
 	public void close() {}
 
 	@Override
-	public void send(Message message, String transportAddress) {
-		File messageFolder = getMessageFolderOut(out, transportAddress, message.getId());
+	public void send(Message message, String transportAddress) throws TransportException {
+		File messageFolder = getMessageFolderTemp(temp, message);
 		messageFolder.mkdirs();
+
+		// write properties
+		File propsFile = new File(messageFolder, PROPERTIES);
+		java.util.Properties props = new java.util.Properties();
+		props.setProperty(PROP_CLASS_ID, message.getClass().getCanonicalName());
+		props.setProperty(PROP_TIME, message.getTime().format(TIME_FORMAT));
+		try {
+			OutputStream out = new FileOutputStream(propsFile);
+			try {
+				props.storeToXML(out, "Z8 file message properties", "UTF-8");
+			} finally {
+				IOUtils.closeQuietly(out);
+			}
+		} catch (Throwable e) {
+			LOG.warn("Can't save message properties " + props + " to '" + messageFolder + "'", e);
+		}
+
 		// write export-entry.xml
 		File outFile = new File(messageFolder, EXPORT_ENTRY);
 		PrintWriter writer = null;
@@ -80,7 +104,7 @@ public class FileTransport extends AbstractTransport implements Properties.Liste
 			writer = new PrintWriter(outFile, IeUtil.XML_ENCODING);
 			IeUtil.marshalExportEntry(message.getExportEntry(), writer);
 		} catch (Exception e) {
-			Trace.logError("Can't export entries to '" + transportAddress + "'", e);
+			throw new TransportException("Can't export entries to '" + message.getAddress() + "'", e);
 		} finally {
 			if (writer != null) {
 				writer.close();
@@ -93,28 +117,47 @@ public class FileTransport extends AbstractTransport implements Properties.Liste
 				try {
 					IOUtils.copy(file.getInputStream(), new FileOutputStream(outFile));
 				} catch (IOException e) {
-					Trace.logError("Can't write file '" + outFile + "'", e);
+					throw new TransportException("Can't write file '" + outFile + "'", e);
 				}
 			}
 		}
+		lastSent = messageFolder;
 	}
 
 	@Override
 	public void commit() throws TransportException {
 		if (lastReceived != null) {
-			File inFile = getMessageFolderIn(in, lastReceived);
-			File archFile = getMessageFolderIn(inArch, lastReceived);
-			archFile.getParentFile().mkdirs();
-			if (IOUtils.moveFolder(inFile, archFile, true))
+			File archive = new File(inArch, lastReceived.getParentFile().getName() + File.separatorChar
+					+ lastReceived.getName());
+			archive.getParentFile().mkdirs();
+			if (IOUtils.moveFolder(lastReceived, archive, true))
 				lastReceived = null;
 			else
-				throw new TransportException("Committing incoming message '" + lastReceived.getId()
-						+ "' failed: can't move folder '" + inFile + "' to '" + archFile + "'");
+				throw new TransportException("Committing incoming message '" + lastReceived.getName()
+						+ "' failed: can't move folder '" + lastReceived + "' to '" + archive + "'");
+		}
+		if (lastSent != null) {
+			File outFolder = new File(out, lastSent.getParentFile().getName() + File.separatorChar + lastSent.getName());
+			outFolder.getParentFile().mkdirs();
+			if (IOUtils.moveFolder(lastSent, outFolder, true))
+				lastSent = null;
+			else
+				throw new TransportException("Committing outgoing message '" + lastSent.getName()
+						+ "' failed: can't move folder '" + lastSent + "' to '" + outFolder + "'");
 		}
 	}
 
 	@Override
-	public void rollback() {}
+	public void rollback() {
+		lastReceived = null;
+		if (lastSent != null) {
+			if (IOUtils.deleteFolder(lastSent, true))
+				lastSent = null;
+			else
+				LOG.error("Rolling back sent message '" + lastSent.getName() + "' failed: can't delete folder '" + lastSent
+						+ "'");
+		}
+	}
 
 	@Override
 	public boolean isSynchronousRequestSupported() {
@@ -132,16 +175,17 @@ public class FileTransport extends AbstractTransport implements Properties.Liste
 	}
 
 	@Override
-	public Message receive() {
-		File[] files = in.listFiles();
-		Arrays.sort(files, NameFileComparator.NAME_INSENSITIVE_COMPARATOR);
+	public Message receive() throws TransportException {
+		File[] addresseeFolders = in.listFiles();
 
-		if (files == null)
-			throw new RuntimeException("FileTransport.receive(): '" + in.getPath() + "' is not a directory.");
+		if (addresseeFolders == null)
+			return null;
 
-		for (File addresseeFolder : files) {
+		for (File addresseeFolder : addresseeFolders) {
 			if (addresseeFolder.isDirectory()) {
-				for (File messageFolder : addresseeFolder.listFiles()) {
+				File[] messageFolders = addresseeFolder.listFiles();
+				Arrays.sort(messageFolders, NameFileComparator.NAME_INSENSITIVE_COMPARATOR);
+				for (File messageFolder : messageFolders) {
 					if (messageFolder.isDirectory()) {
 						try {
 							Message message = getMessage(messageFolder);
@@ -153,27 +197,26 @@ public class FileTransport extends AbstractTransport implements Properties.Liste
 									ExportEntry entry = IeUtil.unmarshalExportEntry(in);
 									message.setExportEntry(entry);
 									// add files
-									Collection<FileInfo> fileInfos = IeUtil.filesToFileInfos(entry.getFiles().getFile(), false);
+									Collection<FileInfo> fileInfos = IeUtil.filesToFileInfos(entry.getFiles().getFile(),
+											false);
 									for (FileInfo fileInfo : fileInfos) {
 										File file = new File(messageFolder, fileInfo.id.toString());
-										fileInfo.file = FilesFactory.createFileItem(fileInfo.name.get());
-										try {
+										if (file.exists()) {
+											fileInfo.file = FilesFactory.createFileItem(fileInfo.name.get());
 											InputStream is = new FileInputStream(file);
 											OutputStream os = fileInfo.file.getOutputStream();
 											IOUtils.copy(is, os);
 											message.getFiles().add(fileInfo);
-										} catch (IOException e) {
-											Trace.logError("Can't import attachment " + fileInfo, e);
 										}
 									}
-									lastReceived = message;
+									lastReceived = messageFolder;
 									return message;
 								} finally {
 									IOUtils.closeQuietly(in);
 								}
 							}
-						} catch (Exception e) {
-							Trace.logError("Can't import entry from '" + messageFolder + "'", e);
+						} catch (IOException e) {
+							throw new TransportException("Can't import entry from '" + messageFolder + "'", e);
 						}
 					}
 				}
@@ -183,22 +226,21 @@ public class FileTransport extends AbstractTransport implements Properties.Liste
 	}
 
 	private void initFolders(String root) {
-		this.root = new File(root);
+		root = root + File.separatorChar + context.getProperty(TransportContext.SelfAddressProperty);
 		in = new File(root, IN);
 		out = new File(root, OUT);
 		inArch = new File(root, IN_ARCH);
+		temp = new File(root, TEMP);
 	}
 
-	private static File getMessageFolderIn(File parent, Message message) {
-		return new File(parent, message.getSender() + File.separatorChar + message.getId().toString());
-	}
-
-	private static File getMessageFolderOut(File parent, String address, UUID id) {
-		return new File(parent, address + File.separatorChar + id.toString());
+	private static File getMessageFolderTemp(File parent, Message message) {
+		return new File(parent, message.getAddress() + File.separatorChar + message.getTime().format(TIME_FORMAT) + '_'
+				+ message.getId().toString());
 	}
 
 	private Message getMessage(File messageFolder) {
 		String classId = null;
+		datetime time = null;
 
 		File propsFile = new File(messageFolder, PROPERTIES);
 		if (propsFile.exists()) {
@@ -211,6 +253,7 @@ public class FileTransport extends AbstractTransport implements Properties.Liste
 					IOUtils.closeQuietly(in);
 				}
 				classId = props.getProperty(PROP_CLASS_ID);
+				time = new datetime(TIME_FORMAT.parse(props.getProperty(PROP_TIME)));
 			} catch (Throwable e) {
 				LOG.warn("Can't get " + PROP_CLASS_ID + " from '" + messageFolder + "'", e);
 			}
@@ -222,6 +265,7 @@ public class FileTransport extends AbstractTransport implements Properties.Liste
 		Message message = (Message) Loader.getInstance(classId);
 		String[] folderName = messageFolder.getName().split("_");
 		message.setId(UUID.fromString(folderName.length < 2 ? folderName[0] : folderName[1]));
+		message.setTime(time);
 		message.setAddress(context.getProperty(TransportContext.SelfAddressProperty));
 		message.setSender(messageFolder.getParentFile().getName());
 

@@ -18,6 +18,7 @@ public interface IObject extends INamedObject {
     static final public String ParentKey = "parentKey";
     static final public String Activator = "activator";
     static final public String Job = "job";
+    static final public String Settings = "settings";
     static final public String Index = "index";
     static final public String Exportable = "exportable";
     static final public String GenDbUpdatable = "gendb_updatable";
@@ -25,7 +26,6 @@ public interface IObject extends INamedObject {
     static final public String SearchIndex = "searchIndex";
     static final public String UniqueField = "uniqueField";
     static final public String FieldImportPolicy = "importPolicy";
-    static final public String FieldImportAggregator = "importAggregator";
 
     public String classId();
 
