@@ -37,6 +37,7 @@ public class Message extends OBJECT implements RmiSerializable, Serializable {
 
 	public static final string TYPE_FILE_REQUEST = new string("file.request");
 	public static final string TYPE_FILE_CONTENT = new string("file.content");
+	public static final string TYPE_FILE_REFERENCE = new string("file.reference");
 
 	public static class CLASS<T extends Message> extends OBJECT.CLASS<T> {
 		public CLASS() {

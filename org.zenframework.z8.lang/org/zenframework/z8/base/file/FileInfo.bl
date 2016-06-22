@@ -1,8 +1,10 @@
+import org.zenframework.z8.base.json.JsonObject;
+import org.zenframework.z8.base.json.JsonArray;
 import org.zenframework.z8.lang.Object;
 
 [native "org.zenframework.z8.server.base.file.FileInfo"]
-
 public class FileInfo extends Object {
+
     public string name;
     public datetime time;
     public int size;
@@ -12,5 +14,8 @@ public class FileInfo extends Object {
     public string[string] details;
     
     static public FileInfo[] parse(string json);
+    static public FileInfo[] parse(JsonArray array);
+    static public FileInfo parse(JsonObject object);
     static public string toJson(FileInfo[] files);
+
 }

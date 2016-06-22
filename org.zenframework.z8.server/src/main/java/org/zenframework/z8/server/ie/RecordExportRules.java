@@ -25,7 +25,8 @@ public class RecordExportRules {
 	}
 
 	public ImportPolicy getImportPolicy(Field field) {
-		return fieldsPolicies.containsKey(field.id()) ? fieldsPolicies.get(field.id()) : defaultImportPolicy;
+		return fieldsPolicies.containsKey(field.id()) ? fieldsPolicies.get(field.id()) : ImportPolicy.getPolicy(
+				field.importPolicy(), defaultImportPolicy);
 	}
 
 	public void setDefaultExportAttachments(boolean exportAttachments) {

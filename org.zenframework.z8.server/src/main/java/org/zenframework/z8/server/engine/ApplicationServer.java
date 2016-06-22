@@ -17,6 +17,7 @@ import org.zenframework.z8.server.request.IMonitor;
 import org.zenframework.z8.server.request.IRequest;
 import org.zenframework.z8.server.request.IResponse;
 import org.zenframework.z8.server.request.Request;
+import org.zenframework.z8.server.request.RequestDispatcher;
 import org.zenframework.z8.server.request.RequestProcessor;
 import org.zenframework.z8.server.security.IUser;
 import org.zenframework.z8.server.security.User;
@@ -53,7 +54,8 @@ public class ApplicationServer extends RmiServer implements IApplicationServer {
 		authorityCenter.register(this);
 
 		RuntimeMXBean mxBean = ManagementFactory.getRuntimeMXBean();
-		System.out.println("INFO: JVM startup options: " + mxBean.getInputArguments().toString());
+		System.out.println("INFO: JVM startup options: " + mxBean.getInputArguments().toString() + "\n\t"
+				+ RequestDispatcher.getMemoryUsage());
 	}
 
 	@Override

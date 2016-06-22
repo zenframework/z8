@@ -19,8 +19,12 @@ public enum ImportPolicy {
 
     public static final ImportPolicy DEFAULT = KEEP;
 
+    public static ImportPolicy getPolicy(String policy, ImportPolicy defaultPolicy) {
+        return policy == null || policy.isEmpty() ? defaultPolicy : ImportPolicy.valueOf(policy);
+    }
+
     public static ImportPolicy getPolicy(String policy) {
-        return policy == null ? ImportPolicy.DEFAULT : ImportPolicy.valueOf(policy);
+        return getPolicy(policy, ImportPolicy.DEFAULT);
     }
 
 }

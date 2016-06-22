@@ -163,9 +163,8 @@ public class TransportRoutes extends Table {
 		sort(Arrays.<Field> asList(priority.get()), where);
 		List<TransportRoute> routes = new LinkedList<TransportRoute>();
 		while (next()) {
-			routes.add(new TransportRoute(domains.get().id.get().get().string().get(), id1.get().get().string().get(), name
-					.get().get().string().get(), TransportRoutes.this.priority.get().get().integer().getInt(),
-					TransportRoutes.this.active.get().get().bool().get()));
+			routes.add(new TransportRoute(domains.get().id.get().string().get(), id1.get().string().get(), name.get()
+					.string().get(), priority.get().integer().getInt(), active.get().bool().get()));
 		}
 		if (routes.isEmpty() && transportCenter != null && !transportCenter.isEmpty()) {
 			try {
@@ -193,20 +192,23 @@ public class TransportRoutes extends Table {
 	}*/
 
 	public guid setRoute(String domain, String protocol, String address, int priority, boolean active) {
-		if (!domains.get().readFirst(new Rel(domains.get().id.get(), Operation.Eq, new sql_string(domain))))
+		SystemDomains domains = SystemDomains.newInstance();
+		if (!domains.readFirst(new Rel(domains.id.get(), Operation.Eq, new sql_string(domain))))
 			throw new exception("Domain '" + domain + "' does not exist");
-		guid domainId = domains.get().recordId();
+		guid domainId = domains.recordId();
 		this.priority.get().set(priority);
 		this.active.get().set(new bool(active));
+		guid routeId;
 		if (readRoute(domain, protocol, address)) {
-			update(recordId());
-			return recordId();
+			routeId = recordId();
+			update(routeId);
 		} else {
 			this.domainLink.get().set(domainId);
 			this.id1.get().set(protocol);
 			this.name.get().set(address);
-			return create();
+			routeId = create();
 		}
+		return routeId;
 	}
 
 	public boolean disableRoute(TransportRoute route, String description) {
@@ -214,6 +216,7 @@ public class TransportRoutes extends Table {
 	}
 
 	public boolean disableRoute(String domain, String protocol, String address, String description) {
+		active.get().set(new bool(false));
 		return update(getWhere(domain, protocol, address)) > 0;
 	}
 

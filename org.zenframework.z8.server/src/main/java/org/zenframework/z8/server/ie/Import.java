@@ -1,5 +1,6 @@
 package org.zenframework.z8.server.ie;
 
+import java.io.IOException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
@@ -61,11 +62,7 @@ public class Import {
 			FileInfo fileInfo = new FileInfo();
 			fileInfo.id = properties.get(Message.PROP_RECORD_ID).guid();
 			fileInfo.path = properties.get(Message.PROP_FILE_PATH).string();
-			try {
-				SystemFiles.sendFile(fileInfo, message.getSender());
-			} catch (Throwable e) {
-				LOG.error("Can't send file " + fileInfo + " to '" + message.getSender(), e);
-			}
+			SystemFiles.sendFile(fileInfo, message.getSender());
 		}
 
 		// Сортировка записей
@@ -101,17 +98,13 @@ public class Import {
 
 	}
 
-	public static void importFiles(Message message) {
+	public static void importFiles(Message message) throws IOException {
 		SystemFiles files = SystemFiles.newInstance();
 
 		for (FileInfo fileInfo : message.getFiles()) {
 			files.addFile(fileInfo);
 			if (fileInfo.file == null) {
-				try {
-					files.getFile(fileInfo);
-				} catch (Throwable e) {
-					LOG.warn("Can't get remote file " + fileInfo, e);
-				}
+				files.getFile(fileInfo);
 			}
 		}
 	}
@@ -124,7 +117,7 @@ public class Import {
 			return;
 
 		String policy = record.getPolicy();
-		ImportPolicy recordPolicy = policy == null || policy.isEmpty() ? ImportPolicy.DEFAULT : ImportPolicy.valueOf(policy);
+		ImportPolicy recordPolicy = ImportPolicy.getPolicy(policy);
 
 		Collection<Field> aggregatedFields = new LinkedList<Field>();
 		for (ExportEntry.Records.Record.Field xmlField : record.getField()) {
@@ -133,14 +126,12 @@ public class Import {
 				policy = xmlField.getPolicy();
 				if (policy == null || policy.isEmpty())
 					policy = field.importPolicy();
-				ImportPolicy fieldPolicy = policy == null || policy.isEmpty() ? recordPolicy : ImportPolicy.valueOf(policy);
-				if (fieldPolicy == ImportPolicy.AGGREGATE)
+				if (ImportPolicy.getPolicy(policy, recordPolicy) == ImportPolicy.AGGREGATE)
 					aggregatedFields.add(field);
 			}
 		}
 
-		boolean exists = aggregatedFields.isEmpty() ? table.hasRecord(recordId) : table.readRecord(recordId,
-				aggregatedFields);
+		boolean exists = table.readRecord(recordId, aggregatedFields);
 
 		boolean hasUpdatedFields = false;
 		for (ExportEntry.Records.Record.Field xmlField : record.getField()) {
@@ -149,24 +140,17 @@ public class Import {
 				policy = xmlField.getPolicy();
 				if (policy == null || policy.isEmpty())
 					policy = field.importPolicy();
-				ImportPolicy fieldPolicy = policy == null || policy.isEmpty() ? recordPolicy : ImportPolicy.valueOf(policy);
+				ImportPolicy fieldPolicy = ImportPolicy.getPolicy(policy, recordPolicy);
 				if (!exists || fieldPolicy == ImportPolicy.OVERRIDE) {
 					field.set(primary.create(field.type(), xmlField.getValue()));
 					hasUpdatedFields = true;
 				} else if (exists && fieldPolicy == ImportPolicy.AGGREGATE) {
-					String aggregator = xmlField.getAggregator();
-					if (aggregator == null || aggregator.isEmpty())
-						aggregator = field.importAggregator();
-					if (aggregator == null || aggregator.isEmpty())
+					if (field.aggregator == null)
 						throw new ImportException("Can't aggregate " + field.id()
-								+ " values. Import aggregator is not defined");
-					try {
-						ImportAggregator importAggregator = (ImportAggregator) Class.forName(aggregator).newInstance();
-						field.set(importAggregator.aggregate(field.get(), primary.create(field.type(), xmlField.getValue())));
-						hasUpdatedFields = true;
-					} catch (Exception e) {
-						throw new ImportException("Can't aggregate " + field.id() + " values", e);
-					}
+								+ " values. Field aggregator is not defined");
+					field.set(field.aggregator.get().aggregate(field.get(),
+							primary.create(field.type(), xmlField.getValue())));
+					hasUpdatedFields = true;
 				}
 			} else {
 				Trace.logEvent("WARNING: Incorrect record format. Table '" + table.classId() + "' has no field '"
