@@ -333,7 +333,7 @@ public class User implements IUser {
 		phone = RmiIO.readString(objects);
 		email = RmiIO.readString(objects);
 		
-		blocked = in.readBoolean();
+		blocked = objects.readBoolean();
 
 		settings = RmiIO.readString(objects);
 
