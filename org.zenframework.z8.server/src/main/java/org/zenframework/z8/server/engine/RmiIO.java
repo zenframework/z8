@@ -168,7 +168,9 @@ public class RmiIO extends ObjectIO {
 
 	@Override
 	protected void writeObject(ObjectOutputStream out, Object replacement, Object value) throws IOException {
-		if (value instanceof String) {
+		if (value == null) {
+			out.writeInt(RmiSerializable.Null);
+		} else if (value instanceof String) {
 			out.writeInt(RmiSerializable.String);
 			writeString(out, (String) value);
 		} else if (value instanceof primary) {
@@ -206,7 +208,7 @@ public class RmiIO extends ObjectIO {
 			writeSerializable(out, (RmiSerializable) value);
 		} else {
 			RuntimeException e = new RuntimeException("Object (" + value.getClass().getCanonicalName()
-					+ ") is not an instance of z8.rmi.ISerializable");
+					+ ") is not an instance of z8.rmi.RmiSerializable");
 			LOG.error(e.getMessage(), e);
 			throw e;
 		}
@@ -371,7 +373,9 @@ public class RmiIO extends ObjectIO {
 	protected Object readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
 		int id = in.readInt();
 
-		if (id == RmiSerializable.String)
+		if (id == RmiSerializable.Null)
+			return null;
+		else if (id == RmiSerializable.String)
 			return readString(in);
 		else if (id == RmiSerializable.Primary)
 			return readPrimary(in);
