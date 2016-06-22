@@ -4,3 +4,4 @@ target
 .externalToolBuilders
 .project
 .settings
+pom.xml.versionsBackup
