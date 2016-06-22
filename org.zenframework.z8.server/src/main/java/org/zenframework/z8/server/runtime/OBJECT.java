@@ -17,7 +17,6 @@ import org.zenframework.z8.server.security.IUser;
 import org.zenframework.z8.server.security.UserInfo;
 import org.zenframework.z8.server.types.bool;
 import org.zenframework.z8.server.types.file;
-import org.zenframework.z8.server.types.guid;
 import org.zenframework.z8.server.types.integer;
 import org.zenframework.z8.server.types.primary;
 import org.zenframework.z8.server.types.string;
@@ -44,13 +43,11 @@ public class OBJECT extends RequestTarget implements IObject, RmiSerializable {
 
     public OBJECT() {
         this(null);
-        setAttribute(IObject.ObjectId, guid.NULL.toString());
     }
 
     public OBJECT(IObject container) {
         super(null);
         this.container = container;
-        setAttribute(IObject.ObjectId, guid.NULL.toString());
     }
 
     @Override
@@ -77,10 +74,6 @@ public class OBJECT extends RequestTarget implements IObject, RmiSerializable {
         }
 
         return id;
-    }
-
-    public guid objectId() {
-        return new guid(getAttribute(ObjectId));
     }
 
     @Override
@@ -271,10 +264,6 @@ public class OBJECT extends RequestTarget implements IObject, RmiSerializable {
         return new string(id());
     }
 
-    public guid z8_objectId() {
-        return objectId();
-    }
-
     public string z8_index() {
         return new string(getIndex());
     }
@@ -341,10 +330,6 @@ public class OBJECT extends RequestTarget implements IObject, RmiSerializable {
 
     public void z8_sendFile(file file) {
         ApplicationServer.getMonitor().print(file);
-    }
-
-    public bool z8_equals(OBJECT.CLASS<? extends OBJECT> x) {
-        return new bool(equals(x.get()));
     }
 
     public bool operatorEqu(OBJECT.CLASS<? extends OBJECT> object) {

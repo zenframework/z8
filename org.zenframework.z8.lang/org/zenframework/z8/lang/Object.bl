@@ -17,7 +17,6 @@ class Object {
 
 	virtual protected void constructor();
 
-	public guid objectId();
 	public string id();
 	public string index();
 	public string name();
@@ -29,7 +28,6 @@ class Object {
 
 	public void sendFile(file file);
 
-	public bool equals(Object value);
 	public bool operator == (Object object);
 	public bool operator != (Object object);
 

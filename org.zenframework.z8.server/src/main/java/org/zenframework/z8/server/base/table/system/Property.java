@@ -19,6 +19,7 @@ public class Property extends OBJECT {
     private static final String PROPERTIES_RESOURCE = "postfactor.properties";
     private static final java.util.Properties DEFAULT_PROPERTIES = new java.util.Properties();
 
+    public static final String Id = "propertyId";
     public static final String Key = IObject.Name;
     public static final String Description = IObject.Description;
     public static final String DefaultValue = "defaultValue";
@@ -63,14 +64,14 @@ public class Property extends OBJECT {
     }
 
     public Property(String id, String key, String defaultValue, String description) {
-        setAttribute(IObject.ObjectId, new guid(id).toString());
+        setAttribute(Id, new guid(id).toString());
         setAttribute(Key, key);
         setAttribute(DefaultValue, defaultValue);
         setAttribute(Description, description);
     }
 
     public guid getId() {
-        return new guid(getAttribute(IObject.ObjectId));
+        return new guid(getAttribute(Id));
     }
 
     public String getKey() {
@@ -112,7 +113,7 @@ public class Property extends OBJECT {
         if (data.size() < 3 || data.size() > 4) {
             throw new exception("Incorrect property definition: " + data);
         }
-        property.setAttribute(IObject.ObjectId, new guid(values.get(0).toString()).toString());
+        property.setAttribute(Id, new guid(values.get(0).toString()).toString());
         property.setAttribute(Key, values.get(1).toString());
         property.setAttribute(DefaultValue, values.get(2).toString());
         if (data.size() > 3) {
@@ -124,7 +125,7 @@ public class Property extends OBJECT {
     public static Property.CLASS<? extends Property> z8_getProperty(guid id, string key, primary defaultValue,
             string description) {
         Property.CLASS<Property> property = new Property.CLASS<Property>();
-        property.setAttribute(IObject.ObjectId, new guid(id).toString());
+        property.setAttribute(Id, new guid(id).toString());
         property.setAttribute(Key, key.get());
         property.setAttribute(DefaultValue, defaultValue.toString());
         property.setAttribute(Description, description.get());
