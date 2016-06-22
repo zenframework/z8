@@ -9,6 +9,4 @@ public class Attribute {
     static public final string Label = new string(IObject.Label);
     static public final string Icon = new string(IObject.Icon);
     static public final string Index = new string(IObject.Index);
-
-    static public final string ObjectId = new string(IObject.ObjectId);
 }
