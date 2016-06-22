@@ -2,12 +2,12 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Z8 ODA UI Plug-in
 Bundle-SymbolicName: org.zenframework.z8.oda.designer;singleton:=true
-Bundle-Version: 1.1.1
+Bundle-Version: 1.2.0.qualifier
 Bundle-ClassPath: .
 Bundle-Activator: org.zenframework.z8.oda.designer.plugin.Plugin
 Bundle-Vendor: ZENFRAMEWORK.ORG
-Require-Bundle: org.zenframework.z8.pde;bundle-version="1.1.1",
- org.zenframework.z8.oda.driver;bundle-version="1.1.1",
+Require-Bundle: org.zenframework.z8.pde;bundle-version="1.2.0.qualifier",
+ org.zenframework.z8.oda.driver;bundle-version="1.2.0.qualifier",
  org.eclipse.ui,
  org.eclipse.core.runtime,
  org.eclipse.jface.text,

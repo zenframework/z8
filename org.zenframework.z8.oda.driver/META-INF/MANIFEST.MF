@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Z8 ODA Driver
 Bundle-SymbolicName: org.zenframework.z8.oda.driver;singleton:=true
-Bundle-Version: 1.1.1
+Bundle-Version: 1.2.0.qualifier
 Bundle-ClassPath: .
 Bundle-Activator: org.zenframework.z8.oda.driver.Plugin
 Bundle-Vendor: ZENFRAMEWORK.ORG
@@ -12,7 +12,7 @@ Require-Bundle: org.eclipse.ui,
  org.eclipse.datatools.connectivity.oda,
  org.eclipse.datatools.connectivity.oda.design.ui,
  org.eclipse.datatools.connectivity.oda.profile,
- org.zenframework.z8.pde;bundle-version="1.0.0"
+ org.zenframework.z8.pde;bundle-version="1.2.0.qualifier"
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-ActivationPolicy: lazy
 Export-Package: org.zenframework.z8.oda.driver
