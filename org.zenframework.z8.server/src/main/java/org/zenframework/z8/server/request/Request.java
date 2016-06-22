@@ -75,8 +75,15 @@ public class Request extends IRequest {
 			}
 		}
 
-		String[] requestId = parameters.get(Json.requestId).split("\\.");
-		return requestId[requestId.length - 1] + "={" + result + "}";
+		String requestId = getParameter(Json.requestId);
+		
+		if(requestId != null) {
+			String[] ids = requestId.split("\\.");
+			requestId = ids[ids.length - 1];
+		} else
+			requestId = Json.retry + "(" + getParameter(Json.retry) + ")";
+		
+		return requestId + "={" + result + "}";
 	}
 
 	@Override
