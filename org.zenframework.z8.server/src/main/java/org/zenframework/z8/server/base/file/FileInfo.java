@@ -9,6 +9,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.fileupload.FileItem;
 import org.zenframework.z8.server.engine.RmiIO;
@@ -39,9 +40,6 @@ public class FileInfo extends OBJECT implements RmiSerializable, Serializable {
 	public string instanceId = new string();
 
 	public RLinkedHashMap<string, string> details = new RLinkedHashMap<string, string>();
-
-	//	public string type = new string();
-	//	public string description = new string();
 
 	public FileItem file;
 	public Status status = Status.LOCAL;
@@ -154,6 +152,12 @@ public class FileInfo extends OBJECT implements RmiSerializable, Serializable {
 		size = new integer(json.has(Json.size) ? json.getString(Json.size) : "");
 		id = new guid(json.has(Json.id) ? json.getString(Json.id) : "");
 		instanceId = new string(json.has(Json.instanceId) ? json.getString(Json.instanceId) : "");
+		details.clear();
+		if (json.has(Json.details)) {
+			for (Map.Entry<String, Object> entry : json.getJsonObject(Json.details).entrySet()) {
+				details.put(new string(entry.getKey()), new string(entry.getValue().toString()));
+			}
+		}
 
 		this.json = json;
 	}
@@ -189,7 +193,7 @@ public class FileInfo extends OBJECT implements RmiSerializable, Serializable {
 			json.put(Json.path, path);
 			json.put(Json.id, id);
 			json.put(Json.instanceId, instanceId);
-			json.put(Json.details, this.details);
+			json.put(Json.details, details);
 		}
 		return json;
 	}
@@ -273,6 +277,7 @@ public class FileInfo extends OBJECT implements RmiSerializable, Serializable {
 		RmiIO.writeDatetime(out, time);
 		RmiIO.writeInteger(out, size);
 		RmiIO.writeGuid(out, id);
+		RmiIO.write(out, null, details);
 
 		out.writeBoolean(file != null);
 
@@ -290,6 +295,7 @@ public class FileInfo extends OBJECT implements RmiSerializable, Serializable {
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public void deserialize(ObjectInputStream in) throws IOException, ClassNotFoundException {
 		@SuppressWarnings("unused")
@@ -301,6 +307,7 @@ public class FileInfo extends OBJECT implements RmiSerializable, Serializable {
 		size = RmiIO.readInteger(in);
 		time = RmiIO.readDatetime(in);
 		id = RmiIO.readGuid(in);
+		details = (RLinkedHashMap<string, string>) RmiIO.read(in);
 
 		if (in.readBoolean()) {
 			long size = in.readLong();
