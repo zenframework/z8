@@ -38,10 +38,15 @@ public class JsonArray extends Object {
 
 	public string toString(int indentFactor);
 
+	public bool contains(primary value);
+	public bool contains(JsonObject obj, string compareKey);
+
 	public static JsonArray parse(string source);
 
 	public static JsonArray fromPrimaryArray(primary[] array);
 	public static JsonArray fromJsonArrayArray(JsonArray[] array);
 	public static JsonArray fromJsonObjectArray(JsonObject[] array);
+
+	public static JsonArray diff(JsonArray a1, JsonArray a2, string compareKey);
 
 }
