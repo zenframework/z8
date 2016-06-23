@@ -241,7 +241,7 @@ public class JsonArray extends OBJECT {
 		return jsonArray;
 	}
 
-	public static JsonArray.CLASS<JsonArray> diff(JsonArray.CLASS<JsonArray> a1, JsonArray.CLASS<JsonArray> a2,
+	public static JsonArray.CLASS<JsonArray> z8_diff(JsonArray.CLASS<JsonArray> a1, JsonArray.CLASS<JsonArray> a2,
 			string compareKey) {
 		return getJsonArray(new org.zenframework.z8.server.json.parser.JsonArray(CollectionUtils.diff(a1.get()
 				.getInternalArray(), a2.get().getInternalArray(), compareKey.get())));
