@@ -21,6 +21,7 @@ public interface RmiSerializable {
 	public static final int ObjID = 2002;
 	public static final int VMID = 2003;
 	public static final int Lease = 2004;
+	public static final int RemoteStub = 2005;
 	
 	public void serialize(ObjectOutputStream stream) throws IOException;
 	public void deserialize(ObjectInputStream stream) throws IOException, ClassNotFoundException;
