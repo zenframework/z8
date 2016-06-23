@@ -6,7 +6,7 @@ import java.io.ObjectOutputStream;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class ObjectIO {
+public abstract class ObjectIO {
 
 	private static final Logger LOG = Logger.getLogger(ObjectIO.class.getName());
 
@@ -27,10 +27,7 @@ public class ObjectIO {
 		return instance.readObject(in);
 	}
 
-	protected void writeObject(ObjectOutputStream out, Object replacement, Object object) throws IOException {
-	}
+	abstract protected void writeObject(ObjectOutputStream out, Object replacement, Object object) throws IOException;
+	abstract protected Object readObject(ObjectInputStream in) throws IOException, ClassNotFoundException;
 
-	protected Object readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
-		return null;
-	}
 }
