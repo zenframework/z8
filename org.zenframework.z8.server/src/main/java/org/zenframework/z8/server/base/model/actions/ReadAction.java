@@ -884,7 +884,12 @@ public class ReadAction extends Action {
 
 			frame.open();
 
+			int recordsWritten = 0;
+			
 			while(frame.next()) {
+				if(recordsWritten > 500)
+					throw new RuntimeException("Too many records fetched for a json client. Use limit parameter.");
+				
 				writer.startObject();
 
 				primary[] group = !hasRecords ? groups.firstGroup : groups.lastGroup;
@@ -906,6 +911,8 @@ public class ReadAction extends Action {
 					style.write(writer);
 
 				writer.finishObject();
+				
+				recordsWritten++;
 			}
 		} finally {
 			frame.restoreState();

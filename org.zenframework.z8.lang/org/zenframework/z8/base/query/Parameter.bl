@@ -13,6 +13,7 @@ class Parameter extends Object {
 	public decimal decimal();
 	public int int();
 	public string string();
+	public file file();
 	
 	public bool[] boolArray();
 	public guid[] guidArray();
