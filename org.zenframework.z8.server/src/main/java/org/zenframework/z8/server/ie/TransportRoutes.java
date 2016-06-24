@@ -158,15 +158,17 @@ public class TransportRoutes extends Table {
 
 	public List<TransportRoute> readRoutes(String domain, String transportCenter, boolean activeOnly) {
 		SqlToken where = new Rel(this.domains.get().id.get(), Operation.Eq, new sql_string(domain));
-		if (activeOnly)
-			where = new And(where, this.active.get().sql_bool());
 		sort(Arrays.<Field> asList(priority.get()), where);
 		List<TransportRoute> routes = new LinkedList<TransportRoute>();
+		boolean localRoutesFound = false;
 		while (next()) {
-			routes.add(new TransportRoute(domains.get().id.get().string().get(), id1.get().string().get(), name.get()
-					.string().get(), priority.get().integer().getInt(), active.get().bool().get()));
+			if (!activeOnly || active.get().bool().get()) {
+				routes.add(new TransportRoute(domains.get().id.get().string().get(), id1.get().string().get(), name.get()
+						.string().get(), priority.get().integer().getInt(), active.get().bool().get()));
+			}
+			localRoutesFound = true;
 		}
-		if (routes.isEmpty() && transportCenter != null && !transportCenter.isEmpty()) {
+		if (routes.isEmpty() && !localRoutesFound && transportCenter != null && !transportCenter.isEmpty()) {
 			try {
 				routes = Rmi.get(ITransportCenter.class, new RmiAddress(transportCenter)).getTransportRoutes(domain);
 				for (TransportRoute route : routes) {
