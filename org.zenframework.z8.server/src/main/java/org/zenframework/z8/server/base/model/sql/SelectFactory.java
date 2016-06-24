@@ -56,7 +56,9 @@ public class SelectFactory {
     }
 
     private int getStart() {
-        return Math.max(action.getStartParameter() + 1, 1);
+        int total = action.getTotalCount();
+        int start = Math.max(action.getStartParameter() + 1, 1);
+        return start > total ? 1 : start;
     }
 
     private int getLimit() {
