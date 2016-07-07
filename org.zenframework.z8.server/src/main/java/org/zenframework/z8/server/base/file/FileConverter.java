@@ -10,6 +10,8 @@ import java.util.List;
 import org.apache.commons.io.FilenameUtils;
 import org.artofsolving.jodconverter.OfficeDocumentConverter;
 import org.artofsolving.jodconverter.office.DefaultOfficeManagerConfiguration;
+import org.artofsolving.jodconverter.office.ExternalOfficeManagerConfiguration;
+import org.artofsolving.jodconverter.office.OfficeException;
 import org.artofsolving.jodconverter.office.OfficeManager;
 import org.zenframework.z8.server.base.table.system.Properties;
 import org.zenframework.z8.server.base.table.system.Property;
@@ -96,12 +98,27 @@ public class FileConverter {
 	private static void startOfficeManager() {
 		if (officeManager == null) {
 			try {
-				officeManager = new DefaultOfficeManagerConfiguration().setOfficeHome(Z8Context.getConfig().getOfficeHome())
-						.setPortNumber(OFFICE_PORT).buildOfficeManager();
+				// Try to connect to an existing instance of openoffice
+				ExternalOfficeManagerConfiguration externalProcessOfficeManager = new ExternalOfficeManagerConfiguration();
+				externalProcessOfficeManager.setConnectOnStart(true);
+				externalProcessOfficeManager.setPortNumber(OFFICE_PORT);
+				officeManager = externalProcessOfficeManager.buildOfficeManager();
 				officeManager.start();
-			} catch (Throwable e) {
-				Trace.logError("Could not start office manager", e);
-				officeManager = null;
+				Trace.logEvent("Connected to an existing OpenOffice process, port " + OFFICE_PORT);
+			} catch (OfficeException e) {
+				try {
+					Trace.logEvent("Can't connect to an existing OpenOffice process: " + e.getMessage());
+					//Start a new openoffice instance
+					officeManager = new DefaultOfficeManagerConfiguration()
+							.setOfficeHome(Z8Context.getConfig().getOfficeHome()).setPortNumber(OFFICE_PORT)
+							.buildOfficeManager();
+					officeManager.start();
+					Trace.logEvent("New OpenOffice '" + Z8Context.getConfig().getOfficeHome() + "' process created, port "
+							+ OFFICE_PORT);
+				} catch (Throwable e1) {
+					Trace.logError("Could not start OpenOffice '" + Z8Context.getConfig().getOfficeHome() + "'", e1);
+					officeManager = null;
+				}
 			}
 		}
 	}
@@ -117,7 +134,7 @@ public class FileConverter {
 		try {
 			getOfficeDocumentConverter().convert(sourceFile, convertedFile);
 		} catch (NullPointerException e) {
-			throw new IOException("Can't start office process '" + Z8Context.getConfig().getOfficeHome() + "'", e);
+			throw new IOException("OpenOffice process is not started", e);
 		}
 	}
 

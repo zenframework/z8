@@ -152,6 +152,7 @@ public class TransportRoutes extends Table {
 		SqlToken where = new Equ(this.domains.get().id.get(), domain);
 		if (activeOnly)
 			where = new And(where, this.active.get().sql_bool());
+
 		sort(Arrays.<Field> asList(priority.get()), where);
 		List<TransportRoute> routes = new LinkedList<TransportRoute>();
 		while (next()) {

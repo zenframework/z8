@@ -72,6 +72,8 @@ public class ReadAction extends Action {
 	guid modelRecordId = null;
 	guid parentId = null;
 
+	private int totalCount = 0;
+	
 	public ReadAction(Query query) {
 		this(new ActionParameters(query), null);
 	}
@@ -814,9 +816,11 @@ public class ReadAction extends Action {
 		return SelectFactory.create(this).aggregate();
 	}
 
-	private void writeCount(JsonWriter writer) throws SQLException {
+	private int writeCount(JsonWriter writer) throws SQLException {
 		CountingSelect counter = counter();
-		writer.writeProperty(Json.total, counter.count());
+		int count = counter.count();
+		writer.writeProperty(Json.total, count);
+		return count;
 	}
 
 	class Groupping {
@@ -1034,8 +1038,8 @@ public class ReadAction extends Action {
 
 		try {
 			if(totalsBy == null) {
-				if(getStartParameter() != -1 || getLimitParameter() != -1)
-					writeCount(writer);
+			    if(getStartParameter() != -1 || getLimitParameter() != -1)
+			        totalCount = writeCount(writer);
 
 				Groupping groups = writeFrame(writer);
 
@@ -1061,5 +1065,9 @@ public class ReadAction extends Action {
 		Expression expression = new Expression(new SqlField(field), type);
 		expression.aggregation = aggregation;
 		return expression;
+	}
+	
+	public int getTotalCount() {
+	    return totalCount;
 	}
 }
