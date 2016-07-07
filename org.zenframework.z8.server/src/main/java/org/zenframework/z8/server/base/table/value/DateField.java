@@ -6,8 +6,10 @@ import org.zenframework.z8.server.db.sql.SqlField;
 import org.zenframework.z8.server.engine.ApplicationServer;
 import org.zenframework.z8.server.format.Format;
 import org.zenframework.z8.server.runtime.IObject;
+import org.zenframework.z8.server.types.bool;
 import org.zenframework.z8.server.types.date;
 import org.zenframework.z8.server.types.primary;
+import org.zenframework.z8.server.types.string;
 import org.zenframework.z8.server.types.sql.sql_date;
 import org.zenframework.z8.server.types.sql.sql_primary;
 
@@ -16,7 +18,6 @@ public class DateField extends Field {
         public CLASS(IObject container) {
             super(container);
             setJavaClass(DateField.class);
-            setAttribute(Native, DateField.class.getCanonicalName());
         }
 
         @Override
@@ -29,8 +30,8 @@ public class DateField extends Field {
         super(container);
         setDefault(date.MIN);
         aggregation = Aggregation.Max;
-        format.set(Format.date);
-        stretch.set(false);
+        format = new string(Format.date);
+        stretch = new bool(false);
     }
 
     public date z8_getDefault() {

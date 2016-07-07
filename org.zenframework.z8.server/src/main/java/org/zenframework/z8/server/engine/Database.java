@@ -131,7 +131,7 @@ public class Database {
         try {
         	systemInstalled = tableExists(Users.TableName);
         } catch(Throwable e) {
-        	Trace.logError(e);
+        	Trace.logEvent(e);
         } finally {
         	ConnectionManager.release(this);
         }

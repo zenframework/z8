@@ -14,7 +14,6 @@ public class JsonWriter extends OBJECT {
         public CLASS(IObject container) {
             super(container);
             setJavaClass(JsonWriter.class);
-            setAttribute(Native, JsonWriter.class.getCanonicalName());
         }
 
         @Override

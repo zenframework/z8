@@ -13,8 +13,8 @@ public interface IAuthorityCenter extends IServer {
 
 	ISession getServer(String sessionId, String serverId) throws RemoteException;
 
-	void register(IServer server) throws RemoteException;
+	void register(IApplicationServer server, String id) throws RemoteException;
 
-	void unregister(IServer server) throws RemoteException;
+	void unregister(IApplicationServer server) throws RemoteException;
 
 }

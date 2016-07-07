@@ -51,7 +51,7 @@ import org.zenframework.z8.server.types.sql.sql_string;
 import org.zenframework.z8.server.utils.ArrayUtils;
 
 public class ReadAction extends Action {
-	private static final Collection<Field> emptyFieldList = new ArrayList<Field>();
+	static private final Collection<Field> emptyFieldList = new ArrayList<Field>();
 
 	private Map<Field, Collection<Query>> fieldToQueries = new LinkedHashMap<Field, Collection<Query>>();
 	private Map<Query, Collection<ILink>> queryToPath = new LinkedHashMap<Query, Collection<ILink>>();
@@ -138,9 +138,8 @@ public class ReadAction extends Action {
 		for(Field field : groupFields)
 			addGroupField(field);
 
-		if(hasPrimaryKeys()) {
-			for(Field primaryKey : query.primaryKeys())
-				addSelectField(primaryKey);
+		if(hasPrimaryKey()) {
+			addSelectField(query.primaryKey());
 
 			addSelectField(query.parentKey());
 			addSelectField(query.parentKeys());
@@ -159,14 +158,13 @@ public class ReadAction extends Action {
 
 		collectUsedQueries(parameters.keyField);
 
-		for(Field primaryKey : query.primaryKeys()) {
-			addNullRecordFilter(primaryKey);
-			addFilter(primaryKey, recordId, Operation.Eq);
-		}
+		Field primaryKey = query.primaryKey();
+		addNullRecordFilter(primaryKey);
+		addFilter(primaryKey, recordId, Operation.Eq);
 
 		if(recordId == null) {
 			Query context = query.getContext();
-			String fieldId = getParameters().get(Json.fieldId);
+			String fieldId = getParameter(Json.fieldId);
 
 			if(context != null && fieldId == null) {
 				addFilter(context.where());
@@ -195,8 +193,8 @@ public class ReadAction extends Action {
 				}
 			}
 
-			String[] lookupFields = getLookupFields();
-			if(lookupFields.length != 0)
+			Collection<String> lookupFields = getLookupFields();
+			if(lookupFields.size() != 0)
 				addLikeFilter(lookupFields, getLookupParameter());
 
 			Collection<Filter> filters = Filter.parse(getFilterParameter(), query);
@@ -215,7 +213,7 @@ public class ReadAction extends Action {
 		}
 	}
 
-	private boolean hasPrimaryKeys() {
+	private boolean hasPrimaryKey() {
 		return groupBy.isEmpty() && aggregateBy.isEmpty();
 	}
 
@@ -378,7 +376,7 @@ public class ReadAction extends Action {
 		if(field != null && checkAggregation(field)) {
 			selectFields.add(field);
 
-			if(hasPrimaryKeys()) {
+			if(hasPrimaryKey()) {
 				Collection<ILink> links = getLinks(field);
 
 				if(!links.isEmpty()) {
@@ -536,24 +534,28 @@ public class ReadAction extends Action {
 		addFilter(getFilter(field, value, operation));
 	}
 
-	private void addLikeFilter(String[] fields, String lookup) {
-		if(fields.length == 0 || lookup == null || lookup.isEmpty())
+	private void addLikeFilter(Collection<String> fields, String lookup) {
+		if(fields.isEmpty() || lookup == null || lookup.isEmpty())
 			return;
 
 		Query query = getQuery();
 
 		SqlToken filter = null;
 
-		for(int index = 0; index < fields.length; index++) {
-			Field field = query.findFieldById(fields[index]);
+		boolean first = true;
+		
+		for(String id : fields) {
+			Field field = query.findFieldById(id);
 			FieldType type = field.type();
 
 			if(type == FieldType.String || type == FieldType.Text) {
 				Lower left = new Lower(field);
-				sql_string right = new sql_string((index != 0 ? "%" : "") + lookup.toLowerCase() + "%");
+				sql_string right = new sql_string((first ? "%" : "") + lookup.toLowerCase() + "%");
 				SqlToken like = new Like(left, right, null);
 
 				filter = filter != null ? new Or(filter, like) : like;
+				
+				first = false;
 			}
 		}
 
@@ -705,17 +707,19 @@ public class ReadAction extends Action {
 
 				SqlToken token = new Filter(field, operation, values).where();
 
-				if(index != 0) {
-					String andOr = parseJsonProperty(filter, Json.andOr);
-
-					if("and".equals(andOr))
-						result = new And(result, token);
-					else if("or".equals(andOr))
-						result = new Or(result, token);
-					else
-						throw new RuntimeException("Read.getFilter1() unknown token '" + andOr + "'");
-				} else
-					result = token;
+				if(token != null) {
+					if(result != null) {
+						String andOr = parseJsonProperty(filter, Json.andOr);
+	
+						if("and".equals(andOr))
+							result = new And(result, token);
+						else if("or".equals(andOr))
+							result = new Or(result, token);
+						else
+							throw new RuntimeException("Read.getFilter1() unknown token '" + andOr + "'");
+					} else
+						result = token;
+				}
 			}
 		}
 

@@ -11,366 +11,341 @@ import org.zenframework.z8.server.base.table.value.Aggregation;
 import org.zenframework.z8.server.base.table.value.Field;
 import org.zenframework.z8.server.base.table.value.ILink;
 import org.zenframework.z8.server.db.sql.SortDirection;
+import org.zenframework.z8.server.engine.ApplicationServer;
 import org.zenframework.z8.server.json.Json;
 import org.zenframework.z8.server.json.parser.JsonArray;
 import org.zenframework.z8.server.json.parser.JsonObject;
-import org.zenframework.z8.server.request.RequestTarget;
 import org.zenframework.z8.server.runtime.RCollection;
+import org.zenframework.z8.server.types.bool;
 import org.zenframework.z8.server.types.guid;
+import org.zenframework.z8.server.types.string;
 
 public class ActionFactory {
-    private String requestId;
-    private Query requestQuery;
-
-    private Query model;
-    private Query context;
-
-    private Map<String, String> requestParameters;
-
-    public static Action create(Query query) {
-        ActionFactory factory = new ActionFactory(query, null);
-        ActionParameters actionParameters = factory.getActionParameters();
-
-        String actionName = actionParameters.requestParameters.get(Json.action);
-
-        if(actionName == null) {
-            return new MetaAction(actionParameters);
-        }
-        if(Action.newAction.equals(actionName)) {
-            return actionParameters.getBoolean(Json.save.get()) ? new CreateAction(actionParameters) : new NewAction(actionParameters);
-        }
-        else if(Action.createAction.equals(actionName)) {
-            return new CreateAction(actionParameters);
-        }
-        else if(Action.copyAction.equals(actionName)) {
-            return new CopyAction(actionParameters);
-        }
-        else if(Action.readAction.equals(actionName)) {
-            return new ReadAction(actionParameters, actionParameters.getId());
-        }
-        else if(Action.updateAction.equals(actionName)) {
-            return new UpdateAction(actionParameters);
-        }
-        else if(Action.destroyAction.equals(actionName)) {
-            return new DestroyAction(actionParameters);
-        }
-        else if(Action.moveAction.equals(actionName)) {
-            return new MoveAction(actionParameters);
-        }
-        else if(Action.commandAction.equals(actionName)) {
-            return new CommandAction(actionParameters);
-        }
-        else if(Action.reportAction.equals(actionName)) {
-            return new ReportAction(actionParameters);
-        }
-        else if(Action.previewAction.equals(actionName)) {
-            return new PreviewAction(actionParameters);
-        }
-        else if(Action.followAction.equals(actionName)) {
-            return new FollowAction(actionParameters);
-        }
-        else if(Action.readRecordAction.equals(actionName)) {
-            return new ReadRecordAction(actionParameters);
-        }
-        else if(Action.modelAction.equals(actionName)) {
-            return new ModelAction(actionParameters);
-        }
-        else if(Action.attachAction.equals(actionName)) {
-            return new AttachAction(actionParameters);
-        }
-        else if(Action.detachAction.equals(actionName)) {
-            return new DetachAction(actionParameters);
-        }
-        else {
-            throw new RuntimeException("Unknown CRUD action: '" + actionName + "'");
-        }
-    }
-
-    public static ActionParameters getActionParameters(Query query) {
-        ActionFactory factory = new ActionFactory(query, new HashMap<String, String>());
-        return factory.getActionParameters();
-    }
-
-    private ActionFactory(Query query, Map<String, String> requestParameters) {
-        this.requestParameters = requestParameters == null ? RequestTarget.getParameters() : requestParameters;
-
-        if(query != null) {
-            requestId = query.classId();
-            requestQuery = query;
-
-            model = query.getModel() != null ? query.getModel() : query;
-            context = model.getContext();
-
-            String queryId = this.requestParameters.get(Json.queryId);
-
-            if(context != null && queryId != null) {
-                Query q = context.findQueryById(queryId);
-                context.setRootQuery(q);
-                q.setContext(context);
-            }
-        }
-    }
-
-    private ActionParameters getActionParameters() {
-        ActionParameters result = new ActionParameters();
-
-        result.requestId = requestId;
-        result.requestParameters = this.requestParameters;
-
-        result.requestQuery = requestQuery;
-
-        String queryId = requestParameters.get(Json.queryId);
-        String fieldId = requestParameters.get(Json.fieldId);
-        String actionName = requestParameters.get(Json.action);
+	private String requestId;
+	private Query requestQuery;
+
+	private Query model;
+	private Query context;
+
+	private Map<string, string> requestParameters;
+
+	public static Action create(Query query) {
+		ActionFactory factory = new ActionFactory(query, null);
+		ActionParameters actionParameters = factory.getActionParameters();
+
+		String actionName = actionParameters.requestParameter(Json.action);
+
+		if(actionName == null)
+			return new MetaAction(actionParameters);
+
+		if(Action.newAction.equals(actionName)) {
+			return actionParameters.getBoolean(Json.save) ? new CreateAction(actionParameters) : new NewAction(actionParameters);
+		} else if(Action.createAction.equals(actionName)) {
+			return new CreateAction(actionParameters);
+		} else if(Action.copyAction.equals(actionName)) {
+			return new CopyAction(actionParameters);
+		} else if(Action.readAction.equals(actionName)) {
+			return new ReadAction(actionParameters, actionParameters.getId());
+		} else if(Action.updateAction.equals(actionName)) {
+			return new UpdateAction(actionParameters);
+		} else if(Action.destroyAction.equals(actionName)) {
+			return new DestroyAction(actionParameters);
+		} else if(Action.moveAction.equals(actionName)) {
+			return new MoveAction(actionParameters);
+		} else if(Action.commandAction.equals(actionName)) {
+			return new CommandAction(actionParameters);
+		} else if(Action.reportAction.equals(actionName)) {
+			return new ReportAction(actionParameters);
+		} else if(Action.previewAction.equals(actionName)) {
+			return new PreviewAction(actionParameters);
+		} else if(Action.followAction.equals(actionName)) {
+			return new FollowAction(actionParameters);
+		} else if(Action.readRecordAction.equals(actionName)) {
+			return new ReadRecordAction(actionParameters);
+		} else if(Action.modelAction.equals(actionName)) {
+			return new ModelAction(actionParameters);
+		} else if(Action.attachAction.equals(actionName)) {
+			return new AttachAction(actionParameters);
+		} else if(Action.detachAction.equals(actionName)) {
+			return new DetachAction(actionParameters);
+		} else {
+			throw new RuntimeException("Unknown CRUD action: '" + actionName + "'");
+		}
+	}
+
+	public static ActionParameters getActionParameters(Query query) {
+		ActionFactory factory = new ActionFactory(query, new HashMap<string, string>());
+		return factory.getActionParameters();
+	}
+
+	private ActionFactory(Query query, Map<string, string> requestParameters) {
+		this.requestParameters = requestParameters == null ? ApplicationServer.getRequest().getParameters() : requestParameters;
+
+		if(query != null) {
+			requestId = query.classId();
+			requestQuery = query;
+
+			model = query.getModel() != null ? query.getModel() : query;
+			context = model.getContext();
+
+			String queryId = requestParameter(Json.queryId);
+
+			if(context != null && queryId != null) {
+				Query q = context.findQueryById(queryId);
+				context.setRootQuery(q);
+				q.setContext(context);
+			}
+		}
+	}
+
+	public String requestParameter(string key) {
+		string value = requestParameters.get(key);
+		return value != null ? value.get() : null;
+	}
+
+	private ActionParameters getActionParameters() {
+		ActionParameters result = new ActionParameters(requestParameters);
+
+		result.requestId = requestId;
+
+		result.requestQuery = requestQuery;
+
+		String queryId = requestParameter(Json.queryId);
+		String fieldId = requestParameter(Json.fieldId);
+		String actionName = requestParameter(Json.action);
+
+		result.query = model;
+
+		Query fieldsQuery = model;
+
+		if(context != null) {
+			if(queryId != null) {
+				result.query = context.getRootQuery();
+
+				assert (result.query.id().equals(queryId));
 
-        result.query = model;
-
-        Query fieldsQuery = model;
-
-        if(context != null) {
-            if(queryId != null) {
-                result.query = context.getRootQuery();
-
-                assert (result.query.id().equals(queryId));
-
-                if(fieldId == null) {
-                    Collection<ILink> path = result.query.getPath(model);
-                    result.keyField = (Field)path.toArray(new ILink[0])[path.size() - 1];
+				if(fieldId == null) {
+					Collection<ILink> path = result.query.getPath(model);
+					result.keyField = (Field)path.toArray(new ILink[0])[path.size() - 1];
 
-                    result.fields = context.getFieldsVia(result.query);
-                    result.fields.removeAll(context.getFieldsVia(model));
-                }
-
-            }
-            else if(fieldId == null) {
-                result.fields = context.getFieldsVia(model);
-            }
+					result.fields = context.getFieldsVia(result.query);
+					result.fields.removeAll(context.getFieldsVia(model));
+				}
 
-            fieldsQuery = context;
-        }
+			} else if(fieldId == null)
+				result.fields = context.getFieldsVia(model);
 
-        if(actionName == null || actionName.equals(Action.readAction)) {
-            result.query.onRender();
-        }
+			fieldsQuery = context;
+		}
 
-        if(fieldId != null) {
-            result.fields = new LinkedHashSet<Field>();
+		if(actionName == null || actionName.equals(Action.readAction))
+			result.query.onRender();
 
-            Field field = result.query.findFieldById(fieldId);
+		if(fieldId != null) {
+			result.fields = new LinkedHashSet<Field>();
 
-            Collection<ILink> path = result.query.getPath(field);
+			Field field = result.query.findFieldById(fieldId);
 
-            result.fields.add(field);
+			Collection<ILink> path = result.query.getPath(field);
 
-            for(ILink link : path) {
-                for(Field f : fieldsQuery.getFieldsVia(link.getQuery())) {
-                    result.fields.add(f);
-                }
-            }
+			result.fields.add(field);
 
-            if(context != null && result.query != fieldsQuery && result.query != model) {
-                Collection<Field> invisibleFields = model.getReachableFields(result.fields);
-                result.fields.removeAll(invisibleFields);
-            }
+			for(ILink link : path) {
+				for(Field f : fieldsQuery.getFieldsVia(link.getQuery()))
+					result.fields.add(f);
+			}
 
-            result.query = path.iterator().next().getQuery();
-            result.query.setContext(context != null ? context : requestQuery);
+			if(context != null && result.query != fieldsQuery && result.query != model) {
+				Collection<Field> invisibleFields = model.getReachableFields(result.fields);
+				result.fields.removeAll(invisibleFields);
+			}
 
-            Collection<Field> columns = field.getColumns();
+			result.query = path.iterator().next().getQuery();
+			result.query.setContext(context != null ? context : requestQuery);
 
-            for(Field f : columns) {
-                if(result.query.findFieldById(f.id()) == f) {
-                    result.fields.add(f);
-                }
-            }
+			Collection<Field> columns = field.getColumns();
 
-            for(Field f : result.fields) {
-                if(f != field && !columns.contains(f)) {
-                    f.hidden.set(true);
-                }
-                else {
-                    f.visible.set(true);
-                }
-            }
+			for(Field f : columns) {
+				if(result.query.findFieldById(f.id()) == f)
+					result.fields.add(f);
+			}
 
-            if(!result.fields.isEmpty()) {
-                result.sortFields = new LinkedHashSet<Field>();
-                result.sortFields.add(field);
-            }
+			for(Field f : result.fields) {
+				if(f != field && !columns.contains(f))
+					f.hidden = new bool(true);
+				else
+					f.visible = new bool(true);
+			}
 
-            Field modelPrimaryKey = model.primaryKey();
+			if(!result.fields.isEmpty()) {
+				result.sortFields = new LinkedHashSet<Field>();
+				result.sortFields.add(field);
+			}
 
-            if(result.query.findFieldById(modelPrimaryKey.id()) != null) {
-                result.keyField = modelPrimaryKey;
-            }
+			Field modelPrimaryKey = model.primaryKey();
 
-            result.link = path.iterator().next();
-        }
+			if(result.query.findFieldById(modelPrimaryKey.id()) != null)
+				result.keyField = modelPrimaryKey;
 
-        if(result.query != null) {
-            if(actionName == null) {
-                result.groupFields = new LinkedHashSet<Field>();
-                result.groupFields.addAll(result.query.collectGroupFields());
+			result.link = path.iterator().next();
+		}
 
-                if(result.sortFields == null) {
-                    result.sortFields = new LinkedHashSet<Field>();
-                    result.sortFields.addAll(result.groupFields);
-                    result.sortFields.addAll(result.query.collectSortFields());
-                }
+		if(result.query != null) {
+			if(actionName == null) {
+				result.groupFields = new LinkedHashSet<Field>();
+				result.groupFields.addAll(result.query.collectGroupFields());
 
-                if(result.fields != null) {
-                    result.groupFields.retainAll(result.fields);
-                    result.sortFields.retainAll(result.fields);
-                }
-            }
-            else {
-                result.groupFields = getGroupFields(result.query);
-                result.sortFields = getSortFields(result.query);
-            }
+				if(result.sortFields == null) {
+					result.sortFields = new LinkedHashSet<Field>();
+					result.sortFields.addAll(result.groupFields);
+					result.sortFields.addAll(result.query.collectSortFields());
+				}
 
-            result.groupBy = result.query.collectGroupByFields();
-            result.aggregateBy = result.query.collectAggregateByFields();
+				if(result.fields != null) {
+					result.groupFields.retainAll(result.fields);
+					result.sortFields.retainAll(result.fields);
+				}
+			} else {
+				result.groupFields = getGroupFields(result.query);
+				result.sortFields = getSortFields(result.query);
+			}
 
-            result.totalsBy = getTotalsBy(result.query);
-            setAggregation(result.query);
+			result.groupBy = result.query.collectGroupByFields();
+			result.aggregateBy = result.query.collectAggregateByFields();
 
-            RCollection<guid> ids = getIds();
+			result.totalsBy = getTotalsBy(result.query);
+			setAggregation(result.query);
 
-            if(ids != null) {
-                result.query.recordIds = ids;
-            }
-        }
+			RCollection<guid> ids = getIds();
 
-        return result;
-    }
+			if(ids != null)
+				result.query.recordIds = ids;
+		}
 
-    private RCollection<guid> getIds() {
-        String jsonData = requestParameters.get(Json.ids);
+		return result;
+	}
 
-        if(jsonData == null || jsonData.isEmpty()) {
-            return null;
-        }
+	private RCollection<guid> getIds() {
+		String jsonData = requestParameter(Json.ids);
 
-        RCollection<guid> ids = new RCollection<guid>();
+		if(jsonData == null || jsonData.isEmpty())
+			return null;
 
-        JsonArray array = new JsonArray(jsonData);
+		RCollection<guid> ids = new RCollection<guid>();
 
-        if(array != null) {
-            int length = array.length();
-            for(int index = 0; index < length; index++) {
-                ids.add(new guid(array.getString(index)));
-            }
-        }
+		JsonArray array = new JsonArray(jsonData);
 
-        return ids;
-    }
+		if(array != null) {
+			int length = array.length();
+			for(int index = 0; index < length; index++) {
+				ids.add(new guid(array.getString(index)));
+			}
+		}
 
-    private Field getTotalsBy(Query query) {
-        String totalsBy = requestParameters.get(Json.totalsBy);
-        return totalsBy != null ? query.findFieldById(totalsBy) : null;
-    }
+		return ids;
+	}
 
-    private void setAggregation(Query query) {
-        String aggregation = requestParameters.get(Json.aggregation);
+	private Field getTotalsBy(Query query) {
+		String totalsBy = requestParameter(Json.totalsBy);
+		return totalsBy != null ? query.findFieldById(totalsBy) : null;
+	}
 
-        if(aggregation != null) {
-            JsonArray array = new JsonArray(aggregation);
+	private void setAggregation(Query query) {
+		String aggregation = requestParameter(Json.aggregation);
 
-            for(int index = 0; index < array.length(); index++) {
-                Field field = query.findFieldById(array.getString(index));
+		if(aggregation != null) {
+			JsonArray array = new JsonArray(aggregation);
 
-                if(field != null) {
-                    field.aggregation = Aggregation.Sum;
-                }
-            }
-        }
-    }
+			for(int index = 0; index < array.length(); index++) {
+				Field field = query.findFieldById(array.getString(index));
 
-    private Collection<Field> parseSortFieldsInOldSchoolManner(Query query, String jsonData) {
-        Collection<Field> fields = new ArrayList<Field>();
+				if(field != null)
+					field.aggregation = Aggregation.Sum;
+			}
+		}
+	}
 
-        Field field = query.findFieldById(jsonData);
-        String dir = requestParameters.get(Json.dir);
+	private Collection<Field> parseSortFieldsInOldSchoolManner(Query query, String jsonData) {
+		Collection<Field> fields = new ArrayList<Field>();
 
-        if(field != null) {
-            field.sortDirection = SortDirection.fromString(dir);
-            fields.add(field);
-        }
-        
-        return fields;
-    }
-    
-    private Collection<Field> parseSortFields(Query query) {
-        Collection<Field> fields = new ArrayList<Field>();
+		Field field = query.findFieldById(jsonData);
+		String dir = requestParameter(Json.dir);
 
-        String jsonData = requestParameters.get(Json.sort);
+		if(field != null) {
+			field.sortDirection = SortDirection.fromString(dir);
+			fields.add(field);
+		}
 
-        if(jsonData == null || jsonData.isEmpty()) {
-            return fields;
-        }
+		return fields;
+	}
 
-        if(jsonData.charAt(0) != '[') {
-            return parseSortFieldsInOldSchoolManner(query, jsonData);
-        }
+	private Collection<Field> parseSortFields(Query query) {
+		Collection<Field> fields = new ArrayList<Field>();
 
-        JsonArray array = new JsonArray(jsonData);
+		String jsonData = requestParameter(Json.sort);
 
-        for(int index = 0; index < array.length(); index++) {
-            JsonObject object = array.getJsonObject(index);
+		if(jsonData == null || jsonData.isEmpty())
+			return fields;
 
-            Field field = query.findFieldById(object.getString(Json.property));
-            String dir = object.getString(Json.direction);
+		if(jsonData.charAt(0) != '[')
+			return parseSortFieldsInOldSchoolManner(query, jsonData);
 
-            if(field != null) {
-                field.sortDirection = SortDirection.fromString(dir);
-                fields.add(field);
-            }
-        }
+		JsonArray array = new JsonArray(jsonData);
 
-        return fields;
-    }
+		for(int index = 0; index < array.length(); index++) {
+			JsonObject object = array.getJsonObject(index);
 
-    private Collection<Field> parseGroupFields(Query query) {
-        Collection<Field> fields = new ArrayList<Field>();
+			Field field = query.findFieldById(object.getString(Json.property));
+			String dir = object.getString(Json.direction);
 
-        String groupDir = requestParameters.get(Json.groupDir);
-        String jsonData = requestParameters.get(Json.groupBy);
+			if(field != null) {
+				field.sortDirection = SortDirection.fromString(dir);
+				fields.add(field);
+			}
+		}
 
-        if(jsonData == null) {
-            return fields;
-        }
+		return fields;
+	}
 
-        JsonArray array = new JsonArray(jsonData);
+	private Collection<Field> parseGroupFields(Query query) {
+		Collection<Field> fields = new ArrayList<Field>();
 
-        for(int index = 0; index < array.length(); index++) {
-            Field field = query.findFieldById(array.getString(index));
+		String groupDir = requestParameter(Json.groupDir);
+		String jsonData = requestParameter(Json.groupBy);
 
-            if(field != null) {
-                field.sortDirection = groupDir == null || groupDir.isEmpty() ? SortDirection.Asc : SortDirection
-                        .fromString(groupDir);
-                fields.add(field);
-            }
-        }
+		if(jsonData == null)
+			return fields;
 
-        return fields;
-    }
+		JsonArray array = new JsonArray(jsonData);
 
-    private Collection<Field> getGroupFields(Query query) {
-        return parseGroupFields(query);
-    }
-    
-    private Collection<Field> getSortFields(Query query) {
-        Collection<Field> sortFields = parseSortFields(query);
-        Collection<Field> groupFields = parseGroupFields(query);
+		for(int index = 0; index < array.length(); index++) {
+			Field field = query.findFieldById(array.getString(index));
 
-        if(sortFields.isEmpty() && groupFields.isEmpty()) {
-            return null;
-        }
+			if(field != null) {
+				field.sortDirection = groupDir == null || groupDir.isEmpty() ? SortDirection.Asc : SortDirection.fromString(groupDir);
+				fields.add(field);
+			}
+		}
 
-        Collection<Field> fields = new LinkedHashSet<Field>();
-        fields.addAll(groupFields);
-        fields.addAll(sortFields);
+		return fields;
+	}
 
-        return fields;
-    }
+	private Collection<Field> getGroupFields(Query query) {
+		return parseGroupFields(query);
+	}
+
+	private Collection<Field> getSortFields(Query query) {
+		Collection<Field> sortFields = parseSortFields(query);
+		Collection<Field> groupFields = parseGroupFields(query);
+
+		if(sortFields.isEmpty() && groupFields.isEmpty()) {
+			return null;
+		}
+
+		Collection<Field> fields = new LinkedHashSet<Field>();
+		fields.addAll(groupFields);
+		fields.addAll(sortFields);
+
+		return fields;
+	}
 }

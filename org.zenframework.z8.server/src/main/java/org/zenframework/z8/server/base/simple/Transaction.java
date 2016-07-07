@@ -11,7 +11,6 @@ public class Transaction extends OBJECT {
         public CLASS(IObject container) {
             super(container);
             setJavaClass(Transaction.class);
-            setAttribute(Native, Transaction.class.getCanonicalName());
         }
 
         @Override

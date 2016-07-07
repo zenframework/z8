@@ -11,7 +11,6 @@ import org.zenframework.z8.server.base.table.value.IntegerField;
 import org.zenframework.z8.server.base.table.value.StringField;
 import org.zenframework.z8.server.base.table.value.TextField;
 import org.zenframework.z8.server.engine.ApplicationServer;
-import org.zenframework.z8.server.engine.Database;
 import org.zenframework.z8.server.engine.Z8Context;
 import org.zenframework.z8.server.types.guid;
 
@@ -19,13 +18,12 @@ public class Scheduler implements Runnable {
 
 	private static Scheduler scheduler = null;
 
-	private Database database;
 	private Thread thread = null;
 	private boolean resetPending = true;
 	private List<Task> tasks = new ArrayList<Task>();
 
 	public static void start() {
-		if (scheduler == null && Z8Context.getConfig().isSchedulerEnabled())
+		if (scheduler == null && Z8Context.getConfig().isSchedulerEnabled() && ApplicationServer.isSystemInstalled())
 			scheduler = new Scheduler();
 	}
 
@@ -47,7 +45,6 @@ public class Scheduler implements Runnable {
 	}
 
 	private Scheduler() {
-		database = ApplicationServer.database();
 		thread = new Thread(this, "Z8 scheduler");
 		thread.start();
 	}
@@ -71,7 +68,7 @@ public class Scheduler implements Runnable {
 	}
 
 	private synchronized void initializeTasks() {
-		if (!resetPending || !database.isSystemInstalled())
+		if (!resetPending || !ApplicationServer.isSystemInstalled())
 			return;
 
 		Tasks tasksTable = new Tasks.CLASS<Tasks>(null).get();

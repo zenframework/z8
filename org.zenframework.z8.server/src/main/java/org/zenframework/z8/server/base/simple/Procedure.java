@@ -23,7 +23,6 @@ public class Procedure extends Command implements java.lang.Runnable {
 		public CLASS(IObject container) {
 			super(container);
 			setJavaClass(Procedure.class);
-			setAttribute(Native, Procedure.class.getCanonicalName());
 		}
 
 		@Override

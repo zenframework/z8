@@ -97,9 +97,7 @@ public class TransportEngine implements Properties.Listener {
 	}
 
 	private static Transport createTransport(TransportContext context, String protocol) {
-		if (RmiTransport.PROTOCOL.equals(protocol)) {
-			return new RmiTransport(context);
-		} else if (JmsTransport.PROTOCOL.equals(protocol)) {
+		if (JmsTransport.PROTOCOL.equals(protocol)) {
 			return new JmsTransport(context);
 		} else if (FileTransport.PROTOCOL.equals(protocol)) {
 			return new FileTransport(context);

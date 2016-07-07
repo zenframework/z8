@@ -54,9 +54,8 @@ public class Monitor extends RequestTarget implements IMonitor {
 
 	@Override
 	public void log(String text) {
-		if (logFile == null) {
+		if (logFile == null)
 			logFile = new file();
-		}
 
 		logFile.write(new Message(text) + file.EOL);
 	}
@@ -125,10 +124,10 @@ public class Monitor extends RequestTarget implements IMonitor {
 
 		writer.finishObject();
 
-		writer.writeProperty(Json.serverId, ApplicationServer.Id());
+		writer.writeProperty(Json.serverId, ApplicationServer.id);
 
 		if (outputFile != null)
-			writer.writeProperty(Json.source, outputFile.getRelativePath().replace('\\', '/'));
+			writer.writeProperty(Json.source, outputFile.path.get().replace('\\', '/'));
 
 		writer.writeInfo(getMessages(), logFile);
 	}

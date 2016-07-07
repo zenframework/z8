@@ -16,7 +16,6 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.FileUploadException;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
-import org.zenframework.z8.server.base.file.FileInfo;
 import org.zenframework.z8.server.base.file.FilesFactory;
 import org.zenframework.z8.server.base.xml.GNode;
 import org.zenframework.z8.server.engine.IApplicationServer;
@@ -28,6 +27,7 @@ import org.zenframework.z8.server.json.Json;
 import org.zenframework.z8.server.logs.Trace;
 import org.zenframework.z8.server.resources.Resources;
 import org.zenframework.z8.server.types.encoding;
+import org.zenframework.z8.server.types.file;
 import org.zenframework.z8.server.utils.NumericUtils;
 import org.zenframework.z8.web.servlet.Servlet;
 
@@ -50,7 +50,7 @@ public abstract class Adapter {
 			ISession session = null;
 
 			Map<String, String> parameters = new HashMap<String, String>();
-			List<FileInfo> files = new ArrayList<FileInfo>();
+			List<file> files = new ArrayList<file>();
 
 			parseRequest(request, parameters, files);
 
@@ -85,7 +85,7 @@ public abstract class Adapter {
 		}
 	}
 
-	private void parseRequest(HttpServletRequest request, Map<String, String> parameters, List<FileInfo> files)
+	private void parseRequest(HttpServletRequest request, Map<String, String> parameters, List<file> files)
 			throws IOException {
 		if (ServletFileUpload.isMultipartContent(request)) {
 			List<FileItem> fileItems = parseMultipartRequest(request);
@@ -97,7 +97,7 @@ public abstract class Adapter {
 				if (!fileItem.isFormField()) {
 					if(fileItem.getSize() > fileSizeMax)
 						throw new RuntimeException(Resources.format("Exception.fileSizeLimitExceeded", fileItem.getName(), fileSizeMaxMB));
-					files.add(new FileInfo(fileItem));
+					files.add(new file(fileItem));
 				} else
 					parameters.put(fileItem.getFieldName(), fileItem.getString(encoding.Default.toString()));
 			}
@@ -147,11 +147,11 @@ public abstract class Adapter {
 
 	protected void processAccessDenied(HttpServletResponse response) throws IOException {}
 
-	protected void service(ISession session, Map<String, String> parameters, List<FileInfo> files,
+	protected void service(ISession session, Map<String, String> parameters, List<file> files,
 			HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
 		GNode node = new GNode(parameters, files);
 
-		IApplicationServer server = session.getServerInfo().getApplicationServer();
+		IApplicationServer server = session.getServerInfo().getServer();
 		node = server.processRequest(session, node);
 
 		if (response != null)

@@ -70,7 +70,7 @@ public class JobMonitor extends Monitor {
 			writer.writeProperty(Json.totalWork, totalWork);
 			writer.writeProperty(Json.worked, worked);
 
-			writer.writeProperty(Json.serverId, ApplicationServer.Id());
+			writer.writeProperty(Json.serverId, ApplicationServer.id);
 			writer.writeInfo(getMessages(), isDone ? getLog() : null);
 
 			collectLogMessages();

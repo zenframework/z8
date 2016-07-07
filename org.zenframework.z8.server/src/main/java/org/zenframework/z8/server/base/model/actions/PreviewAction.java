@@ -6,7 +6,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
-import org.zenframework.z8.server.base.file.FileInfo;
 import org.zenframework.z8.server.base.file.Files;
 import org.zenframework.z8.server.base.file.Folders;
 import org.zenframework.z8.server.base.query.Query;
@@ -15,6 +14,7 @@ import org.zenframework.z8.server.engine.ApplicationServer;
 import org.zenframework.z8.server.engine.Z8Context;
 import org.zenframework.z8.server.json.Json;
 import org.zenframework.z8.server.json.JsonWriter;
+import org.zenframework.z8.server.types.file;
 import org.zenframework.z8.server.types.guid;
 import org.zenframework.z8.server.utils.PdfUtils;
 
@@ -40,28 +40,28 @@ public class PreviewAction extends Action {
 		if (!query.readRecord(recordId, Arrays.<Field> asList(field)))
 			throw new RuntimeException("Record '" + recordId + "' does not exist in '" + query.getIndex() + "'");
 
-		Collection<FileInfo> attachments = FileInfo.parseArray(field.string().get());
+		Collection<file> attachments = file.parse(field.string().get());
 
 		if (attachments.size() == 0)
 			throw new RuntimeException("'" + actionParameters().requestId + "." + fieldId + "' is empty");
 
 		List<File> converted = new ArrayList<File>(attachments.size());
-		Files files = Files.newInstance();
+		Files files = new Files();
 		String previewRelativePath = null;
-		for (FileInfo fileInfo : attachments) {
+		for (file file : attachments) {
 			if (previewRelativePath == null)
-				previewRelativePath = getPreviewPath(fileInfo, requestId, recordId, field);
-			File preview = files.getPreview(fileInfo);
+				previewRelativePath = getPreviewPath(file, requestId, recordId, field);
+			File preview = files.getPreview(file);
 			if (preview != null)
 				converted.add(preview);
 		}
 		File preview = new File(Z8Context.getWorkingPath(), previewRelativePath);
 		PdfUtils.merge(converted, preview);
 		writer.writeProperty(Json.source, previewRelativePath);
-		writer.writeProperty(Json.serverId, ApplicationServer.Id());
+		writer.writeProperty(Json.serverId, ApplicationServer.id);
 	}
 
-	private static String getPreviewPath(FileInfo file, String requestId, guid recordId, Field field) {
+	private static String getPreviewPath(file file, String requestId, guid recordId, Field field) {
 		try {
 			return new File(file.path.get()).getParentFile().getParent() + '/' + PREVIEW;
 		} catch (Throwable e) {

@@ -9,9 +9,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.zenframework.z8.server.base.file.FileInfo;
 import org.zenframework.z8.server.base.file.Folders;
 import org.zenframework.z8.server.base.file.InputOnlyFileItem;
 import org.zenframework.z8.server.base.query.Query;
@@ -26,10 +23,10 @@ import org.zenframework.z8.server.base.view.command.Command;
 import org.zenframework.z8.server.base.view.command.Parameter;
 import org.zenframework.z8.server.db.sql.SqlToken;
 import org.zenframework.z8.server.db.sql.expressions.And;
-import org.zenframework.z8.server.db.sql.expressions.Operation;
+import org.zenframework.z8.server.db.sql.expressions.Equ;
 import org.zenframework.z8.server.db.sql.expressions.Or;
-import org.zenframework.z8.server.db.sql.expressions.Rel;
 import org.zenframework.z8.server.db.sql.functions.InVector;
+import org.zenframework.z8.server.db.sql.functions.string.IsEmpty;
 import org.zenframework.z8.server.engine.Z8Context;
 import org.zenframework.z8.server.ie.Export;
 import org.zenframework.z8.server.ie.Message;
@@ -39,21 +36,20 @@ import org.zenframework.z8.server.ie.TransportEngine;
 import org.zenframework.z8.server.ie.TransportException;
 import org.zenframework.z8.server.ie.TransportRoute;
 import org.zenframework.z8.server.ie.TransportRoutes;
+import org.zenframework.z8.server.logs.Trace;
 import org.zenframework.z8.server.request.Loader;
 import org.zenframework.z8.server.resources.Resources;
 import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.runtime.RCollection;
-import org.zenframework.z8.server.runtime.ServerRuntime;
 import org.zenframework.z8.server.types.datetime;
+import org.zenframework.z8.server.types.file;
 import org.zenframework.z8.server.types.guid;
+import org.zenframework.z8.server.types.integer;
 import org.zenframework.z8.server.types.string;
-import org.zenframework.z8.server.types.sql.sql_string;
 import org.zenframework.z8.server.utils.ErrorUtils;
 import org.zenframework.z8.server.utils.IOUtils;
 
 public class SystemFiles extends Table {
-
-	private static final Log LOG = LogFactory.getLog(SystemFiles.class);
 
 	private static final String TABLE_PREFIX = "table";
 
@@ -114,7 +110,7 @@ public class SystemFiles extends Table {
 
 		@Override
 		public guid z8_get() {
-			SystemFiles container = (SystemFiles) getContainer();
+			SystemFiles container = (SystemFiles)getContainer();
 			return container.recordId();
 		}
 
@@ -140,7 +136,7 @@ public class SystemFiles extends Table {
 
 		@Override
 		public string z8_get() {
-			SystemFiles container = (SystemFiles) getContainer();
+			SystemFiles container = (SystemFiles)getContainer();
 			return new string(container.getStatus().getText());
 		}
 
@@ -166,10 +162,9 @@ public class SystemFiles extends Table {
 
 		@Override
 		protected String attachmentName() {
-			SystemFiles container = (SystemFiles) getContainer();
+			SystemFiles container = (SystemFiles)getContainer();
 			File path = new File(Folders.Base, container.path.get().get().string().get());
-			return container.getStatus() == FileInfo.Status.LOCAL || path.exists() ? container.name.get().get().string()
-					.get() : null;
+			return container.getStatus() == file.Status.LOCAL || path.exists() ? container.name.get().get().string().get() : null;
 		}
 
 		@Override
@@ -183,16 +178,13 @@ public class SystemFiles extends Table {
 	private static final string CommandSendFile = new string("5AC63980-254B-44BB-BC72-407520008D25");
 
 	@SuppressWarnings("unchecked")
-	private static final RCollection<Parameter.CLASS<? extends Parameter>> SendFileParameters = new RCollection<Parameter.CLASS<? extends Parameter>>(
-			Arrays.<Parameter.CLASS<? extends Parameter>> asList(Parameter.z8_create(
-					new string(Resources.get("Files.command.sendFile.addresses")), new string("??"))));
+	private static final RCollection<Parameter.CLASS<? extends Parameter>> SendFileParameters = new RCollection<Parameter.CLASS<? extends Parameter>>(Arrays.<Parameter.CLASS<? extends Parameter>> asList(Parameter.z8_create(
+			new string(Resources.get("Files.command.sendFile.addresses")), new string("??"))));
 
 	public final StringField.CLASS<StringField> path = new StringField.CLASS<StringField>(this);
-	public final BinaryField.CLASS<BinaryField> file = new BinaryField.CLASS<BinaryField>(this);
-	public final RecordIdExpression.CLASS<RecordIdExpression> recordIdExp = new RecordIdExpression.CLASS<RecordIdExpression>(
-			this);
-	public final FileAttachmentExpression.CLASS<FileAttachmentExpression> attachment = new FileAttachmentExpression.CLASS<FileAttachmentExpression>(
-			this);
+	public final BinaryField.CLASS<BinaryField> data = new BinaryField.CLASS<BinaryField>(this);
+	public final RecordIdExpression.CLASS<RecordIdExpression> recordIdExp = new RecordIdExpression.CLASS<RecordIdExpression>(this);
+	public final FileAttachmentExpression.CLASS<FileAttachmentExpression> attachment = new FileAttachmentExpression.CLASS<FileAttachmentExpression>(this);
 
 	static public SystemFiles newInstance() {
 		return new SystemFiles.CLASS<SystemFiles>().get();
@@ -210,24 +202,24 @@ public class SystemFiles extends Table {
 		recordIdExp.setDisplayName("RecordId");
 
 		name.setDisplayName(Resources.get(strings.Name));
-		name.get().length.set(512);
+		name.get().length = new integer(512);
 
 		id.setDisplayName(Resources.get(strings.InstanceId));
 
 		id1.setDisplayName(Resources.get(strings.Status));
 
-		file.setName(names.File);
-		file.setIndex("file");
+		data.setName(names.File);
+		data.setIndex("data");
 
 		path.setName(names.Path);
 		path.setIndex("path");
 		path.setDisplayName(Resources.get(strings.Path));
-		path.get().length.set(512);
+		path.get().length = new integer(512);
 
 		attachment.setIndex("attachment");
 		attachment.setDisplayName(Resources.get(strings.Attachment));
 
-		registerDataField(file);
+		registerDataField(data);
 		registerDataField(path);
 		registerDataField(recordIdExp);
 		registerDataField(attachment);
@@ -244,44 +236,43 @@ public class SystemFiles extends Table {
 		registerFormField(attachment);
 
 		commands.add(Command.z8_create(CommandRequestFile, new string(Resources.get("Files.command.requestFile"))));
-		commands.add(Command.z8_create(CommandSendFile, new string(Resources.get("Files.command.sendFile")),
-				SendFileParameters));
+		commands.add(Command.z8_create(CommandSendFile, new string(Resources.get("Files.command.sendFile")), SendFileParameters));
 	}
 
-	public FileInfo getFile(FileInfo fileInfo) throws IOException {
-		File path = new File(Folders.Base, fileInfo.path.get());
-		if (path.exists()) {
-			fileInfo.name = new string(path.getName());
-			fillFileInfoFile(fileInfo, path);
-		} else if (fileInfo.path.get().startsWith(TABLE_PREFIX)) {
-			fillFileInfoFromTable(fileInfo, path);
+	public file getFile(file file) throws IOException {
+		File path = new File(Folders.Base, file.path.get());
+		if(path.exists()) {
+			file.name = new string(path.getName());
+			fillFileInfoFile(file, path);
+		} else if(file.path.get().startsWith(TABLE_PREFIX)) {
+			fillFileInfoFromTable(file, path);
 		} else {
-			if (!fillFileInfoFromStorage(fileInfo, path))
-				fillFileInfoFromRemote(fileInfo, path);
+			if(!fillFromStorage(file, path))
+				fillFromRemote(file, path);
 		}
-		return fileInfo;
+		return file;
 	}
 
-	public void addFile(FileInfo fileInfo) {
+	public void addFile(file fileInfo) {
 		boolean exists = readFirst(Arrays.<Field> asList(id1.get()), fileInfo, false);
-		if (!exists) {
+		if(!exists) {
 			name.get().set(fileInfo.name);
-			if (fileInfo.instanceId != null)
+			if(fileInfo.instanceId != null)
 				id.get().set(fileInfo.instanceId);
-			else if (fileInfo.file != null)
+			else if(fileInfo.get() != null)
 				id.get().set(Z8Context.getInstanceId());
-			if (fileInfo.file != null)
-				file.get().set(fileInfo.getInputStream());
-			id1.get().set(new string((fileInfo.file == null ? FileInfo.Status.REMOTE : FileInfo.Status.LOCAL).getValue()));
+			if(fileInfo.get() != null)
+				data.get().set(fileInfo.getInputStream());
+			id1.get().set(new string((fileInfo.get() == null ? file.Status.REMOTE : file.Status.LOCAL).getValue()));
 			path.get().set(fileInfo.path);
-			if (fileInfo.id == null || fileInfo.id.isNull())
+			if(fileInfo.id == null || fileInfo.id.isNull())
 				fileInfo.id = guid.create();
-			if (fileInfo.time != null && !fileInfo.time.equals(datetime.MIN))
+			if(fileInfo.time != null && !fileInfo.time.equals(datetime.MIN))
 				createdAt.get().set(fileInfo.time);
 			create(fileInfo.id);
-		} else if (getStatus() != FileInfo.Status.LOCAL && fileInfo.file != null) {
-			id1.get().set(new string(FileInfo.Status.LOCAL.getValue()));
-			file.get().set(fileInfo.getInputStream());
+		} else if(getStatus() != file.Status.LOCAL && fileInfo.get() != null) {
+			id1.get().set(new string(file.Status.LOCAL.getValue()));
+			data.get().set(fileInfo.getInputStream());
 			fileInfo.id = recordId();
 			update(fileInfo.id);
 		}
@@ -289,19 +280,17 @@ public class SystemFiles extends Table {
 
 	@Override
 	@SuppressWarnings({ "rawtypes", "unchecked" })
-	public void z8_onCommand(Query.CLASS<? extends Query> query, Command.CLASS<? extends Command> command,
-			RCollection recordIds) {
-		if (command.get().id.equals(CommandSendFile)) {
+	public void z8_onCommand(Query.CLASS<? extends Query> query, Command.CLASS<? extends Command> command, RCollection recordIds) {
+		if(command.get().id.equals(CommandSendFile)) {
 			read(Arrays.<Field> asList(id.get(), name.get(), path.get()), new InVector(recordId.get(), recordIds));
-			while (next()) {
-				FileInfo fileInfo = new FileInfo(recordId(), name.get().get().string().get(), id.get().get().string().get(),
-						path.get().get().string().get());
+			while(next()) {
+				file fileInfo = new file(recordId(), name.get().get().string().get(), id.get().get().string().get(), path.get().get().string().get());
 				sendFile(fileInfo, command.get().parameters.get(0).get().z8_string().get());
 			}
 		}
 	}
 
-	public static void sendFile(FileInfo fileInfo, String address) {
+	public static void sendFile(file fileInfo, String address) {
 		Export export = new Export.CLASS<Export>().get();
 		export.setSendFilesSeparately(false);
 		export.setSendFilesContent(true);
@@ -312,16 +301,16 @@ public class SystemFiles extends Table {
 		export.execute();
 	}
 
-	private boolean fillFileInfoFromStorage(FileInfo fileInfo, File path) throws IOException {
-		if (readFirst(Arrays.asList(id.get(), id1.get(), name.get(), file.get()), fileInfo, false)) {
+	private boolean fillFromStorage(file fileInfo, File path) throws IOException {
+		if(readFirst(Arrays.asList(id.get(), id1.get(), name.get(), data.get()), fileInfo, false)) {
 			fileInfo.id = recordId();
 			fileInfo.name = name.get().get().string();
 			string instanceId = id.get().get().string();
 			fileInfo.status = getStatus();
-			if (!instanceId.isEmpty())
+			if(!instanceId.isEmpty())
 				fileInfo.instanceId = instanceId;
-			if (fileInfo.status == FileInfo.Status.LOCAL) {
-				IOUtils.copy(file.get().get().binary().get(), path);
+			if(fileInfo.status == file.Status.LOCAL) {
+				IOUtils.copy(data.get().get().binary().get(), path);
 				fillFileInfoFile(fileInfo, path);
 				return true;
 			}
@@ -329,39 +318,39 @@ public class SystemFiles extends Table {
 		return false;
 	}
 
-	private boolean readFirst(Collection<Field> fields, FileInfo fileInfo, boolean localOnly) {
-		SqlToken where = (fileInfo.id != null && !fileInfo.id.isNull()) ? new Rel(recordId.get(), Operation.Eq,
-				fileInfo.id.sql_guid()) : new Rel(path.get(), Operation.Eq, fileInfo.path.sql_string());
-		if (localOnly)
-			where = new And(where, new Or(id1.get().sql_string().isEmpty(), new Rel(id1.get(), Operation.Eq, new sql_string(
-					FileInfo.Status.LOCAL.getValue()))));
+	private boolean readFirst(Collection<Field> fields, file fileInfo, boolean localOnly) {
+		SqlToken where = (fileInfo.id != null && !fileInfo.id.isNull()) ? new Equ(recordId.get(), fileInfo.id) : new Equ(path.get(), fileInfo.path);
+	
+		if(localOnly)
+			where = new And(where, new Or(new IsEmpty(id1.get()), new Equ(id1.get(), file.Status.LOCAL.getValue())));
+		
 		return readFirst(fields, where);
 	}
 
-	private FileInfo.Status getStatus() {
-		return FileInfo.Status.getStatus(id1.get().get().string().get());
+	private file.Status getStatus() {
+		return file.Status.getStatus(id1.get().get().string().get());
 	}
 
-	private static boolean fillFileInfoFromTable(FileInfo fileInfo, File path) throws IOException {
+	private static boolean fillFileInfoFromTable(file fileInfo, File path) throws IOException {
 		fileInfo.name = new string(path.getName());
 		InputStream inputStream = getTableFieldInputStream(fileInfo);
-		if (inputStream == null)
+		if(inputStream == null)
 			return false;
 		IOUtils.copy(inputStream, path);
 		fillFileInfoFile(fileInfo, path);
 		return true;
 	}
 
-	private static InputStream getTableFieldInputStream(FileInfo fileInfo) throws IOException {
+	private static InputStream getTableFieldInputStream(file fileInfo) throws IOException {
 		File fileName = new File(fileInfo.path.get());
 		File field = fileName.getParentFile();
 		File recordId = field.getParentFile();
 		File table = recordId.getParentFile();
-		Query query = (Query) Loader.getInstance(table.getName());
+		Query query = (Query)Loader.getInstance(table.getName());
 		Field dataField = query.getFieldByName(field.getName());
-		if (query.readRecord(new guid(recordId.getName()), Arrays.asList(dataField))) {
-			if (dataField instanceof BinaryField) {
-				return ((BinaryField) dataField).get().binary().get();
+		if(query.readRecord(new guid(recordId.getName()), Arrays.asList(dataField))) {
+			if(dataField instanceof BinaryField) {
+				return ((BinaryField)dataField).get().binary().get();
 			} else {
 				return new ByteArrayInputStream(dataField.get().toString().getBytes());
 			}
@@ -370,37 +359,35 @@ public class SystemFiles extends Table {
 		}
 	}
 
-	private void fillFileInfoFromRemote(FileInfo fileInfo, File path) throws IOException {
-		if (fileInfo.instanceId == null || fileInfo.instanceId.isEmpty()
-				|| fileInfo.instanceId.get().equals(Z8Context.getInstanceId()))
+	private void fillFromRemote(file fileInfo, File path) throws IOException {
+		if(fileInfo.instanceId == null || fileInfo.instanceId.isEmpty() || fileInfo.instanceId.get().equals(Z8Context.getInstanceId()))
 			throw new FileNotFoundException(fileInfo.path.get());
 
 		TransportRoutes transportRoutes = TransportRoutes.newInstance();
 		TransportEngine engine = TransportEngine.getInstance();
 		TransportContext context = new TransportContext.CLASS<TransportContext>().get();
-		List<TransportRoute> routes = transportRoutes.readRoutes(fileInfo.instanceId.get(),
-				Properties.getProperty(ServerRuntime.TransportCenterAddressProperty).trim(), true);
+		List<TransportRoute> routes = transportRoutes.readRoutes(fileInfo.instanceId.get(), true);
 
 		// Try to get file synchronously
-		for (TransportRoute route : routes) {
+		for(TransportRoute route : routes) {
 			Transport transport = engine.getTransport(context, route.getProtocol());
-			if (transport == null || !transport.isSynchronousRequestSupported())
+			if(transport == null || !transport.isSynchronousRequestSupported())
 				continue;
 			try {
 				transport.connect();
-				FileInfo fi = transport.readFileSynchronously(fileInfo, route.getAddress());
+				file fi = transport.readFileSynchronously(fileInfo, route.getAddress());
 				IOUtils.copy(fi.getInputStream(), path);
 				fillFileInfoFile(fileInfo, path);
 				return;
-			} catch (TransportException e) {
-				LOG.info("Can't get remote file '" + fileInfo + "' from '" + route.getTransportUrl() + "'", e);
+			} catch(TransportException e) {
+				Trace.logError("Can't get remote file '" + fileInfo + "' from '" + route.getTransportUrl() + "'", e);
 				transport.close();
 				transportRoutes.disableRoute(route, ErrorUtils.getMessage(e));
 				continue;
 			}
 		}
 
-		if (fileInfo.status != FileInfo.Status.REQUEST_SENT) {
+		if(fileInfo.status != file.Status.REQUEST_SENT) {
 			// Send asynchronous request
 			Export export = new Export.CLASS<Export>().get();
 			export.setAddress(fileInfo.instanceId.get());
@@ -409,8 +396,8 @@ public class SystemFiles extends Table {
 			export.properties.put(Message.PROP_RECORD_ID, fileInfo.id);
 			export.properties.put(Message.PROP_FILE_PATH, fileInfo.path);
 			export.execute();
-			id1.get().set(new string(FileInfo.Status.REQUEST_SENT.getValue()));
-			if (!guid.NULL.equals(fileInfo.id)) {
+			id1.get().set(new string(file.Status.REQUEST_SENT.getValue()));
+			if(!guid.NULL.equals(fileInfo.id)) {
 				update(fileInfo.id);
 			} else {
 				name.get().set(fileInfo.name);
@@ -418,12 +405,12 @@ public class SystemFiles extends Table {
 				this.path.get().set(fileInfo.path);
 				fileInfo.id = create();
 			}
-			fileInfo.status = FileInfo.Status.REQUEST_SENT;
+			fileInfo.status = file.Status.REQUEST_SENT;
 		}
 	}
 
-	private static void fillFileInfoFile(FileInfo fileInfo, File path) throws IOException {
-		fileInfo.file = new InputOnlyFileItem(path, fileInfo.name.get());
+	private static void fillFileInfoFile(file file, File path) throws IOException {
+		file.set(new InputOnlyFileItem(path, file.name.get()));
 	}
 
 }

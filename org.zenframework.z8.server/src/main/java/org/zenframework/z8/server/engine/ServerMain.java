@@ -12,12 +12,14 @@ import org.zenframework.z8.server.logs.Trace;
 
 public final class ServerMain {
 
-	private static enum ServerType {
+	static {
+		ObjectIO.initialize(new RmiIO());
+	}
 
+	private static enum ServerType {
 		authcenter("org.zenframework.z8.server.engine.IAuthorityCenter", "org.zenframework.z8.auth.AuthorityCenter"),
 		appserver("org.zenframework.z8.server.engine.IApplicationServer", "org.zenframework.z8.server.engine.ApplicationServer"),
-		tservice("org.zenframework.z8.server.engine.ITransportService", "org.zenframework.z8.server.engine.TransportService"),
-		tcenter("org.zenframework.z8.server.engine.ITransportCenter", "org.zenframework.z8.server.engine.TransportCenter");
+		interconnection("org.zenframework.z8.server.engine.IInterconnectionCenter", "org.zenframework.z8.interconnection.InterconnectionCenter");
 
 		final String interfaceName;
 		final String className;
@@ -37,7 +39,7 @@ public final class ServerMain {
 
 	private static Options getOptions() {
 		Options options = new Options();
-		options.addOption(ServerOpt, true, "server type: authcenter, appserver, transport");
+		options.addOption(ServerOpt, true, "server type: authcenter, appserver, interconnection");
 		options.addOption(ConfigOpt, true, "path to config file");
 		options.addOption(StopOpt, false, "to stop running server");
 		return options;
@@ -45,8 +47,6 @@ public final class ServerMain {
 
 	public static void main(String[] args) {
 		try {
-			ObjectIO.initialize(new RmiIO());
-			
 			CommandLineParser parser = new BasicParser();
 			CommandLine cmd = parser.parse(Options, args);
 
@@ -63,7 +63,7 @@ public final class ServerMain {
 			Z8Context.init(config);
 
 			if (!cmd.hasOption(StopOpt)) {
-				Method startMethod = serverClass.getMethod("start", ServerConfig.class);
+				Method startMethod = serverClass.getMethod("launch", ServerConfig.class);
 				startMethod.invoke(null, config);
 			} else {
 				Rmi.get(serverInterface).stop();

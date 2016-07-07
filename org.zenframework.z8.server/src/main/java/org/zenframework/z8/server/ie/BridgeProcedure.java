@@ -16,7 +16,6 @@ public class BridgeProcedure extends Procedure {
 		public CLASS(IObject container) {
 			super(container);
 			setJavaClass(BridgeProcedure.class);
-			setAttribute(Native, BridgeProcedure.class.getCanonicalName());
 			setAttribute(Job, "");
 			setAttribute(Settings, "['jms:ActiveMQ.DLQ/file:ActiveMQ.DLQ']");
 		}

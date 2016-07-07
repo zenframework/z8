@@ -115,32 +115,6 @@ public class CLASS<TYPE extends IObject> extends OBJECT implements IClass<TYPE> 
     }
 
     @Override
-    public String getAttribute(String key) {
-        return (object != null ? object.getAttribute(key) : super.getAttribute(key));
-    }
-
-    @Override
-    public void setAttribute(String key, String value) {
-        if (object != null)
-            object.setAttribute(key, value);
-
-        super.setAttribute(key, value);
-    }
-
-    @Override
-    public void removeAttribute(String key) {
-        if (object != null)
-            object.removeAttribute(key);
-
-        super.removeAttribute(key);
-    }
-
-    @Override
-    public boolean hasAttribute(String key) {
-        return object != null ? object.hasAttribute(key) : super.hasAttribute(key);
-    }
-
-    @Override
     public String displayName() {
         String name = super.displayName();
         return name == null || name.isEmpty() ? getJavaClass().getSimpleName() : name;

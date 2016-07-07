@@ -14,7 +14,6 @@ public class Formula extends OBJECT {
         public CLASS(IObject container) {
             super(container);
             setJavaClass(Formula.class);
-            setAttribute(Native, Formula.class.getCanonicalName());
         }
 
         @Override

@@ -1,21 +1,27 @@
 [primary "org.zenframework.z8.server.types.file"]
+public class file extends primary {
 
-final class file extends primary
-{
+	public string name;
+	public datetime time;
+	public int size;
+	public string path;
+	public guid id;
+
+	public string[string] details;
+
 	public void operator = (string path);
-	
-	public string getPath();
-	public string getName();
-	public string getBaseName();
-	public string getExtension();
 
 	public bool isDirectory();
-	public string[] list();
 	public file[] listFiles();
-	
-	public string read();
-	public string read(encoding charset);
-	
-	public void write(string content);
-	public void write(string content, encoding charset);
+	public string relativePath();
+
+	static public bool isDirectory(string path);
+	static public file[] listFiles(string path);
+
+	static public string name(string path);
+	static public string baseName(string path);
+	static public string extension(string path);
+
+	static public file[] parse(string json);
+	static public string toJson(file[] files);
 }

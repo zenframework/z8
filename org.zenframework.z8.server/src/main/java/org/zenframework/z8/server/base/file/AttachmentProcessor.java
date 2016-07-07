@@ -14,6 +14,7 @@ import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.runtime.OBJECT;
 import org.zenframework.z8.server.runtime.RCollection;
 import org.zenframework.z8.server.types.datetime;
+import org.zenframework.z8.server.types.file;
 import org.zenframework.z8.server.types.guid;
 import org.zenframework.z8.server.types.integer;
 import org.zenframework.z8.server.types.string;
@@ -28,7 +29,6 @@ public class AttachmentProcessor extends OBJECT {
 		public CLASS(IObject container) {
 			super(container);
 			setJavaClass(AttachmentProcessor.class);
-			setAttribute(Native, AttachmentProcessor.class.getCanonicalName());
 		}
 
 		@Override
@@ -37,7 +37,6 @@ public class AttachmentProcessor extends OBJECT {
 		}
 	}
 
-	private Files files;
 	private AttachmentField field;
 
 	public AttachmentProcessor(IObject container) {
@@ -49,7 +48,7 @@ public class AttachmentProcessor extends OBJECT {
 	}
 
 	public Table getTable() {
-		return (Table) field.owner();
+		return (Table)field.owner();
 	}
 
 	public void set(AttachmentField field) {
@@ -60,24 +59,24 @@ public class AttachmentProcessor extends OBJECT {
 		return field;
 	}
 
-	public Collection<FileInfo> read(guid recordId) {
-		if (getTable().readRecord(recordId, Arrays.<Field> asList(getField())))
-	        return FileInfo.parseArray(getField().string().get());
-		return new ArrayList<FileInfo>();
+	public Collection<file> read(guid recordId) {
+		if(getTable().readRecord(recordId, Arrays.<Field> asList(getField())))
+			return file.parse(getField().string().get());
+		return new ArrayList<file>();
 	}
 
-	private void save(Collection<FileInfo> files, guid recordId) {
-		getField().set(new string(FileInfo.toJson(files)));
+	private void save(Collection<file> files, guid recordId) {
+		getField().set(new string(file.toJson(files)));
 		getTable().update(recordId);
 	}
 
-	public Collection<FileInfo> create(guid attachTo, Collection<FileInfo> files) {
+	public Collection<file> create(guid attachTo, Collection<file> files) {
 		SystemFiles filesTable = SystemFiles.newInstance();
 
-		for (FileInfo file : files) {
+		for(file file : files) {
 			boolean idIsNull = file.id == null || file.id.isNull();
-			if (idIsNull || !filesTable.hasRecord(file.id)) {
-				if (!idIsNull)
+			if(idIsNull || !filesTable.hasRecord(file.id)) {
+				if(!idIsNull)
 					filesTable.recordId.get().set(file.id);
 
 				setPathIfEmpty(attachTo, file);
@@ -89,8 +88,8 @@ public class AttachmentProcessor extends OBJECT {
 		return files;
 	}
 
-	public Collection<FileInfo> update(guid attachTo, Collection<FileInfo> files) {
-		Collection<FileInfo> result = read(attachTo);
+	public Collection<file> update(guid attachTo, Collection<file> files) {
+		Collection<file> result = read(attachTo);
 
 		files = create(attachTo, files);
 
@@ -100,11 +99,11 @@ public class AttachmentProcessor extends OBJECT {
 		return result;
 	}
 
-	public Collection<FileInfo> remove(guid target, Collection<FileInfo> files) {
+	public Collection<file> remove(guid target, Collection<file> files) {
 		SystemFiles filesTable = SystemFiles.newInstance();
-		Collection<FileInfo> result = read(target);
+		Collection<file> result = read(target);
 
-		for (FileInfo file : files)
+		for(file file : files)
 			filesTable.destroy(file.id);
 
 		result.removeAll(files);
@@ -113,64 +112,41 @@ public class AttachmentProcessor extends OBJECT {
 		return result;
 	}
 
-	private void setPathIfEmpty(guid recordId, FileInfo fileInfo) {
-		if (fileInfo.path.isEmpty()) {
+	private void setPathIfEmpty(guid recordId, file file) {
+		if(file.path.isEmpty()) {
 			datetime time = new datetime();
-			String path = FileUtils.getFile(Folders.Storage, time.format("yyyy.MM.dd"), getTable().classId(),
-					recordId.toString(), field.name(), time.format("HH-mm-ss"), fileInfo.name.get()).toString();
-			fileInfo.path = new string(path);
+			String path = FileUtils.getFile(Folders.Storage, time.format("yyyy.MM.dd"), getTable().classId(), recordId.toString(), field.name(), time.format("HH-mm-ss"), file.name.get()).toString();
+			file.path = new string(path);
 		}
 	}
 
 	public int getPageCount(guid recordId) {
 		int result = 0;
-		Collection<FileInfo> fileInfos = read(recordId);
-		for (FileInfo fileInfo : fileInfos) {
-			result += getFiles().getPageCount(fileInfo);
-		}
+
+		Collection<file> files = read(recordId);
+		Files f = new Files();
+		for(file file : files)
+			result += f.getPageCount(file);
 		return result;
 	}
 
-	static public RCollection<? extends FileInfo.CLASS<? extends FileInfo>> z8_parse(string json) {
-	    return toCollection(FileInfo.parseArray(json.get()));
+	static public RCollection<file> z8_parse(string json) {
+		return new RCollection<file>(file.parse(json.get()));
 	}
 
-	public RCollection<? extends FileInfo.CLASS<? extends FileInfo>> z8_read(guid recordId) {
-		return toCollection(read(recordId));
+	public RCollection<file> z8_read(guid recordId) {
+		return new RCollection<file>(read(recordId));
 	}
 
-	public RCollection<? extends FileInfo.CLASS<? extends FileInfo>> z8_create(guid target,
-			RCollection<? extends FileInfo.CLASS<? extends FileInfo>> classes) {
-		Collection<FileInfo> files = CLASS.asList(classes);
-		return toCollection(create(target, files));
+	public RCollection<file> z8_create(guid target, RCollection<file> files) {
+		return new RCollection<file>(create(target, files));
 	}
 
-	public RCollection<? extends FileInfo.CLASS<? extends FileInfo>> z8_update(guid target,
-			RCollection<? extends FileInfo.CLASS<? extends FileInfo>> classes) {
-		Collection<FileInfo> files = CLASS.asList(classes);
-		return toCollection(update(target, files));
+	public RCollection<file> z8_update(guid target, RCollection<file> files) {
+		return new RCollection<file>(update(target, files));
 	}
 
 	public integer z8_getPageCount(guid recordId) {
 		return new integer(getPageCount(recordId));
 	}
-
-	static private RCollection<? extends FileInfo.CLASS<? extends FileInfo>> toCollection(Collection<FileInfo> files) {
-		RCollection<FileInfo.CLASS<? extends FileInfo>> result = new RCollection<FileInfo.CLASS<? extends FileInfo>>();
-
-		for (FileInfo file : files) {
-			FileInfo.CLASS<FileInfo> cls = new FileInfo.CLASS<FileInfo>();
-			cls.get().set(file);
-			result.add(cls);
-		}
-
-		return result;
-	}
-
-	private Files getFiles() {
-		if (files == null)
-			files = Files.newInstance();
-		return files;
-	}
-
 }

@@ -18,12 +18,13 @@ public final class string extends primary {
 
 	private static final long serialVersionUID = 8678133849134310611L;
 
-	private String m_value = "";
+	private String value = null;
 
 	private Pattern pattern = null;
 	private Matcher matcher = null;
 
-	public string() {}
+	public string() {
+	}
 
 	public string(string str) {
 		set(str);
@@ -39,16 +40,16 @@ public final class string extends primary {
 
 	public string(byte[] str, encoding charset) {
 		try {
-			if (str != null) {
+			if(str != null) {
 				set(new String(str, charset.toString()));
 			}
-		} catch (UnsupportedEncodingException e) {
+		} catch(UnsupportedEncodingException e) {
 			throw new exception(e);
 		}
 	}
 
 	public string(char ch) {
-		set(((Character) ch).toString());
+		set(((Character)ch).toString());
 	}
 
 	@Override
@@ -57,13 +58,13 @@ public final class string extends primary {
 	}
 
 	public String get() {
-		return m_value;
+		return value != null ? value : "";
 	}
 
 	public byte[] getBytes(encoding charset) {
 		try {
-			return m_value.getBytes(charset.toString());
-		} catch (UnsupportedEncodingException e) {
+			return value.getBytes(charset.toString());
+		} catch(UnsupportedEncodingException e) {
 			throw new exception(e);
 		}
 	}
@@ -73,24 +74,24 @@ public final class string extends primary {
 	}
 
 	public void set(string str) {
-		set(str != null ? str.m_value : "");
+		set(str != null ? str.value : null);
 	}
 
 	public void set(String str) {
-		m_value = (str != null ? fromResources(str) : "");
+		value = (str != null ? fromResources(str) : null);
 	}
 
 	public void concat(string s) {
-		concat(s.m_value);
+		concat(s.get());
 	}
 
 	public void concat(String s) {
-		m_value += fromResources(s);
+		value = get() + fromResources(s);
 	}
 
 	@Override
 	public String toString() {
-		return m_value;
+		return get();
 	}
 
 	@Override
@@ -100,183 +101,188 @@ public final class string extends primary {
 
 	@Override
 	public String format() {
-		return '"' + m_value + "'";
+		return '"' + get() + "'";
 	}
 
 	@Override
 	public String toDbConstant(DatabaseVendor vendor) {
-		String string = m_value.replaceAll("'", "''");
+		String string = get().replaceAll("'", "''");
 
-		if (vendor == DatabaseVendor.SqlServer) {
+		if(vendor == DatabaseVendor.SqlServer)
 			return "N'" + string + "'";
-		}
 
 		return "'" + string + "'";
 	}
 
 	public boolean isEmpty() {
-		return m_value == null || m_value.isEmpty();
+		return value == null || value.isEmpty();
 	}
 
 	@Override
 	public int hashCode() {
-		return m_value.hashCode();
+		return get().hashCode();
 	}
 
 	@Override
 	public boolean equals(Object object) {
-		if (m_value != null && m_value.equals(object)) {
+		if(value != null && value.equals(object))
 			return true;
-		}
 
-		if (object instanceof string) {
-			string string = (string) object;
+		if(object instanceof string) {
+			string string = (string)object;
 
-			if (m_value == null || m_value.isEmpty()) {
-				return string.m_value == null || string.m_value.isEmpty();
-			}
+			if(value == null || value.isEmpty())
+				return string.value == null || string.value.isEmpty();
 
-			return m_value != null ? m_value.equals(string.m_value) : false;
+			return value != null ? value.equals(string.value) : false;
 		}
 
 		return false;
 	}
 
 	public String trim() {
-		return m_value.trim();
+		return get().trim();
 	}
 
 	public String trimLeft() {
 		int pos = 0;
 
-		while (pos < m_value.length() && m_value.charAt(pos) <= ' ') {
+		String value = get();
+
+		while(pos < value.length() && value.charAt(pos) <= ' ')
 			pos++;
-		}
-		return pos > 0 ? m_value.substring(pos) : m_value;
+
+		return pos > 0 ? value.substring(pos) : value;
 	}
 
 	public String trimRight() {
-		int length = m_value.length();
+		String value = get();
 
-		while (0 < length && m_value.charAt(length - 1) <= ' ') {
+		int length = value.length();
+
+		while(0 < length && value.charAt(length - 1) <= ' ')
 			length--;
-		}
-		return length < m_value.length() ? m_value.substring(0, length) : m_value;
+
+		return length < value.length() ? value.substring(0, length) : value;
 	}
 
 	public exception exception() {
-		return new exception(m_value);
+		return new exception(get());
 	}
 
 	public sql_string sql_string() {
 		return new sql_string(this);
 	}
 
-	public void operatorAssign(string x) {
-		set(x == null ? "" : x.m_value);
+	public void operatorAssign(string value) {
+		set(value);
 	}
 
 	public string operatorAdd(string x) {
-		return x == null ? new string(m_value) : new string(m_value + x.m_value);
+		return x == null ? new string(get()) : new string(get() + x.get());
 	}
 
 	public string operatorAddAssign(string x) {
-		if (x != null)
-			set(m_value + x.m_value);
+		if(x != null)
+			set(get() + x.get());
 		return this;
 	}
 
 	public bool operatorEqu(string x) {
-		return new bool(m_value.compareTo(x == null ? "" : x.m_value) == 0);
+		return new bool(get().compareTo(x == null ? "" : x.get()) == 0);
 	}
 
 	public bool operatorNotEqu(string x) {
-		return new bool(m_value.compareTo(x == null ? "" : x.m_value) != 0);
+		return new bool(get().compareTo(x == null ? "" : x.get()) != 0);
 	}
 
 	public bool operatorLess(string x) {
-		return new bool(m_value.compareTo(x == null ? "" : x.m_value) < 0);
+		return new bool(get().compareTo(x == null ? "" : x.get()) < 0);
 	}
 
 	public bool operatorMore(string x) {
-		return new bool(m_value.compareTo(x == null ? "" : x.m_value) > 0);
+		return new bool(get().compareTo(x == null ? "" : x.get()) > 0);
 	}
 
 	public bool operatorLessEqu(string x) {
-		return new bool(m_value.compareTo(x == null ? "" : x.m_value) <= 0);
+		return new bool(get().compareTo(x == null ? "" : x.get()) <= 0);
 	}
 
 	public bool operatorMoreEqu(string x) {
-		return new bool(m_value.compareTo(x == null ? "" : x.m_value) >= 0);
+		return new bool(get().compareTo(x == null ? "" : x.get()) >= 0);
 	}
 
 	public integer z8_length() {
-		return new integer(m_value.length());
+		return new integer(get().length());
 	}
 
 	public bool z8_isEmpty() {
-		return new bool(m_value.length() == 0);
+		return new bool(get().length() == 0);
 	}
 
 	public integer z8_compare(string anotherString) {
-		return new integer(m_value.compareTo(anotherString.m_value));
+		return new integer(get().compareTo(anotherString.get()));
 	}
 
 	public integer z8_compareNoCase(string anotherString) {
-		return new integer(m_value.compareToIgnoreCase(anotherString.m_value));
+		return new integer(get().compareToIgnoreCase(anotherString.get()));
 	}
 
 	public integer z8_indexOf(string subString) {
-		return new integer(m_value.indexOf(subString.m_value));
+		return new integer(get().indexOf(subString.get()));
 	}
 
 	public integer z8_indexOf(string subString, integer offset) {
-		return new integer(m_value.indexOf(subString.m_value, offset.getInt()));
+		return new integer(get().indexOf(subString.get(), offset.getInt()));
 	}
 
 	public integer z8_lastIndexOf(string subString) {
-		return new integer(m_value.lastIndexOf(subString.m_value));
+		return new integer(get().lastIndexOf(subString.get()));
 	}
 
 	public integer z8_lastIndexOf(string subString, integer offset) {
-		return new integer(m_value.lastIndexOf(subString.m_value, offset.getInt()));
+		return new integer(get().lastIndexOf(subString.get(), offset.getInt()));
 	}
 
 	public bool z8_startsWith(string prefix) {
-		return new bool(m_value.startsWith(prefix.m_value));
+		return new bool(get().startsWith(prefix.get()));
 	}
 
 	public bool z8_startsWith(string prefix, integer offset) {
-		return new bool(m_value.startsWith(prefix.m_value, offset.getInt()));
+		return new bool(get().startsWith(prefix.get(), offset.getInt()));
 	}
 
 	public bool z8_endsWith(string suffix) {
-		return new bool(m_value.endsWith(suffix.m_value));
+		return new bool(get().endsWith(suffix.get()));
 	}
 
 	public string z8_charAt(integer index) {
 		try {
-			return new string(m_value.charAt(index.getInt()));
-		} catch (IndexOutOfBoundsException e) {
+			return new string(get().charAt(index.getInt()));
+		} catch(IndexOutOfBoundsException e) {
 			throw new exception(e);
 		}
 	}
 
 	public string z8_substring(integer index) {
 		try {
-			return new string(m_value.substring(index.getInt()));
-		} catch (IndexOutOfBoundsException e) {
+			return new string(get().substring(index.getInt()));
+		} catch(IndexOutOfBoundsException e) {
 			throw new exception(e);
 		}
 	}
 
 	public string z8_substring(integer index, integer count) {
 		try {
+			String value = get();
+
 			int end = (index.getInt() + count.getInt());
-			if (end >= m_value.length())
-				end = m_value.length();
-			return new string(m_value.substring(index.getInt(), end));
-		} catch (IndexOutOfBoundsException e) {
+
+			if(end >= value.length())
+				end = value.length();
+
+			return new string(value.substring(index.getInt(), end));
+		} catch(IndexOutOfBoundsException e) {
 			throw new exception(e);
 		}
 	}
@@ -284,26 +290,26 @@ public final class string extends primary {
 	public string z8_left(integer count) {
 		try {
 			return z8_substring(new integer(0), count);
-		} catch (IndexOutOfBoundsException e) {
+		} catch(IndexOutOfBoundsException e) {
 			throw new exception(e);
 		}
 	}
 
 	public string z8_right(integer count) {
 		try {
-			int start = m_value.length() - count.getInt();
-			if (start < 0)
+			int start = get().length() - count.getInt();
+			if(start < 0)
 				start = 0;
 			return z8_substring(new integer(start));
-		} catch (IndexOutOfBoundsException e) {
+		} catch(IndexOutOfBoundsException e) {
 			throw new exception(e);
 		}
 	}
 
 	public string z8_trim() {
 		try {
-			return new string(m_value.trim());
-		} catch (IndexOutOfBoundsException e) {
+			return new string(get().trim());
+		} catch(IndexOutOfBoundsException e) {
 			throw new exception(e);
 		}
 	}
@@ -311,7 +317,7 @@ public final class string extends primary {
 	public string z8_trimLeft() {
 		try {
 			return new string(trimLeft());
-		} catch (IndexOutOfBoundsException e) {
+		} catch(IndexOutOfBoundsException e) {
 			throw new exception(e);
 		}
 	}
@@ -319,7 +325,7 @@ public final class string extends primary {
 	public string z8_trimRight() {
 		try {
 			return new string(trimRight());
-		} catch (IndexOutOfBoundsException e) {
+		} catch(IndexOutOfBoundsException e) {
 			throw new exception(e);
 		}
 	}
@@ -330,22 +336,22 @@ public final class string extends primary {
 
 	public string z8_padLeft(integer length, string padding) {
 		try {
+			String value = get();
+
 			int len = length.getInt();
 
-			if (m_value.length() >= len) {
-				return new string(m_value.substring(0, len));
-			}
+			if(value.length() >= len)
+				return new string(value.substring(0, len));
 
 			String s = "";
 
-			for (int i = 0; i < len - m_value.length(); i++) {
-				s += padding.m_value;
-			}
+			for(int i = 0; i < len - value.length(); i++)
+				s += padding.get();
 
-			s = s.substring(0, len - m_value.length());
+			s = s.substring(0, len - value.length());
 
-			return new string(s + m_value);
-		} catch (IndexOutOfBoundsException e) {
+			return new string(s + value);
+		} catch(IndexOutOfBoundsException e) {
 			throw new exception(e);
 		}
 	}
@@ -356,21 +362,22 @@ public final class string extends primary {
 
 	public string z8_padRight(integer length, string padding) {
 		try {
+			String value = get();
+			
 			int len = length.getInt();
 
-			if (m_value.length() >= len) {
-				return new string(m_value.substring(m_value.length() - len, m_value.length()));
-			}
+			if(value.length() >= len)
+				return new string(value.substring(value.length() - len, value.length()));
 
-			String s = m_value;
+			String s = value;
 
-			while (s.length() < len) {
-				s += padding.m_value;
-			}
+			while(s.length() < len)
+				s += padding.get();
+
 			s = s.substring(0, len);
 
 			return new string(s);
-		} catch (IndexOutOfBoundsException e) {
+		} catch(IndexOutOfBoundsException e) {
 			throw new exception(e);
 		}
 	}
@@ -378,8 +385,9 @@ public final class string extends primary {
 	public string z8_insert(integer index, string what) {
 		try {
 			int i = index.getInt();
-			return new string(m_value.substring(0, i) + what.m_value + m_value.substring(i));
-		} catch (IndexOutOfBoundsException e) {
+			String value = get();
+			return new string(value.substring(0, i) + what.get() + value.substring(i));
+		} catch(IndexOutOfBoundsException e) {
 			throw new exception(e);
 		}
 	}
@@ -387,71 +395,72 @@ public final class string extends primary {
 	public string z8_replace(integer index, integer length, string replacement) {
 		try {
 			int i = index.getInt();
-			return new string(m_value.substring(0, i) + replacement.m_value + m_value.substring(i + length.getInt()));
-		} catch (IndexOutOfBoundsException e) {
+			String value = get();
+			return new string(value.substring(0, i) + replacement.get() + value.substring(i + length.getInt()));
+		} catch(IndexOutOfBoundsException e) {
 			throw new exception(e);
 		}
 	}
 
 	public bool z8_matches(string regex) {
 		try {
-			return new bool(m_value.matches(regex.m_value));
-		} catch (PatternSyntaxException e) {
+			return new bool(get().matches(regex.get()));
+		} catch(PatternSyntaxException e) {
 			throw new exception(e);
 		}
 	}
 
 	public void z8_setupMatcher(string regex) {
 		try {
-			if (regex != null) {
-				pattern = Pattern.compile(regex.m_value);
-				matcher = pattern.matcher(m_value);
+			if(regex != null) {
+				pattern = Pattern.compile(regex.get());
+				matcher = pattern.matcher(get());
 			} else {
 				pattern = null;
 				matcher = null;
 			}
-		} catch (PatternSyntaxException e) {
+		} catch(PatternSyntaxException e) {
 			throw new exception(e);
 		}
 	}
 
 	public bool z8_next() {
 		try {
-			if (matcher == null)
+			if(matcher == null)
 				return new bool(false);
 
 			return new bool(matcher.find());
-		} catch (PatternSyntaxException e) {
+		} catch(PatternSyntaxException e) {
 			throw new exception(e);
 		}
 	}
 
 	public string z8_getGroup(integer groupNumber) {
 		try {
-			if (matcher == null)
+			if(matcher == null)
 				throw new exception("Matcher is null");
 
-			if (matcher.group(groupNumber.getInt()) != null)
+			if(matcher.group(groupNumber.getInt()) != null)
 				return new string(matcher.group(groupNumber.getInt()));
 
 			throw new exception("No such group");
-		} catch (PatternSyntaxException e) {
+		} catch(PatternSyntaxException e) {
 			throw new exception(e);
 		}
 	}
 
 	public string z8_replaceFirst(string regex, string replacement) {
 		try {
-			return new string(m_value.replaceFirst(regex.m_value, replacement.m_value));
-		} catch (PatternSyntaxException e) {
+			return new string(get().replaceFirst(regex.get(), replacement.get()));
+		} catch(PatternSyntaxException e) {
 			throw new exception(e);
 		}
 	}
 
 	public string z8_replaceAll(string regex, string replacement) {
 		try {
-			return new string(m_value.replaceAll(regex.m_value, replacement.m_value));
-		} catch (PatternSyntaxException e) {
+			return new string(get().replaceAll(regex.get(), replacement.get()));
+		} catch(PatternSyntaxException e) {
 			throw new exception(e);
 		}
 	}
@@ -464,74 +473,78 @@ public final class string extends primary {
 		try {
 			RCollection<string> result = new RCollection<string>();
 
-			String[] parts = m_value.split(regex.m_value, limit.getInt());
+			String[] parts = get().split(regex.get(), limit.getInt());
 
-			for (String s : parts) {
+			for(String s : parts)
 				result.add(new string(s));
-			}
+
 			return result;
-		} catch (PatternSyntaxException e) {
+		} catch(PatternSyntaxException e) {
 			throw new exception(e);
 		}
 	}
 
 	public string z8_toLowerCase() {
-		return new string(m_value.toLowerCase());
+		return new string(get().toLowerCase());
 	}
 
 	public string z8_toUpperCase() {
-		return new string(m_value.toUpperCase());
+		return new string(get().toUpperCase());
 	}
 
-	public string z8_format(RCollection<string> _frm) {
-		MessageFormat form = new MessageFormat(m_value);
-		return new string(form.format(_frm.toArray()));
+	public string z8_format(RCollection<string> format) {
+		MessageFormat form = new MessageFormat(get());
+		return new string(form.format(format.toArray()));
 	}
 
 	static public string z8_replicate(string str, integer count) {
 		String s = "";
-		for (int i = 0; i < count.getInt(); i++) {
-			s += str.m_value;
-		}
+		String replica = str.get();
+		for(int i = 0; i < count.getInt(); i++)
+			s += replica;
+
 		return new string(s);
 	}
 
 	public static string[] wrap(String... strings) {
 		string[] result = new string[strings.length];
-		for (int i = 0; i < strings.length; i++) {
+		
+		for(int i = 0; i < strings.length; i++)
 			result[i] = new string(strings[i]);
-		}
+
 		return result;
 	}
 
 	public static String[] unwrap(string... strings) {
 		String[] result = new String[strings.length];
-		for (int i = 0; i < strings.length; i++) {
+		
+		for(int i = 0; i < strings.length; i++)
 			result[i] = strings[i].get();
-		}
+
 		return result;
 	}
 
 	public static Collection<string> wrap(Collection<String> strings) {
 		Collection<string> result = new ArrayList<string>(strings.size());
-		for (String str : strings) {
+
+		for(String str : strings)
 			result.add(new string(str));
-		}
+
 		return result;
 	}
 
 	public static Collection<String> unwrap(Collection<string> strings) {
 		Collection<String> result = new ArrayList<String>(strings.size());
-		for (string str : strings) {
+
+		for(string str : strings)
 			result.add(str.get());
-		}
+
 		return result;
 	}
 
 	private String fromResources(String str) {
-		if (str.startsWith("$") && str.endsWith("$")) {
+		if(str.length() > 2 && str.charAt(0) == '$' && str.charAt(str.length() - 1) == '$')
 			return Resources.get(str.substring(1, str.length() - 1));
-		}
 		return str;
 	}
 }

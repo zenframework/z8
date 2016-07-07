@@ -19,12 +19,12 @@ import org.apache.commons.io.comparator.NameFileComparator;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.zenframework.z8.ie.xml.ExportEntry;
-import org.zenframework.z8.server.base.file.FileInfo;
 import org.zenframework.z8.server.base.file.FilesFactory;
 import org.zenframework.z8.server.base.table.system.Properties;
 import org.zenframework.z8.server.request.Loader;
 import org.zenframework.z8.server.runtime.ServerRuntime;
 import org.zenframework.z8.server.types.datetime;
+import org.zenframework.z8.server.types.file;
 import org.zenframework.z8.server.utils.IOUtils;
 
 public class FileTransport extends AbstractTransport implements Properties.Listener {
@@ -111,8 +111,8 @@ public class FileTransport extends AbstractTransport implements Properties.Liste
 			}
 		}
 		// write files
-		for (FileInfo file : message.getFiles()) {
-			if (file.file != null) {
+		for (file file : message.getFiles()) {
+			if (file.get() != null) {
 				outFile = new File(messageFolder, file.id.toString());
 				try {
 					IOUtils.copy(file.getInputStream(), new FileOutputStream(outFile));
@@ -165,7 +165,7 @@ public class FileTransport extends AbstractTransport implements Properties.Liste
 	}
 
 	@Override
-	public FileInfo readFileSynchronously(FileInfo fileInfo, String transportAddress) throws TransportException {
+	public file readFileSynchronously(file file, String transportAddress) throws TransportException {
 		throw new UnsupportedOperationException();
 	}
 
@@ -197,14 +197,14 @@ public class FileTransport extends AbstractTransport implements Properties.Liste
 									ExportEntry entry = IeUtil.unmarshalExportEntry(in);
 									message.setExportEntry(entry);
 									// add files
-									Collection<FileInfo> fileInfos = IeUtil.filesToFileInfos(entry.getFiles().getFile(),
+									Collection<file> fileInfos = IeUtil.filesToFileInfos(entry.getFiles().getFile(),
 											false);
-									for (FileInfo fileInfo : fileInfos) {
+									for (file fileInfo : fileInfos) {
 										File file = new File(messageFolder, fileInfo.id.toString());
 										if (file.exists()) {
-											fileInfo.file = FilesFactory.createFileItem(fileInfo.name.get());
+											fileInfo.set(FilesFactory.createFileItem(fileInfo.name.get()));
 											InputStream is = new FileInputStream(file);
-											OutputStream os = fileInfo.file.getOutputStream();
+											OutputStream os = fileInfo.getOutputStream();
 											IOUtils.copy(is, os);
 											message.getFiles().add(fileInfo);
 										}

@@ -17,7 +17,6 @@ public class Period extends OBJECT {
         public CLASS(IObject container) {
             super(container);
             setJavaClass(Period.class);
-            setAttribute(Native, Period.class.getCanonicalName());
         }
 
         @Override
@@ -157,8 +156,6 @@ public class Period extends OBJECT {
     }
 
     public static Period.CLASS<? extends Period> parse(String json) {
-        assert (json != null);
-
         JsonObject object = new JsonObject(json);
 
         PeriodType type = PeriodType.fromString(object.getString(Json.period));

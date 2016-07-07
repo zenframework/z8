@@ -3,71 +3,42 @@ package org.zenframework.z8.server.base.file;
 import java.io.File;
 import java.io.IOException;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.zenframework.z8.server.base.table.system.SystemFiles;
 import org.zenframework.z8.server.engine.Z8Context;
-import org.zenframework.z8.server.runtime.IObject;
-import org.zenframework.z8.server.runtime.OBJECT;
+import org.zenframework.z8.server.logs.Trace;
+import org.zenframework.z8.server.types.file;
 import org.zenframework.z8.server.utils.PdfUtils;
 
-public class Files extends OBJECT {
-
-	private static final Log LOG = LogFactory.getLog(Files.class);
-
-	public static class CLASS<T extends Files> extends OBJECT.CLASS<T> {
-		public CLASS() {
-			this(null);
-		}
-
-		public CLASS(IObject container) {
-			super(container);
-			setJavaClass(Files.class);
-		}
-
-		@Override
-		public Object newObject(IObject container) {
-			return new Files(container);
-		}
-	}
-
+public class Files {
 	private final SystemFiles systemFiles = SystemFiles.newInstance();
 	private FileConverter converter;
 
-	private Files(IObject container) {
-		super(container);
+	public void addFile(file file) {
+		systemFiles.addFile(file);
 	}
 
-	public static Files newInstance() {
-		return new Files.CLASS<Files>().get();
+	public file getFile(file file) throws IOException {
+		return systemFiles.getFile(file);
 	}
 
-	public void addFile(FileInfo fileInfo) {
-		systemFiles.addFile(fileInfo);
-	}
-
-	public FileInfo getFile(FileInfo fileInfo) throws IOException {
-		return systemFiles.getFile(fileInfo);
-	}
-
-	public File getPreview(FileInfo fileInfo) throws IOException {
-		if (!FileConverter.isConvertableToPdf(fileInfo.path.get()))
+	public File getPreview(file file) throws IOException {
+		if (!FileConverter.isConvertableToPdf(file.path.get()))
 			return null;
-		getFile(fileInfo);
-		File path = new File(Z8Context.getWorkingPath(), fileInfo.path.get());
+		getFile(file);
+		File path = new File(Z8Context.getWorkingPath(), file.path.get());
 		if (!path.exists())
 			return null;
-		return getConverter().getConvertedPdf(fileInfo.path.get(), path);
+		return getConverter().getConvertedPdf(file.path.get(), path);
 	}
 
-	public int getPageCount(FileInfo fileInfo) {
+	public int getPageCount(file file) {
 		try {
-			File preview = getPreview(fileInfo);
+			File preview = getPreview(file);
 			if (preview == null)
 				return 0;
 			return PdfUtils.getPageCount(preview);
 		} catch (IOException e) {
-			LOG.warn("Can't get pages count '" + fileInfo.path + "'", e);
+			Trace.logError("Can't get pages count '" + file.path + "'", e);
 			return 0;
 		}
 	}

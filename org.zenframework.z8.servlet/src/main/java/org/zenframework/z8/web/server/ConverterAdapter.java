@@ -15,13 +15,13 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.zenframework.z8.server.base.file.FileConverter;
-import org.zenframework.z8.server.base.file.FileInfo;
 import org.zenframework.z8.server.base.file.Folders;
+import org.zenframework.z8.server.engine.IServerInfo;
 import org.zenframework.z8.server.engine.ISession;
-import org.zenframework.z8.server.engine.ServerInfo;
 import org.zenframework.z8.server.json.Json;
 import org.zenframework.z8.server.resources.Resources;
 import org.zenframework.z8.server.types.encoding;
+import org.zenframework.z8.server.types.file;
 import org.zenframework.z8.server.types.guid;
 import org.zenframework.z8.server.types.string;
 import org.zenframework.z8.server.utils.IOUtils;
@@ -46,7 +46,7 @@ public class ConverterAdapter extends Adapter {
 	}
 
 	@Override
-	protected void service(ISession session, Map<String, String> parameters, List<FileInfo> files,
+	protected void service(ISession session, Map<String, String> parameters, List<file> files,
 			HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
 		// URLDecoder.decode заменяет '+' на ' '
 		String encodedUrl = request.getRequestURI().replaceAll("\\+", "%2b");
@@ -61,14 +61,14 @@ public class ConverterAdapter extends Adapter {
 
 		boolean preview = request.getParameter("preview") != null;
 
-		FileInfo fileInfo = null;
+		file file = null;
 
 		if (!absolutePath.exists()) {
-			fileInfo = new FileInfo();
-			fileInfo.path = new string(relativePath.toString());
-			fileInfo.name = new string(relativePath.getName());
-			fileInfo.id = new guid(parameters.get(Json.recordId));
-			fileInfo = downloadFile(session.getServerInfo(), fileInfo, absolutePath);
+			file = new file();
+			file.path = new string(relativePath.toString());
+			file.name = new string(relativePath.getName());
+			file.id = new guid(parameters.get(Json.recordId));
+			file = downloadFile(session.getServerInfo(), file, absolutePath);
 		}
 
 		if (preview) {
@@ -82,7 +82,7 @@ public class ConverterAdapter extends Adapter {
 				response.addHeader("Content-Type", getContentType(absolutePath));
 		} else {
 			response.addHeader("Content-Type", "application/*");
-			String name = fileInfo != null ? fileInfo.name.get() : absolutePath.getName();
+			String name = file != null ? file.name.get() : absolutePath.getName();
 			response.addHeader("Content-Disposition", getContentDisposition(request, name));
 		}
 
@@ -103,8 +103,8 @@ public class ConverterAdapter extends Adapter {
 		return contentType;
 	}
 
-	private FileInfo downloadFile(ServerInfo serverInfo, FileInfo fileInfo, File path) throws IOException {
-		FileInfo downloadedFileInfo = serverInfo.getApplicationServer().download(fileInfo);
+	private file downloadFile(IServerInfo serverInfo, file fileInfo, File path) throws IOException {
+		file downloadedFile = serverInfo.getServer().download(fileInfo);
 
 		/* 
 		 * The storage folder may be shared between servlet and application server, 
@@ -112,15 +112,15 @@ public class ConverterAdapter extends Adapter {
 		*/
 
 		if (!path.exists()) {
-			InputStream in = downloadedFileInfo == null ? null : downloadedFileInfo.getInputStream();
+			InputStream in = downloadedFile == null ? null : downloadedFile.getInputStream();
 			if (in != null)
 				IOUtils.copy(in, path);
 			else
-				throw new IOException(Resources.format(fileInfo.status == FileInfo.Status.REQUEST_SENT ? "Files.retryLater"
+				throw new IOException(Resources.format(fileInfo.status == file.Status.REQUEST_SENT ? "Files.retryLater"
 						: "Files.notFound", fileInfo));
 		}
 
-		return downloadedFileInfo;
+		return downloadedFile;
 	}
 
 	private String getContentDisposition(HttpServletRequest request, String fileName) throws UnsupportedEncodingException {

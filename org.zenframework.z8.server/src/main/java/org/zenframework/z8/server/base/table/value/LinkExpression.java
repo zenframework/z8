@@ -6,15 +6,14 @@ import org.zenframework.z8.server.db.generator.IForeignKey;
 import org.zenframework.z8.server.json.Json;
 import org.zenframework.z8.server.json.JsonWriter;
 import org.zenframework.z8.server.runtime.IObject;
-import org.zenframework.z8.server.types.bool;
 
 public class LinkExpression extends GuidExpression implements ILink, IForeignKey {
     public static class CLASS<T extends LinkExpression> extends GuidExpression.CLASS<T> {
         public CLASS(IObject container) {
             super(container);
             setJavaClass(LinkExpression.class);
-            setAttribute(Native, LinkExpression.class.getCanonicalName());
             setForeignKey(false);
+            setSystem(true);
         }
 
         @Override
@@ -27,7 +26,6 @@ public class LinkExpression extends GuidExpression implements ILink, IForeignKey
 
     public LinkExpression(IObject container) {
         super(container);
-        system = new bool(true);
     }
 
     @Override

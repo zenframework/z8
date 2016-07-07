@@ -10,7 +10,6 @@ import java.util.List;
 import java.util.UUID;
 
 import org.zenframework.z8.ie.xml.ExportEntry;
-import org.zenframework.z8.server.base.file.FileInfo;
 import org.zenframework.z8.server.engine.RmiIO;
 import org.zenframework.z8.server.engine.RmiSerializable;
 import org.zenframework.z8.server.runtime.IObject;
@@ -19,6 +18,7 @@ import org.zenframework.z8.server.runtime.RCollection;
 import org.zenframework.z8.server.runtime.RLinkedHashMap;
 import org.zenframework.z8.server.types.datetime;
 import org.zenframework.z8.server.types.exception;
+import org.zenframework.z8.server.types.file;
 import org.zenframework.z8.server.types.guid;
 import org.zenframework.z8.server.types.primary;
 import org.zenframework.z8.server.types.string;
@@ -47,7 +47,6 @@ public class Message extends OBJECT implements RmiSerializable, Serializable {
 		public CLASS(IObject container) {
 			super(container);
 			setJavaClass(Message.class);
-			setAttribute(Native, Message.class.getCanonicalName());
 		}
 
 		@Override
@@ -63,7 +62,7 @@ public class Message extends OBJECT implements RmiSerializable, Serializable {
 
 	private String xml;
 	private ExportEntry exportEntry;
-	private RCollection<FileInfo> files = new RCollection<FileInfo>(true);
+	private RCollection<file> files = new RCollection<file>(true);
 
 	private RLinkedHashMap<string, primary> properties = null;
 
@@ -133,11 +132,11 @@ public class Message extends OBJECT implements RmiSerializable, Serializable {
 		this.xml = null;
 	}
 
-	public List<FileInfo> getFiles() {
+	public List<file> getFiles() {
 		return files;
 	}
 
-	public void setFiles(List<FileInfo> files) {
+	public void setFiles(List<file> files) {
 		this.files.clear();
 		this.files.addAll(files);
 	}
@@ -213,7 +212,7 @@ public class Message extends OBJECT implements RmiSerializable, Serializable {
 
 	@Override
 	public void serialize(ObjectOutputStream out) throws IOException {
-		out.writeLong(serialVersionUID);
+		RmiIO.writeLong(out, serialVersionUID);
 
 		ByteArrayOutputStream bytes = new ByteArrayOutputStream(256 * NumericUtils.Kilobyte);
 		ObjectOutputStream objects = new ObjectOutputStream(bytes);
@@ -235,7 +234,7 @@ public class Message extends OBJECT implements RmiSerializable, Serializable {
 	@SuppressWarnings("unchecked")
 	public void deserialize(ObjectInputStream in) throws IOException, ClassNotFoundException {
 		@SuppressWarnings("unused")
-		long version = in.readLong();
+		long version = RmiIO.readLong(in);
 
 		ByteArrayInputStream bytes = new ByteArrayInputStream(IOUtils.unzip(RmiIO.readBytes(in)));
 		ObjectInputStream objects = new ObjectInputStream(bytes);
@@ -248,7 +247,7 @@ public class Message extends OBJECT implements RmiSerializable, Serializable {
 
 		objects.close();
 
-		files = (RCollection<FileInfo>) in.readObject();
+		files = (RCollection<file>) in.readObject();
 	}
 
 	public guid z8_getId() {
@@ -263,12 +262,12 @@ public class Message extends OBJECT implements RmiSerializable, Serializable {
 		return new string(sender);
 	}
 
-	public RCollection<FileInfo.CLASS<FileInfo>> z8_getFiles() {
-		RCollection<FileInfo.CLASS<FileInfo>> fileInfos = new RCollection<FileInfo.CLASS<FileInfo>>();
+	public RCollection<file> z8_getFiles() {
+		RCollection<file> files = new RCollection<file>();
 		for (ExportEntry.Files.File file : getExportEntry().getFiles().getFile()) {
-			fileInfos.add(IeUtil.fileToFileInfoCLASS(file));
+			files.add(IeUtil.fileToFileInfo(file));
 		}
-		return fileInfos;
+		return files;
 	}
 
 	public RLinkedHashMap<string, primary> z8_getProperties() {

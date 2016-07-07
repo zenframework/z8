@@ -9,8 +9,5 @@ public interface IServer extends Remote {
 
 	public void stop() throws RemoteException;
 
-	public String id() throws RemoteException;
-
-	public String getUrl() throws RemoteException;
-
+	public void probe() throws RemoteException;
 }

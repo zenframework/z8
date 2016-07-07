@@ -12,7 +12,7 @@ public final class datespan extends primary {
 
 	private static final long serialVersionUID = -9105266490701041179L;
 
-	private long m_ticks = 0;
+	private long ticks = 0;
 
 	static final public long TicksPerSecond = 1000;
 	static final public long TicksPerMinute = TicksPerSecond * 60;
@@ -32,7 +32,7 @@ public final class datespan extends primary {
 	}
 
 	public datespan(datespan dateSpan) {
-		set(dateSpan.m_ticks);
+		set(dateSpan.ticks);
 	}
 
 	public datespan(String s) {
@@ -57,11 +57,11 @@ public final class datespan extends primary {
 	}
 
 	public long get() {
-		return m_ticks;
+		return ticks;
 	}
 
 	public void set(datespan span) {
-		set(span.m_ticks);
+		set(span.ticks);
 	}
 
 	public void set(int Day, int Hour, int Minute, int Second, long Millisecond) {
@@ -69,27 +69,27 @@ public final class datespan extends primary {
 	}
 
 	public void set(long ticks) {
-		m_ticks = ticks;
+		this.ticks = ticks;
 	}
 
 	public long days() {
-		return m_ticks / TicksPerDay;
+		return ticks / TicksPerDay;
 	}
 
 	public long hours() {
-		return m_ticks / TicksPerHour % 24;
+		return ticks / TicksPerHour % 24;
 	}
 
 	public long minutes() {
-		return m_ticks / TicksPerMinute % 60;
+		return ticks / TicksPerMinute % 60;
 	}
 
 	public long Seconds() {
-		return m_ticks / TicksPerSecond % 60;
+		return ticks / TicksPerSecond % 60;
 	}
 
 	public long milliseconds() {
-		return m_ticks;
+		return ticks;
 	}
 
 	public integer z8_days() {
@@ -113,27 +113,27 @@ public final class datespan extends primary {
 	}
 
 	public integer z8_totalHours() {
-		return new integer(m_ticks / TicksPerHour);
+		return new integer(ticks / TicksPerHour);
 	}
 
 	public integer z8_totalMinutes() {
-		return new integer(m_ticks / TicksPerMinute);
+		return new integer(ticks / TicksPerMinute);
 	}
 
 	public integer z8_totalSeconds() {
-		return new integer(m_ticks / TicksPerSecond);
+		return new integer(ticks / TicksPerSecond);
 	}
 
 	public void z8_setTotalHours(integer x) {
-		m_ticks = x.get() * TicksPerHour;
+		ticks = x.get() * TicksPerHour;
 	}
 
 	public void z8_setTotalMinutes(integer x) {
-		m_ticks = x.get() * TicksPerMinute;
+		ticks = x.get() * TicksPerMinute;
 	}
 
 	public void z8_setTotalSeconds(integer x) {
-		m_ticks = x.get() * TicksPerSecond;
+		ticks = x.get() * TicksPerSecond;
 	}
 
 	public void z8_set(integer Day, integer Hour, integer Minute, integer Second) {
@@ -173,14 +173,14 @@ public final class datespan extends primary {
 
 	@Override
 	public int hashCode() {
-		return new Long(m_ticks).hashCode();
+		return new Long(ticks).hashCode();
 	}
 
 	@Override
 	public boolean equals(Object object) {
 		if (object instanceof datespan) {
 			datespan datespan = (datespan) object;
-			return m_ticks == datespan.m_ticks;
+			return ticks == datespan.ticks;
 		}
 		return false;
 	}

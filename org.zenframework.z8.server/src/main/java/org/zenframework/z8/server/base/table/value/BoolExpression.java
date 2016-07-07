@@ -4,6 +4,7 @@ import org.zenframework.z8.server.db.FieldType;
 import org.zenframework.z8.server.db.sql.SqlField;
 import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.types.bool;
+import org.zenframework.z8.server.types.integer;
 import org.zenframework.z8.server.types.primary;
 import org.zenframework.z8.server.types.sql.sql_bool;
 
@@ -12,7 +13,6 @@ public class BoolExpression extends Expression {
         public CLASS(IObject container) {
             super(container);
             setJavaClass(BoolExpression.class);
-            setAttribute(Native, BoolExpression.class.getCanonicalName());
         }
 
         @Override
@@ -23,8 +23,8 @@ public class BoolExpression extends Expression {
 
     public BoolExpression(IObject container) {
         super(container);
-        width.set(5);
-        stretch.set(false);
+        width = new integer(5);
+        stretch = new bool(false);
         setDefault(new bool());
     }
 

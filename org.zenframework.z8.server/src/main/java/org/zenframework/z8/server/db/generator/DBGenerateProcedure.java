@@ -83,9 +83,8 @@ public class DBGenerateProcedure extends Procedure {
             String name = cls.name();
             Table.CLASS<? extends Table> c = nameToClass.get(name);
 
-            if (c == null || c.hasAttribute(IObject.Native)) {
+            if (c == null || c.getClass().isAssignableFrom(cls.getClass()))
                 nameToClass.put(name, cls);
-            }
         }
 
         return nameToClass.values();

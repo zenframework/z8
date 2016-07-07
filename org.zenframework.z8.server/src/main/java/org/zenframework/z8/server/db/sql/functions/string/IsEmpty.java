@@ -7,15 +7,12 @@ import org.zenframework.z8.server.base.table.value.IValue;
 import org.zenframework.z8.server.db.DatabaseVendor;
 import org.zenframework.z8.server.db.FieldType;
 import org.zenframework.z8.server.db.sql.FormatOptions;
-import org.zenframework.z8.server.db.sql.SqlConst;
 import org.zenframework.z8.server.db.sql.SqlField;
 import org.zenframework.z8.server.db.sql.SqlToken;
+import org.zenframework.z8.server.db.sql.expressions.Equ;
 import org.zenframework.z8.server.db.sql.expressions.Group;
-import org.zenframework.z8.server.db.sql.expressions.Operation;
 import org.zenframework.z8.server.db.sql.expressions.Or;
-import org.zenframework.z8.server.db.sql.expressions.Rel;
 import org.zenframework.z8.server.db.sql.functions.IsNull;
-import org.zenframework.z8.server.types.string;
 
 public class IsEmpty extends SqlToken {
     private SqlToken value;
@@ -36,7 +33,7 @@ public class IsEmpty extends SqlToken {
     @Override
     public String format(DatabaseVendor vendor, FormatOptions options, boolean logicalContext) {
         SqlToken value = new Group(this.value);
-        SqlToken t = new Group(new Or(new IsNull(value), new Rel(value, Operation.Eq, new SqlConst(new string("")))));
+        SqlToken t = new Group(new Or(new IsNull(value), new Equ(value, "")));
         return t.format(vendor, options, logicalContext);
     }
 

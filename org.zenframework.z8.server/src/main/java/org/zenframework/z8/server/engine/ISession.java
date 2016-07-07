@@ -9,7 +9,7 @@ public interface ISession extends RmiSerializable, Serializable {
 
     public IUser user();
 
-    public ServerInfo getServerInfo();
+    public IServerInfo getServerInfo();
 
     public long getLastAccessTime();
 }

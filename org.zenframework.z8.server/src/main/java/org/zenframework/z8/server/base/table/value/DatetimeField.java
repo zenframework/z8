@@ -6,8 +6,10 @@ import org.zenframework.z8.server.db.sql.SqlField;
 import org.zenframework.z8.server.engine.ApplicationServer;
 import org.zenframework.z8.server.format.Format;
 import org.zenframework.z8.server.runtime.IObject;
+import org.zenframework.z8.server.types.bool;
 import org.zenframework.z8.server.types.datetime;
 import org.zenframework.z8.server.types.primary;
+import org.zenframework.z8.server.types.string;
 import org.zenframework.z8.server.types.sql.sql_datetime;
 import org.zenframework.z8.server.types.sql.sql_primary;
 
@@ -29,8 +31,8 @@ public class DatetimeField extends Field {
         super(container);
         setDefault(datetime.MIN);
         aggregation = Aggregation.Max;
-        format.set(Format.datetime);
-        stretch.set(false);
+        format = new string(Format.datetime);
+        stretch = new bool(false);
     }
 
     public datetime z8_getDefault() {

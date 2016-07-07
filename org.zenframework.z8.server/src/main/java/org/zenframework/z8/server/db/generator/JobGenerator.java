@@ -5,17 +5,13 @@ import java.util.Collection;
 import org.zenframework.z8.server.base.job.scheduler.Jobs;
 import org.zenframework.z8.server.base.job.scheduler.Tasks;
 import org.zenframework.z8.server.base.simple.Procedure;
-import org.zenframework.z8.server.db.sql.SqlField;
-import org.zenframework.z8.server.db.sql.expressions.Operation;
-import org.zenframework.z8.server.db.sql.expressions.Rel;
+import org.zenframework.z8.server.db.sql.expressions.Equ;
 import org.zenframework.z8.server.engine.Runtime;
 import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.types.bool;
 import org.zenframework.z8.server.types.guid;
 import org.zenframework.z8.server.types.integer;
 import org.zenframework.z8.server.types.string;
-import org.zenframework.z8.server.types.sql.sql_guid;
-import org.zenframework.z8.server.types.sql.sql_string;
 
 public class JobGenerator {
 
@@ -29,7 +25,7 @@ public class JobGenerator {
             String classId = jobClass.classId();
             guid jobRecordId;
 
-            jobsTable.read(new Rel(jobsTable.id.get(), Operation.Eq, new sql_string(classId)));
+            jobsTable.read(new Equ(jobsTable.id.get(), classId));
 
             jobsTable.id.get().set(new string(classId));
             jobsTable.name.get().set(new string(jobClass.displayName()));
@@ -46,7 +42,7 @@ public class JobGenerator {
             String jobValue = jobClass.getAttribute(IObject.Job);
             if (jobValue != null && !jobValue.isEmpty()) {
                 integer repeat = new integer(jobValue);
-                if (!tasksTable.readFirst(new Rel(new SqlField(tasksTable.job.get()), Operation.Eq, new sql_guid(jobRecordId)))) {
+                if (!tasksTable.readFirst(new Equ(tasksTable.job.get(), jobRecordId))) {
                     tasksTable.active.get().set(new bool(repeat.get() >= 0));
                     tasksTable.job.get().set(jobRecordId);
                     if (repeat.get() >= 0)

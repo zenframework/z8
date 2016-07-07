@@ -24,7 +24,6 @@ public class TransportContext extends OBJECT implements Serializable {
         public CLASS(IObject container) {
             super(container);
             setJavaClass(TransportContext.class);
-            setAttribute(Native, TransportContext.class.getCanonicalName());
         }
 
         @Override

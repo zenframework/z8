@@ -32,8 +32,8 @@ public class RuntimeInfo {
 				Z8Context.init(config);
 			}
 			if (cmd.hasOption(OPT_STRUCTURE)) {
-				AuthorityCenter.start(config);
-				ApplicationServer.start(config);
+				AuthorityCenter.launch(config);
+				ApplicationServer.launch(config);
 				JsonObject structure = Import.getTablesStructure();
 				System.out.println(structure.toString(4));
 				Rmi.get(IApplicationServer.class).stop();

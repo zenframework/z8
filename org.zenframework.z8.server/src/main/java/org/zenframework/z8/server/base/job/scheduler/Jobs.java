@@ -3,6 +3,7 @@ package org.zenframework.z8.server.base.job.scheduler;
 import org.zenframework.z8.server.base.table.Table;
 import org.zenframework.z8.server.resources.Resources;
 import org.zenframework.z8.server.runtime.IObject;
+import org.zenframework.z8.server.types.integer;
 
 public class Jobs extends Table {
     final static public String TableName = "SystemJobs";
@@ -14,6 +15,11 @@ public class Jobs extends Table {
         public final static String DefaultSettings = "Jobs.defaultSettings";
     }
 
+    static public class displayNames {
+        public final static String Title = Resources.get(strings.Title);
+        public final static String DefaultSettings = Resources.get(strings.DefaultSettings);
+    }
+
     public static class CLASS<T extends Jobs> extends Table.CLASS<T> {
         public CLASS() {
             this(null);
@@ -23,7 +29,7 @@ public class Jobs extends Table {
             super(container);
             setJavaClass(Jobs.class);
             setName(TableName);
-            setDisplayName(Resources.get(Jobs.strings.Title));
+            setDisplayName(displayNames.Title);
         }
 
         @Override
@@ -39,9 +45,9 @@ public class Jobs extends Table {
     @Override
     public void constructor2() {
         super.constructor2();
-        id.get().length.set(256);
-        name.get().length.set(256);
-        description.setDisplayName(Resources.get(strings.DefaultSettings));
+        id.get().length = new integer(256);
+        name.get().length = new integer(256);
+        description.setDisplayName(displayNames.DefaultSettings);
     }
 
 }

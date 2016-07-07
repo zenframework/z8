@@ -14,7 +14,7 @@ public class GuidField extends Field {
         public CLASS(IObject container) {
             super(container);
             setJavaClass(GuidField.class);
-            setAttribute(Native, GuidField.class.getCanonicalName());
+            setSystem(true);
         }
 
         @Override
@@ -26,7 +26,6 @@ public class GuidField extends Field {
     public GuidField(IObject container) {
         super(container);
         setDefault(new guid());
-        system.set(true);
     }
 
     public guid z8_getDefault() {

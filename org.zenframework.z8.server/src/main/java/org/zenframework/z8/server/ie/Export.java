@@ -15,7 +15,6 @@ import javax.xml.bind.JAXBException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.zenframework.z8.ie.xml.ExportEntry;
-import org.zenframework.z8.server.base.file.FileInfo;
 import org.zenframework.z8.server.base.table.Table;
 import org.zenframework.z8.server.base.table.TreeTable;
 import org.zenframework.z8.server.base.table.system.Properties;
@@ -30,6 +29,7 @@ import org.zenframework.z8.server.runtime.RLinkedHashMap;
 import org.zenframework.z8.server.runtime.ServerRuntime;
 import org.zenframework.z8.server.types.bool;
 import org.zenframework.z8.server.types.exception;
+import org.zenframework.z8.server.types.file;
 import org.zenframework.z8.server.types.guid;
 import org.zenframework.z8.server.types.integer;
 import org.zenframework.z8.server.types.primary;
@@ -110,11 +110,11 @@ public class Export extends OBJECT {
 		}
 	}
 
-	public void addFile(FileInfo fileInfo) {
+	public void addFile(file fileInfo) {
 		addFile(fileInfo, ImportPolicy.DEFAULT);
 	}
 
-	public void addFile(FileInfo fileInfo, ImportPolicy importPolicy) {
+	public void addFile(file fileInfo, ImportPolicy importPolicy) {
 		files.add(IeUtil.fileInfoToFile(fileInfo, importPolicy,
 				context.get().getProperty(TransportContext.SelfAddressProperty)));
 	}
@@ -236,12 +236,12 @@ public class Export extends OBJECT {
 		addRecordset(cls.get(), CLASS.asList(fields), where);
 	}
 
-	public void z8_addFile(FileInfo.CLASS<? extends FileInfo> fileInfo) {
-		addFile(fileInfo.get());
+	public void z8_addFile(file fileInfo) {
+		addFile(fileInfo);
 	}
 
-	public void z8_addFile(FileInfo.CLASS<? extends FileInfo> fileInfo, ImportPolicy importPolicy) {
-		addFile(fileInfo.get(), importPolicy);
+	public void z8_addFile(file fileInfo, ImportPolicy importPolicy) {
+		addFile(fileInfo, importPolicy);
 	}
 
 	public void z8_setDefaults(ImportPolicy importPolicy, bool exportAttachments) {
@@ -300,7 +300,7 @@ public class Export extends OBJECT {
 			// Вложения
 			for (Field attField : recordsetEntry.recordset.getAttachments()) {
 				if (recordsetExportRules.isExportAttachments(recordId, attField)) {
-					List<FileInfo> fileInfos = FileInfo.parseArray(attField.get().string().get());
+					Collection<file> fileInfos = file.parse(attField.get().string().get());
 					files.addAll(IeUtil.fileInfosToFiles(fileInfos,
 							recordsetExportRules.getImportPolicy(recordId, attField), sender));
 				}

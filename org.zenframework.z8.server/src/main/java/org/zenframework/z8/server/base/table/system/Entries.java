@@ -59,12 +59,12 @@ public class Entries extends Table {
         readOnly.set(true);
 
         id.get().visible = new bool(false);
-        id.get().length.set(1024);
+        id.get().length = new integer(1024);
         id.get().visible = new bool(false);
 
         id1.get().visible = new bool(false);
 
-        name.get().length.set(1024);
+        name.get().length = new integer(1024);
 
         description.get().visible = new bool(false);
 

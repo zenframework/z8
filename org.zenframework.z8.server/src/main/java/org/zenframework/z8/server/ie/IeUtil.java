@@ -21,13 +21,14 @@ import org.apache.commons.codec.binary.Base64;
 import org.zenframework.z8.ie.xml.ExportEntry;
 import org.zenframework.z8.ie.xml.ExportEntry.Records;
 import org.zenframework.z8.ie.xml.ObjectFactory;
-import org.zenframework.z8.server.base.file.FileInfo;
-import org.zenframework.z8.server.base.file.Files;
 import org.zenframework.z8.server.base.file.FilesFactory;
 import org.zenframework.z8.server.base.table.Table;
 import org.zenframework.z8.server.base.table.value.AttachmentField;
 import org.zenframework.z8.server.base.table.value.Field;
+import org.zenframework.z8.server.base.table.system.SystemFiles;
 import org.zenframework.z8.server.security.BuiltinUsers;
+import org.zenframework.z8.server.types.datetime;
+import org.zenframework.z8.server.types.file;
 import org.zenframework.z8.server.types.guid;
 import org.zenframework.z8.server.types.string;
 
@@ -87,14 +88,14 @@ public class IeUtil {
 					&& (exportRules.isExportAttachments(recordId, f) || !isAttachmentField)) {
 				String value = f.get().toString();
 				if (isAttachmentField) {
-					Collection<FileInfo> files = FileInfo.parseArray(value);
-					for (FileInfo file : files) {
+					Collection<file> files = file.parse(value);
+					for (file file : files) {
 						if (file.instanceId == null || file.instanceId.isEmpty()) {
 							file.instanceId = new string(defaultInstanceId);
 							file.json = null;
 						}
 					}
-					value = FileInfo.toJson(files);
+					value = file.toJson(files);
 				}
 				Records.Record.Field field = new Records.Record.Field();
 				field.setId(f.id());
@@ -108,7 +109,7 @@ public class IeUtil {
 		return record;
 	}
 
-	public static ExportEntry.Files.File fileInfoToFile(FileInfo fileInfo, ImportPolicy policy, String defaultInstanceId) {
+	public static ExportEntry.Files.File fileInfoToFile(file fileInfo, ImportPolicy policy, String defaultInstanceId) {
 		ExportEntry.Files.File file = new ExportEntry.Files.File();
 		file.setName(fileInfo.name.get());
 		file.setTime(fileInfo.time.getTicks());
@@ -122,44 +123,38 @@ public class IeUtil {
 		return file;
 	}
 
-	public static FileInfo fileToFileInfo(ExportEntry.Files.File file, boolean extractFiles) throws IOException {
-		FileInfo fileInfo = fileToFileInfoCLASS(file).get();
+	public static file fileToFileInfo(ExportEntry.Files.File file, boolean extractFiles) throws IOException {
+		file fileInfo = fileToFileInfo(file);
 		if (extractFiles)
-			fileInfo = Files.newInstance().getFile(fileInfo);
+			fileInfo = SystemFiles.newInstance().getFile(fileInfo);
 		return fileInfo;
 	}
 
-	public static FileInfo.CLASS<FileInfo> fileToFileInfoCLASS(ExportEntry.Files.File file) {
-		FileInfo.CLASS<FileInfo> fileInfo = new FileInfo.CLASS<FileInfo>();
-		fileInfo.get().name.set(file.getName());
-		fileInfo.get().time.set(file.getTime());
-		fileInfo.get().path.set(file.getPath());
-		fileInfo.get().id.set(file.getId());
-		fileInfo.get().instanceId.set(file.getInstanceId());
-		return fileInfo;
+	public static file fileToFileInfo(ExportEntry.Files.File file) {
+		return new file(new guid(file.getId()), file.getName(), file.getInstanceId(), file.getPath(), new datetime(file.getTime()));
 	}
 
-	public static List<ExportEntry.Files.File> fileInfosToFiles(List<FileInfo> fileInfos, ImportPolicy policy,
+	public static List<ExportEntry.Files.File> fileInfosToFiles(Collection<file> fileInfos, ImportPolicy policy,
 			String defaultInstanceId) {
 		List<ExportEntry.Files.File> files = new ArrayList<ExportEntry.Files.File>(fileInfos.size());
-		for (FileInfo fileInfo : fileInfos) {
+		for (file fileInfo : fileInfos) {
 			files.add(fileInfoToFile(fileInfo, policy, defaultInstanceId));
 		}
 		return files;
 	}
 
-	public static List<FileInfo> filesToFileInfos(List<ExportEntry.Files.File> files, boolean extractFiles) throws IOException {
-		List<FileInfo> fileInfos = new ArrayList<FileInfo>(files.size());
+	public static List<file> filesToFileInfos(List<ExportEntry.Files.File> files, boolean extractFiles) throws IOException {
+		List<file> fileInfos = new ArrayList<file>(files.size());
 		for (ExportEntry.Files.File file : files) {
 			fileInfos.add(fileToFileInfo(file, extractFiles));
 		}
 		return fileInfos;
 	}
 
-	public static ExportEntry.Files fileInfosToXmlFiles(List<FileInfo> fileInfos, String defaultInstanceId) {
+	public static ExportEntry.Files fileInfosToXmlFiles(List<file> fileInfos, String defaultInstanceId) {
 		ExportEntry.Files files = new ExportEntry.Files();
 		while (!fileInfos.isEmpty()) {
-			FileInfo fileInfo = fileInfos.remove(0);
+			file fileInfo = fileInfos.remove(0);
 			ExportEntry.Files.File file = new ExportEntry.Files.File();
 			file.setId(fileInfo.id.toString());
 			file.setInstanceId(fileInfo.instanceId != null && !fileInfo.instanceId.isEmpty() ? fileInfo.instanceId.get()
@@ -167,23 +162,19 @@ public class IeUtil {
 			file.setName(fileInfo.name.get());
 			file.setTime(fileInfo.time.getTicks());
 			file.setPath(fileInfo.path.get());
-			file.setValue(Base64.encodeBase64String(fileInfo.file.get()));
+			file.setValue(Base64.encodeBase64String(fileInfo.get().get()));
 			files.getFile().add(file);
 		}
 		return files;
 	}
 
-	public static List<FileInfo> xmlFilesToFileInfos(ExportEntry.Files files) throws IOException {
-		List<FileInfo> fileInfos = new ArrayList<FileInfo>(files.getFile().size());
+	public static List<file> xmlFilesToFileInfos(ExportEntry.Files files) throws IOException {
+		List<file> fileInfos = new ArrayList<file>(files.getFile().size());
 		for (ExportEntry.Files.File file : files.getFile()) {
-			FileInfo fileInfo = new FileInfo();
-			fileInfo.name.set(file.getName());
-			fileInfo.time.set(file.getTime());
-			fileInfo.path.set(file.getPath());
-			fileInfo.id.set(file.getId());
-			fileInfo.instanceId.set(file.getInstanceId());
-			fileInfo.file = FilesFactory.createFileItem(file.getName());
-			OutputStream out = fileInfo.file.getOutputStream();
+			file fileInfo = fileToFileInfo(file);
+			fileInfo.set(FilesFactory.createFileItem(file.getName()));
+
+			OutputStream out = fileInfo.getOutputStream();
 			try {
 				out.write(Base64.decodeBase64(file.getValue()));
 				file.setValue("");

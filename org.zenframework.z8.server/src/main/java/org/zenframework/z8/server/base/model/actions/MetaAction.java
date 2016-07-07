@@ -11,10 +11,11 @@ import org.zenframework.z8.server.base.table.value.Field;
 import org.zenframework.z8.server.json.Json;
 import org.zenframework.z8.server.json.JsonWriter;
 import org.zenframework.z8.server.types.guid;
+import org.zenframework.z8.server.types.string;
 
 public class MetaAction extends ReadAction {
-	public static final String StartValue = "0";
-	public static final String LimitValue = "50";
+	static public final string StartValue = new string("0");
+	static public final string LimitValue = new string("50");
 
 	public MetaAction(ActionParameters actionParameters) {
 		super(actionParameters);
@@ -22,12 +23,12 @@ public class MetaAction extends ReadAction {
 
 	@Override
 	protected void initialize() {
-		ActionParameters actionParameters = actionParameters();
-		Map<String, String> requestParameters = actionParameters.requestParameters;
+		Map<string, string> requestParameters = requestParameters();
 
 		Query query = getQuery();
+		
 		if(query.showAsTree())
-			requestParameters.put(Json.parentId.get(), guid.NULL.toString());
+			requestParameters.put(Json.parentId, new string(guid.NULL.toString()));
 		
 		super.initialize();
 	}
@@ -35,16 +36,16 @@ public class MetaAction extends ReadAction {
 	@Override
 	public void writeResponse(JsonWriter writer) throws Throwable {
 		ActionParameters actionParameters = actionParameters();
-		Map<String, String> requestParameters = actionParameters.requestParameters;
-
+		Map<string, string> requestParameters = requestParameters();
+		
 		Query query = getQuery();
 
 		writer.writeProperty(Json.isQuery, true);
 
-		writer.writeProperty(Json.queryId, requestParameters.get(Json.queryId));
+		writer.writeProperty(Json.queryId, getRequestParameter(Json.queryId));
 
 		if(actionParameters.link != null) {
-			writer.writeProperty(Json.fieldId, requestParameters.get(Json.fieldId));
+			writer.writeProperty(Json.fieldId, getRequestParameter(Json.fieldId));
 			writer.writeProperty(Json.linkId, actionParameters.link.id());
 		}
 
@@ -56,10 +57,10 @@ public class MetaAction extends ReadAction {
 
 		writeSections(writer, fields);
 
-		requestParameters.put(Json.start.get(), StartValue);
-		requestParameters.put(Json.limit.get(), LimitValue);
+		requestParameters.put(Json.start, StartValue);
+		requestParameters.put(Json.limit, LimitValue);
 
-		requestParameters.put(Json.limit.get(), LimitValue);
+		requestParameters.put(Json.limit, LimitValue);
 
 		super.writeResponse(writer);
 	}
@@ -174,7 +175,7 @@ public class MetaAction extends ReadAction {
 		for(Object control : section.controls) {
 			if(control instanceof Field) {
 				Field field = (Field)control;
-				if(!field.system.get()) {
+				if(!field.system()) {
 					writer.startObject();
 					writer.writeProperty(Json.id, field.id());
 					writer.finishObject();

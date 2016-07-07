@@ -4,8 +4,10 @@ import org.zenframework.z8.server.db.FieldType;
 import org.zenframework.z8.server.db.sql.SqlField;
 import org.zenframework.z8.server.format.Format;
 import org.zenframework.z8.server.runtime.IObject;
+import org.zenframework.z8.server.types.bool;
 import org.zenframework.z8.server.types.datetime;
 import org.zenframework.z8.server.types.primary;
+import org.zenframework.z8.server.types.string;
 import org.zenframework.z8.server.types.sql.sql_datetime;
 
 public class DatetimeExpression extends Expression {
@@ -13,7 +15,6 @@ public class DatetimeExpression extends Expression {
         public CLASS(IObject container) {
             super(container);
             setJavaClass(DatetimeExpression.class);
-            setAttribute(Native, DatetimeExpression.class.getCanonicalName());
         }
 
         @Override
@@ -24,8 +25,8 @@ public class DatetimeExpression extends Expression {
 
     public DatetimeExpression(IObject container) {
         super(container);
-        format.set(Format.datetime);
-        stretch.set(false);
+        format = new string(Format.datetime);
+        stretch = new bool(false);
 
         setDefault(new datetime(datetime.MIN));
     }

@@ -9,16 +9,6 @@ public class primary implements Serializable {
 
 	private static final long serialVersionUID = -6139111122281366413L;
 
-	static public final int Binary = 0;
-	static public final int Bool = 1;
-	static public final int Date = 2;
-	static public final int Datespan = 3;
-	static public final int Datetime = 4;
-	static public final int Decimal = 5;
-	static public final int Guid = 6;
-	static public final int Integer = 7;
-	static public final int String = 8;
-	
 	public primary defaultValue() {
 		throw new UnsupportedOperationException();
 	}

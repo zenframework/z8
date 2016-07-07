@@ -29,12 +29,12 @@ import javax.naming.NamingException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.zenframework.z8.server.base.file.FileInfo;
 import org.zenframework.z8.server.base.file.FilesFactory;
 import org.zenframework.z8.server.base.table.system.Properties;
 import org.zenframework.z8.server.base.table.system.SystemFiles;
 import org.zenframework.z8.server.logs.Trace;
 import org.zenframework.z8.server.runtime.ServerRuntime;
+import org.zenframework.z8.server.types.file;
 import org.zenframework.z8.server.utils.IOUtils;
 
 public class JmsTransport extends AbstractTransport implements ExceptionListener, Properties.Listener {
@@ -125,7 +125,7 @@ public class JmsTransport extends AbstractTransport implements ExceptionListener
 	}
 
 	@Override
-	public FileInfo readFileSynchronously(FileInfo fileInfo, String transportAddress) throws TransportException {
+	public file readFileSynchronously(file file, String transportAddress) throws TransportException {
 		throw new UnsupportedOperationException();
 	}
 
@@ -309,12 +309,12 @@ public class JmsTransport extends AbstractTransport implements ExceptionListener
 
 		buff = new byte[IOUtils.DefaultBufferSize];
 		SystemFiles files = SystemFiles.newInstance();
-		for (FileInfo fileInfo : message.getFiles()) {
-			fileInfo = files.getFile(fileInfo);
+		for (file file : message.getFiles()) {
+			file = files.getFile(file);
 			// write file length
-			streamMessage.writeLong(fileInfo.file == null ? 0L : fileInfo.file.getSize());
+			streamMessage.writeLong(file.get() == null ? 0L : file.get().getSize());
 			// write file contents
-			InputStream in = fileInfo.file.getInputStream();
+			InputStream in = file.getInputStream();
 			try {
 				int count;
 				while ((count = in.read(buff)) != -1) {
@@ -345,13 +345,13 @@ public class JmsTransport extends AbstractTransport implements ExceptionListener
 				try {
 					message.setFiles(IeUtil.filesToFileInfos(message.getExportEntry().getFiles().getFile(), false));
 					if (streamMessage.readBoolean()) {
-						for (FileInfo fileInfo : message.getFiles()) {
+						for (file file : message.getFiles()) {
 							// read file size
 							long size = streamMessage.readLong();
 							if (size > 0) {
-								fileInfo.file = FilesFactory.createFileItem(fileInfo.name.get());
+								file.set(FilesFactory.createFileItem(file.name.get()));
 								buff = new byte[(int) Math.min(size, IOUtils.DefaultBufferSize)];
-								OutputStream out = fileInfo.file.getOutputStream();
+								OutputStream out = file.getOutputStream();
 								try {
 									while (size > 0) {
 										count = streamMessage.readBytes(buff);

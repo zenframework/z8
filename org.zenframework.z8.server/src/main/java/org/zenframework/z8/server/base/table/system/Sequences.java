@@ -57,8 +57,8 @@ public class Sequences extends Table {
 
         registerDataField(value);
 
-        id.get().indexed.set(true);
-        id.get().length.set(256);
+        id.get().indexed = new bool(true);
+        id.get().length = new integer(256);
 
         id1.get().visible = new bool(false);
         name.get().visible = new bool(false);

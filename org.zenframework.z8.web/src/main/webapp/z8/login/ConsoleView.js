@@ -2,29 +2,22 @@ Ext.apply(Z8.Console,
 {
 	jobs: new Ext.util.MixedCollection(),
 	
-	getJob: function(jobId)
-	{
+	getJob: function(jobId) {
 		return this.jobs.get(jobId);
 	},
 	
-	start: function(job, queryParameters, parameters)
-	{
+	start: function(job, parameters) {
 		job.parameters = parameters;
 		
 		if(this.getJob(job.jobId) == null)
-		{
 			this.jobs.add(job.jobId, job);
-		}
 		
 		var id = 'console';
 		
-		if(this.view == null)
-		{
+		if(this.view == null) {
 			this.view = new Z8.console.Panel({flex:1, data: this.prepareData()});
 			Z8.TaskManager.register(this.view, id);
-		}
-		else
-		{
+		} else {
 			var view = Z8.TaskManager.getTask(id);
 			Z8.TaskManager.activate(view);
 			view.jobsGrid.store.loadData(this.prepareData(), false);
@@ -35,36 +28,26 @@ Ext.apply(Z8.Console,
 		this.view.on('destroyed', this.onViewDestroyed, this);
 	},
 	
-	getProgressAsString: function(job)
-	{
-		try 
-		{
+	getProgressAsString: function(job) {
+		try {
 			return ((job.progress || 0.0) * 100).toFixed(1) + '%';
-		}
-		catch(e)
-		{
+		} catch(e) {
 			return '0%';
 		}
 	},
 	
-	prepareData: function()
-	{
+	prepareData: function() {
 		var data = [];
 		
-		this.jobs.each(function(job)
-		{
+		this.jobs.each(function(job) {
 			var params = '';
-			Ext.iterate(job.parameters, function(key, val){
-	    		params += key + ' ' + val;
-	    	});
 			data.push([job.jobId, job.text, params, this.getProgressAsString(job)]);
 		}, this);
 		
 		return data;
 	},
 	
-	createPolling: function(job)
-	{
+	createPolling: function(job) {
 		var provider = new Ext.direct.PollingProvider({
 			type:'polling',
 			url: Z8.request.url,
@@ -78,14 +61,11 @@ Ext.apply(Z8.Console,
 		this.processEvent(provider, job);
 	},
 	
-	processEvent: function(provider, event)
-	{
-		if(event.type == 'event')
-		{
+	processEvent: function(provider, event) {
+		if(event.type == 'event') {
 			var job = this.getJob(event.jobId);
 			
-			if(job != null)
-			{
+			if(job != null) {
 				job.info.messages = job.info.messages.concat(event.info.messages);
 				job.info.log = event.info.log;
 	
@@ -94,41 +74,30 @@ Ext.apply(Z8.Console,
 				job.progress = (1.0 * job.worked) / job.total;
 
 				if(event == job)
-				{
 					this.select(job);
-				}
 				else
-				{
 					this.updateProgress(job);
-				}
 			}
 			
 			if(event.done || job == null)
-			{
 				provider.disconnect();
-			}
 		}
 	},
 
-	select: function(job)
-	{
-		if(this.view)
-		{
+	select: function(job) {
+		if(this.view) {
 			var grid = this.view.jobsGrid;
 			var record = grid.findRecord(job.jobId);
 			grid.getSelectionModel().selectRecords([record]);
 		}
 	},
 	
-	updateProgress: function(job)
-	{
-		if(this.view)
-		{
+	updateProgress: function(job) {
+		if(this.view) {
 			var grid = this.view.jobsGrid;
 			var record = grid.findRecord(job.jobId);
 	
-			if(record != null)
-			{
+			if(record != null) {
 				record.data['progress'] = this.getProgressAsString(job);
 				record.afterEdit();
 			}
@@ -137,21 +106,17 @@ Ext.apply(Z8.Console,
 		}
 	},
 	
-	stop: function()
-	{
-		if(this.view)
-		{
+	stop: function() {
+		if(this.view) {
 			this.view.destroy();
 			this.view = null;
 		}
 	},
 	
-	clear: function()
-	{
+	clear: function() {
 	},
 	
-	onViewDestroyed: function()
-	{
+	onViewDestroyed: function() {
 		this.view = null;
 	}
 });

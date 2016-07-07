@@ -201,85 +201,39 @@ Z8.desktop.Desktop = Ext.extend(Ext.Viewport,
 		return items;
 	},
 	
-	getTaskId: function(requestId, parameters)
-	{
+	getTaskId: function(requestId, parameters) {
 		var id = requestId;
 		
 		if(parameters != null)
-		{
 			id += Ext.encode(parameters);
-		}
 		
 		return id;
 	},
 	
-	open: function(task, queryParameters, states)
+	open: function(task, queryParameters)
 	{
 		var id = Ext.isString(task) ? task : task.id;
 		
-//		if(this.shortcutsBtn)
-//		{
-//			if(id != 'shortcutsId')
-//			{
-//				this.shortcutsBtn.enable();
-//			}
-//			else
-//			{
-//				this.shortcutsBtn.disable();
-//			}
-//		}
-		
 		var view = Z8.TaskManager.getTask(this.getTaskId(id, queryParameters));
 		
-		if(view != null)
-		{
+		if(view != null) {
 			Z8.TaskManager.activate(view);
+			return;
 		}
-		else
-		{
-			if(task.service != null)
-			{
-				queryParameters = queryParameters || {};
-				queryParameters.service = task.service; 
-			}
-				
-			if(task.parameters != null)
-			{
-				var parameters = task.parameters;
-				
 
-				if(parameters.length != 0)
-				{
-					var parametersWindow = new Z8.view.ParametersWindow({ title: task.text, record: task.record, parameters: parameters, baseParams: queryParameters });
-					parametersWindow.on('OK', this.onParameters.createDelegate(this, [id, queryParameters], true), this, { single: true});
-					parametersWindow.show();
-					return;
-				}	
-			}	
-					
-			this.onParameters({}, null, id, queryParameters, states);
-		}
+		var parameters = task.parameters;
+
+		var success = this.onTaskStart.createDelegate(this, [queryParameters, parameters], true);
+		var failure = Ext.emptyFn;
+
+		var baseParams = queryParameters || {};
+		baseParams.requestId = id;
+		
+		var parametersWindow = new Z8.view.ParametersWindow({ title: task.text, record: task.record, parameters: parameters, baseParams: baseParams, success: success, failure: failure, scope: this });
+		parametersWindow.show();
 	},
 
-	onParameters: function(parameters, serverId, id, queryParameters, states)
-	{
-		var onSuccess = this.onTaskStart.createDelegate(this, [queryParameters, parameters, states], true);
-		var onError = Ext.emptyFn;
-		
-		var params = { parameters: Ext.encode(parameters) };
-		
-		if(serverId != null)
-		{
-			params.serverId = serverId;
-		}
-		
-		Ext.apply(params, queryParameters);
-		
-		Z8.Ajax.request(id, onSuccess, onError, params, this);
-    },
-	
-	followLink: function(link, query, success, error)
-	{
+	followLink: function(link, query, success, error) {
 		var onSuccess = this.onFollowLink.createDelegate(this, [success], true);
 		var onError = this.onFollowLinkError.createDelegate(this, [error], true);
 		
@@ -288,55 +242,39 @@ Z8.desktop.Desktop = Ext.extend(Ext.Viewport,
 		query.request(onSuccess, onError, params, this);
 	},
     
-	onFollowLink: function(response, callback)
-	{
+	onFollowLink: function(response, callback) {
 		this.onTaskStart(response);
 
-    	
 		if(callback != null)
-		{
 			callback.call(response.info);
-		}
-
 	},
 
-	onFollowLinkError: function(info, callback)
-	{
+	onFollowLinkError: function(info, callback) {
 		callback.call(info);
 	},
 	
-	onTaskStart: function(response, queryParameters, parameters, states)
-	{
-
+	onTaskStart: function(response, queryParameters, parameters) {
 		if(response.jobId != null)
-		{
-			this.startJob(response, queryParameters, parameters);
-		}
+			this.startJob(response, parameters);
 		else
-		{
-			this.createMainView(response, queryParameters, states);
-		}
+			this.createMainView(response, queryParameters);
 	},
 
-	createMainView: function(query, queryParameters, states)
-	{
-		var view = new Z8.view.MasterDetailPanel( { flex: 1, query: query, states: states } );
+	createMainView: function(query, queryParameters) {
+		var view = new Z8.view.MasterDetailPanel( { flex: 1, query: query } );
 		Z8.TaskManager.register(view, this.getTaskId(query.requestId, queryParameters));
 	},
 	
-	startJob: function(job, queryParameters, parameters)
-	{
-		Z8.Console.start(job, queryParameters, parameters);
+	startJob: function(job, parameters) {
+		Z8.Console.start(job, parameters);
 	},
  
-	showMessenger: function()
-	{
+	showMessenger: function() {
 		//this.messenger.showMenu();
 		this.messenger.messengerWindow.show();
 	},
 	
- 	onHelp: function()
- 	{
+ 	onHelp: function() {
 		if (!this.helpWindow)
 			this.helpWindow = new Z8.HelpWindow();
 		
@@ -345,46 +283,36 @@ Z8.desktop.Desktop = Ext.extend(Ext.Viewport,
 		this.helpWindow.activate();
  	},
  	
- 	onProfile: function()
-	{
- 		Z8.viewport.open('ресурсы.юридическиеЛица.представления.ВедениеНашегоПредприятияView');
+ 	onProfile: function() {
 	},
-
  	
- 	onSettings: function()
-	{
+ 	onSettings: function() {
 		if(!this.settingsWindow)
 			this.settingsWindow = new Z8.view.UserSettings();
 		this.settingsWindow.show();
 	},
 
- 	onChangePassword: function()
-	{
+ 	onChangePassword: function() {
 		new Z8.view.ChangePasswordDialog().show();
 	},
 	
- 	onChangeEmail: function()
-	{
+ 	onChangeEmail: function() {
 		new Z8.view.ChangeEmailDialog().show();
 	},
 
-	onShowDesktop: function(button)
-	{
+	onShowDesktop: function(button) {
 		Z8.TaskManager.activate(this.dashboardPanel);
 	},
 
-	onExit: function()
- 	{
+	onExit: function() {
 		var handler = Ext.emptyFn;
 		var dirtyForms = Z8.TaskManager.getDirtyViews();
 		
-		if(!Z8.isEmpty(dirtyForms))
-		{
+		if(!Z8.isEmpty(dirtyForms)) {
 			var msg = 'У вас есть несохраненные формы:';
 			msg += '<ol>';
 			
-			Ext.each(dirtyForms, function(dirtyForm)
-			{
+			Ext.each(dirtyForms, function(dirtyForm) {
 				msg += '<li>' + dirtyForm.query.text + '</li>';
 			});
 			
@@ -392,53 +320,39 @@ Z8.desktop.Desktop = Ext.extend(Ext.Viewport,
 			
 			msg += 'Сохранить их перед закрытием?';
 			
-			handler = function(action)
-			{
+			handler = function(action) {
 				if(action == 'yes')
-				{
 					Z8.viewport.saveDirtyForms(dirtyForms);
-				}
 			};
 			
 			Z8.MessageBox.confirm('Выход', msg, handler, this);
-		}
-		else
-		{
-			handler = function(action)
-			{
+		} else {
+			handler = function(action) {
 				if(action == 'yes')
-				{
 					Z8.LoginManager.logout();            
-				}
 			};
 		
 			Z8.MessageBox.confirm('Выход', 'Вы действительно хотите выйти из системы?', handler);
 		}
 	},
 	
-	saveDirtyForms: function(dirtyForms)
-	{
+	saveDirtyForms: function(dirtyForms) {
 		var total = dirtyForms.length;
 		var succeeded = [];
 		var failed = [];
 		
-		var callback = function(form, result)
-		{
+		var callback = function(form, result) {
 			(result ? succeeded : failed).push(form);
 			
 			if(succeeded.length == total)
-			{
 				Z8.LoginManager.logout();
-			}
 			
-			if(succeeded.length + failed.length == total && failed.length > 0)
-			{
+			if(succeeded.length + failed.length == total && failed.length > 0) {
 				var msg = 'Возникли ошибки при сохранении форм:';
 				
 				msg += '<ol>';
 				
-				Ext.each(failed, function(form)
-				{
+				Ext.each(failed, function(form) {
 					msg += '<li>' + form.query.text + '</li>';
 				});
 				
@@ -448,15 +362,13 @@ Z8.desktop.Desktop = Ext.extend(Ext.Viewport,
 			}
 		};
 		
-		Ext.each(dirtyForms, function(dirtyForm)
-		{
+		Ext.each(dirtyForms, function(dirtyForm) {
 			var cb = Z8.Callback.create(callback, this, dirtyForm);
 			dirtyForm.save(cb, true);
 		});
 	},
 	
-	onDestroy: function()
-	{
+	onDestroy: function() {
 		Z8.desktop.Desktop.superclass.onDestroy.call(this);
 	}
 });

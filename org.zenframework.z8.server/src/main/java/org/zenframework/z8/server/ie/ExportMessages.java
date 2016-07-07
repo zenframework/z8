@@ -24,8 +24,9 @@ import org.zenframework.z8.server.base.view.filter.Filter;
 import org.zenframework.z8.server.db.sql.SqlField;
 import org.zenframework.z8.server.db.sql.SqlToken;
 import org.zenframework.z8.server.db.sql.expressions.And;
+import org.zenframework.z8.server.db.sql.expressions.Equ;
+import org.zenframework.z8.server.db.sql.expressions.IsNot;
 import org.zenframework.z8.server.db.sql.expressions.Operation;
-import org.zenframework.z8.server.db.sql.expressions.Rel;
 import org.zenframework.z8.server.db.sql.expressions.Unary;
 import org.zenframework.z8.server.db.sql.functions.InVector;
 import org.zenframework.z8.server.json.parser.JsonArray;
@@ -38,7 +39,6 @@ import org.zenframework.z8.server.types.datetime;
 import org.zenframework.z8.server.types.guid;
 import org.zenframework.z8.server.types.integer;
 import org.zenframework.z8.server.types.string;
-import org.zenframework.z8.server.types.sql.sql_string;
 import org.zenframework.z8.server.utils.ErrorUtils;
 import org.zenframework.z8.server.utils.StringUtils;
 
@@ -139,8 +139,7 @@ public class ExportMessages extends Table {
 		Properties.addListener(new PreserveExportMessagesListener());
 	}
 
-	private static volatile boolean preserveExportMessages = Boolean.parseBoolean(Properties
-			.getProperty(ServerRuntime.PreserveExportMessagesProperty));
+	private static volatile Boolean preserveExportMessages = null;
 
 	public final SystemDomains.CLASS<SystemDomains> domains = new SystemDomains.CLASS<SystemDomains>(this);
 	public final IntegerField.CLASS<IntegerField> ordinal = new IntegerField.CLASS<IntegerField>(this);
@@ -175,6 +174,9 @@ public class ExportMessages extends Table {
 	public void processed(guid id, String transportInfo) {
 		ExportMessages messages = new ExportMessages.CLASS<ExportMessages>().get();
 
+		if(preserveExportMessages == null)
+			preserveExportMessages = Boolean.parseBoolean(Properties.getProperty(ServerRuntime.PreserveExportMessagesProperty));
+				
 		if (preserveExportMessages) {
 			if (transportInfo != null)
 				messages.description.get().set(transportInfo);
@@ -186,11 +188,17 @@ public class ExportMessages extends Table {
 	}
 
 	public void setError(Message message, Throwable e) {
+		error.get().set(new bool(true));
+		description.get().set(
+				new string(new datetime() + " " + ": '" + ErrorUtils.getMessage(e) + "' " + e.getClass()));
+		update(new guid(message.getId()));
+	}
+
+	public void setInfo(Message message, String info) {
 		ExportMessages messages = new ExportMessages.CLASS<ExportMessages>().get();
 
-		messages.error.get().set(new bool(true));
-		messages.description.get().set(
-				new string(new datetime() + " " + ": '" + ErrorUtils.getMessage(e) + "' " + e.getClass()));
+		messages.error.get().set(new bool(false));
+		messages.description.get().set(new string(info));
 		messages.update(new guid(message.getId()));
 	}
 
@@ -216,7 +224,7 @@ public class ExportMessages extends Table {
 		id1.setDisplayName(Resources.get(strings.Receiver));
 		id1.get().length = new integer(50);
 
-		createdAt.get().system.set(false);
+		createdAt.setSystem(false);
 
 		name.setDisplayName(Resources.get(strings.Info));
 		name.get().length = new integer(1024);
@@ -228,7 +236,7 @@ public class ExportMessages extends Table {
 		ordinal.setDisplayName(Resources.get(strings.Ordinal));
 		ordinal.get().indexFields.add(id);
 		ordinal.get().indexFields.add(id1);
-		ordinal.get().unique.set(true);
+		ordinal.get().unique = new bool(true);
 		ordinal.get().aggregation = Aggregation.Max;
 
 		classId.setName("ClassId");
@@ -247,7 +255,7 @@ public class ExportMessages extends Table {
 		message.setName("Xml");
 		message.setIndex("xml");
 		message.setDisplayName(Resources.get(strings.Message));
-		message.get().colspan.set(3);
+		message.get().colspan = new integer(3);
 		message.get().visible = new bool(false);
 
 		attachment.setIndex("attachment");
@@ -270,21 +278,46 @@ public class ExportMessages extends Table {
 		registerFormField(error);
 	}
 
-	public Collection<String> getAddresses(String sender) {
-		Collection<String> locals = domains.get().getLocalAddresses();
-
+	private Collection<String> getDomains() {
+		return domains.get().getNames();
+	}
+	
+	public Collection<String> getAddresses() {
 		Collection<String> result = new ArrayList<String>();
 
-		Field addressField = id1.get();
-		Collection<Field> fields = Arrays.<Field> asList(addressField);
+		Field sender = id.get();
+		Field address = id1.get();
 
-		group(fields, fields, null);
+		Collection<Field> fields = Arrays.<Field> asList(address);
+		
+		Collection<string> locals = string.wrap(getDomains());
+		
+		SqlToken out = new IsNot(new InVector(address, locals));
+		SqlToken domain = new InVector(sender, locals);
+		
+		group(fields, fields, new And(domain, out));
 
-		while (next()) {
-			String address = addressField.string().get();
-			if (!address.equals(sender) && !locals.contains(address))
-				result.add(address);
-		}
+		while (next())
+			result.add(address.string().get());
+
+		return result;
+	}
+
+	public Collection<guid> getExportMessages(String domain) {
+		Collection<guid> result = new ArrayList<guid>();
+
+		Field address = id1.get();
+		Field processedField = processed.get();
+
+		Collection<Field> fields = Arrays.<Field> asList(recordId.get());
+		Collection<Field> orderBy = Arrays.<Field> asList(ordinal.get());
+
+		SqlToken where = new And(new IsNot(processedField), new Equ(address, domain));
+		
+		read(fields, orderBy, where);
+
+		while (next())
+			result.add(recordId());
 
 		return result;
 	}
@@ -296,22 +329,21 @@ public class ExportMessages extends Table {
 	public List<guid> getExportMessages(String sender, String address, JsonArray filters) {
 		List<guid> result = new LinkedList<guid>();
 
-		Collection<String> locals = domains.get().getLocalAddresses();
+		Collection<String> locals = getDomains();
 
 		Field senderField = id.get();
 		Field addressField = id1.get();
 
-		SqlToken notProcessedNotError = new And(new Unary(Operation.Not, new SqlField(processed.get())), new Unary(
-				Operation.Not, new SqlField(error.get())));
+		SqlToken notProcessedNotError = new And(new Unary(Operation.Not, processed.get()), new Unary(Operation.Not, error.get()));
 		SqlToken notLocal = new Unary(Operation.Not, new InVector(addressField, string.wrap(locals)));
-		SqlToken senderEq = new Rel(senderField, Operation.Eq, new sql_string(sender));
+		SqlToken senderEq = new Equ(senderField, sender);
 		SqlToken where = new And(new And(notProcessedNotError, notLocal), senderEq);
 		
 		if (filters != null && !filters.isEmpty())
 			where = new And(where, Query.parseWhere(Filter.parse(filters, this)));
 		
 		if (address != null) {
-			SqlToken addressEq = new Rel(addressField, Operation.Eq, new sql_string(address));
+			SqlToken addressEq = new Equ(addressField, address);
 			where = new And(where, addressEq);
 		}
 
@@ -329,7 +361,7 @@ public class ExportMessages extends Table {
 	public List<guid> getImportMessages(String selfAddress) {
 		SqlToken notProcessedNotError = new And(new Unary(Operation.Not, new SqlField(processed.get())), new Unary(
 				Operation.Not, new SqlField(error.get())));
-		SqlToken forMe = new Rel(id1.get(), Operation.Eq, new sql_string(selfAddress));
+		SqlToken forMe = new Equ(id1.get(), selfAddress);
 		read(Arrays.<Field> asList(recordId.get()), Arrays.<Field> asList(ordinal.get()), new And(notProcessedNotError,
 				forMe));
 		List<guid> ids = new LinkedList<guid>();

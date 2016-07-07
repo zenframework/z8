@@ -4,14 +4,12 @@ import java.util.Arrays;
 
 import org.zenframework.z8.server.base.table.system.Sequences;
 import org.zenframework.z8.server.db.sql.SqlToken;
-import org.zenframework.z8.server.db.sql.expressions.Operation;
+import org.zenframework.z8.server.db.sql.expressions.Equ;
 import org.zenframework.z8.server.db.sql.expressions.Or;
-import org.zenframework.z8.server.db.sql.expressions.Rel;
 import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.runtime.OBJECT;
 import org.zenframework.z8.server.types.integer;
 import org.zenframework.z8.server.types.string;
-import org.zenframework.z8.server.types.sql.sql_string;
 
 public class Sequencer extends OBJECT {
 	final static public String ProcedureName = "NextInSequence";
@@ -20,7 +18,6 @@ public class Sequencer extends OBJECT {
 		public CLASS(IObject container) {
 			super(container);
 			setJavaClass(Sequencer.class);
-			setAttribute(Native, Sequencer.class.getCanonicalName());
 		}
 
 		@Override
@@ -41,7 +38,7 @@ public class Sequencer extends OBJECT {
 	static public void reset(String key) {
 		Sequences sequences = new Sequences.CLASS<Sequences>().get();
 
-		SqlToken where = new Rel(sequences.id.get(), Operation.Eq, new sql_string(key.toLowerCase()));
+		SqlToken where = new Equ(sequences.id.get(), key.toLowerCase());
 		sequences.destroy(where);
 	}
 
@@ -60,8 +57,8 @@ public class Sequencer extends OBJECT {
 
 		// old id for backward compatibility
 		String id = "id" + Integer.toString(key.hashCode()).replace('-', '_');
-		SqlToken where = new Or(new Rel(idField, Operation.Eq, new sql_string(id)), new Rel(idField, Operation.Eq,
-				new sql_string(key)));
+		
+		SqlToken where = new Or(new Equ(idField, id), new Equ(idField, key));
 
 		long result = defaultValue;
 

@@ -6,6 +6,10 @@ import java.util.Collection;
 import java.util.List;
 
 public class ArrayUtils {
+    static public <Type> boolean contains(Type[] objects, Type object) {
+        return indexOf(objects, object) != -1;
+    }
+
     static public <Type> int indexOf(Type[] objects, Type object) {
         if(objects == null) {
             return -1;

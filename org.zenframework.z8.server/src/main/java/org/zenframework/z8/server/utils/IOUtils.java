@@ -15,7 +15,6 @@ import java.util.zip.Deflater;
 import java.util.zip.Inflater;
 
 import org.mozilla.universalchardet.UniversalDetector;
-import org.zenframework.z8.server.engine.Z8Context;
 import org.zenframework.z8.server.logs.Trace;
 import org.zenframework.z8.server.types.encoding;
 
@@ -303,10 +302,4 @@ public class IOUtils {
 			}
 		}
 	}
-
-	public static String getRelativePath(File path) throws IOException {
-		int baseLen = Z8Context.getWorkingPath().getCanonicalPath().length() + 1;
-		return path.getCanonicalPath().substring(baseLen);
-	}
-
 }

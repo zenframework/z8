@@ -60,7 +60,7 @@ public class Component implements RmiSerializable {
     
     @Override
 	public void serialize(ObjectOutputStream out) throws IOException {
-		out.writeLong(serialVersionUID);
+    	RmiIO.writeLong(out, serialVersionUID);
 		
 		RmiIO.writeString(out, id);
 		RmiIO.writeString(out, className);
@@ -70,7 +70,7 @@ public class Component implements RmiSerializable {
     @Override
 	public void deserialize(ObjectInputStream in) throws IOException, ClassNotFoundException {	
 		@SuppressWarnings("unused")
-		long version = in.readLong();
+		long version = RmiIO.readLong(in);
 		
 		id = RmiIO.readString(in);
 		className = RmiIO.readString(in);

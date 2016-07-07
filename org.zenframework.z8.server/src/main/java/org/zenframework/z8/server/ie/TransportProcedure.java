@@ -2,28 +2,20 @@ package org.zenframework.z8.server.ie;
 
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.zenframework.z8.server.base.simple.Procedure;
-import org.zenframework.z8.server.base.table.system.Properties;
 import org.zenframework.z8.server.base.view.command.Parameter;
 import org.zenframework.z8.server.db.Connection;
 import org.zenframework.z8.server.db.ConnectionManager;
-import org.zenframework.z8.server.engine.ITransportService;
-import org.zenframework.z8.server.engine.Rmi;
 import org.zenframework.z8.server.json.parser.JsonArray;
 import org.zenframework.z8.server.json.parser.JsonObject;
+import org.zenframework.z8.server.logs.Trace;
 import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.runtime.RCollection;
-import org.zenframework.z8.server.runtime.ServerRuntime;
 import org.zenframework.z8.server.types.guid;
 import org.zenframework.z8.server.types.string;
 import org.zenframework.z8.server.utils.ErrorUtils;
 
 public class TransportProcedure extends Procedure {
-
-	private static final Log LOG = LogFactory.getLog(TransportProcedure.class);
-
 	private static final String CONFIG_SEND = "send";
 	private static final String CONFIG_RECEIVE = "receive";
 	private static final String CONFIG_ENABLED = "enabled";
@@ -33,7 +25,6 @@ public class TransportProcedure extends Procedure {
 		public CLASS(IObject container) {
 			super(container);
 			setJavaClass(TransportProcedure.class);
-			setAttribute(Native, TransportProcedure.class.getCanonicalName());
 			setAttribute(Job, "");
 		}
 
@@ -77,19 +68,6 @@ public class TransportProcedure extends Procedure {
 
 		TransportRoutes transportRoutes = TransportRoutes.newInstance();
 
-		String transportCenter = Properties.getProperty(ServerRuntime.TransportCenterAddressProperty).trim();
-		boolean registerInTransportCenter = Boolean.parseBoolean(Properties
-				.getProperty(ServerRuntime.RegisterInTransportCenterProperty));
-
-		if (registerInTransportCenter && !transportCenter.isEmpty()) {
-			try {
-				Rmi.get(ITransportService.class).checkRegistration(selfAddress);
-			} catch (Exception e) {
-				LOG.error("Can't check transport server registration for '" + selfAddress + "' in transport center '"
-						+ transportCenter + "'", e);
-			}
-		}
-
 		transportRoutes.checkInactiveRoutes();
 
 		if (sendEnabled) {
@@ -102,7 +80,7 @@ public class TransportProcedure extends Procedure {
 				if (message == null)
 					continue;
 
-				List<TransportRoute> routes = transportRoutes.readRoutes(message.getAddress(), transportCenter, true);
+				List<TransportRoute> routes = transportRoutes.readRoutes(message.getAddress(), true);
 
 				for (TransportRoute route : routes) {
 
@@ -153,7 +131,7 @@ public class TransportProcedure extends Procedure {
 				try {
 					Import.importMessage(messages, message, null);
 				} catch (Throwable e) {
-					LOG.error("Can't import message '" + message + "'", e);
+					Trace.logError(e);
 					messages.setError(message, e);
 				}
 			}
@@ -180,7 +158,7 @@ public class TransportProcedure extends Procedure {
 		} catch (Throwable e) {
 			transport.rollback();
 			connection.rollback();
-			LOG.error("Can't send message '" + message + "' via '" + route.getTransportUrl() + "'", e);
+			Trace.logError(e);
 
 			if (e instanceof TransportException)
 				throw (TransportException) e;
@@ -201,7 +179,7 @@ public class TransportProcedure extends Procedure {
 		} catch (Throwable e) {
 			connection.rollback();
 			transport.rollback();
-			LOG.error("Can't import message '" + message + "' from '" + transport.getUrl(message.getAddress()) + "'", e);
+			Trace.logError(e);
 		}
 	}
 

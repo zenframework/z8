@@ -300,6 +300,7 @@ public class JsonObject extends HashMap<String, Object> {
      *                If there is a syntax error in the source string or a
      *                duplicated key.
      */
+
     public JsonObject(String source) throws JsonException {
         this(new JsonTokener(source == null || source.trim().isEmpty() ? "{}" : source));
     }

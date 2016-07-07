@@ -1,30 +1,27 @@
 package org.zenframework.z8.server.base.table.system;
 
 import org.zenframework.z8.server.security.IUser;
-import org.zenframework.z8.server.types.guid;
+import org.zenframework.z8.server.security.User;
+import org.zenframework.z8.server.types.string;
 
 public class Domain {
+	private final String name;
+	private final String login;
 
-	private final guid id;
-	private final String address;
-	private final IUser systemUser;
-
-	public Domain(guid id, String address, IUser systemUser) {
-		this.id = id;
-		this.address = address;
-		this.systemUser = systemUser;
+	public Domain(string name, string login) {
+		this(name.get(), login.get());
 	}
 
-	public guid getId() {
-		return id;
+	public Domain(String name, String login) {
+		this.name = name;
+		this.login = login;
 	}
 
-	public String getAddress() {
-		return address;
+	public String getName() {
+		return name;
 	}
 
 	public IUser getSystemUser() {
-		return systemUser;
+		return User.load(login);
 	}
-
 }

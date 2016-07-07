@@ -1,15 +1,16 @@
 package org.zenframework.z8.server.base.model.actions;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+
 import org.zenframework.z8.server.base.query.Query;
 import org.zenframework.z8.server.json.Json;
 import org.zenframework.z8.server.json.parser.JsonArray;
 import org.zenframework.z8.server.request.RequestTarget;
 import org.zenframework.z8.server.types.guid;
 import org.zenframework.z8.server.types.string;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
 
 public abstract class Action extends RequestTarget {
     static public final String newAction = "new";
@@ -28,20 +29,24 @@ public abstract class Action extends RequestTarget {
     static public final String attachAction = "attach";
     static public final String detachAction = "detach";
 
-    private ActionParameters parameters;
+    private ActionParameters actionParameters;
 
     public Action(ActionParameters parameters) {
         super(parameters.requestId);
 
-        this.parameters = parameters;
+        this.actionParameters = parameters;
     }
 
     public ActionParameters actionParameters() {
-        return parameters;
+        return actionParameters;
+    }
+
+    public Map<string, string> requestParameters() {
+        return actionParameters.requestParameters();
     }
 
     public Query getQuery() {
-        return parameters.query;
+        return actionParameters.query;
     }
 
     public Query getRootQuery() {
@@ -50,11 +55,7 @@ public abstract class Action extends RequestTarget {
     }
 
     public String getRequestParameter(string key) {
-        return parameters.requestParameters.get(key.get());
-    }
-
-    public String getRequestParameter(String key) {
-        return parameters.requestParameters.get(key);
+        return actionParameters.requestParameter(key);
     }
 
     public guid getParentIdParameter() {
@@ -128,21 +129,20 @@ public abstract class Action extends RequestTarget {
         return getRequestParameter(Json.lookup);
     }
 
-    public String[] getLookupFields() {
+    public Collection<String> getLookupFields() {
         String lookupFields = getRequestParameter(Json.lookupFields);
         
-        if(lookupFields == null)
-            return new String[0];
-        
         Collection<String> result = new ArrayList<String>();
+
+        if(lookupFields == null)
+            return result;
         
         JsonArray array = new JsonArray(lookupFields);
         
-        for(int index = 0; index < array.length(); index++) {
+        for(int index = 0; index < array.length(); index++)
             result.add(array.getString(index));
-        }
         
-        return result.toArray(new String[0]);
+        return result;
     }
 
     public String getDataParameter() {

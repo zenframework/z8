@@ -1,29 +1,31 @@
 package org.zenframework.z8.server.request;
 
-import org.zenframework.z8.server.base.file.FileInfo;
-import org.zenframework.z8.server.engine.ISession;
-import org.zenframework.z8.server.json.Json;
-import org.zenframework.z8.server.types.encoding;
-import org.zenframework.z8.server.types.string;
-
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.List;
 import java.util.Map;
 
+import org.zenframework.z8.server.engine.ISession;
+import org.zenframework.z8.server.json.Json;
+import org.zenframework.z8.server.types.encoding;
+import org.zenframework.z8.server.types.file;
+import org.zenframework.z8.server.types.string;
+
 public abstract class IRequest {
-    abstract public Map<String, String> getParameters();
-    abstract public List<FileInfo> getFiles();
+    abstract public Map<string, string> getParameters();
+    abstract public List<file> getFiles();
 
     private int events = 0;
     
     public String getParameter(string key) {
-        return getParameter(key.get());
-    }
-    
-    public String getParameter(String key) {
-        Map<String, String> parameters = getParameters();
-        return parameters != null ? parameters.get(key) : null;
+        Map<string, string> parameters = getParameters();
+        
+        if(parameters == null)
+        	return null;
+        
+        string parameter = parameters.get(key);
+        
+        return parameter != null ? parameter.get() : null;
     }
 
     public String id() {

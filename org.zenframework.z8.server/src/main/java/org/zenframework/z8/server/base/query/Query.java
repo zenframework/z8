@@ -11,7 +11,6 @@ import java.util.Map;
 import java.util.regex.Pattern;
 
 import org.apache.commons.io.FileUtils;
-import org.zenframework.z8.server.base.file.FileInfo;
 import org.zenframework.z8.server.base.file.Folders;
 import org.zenframework.z8.server.base.form.Control;
 import org.zenframework.z8.server.base.form.FieldGroup;
@@ -61,6 +60,7 @@ import org.zenframework.z8.server.search.SearchEngine;
 import org.zenframework.z8.server.types.bool;
 import org.zenframework.z8.server.types.decimal;
 import org.zenframework.z8.server.types.exception;
+import org.zenframework.z8.server.types.file;
 import org.zenframework.z8.server.types.guid;
 import org.zenframework.z8.server.types.integer;
 import org.zenframework.z8.server.types.primary;
@@ -68,2430 +68,2396 @@ import org.zenframework.z8.server.types.string;
 import org.zenframework.z8.server.types.sql.sql_bool;
 
 public class Query extends Runnable {
-    static public class strings {
-        public final static String ReadError = "Query.readError";
-    }
+	static public class strings {
+		public final static String ReadError = "Query.readError";
+	}
 
-    public static class CLASS<T extends Query> extends Runnable.CLASS<T> {
-        public CLASS(IObject container) {
-            super(container);
-            setJavaClass(Query.class);
-            setAttribute(Native, Query.class.getCanonicalName());
-        }
+	public static class CLASS<T extends Query> extends Runnable.CLASS<T> {
 
-        @Override
-        public Object newObject(IObject container) {
-            return new Query(container);
-        }
-    }
+    	public CLASS(IObject container) {
+			super(container);
+			setJavaClass(Query.class);
+		}
 
-    public Query.CLASS<? extends Query> model;
+		@Override
+		public Object newObject(IObject container) {
+			return new Query(container);
+		}
+	}
 
-    public bool readOnly = new bool(false);
+	public Query.CLASS<? extends Query> model;
 
-    public bool showAsGrid = new bool(true); // to show treeTable as an ordinary
-                                             // table
-    public ViewMode viewMode = ViewMode.Table;
+	public bool readOnly = new bool(false);
 
-    public bool showTotals = new bool(false);
-    public bool visible = new bool(true);
-    public bool collapseGroups = new bool(false);
-    public bool printAsList = new bool(false);
+	public bool showAsGrid = new bool(true); // to show treeTable as an ordinary
+												// table
+	public ViewMode viewMode = ViewMode.Table;
 
-    public integer columns = new integer(3);
-    public decimal width = new decimal(0);
-    public decimal height = new decimal(0);
+	public bool showTotals = new bool(false);
+	public bool visible = new bool(true);
+	public bool collapseGroups = new bool(false);
+	public bool printAsList = new bool(false);
 
-    public bool parentsSelectable = new bool(true);
+	public integer columns = new integer(3);
+	public decimal width = new decimal(0);
+	public decimal height = new decimal(0);
 
-    public RCollection<Query.CLASS<? extends Query>> queries = new RCollection<Query.CLASS<? extends Query>>(true);
+	public bool parentsSelectable = new bool(true);
 
-    public RCollection<Field.CLASS<? extends Field>> sortFields = new RCollection<Field.CLASS<? extends Field>>(true);
-    public RCollection<Field.CLASS<? extends Field>> groupFields = new RCollection<Field.CLASS<? extends Field>>(true);
-    public RCollection<Field.CLASS<? extends Field>> searchFields = new RCollection<Field.CLASS<? extends Field>>(true);
-    public Field.CLASS<? extends Field> searchId;
+	public RCollection<Query.CLASS<? extends Query>> queries = new RCollection<Query.CLASS<? extends Query>>(true);
 
-    public DataFields dataFields = new DataFields(this);
-    public FormFields formFields = new FormFields(this);
+	public RCollection<Field.CLASS<? extends Field>> sortFields = new RCollection<Field.CLASS<? extends Field>>();
+	public RCollection<Field.CLASS<? extends Field>> groupFields = new RCollection<Field.CLASS<? extends Field>>();
+	public RCollection<Field.CLASS<? extends Field>> searchFields = new RCollection<Field.CLASS<? extends Field>>();
+	public Field.CLASS<? extends Field> searchId;
 
-    public ChartType chartType = ChartType.Column;
+	public DataFields dataFields = new DataFields(this);
+	public FormFields formFields = new FormFields(this);
 
-    public RCollection<Field.CLASS<? extends Field>> chartSeries = new RCollection<Field.CLASS<? extends Field>>(true);
+	public ChartType chartType = ChartType.Column;
 
-    public RCollection<Command.CLASS<? extends Command>> commands = new RCollection<Command.CLASS<? extends Command>>(
-            true);
+	public RCollection<Field.CLASS<? extends Field>> chartSeries = new RCollection<Field.CLASS<? extends Field>>();
 
-    public RCollection<guid> recordIds = new RCollection<guid>();
+	public RCollection<Command.CLASS<? extends Command>> commands = new RCollection<Command.CLASS<? extends Command>>();
 
-    public RCollection<guid> filterBy = new RCollection<guid>(true);
+	public RCollection<guid> recordIds = new RCollection<guid>();
 
-    public RCollection<Link.CLASS<? extends Link>> aggregateBy = new RCollection<Link.CLASS<? extends Link>>(true);
-    public RCollection<Field.CLASS<? extends Field>> groupBy = new RCollection<Field.CLASS<? extends Field>>(true);
+	public RCollection<guid> filterBy = new RCollection<guid>();
 
-    public Period.CLASS<? extends Period> period = null;
+	public RCollection<Link.CLASS<? extends Link>> aggregateBy = new RCollection<Link.CLASS<? extends Link>>();
+	public RCollection<Field.CLASS<? extends Field>> groupBy = new RCollection<Field.CLASS<? extends Field>>();
 
-    public RCollection<RecordActions> recordActions = new RCollection<RecordActions>();
+	public Period.CLASS<? extends Period> period = null;
 
-    private Query contextQuery;
-    private Query[] rootQueries;
+	public RCollection<RecordActions> recordActions = new RCollection<RecordActions>();
 
-    private Collection<OBJECT.CLASS<? extends OBJECT>> links = null;
+	private Query contextQuery;
+	private Query[] rootQueries;
 
-    private Field[] primaryKeys = null;
+	private Collection<OBJECT.CLASS<? extends OBJECT>> links = null;
 
-    private SqlToken where = null;
-    private SqlToken having = null;
+	private Field primaryKey = null;
 
-    protected Select cursor;
-    protected ReadLock readLock = ReadLock.None;
+	private SqlToken where = null;
+	private SqlToken having = null;
 
-    protected Query() {
-        this(null);
-    }
+	protected Select cursor;
+	protected ReadLock readLock = ReadLock.None;
 
-    protected Query(IObject container) {
-        super(container);
-    }
+	protected Query() {
+		this(null);
+	}
 
-    @Override
-    public void constructor2() {
-        super.constructor2();
+	protected Query(IObject container) {
+		super(container);
+	}
 
-        recordActions.add(RecordActions.Add);
-        recordActions.add(RecordActions.Copy);
-        recordActions.add(RecordActions.Delete);
-    }
+	@Override
+	public void constructor2() {
+		super.constructor2();
 
-    public boolean equals(Query anObject) {
-        return this == anObject;
-    }
+		recordActions.add(RecordActions.Add);
+		recordActions.add(RecordActions.Copy);
+		recordActions.add(RecordActions.Delete);
+	}
 
-    @SuppressWarnings("unchecked")
-    private Query.CLASS<? extends Query> myClass() {
-        return (Query.CLASS<? extends Query>) this.getCLASS();
-    }
+	public boolean equals(Query anObject) {
+		return this == anObject;
+	}
 
-    public void onNew(guid recordId, guid parentId, guid modelRecordId) {
-        if (contextQuery != null)
-            contextQuery.onNew(this, recordId, parentId, modelRecordId);
+	@SuppressWarnings("unchecked")
+	private Query.CLASS<? extends Query> myClass() {
+		return (Query.CLASS<? extends Query>)this.getCLASS();
+	}
 
-        if (contextQuery != this)
-            onNew(this, recordId, parentId, modelRecordId);
+	public void onNew(guid recordId, guid parentId, guid modelRecordId) {
+		if(contextQuery != null)
+			contextQuery.onNew(this, recordId, parentId, modelRecordId);
 
-        Query rootQuery = getRootQuery();
+		if(contextQuery != this)
+			onNew(this, recordId, parentId, modelRecordId);
 
-        if (rootQuery != this)
-            rootQuery.onNew(rootQuery, recordId, parentId, modelRecordId);
-    }
+		Query rootQuery = getRootQuery();
 
-    protected void onNew(Query data, guid recordId, guid parentId, guid modelRecordId) {
-        if (ApplicationServer.events())
-            z8_onNew(data.myClass(), recordId, parentId, modelRecordId);
-    }
+		if(rootQuery != this)
+			rootQuery.onNew(rootQuery, recordId, parentId, modelRecordId);
+	}
 
-    public void onCopy() {
-        if (contextQuery != null)
-            contextQuery.onCopy(this);
+	protected void onNew(Query data, guid recordId, guid parentId, guid modelRecordId) {
+		if(ApplicationServer.events())
+			z8_onNew(data.myClass(), recordId, parentId, modelRecordId);
+	}
 
-        if (contextQuery != this)
-            onCopy(this);
+	public void onCopy() {
+		if(contextQuery != null)
+			contextQuery.onCopy(this);
 
-        Query rootQuery = getRootQuery();
+		if(contextQuery != this)
+			onCopy(this);
 
-        if (rootQuery != this)
-            rootQuery.onCopy(rootQuery);
-    }
+		Query rootQuery = getRootQuery();
 
-    protected void onCopy(Query data) {
-        if (ApplicationServer.events())
-            z8_onCopy(data.myClass());
-    }
+		if(rootQuery != this)
+			rootQuery.onCopy(rootQuery);
+	}
 
-    public void beforeRead(guid parentId, Query model, guid modelRecordId) {
-        if (contextQuery != null)
-            contextQuery.beforeRead(this, parentId, model, modelRecordId);
+	protected void onCopy(Query data) {
+		if(ApplicationServer.events())
+			z8_onCopy(data.myClass());
+	}
 
-        if (contextQuery != this)
-            beforeRead(this, parentId, model, modelRecordId);
+	public void beforeRead(guid parentId, Query model, guid modelRecordId) {
+		if(contextQuery != null)
+			contextQuery.beforeRead(this, parentId, model, modelRecordId);
 
-        Query rootQuery = getRootQuery();
+		if(contextQuery != this)
+			beforeRead(this, parentId, model, modelRecordId);
 
-        if (rootQuery != this)
-            rootQuery.beforeRead(rootQuery, parentId, model, modelRecordId);
-    }
+		Query rootQuery = getRootQuery();
 
-    protected void beforeRead(Query data, guid parentId, Query model, guid modelRecordId) {
-        if (ApplicationServer.events())
-            z8_beforeRead(data.myClass(), parentId, model.myClass(), modelRecordId);
-    }
+		if(rootQuery != this)
+			rootQuery.beforeRead(rootQuery, parentId, model, modelRecordId);
+	}
 
-    public void afterRead(guid parentId, Query model, guid modelRecordId) {
-        if (contextQuery != null)
-            contextQuery.afterRead(this, parentId, model, modelRecordId);
+	protected void beforeRead(Query data, guid parentId, Query model, guid modelRecordId) {
+		if(ApplicationServer.events())
+			z8_beforeRead(data.myClass(), parentId, model.myClass(), modelRecordId);
+	}
 
-        if (contextQuery != this)
-            afterRead(this, parentId, model, modelRecordId);
+	public void afterRead(guid parentId, Query model, guid modelRecordId) {
+		if(contextQuery != null)
+			contextQuery.afterRead(this, parentId, model, modelRecordId);
 
-        Query rootQuery = getRootQuery();
+		if(contextQuery != this)
+			afterRead(this, parentId, model, modelRecordId);
 
-        if (rootQuery != this)
-            rootQuery.afterRead(rootQuery, parentId, model, modelRecordId);
-    }
+		Query rootQuery = getRootQuery();
 
-    protected void afterRead(Query data, guid parentId, Query model, guid modelRecordId) {
-        if (ApplicationServer.events())
-            z8_afterRead(data.myClass(), parentId, model.myClass(), modelRecordId);
-    }
+		if(rootQuery != this)
+			rootQuery.afterRead(rootQuery, parentId, model, modelRecordId);
+	}
 
-    public void beforeCreate(guid recordId, guid parentId, Query model, guid modelRecordId) {
-        if (contextQuery != null)
-            contextQuery.beforeCreate(this, recordId, parentId, model, modelRecordId);
+	protected void afterRead(Query data, guid parentId, Query model, guid modelRecordId) {
+		if(ApplicationServer.events())
+			z8_afterRead(data.myClass(), parentId, model.myClass(), modelRecordId);
+	}
 
-        if (contextQuery != this)
-            beforeCreate(this, recordId, parentId, model, modelRecordId);
+	public void beforeCreate(guid recordId, guid parentId, Query model, guid modelRecordId) {
+		if(contextQuery != null)
+			contextQuery.beforeCreate(this, recordId, parentId, model, modelRecordId);
 
-        Query rootQuery = getRootQuery();
+		if(contextQuery != this)
+			beforeCreate(this, recordId, parentId, model, modelRecordId);
 
-        if (rootQuery != this)
-            rootQuery.beforeCreate(rootQuery, recordId, parentId, model, modelRecordId);
-    }
+		Query rootQuery = getRootQuery();
 
-    protected void beforeCreate(Query data, guid recordId, guid parentId, Query model, guid modelRecordId) {
-        if (ApplicationServer.events())
-            z8_beforeCreate(data.myClass(), recordId, parentId, model.myClass(), modelRecordId);
-    }
+		if(rootQuery != this)
+			rootQuery.beforeCreate(rootQuery, recordId, parentId, model, modelRecordId);
+	}
 
-    public void afterCreate(guid recordId, guid parentId, Query model, guid modelRecordId) {
-        if (contextQuery != null)
-            contextQuery.afterCreate(this, recordId, parentId, model, modelRecordId);
+	protected void beforeCreate(Query data, guid recordId, guid parentId, Query model, guid modelRecordId) {
+		if(ApplicationServer.events())
+			z8_beforeCreate(data.myClass(), recordId, parentId, model.myClass(), modelRecordId);
+	}
 
-        if (contextQuery != this)
-            afterCreate(this, recordId, parentId, model, modelRecordId);
+	public void afterCreate(guid recordId, guid parentId, Query model, guid modelRecordId) {
+		if(contextQuery != null)
+			contextQuery.afterCreate(this, recordId, parentId, model, modelRecordId);
 
-        Query rootQuery = getRootQuery();
+		if(contextQuery != this)
+			afterCreate(this, recordId, parentId, model, modelRecordId);
 
-        if (rootQuery != this)
-            rootQuery.afterCreate(rootQuery, recordId, parentId, model, modelRecordId);
-    }
+		Query rootQuery = getRootQuery();
 
-    protected void afterCreate(Query data, guid recordId, guid parentId, Query model, guid modelRecordId) {
-        if (ApplicationServer.events())
-            z8_afterCreate(data.myClass(), recordId, parentId, model.myClass(), modelRecordId);
+		if(rootQuery != this)
+			rootQuery.afterCreate(rootQuery, recordId, parentId, model, modelRecordId);
+	}
 
-        if (hasAttribute(IObject.SearchIndex) && !searchFields.isEmpty())
-            SearchEngine.INSTANCE.updateRecord(this, recordId.toString());
-    }
+	protected void afterCreate(Query data, guid recordId, guid parentId, Query model, guid modelRecordId) {
+		if(ApplicationServer.events())
+			z8_afterCreate(data.myClass(), recordId, parentId, model.myClass(), modelRecordId);
 
-    public void beforeUpdate(guid recordId, Collection<Field> fields, Query model, guid modelId) {
-        if (contextQuery != null)
-            contextQuery.beforeUpdate(this, recordId, fields, model, modelId);
+		if(hasAttribute(IObject.SearchIndex) && !searchFields.isEmpty())
+			SearchEngine.INSTANCE.updateRecord(this, recordId.toString());
+	}
 
-        if (contextQuery != this)
-            beforeUpdate(this, recordId, fields, model, modelId);
+	public void beforeUpdate(guid recordId, Collection<Field> fields, Query model, guid modelId) {
+		if(contextQuery != null)
+			contextQuery.beforeUpdate(this, recordId, fields, model, modelId);
 
-        Query rootQuery = getRootQuery();
+		if(contextQuery != this)
+			beforeUpdate(this, recordId, fields, model, modelId);
 
-        if (rootQuery != this)
-            rootQuery.beforeUpdate(rootQuery, recordId, fields, model, modelId);
-    }
+		Query rootQuery = getRootQuery();
 
-    @SuppressWarnings("unchecked")
-    protected void beforeUpdate(Query data, guid recordId, Collection<Field> fields, Query model, guid modelRecordId) {
-        RCollection<Field.CLASS<? extends Field>> changedFields = new RCollection<Field.CLASS<? extends Field>>();
+		if(rootQuery != this)
+			rootQuery.beforeUpdate(rootQuery, recordId, fields, model, modelId);
+	}
 
-        for (Field field : fields)
-            changedFields.add((Field.CLASS<? extends Field>) field.getCLASS());
+	@SuppressWarnings("unchecked")
+	protected void beforeUpdate(Query data, guid recordId, Collection<Field> fields, Query model, guid modelRecordId) {
+		RCollection<Field.CLASS<? extends Field>> changedFields = new RCollection<Field.CLASS<? extends Field>>();
 
-        if (ApplicationServer.events())
-            z8_beforeUpdate(data.myClass(), recordId, changedFields, model.myClass(), modelRecordId);
-    }
+		for(Field field : fields)
+			changedFields.add((Field.CLASS<? extends Field>)field.getCLASS());
 
-    public void afterUpdate(guid recordId, Collection<Field> fields, Query model, guid modelId) {
-        if (contextQuery != null)
-            contextQuery.afterUpdate(this, recordId, fields, model, modelId);
+		if(ApplicationServer.events())
+			z8_beforeUpdate(data.myClass(), recordId, changedFields, model.myClass(), modelRecordId);
+	}
 
-        if (contextQuery != this)
-            afterUpdate(this, recordId, fields, model, modelId);
+	public void afterUpdate(guid recordId, Collection<Field> fields, Query model, guid modelId) {
+		if(contextQuery != null)
+			contextQuery.afterUpdate(this, recordId, fields, model, modelId);
 
-        Query rootQuery = getRootQuery();
+		if(contextQuery != this)
+			afterUpdate(this, recordId, fields, model, modelId);
 
-        if (rootQuery != this)
-            rootQuery.afterUpdate(rootQuery, recordId, fields, model, modelId);
-    }
+		Query rootQuery = getRootQuery();
 
-    @SuppressWarnings("unchecked")
-    protected void afterUpdate(Query data, guid recordId, Collection<Field> fields, Query model, guid modelRecordId) {
-        RCollection<Field.CLASS<? extends Field>> changedFields = new RCollection<Field.CLASS<? extends Field>>();
+		if(rootQuery != this)
+			rootQuery.afterUpdate(rootQuery, recordId, fields, model, modelId);
+	}
 
-        for (Field field : fields)
-            changedFields.add((Field.CLASS<? extends Field>) field.getCLASS());
+	@SuppressWarnings("unchecked")
+	protected void afterUpdate(Query data, guid recordId, Collection<Field> fields, Query model, guid modelRecordId) {
+		RCollection<Field.CLASS<? extends Field>> changedFields = new RCollection<Field.CLASS<? extends Field>>();
 
-        if (hasAttribute(IObject.SearchIndex) && !searchFields.isEmpty()) {
-            for (Field.CLASS<? extends Field> field : changedFields) {
-                if (searchFields.contains(field)) {
-                    SearchEngine.INSTANCE.updateRecord(this, recordId.toString());
-                    break;
-                }
-            }
-        }
+		for(Field field : fields)
+			changedFields.add((Field.CLASS<? extends Field>)field.getCLASS());
 
-        if (ApplicationServer.events())
-            z8_afterUpdate(data.myClass(), recordId, changedFields, model.myClass(), modelRecordId);
-    }
+		if(hasAttribute(IObject.SearchIndex) && !searchFields.isEmpty()) {
+			for(Field.CLASS<? extends Field> field : changedFields) {
+				if(searchFields.contains(field)) {
+					SearchEngine.INSTANCE.updateRecord(this, recordId.toString());
+					break;
+				}
+			}
+		}
 
-    public void beforeDestroy(guid recordId, Query model, guid modelRecordId) {
-        if (contextQuery != null)
-            contextQuery.beforeDestroy(this, recordId, model, modelRecordId);
+		if(ApplicationServer.events())
+			z8_afterUpdate(data.myClass(), recordId, changedFields, model.myClass(), modelRecordId);
+	}
 
-        if (contextQuery != this)
-            beforeDestroy(this, recordId, model, modelRecordId);
+	public void beforeDestroy(guid recordId, Query model, guid modelRecordId) {
+		if(contextQuery != null)
+			contextQuery.beforeDestroy(this, recordId, model, modelRecordId);
 
-        Query rootQuery = getRootQuery();
+		if(contextQuery != this)
+			beforeDestroy(this, recordId, model, modelRecordId);
 
-        if (rootQuery != this)
-            rootQuery.beforeDestroy(rootQuery, recordId, model, modelRecordId);
-    }
+		Query rootQuery = getRootQuery();
 
-    protected void beforeDestroy(Query data, guid recordId, Query model, guid modelRecordId) {
-        if (ApplicationServer.events())
-            z8_beforeDestroy(data.myClass(), recordId, model.myClass(), modelRecordId);
-    }
+		if(rootQuery != this)
+			rootQuery.beforeDestroy(rootQuery, recordId, model, modelRecordId);
+	}
 
-    public void afterDestroy(guid recordId, Query model, guid modelRecordId) {
-        if (contextQuery != null)
-            contextQuery.afterDestroy(this, recordId, model, modelRecordId);
+	protected void beforeDestroy(Query data, guid recordId, Query model, guid modelRecordId) {
+		if(ApplicationServer.events())
+			z8_beforeDestroy(data.myClass(), recordId, model.myClass(), modelRecordId);
+	}
 
-        if (contextQuery != this)
-            afterDestroy(this, recordId, model, modelRecordId);
+	public void afterDestroy(guid recordId, Query model, guid modelRecordId) {
+		if(contextQuery != null)
+			contextQuery.afterDestroy(this, recordId, model, modelRecordId);
 
-        Query rootQuery = getRootQuery();
+		if(contextQuery != this)
+			afterDestroy(this, recordId, model, modelRecordId);
 
-        if (rootQuery != this)
-            rootQuery.afterDestroy(rootQuery, recordId, model, modelRecordId);
-    }
+		Query rootQuery = getRootQuery();
 
-    protected void afterDestroy(Query data, guid recordId, Query model, guid modelRecordId) {
-        if (ApplicationServer.events())
-            z8_afterDestroy(data.myClass(), recordId, model.myClass(), modelRecordId);
+		if(rootQuery != this)
+			rootQuery.afterDestroy(rootQuery, recordId, model, modelRecordId);
+	}
 
-        if (hasAttribute(IObject.SearchIndex) && !searchFields.isEmpty())
-            SearchEngine.INSTANCE.deleteRecord(this, recordId.toString());
-    }
+	protected void afterDestroy(Query data, guid recordId, Query model, guid modelRecordId) {
+		if(ApplicationServer.events())
+			z8_afterDestroy(data.myClass(), recordId, model.myClass(), modelRecordId);
 
-    public void onRender() {
-        if (contextQuery != null)
-            contextQuery.onRender(this);
+		if(hasAttribute(IObject.SearchIndex) && !searchFields.isEmpty())
+			SearchEngine.INSTANCE.deleteRecord(this, recordId.toString());
+	}
 
-        if (contextQuery != this)
-            onRender(this);
+	public void onRender() {
+		if(contextQuery != null)
+			contextQuery.onRender(this);
 
-        Query rootQuery = getRootQuery();
+		if(contextQuery != this)
+			onRender(this);
 
-        if (rootQuery != this)
-            rootQuery.onRender(this);
-    }
+		Query rootQuery = getRootQuery();
 
-    protected void onRender(Query data) {
-        z8_onRender(data.myClass());
-    }
+		if(rootQuery != this)
+			rootQuery.onRender(this);
+	}
 
-    public Style renderRecord() {
-        Style style = null;
+	protected void onRender(Query data) {
+		z8_onRender(data.myClass());
+	}
 
-        if (contextQuery != null)
-            style = contextQuery.renderRecord(this);
+	public Style renderRecord() {
+		Style style = null;
 
-        if (style != null)
-            return style;
+		if(contextQuery != null)
+			style = contextQuery.renderRecord(this);
 
-        if (contextQuery != this)
-            style = renderRecord(this);
+		if(style != null)
+			return style;
 
-        if (style != null)
-            return style;
+		if(contextQuery != this)
+			style = renderRecord(this);
 
-        Query rootQuery = getRootQuery();
+		if(style != null)
+			return style;
 
-        if (rootQuery != null && rootQuery != this)
-            style = rootQuery.renderRecord(rootQuery);
+		Query rootQuery = getRootQuery();
 
-        return style;
-    }
+		if(rootQuery != null && rootQuery != this)
+			style = rootQuery.renderRecord(rootQuery);
 
-    protected Style renderRecord(Query query) {
-        Style.CLASS<? extends Style> style = z8_renderRecord(query.myClass());
-        return style != null ? style.get() : null;
-    }
+		return style;
+	}
 
-    public void onCommand(Command command, Collection<guid> recordIds) {
-        if (contextQuery != null)
-            contextQuery.onCommand(this, command, recordIds);
+	protected Style renderRecord(Query query) {
+		Style.CLASS<? extends Style> style = z8_renderRecord(query.myClass());
+		return style != null ? style.get() : null;
+	}
 
-        if (contextQuery != this)
-            onCommand(this, command, recordIds);
+	public void onCommand(Command command, Collection<guid> recordIds) {
+		if(contextQuery != null)
+			contextQuery.onCommand(this, command, recordIds);
 
-        Query rootQuery = getRootQuery();
+		if(contextQuery != this)
+			onCommand(this, command, recordIds);
 
-        if (rootQuery != this)
-            rootQuery.onCommand(rootQuery, command, recordIds);
-    }
+		Query rootQuery = getRootQuery();
 
-    @SuppressWarnings("unchecked")
-    protected void onCommand(Query data, Command command, Collection<guid> recordIds) {
-        RCollection<guid> ids = getGuidCollection(recordIds);
-        z8_onCommand(data.myClass(), (Command.CLASS<? extends Command>) command.getCLASS(), ids);
-    }
+		if(rootQuery != this)
+			rootQuery.onCommand(rootQuery, command, recordIds);
+	}
 
-    public Collection<Query> onReport(String report, Collection<guid> recordIds) {
-        Collection<Query> queries = getReportQueries(report, recordIds);
+	@SuppressWarnings("unchecked")
+	protected void onCommand(Query data, Command command, Collection<guid> recordIds) {
+		RCollection<guid> ids = getGuidCollection(recordIds);
+		z8_onCommand(data.myClass(), (Command.CLASS<? extends Command>)command.getCLASS(), ids);
+	}
 
-        if (queries.isEmpty())
-            queries.add(this);
+	public Collection<Query> onReport(String report, Collection<guid> recordIds) {
+		Collection<Query> queries = getReportQueries(report, recordIds);
 
-        for (Query query : queries)
-            onReport(query, report, recordIds);
+		if(queries.isEmpty())
+			queries.add(this);
 
-        return queries;
-    }
+		for(Query query : queries)
+			onReport(query, report, recordIds);
 
-    private Collection<Query> getReportQueries(String report, Collection<guid> recordIds) {
-        File reportFile = FileUtils.getFile(Folders.Base, Folders.Reports, report);
+		return queries;
+	}
 
-        BirtFileReader birtXMLReader = new BirtFileReader(reportFile);
+	private Collection<Query> getReportQueries(String report, Collection<guid> recordIds) {
+		File reportFile = FileUtils.getFile(Folders.Base, Folders.Reports, report);
 
-        Collection<Query> result = new ArrayList<Query>();
+		BirtFileReader birtXMLReader = new BirtFileReader(reportFile);
 
-        Collection<String> classNames = birtXMLReader.getDataSets();
+		Collection<Query> result = new ArrayList<Query>();
 
-        for (String className : classNames) {
-            className = className.split(";")[0];
-            result.add((Query) Loader.getInstance(className));
-        }
+		Collection<String> classNames = birtXMLReader.getDataSets();
 
-        return result;
-    }
+		for(String className : classNames) {
+			className = className.split(";")[0];
+			result.add((Query)Loader.getInstance(className));
+		}
 
-    private void onReport(Query query, String report, Collection<guid> recordIds) {
-        Query contextQuery = query.getContext();
+		return result;
+	}
 
-        if (contextQuery != null)
-            contextQuery.callOnReport(this, report, recordIds);
+	private void onReport(Query query, String report, Collection<guid> recordIds) {
+		Query contextQuery = query.getContext();
 
-        if (contextQuery != query)
-            query.callOnReport(this, report, recordIds);
+		if(contextQuery != null)
+			contextQuery.callOnReport(this, report, recordIds);
 
-        Query rootQuery = query.getRootQuery();
+		if(contextQuery != query)
+			query.callOnReport(this, report, recordIds);
 
-        if (rootQuery != query)
-            rootQuery.callOnReport(rootQuery, report, recordIds);
-    }
+		Query rootQuery = query.getRootQuery();
 
-    private void callOnReport(Query data, String report, Collection<guid> recordIds) {
-        RCollection<guid> ids = getGuidCollection(recordIds);
-        z8_onReport(data.myClass(), new string(report), ids);
-    }
+		if(rootQuery != query)
+			rootQuery.callOnReport(rootQuery, report, recordIds);
+	}
 
-    public Query onFollow(Field field, Collection<guid> recordIds) {
-        Query result = null;
+	private void callOnReport(Query data, String report, Collection<guid> recordIds) {
+		RCollection<guid> ids = getGuidCollection(recordIds);
+		z8_onReport(data.myClass(), new string(report), ids);
+	}
 
-        if (contextQuery != null)
-            result = contextQuery.callOnFollow(field, recordIds);
+	public Query onFollow(Field field, Collection<guid> recordIds) {
+		Query result = null;
 
-        if (result == null)
-            result = callOnFollow(field, recordIds);
+		if(contextQuery != null)
+			result = contextQuery.callOnFollow(field, recordIds);
 
-        if (result == null) {
-            Query rootQuery = getRootQuery();
+		if(result == null)
+			result = callOnFollow(field, recordIds);
 
-            if (rootQuery != this)
-                result = rootQuery.callOnFollow(field, recordIds);
-        }
+		if(result == null) {
+			Query rootQuery = getRootQuery();
 
-        return result;
-    }
+			if(rootQuery != this)
+				result = rootQuery.callOnFollow(field, recordIds);
+		}
 
-    @SuppressWarnings("unchecked")
-    private Query callOnFollow(Field field, Collection<guid> recordIds) {
-        RCollection<guid> ids = getGuidCollection(recordIds);
-        Query.CLASS<? extends Query> cls = z8_onFollow((Field.CLASS<? extends Field>) field.getCLASS(), ids);
-        return cls != null ? (Query) cls.get() : null;
-    }
+		return result;
+	}
 
-    public guid recordId() {
-        return (guid) primaryKey().get();
-    }
+	@SuppressWarnings("unchecked")
+	private Query callOnFollow(Field field, Collection<guid> recordIds) {
+		RCollection<guid> ids = getGuidCollection(recordIds);
+		Query.CLASS<? extends Query> cls = z8_onFollow((Field.CLASS<? extends Field>)field.getCLASS(), ids);
+		return cls != null ? (Query)cls.get() : null;
+	}
 
-    public ReadLock getReadLock() {
-        return readLock;
-    }
+	public guid recordId() {
+		return (guid)primaryKey().get();
+	}
 
-    public void setReadLock(ReadLock readLock) {
-        this.readLock = readLock;
-    }
+	public ReadLock getReadLock() {
+		return readLock;
+	}
 
-    public boolean hasRecord(guid recordId) {
-    	try {
-	    	saveState();
-	        return readRecord(recordId, Arrays.asList(primaryKey()));
-    	} finally {
-    		restoreState();
-    	}
-    }
+	public void setReadLock(ReadLock readLock) {
+		this.readLock = readLock;
+	}
 
-    public boolean hasRecord(SqlToken where) {
-        return readFirst(Arrays.asList(primaryKey()), where);
-    }
+	public boolean hasRecord(guid recordId) {
+		try {
+			saveState();
+			return readRecord(recordId, Arrays.asList(primaryKey()));
+		} finally {
+			restoreState();
+		}
+	}
 
-    public RCollection<guid> findRecords(SqlToken where) {
-        RCollection<guid> records = new RCollection<guid>();
-        read(Arrays.asList(primaryKey()), where);
-        while (next())
-            records.add(primaryKey().guid());
-        return records;
-    }
+	public boolean hasRecord(SqlToken where) {
+		return readFirst(Arrays.asList(primaryKey()), where);
+	}
 
-    public int count() {
-        return count(null);
-    }
+	public RCollection<guid> findRecords(SqlToken where) {
+		RCollection<guid> records = new RCollection<guid>();
+		read(Arrays.asList(primaryKey()), where);
+		while(next())
+			records.add(primaryKey().guid());
+		return records;
+	}
 
-    public int count(SqlToken where) {
-    	try {
-    		saveState();
-	        ReadAction action = new ReadAction(this);
-	        action.addFilter(where);
-	        return action.getCounter().count();
-    	} finally {
-    		restoreState();
-    	}
-    }
+	public int count() {
+		return count(null);
+	}
 
-    public boolean aggregate() {
-        return aggregate(null, null);
-    }
+	public int count(SqlToken where) {
+		try {
+			saveState();
+			ReadAction action = new ReadAction(this);
+			action.addFilter(where);
+			return action.getCounter().count();
+		} finally {
+			restoreState();
+		}
+	}
 
-    public boolean aggregate(Collection<Field> fields) {
-        return aggregate(fields, null);
-    }
+	public boolean aggregate() {
+		return aggregate(null, null);
+	}
 
-    public boolean aggregate(SqlToken where) {
-        return aggregate(null, where);
-    }
+	public boolean aggregate(Collection<Field> fields) {
+		return aggregate(fields, null);
+	}
 
-    public boolean aggregate(Collection<Field> fields, SqlToken where) {
-        ReadAction action = new ReadAction(this, fields);
-        action.addFilter(where);
+	public boolean aggregate(SqlToken where) {
+		return aggregate(null, where);
+	}
 
-        if (cursor != null)
-            cursor.close();
+	public boolean aggregate(Collection<Field> fields, SqlToken where) {
+		ReadAction action = new ReadAction(this, fields);
+		action.addFilter(where);
 
-        cursor = action.getTotals();
+		if(cursor != null)
+			cursor.close();
 
-        return cursor.next();
-    }
+		cursor = action.getTotals();
 
-    private guid getParentId() {
-        Field parentKey = getRootQuery().parentKey();
+		return cursor.next();
+	}
 
-        if (parentKey != null)
-            return parentKey.changed() ? parentKey.guid() : guid.NULL;
+	private guid getParentId() {
+		Field parentKey = getRootQuery().parentKey();
 
-        return null;
-    }
+		if(parentKey != null)
+			return parentKey.changed() ? parentKey.guid() : guid.NULL;
 
-    private Collection<Field> getInsertFields(guid recordId, guid parentId) {
-        Query query = getRootQuery();
+		return null;
+	}
 
-        Collection<Field> myFields = new ArrayList<Field>();
-        Collection<Field> fields = query.getDataFields();
+	private Collection<Field> getInsertFields(guid recordId, guid parentId) {
+		Query query = getRootQuery();
 
-        for (Field field : fields) {
-            if (field.owner() == query) {
-                if (!field.changed())
-                    field.set(field.getDefault());
+		Collection<Field> myFields = new ArrayList<Field>();
+		Collection<Field> fields = query.getDataFields();
 
-                if (field.isPrimaryKey() && !field.changed())
-                    field.set(recordId);
+		for(Field field : fields) {
+			if(field.owner() == query) {
+				if(!field.changed())
+					field.set(field.getDefault());
 
-                if (field.isParentKey() && parentId != null && !field.changed())
-                    field.set(parentId);
+				if(field.isPrimaryKey() && !field.changed())
+					field.set(recordId);
 
-                myFields.add(field);
-            }
-        }
+				if(field.isParentKey() && parentId != null && !field.changed())
+					field.set(parentId);
 
-        return myFields;
-    }
+				myFields.add(field);
+			}
+		}
 
-    /*
-        public Statement batchStatement = null;
+		return myFields;
+	}
 
-        public boolean isBatching() {
-            return batchStatement != null;
-        }
-        
-        public void startBatch() {
-            batchStatement = new BatchStatement();
-            batchStatement.statement()..
-        }
-        
-        public void finishBatch() {
-            batchStatement.executeBatch();
-            batchStatement.close();
-        }
-    */
-    public void executeInsert(Collection<Field> fields) {
-        Query rootQuery = getRootQuery();
+	/*
+	 * public Statement batchStatement = null;
+	 * 
+	 * public boolean isBatching() { return batchStatement != null; }
+	 * 
+	 * public void startBatch() { batchStatement = new BatchStatement();
+	 * batchStatement.statement().. }
+	 * 
+	 * public void finishBatch() { batchStatement.executeBatch();
+	 * batchStatement.close(); }
+	 */
+	public void executeInsert(Collection<Field> fields) {
+		Query rootQuery = getRootQuery();
 
-        Insert insert = new Insert(rootQuery, fields);
+		Insert insert = new Insert(rootQuery, fields);
 
-        try {
-            /*
-                        if(isBatching())
-                            batchStatement.addBatch(insert);
-                        else
-            */
-            insert.execute();
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-    }
+		try {
+			/*
+			 * if(isBatching()) batchStatement.addBatch(insert); else
+			 */
+			insert.execute();
+		} catch(SQLException e) {
+			throw new RuntimeException(e);
+		}
+	}
 
-    public guid insert(guid recordId, guid parentId, guid modelRecordId) {
-        Query model = getModel(this);
+	public guid insert(guid recordId, guid parentId, guid modelRecordId) {
+		Query model = getModel(this);
 
-        Collection<Field> fields = getInsertFields(recordId, parentId);
+		Collection<Field> fields = getInsertFields(recordId, parentId);
 
-        try {
-            beforeCreate(recordId, parentId, model, modelRecordId);
+		try {
+			beforeCreate(recordId, parentId, model, modelRecordId);
 
-            executeInsert(fields);
+			executeInsert(fields);
 
-            afterCreate(recordId, parentId, model, modelRecordId.equals(guid.NULL) ? recordId : modelRecordId);
-        } catch (exception e) {
-            throw e;
-        }
+			afterCreate(recordId, parentId, model, modelRecordId.equals(guid.NULL) ? recordId : modelRecordId);
+		} catch(exception e) {
+			throw e;
+		}
 
-        recordId = primaryKey().guid();
+		recordId = primaryKey().guid();
 
-        for (Field field : fields)
-            field.reset();
+		for(Field field : fields)
+			field.reset();
 
-        return recordId;
-    }
+		return recordId;
+	}
 
-    private guid getModelRecordId(guid id) {
-        Query context = getContext();
-        return context != null && context.getModel() == this ? id : guid.NULL;
-    }
+	private guid getModelRecordId(guid id) {
+		Query context = getContext();
+		return context != null && context.getModel() == this ? id : guid.NULL;
+	}
 
-    public guid create() {
-        guid id = guid.create();
-        return create(id, getParentId(), getModelRecordId(id));
-    }
+	public guid create() {
+		guid id = guid.create();
+		return create(id, getParentId(), getModelRecordId(id));
+	}
 
-    public guid create(guid recordId) {
-        return create(recordId, guid.NULL, guid.NULL);
-    }
+	public guid create(guid recordId) {
+		return create(recordId, guid.NULL, guid.NULL);
+	}
 
-    public guid create(guid recordId, guid parentId, guid modelRecordId) {
-        NewAction.run(this, recordId, parentId, modelRecordId);
-        return insert(recordId, parentId, modelRecordId);
-    }
+	public guid create(guid recordId, guid parentId, guid modelRecordId) {
+		NewAction.run(this, recordId, parentId, modelRecordId);
+		return insert(recordId, parentId, modelRecordId);
+	}
 
-    public guid copy(guid recordId) {
-        guid parentId = getParentId();
-        guid newRecordId = CopyAction.run(this, recordId, parentId, guid.NULL);
-        return insert(newRecordId, parentId, getModelRecordId(newRecordId));
-    }
+	public guid copy(guid recordId) {
+		guid parentId = getParentId();
+		guid newRecordId = CopyAction.run(this, recordId, parentId, guid.NULL);
+		return insert(newRecordId, parentId, getModelRecordId(newRecordId));
+	}
 
-    public boolean readRecord(guid id) {
-        return readRecord(id, (Collection<Field>) null);
-    }
+	public boolean readRecord(guid id) {
+		return readRecord(id, (Collection<Field>)null);
+	}
 
-    public void read() {
-        read((Collection<Field>) null, null, null, null, null);
-    }
+	public void read() {
+		read((Collection<Field>)null, null, null, null, null);
+	}
 
-    public boolean readFirst() {
-        read();
-        return next();
-    }
+	public boolean readFirst() {
+		read();
+		return next();
+	}
 
-    public void read(SqlToken where) {
-        read(null, where);
-    }
+	public void read(SqlToken where) {
+		read(null, where);
+	}
 
-    public boolean readFirst(SqlToken where) {
-        read(where);
-        return next();
-    }
+	public boolean readFirst(SqlToken where) {
+		read(where);
+		return next();
+	}
 
-    public void read(Collection<Field> fields) {
-        read(fields, null);
-    }
+	public void read(Collection<Field> fields) {
+		read(fields, null);
+	}
 
-    public boolean readFirst(Collection<Field> fields) {
-        read(fields);
-        return next();
-    }
+	public boolean readFirst(Collection<Field> fields) {
+		read(fields);
+		return next();
+	}
 
-    public void read(Collection<Field> fields, SqlToken where) {
-        read(fields, null, null, where, null);
-    }
+	public void read(Collection<Field> fields, SqlToken where) {
+		read(fields, null, null, where, null);
+	}
 
-    public boolean readFirst(Collection<Field> fields, SqlToken where) {
-        read(fields, null, null, where, null);
-        return next();
-    }
+	public boolean readFirst(Collection<Field> fields, SqlToken where) {
+		read(fields, null, null, where, null);
+		return next();
+	}
 
-    public void read(Collection<Field> fields, Collection<Field> sortFields, SqlToken where) {
-        read(fields, sortFields, null, where, null);
-    }
+	public void read(Collection<Field> fields, Collection<Field> sortFields, SqlToken where) {
+		read(fields, sortFields, null, where, null);
+	}
 
-    public boolean readFirst(Collection<Field> fields, Collection<Field> sortFields, SqlToken where) {
-        read(fields, sortFields, null, where, null);
-        return next();
-    }
+	public boolean readFirst(Collection<Field> fields, Collection<Field> sortFields, SqlToken where) {
+		read(fields, sortFields, null, where, null);
+		return next();
+	}
 
-    public void sort(Collection<Field> sortFields, SqlToken where) {
-        read(null, sortFields, where);
-    }
+	public void sort(Collection<Field> sortFields, SqlToken where) {
+		read(null, sortFields, where);
+	}
 
-    public void sort(Collection<Field> fields, Collection<Field> sortFields, SqlToken where) {
-        read(fields, null, sortFields, where, null);
-    }
+	public void sort(Collection<Field> fields, Collection<Field> sortFields, SqlToken where) {
+		read(fields, null, sortFields, where, null);
+	}
 
-    public void group(Collection<Field> groupFields, SqlToken where) {
-        group(null, groupFields, where);
-    }
+	public void group(Collection<Field> groupFields, SqlToken where) {
+		group(null, groupFields, where);
+	}
 
-    public void group(Collection<Field> fields, Collection<Field> groupFields, SqlToken where) {
-        read(fields, null, groupFields, where, null);
-    }
+	public void group(Collection<Field> fields, Collection<Field> groupFields, SqlToken where) {
+		read(fields, null, groupFields, where, null);
+	}
 
-    public boolean readRecord(guid id, Collection<Field> fields) {
-        assert (id != null);
+	public boolean readRecord(guid id, Collection<Field> fields) {
+		assert (id != null);
 
-        ReadAction action = new ReadAction(this, fields, id);
-        action.addFilter(where);
+		ReadAction action = new ReadAction(this, fields, id);
+		action.addFilter(where);
 
-        if (cursor != null)
-            cursor.close();
+		if(cursor != null)
+			cursor.close();
 
-        cursor = action.getCursor();
-        return cursor.next();
-    }
+		cursor = action.getCursor();
+		return cursor.next();
+	}
 
-    protected boolean readFirst(Collection<Field> fields, Collection<Field> sortFields, Collection<Field> groupFields,
-            SqlToken where, SqlToken having) {
-        read(fields, sortFields, groupFields, where, having);
-        return next();
-    }
+	protected boolean readFirst(Collection<Field> fields, Collection<Field> sortFields, Collection<Field> groupFields, SqlToken where, SqlToken having) {
+		read(fields, sortFields, groupFields, where, having);
+		return next();
+	}
 
-    protected void read(Collection<Field> fields, Collection<Field> sortFields, Collection<Field> groupFields,
-            SqlToken where, SqlToken having) {
+	protected void read(Collection<Field> fields, Collection<Field> sortFields, Collection<Field> groupFields, SqlToken where, SqlToken having) {
 
-        ActionParameters parameters = new ActionParameters();
-        parameters.query = this;
-        parameters.fields = fields;
-        parameters.sortFields = sortFields;
-        parameters.groupBy = groupFields;
+		ActionParameters parameters = new ActionParameters();
+		parameters.query = this;
+		parameters.fields = fields;
+		parameters.sortFields = sortFields;
+		parameters.groupBy = groupFields;
 
-        ReadAction action = new ReadAction(parameters);
-        action.addFilter(where);
-        action.addGroupFilter(having);
+		ReadAction action = new ReadAction(parameters);
+		action.addFilter(where);
+		action.addGroupFilter(having);
 
-        if (cursor != null)
-            cursor.close();
+		if(cursor != null)
+			cursor.close();
 
-        cursor = action.getCursor();
-    }
+		cursor = action.getCursor();
+	}
 
-    public Collection<Field> getChangedFields() {
-        Query query = getRootQuery();
+	public Collection<Field> getChangedFields() {
+		Query query = getRootQuery();
 
-        Collection<Field> fields = new ArrayList<Field>();
+		Collection<Field> fields = new ArrayList<Field>();
 
-        for (Field.CLASS<? extends Field> field : query.primaryFields()) {
-            if (field.hasInstance() && field.get().changed())
-                fields.add(field.get());
-        }
+		for(Field.CLASS<? extends Field> field : query.primaryFields()) {
+			if(field.hasInstance() && field.get().changed())
+				fields.add(field.get());
+		}
 
-        return fields;
-    }
+		return fields;
+	}
 
-    public int update(guid id) {
-        Collection<Field> fields = getChangedFields();
-        return UpdateAction.run(this, id, fields, getModelRecordId(id));
-    }
+	public int update(guid id) {
+		Collection<Field> fields = getChangedFields();
+		return UpdateAction.run(this, id, fields, getModelRecordId(id));
+	}
 
-    public int update(SqlToken where) {
-        Collection<Field> changedFields = getChangedFields();
+	public int update(SqlToken where) {
+		Collection<Field> changedFields = getChangedFields();
 
-        Collection<Field> fields = new ArrayList<Field>();
-        fields.add(primaryKey());
+		Collection<Field> fields = new ArrayList<Field>();
+		fields.add(primaryKey());
 
-        read(fields, where);
+		read(fields, where);
 
-        int result = 0;
+		int result = 0;
 
-        while (next()) {
-            guid id = recordId();
-            result += UpdateAction.run(this, id, changedFields, getModelRecordId(id), false);
-        }
+		while(next()) {
+			guid id = recordId();
+			result += UpdateAction.run(this, id, changedFields, getModelRecordId(id), false);
+		}
 
-        for (Field field : changedFields)
-            field.reset();
+		for(Field field : changedFields)
+			field.reset();
 
-        return result;
-    }
+		return result;
+	}
 
-    public int destroy(guid id) {
-        return DestroyAction.run(this, id, getModelRecordId(id));
-    }
+	public int destroy(guid id) {
+		return DestroyAction.run(this, id, getModelRecordId(id));
+	}
 
-    public int destroy(SqlToken where) {
-        Collection<Field> fields = new ArrayList<Field>();
-        fields.add(primaryKey());
+	public int destroy(SqlToken where) {
+		Collection<Field> fields = new ArrayList<Field>();
+		fields.add(primaryKey());
 
-        read(fields, where);
+		read(fields, where);
 
-        int result = 0;
+		int result = 0;
 
-        while (next()) {
-            guid id = recordId();
-            result += DestroyAction.run(this, id, getModelRecordId(id));
-        }
+		while(next()) {
+			guid id = recordId();
+			result += DestroyAction.run(this, id, getModelRecordId(id));
+		}
 
-        return result;
-    }
+		return result;
+	}
 
-    private boolean readRecord(guid id, RCollection<Field.CLASS<Field>> fieldClasses) {
-        Collection<Field> fields = CLASS.asList(fieldClasses);
+	private boolean readRecord(guid id, RCollection<Field.CLASS<Field>> fieldClasses) {
+		Collection<Field> fields = CLASS.asList(fieldClasses);
 
-        fields = fields.isEmpty() ? null : fields;
+		fields = fields.isEmpty() ? null : fields;
 
-        return readRecord(id, fields);
-    }
+		return readRecord(id, fields);
+	}
 
-    private void read1(RCollection<Field.CLASS<Field>> fieldClasses, RCollection<Field.CLASS<Field>> sortClasses,
-            RCollection<Field.CLASS<Field>> groupClasses, SqlToken where, SqlToken having) {
-        Collection<Field> fields = CLASS.asList(fieldClasses);
-        Collection<Field> sortFields = CLASS.asList(sortClasses);
-        Collection<Field> groupFields = CLASS.asList(groupClasses);
+	private void read1(RCollection<Field.CLASS<Field>> fieldClasses, RCollection<Field.CLASS<Field>> sortClasses, RCollection<Field.CLASS<Field>> groupClasses, SqlToken where, SqlToken having) {
+		Collection<Field> fields = CLASS.asList(fieldClasses);
+		Collection<Field> sortFields = CLASS.asList(sortClasses);
+		Collection<Field> groupFields = CLASS.asList(groupClasses);
 
-        fields = fields.isEmpty() ? null : fields;
-        sortFields = sortFields.isEmpty() ? null : sortFields;
-        groupFields = groupFields.isEmpty() ? null : groupFields;
+		fields = fields.isEmpty() ? null : fields;
+		sortFields = sortFields.isEmpty() ? null : sortFields;
+		groupFields = groupFields.isEmpty() ? null : groupFields;
 
-        read(fields, sortFields, groupFields, where, having);
-    }
+		read(fields, sortFields, groupFields, where, having);
+	}
 
-    public boolean next() {
-        if (cursor == null)
-            throw new RuntimeException("Method Query.read() should be called before Query.next()");
+	public boolean next() {
+		if(cursor == null)
+			throw new RuntimeException("Method Query.read() should be called before Query.next()");
 
-        return cursor.next();
-    }
+		return cursor.next();
+	}
 
-    public boolean isAfterLast() {
-        if (cursor == null)
-            throw new RuntimeException("Method Query.read() should be called before Query.isAfterLast()");
+	public boolean isAfterLast() {
+		if(cursor == null)
+			throw new RuntimeException("Method Query.read() should be called before Query.isAfterLast()");
 
-        return cursor.isAfterLast();
-    }
+		return cursor.isAfterLast();
+	}
 
-    private List<State> states = new ArrayList<State>();
+	private List<State> states = new ArrayList<State>();
 
-    private static class FieldState {
-        private Field field;
-        private primary value;
-        private boolean changed;
+	private static class FieldState {
+		private Field field;
+		private primary value;
+		private boolean changed;
 
-        public FieldState(Field field) {
-            this.field = field;
+		public FieldState(Field field) {
+			this.field = field;
 
-            changed = field.changed();
+			changed = field.changed();
 
-            if (changed) {
-                value = field.get();
-                field.reset();
-            }
-        }
+			if(changed) {
+				value = field.get();
+				field.reset();
+			}
+		}
 
-        public void restore() {
-            if (changed)
-                field.set(value);
-        }
-    }
+		public void restore() {
+			if(changed)
+				field.set(value);
+		}
+	}
 
-    private static class State {
-        private Select cursor;
-        private Collection<FieldState> fieldStates = new ArrayList<FieldState>();
+	private static class State {
+		private Select cursor;
+		private Collection<FieldState> fieldStates = new ArrayList<FieldState>();
 
-        public State(Collection<Field> fields, Select cursor) {
-            this.cursor = cursor;
+		public State(Collection<Field> fields, Select cursor) {
+			this.cursor = cursor;
 
-            for (Field field : fields)
-                fieldStates.add(new FieldState(field));
-        }
+			for(Field field : fields)
+				fieldStates.add(new FieldState(field));
+		}
 
-        public Select cursor() {
-            return cursor;
-        }
+		public Select cursor() {
+			return cursor;
+		}
 
-        public void restore() {
-            for (FieldState state : fieldStates)
-                state.restore();
-        }
-    }
+		public void restore() {
+			for(FieldState state : fieldStates)
+				state.restore();
+		}
+	}
 
-    public void saveState() {
-        states.add(new State(getDataFields(), cursor));
+	public void saveState() {
+		states.add(new State(getDataFields(), cursor));
 
-        if (cursor != null)
-            cursor.saveState();
+		if(cursor != null)
+			cursor.saveState();
 
-        cursor = null;
-    }
+		cursor = null;
+	}
 
-    public void restoreState() {
-        if (cursor != null)
-            cursor.close();
+	public void restoreState() {
+		if(cursor != null)
+			cursor.close();
 
-        State state = states.remove(states.size() - 1);
+		State state = states.remove(states.size() - 1);
 
-        cursor = state.cursor();
+		cursor = state.cursor();
 
-        if (cursor != null)
-            cursor.restoreState();
+		if(cursor != null)
+			cursor.restoreState();
 
-        state.restore();
-    }
+		state.restore();
+	}
 
-    public Collection<Field.CLASS<? extends Field>> dataFields() {
-        return dataFields;
-    }
+	public Collection<Field.CLASS<? extends Field>> dataFields() {
+		return dataFields;
+	}
 
-    public Collection<Field.CLASS<? extends Field>> formFields() {
-        if (formFields.isEmpty())
-            return dataFields();
+	public Collection<Field.CLASS<? extends Field>> formFields() {
+		if(formFields.isEmpty())
+			return dataFields();
 
-        List<Field.CLASS<? extends Field>> result = new ArrayList<Field.CLASS<? extends Field>>();
+		List<Field.CLASS<? extends Field>> result = new ArrayList<Field.CLASS<? extends Field>>(50);
 
-        for (Control.CLASS<? extends Control> formField : formFields) {
-            if (formField instanceof Field.CLASS) {
-                result.add((Field.CLASS<?>) formField);
-            } else if (formField instanceof FieldGroup.CLASS) {
-                FieldGroup group = (FieldGroup) formField.get();
-                result.addAll(group.fields());
-            }
-        }
-        return result;
-    }
+		for(Control.CLASS<? extends Control> formField : formFields) {
+			if(formField instanceof Field.CLASS) {
+				result.add((Field.CLASS<?>)formField);
+			} else if(formField instanceof FieldGroup.CLASS) {
+				FieldGroup group = (FieldGroup)formField.get();
+				result.addAll(group.fields());
+			}
+		}
+		return result;
+	}
 
-    @SuppressWarnings({ "unchecked", "rawtypes" })
-    public Collection<Control.CLASS<? extends Control>> controls() {
-        return formFields.isEmpty() ? (Collection) dataFields() : formFields;
-    }
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	public Collection<Control.CLASS<? extends Control>> controls() {
+		return formFields.isEmpty() ? (Collection)dataFields() : formFields;
+	}
 
-    public Collection<Query.CLASS<? extends Query>> queries() {
-        return (Collection<Query.CLASS<? extends Query>>) queries;
-    }
+	public Collection<Query.CLASS<? extends Query>> queries() {
+		return (Collection<Query.CLASS<? extends Query>>)queries;
+	}
 
-    public Collection<Query> getQueries() {
-        return CLASS.asList(queries());
-    }
+	public Collection<Query> getQueries() {
+		return CLASS.asList(queries());
+	}
 
-    public List<Field> getDataFields() {
-        return CLASS.asList(dataFields());
-    }
+	public List<Field> getDataFields() {
+		return CLASS.asList(dataFields());
+	}
 
-    public List<Field> getFormFields() {
-        return CLASS.asList(formFields());
-    }
+	public List<Field> getFormFields() {
+		return CLASS.asList(formFields());
+	}
 
-    public List<Control> getControls() {
-        return CLASS.asList(controls());
-    }
+	public List<Control> getControls() {
+		return CLASS.asList(controls());
+	}
 
-    public List<Field> getSearchFields() {
-        return CLASS.asList(searchFields);
-    }
+	public List<Field> getSearchFields() {
+		return CLASS.asList(searchFields);
+	}
 
-    public Collection<Field> getAttachments() {
-        Collection<Field> result = new ArrayList<Field>();
-        for (Field field : getDataFields()) {
-            if (field instanceof AttachmentField || field instanceof AttachmentExpression)
-                result.add(field);
-        }
-        return result;
-    }
+	public Collection<Field> getAttachments() {
+		Collection<Field> result = new ArrayList<Field>();
+		for(Field field : getDataFields()) {
+			if(field instanceof AttachmentField || field instanceof AttachmentExpression)
+				result.add(field);
+		}
+		return result;
+	}
 
-    public Field getAttachmentField() {
-        Collection<Field> attachmentFields = getAttachments();
-        return attachmentFields.isEmpty() ? null : attachmentFields.iterator().next();
-    }
+	public Field getAttachmentField() {
+		Collection<Field> attachmentFields = getAttachments();
+		return attachmentFields.isEmpty() ? null : attachmentFields.iterator().next();
+	}
 
-    public void registerDataField(Field.CLASS<?> field) {
-        dataFields.add(field);
-    }
+	public void registerDataField(Field.CLASS<?> field) {
+		dataFields.add(field);
+	}
 
-    public void unregisterDataField(Field.CLASS<?> field) {
-        dataFields.remove(field);
-    }
+	public void unregisterDataField(Field.CLASS<?> field) {
+		dataFields.remove(field);
+	}
 
-    public void registerFormField(Field.CLASS<?> field) {
-        formFields.add(field);
-    }
+	public void registerFormField(Field.CLASS<?> field) {
+		formFields.add(field);
+	}
 
-    public void unregisterFormField(Field.CLASS<?> field) {
-        formFields.remove(field);
-    }
+	public void unregisterFormField(Field.CLASS<?> field) {
+		formFields.remove(field);
+	}
 
-    public boolean isShared() {
-        return false;
-    }
+	public boolean isShared() {
+		return false;
+	}
 
-    final public SqlToken having() {
-        if (having == null) {
-            having = z8_having();
-        }
-        return having;
-    }
+	final public SqlToken having() {
+		if(having == null) {
+			having = z8_having();
+		}
+		return having;
+	}
 
-    final public SqlToken where() {
-        if (where == null) {
-            where = z8_where();
+	final public SqlToken where() {
+		if(where == null) {
+			where = z8_where();
 
-            if (!filterBy.isEmpty()) {
-                GuidField primaryKey = (GuidField) primaryKey();
-                SqlToken inVector = new InVector(primaryKey.sql_guid(), filterBy);
+			if(!filterBy.isEmpty()) {
+				GuidField primaryKey = (GuidField)primaryKey();
+				SqlToken inVector = new InVector(primaryKey.sql_guid(), filterBy);
 
-                SqlToken whereToken = where instanceof True ? null : where;
+				SqlToken whereToken = where instanceof True ? null : where;
 
-                if (whereToken != null && !(whereToken instanceof Group))
-                    whereToken = new Group(whereToken);
+				if(whereToken != null && !(whereToken instanceof Group))
+					whereToken = new Group(whereToken);
 
-                where = whereToken == null ? new sql_bool(inVector) : new sql_bool(new And(whereToken, inVector));
-            }
-        }
-        return where;
-    }
-    
-    final public void addWhere(String json) {
-        addWhere(parseWhere(Filter.parse(json, this)));
-    }
-    
-    final public void addWhere(Collection<string> json) {
-        addWhere(parseWhere(Filter.parse(json, this)));
-    }
-    
-    final public void addWhere(SqlToken where) {
-        this.where = new And(where(), where);
-    }
-    
-    final public void setWhere(String json) {
-        setWhere(parseWhere(Filter.parse(json, this)));
-    }
-    
-    final public void setWhere(Collection<string> json) {
-        setWhere(parseWhere(Filter.parse(json, this)));
-    }
+				where = whereToken == null ? new sql_bool(inVector) : new sql_bool(new And(whereToken, inVector));
+			}
+		}
+		return where;
+	}
 
-    final public void setWhere(SqlToken where) {
-        this.where = where;
-    }
-    
-    public static SqlToken parseWhere(Collection<Filter> filters) {
-        SqlToken result = null;
-        for (Filter filter : filters) {
-            SqlToken where = filter.where();
-            result = result == null ? where : new And(result, where);
-        }
-        return result;
-    }
+	final public void addWhere(String json) {
+		addWhere(parseWhere(Filter.parse(json, this)));
+	}
 
-    public Collection<Field> getSortFields() {
-        return CLASS.asList(sortFields);
-    }
+	final public void addWhere(Collection<String> json) {
+		addWhere(parseWhere(Filter.parse(json, this)));
+	}
 
-    public Collection<Field> getGroupFields() {
-        return CLASS.asList(groupFields);
-    }
+	final public void addWhere(SqlToken where) {
+		this.where = new And(where(), where);
+	}
 
-    public Collection<Link> getAggregateByFields() {
-        return CLASS.asList(aggregateBy);
-    }
+	final public void setWhere(String json) {
+		setWhere(parseWhere(Filter.parse(json, this)));
+	}
 
-    public Collection<Field> getGroupByFields() {
-        return CLASS.asList(groupBy);
-    }
+	final public void setWhere(Collection<String> json) {
+		setWhere(parseWhere(Filter.parse(json, this)));
+	}
 
-    private RCollection<guid> getGuidCollection(Collection<guid> guids) {
-        RCollection<guid> result = new RCollection<guid>();
+	final public void setWhere(SqlToken where) {
+		this.where = where;
+	}
 
-        for (guid id : guids)
-            result.add(id);
+	public static SqlToken parseWhere(Collection<Filter> filters) {
+		SqlToken result = null;
+		for(Filter filter : filters) {
+			SqlToken where = filter.where();
+			result = result == null ? where : new And(result, where);
+		}
+		return result;
+	}
 
-        return result;
-    }
+	public Collection<Field> getSortFields() {
+		return CLASS.asList(sortFields);
+	}
 
-    private Field findPrimaryKey() {
-        for (Field.CLASS<? extends Field> field : dataFields()) {
-            if (field.getAttribute(IObject.PrimaryKey) != null)
-                return field.get();
-        }
+	public Collection<Field> getGroupFields() {
+		return CLASS.asList(groupFields);
+	}
 
-        return null;
-    }
+	public Collection<Link> getAggregateByFields() {
+		return CLASS.asList(aggregateBy);
+	}
 
-    public Field[] primaryKeys() {
-        if (primaryKeys != null)
-            return primaryKeys;
+	public Collection<Field> getGroupByFields() {
+		return CLASS.asList(groupBy);
+	}
 
-        Query[] rootQueries = getRootQueries();
+	private RCollection<guid> getGuidCollection(Collection<guid> guids) {
+		RCollection<guid> result = new RCollection<guid>();
 
-        if (rootQueries.length == 1) {
-            Query rootQuery = rootQueries[0];
-            Field primaryKey = rootQuery.findPrimaryKey();
-            primaryKeys = primaryKey != null ? new Field[] { primaryKey } : new Field[0];
-        } else {
-            Collection<Field> result = new ArrayList<Field>();
+		for(guid id : guids)
+			result.add(id);
 
-            for (Query query : rootQueries)
-                result.addAll(Arrays.asList(query.primaryKeys()));
+		return result;
+	}
 
-            primaryKeys = result.toArray(new Field[0]);
-        }
+	private Field findPrimaryKey() {
+		for(Field.CLASS<? extends Field> field : dataFields()) {
+			if(field.getAttribute(IObject.PrimaryKey) != null)
+				return field.get();
+		}
 
-        return primaryKeys;
-    }
+		return null;
+	}
 
-    public Field primaryKey() {
-        Field[] primaryKeys = primaryKeys();
-        return primaryKeys.length == 1 ? primaryKeys[0] : null;
-    }
+	public Field primaryKey() {
+		if(primaryKey != null)
+			return primaryKey;
 
-    public Field parentKey() {
-        Query rootQuery = getRootQuery();
+		Query[] rootQueries = getRootQueries();
 
-        if (rootQuery != null && rootQuery instanceof TreeTable) {
-            TreeTable table = (TreeTable) rootQuery;
-            return table.parentId.get();
-        }
+		if(rootQueries.length == 1) {
+			Query rootQuery = rootQueries[0];
+			primaryKey = rootQuery.findPrimaryKey();
+		}
 
-        return null;
-    }
+		return primaryKey;
+	}
 
-    public Field[] parentKeys() {
-        Query rootQuery = getRootQuery();
+	public Field parentKey() {
+		Query rootQuery = getRootQuery();
 
-        if (rootQuery != null && rootQuery instanceof TreeTable) {
-            TreeTable table = (TreeTable) rootQuery;
-            return new Field[] { table.parent1.get(), table.parent2.get(), table.parent3.get(), table.parent4.get(),
-                    table.parent5.get(), table.parent6.get() };
-        }
+		if(rootQuery != null && rootQuery instanceof TreeTable) {
+			TreeTable table = (TreeTable)rootQuery;
+			return table.parentId.get();
+		}
 
-        return new Field[0];
-    }
+		return null;
+	}
 
-    public boolean hasPrimaryKey() {
-        return primaryKey() != null;
-    }
+	public Field[] parentKeys() {
+		Query rootQuery = getRootQuery();
 
-    public Field lockKey() {
-        Query rootQuery = getRootQuery();
+		if(rootQuery != null && rootQuery instanceof TreeTable) {
+			TreeTable table = (TreeTable)rootQuery;
+			return new Field[] { table.parent1.get(), table.parent2.get(), table.parent3.get(), table.parent4.get(), table.parent5.get(), table.parent6.get() };
+		}
 
-        if (rootQuery != null && rootQuery instanceof Table) {
-            Table table = (Table) rootQuery;
-            return table.locked.get();
-        }
+		return new Field[0];
+	}
 
-        return null;
-    }
+	public boolean hasPrimaryKey() {
+		return primaryKey() != null;
+	}
 
-    public Field children() {
-        Query rootQuery = getRootQuery();
+	public Field lockKey() {
+		Query rootQuery = getRootQuery();
 
-        if (rootQuery != null && rootQuery instanceof TreeTable) {
-            TreeTable table = (TreeTable) rootQuery;
-            return table.children.get();
-        }
+		if(rootQuery != null && rootQuery instanceof Table) {
+			Table table = (Table)rootQuery;
+			return table.locked.get();
+		}
 
-        return null;
-    }
+		return null;
+	}
 
-    public String getAlias() {
-        return "T" + Math.abs((id() + hashCode()).hashCode());
-    }
+	public Field children() {
+		Query rootQuery = getRootQuery();
 
-    @Override
-    @SuppressWarnings({ "unchecked", "rawtypes" })
-    public void onInitialized() {
-        super.onInitialized();
+		if(rootQuery != null && rootQuery instanceof TreeTable) {
+			TreeTable table = (TreeTable)rootQuery;
+			return table.children.get();
+		}
 
-        for (Query.CLASS<? extends Query> query : queries())
-            query.addReference((Query.CLASS) getCLASS());
+		return null;
+	}
 
-        if (model != null)
-            model.get().setContext(this);
-    }
+	private String alias = null;
 
-    // ////////////////////////////////////////////////////////////////////////////////////////////////
-    // IQuery
+	public String getAlias() {
+		if(alias == null)
+			alias = "T" + Math.abs((id() + hashCode()).hashCode());
+		return alias;
+	}
 
-    @Override
-    public String toString() {
-        return id();
-    }
+	@Override
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	public void onInitialized() {
+		super.onInitialized();
 
-    public static Query getModel(Query query) {
-        Query context = query.getContext();
+		for(Query.CLASS<? extends Query> query : queries())
+			query.addReference((Query.CLASS)getCLASS());
 
-        if (context != null)
-            return context.getModel() != null ? context.getModel() : query;
+		if(model != null)
+			model.get().setContext(this);
+	}
 
-        return query.getModel() != null ? query.getModel() : query;
-    }
+	// ////////////////////////////////////////////////////////////////////////////////////////////////
+	// IQuery
 
-    public Query getModel() {
-        return model != null ? model.get() : null;
-    }
+	@Override
+	public String toString() {
+		return id();
+	}
 
-    public void setModel(Query model) {
-        this.model = (Query.CLASS<?>) model.getCLASS();
-    }
+	public static Query getModel(Query query) {
+		Query context = query.getContext();
 
-    public Query getContext() {
-        return contextQuery;
-    }
+		if(context != null)
+			return context.getModel() != null ? context.getModel() : query;
 
-    public void setContext(Query contextQuery) {
-        this.contextQuery = contextQuery;
-    }
+		return query.getModel() != null ? query.getModel() : query;
+	}
 
-    public int getOwnersCount() {
-        return owners().size();
-    }
+	public Query getModel() {
+		return model != null ? model.get() : null;
+	}
 
-    @Override
-    public Query getOwner() {
-        return getOwnersCount() == 1 ? owners().iterator().next().get() : null;
-    }
+	public void setModel(Query model) {
+		this.model = (Query.CLASS<?>)model.getCLASS();
+	}
 
-    @SuppressWarnings({ "unchecked", "rawtypes" })
-    public Collection<Query.CLASS<Query>> owners() {
-        return (Collection) getCLASS().getReferences();
-    }
+	public Query getContext() {
+		return contextQuery;
+	}
 
-    public Collection<Query> getOwners() {
-        Collection<Query> result = new ArrayList<Query>();
+	public void setContext(Query contextQuery) {
+		this.contextQuery = contextQuery;
+	}
 
-        for (Query.CLASS<Query> owner : owners())
-            result.add(owner.get());
+	public int getOwnersCount() {
+		return owners().size();
+	}
 
-        return result;
-    }
+	@Override
+	public Query getOwner() {
+		return getOwnersCount() == 1 ? owners().iterator().next().get() : null;
+	}
 
-    public Query getRootQuery() {
-        Query[] rootQueries = getRootQueries();
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	public Collection<Query.CLASS<Query>> owners() {
+		return (Collection)getCLASS().getReferences();
+	}
 
-        if (rootQueries.length != 1)
-            return null;
+	public Collection<Query> getOwners() {
+		Collection<Query> result = new ArrayList<Query>();
 
-        Query rootQuery = rootQueries[0];
+		for(Query.CLASS<Query> owner : owners())
+			result.add(owner.get());
 
-        if (rootQuery == this)
-            return rootQuery;
+		return result;
+	}
 
-        return rootQuery.getRootQuery();
-    }
+	public Query getRootQuery() {
+		Query[] rootQueries = getRootQueries();
 
-    public Query[] getRootQueries() {
-        initializeRootQueries();
-        return rootQueries;
-    }
+		if(rootQueries.length != 1)
+			return null;
 
-    public void setRootQuery(Query rootQuery) {
-        this.rootQueries = new Query[] { rootQuery };
-    }
+		Query rootQuery = rootQueries[0];
 
-    public Collection<OBJECT.CLASS<? extends OBJECT>> getLinks() {
-        if (links == null) {
-            links = new ArrayList<OBJECT.CLASS<? extends OBJECT>>();
+		if(rootQuery == this)
+			return rootQuery;
 
-            for (Field.CLASS<? extends Field> field : dataFields()) {
-                if (field instanceof Link.CLASS || field instanceof LinkExpression.CLASS)
-                    links.add(field);
-            }
-        }
+		return rootQuery.getRootQuery();
+	}
 
-        return links;
-    }
+	public Query[] getRootQueries() {
+		initializeRootQueries();
+		return rootQueries;
+	}
 
-    @SuppressWarnings("unchecked")
-    private void initializeRootQueries() {
-        if (rootQueries != null)
-            return;
+	public void setRootQuery(Query rootQuery) {
+		this.rootQueries = new Query[] { rootQuery };
+	}
 
-        Query.CLASS<Query> me = (Query.CLASS<Query>) this.getCLASS();
+	public Collection<OBJECT.CLASS<? extends OBJECT>> getLinks() {
+		if(links == null) {
+			links = new ArrayList<OBJECT.CLASS<? extends OBJECT>>(10);
 
-        if (queries.size() == 0) {
-            rootQueries = new Query[] { this };
-            return;
-        }
+			for(Field.CLASS<? extends Field> field : dataFields()) {
+				if(field instanceof Link.CLASS || field instanceof LinkExpression.CLASS)
+					links.add(field);
+			}
+		}
 
-        List<Query.CLASS<? extends Query>> references = new ArrayList<Query.CLASS<? extends Query>>();
-        references.addAll(queries());
+		return links;
+	}
 
-        if (getLinks().size() != 0)
-            references.add(me);
+	@SuppressWarnings("unchecked")
+	private void initializeRootQueries() {
+		if(rootQueries != null)
+			return;
 
-        List<Query.CLASS<? extends Query>> referers = new ArrayList<Query.CLASS<? extends Query>>();
-        referers.addAll(references);
+		Query.CLASS<Query> me = (Query.CLASS<Query>)this.getCLASS();
 
-        for (Query.CLASS<? extends Query> query : referers) {
-            if (!query.hasInstance())
-                continue;
+		if(queries.size() == 0) {
+			rootQueries = new Query[] { this };
+			return;
+		}
 
-            for (OBJECT.CLASS<? extends OBJECT> cls : query.get().getLinks()) {
-                if (!cls.hasInstance())
-                    continue;
+		List<Query.CLASS<? extends Query>> references = new ArrayList<Query.CLASS<? extends Query>>(10);
+		references.addAll(queries());
 
-                ILink link = (ILink) cls.get();
-                Query.CLASS<Query> linkedQuery = link.query();
+		if(getLinks().size() != 0)
+			references.add(me);
 
-                if (linkedQuery != me && linkedQuery != query)
-                    references.remove(linkedQuery);
-            }
-        }
+		List<Query.CLASS<? extends Query>> referers = new ArrayList<Query.CLASS<? extends Query>>(10);
+		referers.addAll(references);
 
-        if (references.size() != 1) {
-            for (int index = references.size() - 1; index >= 0; index--) {
-                Query query = references.get(index).get();
+		for(Query.CLASS<? extends Query> query : referers) {
+			if(!query.hasInstance())
+				continue;
 
-                if (query.getLinks().size() == 0) {
-                    System.out.println("Unused query found. " + this + '.' + query);
-                    references.remove(index);
-                }
-            }
-        }
+			for(OBJECT.CLASS<? extends OBJECT> cls : query.get().getLinks()) {
+				if(!cls.hasInstance())
+					continue;
 
-        if (references.size() > 1) {
-            if (model == null) {
-                String message = "Model inconsistency. Multiple root queries detected in " + classId();
+				ILink link = (ILink)cls.get();
+				Query.CLASS<Query> linkedQuery = link.query();
 
-                for (Query.CLASS<? extends Query> query : references)
-                    message += ("\n\t" + query.get());
+				if(linkedQuery != me && linkedQuery != query)
+					references.remove(linkedQuery);
+			}
+		}
 
-                Trace.logEvent(message);
+		if(references.size() != 1) {
+			for(int index = references.size() - 1; index >= 0; index--) {
+				Query query = references.get(index).get();
 
-            }
-        } else if (references.size() == 0)
-            Trace.logEvent("Model inconsistency. No root query detected. " + this);
+				if(query.getLinks().size() == 0) {
+					Trace.logEvent("Unused query found. " + this + '.' + query);
+					references.remove(index);
+				}
+			}
+		}
 
-        rootQueries = CLASS.asList(references).toArray(new Query[0]);
-    }
+		if(references.size() > 1) {
+			if(model == null) {
+				String message = "Model inconsistency. Multiple root queries detected in " + classId();
 
-    private static Pattern pattern = Pattern.compile("\\.");
+				for(Query.CLASS<? extends Query> query : references)
+					message += ("\n\t" + query.get());
 
-    private String[] parseId(String id) {
-        String myId = id();
+				Trace.logEvent(message);
 
-        if (!id.startsWith(myId))
-            return null;
+			}
+		} else if(references.size() == 0)
+			Trace.logEvent("Model inconsistency. No root query detected. " + this);
 
-        if (id.equals(myId))
-            return new String[0];
+		rootQueries = CLASS.asList(references).toArray(new Query[0]);
+	}
 
-        id = id.substring(myId.length());
+	private static Pattern pattern = Pattern.compile("\\.");
 
-        if (!myId.isEmpty() && id.charAt(0) != '.')
-            return null;
+	private String[] parseId(String id) {
+		String myId = id();
 
-        String[] ids = pattern.split(id);
-        return Arrays.copyOfRange(ids, myId.isEmpty() ? 0 : 1, ids.length);
-    }
+		if(!id.startsWith(myId))
+			return null;
 
-    private Query getQueryById(String id) {
-        for (Query.CLASS<? extends Query> query : queries()) {
-            if (query.id().startsWith(id()) && query.getIndex().equals(id))
-                return query.get();
-        }
-        return null;
-    }
+		if(id.equals(myId))
+			return new String[0];
 
-    private Query getMatchedQuery(String id) {
-        for (Query.CLASS<? extends Query> query : queries()) {
-            if (id.startsWith(query.id()))
-                return query.get();
-        }
+		id = id.substring(myId.length());
 
-        return null;
-    }
+		if(!myId.isEmpty() && id.charAt(0) != '.')
+			return null;
 
-    private class FindQueryResult {
-        public Query query = null;
-        public Collection<Query> route = new ArrayList<Query>();
-    }
+		String[] ids = pattern.split(id);
+		return Arrays.copyOfRange(ids, myId.isEmpty() ? 0 : 1, ids.length);
+	}
 
-    private FindQueryResult findQueryById(String id, boolean ignoreLast) {
-        FindQueryResult result = new FindQueryResult();
+	private Query getQueryById(String id) {
+		for(Query.CLASS<? extends Query> query : queries()) {
+			if(query.id().startsWith(id()) && query.getIndex().equals(id))
+				return query.get();
+		}
+		return null;
+	}
 
-        result.query = this;
+	private Query getMatchedQuery(String id) {
+		for(Query.CLASS<? extends Query> query : queries()) {
+			if(id.startsWith(query.id()))
+				return query.get();
+		}
 
-        String[] path = parseId(id);
+		return null;
+	}
 
-        if (path == null) {
-            result.query = getMatchedQuery(id);
+	private class FindQueryResult {
+		public Query query = null;
+		public Collection<Query> route = new ArrayList<Query>(10);
+	}
 
-            if (result.query == null)
-                return null;
+	private FindQueryResult findQueryById(String id, boolean ignoreLast) {
+		FindQueryResult result = new FindQueryResult();
 
-            result.route.add(result.query);
-            path = result.query.parseId(id);
-        }
+		result.query = this;
 
-        int count = path.length - (ignoreLast ? 1 : 0);
+		String[] path = parseId(id);
 
-        if (path.length == 0 || count == 0)
-            return result;
+		if(path == null) {
+			result.query = getMatchedQuery(id);
 
-        for (int i = 0; i < count; i++) {
-            result.query = result.query.getQueryById(path[i]);
-            result.route.add(result.query);
+			if(result.query == null)
+				return null;
 
-            if (result.query == null)
-                return null;
-        }
+			result.route.add(result.query);
+			path = result.query.parseId(id);
+		}
 
-        return result;
-    }
+		int count = path.length - (ignoreLast ? 1 : 0);
 
-    public Query findQueryById(String id) {
-        FindQueryResult result = findQueryById(id, false);
-        return result != null ? result.query : null;
-    }
+		if(path.length == 0 || count == 0)
+			return result;
 
-    public Query findQueryByFieldId(String id) {
-        FindQueryResult result = findQueryById(id, true);
-        return result != null ? result.query : null;
-    }
+		for(int i = 0; i < count; i++) {
+			result.query = result.query.getQueryById(path[i]);
+			result.route.add(result.query);
 
-    public Collection<Query> getRoute(Query query) {
-        FindQueryResult result = findQueryById(query.id(), false);
-        return result != null ? result.route : null;
-    }
+			if(result.query == null)
+				return null;
+		}
 
-    private Collection<ILink> getRouteByOwners(Query query) {
-        List<ILink> path = new ArrayList<ILink>();
+		return result;
+	}
 
-        if (query == this)
-            return path;
+	public Query findQueryById(String id) {
+		FindQueryResult result = findQueryById(id, false);
+		return result != null ? result.query : null;
+	}
 
-        Query owner = null;
+	public Query findQueryByFieldId(String id) {
+		FindQueryResult result = findQueryById(id, true);
+		return result != null ? result.query : null;
+	}
 
-        int ownersCount = query.getOwnersCount();
+	public Collection<Query> getRoute(Query query) {
+		FindQueryResult result = findQueryById(query.id(), false);
+		return result != null ? result.route : null;
+	}
 
-        if (ownersCount > 1) {
-            for (Query o : query.getOwners()) {
-                if (!getRouteByOwners(o).isEmpty() || getRootQuery() == o) {
-                    owner = o;
-                    break;
-                }
-            }
-        } else if (ownersCount == 1)
-            owner = query.getOwner();
+	private Collection<ILink> getRouteByOwners(Query query) {
+		List<ILink> path = new ArrayList<ILink>();
 
-        Query rootQuery = getRootQuery();
+		if(query == this)
+			return path;
 
-        while (owner != null && query != this && query != rootQuery) {
-            Query root = owner.getRootQuery();
+		Query owner = null;
 
-            while (query != root) {
-                ILink link = owner.getLinkTo(query);
+		int ownersCount = query.getOwnersCount();
 
-                if (link != null) {
-                    path.add(0, link);
-                    // assert (owner != query);
-                    query = owner;
-                } else
-                    break;
-            }
+		if(ownersCount > 1) {
+			for(Query o : query.getOwners()) {
+				if(!getRouteByOwners(o).isEmpty() || getRootQuery() == o) {
+					owner = o;
+					break;
+				}
+			}
+		} else if(ownersCount == 1)
+			owner = query.getOwner();
 
-            query = owner;
+		Query rootQuery = getRootQuery();
 
-            if (query.getOwnersCount() > 1) {
-                Collection<ILink> pathFromTop = rootQuery.getRouteByOwners(query);
-                pathFromTop.addAll(path);
-                return pathFromTop;
-            }
+		while(owner != null && query != this && query != rootQuery) {
+			Query root = owner.getRootQuery();
 
-            owner = owner.getOwner();
-        }
+			while(query != root) {
+				ILink link = owner.getLinkTo(query);
 
-        return owner == null ? new ArrayList<ILink>() : path;
-    }
+				if(link != null) {
+					path.add(0, link);
+					// assert (owner != query);
+					query = owner;
+				} else
+					break;
+			}
 
-    public Collection<Query> getRoute(Field field) {
-        FindQueryResult result = findQueryById(field.id(), true);
-        return result != null ? result.route : null;
-    }
+			query = owner;
 
-    public ILink getLinkTo(Query query) {
-        for (OBJECT.CLASS<?> cls : getLinks()) {
-            ILink link = (ILink) cls.get();
-            if (link.getQuery() == query)
-                return link;
-        }
+			if(query.getOwnersCount() > 1) {
+				Collection<ILink> pathFromTop = rootQuery.getRouteByOwners(query);
+				pathFromTop.addAll(path);
+				return pathFromTop;
+			}
 
-        return null;
-    }
+			owner = owner.getOwner();
+		}
 
-    public Collection<ILink> getPath(Query query) {
-        Collection<Query> route = getRoute(query);
+		return owner == null ? new ArrayList<ILink>() : path;
+	}
 
-        if (route == null)
-            return getRouteByOwners(query);
+	public Collection<Query> getRoute(Field field) {
+		FindQueryResult result = findQueryById(field.id(), true);
+		return result != null ? result.route : null;
+	}
 
-        Collection<ILink> path = new ArrayList<ILink>();
+	public ILink getLinkTo(Query query) {
+		for(OBJECT.CLASS<?> cls : getLinks()) {
+			ILink link = (ILink)cls.get();
+			if(link.getQuery() == query)
+				return link;
+		}
 
-        Query current = this;
+		return null;
+	}
 
-        for (Query q : route) {
-            if (current.getRootQuery() != q) {
-                ILink link = current.getLinkTo(q);
+	public Collection<ILink> getPath(Query query) {
+		Collection<Query> route = getRoute(query);
 
-                if (link != null)
-                    path.add(link);
-            }
-            current = q;
-        }
-        return path;
-    }
+		if(route == null)
+			return getRouteByOwners(query);
 
-    public Collection<ILink> getPath(Field field) {
-        Collection<Query> route = getRoute(field);
+		Collection<ILink> path = new ArrayList<ILink>(10);
 
-        if (route == null)
-            return getRouteByOwners(field.owner());
+		Query current = this;
 
-        Collection<ILink> path = new ArrayList<ILink>();
+		for(Query q : route) {
+			if(current.getRootQuery() != q) {
+				ILink link = current.getLinkTo(q);
 
-        Query current = this;
+				if(link != null)
+					path.add(link);
+			}
+			current = q;
+		}
+		return path;
+	}
 
-        for (Query query : route) {
-            if (query != current.getRootQuery()) {
-                ILink link = current.getLinkTo(query);
+	public Collection<ILink> getPath(Field field) {
+		Collection<Query> route = getRoute(field);
 
-                if (link != null)
-                    path.add(link);
-            }
-            current = query;
-        }
+		if(route == null)
+			return getRouteByOwners(field.owner());
 
-        return path;
-    }
+		Collection<ILink> path = new ArrayList<ILink>(10);
 
-    public Field findFieldById(String id) {
-        FindQueryResult result = findQueryById(id, true);
-        return result != null ? result.query.getFieldById(id) : null;
-    }
+		Query current = this;
 
-    public Field getFieldById(String id) {
-        for (Field.CLASS<? extends Field> field : dataFields()) {
-            if (id.equals(field.id()))
-                return field.get();
-        }
-        return null;
-    }
+		for(Query query : route) {
+			if(query != current.getRootQuery()) {
+				ILink link = current.getLinkTo(query);
 
-    public Field getFieldByName(String name) {
-        for (Field.CLASS<? extends Field> field : dataFields()) {
-            if (name.equals(field.name()))
-                return field.get();
-        }
-        return null;
-    }
+				if(link != null)
+					path.add(link);
+			}
+			current = query;
+		}
 
-    public Collection<Field.CLASS<? extends Field>> primaryFields() {
-        Collection<Field.CLASS<? extends Field>> fields = new ArrayList<Field.CLASS<? extends Field>>();
+		return path;
+	}
 
-        for (Field.CLASS<? extends Field> field : dataFields())
-            fields.add(field);
+	public Field findFieldById(String id) {
+		FindQueryResult result = findQueryById(id, true);
+		return result != null ? result.query.getFieldById(id) : null;
+	}
 
-        return fields;
-    }
+	public Field getFieldById(String id) {
+		for(Field.CLASS<? extends Field> field : dataFields()) {
+			if(id.equals(field.id()))
+				return field.get();
+		}
+		return null;
+	}
 
-    public Collection<Field> getPrimaryFields() {
-        Collection<Field> dataFields = getDataFields();
-        Collection<Field> fields = new ArrayList<Field>(dataFields.size());
-        for (Field field : dataFields) {
-            if (!(field instanceof Expression))
-                fields.add(field);
-        }
-        return fields;
-    }
+	public Field getFieldByName(String name) {
+		for(Field.CLASS<? extends Field> field : dataFields()) {
+			if(name.equals(field.name()))
+				return field.get();
+		}
+		return null;
+	}
 
-    private boolean isReachableVia(Query query, Field field) {
-        if (field instanceof Expression) {
-            Expression expression = (Expression) field;
-            SqlToken token = expression.expression();
+	public Collection<Field.CLASS<? extends Field>> primaryFields() {
+		Collection<Field.CLASS<? extends Field>> fields = new ArrayList<Field.CLASS<? extends Field>>(50);
 
-            Collection<IValue> values = token.getUsedFields();
+		for(Field.CLASS<? extends Field> field : dataFields())
+			fields.add(field);
 
-            for (IValue value : values) {
-                if (query.findFieldById(value.id()) == null)
-                    return false;
-            }
-        }
+		return fields;
+	}
 
-        return query.findFieldById(field.id()) != null;
-    }
+	public Collection<Field> getPrimaryFields() {
+		Collection<Field> dataFields = getDataFields();
+		Collection<Field> fields = new ArrayList<Field>(dataFields.size());
+		for(Field field : dataFields) {
+			if(!(field instanceof Expression))
+				fields.add(field);
+		}
+		return fields;
+	}
 
-    public Collection<Field> getFieldsVia(Query query) {
-        if (this == query)
-            return getFormFields();
+	private boolean isReachableVia(Query query, Field field) {
+		if(field instanceof Expression) {
+			Expression expression = (Expression)field;
+			SqlToken token = expression.expression();
 
-        Collection<Field> result = new ArrayList<Field>();
+			Collection<IValue> values = token.getUsedFields();
 
-        for (Field field : getFormFields()) {
-            if (isReachableVia(query, field))
-                result.add(field);
-        }
+			for(IValue value : values) {
+				if(query.findFieldById(value.id()) == null)
+					return false;
+			}
+		}
 
-        return result;
-    }
+		return query.findFieldById(field.id()) != null;
+	}
 
-    public Collection<Field> getReachableFields(Collection<Field> fields) {
-        Collection<Field> result = new ArrayList<Field>();
+	public Collection<Field> getFieldsVia(Query query) {
+		if(this == query)
+			return getFormFields();
 
-        for (Field field : fields) {
-            if (findFieldById(field.id()) != null)
-                result.add(field);
-        }
+		Collection<Field> result = new ArrayList<Field>(50);
 
-        return result;
-    }
+		for(Field field : getFormFields()) {
+			if(isReachableVia(query, field))
+				result.add(field);
+		}
 
-    public Period getPeriod() {
-        if (period != null)
-            return period.get();
+		return result;
+	}
 
-        Query rootQuery = getRootQuery();
+	public Collection<Field> getReachableFields(Collection<Field> fields) {
+		Collection<Field> result = new ArrayList<Field>(50);
 
-        if (rootQuery != null && rootQuery.period != null)
-            return rootQuery.period.get();
+		for(Field field : fields) {
+			if(findFieldById(field.id()) != null)
+				result.add(field);
+		}
 
-        return null;
-    }
+		return result;
+	}
 
-    public void setPeriod(Period.CLASS<? extends Period> period) {
-        Query rootQuery = getRootQuery();
+	public Period getPeriod() {
+		if(period != null)
+			return period.get();
 
-        if (rootQuery.period != null)
-            rootQuery.period = period;
-        else
-            this.period = period;
-    }
+		Query rootQuery = getRootQuery();
 
-    public Collection<Command> commands() {
-        return CLASS.asList(commands);
-    }
+		if(rootQuery != null && rootQuery.period != null)
+			return rootQuery.period.get();
 
-    private boolean isModel() {
-        return contextQuery != null ? contextQuery.getModel() == this : getModel() == null;
-    }
+		return null;
+	}
 
-    public Collection<Command> getCommands() {
-        Collection<Command> result = new ArrayList<Command>();
+	public void setPeriod(Period.CLASS<? extends Period> period) {
+		Query rootQuery = getRootQuery();
 
-        if (isModel()) {
-            result.addAll(commands());
+		if(rootQuery.period != null)
+			rootQuery.period = period;
+		else
+			this.period = period;
+	}
 
-            if (contextQuery != null)
-                result.addAll(contextQuery.commands());
-        }
+	public Collection<Command> commands() {
+		return CLASS.asList(commands);
+	}
 
-        return result;
-    }
+	private boolean isModel() {
+		return contextQuery != null ? contextQuery.getModel() == this : getModel() == null;
+	}
 
-    public Command getCommand(String id) {
-        for (Command command : getCommands()) {
-            if (command.id().equals(id))
-                return command;
-        }
+	public Collection<Command> getCommands() {
+		Collection<Command> result = new ArrayList<Command>();
 
-        return null;
-    }
+		if(isModel()) {
+			result.addAll(commands());
 
-    // ////////////////////////////////////////////////////////////////////////////////////////////////
+			if(contextQuery != null)
+				result.addAll(contextQuery.commands());
+		}
 
-    public boolean showAsTree() {
-        Query rootQuery = getRootQuery();
-        return !rootQuery.showAsGrid.get();
-    }
+		return result;
+	}
 
-    private boolean readOnly() {
-        if (contextQuery != null && contextQuery.readOnly.get())
-            return true;
+	public Command getCommand(String id) {
+		for(Command command : getCommands()) {
+			if(command.id().equals(id))
+				return command;
+		}
 
-        if (readOnly.get())
-            return true;
+		return null;
+	}
 
-        Query rootQuery = getRootQuery();
+	// ////////////////////////////////////////////////////////////////////////////////////////////////
 
-        if (rootQuery != null && rootQuery != this)
-            return rootQuery.readOnly.get();
+	public boolean showAsTree() {
+		Query rootQuery = getRootQuery();
+		return !rootQuery.showAsGrid.get();
+	}
 
-        return false;
-    }
+	private boolean readOnly() {
+		if(contextQuery != null && contextQuery.readOnly.get())
+			return true;
 
-    public Collection<Field> collectSortFields() {
-        Collection<Field> fields = new ArrayList<Field>();
+		if(readOnly.get())
+			return true;
 
-        if (contextQuery != null) {
-            fields = contextQuery.getSortFields();
-            fields = getReachableFields(fields);
-        }
+		Query rootQuery = getRootQuery();
 
-        if (fields.isEmpty())
-            fields = getSortFields();
+		if(rootQuery != null && rootQuery != this)
+			return rootQuery.readOnly.get();
 
-        Query rootQuery = getRootQuery();
+		return false;
+	}
 
-        if (fields.isEmpty() && rootQuery != null && rootQuery != this)
-            fields = rootQuery.getSortFields();
+	public Collection<Field> collectSortFields() {
+		Collection<Field> fields = new ArrayList<Field>();
 
-        return fields;
-    }
+		if(contextQuery != null) {
+			fields = contextQuery.getSortFields();
+			fields = getReachableFields(fields);
+		}
 
-    public Collection<Field> collectGroupFields() {
-        Collection<Field> fields = new ArrayList<Field>();
+		if(fields.isEmpty())
+			fields = getSortFields();
 
-        if (contextQuery != null) {
-            fields = contextQuery.getGroupFields();
-            fields = getReachableFields(fields);
-        }
+		Query rootQuery = getRootQuery();
 
-        if (fields.isEmpty())
-            fields = getGroupFields();
+		if(fields.isEmpty() && rootQuery != null && rootQuery != this)
+			fields = rootQuery.getSortFields();
 
-        Query rootQuery = getRootQuery();
+		return fields;
+	}
 
-        if (fields.isEmpty() && rootQuery != null && rootQuery != this)
-            fields = rootQuery.getGroupFields();
+	public Collection<Field> collectGroupFields() {
+		Collection<Field> fields = new ArrayList<Field>();
 
-        return fields;
-    }
+		if(contextQuery != null) {
+			fields = contextQuery.getGroupFields();
+			fields = getReachableFields(fields);
+		}
 
-    public Collection<Link> collectAggregateByFields() {
-        Collection<Link> fields = new ArrayList<Link>();
+		if(fields.isEmpty())
+			fields = getGroupFields();
 
-        Query context = getContext();
+		Query rootQuery = getRootQuery();
 
-        if (context != null)
-            fields = context.getAggregateByFields();
+		if(fields.isEmpty() && rootQuery != null && rootQuery != this)
+			fields = rootQuery.getGroupFields();
 
-        if (fields.isEmpty())
-            fields = getAggregateByFields();
+		return fields;
+	}
 
-        Query rootQuery = getRootQuery();
+	public Collection<Link> collectAggregateByFields() {
+		Collection<Link> fields = new ArrayList<Link>();
 
-        if (fields.isEmpty() && rootQuery != null && rootQuery != this)
-            fields = rootQuery.getAggregateByFields();
+		Query context = getContext();
 
-        return fields;
-    }
+		if(context != null)
+			fields = context.getAggregateByFields();
 
-    public Collection<Field> collectGroupByFields() {
-        Collection<Field> fields = new ArrayList<Field>();
+		if(fields.isEmpty())
+			fields = getAggregateByFields();
 
-        Query context = getContext();
+		Query rootQuery = getRootQuery();
 
-        if (context != null)
-            fields = context.getGroupByFields();
+		if(fields.isEmpty() && rootQuery != null && rootQuery != this)
+			fields = rootQuery.getAggregateByFields();
 
-        if (fields.isEmpty())
-            fields = getGroupByFields();
+		return fields;
+	}
 
-        Query rootQuery = getRootQuery();
+	public Collection<Field> collectGroupByFields() {
+		Collection<Field> fields = new ArrayList<Field>();
 
-        if (fields.isEmpty() && rootQuery != null && rootQuery != this)
-            fields = rootQuery.getGroupByFields();
+		Query context = getContext();
 
-        return fields;
-    }
+		if(context != null)
+			fields = context.getGroupByFields();
 
-    private String getSearchValue(Field field) {
-        if(field instanceof AttachmentField) {
-            Collection<FileInfo> files = FileInfo.parseArray(field.string().get());
-            
-            String result = "";
-            
-            for(FileInfo file : files)
-                result += (result.isEmpty() ? "" : " ") + file.name;
+		if(fields.isEmpty())
+			fields = getGroupByFields();
 
-            return result;
-        }
-        return field.get().toString();
-    }
-    
-    public String getRecordFullText() {
-        List<Field> searchFields = getSearchFields();
+		Query rootQuery = getRootQuery();
 
-        String result = "";
+		if(fields.isEmpty() && rootQuery != null && rootQuery != this)
+			fields = rootQuery.getGroupByFields();
 
-        for (Field field : searchFields) {
-            if (field.type() != FieldType.Guid)
-                result += (result.isEmpty() ? "" : " ") + getSearchValue(field);
-        }
+		return fields;
+	}
 
-        return result;
-    }
+	private String getSearchValue(Field field) {
+		if(field instanceof AttachmentField) {
+			Collection<file> files = file.parse(field.string().get());
 
-    public Field getSearchId() {
-        return searchId != null ? searchId.get() : primaryKey();
-    }
+			String result = "";
 
-    private static Object mutex = new Object();
-    private static Map<String, Collection<ReportInfo>> reports = new HashMap<String, Collection<ReportInfo>>();
+			for(file file : files)
+				result += (result.isEmpty() ? "" : " ") + file.name;
 
-    private Collection<ReportInfo> getReports() {
-        if (isModel()) {
-            String id = (contextQuery != null ? contextQuery : this).classId();
+			return result;
+		}
+		return field.get().toString();
+	}
 
-            synchronized (mutex) {
-                Collection<ReportInfo> result = reports.get(id);
+	public String getRecordFullText() {
+		List<Field> searchFields = getSearchFields();
 
-                if (result == null) {
-                    result = new ReportBindingFileReader().getReportTemplateFileNames(id);
-                    reports.put(id, result);
-                }
+		String result = "";
 
-                return result;
-            }
-        }
+		for(Field field : searchFields) {
+			if(field.type() != FieldType.Guid)
+				result += (result.isEmpty() ? "" : " ") + getSearchValue(field);
+		}
 
-        return new ArrayList<ReportInfo>();
-    }
+		return result;
+	}
 
-    public Collection<Field.CLASS<? extends Field>> chartSeries() {
-        return chartSeries;
-    }
+	public Field getSearchId() {
+		return searchId != null ? searchId.get() : primaryKey();
+	}
 
-    private Collection<Field> getChartSeries() {
-        return CLASS.asList(chartSeries());
-    }
+	private static Object mutex = new Object();
+	private static Map<String, Collection<ReportInfo>> reports = new HashMap<String, Collection<ReportInfo>>();
 
-    public void writeMeta(JsonWriter writer, Collection<Field> fields) {
-        Query rootQuery = getRootQuery();
+	private Collection<ReportInfo> getReports() {
+		if(isModel()) {
+			String id = (contextQuery != null ? contextQuery : this).classId();
 
-        String name = rootQuery != null ? rootQuery.name() : null;
+			synchronized(mutex) {
+				Collection<ReportInfo> result = reports.get(id);
 
-        writer.writeProperty(Json.id, id());
-        writer.writeProperty(Json.name, name);
-        writer.writeProperty(Json.icon, icon());
+				if(result == null) {
+					result = new ReportBindingFileReader().getReportTemplateFileNames(id);
+					reports.put(id, result);
+				}
 
-        writeRecordActions(writer);
+				return result;
+			}
+		}
 
-        writeKeys(writer, fields);
+		return new ArrayList<ReportInfo>();
+	}
 
-        boolean hasGroupBy = writeGroupByFields(writer, fields);
+	public Collection<Field.CLASS<? extends Field>> chartSeries() {
+		return chartSeries;
+	}
 
-        writeFields(writer, fields);
-        writeOwners(writer);
-        writeReports(writer);
-        writeCharts(writer);
-        writeCommands(writer);
-        writePeriod(writer);
+	private Collection<Field> getChartSeries() {
+		return CLASS.asList(chartSeries());
+	}
 
-        // visuals
-        writer.writeProperty(Json.text, displayName());
+	public void writeMeta(JsonWriter writer, Collection<Field> fields) {
+		Query rootQuery = getRootQuery();
 
-        writer.writeProperty(Json.readOnly, hasGroupBy || rootQuery == null ? true : readOnly());
+		String name = rootQuery != null ? rootQuery.name() : null;
 
-        writer.writeProperty(Json.showTotals, showTotals);
-        writer.writeProperty(Json.columns, columns);
-        writer.writeProperty(Json.viewMode, viewMode.toString());
-        writer.writeProperty(Json.width, width);
-        writer.writeProperty(Json.height, height);
-    }
+		writer.writeProperty(Json.id, id());
+		writer.writeProperty(Json.name, name);
+		writer.writeProperty(Json.icon, icon());
 
-    private void writeRecordActions(JsonWriter writer) {
-        writer.startArray(Json.actions);
+		writeRecordActions(writer);
 
-        for (RecordActions action : recordActions)
-            writer.write(action.toString());
+		writeKeys(writer, fields);
 
-        writer.finishArray();
-    }
+		boolean hasGroupBy = writeGroupByFields(writer, fields);
 
-    private void writeKeys(JsonWriter writer, Collection<Field> fields) {
-        Field primaryKey = primaryKey();
+		writeFields(writer, fields);
+		writeOwners(writer);
+		writeReports(writer);
+		writeCharts(writer);
+		writeCommands(writer);
+		writePeriod(writer);
 
-        if (primaryKey != null && fields.contains(primaryKey))
-            writer.writeProperty(Json.primaryKey, primaryKey.id());
+		// visuals
+		writer.writeProperty(Json.text, displayName());
 
-        Field lockKey = lockKey();
+		writer.writeProperty(Json.readOnly, hasGroupBy || rootQuery == null ? true : readOnly());
 
-        if (lockKey != null && fields.contains(lockKey))
-            writer.writeProperty(Json.lockKey, lockKey.id());
+		writer.writeProperty(Json.showTotals, showTotals);
+		writer.writeProperty(Json.columns, columns);
+		writer.writeProperty(Json.viewMode, viewMode.toString());
+		writer.writeProperty(Json.width, width);
+		writer.writeProperty(Json.height, height);
+	}
 
-        Field attachments = getAttachmentField();
+	private void writeRecordActions(JsonWriter writer) {
+		writer.startArray(Json.actions);
 
-        if (attachments != null && fields.contains(attachments))
-            writer.writeProperty(Json.attachments, attachments.id());
+		for(RecordActions action : recordActions)
+			writer.write(action.toString());
 
-        Field parentKey = parentKey();
+		writer.finishArray();
+	}
 
-        if (parentKey != null && fields.contains(parentKey) && showAsTree()) {
-            writer.writeProperty(Json.parentKey, parentKey().id());
-            writer.writeProperty(Json.parentId, guid.NULL.toString());
+	private void writeKeys(JsonWriter writer, Collection<Field> fields) {
+		Field primaryKey = primaryKey();
 
-            writer.writeProperty(Json.children, children().id());
-            writer.writeProperty(Json.parentsSelectable, parentsSelectable);
-        }
+		if(primaryKey != null && fields.contains(primaryKey))
+			writer.writeProperty(Json.primaryKey, primaryKey.id());
 
-        if (!recordIds.isEmpty()) {
-            writer.startArray(Json.ids);
-            for (guid id : recordIds)
-                writer.write(id);
-            writer.finishArray();
-        }
-    }
+		Field lockKey = lockKey();
 
-    private boolean writeGroupByFields(JsonWriter writer, Collection<Field> fields) {
-        Collection<? extends Field> groupByFields = collectGroupByFields();
+		if(lockKey != null && fields.contains(lockKey))
+			writer.writeProperty(Json.lockKey, lockKey.id());
 
-        if (groupByFields.isEmpty())
-            groupByFields = collectAggregateByFields();
+		Field attachments = getAttachmentField();
 
-        if (groupByFields.isEmpty())
-            return false;
+		if(attachments != null && fields.contains(attachments))
+			writer.writeProperty(Json.attachments, attachments.id());
 
-        writer.startArray(Json.groups);
+		Field parentKey = parentKey();
 
-        for (Field field : groupByFields)
-            writer.write(field.id());
+		if(parentKey != null && fields.contains(parentKey) && showAsTree()) {
+			writer.writeProperty(Json.parentKey, parentKey().id());
+			writer.writeProperty(Json.parentId, guid.NULL.toString());
 
-        writer.finishArray();
+			writer.writeProperty(Json.children, children().id());
+			writer.writeProperty(Json.parentsSelectable, parentsSelectable);
+		}
 
-        return true;
-    }
+		if(!recordIds.isEmpty()) {
+			writer.startArray(Json.ids);
+			for(guid id : recordIds)
+				writer.write(id);
+			writer.finishArray();
+		}
+	}
 
-    private boolean hasRequiredLinks(Collection<ILink> links) {
-        for (ILink link : links) {
-            Field field = (Field) link;
-            if (field.required.get())
-                return true;
-        }
+	private boolean writeGroupByFields(JsonWriter writer, Collection<Field> fields) {
+		Collection<? extends Field> groupByFields = collectGroupByFields();
 
-        return false;
-    }
+		if(groupByFields.isEmpty())
+			groupByFields = collectAggregateByFields();
 
-    private boolean hasReadOnlyLinks(Collection<ILink> links) {
-        for (ILink link : links) {
-            Field field = (Field) link;
-            if (field.readOnly.get())
-                return true;
-        }
+		if(groupByFields.isEmpty())
+			return false;
 
-        return false;
-    }
+		writer.startArray(Json.groups);
 
-    private void writeFields(JsonWriter writer, Collection<Field> fields) {
-        writer.startArray(Json.fields);
+		for(Field field : groupByFields)
+			writer.write(field.id());
 
-        for (Field field : fields) {
-            writer.startObject();
-            field.writeMeta(writer);
+		writer.finishArray();
 
-            Collection<ILink> path = getPath(field);
-            Query owner = field.owner();
+		return true;
+	}
 
-            writer.writeProperty(Json.depth, path.size());
+	private boolean hasRequiredLinks(Collection<ILink> links) {
+		for(ILink link : links) {
+			Field field = (Field)link;
+			if(field.required())
+				return true;
+		}
 
-            boolean readOnly = false;
-            boolean required = false;
+		return false;
+	}
 
-            if (!path.isEmpty()) {
-                String linkId = path.toArray(new ILink[0])[path.size() - 1].id();
-                writer.writeProperty(Json.linked, true);
-                writer.writeProperty(Json.linkId, linkId);
-                writer.writeProperty(Json.linkedVia, owner.primaryKey().id());
-                writer.writeProperty(Json.groupId, owner.id());
+	private boolean hasReadOnlyLinks(Collection<ILink> links) {
+		for(ILink link : links) {
+			Field field = (Field)link;
+			if(field.readOnly())
+				return true;
+		}
 
-                if (field.editWith == null) {
-                    writer.writeProperty(Json.editWith, owner.classId());
-                    writer.writeProperty(Json.editWithText, owner.displayName());
-                }
+		return false;
+	}
 
-                readOnly = hasReadOnlyLinks(path) || !field.selectable.get();
-                required = !readOnly && (hasRequiredLinks(path) || field.required.get());
-            } else {
-                readOnly = field.readOnly.get();
-                required = !readOnly && field.required.get();
-            }
+	private void writeFields(JsonWriter writer, Collection<Field> fields) {
+		writer.startArray(Json.fields);
 
-            writer.writeProperty(Json.required, required);
-            writer.writeProperty(Json.readOnly, readOnly);
+		for(Field field : fields) {
+			writer.startObject();
+			field.writeMeta(writer);
 
-            if (field.editWith != null) {
-                writer.writeProperty(Json.editWith, field.editWith.classId());
-                writer.writeProperty(Json.editWithText, field.editWith.displayName());
-            }
+			Collection<ILink> path = getPath(field);
+			Query owner = field.owner();
 
-            writer.finishObject();
-        }
+			writer.writeProperty(Json.depth, path.size());
 
-        writer.finishArray();
-    }
+			boolean readOnly = false;
+			boolean required = false;
 
-    private void writeOwners(JsonWriter writer) {
-        writer.startArray(Json.backwards);
-        for (Query owner : getOwners())
-            writeOwnerMeta(writer, owner);
-        writer.finishArray();
-    }
+			if(!path.isEmpty()) {
+				String linkId = path.toArray(new ILink[0])[path.size() - 1].id();
+				writer.writeProperty(Json.linked, true);
+				writer.writeProperty(Json.linkId, linkId);
+				writer.writeProperty(Json.linkedVia, owner.primaryKey().id());
+				writer.writeProperty(Json.groupId, owner.id());
 
-    private void writeReports(JsonWriter writer) {
-        Collection<ReportInfo> reports = getReports();
+				if(field.editWith == null) {
+					writer.writeProperty(Json.editWith, owner.classId());
+					writer.writeProperty(Json.editWithText, owner.displayName());
+				}
 
-        writer.startArray(Json.reports);
-        for (ReportInfo report : reports) {
-            writer.startObject();
-            writer.writeProperty(Json.id, report.fileName());
-            writer.writeProperty(Json.text, report.displayName());
-            writer.finishObject();
-        }
-        writer.finishArray();
-    }
+				readOnly = hasReadOnlyLinks(path) || !field.selectable();
+				required = !readOnly && (hasRequiredLinks(path) || field.required());
+			} else {
+				readOnly = field.readOnly();
+				required = !readOnly && field.required();
+			}
 
-    private void writeCharts(JsonWriter writer) {
-        writer.writeProperty(Json.chartType, chartType.toString());
+			writer.writeProperty(Json.required, required);
+			writer.writeProperty(Json.readOnly, readOnly);
 
-        Collection<Field> series = getChartSeries();
+			if(field.editWith != null) {
+				writer.writeProperty(Json.editWith, field.editWith.classId());
+				writer.writeProperty(Json.editWithText, field.editWith.displayName());
+			}
 
-        writer.startArray(Json.chartSeries);
+			writer.finishObject();
+		}
 
-        for (Field field : series)
-            writer.write(field.id());
+		writer.finishArray();
+	}
 
-        writer.finishArray();
-    }
+	private void writeOwners(JsonWriter writer) {
+		writer.startArray(Json.backwards);
+		for(Query owner : getOwners())
+			writeOwnerMeta(writer, owner);
+		writer.finishArray();
+	}
 
-    private void writeCommands(JsonWriter writer) {
-        writer.startArray(Json.commands);
+	private void writeReports(JsonWriter writer) {
+		Collection<ReportInfo> reports = getReports();
 
-        for (ICommand command : getCommands()) {
-            writer.startObject();
-            command.write(writer);
-            writer.finishObject();
-        }
+		writer.startArray(Json.reports);
+		for(ReportInfo report : reports) {
+			writer.startObject();
+			writer.writeProperty(Json.id, report.fileName());
+			writer.writeProperty(Json.text, report.displayName());
+			writer.finishObject();
+		}
+		writer.finishArray();
+	}
 
-        writer.finishArray();
-    }
+	private void writeCharts(JsonWriter writer) {
+		writer.writeProperty(Json.chartType, chartType.toString());
 
-    private void writePeriod(JsonWriter writer) {
-        if (period != null) {
-            writer.startObject(Json.period);
-            writer.writeProperty(Json.period, period.get().type.toString());
-            writer.writeProperty(Json.start, period.get().start);
-            writer.writeProperty(Json.finish, period.get().finish);
-            writer.finishObject();
-        }
-    }
+		Collection<Field> series = getChartSeries();
 
-    private void writeOwnerMeta(JsonWriter writer, Query owner) {
-        while (owner != null) {
-            Query ownerRoot = owner.getRootQuery();
+		writer.startArray(Json.chartSeries);
 
-            if (ownerRoot != null && owner.visible.get()) {
-                writer.startObject();
-                writer.writeProperty(Json.text, owner.getRootQuery().displayName());
-                writer.writeProperty(Json.queryId, owner.id());
-                writer.writeProperty(Json.icon, owner.getRootQuery().icon());
-                writer.finishObject();
-            }
+		for(Field field : series)
+			writer.write(field.id());
 
-            int ownersCount = owner.getOwnersCount();
+		writer.finishArray();
+	}
 
-            if (ownersCount == 0)
-                return;
+	private void writeCommands(JsonWriter writer) {
+		writer.startArray(Json.commands);
 
-            if (ownersCount == 1 && owner.getOwner().getRootQuery() == owner)
-                owner = owner.getOwner();
+		for(ICommand command : getCommands()) {
+			writer.startObject();
+			command.write(writer);
+			writer.finishObject();
+		}
 
-            if (ownersCount > 1) {
-                for (Query o : owner.getOwners())
-                    writeOwnerMeta(writer, o);
-                return;
-            }
+		writer.finishArray();
+	}
 
-            owner = owner.getOwner();
-        }
-    }
+	private void writePeriod(JsonWriter writer) {
+		if(period != null) {
+			writer.startObject(Json.period);
+			writer.writeProperty(Json.period, period.get().type.toString());
+			writer.writeProperty(Json.start, period.get().start);
+			writer.writeProperty(Json.finish, period.get().finish);
+			writer.finishObject();
+		}
+	}
 
-    // ////////////////////////////////////////////////////////////////////////////////////////////////
+	private void writeOwnerMeta(JsonWriter writer, Query owner) {
+		while(owner != null) {
+			Query ownerRoot = owner.getRootQuery();
 
-    public sql_bool z8_having() {
-        return new True();
-    }
+			if(ownerRoot != null && owner.visible.get()) {
+				writer.startObject();
+				writer.writeProperty(Json.text, owner.getRootQuery().displayName());
+				writer.writeProperty(Json.queryId, owner.id());
+				writer.writeProperty(Json.icon, owner.getRootQuery().icon());
+				writer.finishObject();
+			}
 
-    public sql_bool z8_where() {
-        return new True();
-    }
-    
-    public void z8_addWhere(sql_bool where) {
-        addWhere(where);
-    }
+			int ownersCount = owner.getOwnersCount();
 
-    public void z8_addWhere(string json) {
-        addWhere(json.get());
-    }
-    
-    public void z8_addWhere(RCollection<string> json) {
-        addWhere(json);
-    }
+			if(ownersCount == 0)
+				return;
 
-    public void z8_setWhere(sql_bool where) {
-        setWhere(where);
-    }
+			if(ownersCount == 1 && owner.getOwner().getRootQuery() == owner)
+				owner = owner.getOwner();
 
-    public void z8_setWhere(string json) {
-        setWhere(json.get());
-    }
-    
-    public void z8_setWhere(RCollection<string> json) {
-        setWhere(json);
-    }
+			if(ownersCount > 1) {
+				for(Query o : owner.getOwners())
+					writeOwnerMeta(writer, o);
+				return;
+			}
 
-    public bool z8_hasRecord(guid recordId) {
-        return new bool(hasRecord(recordId));
-    }
+			owner = owner.getOwner();
+		}
+	}
 
-    public bool z8_hasRecord(sql_bool where) {
-        return new bool(hasRecord(where));
-    }
+	// ////////////////////////////////////////////////////////////////////////////////////////////////
 
-    public RCollection<guid> z8_findRecords(sql_bool where) {
-        return findRecords(where);
-    }
+	public sql_bool z8_having() {
+		return new True();
+	}
 
-    public integer z8_count() {
-        return z8_count(null);
-    }
+	public sql_bool z8_where() {
+		return new True();
+	}
 
-    public integer z8_count(sql_bool where) {
-        return new integer(count(where));
-    }
+	public void z8_addWhere(sql_bool where) {
+		addWhere(where);
+	}
 
-    public bool z8_aggregate() {
-        return z8_aggregate(null, null);
-    }
+	public void z8_addWhere(string json) {
+		addWhere(json.get());
+	}
 
-    public bool z8_aggregate(RCollection<Field.CLASS<Field>> fieldClasses) {
-        return z8_aggregate(fieldClasses, null);
-    }
+	public void z8_addWhere(RCollection<String> json) {
+		addWhere(json);
+	}
 
-    public bool z8_aggregate(sql_bool where) {
-        return z8_aggregate(null, where);
-    }
+	public void z8_setWhere(sql_bool where) {
+		setWhere(where);
+	}
 
-    public bool z8_aggregate(RCollection<Field.CLASS<Field>> fieldClasses, sql_bool where) {
-        Collection<Field> fields = CLASS.asList(fieldClasses);
-        return new bool(aggregate(fields, where));
-    }
+	public void z8_setWhere(string json) {
+		setWhere(json.get());
+	}
 
-    public guid z8_recordId() {
-        return recordId();
-    }
+	public void z8_setWhere(RCollection<string> json) {
+		setWhere(string.unwrap(json));
+	}
 
-    @SuppressWarnings({ "unchecked", "rawtypes" })
-    public Field.CLASS<? extends Field> z8_getFieldById(string id) {
-        return (Field.CLASS) getFieldById(id.get()).getCLASS();
-    }
+	public bool z8_hasRecord(guid recordId) {
+		return new bool(hasRecord(recordId));
+	}
 
-    @SuppressWarnings({ "unchecked", "rawtypes" })
-    public Field.CLASS<? extends Field> z8_getFieldByName(string name) {
-        return (Field.CLASS) getFieldByName(name.get()).getCLASS();
-    }
+	public bool z8_hasRecord(sql_bool where) {
+		return new bool(hasRecord(where));
+	}
 
-    public guid z8_create() {
-        try {
-            return create();
-        } catch (Throwable e) {
-            throw new exception(e);
-        }
-    }
+	public RCollection<guid> z8_findRecords(sql_bool where) {
+		return findRecords(where);
+	}
 
-    public guid z8_create(guid recordId) {
-        try {
-            return create(recordId);
-        } catch (Throwable e) {
-            throw new exception(e);
-        }
-    }
+	public integer z8_count() {
+		return z8_count(null);
+	}
 
-    public guid z8_copy(guid recordId) {
-        return copy(recordId);
-    }
+	public integer z8_count(sql_bool where) {
+		return new integer(count(where));
+	}
 
-    public void z8_read() {
-        read();
-    }
+	public bool z8_aggregate() {
+		return z8_aggregate(null, null);
+	}
 
-    public bool z8_readRecord(guid id) {
-        return new bool(readRecord(id));
-    }
+	public bool z8_aggregate(RCollection<Field.CLASS<Field>> fieldClasses) {
+		return z8_aggregate(fieldClasses, null);
+	}
 
-    @SuppressWarnings({ "rawtypes", "unchecked" })
-    public bool z8_readRecord(guid id, RCollection fieldClasses) {
-        return new bool(readRecord(id, (RCollection<Field.CLASS<Field>>) fieldClasses));
-    }
+	public bool z8_aggregate(sql_bool where) {
+		return z8_aggregate(null, where);
+	}
 
-    public bool z8_readFirst() {
-        return new bool(readFirst());
-    }
+	public bool z8_aggregate(RCollection<Field.CLASS<Field>> fieldClasses, sql_bool where) {
+		Collection<Field> fields = CLASS.asList(fieldClasses);
+		return new bool(aggregate(fields, where));
+	}
 
-    public bool z8_readFirst(sql_bool where) {
-        return new bool(readFirst(where));
-    }
+	public guid z8_recordId() {
+		return recordId();
+	}
 
-    public void z8_read(sql_bool where) {
-        read(where);
-    }
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	public Field.CLASS<? extends Field> z8_getFieldById(string id) {
+		return (Field.CLASS)getFieldById(id.get()).getCLASS();
+	}
 
-    @SuppressWarnings({ "rawtypes", "unchecked" })
-    public void z8_read(RCollection fieldClasses) {
-        read1(fieldClasses, null, null, null, null);
-    }
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	public Field.CLASS<? extends Field> z8_getFieldByName(string name) {
+		return (Field.CLASS)getFieldByName(name.get()).getCLASS();
+	}
 
-    @SuppressWarnings({ "rawtypes", "unchecked" })
-    public bool z8_readFirst(RCollection fieldClasses) {
-        read1(fieldClasses, null, null, null, null);
-        return new bool(next());
-    }
+	public guid z8_create() {
+		try {
+			return create();
+		} catch(Throwable e) {
+			throw new exception(e);
+		}
+	}
 
-    @SuppressWarnings({ "rawtypes", "unchecked" })
-    public void z8_read(RCollection fieldClasses, RCollection sortClasses) {
-        read1(fieldClasses, sortClasses, null, null, null);
-    }
+	public guid z8_create(guid recordId) {
+		try {
+			return create(recordId);
+		} catch(Throwable e) {
+			throw new exception(e);
+		}
+	}
 
-    @SuppressWarnings({ "rawtypes", "unchecked" })
-    public bool z8_readFirst(RCollection fieldClasses, RCollection sortClasses) {
-        read1(fieldClasses, sortClasses, null, null, null);
-        return new bool(next());
-    }
+	public guid z8_copy(guid recordId) {
+		return copy(recordId);
+	}
 
-    @SuppressWarnings({ "rawtypes", "unchecked" })
-    public void z8_read(RCollection fieldClasses, sql_bool where) {
-        read1(fieldClasses, null, null, where, null);
-    }
+	public void z8_read() {
+		read();
+	}
 
-    @SuppressWarnings({ "rawtypes", "unchecked" })
-    public bool z8_readFirst(RCollection fieldClasses, sql_bool where) {
-        read1(fieldClasses, null, null, where, null);
-        return new bool(next());
-    }
+	public bool z8_readRecord(guid id) {
+		return new bool(readRecord(id));
+	}
 
-    @SuppressWarnings({ "rawtypes", "unchecked" })
-    public void z8_read(RCollection fieldClasses, RCollection sortClasses, sql_bool where) {
-        read1(fieldClasses, sortClasses, null, where, null);
-    }
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	public bool z8_readRecord(guid id, RCollection fieldClasses) {
+		return new bool(readRecord(id, (RCollection<Field.CLASS<Field>>)fieldClasses));
+	}
 
-    @SuppressWarnings({ "rawtypes", "unchecked" })
-    public bool z8_readFirst(RCollection fieldClasses, RCollection sortClasses, sql_bool where) {
-        read1(fieldClasses, sortClasses, null, where, null);
-        return new bool(next());
-    }
+	public bool z8_readFirst() {
+		return new bool(readFirst());
+	}
 
-    @SuppressWarnings({ "rawtypes", "unchecked" })
-    public void z8_sort(RCollection sortClasses) {
-        read1(null, sortClasses, null, null, null);
-    }
+	public bool z8_readFirst(sql_bool where) {
+		return new bool(readFirst(where));
+	}
 
-    @SuppressWarnings({ "rawtypes", "unchecked" })
-    public void z8_sort(RCollection sortClasses, sql_bool where) {
-        read1(null, sortClasses, null, where, null);
-    }
+	public void z8_read(sql_bool where) {
+		read(where);
+	}
 
-    @SuppressWarnings({ "rawtypes", "unchecked" })
-    public void z8_sort(RCollection sortClasses, RCollection fieldClasses) {
-        read1(fieldClasses, sortClasses, null, null, null);
-    }
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	public void z8_read(RCollection fieldClasses) {
+		read1(fieldClasses, null, null, null, null);
+	}
 
-    @SuppressWarnings({ "rawtypes", "unchecked" })
-    public void z8_sort(RCollection sortClasses, RCollection fieldClasses, sql_bool where) {
-        read1(fieldClasses, sortClasses, null, where, null);
-    }
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	public bool z8_readFirst(RCollection fieldClasses) {
+		read1(fieldClasses, null, null, null, null);
+		return new bool(next());
+	}
 
-    @SuppressWarnings({ "rawtypes", "unchecked" })
-    public void z8_group(RCollection groupByClasses) {
-        read1(null, null, groupByClasses, null, null);
-    }
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	public void z8_read(RCollection fieldClasses, RCollection sortClasses) {
+		read1(fieldClasses, sortClasses, null, null, null);
+	}
 
-    @SuppressWarnings({ "rawtypes", "unchecked" })
-    public void z8_group(RCollection groupByClasses, sql_bool where) {
-        read1(null, null, groupByClasses, where, null);
-    }
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	public bool z8_readFirst(RCollection fieldClasses, RCollection sortClasses) {
+		read1(fieldClasses, sortClasses, null, null, null);
+		return new bool(next());
+	}
 
-    @SuppressWarnings({ "rawtypes", "unchecked" })
-    public void z8_group(RCollection groupByClasses, RCollection fieldClasses) {
-        read1(fieldClasses, null, groupByClasses, null, null);
-    }
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	public void z8_read(RCollection fieldClasses, sql_bool where) {
+		read1(fieldClasses, null, null, where, null);
+	}
 
-    @SuppressWarnings({ "rawtypes", "unchecked" })
-    public void z8_group(RCollection groupByClasses, RCollection fieldClasses, sql_bool where) {
-        read1(fieldClasses, null, groupByClasses, where, null);
-    }
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	public bool z8_readFirst(RCollection fieldClasses, sql_bool where) {
+		read1(fieldClasses, null, null, where, null);
+		return new bool(next());
+	}
 
-    @SuppressWarnings({ "rawtypes", "unchecked" })
-    public void z8_group(RCollection groupByClasses, RCollection fieldClasses, sql_bool where, sql_bool having) {
-        read1(fieldClasses, null, groupByClasses, where, having);
-    }
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	public void z8_read(RCollection fieldClasses, RCollection sortClasses, sql_bool where) {
+		read1(fieldClasses, sortClasses, null, where, null);
+	}
 
-    @SuppressWarnings({ "rawtypes", "unchecked" })
-    public void z8_group(RCollection groupClasses, RCollection fieldClasses, RCollection sortClasses) {
-        read1(fieldClasses, sortClasses, groupClasses, null, null);
-    }
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	public bool z8_readFirst(RCollection fieldClasses, RCollection sortClasses, sql_bool where) {
+		read1(fieldClasses, sortClasses, null, where, null);
+		return new bool(next());
+	}
 
-    @SuppressWarnings({ "rawtypes", "unchecked" })
-    public void z8_group(RCollection groupClasses, RCollection fieldClasses, RCollection sortClasses, sql_bool where) {
-        read1(fieldClasses, sortClasses, groupClasses, where, null);
-    }
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	public void z8_sort(RCollection sortClasses) {
+		read1(null, sortClasses, null, null, null);
+	}
 
-    @SuppressWarnings({ "rawtypes", "unchecked" })
-    public void z8_group(RCollection groupClasses, RCollection fieldClasses, RCollection sortClasses, sql_bool where,
-            sql_bool having) {
-        read1(fieldClasses, sortClasses, groupClasses, where, having);
-    }
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	public void z8_sort(RCollection sortClasses, sql_bool where) {
+		read1(null, sortClasses, null, where, null);
+	}
 
-    public integer z8_update(guid id) {
-        return new integer(update(id));
-    }
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	public void z8_sort(RCollection sortClasses, RCollection fieldClasses) {
+		read1(fieldClasses, sortClasses, null, null, null);
+	}
 
-    public integer z8_update(sql_bool where) {
-        return new integer(update(where));
-    }
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	public void z8_sort(RCollection sortClasses, RCollection fieldClasses, sql_bool where) {
+		read1(fieldClasses, sortClasses, null, where, null);
+	}
 
-    public integer z8_destroy(guid id) {
-        return new integer(destroy(id));
-    }
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	public void z8_group(RCollection groupByClasses) {
+		read1(null, null, groupByClasses, null, null);
+	}
 
-    public integer z8_destroy(sql_bool where) {
-        return new integer(destroy(where));
-    }
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	public void z8_group(RCollection groupByClasses, sql_bool where) {
+		read1(null, null, groupByClasses, where, null);
+	}
 
-    public bool z8_next() {
-        return new bool(next());
-    }
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	public void z8_group(RCollection groupByClasses, RCollection fieldClasses) {
+		read1(fieldClasses, null, groupByClasses, null, null);
+	}
 
-    public void z8_onNew(Query.CLASS<? extends Query> query, guid recordId, guid parentId, guid modelRecordId) {
-    }
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	public void z8_group(RCollection groupByClasses, RCollection fieldClasses, sql_bool where) {
+		read1(fieldClasses, null, groupByClasses, where, null);
+	}
 
-    public void z8_onCopy(Query.CLASS<? extends Query> query) {
-    }
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	public void z8_group(RCollection groupByClasses, RCollection fieldClasses, sql_bool where, sql_bool having) {
+		read1(fieldClasses, null, groupByClasses, where, having);
+	}
 
-    public void z8_beforeRead(Query.CLASS<? extends Query> query, guid parentId, Query.CLASS<? extends Query> model,
-            guid modelRecordId) {
-    }
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	public void z8_group(RCollection groupClasses, RCollection fieldClasses, RCollection sortClasses) {
+		read1(fieldClasses, sortClasses, groupClasses, null, null);
+	}
 
-    public void z8_afterRead(Query.CLASS<? extends Query> query, guid parentId, Query.CLASS<? extends Query> model,
-            guid modelRecordId) {
-    }
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	public void z8_group(RCollection groupClasses, RCollection fieldClasses, RCollection sortClasses, sql_bool where) {
+		read1(fieldClasses, sortClasses, groupClasses, where, null);
+	}
 
-    public void z8_beforeCreate(Query.CLASS<? extends Query> query, guid recordId, guid parentId,
-            Query.CLASS<? extends Query> model, guid modelRecordId) {
-    }
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	public void z8_group(RCollection groupClasses, RCollection fieldClasses, RCollection sortClasses, sql_bool where, sql_bool having) {
+		read1(fieldClasses, sortClasses, groupClasses, where, having);
+	}
 
-    public void z8_afterCreate(Query.CLASS<? extends Query> query, guid recordId, guid parentId,
-            Query.CLASS<? extends Query> model, guid modelRecordId) {
-    }
+	public integer z8_update(guid id) {
+		return new integer(update(id));
+	}
 
-    @SuppressWarnings("rawtypes")
-    public void z8_beforeUpdate(Query.CLASS<? extends Query> query, guid recordId, RCollection changedFields,
-            Query.CLASS<? extends Query> model, guid modelRecordId) {
-    }
+	public integer z8_update(sql_bool where) {
+		return new integer(update(where));
+	}
 
-    @SuppressWarnings("rawtypes")
-    public void z8_afterUpdate(Query.CLASS<? extends Query> query, guid recordId, RCollection changedFields,
-            Query.CLASS<? extends Query> model, guid modelRecordId) {
-    }
+	public integer z8_destroy(guid id) {
+		return new integer(destroy(id));
+	}
 
-    public void z8_beforeDestroy(Query.CLASS<? extends Query> query, guid recordId, Query.CLASS<? extends Query> model,
-            guid modelRecordId) {
-    }
+	public integer z8_destroy(sql_bool where) {
+		return new integer(destroy(where));
+	}
 
-    public void z8_afterDestroy(Query.CLASS<? extends Query> query, guid recordId, Query.CLASS<? extends Query> model,
-            guid modelRecordId) {
-    }
+	public bool z8_next() {
+		return new bool(next());
+	}
 
-    @SuppressWarnings("rawtypes")
-    public void z8_onCommand(Query.CLASS<? extends Query> query, Command.CLASS<? extends Command> command,
-            RCollection recordIds) {
-    }
+	public void z8_onNew(Query.CLASS<? extends Query> query, guid recordId, guid parentId, guid modelRecordId) {
+	}
 
-    public void z8_onRender(Query.CLASS<? extends Query> query) {
-    }
+	public void z8_onCopy(Query.CLASS<? extends Query> query) {
+	}
 
-    public Style.CLASS<? extends Style> z8_renderRecord(Query.CLASS<? extends Query> query) {
-        return null;
-    }
+	public void z8_beforeRead(Query.CLASS<? extends Query> query, guid parentId, Query.CLASS<? extends Query> model, guid modelRecordId) {
+	}
 
-    @SuppressWarnings("rawtypes")
-    public void z8_onReport(Query.CLASS<? extends Query> query, string report, RCollection recordIds) {
-    }
+	public void z8_afterRead(Query.CLASS<? extends Query> query, guid parentId, Query.CLASS<? extends Query> model, guid modelRecordId) {
+	}
 
-    @SuppressWarnings({ "unchecked", "rawtypes" })
-    public Query.CLASS<? extends Query> z8_onFollow(Field.CLASS<? extends Field> fieldClass, RCollection recordIds) {
-        Field field = fieldClass.get();
+	public void z8_beforeCreate(Query.CLASS<? extends Query> query, guid recordId, guid parentId, Query.CLASS<? extends Query> model, guid modelRecordId) {
+	}
 
-        if (field.editWith != null) {
-            return (Query.CLASS<? extends Query>) Loader.loadClass(field.editWith.classId());
-        }
+	public void z8_afterCreate(Query.CLASS<? extends Query> query, guid recordId, guid parentId, Query.CLASS<? extends Query> model, guid modelRecordId) {
+	}
 
-        if (field.anchorPolicy == FollowPolicy.Custom) {
-            return null;
-        }
+	@SuppressWarnings("rawtypes")
+	public void z8_beforeUpdate(Query.CLASS<? extends Query> query, guid recordId, RCollection changedFields, Query.CLASS<? extends Query> model, guid modelRecordId) {
+	}
 
-        Class<?> cls = field.owner().getClass();
+	@SuppressWarnings("rawtypes")
+	public void z8_afterUpdate(Query.CLASS<? extends Query> query, guid recordId, RCollection changedFields, Query.CLASS<? extends Query> model, guid modelRecordId) {
+	}
 
-        String classId = cls.getCanonicalName();
+	public void z8_beforeDestroy(Query.CLASS<? extends Query> query, guid recordId, Query.CLASS<? extends Query> model, guid modelRecordId) {
+	}
 
-        while (classId.indexOf(".__") != -1) {
-            cls = cls.getSuperclass();
-            classId = cls.getCanonicalName();
-        }
+	public void z8_afterDestroy(Query.CLASS<? extends Query> query, guid recordId, Query.CLASS<? extends Query> model, guid modelRecordId) {
+	}
 
-        return (Query.CLASS<? extends Query>) Loader.loadClass(classId);
-    }
+	@SuppressWarnings("rawtypes")
+	public void z8_onCommand(Query.CLASS<? extends Query> query, Command.CLASS<? extends Command> command, RCollection recordIds) {
+	}
 
-    public void refresh() {
-        IMonitor monitor = ApplicationServer.getMonitor();
+	public void z8_onRender(Query.CLASS<? extends Query> query) {
+	}
 
-        for (Query rootQuery : getRootQueries())
-            monitor.refresh(rootQuery.name());
-    }
+	public Style.CLASS<? extends Style> z8_renderRecord(Query.CLASS<? extends Query> query) {
+		return null;
+	}
 
-    public void z8_refresh() {
-        refresh();
-    }
+	@SuppressWarnings("rawtypes")
+	public void z8_onReport(Query.CLASS<? extends Query> query, string report, RCollection recordIds) {
+	}
 
-    public void refreshRecord(guid id) {
-        IMonitor monitor = ApplicationServer.getMonitor();
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	public Query.CLASS<? extends Query> z8_onFollow(Field.CLASS<? extends Field> fieldClass, RCollection recordIds) {
+		Field field = fieldClass.get();
 
-        for (Query rootQuery : getRootQueries())
-            monitor.refresh(rootQuery.name(), id);
-    }
+		if(field.editWith != null)
+			return (Query.CLASS<? extends Query>)Loader.loadClass(field.editWith.classId());
 
-    public void z8_refreshRecord(guid id) {
-        refreshRecord(id);
-    }
+		if(field.anchorPolicy == FollowPolicy.Custom)
+			return null;
 
-    public string z8_getRecordFullText() {
-        return new string(getRecordFullText());
-    }
+		Class<?> cls = field.owner().getClass();
+
+		String classId = cls.getCanonicalName();
+
+		while(classId.indexOf(".__") != -1) {
+			cls = cls.getSuperclass();
+			classId = cls.getCanonicalName();
+		}
+
+		return (Query.CLASS<? extends Query>)Loader.loadClass(classId);
+	}
+
+	public void refresh() {
+		IMonitor monitor = ApplicationServer.getMonitor();
+
+		for(Query rootQuery : getRootQueries())
+			monitor.refresh(rootQuery.name());
+	}
+
+	public void z8_refresh() {
+		refresh();
+	}
+
+	public void refreshRecord(guid id) {
+		IMonitor monitor = ApplicationServer.getMonitor();
+
+		for(Query rootQuery : getRootQueries())
+			monitor.refresh(rootQuery.name(), id);
+	}
+
+	public void z8_refreshRecord(guid id) {
+		refreshRecord(id);
+	}
+
+	public string z8_getRecordFullText() {
+		return new string(getRecordFullText());
+	}
 }

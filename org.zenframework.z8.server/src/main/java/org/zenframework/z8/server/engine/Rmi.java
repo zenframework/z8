@@ -6,40 +6,36 @@ import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
-import java.rmi.server.RemoteServer;
-import java.rmi.server.ServerNotActiveException;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.zenframework.z8.server.config.ServerConfig;
+import org.zenframework.z8.server.logs.Trace;
 
 public class Rmi {
 
-	private static final Log LOG = LogFactory.getLog(Rmi.class);
-
 	private static final Map<String, IServer> Servers = new HashMap<String, IServer>();
 
-	private static String Host;
-	private static int Port;
+	private static String localHost;
+	private static int registryPort;
 	private static Registry Registry;
 
 	public static void init(ServerConfig config) throws RemoteException, UnknownHostException {
-		Port = config.getRmiRegistryPort();
-		Host = InetAddress.getLocalHost().getHostAddress();
+		registryPort = config.getRmiRegistryPort();
+		localHost = InetAddress.getLocalHost().getHostAddress();
 
 		try {
-			Registry = LocateRegistry.createRegistry(Port);
-			LOG.trace("RMI registry created at " + Host + ':' + Port);
+			Registry = LocateRegistry.createRegistry(registryPort);
 		} catch (RemoteException e) {
-			Registry = LocateRegistry.getRegistry(Port);
-			LOG.trace("RMI registry located at " + Host + ':' + Port);
+			Registry = LocateRegistry.getRegistry(registryPort);
 		}
 	}
 
 	public static String url(String host, int port, String name) {
-		return "rmi://" + host + ':' + port + '/' + (name != null ? name : "");
+		if(host == null || host.isEmpty())
+			host = localHost;
+		
+		return "rmi://" + host + ':' + port + '/' + name;
 	}
 
 	public static String getName(Class<?> cls) {
@@ -47,36 +43,32 @@ public class Rmi {
 	}
 
 	public static int getPort() {
-		return Port;
+		return registryPort;
 	}
 
 	public static String register(Class<? extends IServer> serverClass, IServer server) throws RemoteException {
 		String name = getName(serverClass);
-		Servers.put(url(Host, Port, name), server);
-		if (server.id() != null)
-			name += '/' + server.id();
+		Servers.put(url(localHost, registryPort, name), server);
 		Registry.rebind(name, server);
-		return url(Host, Port, name);
+		return url(localHost, registryPort, name);
 	}
 
 	public static void unregister(Class<? extends IServer> serverClass, IServer server) throws RemoteException {
 		String name = getName(serverClass);
-		Servers.remove(url(Host, Port, name));
-		if (server.id() != null)
-			name += '/' + server.id();
+		Servers.remove(url(localHost, registryPort, name));
 		try {
 			Registry.unbind(name);
 		} catch (NotBoundException e) {
-			LOG.error("Can't unbind object '" + name + "'", e);
+			Trace.logError("Can't unbind object '" + name + "'", e);
 		}
 	}
 
 	public static <T extends IServer> T get(Class<T> serverClass) throws RemoteException {
-		return get(serverClass, Host, Port);
+		return get(serverClass, localHost, registryPort);
 	}
 
 	public static IServer get(String name) throws RemoteException {
-		return get(name, Host, Port);
+		return get(name, localHost, registryPort);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -85,21 +77,19 @@ public class Rmi {
 	}
 
 	public static IServer get(String name, String host, int port) throws RemoteException {
-		if (host == null || host.isEmpty())
-			host = Host;
 		try {
-			if (Host.equals(host)) {
-				if (Port == port) {
+			if (host == null || host.isEmpty() || localHost.equals(host)) {
+				if (registryPort == port) {
 					IServer server = (IServer) Servers.get(url(host, port, name));
 					if (server != null)
 						return server;
 				}
 				return (IServer) Registry.lookup(name);
 			} else {
-				return (IServer) LocateRegistry.getRegistry(host, port).lookup(name);
+				return (IServer) LocateRegistry.getRegistry(host, registryPort).lookup(name);
 			}
 		} catch (NotBoundException e) {
-			throw new RemoteException("Object " + name + " is not bound", e);
+			throw new RemoteException(e.getMessage(), e);
 		}
 	}
 
@@ -120,15 +110,4 @@ public class Rmi {
 			throw new RemoteException("Object '" + rmiAddress.getName() + "' is not bound", e);
 		}
 	}
-
-	public static String getClientHost() {
-		try {
-			// Try detect remote client host
-			return RemoteServer.getClientHost();
-		} catch (ServerNotActiveException e) {
-			// If ServerNotActiveException, server object was called locally
-			return null;
-		}
-	}
-
 }

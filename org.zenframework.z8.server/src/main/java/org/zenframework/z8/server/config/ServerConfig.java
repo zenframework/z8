@@ -5,15 +5,9 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Properties;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.zenframework.z8.server.types.guid;
-
 public class ServerConfig extends Properties {
 
 	private static final long serialVersionUID = 3564936578688816088L;
-
-	private static final Log LOG = LogFactory.getLog(ServerConfig.class);
 
 	public static final String ConfigurationFileName = "project.xml";
 
@@ -28,20 +22,22 @@ public class ServerConfig extends Properties {
 	public static final String AuthorityCenterPortProperty = "authority.center.port";
 	public static final String AuthorityCenterSessionTimeoutProperty = "authority.center.session.timeout";
 
-	public static final String ApplicationServerIdProperty = "application.server.id";
-
 	public static final String TransportCenterPortProperty = "transport.center.port";
 	public static final String TrnasportServicePortProperty = "transport.service.port";
 
+	public static final String InterconnectionCenterEnabledProperty = "interconnection.center.enabled";
+	public static final String InterconnectionCenterHostProperty = "interconnection.center.host";
+	public static final String InterconnectionCenterPortProperty = "interconnection.center.port";
+
 	public static final String WebServerStartApplicationServerProperty = "web.server.start.application.server";
 	public static final String WebServerStartAuthorityCenterProperty = "web.server.start.authority.center";
-	public static final String WebServerStartTransportServiceProperty = "web.server.start.transport.service";
-	public static final String WebServerStartTransportCenterProperty = "web.server.start.transport.center";
+	public static final String WebServerStartInterconnectionCenterProperty = "web.server.start.interconnection.center";
 	public static final String WebServerFileSizeMaxProperty = "web.server.file.size.max";
 
 	public static final String SchedulerEnabledProperty = "scheduler.enabled";
 
 	public static final String TraceSqlProperty = "trace.sql";
+	public static final String TraceSqlConnectionsProperty = "trace.sql.connections";
 
 	public static final int RegistryPortDefault = 7852;
 	public static final PortRange ServersPortRangeDefault = PortRange.parsePortRange("15000-35530");
@@ -61,17 +57,20 @@ public class ServerConfig extends Properties {
 	private final int authorityCenterPort;
 	private final int authorityCenterSessionTimeout;
 
-	private final String applicationServerId;
-
+	private final boolean interconnectionCenterEnabled;
+	private final String interconnectionCenterHost;
+	private final int interconnectionCenterPort;
+	
 	private final boolean webServerStartApplicationServer;
 	private final boolean webServerStartAuthorityCenter;
-	private final boolean webServerStartTransportService;
-	private final boolean webServerStartTransportCenter;
+	private final boolean webServerStartInterconnectionCenter;
+
 	private final int webServerFileSizeMax;
 
 	private final boolean schedulerEnabled;
 
 	private final boolean traceSql;
+	private final boolean traceSqlConnections;
 
 	private final String officeHome;
 
@@ -80,19 +79,15 @@ public class ServerConfig extends Properties {
 
 		try {
 			getWorkingPath().mkdirs();
-			LOG.info("Server config path: " + configFile.getCanonicalPath());
 			loadFromXML(new FileInputStream(configFile));
 		} catch (Throwable e) {
-			LOG.info("Server config path: " + configFilePath);
 			throw new RuntimeException(e);
 		}
 
-		applicationServerId = getProperty(ApplicationServerIdProperty, guid.create().toString());
-
 		rmiRegistryPort = getProperty(RmiRegistryPortProperty, RegistryPortDefault);
 
-		unicastAuthorityCenterPort = getProperty(UnicastAuthorityCenterPortProperty, 0);
-		unicastApplicationServerPort = getProperty(UnicastApplicationServerPortProperty, 0);
+		unicastAuthorityCenterPort = getProperty(UnicastAuthorityCenterPortProperty, 4444);
+		unicastApplicationServerPort = getProperty(UnicastApplicationServerPortProperty, 5555);
 		unicastTransportCenterPort = getProperty(UnicastTransportCenterPortProperty, 0);
 		unicastTransportServicePort = getProperty(UnicastTransportServicePortProperty, 0);
 
@@ -100,14 +95,19 @@ public class ServerConfig extends Properties {
 		authorityCenterPort = getProperty(AuthorityCenterPortProperty, RegistryPortDefault);
 		authorityCenterSessionTimeout = getProperty(AuthorityCenterSessionTimeoutProperty, 24 * 60);
 
+		interconnectionCenterEnabled = getProperty(InterconnectionCenterEnabledProperty, false);
+		interconnectionCenterHost = getProperty(InterconnectionCenterHostProperty, "");
+		interconnectionCenterPort = getProperty(InterconnectionCenterPortProperty, 7777);
+		
 		webServerStartApplicationServer = getProperty(WebServerStartApplicationServerProperty, true);
 		webServerStartAuthorityCenter = getProperty(WebServerStartAuthorityCenterProperty, true);
-		webServerStartTransportService = getProperty(WebServerStartTransportServiceProperty, true);
-		webServerStartTransportCenter = getProperty(WebServerStartTransportCenterProperty, false);
+		webServerStartInterconnectionCenter = getProperty(WebServerStartInterconnectionCenterProperty, false);
+
 		webServerFileSizeMax = getProperty(WebServerFileSizeMaxProperty, 5);
 
 		traceSql = getProperty(TraceSqlProperty, false);
-
+		traceSqlConnections = getProperty(TraceSqlConnectionsProperty, false);
+		
 		schedulerEnabled = getProperty(SchedulerEnabledProperty, true);
 		
 		officeHome = getProperty(OfficeHomeProperty, "C:/Program Files (x86)/LibreOffice 4.0");
@@ -163,10 +163,6 @@ public class ServerConfig extends Properties {
 		}
 	}
 
-	public final String getServerId() {
-		return applicationServerId;
-	}
-
 	public int getRmiRegistryPort() {
 		return rmiRegistryPort;
 	}
@@ -199,24 +195,36 @@ public class ServerConfig extends Properties {
 		return authorityCenterSessionTimeout;
 	}
 
+	public final boolean interconnectionEnabled() {
+		return interconnectionCenterEnabled;
+	}
+
+	public final String interconnectionCenterHost() {
+		return interconnectionCenterHost;
+	}
+
+	public final int interconnectionCenterPort() {
+		return interconnectionCenterPort;
+	}
+
 	public final boolean getTraceSql() {
 		return traceSql;
 	}
 
-	public final boolean webServerStartApplicationServer() {
+	public final boolean getTraceSqlConnections() {
+		return traceSqlConnections;
+	}
+
+	public final boolean webServerLaunchApplicationServer() {
 		return webServerStartApplicationServer;
 	}
 
-	public final boolean webServerStartAuthorityCenter() {
+	public final boolean webServerLaunchAuthorityCenter() {
 		return webServerStartAuthorityCenter;
 	}
 
-	public final boolean webServerStartTransportService() {
-		return webServerStartTransportService;
-	}
-
-	public final boolean webServerStartTransportCenter() {
-		return webServerStartTransportCenter;
+	public final boolean webServerLaunchInterconnectionCenter() {
+		return webServerStartInterconnectionCenter;
 	}
 
 	public final int webServerFileSizeMax() {

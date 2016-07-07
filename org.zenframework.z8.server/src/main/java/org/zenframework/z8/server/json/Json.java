@@ -27,6 +27,7 @@ public interface Json {
     string email = new string("email");
     string phone = new string("phone");
 
+    string menu = new string("menu");
     string components = new string("components");
     string settings = new string("settings");
 

@@ -8,22 +8,18 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.artofsolving.jodconverter.OfficeDocumentConverter;
 import org.artofsolving.jodconverter.office.DefaultOfficeManagerConfiguration;
 import org.artofsolving.jodconverter.office.OfficeManager;
 import org.zenframework.z8.server.base.table.system.Properties;
 import org.zenframework.z8.server.base.table.system.Property;
 import org.zenframework.z8.server.engine.Z8Context;
+import org.zenframework.z8.server.logs.Trace;
 import org.zenframework.z8.server.runtime.ServerRuntime;
 import org.zenframework.z8.server.utils.EmlUtils;
 import org.zenframework.z8.server.utils.PdfUtils;
 
 public class FileConverter {
-
-	private static final Log LOG = LogFactory.getLog(FileConverter.class);
-
 	private static class ConverterListener implements Properties.Listener {
 		@Override
 		public void onPropertyChange(String key, String value) {
@@ -79,7 +75,7 @@ public class FileConverter {
 				else if (getOfficeExtensions().contains(extension))
 					convertOfficeToPdf(srcFile, convertedFile);
 			} catch (IOException e) {
-				LOG.error("Can't convert " + srcFile + " to " + convertedFile, e);
+				Trace.logError("Can't convert " + srcFile + " to " + convertedFile, e);
 			}
 		}
 
@@ -104,7 +100,7 @@ public class FileConverter {
 						.setPortNumber(OFFICE_PORT).buildOfficeManager();
 				officeManager.start();
 			} catch (Throwable e) {
-				LOG.error("Could not start office manager", e);
+				Trace.logError("Could not start office manager", e);
 				officeManager = null;
 			}
 		}

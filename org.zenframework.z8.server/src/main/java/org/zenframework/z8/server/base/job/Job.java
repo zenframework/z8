@@ -34,7 +34,7 @@ public class Job extends RequestTarget {
 	}
 
 	public boolean scheduled() {
-		return getParameters().get(Json.scheduled) != null;
+		return getParameter(Json.scheduled) != null;
 	}
 
 	@Override
@@ -46,7 +46,7 @@ public class Job extends RequestTarget {
 			thread.start();
 
 			writer.writeProperty(Json.jobId, monitor.id());
-			writer.writeProperty(Json.serverId, ApplicationServer.Id());
+			writer.writeProperty(Json.serverId, ApplicationServer.id);
 			writer.writeProperty(Json.text, procedure.displayName());
 		} else {
 			procedure.run();
@@ -60,11 +60,10 @@ public class Job extends RequestTarget {
 	}
 
 	private void setParameters() {
-		String data = getParameters().get(Json.parameters);
+		String data = getParameter(Json.parameters);
 
-		if (data == null) {
+		if (data == null)
 			return;
-		}
 
 		JsonObject object = new JsonObject(data);
 

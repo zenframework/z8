@@ -1,5 +1,391 @@
 package org.zenframework.z8.server.types;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.OutputStream;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
+import org.apache.commons.fileupload.FileItem;
+import org.apache.commons.io.FilenameUtils;
+import org.zenframework.z8.server.base.file.FilesFactory;
+import org.zenframework.z8.server.base.file.Folders;
+import org.zenframework.z8.server.engine.RmiIO;
+import org.zenframework.z8.server.engine.RmiSerializable;
+import org.zenframework.z8.server.json.Json;
+import org.zenframework.z8.server.json.parser.JsonArray;
+import org.zenframework.z8.server.json.parser.JsonObject;
+import org.zenframework.z8.server.resources.Resources;
+import org.zenframework.z8.server.runtime.RCollection;
+import org.zenframework.z8.server.runtime.RLinkedHashMap;
+import org.zenframework.z8.server.utils.IOUtils;
+
+public class file extends primary implements RmiSerializable, Serializable {
+
+	private static final long serialVersionUID = -2542688680678439014L;
+
+	static public final String EOL = "\r\n";
+
+	public string name = new string();
+	public string path = new string();
+	public datetime time = new datetime();
+	public integer size = new integer();
+	public guid id = new guid();
+	public string instanceId = new string();
+
+	public RLinkedHashMap<string, string> details = new RLinkedHashMap<string, string>();
+
+	private FileItem value;
+	public Status status = Status.LOCAL;
+
+	public JsonObject json;
+
+	static public enum Status {
+
+		LOCAL("Files.status.local", ""), REMOTE("Files.status.remote", "remote"), REQUEST_SENT("Files.status.requestSent", "requestSent");
+
+		private final String id;
+		private final String value;
+
+		private Status(String id, String value) {
+			this.id = id;
+			this.value = value;
+		}
+
+		public String getValue() {
+			return value;
+		}
+
+		public String getText() {
+			return Resources.get(id);
+		}
+
+		static public Status getStatus(String value) {
+			for(Status status : values()) {
+				if(status.value.equals(value))
+					return status;
+			}
+			return LOCAL;
+		}
+
+	}
+
+	public file() {
+		super();
+	}
+
+	public file(guid id) {
+		this(id, null, null, null);
+	}
+
+	public file(File file) {
+		this(null, file.getName(), null, file.getPath());
+	}
+
+	public file(FileItem file) throws IOException {
+		this(file, null, null);
+	}
+
+	public file(FileItem value, String instanceId, String path) {
+		super();
+		this.instanceId = new string(instanceId);
+		this.path = new string(path);
+		this.name = new string(value.getName());
+		this.value = value;
+	}
+
+	public file(guid id, String name, String instanceId, String path) {
+		this(id, name, instanceId, path, null);
+	}
+
+	public file(guid id, String name, String instanceId, String path, datetime time) {
+		super();
+		this.id = new guid(id);
+		this.instanceId = new string(instanceId);
+		this.path = new string(path);
+		this.name = new string(name);
+		this.time = new datetime(time);
+	}
+
+	public file(file file) {
+		super();
+		set(file);
+	}
+
+	protected file(JsonObject json) {
+		super();
+		set(json);
+	}
+
+	public void set(file file) {
+		this.instanceId = file.instanceId;
+		this.name = file.name;
+		this.path = file.path;
+		this.time = file.time;
+		this.size = file.size;
+		this.id = file.id;
+		this.value = file.value;
+		this.status = file.status;
+		this.details = file.details;
+		this.json = file.json;
+	}
+
+	public FileItem get() {
+		return value;
+	}
+	
+	public void set(FileItem value) {
+		this.value = value;
+	}
+
+	protected void set(JsonObject json) {
+		path = new string(json.getString(json.has(Json.file) ? Json.file : Json.path));
+		name = new string(json.has(Json.name) ? json.getString(Json.name) : "");
+		time = new datetime(json.has(Json.time) ? json.getString(Json.time) : "");
+		size = new integer(json.has(Json.size) ? json.getString(Json.size) : "");
+		id = new guid(json.has(Json.id) ? json.getString(Json.id) : "");
+		instanceId = new string(json.has(Json.instanceId) ? json.getString(Json.instanceId) : "");
+
+		this.json = json;
+	}
+
+	static public Collection<file> parse(String json) {
+		List<file> result = new ArrayList<file>();
+
+		JsonArray array = new JsonArray(json);
+		
+		for(int i = 0; i < array.length(); i++)
+			result.add(new file(array.getJsonObject(i)));
+
+		return result;
+	}
+
+	static public String toJson(Collection<file> files) {
+		JsonArray array = new JsonArray();
+
+		for(file file : files)
+			array.add(file.toJsonObject());
+
+		return array.toString();
+	}
+
+	public JsonObject toJsonObject() {
+		if(json == null) {
+			json = new JsonObject();
+			json.put(Json.name, name);
+			json.put(Json.time, time);
+			json.put(Json.size, size);
+			json.put(Json.path, path);
+			json.put(Json.id, id);
+			json.put(Json.instanceId, instanceId);
+			json.put(Json.details, details);
+		}
+		return json;
+	}
+
+	@Override
+	public int hashCode() {
+		return id != null ? id.hashCode() : 0;
+	}
+
+	@Override
+	public boolean equals(Object object) {
+		return object instanceof file && id != null && id.equals(((file)object).id);
+	}
+
+	@Override
+	public String toString() {
+		return toJsonObject().toString();
+	}
+
+	public InputStream getInputStream() {
+		try {
+			return value == null ? null : value.getInputStream();
+		} catch(IOException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	public OutputStream getOutputStream() {
+		try {
+			return value == null ? null  : value.getOutputStream();
+		} catch(IOException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	private void writeObject(ObjectOutputStream out) throws IOException {
+		serialize(out);
+	}
+
+	private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
+		deserialize(in);
+	}
+
+	@Override
+	public void serialize(ObjectOutputStream out) throws IOException {
+		RmiIO.writeLong(out, serialVersionUID);
+
+		RmiIO.writeString(out, instanceId);
+		RmiIO.writeString(out, name);
+		RmiIO.writeString(out, path);
+		RmiIO.writeDatetime(out, time);
+		RmiIO.writeInteger(out, size);
+		RmiIO.writeGuid(out, id);
+
+		RmiIO.writeBoolean(out, value != null);
+
+		if(value != null) {
+			InputStream in = value.getInputStream();
+
+			long size = in.available();
+			RmiIO.writeLong(out, size);
+
+			try {
+				IOUtils.copyLarge(in, out, size, false);
+			} finally {
+				IOUtils.closeQuietly(in);
+			}
+		}
+	}
+
+	@Override
+	public void deserialize(ObjectInputStream in) throws IOException, ClassNotFoundException {
+		@SuppressWarnings("unused")
+		long version = RmiIO.readLong(in);
+
+		instanceId = new string(RmiIO.readString(in));
+		name = new string(RmiIO.readString(in));
+		path = new string(RmiIO.readString(in));
+		size = RmiIO.readInteger(in);
+		time = RmiIO.readDatetime(in);
+		id = RmiIO.readGuid(in);
+
+		if(RmiIO.readBoolean(in)) {
+			long size = RmiIO.readLong(in);
+
+			value = FilesFactory.createFileItem(name.get());
+			OutputStream out = value.getOutputStream();
+
+			try {
+				IOUtils.copyLarge(in, out, size, false);
+			} finally {
+				IOUtils.closeQuietly(out);
+			}
+		}
+	}
+
+	public void write(String content) {
+		write(content, encoding.Default);
+	}
+
+	private File getTempFile() throws IOException {
+		File folder = new File(Folders.Base, Folders.Files);
+		folder.mkdirs();
+
+		File file = File.createTempFile("tmp", ".txt", folder);
+		file.deleteOnExit();
+		return file;
+	}
+
+	public void write(String content, encoding charset) {
+		try {
+			if(path.isEmpty())
+				path.set(getTempFile().getPath());
+
+			OutputStream output = new FileOutputStream(new File(path.get()), true);
+			output.write(content.getBytes(charset.toString()));
+			IOUtils.closeQuietly(output);
+		} catch(IOException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	public String getRelativePath() {
+		String path = this.path.get();
+
+		if (path.startsWith(Folders.Base.getPath()))
+			return path.substring(Folders.Base.getPath().length() + 1);
+
+		return path;
+	}
+
+	public void operatorAssign(string path) {
+		File file = new File(path.get());
+
+		if(!file.isAbsolute())
+			file = new File(new File(Folders.Base, Folders.Files), file.getPath());
+
+		if(!file.isDirectory())
+			file.getParentFile().mkdirs();
+
+		this.path.set(file.getPath());
+	}
+
+	static public RCollection<file> z8_parse(string json) {
+		return new RCollection<file>(parse(json.get()));
+	}
+
+	static public string z8_toJson(RCollection<file> classes) {
+		return new string(toJson(classes));
+	}
+
+	public void z8_write(string content) {
+		write(content.get());
+	}
+
+	public void z8_write(string content, encoding charset) {
+		write(content.get(), charset);
+	}
+	
+	public string z8_relativePath() {
+		return new string(getRelativePath());
+	}
+
+	static public string z8_name(string name) {
+		return new string(FilenameUtils.getName(name.get()));
+	}
+
+	static public string z8_baseName(string name) {
+		return new string(FilenameUtils.getBaseName(name.get()));
+	}
+
+	static public string z8_extension(string name) {
+		return new string(FilenameUtils.getExtension(name.get()));
+	}
+	
+	public bool z8_isDirectory() {
+		return z8_isDirectory(path);
+	}
+
+	static public bool z8_isDirectory(string path) {
+		return new bool(new File(path.get()).isDirectory());
+	}
+
+	public RCollection<file> z8_listFiles() {
+		return z8_listFiles(path);
+	}
+	
+	static public RCollection<file> z8_listFiles(string path) {
+		File[] files = new File(path.get()).listFiles();
+		
+		RCollection<file> result = new RCollection<file>();
+		
+		for (File file : files)
+			result.add(new file(file));
+
+		return result;
+	}
+}
+
+/*package org.zenframework.z8.server.types;
+
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -16,7 +402,7 @@ public class file extends primary {
 
 	private static final long serialVersionUID = -5250938909367581442L;
 
-	public static final String EOL = "\r\n";
+	static public final String EOL = "\r\n";
 
 	private File file;
 
@@ -210,3 +596,4 @@ public class file extends primary {
 	}
 
 }
+*/

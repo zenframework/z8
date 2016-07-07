@@ -27,10 +27,6 @@ public class ServerRuntime extends AbstractRuntime {
 	public static final Property InstanceIdProperty = new Property("7370AF2A-AA31-49E7-84AA-E000DAF78236",
 			"z8.instanceId", "", "Идентификатор экземпляра");
 
-	public static final Property TransportCenterAddressProperty = new Property("9FCF5C13-DDF3-4B0C-8572-AF4DFEF7D6B6",
-			"z8.transport.transportCenterAddress", "", "Адрес (хост:порт) транспортного центра");
-	public static final Property RegisterInTransportCenterProperty = new Property("1090E6CD-0B18-4599-8687-87EF7A888848",
-			"z8.transport.registerInTransportCenter", "true", "Регистрироваться в транспортном центре (true / false)");
 	public static final Property PreserveExportMessagesProperty = new Property("8D9C727A-34FC-4DCD-9AB0-5A2AF8E676E0",
 			"z8.transport.preserveExportMessages", "false",
 			"Сохранять локальную очередь экспортируемых сообщений (true / false)");
@@ -105,7 +101,6 @@ public class ServerRuntime extends AbstractRuntime {
 
 		addProperty(DbSchemeControlSumProperty);
 		addProperty(InstanceIdProperty);
-		addProperty(TransportCenterAddressProperty);
 		addProperty(PreserveExportMessagesProperty);
 		addProperty(EnableProtocolsProperty);
 		addProperty(SendFilesSeparatelyProperty);

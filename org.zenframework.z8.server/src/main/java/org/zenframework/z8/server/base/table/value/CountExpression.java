@@ -10,7 +10,6 @@ public class CountExpression extends IntegerExpression {
         public CLASS(IObject container) {
             super(container);
             setJavaClass(CountExpression.class);
-            setAttribute(Native, CountExpression.class.getCanonicalName());
         }
 
         @Override

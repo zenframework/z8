@@ -8,8 +8,6 @@ import java.util.LinkedList;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.zenframework.z8.server.base.query.Query;
 import org.zenframework.z8.server.base.simple.Activator;
 import org.zenframework.z8.server.base.table.Table;
@@ -19,27 +17,26 @@ import org.zenframework.z8.server.base.table.value.TextField;
 import org.zenframework.z8.server.config.ServerConfig;
 import org.zenframework.z8.server.db.ConnectionManager;
 import org.zenframework.z8.server.db.sql.SqlToken;
-import org.zenframework.z8.server.db.sql.expressions.Operation;
 import org.zenframework.z8.server.db.sql.expressions.Or;
-import org.zenframework.z8.server.db.sql.expressions.Rel;
+import org.zenframework.z8.server.db.sql.functions.string.EqualsIgnoreCase;
 import org.zenframework.z8.server.engine.ApplicationServer;
 import org.zenframework.z8.server.engine.Runtime;
 import org.zenframework.z8.server.engine.Z8Context;
+import org.zenframework.z8.server.logs.Trace;
 import org.zenframework.z8.server.resources.Resources;
 import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.runtime.RCollection;
 import org.zenframework.z8.server.runtime.RLinkedHashMap;
+import org.zenframework.z8.server.types.bool;
 import org.zenframework.z8.server.types.guid;
+import org.zenframework.z8.server.types.integer;
 import org.zenframework.z8.server.types.string;
-import org.zenframework.z8.server.types.sql.sql_string;
 
 public class Properties extends TreeTable {
 
 	public static final String TableName = "SystemProperties";
 	public static final int PropertyNameMaxLength = 256;
 	public static final int PropertyValueMaxLength = 1024;
-
-	private static final Log LOG = LogFactory.getLog(Properties.class);
 
 	private static final Thread PropertiesUpdater = new Thread() {
 
@@ -50,7 +47,7 @@ public class Properties extends TreeTable {
 				try {
 
 				} catch (Throwable e) {
-					LOG.error("Can't update Z8 properties values", e);
+					Trace.logError("Can't update Z8 properties values", e);
 				}
 			}
 		}
@@ -118,20 +115,20 @@ public class Properties extends TreeTable {
 	public void constructor2() {
 		super.constructor2();
 
-		id.get().length.set(PropertyNameMaxLength);
+		id.get().length = new integer(PropertyNameMaxLength);
 		
-		id1.get().visible.set(false);
+		id1.get().visible = new bool(false);
 		
-		name.get().visible.set(false);
-		name.get().length.set(PropertyNameMaxLength);
+		name.get().visible = new bool(false);
+		name.get().length = new integer(PropertyNameMaxLength);
 		
 		value.setName("Value");
 		value.setIndex("value");
 		value.setDisplayName(Resources.get(strings.Value));
 		value.setGendb_updatable(false);
-		value.get().colspan.set(3);
+		value.get().colspan = new integer(3);
 		
-		description.get().colspan.set(3);
+		description.get().colspan = new integer(3);
 		
 		sortFields.add(id);
 		
@@ -179,7 +176,7 @@ public class Properties extends TreeTable {
 		for (Property property : Runtime.instance().properties())
 			values.put(property.getKey(), property.getDefaultValue());
 
-		if (ApplicationServer.database().isSystemInstalled()) {
+		if (ApplicationServer.isSystemInstalled()) {
 			Properties properties = new CLASS<Properties>().get();
 
 			Field id = properties.id.get();
@@ -232,8 +229,7 @@ public class Properties extends TreeTable {
 	}
 
 	private SqlToken getWhere(String key) {
-		return new Or(new Rel(id.get(), Operation.Eq, new sql_string(key)), new Rel(name.get(), Operation.Eq,
-				new sql_string(key)));
+		return new Or(new EqualsIgnoreCase(id.get(), key), new EqualsIgnoreCase(name.get(), key));
 	}
 
 	private guid getParentId(Map<String, guid> ids, String key) {
@@ -269,7 +265,7 @@ public class Properties extends TreeTable {
 				return value;
 		}
 		try {
-			if (ApplicationServer.database().isSystemInstalled()) {
+			if (ApplicationServer.isSystemInstalled()) {
 
 				try {
 					Properties properties = new CLASS<Properties>().get();
@@ -285,7 +281,7 @@ public class Properties extends TreeTable {
 				}
 			}
 		} catch (Throwable e) {
-			LOG.error("Can't read property '" + key + "' from database", e);
+			Trace.logError("Can't read property '" + key + "' from database", e);
 		}
 		return null;
 	}
@@ -303,7 +299,6 @@ public class Properties extends TreeTable {
 			public CLASS(IObject container) {
 				super(container);
 				setJavaClass(PropertiesActivator.class);
-				setAttribute(Native, PropertiesActivator.class.getCanonicalName());
 			}
 
 			@Override

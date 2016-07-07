@@ -6,10 +6,7 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.zenframework.z8.ie.xml.ExportEntry;
-import org.zenframework.z8.server.base.file.FileInfo;
 import org.zenframework.z8.server.base.table.Table;
 import org.zenframework.z8.server.base.table.system.SystemFiles;
 import org.zenframework.z8.server.base.table.value.Field;
@@ -21,17 +18,20 @@ import org.zenframework.z8.server.engine.Runtime;
 import org.zenframework.z8.server.json.parser.JsonObject;
 import org.zenframework.z8.server.logs.Trace;
 import org.zenframework.z8.server.request.Loader;
+import org.zenframework.z8.server.types.file;
 import org.zenframework.z8.server.types.guid;
 import org.zenframework.z8.server.types.primary;
 import org.zenframework.z8.server.types.string;
 
 public class Import {
 
-	private static final Log LOG = LogFactory.getLog(Import.class);
-
 	private static JsonObject STRUCTURE = null;
 
-	public static void importMessage(ExportMessages messages, Message message, String transportInfo) throws ImportException {
+	public static void importMessage(ExportMessages messages, Message message) {
+		importMessage(messages, message, null);
+	}
+	
+	public static void importMessage(ExportMessages messages, Message message, String transportInfo) {
 		Connection connection = ConnectionManager.get();
 		try {
 			connection.beginTransaction();
@@ -47,9 +47,8 @@ public class Import {
 			message.afterImport();
 			connection.commit();
 		} catch (Throwable e) {
-			LOG.error("Can't import message " + message, e);
 			connection.rollback();
-			throw new ImportException("Can't import message " + message, e);
+			throw new RuntimeException(e);
 		}
 	}
 
@@ -59,10 +58,9 @@ public class Import {
 		Map<string, primary> properties = message.getProperties();
 		string type = properties.containsKey(Message.PROP_TYPE) ? properties.get(Message.PROP_TYPE).string() : null;
 		if (Message.TYPE_FILE_REQUEST.equals(type)) {
-			FileInfo fileInfo = new FileInfo();
-			fileInfo.id = properties.get(Message.PROP_RECORD_ID).guid();
-			fileInfo.path = properties.get(Message.PROP_FILE_PATH).string();
-			SystemFiles.sendFile(fileInfo, message.getSender());
+			guid id = properties.get(Message.PROP_RECORD_ID).guid();
+			String path = properties.get(Message.PROP_FILE_PATH).string().get();
+			SystemFiles.sendFile(new file(id, null, null, path), message.getSender());
 		}
 
 		// Сортировка записей
@@ -101,11 +99,10 @@ public class Import {
 	public static void importFiles(Message message) throws IOException {
 		SystemFiles files = SystemFiles.newInstance();
 
-		for (FileInfo fileInfo : message.getFiles()) {
-			files.addFile(fileInfo);
-			if (fileInfo.file == null) {
-				files.getFile(fileInfo);
-			}
+		for (file file : message.getFiles()) {
+			if (file.get() == null)
+				file = files.getFile(file);
+			files.addFile(file);
 		}
 	}
 
@@ -160,17 +157,11 @@ public class Import {
 
 		if (!exists) {
 			// Если запись не существует, создать
-			LOG.debug("Import: create record " + IeUtil.toString(record));
 			table.create(recordId);
 		} else if (hasUpdatedFields) {
 			// Если запись должна быть обновлена согласно политике, обновить
-			LOG.debug("Import: update record " + IeUtil.toString(record));
 			table.update(recordId);
-		} else {
-			// Если запись не должна быть обновлена, ничего не делать
-			LOG.debug("Import: skip record " + IeUtil.toString(record));
 		}
-
 	}
 
 	private static JsonObject getStructure() {

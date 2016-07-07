@@ -1,6 +1,5 @@
 package org.zenframework.z8.auth;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -13,7 +12,7 @@ import org.zenframework.z8.server.types.guid;
 public class SessionManager {
 	private long sessionTimeout = 0;
 
-	private Map<String, Session> sessions = Collections.synchronizedMap(new HashMap<String, Session>());
+	private Map<String, Session> sessions = new HashMap<String, Session>();
 
 	private TimeoutThread timeoutThread = new TimeoutThread();
 
@@ -34,20 +33,20 @@ public class SessionManager {
 
 		if(session != null) {
 			session.access();
-			return session;
+			return new Session(session);
 		}
 
 		throw new AccessDeniedException();
 	}
 
-	public Session create(IUser user) {
+	synchronized public Session create(IUser user) {
 		String id = guid.create().toString();
 		Session session = new Session(id, user);
 		sessions.put(id, session);
 		return session;
 	}
 
-	synchronized void drop(String id) {
+	synchronized private void drop(String id) {
 		Session session = sessions.get(id);
 
 		if(session != null)
