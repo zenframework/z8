@@ -50,6 +50,7 @@ public class file extends primary implements RmiSerializable, Serializable {
 	private FileItem value;
 
 	private long offset;
+	private int partLength = 0;
 	
 	public Status status = Status.LOCAL;
 
@@ -343,6 +344,8 @@ public class file extends primary implements RmiSerializable, Serializable {
 		
 		SystemFiles.get(this);
 
+		offset += partLength;
+		
 		if(offset == size.get())
 			return null;
 		
@@ -350,18 +353,16 @@ public class file extends primary implements RmiSerializable, Serializable {
 
 		InputStream input = getInputStream();
 		input.skip(offset);
-		int read = IOUtils.read(input, bytes);
+		partLength = IOUtils.read(input, bytes);
 		input.close();
 
 		FileItem fileItem = new DiskFileItem(name.get(), null, false, name.get(), 1024 * 1024, null);
 		OutputStream output = fileItem.getOutputStream();
-		output.write(IOUtils.zip(bytes, 0, read));
+		output.write(IOUtils.zip(bytes, 0, partLength));
 		output.close();
 
 		set(fileItem);
 
-		offset += read;
-		
 		return this;
 	}
 
