@@ -69,19 +69,22 @@ public class RmiTransportProcedure extends Procedure {
 					if(!sendMessage(message))
 						return;
 				}
+			} catch(Throwable e) {
+				Trace.logError(e);
 			} finally {
 				workers.remove(domain);
 			}
 		}
 		
-		private boolean sendMessage(Message message) {
+		private boolean sendMessage(Message message) throws Throwable {
 			Connection connection = ConnectionManager.get();
+
 			try {
 				if(server == null)
 					server = getInterconnectionCenter().connect(domain);
 	
 				if(server == null) {
-					messages.setError(message, "'" + domain + "' server is unavalable");
+					message.info("'" + domain + "' server is unavalable");
 					return false;
 				}
 
@@ -90,14 +93,11 @@ public class RmiTransportProcedure extends Procedure {
 					
 					message.beforeExport();
 	
-					long total = java.lang.System.currentTimeMillis();
-					long timing = server.accept(message);
-					total = java.lang.System.currentTimeMillis() - total;
-	
-					message.afterExport();
-
-					message.processed((total - timing) + "/" + timing + "/" + total + " ms (t/p/tt)");
-
+					if(server.accept(message)) {
+						message.afterExport();
+						message.processed();
+					}
+					
 					connection.commit();
 				} else {
 					file file = message.getFile().nextPart();
@@ -105,11 +105,14 @@ public class RmiTransportProcedure extends Procedure {
 					while(file != null) {
 						connection.beginTransaction();
 
-						server.accept(file);
+						boolean reset = !server.accept(file);
 						
-						message.transferred(file.offset());
+						message.transferred(reset ? 0 : file.offset());
 
 						connection.commit();
+
+						if(reset)
+							return false;
 
 						file = file.nextPart();
 					}
@@ -119,9 +122,8 @@ public class RmiTransportProcedure extends Procedure {
 				return true;
 			} catch (Throwable e) {
 				connection.rollback();
-				Trace.logError(e);
-				messages.setError(message, e);
-				return false;
+				message.error(e.getMessage());
+				throw e;
 			}
 		}
 	}
@@ -160,7 +162,7 @@ public class RmiTransportProcedure extends Procedure {
 
 	}
 	
-	static public void accept(Object object) {
-		Import.importObject(object);
+	static public boolean accept(Object object) {
+		return Import.importObject(object);
 	}
 }

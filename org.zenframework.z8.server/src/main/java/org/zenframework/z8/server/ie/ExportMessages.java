@@ -212,9 +212,15 @@ public class ExportMessages extends Table {
 		messages.update(id);
 	}
 
-	public void setError(Message message, String info) {
+	public void info(guid id, String info) {
+		ExportMessages messages = new ExportMessages.CLASS<ExportMessages>().get();
+		messages.description.get().set(new string(info));
+		messages.update(id);
+	}
+
+	public void error(guid id, String info) {
 		description.get().set(new string(info));
-		update(new guid(message.getId()));
+		update(id);
 	}
 
 	public void setError(Message message, Throwable e) {
@@ -222,14 +228,6 @@ public class ExportMessages extends Table {
 		description.get().set(
 				new string(new datetime() + " " + ": '" + ErrorUtils.getMessage(e) + "' " + e.getClass()));
 		update(new guid(message.getId()));
-	}
-
-	public void setInfo(Message message, String info) {
-		ExportMessages messages = new ExportMessages.CLASS<ExportMessages>().get();
-
-		messages.error.get().set(new bool(false));
-		messages.description.get().set(new string(info));
-		messages.update(new guid(message.getId()));
 	}
 
 	public String getSender() {

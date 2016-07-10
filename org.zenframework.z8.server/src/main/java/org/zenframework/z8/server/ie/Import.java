@@ -36,20 +36,28 @@ public class Import {
 
 	private static JsonObject STRUCTURE = null;
 
-	public static void importObject(Object object) {
+	public static boolean importObject(Object object) {
 		if(object instanceof Message) {
-			Import.importMessage((Message)object);
+			return Import.importMessage((Message)object);
 		} else if(object instanceof file) {
-			Import.importFile((file)object);
+			return Import.importFile((file)object);
 		}
+		throw new RuntimeException("Unsupported object type '" + (object != null ? object.getClass().getCanonicalName() : "null"));
 	}
 	
-	public static void importFile(file file) {
+	public static boolean importFile(file file) {
 		File target = FileUtils.getFile(Folders.Base, Folders.Temp, file.path.get());
 
+		long offset = file.offset();
+
+		if(offset == 0)
+			target.delete();
+		else if(!target.exists() || target.length() > offset)
+			return false;
+		
 		try {
 			if(!file.addPartTo(target))
-				return;
+				return true;
 		} catch(IOException e) {
 			throw new RuntimeException(e);
 		}
@@ -57,12 +65,13 @@ public class Import {
 		try {
 			file.set(new InputOnlyFileItem(target, file.name.get()));
 			SystemFiles.newInstance().add(file);
+			return true;
 		} finally {
 			target.delete();
 		}
 	}
 	
-	public static void importMessage(Message message) {
+	public static boolean importMessage(Message message) {
 		IUser user = SystemDomains.newInstance().getDomain(message.getAddress()).getSystemUser();
 
 		IRequest request = new Request(new Session("", user));
@@ -88,6 +97,8 @@ public class Import {
 			message.afterImport();
 			
 			connection.commit();
+			
+			return true;
 		} catch (Throwable e) {
 			connection.rollback();
 			throw new RuntimeException(e);

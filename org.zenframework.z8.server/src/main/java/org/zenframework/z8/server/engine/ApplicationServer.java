@@ -168,10 +168,8 @@ public class ApplicationServer extends RmiServer implements IApplicationServer {
 	}
 
 	@Override
-	public long accept(Object object) {
-		long start = System.currentTimeMillis();
-		RmiTransportProcedure.accept(object);
-		return System.currentTimeMillis() - start;
+	public boolean accept(Object object) {
+		return RmiTransportProcedure.accept(object);
 	}
 	
 	private void checkSchemaVersion() {
