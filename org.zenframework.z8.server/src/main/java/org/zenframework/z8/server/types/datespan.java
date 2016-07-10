@@ -1,11 +1,7 @@
 package org.zenframework.z8.server.types;
 
-import java.text.ParseException;
-
 import org.zenframework.z8.server.db.DatabaseVendor;
 import org.zenframework.z8.server.db.FieldType;
-import org.zenframework.z8.server.exceptions.MaskParseException;
-import org.zenframework.z8.server.format.DatespanFormat;
 import org.zenframework.z8.server.types.sql.sql_datespan;
 
 public final class datespan extends primary {
@@ -19,9 +15,8 @@ public final class datespan extends primary {
 	static final public long TicksPerHour = TicksPerMinute * 60;
 	static final public long TicksPerDay = TicksPerHour * 24;
 
-	static final public DatespanFormat defaultMask = new DatespanFormat("dd HH:mm:ss");
-
-	public datespan() {}
+	public datespan() {
+	}
 
 	public datespan(long ticks) {
 		set(ticks);
@@ -35,11 +30,35 @@ public final class datespan extends primary {
 		set(dateSpan.ticks);
 	}
 
-	public datespan(String s) {
-		try {
-			set(defaultMask.parse(s));
-		} catch (ParseException e) {
-			throw new MaskParseException(new string(s), defaultMask.toString());
+	public datespan(String datespan) {
+		// 01234567890
+		// d hh:mm:ss
+		// hh:mm:ss
+		// mm:ss
+		// ss
+		// s
+		// 01234567890
+
+		int length = datespan.length();
+
+		if(length < 3) {
+			set(0, 0, 0, Integer.parseInt(datespan));
+		} else if(length < 6) {
+			int minutes = Integer.parseInt(datespan.substring(0, 2));
+			int seconds = Integer.parseInt(datespan.substring(3, 5));
+			set(0, 0, minutes, seconds);
+		} else if(length < 9) {
+			int hours = Integer.parseInt(datespan.substring(0, 2));
+			int minutes = Integer.parseInt(datespan.substring(3, 5));
+			int seconds = Integer.parseInt(datespan.substring(6, 8));
+			set(0, hours, minutes, seconds);
+		} else {
+			int space = datespan.indexOf(" ");
+			int days = Integer.parseInt(datespan.substring(0, space));
+			int hours = Integer.parseInt(datespan.substring(space + 1, space + 3));
+			int minutes = Integer.parseInt(datespan.substring(space + 4, space + 6));
+			int seconds = Integer.parseInt(datespan.substring(space + 7, space + 9));
+			set(days, hours, minutes, seconds);
 		}
 	}
 
@@ -64,8 +83,12 @@ public final class datespan extends primary {
 		set(span.ticks);
 	}
 
-	public void set(int Day, int Hour, int Minute, int Second, long Millisecond) {
-		set(Day * TicksPerDay + Hour * TicksPerHour + Minute * TicksPerMinute + Second * TicksPerSecond + Millisecond);
+	public void set(int days, int hours, int minutes, int seconds) {
+		set(days, hours, minutes, seconds, 0);
+	}
+
+	public void set(int days, int hours, int minutes, int seconds, long milliseconds) {
+		set(days * TicksPerDay + hours * TicksPerHour + minutes * TicksPerMinute + seconds * TicksPerSecond + milliseconds);
 	}
 
 	public void set(long ticks) {
@@ -84,7 +107,7 @@ public final class datespan extends primary {
 		return ticks / TicksPerMinute % 60;
 	}
 
-	public long Seconds() {
+	public long seconds() {
 		return ticks / TicksPerSecond % 60;
 	}
 
@@ -105,7 +128,7 @@ public final class datespan extends primary {
 	}
 
 	public integer z8_seconds() {
-		return new integer(Seconds());
+		return new integer(seconds());
 	}
 
 	public integer z8_milliseconds() {
@@ -145,15 +168,15 @@ public final class datespan extends primary {
 	}
 
 	public void z8_truncDay() {
-		set((int) days(), 0, 0, 0, 0);
+		set((int)days(), 0, 0, 0, 0);
 	}
 
 	public void z8_truncHour() {
-		set((int) days(), (int) hours(), 0, 0, 0);
+		set((int)days(), (int)hours(), 0, 0, 0);
 	}
 
 	public void z8_truncMinute() {
-		set((int) days(), (int) hours(), (int) minutes(), 0, 0);
+		set((int)days(), (int)hours(), (int)minutes(), 0, 0);
 	}
 
 	@Override
@@ -163,7 +186,7 @@ public final class datespan extends primary {
 
 	@Override
 	public String toDbConstant(DatabaseVendor dbtype) {
-		switch (dbtype) {
+		switch(dbtype) {
 		case SqlServer:
 			return "(" + z8_milliseconds().toString() + ")";
 		default:
@@ -178,28 +201,20 @@ public final class datespan extends primary {
 
 	@Override
 	public boolean equals(Object object) {
-		if (object instanceof datespan) {
-			datespan datespan = (datespan) object;
+		if(object instanceof datespan) {
+			datespan datespan = (datespan)object;
 			return ticks == datespan.ticks;
 		}
 		return false;
 	}
 
-	public String format(String frm) {
-		return new DatespanFormat(frm).format(this).toString();
-	}
-
-	public String format(DatespanFormat frm) {
-		return frm.format(this).toString();
-	}
-
 	@Override
 	public String toString() {
-		return format(defaultMask);
-	}
-
-	public string z8_toString(string frm) {
-		return new string(format(frm.get()));
+		long days = days();
+		long hours = hours();
+		long minutes = minutes();
+		long seconds = seconds();
+		return "" + days + (hours < 10 ? "0" + hours : hours) + ":" + (minutes < 10 ? "0" + minutes : minutes) + ":" + (seconds < 10 ? "0" + seconds : seconds);
 	}
 
 	public sql_datespan sql_datespan() {
@@ -262,5 +277,9 @@ public final class datespan extends primary {
 
 	static public datespan z8_parse(string string) {
 		return new datespan(string.get());
+	}
+
+	public string z8_toString(string frm) {
+		return new string(toString());
 	}
 }

@@ -9,6 +9,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
+import org.apache.commons.io.FileUtils;
 import org.zenframework.z8.server.base.file.Folders;
 import org.zenframework.z8.server.base.file.InputOnlyFileItem;
 import org.zenframework.z8.server.base.query.Query;
@@ -253,28 +254,53 @@ public class SystemFiles extends Table {
 		return file;
 	}
 
+	public void add(file file) {
+		InputStream input = file.getInputStream();
+
+		name.get().set(file.name);
+		data.get().set(input);
+		path.get().set(file.path);
+
+		try {
+			if(!hasRecord(file.id))
+				create(file.id);
+			else
+				update(file.id);
+		} finally {
+			IOUtils.closeQuietly(input);
+		}
+	}
+
 	public void addFile(file fileInfo) {
 		boolean exists = readFirst(Arrays.<Field> asList(id1.get()), fileInfo, false);
-		if(!exists) {
-			name.get().set(fileInfo.name);
-			if(fileInfo.instanceId != null)
-				id.get().set(fileInfo.instanceId);
-			else if(fileInfo.get() != null)
-				id.get().set(Z8Context.getInstanceId());
-			if(fileInfo.get() != null)
-				data.get().set(fileInfo.getInputStream());
-			id1.get().set(new string((fileInfo.get() == null ? file.Status.REMOTE : file.Status.LOCAL).getValue()));
-			path.get().set(fileInfo.path);
-			if(fileInfo.id == null || fileInfo.id.isNull())
-				fileInfo.id = guid.create();
-			if(fileInfo.time != null && !fileInfo.time.equals(datetime.MIN))
-				createdAt.get().set(fileInfo.time);
-			create(fileInfo.id);
-		} else if(getStatus() != file.Status.LOCAL && fileInfo.get() != null) {
-			id1.get().set(new string(file.Status.LOCAL.getValue()));
-			data.get().set(fileInfo.getInputStream());
-			fileInfo.id = recordId();
-			update(fileInfo.id);
+		InputStream input = null;
+		try {
+			if(!exists) {
+				name.get().set(fileInfo.name);
+				if(fileInfo.instanceId != null)
+					id.get().set(fileInfo.instanceId);
+				else if(fileInfo.get() != null)
+					id.get().set(Z8Context.getInstanceId());
+				if(fileInfo.get() != null) {
+					input = fileInfo.getInputStream();
+					data.get().set(input);
+				}
+				id1.get().set(new string((fileInfo.get() == null ? file.Status.REMOTE : file.Status.LOCAL).getValue()));
+				path.get().set(fileInfo.path);
+				if(fileInfo.id == null || fileInfo.id.isNull())
+					fileInfo.id = guid.create();
+				if(fileInfo.time != null && !fileInfo.time.equals(datetime.MIN))
+					createdAt.get().set(fileInfo.time);
+				create(fileInfo.id);
+			} else if(getStatus() != file.Status.LOCAL && fileInfo.get() != null) {
+				id1.get().set(new string(file.Status.LOCAL.getValue()));
+				input = fileInfo.getInputStream();
+				data.get().set(input);
+				fileInfo.id = recordId();
+				update(fileInfo.id);
+			}
+		} finally {
+			IOUtils.closeQuietly(input);
 		}
 	}
 
@@ -413,4 +439,40 @@ public class SystemFiles extends Table {
 		file.set(new InputOnlyFileItem(path, file.name.get()));
 	}
 
+///////////////////////////////////////////////////
+	
+	public static InputStream getInputStream(file file) throws IOException {
+		SystemFiles table = newInstance();
+
+		SqlToken where = new Equ(table.path.get(), file.path);
+
+		guid recordId = file.id; 
+
+		Field data = table.data.get();
+		Collection<Field> fields = Arrays.asList(data);
+
+		if(recordId != null && !recordId.isNull() && table.readRecord(recordId, fields) || table.readFirst(fields, where))
+			return data.binary().get();
+
+		return null;
+	}
+
+	public static file get(file file) throws IOException {
+		File path = new File(Folders.Base, file.path.get());
+		
+		if(!path.exists()) {
+			InputStream inputStream = getInputStream(file);
+
+			if(inputStream == null)
+				return null;
+			
+			FileUtils.copyInputStreamToFile(inputStream, path);
+		}
+		
+		file.set(new InputOnlyFileItem(path, file.name.get()));
+		file.size = new integer(path.length());
+		return file;
+	}
+	
+	
 }

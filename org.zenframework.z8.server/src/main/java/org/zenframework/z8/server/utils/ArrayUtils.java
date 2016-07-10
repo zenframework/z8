@@ -16,7 +16,7 @@ public class ArrayUtils {
         }
 
         for(int index = 0; index < objects.length; index++) {
-            if(objects[index] == object) {
+            if(objects[index] == object || object != null && object.equals(objects[index])) {
                 return index;
             }
         }

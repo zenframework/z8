@@ -131,7 +131,7 @@ public class IeUtil {
 	}
 
 	public static file fileToFileInfo(ExportEntry.Files.File file) {
-		return new file(new guid(file.getId()), file.getName(), file.getInstanceId(), file.getPath(), new datetime(file.getTime()));
+		return new file(new guid(file.getId()), file.getName(), file.getInstanceId(), file.getPath(), 0, new datetime(file.getTime()));
 	}
 
 	public static List<ExportEntry.Files.File> fileInfosToFiles(Collection<file> fileInfos, ImportPolicy policy,

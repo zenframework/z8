@@ -100,13 +100,18 @@ public class ApplicationServer extends RmiServer implements IApplicationServer {
 	}
 
 	@Override
+	public String id() throws RemoteException {
+		return id;
+	}
+
+	@Override
 	public void start() throws RemoteException {
 		super.start();
 
 		checkSchemaVersion();
 
 		authorityCenter = Rmi.get(IAuthorityCenter.class, config.getAuthorityCenterHost(), config.getAuthorityCenterPort());
-		authorityCenter.register(this, id);
+		authorityCenter.register(this);
 
 		Scheduler.start();
 
@@ -163,8 +168,10 @@ public class ApplicationServer extends RmiServer implements IApplicationServer {
 	}
 
 	@Override
-	public void accept(Object object) {
+	public long accept(Object object) {
+		long start = System.currentTimeMillis();
 		RmiTransportProcedure.accept(object);
+		return System.currentTimeMillis() - start;
 	}
 	
 	private void checkSchemaVersion() {

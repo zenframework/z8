@@ -129,7 +129,7 @@ public class TransportProcedure extends Procedure {
 			for (guid id : ids) {
 				Message message = messages.getMessage(id);
 				try {
-					Import.importMessage(messages, message, null);
+					Import.importMessage(message);
 				} catch (Throwable e) {
 					Trace.logError(e);
 					messages.setError(message, e);

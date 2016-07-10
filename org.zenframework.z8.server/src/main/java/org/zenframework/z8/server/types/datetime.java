@@ -16,20 +16,17 @@ public class datetime extends primary {
 
 	private static final long serialVersionUID = -5362639596768531077L;
 
-	final static public String defaultMask = "dd/MM/yyyy HH:mm:ss";
-	final static public String defaultMaskDate = "dd/MM/yyyy";
-	final static public String defaultMaskTime = "HH:mm:ss";
+	// final static public String defaultMask = "dd/MM/yyyy HH:mm:ss";
+	// final static public String defaultMaskDate = "dd/MM/yyyy";
+	// final static public String defaultMaskTime = "HH:mm:ss";
 
 	final static public datetime MIN = new datetime(1899, 12, 31);
 	final static public datetime MAX = new datetime(4712, 12, 31);
 
-	final static public String[] knownFormats = new String[] { "dd/MM/yyyy HH:mm:ss", "dd/MM/yyyy HH:mm",
-			"dd.MM.yyyy HH:mm:ss", "dd.MM.yyyy HH:mm", "dd/MM/yyyy HH-mm-ss", "dd.MM.yyyy HH-mm-ss", "dd/MM/yyyy HH-mm",
-			"dd.MM.yyyy HH-mm", "dd.MM.yyyy", "dd/MM/yyyy", "HH:mm:ss", "HH:mm", "HH-mm-ss", "HH-mm" };
-
 	protected GregorianCalendar m_value = new GregorianCalendar();
 
-	public datetime() {}
+	public datetime() {
+	}
 
 	public datetime(int year, int month, int day) {
 		set(year, month, day, 0, 0, 0);
@@ -47,12 +44,12 @@ public class datetime extends primary {
 		set(gc);
 	}
 
-	public datetime(date date) {
-		set(date);
+	public datetime(date d) {
+		set(d != null ? d.get() : date.MIN.get());
 	}
 
-	public datetime(datetime datetime) {
-		set(datetime);
+	public datetime(datetime d) {
+		set(d != null ? d.get() : date.MIN.get());
 	}
 
 	public datetime(java.sql.Date datetime) {
@@ -67,8 +64,21 @@ public class datetime extends primary {
 		set(datetime.getTime());
 	}
 
-	public datetime(String s) {
-		this(s, defaultMask);
+	public datetime(String datetime) {
+		if(datetime != null && !datetime.isEmpty()) {
+			// dd/mm/yyyy hh/mm/ss
+			// 0123456789012345678
+
+			int day = Integer.parseInt(datetime.substring(0, 2));
+			int month = Integer.parseInt(datetime.substring(3, 5));
+			int year = Integer.parseInt(datetime.substring(6, 10));
+			int hours = Integer.parseInt(datetime.substring(11, 13));
+			int minutes = Integer.parseInt(datetime.substring(14, 16));
+			int seconds = Integer.parseInt(datetime.substring(17, 19));
+
+			set(year, month, day, hours, minutes, seconds);
+		} else
+			set(MIN);
 	}
 
 	public datetime(String s, String format) {
@@ -76,10 +86,11 @@ public class datetime extends primary {
 	}
 
 	public datetime(String s, String[] formats) {
-		for (int i = 0; i < formats.length; i++) {
+		for(int i = 0; i < formats.length; i++) {
 			try {
 				set(s, formats[i]);
-			} catch (Throwable e) {}
+			} catch(Throwable e) {
+			}
 		}
 	}
 
@@ -100,8 +111,8 @@ public class datetime extends primary {
 		m_value.setTimeInMillis(millisec);
 	}
 
-	public void set(datetime date) {
-		set(date.get());
+	public void set(datetime datetime) {
+		set(datetime.get());
 	}
 
 	public void set(date date) {
@@ -113,12 +124,12 @@ public class datetime extends primary {
 	}
 
 	public void set(java.sql.Date datetime) {
-		if (datetime != null)
+		if(datetime != null)
 			set(datetime.getTime());
 	}
 
 	public void set(java.util.Date datetime) {
-		if (datetime != null)
+		if(datetime != null)
 			set(datetime.getTime());
 	}
 
@@ -135,7 +146,7 @@ public class datetime extends primary {
 			m_value.set(GregorianCalendar.MINUTE, minute);
 			m_value.set(GregorianCalendar.SECOND, second);
 			m_value.set(GregorianCalendar.MILLISECOND, millisecond);
-		} catch (Throwable e) {
+		} catch(Throwable e) {
 			return false;
 		}
 		return true;
@@ -144,14 +155,13 @@ public class datetime extends primary {
 	@SuppressWarnings("deprecation")
 	public void set(String s, String format) {
 		try {
-			if (s == null || s.isEmpty()) {
+			if(s == null || s.isEmpty()) {
 				set(datetime.MIN);
 			} else {
 				java.util.Date date = new SimpleDateFormat(format).parse(s);
-				set(1900 + date.getYear(), date.getMonth() + 1, date.getDate(), date.getHours(), date.getMinutes(),
-						date.getSeconds());
+				set(1900 + date.getYear(), date.getMonth() + 1, date.getDate(), date.getHours(), date.getMinutes(), date.getSeconds());
 			}
-		} catch (ParseException e) {
+		} catch(ParseException e) {
 			throw new exception(e);
 		}
 	}
@@ -170,7 +180,7 @@ public class datetime extends primary {
 			m_value.set(GregorianCalendar.MINUTE, minute);
 			m_value.set(GregorianCalendar.SECOND, second);
 			m_value.set(GregorianCalendar.MILLISECOND, millisecond);
-		} catch (Throwable e) {
+		} catch(Throwable e) {
 			return false;
 		}
 		return true;
@@ -217,43 +227,43 @@ public class datetime extends primary {
 	}
 
 	public datetime addYear(int years) {
-		GregorianCalendar value = (GregorianCalendar) m_value.clone();
+		GregorianCalendar value = (GregorianCalendar)m_value.clone();
 		value.add(GregorianCalendar.YEAR, years);
 		return new datetime(value);
 	}
 
 	public datetime addQuarter(int quarters) {
-		GregorianCalendar value = (GregorianCalendar) m_value.clone();
+		GregorianCalendar value = (GregorianCalendar)m_value.clone();
 		value.add(GregorianCalendar.MONTH, 3 * quarters);
 		return new datetime(value);
 	}
 
 	public datetime addMonth(int months) {
-		GregorianCalendar value = (GregorianCalendar) m_value.clone();
+		GregorianCalendar value = (GregorianCalendar)m_value.clone();
 		value.add(GregorianCalendar.MONTH, months);
 		return new datetime(value);
 	}
 
 	public datetime addDay(int days) {
-		GregorianCalendar value = (GregorianCalendar) m_value.clone();
+		GregorianCalendar value = (GregorianCalendar)m_value.clone();
 		value.add(GregorianCalendar.DAY_OF_MONTH, days);
 		return new datetime(value);
 	}
 
 	public datetime addHour(int hours) {
-		GregorianCalendar value = (GregorianCalendar) m_value.clone();
+		GregorianCalendar value = (GregorianCalendar)m_value.clone();
 		value.add(GregorianCalendar.HOUR, hours);
 		return new datetime(value);
 	}
 
 	public datetime addMinute(int minutes) {
-		GregorianCalendar value = (GregorianCalendar) m_value.clone();
+		GregorianCalendar value = (GregorianCalendar)m_value.clone();
 		value.add(GregorianCalendar.MINUTE, minutes);
 		return new datetime(value);
 	}
 
 	public datetime addSecond(int seconds) {
-		GregorianCalendar value = (GregorianCalendar) m_value.clone();
+		GregorianCalendar value = (GregorianCalendar)m_value.clone();
 		value.add(GregorianCalendar.SECOND, seconds);
 		return new datetime(value);
 	}
@@ -268,41 +278,42 @@ public class datetime extends primary {
 	}
 
 	public datetime truncMonth() {
-		return new datetime(new GregorianCalendar(m_value.get(GregorianCalendar.YEAR), m_value.get(GregorianCalendar.MONTH),
-				1));
+		return new datetime(new GregorianCalendar(m_value.get(GregorianCalendar.YEAR), m_value.get(GregorianCalendar.MONTH), 1));
 	}
 
 	public datetime truncDay() {
-		return new datetime(new GregorianCalendar(m_value.get(GregorianCalendar.YEAR), m_value.get(GregorianCalendar.MONTH),
-				m_value.get(GregorianCalendar.DAY_OF_MONTH)));
+		return new datetime(new GregorianCalendar(m_value.get(GregorianCalendar.YEAR), m_value.get(GregorianCalendar.MONTH), m_value.get(GregorianCalendar.DAY_OF_MONTH)));
 	}
 
 	public datetime truncHour() {
-		return new datetime(new GregorianCalendar(m_value.get(GregorianCalendar.YEAR), m_value.get(GregorianCalendar.MONTH),
-				m_value.get(GregorianCalendar.DAY_OF_MONTH), m_value.get(GregorianCalendar.HOUR), 0, 0));
+		return new datetime(new GregorianCalendar(m_value.get(GregorianCalendar.YEAR), m_value.get(GregorianCalendar.MONTH), m_value.get(GregorianCalendar.DAY_OF_MONTH), m_value.get(GregorianCalendar.HOUR), 0, 0));
 	}
 
 	public datetime truncMinute() {
-		return new datetime(new GregorianCalendar(m_value.get(GregorianCalendar.YEAR), m_value.get(GregorianCalendar.MONTH),
-				m_value.get(GregorianCalendar.DAY_OF_MONTH), m_value.get(GregorianCalendar.HOUR),
-				m_value.get(GregorianCalendar.MINUTE), 0));
+		return new datetime(new GregorianCalendar(m_value.get(GregorianCalendar.YEAR), m_value.get(GregorianCalendar.MONTH), m_value.get(GregorianCalendar.DAY_OF_MONTH), m_value.get(GregorianCalendar.HOUR), m_value.get(GregorianCalendar.MINUTE), 0));
 	}
 
 	@Override
 	public String toString() {
-		return format(defaultMask);
+		return toStringDate() + " " + toStringTime();
 	}
 
 	public String toStringDate() {
-		return format(defaultMaskDate);
+		int day = day();
+		int month = month();
+		int year = year();
+		return (day < 10 ? "0" + day : day) + "/" + (month < 10 ? "0" + month : month) + "/" + year;
 	}
 
 	public String toStringTime() {
-		return format(defaultMaskTime);
+		int hour = hour();
+		int minute = minute();
+		int second = second();
+		return (hour < 10 ? "0" + hour : hour) + ":" + (minute < 10 ? "0" + minute : minute) + ":" + (second < 10 ? "0" + second : second);
 	}
 
 	public String format(String format) {
-		return new SimpleDateFormat(format).format(m_value.getTime());
+		return format(new SimpleDateFormat(format));
 	}
 
 	public String format(DateFormat format) {
@@ -326,8 +337,8 @@ public class datetime extends primary {
 
 	@Override
 	public boolean equals(Object d) {
-		if (d instanceof datetime) {
-			return operatorEqu((datetime) d).get();
+		if(d instanceof datetime) {
+			return operatorEqu((datetime)d).get();
 		}
 		return false;
 	}
@@ -471,10 +482,8 @@ public class datetime extends primary {
 		set(year.getInt(), month.getInt(), day.getInt(), hour.getInt(), minute.getInt(), second.getInt());
 	}
 
-	public void z8_set(integer year, integer month, integer day, integer hour, integer minute, integer second,
-			integer millisecond) {
-		set(year.getInt(), month.getInt(), day.getInt(), hour.getInt(), minute.getInt(), second.getInt(),
-				millisecond.getInt());
+	public void z8_set(integer year, integer month, integer day, integer hour, integer minute, integer second, integer millisecond) {
+		set(year.getInt(), month.getInt(), day.getInt(), hour.getInt(), minute.getInt(), second.getInt(), millisecond.getInt());
 	}
 
 	public void z8_setDate(integer year, integer month, integer day) {

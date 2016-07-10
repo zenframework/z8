@@ -39,8 +39,6 @@ public class EntriesGenerator {
     }
 
     public void run(Collection<Desktop.CLASS<? extends Desktop>> entryClasses, ILogger logger) {
-        logger.progress(0);
-
         Component[] existingComponents = readComponents();
 
         List<Component> toDelete = new ArrayList<Component>();
@@ -99,7 +97,5 @@ public class EntriesGenerator {
             entries.name.get().set(component.title());
             entries.create();
         }
-
-        logger.progress(100);
     }
 }

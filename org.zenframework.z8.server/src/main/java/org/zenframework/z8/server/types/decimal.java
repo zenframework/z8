@@ -26,7 +26,8 @@ public final class decimal extends primary {
 
 	private static int maxPrecision = 38;
 
-	public decimal() {}
+	public decimal() {
+	}
 
 	public decimal(String string) {
 		set(string);
@@ -76,7 +77,7 @@ public final class decimal extends primary {
 
 	public void set(BigDecimal number) {
 		value = new BigDecimal(number.unscaledValue(), number.scale());
-		if (number.precision() > decimal.maxPrecision)
+		if(number.precision() > decimal.maxPrecision)
 			value = value.setScale(number.scale() - (number.precision() - maxPrecision), RoundingMode.CEILING);
 	}
 
@@ -107,12 +108,11 @@ public final class decimal extends primary {
 
 	@Override
 	public String toDbConstant(DatabaseVendor dbtype) {
-		switch (dbtype) {
+		switch(dbtype) {
 		case SqlServer: {
 			int scale = (scale() == 0 ? 1 : scale());
 			int precision = ((precision() + scale) > maxPrecision ? maxPrecision - scale : precision()) + scale;
-			return "CONVERT([numeric](" + java.lang.Integer.toString(precision) + "," + java.lang.Integer.toString(scale)
-					+ "),(" + toString() + "),(0))";
+			return "CONVERT([numeric](" + Integer.toString(precision) + "," + Integer.toString(scale) + "),(" + toString() + "),(0))";
 		}
 		default:
 			return toString();
@@ -126,8 +126,8 @@ public final class decimal extends primary {
 
 	@Override
 	public boolean equals(Object d) {
-		if (d instanceof decimal) {
-			return value.compareTo(((decimal) d).value) == 0;
+		if(d instanceof decimal) {
+			return value.compareTo(((decimal)d).value) == 0;
 		}
 		return false;
 	}
@@ -175,7 +175,7 @@ public final class decimal extends primary {
 	public decimal operatorMod(integer x) {
 		try {
 			return new decimal(value.divideAndRemainder(new BigDecimal(x.get()))[1]);
-		} catch (ArithmeticException e) {
+		} catch(ArithmeticException e) {
 			throw new RuntimeException(e);
 		}
 	}
@@ -199,12 +199,11 @@ public final class decimal extends primary {
 	public decimal operatorDiv(decimal x) {
 		BigDecimal divisor = x.get();
 
-		MathContext mc = new MathContext((int) Math.min(precision() + (long) Math.ceil(10.0 * divisor.precision() / 3.0),
-				java.lang.Integer.MAX_VALUE));
+		MathContext mc = new MathContext((int)Math.min(precision() + (long)Math.ceil(10.0 * divisor.precision() / 3.0), Integer.MAX_VALUE));
 
 		try {
 			return new decimal(value.divide(divisor, mc));
-		} catch (ArithmeticException e) {
+		} catch(ArithmeticException e) {
 			throw new RuntimeException(e);
 		}
 	}
@@ -212,7 +211,7 @@ public final class decimal extends primary {
 	public decimal operatorMod(decimal x) {
 		try {
 			return new decimal(value.divideAndRemainder(x.get())[1]);
-		} catch (ArithmeticException e) {
+		} catch(ArithmeticException e) {
 			throw new RuntimeException(e);
 		}
 	}
@@ -320,15 +319,15 @@ public final class decimal extends primary {
 	}
 
 	public integer z8_signum() {
-		return new integer((long) Math.signum(value.doubleValue()));
+		return new integer((long)Math.signum(value.doubleValue()));
 	}
 
 	public integer z8_ceil() {
-		return new integer((long) Math.ceil(value.doubleValue()));
+		return new integer((long)Math.ceil(value.doubleValue()));
 	}
 
 	public integer z8_floor() {
-		return new integer((long) Math.floor(value.doubleValue()));
+		return new integer((long)Math.floor(value.doubleValue()));
 	}
 
 	public integer round() {
@@ -366,7 +365,7 @@ public final class decimal extends primary {
 	public decimal z8_sin() {
 		try {
 			return new decimal(Math.sin(value.doubleValue()));
-		} catch (Throwable e) {
+		} catch(Throwable e) {
 			throw new RuntimeException(e);
 		}
 	}
@@ -374,7 +373,7 @@ public final class decimal extends primary {
 	public decimal z8_cos() {
 		try {
 			return new decimal(Math.cos(value.doubleValue()));
-		} catch (Throwable e) {
+		} catch(Throwable e) {
 			throw new RuntimeException(e);
 		}
 	}
@@ -382,7 +381,7 @@ public final class decimal extends primary {
 	public decimal z8_tan() {
 		try {
 			return new decimal(Math.tan(value.doubleValue()));
-		} catch (Throwable e) {
+		} catch(Throwable e) {
 			throw new RuntimeException(e);
 		}
 	}
@@ -390,7 +389,7 @@ public final class decimal extends primary {
 	public decimal z8_asin() {
 		try {
 			return new decimal(Math.asin(value.doubleValue()));
-		} catch (Throwable e) {
+		} catch(Throwable e) {
 			throw new RuntimeException(e);
 		}
 	}
@@ -398,7 +397,7 @@ public final class decimal extends primary {
 	public decimal z8_acos() {
 		try {
 			return new decimal(Math.acos(value.doubleValue()));
-		} catch (Throwable e) {
+		} catch(Throwable e) {
 			throw new RuntimeException(e);
 		}
 	}
@@ -406,7 +405,7 @@ public final class decimal extends primary {
 	public decimal z8_atan() {
 		try {
 			return new decimal(Math.atan(value.doubleValue()));
-		} catch (Throwable e) {
+		} catch(Throwable e) {
 			throw new RuntimeException(e);
 		}
 	}
@@ -414,7 +413,7 @@ public final class decimal extends primary {
 	public decimal z8_sinh() {
 		try {
 			return new decimal(Math.sinh(value.doubleValue()));
-		} catch (Throwable e) {
+		} catch(Throwable e) {
 			throw new RuntimeException(e);
 		}
 	}
@@ -422,7 +421,7 @@ public final class decimal extends primary {
 	public decimal z8_cosh() {
 		try {
 			return new decimal(Math.cosh(value.doubleValue()));
-		} catch (Throwable e) {
+		} catch(Throwable e) {
 			throw new RuntimeException(e);
 		}
 	}
@@ -430,7 +429,7 @@ public final class decimal extends primary {
 	public decimal z8_tanh() {
 		try {
 			return new decimal(Math.tanh(value.doubleValue()));
-		} catch (Throwable e) {
+		} catch(Throwable e) {
 			throw new RuntimeException(e);
 		}
 	}
@@ -438,7 +437,7 @@ public final class decimal extends primary {
 	public decimal z8_toRadians() {
 		try {
 			return new decimal(Math.toRadians(value.doubleValue()));
-		} catch (Throwable e) {
+		} catch(Throwable e) {
 			throw new RuntimeException(e);
 		}
 	}
@@ -446,7 +445,7 @@ public final class decimal extends primary {
 	public decimal z8_toDegrees() {
 		try {
 			return new decimal(Math.toDegrees(value.doubleValue()));
-		} catch (Throwable e) {
+		} catch(Throwable e) {
 			throw new RuntimeException(e);
 		}
 	}
@@ -454,7 +453,7 @@ public final class decimal extends primary {
 	public decimal z8_exp() {
 		try {
 			return new decimal(Math.exp(value.doubleValue()));
-		} catch (Throwable e) {
+		} catch(Throwable e) {
 			throw new RuntimeException(e);
 		}
 	}
@@ -462,7 +461,7 @@ public final class decimal extends primary {
 	public decimal z8_ln() {
 		try {
 			return new decimal(Math.log(value.doubleValue()));
-		} catch (Throwable e) {
+		} catch(Throwable e) {
 			throw new RuntimeException(e);
 		}
 	}
@@ -470,7 +469,7 @@ public final class decimal extends primary {
 	public decimal z8_log10() {
 		try {
 			return new decimal(Math.log10(value.doubleValue()));
-		} catch (Throwable e) {
+		} catch(Throwable e) {
 			throw new RuntimeException(e);
 		}
 	}
@@ -478,7 +477,7 @@ public final class decimal extends primary {
 	public decimal z8_sqrt() {
 		try {
 			return new decimal(Math.sqrt(value.doubleValue()));
-		} catch (Throwable e) {
+		} catch(Throwable e) {
 			throw new RuntimeException(e);
 		}
 	}
@@ -486,7 +485,7 @@ public final class decimal extends primary {
 	public decimal z8_cbrt() {
 		try {
 			return new decimal(Math.cbrt(value.doubleValue()));
-		} catch (Throwable e) {
+		} catch(Throwable e) {
 			throw new RuntimeException(e);
 		}
 	}
@@ -502,10 +501,10 @@ public final class decimal extends primary {
 	static public decimal z8_parse(string string) {
 		try {
 			String str = string.get();
-			if (str.length() == 0)
+			if(str.length() == 0)
 				str = "0.0";
 			return new decimal(new BigDecimal(str));
-		} catch (NumberFormatException e) {
+		} catch(NumberFormatException e) {
 			throw new MaskParseException(string, "decimal");
 		}
 	}

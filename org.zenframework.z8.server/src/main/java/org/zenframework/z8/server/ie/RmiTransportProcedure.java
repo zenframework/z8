@@ -3,12 +3,9 @@ package org.zenframework.z8.server.ie;
 import java.rmi.RemoteException;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
-import org.zenframework.z8.ie.xml.ExportEntry;
 import org.zenframework.z8.server.base.simple.Procedure;
-import org.zenframework.z8.server.base.table.system.SystemDomains;
 import org.zenframework.z8.server.base.view.command.Parameter;
 import org.zenframework.z8.server.config.ServerConfig;
 import org.zenframework.z8.server.db.Connection;
@@ -17,13 +14,10 @@ import org.zenframework.z8.server.engine.ApplicationServer;
 import org.zenframework.z8.server.engine.IApplicationServer;
 import org.zenframework.z8.server.engine.IInterconnectionCenter;
 import org.zenframework.z8.server.engine.Rmi;
-import org.zenframework.z8.server.engine.Session;
 import org.zenframework.z8.server.logs.Trace;
-import org.zenframework.z8.server.request.IRequest;
-import org.zenframework.z8.server.request.Request;
 import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.runtime.RCollection;
-import org.zenframework.z8.server.security.IUser;
+import org.zenframework.z8.server.types.file;
 import org.zenframework.z8.server.types.guid;
 
 public class RmiTransportProcedure extends Procedure {
@@ -69,42 +63,65 @@ public class RmiTransportProcedure extends Procedure {
 		public void run() {
 			Collection<guid> ids = messages.getExportMessages(domain);
 
-			for (guid id : ids) {
-				Message message = messages.getMessage(id);
-
-				if (message == null)
-					continue;
-
-				sendMessage(message);
+			try {
+				for (guid id : ids) {
+					Message message = messages.getMessage(id);
+					if(!sendMessage(message))
+						return;
+				}
+			} finally {
+				workers.remove(domain);
 			}
 		}
 		
-		void sendMessage(Message message) {
+		private boolean sendMessage(Message message) {
 			Connection connection = ConnectionManager.get();
 			try {
-				connection.beginTransaction();
-				
-				List<ExportEntry.Files.File> files = message.getExportEntry().getFiles().getFile();
-				message.setFiles(IeUtil.filesToFileInfos(files, true));
-
-				message.beforeExport();
-
 				if(server == null)
 					server = getInterconnectionCenter().connect(domain);
 	
-				long startAt = java.lang.System.currentTimeMillis();
-				server.accept(message);
-				messages.processed(new guid(message.getId()), (java.lang.System.currentTimeMillis() - startAt) + " ms");
+				if(server == null) {
+					messages.setError(message, "'" + domain + "' server is unavalable");
+					return false;
+				}
 
-				message.afterExport();
-				
-				connection.commit();
+				if(!message.isFile()) {
+					connection.beginTransaction();
+					
+					message.beforeExport();
+	
+					long total = java.lang.System.currentTimeMillis();
+					long timing = server.accept(message);
+					total = java.lang.System.currentTimeMillis() - total;
+	
+					message.afterExport();
+
+					message.processed((total - timing) + "/" + timing + "/" + total + " ms (t/p/tt)");
+
+					connection.commit();
+				} else {
+					file file = message.getFile().nextPart();
+
+					while(file != null) {
+						connection.beginTransaction();
+
+						server.accept(file);
+						
+						message.transferred(file.offset());
+
+						connection.commit();
+
+						file = file.nextPart();
+					}
+					
+					message.processed();
+				}
+				return true;
 			} catch (Throwable e) {
 				connection.rollback();
 				Trace.logError(e);
 				messages.setError(message, e);
-			} finally {
-				workers.remove(domain);
+				return false;
 			}
 		}
 	}
@@ -144,20 +161,6 @@ public class RmiTransportProcedure extends Procedure {
 	}
 	
 	static public void accept(Object object) {
-		Message message = (Message)object;
-		
-		IUser user = SystemDomains.newInstance().getDomain(message.getAddress()).getSystemUser();
-
-		IRequest request = new Request(new Session("", user));
-
-		ApplicationServer.setRequest(request);
-		
-		try {
-			Import.importMessage(ExportMessages.newInstance(), message);
-		} finally {
-			ConnectionManager.release();
-			ApplicationServer.setRequest(null);
-		}
+		Import.importObject(object);
 	}
-	
 }

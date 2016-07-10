@@ -12,13 +12,14 @@ import org.zenframework.z8.server.engine.IServerInfo;
 import org.zenframework.z8.server.engine.ServerInfo;
 import org.zenframework.z8.server.logs.Trace;
 import org.zenframework.z8.server.request.RequestDispatcher;
+import org.zenframework.z8.server.types.guid;
 import org.zenframework.z8.server.utils.ArrayUtils;
 
 public class InterconnectionCenter extends HubServer implements IInterconnectionCenter {
 
-	private static final long serialVersionUID = -2249011505751910023L;
-
 	private static final String cache = "interconnection.center.cache";
+
+	static public String id = guid.create().toString();
 
 	static private InterconnectionCenter instance = null;
 	
@@ -35,6 +36,11 @@ public class InterconnectionCenter extends HubServer implements IInterconnection
 	private InterconnectionCenter(ServerConfig config) throws RemoteException {
 		super(config.interconnectionCenterPort(), IInterconnectionCenter.class);
 		this.config = config;
+	}
+
+	@Override
+	public String id() throws RemoteException {
+		return id;
 	}
 
 	@Override
@@ -64,11 +70,6 @@ public class InterconnectionCenter extends HubServer implements IInterconnection
 	@Override
 	protected File cacheFile() {
 		return new File(config.getWorkingPath(), cache);
-	}
-
-	@Override
-	protected long serialVersion() {
-		return serialVersionUID;
 	}
 	
 	private IServerInfo findServer(String domain) throws RemoteException {

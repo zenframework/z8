@@ -14,18 +14,14 @@ public class SessionManager {
 
 	private Map<String, Session> sessions = new HashMap<String, Session>();
 
-	private TimeoutThread timeoutThread = new TimeoutThread();
-
 	SessionManager() {
 	}
 
 	public void start(ServerConfig config) {
 		setSessionTimeout(config.getSessionTimeout());
-		timeoutThread.start(this);
 	}
 
 	public void stop() {
-		timeoutThread.interrupt();
 	}
 
 	public Session get(String id) {
@@ -53,14 +49,13 @@ public class SessionManager {
 			sessions.remove(id);
 	}
 
-	public void checkTimeout() {
+	public void check() {
 		if(sessionTimeout != 0) {
 			long timeLimit = System.currentTimeMillis() - sessionTimeout;
 
 			for(Session session : sessions.values().toArray(new Session[0])) {
-				if(session.getLastAccessTime() < timeLimit) {
+				if(session.getLastAccessTime() < timeLimit)
 					drop(session.id());
-				}
 			}
 		}
 	}

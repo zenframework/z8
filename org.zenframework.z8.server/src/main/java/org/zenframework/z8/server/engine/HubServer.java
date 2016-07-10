@@ -16,7 +16,8 @@ import org.apache.commons.io.IOUtils;
 import org.zenframework.z8.server.logs.Trace;
 import org.zenframework.z8.server.utils.ErrorUtils;
 
-abstract public class HubServer extends RmiServer {
+abstract public class HubServer extends RmiServer implements IHubServer {
+	private static final long serialVersionUID = -3444119932500940144L;
 
 	private Collection<IServerInfo> innerServers = new ArrayList<IServerInfo>();
 	private Collection<IServerInfo> servers = Collections.synchronizedCollection(innerServers);
@@ -68,7 +69,6 @@ abstract public class HubServer extends RmiServer {
 		return null;
 	}
 	
-	abstract protected long serialVersion();
 	abstract protected File cacheFile();
 	
 	private synchronized void saveServers() {
@@ -76,7 +76,7 @@ abstract public class HubServer extends RmiServer {
 			OutputStream file = new FileOutputStream(cacheFile());
 			ObjectOutputStream out = new ObjectOutputStream(file);
 
-			out.writeLong(serialVersion());
+			out.writeLong(serialVersionUID);
 
 			out.writeObject(innerServers);
 
@@ -99,7 +99,7 @@ abstract public class HubServer extends RmiServer {
 			InputStream fileIn = new FileInputStream(file);
 			ObjectInputStream objectIn = new ObjectInputStream(fileIn);
 
-			if(serialVersion() == objectIn.readLong()) {
+			if(serialVersionUID == objectIn.readLong()) {
 				innerServers = (Collection<IServerInfo>)objectIn.readObject();
 				servers = Collections.synchronizedCollection(innerServers);
 			}

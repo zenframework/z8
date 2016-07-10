@@ -1,13 +1,18 @@
 package org.zenframework.z8.server.ie;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.Map;
 
+import org.apache.commons.io.FileUtils;
 import org.zenframework.z8.ie.xml.ExportEntry;
+import org.zenframework.z8.server.base.file.Folders;
+import org.zenframework.z8.server.base.file.InputOnlyFileItem;
 import org.zenframework.z8.server.base.table.Table;
+import org.zenframework.z8.server.base.table.system.SystemDomains;
 import org.zenframework.z8.server.base.table.system.SystemFiles;
 import org.zenframework.z8.server.base.table.value.Field;
 import org.zenframework.z8.server.db.Connection;
@@ -15,9 +20,13 @@ import org.zenframework.z8.server.db.ConnectionManager;
 import org.zenframework.z8.server.db.generator.IForeignKey;
 import org.zenframework.z8.server.engine.ApplicationServer;
 import org.zenframework.z8.server.engine.Runtime;
+import org.zenframework.z8.server.engine.Session;
 import org.zenframework.z8.server.json.parser.JsonObject;
 import org.zenframework.z8.server.logs.Trace;
+import org.zenframework.z8.server.request.IRequest;
 import org.zenframework.z8.server.request.Loader;
+import org.zenframework.z8.server.request.Request;
+import org.zenframework.z8.server.security.IUser;
 import org.zenframework.z8.server.types.file;
 import org.zenframework.z8.server.types.guid;
 import org.zenframework.z8.server.types.primary;
@@ -27,28 +36,64 @@ public class Import {
 
 	private static JsonObject STRUCTURE = null;
 
-	public static void importMessage(ExportMessages messages, Message message) {
-		importMessage(messages, message, null);
+	public static void importObject(Object object) {
+		if(object instanceof Message) {
+			Import.importMessage((Message)object);
+		} else if(object instanceof file) {
+			Import.importFile((file)object);
+		}
 	}
 	
-	public static void importMessage(ExportMessages messages, Message message, String transportInfo) {
+	public static void importFile(file file) {
+		File target = FileUtils.getFile(Folders.Base, Folders.Temp, file.path.get());
+
+		try {
+			if(!file.addPartTo(target))
+				return;
+		} catch(IOException e) {
+			throw new RuntimeException(e);
+		}
+		
+		try {
+			file.set(new InputOnlyFileItem(target, file.name.get()));
+			SystemFiles.newInstance().add(file);
+		} finally {
+			target.delete();
+		}
+	}
+	
+	public static void importMessage(Message message) {
+		IUser user = SystemDomains.newInstance().getDomain(message.getAddress()).getSystemUser();
+
+		IRequest request = new Request(new Session("", user));
+
+		ApplicationServer.setRequest(request);
+
 		Connection connection = ConnectionManager.get();
+
 		try {
 			connection.beginTransaction();
-			messages.processed(new guid(message.getId()), transportInfo);
+			message.processed();
+
 			message.beforeImport();
 			ApplicationServer.disableEvents();
+			
 			try {
 				importRecords(message);
 				importFiles(message);
 			} finally {
 				ApplicationServer.enableEvents();
 			}
+			
 			message.afterImport();
+			
 			connection.commit();
 		} catch (Throwable e) {
 			connection.rollback();
 			throw new RuntimeException(e);
+		} finally {
+			ConnectionManager.release();
+			ApplicationServer.setRequest(null);
 		}
 	}
 

@@ -14,15 +14,17 @@ import org.zenframework.z8.server.engine.ISession;
 import org.zenframework.z8.server.engine.Rmi;
 import org.zenframework.z8.server.engine.ServerInfo;
 import org.zenframework.z8.server.engine.Session;
+import org.zenframework.z8.server.engine.TimeoutChecker;
 import org.zenframework.z8.server.exceptions.AccessDeniedException;
 import org.zenframework.z8.server.logs.Trace;
 import org.zenframework.z8.server.request.RequestDispatcher;
 import org.zenframework.z8.server.security.IUser;
+import org.zenframework.z8.server.types.guid;
 
 public class AuthorityCenter extends HubServer implements IAuthorityCenter {
-
-	private static final long serialVersionUID = -3444119932500940144L;
 	private static final String serversCache = "authority.center.cache";
+
+	static public String id = guid.create().toString();
 
 	static private AuthorityCenter instance = null;
 	
@@ -32,6 +34,8 @@ public class AuthorityCenter extends HubServer implements IAuthorityCenter {
 	
 	private UserManager userManager;
 	private SessionManager sessionManager;
+
+	private TimeoutChecker timeoutChecker;
 
 	public static IAuthorityCenter launch(ServerConfig config) throws RemoteException {
 		if(instance == null) {
@@ -47,6 +51,11 @@ public class AuthorityCenter extends HubServer implements IAuthorityCenter {
 	}
 
 	@Override
+	public String id() throws RemoteException {
+		return id;
+	}
+	
+	@Override
 	public void start() throws RemoteException {
 		super.start();
 
@@ -55,25 +64,22 @@ public class AuthorityCenter extends HubServer implements IAuthorityCenter {
 		sessionManager = new SessionManager();
 		sessionManager.start(config);
 		
-		if(config.interconnectionEnabled()) {
-			String host = config.interconnectionCenterHost();
-			int port = config.interconnectionCenterPort();
-
-			interconnectionCenter = Rmi.get(IInterconnectionCenter.class, host, port);
-		}
+		timeoutChecker = new TimeoutChecker(this, "Authority Center Timeout Thread");
+		timeoutChecker.start();
 
 		Trace.logEvent("JVM startup options: " + ManagementFactory.getRuntimeMXBean().getInputArguments().toString() + "\n\t" + RequestDispatcher.getMemoryUsage());
 	}
 
 	@Override
 	public void stop() throws RemoteException {
-		sessionManager.stop();
+		timeoutChecker.destroy();
+		
 		super.stop();
 	}
 
 	@Override
-	public synchronized void register(IApplicationServer server, String id) throws RemoteException {
-		addServer(new ServerInfo(server, id));
+	public synchronized void register(IApplicationServer server) throws RemoteException {
+		addServer(new ServerInfo(server, server.id()));
 		registerInterconnection(server);
 	}
 	
@@ -84,13 +90,25 @@ public class AuthorityCenter extends HubServer implements IAuthorityCenter {
 	}
 
 	private void registerInterconnection(IApplicationServer server) throws RemoteException {
-		if(interconnectionCenter != null)
+		if(interconnectionCenter == null)
+			return;
+		
+		try {
 			interconnectionCenter.register(server);
+		} catch(Throwable e) {
+			interconnectionCenter = null;
+		}
 	}
 
 	private void unregisterInterconnection(IApplicationServer server) throws RemoteException {
-		if(interconnectionCenter != null)
+		if(interconnectionCenter == null)
+			return;
+
+		try {
 			interconnectionCenter.unregister(server);
+		} catch(Throwable e) {
+			interconnectionCenter = null;
+		}
 	}
 
 	@Override
@@ -161,9 +179,36 @@ public class AuthorityCenter extends HubServer implements IAuthorityCenter {
 	protected File cacheFile() {
 		return new File(config.getWorkingPath(), serversCache);
 	}
-
+	
 	@Override
-	protected long serialVersion() {
-		return serialVersionUID;
+	public void check() {
+		instance.checkSessions();
+		instance.checkConnections();
+	}
+	
+	private void checkSessions() {
+		sessionManager.check();
+	}
+
+	private void checkConnections() {
+		if(interconnectionCenter != null || !config.interconnectionEnabled())
+			return;
+
+		try {
+			interconnectionCenter = getInterconnectionCenter();
+			
+			for(IServerInfo server : getServers()) {
+				if(server.isAlive())
+					interconnectionCenter.register(server.getServer());
+			}
+
+		} catch(Throwable e) {
+		}
+	}
+	
+	private IInterconnectionCenter getInterconnectionCenter() throws RemoteException {
+		String host = config.interconnectionCenterHost();
+		int port = config.interconnectionCenterPort();
+		return Rmi.get(IInterconnectionCenter.class, host, port);
 	}
 }

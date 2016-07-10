@@ -48,40 +48,44 @@ Ext.apply(Z8.Console,
 	},
 	
 	createPolling: function(job) {
-		var provider = new Ext.direct.PollingProvider({
-			type:'polling',
-			url: Z8.request.url,
-			baseParams: { sessionId: Z8.sessionId, jobId: job.jobId }
-		});
-		
-		Ext.Direct.addProvider(provider);
-		
-		provider.on('data', this.processEvent, this);
-		
-		this.processEvent(provider, job);
+		var success = function(response, action) {
+			if(response != null && response.success) {
+				if(!this.processEvent(response))
+					this.createPolling.defer(250, this, [response]);
+			} else
+				failure(response);
+		};
+
+		var failure = function(response) {
+			if(response != null && this.relogin(response.status))
+				return;
+
+			job.info = result != null ? result.info : { messages: ['Transaction failure.'] };
+			this.processEvent(job);
+		};
+
+		var params = { serverId: job.serverId, jobId: job.jobId };
+		Z8.Ajax.request(null, success, failure, params, this);
 	},
 	
-	processEvent: function(provider, event) {
-		if(event.type == 'event') {
-			var job = this.getJob(event.jobId);
-			
-			if(job != null) {
-				job.info.messages = job.info.messages.concat(event.info.messages);
-				job.info.log = event.info.log;
-	
-				job.total = event.total != null && event.total != 0 ? event.total : 100.0;
-				job.worked = event.worked != null ? event.worked : 0.0;
-				job.progress = (1.0 * job.worked) / job.total;
+	processEvent: function(event) {
+		var job = this.getJob(event.jobId);
+		
+		if(job != null) {
+			job.info.messages = job.info.messages.concat(event.info.messages);
+			job.info.log = event.info.log;
 
-				if(event == job)
-					this.select(job);
-				else
-					this.updateProgress(job);
-			}
-			
-			if(event.done || job == null)
-				provider.disconnect();
+			job.total = event.total != null && event.total != 0 ? event.total : 100.0;
+			job.worked = event.worked != null ? event.worked : 0.0;
+			job.progress = (1.0 * job.worked) / job.total;
+
+			if(event == job)
+				this.select(job);
+			else
+				this.updateProgress(job);
 		}
+		
+		return event.done || job == null;
 	},
 
 	select: function(job) {

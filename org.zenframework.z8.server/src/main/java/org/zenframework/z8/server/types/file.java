@@ -1,5 +1,7 @@
 package org.zenframework.z8.server.types;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -7,15 +9,18 @@ import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
+import java.io.RandomAccessFile;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
 import org.apache.commons.fileupload.FileItem;
+import org.apache.commons.fileupload.disk.DiskFileItem;
 import org.apache.commons.io.FilenameUtils;
 import org.zenframework.z8.server.base.file.FilesFactory;
 import org.zenframework.z8.server.base.file.Folders;
+import org.zenframework.z8.server.base.table.system.SystemFiles;
 import org.zenframework.z8.server.engine.RmiIO;
 import org.zenframework.z8.server.engine.RmiSerializable;
 import org.zenframework.z8.server.json.Json;
@@ -29,6 +34,7 @@ import org.zenframework.z8.server.utils.IOUtils;
 public class file extends primary implements RmiSerializable, Serializable {
 
 	private static final long serialVersionUID = -2542688680678439014L;
+	private static final int partSize = 512 * 1024;
 
 	static public final String EOL = "\r\n";
 
@@ -42,6 +48,9 @@ public class file extends primary implements RmiSerializable, Serializable {
 	public RLinkedHashMap<string, string> details = new RLinkedHashMap<string, string>();
 
 	private FileItem value;
+
+	private long offset;
+	
 	public Status status = Status.LOCAL;
 
 	public JsonObject json;
@@ -85,7 +94,7 @@ public class file extends primary implements RmiSerializable, Serializable {
 	}
 
 	public file(File file) {
-		this(null, file.getName(), null, file.getPath());
+		this(null, file.getName(), null, file.getPath(), file.length(), new datetime(file.lastModified()));
 	}
 
 	public file(FileItem file) throws IOException {
@@ -93,23 +102,21 @@ public class file extends primary implements RmiSerializable, Serializable {
 	}
 
 	public file(FileItem value, String instanceId, String path) {
-		super();
-		this.instanceId = new string(instanceId);
-		this.path = new string(path);
-		this.name = new string(value.getName());
+		this(null, value.getName(), instanceId, path, value.getSize(), null);
 		this.value = value;
 	}
 
 	public file(guid id, String name, String instanceId, String path) {
-		this(id, name, instanceId, path, null);
+		this(id, name, instanceId, path, 0, null);
 	}
 
-	public file(guid id, String name, String instanceId, String path, datetime time) {
+	public file(guid id, String name, String instanceId, String path, long size, datetime time) {
 		super();
 		this.id = new guid(id);
 		this.instanceId = new string(instanceId);
-		this.path = new string(path);
+		this.path = new string(getRelativePath(path));
 		this.name = new string(name);
+		this.size = new integer(size);
 		this.time = new datetime(time);
 	}
 
@@ -173,6 +180,14 @@ public class file extends primary implements RmiSerializable, Serializable {
 			array.add(file.toJsonObject());
 
 		return array.toString();
+	}
+
+	public long offset() {
+		return offset;
+	}
+	
+	public void setOffset(long offset) {
+		this.offset = offset;
 	}
 
 	public JsonObject toJsonObject() {
@@ -239,6 +254,7 @@ public class file extends primary implements RmiSerializable, Serializable {
 		RmiIO.writeInteger(out, size);
 		RmiIO.writeGuid(out, id);
 
+		RmiIO.writeLong(out, offset);
 		RmiIO.writeBoolean(out, value != null);
 
 		if(value != null) {
@@ -263,10 +279,12 @@ public class file extends primary implements RmiSerializable, Serializable {
 		instanceId = new string(RmiIO.readString(in));
 		name = new string(RmiIO.readString(in));
 		path = new string(RmiIO.readString(in));
-		size = RmiIO.readInteger(in);
 		time = RmiIO.readDatetime(in);
+		size = RmiIO.readInteger(in);
 		id = RmiIO.readGuid(in);
 
+		offset = RmiIO.readLong(in);
+		
 		if(RmiIO.readBoolean(in)) {
 			long size = RmiIO.readLong(in);
 
@@ -289,17 +307,20 @@ public class file extends primary implements RmiSerializable, Serializable {
 		File folder = new File(Folders.Base, Folders.Files);
 		folder.mkdirs();
 
-		File file = File.createTempFile("tmp", ".txt", folder);
-		file.deleteOnExit();
-		return file;
+		return File.createTempFile("tmp", ".txt", folder);
 	}
 
 	public void write(String content, encoding charset) {
 		try {
-			if(path.isEmpty())
-				path.set(getTempFile().getPath());
+			File file = new File(path.get());
+			
+			if(path.isEmpty()) {
+				file = getTempFile();
+				path.set(getRelativePath(file.getPath()));
+			} else if(!file.isAbsolute())
+				file = new File(Folders.Base, path.get());
 
-			OutputStream output = new FileOutputStream(new File(path.get()), true);
+			OutputStream output = new FileOutputStream(file, true);
 			output.write(content.getBytes(charset.toString()));
 			IOUtils.closeQuietly(output);
 		} catch(IOException e) {
@@ -307,15 +328,60 @@ public class file extends primary implements RmiSerializable, Serializable {
 		}
 	}
 
-	public String getRelativePath() {
-		String path = this.path.get();
+	static public String getRelativePath(File file) {
+		return getRelativePath(file.getPath());
+	}
 
-		if (path.startsWith(Folders.Base.getPath()))
+	static public String getRelativePath(String path) {
+		if (path != null && path.startsWith(Folders.Base.getPath()))
 			return path.substring(Folders.Base.getPath().length() + 1);
 
 		return path;
 	}
 
+	public file nextPart() throws IOException {
+		
+		SystemFiles.get(this);
+
+		if(offset == size.get())
+			return null;
+		
+		byte[] bytes = new byte[partSize];
+
+		InputStream input = getInputStream();
+		input.skip(offset);
+		int read = IOUtils.read(input, bytes);
+		input.close();
+
+		FileItem fileItem = new DiskFileItem(name.get(), null, false, name.get(), 1024 * 1024, null);
+		OutputStream output = fileItem.getOutputStream();
+		output.write(IOUtils.zip(bytes, 0, read));
+		output.close();
+
+		set(fileItem);
+
+		offset += read;
+		
+		return this;
+	}
+
+	public boolean addPartTo(File target) throws IOException {
+		ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+		IOUtils.copy(getInputStream(), bytes);
+
+		byte[] unzipped = IOUtils.unzip(bytes.toByteArray());
+		ByteArrayInputStream input = new ByteArrayInputStream(unzipped);
+
+		target.getParentFile().mkdirs();
+
+		RandomAccessFile output = new RandomAccessFile(target.getPath(), "rw");
+		output.seek(offset);
+		
+		IOUtils.copy(input, output);
+		
+		return target.length() == size.get();
+	}
+	
 	public void operatorAssign(string path) {
 		File file = new File(path.get());
 
@@ -344,10 +410,6 @@ public class file extends primary implements RmiSerializable, Serializable {
 		write(content.get(), charset);
 	}
 	
-	public string z8_relativePath() {
-		return new string(getRelativePath());
-	}
-
 	static public string z8_name(string name) {
 		return new string(FilenameUtils.getName(name.get()));
 	}

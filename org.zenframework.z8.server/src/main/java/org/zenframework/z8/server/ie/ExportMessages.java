@@ -112,6 +112,19 @@ public class ExportMessages extends Table {
 
 	}
 
+	static public class names {
+/*		public final static String Sender = "ExportMessages.sender";
+		public final static String Receiver = "ExportMessages.receiver";
+		public final static String Info = "ExportMessages.info";
+		public final static String Transport = "ExportMessages.transport";
+		public final static String Message = "ExportMessages.message";
+		public final static String Ordinal = "ExportMessages.ordinal";
+		public final static String ClassId = "ExportMessages.classId";
+		public final static String Processed = "ExportMessages.processed";
+		public final static String Error = "ExportMessages.error";*/
+		public final static String BytesTransferred = "BytesTransferred";
+	}
+
 	static public class strings {
 		public final static String Title = "ExportMessages.title";
 		public final static String Sender = "ExportMessages.sender";
@@ -123,6 +136,7 @@ public class ExportMessages extends Table {
 		public final static String ClassId = "ExportMessages.classId";
 		public final static String Processed = "ExportMessages.processed";
 		public final static String Error = "ExportMessages.error";
+		public final static String BytesTransferred = "ExportMessages.bytesTransferred";
 	}
 
 	private static class PreserveExportMessagesListener implements Properties.Listener {
@@ -147,6 +161,9 @@ public class ExportMessages extends Table {
 	public final TextField.CLASS<TextField> message = new TextField.CLASS<TextField>(this);
 	public final BoolField.CLASS<BoolField> processed = new BoolField.CLASS<BoolField>(this);
 	public final BoolField.CLASS<BoolField> error = new BoolField.CLASS<BoolField>(this);
+	public final IntegerField.CLASS<IntegerField> bytesTransferred = new IntegerField.CLASS<IntegerField>(this);
+
+	
 	public final MessageAttachmentExpression.CLASS<MessageAttachmentExpression> attachment = new MessageAttachmentExpression.CLASS<MessageAttachmentExpression>(
 			this);
 
@@ -185,6 +202,19 @@ public class ExportMessages extends Table {
 		} else {
 			messages.destroy(id);
 		}
+	}
+
+	public void transferred(guid id, long bytes) {
+		ExportMessages messages = new ExportMessages.CLASS<ExportMessages>().get();
+
+		messages.description.get().set(bytes + "B");
+		messages.bytesTransferred.get().set(new integer(bytes));
+		messages.update(id);
+	}
+
+	public void setError(Message message, String info) {
+		description.get().set(new string(info));
+		update(new guid(message.getId()));
 	}
 
 	public void setError(Message message, Throwable e) {
@@ -252,6 +282,10 @@ public class ExportMessages extends Table {
 		error.setIndex("error");
 		error.setDisplayName(Resources.get(strings.Error));
 
+		bytesTransferred.setName(names.BytesTransferred);
+		bytesTransferred.setIndex("transferred");
+		bytesTransferred.setDisplayName(Resources.get(strings.BytesTransferred));
+
 		message.setName("Xml");
 		message.setIndex("xml");
 		message.setDisplayName(Resources.get(strings.Message));
@@ -264,6 +298,7 @@ public class ExportMessages extends Table {
 		registerDataField(classId);
 		registerDataField(processed);
 		registerDataField(error);
+		registerDataField(bytesTransferred);
 		registerDataField(message);
 		registerDataField(attachment);
 
@@ -387,10 +422,11 @@ public class ExportMessages extends Table {
 		if (classId == null || classId.isEmpty())
 			classId = Message.class.getCanonicalName();
 		Message message = (Message) Loader.getInstance(classId);
-		message.setId(recordId().get());
+		message.setId(recordId());
 		message.setTime(createdAt.get().datetime());
 		message.setAddress(getReceiver());
 		message.setSender(getSender());
+		message.setBytesTransferred(bytesTransferred.get().integer().get());
 		message.setXml(xml);
 		return message;
 	}

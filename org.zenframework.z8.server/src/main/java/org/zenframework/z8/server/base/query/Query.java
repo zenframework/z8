@@ -811,7 +811,7 @@ public class Query extends Runnable {
 
 	public int update(guid id) {
 		Collection<Field> fields = getChangedFields();
-		return UpdateAction.run(this, id, fields, getModelRecordId(id));
+		return UpdateAction.run(this, id, fields, getModelRecordId(id), true);
 	}
 
 	public int update(SqlToken where) {

@@ -24,6 +24,9 @@ public abstract class RmiServer implements IServer, Remote {
 		}
 	}
 	
+	public void check() {
+	}
+	
 	@Override
 	public void probe() throws RemoteException {
 	}

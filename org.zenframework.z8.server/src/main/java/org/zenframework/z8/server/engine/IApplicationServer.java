@@ -18,5 +18,5 @@ public interface IApplicationServer extends IServer {
 
 	public String[] domains() throws RemoteException;
 
-	public void accept(Object data) throws RemoteException;
+	public long accept(Object data) throws RemoteException;
 }

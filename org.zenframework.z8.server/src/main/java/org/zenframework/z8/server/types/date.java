@@ -17,11 +17,8 @@ public final class date extends primary {
 
 	private GregorianCalendar m_value = new GregorianCalendar();
 
-	final static public String defaultMask = "dd/MM/yyyy";
 	final static public date MIN = new date(1899, 12, 31);
 	final static public date MAX = new date(4712, 12, 31);
-
-	final static public String[] knownFormats = new String[] { "dd/MM/yyyy", "dd.MM.yyyy" };
 
 	public date() {
 		nullTime();
@@ -55,13 +52,14 @@ public final class date extends primary {
 		set(gc);
 	}
 
-	public date(String s) {
-		if (s != null && !s.isEmpty()) {
-			String[] values = s.split(" ")[0].split("/");
+	public date(String date) {
+		if (date != null && !date.isEmpty()) {
+			// dd/mm/yyyy
+			// 0123456789
 
-			int day = java.lang.Integer.parseInt(values[0]);
-			int month = java.lang.Integer.parseInt(values[1]);
-			int year = java.lang.Integer.parseInt(values[2]);
+			int day = Integer.parseInt(date.substring(0, 2));
+			int month = Integer.parseInt(date.substring(3, 5));
+			int year = Integer.parseInt(date.substring(6, 10));
 
 			set(year, month, day);
 		} else
@@ -143,7 +141,10 @@ public final class date extends primary {
 
 	@Override
 	public String toString() {
-		return format(defaultMask);
+		int day = day();
+		int month = month();
+		int year = year();
+		return (day < 10 ? "0" + day : day) + "/" + (month < 10 ? "0" + month : month) + "/" + year;
 	}
 
 	public String format(String format) {
@@ -397,7 +398,7 @@ public final class date extends primary {
 		return new date(string.get());
 	}
 
-	static public date z8_parse(string string, string frm) {
-		return new date(string.get(), frm.get());
+	static public date z8_parse(string string, string format) {
+		return new date(string.get(), format.get());
 	}
 }

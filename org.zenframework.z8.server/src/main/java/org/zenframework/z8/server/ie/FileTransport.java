@@ -13,7 +13,6 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.UUID;
 
 import org.apache.commons.io.comparator.NameFileComparator;
 import org.apache.commons.logging.Log;
@@ -25,6 +24,7 @@ import org.zenframework.z8.server.request.Loader;
 import org.zenframework.z8.server.runtime.ServerRuntime;
 import org.zenframework.z8.server.types.datetime;
 import org.zenframework.z8.server.types.file;
+import org.zenframework.z8.server.types.guid;
 import org.zenframework.z8.server.utils.IOUtils;
 
 public class FileTransport extends AbstractTransport implements Properties.Listener {
@@ -264,7 +264,7 @@ public class FileTransport extends AbstractTransport implements Properties.Liste
 
 		Message message = (Message) Loader.getInstance(classId);
 		String[] folderName = messageFolder.getName().split("_");
-		message.setId(UUID.fromString(folderName.length < 2 ? folderName[0] : folderName[1]));
+		message.setId(new guid(folderName.length < 2 ? folderName[0] : folderName[1]));
 		message.setTime(time);
 		message.setAddress(context.getProperty(TransportContext.SelfAddressProperty));
 		message.setSender(messageFolder.getParentFile().getName());

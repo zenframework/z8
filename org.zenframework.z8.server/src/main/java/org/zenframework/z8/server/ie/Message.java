@@ -7,7 +7,6 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.List;
-import java.util.UUID;
 
 import org.zenframework.z8.ie.xml.ExportEntry;
 import org.zenframework.z8.server.engine.RmiIO;
@@ -55,10 +54,11 @@ public class Message extends OBJECT implements RmiSerializable, Serializable {
 		}
 	}
 
-	private UUID id = UUID.randomUUID();
+	private guid id = guid.create();
 	private datetime time = new datetime();
 	private String sender;
 	private String address;
+	private long bytesTransferred;
 
 	private String xml;
 	private ExportEntry exportEntry;
@@ -70,11 +70,11 @@ public class Message extends OBJECT implements RmiSerializable, Serializable {
 		super(container);
 	}
 
-	public UUID getId() {
+	public guid getId() {
 		return id;
 	}
 
-	public void setId(UUID id) {
+	public void setId(guid id) {
 		this.id = id;
 	}
 
@@ -102,8 +102,12 @@ public class Message extends OBJECT implements RmiSerializable, Serializable {
 		this.sender = sender;
 	}
 
+	public void setBytesTransferred(long bytesTransferred) {
+		this.bytesTransferred = bytesTransferred;
+	}
+
 	public String getXml() {
-		if (xml == null && exportEntry != null) {
+		if(xml == null && exportEntry != null) {
 			xml = IeUtil.marshalExportEntry(exportEntry);
 		}
 		return xml;
@@ -115,10 +119,10 @@ public class Message extends OBJECT implements RmiSerializable, Serializable {
 	}
 
 	public ExportEntry getExportEntry() {
-		if (exportEntry == null && xml != null) {
+		if(exportEntry == null && xml != null) {
 			exportEntry = IeUtil.unmarshalExportEntry(xml);
 		}
-		if (exportEntry == null) {
+		if(exportEntry == null) {
 			exportEntry = new ExportEntry();
 			exportEntry.setRecords(new ExportEntry.Records());
 			exportEntry.setFiles(new ExportEntry.Files());
@@ -142,11 +146,11 @@ public class Message extends OBJECT implements RmiSerializable, Serializable {
 	}
 
 	public RLinkedHashMap<string, primary> getProperties() {
-		if (properties == null) {
+		if(properties == null) {
 			properties = new RLinkedHashMap<string, primary>();
 			ExportEntry.Properties entryProps = getExportEntry().getProperties();
-			if (entryProps != null) {
-				for (ExportEntry.Properties.Property property : entryProps.getProperty()) {
+			if(entryProps != null) {
+				for(ExportEntry.Properties.Property property : entryProps.getProperty()) {
 					properties.put(new string(property.getKey()), primary.create(property.getType(), property.getValue()));
 				}
 			}
@@ -158,10 +162,10 @@ public class Message extends OBJECT implements RmiSerializable, Serializable {
 		primary type = getProperties().get(Message.PROP_TYPE);
 		primary group = getProperties().get(Message.PROP_GROUP);
 		StringBuilder str = new StringBuilder();
-		if (type != null)
+		if(type != null)
 			str.append(type);
-		if (group != null) {
-			if (str.length() > 0)
+		if(group != null) {
+			if(str.length() > 0)
 				str.append(" : ");
 			str.append(group);
 		}
@@ -182,25 +186,29 @@ public class Message extends OBJECT implements RmiSerializable, Serializable {
 		z8_beforeImport();
 	}
 
-	public void z8_beforeImport() {}
+	public void z8_beforeImport() {
+	}
 
 	protected void afterImport() {
 		z8_afterImport();
 	}
 
-	public void z8_afterImport() {}
+	public void z8_afterImport() {
+	}
 
 	protected void beforeExport() {
 		z8_beforeExport();
 	}
 
-	public void z8_beforeExport() {}
+	public void z8_beforeExport() {
+	}
 
 	protected void afterExport() {
 		z8_afterExport();
 	}
 
-	public void z8_afterExport() {}
+	public void z8_afterExport() {
+	}
 
 	private void writeObject(ObjectOutputStream out) throws IOException {
 		serialize(out);
@@ -210,6 +218,34 @@ public class Message extends OBJECT implements RmiSerializable, Serializable {
 		deserialize(in);
 	}
 
+	public void processed() {
+		processed(null);
+	}
+	
+	public void processed(String info) {
+		ExportMessages.newInstance().processed(getId(), info);
+	}
+	
+	public void transferred(long bytes) {
+		ExportMessages.newInstance().transferred(getId(), bytes);
+	}
+
+	public boolean isFile() {
+		List<ExportEntry.Files.File> files = getExportEntry().getFiles().getFile();
+
+		if(files.size() > 1)
+			throw new RuntimeException("Message must contain one or zero files");
+
+		return files.size() == 1;
+	}
+
+	public file getFile() {
+		ExportEntry.Files.File desc = getExportEntry().getFiles().getFile().get(0);
+		file file = new file(new guid(desc.getId()), desc.getId(), desc.getInstanceId(), desc.getPath(), 0, new datetime(desc.getTime()));
+		file.setOffset(bytesTransferred);
+		return file;
+	}
+
 	@Override
 	public void serialize(ObjectOutputStream out) throws IOException {
 		RmiIO.writeLong(out, serialVersionUID);
@@ -217,7 +253,7 @@ public class Message extends OBJECT implements RmiSerializable, Serializable {
 		ByteArrayOutputStream bytes = new ByteArrayOutputStream(256 * NumericUtils.Kilobyte);
 		ObjectOutputStream objects = new ObjectOutputStream(bytes);
 
-		RmiIO.writeUUID(objects, id);
+		RmiIO.writeGuid(objects, id);
 		RmiIO.writeDatetime(objects, time);
 		RmiIO.writeString(objects, sender);
 		RmiIO.writeString(objects, address);
@@ -227,11 +263,10 @@ public class Message extends OBJECT implements RmiSerializable, Serializable {
 
 		RmiIO.writeBytes(out, IOUtils.zip(bytes.toByteArray()));
 
-		out.writeObject(files);
+		// out.writeObject(files);
 	}
 
 	@Override
-	@SuppressWarnings("unchecked")
 	public void deserialize(ObjectInputStream in) throws IOException, ClassNotFoundException {
 		@SuppressWarnings("unused")
 		long version = RmiIO.readLong(in);
@@ -239,7 +274,7 @@ public class Message extends OBJECT implements RmiSerializable, Serializable {
 		ByteArrayInputStream bytes = new ByteArrayInputStream(IOUtils.unzip(RmiIO.readBytes(in)));
 		ObjectInputStream objects = new ObjectInputStream(bytes);
 
-		id = RmiIO.readUUID(objects);
+		id = RmiIO.readGuid(objects);
 		time = RmiIO.readDatetime(objects);
 		sender = RmiIO.readString(objects);
 		address = RmiIO.readString(objects);
@@ -247,7 +282,7 @@ public class Message extends OBJECT implements RmiSerializable, Serializable {
 
 		objects.close();
 
-		files = (RCollection<file>) in.readObject();
+		// files = (RCollection<file>) in.readObject();
 	}
 
 	public guid z8_getId() {
@@ -264,7 +299,7 @@ public class Message extends OBJECT implements RmiSerializable, Serializable {
 
 	public RCollection<file> z8_getFiles() {
 		RCollection<file> files = new RCollection<file>();
-		for (ExportEntry.Files.File file : getExportEntry().getFiles().getFile()) {
+		for(ExportEntry.Files.File file : getExportEntry().getFiles().getFile()) {
 			files.add(IeUtil.fileToFileInfo(file));
 		}
 		return files;
@@ -277,7 +312,7 @@ public class Message extends OBJECT implements RmiSerializable, Serializable {
 	public string z8_getXml() {
 		try {
 			return new string(getXml());
-		} catch (Throwable e) {
+		} catch(Throwable e) {
 			throw new exception(e);
 		}
 	}

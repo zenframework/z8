@@ -1,7 +1,5 @@
 package org.zenframework.z8.server.ie.ws;
 
-import java.util.UUID;
-
 import org.zenframework.z8.ie.xml.ExportEntry;
 import org.zenframework.z8.server.ie.ExportMessages;
 import org.zenframework.z8.server.ie.IeUtil;
@@ -9,6 +7,7 @@ import org.zenframework.z8.server.ie.Import;
 import org.zenframework.z8.server.ie.Message;
 import org.zenframework.z8.server.ie.TransportException;
 import org.zenframework.z8.server.request.Loader;
+import org.zenframework.z8.server.types.guid;
 
 public class TransportServiceImpl implements TransportService {
 
@@ -19,7 +18,7 @@ public class TransportServiceImpl implements TransportService {
 	}
 
 	@Override
-	public void sendMessage(String messageClass, UUID id, String sender, String address, ExportEntry exportEntry)
+	public void sendMessage(String messageClass, guid id, String sender, String address, ExportEntry exportEntry)
 			throws TransportException {
 		Message message = (Message) Loader.getInstance(messageClass);
 		message.setId(id);

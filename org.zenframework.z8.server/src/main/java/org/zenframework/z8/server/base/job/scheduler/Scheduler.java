@@ -54,6 +54,9 @@ public class Scheduler implements Runnable {
 		while (scheduler != null) {
 			initializeTasks();
 
+			if(Thread.interrupted())
+				return;
+			
 			for (Task task : tasks) {
 				if (task.readyToStart())
 					startJob(task);
@@ -62,7 +65,7 @@ public class Scheduler implements Runnable {
 			try {
 				Thread.sleep(1 * 1000);
 			} catch (InterruptedException e) {
-				break;
+				return;
 			}
 		}
 	}
