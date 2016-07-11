@@ -10,8 +10,8 @@ import org.zenframework.z8.server.base.table.value.Field;
 import org.zenframework.z8.server.base.table.value.IntegerField;
 import org.zenframework.z8.server.base.table.value.StringField;
 import org.zenframework.z8.server.base.table.value.TextField;
+import org.zenframework.z8.server.config.ServerConfig;
 import org.zenframework.z8.server.engine.ApplicationServer;
-import org.zenframework.z8.server.engine.Z8Context;
 import org.zenframework.z8.server.types.guid;
 
 public class Scheduler implements Runnable {
@@ -23,7 +23,7 @@ public class Scheduler implements Runnable {
 	private List<Task> tasks = new ArrayList<Task>();
 
 	public static void start() {
-		if (scheduler == null && Z8Context.getConfig().isSchedulerEnabled() && ApplicationServer.isSystemInstalled())
+		if (scheduler == null && ServerConfig.isSchedulerEnabled() && ServerConfig.database().isSystemInstalled())
 			scheduler = new Scheduler();
 	}
 

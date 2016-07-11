@@ -22,13 +22,13 @@ import org.zenframework.z8.server.base.table.value.StringExpression;
 import org.zenframework.z8.server.base.table.value.StringField;
 import org.zenframework.z8.server.base.view.command.Command;
 import org.zenframework.z8.server.base.view.command.Parameter;
+import org.zenframework.z8.server.config.ServerConfig;
 import org.zenframework.z8.server.db.sql.SqlToken;
 import org.zenframework.z8.server.db.sql.expressions.And;
 import org.zenframework.z8.server.db.sql.expressions.Equ;
 import org.zenframework.z8.server.db.sql.expressions.Or;
 import org.zenframework.z8.server.db.sql.functions.InVector;
 import org.zenframework.z8.server.db.sql.functions.string.IsEmpty;
-import org.zenframework.z8.server.engine.Z8Context;
 import org.zenframework.z8.server.ie.Export;
 import org.zenframework.z8.server.ie.Message;
 import org.zenframework.z8.server.ie.Transport;
@@ -280,7 +280,7 @@ public class SystemFiles extends Table {
 				if(fileInfo.instanceId != null)
 					id.get().set(fileInfo.instanceId);
 				else if(fileInfo.get() != null)
-					id.get().set(Z8Context.getInstanceId());
+					id.get().set(ServerConfig.instanceId());
 				if(fileInfo.get() != null) {
 					input = fileInfo.getInputStream();
 					data.get().set(input);
@@ -386,7 +386,7 @@ public class SystemFiles extends Table {
 	}
 
 	private void fillFromRemote(file fileInfo, File path) throws IOException {
-		if(fileInfo.instanceId == null || fileInfo.instanceId.isEmpty() || fileInfo.instanceId.get().equals(Z8Context.getInstanceId()))
+		if(fileInfo.instanceId == null || fileInfo.instanceId.isEmpty() || fileInfo.instanceId.get().equals(ServerConfig.instanceId()))
 			throw new FileNotFoundException(fileInfo.path.get());
 
 		TransportRoutes transportRoutes = TransportRoutes.newInstance();

@@ -9,7 +9,7 @@ import org.zenframework.z8.server.base.table.Table;
 import org.zenframework.z8.server.base.table.system.SystemFiles;
 import org.zenframework.z8.server.base.table.value.AttachmentField;
 import org.zenframework.z8.server.base.table.value.Field;
-import org.zenframework.z8.server.engine.Z8Context;
+import org.zenframework.z8.server.config.ServerConfig;
 import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.runtime.OBJECT;
 import org.zenframework.z8.server.runtime.RCollection;
@@ -80,7 +80,7 @@ public class AttachmentProcessor extends OBJECT {
 					filesTable.recordId.get().set(file.id);
 
 				setPathIfEmpty(attachTo, file);
-				file.instanceId = new string(Z8Context.getInstanceId());
+				file.instanceId = new string(ServerConfig.instanceId());
 				filesTable.addFile(file);
 			}
 		}

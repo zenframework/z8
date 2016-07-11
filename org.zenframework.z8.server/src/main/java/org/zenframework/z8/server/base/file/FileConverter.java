@@ -15,7 +15,7 @@ import org.artofsolving.jodconverter.office.OfficeException;
 import org.artofsolving.jodconverter.office.OfficeManager;
 import org.zenframework.z8.server.base.table.system.Properties;
 import org.zenframework.z8.server.base.table.system.Property;
-import org.zenframework.z8.server.engine.Z8Context;
+import org.zenframework.z8.server.config.ServerConfig;
 import org.zenframework.z8.server.logs.Trace;
 import org.zenframework.z8.server.runtime.ServerRuntime;
 import org.zenframework.z8.server.utils.EmlUtils;
@@ -106,17 +106,19 @@ public class FileConverter {
 				officeManager.start();
 				Trace.logEvent("Connected to an existing OpenOffice process, port " + OFFICE_PORT);
 			} catch (OfficeException e) {
+				String officeHome = ServerConfig.officeHome();
+
 				try {
 					Trace.logEvent("Can't connect to an existing OpenOffice process: " + e.getMessage());
 					//Start a new openoffice instance
 					officeManager = new DefaultOfficeManagerConfiguration()
-							.setOfficeHome(Z8Context.getConfig().getOfficeHome()).setPortNumber(OFFICE_PORT)
+							.setOfficeHome(officeHome).setPortNumber(OFFICE_PORT)
 							.buildOfficeManager();
 					officeManager.start();
-					Trace.logEvent("New OpenOffice '" + Z8Context.getConfig().getOfficeHome() + "' process created, port "
+					Trace.logEvent("New OpenOffice '" + officeHome + "' process created, port "
 							+ OFFICE_PORT);
 				} catch (Throwable e1) {
-					Trace.logError("Could not start OpenOffice '" + Z8Context.getConfig().getOfficeHome() + "'", e1);
+					Trace.logError("Could not start OpenOffice '" + officeHome + "'", e1);
 					officeManager = null;
 				}
 			}

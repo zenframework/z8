@@ -4,7 +4,7 @@ import java.io.File;
 import java.io.IOException;
 
 import org.zenframework.z8.server.base.table.system.SystemFiles;
-import org.zenframework.z8.server.engine.Z8Context;
+import org.zenframework.z8.server.config.ServerConfig;
 import org.zenframework.z8.server.logs.Trace;
 import org.zenframework.z8.server.types.file;
 import org.zenframework.z8.server.utils.PdfUtils;
@@ -25,7 +25,7 @@ public class Files {
 		if (!FileConverter.isConvertableToPdf(file.path.get()))
 			return null;
 		getFile(file);
-		File path = new File(Z8Context.getWorkingPath(), file.path.get());
+		File path = new File(ServerConfig.workingPath(), file.path.get());
 		if (!path.exists())
 			return null;
 		return getConverter().getConvertedPdf(file.path.get(), path);
@@ -45,7 +45,7 @@ public class Files {
 
 	private FileConverter getConverter() {
 		if (converter == null)
-			converter = new FileConverter(new File(Z8Context.getWorkingPath(), Folders.Cache));
+			converter = new FileConverter(new File(Folders.Base, Folders.Cache));
 		return converter;
 	}
 

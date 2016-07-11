@@ -32,13 +32,11 @@ public class ApplicationServer extends RmiServer implements IApplicationServer {
 
 	static private ApplicationServer instance;
 
-	private ServerConfig config;
-	private Database database;
 	private IAuthorityCenter authorityCenter;
 
 	static public IApplicationServer launch(ServerConfig config) throws RemoteException {
 		if(instance == null) {
-			instance = new ApplicationServer(config);
+			instance = new ApplicationServer();
 			instance.start();
 		}
 		return instance;	
@@ -51,10 +49,6 @@ public class ApplicationServer extends RmiServer implements IApplicationServer {
 		return request;
 	}
 
-	static public ServerConfig config() {
-		return instance.getConfig();
-	}
-
 	static public ISession getSession() {
 		return getRequest().getSession();
 	}
@@ -63,12 +57,8 @@ public class ApplicationServer extends RmiServer implements IApplicationServer {
 		return getRequest().getMonitor();
 	}
 
-	static public Database database() {
-		return instance.getDatabase();
-	}
-
 	static public boolean isSystemInstalled() {
-		return database().isSystemInstalled();
+		return ServerConfig.database().isSystemInstalled();
 	}
 	
 	public static IUser getUser() {
@@ -94,9 +84,8 @@ public class ApplicationServer extends RmiServer implements IApplicationServer {
 		return getRequest().events();
 	}
 
-	private ApplicationServer(ServerConfig config) throws RemoteException {
-		super(config.getUnicastApplicationServerPort(), IApplicationServer.class);
-		this.config = config;
+	private ApplicationServer() throws RemoteException {
+		super(ServerConfig.applicationServerPort(), IApplicationServer.class);
 	}
 
 	@Override
@@ -110,8 +99,7 @@ public class ApplicationServer extends RmiServer implements IApplicationServer {
 
 		checkSchemaVersion();
 
-		authorityCenter = Rmi.get(IAuthorityCenter.class, config.getAuthorityCenterHost(), config.getAuthorityCenterPort());
-		authorityCenter.register(this);
+		ServerConfig.authorityCenter().register(this);
 
 		Scheduler.start();
 
@@ -175,15 +163,5 @@ public class ApplicationServer extends RmiServer implements IApplicationServer {
 	private void checkSchemaVersion() {
 		String version = Runtime.version();
 		System.out.println("Runtime schema version: " + version);
-	}
-
-	private Database getDatabase() {
-		if(database == null)
-			database = new Database(config);
-		return database;
-	}
-
-	private ServerConfig getConfig() {
-		return config;
 	}
 }

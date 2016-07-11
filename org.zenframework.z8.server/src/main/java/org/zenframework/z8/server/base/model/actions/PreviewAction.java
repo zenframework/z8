@@ -11,7 +11,6 @@ import org.zenframework.z8.server.base.file.Folders;
 import org.zenframework.z8.server.base.query.Query;
 import org.zenframework.z8.server.base.table.value.Field;
 import org.zenframework.z8.server.engine.ApplicationServer;
-import org.zenframework.z8.server.engine.Z8Context;
 import org.zenframework.z8.server.json.Json;
 import org.zenframework.z8.server.json.JsonWriter;
 import org.zenframework.z8.server.types.file;
@@ -55,7 +54,7 @@ public class PreviewAction extends Action {
 			if (preview != null)
 				converted.add(preview);
 		}
-		File preview = new File(Z8Context.getWorkingPath(), previewRelativePath);
+		File preview = new File(Folders.Base, previewRelativePath);
 		PdfUtils.merge(converted, preview);
 		writer.writeProperty(Json.source, previewRelativePath);
 		writer.writeProperty(Json.serverId, ApplicationServer.id);

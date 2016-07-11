@@ -1,6 +1,5 @@
 package org.zenframework.z8.server.ie;
 
-import java.rmi.RemoteException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -10,10 +9,7 @@ import org.zenframework.z8.server.base.view.command.Parameter;
 import org.zenframework.z8.server.config.ServerConfig;
 import org.zenframework.z8.server.db.Connection;
 import org.zenframework.z8.server.db.ConnectionManager;
-import org.zenframework.z8.server.engine.ApplicationServer;
 import org.zenframework.z8.server.engine.IApplicationServer;
-import org.zenframework.z8.server.engine.IInterconnectionCenter;
-import org.zenframework.z8.server.engine.Rmi;
 import org.zenframework.z8.server.logs.Trace;
 import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.runtime.RCollection;
@@ -22,7 +18,6 @@ import org.zenframework.z8.server.types.guid;
 
 public class RmiTransportProcedure extends Procedure {
 
-	static private IInterconnectionCenter interconnectionCenter;
 	static private Map<String, TransportThread> workers = new HashMap<String, TransportThread>();
 
 	protected final ExportMessages messages = ExportMessages.newInstance();
@@ -81,7 +76,7 @@ public class RmiTransportProcedure extends Procedure {
 
 			try {
 				if(server == null)
-					server = getInterconnectionCenter().connect(domain);
+					server = ServerConfig.interconnectionCenter().connect(domain);
 	
 				if(server == null) {
 					message.info("'" + domain + "' server is unavalable");
@@ -134,7 +129,7 @@ public class RmiTransportProcedure extends Procedure {
 	}
 
 	private void sendMessages() {
-		if(!ApplicationServer.config().interconnectionEnabled())
+		if(!ServerConfig.interconnectionEnabled())
 			return;
 
 		Collection<String> addresses = messages.getAddresses();
@@ -150,18 +145,6 @@ public class RmiTransportProcedure extends Procedure {
 		}
 	}
 
-	private IInterconnectionCenter getInterconnectionCenter() throws RemoteException {
-		if(interconnectionCenter == null) {
-			ServerConfig config = ApplicationServer.config(); 
-			String host = config.interconnectionCenterHost();
-			int port = config.interconnectionCenterPort();
-	
-			interconnectionCenter = Rmi.get(IInterconnectionCenter.class, host, port);
-		}
-		return interconnectionCenter;
-
-	}
-	
 	static public boolean accept(Object object) {
 		return Import.importObject(object);
 	}

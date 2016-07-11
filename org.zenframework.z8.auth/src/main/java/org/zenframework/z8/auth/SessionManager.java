@@ -17,8 +17,8 @@ public class SessionManager {
 	SessionManager() {
 	}
 
-	public void start(ServerConfig config) {
-		setSessionTimeout(config.getSessionTimeout());
+	public void start() {
+		setSessionTimeout(ServerConfig.sessionTimeout());
 	}
 
 	public void stop() {

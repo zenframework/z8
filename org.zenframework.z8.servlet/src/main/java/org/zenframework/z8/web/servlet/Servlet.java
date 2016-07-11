@@ -19,7 +19,6 @@ import org.zenframework.z8.server.config.ServerConfig;
 import org.zenframework.z8.server.engine.ApplicationServer;
 import org.zenframework.z8.server.engine.IServer;
 import org.zenframework.z8.server.engine.RmiIO;
-import org.zenframework.z8.server.engine.Z8Context;
 import org.zenframework.z8.server.logs.Trace;
 import org.zenframework.z8.server.types.encoding;
 import org.zenframework.z8.web.server.Adapter;
@@ -38,7 +37,6 @@ public class Servlet extends HttpServlet {
 	static private final String ParamWorkingPath = "working-path";
 
 	private final List<Adapter> adapters = new ArrayList<Adapter>();
-	private ServerConfig config;
 
 	private IServer interconnectionCenter;
 	private IServer authorityCenter;
@@ -54,15 +52,14 @@ public class Servlet extends HttpServlet {
 		if(workingPath == null)
 			workingPath = context.getRealPath("WEB-INF");
 
-		config = new ServerConfig(workingPath + File.separator + ServerConfig.ConfigurationFileName);
-
 		try {
-			Z8Context.init(config);
-			if(config.webServerLaunchInterconnectionCenter())
+			ServerConfig config = new ServerConfig(new File(workingPath, ServerConfig.DefaultConfigurationFileName).getPath());
+
+			if(ServerConfig.webServerLaunchInterconnectionCenter())
 				interconnectionCenter = InterconnectionCenter.launch(config);
-			if(config.webServerLaunchAuthorityCenter())
+			if(ServerConfig.webServerLaunchAuthorityCenter())
 				authorityCenter = AuthorityCenter.launch(config);
-			if(config.webServerLaunchApplicationServer())
+			if(ServerConfig.webServerLaunchApplicationServer())
 				applicationServer = ApplicationServer.launch(config);
 		} catch(Throwable e) {
 			Trace.logError(e);
@@ -101,8 +98,6 @@ public class Servlet extends HttpServlet {
 			stopServer(authorityCenter);
 		if(interconnectionCenter != null)
 			stopServer(interconnectionCenter);
-
-		config = null;
 
 		for(Adapter adapter : adapters)
 			adapter.stop();

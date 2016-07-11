@@ -4,6 +4,7 @@ import java.io.File;
 import java.lang.management.ManagementFactory;
 import java.rmi.RemoteException;
 
+import org.zenframework.z8.server.base.file.Folders;
 import org.zenframework.z8.server.config.ServerConfig;
 import org.zenframework.z8.server.engine.HubServer;
 import org.zenframework.z8.server.engine.IApplicationServer;
@@ -11,7 +12,6 @@ import org.zenframework.z8.server.engine.IAuthorityCenter;
 import org.zenframework.z8.server.engine.IInterconnectionCenter;
 import org.zenframework.z8.server.engine.IServerInfo;
 import org.zenframework.z8.server.engine.ISession;
-import org.zenframework.z8.server.engine.Rmi;
 import org.zenframework.z8.server.engine.ServerInfo;
 import org.zenframework.z8.server.engine.Session;
 import org.zenframework.z8.server.engine.TimeoutChecker;
@@ -27,43 +27,40 @@ public class AuthorityCenter extends HubServer implements IAuthorityCenter {
 	static public String id = guid.create().toString();
 
 	static private AuthorityCenter instance = null;
-	
-	private ServerConfig config;
 
-	private IInterconnectionCenter interconnectionCenter = null;
-	
 	private UserManager userManager;
 	private SessionManager sessionManager;
 
 	private TimeoutChecker timeoutChecker;
 
+	private boolean interconnectionReset = true;
+
 	public static IAuthorityCenter launch(ServerConfig config) throws RemoteException {
 		if(instance == null) {
-			instance = new AuthorityCenter(config);
+			instance = new AuthorityCenter();
 			instance.start();
 		}
 		return instance;
 	}
 
-	private AuthorityCenter(ServerConfig config) throws RemoteException {
-		super(config.getUnicastAuthorityCenterPort(), IAuthorityCenter.class);
-		this.config = config;
+	private AuthorityCenter() throws RemoteException {
+		super(ServerConfig.authorityCenterPort(), IAuthorityCenter.class);
 	}
 
 	@Override
 	public String id() throws RemoteException {
 		return id;
 	}
-	
+
 	@Override
 	public void start() throws RemoteException {
 		super.start();
 
-		userManager = new UserManager(config);
+		userManager = new UserManager();
 
 		sessionManager = new SessionManager();
-		sessionManager.start(config);
-		
+		sessionManager.start();
+
 		timeoutChecker = new TimeoutChecker(this, "Authority Center Timeout Thread");
 		timeoutChecker.start();
 
@@ -73,7 +70,7 @@ public class AuthorityCenter extends HubServer implements IAuthorityCenter {
 	@Override
 	public void stop() throws RemoteException {
 		timeoutChecker.destroy();
-		
+
 		super.stop();
 	}
 
@@ -82,7 +79,7 @@ public class AuthorityCenter extends HubServer implements IAuthorityCenter {
 		addServer(new ServerInfo(server, server.id()));
 		registerInterconnection(server);
 	}
-	
+
 	@Override
 	public synchronized void unregister(IApplicationServer server) throws RemoteException {
 		removeServer(server);
@@ -90,24 +87,28 @@ public class AuthorityCenter extends HubServer implements IAuthorityCenter {
 	}
 
 	private void registerInterconnection(IApplicationServer server) throws RemoteException {
+		IInterconnectionCenter interconnectionCenter = interconnectionCenter();
+
 		if(interconnectionCenter == null)
 			return;
-		
+
 		try {
 			interconnectionCenter.register(server);
 		} catch(Throwable e) {
-			interconnectionCenter = null;
+			resetInterconnectionCenter();
 		}
 	}
 
 	private void unregisterInterconnection(IApplicationServer server) throws RemoteException {
+		IInterconnectionCenter interconnectionCenter = interconnectionCenter();
+
 		if(interconnectionCenter == null)
 			return;
 
 		try {
 			interconnectionCenter.unregister(server);
 		} catch(Throwable e) {
-			interconnectionCenter = null;
+			resetInterconnectionCenter();
 		}
 	}
 
@@ -157,7 +158,7 @@ public class AuthorityCenter extends HubServer implements IAuthorityCenter {
 		for(IServerInfo server : servers) {
 			if(serverId != null && !server.getId().equals(serverId))
 				continue;
-			
+
 			if(!server.isAlive()) {
 				unregister(server.getServer());
 				continue;
@@ -177,26 +178,26 @@ public class AuthorityCenter extends HubServer implements IAuthorityCenter {
 
 	@Override
 	protected File cacheFile() {
-		return new File(config.getWorkingPath(), serversCache);
+		return new File(Folders.Base, serversCache);
 	}
-	
+
 	@Override
 	public void check() {
 		instance.checkSessions();
 		instance.checkConnections();
 	}
-	
+
 	private void checkSessions() {
 		sessionManager.check();
 	}
 
 	private void checkConnections() {
-		if(interconnectionCenter != null || !config.interconnectionEnabled())
+		if(!interconnectionReset || !ServerConfig.interconnectionEnabled())
 			return;
 
 		try {
-			interconnectionCenter = getInterconnectionCenter();
-			
+			IInterconnectionCenter interconnectionCenter = interconnectionCenter();
+
 			for(IServerInfo server : getServers()) {
 				if(server.isAlive())
 					interconnectionCenter.register(server.getServer());
@@ -205,10 +206,15 @@ public class AuthorityCenter extends HubServer implements IAuthorityCenter {
 		} catch(Throwable e) {
 		}
 	}
-	
-	private IInterconnectionCenter getInterconnectionCenter() throws RemoteException {
-		String host = config.interconnectionCenterHost();
-		int port = config.interconnectionCenterPort();
-		return Rmi.get(IInterconnectionCenter.class, host, port);
+
+	private IInterconnectionCenter interconnectionCenter() throws RemoteException {
+		IInterconnectionCenter interconnectionCenter = ServerConfig.interconnectionCenter();
+		interconnectionReset = false;
+		return interconnectionCenter;
+	}
+
+	private void resetInterconnectionCenter() throws RemoteException {
+		ServerConfig.resetInterconnectionCenter();
+		interconnectionReset = true;
 	}
 }

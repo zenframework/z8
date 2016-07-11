@@ -60,7 +60,6 @@ public final class ServerMain {
 			Class<? extends IServer> serverClass = getClass(serverType.className);
 			
 			ServerConfig config = new ServerConfig(cmd.hasOption(ConfigOpt) ? cmd.getOptionValue(ConfigOpt) : null);
-			Z8Context.init(config);
 
 			if (!cmd.hasOption(StopOpt)) {
 				Method startMethod = serverClass.getMethod("launch", ServerConfig.class);

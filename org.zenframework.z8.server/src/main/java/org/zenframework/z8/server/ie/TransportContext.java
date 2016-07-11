@@ -2,7 +2,7 @@ package org.zenframework.z8.server.ie;
 
 import java.io.Serializable;
 
-import org.zenframework.z8.server.engine.Z8Context;
+import org.zenframework.z8.server.config.ServerConfig;
 import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.runtime.OBJECT;
 import org.zenframework.z8.server.runtime.RLinkedHashMap;
@@ -42,7 +42,7 @@ public class TransportContext extends OBJECT implements Serializable {
     @Override
     public void constructor2() {
         super.constructor2();
-        String instanceId = Z8Context.getInstanceId();
+        String instanceId = ServerConfig.instanceId();
         if (instanceId != null && !instanceId.isEmpty()) {
             setProperty(SelfAddressProperty, instanceId);
         }

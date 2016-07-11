@@ -1,4 +1,4 @@
-package org.zenframework.z8.server.engine;
+/*package org.zenframework.z8.server.engine;
 
 import java.io.File;
 import java.net.UnknownHostException;
@@ -25,14 +25,12 @@ public class Z8Context {
 		Rmi.init(config);
 		
 		Properties.addListener(new Properties.Listener() {
-
 			@Override
 			public void onPropertyChange(String key, String value) {
 				if (ServerRuntime.InstanceIdProperty.equalsKey(key)) {
 					instanceId = value;
 				}
 			}
-
 		});
 	}
 
@@ -69,3 +67,4 @@ public class Z8Context {
 		return instanceId;
 	}
 }
+*/

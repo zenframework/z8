@@ -4,6 +4,7 @@ import java.io.File;
 import java.lang.management.ManagementFactory;
 import java.rmi.RemoteException;
 
+import org.zenframework.z8.server.base.file.Folders;
 import org.zenframework.z8.server.config.ServerConfig;
 import org.zenframework.z8.server.engine.HubServer;
 import org.zenframework.z8.server.engine.IApplicationServer;
@@ -23,19 +24,16 @@ public class InterconnectionCenter extends HubServer implements IInterconnection
 
 	static private InterconnectionCenter instance = null;
 	
-	private ServerConfig config;
-
 	public static IInterconnectionCenter launch(ServerConfig config) throws RemoteException {
 		if(instance == null) {
-			instance = new InterconnectionCenter(config);
+			instance = new InterconnectionCenter();
 			instance.start();
 		}
 		return instance;
 	}
 
-	private InterconnectionCenter(ServerConfig config) throws RemoteException {
-		super(config.interconnectionCenterPort(), IInterconnectionCenter.class);
-		this.config = config;
+	private InterconnectionCenter() throws RemoteException {
+		super(ServerConfig.interconnectionCenterPort(), IInterconnectionCenter.class);
 	}
 
 	@Override
@@ -69,7 +67,7 @@ public class InterconnectionCenter extends HubServer implements IInterconnection
 	
 	@Override
 	protected File cacheFile() {
-		return new File(config.getWorkingPath(), cache);
+		return new File(Folders.Base, cache);
 	}
 	
 	private IServerInfo findServer(String domain) throws RemoteException {

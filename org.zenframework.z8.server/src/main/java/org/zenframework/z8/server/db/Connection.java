@@ -6,7 +6,7 @@ import java.sql.ResultSet;
 import java.sql.SQLClientInfoException;
 import java.sql.SQLException;
 
-import org.zenframework.z8.server.engine.ApplicationServer;
+import org.zenframework.z8.server.config.ServerConfig;
 import org.zenframework.z8.server.engine.Database;
 import org.zenframework.z8.server.logs.Trace;
 import org.zenframework.z8.server.types.encoding;
@@ -102,7 +102,7 @@ public class Connection {
 	}
 
 	private void initClientInfo() {
-		if(ApplicationServer.config().getTraceSqlConnections()) {
+		if(ServerConfig.traceSqlConnections()) {
 			try {
 				connection.setClientInfo("ApplicationName", owner.getName());
 			} catch(SQLClientInfoException e) {

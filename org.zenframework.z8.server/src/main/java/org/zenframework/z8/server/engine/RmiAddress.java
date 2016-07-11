@@ -21,7 +21,7 @@ public class RmiAddress {
 			int hostAndPort = address.indexOf(':');
 			int portAndName = address.indexOf('/');
 			host = address.substring(0, hostAndPort < 0 ? (portAndName < 0 ? address.length() : portAndName) : hostAndPort);
-			port = hostAndPort < 0 ? ServerConfig.RegistryPortDefault : Integer.parseInt(address.substring(hostAndPort + 1,
+			port = hostAndPort < 0 ? ServerConfig.DefaultRegistryPort : Integer.parseInt(address.substring(hostAndPort + 1,
 					portAndName < 0 ? address.length() : portAndName));
 			name = portAndName < 0 ? null : address.substring(portAndName + 1);
 		} catch (Throwable e) {

@@ -11,7 +11,6 @@ import org.zenframework.z8.server.engine.ApplicationServer;
 import org.zenframework.z8.server.engine.IApplicationServer;
 import org.zenframework.z8.server.engine.IAuthorityCenter;
 import org.zenframework.z8.server.engine.Rmi;
-import org.zenframework.z8.server.engine.Z8Context;
 import org.zenframework.z8.server.ie.Import;
 import org.zenframework.z8.server.json.parser.JsonObject;
 
@@ -27,10 +26,10 @@ public class RuntimeInfo {
 			CommandLineParser parser = new BasicParser();
 			CommandLine cmd = parser.parse(OPTIONS, args);
 			ServerConfig config = null;
-			if (cmd.hasOption(OPT_CONFIG)) {
+			
+			if (cmd.hasOption(OPT_CONFIG))
 				config = new ServerConfig(cmd.getOptionValue(OPT_CONFIG));
-				Z8Context.init(config);
-			}
+
 			if (cmd.hasOption(OPT_STRUCTURE)) {
 				AuthorityCenter.launch(config);
 				ApplicationServer.launch(config);

@@ -18,10 +18,10 @@ import org.apache.commons.fileupload.FileUploadException;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.zenframework.z8.server.base.file.FilesFactory;
 import org.zenframework.z8.server.base.xml.GNode;
+import org.zenframework.z8.server.config.ServerConfig;
 import org.zenframework.z8.server.engine.IApplicationServer;
 import org.zenframework.z8.server.engine.IAuthorityCenter;
 import org.zenframework.z8.server.engine.ISession;
-import org.zenframework.z8.server.engine.Z8Context;
 import org.zenframework.z8.server.exceptions.AccessDeniedException;
 import org.zenframework.z8.server.json.Json;
 import org.zenframework.z8.server.logs.Trace;
@@ -64,10 +64,10 @@ public abstract class Adapter {
 						|| password.length() > IAuthorityCenter.MaxPasswordLength)
 					throw new AccessDeniedException();
 
-				session = Z8Context.getAuthorityCenter().login(login, password);
+				session = ServerConfig.authorityCenter().login(login, password);
 			} else if (sessionId != null) {
 				String serverId = parameters.get(Json.serverId);
-				session = Z8Context.getAuthorityCenter().getServer(sessionId, serverId);
+				session = ServerConfig.authorityCenter().getServer(sessionId, serverId);
 			}
 
 			if (session == null)
@@ -90,7 +90,7 @@ public abstract class Adapter {
 		if (ServletFileUpload.isMultipartContent(request)) {
 			List<FileItem> fileItems = parseMultipartRequest(request);
 
-			long fileSizeMaxMB = Z8Context.getConfig().webServerFileSizeMax();
+			long fileSizeMaxMB = ServerConfig.webServerFileSizeMax();
 			long fileSizeMax = fileSizeMaxMB > 0 ? fileSizeMaxMB * NumericUtils.Megabyte : Long.MAX_VALUE;
 
 			for (FileItem fileItem : fileItems) {

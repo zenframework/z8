@@ -17,8 +17,8 @@ public class RmiAddressTest extends TestCase {
 		assertRmiAddress("rmi:qweqwe:123/asd", "qweqwe", 123, "asd");
 		assertRmiAddress("qweqwe:123/asd", "qweqwe", 123, "asd");
 		assertRmiAddress("qweqwe:123", "qweqwe", 123, null);
-		assertRmiAddress("qweqwe/asd", "qweqwe", ServerConfig.RegistryPortDefault, "asd");
-		assertRmiAddress("qweqwe", "qweqwe", ServerConfig.RegistryPortDefault, null);
+		assertRmiAddress("qweqwe/asd", "qweqwe", ServerConfig.DefaultRegistryPort, "asd");
+		assertRmiAddress("qweqwe", "qweqwe", ServerConfig.DefaultRegistryPort, null);
 	}
 
 	private static void assertRmiAddress(String address, String host, int port, String name) throws URISyntaxException {

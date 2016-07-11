@@ -21,7 +21,6 @@ import org.zenframework.z8.server.db.sql.expressions.Or;
 import org.zenframework.z8.server.db.sql.functions.string.EqualsIgnoreCase;
 import org.zenframework.z8.server.engine.ApplicationServer;
 import org.zenframework.z8.server.engine.Runtime;
-import org.zenframework.z8.server.engine.Z8Context;
 import org.zenframework.z8.server.logs.Trace;
 import org.zenframework.z8.server.resources.Resources;
 import org.zenframework.z8.server.runtime.IObject;
@@ -140,7 +139,7 @@ public class Properties extends TreeTable {
 	}
 
 	public static void setProperty(String key, String value) {
-		if (!ApplicationServer.database().tableExists(Properties.TableName))
+		if (!ServerConfig.database().tableExists(Properties.TableName))
 			throw new RuntimeException("Can not set property [" + key + "=" + value + "]. System is not installed");
 
 		Properties properties = new CLASS<Properties>().get();
@@ -258,24 +257,22 @@ public class Properties extends TreeTable {
 	}
 
 	private static String getPropertyFromDb(String key) {
-		ServerConfig config = Z8Context.getConfig();
-		if (config != null) {
-			String value = config.getProperty(key);
-			if (value != null)
-				return value;
-		}
+		String value = ServerConfig.get(key);
+		if (value != null)
+			return value;
+
 		try {
 			if (ApplicationServer.isSystemInstalled()) {
 
 				try {
 					Properties properties = new CLASS<Properties>().get();
 
-					Field value = properties.value.get();
+					Field valueField = properties.value.get();
 					Collection<Field> fields = new ArrayList<Field>();
-					fields.add(value);
+					fields.add(valueField);
 
 					if (properties.readFirst(fields, properties.getWhere(key)))
-						return value.string().get();
+						return valueField.string().get();
 				} finally {
 					ConnectionManager.release();
 				}
