@@ -63,8 +63,14 @@ public class Import {
 		}
 		
 		try {
+			SystemFiles files = SystemFiles.newInstance();
 			file.set(new InputOnlyFileItem(target, file.name.get()));
-			SystemFiles.newInstance().add(file);
+
+			if(!files.hasRecord(file.id))
+				files.addFile(file);
+			else
+				files.updateFile(file);
+
 			return true;
 		} finally {
 			target.delete();

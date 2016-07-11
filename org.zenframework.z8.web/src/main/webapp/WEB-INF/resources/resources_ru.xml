@@ -88,17 +88,20 @@
     <entry key="Files.title">Файлы</entry>
     <entry key="Files.name">Имя файла</entry>
     <entry key="Files.path">Путь к файлу в кэше</entry>
-    <entry key="Files.instanceId">Id владельца</entry>
-    <entry key="Files.status">Статус</entry>
-    <entry key="Files.status.local">Локальный</entry>
-    <entry key="Files.status.remote">Не запрашивался</entry>
-    <entry key="Files.status.requestSent">Запрошен</entry>
-    <entry key="Files.attachment">Вложение</entry>
-    <entry key="Files.command.requestFile">Запросить файл</entry>
-    <entry key="Files.command.sendFile">Отправить файл</entry>
-    <entry key="Files.command.sendFile.addresses">"Адреса получателей (через \',\')"</entry>
-    <entry key="Files.notFound">Файл не найден. Обратитесь в службу технической поддержки. Информация для техподдержки: {0}</entry>
-    <entry key="Files.retryLater">Файл находится на удалённом сервере. Запрос на получение файла отправлен. Повторите попытку чтения файла позже. В случае, если файл не будет доступен в ближайшее время, обратитесь в службу технической поддержки. Информация для службы технической поддержки: {0}</entry>
+    
+    
+    <!-- SystemFiles -->
+    <entry key="SystemFiles.instanceId">Id владельца</entry>
+    <entry key="SystemFiles.status">Статус</entry>
+    <entry key="SystemFiles.status.local">Локальный</entry>
+    <entry key="SystemFiles.status.remote">Не запрашивался</entry>
+    <entry key="SystemFiles.status.requestSent">Запрошен</entry>
+    <entry key="SystemFiles.attachment">Вложение</entry>
+    <entry key="SystemFiles.command.requestFile">Запросить файл</entry>
+    <entry key="SystemFiles.command.sendFile">Отправить файл</entry>
+    <entry key="SystemFiles.command.sendFile.addresses">"Адреса получателей (через \',\')"</entry>
+    <entry key="SystemFiles.notFound">Файл не найден. Обратитесь в службу технической поддержки. Информация для техподдержки: {0}</entry>
+    <entry key="SystemFiles.retryLater">Файл находится на удалённом сервере. Запрос на получение файла отправлен. Повторите попытку чтения файла позже. В случае, если файл не будет доступен в ближайшее время, обратитесь в службу технической поддержки. Информация для службы технической поддержки: {0}</entry>
 
 	<!-- Entries -->
 	<entry key="Entries.title">Компоненты</entry>

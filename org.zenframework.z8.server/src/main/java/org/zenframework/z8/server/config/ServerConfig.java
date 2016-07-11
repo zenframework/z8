@@ -16,7 +16,7 @@ public class ServerConfig extends Properties {
 	static private final long serialVersionUID = 3564936578688816088L;
 
 	static private ServerConfig instance;
-	
+
 	static private String DefaultInstanceId = "Z8 Server";
 	static public String DefaultConfigurationFileName = "project.xml";
 
@@ -46,7 +46,11 @@ public class ServerConfig extends Properties {
 	static private String TraceSqlConnectionsProperty = "trace.sql.connections";
 
 	static public int DefaultRegistryPort = 7852;
-//	static private PortRange ServersPortRangeDefault = PortRange.parsePortRange("15000-35530");
+
+	static public String TextExtensionsProperty = "file.converter.text";
+	static public String ImageExtensionsProperty = "file.converter.image";
+	static public String EmailExtensionsProperty = "file.converter.email";
+	static public String OfficeExtensionsProperty = "file.converter.office";
 
 	static private String OfficeHomeProperty = "office.home";
 
@@ -66,7 +70,7 @@ public class ServerConfig extends Properties {
 	static private boolean interconnectionCenterEnabled;
 	static private String interconnectionCenterHost;
 	static private int interconnectionCenterPort;
-	
+
 	static private boolean webServerStartApplicationServer;
 	static private boolean webServerStartAuthorityCenter;
 	static private boolean webServerStartInterconnectionCenter;
@@ -82,20 +86,25 @@ public class ServerConfig extends Properties {
 
 	static private Database database;
 
+	static public String[] textExtensions; // "txt, xml"
+	static public String[] imageExtensions; // "tif, tiff, jpg, jpeg, gif, png, bmp"
+	static public String[] emailExtensions; // "eml, mime"
+	static public String[] officeExtensions; // "doc, docx, xls, xlsx, ppt, pptx, odt, odp, ods, odf, odg, wpd, sxw, sxi, sxc, sxd, stw, vsd"
+
 	static private Object Lock = new Object();
 	static private IAuthorityCenter authorityCenter;
 	static private IInterconnectionCenter interconnectionCenter;
-	
+
 	public ServerConfig(String configFilePath) throws IOException {
 		if(instance != null)
 			return;
-		
+
 		File configFile = new File(configFilePath != null ? configFilePath : DefaultConfigurationFileName);
 		workingPath = configFile.getCanonicalFile().getParentFile();
 
 		try {
 			loadFromXML(new FileInputStream(configFile));
-		} catch (Throwable e) {
+		} catch(Throwable e) {
 			throw new RuntimeException(e);
 		}
 
@@ -112,7 +121,7 @@ public class ServerConfig extends Properties {
 		interconnectionCenterEnabled = getProperty(InterconnectionCenterEnabledProperty, false);
 		interconnectionCenterHost = getProperty(InterconnectionCenterHostProperty, "");
 		interconnectionCenterPort = getProperty(InterconnectionCenterPortProperty, 20000);
-		
+
 		webServerStartApplicationServer = getProperty(WebServerStartApplicationServerProperty, true);
 		webServerStartAuthorityCenter = getProperty(WebServerStartAuthorityCenterProperty, true);
 		webServerStartInterconnectionCenter = getProperty(WebServerStartInterconnectionCenterProperty, false);
@@ -121,20 +130,25 @@ public class ServerConfig extends Properties {
 
 		traceSql = getProperty(TraceSqlProperty, false);
 		traceSqlConnections = getProperty(TraceSqlConnectionsProperty, false);
-		
+
 		schedulerEnabled = getProperty(SchedulerEnabledProperty, true);
-		
+
+		textExtensions = getProperty(TextExtensionsProperty, new String[] { "txt, xml" });
+		imageExtensions = getProperty(ImageExtensionsProperty, new String[] { "tif, tiff, jpg, jpeg, gif, png, bmp" });
+		emailExtensions = getProperty(EmailExtensionsProperty, new String[] { "eml, mime" });
+		officeExtensions = getProperty(OfficeExtensionsProperty, new String[] { "doc, docx, xls, xlsx, ppt, pptx, odt, odp, ods, odf, odg, wpd, sxw, sxi, sxc, sxd, stw, vsd" });
+
 		officeHome = getProperty(OfficeHomeProperty, "C:/Program Files (x86)/LibreOffice 4.0");
-		
+
 		instance = this;
 	}
 
-	/////////////////////////////////////////////////////////////////
+	// ///////////////////////////////////////////////////////////////
 	// Properties overrides
-	
+
 	@Override
 	public synchronized Object put(Object key, Object value) {
-		String stringKey = (String) key;
+		String stringKey = (String)key;
 		return super.put(stringKey.toUpperCase(), value);
 	}
 
@@ -157,15 +171,31 @@ public class ServerConfig extends Properties {
 	public int getProperty(String key, int defaultValue) {
 		try {
 			return Integer.parseInt(getProperty(key));
-		} catch (NumberFormatException e) {
+		} catch(NumberFormatException e) {
 			return defaultValue;
 		}
 	}
 
-	// Properties overrides
-	/////////////////////////////////////////////////////////////////
+	public String[] getProperty(String key, String[] defaultValue) {
+		String value = getProperty(key);
+		
+		if(value == null || value.trim().isEmpty())
+			return defaultValue;
 
-	/////////////////////////////////////////////////////////////////
+		String[] values = value.split("\\,");
+		
+		String[] result = new String[values.length];
+		
+		for(int i = 0; i < values.length; i++)
+			result[i] = values[i].trim().toLowerCase();
+		
+		return result;
+	}
+
+	// Properties overrides
+	// ///////////////////////////////////////////////////////////////
+
+	// ///////////////////////////////////////////////////////////////
 	// getters
 
 	static public String get(String key) {
@@ -183,9 +213,9 @@ public class ServerConfig extends Properties {
 	static public int get(String key, int defaultValue) {
 		return instance.getProperty(key, defaultValue);
 	}
-	
+
 	// getters
-	/////////////////////////////////////////////////////////////////
+	// ///////////////////////////////////////////////////////////////
 
 	static public String instanceId() {
 		return instanceId;
@@ -259,48 +289,64 @@ public class ServerConfig extends Properties {
 		return schedulerEnabled;
 	}
 
+	static public String[] textExtensions() {
+		return textExtensions;
+	}
+
+	static public String[] imageExtensions() {
+		return imageExtensions;
+	}
+
+	static public String[] emailExtensions() {
+		return emailExtensions;
+	}
+
+	static public String[] officeExtensions() {
+		return officeExtensions;
+	}
+
 	static public String officeHome() {
 		return officeHome;
 	}
-	
+
 	static public Database database() {
 		if(database == null)
 			database = new Database(instance);
 		return database;
 	}
-	
+
 	static public IAuthorityCenter authorityCenter() {
-		if (authorityCenter != null)
+		if(authorityCenter != null)
 			return authorityCenter;
 
-		synchronized (Lock) {
-			if (authorityCenter != null)
+		synchronized(Lock) {
+			if(authorityCenter != null)
 				return authorityCenter;
 
 			try {
 				return authorityCenter = Rmi.get(IAuthorityCenter.class, authorityCenterHost(), authorityCenterPort());
-			} catch (Throwable e) {
+			} catch(Throwable e) {
 				throw new AccessDeniedException();
 			}
 		}
 	}
-	
+
 	static public IInterconnectionCenter interconnectionCenter() {
-		if (interconnectionCenter != null)
+		if(interconnectionCenter != null)
 			return interconnectionCenter;
 
-		synchronized (Lock) {
-			if (interconnectionCenter != null)
+		synchronized(Lock) {
+			if(interconnectionCenter != null)
 				return interconnectionCenter;
 
 			try {
 				return interconnectionCenter = Rmi.get(IInterconnectionCenter.class, interconnectionCenterHost(), interconnectionCenterPort());
-			} catch (Throwable e) {
+			} catch(Throwable e) {
 				throw new RuntimeException(e);
 			}
 		}
 	}
-	
+
 	static public boolean hasInterconnectionCenter() {
 		return interconnectionCenter != null;
 	}

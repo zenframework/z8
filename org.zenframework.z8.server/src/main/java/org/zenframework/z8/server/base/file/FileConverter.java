@@ -2,10 +2,6 @@ package org.zenframework.z8.server.base.file;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
 
 import org.apache.commons.io.FilenameUtils;
 import org.artofsolving.jodconverter.OfficeDocumentConverter;
@@ -13,40 +9,14 @@ import org.artofsolving.jodconverter.office.DefaultOfficeManagerConfiguration;
 import org.artofsolving.jodconverter.office.ExternalOfficeManagerConfiguration;
 import org.artofsolving.jodconverter.office.OfficeException;
 import org.artofsolving.jodconverter.office.OfficeManager;
-import org.zenframework.z8.server.base.table.system.Properties;
-import org.zenframework.z8.server.base.table.system.Property;
 import org.zenframework.z8.server.config.ServerConfig;
 import org.zenframework.z8.server.logs.Trace;
-import org.zenframework.z8.server.runtime.ServerRuntime;
+import org.zenframework.z8.server.utils.ArrayUtils;
 import org.zenframework.z8.server.utils.EmlUtils;
 import org.zenframework.z8.server.utils.PdfUtils;
 
 public class FileConverter {
-	private static class ConverterListener implements Properties.Listener {
-		@Override
-		public void onPropertyChange(String key, String value) {
-			if (ServerRuntime.FileConverterTextExtensionsProperty.equalsKey(key))
-				textExtensions.clear();
-			if (ServerRuntime.FileConverterImageExtensionsProperty.equalsKey(key))
-				imageExtensions.clear();
-			if (ServerRuntime.FileConverterEmailExtensionsProperty.equalsKey(key))
-				emailExtensions.clear();
-			if (ServerRuntime.FileConverterOfficeExtensionsProperty.equalsKey(key))
-				officeExtensions.clear();
-		}
-
-	}
-
-	static {
-		Properties.addListener(new ConverterListener());
-	}
-
 	private static final int OFFICE_PORT = 8100;
-
-	private static final List<String> textExtensions = Collections.synchronizedList(new LinkedList<String>());
-	private static final List<String> imageExtensions = Collections.synchronizedList(new LinkedList<String>());
-	private static final List<String> emailExtensions = Collections.synchronizedList(new LinkedList<String>());
-	private static final List<String> officeExtensions = Collections.synchronizedList(new LinkedList<String>());
 
 	public static final String PDF_EXTENSION = "pdf";
 
@@ -68,13 +38,13 @@ public class FileConverter {
 			convertedFile.getParentFile().mkdirs();
 			String extension = FilenameUtils.getExtension(srcFile.getName()).toLowerCase();
 			try {
-				if (getTextExtensions().contains(extension))
+				if (isTextExtension(extension))
 					PdfUtils.textToPdf(srcFile, convertedFile);
-				else if (getImageExtensions().contains(extension))
+				else if (isImageExtension(extension))
 					PdfUtils.imageToPdf(srcFile, convertedFile);
-				else if (getEmailExtensions().contains(extension))
+				else if (isEmailExtension(extension))
 					PdfUtils.textToPdf(EmlUtils.emailToString(srcFile), convertedFile);
-				else if (getOfficeExtensions().contains(extension))
+				else if (isOfficeExtension(extension))
 					convertOfficeToPdf(srcFile, convertedFile);
 			} catch (IOException e) {
 				Trace.logError("Can't convert " + srcFile + " to " + convertedFile, e);
@@ -90,9 +60,9 @@ public class FileConverter {
 
 	public static boolean isConvertableToPdf(String fileName) {
 		String extension = FilenameUtils.getExtension(fileName).toLowerCase();
-		return PDF_EXTENSION.equals(extension) || getTextExtensions().contains(extension)
-				|| getImageExtensions().contains(extension) || getOfficeExtensions().contains(extension)
-				|| getEmailExtensions().contains(extension);
+		return PDF_EXTENSION.equals(extension) || isTextExtension(extension)
+				|| isImageExtension(extension) || isOfficeExtension(extension)
+				|| isEmailExtension(extension);
 	}
 
 	private static void startOfficeManager() {
@@ -145,39 +115,19 @@ public class FileConverter {
 		return new OfficeDocumentConverter(officeManager);
 	}
 
-	private static List<String> getTextExtensions() {
-		if (textExtensions.isEmpty())
-			textExtensions.addAll(getExtensions(ServerRuntime.FileConverterTextExtensionsProperty));
-		return textExtensions;
+	private static boolean isTextExtension(String extension) {
+		return ArrayUtils.contains(ServerConfig.textExtensions(), extension.toLowerCase());
 	}
 
-	private static List<String> getImageExtensions() {
-		if (imageExtensions.isEmpty())
-			imageExtensions.addAll(getExtensions(ServerRuntime.FileConverterImageExtensionsProperty));
-		return imageExtensions;
+	private static boolean isImageExtension(String extension) {
+		return ArrayUtils.contains(ServerConfig.imageExtensions(), extension.toLowerCase());
 	}
 
-	private static List<String> getEmailExtensions() {
-		if (emailExtensions.isEmpty())
-			emailExtensions.addAll(getExtensions(ServerRuntime.FileConverterEmailExtensionsProperty));
-		return emailExtensions;
+	private static boolean isEmailExtension(String extension) {
+		return ArrayUtils.contains(ServerConfig.emailExtensions(), extension.toLowerCase());
 	}
 
-	private static List<String> getOfficeExtensions() {
-		if (officeExtensions.isEmpty())
-			officeExtensions.addAll(getExtensions(ServerRuntime.FileConverterOfficeExtensionsProperty));
-		return officeExtensions;
+	private static boolean isOfficeExtension(String extension) {
+		return ArrayUtils.contains(ServerConfig.officeExtensions(), extension.toLowerCase());
 	}
-
-	private static final List<String> getExtensions(Property extensionsProperty) {
-		String[] extensionsArray = Properties.getProperty(extensionsProperty).split("\\,");
-		List<String> extensionsList = new ArrayList<String>(extensionsArray.length);
-		for (String ext : extensionsArray) {
-			ext = ext.trim().toLowerCase();
-			if (!ext.isEmpty())
-				extensionsList.add(ext);
-		}
-		return extensionsList;
-	}
-
 }

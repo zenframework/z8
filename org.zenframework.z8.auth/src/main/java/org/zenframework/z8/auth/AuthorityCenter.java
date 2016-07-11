@@ -87,26 +87,16 @@ public class AuthorityCenter extends HubServer implements IAuthorityCenter {
 	}
 
 	private void registerInterconnection(IApplicationServer server) throws RemoteException {
-		IInterconnectionCenter interconnectionCenter = interconnectionCenter();
-
-		if(interconnectionCenter == null)
-			return;
-
 		try {
-			interconnectionCenter.register(server);
+			interconnectionCenter().register(server);
 		} catch(Throwable e) {
 			resetInterconnectionCenter();
 		}
 	}
 
 	private void unregisterInterconnection(IApplicationServer server) throws RemoteException {
-		IInterconnectionCenter interconnectionCenter = interconnectionCenter();
-
-		if(interconnectionCenter == null)
-			return;
-
 		try {
-			interconnectionCenter.unregister(server);
+			interconnectionCenter().unregister(server);
 		} catch(Throwable e) {
 			resetInterconnectionCenter();
 		}
@@ -210,7 +200,7 @@ public class AuthorityCenter extends HubServer implements IAuthorityCenter {
 	private IInterconnectionCenter interconnectionCenter() throws RemoteException {
 		IInterconnectionCenter interconnectionCenter = ServerConfig.interconnectionCenter();
 		interconnectionReset = false;
-		return interconnectionCenter;
+		return interconnectionCenter; 
 	}
 
 	private void resetInterconnectionCenter() throws RemoteException {

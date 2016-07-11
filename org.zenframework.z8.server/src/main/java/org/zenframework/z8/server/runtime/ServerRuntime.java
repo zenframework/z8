@@ -24,9 +24,6 @@ public class ServerRuntime extends AbstractRuntime {
 	public static final Property DbSchemeControlSumProperty = new Property("C0CDFF6D-9357-41FA-94B1-61D131CC0C09",
 			"z8.database.schemeControlSum", "000.000.0000", "Контрольная сумма схемы базы данных");
 
-	public static final Property InstanceIdProperty = new Property("7370AF2A-AA31-49E7-84AA-E000DAF78236",
-			"z8.instanceId", "", "Идентификатор экземпляра");
-
 	public static final Property PreserveExportMessagesProperty = new Property("8D9C727A-34FC-4DCD-9AB0-5A2AF8E676E0",
 			"z8.transport.preserveExportMessages", "false",
 			"Сохранять локальную очередь экспортируемых сообщений (true / false)");
@@ -57,21 +54,6 @@ public class ServerRuntime extends AbstractRuntime {
 	public static final Property WsEndpointProperty = new Property("E90D5A9C-6C4A-48A2-BA3C-34E2F69DEF11",
 			"z8.transport.ws.endpoint", "http://localhost:9898/transport", "URL транспортного web-сервиса");
 
-	public static final Property FileItemSizeThresholdProperty = new Property("CDF0A743-F95F-4235-AD3D-D40F589A68DF",
-			"z8.files.fileItemSizeThreshold", "10485760", "Порог выгрузки файла на диск (по умолчанию 10М)");
-
-	public static final Property FileConverterTextExtensionsProperty = new Property("A585CA29-B306-46EF-9F8F-D9DB1725CB70",
-			"z8.files.converter.textExtensions", "txt, xml", "Список расширений текстовых файлов (через ',')");
-	public static final Property FileConverterImageExtensionsProperty = new Property("A585CA29-B306-46EF-9F8F-D9DB1725CB71",
-			"z8.files.converter.imageExtensions", "tif, tiff, jpg, jpeg, gif, png, bmp",
-			"Список расширений файлов изображений (через ',')");
-	public static final Property FileConverterEmailExtensionsProperty = new Property("A585CA29-B306-46EF-9F8F-D9DB1725CB72",
-			"z8.files.converter.emailExtensions", "eml, mime", "Список расширений писем электронной почты (через ',')");
-	public static final Property FileConverterOfficeExtensionsProperty = new Property(
-			"A585CA29-B306-46EF-9F8F-D9DB1725CB73", "z8.files.converter.officeExtensions",
-			"doc, docx, xls, xlsx, ppt, pptx, odt, odp, ods, odf, odg, wpd, sxw, sxi, sxc, sxd, stw, vsd",
-			"Список расширений офисных документов (через ',')");
-
 	public ServerRuntime() {
 		addTable(new Users.CLASS<Users>(null));
 		addTable(new SecurityGroups.CLASS<SecurityGroups>(null));
@@ -100,7 +82,6 @@ public class ServerRuntime extends AbstractRuntime {
 		addJob(new BridgeProcedure.CLASS<BridgeProcedure>(null));
 
 		addProperty(DbSchemeControlSumProperty);
-		addProperty(InstanceIdProperty);
 		addProperty(PreserveExportMessagesProperty);
 		addProperty(EnableProtocolsProperty);
 		addProperty(SendFilesSeparatelyProperty);
@@ -113,11 +94,6 @@ public class ServerRuntime extends AbstractRuntime {
 		addProperty(JmsConnectionUrlProperty);
 		addProperty(JmsModeProperty);
 		addProperty(WsEndpointProperty);
-		addProperty(FileItemSizeThresholdProperty);
-		addProperty(FileConverterTextExtensionsProperty);
-		addProperty(FileConverterImageExtensionsProperty);
-		addProperty(FileConverterEmailExtensionsProperty);
-		addProperty(FileConverterOfficeExtensionsProperty);
 	}
 
 }

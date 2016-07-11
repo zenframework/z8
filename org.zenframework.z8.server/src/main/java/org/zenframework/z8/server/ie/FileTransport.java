@@ -18,7 +18,6 @@ import org.apache.commons.io.comparator.NameFileComparator;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.zenframework.z8.ie.xml.ExportEntry;
-import org.zenframework.z8.server.base.file.FilesFactory;
 import org.zenframework.z8.server.base.table.system.Properties;
 import org.zenframework.z8.server.request.Loader;
 import org.zenframework.z8.server.runtime.ServerRuntime;
@@ -200,10 +199,10 @@ public class FileTransport extends AbstractTransport implements Properties.Liste
 									Collection<file> fileInfos = IeUtil.filesToFileInfos(entry.getFiles().getFile(),
 											false);
 									for (file fileInfo : fileInfos) {
-										File file = new File(messageFolder, fileInfo.id.toString());
-										if (file.exists()) {
-											fileInfo.set(FilesFactory.createFileItem(fileInfo.name.get()));
-											InputStream is = new FileInputStream(file);
+										File f = new File(messageFolder, fileInfo.id.toString());
+										if (f.exists()) {
+											fileInfo.set(file.createFileItem(fileInfo.name));
+											InputStream is = new FileInputStream(f);
 											OutputStream os = fileInfo.getOutputStream();
 											IOUtils.copy(is, os);
 											message.getFiles().add(fileInfo);

@@ -29,7 +29,6 @@ import javax.naming.NamingException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.zenframework.z8.server.base.file.FilesFactory;
 import org.zenframework.z8.server.base.table.system.Properties;
 import org.zenframework.z8.server.base.table.system.SystemFiles;
 import org.zenframework.z8.server.logs.Trace;
@@ -345,13 +344,13 @@ public class JmsTransport extends AbstractTransport implements ExceptionListener
 				try {
 					message.setFiles(IeUtil.filesToFileInfos(message.getExportEntry().getFiles().getFile(), false));
 					if (streamMessage.readBoolean()) {
-						for (file file : message.getFiles()) {
+						for (file f : message.getFiles()) {
 							// read file size
 							long size = streamMessage.readLong();
 							if (size > 0) {
-								file.set(FilesFactory.createFileItem(file.name.get()));
+								f.set(file.createFileItem(f.name));
 								buff = new byte[(int) Math.min(size, IOUtils.DefaultBufferSize)];
-								OutputStream out = file.getOutputStream();
+								OutputStream out = f.getOutputStream();
 								try {
 									while (size > 0) {
 										count = streamMessage.readBytes(buff);

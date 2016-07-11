@@ -9,7 +9,6 @@ import org.zenframework.z8.server.base.table.Table;
 import org.zenframework.z8.server.base.table.system.SystemFiles;
 import org.zenframework.z8.server.base.table.value.AttachmentField;
 import org.zenframework.z8.server.base.table.value.Field;
-import org.zenframework.z8.server.config.ServerConfig;
 import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.runtime.OBJECT;
 import org.zenframework.z8.server.runtime.RCollection;
@@ -18,6 +17,7 @@ import org.zenframework.z8.server.types.file;
 import org.zenframework.z8.server.types.guid;
 import org.zenframework.z8.server.types.integer;
 import org.zenframework.z8.server.types.string;
+import org.zenframework.z8.server.utils.AttachmentUtils;
 
 public class AttachmentProcessor extends OBJECT {
 
@@ -74,15 +74,11 @@ public class AttachmentProcessor extends OBJECT {
 		SystemFiles filesTable = SystemFiles.newInstance();
 
 		for(file file : files) {
-			boolean idIsNull = file.id == null || file.id.isNull();
-			if(idIsNull || !filesTable.hasRecord(file.id)) {
-				if(!idIsNull)
-					filesTable.recordId.get().set(file.id);
+			if(file.id == null || file.id.isNull())
+				file.id = guid.create();
 
-				setPathIfEmpty(attachTo, file);
-				file.instanceId = new string(ServerConfig.instanceId());
-				filesTable.addFile(file);
-			}
+			setPathIfEmpty(attachTo, file);
+			filesTable.addFile(file);
 		}
 
 		return files;
@@ -124,9 +120,9 @@ public class AttachmentProcessor extends OBJECT {
 		int result = 0;
 
 		Collection<file> files = read(recordId);
-		Files f = new Files();
+
 		for(file file : files)
-			result += f.getPageCount(file);
+			result += AttachmentUtils.getPageCount(file);
 		return result;
 	}
 

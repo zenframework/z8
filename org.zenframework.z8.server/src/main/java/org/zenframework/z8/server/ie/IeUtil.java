@@ -21,11 +21,10 @@ import org.apache.commons.codec.binary.Base64;
 import org.zenframework.z8.ie.xml.ExportEntry;
 import org.zenframework.z8.ie.xml.ExportEntry.Records;
 import org.zenframework.z8.ie.xml.ObjectFactory;
-import org.zenframework.z8.server.base.file.FilesFactory;
 import org.zenframework.z8.server.base.table.Table;
+import org.zenframework.z8.server.base.table.system.SystemFiles;
 import org.zenframework.z8.server.base.table.value.AttachmentField;
 import org.zenframework.z8.server.base.table.value.Field;
-import org.zenframework.z8.server.base.table.system.SystemFiles;
 import org.zenframework.z8.server.security.BuiltinUsers;
 import org.zenframework.z8.server.types.datetime;
 import org.zenframework.z8.server.types.file;
@@ -170,14 +169,14 @@ public class IeUtil {
 
 	public static List<file> xmlFilesToFileInfos(ExportEntry.Files files) throws IOException {
 		List<file> fileInfos = new ArrayList<file>(files.getFile().size());
-		for (ExportEntry.Files.File file : files.getFile()) {
-			file fileInfo = fileToFileInfo(file);
-			fileInfo.set(FilesFactory.createFileItem(file.getName()));
+		for (ExportEntry.Files.File f : files.getFile()) {
+			file fileInfo = fileToFileInfo(f);
+			fileInfo.set(file.createFileItem(f.getName()));
 
 			OutputStream out = fileInfo.getOutputStream();
 			try {
-				out.write(Base64.decodeBase64(file.getValue()));
-				file.setValue("");
+				out.write(Base64.decodeBase64(f.getValue()));
+				f.setValue("");
 			} finally {
 				out.close();
 			}
