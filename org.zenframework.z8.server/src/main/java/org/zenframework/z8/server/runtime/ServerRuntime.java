@@ -28,11 +28,11 @@ public class ServerRuntime extends AbstractRuntime {
 			"Сохранять локальную очередь экспортируемых сообщений (true / false)");
 //	public static final Property EnableProtocolsProperty = new Property("222A95B9-05BC-4AF3-8425-323D8B1A1B73",
 //			"z8.transport.enableProtocols", "", "Список (через ',') протоколов, инициализируемых при старте");
-	public static final Property ExportRecordsMaxProperty = new Property("FAB69475-114C-4C39-8401-A03C42608BBE",
-			"z8.transport.exportRecordsMax", "1000", "Максимальное количество записей в сообщении экспорта");
-	public static final Property RecordsSortingModeProperty = new Property("FA9D7410-050B-43BB-9F7A-B151F5BCD091",
-			"z8.transport.recordsSortingMode", "always",
-			"Режим сортировки записей при импорте/экспорте (on_export, on_import, always)");
+//	public static final Property ExportRecordsMaxProperty = new Property("FAB69475-114C-4C39-8401-A03C42608BBE",
+//			"z8.transport.exportRecordsMax", "1000", "Максимальное количество записей в сообщении экспорта");
+//	public static final Property RecordsSortingModeProperty = new Property("FA9D7410-050B-43BB-9F7A-B151F5BCD091",
+//			"z8.transport.recordsSortingMode", "always",
+//			"Режим сортировки записей при импорте/экспорте (on_export, on_import, always)");
 //	public static final Property InactiveRouteTimeoutProperty = new Property("B7CA8C2A-430C-44BC-8DFA-FEF11A7B115B",
 //			"z8.transport.inactiveRouteTimeout", "30",
 //			"Время простоя маршрута, по которому не удалось отправить сообщение, минуты");
@@ -78,8 +78,8 @@ public class ServerRuntime extends AbstractRuntime {
 		addProperty(DbSchemeControlSumProperty);
 		addProperty(PreserveMessagesQueueProperty);
 //		addProperty(EnableProtocolsProperty);
-		addProperty(ExportRecordsMaxProperty);
-		addProperty(RecordsSortingModeProperty);
+//		addProperty(ExportRecordsMaxProperty);
+//		addProperty(RecordsSortingModeProperty);
 //		addProperty(InactiveRouteTimeoutProperty);
 //		addProperty(FileFolderProperty);
 //		addProperty(JmsConnectionFactoryProperty);

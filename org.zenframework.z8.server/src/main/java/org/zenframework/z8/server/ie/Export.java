@@ -17,17 +17,16 @@ import org.apache.commons.logging.LogFactory;
 import org.zenframework.z8.ie.xml.ExportEntry;
 import org.zenframework.z8.server.base.table.Table;
 import org.zenframework.z8.server.base.table.TreeTable;
-import org.zenframework.z8.server.base.table.system.MessagesQueue;
-import org.zenframework.z8.server.base.table.system.Properties;
 import org.zenframework.z8.server.base.table.system.Domains;
+import org.zenframework.z8.server.base.table.system.MessagesQueue;
 import org.zenframework.z8.server.base.table.value.Field;
+import org.zenframework.z8.server.config.ServerConfig;
 import org.zenframework.z8.server.db.generator.IForeignKey;
 import org.zenframework.z8.server.request.Loader;
 import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.runtime.OBJECT;
 import org.zenframework.z8.server.runtime.RCollection;
 import org.zenframework.z8.server.runtime.RLinkedHashMap;
-import org.zenframework.z8.server.runtime.ServerRuntime;
 import org.zenframework.z8.server.types.bool;
 import org.zenframework.z8.server.types.exception;
 import org.zenframework.z8.server.types.file;
@@ -77,7 +76,7 @@ public class Export extends OBJECT {
 	private final List<ExportEntry.Properties.Property> props = new LinkedList<ExportEntry.Properties.Property>();
 
 	private String address;
-	private int exportRecordsMax = Integer.parseInt(Properties.getProperty(ServerRuntime.ExportRecordsMaxProperty));
+	private int exportRecordsMax = ServerConfig.get("z8.transport.exportRecordsMax", 1000);
 
 	public Export(IObject container) {
 		super(container);
