@@ -14,6 +14,7 @@ import org.zenframework.z8.server.base.file.InputOnlyFileItem;
 import org.zenframework.z8.server.base.query.Query;
 import org.zenframework.z8.server.base.table.value.BinaryField;
 import org.zenframework.z8.server.base.table.value.Field;
+import org.zenframework.z8.server.base.table.value.StringField;
 import org.zenframework.z8.server.config.ServerConfig;
 import org.zenframework.z8.server.db.sql.SqlToken;
 import org.zenframework.z8.server.db.sql.expressions.And;
@@ -58,6 +59,9 @@ public class SystemFiles extends Files {
 		}
 	}
 
+	public final StringField.CLASS<? extends StringField> instanceId = id;
+	public final StringField.CLASS<? extends StringField> status = id1;
+
 	static public SystemFiles newInstance() {
 		return new SystemFiles.CLASS<SystemFiles>().get();
 	}
@@ -81,17 +85,17 @@ public class SystemFiles extends Files {
 	}
 
 	public void importFile(file fileInfo) {
-		boolean exists = readFirst(Arrays.<Field> asList(id1.get()), fileInfo, false);
+		boolean exists = readFirst(Arrays.<Field> asList(status.get()), fileInfo, false);
 		InputStream input = null;
 		try {
 			if(!exists) {
 				name.get().set(fileInfo.name);
-				id.get().set(fileInfo.instanceId);
+				instanceId.get().set(fileInfo.instanceId);
 				if(fileInfo.get() != null) {
 					input = fileInfo.getInputStream();
 					data.get().set(input);
 				}
-				id1.get().set(new string((fileInfo.get() == null ? file.Status.REMOTE : file.Status.LOCAL).getValue()));
+				status.get().set(new string((fileInfo.get() == null ? file.Status.REMOTE : file.Status.LOCAL).getValue()));
 				path.get().set(fileInfo.path);
 				if(fileInfo.id == null || fileInfo.id.isNull())
 					fileInfo.id = guid.create();
@@ -99,7 +103,7 @@ public class SystemFiles extends Files {
 					createdAt.get().set(fileInfo.time);
 				create(fileInfo.id);
 			} else if(getStatus() != file.Status.LOCAL && fileInfo.get() != null) {
-				id1.get().set(new string(file.Status.LOCAL.getValue()));
+				status.get().set(new string(file.Status.LOCAL.getValue()));
 				input = fileInfo.getInputStream();
 				data.get().set(input);
 				fileInfo.id = recordId();
@@ -122,10 +126,10 @@ public class SystemFiles extends Files {
 	}
 
 	private boolean fillFromStorage(file fileInfo, File path) throws IOException {
-		if(readFirst(Arrays.asList(id.get(), id1.get(), name.get(), data.get()), fileInfo, false)) {
+		if(readFirst(Arrays.asList(instanceId.get(), status.get(), name.get(), data.get()), fileInfo, false)) {
 			fileInfo.id = recordId();
 			fileInfo.name = name.get().string();
-			string instanceId = id.get().string();
+			string instanceId = this.instanceId.get().string();
 			fileInfo.status = getStatus();
 			if(!instanceId.isEmpty())
 				fileInfo.instanceId = instanceId;
@@ -142,13 +146,13 @@ public class SystemFiles extends Files {
 		SqlToken where = (fileInfo.id != null && !fileInfo.id.isNull()) ? new Equ(recordId.get(), fileInfo.id) : new Equ(path.get(), fileInfo.path);
 	
 		if(localOnly)
-			where = new And(where, new Or(new IsEmpty(id1.get()), new Equ(id1.get(), file.Status.LOCAL.getValue())));
+			where = new And(where, new Or(new IsEmpty(status.get()), new Equ(status.get(), file.Status.LOCAL.getValue())));
 		
 		return readFirst(fields, where);
 	}
 
 	public file.Status getStatus() {
-		return file.Status.getStatus(id1.get().string().get());
+		return file.Status.getStatus(status.get().string().get());
 	}
 
 	private static boolean fillFileInfoFromTable(file fileInfo, File path) throws IOException {
@@ -216,12 +220,12 @@ public class SystemFiles extends Files {
 			export.properties.put(Message.PROP_RECORD_ID, fileInfo.id);
 			export.properties.put(Message.PROP_FILE_PATH, fileInfo.path);
 			export.execute();
-			id1.get().set(new string(file.Status.REQUEST_SENT.getValue()));
+			status.get().set(new string(file.Status.REQUEST_SENT.getValue()));
 			if(!guid.NULL.equals(fileInfo.id)) {
 				update(fileInfo.id);
 			} else {
 				name.get().set(fileInfo.name);
-				id.get().set(fileInfo.instanceId);
+				instanceId.get().set(fileInfo.instanceId);
 				this.path.get().set(fileInfo.path);
 				fileInfo.id = create();
 			}

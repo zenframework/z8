@@ -9,6 +9,7 @@ import java.io.Serializable;
 import java.util.List;
 
 import org.zenframework.z8.ie.xml.ExportEntry;
+import org.zenframework.z8.server.base.table.system.MessagesQueue;
 import org.zenframework.z8.server.engine.RmiIO;
 import org.zenframework.z8.server.engine.RmiSerializable;
 import org.zenframework.z8.server.runtime.IObject;
@@ -219,7 +220,7 @@ public class Message extends OBJECT implements RmiSerializable, Serializable {
 	}
 
 	public void info(String info) {
-		ExportMessages.newInstance().info(getId(), info);
+		MessagesQueue.newInstance().info(getId(), info);
 	}
 
 	public void processed() {
@@ -227,11 +228,11 @@ public class Message extends OBJECT implements RmiSerializable, Serializable {
 	}
 	
 	public void processed(String info) {
-		ExportMessages.newInstance().processed(getId(), info);
+		MessagesQueue.newInstance().processed(getId(), info);
 	}
 	
 	public void transferred(long bytes) {
-		ExportMessages.newInstance().transferred(getId(), bytes);
+		MessagesQueue.newInstance().transferred(getId(), bytes);
 	}
 
 	public boolean isFile() {

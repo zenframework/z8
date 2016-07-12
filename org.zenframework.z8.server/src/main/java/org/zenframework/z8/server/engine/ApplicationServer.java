@@ -6,7 +6,7 @@ import java.rmi.RemoteException;
 
 import org.zenframework.z8.server.base.job.scheduler.Scheduler;
 import org.zenframework.z8.server.base.table.system.Files;
-import org.zenframework.z8.server.base.table.system.SystemDomains;
+import org.zenframework.z8.server.base.table.system.Domains;
 import org.zenframework.z8.server.base.table.system.SystemFiles;
 import org.zenframework.z8.server.base.xml.GNode;
 import org.zenframework.z8.server.config.ServerConfig;
@@ -116,7 +116,7 @@ public class ApplicationServer extends RmiServer implements IApplicationServer {
 
 	@Override
 	public String[] domains() {
-		return SystemDomains.newInstance().getNames().toArray(new String[0]);
+		return Domains.newInstance().getNames().toArray(new String[0]);
 	}
 
 	@Override

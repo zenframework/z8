@@ -1,7 +1,5 @@
-package org.zenframework.z8.server.base.table.system;
+package org.zenframework.z8.server.security;
 
-import org.zenframework.z8.server.security.IUser;
-import org.zenframework.z8.server.security.User;
 import org.zenframework.z8.server.types.string;
 
 public class Domain {

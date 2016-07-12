@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.zenframework.z8.server.base.simple.Procedure;
+import org.zenframework.z8.server.base.table.system.MessagesQueue;
 import org.zenframework.z8.server.base.view.command.Parameter;
 import org.zenframework.z8.server.config.ServerConfig;
 import org.zenframework.z8.server.db.Connection;
@@ -20,13 +21,13 @@ public class RmiTransportProcedure extends Procedure {
 
 	static private Map<String, TransportThread> workers = new HashMap<String, TransportThread>();
 
-	protected final ExportMessages messages = ExportMessages.newInstance();
+	protected final MessagesQueue messages = MessagesQueue.newInstance();
 
 	public static class CLASS<T extends RmiTransportProcedure> extends Procedure.CLASS<T> {
 		public CLASS(IObject container) {
 			super(container);
 			setJavaClass(RmiTransportProcedure.class);
-			setAttribute(Job, "");
+			setAttribute(Job, "10");
 		}
 
 		@Override
@@ -56,7 +57,7 @@ public class RmiTransportProcedure extends Procedure {
 
 		@Override
 		public void run() {
-			Collection<guid> ids = messages.getExportMessages(domain);
+			Collection<guid> ids = messages.getMessages(domain);
 
 			try {
 				for (guid id : ids) {
@@ -118,7 +119,7 @@ public class RmiTransportProcedure extends Procedure {
 	
 				if(server.accept(message)) {
 					message.afterExport();
-					message.processed();
+					message.processed("OK");
 				}
 				
 				connection.commit();

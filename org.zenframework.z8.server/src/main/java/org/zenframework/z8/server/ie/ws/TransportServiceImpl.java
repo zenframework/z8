@@ -1,7 +1,7 @@
 package org.zenframework.z8.server.ie.ws;
 
 import org.zenframework.z8.ie.xml.ExportEntry;
-import org.zenframework.z8.server.ie.ExportMessages;
+import org.zenframework.z8.server.base.table.system.MessagesQueue;
 import org.zenframework.z8.server.ie.IeUtil;
 import org.zenframework.z8.server.ie.Import;
 import org.zenframework.z8.server.ie.Message;
@@ -27,7 +27,7 @@ public class TransportServiceImpl implements TransportService {
 		try {
 			message.setFiles(IeUtil.xmlFilesToFileInfos(exportEntry.getFiles()));
 			message.setExportEntry(exportEntry);
-			ExportMessages.newInstance().addMessage(message, endpoint, ExportMessages.Direction.IN);
+			MessagesQueue.newInstance().addMessage(message, endpoint, MessagesQueue.Direction.IN);
 			Import.importFiles(message);
 		} catch (Exception e) {
 			throw new TransportException("Can't send IE message " + message.getId() + " from " + message.getSender()

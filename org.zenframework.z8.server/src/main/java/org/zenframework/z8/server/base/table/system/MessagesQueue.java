@@ -1,4 +1,4 @@
-package org.zenframework.z8.server.ie;
+package org.zenframework.z8.server.base.table.system;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -10,9 +10,6 @@ import javax.xml.bind.JAXBException;
 
 import org.zenframework.z8.server.base.query.Query;
 import org.zenframework.z8.server.base.table.Table;
-import org.zenframework.z8.server.base.table.system.Properties;
-import org.zenframework.z8.server.base.table.system.SystemDomains;
-import org.zenframework.z8.server.base.table.value.Aggregation;
 import org.zenframework.z8.server.base.table.value.BoolField;
 import org.zenframework.z8.server.base.table.value.Field;
 import org.zenframework.z8.server.base.table.value.IntegerField;
@@ -27,6 +24,7 @@ import org.zenframework.z8.server.db.sql.expressions.IsNot;
 import org.zenframework.z8.server.db.sql.expressions.Operation;
 import org.zenframework.z8.server.db.sql.expressions.Unary;
 import org.zenframework.z8.server.db.sql.functions.InVector;
+import org.zenframework.z8.server.ie.Message;
 import org.zenframework.z8.server.json.parser.JsonArray;
 import org.zenframework.z8.server.request.Loader;
 import org.zenframework.z8.server.resources.Resources;
@@ -38,39 +36,40 @@ import org.zenframework.z8.server.types.integer;
 import org.zenframework.z8.server.types.string;
 import org.zenframework.z8.server.utils.StringUtils;
 
-public class ExportMessages extends Table {
+public class MessagesQueue extends Table {
 
 	public static final String TableName = "SystemExportMessages";
-
+	public static final String MessageClass = Message.class.getCanonicalName();
+	
 	static public class names {
 		public final static String Ordinal = "Ordinal";
 		public final static String ClassId = "ClassId";
 
-		public final static String Sent = "Sent";
+		public final static String Processed = "Sent";
 		public final static String Xml = "Xml";
 		
 		public final static String BytesTransferred = "BytesTransferred";
 	}
 
 	static public class strings {
-		public final static String Title = "ExportMessages.title";
-		public final static String Sender = "ExportMessages.sender";
-		public final static String Receiver = "ExportMessages.receiver";
-		public final static String Info = "ExportMessages.info";
-		public final static String Transport = "ExportMessages.transport";
-		public final static String Message = "ExportMessages.message";
-		public final static String Ordinal = "ExportMessages.ordinal";
-		public final static String ClassId = "ExportMessages.classId";
-		public final static String Processed = "ExportMessages.processed";
-		public final static String BytesTransferred = "ExportMessages.bytesTransferred";
+		public final static String Title = "MessagesQueue.title";
+		public final static String Sender = "MessagesQueue.sender";
+		public final static String Address = "MessagesQueue.address";
+		public final static String Info = "MessagesQueue.info";
+		public final static String Result = "MessagesQueue.result";
+		public final static String Message = "MessagesQueue.message";
+		public final static String Ordinal = "MessagesQueue.ordinal";
+		public final static String ClassId = "MessagesQueue.classId";
+		public final static String Processed = "MessagesQueue.processed";
+		public final static String BytesTransferred = "MessagesQueue.bytesTransferred";
 	}
 
 	static public class displayNames {
 		public final static String Title = Resources.get(strings.Title);
 		public final static String Sender = Resources.get(strings.Sender);
-		public final static String Receiver = Resources.get(strings.Receiver);
+		public final static String Address = Resources.get(strings.Address);
 		public final static String Info = Resources.get(strings.Info);
-		public final static String Transport = Resources.get(strings.Transport);
+		public final static String Result = Resources.get(strings.Result);
 		public final static String Message = Resources.get(strings.Message);
 		public final static String Ordinal = Resources.get(strings.Ordinal);
 		public final static String ClassId = Resources.get(strings.ClassId);
@@ -78,24 +77,22 @@ public class ExportMessages extends Table {
 		public final static String BytesTransferred = Resources.get(strings.BytesTransferred);
 	}
 
-	public static class CLASS<T extends ExportMessages> extends Table.CLASS<T> {
-
+	public static class CLASS<T extends MessagesQueue> extends Table.CLASS<T> {
 		public CLASS() {
 			this(null);
 		}
 
 		public CLASS(IObject container) {
 			super(container);
-			setJavaClass(ExportMessages.class);
+			setJavaClass(MessagesQueue.class);
 			setName(TableName);
 			setDisplayName(displayNames.Title);
 		}
 
 		@Override
 		public Object newObject(IObject container) {
-			return new ExportMessages(container);
+			return new MessagesQueue(container);
 		}
-
 	}
 
 	public static enum Direction {
@@ -114,124 +111,69 @@ public class ExportMessages extends Table {
 
 	}
 
-	private static class PreserveExportMessagesListener implements Properties.Listener {
+	private static class PreserveMessagesQueueListener implements Properties.Listener {
 
 		@Override
 		public void onPropertyChange(String key, String value) {
-			if(ServerRuntime.PreserveExportMessagesProperty.equalsKey(key))
-				preserveExportMessages = Boolean.parseBoolean(value);
+			if(ServerRuntime.PreserveMessagesQueueProperty.equalsKey(key))
+				preserveMessagesQueue = Boolean.parseBoolean(value);
 		}
 	}
 
 	static {
-		Properties.addListener(new PreserveExportMessagesListener());
+		Properties.addListener(new PreserveMessagesQueueListener());
 	}
 
-	private static volatile Boolean preserveExportMessages = null;
+	private static volatile Boolean preserveMessagesQueue = null;
 
-	public final SystemDomains.CLASS<SystemDomains> domains = new SystemDomains.CLASS<SystemDomains>(this);
+	public final Domains.CLASS<Domains> domains = new Domains.CLASS<Domains>(this);
 	public final IntegerField.CLASS<IntegerField> ordinal = new IntegerField.CLASS<IntegerField>(this);
 	public final StringField.CLASS<StringField> classId = new StringField.CLASS<StringField>(this);
 	public final TextField.CLASS<TextField> message = new TextField.CLASS<TextField>(this);
 	public final BoolField.CLASS<BoolField> processed = new BoolField.CLASS<BoolField>(this);
 	public final IntegerField.CLASS<IntegerField> bytesTransferred = new IntegerField.CLASS<IntegerField>(this);
 
-	protected ExportMessages(IObject container) {
+	public final StringField.CLASS<? extends StringField> sender = id;
+	public final StringField.CLASS<? extends StringField> address = id1;
+	
+	public static MessagesQueue newInstance() {
+		return new MessagesQueue.CLASS<MessagesQueue>().get();
+	}
+
+	protected MessagesQueue(IObject container) {
 		super(container);
-	}
-
-	public void addMessage(Message message, String transportInfo, Direction direction) throws JAXBException {
-		guid recordId = new guid(message.getId());
-		this.id.get().set(new string(message.getSender()));
-		this.id1.get().set(new string(message.getAddress()));
-		this.name.get().set(StringUtils.cut(message.getInfo(), this.name.get().length.getInt()));
-		if(transportInfo != null)
-			this.description.get().set(new string(transportInfo));
-		this.ordinal.get().set(new integer(nextOrdinal(message, direction)));
-		this.classId.get().set(new string(message.classId()));
-		this.message.get().set(new string(message.getXml()));
-
-		if(hasRecord(recordId))
-			update(recordId);
-		else
-			create(recordId);
-	}
-
-	public void processed(guid id, String transportInfo) {
-		ExportMessages messages = new ExportMessages.CLASS<ExportMessages>().get();
-
-		if(preserveExportMessages == null)
-			preserveExportMessages = Boolean.parseBoolean(Properties.getProperty(ServerRuntime.PreserveExportMessagesProperty));
-
-		if(preserveExportMessages) {
-			if(transportInfo != null)
-				messages.description.get().set(transportInfo);
-			messages.processed.get().set(new bool(true));
-			messages.update(id);
-		} else {
-			messages.destroy(id);
-		}
-	}
-
-	public void transferred(guid id, long bytes) {
-		ExportMessages messages = new ExportMessages.CLASS<ExportMessages>().get();
-
-		messages.bytesTransferred.get().set(new integer(bytes));
-		messages.update(id);
-	}
-
-	public void info(guid id, String info) {
-		ExportMessages messages = new ExportMessages.CLASS<ExportMessages>().get();
-		messages.description.get().set(new string(info));
-		messages.update(id);
-	}
-
-	public String getSender() {
-		return id.get().get().toString();
-	}
-
-	public String getReceiver() {
-		return id1.get().get().toString();
-	}
-
-	public String getTransportUrl() {
-		return name.get().get().string().get();
 	}
 
 	@Override
 	public void constructor2() {
 		super.constructor2();
 
-		id.setDisplayName(displayNames.Sender);
-		id.get().length = new integer(50);
+		sender.setDisplayName(displayNames.Sender);
+		sender.get().length = new integer(50);
 
-		id1.setDisplayName(displayNames.Receiver);
-		id1.get().length = new integer(50);
+		address.setDisplayName(displayNames.Address);
+		address.get().length = new integer(50);
 
 		name.setDisplayName(displayNames.Info);
 		name.get().length = new integer(1024);
 
-		description.setDisplayName(displayNames.Transport);
+		description.setDisplayName(displayNames.Result);
 
 		ordinal.setName(names.Ordinal);
 		ordinal.setIndex("ordinal");
 		ordinal.setDisplayName(displayNames.Ordinal);
-		ordinal.get().indexFields.add(id);
-		ordinal.get().indexFields.add(id1);
-		ordinal.get().unique = new bool(true);
-		ordinal.get().aggregation = Aggregation.Max;
 
 		classId.setName(names.ClassId);
 		classId.setIndex("classId");
 		classId.setDisplayName(displayNames.ClassId);
 		classId.get().length = new integer(100);
 
-		processed.setName(names.Sent);
-		processed.setIndex("sent");
+		processed.setName(names.Processed);
+		processed.setIndex("processed");
 		processed.setDisplayName(displayNames.Processed);
 
 		bytesTransferred.setName(names.BytesTransferred);
-		bytesTransferred.setIndex("transferred");
+		bytesTransferred.setIndex("bytesTransferred");
 		bytesTransferred.setDisplayName(displayNames.BytesTransferred);
 
 		message.setName(names.Xml);
@@ -245,19 +187,63 @@ public class ExportMessages extends Table {
 		registerDataField(message);
 	}
 
-	private Collection<String> getDomains() {
-		return domains.get().getNames();
+	public void addMessage(Message message, String transportInfo, Direction direction) throws JAXBException {
+		guid recordId = new guid(message.getId());
+		sender.get().set(new string(message.getSender()));
+		address.get().set(new string(message.getAddress()));
+		name.get().set(StringUtils.cut(message.getInfo(), this.name.get().length.getInt()));
+		if(transportInfo != null)
+			description.get().set(new string(transportInfo));
+		ordinal.get().set(new integer(nextOrdinal(message, direction)));
+		classId.get().set(new string(message.classId()));
+		this.message.get().set(new string(message.getXml()));
+
+		if(hasRecord(recordId))
+			update(recordId);
+		else
+			create(recordId);
+	}
+
+	public void processed(guid id, String transportInfo) {
+		if(preserveMessagesQueue == null)
+			preserveMessagesQueue = Boolean.parseBoolean(Properties.getProperty(ServerRuntime.PreserveMessagesQueueProperty));
+
+		if(preserveMessagesQueue) {
+			if(transportInfo != null)
+				description.get().set(transportInfo);
+			processed.get().set(new bool(true));
+			update(id);
+		} else
+			destroy(id);
+	}
+
+	public void transferred(guid id, long bytes) {
+		bytesTransferred.get().set(new integer(bytes));
+		update(id);
+	}
+
+	public void info(guid id, String info) {
+		description.get().set(new string(info));
+		update(id);
+	}
+
+	public String getTransportUrl() {
+		return name.get().string().get();
+	}
+
+	private Collection<string> getDomains() {
+		return string.wrap(Domains.newInstance().getNames());
 	}
 
 	public Collection<String> getAddresses() {
 		Collection<String> result = new ArrayList<String>();
 
-		Field sender = id.get();
-		Field address = id1.get();
+		Field sender = this.sender.get();
+		Field address = this.address.get();
 
 		Collection<Field> fields = Arrays.<Field> asList(address);
 
-		Collection<string> locals = string.wrap(getDomains());
+		Collection<string> locals = getDomains();
 
 		SqlToken out = new IsNot(new InVector(address, locals));
 		SqlToken domain = new InVector(sender, locals);
@@ -270,16 +256,16 @@ public class ExportMessages extends Table {
 		return result;
 	}
 
-	public Collection<guid> getExportMessages(String domain) {
+	public Collection<guid> getMessages(String domain) {
 		Collection<guid> result = new ArrayList<guid>();
 
-		Field address = id1.get();
-		Field processedField = processed.get();
+		Field address = this.address.get();
+		Field processed = this.processed.get();
 
 		Collection<Field> fields = Arrays.<Field> asList(recordId.get());
 		Collection<Field> orderBy = Arrays.<Field> asList(ordinal.get());
 
-		SqlToken where = new And(new IsNot(processedField), new Equ(address, domain));
+		SqlToken where = new And(new IsNot(processed), new Equ(address, domain));
 
 		read(fields, orderBy, where);
 
@@ -293,24 +279,22 @@ public class ExportMessages extends Table {
 		return getExportMessages(sender, null, filters);
 	}
 
-	public List<guid> getExportMessages(String sender, String address, JsonArray filters) {
+	public List<guid> getExportMessages(String from, String to, JsonArray filters) {
 		List<guid> result = new LinkedList<guid>();
 
-		Collection<String> locals = getDomains();
-
-		Field senderField = id.get();
-		Field addressField = id1.get();
+		Field sender = this.sender.get();
+		Field address = this.address.get();
 
 		SqlToken notProcessed = new Unary(Operation.Not, processed.get());
-		SqlToken notLocal = new Unary(Operation.Not, new InVector(addressField, string.wrap(locals)));
-		SqlToken senderEq = new Equ(senderField, sender);
+		SqlToken notLocal = new Unary(Operation.Not, new InVector(address, getDomains()));
+		SqlToken senderEq = new Equ(sender, from);
 		SqlToken where = new And(new And(notProcessed, notLocal), senderEq);
 
 		if(filters != null && !filters.isEmpty())
 			where = new And(where, Query.parseWhere(Filter.parse(filters, this)));
 
-		if(address != null) {
-			SqlToken addressEq = new Equ(addressField, address);
+		if(to != null) {
+			SqlToken addressEq = new Equ(address, to);
 			where = new And(where, addressEq);
 		}
 
@@ -327,17 +311,14 @@ public class ExportMessages extends Table {
 
 	public List<guid> getImportMessages(String selfAddress) {
 		SqlToken notProcessed = new IsNot(processed.get());
-		SqlToken forMe = new Equ(id1.get(), selfAddress);
+		SqlToken forMe = new Equ(address.get(), selfAddress);
 		read(Arrays.<Field> asList(recordId.get()), Arrays.<Field> asList(ordinal.get()), new And(notProcessed, forMe));
-		List<guid> ids = new LinkedList<guid>();
-		while(next()) {
-			ids.add(recordId());
-		}
-		return ids;
-	}
-
-	public boolean readMessage(guid messageId) {
-		return readRecord(messageId, getDataFields());
+		List<guid> result = new LinkedList<guid>();
+		
+		while(next())
+			result.add(recordId());
+		
+		return result;
 	}
 
 	private long nextOrdinal(Message message, Direction direction) {
@@ -347,22 +328,19 @@ public class ExportMessages extends Table {
 	public Message getMessage(guid id) {
 		if(!readRecord(id, getDataFields()))
 			return null;
-		String xml = this.message.get().get().toString();
+		
 		String classId = this.classId.get().get().string().get();
-		if(classId == null || classId.isEmpty())
+		
+		if(classId.isEmpty())
 			classId = Message.class.getCanonicalName();
-		Message message = (Message)Loader.getInstance(classId);
-		message.setId(recordId());
-		message.setTime(createdAt.get().datetime());
-		message.setAddress(getReceiver());
-		message.setSender(getSender());
-		message.setBytesTransferred(bytesTransferred.get().integer().get());
-		message.setXml(xml);
-		return message;
-	}
 
-	public static ExportMessages newInstance() {
-		return new ExportMessages.CLASS<ExportMessages>().get();
+		Message result = (Message)Loader.getInstance(!classId.isEmpty() ? classId : MessageClass);
+		result.setId(recordId());
+		result.setTime(createdAt.get().datetime());
+		result.setAddress(address.get().string().get());
+		result.setSender(sender.get().string().get());
+		result.setBytesTransferred(bytesTransferred.get().integer().get());
+		result.setXml(message.get().get().toString());
+		return result;
 	}
-
 }

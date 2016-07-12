@@ -63,17 +63,17 @@
     <entry key="Properties.title">Системные свойства</entry>
     <entry key="Properties.value">Значение</entry>
     
-    <!-- Export messasges -->
-    <entry key="ExportMessages.title">Очередь сообщений</entry>
-    <entry key="ExportMessages.sender">Отправитель</entry>
-    <entry key="ExportMessages.receiver">Получатель</entry>
-    <entry key="ExportMessages.info">Информация</entry>
-    <entry key="ExportMessages.transport">Транспорт</entry>
-    <entry key="ExportMessages.message">Сообщение</entry>
-    <entry key="ExportMessages.ordinal">Номер</entry>
-    <entry key="ExportMessages.processed">Обработано</entry>
-    <entry key="ExportMessages.classId">Класс сообщения</entry>
-    <entry key="ExportMessages.bytesTransferred">Bytes sent</entry>
+    <!-- MessagesQueue -->
+    <entry key="MessagesQueue.title">Очередь сообщений</entry>
+    <entry key="MessagesQueue.sender">Отправитель</entry>
+    <entry key="MessagesQueue.address">Получатель</entry>
+    <entry key="MessagesQueue.info">Информация</entry>
+    <entry key="MessagesQueue.result">Транспорт</entry>
+    <entry key="MessagesQueue.message">Сообщение</entry>
+    <entry key="MessagesQueue.ordinal">Номер</entry>
+    <entry key="MessagesQueue.processed">Обработано</entry>
+    <entry key="MessagesQueue.classId">Класс сообщения</entry>
+    <entry key="MessagesQueue.bytesTransferred">Bytes sent</entry>
 
     <!-- Transport routes -->
     <entry key="TransportRoutes.title">Маршруты</entry>

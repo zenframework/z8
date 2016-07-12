@@ -3,6 +3,7 @@ package org.zenframework.z8.server.ie;
 import java.util.List;
 
 import org.zenframework.z8.server.base.simple.Procedure;
+import org.zenframework.z8.server.base.table.system.MessagesQueue;
 import org.zenframework.z8.server.base.view.command.Parameter;
 import org.zenframework.z8.server.db.Connection;
 import org.zenframework.z8.server.db.ConnectionManager;
@@ -34,7 +35,7 @@ public class TransportProcedure extends Procedure {
 		}
 	}
 
-	protected final ExportMessages messages = ExportMessages.newInstance();
+	protected final MessagesQueue messages = MessagesQueue.newInstance();
 	protected final TransportContext.CLASS<TransportContext> context = new TransportContext.CLASS<TransportContext>();
 	protected final TransportEngine engine = TransportEngine.getInstance();
 
@@ -64,7 +65,7 @@ public class TransportProcedure extends Procedure {
 				: new JsonObject();
 		boolean receiveEnabled = receiveConfig.has(CONFIG_ENABLED) ? receiveConfig.getBoolean(CONFIG_ENABLED) : true;
 
-		ExportMessages messages = ExportMessages.newInstance();
+		MessagesQueue messages = MessagesQueue.newInstance();
 
 		TransportRoutes transportRoutes = TransportRoutes.newInstance();
 
@@ -142,7 +143,7 @@ public class TransportProcedure extends Procedure {
 
 	protected void z8_init() {}
 
-	private static void sendMessage(ExportMessages messages, Message message, Transport transport, TransportRoute route)
+	private static void sendMessage(MessagesQueue messages, Message message, Transport transport, TransportRoute route)
 			throws TransportException {
 		Connection connection = ConnectionManager.get();
 		try {
@@ -167,12 +168,12 @@ public class TransportProcedure extends Procedure {
 		}
 	}
 
-	private static void receiveMessage(ExportMessages messages, Message message, Transport transport)
+	private static void receiveMessage(MessagesQueue messages, Message message, Transport transport)
 			throws TransportException {
 		Connection connection = ConnectionManager.get();
 		try {
 			connection.beginTransaction();
-			messages.addMessage(message, transport.getProtocol(), ExportMessages.Direction.IN);
+			messages.addMessage(message, transport.getProtocol(), MessagesQueue.Direction.IN);
 			Import.importFiles(message);
 			transport.commit();
 			connection.commit();

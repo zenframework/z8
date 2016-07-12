@@ -2,7 +2,7 @@ package org.zenframework.z8.server.base.table.system;
 
 import org.zenframework.z8.server.base.form.Desktop;
 import org.zenframework.z8.server.base.job.scheduler.TaskLogs;
-import org.zenframework.z8.server.base.table.system.view.ExportMessagesView;
+import org.zenframework.z8.server.base.table.system.view.MessagesQueueView;
 import org.zenframework.z8.server.base.table.system.view.FilesView;
 import org.zenframework.z8.server.base.table.system.view.UserEntriesView;
 import org.zenframework.z8.server.db.generator.DBGenerateProcedure;
@@ -40,10 +40,10 @@ public class SystemTools extends Desktop {
     public final Sequences.CLASS<Sequences> sequences = new Sequences.CLASS<Sequences>(this);
     public final DBGenerateProcedure.CLASS<DBGenerateProcedure> generator = new DBGenerateProcedure.CLASS<DBGenerateProcedure>(this);
     public final Properties.CLASS<Properties> properties = new Properties.CLASS<Properties>(this);
-    public final ExportMessagesView.CLASS<ExportMessagesView> exportMessages = new ExportMessagesView.CLASS<ExportMessagesView>(this);
+    public final MessagesQueueView.CLASS<MessagesQueueView> exportMessages = new MessagesQueueView.CLASS<MessagesQueueView>(this);
     public final TransportRoutes.CLASS<TransportRoutes> transportRoutes = new TransportRoutes.CLASS<TransportRoutes>(this);
     public final FilesView.CLASS<FilesView> files = new FilesView.CLASS<FilesView>(this);
-    public final SystemDomains.CLASS<SystemDomains> addresses = new SystemDomains.CLASS<SystemDomains>(this);
+    public final Domains.CLASS<Domains> addresses = new Domains.CLASS<Domains>(this);
 
     public SystemTools(IObject container) {
         super(container);

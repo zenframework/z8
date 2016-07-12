@@ -14,10 +14,11 @@ import org.zenframework.z8.server.db.sql.expressions.Is;
 import org.zenframework.z8.server.db.sql.functions.string.EqualsIgnoreCase;
 import org.zenframework.z8.server.resources.Resources;
 import org.zenframework.z8.server.runtime.IObject;
+import org.zenframework.z8.server.security.Domain;
 import org.zenframework.z8.server.types.bool;
 import org.zenframework.z8.server.types.integer;
 
-public class SystemDomains extends Table {
+public class Domains extends Table {
 
 	public static final String TableName = "SystemDomains";
 
@@ -42,21 +43,21 @@ public class SystemDomains extends Table {
 		public final static String Owner = Resources.get(strings.Owner);
 	}
 	
-	public static class CLASS<T extends SystemDomains> extends Table.CLASS<T> {
+	public static class CLASS<T extends Domains> extends Table.CLASS<T> {
 		public CLASS() {
 			this(null);
 		}
 
 		public CLASS(IObject container) {
 			super(container);
-			setJavaClass(SystemDomains.class);
+			setJavaClass(Domains.class);
 			setName(TableName);
 			setDisplayName(displayNames.Title);
 		}
 
 		@Override
 		public Object newObject(IObject container) {
-			return new SystemDomains(container);
+			return new Domains(container);
 		}
 	}
 
@@ -64,11 +65,11 @@ public class SystemDomains extends Table {
 	public final Link.CLASS<Link> userLink = new Link.CLASS<Link>(this);
 	public final BoolField.CLASS<BoolField> owner = new BoolField.CLASS<BoolField>(this);
 
-	static public SystemDomains newInstance() {
-		return new SystemDomains.CLASS<SystemDomains>().get();
+	static public Domains newInstance() {
+		return new Domains.CLASS<Domains>().get();
 	}
 
-	public SystemDomains(IObject container) {
+	public Domains(IObject container) {
 		super(container);
 	}
 

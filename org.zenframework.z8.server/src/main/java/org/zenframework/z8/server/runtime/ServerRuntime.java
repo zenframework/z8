@@ -3,21 +3,19 @@ package org.zenframework.z8.server.runtime;
 import org.zenframework.z8.server.base.job.scheduler.Jobs;
 import org.zenframework.z8.server.base.job.scheduler.TaskLogs;
 import org.zenframework.z8.server.base.job.scheduler.Tasks;
+import org.zenframework.z8.server.base.table.system.Domains;
 import org.zenframework.z8.server.base.table.system.Entries;
 import org.zenframework.z8.server.base.table.system.Files;
+import org.zenframework.z8.server.base.table.system.MessagesQueue;
 import org.zenframework.z8.server.base.table.system.Properties;
 import org.zenframework.z8.server.base.table.system.Property;
 import org.zenframework.z8.server.base.table.system.SecurityGroups;
 import org.zenframework.z8.server.base.table.system.Sequences;
-import org.zenframework.z8.server.base.table.system.SystemDomains;
 import org.zenframework.z8.server.base.table.system.SystemFiles;
 import org.zenframework.z8.server.base.table.system.SystemTools;
 import org.zenframework.z8.server.base.table.system.UserEntries;
 import org.zenframework.z8.server.base.table.system.Users;
-import org.zenframework.z8.server.ie.BridgeProcedure;
-import org.zenframework.z8.server.ie.ExportMessages;
 import org.zenframework.z8.server.ie.RmiTransportProcedure;
-import org.zenframework.z8.server.ie.TransportProcedure;
 import org.zenframework.z8.server.ie.TransportRoutes;
 
 public class ServerRuntime extends AbstractRuntime {
@@ -25,7 +23,7 @@ public class ServerRuntime extends AbstractRuntime {
 	public static final Property DbSchemeControlSumProperty = new Property("C0CDFF6D-9357-41FA-94B1-61D131CC0C09",
 			"z8.database.schemeControlSum", "000.000.0000", "Контрольная сумма схемы базы данных");
 
-	public static final Property PreserveExportMessagesProperty = new Property("8D9C727A-34FC-4DCD-9AB0-5A2AF8E676E0",
+	public static final Property PreserveMessagesQueueProperty = new Property("8D9C727A-34FC-4DCD-9AB0-5A2AF8E676E0",
 			"z8.transport.preserveExportMessages", "false",
 			"Сохранять локальную очередь экспортируемых сообщений (true / false)");
 	public static final Property EnableProtocolsProperty = new Property("222A95B9-05BC-4AF3-8425-323D8B1A1B73",
@@ -61,7 +59,7 @@ public class ServerRuntime extends AbstractRuntime {
 		addTable(new Sequences.CLASS<Sequences>(null));
 		addTable(new Entries.CLASS<Entries>(null));
 
-		addTable(new SystemDomains.CLASS<SystemDomains>(null));
+		addTable(new Domains.CLASS<Domains>(null));
 		addTable(new UserEntries.CLASS<UserEntries>(null));
 
 		addTable(new Jobs.CLASS<Jobs>(null));
@@ -72,19 +70,17 @@ public class ServerRuntime extends AbstractRuntime {
 		addTable(new SystemFiles.CLASS<SystemFiles>(null));
 		addTable(new Properties.CLASS<Properties>(null));
 
-		addTable(new ExportMessages.CLASS<ExportMessages>(null));
+		addTable(new MessagesQueue.CLASS<MessagesQueue>(null));
 		addTable(new TransportRoutes.CLASS<TransportRoutes>(null));
 
 		addEntry(new SystemTools.CLASS<SystemTools>(null));
 
 		addActivator(new Properties.PropertiesActivator.CLASS<Properties.PropertiesActivator>(null));
 
-		addJob(new TransportProcedure.CLASS<TransportProcedure>(null));
 		addJob(new RmiTransportProcedure.CLASS<RmiTransportProcedure>(null));
-		addJob(new BridgeProcedure.CLASS<BridgeProcedure>(null));
 
 		addProperty(DbSchemeControlSumProperty);
-		addProperty(PreserveExportMessagesProperty);
+		addProperty(PreserveMessagesQueueProperty);
 		addProperty(EnableProtocolsProperty);
 		addProperty(SendFilesSeparatelyProperty);
 		addProperty(LazyFilesProperty);

@@ -308,10 +308,10 @@ public class JsonWriter {
 			write(message);
 		finishArray();
 
-		writeProperty(new string(Json.serverId), serverId);
-
-		if(log != null)
+		if(log != null) {
+			writeProperty(new string(Json.serverId), serverId);
 			writeProperty(new string(Json.log), log.path.get());
+		}
 
 		finishObject();
 	}

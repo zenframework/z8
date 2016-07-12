@@ -17,8 +17,9 @@ import org.apache.commons.logging.LogFactory;
 import org.zenframework.z8.ie.xml.ExportEntry;
 import org.zenframework.z8.server.base.table.Table;
 import org.zenframework.z8.server.base.table.TreeTable;
+import org.zenframework.z8.server.base.table.system.MessagesQueue;
 import org.zenframework.z8.server.base.table.system.Properties;
-import org.zenframework.z8.server.base.table.system.SystemDomains;
+import org.zenframework.z8.server.base.table.system.Domains;
 import org.zenframework.z8.server.base.table.value.Field;
 import org.zenframework.z8.server.db.generator.IForeignKey;
 import org.zenframework.z8.server.request.Loader;
@@ -153,7 +154,7 @@ public class Export extends OBJECT {
 			throw new exception("Export address is not set");
 		String sender = context.get().check().getProperty(TransportContext.SelfAddressProperty);
 		try {
-			boolean local = SystemDomains.newInstance().isOwner(address);
+			boolean local = Domains.newInstance().isOwner(address);
 			RecordsSorter recordsSorter = new RecordsSorter();
 			if (!local) {
 				// Если протокол НЕ "local", экспортировать записи БД
@@ -180,7 +181,7 @@ public class Export extends OBJECT {
 				}
 			}
 			// Запись сообщений в таблицу ExportMessages
-			ExportMessages exportMessages = ExportMessages.newInstance();
+			MessagesQueue exportMessages = MessagesQueue.newInstance();
 			if (sendFilesSeparately && !local) {
 				for (ExportEntry.Files.File file : files) {
 					Message message = z8_newMessage().get();
@@ -193,7 +194,7 @@ public class Export extends OBJECT {
 					props.add(getProperty(Message.PROP_TYPE, sendFilesContent ? Message.TYPE_FILE_CONTENT
 							: Message.TYPE_FILE_REFERENCE));
 					props.add(getProperty(Message.PROP_GROUP, new string(file.getPath())));
-					exportMessages.addMessage(message, null, ExportMessages.Direction.OUT);
+					exportMessages.addMessage(message, null, MessagesQueue.Direction.OUT);
 				}
 			}
 			Message message = z8_newMessage().get();
@@ -206,7 +207,7 @@ public class Export extends OBJECT {
 				message.getExportEntry().getProperties().getProperty()
 						.add(getProperty(Message.PROP_SEND_FILES_CONTENT, new bool(true)));
 			}
-			exportMessages.addMessage(message, null, ExportMessages.Direction.OUT);
+			exportMessages.addMessage(message, null, MessagesQueue.Direction.OUT);
 		} catch (JAXBException e) {
 			throw new exception("Can't marshal records", e);
 		} catch (SorterException e) {

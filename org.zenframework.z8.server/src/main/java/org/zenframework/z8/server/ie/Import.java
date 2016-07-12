@@ -12,7 +12,7 @@ import org.zenframework.z8.ie.xml.ExportEntry;
 import org.zenframework.z8.server.base.file.Folders;
 import org.zenframework.z8.server.base.file.InputOnlyFileItem;
 import org.zenframework.z8.server.base.table.Table;
-import org.zenframework.z8.server.base.table.system.SystemDomains;
+import org.zenframework.z8.server.base.table.system.Domains;
 import org.zenframework.z8.server.base.table.system.SystemFiles;
 import org.zenframework.z8.server.base.table.value.Field;
 import org.zenframework.z8.server.db.Connection;
@@ -78,7 +78,7 @@ public class Import {
 	}
 	
 	public static boolean importMessage(Message message) {
-		IUser user = SystemDomains.newInstance().getDomain(message.getAddress()).getSystemUser();
+		IUser user = Domains.newInstance().getDomain(message.getAddress()).getSystemUser();
 
 		IRequest request = new Request(new Session("", user));
 

@@ -6,7 +6,7 @@ import java.util.List;
 
 import org.zenframework.z8.server.base.table.Table;
 import org.zenframework.z8.server.base.table.system.Properties;
-import org.zenframework.z8.server.base.table.system.SystemDomains;
+import org.zenframework.z8.server.base.table.system.Domains;
 import org.zenframework.z8.server.base.table.value.BoolField;
 import org.zenframework.z8.server.base.table.value.Field;
 import org.zenframework.z8.server.base.table.value.IntegerField;
@@ -62,7 +62,7 @@ public class TransportRoutes extends Table {
 		public final static String Error = "TransportRoutes.error";
 	}
 
-	public final SystemDomains.CLASS<SystemDomains> domains = new SystemDomains.CLASS<SystemDomains>(this);
+	public final Domains.CLASS<Domains> domains = new Domains.CLASS<Domains>(this);
 	public final Link.CLASS<Link> domainLink = new Link.CLASS<Link>(this);
 	public final IntegerField.CLASS<IntegerField> priority = new IntegerField.CLASS<IntegerField>(this);
 	public final BoolField.CLASS<BoolField> active = new BoolField.CLASS<BoolField>(this);
@@ -175,7 +175,7 @@ public class TransportRoutes extends Table {
 	}*/
 
 	public guid setRoute(String domain, String protocol, String address, int priority, boolean active) {
-		SystemDomains domains = SystemDomains.newInstance();
+		Domains domains = Domains.newInstance();
 		if (!domains.readFirst(new Equ(domains.id.get(), domain)))
 			throw new exception("Domain '" + domain + "' does not exist");
 		guid domainId = domains.recordId();

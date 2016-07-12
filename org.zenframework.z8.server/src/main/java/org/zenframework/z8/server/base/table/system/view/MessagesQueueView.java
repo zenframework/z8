@@ -1,45 +1,42 @@
 package org.zenframework.z8.server.base.table.system.view;
 
+import org.zenframework.z8.server.base.table.system.MessagesQueue;
 import org.zenframework.z8.server.base.table.value.AttachmentExpression;
-import org.zenframework.z8.server.ie.ExportMessages;
 import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.types.bool;
 import org.zenframework.z8.server.types.integer;
 
-public class ExportMessagesView extends ExportMessages {
-	public static class CLASS<T extends ExportMessagesView> extends ExportMessages.CLASS<T> {
-
+public class MessagesQueueView extends MessagesQueue {
+	public static class CLASS<T extends MessagesQueueView> extends MessagesQueue.CLASS<T> {
 		public CLASS() {
 			this(null);
 		}
 
 		public CLASS(IObject container) {
 			super(container);
-			setJavaClass(ExportMessagesView.class);
+			setJavaClass(MessagesQueueView.class);
 		}
 
 		@Override
 		public Object newObject(IObject container) {
-			return new ExportMessagesView(container);
+			return new MessagesQueueView(container);
 		}
-
 	}
 
-	public static class MessageAttachmentExpression extends AttachmentExpression {
-
-		public static class CLASS<T extends MessageAttachmentExpression> extends AttachmentExpression.CLASS<T> {
+	public static class XmlExpression extends AttachmentExpression {
+		public static class CLASS<T extends XmlExpression> extends AttachmentExpression.CLASS<T> {
 			public CLASS(IObject container) {
 				super(container);
-				setJavaClass(MessageAttachmentExpression.class);
+				setJavaClass(XmlExpression.class);
 			}
 
 			@Override
 			public Object newObject(IObject container) {
-				return new MessageAttachmentExpression(container);
+				return new XmlExpression(container);
 			}
 		}
 
-		public MessageAttachmentExpression(IObject container) {
+		public XmlExpression(IObject container) {
 			super(container);
 		}
 
@@ -54,9 +51,9 @@ public class ExportMessagesView extends ExportMessages {
 		}
 	}
 
-	public final MessageAttachmentExpression.CLASS<MessageAttachmentExpression> attachment = new MessageAttachmentExpression.CLASS<MessageAttachmentExpression>(this);
+	public final XmlExpression.CLASS<XmlExpression> attachment = new XmlExpression.CLASS<XmlExpression>(this);
 
-	private ExportMessagesView(IObject container) {
+	private MessagesQueueView(IObject container) {
 		super(container);
 	}
 
@@ -80,8 +77,8 @@ public class ExportMessagesView extends ExportMessages {
 
 		registerFormField(ordinal);
 		registerFormField(createdAt);
-		registerFormField(id);
-		registerFormField(id1);
+		registerFormField(sender);
+		registerFormField(address);
 		registerFormField(name);
 		registerFormField(description);
 		registerFormField(classId);
