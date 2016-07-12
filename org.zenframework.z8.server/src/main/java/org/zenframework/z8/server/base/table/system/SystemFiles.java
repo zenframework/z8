@@ -116,8 +116,6 @@ public class SystemFiles extends Files {
 
 	public static void sendFile(file fileInfo, String address) {
 		Export export = new Export.CLASS<Export>().get();
-		export.setSendFilesSeparately(false);
-		export.setSendFilesContent(true);
 		export.setAddress(address);
 		export.properties.put(Message.PROP_TYPE, Message.TYPE_FILE_CONTENT);
 		export.properties.put(Message.PROP_GROUP, fileInfo.path);

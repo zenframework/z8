@@ -20,7 +20,6 @@ import org.apache.commons.logging.LogFactory;
 import org.zenframework.z8.ie.xml.ExportEntry;
 import org.zenframework.z8.server.base.table.system.Properties;
 import org.zenframework.z8.server.request.Loader;
-import org.zenframework.z8.server.runtime.ServerRuntime;
 import org.zenframework.z8.server.types.datetime;
 import org.zenframework.z8.server.types.file;
 import org.zenframework.z8.server.types.guid;
@@ -54,15 +53,15 @@ public class FileTransport extends AbstractTransport implements Properties.Liste
 
 	public FileTransport(TransportContext context) {
 		super(context);
-		initFolders(Properties.getProperty(ServerRuntime.FileFolderProperty));
+		initFolders(""/*Properties.getProperty(ServerRuntime.FileFolderProperty)*/);
 		Properties.addListener(this);
 	}
 
 	@Override
 	public void onPropertyChange(String key, String value) {
-		if (ServerRuntime.FileFolderProperty.equalsKey(key)) {
+/*		if (ServerRuntime.FileFolderProperty.equalsKey(key)) {
 			initFolders(value);
-		}
+		}*/
 	}
 
 	public boolean canReceive() {

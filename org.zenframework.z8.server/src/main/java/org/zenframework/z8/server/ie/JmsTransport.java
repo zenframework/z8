@@ -32,7 +32,6 @@ import org.apache.commons.logging.LogFactory;
 import org.zenframework.z8.server.base.table.system.Properties;
 import org.zenframework.z8.server.base.table.system.SystemFiles;
 import org.zenframework.z8.server.logs.Trace;
-import org.zenframework.z8.server.runtime.ServerRuntime;
 import org.zenframework.z8.server.types.file;
 import org.zenframework.z8.server.utils.IOUtils;
 
@@ -67,10 +66,10 @@ public class JmsTransport extends AbstractTransport implements ExceptionListener
 
 	@Override
 	public void onPropertyChange(String key, String value) {
-		if (ServerRuntime.JmsConnectionFactoryProperty.equalsKey(key)
+/*		if (ServerRuntime.JmsConnectionFactoryProperty.equalsKey(key)
 				|| ServerRuntime.JmsConnectionUrlProperty.equalsKey(key) || ServerRuntime.JmsModeProperty.equalsKey(key)) {
 			propertyChanged.set(true);
-		}
+		}*/
 	}
 
 	@Override
@@ -80,8 +79,8 @@ public class JmsTransport extends AbstractTransport implements ExceptionListener
 		}
 		if (connection == null) {
 			try {
-				String jmsFactoryClass = Properties.getProperty(ServerRuntime.JmsConnectionFactoryProperty);
-				String jmsUrl = Properties.getProperty(ServerRuntime.JmsConnectionUrlProperty);
+				String jmsFactoryClass = "";//Properties.getProperty(ServerRuntime.JmsConnectionFactoryProperty);
+				String jmsUrl ="";// Properties.getProperty(ServerRuntime.JmsConnectionUrlProperty);
 				String selfAddress = context.getProperty(TransportContext.SelfAddressProperty);
 				ConnectionFactory connectionFactory = getConnectionFactory(jmsFactoryClass, jmsUrl);
 				connection = connectionFactory.createConnection();
@@ -90,7 +89,7 @@ public class JmsTransport extends AbstractTransport implements ExceptionListener
 				session = connection.createSession(true, -1 /* arg not used */);
 				self = session.createQueue(selfAddress);
 				consumer = session.createConsumer(self);
-				mode = getMode(Properties.getProperty(ServerRuntime.JmsModeProperty));
+				mode = getMode(""/*Properties.getProperty(ServerRuntime.JmsModeProperty)*/);
 				Trace.logEvent("JMS transport: Connected to '" + jmsUrl + "'");
 				Trace.logEvent("JMS Transport: Listening to '" + selfAddress + "'");
 			} catch (JMSException e) {

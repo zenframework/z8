@@ -19,9 +19,6 @@ class Export {
     public void setExportRules(Table table, RecordsetExportRules rules);
     public void setExportRecordsMax(int exportRecordsMax);
     
-	public void setSendFilesSeparately(bool sendFilesSeparately);
-	public void setSendFilesContent(bool sendFilesContent);
-	
 	public void setAddress(string address);
 	
     public void execute();

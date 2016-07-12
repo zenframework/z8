@@ -78,9 +78,6 @@ public class Export extends OBJECT {
 
 	private String address;
 	private int exportRecordsMax = Integer.parseInt(Properties.getProperty(ServerRuntime.ExportRecordsMaxProperty));
-	private boolean sendFilesSeparately = Boolean.parseBoolean(Properties
-			.getProperty(ServerRuntime.SendFilesSeparatelyProperty));
-	private boolean sendFilesContent = !Boolean.parseBoolean(Properties.getProperty(ServerRuntime.LazyFilesProperty));
 
 	public Export(IObject container) {
 		super(container);
@@ -141,14 +138,6 @@ public class Export extends OBJECT {
 		this.exportRecordsMax = exportRecordsMax;
 	}
 
-	public void setSendFilesSeparately(boolean sendFilesSeparately) {
-		this.sendFilesSeparately = sendFilesSeparately;
-	}
-
-	public void setSendFilesContent(boolean sendFilesContent) {
-		this.sendFilesContent = sendFilesContent;
-	}
-
 	public void execute() {
 		if (address == null || address.isEmpty())
 			throw new exception("Export address is not set");
@@ -182,17 +171,15 @@ public class Export extends OBJECT {
 			}
 			// Запись сообщений в таблицу MessagesQueue
 			MessagesQueue messagesQueue = MessagesQueue.newInstance();
-			if (sendFilesSeparately && !local) {
+			if (!local) {
 				for (ExportEntry.Files.File file : files) {
 					Message message = z8_newMessage().get();
 					message.setAddress(getAddress());
 					message.setSender(sender);
 					message.getExportEntry().getFiles().getFile().add(file);
 					List<ExportEntry.Properties.Property> props = message.getExportEntry().getProperties().getProperty();
-					if (sendFilesContent)
-						props.add(getProperty(Message.PROP_SEND_FILES_CONTENT, new bool(true)));
-					props.add(getProperty(Message.PROP_TYPE, sendFilesContent ? Message.TYPE_FILE_CONTENT
-							: Message.TYPE_FILE_REFERENCE));
+					props.add(getProperty(Message.PROP_SEND_FILES_CONTENT, new bool(true)));
+					props.add(getProperty(Message.PROP_TYPE, Message.TYPE_FILE_CONTENT));
 					props.add(getProperty(Message.PROP_GROUP, new string(file.getPath())));
 					messagesQueue.addMessage(message, null, MessagesQueue.Direction.OUT);
 				}
@@ -202,11 +189,6 @@ public class Export extends OBJECT {
 			message.setSender(sender);
 			message.getExportEntry().getRecords().getRecord().addAll(records);
 			message.getExportEntry().getProperties().getProperty().addAll(props);
-			if (!sendFilesSeparately && !local) {
-				message.getExportEntry().getFiles().getFile().addAll(files);
-				message.getExportEntry().getProperties().getProperty()
-						.add(getProperty(Message.PROP_SEND_FILES_CONTENT, new bool(true)));
-			}
 			messagesQueue.addMessage(message, null, MessagesQueue.Direction.OUT);
 		} catch (JAXBException e) {
 			throw new exception("Can't marshal records", e);
@@ -260,14 +242,6 @@ public class Export extends OBJECT {
 
 	public void z8_setExportRecordsMax(integer exportRecordsMax) {
 		setExportRecordsMax(exportRecordsMax.getInt());
-	}
-
-	public void z8_setSendFilesSeparately(bool sendFilesSeparately) {
-		setSendFilesSeparately(sendFilesSeparately.get());
-	}
-
-	public void z8_setSendFilesContent(bool sendFilesContent) {
-		setSendFilesContent(sendFilesContent.get());
 	}
 
 	public void z8_init() {}

@@ -9,7 +9,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.zenframework.z8.server.base.table.system.Properties;
 import org.zenframework.z8.server.ie.ws.WsTransport;
-import org.zenframework.z8.server.runtime.ServerRuntime;
 
 public class TransportEngine implements Properties.Listener {
 
@@ -17,8 +16,8 @@ public class TransportEngine implements Properties.Listener {
 
 	private static TransportEngine INSTANCE;
 
-	private final List<String> enabledProtocols = getEnabledProtocols(Properties
-			.getProperty(ServerRuntime.EnableProtocolsProperty));
+	private final List<String> enabledProtocols = getEnabledProtocols(""/*Properties
+			.getProperty(ServerRuntime.EnableProtocolsProperty)*/);
 	private final Map<String, Transport> transports = new HashMap<String, Transport>();
 
 	private TransportEngine() {
@@ -58,13 +57,13 @@ public class TransportEngine implements Properties.Listener {
 
 	@Override
 	public void onPropertyChange(String key, String value) {
-		if (ServerRuntime.EnableProtocolsProperty.equalsKey(key)) {
+/*		if (ServerRuntime.EnableProtocolsProperty.equalsKey(key)) {
 			stop();
 			synchronized (enabledProtocols) {
 				enabledProtocols.clear();
 				enabledProtocols.addAll(getEnabledProtocols(value));
 			}
-		}
+		}*/
 	}
 
 	public synchronized void stop() {

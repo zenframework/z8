@@ -5,7 +5,6 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.zenframework.z8.server.base.table.Table;
-import org.zenframework.z8.server.base.table.system.Properties;
 import org.zenframework.z8.server.base.table.system.Domains;
 import org.zenframework.z8.server.base.table.value.BoolField;
 import org.zenframework.z8.server.base.table.value.Field;
@@ -14,19 +13,13 @@ import org.zenframework.z8.server.base.table.value.Link;
 import org.zenframework.z8.server.db.sql.SqlToken;
 import org.zenframework.z8.server.db.sql.expressions.And;
 import org.zenframework.z8.server.db.sql.expressions.Equ;
-import org.zenframework.z8.server.db.sql.expressions.Operation;
-import org.zenframework.z8.server.db.sql.expressions.Rel;
-import org.zenframework.z8.server.db.sql.expressions.Unary;
 import org.zenframework.z8.server.resources.Resources;
 import org.zenframework.z8.server.runtime.IObject;
-import org.zenframework.z8.server.runtime.ServerRuntime;
 import org.zenframework.z8.server.types.bool;
-import org.zenframework.z8.server.types.datetime;
 import org.zenframework.z8.server.types.exception;
 import org.zenframework.z8.server.types.guid;
 import org.zenframework.z8.server.types.integer;
 import org.zenframework.z8.server.types.string;
-import org.zenframework.z8.server.types.sql.sql_datetime;
 
 public class TransportRoutes extends Table {
 
@@ -166,14 +159,6 @@ public class TransportRoutes extends Table {
 		return setRoute(route.getDomain(), route.getProtocol(), route.getAddress(), route.getPriority(), route.isActive());
 	}
 
-	/*public guid setRoute(String domain, String protocol, String address, int priority, boolean active) {
-		if (domains.get().readFirst(new Rel(domains.get().id.get(), Operation.Eq, new sql_string(domain)))) {
-			return setRoute(domains.get().recordId(), protocol, address, priority, active);
-		} else {
-			throw new exception("Domain '" + domain + "' does not exist");
-		}
-	}*/
-
 	public guid setRoute(String domain, String protocol, String address, int priority, boolean active) {
 		Domains domains = Domains.newInstance();
 		if (!domains.readFirst(new Equ(domains.id.get(), domain)))
@@ -204,14 +189,14 @@ public class TransportRoutes extends Table {
 	}
 
 	public void checkInactiveRoutes() {
-		int timeout = Integer.parseInt(Properties.getProperty(ServerRuntime.InactiveRouteTimeoutProperty));
+/*		int timeout = Integer.parseInt(Properties.getProperty(ServerRuntime.InactiveRouteTimeoutProperty));
 		read(new And(new Unary(Operation.Not, this.active.get().sql_bool()), new Rel(this.modifiedAt.get(), Operation.LT,
 				new sql_datetime(new datetime().addMinute(-timeout)))));
 		while (next()) {
 			this.active.get().set(new bool(true));
 			this.description.get().set("");
 			update(recordId());
-		}
+		}*/
 	}
 
 	public string z8_getAddress() {

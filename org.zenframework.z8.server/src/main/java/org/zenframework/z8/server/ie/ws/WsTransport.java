@@ -5,12 +5,10 @@ import javax.xml.ws.Endpoint;
 import org.apache.cxf.interceptor.LoggingInInterceptor;
 import org.apache.cxf.interceptor.LoggingOutInterceptor;
 import org.apache.cxf.jaxws.JaxWsProxyFactoryBean;
-import org.zenframework.z8.server.base.table.system.Properties;
 import org.zenframework.z8.server.ie.AbstractTransport;
 import org.zenframework.z8.server.ie.Message;
 import org.zenframework.z8.server.ie.TransportContext;
 import org.zenframework.z8.server.ie.TransportException;
-import org.zenframework.z8.server.runtime.ServerRuntime;
 import org.zenframework.z8.server.types.file;
 
 public class WsTransport extends AbstractTransport {
@@ -25,7 +23,7 @@ public class WsTransport extends AbstractTransport {
 
 	@Override
 	public void init() {
-		endpoint = Endpoint.publish(Properties.getProperty(ServerRuntime.WsEndpointProperty), new TransportServiceImpl(
+		endpoint = Endpoint.publish(""/*Properties.getProperty(ServerRuntime.WsEndpointProperty)*/, new TransportServiceImpl(
 				context.getProperty(TransportContext.SelfAddressProperty)));
 	}
 
