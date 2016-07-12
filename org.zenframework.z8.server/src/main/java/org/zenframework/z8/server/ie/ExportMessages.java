@@ -20,7 +20,6 @@ import org.zenframework.z8.server.base.table.value.Sequencer;
 import org.zenframework.z8.server.base.table.value.StringField;
 import org.zenframework.z8.server.base.table.value.TextField;
 import org.zenframework.z8.server.base.view.filter.Filter;
-import org.zenframework.z8.server.db.sql.SqlField;
 import org.zenframework.z8.server.db.sql.SqlToken;
 import org.zenframework.z8.server.db.sql.expressions.And;
 import org.zenframework.z8.server.db.sql.expressions.Equ;
@@ -34,11 +33,9 @@ import org.zenframework.z8.server.resources.Resources;
 import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.runtime.ServerRuntime;
 import org.zenframework.z8.server.types.bool;
-import org.zenframework.z8.server.types.datetime;
 import org.zenframework.z8.server.types.guid;
 import org.zenframework.z8.server.types.integer;
 import org.zenframework.z8.server.types.string;
-import org.zenframework.z8.server.utils.ErrorUtils;
 import org.zenframework.z8.server.utils.StringUtils;
 
 public class ExportMessages extends Table {
@@ -50,7 +47,6 @@ public class ExportMessages extends Table {
 		public final static String ClassId = "ClassId";
 
 		public final static String Sent = "Sent";
-		public final static String Error = "Error";
 		public final static String Xml = "Xml";
 		
 		public final static String BytesTransferred = "BytesTransferred";
@@ -66,7 +62,6 @@ public class ExportMessages extends Table {
 		public final static String Ordinal = "ExportMessages.ordinal";
 		public final static String ClassId = "ExportMessages.classId";
 		public final static String Processed = "ExportMessages.processed";
-		public final static String Error = "ExportMessages.error";
 		public final static String BytesTransferred = "ExportMessages.bytesTransferred";
 	}
 
@@ -80,7 +75,6 @@ public class ExportMessages extends Table {
 		public final static String Ordinal = Resources.get(strings.Ordinal);
 		public final static String ClassId = Resources.get(strings.ClassId);
 		public final static String Processed = Resources.get(strings.Processed);
-		public final static String Error = Resources.get(strings.Error);
 		public final static String BytesTransferred = Resources.get(strings.BytesTransferred);
 	}
 
@@ -140,7 +134,6 @@ public class ExportMessages extends Table {
 	public final StringField.CLASS<StringField> classId = new StringField.CLASS<StringField>(this);
 	public final TextField.CLASS<TextField> message = new TextField.CLASS<TextField>(this);
 	public final BoolField.CLASS<BoolField> processed = new BoolField.CLASS<BoolField>(this);
-	public final BoolField.CLASS<BoolField> error = new BoolField.CLASS<BoolField>(this);
 	public final IntegerField.CLASS<IntegerField> bytesTransferred = new IntegerField.CLASS<IntegerField>(this);
 
 	protected ExportMessages(IObject container) {
@@ -193,17 +186,6 @@ public class ExportMessages extends Table {
 		messages.update(id);
 	}
 
-	public void error(guid id, String info) {
-		description.get().set(new string(info));
-		update(id);
-	}
-
-	public void setError(Message message, Throwable e) {
-		error.get().set(new bool(true));
-		description.get().set(new string(new datetime() + " " + ": '" + ErrorUtils.getMessage(e) + "' " + e.getClass()));
-		update(new guid(message.getId()));
-	}
-
 	public String getSender() {
 		return id.get().get().toString();
 	}
@@ -248,10 +230,6 @@ public class ExportMessages extends Table {
 		processed.setIndex("sent");
 		processed.setDisplayName(displayNames.Processed);
 
-		error.setName(names.Error);
-		error.setIndex("error");
-		error.setDisplayName(displayNames.Error);
-
 		bytesTransferred.setName(names.BytesTransferred);
 		bytesTransferred.setIndex("transferred");
 		bytesTransferred.setDisplayName(displayNames.BytesTransferred);
@@ -263,7 +241,6 @@ public class ExportMessages extends Table {
 		registerDataField(ordinal);
 		registerDataField(classId);
 		registerDataField(processed);
-		registerDataField(error);
 		registerDataField(bytesTransferred);
 		registerDataField(message);
 	}
@@ -324,10 +301,10 @@ public class ExportMessages extends Table {
 		Field senderField = id.get();
 		Field addressField = id1.get();
 
-		SqlToken notProcessedNotError = new And(new Unary(Operation.Not, processed.get()), new Unary(Operation.Not, error.get()));
+		SqlToken notProcessed = new Unary(Operation.Not, processed.get());
 		SqlToken notLocal = new Unary(Operation.Not, new InVector(addressField, string.wrap(locals)));
 		SqlToken senderEq = new Equ(senderField, sender);
-		SqlToken where = new And(new And(notProcessedNotError, notLocal), senderEq);
+		SqlToken where = new And(new And(notProcessed, notLocal), senderEq);
 
 		if(filters != null && !filters.isEmpty())
 			where = new And(where, Query.parseWhere(Filter.parse(filters, this)));
@@ -349,9 +326,9 @@ public class ExportMessages extends Table {
 	}
 
 	public List<guid> getImportMessages(String selfAddress) {
-		SqlToken notProcessedNotError = new And(new Unary(Operation.Not, new SqlField(processed.get())), new Unary(Operation.Not, new SqlField(error.get())));
+		SqlToken notProcessed = new IsNot(processed.get());
 		SqlToken forMe = new Equ(id1.get(), selfAddress);
-		read(Arrays.<Field> asList(recordId.get()), Arrays.<Field> asList(ordinal.get()), new And(notProcessedNotError, forMe));
+		read(Arrays.<Field> asList(recordId.get()), Arrays.<Field> asList(ordinal.get()), new And(notProcessed, forMe));
 		List<guid> ids = new LinkedList<guid>();
 		while(next()) {
 			ids.add(recordId());

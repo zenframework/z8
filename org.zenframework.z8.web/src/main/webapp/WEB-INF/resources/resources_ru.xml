@@ -72,7 +72,6 @@
     <entry key="ExportMessages.message">Сообщение</entry>
     <entry key="ExportMessages.ordinal">Номер</entry>
     <entry key="ExportMessages.processed">Обработано</entry>
-    <entry key="ExportMessages.error">Ошибка</entry>
     <entry key="ExportMessages.classId">Класс сообщения</entry>
     <entry key="ExportMessages.bytesTransferred">Bytes sent</entry>
 

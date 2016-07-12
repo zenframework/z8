@@ -222,10 +222,6 @@ public class Message extends OBJECT implements RmiSerializable, Serializable {
 		ExportMessages.newInstance().info(getId(), info);
 	}
 
-	public void error(String info) {
-		ExportMessages.newInstance().error(getId(), info);
-	}
-	
 	public void processed() {
 		processed(null);
 	}

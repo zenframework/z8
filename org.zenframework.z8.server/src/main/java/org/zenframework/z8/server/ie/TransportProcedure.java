@@ -132,7 +132,7 @@ public class TransportProcedure extends Procedure {
 					Import.importMessage(message);
 				} catch (Throwable e) {
 					Trace.logError(e);
-					messages.setError(message, e);
+					message.info(ErrorUtils.getMessage(e));
 				}
 			}
 
@@ -147,7 +147,7 @@ public class TransportProcedure extends Procedure {
 		Connection connection = ConnectionManager.get();
 		try {
 			connection.beginTransaction();
-			messages.processed(new guid(message.getId()), route.getTransportUrl());
+			message.processed(route.getTransportUrl());
 			message.getFiles().addAll(
 					IeUtil.filesToFileInfos(message.getExportEntry().getFiles().getFile(), message.isSendFilesContent()));
 			message.beforeExport();
@@ -163,7 +163,7 @@ public class TransportProcedure extends Procedure {
 			if (e instanceof TransportException)
 				throw (TransportException) e;
 
-			messages.setError(message, e);
+			message.info(ErrorUtils.getMessage(e));
 		}
 	}
 
