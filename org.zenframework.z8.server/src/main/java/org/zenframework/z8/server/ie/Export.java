@@ -180,8 +180,8 @@ public class Export extends OBJECT {
 					props.add(getProperty(entry.getKey(), entry.getValue()));
 				}
 			}
-			// Запись сообщений в таблицу ExportMessages
-			MessagesQueue exportMessages = MessagesQueue.newInstance();
+			// Запись сообщений в таблицу MessagesQueue
+			MessagesQueue messagesQueue = MessagesQueue.newInstance();
 			if (sendFilesSeparately && !local) {
 				for (ExportEntry.Files.File file : files) {
 					Message message = z8_newMessage().get();
@@ -194,7 +194,7 @@ public class Export extends OBJECT {
 					props.add(getProperty(Message.PROP_TYPE, sendFilesContent ? Message.TYPE_FILE_CONTENT
 							: Message.TYPE_FILE_REFERENCE));
 					props.add(getProperty(Message.PROP_GROUP, new string(file.getPath())));
-					exportMessages.addMessage(message, null, MessagesQueue.Direction.OUT);
+					messagesQueue.addMessage(message, null, MessagesQueue.Direction.OUT);
 				}
 			}
 			Message message = z8_newMessage().get();
@@ -207,7 +207,7 @@ public class Export extends OBJECT {
 				message.getExportEntry().getProperties().getProperty()
 						.add(getProperty(Message.PROP_SEND_FILES_CONTENT, new bool(true)));
 			}
-			exportMessages.addMessage(message, null, MessagesQueue.Direction.OUT);
+			messagesQueue.addMessage(message, null, MessagesQueue.Direction.OUT);
 		} catch (JAXBException e) {
 			throw new exception("Can't marshal records", e);
 		} catch (SorterException e) {
