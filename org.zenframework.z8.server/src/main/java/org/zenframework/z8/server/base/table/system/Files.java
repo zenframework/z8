@@ -94,7 +94,7 @@ public class Files extends Table {
 		unregisterDataField(archive);
 	}
 
-	public void addFile(file file) {
+	public void add(file file) {
 		change(file, true);
 	}
 
@@ -109,6 +109,12 @@ public class Files extends Table {
 			name.get().set(file.name);
 			data.get().set(input);
 			path.get().set(file.path);
+			
+			// file.status support
+			id.get().set(file.instanceId);
+			id1.get().set(file.status.getValue());
+			// file.status support
+
 			if(create)
 				create(file.id);
 			else

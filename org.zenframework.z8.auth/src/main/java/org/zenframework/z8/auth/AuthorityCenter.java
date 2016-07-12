@@ -14,7 +14,6 @@ import org.zenframework.z8.server.engine.IServerInfo;
 import org.zenframework.z8.server.engine.ISession;
 import org.zenframework.z8.server.engine.ServerInfo;
 import org.zenframework.z8.server.engine.Session;
-import org.zenframework.z8.server.engine.TimeoutChecker;
 import org.zenframework.z8.server.exceptions.AccessDeniedException;
 import org.zenframework.z8.server.logs.Trace;
 import org.zenframework.z8.server.request.RequestDispatcher;
@@ -31,8 +30,6 @@ public class AuthorityCenter extends HubServer implements IAuthorityCenter {
 	private UserManager userManager;
 	private SessionManager sessionManager;
 
-	private TimeoutChecker timeoutChecker;
-
 	private boolean interconnectionReset = true;
 
 	public static IAuthorityCenter launch(ServerConfig config) throws RemoteException {
@@ -44,7 +41,7 @@ public class AuthorityCenter extends HubServer implements IAuthorityCenter {
 	}
 
 	private AuthorityCenter() throws RemoteException {
-		super(ServerConfig.authorityCenterPort(), IAuthorityCenter.class);
+		super(ServerConfig.authorityCenterPort());
 	}
 
 	@Override
@@ -61,17 +58,9 @@ public class AuthorityCenter extends HubServer implements IAuthorityCenter {
 		sessionManager = new SessionManager();
 		sessionManager.start();
 
-		timeoutChecker = new TimeoutChecker(this, "Authority Center Timeout Thread");
-		timeoutChecker.start();
+		enableTimeoutChecking();
 
 		Trace.logEvent("JVM startup options: " + ManagementFactory.getRuntimeMXBean().getInputArguments().toString() + "\n\t" + RequestDispatcher.getMemoryUsage());
-	}
-
-	@Override
-	public void stop() throws RemoteException {
-		timeoutChecker.destroy();
-
-		super.stop();
 	}
 
 	@Override
@@ -150,7 +139,8 @@ public class AuthorityCenter extends HubServer implements IAuthorityCenter {
 				continue;
 
 			if(!server.isAlive()) {
-				unregister(server.getServer());
+				if(server.isDead())
+					unregister(server.getServer());
 				continue;
 			}
 
@@ -172,7 +162,7 @@ public class AuthorityCenter extends HubServer implements IAuthorityCenter {
 	}
 
 	@Override
-	public void check() {
+	protected void timeoutCheck() {
 		instance.checkSessions();
 		instance.checkConnections();
 	}
@@ -182,7 +172,7 @@ public class AuthorityCenter extends HubServer implements IAuthorityCenter {
 	}
 
 	private void checkConnections() {
-		if(!interconnectionReset || !ServerConfig.interconnectionEnabled())
+		if(!interconnectionReset)
 			return;
 
 		try {

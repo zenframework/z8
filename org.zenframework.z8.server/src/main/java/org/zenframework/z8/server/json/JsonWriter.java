@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.zenframework.z8.server.base.table.value.IValue;
-import org.zenframework.z8.server.engine.ApplicationServer;
 import org.zenframework.z8.server.json.parser.JsonArray;
 import org.zenframework.z8.server.json.parser.JsonObject;
 import org.zenframework.z8.server.runtime.RCollection;
@@ -301,7 +300,7 @@ public class JsonWriter {
 		finishObject();
 	}
 
-	public void writeInfo(String[] messages, file log) {
+	public void writeInfo(String[] messages, String serverId, file log) {
 		startObject(Json.info);
 
 		startArray(Json.messages);
@@ -309,10 +308,10 @@ public class JsonWriter {
 			write(message);
 		finishArray();
 
-		if(log != null) {
-			writeProperty(new string(Json.serverId), ApplicationServer.id);
+		writeProperty(new string(Json.serverId), serverId);
+
+		if(log != null)
 			writeProperty(new string(Json.log), log.path.get());
-		}
 
 		finishObject();
 	}

@@ -6,6 +6,7 @@ import java.util.Collection;
 
 import org.apache.commons.io.FileUtils;
 import org.zenframework.z8.server.base.table.Table;
+import org.zenframework.z8.server.base.table.system.Files;
 import org.zenframework.z8.server.base.table.system.SystemFiles;
 import org.zenframework.z8.server.base.table.value.AttachmentField;
 import org.zenframework.z8.server.base.table.value.Field;
@@ -71,14 +72,14 @@ public class AttachmentProcessor extends OBJECT {
 	}
 
 	public Collection<file> create(guid attachTo, Collection<file> files) {
-		SystemFiles filesTable = SystemFiles.newInstance();
+		Files filesTable = Files.newInstance();
 
 		for(file file : files) {
-			if(file.id == null || file.id.isNull())
+			if(file.id.isNull())
 				file.id = guid.create();
 
 			setPathIfEmpty(attachTo, file);
-			filesTable.addFile(file);
+			filesTable.add(file);
 		}
 
 		return files;

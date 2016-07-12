@@ -33,7 +33,7 @@ public class InterconnectionCenter extends HubServer implements IInterconnection
 	}
 
 	private InterconnectionCenter() throws RemoteException {
-		super(ServerConfig.interconnectionCenterPort(), IInterconnectionCenter.class);
+		super(ServerConfig.interconnectionCenterPort());
 	}
 
 	@Override
@@ -78,7 +78,8 @@ public class InterconnectionCenter extends HubServer implements IInterconnection
 				continue;
 			
 			if(!server.isAlive()) {
-				unregister(server.getServer());
+				if(server.isDead())
+					unregister(server.getServer());
 				continue;
 			}
 
@@ -93,5 +94,4 @@ public class InterconnectionCenter extends HubServer implements IInterconnection
 
 		return null;
 	}
-	
 }

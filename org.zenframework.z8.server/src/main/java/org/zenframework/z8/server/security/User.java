@@ -15,12 +15,12 @@ import org.zenframework.z8.server.base.table.system.SystemTools;
 import org.zenframework.z8.server.base.table.system.UserEntries;
 import org.zenframework.z8.server.base.table.system.Users;
 import org.zenframework.z8.server.base.table.value.Field;
+import org.zenframework.z8.server.config.ServerConfig;
 import org.zenframework.z8.server.db.ConnectionManager;
 import org.zenframework.z8.server.db.sql.SqlToken;
 import org.zenframework.z8.server.db.sql.expressions.And;
 import org.zenframework.z8.server.db.sql.expressions.Equ;
 import org.zenframework.z8.server.db.sql.functions.string.EqualsIgnoreCase;
-import org.zenframework.z8.server.engine.ApplicationServer;
 import org.zenframework.z8.server.engine.Database;
 import org.zenframework.z8.server.engine.RmiIO;
 import org.zenframework.z8.server.engine.Runtime;
@@ -147,7 +147,7 @@ public class User implements IUser {
 	}
 	
 	static public IUser load(String login) {
-		if(!ApplicationServer.isSystemInstalled())
+		if(!ServerConfig.isSystemInstalled())
 			return User.system();
 
 		User user = new User();

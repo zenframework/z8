@@ -71,17 +71,46 @@ public class RmiTransportProcedure extends Procedure {
 			}
 		}
 		
-		private boolean sendMessage(Message message) throws Throwable {
-			Connection connection = ConnectionManager.get();
+		private String interconnectionCenterUnavailableMessage() {
+			return "Interconnection Center is unavailable at " + ServerConfig.interconnectionCenterHost() + ":" + ServerConfig.interconnectionCenterPort();
+		}
+		
+		private String domainUnavailableMessage() {
+			return "Domain '" + domain  + "' is unavailable at Interconnection Center " + ServerConfig.interconnectionCenterHost() + ":" + ServerConfig.interconnectionCenterPort();
+		}
 
+		private IApplicationServer connect() throws Throwable {
 			try {
+				ServerConfig.interconnectionCenter().probe();
+			} catch(Throwable e) {
+				throw new RuntimeException(interconnectionCenterUnavailableMessage());
+			}
+			
+			try {
+				IApplicationServer server = ServerConfig.interconnectionCenter().connect(domain);
 				if(server == null)
-					server = ServerConfig.interconnectionCenter().connect(domain);
-	
+					throw new RuntimeException(domainUnavailableMessage());
+				return server;
+			} catch(Throwable e) {
+				ServerConfig.resetInterconnectionCenter();
+				throw new RuntimeException(domainUnavailableMessage());
+			}
+		}
+		
+		private boolean sendMessage(Message message) throws Throwable {
+			Connection connection = null;
+			
+			try {
 				if(server == null) {
-					message.info("'" + domain + "' server is unavalable");
-					return false;
+					try {
+						server = connect();
+					} catch(Throwable e) {
+						message.info(e.getMessage());
+						return false;
+					}
 				}
+				
+				connection = ConnectionManager.get();
 
 				if(!message.isFile()) {
 					connection.beginTransaction();
@@ -116,7 +145,8 @@ public class RmiTransportProcedure extends Procedure {
 				}
 				return true;
 			} catch (Throwable e) {
-				connection.rollback();
+				if(connection != null)
+					connection.rollback();
 				message.error(e.getMessage());
 				throw e;
 			}
@@ -129,9 +159,6 @@ public class RmiTransportProcedure extends Procedure {
 	}
 
 	private void sendMessages() {
-		if(!ServerConfig.interconnectionEnabled())
-			return;
-
 		Collection<String> addresses = messages.getAddresses();
 
 		for (String address : addresses) {

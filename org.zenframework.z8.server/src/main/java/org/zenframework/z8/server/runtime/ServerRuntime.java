@@ -4,6 +4,7 @@ import org.zenframework.z8.server.base.job.scheduler.Jobs;
 import org.zenframework.z8.server.base.job.scheduler.TaskLogs;
 import org.zenframework.z8.server.base.job.scheduler.Tasks;
 import org.zenframework.z8.server.base.table.system.Entries;
+import org.zenframework.z8.server.base.table.system.Files;
 import org.zenframework.z8.server.base.table.system.Properties;
 import org.zenframework.z8.server.base.table.system.Property;
 import org.zenframework.z8.server.base.table.system.SecurityGroups;
@@ -67,6 +68,7 @@ public class ServerRuntime extends AbstractRuntime {
 		addTable(new Tasks.CLASS<Tasks>(null));
 		addTable(new TaskLogs.CLASS<TaskLogs>(null));
 
+		addTable(new Files.CLASS<Files>(null));
 		addTable(new SystemFiles.CLASS<SystemFiles>(null));
 		addTable(new Properties.CLASS<Properties>(null));
 

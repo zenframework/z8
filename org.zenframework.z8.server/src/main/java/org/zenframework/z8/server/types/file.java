@@ -42,13 +42,13 @@ public class file extends primary implements RmiSerializable, Serializable {
 	public datetime time = new datetime();
 	public integer size = new integer();
 	public guid id = new guid();
-	public string instanceId = new string( ServerConfig.instanceId());
-
+	public string instanceId = new string(ServerConfig.instanceId());
+	
 	public RLinkedHashMap<string, string> details = new RLinkedHashMap<string, string>();
 
 	private FileItem value;
 
-	private long offset;
+	private long offset = 0;
 	private int partLength = 0;
 	
 	public Status status = Status.LOCAL;
@@ -121,7 +121,7 @@ public class file extends primary implements RmiSerializable, Serializable {
 	public file(guid id, String name, String instanceId, String path, long size, datetime time) {
 		super();
 		this.id = new guid(id);
-		this.instanceId = new string(instanceId);
+		this.instanceId = new string(instanceId != null ? instanceId : ServerConfig.instanceId());
 		this.path = new string(getRelativePath(path));
 		this.name = new string(name);
 		this.size = new integer(size);

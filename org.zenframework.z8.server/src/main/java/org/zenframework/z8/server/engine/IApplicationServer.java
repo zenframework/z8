@@ -8,7 +8,6 @@ import org.zenframework.z8.server.security.IUser;
 import org.zenframework.z8.server.types.file;
 
 public interface IApplicationServer extends IServer {
-
 	public GNode processRequest(ISession session, GNode request) throws RemoteException;
 
 	public file download(file file) throws RemoteException, IOException;

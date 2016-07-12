@@ -11,7 +11,6 @@ import org.zenframework.z8.server.base.table.value.IntegerField;
 import org.zenframework.z8.server.base.table.value.StringField;
 import org.zenframework.z8.server.base.table.value.TextField;
 import org.zenframework.z8.server.config.ServerConfig;
-import org.zenframework.z8.server.engine.ApplicationServer;
 import org.zenframework.z8.server.types.guid;
 
 public class Scheduler implements Runnable {
@@ -71,7 +70,7 @@ public class Scheduler implements Runnable {
 	}
 
 	private synchronized void initializeTasks() {
-		if (!resetPending || !ApplicationServer.isSystemInstalled())
+		if (!resetPending || !ServerConfig.isSystemInstalled())
 			return;
 
 		Tasks tasksTable = new Tasks.CLASS<Tasks>(null).get();

@@ -7,14 +7,20 @@ import java.rmi.ConnectException;
 import java.rmi.NoSuchObjectException;
 import java.rmi.RemoteException;
 
+import org.zenframework.z8.server.types.datespan;
+
 public class ServerInfo implements IServerInfo {
 
 	private static final long serialVersionUID = 5011706173964296365L;
+	private static final long TenMinutes = 10 * datespan.TicksPerMinute;
+	private static final long ThreeDays = 3 * datespan.TicksPerDay;
 
 	private IApplicationServer server;
 	private String id;
 	private String[] domains;
 
+	private long lastChecked = 0;
+	
 	public ServerInfo() {
 	}
 
@@ -49,14 +55,23 @@ public class ServerInfo implements IServerInfo {
 	}
 
 	public boolean isAlive() throws RemoteException {
+		if(lastChecked != 0 && System.currentTimeMillis() - lastChecked < TenMinutes)
+			return false;
+		
 		try {
 			server.probe();
+			lastChecked = 0;
 			return true;
 		} catch(NoSuchObjectException e) {
-			return false;
 		} catch(ConnectException e) {
-			return false;
 		}
+		
+		lastChecked = System.currentTimeMillis();
+		return false;
+	}
+
+	public boolean isDead() throws RemoteException {
+		return System.currentTimeMillis() - lastChecked > ThreeDays;
 	}
 
 	@Override

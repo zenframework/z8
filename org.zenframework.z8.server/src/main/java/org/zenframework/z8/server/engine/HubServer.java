@@ -22,8 +22,8 @@ abstract public class HubServer extends RmiServer implements IHubServer {
 	private Collection<IServerInfo> innerServers = new ArrayList<IServerInfo>();
 	private Collection<IServerInfo> servers = Collections.synchronizedCollection(innerServers);
 
-	protected HubServer(int port, Class<? extends IServer> serverClass) throws RemoteException {
-		super(port, serverClass);
+	protected HubServer(int port) throws RemoteException {
+		super(port);
 	}
 
 	@Override

@@ -57,10 +57,6 @@ public class ApplicationServer extends RmiServer implements IApplicationServer {
 		return getRequest().getMonitor();
 	}
 
-	static public boolean isSystemInstalled() {
-		return ServerConfig.database().isSystemInstalled();
-	}
-	
 	public static IUser getUser() {
 		return getSession().user();
 	}
@@ -85,7 +81,7 @@ public class ApplicationServer extends RmiServer implements IApplicationServer {
 	}
 
 	private ApplicationServer() throws RemoteException {
-		super(ServerConfig.applicationServerPort(), IApplicationServer.class);
+		super(ServerConfig.applicationServerPort());
 	}
 
 	@Override
@@ -99,7 +95,7 @@ public class ApplicationServer extends RmiServer implements IApplicationServer {
 
 		checkSchemaVersion();
 
-		ServerConfig.authorityCenter().register(this);
+		enableTimeoutChecking();
 
 		Scheduler.start();
 
@@ -158,6 +154,15 @@ public class ApplicationServer extends RmiServer implements IApplicationServer {
 	@Override
 	public boolean accept(Object object) {
 		return RmiTransportProcedure.accept(object);
+	}
+
+	@Override
+	protected void timeoutCheck() {
+		try {
+			ServerConfig.authorityCenter().register(this);
+		} catch(Throwable e) {
+			Trace.logEvent("No authority center at " + ServerConfig.authorityCenterHost() + ":" + ServerConfig.authorityCenterPort());
+		}
 	}
 	
 	private void checkSchemaVersion() {

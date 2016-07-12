@@ -74,6 +74,7 @@
     <entry key="ExportMessages.processed">Обработано</entry>
     <entry key="ExportMessages.error">Ошибка</entry>
     <entry key="ExportMessages.classId">Класс сообщения</entry>
+    <entry key="ExportMessages.bytesTransferred">Bytes sent</entry>
 
     <!-- Transport routes -->
     <entry key="TransportRoutes.title">Маршруты</entry>

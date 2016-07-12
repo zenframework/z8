@@ -67,7 +67,7 @@ public class Import {
 			file.set(new InputOnlyFileItem(target, file.name.get()));
 
 			if(!files.hasRecord(file.id))
-				files.addFile(file);
+				files.add(file);
 			else
 				files.updateFile(file);
 
@@ -164,7 +164,7 @@ public class Import {
 		for (file file : message.getFiles()) {
 			if (file.get() == null)
 				file = files.getFile(file);
-			files.addFile(file);
+			files.importFile(file);
 		}
 	}
 

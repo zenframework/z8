@@ -22,6 +22,7 @@ public class ServerConfig extends Properties {
 
 	static private String InstanceIdProperty = "z8.instance.id";
 
+	static private String RmiEnabledProperty = "rmi.enabled";
 	static private String RmiRegistryPortProperty = "rmi.registry.port";
 
 	static private String ApplicationServerHostProperty = "application.server.host";
@@ -31,7 +32,6 @@ public class ServerConfig extends Properties {
 	static private String AuthorityCenterPortProperty = "authority.center.port";
 	static private String AuthorityCenterSessionTimeoutProperty = "authority.center.session.timeout";
 
-	static private String InterconnectionCenterEnabledProperty = "interconnection.center.enabled";
 	static private String InterconnectionCenterHostProperty = "interconnection.center.host";
 	static private String InterconnectionCenterPortProperty = "interconnection.center.port";
 
@@ -45,8 +45,6 @@ public class ServerConfig extends Properties {
 	static private String TraceSqlProperty = "trace.sql";
 	static private String TraceSqlConnectionsProperty = "trace.sql.connections";
 
-	static public int DefaultRegistryPort = 7852;
-
 	static public String TextExtensionsProperty = "file.converter.text";
 	static public String ImageExtensionsProperty = "file.converter.image";
 	static public String EmailExtensionsProperty = "file.converter.email";
@@ -58,6 +56,7 @@ public class ServerConfig extends Properties {
 
 	static private String instanceId;
 
+	static private boolean rmiEnabled;
 	static private int rmiRegistryPort;
 
 	static private String applicationServerHost;
@@ -67,7 +66,6 @@ public class ServerConfig extends Properties {
 	static private int authorityCenterPort;
 	static private int authorityCenterSessionTimeout;
 
-	static private boolean interconnectionCenterEnabled;
 	static private String interconnectionCenterHost;
 	static private int interconnectionCenterPort;
 
@@ -109,17 +107,18 @@ public class ServerConfig extends Properties {
 		}
 
 		instanceId = getProperty(InstanceIdProperty, DefaultInstanceId);
-		rmiRegistryPort = getProperty(RmiRegistryPortProperty, DefaultRegistryPort);
 
-		applicationServerHost = getProperty(ApplicationServerHostProperty, "");
+		rmiEnabled = getProperty(RmiEnabledProperty, true);
+		rmiRegistryPort = getProperty(RmiRegistryPortProperty, Rmi.defaultRegistryPort);
+
+		applicationServerHost = getProperty(ApplicationServerHostProperty, Rmi.localhost);
 		applicationServerPort = getProperty(ApplicationServerPortProperty, 15000);
 
-		authorityCenterHost = getProperty(AuthorityCenterHostProperty, "");
+		authorityCenterHost = getProperty(AuthorityCenterHostProperty, Rmi.localhost);
 		authorityCenterPort = getProperty(AuthorityCenterPortProperty, 10000);
 		authorityCenterSessionTimeout = getProperty(AuthorityCenterSessionTimeoutProperty, 24 * 60);
 
-		interconnectionCenterEnabled = getProperty(InterconnectionCenterEnabledProperty, false);
-		interconnectionCenterHost = getProperty(InterconnectionCenterHostProperty, "");
+		interconnectionCenterHost = getProperty(InterconnectionCenterHostProperty, Rmi.localhost);
 		interconnectionCenterPort = getProperty(InterconnectionCenterPortProperty, 20000);
 
 		webServerStartApplicationServer = getProperty(WebServerStartApplicationServerProperty, true);
@@ -133,10 +132,10 @@ public class ServerConfig extends Properties {
 
 		schedulerEnabled = getProperty(SchedulerEnabledProperty, true);
 
-		textExtensions = getProperty(TextExtensionsProperty, new String[] { "txt, xml" });
-		imageExtensions = getProperty(ImageExtensionsProperty, new String[] { "tif, tiff, jpg, jpeg, gif, png, bmp" });
-		emailExtensions = getProperty(EmailExtensionsProperty, new String[] { "eml, mime" });
-		officeExtensions = getProperty(OfficeExtensionsProperty, new String[] { "doc, docx, xls, xlsx, ppt, pptx, odt, odp, ods, odf, odg, wpd, sxw, sxi, sxc, sxd, stw, vsd" });
+		textExtensions = getProperty(TextExtensionsProperty, new String[] { "txt", "xml" });
+		imageExtensions = getProperty(ImageExtensionsProperty, new String[] { "tif", "tiff", "jpg", "jpeg", "gif", "png", "bmp" });
+		emailExtensions = getProperty(EmailExtensionsProperty, new String[] { "eml", "mime" });
+		officeExtensions = getProperty(OfficeExtensionsProperty, new String[] { "doc", "docx", "xls", "xlsx", "ppt", "pptx", "odt", "odp", "ods", "odf", "odg", "wpd", "sxw", "sxi", "sxc", "sxd", "stw", "vsd" });
 
 		officeHome = getProperty(OfficeHomeProperty, "C:/Program Files (x86)/LibreOffice 4.0");
 
@@ -192,6 +191,26 @@ public class ServerConfig extends Properties {
 		return result;
 	}
 
+	public int[] getProperty(String key, int[] defaultValue) {
+		String value = getProperty(key);
+		
+		if(value == null || value.trim().isEmpty())
+			return defaultValue;
+
+		String[] values = value.split("\\,");
+		
+		int[] result = new int[values.length];
+		
+		try {
+			for(int i = 0; i < values.length; i++)
+				result[i] = Integer.parseInt(values[i].trim());
+		} catch(NumberFormatException e) {
+			return defaultValue;
+		}
+		
+		return result;
+	}
+
 	// Properties overrides
 	// ///////////////////////////////////////////////////////////////
 
@@ -225,6 +244,10 @@ public class ServerConfig extends Properties {
 		return workingPath;
 	}
 
+	static public boolean rmiEnabled() {
+		return rmiEnabled;
+	}
+
 	static public int rmiRegistryPort() {
 		return rmiRegistryPort;
 	}
@@ -247,10 +270,6 @@ public class ServerConfig extends Properties {
 
 	static public int sessionTimeout() {
 		return authorityCenterSessionTimeout;
-	}
-
-	static public boolean interconnectionEnabled() {
-		return interconnectionCenterEnabled;
 	}
 
 	static public String interconnectionCenterHost() {
@@ -315,6 +334,10 @@ public class ServerConfig extends Properties {
 		return database;
 	}
 
+	static public boolean isSystemInstalled() {
+		return database().isSystemInstalled();
+	}
+
 	static public IAuthorityCenter authorityCenter() {
 		if(authorityCenter != null)
 			return authorityCenter;
@@ -324,7 +347,7 @@ public class ServerConfig extends Properties {
 				return authorityCenter;
 
 			try {
-				return authorityCenter = Rmi.get(IAuthorityCenter.class, authorityCenterHost(), authorityCenterPort());
+				return authorityCenter = (IAuthorityCenter)Rmi.get(IAuthorityCenter.class, authorityCenterHost(), authorityCenterPort());
 			} catch(Throwable e) {
 				throw new AccessDeniedException();
 			}
@@ -340,7 +363,7 @@ public class ServerConfig extends Properties {
 				return interconnectionCenter;
 
 			try {
-				return interconnectionCenter = Rmi.get(IInterconnectionCenter.class, interconnectionCenterHost(), interconnectionCenterPort());
+				return interconnectionCenter = (IInterconnectionCenter)Rmi.get(IInterconnectionCenter.class, interconnectionCenterHost(), interconnectionCenterPort());
 			} catch(Throwable e) {
 				throw new RuntimeException(e);
 			}

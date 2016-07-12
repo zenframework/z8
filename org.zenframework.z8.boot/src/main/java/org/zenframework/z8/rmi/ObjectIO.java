@@ -17,7 +17,7 @@ public abstract class ObjectIO {
 	}
 
 	static public Object read(ObjectInputStream in) throws IOException, ClassNotFoundException {
-		return instance.readObject(in);
+		return instance != null ? instance.readObject(in) : null;
 	}
 
 	abstract protected void writeObject(ObjectOutputStream out, Object object) throws IOException;

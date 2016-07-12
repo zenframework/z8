@@ -19,7 +19,6 @@ import org.zenframework.z8.server.db.ConnectionManager;
 import org.zenframework.z8.server.db.sql.SqlToken;
 import org.zenframework.z8.server.db.sql.expressions.Or;
 import org.zenframework.z8.server.db.sql.functions.string.EqualsIgnoreCase;
-import org.zenframework.z8.server.engine.ApplicationServer;
 import org.zenframework.z8.server.engine.Runtime;
 import org.zenframework.z8.server.logs.Trace;
 import org.zenframework.z8.server.resources.Resources;
@@ -175,7 +174,7 @@ public class Properties extends TreeTable {
 		for (Property property : Runtime.instance().properties())
 			values.put(property.getKey(), property.getDefaultValue());
 
-		if (ApplicationServer.isSystemInstalled()) {
+		if (ServerConfig.isSystemInstalled()) {
 			Properties properties = new CLASS<Properties>().get();
 
 			Field id = properties.id.get();
@@ -262,7 +261,7 @@ public class Properties extends TreeTable {
 			return value;
 
 		try {
-			if (ApplicationServer.isSystemInstalled()) {
+			if (ServerConfig.isSystemInstalled()) {
 
 				try {
 					Properties properties = new CLASS<Properties>().get();
