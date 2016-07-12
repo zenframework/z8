@@ -61,7 +61,7 @@ public class RmiTransportProcedure extends Procedure {
 			try {
 				for (guid id : ids) {
 					Message message = messages.getMessage(id);
-					if(!sendMessage(message))
+					if(!send(message))
 						return;
 				}
 			} catch(Throwable e) {
@@ -71,85 +71,97 @@ public class RmiTransportProcedure extends Procedure {
 			}
 		}
 		
-		private String interconnectionCenterUnavailableMessage() {
-			return "Interconnection Center is unavailable at " + ServerConfig.interconnectionCenterHost() + ":" + ServerConfig.interconnectionCenterPort();
-		}
-		
-		private String domainUnavailableMessage() {
-			return "Domain '" + domain  + "' is unavailable at Interconnection Center " + ServerConfig.interconnectionCenterHost() + ":" + ServerConfig.interconnectionCenterPort();
-		}
-
-		private IApplicationServer connect() throws Throwable {
+		private IApplicationServer connect(Message message) throws Throwable {
 			try {
 				ServerConfig.interconnectionCenter().probe();
 			} catch(Throwable e) {
-				throw new RuntimeException(interconnectionCenterUnavailableMessage());
+				message.info("Interconnection Center is unavailable at " + ServerConfig.interconnectionCenterHost() + ":" + ServerConfig.interconnectionCenterPort());
+				return null;
 			}
 			
+			IApplicationServer server = null;
+			
 			try {
-				IApplicationServer server = ServerConfig.interconnectionCenter().connect(domain);
-				if(server == null)
-					throw new RuntimeException(domainUnavailableMessage());
-				return server;
+				server = ServerConfig.interconnectionCenter().connect(domain);
 			} catch(Throwable e) {
 				ServerConfig.resetInterconnectionCenter();
-				throw new RuntimeException(domainUnavailableMessage());
+			} finally {
+				if(server == null)
+					message.info("Domain '" + domain  + "' is unavailable at Interconnection Center " + ServerConfig.interconnectionCenterHost() + ":" + ServerConfig.interconnectionCenterPort());
+			}
+
+			return server;
+		}
+		
+		private boolean send(Message message) throws Throwable {
+			if(server == null)
+				server = connect(message);
+
+			if(server == null)
+				return false;
+
+			try {
+				return message.isFile() ? sendFile(message) : sendMessage(message);
+			} catch(Throwable e) {
+				message.info(e.getMessage());
+				throw e;
+			}
+		}
+
+		private boolean sendMessage(Message message) throws Throwable {
+			Connection connection = ConnectionManager.get();
+
+			try {
+				connection.beginTransaction();
+				
+				message.beforeExport();
+	
+				if(server.accept(message)) {
+					message.afterExport();
+					message.processed();
+				}
+				
+				connection.commit();
+				return true;
+				
+			} catch (Throwable e) {
+				connection.rollback();
+				throw e;
 			}
 		}
 		
-		private boolean sendMessage(Message message) throws Throwable {
-			Connection connection = null;
+		private boolean sendFile(Message message) throws Throwable {
+			file file = message.getFile();
 			
-			try {
-				if(server == null) {
-					try {
-						server = connect();
-					} catch(Throwable e) {
-						message.info(e.getMessage());
+			if(server.hasFile(file)) {
+				message.processed("Skipped");
+				return true;
+			}
+				
+			Connection connection = ConnectionManager.get();
+
+			while((file = file.nextPart()) != null) {
+				try {
+					connection.beginTransaction();
+	
+					boolean reset = !server.accept(file);
+					
+					message.transferred(reset ? 0 : file.offset());
+	
+					connection.commit();
+	
+					if(reset) {
+						message.info("Reset");
 						return false;
 					}
-				}
-				
-				connection = ConnectionManager.get();
-
-				if(!message.isFile()) {
-					connection.beginTransaction();
-					
-					message.beforeExport();
-	
-					if(server.accept(message)) {
-						message.afterExport();
-						message.processed();
-					}
-					
-					connection.commit();
-				} else {
-					file file = message.getFile().nextPart();
-
-					while(file != null) {
-						connection.beginTransaction();
-
-						boolean reset = !server.accept(file);
-						
-						message.transferred(reset ? 0 : file.offset());
-
-						connection.commit();
-
-						if(reset)
-							return false;
-
-						file = file.nextPart();
-					}
-					
-					message.processed();
-				}
-				return true;
-			} catch (Throwable e) {
-				if(connection != null)
+				} catch (Throwable e) {
 					connection.rollback();
-				message.error(e.getMessage());
-				throw e;
+					throw e;
+				}
 			}
+
+			message.processed("OK");
+			return true;
 		}
 	}
 

@@ -183,7 +183,6 @@ public class ExportMessages extends Table {
 	public void transferred(guid id, long bytes) {
 		ExportMessages messages = new ExportMessages.CLASS<ExportMessages>().get();
 
-		messages.description.get().set(bytes + "B");
 		messages.bytesTransferred.get().set(new integer(bytes));
 		messages.update(id);
 	}

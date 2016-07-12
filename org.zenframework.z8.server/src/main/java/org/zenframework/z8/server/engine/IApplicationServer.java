@@ -18,4 +18,5 @@ public interface IApplicationServer extends IServer {
 	public String[] domains() throws RemoteException;
 
 	public boolean accept(Object data) throws RemoteException;
+	public boolean hasFile(file file) throws RemoteException;
 }
