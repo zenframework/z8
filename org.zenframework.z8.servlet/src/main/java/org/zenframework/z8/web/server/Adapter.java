@@ -3,6 +3,7 @@ package org.zenframework.z8.web.server;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.rmi.ConnectException;
+import java.rmi.NoSuchObjectException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -74,6 +75,8 @@ public abstract class Adapter {
 
 			service(session, parameters, files, request, response);
 		} catch(AccessDeniedException e) {
+			processAccessDenied(response);
+		} catch(NoSuchObjectException e) {
 			processAccessDenied(response);
 		} catch(ConnectException e) {
 			processAccessDenied(response);
