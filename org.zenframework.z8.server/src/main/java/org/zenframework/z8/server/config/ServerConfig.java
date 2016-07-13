@@ -5,117 +5,149 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Properties;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.zenframework.z8.server.types.guid;
+import org.zenframework.z8.server.engine.Database;
+import org.zenframework.z8.server.engine.IAuthorityCenter;
+import org.zenframework.z8.server.engine.IInterconnectionCenter;
+import org.zenframework.z8.server.engine.Rmi;
+import org.zenframework.z8.server.exceptions.AccessDeniedException;
 
 public class ServerConfig extends Properties {
 
-	private static final long serialVersionUID = 3564936578688816088L;
+	static private final long serialVersionUID = 3564936578688816088L;
 
-	private static final Log LOG = LogFactory.getLog(ServerConfig.class);
+	static private ServerConfig instance;
 
-	public static final String ConfigurationFileName = "project.xml";
+	static private String DefaultInstanceId = "Z8 Server";
+	static public String DefaultConfigurationFileName = "project.xml";
 
-	public static final String RmiRegistryPortProperty = "rmi.registry.port";
+	static private String InstanceIdProperty = "z8.instance.id";
 
-	public static final String UnicastAuthorityCenterPortProperty = "unicast.authority.center.port";
-	public static final String UnicastApplicationServerPortProperty = "unicast.application.server.port";
-	public static final String UnicastTransportCenterPortProperty = "unicast.transport.center.port";
-	public static final String UnicastTransportServicePortProperty = "unicast.transport.service.port";
+	static private String RmiEnabledProperty = "rmi.enabled";
+	static private String RmiRegistryPortProperty = "rmi.registry.port";
 
-	public static final String AuthorityCenterHostProperty = "authority.center.host";
-	public static final String AuthorityCenterPortProperty = "authority.center.port";
-	public static final String AuthorityCenterSessionTimeoutProperty = "authority.center.session.timeout";
+	static private String ApplicationServerHostProperty = "application.server.host";
+	static private String ApplicationServerPortProperty = "application.server.port";
 
-	public static final String ApplicationServerIdProperty = "application.server.id";
+	static private String AuthorityCenterHostProperty = "authority.center.host";
+	static private String AuthorityCenterPortProperty = "authority.center.port";
+	static private String AuthorityCenterSessionTimeoutProperty = "authority.center.session.timeout";
 
-	public static final String TransportCenterPortProperty = "transport.center.port";
-	public static final String TrnasportServicePortProperty = "transport.service.port";
+	static private String InterconnectionCenterHostProperty = "interconnection.center.host";
+	static private String InterconnectionCenterPortProperty = "interconnection.center.port";
 
-	public static final String WebServerStartApplicationServerProperty = "web.server.start.application.server";
-	public static final String WebServerStartAuthorityCenterProperty = "web.server.start.authority.center";
-	public static final String WebServerStartTransportServiceProperty = "web.server.start.transport.service";
-	public static final String WebServerStartTransportCenterProperty = "web.server.start.transport.center";
-	public static final String WebServerFileSizeMaxProperty = "web.server.file.size.max";
+	static private String WebServerStartApplicationServerProperty = "web.server.start.application.server";
+	static private String WebServerStartAuthorityCenterProperty = "web.server.start.authority.center";
+	static private String WebServerStartInterconnectionCenterProperty = "web.server.start.interconnection.center";
+	static private String WebServerFileSizeMaxProperty = "web.server.file.size.max";
 
-	public static final String SchedulerEnabledProperty = "scheduler.enabled";
+	static private String SchedulerEnabledProperty = "scheduler.enabled";
 
-	public static final String TraceSqlProperty = "trace.sql";
+	static private String TraceSqlProperty = "trace.sql";
+	static private String TraceSqlConnectionsProperty = "trace.sql.connections";
 
-	public static final int RegistryPortDefault = 7852;
-	public static final PortRange ServersPortRangeDefault = PortRange.parsePortRange("15000-35530");
+	static public String TextExtensionsProperty = "file.converter.text";
+	static public String ImageExtensionsProperty = "file.converter.image";
+	static public String EmailExtensionsProperty = "file.converter.email";
+	static public String OfficeExtensionsProperty = "file.converter.office";
 
-	public static final String OfficeHomeProperty = "office.home";
+	static private String OfficeHomeProperty = "office.home";
 
-	private final File configFile;
+	static private File workingPath;
 
-	private final int rmiRegistryPort;
+	static private String instanceId;
 
-	private final int unicastAuthorityCenterPort;
-	private final int unicastApplicationServerPort;
-	private final int unicastTransportCenterPort;
-	private final int unicastTransportServicePort;
+	static private boolean rmiEnabled;
+	static private int rmiRegistryPort;
 
-	private final String authorityCenterHost;
-	private final int authorityCenterPort;
-	private final int authorityCenterSessionTimeout;
+	static private String applicationServerHost;
+	static private int applicationServerPort;
 
-	private final String applicationServerId;
+	static private String authorityCenterHost;
+	static private int authorityCenterPort;
+	static private int authorityCenterSessionTimeout;
 
-	private final boolean webServerStartApplicationServer;
-	private final boolean webServerStartAuthorityCenter;
-	private final boolean webServerStartTransportService;
-	private final boolean webServerStartTransportCenter;
-	private final int webServerFileSizeMax;
+	static private String interconnectionCenterHost;
+	static private int interconnectionCenterPort;
 
-	private final boolean schedulerEnabled;
+	static private boolean webServerStartApplicationServer;
+	static private boolean webServerStartAuthorityCenter;
+	static private boolean webServerStartInterconnectionCenter;
 
-	private final boolean traceSql;
+	static private int webServerFileSizeMax;
 
-	private final String officeHome;
+	static private boolean schedulerEnabled;
 
-	public ServerConfig(String configFilePath) {
-		configFile = new File(configFilePath != null ? configFilePath : ConfigurationFileName);
+	static private boolean traceSql;
+	static private boolean traceSqlConnections;
+
+	static private String officeHome;
+
+	static private Database database;
+
+	static public String[] textExtensions; // "txt, xml"
+	static public String[] imageExtensions; // "tif, tiff, jpg, jpeg, gif, png, bmp"
+	static public String[] emailExtensions; // "eml, mime"
+	static public String[] officeExtensions; // "doc, docx, xls, xlsx, ppt, pptx, odt, odp, ods, odf, odg, wpd, sxw, sxi, sxc, sxd, stw, vsd"
+
+	static private Object Lock = new Object();
+	static private IAuthorityCenter authorityCenter;
+	static private IInterconnectionCenter interconnectionCenter;
+
+	public ServerConfig(String configFilePath) throws IOException {
+		if(instance != null)
+			return;
+
+		File configFile = new File(configFilePath != null ? configFilePath : DefaultConfigurationFileName);
+		workingPath = configFile.getCanonicalFile().getParentFile();
 
 		try {
-			getWorkingPath().mkdirs();
-			LOG.info("Server config path: " + configFile.getCanonicalPath());
 			loadFromXML(new FileInputStream(configFile));
-		} catch (Throwable e) {
-			LOG.info("Server config path: " + configFilePath);
+		} catch(Throwable e) {
 			throw new RuntimeException(e);
 		}
 
-		applicationServerId = getProperty(ApplicationServerIdProperty, guid.create().toString());
+		instanceId = getProperty(InstanceIdProperty, DefaultInstanceId);
 
-		rmiRegistryPort = getProperty(RmiRegistryPortProperty, RegistryPortDefault);
+		rmiEnabled = getProperty(RmiEnabledProperty, true);
+		rmiRegistryPort = getProperty(RmiRegistryPortProperty, Rmi.defaultRegistryPort);
 
-		unicastAuthorityCenterPort = getProperty(UnicastAuthorityCenterPortProperty, 0);
-		unicastApplicationServerPort = getProperty(UnicastApplicationServerPortProperty, 0);
-		unicastTransportCenterPort = getProperty(UnicastTransportCenterPortProperty, 0);
-		unicastTransportServicePort = getProperty(UnicastTransportServicePortProperty, 0);
+		applicationServerHost = getProperty(ApplicationServerHostProperty, Rmi.localhost);
+		applicationServerPort = getProperty(ApplicationServerPortProperty, 15000);
 
-		authorityCenterHost = getProperty(AuthorityCenterHostProperty, "");
-		authorityCenterPort = getProperty(AuthorityCenterPortProperty, RegistryPortDefault);
+		authorityCenterHost = getProperty(AuthorityCenterHostProperty, Rmi.localhost);
+		authorityCenterPort = getProperty(AuthorityCenterPortProperty, 10000);
 		authorityCenterSessionTimeout = getProperty(AuthorityCenterSessionTimeoutProperty, 24 * 60);
+
+		interconnectionCenterHost = getProperty(InterconnectionCenterHostProperty, Rmi.localhost);
+		interconnectionCenterPort = getProperty(InterconnectionCenterPortProperty, 20000);
 
 		webServerStartApplicationServer = getProperty(WebServerStartApplicationServerProperty, true);
 		webServerStartAuthorityCenter = getProperty(WebServerStartAuthorityCenterProperty, true);
-		webServerStartTransportService = getProperty(WebServerStartTransportServiceProperty, true);
-		webServerStartTransportCenter = getProperty(WebServerStartTransportCenterProperty, false);
+		webServerStartInterconnectionCenter = getProperty(WebServerStartInterconnectionCenterProperty, false);
+
 		webServerFileSizeMax = getProperty(WebServerFileSizeMaxProperty, 5);
 
 		traceSql = getProperty(TraceSqlProperty, false);
+		traceSqlConnections = getProperty(TraceSqlConnectionsProperty, false);
 
 		schedulerEnabled = getProperty(SchedulerEnabledProperty, true);
-		
+
+		textExtensions = getProperty(TextExtensionsProperty, new String[] { "txt", "xml" });
+		imageExtensions = getProperty(ImageExtensionsProperty, new String[] { "tif", "tiff", "jpg", "jpeg", "gif", "png", "bmp" });
+		emailExtensions = getProperty(EmailExtensionsProperty, new String[] { "eml", "mime" });
+		officeExtensions = getProperty(OfficeExtensionsProperty, new String[] { "doc", "docx", "xls", "xlsx", "ppt", "pptx", "odt", "odp", "ods", "odf", "odg", "wpd", "sxw", "sxi", "sxc", "sxd", "stw", "vsd" });
+
 		officeHome = getProperty(OfficeHomeProperty, "C:/Program Files (x86)/LibreOffice 4.0");
+
+		instance = this;
 	}
+
+	// ///////////////////////////////////////////////////////////////
+	// Properties overrides
 
 	@Override
 	public synchronized Object put(Object key, Object value) {
-		String stringKey = (String) key;
+		String stringKey = (String)key;
 		return super.put(stringKey.toUpperCase(), value);
 	}
 
@@ -125,110 +157,225 @@ public class ServerConfig extends Properties {
 	}
 
 	@Override
-	public final String getProperty(String key, String defaultValue) {
+	public String getProperty(String key, String defaultValue) {
 		String value = getProperty(key);
 		return value != null && !value.isEmpty() ? value : defaultValue;
 	}
 
-	public final boolean getProperty(String key, boolean defaultValue) {
+	public boolean getProperty(String key, boolean defaultValue) {
 		String value = getProperty(key);
 		return value != null && !value.isEmpty() ? Boolean.parseBoolean(value) : defaultValue;
 	}
 
-	public final int getProperty(String key, int defaultValue) {
+	public int getProperty(String key, int defaultValue) {
 		try {
 			return Integer.parseInt(getProperty(key));
-		} catch (NumberFormatException e) {
+		} catch(NumberFormatException e) {
 			return defaultValue;
 		}
 	}
 
-	public final PortRange getProperty(String key, PortRange defaultValue) {
+	public String[] getProperty(String key, String[] defaultValue) {
+		String value = getProperty(key);
+		
+		if(value == null || value.trim().isEmpty())
+			return defaultValue;
+
+		String[] values = value.split("\\,");
+		
+		String[] result = new String[values.length];
+		
+		for(int i = 0; i < values.length; i++)
+			result[i] = values[i].trim().toLowerCase();
+		
+		return result;
+	}
+
+	public int[] getProperty(String key, int[] defaultValue) {
+		String value = getProperty(key);
+		
+		if(value == null || value.trim().isEmpty())
+			return defaultValue;
+
+		String[] values = value.split("\\,");
+		
+		int[] result = new int[values.length];
+		
 		try {
-			return PortRange.parsePortRange(getProperty(key));
-		} catch (Throwable e) {
+			for(int i = 0; i < values.length; i++)
+				result[i] = Integer.parseInt(values[i].trim());
+		} catch(NumberFormatException e) {
 			return defaultValue;
 		}
+		
+		return result;
 	}
 
-	public final File getConfigFile() {
-		return configFile;
+	// Properties overrides
+	// ///////////////////////////////////////////////////////////////
+
+	// ///////////////////////////////////////////////////////////////
+	// getters
+
+	static public String get(String key) {
+		return instance.getProperty(key);
 	}
 
-	public final File getWorkingPath() {
-		try {
-			return configFile.getCanonicalFile().getParentFile();
-		} catch(IOException e) {
-			throw new RuntimeException(e);
-		}
+	static public String get(String key, String defaultValue) {
+		return instance.getProperty(key, defaultValue);
 	}
 
-	public final String getServerId() {
-		return applicationServerId;
+	static public boolean get(String key, boolean defaultValue) {
+		return instance.getProperty(key, defaultValue);
 	}
 
-	public int getRmiRegistryPort() {
+	static public int get(String key, int defaultValue) {
+		return instance.getProperty(key, defaultValue);
+	}
+
+	// getters
+	// ///////////////////////////////////////////////////////////////
+
+	static public String instanceId() {
+		return instanceId;
+	}
+
+	static public File workingPath() {
+		return workingPath;
+	}
+
+	static public boolean rmiEnabled() {
+		return rmiEnabled;
+	}
+
+	static public int rmiRegistryPort() {
 		return rmiRegistryPort;
 	}
 
-	public int getUnicastAuthorityCenterPort() {
-		return unicastAuthorityCenterPort;
+	static public String applicationServerHost() {
+		return applicationServerHost;
 	}
 
-	public int getUnicastApplicationServerPort() {
-		return unicastApplicationServerPort;
+	static public int applicationServerPort() {
+		return applicationServerPort;
 	}
 
-	public int getUnicastTransportCenterPort() {
-		return unicastTransportCenterPort;
-	}
-
-	public int getUnicastTransportServicePort() {
-		return unicastTransportServicePort;
-	}
-
-	public final String getAuthorityCenterHost() {
+	static public String authorityCenterHost() {
 		return authorityCenterHost;
 	}
 
-	public final int getAuthorityCenterPort() {
+	static public int authorityCenterPort() {
 		return authorityCenterPort;
 	}
 
-	public final int getSessionTimeout() {
+	static public int sessionTimeout() {
 		return authorityCenterSessionTimeout;
 	}
 
-	public final boolean getTraceSql() {
+	static public String interconnectionCenterHost() {
+		return interconnectionCenterHost;
+	}
+
+	static public int interconnectionCenterPort() {
+		return interconnectionCenterPort;
+	}
+
+	static public boolean traceSql() {
 		return traceSql;
 	}
 
-	public final boolean webServerStartApplicationServer() {
+	static public boolean traceSqlConnections() {
+		return traceSqlConnections;
+	}
+
+	static public boolean webServerLaunchApplicationServer() {
 		return webServerStartApplicationServer;
 	}
 
-	public final boolean webServerStartAuthorityCenter() {
+	static public boolean webServerLaunchAuthorityCenter() {
 		return webServerStartAuthorityCenter;
 	}
 
-	public final boolean webServerStartTransportService() {
-		return webServerStartTransportService;
+	static public boolean webServerLaunchInterconnectionCenter() {
+		return webServerStartInterconnectionCenter;
 	}
 
-	public final boolean webServerStartTransportCenter() {
-		return webServerStartTransportCenter;
-	}
-
-	public final int webServerFileSizeMax() {
+	static public int webServerFileSizeMax() {
 		return webServerFileSizeMax;
 	}
 
-	public final boolean isSchedulerEnabled() {
+	static public boolean isSchedulerEnabled() {
 		return schedulerEnabled;
 	}
 
-	public String getOfficeHome() {
+	static public String[] textExtensions() {
+		return textExtensions;
+	}
+
+	static public String[] imageExtensions() {
+		return imageExtensions;
+	}
+
+	static public String[] emailExtensions() {
+		return emailExtensions;
+	}
+
+	static public String[] officeExtensions() {
+		return officeExtensions;
+	}
+
+	static public String officeHome() {
 		return officeHome;
+	}
+
+	static public Database database() {
+		if(database == null)
+			database = new Database(instance);
+		return database;
+	}
+
+	static public boolean isSystemInstalled() {
+		return database().isSystemInstalled();
+	}
+
+	static public IAuthorityCenter authorityCenter() {
+		if(authorityCenter != null)
+			return authorityCenter;
+
+		synchronized(Lock) {
+			if(authorityCenter != null)
+				return authorityCenter;
+
+			try {
+				return authorityCenter = (IAuthorityCenter)Rmi.get(IAuthorityCenter.class, authorityCenterHost(), authorityCenterPort());
+			} catch(Throwable e) {
+				throw new AccessDeniedException();
+			}
+		}
+	}
+
+	static public IInterconnectionCenter interconnectionCenter() {
+		if(interconnectionCenter != null)
+			return interconnectionCenter;
+
+		synchronized(Lock) {
+			if(interconnectionCenter != null)
+				return interconnectionCenter;
+
+			try {
+				return interconnectionCenter = (IInterconnectionCenter)Rmi.get(IInterconnectionCenter.class, interconnectionCenterHost(), interconnectionCenterPort());
+			} catch(Throwable e) {
+				throw new RuntimeException(e);
+			}
+		}
+	}
+
+	static public boolean hasInterconnectionCenter() {
+		return interconnectionCenter != null;
+	}
+
+	static public void resetInterconnectionCenter() {
+		interconnectionCenter = null;
 	}
 
 }

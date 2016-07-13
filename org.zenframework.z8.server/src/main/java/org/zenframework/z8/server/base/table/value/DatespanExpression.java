@@ -12,7 +12,6 @@ public class DatespanExpression extends Expression {
         public CLASS(IObject container) {
             super(container);
             setJavaClass(DatespanExpression.class);
-            setAttribute(Native, DatespanExpression.class.getCanonicalName());
         }
 
         @Override

@@ -12,7 +12,6 @@ public class StringExpression extends Expression {
         public CLASS(IObject container) {
             super(container);
             setJavaClass(StringExpression.class);
-            setAttribute(Native, StringExpression.class.getCanonicalName());
         }
 
         @Override

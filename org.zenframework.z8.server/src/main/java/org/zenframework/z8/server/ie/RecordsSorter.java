@@ -11,9 +11,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.zenframework.z8.ie.xml.ExportEntry;
-import org.zenframework.z8.server.base.table.system.Properties;
+import org.zenframework.z8.server.config.ServerConfig;
 import org.zenframework.z8.server.logs.Trace;
-import org.zenframework.z8.server.runtime.ServerRuntime;
 import org.zenframework.z8.server.types.guid;
 
 public class RecordsSorter {
@@ -109,7 +108,7 @@ public class RecordsSorter {
 	}
 
 	public static SortingMode getSortingMode() {
-		return SortingMode.valueOf(Properties.getProperty(ServerRuntime.RecordsSortingModeProperty).toUpperCase());
+		return SortingMode.valueOf(ServerConfig.get("z8.transport.recordsSortingMode", SortingMode.ALWAYS.toString())/*Properties.getProperty(ServerRuntime.RecordsSortingModeProperty).toUpperCase()*/);
 	}
 
 	private String recordsToString(Map<Record, Collection<Record>> recordsRelations) {

@@ -84,7 +84,7 @@ public class ModelAction extends Action {
 
         writer.startArray(Json.data);
 
-        String parentId = actionParameters().requestParameters.get(Json.parentId);
+        String parentId = getRequestParameter(Json.parentId);
 
         boolean root = parentId == null || parentId.isEmpty();
 

@@ -9,7 +9,7 @@ public class FormFields extends RCollection<Control.CLASS<? extends Control>> {
     Query owner = null;
 
     public FormFields(Query owner) {
-        super(true);
+        super(/*true*/);
 
         this.owner = owner;
     }

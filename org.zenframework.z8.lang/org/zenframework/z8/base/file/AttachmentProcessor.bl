@@ -3,15 +3,15 @@ import org.zenframework.z8.lang.Object;
 [native "org.zenframework.z8.server.base.file.AttachmentProcessor"]
 class AttachmentProcessor extends Object {
 	
-    static public FileInfo[] parse(string json);
+    static public file[] parse(string json);
 
-    public FileInfo[] read(guid recordId);
+    public file[] read(guid recordId);
 
-    public FileInfo[] create(guid recordId, FileInfo[] files);
-    public FileInfo[] create(guid recordId, FileInfo[] files, string[string] details);
+    public file[] create(guid recordId, file[] files);
+    public file[] create(guid recordId, file[] files, string[string] details);
 
-    public FileInfo[] update(guid recordId, FileInfo[] files);
-    public FileInfo[] update(guid recordId, FileInfo[] files, string[string] details);
+    public file[] update(guid recordId, file[] files);
+    public file[] update(guid recordId, file[] files, string[string] details);
     
     public int getPageCount(guid recordId);
 

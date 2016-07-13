@@ -1,6 +1,5 @@
 package org.zenframework.z8.server.json.parser;
 
-import java.io.File;
 import java.math.BigDecimal;
 import java.util.GregorianCalendar;
 import java.util.UUID;
@@ -33,41 +32,36 @@ public class JsonUtils {
             return ((datespan) o).get();
         else if (o instanceof decimal)
             return ((decimal) o).get();
-        else if (o instanceof file)
-            return ((file) o).get();
         else if (o instanceof guid)
             return ((guid) o).toString();
         else if (o instanceof integer)
             return ((integer) o).get();
         else if (o instanceof string)
             return ((string) o).get();
-        else if (o instanceof binary)
+        else if (o instanceof binary || o instanceof file)
         	throw new UnsupportedOperationException();
         else
             return o;
     }
 
     public static primary wrap(Object o) {
-        if (o instanceof primary) {
+        if (o instanceof primary)
             return (primary) o;
-        } else if (o instanceof Boolean) {
+        else if (o instanceof Boolean)
             return new bool((Boolean) o);
-        } else if (o instanceof GregorianCalendar) {
+        else if (o instanceof GregorianCalendar)
             return new datetime((GregorianCalendar) o);
-        } else if (o instanceof Float || o instanceof Double) {
+        else if (o instanceof Float || o instanceof Double)
             return new decimal((Double) o);
-        } else if (o instanceof BigDecimal) {
+        else if (o instanceof BigDecimal)
             return new decimal((BigDecimal) o);
-        } else if (o instanceof File) {
-            return new file((File) o);
-        } else if (o instanceof UUID) {
+        else if (o instanceof UUID)
             return new guid((UUID) o);
-        } else if (o instanceof Byte || o instanceof Short || o instanceof Integer || o instanceof Long) {
+        else if (o instanceof Byte || o instanceof Short || o instanceof Integer || o instanceof Long)
             return new integer((Long) o);
-        } else if (o instanceof String) {
+        else if (o instanceof String)
             return new string((String) o);
-        } else {
+        else
             throw new UnsupportedOperationException();
-        }
     }
 }

@@ -13,7 +13,6 @@ public class TextExpression extends Expression {
         public CLASS(IObject container) {
             super(container);
             setJavaClass(TextExpression.class);
-            setAttribute(Native, TextExpression.class.getCanonicalName());
         }
 
         @Override
@@ -29,7 +28,7 @@ public class TextExpression extends Expression {
 
         setDefault(new string());
 
-        length.set(0);
+        length = new integer(0);
         aggregation = Aggregation.None;
     }
 

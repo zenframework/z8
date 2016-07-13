@@ -15,21 +15,21 @@ import javax.xml.bind.JAXBException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.zenframework.z8.ie.xml.ExportEntry;
-import org.zenframework.z8.server.base.file.FileInfo;
 import org.zenframework.z8.server.base.table.Table;
 import org.zenframework.z8.server.base.table.TreeTable;
-import org.zenframework.z8.server.base.table.system.Properties;
-import org.zenframework.z8.server.base.table.system.SystemDomains;
+import org.zenframework.z8.server.base.table.system.Domains;
+import org.zenframework.z8.server.base.table.system.MessagesQueue;
 import org.zenframework.z8.server.base.table.value.Field;
+import org.zenframework.z8.server.config.ServerConfig;
 import org.zenframework.z8.server.db.generator.IForeignKey;
 import org.zenframework.z8.server.request.Loader;
 import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.runtime.OBJECT;
 import org.zenframework.z8.server.runtime.RCollection;
 import org.zenframework.z8.server.runtime.RLinkedHashMap;
-import org.zenframework.z8.server.runtime.ServerRuntime;
 import org.zenframework.z8.server.types.bool;
 import org.zenframework.z8.server.types.exception;
+import org.zenframework.z8.server.types.file;
 import org.zenframework.z8.server.types.guid;
 import org.zenframework.z8.server.types.integer;
 import org.zenframework.z8.server.types.primary;
@@ -76,10 +76,7 @@ public class Export extends OBJECT {
 	private final List<ExportEntry.Properties.Property> props = new LinkedList<ExportEntry.Properties.Property>();
 
 	private String address;
-	private int exportRecordsMax = Integer.parseInt(Properties.getProperty(ServerRuntime.ExportRecordsMaxProperty));
-	private boolean sendFilesSeparately = Boolean.parseBoolean(Properties
-			.getProperty(ServerRuntime.SendFilesSeparatelyProperty));
-	private boolean sendFilesContent = !Boolean.parseBoolean(Properties.getProperty(ServerRuntime.LazyFilesProperty));
+	private int exportRecordsMax = ServerConfig.get("z8.transport.exportRecordsMax", 1000);
 
 	public Export(IObject container) {
 		super(container);
@@ -110,11 +107,11 @@ public class Export extends OBJECT {
 		}
 	}
 
-	public void addFile(FileInfo fileInfo) {
+	public void addFile(file fileInfo) {
 		addFile(fileInfo, ImportPolicy.DEFAULT);
 	}
 
-	public void addFile(FileInfo fileInfo, ImportPolicy importPolicy) {
+	public void addFile(file fileInfo, ImportPolicy importPolicy) {
 		files.add(IeUtil.fileInfoToFile(fileInfo, importPolicy,
 				context.get().getProperty(TransportContext.SelfAddressProperty)));
 	}
@@ -140,20 +137,12 @@ public class Export extends OBJECT {
 		this.exportRecordsMax = exportRecordsMax;
 	}
 
-	public void setSendFilesSeparately(boolean sendFilesSeparately) {
-		this.sendFilesSeparately = sendFilesSeparately;
-	}
-
-	public void setSendFilesContent(boolean sendFilesContent) {
-		this.sendFilesContent = sendFilesContent;
-	}
-
 	public void execute() {
 		if (address == null || address.isEmpty())
 			throw new exception("Export address is not set");
 		String sender = context.get().check().getProperty(TransportContext.SelfAddressProperty);
 		try {
-			boolean local = SystemDomains.newInstance().isOwner(address);
+			boolean local = Domains.newInstance().isOwner(address);
 			RecordsSorter recordsSorter = new RecordsSorter();
 			if (!local) {
 				// Если протокол НЕ "local", экспортировать записи БД
@@ -179,21 +168,19 @@ public class Export extends OBJECT {
 					props.add(getProperty(entry.getKey(), entry.getValue()));
 				}
 			}
-			// Запись сообщений в таблицу ExportMessages
-			ExportMessages exportMessages = ExportMessages.newInstance();
-			if (sendFilesSeparately && !local) {
+			// Запись сообщений в таблицу MessagesQueue
+			MessagesQueue messagesQueue = MessagesQueue.newInstance();
+			if (!local) {
 				for (ExportEntry.Files.File file : files) {
 					Message message = z8_newMessage().get();
 					message.setAddress(getAddress());
 					message.setSender(sender);
 					message.getExportEntry().getFiles().getFile().add(file);
 					List<ExportEntry.Properties.Property> props = message.getExportEntry().getProperties().getProperty();
-					if (sendFilesContent)
-						props.add(getProperty(Message.PROP_SEND_FILES_CONTENT, new bool(true)));
-					props.add(getProperty(Message.PROP_TYPE, sendFilesContent ? Message.TYPE_FILE_CONTENT
-							: Message.TYPE_FILE_REFERENCE));
+					props.add(getProperty(Message.PROP_SEND_FILES_CONTENT, new bool(true)));
+					props.add(getProperty(Message.PROP_TYPE, Message.TYPE_FILE_CONTENT));
 					props.add(getProperty(Message.PROP_GROUP, new string(file.getPath())));
-					exportMessages.addMessage(message, null, ExportMessages.Direction.OUT);
+					messagesQueue.addMessage(message, null, MessagesQueue.Direction.OUT);
 				}
 			}
 			Message message = z8_newMessage().get();
@@ -201,12 +188,7 @@ public class Export extends OBJECT {
 			message.setSender(sender);
 			message.getExportEntry().getRecords().getRecord().addAll(records);
 			message.getExportEntry().getProperties().getProperty().addAll(props);
-			if (!sendFilesSeparately && !local) {
-				message.getExportEntry().getFiles().getFile().addAll(files);
-				message.getExportEntry().getProperties().getProperty()
-						.add(getProperty(Message.PROP_SEND_FILES_CONTENT, new bool(true)));
-			}
-			exportMessages.addMessage(message, null, ExportMessages.Direction.OUT);
+			messagesQueue.addMessage(message, null, MessagesQueue.Direction.OUT);
 		} catch (JAXBException e) {
 			throw new exception("Can't marshal records", e);
 		} catch (SorterException e) {
@@ -236,12 +218,12 @@ public class Export extends OBJECT {
 		addRecordset(cls.get(), CLASS.asList(fields), where);
 	}
 
-	public void z8_addFile(FileInfo.CLASS<? extends FileInfo> fileInfo) {
-		addFile(fileInfo.get());
+	public void z8_addFile(file fileInfo) {
+		addFile(fileInfo);
 	}
 
-	public void z8_addFile(FileInfo.CLASS<? extends FileInfo> fileInfo, ImportPolicy importPolicy) {
-		addFile(fileInfo.get(), importPolicy);
+	public void z8_addFile(file fileInfo, ImportPolicy importPolicy) {
+		addFile(fileInfo, importPolicy);
 	}
 
 	public void z8_setDefaults(ImportPolicy importPolicy, bool exportAttachments) {
@@ -259,14 +241,6 @@ public class Export extends OBJECT {
 
 	public void z8_setExportRecordsMax(integer exportRecordsMax) {
 		setExportRecordsMax(exportRecordsMax.getInt());
-	}
-
-	public void z8_setSendFilesSeparately(bool sendFilesSeparately) {
-		setSendFilesSeparately(sendFilesSeparately.get());
-	}
-
-	public void z8_setSendFilesContent(bool sendFilesContent) {
-		setSendFilesContent(sendFilesContent.get());
 	}
 
 	public void z8_init() {}
@@ -300,7 +274,7 @@ public class Export extends OBJECT {
 			// Вложения
 			for (Field attField : recordsetEntry.recordset.getAttachments()) {
 				if (recordsetExportRules.isExportAttachments(recordId, attField)) {
-					List<FileInfo> fileInfos = FileInfo.parseArray(attField.get().string().get());
+					Collection<file> fileInfos = file.parse(attField.get().string().get());
 					files.addAll(IeUtil.fileInfosToFiles(fileInfos,
 							recordsetExportRules.getImportPolicy(recordId, attField), sender));
 				}

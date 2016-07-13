@@ -8,8 +8,7 @@ import java.util.Map;
 import org.zenframework.z8.server.base.query.Query;
 import org.zenframework.z8.server.base.table.Table;
 import org.zenframework.z8.server.base.table.value.Field;
-import org.zenframework.z8.server.db.sql.expressions.Operation;
-import org.zenframework.z8.server.db.sql.expressions.Rel;
+import org.zenframework.z8.server.db.sql.expressions.Equ;
 import org.zenframework.z8.server.engine.Runtime;
 import org.zenframework.z8.server.ie.Export;
 import org.zenframework.z8.server.resources.Resources;
@@ -19,7 +18,6 @@ import org.zenframework.z8.server.runtime.RCollection;
 import org.zenframework.z8.server.types.exception;
 import org.zenframework.z8.server.types.guid;
 import org.zenframework.z8.server.types.string;
-import org.zenframework.z8.server.types.sql.sql_string;
 
 public class SearchEngine extends OBJECT {
 
@@ -64,7 +62,7 @@ public class SearchEngine extends OBJECT {
     public void updateRecord(Query query, String recordId) {
         query.saveState();
         
-        if (query.readFirst(query.getSearchFields(), new Rel(query.getSearchId(), Operation.Eq, new sql_string(recordId)))) {
+        if (query.readFirst(query.getSearchFields(), new Equ(query.getSearchId(), recordId))) {
             String fullText = query.getRecordFullText();
             if (fullText != null && !fullText.isEmpty()) {
                 SearchIndex index = getIndex(query);

@@ -9,6 +9,7 @@ public class AttachmentField extends TextField {
             super(container);
             setJavaClass(AttachmentField.class);
             setAttribute("native", AttachmentField.class.getCanonicalName());
+            setSystem(true);
         }
 
         @Override
@@ -19,7 +20,6 @@ public class AttachmentField extends TextField {
 
     public AttachmentField(IObject container) {
         super(container);
-        system.set(true);
     }
 
     public AttachmentProcessor getAttachmentProcessor() {

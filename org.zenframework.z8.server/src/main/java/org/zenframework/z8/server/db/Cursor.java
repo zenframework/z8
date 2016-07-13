@@ -6,6 +6,7 @@ import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.util.UUID;
 
 import org.zenframework.z8.server.logs.Trace;
 import org.zenframework.z8.server.types.binary;
@@ -63,7 +64,7 @@ public class Cursor {
     }
 
     public guid getGuid(int index) throws SQLException {
-        String value = resultSet.getString(index);
+        UUID value = (UUID)resultSet.getObject(index);
         return value != null && !wasNull() ? new guid(value) : new guid();
     }
 

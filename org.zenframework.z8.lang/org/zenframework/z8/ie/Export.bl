@@ -1,4 +1,3 @@
-import org.zenframework.z8.base.file.FileInfo;
 import org.zenframework.z8.base.table.value.Field;
 import org.zenframework.z8.base.table.Table;
 
@@ -13,16 +12,13 @@ class Export {
     public void addRecordset(Table table, sql_bool where);
     public void addRecordset(Table table, Field[] fields, sql_bool where);
     
-    public void addFile(FileInfo fileInfo);
-    public void addFile(FileInfo fileInfo, ImportPolicy importPolicy);
+    public void addFile(file file);
+    public void addFile(file file, ImportPolicy importPolicy);
 
     public void setDefaults(ImportPolicy importPolicy, bool exportAttachments);
     public void setExportRules(Table table, RecordsetExportRules rules);
     public void setExportRecordsMax(int exportRecordsMax);
     
-	public void setSendFilesSeparately(bool sendFilesSeparately);
-	public void setSendFilesContent(bool sendFilesContent);
-	
 	public void setAddress(string address);
 	
     public void execute();

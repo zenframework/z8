@@ -36,9 +36,8 @@ public class SqlField extends SqlToken {
             Expression expression = (Expression)field;
             SqlToken token = expression.expression();
 
-            if(token != null) {
+            if(token != null)
                 token.collectFields(fields);
-            }
         } else
             fields.add(field);
     }
@@ -68,27 +67,20 @@ public class SqlField extends SqlToken {
 
     private SqlToken aggregate(SqlToken token, Aggregation aggregation) {
         switch(aggregation) {
-        case Sum: {
+        case Sum:
             return new Sum(token);
-        }
-        case Max: {
+        case Max:
             return new Max(token);
-        }
-        case Min: {
+        case Min:
             return new Min(token);
-        }
-        case Average: {
+        case Average:
             return new Average(token);
-        }
-        case Count: {
+        case Count:
             return new Count(token);
-        }
-        case Array: {
+        case Array:
             return new Array(token);
-        }
-        case Concat: {
+        case Concat:
             return new Concat(token);
-        }
         default:
             return token;
         }

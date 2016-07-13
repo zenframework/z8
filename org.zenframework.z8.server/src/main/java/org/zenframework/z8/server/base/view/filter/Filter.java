@@ -13,7 +13,6 @@ import org.zenframework.z8.server.db.sql.SqlToken;
 import org.zenframework.z8.server.db.sql.expressions.And;
 import org.zenframework.z8.server.db.sql.expressions.Operation;
 import org.zenframework.z8.server.db.sql.expressions.Rel;
-import org.zenframework.z8.server.db.sql.expressions.True;
 import org.zenframework.z8.server.db.sql.expressions.Unary;
 import org.zenframework.z8.server.db.sql.functions.InVector;
 import org.zenframework.z8.server.db.sql.functions.datetime.TruncDay;
@@ -115,9 +114,9 @@ public class Filter {
                 return result;
             } else if (operation == null || operation == Operation.BeginsWith || operation == Operation.EndsWith
                     || operation == Operation.Contains) {
-                if (value.isEmpty()) {
-                    return new True();
-                }
+                
+            	if (value.isEmpty())
+                    return null;
 
                 if (operation == null) {
                     boolean startStar = value.startsWith("*");
@@ -210,7 +209,7 @@ public class Filter {
         }
     }
 
-    public static Collection<Filter> parse(Collection<string> json, Query query) {
+    public static Collection<Filter> parse(Collection<String> json, Query query) {
         List<Filter> result = new ArrayList<Filter>();
 
         if (json == null)
@@ -228,7 +227,7 @@ public class Filter {
             return result;
 
         if (!json.startsWith("["))
-            json = "[" + json + "]";
+        	json = "[" + json + "]";
 
         JsonArray filters = new JsonArray(json);
 

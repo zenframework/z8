@@ -73,13 +73,13 @@ public class Task {
 
     public void stop(IMonitor monitor) {
         try {
-            file logFile = monitor != null ? monitor.getLog() : null;
+        	file logFile = monitor != null ? monitor.getLog() : null;
     
             if (logFile != null) {
                 // [{"id":"ext-comp-2215","size":64000,"time":"05/09/2013 02:52:49","file":"T13_0742.xls","name":"storage\\SystemTasks\\7DBC9271-9B49-453F-A84B-B41F10353627\\E98923B5D6044D80870447FC232F9DE0.xls"}]
                 JsonArray writer = new JsonArray();
                 JsonObject obj = new JsonObject();
-                String fileName = logFile.getRelativePath();
+                String fileName = logFile.path.get();
                 obj.put(Json.size, 0);
                 obj.put(Json.time, new datetime());
                 obj.put(Json.name, "log.txt");

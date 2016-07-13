@@ -18,12 +18,11 @@ import org.zenframework.z8.server.types.integer;
 import org.zenframework.z8.server.types.string;
 import org.zenframework.z8.server.utils.ErrorUtils;
 
-public class Procedure extends Command implements java.lang.Runnable {
+public class Procedure extends Command {
 	public static class CLASS<T extends Procedure> extends Command.CLASS<T> {
 		public CLASS(IObject container) {
 			super(container);
 			setJavaClass(Procedure.class);
-			setAttribute(Native, Procedure.class.getCanonicalName());
 		}
 
 		@Override

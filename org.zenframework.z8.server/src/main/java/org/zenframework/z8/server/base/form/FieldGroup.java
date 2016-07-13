@@ -15,7 +15,6 @@ public class FieldGroup extends Control {
         public CLASS(IObject container) {
             super(container);
             setJavaClass(FieldGroup.class);
-            setAttribute(Native, FieldGroup.class.getCanonicalName());
         }
 
         @Override

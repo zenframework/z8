@@ -17,7 +17,6 @@ public class BinaryField extends Field {
         public CLASS(IObject container) {
             super(container);
             setJavaClass(BinaryField.class);
-            setAttribute(Native, BinaryField.class.getCanonicalName());
         }
 
         @Override

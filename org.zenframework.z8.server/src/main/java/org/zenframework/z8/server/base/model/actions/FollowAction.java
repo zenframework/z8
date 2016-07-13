@@ -18,7 +18,7 @@ public class FollowAction extends MetaAction {
     }
 
     static private ActionParameters getActionParameters(ActionParameters actionParameters) {
-        String jsonData = actionParameters.requestParameters.get(Json.link);
+        String jsonData = actionParameters.requestParameter(Json.link);
 
         JsonObject object = new JsonObject(jsonData);
 
@@ -53,11 +53,10 @@ public class FollowAction extends MetaAction {
 
         query1.recordIds = query.recordIds;
 
-        String periodData = actionParameters.requestParameters.get(Json.period);
+        String periodData = actionParameters.requestParameter(Json.period);
 
-        if(periodData != null && !periodData.isEmpty()) {
+        if(periodData != null && !periodData.isEmpty())
             query1.setPeriod(Period.parse(periodData));
-        }
 
         return ActionFactory.getActionParameters(query1);
     }

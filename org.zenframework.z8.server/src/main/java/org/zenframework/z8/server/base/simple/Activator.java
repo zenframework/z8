@@ -9,7 +9,6 @@ public class Activator extends OBJECT {
         public CLASS(IObject container) {
             super(container);
             setJavaClass(Activator.class);
-            setAttribute(Native, Activator.class.getCanonicalName());
         }
 
         @Override

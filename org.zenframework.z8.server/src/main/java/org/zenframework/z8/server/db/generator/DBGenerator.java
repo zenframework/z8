@@ -26,8 +26,6 @@ public class DBGenerator {
     }
 
     public void run(Collection<Table.CLASS<? extends Table>> tables, Collection<Desktop.CLASS<? extends Desktop>> entries, ILogger logger) {
-        logger.progress(0);
-
         ApplicationServer.disableEvents();
 
         try {
@@ -37,13 +35,13 @@ public class DBGenerator {
         } finally {
             ApplicationServer.enableEvents();
         }
-
-        logger.progress(100);
     }
 
     private void run(Collection<Table.CLASS<? extends Table>> tables, Map<String, TableDescription> existingTables,
             ILogger logger, Collection<Desktop.CLASS<? extends Desktop>> entries) {
         List<TableGenerator> generators = getTableGenerators(tables, existingTables, logger);
+
+        logger.progress(0);
 
         int total = 5 * generators.size();
         float progress = 0.0f;

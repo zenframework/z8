@@ -4,7 +4,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.zenframework.z8.server.config.ServerConfig;
 import org.zenframework.z8.server.security.IUser;
 
 public class UserManager
@@ -12,7 +11,7 @@ public class UserManager
 	private Map<String, IUser> users = Collections
 	        .synchronizedMap(new HashMap<String, IUser>());
 
-	public UserManager(ServerConfig config) {
+	public UserManager() {
 	}
 
 	public void add(IUser user) {

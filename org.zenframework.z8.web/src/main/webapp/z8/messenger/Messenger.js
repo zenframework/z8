@@ -54,7 +54,7 @@ Z8.messenger.Messenger = Ext.extend(Ext.util.Observable,
 		var masterState = target.getAttribute('masterstate');
 		var detailState = target.getAttribute('detailstate');
 			
-		Z8.viewport.open(target.id, {}, {master: Ext.decode(masterState), detail: Ext.decode(detailState)} );
+		Z8.viewport.open(target.id, {});
 	},
 	
 	start: function()

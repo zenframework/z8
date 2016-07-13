@@ -9,11 +9,9 @@ import org.zenframework.z8.server.base.table.system.Entries;
 import org.zenframework.z8.server.base.table.system.UserEntries;
 import org.zenframework.z8.server.base.table.value.Field;
 import org.zenframework.z8.server.db.sql.SqlToken;
-import org.zenframework.z8.server.db.sql.expressions.Operation;
-import org.zenframework.z8.server.db.sql.expressions.Rel;
+import org.zenframework.z8.server.db.sql.expressions.Equ;
 import org.zenframework.z8.server.security.Component;
 import org.zenframework.z8.server.types.guid;
-import org.zenframework.z8.server.types.sql.sql_guid;
 
 public class EntriesGenerator {
     public EntriesGenerator() {
@@ -41,8 +39,6 @@ public class EntriesGenerator {
     }
 
     public void run(Collection<Desktop.CLASS<? extends Desktop>> entryClasses, ILogger logger) {
-        logger.progress(0);
-
         Component[] existingComponents = readComponents();
 
         List<Component> toDelete = new ArrayList<Component>();
@@ -84,7 +80,7 @@ public class EntriesGenerator {
         Entries entries = new Entries.CLASS<Entries>().get();
 
         for(Component component : toDelete) {
-            SqlToken where = new Rel(userEntries.entry.get(), Operation.Eq, new sql_guid(component.id()));
+            SqlToken where = new Equ(userEntries.entry.get(), new guid(component.id()));
 
             userEntries.destroy(where);
             entries.destroy(new guid(component.id()));
@@ -101,7 +97,5 @@ public class EntriesGenerator {
             entries.name.get().set(component.title());
             entries.create();
         }
-
-        logger.progress(100);
     }
 }

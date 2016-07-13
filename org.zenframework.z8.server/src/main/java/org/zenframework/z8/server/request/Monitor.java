@@ -12,6 +12,7 @@ import org.zenframework.z8.server.json.parser.JsonObject;
 import org.zenframework.z8.server.logs.Trace;
 import org.zenframework.z8.server.types.file;
 import org.zenframework.z8.server.types.guid;
+import org.zenframework.z8.server.types.string;
 import org.zenframework.z8.server.utils.ErrorUtils;
 
 public class Monitor extends RequestTarget implements IMonitor {
@@ -54,9 +55,8 @@ public class Monitor extends RequestTarget implements IMonitor {
 
 	@Override
 	public void log(String text) {
-		if (logFile == null) {
+		if (logFile == null)
 			logFile = new file();
-		}
 
 		logFile.write(new Message(text) + file.EOL);
 	}
@@ -125,12 +125,11 @@ public class Monitor extends RequestTarget implements IMonitor {
 
 		writer.finishObject();
 
-		writer.writeProperty(Json.serverId, ApplicationServer.Id());
-
 		if (outputFile != null)
-			writer.writeProperty(Json.source, outputFile.getRelativePath().replace('\\', '/'));
+			writer.writeProperty(Json.source, outputFile.path.get().replace('\\', '/'));
 
-		writer.writeInfo(getMessages(), logFile);
+		writer.writeProperty(new string(Json.serverId), ApplicationServer.id);
+		writer.writeInfo(getMessages(), ApplicationServer.id, logFile);
 	}
 
 }

@@ -1,42 +1,33 @@
 package org.zenframework.z8.server.ie;
 
-import java.io.IOException;
-import java.net.URISyntaxException;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.zenframework.z8.server.base.simple.Procedure;
-import org.zenframework.z8.server.base.table.system.Properties;
+import org.zenframework.z8.server.base.table.system.MessagesQueue;
 import org.zenframework.z8.server.base.view.command.Parameter;
+import org.zenframework.z8.server.config.ServerConfig;
 import org.zenframework.z8.server.db.Connection;
 import org.zenframework.z8.server.db.ConnectionManager;
-import org.zenframework.z8.server.engine.ITransportCenter;
-import org.zenframework.z8.server.engine.ITransportService;
-import org.zenframework.z8.server.engine.Rmi;
-import org.zenframework.z8.server.engine.RmiAddress;
+import org.zenframework.z8.server.engine.IApplicationServer;
 import org.zenframework.z8.server.logs.Trace;
 import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.runtime.RCollection;
-import org.zenframework.z8.server.runtime.ServerRuntime;
+import org.zenframework.z8.server.types.file;
 import org.zenframework.z8.server.types.guid;
 
 public class RmiTransportProcedure extends Procedure {
 
-	private static final Log LOG = LogFactory.getLog(RmiTransportProcedure.class);
+	static private Map<String, TransportThread> workers = new HashMap<String, TransportThread>();
 
-	protected final ExportMessages messages = ExportMessages.newInstance();
-	protected final TransportContext.CLASS<TransportContext> context = new TransportContext.CLASS<TransportContext>();
+	protected final MessagesQueue messages = MessagesQueue.newInstance();
 
 	public static class CLASS<T extends RmiTransportProcedure> extends Procedure.CLASS<T> {
 		public CLASS(IObject container) {
 			super(container);
 			setJavaClass(RmiTransportProcedure.class);
-			setAttribute(Native, RmiTransportProcedure.class.getCanonicalName());
-			setAttribute(Job, "");
+			setAttribute(Job, "10");
 		}
 
 		@Override
@@ -53,103 +44,148 @@ public class RmiTransportProcedure extends Procedure {
 	@Override
 	public void constructor2() {
 		super.constructor2();
-		z8_init();
 	}
 
 	public class TransportThread extends Thread {
-		private String address;
-		private String sender;
-
-		public TransportThread(String sender, String address) {
-			super(address);
-			this.sender = sender;
-			this.address = address;
+		private String domain;
+		private IApplicationServer server;
+		
+		public TransportThread(String domain) {
+			super(domain);
+			this.domain = domain;
 		}
 
 		@Override
 		public void run() {
-			Collection<guid> ids = messages.getExportMessages(sender, address, null);
+			Collection<guid> ids = messages.getMessages(domain);
 
-			for (guid id : ids) {
-				Message message = messages.getMessage(id);
-
-				if (message == null)
-					continue;
-
-				RmiTransportProcedure.this.sendMessage(message);
+			try {
+				for (guid id : ids) {
+					Message message = messages.getMessage(id);
+					if(!send(message))
+						return;
+				}
+			} catch(Throwable e) {
+				Trace.logError(e);
+			} finally {
+				workers.remove(domain);
 			}
 		}
-	}
+		
+		private IApplicationServer connect(Message message) throws Throwable {
+			try {
+				ServerConfig.interconnectionCenter().probe();
+			} catch(Throwable e) {
+				message.info("Interconnection Center is unavailable at " + ServerConfig.interconnectionCenterHost() + ":" + ServerConfig.interconnectionCenterPort());
+				return null;
+			}
+			
+			IApplicationServer server = null;
+			
+			try {
+				server = ServerConfig.interconnectionCenter().connect(domain);
+			} catch(Throwable e) {
+				ServerConfig.resetInterconnectionCenter();
+			} finally {
+				if(server == null)
+					message.info("Domain '" + domain  + "' is unavailable at Interconnection Center " + ServerConfig.interconnectionCenterHost() + ":" + ServerConfig.interconnectionCenterPort());
+			}
 
-	public static Map<String, TransportThread> workers = new HashMap<String, TransportThread>();
+			return server;
+		}
+		
+		private boolean send(Message message) throws Throwable {
+			if(server == null)
+				server = connect(message);
+
+			if(server == null)
+				return false;
+
+			try {
+				return message.isFile() ? sendFile(message) : sendMessage(message);
+			} catch(Throwable e) {
+				message.info(e.getMessage());
+				throw e;
+			}
+		}
+
+		private boolean sendMessage(Message message) throws Throwable {
+			Connection connection = ConnectionManager.get();
+
+			try {
+				connection.beginTransaction();
+				
+				message.beforeExport();
+	
+				if(server.accept(message)) {
+					message.afterExport();
+					message.processed("OK");
+				}
+				
+				connection.commit();
+				return true;
+				
+			} catch (Throwable e) {
+				connection.rollback();
+				throw e;
+			}
+		}
+		
+		private boolean sendFile(Message message) throws Throwable {
+			file file = message.getFile();
+			
+			if(server.hasFile(file)) {
+				message.processed("Skipped");
+				return true;
+			}
+				
+			Connection connection = ConnectionManager.get();
+
+			while((file = file.nextPart()) != null) {
+				try {
+					connection.beginTransaction();
+	
+					boolean reset = !server.accept(file);
+					
+					message.transferred(reset ? 0 : file.offset());
+	
+					connection.commit();
+	
+					if(reset) {
+						message.info("Reset");
+						return false;
+					}
+				} catch (Throwable e) {
+					connection.rollback();
+					throw e;
+				}
+			}
+
+			message.processed("OK");
+			return true;
+		}
+	}
 
 	@Override
 	protected void z8_exec(RCollection<Parameter.CLASS<? extends Parameter>> parameters) {
 		sendMessages();
 	}
 
-	private void register(String sender) {
-		String transportCenter = Properties.getProperty(ServerRuntime.TransportCenterAddressProperty).trim();
-		boolean registerInTransportCenter = Boolean.parseBoolean(Properties
-				.getProperty(ServerRuntime.RegisterInTransportCenterProperty));
-
-		if (registerInTransportCenter && !transportCenter.isEmpty()) {
-			try {
-				Rmi.get(ITransportService.class).checkRegistration(sender);
-			} catch (Throwable e) {
-				Trace.logError("Can't check transport server registration for '" + sender + "' in transport center '"
-						+ transportCenter + "'", e);
-			}
-		}
-	}
-
 	private void sendMessages() {
-		String sender = context.get().check().getProperty(TransportContext.SelfAddressProperty);
-
-		register(sender);
-
-		Collection<String> addresses = messages.getAddresses(sender);
+		Collection<String> addresses = messages.getAddresses();
 
 		for (String address : addresses) {
 			TransportThread thread = workers.get(address);
 
-			if (thread == null || !thread.isAlive()) {
-				TransportThread worker = new TransportThread(sender, address);
+			if (thread == null) {
+				TransportThread worker = new TransportThread(address);
 				workers.put(address, worker);
 				worker.start();
 			}
 		}
 	}
 
-	protected void z8_init() {}
-
-	public void sendMessage(Message message) {
-		Connection connection = ConnectionManager.get();
-		try {
-			connection.beginTransaction();
-			messages.processed(new guid(message.getId()), null);
-			message.getFiles().addAll(
-					IeUtil.filesToFileInfos(message.getExportEntry().getFiles().getFile(), message.isSendFilesContent()));
-			message.beforeExport();
-			String transportCenter = Properties.getProperty(ServerRuntime.TransportCenterAddressProperty).trim();
-			List<TransportRoute> routes = Rmi.get(ITransportCenter.class, new RmiAddress(transportCenter))
-					.getTransportRoutes(message.getAddress());
-			if (routes.size() != 1)
-				throw new RuntimeException("bad routes");
-			String rmiAddress = routes.get(0).getAddress();
-			getServer(rmiAddress).sendMessage(message);
-			message.afterExport();
-			connection.commit();
-		} catch (Throwable e) {
-			connection.rollback();
-			LOG.error("Can't send message '" + message, e);
-			messages.setError(message, e);
-		}
+	static public boolean accept(Object object) {
+		return Import.importObject(object);
 	}
-
-	private static ITransportService getServer(String transportAddress) throws IOException, URISyntaxException {
-		RmiAddress address = new RmiAddress(transportAddress);
-		return (ITransportService) Rmi.get(ITransportService.class, address);
-	}
-
 }

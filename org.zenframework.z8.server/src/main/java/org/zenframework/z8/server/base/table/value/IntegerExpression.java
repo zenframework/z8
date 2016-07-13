@@ -4,8 +4,10 @@ import org.zenframework.z8.server.db.FieldType;
 import org.zenframework.z8.server.db.sql.SqlField;
 import org.zenframework.z8.server.format.Format;
 import org.zenframework.z8.server.runtime.IObject;
+import org.zenframework.z8.server.types.bool;
 import org.zenframework.z8.server.types.integer;
 import org.zenframework.z8.server.types.primary;
+import org.zenframework.z8.server.types.string;
 import org.zenframework.z8.server.types.sql.sql_integer;
 
 public class IntegerExpression extends Expression {
@@ -13,7 +15,6 @@ public class IntegerExpression extends Expression {
         public CLASS(IObject container) {
             super(container);
             setJavaClass(IntegerExpression.class);
-            setAttribute(Native, IntegerExpression.class.getCanonicalName());
         }
 
         @Override
@@ -25,8 +26,8 @@ public class IntegerExpression extends Expression {
     public IntegerExpression(IObject container) {
         super(container);
 
-        format.set(Format.integer);
-        stretch.set(false);
+        format = new string(Format.integer);
+        stretch = new bool(false);
 
         aggregation = Aggregation.Sum;
 

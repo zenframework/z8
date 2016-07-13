@@ -2,8 +2,7 @@ package org.zenframework.z8.server.base.table.system;
 
 import java.io.InputStream;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.zenframework.z8.server.logs.Trace;
 import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.runtime.OBJECT;
 import org.zenframework.z8.server.runtime.RCollection;
@@ -13,8 +12,6 @@ import org.zenframework.z8.server.types.primary;
 import org.zenframework.z8.server.types.string;
 
 public class Property extends OBJECT {
-
-    private static final Log LOG = LogFactory.getLog(Property.class);
 
     private static final String PROPERTIES_RESOURCE = "postfactor.properties";
     private static final java.util.Properties DEFAULT_PROPERTIES = new java.util.Properties();
@@ -35,7 +32,7 @@ public class Property extends OBJECT {
                 }
             }
         } catch (Throwable e) {
-            LOG.warn("Can't load default properties from classpath", e);
+            Trace.logError("Can't load default properties from classpath", e);
         }
     }
 

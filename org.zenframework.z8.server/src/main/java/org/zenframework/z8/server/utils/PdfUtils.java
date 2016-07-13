@@ -11,7 +11,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.apache.commons.io.FilenameUtils;
-import org.zenframework.z8.server.engine.Z8Context;
+import org.zenframework.z8.server.base.file.Folders;
 
 import com.lowagie.text.Document;
 import com.lowagie.text.DocumentException;
@@ -57,7 +57,7 @@ public class PdfUtils {
 		Document document = new Document();
 		try {
 			Font font = new Font(BaseFont.createFont(
-					new File(Z8Context.getWorkingPath(), "fonts/times.ttf").getCanonicalPath(), BaseFont.IDENTITY_H,
+					new File(Folders.Base, "fonts/times.ttf").getCanonicalPath(), BaseFont.IDENTITY_H,
 					BaseFont.EMBEDDED), 14);
 			PdfWriter.getInstance(document, new FileOutputStream(file));
 			document.open();

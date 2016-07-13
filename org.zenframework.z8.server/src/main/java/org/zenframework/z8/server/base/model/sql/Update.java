@@ -107,9 +107,8 @@ public class Update extends Statement {
         } catch (Throwable e) {
             System.out.println(sql());
 
-            for (Field field : fields) {
+            for (Field field : fields)
                 System.out.println(field.name() + ": " + field.get());
-            }
 
             Trace.logError(e);
 

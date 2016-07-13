@@ -16,7 +16,7 @@ public class Session implements ISession {
 
 	private String id;
 	private IUser user;
-	private ServerInfo serverInfo;
+	private IServerInfo serverInfo;
 
 	private long lastAccessTime;
 
@@ -30,6 +30,11 @@ public class Session implements ISession {
 		this.lastAccessTime = System.currentTimeMillis();
 	}
 
+	public Session(Session session) {
+		this.id = session.id;
+		this.user = session.user;
+	}
+
 	@Override
 	public String id() {
 		return id;
@@ -41,27 +46,21 @@ public class Session implements ISession {
 	}
 
 	@Override
-	public ServerInfo getServerInfo() {
+	public IServerInfo getServerInfo() {
 		return serverInfo;
 	}
 
-	public void setServerInfo(ServerInfo serverInfo) {
+	public void setServerInfo(IServerInfo serverInfo) {
 		this.serverInfo = serverInfo;
 	}
 
 	@Override
-	public synchronized long getLastAccessTime() {
+	public long getLastAccessTime() {
 		return lastAccessTime;
 	}
 
-	public synchronized void access() {
+	public void access() {
 		lastAccessTime = System.currentTimeMillis();
-		cleanLoginInfo();
-	}
-
-	private void cleanLoginInfo() {
-		user.setSettings(null);
-		user.components().clear();
 	}
 
 	private void writeObject(ObjectOutputStream out) throws IOException {
@@ -74,7 +73,7 @@ public class Session implements ISession {
 
 	@Override
 	public void serialize(ObjectOutputStream out) throws IOException {
-		out.writeLong(serialVersionUID);
+		RmiIO.writeLong(out, serialVersionUID);
 
 		ByteArrayOutputStream bytes = new ByteArrayOutputStream(32 * NumericUtils.Kilobyte);
 		ObjectOutputStream objects = new ObjectOutputStream(bytes);
@@ -92,7 +91,7 @@ public class Session implements ISession {
 	@Override
 	public void deserialize(ObjectInputStream in) throws IOException, ClassNotFoundException {
 		@SuppressWarnings("unused")
-		long version = in.readLong();
+		long version = RmiIO.readLong(in);
 
 		ByteArrayInputStream bytes = new ByteArrayInputStream(IOUtils.unzip(RmiIO.readBytes(in)));
 		ObjectInputStream objects = new ObjectInputStream(bytes);

@@ -14,7 +14,6 @@ public class DatespanField extends Field {
         public CLASS(IObject container) {
             super(container);
             setJavaClass(DatespanField.class);
-            setAttribute(Native, DatespanField.class.getCanonicalName());
         }
 
         @Override

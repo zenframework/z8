@@ -6,6 +6,7 @@ import org.zenframework.z8.server.db.sql.SqlField;
 import org.zenframework.z8.server.engine.ApplicationServer;
 import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.types.bool;
+import org.zenframework.z8.server.types.integer;
 import org.zenframework.z8.server.types.primary;
 import org.zenframework.z8.server.types.sql.sql_bool;
 
@@ -14,7 +15,6 @@ public class BoolField extends Field {
         public CLASS(IObject container) {
             super(container);
             setJavaClass(BoolField.class);
-            setAttribute(Native, BoolField.class.getCanonicalName());
         }
 
         @Override
@@ -26,8 +26,8 @@ public class BoolField extends Field {
     public BoolField(IObject container) {
         super(container);
         setDefault(new bool(false));
-        width.set(5);
-        stretch.set(false);
+        width = new integer(5);
+        stretch = new bool(false);
         aggregation = Aggregation.Max;
     }
 

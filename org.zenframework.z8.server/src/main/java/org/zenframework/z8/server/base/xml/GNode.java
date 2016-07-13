@@ -10,10 +10,10 @@ import java.io.UnsupportedEncodingException;
 import java.util.List;
 import java.util.Map;
 
-import org.zenframework.z8.server.base.file.FileInfo;
 import org.zenframework.z8.server.engine.RmiIO;
 import org.zenframework.z8.server.engine.RmiSerializable;
 import org.zenframework.z8.server.types.encoding;
+import org.zenframework.z8.server.types.file;
 import org.zenframework.z8.server.utils.IOUtils;
 import org.zenframework.z8.server.utils.NumericUtils;
 
@@ -21,7 +21,7 @@ public class GNode implements RmiSerializable, Serializable {
 	private static final long serialVersionUID = 6229467644994428114L;
 
 	private Map<String, String> attributes;
-	private List<FileInfo> files;
+	private List<file> files;
 	private byte[] content = null;
 
 	public GNode() {
@@ -35,7 +35,7 @@ public class GNode implements RmiSerializable, Serializable {
 		}
 	}
 
-	public GNode(Map<String, String> attributes, List<FileInfo> files) {
+	public GNode(Map<String, String> attributes, List<file> files) {
 		this.attributes = attributes;
 		this.files = files;
 	}
@@ -48,7 +48,7 @@ public class GNode implements RmiSerializable, Serializable {
 		return content;
 	}
 
-	public List<FileInfo> getFiles() {
+	public List<file> getFiles() {
 		return files;
 	}
 
@@ -62,7 +62,7 @@ public class GNode implements RmiSerializable, Serializable {
 
 	@Override
 	public void serialize(ObjectOutputStream out) throws IOException {
-		out.writeLong(serialVersionUID);
+		RmiIO.writeLong(out, serialVersionUID);
 
 		ByteArrayOutputStream bytes = new ByteArrayOutputStream(32 * NumericUtils.Kilobyte);
 		ObjectOutputStream objects = new ObjectOutputStream(bytes);
@@ -82,7 +82,7 @@ public class GNode implements RmiSerializable, Serializable {
 	@SuppressWarnings("unchecked")
 	public void deserialize(ObjectInputStream in) throws IOException, ClassNotFoundException {
 		@SuppressWarnings("unused")
-		long version = in.readLong();
+		long version = RmiIO.readLong(in);
 
 		ByteArrayInputStream bytes = new ByteArrayInputStream(IOUtils.unzip(RmiIO.readBytes(in)));
 		ObjectInputStream objects = new ObjectInputStream(bytes);
@@ -93,6 +93,6 @@ public class GNode implements RmiSerializable, Serializable {
 
 		objects.close();
 
-		files = (List<FileInfo>)in.readObject();
+		files = (List<file>)in.readObject();
 	}
 }

@@ -6,8 +6,8 @@ import java.util.Collection;
 
 import org.zenframework.z8.server.base.query.Query;
 import org.zenframework.z8.server.base.table.value.Field;
-import org.zenframework.z8.server.base.table.value.GuidField;
 import org.zenframework.z8.server.base.table.value.ILink;
+import org.zenframework.z8.server.config.ServerConfig;
 import org.zenframework.z8.server.db.BasicSelect;
 import org.zenframework.z8.server.db.Connection;
 import org.zenframework.z8.server.db.ConnectionManager;
@@ -18,11 +18,8 @@ import org.zenframework.z8.server.db.sql.FormatOptions;
 import org.zenframework.z8.server.db.sql.SqlField;
 import org.zenframework.z8.server.db.sql.SqlToken;
 import org.zenframework.z8.server.db.sql.expressions.And;
-import org.zenframework.z8.server.db.sql.expressions.Operation;
-import org.zenframework.z8.server.db.sql.expressions.Rel;
-import org.zenframework.z8.server.engine.ApplicationServer;
+import org.zenframework.z8.server.db.sql.expressions.Equ;
 import org.zenframework.z8.server.engine.Database;
-import org.zenframework.z8.server.engine.Z8Context;
 import org.zenframework.z8.server.logs.Trace;
 import org.zenframework.z8.server.types.primary;
 
@@ -76,7 +73,7 @@ public class Select {
 	}
 
 	public Database database() {
-		return ApplicationServer.database();
+		return ServerConfig.database();
 	}
 
 	public DatabaseVendor vendor() {
@@ -254,8 +251,7 @@ public class Select {
 
 			if (name != null) {
 				Query query = link.getQuery().getRootQuery();
-				GuidField primaryKey = (GuidField) query.primaryKey();
-				SqlToken token = new Rel(link.sql_guid(), Operation.Eq, primaryKey.sql_guid());
+				SqlToken token = new Equ(link.sql_guid(), query.primaryKey());
 
 				options.disableAggregation();
 
@@ -318,7 +314,7 @@ public class Select {
 
 		String sql = sql(new FormatOptions());
 
-		boolean traceSql = Z8Context.getConfig().getTraceSql();
+		boolean traceSql = ServerConfig.traceSql();
 		long startAt = traceSql ? System.currentTimeMillis() : 0;
 
 		try {
@@ -330,7 +326,7 @@ public class Select {
 		}
 
 		if (traceSql)
-			Trace.logEvent("\n" + sql + "\n" + "Execution time: " + (System.currentTimeMillis() - startAt) + " ms\n");
+			Trace.logEvent(sql + "\n" + "Execution time: " + (System.currentTimeMillis() - startAt) + " ms\n");
 
 		activate();
 	}

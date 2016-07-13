@@ -5,7 +5,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.zenframework.z8.server.base.file.FileInfo;
 import org.zenframework.z8.server.engine.Session;
 import org.zenframework.z8.server.json.Json;
 import org.zenframework.z8.server.logs.Trace;
@@ -17,6 +16,7 @@ import org.zenframework.z8.server.request.RequestDispatcher;
 import org.zenframework.z8.server.request.Response;
 import org.zenframework.z8.server.security.IUser;
 import org.zenframework.z8.server.security.User;
+import org.zenframework.z8.server.types.file;
 
 public class ScheduledJob implements Runnable {
 
@@ -35,7 +35,7 @@ public class ScheduledJob implements Runnable {
 		parameters.put(Json.scheduled.get(), "");
 		parameters.put(Json.settings.get(), task.settings);
 
-		List<FileInfo> files = new ArrayList<FileInfo>();
+		List<file> files = new ArrayList<file>();
 
 		try {
 			task.start();

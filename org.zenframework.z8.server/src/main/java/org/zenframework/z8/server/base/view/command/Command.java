@@ -23,7 +23,6 @@ public class Command extends Runnable implements ICommand {
         public CLASS(IObject container) {
             super(container);
             setJavaClass(Command.class);
-            setAttribute(Native, Command.class.getCanonicalName());
         }
 
         @Override
