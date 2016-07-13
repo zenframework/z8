@@ -1,5 +1,6 @@
 package org.zenframework.z8.server.engine;
 
+import java.lang.reflect.Proxy;
 import java.rmi.NoSuchObjectException;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
@@ -11,7 +12,8 @@ import org.zenframework.z8.server.logs.Trace;
 
 public abstract class RmiServer implements IServer, Remote {
 	private TimeoutChecker timeoutChecker;
-
+	private Proxy proxy;
+	
 	static public String serverName(Class<?> cls) {
 		Class<?> subinterface = IServer.class;
 
@@ -36,36 +38,6 @@ public abstract class RmiServer implements IServer, Remote {
 			export(port);
 	}
 
-	private void export(int port) throws RemoteException {
-		while(!safeExport(port))
-			port++;
-	}
-	
-	private void unexport() {
-		try {
-			UnicastRemoteObject.unexportObject(this, true);
-		} catch(NoSuchObjectException e) {
-			Trace.logError(e);
-		}
-	}
-
-	private boolean safeExport(int port) throws RemoteException {
-		try {
-			UnicastRemoteObject.exportObject(this, port);
-			return true;
-		} catch(ExportException e) {
-			return false;
-		}
-	}
-	
-	protected void enableTimeoutChecking() {
-		timeoutChecker = new TimeoutChecker(this, getClass().getSimpleName() + " Timeout Thread");
-		timeoutChecker.start();
-	}
-	
-	protected void timeoutCheck() {
-	}
-	
 	@Override
 	public String name() throws RemoteException {
 		return serverName(getClass());
@@ -88,6 +60,42 @@ public abstract class RmiServer implements IServer, Remote {
 		unexport();
 		Rmi.unregister(this);
 	}
+
+	public Proxy proxy() {
+		return proxy;
+	}
+
+	protected void enableTimeoutChecking() {
+		timeoutChecker = new TimeoutChecker(this, getClass().getSimpleName() + " Timeout Thread");
+		timeoutChecker.start();
+	}
+	
+	protected void timeoutCheck() {
+	}
+	
+	private void export(int port) throws RemoteException {
+		while(!safeExport(port))
+			port++;
+	}
+	
+	private boolean safeExport(int port) throws RemoteException {
+		try {
+			proxy = (Proxy)UnicastRemoteObject.exportObject(this, port);
+			return true;
+		} catch(ExportException e) {
+			return false;
+		}
+	}
+	
+	private void unexport() {
+		try {
+			UnicastRemoteObject.unexportObject(this, true);
+		} catch(NoSuchObjectException e) {
+			Trace.logError(e);
+		}
+	}
+
+	
 }
 
 

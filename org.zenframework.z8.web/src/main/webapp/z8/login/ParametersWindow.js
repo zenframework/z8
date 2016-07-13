@@ -154,7 +154,7 @@ Z8.view.ParametersWindow = Ext.extend(Z8.Window, {
 			} else
 				info = form;
 			
-			if(this.failure != null)
+			if(this.failure != null && this.failure != Ext.emptyFn)
 				this.failure.call(this.scope, info);
 			else
 				Z8.showMessages(this.title || 'Z8', Z8.Format.nl2br(info.messages));

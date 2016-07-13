@@ -75,11 +75,6 @@ public class AuthorityCenter extends HubServer implements IAuthorityCenter {
 		unregisterInterconnection(server);
 	}
 
-	@Override
-	public IServerInfo[] servers() throws RemoteException {
-		return getServers().toArray(new IServerInfo[0]);
-	}
-	
 	private void registerInterconnection(IApplicationServer server) throws RemoteException {
 		try {
 			interconnectionCenter().register(server);

@@ -210,6 +210,9 @@ public class RmiIO extends ObjectIO {
 	
 	@Override
 	protected void writeObject(ObjectOutputStream out, Object object) throws IOException {
+		if(object instanceof RmiServer)
+			object = ((RmiServer)object).proxy();
+			
 		if(object == null) {
 			writeByte(out, RmiIOType.Null);
 		

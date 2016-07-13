@@ -28,6 +28,24 @@ public class Rmi {
 			rebind(name, server);
 	}
 
+	static private Registry getRegistry() {
+		if(registry != null)
+			return registry;
+
+		int port = ServerConfig.rmiRegistryPort();
+
+		try {
+			return registry = LocateRegistry.createRegistry(port);
+		} catch(RemoteException e) {
+		}
+
+		try {
+			return registry = LocateRegistry.getRegistry(port);
+		} catch(Throwable e1) {
+			throw new RuntimeException(e1);
+		}
+	}
+
 	static public void unregister(IServer server) throws RemoteException {
 		String name = server.name();
 
@@ -56,24 +74,6 @@ public class Rmi {
 			return (IServer)LocateRegistry.getRegistry(host, ServerConfig.rmiRegistryPort()).lookup(name);
 		} catch(NotBoundException e) {
 			throw new RemoteException("Object '" + name + "' is not bound", e);
-		}
-	}
-
-	static private Registry getRegistry() {
-		if(registry != null)
-			return registry;
-
-		int port = ServerConfig.rmiRegistryPort();
-
-		try {
-			return registry = LocateRegistry.createRegistry(port);
-		} catch(RemoteException e) {
-		}
-
-		try {
-			return registry = LocateRegistry.getRegistry(port);
-		} catch(Throwable e1) {
-			throw new RuntimeException(e1);
 		}
 	}
 

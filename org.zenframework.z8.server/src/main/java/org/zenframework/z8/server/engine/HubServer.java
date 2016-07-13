@@ -7,7 +7,6 @@ import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
-import java.lang.reflect.Proxy;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -18,7 +17,7 @@ import org.zenframework.z8.server.logs.Trace;
 import org.zenframework.z8.server.utils.ErrorUtils;
 
 abstract public class HubServer extends RmiServer implements IHubServer {
-	private static final long serialVersionUID = -3444119932500940144L;
+	private static final long serialVersionUID = -3444119932500940156L;
 
 	private Collection<IServerInfo> innerServers = new ArrayList<IServerInfo>();
 	private Collection<IServerInfo> servers = Collections.synchronizedCollection(innerServers);
@@ -34,6 +33,11 @@ abstract public class HubServer extends RmiServer implements IHubServer {
 		restoreServers();
 	}
 
+	@Override
+	public IServerInfo[] servers() throws RemoteException {
+		return getServers().toArray(new IServerInfo[0]);
+	}
+	
 	protected Collection<IServerInfo> getServers() {
 		return servers;
 	}
@@ -63,7 +67,7 @@ abstract public class HubServer extends RmiServer implements IHubServer {
 
 	protected IServerInfo findServer(IApplicationServer server) {
 		for(IServerInfo existing : servers) {
-			if(existing.getServer().equals(server))
+			if(existing.equals(server))
 				return existing;
 		}
 		
@@ -78,10 +82,7 @@ abstract public class HubServer extends RmiServer implements IHubServer {
 			ObjectOutputStream out = new ObjectOutputStream(file);
 
 			out.writeLong(serialVersionUID);
-
-			RmiIO.writeInt(out, innerServers.size());
-			for(IServerInfo server : innerServers)
-				out.writeObject(server.getServer() instanceof Proxy ? server : null);
+			out.writeObject(innerServers);
 
 			IOUtils.closeQuietly(out);
 			IOUtils.closeQuietly(file);
@@ -91,6 +92,7 @@ abstract public class HubServer extends RmiServer implements IHubServer {
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	private synchronized void restoreServers() {
 		try {
 			File file = cacheFile();
@@ -102,16 +104,7 @@ abstract public class HubServer extends RmiServer implements IHubServer {
 			ObjectInputStream objectIn = new ObjectInputStream(fileIn);
 
 			if(serialVersionUID == objectIn.readLong()) {
-				innerServers = new ArrayList<IServerInfo>();
-
-				int count = RmiIO.readInt(objectIn);
-				
-				for(int i = 0; i < count; i++) {
-					IServerInfo server = (IServerInfo)objectIn.readObject();
-					if(server != null)
-						innerServers.add(server);
-				}
-				
+				innerServers = (Collection<IServerInfo>)objectIn.readObject();
 				servers = Collections.synchronizedCollection(innerServers);
 			}
 

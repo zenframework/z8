@@ -117,11 +117,19 @@
 	<!-- UserEntryPoints -->
 	<entry key="UserEntryPoints.title">Пользователи</entry>
 
-	<entry key="AuthorityCenterView.title">Сервер авторизации</entry>
-	<entry key="AuthorityCenterView.id">Id</entry>
-	<entry key="AuthorityCenterView.host">Хост</entry>
-	<entry key="AuthorityCenterView.port">Порт</entry>
-	<entry key="AuthorityCenterView.active">Активен</entry>
+	<!-- HubServerView -->
+	<entry key="HubServerView.id">Id</entry>
+	<entry key="HubServerView.host">Хост</entry>
+	<entry key="HubServerView.port">Порт</entry>
+	<entry key="HubServerView.active">Up</entry>
+	<entry key="HubServerView.serverId">Server Id</entry>
+	<entry key="HubServerView.domains">Домены</entry>
+
+	<!-- AuthorityCenterView -->
+	<entry key="AuthorityCenterView.title">Authority Center</entry>
+
+	<!-- InterconnectionCenterView -->
+	<entry key="InterconnectionCenterView.title">Interconnection Center</entry>
 
 	<!-- BuiltinUsers -->
 	<entry key="BuiltinUsers.System.name">System</entry>

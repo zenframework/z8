@@ -11,6 +11,4 @@ public interface IAuthorityCenter extends IHubServer {
 	public ISession login(String userName, String password) throws RemoteException;
 
 	public ISession server(String sessionId, String serverId) throws RemoteException;
-
-	public IServerInfo[] servers() throws RemoteException;
 }

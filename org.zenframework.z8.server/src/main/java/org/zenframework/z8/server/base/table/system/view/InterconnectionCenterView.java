@@ -5,38 +5,38 @@ import org.zenframework.z8.server.engine.IServerInfo;
 import org.zenframework.z8.server.resources.Resources;
 import org.zenframework.z8.server.runtime.IObject;
 
-public class AuthorityCenterView extends HubServerView {
+public class InterconnectionCenterView extends HubServerView {
 	static public class strings {
-		static public String Title = "AuthorityCenterView.title";
+		static public String Title = "InterconnectionCenterView.title";
 	}
 
 	static public class displayNames {
 		static public String Title = Resources.get(strings.Title);
 	}
 
-	public static class CLASS<T extends AuthorityCenterView> extends HubServerView.CLASS<T> {
+	public static class CLASS<T extends InterconnectionCenterView> extends HubServerView.CLASS<T> {
 		public CLASS() {
 			this(null);
 		}
 
 		public CLASS(IObject container) {
 			super(container);
-			setJavaClass(AuthorityCenterView.class);
+			setJavaClass(InterconnectionCenterView.class);
 			setDisplayName(displayNames.Title);
 		}
 
 		@Override
 		public Object newObject(IObject container) {
-			return new AuthorityCenterView(container);
+			return new InterconnectionCenterView(container);
 		}
 	}
 
-	public AuthorityCenterView(IObject container) {
+	public InterconnectionCenterView(IObject container) {
 		super(container);
 	}
 	
 	@Override
 	protected IServerInfo[] getServers() throws Throwable {
-		return ServerConfig.authorityCenter().servers();
+		return ServerConfig.interconnectionCenter().servers();
 	}
 }

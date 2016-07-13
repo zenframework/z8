@@ -1895,6 +1895,8 @@ public class Query extends Runnable {
 		writer.writeProperty(Json.viewMode, viewMode.toString());
 		writer.writeProperty(Json.width, width);
 		writer.writeProperty(Json.height, height);
+
+		writeSections(writer, fields);
 	}
 
 	private void writeRecordActions(JsonWriter writer) {
@@ -2110,6 +2112,101 @@ public class Query extends Runnable {
 
 			owner = owner.getOwner();
 		}
+	}
+
+	class Section {
+		FieldGroup group = null;
+		Collection<Object> controls = new ArrayList<Object>();
+
+		Section(FieldGroup group) {
+			this.group = group;
+		}
+
+		void add(Object control) {
+			controls.add(control);
+		}
+
+		boolean isEmpty() {
+			return controls.isEmpty();
+		}
+	}
+
+	private void writeSections(JsonWriter writer, Collection<Field> fields) {
+		Section section = getSections(null, fields);
+
+		if(section == null)
+			return;
+
+		writer.startObject(Json.section);
+		writeSection(writer, section);
+		writer.finishObject();
+	}
+
+	private void writeSection(JsonWriter writer, Section section) {
+		if(section.group != null)
+			section.group.writeMeta(writer);
+
+		writer.writeProperty(Json.isSection, true);
+
+		writer.startArray(Json.controls);
+
+		for(Object control : section.controls) {
+			if(control instanceof Field) {
+				Field field = (Field)control;
+				if(!field.system()) {
+					writer.startObject();
+					writer.writeProperty(Json.id, field.id());
+					writer.finishObject();
+				}
+			} else if(control instanceof Section) {
+				writer.startObject();
+				writeSection(writer, (Section)control);
+				writer.finishObject();
+			}
+		}
+
+		writer.finishArray();
+	}
+	
+	private Collection<Control> collectControls() {
+		Collection<Control> controls = new ArrayList<Control>();
+
+		Query context = getContext();
+
+		if(context != null)
+			controls = context.getControls();
+
+		if(controls.isEmpty())
+			controls = getControls();
+
+		Query rootQuery = getRootQuery();
+
+		if(controls.isEmpty() && rootQuery != this)
+			controls = rootQuery.getControls();
+
+		return controls;
+	}
+
+	private Section getSections(FieldGroup group, Collection<Field> fields) {
+		Section result = new Section(group);
+
+		Collection<Control> controls = group == null ? collectControls() : group.getControls();
+
+		for(Control control : controls) {
+			if(control instanceof Field) {
+				if(fields.contains(control)) {
+					result.add(control);
+				}
+			} else if(control instanceof FieldGroup) {
+				Section section = getSections((FieldGroup)control, fields);
+
+				if(section != null) {
+					result.add(section);
+				}
+			}
+		}
+
+		return result.isEmpty() ? null : result;
 	}
 
 	// ////////////////////////////////////////////////////////////////////////////////////////////////

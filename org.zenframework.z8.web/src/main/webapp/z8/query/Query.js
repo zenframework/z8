@@ -219,6 +219,7 @@ Z8.query.Query = Ext.extend(Ext.util.Observable,
 			totalProperty: Z8.totalProperty,
 			
 			remoteSort: this.remoteSort != null ? this.remoteSort : true,
+
 			sortInfo: this.sort != null ? { field: this.sort, direction: this.dir } : null,
 			
 			groupFields: this.groupBy,

@@ -102,6 +102,30 @@ public class ServerInfo implements IServerInfo {
 	}
 
 	public String toString() {
-		return "[id: " + id + ", " + server.toString() + "]";
+		IApplicationServer proxy = getProxy(server);
+		return "[id: " + id + ", " + (proxy != null ? proxy.toString() : "") + "]";
+	}
+	
+	static private IApplicationServer getProxy(IApplicationServer server) {
+		if(server instanceof RmiServer)
+			return (IApplicationServer)((RmiServer)server).proxy();
+		return server;
+	}
+	
+	@Override
+	public boolean equals(Object object) {
+		if(this == object)
+			return true;
+		
+		IApplicationServer server1 = getProxy(server);
+		IApplicationServer server2 = null;
+		
+		if(object instanceof ServerInfo)
+			server2 = getProxy(((ServerInfo)object).getServer());
+		
+		if(object instanceof IApplicationServer)
+			server2 = getProxy((IApplicationServer)object);
+
+		return server1 == server2 || server1 != null && server1.equals(server2) || server2 != null && server2.equals(server1);
 	}
 }

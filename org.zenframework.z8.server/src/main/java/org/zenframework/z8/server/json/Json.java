@@ -126,6 +126,7 @@ public interface Json {
     string groupDir = new string("groupDir");
     string groupValue = new string("groupValue");
     string groups = new string("groups");
+    string remoteSort = new string("remoteSort");
     string __search_text__ = new string("__search_text__");
 
     string filterBy = new string("filterBy");

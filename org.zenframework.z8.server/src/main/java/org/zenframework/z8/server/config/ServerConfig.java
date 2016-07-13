@@ -347,7 +347,7 @@ public class ServerConfig extends Properties {
 				return authorityCenter;
 
 			try {
-				return authorityCenter = (IAuthorityCenter)Rmi.get(IAuthorityCenter.class, authorityCenterHost(), authorityCenterPort());
+				return authorityCenter = Rmi.get(IAuthorityCenter.class, authorityCenterHost(), authorityCenterPort());
 			} catch(Throwable e) {
 				throw new AccessDeniedException();
 			}
@@ -363,7 +363,7 @@ public class ServerConfig extends Properties {
 				return interconnectionCenter;
 
 			try {
-				return interconnectionCenter = (IInterconnectionCenter)Rmi.get(IInterconnectionCenter.class, interconnectionCenterHost(), interconnectionCenterPort());
+				return interconnectionCenter = Rmi.get(IInterconnectionCenter.class, interconnectionCenterHost(), interconnectionCenterPort());
 			} catch(Throwable e) {
 				throw new RuntimeException(e);
 			}
