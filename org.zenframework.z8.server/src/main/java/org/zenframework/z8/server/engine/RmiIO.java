@@ -11,7 +11,6 @@ import java.math.BigInteger;
 import java.rmi.dgc.Lease;
 import java.rmi.dgc.VMID;
 import java.rmi.server.ObjID;
-import java.rmi.server.RemoteObjectInvocationHandler;
 import java.rmi.server.RemoteRef;
 import java.rmi.server.RemoteStub;
 import java.rmi.server.UID;
@@ -38,6 +37,7 @@ import org.zenframework.z8.server.types.primary;
 import org.zenframework.z8.server.types.string;
 import org.zenframework.z8.server.utils.ErrorUtils;
 import org.zenframework.z8.server.utils.IOUtils;
+import org.zenframework.z8.server.utils.ProxyUtils;
 
 import sun.rmi.server.UnicastRef;
 import sun.rmi.transport.LiveRef;
@@ -301,10 +301,6 @@ public class RmiIO extends ObjectIO {
 	}
 
 	private void writeProxy(ObjectOutputStream out, Proxy proxy) throws IOException {
-		RemoteObjectInvocationHandler handler = (RemoteObjectInvocationHandler)Proxy.getInvocationHandler(proxy);
-
-		UnicastRef unicastRef = (UnicastRef)handler.getRef();
-		LiveRef liveRef = unicastRef.getLiveRef();
 
 		Class<?>[] interfaces = proxy.getClass().getInterfaces();
 
@@ -313,6 +309,7 @@ public class RmiIO extends ObjectIO {
 		for(Class<?> cls : interfaces)
 			writeString(out, cls.getCanonicalName());
 
+		LiveRef liveRef = ProxyUtils.getLiveRef(proxy);
 		liveRef.write(out, true);
 	}
 
@@ -628,9 +625,7 @@ public class RmiIO extends ObjectIO {
 			interfaces[i] = getClass(readString(in));
 		
 		LiveRef liveRef = LiveRef.read(in, true);
-
-		RemoteObjectInvocationHandler handler = new RemoteObjectInvocationHandler(new UnicastRef(liveRef));
-		return Proxy.newProxyInstance(this.getClass().getClassLoader(), interfaces, handler);
+		return ProxyUtils.newProxy(liveRef, interfaces);
 	}
 
 	private Object readRemoteStub(ObjectInputStream in) throws IOException, ClassNotFoundException {

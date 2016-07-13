@@ -4,17 +4,14 @@ import java.io.IOException;
 import java.io.ObjectInput;
 import java.io.ObjectOutput;
 import java.io.Serializable;
-import java.util.concurrent.atomic.AtomicLong;
 
 public final class ObjID implements Serializable {
 	private static final long serialVersionUID = -2041779290797310925L;
 
-	private static final AtomicLong nextObjNum = new AtomicLong(1000000);
-
 	private long objNum = 0;
 
 	public ObjID() {
-		this(nextObjNum.getAndIncrement());
+		this(1000000);
 	}
 
 	public ObjID(int objNum) {

@@ -1,91 +1,63 @@
 package org.zenframework.z8.server.engine;
 
-import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
-import java.rmi.registry.LocateRegistry;
-import java.rmi.registry.Registry;
+import java.rmi.server.ObjID;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.zenframework.z8.server.config.ServerConfig;
-import org.zenframework.z8.server.logs.Trace;
+import org.zenframework.z8.server.utils.ProxyUtils;
 
+import sun.rmi.transport.LiveRef;
+import sun.rmi.transport.tcp.TCPEndpoint;
+
+@SuppressWarnings("restriction")
 public class Rmi {
 
-	static public String localhost = "localhost";
-	static public int defaultRegistryPort = 7852;
+	static public String localhost = TCPEndpoint.getLocalEndpoint(0).getHost();
 	
-	static private Map<String, IServer> servers = new HashMap<String, IServer>();
-
-	static private Registry registry;
+	static private Map<Class<?>, IServer> servers = new HashMap<Class<?>, IServer>();
 
 	static public void register(IServer server) throws RemoteException {
-		String name = server.name();
-
-		servers.put(name, server);
-
-		if(ServerConfig.rmiEnabled())
-			rebind(name, server);
-	}
-
-	static private Registry getRegistry() {
-		if(registry != null)
-			return registry;
-
-		int port = ServerConfig.rmiRegistryPort();
-
-		try {
-			return registry = LocateRegistry.createRegistry(port);
-		} catch(RemoteException e) {
-		}
-
-		try {
-			return registry = LocateRegistry.getRegistry(port);
-		} catch(Throwable e1) {
-			throw new RuntimeException(e1);
-		}
+		servers.put(serverClass(server.getClass()), server);
 	}
 
 	static public void unregister(IServer server) throws RemoteException {
-		String name = server.name();
-
-		servers.remove(server);
-
-		if(ServerConfig.rmiEnabled())
-			unbind(name);
+		servers.remove(serverClass(server.getClass()));
 	}
 
-	static public IServer get(String name) throws RemoteException {
-		return get(name, Rmi.localhost, 0);
+	static public <TYPE> TYPE get(Class<TYPE> cls) throws RemoteException {
+		return get(cls, Rmi.localhost, 0);
 	}
 
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({ "unchecked" })
 	static public <TYPE> TYPE get(Class<TYPE> cls, String host, int port) throws RemoteException {
-		return (TYPE)get(RmiServer.serverName(cls), host, port);
-	}
-	
-	static public IServer get(String name, String host, int port) throws RemoteException {
-		IServer server = (IServer)servers.get(name);
+		IServer server = servers.get(serverClass(cls));
 
 		if(server != null)
-			return server;
+			return (TYPE)server;
 
-		try {
-			return (IServer)LocateRegistry.getRegistry(host, ServerConfig.rmiRegistryPort()).lookup(name);
-		} catch(NotBoundException e) {
-			throw new RemoteException("Object '" + name + "' is not bound", e);
-		}
+		Class<?>[] interfaces = { cls, IServer.class };
+		LiveRef liveRef = new LiveRef(new ObjID(), new TCPEndpoint(host, port), false);
+		
+		return (TYPE)ProxyUtils.newProxy(liveRef, interfaces);
 	}
 
-	static private void rebind(String name, IServer server) throws RemoteException {
-		getRegistry().rebind(name, server);
-	}
+	static public Class<?> serverClass(Class<?> cls) {
+		Class<?> subinterface = IServer.class;
 
-	static private void unbind(String name) throws RemoteException {
-		try {
-			getRegistry().unbind(name);
-		} catch(NotBoundException e) {
-			Trace.logError("Can't unbind object '" + name + "'", e);
+		if(cls.isInterface() && subinterface.isAssignableFrom(cls))
+			return cls;
+			
+		Class<?>[] interfaces = cls.getInterfaces();
+		
+		for(Class<?> i : interfaces) {
+			if(subinterface.isAssignableFrom(i))
+				subinterface = i;
 		}
+		
+		if(subinterface == IServer.class)
+			throw new RuntimeException("Class '" + cls.getCanonicalName() + "' does not implement subinterface of '" + IServer.class.getCanonicalName() + "'");
+
+		return subinterface;
 	}
 }

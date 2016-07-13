@@ -60,7 +60,7 @@ public final class ServerMain {
 			if (!cmd.hasOption(StopOpt))
 				serverClass.getMethod("launch", ServerConfig.class).invoke(null, config);
 			else
-				Rmi.get(RmiServer.serverName(serverClass)).stop();
+				Rmi.get(serverClass).stop();
 		} catch (Throwable e) {
 			Trace.logError(e);
 			System.exit(-1);

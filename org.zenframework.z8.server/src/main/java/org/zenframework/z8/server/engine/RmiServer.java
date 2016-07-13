@@ -14,33 +14,9 @@ public abstract class RmiServer implements IServer, Remote {
 	private TimeoutChecker timeoutChecker;
 	private Proxy proxy;
 	
-	static public String serverName(Class<?> cls) {
-		Class<?> subinterface = IServer.class;
-
-		if(cls.isInterface() && subinterface.isAssignableFrom(cls))
-			return cls.getSimpleName();
-			
-		Class<?>[] interfaces = cls.getInterfaces();
-		
-		for(Class<?> i : interfaces) {
-			if(subinterface.isAssignableFrom(i))
-				subinterface = i;
-		}
-		
-		if(subinterface == IServer.class)
-			throw new RuntimeException("Class '" + cls.getCanonicalName() + "' does not implement subinterface of '" + IServer.class.getCanonicalName() + "'");
-
-		return subinterface.getSimpleName();
-	}
-
 	protected RmiServer(int port) throws RemoteException {
 		if(ServerConfig.rmiEnabled())
 			export(port);
-	}
-
-	@Override
-	public String name() throws RemoteException {
-		return serverName(getClass());
 	}
 
 	@Override

@@ -3,6 +3,7 @@ package org.zenframework.z8.server.engine;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.lang.reflect.Proxy;
 import java.rmi.ConnectException;
 import java.rmi.NoSuchObjectException;
 import java.rmi.RemoteException;
@@ -36,18 +37,27 @@ public class ServerInfo implements IServerInfo {
 		this.domains = domains;
 	}
 
+	@Override
 	public IApplicationServer getServer() {
 		return server;
 	}
+	
+	@Override
+	public Proxy getProxy() {
+		return (Proxy)getProxy(server);
+	}
 
+	@Override
 	public String getId() {
 		return id;
 	}
 
+	@Override
 	public String[] getDomains() {
 		return domains;
 	}
 
+	@Override
 	public boolean isAlive() throws RemoteException {
 		if(lastChecked != 0 && System.currentTimeMillis() - lastChecked < TenMinutes)
 			return false;
@@ -64,6 +74,7 @@ public class ServerInfo implements IServerInfo {
 		return false;
 	}
 
+	@Override
 	public boolean isDead() throws RemoteException {
 		return firstChecked != 0 && System.currentTimeMillis() - firstChecked > ThreeDays;
 	}
