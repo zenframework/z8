@@ -49,6 +49,7 @@ public class ServerInfo implements IServerInfo {
 	@Override
 	public void setServer(IApplicationServer server) {
 		this.server = server;
+		lastChecked = 0;
 	}
 
 	@Override

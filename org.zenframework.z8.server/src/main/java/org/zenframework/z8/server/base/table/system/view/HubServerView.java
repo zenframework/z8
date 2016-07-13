@@ -129,12 +129,22 @@ abstract public class HubServerView extends Query {
 			writer.writeProperty(serverId.id(), server.getId());
 			writer.writeProperty(host.id(), getHost(server));
 			writer.writeProperty(port.id(), getPort(server));
-			writer.writeProperty(domains.id(), server.getDomains() != null ? Arrays.toString(server.getDomains()) : "");
+			writer.writeProperty(domains.id(), getDomains(server));
 			writer.writeProperty(active.id(), checkAlive ? (server.isAlive() ? bool.trueString : bool.falseString) : "");
 			writer.finishObject();
 		}
 		
 		writer.finishArray();
+	}
+
+	private String getDomains(IServerInfo server) {
+		String[] domains = server.getDomains();
+		
+		if(domains == null)
+			return "";
+		
+		String result = Arrays.toString(server.getDomains());
+		return result.substring(1, result.length() - 1);
 	}
 
 	private String getHost(IServerInfo server) {
