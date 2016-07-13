@@ -2,6 +2,7 @@ package org.zenframework.z8.web.server;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.rmi.ConnectException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -65,7 +66,7 @@ public abstract class Adapter {
 				session = ServerConfig.authorityCenter().login(login, password);
 			} else if(sessionId != null) {
 				String serverId = parameters.get(Json.serverId);
-				session = ServerConfig.authorityCenter().getServer(sessionId, serverId);
+				session = ServerConfig.authorityCenter().server(sessionId, serverId);
 			}
 
 			if(session == null)
@@ -73,6 +74,8 @@ public abstract class Adapter {
 
 			service(session, parameters, files, request, response);
 		} catch(AccessDeniedException e) {
+			processAccessDenied(response);
+		} catch(ConnectException e) {
 			processAccessDenied(response);
 		} catch(Throwable e) {
 			String className = e.getClass().getCanonicalName();

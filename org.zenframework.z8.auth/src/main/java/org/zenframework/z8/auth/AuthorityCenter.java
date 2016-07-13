@@ -75,6 +75,11 @@ public class AuthorityCenter extends HubServer implements IAuthorityCenter {
 		unregisterInterconnection(server);
 	}
 
+	@Override
+	public IServerInfo[] servers() throws RemoteException {
+		return getServers().toArray(new IServerInfo[0]);
+	}
+	
 	private void registerInterconnection(IApplicationServer server) throws RemoteException {
 		try {
 			interconnectionCenter().register(server);
@@ -105,7 +110,7 @@ public class AuthorityCenter extends HubServer implements IAuthorityCenter {
 	}
 
 	@Override
-	public ISession getServer(String sessionId, String serverId) throws RemoteException {
+	public ISession server(String sessionId, String serverId) throws RemoteException {
 		Session session = sessionManager.get(sessionId);
 		IServerInfo server = findServer(serverId);
 

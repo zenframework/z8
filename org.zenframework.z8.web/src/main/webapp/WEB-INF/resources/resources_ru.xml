@@ -117,6 +117,12 @@
 	<!-- UserEntryPoints -->
 	<entry key="UserEntryPoints.title">Пользователи</entry>
 
+	<entry key="AuthorityCenterView.title">Сервер авторизации</entry>
+	<entry key="AuthorityCenterView.id">Id</entry>
+	<entry key="AuthorityCenterView.host">Хост</entry>
+	<entry key="AuthorityCenterView.port">Порт</entry>
+	<entry key="AuthorityCenterView.active">Активен</entry>
+
 	<!-- BuiltinUsers -->
 	<entry key="BuiltinUsers.System.name">System</entry>
 	<entry key="BuiltinUsers.System.description">Системный вход</entry>

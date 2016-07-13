@@ -178,6 +178,10 @@ public class JsonWriter {
 		writeProperty(name.get(), value, true);
 	}
 
+	public void writeProperty(String name, String value) {
+		writeProperty(name, value, true);
+	}
+
 	public void writeProperty(String name, String value, boolean quoteValue) {
 		if(value != null) {
 			name = quoteName ? JsonObject.quote(name) : name;

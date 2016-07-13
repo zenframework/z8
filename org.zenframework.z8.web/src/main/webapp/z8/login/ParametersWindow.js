@@ -142,13 +142,18 @@ Z8.view.ParametersWindow = Ext.extend(Z8.Window, {
 			this.okButton.setDisabled(false);
 			this.okButton.setIconClass('');
 
-			var result = form.requestId != null ? form : action.result;
+			var	info = null;
+			
+			if(form.messages == null) {
+				var result = form.messages != null ? form : action.result;
 
-			if(result != null && this.relogin(result.status))
-				return;
+				if(result != null && this.relogin(result.status))
+					return;
 
-			var	info = result != null ? result.info : { messages: ['Transaction failure.'] };
-
+				info = result != null ? result.info : { messages: ['Transaction failure.'] };
+			} else
+				info = form;
+			
 			if(this.failure != null)
 				this.failure.call(this.scope, info);
 			else

@@ -81,6 +81,7 @@ public class ServerInfo implements IServerInfo {
 		RmiIO.writeString(out, id);
 		out.writeObject(domains);
 		out.writeObject(server);
+		RmiIO.writeLong(out, lastChecked);
 	}
 
 	@Override
@@ -91,6 +92,7 @@ public class ServerInfo implements IServerInfo {
 		id = RmiIO.readString(in);
 		domains = (String[])in.readObject();
 		server = (IApplicationServer)in.readObject();
+		lastChecked = RmiIO.readLong(in);
 	}
 
 	public String toString() {

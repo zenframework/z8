@@ -2,8 +2,9 @@ package org.zenframework.z8.server.base.table.system;
 
 import org.zenframework.z8.server.base.form.Desktop;
 import org.zenframework.z8.server.base.job.scheduler.TaskLogs;
-import org.zenframework.z8.server.base.table.system.view.MessagesQueueView;
+import org.zenframework.z8.server.base.table.system.view.AuthorityCenterView;
 import org.zenframework.z8.server.base.table.system.view.FilesView;
+import org.zenframework.z8.server.base.table.system.view.MessagesQueueView;
 import org.zenframework.z8.server.base.table.system.view.UserEntriesView;
 import org.zenframework.z8.server.db.generator.DBGenerateProcedure;
 import org.zenframework.z8.server.ie.TransportRoutes;
@@ -45,6 +46,8 @@ public class SystemTools extends Desktop {
     public final FilesView.CLASS<FilesView> files = new FilesView.CLASS<FilesView>(this);
     public final Domains.CLASS<Domains> addresses = new Domains.CLASS<Domains>(this);
 
+    public final AuthorityCenterView.CLASS<AuthorityCenterView> authorityCenter = new AuthorityCenterView.CLASS<AuthorityCenterView>(this);
+
     public SystemTools(IObject container) {
         super(container);
     }
@@ -62,6 +65,7 @@ public class SystemTools extends Desktop {
         runnables.add(transportRoutes);
         runnables.add(files);
         runnables.add(addresses);
+        runnables.add(authorityCenter);
 
         dataSets.add(userEntries);
         dataSets.add(taskLogs);
