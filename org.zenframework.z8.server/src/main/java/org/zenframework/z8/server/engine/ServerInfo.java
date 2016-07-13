@@ -65,7 +65,7 @@ public class ServerInfo implements IServerInfo {
 	}
 
 	public boolean isDead() throws RemoteException {
-		return System.currentTimeMillis() - firstChecked > ThreeDays;
+		return firstChecked != 0 && System.currentTimeMillis() - firstChecked > ThreeDays;
 	}
 
 	private void writeObject(ObjectOutputStream out) throws IOException {
