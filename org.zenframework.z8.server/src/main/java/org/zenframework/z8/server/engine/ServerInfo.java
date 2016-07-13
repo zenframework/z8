@@ -48,14 +48,6 @@ public class ServerInfo implements IServerInfo {
 		return domains;
 	}
 
-	private void writeObject(ObjectOutputStream out) throws IOException {
-		serialize(out);
-	}
-
-	private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
-		deserialize(in);
-	}
-
 	public boolean isAlive() throws RemoteException {
 		if(lastChecked != 0 && System.currentTimeMillis() - lastChecked < TenMinutes)
 			return false;
@@ -74,6 +66,14 @@ public class ServerInfo implements IServerInfo {
 
 	public boolean isDead() throws RemoteException {
 		return System.currentTimeMillis() - firstChecked > ThreeDays;
+	}
+
+	private void writeObject(ObjectOutputStream out) throws IOException {
+		serialize(out);
+	}
+
+	private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
+		deserialize(in);
 	}
 
 	@Override

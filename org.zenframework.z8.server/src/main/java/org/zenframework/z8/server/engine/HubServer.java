@@ -7,6 +7,7 @@ import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
+import java.lang.reflect.Proxy;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -78,7 +79,9 @@ abstract public class HubServer extends RmiServer implements IHubServer {
 
 			out.writeLong(serialVersionUID);
 
-			out.writeObject(innerServers);
+			RmiIO.writeInt(out, innerServers.size());
+			for(IServerInfo server : innerServers)
+				out.writeObject(server.getServer() instanceof Proxy ? server : null);
 
 			IOUtils.closeQuietly(out);
 			IOUtils.closeQuietly(file);
@@ -88,7 +91,6 @@ abstract public class HubServer extends RmiServer implements IHubServer {
 		}
 	}
 
-	@SuppressWarnings("unchecked")
 	private synchronized void restoreServers() {
 		try {
 			File file = cacheFile();
@@ -100,7 +102,16 @@ abstract public class HubServer extends RmiServer implements IHubServer {
 			ObjectInputStream objectIn = new ObjectInputStream(fileIn);
 
 			if(serialVersionUID == objectIn.readLong()) {
-				innerServers = (Collection<IServerInfo>)objectIn.readObject();
+				innerServers = new ArrayList<IServerInfo>();
+
+				int count = RmiIO.readInt(objectIn);
+				
+				for(int i = 0; i < count; i++) {
+					IServerInfo server = (IServerInfo)objectIn.readObject();
+					if(server != null)
+						innerServers.add(server);
+				}
+				
 				servers = Collections.synchronizedCollection(innerServers);
 			}
 
