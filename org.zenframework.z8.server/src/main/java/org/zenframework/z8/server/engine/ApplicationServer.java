@@ -5,14 +5,13 @@ import java.lang.management.ManagementFactory;
 import java.rmi.RemoteException;
 
 import org.zenframework.z8.server.base.job.scheduler.Scheduler;
-import org.zenframework.z8.server.base.table.system.Files;
 import org.zenframework.z8.server.base.table.system.Domains;
+import org.zenframework.z8.server.base.table.system.Files;
 import org.zenframework.z8.server.base.table.system.SystemFiles;
 import org.zenframework.z8.server.base.xml.GNode;
 import org.zenframework.z8.server.config.ServerConfig;
 import org.zenframework.z8.server.db.ConnectionManager;
 import org.zenframework.z8.server.ie.RmiTransportProcedure;
-import org.zenframework.z8.server.ie.TransportEngine;
 import org.zenframework.z8.server.logs.Trace;
 import org.zenframework.z8.server.request.IMonitor;
 import org.zenframework.z8.server.request.IRequest;
@@ -32,8 +31,6 @@ public class ApplicationServer extends RmiServer implements IApplicationServer {
 	static public String id = guid.create().toString();
 
 	static private ApplicationServer instance;
-
-	private IAuthorityCenter authorityCenter;
 
 	static public IApplicationServer launch(ServerConfig config) throws RemoteException {
 		if(instance == null) {
@@ -106,11 +103,9 @@ public class ApplicationServer extends RmiServer implements IApplicationServer {
 	@Override
 	public void stop() throws RemoteException {
 		Scheduler.stop();
-
-		TransportEngine.getInstance().stop();
-
-		authorityCenter.unregister(this);
-
+	
+		ServerConfig.authorityCenter().unregister(this);
+		
 		super.stop();
 	}
 

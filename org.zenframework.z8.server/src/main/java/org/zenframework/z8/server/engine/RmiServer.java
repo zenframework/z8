@@ -70,8 +70,6 @@ public abstract class RmiServer implements IServer, Remote {
 			Trace.logError(e);
 		}
 	}
-
-	
 }
 
 

@@ -20,9 +20,8 @@ public class ServerInfo implements IServerInfo {
 	private String id;
 	private String[] domains;
 
-	private long firstChecked = 0;
+	private long firstFailure = 0;
 	private long lastChecked = 0;
-	
 	
 	public ServerInfo() {
 	}
@@ -64,19 +63,23 @@ public class ServerInfo implements IServerInfo {
 		
 		try {
 			server.probe();
-			firstChecked = lastChecked = 0;
+			firstFailure = lastChecked = 0;
 			return true;
 		} catch(NoSuchObjectException e) {
 		} catch(ConnectException e) {
 		}
 		
-		lastChecked = System.currentTimeMillis();
+		long time = System.currentTimeMillis();
+		if(lastChecked == 0)
+			firstFailure = time;
+		
+		lastChecked = time;
 		return false;
 	}
 
 	@Override
 	public boolean isDead() throws RemoteException {
-		return firstChecked != 0 && System.currentTimeMillis() - firstChecked > ThreeDays;
+		return firstFailure != 0 && System.currentTimeMillis() - firstFailure > ThreeDays;
 	}
 
 	private void writeObject(ObjectOutputStream out) throws IOException {
@@ -95,7 +98,7 @@ public class ServerInfo implements IServerInfo {
 		out.writeObject(domains);
 		out.writeObject(server);
 
-		RmiIO.writeLong(out, firstChecked);
+		RmiIO.writeLong(out, firstFailure);
 		RmiIO.writeLong(out, lastChecked);
 	}
 
@@ -108,7 +111,7 @@ public class ServerInfo implements IServerInfo {
 		domains = (String[])in.readObject();
 		server = (IApplicationServer)in.readObject();
 
-		firstChecked = RmiIO.readLong(in);
+		firstFailure = RmiIO.readLong(in);
 		lastChecked = RmiIO.readLong(in);
 	}
 

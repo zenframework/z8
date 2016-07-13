@@ -17,7 +17,7 @@ import org.zenframework.z8.server.logs.Trace;
 import org.zenframework.z8.server.utils.ErrorUtils;
 
 abstract public class HubServer extends RmiServer implements IHubServer {
-	private static final long serialVersionUID = -3444119932500940157L;
+	private static final long serialVersionUID = -3444119932500940159L;
 
 	private Collection<IServerInfo> innerServers = new ArrayList<IServerInfo>();
 	private Collection<IServerInfo> servers = Collections.synchronizedCollection(innerServers);
