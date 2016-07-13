@@ -8,7 +8,6 @@ import java.util.Map;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.zenframework.z8.server.base.table.system.Properties;
-import org.zenframework.z8.server.ie.ws.WsTransport;
 import org.zenframework.z8.server.runtime.ServerRuntime;
 
 public class TransportEngine implements Properties.Listener {
@@ -103,8 +102,6 @@ public class TransportEngine implements Properties.Listener {
 			return new JmsTransport(context);
 		} else if (FileTransport.PROTOCOL.equals(protocol)) {
 			return new FileTransport(context);
-		} else if (WsTransport.PROTOCOL.equals(protocol)) {
-			return new WsTransport(context);
 		} else {
 			return null;
 		}

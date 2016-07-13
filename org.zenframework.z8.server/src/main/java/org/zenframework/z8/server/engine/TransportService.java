@@ -15,6 +15,7 @@ import org.zenframework.z8.server.base.file.Files;
 import org.zenframework.z8.server.base.table.system.Properties;
 import org.zenframework.z8.server.base.table.system.SystemDomains;
 import org.zenframework.z8.server.config.ServerConfig;
+import org.zenframework.z8.server.db.ConnectionManager;
 import org.zenframework.z8.server.ie.ExportMessages;
 import org.zenframework.z8.server.ie.IeUtil;
 import org.zenframework.z8.server.ie.Import;
@@ -111,6 +112,7 @@ public class TransportService extends RmiServer implements ITransportService, Pr
 			Import.importMessage(ExportMessages.newInstance(), message,
 					IeUtil.getUrl(RmiTransport.PROTOCOL, clientHost != null ? clientHost : "localhost"));
 		} finally {
+			ConnectionManager.release();
 			ApplicationServer.setRequest(null);
 		}
 	}
