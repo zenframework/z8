@@ -57,7 +57,7 @@ public class AuthorityCenter extends HubServer implements IAuthorityCenter {
 		sessionManager = new SessionManager();
 		sessionManager.start();
 
-		enableTimeoutChecking(5 * datespan.TicksPerMinute);
+		enableTimeoutChecking(1 * datespan.TicksPerMinute);
 
 		Trace.logEvent("JVM startup options: " + ManagementFactory.getRuntimeMXBean().getInputArguments().toString() + "\n\t" + RequestDispatcher.getMemoryUsage());
 	}
@@ -172,9 +172,10 @@ public class AuthorityCenter extends HubServer implements IAuthorityCenter {
 		try {
 			IInterconnectionCenter center = ServerConfig.interconnectionCenter();
 
-			for(IServerInfo server : getServers())
-				center.register(server.getServer());
-
+			for(IServerInfo server : getServers()) {
+				if(server.isAlive())
+					center.register(server.getServer());
+			}
 		} catch(Throwable e) {
 		}
 	}

@@ -174,12 +174,11 @@ public class User implements IUser {
 
 	private void addSystemTools() {
 		for(Component component : components) {
-			if(component.className().equals(SystemTools.class.getCanonicalName())) {
+			if(component.className().equals(SystemTools.ClassName))
 				return;
-			}
 		}
 
-		components.add(new Component(null, SystemTools.class.getCanonicalName(), Resources.get(SystemTools.strings.Title)));
+		components.add(new Component(null, SystemTools.ClassName, Resources.get(SystemTools.strings.Title)));
 	}
 
 	@SuppressWarnings("unchecked")

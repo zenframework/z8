@@ -94,7 +94,7 @@ public class ApplicationServer extends RmiServer implements IApplicationServer {
 
 		checkSchemaVersion();
 
-		enableTimeoutChecking(5 * datespan.TicksPerMinute);
+		enableTimeoutChecking(1 * datespan.TicksPerMinute);
 
 		Scheduler.start();
 
@@ -105,7 +105,7 @@ public class ApplicationServer extends RmiServer implements IApplicationServer {
 	public void stop() throws RemoteException {
 		Scheduler.stop();
 	
-		ServerConfig.authorityCenter().unregister(this);
+		unregister();
 		
 		super.stop();
 	}
@@ -160,12 +160,23 @@ public class ApplicationServer extends RmiServer implements IApplicationServer {
 	
 	@Override
 	protected void timeoutCheck() {
+		register();
+	}
+	
+	private void register() {
 		try {
 			ServerConfig.authorityCenter().register(this);
 		} catch(Throwable e) {
 		}
 	}
 	
+	private void unregister() {
+		try {
+			ServerConfig.authorityCenter().unregister(this);
+		} catch(Throwable e) {
+		}
+	}
+
 	private void checkSchemaVersion() {
 		String version = Runtime.version();
 		System.out.println("Runtime schema version: " + version);

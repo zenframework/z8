@@ -8,14 +8,18 @@ import org.zenframework.z8.server.base.table.system.view.InterconnectionCenterVi
 import org.zenframework.z8.server.base.table.system.view.MessagesQueueView;
 import org.zenframework.z8.server.base.table.system.view.UserEntriesView;
 import org.zenframework.z8.server.db.generator.DBGenerateProcedure;
+import org.zenframework.z8.server.engine.ApplicationServer;
 import org.zenframework.z8.server.ie.TransportRoutes;
 import org.zenframework.z8.server.resources.Resources;
 import org.zenframework.z8.server.runtime.IObject;
+import org.zenframework.z8.server.security.BuiltinUsers;
 import org.zenframework.z8.server.types.guid;
 
 public class SystemTools extends Desktop {
-	final static public guid Id = new guid("00000000-0000-0000-0000-000000000001");
-
+	static public guid Id = new guid("00000000-0000-0000-0000-000000000001");
+	
+	static public String ClassName = SystemTools.class.getCanonicalName();
+	
 	static public class strings {
 		public final static String Title = "SystemTools.title";
 	}
@@ -68,8 +72,12 @@ public class SystemTools extends Desktop {
 		runnables.add(files);
 		runnables.add(addresses);
 
-		runnables.add(authorityCenter);
-		runnables.add(interconnectionCenter);
+		guid user = ApplicationServer.getUser().id();
+		
+		if(user.equals(BuiltinUsers.Administrator.guid()) || user.equals(BuiltinUsers.System.guid())) {
+			runnables.add(authorityCenter);
+			runnables.add(interconnectionCenter);
+		}
 
 		dataSets.add(userEntries);
 		dataSets.add(taskLogs);
