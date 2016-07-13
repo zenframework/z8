@@ -41,9 +41,8 @@ public abstract class RmiServer implements IServer, Remote {
 		return proxy;
 	}
 
-	protected void enableTimeoutChecking() {
-		timeoutChecker = new TimeoutChecker(this, getClass().getSimpleName() + " Timeout Thread");
-		timeoutChecker.start();
+	protected void enableTimeoutChecking(long timeout) {
+		timeoutChecker = new TimeoutChecker(timeout, this, getClass().getSimpleName() + " Timeout Thread");
 	}
 	
 	protected void timeoutCheck() {
@@ -74,13 +73,16 @@ public abstract class RmiServer implements IServer, Remote {
 
 
 class TimeoutChecker extends Thread {
-	
 	private RmiServer server;
+	private long timeout;
 	
-	public TimeoutChecker(RmiServer server, String name) {
+	public TimeoutChecker(long timeout, RmiServer server, String name) {
 		super(name);
 		
 		this.server = server;
+		this.timeout = timeout;
+
+		start();
 	}
 	
 	@Override
@@ -92,7 +94,7 @@ class TimeoutChecker extends Thread {
 				if(Thread.interrupted())
 					return;
 			
-				Thread.sleep(30000);
+				Thread.sleep(timeout);
 			} catch(InterruptedException e) {
 				return;
 			}

@@ -1,6 +1,5 @@
 package org.zenframework.z8.server.engine;
 
-import java.rmi.RemoteException;
 import java.rmi.server.ObjID;
 import java.util.HashMap;
 import java.util.Map;
@@ -17,20 +16,20 @@ public class Rmi {
 	
 	static private Map<Class<?>, IServer> servers = new HashMap<Class<?>, IServer>();
 
-	static public void register(IServer server) throws RemoteException {
+	static public void register(IServer server) {
 		servers.put(serverClass(server.getClass()), server);
 	}
 
-	static public void unregister(IServer server) throws RemoteException {
+	static public void unregister(IServer server) {
 		servers.remove(serverClass(server.getClass()));
 	}
 
-	static public <TYPE> TYPE get(Class<TYPE> cls) throws RemoteException {
+	static public <TYPE> TYPE get(Class<TYPE> cls) {
 		return get(cls, Rmi.localhost, 0);
 	}
 
 	@SuppressWarnings({ "unchecked" })
-	static public <TYPE> TYPE get(Class<TYPE> cls, String host, int port) throws RemoteException {
+	static public <TYPE> TYPE get(Class<TYPE> cls, String host, int port) {
 		IServer server = servers.get(serverClass(cls));
 
 		if(server != null)

@@ -6,7 +6,6 @@ import java.util.Collection;
 
 import org.zenframework.z8.server.base.json.Json;
 import org.zenframework.z8.server.base.query.Query;
-import org.zenframework.z8.server.base.table.value.BoolField;
 import org.zenframework.z8.server.base.table.value.Field;
 import org.zenframework.z8.server.base.table.value.IntegerField;
 import org.zenframework.z8.server.base.table.value.StringField;
@@ -55,7 +54,7 @@ abstract public class HubServerView extends Query {
 
 	private StringField.CLASS<StringField> host = new StringField.CLASS<StringField>(this);
 	private IntegerField.CLASS<IntegerField> port = new IntegerField.CLASS<IntegerField>(this);
-	private BoolField.CLASS<BoolField> active = new BoolField.CLASS<BoolField>(this);
+	private StringField.CLASS<StringField> active = new StringField.CLASS<StringField>(this);
 	private StringField.CLASS<StringField> domains = new StringField.CLASS<StringField>(this);
 	private StringField.CLASS<StringField> serverId = new StringField.CLASS<StringField>(this);
 	
@@ -79,6 +78,8 @@ abstract public class HubServerView extends Query {
 
 		active.setIndex("active");
 		active.setDisplayName(displayNames.Active);
+		active.get().width = new integer(10);
+		active.get().stretch = new bool(false);
 
 		domains.setIndex("domains");
 		domains.setDisplayName(displayNames.Domains);
@@ -115,12 +116,12 @@ abstract public class HubServerView extends Query {
 			writer.writeProperty(Json.remoteSort, false);
 		}
 		
-		writeData(writer);
+		writeData(writer, action != null);
 	}
 
 	abstract protected IServerInfo[] getServers() throws Throwable;
 	
-	private void writeData(JsonWriter writer) throws Throwable {
+	private void writeData(JsonWriter writer, boolean checkAlive) throws Throwable {
 		writer.startArray(Json.data);
 	
 		for(IServerInfo server : getServers()) {
@@ -129,7 +130,7 @@ abstract public class HubServerView extends Query {
 			writer.writeProperty(host.id(), getHost(server));
 			writer.writeProperty(port.id(), getPort(server));
 			writer.writeProperty(domains.id(), server.getDomains() != null ? Arrays.toString(server.getDomains()) : "");
-			writer.writeProperty(active.id(), server.isAlive());
+			writer.writeProperty(active.id(), checkAlive ? (server.isAlive() ? bool.trueString : bool.falseString) : "");
 			writer.finishObject();
 		}
 		

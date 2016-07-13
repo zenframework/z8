@@ -8,19 +8,20 @@ import org.zenframework.z8.server.types.sql.sql_bool;
 
 public final class bool extends primary {
 
-	private static final long serialVersionUID = 4231676741592349038L;
+	static private final long serialVersionUID = 4231676741592349038L;
 
 	private boolean value = false;
 
-	public static class strings {
+	static public class strings {
 		public final static String True = "bool.true";
 		public final static String False = "bool.false";
 	}
 
-	private static String trueString = Resources.get(strings.True);
-	private static String falseString = Resources.get(strings.False);
+	static public String trueString = Resources.get(strings.True);
+	static public String falseString = Resources.get(strings.False);
 
-	public bool() {}
+	public bool() {
+	}
 
 	public bool(bool x) {
 		set(x.value);
@@ -31,11 +32,9 @@ public final class bool extends primary {
 	}
 
 	public bool(String x) {
-		if (x == null || x.equalsIgnoreCase("0") || x.equalsIgnoreCase("false") || x.equalsIgnoreCase("no")
-				|| x.equalsIgnoreCase("n") || x.equalsIgnoreCase(falseString)) {
+		if(x == null || x.equalsIgnoreCase("0") || x.equalsIgnoreCase("false") || x.equalsIgnoreCase("no") || x.equalsIgnoreCase("n") || x.equalsIgnoreCase(falseString)) {
 			set(false);
-		} else if (x.equalsIgnoreCase("1") || x.equalsIgnoreCase("true") || x.equalsIgnoreCase("yes")
-				|| x.equalsIgnoreCase("y") || x.equalsIgnoreCase(trueString)) {
+		} else if(x.equalsIgnoreCase("1") || x.equalsIgnoreCase("true") || x.equalsIgnoreCase("yes") || x.equalsIgnoreCase("y") || x.equalsIgnoreCase(trueString)) {
 			set(true);
 		} else {
 			throw new MaskParseException(new string(x), "bool");
@@ -79,7 +78,7 @@ public final class bool extends primary {
 
 	@Override
 	public String toDbConstant(DatabaseVendor dbtype) {
-		switch (dbtype) {
+		switch(dbtype) {
 		case SqlServer:
 			return toNumber();
 		default:
@@ -94,8 +93,8 @@ public final class bool extends primary {
 
 	@Override
 	public boolean equals(Object b) {
-		if (b instanceof bool) {
-			return value == ((bool) b).value;
+		if(b instanceof bool) {
+			return value == ((bool)b).value;
 		}
 		return false;
 	}

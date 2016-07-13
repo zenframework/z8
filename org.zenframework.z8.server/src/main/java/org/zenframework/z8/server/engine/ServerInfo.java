@@ -37,13 +37,18 @@ public class ServerInfo implements IServerInfo {
 	}
 
 	@Override
+	public Proxy getProxy() {
+		return (Proxy)getProxy(server);
+	}
+
+	@Override
 	public IApplicationServer getServer() {
 		return server;
 	}
 	
 	@Override
-	public Proxy getProxy() {
-		return (Proxy)getProxy(server);
+	public void setServer(IApplicationServer server) {
+		this.server = server;
 	}
 
 	@Override
@@ -52,8 +57,18 @@ public class ServerInfo implements IServerInfo {
 	}
 
 	@Override
+	public void setId(String id) {
+		this.id = id;
+	}
+	
+	@Override
 	public String[] getDomains() {
 		return domains;
+	}
+
+	@Override
+	public void setDomains(String[] domains) {
+		this.domains = domains;
 	}
 
 	@Override

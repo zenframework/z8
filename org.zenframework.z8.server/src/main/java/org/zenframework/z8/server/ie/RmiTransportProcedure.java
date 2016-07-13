@@ -11,11 +11,13 @@ import org.zenframework.z8.server.config.ServerConfig;
 import org.zenframework.z8.server.db.Connection;
 import org.zenframework.z8.server.db.ConnectionManager;
 import org.zenframework.z8.server.engine.IApplicationServer;
+import org.zenframework.z8.server.engine.IInterconnectionCenter;
 import org.zenframework.z8.server.logs.Trace;
 import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.runtime.RCollection;
 import org.zenframework.z8.server.types.file;
 import org.zenframework.z8.server.types.guid;
+import org.zenframework.z8.server.utils.ProxyUtils;
 
 public class RmiTransportProcedure extends Procedure {
 
@@ -73,23 +75,19 @@ public class RmiTransportProcedure extends Procedure {
 		}
 		
 		private IApplicationServer connect(Message message) throws Throwable {
+			IInterconnectionCenter center = ServerConfig.interconnectionCenter();
+			
 			try {
-				ServerConfig.interconnectionCenter().probe();
+				center.probe();
 			} catch(Throwable e) {
-				message.info("Interconnection Center is unavailable at " + ServerConfig.interconnectionCenterHost() + ":" + ServerConfig.interconnectionCenterPort());
+				message.info("Interconnection Center is unavailable at " + ProxyUtils.getUrl(center));
 				return null;
 			}
 			
-			IApplicationServer server = null;
+			IApplicationServer server = ServerConfig.interconnectionCenter().connect(domain);
 			
-			try {
-				server = ServerConfig.interconnectionCenter().connect(domain);
-			} catch(Throwable e) {
-				ServerConfig.resetInterconnectionCenter();
-			} finally {
-				if(server == null)
-					message.info("Domain '" + domain  + "' is unavailable at Interconnection Center " + ServerConfig.interconnectionCenterHost() + ":" + ServerConfig.interconnectionCenterPort());
-			}
+			if(server == null)
+				message.info("Domain '" + domain  + "' is unavailable at Interconnection Center " + ProxyUtils.getUrl(center));
 
 			return server;
 		}

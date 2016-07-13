@@ -4,15 +4,37 @@ import java.lang.reflect.Proxy;
 import java.rmi.RemoteException;
 import java.rmi.server.RemoteObjectInvocationHandler;
 
+import org.zenframework.z8.server.engine.IServer;
+import org.zenframework.z8.server.engine.RmiServer;
+
 import sun.rmi.server.UnicastRef;
 import sun.rmi.transport.LiveRef;
 import sun.rmi.transport.tcp.TCPEndpoint;
 
 @SuppressWarnings("restriction")
 public class ProxyUtils {
+	static public Proxy getProxy(IServer server) {
+		return server instanceof Proxy ? (Proxy)server : ((RmiServer)server).proxy();
+	}
 	
+	static public String getUrl(IServer server) {
+		return getUrl(getProxy(server));
+	}
+
+	static public String getUrl(Proxy proxy) {
+		return getHost(proxy) + ":" + getPort(proxy);
+	}
+
+	static public String getHost(IServer server) {
+		return getHost(getProxy(server));
+	}
+
 	static public String getHost(Proxy proxy) {
 		return getEndpoint(proxy).getHost();
+	}
+
+	static public int getPort(IServer server) {
+		return getPort(getProxy(server));
 	}
 
 	static public int getPort(Proxy proxy) {

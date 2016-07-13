@@ -9,7 +9,6 @@ import org.zenframework.z8.server.engine.Database;
 import org.zenframework.z8.server.engine.IAuthorityCenter;
 import org.zenframework.z8.server.engine.IInterconnectionCenter;
 import org.zenframework.z8.server.engine.Rmi;
-import org.zenframework.z8.server.exceptions.AccessDeniedException;
 
 public class ServerConfig extends Properties {
 
@@ -87,7 +86,6 @@ public class ServerConfig extends Properties {
 	static public String[] emailExtensions; // "eml, mime"
 	static public String[] officeExtensions; // "doc, docx, xls, xlsx, ppt, pptx, odt, odp, ods, odf, odg, wpd, sxw, sxi, sxc, sxd, stw, vsd"
 
-	static private Object Lock = new Object();
 	static private IAuthorityCenter authorityCenter;
 	static private IInterconnectionCenter interconnectionCenter;
 
@@ -332,43 +330,14 @@ public class ServerConfig extends Properties {
 	}
 
 	static public IAuthorityCenter authorityCenter() {
-		if(authorityCenter != null)
-			return authorityCenter;
-
-		synchronized(Lock) {
-			if(authorityCenter != null)
-				return authorityCenter;
-
-			try {
-				return authorityCenter = Rmi.get(IAuthorityCenter.class, authorityCenterHost(), authorityCenterPort());
-			} catch(Throwable e) {
-				throw new AccessDeniedException();
-			}
-		}
+		if(authorityCenter == null)
+			authorityCenter = Rmi.get(IAuthorityCenter.class, authorityCenterHost(), authorityCenterPort());
+		return authorityCenter;
 	}
 
 	static public IInterconnectionCenter interconnectionCenter() {
-		if(interconnectionCenter != null)
-			return interconnectionCenter;
-
-		synchronized(Lock) {
-			if(interconnectionCenter != null)
-				return interconnectionCenter;
-
-			try {
-				return interconnectionCenter = Rmi.get(IInterconnectionCenter.class, interconnectionCenterHost(), interconnectionCenterPort());
-			} catch(Throwable e) {
-				throw new RuntimeException(e);
-			}
-		}
+		if(interconnectionCenter == null)
+			interconnectionCenter = Rmi.get(IInterconnectionCenter.class, interconnectionCenterHost(), interconnectionCenterPort());
+		return interconnectionCenter;
 	}
-
-	static public boolean hasInterconnectionCenter() {
-		return interconnectionCenter != null;
-	}
-
-	static public void resetInterconnectionCenter() {
-		interconnectionCenter = null;
-	}
-
 }

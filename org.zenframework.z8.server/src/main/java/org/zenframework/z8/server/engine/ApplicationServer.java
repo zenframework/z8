@@ -21,6 +21,7 @@ import org.zenframework.z8.server.request.RequestDispatcher;
 import org.zenframework.z8.server.request.RequestProcessor;
 import org.zenframework.z8.server.security.IUser;
 import org.zenframework.z8.server.security.User;
+import org.zenframework.z8.server.types.datespan;
 import org.zenframework.z8.server.types.file;
 import org.zenframework.z8.server.types.guid;
 
@@ -93,7 +94,7 @@ public class ApplicationServer extends RmiServer implements IApplicationServer {
 
 		checkSchemaVersion();
 
-		enableTimeoutChecking();
+		enableTimeoutChecking(5 * datespan.TicksPerMinute);
 
 		Scheduler.start();
 
@@ -162,7 +163,6 @@ public class ApplicationServer extends RmiServer implements IApplicationServer {
 		try {
 			ServerConfig.authorityCenter().register(this);
 		} catch(Throwable e) {
-			Trace.logEvent("No authority center at " + ServerConfig.authorityCenterHost() + ":" + ServerConfig.authorityCenterPort());
 		}
 	}
 	

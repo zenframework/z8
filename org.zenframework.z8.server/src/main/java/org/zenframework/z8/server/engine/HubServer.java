@@ -45,10 +45,12 @@ abstract public class HubServer extends RmiServer implements IHubServer {
 	protected void addServer(IServerInfo server) {
 		IServerInfo existing = findServer(server.getServer());
 		
-		if(existing != null)
-			servers.remove(existing);
-		
-		servers.add(server);
+		if(existing != null) {
+			existing.setId(server.getId());
+			existing.setDomains(server.getDomains());
+			existing.setServer(server.getServer());
+		} else
+			servers.add(server);
 		
 		saveServers();
 	}
