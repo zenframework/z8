@@ -26,7 +26,8 @@ public class Scheduler implements Runnable {
 	static private Collection<Thread> threads = new ArrayList<Thread>();
 	
 	static {
-		addSystemJob(TransportJob.class.getCanonicalName(), ServerConfig.schedulerTransportJobRepeat());
+		if(ServerConfig.transportJobEnabled())
+			addSystemJob(TransportJob.class.getCanonicalName(), ServerConfig.transportJobRepeat());
 	}
 
 	static public void addSystemJob(String className, int repeat) {

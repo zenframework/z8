@@ -40,7 +40,8 @@ public class ServerConfig extends Properties {
 	static private String WebServerFileSizeMaxProperty = "web.server.file.size.max";
 
 	static private String SchedulerEnabledProperty = "scheduler.enabled";
-	static private String SchedulerTransportJobRepeatProperty = "scheduler.transport.job.repeat";
+	
+	static private String TransportJobRepeatProperty = "transport.job.repeat";
 
 	static private String TraceSqlProperty = "trace.sql";
 	static private String TraceSqlConnectionsProperty = "trace.sql.connections";
@@ -75,7 +76,8 @@ public class ServerConfig extends Properties {
 	static private int webServerFileSizeMax;
 
 	static private boolean schedulerEnabled;
-	static private int schedulerTransportJobRepeat;
+	
+	static private int transportJobRepeat;
 	
 	static private boolean traceSql;
 	static private boolean traceSqlConnections;
@@ -129,7 +131,8 @@ public class ServerConfig extends Properties {
 		traceSqlConnections = getProperty(TraceSqlConnectionsProperty, false);
 
 		schedulerEnabled = getProperty(SchedulerEnabledProperty, true);
-		schedulerTransportJobRepeat = getProperty(SchedulerTransportJobRepeatProperty, 5 * 60);
+		
+		transportJobRepeat = getProperty(TransportJobRepeatProperty, 5 * 60);
 		
 		textExtensions = getProperty(TextExtensionsProperty, new String[] { "txt", "xml" });
 		imageExtensions = getProperty(ImageExtensionsProperty, new String[] { "tif", "tiff", "jpg", "jpeg", "gif", "png", "bmp" });
@@ -308,8 +311,12 @@ public class ServerConfig extends Properties {
 		return schedulerEnabled;
 	}
 
-	static public int schedulerTransportJobRepeat() {
-		return schedulerTransportJobRepeat;
+	static public boolean transportJobEnabled() {
+		return transportJobRepeat() != 0;
+	}
+
+	static public int transportJobRepeat() {
+		return transportJobRepeat;
 	}
 	
 	static public String[] textExtensions() {
