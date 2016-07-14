@@ -90,7 +90,7 @@ public class RequestDispatcher implements Runnable {
 			processRequest(request, response, requestId);
 
 			if (!Dashboard.Id.equals(requestId) && !Json.settings.equals(requestId))
-				Trace.logEvent(request.toString() + "\n\t\t " + (System.currentTimeMillis() - t) + "ms; " + getMemoryUsage());
+				Trace.logEvent(request.toString() + "\n\t " + (System.currentTimeMillis() - t) + "ms; " + getMemoryUsage());
 		}
 	}
 

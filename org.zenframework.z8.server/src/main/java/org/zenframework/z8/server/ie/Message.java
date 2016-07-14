@@ -197,14 +197,14 @@ public class Message extends OBJECT implements RmiSerializable, Serializable {
 	public void z8_afterImport() {
 	}
 
-	protected void beforeExport() {
+	public void beforeExport() {
 		z8_beforeExport();
 	}
 
 	public void z8_beforeExport() {
 	}
 
-	protected void afterExport() {
+	public void afterExport() {
 		z8_afterExport();
 	}
 

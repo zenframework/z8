@@ -26,7 +26,7 @@ public class TransportProcedure extends Procedure {
 		public CLASS(IObject container) {
 			super(container);
 			setJavaClass(TransportProcedure.class);
-			setAttribute(Job, "");
+//			setAttribute(Job, "");
 		}
 
 		@Override

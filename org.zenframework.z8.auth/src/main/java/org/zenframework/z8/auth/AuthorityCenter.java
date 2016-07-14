@@ -30,6 +30,8 @@ public class AuthorityCenter extends HubServer implements IAuthorityCenter {
 
 	private UserManager userManager;
 	private SessionManager sessionManager;
+	
+	private Object lock = new Object();
 
 	public static IAuthorityCenter launch(ServerConfig config) throws RemoteException {
 		if(instance == null) {
@@ -143,8 +145,10 @@ public class AuthorityCenter extends HubServer implements IAuthorityCenter {
 
 			// меняем порядок, чтобы распределять запросы
 			if(serverId == null && this.getServers().size() > 1) {
-				this.getServers().remove(server);
-				this.getServers().add(server);
+				synchronized(lock) {
+					this.getServers().remove(server);
+					this.getServers().add(server);
+				}
 			}
 
 			return server;

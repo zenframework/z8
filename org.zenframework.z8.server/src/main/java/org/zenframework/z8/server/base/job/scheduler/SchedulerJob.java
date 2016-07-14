@@ -26,7 +26,7 @@ import org.zenframework.z8.server.types.string;
 public class SchedulerJob implements Runnable {
 	public guid id;
 
-	public String jobId;
+	public String className;
 	public String login;
 	public String name;
 	public String settings;
@@ -47,6 +47,13 @@ public class SchedulerJob implements Runnable {
 		this.id = id;
 	}
 
+	public SchedulerJob(String className, int repeat) {
+		this.className = className;
+		String[] names = className.split("\\.");
+		this.name = names[names.length - 1];
+		this.repeat = repeat;
+	}
+	
 	@Override
 	public int hashCode() {
 		return id.hashCode();
@@ -69,7 +76,9 @@ public class SchedulerJob implements Runnable {
 	public boolean readyToStart() {
 		long now = new datetime().getTicks();
 
-		return active && !isRunning && from.getTicks() < now && (till.equals(datetime.MIN) || now < till.getTicks()) && (lastStarted.equals(datetime.MIN) || lastStarted.addSecond(repeat).getTicks() < now);
+		return active && !isRunning && from.getTicks() < now && 
+				(till.equals(datetime.MIN) || now < till.getTicks()) && 
+				(lastStarted.equals(datetime.MIN) || lastStarted.addSecond(repeat).getTicks() < now);
 	}
 
 	private boolean beforeStart() {
@@ -77,10 +86,12 @@ public class SchedulerJob implements Runnable {
 		datetime lastStarted = new datetime();
 
 		try {
-			SchedulerJobs tasks = new SchedulerJobs.CLASS<SchedulerJobs>(null).get();
-			tasks.lastStarted.get().set(lastStarted);
-			tasks.update(id);
-
+			if(id != null) {
+				SchedulerJobs tasks = new SchedulerJobs.CLASS<SchedulerJobs>(null).get();
+				tasks.lastStarted.get().set(lastStarted);
+				tasks.update(id);
+			}
+			
 			this.lastStarted = lastStarted;
 			
 			executionCount++;
@@ -93,11 +104,12 @@ public class SchedulerJob implements Runnable {
 	}
 
 	private void afterFinish(file log) {
-		if(log == null)
+		if(id == null || log == null)
 			return;
 
 		JsonArray writer = new JsonArray();
-		writer.add(log);
+		log.name = new string("error.log");
+		writer.put(log);
 
 		Logs logs = Logs.newInstance();
 		logs.job.get().set(id);
@@ -116,13 +128,13 @@ public class SchedulerJob implements Runnable {
 				return;
 
 			Map<String, String> parameters = new HashMap<String, String>();
-			parameters.put(Json.requestId.get(), jobId);
-			parameters.put(Json.scheduled.get(), "");
+			parameters.put(Json.requestId.get(), className);
+			parameters.put(Json.scheduled.get(), "true");
 			parameters.put(Json.settings.get(), settings);
 	
 			List<file> files = new ArrayList<file>();
 	
-			IUser user = User.load(login);
+			IUser user = login != null ? User.load(login) : User.system();
 			IRequest request = new Request(parameters, files, new Session("", user));
 			IResponse response = new Response();
 	

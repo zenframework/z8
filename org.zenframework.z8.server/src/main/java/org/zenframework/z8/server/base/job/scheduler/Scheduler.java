@@ -12,18 +12,28 @@ import org.zenframework.z8.server.base.table.value.IntegerField;
 import org.zenframework.z8.server.base.table.value.StringField;
 import org.zenframework.z8.server.base.table.value.TextField;
 import org.zenframework.z8.server.config.ServerConfig;
+import org.zenframework.z8.server.ie.rmi.TransportJob;
 import org.zenframework.z8.server.types.guid;
 
 public class Scheduler implements Runnable {
-
 	private static Scheduler scheduler = null;
 
 	private Thread thread = null;
 	private boolean resetPending = true;
 	private List<SchedulerJob> jobs = new ArrayList<SchedulerJob>();
-
+	
+	static private List<SchedulerJob> systemJobs = new ArrayList<SchedulerJob>();
 	static private Collection<Thread> threads = new ArrayList<Thread>();
 	
+	static {
+		addSystemJob(TransportJob.class.getCanonicalName(), ServerConfig.schedulerTransportJobRepeat());
+	}
+
+	static public void addSystemJob(String className, int repeat) {
+		SchedulerJob job = new SchedulerJob(className, repeat);
+		systemJobs.add(job);
+	}
+
 	static public synchronized void register(Thread thread) {
 		threads.add(thread);
 	}
@@ -94,19 +104,19 @@ public class Scheduler implements Runnable {
 		if(!resetPending || !ServerConfig.isSystemInstalled())
 			return;
 
-		SchedulerJobs tasksTable = new SchedulerJobs.CLASS<SchedulerJobs>(null).get();
+		SchedulerJobs jobsTable = new SchedulerJobs.CLASS<SchedulerJobs>(null).get();
 
 		Collection<Field> fields = new ArrayList<Field>();
 
-		TextField settings = tasksTable.description.get();
-		DatetimeField from = tasksTable.from.get();
-		DatetimeField till = tasksTable.till.get();
-		IntegerField repeat = tasksTable.repeat.get();
-		DatetimeField lastStarted = tasksTable.lastStarted.get();
-		BoolField active = tasksTable.active.get();
-		StringField jobId = tasksTable.jobs.get().id.get();
-		StringField jobName = tasksTable.jobs.get().name.get();
-		StringField login = tasksTable.users.get().name.get();
+		TextField settings = jobsTable.description.get();
+		DatetimeField from = jobsTable.from.get();
+		DatetimeField till = jobsTable.till.get();
+		IntegerField repeat = jobsTable.repeat.get();
+		DatetimeField lastStarted = jobsTable.lastStarted.get();
+		BoolField active = jobsTable.active.get();
+		StringField className = jobsTable.jobs.get().id.get();
+		StringField name = jobsTable.jobs.get().name.get();
+		StringField login = jobsTable.users.get().name.get();
 
 		fields.add(settings);
 		fields.add(from);
@@ -114,43 +124,44 @@ public class Scheduler implements Runnable {
 		fields.add(repeat);
 		fields.add(lastStarted);
 		fields.add(active);
-		fields.add(jobId);
-		fields.add(jobName);
+		fields.add(className);
+		fields.add(name);
 		fields.add(login);
 
-		tasksTable.read(fields);
+		jobsTable.read(fields);
 
 		List<SchedulerJob> result = new ArrayList<SchedulerJob>();
 
-		while(tasksTable.next()) {
-			guid taskId = tasksTable.recordId();
-			SchedulerJob task = new SchedulerJob(taskId);
+		while(jobsTable.next()) {
+			guid id = jobsTable.recordId();
+			SchedulerJob job = new SchedulerJob(id);
 
-			int index = jobs.indexOf(task);
+			int index = jobs.indexOf(job);
 			if(index != -1)
-				task = jobs.get(index);
+				job = jobs.get(index);
 
-			task.jobId = jobId.string().get();
-			task.name = jobName.string().get();
-			task.login = login.string().get();
-			task.from = from.datetime();
-			task.settings = settings.string().get();
-			task.till = till.datetime();
-			task.lastStarted = lastStarted.datetime();
-			task.repeat = repeat.integer().getInt();
-			task.active = active.bool().get();
+			job.className = className.string().get();
+			job.name = name.string().get();
+			job.login = login.string().get();
+			job.from = from.datetime();
+			job.settings = settings.string().get();
+			job.till = till.datetime();
+			job.lastStarted = lastStarted.datetime();
+			job.repeat = repeat.integer().getInt();
+			job.active = active.bool().get();
 
-			result.add(task);
+			result.add(job);
 		}
 
+		result.addAll(systemJobs);
 		jobs = result;
 
 		resetPending = false;
 	}
 
 	private boolean hasRunningJobs() {
-		for(SchedulerJob task : jobs) {
-			if(task.isRunning)
+		for(SchedulerJob job : jobs) {
+			if(job.isRunning)
 				return true;
 		}
 

@@ -4,18 +4,17 @@ import org.zenframework.z8.server.base.table.system.Domains;
 import org.zenframework.z8.server.base.table.system.Entries;
 import org.zenframework.z8.server.base.table.system.Files;
 import org.zenframework.z8.server.base.table.system.Jobs;
+import org.zenframework.z8.server.base.table.system.Logs;
 import org.zenframework.z8.server.base.table.system.MessagesQueue;
 import org.zenframework.z8.server.base.table.system.Properties;
 import org.zenframework.z8.server.base.table.system.Property;
+import org.zenframework.z8.server.base.table.system.SchedulerJobs;
 import org.zenframework.z8.server.base.table.system.SecurityGroups;
 import org.zenframework.z8.server.base.table.system.Sequences;
 import org.zenframework.z8.server.base.table.system.SystemFiles;
 import org.zenframework.z8.server.base.table.system.SystemTools;
-import org.zenframework.z8.server.base.table.system.Logs;
-import org.zenframework.z8.server.base.table.system.SchedulerJobs;
 import org.zenframework.z8.server.base.table.system.UserEntries;
 import org.zenframework.z8.server.base.table.system.Users;
-import org.zenframework.z8.server.ie.RmiTransportProcedure;
 import org.zenframework.z8.server.ie.TransportRoutes;
 
 public class ServerRuntime extends AbstractRuntime {
@@ -72,8 +71,6 @@ public class ServerRuntime extends AbstractRuntime {
 		addEntry(new SystemTools.CLASS<SystemTools>(null));
 
 		addActivator(new Properties.PropertiesActivator.CLASS<Properties.PropertiesActivator>(null));
-
-		addJob(new RmiTransportProcedure.CLASS<RmiTransportProcedure>(null));
 
 		addProperty(DbSchemeControlSumProperty);
 		addProperty(PreserveMessagesQueueProperty);

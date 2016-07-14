@@ -11,7 +11,7 @@ import org.zenframework.z8.server.base.table.system.SystemFiles;
 import org.zenframework.z8.server.base.xml.GNode;
 import org.zenframework.z8.server.config.ServerConfig;
 import org.zenframework.z8.server.db.ConnectionManager;
-import org.zenframework.z8.server.ie.RmiTransportProcedure;
+import org.zenframework.z8.server.ie.rmi.TransportJob;
 import org.zenframework.z8.server.logs.Trace;
 import org.zenframework.z8.server.request.IMonitor;
 import org.zenframework.z8.server.request.IRequest;
@@ -150,7 +150,7 @@ public class ApplicationServer extends RmiServer implements IApplicationServer {
 
 	@Override
 	public boolean accept(Object object) {
-		return RmiTransportProcedure.accept(object);
+		return TransportJob.accept(object);
 	}
 
 	@Override
