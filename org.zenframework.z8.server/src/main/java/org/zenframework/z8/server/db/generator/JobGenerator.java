@@ -38,8 +38,6 @@ public class JobGenerator {
 
 			jobsTable.id.get().set(new string(classId));
 			jobsTable.name.get().set(new string(jobClass.displayName()));
-			if(jobClass.hasAttribute(IObject.Settings))
-				jobsTable.description.get().set(jobClass.getAttribute(IObject.Settings));
 
 			if(jobsTable.next()) {
 				jobRecordId = jobsTable.recordId();
@@ -50,12 +48,11 @@ public class JobGenerator {
 			String jobValue = jobClass.getAttribute(IObject.Job);
 			
 			if(jobValue != null && !jobValue.isEmpty()) {
-				integer repeat = new integer(jobValue);
+				int repeat = new integer(jobValue).getInt();
 				if(!schedulerJobs.readFirst(new Equ(schedulerJobs.job.get(), jobRecordId))) {
-					schedulerJobs.active.get().set(new bool(repeat.get() > 0));
+					schedulerJobs.active.get().set(new bool(repeat > 0));
 					schedulerJobs.job.get().set(jobRecordId);
-					if(repeat.get() >= 0)
-						schedulerJobs.repeat.get().set(repeat);
+					schedulerJobs.repeat.get().set(new integer(repeat > SchedulerJobs.MinRepeat ? repeat : SchedulerJobs.DefaultRepeat));
 					schedulerJobs.create();
 				}
 			}

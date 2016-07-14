@@ -17,7 +17,7 @@ public class BridgeProcedure extends Procedure {
 			super(container);
 			setJavaClass(BridgeProcedure.class);
 //			setAttribute(Job, "");
-			setAttribute(Settings, "['jms:ActiveMQ.DLQ/file:ActiveMQ.DLQ']");
+			setAttribute("settings", "['jms:ActiveMQ.DLQ/file:ActiveMQ.DLQ']");
 		}
 
 		@Override
@@ -44,7 +44,7 @@ public class BridgeProcedure extends Procedure {
 	@Override
 	protected void z8_exec(RCollection<Parameter.CLASS<? extends Parameter>> parameters) {
 
-		JsonArray settings = new JsonArray(((string) getParameter(IObject.Settings).get()).get());
+		JsonArray settings = new JsonArray(((string) getParameter("settings").get()).get());
 
 		for (int i = 0; i < settings.size(); i++) {
 			String setting = settings.getString(i);

@@ -19,7 +19,9 @@ import org.zenframework.z8.server.types.guid;
 import org.zenframework.z8.server.types.integer;
 
 public class SchedulerJobs extends Table {
-	final static public String TableName = "SystemTasks";
+	static public String TableName = "SystemTasks";
+	static public int MinRepeat = 10;
+	static public int DefaultRepeat = 3600;
 
 	static public class names {
 		public final static String Jobs = "Jobs";
@@ -126,7 +128,7 @@ public class SchedulerJobs extends Table {
 		registerDataField(lastStarted);
 		registerDataField(active);
 
-		repeat.get().setDefault(new integer(3600));
+		repeat.get().setDefault(new integer(DefaultRepeat));
 		active.get().setDefault(new bool(true));
 
 		registerFormField(jobs.get().name);

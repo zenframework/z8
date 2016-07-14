@@ -55,7 +55,7 @@ public class TransportProcedure extends Procedure {
 
 		String selfAddress = context.get().check().getProperty(TransportContext.SelfAddressProperty);
 
-		JsonObject configuration = new JsonObject(((string) getParameter(IObject.Settings).get()).get());
+		JsonObject configuration = new JsonObject(((string) getParameter("settings").get()).get());
 
 		JsonObject sendConfig = configuration.has(CONFIG_SEND) ? configuration.getJsonObject(CONFIG_SEND) : new JsonObject();
 		boolean sendEnabled = sendConfig.has(CONFIG_ENABLED) ? sendConfig.getBoolean(CONFIG_ENABLED) : true;
