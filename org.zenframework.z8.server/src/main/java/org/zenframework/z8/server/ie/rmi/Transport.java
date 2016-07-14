@@ -55,7 +55,7 @@ public class Transport implements Runnable {
 			Trace.logError(e);
 		} finally {
 			Scheduler.unregister(thread);
-			workers.remove(this);
+			workers.remove(domain);
 		}
 	}
 

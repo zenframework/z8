@@ -8,6 +8,7 @@ import java.util.Map;
 
 import org.zenframework.z8.server.config.ServerConfig;
 import org.zenframework.z8.server.engine.Database;
+import org.zenframework.z8.server.exceptions.ThreadInterruptedException;
 
 public class ConnectionManager {
 	static private Map<String, List<Connection>> schemas = new HashMap<String, List<Connection>>();
@@ -17,6 +18,9 @@ public class ConnectionManager {
 	}
 
 	public static synchronized Connection get(Database database) {
+		if(Thread.interrupted())
+			throw new ThreadInterruptedException();
+
 		if(database == null)
 			database = ServerConfig.database();
 

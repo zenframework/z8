@@ -52,7 +52,7 @@ public class JobGenerator {
 			if(jobValue != null && !jobValue.isEmpty()) {
 				integer repeat = new integer(jobValue);
 				if(!schedulerJobs.readFirst(new Equ(schedulerJobs.job.get(), jobRecordId))) {
-					schedulerJobs.active.get().set(new bool(repeat.get() >= 0));
+					schedulerJobs.active.get().set(new bool(repeat.get() > 0));
 					schedulerJobs.job.get().set(jobRecordId);
 					if(repeat.get() >= 0)
 						schedulerJobs.repeat.get().set(repeat);

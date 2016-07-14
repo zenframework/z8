@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import org.zenframework.z8.server.exceptions.ThreadInterruptedException;
 import org.zenframework.z8.server.logs.Trace;
 
 public class CLASS<TYPE extends IObject> extends OBJECT implements IClass<TYPE> {
@@ -38,9 +37,6 @@ public class CLASS<TYPE extends IObject> extends OBJECT implements IClass<TYPE> 
 
 	public CLASS(IObject container) {
 		super(container);
-
-		if(Thread.interrupted())
-			throw new ThreadInterruptedException();
 	}
 
 	@Override

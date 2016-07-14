@@ -23,6 +23,7 @@ import org.zenframework.z8.server.base.table.system.Files;
 import org.zenframework.z8.server.config.ServerConfig;
 import org.zenframework.z8.server.engine.RmiIO;
 import org.zenframework.z8.server.engine.RmiSerializable;
+import org.zenframework.z8.server.exceptions.ThreadInterruptedException;
 import org.zenframework.z8.server.json.Json;
 import org.zenframework.z8.server.json.parser.JsonArray;
 import org.zenframework.z8.server.json.parser.JsonObject;
@@ -348,6 +349,8 @@ public class file extends primary implements RmiSerializable, Serializable {
 	}
 
 	public file nextPart() throws IOException {
+		if(Thread.interrupted())
+			throw new ThreadInterruptedException();
 		
 		Files.get(this);
 

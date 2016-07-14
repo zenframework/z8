@@ -29,7 +29,6 @@ public class SchedulerJob implements Runnable {
 	public String className;
 	public String login;
 	public String name;
-	public String settings;
 	public datetime from = new datetime();
 	public datetime till = new datetime().addDay(30);
 	public int repeat = 1;
@@ -130,7 +129,6 @@ public class SchedulerJob implements Runnable {
 			Map<String, String> parameters = new HashMap<String, String>();
 			parameters.put(Json.requestId.get(), className);
 			parameters.put(Json.scheduled.get(), "true");
-			parameters.put(Json.settings.get(), settings);
 	
 			List<file> files = new ArrayList<file>();
 	

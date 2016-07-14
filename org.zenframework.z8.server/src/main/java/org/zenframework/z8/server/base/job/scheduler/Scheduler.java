@@ -1,6 +1,7 @@
 package org.zenframework.z8.server.base.job.scheduler;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
@@ -10,7 +11,6 @@ import org.zenframework.z8.server.base.table.value.DatetimeField;
 import org.zenframework.z8.server.base.table.value.Field;
 import org.zenframework.z8.server.base.table.value.IntegerField;
 import org.zenframework.z8.server.base.table.value.StringField;
-import org.zenframework.z8.server.base.table.value.TextField;
 import org.zenframework.z8.server.config.ServerConfig;
 import org.zenframework.z8.server.ie.rmi.TransportJob;
 import org.zenframework.z8.server.types.guid;
@@ -107,9 +107,6 @@ public class Scheduler implements Runnable {
 
 		SchedulerJobs jobsTable = new SchedulerJobs.CLASS<SchedulerJobs>(null).get();
 
-		Collection<Field> fields = new ArrayList<Field>();
-
-		TextField settings = jobsTable.description.get();
 		DatetimeField from = jobsTable.from.get();
 		DatetimeField till = jobsTable.till.get();
 		IntegerField repeat = jobsTable.repeat.get();
@@ -119,15 +116,7 @@ public class Scheduler implements Runnable {
 		StringField name = jobsTable.jobs.get().name.get();
 		StringField login = jobsTable.users.get().name.get();
 
-		fields.add(settings);
-		fields.add(from);
-		fields.add(till);
-		fields.add(repeat);
-		fields.add(lastStarted);
-		fields.add(active);
-		fields.add(className);
-		fields.add(name);
-		fields.add(login);
+		Collection<Field> fields = Arrays.asList(from, till, repeat, lastStarted, active, className, name, login);
 
 		jobsTable.read(fields);
 
@@ -145,7 +134,6 @@ public class Scheduler implements Runnable {
 			job.name = name.string().get();
 			job.login = login.string().get();
 			job.from = from.datetime();
-			job.settings = settings.string().get();
 			job.till = till.datetime();
 			job.lastStarted = lastStarted.datetime();
 			job.repeat = repeat.integer().getInt();

@@ -35,6 +35,7 @@ import org.zenframework.z8.server.types.guid;
 import org.zenframework.z8.server.types.integer;
 import org.zenframework.z8.server.types.primary;
 import org.zenframework.z8.server.types.string;
+import org.zenframework.z8.server.utils.ErrorUtils;
 import org.zenframework.z8.server.utils.IOUtils;
 import org.zenframework.z8.server.utils.ProxyUtils;
 
@@ -369,9 +370,10 @@ public class RmiIO extends ObjectIO {
 		writeLong(out, lease.getValue());
 	}
 
-	private void writeException(ObjectOutputStream out, Throwable object) throws IOException {
-		writeString(out, object.getClass().getCanonicalName());
-		writeString(out, object.getMessage());
+	private void writeException(ObjectOutputStream out, Throwable exception) throws IOException {
+		exception = ErrorUtils.getCause(exception);
+		writeString(out, exception.getClass().getCanonicalName());
+		writeString(out, exception.getMessage());
 	}
 
 	static public bool readBool(ObjectInputStream in) throws IOException {
