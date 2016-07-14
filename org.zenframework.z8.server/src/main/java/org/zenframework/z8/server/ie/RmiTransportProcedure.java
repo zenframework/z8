@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.zenframework.z8.server.base.job.scheduler.Scheduler;
 import org.zenframework.z8.server.base.simple.Procedure;
 import org.zenframework.z8.server.base.table.system.MessagesQueue;
 import org.zenframework.z8.server.base.view.command.Parameter;
@@ -48,13 +49,19 @@ public class RmiTransportProcedure extends Procedure {
 		super.constructor2();
 	}
 
-	public class TransportThread extends Thread {
+	public class TransportThread implements Runnable {
 		private String domain;
 		private IApplicationServer server;
-		
+		private Thread thread;
+
 		public TransportThread(String domain) {
-			super(domain);
 			this.domain = domain;
+		}
+
+		public void start() {
+			Thread thread = new Thread(this, domain);
+			Scheduler.register(thread);
+			thread.start();
 		}
 
 		@Override
@@ -62,7 +69,7 @@ public class RmiTransportProcedure extends Procedure {
 			Collection<guid> ids = messages.getMessages(domain);
 
 			try {
-				for (guid id : ids) {
+				for(guid id : ids) {
 					Message message = messages.getMessage(id);
 					if(!send(message))
 						return;
@@ -70,28 +77,29 @@ public class RmiTransportProcedure extends Procedure {
 			} catch(Throwable e) {
 				Trace.logError(e);
 			} finally {
+				Scheduler.unregister(thread);
 				workers.remove(domain);
 			}
 		}
-		
+
 		private IApplicationServer connect(Message message) throws Throwable {
 			IInterconnectionCenter center = ServerConfig.interconnectionCenter();
-			
+
 			try {
 				center.probe();
 			} catch(Throwable e) {
 				message.info("Interconnection Center is unavailable at " + ProxyUtils.getUrl(center));
 				return null;
 			}
-			
+
 			IApplicationServer server = ServerConfig.interconnectionCenter().connect(domain);
-			
+
 			if(server == null)
-				message.info("Domain '" + domain  + "' is unavailable at Interconnection Center " + ProxyUtils.getUrl(center));
+				message.info("Domain '" + domain + "' is unavailable at Interconnection Center " + ProxyUtils.getUrl(center));
 
 			return server;
 		}
-		
+
 		private boolean send(Message message) throws Throwable {
 			if(server == null)
 				server = connect(message);
@@ -112,48 +120,48 @@ public class RmiTransportProcedure extends Procedure {
 
 			try {
 				connection.beginTransaction();
-				
+
 				message.beforeExport();
-	
+
 				if(server.accept(message)) {
 					message.afterExport();
 					message.processed("OK");
 				}
-				
+
 				connection.commit();
 				return true;
-				
-			} catch (Throwable e) {
+
+			} catch(Throwable e) {
 				connection.rollback();
 				throw e;
 			}
 		}
-		
+
 		private boolean sendFile(Message message) throws Throwable {
 			file file = message.getFile();
-			
+
 			if(server.hasFile(file)) {
 				message.processed("Skipped");
 				return true;
 			}
-				
+
 			Connection connection = ConnectionManager.get();
 
 			while((file = file.nextPart()) != null) {
 				try {
 					connection.beginTransaction();
-	
+
 					boolean reset = !server.accept(file);
-					
+
 					message.transferred(reset ? 0 : file.offset());
-	
+
 					connection.commit();
-	
+
 					if(reset) {
 						message.info("Reset");
 						return false;
 					}
-				} catch (Throwable e) {
+				} catch(Throwable e) {
 					connection.rollback();
 					throw e;
 				}
@@ -172,10 +180,10 @@ public class RmiTransportProcedure extends Procedure {
 	private void sendMessages() {
 		Collection<String> addresses = messages.getAddresses();
 
-		for (String address : addresses) {
+		for(String address : addresses) {
 			TransportThread thread = workers.get(address);
 
-			if (thread == null) {
+			if(thread == null) {
 				TransportThread worker = new TransportThread(address);
 				workers.put(address, worker);
 				worker.start();

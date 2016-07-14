@@ -1,4 +1,4 @@
-package org.zenframework.z8.server.base.job.scheduler;
+package org.zenframework.z8.server.base.table.system;
 
 import org.zenframework.z8.server.base.table.Table;
 import org.zenframework.z8.server.base.table.value.AttachmentField;
@@ -7,50 +7,54 @@ import org.zenframework.z8.server.base.table.value.Link;
 import org.zenframework.z8.server.resources.Resources;
 import org.zenframework.z8.server.runtime.IObject;
 
-public class TaskLogs extends Table {
+public class Logs extends Table {
     final static public String TableName = "SystemTaskLogs";
 
     static public class names {
         public final static String Started = "Started";
         public final static String Finished = "Finished";
-        public final static String Task = "Task";
+        public final static String Job = "Task";
         public final static String Files = "Files";
     }
 
     static public class strings {
-        public final static String Title = "TaskLogs.title";
-        public final static String Started = "TaskLogs.started";
-        public final static String Finished = "TaskLogs.finished";
+        public final static String Title = "Logs.title";
+        public final static String Started = "Logs.started";
+        public final static String Finished = "Logs.finished";
     }
 
-    public static class CLASS<T extends TaskLogs> extends Table.CLASS<T> {
+    public static class CLASS<T extends Logs> extends Table.CLASS<T> {
         public CLASS() {
             this(null);
         }
 
         public CLASS(IObject container) {
             super(container);
-            setJavaClass(TaskLogs.class);
+            setJavaClass(Logs.class);
             setName(TableName);
-            setDisplayName(Resources.get(TaskLogs.strings.Title));
+            setDisplayName(Resources.get(Logs.strings.Title));
         }
 
         @Override
         public Object newObject(IObject container) {
-            return new TaskLogs(container);
+            return new Logs(container);
         }
     }
 
-    public Tasks.CLASS<Tasks> tasks = new Tasks.CLASS<Tasks>(this);
+    static public Logs newInstance() {
+    	return new Logs.CLASS<Logs>(null).get();
+    }
+    
+    public SchedulerJobs.CLASS<SchedulerJobs> jobs = new SchedulerJobs.CLASS<SchedulerJobs>(this);
 
-    public Link.CLASS<Link> task = new Link.CLASS<Link>(this);
+    public Link.CLASS<Link> job = new Link.CLASS<Link>(this);
 
     public DatetimeField.CLASS<DatetimeField> started = new DatetimeField.CLASS<DatetimeField>(this);
     public DatetimeField.CLASS<DatetimeField> finished = new DatetimeField.CLASS<DatetimeField>(this);
 
     public AttachmentField.CLASS<AttachmentField> files = new AttachmentField.CLASS<AttachmentField>(this);
     
-    public TaskLogs(IObject container) {
+    public Logs(IObject container) {
         super(container);
     }
 
@@ -58,12 +62,12 @@ public class TaskLogs extends Table {
     public void constructor2() {
         super.constructor2();
 
-        model = tasks;
+        model = jobs;
 
-        tasks.setIndex("tasks");
+        jobs.setIndex("jobs");
         
-        task.setName(names.Task);
-        task.setIndex("task");
+        job.setName(names.Job);
+        job.setIndex("job");
 
         started.setName(names.Started);
         started.setIndex("started");
@@ -76,9 +80,9 @@ public class TaskLogs extends Table {
         files.setName(names.Files);
         files.setIndex("files");
 
-        task.get().operatorAssign(tasks);
+        job.get().operatorAssign(jobs);
 
-        registerDataField(task);
+        registerDataField(job);
         registerDataField(started);
         registerDataField(finished);
         registerDataField(files);
@@ -86,17 +90,17 @@ public class TaskLogs extends Table {
         registerFormField(started);
         registerFormField(finished);
 
-        registerFormField(tasks.get().jobs.get().name);
-        registerFormField(tasks.get().users.get().name);
-        registerFormField(tasks.get().description);
-        registerFormField(tasks.get().from);
-        registerFormField(tasks.get().till);
-        registerFormField(tasks.get().repeat);
-        registerFormField(tasks.get().lastStarted);
-        registerFormField(tasks.get().active);
+        registerFormField(jobs.get().jobs.get().name);
+        registerFormField(jobs.get().users.get().name);
+        registerFormField(jobs.get().description);
+        registerFormField(jobs.get().from);
+        registerFormField(jobs.get().till);
+        registerFormField(jobs.get().repeat);
+        registerFormField(jobs.get().lastStarted);
+        registerFormField(jobs.get().active);
 
-        queries.add(tasks);
+        queries.add(jobs);
 
-        links.add(task);
+        links.add(job);
     }
 }

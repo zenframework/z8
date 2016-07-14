@@ -2,7 +2,6 @@ package org.zenframework.z8.server.types;
 
 import org.zenframework.z8.server.db.DatabaseVendor;
 import org.zenframework.z8.server.db.FieldType;
-import org.zenframework.z8.server.exceptions.MaskParseException;
 import org.zenframework.z8.server.resources.Resources;
 import org.zenframework.z8.server.types.sql.sql_bool;
 
@@ -37,7 +36,7 @@ public final class bool extends primary {
 		} else if(x.equalsIgnoreCase("1") || x.equalsIgnoreCase("true") || x.equalsIgnoreCase("yes") || x.equalsIgnoreCase("y") || x.equalsIgnoreCase(trueString)) {
 			set(true);
 		} else {
-			throw new MaskParseException(new string(x), "bool");
+			throw new RuntimeException("Invalid value for bool: '" + x + "'");
 		}
 	}
 

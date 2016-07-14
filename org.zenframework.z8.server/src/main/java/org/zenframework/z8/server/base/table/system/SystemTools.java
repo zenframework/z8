@@ -1,7 +1,6 @@
 package org.zenframework.z8.server.base.table.system;
 
 import org.zenframework.z8.server.base.form.Desktop;
-import org.zenframework.z8.server.base.job.scheduler.TaskLogs;
 import org.zenframework.z8.server.base.table.system.view.AuthorityCenterView;
 import org.zenframework.z8.server.base.table.system.view.FilesView;
 import org.zenframework.z8.server.base.table.system.view.InterconnectionCenterView;
@@ -42,7 +41,7 @@ public class SystemTools extends Desktop {
 	}
 
 	public final UserEntriesView.CLASS<UserEntriesView> userEntries = new UserEntriesView.CLASS<UserEntriesView>(this);
-	public final TaskLogs.CLASS<TaskLogs> taskLogs = new TaskLogs.CLASS<TaskLogs>(this);
+	public final Logs.CLASS<Logs> taskLogs = new Logs.CLASS<Logs>(this);
 	public final Sequences.CLASS<Sequences> sequences = new Sequences.CLASS<Sequences>(this);
 	public final DBGenerateProcedure.CLASS<DBGenerateProcedure> generator = new DBGenerateProcedure.CLASS<DBGenerateProcedure>(this);
 	public final Properties.CLASS<Properties> properties = new Properties.CLASS<Properties>(this);

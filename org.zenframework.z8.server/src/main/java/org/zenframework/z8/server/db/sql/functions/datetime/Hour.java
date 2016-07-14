@@ -12,42 +12,42 @@ import org.zenframework.z8.server.db.sql.SqlToken;
 import org.zenframework.z8.server.db.sql.functions.conversion.ToNumber;
 import org.zenframework.z8.server.db.sql.functions.numeric.Mod;
 import org.zenframework.z8.server.db.sql.functions.numeric.Round;
-import org.zenframework.z8.server.exceptions.UnsupportedParameterException;
+import org.zenframework.z8.server.exceptions.UnsupportedException;
 import org.zenframework.z8.server.exceptions.db.UnknownDatabaseException;
 import org.zenframework.z8.server.types.integer;
 
 public class Hour extends SqlToken {
-    private SqlToken param1;
+    private SqlToken time;
 
-    public Hour(SqlToken p1) {
-        param1 = p1;
+    public Hour(SqlToken time) {
+        this.time = time;
     }
 
     @Override
     public void collectFields(Collection<IValue> fields) {
-        param1.collectFields(fields);
+        time.collectFields(fields);
     }
 
     @Override
     public String format(DatabaseVendor vendor, FormatOptions options, boolean logicalContext) {
-        switch(param1.type()) {
+        switch(time.type()) {
         case Date:
         case Datetime:
             switch(vendor) {
             case Oracle:
-                return new ToNumber(new SqlStringToken("TO_CHAR(" + param1.format(vendor, options) + ", 'HH24')")).format(
+                return new ToNumber(new SqlStringToken("TO_CHAR(" + time.format(vendor, options) + ", 'HH24')")).format(
                         vendor, options);
             case SqlServer:
-                return "DatePart(hour, " + param1.format(vendor, options) + ")";
+                return "DatePart(hour, " + time.format(vendor, options) + ")";
             default:
                 throw new UnknownDatabaseException();
             }
 
         case Datespan:
-            return new Round(new Mod(new TotalHour(param1), new SqlConst(new integer(24))), null).format(vendor, options);
+            return new Round(new Mod(new TotalHour(time), new SqlConst(new integer(24))), null).format(vendor, options);
 
         default:
-            throw new UnsupportedParameterException();
+            throw new UnsupportedException();
         }
     }
 

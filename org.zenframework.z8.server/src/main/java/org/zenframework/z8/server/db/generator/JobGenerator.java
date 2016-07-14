@@ -2,9 +2,9 @@ package org.zenframework.z8.server.db.generator;
 
 import java.util.Collection;
 
-import org.zenframework.z8.server.base.job.scheduler.Jobs;
-import org.zenframework.z8.server.base.job.scheduler.Tasks;
 import org.zenframework.z8.server.base.simple.Procedure;
+import org.zenframework.z8.server.base.table.system.Jobs;
+import org.zenframework.z8.server.base.table.system.SchedulerJobs;
 import org.zenframework.z8.server.db.sql.expressions.Equ;
 import org.zenframework.z8.server.engine.Runtime;
 import org.zenframework.z8.server.runtime.IObject;
@@ -19,7 +19,7 @@ public class JobGenerator {
         Collection<Procedure.CLASS<? extends Procedure>> jobs = Runtime.instance().jobs();
 
         Jobs jobsTable = new Jobs.CLASS<Jobs>().get();
-        Tasks tasksTable = new Tasks.CLASS<Tasks>().get();
+        SchedulerJobs tasksTable = new SchedulerJobs.CLASS<SchedulerJobs>().get();
 
         for (Procedure.CLASS<? extends Procedure> jobClass : jobs) {
             String classId = jobClass.classId();

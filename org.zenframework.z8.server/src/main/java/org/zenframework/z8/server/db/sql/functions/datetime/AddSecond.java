@@ -7,57 +7,57 @@ import org.zenframework.z8.server.db.DatabaseVendor;
 import org.zenframework.z8.server.db.FieldType;
 import org.zenframework.z8.server.db.sql.FormatOptions;
 import org.zenframework.z8.server.db.sql.SqlToken;
-import org.zenframework.z8.server.exceptions.UnsupportedParameterException;
+import org.zenframework.z8.server.exceptions.UnsupportedException;
 import org.zenframework.z8.server.exceptions.db.UnknownDatabaseException;
 import org.zenframework.z8.server.types.datespan;
 
 public class AddSecond extends SqlToken {
-    private SqlToken param1;
-    private SqlToken param2;
+    private SqlToken date;
+    private SqlToken seconds;
 
-    public AddSecond(SqlToken p1, SqlToken p2) {
-        param1 = p1;
-        param2 = p2;
+    public AddSecond(SqlToken date, SqlToken seconds) {
+        this.date = date;
+        this.seconds = seconds;
     }
 
     @Override
     public void collectFields(Collection<IValue> fields) {
-        param1.collectFields(fields);
-        param2.collectFields(fields);
+        date.collectFields(fields);
+        seconds.collectFields(fields);
     }
 
     @Override
     public String format(DatabaseVendor vendor, FormatOptions options, boolean logicalContext) {
-        switch(param1.type()) {
+        switch(date.type()) {
         case Date:
         case Datetime:
             switch(vendor) {
             case Oracle:
-                return "(" + param1.format(vendor, options) + "+(" + param2.format(vendor, options) + ")/(24*60*60))";
+                return "(" + date.format(vendor, options) + "+(" + seconds.format(vendor, options) + ")/(24*60*60))";
             case Postgres:
-                return "(" + param1.format(vendor, options) + " + (" + param2.format(vendor, options) + ") * interval '1 second')";
+                return "(" + date.format(vendor, options) + " + (" + seconds.format(vendor, options) + ") * interval '1 second')";
             case SqlServer:
-                return "DATEADD(ss, " + param2.format(vendor, options) + ", " + param1.format(vendor, options) + ")";
+                return "DATEADD(ss, " + seconds.format(vendor, options) + ", " + date.format(vendor, options) + ")";
             default:
                 throw new UnknownDatabaseException();
             }
 
         case Datespan:
-            return param1.format(vendor, options) + "+(" + param2.format(vendor, options) + "*" + datespan.TicksPerSecond
+            return date.format(vendor, options) + "+(" + seconds.format(vendor, options) + "*" + datespan.TicksPerSecond
                     + ")";
 
         default:
-            throw new UnsupportedParameterException();
+            throw new UnsupportedException();
         }
     }
 
     @Override
     public FieldType type() {
-        return param1.type();
+        return date.type();
     }
 
     @Override
     public String formula() {
-        return param1.formula() + ".add(Date.SECOND, " + param2.formula() + ")";
+        return date.formula() + ".add(Date.SECOND, " + seconds.formula() + ")";
     }
 }

@@ -13,44 +13,44 @@ import org.zenframework.z8.server.db.sql.expressions.Mul;
 import org.zenframework.z8.server.db.sql.expressions.Operation;
 import org.zenframework.z8.server.db.sql.functions.conversion.ToNumber;
 import org.zenframework.z8.server.db.sql.functions.numeric.Round;
-import org.zenframework.z8.server.exceptions.UnsupportedParameterException;
+import org.zenframework.z8.server.exceptions.UnsupportedException;
 import org.zenframework.z8.server.exceptions.db.UnknownDatabaseException;
 import org.zenframework.z8.server.types.datespan;
 import org.zenframework.z8.server.types.integer;
 
 public class Day extends SqlToken {
-    private SqlToken param1;
+    private SqlToken date;
 
-    public Day(SqlToken p1) {
-        param1 = p1;
+    public Day(SqlToken date) {
+        this.date = date;
     }
 
     @Override
     public void collectFields(Collection<IValue> fields) {
-        param1.collectFields(fields);
+        date.collectFields(fields);
     }
 
     @Override
     public String format(DatabaseVendor vendor, FormatOptions options, boolean logicalContext) {
-        switch(param1.type()) {
+        switch(date.type()) {
         case Date:
         case Datetime:
             switch(vendor) {
             case Oracle:
-                return new ToNumber(new SqlStringToken("TO_CHAR(" + param1.format(vendor, options) + ", 'DD')")).format(
+                return new ToNumber(new SqlStringToken("TO_CHAR(" + date.format(vendor, options) + ", 'DD')")).format(
                         vendor, options);
             case SqlServer:
-                return "Day(" + param1.format(vendor, options) + ")";
+                return "Day(" + date.format(vendor, options) + ")";
             default:
                 throw new UnknownDatabaseException();
             }
 
         case Datespan:
-            return new Round(new Mul(param1, Operation.Div, new SqlConst(new integer(datespan.TicksPerDay))), null).format(
+            return new Round(new Mul(date, Operation.Div, new SqlConst(new integer(datespan.TicksPerDay))), null).format(
                     vendor, options);
 
         default:
-            throw new UnsupportedParameterException();
+            throw new UnsupportedException();
         }
     }
 
@@ -61,6 +61,6 @@ public class Day extends SqlToken {
 
     @Override
     public String formula() {
-        return "(" + param1.formula() + ").days()";
+        return "(" + date.formula() + ").days()";
     }
 }

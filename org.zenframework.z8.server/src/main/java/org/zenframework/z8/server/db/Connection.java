@@ -9,6 +9,7 @@ import java.sql.SQLException;
 import org.zenframework.z8.server.config.ServerConfig;
 import org.zenframework.z8.server.engine.Database;
 import org.zenframework.z8.server.logs.Trace;
+import org.zenframework.z8.server.types.datespan;
 import org.zenframework.z8.server.types.encoding;
 
 public class Connection {
@@ -19,7 +20,7 @@ public class Connection {
 
 	static private final int DefaultFetchSize = 1000;
 
-	static public int MaxIdleTime = 2 * 60 * 1000; // 2 min
+	static private long FiveMinutes = 5 * datespan.TicksPerMinute;
 
 	private Database database = null;
 	private java.sql.Connection connection = null;
@@ -79,7 +80,7 @@ public class Connection {
 	}
 
 	public boolean isUnused() {
-		return !isInUse() && System.currentTimeMillis() - lastUsed >= MaxIdleTime;
+		return !isInUse() && System.currentTimeMillis() - lastUsed >= FiveMinutes;
 	}
 
 	public boolean isClosed() {

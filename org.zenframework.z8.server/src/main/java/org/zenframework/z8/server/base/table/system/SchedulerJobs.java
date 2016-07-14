@@ -1,11 +1,11 @@
-package org.zenframework.z8.server.base.job.scheduler;
+package org.zenframework.z8.server.base.table.system;
 
 import java.util.Arrays;
 import java.util.Collection;
 
+import org.zenframework.z8.server.base.job.scheduler.Scheduler;
 import org.zenframework.z8.server.base.query.Query;
 import org.zenframework.z8.server.base.table.Table;
-import org.zenframework.z8.server.base.table.system.Users;
 import org.zenframework.z8.server.base.table.value.BoolField;
 import org.zenframework.z8.server.base.table.value.DatetimeField;
 import org.zenframework.z8.server.base.table.value.Field;
@@ -18,7 +18,7 @@ import org.zenframework.z8.server.types.exception;
 import org.zenframework.z8.server.types.guid;
 import org.zenframework.z8.server.types.integer;
 
-public class Tasks extends Table {
+public class SchedulerJobs extends Table {
 	final static public String TableName = "SystemTasks";
 
 	static public class names {
@@ -34,14 +34,14 @@ public class Tasks extends Table {
 	}
 
 	static public class strings {
-		public final static String Title = "Tasks.title";
-		public final static String Settings = "Tasks.settings";
-		public final static String From = "Tasks.from";
-		public final static String Till = "Tasks.till";
-		public final static String Repeat = "Tasks.repeat";
-		public final static String Active = "Tasks.active";
-		public final static String LastStarted = "Tasks.lastStarted";
-		public final static String ErrorNoJob = "Tasks.error.noJob";
+		public final static String Title = "SchedulerJobs.title";
+		public final static String Settings = "SchedulerJobs.settings";
+		public final static String From = "SchedulerJobs.from";
+		public final static String Till = "SchedulerJobs.till";
+		public final static String Repeat = "SchedulerJobs.repeat";
+		public final static String Active = "SchedulerJobs.active";
+		public final static String LastStarted = "SchedulerJobs.lastStarted";
+		public final static String ErrorNoJob = "SchedulerJobs.error.noJob";
 	}
 
 	public static class CLASS<T extends Table> extends Table.CLASS<T> {
@@ -51,14 +51,14 @@ public class Tasks extends Table {
 
 		public CLASS(IObject container) {
 			super(container);
-			setJavaClass(Tasks.class);
+			setJavaClass(SchedulerJobs.class);
 			setName(TableName);
-			setDisplayName(Resources.get(Tasks.strings.Title));
+			setDisplayName(Resources.get(SchedulerJobs.strings.Title));
 		}
 
 		@Override
 		public Object newObject(IObject container) {
-			return new Tasks(container);
+			return new SchedulerJobs(container);
 		}
 	}
 
@@ -74,7 +74,7 @@ public class Tasks extends Table {
 	public IntegerField.CLASS<IntegerField> repeat = new IntegerField.CLASS<IntegerField>(this);
 	public BoolField.CLASS<BoolField> active = new BoolField.CLASS<BoolField>(this);
 
-	public Tasks(IObject container) {
+	public SchedulerJobs(IObject container) {
 		super(container);
 	}
 

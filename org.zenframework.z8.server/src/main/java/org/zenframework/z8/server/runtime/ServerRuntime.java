@@ -1,11 +1,9 @@
 package org.zenframework.z8.server.runtime;
 
-import org.zenframework.z8.server.base.job.scheduler.Jobs;
-import org.zenframework.z8.server.base.job.scheduler.TaskLogs;
-import org.zenframework.z8.server.base.job.scheduler.Tasks;
 import org.zenframework.z8.server.base.table.system.Domains;
 import org.zenframework.z8.server.base.table.system.Entries;
 import org.zenframework.z8.server.base.table.system.Files;
+import org.zenframework.z8.server.base.table.system.Jobs;
 import org.zenframework.z8.server.base.table.system.MessagesQueue;
 import org.zenframework.z8.server.base.table.system.Properties;
 import org.zenframework.z8.server.base.table.system.Property;
@@ -13,6 +11,8 @@ import org.zenframework.z8.server.base.table.system.SecurityGroups;
 import org.zenframework.z8.server.base.table.system.Sequences;
 import org.zenframework.z8.server.base.table.system.SystemFiles;
 import org.zenframework.z8.server.base.table.system.SystemTools;
+import org.zenframework.z8.server.base.table.system.Logs;
+import org.zenframework.z8.server.base.table.system.SchedulerJobs;
 import org.zenframework.z8.server.base.table.system.UserEntries;
 import org.zenframework.z8.server.base.table.system.Users;
 import org.zenframework.z8.server.ie.RmiTransportProcedure;
@@ -59,8 +59,8 @@ public class ServerRuntime extends AbstractRuntime {
 		addTable(new UserEntries.CLASS<UserEntries>(null));
 
 		addTable(new Jobs.CLASS<Jobs>(null));
-		addTable(new Tasks.CLASS<Tasks>(null));
-		addTable(new TaskLogs.CLASS<TaskLogs>(null));
+		addTable(new SchedulerJobs.CLASS<SchedulerJobs>(null));
+		addTable(new Logs.CLASS<Logs>(null));
 
 		addTable(new Files.CLASS<Files>(null));
 		addTable(new SystemFiles.CLASS<SystemFiles>(null));

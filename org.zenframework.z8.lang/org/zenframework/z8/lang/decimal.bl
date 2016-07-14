@@ -84,5 +84,4 @@ final class decimal extends primary
 	public decimal power(decimal power);
 
 	static public decimal parse(string string);
-	static public decimal parse(int doubleBit);
 }

@@ -2,16 +2,19 @@ package org.zenframework.z8.server.utils;
 
 public class ErrorUtils {
 
-	static public String getMessage(Throwable exception) {
+	static public Throwable getCause(Throwable exception) {
         Throwable cause = exception; 
+
         while(true) {
         	cause = exception.getCause();
         	if(cause == null || cause == exception)
-        		break;
+        		return exception;
         	exception = cause;
         }
-        
-        String message = exception.toString();
+	}
+
+	static public String getMessage(Throwable exception) {
+        String message = getCause(exception).toString();
 		return message == null || message.isEmpty() ? "Internal server error." : message;
 	}
 

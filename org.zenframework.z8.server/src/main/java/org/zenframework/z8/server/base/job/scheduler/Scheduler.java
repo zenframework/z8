@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import org.zenframework.z8.server.base.table.system.SchedulerJobs;
 import org.zenframework.z8.server.base.table.value.BoolField;
 import org.zenframework.z8.server.base.table.value.DatetimeField;
 import org.zenframework.z8.server.base.table.value.Field;
@@ -19,27 +20,32 @@ public class Scheduler implements Runnable {
 
 	private Thread thread = null;
 	private boolean resetPending = true;
-	private List<Task> tasks = new ArrayList<Task>();
+	private List<SchedulerJob> jobs = new ArrayList<SchedulerJob>();
 
-	public static void start() {
-		if (scheduler == null && ServerConfig.isSchedulerEnabled() && ServerConfig.database().isSystemInstalled())
+	static private Collection<Thread> threads = new ArrayList<Thread>();
+	
+	static public synchronized void register(Thread thread) {
+		threads.add(thread);
+	}
+	
+	static public synchronized void unregister(Thread thread) {
+		threads.remove(thread);
+	}
+
+	static public void start() {
+		if(scheduler == null && ServerConfig.isSchedulerEnabled() && ServerConfig.database().isSystemInstalled())
 			scheduler = new Scheduler();
 	}
 
-	public static void stop() {
-		if (scheduler != null) {
-			scheduler.thread.interrupt();
-			while (scheduler.countRunningTasks() > 0) {
-				try {
-					Thread.sleep(100);
-				} catch (InterruptedException e) {}
-			}
+	static public void stop() {
+		if(scheduler != null) {
+			scheduler.stopJobs();
 			scheduler = null;
 		}
 	}
 
-	public static void reset() {
-		if (scheduler != null)
+	static public void reset() {
+		if(scheduler != null)
 			scheduler.resetPending = true;
 	}
 
@@ -50,30 +56,45 @@ public class Scheduler implements Runnable {
 
 	@Override
 	public void run() {
-		while (scheduler != null) {
-			initializeTasks();
+		while(scheduler != null) {
+			initializeJobs();
 
 			if(Thread.interrupted())
 				return;
-			
-			for (Task task : tasks) {
-				if (task.readyToStart())
-					startJob(task);
-			}
+
+			for(SchedulerJob job : jobs)
+				job.start();
 
 			try {
 				Thread.sleep(1 * 1000);
-			} catch (InterruptedException e) {
+			} catch(InterruptedException e) {
 				return;
 			}
 		}
 	}
 
-	private synchronized void initializeTasks() {
-		if (!resetPending || !ServerConfig.isSystemInstalled())
+	private void stopJobs() {
+		thread.interrupt();
+
+		for(SchedulerJob job : jobs.toArray(new SchedulerJob[0]))
+			job.stop();
+
+		for(Thread thread : threads.toArray(new Thread[0]))
+			thread.interrupt();
+
+		while(hasRunningJobs()) {
+			try {
+				Thread.sleep(100);
+			} catch(InterruptedException e) {
+			}
+		}
+	}
+
+	private synchronized void initializeJobs() {
+		if(!resetPending || !ServerConfig.isSystemInstalled())
 			return;
 
-		Tasks tasksTable = new Tasks.CLASS<Tasks>(null).get();
+		SchedulerJobs tasksTable = new SchedulerJobs.CLASS<SchedulerJobs>(null).get();
 
 		Collection<Field> fields = new ArrayList<Field>();
 
@@ -99,15 +120,15 @@ public class Scheduler implements Runnable {
 
 		tasksTable.read(fields);
 
-		List<Task> result = new ArrayList<Task>();
+		List<SchedulerJob> result = new ArrayList<SchedulerJob>();
 
-		while (tasksTable.next()) {
+		while(tasksTable.next()) {
 			guid taskId = tasksTable.recordId();
-			Task task = new Task(taskId);
+			SchedulerJob task = new SchedulerJob(taskId);
 
-			int index = tasks.indexOf(task);
-			if (index != -1)
-				task = tasks.get(index);
+			int index = jobs.indexOf(task);
+			if(index != -1)
+				task = jobs.get(index);
 
 			task.jobId = jobId.string().get();
 			task.name = jobName.string().get();
@@ -122,25 +143,22 @@ public class Scheduler implements Runnable {
 			result.add(task);
 		}
 
-		tasks = result;
+		jobs = result;
 
 		resetPending = false;
 	}
 
-	private ScheduledJob startJob(Task task) {
-		ScheduledJob job = new ScheduledJob(task);
-		Thread thread = new Thread(job, task.toString());
-		thread.start();
+	private boolean hasRunningJobs() {
+		for(SchedulerJob task : jobs) {
+			if(task.isRunning)
+				return true;
+		}
 
-		return job;
+		for(Thread thread : threads.toArray(new Thread[0])) {
+			if(thread.isAlive())
+				return true;
+		}
+		
+		return false;
 	}
-
-	private int countRunningTasks() {
-		int count = 0;
-		for (Task task : tasks)
-			if (task.isRunning)
-				count++;
-		return count;
-	}
-
 }

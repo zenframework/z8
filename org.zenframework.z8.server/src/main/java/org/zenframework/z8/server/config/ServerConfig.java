@@ -13,6 +13,7 @@ import org.zenframework.z8.server.engine.Rmi;
 public class ServerConfig extends Properties {
 
 	static private final long serialVersionUID = 3564936578688816088L;
+	static private final String localhost = "localhost";
 
 	static private ServerConfig instance;
 
@@ -106,14 +107,14 @@ public class ServerConfig extends Properties {
 
 		rmiEnabled = getProperty(RmiEnabledProperty, true);
 
-		applicationServerHost = getProperty(ApplicationServerHostProperty, Rmi.localhost);
+		applicationServerHost = getHost(ApplicationServerHostProperty, Rmi.localhost);
 		applicationServerPort = getProperty(ApplicationServerPortProperty, 15000);
 
-		authorityCenterHost = getProperty(AuthorityCenterHostProperty, Rmi.localhost);
+		authorityCenterHost = getHost(AuthorityCenterHostProperty, Rmi.localhost);
 		authorityCenterPort = getProperty(AuthorityCenterPortProperty, 10000);
 		authorityCenterSessionTimeout = getProperty(AuthorityCenterSessionTimeoutProperty, 24 * 60);
 
-		interconnectionCenterHost = getProperty(InterconnectionCenterHostProperty, Rmi.localhost);
+		interconnectionCenterHost = getHost(InterconnectionCenterHostProperty, Rmi.localhost);
 		interconnectionCenterPort = getProperty(InterconnectionCenterPortProperty, 20000);
 
 		webServerStartApplicationServer = getProperty(WebServerStartApplicationServerProperty, true);
@@ -206,6 +207,11 @@ public class ServerConfig extends Properties {
 		return result;
 	}
 
+	public String getHost(String key, String defaultValue) {
+		String host = getProperty(key, Rmi.localhost);
+		return localhost.equals(host) ? Rmi.localhost : host;
+	}
+	
 	// Properties overrides
 	// ///////////////////////////////////////////////////////////////
 

@@ -1,4 +1,4 @@
-package org.zenframework.z8.server.base.job.scheduler;
+package org.zenframework.z8.server.base.table.system;
 
 import org.zenframework.z8.server.base.table.Table;
 import org.zenframework.z8.server.resources.Resources;

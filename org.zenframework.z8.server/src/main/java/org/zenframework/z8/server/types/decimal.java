@@ -6,7 +6,6 @@ import java.math.RoundingMode;
 
 import org.zenframework.z8.server.db.DatabaseVendor;
 import org.zenframework.z8.server.db.FieldType;
-import org.zenframework.z8.server.exceptions.MaskParseException;
 import org.zenframework.z8.server.types.sql.sql_decimal;
 
 public final class decimal extends primary {
@@ -498,18 +497,14 @@ public final class decimal extends primary {
 		return new decimal(Math.pow(value.doubleValue(), power.get()));
 	}
 
-	static public decimal z8_parse(string string) {
+	static public decimal z8_parse(string value) {
 		try {
-			String str = string.get();
-			if(str.length() == 0)
-				str = "0.0";
-			return new decimal(new BigDecimal(str));
+			String string = value.get();
+			if(string.isEmpty())
+				return  new decimal();
+			return new decimal(new BigDecimal(string));
 		} catch(NumberFormatException e) {
-			throw new MaskParseException(string, "decimal");
+			throw new RuntimeException("Invalid value for decimal: '" + value.get() + "'");
 		}
-	}
-
-	static public decimal z8_parse(integer doubleBit) {
-		return new decimal(Double.longBitsToDouble(doubleBit.get()));
 	}
 }

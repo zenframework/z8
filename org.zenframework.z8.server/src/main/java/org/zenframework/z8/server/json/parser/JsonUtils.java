@@ -17,7 +17,7 @@ import org.zenframework.z8.server.types.primary;
 import org.zenframework.z8.server.types.string;
 
 public class JsonUtils {
-   public static Object unwrap(Object o) {
+	public static Object unwrap(Object o) {
     	if (o instanceof bool)
             return ((bool) o).get();
         else if (o instanceof date) {
@@ -38,30 +38,32 @@ public class JsonUtils {
             return ((integer) o).get();
         else if (o instanceof string)
             return ((string) o).get();
-        else if (o instanceof binary || o instanceof file)
+        else if(o instanceof file)
+        	return ((file)o).toJsonObject();
+        else if (o instanceof binary)
         	throw new UnsupportedOperationException();
         else
             return o;
     }
 
-    public static primary wrap(Object o) {
-        if (o instanceof primary)
-            return (primary) o;
-        else if (o instanceof Boolean)
-            return new bool((Boolean) o);
-        else if (o instanceof GregorianCalendar)
-            return new datetime((GregorianCalendar) o);
-        else if (o instanceof Float || o instanceof Double)
-            return new decimal((Double) o);
-        else if (o instanceof BigDecimal)
-            return new decimal((BigDecimal) o);
-        else if (o instanceof UUID)
-            return new guid((UUID) o);
-        else if (o instanceof Byte || o instanceof Short || o instanceof Integer || o instanceof Long)
-            return new integer((Long) o);
-        else if (o instanceof String)
-            return new string((String) o);
-        else
-            throw new UnsupportedOperationException();
-    }
+	public static primary wrap(Object o) {
+		if(o instanceof primary)
+			return (primary)o;
+		else if(o instanceof Boolean)
+			return new bool((Boolean)o);
+		else if(o instanceof GregorianCalendar)
+			return new datetime((GregorianCalendar)o);
+		else if(o instanceof Float || o instanceof Double)
+			return new decimal((Double)o);
+		else if(o instanceof BigDecimal)
+			return new decimal((BigDecimal)o);
+		else if(o instanceof UUID)
+			return new guid((UUID)o);
+		else if(o instanceof Byte || o instanceof Short || o instanceof Integer || o instanceof Long)
+			return new integer((Long)o);
+		else if(o instanceof String)
+			return new string((String)o);
+		else
+			throw new UnsupportedOperationException();
+	}
 }
