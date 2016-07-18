@@ -7,7 +7,6 @@ import java.rmi.RemoteException;
 import java.rmi.server.ExportException;
 import java.rmi.server.UnicastRemoteObject;
 
-import org.zenframework.z8.server.config.ServerConfig;
 import org.zenframework.z8.server.logs.Trace;
 
 public abstract class RmiServer implements IServer, Remote {
