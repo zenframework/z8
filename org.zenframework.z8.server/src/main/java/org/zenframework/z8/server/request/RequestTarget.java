@@ -5,37 +5,46 @@ import java.util.Map;
 import org.zenframework.z8.server.base.model.NamedObject;
 import org.zenframework.z8.server.engine.ApplicationServer;
 import org.zenframework.z8.server.json.JsonWriter;
+import org.zenframework.z8.server.types.string;
 
 public abstract class RequestTarget extends NamedObject implements IRequestTarget {
-    static public IRequest request() {
-        return ApplicationServer.getRequest();
-    }
+	private IRequest request;
 
-    static public Map<String, String> getParameters() {
-        return request().getParameters();
-    }
+	public RequestTarget(String id) {
+		super(id);
+	}
 
-    public RequestTarget(String id) {
-        super(id);
-    }
+	public IRequest request() {
+		if(request == null)
+			request = ApplicationServer.getRequest();
+		return request;
+	}
 
-    @Override
-    public void processRequest(IResponse response) throws Throwable {
-        JsonWriter writer = new JsonWriter();
+	public Map<string, string> getParameters() {
+		return request().getParameters();
+	}
 
-        writer.startResponse(id(), true);
+	public String getParameter(string key) {
+		return request().getParameter(key);
+	}
 
-        response.setWriter(writer);
+	@Override
+	public void processRequest(IResponse response) throws Throwable {
+		JsonWriter writer = new JsonWriter();
 
-        writeResponse(writer);
+		writer.startResponse(id(), true);
 
-        IMonitor monitor = request().getMonitor();
+		response.setWriter(writer);
 
-        if(monitor != this)
-            monitor.writeResponse(writer);
+		writeResponse(writer);
 
-        writer.finishResponse();
-        
-        response.setContent(writer.toString());
-    }
+		IMonitor monitor = request().getMonitor();
+
+		if(monitor != this)
+			monitor.writeResponse(writer);
+
+		writer.finishResponse();
+
+		response.setContent(writer.toString());
+	}
 }

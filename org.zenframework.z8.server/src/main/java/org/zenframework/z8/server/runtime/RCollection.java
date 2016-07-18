@@ -2,219 +2,226 @@ package org.zenframework.z8.server.runtime;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashSet;
-import java.util.LinkedHashSet;
-import java.util.Set;
 
 import org.zenframework.z8.server.types.bool;
 import org.zenframework.z8.server.types.integer;
 
 public class RCollection<TYPE> extends ArrayList<TYPE> {
-    private static final long serialVersionUID = -6377746293839490960L;
+	private static final long serialVersionUID = -6377746293839490960L;
 
-    private final boolean uniqueElements;
-    private final Set<Object> hashes;
+	private final boolean uniqueElements;
 
-    public RCollection() {
-        this(10, false);
-    }
+	public RCollection() {
+		this(10, false);
+	}
 
-    public RCollection(boolean uniqueElements) {
-        this(10, uniqueElements);
-    }
+	public RCollection(boolean uniqueElements) {
+		this(10, uniqueElements);
+	}
 
-    public RCollection(int initialCapacity, boolean uniqueElements) {
-        super(initialCapacity);
-        this.uniqueElements = uniqueElements;
-        hashes = uniqueElements ? new HashSet<Object>() : null;
-    }
+	public RCollection(int initialCapacity, boolean uniqueElements) {
+		super(initialCapacity);
+		this.uniqueElements = uniqueElements;
+	}
 
-    public RCollection(TYPE[] array) {
-        this(array.length, false);
-        for(TYPE element : array) {
-            add(element);
-        }
-    }
+	@SuppressWarnings("unchecked")
+	public RCollection(Object elements) {
+		this();
 
-    public RCollection(Collection<TYPE> collection) {
-        this(collection.size(), false);
-        addAll(collection);
-    }
+		if(elements instanceof Collection)
+			addAll((Collection<? extends TYPE>)elements);
+		else
+			addAll((TYPE[])elements);
+	}
 
-    @Override
-    public TYPE get(int index) {
-        try {
-            return super.get(index);
-        }
-        catch(IndexOutOfBoundsException e) {
-            throw new RuntimeException(e);
-        }
-    }
+	public RCollection(TYPE[] array) {
+		this(array.length, false);
+		addAll(array);
+	}
 
-    public TYPE get(integer index) {
-        return get(index.getInt());
-    }
+	public RCollection(Collection<TYPE> collection) {
+		this(collection.size(), false);
+		addAll(collection);
+	}
 
-    @Override
-    public boolean contains(Object object) {
-        return uniqueElements ? hashes.contains(object) : super.contains(object);
-    }
+	public TYPE get(integer index) {
+		return get(index.getInt());
+	}
 
-    @Override
-    public boolean add(TYPE element) {
-        if(uniqueElements) {
-            if(contains(element)) {
-                return true;
-            }
+	@Override
+	public boolean add(TYPE element) {
+		return uniqueElements && contains(element) ? true : super.add(element);
+	}
 
-            hashes.add(element);
-        }
+	@Override
+	public void add(int index, TYPE element) {
+		if(uniqueElements && contains(element))
+			return;
 
-        return super.add(element);
-    }
+		super.add(index, element);
+	}
 
-    @Override
-    public void add(int index, TYPE element) {
-        if(uniqueElements) {
-            if(contains(element)) {
-                return;
-            }
+	@Override
+	public boolean addAll(Collection<? extends TYPE> items) {
+		return addAll(this.size(), items);
+	}
 
-            hashes.add(element);
-        }
+	public boolean addAll(TYPE[] items) {
+		return addAll(this.size(), items);
+	}
 
-        super.add(index, element);
-    }
+	@Override
+	public boolean addAll(int index, Collection<? extends TYPE> items) {
+		return doAddAll(index, items);
+	}
 
-    @Override
-    public boolean addAll(Collection<? extends TYPE> items) {
-        return addAll(this.size(), items);
-    }
+	public boolean addAll(int index, TYPE[] items) {
+		return doAddAll(index, items);
+	}
 
-    @Override
-    public boolean addAll(int index, Collection<? extends TYPE> items) {
-        return addAllOfType(index, items);
-    }
-    
-    private <T extends TYPE> boolean addAllOfType(int index, Collection<T> items) {
-        Collection<T> itemsToAdd = items;
+	private <T extends TYPE> boolean doAddAll(int index, Collection<T> items) {
+		for(T item : items) {
+			if(!uniqueElements || !contains(item)) {
+				super.add(index, item);
+				index++;
+			}
+		}
 
-        if(uniqueElements) {
-            itemsToAdd = new LinkedHashSet<T>();
+		return true;
+	}
 
-            for(T item : items) {
-                if(!contains(item)) {
-                    itemsToAdd.add(item);
-                    hashes.add(item);
-                }
-            }
-        }
+	private <T extends TYPE> boolean doAddAll(int index, T[] items) {
+		for(T item : items) {
+			if(!uniqueElements || !contains(item)) {
+				super.add(index, item);
+				index++;
+			}
+		}
 
-        return super.addAll(index, itemsToAdd);
-    }
+		return true;
+	}
 
-    @Override
-    @SuppressWarnings("unchecked")
-    public boolean remove(Object object) {
-        TYPE element = (TYPE)object;
+	public void remove(Collection<? extends TYPE> elements) {
+		for(TYPE element : elements)
+			remove(element);
+	}
 
-        if(uniqueElements) {
-            hashes.remove(object);
+	public void remove(TYPE[] elements) {
+		for(TYPE element : elements)
+			remove(element);
+	}
+
+	public int indexOf(Object object) {
+    	for(int i = 0; i < size(); i++) {
+    		if(get(i) == object)
+    			return i;
         }
 
-        return super.remove(element);
+        return -1;
     }
+	
+	@Override
+	protected void removeRange(int fromIndex, int toIndex) {
+		throw new UnsupportedOperationException();
+	}
 
-    public void remove(Collection<? extends TYPE> elements) {
-        for(TYPE element : elements) {
-            remove(element);
-        }
-    }
+	public void operatorAssign(Object array) {
+		clear();
+		operatorAddAssign(array);
+	}
 
-    @Override
-    protected void removeRange(int fromIndex, int toIndex) {
-        throw new UnsupportedOperationException();
-    }
+	@SuppressWarnings("unchecked")
+	public void operatorAddAssign(Object array) {
+		if(array instanceof Collection)
+			addAll((Collection<TYPE>)array);
+		else
+			addAll((TYPE[])array);
+	}
 
-    public void operatorAssign(Object array) {
-        clear();
-        operatorAddAssign(array);
-    }
+	public RCollection<TYPE> operatorAdd(Object array) {
+		RCollection<TYPE> result = new RCollection<TYPE>();
+		result.operatorAddAssign(this);
+		result.operatorAddAssign(array);
+		return result;
+	}
 
-    @SuppressWarnings("unchecked")
-    public void operatorAddAssign(Object array) {
-        addAll((RCollection<TYPE>)array);
-    }
+	public integer z8_size() {
+		return new integer(size());
+	}
 
-    public RCollection<TYPE> operatorAdd(Object array) {
-        RCollection<TYPE> result = new RCollection<TYPE>();
-        result.operatorAddAssign(this);
-        result.operatorAddAssign(array);
-        return result;
-    }
+	public bool z8_isEmpty() {
+		return new bool(size() == 0);
+	}
 
-    public integer z8_size() {
-        return new integer(size());
-    }
+	public bool z8_contains(TYPE element) {
+		return new bool(contains(element));
+	}
 
-    public bool z8_isEmpty() {
-        return new bool(size() == 0);
-    }
+	@SuppressWarnings("unchecked")
+	public bool z8_isSubsetOf(Object elements) {
+		if(elements instanceof Collection)
+			return new bool(isSubsetOf((Collection<? extends TYPE>)elements));
+		return new bool(isSubsetOf((TYPE[])elements));
+	}
 
-    public bool z8_contains(TYPE element) {
-        return new bool(contains(element));
-    }
+	public boolean isSubsetOf(Collection<? extends TYPE> elements) {
+		for(TYPE element : this) {
+			if(!elements.contains(element))
+				return false;
+		}
 
-    public bool z8_isSubsetOf(RCollection<? extends TYPE> elements) {
-        for(TYPE element : this) {
-            if(!elements.contains(element)) {
-                return new bool(false);
-            }
-        }
+		return true;
+	}
 
-        return new bool(true);
-    }
+	public boolean isSubsetOf(TYPE[] elements) {
+		return isSubsetOf(new RCollection<TYPE>(elements));
+	}
 
-    public integer z8_indexOf(TYPE element) {
-        return new integer(indexOf(element));
-    }
+	public integer z8_indexOf(TYPE element) {
+		return new integer(indexOf(element));
+	}
 
-    @Override
-    public void clear() {
-        if(hashes != null)
-            hashes.clear();
-        super.clear();
-    }
+	public void z8_clear() {
+		clear();
+	}
 
-    public void z8_clear() {
-        clear();
-    }
+	public void z8_add(TYPE element) {
+		add(element);
+	}
 
-    public void z8_add(TYPE element) {
-        add(element);
-    }
+	public void z8_add(integer index, TYPE element) {
+		add(index.getInt(), element);
+	}
 
-    public void z8_add(integer index, TYPE element) {
-        add(index.getInt(), element);
-    }
+	@SuppressWarnings({ "unchecked" })
+	public void z8_addAll(Object elements) {
+		if(elements instanceof Collection)
+			addAll((Collection<? extends TYPE>)elements);
+		else
+			addAll((TYPE[])elements);
+	}
 
-    public void z8_addAll(RCollection<? extends TYPE> elements) {
-        addAll(elements);
-    }
+	@SuppressWarnings("unchecked")
+	public void z8_addAll(integer index, Object elements) {
+		if(elements instanceof Collection)
+			addAll(index.getInt(), (Collection<? extends TYPE>)elements);
+		else
+			addAll(index.getInt(), (TYPE[])elements);
+	}
 
-    public void z8_addAll(integer index, RCollection<? extends TYPE> elements) {
-        addAll(index.getInt(), elements);
-    }
+	public TYPE z8_removeAt(integer index) {
+		return remove(index.getInt());
+	}
 
-    public TYPE z8_removeAt(integer index) {
-        return remove(index.getInt());
-    }
+	public boolean z8_remove(TYPE element) {
+		return remove(element);
+	}
 
-    public boolean z8_remove(TYPE element) {
-        return remove(element);
-    }
+	public void z8_remove(RCollection<? extends TYPE> elements) {
+		remove(elements);
+	}
 
-    public void z8_remove(RCollection<? extends TYPE> elements) {
-        remove(elements);
-    }
+	public void z8_remove(TYPE[] elements) {
+		remove(elements);
+	}
 }

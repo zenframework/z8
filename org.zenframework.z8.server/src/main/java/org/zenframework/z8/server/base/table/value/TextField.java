@@ -15,7 +15,6 @@ public class TextField extends StringField {
         public CLASS(IObject container) {
             super(container);
             setJavaClass(TextField.class);
-            setAttribute(Native, TextField.class.getCanonicalName());
         }
 
         @Override
@@ -28,7 +27,7 @@ public class TextField extends StringField {
 
     public TextField(IObject container) {
         super(container);
-        length.set(0);
+        length = new integer(0);
         aggregation = Aggregation.None;
     }
 

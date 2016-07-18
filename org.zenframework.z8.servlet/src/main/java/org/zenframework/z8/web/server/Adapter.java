@@ -2,6 +2,8 @@ package org.zenframework.z8.web.server;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.rmi.ConnectException;
+import java.rmi.NoSuchObjectException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -15,25 +17,24 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.FileUploadException;
+import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
-import org.zenframework.z8.server.base.file.FileInfo;
-import org.zenframework.z8.server.base.file.FilesFactory;
 import org.zenframework.z8.server.base.xml.GNode;
+import org.zenframework.z8.server.config.ServerConfig;
 import org.zenframework.z8.server.engine.IApplicationServer;
 import org.zenframework.z8.server.engine.IAuthorityCenter;
 import org.zenframework.z8.server.engine.ISession;
-import org.zenframework.z8.server.engine.Z8Context;
 import org.zenframework.z8.server.exceptions.AccessDeniedException;
 import org.zenframework.z8.server.json.Json;
 import org.zenframework.z8.server.logs.Trace;
 import org.zenframework.z8.server.resources.Resources;
 import org.zenframework.z8.server.types.encoding;
+import org.zenframework.z8.server.types.file;
 import org.zenframework.z8.server.utils.NumericUtils;
 import org.zenframework.z8.web.servlet.Servlet;
 
 public abstract class Adapter {
-	private static final Collection<String> IgnoredExceptions = Arrays
-			.asList("org.apache.catalina.connector.ClientAbortException");
+	private static final Collection<String> IgnoredExceptions = Arrays.asList("org.apache.catalina.connector.ClientAbortException");
 
 	protected Servlet servlet;
 
@@ -50,7 +51,7 @@ public abstract class Adapter {
 			ISession session = null;
 
 			Map<String, String> parameters = new HashMap<String, String>();
-			List<FileInfo> files = new ArrayList<FileInfo>();
+			List<file> files = new ArrayList<file>();
 
 			parseRequest(request, parameters, files);
 
@@ -58,46 +59,48 @@ public abstract class Adapter {
 			String password = parameters.get(Json.password);
 			String sessionId = parameters.get(Json.sessionId);
 
-			if (login != null && password != null) {
+			if(login != null && password != null) {
 
-				if (login.isEmpty() || login.length() > IAuthorityCenter.MaxLoginLength
-						|| password.length() > IAuthorityCenter.MaxPasswordLength)
+				if(login.isEmpty() || login.length() > IAuthorityCenter.MaxLoginLength || password.length() > IAuthorityCenter.MaxPasswordLength)
 					throw new AccessDeniedException();
 
-				session = Z8Context.getAuthorityCenter().login(login, password);
-			} else if (sessionId != null) {
+				session = ServerConfig.authorityCenter().login(login, password);
+			} else if(sessionId != null) {
 				String serverId = parameters.get(Json.serverId);
-				session = Z8Context.getAuthorityCenter().getServer(sessionId, serverId);
+				session = ServerConfig.authorityCenter().server(sessionId, serverId);
 			}
 
-			if (session == null)
+			if(session == null)
 				throw new AccessDeniedException();
 
 			service(session, parameters, files, request, response);
-		} catch (AccessDeniedException e) {
+		} catch(AccessDeniedException e) {
 			processAccessDenied(response);
-		} catch (Throwable e) {
+		} catch(NoSuchObjectException e) {
+			processAccessDenied(response);
+		} catch(ConnectException e) {
+			processAccessDenied(response);
+		} catch(Throwable e) {
 			String className = e.getClass().getCanonicalName();
-			if (!IgnoredExceptions.contains(className)) {
+			if(!IgnoredExceptions.contains(className)) {
 				Trace.logError(e);
 				processError(response, e);
 			}
 		}
 	}
 
-	private void parseRequest(HttpServletRequest request, Map<String, String> parameters, List<FileInfo> files)
-			throws IOException {
-		if (ServletFileUpload.isMultipartContent(request)) {
+	private void parseRequest(HttpServletRequest request, Map<String, String> parameters, List<file> files) throws IOException {
+		if(ServletFileUpload.isMultipartContent(request)) {
 			List<FileItem> fileItems = parseMultipartRequest(request);
 
-			long fileSizeMaxMB = Z8Context.getConfig().webServerFileSizeMax();
+			long fileSizeMaxMB = ServerConfig.webServerFileSizeMax();
 			long fileSizeMax = fileSizeMaxMB > 0 ? fileSizeMaxMB * NumericUtils.Megabyte : Long.MAX_VALUE;
 
-			for (FileItem fileItem : fileItems) {
-				if (!fileItem.isFormField()) {
+			for(FileItem fileItem : fileItems) {
+				if(!fileItem.isFormField()) {
 					if(fileItem.getSize() > fileSizeMax)
 						throw new RuntimeException(Resources.format("Exception.fileSizeLimitExceeded", fileItem.getName(), fileSizeMaxMB));
-					files.add(new FileInfo(fileItem));
+					files.add(new file(fileItem));
 				} else
 					parameters.put(fileItem.getFieldName(), fileItem.getString(encoding.Default.toString()));
 			}
@@ -105,7 +108,7 @@ public abstract class Adapter {
 			@SuppressWarnings("unchecked")
 			Map<String, String[]> requestParameters = request.getParameterMap();
 
-			for (String name : requestParameters.keySet()) {
+			for(String name : requestParameters.keySet()) {
 				String[] values = requestParameters.get(name);
 				parameters.put(name, values.length != 0 ? values[0] : null);
 			}
@@ -115,25 +118,26 @@ public abstract class Adapter {
 	}
 
 	protected List<FileItem> parseMultipartRequest(HttpServletRequest request) {
-		ServletFileUpload upload = new ServletFileUpload(FilesFactory.getFileItemFactory());
+		ServletFileUpload upload = new ServletFileUpload(new DiskFileItemFactory());
 
 		try {
 			return upload.parseRequest(request);
-		} catch (FileUploadException e) {
+		} catch(FileUploadException e) {
 			throw new RuntimeException(e);
 		}
 	}
 
-	public void start() {}
+	public void start() {
+	}
 
-	public void stop() {}
+	public void stop() {
+	}
 
 	abstract public boolean canHandleRequest(HttpServletRequest request);
 
 	protected void processError(HttpServletResponse response, Throwable e) throws IOException, ServletException {
 		response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-		writeResponse(response,
-				(e.getMessage() != null ? e.getMessage() : "Internal server error").getBytes(encoding.Default.toString()));
+		writeResponse(response, (e.getMessage() != null ? e.getMessage() : "Internal server error").getBytes(encoding.Default.toString()));
 	}
 
 	protected void writeResponse(HttpServletResponse response, byte[] content) throws IOException {
@@ -145,16 +149,16 @@ public abstract class Adapter {
 		out.close();
 	}
 
-	protected void processAccessDenied(HttpServletResponse response) throws IOException {}
+	protected void processAccessDenied(HttpServletResponse response) throws IOException {
+	}
 
-	protected void service(ISession session, Map<String, String> parameters, List<FileInfo> files,
-			HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
+	protected void service(ISession session, Map<String, String> parameters, List<file> files, HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
 		GNode node = new GNode(parameters, files);
 
-		IApplicationServer server = session.getServerInfo().getApplicationServer();
+		IApplicationServer server = session.getServerInfo().getServer();
 		node = server.processRequest(session, node);
 
-		if (response != null)
+		if(response != null)
 			writeResponse(response, node.getContent());
 	}
 }

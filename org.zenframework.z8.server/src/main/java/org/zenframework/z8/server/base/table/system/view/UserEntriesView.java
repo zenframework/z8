@@ -6,6 +6,8 @@ import org.zenframework.z8.server.base.table.system.Users;
 import org.zenframework.z8.server.resources.Resources;
 import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.security.SecurityGroup;
+import org.zenframework.z8.server.types.bool;
+import org.zenframework.z8.server.types.integer;
 
 public class UserEntriesView extends Query {
     static public class names {
@@ -69,9 +71,9 @@ public class UserEntriesView extends Query {
         registerFormField(userEntries.get().entries.get().name);
         registerFormField(userEntries.get().position);
 
-        userEntries.get().entries.get().name.get().stretch.set(false);
-        userEntries.get().entries.get().name.get().width.set(50);
-        userEntries.get().position.get().width.set(15);
+        userEntries.get().entries.get().name.get().stretch = new bool(false);
+        userEntries.get().entries.get().name.get().width = new integer(50);
+        userEntries.get().position.get().width = new integer(15);
 
         users.get().sortFields.add(users.get().name);
 

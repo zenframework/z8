@@ -143,9 +143,6 @@ public class ArrayInitializer extends LanguageElement {
     public void getCode(CodeGenerator codeGenerator) {
         boolean isMap = isMap();
 
-        codeGenerator.append("new " + (isMap ? BuiltinNative.Map : BuiltinNative.Array));
-        codeGenerator.append('(');
-
         int index = 0;
 
         StringBuffer keys = new StringBuffer();
@@ -182,7 +179,6 @@ public class ArrayInitializer extends LanguageElement {
         codeGenerator.append('}');
 
         if(isMap) {
-
             codeGenerator.append(", ");
 
             codeGenerator.append("new " + BuiltinNative.Object + "[]");
@@ -190,8 +186,6 @@ public class ArrayInitializer extends LanguageElement {
             codeGenerator.append(values.toString());
             codeGenerator.append('}');
         }
-
-        codeGenerator.append(')');
     }
 
     public ILanguageElement[] getElements() {

@@ -41,28 +41,25 @@ abstract public class Field extends Control implements IValue, IField {
 	}
 
 	public static class CLASS<T extends Field> extends Control.CLASS<T> {
+
 		public CLASS(IObject container) {
 			super(container);
 			setJavaClass(Field.class);
-			setAttribute(Native, Field.class.getCanonicalName());
 		}
 	}
 
-	public bool system = new bool(false);
-	public bool visible = new bool(true);
-	public bool hidden = new bool(false);
-	public bool readOnly = new bool(false);
-	public bool selectable = new bool(true);
-	public string format = new string();
-	public integer length = new integer();
+	public bool visible = null;
+	public bool hidden = null;
+	public string format = null;
+	public integer length = null;
 
-	public integer width = new integer();
-	public integer column = new integer();
-	public integer columnWidth = new integer();
-	public integer labelWidth = new integer();
-	public bool stretch = new bool(true);
+	public integer width = null;
+	public integer column = null;
+	public integer columnWidth = null;
+	public integer labelWidth = null;
+	public bool stretch = null;
 
-	public bool anchor = new bool(false);
+	public bool anchor = null;
 	public FollowPolicy anchorPolicy = FollowPolicy.Default;
 
 	public SortDirection sortDirection = SortDirection.Asc;
@@ -70,17 +67,19 @@ abstract public class Field extends Control implements IValue, IField {
 
 	public Query.CLASS<? extends Query> editWith = null;
 
-	public bool required = new bool(false);
-	public bool indexed = new bool(false);
-	public bool unique = new bool(false);
+	public bool readOnly = null;
+	public bool selectable = null;
+	public bool required = null;
+	
+	public bool indexed = null;
+	public bool unique = null;
 
-	public RCollection<Field.CLASS<? extends Field>> indexFields = new RCollection<Field.CLASS<? extends Field>>(true);
+	public RCollection<Field.CLASS<? extends Field>> indexFields = new RCollection<Field.CLASS<? extends Field>>();
 
-	public RCollection<Formula.CLASS<? extends Formula>> evaluations = new RCollection<Formula.CLASS<? extends Formula>>(
-			true);
+	public RCollection<Formula.CLASS<? extends Formula>> evaluations = new RCollection<Formula.CLASS<? extends Formula>>();
 
-	public RCollection<Field.CLASS<? extends Field>> dependencies = new RCollection<Field.CLASS<? extends Field>>(true);
-	public RCollection<Field.CLASS<? extends Field>> columns = new RCollection<Field.CLASS<? extends Field>>(true);
+	public RCollection<Field.CLASS<? extends Field>> dependencies = new RCollection<Field.CLASS<? extends Field>>();
+	public RCollection<Field.CLASS<? extends Field>> columns = new RCollection<Field.CLASS<? extends Field>>();
 	public RLinkedHashMap<guid, RCollection<Control.CLASS<? extends Control>>> fieldsToShow = new RLinkedHashMap<guid, RCollection<Control.CLASS<? extends Control>>>();
 
 	public Aggregator.CLASS<? extends Aggregator> aggregator = null;
@@ -107,7 +106,7 @@ abstract public class Field extends Control implements IValue, IField {
 	@SuppressWarnings("unchecked")
 	public Field.CLASS<Field> operatorAssign(primary value) {
 		set(value);
-		return (Field.CLASS<Field>) getCLASS();
+		return (Field.CLASS<Field>)getCLASS();
 	}
 
 	@Override
@@ -143,7 +142,7 @@ abstract public class Field extends Control implements IValue, IField {
 
 	@Override
 	public Query owner() {
-		return (Query) getOwner();
+		return (Query)getOwner();
 	}
 
 	public Collection<Field.CLASS<? extends Field>> columns() {
@@ -181,7 +180,7 @@ abstract public class Field extends Control implements IValue, IField {
 	public String format(DatabaseVendor vendor, FormatOptions options) {
 		String alias = options.getFieldAlias(this);
 
-		if (alias == null) {
+		if(alias == null) {
 			Query data = owner();
 			return data.getAlias() + '.' + vendor.quote(name());
 		}
@@ -209,7 +208,7 @@ abstract public class Field extends Control implements IValue, IField {
 	protected primary internalGet() {
 		try {
 			return (changed || cursor == null || cursor.isClosed()) ? getDefaultValue() : read();
-		} catch (SQLException e) {
+		} catch(SQLException e) {
 			throw new RuntimeException(e);
 		}
 	}
@@ -219,7 +218,7 @@ abstract public class Field extends Control implements IValue, IField {
 
 	@Override
 	public void set(primary value) {
-		if (!changed) {
+		if(!changed) {
 			originalValue = this.value;
 			changed = true;
 		}
@@ -232,7 +231,7 @@ abstract public class Field extends Control implements IValue, IField {
 	}
 
 	public void reset() {
-		if (changed) {
+		if(changed) {
 			value = originalValue;
 			changed = false;
 		}
@@ -249,7 +248,27 @@ abstract public class Field extends Control implements IValue, IField {
 	}
 
 	public int width() {
-		return width.getInt();
+		return width != null ? width.getInt() : 0;
+	}
+
+	public boolean indexed() {
+		return indexed != null ? indexed.get() : false;
+	}
+
+	public boolean unique() {
+		return unique != null ? unique.get() : false;
+	}
+
+	public boolean readOnly() {
+		return readOnly != null ? readOnly.get() : false;
+	}
+
+	public boolean required() {
+		return required != null ? required.get() : false;
+	}
+
+	public boolean selectable() {
+		return selectable != null ? selectable.get() : true;
 	}
 
 	public Collection<Formula.CLASS<? extends Formula>> evaluations() {
@@ -261,13 +280,13 @@ abstract public class Field extends Control implements IValue, IField {
 	}
 
 	public Sequencer getSequencer() {
-		if (sequencer == null) {
+		if(sequencer == null) {
 			Sequencer.CLASS<Sequencer> cls = new Sequencer.CLASS<Sequencer>(this);
 			sequencer = cls.get();
 
 			String containerName = getContainer().getAttribute(Name);
 
-			if (containerName == null) {
+			if(containerName == null) {
 				containerName = getContainer().classId();
 			}
 
@@ -281,26 +300,26 @@ abstract public class Field extends Control implements IValue, IField {
 		super.writeMeta(writer);
 
 		writer.writeProperty(Json.serverType, type().toString());
-		writer.writeProperty(Json.visible, visible);
-		writer.writeProperty(Json.hidden, hidden);
-		writer.writeProperty(Json.format, format);
-		writer.writeProperty(Json.length, length);
-		writer.writeProperty(Json.anchor, anchor);
+		writer.writeProperty(Json.visible, visible, new bool(true));
+		writer.writeProperty(Json.hidden, hidden, new bool(false));
+		writer.writeProperty(Json.format, format, new string());
+		writer.writeProperty(Json.length, length, new integer(0));
+		writer.writeProperty(Json.anchor, anchor, new bool(false));
 		writer.writeProperty(Json.anchorPolicy, anchorPolicy.toString());
 
-		writer.writeProperty(Json.width, width);
-		writer.writeProperty(Json.column, column);
-		writer.writeProperty(Json.columnWidth, columnWidth);
-		writer.writeProperty(Json.labelWidth, labelWidth);
-		writer.writeProperty(Json.stretch, stretch);
+		writer.writeProperty(Json.width, width, new integer(0));
+		writer.writeProperty(Json.column, column, new integer(0));
+		writer.writeProperty(Json.columnWidth, columnWidth, new integer(0));
+		writer.writeProperty(Json.labelWidth, labelWidth, new integer(0));
+		writer.writeProperty(Json.stretch, stretch, new bool(true));
 
-		if (aggregation != Aggregation.None)
+		if(aggregation != Aggregation.None)
 			writer.writeProperty(Json.aggregation, aggregation.toString());
 
-		if (!evaluations.isEmpty()) {
+		if(!evaluations.isEmpty()) {
 			writer.startArray(Json.evaluations);
 
-			for (Formula formula : getEvaluations()) {
+			for(Formula formula : getEvaluations()) {
 				writer.startObject();
 
 				writer.writeProperty(Json.field, formula.field.id());
@@ -310,7 +329,7 @@ abstract public class Field extends Control implements IValue, IField {
 
 				writer.startArray(Json.fields);
 
-				for (IValue field : fields)
+				for(IValue field : fields)
 					writer.write(field.id());
 
 				writer.finishArray();
@@ -321,26 +340,26 @@ abstract public class Field extends Control implements IValue, IField {
 			writer.finishArray();
 		}
 
-		if (!dependencies.isEmpty()) {
+		if(!dependencies.isEmpty()) {
 			writer.startArray(Json.dependencies);
 
-			for (Field.CLASS<?> cls : dependencies)
+			for(Field.CLASS<?> cls : dependencies)
 				writer.write(cls.id());
 
 			writer.finishArray();
 		}
 
-		if (!fieldsToShow.isEmpty()) {
+		if(!fieldsToShow.isEmpty()) {
 			writer.startObject(Json.fieldsToShow);
 
-			for (guid key : fieldsToShow.keySet()) {
+			for(guid key : fieldsToShow.keySet()) {
 				writer.startArray(JsonObject.quote(key.toString()));
 
-				for (Control.CLASS<?> field : fieldsToShow.get(key)) {
-					if (field.instanceOf(FieldGroup.class)) {
-						FieldGroup group = (FieldGroup) field.get();
+				for(Control.CLASS<?> field : fieldsToShow.get(key)) {
+					if(field.instanceOf(FieldGroup.class)) {
+						FieldGroup group = (FieldGroup)field.get();
 
-						for (Control.CLASS<?> groupField : group.controls)
+						for(Control.CLASS<?> groupField : group.controls)
 							writer.write(groupField.id());
 					}
 
@@ -355,7 +374,7 @@ abstract public class Field extends Control implements IValue, IField {
 	}
 
 	public void writeData(JsonWriter writer) {
-		writer.writeProperty(JsonObject.quote(id()), get());
+		writer.writeProperty('"' + id() + '"', get());
 	}
 
 	public sql_primary formula() {
@@ -363,39 +382,39 @@ abstract public class Field extends Control implements IValue, IField {
 	}
 
 	public binary binary() {
-		return (binary) get();
+		return (binary)get();
 	}
 
 	public bool bool() {
-		return (bool) get();
+		return (bool)get();
 	}
 
 	public guid guid() {
-		return (guid) get();
+		return (guid)get();
 	}
 
 	public date date() {
-		return (date) get();
+		return (date)get();
 	}
 
 	public datetime datetime() {
-		return (datetime) get();
+		return (datetime)get();
 	}
 
 	public datespan datespan() {
-		return (datespan) get();
+		return (datespan)get();
 	}
 
 	public decimal decimal() {
-		return (decimal) get();
+		return (decimal)get();
 	}
 
 	public integer integer() {
-		return (integer) get();
+		return (integer)get();
 	}
 
 	public string string() {
-		return (string) get();
+		return (string)get();
 	}
 
 	public FieldType z8_getType() {
@@ -464,7 +483,7 @@ abstract public class Field extends Control implements IValue, IField {
 	}
 
 	public Sequencer.CLASS<? extends Sequencer> z8_getSequencer() {
-		return (Sequencer.CLASS<?>) getSequencer().getCLASS();
+		return (Sequencer.CLASS<?>)getSequencer().getCLASS();
 	}
 
 	public sql_bool z8_sqlIsNull() {

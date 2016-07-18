@@ -25,8 +25,7 @@ import org.zenframework.z8.server.db.Statement;
 import org.zenframework.z8.server.db.sql.FormatOptions;
 import org.zenframework.z8.server.db.sql.SqlField;
 import org.zenframework.z8.server.db.sql.SqlToken;
-import org.zenframework.z8.server.db.sql.expressions.Operation;
-import org.zenframework.z8.server.db.sql.expressions.Rel;
+import org.zenframework.z8.server.db.sql.expressions.Equ;
 import org.zenframework.z8.server.db.sql.functions.If;
 import org.zenframework.z8.server.db.sql.functions.IsNull;
 import org.zenframework.z8.server.db.sql.functions.conversion.ToBytes;
@@ -38,8 +37,6 @@ import org.zenframework.z8.server.resources.Resources;
 import org.zenframework.z8.server.security.BuiltinUsers;
 import org.zenframework.z8.server.types.guid;
 import org.zenframework.z8.server.types.primary;
-import org.zenframework.z8.server.types.sql.sql_bool;
-import org.zenframework.z8.server.types.sql.sql_guid;
 import org.zenframework.z8.server.utils.ErrorUtils;
 
 public class TableGenerator {
@@ -530,7 +527,7 @@ public class TableGenerator {
         Query query = table();
         query.setReadLock(ReadLock.None);
         Field primaryKey = query.primaryKey();
-        sql_bool where = new sql_bool(new Rel(primaryKey, Operation.Eq, new sql_guid(recordId)));
+        SqlToken where = new Equ(primaryKey, recordId);
 
         select.setWhere(where);
         select.setRootQuery(query);

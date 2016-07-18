@@ -2,28 +2,21 @@ package org.zenframework.z8.server.ie;
 
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.zenframework.z8.server.base.simple.Procedure;
-import org.zenframework.z8.server.base.table.system.Properties;
+import org.zenframework.z8.server.base.table.system.MessagesQueue;
 import org.zenframework.z8.server.base.view.command.Parameter;
 import org.zenframework.z8.server.db.Connection;
 import org.zenframework.z8.server.db.ConnectionManager;
-import org.zenframework.z8.server.engine.ITransportService;
-import org.zenframework.z8.server.engine.Rmi;
 import org.zenframework.z8.server.json.parser.JsonArray;
 import org.zenframework.z8.server.json.parser.JsonObject;
+import org.zenframework.z8.server.logs.Trace;
 import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.runtime.RCollection;
-import org.zenframework.z8.server.runtime.ServerRuntime;
 import org.zenframework.z8.server.types.guid;
 import org.zenframework.z8.server.types.string;
 import org.zenframework.z8.server.utils.ErrorUtils;
 
 public class TransportProcedure extends Procedure {
-
-	private static final Log LOG = LogFactory.getLog(TransportProcedure.class);
-
 	private static final String CONFIG_SEND = "send";
 	private static final String CONFIG_RECEIVE = "receive";
 	private static final String CONFIG_ENABLED = "enabled";
@@ -33,8 +26,7 @@ public class TransportProcedure extends Procedure {
 		public CLASS(IObject container) {
 			super(container);
 			setJavaClass(TransportProcedure.class);
-			setAttribute(Native, TransportProcedure.class.getCanonicalName());
-			setAttribute(Job, "");
+//			setAttribute(Job, "");
 		}
 
 		@Override
@@ -43,7 +35,7 @@ public class TransportProcedure extends Procedure {
 		}
 	}
 
-	protected final ExportMessages messages = ExportMessages.newInstance();
+	protected final MessagesQueue messages = MessagesQueue.newInstance();
 	protected final TransportContext.CLASS<TransportContext> context = new TransportContext.CLASS<TransportContext>();
 	protected final TransportEngine engine = TransportEngine.getInstance();
 
@@ -63,7 +55,7 @@ public class TransportProcedure extends Procedure {
 
 		String selfAddress = context.get().check().getProperty(TransportContext.SelfAddressProperty);
 
-		JsonObject configuration = new JsonObject(((string) getParameter(IObject.Settings).get()).get());
+		JsonObject configuration = new JsonObject(((string) getParameter("settings").get()).get());
 
 		JsonObject sendConfig = configuration.has(CONFIG_SEND) ? configuration.getJsonObject(CONFIG_SEND) : new JsonObject();
 		boolean sendEnabled = sendConfig.has(CONFIG_ENABLED) ? sendConfig.getBoolean(CONFIG_ENABLED) : true;
@@ -73,22 +65,9 @@ public class TransportProcedure extends Procedure {
 				: new JsonObject();
 		boolean receiveEnabled = receiveConfig.has(CONFIG_ENABLED) ? receiveConfig.getBoolean(CONFIG_ENABLED) : true;
 
-		ExportMessages messages = ExportMessages.newInstance();
+		MessagesQueue messages = MessagesQueue.newInstance();
 
 		TransportRoutes transportRoutes = TransportRoutes.newInstance();
-
-		String transportCenter = Properties.getProperty(ServerRuntime.TransportCenterAddressProperty).trim();
-		boolean registerInTransportCenter = Boolean.parseBoolean(Properties
-				.getProperty(ServerRuntime.RegisterInTransportCenterProperty));
-
-		if (registerInTransportCenter && !transportCenter.isEmpty()) {
-			try {
-				Rmi.get(ITransportService.class).checkRegistration(selfAddress);
-			} catch (Exception e) {
-				LOG.error("Can't check transport server registration for '" + selfAddress + "' in transport center '"
-						+ transportCenter + "'", e);
-			}
-		}
 
 		transportRoutes.checkInactiveRoutes();
 
@@ -102,7 +81,7 @@ public class TransportProcedure extends Procedure {
 				if (message == null)
 					continue;
 
-				List<TransportRoute> routes = transportRoutes.readRoutes(message.getAddress(), transportCenter, true);
+				List<TransportRoute> routes = transportRoutes.readRoutes(message.getAddress(), true);
 
 				for (TransportRoute route : routes) {
 
@@ -151,10 +130,10 @@ public class TransportProcedure extends Procedure {
 			for (guid id : ids) {
 				Message message = messages.getMessage(id);
 				try {
-					Import.importMessage(messages, message, null);
+					Import.importMessage(message);
 				} catch (Throwable e) {
-					LOG.error("Can't import message '" + message + "'", e);
-					messages.setError(message, e);
+					Trace.logError(e);
+					message.info(ErrorUtils.getMessage(e));
 				}
 			}
 
@@ -164,12 +143,12 @@ public class TransportProcedure extends Procedure {
 
 	protected void z8_init() {}
 
-	private static void sendMessage(ExportMessages messages, Message message, Transport transport, TransportRoute route)
+	private static void sendMessage(MessagesQueue messages, Message message, Transport transport, TransportRoute route)
 			throws TransportException {
 		Connection connection = ConnectionManager.get();
 		try {
 			connection.beginTransaction();
-			messages.processed(new guid(message.getId()), route.getTransportUrl());
+			message.processed(route.getTransportUrl());
 			message.getFiles().addAll(
 					IeUtil.filesToFileInfos(message.getExportEntry().getFiles().getFile(), message.isSendFilesContent()));
 			message.beforeExport();
@@ -180,28 +159,28 @@ public class TransportProcedure extends Procedure {
 		} catch (Throwable e) {
 			transport.rollback();
 			connection.rollback();
-			LOG.error("Can't send message '" + message + "' via '" + route.getTransportUrl() + "'", e);
+			Trace.logError(e);
 
 			if (e instanceof TransportException)
 				throw (TransportException) e;
 
-			messages.setError(message, e);
+			message.info(ErrorUtils.getMessage(e));
 		}
 	}
 
-	private static void receiveMessage(ExportMessages messages, Message message, Transport transport)
+	private static void receiveMessage(MessagesQueue messages, Message message, Transport transport)
 			throws TransportException {
 		Connection connection = ConnectionManager.get();
 		try {
 			connection.beginTransaction();
-			messages.addMessage(message, transport.getProtocol(), ExportMessages.Direction.IN);
+			messages.addMessage(message, transport.getProtocol(), MessagesQueue.Direction.IN);
 			Import.importFiles(message);
 			transport.commit();
 			connection.commit();
 		} catch (Throwable e) {
 			connection.rollback();
 			transport.rollback();
-			LOG.error("Can't import message '" + message + "' from '" + transport.getUrl(message.getAddress()) + "'", e);
+			Trace.logError(e);
 		}
 	}
 

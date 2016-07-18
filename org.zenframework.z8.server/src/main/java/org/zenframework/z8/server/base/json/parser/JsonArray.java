@@ -24,7 +24,6 @@ public class JsonArray extends OBJECT {
 		public CLASS(IObject container) {
 			super(container);
 			setJavaClass(JsonArray.class);
-			setAttribute(Native, JsonArray.class.getCanonicalName());
 		}
 
 		@Override

@@ -5,6 +5,7 @@ import java.util.Map;
 import org.zenframework.z8.server.request.INamedObject;
 
 public interface IObject extends INamedObject {
+    static final public String System = "system";
     static final public String DisplayName = "displayName";
     static final public String Description = "description";
     static final public String Label = "label";
@@ -16,7 +17,6 @@ public interface IObject extends INamedObject {
     static final public String ParentKey = "parentKey";
     static final public String Activator = "activator";
     static final public String Job = "job";
-    static final public String Settings = "settings";
     static final public String Index = "index";
     static final public String Exportable = "exportable";
     static final public String GenDbUpdatable = "gendb_updatable";
@@ -37,11 +37,12 @@ public interface IObject extends INamedObject {
     public void setDisplayName(String name);
 
     public String description();
-
     public void setDescription(String name);
 
+    public boolean system();
+    public void setSystem(boolean system);
+    
     public String label();
-
     public void setLabel(String label);
 
     public boolean foreignKey();

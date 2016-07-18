@@ -6,13 +6,17 @@ import java.util.Collection;
 import java.util.List;
 
 public class ArrayUtils {
+    static public <Type> boolean contains(Type[] objects, Type object) {
+        return indexOf(objects, object) != -1;
+    }
+
     static public <Type> int indexOf(Type[] objects, Type object) {
         if(objects == null) {
             return -1;
         }
 
         for(int index = 0; index < objects.length; index++) {
-            if(objects[index] == object) {
+            if(objects[index] == object || object != null && object.equals(objects[index])) {
                 return index;
             }
         }

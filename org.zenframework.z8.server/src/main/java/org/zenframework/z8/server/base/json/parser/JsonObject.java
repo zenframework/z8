@@ -29,7 +29,6 @@ public class JsonObject extends OBJECT {
         public CLASS(IObject container) {
             super(container);
             setJavaClass(JsonObject.class);
-            setAttribute(Native, JsonObject.class.getCanonicalName());
         }
 
         @Override

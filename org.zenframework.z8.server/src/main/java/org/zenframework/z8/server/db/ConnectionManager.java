@@ -6,19 +6,23 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import org.zenframework.z8.server.engine.ApplicationServer;
+import org.zenframework.z8.server.config.ServerConfig;
 import org.zenframework.z8.server.engine.Database;
+import org.zenframework.z8.server.exceptions.ThreadInterruptedException;
 
 public class ConnectionManager {
 	static private Map<String, List<Connection>> schemas = new HashMap<String, List<Connection>>();
 
 	public static synchronized Connection get() {
-		return get(ApplicationServer.database());
+		return get(ServerConfig.database());
 	}
 
 	public static synchronized Connection get(Database database) {
+		if(Thread.interrupted())
+			throw new ThreadInterruptedException();
+
 		if(database == null)
-			database = ApplicationServer.database();
+			database = ServerConfig.database();
 
 		List<Connection> connections = schemas.get(database.schema());
 
@@ -61,7 +65,7 @@ public class ConnectionManager {
 
 	public static synchronized void release(Database database) {
 		if(database == null)
-			database = ApplicationServer.database();
+			database = ServerConfig.database();
 
 		List<Connection> connections = schemas.get(database.schema());
 

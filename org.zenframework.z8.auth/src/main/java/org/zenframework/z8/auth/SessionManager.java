@@ -1,6 +1,5 @@
 package org.zenframework.z8.auth;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -13,20 +12,16 @@ import org.zenframework.z8.server.types.guid;
 public class SessionManager {
 	private long sessionTimeout = 0;
 
-	private Map<String, Session> sessions = Collections.synchronizedMap(new HashMap<String, Session>());
-
-	private TimeoutThread timeoutThread = new TimeoutThread();
+	private Map<String, Session> sessions = new HashMap<String, Session>();
 
 	SessionManager() {
 	}
 
-	public void start(ServerConfig config) {
-		setSessionTimeout(config.getSessionTimeout());
-		timeoutThread.start(this);
+	public void start() {
+		setSessionTimeout(ServerConfig.sessionTimeout());
 	}
 
 	public void stop() {
-		timeoutThread.interrupt();
 	}
 
 	public Session get(String id) {
@@ -34,34 +29,33 @@ public class SessionManager {
 
 		if(session != null) {
 			session.access();
-			return session;
+			return new Session(session);
 		}
 
 		throw new AccessDeniedException();
 	}
 
-	public Session create(IUser user) {
+	synchronized public Session create(IUser user) {
 		String id = guid.create().toString();
 		Session session = new Session(id, user);
 		sessions.put(id, session);
 		return session;
 	}
 
-	synchronized void drop(String id) {
+	synchronized private void drop(String id) {
 		Session session = sessions.get(id);
 
 		if(session != null)
 			sessions.remove(id);
 	}
 
-	public void checkTimeout() {
+	public void check() {
 		if(sessionTimeout != 0) {
 			long timeLimit = System.currentTimeMillis() - sessionTimeout;
 
 			for(Session session : sessions.values().toArray(new Session[0])) {
-				if(session.getLastAccessTime() < timeLimit) {
+				if(session.getLastAccessTime() < timeLimit)
 					drop(session.id());
-				}
 			}
 		}
 	}

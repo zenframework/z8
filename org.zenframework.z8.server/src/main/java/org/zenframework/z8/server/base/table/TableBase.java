@@ -28,7 +28,6 @@ public class TableBase extends Query implements ITable {
         public CLASS(IObject container) {
             super(container);
             setJavaClass(TableBase.class);
-            setAttribute(Native, TableBase.class.getCanonicalName());
         }
 
         @Override
@@ -72,7 +71,7 @@ public class TableBase extends Query implements ITable {
         List<IField> result = new ArrayList<IField>();
 
         for(Field field : getDataFields()) {
-            if((field.indexed.get() || !field.indexFields.isEmpty()) && !field.unique.get() && !(field instanceof Link)) {
+            if((field.indexed() || !field.indexFields.isEmpty()) && !field.unique() && !(field instanceof Link)) {
                 result.add(field);
             }
         }
@@ -85,7 +84,7 @@ public class TableBase extends Query implements ITable {
         List<IField> result = new ArrayList<IField>();
 
         for(Field field : getDataFields()) {
-            if(field.unique.get() && !(field instanceof Link)) {
+            if(field.unique() && !(field instanceof Link)) {
                 result.add(field);
             }
         }

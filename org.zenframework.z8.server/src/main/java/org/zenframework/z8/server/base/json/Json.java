@@ -126,6 +126,7 @@ public class Json extends OBJECT {
     final static public string groupDir = org.zenframework.z8.server.json.Json.groupDir;
     final static public string groupValue = org.zenframework.z8.server.json.Json.groupValue;
     final static public string groups = org.zenframework.z8.server.json.Json.groups;
+    final static public string remoteSort = org.zenframework.z8.server.json.Json.remoteSort;
     final static public string __search_text__ = org.zenframework.z8.server.json.Json.__search_text__;
 
     final static public string filterBy = org.zenframework.z8.server.json.Json.filterBy;

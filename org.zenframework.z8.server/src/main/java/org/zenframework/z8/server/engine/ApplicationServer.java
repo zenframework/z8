@@ -2,16 +2,16 @@ package org.zenframework.z8.server.engine;
 
 import java.io.IOException;
 import java.lang.management.ManagementFactory;
-import java.lang.management.RuntimeMXBean;
 import java.rmi.RemoteException;
 
-import org.zenframework.z8.server.base.file.FileInfo;
-import org.zenframework.z8.server.base.file.Files;
 import org.zenframework.z8.server.base.job.scheduler.Scheduler;
+import org.zenframework.z8.server.base.table.system.Domains;
+import org.zenframework.z8.server.base.table.system.Files;
+import org.zenframework.z8.server.base.table.system.SystemFiles;
 import org.zenframework.z8.server.base.xml.GNode;
 import org.zenframework.z8.server.config.ServerConfig;
 import org.zenframework.z8.server.db.ConnectionManager;
-import org.zenframework.z8.server.ie.TransportEngine;
+import org.zenframework.z8.server.ie.rmi.TransportJob;
 import org.zenframework.z8.server.logs.Trace;
 import org.zenframework.z8.server.request.IMonitor;
 import org.zenframework.z8.server.request.IRequest;
@@ -21,26 +21,71 @@ import org.zenframework.z8.server.request.RequestDispatcher;
 import org.zenframework.z8.server.request.RequestProcessor;
 import org.zenframework.z8.server.security.IUser;
 import org.zenframework.z8.server.security.User;
+import org.zenframework.z8.server.types.datespan;
+import org.zenframework.z8.server.types.file;
+import org.zenframework.z8.server.types.guid;
 
 public class ApplicationServer extends RmiServer implements IApplicationServer {
 
-	private static final long serialVersionUID = 7035837292407422257L;
+	static private final ThreadLocal<IRequest> currentRequest = new ThreadLocal<IRequest>();
 
-	private static final ThreadLocal<IRequest> currentRequest = new ThreadLocal<IRequest>();
+	static public String id = guid.create().toString();
 
-	private static ApplicationServer INSTANCE = null;
+	static private ApplicationServer instance;
 
-	private static String Id = null;
+	static public IApplicationServer launch(ServerConfig config) throws RemoteException {
+		if(instance == null) {
+			instance = new ApplicationServer();
+			instance.start();
+		}
+		return instance;	
+	}
 
-	private transient IAuthorityCenter authorityCenter = null;
+	static public IRequest getRequest() {
+		IRequest request = currentRequest.get();
+		if(request == null)
+			request = new Request(new Session());
+		return request;
+	}
 
-	private ApplicationServer(int unicastPort) throws RemoteException {
-		super(unicastPort, IApplicationServer.class);
+	static public ISession getSession() {
+		return getRequest().getSession();
+	}
+
+	static public IMonitor getMonitor() {
+		return getRequest().getMonitor();
+	}
+
+	public static IUser getUser() {
+		return getSession().user();
+	}
+
+	public static void setRequest(IRequest request) {
+		if(request != null)
+			currentRequest.set(request);
+		else
+			currentRequest.remove();
+	}
+
+	public static void disableEvents() {
+		getRequest().disableEvents();
+	}
+
+	public static void enableEvents() {
+		getRequest().enableEvents();
+	}
+
+	public static boolean events() {
+		return getRequest().events();
+	}
+
+	private ApplicationServer() throws RemoteException {
+		super(ServerConfig.applicationServerPort());
 	}
 
 	@Override
-	public String id() {
-		return Id;
+	public String id() throws RemoteException {
+		return id;
 	}
 
 	@Override
@@ -49,29 +94,25 @@ public class ApplicationServer extends RmiServer implements IApplicationServer {
 
 		checkSchemaVersion();
 
-		authorityCenter = Rmi.get(IAuthorityCenter.class, Z8Context.getConfig().getAuthorityCenterHost(), Z8Context
-				.getConfig().getAuthorityCenterPort());
-		authorityCenter.register(this);
+		enableTimeoutChecking(1 * datespan.TicksPerMinute);
 
-		RuntimeMXBean mxBean = ManagementFactory.getRuntimeMXBean();
-		System.out.println("INFO: JVM startup options: " + mxBean.getInputArguments().toString() + "\n\t"
-				+ RequestDispatcher.getMemoryUsage());
+		Scheduler.start();
+
+		Trace.logEvent("JVM startup options: " + ManagementFactory.getRuntimeMXBean().getInputArguments().toString() + "\n\t" + RequestDispatcher.getMemoryUsage());
 	}
 
 	@Override
-	public void stop() {
+	public void stop() throws RemoteException {
 		Scheduler.stop();
-		TransportEngine.getInstance().stop();
-		try {
-			authorityCenter.unregister(this);
-		} catch (RemoteException e) {
-			Trace.logError(e);
-		}
-		try {
-			super.stop();
-		} catch (RemoteException e) {
-			Trace.logError(e);
-		}
+	
+		unregister();
+		
+		super.stop();
+	}
+
+	@Override
+	public String[] domains() {
+		return Domains.newInstance().getNames().toArray(new String[0]);
 	}
 
 	@Override
@@ -85,9 +126,9 @@ public class ApplicationServer extends RmiServer implements IApplicationServer {
 	}
 
 	@Override
-	public FileInfo download(FileInfo fileInfo) throws IOException {
+	public file download(file file) throws IOException {
 		try {
-			return Files.newInstance().getFile(fileInfo);
+			return SystemFiles.newInstance().getFile(file);
 		} finally {
 			ConnectionManager.release();
 		}
@@ -107,64 +148,37 @@ public class ApplicationServer extends RmiServer implements IApplicationServer {
 		return new GNode(response.getContent());
 	}
 
-	public static void start(ServerConfig config) throws RemoteException {
-		if (INSTANCE == null) {
-			Id = config.getServerId();
-			INSTANCE = new ApplicationServer(config.getUnicastApplicationServerPort());
-			INSTANCE.start();
-			Scheduler.start();
+	@Override
+	public boolean accept(Object object) {
+		return TransportJob.accept(object);
+	}
+
+	@Override
+	public boolean hasFile(file file) throws RemoteException {
+		return Files.newInstance().hasRecord(file.id);
+	}
+	
+	@Override
+	protected void timeoutCheck() {
+		register();
+	}
+	
+	private void register() {
+		try {
+			ServerConfig.authorityCenter().register(this);
+		} catch(Throwable e) {
 		}
 	}
-
-	public static String Id() {
-		return Id;
-	}
-
-	public static IRequest getRequest() {
-		IRequest request = currentRequest.get();
-		if (request == null)
-			request = new Request(new Session());
-		return request;
-	}
-
-	public static ISession getSession() {
-		return getRequest().getSession();
-	}
-
-	public static IMonitor getMonitor() {
-		return getRequest().getMonitor();
-	}
-
-	public static Database database() {
-		return new Database(Z8Context.getConfig());
-	}
-
-	public static IUser getUser() {
-		return getSession().user();
-	}
-
-	public static void setRequest(IRequest request) {
-		if (request != null)
-			currentRequest.set(request);
-		else
-			currentRequest.remove();
-	}
-
-	public static void disableEvents() {
-		getRequest().disableEvents();
-	}
-
-	public static void enableEvents() {
-		getRequest().enableEvents();
-	}
-
-	public static boolean events() {
-		return getRequest().events();
+	
+	private void unregister() {
+		try {
+			ServerConfig.authorityCenter().unregister(this);
+		} catch(Throwable e) {
+		}
 	}
 
 	private void checkSchemaVersion() {
 		String version = Runtime.version();
 		System.out.println("Runtime schema version: " + version);
 	}
-
 }

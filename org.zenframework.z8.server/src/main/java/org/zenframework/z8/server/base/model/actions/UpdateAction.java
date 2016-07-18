@@ -22,9 +22,8 @@ public class UpdateAction extends Action {
     public void writeResponse(JsonWriter writer) {
         String jsonData = getDataParameter();
 
-        if(jsonData.charAt(0) == '{') {
+        if(jsonData.charAt(0) == '{')
             jsonData = "[" + jsonData + "]";
-        }
 
         JsonArray records = new JsonArray(jsonData);
 

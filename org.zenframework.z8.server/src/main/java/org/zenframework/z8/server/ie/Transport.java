@@ -1,6 +1,6 @@
 package org.zenframework.z8.server.ie;
 
-import org.zenframework.z8.server.base.file.FileInfo;
+import org.zenframework.z8.server.types.file;
 
 public interface Transport {
 
@@ -18,7 +18,7 @@ public interface Transport {
 
 	boolean isSynchronousRequestSupported();
 
-	FileInfo readFileSynchronously(FileInfo fileInfo, String transportAddress) throws TransportException;
+	file readFileSynchronously(file file, String transportAddress) throws TransportException;
 
 	String getProtocol();
 

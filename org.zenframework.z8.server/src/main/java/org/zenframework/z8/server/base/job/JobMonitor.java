@@ -4,6 +4,7 @@ import org.zenframework.z8.server.engine.ApplicationServer;
 import org.zenframework.z8.server.json.Json;
 import org.zenframework.z8.server.json.JsonWriter;
 import org.zenframework.z8.server.request.Monitor;
+import org.zenframework.z8.server.types.string;
 
 public class JobMonitor extends Monitor {
 
@@ -70,8 +71,8 @@ public class JobMonitor extends Monitor {
 			writer.writeProperty(Json.totalWork, totalWork);
 			writer.writeProperty(Json.worked, worked);
 
-			writer.writeProperty(Json.serverId, ApplicationServer.Id());
-			writer.writeInfo(getMessages(), isDone ? getLog() : null);
+			writer.writeProperty(new string(Json.serverId), ApplicationServer.id);
+			writer.writeInfo(getMessages(), ApplicationServer.id, isDone ? getLog() : null);
 
 			collectLogMessages();
 			clearMessages();

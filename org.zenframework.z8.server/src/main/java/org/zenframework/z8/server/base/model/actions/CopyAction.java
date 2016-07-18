@@ -16,90 +16,88 @@ import org.zenframework.z8.server.types.guid;
 import org.zenframework.z8.server.types.primary;
 
 public class CopyAction extends Action {
-    public CopyAction(ActionParameters parameters) {
-        super(parameters);
-    }
+	public CopyAction(ActionParameters parameters) {
+		super(parameters);
+	}
 
-    @Override
-    public void writeResponse(JsonWriter
-    		writer) {
-        Query query = getQuery();
+	@Override
+	public void writeResponse(JsonWriter writer) {
+		Query query = getQuery();
 
-        guid sourceRecordId = getSourceParameter();
-        guid parentId = getParentIdParameter();
-        guid modelRecordId = getRecordIdParameter();
+		guid sourceRecordId = getSourceParameter();
+		guid parentId = getParentIdParameter();
+		guid modelRecordId = getRecordIdParameter();
 
-        run(query, sourceRecordId, parentId, modelRecordId);
+		run(query, sourceRecordId, parentId, modelRecordId);
 
-        Collection<Field> fields = new ArrayList<Field>();
+		Collection<Field> fields = new ArrayList<Field>();
 
-        String jsonData = getDataParameter();
+		String jsonData = getDataParameter();
 
-        JsonObject record = new JsonObject(jsonData);
+		JsonObject record = new JsonObject(jsonData);
 
-        for(String fieldId : JsonObject.getNames(record)) {
-            Field field = query.findFieldById(fieldId);
+		for(String fieldId : JsonObject.getNames(record)) {
+			Field field = query.findFieldById(fieldId);
 
-            if(field != null) {
-                if(canCopy(field) && !field.changed()) {
-                    String value = record.getString(fieldId);
-                    QueryUtils.setFieldValue(field, value);
-                }
+			if(field != null) {
+				if(canCopy(field) && !field.changed()) {
+					String value = record.getString(fieldId);
+					QueryUtils.setFieldValue(field, value);
+				}
 
-                fields.add(field);
-            }
-        }
+				fields.add(field);
+			}
+		}
 
-        writer.startArray(Json.data);
-        writer.startObject();
+		writer.startArray(Json.data);
+		writer.startObject();
 
-        for(Field field : fields)
-            field.writeData(writer);
+		for(Field field : fields)
+			field.writeData(writer);
 
-        Style style = query.renderRecord();
+		Style style = query.renderRecord();
 
-        if(style != null)
-            style.write(writer);
+		if(style != null)
+			style.write(writer);
 
-        writer.finishObject();
-        writer.finishArray();
-    }
+		writer.finishObject();
+		writer.finishArray();
+	}
 
-    static private boolean canCopy(Field field) {
-        return !field.isPrimaryKey() && !field.unique.get();
-    }
+	static private boolean canCopy(Field field) {
+		return !field.isPrimaryKey() && !field.unique();
+	}
 
-    static public guid run(Query query, guid sourceId, guid parentId, guid modelRecordId) {
-        guid newRecordId = guid.create();
+	static public guid run(Query query, guid sourceId, guid parentId, guid modelRecordId) {
+		guid newRecordId = guid.create();
 
-        Collection<Field> changed = query.getRootQuery().getChangedFields();
+		Collection<Field> changed = query.getRootQuery().getChangedFields();
 
-        NewAction.run(query, newRecordId, parentId, modelRecordId);
+		NewAction.run(query, newRecordId, parentId, modelRecordId);
 
-        Collection<Field> fields = query.getRootQuery().getDataFields();
-        Map<Field, primary> values = new HashMap<Field, primary>();
+		Collection<Field> fields = query.getRootQuery().getDataFields();
+		Map<Field, primary> values = new HashMap<Field, primary>();
 
-        try {
-            query.saveState();
+		try {
+			query.saveState();
 
-            if(query.readRecord(sourceId, fields)) {
-                for(Field field : fields) {
-                    values.put(field, field.get());
-                }
-            }
-        }
-        finally {
-            query.restoreState();
-        }
+			if(query.readRecord(sourceId, fields)) {
+				for(Field field : fields) {
+					values.put(field, field.get());
+				}
+			}
+		} finally {
+			query.restoreState();
+		}
 
-        for(Field field : values.keySet()) {
-            if(canCopy(field) && !changed.contains(field)) {
-                field.set(values.get(field));
-            }
-        }
+		for(Field field : values.keySet()) {
+			if(canCopy(field) && !changed.contains(field)) {
+				field.set(values.get(field));
+			}
+		}
 
-        query.onCopy();
+		query.onCopy();
 
-        return newRecordId;
-    }
+		return newRecordId;
+	}
 }

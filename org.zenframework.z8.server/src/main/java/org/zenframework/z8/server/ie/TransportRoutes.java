@@ -4,39 +4,24 @@ import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.zenframework.z8.server.base.table.Table;
-import org.zenframework.z8.server.base.table.system.Properties;
-import org.zenframework.z8.server.base.table.system.SystemDomains;
+import org.zenframework.z8.server.base.table.system.Domains;
 import org.zenframework.z8.server.base.table.value.BoolField;
 import org.zenframework.z8.server.base.table.value.Field;
 import org.zenframework.z8.server.base.table.value.IntegerField;
 import org.zenframework.z8.server.base.table.value.Link;
 import org.zenframework.z8.server.db.sql.SqlToken;
 import org.zenframework.z8.server.db.sql.expressions.And;
-import org.zenframework.z8.server.db.sql.expressions.Operation;
-import org.zenframework.z8.server.db.sql.expressions.Rel;
-import org.zenframework.z8.server.db.sql.expressions.Unary;
-import org.zenframework.z8.server.engine.ITransportCenter;
-import org.zenframework.z8.server.engine.Rmi;
-import org.zenframework.z8.server.engine.RmiAddress;
+import org.zenframework.z8.server.db.sql.expressions.Equ;
 import org.zenframework.z8.server.resources.Resources;
 import org.zenframework.z8.server.runtime.IObject;
-import org.zenframework.z8.server.runtime.ServerRuntime;
 import org.zenframework.z8.server.types.bool;
-import org.zenframework.z8.server.types.datetime;
 import org.zenframework.z8.server.types.exception;
 import org.zenframework.z8.server.types.guid;
 import org.zenframework.z8.server.types.integer;
 import org.zenframework.z8.server.types.string;
-import org.zenframework.z8.server.types.sql.sql_datetime;
-import org.zenframework.z8.server.types.sql.sql_guid;
-import org.zenframework.z8.server.types.sql.sql_string;
 
 public class TransportRoutes extends Table {
-
-	private static final Log LOG = LogFactory.getLog(TransportRoutes.class);
 
 	public static final String TableName = "SystemTransportRoutes";
 
@@ -70,7 +55,7 @@ public class TransportRoutes extends Table {
 		public final static String Error = "TransportRoutes.error";
 	}
 
-	public final SystemDomains.CLASS<SystemDomains> domains = new SystemDomains.CLASS<SystemDomains>(this);
+	public final Domains.CLASS<Domains> domains = new Domains.CLASS<Domains>(this);
 	public final Link.CLASS<Link> domainLink = new Link.CLASS<Link>(this);
 	public final IntegerField.CLASS<IntegerField> priority = new IntegerField.CLASS<IntegerField>(this);
 	public final BoolField.CLASS<BoolField> active = new BoolField.CLASS<BoolField>(this);
@@ -98,8 +83,8 @@ public class TransportRoutes extends Table {
 		id1.setDisplayName(Resources.get(strings.Protocol));
 		id1.get().length = new integer(256);
 
-		createdAt.get().system.set(false);
-		modifiedAt.get().system.set(false);
+		createdAt.setSystem(false);
+		modifiedAt.setSystem(false);
 
 		name.setDisplayName(Resources.get(strings.Address));
 
@@ -156,27 +141,16 @@ public class TransportRoutes extends Table {
 		return readFirst(getWhere(domain, protocol, address));
 	}
 
-	public List<TransportRoute> readRoutes(String domain, String transportCenter, boolean activeOnly) {
-		SqlToken where = new Rel(this.domains.get().id.get(), Operation.Eq, new sql_string(domain));
+	public List<TransportRoute> readRoutes(String domain, boolean activeOnly) {
+		SqlToken where = new Equ(this.domains.get().id.get(), domain);
+		if (activeOnly)
+			where = new And(where, this.active.get().sql_bool());
+
 		sort(Arrays.<Field> asList(priority.get()), where);
 		List<TransportRoute> routes = new LinkedList<TransportRoute>();
-		boolean localRoutesFound = false;
 		while (next()) {
-			if (!activeOnly || active.get().bool().get()) {
-				routes.add(new TransportRoute(domains.get().id.get().string().get(), id1.get().string().get(), name.get()
-						.string().get(), priority.get().integer().getInt(), active.get().bool().get()));
-			}
-			localRoutesFound = true;
-		}
-		if (routes.isEmpty() && !localRoutesFound && transportCenter != null && !transportCenter.isEmpty()) {
-			try {
-				routes = Rmi.get(ITransportCenter.class, new RmiAddress(transportCenter)).getTransportRoutes(domain);
-				for (TransportRoute route : routes) {
-					setRoute(route);
-				}
-			} catch (Exception e) {
-				LOG.error("Can't get routes from transport center '" + transportCenter + "'", e);
-			}
+			routes.add(new TransportRoute(domains.get().id.get().string().get(), id1.get().string().get(), name.get()
+					.string().get(), priority.get().integer().getInt(), active.get().bool().get()));
 		}
 		return routes;
 	}
@@ -185,17 +159,9 @@ public class TransportRoutes extends Table {
 		return setRoute(route.getDomain(), route.getProtocol(), route.getAddress(), route.getPriority(), route.isActive());
 	}
 
-	/*public guid setRoute(String domain, String protocol, String address, int priority, boolean active) {
-		if (domains.get().readFirst(new Rel(domains.get().id.get(), Operation.Eq, new sql_string(domain)))) {
-			return setRoute(domains.get().recordId(), protocol, address, priority, active);
-		} else {
-			throw new exception("Domain '" + domain + "' does not exist");
-		}
-	}*/
-
 	public guid setRoute(String domain, String protocol, String address, int priority, boolean active) {
-		SystemDomains domains = SystemDomains.newInstance();
-		if (!domains.readFirst(new Rel(domains.id.get(), Operation.Eq, new sql_string(domain))))
+		Domains domains = Domains.newInstance();
+		if (!domains.readFirst(new Equ(domains.id.get(), domain)))
 			throw new exception("Domain '" + domain + "' does not exist");
 		guid domainId = domains.recordId();
 		this.priority.get().set(priority);
@@ -223,14 +189,14 @@ public class TransportRoutes extends Table {
 	}
 
 	public void checkInactiveRoutes() {
-		int timeout = Integer.parseInt(Properties.getProperty(ServerRuntime.InactiveRouteTimeoutProperty));
+/*		int timeout = Integer.parseInt(Properties.getProperty(ServerRuntime.InactiveRouteTimeoutProperty));
 		read(new And(new Unary(Operation.Not, this.active.get().sql_bool()), new Rel(this.modifiedAt.get(), Operation.LT,
 				new sql_datetime(new datetime().addMinute(-timeout)))));
 		while (next()) {
 			this.active.get().set(new bool(true));
 			this.description.get().set("");
 			update(recordId());
-		}
+		}*/
 	}
 
 	public string z8_getAddress() {
@@ -270,14 +236,11 @@ public class TransportRoutes extends Table {
 	}
 
 	private SqlToken getWhere(String domain, String protocol, String address) {
-		return new And(new And(new Rel(this.domains.get().id.get(), Operation.Eq, new sql_string(domain)), new Rel(
-				this.id1.get(), Operation.Eq, new sql_string(protocol))), new Rel(this.name.get(), Operation.Eq,
-				new sql_string(address)));
+		return new And(new And(new Equ(this.domains.get().id.get(), domain), new Equ(this.id1.get(), protocol)), new Equ(this.name.get(), address));
 	}
 
 	private SqlToken getWhere(guid domain, String protocol, String address) {
-		return new And(new And(new Rel(this.domainLink.get(), Operation.Eq, new sql_guid(domain)), new Rel(this.id1.get(),
-				Operation.Eq, new sql_string(protocol))), new Rel(this.name.get(), Operation.Eq, new sql_string(address)));
+		return new And(new And(new Equ(this.domainLink.get(), domain), new Equ(this.id1.get(), protocol)), new Equ(this.name.get(), address));
 	}
 
 }

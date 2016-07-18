@@ -12,7 +12,6 @@ import org.zenframework.z8.server.engine.ApplicationServer;
 import org.zenframework.z8.server.exceptions.AccessDeniedException;
 import org.zenframework.z8.server.json.Json;
 import org.zenframework.z8.server.json.JsonWriter;
-import org.zenframework.z8.server.json.parser.JsonObject;
 import org.zenframework.z8.server.logs.Trace;
 import org.zenframework.z8.server.request.Loader;
 import org.zenframework.z8.server.request.RequestTarget;
@@ -23,144 +22,141 @@ import org.zenframework.z8.server.types.primary;
 import org.zenframework.z8.server.types.string;
 
 public class Dashboard extends RequestTarget {
-    public static final String Id = "desktop";
+	public static final String Id = "desktop";
 
-    public Dashboard() {
-        super(Id);
-    }
+	public Dashboard() {
+		super(Id);
+	}
 
-    @Override
-    public void writeResponse(JsonWriter writer) {
-        Map<String, String> parameters = getParameters();
+	@Override
+	public void writeResponse(JsonWriter writer) {
+		String login = getParameter(Json.login);
+		String newPassword = getParameter(Json.newPassword);
+		String password = getParameter(Json.password);
+		String email = getParameter(Json.email);
 
-        String login = parameters.get(Json.login);
-        String newPassword = parameters.get(Json.newPassword);
-        String password = parameters.get(Json.password);
-        String email = parameters.get(Json.email);
+		if(login != null)
+			writeLoginInfo(writer);
+		else if(newPassword != null)
+			changePassword(password, newPassword);
+		else if(email != null)
+			changeEmail(email);
+		else {
+			String id = getParameter(Json.menu);
 
-        if(login != null)
-            writeLoginInfo(writer);
-        else if(newPassword != null)
-            changePassword(password, newPassword);
-        else if(email != null)
-            changeEmail(email);
-        else {
-            String id = parameters.get("menu");
+			if(id != null) {
+				Desktop desktop = (Desktop)Loader.getInstance(id);
 
-            if(id != null) {
-                Desktop desktop = (Desktop)Loader.getInstance(id);
+				writer.startArray(Json.data);
+				writeDesktop(writer, desktop);
+				writer.finishArray();
+			}
+		}
+	}
 
-                writer.startArray(Json.data);
-                writeDesktop(writer, desktop);
-                writer.finishArray();
-            }
-        }
-    }
+	private void changePassword(String password, String newPassword) {
+		IUser user = ApplicationServer.getUser();
 
-    private void changePassword(String password, String newPassword) {
-        IUser user = ApplicationServer.getUser();
+		if(!user.password().equals(password)) {
+			throw new AccessDeniedException();
+		}
 
-        if(!user.password().equals(password)) {
-            throw new AccessDeniedException();
-        }
+		Users users = new Users.CLASS<Users>().get();
 
-        Users users = new Users.CLASS<Users>().get();
+		users.password.get().set(new string(newPassword));
+		users.update(user.id());
+	}
 
-        users.password.get().set(new string(newPassword));
-        users.update(user.id());
-    }
+	private void changeEmail(String email) {
+		IUser user = ApplicationServer.getUser();
 
-    private void changeEmail(String email) {
-        IUser user = ApplicationServer.getUser();
+		if(!user.email().equalsIgnoreCase(email)) {
+			Users users = new Users.CLASS<Users>().get();
+			users.email.get().set(new string(email));
+			users.update(user.id());
+		}
+	}
 
-        if(!user.email().equalsIgnoreCase(email)) {
-            Users users = new Users.CLASS<Users>().get();
-            users.email.get().set(new string(email));
-            users.update(user.id());
-        }
-    }
+	private void writeDesktopData(JsonWriter writer, Desktop desktop, String displayName) {
+		Collection<CLASS<?>> runnables = new ArrayList<CLASS<?>>();
 
-    private void writeDesktopData(JsonWriter writer, Desktop desktop, String displayName) {
-        Collection<CLASS<?>> runnables = new ArrayList<CLASS<?>>();
+		for(CLASS<?> cls : desktop.getRunnables())
+			runnables.add(cls);
 
-        for(CLASS<?> cls : desktop.getRunnables())
-        	runnables.add(cls);
+		if(!runnables.isEmpty()) {
+			writer.startObject();
 
-        if(!runnables.isEmpty()) {
-            writer.startObject();
+			writer.writeProperty(Json.text, displayName);
 
-            writer.writeProperty(Json.text, displayName);
-            
-            writer.startArray(Json.items);
-            for(CLASS<?> cls : runnables)
-                writeData(writer, cls);
-            writer.finishArray();
-            
-            writer.finishObject();
-        }
-    }
+			writer.startArray(Json.items);
+			for(CLASS<?> cls : runnables)
+				writeData(writer, cls);
+			writer.finishArray();
 
-    private void writeDesktop(JsonWriter writer, Desktop desktop) {
-        writeDesktopData(writer, desktop, "");
+			writer.finishObject();
+		}
+	}
 
-        for(CLASS<?> cls : desktop.getSubDesktops()) {
-            Desktop subDesktop = (Desktop)cls.get();
-            writeDesktopData(writer, subDesktop, subDesktop.displayName());
-        }
-    }
+	private void writeDesktop(JsonWriter writer, Desktop desktop) {
+		writeDesktopData(writer, desktop, "");
 
-    private CLASS<?>[] loadComponents(Collection<Component> components) {
-        List<CLASS<?>> list = new ArrayList<CLASS<?>>();
+		for(CLASS<?> cls : desktop.getSubDesktops()) {
+			Desktop subDesktop = (Desktop)cls.get();
+			writeDesktopData(writer, subDesktop, subDesktop.displayName());
+		}
+	}
 
-        for(Component component : components) {
-            try {
-                list.add(Loader.loadClass(component.className()));
-            }
-            catch(RuntimeException e) {
-                Trace.logError("Error loading entry point '" + component.className() + "'", e);
-            }
-        }
+	private CLASS<?>[] loadComponents(Collection<Component> components) {
+		List<CLASS<?>> list = new ArrayList<CLASS<?>>();
 
-        return list.toArray(new CLASS[0]);
-    }
+		for(Component component : components) {
+			try {
+				list.add(Loader.loadClass(component.className()));
+			} catch(RuntimeException e) {
+				Trace.logError("Error loading entry point '" + component.className() + "'", e);
+			}
+		}
 
-    protected void writeLoginInfo(JsonWriter writer) {
-        IUser user = ApplicationServer.getUser();
+		return list.toArray(new CLASS[0]);
+	}
 
-        writer.writeProperty(Json.sessionId, ApplicationServer.getSession().id());
+	protected void writeLoginInfo(JsonWriter writer) {
+		IUser user = ApplicationServer.getUser();
 
-        writer.startObject(Json.user);
+		writer.writeProperty(Json.sessionId, ApplicationServer.getSession().id());
 
-        writer.writeProperty(Json.id, user.id());
-        writer.writeProperty(Json.name, user.description());
-        writer.writeProperty(Json.login, user.name());
-        writer.writeProperty(Json.email, user.email());
-        writer.writeProperty(Json.phone, user.phone());
-        writer.writeProperty(Json.settings, user.settings());
+		writer.startObject(Json.user);
 
-        writer.startArray(Json.components);
-        for(CLASS<?> cls : loadComponents(user.components()))
-            writeData(writer, cls);
-        writer.finishArray();
+		writer.writeProperty(Json.id, user.id());
+		writer.writeProperty(Json.name, user.description());
+		writer.writeProperty(Json.login, user.name());
+		writer.writeProperty(Json.email, user.email());
+		writer.writeProperty(Json.phone, user.phone());
+		writer.writeProperty(Json.settings, user.settings());
 
-        writer.startObject(Json.parameters);
-        Map<string, primary> parameters = user.parameters();
-        for(string key : parameters.keySet())
-            writer.writeProperty(JsonObject.quote(key.get()), parameters.get(key));
-        writer.finishObject();
-    
-        writer.finishObject();
-    }
+		writer.startArray(Json.components);
+		for(CLASS<?> cls : loadComponents(user.components()))
+			writeData(writer, cls);
+		writer.finishArray();
 
-    private void writeData(JsonWriter writer, CLASS<?> cls) {
-        writer.startObject();
+		writer.startObject(Json.parameters);
+		Map<string, primary> parameters = user.parameters();
+		for(string key : parameters.keySet())
+			writer.writeProperty('"' + key.get() + '"', parameters.get(key));
+		writer.finishObject();
 
-        if(cls.instanceOf(Procedure.class)) {
-            Procedure procedure = (Procedure)cls.newInstance();
-            procedure.write(writer);
-        } else
-            cls.write(writer);
+		writer.finishObject();
+	}
 
-        writer.finishObject();
-    }
+	private void writeData(JsonWriter writer, CLASS<?> cls) {
+		writer.startObject();
+
+		if(cls.instanceOf(Procedure.class)) {
+			Procedure procedure = (Procedure)cls.newInstance();
+			procedure.write(writer);
+		} else
+			cls.write(writer);
+
+		writer.finishObject();
+	}
 }

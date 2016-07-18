@@ -3,7 +3,6 @@ package org.zenframework.z8.server.request;
 import java.lang.management.ManagementFactory;
 import java.lang.management.MemoryMXBean;
 import java.lang.management.MemoryUsage;
-import java.util.Map;
 
 import org.zenframework.z8.server.base.job.Job;
 import org.zenframework.z8.server.base.job.JobMonitor;
@@ -13,14 +12,13 @@ import org.zenframework.z8.server.base.model.actions.ActionFactory;
 import org.zenframework.z8.server.base.query.Query;
 import org.zenframework.z8.server.base.simple.Procedure;
 import org.zenframework.z8.server.base.view.Dashboard;
-import org.zenframework.z8.server.base.view.command.Parameter;
+import org.zenframework.z8.server.config.ServerConfig;
 import org.zenframework.z8.server.engine.ApplicationServer;
 import org.zenframework.z8.server.json.Json;
 import org.zenframework.z8.server.json.JsonWriter;
 import org.zenframework.z8.server.logs.Trace;
 import org.zenframework.z8.server.runtime.OBJECT;
 import org.zenframework.z8.server.security.IUser;
-import org.zenframework.z8.server.types.string;
 import org.zenframework.z8.server.utils.ErrorUtils;
 
 public class RequestDispatcher implements Runnable {
@@ -92,7 +90,7 @@ public class RequestDispatcher implements Runnable {
 			processRequest(request, response, requestId);
 
 			if (!Dashboard.Id.equals(requestId) && !Json.settings.equals(requestId))
-				Trace.logEvent(request.toString() + "\n\t\t " + (System.currentTimeMillis() - t) + "ms; " + getMemoryUsage());
+				Trace.logEvent(request.toString() + "\n\t " + (System.currentTimeMillis() - t) + "ms; " + getMemoryUsage());
 		}
 	}
 
@@ -111,7 +109,7 @@ public class RequestDispatcher implements Runnable {
 			IUser user = ApplicationServer.getUser();
 			user.setSettings(request.getParameter(Json.data));
 
-			user.save(ApplicationServer.database());
+			user.save(ServerConfig.database());
 
 			JsonWriter writer = new JsonWriter();
 			writer.startResponse(requestId, true);
@@ -129,9 +127,6 @@ public class RequestDispatcher implements Runnable {
 				action.processRequest(response);
 			} else if (object instanceof Procedure) {
 				Procedure procedure = (Procedure) object;
-				for (Map.Entry<String, String> entry : request.getParameters().entrySet()) {
-					procedure.parameters.add(Parameter.z8_create(new string(entry.getKey()), new string(entry.getValue())));
-				}
 				Job job = new Job(procedure);
 				job.processRequest(response);
 			}

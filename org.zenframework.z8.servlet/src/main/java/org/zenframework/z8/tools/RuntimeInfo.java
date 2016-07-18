@@ -8,10 +8,6 @@ import org.apache.commons.cli.Options;
 import org.zenframework.z8.auth.AuthorityCenter;
 import org.zenframework.z8.server.config.ServerConfig;
 import org.zenframework.z8.server.engine.ApplicationServer;
-import org.zenframework.z8.server.engine.IApplicationServer;
-import org.zenframework.z8.server.engine.IAuthorityCenter;
-import org.zenframework.z8.server.engine.Rmi;
-import org.zenframework.z8.server.engine.Z8Context;
 import org.zenframework.z8.server.ie.Import;
 import org.zenframework.z8.server.json.parser.JsonObject;
 
@@ -27,17 +23,17 @@ public class RuntimeInfo {
 			CommandLineParser parser = new BasicParser();
 			CommandLine cmd = parser.parse(OPTIONS, args);
 			ServerConfig config = null;
-			if (cmd.hasOption(OPT_CONFIG)) {
+			
+			if (cmd.hasOption(OPT_CONFIG))
 				config = new ServerConfig(cmd.getOptionValue(OPT_CONFIG));
-				Z8Context.init(config);
-			}
+
 			if (cmd.hasOption(OPT_STRUCTURE)) {
-				AuthorityCenter.start(config);
-				ApplicationServer.start(config);
+				AuthorityCenter.launch(config);
+				ApplicationServer.launch(config);
 				JsonObject structure = Import.getTablesStructure();
 				System.out.println(structure.toString(4));
-				Rmi.get(IApplicationServer.class).stop();
-				Rmi.get(IAuthorityCenter.class).stop();
+//				Rmi.get(IApplicationServer.class).stop();
+//				Rmi.get(IAuthorityCenter.class).stop();
 				System.exit(0);
 			} else {
 				throw new Exception("Incorrect arguments");

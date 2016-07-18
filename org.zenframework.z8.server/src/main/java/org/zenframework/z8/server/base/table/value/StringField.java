@@ -20,7 +20,6 @@ public class StringField extends Field {
         public CLASS(IObject container) {
             super(container);
             setJavaClass(StringField.class);
-            setAttribute(Native, StringField.class.getCanonicalName());
         }
 
         @Override
@@ -29,13 +28,13 @@ public class StringField extends Field {
         }
     }
 
-    public integer minLength = new integer(0);
-    public integer maxLength = new integer(0);
+    public integer minLength = null;
+    public integer maxLength = null;
 
     public StringField(IObject container) {
         super(container);
         setDefault(new string(""));
-        length.set(DefaultLength);
+        length = new integer(DefaultLength);
         aggregation = Aggregation.Max;
     }
 
@@ -99,7 +98,7 @@ public class StringField extends Field {
     public void writeMeta(JsonWriter writer) {
         super.writeMeta(writer);
 
-        writer.writeProperty(Json.min, Math.max(minLength.get(), 0));
-        writer.writeProperty(Json.max, Math.min(maxLength.get(), length.get()));
+        writer.writeProperty(Json.min, minLength, new integer(0));
+        writer.writeProperty(Json.max, maxLength, length);
     }
 }

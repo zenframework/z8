@@ -14,7 +14,6 @@ public class Style extends OBJECT {
         public CLASS(IObject container) {
             super(container);
             setJavaClass(Style.class);
-            setAttribute(Native, Style.class.getCanonicalName());
         }
 
         @Override

@@ -12,10 +12,10 @@ import org.zenframework.z8.server.types.string;
 public class AttachmentExpression extends TextExpression {
 
 	public static class CLASS<T extends AttachmentExpression> extends TextExpression.CLASS<T> {
+
 		public CLASS(IObject container) {
 			super(container);
 			setJavaClass(AttachmentExpression.class);
-			setAttribute(Native, AttachmentExpression.class.getCanonicalName());
 		}
 
 		@Override

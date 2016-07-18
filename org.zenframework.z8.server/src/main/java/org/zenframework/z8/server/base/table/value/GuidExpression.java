@@ -12,7 +12,7 @@ public class GuidExpression extends Expression {
         public CLASS(IObject container) {
             super(container);
             setJavaClass(GuidExpression.class);
-            setAttribute(Native, GuidExpression.class.getCanonicalName());
+            setSystem(true);
         }
 
         @Override
@@ -25,7 +25,6 @@ public class GuidExpression extends Expression {
         super(container);
 
         setDefault(new guid());
-        system.set(true);
     }
 
     @Override

@@ -8,212 +8,184 @@ import java.util.List;
 import org.zenframework.z8.server.logs.Trace;
 
 public class CLASS<TYPE extends IObject> extends OBJECT implements IClass<TYPE> {
-    public final static int Constructor = -1;
-    public final static int Constructor1 = 0;
-    public final static int Constructor2 = 1;
+	public final static int Constructor = -1;
+	public final static int Constructor1 = 0;
+	public final static int Constructor2 = 1;
 
-    private Class<TYPE> javaClass;
-    private TYPE object = null;
-    private int stage = Constructor;
+	private Class<TYPE> javaClass;
+	private TYPE object = null;
+	private int stage = Constructor;
 
-    Constructor<?> constructor = null;
+	Constructor<?> constructor = null;
 
-    private List<IClass<TYPE>> references = null;
+	private List<IClass<TYPE>> references = null;
 
-    static public <T extends IObject> List<T> asList(
-            Collection<? extends org.zenframework.z8.server.runtime.CLASS<? extends T>> collection) {
-        return asList(collection, false);
-    }
+	static public <T extends IObject> List<T> asList(Collection<? extends CLASS<? extends T>> collection) {
+		return asList(collection, false);
+	}
 
-    static public <T extends IObject> List<T> asList(
-            Collection<? extends org.zenframework.z8.server.runtime.CLASS<? extends T>> collection, boolean createNewInstances) {
-        List<T> result = new ArrayList<T>();
+	static public <T extends IObject> List<T> asList(Collection<? extends CLASS<? extends T>> collection, boolean createNewInstances) {
+		List<T> result = new ArrayList<T>();
 
-        if (collection != null) {
-            for (org.zenframework.z8.server.runtime.CLASS<? extends T> cls : collection)
-                result.add((T) (createNewInstances ? cls.newInstance() : cls.get()));
-        }
+		if(collection != null) {
+			for(org.zenframework.z8.server.runtime.CLASS<? extends T> cls : collection)
+				result.add((T)(createNewInstances ? cls.newInstance() : cls.get()));
+		}
 
-        return result;
-    }
+		return result;
+	}
 
-    public CLASS(IObject container) {
-        super(container);
-    }
+	public CLASS(IObject container) {
+		super(container);
+	}
 
-    @Override
-    final public Class<TYPE> getJavaClass() {
-        return javaClass;
-    }
+	@Override
+	final public Class<TYPE> getJavaClass() {
+		return javaClass;
+	}
 
-    @Override
-    @SuppressWarnings("unchecked")
-    final public void setJavaClass(Class<?> cls) {
-        javaClass = (Class<TYPE>)cls;
-    }
+	@Override
+	@SuppressWarnings("unchecked")
+	final public void setJavaClass(Class<?> cls) {
+		javaClass = (Class<TYPE>)cls;
+	}
 
-    @SuppressWarnings("unchecked")
-    public void setObject(IObject object) {
-        this.object = (TYPE) object;
-        this.stage = Constructor2;
+	@SuppressWarnings("unchecked")
+	public void setObject(IObject object) {
+		this.object = (TYPE)object;
+		this.stage = Constructor2;
 
-        this.object.setContainer(getContainer());
-        setAttributes(object.getAttributes());
+		this.object.setContainer(getContainer());
+		setAttributes(object.getAttributes());
 
-        this.object.setCLASS(this);
-        this.object.setIndex(getIndex());
-    }
+		this.object.setCLASS(this);
+		this.object.setIndex(getIndex());
+	}
 
-    @Override
-    public void setOwner(IObject owner) {
-        super.setOwner(owner);
+	@Override
+	public void setOwner(IObject owner) {
+		super.setOwner(owner);
 
-        if (object != null)
-            object.setOwner(owner);
-    }
-    
-    @Override
-    public List<IClass<TYPE>> getReferences() {
-        if (references == null)
-            references = new ArrayList<IClass<TYPE>>();
+		if(object != null)
+			object.setOwner(owner);
+	}
 
-        return references;
-    }
+	@Override
+	public List<IClass<TYPE>> getReferences() {
+		if(references == null)
+			references = new ArrayList<IClass<TYPE>>();
 
-    public void addReference(IClass<TYPE> reference) {
-        if (references == null)
-            references = new ArrayList<IClass<TYPE>>();
+		return references;
+	}
 
-        if (!references.contains(reference))
-            references.add(reference);
-    }
+	public void addReference(IClass<TYPE> reference) {
+		if(references == null)
+			references = new ArrayList<IClass<TYPE>>();
 
-    public boolean instanceOf(Class<?> cls) {
-        return cls.isAssignableFrom(getJavaClass());
-    }
+		if(!references.contains(reference))
+			references.add(reference);
+	}
 
-    @Override
-    public boolean hasInstance() {
-        return object != null;
-    }
+	public boolean instanceOf(Class<?> cls) {
+		return cls.isAssignableFrom(getJavaClass());
+	}
 
-    @Override
-    public final TYPE get() {
-        return get(Constructor2);
-    }
+	@Override
+	public boolean hasInstance() {
+		return object != null;
+	}
 
-    public/* final */TYPE get(int stage) {
-        if(object != null && this.stage >= stage)
-            return object;
-        
-        if (object == null)
-            create(getContainer());
+	@Override
+	public final TYPE get() {
+		return get(Constructor2);
+	}
 
-        callConstructors(stage);
+	public/* final */TYPE get(int stage) {
+		if(object != null && this.stage >= stage)
+			return object;
 
-        return object;
-    }
+		if(object == null)
+			create(getContainer());
 
-    @Override
-    public String getAttribute(String key) {
-        return (object != null ? object.getAttribute(key) : super.getAttribute(key));
-    }
+		callConstructors(stage);
 
-    @Override
-    public void setAttribute(String key, String value) {
-        if (object != null)
-            object.setAttribute(key, value);
+		return object;
+	}
 
-        super.setAttribute(key, value);
-    }
+	@Override
+	public String displayName() {
+		String name = super.displayName();
+		return name == null || name.isEmpty() ? getJavaClass().getSimpleName() : name;
+	}
 
-    @Override
-    public void removeAttribute(String key) {
-        if (object != null)
-            object.removeAttribute(key);
+	public Object newObject(IObject container) {
+		return null;
+	}
 
-        super.removeAttribute(key);
-    }
+	@SuppressWarnings("unchecked")
+	private TYPE constructObject(IObject container) throws Exception {
+		TYPE object = (TYPE)newObject(container);
 
-    @Override
-    public boolean hasAttribute(String key) {
-        return object != null ? object.hasAttribute(key) : super.hasAttribute(key);
-    }
+		if(object != null)
+			return object;
 
-    @Override
-    public String displayName() {
-        String name = super.displayName();
-        return name == null || name.isEmpty() ? getJavaClass().getSimpleName() : name;
-    }
+		try {
+			Constructor<TYPE> constructor = javaClass.getDeclaredConstructor(IObject.class);
+			return (TYPE)constructor.newInstance(container);
+		} catch(NoSuchMethodException e) {
+			Class<?> enclosingClass = javaClass.getEnclosingClass();
+			Constructor<TYPE> constructor = javaClass.getDeclaredConstructor(enclosingClass, IObject.class);
+			constructor.setAccessible(true);
+			return (TYPE)constructor.newInstance(container, container);
+		}
+	}
 
-    public Object newObject(IObject container) {
-        return null;
-    }
+	private void create(IObject container) {
+		try {
+			object = constructObject(container);
+			object.setCLASS(this);
+			object.setOwner(getOwner());
+		} catch(Throwable e) {
+			Trace.logError(e);
+			throw new RuntimeException(e);
+		}
+	}
 
-    @SuppressWarnings("unchecked")
-    private TYPE constructObject(IObject container) throws Exception {
-        TYPE object = (TYPE) newObject(container);
+	private void callConstructors(int stage) {
+		if(this.stage < Constructor1 && stage >= Constructor1) {
+			this.stage = Constructor1;
+			object.constructor1();
+			object.setAttributes(getAttributes());
+		}
 
-        if (object != null)
-            return object;
+		callConstructor2(stage);
+	}
 
-        try {
-            Constructor<TYPE> constructor = javaClass.getDeclaredConstructor(IObject.class);
-            return (TYPE) constructor.newInstance(container);
-        } catch (NoSuchMethodException e) {
-            Class<?> enclosingClass = javaClass.getEnclosingClass();
-            Constructor<TYPE> constructor = javaClass.getDeclaredConstructor(enclosingClass, IObject.class);
-            constructor.setAccessible(true);
-            return (TYPE) constructor.newInstance(container, container);
-        }
-    }
+	private void callConstructor2(int stage) {
+		if(this.stage < Constructor2 && stage >= Constructor2) {
+			this.stage = Constructor2;
+			object.constructor2();
+			object.onInitialized();
+			object.constructor();
+		}
+	}
 
-    private void create(IObject container) {
-        try {
-            object = constructObject(container);
-            object.setCLASS(this);
-            object.setOwner(getOwner());
-        } catch (Throwable e) {
-            Trace.logError(e);
-            throw new RuntimeException(e);
-        }
-    }
+	@Override
+	@SuppressWarnings("unchecked")
+	public TYPE newInstance() {
+		try {
+			if(constructor == null)
+				constructor = getClass().getDeclaredConstructor(IObject.class);
+			org.zenframework.z8.server.runtime.CLASS<TYPE> cls = (org.zenframework.z8.server.runtime.CLASS<TYPE>)constructor.newInstance(getContainer());
+			return cls.get();
+		} catch(Throwable e) {
+			Trace.logError(e);
+			throw new RuntimeException(e);
+		}
+	}
 
-    private void callConstructors(int stage) {
-        if (this.stage < Constructor1 && stage >= Constructor1) {
-            this.stage = Constructor1;
-            object.constructor1();
-            object.setAttributes(getAttributes());
-        }
-
-        callConstructor2(stage);
-    }
-
-    private void callConstructor2(int stage) {
-        if (this.stage < Constructor2 && stage >= Constructor2) {
-            this.stage = Constructor2;
-            object.constructor2();
-            object.onInitialized();
-            object.constructor();
-        }
-    }
-
-    @Override
-    @SuppressWarnings("unchecked")
-    public TYPE newInstance() {
-        try {
-            if(constructor == null)
-                constructor = getClass().getDeclaredConstructor(IObject.class);
-            org.zenframework.z8.server.runtime.CLASS<TYPE> cls = (org.zenframework.z8.server.runtime.CLASS<TYPE>) constructor.newInstance(getContainer());
-            return cls.get();
-        } catch (Throwable e) {
-            Trace.logError(e);
-            throw new RuntimeException(e);
-        }
-    }
-
-    @Override
-    public String classId() {
-        return javaClass.getCanonicalName();
-    }
+	@Override
+	public String classId() {
+		return javaClass.getCanonicalName();
+	}
 }

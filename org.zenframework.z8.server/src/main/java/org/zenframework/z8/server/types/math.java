@@ -9,7 +9,6 @@ public class math extends OBJECT {
 		public CLASS(IObject container) {
 			super(container);
 			setJavaClass(math.class);
-			setAttribute(Native, math.class.getCanonicalName());
 		}
 
 		@Override

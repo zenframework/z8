@@ -6,9 +6,11 @@ import org.zenframework.z8.server.db.sql.SqlField;
 import org.zenframework.z8.server.engine.ApplicationServer;
 import org.zenframework.z8.server.format.Format;
 import org.zenframework.z8.server.runtime.IObject;
+import org.zenframework.z8.server.types.bool;
 import org.zenframework.z8.server.types.decimal;
 import org.zenframework.z8.server.types.integer;
 import org.zenframework.z8.server.types.primary;
+import org.zenframework.z8.server.types.string;
 import org.zenframework.z8.server.types.sql.sql_decimal;
 import org.zenframework.z8.server.types.sql.sql_primary;
 
@@ -32,8 +34,8 @@ public class DecimalField extends Field {
     public DecimalField(IObject container) {
         super(container);
         setDefault(new decimal());
-        format.set(Format.decimal);
-        stretch.set(false);
+        format = new string(Format.decimal);
+        stretch = new bool(false);
         
         aggregation = Aggregation.Sum;
     }

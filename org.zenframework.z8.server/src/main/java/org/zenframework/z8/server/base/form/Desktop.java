@@ -13,7 +13,6 @@ public class Desktop extends OBJECT {
         public CLASS(IObject container) {
             super(container);
             setJavaClass(Desktop.class);
-            setAttribute(Native, Desktop.class.getCanonicalName());
         }
 
         @Override

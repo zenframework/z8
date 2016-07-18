@@ -16,7 +16,6 @@ public class Hyperlink extends OBJECT {
         public CLASS(IObject container) {
             super(container);
             setJavaClass(Hyperlink.class);
-            setAttribute(Native, Hyperlink.class.getCanonicalName());
         }
 
         @Override

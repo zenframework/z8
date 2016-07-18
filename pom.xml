@@ -35,6 +35,7 @@
 
 	<modules>
 		<module>org.zenframework.z8.auth</module>
+		<module>org.zenframework.z8.interconnection</module>
 		<module>org.zenframework.z8.boot</module>
 		<module>org.zenframework.z8.compiler</module>
 		<module>org.zenframework.z8.lang</module>

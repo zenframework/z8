@@ -8,7 +8,6 @@ public class Runnable extends OBJECT implements java.lang.Runnable {
         public CLASS(IObject container) {
             super(container);
             setJavaClass(Runnable.class);
-            setAttribute(Native, Runnable.class.getCanonicalName());
         }
 
         @Override

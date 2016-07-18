@@ -11,50 +11,50 @@ import org.zenframework.z8.server.db.sql.SqlToken;
 import org.zenframework.z8.server.db.sql.expressions.Mul;
 import org.zenframework.z8.server.db.sql.expressions.Operation;
 import org.zenframework.z8.server.db.sql.functions.conversion.ToDatetime;
-import org.zenframework.z8.server.exceptions.UnsupportedParameterException;
+import org.zenframework.z8.server.exceptions.UnsupportedException;
 import org.zenframework.z8.server.exceptions.db.UnknownDatabaseException;
 import org.zenframework.z8.server.types.datespan;
 import org.zenframework.z8.server.types.integer;
 
 public class TruncSecond extends SqlToken {
-    private SqlToken param1;
+    private SqlToken time;
 
-    public TruncSecond(SqlToken p1) {
-        param1 = p1;
+    public TruncSecond(SqlToken time) {
+        this.time = time;
     }
 
     @Override
     public void collectFields(Collection<IValue> fields) {
-        param1.collectFields(fields);
+        time.collectFields(fields);
     }
 
     @Override
     public String format(DatabaseVendor vendor, FormatOptions options, boolean logicalContext) {
-        switch(param1.type()) {
+        switch(time.type()) {
         case Date:
         case Datetime:
             switch(vendor) {
             case Oracle:
-                return new ToDatetime(param1).format(vendor, options);
+                return new ToDatetime(time).format(vendor, options);
             case Postgres:
-                return "date_trunc('second', " + param1.format(vendor, options) + ")";
+                return "date_trunc('second', " + time.format(vendor, options) + ")";
             case SqlServer:
-                return "Convert(datetime, convert(varchar(19)," + param1.format(vendor, options) + ", 120), 120)";
+                return "Convert(datetime, convert(varchar(19)," + time.format(vendor, options) + ", 120), 120)";
             default:
                 throw new UnknownDatabaseException();
             }
 
         case Datespan:
-            return new Mul(new TotalMinute(param1), Operation.Mul, new SqlConst(new integer(datespan.TicksPerMinute)))
+            return new Mul(new TotalMinute(time), Operation.Mul, new SqlConst(new integer(datespan.TicksPerMinute)))
                     .format(vendor, options);
 
         default:
-            throw new UnsupportedParameterException();
+            throw new UnsupportedException();
         }
     }
 
     @Override
     public FieldType type() {
-        return param1.type();
+        return time.type();
     }
 }

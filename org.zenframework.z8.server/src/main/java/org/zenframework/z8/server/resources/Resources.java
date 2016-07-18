@@ -13,90 +13,90 @@ import org.zenframework.z8.server.base.file.Folders;
 import org.zenframework.z8.server.logs.Trace;
 
 public class Resources {
-    public static String DefaultLanguage = "ru";
+	public static String DefaultLanguage = "ru";
 
-    private static Resources instance;
+	private static Resources instance;
 
-    private Map<String, Properties> boundles = new ConcurrentHashMap<String, Properties>();
+	private Map<String, Properties> boundles = new ConcurrentHashMap<String, Properties>();
 
-    static {
-        instance = new Resources();
-    }
+	static {
+		instance = new Resources();
+	}
 
-    public static String get(String id) {
-        return getResources().getString(id);
-    }
+	public static String get(String id) {
+		return getResources().getString(id);
+	}
 
-    public static Resources getResources() {
-        return instance;
-    }
+	public static Resources getResources() {
+		return instance;
+	}
 
-    private Resources() {
-        load(DefaultLanguage);
-    }
+	private Resources() {
+		load(DefaultLanguage);
+	}
 
-    private String getString(String key) {
-        Properties props = boundles.get(DefaultLanguage);
+	private String getString(String key) {
+		Properties props = boundles.get(DefaultLanguage);
 
-        if(props == null) {
-            return "${" + key + "}";
-        }
+		if(props == null) {
+			return "${" + key + "}";
+		}
 
-        String value = props.getProperty(key);
+		String value = props.getProperty(key);
 
-        if(value == null) {
-            return "${" + key + "}";
-        }
+		if(value == null) {
+			return "${" + key + "}";
+		}
 
-        return value;
-    }
+		return value;
+	}
 
-    static public String format(String key, Object... format) {
-        return MessageFormat.format(get(key), format);
-    }
+	static public String format(String key, Object... format) {
+		return MessageFormat.format(get(key), format);
+	}
 
-    public boolean load(final String language) {
-        if(boundles.containsKey(language))
-            return true;
+	public boolean load(final String language) {
+		if(boundles.containsKey(language))
+			return true;
 
-        File resourcesFolder = new File(Folders.Base, "resources");
+		File resourcesFolder = new File(Folders.Base, "resources");
 
-        String os_name = System.getProperty("os.name");
-        Trace.logEvent("Loading resource boundles for '" + language + "'. System locale: '"
-                + java.util.Locale.getDefault().toString() + "'. OS name: '" + os_name + "'.");
+		String os_name = System.getProperty("os.name");
+		Trace.logEvent("Loading resource boundles for '" + language + "'. System locale: '" + java.util.Locale.getDefault().toString() + "'. OS name: '" + os_name + "'.");
 
-        File[] files = resourcesFolder.listFiles(new FileFilter() {
-            @Override
-            public boolean accept(File file) {
-                String nls = "_" + language + ".nls";
-                String xml = "_" + language + ".xml";
-                String name = file.getName();
-                return file.isFile() && (name.endsWith(nls) || name.endsWith(xml));
-            }
-        });
+		final String nls = "_" + language + ".nls";
+		final String xml = "_" + language + ".xml";
 
-        if(files == null || files.length == 0) {
-            Trace.logEvent("No resource boundles found for '" + language + "'.");
-            return false;
-        }
+		File[] files = resourcesFolder.listFiles(new FileFilter() {
+			@Override
+			public boolean accept(File file) {
+				if(!file.isFile())
+					return false;
+				
+				String name = file.getName();
+				return name.endsWith(xml) || name.endsWith(nls);
+			}
+		});
 
-        boolean result = true;
+		if(files == null || files.length == 0) {
+			Trace.logEvent("No resource boundles found for '" + language + "'.");
+			return false;
+		}
 
-        Properties boundle = new Properties();
-        boundles.put(language, boundle);
+		boolean result = true;
 
-        for(File file : files) {
-            Properties properties = new Properties();
-            try {
-                properties.loadFromXML(new FileInputStream(file));
-                boundle.putAll(properties);
-            }
-            catch(IOException e) {
-                Trace.logError(e);
-                result = false;
-            }
-        }
+		Properties boundle = new Properties();
+		boundles.put(language, boundle);
 
-        return result;
-    }
+		for(File file : files) {
+			try {
+				boundle.loadFromXML(new FileInputStream(file));
+			} catch(IOException e) {
+				Trace.logError(e);
+				result = false;
+			}
+		}
+
+		return result;
+	}
 }

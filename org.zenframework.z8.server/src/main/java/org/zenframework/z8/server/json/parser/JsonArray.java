@@ -116,6 +116,7 @@ public class JsonArray extends ArrayList<Object> {
      * @throws JsonException
      *             If there is a syntax error.
      */
+
     public JsonArray(String source) throws JsonException {
         this(new JsonTokener(source == null || source.isEmpty() ? "[]" : source));
     }

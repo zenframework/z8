@@ -35,7 +35,7 @@ class ReportReadAction extends ReadAction {
         List<Field> result = new ArrayList<Field>();
 
         for(Field field : super.getSelectFields()) {
-            if(field.isDataField() && !field.system.get()) {
+            if(field.isDataField() && !field.system()) {
                 result.add(field);
             }
         }
@@ -65,10 +65,9 @@ public class ReportAction extends Action {
             Collection<Query> queries = query.onReport(report, ids);
 
             for(Query reportQuery : queries) {
-                parameters = new ActionParameters();
+                parameters = new ActionParameters(requestParameters());
                 parameters.query = reportQuery;
                 parameters.keyField = actionParameters().keyField;
-                parameters.requestParameters = actionParameters().requestParameters;
 
                 ReadAction action = new ReportReadAction(parameters);
                 actions.add(action);
@@ -104,7 +103,7 @@ public class ReportAction extends Action {
 
             Field field = getQuery().findFieldById(column.getString(Json.id));
 
-            if(field != null && !field.system.get()) {
+            if(field != null && !field.system()) {
                 int width = column.getInt(Json.width);
                 field.width = new integer(width);
                 result.add(field);
@@ -150,7 +149,7 @@ public class ReportAction extends Action {
         String report = getReportParameter();
 
         String reportFolder = Folders.Reports;
-        String reportTemplate = report;
+        String reportTemplate = report != null ? report : null;
         String reportCaption = "";
 
         if(report == null) {
@@ -177,7 +176,7 @@ public class ReportAction extends Action {
         String reportId = report != null ? reportRunner.execute() : reportRunner.execute(columns, groupFields);
 
         writer.writeProperty(Json.source, reportId);
-        writer.writeProperty(Json.serverId, ApplicationServer.Id());
+        writer.writeProperty(Json.serverId, ApplicationServer.id);
     }
 
 }

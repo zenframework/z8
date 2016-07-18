@@ -2,6 +2,7 @@ package org.zenframework.z8.server.utils;
 
 import java.io.ByteArrayOutputStream;
 import java.io.Closeable;
+import java.io.DataOutput;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -15,7 +16,6 @@ import java.util.zip.Deflater;
 import java.util.zip.Inflater;
 
 import org.mozilla.universalchardet.UniversalDetector;
-import org.zenframework.z8.server.engine.Z8Context;
 import org.zenframework.z8.server.logs.Trace;
 import org.zenframework.z8.server.types.encoding;
 
@@ -31,6 +31,56 @@ public class IOUtils {
 	private IOUtils() {/* hide constructor */
 	}
 
+	public static int read(InputStream input, byte[] buffer) throws IOException {
+		return read(input, buffer, 0, buffer.length);
+	}
+
+	public static int read(InputStream input, byte[] buffer, int offset, int length) throws IOException {
+		if(length < 0)
+			throw new IllegalArgumentException("Length must not be negative: " + length);
+
+		int remaining = length;
+	
+		while(remaining > 0) {
+			int location = length - remaining;
+			int count = input.read(buffer, offset + location, remaining);
+			if(count == -1) // EOF
+				break;
+
+			remaining -= count;
+		}
+
+		return length - remaining;
+	}
+
+	static public void copy(InputStream input, DataOutput output) throws IOException {
+		copy(input, output, true);
+	}
+
+	static public void copy(InputStream input, DataOutput output, boolean autoClose) throws IOException {
+		try {
+			int count = 0;
+			byte[] buffer = new byte[DefaultBufferSize];
+
+			while((count = input.read(buffer)) != -1) {
+				if(count > 0)
+					output.write(buffer, 0, count);
+			}
+
+			if(autoClose) {
+				input.close();
+				if(output instanceof Closeable)
+					((Closeable)output).close();
+				autoClose = false;
+			}
+		} finally {
+			if(autoClose) {
+				closeQuietly(input);
+				closeQuietly((Closeable)output);
+			}
+		}
+	}
+
 	static public void copy(InputStream input, File file) throws IOException {
 		copy(input, file, true);
 	}
@@ -40,7 +90,7 @@ public class IOUtils {
 			file.getParentFile().mkdirs();
 			copy(input, new FileOutputStream(file), autoClose);
 		} finally {
-			if (autoClose)
+			if(autoClose)
 				closeQuietly(input);
 		}
 	}
@@ -54,18 +104,18 @@ public class IOUtils {
 			int count = 0;
 			byte[] buffer = new byte[DefaultBufferSize];
 
-			while ((count = input.read(buffer)) != -1) {
-				if (count > 0)
+			while((count = input.read(buffer)) != -1) {
+				if(count > 0)
 					output.write(buffer, 0, count);
 			}
 
-			if (autoClose) {
+			if(autoClose) {
 				input.close();
 				output.close();
 				autoClose = false;
 			}
 		} finally {
-			if (autoClose) {
+			if(autoClose) {
 				closeQuietly(input);
 				closeQuietly(output);
 			}
@@ -81,12 +131,12 @@ public class IOUtils {
 			byte[] buffer = new byte[DefaultBufferSize];
 			long count = 0;
 			int read = 0;
-			while ((read = input.read(buffer)) != -1) {
+			while((read = input.read(buffer)) != -1) {
 				output.write(buffer, 0, read);
 				count += read;
 			}
 
-			if (autoClose) {
+			if(autoClose) {
 				input.close();
 				output.close();
 				autoClose = false;
@@ -94,7 +144,7 @@ public class IOUtils {
 
 			return count;
 		} finally {
-			if (autoClose) {
+			if(autoClose) {
 				closeQuietly(input);
 				closeQuietly(output);
 			}
@@ -109,26 +159,26 @@ public class IOUtils {
 		try {
 			byte[] buffer = new byte[DefaultBufferSize];
 
-			if (length == 0)
+			if(length == 0)
 				return 0;
 
 			final int bufferLength = buffer.length;
 
 			int bytesToRead = bufferLength;
-			if (length > 0 && length < bufferLength)
-				bytesToRead = (int) length;
+			if(length > 0 && length < bufferLength)
+				bytesToRead = (int)length;
 
 			int read;
 			long totalRead = 0;
 
-			while (bytesToRead > 0 && (read = input.read(buffer, 0, bytesToRead)) != -1) {
+			while(bytesToRead > 0 && (read = input.read(buffer, 0, bytesToRead)) != -1) {
 				output.write(buffer, 0, read);
 				totalRead += read;
-				if (length > 0)
-					bytesToRead = (int) Math.min(length - totalRead, bufferLength);
+				if(length > 0)
+					bytesToRead = (int)Math.min(length - totalRead, bufferLength);
 			}
 
-			if (autoClose) {
+			if(autoClose) {
 				input.close();
 				output.close();
 				autoClose = false;
@@ -136,7 +186,7 @@ public class IOUtils {
 
 			return totalRead;
 		} finally {
-			if (autoClose) {
+			if(autoClose) {
 				closeQuietly(input);
 				closeQuietly(output);
 			}
@@ -159,23 +209,28 @@ public class IOUtils {
 
 	static public void closeQuietly(Closeable closable) {
 		try {
-			if (closable != null)
+			if(closable != null)
 				closable.close();
-		} catch (Throwable e) {}
+		} catch(Throwable e) {
+		}
 	}
 
 	static public byte[] zip(byte[] bytes) {
-		if (bytes == null)
+		return zip(bytes, 0, bytes.length);
+	}
+	
+	static public byte[] zip(byte[] bytes, int offset, int length) {
+		if(bytes == null)
 			return null;
 
 		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 
 		Deflater deflater = new Deflater();
-		deflater.setInput(bytes);
+		deflater.setInput(bytes, offset, length);
 		deflater.finish();
 
 		byte[] buffer = new byte[32768];
-		while (!deflater.finished()) {
+		while(!deflater.finished()) {
 			int count = deflater.deflate(buffer);
 			outputStream.write(buffer, 0, count);
 		}
@@ -184,21 +239,25 @@ public class IOUtils {
 	}
 
 	static public byte[] unzip(byte[] bytes) {
-		if (bytes == null)
+		return unzip(bytes, 0, bytes.length);
+	}
+	
+	static public byte[] unzip(byte[] bytes, int offset, int length) {
+		if(bytes == null)
 			return null;
 
 		Inflater inflater = new Inflater();
-		inflater.setInput(bytes);
+		inflater.setInput(bytes, offset, length);
 
 		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 
 		byte[] buffer = new byte[32768];
 
-		while (!inflater.finished()) {
+		while(!inflater.finished()) {
 			try {
 				int count = inflater.inflate(buffer);
 				outputStream.write(buffer, 0, count);
-			} catch (DataFormatException e) {
+			} catch(DataFormatException e) {
 				throw new RuntimeException(e);
 			}
 		}
@@ -210,14 +269,14 @@ public class IOUtils {
 		dest.getParentFile().mkdirs();
 		String message = "";
 		try {
-			if (IS_WINDOWS)
+			if(IS_WINDOWS)
 				message = cmd(trace, "cmd", "/C", "move", "/Y", src.getCanonicalPath(), dest.getCanonicalPath());
-			else if (IS_LINUX)
+			else if(IS_LINUX)
 				message = cmd(trace, "mv", src.getCanonicalPath(), dest.getCanonicalPath());
-			if (trace) {
+			if(trace) {
 				Trace.logEvent("Move '" + src + "' to '" + dest + "':\r\n" + message);
 			}
-		} catch (Exception e) {
+		} catch(Exception e) {
 			Trace.logError("Can't move '" + src + "' to '" + dest + "'", e);
 		}
 		return dest.exists();
@@ -227,14 +286,14 @@ public class IOUtils {
 		dest.getParentFile().mkdirs();
 		String message = "";
 		try {
-			if (IS_WINDOWS)
+			if(IS_WINDOWS)
 				message = cmd(trace, "cmd", "/C", "xcopy", "/E", "/Y", src.getCanonicalPath(), dest.getCanonicalPath());
-			else if (IS_LINUX)
+			else if(IS_LINUX)
 				message = cmd(trace, "cp", "-r", src.getCanonicalPath(), dest.getCanonicalPath());
-			if (trace) {
+			if(trace) {
 				Trace.logEvent("Copy '" + src + "' to '" + dest + "':\r\n" + message);
 			}
-		} catch (Exception e) {
+		} catch(Exception e) {
 			Trace.logError("Can't copy '" + src + "' to '" + dest + "'", e);
 		}
 		return dest.exists();
@@ -243,14 +302,14 @@ public class IOUtils {
 	static public boolean deleteFolder(File folder, boolean trace) {
 		String message = "";
 		try {
-			if (IS_WINDOWS)
+			if(IS_WINDOWS)
 				message = cmd(trace, "cmd", "/C", "rmdir", "/S", folder.getCanonicalPath());
-			else if (IS_LINUX)
+			else if(IS_LINUX)
 				message = cmd(trace, "rm", "-r", folder.getCanonicalPath());
-			if (trace) {
+			if(trace) {
 				Trace.logEvent("Delete '" + folder + "':\r\n" + message);
 			}
-		} catch (Exception e) {
+		} catch(Exception e) {
 			Trace.logError("Can't delete '" + folder + "'", e);
 		}
 		return folder.exists();
@@ -259,14 +318,14 @@ public class IOUtils {
 	static public String cmd(boolean trace, String... c) throws IOException, InterruptedException {
 		ProcessBuilder cmd = new ProcessBuilder(c);
 		String charset;
-		if (IS_WINDOWS)
+		if(IS_WINDOWS)
 			charset = "cp866";
-		else if (IS_LINUX)
+		else if(IS_LINUX)
 			charset = "UTF-8";
 		else
 			throw new UnsupportedOperationException("Unsupported OS '" + OS_NAME + "'");
 		Process proc = cmd.start();
-		if (trace) {
+		if(trace) {
 			InputStream in = proc.getErrorStream();
 			ByteArrayOutputStream out = new ByteArrayOutputStream(1024);
 			copy(in, out);
@@ -286,27 +345,22 @@ public class IOUtils {
 		try {
 			in = new FileInputStream(file);
 			byte[] buf = new byte[1024];
-			for (int n = in.read(buf); n >= 0 && !detector.isDone(); n = in.read(buf)) {
+			for(int n = in.read(buf); n >= 0 && !detector.isDone(); n = in.read(buf)) {
 				detector.handleData(buf, 0, n);
 			}
 			detector.dataEnd();
 			return detector.getDetectedCharset() != null ? detector.getDetectedCharset() : defaultCharset;
-		} catch (Exception e) {
+		} catch(Exception e) {
 			Trace.logError("Can't detect encoding of '" + file.getAbsolutePath() + "'", e);
 			return defaultCharset;
 		} finally {
 			detector.reset();
-			if (in != null) {
+			if(in != null) {
 				try {
 					in.close();
-				} catch (IOException e) {}
+				} catch(IOException e) {
+				}
 			}
 		}
 	}
-
-	public static String getRelativePath(File path) throws IOException {
-		int baseLen = Z8Context.getWorkingPath().getCanonicalPath().length() + 1;
-		return path.getCanonicalPath().substring(baseLen);
-	}
-
 }

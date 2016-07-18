@@ -27,6 +27,7 @@ public interface Json {
     string email = new string("email");
     string phone = new string("phone");
 
+    string menu = new string("menu");
     string components = new string("components");
     string settings = new string("settings");
 
@@ -125,6 +126,7 @@ public interface Json {
     string groupDir = new string("groupDir");
     string groupValue = new string("groupValue");
     string groups = new string("groups");
+    string remoteSort = new string("remoteSort");
     string __search_text__ = new string("__search_text__");
 
     string filterBy = new string("filterBy");

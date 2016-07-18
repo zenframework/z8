@@ -12,42 +12,42 @@ import org.zenframework.z8.server.db.sql.SqlToken;
 import org.zenframework.z8.server.db.sql.functions.conversion.ToNumber;
 import org.zenframework.z8.server.db.sql.functions.numeric.Mod;
 import org.zenframework.z8.server.db.sql.functions.numeric.Round;
-import org.zenframework.z8.server.exceptions.UnsupportedParameterException;
+import org.zenframework.z8.server.exceptions.UnsupportedException;
 import org.zenframework.z8.server.exceptions.db.UnknownDatabaseException;
 import org.zenframework.z8.server.types.integer;
 
 public class Minute extends SqlToken {
-    private SqlToken param1;
+    private SqlToken time;
 
-    public Minute(SqlToken p1) {
-        param1 = p1;
+    public Minute(SqlToken time) {
+        this.time = time;
     }
 
     @Override
     public void collectFields(Collection<IValue> fields) {
-        param1.collectFields(fields);
+        time.collectFields(fields);
     }
 
     @Override
     public String format(DatabaseVendor vendor, FormatOptions options, boolean logicalContext) {
-        switch(param1.type()) {
+        switch(time.type()) {
         case Date:
         case Datetime:
             switch(vendor) {
             case Oracle:
-                return new ToNumber(new SqlStringToken("TO_CHAR(" + param1.format(vendor, options) + ", 'MI')")).format(
+                return new ToNumber(new SqlStringToken("TO_CHAR(" + time.format(vendor, options) + ", 'MI')")).format(
                         vendor, options);
             case SqlServer:
-                return "DatePart(minute, " + param1.format(vendor, options) + ")";
+                return "DatePart(minute, " + time.format(vendor, options) + ")";
             default:
                 throw new UnknownDatabaseException();
             }
 
         case Datespan:
-            return new Round(new Mod(new TotalMinute(param1), new SqlConst(new integer(60))), null).format(vendor, options);
+            return new Round(new Mod(new TotalMinute(time), new SqlConst(new integer(60))), null).format(vendor, options);
 
         default:
-            throw new UnsupportedParameterException();
+            throw new UnsupportedException();
         }
     }
 

@@ -11,7 +11,7 @@
 	<entry key="Field.readException">Ошибка чтения поля {0}</entry>
 
 	<!-- Query -->
-	<entry key="Query.readError">Ошибка чтения базы данных.\nОбновите данные и повторите операцию.</entry>
+	<entry key="Query.readError">Ошибка чтения базы данных. Обновите данные и повторите операцию.</entry>
 
 	<!-- Table -->
 	<entry key="Table.recordId">UID</entry>
@@ -56,25 +56,24 @@
 	<entry key="SystemDomains.title">Домены</entry>
 	<entry key="SystemDomains.id">Id</entry>
 	<entry key="SystemDomains.user">Системный пользователь</entry>
-	<entry key="SystemDomains.userDesc">Системный пользователь (описание)</entry>
+	<entry key="SystemDomains.userDescription">Системный пользователь (описание)</entry>
 	<entry key="SystemDomains.owner">Владелец</entry>
-	<entry key="SystemDomains.exportUrl">URL экспорта</entry>
 
     <!-- Properties -->
     <entry key="Properties.title">Системные свойства</entry>
     <entry key="Properties.value">Значение</entry>
     
-    <!-- Export messasges -->
-    <entry key="ExportMessages.title">Очередь сообщений</entry>
-    <entry key="ExportMessages.sender">Отправитель</entry>
-    <entry key="ExportMessages.receiver">Получатель</entry>
-    <entry key="ExportMessages.info">Информация</entry>
-    <entry key="ExportMessages.transport">Транспорт</entry>
-    <entry key="ExportMessages.message">Сообщение</entry>
-    <entry key="ExportMessages.ordinal">Номер</entry>
-    <entry key="ExportMessages.processed">Обработано</entry>
-    <entry key="ExportMessages.error">Ошибка</entry>
-    <entry key="ExportMessages.classId">Класс сообщения</entry>
+    <!-- MessagesQueue -->
+    <entry key="MessagesQueue.title">Очередь сообщений</entry>
+    <entry key="MessagesQueue.sender">Отправитель</entry>
+    <entry key="MessagesQueue.address">Получатель</entry>
+    <entry key="MessagesQueue.info">Информация</entry>
+    <entry key="MessagesQueue.result">Транспорт</entry>
+    <entry key="MessagesQueue.message">Сообщение</entry>
+    <entry key="MessagesQueue.ordinal">Номер</entry>
+    <entry key="MessagesQueue.processed">Обработано</entry>
+    <entry key="MessagesQueue.classId">Класс сообщения</entry>
+    <entry key="MessagesQueue.bytesTransferred">Bytes sent</entry>
 
     <!-- Transport routes -->
     <entry key="TransportRoutes.title">Маршруты</entry>
@@ -89,17 +88,20 @@
     <entry key="Files.title">Файлы</entry>
     <entry key="Files.name">Имя файла</entry>
     <entry key="Files.path">Путь к файлу в кэше</entry>
-    <entry key="Files.instanceId">Id владельца</entry>
-    <entry key="Files.status">Статус</entry>
-    <entry key="Files.status.local">Локальный</entry>
-    <entry key="Files.status.remote">Не запрашивался</entry>
-    <entry key="Files.status.requestSent">Запрошен</entry>
-    <entry key="Files.attachment">Вложение</entry>
-    <entry key="Files.command.requestFile">Запросить файл</entry>
-    <entry key="Files.command.sendFile">Отправить файл</entry>
-    <entry key="Files.command.sendFile.addresses">"Адреса получателей (через \',\')"</entry>
-    <entry key="Files.notFound">Файл не найден. Обратитесь в службу технической поддержки. Информация для техподдержки: {0}</entry>
-    <entry key="Files.retryLater">Файл находится на удалённом сервере. Запрос на получение файла отправлен. Повторите попытку чтения файла позже. В случае, если файл не будет доступен в ближайшее время, обратитесь в службу технической поддержки. Информация для службы технической поддержки: {0}</entry>
+    
+    
+    <!-- SystemFiles -->
+    <entry key="SystemFiles.instanceId">Id владельца</entry>
+    <entry key="SystemFiles.status">Статус</entry>
+    <entry key="SystemFiles.status.local">Локальный</entry>
+    <entry key="SystemFiles.status.remote">Не запрашивался</entry>
+    <entry key="SystemFiles.status.requestSent">Запрошен</entry>
+    <entry key="SystemFiles.attachment">Вложение</entry>
+    <entry key="SystemFiles.command.requestFile">Запросить файл</entry>
+    <entry key="SystemFiles.command.sendFile">Отправить файл</entry>
+    <entry key="SystemFiles.command.sendFile.addresses">"Адреса получателей (через \',\')"</entry>
+    <entry key="SystemFiles.notFound">Файл не найден. Обратитесь в службу технической поддержки. Информация для техподдержки: {0}</entry>
+    <entry key="SystemFiles.retryLater">Файл находится на удалённом сервере. Запрос на получение файла отправлен. Повторите попытку чтения файла позже. В случае, если файл не будет доступен в ближайшее время, обратитесь в службу технической поддержки. Информация для службы технической поддержки: {0}</entry>
 
 	<!-- Entries -->
 	<entry key="Entries.title">Компоненты</entry>
@@ -114,6 +116,20 @@
 		
 	<!-- UserEntryPoints -->
 	<entry key="UserEntryPoints.title">Пользователи</entry>
+
+	<!-- HubServerView -->
+	<entry key="HubServerView.id">Id</entry>
+	<entry key="HubServerView.host">Хост</entry>
+	<entry key="HubServerView.port">Порт</entry>
+	<entry key="HubServerView.active">Up</entry>
+	<entry key="HubServerView.serverId">Server Id</entry>
+	<entry key="HubServerView.domains">Домены</entry>
+
+	<!-- AuthorityCenterView -->
+	<entry key="AuthorityCenterView.title">Authority Center</entry>
+
+	<!-- InterconnectionCenterView -->
+	<entry key="InterconnectionCenterView.title">Interconnection Center</entry>
 
 	<!-- BuiltinUsers -->
 	<entry key="BuiltinUsers.System.name">System</entry>
@@ -144,24 +160,24 @@
 	<entry key="Locks.class">Class</entry>
 	<entry key="Locks.schema">Schema</entry>
 
-	<!-- Tasks -->
-	<entry key="Tasks.settings">Настройки</entry>
-	<entry key="Tasks.title">Задачи</entry>
-	<entry key="Tasks.from">С</entry>
-	<entry key="Tasks.till">По</entry>
-	<entry key="Tasks.repeat">Повтор (секунд)</entry>
-	<entry key="Tasks.active">Активна</entry>
-	<entry key="Tasks.lastStarted">Последний запуск</entry>
-	<entry key="Tasks.error.noJob">Не выбран тип процедура</entry>
+	<!-- SchedulerJobs -->
+	<entry key="SchedulerJobs.settings">Настройки</entry>
+	<entry key="SchedulerJobs.title">Задачи</entry>
+	<entry key="SchedulerJobs.from">С</entry>
+	<entry key="SchedulerJobs.till">По</entry>
+	<entry key="SchedulerJobs.repeat">Повтор (секунд)</entry>
+	<entry key="SchedulerJobs.active">Активна</entry>
+	<entry key="SchedulerJobs.lastStarted">Последний запуск</entry>
+	<entry key="SchedulerJobs.error.noJob">Не выбран тип процедура</entry>
 
 	<!-- Jobs -->
 	<entry key="Jobs.title">Задачи</entry>
 	<entry key="Jobs.defaultSettings">Настройки по умолчанию</entry>
 
-	<!-- TaskLogs -->
-	<entry key="TaskLogs.title">Назначенные задачи</entry>
-	<entry key="TaskLogs.started">Старт</entry>
-	<entry key="TaskLogs.finished">Финиш</entry>
+	<!-- Logs -->
+	<entry key="Logs.title">Назначенные задачи</entry>
+	<entry key="Logs.started">Старт</entry>
+	<entry key="Logs.finished">Финиш</entry>
 
 	<!-- RecordsMergerJob -->
 	<entry key="RecordsMergerJob.tablesChanged">Изменено {0} таблиц.</entry>
@@ -188,7 +204,7 @@
 
 	<!-- Procedure -->
 	<entry key="Procedure.rollback">Отменены все возможные изменения в данных, произошедшие в ходе выполнения задачи.</entry>
-	<entry key="Procedure.jobError">Выполнение задачи прервано из-за возникшей ошибки:\n{0}</entry>
+	<entry key="Procedure.jobError">Выполнение задачи прервано из-за возникшей ошибки: {0}</entry>
 
 	<!-- Reports -->
 	<entry key="Report.groupTotal">Итого по </entry>
@@ -204,7 +220,6 @@
 
 	<entry key="Exception.wrongParentNode">Неверный родительский узел.</entry>
 
-	<entry key="Exception.childRecordFound">Ошибка. Была произведена попытка удаления записи, на которую ссылается другая запись.</entry>
     <entry key="Exception.unknownDatabase">Неподдерживаемая база данных</entry>
 	
 	<!-- Generator -->
@@ -213,15 +228,15 @@
 	<entry key="Generator.schedulerStarted">Планировщик задач запущен</entry>
     <entry key="Generator.recreatringTable">Таблица ''{0}''({1}) требует регенерации</entry>
 	<entry key="Generator.droppingTable">Таблица ''{0}'' требует удаления</entry>
-    <entry key="Generator.createTableError">Ошибка. Таблица ''{0}''({1}) - генерация не выполнена.\nТекст ошибки: {2}</entry>
-    <entry key="Generator.packTableError">Ошибка. Таблица ''{0}''({1}) - паковка не выполнена.\nТекст ошибки: {2}</entry>
-	<entry key="Generator.dropTableError">Ошибка. Таблица ''{0}'' - удаление  не выполнено.\nТекст ошибки: {1}</entry>
-    <entry key="Generator.dropForeignKeyError">Ошибка. Таблица ''{0}'' - удаление внешнего ключа {1} закончилось неудачей.\nТекст ошибки: {2}</entry>
-	<entry key="Generator.dropIndexError">Ошибка. Таблица ''{0}'' - удаление индекса {1} закончилось неудачей.\nТекст ошибки: {2}</entry>
-	<entry key="Generator.createForeignKeyError">Ошибка. Таблица ''{0}''({1}) - создание внешнего ключа на таблицу ''{2}''({3}) закончилось неудачей.\nТекст ошибки: {4}</entry>
-    <entry key="Generator.createUniqueIndexError">Ошибка. Таблица "{1}"({2}) - создание уникального индекса "{0}" не выполнено.\nТекст ошибки: {3}</entry>
-    <entry key="Generator.createIndexError">Ошибка. Таблица ''{1}''({2}) - создание индекса ''{0}'' не выполнено.\nТекст ошибки: {3}</entry>
-    <entry key="Generator.insertRecordsError">Изменение записи, ключ {0} в таблице ''{1}''({2}), закончилось неудачей.\nТекст ошибки: {3}</entry>
+    <entry key="Generator.createTableError">Ошибка. Таблица ''{0}''({1}) - генерация не выполнена.{2}</entry>
+    <entry key="Generator.packTableError">Ошибка. Таблица ''{0}''({1}) - паковка не выполнена. {2}</entry>
+	<entry key="Generator.dropTableError">Ошибка. Таблица ''{0}'' - удаление  не выполнено. {1}</entry>
+    <entry key="Generator.dropForeignKeyError">Ошибка. Таблица ''{0}'' - удаление внешнего ключа {1} закончилось неудачей. {2}</entry>
+	<entry key="Generator.dropIndexError">Ошибка. Таблица ''{0}'' - удаление индекса {1} закончилось неудачей. {2}</entry>
+	<entry key="Generator.createForeignKeyError">Ошибка. Таблица ''{0}''({1}) - создание внешнего ключа на таблицу ''{2}''({3}) закончилось неудачей. {4}</entry>
+    <entry key="Generator.createUniqueIndexError">Ошибка. Таблица "{1}"({2}) - создание уникального индекса "{0}" не выполнено. {3}</entry>
+    <entry key="Generator.createIndexError">Ошибка. Таблица ''{1}''({2}) - создание индекса ''{0}'' не выполнено. {3}</entry>
+    <entry key="Generator.insertRecordsError">Изменение записи, ключ {0} в таблице ''{1}''({2}), закончилось неудачей. {3}</entry>
 
 	<entry key="Messenger.supportAddress"></entry>
 	<entry key="Messenger.smsAlertAddress"></entry>

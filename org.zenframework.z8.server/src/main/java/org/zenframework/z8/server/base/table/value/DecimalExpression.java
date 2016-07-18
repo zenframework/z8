@@ -4,8 +4,10 @@ import org.zenframework.z8.server.db.FieldType;
 import org.zenframework.z8.server.db.sql.SqlField;
 import org.zenframework.z8.server.format.Format;
 import org.zenframework.z8.server.runtime.IObject;
+import org.zenframework.z8.server.types.bool;
 import org.zenframework.z8.server.types.decimal;
 import org.zenframework.z8.server.types.primary;
+import org.zenframework.z8.server.types.string;
 import org.zenframework.z8.server.types.sql.sql_decimal;
 import org.zenframework.z8.server.types.sql.sql_primary;
 
@@ -14,7 +16,6 @@ public class DecimalExpression extends Expression {
         public CLASS(IObject container) {
             super(container);
             setJavaClass(DecimalExpression.class);
-            setAttribute(Native, DecimalExpression.class.getCanonicalName());
         }
 
         @Override
@@ -25,8 +26,8 @@ public class DecimalExpression extends Expression {
 
     public DecimalExpression(IObject container) {
         super(container);
-        format.set(Format.decimal);
-        stretch.set(false);
+        format = new string(Format.decimal);
+        stretch = new bool(false);
 
         aggregation = Aggregation.Sum;
 

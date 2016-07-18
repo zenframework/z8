@@ -7,57 +7,57 @@ import org.zenframework.z8.server.db.DatabaseVendor;
 import org.zenframework.z8.server.db.FieldType;
 import org.zenframework.z8.server.db.sql.FormatOptions;
 import org.zenframework.z8.server.db.sql.SqlToken;
-import org.zenframework.z8.server.exceptions.UnsupportedParameterException;
+import org.zenframework.z8.server.exceptions.UnsupportedException;
 import org.zenframework.z8.server.exceptions.db.UnknownDatabaseException;
 import org.zenframework.z8.server.types.datespan;
 
 public class AddHour extends SqlToken {
-    private SqlToken param1;
-    private SqlToken param2;
+    private SqlToken date;
+    private SqlToken hours;
 
-    public AddHour(SqlToken p1, SqlToken p2) {
-        param1 = p1;
-        param2 = p2;
+    public AddHour(SqlToken date, SqlToken hours) {
+        this.date = date;
+        this.hours = hours;
     }
 
     @Override
     public void collectFields(Collection<IValue> fields) {
-        param1.collectFields(fields);
-        param2.collectFields(fields);
+        date.collectFields(fields);
+        hours.collectFields(fields);
     }
 
     @Override
     public String format(DatabaseVendor vendor, FormatOptions options, boolean logicalContext) {
-        switch(param1.type()) {
+        switch(date.type()) {
         case Date:
         case Datetime:
             switch(vendor) {
             case Oracle:
-                return "(" + param1.format(vendor, options) + "+(" + param2.format(vendor, options) + ")/24)";
+                return "(" + date.format(vendor, options) + "+(" + hours.format(vendor, options) + ")/24)";
             case Postgres:
-                return "(" + param1.format(vendor, options) + " + (" + param2.format(vendor, options) + ") * interval '1 hour')";
+                return "(" + date.format(vendor, options) + " + (" + hours.format(vendor, options) + ") * interval '1 hour')";
             case SqlServer:
-                return "DATEADD(hh, " + param2.format(vendor, options) + ", " + param1.format(vendor, options) + ")";
+                return "DATEADD(hh, " + hours.format(vendor, options) + ", " + date.format(vendor, options) + ")";
             default:
                 throw new UnknownDatabaseException();
             }
 
         case Datespan:
-            return param1.format(vendor, options) + "+(" + param2.format(vendor, options) + "*" + datespan.TicksPerHour
+            return date.format(vendor, options) + "+(" + hours.format(vendor, options) + "*" + datespan.TicksPerHour
                     + ")";
 
         default:
-            throw new UnsupportedParameterException();
+            throw new UnsupportedException();
         }
     }
 
     @Override
     public FieldType type() {
-        return param1.type();
+        return date.type();
     }
 
     @Override
     public String formula() {
-        return param1.formula() + ".add(Date.HOUR, " + param2.formula() + ")";
+        return date.formula() + ".add(Date.HOUR, " + hours.formula() + ")";
     }
 }

@@ -1,134 +1,62 @@
 package org.zenframework.z8.server.engine;
 
-import java.net.InetAddress;
-import java.net.UnknownHostException;
-import java.rmi.NotBoundException;
-import java.rmi.RemoteException;
-import java.rmi.registry.LocateRegistry;
-import java.rmi.registry.Registry;
-import java.rmi.server.RemoteServer;
-import java.rmi.server.ServerNotActiveException;
+import java.rmi.server.ObjID;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.zenframework.z8.server.config.ServerConfig;
+import org.zenframework.z8.server.utils.ProxyUtils;
 
+import sun.rmi.transport.LiveRef;
+import sun.rmi.transport.tcp.TCPEndpoint;
+
+@SuppressWarnings("restriction")
 public class Rmi {
 
-	private static final Log LOG = LogFactory.getLog(Rmi.class);
+	static public String localhost = TCPEndpoint.getLocalEndpoint(0).getHost();
+	
+	static private Map<Class<?>, IServer> servers = new HashMap<Class<?>, IServer>();
 
-	private static final Map<String, IServer> Servers = new HashMap<String, IServer>();
+	static public void register(IServer server) {
+		servers.put(serverClass(server.getClass()), server);
+	}
 
-	private static String Host;
-	private static int Port;
-	private static Registry Registry;
+	static public void unregister(IServer server) {
+		servers.remove(serverClass(server.getClass()));
+	}
 
-	public static void init(ServerConfig config) throws RemoteException, UnknownHostException {
-		Port = config.getRmiRegistryPort();
-		Host = InetAddress.getLocalHost().getHostAddress();
+	static public <TYPE> TYPE get(Class<TYPE> cls) {
+		return get(cls, Rmi.localhost, 0);
+	}
 
-		try {
-			Registry = LocateRegistry.createRegistry(Port);
-			LOG.trace("RMI registry created at " + Host + ':' + Port);
-		} catch (RemoteException e) {
-			Registry = LocateRegistry.getRegistry(Port);
-			LOG.trace("RMI registry located at " + Host + ':' + Port);
+	@SuppressWarnings({ "unchecked" })
+	static public <TYPE> TYPE get(Class<TYPE> cls, String host, int port) {
+		IServer server = servers.get(serverClass(cls));
+
+		if(server != null)
+			return (TYPE)server;
+
+		Class<?>[] interfaces = { cls, IServer.class };
+		LiveRef liveRef = new LiveRef(new ObjID(), new TCPEndpoint(host, port), false);
+		
+		return (TYPE)ProxyUtils.newProxy(liveRef, interfaces);
+	}
+
+	static public Class<?> serverClass(Class<?> cls) {
+		Class<?> subinterface = IServer.class;
+
+		if(cls.isInterface() && subinterface.isAssignableFrom(cls))
+			return cls;
+			
+		Class<?>[] interfaces = cls.getInterfaces();
+		
+		for(Class<?> i : interfaces) {
+			if(subinterface.isAssignableFrom(i))
+				subinterface = i;
 		}
-	}
+		
+		if(subinterface == IServer.class)
+			throw new RuntimeException("Class '" + cls.getCanonicalName() + "' does not implement subinterface of '" + IServer.class.getCanonicalName() + "'");
 
-	public static String url(String host, int port, String name) {
-		return "rmi://" + host + ':' + port + '/' + (name != null ? name : "");
+		return subinterface;
 	}
-
-	public static String getName(Class<?> cls) {
-		return cls.getSimpleName();
-	}
-
-	public static int getPort() {
-		return Port;
-	}
-
-	public static String register(Class<? extends IServer> serverClass, IServer server) throws RemoteException {
-		String name = getName(serverClass);
-		Servers.put(url(Host, Port, name), server);
-		if (server.id() != null)
-			name += '/' + server.id();
-		Registry.rebind(name, server);
-		return url(Host, Port, name);
-	}
-
-	public static void unregister(Class<? extends IServer> serverClass, IServer server) throws RemoteException {
-		String name = getName(serverClass);
-		Servers.remove(url(Host, Port, name));
-		if (server.id() != null)
-			name += '/' + server.id();
-		try {
-			Registry.unbind(name);
-		} catch (NotBoundException e) {
-			LOG.error("Can't unbind object '" + name + "'", e);
-		}
-	}
-
-	public static <T extends IServer> T get(Class<T> serverClass) throws RemoteException {
-		return get(serverClass, Host, Port);
-	}
-
-	public static IServer get(String name) throws RemoteException {
-		return get(name, Host, Port);
-	}
-
-	@SuppressWarnings("unchecked")
-	public static <T extends IServer> T get(Class<T> serverClass, String host, int port) throws RemoteException {
-		return (T) get(getName(serverClass), host, port);
-	}
-
-	public static IServer get(String name, String host, int port) throws RemoteException {
-		if (host == null || host.isEmpty())
-			host = Host;
-		try {
-			if (Host.equals(host)) {
-				if (Port == port) {
-					IServer server = (IServer) Servers.get(url(host, port, name));
-					if (server != null)
-						return server;
-				}
-				return (IServer) Registry.lookup(name);
-			} else {
-				return (IServer) LocateRegistry.getRegistry(host, port).lookup(name);
-			}
-		} catch (NotBoundException e) {
-			throw new RemoteException("Object " + name + " is not bound", e);
-		}
-	}
-
-	@SuppressWarnings("unchecked")
-	public static <T extends IServer> T get(Class<T> serverClass, RmiAddress rmiAddress) throws RemoteException {
-		try {
-			return (T) LocateRegistry.getRegistry(rmiAddress.getHost(), rmiAddress.getPort()).lookup(getName(serverClass));
-		} catch (NotBoundException e) {
-			throw new RemoteException("Object '" + rmiAddress.getName() + "' is not bound", e);
-		}
-	}
-
-	public static IServer get(RmiAddress rmiAddress) throws RemoteException {
-		try {
-			return (IServer) LocateRegistry.getRegistry(rmiAddress.getHost(), rmiAddress.getPort()).lookup(
-					rmiAddress.getName());
-		} catch (NotBoundException e) {
-			throw new RemoteException("Object '" + rmiAddress.getName() + "' is not bound", e);
-		}
-	}
-
-	public static String getClientHost() {
-		try {
-			// Try detect remote client host
-			return RemoteServer.getClientHost();
-		} catch (ServerNotActiveException e) {
-			// If ServerNotActiveException, server object was called locally
-			return null;
-		}
-	}
-
 }

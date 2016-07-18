@@ -75,8 +75,8 @@ public class TransportRoute implements RmiSerializable, Serializable {
 		RmiIO.writeString(out, protocol);
 		RmiIO.writeString(out, address);
 
-		out.writeInt(priority);
-		out.writeBoolean(active);
+		RmiIO.writeInt(out, priority);
+		RmiIO.writeBoolean(out, active);
 	}
 
 	@Override
@@ -85,8 +85,8 @@ public class TransportRoute implements RmiSerializable, Serializable {
 		protocol = RmiIO.readString(in);
 		address = RmiIO.readString(in);
 
-		priority = in.readInt();
-		active = in.readBoolean();
+		priority = RmiIO.readInt(in);
+		active = RmiIO.readBoolean(in);
 	}
 
 }

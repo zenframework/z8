@@ -6,6 +6,7 @@ import org.zenframework.z8.server.db.sql.FormatOptions;
 import org.zenframework.z8.server.db.sql.SqlConst;
 import org.zenframework.z8.server.db.sql.SqlToken;
 import org.zenframework.z8.server.runtime.IObject;
+import org.zenframework.z8.server.types.bool;
 import org.zenframework.z8.server.types.primary;
 
 public class Expression extends Field {
@@ -13,7 +14,6 @@ public class Expression extends Field {
         public CLASS(IObject container) {
             super(container);
             setJavaClass(Expression.class);
-            setAttribute(Native, Expression.class.getCanonicalName());
         }
 
         @Override
@@ -28,12 +28,11 @@ public class Expression extends Field {
     public Expression(IObject container) {
         super(container);
 
-        readOnly.set(true);
+        readOnly = new bool(true);
     }
 
     public Expression(SqlToken expression, FieldType expressionType) {
-        super(null);
-        readOnly.set(true);
+        this(null);
         this.expression = expression;
         this.expressionType = expressionType;
     }

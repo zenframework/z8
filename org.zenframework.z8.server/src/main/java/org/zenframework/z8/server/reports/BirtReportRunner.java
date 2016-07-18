@@ -54,6 +54,7 @@ import org.zenframework.z8.server.base.file.Folders;
 import org.zenframework.z8.server.base.model.actions.ReadAction;
 import org.zenframework.z8.server.base.table.value.Field;
 import org.zenframework.z8.server.resources.Resources;
+import org.zenframework.z8.server.types.string;
 import org.zenframework.z8.server.utils.IOUtils;
 
 public class BirtReportRunner {
@@ -494,13 +495,12 @@ public class BirtReportRunner {
 	}
 
 	private String getColumnFormat(Column column) {
-		String format = column.getField().format.get();
+		string format = column.getField().format;
 
-		if(format.isEmpty()) {
+		if(format == null || format.isEmpty())
 			return null;
-		}
 
-		return format.replace("d", "dd").replace("m", "MM").replace("Y", "yyyy").replace("i", "mm").replace("s", "ss");
+		return format.get().replace("d", "dd").replace("m", "MM").replace("Y", "yyyy").replace("i", "mm").replace("s", "ss");
 	}
 
 	private void setCellFormat(CellHandle cell, Column column) throws SemanticException {
@@ -847,7 +847,7 @@ public class BirtReportRunner {
 		for(Field field : fields) {
 			Column c = new Column(field.displayName());
 			c.setField(field);
-			c.setWidth(field.width.getInt());
+			c.setWidth(field.width());
 			column.addColumn(c);
 		}
 

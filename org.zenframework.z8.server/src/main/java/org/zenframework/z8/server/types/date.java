@@ -1,6 +1,5 @@
 package org.zenframework.z8.server.types;
 
-import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.GregorianCalendar;
@@ -18,12 +17,8 @@ public final class date extends primary {
 
 	private GregorianCalendar m_value = new GregorianCalendar();
 
-	final static public DateFormat defaultMasks[] = { new SimpleDateFormat("dd/MM/yyyy"),
-			new SimpleDateFormat("dd-MM-yyyy"), new SimpleDateFormat("dd.MM.yyyy") };
 	final static public date MIN = new date(1899, 12, 31);
 	final static public date MAX = new date(4712, 12, 31);
-
-	final static public String[] knownFormats = new String[] { "dd/MM/yyyy", "dd.MM.yyyy" };
 
 	public date() {
 		nullTime();
@@ -57,36 +52,30 @@ public final class date extends primary {
 		set(gc);
 	}
 
-	public date(String s) {
-		this(s, defaultMasks);
+	public date(String date) {
+		if (date != null && !date.isEmpty()) {
+			// dd/mm/yyyy
+			// 0123456789
+
+			int day = Integer.parseInt(date.substring(0, 2));
+			int month = Integer.parseInt(date.substring(3, 5));
+			int year = Integer.parseInt(date.substring(6, 10));
+
+			set(year, month, day);
+		} else
+			set(MIN);
 	}
 
 	public date(String s, String format) {
-		set(s, new SimpleDateFormat(format));
-	}
-
-	public date(String s, DateFormat format) {
 		set(s, format);
 	}
 
 	public date(String s, String[] formats) {
 		for (int i = 0; i < formats.length; i++) {
 			try {
-				set(s, new SimpleDateFormat(formats[i]));
-				return;
-			} catch (Throwable e) {}
-		}
-		set(MIN);
-	}
-
-	public date(String s, DateFormat[] formats) {
-		for (int i = 0; i < formats.length; i++) {
-			try {
 				set(s, formats[i]);
-				return;
 			} catch (Throwable e) {}
 		}
-		set(MIN);
 	}
 
 	@Override
@@ -137,12 +126,12 @@ public final class date extends primary {
 	}
 
 	@SuppressWarnings("deprecation")
-	public void set(String s, DateFormat format) {
+	public void set(String s, String format) {
 		try {
 			if (s.isEmpty()) {
 				set(date.MIN);
 			} else {
-				java.util.Date date = format.parse(s);
+				java.util.Date date = new SimpleDateFormat(format).parse(s);
 				set(1900 + date.getYear(), date.getMonth() + 1, date.getDate());
 			}
 		} catch (ParseException e) {
@@ -152,15 +141,14 @@ public final class date extends primary {
 
 	@Override
 	public String toString() {
-		return format(defaultMasks[0]);
+		int day = day();
+		int month = month();
+		int year = year();
+		return (day < 10 ? "0" + day : day) + "/" + (month < 10 ? "0" + month : month) + "/" + year;
 	}
 
 	public String format(String format) {
-		return format(new SimpleDateFormat(format));
-	}
-
-	public String format(DateFormat format) {
-		return format.format(m_value.getTime());
+		return new SimpleDateFormat(format).format(m_value.getTime());
 	}
 
 	@Override
@@ -410,7 +398,7 @@ public final class date extends primary {
 		return new date(string.get());
 	}
 
-	static public date z8_parse(string string, string frm) {
-		return new date(string.get(), frm.get());
+	static public date z8_parse(string string, string format) {
+		return new date(string.get(), format.get());
 	}
 }

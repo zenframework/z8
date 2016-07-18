@@ -14,7 +14,7 @@ public class guid extends primary {
 
 	private static final UUID nullValue = UUID.fromString("00000000-0000-0000-0000-000000000000");
 
-	private UUID m_value;
+	private UUID value;
 
 	static final public guid NULL = new guid() {
 
@@ -28,11 +28,11 @@ public class guid extends primary {
 	};
 
 	public guid() {
-		m_value = nullValue;
+		value = nullValue;
 	}
 
 	public guid(guid guid) {
-		set(guid != null ? guid.m_value : nullValue);
+		set(guid != null ? guid.value : nullValue);
 	}
 
 	public guid(UUID guid) {
@@ -40,11 +40,10 @@ public class guid extends primary {
 	}
 
 	public guid(String guid) {
-		if (guid != null) {
+		if (guid != null)
 			set(guid);
-		} else {
+		else
 			set(nullValue);
-		}
 	}
 
 	public guid(byte[] data) {
@@ -79,34 +78,34 @@ public class guid extends primary {
 
 	@Override
 	public String toString() {
-		return m_value.toString().toUpperCase();
+		return value.toString().toUpperCase();
 	}
 
 	public String toString(boolean useDelimiter) {
-		return (useDelimiter ? m_value.toString() : m_value.toString().replace("-", "")).toUpperCase();
+		return (useDelimiter ? value.toString() : value.toString().replace("-", "")).toUpperCase();
 	}
 
 	public UUID get() {
-		return m_value;
+		return value;
 	}
 
 	public void set(UUID value) {
-		m_value = value;
+		this.value = value;
 	}
 
-	public void set(guid value) {
-		set(value != null ? value.m_value : null);
+	public void set(guid guid) {
+		set(guid != null ? guid.value : null);
 	}
 
-	public void set(String value) {
-		if (value == null || value.trim().equals("") || value.trim().equals("0")) {
-			m_value = nullValue;
+	public void set(String guid) {
+		if (guid == null || guid.trim().equals("") || guid.trim().equals("0")) {
+			value = nullValue;
 		} else {
-			if (value.length() == 32) {
-				value = value.substring(0, 8) + "-" + value.substring(8, 12) + "-" + value.substring(12, 16) + "-"
-						+ value.substring(16, 20) + "-" + value.substring(20, 32);
+			if (guid.length() == 32) {
+				guid = guid.substring(0, 8) + "-" + guid.substring(8, 12) + "-" + guid.substring(12, 16) + "-"
+						+ guid.substring(16, 20) + "-" + guid.substring(20, 32);
 			}
-			m_value = UUID.fromString(value);
+			value = UUID.fromString(guid);
 		}
 	}
 
@@ -129,7 +128,7 @@ public class guid extends primary {
 
 	@Override
 	public int hashCode() {
-		return m_value.hashCode();
+		return value.hashCode();
 	}
 
 	@Override
@@ -149,11 +148,11 @@ public class guid extends primary {
 	}
 
 	public bool operatorEqu(guid x) {
-		return new bool(m_value.equals(x.m_value));
+		return new bool(value.equals(x.value));
 	}
 
 	public bool operatorNotEqu(guid x) {
-		return new bool(!m_value.equals(x.m_value));
+		return new bool(!value.equals(x.value));
 	}
 
 	static public guid z8_parse(string string) {

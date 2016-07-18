@@ -13,18 +13,16 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.UUID;
 
 import org.apache.commons.io.comparator.NameFileComparator;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.zenframework.z8.ie.xml.ExportEntry;
-import org.zenframework.z8.server.base.file.FileInfo;
-import org.zenframework.z8.server.base.file.FilesFactory;
 import org.zenframework.z8.server.base.table.system.Properties;
 import org.zenframework.z8.server.request.Loader;
-import org.zenframework.z8.server.runtime.ServerRuntime;
 import org.zenframework.z8.server.types.datetime;
+import org.zenframework.z8.server.types.file;
+import org.zenframework.z8.server.types.guid;
 import org.zenframework.z8.server.utils.IOUtils;
 
 public class FileTransport extends AbstractTransport implements Properties.Listener {
@@ -55,15 +53,15 @@ public class FileTransport extends AbstractTransport implements Properties.Liste
 
 	public FileTransport(TransportContext context) {
 		super(context);
-		initFolders(Properties.getProperty(ServerRuntime.FileFolderProperty));
+		initFolders(""/*Properties.getProperty(ServerRuntime.FileFolderProperty)*/);
 		Properties.addListener(this);
 	}
 
 	@Override
 	public void onPropertyChange(String key, String value) {
-		if (ServerRuntime.FileFolderProperty.equalsKey(key)) {
+/*		if (ServerRuntime.FileFolderProperty.equalsKey(key)) {
 			initFolders(value);
-		}
+		}*/
 	}
 
 	public boolean canReceive() {
@@ -111,8 +109,8 @@ public class FileTransport extends AbstractTransport implements Properties.Liste
 			}
 		}
 		// write files
-		for (FileInfo file : message.getFiles()) {
-			if (file.file != null) {
+		for (file file : message.getFiles()) {
+			if (file.get() != null) {
 				outFile = new File(messageFolder, file.id.toString());
 				try {
 					IOUtils.copy(file.getInputStream(), new FileOutputStream(outFile));
@@ -165,7 +163,7 @@ public class FileTransport extends AbstractTransport implements Properties.Liste
 	}
 
 	@Override
-	public FileInfo readFileSynchronously(FileInfo fileInfo, String transportAddress) throws TransportException {
+	public file readFileSynchronously(file file, String transportAddress) throws TransportException {
 		throw new UnsupportedOperationException();
 	}
 
@@ -197,14 +195,14 @@ public class FileTransport extends AbstractTransport implements Properties.Liste
 									ExportEntry entry = IeUtil.unmarshalExportEntry(in);
 									message.setExportEntry(entry);
 									// add files
-									Collection<FileInfo> fileInfos = IeUtil.filesToFileInfos(entry.getFiles().getFile(),
+									Collection<file> fileInfos = IeUtil.filesToFileInfos(entry.getFiles().getFile(),
 											false);
-									for (FileInfo fileInfo : fileInfos) {
-										File file = new File(messageFolder, fileInfo.id.toString());
-										if (file.exists()) {
-											fileInfo.file = FilesFactory.createFileItem(fileInfo.name.get());
-											InputStream is = new FileInputStream(file);
-											OutputStream os = fileInfo.file.getOutputStream();
+									for (file fileInfo : fileInfos) {
+										File f = new File(messageFolder, fileInfo.id.toString());
+										if (f.exists()) {
+											fileInfo.set(file.createFileItem(fileInfo.name));
+											InputStream is = new FileInputStream(f);
+											OutputStream os = fileInfo.getOutputStream();
 											IOUtils.copy(is, os);
 											message.getFiles().add(fileInfo);
 										}
@@ -264,7 +262,7 @@ public class FileTransport extends AbstractTransport implements Properties.Liste
 
 		Message message = (Message) Loader.getInstance(classId);
 		String[] folderName = messageFolder.getName().split("_");
-		message.setId(UUID.fromString(folderName.length < 2 ? folderName[0] : folderName[1]));
+		message.setId(new guid(folderName.length < 2 ? folderName[0] : folderName[1]));
 		message.setTime(time);
 		message.setAddress(context.getProperty(TransportContext.SelfAddressProperty));
 		message.setSender(messageFolder.getParentFile().getName());

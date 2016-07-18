@@ -12,7 +12,6 @@ public class Link extends GuidField implements ILink, IForeignKey {
         public CLASS(IObject container) {
             super(container);
             setJavaClass(Link.class);
-            setAttribute(Native, Link.class.getCanonicalName());
             setForeignKey(true);
         }
 

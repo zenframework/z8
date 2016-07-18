@@ -34,7 +34,7 @@ public class OdaQuery implements IQuery {
         List<IValue> values = new ArrayList<IValue>();
 
         for(Field field : action.getSelectFields()) {
-            if(!field.system.get()) {
+            if(!field.system()) {
                 values.add(field);
             }
         }
