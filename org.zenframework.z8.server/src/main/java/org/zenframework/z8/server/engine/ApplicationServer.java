@@ -7,7 +7,6 @@ import java.rmi.RemoteException;
 import org.zenframework.z8.server.base.job.scheduler.Scheduler;
 import org.zenframework.z8.server.base.table.system.Domains;
 import org.zenframework.z8.server.base.table.system.Files;
-import org.zenframework.z8.server.base.table.system.SystemFiles;
 import org.zenframework.z8.server.base.xml.GNode;
 import org.zenframework.z8.server.config.ServerConfig;
 import org.zenframework.z8.server.db.ConnectionManager;
@@ -128,7 +127,7 @@ public class ApplicationServer extends RmiServer implements IApplicationServer {
 	@Override
 	public file download(file file) throws IOException {
 		try {
-			return SystemFiles.newInstance().getFile(file);
+			return Files.get(file);
 		} finally {
 			ConnectionManager.release();
 		}
@@ -155,7 +154,7 @@ public class ApplicationServer extends RmiServer implements IApplicationServer {
 
 	@Override
 	public boolean hasFile(file file) throws RemoteException {
-		return Files.newInstance().hasRecord(file.id);
+		return false; //Files.newInstance().hasRecord(file.id);
 	}
 	
 	@Override

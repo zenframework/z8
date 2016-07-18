@@ -63,17 +63,21 @@
     <entry key="Properties.title">Системные свойства</entry>
     <entry key="Properties.value">Значение</entry>
     
-    <!-- MessagesQueue -->
-    <entry key="MessagesQueue.title">Очередь сообщений</entry>
-    <entry key="MessagesQueue.sender">Отправитель</entry>
-    <entry key="MessagesQueue.address">Получатель</entry>
-    <entry key="MessagesQueue.info">Информация</entry>
-    <entry key="MessagesQueue.result">Транспорт</entry>
-    <entry key="MessagesQueue.message">Сообщение</entry>
+    <!-- MessageQueue -->
+    <entry key="MessageQueue.title">Очередь сообщений</entry>
+    <entry key="MessageQueue.sender">Отправитель</entry>
+    <entry key="MessageQueue.address">Получатель</entry>
     <entry key="MessagesQueue.ordinal">Номер</entry>
-    <entry key="MessagesQueue.processed">Обработано</entry>
-    <entry key="MessagesQueue.classId">Класс сообщения</entry>
-    <entry key="MessagesQueue.bytesTransferred">Bytes sent</entry>
+    <entry key="MessagesQueue.processing">В обработке</entry>
+
+    <!-- TransportQueue -->
+    <entry key="TransportQueue.title">Очередь сообщений</entry>
+    <entry key="TransportQueue.sender">Отправитель</entry>
+    <entry key="TransportQueue.address">Получатель</entry>
+    <entry key="TransportQueue.result">Результат</entry>
+    <entry key="TransportQueue.ordinal">Номер</entry>
+    <entry key="TransportQueue.processed">Обработано</entry>
+    <entry key="TransportQueue.bytesTransferred">Bytes sent</entry>
 
     <!-- Transport routes -->
     <entry key="TransportRoutes.title">Маршруты</entry>
@@ -90,18 +94,8 @@
     <entry key="Files.path">Путь к файлу в кэше</entry>
     
     
-    <!-- SystemFiles -->
-    <entry key="SystemFiles.instanceId">Id владельца</entry>
-    <entry key="SystemFiles.status">Статус</entry>
-    <entry key="SystemFiles.status.local">Локальный</entry>
-    <entry key="SystemFiles.status.remote">Не запрашивался</entry>
-    <entry key="SystemFiles.status.requestSent">Запрошен</entry>
-    <entry key="SystemFiles.attachment">Вложение</entry>
-    <entry key="SystemFiles.command.requestFile">Запросить файл</entry>
-    <entry key="SystemFiles.command.sendFile">Отправить файл</entry>
-    <entry key="SystemFiles.command.sendFile.addresses">"Адреса получателей (через \',\')"</entry>
-    <entry key="SystemFiles.notFound">Файл не найден. Обратитесь в службу технической поддержки. Информация для техподдержки: {0}</entry>
-    <entry key="SystemFiles.retryLater">Файл находится на удалённом сервере. Запрос на получение файла отправлен. Повторите попытку чтения файла позже. В случае, если файл не будет доступен в ближайшее время, обратитесь в службу технической поддержки. Информация для службы технической поддержки: {0}</entry>
+    <!-- FilesView -->
+    <entry key="FilesView.attachment">Вложение</entry>
 
 	<!-- Entries -->
 	<entry key="Entries.title">Компоненты</entry>
@@ -213,13 +207,12 @@
 	<!-- Exceptions -->
 	<entry key="Exception.accessDenied">Неверный логин или пароль для входа</entry>
 	<entry key="Exception.unknownDataType">Неизвестный тип данных ''{0}''</entry>
-	<entry key="Exception.maskParse">Значение не соответствует маске. Значение: ''{0}''. Маска: ''{1}''</entry>
-    <entry key="Exception.resourceNotFound">Ресурс не найден. Ключ: {0}</entry>
+	<entry key="Exception.serverUnavailable">Сервер не отвечает.</entry>
+    <entry key="Exception.resourceNotFound">Ресурс не найден: {0}</entry>
 	<entry key="Exception.fileNotFound">Файл не найден: {0}</entry>
 	<entry key="Exception.fileSizeLimitExceeded">Размер файла ''{0}'' превышает допустимый {1}Mb</entry>
 
 	<entry key="Exception.wrongParentNode">Неверный родительский узел.</entry>
-
     <entry key="Exception.unknownDatabase">Неподдерживаемая база данных</entry>
 	
 	<!-- Generator -->

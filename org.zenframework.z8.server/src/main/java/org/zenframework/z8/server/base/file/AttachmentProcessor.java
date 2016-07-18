@@ -7,7 +7,6 @@ import java.util.Collection;
 import org.apache.commons.io.FileUtils;
 import org.zenframework.z8.server.base.table.Table;
 import org.zenframework.z8.server.base.table.system.Files;
-import org.zenframework.z8.server.base.table.system.SystemFiles;
 import org.zenframework.z8.server.base.table.value.AttachmentField;
 import org.zenframework.z8.server.base.table.value.Field;
 import org.zenframework.z8.server.runtime.IObject;
@@ -97,7 +96,7 @@ public class AttachmentProcessor extends OBJECT {
 	}
 
 	public Collection<file> remove(guid target, Collection<file> files) {
-		SystemFiles filesTable = SystemFiles.newInstance();
+		Files filesTable = Files.newInstance();
 		Collection<file> result = read(target);
 
 		for(file file : files)

@@ -56,11 +56,8 @@ Ext.apply(Z8.Console,
 				failure(response);
 		};
 
-		var failure = function(response) {
-			if(response != null && this.relogin(response.status))
-				return;
-
-			job.info = result != null ? result.info : { messages: ['Transaction failure.'] };
+		var failure = function(info) {
+			job.info = info;
 			this.processEvent(job);
 		};
 

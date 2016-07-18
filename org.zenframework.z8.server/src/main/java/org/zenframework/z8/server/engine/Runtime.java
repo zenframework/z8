@@ -16,7 +16,8 @@ import org.zenframework.z8.server.utils.StringUtils;
 
 public class Runtime extends AbstractRuntime {
 
-    private static IRuntime runtime;
+	static private IRuntime runtime;
+    static private String version;
 
     static public IRuntime instance() {
         if(runtime == null)
@@ -38,6 +39,7 @@ public class Runtime extends AbstractRuntime {
         
         // Load base runtime-class
         mergeWith(new ServerRuntime());
+        
         try {
             // Load other modules runtime-classes
             Enumeration<URL> resources = classLoader.getResources(Z8RuntimePath);
@@ -74,6 +76,9 @@ public class Runtime extends AbstractRuntime {
     }
 
     public static String version() {
+    	if(version != null)
+    		return version;
+    	
         int controlSum = 0;
 
         for(Table.CLASS<? extends Table> cls: instance().tables()) {
@@ -81,7 +86,8 @@ public class Runtime extends AbstractRuntime {
             controlSum += table.controlSum();
         }
         
-        String version = StringUtils.padLeft("" + Math.abs(controlSum), 10, '0');
-        return version.substring(0, 1) + "." + version.substring(1, 4) + "." + version.substring(4, 7) + "." + version.substring(7);
+        version = StringUtils.padLeft("" + Math.abs(controlSum), 10, '0');
+        version = version.substring(0, 1) + "." + version.substring(1, 4) + "." + version.substring(4, 7) + "." + version.substring(7);
+        return version;
     }
 }

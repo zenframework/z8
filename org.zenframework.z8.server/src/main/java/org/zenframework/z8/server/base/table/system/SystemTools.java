@@ -4,11 +4,10 @@ import org.zenframework.z8.server.base.form.Desktop;
 import org.zenframework.z8.server.base.table.system.view.AuthorityCenterView;
 import org.zenframework.z8.server.base.table.system.view.FilesView;
 import org.zenframework.z8.server.base.table.system.view.InterconnectionCenterView;
-import org.zenframework.z8.server.base.table.system.view.MessagesQueueView;
+import org.zenframework.z8.server.base.table.system.view.TransportQueueView;
 import org.zenframework.z8.server.base.table.system.view.UserEntriesView;
 import org.zenframework.z8.server.db.generator.DBGenerateProcedure;
 import org.zenframework.z8.server.engine.ApplicationServer;
-import org.zenframework.z8.server.ie.TransportRoutes;
 import org.zenframework.z8.server.resources.Resources;
 import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.security.BuiltinUsers;
@@ -45,8 +44,7 @@ public class SystemTools extends Desktop {
 	public final Sequences.CLASS<Sequences> sequences = new Sequences.CLASS<Sequences>(this);
 	public final DBGenerateProcedure.CLASS<DBGenerateProcedure> generator = new DBGenerateProcedure.CLASS<DBGenerateProcedure>(this);
 	public final Properties.CLASS<Properties> properties = new Properties.CLASS<Properties>(this);
-	public final MessagesQueueView.CLASS<MessagesQueueView> exportMessages = new MessagesQueueView.CLASS<MessagesQueueView>(this);
-	public final TransportRoutes.CLASS<TransportRoutes> transportRoutes = new TransportRoutes.CLASS<TransportRoutes>(this);
+	public final TransportQueueView.CLASS<TransportQueueView> exportMessages = new TransportQueueView.CLASS<TransportQueueView>(this);
 	public final FilesView.CLASS<FilesView> files = new FilesView.CLASS<FilesView>(this);
 	public final Domains.CLASS<Domains> addresses = new Domains.CLASS<Domains>(this);
 
@@ -67,7 +65,6 @@ public class SystemTools extends Desktop {
 		runnables.add(generator);
 		runnables.add(properties);
 		runnables.add(exportMessages);
-		runnables.add(transportRoutes);
 		runnables.add(files);
 		runnables.add(addresses);
 
@@ -83,7 +80,6 @@ public class SystemTools extends Desktop {
 		dataSets.add(sequences);
 		dataSets.add(properties);
 		dataSets.add(exportMessages);
-		dataSets.add(transportRoutes);
 		dataSets.add(files);
 		dataSets.add(addresses);
 	}

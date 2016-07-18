@@ -142,16 +142,28 @@ public class User implements IUser {
 		return parameters;
 	}
 
-	static public IUser load(string login) {
-		return load(login.get());
+	static public IUser load(String login) {
+		return load(new string(login));
 	}
 	
-	static public IUser load(String login) {
+	static public IUser load(guid userId) {
+		return load((primary)userId);
+	}
+
+	static public IUser load(string login) {
+		return load((primary)login);
+	}
+	
+	static private IUser load(primary loginOrId) {
 		if(!ServerConfig.isSystemInstalled())
 			return User.system();
 
 		User user = new User();
-		user.readInfo(login);
+		
+		if(loginOrId instanceof string)
+			user.readInfo((string)loginOrId);
+		else
+			user.readInfo((guid)loginOrId);
 
 		user.readComponents();
 
@@ -196,11 +208,23 @@ public class User implements IUser {
 		return result != null ? (Users)result.newInstance() : null;
 	}
 
-	private void readInfo(String login) {
+	private void readInfo(guid id) {
 		Users users = getUsers();
+		SqlToken where = new Equ(users.recordId.get(), id);
+		readInfo(users, where);
+	}
+	
+	private void readInfo(string login) {
+		Users users = getUsers();
+		SqlToken where = new EqualsIgnoreCase(users.name.get(), login);
+		readInfo(users, where);
+	}
+
+	private void readInfo(Users users, SqlToken where) {
 
 		Collection<Field> fields = new ArrayList<Field>();
 		fields.add(users.recordId.get());
+		fields.add(users.name.get());
 		fields.add(users.password.get());
 		users.password.get().mask = false;
 		fields.add(users.settings.get());
@@ -208,13 +232,11 @@ public class User implements IUser {
 		fields.add(users.email.get());
 		fields.add(users.securityGroup.get());
 
-		SqlToken where = new EqualsIgnoreCase(users.name.get(), login);
-
 		users.read(fields, where);
 
 		if(users.next()) {
 			this.id = users.recordId.get().guid();
-			this.name = login;
+			this.name = users.name.get().string().get();
 			this.password = users.password.get().string().get();
 			this.settings = users.settings.get().string().get();
 			this.phone = users.phone.get().string().get();

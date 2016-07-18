@@ -19,7 +19,6 @@ import org.zenframework.z8.server.base.file.Folders;
 import org.zenframework.z8.server.engine.IServerInfo;
 import org.zenframework.z8.server.engine.ISession;
 import org.zenframework.z8.server.json.Json;
-import org.zenframework.z8.server.resources.Resources;
 import org.zenframework.z8.server.types.encoding;
 import org.zenframework.z8.server.types.file;
 import org.zenframework.z8.server.types.guid;
@@ -103,8 +102,8 @@ public class ConverterAdapter extends Adapter {
 		return contentType;
 	}
 
-	private file downloadFile(IServerInfo serverInfo, file fileInfo, File path) throws IOException {
-		file downloadedFile = serverInfo.getServer().download(fileInfo);
+	private file downloadFile(IServerInfo serverInfo, file file, File path) throws IOException {
+		file downloadedFile = serverInfo.getServer().download(file);
 
 		/*
 		 * The storage folder may be shared between servlet and application
@@ -117,7 +116,7 @@ public class ConverterAdapter extends Adapter {
 			if(in != null)
 				IOUtils.copy(in, path);
 			else
-				throw new IOException(Resources.format(fileInfo.status == file.Status.REQUEST_SENT ? "SystemFiles.retryLater" : "SystemFiles.notFound", fileInfo));
+				throw new IOException("File '" + file.path.get() + "' does not exist");
 		}
 
 		return downloadedFile;

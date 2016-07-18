@@ -59,9 +59,8 @@ public abstract class AbstractRuntime implements IRuntime {
 
     private static <T extends OBJECT.CLASS<? extends OBJECT>> T get(String name, List<T> list) {
         for (T cls : list) {
-            if (name.equals(cls.classId())) {
+            if (name.equals(cls.classId()))
                 return cls;
-            }
         }
         return null;
     }

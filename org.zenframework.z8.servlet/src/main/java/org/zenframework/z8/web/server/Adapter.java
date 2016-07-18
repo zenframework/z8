@@ -25,6 +25,7 @@ import org.zenframework.z8.server.engine.IApplicationServer;
 import org.zenframework.z8.server.engine.IAuthorityCenter;
 import org.zenframework.z8.server.engine.ISession;
 import org.zenframework.z8.server.exceptions.AccessDeniedException;
+import org.zenframework.z8.server.exceptions.ServerUnavailableException;
 import org.zenframework.z8.server.json.Json;
 import org.zenframework.z8.server.logs.Trace;
 import org.zenframework.z8.server.resources.Resources;
@@ -58,6 +59,7 @@ public abstract class Adapter {
 			String login = parameters.get(Json.login);
 			String password = parameters.get(Json.password);
 			String sessionId = parameters.get(Json.sessionId);
+			String serverId = parameters.get(Json.serverId);
 
 			if(login != null && password != null) {
 
@@ -66,12 +68,11 @@ public abstract class Adapter {
 
 				session = ServerConfig.authorityCenter().login(login, password);
 			} else if(sessionId != null) {
-				String serverId = parameters.get(Json.serverId);
 				session = ServerConfig.authorityCenter().server(sessionId, serverId);
 			}
 
 			if(session == null)
-				throw new AccessDeniedException();
+				throw serverId == null ? new AccessDeniedException() : new ServerUnavailableException(serverId);
 
 			service(session, parameters, files, request, response);
 		} catch(AccessDeniedException e) {

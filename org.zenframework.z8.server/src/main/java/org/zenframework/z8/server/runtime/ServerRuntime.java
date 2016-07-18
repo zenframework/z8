@@ -5,17 +5,16 @@ import org.zenframework.z8.server.base.table.system.Entries;
 import org.zenframework.z8.server.base.table.system.Files;
 import org.zenframework.z8.server.base.table.system.Jobs;
 import org.zenframework.z8.server.base.table.system.Logs;
-import org.zenframework.z8.server.base.table.system.MessagesQueue;
+import org.zenframework.z8.server.base.table.system.MessageQueue;
 import org.zenframework.z8.server.base.table.system.Properties;
 import org.zenframework.z8.server.base.table.system.Property;
 import org.zenframework.z8.server.base.table.system.SchedulerJobs;
 import org.zenframework.z8.server.base.table.system.SecurityGroups;
 import org.zenframework.z8.server.base.table.system.Sequences;
-import org.zenframework.z8.server.base.table.system.SystemFiles;
 import org.zenframework.z8.server.base.table.system.SystemTools;
+import org.zenframework.z8.server.base.table.system.TransportQueue;
 import org.zenframework.z8.server.base.table.system.UserEntries;
 import org.zenframework.z8.server.base.table.system.Users;
-import org.zenframework.z8.server.ie.TransportRoutes;
 
 public class ServerRuntime extends AbstractRuntime {
 
@@ -62,11 +61,10 @@ public class ServerRuntime extends AbstractRuntime {
 		addTable(new Logs.CLASS<Logs>(null));
 
 		addTable(new Files.CLASS<Files>(null));
-		addTable(new SystemFiles.CLASS<SystemFiles>(null));
 		addTable(new Properties.CLASS<Properties>(null));
 
-		addTable(new MessagesQueue.CLASS<MessagesQueue>(null));
-		addTable(new TransportRoutes.CLASS<TransportRoutes>(null));
+		addTable(new MessageQueue.CLASS<MessageQueue>(null));
+		addTable(new TransportQueue.CLASS<TransportQueue>(null));
 
 		addEntry(new SystemTools.CLASS<SystemTools>(null));
 

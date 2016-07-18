@@ -288,11 +288,19 @@ public class RmiIO extends ObjectIO {
 		} else if(object instanceof RmiSerializable) {
 			writeByte(out, RmiIOType.Self);
 			writeSerializable(out, (RmiSerializable)object);
+		} else if(object instanceof Enum<?>) {
+			writeByte(out, RmiIOType.Enum);
+			writeEnum(out, (Enum<?>)object);
 		} else {
 			RuntimeException e = new RuntimeException("Object (" + object.getClass().getCanonicalName() + ") is not an instance of z8.rmi.RmiSerializable");
 			Trace.logError(e);
 			throw e;
 		}
+	}
+
+	private void writeEnum(ObjectOutputStream out, Enum<?> enumeration) throws IOException {
+		writeString(out, enumeration.getClass().getCanonicalName());
+		writeString(out, enumeration.name());
 	}
 
 	private void writeOBJECT(ObjectOutputStream out, OBJECT object) throws IOException {
@@ -557,6 +565,8 @@ public class RmiIO extends ObjectIO {
 			return readOBJECT(in);
 		else if(id == RmiIOType.Self)
 			return readSerializable(in);
+		else if(id == RmiIOType.Enum)
+			return readEnum(in);
 
 		throw new RuntimeException("Unknown object type");
 	}
@@ -608,6 +618,13 @@ public class RmiIO extends ObjectIO {
 		}
 
 		return map;
+	}
+
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	private Object readEnum(ObjectInputStream in) throws IOException, ClassNotFoundException {
+		Class cls = getClass(readString(in));
+		String name = readString(in);
+		return Enum.valueOf(cls, name);
 	}
 
 	private Object readOBJECT(ObjectInputStream in) throws IOException, ClassNotFoundException {

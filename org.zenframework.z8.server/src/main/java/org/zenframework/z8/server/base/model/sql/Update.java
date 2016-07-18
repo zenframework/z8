@@ -32,10 +32,6 @@ public class Update extends Statement {
             throw new RuntimeException("Update: recordId == null");
     }
 
-    public Update(Query query, Collection<Field> fields, sql_bool where) {
-        this(query, fields, null, where);
-    }
-
     private Update(Query query, Collection<Field> fields, guid recordId, sql_bool where) {
         super(ConnectionManager.get());
         

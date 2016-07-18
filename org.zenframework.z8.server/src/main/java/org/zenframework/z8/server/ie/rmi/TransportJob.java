@@ -3,7 +3,8 @@ package org.zenframework.z8.server.ie.rmi;
 import java.util.Collection;
 
 import org.zenframework.z8.server.base.simple.Procedure;
-import org.zenframework.z8.server.base.table.system.MessagesQueue;
+import org.zenframework.z8.server.base.table.system.MessageQueue;
+import org.zenframework.z8.server.base.table.system.TransportQueue;
 import org.zenframework.z8.server.base.view.command.Parameter;
 import org.zenframework.z8.server.ie.Import;
 import org.zenframework.z8.server.runtime.IObject;
@@ -32,8 +33,18 @@ public class TransportJob extends Procedure {
 		sendMessages();
 	}
 
+	Collection<String> getAddresses() {
+		Collection<String> result = TransportQueue.newInstance().getAddresses();
+		
+		for(String address : MessageQueue.newInstance().getAddresses()) {
+			if(!result.contains(address))
+				result.add(address);
+		}
+		return result;
+	}
+	
 	private void sendMessages() {
-		Collection<String> addresses = MessagesQueue.newInstance().getAddresses();
+		Collection<String> addresses = getAddresses();
 
 		for(String address : addresses) {
 			Transport thread = Transport.get(address);

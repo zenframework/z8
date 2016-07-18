@@ -7,6 +7,7 @@ import java.util.Map;
 
 import org.zenframework.z8.server.base.form.Desktop;
 import org.zenframework.z8.server.base.simple.Procedure;
+import org.zenframework.z8.server.base.simple.Runnable;
 import org.zenframework.z8.server.base.table.system.Users;
 import org.zenframework.z8.server.engine.ApplicationServer;
 import org.zenframework.z8.server.exceptions.AccessDeniedException;
@@ -77,11 +78,9 @@ public class Dashboard extends RequestTarget {
 		}
 	}
 
+	@SuppressWarnings("rawtypes")
 	private void writeDesktopData(JsonWriter writer, Desktop desktop, String displayName) {
-		Collection<CLASS<?>> runnables = new ArrayList<CLASS<?>>();
-
-		for(CLASS<?> cls : desktop.getRunnables())
-			runnables.add(cls);
+		Collection<Runnable.CLASS> runnables = desktop.getRunnables();
 
 		if(!runnables.isEmpty()) {
 			writer.startObject();
@@ -152,7 +151,7 @@ public class Dashboard extends RequestTarget {
 		writer.startObject();
 
 		if(cls.instanceOf(Procedure.class)) {
-			Procedure procedure = (Procedure)cls.newInstance();
+			Procedure procedure = (Procedure)cls.get();
 			procedure.write(writer);
 		} else
 			cls.write(writer);
