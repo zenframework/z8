@@ -73,7 +73,7 @@ public class ExportSource implements RmiSerializable, Serializable {
 
 	public Table table() {
 		if(table == null)
-			table = (Table)Runtime.instance().getTable(tableName).newInstance();
+			table = (Table)Runtime.instance().getTableByName(tableName).newInstance();
 		return table;
 	}
 

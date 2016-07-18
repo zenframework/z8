@@ -237,7 +237,7 @@ public class MessageSource implements RmiSerializable, Serializable {
 		Table table = tableCache.get(name);
 		
 		if(table == null) {
-			table = (Table)Runtime.instance().getTable(name).newInstance();
+			table = (Table)Runtime.instance().getTableByName(name).newInstance();
 			tableCache.put(name, table);
 		}
 		
