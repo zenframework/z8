@@ -44,7 +44,6 @@
 		<module>org.zenframework.z8.server</module>
 		<module>org.zenframework.z8.servlet</module>
 		<module>org.zenframework.z8.web</module>
-		<module>org.zenframework.z8.xml</module>
 	</modules>
 
 	<profiles>
