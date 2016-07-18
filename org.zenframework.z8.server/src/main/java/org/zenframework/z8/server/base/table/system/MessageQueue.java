@@ -127,7 +127,7 @@ public class MessageQueue extends Table {
 	public void add(Message message) {
 		sender.get().set(new string(message.getSender()));
 		address.get().set(new string(message.getAddress()));
-		ordinal.get().set(new integer(Sequencer.next("Messages." + message.getAddress())));
+		ordinal.get().set(new integer(Sequencer.next(message.getAddress() + ".message")));
 		classId.get().set(new string(message.classId()));
 		data.get().set(message.toBinary());
 		create();

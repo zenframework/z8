@@ -158,7 +158,7 @@ public class TransportQueue extends Table {
 	public void add(Message message) {
 		sender.get().set(new string(message.getSender()));
 		address.get().set(new string(message.getAddress()));
-		ordinal.get().set(new integer(Sequencer.next("out_" + message.getAddress())));
+		ordinal.get().set(new integer(Sequencer.next(message.getAddress() + ".transport")));
 		classId.get().set(new string(message.classId()));
 		data.get().set(message.toBinary());
 		create();
