@@ -14,7 +14,6 @@ import org.zenframework.z8.server.db.sql.SqlToken;
 import org.zenframework.z8.server.engine.RmiIO;
 import org.zenframework.z8.server.engine.RmiSerializable;
 import org.zenframework.z8.server.engine.Runtime;
-import org.zenframework.z8.server.request.Loader;
 import org.zenframework.z8.server.types.guid;
 
 public class ExportSource implements RmiSerializable, Serializable {
@@ -44,7 +43,7 @@ public class ExportSource implements RmiSerializable, Serializable {
 	
 	private ExportSource(Table table, Collection<Field> fields) {
 		this.table = table;
-		this.tableName = table.classId();
+		this.tableName = table.name();
 
 		this.fields = fields == null ? table.getPrimaryFields() : fields;
 		
@@ -74,7 +73,7 @@ public class ExportSource implements RmiSerializable, Serializable {
 
 	public Table table() {
 		if(table == null)
-			table = (Table)Loader.getInstance(tableName);
+			table = (Table)Runtime.instance().getTable(tableName).newInstance();
 		return table;
 	}
 
@@ -86,10 +85,10 @@ public class ExportSource implements RmiSerializable, Serializable {
 
 		fields = new ArrayList<Field>();
 		
-		for(String name : fieldNames) {
-			Field field = table.getFieldByName(name);
+		for(String fieldName : fieldNames) {
+			Field field = table.getFieldByName(fieldName);
 			if(field == null)
-				throw new RuntimeException("Field not found: '" + tableName + "'.'" + name + "'; schema version: " + Runtime.version());
+				throw new RuntimeException("Field not found: '" + tableName + "'.'" + fieldName + "'; schema version: " + Runtime.version());
 			fields.add(field);
 		}
 		

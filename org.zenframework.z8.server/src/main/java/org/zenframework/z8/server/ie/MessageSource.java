@@ -20,8 +20,8 @@ import org.zenframework.z8.server.db.sql.SqlToken;
 import org.zenframework.z8.server.db.sql.functions.InVector;
 import org.zenframework.z8.server.engine.RmiIO;
 import org.zenframework.z8.server.engine.RmiSerializable;
+import org.zenframework.z8.server.engine.Runtime;
 import org.zenframework.z8.server.json.parser.JsonArray;
-import org.zenframework.z8.server.request.Loader;
 import org.zenframework.z8.server.security.BuiltinUsers;
 import org.zenframework.z8.server.types.file;
 import org.zenframework.z8.server.types.guid;
@@ -55,11 +55,11 @@ public class MessageSource implements RmiSerializable, Serializable {
 	}
 	
 	public void addRule(Table table, ImportPolicy policy) {
-		exportRules.add(table.classId(), policy);
+		exportRules.add(table.name(), policy);
 	}
 
 	public void addRule(Table table, guid recordId, ImportPolicy policy) {
-		exportRules.add(table.classId(), recordId, policy);
+		exportRules.add(table.name(), recordId, policy);
 	}
 
 	public void addRule(Table table, Field field, ImportPolicy policy) {
@@ -237,7 +237,7 @@ public class MessageSource implements RmiSerializable, Serializable {
 		Table table = tableCache.get(name);
 		
 		if(table == null) {
-			table = (Table)Loader.getInstance(name);
+			table = (Table)Runtime.instance().getTable(name).newInstance();
 			tableCache.put(name, table);
 		}
 		

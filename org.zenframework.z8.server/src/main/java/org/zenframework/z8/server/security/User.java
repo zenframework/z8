@@ -10,7 +10,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
-import org.zenframework.z8.server.base.table.Table;
 import org.zenframework.z8.server.base.table.system.SystemTools;
 import org.zenframework.z8.server.base.table.system.UserEntries;
 import org.zenframework.z8.server.base.table.system.Users;
@@ -23,11 +22,9 @@ import org.zenframework.z8.server.db.sql.expressions.Equ;
 import org.zenframework.z8.server.db.sql.functions.string.EqualsIgnoreCase;
 import org.zenframework.z8.server.engine.Database;
 import org.zenframework.z8.server.engine.RmiIO;
-import org.zenframework.z8.server.engine.Runtime;
 import org.zenframework.z8.server.exceptions.AccessDeniedException;
 import org.zenframework.z8.server.logs.Trace;
 import org.zenframework.z8.server.resources.Resources;
-import org.zenframework.z8.server.runtime.CLASS;
 import org.zenframework.z8.server.runtime.RLinkedHashMap;
 import org.zenframework.z8.server.types.guid;
 import org.zenframework.z8.server.types.primary;
@@ -193,29 +190,14 @@ public class User implements IUser {
 		components.add(new Component(null, SystemTools.ClassName, Resources.get(SystemTools.strings.Title)));
 	}
 
-	@SuppressWarnings("unchecked")
-	private Users getUsers() {
-		CLASS<? extends Users> result = null;
-		Class<?> cls = Users.class;
-
-		for(CLASS<? extends Table> table : Runtime.instance().tables()) {
-			if(table.instanceOf(cls)) {
-				result = (CLASS<? extends Users>)table;
-				cls = result.getJavaClass();
-			}
-		}
-
-		return result != null ? (Users)result.newInstance() : null;
-	}
-
 	private void readInfo(guid id) {
-		Users users = getUsers();
+		Users users = Users.newInstance();
 		SqlToken where = new Equ(users.recordId.get(), id);
 		readInfo(users, where);
 	}
 	
 	private void readInfo(string login) {
-		Users users = getUsers();
+		Users users = Users.newInstance();
 		SqlToken where = new EqualsIgnoreCase(users.name.get(), login);
 		readInfo(users, where);
 	}

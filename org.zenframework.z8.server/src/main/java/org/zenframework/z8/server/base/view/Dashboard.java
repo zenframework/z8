@@ -62,7 +62,7 @@ public class Dashboard extends RequestTarget {
 			throw new AccessDeniedException();
 		}
 
-		Users users = new Users.CLASS<Users>().get();
+		Users users = Users.newInstance();
 
 		users.password.get().set(new string(newPassword));
 		users.update(user.id());
@@ -72,7 +72,7 @@ public class Dashboard extends RequestTarget {
 		IUser user = ApplicationServer.getUser();
 
 		if(!user.email().equalsIgnoreCase(email)) {
-			Users users = new Users.CLASS<Users>().get();
+			Users users = Users.newInstance();
 			users.email.get().set(new string(email));
 			users.update(user.id());
 		}
