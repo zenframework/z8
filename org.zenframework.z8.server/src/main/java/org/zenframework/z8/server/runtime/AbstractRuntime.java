@@ -84,7 +84,7 @@ public abstract class AbstractRuntime implements IRuntime {
 			}
 		}
 		tableClasses.put(cls.classId(), cls);
-		tableNames.put(cls.classId(), cls);
+		tableNames.put(cls.name(), cls);
 	}
 
 	protected void addEntry(OBJECT.CLASS<? extends OBJECT> cls) {
