@@ -15,7 +15,7 @@ public abstract class RmiServer implements IServer, Remote {
 	private Proxy proxy;
 	
 	protected RmiServer(int port) throws RemoteException {
-		if(ServerConfig.rmiEnabled())
+		if(port != 0)
 			export(port);
 	}
 
