@@ -14,8 +14,7 @@ public abstract class RmiServer implements IServer, Remote {
 	private Proxy proxy;
 	
 	protected RmiServer(int port) throws RemoteException {
-		if(port != 0)
-			export(port);
+		export(port);
 	}
 
 	@Override
@@ -48,8 +47,10 @@ public abstract class RmiServer implements IServer, Remote {
 	}
 	
 	private void export(int port) throws RemoteException {
-		while(!safeExport(port))
-			port++;
+		if(port != 0) {
+			while(!safeExport(port))
+				port++;
+		}
 	}
 	
 	private boolean safeExport(int port) throws RemoteException {
