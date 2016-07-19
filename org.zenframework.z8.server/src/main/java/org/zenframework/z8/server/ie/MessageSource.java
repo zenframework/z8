@@ -127,7 +127,7 @@ public class MessageSource implements RmiSerializable, Serializable {
 		files = (Collection<file>)in.readObject();
 	}
 
-	private Map<String, Boolean> addedRecords = new HashMap<String, Boolean>();
+	private Map<String, Boolean> recordStates = new HashMap<String, Boolean>();
 	
 	private void processExportSource(ExportSource source) {
 		Table table = source.table();
@@ -146,10 +146,10 @@ public class MessageSource implements RmiSerializable, Serializable {
 		
 			String id = makeUniqueId(tableName, recordId);
 			
-			if(addedRecords.get(id) != null)
+			if(recordStates.get(id) != null)
 				continue;
 			
-			addedRecords.put(id, false);
+			recordStates.put(id, false);
 			
 			RecordInfo record = new RecordInfo(recordId, tableName);
 			
@@ -164,7 +164,7 @@ public class MessageSource implements RmiSerializable, Serializable {
 			
 			inserts.add(record);
 
-			addedRecords.put(id, true);
+			recordStates.put(id, true);
 		}
 		
 		table.restoreState();
@@ -199,19 +199,20 @@ public class MessageSource implements RmiSerializable, Serializable {
 				BuiltinUsers.Administrator.guid().equals(value))
 			return false;
 
-		Boolean recordState = addedRecords.get(makeUniqueId(name, value));
-		boolean notProcessed = recordState == null;
-		boolean inProcess = recordState != null && !recordState;
+		Boolean state = recordStates.get(makeUniqueId(name, value));
+		boolean notInserted = state == null;
+		boolean inserting = state != null && !state;
 		
-		if(notProcessed) {
+		if(notInserted) {
 			ExportSource source = new ExportSource(table, null, Arrays.asList(value));
 			processExportSource(source);
 			return true;
-		} else if(inProcess) {
+		} else if(inserting) {
 			processUpdate(recordId, field);
 			return false;
 		}
 		
+		// inserted
 		return true;
 	}
 
