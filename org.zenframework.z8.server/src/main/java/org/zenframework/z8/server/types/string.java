@@ -63,7 +63,7 @@ public final class string extends primary {
 
 	public byte[] getBytes(encoding charset) {
 		try {
-			return value.getBytes(charset.toString());
+			return value != null ? value.getBytes(charset.toString()) : null;
 		} catch(UnsupportedEncodingException e) {
 			throw new exception(e);
 		}

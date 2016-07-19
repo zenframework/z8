@@ -46,7 +46,7 @@ public class binary extends primary {
 	}
 
 	private void set(byte[] bytes) {
-		set(new ByteArrayInputStream(bytes));
+		set(new ByteArrayInputStream(bytes != null ? bytes : new byte[0]));
 	}
 
 	private void set(binary binary) {
