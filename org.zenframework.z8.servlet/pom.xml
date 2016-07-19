@@ -68,12 +68,6 @@
 		</dependency>
 		<dependency>
 			<groupId>org.zenframework.z8</groupId>
-			<artifactId>org.zenframework.z8.xml</artifactId>
-			<version>${project.version}</version>
-			<scope>compile</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.zenframework.z8</groupId>
 			<artifactId>org.zenframework.z8.oda.driver</artifactId>
 			<version>${project.version}</version>
 			<scope>compile</scope>

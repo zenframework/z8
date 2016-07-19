@@ -10,6 +10,7 @@ import org.zenframework.z8.server.base.table.value.Link;
 import org.zenframework.z8.server.base.table.value.StringField;
 import org.zenframework.z8.server.base.table.value.TextField;
 import org.zenframework.z8.server.engine.IAuthorityCenter;
+import org.zenframework.z8.server.engine.Runtime;
 import org.zenframework.z8.server.resources.Resources;
 import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.runtime.RCollection;
@@ -92,6 +93,10 @@ public class Users extends Table {
 		}
 	}
 
+	static public Users newInstance() {
+		return (Users)Runtime.instance().getTableByName(Users.TableName).newInstance();
+	}
+	
 	public SecurityGroups.CLASS<SecurityGroups> securityGroups = new SecurityGroups.CLASS<SecurityGroups>(this);
 
 	public Link.CLASS<Link> securityGroup = new Link.CLASS<Link>(this);

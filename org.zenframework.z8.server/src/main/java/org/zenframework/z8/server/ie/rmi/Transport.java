@@ -5,13 +5,15 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.zenframework.z8.server.base.job.scheduler.Scheduler;
-import org.zenframework.z8.server.base.table.system.MessagesQueue;
+import org.zenframework.z8.server.base.table.system.MessageQueue;
+import org.zenframework.z8.server.base.table.system.TransportQueue;
 import org.zenframework.z8.server.config.ServerConfig;
 import org.zenframework.z8.server.db.Connection;
 import org.zenframework.z8.server.db.ConnectionManager;
 import org.zenframework.z8.server.engine.IApplicationServer;
 import org.zenframework.z8.server.engine.IInterconnectionCenter;
 import org.zenframework.z8.server.ie.Message;
+import org.zenframework.z8.server.ie.MessageSource;
 import org.zenframework.z8.server.logs.Trace;
 import org.zenframework.z8.server.types.file;
 import org.zenframework.z8.server.types.guid;
@@ -24,7 +26,8 @@ public class Transport implements Runnable {
 	private IApplicationServer server;
 	private Thread thread;
 
-	private MessagesQueue messages = MessagesQueue.newInstance();
+	private MessageQueue messageQueue = MessageQueue.newInstance();
+	private TransportQueue transportQueue = TransportQueue.newInstance();
 	
 	static public Transport get(String domain) {
 		return workers.get(domain);
@@ -43,14 +46,9 @@ public class Transport implements Runnable {
 
 	@Override
 	public void run() {
-		Collection<guid> ids = messages.getMessages(domain);
-
 		try {
-			for(guid id : ids) {
-				Message message = messages.getMessage(id);
-				if(!send(message))
-					return;
-			}
+			prepareMessages();
+			sendMessages();
 		} catch(Throwable e) {
 			Trace.logError(e);
 		} finally {
@@ -59,20 +57,74 @@ public class Transport implements Runnable {
 		}
 	}
 
+	private void prepareMessages() throws Throwable {
+		Collection<Message> messages = messageQueue.getMessages(domain);
+
+		for(Message message : messages)
+			prepare(message);
+	}
+	
+	private void prepare(Message message) throws Throwable {
+		MessageSource source = message.getSource();
+		source.exportData();
+		
+		Connection connection = ConnectionManager.get();
+		
+		try {
+			connection.beginTransaction();
+			
+			messageQueue.beginProcessing(message.getId());
+			
+			for(file file : source.files()) {
+				Message fileMessage = (Message)message.getCLASS().newInstance();
+				fileMessage.setSourceId(message.getId());
+				fileMessage.setAddress(message.getAddress());
+				fileMessage.setSender(message.getSender());
+				fileMessage.setType(message.getType());
+				fileMessage.setFile(file);
+				transportQueue.add(fileMessage);
+			}
+			
+			Message dataMessage = (Message)message.getCLASS().newInstance();
+			dataMessage.setSourceId(message.getId());
+			dataMessage.setAddress(message.getAddress());
+			dataMessage.setSender(message.getSender());
+			dataMessage.setSource(message.getSource());
+			dataMessage.setType(message.getType());
+			
+			transportQueue.add(dataMessage);
+			
+			connection.commit();
+		} catch(Throwable e) {
+			connection.rollback();
+			throw e;
+		}
+	}
+	
+	private void sendMessages() throws Throwable {
+		Collection<guid> ids = transportQueue.getMessages(domain);
+
+		for(guid id : ids) {
+			Message message = transportQueue.getMessage(id);
+			if(!send(message))
+				return;
+		}
+	}
+	
 	private IApplicationServer connect(Message message) throws Throwable {
 		IInterconnectionCenter center = ServerConfig.interconnectionCenter();
 
 		try {
 			center.probe();
 		} catch(Throwable e) {
-			message.info("Interconnection Center is unavailable at " + ProxyUtils.getUrl(center));
+			transportQueue.setInfo(message.getId(), "Interconnection Center is unavailable at " + ProxyUtils.getUrl(center));
 			return null;
 		}
 
 		IApplicationServer server = ServerConfig.interconnectionCenter().connect(domain);
 
 		if(server == null)
-			message.info("Domain '" + domain + "' is unavailable at Interconnection Center " + ProxyUtils.getUrl(center));
+			transportQueue.setInfo(message.getId(), "Domain '" + domain + "' is unavailable at Interconnection Center " + ProxyUtils.getUrl(center));
 
 		return server;
 	}
@@ -85,9 +137,9 @@ public class Transport implements Runnable {
 			return false;
 
 		try {
-			return message.isFile() ? sendFile(message) : sendMessage(message);
+			return message.isFileMessage() ? sendFile(message) : sendMessage(message);
 		} catch(Throwable e) {
-			message.info(e.getMessage());
+			transportQueue.setInfo(message.getId(), e.getMessage());
 			throw e;
 		}
 	}
@@ -102,7 +154,8 @@ public class Transport implements Runnable {
 
 			if(server.accept(message)) {
 				message.afterExport();
-				message.processed("OK");
+				messageQueue.endProcessing(message.getSourceId());
+				transportQueue.setProcessed(message.getId(), "OK");
 			}
 
 			connection.commit();
@@ -118,7 +171,7 @@ public class Transport implements Runnable {
 		file file = message.getFile();
 
 		if(server.hasFile(file)) {
-			message.processed("Skipped");
+			transportQueue.setProcessed(message.getId(), "Skipped");
 			return true;
 		}
 
@@ -130,12 +183,12 @@ public class Transport implements Runnable {
 
 				boolean reset = !server.accept(file);
 
-				message.transferred(reset ? 0 : file.offset());
+				transportQueue.setBytesTrasferred(message.getId(), reset ? 0 : file.offset());
 
 				connection.commit();
 
 				if(reset) {
-					message.info("Reset");
+					transportQueue.setInfo(message.getId(), "Reset");
 					return false;
 				}
 			} catch(Throwable e) {
@@ -144,7 +197,7 @@ public class Transport implements Runnable {
 			}
 		}
 
-		message.processed("OK");
+		transportQueue.setProcessed(message.getId(), "OK");
 		return true;
 	}
 }

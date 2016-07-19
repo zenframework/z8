@@ -20,6 +20,7 @@ public interface IRuntime {
     public Collection<Property> properties();
 
     public Table.CLASS<? extends Table> getTable(String className);
+    public Table.CLASS<? extends Table> getTableByName(String name);
 
     public OBJECT.CLASS<? extends OBJECT> getEntry(String className);
 

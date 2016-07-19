@@ -3,43 +3,38 @@ package org.zenframework.z8.server.ie;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
-import java.util.List;
+import java.util.Map;
 
-import org.zenframework.z8.ie.xml.ExportEntry;
-import org.zenframework.z8.server.base.table.system.MessagesQueue;
+import org.zenframework.z8.server.base.table.Table;
+import org.zenframework.z8.server.base.table.system.MessageQueue;
+import org.zenframework.z8.server.base.table.value.Field;
+import org.zenframework.z8.server.engine.ApplicationServer;
 import org.zenframework.z8.server.engine.RmiIO;
 import org.zenframework.z8.server.engine.RmiSerializable;
 import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.runtime.OBJECT;
 import org.zenframework.z8.server.runtime.RCollection;
 import org.zenframework.z8.server.runtime.RLinkedHashMap;
-import org.zenframework.z8.server.types.datetime;
-import org.zenframework.z8.server.types.exception;
+import org.zenframework.z8.server.types.binary;
 import org.zenframework.z8.server.types.file;
 import org.zenframework.z8.server.types.guid;
 import org.zenframework.z8.server.types.primary;
 import org.zenframework.z8.server.types.string;
+import org.zenframework.z8.server.types.sql.sql_bool;
 import org.zenframework.z8.server.utils.IOUtils;
 import org.zenframework.z8.server.utils.NumericUtils;
 
 public class Message extends OBJECT implements RmiSerializable, Serializable {
 
-	private static final long serialVersionUID = 3103056587172568570L;
+	static private final long serialVersionUID = 3103056587172568570L;
 
-	public static final string PROP_TYPE = new string("message.type");
-	public static final string PROP_GROUP = new string("message.group");
-	public static final string PROP_RECORD_ID = new string("message.recordId");
-	public static final string PROP_FILE_PATH = new string("message.filePath");
-	public static final string PROP_SEND_FILES_CONTENT = new string("message.sendFilesContent");
+	static public final string RecordId = new string("message.recordId");
 
-	public static final string TYPE_FILE_REQUEST = new string("file.request");
-	public static final string TYPE_FILE_CONTENT = new string("file.content");
-	public static final string TYPE_FILE_REFERENCE = new string("file.reference");
-
-	public static class CLASS<T extends Message> extends OBJECT.CLASS<T> {
+	static public class CLASS<T extends Message> extends OBJECT.CLASS<T> {
 		public CLASS() {
 			this(null);
 		}
@@ -55,18 +50,16 @@ public class Message extends OBJECT implements RmiSerializable, Serializable {
 		}
 	}
 
-	private guid id = guid.create();
-	private datetime time = new datetime();
+	private guid id = guid.NULL;
+	private guid sourceId = guid.NULL;
 	private String sender;
 	private String address;
-	private long bytesTransferred;
+	private String type;
 
-	private String xml;
-	private ExportEntry exportEntry;
-	private RCollection<file> files = new RCollection<file>(true);
+	private file file;
 
-	private RLinkedHashMap<string, primary> properties = null;
-
+	private MessageSource source = new MessageSource();
+	
 	public Message(IObject container) {
 		super(container);
 	}
@@ -79,12 +72,12 @@ public class Message extends OBJECT implements RmiSerializable, Serializable {
 		this.id = id;
 	}
 
-	public datetime getTime() {
-		return time;
+	public guid getSourceId() {
+		return sourceId;
 	}
 
-	public void setTime(datetime time) {
-		this.time = time;
+	public void setSourceId(guid sourceId) {
+		this.sourceId = sourceId;
 	}
 
 	public String getAddress() {
@@ -103,152 +96,91 @@ public class Message extends OBJECT implements RmiSerializable, Serializable {
 		this.sender = sender;
 	}
 
+	public String getType() {
+		return type;
+	}
+
+	public void setType(String type) {
+		this.type = type;
+	}
+
+	public MessageSource getSource() {
+		return source;
+	}
+
+	public void setSource(MessageSource source) {
+		this.source = source;
+	}
+
+	public boolean isFileMessage() {
+		return file != null;
+	}
+
+	public file getFile() {
+		return file;
+	}
+
+	public void setFile(file file) {
+		this.file = file;
+	}
+	
 	public void setBytesTransferred(long bytesTransferred) {
-		this.bytesTransferred = bytesTransferred;
-	}
-
-	public String getXml() {
-		if(xml == null && exportEntry != null) {
-			xml = IeUtil.marshalExportEntry(exportEntry);
-		}
-		return xml;
-	}
-
-	public void setXml(String xml) {
-		this.xml = xml;
-		this.exportEntry = null;
-	}
-
-	public ExportEntry getExportEntry() {
-		if(exportEntry == null && xml != null) {
-			exportEntry = IeUtil.unmarshalExportEntry(xml);
-		}
-		if(exportEntry == null) {
-			exportEntry = new ExportEntry();
-			exportEntry.setRecords(new ExportEntry.Records());
-			exportEntry.setFiles(new ExportEntry.Files());
-			exportEntry.setProperties(new ExportEntry.Properties());
-		}
-		return exportEntry;
-	}
-
-	public void setExportEntry(ExportEntry exportEntry) {
-		this.exportEntry = exportEntry;
-		this.xml = null;
-	}
-
-	public List<file> getFiles() {
-		return files;
-	}
-
-	public void setFiles(List<file> files) {
-		this.files.clear();
-		this.files.addAll(files);
-	}
-
-	public RLinkedHashMap<string, primary> getProperties() {
-		if(properties == null) {
-			properties = new RLinkedHashMap<string, primary>();
-			ExportEntry.Properties entryProps = getExportEntry().getProperties();
-			if(entryProps != null) {
-				for(ExportEntry.Properties.Property property : entryProps.getProperty()) {
-					properties.put(new string(property.getKey()), primary.create(property.getType(), property.getValue()));
-				}
-			}
-		}
-		return properties;
-	}
-
-	public String getInfo() {
-		primary type = getProperties().get(Message.PROP_TYPE);
-		primary group = getProperties().get(Message.PROP_GROUP);
-		StringBuilder str = new StringBuilder();
-		if(type != null)
-			str.append(type);
-		if(group != null) {
-			if(str.length() > 0)
-				str.append(" : ");
-			str.append(group);
-		}
-		return str.toString();
-	}
-
-	public boolean isSendFilesContent() {
-		RLinkedHashMap<string, primary> props = getProperties();
-		return props.containsKey(PROP_SEND_FILES_CONTENT) && props.get(PROP_SEND_FILES_CONTENT).bool().get();
-	}
-
-	@Override
-	public String toString() {
-		return new StringBuilder().append(id).append(':').append(sender).append("->").append(address).toString();
+		if(file != null)
+			file.setOffset(bytesTransferred);
 	}
 
 	protected void beforeImport() {
 		z8_beforeImport();
 	}
 
-	public void z8_beforeImport() {
-	}
-
 	protected void afterImport() {
 		z8_afterImport();
-	}
-
-	public void z8_afterImport() {
 	}
 
 	public void beforeExport() {
 		z8_beforeExport();
 	}
 
-	public void z8_beforeExport() {
-	}
-
 	public void afterExport() {
 		z8_afterExport();
 	}
 
-	public void z8_afterExport() {
+	public binary toBinary() {
+		try {
+			ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+			ObjectOutputStream out = new ObjectOutputStream(bytes);
+			
+			serialize(out);
+			
+			IOUtils.closeQuietly(out);
+			IOUtils.closeQuietly(bytes);
+			
+			return new binary(bytes.toByteArray());
+		} catch(IOException e) {
+			throw new RuntimeException(e);
+		}
 	}
-
+	
+	public void fromBinary(binary binary) {
+		try {
+			InputStream binaryIn = binary.get();
+			ObjectInputStream in = new ObjectInputStream(binaryIn);
+		
+			deserialize(in);
+			
+			IOUtils.closeQuietly(in);
+			IOUtils.closeQuietly(binaryIn);
+		} catch(Throwable e) {
+			throw new RuntimeException(e);
+		}
+	}
+	
 	private void writeObject(ObjectOutputStream out) throws IOException {
 		serialize(out);
 	}
 
 	private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
 		deserialize(in);
-	}
-
-	public void info(String info) {
-		MessagesQueue.newInstance().info(getId(), info);
-	}
-
-	public void processed() {
-		processed(null);
-	}
-	
-	public void processed(String info) {
-		MessagesQueue.newInstance().processed(getId(), info);
-	}
-	
-	public void transferred(long bytes) {
-		MessagesQueue.newInstance().transferred(getId(), bytes);
-	}
-
-	public boolean isFile() {
-		List<ExportEntry.Files.File> files = getExportEntry().getFiles().getFile();
-
-		if(files.size() > 1)
-			throw new RuntimeException("Message must contain one or zero files");
-
-		return files.size() == 1;
-	}
-
-	public file getFile() {
-		ExportEntry.Files.File desc = getExportEntry().getFiles().getFile().get(0);
-		file file = new file(new guid(desc.getId()), desc.getId(), desc.getInstanceId(), desc.getPath(), 0, new datetime(desc.getTime()));
-		file.setOffset(bytesTransferred);
-		return file;
 	}
 
 	@Override
@@ -259,16 +191,17 @@ public class Message extends OBJECT implements RmiSerializable, Serializable {
 		ObjectOutputStream objects = new ObjectOutputStream(bytes);
 
 		RmiIO.writeGuid(objects, id);
-		RmiIO.writeDatetime(objects, time);
+		RmiIO.writeGuid(objects, sourceId);
 		RmiIO.writeString(objects, sender);
 		RmiIO.writeString(objects, address);
-		RmiIO.writeString(objects, getXml());
+		RmiIO.writeString(objects, type);
+
+		objects.writeObject(source);
+		objects.writeObject(file);
 
 		objects.close();
 
 		RmiIO.writeBytes(out, IOUtils.zip(bytes.toByteArray()));
-
-		// out.writeObject(files);
 	}
 
 	@Override
@@ -280,46 +213,142 @@ public class Message extends OBJECT implements RmiSerializable, Serializable {
 		ObjectInputStream objects = new ObjectInputStream(bytes);
 
 		id = RmiIO.readGuid(objects);
-		time = RmiIO.readDatetime(objects);
+		sourceId = RmiIO.readGuid(objects);
 		sender = RmiIO.readString(objects);
 		address = RmiIO.readString(objects);
-		xml = RmiIO.readString(objects);
+		type = RmiIO.readString(objects);
 
+		source = (MessageSource)objects.readObject();
+		file = (file)objects.readObject();
+		
 		objects.close();
-
-		// files = (RCollection<file>) in.readObject();
 	}
 
-	public guid z8_getId() {
-		return new guid(id);
+	public ExportRules getExportRules() {
+		return source.exportRules();
 	}
 
+	public void importData() {
+		beforeImport();
+
+		try {
+			ApplicationServer.disableEvents();
+			source.apply();
+		} finally {
+			ApplicationServer.enableEvents();
+		}
+
+		afterImport();
+	}
+	
 	public string z8_getAddress() {
 		return new string(address);
+	}
+
+	public void z8_setAddress(string address) {
+		setAddress(address.get());
 	}
 
 	public string z8_getSender() {
 		return new string(sender);
 	}
 
-	public RCollection<file> z8_getFiles() {
-		RCollection<file> files = new RCollection<file>();
-		for(ExportEntry.Files.File file : getExportEntry().getFiles().getFile()) {
-			files.add(IeUtil.fileToFileInfo(file));
-		}
-		return files;
+	public void z8_setSender(string sender) {
+		setSender(sender.get());
+	}
+	
+	public string z8_getType() {
+		return new string(type);
+	}
+
+	public void z8_setType(string type) {
+		setType(type.get());
 	}
 
 	public RLinkedHashMap<string, primary> z8_getProperties() {
-		return getProperties();
+		RLinkedHashMap<string, primary> properties = new RLinkedHashMap<string, primary>();
+
+		for(Map.Entry<String, primary> entry : source.getProperties().entrySet())
+			properties.put(new string(entry.getKey()), entry.getValue());
+		
+		return properties;
 	}
 
-	public string z8_getXml() {
-		try {
-			return new string(getXml());
-		} catch(Throwable e) {
-			throw new exception(e);
-		}
+	public primary z8_getProperty(string key) {
+		return source.getProperty(key.get());
 	}
 
+	public void z8_setProperty(string key, primary value) {
+		source.setProperty(key.get(), value);
+	}
+
+	public void z8_add(Table.CLASS<? extends Table> table) {
+		source.add(table.get(), null, null);
+	}
+
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	public void z8_add(Table.CLASS<? extends Table> table, RCollection fields) {
+		source.add(table.get(), CLASS.asList(fields), null);
+	}
+
+	public void z8_add(Table.CLASS<? extends Table> table, sql_bool where) {
+		source.add(table.get(), null, where);
+	}
+
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	public void z8_add(Table.CLASS<? extends Table> table, RCollection fields, sql_bool where) {
+		source.add(table.get(), CLASS.asList(fields), where);
+	}
+
+	public void z8_addRule(ImportPolicy policy) {
+		source.addRule(policy);
+	}
+
+	public void z8_addRule(Table.CLASS<? extends Table> table, ImportPolicy policy) {
+		source.addRule(table.get(), policy);
+	}
+	
+	public void z8_addRule(Table.CLASS<? extends Table> table, guid recordId, ImportPolicy policy) {
+		source.addRule(table.get(), recordId, policy);
+	}
+
+	public void z8_addRule(Field.CLASS<? extends Field> field, ImportPolicy policy) {
+		source.addRule((Table)field.get().getOwner(), field.get(), policy);
+	}
+
+	public void z8_addRule(RCollection<Field.CLASS<? extends Field>> fields, ImportPolicy policy) {
+		for(Field.CLASS<? extends Field> field : fields)
+			z8_addRule(field, policy);
+	}
+
+	public void z8_addRule(guid recordId, Field.CLASS<? extends Field> field, ImportPolicy policy) {
+		source.addRule((Table)field.get().getOwner(), recordId, field.get(), policy);
+	}
+
+	public void z8_addRule(guid recordId, RCollection<Field.CLASS<? extends Field>> fields, ImportPolicy policy) {
+		for(Field.CLASS<? extends Field> field : fields)
+			z8_addRule(recordId, field, policy);
+	}
+
+	public void z8_send() {
+		if(address == null || address.isEmpty())
+			throw new RuntimeException("Export address is not set");
+
+		if(sender == null || sender.isEmpty())
+			throw new RuntimeException("Sender is not set");
+		
+		MessageQueue.newInstance().add(this);
+	}
+
+	public void z8_beforeImport() {
+	}
+
+	public void z8_afterImport() {
+	}
+
+	public void z8_beforeExport() {
+	}
+
+	public void z8_afterExport() {
+	}
 }

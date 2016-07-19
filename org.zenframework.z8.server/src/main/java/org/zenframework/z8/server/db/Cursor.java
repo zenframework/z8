@@ -64,8 +64,8 @@ public class Cursor {
     }
 
     public guid getGuid(int index) throws SQLException {
-        UUID value = (UUID)resultSet.getObject(index);
-        return value != null && !wasNull() ? new guid(value) : new guid();
+    	Object value = resultSet.getObject(index);
+        return value != null && !wasNull() ? (value instanceof UUID ? new guid((UUID)value) : new guid((String)value)) : new guid();
     }
 
     public bool getBoolean(int index) throws SQLException {

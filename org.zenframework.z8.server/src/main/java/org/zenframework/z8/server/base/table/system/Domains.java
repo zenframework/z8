@@ -12,15 +12,18 @@ import org.zenframework.z8.server.db.sql.SqlToken;
 import org.zenframework.z8.server.db.sql.expressions.And;
 import org.zenframework.z8.server.db.sql.expressions.Is;
 import org.zenframework.z8.server.db.sql.functions.string.EqualsIgnoreCase;
+import org.zenframework.z8.server.engine.Rmi;
 import org.zenframework.z8.server.resources.Resources;
 import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.security.Domain;
 import org.zenframework.z8.server.types.bool;
 import org.zenframework.z8.server.types.integer;
+import org.zenframework.z8.server.types.string;
 
 public class Domains extends Table {
 
-	public static final String TableName = "SystemDomains";
+	static public string DefaultDomain = new string(Users.displayNames.SystemName + " at "+ Rmi.localhost);
+	static public String TableName = "SystemDomains";
 
 	static public class names {
 		public final static String User = "UserId";
@@ -115,14 +118,14 @@ public class Domains extends Table {
 
 	public Domain getDomain(String name) {
 		Field id = this.id.get();
-		Field login = users.get().name.get();
+		Field user = userLink.get();
 		
 		SqlToken where = new EqualsIgnoreCase(id, name);
 		
-		if (!readFirst(Arrays.<Field> asList(id, login), where))
-			return null;
+		if (!readFirst(Arrays.<Field> asList(id, user), where))
+			return Domain.system();
 		
-		return new Domain(id.string(), login.string());
+		return new Domain(id.string(), user.guid());
 	}
 
 	public boolean isOwner(String name) {
@@ -138,17 +141,20 @@ public class Domains extends Table {
 
 	public Collection<Domain> getLocalDomains() {
 		Field id = this.id.get();
-		Field login = users.get().name.get();
+		Field user = userLink.get();
 		Field owner = this.owner.get();
 		
-		read(Arrays.<Field> asList(id, login), new Is(owner));
+		read(Arrays.<Field> asList(id, user), new Is(owner));
 		
 		Collection<Domain> domains = new ArrayList<Domain>();
 		
+		domains.add(Domain.system());
+
 		while (next()) {
-			Domain domain = new Domain(id.string(), login.string());
+			Domain domain = new Domain(id.string(), user.guid());
 			domains.add(domain);
 		}
+		
 		return domains;
 	}
 

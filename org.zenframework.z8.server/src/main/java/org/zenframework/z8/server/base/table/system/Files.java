@@ -50,17 +50,16 @@ public class Files extends Table {
 
 		public CLASS(IObject container) {
 			super(container);
-			setJavaClass(SystemFiles.class);
+			setJavaClass(Files.class);
 			setName(TableName);
 			setDisplayName(displayNames.Title);
 		}
 
 		@Override
 		public Object newObject(IObject container) {
-			return new SystemFiles(container);
+			return new Files(container);
 		}
 	}
-
 
 	public final StringField.CLASS<StringField> path = new StringField.CLASS<StringField>(this);
 	public final BinaryField.CLASS<BinaryField> data = new BinaryField.CLASS<BinaryField>(this);
@@ -110,11 +109,6 @@ public class Files extends Table {
 			data.get().set(input);
 			path.get().set(file.path);
 			
-			// file.status support
-			id.get().set(file.instanceId);
-			id1.get().set(file.status.getValue());
-			// file.status support
-
 			if(create)
 				create(file.id);
 			else

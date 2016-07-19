@@ -22,8 +22,6 @@ public class ServerConfig extends Properties {
 
 	static private String InstanceIdProperty = "z8.instance.id";
 
-	static private String RmiEnabledProperty = "rmi.enabled";
-
 	static private String ApplicationServerHostProperty = "application.server.host";
 	static private String ApplicationServerPortProperty = "application.server.port";
 
@@ -56,8 +54,6 @@ public class ServerConfig extends Properties {
 	static private File workingPath;
 
 	static private String instanceId;
-
-	static private boolean rmiEnabled;
 
 	static private String applicationServerHost;
 	static private int applicationServerPort;
@@ -108,8 +104,6 @@ public class ServerConfig extends Properties {
 		}
 
 		instanceId = getProperty(InstanceIdProperty, DefaultInstanceId);
-
-		rmiEnabled = getProperty(RmiEnabledProperty, true);
 
 		applicationServerHost = getHost(ApplicationServerHostProperty, Rmi.localhost);
 		applicationServerPort = getProperty(ApplicationServerPortProperty, 15000);
@@ -249,10 +243,6 @@ public class ServerConfig extends Properties {
 
 	static public File workingPath() {
 		return workingPath;
-	}
-
-	static public boolean rmiEnabled() {
-		return rmiEnabled;
 	}
 
 	static public String applicationServerHost() {

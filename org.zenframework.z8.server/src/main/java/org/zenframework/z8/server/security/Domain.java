@@ -1,18 +1,29 @@
 package org.zenframework.z8.server.security;
 
+import org.zenframework.z8.server.base.table.system.Domains;
+import org.zenframework.z8.server.base.table.system.Users;
+import org.zenframework.z8.server.types.guid;
 import org.zenframework.z8.server.types.string;
 
 public class Domain {
-	private final String name;
-	private final String login;
+	private String name;
+	private guid user;
 
-	public Domain(string name, string login) {
-		this(name.get(), login.get());
+	static private Domain system;
+	
+	static public Domain system() {
+		if(system == null)
+			system = new Domain(Domains.DefaultDomain.get(), Users.System);
+		return system;
+	}
+	
+	public Domain(string name, guid user) {
+		this(name.get(), user);
 	}
 
-	public Domain(String name, String login) {
+	public Domain(String name, guid user) {
 		this.name = name;
-		this.login = login;
+		this.user = user;
 	}
 
 	public String getName() {
@@ -20,6 +31,6 @@ public class Domain {
 	}
 
 	public IUser getSystemUser() {
-		return User.load(login);
+		return User.load(user);
 	}
 }

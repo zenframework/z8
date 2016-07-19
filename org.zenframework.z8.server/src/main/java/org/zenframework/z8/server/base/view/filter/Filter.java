@@ -163,7 +163,7 @@ public class Filter {
         return toString(field);
     }
 
-    protected static Collection<String> parseValues(String jsonData) {
+    static protected Collection<String> parseValues(String jsonData) {
         Collection<String> result = new ArrayList<String>();
 
         if (jsonData.isEmpty()) {
@@ -193,7 +193,7 @@ public class Filter {
         return result;
     }
 
-    protected static Filter getFieldFilter(Query query, String name, String values, String comparison) {
+    static protected Filter getFieldFilter(Query query, String name, String values, String comparison) {
         Operation operation = comparison != null ? Operation.fromString(comparison) : null;
 
         if (Json.__search_text__.equals(name)) {
@@ -209,7 +209,7 @@ public class Filter {
         }
     }
 
-    public static Collection<Filter> parse(Collection<String> json, Query query) {
+    static public Collection<Filter> parse(Collection<String> json, Query query) {
         List<Filter> result = new ArrayList<Filter>();
 
         if (json == null)
@@ -220,7 +220,7 @@ public class Filter {
         return parse(filters, query);
     }
 
-    public static Collection<Filter> parse(String json, Query query) {
+    static public Collection<Filter> parse(String json, Query query) {
         List<Filter> result = new ArrayList<Filter>();
 
         if (json == null)
@@ -234,7 +234,7 @@ public class Filter {
         return parse(filters, query);
     }
 
-    public static Collection<Filter> parse(JsonArray json, Query query) {
+    static public Collection<Filter> parse(JsonArray json, Query query) {
         List<Filter> result = new ArrayList<Filter>();
 
         for (int index = 0; index < json.length(); index++) {

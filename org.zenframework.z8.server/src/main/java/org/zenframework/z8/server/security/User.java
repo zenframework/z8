@@ -10,7 +10,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
-import org.zenframework.z8.server.base.table.Table;
 import org.zenframework.z8.server.base.table.system.SystemTools;
 import org.zenframework.z8.server.base.table.system.UserEntries;
 import org.zenframework.z8.server.base.table.system.Users;
@@ -23,11 +22,9 @@ import org.zenframework.z8.server.db.sql.expressions.Equ;
 import org.zenframework.z8.server.db.sql.functions.string.EqualsIgnoreCase;
 import org.zenframework.z8.server.engine.Database;
 import org.zenframework.z8.server.engine.RmiIO;
-import org.zenframework.z8.server.engine.Runtime;
 import org.zenframework.z8.server.exceptions.AccessDeniedException;
 import org.zenframework.z8.server.logs.Trace;
 import org.zenframework.z8.server.resources.Resources;
-import org.zenframework.z8.server.runtime.CLASS;
 import org.zenframework.z8.server.runtime.RLinkedHashMap;
 import org.zenframework.z8.server.types.guid;
 import org.zenframework.z8.server.types.primary;
@@ -142,16 +139,28 @@ public class User implements IUser {
 		return parameters;
 	}
 
-	static public IUser load(string login) {
-		return load(login.get());
+	static public IUser load(String login) {
+		return load(new string(login));
 	}
 	
-	static public IUser load(String login) {
+	static public IUser load(guid userId) {
+		return load((primary)userId);
+	}
+
+	static public IUser load(string login) {
+		return load((primary)login);
+	}
+	
+	static private IUser load(primary loginOrId) {
 		if(!ServerConfig.isSystemInstalled())
 			return User.system();
 
 		User user = new User();
-		user.readInfo(login);
+		
+		if(loginOrId instanceof string)
+			user.readInfo((string)loginOrId);
+		else
+			user.readInfo((guid)loginOrId);
 
 		user.readComponents();
 
@@ -181,26 +190,23 @@ public class User implements IUser {
 		components.add(new Component(null, SystemTools.ClassName, Resources.get(SystemTools.strings.Title)));
 	}
 
-	@SuppressWarnings("unchecked")
-	private Users getUsers() {
-		CLASS<? extends Users> result = null;
-		Class<?> cls = Users.class;
-
-		for(CLASS<? extends Table> table : Runtime.instance().tables()) {
-			if(table.instanceOf(cls)) {
-				result = (CLASS<? extends Users>)table;
-				cls = result.getJavaClass();
-			}
-		}
-
-		return result != null ? (Users)result.newInstance() : null;
+	private void readInfo(guid id) {
+		Users users = Users.newInstance();
+		SqlToken where = new Equ(users.recordId.get(), id);
+		readInfo(users, where);
+	}
+	
+	private void readInfo(string login) {
+		Users users = Users.newInstance();
+		SqlToken where = new EqualsIgnoreCase(users.name.get(), login);
+		readInfo(users, where);
 	}
 
-	private void readInfo(String login) {
-		Users users = getUsers();
+	private void readInfo(Users users, SqlToken where) {
 
 		Collection<Field> fields = new ArrayList<Field>();
 		fields.add(users.recordId.get());
+		fields.add(users.name.get());
 		fields.add(users.password.get());
 		users.password.get().mask = false;
 		fields.add(users.settings.get());
@@ -208,13 +214,11 @@ public class User implements IUser {
 		fields.add(users.email.get());
 		fields.add(users.securityGroup.get());
 
-		SqlToken where = new EqualsIgnoreCase(users.name.get(), login);
-
 		users.read(fields, where);
 
 		if(users.next()) {
 			this.id = users.recordId.get().guid();
-			this.name = login;
+			this.name = users.name.get().string().get();
 			this.password = users.password.get().string().get();
 			this.settings = users.settings.get().string().get();
 			this.phone = users.phone.get().string().get();

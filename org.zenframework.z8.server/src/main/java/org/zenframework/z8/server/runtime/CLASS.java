@@ -20,16 +20,12 @@ public class CLASS<TYPE extends IObject> extends OBJECT implements IClass<TYPE> 
 
 	private List<IClass<TYPE>> references = null;
 
-	static public <T extends IObject> List<T> asList(Collection<? extends CLASS<? extends T>> collection) {
-		return asList(collection, false);
-	}
-
-	static public <T extends IObject> List<T> asList(Collection<? extends CLASS<? extends T>> collection, boolean createNewInstances) {
+	static public <T extends IObject> List<T> asList(Collection<? extends org.zenframework.z8.server.runtime.CLASS<? extends T>> collection) {
 		List<T> result = new ArrayList<T>();
 
 		if(collection != null) {
 			for(org.zenframework.z8.server.runtime.CLASS<? extends T> cls : collection)
-				result.add((T)(createNewInstances ? cls.newInstance() : cls.get()));
+				result.add((T)(cls.get()));
 		}
 
 		return result;

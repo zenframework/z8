@@ -1,8 +1,0 @@
-import org.zenframework.z8.lang.Object;
-
-[native "org.zenframework.z8.server.base.table.value.aggregator.Aggregator"]
-class Aggregator extends Object {
-
-	public virtual primary aggregate(primary oldValue, primary newValue);
-
-}

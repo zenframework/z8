@@ -20,14 +20,12 @@ import org.apache.commons.fileupload.disk.DiskFileItem;
 import org.apache.commons.io.FilenameUtils;
 import org.zenframework.z8.server.base.file.Folders;
 import org.zenframework.z8.server.base.table.system.Files;
-import org.zenframework.z8.server.config.ServerConfig;
 import org.zenframework.z8.server.engine.RmiIO;
 import org.zenframework.z8.server.engine.RmiSerializable;
 import org.zenframework.z8.server.exceptions.ThreadInterruptedException;
 import org.zenframework.z8.server.json.Json;
 import org.zenframework.z8.server.json.parser.JsonArray;
 import org.zenframework.z8.server.json.parser.JsonObject;
-import org.zenframework.z8.server.resources.Resources;
 import org.zenframework.z8.server.runtime.RCollection;
 import org.zenframework.z8.server.runtime.RLinkedHashMap;
 import org.zenframework.z8.server.utils.IOUtils;
@@ -43,7 +41,6 @@ public class file extends primary implements RmiSerializable, Serializable {
 	public datetime time = new datetime();
 	public integer size = new integer();
 	public guid id = new guid();
-	public string instanceId = new string(ServerConfig.instanceId());
 	
 	public RLinkedHashMap<string, string> details = new RLinkedHashMap<string, string>();
 
@@ -52,39 +49,7 @@ public class file extends primary implements RmiSerializable, Serializable {
 	private long offset = 0;
 	private int partLength = 0;
 	
-	public Status status = Status.LOCAL;
-
 	public JsonObject json;
-
-	static public enum Status {
-
-		LOCAL("SystemFiles.status.local", ""), REMOTE("SystemFiles.status.remote", "remote"), REQUEST_SENT("SystemFiles.status.requestSent", "requestSent");
-
-		private final String id;
-		private final String value;
-
-		private Status(String id, String value) {
-			this.id = id;
-			this.value = value;
-		}
-
-		public String getValue() {
-			return value;
-		}
-
-		public String getText() {
-			return Resources.get(id);
-		}
-
-		static public Status getStatus(String value) {
-			for(Status status : values()) {
-				if(status.value.equals(value))
-					return status;
-			}
-			return LOCAL;
-		}
-
-	}
 
 	public static FileItem createFileItem(string name) {
 		return createFileItem(name.get());
@@ -122,7 +87,6 @@ public class file extends primary implements RmiSerializable, Serializable {
 	public file(guid id, String name, String instanceId, String path, long size, datetime time) {
 		super();
 		this.id = new guid(id);
-		this.instanceId = new string(instanceId != null ? instanceId : ServerConfig.instanceId());
 		this.path = new string(getRelativePath(path));
 		this.name = new string(name);
 		this.size = new integer(size);
@@ -140,14 +104,12 @@ public class file extends primary implements RmiSerializable, Serializable {
 	}
 
 	public void set(file file) {
-		this.instanceId = file.instanceId;
 		this.name = file.name;
 		this.path = file.path;
 		this.time = file.time;
 		this.size = file.size;
 		this.id = file.id;
 		this.value = file.value;
-		this.status = file.status;
 		this.details = file.details;
 		this.json = file.json;
 	}
@@ -166,7 +128,6 @@ public class file extends primary implements RmiSerializable, Serializable {
 		time = new datetime(json.has(Json.time) ? json.getString(Json.time) : "");
 		size = new integer(json.has(Json.size) ? json.getString(Json.size) : "");
 		id = new guid(json.has(Json.id) ? json.getString(Json.id) : "");
-		instanceId = new string(json.has(Json.instanceId) ? json.getString(Json.instanceId) : "");
 
 		this.json = json;
 	}
@@ -207,7 +168,6 @@ public class file extends primary implements RmiSerializable, Serializable {
 			json.put(Json.size, size);
 			json.put(Json.path, path);
 			json.put(Json.id, id);
-			json.put(Json.instanceId, instanceId);
 			json.put(Json.details, details);
 		}
 		return json;
@@ -256,7 +216,6 @@ public class file extends primary implements RmiSerializable, Serializable {
 	public void serialize(ObjectOutputStream out) throws IOException {
 		RmiIO.writeLong(out, serialVersionUID);
 
-		RmiIO.writeString(out, instanceId);
 		RmiIO.writeString(out, name);
 		RmiIO.writeString(out, path);
 		RmiIO.writeDatetime(out, time);
@@ -285,7 +244,6 @@ public class file extends primary implements RmiSerializable, Serializable {
 		@SuppressWarnings("unused")
 		long version = RmiIO.readLong(in);
 
-		instanceId = new string(RmiIO.readString(in));
 		name = new string(RmiIO.readString(in));
 		path = new string(RmiIO.readString(in));
 		time = RmiIO.readDatetime(in);

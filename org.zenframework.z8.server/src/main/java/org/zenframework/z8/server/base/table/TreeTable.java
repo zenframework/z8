@@ -62,18 +62,18 @@ public class TreeTable extends Table {
 	public IntegerField.CLASS<? extends IntegerField> children = new IntegerField.CLASS<IntegerField>(this);
 	public StringField.CLASS<? extends StringField> path = new StringField.CLASS<StringField>(this);
 
-	public Link.CLASS<? extends Link> parent1 = new Link.CLASS<Link>(this);
-	public Link.CLASS<? extends Link> parent2 = new Link.CLASS<Link>(this);
-	public Link.CLASS<? extends Link> parent3 = new Link.CLASS<Link>(this);
-	public Link.CLASS<? extends Link> parent4 = new Link.CLASS<Link>(this);
-	public Link.CLASS<? extends Link> parent5 = new Link.CLASS<Link>(this);
-	public Link.CLASS<? extends Link> parent6 = new Link.CLASS<Link>(this);
-	public Link.CLASS<? extends Link> root = new Link.CLASS<Link>(this);
+	public GuidField.CLASS<? extends GuidField> parent1 = new GuidField.CLASS<GuidField>(this);
+	public GuidField.CLASS<? extends GuidField> parent2 = new GuidField.CLASS<GuidField>(this);
+	public GuidField.CLASS<? extends GuidField> parent3 = new GuidField.CLASS<GuidField>(this);
+	public GuidField.CLASS<? extends GuidField> parent4 = new GuidField.CLASS<GuidField>(this);
+	public GuidField.CLASS<? extends GuidField> parent5 = new GuidField.CLASS<GuidField>(this);
+	public GuidField.CLASS<? extends GuidField> parent6 = new GuidField.CLASS<GuidField>(this);
+	public GuidField.CLASS<? extends GuidField> root = new GuidField.CLASS<GuidField>(this);
 
 	public bool keepIntegrity = new bool(true);
 
 	@SuppressWarnings("rawtypes")
-	private Link.CLASS[] parentLinks = { parent1, parent2, parent3, parent4, parent5, parent6 };
+	private GuidField.CLASS[] parentLinks = { parent1, parent2, parent3, parent4, parent5, parent6 };
 
 	public TreeTable(IObject container) {
 		super(container);
@@ -87,7 +87,6 @@ public class TreeTable extends Table {
 		parentId.setIndex("parentId");
 		parentId.setDisplayName(strings.ParentId);
 		parentId.setAttribute(ParentKey, "");
-		parentId.setAttribute(ForeignKey, "false");
 
 		depth.setName(names.Depth);
 		depth.setIndex("depth");
@@ -102,31 +101,24 @@ public class TreeTable extends Table {
 		path.setDisplayName(strings.Path);
 
 		parent1.setName(names.Parent1);
-		parent1.setForeignKey(false);
 		parent1.setIndex("parent1");
 
 		parent2.setName(names.Parent2);
-		parent2.setForeignKey(false);
 		parent2.setIndex("parent2");
 
 		parent3.setName(names.Parent3);
-		parent3.setForeignKey(false);
 		parent3.setIndex("parent3");
 
 		parent4.setName(names.Parent4);
-		parent4.setForeignKey(false);
 		parent4.setIndex("parent4");
 
 		parent5.setName(names.Parent5);
-		parent5.setForeignKey(false);
 		parent5.setIndex("parent5");
 
 		parent6.setName(names.Parent6);
-		parent6.setForeignKey(false);
 		parent6.setIndex("parent6");
 
 		root.setName(names.Root);
-		root.setForeignKey(false);
 		root.setIndex("root");
 
 		registerDataField(parentId);

@@ -1,4 +1,3 @@
-import org.zenframework.z8.base.table.value.aggregator.Aggregator;
 import org.zenframework.z8.base.table.SortDirection;
 import org.zenframework.z8.base.query.Query;
 import org.zenframework.z8.base.query.FollowPolicy;
@@ -41,8 +40,6 @@ class Field extends Control {
 	public Field[] columns;
 	public Control[][guid] fieldsToShow;
 	
-	public Aggregator aggregator;
-
 	public Formula[] evaluations;
 	
 	public FieldType getType();

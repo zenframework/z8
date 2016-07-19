@@ -26,6 +26,7 @@ public class RmiIOType {
 	public static final byte Array = 40;
 	public static final byte Collection = 41;
 	public static final byte Map = 42;
+	public static final byte Enum = 43;
 
 	public static final byte Proxy = 50;
 	public static final byte Exception = 51;

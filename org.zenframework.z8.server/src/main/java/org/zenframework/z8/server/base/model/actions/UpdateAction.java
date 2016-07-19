@@ -14,60 +14,60 @@ import org.zenframework.z8.server.json.parser.JsonObject;
 import org.zenframework.z8.server.types.guid;
 
 public class UpdateAction extends Action {
-    public UpdateAction(ActionParameters parameters) {
-        super(parameters);
-    }
+	public UpdateAction(ActionParameters parameters) {
+		super(parameters);
+	}
 
-    @Override
-    public void writeResponse(JsonWriter writer) {
-        String jsonData = getDataParameter();
+	@Override
+	public void writeResponse(JsonWriter writer) {
+		String jsonData = getDataParameter();
 
-        if(jsonData.charAt(0) == '{')
-            jsonData = "[" + jsonData + "]";
+		if(jsonData.charAt(0) == '{')
+			jsonData = "[" + jsonData + "]";
 
-        JsonArray records = new JsonArray(jsonData);
+		JsonArray records = new JsonArray(jsonData);
 
-        Query query = getQuery();
+		Query query = getQuery();
 
-        for(int index = 0; index < records.length(); index++) {
-            JsonObject record = (JsonObject)records.get(index);
+		for(int index = 0; index < records.length(); index++) {
+			JsonObject record = (JsonObject)records.get(index);
 
-            List<Field> fields = new ArrayList<Field>();
+			List<Field> fields = new ArrayList<Field>();
 
-            guid keyValue = QueryUtils.parseRecord(record, query, fields);
+			guid keyValue = QueryUtils.parseRecord(record, query, fields);
 
-            guid modelRecordId = getRecordIdParameter();
+			guid modelRecordId = getRecordIdParameter();
 
-            run(query, keyValue, fields, modelRecordId != null ? modelRecordId : keyValue);
-        }
-    }
+			run(query, keyValue, fields, modelRecordId != null ? modelRecordId : keyValue);
+		}
+	}
 
-    static public int run(Query query, guid keyValue, Collection<Field> fields, guid modelRecordId) {
-        return run(query, keyValue, fields, modelRecordId, true);
-    }
+	static public int run(Query query, guid keyValue, Collection<Field> fields, guid modelRecordId) {
+		return run(query, keyValue, fields, modelRecordId, true);
+	}
 
-    static public int run(Query query, guid keyValue, Collection<Field> fields, guid modelRecordId, boolean resetChangedFields) {
-        int result = 0;
-        
-        if(!fields.isEmpty() && (keyValue == null || !keyValue.equals(guid.NULL))) {
-            Query model = Query.getModel(query);
+	static public int run(Query query, guid keyValue, Collection<Field> fields, guid modelRecordId, boolean resetChangedFields) {
+		int result = 0;
 
-            if(keyValue != null)
-                query.beforeUpdate(keyValue, fields, model, modelRecordId);
+		if(!fields.isEmpty() && (keyValue == null || !keyValue.equals(guid.NULL))) {
+			Query model = Query.getModel(query);
 
-            Collection<Field> changedFields = query.getRootQuery().getChangedFields();
+			if(keyValue != null)
+				query.beforeUpdate(keyValue, fields, model, modelRecordId);
 
-            result = new Update(query, changedFields, keyValue).execute();
+			Collection<Field> changedFields = query.getRootQuery().getChangedFields();
 
-            if(keyValue != null)
-                query.afterUpdate(keyValue, changedFields, model, modelRecordId);
+			result = changedFields.isEmpty() ? 0 : new Update(query, changedFields, keyValue).execute();
 
-            if(resetChangedFields) {
-                for(Field field : fields)
-                    field.reset();
-            }
-        }
-        
-        return result;
-    }
+			if(keyValue != null)
+				query.afterUpdate(keyValue, changedFields, model, modelRecordId);
+
+			if(resetChangedFields) {
+				for(Field field : changedFields)
+					field.reset();
+			}
+		}
+
+		return result;
+	}
 }

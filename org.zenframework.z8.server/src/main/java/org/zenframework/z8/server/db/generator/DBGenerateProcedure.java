@@ -1,8 +1,6 @@
 package org.zenframework.z8.server.db.generator;
 
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
 
 import org.zenframework.z8.server.base.form.Desktop;
 import org.zenframework.z8.server.base.job.scheduler.Scheduler;
@@ -56,7 +54,7 @@ public class DBGenerateProcedure extends Procedure {
         try {
             Connection connection = ConnectionManager.get();
 
-            Collection<Table.CLASS<? extends Table>> tables = getTables();
+            Collection<Table.CLASS<? extends Table>> tables = Runtime.instance().tables();
             Collection<Desktop.CLASS<? extends Desktop>> entries = (Collection) Runtime.instance().entries();
 
             try {
@@ -72,22 +70,6 @@ public class DBGenerateProcedure extends Procedure {
         Scheduler.start();
 
         reportProgress(Resources.get("Generator.schedulerStarted"), 100);
-    }
-
-    @SuppressWarnings({ "unchecked", "rawtypes" })
-    private Collection<Table.CLASS<? extends Table>> getTables() {
-        Map<String, Table.CLASS<? extends Table>> nameToClass = new HashMap<String, Table.CLASS<? extends Table>>();
-        Collection<Table.CLASS<? extends Table>> tables = (Collection) Runtime.instance().tables();
-
-        for (Table.CLASS<? extends Table> cls : tables) {
-            String name = cls.name();
-            Table.CLASS<? extends Table> c = nameToClass.get(name);
-
-            if (c == null || c.getClass().isAssignableFrom(cls.getClass()))
-                nameToClass.put(name, cls);
-        }
-
-        return nameToClass.values();
     }
 
     private class Logger implements ILogger {

@@ -8,10 +8,12 @@ import org.zenframework.z8.base.table.Table;
 [displayName "Домены"]
 class Domains extends Table {
 
-	Users users;
+	static public string DefaultDomain;
+
+	public Users users;
 	
 	[name "UserId"]
-	Link userLink = users;
+	public Link userLink = users;
 	
 	[displayName "Адрес"] id;
 	id.length = 256;
@@ -19,6 +21,6 @@ class Domains extends Table {
 	
 	[name "Owner"]
 	[displayName "Владелец"]
-	BoolField owner;
+	public BoolField owner;
 
 }

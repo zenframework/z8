@@ -756,6 +756,10 @@ public class Query extends Runnable {
 		group(null, groupFields, where);
 	}
 
+	public void group(Collection<Field> fields, Collection<Field> groupFields) {
+		group(fields, groupFields, null);
+	}
+
 	public void group(Collection<Field> fields, Collection<Field> groupFields, SqlToken where) {
 		read(fields, null, groupFields, where, null);
 	}
