@@ -14,7 +14,6 @@ import org.zenframework.z8.server.db.ConnectionManager;
 import org.zenframework.z8.server.engine.IApplicationServer;
 import org.zenframework.z8.server.engine.IInterconnectionCenter;
 import org.zenframework.z8.server.ie.Message;
-import org.zenframework.z8.server.ie.MessageSource;
 import org.zenframework.z8.server.logs.Trace;
 import org.zenframework.z8.server.types.file;
 import org.zenframework.z8.server.types.guid;
@@ -66,8 +65,7 @@ public class Transport implements Runnable {
 	}
 	
 	private void prepare(Message message) throws Throwable {
-		MessageSource source = message.getSource();
-		source.exportData();
+		message.exportData();
 		
 		Connection connection = ConnectionManager.get();
 		
@@ -76,12 +74,11 @@ public class Transport implements Runnable {
 			
 			messageQueue.beginProcessing(message.getId());
 			
-			for(file file : source.files()) {
-				Message fileMessage = (Message)message.getCLASS().newInstance();
+			for(file file : message.getSource().files()) {
+				Message fileMessage = Message.newInstance();
 				fileMessage.setSourceId(message.getId());
 				fileMessage.setAddress(message.getAddress());
 				fileMessage.setSender(message.getSender());
-				fileMessage.setType(message.getType());
 				fileMessage.setFile(file);
 				transportQueue.add(fileMessage);
 			}
@@ -160,10 +157,7 @@ public class Transport implements Runnable {
 		try {
 			connection.beginTransaction();
 
-			message.beforeExport();
-
 			if(server.accept(message)) {
-				message.afterExport();
 				messageQueue.endProcessing(message.getSourceId());
 				transportQueue.setProcessed(message.getId(), "OK");
 			}

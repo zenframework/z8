@@ -63,6 +63,10 @@ public class Message extends OBJECT implements RmiSerializable, Serializable {
 
 	private MessageSource source = new MessageSource();
 	
+	static public Message newInstance() {
+		return new Message.CLASS<Message>(null).get();
+	}
+	
 	public Message(IObject container) {
 		super(container);
 	}
@@ -231,12 +235,18 @@ public class Message extends OBJECT implements RmiSerializable, Serializable {
 		return source.exportRules();
 	}
 
+	public void exportData() {
+		beforeExport();
+		source.exportData();
+		afterExport();
+	}
+
 	public void importData() {
 		beforeImport();
 
 		try {
 			ApplicationServer.disableEvents();
-			source.apply();
+			source.importData();
 		} finally {
 			ApplicationServer.enableEvents();
 		}

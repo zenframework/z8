@@ -226,7 +226,7 @@ public class MessageSource implements RmiSerializable, Serializable {
 		return name + "/" + id;
 	}
 
-	public void apply() {
+	public void importData() {
 		for(RecordInfo record : inserts)
 			insert(record);
 
