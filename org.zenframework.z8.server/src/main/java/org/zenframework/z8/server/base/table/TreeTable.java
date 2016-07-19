@@ -9,7 +9,6 @@ import org.zenframework.z8.server.base.query.Query;
 import org.zenframework.z8.server.base.table.value.Field;
 import org.zenframework.z8.server.base.table.value.GuidField;
 import org.zenframework.z8.server.base.table.value.IntegerField;
-import org.zenframework.z8.server.base.table.value.Link;
 import org.zenframework.z8.server.base.table.value.StringField;
 import org.zenframework.z8.server.db.sql.expressions.Equ;
 import org.zenframework.z8.server.resources.Resources;
@@ -193,7 +192,7 @@ public class TreeTable extends Table {
 
 				for(int i = 0; i < parentLinks.length && i < parents.length; i++) {
 					guid parent = parents[i];
-					Link link = (Link)parentLinks[i].get();
+					Field link = (Field)parentLinks[i].get();
 					link.set(parent);
 				}
 				root.get().set(parents.length > 0 ? parents[0] : guid.NULL);
