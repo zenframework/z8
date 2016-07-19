@@ -173,6 +173,7 @@ public class Transport implements Runnable {
 
 	private boolean sendFile(Message message) throws Throwable {
 		file file = message.getFile();
+		long size = file.size.get();
 
 		if(server.hasFile(file)) {
 			transportQueue.setProcessed(message.getId(), "Skipped");
@@ -201,7 +202,7 @@ public class Transport implements Runnable {
 			}
 		}
 
-		transportQueue.setProcessed(message.getId(), "OK");
+		transportQueue.setProcessed(message.getId(), "OK", size);
 		return true;
 	}
 }

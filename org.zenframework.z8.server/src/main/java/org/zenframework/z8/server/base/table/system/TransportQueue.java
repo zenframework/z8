@@ -165,12 +165,18 @@ public class TransportQueue extends Table {
 	}
 
 	public void setProcessed(guid id, String info) {
+		setProcessed(id, info, -1);
+	}
+	
+	public void setProcessed(guid id, String info, long bytes) {
 		if(preserveMessagesQueue == null)
 			preserveMessagesQueue = Boolean.parseBoolean(Properties.getProperty(ServerRuntime.PreserveMessagesQueueProperty));
 
 		if(preserveMessagesQueue) {
 			if(info != null)
 				description.get().set(info);
+			if(bytes != -1)
+				bytesTransferred.get().set(bytes);
 			processed.get().set(new bool(true));
 			update(id);
 		} else
