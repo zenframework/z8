@@ -210,8 +210,9 @@ public class MessageSource implements RmiSerializable, Serializable {
 		} else if(inProcess) {
 			processUpdate(recordId, field);
 			return false;
-		} else
-			return true;
+		}
+		
+		return true;
 	}
 
 	private void processUpdate(guid recordId, Field field) {
