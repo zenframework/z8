@@ -10,8 +10,11 @@ import java.io.Serializable;
 import java.util.Map;
 
 import org.zenframework.z8.server.base.table.Table;
+import org.zenframework.z8.server.base.table.system.Domains;
 import org.zenframework.z8.server.base.table.system.MessageQueue;
 import org.zenframework.z8.server.base.table.value.Field;
+import org.zenframework.z8.server.db.Connection;
+import org.zenframework.z8.server.db.ConnectionManager;
 import org.zenframework.z8.server.engine.ApplicationServer;
 import org.zenframework.z8.server.engine.RmiIO;
 import org.zenframework.z8.server.engine.RmiSerializable;
@@ -337,9 +340,31 @@ public class Message extends OBJECT implements RmiSerializable, Serializable {
 		if(sender == null || sender.isEmpty())
 			throw new RuntimeException("Sender is not set");
 		
-		MessageQueue.newInstance().add(this);
+		if(Domains.newInstance().isOwner(address))
+			callEvents();
+		else
+			MessageQueue.newInstance().add(this);
 	}
 
+	private void callEvents() {
+		Connection connection = ConnectionManager.get();
+		
+		connection.beginTransaction();
+		
+		try {
+			beforeExport();
+			afterExport();
+	
+			beforeImport();
+			afterImport();
+			
+			connection.commit();
+		} catch(Throwable e) {
+			connection.rollback();
+			throw new RuntimeException(e);
+		}
+	}
+	
 	public void z8_beforeImport() {
 	}
 

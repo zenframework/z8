@@ -1,5 +1,6 @@
 package org.zenframework.z8.server.ie.rmi;
 
+import java.rmi.ConnectException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -123,8 +124,17 @@ public class Transport implements Runnable {
 
 		IApplicationServer server = ServerConfig.interconnectionCenter().connect(domain);
 
-		if(server == null)
+		if(server == null) {
 			transportQueue.setInfo(message.getId(), "Domain '" + domain + "' is unavailable at Interconnection Center " + ProxyUtils.getUrl(center));
+			return null;
+		}
+
+		try {
+			server.probe();
+		} catch(ConnectException e) {
+			transportQueue.setInfo(message.getId(), "Sending via Interconnection center: " + ProxyUtils.getUrl(center));
+			return new ApplicationServerProxy(server);
+		}
 
 		return server;
 	}

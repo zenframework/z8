@@ -13,6 +13,7 @@ import org.zenframework.z8.server.engine.IServerInfo;
 import org.zenframework.z8.server.engine.ServerInfo;
 import org.zenframework.z8.server.logs.Trace;
 import org.zenframework.z8.server.request.RequestDispatcher;
+import org.zenframework.z8.server.types.file;
 import org.zenframework.z8.server.types.guid;
 import org.zenframework.z8.server.utils.ArrayUtils;
 
@@ -63,6 +64,16 @@ public class InterconnectionCenter extends HubServer implements IInterconnection
 	public IApplicationServer connect(String domain) throws RemoteException {
 		IServerInfo server = findServer(domain); 
 		return server != null ? server.getServer() : null;
+	}
+
+	@Override
+	public boolean accept(IApplicationServer server, Object data) throws RemoteException {
+		return server.accept(data);
+	}
+	
+	@Override
+	public boolean hasFile(IApplicationServer server, file file) throws RemoteException {
+		return server.hasFile(file);
 	}
 	
 	@Override
