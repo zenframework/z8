@@ -8,9 +8,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 
 import org.zenframework.z8.server.base.table.Table;
 import org.zenframework.z8.server.base.table.value.AttachmentField;
@@ -129,7 +127,7 @@ public class MessageSource implements RmiSerializable, Serializable {
 		files = (Collection<file>)in.readObject();
 	}
 
-	private Set<String> addedRecords = new HashSet<String>();
+	private Map<String, Boolean> addedRecords = new HashMap<String, Boolean>();
 	
 	private void processExportSource(ExportSource source) {
 		Table table = source.table();
@@ -148,10 +146,10 @@ public class MessageSource implements RmiSerializable, Serializable {
 		
 			String id = makeUniqueId(tableName, recordId);
 			
-			if(addedRecords.contains(id))
+			if(addedRecords.get(id) != null)
 				continue;
 			
-			addedRecords.add(id);
+			addedRecords.put(id, false);
 			
 			RecordInfo record = new RecordInfo(recordId, tableName);
 			
@@ -165,6 +163,8 @@ public class MessageSource implements RmiSerializable, Serializable {
 			}
 			
 			inserts.add(record);
+
+			addedRecords.put(id, true);
 		}
 		
 		table.restoreState();
@@ -199,14 +199,19 @@ public class MessageSource implements RmiSerializable, Serializable {
 				BuiltinUsers.Administrator.guid().equals(value))
 			return false;
 
-		if(addedRecords.contains(makeUniqueId(name, value))) {
+		Boolean recordState = addedRecords.get(makeUniqueId(name, value));
+		boolean notProcessed = recordState == null;
+		boolean inProcess = recordState != null && !recordState;
+		
+		if(notProcessed) {
+			ExportSource source = new ExportSource(table, null, Arrays.asList(value));
+			processExportSource(source);
+			return true;
+		} else if(inProcess) {
 			processUpdate(recordId, field);
 			return false;
-		}
-		
-		ExportSource source = new ExportSource(table, null, Arrays.asList(value));
-		processExportSource(source);
-		return true;
+		} else
+			return true;
 	}
 
 	private void processUpdate(guid recordId, Field field) {
@@ -223,7 +228,7 @@ public class MessageSource implements RmiSerializable, Serializable {
 		for(RecordInfo record : inserts)
 			insert(record);
 
-		for(RecordInfo record : inserts)
+		for(RecordInfo record : updates)
 			update(record);
 		
 		fieldCache.clear();
