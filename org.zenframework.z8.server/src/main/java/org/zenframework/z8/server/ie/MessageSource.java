@@ -176,9 +176,9 @@ public class MessageSource implements RmiSerializable, Serializable {
 		if(!isAttachment)
 			return;
 		
-		for(file file : file.parse(field.string().get())) {
-			if(!files.contains(file))
-				files.add(file);
+		for(file f : file.parse(field.string().get())) {
+			if(!files.contains(f))
+				files.add(f);
 		}
 	}
 
@@ -323,9 +323,9 @@ public class MessageSource implements RmiSerializable, Serializable {
 
 		Collection<file> files = file.parse(value1.get());
 		
-		for(file file : file.parse(value2.get())) {
-			if(!files.contains(file))
-				files.add(file);
+		for(file f : file.parse(value2.get())) {
+			if(!files.contains(f))
+				files.add(f);
 		}
 		
 		return new string(new JsonArray(files).toString());
