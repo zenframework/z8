@@ -113,7 +113,8 @@ public class RCollection<TYPE> extends ArrayList<TYPE> {
 
 	public int indexOf(Object object) {
     	for(int i = 0; i < size(); i++) {
-    		if(get(i) == object)
+    	    Object element = get(i);
+    		if(element == object || element.equals(object))
     			return i;
         }
 
