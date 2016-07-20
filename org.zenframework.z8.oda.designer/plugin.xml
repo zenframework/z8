@@ -55,13 +55,4 @@
 		</dataSetUI>
 	</extension>
    
- 	<extension
- 		point="org.eclipse.ui.preferencePages">
-		<page
-			class="org.zenframework.z8.oda.designer.ui.preferences.DataSetPreferencePage"
-            category="org.eclipse.birt.report.designer.ui.preferences.DateSetPreferencePage"
-            name="Z8 Data Set"
-            id="org.zenframework.z8.oda.designer.ui.preferences.DataSetPreferencePage"/>
-   </extension>
-	
 </plugin>
