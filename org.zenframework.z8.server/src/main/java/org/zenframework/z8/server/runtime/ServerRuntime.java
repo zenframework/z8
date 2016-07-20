@@ -21,10 +21,6 @@ public class ServerRuntime extends AbstractRuntime {
 	public static final Property DbSchemeControlSumProperty = new Property("C0CDFF6D-9357-41FA-94B1-61D131CC0C09",
 			"z8.database.schemeControlSum", "000.000.0000", "Контрольная сумма схемы базы данных");
 
-	public static final Property PreserveMessagesQueueProperty = new Property("8D9C727A-34FC-4DCD-9AB0-5A2AF8E676E0",
-			"z8.transport.preserveExportMessages", "false",
-			"Сохранять локальную очередь экспортируемых сообщений (true / false)");
-
 	public ServerRuntime() {
 		addTable(new Users.CLASS<Users>(null));
 		addTable(new SecurityGroups.CLASS<SecurityGroups>(null));
@@ -49,7 +45,5 @@ public class ServerRuntime extends AbstractRuntime {
 		addActivator(new Properties.PropertiesActivator.CLASS<Properties.PropertiesActivator>(null));
 
 		addProperty(DbSchemeControlSumProperty);
-		addProperty(PreserveMessagesQueueProperty);
 	}
-
 }

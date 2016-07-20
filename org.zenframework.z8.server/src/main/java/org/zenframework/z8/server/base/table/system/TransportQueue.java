@@ -19,8 +19,6 @@ import org.zenframework.z8.server.ie.Message;
 import org.zenframework.z8.server.request.Loader;
 import org.zenframework.z8.server.resources.Resources;
 import org.zenframework.z8.server.runtime.IObject;
-import org.zenframework.z8.server.runtime.ServerRuntime;
-import org.zenframework.z8.server.types.bool;
 import org.zenframework.z8.server.types.guid;
 import org.zenframework.z8.server.types.integer;
 import org.zenframework.z8.server.types.string;
@@ -78,21 +76,6 @@ public class TransportQueue extends Table {
 			return new TransportQueue(container);
 		}
 	}
-
-	private static class PreserveMessagesQueueListener implements Properties.Listener {
-
-		@Override
-		public void onPropertyChange(String key, String value) {
-			if(ServerRuntime.PreserveMessagesQueueProperty.equalsKey(key))
-				preserveMessagesQueue = Boolean.parseBoolean(value);
-		}
-	}
-
-	static {
-		Properties.addListener(new PreserveMessagesQueueListener());
-	}
-
-	private static volatile Boolean preserveMessagesQueue = null;
 
 	public StringField.CLASS<StringField> address = new StringField.CLASS<StringField>(this);
 	public StringField.CLASS<StringField> sender = new StringField.CLASS<StringField>(this);
@@ -169,18 +152,7 @@ public class TransportQueue extends Table {
 	}
 	
 	public void setProcessed(guid id, String info, long bytes) {
-		if(preserveMessagesQueue == null)
-			preserveMessagesQueue = Boolean.parseBoolean(Properties.getProperty(ServerRuntime.PreserveMessagesQueueProperty));
-
-		if(preserveMessagesQueue) {
-			if(info != null)
-				description.get().set(info);
-			if(bytes != -1)
-				bytesTransferred.get().set(bytes);
-			processed.get().set(new bool(true));
-			update(id);
-		} else
-			destroy(id);
+		destroy(id);
 	}
 
 	public void setBytesTrasferred(guid id, long bytes) {
