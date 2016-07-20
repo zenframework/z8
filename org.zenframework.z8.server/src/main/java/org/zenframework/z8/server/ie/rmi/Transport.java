@@ -1,6 +1,6 @@
 package org.zenframework.z8.server.ie.rmi;
 
-import java.rmi.ConnectException;
+import java.rmi.RemoteException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -128,7 +128,7 @@ public class Transport implements Runnable {
 
 		try {
 			server.probe();
-		} catch(ConnectException e) {
+		} catch(RemoteException e) {
 			transportQueue.setInfo(message.getId(), "Sending via Interconnection center: " + ProxyUtils.getUrl(center));
 			return new ApplicationServerProxy(server);
 		}

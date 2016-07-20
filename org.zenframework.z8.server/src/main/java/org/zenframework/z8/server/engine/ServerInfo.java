@@ -4,8 +4,6 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.lang.reflect.Proxy;
-import java.rmi.ConnectException;
-import java.rmi.NoSuchObjectException;
 import java.rmi.RemoteException;
 
 import org.zenframework.z8.server.types.datespan;
@@ -81,8 +79,7 @@ public class ServerInfo implements IServerInfo {
 			server.probe();
 			firstFailure = lastChecked = 0;
 			return true;
-		} catch(NoSuchObjectException e) {
-		} catch(ConnectException e) {
+		} catch(RemoteException e) {
 		}
 		
 		long time = System.currentTimeMillis();

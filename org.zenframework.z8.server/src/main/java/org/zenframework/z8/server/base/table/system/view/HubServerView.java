@@ -138,8 +138,8 @@ abstract public class HubServerView extends Query {
 			for(int i = 0; i < records.length(); i++)
 				urls.add(records.getString(i));
 			unregister(urls);
+			refresh();
 		}
-		
 	}
 
 	abstract protected IServerInfo[] getServers() throws Throwable;
