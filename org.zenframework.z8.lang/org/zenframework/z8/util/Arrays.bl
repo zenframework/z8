@@ -1,9 +1,0 @@
-import org.zenframework.z8.lang.Object;
-
-[native "org.zenframework.z8.server.base.util.Arrays"]
-class Arrays {
-	
-	public static string toString(primary[] array);
-	public static string toString(Object[] array);
-
-}
