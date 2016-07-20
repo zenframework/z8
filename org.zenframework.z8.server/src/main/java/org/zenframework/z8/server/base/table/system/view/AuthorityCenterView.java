@@ -39,4 +39,9 @@ public class AuthorityCenterView extends HubServerView {
 	protected IServerInfo[] getServers() throws Throwable {
 		return ServerConfig.authorityCenter().servers();
 	}
+	
+	@Override
+	protected void unregister(IServerInfo server) throws Throwable {
+		ServerConfig.authorityCenter().unregister(server.getServer());
+	}
 }

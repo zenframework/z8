@@ -26,7 +26,6 @@ import org.zenframework.z8.server.base.model.sql.Select;
 import org.zenframework.z8.server.base.simple.Runnable;
 import org.zenframework.z8.server.base.table.Table;
 import org.zenframework.z8.server.base.table.TreeTable;
-import org.zenframework.z8.server.base.table.value.AttachmentExpression;
 import org.zenframework.z8.server.base.table.value.AttachmentField;
 import org.zenframework.z8.server.base.table.value.Expression;
 import org.zenframework.z8.server.base.table.value.Field;
@@ -1014,7 +1013,7 @@ public class Query extends Runnable {
 	public Collection<Field> getAttachments() {
 		Collection<Field> result = new ArrayList<Field>();
 		for(Field field : getDataFields()) {
-			if(field instanceof AttachmentField || field instanceof AttachmentExpression)
+			if(field instanceof AttachmentField)
 				result.add(field);
 		}
 		return result;

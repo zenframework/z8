@@ -118,6 +118,7 @@
 	<entry key="HubServerView.active">Up</entry>
 	<entry key="HubServerView.serverId">Server Id</entry>
 	<entry key="HubServerView.domains">Домены</entry>
+	<entry key="HubServerView.unregister">Удалить</entry>
 
 	<!-- AuthorityCenterView -->
 	<entry key="AuthorityCenterView.title">Authority Center</entry>
