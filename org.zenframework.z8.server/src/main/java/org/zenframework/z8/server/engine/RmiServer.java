@@ -59,6 +59,9 @@ public abstract class RmiServer implements IServer, Remote {
 			return true;
 		} catch(ExportException e) {
 			return false;
+		} catch(Throwable e) {
+			Trace.logError(e);
+			throw new RemoteException("", e);
 		}
 	}
 	
