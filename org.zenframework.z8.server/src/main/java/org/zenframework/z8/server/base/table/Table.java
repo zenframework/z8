@@ -11,6 +11,7 @@ import org.zenframework.z8.server.base.table.value.GuidField;
 import org.zenframework.z8.server.base.table.value.StringField;
 import org.zenframework.z8.server.base.table.value.TextField;
 import org.zenframework.z8.server.db.sql.SqlToken;
+import org.zenframework.z8.server.engine.ApplicationServer;
 import org.zenframework.z8.server.resources.Resources;
 import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.types.bool;
@@ -221,7 +222,7 @@ public class Table extends TableBase {
 	@Override
 	protected void beforeCreate(Query data, guid recordId, guid parentId, Query model, guid modelRecordId) {
 		createdAt.get().set(new datetime());
-		createdBy.get().set(getUser().id());
+		createdBy.get().set(ApplicationServer.getUser().id());
 
 		lockedField.get().set(locked.get().get());
 
@@ -232,7 +233,7 @@ public class Table extends TableBase {
 	protected void beforeUpdate(Query data, guid recordId, Collection<Field> fields, Query model, guid modelRecordId) {
 		if(data == this && !fields.isEmpty()) {
 			modifiedAt.get().set(new datetime());
-			modifiedBy.get().set(getUser().id());
+			modifiedBy.get().set(ApplicationServer.getUser().id());
 		}
 
 		if(fields.contains(locked.get()))

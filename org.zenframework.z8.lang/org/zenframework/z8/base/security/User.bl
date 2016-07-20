@@ -1,8 +1,7 @@
 import org.zenframework.z8.lang.Object;
 
-[native "org.zenframework.z8.server.security.UserInfo"]
-class User extends Object
-{
+[native "org.zenframework.z8.server.base.security.User"]
+class User extends Object {
 	guid id;
 	string name;
 

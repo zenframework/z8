@@ -1,19 +1,10 @@
-import org.zenframework.z8.base.json.JsonWriter;
 import org.zenframework.z8.base.json.JsonArray;
 import org.zenframework.z8.base.security.User;
 
 [native "org.zenframework.z8.server.runtime.OBJECT"]
 class Object {
 	static public bool isNull(Object object);
-
 	static public User user();
-	static public void log(string text);
-	static public void showMessage(string text);
-	static public JsonWriter getWriter();
-    static public string[string] requestParameters();
-
-	static public int currentTimeMillis();
-	static public void wait(int millis);
 
 	virtual protected void constructor();
 
@@ -25,8 +16,6 @@ class Object {
 
     public void setAttribute(string attribute, primary value);
 	public void removeAttribute(string attribute);
-
-	public void sendFile(file file);
 
 	public bool operator == (Object object);
 	public bool operator != (Object object);

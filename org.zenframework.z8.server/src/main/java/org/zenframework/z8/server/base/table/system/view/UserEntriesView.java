@@ -3,6 +3,7 @@ package org.zenframework.z8.server.base.table.system.view;
 import org.zenframework.z8.server.base.query.Query;
 import org.zenframework.z8.server.base.table.system.UserEntries;
 import org.zenframework.z8.server.base.table.system.Users;
+import org.zenframework.z8.server.engine.ApplicationServer;
 import org.zenframework.z8.server.resources.Resources;
 import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.security.SecurityGroup;
@@ -53,7 +54,7 @@ public class UserEntriesView extends Query {
         registerFormField(users.get().name);
         registerFormField(users.get().description);
 
-        if(getUser().securityGroup() == SecurityGroup.Administrators) {
+        if(ApplicationServer.getUser().securityGroup() == SecurityGroup.Administrators) {
             registerFormField(users.get().password);
         }
         else {

@@ -7,6 +7,7 @@ import org.zenframework.z8.server.base.table.Table;
 import org.zenframework.z8.server.base.table.value.IField;
 import org.zenframework.z8.server.base.table.value.IntegerField;
 import org.zenframework.z8.server.base.table.value.Link;
+import org.zenframework.z8.server.engine.ApplicationServer;
 import org.zenframework.z8.server.resources.Resources;
 import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.runtime.RCollection;
@@ -97,7 +98,7 @@ public class UserEntries extends Table {
         position.setIndex("position");
         position.setDisplayName(Resources.get(strings.Position));
 
-        readOnly.set(getUser().securityGroup() != SecurityGroup.Administrators);
+        readOnly.set(ApplicationServer.getUser().securityGroup() != SecurityGroup.Administrators);
 
         registerDataField(user);
         registerDataField(entry);

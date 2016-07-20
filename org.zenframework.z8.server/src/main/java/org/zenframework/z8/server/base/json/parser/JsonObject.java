@@ -2,14 +2,12 @@ package org.zenframework.z8.server.base.json.parser;
 
 import java.util.Map;
 
-import org.apache.commons.codec.binary.Base64;
 import org.zenframework.z8.server.base.table.value.Field;
 import org.zenframework.z8.server.json.parser.JsonUtils;
 import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.runtime.OBJECT;
 import org.zenframework.z8.server.runtime.RCollection;
 import org.zenframework.z8.server.runtime.RLinkedHashMap;
-import org.zenframework.z8.server.types.binary;
 import org.zenframework.z8.server.types.bool;
 import org.zenframework.z8.server.types.date;
 import org.zenframework.z8.server.types.datetime;
@@ -113,10 +111,6 @@ public class JsonObject extends OBJECT {
         return datetime.z8_parse(z8_getString(name));
     }
 
-    public binary z8_getBinary(string name) {
-        return new binary(Base64.decodeBase64(object.getString(name)));
-    }
-
     public JsonArray.CLASS<? extends JsonArray> z8_getJsonArray(string name) {
         org.zenframework.z8.server.json.parser.JsonArray array = this.object.getJsonArray(name);
         JsonArray.CLASS<? extends JsonArray> cls = new JsonArray.CLASS<JsonArray>(null);
@@ -139,7 +133,7 @@ public class JsonObject extends OBJECT {
 
     @SuppressWarnings("unchecked")
     public JsonObject.CLASS<? extends JsonObject> z8_put(string name, JsonArray.CLASS<? extends JsonArray> value) {
-        object.put(name.get(), value.get().getInternalArray());
+        object.put(name.get(), value.get().get());
         return (JsonObject.CLASS<? extends JsonObject>) getCLASS();
     }
 
@@ -196,7 +190,7 @@ public class JsonObject extends OBJECT {
         RLinkedHashMap<primary, JsonArray.CLASS<? extends JsonArray>> jsonArrayMap = (RLinkedHashMap<primary, JsonArray.CLASS<? extends JsonArray>>) map;
         JsonObject.CLASS<? extends JsonObject> jsonObject = new JsonObject.CLASS<JsonObject>();
         for (Map.Entry<primary, JsonArray.CLASS<? extends JsonArray>> ja : jsonArrayMap.entrySet()) {
-            jsonObject.get().getInternalObject().put(ja.getKey().toString(), ja.getValue().get().getInternalArray());
+            jsonObject.get().getInternalObject().put(ja.getKey().toString(), ja.getValue().get().get());
         }
         return jsonObject;
     }

@@ -3,6 +3,7 @@ package org.zenframework.z8.server.base.table.system;
 import org.zenframework.z8.server.base.query.ReadLock;
 import org.zenframework.z8.server.base.table.Table;
 import org.zenframework.z8.server.base.table.value.IntegerField;
+import org.zenframework.z8.server.engine.ApplicationServer;
 import org.zenframework.z8.server.resources.Resources;
 import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.security.SecurityGroup;
@@ -53,7 +54,7 @@ public class Sequences extends Table {
         value.setIndex("value");
         value.setDisplayName(Resources.get(strings.Value));
 
-        readOnly.set(getUser().securityGroup() != SecurityGroup.Administrators);
+        readOnly.set(ApplicationServer.getUser().securityGroup() != SecurityGroup.Administrators);
 
         registerDataField(value);
 

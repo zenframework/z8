@@ -17,39 +17,39 @@ public class ServerConfig extends Properties {
 
 	static private ServerConfig instance;
 
-	static private String DefaultInstanceId = "Z8 Server";
+	static public String DefaultInstanceId = "Z8 Server";
 	static public String DefaultConfigurationFileName = "project.xml";
 
-	static private String InstanceIdProperty = "z8.instance.id";
+	static private String InstanceId = "z8.instance.id";
 
-	static private String ApplicationServerHostProperty = "application.server.host";
-	static private String ApplicationServerPortProperty = "application.server.port";
+	static private String ApplicationServerHost = "application.server.host";
+	static private String ApplicationServerPort = "application.server.port";
 
-	static private String AuthorityCenterHostProperty = "authority.center.host";
-	static private String AuthorityCenterPortProperty = "authority.center.port";
-	static private String AuthorityCenterSessionTimeoutProperty = "authority.center.session.timeout";
+	static private String AuthorityCenterHost = "authority.center.host";
+	static private String AuthorityCenterPort = "authority.center.port";
+	static private String AuthorityCenterSessionTimeout = "authority.center.session.timeout";
 
-	static private String InterconnectionCenterHostProperty = "interconnection.center.host";
-	static private String InterconnectionCenterPortProperty = "interconnection.center.port";
+	static private String InterconnectionCenterHost = "interconnection.center.host";
+	static private String InterconnectionCenterPort = "interconnection.center.port";
 
-	static private String WebServerStartApplicationServerProperty = "web.server.start.application.server";
-	static private String WebServerStartAuthorityCenterProperty = "web.server.start.authority.center";
-	static private String WebServerStartInterconnectionCenterProperty = "web.server.start.interconnection.center";
-	static private String WebServerFileSizeMaxProperty = "web.server.file.size.max";
+	static private String WebServerStartApplicationServer = "web.server.start.application.server";
+	static private String WebServerStartAuthorityCenter = "web.server.start.authority.center";
+	static private String WebServerStartInterconnectionCenter = "web.server.start.interconnection.center";
+	static private String WebServerFileSizeMax = "web.server.file.size.max";
 
-	static private String SchedulerEnabledProperty = "scheduler.enabled";
+	static private String SchedulerEnabled = "scheduler.enabled";
 	
-	static private String TransportJobRepeatProperty = "transport.job.repeat";
+	static private String TransportJobRepeat = "transport.job.repeat";
 
-	static private String TraceSqlProperty = "trace.sql";
-	static private String TraceSqlConnectionsProperty = "trace.sql.connections";
+	static private String TraceSql = "trace.sql";
+	static private String TraceSqlConnections = "trace.sql.connections";
 
-	static public String TextExtensionsProperty = "file.converter.text";
-	static public String ImageExtensionsProperty = "file.converter.image";
-	static public String EmailExtensionsProperty = "file.converter.email";
-	static public String OfficeExtensionsProperty = "file.converter.office";
+	static public String TextExtensions = "file.converter.text";
+	static public String ImageExtensions = "file.converter.image";
+	static public String EmailExtensions = "file.converter.email";
+	static public String OfficeExtensions = "file.converter.office";
 
-	static private String OfficeHomeProperty = "office.home";
+	static private String OfficeHome = "office.home";
 
 	static private File workingPath;
 
@@ -103,37 +103,37 @@ public class ServerConfig extends Properties {
 			throw new RuntimeException(e);
 		}
 
-		instanceId = getProperty(InstanceIdProperty, DefaultInstanceId);
+		instanceId = getProperty(InstanceId, DefaultInstanceId);
 
-		applicationServerHost = getHost(ApplicationServerHostProperty, Rmi.localhost);
-		applicationServerPort = getProperty(ApplicationServerPortProperty, 15000);
+		applicationServerHost = getHost(ApplicationServerHost, Rmi.localhost);
+		applicationServerPort = getProperty(ApplicationServerPort, 15000);
 
-		authorityCenterHost = getHost(AuthorityCenterHostProperty, Rmi.localhost);
-		authorityCenterPort = getProperty(AuthorityCenterPortProperty, 10000);
-		authorityCenterSessionTimeout = getProperty(AuthorityCenterSessionTimeoutProperty, 24 * 60);
+		authorityCenterHost = getHost(AuthorityCenterHost, Rmi.localhost);
+		authorityCenterPort = getProperty(AuthorityCenterPort, 10000);
+		authorityCenterSessionTimeout = getProperty(AuthorityCenterSessionTimeout, 24 * 60);
 
-		interconnectionCenterHost = getHost(InterconnectionCenterHostProperty, Rmi.localhost);
-		interconnectionCenterPort = getProperty(InterconnectionCenterPortProperty, 20000);
+		interconnectionCenterHost = getHost(InterconnectionCenterHost, Rmi.localhost);
+		interconnectionCenterPort = getProperty(InterconnectionCenterPort, 20000);
 
-		webServerStartApplicationServer = getProperty(WebServerStartApplicationServerProperty, true);
-		webServerStartAuthorityCenter = getProperty(WebServerStartAuthorityCenterProperty, true);
-		webServerStartInterconnectionCenter = getProperty(WebServerStartInterconnectionCenterProperty, false);
+		webServerStartApplicationServer = getProperty(WebServerStartApplicationServer, true);
+		webServerStartAuthorityCenter = getProperty(WebServerStartAuthorityCenter, true);
+		webServerStartInterconnectionCenter = getProperty(WebServerStartInterconnectionCenter, false);
 
-		webServerFileSizeMax = getProperty(WebServerFileSizeMaxProperty, 5);
+		webServerFileSizeMax = getProperty(WebServerFileSizeMax, 5);
 
-		traceSql = getProperty(TraceSqlProperty, false);
-		traceSqlConnections = getProperty(TraceSqlConnectionsProperty, false);
+		traceSql = getProperty(TraceSql, false);
+		traceSqlConnections = getProperty(TraceSqlConnections, false);
 
-		schedulerEnabled = getProperty(SchedulerEnabledProperty, true);
+		schedulerEnabled = getProperty(SchedulerEnabled, true);
 		
-		transportJobRepeat = getProperty(TransportJobRepeatProperty, 5 * 60);
+		transportJobRepeat = getProperty(TransportJobRepeat, 5 * 60);
 		
-		textExtensions = getProperty(TextExtensionsProperty, new String[] { "txt", "xml" });
-		imageExtensions = getProperty(ImageExtensionsProperty, new String[] { "tif", "tiff", "jpg", "jpeg", "gif", "png", "bmp" });
-		emailExtensions = getProperty(EmailExtensionsProperty, new String[] { "eml", "mime" });
-		officeExtensions = getProperty(OfficeExtensionsProperty, new String[] { "doc", "docx", "xls", "xlsx", "ppt", "pptx", "odt", "odp", "ods", "odf", "odg", "wpd", "sxw", "sxi", "sxc", "sxd", "stw", "vsd" });
+		textExtensions = getProperty(TextExtensions, new String[] { "txt", "xml" });
+		imageExtensions = getProperty(ImageExtensions, new String[] { "tif", "tiff", "jpg", "jpeg", "gif", "png", "bmp" });
+		emailExtensions = getProperty(EmailExtensions, new String[] { "eml", "mime" });
+		officeExtensions = getProperty(OfficeExtensions, new String[] { "doc", "docx", "xls", "xlsx", "ppt", "pptx", "odt", "odp", "ods", "odf", "odg", "wpd", "sxw", "sxi", "sxc", "sxd", "stw", "vsd" });
 
-		officeHome = getProperty(OfficeHomeProperty, "C:/Program Files (x86)/LibreOffice 4.0");
+		officeHome = getProperty(OfficeHome, "C:/Program Files (x86)/LibreOffice 4.0");
 
 		instance = this;
 	}

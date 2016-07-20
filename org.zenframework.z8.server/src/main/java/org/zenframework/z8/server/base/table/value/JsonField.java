@@ -55,7 +55,7 @@ public class JsonField extends TextField {
 
     @SuppressWarnings("unchecked")
     public TextField.CLASS<? extends TextField> operatorAssign(JsonArray.CLASS<? extends JsonArray> value) {
-        set(value.get().getInternalArray().isEmpty() ? "" : value.get().getInternalArray().toString());
+        set(value.get().get().isEmpty() ? "" : value.get().get().toString());
         return (TextField.CLASS<? extends TextField>) this.getCLASS();
     }
 

@@ -6,19 +6,15 @@ import java.io.ObjectOutputStream;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.zenframework.z8.server.base.application.Application;
 import org.zenframework.z8.server.base.json.parser.JsonArray;
-import org.zenframework.z8.server.engine.ApplicationServer;
+import org.zenframework.z8.server.base.security.User;
 import org.zenframework.z8.server.engine.RmiSerializable;
 import org.zenframework.z8.server.json.Json;
 import org.zenframework.z8.server.json.JsonWriter;
-import org.zenframework.z8.server.logs.Trace;
 import org.zenframework.z8.server.request.INamedObject;
 import org.zenframework.z8.server.request.RequestTarget;
-import org.zenframework.z8.server.security.IUser;
-import org.zenframework.z8.server.security.UserInfo;
 import org.zenframework.z8.server.types.bool;
-import org.zenframework.z8.server.types.file;
-import org.zenframework.z8.server.types.integer;
 import org.zenframework.z8.server.types.primary;
 import org.zenframework.z8.server.types.string;
 
@@ -262,89 +258,9 @@ public class OBJECT extends RequestTarget implements IObject, RmiSerializable {
 		return null;
 	}
 
-	static public IUser getUser() {
-		return ApplicationServer.getUser();
-	}
-
 	@Override
 	public void constructor() {
 		z8_constructor();
-	}
-
-	protected void z8_constructor() {
-	}
-
-	public string z8_id() {
-		return new string(id());
-	}
-
-	public string z8_index() {
-		return new string(getIndex());
-	}
-
-	public string z8_name() {
-		return new string(name());
-	}
-
-	public string z8_displayName() {
-		return new string(displayName());
-	}
-
-	public string z8_className() {
-		return new string(classId());
-	}
-
-	static public bool z8_isNull(IObject object) {
-		return new bool(object == null);
-	}
-
-	static public UserInfo.CLASS<? extends UserInfo> z8_user() {
-		UserInfo.CLASS<UserInfo> cls = new UserInfo.CLASS<UserInfo>(null);
-		UserInfo user = cls.get();
-		user.initialize(getUser());
-		return cls;
-	}
-
-	public string z8_toString() {
-		return new string("");
-	}
-
-	static public void log(String text) {
-		Trace.logEvent(text);
-		ApplicationServer.getMonitor().log(text);
-	}
-
-	static public void z8_log(string text) {
-		log(text.get());
-	}
-
-	static public void z8_wait(integer milliseconds) {
-		try {
-			Object obj = new Object();
-			;
-
-			synchronized(obj) {
-				obj.wait(milliseconds.get());
-			}
-		} catch(InterruptedException e) {
-		}
-	}
-
-	static public integer z8_currentTimeMillis() {
-		return new integer(java.lang.System.currentTimeMillis());
-	}
-
-	static public void showMessage(String text) {
-		Trace.logEvent(text);
-		ApplicationServer.getMonitor().print(text);
-	}
-
-	public void z8_showMessage(string text) {
-		showMessage(text.get());
-	}
-
-	public void z8_sendFile(file file) {
-		ApplicationServer.getMonitor().print(file);
 	}
 
 	public bool operatorEqu(OBJECT.CLASS<? extends OBJECT> object) {
@@ -377,22 +293,47 @@ public class OBJECT extends RequestTarget implements IObject, RmiSerializable {
 	public void deserialize(ObjectInputStream stream) throws IOException, ClassNotFoundException {
 	}
 
-	static public RLinkedHashMap<string, string> z8_requestParameters() {
-		return (RLinkedHashMap<string, string>)ApplicationServer.getRequest().getParameters();
-	}
-
-	static public org.zenframework.z8.server.base.json.JsonWriter.CLASS<? extends org.zenframework.z8.server.base.json.JsonWriter> z8_getWriter() {
-		org.zenframework.z8.server.base.json.JsonWriter.CLASS<org.zenframework.z8.server.base.json.JsonWriter> writer = new org.zenframework.z8.server.base.json.JsonWriter.CLASS<org.zenframework.z8.server.base.json.JsonWriter>(null);
-		writer.get().set(ApplicationServer.getRequest().getResponse().getWriter());
-		return writer;
-	}
-
 	public org.zenframework.z8.server.json.parser.JsonArray response() {
 		RLinkedHashMap<string, string> parameters = (RLinkedHashMap<string, string>)getParameters();
 
 		JsonArray.CLASS<? extends JsonArray> response = z8_response(parameters);
 
-		return response != null ? response.get().getInternalArray() : null;
+		return response != null ? response.get().get() : null;
+	}
+
+	static public bool z8_isNull(IObject object) {
+		return new bool(object == null);
+	}
+
+	static public User.CLASS<? extends User> z8_user() {
+		return Application.z8_user();
+	}
+
+	protected void z8_constructor() {
+	}
+
+	public string z8_id() {
+		return new string(id());
+	}
+
+	public string z8_index() {
+		return new string(getIndex());
+	}
+
+	public string z8_name() {
+		return new string(name());
+	}
+
+	public string z8_displayName() {
+		return new string(displayName());
+	}
+
+	public string z8_className() {
+		return new string(classId());
+	}
+
+	public string z8_toString() {
+		return new string("");
 	}
 
 	public JsonArray.CLASS<? extends JsonArray> z8_response(RLinkedHashMap<string, string> parameters) {

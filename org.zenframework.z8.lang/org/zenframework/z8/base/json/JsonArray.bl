@@ -6,6 +6,7 @@ import org.zenframework.z8.base.json.JsonObject;
 public class JsonArray extends Object {
 
 	public void operator = (string source);
+	public void operator = (primary[] source);
 
     public bool isEmpty();
     public int length();
@@ -15,7 +16,6 @@ public class JsonArray extends Object {
     public decimal getDecimal(int i);
     public bool getBool(int i);
     public guid getGuid(int i);
-    public binary getBinary(int i);
 
     public JsonArray getJsonArray(int i);
     public JsonObject getJsonObject(int i);
@@ -33,20 +33,8 @@ public class JsonArray extends Object {
     
     public guid[] toGuidArray();
     public string[] toStringArray();
-    public JsonArray[] toJsonArrayArray();
-    public JsonObject[] toJsonObjectArray();
 
 	public string toString(int indentFactor);
 
-	public bool contains(primary value);
-	public bool contains(JsonObject obj, string compareKey);
-
 	public static JsonArray parse(string source);
-
-	public static JsonArray fromPrimaryArray(primary[] array);
-	public static JsonArray fromJsonArrayArray(JsonArray[] array);
-	public static JsonArray fromJsonObjectArray(JsonObject[] array);
-
-	public static JsonArray diff(JsonArray a1, JsonArray a2, string compareKey);
-
 }
