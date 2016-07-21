@@ -31,8 +31,6 @@ public class AuthorityCenter extends HubServer implements IAuthorityCenter {
 	private UserManager userManager;
 	private SessionManager sessionManager;
 	
-	private Object lock = new Object();
-
 	public static IAuthorityCenter launch(ServerConfig config) throws RemoteException {
 		if(instance == null) {
 			instance = new AuthorityCenter();
@@ -131,7 +129,7 @@ public class AuthorityCenter extends HubServer implements IAuthorityCenter {
 	}
 
 	private IServerInfo findServer(String serverId) throws RemoteException {
-		IServerInfo[] servers = this.getServers().toArray(new IServerInfo[0]);
+		IServerInfo[] servers = getServers();
 
 		for(IServerInfo server : servers) {
 			if(serverId != null && !server.getId().equals(serverId))
@@ -143,13 +141,8 @@ public class AuthorityCenter extends HubServer implements IAuthorityCenter {
 				continue;
 			}
 
-			// меняем порядок, чтобы распределять запросы
-			if(serverId == null && this.getServers().size() > 1) {
-				synchronized(lock) {
-					this.getServers().remove(server);
-					this.getServers().add(server);
-				}
-			}
+			if(serverId == null)
+				sendToBottom(server);
 
 			return server;
 		}

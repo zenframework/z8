@@ -82,7 +82,7 @@ public class InterconnectionCenter extends HubServer implements IInterconnection
 	}
 	
 	private IServerInfo findServer(String domain) throws RemoteException {
-		IServerInfo[] servers = this.getServers().toArray(new IServerInfo[0]);
+		IServerInfo[] servers = getServers();
 
 		for(IServerInfo server : servers) {
 			if(!ArrayUtils.contains(server.getDomains(), domain))
@@ -95,10 +95,7 @@ public class InterconnectionCenter extends HubServer implements IInterconnection
 			}
 
 			// меняем порядок, чтобы распределять запросы
-			if(this.getServers().size() > 1) {
-				this.getServers().remove(server);
-				this.getServers().add(server);
-			}
+			sendToBottom(server);
 
 			return server;
 		}
