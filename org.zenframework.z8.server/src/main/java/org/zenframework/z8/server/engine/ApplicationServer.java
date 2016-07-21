@@ -154,7 +154,7 @@ public class ApplicationServer extends RmiServer implements IApplicationServer {
 
 	@Override
 	public boolean hasFile(file file) throws RemoteException {
-		return false; //Files.newInstance().hasRecord(file.id);
+		return Files.newInstance().hasRecord(file.id);
 	}
 	
 	@Override
