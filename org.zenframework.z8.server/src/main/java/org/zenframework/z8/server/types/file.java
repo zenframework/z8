@@ -347,8 +347,6 @@ public class file extends primary implements RmiSerializable, Serializable {
 		byte[] unzipped = IOUtils.unzip(bytes.toByteArray());
 		ByteArrayInputStream input = new ByteArrayInputStream(unzipped);
 
-		target.getParentFile().mkdirs();
-
 		RandomAccessFile output = new RandomAccessFile(target.getPath(), "rw");
 		output.seek(offset);
 		

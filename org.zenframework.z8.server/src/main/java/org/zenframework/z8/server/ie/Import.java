@@ -34,9 +34,10 @@ public class Import {
 
 		long offset = file.offset();
 
-		if(offset == 0)
+		if(offset == 0) {
+			target.getParentFile().mkdirs();
 			target.delete();
-		else if(!target.exists() || (offset + file.partLength()) < target.length())
+		} else if(!target.exists() || (offset + file.partLength()) < target.length())
 			return false;
 
 		try {
