@@ -16,6 +16,7 @@ class Application extends Object {
 	static public string[string] requestParameters();
 	static public JsonWriter responseWriter();
 
-	static public int maxFileSize();
+	static public int maxDownloadSize();
+	static public int maxUploadSize();
 	static public string[] supportedFileTypes();
 }

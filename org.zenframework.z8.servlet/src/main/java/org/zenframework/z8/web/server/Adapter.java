@@ -94,7 +94,7 @@ public abstract class Adapter {
 		if(ServletFileUpload.isMultipartContent(request)) {
 			List<FileItem> fileItems = parseMultipartRequest(request);
 
-			long fileSizeMaxMB = ServerConfig.webServerFileSizeMax();
+			long fileSizeMaxMB = ServerConfig.webServerUploadMax();
 			long fileSizeMax = fileSizeMaxMB > 0 ? fileSizeMaxMB * NumericUtils.Megabyte : Long.MAX_VALUE;
 
 			for(FileItem fileItem : fileItems) {

@@ -49,8 +49,12 @@ public class Application {
 		return writer;
 	}
 
-	static public integer z8_maxFileSize() {
-		return new integer(ServerConfig.webServerFileSizeMax() * NumericUtils.Megabyte);
+	static public integer z8_maxDownloadSize() {
+		return new integer(ServerConfig.webClientDownloadMax() * NumericUtils.Megabyte);
+	}
+
+	static public integer z8_maxUploadSize() {
+		return new integer(ServerConfig.webServerUploadMax() * NumericUtils.Megabyte);
 	}
 
 	static public RCollection<string> z8_supportedFileTypes() {

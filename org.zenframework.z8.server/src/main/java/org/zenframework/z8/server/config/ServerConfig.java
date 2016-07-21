@@ -35,7 +35,9 @@ public class ServerConfig extends Properties {
 	static private String WebServerStartApplicationServer = "web.server.start.application.server";
 	static private String WebServerStartAuthorityCenter = "web.server.start.authority.center";
 	static private String WebServerStartInterconnectionCenter = "web.server.start.interconnection.center";
-	static private String WebServerFileSizeMax = "web.server.file.size.max";
+
+	static private String WebServerUploadMax = "web.server.upload.max";
+	static private String WebClientDownloadMax = "web.client.download.max";
 
 	static private String SchedulerEnabled = "scheduler.enabled";
 	
@@ -69,8 +71,9 @@ public class ServerConfig extends Properties {
 	static private boolean webServerStartAuthorityCenter;
 	static private boolean webServerStartInterconnectionCenter;
 
-	static private int webServerFileSizeMax;
-
+	static private int webServerUploadMax;
+	static private int webClientDownloadMax;
+	
 	static private boolean schedulerEnabled;
 	
 	static private int transportJobRepeat;
@@ -119,8 +122,9 @@ public class ServerConfig extends Properties {
 		webServerStartAuthorityCenter = getProperty(WebServerStartAuthorityCenter, true);
 		webServerStartInterconnectionCenter = getProperty(WebServerStartInterconnectionCenter, false);
 
-		webServerFileSizeMax = getProperty(WebServerFileSizeMax, 5);
-
+		webServerUploadMax = getProperty(WebServerUploadMax, 5);
+		webClientDownloadMax = getProperty(WebClientDownloadMax, 1);
+		
 		traceSql = getProperty(TraceSql, false);
 		traceSqlConnections = getProperty(TraceSqlConnections, false);
 
@@ -293,8 +297,12 @@ public class ServerConfig extends Properties {
 		return webServerStartInterconnectionCenter;
 	}
 
-	static public int webServerFileSizeMax() {
-		return webServerFileSizeMax;
+	static public int webServerUploadMax() {
+		return webServerUploadMax;
+	}
+
+	static public int webClientDownloadMax() {
+		return webClientDownloadMax;
 	}
 
 	static public boolean isSchedulerEnabled() {
