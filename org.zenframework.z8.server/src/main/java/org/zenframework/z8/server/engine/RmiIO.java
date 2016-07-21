@@ -42,7 +42,7 @@ import org.zenframework.z8.server.utils.ProxyUtils;
 import sun.rmi.server.UnicastRef;
 import sun.rmi.transport.LiveRef;
 
-@SuppressWarnings({ "deprecation" })
+@SuppressWarnings({ "deprecation", "restriction" })
 public class RmiIO extends ObjectIO {
 	static private Map<String, Constructor<?>> constructors = Collections.synchronizedMap(new HashMap<String, Constructor<?>>());
 	static private Map<String, Class<?>> classes = Collections.synchronizedMap(new HashMap<String, Class<?>>());
