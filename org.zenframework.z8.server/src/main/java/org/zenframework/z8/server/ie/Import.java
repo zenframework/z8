@@ -36,7 +36,7 @@ public class Import {
 
 		if(offset == 0)
 			target.delete();
-		else if(!target.exists() || target.length() > offset)
+		else if(!target.exists() || (offset + file.partLength()) < target.length())
 			return false;
 
 		try {

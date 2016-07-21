@@ -156,6 +156,10 @@ public class file extends primary implements RmiSerializable, Serializable {
 		return offset;
 	}
 	
+	public int partLength() {
+		return partLength;
+	}
+
 	public void setOffset(long offset) {
 		this.offset = offset;
 	}
@@ -223,6 +227,7 @@ public class file extends primary implements RmiSerializable, Serializable {
 		RmiIO.writeGuid(out, id);
 
 		RmiIO.writeLong(out, offset);
+		RmiIO.writeInt(out, partLength);
 		RmiIO.writeBoolean(out, value != null);
 
 		if(value != null) {
@@ -251,6 +256,7 @@ public class file extends primary implements RmiSerializable, Serializable {
 		id = RmiIO.readGuid(in);
 
 		offset = RmiIO.readLong(in);
+		partLength = RmiIO.readInt(in);
 		
 		if(RmiIO.readBoolean(in)) {
 			long size = RmiIO.readLong(in);
