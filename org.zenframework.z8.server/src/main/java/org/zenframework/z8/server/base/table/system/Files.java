@@ -148,6 +148,7 @@ public class Files extends Table {
 		
 		file.set(new InputOnlyFileItem(path, file.name.get()));
 		file.size = new integer(path.length());
+		
 		return file;
 	}
 }

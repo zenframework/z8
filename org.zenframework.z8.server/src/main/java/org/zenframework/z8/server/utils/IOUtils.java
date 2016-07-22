@@ -9,11 +9,14 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.RandomAccessFile;
 import java.net.URL;
 import java.nio.charset.Charset;
 import java.util.zip.DataFormatException;
 import java.util.zip.Deflater;
+import java.util.zip.DeflaterInputStream;
 import java.util.zip.Inflater;
+import java.util.zip.InflaterInputStream;
 
 import org.mozilla.universalchardet.UniversalDetector;
 import org.zenframework.z8.server.logs.Trace;
@@ -238,6 +241,14 @@ public class IOUtils {
 		return outputStream.toByteArray();
 	}
 
+	static public void unzip(InputStream input, OutputStream output) throws IOException {
+		copy(new InflaterInputStream(input), output);
+	}
+
+	static public void unzip(InputStream input, RandomAccessFile output) throws IOException {
+		copy(new InflaterInputStream(input), output);
+	}
+
 	static public byte[] unzip(byte[] bytes) {
 		return unzip(bytes, 0, bytes.length);
 	}
@@ -263,6 +274,14 @@ public class IOUtils {
 		}
 
 		return outputStream.toByteArray();
+	}
+
+	static public void zip(InputStream input, OutputStream output) throws IOException {
+		copy(new DeflaterInputStream(input), output);
+	}
+
+	static public void zip(InputStream input, RandomAccessFile output) throws IOException {
+		copy(new DeflaterInputStream(input), output);
 	}
 
 	static public boolean moveFolder(File src, File dest, boolean trace) {

@@ -1,7 +1,6 @@
 package org.zenframework.z8.server.types;
 
 import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -324,33 +323,33 @@ public class file extends primary implements RmiSerializable, Serializable {
 			return null;
 		
 		byte[] bytes = new byte[512 * NumericUtils.Kilobyte];
+		partLength = read(offset, bytes);
 
-		InputStream input = getInputStream();
-		input.skip(offset);
-		partLength = IOUtils.read(input, bytes);
-		input.close();
-
-		FileItem fileItem = createFileItem(name);
-		OutputStream output = fileItem.getOutputStream();
-		output.write(IOUtils.zip(bytes, 0, partLength));
-		output.close();
-
-		set(fileItem);
+		InputStream input = new ByteArrayInputStream(bytes, 0, partLength);
+		
+		set(createFileItem(name));
+		
+		IOUtils.zip(input, getOutputStream());
 
 		return this;
 	}
 
+	private int read(long offset, byte[] bytes) throws IOException {
+		InputStream input = null;
+		try {
+			input = getInputStream();
+			input.skip(offset);
+			return IOUtils.read(input, bytes);
+		} finally {
+			IOUtils.closeQuietly(input);
+		}
+	}
+	
 	public boolean addPartTo(File target) throws IOException {
-		ByteArrayOutputStream bytes = new ByteArrayOutputStream();
-		IOUtils.copy(getInputStream(), bytes);
-
-		byte[] unzipped = IOUtils.unzip(bytes.toByteArray());
-		ByteArrayInputStream input = new ByteArrayInputStream(unzipped);
-
 		RandomAccessFile output = new RandomAccessFile(target.getPath(), "rw");
 		output.seek(offset);
 		
-		IOUtils.copy(input, output);
+		IOUtils.unzip(getInputStream(), output);
 		
 		return target.length() == size.get();
 	}
