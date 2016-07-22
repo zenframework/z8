@@ -1,7 +1,9 @@
-[primary "org.zenframework.z8.server.types.exception"]
+/*
+	Эквивалент Throwable в java - catch(exception e) == catch(Throwable e)
+*/
 
-class exception
-{
+[primary "org.zenframework.z8.server.types.exception"]
+class exception {
 	public operator string();
 
 	virtual public string getMessage();

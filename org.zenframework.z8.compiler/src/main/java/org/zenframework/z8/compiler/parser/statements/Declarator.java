@@ -105,9 +105,8 @@ public class Declarator extends Initialization implements IVariable, IStatement 
     @Override
     public boolean checkSemantics(CompilationUnit compilationUnit, IType declaringType, IMethod declaringMethod,
             IVariable leftHandValue, IVariableType context) {
-        if(variableType.hasFatalError()) {
+        if(variableType.hasFatalError())
             return false;
-        }
 
         if(!variableType.checkSemantics(compilationUnit, declaringType, declaringMethod, null, null))
             return false;

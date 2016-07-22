@@ -2,7 +2,18 @@ import org.zenframework.z8.lang.Object;
 
 [native "org.zenframework.z8.server.base.simple.Transaction"]
 class Transaction extends Object {
-	virtual protected void trasaction();
+	/*
+		try {
+			Transaction.begin();
+			...
+			Transaction.commit();
+		} catch(exception e) {
+			Transaction.rollback();
+			...
+		}
+	*/
 
-	public void run();
+	static public void begin();
+	static public void commit();
+	static public void rollback();
 }

@@ -18,26 +18,8 @@ public class CodeGenerator {
         return compilationUnit;
     }
 
-    public void append(char c) {
-        buffer.append(c);
-    }
-
     public int length() {
         return buffer.length();
-    }
-
-    public void append(String text) {
-        buffer.append(text);
-    }
-
-    public void append(CodeGenerator generator) {
-        buffer.append(generator.buffer);
-        line += generator.line;
-    }
-
-    public void breakLine() {
-        buffer.append("\n");
-        line++;
     }
 
     public int getCurrentLine() {
@@ -49,15 +31,40 @@ public class CodeGenerator {
         return buffer.toString();
     }
 
-    public void indent() {
+    public CodeGenerator append(char c) {
+        buffer.append(c);
+        return this;
+    }
+
+    public CodeGenerator append(String text) {
+        buffer.append(text);
+        return this;
+    }
+
+    public CodeGenerator append(CodeGenerator generator) {
+        buffer.append(generator.buffer);
+        line += generator.line;
+        return this;
+    }
+
+    public CodeGenerator breakLine() {
+        buffer.append("\n");
+        line++;
+        return this;
+    }
+
+    public CodeGenerator indent() {
         buffer.append(indent);
+        return this;
     }
 
-    public void incrementIndent() {
+    public CodeGenerator incrementIndent() {
         indent += "\t";
+        return this;
     }
 
-    public void decrementIndent() {
+    public CodeGenerator decrementIndent() {
         indent = indent.substring(0, indent.length() - 1);
+        return this;
     }
 }

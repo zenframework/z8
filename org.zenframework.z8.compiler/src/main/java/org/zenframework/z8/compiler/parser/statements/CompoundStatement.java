@@ -18,191 +18,176 @@ import org.zenframework.z8.compiler.parser.LanguageElement;
 import org.zenframework.z8.compiler.workspace.CompilationUnit;
 
 public class CompoundStatement extends LanguageElement implements IStatement {
-    private IToken leftBrace;
-    private IToken rightBrace;
+	private IToken leftBrace;
+	private IToken rightBrace;
 
-    private List<ILanguageElement> elements;
-    private boolean autoOpenScope;
+	private List<ILanguageElement> elements;
+	private boolean autoOpenScope;
 
-    public CompoundStatement(IToken leftBrace) {
-        this.leftBrace = leftBrace;
-        setAutoOpenScope(true);
-    }
+	public CompoundStatement(IToken leftBrace) {
+		this.leftBrace = leftBrace;
+		setAutoOpenScope(true);
+	}
 
-    public void setLeftBrace(IToken leftBrace) {
-        this.leftBrace = leftBrace;
-    }
+	public void setLeftBrace(IToken leftBrace) {
+		this.leftBrace = leftBrace;
+	}
 
-    public void setRightBrace(IToken rightBrace) {
-        this.rightBrace = rightBrace;
-    }
+	public void setRightBrace(IToken rightBrace) {
+		this.rightBrace = rightBrace;
+	}
 
-    @Override
-    public IPosition getPosition() {
-        if(elements == null) {
-            return getSourceRange();
-        }
+	@Override
+	public IPosition getPosition() {
+		if(elements == null)
+			return getSourceRange();
 
-        return elements.get(0).getPosition();
-    }
+		return elements.get(0).getPosition();
+	}
 
-    @Override
-    public IPosition getSourceRange() {
-        if(rightBrace != null) {
-            return leftBrace.getPosition().union(rightBrace.getPosition());
-        }
-        else if(elements != null) {
-            return leftBrace.getPosition().union(elements.get(elements.size() - 1).getSourceRange());
-        }
-        else {
-            return leftBrace.getPosition();
-        }
-    }
+	@Override
+	public IPosition getSourceRange() {
+		if(rightBrace != null)
+			return leftBrace.getPosition().union(rightBrace.getPosition());
+		else if(elements != null)
+			return leftBrace.getPosition().union(elements.get(elements.size() - 1).getSourceRange());
+		else
+			return leftBrace.getPosition();
+	}
 
-    @Override
-    public IToken getFirstToken() {
-        return leftBrace;
-    }
+	@Override
+	public IToken getFirstToken() {
+		return leftBrace;
+	}
 
-    public void addStatement(ILanguageElement element) {
-        if(elements == null) {
-            elements = new ArrayList<ILanguageElement>();
-        }
+	public void addStatement(ILanguageElement element) {
+		if(elements == null)
+			elements = new ArrayList<ILanguageElement>();
 
-        element.setParent(this);
-        elements.add(element);
-    }
+		element.setParent(this);
+		elements.add(element);
+	}
 
-    public void setAutoOpenScope(boolean autoOpenScope) {
-        this.autoOpenScope = autoOpenScope;
-    }
+	public void setAutoOpenScope(boolean autoOpenScope) {
+		this.autoOpenScope = autoOpenScope;
+	}
 
-    @Override
-    public boolean resolveTypes(CompilationUnit compilationUnit, IType declaringType) {
-        if(!super.resolveTypes(compilationUnit, declaringType))
-            return false;
+	@Override
+	public boolean resolveTypes(CompilationUnit compilationUnit, IType declaringType) {
+		if(!super.resolveTypes(compilationUnit, declaringType))
+			return false;
 
-        if(elements == null)
-            return true;
+		if(elements == null)
+			return true;
 
-        for(ILanguageElement element : elements) {
-            element.resolveTypes(compilationUnit, declaringType);
-        }
+		for(ILanguageElement element : elements)
+			element.resolveTypes(compilationUnit, declaringType);
 
-        return true;
-    }
+		return true;
+	}
 
-    @Override
-    public boolean checkSemantics(CompilationUnit compilationUnit, IType declaringType, IMethod declaringMethod,
-            IVariable leftHandValue, IVariableType context) {
-        if(!super.checkSemantics(compilationUnit, declaringType, declaringMethod, null, null))
-            return false;
+	@Override
+	public boolean checkSemantics(CompilationUnit compilationUnit, IType declaringType, IMethod declaringMethod, IVariable leftHandValue, IVariableType context) {
+		if(!super.checkSemantics(compilationUnit, declaringType, declaringMethod, null, null))
+			return false;
 
-        if(elements == null)
-            return true;
+		if(elements == null)
+			return true;
 
-        if(autoOpenScope) {
-            declaringMethod.openLocalScope();
-        }
+		if(autoOpenScope)
+			declaringMethod.openLocalScope();
+	
+		for(ILanguageElement element : elements)
+			element.checkSemantics(compilationUnit, declaringType, declaringMethod, null, null);
 
-        for(ILanguageElement element : elements) {
-            element.checkSemantics(compilationUnit, declaringType, declaringMethod, null, null);
-        }
+		if(autoOpenScope)
+			declaringMethod.closeLocalScope();
 
-        if(autoOpenScope) {
-            declaringMethod.closeLocalScope();
-        }
+		return true;
+	}
 
-        return true;
-    }
+	@Override
+	public boolean resolveNestedTypes(CompilationUnit compilationUnit, IType declaringType) {
+		if(!super.resolveNestedTypes(compilationUnit, declaringType))
+			return false;
 
-    @Override
-    public boolean resolveNestedTypes(CompilationUnit compilationUnit, IType declaringType) {
-        if(!super.resolveNestedTypes(compilationUnit, declaringType))
-            return false;
+		if(elements != null) {
+			for(ILanguageElement element : elements)
+				element.resolveNestedTypes(compilationUnit, declaringType);
+		}
+		return true;
+	}
 
-        if(elements != null) {
-            for(ILanguageElement element : elements) {
-                element.resolveNestedTypes(compilationUnit, declaringType);
-            }
-        }
-        return true;
-    }
+	@Override
+	public boolean returnsOnAllControlPaths() {
+		if(elements == null)
+			return false;
 
-    @Override
-    public boolean returnsOnAllControlPaths() {
-        if(elements == null) {
-            return false;
-        }
+		for(int i = 0; i < elements.size(); i++) {
+			ILanguageElement element = elements.get(i);
 
-        for(int i = 0; i < elements.size(); i++) {
-            ILanguageElement element = elements.get(i);
+			if(!(element instanceof IStatement)) {
+				setError(element.getPosition(), "Syntax error");
+				return false;
+			}
+			IStatement statement = (IStatement)element;
 
-            if(!(element instanceof IStatement)) {
-                setError(element.getPosition(), "Syntax error");
-                return false;
-            }
-            IStatement statement = (IStatement)element;
+			boolean returnsOnAllControlPaths = statement.returnsOnAllControlPaths();
+			boolean breaksControlFlow = statement.breaksControlFlow();
 
-            boolean returnsOnAllControlPaths = statement.returnsOnAllControlPaths();
-            boolean breaksControlFlow = statement.breaksControlFlow();
+			if(returnsOnAllControlPaths || breaksControlFlow) {
+				if(i != elements.size() - 1)
+					setError(elements.get(i + 1).getPosition(), "Unreachable code");
+				return returnsOnAllControlPaths;
+			}
+		}
 
-            if(returnsOnAllControlPaths || breaksControlFlow) {
-                if(i != elements.size() - 1) {
-                    setError(elements.get(i + 1).getPosition(), "Unreachable code");
-                }
-                return returnsOnAllControlPaths;
-            }
-        }
+		return false;
+	}
 
-        return false;
-    }
+	@Override
+	public boolean breaksControlFlow() {
+		return false;
+	}
 
-    @Override
-    public boolean breaksControlFlow() {
-        return false;
-    }
+	@Override
+	public void getClassCode(CodeGenerator codeGenerator) {
+		if(elements != null) {
+			for(ILanguageElement element : elements)
+				element.getClassCode(codeGenerator);
+		}
+	}
 
-    @Override
-    public void getClassCode(CodeGenerator codeGenerator) {
-        if(elements != null) {
-            for(ILanguageElement element : elements) {
-                element.getClassCode(codeGenerator);
-            }
-        }
-    }
+	@Override
+	public void getCode(CodeGenerator codeGenerator) {
+		codeGenerator.append("{");
+		codeGenerator.breakLine();
 
-    @Override
-    public void getCode(CodeGenerator codeGenerator) {
-        codeGenerator.append("{");
-        codeGenerator.breakLine();
+		if(elements != null) {
+			codeGenerator.incrementIndent();
 
-        if(elements != null) {
-            codeGenerator.incrementIndent();
+			for(ILanguageElement element : elements) {
+				codeGenerator.indent();
+				element.getCode(codeGenerator);
+			}
 
-            for(ILanguageElement element : elements) {
-                codeGenerator.indent();
-                element.getCode(codeGenerator);
-            }
+			codeGenerator.decrementIndent();
+		}
 
-            codeGenerator.decrementIndent();
-        }
+		codeGenerator.indent();
+		codeGenerator.append("}");
+		codeGenerator.breakLine();
+	}
 
-        codeGenerator.indent();
-        codeGenerator.append("}");
-        codeGenerator.breakLine();
-    }
+	public List<ILanguageElement> getElements() {
+		return elements;
+	}
 
-    public List<ILanguageElement> getElements() {
-        return elements;
-    }
-
-    @Override
-    public void replaceTypeName(TextEdit parent, IType type, String newTypeName) {
-        if(elements != null) {
-            for(ILanguageElement element : elements) {
-                element.replaceTypeName(parent, type, newTypeName);
-            }
-        }
-    }
+	@Override
+	public void replaceTypeName(TextEdit parent, IType type, String newTypeName) {
+		if(elements != null) {
+			for(ILanguageElement element : elements)
+				element.replaceTypeName(parent, type, newTypeName);
+		}
+	}
 }

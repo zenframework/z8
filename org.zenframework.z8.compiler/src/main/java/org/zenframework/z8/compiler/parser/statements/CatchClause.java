@@ -16,111 +16,126 @@ import org.zenframework.z8.compiler.parser.type.Primary;
 import org.zenframework.z8.compiler.workspace.CompilationUnit;
 
 public class CatchClause extends LanguageElement implements IStatement {
-    private IToken catchToken;
+	private IToken catchToken;
 
-    private Declarator declarator;
-    private CompoundStatement statement;
+	private Declarator declarator;
+	private CompoundStatement statement;
 
-    public CatchClause(IToken catchToken, Declarator declarator, CompoundStatement statement) {
-        this.catchToken = catchToken;
-        this.declarator = declarator;
-        this.statement = statement;
+	public CatchClause(IToken catchToken, Declarator declarator, CompoundStatement statement) {
+		this.catchToken = catchToken;
+		this.declarator = declarator;
+		this.statement = statement;
 
-        this.statement.setParent(this);
-    }
+		this.statement.setParent(this);
+	}
 
-    @Override
-    public IPosition getSourceRange() {
-        return catchToken.getPosition().union(statement.getSourceRange());
-    }
+	@Override
+	public IPosition getSourceRange() {
+		return catchToken.getPosition().union(statement.getSourceRange());
+	}
 
-    @Override
-    public IToken getFirstToken() {
-        return catchToken;
-    }
+	@Override
+	public IToken getFirstToken() {
+		return catchToken;
+	}
 
-    @Override
-    public IVariableType getVariableType() {
-        return declarator.getVariableType();
-    }
+	@Override
+	public IVariableType getVariableType() {
+		return declarator.getVariableType();
+	}
 
-    @Override
-    public boolean resolveTypes(CompilationUnit compilationUnit, IType declaringType) {
-        if(!super.resolveTypes(compilationUnit, declaringType))
-            return false;
+	@Override
+	public boolean resolveTypes(CompilationUnit compilationUnit, IType declaringType) {
+		if(!super.resolveTypes(compilationUnit, declaringType))
+			return false;
 
-        declarator.resolveTypes(compilationUnit, declaringType);
-        statement.resolveTypes(compilationUnit, declaringType);
-        return true;
-    }
+		declarator.resolveTypes(compilationUnit, declaringType);
+		statement.resolveTypes(compilationUnit, declaringType);
+		return true;
+	}
 
-    @Override
-    public boolean checkSemantics(CompilationUnit compilationUnit, IType declaringType, IMethod declaringMethod,
-            IVariable leftHandValue, IVariableType context) {
-        if(!super.checkSemantics(compilationUnit, declaringType, declaringMethod, null, null))
-            return false;
+	@Override
+	public boolean checkSemantics(CompilationUnit compilationUnit, IType declaringType, IMethod declaringMethod, IVariable leftHandValue, IVariableType context) {
+		if(!super.checkSemantics(compilationUnit, declaringType, declaringMethod, null, null))
+			return false;
 
-        declaringMethod.openLocalScope();
+		declaringMethod.openLocalScope();
 
-        if(declarator != null) {
-            declarator.checkSemantics(compilationUnit, declaringType, declaringMethod, null, null);
-        }
+		if(declarator != null)
+			declarator.checkSemantics(compilationUnit, declaringType, declaringMethod, null, null);
 
-        IType exceptionType = Primary.resolveType(compilationUnit, Primary.Exception);
+		IType exceptionType = Primary.resolveType(compilationUnit, Primary.Exception);
 
-        if(exceptionType != null) {
-            IVariableType variableType = declarator.getVariableType();
+		if(exceptionType != null) {
+			IVariableType variableType = declarator.getVariableType();
 
-            ITypeCast typeCast = variableType.getCastTo(exceptionType);
+			ITypeCast typeCast = variableType.getCastTo(exceptionType);
 
-            if(typeCast == null || typeCast.getOperator() != null) {
-                setError(declarator.getPosition(), "Type mismatch: cannot convert from " + variableType.getSignature()
-                        + " to " + exceptionType.getUserName());
-            }
-        }
+			if(typeCast == null || typeCast.getOperator() != null)
+				setError(declarator.getPosition(), "Type mismatch: cannot convert from " + variableType.getSignature() + " to " + exceptionType.getUserName());
+		}
 
-        if(statement != null) {
-            statement.checkSemantics(compilationUnit, declaringType, declaringMethod, null, null);
-        }
+		if(statement != null)
+			statement.checkSemantics(compilationUnit, declaringType, declaringMethod, null, null);
 
-        declaringMethod.closeLocalScope();
+		declaringMethod.closeLocalScope();
 
-        return true;
-    }
+		return true;
+	}
 
-    @Override
-    public boolean resolveNestedTypes(CompilationUnit compilationUnit, IType declaringType) {
-        return super.resolveNestedTypes(compilationUnit, declaringType)
-                && statement.resolveNestedTypes(compilationUnit, declaringType);
-    }
+	@Override
+	public boolean resolveNestedTypes(CompilationUnit compilationUnit, IType declaringType) {
+		return super.resolveNestedTypes(compilationUnit, declaringType) && statement.resolveNestedTypes(compilationUnit, declaringType);
+	}
 
-    @Override
-    public boolean returnsOnAllControlPaths() {
-        return ((IStatement)statement).returnsOnAllControlPaths();
-    }
+	public boolean catchesAll() {
+		return declarator.getVariableType().getType().isPrimary();
+	}
+	
+	@Override
+	public boolean returnsOnAllControlPaths() {
+		return ((IStatement)statement).returnsOnAllControlPaths();
+	}
 
-    @Override
-    public boolean breaksControlFlow() {
-        return false;
-    }
+	@Override
+	public boolean breaksControlFlow() {
+		return false;
+	}
 
-    @Override
-    public void getClassCode(CodeGenerator codeGenerator) {
-        statement.getClassCode(codeGenerator);
-    }
+	@Override
+	public void getClassCode(CodeGenerator codeGenerator) {
+		statement.getClassCode(codeGenerator);
+	}
 
-    @Override
-    public void getCode(CodeGenerator codeGenerator) {
-        IType type = getVariableType().getType();
-        codeGenerator.getCompilationUnit().importType(type);
-        codeGenerator.append("catch(" + type.getJavaName() + " " + declarator.getName() + ")");
-        codeGenerator.breakLine();
-        codeGenerator.indent();
-        statement.getCode(codeGenerator);
-    }
+	@Override
+	public void getCode(CodeGenerator codeGenerator) {
+		IType type = getVariableType().getType();
+		
+		CompilationUnit compilationUnit = codeGenerator.getCompilationUnit();
+		compilationUnit.importType(type);
 
-    @Override
-    public void replaceTypeName(TextEdit parent, IType type, String newTypeName) {
-        statement.replaceTypeName(parent, type, newTypeName);
-    }
+		String typeName = type.getJavaName();
+		String declaration = typeName + " " + declarator.getName();
+		
+		if(type.isPrimary()) {
+			String throwableName = compilationUnit.createUniqueName();
+			codeGenerator.append("catch(java.lang.Throwable " + throwableName + ") {");
+			codeGenerator.breakLine().incrementIndent().indent();
+			
+			codeGenerator.append(declaration + " = new " + typeName + "(" + throwableName + ");");
+			codeGenerator.breakLine().indent();
+
+			statement.getCode(codeGenerator);
+			
+			codeGenerator.decrementIndent().indent().append('}').breakLine();
+		} else {
+			codeGenerator.append("catch(" + declaration + ")").breakLine().indent();
+			statement.getCode(codeGenerator);
+		}
+	}
+
+	@Override
+	public void replaceTypeName(TextEdit parent, IType type, String newTypeName) {
+		statement.replaceTypeName(parent, type, newTypeName);
+	}
 }

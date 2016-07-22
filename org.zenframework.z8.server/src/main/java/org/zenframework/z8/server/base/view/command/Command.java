@@ -15,114 +15,113 @@ import org.zenframework.z8.server.types.guid;
 import org.zenframework.z8.server.types.string;
 
 public class Command extends Runnable implements ICommand {
-    public static class CLASS<T extends Command> extends Runnable.CLASS<T> {
-        public CLASS() {
-            this(null);
-        }
+	static public class CLASS<T extends Command> extends Runnable.CLASS<T> {
+		public CLASS() {
+			this(null);
+		}
 
-        public CLASS(IObject container) {
-            super(container);
-            setJavaClass(Command.class);
-        }
+		public CLASS(IObject container) {
+			super(container);
+			setJavaClass(Command.class);
+		}
 
-        @Override
-        public Object newObject(IObject container) {
-            return new Command(container);
-        }
-    }
+		@Override
+		public Object newObject(IObject container) {
+			return new Command(container);
+		}
+	}
 
-    public string id = guid.create().string();
-    public string text = new string();
-    public string description = new string();
-    public string icon = new string();
+	public string id = guid.create().string();
+	public string text = new string();
+	public string description = new string();
+	public string icon = new string();
 
-    public bool useTransaction = new bool(true);
-    
-    public RCollection<Parameter.CLASS<? extends Parameter>> parameters = new RCollection<Parameter.CLASS<? extends Parameter>>();
+	public bool useTransaction = new bool(true);
 
-    public Command(IObject container) {
-        super(container);
-    }
+	public RCollection<Parameter.CLASS<? extends Parameter>> parameters = new RCollection<Parameter.CLASS<? extends Parameter>>();
 
-    @Override
-    public String id() {
-        return id.get();
-    }
+	public Command(IObject container) {
+		super(container);
+	}
 
-    @Override
-    public String displayName() {
-        return text.get();
-    }
+	@Override
+	public String id() {
+		return id.get();
+	}
 
-    @Override
-    public boolean equals(Object object) {
-        return object instanceof INamedObject ? id().equals(((INamedObject)object).id()) : false;
-    }
+	@Override
+	public String displayName() {
+		return text.get();
+	}
 
-    @Override
-    public int compareTo(INamedObject object) {
-        return id().hashCode() - object.id().hashCode();
-    }
+	@Override
+	public boolean equals(Object object) {
+		return object instanceof INamedObject ? id().equals(((INamedObject)object).id()) : false;
+	}
 
-    @SuppressWarnings({ "unchecked", "rawtypes" })
-    public Collection<Parameter.CLASS<Parameter>> parameters() {
-        return (Collection)parameters;
-    }
+	@Override
+	public int compareTo(INamedObject object) {
+		return id().hashCode() - object.id().hashCode();
+	}
 
-    @Override
-    public IParameter getParameter(String id) {
-        for(Parameter.CLASS<?> cls : parameters) {
-            Parameter parameter = (Parameter)cls.get();
-            if(parameter.id().equals(id)) {
-                return parameter;
-            }
-        }
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	public Collection<Parameter.CLASS<Parameter>> parameters() {
+		return (Collection)parameters;
+	}
 
-        return null;
-    }
+	@Override
+	public IParameter getParameter(String id) {
+		for(Parameter.CLASS<?> cls : parameters) {
+			Parameter parameter = (Parameter)cls.get();
+			if(parameter.id().equals(id)) {
+				return parameter;
+			}
+		}
 
-    @Override
-    public void write(JsonWriter writer) {
-        writer.writeProperty(Json.id, id);
-        writer.writeProperty(Json.text, text);
-        writer.writeProperty(Json.description, description);
-        writer.writeProperty(Json.icon, icon);
+		return null;
+	}
 
-        writer.startArray(Json.parameters);
+	@Override
+	public void write(JsonWriter writer) {
+		writer.writeProperty(Json.id, id);
+		writer.writeProperty(Json.text, text);
+		writer.writeProperty(Json.description, description);
+		writer.writeProperty(Json.icon, icon);
 
-        for(Parameter.CLASS<?> cls : parameters) {
-            Parameter parameter = (Parameter)cls.get();
-            writer.startObject();
-            parameter.write(writer);
-            writer.finishObject();
-        }
+		writer.startArray(Json.parameters);
 
-        writer.finishArray();
-    }
+		for(Parameter.CLASS<?> cls : parameters) {
+			Parameter parameter = (Parameter)cls.get();
+			writer.startObject();
+			parameter.write(writer);
+			writer.finishObject();
+		}
 
-    static public Command.CLASS<? extends Command> z8_create(string id, string text) {
-        return z8_create(id, text, new string());
-    }
+		writer.finishArray();
+	}
 
-    static public Command.CLASS<? extends Command> z8_create(string id, string text,
-            Parameter.CLASS<? extends Parameter> parameter) {
-        Command.CLASS<? extends Command> command = z8_create(id, text);
-        command.get().parameters.add(parameter);
-        return command;
-    }
+	static public Command.CLASS<? extends Command> z8_create(string id, string text) {
+		return z8_create(id, text, new string());
+	}
 
-    @SuppressWarnings({ "unchecked", "rawtypes" })
-    static public Command.CLASS<? extends Command> z8_create(string id, string text, RCollection parameters) {
-        Command.CLASS<? extends Command> command = z8_create(id, text);
-        command.get().parameters.addAll(parameters);
-        return command;
-    }
+	static public Command.CLASS<? extends Command> z8_create(string id, string text, Parameter.CLASS<? extends Parameter> parameter) {
+		Command.CLASS<? extends Command> command = z8_create(id, text);
+		command.get().parameters.add(parameter);
+		return command;
+	}
 
-    static public Command.CLASS<? extends Command> z8_create(string id, string text, string icon) {
-        Command.CLASS<Command> command = new Command.CLASS<Command>();
-        command.get().id.set(id);
-        command.get().text.set(text);
-        command.get().icon.set(icon);
-        return command;
-    }
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	static public Command.CLASS<? extends Command> z8_create(string id, string text, RCollection parameters) {
+		Command.CLASS<? extends Command> command = z8_create(id, text);
+		command.get().parameters.addAll(parameters);
+		return command;
+	}
+
+	static public Command.CLASS<? extends Command> z8_create(string id, string text, string icon) {
+		Command.CLASS<Command> command = new Command.CLASS<Command>();
+		command.get().id.set(id);
+		command.get().text.set(text);
+		command.get().icon.set(icon);
+		return command;
+	}
 }
