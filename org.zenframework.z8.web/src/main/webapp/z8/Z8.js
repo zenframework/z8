@@ -1,8 +1,7 @@
 Ext.isIE6 = false;
 Ext.BLANK_IMAGE_URL = 'resources/images/default/s.gif';
 
-Z8 =
-{
+Z8 = {
 	viewport: null,
 	
 	componentsList: null,
