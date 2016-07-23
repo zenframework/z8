@@ -32,7 +32,6 @@ public class Resource extends LanguageElement {
     private List<BuildMessage> messages;
 
     static public boolean isBLResource(IResource resource) {
-        // TODO Сделать поддержку папок с исходниками
         return FileExtension.equals(resource.getProjectRelativePath().getFileExtension());
     }
 
