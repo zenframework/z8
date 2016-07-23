@@ -515,4 +515,9 @@ public class DummyResource implements IResource, IContainer {
         throw new UnsupportedOperationException();
     }
 
+//	@Override
+	public void accept(IResourceProxyVisitor arg0, int arg1, int arg2) throws CoreException {
+        throw new UnsupportedOperationException();
+	}
+
 }
