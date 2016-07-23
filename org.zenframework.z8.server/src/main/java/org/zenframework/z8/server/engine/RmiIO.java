@@ -11,8 +11,6 @@ import java.math.BigInteger;
 import java.rmi.dgc.Lease;
 import java.rmi.dgc.VMID;
 import java.rmi.server.ObjID;
-import java.rmi.server.RemoteRef;
-import java.rmi.server.RemoteStub;
 import java.rmi.server.UID;
 import java.util.Collection;
 import java.util.Collections;
@@ -39,10 +37,8 @@ import org.zenframework.z8.server.utils.ErrorUtils;
 import org.zenframework.z8.server.utils.IOUtils;
 import org.zenframework.z8.server.utils.ProxyUtils;
 
-import sun.rmi.server.UnicastRef;
 import sun.rmi.transport.LiveRef;
 
-@SuppressWarnings({ "deprecation", "restriction" })
 public class RmiIO extends ObjectIO {
 	static private Map<String, Constructor<?>> constructors = Collections.synchronizedMap(new HashMap<String, Constructor<?>>());
 	static private Map<String, Class<?>> classes = Collections.synchronizedMap(new HashMap<String, Class<?>>());
@@ -265,9 +261,6 @@ public class RmiIO extends ObjectIO {
 		} else if(object instanceof Proxy) {
 			writeByte(out, RmiIOType.Proxy);
 			writeProxy(out, (Proxy)object);
-		} else if(object instanceof RemoteStub) {
-			writeByte(out, RmiIOType.RemoteStub);
-			writeRemoteStub(out, (RemoteStub)object);
 		} else if(object instanceof Throwable) {
 			writeByte(out, RmiIOType.Exception);
 			writeException(out, (Throwable)object);
@@ -318,14 +311,6 @@ public class RmiIO extends ObjectIO {
 			writeString(out, cls.getCanonicalName());
 
 		LiveRef liveRef = ProxyUtils.getLiveRef(proxy);
-		liveRef.write(out, true);
-	}
-
-	private void writeRemoteStub(ObjectOutputStream out, RemoteStub stub) throws IOException {
-		UnicastRef unicastRef = (UnicastRef)stub.getRef();
-		LiveRef liveRef = unicastRef.getLiveRef();
-
-		writeString(out, stub.getClass().getCanonicalName());
 		liveRef.write(out, true);
 	}
 
@@ -549,8 +534,6 @@ public class RmiIO extends ObjectIO {
 		// RMI internals
 		else if(id == RmiIOType.Proxy)
 			return readProxy(in);
-		else if(id == RmiIOType.RemoteStub)
-			return readRemoteStub(in);
 		else if(id == RmiIOType.Exception)
 			return readException(in);
 		else if(id == RmiIOType.ObjID)
@@ -644,12 +627,6 @@ public class RmiIO extends ObjectIO {
 		
 		LiveRef liveRef = LiveRef.read(in, true);
 		return ProxyUtils.newProxy(liveRef, interfaces);
-	}
-
-	private Object readRemoteStub(ObjectInputStream in) throws IOException, ClassNotFoundException {
-		String cls = readString(in);
-		LiveRef liveRef = LiveRef.read(in, true);
-		return newObject(cls, new Class<?>[] { RemoteRef.class }, new Object[] { new UnicastRef(liveRef) });
 	}
 
 	private ObjID readObjID(ObjectInputStream in) throws IOException, ClassNotFoundException {

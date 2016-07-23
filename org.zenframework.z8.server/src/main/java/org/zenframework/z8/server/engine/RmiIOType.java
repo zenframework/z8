@@ -33,5 +33,4 @@ public class RmiIOType {
 	public static final byte ObjID = 52;
 	public static final byte VMID = 53;
 	public static final byte Lease = 54;
-	public static final byte RemoteStub = 55;
 }

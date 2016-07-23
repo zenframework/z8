@@ -40,7 +40,7 @@ public class ConnectionManager {
 		while(iterator.hasNext()) {
 			Connection connection = iterator.next();
 			if(connection.isUnused()) {
-				connection.safeClose();
+				connection.close();
 				iterator.remove();
 			}
 		}
@@ -83,7 +83,7 @@ public class ConnectionManager {
 		while(iterator.hasNext()) {
 			Connection connection = iterator.next();
 			if(connection.isUnused()) {
-				connection.safeClose();
+				connection.close();
 				iterator.remove();
 			}
 		}

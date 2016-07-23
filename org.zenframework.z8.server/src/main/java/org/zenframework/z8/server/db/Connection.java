@@ -50,18 +50,19 @@ public class Connection {
 		this.connection = connection;
 	}
 
-	public void safeClose() {
+	public void close() {
 		try {
-			if(connection != null) {
+			if(connection != null)
 				connection.close();
-				connection = null;
-			}
 		} catch(SQLException e) {
+		} finally {
+			connection = null;
+			transactionCount = 0;
 		}
 	}
 
 	private void reconnect() {
-		safeClose();
+		close();
 		connection = newConnection(database);
 
 		initClientInfo();
@@ -88,7 +89,7 @@ public class Connection {
 	}
 
 	public void use() {
-		if(isClosed())
+		if(transactionCount != 0 || isClosed())
 			reconnect();
 
 		lastUsed = System.currentTimeMillis();
@@ -140,13 +141,15 @@ public class Connection {
 
 		System.out.println(message + "(error code: " + errorCode + "; sqlState: " + sqlState + ") - reconnecting...");
 
-		/*
-		 * Postgres; Class 08 — Connection Exception SQLState Description 08000
-		 * connection exception 08003 connection does not exist 08006 connection
-		 * failure 08001 sqlclient unable to establish sqlconnection 08004
-		 * sqlserver rejected establishment of sqlconnection 08007 transaction
-		 * resolution unknown 08P01 protocol violation
-		 */
+		
+		// Postgres; Class 08 — Connection Exception SQLState Description
+		// 08000 connection exception 
+		// 08003 connection does not exist
+		// 08006 connection failure
+		// 08001 sqlclient unable to establish sqlconnection
+		// 08004 sqlserver rejected establishment of sqlconnection
+		// 08007 transaction resolution unknown
+		// 08P01 protocol violation
 
 		if(transactionCount != 0)
 			throw exception;
