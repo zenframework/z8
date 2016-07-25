@@ -4,9 +4,9 @@ Bundle-Name: Z8 Development Tools
 Bundle-SymbolicName: org.zenframework.z8.pde; singleton:=true
 Bundle-Version: 1.2.0.qualifier
 Bundle-ClassPath: .,
- target/lib/org.zenframework.z8.compiler.jar,
- target/lib/org.zenframework.z8.server.jar,
- target/lib/tools.jar
+ lib/org.zenframework.z8.compiler.jar,
+ lib/org.zenframework.z8.server.jar,
+ lib/tools.jar
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-Activator: org.zenframework.z8.pde.Plugin
 Bundle-Vendor: ZENFRAMEWORK
@@ -37,27 +37,27 @@ Require-Bundle: org.eclipse.core.runtime,
  org.apache.commons.logging
 Bundle-ActivationPolicy: lazy
 Export-Package: org.zenframework.z8.pde;
-  uses:="org.eclipse.jface.text,
+  uses:="org.eclipse.jface.action,
+   org.zenframework.z8.compiler.core,
+   org.eclipse.swt.graphics,
+   org.zenframework.z8.compiler.workspace,
+   org.eclipse.swt.widgets,
+   org.eclipse.jface.text,
+   org.eclipse.ui.dialogs,
+   org.eclipse.ui.views.properties,
+   org.zenframework.z8.pde.source,
+   org.eclipse.jface.viewers,
+   org.eclipse.ui.plugin,
+   org.osgi.framework,
+   org.eclipse.ui,
    org.eclipse.core.runtime,
    org.eclipse.jface.resource,
-   org.eclipse.ui,
-   org.eclipse.ui.views.properties,
-   org.zenframework.z8.compiler.core,
-   org.eclipse.ui.plugin,
-   org.eclipse.ui.part,
-   org.eclipse.jface.text.rules,
-   org.zenframework.z8.compiler.workspace,
-   org.zenframework.z8.pde.source,
-   org.eclipse.jface.action,
    org.eclipse.jface.preference,
-   org.eclipse.swt.dnd,
    org.eclipse.core.resources,
-   org.eclipse.swt.graphics,
-   org.eclipse.jface.viewers,
-   org.eclipse.ui.dialogs,
-   org.osgi.framework,
-   org.eclipse.swt.widgets",
- org.zenframework.z8.pde.preferences;uses:="org.eclipse.jface.preference,org.eclipse.ui,org.eclipse.swt.widgets",
+   org.eclipse.swt.dnd,
+   org.eclipse.ui.part,
+   org.eclipse.jface.text.rules",
+ org.zenframework.z8.pde.preferences;uses:="org.eclipse.ui,org.eclipse.swt.widgets,org.eclipse.jface.preference",
  org.zenframework.z8.server.base.form,
  org.zenframework.z8.server.base.model.actions,
  org.zenframework.z8.server.base.model.sql,
@@ -66,8 +66,8 @@ Export-Package: org.zenframework.z8.pde;
  org.zenframework.z8.server.config,
  org.zenframework.z8.server.db,
  org.zenframework.z8.server.engine,
+ org.zenframework.z8.server.request,
  org.zenframework.z8.server.resources,
  org.zenframework.z8.server.runtime,
  org.zenframework.z8.server.security,
- org.zenframework.z8.server.types,
- org.zenframework.z8.server.request
+ org.zenframework.z8.server.types

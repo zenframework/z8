@@ -699,7 +699,15 @@ public class Query extends Runnable {
 	}
 
 	public void read() {
-		read((Collection<Field>)null, null, null, null, null);
+		read(-1);
+	}
+
+	public void read(int limit) {
+		read(-1, limit);
+	}
+
+	public void read(int start, int limit) {
+		read((Collection<Field>)null, null, null, null, null, start, limit);
 	}
 
 	public boolean readFirst() {
@@ -708,7 +716,15 @@ public class Query extends Runnable {
 	}
 
 	public void read(SqlToken where) {
-		read(null, where);
+		read(where, -1);
+	}
+
+	public void read(SqlToken where, int limit) {
+		read(where, -1, limit);
+	}
+
+	public void read(SqlToken where, int start, int limit) {
+		read(null, where, start, limit);
 	}
 
 	public boolean readFirst(SqlToken where) {
@@ -717,7 +733,15 @@ public class Query extends Runnable {
 	}
 
 	public void read(Collection<Field> fields) {
-		read(fields, null);
+		read(fields, -1);
+	}
+
+	public void read(Collection<Field> fields, int limit) {
+		read(fields, -1, limit);
+	}
+
+	public void read(Collection<Field> fields, int start, int limit) {
+		read(fields, null, start, limit);
 	}
 
 	public boolean readFirst(Collection<Field> fields) {
@@ -726,7 +750,15 @@ public class Query extends Runnable {
 	}
 
 	public void read(Collection<Field> fields, SqlToken where) {
-		read(fields, null, null, where, null);
+		read(fields, where, -1);
+	}
+
+	public void read(Collection<Field> fields, SqlToken where, int limit) {
+		read(fields, where, -1, limit);
+	}
+
+	public void read(Collection<Field> fields, SqlToken where, int start, int limit) {
+		read(fields, null, null, where, null, start, limit);
 	}
 
 	public boolean readFirst(Collection<Field> fields, SqlToken where) {
@@ -735,7 +767,15 @@ public class Query extends Runnable {
 	}
 
 	public void read(Collection<Field> fields, Collection<Field> sortFields, SqlToken where) {
-		read(fields, sortFields, null, where, null);
+		read(fields, sortFields, where, -1);
+	}
+
+	public void read(Collection<Field> fields, Collection<Field> sortFields, SqlToken where, int limit) {
+		read(fields, sortFields, where, -1, limit);
+	}
+
+	public void read(Collection<Field> fields, Collection<Field> sortFields, SqlToken where, int start, int limit) {
+		read(fields, sortFields, null, where, null, start, limit);
 	}
 
 	public boolean readFirst(Collection<Field> fields, Collection<Field> sortFields, SqlToken where) {
@@ -744,6 +784,14 @@ public class Query extends Runnable {
 	}
 
 	public void sort(Collection<Field> sortFields, SqlToken where) {
+		read(sortFields, where, -1);
+	}
+
+	public void sort(Collection<Field> sortFields, SqlToken where, int limit) {
+		read(sortFields, where, -1, limit);
+	}
+
+	public void sort(Collection<Field> sortFields, SqlToken where, int start, int limit) {
 		read(null, sortFields, where);
 	}
 
@@ -752,20 +800,42 @@ public class Query extends Runnable {
 	}
 
 	public void group(Collection<Field> groupFields, SqlToken where) {
-		group(null, groupFields, where);
+		group(groupFields, where, -1);
+	}
+
+	public void group(Collection<Field> groupFields, SqlToken where, int limit) {
+		group(null, groupFields, where, -1, limit);
+	}
+
+	public void group(Collection<Field> groupFields, SqlToken where, int start, int limit) {
+		group(null, groupFields, where, start, limit);
 	}
 
 	public void group(Collection<Field> fields, Collection<Field> groupFields) {
-		group(fields, groupFields, null);
+		group(fields, groupFields, -1);
+	}
+
+	public void group(Collection<Field> fields, Collection<Field> groupFields, int limit) {
+		group(fields, groupFields, -1, limit);
+	}
+
+	public void group(Collection<Field> fields, Collection<Field> groupFields, int start, int limit) {
+		group(fields, groupFields, null, start, limit);
 	}
 
 	public void group(Collection<Field> fields, Collection<Field> groupFields, SqlToken where) {
-		read(fields, null, groupFields, where, null);
+		read(fields, groupFields, where, -1);
+	}
+
+	public void group(Collection<Field> fields, Collection<Field> groupFields, SqlToken where, int limit) {
+		read(fields, groupFields, where, -1, limit);
+	}
+
+	public void group(Collection<Field> fields, Collection<Field> groupFields, SqlToken where, int start, int limit) {
+		read(fields, null, groupFields, where, null, start, limit);
 	}
 
 	public boolean readRecord(guid id, Collection<Field> fields) {
-		assert (id != null);
-
 		ReadAction action = new ReadAction(this, fields, id);
 		action.addFilter(where);
 
@@ -782,7 +852,10 @@ public class Query extends Runnable {
 	}
 
 	protected void read(Collection<Field> fields, Collection<Field> sortFields, Collection<Field> groupFields, SqlToken where, SqlToken having) {
+		read(fields, sortFields, groupFields, where, having, -1, -1);
+	}
 
+	protected void read(Collection<Field> fields, Collection<Field> sortFields, Collection<Field> groupFields, SqlToken where, SqlToken having, int start, int limit) {
 		ActionParameters parameters = new ActionParameters();
 		parameters.query = this;
 		parameters.fields = fields;
@@ -792,6 +865,9 @@ public class Query extends Runnable {
 		ReadAction action = new ReadAction(parameters);
 		action.addFilter(where);
 		action.addGroupFilter(having);
+
+		action.setLimit(limit);
+		action.setStart(start);
 
 		if(cursor != null)
 			cursor.close();

@@ -58,6 +58,11 @@ public abstract class Action extends RequestTarget {
         return actionParameters.requestParameter(key);
     }
 
+    public int getRequestParameter(string key, int defaultValue) {
+        String value = getRequestParameter(key);
+        return value != null && !value.isEmpty() ? Integer.parseInt(value) : defaultValue;
+    }
+
     public guid getParentIdParameter() {
         String parentId = getRequestParameter(Json.parentId);
         return parentId == null ? null : parentId.isEmpty() ? guid.NULL : new guid(parentId);
@@ -97,16 +102,6 @@ public abstract class Action extends RequestTarget {
 
     public String getTextParameter() {
         return getRequestParameter(Json.text);
-    }
-
-    public int getStartParameter() {
-        String start = getRequestParameter(Json.start);
-        return start != null ? Integer.parseInt(start) : -1;
-    }
-
-    public int getLimitParameter() {
-        String limit = getRequestParameter(Json.limit);
-        return limit != null ? Integer.parseInt(limit) : -1;
     }
 
     public String getFieldIdParameter() {

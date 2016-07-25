@@ -153,30 +153,23 @@ public class MessageQueue extends Table {
 
 		Field address = this.address.get();
 		Field processing = this.processing.get();
+		Field data = this.data.get();
+		Field classId = this.classId.get();
 
-		Collection<Field> fields = Arrays.<Field> asList(recordId.get());
+		Collection<Field> fields = Arrays.<Field> asList(data, classId);
 		Collection<Field> orderBy = Arrays.<Field> asList(ordinal.get());
 
 		SqlToken where = new And(new IsNot(processing), new Equ(address, domain));
 
-		read(fields, orderBy, where);
+		read(fields, orderBy, where, 100);
 
-		while(next())
-			result.add(getMessage(recordId()));
+		while(next()) {
+			Message message = (Message)Loader.getInstance(classId.string().get());
+			message.fromBinary(data.binary());
+			message.setId(recordId());
+			result.add(message);
+		}
 
-		return result;
-	}
-
-	public Message getMessage(guid id) {
-		if(!readRecord(id, getDataFields()))
-			return null;
-			
-		String classId = this.classId.get().get().string().get();
-		
-		Message result = (Message)Loader.getInstance(classId);
-		result.fromBinary(data.get().binary());
-		result.setId(recordId());
-		
 		return result;
 	}
 	

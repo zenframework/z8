@@ -72,6 +72,9 @@ public class ReadAction extends Action {
 	guid modelRecordId = null;
 	guid parentId = null;
 
+	private int start = -1;
+	private int limit = -1;
+	
 	private int totalCount = 0;
 	
 	public ReadAction(Query query) {
@@ -102,7 +105,23 @@ public class ReadAction extends Action {
 		initialize();
 	}
 
-	protected void initialize() {
+    public int getStart() {
+        return getRequestParameter(Json.start, start);
+    }
+
+    public void setStart(int start) {
+        this.start = start;
+    }
+
+    public int getLimit() {
+        return getRequestParameter(Json.limit, limit);
+    }
+	
+    public void setLimit(int limit) {
+        this.limit = limit;
+    }
+
+    protected void initialize() {
 		ActionParameters parameters = actionParameters();
 
 		initFields();
@@ -1038,7 +1057,7 @@ public class ReadAction extends Action {
 
 		try {
 			if(totalsBy == null) {
-			    if(getStartParameter() != -1 || getLimitParameter() != -1)
+			    if(getStart() != -1 || getLimit() != -1)
 			        totalCount = writeCount(writer);
 
 				Groupping groups = writeFrame(writer);

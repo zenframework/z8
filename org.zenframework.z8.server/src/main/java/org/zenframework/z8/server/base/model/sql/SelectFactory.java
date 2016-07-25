@@ -57,12 +57,12 @@ public class SelectFactory {
 
     private int getStart() {
         int total = action.getTotalCount();
-        int start = Math.max(action.getStartParameter() + 1, 1);
+        int start = Math.max(action.getStart() + 1, 1);
         return start > total ? 1 : start;
     }
 
     private int getLimit() {
-        return action.getLimitParameter();
+        return action.getLimit();
     }
 
     private Collection<Field> getSortFields() {
