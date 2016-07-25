@@ -2,6 +2,8 @@ package org.zenframework.z8.server.base.table.system.view;
 
 import org.zenframework.z8.server.base.table.system.Files;
 import org.zenframework.z8.server.runtime.IObject;
+import org.zenframework.z8.server.types.bool;
+import org.zenframework.z8.server.types.integer;
 
 public class FilesView extends Files {
 	public static class CLASS<T extends FilesView> extends Files.CLASS<T> {
@@ -32,9 +34,13 @@ public class FilesView extends Files {
 	public void constructor2() {
 		super.constructor2();
 
+		name.get().width = new integer(30);
+		name.get().stretch = new bool(false);
+
+		path.get().stretch = new bool(true);
+		
 		registerFormField(createdAt);
 		registerFormField(name);
-		registerFormField(description);
 		registerFormField(path);
 	}
 }
