@@ -105,18 +105,19 @@ public class Dashboard extends RequestTarget {
 		}
 	}
 
-	private CLASS<?>[] loadComponents(Collection<Component> components) {
-		List<CLASS<?>> list = new ArrayList<CLASS<?>>();
+	@SuppressWarnings("unchecked")
+	private Collection<Desktop.CLASS<Desktop>> loadComponents(Collection<Component> components) {
+		List<Desktop.CLASS<Desktop>> result = new ArrayList<Desktop.CLASS<Desktop>>();
 
 		for(Component component : components) {
 			try {
-				list.add(Loader.loadClass(component.className()));
+				result.add((Desktop.CLASS<Desktop>)Loader.loadClass(component.className()));
 			} catch(RuntimeException e) {
 				Trace.logError("Error loading entry point '" + component.className() + "'", e);
 			}
 		}
-
-		return list.toArray(new CLASS[0]);
+		
+		return result;
 	}
 
 	protected void writeLoginInfo(JsonWriter writer) {
@@ -133,11 +134,19 @@ public class Dashboard extends RequestTarget {
 		writer.writeProperty(Json.phone, user.phone());
 		writer.writeProperty(Json.settings, user.settings());
 
+		Collection<Desktop.CLASS<Desktop>> desktops = loadComponents(user.components());
 		writer.startArray(Json.components);
-		for(CLASS<?> cls : loadComponents(user.components()))
+		for(CLASS<?> cls : desktops)
 			writeData(writer, cls);
 		writer.finishArray();
 
+		if(getParameter(Json.experimental) != null) {
+			writer.startArray(Json.data);
+			for(Desktop.CLASS<Desktop> cls : desktops)
+				writeDesktopData(writer, cls.newInstance(), cls.displayName());
+			writer.finishArray();
+		}
+		
 		writer.startObject(Json.parameters);
 		Map<string, primary> parameters = user.parameters();
 		for(string key : parameters.keySet())

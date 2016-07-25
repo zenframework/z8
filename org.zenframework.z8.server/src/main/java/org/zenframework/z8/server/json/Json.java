@@ -230,4 +230,5 @@ public interface Json {
     string create = new string("create");
     string destroy = new string("destroy");
 
+    string experimental = new string("experimental");
 }
