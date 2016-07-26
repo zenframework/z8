@@ -29,8 +29,8 @@ public class MessageQueue extends Table {
 	static public String TableName = "SystemMessageQueue";
 	
 	static public class names {
-		static public String Address = "address";
-		static public String Sender = "sender";
+		static public String Address = "Address";
+		static public String Sender = "Sender";
 		static public String Ordinal = "Ordinal";
 		static public String ClassId = "ClassId";
 		static public String Data = "Data";
