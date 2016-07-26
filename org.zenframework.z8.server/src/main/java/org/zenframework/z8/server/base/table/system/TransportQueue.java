@@ -98,13 +98,13 @@ public class TransportQueue extends Table {
 	public void constructor2() {
 		super.constructor2();
 
+		sender.setName(names.Sender);
 		sender.setIndex("sender");
-		sender.setIndex(names.Sender);
 		sender.setDisplayName(displayNames.Sender);
 		sender.get().length = new integer(50);
 
-		address.setIndex("address");
 		address.setName(names.Address);
+		address.setIndex("address");
 		address.setDisplayName(displayNames.Address);
 		address.get().length = new integer(50);
 
@@ -200,15 +200,19 @@ public class TransportQueue extends Table {
 	}
 
 	public Message getMessage(guid id) {
-		if(!readRecord(id, getDataFields()))
+		Field data = this.data.get();
+		Field classId = this.classId.get();
+		Field bytesTransferred = this.bytesTransferred.get();
+
+		Collection<Field> fields = Arrays.<Field> asList(data, classId, bytesTransferred);
+
+		if(!readRecord(id, fields))
 			return null;
-		
-		String classId = this.classId.get().get().string().get();
-		
-		Message result = (Message)Loader.getInstance(classId);
+				
+		Message result = (Message)Loader.getInstance(classId.string().get());
 		result.fromBinary(data.get().binary());
 		result.setId(recordId());
-		result.setBytesTransferred(bytesTransferred.get().integer().get());
+		result.setBytesTransferred(bytesTransferred.integer().get());
 		return result;
 	}
 }

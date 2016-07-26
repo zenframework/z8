@@ -160,6 +160,7 @@ public class ApplicationServer extends RmiServer implements IApplicationServer {
 	@Override
 	protected void timeoutCheck() {
 		register();
+		ConnectionManager.release();
 	}
 	
 	private void register() {

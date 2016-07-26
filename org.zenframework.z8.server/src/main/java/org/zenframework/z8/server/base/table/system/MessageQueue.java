@@ -91,13 +91,13 @@ public class MessageQueue extends Table {
 	public void constructor2() {
 		super.constructor2();
 
+		sender.setName(names.Sender);
 		sender.setIndex("sender");
-		sender.setIndex(names.Sender);
 		sender.setDisplayName(displayNames.Sender);
 		sender.get().length = new integer(50);
 
-		address.setIndex("address");
 		address.setName(names.Address);
+		address.setIndex("address");
 		address.setDisplayName(displayNames.Address);
 		address.get().length = new integer(50);
 

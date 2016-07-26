@@ -36,15 +36,6 @@ public class ConnectionManager {
 				return connection;
 		}
 
-		Iterator<Connection> iterator = connections.iterator();
-		while(iterator.hasNext()) {
-			Connection connection = iterator.next();
-			if(connection.isUnused()) {
-				connection.close();
-				iterator.remove();
-			}
-		}
-
 		for(Connection connection : connections) {
 			if(!connection.isInUse()) {
 				connection.use();
@@ -72,16 +63,14 @@ public class ConnectionManager {
 		if(connections == null)
 			return;
 
-		for(Connection connection : connections) {
-			if(connection.isCurrent()) {
-				connection.release();
-				break;
-			}
-		}
-
 		Iterator<Connection> iterator = connections.iterator();
+
 		while(iterator.hasNext()) {
 			Connection connection = iterator.next();
+			
+			if(connection.isCurrent())
+				connection.release();
+			
 			if(connection.isUnused()) {
 				connection.close();
 				iterator.remove();
