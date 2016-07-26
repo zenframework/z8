@@ -75,6 +75,7 @@ import org.zenframework.z8.pde.refactoring.reorg.IReorgPolicy.ICopyPolicy;
 import org.zenframework.z8.pde.refactoring.reorg.IReorgPolicy.IMovePolicy;
 import org.zenframework.z8.pde.refactoring.search.SearchEngine;
 
+@SuppressWarnings("deprecation")
 public final class ReorgPolicyFactory {
     public static final String COPY = "org.zenframework.z8.reorg.copy";
     public static final String DELETE = "org.zenframework.z8.reorg.delete";

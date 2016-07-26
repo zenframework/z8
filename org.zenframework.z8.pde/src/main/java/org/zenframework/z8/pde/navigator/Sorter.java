@@ -10,6 +10,7 @@ import org.zenframework.z8.compiler.parser.type.MemberNestedType;
 import org.zenframework.z8.compiler.workspace.CompilationUnit;
 import org.zenframework.z8.compiler.workspace.Folder;
 
+@SuppressWarnings("deprecation")
 public class Sorter extends ViewerSorter {
 
     @Override

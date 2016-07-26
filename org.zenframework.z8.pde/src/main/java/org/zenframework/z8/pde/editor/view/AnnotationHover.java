@@ -12,7 +12,6 @@ import org.eclipse.jface.text.source.ISourceViewer;
 
 public class AnnotationHover implements IAnnotationHover {
     @Override
-    @SuppressWarnings("unchecked")
     public String getHoverInfo(ISourceViewer sourceViewer, int line) {
         IDocument document = sourceViewer.getDocument();
         IAnnotationModel model = sourceViewer.getAnnotationModel();

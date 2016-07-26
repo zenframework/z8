@@ -14,6 +14,7 @@ import org.eclipse.ltk.core.refactoring.RefactoringDescriptor;
 import org.zenframework.z8.compiler.workspace.Workspace;
 import org.zenframework.z8.pde.refactoring.messages.RefactoringMessages;
 
+@SuppressWarnings("deprecation")
 public abstract class AbstractLanguageElementRenameChange extends Z8Change {
     private final String m_newName;
     private final String m_oldName;

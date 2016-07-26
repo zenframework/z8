@@ -31,7 +31,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.zenframework.z8.pde.refactoring.messages.Messages;
 import org.zenframework.z8.pde.refactoring.messages.RefactoringMessages;
 
-@SuppressWarnings("restriction")
+@SuppressWarnings({ "restriction", "deprecation" })
 public class RefactoringExecutionHelper {
     private final Refactoring m_refactoring;
     private final Shell m_parent;
@@ -44,7 +44,6 @@ public class RefactoringExecutionHelper {
         public PerformChangeOperation m_performChangeOperation;
 
         @Override
-        @SuppressWarnings("deprecation")
         public void run(IProgressMonitor pm) throws CoreException {
             try {
                 pm.beginTask("", 11);

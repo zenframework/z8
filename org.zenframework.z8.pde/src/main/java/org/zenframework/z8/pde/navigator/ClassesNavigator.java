@@ -69,7 +69,8 @@ public class ClassesNavigator extends ViewPart implements ResourceListener {
     private PropertySheetPage m_propertyPage;
     private MyPropertySheetEnrty m_propertySheetEntry;
 
-    @Override
+    @SuppressWarnings("deprecation")
+	@Override
     public void createPartControl(Composite parent) {
         m_viewer = createViewer(parent);
         m_viewer.setInput(Workspace.getInstance());
@@ -375,7 +376,7 @@ public class ClassesNavigator extends ViewPart implements ResourceListener {
     }
 
     @Override
-    @SuppressWarnings("rawtypes")
+    @SuppressWarnings({ "rawtypes", "unchecked" })
     public Object getAdapter(Class type) {
         if(type == IPropertySheetPage.class) {
             return m_propertyPage;

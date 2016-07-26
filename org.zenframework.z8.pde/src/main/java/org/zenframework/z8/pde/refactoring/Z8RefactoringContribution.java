@@ -17,7 +17,7 @@ public abstract class Z8RefactoringContribution extends RefactoringContribution 
     public abstract Refactoring createRefactoring(RefactoringDescriptor descriptor) throws CoreException;
 
     @Override
-    @SuppressWarnings("rawtypes")
+    @SuppressWarnings({ "rawtypes", "unchecked" })
     public Map retrieveArgumentMap(RefactoringDescriptor descriptor) {
         if(descriptor instanceof Z8RefactoringDescriptor) {
             return ((Z8RefactoringDescriptor)descriptor).getArguments();

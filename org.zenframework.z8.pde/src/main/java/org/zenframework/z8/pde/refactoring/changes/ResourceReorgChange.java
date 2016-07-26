@@ -19,6 +19,7 @@ import org.eclipse.ltk.core.refactoring.participants.ReorgExecutionLog;
 
 import org.zenframework.z8.pde.refactoring.reorg.INewNameQuery;
 
+@SuppressWarnings("deprecation")
 abstract class ResourceReorgChange extends Z8Change {
     private final IPath fResourcePath;
     private final boolean fIsFile;

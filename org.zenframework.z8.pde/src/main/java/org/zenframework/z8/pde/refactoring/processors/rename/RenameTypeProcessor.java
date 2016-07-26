@@ -55,6 +55,7 @@ import org.zenframework.z8.pde.refactoring.processors.QualifiedNameSearchResult;
 import org.zenframework.z8.pde.refactoring.processors.Z8Processors;
 import org.zenframework.z8.pde.refactoring.search.SearchEngine;
 
+@SuppressWarnings("deprecation")
 public class RenameTypeProcessor extends Z8RenameProcessor implements ITextUpdating, IReferenceUpdating, IResourceMapper,
         ILanguageElementMapper {
     public static final String ID_RENAME_TYPE = "org.zenframework.z8.refactoring.rename.type";

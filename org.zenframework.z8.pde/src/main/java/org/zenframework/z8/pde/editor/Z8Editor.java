@@ -219,7 +219,7 @@ public class Z8Editor extends TextEditor implements ResourceListener {
     }
 
     @Override
-    @SuppressWarnings("rawtypes")
+    @SuppressWarnings({ "rawtypes", "unchecked" })
     public Object getAdapter(Class required) {
         if(IContentOutlinePage.class.equals(required)) {
             if(m_outlinePage == null) {

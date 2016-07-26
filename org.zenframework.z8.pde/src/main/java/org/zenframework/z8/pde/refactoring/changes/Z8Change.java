@@ -21,6 +21,7 @@ import org.zenframework.z8.pde.refactoring.Resources;
 import org.zenframework.z8.pde.refactoring.messages.Messages;
 import org.zenframework.z8.pde.refactoring.messages.RefactoringMessages;
 
+@SuppressWarnings("deprecation")
 public abstract class Z8Change extends Change {
     private long m_modificationStamp;
     private boolean m_readOnly;
@@ -273,7 +274,6 @@ public abstract class Z8Change extends Change {
         }
     }
 
-    @SuppressWarnings("deprecation")
     private static ITextFileBuffer getBuffer(IFile file) {
         ITextFileBufferManager manager = FileBuffers.getTextFileBufferManager();
         return manager.getTextFileBuffer(file.getFullPath());

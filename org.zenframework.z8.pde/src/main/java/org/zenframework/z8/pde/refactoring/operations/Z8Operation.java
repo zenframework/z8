@@ -33,7 +33,7 @@ import org.zenframework.z8.compiler.workspace.Folder;
 import org.zenframework.z8.pde.Plugin;
 import org.zenframework.z8.pde.refactoring.messages.RefactoringMessages;
 
-@SuppressWarnings("restriction")
+@SuppressWarnings({ "restriction", "deprecation" })
 public abstract class Z8Operation implements IWorkspaceRunnable, IProgressMonitor {
     protected interface IPostAction {
         String getID();
@@ -257,7 +257,6 @@ public abstract class Z8Operation implements IWorkspaceRunnable, IProgressMonito
         return stack;
     }
 
-    @SuppressWarnings("deprecation")
     protected ITextFileBuffer getBuffer(CompilationUnit compilationUnit, IProgressMonitor monitor) throws CoreException {
         ITextFileBufferManager manager = (TextFileBufferManager)FileBuffersPlugin.getDefault().getFileBufferManager();
 

@@ -15,7 +15,6 @@ import org.eclipse.jface.text.source.ISourceViewer;
 
 public class TextHover implements ITextHover {
     @Override
-    @SuppressWarnings("unchecked")
     public String getHoverInfo(ITextViewer textViewer, IRegion hoverRegion) {
         IAnnotationModel model = ((ISourceViewer)textViewer).getAnnotationModel();
 

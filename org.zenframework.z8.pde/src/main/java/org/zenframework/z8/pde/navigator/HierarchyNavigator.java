@@ -67,7 +67,8 @@ public class HierarchyNavigator extends ViewPart implements ResourceListener {
 
     private boolean m_showSuper = Plugin.getDefault().getPreferenceStore().getBoolean(PREFERENCE_STRING_SUPER);
 
-    @Override
+    @SuppressWarnings("deprecation")
+	@Override
     public void createPartControl(Composite parent) {
         //		ProjectBuilder.addPropertyChangeListener(this);
         m_viewer = createViewer(parent);
@@ -258,7 +259,7 @@ public class HierarchyNavigator extends ViewPart implements ResourceListener {
     }
 
     @Override
-    @SuppressWarnings("rawtypes")
+    @SuppressWarnings({ "rawtypes", "unchecked" })
     public Object getAdapter(Class type) {
         if(type == IPropertySheetPage.class) {
             return m_propertyPage;

@@ -45,7 +45,6 @@ public class RulerClickAction extends SelectMarkerRulerAction {
         super.update();
     }
 
-    @SuppressWarnings("unchecked")
     private void findAnnotation() {
         fAnnotation = null;
 

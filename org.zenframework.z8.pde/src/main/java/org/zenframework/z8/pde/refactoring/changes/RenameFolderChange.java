@@ -23,6 +23,7 @@ import org.zenframework.z8.pde.refactoring.messages.RefactoringMessages;
 import org.zenframework.z8.pde.refactoring.operations.MultiOperation;
 import org.zenframework.z8.pde.refactoring.operations.RenameResourceElementsOperation;
 
+@SuppressWarnings("deprecation")
 public final class RenameFolderChange extends AbstractLanguageElementRenameChange {
     private static IPath createPath(String folderName) {
         return new Path(folderName.replace('.', IPath.SEPARATOR));

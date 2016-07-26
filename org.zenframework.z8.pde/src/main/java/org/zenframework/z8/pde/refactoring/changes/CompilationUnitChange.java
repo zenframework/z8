@@ -13,6 +13,7 @@ import org.eclipse.text.edits.UndoEdit;
 import org.zenframework.z8.compiler.workspace.CompilationUnit;
 import org.zenframework.z8.pde.Plugin;
 
+@SuppressWarnings("deprecation")
 public class CompilationUnitChange extends TextFileChange {
     private CompilationUnit m_compilationUnit;
 
@@ -54,7 +55,7 @@ public class CompilationUnitChange extends TextFileChange {
     }
 
     @Override
-    @SuppressWarnings("rawtypes")
+    @SuppressWarnings({ "rawtypes", "unchecked" })
     public Object getAdapter(Class adapter) {
         if(CompilationUnit.class.equals(adapter)) {
             return m_compilationUnit;

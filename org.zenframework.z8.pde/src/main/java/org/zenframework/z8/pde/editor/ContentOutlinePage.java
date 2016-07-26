@@ -44,6 +44,7 @@ import org.zenframework.z8.pde.source.InitHelper;
 import org.zenframework.z8.pde.source.MultipleTransactions;
 import org.zenframework.z8.pde.source.Transaction;
 
+@SuppressWarnings("deprecation")
 public class ContentOutlinePage extends org.eclipse.ui.views.contentoutline.ContentOutlinePage {
 
     Menu fMenu;

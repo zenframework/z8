@@ -53,6 +53,7 @@ import org.zenframework.z8.pde.refactoring.processors.rename.Z8RenameProcessor;
 import org.zenframework.z8.pde.refactoring.processors.rename.RenameResourceProcessor;
 import org.zenframework.z8.pde.refactoring.search.SearchEngine;
 
+@SuppressWarnings("deprecation")
 public class RenameFolderProcessor extends Z8RenameProcessor implements IReferenceUpdating, IResourceMapper {
     private static final String ATTRIBUTE_REFERENCES = "references";
 

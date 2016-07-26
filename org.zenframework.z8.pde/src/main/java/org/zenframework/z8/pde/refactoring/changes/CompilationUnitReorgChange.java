@@ -11,6 +11,7 @@ import org.zenframework.z8.compiler.workspace.CompilationUnit;
 import org.zenframework.z8.compiler.workspace.Folder;
 import org.zenframework.z8.pde.refactoring.reorg.INewNameQuery;
 
+@SuppressWarnings("deprecation")
 abstract class CompilationUnitReorgChange extends Z8Change {
     private CompilationUnit m_compilationUnit;
     private Folder m_oldFolder;
