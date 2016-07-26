@@ -9,27 +9,17 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.codec.binary.Base64;
-import org.zenframework.z8.server.base.table.system.Properties;
 import org.zenframework.z8.server.config.ServerConfig;
 import org.zenframework.z8.server.engine.ISession;
 import org.zenframework.z8.web.servlet.Servlet;
 
-public class TrustedAuthAdapter extends Adapter implements Properties.Listener {
+public class TrustedAuthAdapter extends Adapter {
 
 	private static final String AdapterPath = "/trusted.json";
 	private static final String PARAM_LOGIN = "login";
 
 	public TrustedAuthAdapter(Servlet servlet) {
 		super(servlet);
-	}
-
-	private volatile Boolean trustLocalOnly = null;
-
-	@Override
-	public void onPropertyChange(String key, String value) {
-		if (ServletRuntime.TrustLocalOnlyProperty.equalsKey(key)) {
-			trustLocalOnly = Boolean.valueOf(value);
-		}
 	}
 
 	@Override
@@ -59,9 +49,7 @@ public class TrustedAuthAdapter extends Adapter implements Properties.Listener {
 	}
 
 	private boolean isTrustLocalOnly() {
-		if (trustLocalOnly == null)
-			trustLocalOnly = Boolean.valueOf(Properties.getProperty(ServletRuntime.TrustLocalOnlyProperty));
-		return trustLocalOnly;
+		return ServerConfig.get("z8.servlet.trustLocalOnly", false);
 	}
 
 	private boolean isRequestTrusted(HttpServletRequest request) {
