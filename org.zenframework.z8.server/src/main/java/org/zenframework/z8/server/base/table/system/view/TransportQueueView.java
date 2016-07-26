@@ -2,6 +2,7 @@ package org.zenframework.z8.server.base.table.system.view;
 
 import org.zenframework.z8.server.base.table.system.TransportQueue;
 import org.zenframework.z8.server.runtime.IObject;
+import org.zenframework.z8.server.types.bool;
 
 public class TransportQueueView extends TransportQueue {
 	public static class CLASS<T extends TransportQueueView> extends TransportQueue.CLASS<T> {
@@ -28,6 +29,8 @@ public class TransportQueueView extends TransportQueue {
 	public void constructor2() {
 		super.constructor2();
 
+		readOnly = new bool(true);
+		
 		sortFields.add(ordinal);
 		
 		registerFormField(ordinal);
