@@ -18,10 +18,16 @@ import org.zenframework.z8.server.db.ConnectionManager;
 import org.zenframework.z8.server.engine.ApplicationServer;
 import org.zenframework.z8.server.engine.RmiIO;
 import org.zenframework.z8.server.engine.RmiSerializable;
+import org.zenframework.z8.server.engine.Session;
+import org.zenframework.z8.server.request.IRequest;
+import org.zenframework.z8.server.request.Request;
 import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.runtime.OBJECT;
 import org.zenframework.z8.server.runtime.RCollection;
 import org.zenframework.z8.server.runtime.RLinkedHashMap;
+import org.zenframework.z8.server.security.Domain;
+import org.zenframework.z8.server.security.IUser;
+import org.zenframework.z8.server.security.User;
 import org.zenframework.z8.server.types.binary;
 import org.zenframework.z8.server.types.file;
 import org.zenframework.z8.server.types.guid;
@@ -241,17 +247,45 @@ public class Message extends OBJECT implements RmiSerializable, Serializable {
 		afterExport();
 	}
 
-	public void importData() {
+	private void callImport(boolean local) {
+		if(local) {
+			beforeExport();
+			afterExport();
+		}
+		
 		beforeImport();
 
-		try {
-			ApplicationServer.disableEvents();
-			source.importData();
-		} finally {
-			ApplicationServer.enableEvents();
+		if(!local) {
+			try {
+				ApplicationServer.disableEvents();
+				source.importData();
+			} finally {
+				ApplicationServer.enableEvents();
+			}
 		}
-
+		
 		afterImport();
+	}
+
+	public void importData() {
+		Domain domain = Domains.newInstance().getDomain(address);
+		IUser user = domain != null ? domain.getSystemUser() : User.system();
+
+		IRequest currentRequest = ApplicationServer.getRequest();
+		ApplicationServer.setRequest(new Request(new Session("", user)));
+
+		Connection connection = ConnectionManager.get();
+
+		try {
+			connection.beginTransaction();
+			callImport(domain.isOwner());
+			connection.commit();
+		} catch(Throwable e) {
+			connection.rollback();
+			throw new RuntimeException(e);
+		} finally {
+			ApplicationServer.setRequest(currentRequest);
+		}
 	}
 	
 	public string z8_getAddress() {
@@ -351,30 +385,11 @@ public class Message extends OBJECT implements RmiSerializable, Serializable {
 			throw new RuntimeException("Sender is not set");
 		
 		if(Domains.newInstance().isOwner(address))
-			callEvents();
+			importData();
 		else
 			MessageQueue.newInstance().add(this);
 	}
 
-	private void callEvents() {
-		Connection connection = ConnectionManager.get();
-		
-		connection.beginTransaction();
-		
-		try {
-			beforeExport();
-			afterExport();
-	
-			beforeImport();
-			afterImport();
-			
-			connection.commit();
-		} catch(Throwable e) {
-			connection.rollback();
-			throw new RuntimeException(e);
-		}
-	}
-	
 	public void z8_beforeImport() {
 	}
 

@@ -63,26 +63,7 @@ public class Import {
 	}
 
 	static public boolean importMessage(Message message) {
-		Domain domain = Domains.newInstance().getDomain(message.getAddress());
-		IUser user = domain != null ? domain.getSystemUser() : User.system();
-
-		IRequest request = new Request(new Session("", user));
-
-		ApplicationServer.setRequest(request);
-
-		Connection connection = ConnectionManager.get();
-		connection.beginTransaction();
-
-		try {
-			message.importData();
-			connection.commit();
-			return true;
-		} catch(Throwable e) {
-			connection.rollback();
-			throw new RuntimeException(e);
-		} finally {
-			ConnectionManager.release();
-			ApplicationServer.setRequest(null);
-		}
+		message.importData();
+		return true;
 	}
 }

@@ -118,14 +118,15 @@ public class Domains extends Table {
 
 	public Domain getDomain(String name) {
 		Field id = this.id.get();
-		Field user = userLink.get();
+		Field user = this.userLink.get();
+		Field owner = this.owner.get();
 		
 		SqlToken where = new EqualsIgnoreCase(id, name);
 		
-		if (!readFirst(Arrays.<Field> asList(id, user), where))
+		if (!readFirst(Arrays.<Field> asList(id, user, owner), where))
 			return Domain.system();
 		
-		return new Domain(id.string(), user.guid());
+		return new Domain(id.string(), user.guid(), owner.bool());
 	}
 
 	public boolean isOwner(String name) {
@@ -144,14 +145,14 @@ public class Domains extends Table {
 		Field user = userLink.get();
 		Field owner = this.owner.get();
 		
-		read(Arrays.<Field> asList(id, user), new Is(owner));
+		read(Arrays.<Field> asList(id, user, owner), new Is(owner));
 		
 		Collection<Domain> domains = new ArrayList<Domain>();
 		
 		domains.add(Domain.system());
 
 		while (next()) {
-			Domain domain = new Domain(id.string(), user.guid());
+			Domain domain = new Domain(id.string(), user.guid(), owner.bool());
 			domains.add(domain);
 		}
 		
