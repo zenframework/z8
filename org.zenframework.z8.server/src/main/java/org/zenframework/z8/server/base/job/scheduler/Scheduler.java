@@ -9,6 +9,7 @@ import org.zenframework.z8.server.base.table.system.SchedulerJobs;
 import org.zenframework.z8.server.base.table.value.BoolField;
 import org.zenframework.z8.server.base.table.value.DatetimeField;
 import org.zenframework.z8.server.base.table.value.Field;
+import org.zenframework.z8.server.base.table.value.GuidField;
 import org.zenframework.z8.server.base.table.value.IntegerField;
 import org.zenframework.z8.server.base.table.value.StringField;
 import org.zenframework.z8.server.config.ServerConfig;
@@ -107,6 +108,7 @@ public class Scheduler implements Runnable {
 
 		SchedulerJobs jobsTable = new SchedulerJobs.CLASS<SchedulerJobs>(null).get();
 
+		GuidField user = jobsTable.user.get();
 		DatetimeField from = jobsTable.from.get();
 		DatetimeField till = jobsTable.till.get();
 		IntegerField repeat = jobsTable.repeat.get();
@@ -114,9 +116,8 @@ public class Scheduler implements Runnable {
 		BoolField active = jobsTable.active.get();
 		StringField className = jobsTable.jobs.get().id.get();
 		StringField name = jobsTable.jobs.get().name.get();
-		StringField login = jobsTable.users.get().name.get();
 
-		Collection<Field> fields = Arrays.asList(from, till, repeat, lastStarted, active, className, name, login);
+		Collection<Field> fields = Arrays.asList(user, from, till, repeat, lastStarted, active, className, name);
 
 		jobsTable.read(fields);
 
@@ -132,7 +133,7 @@ public class Scheduler implements Runnable {
 
 			job.className = className.string().get();
 			job.name = name.string().get();
-			job.login = login.string().get();
+			job.user = user.guid();
 			job.from = from.datetime();
 			job.till = till.datetime();
 			job.lastStarted = lastStarted.datetime();

@@ -27,7 +27,7 @@ public class SchedulerJob implements Runnable {
 	public guid id;
 
 	public String className;
-	public String login;
+	public guid user;
 	public String name;
 	public datetime from = new datetime();
 	public datetime till = new datetime().addDay(30);
@@ -132,7 +132,7 @@ public class SchedulerJob implements Runnable {
 	
 			List<file> files = new ArrayList<file>();
 	
-			IUser user = login != null ? User.load(login) : User.system();
+			IUser user = this.user != null ? User.load(this.user) : User.system();
 			IRequest request = new Request(parameters, files, new Session("", user));
 			IResponse response = new Response();
 	
