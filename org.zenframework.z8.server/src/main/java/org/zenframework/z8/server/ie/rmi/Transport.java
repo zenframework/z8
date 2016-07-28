@@ -13,7 +13,7 @@ import org.zenframework.z8.server.db.Connection;
 import org.zenframework.z8.server.db.ConnectionManager;
 import org.zenframework.z8.server.engine.IApplicationServer;
 import org.zenframework.z8.server.engine.IInterconnectionCenter;
-import org.zenframework.z8.server.ie.BaseMessage;
+import org.zenframework.z8.server.ie.Message;
 import org.zenframework.z8.server.ie.DataMessage;
 import org.zenframework.z8.server.ie.FileMessage;
 import org.zenframework.z8.server.logs.Trace;
@@ -60,13 +60,13 @@ public class Transport implements Runnable {
 	}
 
 	private void prepareMessages() throws Throwable {
-		Collection<BaseMessage> messages = messageQueue.getMessages(domain);
+		Collection<Message> messages = messageQueue.getMessages(domain);
 
-		for(BaseMessage message : messages)
+		for(Message message : messages)
 			prepare(message);
 	}
 
-	private void prepare(BaseMessage message) throws Throwable {
+	private void prepare(Message message) throws Throwable {
 		Connection connection = ConnectionManager.get();
 
 		try {
@@ -84,13 +84,13 @@ public class Transport implements Runnable {
 		Collection<guid> ids = transportQueue.getMessages(domain);
 
 		for(guid id : ids) {
-			BaseMessage message = transportQueue.getMessage(id);
+			Message message = transportQueue.getMessage(id);
 			if(!send(message))
 				return;
 		}
 	}
 
-	private IApplicationServer connect(BaseMessage message) throws Throwable {
+	private IApplicationServer connect(Message message) throws Throwable {
 		IInterconnectionCenter center = ServerConfig.interconnectionCenter();
 
 		try {
@@ -117,7 +117,7 @@ public class Transport implements Runnable {
 		return server;
 	}
 
-	private boolean send(BaseMessage message) throws Throwable {
+	private boolean send(Message message) throws Throwable {
 		if(server == null)
 			server = connect(message);
 

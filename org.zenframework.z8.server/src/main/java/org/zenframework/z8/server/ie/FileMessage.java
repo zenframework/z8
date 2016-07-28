@@ -16,13 +16,13 @@ import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.types.file;
 import org.zenframework.z8.server.types.string;
 
-public class FileMessage extends BaseMessage {
+public class FileMessage extends Message {
 
 	static private final long serialVersionUID = 3103056307172568573L;
 
 	static public final string RecordId = new string("message.recordId");
 
-	static public class CLASS<T extends FileMessage> extends BaseMessage.CLASS<T> {
+	static public class CLASS<T extends FileMessage> extends Message.CLASS<T> {
 		public CLASS() {
 			this(null);
 		}

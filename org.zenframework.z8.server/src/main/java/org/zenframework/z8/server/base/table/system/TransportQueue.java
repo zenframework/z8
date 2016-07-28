@@ -15,7 +15,7 @@ import org.zenframework.z8.server.db.sql.SqlToken;
 import org.zenframework.z8.server.db.sql.expressions.And;
 import org.zenframework.z8.server.db.sql.expressions.Equ;
 import org.zenframework.z8.server.db.sql.expressions.IsNot;
-import org.zenframework.z8.server.ie.BaseMessage;
+import org.zenframework.z8.server.ie.Message;
 import org.zenframework.z8.server.request.Loader;
 import org.zenframework.z8.server.resources.Resources;
 import org.zenframework.z8.server.runtime.IObject;
@@ -138,7 +138,7 @@ public class TransportQueue extends Table {
 		registerDataField(processed);
 	}
 
-	public void add(BaseMessage message) {
+	public void add(Message message) {
 		sender.get().set(new string(message.getSender()));
 		address.get().set(new string(message.getAddress()));
 		ordinal.get().set(new integer(Sequencer.next(message.getAddress() + ".transport")));
@@ -199,7 +199,7 @@ public class TransportQueue extends Table {
 		return result;
 	}
 
-	public BaseMessage getMessage(guid id) {
+	public Message getMessage(guid id) {
 		Field data = this.data.get();
 		Field classId = this.classId.get();
 		Field bytesTransferred = this.bytesTransferred.get();
@@ -209,7 +209,7 @@ public class TransportQueue extends Table {
 		if(!readRecord(id, fields))
 			return null;
 				
-		BaseMessage result = (BaseMessage)Loader.getInstance(classId.string().get());
+		Message result = (Message)Loader.getInstance(classId.string().get());
 		result.fromBinary(data.get().binary());
 		result.setId(recordId());
 		result.setBytesTransferred(bytesTransferred.integer().get());

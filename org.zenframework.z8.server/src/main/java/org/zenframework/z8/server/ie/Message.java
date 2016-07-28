@@ -29,18 +29,18 @@ import org.zenframework.z8.server.types.string;
 import org.zenframework.z8.server.utils.IOUtils;
 import org.zenframework.z8.server.utils.NumericUtils;
 
-abstract public class BaseMessage extends OBJECT implements RmiSerializable, Serializable {
+abstract public class Message extends OBJECT implements RmiSerializable, Serializable {
 
 	static private final long serialVersionUID = 3103056587172568573L;
 
-	static public class CLASS<T extends BaseMessage> extends OBJECT.CLASS<T> {
+	static public class CLASS<T extends Message> extends OBJECT.CLASS<T> {
 		public CLASS() {
 			this(null);
 		}
 
 		public CLASS(IObject container) {
 			super(container);
-			setJavaClass(BaseMessage.class);
+			setJavaClass(Message.class);
 		}
 
 		@Override
@@ -62,7 +62,7 @@ abstract public class BaseMessage extends OBJECT implements RmiSerializable, Ser
 	abstract public void prepare();
 	abstract protected boolean apply();
 
-	public BaseMessage(IObject container) {
+	public Message(IObject container) {
 		super(container);
 	}
 

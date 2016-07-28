@@ -11,7 +11,7 @@ import org.zenframework.z8.server.engine.IApplicationServer;
 import org.zenframework.z8.server.engine.IInterconnectionCenter;
 import org.zenframework.z8.server.engine.IServerInfo;
 import org.zenframework.z8.server.engine.ServerInfo;
-import org.zenframework.z8.server.ie.BaseMessage;
+import org.zenframework.z8.server.ie.Message;
 import org.zenframework.z8.server.logs.Trace;
 import org.zenframework.z8.server.request.RequestDispatcher;
 import org.zenframework.z8.server.types.guid;
@@ -67,12 +67,12 @@ public class InterconnectionCenter extends HubServer implements IInterconnection
 	}
 
 	@Override
-	public boolean has(IApplicationServer server, BaseMessage message) throws RemoteException {
+	public boolean has(IApplicationServer server, Message message) throws RemoteException {
 		return server.has(message);
 	}
 	
 	@Override
-	public boolean accept(IApplicationServer server, BaseMessage message) throws RemoteException {
+	public boolean accept(IApplicationServer server, Message message) throws RemoteException {
 		return server.accept(message);
 	}
 	

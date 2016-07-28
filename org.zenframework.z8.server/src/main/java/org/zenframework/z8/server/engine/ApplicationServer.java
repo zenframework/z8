@@ -10,7 +10,7 @@ import org.zenframework.z8.server.base.table.system.Files;
 import org.zenframework.z8.server.base.xml.GNode;
 import org.zenframework.z8.server.config.ServerConfig;
 import org.zenframework.z8.server.db.ConnectionManager;
-import org.zenframework.z8.server.ie.BaseMessage;
+import org.zenframework.z8.server.ie.Message;
 import org.zenframework.z8.server.ie.FileMessage;
 import org.zenframework.z8.server.logs.Trace;
 import org.zenframework.z8.server.request.IMonitor;
@@ -149,7 +149,7 @@ public class ApplicationServer extends RmiServer implements IApplicationServer {
 	}
 
 	@Override
-	public boolean has(BaseMessage message) throws RemoteException {
+	public boolean has(Message message) throws RemoteException {
 		if(message instanceof FileMessage) {
 			file file = ((FileMessage)message).getFile();
 			return Files.newInstance().hasRecord(file.id);
@@ -159,7 +159,7 @@ public class ApplicationServer extends RmiServer implements IApplicationServer {
 	}
 	
 	@Override
-	public boolean accept(BaseMessage message) {
+	public boolean accept(Message message) {
 		return message.receive();
 	}
 

@@ -2,7 +2,7 @@ import org.zenframework.z8.base.table.Table;
 import org.zenframework.z8.base.table.value.Field;
 import org.zenframework.z8.lang.Object;
 
-[native "org.zenframework.z8.server.ie.Message"]
+[native "org.zenframework.z8.server.ie.DataMessage"]
 class Message extends Object {
 	public static final string RecordId = "message.recordId";
 

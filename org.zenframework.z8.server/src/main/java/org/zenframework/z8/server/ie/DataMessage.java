@@ -18,13 +18,13 @@ import org.zenframework.z8.server.types.primary;
 import org.zenframework.z8.server.types.string;
 import org.zenframework.z8.server.types.sql.sql_bool;
 
-public class DataMessage extends BaseMessage {
+public class DataMessage extends Message {
 
 	static private final long serialVersionUID = 3103056587172568570L;
 
 	static public final string RecordId = new string("message.recordId");
 
-	static public class CLASS<T extends DataMessage> extends BaseMessage.CLASS<T> {
+	static public class CLASS<T extends DataMessage> extends Message.CLASS<T> {
 		public CLASS() {
 			this(null);
 		}
