@@ -197,14 +197,20 @@ abstract public class Message extends OBJECT implements RmiSerializable, Seriali
 			throw new RuntimeException("Sender is not set");
 		
 		if(Domains.newInstance().isOwner(address))
-			receive();
+			accept(true);
 		else
 			MessageQueue.newInstance().add(this);
 	}
 	
-	public boolean receive() {
-		Domain domain = Domains.newInstance().getDomain(address);
-		IUser user = domain != null ? domain.getSystemUser() : User.system();
+	public boolean accept() {
+		return accept(false);
+	}
+	
+	private boolean accept(boolean localSend) {
+		Domains domains = Domains.newInstance();
+		Domain acceptorDomain = domains.getDomain(address);
+
+		IUser user = acceptorDomain != null ? acceptorDomain.getSystemUser() : User.system();
 
 		IRequest currentRequest = ApplicationServer.getRequest();
 		ApplicationServer.setRequest(new Request(new Session("", user)));
@@ -213,7 +219,7 @@ abstract public class Message extends OBJECT implements RmiSerializable, Seriali
 
 		try {
 			connection.beginTransaction();
-			boolean result = callImport(domain.isOwner());
+			boolean result = callImport(localSend);
 			connection.commit();
 			return result;
 		} catch(Throwable e) {
@@ -224,15 +230,15 @@ abstract public class Message extends OBJECT implements RmiSerializable, Seriali
 		}
 	}
 	
-	private boolean callImport(boolean local) {
-		if(local) {
+	private boolean callImport(boolean localSend) {
+		if(localSend) {
 			beforeExport();
 			afterExport();
 		}
 		
 		beforeImport();
 
-		if(!local) {
+		if(!localSend) {
 			try {
 				ApplicationServer.disableEvents();
 				if(!apply())

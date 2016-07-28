@@ -160,7 +160,7 @@ public class ApplicationServer extends RmiServer implements IApplicationServer {
 	
 	@Override
 	public boolean accept(Message message) {
-		return message.receive();
+		return message.accept();
 	}
 
 	@Override
