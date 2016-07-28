@@ -63,13 +63,7 @@ public class FileMessage extends Message {
 	@Override
 	protected void write(ObjectOutputStream out) throws IOException {
 		RmiIO.writeLong(out, serialVersionUID);
-
-		FileItem value = file.get();
-		file.set((FileItem)null);
-	
 		out.writeObject(file);
-		
-		file.set(value);
 	}
 
 	@Override
@@ -82,7 +76,12 @@ public class FileMessage extends Message {
 
 	@Override
 	public void prepare() {
+		FileItem value = file.get();
+		file.set((FileItem)null);
+	
 		TransportQueue.newInstance().add(this);
+
+		file.set(value);
 	}
 
 	@Override
