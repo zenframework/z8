@@ -13,7 +13,9 @@ import org.zenframework.z8.server.db.Connection;
 import org.zenframework.z8.server.db.ConnectionManager;
 import org.zenframework.z8.server.engine.IApplicationServer;
 import org.zenframework.z8.server.engine.IInterconnectionCenter;
-import org.zenframework.z8.server.ie.Message;
+import org.zenframework.z8.server.ie.BaseMessage;
+import org.zenframework.z8.server.ie.DataMessage;
+import org.zenframework.z8.server.ie.FileMessage;
 import org.zenframework.z8.server.logs.Trace;
 import org.zenframework.z8.server.types.file;
 import org.zenframework.z8.server.types.guid;
@@ -28,7 +30,7 @@ public class Transport implements Runnable {
 
 	private MessageQueue messageQueue = MessageQueue.newInstance();
 	private TransportQueue transportQueue = TransportQueue.newInstance();
-	
+
 	static public Transport get(String domain) {
 		return workers.get(domain);
 	}
@@ -58,58 +60,37 @@ public class Transport implements Runnable {
 	}
 
 	private void prepareMessages() throws Throwable {
-		Collection<Message> messages = messageQueue.getMessages(domain);
+		Collection<BaseMessage> messages = messageQueue.getMessages(domain);
 
-		for(Message message : messages)
+		for(BaseMessage message : messages)
 			prepare(message);
 	}
-	
-	private void prepare(Message message) throws Throwable {
-		message.exportData();
-		
+
+	private void prepare(BaseMessage message) throws Throwable {
 		Connection connection = ConnectionManager.get();
-		
+
 		try {
 			connection.beginTransaction();
-			
 			messageQueue.beginProcessing(message.getId());
-			
-			for(file file : message.getSource().files()) {
-				Message fileMessage = Message.newInstance();
-				fileMessage.setSourceId(message.getId());
-				fileMessage.setAddress(message.getAddress());
-				fileMessage.setSender(message.getSender());
-				fileMessage.setFile(file);
-				transportQueue.add(fileMessage);
-			}
-			
-			Message dataMessage = (Message)message.getCLASS().newInstance();
-			dataMessage.setSourceId(message.getId());
-			dataMessage.setAddress(message.getAddress());
-			dataMessage.setSender(message.getSender());
-			dataMessage.setSource(message.getSource());
-			dataMessage.setType(message.getType());
-			
-			transportQueue.add(dataMessage);
-			
+			message.prepare();
 			connection.commit();
 		} catch(Throwable e) {
 			connection.rollback();
 			throw e;
 		}
 	}
-	
+
 	private void sendMessages() throws Throwable {
 		Collection<guid> ids = transportQueue.getMessages(domain);
 
 		for(guid id : ids) {
-			Message message = transportQueue.getMessage(id);
+			BaseMessage message = transportQueue.getMessage(id);
 			if(!send(message))
 				return;
 		}
 	}
-	
-	private IApplicationServer connect(Message message) throws Throwable {
+
+	private IApplicationServer connect(BaseMessage message) throws Throwable {
 		IInterconnectionCenter center = ServerConfig.interconnectionCenter();
 
 		try {
@@ -136,7 +117,7 @@ public class Transport implements Runnable {
 		return server;
 	}
 
-	private boolean send(Message message) throws Throwable {
+	private boolean send(BaseMessage message) throws Throwable {
 		if(server == null)
 			server = connect(message);
 
@@ -144,14 +125,14 @@ public class Transport implements Runnable {
 			return false;
 
 		try {
-			return message.isFileMessage() ? sendFile(message) : sendMessage(message);
+			return message instanceof FileMessage ? sendFile((FileMessage)message) : sendMessage((DataMessage)message);
 		} catch(Throwable e) {
 			transportQueue.setInfo(message.getId(), e.getMessage());
 			throw e;
 		}
 	}
 
-	private boolean sendMessage(Message message) throws Throwable {
+	private boolean sendMessage(DataMessage message) throws Throwable {
 		Connection connection = ConnectionManager.get();
 
 		try {
@@ -171,11 +152,11 @@ public class Transport implements Runnable {
 		}
 	}
 
-	private boolean sendFile(Message message) throws Throwable {
+	private boolean sendFile(FileMessage message) throws Throwable {
 		file file = message.getFile();
 		long size = file.size.get();
 
-		if(server.hasFile(file)) {
+		if(server.has(message)) {
 			transportQueue.setProcessed(message.getId(), "Skipped");
 			return true;
 		}
@@ -186,7 +167,7 @@ public class Transport implements Runnable {
 			try {
 				connection.beginTransaction();
 
-				boolean reset = !server.accept(file);
+				boolean reset = !server.accept(message);
 
 				transportQueue.setBytesTrasferred(message.getId(), reset ? 0 : file.offset());
 

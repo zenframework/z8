@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.rmi.RemoteException;
 
 import org.zenframework.z8.server.base.xml.GNode;
+import org.zenframework.z8.server.ie.BaseMessage;
 import org.zenframework.z8.server.security.IUser;
 import org.zenframework.z8.server.types.file;
 
@@ -17,6 +18,6 @@ public interface IApplicationServer extends IServer {
 
 	public String[] domains() throws RemoteException;
 
-	public boolean accept(Object data) throws RemoteException;
-	public boolean hasFile(file file) throws RemoteException;
+	public boolean has(BaseMessage message) throws RemoteException;
+	public boolean accept(BaseMessage message) throws RemoteException;
 }

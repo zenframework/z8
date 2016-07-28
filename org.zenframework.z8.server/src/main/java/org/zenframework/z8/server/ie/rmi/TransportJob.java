@@ -6,7 +6,6 @@ import org.zenframework.z8.server.base.simple.Procedure;
 import org.zenframework.z8.server.base.table.system.MessageQueue;
 import org.zenframework.z8.server.base.table.system.TransportQueue;
 import org.zenframework.z8.server.base.view.command.Parameter;
-import org.zenframework.z8.server.ie.Import;
 import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.runtime.RCollection;
 
@@ -52,9 +51,5 @@ public class TransportJob extends Procedure {
 			if(thread == null)
 				new Transport(address).start();
 		}
-	}
-
-	static public boolean accept(Object object) {
-		return Import.importObject(object);
 	}
 }

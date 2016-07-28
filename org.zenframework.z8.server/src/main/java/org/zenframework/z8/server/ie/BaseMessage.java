@@ -1,4 +1,4 @@
-/*package org.zenframework.z8.server.ie;
+package org.zenframework.z8.server.ie;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -7,12 +7,9 @@ import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
-import java.util.Map;
 
-import org.zenframework.z8.server.base.table.Table;
 import org.zenframework.z8.server.base.table.system.Domains;
 import org.zenframework.z8.server.base.table.system.MessageQueue;
-import org.zenframework.z8.server.base.table.value.Field;
 import org.zenframework.z8.server.db.Connection;
 import org.zenframework.z8.server.db.ConnectionManager;
 import org.zenframework.z8.server.engine.ApplicationServer;
@@ -23,39 +20,32 @@ import org.zenframework.z8.server.request.IRequest;
 import org.zenframework.z8.server.request.Request;
 import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.runtime.OBJECT;
-import org.zenframework.z8.server.runtime.RCollection;
-import org.zenframework.z8.server.runtime.RLinkedHashMap;
 import org.zenframework.z8.server.security.Domain;
 import org.zenframework.z8.server.security.IUser;
 import org.zenframework.z8.server.security.User;
 import org.zenframework.z8.server.types.binary;
-import org.zenframework.z8.server.types.file;
 import org.zenframework.z8.server.types.guid;
-import org.zenframework.z8.server.types.primary;
 import org.zenframework.z8.server.types.string;
-import org.zenframework.z8.server.types.sql.sql_bool;
 import org.zenframework.z8.server.utils.IOUtils;
 import org.zenframework.z8.server.utils.NumericUtils;
 
-public class Message extends OBJECT implements RmiSerializable, Serializable {
+abstract public class BaseMessage extends OBJECT implements RmiSerializable, Serializable {
 
-	static private final long serialVersionUID = 3103056587172568570L;
+	static private final long serialVersionUID = 3103056587172568573L;
 
-	static public final string RecordId = new string("message.recordId");
-
-	static public class CLASS<T extends Message> extends OBJECT.CLASS<T> {
+	static public class CLASS<T extends BaseMessage> extends OBJECT.CLASS<T> {
 		public CLASS() {
 			this(null);
 		}
 
 		public CLASS(IObject container) {
 			super(container);
-			setJavaClass(Message.class);
+			setJavaClass(BaseMessage.class);
 		}
 
 		@Override
 		public Object newObject(IObject container) {
-			return new Message(container);
+			return null;
 		}
 	}
 
@@ -63,17 +53,16 @@ public class Message extends OBJECT implements RmiSerializable, Serializable {
 	private guid sourceId = guid.NULL;
 	private String sender;
 	private String address;
-	private String type;
-
-	private file file;
-
-	private MessageSource source = new MessageSource();
 	
-	static public Message newInstance() {
-		return new Message.CLASS<Message>(null).get();
-	}
-	
-	public Message(IObject container) {
+	abstract public void setBytesTransferred(long bytesTransferred);
+
+	abstract protected void write(ObjectOutputStream out) throws IOException;
+	abstract protected void read(ObjectInputStream in) throws IOException, ClassNotFoundException;
+
+	abstract public void prepare();
+	abstract protected boolean apply();
+
+	public BaseMessage(IObject container) {
 		super(container);
 	}
 
@@ -107,39 +96,6 @@ public class Message extends OBJECT implements RmiSerializable, Serializable {
 
 	public void setSender(String sender) {
 		this.sender = sender;
-	}
-
-	public String getType() {
-		return type;
-	}
-
-	public void setType(String type) {
-		this.type = type;
-	}
-
-	public MessageSource getSource() {
-		return source;
-	}
-
-	public void setSource(MessageSource source) {
-		this.source = source;
-	}
-
-	public boolean isFileMessage() {
-		return file != null;
-	}
-
-	public file getFile() {
-		return file;
-	}
-
-	public void setFile(file file) {
-		this.file = file;
-	}
-	
-	public void setBytesTransferred(long bytesTransferred) {
-		if(file != null)
-			file.setOffset(bytesTransferred);
 	}
 
 	protected void beforeImport() {
@@ -207,10 +163,8 @@ public class Message extends OBJECT implements RmiSerializable, Serializable {
 		RmiIO.writeGuid(objects, sourceId);
 		RmiIO.writeString(objects, sender);
 		RmiIO.writeString(objects, address);
-		RmiIO.writeString(objects, type);
-
-		objects.writeObject(source);
-		objects.writeObject(file);
+		
+		write(objects);
 
 		objects.close();
 
@@ -229,45 +183,26 @@ public class Message extends OBJECT implements RmiSerializable, Serializable {
 		sourceId = RmiIO.readGuid(objects);
 		sender = RmiIO.readString(objects);
 		address = RmiIO.readString(objects);
-		type = RmiIO.readString(objects);
 
-		source = (MessageSource)objects.readObject();
-		file = (file)objects.readObject();
+		read(objects);
 		
 		objects.close();
 	}
 
-	public ExportRules getExportRules() {
-		return source.exportRules();
-	}
+	public void send() {
+		if(address == null || address.isEmpty())
+			throw new RuntimeException("Export address is not set");
 
-	public void exportData() {
-		beforeExport();
-		source.exportData();
-		afterExport();
-	}
-
-	private void callImport(boolean local) {
-		if(local) {
-			beforeExport();
-			afterExport();
-		}
+		if(sender == null || sender.isEmpty())
+			throw new RuntimeException("Sender is not set");
 		
-		beforeImport();
-
-		if(!local) {
-			try {
-				ApplicationServer.disableEvents();
-				source.importData();
-			} finally {
-				ApplicationServer.enableEvents();
-			}
-		}
-		
-		afterImport();
+		if(Domains.newInstance().isOwner(address))
+			receive();
+		else
+			MessageQueue.newInstance().add(this);
 	}
-
-	public void importData() {
+	
+	public boolean receive() {
 		Domain domain = Domains.newInstance().getDomain(address);
 		IUser user = domain != null ? domain.getSystemUser() : User.system();
 
@@ -278,8 +213,9 @@ public class Message extends OBJECT implements RmiSerializable, Serializable {
 
 		try {
 			connection.beginTransaction();
-			callImport(domain.isOwner());
+			boolean result = callImport(domain.isOwner());
 			connection.commit();
+			return result;
 		} catch(Throwable e) {
 			connection.rollback();
 			throw new RuntimeException(e);
@@ -288,6 +224,28 @@ public class Message extends OBJECT implements RmiSerializable, Serializable {
 		}
 	}
 	
+	private boolean callImport(boolean local) {
+		if(local) {
+			beforeExport();
+			afterExport();
+		}
+		
+		beforeImport();
+
+		if(!local) {
+			try {
+				ApplicationServer.disableEvents();
+				if(!apply())
+					return false;
+			} finally {
+				ApplicationServer.enableEvents();
+			}
+		}
+		
+		afterImport();
+		return true;
+	}
+
 	public string z8_getAddress() {
 		return new string(address);
 	}
@@ -304,90 +262,8 @@ public class Message extends OBJECT implements RmiSerializable, Serializable {
 		setSender(sender.get());
 	}
 	
-	public string z8_getType() {
-		return new string(type);
-	}
-
-	public void z8_setType(string type) {
-		setType(type.get());
-	}
-
-	public RLinkedHashMap<string, primary> z8_getProperties() {
-		RLinkedHashMap<string, primary> properties = new RLinkedHashMap<string, primary>();
-
-		for(Map.Entry<String, primary> entry : source.getProperties().entrySet())
-			properties.put(new string(entry.getKey()), entry.getValue());
-		
-		return properties;
-	}
-
-	public primary z8_getProperty(string key) {
-		return source.getProperty(key.get());
-	}
-
-	public void z8_setProperty(string key, primary value) {
-		source.setProperty(key.get(), value);
-	}
-
-	public void z8_add(Table.CLASS<? extends Table> table) {
-		source.add(table.get(), null, null);
-	}
-
-	@SuppressWarnings({ "rawtypes", "unchecked" })
-	public void z8_add(Table.CLASS<? extends Table> table, RCollection fields) {
-		source.add(table.get(), CLASS.asList(fields), null);
-	}
-
-	public void z8_add(Table.CLASS<? extends Table> table, sql_bool where) {
-		source.add(table.get(), null, where);
-	}
-
-	@SuppressWarnings({ "rawtypes", "unchecked" })
-	public void z8_add(Table.CLASS<? extends Table> table, RCollection fields, sql_bool where) {
-		source.add(table.get(), CLASS.asList(fields), where);
-	}
-
-	public void z8_addRule(ImportPolicy policy) {
-		source.addRule(policy);
-	}
-
-	public void z8_addRule(Table.CLASS<? extends Table> table, ImportPolicy policy) {
-		source.addRule(table.get(), policy);
-	}
-	
-	public void z8_addRule(Table.CLASS<? extends Table> table, guid recordId, ImportPolicy policy) {
-		source.addRule(table.get(), recordId, policy);
-	}
-
-	public void z8_addRule(Field.CLASS<? extends Field> field, ImportPolicy policy) {
-		source.addRule((Table)field.get().getOwner(), field.get(), policy);
-	}
-
-	public void z8_addRule(RCollection<Field.CLASS<? extends Field>> fields, ImportPolicy policy) {
-		for(Field.CLASS<? extends Field> field : fields)
-			z8_addRule(field, policy);
-	}
-
-	public void z8_addRule(guid recordId, Field.CLASS<? extends Field> field, ImportPolicy policy) {
-		source.addRule((Table)field.get().getOwner(), recordId, field.get(), policy);
-	}
-
-	public void z8_addRule(guid recordId, RCollection<Field.CLASS<? extends Field>> fields, ImportPolicy policy) {
-		for(Field.CLASS<? extends Field> field : fields)
-			z8_addRule(recordId, field, policy);
-	}
-
 	public void z8_send() {
-		if(address == null || address.isEmpty())
-			throw new RuntimeException("Export address is not set");
-
-		if(sender == null || sender.isEmpty())
-			throw new RuntimeException("Sender is not set");
-		
-		if(Domains.newInstance().isOwner(address))
-			importData();
-		else
-			MessageQueue.newInstance().add(this);
+		send();
 	}
 
 	public void z8_beforeImport() {
@@ -402,4 +278,3 @@ public class Message extends OBJECT implements RmiSerializable, Serializable {
 	public void z8_afterExport() {
 	}
 }
-*/

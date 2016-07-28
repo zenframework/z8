@@ -8,6 +8,7 @@ import org.zenframework.z8.server.config.ServerConfig;
 import org.zenframework.z8.server.engine.IApplicationServer;
 import org.zenframework.z8.server.engine.ISession;
 import org.zenframework.z8.server.exceptions.UnsupportedException;
+import org.zenframework.z8.server.ie.BaseMessage;
 import org.zenframework.z8.server.security.IUser;
 import org.zenframework.z8.server.types.file;
 
@@ -19,13 +20,13 @@ public class ApplicationServerProxy implements IApplicationServer {
 	}
 	
 	@Override
-	public boolean accept(Object data) throws RemoteException {
-		return ServerConfig.interconnectionCenter().accept(server, data);
+	public boolean has(BaseMessage message) throws RemoteException {
+		return ServerConfig.interconnectionCenter().has(server, message);
 	}
 
 	@Override
-	public boolean hasFile(file file) throws RemoteException {
-		return ServerConfig.interconnectionCenter().hasFile(server, file);
+	public boolean accept(BaseMessage data) throws RemoteException {
+		return ServerConfig.interconnectionCenter().accept(server, data);
 	}
 
 	@Override

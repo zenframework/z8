@@ -15,7 +15,7 @@ import org.zenframework.z8.server.db.sql.SqlToken;
 import org.zenframework.z8.server.db.sql.expressions.And;
 import org.zenframework.z8.server.db.sql.expressions.Equ;
 import org.zenframework.z8.server.db.sql.expressions.IsNot;
-import org.zenframework.z8.server.ie.Message;
+import org.zenframework.z8.server.ie.BaseMessage;
 import org.zenframework.z8.server.request.Loader;
 import org.zenframework.z8.server.resources.Resources;
 import org.zenframework.z8.server.runtime.IObject;
@@ -124,7 +124,7 @@ public class MessageQueue extends Table {
 		registerDataField(processing);
 	}
 
-	public void add(Message message) {
+	public void add(BaseMessage message) {
 		sender.get().set(new string(message.getSender()));
 		address.get().set(new string(message.getAddress()));
 		ordinal.get().set(new integer(Sequencer.next(message.getAddress() + ".message")));
@@ -148,8 +148,8 @@ public class MessageQueue extends Table {
 		return result;
 	}
 
-	public Collection<Message> getMessages(String domain) {
-		Collection<Message> result = new ArrayList<Message>();
+	public Collection<BaseMessage> getMessages(String domain) {
+		Collection<BaseMessage> result = new ArrayList<BaseMessage>();
 
 		Field address = this.address.get();
 		Field processing = this.processing.get();
@@ -164,7 +164,7 @@ public class MessageQueue extends Table {
 		read(fields, orderBy, where, 100);
 
 		while(next()) {
-			Message message = (Message)Loader.getInstance(classId.string().get());
+			BaseMessage message = (BaseMessage)Loader.getInstance(classId.string().get());
 			message.fromBinary(data.binary());
 			message.setId(recordId());
 			result.add(message);
