@@ -117,4 +117,12 @@ public class FileMessage extends Message {
 			target.delete();
 		}
 	}
+	
+	public file z8_getFile() {
+		return getFile();
+	}
+
+	public void z8_setFile(file file) {
+		setFile(file);
+	}
 }

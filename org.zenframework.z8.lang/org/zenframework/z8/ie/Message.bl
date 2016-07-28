@@ -1,11 +1,7 @@
-import org.zenframework.z8.base.table.Table;
-import org.zenframework.z8.base.table.value.Field;
 import org.zenframework.z8.lang.Object;
 
-[native "org.zenframework.z8.server.ie.DataMessage"]
+[native "org.zenframework.z8.server.ie.Message"]
 class Message extends Object {
-	public static final string RecordId = "message.recordId";
-
 	virtual protected void beforeImport();
 	virtual protected void afterImport();
 
@@ -17,29 +13,6 @@ class Message extends Object {
 
 	public string getSender();
 	public void setSender(string sender);
-
-	public string getType();
-	public void setType(string type);
-
-	public primary[string] getProperties();
-	public primary getProperty(string key);
-	public void setProperty(string key, primary value);
-
-	public void add(Table table);
-	public void add(Table table, Field[] fields);
-	public void add(Table table, sql_bool where);
-	public void add(Table table, Field[] fields, sql_bool where);
-
-	public void addRule(ImportPolicy policy);
-
-	public void addRule(Table table, ImportPolicy policy);
-	public void addRule(Table table, guid recordId, ImportPolicy policy);
-
-	public void addRule(Field field, ImportPolicy policy);
-	public void addRule(Field[] fields, ImportPolicy policy);
-
-	public void addRule(guid recordId, Field field, ImportPolicy policy);
-	public void addRule(guid recordId, Field[] fields, ImportPolicy policy);
 
 	public void send();
 }
