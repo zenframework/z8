@@ -37,8 +37,8 @@ public class RequestDispatcher implements Runnable {
 			ApplicationServer.setRequest(request);
 
 			dispatch();
-		} catch (Throwable exception) {
-			if (!Dashboard.Id.equals(request.id())) {
+		} catch(Throwable exception) {
+			if(!Dashboard.Id.equals(request.id())) {
 				Trace.logError(request.toString(), exception);
 			}
 
@@ -53,7 +53,7 @@ public class RequestDispatcher implements Runnable {
 
 			try {
 				monitor.writeResponse(writer);
-			} catch (Throwable e) {
+			} catch(Throwable e) {
 				Trace.logError(e);
 			}
 
@@ -70,10 +70,10 @@ public class RequestDispatcher implements Runnable {
 		String messageId = request.getParameter(Json.message);
 		String jobId = request.getParameter(Json.jobId);
 
-		if (jobId != null) {
+		if(jobId != null) {
 			JobMonitor monitor = Job.getMonitor(jobId);
 
-			if (monitor == null) {
+			if(monitor == null) {
 				monitor = new JobMonitor(null, jobId);
 				monitor.setTotalWork(100);
 				monitor.setWorked(100);
@@ -82,14 +82,14 @@ public class RequestDispatcher implements Runnable {
 			ApplicationServer.getRequest().setMonitor(monitor);
 
 			monitor.processRequest(response);
-		} else if (messageId != null) {
+		} else if(messageId != null) {
 			new Messenger(messageId).processRequest(response);
 		} else {
 			long t = System.currentTimeMillis();
 
 			processRequest(request, response, requestId);
 
-			if (!Dashboard.Id.equals(requestId) && !Json.settings.equals(requestId))
+			if(!Dashboard.Id.equals(requestId) && !Json.settings.equals(requestId))
 				Trace.logEvent(request.toString() + "\n\t " + (System.currentTimeMillis() - t) + "ms; " + getMemoryUsage());
 		}
 	}
@@ -102,10 +102,10 @@ public class RequestDispatcher implements Runnable {
 	}
 
 	private void processRequest(IRequest request, IResponse response, String requestId) throws Throwable {
-		if (Dashboard.Id.equals(requestId)) {
+		if(Dashboard.Id.equals(requestId)) {
 			Dashboard dashboard = new Dashboard();
 			dashboard.processRequest(response);
-		} else if (Json.settings.equals(requestId)) {
+		} else if(Json.settings.equals(requestId)) {
 			IUser user = ApplicationServer.getUser();
 			user.setSettings(request.getParameter(Json.data));
 
@@ -119,14 +119,14 @@ public class RequestDispatcher implements Runnable {
 		} else {
 			OBJECT object = requestId != null ? Loader.getInstance(requestId) : null;
 
-			if (object != null && object.response() != null) {
+			if(object != null && object.response() != null) {
 				object.processRequest(response);
-			} else if (object == null || object instanceof Query) {
-				Query query = (Query) object;
+			} else if(object instanceof Query) {
+				Query query = (Query)object;
 				Action action = ActionFactory.create(query);
 				action.processRequest(response);
-			} else if (object instanceof Procedure) {
-				Procedure procedure = (Procedure) object;
+			} else if(object instanceof Procedure) {
+				Procedure procedure = (Procedure)object;
 				Job job = new Job(procedure);
 				job.processRequest(response);
 			}
