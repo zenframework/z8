@@ -139,7 +139,8 @@ public class MessageSource implements RmiSerializable, Serializable {
 		
 		Collection<guid> records = source.records();
 		SqlToken where = records != null ? new InVector(table.primaryKey(), records) : null;
-		table.read(fields, where);
+		table.setWhere(where); // to replace existing where
+		table.read(fields);
 
 		while(table.next()) {
 			guid recordId = table.recordId();
