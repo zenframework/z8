@@ -16,6 +16,7 @@ import org.zenframework.z8.server.engine.ApplicationServer;
 import org.zenframework.z8.server.engine.RmiIO;
 import org.zenframework.z8.server.engine.RmiSerializable;
 import org.zenframework.z8.server.engine.Session;
+import org.zenframework.z8.server.logs.Trace;
 import org.zenframework.z8.server.request.IRequest;
 import org.zenframework.z8.server.request.Request;
 import org.zenframework.z8.server.runtime.IObject;
@@ -60,6 +61,7 @@ abstract public class Message extends OBJECT implements RmiSerializable, Seriali
 	abstract protected void read(ObjectInputStream in) throws IOException, ClassNotFoundException;
 
 	abstract public void prepare();
+	abstract protected boolean transactive();
 	abstract protected boolean apply();
 
 	public Message(IObject container) {
@@ -215,18 +217,27 @@ abstract public class Message extends OBJECT implements RmiSerializable, Seriali
 		IRequest currentRequest = ApplicationServer.getRequest();
 		ApplicationServer.setRequest(new Request(new Session("", user)));
 
-		Connection connection = ConnectionManager.get();
+		Connection connection = transactive() ? ConnectionManager.get() : null;
 
 		try {
-			connection.beginTransaction();
+			if(connection != null)
+				connection.beginTransaction();
+			
 			boolean result = callImport(localSend);
-			connection.commit();
+			
+			if(connection != null)
+				connection.commit();
+			
 			return result;
 		} catch(Throwable e) {
-			connection.rollback();
+			if(connection != null)
+				connection.rollback();
+			
+			Trace.logError(e);
 			throw new RuntimeException(e);
 		} finally {
 			ApplicationServer.setRequest(currentRequest);
+			ConnectionManager.release();
 		}
 	}
 	

@@ -120,6 +120,11 @@ public class DataMessage extends Message {
 	}
 
 	@Override
+	protected boolean transactive() {
+		return true;
+	}
+
+	@Override
 	protected boolean apply() {
 		source.importData();
 		return true;

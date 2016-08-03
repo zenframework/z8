@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
-import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.io.FileUtils;
 import org.zenframework.z8.server.base.file.Folders;
 import org.zenframework.z8.server.base.file.InputOnlyFileItem;
@@ -76,12 +75,12 @@ public class FileMessage extends Message {
 
 	@Override
 	public void prepare() {
-		FileItem value = file.get();
-		file.set((FileItem)null);
-	
 		TransportQueue.newInstance().add(this);
+	}
 
-		file.set(value);
+	@Override
+	protected boolean transactive() {
+		return false;
 	}
 
 	@Override
