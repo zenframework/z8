@@ -365,7 +365,6 @@ public class RmiIO extends ObjectIO {
 
 	private void writeException(ObjectOutputStream out, Throwable exception) throws IOException {
 		exception = ErrorUtils.getCause(exception);
-		writeString(out, exception.getClass().getCanonicalName());
 		writeString(out, exception.getMessage());
 	}
 
@@ -647,19 +646,6 @@ public class RmiIO extends ObjectIO {
 	}
 
 	private Object readException(ObjectInputStream in) throws IOException, ClassNotFoundException {
-		String cls = readString(in);
-		String message = readString(in);
-
-		try {
-			return newObject(cls, new Class<?>[] { String.class }, new Object[] { message });
-		} catch(Throwable e) {
-		}
-		
-		try {
-			return newObject(cls, new Class<?>[] { String.class, Error.class }, new Object[] { message, null });
-		} catch(Throwable e) {
-		}
-		
-		return newObject(cls, new Class<?>[] { String.class, Throwable.class }, new Object[] { message, null });
+		return new RuntimeException(readString(in));
 	}
 }
