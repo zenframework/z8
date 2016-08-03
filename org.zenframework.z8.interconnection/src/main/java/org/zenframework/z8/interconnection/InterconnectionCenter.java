@@ -50,13 +50,13 @@ public class InterconnectionCenter extends HubServer implements IInterconnection
 	}
 
 	@Override
-	public synchronized void register(IApplicationServer server) throws RemoteException {
+	public void register(IApplicationServer server) throws RemoteException {
 		String[] domains = server.domains();
 		addServer(new ServerInfo(server, domains));
 	}
 	
 	@Override
-	public synchronized void unregister(IApplicationServer server) throws RemoteException {
+	public void unregister(IApplicationServer server) throws RemoteException {
 		removeServer(server);
 	}
 

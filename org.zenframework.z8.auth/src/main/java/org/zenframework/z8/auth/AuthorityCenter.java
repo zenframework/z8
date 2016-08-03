@@ -63,13 +63,13 @@ public class AuthorityCenter extends HubServer implements IAuthorityCenter {
 	}
 
 	@Override
-	public synchronized void register(IApplicationServer server) throws RemoteException {
+	public void register(IApplicationServer server) throws RemoteException {
 		addServer(new ServerInfo(server, server.id()));
 		registerInterconnection(server);
 	}
 
 	@Override
-	public synchronized void unregister(IApplicationServer server) throws RemoteException {
+	public void unregister(IApplicationServer server) throws RemoteException {
 		removeServer(server);
 		unregisterInterconnection(server);
 	}

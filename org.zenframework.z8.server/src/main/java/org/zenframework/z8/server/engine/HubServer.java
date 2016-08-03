@@ -99,7 +99,7 @@ abstract public class HubServer extends RmiServer implements IHubServer {
 	
 	abstract protected File cacheFile();
 	
-	private synchronized void saveServers() {
+	private void saveServers() {
 		try {
 			OutputStream file = new FileOutputStream(cacheFile());
 			ObjectOutputStream out = new ObjectOutputStream(file);
@@ -119,7 +119,7 @@ abstract public class HubServer extends RmiServer implements IHubServer {
 	}
 
 	@SuppressWarnings("unchecked")
-	private synchronized void restoreServers() {
+	private void restoreServers() {
 		try {
 			File file = cacheFile();
 
