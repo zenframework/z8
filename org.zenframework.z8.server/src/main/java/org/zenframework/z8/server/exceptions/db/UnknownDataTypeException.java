@@ -6,6 +6,10 @@ import org.zenframework.z8.server.resources.Resources;
 public final class UnknownDataTypeException extends RuntimeException {
     private static final long serialVersionUID = 5648419617588901507L;
 
+    public UnknownDataTypeException(String message, Throwable e) {
+    	super(message, e);
+    }
+    
     public UnknownDataTypeException(FieldType type) {
         super(Resources.format("Exception.unknownDataType", type.toString()));
     }

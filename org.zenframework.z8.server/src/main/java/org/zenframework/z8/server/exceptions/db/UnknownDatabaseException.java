@@ -9,4 +9,7 @@ public final class UnknownDatabaseException extends RuntimeException {
         super(Resources.get("Exception.unknownDatabase"));
     }
 
+    public UnknownDatabaseException(String message, Throwable e) {
+        super(message, e);
+    }
 }
