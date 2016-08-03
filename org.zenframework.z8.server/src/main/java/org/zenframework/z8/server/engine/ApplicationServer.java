@@ -112,7 +112,11 @@ public class ApplicationServer extends RmiServer implements IApplicationServer {
 
 	@Override
 	public String[] domains() {
-		return Domains.newInstance().getNames().toArray(new String[0]);
+		try {
+			return Domains.newInstance().getNames().toArray(new String[0]);
+		} finally {
+			ConnectionManager.release();
+		}
 	}
 
 	@Override
@@ -150,12 +154,15 @@ public class ApplicationServer extends RmiServer implements IApplicationServer {
 
 	@Override
 	public boolean has(Message message) throws RemoteException {
-		if(message instanceof FileMessage) {
-			file file = ((FileMessage)message).getFile();
-			return Files.newInstance().hasRecord(file.id);
+		try {
+			if(message instanceof FileMessage) {
+				file file = ((FileMessage)message).getFile();
+				return Files.newInstance().hasRecord(file.id);
+			}
+			return false;
+		} finally {
+			ConnectionManager.release();
 		}
-		
-		return false;
 	}
 	
 	@Override
