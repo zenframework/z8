@@ -711,7 +711,7 @@ public class Query extends Runnable {
 	}
 
 	public boolean readFirst() {
-		read();
+		read((SqlToken)null, 1);
 		return next();
 	}
 
@@ -728,7 +728,7 @@ public class Query extends Runnable {
 	}
 
 	public boolean readFirst(SqlToken where) {
-		read(where);
+		read(where, 1);
 		return next();
 	}
 
@@ -745,7 +745,7 @@ public class Query extends Runnable {
 	}
 
 	public boolean readFirst(Collection<Field> fields) {
-		read(fields);
+		read(fields, 1);
 		return next();
 	}
 
@@ -762,7 +762,7 @@ public class Query extends Runnable {
 	}
 
 	public boolean readFirst(Collection<Field> fields, SqlToken where) {
-		read(fields, null, null, where, null);
+		read(fields, null, null, where, null, 0, 1);
 		return next();
 	}
 

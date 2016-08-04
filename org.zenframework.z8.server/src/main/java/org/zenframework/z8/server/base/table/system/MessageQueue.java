@@ -161,7 +161,7 @@ public class MessageQueue extends Table {
 
 		SqlToken where = new And(new IsNot(processing), new Equ(address, domain));
 
-		read(fields, orderBy, where, 100);
+		read(fields, orderBy, where, 10);
 
 		while(next()) {
 			Message message = (Message)Loader.getInstance(classId.string().get());
