@@ -52,7 +52,6 @@ public class UnaryExpression extends LanguageElement {
 
     @Override
     public IVariableType getVariableType() {
-        assert (operator != null);
         return operator.getVariableType();
     }
 
@@ -127,8 +126,6 @@ public class UnaryExpression extends LanguageElement {
 
     @Override
     public void getCode(CodeGenerator codeGenerator) {
-        assert (expression != null);
-
         typeCast.getCode(codeGenerator, expression);
 
         codeGenerator.append('.');

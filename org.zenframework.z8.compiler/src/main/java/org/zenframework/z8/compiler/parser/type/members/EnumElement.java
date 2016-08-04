@@ -56,8 +56,7 @@ public class EnumElement extends LanguageElement implements IMember {
 
     @Override
     public String getSignature() {
-        assert (false);
-        return null;
+        throw new UnsupportedOperationException();
     }
 
     @Override

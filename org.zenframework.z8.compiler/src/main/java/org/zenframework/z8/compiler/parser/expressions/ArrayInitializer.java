@@ -135,7 +135,6 @@ public class ArrayInitializer extends LanguageElement {
     }
 
     private boolean isMap() {
-        assert (getVariableType().isArray());
         return getVariableType().getRightKey() != null;
     }
 
@@ -152,7 +151,6 @@ public class ArrayInitializer extends LanguageElement {
             boolean isLast = (index == elements.size() - 1);
 
             if(isMap) {
-                assert (element instanceof MapElement);
                 MapElement pair = (MapElement)element;
 
                 CodeGenerator keyCodeGenerator = new CodeGenerator(getCompilationUnit());

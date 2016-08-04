@@ -104,8 +104,6 @@ public class BracedExpression extends LanguageElement {
 
         IMethod[] methods = variableType.getMatchingMethods(PriorityOperator.Name);
 
-        assert (methods.length <= 1);
-
         if(methods.length == 1) {
             expression.getCode(codeGenerator);
 

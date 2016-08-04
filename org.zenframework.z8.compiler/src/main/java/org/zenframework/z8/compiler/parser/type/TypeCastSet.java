@@ -13,105 +13,101 @@ import org.zenframework.z8.compiler.core.ITypeCast;
 import org.zenframework.z8.compiler.core.ITypeCastSet;
 
 public class TypeCastSet implements ITypeCastSet {
-    private IMethod context;
-    private List<ITypeCast> typeCasts;
+	private IMethod context;
+	private List<ITypeCast> typeCasts;
 
-    public static ITypeCastSet[] findBestCast(ITypeCastSet[] candidates) {
-        class TypeCastSetComparator implements Comparator<ITypeCastSet> {
-            @Override
-            public int compare(ITypeCastSet left, ITypeCastSet right) {
-                return left.getWeight() - right.getWeight();
-            }
+	public static ITypeCastSet[] findBestCast(ITypeCastSet[] candidates) {
+		class TypeCastSetComparator implements Comparator<ITypeCastSet> {
+			@Override
+			public int compare(ITypeCastSet left, ITypeCastSet right) {
+				return left.getWeight() - right.getWeight();
+			}
 
-        }
+		}
 
-        if(candidates.length == 0) {
-            return new ITypeCastSet[0];
-        }
+		if(candidates.length == 0) {
+			return new ITypeCastSet[0];
+		}
 
-        if(candidates.length == 1) {
-            return candidates;
-        }
+		if(candidates.length == 1) {
+			return candidates;
+		}
 
-        List<ITypeCastSet> list = Arrays.asList(candidates);
-        Collections.sort(list, new TypeCastSetComparator());
+		List<ITypeCastSet> list = Arrays.asList(candidates);
+		Collections.sort(list, new TypeCastSetComparator());
 
-        ITypeCastSet first = list.get(0);
-        ITypeCastSet second = list.get(1);
+		ITypeCastSet first = list.get(0);
+		ITypeCastSet second = list.get(1);
 
-        return first.equals(second) ? new ITypeCastSet[] { first, second } : new ITypeCastSet[] { first };
-    }
+		return first.equals(second) ? new ITypeCastSet[] { first, second } : new ITypeCastSet[] { first };
+	}
 
-    public TypeCastSet() {}
+	public TypeCastSet() {
+	}
 
-    @Override
-    public IMethod getContext() {
-        return context;
-    }
+	@Override
+	public IMethod getContext() {
+		return context;
+	}
 
-    @Override
-    public void setContext(IMethod context) {
-        this.context = context;
-    }
+	@Override
+	public void setContext(IMethod context) {
+		this.context = context;
+	}
 
-    @Override
-    public int getWeight() {
-        int weight = 0;
+	@Override
+	public int getWeight() {
+		int weight = 0;
 
-        for(ITypeCast typeCast : typeCasts) {
-            weight += typeCast.getWeight();
-        }
+		for(ITypeCast typeCast : typeCasts) {
+			weight += typeCast.getWeight();
+		}
 
-        return weight;
-    }
+		return weight;
+	}
 
-    @Override
-    public boolean equals(Object object) {
-        ITypeCastSet other = (ITypeCastSet)object;
-        return getWeight() == other.getWeight();
-    }
+	@Override
+	public boolean equals(Object object) {
+		ITypeCastSet other = (ITypeCastSet)object;
+		return getWeight() == other.getWeight();
+	}
 
-    @Override
-    public ITypeCast[] get() {
-        if(typeCasts == null) {
-            return new ITypeCast[0];
-        }
+	@Override
+	public ITypeCast[] get() {
+		if(typeCasts == null) {
+			return new ITypeCast[0];
+		}
 
-        return typeCasts.toArray(new ITypeCast[typeCasts.size()]);
-    }
+		return typeCasts.toArray(new ITypeCast[typeCasts.size()]);
+	}
 
-    @Override
-    public void add(ITypeCast typeCast) {
-        if(typeCasts == null) {
-            typeCasts = new ArrayList<ITypeCast>();
-        }
+	@Override
+	public void add(ITypeCast typeCast) {
+		if(typeCasts == null) {
+			typeCasts = new ArrayList<ITypeCast>();
+		}
 
-        typeCasts.add(typeCast);
-    }
+		typeCasts.add(typeCast);
+	}
 
-    @Override
-    public void getCode(CodeGenerator codeGenerator, ILanguageElement[] elements) {
-        ITypeCast[] typeCasts = get();
+	@Override
+	public void getCode(CodeGenerator codeGenerator, ILanguageElement[] elements) {
+		ITypeCast[] typeCasts = get();
 
-        assert (typeCasts.length == elements.length);
+		IMethod method = getContext();
 
-        IMethod method = getContext();
+		if(method != null) {
+			codeGenerator.append(method.getJavaName());
+			codeGenerator.append('(');
+		}
 
-        if(method != null) {
-            codeGenerator.append(method.getJavaName());
-            codeGenerator.append('(');
-        }
+		for(int i = 0; i < elements.length; i++) {
+			if(i != 0)
+				codeGenerator.append(", ");
+			typeCasts[i].getCode(codeGenerator, elements[i], true);
+		}
 
-        for(int i = 0; i < elements.length; i++) {
-            if(i != 0) {
-                codeGenerator.append(", ");
-            }
-
-            typeCasts[i].getCode(codeGenerator, elements[i], true);
-        }
-
-        if(method != null) {
-            codeGenerator.append(')');
-        }
-    }
+		if(method != null)
+			codeGenerator.append(')');
+	}
 }

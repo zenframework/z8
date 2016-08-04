@@ -29,7 +29,6 @@ public class ABC {
     }
 
     public static boolean isDigit(char chr, int base) {
-        assert (base == 10 || base == 16);
         return base == 10 ? isDigit(chr) : isXDigit(chr);
     }
 

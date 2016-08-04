@@ -169,8 +169,6 @@ public class BinaryExpression extends LanguageElement {
         IType booleanType = Primary.resolveType(getCompilationUnit(), Primary.Boolean);
 
         if(left.getVariableType().isEnum()) {
-            assert (booleanType != null);
-
             codeGenerator.getCompilationUnit().importType(booleanType);
             codeGenerator.append("new " + booleanType.getJavaName() + "(");
             left.getCode(codeGenerator);

@@ -17,240 +17,238 @@ import org.zenframework.z8.compiler.parser.type.members.TypeBody;
 import org.zenframework.z8.compiler.workspace.CompilationUnit;
 
 public class MemberNestedType extends AbstractType implements IInitializer {
-    private IToken classToken;
+	private IToken classToken;
 
-    private QualifiedName name;
-    private TypeBody body;
+	private QualifiedName name;
+	private TypeBody body;
 
-    public MemberNestedType(QualifiedName name, IToken classToken, TypeBody body) {
-        super();
+	public MemberNestedType(QualifiedName name, IToken classToken, TypeBody body) {
+		super();
 
-        this.name = name;
-        this.classToken = classToken;
-        this.body = body;
-    }
+		this.name = name;
+		this.classToken = classToken;
+		this.body = body;
+	}
 
-    @Override
-    public IPosition getSourceRange() {
-        if(body != null) {
-            return name.getSourceRange().union(body.getSourceRange());
-        }
+	@Override
+	public IPosition getSourceRange() {
+		if(body != null) {
+			return name.getSourceRange().union(body.getSourceRange());
+		}
 
-        return name.getSourceRange();
-    }
+		return name.getSourceRange();
+	}
 
-    @Override
-    public IToken getFirstToken() {
-        return getFirstToken(super.getFirstToken(), name.getFirstToken());
-    }
+	@Override
+	public IToken getFirstToken() {
+		return getFirstToken(super.getFirstToken(), name.getFirstToken());
+	}
 
-    @Override
-    public IPosition getPosition() {
-        return name.getPosition();
-    }
+	@Override
+	public IPosition getPosition() {
+		return name.getPosition();
+	}
 
-    @Override
-    public String getLeftName() {
-        return name.toString();
-    }
+	@Override
+	public String getLeftName() {
+		return name.toString();
+	}
 
-    @Override
-    public String getRightName() {
-        return null;
-    }
+	@Override
+	public String getRightName() {
+		return null;
+	}
 
-    @Override
-    public ILanguageElement getLeftElement() {
-        return name;
-    }
+	@Override
+	public ILanguageElement getLeftElement() {
+		return name;
+	}
 
-    @Override
-    public ILanguageElement getRightElement() {
-        return null;
-    }
+	@Override
+	public ILanguageElement getRightElement() {
+		return null;
+	}
 
-    @Override
-    public IToken getOperator() {
-        return null;
-    }
+	@Override
+	public IToken getOperator() {
+		return null;
+	}
 
-    @Override
-    public boolean resolveTypes(CompilationUnit compilationUnit, IType declaringType) {
-        if(!super.resolveTypes(compilationUnit, declaringType))
-            return false;
+	@Override
+	public boolean resolveTypes(CompilationUnit compilationUnit, IType declaringType) {
+		if(!super.resolveTypes(compilationUnit, declaringType))
+			return false;
 
-        setUserName(name.toString());
-        setJavaName(compilationUnit.createUniqueName());
+		setUserName(name.toString());
+		setJavaName(compilationUnit.createUniqueName());
 
-        if(body != null) {
-            return body.resolveTypes(compilationUnit, this);
-        }
+		if(body != null) {
+			return body.resolveTypes(compilationUnit, this);
+		}
 
-        return true;
-    }
+		return true;
+	}
 
-    @Override
-    public boolean checkSemantics(CompilationUnit compilationUnit, IType declaringType, IMethod declaringMethod,
-            IVariable leftHandValue, IVariableType context) {
-        if(!super.checkSemantics(compilationUnit, declaringType, declaringMethod, null, null))
-            return false;
+	@Override
+	public boolean checkSemantics(CompilationUnit compilationUnit, IType declaringType, IMethod declaringMethod, IVariable leftHandValue, IVariableType context) {
+		if(!super.checkSemantics(compilationUnit, declaringType, declaringMethod, null, null))
+			return false;
 
-        if(!name.checkSemantics(compilationUnit, declaringType, declaringMethod, null, null))
-            return false;
+		if(!name.checkSemantics(compilationUnit, declaringType, declaringMethod, null, null))
+			return false;
 
-        if(name.getVariableType().isStatic()) {
-            assert (name.getTokenCount() == 1);
-            setError(name.getPosition(), name.toString() + ": undeclared identifier");
-            return false;
-        }
+		if(name.getVariableType().isStatic()) {
+			setError(name.getPosition(), name.toString() + ": undeclared identifier");
+			return false;
+		}
 
-        String userName = name.toString();
+		String userName = name.toString();
 
-        boolean result = true;
+		boolean result = true;
 
-        if(declaringType.getNestedType(userName) != null) {
-            setError(name.getPosition(), "second local class definition found");
-            result = false;
-        }
+		if(declaringType.getNestedType(userName) != null) {
+			setError(name.getPosition(), "second local class definition found");
+			result = false;
+		}
 
-        setContainerType(declaringType);
-        declaringType.addNestedType(this);
-        declaringType.addInitializer(this);
+		setContainerType(declaringType);
+		declaringType.addNestedType(this);
+		declaringType.addInitializer(this);
 
-        IVariableType variableType = name.getVariableType();
+		IVariableType variableType = name.getVariableType();
 
-        if(variableType.isArray() || variableType.isEnum()) {
-            setError(getPosition(), "Variables of array or enum type cannot be initialized in this manner");
-            result = false;
-        }
+		if(variableType.isArray() || variableType.isEnum()) {
+			setError(getPosition(), "Variables of array or enum type cannot be initialized in this manner");
+			result = false;
+		}
 
-        return result;
-    }
+		return result;
+	}
 
-    @Override
-    public boolean resolveNestedTypes(CompilationUnit compilationUnit, IType declaringType) {
-        if(nestedTypesResolved()) {
-            return true;
-        }
+	@Override
+	public boolean resolveNestedTypes(CompilationUnit compilationUnit, IType declaringType) {
+		if(nestedTypesResolved()) {
+			return true;
+		}
 
-        setNestedTypesResolved(true);
+		setNestedTypesResolved(true);
 
-        if(!super.resolveNestedTypes(compilationUnit, declaringType))
-            return false;
+		if(!super.resolveNestedTypes(compilationUnit, declaringType))
+			return false;
 
-        if(!name.resolveNestedTypes(compilationUnit, declaringType))
-            return false;
+		if(!name.resolveNestedTypes(compilationUnit, declaringType))
+			return false;
 
-        IType baseType = findBaseType(declaringType, 0);
-        setBaseType(baseType);
+		IType baseType = findBaseType(declaringType, 0);
+		setBaseType(baseType);
 
-        if(baseType != null) {
-            compilationUnit.addHyperlink(classToken.getPosition(), baseType.getCompilationUnit(), baseType.getPosition());
-            baseType.resolveNestedTypes(baseType.getCompilationUnit(), baseType.getDeclaringType());
-        }
+		if(baseType != null) {
+			compilationUnit.addHyperlink(classToken.getPosition(), baseType.getCompilationUnit(), baseType.getPosition());
+			baseType.resolveNestedTypes(baseType.getCompilationUnit(), baseType.getDeclaringType());
+		}
 
-        if(body != null) {
-            body.resolveStructure(compilationUnit, this);
-            body.checkSemantics(compilationUnit, this, null, null, null);
-            body.resolveNestedTypes(compilationUnit, this);
-        }
+		if(body != null) {
+			body.resolveStructure(compilationUnit, this);
+			body.checkSemantics(compilationUnit, this, null, null, null);
+			body.resolveNestedTypes(compilationUnit, this);
+		}
 
-        return true;
-    }
+		return true;
+	}
 
-    private IType findBaseType(IType type, int index) {
-        if(type == null) {
-            return null;
-        }
+	private IType findBaseType(IType type, int index) {
+		if(type == null) {
+			return null;
+		}
 
-        String nameStr = name.toString(index);
+		String nameStr = name.toString(index);
 
-        IType result = type.getNestedType(nameStr);
+		IType result = type.getNestedType(nameStr);
 
-        if(result != null && result != this) {
-            return result;
-        }
+		if(result != null && result != this) {
+			return result;
+		}
 
-        if(type.getBaseType() != null) {
-            return findBaseType(type.getBaseType(), index);
-        }
+		if(type.getBaseType() != null) {
+			return findBaseType(type.getBaseType(), index);
+		}
 
-        if(index == name.getTokenCount()) {
-            return name.getVariableType(index - 1).getType();
-        }
+		if(index == name.getTokenCount()) {
+			return name.getVariableType(index - 1).getType();
+		}
 
-        IVariableType variableType = name.getVariableType(index);
+		IVariableType variableType = name.getVariableType(index);
 
-        if(variableType != null) {
-            return findBaseType(variableType.getType(), index + 1);
-        }
+		if(variableType != null) {
+			return findBaseType(variableType.getType(), index + 1);
+		}
 
-        return null;
-    }
+		return null;
+	}
 
-    @Override
-    public void getCode(CodeGenerator codeGenerator) {
-        // local class context
-        codeGenerator.breakLine();
-        codeGenerator.indent();
-        codeGenerator.append("public static class " + getJavaName() + " extends " + getBaseType().getNestedJavaName());
-        codeGenerator.breakLine();
-        codeGenerator.indent();
-        codeGenerator.append("{");
-        codeGenerator.breakLine();
+	@Override
+	public void getCode(CodeGenerator codeGenerator) {
+		// local class context
+		codeGenerator.breakLine();
+		codeGenerator.indent();
+		codeGenerator.append("public static class " + getJavaName() + " extends " + getBaseType().getNestedJavaName());
+		codeGenerator.breakLine();
+		codeGenerator.indent();
+		codeGenerator.append("{");
+		codeGenerator.breakLine();
 
-        codeGenerator.incrementIndent();
+		codeGenerator.incrementIndent();
 
-        if(!extendsPrimary()) {
-            generateClassCode(codeGenerator);
-        }
+		if(!extendsPrimary()) {
+			generateClassCode(codeGenerator);
+		}
 
-        body.getCode(codeGenerator);
+		body.getCode(codeGenerator);
 
-        codeGenerator.decrementIndent();
+		codeGenerator.decrementIndent();
 
-        codeGenerator.indent();
-        codeGenerator.append("};");
-        codeGenerator.breakLine();
-    }
+		codeGenerator.indent();
+		codeGenerator.append("};");
+		codeGenerator.breakLine();
+	}
 
-    @Override
-    public void getConstructor(CodeGenerator codeGenerator) {
-        codeGenerator.indent();
+	@Override
+	public void getConstructor(CodeGenerator codeGenerator) {
+		codeGenerator.indent();
 
-        name.getCode(codeGenerator);
-        codeGenerator.append(" = " + getVariableType().getJavaNew(getStaticContext()));
+		name.getCode(codeGenerator);
+		codeGenerator.append(" = " + getVariableType().getJavaNew(getStaticContext()));
 
-        codeGenerator.append(';');
-        codeGenerator.breakLine();
-    }
+		codeGenerator.append(';');
+		codeGenerator.breakLine();
+	}
 
-    @Override
-    public void getConstructor2(CodeGenerator codeGenerator) {
-        IAttribute[] attributes = getAttributes();
+	@Override
+	public void getConstructor2(CodeGenerator codeGenerator) {
+		IAttribute[] attributes = getAttributes();
 
-        for(IAttribute attribute : attributes) {
-            codeGenerator.indent();
-            name.getCode(codeGenerator);
-            codeGenerator.append("." + "setAttribute(" + '"' + attribute.getName() + '"' + ", ");
-            attribute.getCode(codeGenerator);
-            codeGenerator.append(");");
-            codeGenerator.breakLine();
-        }
-    }
+		for(IAttribute attribute : attributes) {
+			codeGenerator.indent();
+			name.getCode(codeGenerator);
+			codeGenerator.append("." + "setAttribute(" + '"' + attribute.getName() + '"' + ", ");
+			attribute.getCode(codeGenerator);
+			codeGenerator.append(");");
+			codeGenerator.breakLine();
+		}
+	}
 
-    @Override
-    public TypeBody getTypeBody() {
-        return body;
-    }
+	@Override
+	public TypeBody getTypeBody() {
+		return body;
+	}
 
-    @Override
-    public void replaceTypeName(TextEdit parent, IType type, String newTypeName) {
-        super.replaceTypeName(parent, type, newTypeName);
+	@Override
+	public void replaceTypeName(TextEdit parent, IType type, String newTypeName) {
+		super.replaceTypeName(parent, type, newTypeName);
 
-        if(body != null) {
-            body.replaceTypeName(parent, type, newTypeName);
-        }
-    }
+		if(body != null) {
+			body.replaceTypeName(parent, type, newTypeName);
+		}
+	}
 
 }

@@ -80,8 +80,7 @@ public class OperatorToken extends Token {
             return "*^*=";
         }
 
-        assert (false);
-        return null;
+        throw new UnsupportedOperationException();
     }
 
     public String getJavaSign() {
@@ -146,7 +145,6 @@ public class OperatorToken extends Token {
             return "MulCaretMulAssign";
         }
 
-        assert (false);
-        return null;
+        throw new UnsupportedOperationException();
     }
 }

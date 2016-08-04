@@ -25,503 +25,476 @@ import org.zenframework.z8.compiler.workspace.CompilationUnit;
 import org.zenframework.z8.compiler.workspace.Project;
 
 public class Type extends AbstractType {
-    private IToken finalToken;
-    private IToken classToken;
-    private IToken typeNameToken;
-    private IToken baseTypeNameToken;
-
-    private VariableType baseVariableType;
-
-    private TypeBody body;
-
-    public Type(IToken finalToken, IToken classToken) {
-        this.finalToken = finalToken;
-        this.classToken = classToken;
-    }
-
-    @Override
-    public ILanguageElement getParent() {
-        return getCompilationUnit();
-    }
-
-    @Override
-    public IPosition getSourceRange() {
-        IPosition start = super.getSourceRange();
-
-        if(start == null) {
-            start = classToken.getPosition();
-        }
-
-        if(body != null) {
-            return start.union(body.getSourceRange());
-        }
-        else if(baseVariableType != null) {
-            return start.union(baseVariableType.getPosition());
-        }
-
-        return start.union(typeNameToken.getPosition());
-    }
-
-    @Override
-    public IPosition getPosition() {
-        return typeNameToken != null ? typeNameToken.getPosition() : classToken.getPosition();
-    }
-
-    @Override
-    public IToken getFirstToken() {
-        return getFirstToken(super.getFirstToken(), classToken);
-    }
-
-    @Override
-    public ILanguageElement getElementAt(IPosition position) {
-        if(getSourceRange().contains(position)) {
-            return this;
-        }
-
-        return null;
-    }
-
-    public IToken getClassToken() {
-        return classToken;
-    }
-
-    @Override
-    public IToken getNameToken() {
-        return typeNameToken;
-    }
-
-    public void setTypeNameToken(IToken typeNameToken) {
-        this.typeNameToken = typeNameToken;
-        setUserName(typeNameToken.getRawText());
-    }
-
-    @Override
-    public boolean isFinal() {
-        return finalToken != null;
-    }
-
-    public void setBaseTypeToken(IToken baseTypeNameToken) {
-        this.baseTypeNameToken = baseTypeNameToken;
-        baseVariableType = new VariableType(baseTypeNameToken);
-    }
-
-    public TypeBody getBody() {
-        return body;
-    }
-
-    public void setBody(TypeBody body) {
-        this.body = body;
-    }
-
-    @Override
-    public Project getProject() {
-        return getCompilationUnit().getProject();
-    }
-
-    @Override
-    public boolean resolveType(CompilationUnit compilationUnit) {
-        if(!super.resolveType(compilationUnit))
-            return false;
-
-        String typeName = getUserName();
-
-        if(typeName == null) {
-            return false;
-        }
-
-        if(!isNative() && !Lexer.checkIdentifier(typeName)) {
-            setFatalError(typeNameToken.getPosition(), "Syntax error on token '" + typeName + "'. " + typeName
-                    + " is a reserved keyword.");
-            return false;
-        }
-
-        if(!compilationUnit.getSimpleName().equals(typeName)) {
-            setError(typeNameToken.getPosition(), "The type " + typeName + " must be defined in its own file");
-            return false;
-        }
-
-        return true;
-    }
-
-    @Override
-    public boolean canBeBaseTypeOf(IType type) {
-        if(equals(type)) {
-            return false;
-        }
-
-        if(baseVariableType == null) {
-            return true;
-        }
-
-        IType baseType = baseVariableType.getType();
-
-        if(type.equals(baseType)) {
-            return false;
-        }
-
-        if(baseType != null) {
-            return baseType.canBeBaseTypeOf(type);
-        }
-
-        return true;
+	private IToken finalToken;
+	private IToken classToken;
+	private IToken typeNameToken;
+	private IToken baseTypeNameToken;
+
+	private VariableType baseVariableType;
+
+	private TypeBody body;
+
+	public Type(IToken finalToken, IToken classToken) {
+		this.finalToken = finalToken;
+		this.classToken = classToken;
+	}
+
+	@Override
+	public ILanguageElement getParent() {
+		return getCompilationUnit();
+	}
+
+	@Override
+	public IPosition getSourceRange() {
+		IPosition start = super.getSourceRange();
+
+		if(start == null) {
+			start = classToken.getPosition();
+		}
+
+		if(body != null) {
+			return start.union(body.getSourceRange());
+		} else if(baseVariableType != null) {
+			return start.union(baseVariableType.getPosition());
+		}
+
+		return start.union(typeNameToken.getPosition());
+	}
+
+	@Override
+	public IPosition getPosition() {
+		return typeNameToken != null ? typeNameToken.getPosition() : classToken.getPosition();
+	}
+
+	@Override
+	public IToken getFirstToken() {
+		return getFirstToken(super.getFirstToken(), classToken);
+	}
+
+	@Override
+	public ILanguageElement getElementAt(IPosition position) {
+		if(getSourceRange().contains(position)) {
+			return this;
+		}
+
+		return null;
+	}
+
+	public IToken getClassToken() {
+		return classToken;
+	}
+
+	@Override
+	public IToken getNameToken() {
+		return typeNameToken;
+	}
+
+	public void setTypeNameToken(IToken typeNameToken) {
+		this.typeNameToken = typeNameToken;
+		setUserName(typeNameToken.getRawText());
+	}
+
+	@Override
+	public boolean isFinal() {
+		return finalToken != null;
+	}
+
+	public void setBaseTypeToken(IToken baseTypeNameToken) {
+		this.baseTypeNameToken = baseTypeNameToken;
+		baseVariableType = new VariableType(baseTypeNameToken);
+	}
+
+	public TypeBody getBody() {
+		return body;
+	}
+
+	public void setBody(TypeBody body) {
+		this.body = body;
+	}
+
+	@Override
+	public Project getProject() {
+		return getCompilationUnit().getProject();
+	}
+
+	@Override
+	public boolean resolveType(CompilationUnit compilationUnit) {
+		if(!super.resolveType(compilationUnit))
+			return false;
+
+		String typeName = getUserName();
+
+		if(typeName == null) {
+			return false;
+		}
 
-    }
-
-    @Override
-    public boolean resolveTypes(CompilationUnit compilationUnit, IType declaringType) {
-        if(typesResolved()) {
-            return true;
-        }
+		if(!isNative() && !Lexer.checkIdentifier(typeName)) {
+			setFatalError(typeNameToken.getPosition(), "Syntax error on token '" + typeName + "'. " + typeName + " is a reserved keyword.");
+			return false;
+		}
 
-        setTypesResolved(true);
-
-        if(!super.resolveTypes(compilationUnit, declaringType))
-            return false;
+		if(!compilationUnit.getSimpleName().equals(typeName)) {
+			setError(typeNameToken.getPosition(), "The type " + typeName + " must be defined in its own file");
+			return false;
+		}
 
-        if(baseVariableType != null) {
-            if(baseVariableType.resolveTypes(compilationUnit, this)) {
-                IType baseType = baseVariableType.getType();
+		return true;
+	}
 
-                if(baseType.equals(this) || baseType.isSubtypeOf(this)) {
-                    setError(baseVariableType.getPosition(),
-                            "Cycle detected: the type " + baseVariableType.getSignature()
-                                    + " cannot extend/implement itself");
-                    baseType = null;
-                }
-                else if(baseType.isEnum()) {
-                    setError(baseVariableType.getPosition(), "The enum " + baseVariableType.getSignature()
-                            + " cannot be the supertype of " + getUserName() + "; a supertype must be a type");
-                    baseType = null;
-                }
-                else if(baseType.isFinal()) {
-                    setError(baseVariableType.getPosition(), "The type " + baseVariableType.getSignature()
-                            + " is final and cannot be the supertype of " + getUserName());
-                    baseType = null;
-                }
+	@Override
+	public boolean canBeBaseTypeOf(IType type) {
+		if(equals(type)) {
+			return false;
+		}
 
-                setBaseType(baseType);
+		if(baseVariableType == null) {
+			return true;
+		}
 
-            }
-        }
+		IType baseType = baseVariableType.getType();
 
-        setupNativeAttribute();
+		if(type.equals(baseType)) {
+			return false;
+		}
 
-        if(body != null) {
-            body.resolveTypes(compilationUnit, this);
-        }
+		if(baseType != null) {
+			return baseType.canBeBaseTypeOf(type);
+		}
 
-        return true;
-    }
+		return true;
 
-    @Override
-    public boolean resolveStructure(CompilationUnit compilationUnit, IType declaringType) {
-        assert (typesResolved());
+	}
 
-        if(structureResolved()) {
-            return true;
-        }
-        setStructureResolved(true);
+	@Override
+	public boolean resolveTypes(CompilationUnit compilationUnit, IType declaringType) {
+		if(typesResolved()) {
+			return true;
+		}
 
-        if(!super.resolveStructure(compilationUnit, declaringType))
-            return false;
+		setTypesResolved(true);
 
-        IType baseType = getBaseType();
+		if(!super.resolveTypes(compilationUnit, declaringType))
+			return false;
 
-        if(baseType != null && !canBeSubtypeOf(baseType)) {
-            setError(typeNameToken.getPosition(), "The hierarchy of the type " + getUserName() + " is inconsistent");
-            setBaseType(null);
-        }
+		if(baseVariableType != null) {
+			if(baseVariableType.resolveTypes(compilationUnit, this)) {
+				IType baseType = baseVariableType.getType();
 
-        if(baseType != null) {
-            baseType.resolveStructure(baseType.getCompilationUnit(), baseType);
-        }
+				if(baseType.equals(this) || baseType.isSubtypeOf(this)) {
+					setError(baseVariableType.getPosition(), "Cycle detected: the type " + baseVariableType.getSignature() + " cannot extend/implement itself");
+					baseType = null;
+				} else if(baseType.isEnum()) {
+					setError(baseVariableType.getPosition(), "The enum " + baseVariableType.getSignature() + " cannot be the supertype of " + getUserName() + "; a supertype must be a type");
+					baseType = null;
+				} else if(baseType.isFinal()) {
+					setError(baseVariableType.getPosition(), "The type " + baseVariableType.getSignature() + " is final and cannot be the supertype of " + getUserName());
+					baseType = null;
+				}
 
-        if(body != null) {
-            body.resolveStructure(compilationUnit, this);
-        }
-
-        return true;
-    }
-
-    @Override
-    public boolean checkSemantics(CompilationUnit compilationUnit, IType declaringType, IMethod declaringMethod,
-            IVariable leftHandValue, IVariableType context) {
-        assert (structureResolved());
-
-        if(semanticsChecked()) {
-            return true;
-        }
-
-        setSemanticsChecked(true);
+				setBaseType(baseType);
 
-        if(!super.checkSemantics(compilationUnit, declaringType, declaringMethod, leftHandValue, context))
-            return false;
+			}
+		}
 
-        IType baseType = getBaseType();
-
-        if(baseType != null) {
-            baseType.checkSemantics(baseType.getCompilationUnit(), baseType, null, null, null);
-        }
-
-        if(body != null) {
-            body.checkSemantics(compilationUnit, this, null, null, null);
-        }
-
-        if(getBaseType() != null) {
-            compilationUnit.addHyperlink(baseVariableType.getPosition(), getBaseType());
-        }
-
-        if(typeNameToken != null) {
-            compilationUnit.addHyperlink(typeNameToken.getPosition(), this);
-        }
-
-        return true;
-    }
-
-    @Override
-    public boolean resolveNestedTypes(CompilationUnit compilationUnit, IType declaringType) {
-        if(nestedTypesResolved()) {
-            return true;
-        }
-        setNestedTypesResolved(true);
+		setupNativeAttribute();
 
-        if(!super.resolveNestedTypes(compilationUnit, declaringType))
-            return false;
+		if(body != null) {
+			body.resolveTypes(compilationUnit, this);
+		}
 
-        IType baseType = getBaseType();
+		return true;
+	}
 
-        if(baseType != null) {
-            baseType.resolveNestedTypes(baseType.getCompilationUnit(), baseType);
-        }
+	@Override
+	public boolean resolveStructure(CompilationUnit compilationUnit, IType declaringType) {
+		if(structureResolved())
+			return true;
 
-        if(body != null) {
-            body.resolveNestedTypes(compilationUnit, declaringType);
-        }
+		setStructureResolved(true);
 
-        return true;
-    }
+		if(!super.resolveStructure(compilationUnit, declaringType))
+			return false;
 
-    class MemberInitializationInfo {
-        String name;
-        IMember member;
+		IType baseType = getBaseType();
 
-        IType type;
-        Set<ILanguageElement> initializers;
+		if(baseType != null && !canBeSubtypeOf(baseType)) {
+			setError(typeNameToken.getPosition(), "The hierarchy of the type " + getUserName() + " is inconsistent");
+			setBaseType(null);
+		}
 
-        MemberInitializationInfo(String name) {
-            this.name = name;
-        }
+		if(baseType != null)
+			baseType.resolveStructure(baseType.getCompilationUnit(), baseType);
 
-        IVariableType getVariableType() {
-            if(type != null) {
-                return type.getVariableType();
-            }
+		if(body != null)
+			body.resolveStructure(compilationUnit, this);
 
-            if(member != null) {
-                return member.getVariableType();
-            }
+		return true;
+	}
 
-            assert (false);
-            return null;
-        }
+	@Override
+	public boolean checkSemantics(CompilationUnit compilationUnit, IType declaringType, IMethod declaringMethod, IVariable leftHandValue, IVariableType context) {
+		if(semanticsChecked())
+			return true;
 
-        String getQualifiedJavaName() {
-            return getVariableType().getType().getQualifiedJavaName();
-        }
+		setSemanticsChecked(true);
 
-        ILanguageElement[] getInitializers() {
-            return initializers != null ? initializers.toArray(new ILanguageElement[0]) : new ILanguageElement[0];
-        }
+		if(!super.checkSemantics(compilationUnit, declaringType, declaringMethod, leftHandValue, context))
+			return false;
 
-        void addInitializer(ILanguageElement initializer) {
-            if(initializers == null) {
-                initializers = new Set<ILanguageElement>();
-            }
-            initializers.add(initializer);
-        }
-    }
+		IType baseType = getBaseType();
 
-    @SuppressWarnings("unused")
-    private MemberInitializationInfo[] getMemberInitilization() {
-        Map<String, MemberInitializationInfo> result = new HashMap<String, MemberInitializationInfo>();
+		if(baseType != null)
+			baseType.checkSemantics(baseType.getCompilationUnit(), baseType, null, null, null);
 
-        initMembersMap(result, this);
-        collectInitializers(result, this);
-        collectNestedTypes(result, this);
+		if(body != null)
+			body.checkSemantics(compilationUnit, this, null, null, null);
 
-        return result.values().toArray(new MemberInitializationInfo[0]);
-    }
+		if(getBaseType() != null)
+			compilationUnit.addHyperlink(baseVariableType.getPosition(), getBaseType());
 
-    private void initMembersMap(Map<String, MemberInitializationInfo> result, IType type) {
-        IMember[] members = type.getAllMembers();
+		if(typeNameToken != null)
+			compilationUnit.addHyperlink(typeNameToken.getPosition(), this);
 
-        for(IMember member : members) {
-            if(!(member instanceof IMethod) && member.getVariableType().isReference()) {
-                String name = member.getDeclaringType().getNestedUserName() + '.' + member.getName();
-                MemberInitializationInfo info = new MemberInitializationInfo(name);
-                info.member = member;
-                result.put(name, info);
-            }
-        }
-    }
+		return true;
+	}
 
-    private void collectNestedTypes(Map<String, MemberInitializationInfo> result, IType type) {
-        if(type.getRecursionFlag()) {
-            return;
-        }
+	@Override
+	public boolean resolveNestedTypes(CompilationUnit compilationUnit, IType declaringType) {
+		if(nestedTypesResolved()) {
+			return true;
+		}
+		setNestedTypesResolved(true);
 
-        type.setRecursionFlag(true);
+		if(!super.resolveNestedTypes(compilationUnit, declaringType))
+			return false;
 
-        IType baseType = type.getBaseType();
+		IType baseType = getBaseType();
 
-        if(baseType != null) {
-            collectNestedTypes(result, baseType);
-        }
+		if(baseType != null) {
+			baseType.resolveNestedTypes(baseType.getCompilationUnit(), baseType);
+		}
 
-        IType[] nestedTypes = type.getNestedTypes();
+		if(body != null) {
+			body.resolveNestedTypes(compilationUnit, declaringType);
+		}
 
-        for(IType nestedType : nestedTypes) {
-            if(nestedType instanceof DeclaratorNestedType) {
-                String name = nestedType.getNestedUserName();
+		return true;
+	}
 
-                MemberInitializationInfo info = result.get(name);
+	class MemberInitializationInfo {
+		String name;
+		IMember member;
 
-                if(info == null) {
-                    info = new MemberInitializationInfo(name);
-                    result.put(name, info);
-                }
+		IType type;
+		Set<ILanguageElement> initializers;
 
-                info.type = nestedType;
-                collectNestedTypes(result, nestedType);
-            }
+		MemberInitializationInfo(String name) {
+			this.name = name;
+		}
 
-            initMembersMap(result, nestedType);
-            collectInitializers(result, nestedType);
-        }
+		IVariableType getVariableType() {
+			if(type != null)
+				return type.getVariableType();
 
-        type.setRecursionFlag(false);
-    }
+			if(member != null)
+				return member.getVariableType();
 
-    private void collectInitializers(Map<String, MemberInitializationInfo> result, IType type) {
-        if(type.getRecursionFlag()) {
-            return;
-        }
+	        throw new UnsupportedOperationException();
+		}
 
-        type.setRecursionFlag(true);
+		String getQualifiedJavaName() {
+			return getVariableType().getType().getQualifiedJavaName();
+		}
 
-        IType baseType = type.getBaseType();
+		ILanguageElement[] getInitializers() {
+			return initializers != null ? initializers.toArray(new ILanguageElement[0]) : new ILanguageElement[0];
+		}
 
-        if(baseType != null) {
-            collectInitializers(result, baseType);
-        }
+		void addInitializer(ILanguageElement initializer) {
+			if(initializers == null)
+				initializers = new Set<ILanguageElement>();
+			initializers.add(initializer);
+		}
+	}
 
-        IInitializer[] initializers = type.getInitializers();
+	@SuppressWarnings("unused")
+	private MemberInitializationInfo[] getMemberInitilization() {
+		Map<String, MemberInitializationInfo> result = new HashMap<String, MemberInitializationInfo>();
 
-        for(IInitializer initializer : initializers) {
-            String name = type.getNestedUserName() + '.' + initializer.getLeftName();
+		initMembersMap(result, this);
+		collectInitializers(result, this);
+		collectNestedTypes(result, this);
 
-            MemberInitializationInfo info = result.get(name);
+		return result.values().toArray(new MemberInitializationInfo[0]);
+	}
 
-            if(initializer instanceof IType) {
-                if(!type.isNative()) {
-                    if(info == null) {
-                        info = new MemberInitializationInfo(name);
-                        result.put(name, info);
-                    }
+	private void initMembersMap(Map<String, MemberInitializationInfo> result, IType type) {
+		IMember[] members = type.getAllMembers();
 
-                    info.type = (IType)initializer;
-                }
+		for(IMember member : members) {
+			if(!(member instanceof IMethod) && member.getVariableType().isReference()) {
+				String name = member.getDeclaringType().getNestedUserName() + '.' + member.getName();
+				MemberInitializationInfo info = new MemberInitializationInfo(name);
+				info.member = member;
+				result.put(name, info);
+			}
+		}
+	}
 
-                collectNestedTypes(result, (IType)initializer);
-            }
+	private void collectNestedTypes(Map<String, MemberInitializationInfo> result, IType type) {
+		if(type.getRecursionFlag()) {
+			return;
+		}
 
-            if(info != null) {
-                info.addInitializer(initializer);
-            }
-        }
+		type.setRecursionFlag(true);
 
-        type.setRecursionFlag(false);
-    }
+		IType baseType = type.getBaseType();
 
-    @Override
-    public void getCode(CodeGenerator headerGenerator) {
-        CodeGenerator codeGenerator = new CodeGenerator(getCompilationUnit());
+		if(baseType != null) {
+			collectNestedTypes(result, baseType);
+		}
 
-        codeGenerator.breakLine();
+		IType[] nestedTypes = type.getNestedTypes();
 
-        String base = getBaseType() == null ? BuiltinNative.OBJECT : getBaseType().getJavaName();
+		for(IType nestedType : nestedTypes) {
+			if(nestedType instanceof DeclaratorNestedType) {
+				String name = nestedType.getNestedUserName();
 
-        codeGenerator.indent();
-        codeGenerator.append("@SuppressWarnings(\"all\")");
-        codeGenerator.breakLine();
-        codeGenerator.indent();
-        codeGenerator.append("public class " + getJavaName() + " extends " + base);
-        codeGenerator.breakLine();
-        codeGenerator.indent();
-        codeGenerator.append("{");
-        codeGenerator.breakLine();
+				MemberInitializationInfo info = result.get(name);
 
-        codeGenerator.incrementIndent();
+				if(info == null) {
+					info = new MemberInitializationInfo(name);
+					result.put(name, info);
+				}
 
-        if(!extendsPrimary()) {
-            generateClassCode(codeGenerator);
-        }
+				info.type = nestedType;
+				collectNestedTypes(result, nestedType);
+			}
 
-        if(body != null) {
-            codeGenerator.breakLine();
-            body.getCode(codeGenerator);
-        }
+			initMembersMap(result, nestedType);
+			collectInitializers(result, nestedType);
+		}
 
-        codeGenerator.append("}");
-        codeGenerator.breakLine();
+		type.setRecursionFlag(false);
+	}
 
-        codeGenerator.decrementIndent();
+	private void collectInitializers(Map<String, MemberInitializationInfo> result, IType type) {
+		if(type.getRecursionFlag()) {
+			return;
+		}
 
-        // Import block code
-        super.getCode(headerGenerator);
+		type.setRecursionFlag(true);
 
-        for(String standardImport : BuiltinNative.StandardImports) {
-            headerGenerator.append(standardImport);
-            headerGenerator.breakLine();
-        }
+		IType baseType = type.getBaseType();
 
-        CompilationUnit compilationUnit = getCompilationUnit();
+		if(baseType != null) {
+			collectInitializers(result, baseType);
+		}
 
-        IType[] usedTypes = compilationUnit.getImportedTypes();
+		IInitializer[] initializers = type.getInitializers();
 
-        for(IType type : usedTypes) {
-            headerGenerator.append("import " + type.getQualifiedJavaName() + ";");
-            headerGenerator.breakLine();
-        }
+		for(IInitializer initializer : initializers) {
+			String name = type.getNestedUserName() + '.' + initializer.getLeftName();
 
-        compilationUnit.setTargetLinesOffset(headerGenerator.getCurrentLine());
+			MemberInitializationInfo info = result.get(name);
 
-        headerGenerator.append(codeGenerator);
-    }
+			if(initializer instanceof IType) {
+				if(!type.isNative()) {
+					if(info == null) {
+						info = new MemberInitializationInfo(name);
+						result.put(name, info);
+					}
 
-    @Override
-    public TypeBody getTypeBody() {
-        return body;
-    }
+					info.type = (IType)initializer;
+				}
 
-    @Override
-    public void replaceTypeName(TextEdit parent, IType type, String newTypeName) {
-        assert (type != null);
+				collectNestedTypes(result, (IType)initializer);
+			}
 
-        super.replaceTypeName(parent, type, newTypeName);
+			if(info != null) {
+				info.addInitializer(initializer);
+			}
+		}
 
-        if(type.equals(this) && typeNameToken != null) {
-            IPosition position = typeNameToken.getPosition();
-            parent.addChild(new ReplaceEdit(position.getOffset(), position.getLength(), newTypeName));
-        }
+		type.setRecursionFlag(false);
+	}
 
-        if(type.equals(getBaseType())) {
-            IPosition position = baseTypeNameToken.getPosition();
-            parent.addChild(new ReplaceEdit(position.getOffset(), position.getLength(), newTypeName));
-        }
+	@Override
+	public void getCode(CodeGenerator headerGenerator) {
+		CodeGenerator codeGenerator = new CodeGenerator(getCompilationUnit());
 
-        if(body != null) {
-            body.replaceTypeName(parent, type, newTypeName);
-        }
-    }
+		codeGenerator.breakLine();
+
+		String base = getBaseType() == null ? BuiltinNative.OBJECT : getBaseType().getJavaName();
+
+		codeGenerator.indent();
+		codeGenerator.append("@SuppressWarnings(\"all\")");
+		codeGenerator.breakLine();
+		codeGenerator.indent();
+		codeGenerator.append("public class " + getJavaName() + " extends " + base);
+		codeGenerator.breakLine();
+		codeGenerator.indent();
+		codeGenerator.append("{");
+		codeGenerator.breakLine();
+
+		codeGenerator.incrementIndent();
+
+		if(!extendsPrimary()) {
+			generateClassCode(codeGenerator);
+		}
+
+		if(body != null) {
+			codeGenerator.breakLine();
+			body.getCode(codeGenerator);
+		}
+
+		codeGenerator.append("}");
+		codeGenerator.breakLine();
+
+		codeGenerator.decrementIndent();
+
+		// Import block code
+		super.getCode(headerGenerator);
+
+		for(String standardImport : BuiltinNative.StandardImports) {
+			headerGenerator.append(standardImport);
+			headerGenerator.breakLine();
+		}
+
+		CompilationUnit compilationUnit = getCompilationUnit();
+
+		IType[] usedTypes = compilationUnit.getImportedTypes();
+
+		for(IType type : usedTypes) {
+			headerGenerator.append("import " + type.getQualifiedJavaName() + ";");
+			headerGenerator.breakLine();
+		}
+
+		compilationUnit.setTargetLinesOffset(headerGenerator.getCurrentLine());
+
+		headerGenerator.append(codeGenerator);
+	}
+
+	@Override
+	public TypeBody getTypeBody() {
+		return body;
+	}
+
+	@Override
+	public void replaceTypeName(TextEdit parent, IType type, String newTypeName) {
+		super.replaceTypeName(parent, type, newTypeName);
+
+		if(type.equals(this) && typeNameToken != null) {
+			IPosition position = typeNameToken.getPosition();
+			parent.addChild(new ReplaceEdit(position.getOffset(), position.getLength(), newTypeName));
+		}
+
+		if(type.equals(getBaseType())) {
+			IPosition position = baseTypeNameToken.getPosition();
+			parent.addChild(new ReplaceEdit(position.getOffset(), position.getLength(), newTypeName));
+		}
+
+		if(body != null)
+			body.replaceTypeName(parent, type, newTypeName);
+	}
 }

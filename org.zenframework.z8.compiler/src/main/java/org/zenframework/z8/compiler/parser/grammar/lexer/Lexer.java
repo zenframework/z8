@@ -316,8 +316,6 @@ public class Lexer {
     Token getComment(IPosition position) throws TokenException {
         Position start = new Position(position);
 
-        assert (charAt(position) == '/' && (nextCharAt(position) == '*' || nextCharAt(position) == '/'));
-
         boolean singleLine = nextCharAt(position) == '/';
 
         buffer.advance(position, 2);
@@ -391,16 +389,12 @@ public class Lexer {
     }
 
     Token getPunctuator(IPosition position) throws TokenException {
-        assert (!isEOF(position));
-
         Position start = new Position(position);
 
         char first = charAt(position);
         char second = nextCharAt(position, 1);
         char third = nextCharAt(position, 2);
         char fourth = nextCharAt(position, 3);
-
-        assert (ABC.isPunctuator(first));
 
         if(first == '/' && (second == '*' || second == '/')) {
             return getComment(position);
@@ -504,13 +498,10 @@ public class Lexer {
             }
         }
 
-        assert (false);
-        return new Token();
+        throw new UnsupportedOperationException();
     }
 
     Token getIdentifier(IPosition position) {
-        assert (ABC.isAlpha(charAt(position)) || charAt(position) == '_');
-
         Position start = new Position(position);
 
         while(!isEOF(position)) {
@@ -620,8 +611,6 @@ public class Lexer {
     }
 
     String getMantissa(IPosition position) throws TokenException {
-        assert (!isEOF(position) && charAt(position) == '.');
-
         char next = nextCharAt(position);
 
         buffer.advance(position);
@@ -642,9 +631,6 @@ public class Lexer {
     String getDegree(IPosition position) throws TokenException {
         Position start = new Position(position);
 
-        assert (!isEOF(position));
-        assert (charAt(position) == 'e' || charAt(position) == 'E');
-
         char sign = nextCharAt(position);
 
         if(sign != '+' && sign != '-') {
@@ -663,8 +649,6 @@ public class Lexer {
 
     String getDigitSequence(IPosition position, int base) throws TokenException {
         Position start = new Position(position);
-
-        assert (base == 10 || base == 16);
 
         if(isEOF(position) || !ABC.isDigit(charAt(position), base)) {
             String error = "expected " + (base == 10 ? "decimal" : "hexadecimal") + " digit";
@@ -725,8 +709,6 @@ public class Lexer {
     }
 
     Token getDateTime(IPosition position) {
-        assert (charAt(position) == '\'');
-
         Position start = new Position(position);
 
         buffer.advance(position);
@@ -869,8 +851,6 @@ public class Lexer {
     }
 
     Token getBinary(IPosition position) {
-        assert (charAt(position) == '\'');
-
         LinkedList<Byte> bytes = new LinkedList<Byte>();
 
         Position start = new Position(position);
@@ -938,7 +918,6 @@ public class Lexer {
 
     Token getGUID(IPosition position) {
         //{1601767A-6DAE-4e27-A765-9789FF1875D6}
-        assert (charAt(position) == '\'');
 
         Position start = new Position(position);
 

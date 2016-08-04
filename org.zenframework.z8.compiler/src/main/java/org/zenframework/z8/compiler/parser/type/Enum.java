@@ -18,209 +18,201 @@ import org.zenframework.z8.compiler.parser.variable.VariableType;
 import org.zenframework.z8.compiler.workspace.CompilationUnit;
 
 public class Enum extends AbstractType {
-    private IToken enumToken;
-    private IToken nameToken;
+	private IToken enumToken;
+	private IToken nameToken;
 
-    @SuppressWarnings("unused")
-    private IToken leftBrace;
-    private List<EnumElement> values;
-    private IToken rightBrace;
+	@SuppressWarnings("unused")
+	private IToken leftBrace;
+	private List<EnumElement> values;
+	private IToken rightBrace;
 
-    public Enum(IToken enumToken) {
-        this.enumToken = enumToken;
-    }
+	public Enum(IToken enumToken) {
+		this.enumToken = enumToken;
+	}
 
-    @Override
-    public IPosition getSourceRange() {
-        IPosition start = super.getSourceRange();
+	@Override
+	public IPosition getSourceRange() {
+		IPosition start = super.getSourceRange();
 
-        if(start == null) {
-            start = enumToken.getPosition();
-        }
+		if(start == null) {
+			start = enumToken.getPosition();
+		}
 
-        if(rightBrace != null) {
-            return start.union(rightBrace.getPosition());
-        }
-        else if(values != null) {
-            return start.union(values.get(values.size() - 1).getSourceRange());
-        }
-        else if(nameToken != null) {
-            return start.union(nameToken.getPosition());
-        }
-        else {
-            return start;
-        }
-    }
+		if(rightBrace != null) {
+			return start.union(rightBrace.getPosition());
+		} else if(values != null) {
+			return start.union(values.get(values.size() - 1).getSourceRange());
+		} else if(nameToken != null) {
+			return start.union(nameToken.getPosition());
+		} else {
+			return start;
+		}
+	}
 
-    @Override
-    public IPosition getPosition() {
-        if(nameToken != null) {
-            return enumToken.getPosition().union(nameToken.getPosition());
-        }
-        return enumToken.getPosition();
-    }
+	@Override
+	public IPosition getPosition() {
+		if(nameToken != null) {
+			return enumToken.getPosition().union(nameToken.getPosition());
+		}
+		return enumToken.getPosition();
+	}
 
-    @Override
-    public IToken getFirstToken() {
-        return getFirstToken(super.getFirstToken(), enumToken);
-    }
+	@Override
+	public IToken getFirstToken() {
+		return getFirstToken(super.getFirstToken(), enumToken);
+	}
 
-    @Override
-    public IToken getNameToken() {
-        return nameToken;
-    }
+	@Override
+	public IToken getNameToken() {
+		return nameToken;
+	}
 
-    public void setNameToken(IToken nameToken) {
+	public void setNameToken(IToken nameToken) {
 
-        this.nameToken = nameToken;
-        super.setUserName(nameToken.getRawText());
-    }
+		this.nameToken = nameToken;
+		super.setUserName(nameToken.getRawText());
+	}
 
-    public void setLeftBrace(IToken leftBrace) {
-        this.leftBrace = leftBrace;
-    }
+	public void setLeftBrace(IToken leftBrace) {
+		this.leftBrace = leftBrace;
+	}
 
-    public void setRightBrace(IToken rightBrace) {
-        this.rightBrace = rightBrace;
-    }
+	public void setRightBrace(IToken rightBrace) {
+		this.rightBrace = rightBrace;
+	}
 
-    public void addElement(IToken name) {
-        if(values == null) {
-            values = new ArrayList<EnumElement>();
-        }
-        values.add(new EnumElement(name));
-    }
+	public void addElement(IToken name) {
+		if(values == null) {
+			values = new ArrayList<EnumElement>();
+		}
+		values.add(new EnumElement(name));
+	}
 
-    @Override
-    public boolean isEnum() {
-        return true;
-    }
+	@Override
+	public boolean isEnum() {
+		return true;
+	}
 
-    @Override
-    public boolean isFinal() {
-        return true;
-    }
+	@Override
+	public boolean isFinal() {
+		return true;
+	}
 
-    @Override
-    public boolean resolveType(CompilationUnit compilationUnit) {
-        if(!super.resolveType(compilationUnit))
-            return false;
+	@Override
+	public boolean resolveType(CompilationUnit compilationUnit) {
+		if(!super.resolveType(compilationUnit))
+			return false;
 
-        if(nameToken != null) {
-            String typeName = getUserName();
+		if(nameToken != null) {
+			String typeName = getUserName();
 
-            if(!compilationUnit.getSimpleName().equals(typeName)) {
-                setFatalError(nameToken.getPosition(), "The type " + typeName + " must be defined in its own file");
-                return false;
-            }
+			if(!compilationUnit.getSimpleName().equals(typeName)) {
+				setFatalError(nameToken.getPosition(), "The type " + typeName + " must be defined in its own file");
+				return false;
+			}
 
-            if(!Lexer.checkIdentifier(typeName)) {
-                setFatalError(nameToken.getPosition(), "Syntax error on token '" + typeName + "'. " + typeName
-                        + " is a reserved keyword.");
-                return false;
-            }
+			if(!Lexer.checkIdentifier(typeName)) {
+				setFatalError(nameToken.getPosition(), "Syntax error on token '" + typeName + "'. " + typeName + " is a reserved keyword.");
+				return false;
+			}
 
-            return true;
-        }
+			return true;
+		}
 
-        return false;
-    }
+		return false;
+	}
 
-    @Override
-    public boolean resolveTypes(CompilationUnit compilationUnit, IType declaringType) {
-        if(!super.resolveTypes(compilationUnit, declaringType))
-            return false;
+	@Override
+	public boolean resolveTypes(CompilationUnit compilationUnit, IType declaringType) {
+		if(!super.resolveTypes(compilationUnit, declaringType))
+			return false;
 
-        IType booleanType = Primary.resolveType(compilationUnit, Primary.Boolean);
+		IType booleanType = Primary.resolveType(compilationUnit, Primary.Boolean);
 
-        if(booleanType != null) {
-            Variable[] parameters = new Variable[] { new Variable(getVariableType(), "value") };
+		if(booleanType != null) {
+			Variable[] parameters = new Variable[] { new Variable(getVariableType(), "value") };
 
-            IMethod enumEquOperator = new AbstractMethod(new VariableType(getCompilationUnit(), booleanType), parameters,
-                    null, null) {
-                @Override
-                public String getJavaName() {
-                    assert (false);
-                    return null;
-                }
+			IMethod enumEquOperator = new AbstractMethod(new VariableType(getCompilationUnit(), booleanType), parameters, null, null) {
+				@Override
+				public String getJavaName() {
+					throw new UnsupportedOperationException();
+				}
 
-                @Override
-                public String getName() {
-                    return new OperatorToken(IToken.EQU, null).getName();
-                }
+				@Override
+				public String getName() {
+					return new OperatorToken(IToken.EQU, null).getName();
+				}
 
-                @Override
-                public IPosition getNamePosition() {
-                    return null;
-                }
-            };
+				@Override
+				public IPosition getNamePosition() {
+					return null;
+				}
+			};
 
-            IMethod enumNotEquOperator = new AbstractMethod(new VariableType(getCompilationUnit(), booleanType), parameters,
-                    null, null) {
-                @Override
-                public String getJavaName() {
-                    assert (false);
-                    return null;
-                }
+			IMethod enumNotEquOperator = new AbstractMethod(new VariableType(getCompilationUnit(), booleanType), parameters, null, null) {
+				@Override
+				public String getJavaName() {
+					throw new UnsupportedOperationException();
+				}
 
-                @Override
-                public String getName() {
-                    return new OperatorToken(IToken.NOT_EQU, null).getName();
-                }
+				@Override
+				public String getName() {
+					return new OperatorToken(IToken.NOT_EQU, null).getName();
+				}
 
-                @Override
-                public IPosition getNamePosition() {
-                    return null;
-                }
-            };
+				@Override
+				public IPosition getNamePosition() {
+					return null;
+				}
+			};
 
-            addMethod(enumEquOperator);
-            addMethod(enumNotEquOperator);
-        }
+			addMethod(enumEquOperator);
+			addMethod(enumNotEquOperator);
+		}
 
-        setupNativeAttribute();
-        return true;
-    }
+		setupNativeAttribute();
+		return true;
+	}
 
-    @Override
-    public boolean resolveStructure(CompilationUnit compilationUnit, IType declaringType) {
-        if(!super.resolveStructure(compilationUnit, declaringType))
-            return false;
+	@Override
+	public boolean resolveStructure(CompilationUnit compilationUnit, IType declaringType) {
+		if(!super.resolveStructure(compilationUnit, declaringType))
+			return false;
 
-        if(values != null) {
-            for(EnumElement value : values) {
-                value.resolveStructure(compilationUnit, this);
-            }
-        }
+		if(values != null) {
+			for(EnumElement value : values) {
+				value.resolveStructure(compilationUnit, this);
+			}
+		}
 
-        return true;
-    }
+		return true;
+	}
 
-    @Override
-    public void getCode(CodeGenerator codeGenerator) {
-        super.getCode(codeGenerator);
+	@Override
+	public void getCode(CodeGenerator codeGenerator) {
+		super.getCode(codeGenerator);
 
-        codeGenerator.append("public enum " + getJavaName());
-        codeGenerator.breakLine();
-        codeGenerator.append("{");
-        codeGenerator.breakLine();
+		codeGenerator.append("public enum " + getJavaName());
+		codeGenerator.breakLine();
+		codeGenerator.append("{");
+		codeGenerator.breakLine();
 
-        codeGenerator.incrementIndent();
+		codeGenerator.incrementIndent();
 
-        if(values != null) {
-            for(EnumElement value : values) {
-                value.getCode(codeGenerator);
-            }
-        }
+		if(values != null) {
+			for(EnumElement value : values) {
+				value.getCode(codeGenerator);
+			}
+		}
 
-        codeGenerator.decrementIndent();
+		codeGenerator.decrementIndent();
 
-        codeGenerator.append("}");
-        codeGenerator.breakLine();
-    }
+		codeGenerator.append("}");
+		codeGenerator.breakLine();
+	}
 
-    @Override
-    public TypeBody getTypeBody() {
-        return null;
-    }
+	@Override
+	public TypeBody getTypeBody() {
+		return null;
+	}
 }

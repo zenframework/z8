@@ -15,8 +15,7 @@ abstract public class ConstantToken extends Token {
     }
 
     public String format(boolean forCodeGeneration) {
-        assert (false);
-        return "";
+        throw new UnsupportedOperationException();
     }
 
     public String getValueString() {

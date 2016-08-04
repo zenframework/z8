@@ -60,8 +60,6 @@ public class JumpStatement extends LanguageElement implements IStatement {
 		if(jump.getId() == IToken.RETURN) {
 			IVariableType returnType = declaringMethod.getVariableType();
 
-			assert (returnType != null);
-
 			IType voidType = Primary.resolveType(compilationUnit, Primary.Void);
 
 			boolean isVoidMethod = false;
@@ -138,13 +136,10 @@ public class JumpStatement extends LanguageElement implements IStatement {
 
 				IMethod[] methods = getDeclaringMethod().getVariableType().getMatchingMethods(PriorityOperator.Name);
 
-				assert (methods.length <= 1);
-
 				typeCast.getCode(codeGenerator, expression);
 
-				if(methods.length == 1) {
+				if(methods.length == 1)
 					codeGenerator.append("." + methods[0].getJavaName() + "()");
-				}
 			}
 			codeGenerator.append(";");
 			codeGenerator.breakLine();
@@ -157,8 +152,7 @@ public class JumpStatement extends LanguageElement implements IStatement {
 
 	@Override
 	public void replaceTypeName(TextEdit parent, IType type, String newTypeName) {
-		if(expression != null) {
+		if(expression != null)
 			expression.replaceTypeName(parent, type, newTypeName);
-		}
 	}
 }
