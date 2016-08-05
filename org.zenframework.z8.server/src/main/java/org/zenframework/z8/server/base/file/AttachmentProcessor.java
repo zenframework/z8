@@ -63,9 +63,17 @@ public class AttachmentProcessor extends OBJECT {
 	}
 
 	public Collection<file> read(guid recordId) {
-		if(getTable().readRecord(recordId, Arrays.<Field> asList(getField())))
-			return file.parse(getField().string().get());
-		return new ArrayList<file>();
+		Table table = getTable();
+		
+		table.saveState();
+		
+		try {
+			if(getTable().readRecord(recordId, Arrays.<Field> asList(getField())))
+				return file.parse(getField().string().get());
+			return new ArrayList<file>();
+		} finally {
+			table.restoreState();
+		}
 	}
 
 	private void save(Collection<file> files, guid recordId) {
@@ -135,6 +143,7 @@ public class AttachmentProcessor extends OBJECT {
 
 		for(file file : files)
 			result += AttachmentUtils.getPageCount(file);
+
 		return result;
 	}
 
