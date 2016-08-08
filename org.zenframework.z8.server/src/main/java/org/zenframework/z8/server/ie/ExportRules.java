@@ -29,10 +29,12 @@ public class ExportRules implements RmiSerializable, Serializable {
 	private TableRules getTableRules(String table) {
 		TableRules rules = tables.get(table);
 
-		if(rules != null)
-			return rules;
-			
-		return tables.put(table, new TableRules());
+		if(rules == null) {
+			rules = new TableRules();
+			tables.put(table, new TableRules());
+		}
+		
+		return rules;
 	}
 	
 	public void add(String table, ImportPolicy policy) {
