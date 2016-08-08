@@ -31,7 +31,7 @@ public class ExportRules implements RmiSerializable, Serializable {
 
 		if(rules == null) {
 			rules = new TableRules();
-			tables.put(table, new TableRules());
+			tables.put(table, rules);
 		}
 		
 		return rules;
