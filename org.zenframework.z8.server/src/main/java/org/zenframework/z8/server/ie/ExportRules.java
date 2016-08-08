@@ -26,24 +26,33 @@ public class ExportRules implements RmiSerializable, Serializable {
 		defaultPolicy = policy;
 	}
 
-	private void add(String table, TableRules rules) {
-		tables.put(table, rules);
+	private TableRules getTableRules(String table) {
+		TableRules rules = tables.get(table);
+
+		if(rules != null)
+			return rules;
+			
+		return tables.put(table, new TableRules());
 	}
 	
 	public void add(String table, ImportPolicy policy) {
-		add(table, new TableRules(policy));
+		TableRules rules = getTableRules(table);
+		rules.setPolicy(policy);
 	}
 
 	public void add(String table, guid recordId, ImportPolicy policy) {
-		add(table, new TableRules(recordId, policy));
+		TableRules rules = getTableRules(table);
+		rules.setPolicy(recordId, policy);
 	}
 
 	public void add(String table, String field, ImportPolicy policy) {
-		add(table, new TableRules(field, policy));
+		TableRules rules = getTableRules(table);
+		rules.setPolicy(field, policy);
 	}
 
 	public void add(String table, guid recordId, String field, ImportPolicy policy) {
-		add(table, new TableRules(recordId, field, policy));
+		TableRules rules = getTableRules(table);
+		rules.setPolicy(recordId, field, policy);
 	}
 	
 	private void writeObject(ObjectOutputStream out) throws IOException {
