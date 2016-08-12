@@ -114,6 +114,7 @@ public class Users extends Table {
 				setJavaClass(PasswordField.class);
 				setName(names.Password);
 				setDisplayName(displayNames.Password);
+				setExportable(false);
 				setIndex("password");
 			}
 
