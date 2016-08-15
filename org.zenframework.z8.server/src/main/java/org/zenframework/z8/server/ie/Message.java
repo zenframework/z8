@@ -198,6 +198,9 @@ abstract public class Message extends OBJECT implements RmiSerializable, Seriali
 		if(address == null || address.isEmpty())
 			throw new RuntimeException("Export address is not set");
 
+		if(sender == null || sender.isEmpty())
+			setSender(Domains.DefaultDomain.get());
+
 		if(Domains.newInstance().isOwner(address))
 			accept(true);
 		else
