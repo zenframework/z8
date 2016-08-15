@@ -54,14 +54,17 @@ abstract public class Message extends OBJECT implements RmiSerializable, Seriali
 	private guid sourceId = guid.NULL;
 	private String sender;
 	private String address;
-	
+
 	abstract public void setBytesTransferred(long bytesTransferred);
 
 	abstract protected void write(ObjectOutputStream out) throws IOException;
+
 	abstract protected void read(ObjectInputStream in) throws IOException, ClassNotFoundException;
 
 	abstract public void prepare();
+
 	abstract protected boolean transactive();
+
 	abstract protected boolean apply();
 
 	public Message(IObject container) {
@@ -120,32 +123,32 @@ abstract public class Message extends OBJECT implements RmiSerializable, Seriali
 		try {
 			ByteArrayOutputStream bytes = new ByteArrayOutputStream();
 			ObjectOutputStream out = new ObjectOutputStream(bytes);
-			
+
 			serialize(out);
-			
+
 			IOUtils.closeQuietly(out);
 			IOUtils.closeQuietly(bytes);
-			
+
 			return new binary(bytes.toByteArray());
 		} catch(IOException e) {
 			throw new RuntimeException(e);
 		}
 	}
-	
+
 	public void fromBinary(binary binary) {
 		try {
 			InputStream binaryIn = binary.get();
 			ObjectInputStream in = new ObjectInputStream(binaryIn);
-		
+
 			deserialize(in);
-			
+
 			IOUtils.closeQuietly(in);
 			IOUtils.closeQuietly(binaryIn);
 		} catch(Throwable e) {
 			throw new RuntimeException(e);
 		}
 	}
-	
+
 	private void writeObject(ObjectOutputStream out) throws IOException {
 		serialize(out);
 	}
@@ -165,7 +168,7 @@ abstract public class Message extends OBJECT implements RmiSerializable, Seriali
 		RmiIO.writeGuid(objects, sourceId);
 		RmiIO.writeString(objects, sender);
 		RmiIO.writeString(objects, address);
-		
+
 		write(objects);
 
 		objects.close();
@@ -187,7 +190,7 @@ abstract public class Message extends OBJECT implements RmiSerializable, Seriali
 		address = RmiIO.readString(objects);
 
 		read(objects);
-		
+
 		objects.close();
 	}
 
@@ -195,19 +198,16 @@ abstract public class Message extends OBJECT implements RmiSerializable, Seriali
 		if(address == null || address.isEmpty())
 			throw new RuntimeException("Export address is not set");
 
-		if(sender == null || sender.isEmpty())
-			throw new RuntimeException("Sender is not set");
-		
 		if(Domains.newInstance().isOwner(address))
 			accept(true);
 		else
 			MessageQueue.newInstance().add(this);
 	}
-	
+
 	public boolean accept() {
 		return accept(false);
 	}
-	
+
 	private boolean accept(boolean localSend) {
 		Domains domains = Domains.newInstance();
 		Domain acceptorDomain = domains.getDomain(address);
@@ -222,17 +222,17 @@ abstract public class Message extends OBJECT implements RmiSerializable, Seriali
 		try {
 			if(connection != null)
 				connection.beginTransaction();
-			
+
 			boolean result = callImport(localSend);
-			
+
 			if(connection != null)
 				connection.commit();
-			
+
 			return result;
 		} catch(Throwable e) {
 			if(connection != null)
 				connection.rollback();
-			
+
 			Trace.logError(e);
 			throw new RuntimeException(e);
 		} finally {
@@ -240,13 +240,13 @@ abstract public class Message extends OBJECT implements RmiSerializable, Seriali
 			ConnectionManager.release();
 		}
 	}
-	
+
 	private boolean callImport(boolean localSend) {
 		if(localSend) {
 			beforeExport();
 			afterExport();
 		}
-		
+
 		beforeImport();
 
 		if(!localSend) {
@@ -258,7 +258,7 @@ abstract public class Message extends OBJECT implements RmiSerializable, Seriali
 				ApplicationServer.enableEvents();
 			}
 		}
-		
+
 		afterImport();
 		return true;
 	}
@@ -278,7 +278,7 @@ abstract public class Message extends OBJECT implements RmiSerializable, Seriali
 	public void z8_setSender(string sender) {
 		setSender(sender.get());
 	}
-	
+
 	public void z8_send() {
 		send();
 	}
