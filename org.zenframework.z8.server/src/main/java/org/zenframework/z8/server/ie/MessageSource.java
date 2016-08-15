@@ -44,14 +44,14 @@ public class MessageSource implements RmiSerializable, Serializable {
 	}
 
 	public void add(Table table, Collection<Field> fields, sql_bool where) {
-		if (table.exportable())
+		if(table.exportable())
 			sources.add(new ExportSource(table, fields, where));
 	}
-	
+
 	public void addRule(ImportPolicy importPolicy) {
 		exportRules.add(importPolicy);
 	}
-	
+
 	public void addRule(Table table, ImportPolicy policy) {
 		exportRules.add(table.name(), policy);
 	}
@@ -83,7 +83,7 @@ public class MessageSource implements RmiSerializable, Serializable {
 	public Collection<file> files() {
 		return files;
 	}
-	
+
 	public void exportData() {
 		for(ExportSource source : sources)
 			processExportSource(source);
@@ -128,15 +128,15 @@ public class MessageSource implements RmiSerializable, Serializable {
 	}
 
 	private Map<String, Boolean> recordStates = new HashMap<String, Boolean>();
-	
+
 	private void processExportSource(ExportSource source) {
 		Table table = source.table();
 		String tableName = source.name();
 
 		Collection<Field> fields = source.fields();
-		
+
 		table.saveState();
-		
+
 		Collection<guid> records = source.records();
 		SqlToken where = records != null ? new InVector(table.primaryKey(), records) : null;
 		table.setWhere(where); // to replace existing where
@@ -144,39 +144,39 @@ public class MessageSource implements RmiSerializable, Serializable {
 
 		while(table.next()) {
 			guid recordId = table.recordId();
-		
+
 			String id = makeUniqueId(tableName, recordId);
-			
+
 			if(recordStates.get(id) != null)
 				continue;
-			
+
 			recordStates.put(id, false);
-			
+
 			RecordInfo record = new RecordInfo(recordId, tableName);
-			
+
 			for(Field field : fields) {
 				if(!processLink(field, recordId))
 					continue;
 
 				processAttachments(field);
-				
+
 				record.add(new FieldInfo(field));
 			}
-			
+
 			inserts.add(record);
 
 			recordStates.put(id, true);
 		}
-		
+
 		table.restoreState();
 	}
-	
+
 	private void processAttachments(Field field) {
 		boolean isAttachment = field instanceof AttachmentField;
-		
+
 		if(!isAttachment)
 			return;
-		
+
 		for(file f : file.parse(field.string().get())) {
 			if(!files.contains(f))
 				files.add(f);
@@ -186,24 +186,22 @@ public class MessageSource implements RmiSerializable, Serializable {
 	private boolean processLink(Field field, guid recordId) {
 		boolean isLink = field instanceof Link;
 		boolean isParentKey = field.isParentKey();
-		
+
 		if(!isLink && !isParentKey)
 			return true;
-		
+
 		Table table = (Table)(isParentKey ? field.getOwner() : ((Link)field).getQuery());
-		
+
 		String name = table.name();
 		guid value = field.guid();
-		
-		if(value.equals(guid.NULL) || 
-				BuiltinUsers.System.guid().equals(value) || 
-				BuiltinUsers.Administrator.guid().equals(value))
+
+		if(value.equals(guid.NULL) || BuiltinUsers.System.guid().equals(value) || BuiltinUsers.Administrator.guid().equals(value))
 			return false;
 
 		Boolean state = recordStates.get(makeUniqueId(name, value));
 		boolean notInserted = state == null;
 		boolean inserting = state != null && !state;
-		
+
 		if(notInserted) {
 			ExportSource source = new ExportSource(table, null, Arrays.asList(value));
 			processExportSource(source);
@@ -212,7 +210,7 @@ public class MessageSource implements RmiSerializable, Serializable {
 			processUpdate(recordId, field);
 			return false;
 		}
-		
+
 		// inserted
 		return true;
 	}
@@ -222,7 +220,7 @@ public class MessageSource implements RmiSerializable, Serializable {
 		record.add(new FieldInfo(field));
 		updates.add(record);
 	}
-	
+
 	private String makeUniqueId(String name, guid id) {
 		return name + "/" + id;
 	}
@@ -233,7 +231,7 @@ public class MessageSource implements RmiSerializable, Serializable {
 
 		for(RecordInfo record : updates)
 			update(record);
-		
+
 		fieldCache.clear();
 		tableCache.clear();
 	}
@@ -243,25 +241,25 @@ public class MessageSource implements RmiSerializable, Serializable {
 
 	private Table getTable(String name) {
 		Table table = tableCache.get(name);
-		
+
 		if(table == null) {
 			table = (Table)Runtime.instance().getTableByName(name).newInstance();
 			tableCache.put(name, table);
 		}
-		
+
 		return table;
 	}
-	
+
 	private Field getField(String tableName, String fieldName) {
 		String key = tableName + "." + fieldName;
-		
+
 		Field field = fieldCache.get(key);
-		
+
 		if(field == null) {
 			field = getTable(tableName).getFieldByName(fieldName);
 			fieldCache.put(key, field);
 		}
-		
+
 		return field;
 	}
 
@@ -276,7 +274,7 @@ public class MessageSource implements RmiSerializable, Serializable {
 		for(FieldInfo fieldInfo : record.fields()) {
 			String fieldName = fieldInfo.name();
 			Field field = getField(tableName, fieldName);
-			
+
 			if(field == null)
 				throw new RuntimeException("Incorrect record format. Table '" + tableName + "' has no field '" + fieldName + "'");
 
@@ -284,10 +282,10 @@ public class MessageSource implements RmiSerializable, Serializable {
 
 			if(!exists || fieldPolicy == ImportPolicy.OVERRIDE) {
 				primary value = fieldInfo.value();
-			
+
 				if(exists && field instanceof AttachmentField)
 					value = mergeAttachments(field.string(), (string)value);
-				
+
 				field.set(value);
 			}
 		}
@@ -308,27 +306,27 @@ public class MessageSource implements RmiSerializable, Serializable {
 
 			if(field == null)
 				throw new RuntimeException("Incorrect record format. Table '" + tableName + "' has no field '" + fieldName + "'");
-			
+
 			field.set(fieldInfo.value());
 		}
-		
+
 		table.update(record.id());
 	}
-	
+
 	static private string mergeAttachments(string value1, string value2) {
 		if(value1.equals(value2) || value2.isEmpty())
 			return value1;
-		
+
 		if(value1.isEmpty())
 			return value2;
 
 		Collection<file> files = file.parse(value1.get());
-		
+
 		for(file f : file.parse(value2.get())) {
 			if(!files.contains(f))
 				files.add(f);
 		}
-		
+
 		return new string(new JsonArray(files).toString());
 	}
 }
