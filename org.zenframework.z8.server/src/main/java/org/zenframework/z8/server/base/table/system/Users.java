@@ -220,7 +220,6 @@ public class Users extends Table {
 		securityGroup.get().operatorAssign(securityGroups);
 
 		password.get().length = new integer(IAuthorityCenter.MaxPasswordLength);
-		password.setExportable(false);
 
 		phone.get().length = new integer(128);
 		email.get().length = new integer(128);
