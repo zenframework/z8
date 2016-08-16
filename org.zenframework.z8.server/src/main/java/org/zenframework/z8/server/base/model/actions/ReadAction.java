@@ -74,9 +74,9 @@ public class ReadAction extends Action {
 
 	private int start = -1;
 	private int limit = -1;
-	
+
 	private int totalCount = 0;
-	
+
 	public ReadAction(Query query) {
 		this(new ActionParameters(query), null);
 	}
@@ -105,32 +105,32 @@ public class ReadAction extends Action {
 		initialize();
 	}
 
-    public int getStart() {
-        return getRequestParameter(Json.start, start);
-    }
+	public int getStart() {
+		return getRequestParameter(Json.start, start);
+	}
 
-    public void setStart(int start) {
-        this.start = start;
-    }
+	public void setStart(int start) {
+		this.start = start;
+	}
 
-    public int getLimit() {
-        return getRequestParameter(Json.limit, limit);
-    }
-	
-    public void setLimit(int limit) {
-        this.limit = limit;
-    }
+	public int getLimit() {
+		return getRequestParameter(Json.limit, limit);
+	}
 
-    protected void initialize() {
+	public void setLimit(int limit) {
+		this.limit = limit;
+	}
+
+	protected void initialize() {
 		ActionParameters parameters = actionParameters();
 
 		initFields();
 		initPeriod();
 		initQuery();
 
-        beforeRead();
+		beforeRead();
 
-        Query query = getQuery();
+		Query query = getQuery();
 
 		Collection<Field> fields = parameters.fields != null && !parameters.fields.isEmpty() ? parameters.fields : query.getFormFields();
 		Collection<Field> sortFields = parameters.sortFields != null ? parameters.sortFields : emptyFieldList;
@@ -564,7 +564,7 @@ public class ReadAction extends Action {
 		SqlToken filter = null;
 
 		boolean first = true;
-		
+
 		for(String id : fields) {
 			Field field = query.findFieldById(id);
 			FieldType type = field.type();
@@ -575,7 +575,7 @@ public class ReadAction extends Action {
 				SqlToken like = new Like(left, right, null);
 
 				filter = filter != null ? new Or(filter, like) : like;
-				
+
 				first = false;
 			}
 		}
@@ -722,7 +722,7 @@ public class ReadAction extends Action {
 			String operator = parseJsonProperty(filter, Json.operator);
 
 			if(fieldId != null && value != null && operator != null) {
-			    Field field = getQuery().findFieldById(fieldId);
+				Field field = getQuery().findFieldById(fieldId);
 				Collection<String> values = parseValues(value);
 				Operation operation = Operation.fromString(operator);
 
@@ -731,7 +731,7 @@ public class ReadAction extends Action {
 				if(token != null) {
 					if(result != null) {
 						String andOr = parseJsonProperty(filter, Json.andOr);
-	
+
 						if("and".equals(andOr))
 							result = new And(result, token);
 						else if("or".equals(andOr))
@@ -876,7 +876,7 @@ public class ReadAction extends Action {
 		frame.aggregate();
 
 		writer.startArray(Json.data);
-		
+
 		while(frame.next()) {
 			writer.startObject();
 
@@ -908,11 +908,11 @@ public class ReadAction extends Action {
 			frame.open();
 
 			int recordsWritten = 0;
-			
+
 			while(frame.next()) {
 				if(recordsWritten > 500)
 					throw new RuntimeException("Too many records fetched for a json client. Use limit parameter.");
-				
+
 				writer.startObject();
 
 				primary[] group = !hasRecords ? groups.firstGroup : groups.lastGroup;
@@ -934,7 +934,7 @@ public class ReadAction extends Action {
 					style.write(writer);
 
 				writer.finishObject();
-				
+
 				recordsWritten++;
 			}
 		} finally {
@@ -1005,7 +1005,7 @@ public class ReadAction extends Action {
 
 			while(summary.next()) {
 				writer.startObject(JsonObject.quote(groupField.get().toString()));
-				
+
 				for(Field field : summary.getFields()) {
 					if(field == groupField)
 						writer.writeProperty(Json.groupValue, groupField.get());
@@ -1053,12 +1053,12 @@ public class ReadAction extends Action {
 		Field totalsBy = actionParameters().totalsBy;
 
 		Query query = getQuery();
-        query.setReadLock(ReadLock.None);
+		query.setReadLock(ReadLock.None);
 
 		try {
 			if(totalsBy == null) {
-			    if(getStart() != -1 || getLimit() != -1)
-			        totalCount = writeCount(writer);
+				if(getStart() != -1 || getLimit() != -1)
+					totalCount = writeCount(writer);
 
 				Groupping groups = writeFrame(writer);
 
@@ -1077,7 +1077,7 @@ public class ReadAction extends Action {
 	private Field createAggregatedExpression(final Field field, Aggregation aggregation, FieldType type) {
 		if(aggregation == Aggregation.None)
 			return null;
-		
+
 		if(field.aggregation == aggregation)
 			return field;
 
@@ -1085,8 +1085,8 @@ public class ReadAction extends Action {
 		expression.aggregation = aggregation;
 		return expression;
 	}
-	
+
 	public int getTotalCount() {
-	    return totalCount;
+		return totalCount;
 	}
 }
