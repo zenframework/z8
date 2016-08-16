@@ -11,82 +11,72 @@ import org.zenframework.z8.server.types.integer;
 import org.zenframework.z8.server.types.primary;
 import org.zenframework.z8.server.types.string;
 import org.zenframework.z8.server.types.sql.sql_integer;
-import org.zenframework.z8.server.types.sql.sql_primary;
 
 public class IntegerField extends Field {
-    public static class CLASS<T extends IntegerField> extends Field.CLASS<T> {
-        public CLASS(IObject container) {
-            super(container);
-            setJavaClass(IntegerField.class);
-        }
+	public static class CLASS<T extends IntegerField> extends Field.CLASS<T> {
+		public CLASS(IObject container) {
+			super(container);
+			setJavaClass(IntegerField.class);
+		}
 
-        @Override
-        public Object newObject(IObject container) {
-            return new IntegerField(container);
-        }
-    }
+		@Override
+		public Object newObject(IObject container) {
+			return new IntegerField(container);
+		}
+	}
 
-    public IntegerField(IObject container) {
-        super(container);
-        setDefault(new integer());
-        format = new string(Format.integer);
-        stretch = new bool(false);
-        
-        aggregation = Aggregation.Sum;
-    }
+	public IntegerField(IObject container) {
+		super(container);
+		setDefault(new integer());
+		format = new string(Format.integer);
+		stretch = new bool(false);
 
-    public integer z8_getDefault() {
-        return (integer)super.getDefault();
-    }
+		aggregation = Aggregation.Sum;
+	}
 
-    @Override
-    public primary getDefault() {
-        return ApplicationServer.events() ? z8_getDefault() : super.getDefault();
-    }
+	public integer z8_getDefault() {
+		return (integer)super.getDefault();
+	}
 
-    @Override
-    public FieldType type() {
-        return FieldType.Integer;
-    }
+	@Override
+	public primary getDefault() {
+		return ApplicationServer.events() ? z8_getDefault() : super.getDefault();
+	}
 
-    @Override
-    public String sqlType(DatabaseVendor vendor) {
-        String name = type().vendorType(vendor);
+	@Override
+	public FieldType type() {
+		return FieldType.Integer;
+	}
 
-        if(vendor == DatabaseVendor.Oracle) {
-            return name + "(19, 0)";
-        }
-        return name;
-    }
+	@Override
+	public String sqlType(DatabaseVendor vendor) {
+		String name = type().vendorType(vendor);
 
-    public sql_integer sql_int() {
-        return new sql_integer(new SqlField(this));
-    }
+		if(vendor == DatabaseVendor.Oracle) {
+			return name + "(19, 0)";
+		}
+		return name;
+	}
 
-    public void set(long value) {
-        set(new integer(value));
-    }
+	public sql_integer sql_int() {
+		return new sql_integer(new SqlField(this));
+	}
 
-    @Override
-    public primary get() {
-        return z8_get();
-    }
+	public void set(long value) {
+		set(new integer(value));
+	}
 
-    public integer z8_get() {
-        return (integer)internalGet();
-    }
+	@Override
+	public primary get() {
+		return z8_get();
+	}
 
-    @Override
-    public sql_primary formula() {
-        return z8_formula();
-    }
+	public integer z8_get() {
+		return (integer)internalGet();
+	}
 
-    public sql_integer z8_formula() {
-        return null;
-    }
-
-    public IntegerField.CLASS<? extends IntegerField> operatorAssign(integer value) {
-        set(value);
-        return (IntegerField.CLASS<?>) this.getCLASS();
-    }
+	public IntegerField.CLASS<? extends IntegerField> operatorAssign(integer value) {
+		set(value);
+		return (IntegerField.CLASS<?>)this.getCLASS();
+	}
 }

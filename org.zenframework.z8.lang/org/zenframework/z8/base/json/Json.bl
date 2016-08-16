@@ -56,9 +56,6 @@ public class Json extends Object {
     static public string visible;
     static public string hidden;
     static public string hidable;
-    static public string formula;
-    static public string evaluations;
-    static public string dependencies;
     static public string width;
     static public string height;
     static public string length;

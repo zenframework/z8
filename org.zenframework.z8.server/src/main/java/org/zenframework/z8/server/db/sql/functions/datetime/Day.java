@@ -19,48 +19,41 @@ import org.zenframework.z8.server.types.datespan;
 import org.zenframework.z8.server.types.integer;
 
 public class Day extends SqlToken {
-    private SqlToken date;
+	private SqlToken date;
 
-    public Day(SqlToken date) {
-        this.date = date;
-    }
+	public Day(SqlToken date) {
+		this.date = date;
+	}
 
-    @Override
-    public void collectFields(Collection<IValue> fields) {
-        date.collectFields(fields);
-    }
+	@Override
+	public void collectFields(Collection<IValue> fields) {
+		date.collectFields(fields);
+	}
 
-    @Override
-    public String format(DatabaseVendor vendor, FormatOptions options, boolean logicalContext) {
-        switch(date.type()) {
-        case Date:
-        case Datetime:
-            switch(vendor) {
-            case Oracle:
-                return new ToNumber(new SqlStringToken("TO_CHAR(" + date.format(vendor, options) + ", 'DD')")).format(
-                        vendor, options);
-            case SqlServer:
-                return "Day(" + date.format(vendor, options) + ")";
-            default:
-                throw new UnknownDatabaseException();
-            }
+	@Override
+	public String format(DatabaseVendor vendor, FormatOptions options, boolean logicalContext) {
+		switch(date.type()) {
+		case Date:
+		case Datetime:
+			switch(vendor) {
+			case Oracle:
+				return new ToNumber(new SqlStringToken("TO_CHAR(" + date.format(vendor, options) + ", 'DD')")).format(vendor, options);
+			case SqlServer:
+				return "Day(" + date.format(vendor, options) + ")";
+			default:
+				throw new UnknownDatabaseException();
+			}
 
-        case Datespan:
-            return new Round(new Mul(date, Operation.Div, new SqlConst(new integer(datespan.TicksPerDay))), null).format(
-                    vendor, options);
+		case Datespan:
+			return new Round(new Mul(date, Operation.Div, new SqlConst(new integer(datespan.TicksPerDay))), null).format(vendor, options);
 
-        default:
-            throw new UnsupportedException();
-        }
-    }
+		default:
+			throw new UnsupportedException();
+		}
+	}
 
-    @Override
-    public FieldType type() {
-        return FieldType.Integer;
-    }
-
-    @Override
-    public String formula() {
-        return "(" + date.formula() + ").days()";
-    }
+	@Override
+	public FieldType type() {
+		return FieldType.Integer;
+	}
 }

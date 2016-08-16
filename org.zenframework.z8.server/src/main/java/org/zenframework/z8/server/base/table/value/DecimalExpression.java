@@ -9,60 +9,50 @@ import org.zenframework.z8.server.types.decimal;
 import org.zenframework.z8.server.types.primary;
 import org.zenframework.z8.server.types.string;
 import org.zenframework.z8.server.types.sql.sql_decimal;
-import org.zenframework.z8.server.types.sql.sql_primary;
 
 public class DecimalExpression extends Expression {
-    public static class CLASS<T extends DecimalExpression> extends Expression.CLASS<T> {
-        public CLASS(IObject container) {
-            super(container);
-            setJavaClass(DecimalExpression.class);
-        }
+	public static class CLASS<T extends DecimalExpression> extends Expression.CLASS<T> {
+		public CLASS(IObject container) {
+			super(container);
+			setJavaClass(DecimalExpression.class);
+		}
 
-        @Override
-        public Object newObject(IObject container) {
-            return new DecimalExpression(container);
-        }
-    }
+		@Override
+		public Object newObject(IObject container) {
+			return new DecimalExpression(container);
+		}
+	}
 
-    public DecimalExpression(IObject container) {
-        super(container);
-        format = new string(Format.decimal);
-        stretch = new bool(false);
+	public DecimalExpression(IObject container) {
+		super(container);
+		format = new string(Format.decimal);
+		stretch = new bool(false);
 
-        aggregation = Aggregation.Sum;
+		aggregation = Aggregation.Sum;
 
-        setDefault(new decimal());
-    }
+		setDefault(new decimal());
+	}
 
-    @Override
-    public FieldType type() {
-        return FieldType.Decimal;
-    }
+	@Override
+	public FieldType type() {
+		return FieldType.Decimal;
+	}
 
-    public sql_decimal sql_decimal() {
-        return new sql_decimal(new SqlField(this));
-    }
+	public sql_decimal sql_decimal() {
+		return new sql_decimal(new SqlField(this));
+	}
 
-    @Override
-    public primary get() {
-        return z8_get();
-    }
+	@Override
+	public primary get() {
+		return z8_get();
+	}
 
-    public decimal z8_get() {
-        return (decimal)internalGet();
-    }
+	public decimal z8_get() {
+		return (decimal)internalGet();
+	}
 
-    @Override
-    public sql_primary formula() {
-        return z8_formula();
-    }
-
-    public sql_decimal z8_formula() {
-        return null;
-    }
-
-    public DecimalExpression.CLASS<? extends DecimalExpression> operatorAssign(decimal value) {
-        set(value);
-        return (DecimalExpression.CLASS<?>) this.getCLASS();
-    }
+	public DecimalExpression.CLASS<? extends DecimalExpression> operatorAssign(decimal value) {
+		set(value);
+		return (DecimalExpression.CLASS<?>)this.getCLASS();
+	}
 }

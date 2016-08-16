@@ -61,9 +61,6 @@ public class Json extends OBJECT {
     final static public string visible = org.zenframework.z8.server.json.Json.visible;
     final static public string hidden = org.zenframework.z8.server.json.Json.hidden;
     final static public string hidable = org.zenframework.z8.server.json.Json.hidable;
-    final static public string formula = org.zenframework.z8.server.json.Json.formula;
-    final static public string evaluations = org.zenframework.z8.server.json.Json.evaluations;
-    final static public string dependencies = org.zenframework.z8.server.json.Json.dependencies;
     final static public string width = org.zenframework.z8.server.json.Json.width;
     final static public string height = org.zenframework.z8.server.json.Json.height;
     final static public string length = org.zenframework.z8.server.json.Json.length;

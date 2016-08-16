@@ -166,15 +166,10 @@ public class ActionFactory {
 			Collection<Field> columns = field.getColumns();
 
 			for(Field f : columns) {
-				if(result.query.findFieldById(f.id()) == f)
-					result.fields.add(f);
-			}
-
-			for(Field f : result.fields) {
-				if(f != field && !columns.contains(f))
-					f.hidden = new bool(true);
-				else
+				if(result.query.findFieldById(f.id()) == f) {
 					f.visible = new bool(true);
+					result.fields.add(f);
+				}
 			}
 
 			if(!result.fields.isEmpty()) {

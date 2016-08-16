@@ -2,12 +2,12 @@ package org.zenframework.z8.server.base.model.actions;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
-import java.util.Set;
 
 import org.zenframework.z8.server.base.model.sql.AggregatingSelect;
 import org.zenframework.z8.server.base.model.sql.CountingSelect;
@@ -500,36 +500,12 @@ public class ReadAction extends Action {
 			return getUsedFields(expression.expression());
 		}
 
-		Collection<Field> fields = getFormulaFields(field);
-		fields.add(field);
-
-		return fields;
+		return Arrays.asList(field);
 	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	private Collection<Field> getUsedFields(SqlToken token) {
 		return token != null ? (Collection)token.getUsedFields() : new LinkedHashSet<Field>();
-	}
-
-	private void getFormulaFields(Field field, Collection<Field> result, Set<Field> processedFields) {
-		if(processedFields == null)
-			processedFields = new LinkedHashSet<Field>();
-
-		if(!processedFields.contains(field)) {
-			processedFields.add(field);
-
-			Collection<Field> fields = getUsedFields(field.formula());
-			for(Field f : fields) {
-				result.add(f);
-				getFormulaFields(f, result, processedFields);
-			}
-		}
-	}
-
-	private Collection<Field> getFormulaFields(Field field) {
-		Collection<Field> result = new LinkedHashSet<Field>();
-		getFormulaFields(field, result, null);
-		return result;
 	}
 
 	private SqlToken getIsNullFilter(Field field, Operation operation) {

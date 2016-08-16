@@ -15,93 +15,71 @@ import org.zenframework.z8.server.exceptions.db.UnknownDatabaseException;
 import org.zenframework.z8.server.types.sql.sql_integer;
 
 public class Unary extends SqlToken {
-    private Operation operation;
-    private SqlToken token;
+	private Operation operation;
+	private SqlToken token;
 
-    public Unary(Operation operation, Field field) {
-        this(operation, new SqlField(field));
-    }
+	public Unary(Operation operation, Field field) {
+		this(operation, new SqlField(field));
+	}
 
-    public Unary(Operation operation, SqlToken token) {
-        this.operation = operation;
-        this.token = token;
-    }
+	public Unary(Operation operation, SqlToken token) {
+		this.operation = operation;
+		this.token = token;
+	}
 
-    @Override
-    public void collectFields(Collection<IValue> fields) {
-        if(token != null)
-            token.collectFields(fields);
-    }
+	@Override
+	public void collectFields(Collection<IValue> fields) {
+		if(token != null)
+			token.collectFields(fields);
+	}
 
-    @Override
-    public String format(DatabaseVendor vendor, FormatOptions options, boolean logicalContext)
-            throws UnknownDatabaseException {
-        switch(operation) {
-        case Not: {
-            SqlToken t = new UNOTToken();
-            if(!logicalContext)
-                t = new If(t, new sql_integer(1), new sql_integer(0));
-            return t.format(vendor, options, logicalContext);
-        }
+	@Override
+	public String format(DatabaseVendor vendor, FormatOptions options, boolean logicalContext) throws UnknownDatabaseException {
+		switch(operation) {
+		case Not: {
+			SqlToken t = new UNOTToken();
+			if(!logicalContext)
+				t = new If(t, new sql_integer(1), new sql_integer(0));
+			return t.format(vendor, options, logicalContext);
+		}
 
-        case Minus:
-            return "(-" + token.format(vendor, options) + ")";
+		case Minus:
+			return "(-" + token.format(vendor, options) + ")";
 
-        default:
-            throw new UnsupportedException();
-        }
-    }
+		default:
+			throw new UnsupportedException();
+		}
+	}
 
-    private String sign() {
-        switch(operation) {
-        case Not:
-            return "!";
-        case Minus:
-            return "-";
-        default:
-            throw new UnsupportedException();
-        }
-    }
+	@Override
+	public FieldType type() {
+		switch(operation) {
+		case Not: {
+			return FieldType.Boolean;
+		}
 
-    @Override
-    public String formula() {
-        return sign() + token.formula();
-    }
+		case Minus: {
+			return token.type();
+		}
 
-    @Override
-    public FieldType type() {
-        switch(operation) {
-        case Not: {
-            return FieldType.Boolean;
-        }
+		default:
+			throw new UnsupportedException();
+		}
+	}
 
-        case Minus: {
-            return token.type();
-        }
+	private class UNOTToken extends SqlToken {
+		@Override
+		public String format(DatabaseVendor vendor, FormatOptions options, boolean logicalContext) {
+			return "not(" + token.format(vendor, options, true) + ")";
+		}
 
-        default:
-            throw new UnsupportedException();
-        }
-    }
+		@Override
+		public void collectFields(Collection<IValue> fields) {
+		}
 
-    private class UNOTToken extends SqlToken {
-        @Override
-        public String format(DatabaseVendor vendor, FormatOptions options, boolean logicalContext) {
-            return "not(" + token.format(vendor, options, true) + ")";
-        }
-
-        @Override
-        public String formula() {
-            assert (false);
-            return null;
-        }
-
-        @Override
-        public void collectFields(Collection<IValue> fields) {}
-
-        @Override
-        public FieldType type() {
-            return FieldType.Boolean;
-        }
-    }
+		@Override
+		public FieldType type() {
+			return FieldType.Boolean;
+		}
+	}
 }

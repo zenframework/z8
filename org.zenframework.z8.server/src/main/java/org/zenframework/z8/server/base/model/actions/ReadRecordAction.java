@@ -10,46 +10,45 @@ import org.zenframework.z8.server.json.Json;
 import org.zenframework.z8.server.json.JsonWriter;
 
 public class ReadRecordAction extends ReadAction {
-    public ReadRecordAction(ActionParameters parameters) {
-        super(parameters, parameters.getRecordId());
-    }
+	public ReadRecordAction(ActionParameters parameters) {
+		super(parameters, parameters.getRecordId());
+	}
 
-    @Override
-    public void writeResponse(JsonWriter writer) throws Throwable {
-        Select cursor = getCursor();
+	@Override
+	public void writeResponse(JsonWriter writer) throws Throwable {
+		Select cursor = getCursor();
 
-        try {
-            Collection<Field> fetchedFields = cursor.getFields();
+		try {
+			Collection<Field> fetchedFields = cursor.getFields();
 
-            Collection<Field> fields = new ArrayList<Field>();
+			Collection<Field> fields = new ArrayList<Field>();
 
-            for(Field field : fetchedFields) {
-                if(field.system() || field instanceof GuidField || field == getQuery().lockKey() || field.hidden != null && field.hidden.get()) {
-                    continue;
-                }
-                fields.add(field);
-            }
+			for(Field field : fetchedFields) {
+				if(field.system() || field instanceof GuidField || field == getQuery().lockKey()) {
+					continue;
+				}
+				fields.add(field);
+			}
 
-            writer.startArray(Json.fields);
-            for(Field field : fields) {
-            	writer.startObject();
-                field.writeMeta(writer);
-                writer.finishObject();
-            }
-            writer.finishArray();
+			writer.startArray(Json.fields);
+			for(Field field : fields) {
+				writer.startObject();
+				field.writeMeta(writer);
+				writer.finishObject();
+			}
+			writer.finishArray();
 
-            writer.startArray(Json.data);
-            if(cursor.next()) {
-                for(Field field : fields) {
-                    writer.startObject();
-                    field.writeData(writer);
-                    writer.finishObject();
-                }
-            }
-            writer.finishArray();
-        }
-        finally {
-            cursor.close();
-        }
-    }
+			writer.startArray(Json.data);
+			if(cursor.next()) {
+				for(Field field : fields) {
+					writer.startObject();
+					field.writeData(writer);
+					writer.finishObject();
+				}
+			}
+			writer.finishArray();
+		} finally {
+			cursor.close();
+		}
+	}
 }

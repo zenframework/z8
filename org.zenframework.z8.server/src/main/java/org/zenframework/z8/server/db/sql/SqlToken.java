@@ -8,49 +8,44 @@ import org.zenframework.z8.server.db.DatabaseVendor;
 import org.zenframework.z8.server.db.FieldType;
 
 abstract public class SqlToken {
-    private Collection<IValue> usedFields = null;
-    
-    public String format(DatabaseVendor vendor, FormatOptions options) {
-        return format(vendor, options, false);
-    }
+	private Collection<IValue> usedFields = null;
 
-    abstract public void collectFields(Collection<IValue> fields);
+	public String format(DatabaseVendor vendor, FormatOptions options) {
+		return format(vendor, options, false);
+	}
 
-    abstract public String format(DatabaseVendor vendor, FormatOptions options, boolean isLogicalContext);
+	abstract public void collectFields(Collection<IValue> fields);
 
-    public String formula() {
-        assert (false);
-        return null;
-    }
+	abstract public String format(DatabaseVendor vendor, FormatOptions options, boolean isLogicalContext);
 
-    public Collection<IValue> getUsedFields() {
-        if(usedFields == null) {
-            usedFields = new HashSet<IValue>();
-            collectFields(usedFields);
-        }
-        return usedFields;
-    }
+	public Collection<IValue> getUsedFields() {
+		if(usedFields == null) {
+			usedFields = new HashSet<IValue>();
+			collectFields(usedFields);
+		}
+		return usedFields;
+	}
 
-    public boolean isNumeric() {
-        return isInteger() || isDecimal();
-    }
+	public boolean isNumeric() {
+		return isInteger() || isDecimal();
+	}
 
-    public boolean isInteger() {
-        return type() == FieldType.Integer;
-    }
+	public boolean isInteger() {
+		return type() == FieldType.Integer;
+	}
 
-    public boolean isDecimal() {
-        return type() == FieldType.Decimal;
-    }
+	public boolean isDecimal() {
+		return type() == FieldType.Decimal;
+	}
 
-    public boolean isDate() {
-        FieldType type = type();
-        return type == FieldType.Date || type == FieldType.Datetime;
-    }
+	public boolean isDate() {
+		FieldType type = type();
+		return type == FieldType.Date || type == FieldType.Datetime;
+	}
 
-    public boolean isDatespan() {
-        return type() == FieldType.Datespan;
-    }
+	public boolean isDatespan() {
+		return type() == FieldType.Datespan;
+	}
 
-    abstract public FieldType type();
+	abstract public FieldType type();
 }

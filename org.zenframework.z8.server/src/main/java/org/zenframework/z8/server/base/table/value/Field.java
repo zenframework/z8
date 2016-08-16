@@ -4,9 +4,7 @@ import java.sql.SQLException;
 import java.util.Collection;
 
 import org.zenframework.z8.server.base.form.Control;
-import org.zenframework.z8.server.base.form.FieldGroup;
 import org.zenframework.z8.server.base.model.sql.Select;
-import org.zenframework.z8.server.base.query.Formula;
 import org.zenframework.z8.server.base.query.Query;
 import org.zenframework.z8.server.db.DatabaseVendor;
 import org.zenframework.z8.server.db.FieldType;
@@ -17,10 +15,8 @@ import org.zenframework.z8.server.db.sql.SqlField;
 import org.zenframework.z8.server.db.sql.functions.IsNull;
 import org.zenframework.z8.server.json.Json;
 import org.zenframework.z8.server.json.JsonWriter;
-import org.zenframework.z8.server.json.parser.JsonObject;
 import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.runtime.RCollection;
-import org.zenframework.z8.server.runtime.RLinkedHashMap;
 import org.zenframework.z8.server.types.binary;
 import org.zenframework.z8.server.types.bool;
 import org.zenframework.z8.server.types.date;
@@ -32,7 +28,6 @@ import org.zenframework.z8.server.types.integer;
 import org.zenframework.z8.server.types.primary;
 import org.zenframework.z8.server.types.string;
 import org.zenframework.z8.server.types.sql.sql_bool;
-import org.zenframework.z8.server.types.sql.sql_primary;
 
 abstract public class Field extends Control implements IValue, IField {
 	public static class strings {
@@ -48,7 +43,6 @@ abstract public class Field extends Control implements IValue, IField {
 	}
 
 	public bool visible = null;
-	public bool hidden = null;
 	public string format = null;
 	public integer length = null;
 
@@ -75,11 +69,7 @@ abstract public class Field extends Control implements IValue, IField {
 
 	public RCollection<Field.CLASS<? extends Field>> indexFields = new RCollection<Field.CLASS<? extends Field>>();
 
-	public RCollection<Formula.CLASS<? extends Formula>> evaluations = new RCollection<Formula.CLASS<? extends Formula>>();
-
-	public RCollection<Field.CLASS<? extends Field>> dependencies = new RCollection<Field.CLASS<? extends Field>>();
 	public RCollection<Field.CLASS<? extends Field>> columns = new RCollection<Field.CLASS<? extends Field>>();
-	public RLinkedHashMap<guid, RCollection<Control.CLASS<? extends Control>>> fieldsToShow = new RLinkedHashMap<guid, RCollection<Control.CLASS<? extends Control>>>();
 
 	private primary value = null;
 	private primary originalValue = null;
@@ -264,14 +254,6 @@ abstract public class Field extends Control implements IValue, IField {
 		return selectable != null ? selectable.get() : true;
 	}
 
-	public Collection<Formula.CLASS<? extends Formula>> evaluations() {
-		return evaluations;
-	}
-
-	public Collection<Formula> getEvaluations() {
-		return CLASS.asList(evaluations());
-	}
-
 	public Sequencer getSequencer() {
 		if(sequencer == null) {
 			Sequencer.CLASS<Sequencer> cls = new Sequencer.CLASS<Sequencer>(this);
@@ -294,7 +276,6 @@ abstract public class Field extends Control implements IValue, IField {
 
 		writer.writeProperty(Json.serverType, type().toString());
 		writer.writeProperty(Json.visible, visible, new bool(true));
-		writer.writeProperty(Json.hidden, hidden, new bool(false));
 		writer.writeProperty(Json.format, format, new string());
 		writer.writeProperty(Json.length, length, new integer(0));
 		writer.writeProperty(Json.anchor, anchor, new bool(false));
@@ -308,70 +289,10 @@ abstract public class Field extends Control implements IValue, IField {
 
 		if(aggregation != Aggregation.None)
 			writer.writeProperty(Json.aggregation, aggregation.toString());
-
-		if(!evaluations.isEmpty()) {
-			writer.startArray(Json.evaluations);
-
-			for(Formula formula : getEvaluations()) {
-				writer.startObject();
-
-				writer.writeProperty(Json.field, formula.field.id());
-				writer.writeProperty(Json.formula, formula.formula.formula());
-
-				Collection<IValue> fields = formula.formula.getUsedFields();
-
-				writer.startArray(Json.fields);
-
-				for(IValue field : fields)
-					writer.write(field.id());
-
-				writer.finishArray();
-
-				writer.finishObject();
-			}
-
-			writer.finishArray();
-		}
-
-		if(!dependencies.isEmpty()) {
-			writer.startArray(Json.dependencies);
-
-			for(Field.CLASS<?> cls : dependencies)
-				writer.write(cls.id());
-
-			writer.finishArray();
-		}
-
-		if(!fieldsToShow.isEmpty()) {
-			writer.startObject(Json.fieldsToShow);
-
-			for(guid key : fieldsToShow.keySet()) {
-				writer.startArray(JsonObject.quote(key.toString()));
-
-				for(Control.CLASS<?> field : fieldsToShow.get(key)) {
-					if(field.instanceOf(FieldGroup.class)) {
-						FieldGroup group = (FieldGroup)field.get();
-
-						for(Control.CLASS<?> groupField : group.controls)
-							writer.write(groupField.id());
-					}
-
-					writer.write(field.id());
-				}
-
-				writer.finishArray();
-			}
-
-			writer.finishObject();
-		}
 	}
 
 	public void writeData(JsonWriter writer) {
 		writer.writeProperty('"' + id() + '"', get());
-	}
-
-	public sql_primary formula() {
-		return null;
 	}
 
 	public binary binary() {

@@ -12,52 +12,46 @@ import org.zenframework.z8.server.exceptions.db.UnknownDatabaseException;
 import org.zenframework.z8.server.types.datespan;
 
 public class AddSecond extends SqlToken {
-    private SqlToken date;
-    private SqlToken seconds;
+	private SqlToken date;
+	private SqlToken seconds;
 
-    public AddSecond(SqlToken date, SqlToken seconds) {
-        this.date = date;
-        this.seconds = seconds;
-    }
+	public AddSecond(SqlToken date, SqlToken seconds) {
+		this.date = date;
+		this.seconds = seconds;
+	}
 
-    @Override
-    public void collectFields(Collection<IValue> fields) {
-        date.collectFields(fields);
-        seconds.collectFields(fields);
-    }
+	@Override
+	public void collectFields(Collection<IValue> fields) {
+		date.collectFields(fields);
+		seconds.collectFields(fields);
+	}
 
-    @Override
-    public String format(DatabaseVendor vendor, FormatOptions options, boolean logicalContext) {
-        switch(date.type()) {
-        case Date:
-        case Datetime:
-            switch(vendor) {
-            case Oracle:
-                return "(" + date.format(vendor, options) + "+(" + seconds.format(vendor, options) + ")/(24*60*60))";
-            case Postgres:
-                return "(" + date.format(vendor, options) + " + (" + seconds.format(vendor, options) + ") * interval '1 second')";
-            case SqlServer:
-                return "DATEADD(ss, " + seconds.format(vendor, options) + ", " + date.format(vendor, options) + ")";
-            default:
-                throw new UnknownDatabaseException();
-            }
+	@Override
+	public String format(DatabaseVendor vendor, FormatOptions options, boolean logicalContext) {
+		switch(date.type()) {
+		case Date:
+		case Datetime:
+			switch(vendor) {
+			case Oracle:
+				return "(" + date.format(vendor, options) + "+(" + seconds.format(vendor, options) + ")/(24*60*60))";
+			case Postgres:
+				return "(" + date.format(vendor, options) + " + (" + seconds.format(vendor, options) + ") * interval '1 second')";
+			case SqlServer:
+				return "DATEADD(ss, " + seconds.format(vendor, options) + ", " + date.format(vendor, options) + ")";
+			default:
+				throw new UnknownDatabaseException();
+			}
 
-        case Datespan:
-            return date.format(vendor, options) + "+(" + seconds.format(vendor, options) + "*" + datespan.TicksPerSecond
-                    + ")";
+		case Datespan:
+			return date.format(vendor, options) + "+(" + seconds.format(vendor, options) + "*" + datespan.TicksPerSecond + ")";
 
-        default:
-            throw new UnsupportedException();
-        }
-    }
+		default:
+			throw new UnsupportedException();
+		}
+	}
 
-    @Override
-    public FieldType type() {
-        return date.type();
-    }
-
-    @Override
-    public String formula() {
-        return date.formula() + ".add(Date.SECOND, " + seconds.formula() + ")";
-    }
+	@Override
+	public FieldType type() {
+		return date.type();
+	}
 }

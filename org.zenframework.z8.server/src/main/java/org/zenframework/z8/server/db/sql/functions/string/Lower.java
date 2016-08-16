@@ -12,34 +12,29 @@ import org.zenframework.z8.server.db.sql.SqlToken;
 import org.zenframework.z8.server.db.sql.functions.conversion.ToChar;
 
 public class Lower extends StringFunction {
-    private SqlToken value;
+	private SqlToken value;
 
-    public Lower(Field field) {
-        this(new SqlField(field));
-    }
+	public Lower(Field field) {
+		this(new SqlField(field));
+	}
 
-    public Lower(SqlToken value) {
-        this.value = value;
-    }
+	public Lower(SqlToken value) {
+		this.value = value;
+	}
 
-    @Override
-    public void collectFields(Collection<IValue> fields) {
-        value.collectFields(fields);
-    }
+	@Override
+	public void collectFields(Collection<IValue> fields) {
+		value.collectFields(fields);
+	}
 
-    @Override
-    public String format(DatabaseVendor vendor, FormatOptions options, boolean logicalContext) {
-        SqlToken token = value.type() != FieldType.String ? new ToChar(value) : value;
-        return "LOWER(" + token.format(vendor, options) + ")";
-    }
+	@Override
+	public String format(DatabaseVendor vendor, FormatOptions options, boolean logicalContext) {
+		SqlToken token = value.type() != FieldType.String ? new ToChar(value) : value;
+		return "LOWER(" + token.format(vendor, options) + ")";
+	}
 
-    @Override
-    public String formula() {
-        return value.formula() + ".toLowerCase()";
-    }
-
-    @Override
-    public FieldType type() {
-        return FieldType.String;
-    }
+	@Override
+	public FieldType type() {
+		return FieldType.String;
+	}
 }

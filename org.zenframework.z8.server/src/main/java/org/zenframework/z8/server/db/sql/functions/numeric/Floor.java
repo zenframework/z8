@@ -9,29 +9,24 @@ import org.zenframework.z8.server.db.sql.FormatOptions;
 import org.zenframework.z8.server.db.sql.SqlToken;
 
 public class Floor extends SqlToken {
-    private SqlToken param1;
+	private SqlToken param1;
 
-    public Floor(SqlToken p1) {
-        param1 = p1;
-    }
+	public Floor(SqlToken p1) {
+		param1 = p1;
+	}
 
-    @Override
-    public void collectFields(Collection<IValue> fields) {
-        param1.collectFields(fields);
-    }
+	@Override
+	public void collectFields(Collection<IValue> fields) {
+		param1.collectFields(fields);
+	}
 
-    @Override
-    public String format(DatabaseVendor vendor, FormatOptions options, boolean logicalContext) {
-        return "FLOOR(" + param1.format(vendor, options) + ")";
-    }
+	@Override
+	public String format(DatabaseVendor vendor, FormatOptions options, boolean logicalContext) {
+		return "FLOOR(" + param1.format(vendor, options) + ")";
+	}
 
-    @Override
-    public FieldType type() {
-        return FieldType.Integer;
-    }
-
-    @Override
-    public String formula() {
-        return "Math.floor(" + param1.formula() + ")";
-    }
+	@Override
+	public FieldType type() {
+		return FieldType.Integer;
+	}
 }

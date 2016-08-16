@@ -9,41 +9,32 @@ import org.zenframework.z8.server.db.sql.SqlToken;
 import org.zenframework.z8.server.exceptions.db.UnknownDatabaseException;
 
 public class Replace extends StringFunction {
-    private SqlToken string;
-    private SqlToken pattern;
-    private SqlToken replacement;
+	private SqlToken string;
+	private SqlToken pattern;
+	private SqlToken replacement;
 
-    public Replace(SqlToken string, SqlToken pattern, SqlToken replacement) {
-        this.string = string;
-        this.pattern = pattern;
-        this.replacement = replacement;
-    }
+	public Replace(SqlToken string, SqlToken pattern, SqlToken replacement) {
+		this.string = string;
+		this.pattern = pattern;
+		this.replacement = replacement;
+	}
 
-    @Override
-    public void collectFields(Collection<IValue> fields) {
-        string.collectFields(fields);
-        pattern.collectFields(fields);
-        replacement.collectFields(fields);
-    }
+	@Override
+	public void collectFields(Collection<IValue> fields) {
+		string.collectFields(fields);
+		pattern.collectFields(fields);
+		replacement.collectFields(fields);
+	}
 
-    @Override
-    public String format(DatabaseVendor vendor, FormatOptions options, boolean logicalContext) {
-        switch(vendor) {
-        case Oracle:
-        case SqlServer:
-        case Postgres:
-            return "replace(" + 
-                string.format(vendor, options) + ", " +
-                pattern.format(vendor, options) + ", " +
-                replacement.format(vendor, options) + ")";
-        default:
-            throw new UnknownDatabaseException();
-        }
-    }
-
-    @Override
-    public String formula() {
-        return string.formula() + ".replace(" + pattern.formula() + ", " + replacement.formula() + ")";
-    }
-
+	@Override
+	public String format(DatabaseVendor vendor, FormatOptions options, boolean logicalContext) {
+		switch(vendor) {
+		case Oracle:
+		case SqlServer:
+		case Postgres:
+			return "replace(" + string.format(vendor, options) + ", " + pattern.format(vendor, options) + ", " + replacement.format(vendor, options) + ")";
+		default:
+			throw new UnknownDatabaseException();
+		}
+	}
 }

@@ -15,35 +15,30 @@ import org.zenframework.z8.server.db.sql.expressions.Or;
 import org.zenframework.z8.server.db.sql.functions.IsNull;
 
 public class IsEmpty extends SqlToken {
-    private SqlToken value;
+	private SqlToken value;
 
-    public IsEmpty(Field field) {
-        this(new SqlField(field));
-    }
+	public IsEmpty(Field field) {
+		this(new SqlField(field));
+	}
 
-    public IsEmpty(SqlToken value) {
-        this.value = value;
-    }
+	public IsEmpty(SqlToken value) {
+		this.value = value;
+	}
 
-    @Override
-    public void collectFields(Collection<IValue> fields) {
-        value.collectFields(fields);
-    }
+	@Override
+	public void collectFields(Collection<IValue> fields) {
+		value.collectFields(fields);
+	}
 
-    @Override
-    public String format(DatabaseVendor vendor, FormatOptions options, boolean logicalContext) {
-        SqlToken value = new Group(this.value);
-        SqlToken t = new Group(new Or(new IsNull(value), new Equ(value, "")));
-        return t.format(vendor, options, logicalContext);
-    }
+	@Override
+	public String format(DatabaseVendor vendor, FormatOptions options, boolean logicalContext) {
+		SqlToken value = new Group(this.value);
+		SqlToken t = new Group(new Or(new IsNull(value), new Equ(value, "")));
+		return t.format(vendor, options, logicalContext);
+	}
 
-    @Override
-    public FieldType type() {
-        return FieldType.Boolean;
-    }
-
-    @Override
-    public String formula() {
-        return "Z8.isEmpty(" + value.formula() + ")";
-    }
+	@Override
+	public FieldType type() {
+		return FieldType.Boolean;
+	}
 }
