@@ -19,6 +19,7 @@ import java.util.Map;
 import java.util.UUID;
 
 import org.zenframework.z8.rmi.ObjectIO;
+import org.zenframework.z8.server.exceptions.AccessDeniedException;
 import org.zenframework.z8.server.logs.Trace;
 import org.zenframework.z8.server.runtime.CLASS;
 import org.zenframework.z8.server.runtime.IObject;
@@ -154,7 +155,7 @@ public class RmiIO extends ObjectIO {
 	static public void writeInt(ObjectOutputStream out, int value) throws IOException {
 		out.writeInt(value);
 	}
-	
+
 	static public void writeLong(ObjectOutputStream out, long value) throws IOException {
 		out.writeLong(value);
 	}
@@ -203,16 +204,16 @@ public class RmiIO extends ObjectIO {
 		} else
 			throw new RuntimeException("Unknown primary type");
 	}
-	
+
 	@Override
 	protected void writeObject(ObjectOutputStream out, Object object) throws IOException {
 		if(object instanceof RmiServer)
 			object = ((RmiServer)object).proxy();
-			
+
 		if(object == null) {
 			writeByte(out, RmiIOType.Null);
-		
-		// primitives
+
+			// primitives
 		} else if(object instanceof Boolean) {
 			writeByte(out, RmiIOType.Boolean);
 			writeBoolean(out, (Boolean)object);
@@ -241,12 +242,12 @@ public class RmiIO extends ObjectIO {
 			writeByte(out, RmiIOType.String);
 			writeString(out, (String)object);
 
-		// primary
+			// primary
 		} else if(object instanceof primary) {
 			writeByte(out, RmiIOType.Primary);
 			writePrimary(out, (primary)object);
 
-		// arrays, collections, maps
+			// arrays, collections, maps
 		} else if(object instanceof Object[]) {
 			writeByte(out, RmiIOType.Array);
 			writeArray(out, (Object[])object);
@@ -256,8 +257,8 @@ public class RmiIO extends ObjectIO {
 		} else if(object instanceof Map) {
 			writeByte(out, RmiIOType.Map);
 			writeMap(out, (Map<?, ?>)object);
-		
-		// RMI internals
+
+			// RMI internals
 		} else if(object instanceof Proxy) {
 			writeByte(out, RmiIOType.Proxy);
 			writeProxy(out, (Proxy)object);
@@ -274,7 +275,7 @@ public class RmiIO extends ObjectIO {
 			writeByte(out, RmiIOType.Lease);
 			writeLease(out, (Lease)object);
 
-		// OBJECT, RmiSerializable
+			// OBJECT, RmiSerializable
 		} else if(object instanceof OBJECT) {
 			writeByte(out, RmiIOType.OBJECT);
 			writeOBJECT(out, (OBJECT)object);
@@ -318,7 +319,7 @@ public class RmiIO extends ObjectIO {
 		writeInt(out, array.length);
 
 		writeString(out, array.getClass().getComponentType().getCanonicalName());
-		
+
 		for(Object object : array)
 			writeObject(out, object);
 	}
@@ -366,6 +367,7 @@ public class RmiIO extends ObjectIO {
 	private void writeException(ObjectOutputStream out, Throwable exception) throws IOException {
 		exception = ErrorUtils.getCause(exception);
 		writeString(out, exception.getMessage());
+		writeBoolean(out, exception instanceof AccessDeniedException);
 	}
 
 	static public bool readBool(ObjectInputStream in) throws IOException {
@@ -521,7 +523,7 @@ public class RmiIO extends ObjectIO {
 		// primary
 		else if(id == RmiIOType.Primary)
 			return readPrimary(in);
-		
+
 		// Arrays, collections, maps
 		else if(id == RmiIOType.Array)
 			return readArray(in);
@@ -618,12 +620,12 @@ public class RmiIO extends ObjectIO {
 
 	private Object readProxy(ObjectInputStream in) throws IOException, ClassNotFoundException {
 		int count = readInt(in);
-		
+
 		Class<?>[] interfaces = new Class<?>[count];
-		
+
 		for(int i = 0; i < count; i++)
 			interfaces[i] = getClass(readString(in));
-		
+
 		LiveRef liveRef = LiveRef.read(in, true);
 		return ProxyUtils.newProxy(liveRef, interfaces);
 	}
@@ -646,6 +648,9 @@ public class RmiIO extends ObjectIO {
 	}
 
 	private Object readException(ObjectInputStream in) throws IOException, ClassNotFoundException {
-		return new RuntimeException(readString(in));
+		String cause = readString(in);
+		if(readBoolean(in))
+			return new AccessDeniedException();
+		return new RuntimeException(cause);
 	}
 }

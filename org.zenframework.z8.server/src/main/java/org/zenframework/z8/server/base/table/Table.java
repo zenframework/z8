@@ -3,14 +3,12 @@ package org.zenframework.z8.server.base.table;
 import java.util.Collection;
 
 import org.zenframework.z8.server.base.query.Query;
-import org.zenframework.z8.server.base.table.value.BoolExpression;
 import org.zenframework.z8.server.base.table.value.BoolField;
 import org.zenframework.z8.server.base.table.value.DatetimeField;
 import org.zenframework.z8.server.base.table.value.Field;
 import org.zenframework.z8.server.base.table.value.GuidField;
 import org.zenframework.z8.server.base.table.value.StringField;
 import org.zenframework.z8.server.base.table.value.TextField;
-import org.zenframework.z8.server.db.sql.SqlToken;
 import org.zenframework.z8.server.engine.ApplicationServer;
 import org.zenframework.z8.server.resources.Resources;
 import org.zenframework.z8.server.runtime.IObject;
@@ -33,7 +31,6 @@ public class Table extends TableBase {
 		public final static String Name = "Name";
 		public final static String Description = "Description";
 		public final static String Locked = "Locked";
-		public final static String LockedExpression = "LockedExpression";
 	}
 
 	static public class strings {
@@ -94,34 +91,7 @@ public class Table extends TableBase {
 	public StringField.CLASS<? extends StringField> name = new StringField.CLASS<StringField>(this);
 	public TextField.CLASS<? extends StringField> description = new TextField.CLASS<TextField>(this);
 
-	private BoolField.CLASS<? extends BoolField> lockedField = new BoolField.CLASS<BoolField>(this);
-
-	public BoolExpression.CLASS<? extends BoolExpression> locked = new lockedExpression.CLASS<lockedExpression>(this);
-
-	public static class lockedExpression extends BoolExpression {
-		public static class CLASS<T extends lockedExpression> extends BoolExpression.CLASS<T> {
-			public CLASS(IObject container) {
-				super(container);
-				setJavaClass(lockedExpression.class);
-				setSystem(true);
-			}
-
-			@Override
-			public Object newObject(IObject container) {
-				return new lockedExpression(container);
-			}
-		}
-
-		public lockedExpression(IObject container) {
-			super(container);
-		}
-
-		@Override
-		public SqlToken z8_expression() {
-			Table table = (Table)getContainer();
-			return table.lockedField.get().sql_bool();
-		}
-	}
+	public BoolField.CLASS<? extends BoolField> locked = new BoolField.CLASS<BoolField>(this);
 
 	final static public int IdLength = 15;
 	final static public int Id1Length = 15;
@@ -160,13 +130,10 @@ public class Table extends TableBase {
 		description.setIndex("description");
 		description.setDisplayName(displayNames.Description);
 
-		lockedField.setName(names.Locked);
-		lockedField.setIndex("locked");
-		lockedField.setDisplayName(displayNames.Locked);
-		lockedField.setSystem(true);
-
-		locked.setIndex("lockedExpression");
+		locked.setName(names.Locked);
+		locked.setIndex("locked");
 		locked.setDisplayName(displayNames.Locked);
+		locked.setSystem(true);
 
 		recordId.setName(names.RecordId);
 		recordId.setIndex("recordId");
@@ -210,7 +177,6 @@ public class Table extends TableBase {
 		registerDataField(id1);
 		registerDataField(name);
 		registerDataField(description);
-		registerDataField(lockedField);
 		registerDataField(locked);
 	}
 
@@ -224,8 +190,6 @@ public class Table extends TableBase {
 		createdAt.get().set(new datetime());
 		createdBy.get().set(ApplicationServer.getUser().id());
 
-		lockedField.get().set(locked.get().get());
-
 		super.beforeCreate(data, recordId, parentId, model, modelRecordId);
 	}
 
@@ -235,9 +199,6 @@ public class Table extends TableBase {
 			modifiedAt.get().set(new datetime());
 			modifiedBy.get().set(ApplicationServer.getUser().id());
 		}
-
-		if(fields.contains(locked.get()))
-			lockedField.get().set(locked.get().get());
 
 		super.beforeUpdate(data, recordId, fields, model, modelRecordId);
 	}
