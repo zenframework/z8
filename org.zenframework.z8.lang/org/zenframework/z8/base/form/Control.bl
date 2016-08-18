@@ -6,10 +6,9 @@
 import org.zenframework.z8.lang.Object;
 
 [native "org.zenframework.z8.server.base.form.Control"]
-class Control extends Object
-{
+class Control extends Object {
 	public int rowspan = 1;
 	public int colspan = 1;
-	
+
 	public bool hidable = false;
 }

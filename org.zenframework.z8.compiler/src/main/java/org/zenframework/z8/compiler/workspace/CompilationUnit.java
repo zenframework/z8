@@ -191,15 +191,13 @@ public class CompilationUnit extends Resource {
 			for(Project project : projects) {
 				compilationUnit = resolveToCompilationUnit(project, simpleName);
 
-				if(compilationUnit != null) {
+				if(compilationUnit != null)
 					break;
-				}
 			}
 		}
 
-		if(compilationUnit != null) {
+		if(compilationUnit != null)
 			return compilationUnit.resolveType();
-		}
 
 		return null;
 	}
@@ -209,13 +207,11 @@ public class CompilationUnit extends Resource {
 
 		ImportBlock importBlock = type != null ? type.getImportBlock() : null;
 
-		if(compilationUnit == null && importBlock != null) {
+		if(compilationUnit == null && importBlock != null)
 			compilationUnit = importBlock.getImportedUnit(simpleName);
-		}
 
-		if(compilationUnit == null) {
+		if(compilationUnit == null)
 			compilationUnit = getFolder().getCompilationUnit(simpleName + ".bl");
-		}
 
 		return compilationUnit;
 	}
@@ -246,19 +242,16 @@ public class CompilationUnit extends Resource {
 	}
 
 	public void importType(IType type) {
-		if(importedTypes == null) {
+		if(importedTypes == null)
 			importedTypes = new Set<IType>();
-		}
 
-		if(type != this.type && !type.getUserName().equals(Primary.Void)) {
+		if(type != this.type && !type.getUserName().equals(Primary.Void))
 			importedTypes.add(type);
-		}
 	}
 
 	public IType[] getImportedTypes() {
-		if(importedTypes == null) {
+		if(importedTypes == null)
 			return new IType[0];
-		}
 
 		return importedTypes.toArray(new IType[importedTypes.size()]);
 	}
@@ -302,9 +295,8 @@ public class CompilationUnit extends Resource {
 				File.fromPath(folder).makeDirectories();
 				File.fromPath(outputPath).write(newContent);
 				Project.filesWritten++;
-			} else {
+			} else
 				Project.filesSkipped++;
-			}
 
 			File.rename(outputPath, outputPath);
 
@@ -324,9 +316,8 @@ public class CompilationUnit extends Resource {
 	}
 
 	protected void addHyperlink(IPosition position, Hyperlink hyperlink) {
-		if(hyperlinks == null) {
+		if(hyperlinks == null)
 			hyperlinks = new HashMap<IPosition, Hyperlink>();
-		}
 
 		hyperlinks.put(position, hyperlink);
 	}
