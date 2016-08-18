@@ -54,6 +54,9 @@ public class PdfUtils {
 	}
 
 	public static void textToPdf(String text, File file) throws IOException {
+		// If text is empty, itext generates incorrect pdf
+		if (text == null || text.isEmpty())
+			text = " ";
 		Document document = new Document();
 		try {
 			Font font = new Font(BaseFont.createFont(
