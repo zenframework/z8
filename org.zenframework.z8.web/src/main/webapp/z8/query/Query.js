@@ -68,7 +68,8 @@ Z8.query.Query = Ext.extend(Ext.util.Observable, {
 
 		for(var i = 0; i < columns.length; i++) {
 			var field = this.getFieldById(columns[i].id);
-			fields.push(field);
+			if(field != null)
+				fields.push(field);
 		}
 
 		return fields;
