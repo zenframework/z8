@@ -27,7 +27,7 @@ Z8.form.Form = Ext.extend(Ext.Panel, {
 		for(var i = 0; i < section.controls.length; i++) {
 			var field = this.createControl(section.controls[i]);
 			if(field != null)
-				fields[i] = field;
+				fields.push(field);
 		}
 
 		return fields;
