@@ -183,7 +183,7 @@ public interface Json {
     string records = new string("records");
 
     string fields = new string("fields");
-    string section = new string("section");
+    string sections = new string("sections");
     string controls = new string("controls");
     string actions = new string("actions");
     string columns = new string("columns");

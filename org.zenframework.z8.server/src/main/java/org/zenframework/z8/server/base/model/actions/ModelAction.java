@@ -57,7 +57,7 @@ public class ModelAction extends Action {
 
         writer.writeProperty(Json.sort, Json.displayName);
 
-        writer.startObject(Json.section);
+        writer.startObject(Json.sections);
         
         writer.writeProperty(Json.isSection, true);
         

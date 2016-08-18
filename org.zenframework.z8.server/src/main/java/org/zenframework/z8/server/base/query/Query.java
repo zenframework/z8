@@ -13,7 +13,7 @@ import java.util.regex.Pattern;
 import org.apache.commons.io.FileUtils;
 import org.zenframework.z8.server.base.file.Folders;
 import org.zenframework.z8.server.base.form.Control;
-import org.zenframework.z8.server.base.form.FieldGroup;
+import org.zenframework.z8.server.base.form.Section;
 import org.zenframework.z8.server.base.model.actions.ActionParameters;
 import org.zenframework.z8.server.base.model.actions.CopyAction;
 import org.zenframework.z8.server.base.model.actions.DestroyAction;
@@ -73,7 +73,7 @@ public class Query extends Runnable {
 
 	public static class CLASS<T extends Query> extends Runnable.CLASS<T> {
 
-    	public CLASS(IObject container) {
+		public CLASS(IObject container) {
 			super(container);
 			setJavaClass(Query.class);
 		}
@@ -276,8 +276,9 @@ public class Query extends Runnable {
 		if(ApplicationServer.events())
 			z8_afterCreate(data.myClass(), recordId, parentId, model.myClass(), modelRecordId);
 
-		if(hasAttribute(IObject.SearchIndex) && !searchFields.isEmpty())
+		if(hasAttribute(IObject.SearchIndex) && !searchFields.isEmpty()) {
 			SearchEngine.INSTANCE.updateRecord(this, recordId.toString());
+		}
 	}
 
 	public void beforeUpdate(guid recordId, Collection<Field> fields, Query model, guid modelId) {
@@ -1046,13 +1047,11 @@ public class Query extends Runnable {
 
 		List<Field.CLASS<? extends Field>> result = new ArrayList<Field.CLASS<? extends Field>>(50);
 
-		for(Control.CLASS<? extends Control> formField : formFields) {
-			if(formField instanceof Field.CLASS) {
-				result.add((Field.CLASS<?>)formField);
-			} else if(formField instanceof FieldGroup.CLASS) {
-				FieldGroup group = (FieldGroup)formField.get();
-				result.addAll(group.fields());
-			}
+		for(Control.CLASS<? extends Control> field : formFields) {
+			if(field instanceof Section.CLASS)
+				result.addAll(((Section)field.get()).fields());
+			else if(field instanceof Field.CLASS)
+				result.add((Field.CLASS<?>)field);
 		}
 		return result;
 	}
@@ -1975,7 +1974,7 @@ public class Query extends Runnable {
 		writer.writeProperty(Json.width, width);
 		writer.writeProperty(Json.height, height);
 
-		writeSections(writer, fields);
+		writeSections(writer);
 	}
 
 	private void writeRecordActions(JsonWriter writer) {
@@ -2193,60 +2192,29 @@ public class Query extends Runnable {
 		}
 	}
 
-	class Section {
-		FieldGroup group = null;
-		Collection<Object> controls = new ArrayList<Object>();
+	private void writeSections(JsonWriter writer) {
+		Collection<Control> controls = collectControls();
 
-		Section(FieldGroup group) {
-			this.group = group;
-		}
+		writer.startArray(Json.sections);
 
-		void add(Object control) {
-			controls.add(control);
-		}
-
-		boolean isEmpty() {
-			return controls.isEmpty();
-		}
-	}
-
-	private void writeSections(JsonWriter writer, Collection<Field> fields) {
-		Section section = getSections(null, fields);
-
-		if(section == null)
-			return;
-
-		writer.startObject(Json.section);
-		writeSection(writer, section);
-		writer.finishObject();
-	}
-
-	private void writeSection(JsonWriter writer, Section section) {
-		if(section.group != null)
-			section.group.writeMeta(writer);
-
-		writer.writeProperty(Json.isSection, true);
-
-		writer.startArray(Json.controls);
-
-		for(Object control : section.controls) {
-			if(control instanceof Field) {
+		for(Control control : controls) {
+			if(control instanceof Section) {
+				writer.startObject();
+				control.writeMeta(writer);
+				writer.finishObject();
+			} else {
 				Field field = (Field)control;
 				if(!field.system()) {
 					writer.startObject();
 					writer.writeProperty(Json.id, field.id());
 					writer.finishObject();
 				}
-			} else if(control instanceof Section) {
-				writer.startObject();
-				writeSection(writer, (Section)control);
-				writer.finishObject();
 			}
 		}
 
 		writer.finishArray();
 	}
-	
+
 	private Collection<Control> collectControls() {
 		Collection<Control> controls = new ArrayList<Control>();
 
@@ -2266,29 +2234,7 @@ public class Query extends Runnable {
 		return controls;
 	}
 
-	private Section getSections(FieldGroup group, Collection<Field> fields) {
-		Section result = new Section(group);
-
-		Collection<Control> controls = group == null ? collectControls() : group.getControls();
-
-		for(Control control : controls) {
-			if(control instanceof Field) {
-				if(fields.contains(control)) {
-					result.add(control);
-				}
-			} else if(control instanceof FieldGroup) {
-				Section section = getSections((FieldGroup)control, fields);
-
-				if(section != null) {
-					result.add(section);
-				}
-			}
-		}
-
-		return result.isEmpty() ? null : result;
-	}
-
-	// ////////////////////////////////////////////////////////////////////////////////////////////////
+	//////////////////////////////////////////////////////////////////////////////////////////////////
 
 	public sql_bool z8_having() {
 		return new True();

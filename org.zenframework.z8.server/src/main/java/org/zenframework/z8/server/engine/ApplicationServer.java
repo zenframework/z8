@@ -11,7 +11,7 @@ import org.zenframework.z8.server.base.xml.GNode;
 import org.zenframework.z8.server.config.ServerConfig;
 import org.zenframework.z8.server.db.ConnectionManager;
 import org.zenframework.z8.server.ie.Message;
-import org.zenframework.z8.server.ie.FileMessage;
+import org.zenframework.z8.server.ie.MessageAcceptor;
 import org.zenframework.z8.server.logs.Trace;
 import org.zenframework.z8.server.request.IMonitor;
 import org.zenframework.z8.server.request.IRequest;
@@ -154,20 +154,12 @@ public class ApplicationServer extends RmiServer implements IApplicationServer {
 
 	@Override
 	public boolean has(Message message) throws RemoteException {
-		try {
-			if(message instanceof FileMessage) {
-				file file = ((FileMessage)message).getFile();
-				return Files.newInstance().hasRecord(file.id);
-			}
-			return false;
-		} finally {
-			ConnectionManager.release();
-		}
+		return MessageAcceptor.has(message);
 	}
 	
 	@Override
 	public boolean accept(Message message) {
-		return message.accept();
+		return MessageAcceptor.accept(message);
 	}
 
 	@Override

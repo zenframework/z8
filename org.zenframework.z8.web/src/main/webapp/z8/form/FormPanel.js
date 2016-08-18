@@ -1,5 +1,4 @@
-Z8.form.Form = Ext.extend(Ext.Panel, 
-{
+Z8.form.Form = Ext.extend(Ext.Panel, {
 	layout : 'z8.form',
 	padding: '0px 0px 0px 0px',
 	border: true,
@@ -9,29 +8,26 @@ Z8.form.Form = Ext.extend(Ext.Panel,
 
 	focusDelay: 100,
 	needLayout: true,
-	
-	constructor: function(config)
-	{
+
+	constructor: function(config) {
 		Ext.apply(this, config);
-		
+
 		config.autoScroll = true;
 		config.layoutConfig = config.layoutConfig || {};
-		config.layoutConfig.columns = this.query.columns;		
+		config.layoutConfig.columns = this.query.columns;
 
-		config.items = this.query.section != null ? this.createFields(this.query.section) : [];
-		
+		config.items = this.createFields(this.query.section);
+
 		Z8.form.Form.superclass.constructor.call(this, config);
 	},
 
-	createFields: function(section)
-	{
+	createFields: function(section) {
 		var fields = [];
-		
-		for(var i = 0; i < section.controls.length; i++)
-		{
+
+		for(var i = 0; i < section.controls.length; i++) {
 			fields[i] = this.createControl(section.controls[i]);
 		}
-		
+
 		return fields;
 	},
 
@@ -61,7 +57,7 @@ Z8.form.Form = Ext.extend(Ext.Panel,
 	
 		return formField;
 	},
-	
+
 	initComponent: function()
 	{
 		Z8.form.Form.superclass.initComponent.call(this);

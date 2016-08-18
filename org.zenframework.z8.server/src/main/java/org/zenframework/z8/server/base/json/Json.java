@@ -179,7 +179,7 @@ public class Json extends OBJECT {
     final static public string records = org.zenframework.z8.server.json.Json.records;
 
     final static public string fields = org.zenframework.z8.server.json.Json.fields;
-    final static public string section = org.zenframework.z8.server.json.Json.section;
+    final static public string sections = org.zenframework.z8.server.json.Json.sections;
     final static public string controls = org.zenframework.z8.server.json.Json.controls;
     final static public string actions = org.zenframework.z8.server.json.Json.actions;
     final static public string columns = org.zenframework.z8.server.json.Json.columns;

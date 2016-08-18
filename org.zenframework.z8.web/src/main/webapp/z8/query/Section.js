@@ -1,52 +1,42 @@
-Z8.query.Section = Ext.extend(Ext.util.Observable,
-{
+Z8.query.Section = Ext.extend(Ext.util.Observable, {
 	header: '',
 	controls: [],
 
-	constructor : function(config)
-	{
-		Ext.apply(this, config);
-
-		for(var i = 0; i < this.controls.length; i++)
-		{
-			var control = this.controls[i];
-			
-			if(control.isSection)
-			{
-				this.controls[i] = new Z8.query.Section(control);
+	constructor : function(section) {
+		if(Ext.isArray(section)) {
+			var sections = section;
+			for(var i = 0, length = sections.length; i < length; i++) {
+				var section = sections[i];
+				if(section.isSection) 
+					this.controls[i] = new Z8.query.Section(section);
+				else
+					this.controls[i] = section;
 			}
-			else
-			{
-				if(config.hidable)
-				{
-					control.hidable = true;
-				}
-				
-				this.controls[i] = control;
+		} else {
+			for(var i = 0; i < controls.length; i++) {
+				var control = controls[i];
+				if(control.isSection) 
+					this.controls[i] = new Z8.query.Section(control);
+				else
+					this.controls[i] = control;
 			}
 		}
 
 		Z8.query.Section.superclass.constructor.call(this);
 	},
 
-	getAllColumns: function()
-	{
+	getAllColumns: function() {
 		var columns = [];
 
-		for(var i = 0; i < this.controls.length; i++)
-		{
+		for(var i = 0; i < this.controls.length; i++) {
 			var control = this.controls[i];
-			
-			if(control.isSection)
-			{
+
+			if(control.isSection) 
 				columns = columns.concat(control.getAllColumns());
-			}
 			else
-			{
 				columns.push(control);
-			}
 		}
-		
+
 		return columns;
 	}
 });

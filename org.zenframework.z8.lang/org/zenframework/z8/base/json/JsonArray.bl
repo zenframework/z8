@@ -8,31 +8,31 @@ public class JsonArray extends Object {
 	public void operator = (string source);
 	public void operator = (primary[] source);
 
-    public bool isEmpty();
-    public int length();
+	public bool isEmpty();
+	public int length();
 
-    public string getString(int i);
-    public int getInt(int i);
-    public decimal getDecimal(int i);
-    public bool getBool(int i);
-    public guid getGuid(int i);
+	public string getString(int i);
+	public int getInt(int i);
+	public decimal getDecimal(int i);
+	public bool getBool(int i);
+	public guid getGuid(int i);
 
-    public JsonArray getJsonArray(int i);
-    public JsonObject getJsonObject(int i);
+	public JsonArray getJsonArray(int i);
+	public JsonObject getJsonObject(int i);
 
-    public JsonArray put(primary value);
-    public JsonArray put(JsonArray value);
-    public JsonArray put(JsonObject value);
+	public JsonArray put(primary value);
+	public JsonArray put(JsonArray value);
+	public JsonArray put(JsonObject value);
 
-    public JsonArray put(int index, primary value);
-    public JsonArray put(int index, JsonArray value);
-    public JsonArray put(int index, JsonObject value);
-    public JsonArray insert(int index, JsonObject value);
-    
-    public JsonArray remove(int index);
-    
-    public guid[] toGuidArray();
-    public string[] toStringArray();
+	public JsonArray put(int index, primary value);
+	public JsonArray put(int index, JsonArray value);
+	public JsonArray put(int index, JsonObject value);
+	public JsonArray insert(int index, JsonObject value);
+
+	public JsonArray remove(int index);
+
+	public guid[] toGuidArray();
+	public string[] toStringArray();
 
 	public string toString(int indentFactor);
 

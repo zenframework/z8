@@ -10,6 +10,7 @@ import org.zenframework.z8.server.base.table.Table;
 import org.zenframework.z8.server.base.table.value.Field;
 import org.zenframework.z8.server.db.sql.expressions.Equ;
 import org.zenframework.z8.server.engine.Runtime;
+import org.zenframework.z8.server.logs.Trace;
 import org.zenframework.z8.server.resources.Resources;
 import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.runtime.RCollection;
@@ -35,11 +36,15 @@ public class SearchEngine {
 		if(query.readFirst(query.getSearchFields(), new Equ(query.getSearchId(), recordId))) {
 			String fullText = query.getRecordFullText();
 			if(fullText != null && !fullText.isEmpty()) {
-				SearchIndex index = getIndex(query);
-				Field searchId = query.getSearchId();
-				String searchRecordId = searchId != null ? searchId.get().toString() : null;
-				index.updateDocument(searchRecordId == null || searchRecordId.equals(guid.NULL) ? recordId : searchRecordId, fullText);
-				index.commit();
+				try {
+					SearchIndex index = getIndex(query);
+					Field searchId = query.getSearchId();
+					String searchRecordId = searchId != null ? searchId.get().toString() : null;
+					index.updateDocument(searchRecordId == null || searchRecordId.equals(guid.NULL) ? recordId : searchRecordId, fullText);
+					index.commit();
+				} catch(Throwable e) {
+					Trace.logEvent(e);
+				}
 			}
 		}
 
@@ -47,9 +52,13 @@ public class SearchEngine {
 	}
 
 	public void deleteRecord(Query query, String recordId) {
-		SearchIndex index = getIndex(query);
-		index.deleteDocument(recordId);
-		index.commit();
+		try {
+			SearchIndex index = getIndex(query);
+			index.deleteDocument(recordId);
+			index.commit();
+		} catch(Throwable e) {
+			Trace.logEvent(e);
+		}
 	}
 
 	public Collection<String> searchRecords(Query query, String target) {
