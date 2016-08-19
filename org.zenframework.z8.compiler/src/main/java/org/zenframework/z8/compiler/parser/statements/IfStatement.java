@@ -15,172 +15,170 @@ import org.zenframework.z8.compiler.parser.LanguageElement;
 import org.zenframework.z8.compiler.workspace.CompilationUnit;
 
 public class IfStatement extends LanguageElement implements IStatement {
-    private IToken ifToken;
-    @SuppressWarnings("unused")
-    private IToken elseToken;
+	private IToken ifToken;
+	@SuppressWarnings("unused")
+	private IToken elseToken;
 
-    private LoopCondition condition;
-    private ILanguageElement ifStatement;
-    private ILanguageElement elseStatement;
+	private LoopCondition condition;
+	private ILanguageElement ifStatement;
+	private ILanguageElement elseStatement;
 
-    public IfStatement(IToken ifToken, ILanguageElement condition, ILanguageElement ifStatement, IToken elseToken,
-            ILanguageElement elseStatement) {
-        this.ifToken = ifToken;
-        this.condition = new LoopCondition(condition);
-        this.ifStatement = ifStatement;
-        this.elseToken = elseToken;
-        this.elseStatement = elseStatement;
+	public IfStatement(IToken ifToken, ILanguageElement condition, ILanguageElement ifStatement, IToken elseToken, ILanguageElement elseStatement) {
+		this.ifToken = ifToken;
+		this.condition = new LoopCondition(condition);
+		this.ifStatement = ifStatement;
+		this.elseToken = elseToken;
+		this.elseStatement = elseStatement;
 
-        this.ifStatement.setParent(this);
+		this.ifStatement.setParent(this);
 
-        if(this.elseStatement != null) {
-            this.elseStatement.setParent(this);
-        }
-    }
+		if(this.elseStatement != null) {
+			this.elseStatement.setParent(this);
+		}
+	}
 
-    @Override
-    public IPosition getSourceRange() {
-        if(elseStatement != null) {
-            return ifToken.getPosition().union(elseStatement.getSourceRange());
-        }
-        return ifToken.getPosition().union(ifStatement.getSourceRange());
-    }
+	@Override
+	public IPosition getSourceRange() {
+		if(elseStatement != null) {
+			return ifToken.getPosition().union(elseStatement.getSourceRange());
+		}
+		return ifToken.getPosition().union(ifStatement.getSourceRange());
+	}
 
-    @Override
-    public IToken getFirstToken() {
-        return ifToken;
-    }
+	@Override
+	public IToken getFirstToken() {
+		return ifToken;
+	}
 
-    @Override
-    public boolean resolveTypes(CompilationUnit compilationUnit, IType declaringType) {
-        if(!super.resolveTypes(compilationUnit, declaringType))
-            return false;
+	@Override
+	public boolean resolveTypes(CompilationUnit compilationUnit, IType declaringType) {
+		if(!super.resolveTypes(compilationUnit, declaringType))
+			return false;
 
-        condition.resolveTypes(compilationUnit, declaringType);
+		condition.resolveTypes(compilationUnit, declaringType);
 
-        ifStatement.resolveTypes(compilationUnit, declaringType);
+		ifStatement.resolveTypes(compilationUnit, declaringType);
 
-        if(elseStatement != null)
-            elseStatement.resolveTypes(compilationUnit, declaringType);
+		if(elseStatement != null)
+			elseStatement.resolveTypes(compilationUnit, declaringType);
 
-        return true;
-    }
+		return true;
+	}
 
-    @Override
-    public boolean checkSemantics(CompilationUnit compilationUnit, IType declaringType, IMethod declaringMethod,
-            IVariable leftHandValue, IVariableType context) {
-        if(!super.checkSemantics(compilationUnit, declaringType, declaringMethod, null, null))
-            return false;
+	@Override
+	public boolean checkSemantics(CompilationUnit compilationUnit, IType declaringType, IMethod declaringMethod, IVariable leftHandValue, IVariableType context) {
+		if(!super.checkSemantics(compilationUnit, declaringType, declaringMethod, null, null))
+			return false;
 
-        condition.checkSemantics(compilationUnit, declaringType, declaringMethod, null, null);
+		condition.checkSemantics(compilationUnit, declaringType, declaringMethod, null, null);
 
-        declaringMethod.openLocalScope();
-        ifStatement.checkSemantics(compilationUnit, declaringType, declaringMethod, null, null);
-        declaringMethod.closeLocalScope();
+		declaringMethod.openLocalScope();
+		ifStatement.checkSemantics(compilationUnit, declaringType, declaringMethod, null, null);
+		declaringMethod.closeLocalScope();
 
-        if(elseStatement != null) {
-            declaringMethod.openLocalScope();
-            elseStatement.checkSemantics(compilationUnit, declaringType, declaringMethod, null, null);
-            declaringMethod.closeLocalScope();
-        }
+		if(elseStatement != null) {
+			declaringMethod.openLocalScope();
+			elseStatement.checkSemantics(compilationUnit, declaringType, declaringMethod, null, null);
+			declaringMethod.closeLocalScope();
+		}
 
-        return true;
-    }
+		return true;
+	}
 
-    @Override
-    public boolean resolveNestedTypes(CompilationUnit compilationUnit, IType declaringType) {
-        if(!super.resolveNestedTypes(compilationUnit, declaringType))
-            return false;
+	@Override
+	public boolean resolveNestedTypes(CompilationUnit compilationUnit, IType declaringType) {
+		if(!super.resolveNestedTypes(compilationUnit, declaringType))
+			return false;
 
-        ifStatement.resolveNestedTypes(compilationUnit, declaringType);
+		ifStatement.resolveNestedTypes(compilationUnit, declaringType);
 
-        if(elseStatement != null) {
-            elseStatement.resolveNestedTypes(compilationUnit, declaringType);
-        }
+		if(elseStatement != null) {
+			elseStatement.resolveNestedTypes(compilationUnit, declaringType);
+		}
 
-        return true;
-    }
+		return true;
+	}
 
-    @Override
-    public boolean returnsOnAllControlPaths() {
-    	boolean result = ((IStatement)ifStatement).returnsOnAllControlPaths();
-        
-    	if(elseStatement != null)
-    		return result && ((IStatement)elseStatement).returnsOnAllControlPaths();
-	
-    	return false;
-    }
+	@Override
+	public boolean returnsOnAllControlPaths() {
+		boolean result = ((IStatement)ifStatement).returnsOnAllControlPaths();
 
-    @Override
-    public boolean breaksControlFlow() {
-        return false;
-    }
+		if(elseStatement != null)
+			return result && ((IStatement)elseStatement).returnsOnAllControlPaths();
 
-    @Override
-    public void getClassCode(CodeGenerator codeGenerator) {
-        ifStatement.getClassCode(codeGenerator);
+		return false;
+	}
 
-        if(elseStatement != null) {
-            elseStatement.getClassCode(codeGenerator);
-        }
-    }
+	@Override
+	public boolean breaksControlFlow() {
+		return false;
+	}
 
-    @Override
-    public void getCode(CodeGenerator codeGenerator) {
-        codeGenerator.getCompilationUnit().setLineNumbers(getSourceRange().getLine(), codeGenerator.getCurrentLine());
+	@Override
+	public void getClassCode(CodeGenerator codeGenerator) {
+		ifStatement.getClassCode(codeGenerator);
 
-        codeGenerator.append("if(");
-        condition.getCode(codeGenerator);
-        codeGenerator.append(")");
-        codeGenerator.breakLine();
+		if(elseStatement != null) {
+			elseStatement.getClassCode(codeGenerator);
+		}
+	}
 
-        boolean braces = ifStatement instanceof CompoundStatement;
+	@Override
+	public void getCode(CodeGenerator codeGenerator) {
+		codeGenerator.getCompilationUnit().setLineNumbers(getSourceRange().getLine(), codeGenerator.getCurrentLine());
 
-        if(!braces)
-            codeGenerator.incrementIndent();
+		codeGenerator.append("if(");
+		condition.getCode(codeGenerator);
+		codeGenerator.append(")");
+		codeGenerator.breakLine();
 
-        codeGenerator.indent();
-        ifStatement.getCode(codeGenerator);
+		boolean braces = ifStatement instanceof CompoundStatement;
 
-        if(!braces)
-            codeGenerator.decrementIndent();
+		if(!braces)
+			codeGenerator.incrementIndent();
 
-        if(elseStatement == null) {
-            return;
-        }
+		codeGenerator.indent();
+		ifStatement.getCode(codeGenerator);
 
-        braces = elseStatement instanceof CompoundStatement;
+		if(!braces)
+			codeGenerator.decrementIndent();
 
-        codeGenerator.indent();
-        codeGenerator.append("else");
+		if(elseStatement == null) {
+			return;
+		}
 
-        if(elseStatement instanceof IfStatement) {
-            codeGenerator.append(" ");
-            elseStatement.getCode(codeGenerator);
-            return;
-        }
+		braces = elseStatement instanceof CompoundStatement;
 
-        codeGenerator.breakLine();
+		codeGenerator.indent();
+		codeGenerator.append("else");
 
-        if(!braces)
-            codeGenerator.incrementIndent();
+		if(elseStatement instanceof IfStatement) {
+			codeGenerator.append(" ");
+			elseStatement.getCode(codeGenerator);
+			return;
+		}
 
-        codeGenerator.indent();
-        elseStatement.getCode(codeGenerator);
+		codeGenerator.breakLine();
 
-        if(!braces)
-            codeGenerator.decrementIndent();
-    }
+		if(!braces)
+			codeGenerator.incrementIndent();
 
-    @Override
-    public void replaceTypeName(TextEdit parent, IType type, String newTypeName) {
-        condition.replaceTypeName(parent, type, newTypeName);
+		codeGenerator.indent();
+		elseStatement.getCode(codeGenerator);
 
-        ifStatement.replaceTypeName(parent, type, newTypeName);
+		if(!braces)
+			codeGenerator.decrementIndent();
+	}
 
-        if(elseStatement != null) {
-            elseStatement.replaceTypeName(parent, type, newTypeName);
-        }
-    }
+	@Override
+	public void replaceTypeName(TextEdit parent, IType type, String newTypeName) {
+		condition.replaceTypeName(parent, type, newTypeName);
+
+		ifStatement.replaceTypeName(parent, type, newTypeName);
+
+		if(elseStatement != null) {
+			elseStatement.replaceTypeName(parent, type, newTypeName);
+		}
+	}
 
 }

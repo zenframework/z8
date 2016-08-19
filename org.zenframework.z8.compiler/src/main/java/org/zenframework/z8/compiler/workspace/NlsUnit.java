@@ -11,86 +11,84 @@ import org.zenframework.z8.compiler.file.FileException;
 import org.zenframework.z8.compiler.util.Set;
 
 public class NlsUnit extends Resource {
-    private Properties properties = new Properties();
-    private String locale;
+	private Properties properties = new Properties();
+	private String locale;
 
-    private boolean buildPending = true;
+	private boolean buildPending = true;
 
-    private Set<CompilationUnit> consumers;
+	private Set<CompilationUnit> consumers;
 
-    public NlsUnit(Resource parent, IResource resource) {
-        super(parent, resource);
-        parent.addMember(this);
-    }
+	public NlsUnit(Resource parent, IResource resource) {
+		super(parent, resource);
+		parent.addMember(this);
+	}
 
-    public void contentChanged() {
-        if(Project.isIdle()) {
-            buildPending = true;
-            updateDependencies();
-        }
-    }
+	public void contentChanged() {
+		if(Project.isIdle()) {
+			buildPending = true;
+			updateDependencies();
+		}
+	}
 
-    protected void updateDependencies() {
-        CompilationUnit[] consumers = getConsumers();
+	protected void updateDependencies() {
+		CompilationUnit[] consumers = getConsumers();
 
-        for(CompilationUnit consumer : consumers) {
-            consumer.setChanged(true);
-            consumer.updateDependencies();
-        }
+		for(CompilationUnit consumer : consumers) {
+			consumer.setChanged(true);
+			consumer.updateDependencies();
+		}
 
-        cleanup();
-    }
+		cleanup();
+	}
 
-    public CompilationUnit[] getConsumers() {
-        if(consumers == null) {
-            return new CompilationUnit[0];
-        }
+	public CompilationUnit[] getConsumers() {
+		if(consumers == null) {
+			return new CompilationUnit[0];
+		}
 
-        return consumers.toArray(new CompilationUnit[consumers.size()]);
-    }
+		return consumers.toArray(new CompilationUnit[consumers.size()]);
+	}
 
-    public void addConsumer(CompilationUnit consumer) {
-        if(consumers == null) {
-            consumers = new Set<CompilationUnit>();
-        }
-        consumers.add(consumer);
-    }
+	public void addConsumer(CompilationUnit consumer) {
+		if(consumers == null) {
+			consumers = new Set<CompilationUnit>();
+		}
+		consumers.add(consumer);
+	}
 
-    public String getLocale() {
-        return locale;
-    }
+	public String getLocale() {
+		return locale;
+	}
 
-    public boolean compareLocale(String locale) {
-        return true;
-    }
+	public boolean compareLocale(String locale) {
+		return true;
+	}
 
-    public String getValue(String key) {
-        return (String)properties.get(key);
-    }
+	public String getValue(String key) {
+		return (String)properties.get(key);
+	}
 
-    private void cleanup() {
-        consumers = null;
-        properties.clear();
-        clearMessages();
-    }
+	private void cleanup() {
+		consumers = null;
+		properties.clear();
+		clearMessages();
+	}
 
-    public void parse() {
-        if(!buildPending) {
-            return;
-        }
+	public void parse() {
+		if(!buildPending) {
+			return;
+		}
 
-        buildPending = false;
+		buildPending = false;
 
-        try {
-            properties.loadFromXML(new FileInputStream(getAbsolutePath().toString()));
-        }
-        catch(FileNotFoundException e) {
-            error(new FileException(getPath(), e.getMessage()));
-        }
-        catch(IOException e) {
-            error(new FileException(getPath(), e.getMessage()));
-        }
+		try {
+			properties.loadFromXML(new FileInputStream(getAbsolutePath().toString()));
+		} catch(FileNotFoundException e) {
+			error(new FileException(getPath(), e.getMessage()));
+		} catch(IOException e) {
+			error(new FileException(getPath(), e.getMessage()));
+		}
 
-        reportMessages();
-    }
+		reportMessages();
+	}
 }

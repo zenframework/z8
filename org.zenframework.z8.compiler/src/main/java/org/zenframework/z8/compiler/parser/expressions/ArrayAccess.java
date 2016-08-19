@@ -17,115 +17,111 @@ import org.zenframework.z8.compiler.parser.variable.VariableType;
 import org.zenframework.z8.compiler.workspace.CompilationUnit;
 
 public class ArrayAccess extends LanguageElement implements IJavaTypeCast {
-    private ILanguageElement array;
-    private ILanguageElement expression;
-    @SuppressWarnings("unused")
-    private IToken leftBracket;
-    private IToken rightBracket;
+	private ILanguageElement array;
+	private ILanguageElement expression;
 
-    private ITypeCast typeCast;
+	@SuppressWarnings("unused")
+	private IToken leftBracket;
+	private IToken rightBracket;
 
-    private boolean javaCastPending = true;
+	private ITypeCast typeCast;
 
-    public ArrayAccess(ILanguageElement array, ILanguageElement expression, IToken leftBracket, IToken rightBracket) {
-        this.array = array;
-        this.expression = expression;
-        this.leftBracket = leftBracket;
-        this.rightBracket = rightBracket;
-    }
+	private boolean javaCastPending = true;
 
-    @Override
-    public IPosition getSourceRange() {
-        if(rightBracket != null) {
-            return array.getPosition().union(rightBracket.getPosition());
-        }
-        return array.getPosition().union(expression.getSourceRange());
-    }
+	public ArrayAccess(ILanguageElement array, ILanguageElement expression, IToken leftBracket, IToken rightBracket) {
+		this.array = array;
+		this.expression = expression;
+		this.leftBracket = leftBracket;
+		this.rightBracket = rightBracket;
+	}
 
-    @Override
-    public IToken getFirstToken() {
-        return array.getFirstToken();
-    }
+	@Override
+	public IPosition getSourceRange() {
+		if(rightBracket != null) {
+			return array.getPosition().union(rightBracket.getPosition());
+		}
+		return array.getPosition().union(expression.getSourceRange());
+	}
 
-    @Override
-    public IVariable getVariable() {
-        return new LeftHandValue(this);
-    }
+	@Override
+	public IToken getFirstToken() {
+		return array.getFirstToken();
+	}
 
-    @Override
-    public IVariableType getVariableType() {
-        IVariableType variableType = new VariableType(array.getVariableType());
-        variableType.removeRightKey();
-        return variableType;
-    }
+	@Override
+	public IVariable getVariable() {
+		return new LeftHandValue(this);
+	}
 
-    @Override
-    public boolean resolveTypes(CompilationUnit compilationUnit, IType declaringType) {
-        return super.resolveTypes(compilationUnit, declaringType) && array.resolveTypes(compilationUnit, declaringType)
-                && expression.resolveTypes(compilationUnit, declaringType);
-    }
+	@Override
+	public IVariableType getVariableType() {
+		IVariableType variableType = new VariableType(array.getVariableType());
+		variableType.removeRightKey();
+		return variableType;
+	}
 
-    @Override
-    public boolean checkSemantics(CompilationUnit compilationUnit, IType declaringType, IMethod declaringMethod,
-            IVariable leftHandValue, IVariableType context) {
-        if(!super.checkSemantics(compilationUnit, declaringType, declaringMethod, null, null))
-            return false;
+	@Override
+	public boolean resolveTypes(CompilationUnit compilationUnit, IType declaringType) {
+		return super.resolveTypes(compilationUnit, declaringType) && array.resolveTypes(compilationUnit, declaringType) && expression.resolveTypes(compilationUnit, declaringType);
+	}
 
-        if(!array.checkSemantics(compilationUnit, declaringType, declaringMethod, null, null))
-            return false;
+	@Override
+	public boolean checkSemantics(CompilationUnit compilationUnit, IType declaringType, IMethod declaringMethod, IVariable leftHandValue, IVariableType context) {
+		if(!super.checkSemantics(compilationUnit, declaringType, declaringMethod, null, null))
+			return false;
 
-        if(!array.getVariableType().isArray()) {
-            setError(array.getPosition(), "The type of the expression must be an array type but it resolved to "
-                    + array.getVariableType().getSignature());
-            return false;
-        }
+		if(!array.checkSemantics(compilationUnit, declaringType, declaringMethod, null, null))
+			return false;
 
-        if(!expression.checkSemantics(compilationUnit, declaringType, declaringMethod, null, null))
-            return false;
+		if(!array.getVariableType().isArray()) {
+			setError(array.getPosition(), "The type of the expression must be an array type but it resolved to " + array.getVariableType().getSignature());
+			return false;
+		}
 
-        IType index = array.getVariableType().getRightKey();
+		if(!expression.checkSemantics(compilationUnit, declaringType, declaringMethod, null, null))
+			return false;
 
-        if(index == null) {
-            index = Primary.resolveType(compilationUnit, Primary.Integer);
-        }
+		IType index = array.getVariableType().getRightKey();
 
-        if(index != null) {
-            typeCast = expression.getVariableType().getCastTo(index);
+		if(index == null) {
+			index = Primary.resolveType(compilationUnit, Primary.Integer);
+		}
 
-            if(typeCast == null) {
-                setError(expression.getPosition(), "Type mismatch: cannot convert from "
-                        + expression.getVariableType().getSignature() + " to " + index.getUserName());
-                return false;
-            }
-        }
-        else {
-            return false;
-        }
+		if(index != null) {
+			typeCast = expression.getVariableType().getCastTo(index);
 
-        return true;
-    }
+			if(typeCast == null) {
+				setError(expression.getPosition(), "Type mismatch: cannot convert from " + expression.getVariableType().getSignature() + " to " + index.getUserName());
+				return false;
+			}
+		} else {
+			return false;
+		}
 
-    @Override
-    public void setCastPending(boolean castPending) {
-        javaCastPending = castPending;
-    }
+		return true;
+	}
 
-    @Override
-    public void getCode(CodeGenerator codeGenerator) {
-        IVariableType variableType = getVariableType();
+	@Override
+	public void setCastPending(boolean castPending) {
+		javaCastPending = castPending;
+	}
 
-        if(javaCastPending && !variableType.isArray()) {
-            codeGenerator.getCompilationUnit().importType(getVariableType().getType());
-            codeGenerator.append("((" + getVariableType().getDeclaringJavaName() + ")");
-        }
+	@Override
+	public void getCode(CodeGenerator codeGenerator) {
+		IVariableType variableType = getVariableType();
 
-        array.getCode(codeGenerator);
-        codeGenerator.append(".get(");
-        typeCast.getCode(codeGenerator, expression);
-        codeGenerator.append(")");
+		if(javaCastPending && !variableType.isArray()) {
+			codeGenerator.getCompilationUnit().importType(getVariableType().getType());
+			codeGenerator.append("((" + getVariableType().getDeclaringJavaName() + ")");
+		}
 
-        if(javaCastPending && !variableType.isArray()) {
-            codeGenerator.append(")");
-        }
-    }
+		array.getCode(codeGenerator);
+		codeGenerator.append(".get(");
+		typeCast.getCode(codeGenerator, expression);
+		codeGenerator.append(")");
+
+		if(javaCastPending && !variableType.isArray()) {
+			codeGenerator.append(")");
+		}
+	}
 }

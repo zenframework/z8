@@ -4,13 +4,13 @@ import org.zenframework.z8.compiler.workspace.CompilationUnit;
 import org.zenframework.z8.compiler.workspace.Project;
 
 public interface ISource {
-    CompilationUnit getCompilationUnit();
+	CompilationUnit getCompilationUnit();
 
-    Project getProject();
+	Project getProject();
 
-    IPosition getPosition();
+	IPosition getPosition();
 
-    IPosition getSourceRange();
+	IPosition getSourceRange();
 
-    IToken getFirstToken();
+	IToken getFirstToken();
 }

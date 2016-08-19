@@ -1,27 +1,27 @@
 package org.zenframework.z8.compiler.core;
 
 public interface IMethod extends IMember {
-    boolean isVirtual();
+	boolean isVirtual();
 
-    boolean isNative();
+	boolean isNative();
 
-    void openLocalScope();
+	void openLocalScope();
 
-    void closeLocalScope();
+	void closeLocalScope();
 
-    void addLocalVariable(IVariable variable);
+	void addLocalVariable(IVariable variable);
 
-    IVariable findLocalVariable(String name);
+	IVariable findLocalVariable(String name);
 
-    int getParametersCount();
+	int getParametersCount();
 
-    IVariable[] getParameters();
+	IVariable[] getParameters();
 
-    IVariableType[] getParameterTypes();
+	IVariableType[] getParameterTypes();
 
-    String[] getParameterNames();
+	String[] getParameterNames();
 
-    IPosition getNamePosition();
+	IPosition getNamePosition();
 
-    ILanguageElement getBody();
+	ILanguageElement getBody();
 }

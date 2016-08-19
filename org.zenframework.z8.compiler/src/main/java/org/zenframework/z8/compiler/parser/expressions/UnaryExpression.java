@@ -18,122 +18,118 @@ import org.zenframework.z8.compiler.parser.type.TypeCast;
 import org.zenframework.z8.compiler.workspace.CompilationUnit;
 
 public class UnaryExpression extends LanguageElement {
-    private OperatorToken operatorToken;
-    private ILanguageElement expression;
+	private OperatorToken operatorToken;
+	private ILanguageElement expression;
 
-    private IMethod operator;
-    private ITypeCast typeCast;
+	private IMethod operator;
+	private ITypeCast typeCast;
 
-    public UnaryExpression(OperatorToken operatorToken, ILanguageElement expression) {
-        this.operatorToken = operatorToken;
-        this.expression = expression;
-    }
+	public UnaryExpression(OperatorToken operatorToken, ILanguageElement expression) {
+		this.operatorToken = operatorToken;
+		this.expression = expression;
+	}
 
-    @Override
-    public IPosition getSourceRange() {
-        if(expression != null) {
-            return operatorToken.getPosition().union(expression.getPosition());
-        }
-        return operatorToken.getPosition();
-    }
+	@Override
+	public IPosition getSourceRange() {
+		if(expression != null) {
+			return operatorToken.getPosition().union(expression.getPosition());
+		}
+		return operatorToken.getPosition();
+	}
 
-    @Override
-    public IToken getFirstToken() {
-        return operatorToken;
-    }
+	@Override
+	public IToken getFirstToken() {
+		return operatorToken;
+	}
 
-    public OperatorToken getOperatorToken() {
-        return operatorToken;
-    }
+	public OperatorToken getOperatorToken() {
+		return operatorToken;
+	}
 
-    public ILanguageElement getExpression() {
-        return expression;
-    }
+	public ILanguageElement getExpression() {
+		return expression;
+	}
 
-    @Override
-    public IVariableType getVariableType() {
-        return operator.getVariableType();
-    }
+	@Override
+	public IVariableType getVariableType() {
+		return operator.getVariableType();
+	}
 
-    @Override
-    public boolean resolveTypes(CompilationUnit compilationUnit, IType declaringType) {
-        if(!super.resolveTypes(compilationUnit, declaringType))
-            return false;
+	@Override
+	public boolean resolveTypes(CompilationUnit compilationUnit, IType declaringType) {
+		if(!super.resolveTypes(compilationUnit, declaringType))
+			return false;
 
-        return expression.resolveTypes(compilationUnit, declaringType);
-    }
+		return expression.resolveTypes(compilationUnit, declaringType);
+	}
 
-    @Override
-    public boolean checkSemantics(CompilationUnit compilationUnit, IType declaringType, IMethod declaringMethod,
-            IVariable leftHandValue, IVariableType context) {
-        if(!super.checkSemantics(compilationUnit, declaringType, declaringMethod, null, null))
-            return false;
+	@Override
+	public boolean checkSemantics(CompilationUnit compilationUnit, IType declaringType, IMethod declaringMethod, IVariable leftHandValue, IVariableType context) {
+		if(!super.checkSemantics(compilationUnit, declaringType, declaringMethod, null, null))
+			return false;
 
-        if(expression == null || !expression.checkSemantics(compilationUnit, declaringType, declaringMethod, null, null))
-            return false;
+		if(expression == null || !expression.checkSemantics(compilationUnit, declaringType, declaringMethod, null, null))
+			return false;
 
-        IVariableType expressionType = expression.getVariableType();
+		IVariableType expressionType = expression.getVariableType();
 
-        IMethod[] operators = expressionType.getMatchingMethods(operatorToken.getName());
+		IMethod[] operators = expressionType.getMatchingMethods(operatorToken.getName());
 
-        for(IMethod operator : operators) {
-            IVariable[] parameters = operator.getParameters();
+		for(IMethod operator : operators) {
+			IVariable[] parameters = operator.getParameters();
 
-            if(parameters.length == 0) {
-                typeCast = new TypeCast(expressionType, expressionType, 0);
-                this.operator = operator;
-                return true;
-            }
-        }
+			if(parameters.length == 0) {
+				typeCast = new TypeCast(expressionType, expressionType, 0);
+				this.operator = operator;
+				return true;
+			}
+		}
 
-        List<ITypeCast> typeCastCandidates = new ArrayList<ITypeCast>();
-        List<IMethod> operatorCandidates = new ArrayList<IMethod>();
+		List<ITypeCast> typeCastCandidates = new ArrayList<ITypeCast>();
+		List<IMethod> operatorCandidates = new ArrayList<IMethod>();
 
-        IMethod[] typeCastOperators = expressionType.getTypeCastOperators();
+		IMethod[] typeCastOperators = expressionType.getTypeCastOperators();
 
-        for(IMethod typeCastOperator : typeCastOperators) {
-            IVariableType variableType = typeCastOperator.getVariableType();
+		for(IMethod typeCastOperator : typeCastOperators) {
+			IVariableType variableType = typeCastOperator.getVariableType();
 
-            operators = variableType.getMatchingMethods(operatorToken.getName());
+			operators = variableType.getMatchingMethods(operatorToken.getName());
 
-            for(IMethod operator : operators) {
-                IVariable[] parameters = operator.getParameters();
+			for(IMethod operator : operators) {
+				IVariable[] parameters = operator.getParameters();
 
-                if(parameters.length == 0) {
-                    typeCastCandidates.add(new TypeCast(expressionType, typeCastOperator));
-                    operatorCandidates.add(operator);
-                    break;
-                }
-            }
-        }
+				if(parameters.length == 0) {
+					typeCastCandidates.add(new TypeCast(expressionType, typeCastOperator));
+					operatorCandidates.add(operator);
+					break;
+				}
+			}
+		}
 
-        if(operatorCandidates.size() == 0) {
-            setError(getPosition(),
-                    "The " + operatorToken.getName() + " is undefined for the argument type " + expressionType.getSignature());
-            return false;
-        }
-        else if(operatorCandidates.size() != 1) {
-            setError(getPosition(),
-                    "The " + operatorToken.getName() + " is ambiguous for the type " + expressionType.getSignature());
-            return false;
-        }
+		if(operatorCandidates.size() == 0) {
+			setError(getPosition(), "The " + operatorToken.getName() + " is undefined for the argument type " + expressionType.getSignature());
+			return false;
+		} else if(operatorCandidates.size() != 1) {
+			setError(getPosition(), "The " + operatorToken.getName() + " is ambiguous for the type " + expressionType.getSignature());
+			return false;
+		}
 
-        operator = operatorCandidates.get(0);
-        typeCast = typeCastCandidates.get(0);
+		operator = operatorCandidates.get(0);
+		typeCast = typeCastCandidates.get(0);
 
-        return true;
-    }
+		return true;
+	}
 
-    @Override
-    public void getCode(CodeGenerator codeGenerator) {
-        typeCast.getCode(codeGenerator, expression);
+	@Override
+	public void getCode(CodeGenerator codeGenerator) {
+		typeCast.getCode(codeGenerator, expression);
 
-        codeGenerator.append('.');
+		codeGenerator.append('.');
 
-        if(typeCast.getTarget().isReference()) {
-            codeGenerator.append("get().");
-        }
+		if(typeCast.getTarget().isReference()) {
+			codeGenerator.append("get().");
+		}
 
-        codeGenerator.append(operator.getJavaName() + "()");
-    }
+		codeGenerator.append(operator.getJavaName() + "()");
+	}
 }

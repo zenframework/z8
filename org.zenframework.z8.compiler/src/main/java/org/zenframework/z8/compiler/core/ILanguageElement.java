@@ -5,66 +5,64 @@ import org.eclipse.text.edits.TextEdit;
 
 import org.zenframework.z8.compiler.workspace.CompilationUnit;
 
-public interface ILanguageElement extends IAttributed, ISource
-{
-    ILanguageElement getParent();
+public interface ILanguageElement extends IAttributed, ISource {
+	ILanguageElement getParent();
 
-    void setParent(ILanguageElement parent);
+	void setParent(ILanguageElement parent);
 
-    IType getDeclaringType();
+	IType getDeclaringType();
 
-    IMethod getDeclaringMethod();
+	IMethod getDeclaringMethod();
 
-    boolean getStaticContext();
+	boolean getStaticContext();
 
-    void setStaticContext(boolean context);
+	void setStaticContext(boolean context);
 
-    IVariable getVariable();
+	IVariable getVariable();
 
-    IVariableType getVariableType();
+	IVariableType getVariableType();
 
-    boolean hasError();
+	boolean hasError();
 
-    boolean hasFatalError();
+	boolean hasFatalError();
 
-    void setError(IPosition position, String message);
+	void setError(IPosition position, String message);
 
-    void setFatalError(IPosition position, String message);
+	void setFatalError(IPosition position, String message);
 
-    boolean resolveTypes(CompilationUnit source, IType declaringType);
+	boolean resolveTypes(CompilationUnit source, IType declaringType);
 
-    boolean resolveStructure(CompilationUnit source, IType declaringType);
+	boolean resolveStructure(CompilationUnit source, IType declaringType);
 
-    boolean checkSemantics(CompilationUnit source, IType declaringType, IMethod declaringMethod, IVariable leftHandValue,
-            IVariableType context);
+	boolean checkSemantics(CompilationUnit source, IType declaringType, IMethod declaringMethod, IVariable leftHandValue, IVariableType context);
 
-    boolean resolveNestedTypes(CompilationUnit source, IType declaringType);
+	boolean resolveNestedTypes(CompilationUnit source, IType declaringType);
 
-    boolean isQualifiedName();
+	boolean isQualifiedName();
 
-    boolean isOperatorNew();
+	boolean isOperatorNew();
 
-    void getCode(CodeGenerator codeGenerator);
+	void getCode(CodeGenerator codeGenerator);
 
-    void getClassCode(CodeGenerator codeGenerator);
+	void getClassCode(CodeGenerator codeGenerator);
 
-    void getStaticBlock(CodeGenerator codeGenerator);
+	void getStaticBlock(CodeGenerator codeGenerator);
 
-    void getStaticConstructor(CodeGenerator codeGenerator);
+	void getStaticConstructor(CodeGenerator codeGenerator);
 
-    void getConstructor(CodeGenerator codeGenerator);
+	void getConstructor(CodeGenerator codeGenerator);
 
-    void getConstructor1(CodeGenerator codeGenerator);
+	void getConstructor1(CodeGenerator codeGenerator);
 
-    void getConstructor2(CodeGenerator codeGenerator);
+	void getConstructor2(CodeGenerator codeGenerator);
 
-    void replaceTypeName(TextEdit parent, IType type, String newTypeName);
+	void replaceTypeName(TextEdit parent, IType type, String newTypeName);
 
-    void replaceImport(TextEdit parent, IPath oldImport, IPath newImport);
+	void replaceImport(TextEdit parent, IPath oldImport, IPath newImport);
 
-    ILanguageElement getElementAt(int offset);
+	ILanguageElement getElementAt(int offset);
 
-    ILanguageElement getElementAt(int offset, int length);
+	ILanguageElement getElementAt(int offset, int length);
 
-    ILanguageElement getElementAt(IPosition position);
+	ILanguageElement getElementAt(IPosition position);
 }

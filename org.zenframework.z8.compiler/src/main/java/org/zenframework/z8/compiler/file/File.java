@@ -10,154 +10,141 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 
 public class File {
-    private IPath path;
+	private IPath path;
 
-    private final String Charset = "UTF-8";
-    
-    static public File fromPath(IPath path) throws FileException {
-        return new File(path);
-    }
+	private final String Charset = "UTF-8";
 
-    public File(String path) throws FileException {
-        this.path = new Path(path);
-    }
+	static public File fromPath(IPath path) throws FileException {
+		return new File(path);
+	}
 
-    public File(IPath path) throws FileException {
-        this.path = path;
-    }
+	public File(String path) throws FileException {
+		this.path = new Path(path);
+	}
 
-    public IPath getPath() {
-        return path;
-    }
+	public File(IPath path) throws FileException {
+		this.path = path;
+	}
 
-    public long getTimeStamp() throws FileException {
-        try {
-            return path.toFile().lastModified();
-        }
-        catch(SecurityException e) {
-            throw new FileException(path, e.getMessage());
-        }
-    }
+	public IPath getPath() {
+		return path;
+	}
 
-    static public void rename(IPath oldPath, IPath newPath) throws FileException {
-        try {
-            oldPath.toFile().renameTo(newPath.toFile());
-        }
-        catch(SecurityException e) {
-            throw new FileException(oldPath, e.getMessage());
-        }
-    }
+	public long getTimeStamp() throws FileException {
+		try {
+			return path.toFile().lastModified();
+		} catch(SecurityException e) {
+			throw new FileException(path, e.getMessage());
+		}
+	}
 
-    public char[] read() throws FileException, UnsupportedEncodingException {
-        FileInputStream stream;
+	static public void rename(IPath oldPath, IPath newPath) throws FileException {
+		try {
+			oldPath.toFile().renameTo(newPath.toFile());
+		} catch(SecurityException e) {
+			throw new FileException(oldPath, e.getMessage());
+		}
+	}
 
-        try {
-            stream = new FileInputStream(path.toString());
-        }
-        catch(FileNotFoundException e) {
-            throw new FileException(path, e.getMessage());
-        }
+	public char[] read() throws FileException, UnsupportedEncodingException {
+		FileInputStream stream;
 
-        byte[] rawBytes;
+		try {
+			stream = new FileInputStream(path.toString());
+		} catch(FileNotFoundException e) {
+			throw new FileException(path, e.getMessage());
+		}
 
-        try {
-            rawBytes = new byte[stream.available()];
-            stream.read(rawBytes);
-        }
-        catch(IOException e) {
-            throw new FileException(path, e.getMessage());
-        }
-        finally {
-            try {
-                stream.close();
-            }
-            catch(IOException e) {}
-        }
+		byte[] rawBytes;
 
-        return new String(rawBytes, Charset).toCharArray();
-    }
+		try {
+			rawBytes = new byte[stream.available()];
+			stream.read(rawBytes);
+		} catch(IOException e) {
+			throw new FileException(path, e.getMessage());
+		} finally {
+			try {
+				stream.close();
+			} catch(IOException e) {
+			}
+		}
 
-    private void write(String string, boolean append) throws FileException {
-        FileOutputStream stream = null;
+		return new String(rawBytes, Charset).toCharArray();
+	}
 
-        try {
-            String path = getPath().toString();
+	private void write(String string, boolean append) throws FileException {
+		FileOutputStream stream = null;
 
-            java.io.File file = new java.io.File(path);
+		try {
+			String path = getPath().toString();
 
-            if(file.exists() && !file.canWrite() && !append) {
-                file.delete();
-            }
+			java.io.File file = new java.io.File(path);
 
-            stream = new FileOutputStream(getPath().toString(), append);
-            stream.write(string.getBytes(Charset));
-        }
-        catch(java.lang.SecurityException e) {
-            throw new FileException(path, e.getMessage());
-        }
-        catch(java.io.IOException e) {
-            throw new FileException(path, e.getMessage());
-        }
-        finally {
-            try {
-                if(stream != null) {
-                    stream.close();
-                }
-            }
-            catch(java.io.IOException e) {
-                throw new FileException(path, e.getMessage());
-            }
-        }
-    }
+			if(file.exists() && !file.canWrite() && !append) {
+				file.delete();
+			}
 
-    public void write(String string) throws FileException {
-        write(string, false);
-    }
+			stream = new FileOutputStream(getPath().toString(), append);
+			stream.write(string.getBytes(Charset));
+		} catch(java.lang.SecurityException e) {
+			throw new FileException(path, e.getMessage());
+		} catch(java.io.IOException e) {
+			throw new FileException(path, e.getMessage());
+		} finally {
+			try {
+				if(stream != null) {
+					stream.close();
+				}
+			} catch(java.io.IOException e) {
+				throw new FileException(path, e.getMessage());
+			}
+		}
+	}
 
-    public void append(String string) throws FileException {
-        write(string, true);
-    }
+	public void write(String string) throws FileException {
+		write(string, false);
+	}
 
-    public boolean exists() throws FileException {
-        try {
-            return new java.io.File(path.toString()).exists();
-        }
-        catch(SecurityException e) {
-            throw new FileException(path, e.getMessage());
-        }
-    }
+	public void append(String string) throws FileException {
+		write(string, true);
+	}
 
-    public boolean isDirectory() throws FileException {
-        try {
-            return new java.io.File(path.toString()).isDirectory();
-        }
-        catch(SecurityException e) {
-            throw new FileException(path, e.getMessage());
-        }
-    }
+	public boolean exists() throws FileException {
+		try {
+			return new java.io.File(path.toString()).exists();
+		} catch(SecurityException e) {
+			throw new FileException(path, e.getMessage());
+		}
+	}
 
-    public IPath[] getFiles() throws FileException {
-        try {
-            String[] fileNames = path.toFile().list();
-            IPath[] result = new IPath[fileNames.length];
+	public boolean isDirectory() throws FileException {
+		try {
+			return new java.io.File(path.toString()).isDirectory();
+		} catch(SecurityException e) {
+			throw new FileException(path, e.getMessage());
+		}
+	}
 
-            for(int i = 0; i < fileNames.length; i++) {
-                result[i] = path.append(fileNames[i]);
-            }
+	public IPath[] getFiles() throws FileException {
+		try {
+			String[] fileNames = path.toFile().list();
+			IPath[] result = new IPath[fileNames.length];
 
-            return result;
-        }
-        catch(SecurityException e) {
-            throw new FileException(path, e.getMessage());
-        }
-    }
+			for(int i = 0; i < fileNames.length; i++) {
+				result[i] = path.append(fileNames[i]);
+			}
 
-    public boolean makeDirectories() throws FileException {
-        try {
-            return path.toFile().mkdirs();
-        }
-        catch(SecurityException e) {
-            throw new FileException(path, e.getMessage());
-        }
-    }
+			return result;
+		} catch(SecurityException e) {
+			throw new FileException(path, e.getMessage());
+		}
+	}
+
+	public boolean makeDirectories() throws FileException {
+		try {
+			return path.toFile().mkdirs();
+		} catch(SecurityException e) {
+			throw new FileException(path, e.getMessage());
+		}
+	}
 }

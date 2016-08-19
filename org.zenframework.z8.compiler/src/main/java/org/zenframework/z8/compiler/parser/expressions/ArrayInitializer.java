@@ -19,174 +19,169 @@ import org.zenframework.z8.compiler.parser.variable.VariableType;
 import org.zenframework.z8.compiler.workspace.CompilationUnit;
 
 public class ArrayInitializer extends LanguageElement {
-    private IToken leftBrace;
-    private IToken rightBrace;
+	private IToken leftBrace;
+	private IToken rightBrace;
 
-    private List<ILanguageElement> elements = new ArrayList<ILanguageElement>();
+	private List<ILanguageElement> elements = new ArrayList<ILanguageElement>();
 
-    private IVariable variable;
-    private List<ITypeCast> typeCast = new ArrayList<ITypeCast>();
+	private IVariable variable;
+	private List<ITypeCast> typeCast = new ArrayList<ITypeCast>();
 
-    public ArrayInitializer(IToken leftBrace) {
-        this.leftBrace = leftBrace;
-    }
+	public ArrayInitializer(IToken leftBrace) {
+		this.leftBrace = leftBrace;
+	}
 
-    public void setLeftBrace(IToken leftBrace) {
-        this.leftBrace = leftBrace;
-    }
+	public void setLeftBrace(IToken leftBrace) {
+		this.leftBrace = leftBrace;
+	}
 
-    public void setRightBrace(IToken rightBrace) {
-        this.rightBrace = rightBrace;
-    }
+	public void setRightBrace(IToken rightBrace) {
+		this.rightBrace = rightBrace;
+	}
 
-    @Override
-    public IPosition getSourceRange() {
-        if(rightBrace != null) {
-            return leftBrace.getPosition().union(rightBrace.getPosition());
-        }
-        else if(elements.size() > 0) {
-            return leftBrace.getPosition().union(elements.get(elements.size() - 1).getSourceRange());
-        }
-        else
-            return leftBrace.getPosition();
-    }
+	@Override
+	public IPosition getSourceRange() {
+		if(rightBrace != null) {
+			return leftBrace.getPosition().union(rightBrace.getPosition());
+		} else if(elements.size() > 0) {
+			return leftBrace.getPosition().union(elements.get(elements.size() - 1).getSourceRange());
+		} else
+			return leftBrace.getPosition();
+	}
 
-    @Override
-    public IToken getFirstToken() {
-        return leftBrace;
-    }
+	@Override
+	public IToken getFirstToken() {
+		return leftBrace;
+	}
 
-    public void add(ILanguageElement element) {
-        elements.add(element);
-        element.setParent(this);
-    }
+	public void add(ILanguageElement element) {
+		elements.add(element);
+		element.setParent(this);
+	}
 
-    public int getIndexOf(ILanguageElement element) {
-        return elements.indexOf(element);
-    }
+	public int getIndexOf(ILanguageElement element) {
+		return elements.indexOf(element);
+	}
 
-    @Override
-    public IVariableType getVariableType() {
-        return variable.getVariableType();
-    }
+	@Override
+	public IVariableType getVariableType() {
+		return variable.getVariableType();
+	}
 
-    @Override
-    public void setStaticContext(boolean staticContext) {
-        super.setStaticContext(staticContext);
+	@Override
+	public void setStaticContext(boolean staticContext) {
+		super.setStaticContext(staticContext);
 
-        for(ILanguageElement element : elements) {
-            element.setStaticContext(staticContext);
-        }
-    }
+		for(ILanguageElement element : elements) {
+			element.setStaticContext(staticContext);
+		}
+	}
 
-    @Override
-    public boolean resolveTypes(CompilationUnit compilationUnit, IType declaringType) {
-        if(!super.resolveTypes(compilationUnit, declaringType))
-            return false;
+	@Override
+	public boolean resolveTypes(CompilationUnit compilationUnit, IType declaringType) {
+		if(!super.resolveTypes(compilationUnit, declaringType))
+			return false;
 
-        boolean result = true;
+		boolean result = true;
 
-        for(ILanguageElement element : elements) {
-            result &= element.resolveTypes(compilationUnit, declaringType);
-        }
+		for(ILanguageElement element : elements) {
+			result &= element.resolveTypes(compilationUnit, declaringType);
+		}
 
-        return result;
-    }
+		return result;
+	}
 
-    @Override
-    public boolean checkSemantics(CompilationUnit compilationUnit, IType declaringType, IMethod declaringMethod,
-            IVariable leftHandValue, IVariableType context) {
-        if(!super.checkSemantics(compilationUnit, declaringType, declaringMethod, null, null))
-            return false;
+	@Override
+	public boolean checkSemantics(CompilationUnit compilationUnit, IType declaringType, IMethod declaringMethod, IVariable leftHandValue, IVariableType context) {
+		if(!super.checkSemantics(compilationUnit, declaringType, declaringMethod, null, null))
+			return false;
 
-        IVariableType initType = new VariableType(leftHandValue.getVariableType());
+		IVariableType initType = new VariableType(leftHandValue.getVariableType());
 
-        if(!initType.isArray()) {
-            setError(getPosition(), "The operator ={} cannot be applied to type " + initType.getSignature());
-            return false;
-        }
+		if(!initType.isArray()) {
+			setError(getPosition(), "The operator ={} cannot be applied to type " + initType.getSignature());
+			return false;
+		}
 
-        if(initType.getRightKey() == null) {
-            initType.removeRightKey();
-        }
+		if(initType.getRightKey() == null) {
+			initType.removeRightKey();
+		}
 
-        boolean result = true;
+		boolean result = true;
 
-        for(ILanguageElement element : elements) {
-            if(!element.checkSemantics(compilationUnit, declaringType, declaringMethod, new Variable(initType), null)) {
-                result = false;
-                continue;
-            }
+		for(ILanguageElement element : elements) {
+			if(!element.checkSemantics(compilationUnit, declaringType, declaringMethod, new Variable(initType), null)) {
+				result = false;
+				continue;
+			}
 
-            ITypeCast typeCast = element.getVariableType().getCastTo(initType);
+			ITypeCast typeCast = element.getVariableType().getCastTo(initType);
 
-            if(typeCast == null) {
-                setError(element.getPosition(), "Type mismatch: cannot convert from "
-                        + element.getVariableType().getSignature() + " to " + initType.getSignature());
-                result = false;
-            }
+			if(typeCast == null) {
+				setError(element.getPosition(), "Type mismatch: cannot convert from " + element.getVariableType().getSignature() + " to " + initType.getSignature());
+				result = false;
+			}
 
-            this.typeCast.add(typeCast);
-        }
+			this.typeCast.add(typeCast);
+		}
 
-        variable = leftHandValue;
+		variable = leftHandValue;
 
-        return result;
-    }
+		return result;
+	}
 
-    private boolean isMap() {
-        return getVariableType().getRightKey() != null;
-    }
+	private boolean isMap() {
+		return getVariableType().getRightKey() != null;
+	}
 
-    @Override
-    public void getCode(CodeGenerator codeGenerator) {
-        boolean isMap = isMap();
+	@Override
+	public void getCode(CodeGenerator codeGenerator) {
+		boolean isMap = isMap();
 
-        int index = 0;
+		int index = 0;
 
-        StringBuffer keys = new StringBuffer();
-        StringBuffer values = new StringBuffer();
+		StringBuffer keys = new StringBuffer();
+		StringBuffer values = new StringBuffer();
 
-        for(ILanguageElement element : elements) {
-            boolean isLast = (index == elements.size() - 1);
+		for(ILanguageElement element : elements) {
+			boolean isLast = (index == elements.size() - 1);
 
-            if(isMap) {
-                MapElement pair = (MapElement)element;
+			if(isMap) {
+				MapElement pair = (MapElement)element;
 
-                CodeGenerator keyCodeGenerator = new CodeGenerator(getCompilationUnit());
-                pair.getKeyCode(keyCodeGenerator);
+				CodeGenerator keyCodeGenerator = new CodeGenerator(getCompilationUnit());
+				pair.getKeyCode(keyCodeGenerator);
 
-                CodeGenerator valueCodeGenerator = new CodeGenerator(getCompilationUnit());
-                pair.getValueCode(valueCodeGenerator);
+				CodeGenerator valueCodeGenerator = new CodeGenerator(getCompilationUnit());
+				pair.getValueCode(valueCodeGenerator);
 
-                keys.append(keyCodeGenerator.toString() + (isLast ? "" : ", "));
-                values.append(valueCodeGenerator.toString() + (isLast ? "" : ", "));
-            }
-            else {
-                CodeGenerator keyCodeGenerator = new CodeGenerator(getCompilationUnit());
-                typeCast.get(index).getCode(keyCodeGenerator, element, true);
-                keys.append(keyCodeGenerator.toString() + (isLast ? "" : ", "));
-            }
+				keys.append(keyCodeGenerator.toString() + (isLast ? "" : ", "));
+				values.append(valueCodeGenerator.toString() + (isLast ? "" : ", "));
+			} else {
+				CodeGenerator keyCodeGenerator = new CodeGenerator(getCompilationUnit());
+				typeCast.get(index).getCode(keyCodeGenerator, element, true);
+				keys.append(keyCodeGenerator.toString() + (isLast ? "" : ", "));
+			}
 
-            index++;
-        }
+			index++;
+		}
 
-        codeGenerator.append("new " + BuiltinNative.Object + "[]");
-        codeGenerator.append('{');
-        codeGenerator.append(keys.toString());
-        codeGenerator.append('}');
+		codeGenerator.append("new " + BuiltinNative.Object + "[]");
+		codeGenerator.append('{');
+		codeGenerator.append(keys.toString());
+		codeGenerator.append('}');
 
-        if(isMap) {
-            codeGenerator.append(", ");
+		if(isMap) {
+			codeGenerator.append(", ");
 
-            codeGenerator.append("new " + BuiltinNative.Object + "[]");
-            codeGenerator.append('{');
-            codeGenerator.append(values.toString());
-            codeGenerator.append('}');
-        }
-    }
+			codeGenerator.append("new " + BuiltinNative.Object + "[]");
+			codeGenerator.append('{');
+			codeGenerator.append(values.toString());
+			codeGenerator.append('}');
+		}
+	}
 
-    public ILanguageElement[] getElements() {
-        return elements.toArray(new ILanguageElement[0]);
-    }
+	public ILanguageElement[] getElements() {
+		return elements.toArray(new ILanguageElement[0]);
+	}
 }

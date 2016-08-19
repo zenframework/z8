@@ -299,7 +299,7 @@ public class Type extends AbstractType {
 			if(member != null)
 				return member.getVariableType();
 
-	        throw new UnsupportedOperationException();
+			throw new UnsupportedOperationException();
 		}
 
 		String getQualifiedJavaName() {

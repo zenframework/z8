@@ -96,7 +96,7 @@ public class CompoundStatement extends LanguageElement implements IStatement {
 
 		if(autoOpenScope)
 			declaringMethod.openLocalScope();
-	
+
 		for(ILanguageElement element : elements)
 			element.checkSemantics(compilationUnit, declaringType, declaringMethod, null, null);
 

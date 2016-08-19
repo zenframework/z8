@@ -4,25 +4,26 @@ import org.zenframework.z8.compiler.core.IPosition;
 import org.zenframework.z8.compiler.core.IToken;
 
 abstract public class ConstantToken extends Token {
-    protected ConstantToken() {}
+	protected ConstantToken() {
+	}
 
-    protected ConstantToken(IPosition position) {
-        super(IToken.CONSTANT, position);
-    }
+	protected ConstantToken(IPosition position) {
+		super(IToken.CONSTANT, position);
+	}
 
-    public String format() {
-        return format(false);
-    }
+	public String format() {
+		return format(false);
+	}
 
-    public String format(boolean forCodeGeneration) {
-        throw new UnsupportedOperationException();
-    }
+	public String format(boolean forCodeGeneration) {
+		throw new UnsupportedOperationException();
+	}
 
-    public String getValueString() {
-        return format(true);
-    }
+	public String getValueString() {
+		return format(true);
+	}
 
-    abstract public String getTypeName();
+	abstract public String getTypeName();
 
-    abstract public String getSqlTypeName();
+	abstract public String getSqlTypeName();
 }

@@ -21,260 +21,244 @@ import org.zenframework.z8.compiler.parser.variable.VariableType;
 import org.zenframework.z8.compiler.workspace.CompilationUnit;
 
 public class MethodCall extends LanguageElement implements IJavaTypeCast {
-    ILanguageElement context;
-
-    private IToken nameToken;
-    private IToken leftBrace;
-    private ILanguageElement[] arguments;
-    private IToken rightBrace;
+	ILanguageElement context;
 
-    private IVariableType variableType;
-    private ITypeCastSet typeCastSet;
+	private IToken nameToken;
+	private IToken leftBrace;
+	private ILanguageElement[] arguments;
+	private IToken rightBrace;
 
-    private boolean javaCastPending = true;
+	private IVariableType variableType;
+	private ITypeCastSet typeCastSet;
 
-    public MethodCall(ILanguageElement context, IToken nameToken, ILanguageElement[] arguments, IToken leftBrace,
-            IToken rightBrace) {
-        this.context = context;
+	private boolean javaCastPending = true;
 
-        this.nameToken = nameToken;
-        this.arguments = arguments;
+	public MethodCall(ILanguageElement context, IToken nameToken, ILanguageElement[] arguments, IToken leftBrace, IToken rightBrace) {
+		this.context = context;
 
-        this.leftBrace = leftBrace;
-        this.rightBrace = rightBrace;
-    }
+		this.nameToken = nameToken;
+		this.arguments = arguments;
 
-    @Override
-    public IPosition getSourceRange() {
-        if(rightBrace != null) {
-            return nameToken.getPosition().union(rightBrace.getPosition());
-        }
-        else if(arguments.length > 0) {
-            return nameToken.getPosition().union(arguments[arguments.length - 1].getSourceRange());
-        }
-        else {
-            return nameToken.getPosition().union(leftBrace.getPosition());
-        }
-    }
+		this.leftBrace = leftBrace;
+		this.rightBrace = rightBrace;
+	}
 
-    @Override
-    public IToken getFirstToken() {
-        return nameToken;
-    }
+	@Override
+	public IPosition getSourceRange() {
+		if(rightBrace != null) {
+			return nameToken.getPosition().union(rightBrace.getPosition());
+		} else if(arguments.length > 0) {
+			return nameToken.getPosition().union(arguments[arguments.length - 1].getSourceRange());
+		} else {
+			return nameToken.getPosition().union(leftBrace.getPosition());
+		}
+	}
 
-    @Override
-    public IVariableType getVariableType() {
-        return variableType;
-    }
+	@Override
+	public IToken getFirstToken() {
+		return nameToken;
+	}
 
-    private String makeSignatureList(IVariableType[] variableTypes) {
-        StringBuffer buffer = new StringBuffer();
+	@Override
+	public IVariableType getVariableType() {
+		return variableType;
+	}
 
-        buffer.append('(');
+	private String makeSignatureList(IVariableType[] variableTypes) {
+		StringBuffer buffer = new StringBuffer();
 
-        for(int i = 0; i < variableTypes.length; i++) {
-            if(i != 0) {
-                buffer.append(", ");
-            }
-            buffer.append(variableTypes[i].getSignature());
-        }
+		buffer.append('(');
 
-        return buffer.toString() + ')';
-    }
+		for(int i = 0; i < variableTypes.length; i++) {
+			if(i != 0) {
+				buffer.append(", ");
+			}
+			buffer.append(variableTypes[i].getSignature());
+		}
 
-    @Override
-    public boolean resolveTypes(CompilationUnit compilationUnit, IType declaringType) {
-        if(!super.resolveTypes(compilationUnit, declaringType))
-            return false;
+		return buffer.toString() + ')';
+	}
 
-        if(context != null && !context.resolveTypes(compilationUnit, declaringType))
-            return false;
+	@Override
+	public boolean resolveTypes(CompilationUnit compilationUnit, IType declaringType) {
+		if(!super.resolveTypes(compilationUnit, declaringType))
+			return false;
 
-        boolean result = true;
+		if(context != null && !context.resolveTypes(compilationUnit, declaringType))
+			return false;
 
-        for(ILanguageElement argument : arguments) {
-            result &= argument.resolveTypes(compilationUnit, declaringType);
-        }
+		boolean result = true;
 
-        return result;
-    }
+		for(ILanguageElement argument : arguments) {
+			result &= argument.resolveTypes(compilationUnit, declaringType);
+		}
 
-    @Override
-    public boolean checkSemantics(CompilationUnit compilationUnit, IType declaringType, IMethod declaringMethod,
-            IVariable leftHandValue, IVariableType contextType) {
-        if(!super.checkSemantics(compilationUnit, declaringType, declaringMethod, null, null))
-            return false;
-
-        if(context != null && !context.checkSemantics(compilationUnit, declaringType, declaringMethod, null, null))
-            return false;
-
-        IVariableType[] argumentTypes = new IVariableType[arguments.length];
+		return result;
+	}
 
-        boolean parametersChecked = true;
+	@Override
+	public boolean checkSemantics(CompilationUnit compilationUnit, IType declaringType, IMethod declaringMethod, IVariable leftHandValue, IVariableType contextType) {
+		if(!super.checkSemantics(compilationUnit, declaringType, declaringMethod, null, null))
+			return false;
 
-        for(int i = 0; i < arguments.length; i++) {
-            parametersChecked &= arguments[i].checkSemantics(compilationUnit, declaringType, declaringMethod, null, null);
-        }
+		if(context != null && !context.checkSemantics(compilationUnit, declaringType, declaringMethod, null, null))
+			return false;
 
-        if(!parametersChecked) {
-            return false;
-        }
+		IVariableType[] argumentTypes = new IVariableType[arguments.length];
 
-        for(int i = 0; i < arguments.length; i++) {
-            argumentTypes[i] = arguments[i].getVariableType();
-        }
+		boolean parametersChecked = true;
 
-        contextType = context != null ? context.getVariableType() : new VariableType(getCompilationUnit(), declaringType);
+		for(int i = 0; i < arguments.length; i++) {
+			parametersChecked &= arguments[i].checkSemantics(compilationUnit, declaringType, declaringMethod, null, null);
+		}
 
-        IMethod[] methods = contextType.getMatchingMethods(nameToken.getRawText());
+		if(!parametersChecked) {
+			return false;
+		}
 
-        if(methods.length == 0) {
-            setError(nameToken.getPosition(), "The method " + nameToken.getRawText() + makeSignatureList(argumentTypes)
-                    + " is undefined for the type " + contextType.getSignature());
-            return false;
-        }
+		for(int i = 0; i < arguments.length; i++) {
+			argumentTypes[i] = arguments[i].getVariableType();
+		}
 
-        List<ITypeCastSet> availableCasts = new ArrayList<ITypeCastSet>();
+		contextType = context != null ? context.getVariableType() : new VariableType(getCompilationUnit(), declaringType);
 
-        for(IMethod method : methods) {
-            IVariableType[] parameters = method.getParameterTypes();
-
-            if(parameters.length != argumentTypes.length)
-                continue;
+		IMethod[] methods = contextType.getMatchingMethods(nameToken.getRawText());
 
-            ITypeCastSet candidates = new TypeCastSet();
-            candidates.setContext(method);
+		if(methods.length == 0) {
+			setError(nameToken.getPosition(), "The method " + nameToken.getRawText() + makeSignatureList(argumentTypes) + " is undefined for the type " + contextType.getSignature());
+			return false;
+		}
 
-            boolean argumentsCast = true;
+		List<ITypeCastSet> availableCasts = new ArrayList<ITypeCastSet>();
 
-            for(int i = 0; i < parameters.length; i++) {
-                ITypeCast typeCast = argumentTypes[i].getCastTo(parameters[i]);
+		for(IMethod method : methods) {
+			IVariableType[] parameters = method.getParameterTypes();
 
-                if(typeCast == null) {
-                    argumentsCast = false;
-                    break;
-                }
+			if(parameters.length != argumentTypes.length)
+				continue;
 
-                candidates.add(typeCast);
-            }
+			ITypeCastSet candidates = new TypeCastSet();
+			candidates.setContext(method);
 
-            if(argumentsCast) {
-                availableCasts.add(candidates);
-            }
-        }
-
-        ITypeCastSet[] result = TypeCastSet.findBestCast(availableCasts.toArray(new ITypeCastSet[availableCasts.size()]));
+			boolean argumentsCast = true;
 
-        if(result.length == 0) {
-            setError(getPosition(), "The method " + methods[0].getSignature() + " in the type " + contextType.getSignature()
-                    + " is not applicable for the arguments " + makeSignatureList(argumentTypes));
-            addHyperlink(methods[0]);
-            return false;
-        }
-        else if(result.length != 1) {
-            setError(getPosition(), "The method " + result[0].getContext().getSignature() + " is ambiguous for the type "
-                    + contextType.getSignature());
-            addHyperlink(methods[0]);
-            return false;
-        }
+			for(int i = 0; i < parameters.length; i++) {
+				ITypeCast typeCast = argumentTypes[i].getCastTo(parameters[i]);
 
-        IMethod method = result[0].getContext();
-        addHyperlink(method);
+				if(typeCast == null) {
+					argumentsCast = false;
+					break;
+				}
 
-        if(contextType.isStatic() && !method.isStatic()) {
-            setError(getPosition(), "Cannot make a static reference to the non-static method " + method.getSignature());
-        }
+				candidates.add(typeCast);
+			}
 
-        if(context != null && !contextType.isStatic() && method.isStatic()) {
-            setWarning(getPosition(), "The static method " + contextType.getSignature() + '.' + method.getSignature()
-                    + " should be accessed in a static way");
-        }
+			if(argumentsCast) {
+				availableCasts.add(candidates);
+			}
+		}
 
-        if(context == null && getStaticContext() && !method.isStatic()) {
-            setError(getPosition(), "Cannot make a static reference to the non-static method " + method.getSignature()
-                    + " from " + method.getDeclaringType().getUserName());
-        }
+		ITypeCastSet[] result = TypeCastSet.findBestCast(availableCasts.toArray(new ITypeCastSet[availableCasts.size()]));
 
-        IType methodDeclaringType = method.getDeclaringType();
+		if(result.length == 0) {
+			setError(getPosition(), "The method " + methods[0].getSignature() + " in the type " + contextType.getSignature() + " is not applicable for the arguments " + makeSignatureList(argumentTypes));
+			addHyperlink(methods[0]);
+			return false;
+		} else if(result.length != 1) {
+			setError(getPosition(), "The method " + result[0].getContext().getSignature() + " is ambiguous for the type " + contextType.getSignature());
+			addHyperlink(methods[0]);
+			return false;
+		}
 
-        if(methodDeclaringType != null && methodDeclaringType != declaringType) {
-            if(method.isPrivate() && !methodDeclaringType.hasPrivateAccess(declaringType) || method.isProtected()
-                    && !methodDeclaringType.hasProtectedAccess(declaringType)) {
-                setError(getPosition(),
-                        "The method " + method.getSignature() + " from the type " + methodDeclaringType.getUserName()
-                                + " is not visible");
-            }
-        }
+		IMethod method = result[0].getContext();
+		addHyperlink(method);
 
-        typeCastSet = result[0];
+		if(contextType.isStatic() && !method.isStatic()) {
+			setError(getPosition(), "Cannot make a static reference to the non-static method " + method.getSignature());
+		}
 
-        variableType = method.getVariableType();
+		if(context != null && !contextType.isStatic() && method.isStatic()) {
+			setWarning(getPosition(), "The static method " + contextType.getSignature() + '.' + method.getSignature() + " should be accessed in a static way");
+		}
 
-        return true;
-    }
+		if(context == null && getStaticContext() && !method.isStatic()) {
+			setError(getPosition(), "Cannot make a static reference to the non-static method " + method.getSignature() + " from " + method.getDeclaringType().getUserName());
+		}
 
-    protected void addHyperlink(IMethod method) {
-        CompilationUnit compilationUnit = method.getCompilationUnit();
+		IType methodDeclaringType = method.getDeclaringType();
 
-        if(compilationUnit != null) {
-            getCompilationUnit().addHyperlink(nameToken.getPosition(), compilationUnit, method.getNamePosition());
-        }
-    }
+		if(methodDeclaringType != null && methodDeclaringType != declaringType) {
+			if(method.isPrivate() && !methodDeclaringType.hasPrivateAccess(declaringType) || method.isProtected() && !methodDeclaringType.hasProtectedAccess(declaringType)) {
+				setError(getPosition(), "The method " + method.getSignature() + " from the type " + methodDeclaringType.getUserName() + " is not visible");
+			}
+		}
 
-    @Override
-    public void setCastPending(boolean castPending) {
-        javaCastPending = castPending;
-    }
+		typeCastSet = result[0];
 
-    @Override
-    public void getCode(CodeGenerator codeGenerator) {
-        IVariableType variableType = getVariableType();
+		variableType = method.getVariableType();
 
-        if(context != null) {
-            boolean needCast = javaCastPending && context.getVariableType().isArray() && !variableType.isArray()
-                    && !variableType.getType().getUserName().equals(Primary.Void);
+		return true;
+	}
 
-            if(needCast) {
-                codeGenerator.getCompilationUnit().importType(variableType.getType());
-                codeGenerator.append("((" + variableType.getDeclaringJavaName() + ")");
-            }
+	protected void addHyperlink(IMethod method) {
+		CompilationUnit compilationUnit = method.getCompilationUnit();
 
-            boolean needGet = !(context instanceof Super) && !context.getVariableType().isStatic()
-                    && context.getVariableType().isReference();
+		if(compilationUnit != null) {
+			getCompilationUnit().addHyperlink(nameToken.getPosition(), compilationUnit, method.getNamePosition());
+		}
+	}
 
-            context.getCode(codeGenerator);
-            codeGenerator.append(".");
+	@Override
+	public void setCastPending(boolean castPending) {
+		javaCastPending = castPending;
+	}
 
-            if(needGet) {
-                codeGenerator.append("get(" + getDeclaringType().getConstructionStage() + ").");
-            }
+	@Override
+	public void getCode(CodeGenerator codeGenerator) {
+		IVariableType variableType = getVariableType();
 
-            typeCastSet.getCode(codeGenerator, arguments);
+		if(context != null) {
+			boolean needCast = javaCastPending && context.getVariableType().isArray() && !variableType.isArray() && !variableType.getType().getUserName().equals(Primary.Void);
 
-            if(needCast) {
-                codeGenerator.append(")");
-            }
-        }
-        else {
-            typeCastSet.getCode(codeGenerator, arguments);
-        }
-    }
+			if(needCast) {
+				codeGenerator.getCompilationUnit().importType(variableType.getType());
+				codeGenerator.append("((" + variableType.getDeclaringJavaName() + ")");
+			}
 
-    public String getSignature() {
-        List<IVariableType> types = new ArrayList<IVariableType>();
+			boolean needGet = !(context instanceof Super) && !context.getVariableType().isStatic() && context.getVariableType().isReference();
 
-        for(ILanguageElement argument : arguments) {
-            types.add(argument.getVariableType());
-        }
+			context.getCode(codeGenerator);
+			codeGenerator.append(".");
 
-        return nameToken.getRawText() + makeSignatureList(types.toArray(new IVariableType[0]));
-    }
+			if(needGet) {
+				codeGenerator.append("get(" + getDeclaringType().getConstructionStage() + ").");
+			}
 
-    public ILanguageElement getContext() {
-        return context;
-    }
+			typeCastSet.getCode(codeGenerator, arguments);
 
-    public ILanguageElement[] getArguments() {
-        return arguments;
-    }
+			if(needCast) {
+				codeGenerator.append(")");
+			}
+		} else {
+			typeCastSet.getCode(codeGenerator, arguments);
+		}
+	}
+
+	public String getSignature() {
+		List<IVariableType> types = new ArrayList<IVariableType>();
+
+		for(ILanguageElement argument : arguments) {
+			types.add(argument.getVariableType());
+		}
+
+		return nameToken.getRawText() + makeSignatureList(types.toArray(new IVariableType[0]));
+	}
+
+	public ILanguageElement getContext() {
+		return context;
+	}
+
+	public ILanguageElement[] getArguments() {
+		return arguments;
+	}
 }

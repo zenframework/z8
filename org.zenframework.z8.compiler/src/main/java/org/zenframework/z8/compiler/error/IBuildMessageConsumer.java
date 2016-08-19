@@ -3,13 +3,13 @@ package org.zenframework.z8.compiler.error;
 import org.zenframework.z8.compiler.workspace.Resource;
 
 public interface IBuildMessageConsumer {
-    int getErrorCount();
+	int getErrorCount();
 
-    int getWarningCount();
+	int getWarningCount();
 
-    void consume(BuildMessage message);
+	void consume(BuildMessage message);
 
-    void report(Resource resource, BuildMessage[] message);
+	void report(Resource resource, BuildMessage[] message);
 
-    void clearMessages(Resource resource);
+	void clearMessages(Resource resource);
 }

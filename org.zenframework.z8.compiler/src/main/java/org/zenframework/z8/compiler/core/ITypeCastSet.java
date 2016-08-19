@@ -1,15 +1,15 @@
 package org.zenframework.z8.compiler.core;
 
 public interface ITypeCastSet {
-    IMethod getContext();
+	IMethod getContext();
 
-    void setContext(IMethod context);
+	void setContext(IMethod context);
 
-    int getWeight();
+	int getWeight();
 
-    ITypeCast[] get();
+	ITypeCast[] get();
 
-    void add(ITypeCast typeCast);
+	void add(ITypeCast typeCast);
 
-    void getCode(CodeGenerator codeGenerator, ILanguageElement[] elements);
+	void getCode(CodeGenerator codeGenerator, ILanguageElement[] elements);
 }

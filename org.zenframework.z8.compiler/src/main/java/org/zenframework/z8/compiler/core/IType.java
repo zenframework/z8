@@ -7,134 +7,134 @@ import org.zenframework.z8.compiler.parser.type.members.TypeBody;
 import org.zenframework.z8.compiler.workspace.CompilationUnit;
 
 public interface IType extends ILanguageElement {
-    IAttribute findAttribute(String name);
+	IAttribute findAttribute(String name);
 
-    boolean getRecursionFlag();
+	boolean getRecursionFlag();
 
-    void setRecursionFlag(boolean recursionFlag);
+	void setRecursionFlag(boolean recursionFlag);
 
-    IToken getNameToken();
+	IToken getNameToken();
 
-    String getUserName();
+	String getUserName();
 
-    String getJavaName();
+	String getJavaName();
 
-    String getNestedUserName();
+	String getNestedUserName();
 
-    String getNestedJavaName();
+	String getNestedJavaName();
 
-    String getUserPackage();
+	String getUserPackage();
 
-    String getJavaPackage();
+	String getJavaPackage();
 
-    String getQualifiedJavaName();
+	String getQualifiedJavaName();
 
-    String getQualifiedUserName();
+	String getQualifiedUserName();
 
-    @Override
-    IVariableType getVariableType();
+	@Override
+	IVariableType getVariableType();
 
-    IType getBaseType();
+	IType getBaseType();
 
-    void setBaseType(IType baseType);
+	void setBaseType(IType baseType);
 
-    boolean canBeBaseTypeOf(IType type);
+	boolean canBeBaseTypeOf(IType type);
 
-    boolean canBeSubtypeOf(IType type);
+	boolean canBeSubtypeOf(IType type);
 
-    IType getContainerType();
+	IType getContainerType();
 
-    IType getTopLevelContainerType();
+	IType getTopLevelContainerType();
 
-    IType[] getNestedTypes();
+	IType[] getNestedTypes();
 
-    IType getNestedType(String name);
+	IType getNestedType(String name);
 
-    void addNestedType(IType type);
+	void addNestedType(IType type);
 
-    IType lookupNestedType(String qualifiedName);
+	IType lookupNestedType(String qualifiedName);
 
-    boolean isEnum();
+	boolean isEnum();
 
-    boolean isNative();
+	boolean isNative();
 
-    boolean isPrimary();
+	boolean isPrimary();
 
-    boolean isAbstract();
+	boolean isAbstract();
 
-    boolean extendsPrimary();
+	boolean extendsPrimary();
 
-    boolean isFinal();
+	boolean isFinal();
 
-    IMember[] getMembers();
+	IMember[] getMembers();
 
-    IMember[] getAllMembers();
+	IMember[] getAllMembers();
 
-    IMethod[] getMethods();
+	IMethod[] getMethods();
 
-    IMethod[] getTypeCastOperators();
+	IMethod[] getTypeCastOperators();
 
-    IInitializer[] getInitializers();
+	IInitializer[] getInitializers();
 
-    IInitializer[] getAllInitializers();
+	IInitializer[] getAllInitializers();
 
-    IMember getMember(String name);
+	IMember getMember(String name);
 
-    IMethod getMethod(String signature);
+	IMethod getMethod(String signature);
 
-    IInitializer getInitializer(String name);
+	IInitializer getInitializer(String name);
 
-    IMember findMember(String name);
+	IMember findMember(String name);
 
-    IMethod findMethod(String signature);
+	IMethod findMethod(String signature);
 
-    IInitializer findInitializer(String name);
+	IInitializer findInitializer(String name);
 
-    ITypeCast getCastTo(IVariableType variableType);
+	ITypeCast getCastTo(IVariableType variableType);
 
-    void addMember(IMember member);
+	void addMember(IMember member);
 
-    void addMethod(IMethod method);
+	void addMethod(IMethod method);
 
-    void addTypeCastOperator(IMethod operator);
+	void addTypeCastOperator(IMethod operator);
 
-    void addInitializer(IInitializer initializer);
+	void addInitializer(IInitializer initializer);
 
-    boolean isSubtypeOf(IType candidate);
+	boolean isSubtypeOf(IType candidate);
 
-    boolean isContainerOf(IType candidate);
+	boolean isContainerOf(IType candidate);
 
-    boolean hasPrivateAccess(IType from);
+	boolean hasPrivateAccess(IType from);
 
-    boolean hasProtectedAccess(IType from);
+	boolean hasProtectedAccess(IType from);
 
-    String getConstructionStage();
+	String getConstructionStage();
 
-    void setConstructionStage(String stage);
+	void setConstructionStage(String stage);
 
-    IMember[] getAutoArrays();
+	IMember[] getAutoArrays();
 
-    IMethod[] getMatchingMethods(String name);
+	IMethod[] getMatchingMethods(String name);
 
-    IMethod[] getMatchingMethods(String name, int parametrsCount);
+	IMethod[] getMatchingMethods(String name, int parametrsCount);
 
-    ImportBlock getImportBlock();
+	ImportBlock getImportBlock();
 
-    void setImportBlock(ImportBlock importBlock);
+	void setImportBlock(ImportBlock importBlock);
 
-    ImportElement[] getImports();
+	ImportElement[] getImports();
 
-    TypeBody getTypeBody();
+	TypeBody getTypeBody();
 
-    MemberInit getMemberInit(String left, IType context);
+	MemberInit getMemberInit(String left, IType context);
 
-    boolean resolveType(CompilationUnit compilationUnit);
+	boolean resolveType(CompilationUnit compilationUnit);
 
-    boolean checkImportUsage(CompilationUnit compilationUnit);
+	boolean checkImportUsage(CompilationUnit compilationUnit);
 
-    public IInitializer[] findInitializers(String name);
+	public IInitializer[] findInitializers(String name);
 
-    public IInitializer findInitializerDeep(String name);
+	public IInitializer findInitializerDeep(String name);
 
-    public boolean isSubtypeOf(String typeName);
+	public boolean isSubtypeOf(String typeName);
 }

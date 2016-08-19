@@ -91,7 +91,7 @@ public class CatchClause extends LanguageElement implements IStatement {
 	public boolean catchesAll() {
 		return declarator.getVariableType().getType().isPrimary();
 	}
-	
+
 	@Override
 	public boolean returnsOnAllControlPaths() {
 		return ((IStatement)statement).returnsOnAllControlPaths();
@@ -110,23 +110,23 @@ public class CatchClause extends LanguageElement implements IStatement {
 	@Override
 	public void getCode(CodeGenerator codeGenerator) {
 		IType type = getVariableType().getType();
-		
+
 		CompilationUnit compilationUnit = codeGenerator.getCompilationUnit();
 		compilationUnit.importType(type);
 
 		String typeName = type.getJavaName();
 		String declaration = typeName + " " + declarator.getName();
-		
+
 		if(type.isPrimary()) {
 			String throwableName = compilationUnit.createUniqueName();
 			codeGenerator.append("catch(java.lang.Throwable " + throwableName + ") {");
 			codeGenerator.breakLine().incrementIndent().indent();
-			
+
 			codeGenerator.append(declaration + " = new " + typeName + "(" + throwableName + ");");
 			codeGenerator.breakLine().indent();
 
 			statement.getCode(codeGenerator);
-			
+
 			codeGenerator.decrementIndent().indent().append('}').breakLine();
 		} else {
 			codeGenerator.append("catch(" + declaration + ")").breakLine().indent();

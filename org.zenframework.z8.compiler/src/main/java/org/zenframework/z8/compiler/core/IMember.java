@@ -1,16 +1,16 @@
 package org.zenframework.z8.compiler.core;
 
 public interface IMember extends IVariable, ILanguageElement {
-    boolean isStatic();
+	boolean isStatic();
 
-    boolean isPublic();
+	boolean isPublic();
 
-    boolean isPrivate();
+	boolean isPrivate();
 
-    boolean isProtected();
+	boolean isProtected();
 
-    @Override
-    IType getDeclaringType();
+	@Override
+	IType getDeclaringType();
 
-    IInitializer getInitializer();
+	IInitializer getInitializer();
 }

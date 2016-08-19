@@ -5,31 +5,32 @@ import org.zenframework.z8.compiler.parser.type.Primary;
 import org.zenframework.z8.compiler.util.Date;
 
 public class DateToken extends ConstantToken {
-    private Date value;
+	private Date value;
 
-    public DateToken() {}
+	public DateToken() {
+	}
 
-    public DateToken(Date value, IPosition position) {
-        super(position);
-        this.value = value;
-    }
+	public DateToken(Date value, IPosition position) {
+		super(position);
+		this.value = value;
+	}
 
-    public Date getValue() {
-        return value;
-    }
+	public Date getValue() {
+		return value;
+	}
 
-    @Override
-    public String format(boolean forCodeGeneration) {
-        return '"' + value.toString() + '"';
-    }
+	@Override
+	public String format(boolean forCodeGeneration) {
+		return '"' + value.toString() + '"';
+	}
 
-    @Override
-    public String getTypeName() {
-        return Primary.Date;
-    }
+	@Override
+	public String getTypeName() {
+		return Primary.Date;
+	}
 
-    @Override
-    public String getSqlTypeName() {
-        return Primary.SqlDate;
-    }
+	@Override
+	public String getSqlTypeName() {
+		return Primary.SqlDate;
+	}
 }

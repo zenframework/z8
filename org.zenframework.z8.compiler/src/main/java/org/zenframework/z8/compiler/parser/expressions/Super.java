@@ -12,56 +12,54 @@ import org.zenframework.z8.compiler.parser.variable.VariableType;
 import org.zenframework.z8.compiler.workspace.CompilationUnit;
 
 public class Super extends LanguageElement {
-    private IVariableType variableType;
-    private IToken superToken;
+	private IVariableType variableType;
+	private IToken superToken;
 
-    public Super(IToken token) {
-        superToken = token;
-    }
+	public Super(IToken token) {
+		superToken = token;
+	}
 
-    @Override
-    public IPosition getSourceRange() {
-        return superToken.getPosition();
-    }
+	@Override
+	public IPosition getSourceRange() {
+		return superToken.getPosition();
+	}
 
-    @Override
-    public IToken getFirstToken() {
-        return superToken;
-    }
+	@Override
+	public IToken getFirstToken() {
+		return superToken;
+	}
 
-    @Override
-    public IVariableType getVariableType() {
-        return variableType;
-    }
+	@Override
+	public IVariableType getVariableType() {
+		return variableType;
+	}
 
-    @Override
-    public boolean checkSemantics(CompilationUnit compilationUnit, IType declaringType, IMethod declaringMethod,
-            IVariable leftHandValue, IVariableType context) {
-        if(!super.checkSemantics(compilationUnit, declaringType, declaringMethod, null, null))
-            return false;
+	@Override
+	public boolean checkSemantics(CompilationUnit compilationUnit, IType declaringType, IMethod declaringMethod, IVariable leftHandValue, IVariableType context) {
+		if(!super.checkSemantics(compilationUnit, declaringType, declaringMethod, null, null))
+			return false;
 
-        IType type = declaringType.getBaseType();
+		IType type = declaringType.getBaseType();
 
-        if(type == null) {
-            setError(superToken.getPosition(), "type " + declaringType.getUserName()
-                    + " has no base; keyword super cannot be used");
-            return false;
-        }
+		if(type == null) {
+			setError(superToken.getPosition(), "type " + declaringType.getUserName() + " has no base; keyword super cannot be used");
+			return false;
+		}
 
-        variableType = new VariableType(getCompilationUnit(), type);
+		variableType = new VariableType(getCompilationUnit(), type);
 
-        compilationUnit.addHyperlink(superToken.getPosition(), type);
-        compilationUnit.addContentProposal(superToken.getPosition(), variableType);
+		compilationUnit.addHyperlink(superToken.getPosition(), type);
+		compilationUnit.addContentProposal(superToken.getPosition(), variableType);
 
-        if(getStaticContext()) {
-            setError(getPosition(), "cannot use super in a static context");
-        }
+		if(getStaticContext()) {
+			setError(getPosition(), "cannot use super in a static context");
+		}
 
-        return true;
-    }
+		return true;
+	}
 
-    @Override
-    public void getCode(CodeGenerator codeGenerator) {
-        codeGenerator.append("super");
-    }
+	@Override
+	public void getCode(CodeGenerator codeGenerator) {
+		codeGenerator.append("super");
+	}
 }

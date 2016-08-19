@@ -1,15 +1,15 @@
 package org.zenframework.z8.compiler.core;
 
 public interface IVariable extends IAttributed, ISource {
-    IVariableType getVariableType();
+	IVariableType getVariableType();
 
-    String getName();
+	String getName();
 
-    String getJavaName();
+	String getJavaName();
 
-    String getUserName();
+	String getUserName();
 
-    String getSignature();
+	String getSignature();
 
-    boolean isFinal();
+	boolean isFinal();
 }

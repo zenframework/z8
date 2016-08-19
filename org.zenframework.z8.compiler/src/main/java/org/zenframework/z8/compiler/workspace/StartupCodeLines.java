@@ -4,53 +4,54 @@ import org.zenframework.z8.compiler.core.IAttribute;
 import org.zenframework.z8.compiler.core.IType;
 
 public class StartupCodeLines {
-    public String addTable = null;
-    public String addEntry = null;
-    public String addJob = null;
-    public String addActivator = null;
+	public String addTable = null;
+	public String addEntry = null;
+	public String addJob = null;
+	public String addActivator = null;
 
-    public StartupCodeLines() {}
+	public StartupCodeLines() {
+	}
 
-    public void clear() {
-        addTable = null;
-        addEntry = null;
-        addJob = null;
-        addActivator = null;
-    }
+	public void clear() {
+		addTable = null;
+		addEntry = null;
+		addJob = null;
+		addActivator = null;
+	}
 
-    private String getJavaNew(IType type) {
-        return "new " + type.getQualifiedJavaName() + ".CLASS(null)";
-    }
+	private String getJavaNew(IType type) {
+		return "new " + type.getQualifiedJavaName() + ".CLASS(null)";
+	}
 
-    public void generate(IType type) {
-        clear();
+	public void generate(IType type) {
+		clear();
 
-        if(type == null) {
-            return;
-        }
+		if(type == null) {
+			return;
+		}
 
-        IAttribute name = type.findAttribute(IAttribute.Name);
+		IAttribute name = type.findAttribute(IAttribute.Name);
 
-        if(name != null && name.getValueString().length() != 0 && type.getAttribute(IAttribute.Generatable) != null) {
-            addTable = "addTable(" + getJavaNew(type) + ");\n";
-        }
+		if(name != null && name.getValueString().length() != 0 && type.getAttribute(IAttribute.Generatable) != null) {
+			addTable = "addTable(" + getJavaNew(type) + ");\n";
+		}
 
-        IAttribute attribute = type.getAttribute(IAttribute.Job);
+		IAttribute attribute = type.getAttribute(IAttribute.Job);
 
-        if(attribute != null) {
-            addJob = "addJob(" + getJavaNew(type) + ");";
-        }
+		if(attribute != null) {
+			addJob = "addJob(" + getJavaNew(type) + ");";
+		}
 
-        attribute = type.getAttribute(IAttribute.Entry);
+		attribute = type.getAttribute(IAttribute.Entry);
 
-        if(attribute != null) {
-            addEntry = "addEntry(" + getJavaNew(type) + ");";
-        }
+		if(attribute != null) {
+			addEntry = "addEntry(" + getJavaNew(type) + ");";
+		}
 
-        attribute = type.getAttribute(IAttribute.Activator);
+		attribute = type.getAttribute(IAttribute.Activator);
 
-        if(attribute != null) {
-            addActivator = "addActivator(" + getJavaNew(type) + ");";
-        }
-    }
+		if(attribute != null) {
+			addActivator = "addActivator(" + getJavaNew(type) + ");";
+		}
+	}
 }

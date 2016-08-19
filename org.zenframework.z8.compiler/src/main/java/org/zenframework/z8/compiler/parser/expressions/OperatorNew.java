@@ -14,68 +14,66 @@ import org.zenframework.z8.compiler.parser.variable.VariableType;
 import org.zenframework.z8.compiler.workspace.CompilationUnit;
 
 public class OperatorNew extends LanguageElement {
-    private IToken newToken;
-    private VariableType variableType;
+	private IToken newToken;
+	private VariableType variableType;
 
-    public OperatorNew(IToken newToken, IToken typeNameToken) {
-        this.newToken = newToken;
-        this.variableType = new VariableType(typeNameToken);
-    }
+	public OperatorNew(IToken newToken, IToken typeNameToken) {
+		this.newToken = newToken;
+		this.variableType = new VariableType(typeNameToken);
+	}
 
-    @Override
-    public IPosition getSourceRange() {
-        return newToken.getPosition().union(variableType.getPosition());
-    }
+	@Override
+	public IPosition getSourceRange() {
+		return newToken.getPosition().union(variableType.getPosition());
+	}
 
-    @Override
-    public IToken getFirstToken() {
-        return newToken;
-    }
+	@Override
+	public IToken getFirstToken() {
+		return newToken;
+	}
 
-    @Override
-    public IVariableType getVariableType() {
-        return variableType;
-    }
+	@Override
+	public IVariableType getVariableType() {
+		return variableType;
+	}
 
-    @Override
-    public boolean isOperatorNew() {
-        return true;
-    }
+	@Override
+	public boolean isOperatorNew() {
+		return true;
+	}
 
-    @Override
-    public boolean resolveTypes(CompilationUnit compilationUnit, IType declaringType) {
-        if(!super.resolveTypes(compilationUnit, declaringType))
-            return false;
+	@Override
+	public boolean resolveTypes(CompilationUnit compilationUnit, IType declaringType) {
+		if(!super.resolveTypes(compilationUnit, declaringType))
+			return false;
 
-        if(variableType != null) {
-            return variableType.resolveTypes(compilationUnit, declaringType);
-        }
-        return false;
-    }
+		if(variableType != null) {
+			return variableType.resolveTypes(compilationUnit, declaringType);
+		}
+		return false;
+	}
 
-    @Override
-    public boolean checkSemantics(CompilationUnit compilationUnit, IType declaringType, IMethod declaringMethod,
-            IVariable leftHandValue, IVariableType context) {
-        if(!super.checkSemantics(compilationUnit, declaringType, declaringMethod, null, null))
-            return false;
+	@Override
+	public boolean checkSemantics(CompilationUnit compilationUnit, IType declaringType, IMethod declaringMethod, IVariable leftHandValue, IVariableType context) {
+		if(!super.checkSemantics(compilationUnit, declaringType, declaringMethod, null, null))
+			return false;
 
-        if(variableType != null
-                && !variableType.checkSemantics(compilationUnit, declaringType, declaringMethod, null, null))
-            return false;
+		if(variableType != null && !variableType.checkSemantics(compilationUnit, declaringType, declaringMethod, null, null))
+			return false;
 
-        return true;
-    }
+		return true;
+	}
 
-    @Override
-    public void getCode(CodeGenerator codeGenerator) {
-        codeGenerator.getCompilationUnit().importType(variableType.getType());
-        codeGenerator.append(variableType.getJavaNew(getStaticContext()));
-    }
+	@Override
+	public void getCode(CodeGenerator codeGenerator) {
+		codeGenerator.getCompilationUnit().importType(variableType.getType());
+		codeGenerator.append(variableType.getJavaNew(getStaticContext()));
+	}
 
-    @Override
-    public void replaceTypeName(TextEdit parent, IType type, String newTypeName) {
-        if(variableType != null) {
-            variableType.replaceTypeName(parent, type, newTypeName);
-        }
-    }
+	@Override
+	public void replaceTypeName(TextEdit parent, IType type, String newTypeName) {
+		if(variableType != null) {
+			variableType.replaceTypeName(parent, type, newTypeName);
+		}
+	}
 }

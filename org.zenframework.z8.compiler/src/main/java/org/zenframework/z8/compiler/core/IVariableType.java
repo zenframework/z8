@@ -1,61 +1,61 @@
 package org.zenframework.z8.compiler.core;
 
 public interface IVariableType extends ILanguageElement {
-    IType getType();
+	IType getType();
 
-    String getSignature();
+	String getSignature();
 
-    String getJavaName();
+	String getJavaName();
 
-    String getDeclaringJavaName();
+	String getDeclaringJavaName();
 
-    String getJavaNew();
+	String getJavaNew();
 
-    String getJavaNew(boolean staticContext);
+	String getJavaNew(boolean staticContext);
 
-    boolean isAuto();
+	boolean isAuto();
 
-    boolean isEnum();
+	boolean isEnum();
 
-    boolean isArray();
+	boolean isArray();
 
-    boolean isStatic();
+	boolean isStatic();
 
-    boolean isReference();
+	boolean isReference();
 
-    boolean isArrayOfReferences();
+	boolean isArrayOfReferences();
 
-    boolean extendsPrimary();
+	boolean extendsPrimary();
 
-    int getDimensions();
+	int getDimensions();
 
-    IType[] getKeys();
+	IType[] getKeys();
 
-    IType getRightKey();
+	IType getRightKey();
 
-    IType getLeftKey();
+	IType getLeftKey();
 
-    void addLeftKey(IType type);
+	void addLeftKey(IType type);
 
-    void addRightKey(IType type);
+	void addRightKey(IType type);
 
-    IType removeLeftKey();
+	IType removeLeftKey();
 
-    IType removeRightKey();
+	IType removeRightKey();
 
-    public ITypeCast getCastTo(IType candidate);
+	public ITypeCast getCastTo(IType candidate);
 
-    public ITypeCast getCastTo(IVariableType candidate);
+	public ITypeCast getCastTo(IVariableType candidate);
 
-    public ITypeCast getCastTo(IType context, IVariableType candidate);
+	public ITypeCast getCastTo(IType context, IVariableType candidate);
 
-    boolean compare(IVariableType variableType);
+	boolean compare(IVariableType variableType);
 
-    IMember findMember(String name);
+	IMember findMember(String name);
 
-    IMethod[] getMatchingMethods(String name);
+	IMethod[] getMatchingMethods(String name);
 
-    IMethod[] getTypeCastOperators();
+	IMethod[] getTypeCastOperators();
 
-    IMember[] getAllMembers();
+	IMember[] getAllMembers();
 }

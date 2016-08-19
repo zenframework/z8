@@ -1,27 +1,27 @@
 package org.zenframework.z8.compiler.core;
 
 public interface ITypeCast {
-    IVariableType getSource();
+	IVariableType getSource();
 
-    IVariableType getTarget();
+	IVariableType getTarget();
 
-    int compare(ITypeCast other);
+	int compare(ITypeCast other);
 
-    int getWeight();
+	int getWeight();
 
-    boolean hasOperator();
+	boolean hasOperator();
 
-    IMethod getContext();
+	IMethod getContext();
 
-    void setContext(IMethod method);
+	void setContext(IMethod method);
 
-    IMethod getOperator();
+	IMethod getOperator();
 
-    void setOperator(IMethod operator);
+	void setOperator(IMethod operator);
 
-    int distanceToBaseType();
+	int distanceToBaseType();
 
-    void getCode(CodeGenerator codeGenerator, ILanguageElement element);
+	void getCode(CodeGenerator codeGenerator, ILanguageElement element);
 
-    void getCode(CodeGenerator codeGenerator, ILanguageElement element, boolean newValue);
+	void getCode(CodeGenerator codeGenerator, ILanguageElement element, boolean newValue);
 }

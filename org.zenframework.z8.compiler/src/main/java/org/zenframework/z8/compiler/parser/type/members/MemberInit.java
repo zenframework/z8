@@ -17,173 +17,167 @@ import org.zenframework.z8.compiler.parser.grammar.lexer.token.OperatorToken;
 import org.zenframework.z8.compiler.workspace.CompilationUnit;
 
 public class MemberInit extends Initialization implements IInitializer {
-    public MemberInit(QualifiedName left, OperatorToken operatorToken, ILanguageElement right) {
-        super(left, operatorToken, right);
-    }
+	public MemberInit(QualifiedName left, OperatorToken operatorToken, ILanguageElement right) {
+		super(left, operatorToken, right);
+	}
 
-    public QualifiedName getQualifiedName() {
-        return (QualifiedName)getLeftElement();
-    }
+	public QualifiedName getQualifiedName() {
+		return (QualifiedName)getLeftElement();
+	}
 
-    public String getName() {
-        return getQualifiedName().toString();
-    }
+	public String getName() {
+		return getQualifiedName().toString();
+	}
 
-    @Override
-    public int hashCode() {
-        return getName().hashCode();
-    }
+	@Override
+	public int hashCode() {
+		return getName().hashCode();
+	}
 
-    @Override
-    public String getLeftName() {
-        QualifiedName qualifiedName = (QualifiedName)getLeftElement();
-        return qualifiedName.toString();
-    }
+	@Override
+	public String getLeftName() {
+		QualifiedName qualifiedName = (QualifiedName)getLeftElement();
+		return qualifiedName.toString();
+	}
 
-    @Override
-    public String getRightName() {
-        ILanguageElement initializer = getRightElement();
+	@Override
+	public String getRightName() {
+		ILanguageElement initializer = getRightElement();
 
-        if(initializer instanceof OperatorNew) {
-            OperatorNew type = (OperatorNew)initializer;
-            return type.getVariableType().getJavaNew(getStaticContext());
-        }
+		if(initializer instanceof OperatorNew) {
+			OperatorNew type = (OperatorNew)initializer;
+			return type.getVariableType().getJavaNew(getStaticContext());
+		}
 
-        CodeGenerator codeGenerator = new CodeGenerator(getCompilationUnit());
-        initializer.getCode(codeGenerator);
-        return codeGenerator.toString();
-    }
+		CodeGenerator codeGenerator = new CodeGenerator(getCompilationUnit());
+		initializer.getCode(codeGenerator);
+		return codeGenerator.toString();
+	}
 
-    @Override
-    public boolean getStaticContext() {
-        ILanguageElement parent = getParent();
+	@Override
+	public boolean getStaticContext() {
+		ILanguageElement parent = getParent();
 
-        if(parent != null) {
-            IMember member = (IMember)parent;
-            return member.isStatic();
-        }
+		if(parent != null) {
+			IMember member = (IMember)parent;
+			return member.isStatic();
+		}
 
-        return false;
-    }
+		return false;
+	}
 
-    @Override
-    public boolean equals(Object object) {
-        if(this == object) {
-            return true;
-        }
+	@Override
+	public boolean equals(Object object) {
+		if(this == object) {
+			return true;
+		}
 
-        if(object instanceof MemberInit) {
-            MemberInit memberInit = (MemberInit)object;
+		if(object instanceof MemberInit) {
+			MemberInit memberInit = (MemberInit)object;
 
-            if(getDeclaringType().equals(memberInit.getDeclaringType())) {
-                return getLeftName().equals(memberInit.getLeftName());
-            }
-        }
+			if(getDeclaringType().equals(memberInit.getDeclaringType())) {
+				return getLeftName().equals(memberInit.getLeftName());
+			}
+		}
 
-        return false;
-    }
+		return false;
+	}
 
-    @Override
-    public boolean checkSemantics(CompilationUnit compilationUnit, IType declaringType, IMethod declaringMethod,
-            IVariable leftHandValue, IVariableType context) {
-        if(!super.checkSemantics(compilationUnit, declaringType, declaringMethod, null, null))
-            return false;
+	@Override
+	public boolean checkSemantics(CompilationUnit compilationUnit, IType declaringType, IMethod declaringMethod, IVariable leftHandValue, IVariableType context) {
+		if(!super.checkSemantics(compilationUnit, declaringType, declaringMethod, null, null))
+			return false;
 
-        if(getAttributes().length != 0 && !getVariableType().isReference()) {
-            setError(getLeftElement().getPosition(), "Attributes cannot be applied to variables of a primary type");
-        }
+		if(getAttributes().length != 0 && !getVariableType().isReference()) {
+			setError(getLeftElement().getPosition(), "Attributes cannot be applied to variables of a primary type");
+		}
 
-        IInitializer initializer = declaringType.findInitializer(getName());
+		IInitializer initializer = declaringType.findInitializer(getName());
 
-        if(initializer != null && initializer instanceof MemberInit) {
-            if(declaringType.equals(initializer.getDeclaringType())) {
-                setError(
-                        initializer.getLeftElement().getPosition(),
-                        "Duplicate initialization of " + initializer.getLeftName() + " in type "
-                                + declaringType.getUserName());
-                setError(getLeftElement().getPosition(), "Duplicate initialization of " + initializer.getLeftName()
-                        + " in type " + declaringType.getUserName());
-            }
-            /*
-            			else if(initializer.getVariableType().isArray() && getOperator().getId() == IToken.ASSIGN)
-            			{
-            				setError(getPosition(), "Array initialization conflicts with one in type " + initializer.getDeclaringType().getUserName() + "; use += instead");
-            			}
-            */
-            else {
-                declaringType.addInitializer(this);
-            }
-        }
-        /*
-        		else if(getVariableType().isArray() && getOperator() != null && getOperator().getId() == IToken.ASSIGN)
-        		{
-        			QualifiedName qualifiedName = (QualifiedName)getLeftElement();
-        			
-        			IToken[] tokens = qualifiedName.getTokens();
-        			
-        			for(int i = 0; i < tokens.length - 1; i++)
-        			{
-        				String name = qualifiedName.toString(i + 1);
+		if(initializer != null && initializer instanceof MemberInit) {
+			if(declaringType.equals(initializer.getDeclaringType())) {
+				setError(initializer.getLeftElement().getPosition(), "Duplicate initialization of " + initializer.getLeftName() + " in type " + declaringType.getUserName());
+				setError(getLeftElement().getPosition(), "Duplicate initialization of " + initializer.getLeftName() + " in type " + declaringType.getUserName());
+			}
+			/*
+			 * else if(initializer.getVariableType().isArray() &&
+			 * getOperator().getId() == IToken.ASSIGN) { setError(getPosition(),
+			 * "Array initialization conflicts with one in type " +
+			 * initializer.getDeclaringType().getUserName() +
+			 * "; use += instead"); }
+			 */
+			else {
+				declaringType.addInitializer(this);
+			}
+		}
+		/*
+		 * else if(getVariableType().isArray() && getOperator() != null &&
+		 * getOperator().getId() == IToken.ASSIGN) { QualifiedName qualifiedName
+		 * = (QualifiedName)getLeftElement();
+		 * 
+		 * IToken[] tokens = qualifiedName.getTokens();
+		 * 
+		 * for(int i = 0; i < tokens.length - 1; i++) { String name =
+		 * qualifiedName.toString(i + 1);
+		 * 
+		 * initializer =
+		 * qualifiedName.getVariableType(i).getType().findInitializer(name);
+		 * 
+		 * if(initializer != null && initializer.getVariableType().isArray()) {
+		 * setError(getPosition(),
+		 * "Array initialization conflicts with one in type " +
+		 * initializer.getDeclaringType().getUserName() + "; use += instead");
+		 * return true; } }
+		 * 
+		 * declaringType.addInitializer(this); }
+		 */
+		else {
+			declaringType.addInitializer(this);
+		}
 
-        				initializer = qualifiedName.getVariableType(i).getType().findInitializer(name);
-        				
-        				if(initializer != null && initializer.getVariableType().isArray())
-        				{
-        					setError(getPosition(), "Array initialization conflicts with one in type " + initializer.getDeclaringType().getUserName() + "; use += instead");
-        					return true;
-        				}
-        			}
+		return true;
+	}
 
-        			declaringType.addInitializer(this);
-        		}
-        */
-        else {
-            declaringType.addInitializer(this);
-        }
+	@Override
+	public void getCode(CodeGenerator codeGenerator) {
+	}
 
-        return true;
-    }
+	private boolean isConstructor1Assignment() {
+		return getVariableType().isReference() && getOperator() != null && getOperator().getId() == IToken.ASSIGN;
+	}
 
-    @Override
-    public void getCode(CodeGenerator codeGenerator) {}
+	@Override
+	public void getConstructor1(CodeGenerator codeGenerator) {
+		if(getRightElement() != null && isConstructor1Assignment()) {
+			codeGenerator.indent();
 
-    private boolean isConstructor1Assignment() {
-        return getVariableType().isReference() && getOperator() != null && 
-                getOperator().getId() == IToken.ASSIGN;
-    }
+			super.getCode(codeGenerator);
 
-    @Override
-    public void getConstructor1(CodeGenerator codeGenerator) {
-        if(getRightElement() != null && isConstructor1Assignment()) {
-            codeGenerator.indent();
+			codeGenerator.append(";");
+			codeGenerator.breakLine();
+		}
+	}
 
-            super.getCode(codeGenerator);
+	@Override
+	public void getConstructor2(CodeGenerator codeGenerator) {
+		if(getRightElement() != null && !isConstructor1Assignment()) {
+			codeGenerator.indent();
 
-            codeGenerator.append(";");
-            codeGenerator.breakLine();
-        }
-    }
+			super.getCode(codeGenerator);
 
-    @Override
-    public void getConstructor2(CodeGenerator codeGenerator) {
-        if(getRightElement() != null && !isConstructor1Assignment()) {
-            codeGenerator.indent();
+			codeGenerator.append(";");
+			codeGenerator.breakLine();
+		}
 
-            super.getCode(codeGenerator);
+		IAttribute[] attributes = getAttributes();
 
-            codeGenerator.append(";");
-            codeGenerator.breakLine();
-        }
-
-        IAttribute[] attributes = getAttributes();
-
-        for(IAttribute attribute : attributes) {
-            codeGenerator.indent();
-            getLeftElement().getCode(codeGenerator);
-            codeGenerator.append(".setAttribute(" + '"' + attribute.getName() + '"' + ", ");
-            attribute.getCode(codeGenerator);
-            codeGenerator.append(");");
-            codeGenerator.breakLine();
-        }
-    }
+		for(IAttribute attribute : attributes) {
+			codeGenerator.indent();
+			getLeftElement().getCode(codeGenerator);
+			codeGenerator.append(".setAttribute(" + '"' + attribute.getName() + '"' + ", ");
+			attribute.getCode(codeGenerator);
+			codeGenerator.append(");");
+			codeGenerator.breakLine();
+		}
+	}
 }
