@@ -7,24 +7,27 @@ Z8.query.Section = Ext.extend(Ext.util.Observable, {
 			var sections = section;
 			for(var i = 0, length = sections.length; i < length; i++) {
 				var section = sections[i];
-				if(section.isSection) 
-					this.controls[i] = new Z8.query.Section(section);
-				else
-					this.controls[i] = section;
+				this.addControl(section);
 			}
-		} else {
-			for(var i = 0; i < controls.length; i++) {
+		} else if(section.isSection) {
+			var controls = section.controls;
+			for(var i = 0, length = controls.length; i < length; i++) {
 				var control = controls[i];
-				if(control.isSection) 
-					this.controls[i] = new Z8.query.Section(control);
-				else
-					this.controls[i] = control;
+				this.addControl(control);
 			}
-		}
+		} else
+			this.addControl(section);
 
 		Z8.query.Section.superclass.constructor.call(this);
 	},
 
+	addControl: function(control) {
+		if(control.isSection) 
+			this.controls.push(new Z8.query.Section(control));
+		else
+			this.controls.push(control);
+	},
+	
 	getAllColumns: function() {
 		var columns = [];
 
