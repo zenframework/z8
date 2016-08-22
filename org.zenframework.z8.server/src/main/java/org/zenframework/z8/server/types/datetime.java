@@ -4,6 +4,7 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.GregorianCalendar;
+import java.util.TimeZone;
 
 import org.zenframework.z8.server.db.DatabaseVendor;
 import org.zenframework.z8.server.db.FieldType;
@@ -38,6 +39,10 @@ public class datetime extends primary {
 
 	public datetime(long milliseconds) {
 		set(milliseconds);
+	}
+
+	public datetime(long milliseconds, String timeZone) {
+		set(milliseconds, timeZone);
 	}
 
 	public datetime(GregorianCalendar gc) {
@@ -108,7 +113,13 @@ public class datetime extends primary {
 	}
 
 	public void set(long millisec) {
-		m_value.setTimeInMillis(millisec);
+		set(millisec, null);
+	}
+
+	private void set(long milliseconds, String timeZone) {
+		if(timeZone != null)
+			m_value = new GregorianCalendar(TimeZone.getTimeZone(timeZone));
+		m_value.setTimeInMillis(milliseconds);
 	}
 
 	public void set(datetime datetime) {

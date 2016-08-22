@@ -3,6 +3,7 @@ package org.zenframework.z8.server.types;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.GregorianCalendar;
+import java.util.TimeZone;
 
 import org.zenframework.z8.server.db.DatabaseVendor;
 import org.zenframework.z8.server.db.FieldType;
@@ -42,6 +43,10 @@ public final class date extends primary {
 
 	public date(long milliseconds) {
 		set(milliseconds);
+	}
+
+	public date(long milliseconds, String timeZone) {
+		set(milliseconds, timeZone);
 	}
 
 	public date(int year, int month, int day) {
@@ -111,6 +116,12 @@ public final class date extends primary {
 	}
 
 	private void set(long milliseconds) {
+		set(milliseconds, null);
+	}
+
+	private void set(long milliseconds, String timeZone) {
+		if(timeZone != null)
+			m_value = new GregorianCalendar(TimeZone.getTimeZone(timeZone));
 		m_value.setTimeInMillis(milliseconds);
 		nullTime();
 	}

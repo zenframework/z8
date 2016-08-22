@@ -89,6 +89,7 @@ public class RmiIO extends ObjectIO {
 
 	static public void writeDate(ObjectOutputStream out, date value) throws IOException {
 		writeLong(out, value.getTicks());
+		writeString(out, value.get().getTimeZone().getID());
 	}
 
 	static public void writeDatespan(ObjectOutputStream out, datespan value) throws IOException {
@@ -97,6 +98,7 @@ public class RmiIO extends ObjectIO {
 
 	static public void writeDatetime(ObjectOutputStream out, datetime value) throws IOException {
 		writeLong(out, value.getTicks());
+		writeString(out, value.get().getTimeZone().getID());
 	}
 
 	static public void writeDecimal(ObjectOutputStream out, decimal value) throws IOException {
@@ -375,15 +377,15 @@ public class RmiIO extends ObjectIO {
 	}
 
 	static public date readDate(ObjectInputStream in) throws IOException {
-		return new date(readLong(in));
+		return new date(readLong(in), readString(in));
+	}
+
+	static public datetime readDatetime(ObjectInputStream in) throws IOException {
+		return new datetime(readLong(in), readString(in));
 	}
 
 	static public datespan readDatespan(ObjectInputStream in) throws IOException {
 		return new datespan(readLong(in));
-	}
-
-	static public datetime readDatetime(ObjectInputStream in) throws IOException {
-		return new datetime(readLong(in));
 	}
 
 	static public decimal readDecimal(ObjectInputStream in) throws IOException {
