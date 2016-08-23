@@ -414,8 +414,10 @@ public class TableGenerator {
 		String tableName = table().name();
 
 		// Никогда не пересоздаем SystemFiles - очень долго. Если что, то все изменения руками.
-		if(tableName.equals(Files.TableName))
+		if(tableName.equals(Files.TableName)) {
+			logger.message(Files.TableName + " - skipped.");
 			return;
+		}
 
 		String name = tableName + "_" + guid.create().toString();
 
