@@ -4,9 +4,9 @@ import org.zenframework.z8.server.base.table.ITable;
 import org.zenframework.z8.server.base.table.value.IField;
 
 public interface IForeignKey {
-    public ITable getReferencedTable();
+	public ITable getReferencedTable();
 
-    public IField getFieldDescriptor();
+	public IField getFieldDescriptor();
 
-    public IField getReferer();
+	public IField getReferer();
 }

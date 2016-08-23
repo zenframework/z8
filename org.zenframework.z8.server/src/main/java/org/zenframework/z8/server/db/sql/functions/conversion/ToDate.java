@@ -26,7 +26,7 @@ public class ToDate extends SqlToken {
 		switch(vendor) {
 		case Oracle:
 		case Postgres:
-			return "to_date(" + param1.format(vendor, options) + ",'DD/MM/YYYY')::timestamp";
+			return param1.format(vendor, options) + "::timestamp with time zone";
 		case SqlServer:
 			return "CONVERT([datetime]," + param1.format(vendor, options) + ",(103))";
 		default:

@@ -8,21 +8,19 @@ import org.zenframework.z8.server.db.Statement;
 import org.zenframework.z8.server.engine.Database;
 
 class ForeignKeyGenerator {
-    private ForeignKey foreignKey;
+	private ForeignKey foreignKey;
 
-    ForeignKeyGenerator(ForeignKey foreignKey) {
-        this.foreignKey = foreignKey;
-    }
+	ForeignKeyGenerator(ForeignKey foreignKey) {
+		this.foreignKey = foreignKey;
+	}
 
-    void run(Connection connection) throws SQLException {
-        Database database = connection.database();
-        DatabaseVendor vendor = database.vendor();
+	void run(Connection connection) throws SQLException {
+		Database database = connection.database();
+		DatabaseVendor vendor = database.vendor();
 
-        String sql = "ALTER TABLE " + database.tableName(foreignKey.table) + " " + "ADD CONSTRAINT "
-                + vendor.quote(foreignKey.name) + " " + "FOREIGN KEY" + "(" + vendor.quote(foreignKey.field) + ")" + " "
-                + "REFERENCES " + database.tableName(foreignKey.referenceTable) + " " + "("
-                + vendor.quote(foreignKey.referenceField) + ")";
+		String sql = "ALTER TABLE " + database.tableName(foreignKey.table) + " " + "ADD CONSTRAINT " + vendor.quote(foreignKey.name) + " " + "FOREIGN KEY" + "(" + vendor.quote(foreignKey.field) + ")" + " " + "REFERENCES " + database.tableName(foreignKey.referenceTable) + " "
+				+ "(" + vendor.quote(foreignKey.referenceField) + ")";
 
-        Statement.executeUpdate(connection, sql);
-    }
+		Statement.executeUpdate(connection, sql);
+	}
 }

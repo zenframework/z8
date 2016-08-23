@@ -10,23 +10,22 @@ import org.zenframework.z8.server.db.Statement;
 import org.zenframework.z8.server.engine.Database;
 
 class PrimaryKeyGenerator {
-    private Table table = null;
+	private Table table = null;
 
-    PrimaryKeyGenerator(Table table) {
-        this.table = table;
-    }
+	PrimaryKeyGenerator(Table table) {
+		this.table = table;
+	}
 
-    void run(Connection connection) throws SQLException {
-        Field primaryKey = table.primaryKey();
+	void run(Connection connection) throws SQLException {
+		Field primaryKey = table.primaryKey();
 
-        if(primaryKey == null)
-            return;
+		if(primaryKey == null)
+			return;
 
-        Database database = connection.database();
-        DatabaseVendor vendor = database.vendor();
+		Database database = connection.database();
+		DatabaseVendor vendor = database.vendor();
 
-        String sql = "ALTER TABLE " + database.tableName(table.name()) + " ADD PRIMARY KEY(" + vendor.quote(primaryKey.name())
-                + ")";
-        Statement.executeUpdate(connection, sql);
-    }
+		String sql = "ALTER TABLE " + database.tableName(table.name()) + " ADD PRIMARY KEY(" + vendor.quote(primaryKey.name()) + ")";
+		Statement.executeUpdate(connection, sql);
+	}
 }

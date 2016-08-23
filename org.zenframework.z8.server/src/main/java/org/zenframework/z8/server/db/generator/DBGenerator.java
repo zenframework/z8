@@ -17,123 +17,121 @@ import org.zenframework.z8.server.runtime.ServerRuntime;
 import org.zenframework.z8.server.utils.ErrorUtils;
 
 public class DBGenerator {
-    public static final String SchemaGenerateLock = "SchemaGenerate";
+	public static final String SchemaGenerateLock = "SchemaGenerate";
 
-    private Connection connection;
+	private Connection connection;
 
-    public DBGenerator(Connection connection) {
-        this.connection = connection;
-    }
+	public DBGenerator(Connection connection) {
+		this.connection = connection;
+	}
 
-    public void run(Collection<Table.CLASS<? extends Table>> tables, Collection<Desktop.CLASS<? extends Desktop>> entries, ILogger logger) {
-        ApplicationServer.disableEvents();
+	public void run(Collection<Table.CLASS<? extends Table>> tables, Collection<Desktop.CLASS<? extends Desktop>> entries, ILogger logger) {
+		ApplicationServer.disableEvents();
 
-        try {
-            run(tables, DataSchema.getTables(connection, "%"), logger, entries);
-        } catch (SQLException e) {
-            logger.error(e);
-        } finally {
-            ApplicationServer.enableEvents();
-        }
-    }
+		try {
+			run(tables, DataSchema.getTables(connection, "%"), logger, entries);
+		} catch(SQLException e) {
+			logger.error(e);
+		} finally {
+			ApplicationServer.enableEvents();
+		}
+	}
 
-    private void run(Collection<Table.CLASS<? extends Table>> tables, Map<String, TableDescription> existingTables,
-            ILogger logger, Collection<Desktop.CLASS<? extends Desktop>> entries) {
-        List<TableGenerator> generators = getTableGenerators(tables, existingTables, logger);
+	private void run(Collection<Table.CLASS<? extends Table>> tables, Map<String, TableDescription> existingTables, ILogger logger, Collection<Desktop.CLASS<? extends Desktop>> entries) {
+		List<TableGenerator> generators = getTableGenerators(tables, existingTables, logger);
 
-        logger.progress(0);
+		logger.progress(0);
 
-        int total = 5 * generators.size();
-        float progress = 0.0f;
+		int total = 5 * generators.size();
+		float progress = 0.0f;
 
-        fireBeforeDbGenerated();
+		fireBeforeDbGenerated();
 
-        for (TableGenerator generator : generators) {
-            generator.dropAllKeys(connection);
-            progress++;
-            logger.progress(Math.round(progress / total * 100));
-        }
+		for(TableGenerator generator : generators) {
+			generator.dropAllKeys(connection);
+			progress++;
+			logger.progress(Math.round(progress / total * 100));
+		}
 
-        for (TableGenerator generator : generators) {
-            generator.create(connection);
-            progress++;
-            logger.progress(Math.round(progress / total * 100));
-        }
+		for(TableGenerator generator : generators) {
+			generator.create(connection);
+			progress++;
+			logger.progress(Math.round(progress / total * 100));
+		}
 
-        for (TableGenerator generator : generators) {
-            generator.createRecords();
-            progress++;
-            logger.progress(Math.round(progress / total * 100));
-        }
+		for(TableGenerator generator : generators) {
+			generator.createRecords();
+			progress++;
+			logger.progress(Math.round(progress / total * 100));
+		}
 
-        for (TableGenerator generator : generators) {
-            generator.createPrimaryKey();
-            progress++;
-            logger.progress(Math.round(progress / total * 100));
-        }
+		for(TableGenerator generator : generators) {
+			generator.createPrimaryKey();
+			progress++;
+			logger.progress(Math.round(progress / total * 100));
+		}
 
-        try {
-            new EntriesGenerator().run(entries, logger);
-        } catch (Throwable e) {
-            logger.error(e, ErrorUtils.getMessage(e));
-        }
+		try {
+			new EntriesGenerator().run(entries, logger);
+		} catch(Throwable e) {
+			logger.error(e, ErrorUtils.getMessage(e));
+		}
 
-        try {
-            new JobGenerator().run(logger);
-        } catch (Throwable e) {
-            logger.error(e, ErrorUtils.getMessage(e));
-        }
+		try {
+			new JobGenerator().run(logger);
+		} catch(Throwable e) {
+			logger.error(e, ErrorUtils.getMessage(e));
+		}
 
-        for (TableGenerator generator : generators) {
-            generator.createForeignKeys();
-            progress++;
-            logger.progress(Math.round(progress / total * 100));
-        }
+		for(TableGenerator generator : generators) {
+			generator.createForeignKeys();
+			progress++;
+			logger.progress(Math.round(progress / total * 100));
+		}
 
-        fireAfterDbGenerated();
+		fireAfterDbGenerated();
 
-        String version = Runtime.version();
-        Properties.setProperty(ServerRuntime.DbSchemeControlSumProperty, version);
-        logger.message("Control sum: " + version);
+		String version = Runtime.version();
+		Properties.setProperty(ServerRuntime.DbSchemeControlSumProperty, version);
+		logger.message("Control sum: " + version);
 
-        logger.progress(100);
-    }
+		logger.progress(100);
+	}
 
-    private List<TableGenerator> getTableGenerators(Collection<Table.CLASS<? extends Table>> tables,
-            Map<String, TableDescription> existingTables, ILogger logger) {
-        List<TableGenerator> generators = new ArrayList<TableGenerator>();
+	private List<TableGenerator> getTableGenerators(Collection<Table.CLASS<? extends Table>> tables, Map<String, TableDescription> existingTables, ILogger logger) {
+		List<TableGenerator> generators = new ArrayList<TableGenerator>();
 
-        for (Table.CLASS<? extends Table> table : tables) {
-            GeneratorAction action;
+		for(Table.CLASS<? extends Table> table : tables) {
+			GeneratorAction action;
 
-            TableDescription description = existingTables.get(table.name());
+			TableDescription description = existingTables.get(table.name());
 
-            if (description != null && description.isView()) {
-                continue;
-            }
+			if(description != null && description.isView()) {
+				continue;
+			}
 
-            if (description != null) {
-                action = GeneratorAction.Alter;
-                generators.add(new TableGenerator(table, action, description, logger));
-            } else {
-                action = GeneratorAction.Create;
-                generators.add(new TableGenerator(table, action, new TableDescription(table.name(), false), logger));
-            }
-        }
+			if(description != null) {
+				action = GeneratorAction.Alter;
+				generators.add(new TableGenerator(table, action, description, logger));
+			} else {
+				action = GeneratorAction.Create;
+				generators.add(new TableGenerator(table, action, new TableDescription(table.name(), false), logger));
+			}
+		}
 
-        return generators;
-    }
+		return generators;
+	}
 
-    private static void fireBeforeDbGenerated() {
-        for (Activator.CLASS<? extends Activator> activator : Runtime.instance().activators()) {
-            activator.get().beforeDbGenerated();
-        }
-    }
+	private static void fireBeforeDbGenerated() {
+		for(Activator.CLASS<? extends Activator> activator : Runtime.instance().activators()) {
+			activator.get().beforeDbGenerated();
+		}
+	}
 
-    private static void fireAfterDbGenerated() {
-        for (Activator.CLASS<? extends Activator> activator : Runtime.instance().activators()) {
-            activator.get().afterDbGenerated();
-        }
-    }
+	private static void fireAfterDbGenerated() {
+		for(Activator.CLASS<? extends Activator> activator : Runtime.instance().activators()) {
+			activator.get().afterDbGenerated();
+		}
+	}
 
 }

@@ -12,95 +12,94 @@ import org.zenframework.z8.server.types.guid;
 import org.zenframework.z8.server.types.string;
 
 public class TreeTableStructure {
-    private TreeTable table = null;
-    private Map<guid, guid> tree = new HashMap<guid, guid>();
+	private TreeTable table = null;
+	private Map<guid, guid> tree = new HashMap<guid, guid>();
 
-    public TreeTableStructure(TreeTable table) {
-        this.table = table;
-    }
+	public TreeTableStructure(TreeTable table) {
+		this.table = table;
+	}
 
-    public void run() {
-        initTree();
-        correctTree();
-    }
+	public void run() {
+		initTree();
+		correctTree();
+	}
 
-    private void initTree() {
-        Collection<Field> fields = new ArrayList<Field>();
-        fields.add(table.primaryKey());
-        fields.add(table.parentKey());
-        
-        table.read(fields);
+	private void initTree() {
+		Collection<Field> fields = new ArrayList<Field>();
+		fields.add(table.primaryKey());
+		fields.add(table.parentKey());
 
-        while(table.next()) {
-            guid id = table.recordId.get().guid();
+		table.read(fields);
 
-            if(!id.equals(guid.NULL)) {
-                guid parentId = table.parentId.get().guid();
+		while(table.next()) {
+			guid id = table.recordId.get().guid();
 
-                if(!parentId.equals(id)) {
-                    tree.put(id, parentId);
-                }
-                else {
-                    System.out.println(table.displayName() + ": parentId equals recordId: " + id.toString());
-                }
-            }
-        }
-    }
+			if(!id.equals(guid.NULL)) {
+				guid parentId = table.parentId.get().guid();
 
-    private void correctTree() {
-        table.keepIntegrity.set(false);
+				if(!parentId.equals(id)) {
+					tree.put(id, parentId);
+				} else {
+					System.out.println(table.displayName() + ": parentId equals recordId: " + id.toString());
+				}
+			}
+		}
+	}
 
-        for(guid id : tree.keySet()) {
-            String path = getPath(id);
-            guid[] parents = parsePath(path);
+	private void correctTree() {
+		table.keepIntegrity.set(false);
 
-            path += (path.isEmpty() ? "" : ".") + id;
+		for(guid id : tree.keySet()) {
+			String path = getPath(id);
+			guid[] parents = parsePath(path);
 
-            guid parent0 = parents.length == 0 ? guid.NULL : parents[0];
-            guid root = parent0.equals(guid.NULL) ? id : parent0;
+			path += (path.isEmpty() ? "" : ".") + id;
 
-            table.path.get().set(new string(path));
-            table.root.get().set(root);
-            
-            table.parent1.get().set(parents.length > 0 ? parents[0] : null);
-            table.parent2.get().set(parents.length > 1 ? parents[1] : null);
-            table.parent3.get().set(parents.length > 2 ? parents[2] : null);
-            table.parent4.get().set(parents.length > 3 ? parents[3] : null);
-            table.parent5.get().set(parents.length > 4 ? parents[4] : null);
-            table.parent6.get().set(parents.length > 5 ? parents[5] : null);
-            
-            table.update(id);
-        }
-    }
+			guid parent0 = parents.length == 0 ? guid.NULL : parents[0];
+			guid root = parent0.equals(guid.NULL) ? id : parent0;
 
-    private String getPath(guid id) {
-        String path = "";
+			table.path.get().set(new string(path));
+			table.root.get().set(root);
 
-        while(id != null) {
-            guid parentId = tree.get(id);
+			table.parent1.get().set(parents.length > 0 ? parents[0] : null);
+			table.parent2.get().set(parents.length > 1 ? parents[1] : null);
+			table.parent3.get().set(parents.length > 2 ? parents[2] : null);
+			table.parent4.get().set(parents.length > 3 ? parents[3] : null);
+			table.parent5.get().set(parents.length > 4 ? parents[4] : null);
+			table.parent6.get().set(parents.length > 5 ? parents[5] : null);
 
-            if(parentId != null && !parentId.equals(guid.NULL)) {
-                path = parentId + (path.isEmpty() ? "" : ".") + path;
-            }
+			table.update(id);
+		}
+	}
 
-            id = parentId;
-        }
+	private String getPath(guid id) {
+		String path = "";
 
-        return path;
-    }
+		while(id != null) {
+			guid parentId = tree.get(id);
 
-    private guid[] parsePath(String path) {
-        List<guid> result = new ArrayList<guid>();
+			if(parentId != null && !parentId.equals(guid.NULL)) {
+				path = parentId + (path.isEmpty() ? "" : ".") + path;
+			}
 
-        if(!path.isEmpty()) {
-            String[] levels = path.split("\\.");
+			id = parentId;
+		}
 
-            for(String level : levels) {
-                result.add(new guid(level));
-            }
-        }
+		return path;
+	}
 
-        return result.toArray(new guid[0]);
-    }
+	private guid[] parsePath(String path) {
+		List<guid> result = new ArrayList<guid>();
+
+		if(!path.isEmpty()) {
+			String[] levels = path.split("\\.");
+
+			for(String level : levels) {
+				result.add(new guid(level));
+			}
+		}
+
+		return result.toArray(new guid[0]);
+	}
 
 }

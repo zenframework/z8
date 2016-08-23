@@ -46,7 +46,7 @@ public class JobGenerator {
 				jobRecordId = jobsTable.create();
 
 			String jobValue = jobClass.getAttribute(IObject.Job);
-			
+
 			if(jobValue != null && !jobValue.isEmpty()) {
 				int repeat = new integer(jobValue).getInt();
 				if(!schedulerJobs.readFirst(new Equ(schedulerJobs.job.get(), jobRecordId))) {
@@ -61,21 +61,21 @@ public class JobGenerator {
 
 	private Collection<String> jobs() {
 		Collection<String> result = new ArrayList<String>();
-		
+
 		for(Procedure.CLASS<? extends Procedure> cls : Runtime.instance().jobs())
 			result.add(cls.classId());
-		
+
 		return result;
 	}
-	
+
 	private void deleteOldJobs(ILogger logger) {
 		Collection<String> jobs = jobs();
-		
+
 		SchedulerJobs schedulerJobs = new SchedulerJobs.CLASS<SchedulerJobs>().get();
 		Field jobId = schedulerJobs.jobs.get().id.get();
-		
+
 		schedulerJobs.read(Arrays.asList(jobId));
-		
+
 		Logs logs = new Logs.CLASS<Logs>().get();
 
 		while(schedulerJobs.next()) {
@@ -83,7 +83,7 @@ public class JobGenerator {
 				guid recordId = schedulerJobs.recordId();
 				logs.destroy(new Equ(logs.job.get(), recordId));
 				schedulerJobs.destroy(recordId);
-			}				
+			}
 		}
 	}
 }

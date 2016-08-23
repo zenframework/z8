@@ -27,9 +27,8 @@ public class SqlConst extends SqlToken {
 	public String format(DatabaseVendor vendor, FormatOptions options, boolean logicalContext) throws UnknownDatabaseException {
 		String result = value.toDbConstant(vendor);
 
-		if(logicalContext && value.type() == FieldType.Boolean) {
+		if(logicalContext && value.type() == FieldType.Boolean)
 			return result + "=1";
-		}
 
 		if(value.type() == FieldType.String) {
 			switch(vendor) {

@@ -2,6 +2,7 @@ package org.zenframework.z8.server.types;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.ZonedDateTime;
 import java.util.GregorianCalendar;
 
 import org.zenframework.z8.server.db.DatabaseVendor;
@@ -163,7 +164,12 @@ public final class date extends primary {
 
 	@Override
 	public String toDbConstant(DatabaseVendor vendor) {
-		return new ToDate(new SqlStringToken("'" + toString() + "'")).format(vendor, new FormatOptions());
+		if(vendor != DatabaseVendor.Postgres)
+			throw new UnsupportedOperationException();
+
+		ZonedDateTime datetime = value.toZonedDateTime();
+		String result = "'" + datetime.toLocalDate() + datetime.getOffset() + "'";
+		return new ToDate(new SqlStringToken(result)).format(vendor, new FormatOptions());
 	}
 
 	@Override
