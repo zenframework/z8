@@ -2,9 +2,9 @@ package org.zenframework.z8.server.types;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.ZonedDateTime;
 import java.util.GregorianCalendar;
 
+import org.apache.commons.lang.time.DateFormatUtils;
 import org.zenframework.z8.server.db.DatabaseVendor;
 import org.zenframework.z8.server.db.FieldType;
 import org.zenframework.z8.server.db.sql.FormatOptions;
@@ -167,8 +167,7 @@ public final class date extends primary {
 		if(vendor != DatabaseVendor.Postgres)
 			throw new UnsupportedOperationException();
 
-		ZonedDateTime datetime = value.toZonedDateTime();
-		String result = "'" + datetime.toLocalDate() + datetime.getOffset() + "'";
+		String result = "'" + DateFormatUtils.ISO_DATETIME_TIME_ZONE_FORMAT.format(value) + "'";
 		return new ToDate(new SqlStringToken(result)).format(vendor, new FormatOptions());
 	}
 
