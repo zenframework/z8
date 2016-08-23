@@ -3,7 +3,6 @@ package org.zenframework.z8.server.types;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.GregorianCalendar;
-import java.util.TimeZone;
 
 import org.zenframework.z8.server.db.DatabaseVendor;
 import org.zenframework.z8.server.db.FieldType;
@@ -16,10 +15,14 @@ public final class date extends primary {
 
 	private static final long serialVersionUID = 9203264055660935905L;
 
-	private GregorianCalendar m_value = new GregorianCalendar();
+	private GregorianCalendar value = new GregorianCalendar();
 
-	final static public date MIN = new date(1899, 12, 31);
-	final static public date MAX = new date(4712, 12, 31);
+	// TimeZone Europe/Moscow
+	private static long UTC_1899_12_31 = -2209086000000l;
+	private static long UTC_4712_12_31 = 86560606800000l;
+
+	final static public date MIN = new date(UTC_1899_12_31);
+	final static public date MAX = new date(UTC_4712_12_31);
 
 	public date() {
 		nullTime();
@@ -45,10 +48,6 @@ public final class date extends primary {
 		set(milliseconds);
 	}
 
-	public date(long milliseconds, String timeZone) {
-		set(milliseconds, timeZone);
-	}
-
 	public date(int year, int month, int day) {
 		set(year, month, day);
 	}
@@ -58,7 +57,7 @@ public final class date extends primary {
 	}
 
 	public date(String date) {
-		if (date != null && !date.isEmpty()) {
+		if(date != null && !date.isEmpty()) {
 			// dd/mm/yyyy
 			// 0123456789
 
@@ -76,10 +75,11 @@ public final class date extends primary {
 	}
 
 	public date(String s, String[] formats) {
-		for (int i = 0; i < formats.length; i++) {
+		for(int i = 0; i < formats.length; i++) {
 			try {
 				set(s, formats[i]);
-			} catch (Throwable e) {}
+			} catch(Throwable e) {
+			}
 		}
 	}
 
@@ -89,18 +89,18 @@ public final class date extends primary {
 	}
 
 	private void nullTime() {
-		m_value.set(GregorianCalendar.HOUR_OF_DAY, 0);
-		m_value.set(GregorianCalendar.MINUTE, 0);
-		m_value.set(GregorianCalendar.SECOND, 0);
-		m_value.set(GregorianCalendar.MILLISECOND, 0);
+		value.set(GregorianCalendar.HOUR_OF_DAY, 0);
+		value.set(GregorianCalendar.MINUTE, 0);
+		value.set(GregorianCalendar.SECOND, 0);
+		value.set(GregorianCalendar.MILLISECOND, 0);
 	}
 
 	public long getTicks() {
-		return m_value.getTimeInMillis();
+		return value.getTimeInMillis();
 	}
 
 	public GregorianCalendar get() {
-		return m_value;
+		return value;
 	}
 
 	public void set(date date) {
@@ -116,21 +116,15 @@ public final class date extends primary {
 	}
 
 	private void set(long milliseconds) {
-		set(milliseconds, null);
-	}
-
-	private void set(long milliseconds, String timeZone) {
-		if(timeZone != null)
-			m_value = new GregorianCalendar(TimeZone.getTimeZone(timeZone));
-		m_value.setTimeInMillis(milliseconds);
+		value.setTimeInMillis(milliseconds);
 		nullTime();
 	}
 
 	public boolean set(int year, int month, int day) {
 		try {
-			m_value.set(year, month - 1, day);
+			value.set(year, month - 1, day);
 			nullTime();
-		} catch (Throwable e) {
+		} catch(Throwable e) {
 			return false;
 		}
 		return true;
@@ -139,13 +133,13 @@ public final class date extends primary {
 	@SuppressWarnings("deprecation")
 	public void set(String s, String format) {
 		try {
-			if (s.isEmpty()) {
+			if(s.isEmpty()) {
 				set(date.MIN);
 			} else {
 				java.util.Date date = new SimpleDateFormat(format).parse(s);
 				set(1900 + date.getYear(), date.getMonth() + 1, date.getDate());
 			}
-		} catch (ParseException e) {
+		} catch(ParseException e) {
 			throw new exception(e);
 		}
 	}
@@ -159,7 +153,7 @@ public final class date extends primary {
 	}
 
 	public String format(String format) {
-		return new SimpleDateFormat(format).format(m_value.getTime());
+		return new SimpleDateFormat(format).format(value.getTime());
 	}
 
 	@Override
@@ -174,86 +168,85 @@ public final class date extends primary {
 
 	@Override
 	public int hashCode() {
-		return m_value.hashCode();
+		return value.hashCode();
 	}
 
 	@Override
 	public boolean equals(Object d) {
-		if (d instanceof date) {
-			return operatorEqu((date) d).get();
+		if(d instanceof date) {
+			return operatorEqu((date)d).get();
 		}
 		return false;
 	}
 
 	public int year() {
-		return m_value.get(GregorianCalendar.YEAR);
+		return value.get(GregorianCalendar.YEAR);
 	}
 
 	public int quarter() {
-		return m_value.get(GregorianCalendar.MONTH) / 3 + 1;
+		return value.get(GregorianCalendar.MONTH) / 3 + 1;
 	}
 
 	public int month() {
-		return m_value.get(GregorianCalendar.MONTH) + 1;
+		return value.get(GregorianCalendar.MONTH) + 1;
 	}
 
 	public int weekOfYear() {
-		m_value.setMinimalDaysInFirstWeek(7);
-		return m_value.get(GregorianCalendar.WEEK_OF_YEAR);
+		value.setMinimalDaysInFirstWeek(7);
+		return value.get(GregorianCalendar.WEEK_OF_YEAR);
 	}
 
 	public int day() {
-		return m_value.get(GregorianCalendar.DAY_OF_MONTH);
+		return value.get(GregorianCalendar.DAY_OF_MONTH);
 	}
 
 	public int dayOfWeek() {
-		return m_value.get(GregorianCalendar.DAY_OF_WEEK);
+		return value.get(GregorianCalendar.DAY_OF_WEEK);
 	}
 
 	public int dayOfYear() {
-		return m_value.get(GregorianCalendar.DAY_OF_YEAR);
+		return value.get(GregorianCalendar.DAY_OF_YEAR);
 	}
 
 	public date addYear(int years) {
-		GregorianCalendar value = (GregorianCalendar) m_value.clone();
-		value.add(GregorianCalendar.YEAR, years);
-		return new date(value);
+		GregorianCalendar calendar = (GregorianCalendar)value.clone();
+		calendar.add(GregorianCalendar.YEAR, years);
+		return new date(calendar);
 	}
 
 	public date addQuarter(int quarters) {
-		GregorianCalendar value = (GregorianCalendar) m_value.clone();
-		value.add(GregorianCalendar.MONTH, 3 * quarters);
-		return new date(value);
+		GregorianCalendar calendar = (GregorianCalendar)value.clone();
+		calendar.add(GregorianCalendar.MONTH, 3 * quarters);
+		return new date(calendar);
 	}
 
 	public date addMonth(int months) {
-		GregorianCalendar value = (GregorianCalendar) m_value.clone();
-		value.add(GregorianCalendar.MONTH, months);
-		return new date(value);
+		GregorianCalendar calendar = (GregorianCalendar)value.clone();
+		calendar.add(GregorianCalendar.MONTH, months);
+		return new date(calendar);
 	}
 
 	public date addDay(int days) {
-		GregorianCalendar value = (GregorianCalendar) m_value.clone();
-		value.add(GregorianCalendar.DAY_OF_MONTH, days);
-		return new date(value);
+		GregorianCalendar calendar = (GregorianCalendar)value.clone();
+		calendar.add(GregorianCalendar.DAY_OF_MONTH, days);
+		return new date(calendar);
 	}
 
 	public date truncYear() {
-		return new date(new GregorianCalendar(m_value.get(GregorianCalendar.YEAR), 0, 1));
+		return new date(new GregorianCalendar(value.get(GregorianCalendar.YEAR), 0, 1));
 	}
 
 	public date truncQuarter() {
-		int month = m_value.get(GregorianCalendar.MONTH);
-		return new date(new GregorianCalendar(m_value.get(GregorianCalendar.YEAR), month - month % 3, 1));
+		int month = value.get(GregorianCalendar.MONTH);
+		return new date(new GregorianCalendar(value.get(GregorianCalendar.YEAR), month - month % 3, 1));
 	}
 
 	public date truncMonth() {
-		return new date(new GregorianCalendar(m_value.get(GregorianCalendar.YEAR), m_value.get(GregorianCalendar.MONTH), 1));
+		return new date(new GregorianCalendar(value.get(GregorianCalendar.YEAR), value.get(GregorianCalendar.MONTH), 1));
 	}
 
 	public date truncDay() {
-		return new date(new GregorianCalendar(m_value.get(GregorianCalendar.YEAR), m_value.get(GregorianCalendar.MONTH),
-				m_value.get(GregorianCalendar.DAY_OF_MONTH)));
+		return new date(new GregorianCalendar(value.get(GregorianCalendar.YEAR), value.get(GregorianCalendar.MONTH), value.get(GregorianCalendar.DAY_OF_MONTH)));
 	}
 
 	@Override

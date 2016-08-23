@@ -4,7 +4,6 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.GregorianCalendar;
-import java.util.TimeZone;
 
 import org.zenframework.z8.server.db.DatabaseVendor;
 import org.zenframework.z8.server.db.FieldType;
@@ -21,10 +20,14 @@ public class datetime extends primary {
 	// final static public String defaultMaskDate = "dd/MM/yyyy";
 	// final static public String defaultMaskTime = "HH:mm:ss";
 
-	final static public datetime MIN = new datetime(1899, 12, 31);
-	final static public datetime MAX = new datetime(4712, 12, 31);
+	// TimeZone Europe/Moscow
+	private static long UTC_1899_12_31 = -2209086000000l; 
+	private static long UTC_4712_12_31 = 86560606800000l; 
 
-	protected GregorianCalendar m_value = new GregorianCalendar();
+	final static public datetime MIN = new datetime(UTC_1899_12_31);
+	final static public datetime MAX = new datetime(UTC_4712_12_31);
+
+	protected GregorianCalendar value = new GregorianCalendar();
 
 	public datetime() {
 	}
@@ -39,10 +42,6 @@ public class datetime extends primary {
 
 	public datetime(long milliseconds) {
 		set(milliseconds);
-	}
-
-	public datetime(long milliseconds, String timeZone) {
-		set(milliseconds, timeZone);
 	}
 
 	public datetime(GregorianCalendar gc) {
@@ -105,21 +104,15 @@ public class datetime extends primary {
 	}
 
 	public GregorianCalendar get() {
-		return m_value;
+		return value;
 	}
 
 	public long getTicks() {
-		return m_value.getTimeInMillis();
+		return value.getTimeInMillis();
 	}
 
-	public void set(long millisec) {
-		set(millisec, null);
-	}
-
-	private void set(long milliseconds, String timeZone) {
-		if(timeZone != null)
-			m_value = new GregorianCalendar(TimeZone.getTimeZone(timeZone));
-		m_value.setTimeInMillis(milliseconds);
+	private void set(long milliseconds) {
+		value.setTimeInMillis(milliseconds);
 	}
 
 	public void set(datetime datetime) {
@@ -150,13 +143,13 @@ public class datetime extends primary {
 
 	public boolean set(int year, int month, int day, int hour, int minute, int second, int millisecond) {
 		try {
-			m_value.set(GregorianCalendar.YEAR, year);
-			m_value.set(GregorianCalendar.MONTH, month - 1);
-			m_value.set(GregorianCalendar.DAY_OF_MONTH, day);
-			m_value.set(GregorianCalendar.HOUR_OF_DAY, hour);
-			m_value.set(GregorianCalendar.MINUTE, minute);
-			m_value.set(GregorianCalendar.SECOND, second);
-			m_value.set(GregorianCalendar.MILLISECOND, millisecond);
+			value.set(GregorianCalendar.YEAR, year);
+			value.set(GregorianCalendar.MONTH, month - 1);
+			value.set(GregorianCalendar.DAY_OF_MONTH, day);
+			value.set(GregorianCalendar.HOUR_OF_DAY, hour);
+			value.set(GregorianCalendar.MINUTE, minute);
+			value.set(GregorianCalendar.SECOND, second);
+			value.set(GregorianCalendar.MILLISECOND, millisecond);
 		} catch(Throwable e) {
 			return false;
 		}
@@ -187,10 +180,10 @@ public class datetime extends primary {
 
 	public boolean setTime(int hour, int minute, int second, int millisecond) {
 		try {
-			m_value.set(GregorianCalendar.HOUR, hour);
-			m_value.set(GregorianCalendar.MINUTE, minute);
-			m_value.set(GregorianCalendar.SECOND, second);
-			m_value.set(GregorianCalendar.MILLISECOND, millisecond);
+			value.set(GregorianCalendar.HOUR, hour);
+			value.set(GregorianCalendar.MINUTE, minute);
+			value.set(GregorianCalendar.SECOND, second);
+			value.set(GregorianCalendar.MILLISECOND, millisecond);
 		} catch(Throwable e) {
 			return false;
 		}
@@ -198,110 +191,110 @@ public class datetime extends primary {
 	}
 
 	public int year() {
-		return m_value.get(GregorianCalendar.YEAR);
+		return value.get(GregorianCalendar.YEAR);
 	}
 
 	public int quarter() {
-		return m_value.get(GregorianCalendar.MONTH) / 3 + 1;
+		return value.get(GregorianCalendar.MONTH) / 3 + 1;
 	}
 
 	public int month() {
-		return m_value.get(GregorianCalendar.MONTH) + 1;
+		return value.get(GregorianCalendar.MONTH) + 1;
 	}
 
 	public int day() {
-		return m_value.get(GregorianCalendar.DAY_OF_MONTH);
+		return value.get(GregorianCalendar.DAY_OF_MONTH);
 	}
 
 	public int dayOfWeek() {
-		return m_value.get(GregorianCalendar.DAY_OF_WEEK);
+		return value.get(GregorianCalendar.DAY_OF_WEEK);
 	}
 
 	public int dayOfYear() {
-		return m_value.get(GregorianCalendar.DAY_OF_YEAR);
+		return value.get(GregorianCalendar.DAY_OF_YEAR);
 	}
 
 	public int hour() {
-		return m_value.get(GregorianCalendar.HOUR_OF_DAY);
+		return value.get(GregorianCalendar.HOUR_OF_DAY);
 	}
 
 	public int minute() {
-		return m_value.get(GregorianCalendar.MINUTE);
+		return value.get(GregorianCalendar.MINUTE);
 	}
 
 	public int second() {
-		return m_value.get(GregorianCalendar.SECOND);
+		return value.get(GregorianCalendar.SECOND);
 	}
 
 	public int millisecond() {
-		return m_value.get(GregorianCalendar.MILLISECOND);
+		return value.get(GregorianCalendar.MILLISECOND);
 	}
 
 	public datetime addYear(int years) {
-		GregorianCalendar value = (GregorianCalendar)m_value.clone();
-		value.add(GregorianCalendar.YEAR, years);
-		return new datetime(value);
+		GregorianCalendar calendar = (GregorianCalendar)value.clone();
+		calendar.add(GregorianCalendar.YEAR, years);
+		return new datetime(calendar);
 	}
 
 	public datetime addQuarter(int quarters) {
-		GregorianCalendar value = (GregorianCalendar)m_value.clone();
-		value.add(GregorianCalendar.MONTH, 3 * quarters);
-		return new datetime(value);
+		GregorianCalendar calendar = (GregorianCalendar)value.clone();
+		calendar.add(GregorianCalendar.MONTH, 3 * quarters);
+		return new datetime(calendar);
 	}
 
 	public datetime addMonth(int months) {
-		GregorianCalendar value = (GregorianCalendar)m_value.clone();
-		value.add(GregorianCalendar.MONTH, months);
-		return new datetime(value);
+		GregorianCalendar calendar = (GregorianCalendar)value.clone();
+		calendar.add(GregorianCalendar.MONTH, months);
+		return new datetime(calendar);
 	}
 
 	public datetime addDay(int days) {
-		GregorianCalendar value = (GregorianCalendar)m_value.clone();
-		value.add(GregorianCalendar.DAY_OF_MONTH, days);
-		return new datetime(value);
+		GregorianCalendar calendar = (GregorianCalendar)value.clone();
+		calendar.add(GregorianCalendar.DAY_OF_MONTH, days);
+		return new datetime(calendar);
 	}
 
 	public datetime addHour(int hours) {
-		GregorianCalendar value = (GregorianCalendar)m_value.clone();
-		value.add(GregorianCalendar.HOUR, hours);
-		return new datetime(value);
+		GregorianCalendar calendar = (GregorianCalendar)value.clone();
+		calendar.add(GregorianCalendar.HOUR, hours);
+		return new datetime(calendar);
 	}
 
 	public datetime addMinute(int minutes) {
-		GregorianCalendar value = (GregorianCalendar)m_value.clone();
-		value.add(GregorianCalendar.MINUTE, minutes);
-		return new datetime(value);
+		GregorianCalendar calendar = (GregorianCalendar)value.clone();
+		calendar.add(GregorianCalendar.MINUTE, minutes);
+		return new datetime(calendar);
 	}
 
 	public datetime addSecond(int seconds) {
-		GregorianCalendar value = (GregorianCalendar)m_value.clone();
-		value.add(GregorianCalendar.SECOND, seconds);
-		return new datetime(value);
+		GregorianCalendar calendar = (GregorianCalendar)value.clone();
+		calendar.add(GregorianCalendar.SECOND, seconds);
+		return new datetime(calendar);
 	}
 
 	public datetime truncYear() {
-		return new datetime(new GregorianCalendar(m_value.get(GregorianCalendar.YEAR), 0, 1));
+		return new datetime(new GregorianCalendar(value.get(GregorianCalendar.YEAR), 0, 1));
 	}
 
 	public datetime truncQuarter() {
-		int month = m_value.get(GregorianCalendar.MONTH);
-		return new datetime(new GregorianCalendar(m_value.get(GregorianCalendar.YEAR), month - month % 3, 1));
+		int month = value.get(GregorianCalendar.MONTH);
+		return new datetime(new GregorianCalendar(value.get(GregorianCalendar.YEAR), month - month % 3, 1));
 	}
 
 	public datetime truncMonth() {
-		return new datetime(new GregorianCalendar(m_value.get(GregorianCalendar.YEAR), m_value.get(GregorianCalendar.MONTH), 1));
+		return new datetime(new GregorianCalendar(value.get(GregorianCalendar.YEAR), value.get(GregorianCalendar.MONTH), 1));
 	}
 
 	public datetime truncDay() {
-		return new datetime(new GregorianCalendar(m_value.get(GregorianCalendar.YEAR), m_value.get(GregorianCalendar.MONTH), m_value.get(GregorianCalendar.DAY_OF_MONTH)));
+		return new datetime(new GregorianCalendar(value.get(GregorianCalendar.YEAR), value.get(GregorianCalendar.MONTH), value.get(GregorianCalendar.DAY_OF_MONTH)));
 	}
 
 	public datetime truncHour() {
-		return new datetime(new GregorianCalendar(m_value.get(GregorianCalendar.YEAR), m_value.get(GregorianCalendar.MONTH), m_value.get(GregorianCalendar.DAY_OF_MONTH), m_value.get(GregorianCalendar.HOUR), 0, 0));
+		return new datetime(new GregorianCalendar(value.get(GregorianCalendar.YEAR), value.get(GregorianCalendar.MONTH), value.get(GregorianCalendar.DAY_OF_MONTH), value.get(GregorianCalendar.HOUR), 0, 0));
 	}
 
 	public datetime truncMinute() {
-		return new datetime(new GregorianCalendar(m_value.get(GregorianCalendar.YEAR), m_value.get(GregorianCalendar.MONTH), m_value.get(GregorianCalendar.DAY_OF_MONTH), m_value.get(GregorianCalendar.HOUR), m_value.get(GregorianCalendar.MINUTE), 0));
+		return new datetime(new GregorianCalendar(value.get(GregorianCalendar.YEAR), value.get(GregorianCalendar.MONTH), value.get(GregorianCalendar.DAY_OF_MONTH), value.get(GregorianCalendar.HOUR), value.get(GregorianCalendar.MINUTE), 0));
 	}
 
 	@Override
@@ -313,6 +306,7 @@ public class datetime extends primary {
 		int day = day();
 		int month = month();
 		int year = year();
+
 		return (day < 10 ? "0" + day : day) + "/" + (month < 10 ? "0" + month : month) + "/" + year;
 	}
 
@@ -328,7 +322,7 @@ public class datetime extends primary {
 	}
 
 	public String format(DateFormat format) {
-		return format.format(m_value.getTime());
+		return format.format(value.getTime());
 	}
 
 	@Override
@@ -343,7 +337,7 @@ public class datetime extends primary {
 
 	@Override
 	public int hashCode() {
-		return m_value.hashCode();
+		return value.hashCode();
 	}
 
 	@Override
@@ -367,19 +361,19 @@ public class datetime extends primary {
 	}
 
 	public datetime operatorAdd(datespan x) {
-		return new datetime(m_value.getTimeInMillis() + x.milliseconds());
+		return new datetime(value.getTimeInMillis() + x.milliseconds());
 	}
 
 	public datespan operatorSub(date x) {
-		return new datespan(m_value.getTimeInMillis() - x.get().getTimeInMillis());
+		return new datespan(value.getTimeInMillis() - x.get().getTimeInMillis());
 	}
 
 	public datetime operatorSub(datespan x) {
-		return new datetime(m_value.getTimeInMillis() - x.milliseconds());
+		return new datetime(value.getTimeInMillis() - x.milliseconds());
 	}
 
 	public datespan operatorSub(datetime x) {
-		return new datespan(m_value.getTimeInMillis() - x.get().getTimeInMillis());
+		return new datespan(value.getTimeInMillis() - x.get().getTimeInMillis());
 	}
 
 	public datetime operatorAddAssign(datespan x) {
@@ -417,27 +411,27 @@ public class datetime extends primary {
 	}
 
 	public bool operatorEqu(datetime x) {
-		return new bool(m_value.compareTo(x.get()) == 0);
+		return new bool(value.compareTo(x.get()) == 0);
 	}
 
 	public bool operatorNotEqu(datetime x) {
-		return new bool(m_value.compareTo(x.get()) != 0);
+		return new bool(value.compareTo(x.get()) != 0);
 	}
 
 	public bool operatorLess(datetime x) {
-		return new bool(m_value.compareTo(x.get()) < 0);
+		return new bool(value.compareTo(x.get()) < 0);
 	}
 
 	public bool operatorMore(datetime x) {
-		return new bool(m_value.compareTo(x.get()) > 0);
+		return new bool(value.compareTo(x.get()) > 0);
 	}
 
 	public bool operatorLessEqu(datetime x) {
-		return new bool(m_value.compareTo(x.get()) <= 0);
+		return new bool(value.compareTo(x.get()) <= 0);
 	}
 
 	public bool operatorMoreEqu(datetime x) {
-		return new bool(m_value.compareTo(x.get()) >= 0);
+		return new bool(value.compareTo(x.get()) >= 0);
 	}
 
 	static public datetime z8_now() {
