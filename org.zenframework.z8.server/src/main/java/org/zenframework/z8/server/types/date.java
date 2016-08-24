@@ -57,39 +57,49 @@ public final class date extends primary {
 	}
 
 	public date(String date) {
-		if(date != null && !date.isEmpty()) {
-			// yyyy-MM-ddThh:mm[:ss][+hh:mm[:ss]]
-			// 0123456789012345 678  901234 567
+		if(date == null || date.isEmpty()) {
+			set(MIN);
+			return;
+		}
 
-			int length = date.length(); 
-			int year = Integer.parseInt(date.substring(0, 4));
-			int month = Integer.parseInt(date.substring(5, 7));
-			int day = Integer.parseInt(date.substring(8, 10));
+		// yyyy-MM-ddThh:mm[:ss][+hh:mm[:ss]]
+		// 0123456789012345 678  901234 567
 
-			int shift = length > 17 && date.charAt(16) == ':' ? 0 : 3;
+		// yyyy-MM-ddThh:mm[:ss].000Z
+		// 0123456789012345 678 90123
 
-			int index = 19 - shift;
+		int length = date.length(); 
+		int year = Integer.parseInt(date.substring(0, 4));
+		int month = Integer.parseInt(date.substring(5, 7));
+		int day = Integer.parseInt(date.substring(8, 10));
 
-			boolean hasZone = length > index + 1; 
+		int shift = length > 17 && date.charAt(16) == ':' ? 0 : 3;
 
-			int zoneSign = hasZone ? (date.charAt(index) == '+' ? 1 : -1) : 0;
+		int index = 19 - shift;
+
+		int zoneOffset = 0;
+		boolean hasZone = index < length && date.charAt(index) != '.'; 
+
+		if(hasZone) {
+			int zoneSign = date.charAt(index) == '+' ? 1 : -1;
+
 			index = 20 - shift;
-			int zoneHours = hasZone ? Integer.parseInt(date.substring(index, index + 2)) : 0;
+			int zoneHours = Integer.parseInt(date.substring(index, index + 2));
+
 			index = 23 - shift;
-			int zoneMinutes = hasZone ? Integer.parseInt(date.substring(index, index + 2)) : 0;
+			int zoneMinutes = Integer.parseInt(date.substring(index, index + 2));
 
 			index = 25 - shift;
-			boolean hasZoneSeconds = length > index + 1;
+			boolean hasZoneSeconds = index < length;
 
 			index = 26 - shift;
 			int zoneSeconds = hasZoneSeconds ? Integer.parseInt(date.substring(index, index + 2)) : 0;
 
-			int zoneOffset = zoneSign * zoneHours * datespan.TicksPerHour + zoneMinutes * datespan.TicksPerMinute + zoneSeconds * datespan.TicksPerSecond;
+			zoneOffset = zoneSign * zoneHours * datespan.TicksPerHour + zoneMinutes * datespan.TicksPerMinute + zoneSeconds * datespan.TicksPerSecond;
+		}
 
-			set(year, month, day);
-			setZoneOffset(zoneOffset);
-		} else
-			set(MIN);
+		set(year, month, day);
+		setZoneOffset(zoneOffset);
 	}
 
 	public date(String s, String format) {

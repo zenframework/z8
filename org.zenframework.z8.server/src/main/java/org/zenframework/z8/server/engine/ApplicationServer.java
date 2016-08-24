@@ -22,7 +22,6 @@ import org.zenframework.z8.server.request.RequestProcessor;
 import org.zenframework.z8.server.security.IUser;
 import org.zenframework.z8.server.security.User;
 import org.zenframework.z8.server.types.datespan;
-import org.zenframework.z8.server.types.datetime;
 import org.zenframework.z8.server.types.file;
 import org.zenframework.z8.server.types.guid;
 
@@ -82,18 +81,6 @@ public class ApplicationServer extends RmiServer implements IApplicationServer {
 
 	private ApplicationServer() throws RemoteException {
 		super(ServerConfig.applicationServerPort());
-		
-		datetime d = new datetime(0, 1, 1, 0, 0, 0);
-		d.setZoneOffset(0);
-		datetime d1 = new datetime(1, 1, 1, 0, 0, 0);
-		d1.setZoneOffset(0);
-		
-		datetime d2 = new datetime(5000, 1, 1, 0, 0, 0);
-		d2.setZoneOffset(0);
-
-		System.out.println(d.toString() + '\t' + d.getTicks());
-		System.out.println(d1.toString() + '\t' + d1.getTicks());
-		System.out.println(d2.toString() + '\t' + d2.getTicks());
 	}
 
 	@Override

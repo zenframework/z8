@@ -65,44 +65,54 @@ public class datetime extends primary {
 	}
 
 	public datetime(String datetime) {
-		if(datetime != null && !datetime.isEmpty()) {
-			// yyyy-MM-ddThh:mm[:ss][+hh:mm[:ss]]
-			// 0123456789012345 678  901234 567
+		if(datetime == null || datetime.isEmpty()) {
+			set(MIN);
+			return;
+		}
 
-			int length = datetime.length(); 
-			int year = Integer.parseInt(datetime.substring(0, 4));
-			int month = Integer.parseInt(datetime.substring(5, 7));
-			int day = Integer.parseInt(datetime.substring(8, 10));
-			int hours = Integer.parseInt(datetime.substring(11, 13));
-			int minutes = Integer.parseInt(datetime.substring(14, 16));
+		// yyyy-MM-ddThh:mm[:ss][+hh:mm[:ss]]
+		// 0123456789012345 678  901234 567
 
-			boolean hasSeconds = length > 17 && datetime.charAt(16) == ':'; 
-			int seconds = hasSeconds ? Integer.parseInt(datetime.substring(17, 19)) : 0;
+		// yyyy-MM-ddThh:mm[:ss].000Z
+		// 0123456789012345 678 90123
 
-			int shift = hasSeconds ? 0 : 3;
+		int length = datetime.length(); 
+		int year = Integer.parseInt(datetime.substring(0, 4));
+		int month = Integer.parseInt(datetime.substring(5, 7));
+		int day = Integer.parseInt(datetime.substring(8, 10));
+		int hours = Integer.parseInt(datetime.substring(11, 13));
+		int minutes = Integer.parseInt(datetime.substring(14, 16));
 
-			int index = 19 - shift;
+		boolean hasSeconds = length > 17 && datetime.charAt(16) == ':'; 
+		int seconds = hasSeconds ? Integer.parseInt(datetime.substring(17, 19)) : 0;
 
-			boolean hasOffset = length > index + 1; 
+		int shift = hasSeconds ? 0 : 3;
 
-			int offsetSign = hasOffset ? (datetime.charAt(index) == '+' ? 1 : -1) : 0;
+		int index = 19 - shift;
+
+		int zoneOffset = 0;
+		boolean hasZone = index < length && datetime.charAt(index) != '.';
+
+		if(hasZone) {
+			int zoneSign = datetime.charAt(index) == '+' ? 1 : -1;
+
 			index = 20 - shift;
-			int offsetHours = hasOffset ? Integer.parseInt(datetime.substring(index, index + 2)) : 0;
+			int zoneHours = Integer.parseInt(datetime.substring(index, index + 2));
+
 			index = 23 - shift;
-			int offsetMinutes = hasOffset ? Integer.parseInt(datetime.substring(index, index + 2)) : 0;
+			int zoneMinutes = Integer.parseInt(datetime.substring(index, index + 2));
 
 			index = 25 - shift;
-			boolean hasOffsetSeconds = length > index + 1;
+			boolean hasZoneSeconds = index < length;
 
 			index = 26 - shift;
-			int offsetSeconds = hasOffsetSeconds ? Integer.parseInt(datetime.substring(index, index + 2)) : 0;
+			int zoneSeconds = hasZoneSeconds ? Integer.parseInt(datetime.substring(index, index + 2)) : 0;
 
-			int zoneOffset = offsetSign * offsetHours * datespan.TicksPerHour + offsetMinutes * datespan.TicksPerMinute + offsetSeconds * datespan.TicksPerSecond;
+			zoneOffset = zoneSign * zoneHours * datespan.TicksPerHour + zoneMinutes * datespan.TicksPerMinute + zoneSeconds * datespan.TicksPerSecond;
+		}
 
-			set(year, month, day, hours, minutes, seconds);
-			setZoneOffset(zoneOffset);
-		} else
-			set(MIN);
+		set(year, month, day, hours, minutes, seconds);
+		setZoneOffset(zoneOffset);
 	}
 
 	public datetime(String s, String format) {
