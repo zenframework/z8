@@ -11,11 +11,11 @@ Ext.data.Record.prototype.encode = function()
 		
 		if(field.serverType == Z8.ServerTypes.Date)
 		{
-			data[field.id] = Ext.util.Format.date(this.data[field.id], Z8.Format.Date);
+			data[field.id] = this.data[field.id].toISOString(); //Ext.util.Format.date(this.data[field.id], Z8.Format.Date);
 		}
 		else if(field.serverType == Z8.ServerTypes.Datetime)
 		{
-			data[field.id] = Ext.util.Format.date(this.data[field.id], Z8.Format.Datetime);
+			data[field.id] = this.data[field.id].toISOString(); //Ext.util.Format.date(this.data[field.id], Z8.Format.Datetime);
 		}
 		else
 		{

@@ -124,12 +124,12 @@ Z8.grid.Tooltip = Ext.extend(Ext.ToolTip,
 
 				if(field.serverType == Z8.ServerTypes.Date)
 				{
-					value = Date.parseDate(value, Z8.Format.Date);
+					value = !Ext.isEmpty(value) ? new Date(value) : value;
 					renderer = Ext.util.Format.dateRenderer();
 				}
 				else if(field.serverType == Z8.ServerTypes.Datetime)
 				{
-					value = Date.parseDate(value, Z8.Format.Datetime);
+					value = !Ext.isEmpty(value) ? new Date(value) : value;
 					renderer = Ext.util.Format.dateRenderer(Z8.Format.Datetime);
 				}
 				else if(field.serverType == Z8.ServerTypes.Float)

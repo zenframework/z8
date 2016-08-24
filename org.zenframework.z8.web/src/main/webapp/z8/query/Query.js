@@ -139,7 +139,7 @@ Z8.query.Query = Ext.extend(Ext.util.Observable, {
 			if(field.type == Z8.Types.Date) {
 				field.convert = function(value, record) {
 					var isDatetime = this.serverType == Z8.ServerTypes.Datetime;
-					return Date.parseDate(value, isDatetime ? Z8.Format.Datetime : Z8.Format.Date);
+					return !Ext.isEmpty(value) ? new Date(value) : null; //Date.parseDate(value, isDatetime ? Z8.Format.Datetime : Z8.Format.Date);
 				}
 			}
 

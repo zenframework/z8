@@ -10,10 +10,10 @@ public final class datespan extends primary {
 
 	private long ticks = 0;
 
-	static final public long TicksPerSecond = 1000;
-	static final public long TicksPerMinute = TicksPerSecond * 60;
-	static final public long TicksPerHour = TicksPerMinute * 60;
-	static final public long TicksPerDay = TicksPerHour * 24;
+	static final public int TicksPerSecond = 1000;
+	static final public int TicksPerMinute = TicksPerSecond * 60;
+	static final public int TicksPerHour = TicksPerMinute * 60;
+	static final public int TicksPerDay = TicksPerHour * 24;
 
 	public datespan() {
 	}

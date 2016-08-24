@@ -2,9 +2,9 @@ package org.zenframework.z8.server.types;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.GregorianCalendar;
 
-import org.apache.commons.lang.time.DateFormatUtils;
 import org.zenframework.z8.server.db.DatabaseVendor;
 import org.zenframework.z8.server.db.FieldType;
 import org.zenframework.z8.server.db.sql.FormatOptions;
@@ -59,14 +59,36 @@ public final class date extends primary {
 
 	public date(String date) {
 		if(date != null && !date.isEmpty()) {
-			// dd/mm/yyyy
-			// 0123456789
+			// yyyy-MM-ddThh:mm[:ss][+hh:mm[:ss]]
+			// 0123456789012345 678  901234 567
 
-			int day = Integer.parseInt(date.substring(0, 2));
-			int month = Integer.parseInt(date.substring(3, 5));
-			int year = Integer.parseInt(date.substring(6, 10));
+			int length = date.length(); 
+			int year = Integer.parseInt(date.substring(0, 4));
+			int month = Integer.parseInt(date.substring(5, 7));
+			int day = Integer.parseInt(date.substring(8, 10));
+
+			int shift = length > 17 && date.charAt(16) == ':' ? 0 : 3;
+
+			int index = 19 - shift;
+
+			boolean hasZone = length > index + 1; 
+
+			int zoneSign = hasZone ? (date.charAt(index) == '+' ? 1 : -1) : 0;
+			index = 20 - shift;
+			int zoneHours = hasZone ? Integer.parseInt(date.substring(index, index + 2)) : 0;
+			index = 23 - shift;
+			int zoneMinutes = hasZone ? Integer.parseInt(date.substring(index, index + 2)) : 0;
+
+			index = 25 - shift;
+			boolean hasZoneSeconds = length > index + 1;
+
+			index = 26 - shift;
+			int zoneSeconds = hasZoneSeconds ? Integer.parseInt(date.substring(index, index + 2)) : 0;
+
+			int zoneOffset = zoneSign * zoneHours * datespan.TicksPerHour + zoneMinutes * datespan.TicksPerMinute + zoneSeconds * datespan.TicksPerSecond;
 
 			set(year, month, day);
+			setZoneOffset(zoneOffset);
 		} else
 			set(MIN);
 	}
@@ -121,6 +143,10 @@ public final class date extends primary {
 		nullTime();
 	}
 
+	public void setZoneOffset(int zoneOffset) {
+		value.set(GregorianCalendar.ZONE_OFFSET, zoneOffset);
+	}
+
 	public boolean set(int year, int month, int day) {
 		try {
 			value.set(year, month - 1, day);
@@ -131,14 +157,13 @@ public final class date extends primary {
 		return true;
 	}
 
-	@SuppressWarnings("deprecation")
 	public void set(String s, String format) {
 		try {
 			if(s.isEmpty()) {
 				set(date.MIN);
 			} else {
-				java.util.Date date = new SimpleDateFormat(format).parse(s);
-				set(1900 + date.getYear(), date.getMonth() + 1, date.getDate());
+				Date date = new SimpleDateFormat(format).parse(s);
+				set(date.getTime());
 			}
 		} catch(ParseException e) {
 			throw new exception(e);
@@ -150,7 +175,25 @@ public final class date extends primary {
 		int day = day();
 		int month = month();
 		int year = year();
-		return (day < 10 ? "0" + day : day) + "/" + (month < 10 ? "0" + month : month) + "/" + year;
+
+		long offset = zoneOffset();
+
+		long offsetHours = Math.abs(offset / datespan.TicksPerHour);
+		long offsetMinutes = Math.abs((offset % datespan.TicksPerHour) / datespan.TicksPerMinute);
+		long offsetSeconds = Math.abs((offset % datespan.TicksPerHour) % datespan.TicksPerMinute / datespan.TicksPerSecond);
+
+		String result = "" + year + '-' + (month < 10 ? "0" + month : month) + '-' + (day < 10 ? "0" + day : day) + "T00:00";
+
+		if(offsetHours != 0 || offsetMinutes != 0 || offsetSeconds != 0) {
+			result += "" + (offset > 0 ? '+' : '-') +
+				(offsetHours < 10 ? "0" + offsetHours : offsetHours) + ":" +
+				(offsetMinutes < 10 ? "0" + offsetMinutes : offsetMinutes);
+		}
+
+		if(offsetSeconds != 0)
+			result += ":" + (offsetSeconds < 10 ? "0" + offsetSeconds : offsetSeconds);
+
+		return result;
 	}
 
 	public String format(String format) {
@@ -167,8 +210,7 @@ public final class date extends primary {
 		if(vendor != DatabaseVendor.Postgres)
 			throw new UnsupportedOperationException();
 
-		String result = "'" + DateFormatUtils.ISO_DATETIME_TIME_ZONE_FORMAT.format(value) + "'";
-		return new ToDate(new SqlStringToken(result)).format(vendor, new FormatOptions());
+		return new ToDate(new SqlStringToken("'" + toString() + "'")).format(vendor, new FormatOptions());
 	}
 
 	@Override
@@ -211,6 +253,10 @@ public final class date extends primary {
 
 	public int dayOfYear() {
 		return value.get(GregorianCalendar.DAY_OF_YEAR);
+	}
+
+	public int zoneOffset() {
+		return value.get(GregorianCalendar.ZONE_OFFSET);
 	}
 
 	public date addYear(int years) {
@@ -399,8 +445,8 @@ public final class date extends primary {
 		return truncDay();
 	}
 
-	public string z8_toString(string frm) {
-		return new string(format(frm.get()));
+	public string z8_toString(string format) {
+		return new string(format(format.get()));
 	}
 
 	static public date z8_parse(string string) {

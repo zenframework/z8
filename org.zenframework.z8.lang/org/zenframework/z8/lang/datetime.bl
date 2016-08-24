@@ -64,9 +64,6 @@ final class datetime extends primary
 	public datetime truncHour();
 	public datetime truncMinute();
 
-	public string toStringDate();
-	public string toStringTime();
-
 	public string toString(string frm);
 
 	/**

@@ -3,9 +3,9 @@ package org.zenframework.z8.server.types;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.GregorianCalendar;
 
-import org.apache.commons.lang.time.DateFormatUtils;
 import org.zenframework.z8.server.db.DatabaseVendor;
 import org.zenframework.z8.server.db.FieldType;
 import org.zenframework.z8.server.db.sql.FormatOptions;
@@ -71,17 +71,41 @@ public class datetime extends primary {
 
 	public datetime(String datetime) {
 		if(datetime != null && !datetime.isEmpty()) {
-			// dd/mm/yyyy hh/mm/ss
-			// 0123456789012345678
+			// yyyy-MM-ddThh:mm[:ss][+hh:mm[:ss]]
+			// 0123456789012345 678  901234 567
 
-			int day = Integer.parseInt(datetime.substring(0, 2));
-			int month = Integer.parseInt(datetime.substring(3, 5));
-			int year = Integer.parseInt(datetime.substring(6, 10));
+			int length = datetime.length(); 
+			int year = Integer.parseInt(datetime.substring(0, 4));
+			int month = Integer.parseInt(datetime.substring(5, 7));
+			int day = Integer.parseInt(datetime.substring(8, 10));
 			int hours = Integer.parseInt(datetime.substring(11, 13));
 			int minutes = Integer.parseInt(datetime.substring(14, 16));
-			int seconds = Integer.parseInt(datetime.substring(17, 19));
+
+			boolean hasSeconds = length > 17 && datetime.charAt(16) == ':'; 
+			int seconds = hasSeconds ? Integer.parseInt(datetime.substring(17, 19)) : 0;
+
+			int shift = hasSeconds ? 0 : 3;
+
+			int index = 19 - shift;
+
+			boolean hasOffset = length > index + 1; 
+
+			int offsetSign = hasOffset ? (datetime.charAt(index) == '+' ? 1 : -1) : 0;
+			index = 20 - shift;
+			int offsetHours = hasOffset ? Integer.parseInt(datetime.substring(index, index + 2)) : 0;
+			index = 23 - shift;
+			int offsetMinutes = hasOffset ? Integer.parseInt(datetime.substring(index, index + 2)) : 0;
+
+			index = 25 - shift;
+			boolean hasOffsetSeconds = length > index + 1;
+
+			index = 26 - shift;
+			int offsetSeconds = hasOffsetSeconds ? Integer.parseInt(datetime.substring(index, index + 2)) : 0;
+
+			int zoneOffset = offsetSign * offsetHours * datespan.TicksPerHour + offsetMinutes * datespan.TicksPerMinute + offsetSeconds * datespan.TicksPerSecond;
 
 			set(year, month, day, hours, minutes, seconds);
+			setZoneOffset(zoneOffset);
 		} else
 			set(MIN);
 	}
@@ -157,14 +181,13 @@ public class datetime extends primary {
 		return true;
 	}
 
-	@SuppressWarnings("deprecation")
 	public void set(String s, String format) {
 		try {
 			if(s == null || s.isEmpty()) {
 				set(datetime.MIN);
 			} else {
-				java.util.Date date = new SimpleDateFormat(format).parse(s);
-				set(1900 + date.getYear(), date.getMonth() + 1, date.getDate(), date.getHours(), date.getMinutes(), date.getSeconds());
+				Date date = new SimpleDateFormat(format).parse(s);
+				set(date.getTime());
 			}
 		} catch(ParseException e) {
 			throw new exception(e);
@@ -177,6 +200,10 @@ public class datetime extends primary {
 
 	public boolean setTime(int hour, int minute, int second) {
 		return setTime(hour, minute, second, 0);
+	}
+
+	public void setZoneOffset(int zoneOffset) {
+		value.set(GregorianCalendar.ZONE_OFFSET, zoneOffset);
 	}
 
 	public boolean setTime(int hour, int minute, int second, int millisecond) {
@@ -229,6 +256,10 @@ public class datetime extends primary {
 
 	public int millisecond() {
 		return value.get(GregorianCalendar.MILLISECOND);
+	}
+
+	public int zoneOffset() {
+		return value.get(GregorianCalendar.ZONE_OFFSET);
 	}
 
 	public datetime addYear(int years) {
@@ -300,22 +331,36 @@ public class datetime extends primary {
 
 	@Override
 	public String toString() {
-		return toStringDate() + " " + toStringTime();
-	}
-
-	public String toStringDate() {
 		int day = day();
 		int month = month();
 		int year = year();
 
-		return (day < 10 ? "0" + day : day) + "/" + (month < 10 ? "0" + month : month) + "/" + year;
-	}
+		int hours = hour();
+		int minutes = minute();
+		int seconds = second();
 
-	public String toStringTime() {
-		int hour = hour();
-		int minute = minute();
-		int second = second();
-		return (hour < 10 ? "0" + hour : hour) + ":" + (minute < 10 ? "0" + minute : minute) + ":" + (second < 10 ? "0" + second : second);
+		long offset = zoneOffset();
+
+		long offsetHours = Math.abs(offset / datespan.TicksPerHour);
+		long offsetMinutes = Math.abs((offset % datespan.TicksPerHour) / datespan.TicksPerMinute);
+		long offsetSeconds = Math.abs((offset % datespan.TicksPerHour) % datespan.TicksPerMinute / datespan.TicksPerSecond);
+
+		String result = "" + year + '-' + (month < 10 ? "0" + month : month) + '-' + (day < 10 ? "0" + day : day) + 
+				"T" + (hours < 10 ? "0" + hours : hours) + ":" + (minutes < 10 ? "0" + minutes : minutes);
+
+		if(seconds != 0)
+			result += ":" + (seconds < 10 ? "0" + seconds : seconds);
+
+		if(offsetHours != 0 || offsetMinutes != 0 || offsetSeconds != 0) {
+			result += "" + (offset > 0 ? '+' : '-') +
+				(offsetHours < 10 ? "0" + offsetHours : offsetHours) + ":" +
+				(offsetMinutes < 10 ? "0" + offsetMinutes : offsetMinutes);
+		}
+
+		if(offsetSeconds != 0)
+			result += ":" + (offsetSeconds < 10 ? "0" + offsetSeconds : offsetSeconds);
+
+		return result;
 	}
 
 	public String format(String format) {
@@ -336,8 +381,7 @@ public class datetime extends primary {
 		if(vendor != DatabaseVendor.Postgres)
 			throw new UnsupportedOperationException();
 
-		String result = "'" + DateFormatUtils.ISO_DATETIME_TIME_ZONE_FORMAT.format(value) + "'";
-		return new ToDatetime(new SqlStringToken(result)).format(vendor, new FormatOptions());
+		return new ToDatetime(new SqlStringToken("'" + toString() + "'")).format(vendor, new FormatOptions());
 	}
 
 	@Override
@@ -558,14 +602,6 @@ public class datetime extends primary {
 
 	public datetime z8_truncMinute() {
 		return truncMinute();
-	}
-
-	public string z8_toStringDate() {
-		return new string(toStringDate());
-	}
-
-	public string z8_toStringTime() {
-		return new string(toStringTime());
 	}
 
 	public string z8_toString(string format) {

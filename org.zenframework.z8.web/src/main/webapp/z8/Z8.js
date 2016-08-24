@@ -574,7 +574,7 @@ Z8 = {
 	decode: function(value, serverType)
 	{
 		var format = Z8.Types.dateFormat(serverType);
-		return format != null ? Date.parseDate(value, format) : value;
+		return format != null ? (!Ext.isEmpty(value) ? new Date(value) : '') : value;
 	},
 	
 	showMessages: function(title, messages)

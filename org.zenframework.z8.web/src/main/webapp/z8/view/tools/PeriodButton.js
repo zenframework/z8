@@ -319,8 +319,8 @@ Z8.PeriodButton = Ext.extend(Z8.SplitButton,
 		
 		this.addEvents('changed');
 
-		this.start = Ext.isDate(this.start) ? this.start : Date.parseDate(this.start, Z8.Format.Date);
-		this.finish = Ext.isDate(this.finish) ? this.finish : Date.parseDate(this.finish, Z8.Format.Date);
+		this.start = Ext.isDate(this.start) ? this.start : (!Ext.isEmpty(this.start) ? new Date(this.start) : this.start)/*Date.parseDate(this.start, Z8.Format.Date)*/;
+		this.finish = Ext.isDate(this.finish) ? this.finish : (!Ext.isEmpty(this.finish) ? new Date(this.finish) : this.finish)/*Date.parseDate(this.finish, Z8.Format.Date)*/;
 		
 		if(this.period == Z8.Periods.Default)
 		{
