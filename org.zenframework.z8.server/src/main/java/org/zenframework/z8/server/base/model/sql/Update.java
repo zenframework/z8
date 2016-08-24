@@ -19,98 +19,102 @@ import org.zenframework.z8.server.types.primary;
 import org.zenframework.z8.server.types.sql.sql_bool;
 
 public class Update extends Statement {
-    private Query query;
-    private Collection<Field> fields;
+	private Query query;
+	private Collection<Field> fields;
 
-    private guid recordId;
-    private sql_bool where;
+	private guid recordId;
+	private sql_bool where;
 
-    public Update(Query query, Collection<Field> fields, guid recordId) {
-        this(query, fields, recordId, null);
+	public Update(Query query, Collection<Field> fields, guid recordId) {
+		this(query, fields, recordId, null);
 
-        if (recordId == null)
-            throw new RuntimeException("Update: recordId == null");
-    }
+		if(recordId == null)
+			throw new RuntimeException("Update: recordId == null");
+	}
 
-    private Update(Query query, Collection<Field> fields, guid recordId, sql_bool where) {
-        super(ConnectionManager.get());
-        
-        this.query = query;
-        this.fields = new ArrayList<Field>();
-        this.recordId = recordId;
-        this.where = where;
-        
-        for (Field field : fields) {
-            if (!(field instanceof Expression)) {
-                this.fields.add(field);
-            }
-        }
-        
-        sql = buildSql();
-    }
+	public Update(Query query, Collection<Field> fields, guid recordId, sql_bool where) {
+		super(ConnectionManager.get());
 
-    private String buildSql() {
-        DatabaseVendor vendor = vendor();
+		this.query = query;
+		this.fields = new ArrayList<Field>();
+		this.recordId = recordId;
+		this.where = where;
 
-        String sql = "update " + database().tableName(query.getRootQuery().name());
+		for(Field field : fields) {
+			if(!(field instanceof Expression)) {
+				this.fields.add(field);
+			}
+		}
 
-        String set = "";
+		sql = buildSql();
+	}
 
-        for (Field field : fields) {
-            if (!field.isPrimaryKey()) {
-                set += (set.isEmpty() ? "" : ", ") + vendor.quote(field.name()) + "=?";
-            }
-        }
+	private String tableName(Query query) {
+		DatabaseVendor vendor = vendor();
+		return database().tableName(query.name()) + (vendor == DatabaseVendor.SqlServer ? " as " : " ") + query.getAlias();
+	}
 
-        String where = "";
+	private String buildSql() {
+		DatabaseVendor vendor = vendor();
 
-        if(recordId != null) {
-            GuidField primaryKey = (GuidField) query.getRootQuery().primaryKey();
-            where = vendor.quote(primaryKey.name()) + "=" + recordId.sql_guid().format(vendor, new FormatOptions());
-        }
+		String sql = "update " + tableName(query.getRootQuery());
 
-        if (this.where != null) {
-            where += (where.isEmpty() ? "" : " and ") + "("
-                    + this.where.format(vendor, new FormatOptions(), true) + ")";
-        }
+		String set = "";
 
-        sql += " set " + set + (where.isEmpty() ? "" : " where " + where);
-        
-        return sql;
-    }
-    
-    @Override
-    public void prepare(String sql) throws SQLException {
-        
-        super.prepare(sql);
+		for(Field field : fields) {
+			if(!field.isPrimaryKey()) {
+				set += (set.isEmpty() ? "" : ", ") + vendor.quote(field.name()) + "=?";
+			}
+		}
 
-        int position = 1;
+		String where = "";
 
-        for (Field field : fields) {
-            if (!field.isPrimaryKey()) {
-                primary value = field.getDefaultValue();
-                DbUtil.addParameter(this, position, field.type(), value);
-                position++;
-            }
-        }
-    }
+		if(recordId != null) {
+			GuidField primaryKey = (GuidField)query.getRootQuery().primaryKey();
+			where = vendor.quote(primaryKey.name()) + "=" + recordId.sql_guid().format(vendor, new FormatOptions());
+		}
 
-    public int execute() {
+		if(this.where != null) {
+			where += (where.isEmpty() ? "" : " and ") + "(" + this.where.format(vendor, new FormatOptions(), true) + ")";
+		}
 
-        try {
-            prepare(sql);
-            return executeUpdate();
-        } catch (Throwable e) {
-            System.out.println(sql());
+		sql += " set " + set + (where.isEmpty() ? "" : " where " + where);
 
-            for (Field field : fields)
-                System.out.println(field.name() + ": " + field.get());
+		return sql;
+	}
 
-            Trace.logError(e);
+	@Override
+	public void prepare(String sql) throws SQLException {
 
-            throw new RuntimeException(e);
-        } finally {
-            close();
-        }
-    }
+		super.prepare(sql);
+
+		int position = 1;
+
+		for(Field field : fields) {
+			if(!field.isPrimaryKey()) {
+				primary value = field.getDefaultValue();
+				DbUtil.addParameter(this, position, field.type(), value);
+				position++;
+			}
+		}
+	}
+
+	public int execute() {
+
+		try {
+			prepare(sql);
+			return executeUpdate();
+		} catch(Throwable e) {
+			System.out.println(sql());
+
+			for(Field field : fields)
+				System.out.println(field.name() + ": " + field.get());
+
+			Trace.logError(e);
+
+			throw new RuntimeException(e);
+		} finally {
+			close();
+		}
+	}
 }

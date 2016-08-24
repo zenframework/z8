@@ -18,12 +18,11 @@ public final class date extends primary {
 
 	private GregorianCalendar value = new GregorianCalendar();
 
-	// TimeZone Europe/Moscow
-	private static long UTC_1899_12_31 = -2209086000000l;
-	private static long UTC_4712_12_31 = 86560606800000l;
+	private static long UTC_0001_01_01 = -62135769600000l;
+	private static long UTC_5000_01_01 = 95617584000000l;
 
-	final static public date MIN = new date(UTC_1899_12_31);
-	final static public date MAX = new date(UTC_4712_12_31);
+	final static public date MIN = new date(UTC_0001_01_01);
+	final static public date MAX = new date(UTC_5000_01_01);
 
 	public date() {
 		nullTime();
@@ -182,7 +181,9 @@ public final class date extends primary {
 		long offsetMinutes = Math.abs((offset % datespan.TicksPerHour) / datespan.TicksPerMinute);
 		long offsetSeconds = Math.abs((offset % datespan.TicksPerHour) % datespan.TicksPerMinute / datespan.TicksPerSecond);
 
-		String result = "" + year + '-' + (month < 10 ? "0" + month : month) + '-' + (day < 10 ? "0" + day : day) + "T00:00";
+		String result = "" + (year < 10 ? "000" : (year < 100 ? "00" : (year < 1000 ? "0" : ""))) + year +
+				'-' + (month < 10 ? "0" + month : month) +
+				'-' + (day < 10 ? "0" + day : day) + "T00:00";
 
 		if(offsetHours != 0 || offsetMinutes != 0 || offsetSeconds != 0) {
 			result += "" + (offset > 0 ? '+' : '-') +

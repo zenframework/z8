@@ -10,16 +10,20 @@ import java.util.Map;
 
 import org.zenframework.z8.server.base.model.sql.CountingSelect;
 import org.zenframework.z8.server.base.model.sql.Select;
+import org.zenframework.z8.server.base.model.sql.Update;
 import org.zenframework.z8.server.base.query.Query;
 import org.zenframework.z8.server.base.query.ReadLock;
 import org.zenframework.z8.server.base.table.Table;
 import org.zenframework.z8.server.base.table.TreeTable;
 import org.zenframework.z8.server.base.table.system.Files;
 import org.zenframework.z8.server.base.table.system.Users;
+import org.zenframework.z8.server.base.table.value.Aggregation;
 import org.zenframework.z8.server.base.table.value.BoolExpression;
 import org.zenframework.z8.server.base.table.value.DateExpression;
+import org.zenframework.z8.server.base.table.value.DateField;
 import org.zenframework.z8.server.base.table.value.DatespanExpression;
 import org.zenframework.z8.server.base.table.value.DatetimeExpression;
+import org.zenframework.z8.server.base.table.value.DatetimeField;
 import org.zenframework.z8.server.base.table.value.DecimalExpression;
 import org.zenframework.z8.server.base.table.value.Expression;
 import org.zenframework.z8.server.base.table.value.Field;
@@ -40,6 +44,8 @@ import org.zenframework.z8.server.db.sql.SqlField;
 import org.zenframework.z8.server.db.sql.SqlStringToken;
 import org.zenframework.z8.server.db.sql.SqlToken;
 import org.zenframework.z8.server.db.sql.expressions.Equ;
+import org.zenframework.z8.server.db.sql.expressions.Operation;
+import org.zenframework.z8.server.db.sql.expressions.Rel;
 import org.zenframework.z8.server.db.sql.functions.If;
 import org.zenframework.z8.server.db.sql.functions.IsNull;
 import org.zenframework.z8.server.db.sql.functions.conversion.ToBytes;
@@ -49,8 +55,11 @@ import org.zenframework.z8.server.exceptions.db.ObjectAlreadyExistException;
 import org.zenframework.z8.server.exceptions.db.ObjectNotFoundException;
 import org.zenframework.z8.server.resources.Resources;
 import org.zenframework.z8.server.security.BuiltinUsers;
+import org.zenframework.z8.server.types.date;
+import org.zenframework.z8.server.types.datetime;
 import org.zenframework.z8.server.types.guid;
 import org.zenframework.z8.server.types.primary;
+import org.zenframework.z8.server.types.sql.sql_bool;
 import org.zenframework.z8.server.utils.ErrorUtils;
 
 public class TableGenerator {
@@ -422,15 +431,18 @@ public class TableGenerator {
 		String name = tableName + "_" + guid.create().toString();
 
 		try {
+			connection.beginTransaction();
 			createTable(name);
 			moveData(name);
 			dropTable(connection, table().name());
-		} catch(SQLException e) {
-			dropTable(connection, name);
-			throw e;
+			renameTable(connection, name, table().name());
+			connection.commit();
+		} catch(Throwable e) {
+			connection.rollback();
+			throw new SQLException(e);
 		}
 
-		renameTable(connection, name, table().name());
+		updateDefaultDatetime();
 	}
 
 	private void createTable(String name) throws SQLException {
@@ -446,6 +458,18 @@ public class TableGenerator {
 		sql += ")";
 
 		Statement.executeUpdate(connection, sql);
+	}
+
+	private void updateDefaultDatetime() throws SQLException {
+		for(Field field : table.getDataFields()) {
+			if(field instanceof DateField || field instanceof DatetimeField) {
+				field.set(field instanceof DateField ? date.MIN : datetime.MIN);
+				field.aggregation = Aggregation.None;
+				datetime min = new datetime(1900, 1, 1, 0, 0, 0);
+				sql_bool where = new sql_bool(new Rel(field, Operation.LT, min.sql_datetime()));
+				new Update(table, Arrays.asList(field), null, where).execute();
+			}
+		}
 	}
 
 	public void createPrimaryKey() {

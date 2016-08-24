@@ -17,16 +17,11 @@ public class datetime extends primary {
 
 	private static final long serialVersionUID = -5362639596768531077L;
 
-	// final static public String defaultMask = "dd/MM/yyyy HH:mm:ss";
-	// final static public String defaultMaskDate = "dd/MM/yyyy";
-	// final static public String defaultMaskTime = "HH:mm:ss";
+	private static long UTC_0001_01_01 = -62135769600000l;
+	private static long UTC_5000_01_01 = 95617584000000l;
 
-	// TimeZone Europe/Moscow
-	private static long UTC_1899_12_31 = -2209086000000l; 
-	private static long UTC_4712_12_31 = 86560606800000l; 
-
-	final static public datetime MIN = new datetime(UTC_1899_12_31);
-	final static public datetime MAX = new datetime(UTC_4712_12_31);
+	final static public datetime MIN = new datetime(UTC_0001_01_01);
+	final static public datetime MAX = new datetime(UTC_5000_01_01);
 
 	protected GregorianCalendar value = new GregorianCalendar();
 
@@ -345,7 +340,9 @@ public class datetime extends primary {
 		long offsetMinutes = Math.abs((offset % datespan.TicksPerHour) / datespan.TicksPerMinute);
 		long offsetSeconds = Math.abs((offset % datespan.TicksPerHour) % datespan.TicksPerMinute / datespan.TicksPerSecond);
 
-		String result = "" + year + '-' + (month < 10 ? "0" + month : month) + '-' + (day < 10 ? "0" + day : day) + 
+		String result = "" + (year < 10 ? "000" : (year < 100 ? "00" : (year < 1000 ? "0" : ""))) + year +
+				'-' + (month < 10 ? "0" + month : month) + 
+				'-' + (day < 10 ? "0" + day : day) + 
 				"T" + (hours < 10 ? "0" + hours : hours) + ":" + (minutes < 10 ? "0" + minutes : minutes);
 
 		if(seconds != 0)
