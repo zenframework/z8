@@ -2,8 +2,8 @@
 
 final class datetime extends primary
 {
-	static public datetime MIN = '31/12/1899 00:00:00';
-	static public datetime MAX = '31/12/4712 00:00:00';
+	static public datetime MIN = '01/01/0001 00:00:00';
+	static public datetime MAX = '01/01/5000 00:00:00';
 
 	static public datetime now();
 	public operator string();
