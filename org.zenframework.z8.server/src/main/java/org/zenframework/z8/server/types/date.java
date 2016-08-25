@@ -77,7 +77,7 @@ public final class date extends primary {
 
 		int index = 19 - shift;
 
-		int zoneOffset = 0;
+		int zoneOffset = zoneOffset();
 		boolean hasZone = index < length && date.charAt(index) != '.'; 
 
 		if(hasZone) {

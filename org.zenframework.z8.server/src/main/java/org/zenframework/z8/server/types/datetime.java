@@ -90,7 +90,7 @@ public class datetime extends primary {
 
 		int index = 19 - shift;
 
-		int zoneOffset = 0;
+		int zoneOffset = zoneOffset();
 		boolean hasZone = index < length && datetime.charAt(index) != '.';
 
 		if(hasZone) {
