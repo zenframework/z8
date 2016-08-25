@@ -1,26 +1,17 @@
-Ext.data.Record.prototype.encode = function()
-{
+Ext.data.Record.prototype.encode = function() {
 	var data = {};
 	var fields = this.store.fields;
-	
+
 	data[this.store.idProperty] = this.id;
-	
-	for(var i = 0; i < fields.getCount(); i++)
-	{
+
+	for(var i = 0; i < fields.getCount(); i++) {
 		var field = fields.get(i);
-		
-		if(field.serverType == Z8.ServerTypes.Date)
-		{
-			data[field.id] = this.data[field.id].toISOString(); //Ext.util.Format.date(this.data[field.id], Z8.Format.Date);
-		}
-		else if(field.serverType == Z8.ServerTypes.Datetime)
-		{
-			data[field.id] = this.data[field.id].toISOString(); //Ext.util.Format.date(this.data[field.id], Z8.Format.Datetime);
-		}
+		var value = this.data[field.id];
+
+		if(field.serverType == Z8.ServerTypes.Date || field.serverType == Z8.ServerTypes.Datetime)
+			data[field.id] = Ext.isDate(value) ? Z8.Format.isoDate(value) : '';
 		else
-		{
 			data[field.id] = this.data[field.id];
-		}
 	}
 	
 	return Ext.encode(data);

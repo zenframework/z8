@@ -65,9 +65,6 @@ public final class date extends primary {
 		// yyyy-MM-ddThh:mm[:ss][+hh:mm[:ss]]
 		// 0123456789012345 678  901234 567
 
-		// yyyy-MM-ddThh:mm[:ss].000Z
-		// 0123456789012345 678 90123
-
 		int length = date.length(); 
 		int year = Integer.parseInt(date.substring(0, 4));
 		int month = Integer.parseInt(date.substring(5, 7));
@@ -77,8 +74,7 @@ public final class date extends primary {
 
 		int index = 19 - shift;
 
-		int zoneOffset = zoneOffset();
-		boolean hasZone = index < length && date.charAt(index) != '.'; 
+		boolean hasZone = index < length; 
 
 		if(hasZone) {
 			int zoneSign = date.charAt(index) == '+' ? 1 : -1;
@@ -95,11 +91,11 @@ public final class date extends primary {
 			index = 26 - shift;
 			int zoneSeconds = hasZoneSeconds ? Integer.parseInt(date.substring(index, index + 2)) : 0;
 
-			zoneOffset = zoneSign * zoneHours * datespan.TicksPerHour + zoneMinutes * datespan.TicksPerMinute + zoneSeconds * datespan.TicksPerSecond;
+			int zoneOffset = zoneSign * zoneHours * datespan.TicksPerHour + zoneMinutes * datespan.TicksPerMinute + zoneSeconds * datespan.TicksPerSecond;
+			setZoneOffset(zoneOffset);
 		}
 
 		set(year, month, day);
-		setZoneOffset(zoneOffset);
 	}
 
 	public date(String s, String format) {

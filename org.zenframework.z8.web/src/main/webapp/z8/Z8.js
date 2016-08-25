@@ -3,12 +3,12 @@ Ext.BLANK_IMAGE_URL = 'resources/images/default/s.gif';
 
 Z8 = {
 	viewport: null,
-	
+
 	componentsList: null,
-	
+
 	user: null,
 	sessionId: null,
-	
+
 	decimalSeparator: ',',
 	integerSeparator: ' ',
 
@@ -33,126 +33,96 @@ Z8 = {
 
 	defaultPageCount: 50,
 
-	initialize: function()
-	{
+	initialize: function() {
 		var userAgent = navigator.userAgent.toLowerCase();
 		Ext.isIE9 = Ext.isIE && /msie 9/.test(userAgent);
 		Ext.isIE10 = Ext.isIE && /msie 10/.test(userAgent);
 
 		var body = document.body || document.getElementsByTagName('body')[0];
 
-		if(body != null)
-		{
+		if(body != null) {
 			var bodyEl = Ext.fly(body, '_internal');
-			
+
 			if(Ext.isIE9)
-			{
 				bodyEl.addClass('ext-ie9');
-			}
 
 			if(Ext.isIE10)
-			{
 				bodyEl.addClass('ext-ie10');
-			}
 		}
 	
 		Ext.WindowMgr.zseed = 12000;
 
 		Ext.QuickTips.init(true);
 		Ext.form.Field.prototype.msgTarget = 'side';
-		
+
 		Z8.PageManager.regBeforeUnload();
 	},
-	
-	log: function(message)
-	{	
+
+	log: function(message) {
 		try { console.log(message); } catch(e) {}
 	},
 
-	isEmpty: function(object)
-	{
+	isEmpty: function(object) {
 		if(Ext.isEmpty(object))
-		{
 			return true;
-		}
-		
-		if(Ext.isObject(object))
-		{
+
+		if(Ext.isObject(object)) {
 			var isEmpty = true;
 			Ext.iterate(object, function(key, value, object) { isEmpty = false; return false; });
 			return isEmpty; 
 		}
-		
+
 		return false;
 	},
-	
-	arrayCompare: function(array1, array2)
-	{
+
+	arrayCompare: function(array1, array2) {
 		if(!Ext.isArray(array1) || !Ext.isArray(array2))
-		{
 			return false;
-		}
 
 		if(array1.length != array2.length)
-		{
 			return false;
-		}
-		
-		for(var i = 0; i < array1.length; i++)
-		{
+
+		for(var i = 0; i < array1.length; i++) {
 			if(array1[i] != array2[i])
-			{
 				return false;
-			}
 		}
-		
+
 		return true;
 	},
-	
-	stopEvent: function(event)
-	{
+
+	stopEvent: function(event) {
 		event.stopEvent();
 		event.stopPropagation();
 	},
-	
-	getRequestUrl: function()
-	{
+
+	getRequestUrl: function() {
 		return getRequestUrl();
 	},
 
-	getUserSettings: function()
-	{
-		if(Z8.user.encodedSettings == null)
-		{
-			try
-			{
+	getUserSettings: function() {
+		if(Z8.user.encodedSettings == null) {
+			try {
 				Z8.user.encodedSettings = Ext.decode(Z8.user.settings);
-			}
-			catch(e) {}
-		
+			} catch(e) {}
+
 			if(Z8.user.encodedSettings == null || Ext.isArray(Z8.user.encodedSettings))
-			{
 				Z8.user.encodedSettings = {};
-			}
 		}
-		
+
 		return Z8.user.encodedSettings;
 	},
-	
-	request:
-	{
+
+	request: {
 		url: getRequestUrl() + '/request.json',
 		method: 'post',
 		desktopId: "desktop"
 	},
 
-	Status:
-	{
+	Status: {
 		AccessDenied: 401
 	},
-	
-	ServerTypes: 
-	{
+
+	ServerTypes: {
 		Guid: 'guid',
 		Integer: 'int',
 		Float: 'float',
@@ -166,8 +136,7 @@ Z8 = {
 		File: 'file'
 	},
 
-	GoogleTypes: 
-	{
+	GoogleTypes: {
 		String: 'string',
 		Number: 'number',
 		Boolean: 'boolean',
@@ -175,8 +144,7 @@ Z8 = {
 		Datetime: 'datetime',
 		Time: 'timeofday',
 
-		fromServerType: function (serverType)
-		{
+		fromServerType: function (serverType) {
 			switch(serverType) {
 			case Z8.ServerTypes.Integer:
 			case Z8.ServerTypes.Float:
@@ -198,16 +166,14 @@ Z8 = {
 		}
 	},
 
-	Types: 
-	{
+	Types: {
 		Integer: Ext.data.Types.INTEGER,
 		Float: Ext.data.Types.FLOAT,
 		Boolean: Ext.data.Types.BOOLEAN,
 		Date: Ext.data.Types.DATE,
 		String: Ext.data.Types.STRING,
 
-		fromServerType: function (serverType)
-		{
+		fromServerType: function (serverType) {
 			switch(serverType) {
 			case Z8.ServerTypes.Integer:
 				return Z8.Types.Integer;
@@ -227,13 +193,12 @@ Z8 = {
 				return Z8.Types.String;
 			}
 		},
-	
-		dateFormat: function(serverType)
-		{
+
+		dateFormat: function(serverType) {
 			switch(serverType) {
-			case Z8.ServerTypes.Date:		
+			case Z8.ServerTypes.Date:
 				return Z8.Format.Date;
-			case Z8.ServerTypes.Datetime:	
+			case Z8.ServerTypes.Datetime:
 				return Z8.Format.Datetime;
 			default:
 				return null;
@@ -241,10 +206,8 @@ Z8 = {
 		}
 	},
 
-	Grid:
-	{
-		xtype: function (type)
-		{
+	Grid: {
+		xtype: function (type) {
 			switch(type) {
 			case Z8.Types.Integer:
 			case Z8.Types.Float:	
@@ -258,43 +221,29 @@ Z8 = {
 			}
 		},
 
-		fieldWidth: function(width, field)
-		{
+		fieldWidth: function(width, field) {
 			width = width || null;
-			
+
 			var format = field.format;
 
 			if(width != null)
-			{
 				return width * Z8.charWidth;
-			}
 
 			if(field.type == Z8.Types.Date)
-			{
 				return format != null ? (new Date(2000, 12, 25).format(format).length * Z8.charWidth + 20) : 90;
-			}
 			else if(field.type == Z8.Types.Boolean)
-			{
 				return width > 0 ? width * Z8.charWidth : 30;
-			}
 			else if(field.type == Z8.Types.Integer)
-			{
 				return format != null ? Ext.util.Format.number(10000000, format).length * Z8.charWidth : 70;
-			}
 			else if(field.type == Z8.Types.Float)
-			{
 				return format != null ? Ext.util.Format.number(1000000000.00, format).length * Z8.charWidth : 70;
-			}
 			else
-			{
 				return 120;
-			}
 		},
-		
-		newColumn: function(field)
-		{
+
+		newColumn: function(field) {
 			var column = {};
-			
+
 			column.id = field.id;
 			column.dataIndex = field.id;
 			column.header = field.header;
@@ -305,92 +254,64 @@ Z8 = {
 			column.dataHidable = field.hidable;
 			column.index = field.column | 0;
 
-			if(field.hidden === true)
-			{
+			if(field.hidden === true) {
 				column.hidden = true;
 				column.hideable = false;
-			}
-			else
-			{
+			} else {
 				column.hidden = field.visible !== true;
 
-				if(field.required && !field.query.readOnly && !field.readOnly)
-				{
+				if(field.required && !field.query.readOnly && !field.readOnly) {
 					column.hidden = false;
 					column.hideable = false;
 				}
 			}
-			
+
 			column.linkId = field.linkId;
 			column.linkedVia = field.linkedVia;
-			
+
 			column.anchor = field.anchor;
 			column.anchorPolicy = field.anchorPolicy;
-			
+
 			column.editWith = field.editWith;
 			column.editWithText = field.editWithText;
-			
+
 			if(Ext.isEmpty(column.header))
-			{
 				column.header = Z8.emptyString;
-			}
-			
+
 			if(field.required)
-			{
 				column.header = '<span style="color:#CC0000;">*</span>&nbsp;' + column.header;
-			}
 
 			if(field.format != null)
-			{
 				column.format = field.format;
-			}
-			
-			if(field.gridXType != null)
-			{
-				column.xtype = field.gridXType;
-			}
 
-			if(field.type == Z8.Types.Date)
-			{
+			if(field.gridXType != null)
+				column.xtype = field.gridXType;
+
+			if(field.type == Z8.Types.Date) {
 				column.filter = { type: 'date', dateFormat: field.format };
-			}
-			else if(field.type == Z8.Types.Boolean)
-			{
+			} else if(field.type == Z8.Types.Boolean) {
 				column.trueText = Z8.Format.TrueText;
 				column.falseText = Z8.Format.FalseText;
-				column.filter = { type: 'boolean' };            
-			}
-			else if(field.type == Z8.Types.Integer)
-			{
+				column.filter = { type: 'boolean' };
+			} else if(field.type == Z8.Types.Integer) {
 				column.filter = { type: 'numeric' };
 				column.align = 'right';
-			}
-			else if(field.type == Z8.Types.Float)
-			{
-				column.filter = { type: 'numeric' };            
+			} else if(field.type == Z8.Types.Float) {
+				column.filter = { type: 'numeric' };
 				column.align = 'right';
-			}
-			else
-			{
-				if(field.serverType == Z8.ServerTypes.Text)
-				{
+			} else {
+				if(field.serverType == Z8.ServerTypes.Text) {
 					column.groupable = false;
 					column.filterable = false;
-				}
-				else
-				{
+				} else
 					column.filter = { type: 'string' };
-				}
 			}
-			
 			return column;
 		}
 	},
 
-	Form:
-	{
-		xtype: function(serverType)
-		{
+	Form: {
+		xtype: function(serverType) {
 			switch(serverType) {
 			case Z8.ServerTypes.Integer:
 			case Z8.ServerTypes.Float:	
@@ -407,11 +328,10 @@ Z8 = {
 				return 'textfield';
 			}
 		},
-		
-		newField: function(field)
-		{
+
+		newField: function(field) {
 			var width = Z8.Grid.fieldWidth(field.width, field);
-			
+
 			var formField = {
 				dataIndex: field.id,
 				fieldId: field.id,
@@ -436,63 +356,46 @@ Z8 = {
 			};
 
 			if(field.hidden === true)
-			{
 				formField.hidden = true;
-			}
 
 			if(field.filter != null)
-			{
 				formField.filter = field.filter;
-			}
-			
+
 			var minLength = field.min || 0;
 			var maxLength = field.max || field.length || 0;
 
-			if(maxLength == minLength && minLength != 0)
-			{
+			if(maxLength == minLength && minLength != 0) {
 				formField.minLength = minLength;
 				formField.maxLength = minLength;
 				formField.minLengthText = "Длина поля '" + formField.fieldLabel + "' - строго " + minLength + " символов";
 				formField.autoCreate = { tag: 'input', type: 'text', autocomplete: 'off', maxlength: maxLength };
-			}
-			else if(maxLength != 0)
-			{
+			} else if(maxLength != 0) {
 				formField.maxLength = maxLength;
 				formField.maxLengthText = "Максимальная длина поля '" + formField.fieldLabel + "' - " + maxLength + " символов";
 				formField.autoCreate = { tag: 'input', type: 'text', autocomplete: 'off', maxlength: maxLength };
-			}
-			else if(minLength != 0)
-			{
+			} else if(minLength != 0) {
 				formField.minLength = minLength;
 				formField.minLengthText = "Мининмальная длина поля '" + formField.fieldLabel + "' - " + minLength + " символов";
 			}
-			
+
 			if(field.formXType != null)
-			{
 				formField.xtype = field.formXType;
-			}
 
 			if(field.format != null)
-			{
 				formField.format = field.format;
-			}
-			
+
 			if(field.type == Z8.Types.Integer || field.type == Z8.Types.Float)
-			{
 				formField.align = 'right';
-			}
-			
-			if(field.serverType == Z8.ServerTypes.Date)
-			{
+
+			if(field.serverType == Z8.ServerTypes.Date) {
 				formField.minValue = Z8.minDate;
 				formField.maxValue = Z8.maxDate;
 
 				formField.plugins = field.readOnly ? null : [new Ext.ux.InputTextMask('X[0|1|2|3]X9/X[0|1]X9/9999', true)];
 				formField.emptyText = field.readOnly ? null : '__/__/____';
 			}
-			
-			if(field.serverType == Z8.ServerTypes.Datetime)
-			{
+
+			if(field.serverType == Z8.ServerTypes.Datetime) {
 				formField.minValue = Z8.minDatetime;
 				formField.maxValue = Z8.maxDatetime;
 
@@ -504,22 +407,17 @@ Z8 = {
 			}
 
 			if(field.type == Z8.Types.Boolean)
-			{
 				formField.disabled = field.readOnly;
-			}
 
-			if(field.serverType == Z8.ServerTypes.Text)
-			{
+			if(field.serverType == Z8.ServerTypes.Text) {
 				formField.height = Math.max(22, (field.lines || 5) * 14 + 6);
 				formField.labelAlign = 'top';
 			}
-			
 			return formField;
 		}
 	},
 
-	Format:
-	{
+	Format: {
 		Date: 'd/m/Y',
 		LongDate: 'j F Y',
 		Time: 'G:i:s',
@@ -528,83 +426,88 @@ Z8 = {
 		Float: '0,000.00',
 		TrueText: 'да',
 		FalseText: 'нет',
-		
-		nl2br: function(message)
-		{
+
+		nl2br: function(message) {
 			var result = null;
-			
-			if(Ext.isArray(message))
-			{
+			if(Ext.isArray(message)) {
 				var result = [];
-				
 				for(var i = 0; i < message.length; i++)
-				{
 					result.push(message[i].replace(/\\n/g, '<br>'));
-				}
-			}
-			else
-			{
+			} else
 				result = message.replace(/\\n/g, '<br>');
-			}
-			
+
 			return result;
+		},
+
+		isoDate: function(date) {
+			var zoneOffset = -date.getTimezoneOffset();
+
+			var year = date.getFullYear();
+			var month = date.getMonth() + 1;
+			var day = date.getDate();
+			var hours = date.getHours();
+			var minutes = date.getMinutes();
+			var seconds = date.getSeconds();
+
+			var offset = '';
+			if(zoneOffset != 0) {
+				var zoneHours = Math.floor(zoneOffset / 60);
+				var zoneMinutes = zoneOffset % 60;
+				offset = (zoneOffset >= 0 ? '+' : '-') +
+					(zoneHours < 10 ? '0' : '') + zoneHours + ':' +
+					(zoneMinutes < 10 ? '0' : '') + zoneMinutes;
+			}
+
+			return year + '-' +
+				(month < 10 ? '0' : '') + month + '-' +
+				(day < 10 ? '0' : '') + day + 'T' +
+				(hours < 10 ? '0' : '') + hours + ':' +
+				(minutes < 10 ? '0' : '') + minutes +
+				(seconds != 0 ? (seconds < 10 ? '0' : '') + seconds : '') + offset;
 		}
 	},
-	
-	Report:
-	{
+
+	Report: {
 		pdf: 'pdf',
 		xls: 'xls',
 		doc: 'doc',
 		unknown: 'unknown',
-		
+
 		acrobat: 'Acrobat Reader',
 		excel: 'Microsoft Excel',
 		word: 'Microsoft Word',
-		
+
 		acrobatIcon: 'silk-page-white-acrobat',
 		excelIcon: 'silk-page-excel',
 		wordIcon: 'silk-page-word',
 		unknownIcon: 'silk-page',
-		
+
 		icons: {},
 		names: {}
 	},
-	
-	decode: function(value, serverType)
-	{
+
+	decode: function(value, serverType) {
 		var format = Z8.Types.dateFormat(serverType);
 		return format != null ? (!Ext.isEmpty(value) ? new Date(value) : '') : value;
 	},
-	
-	showMessages: function(title, messages)
-	{
+
+	showMessages: function(title, messages) {
 		text = '';
-		
-		if(Ext.isArray(messages))
-		{
+
+		if(Ext.isArray(messages)) {
 			for(var i = 0; i < messages.length; i++)
-			{
 				text += (i != 0 ? '<br>' : '') + messages[i];
-			}
-		}
-		else
-		{
+		} else
 			text = messages;
-		}
-		
+
 		if(Z8.isEmpty(text))
-		{
 			return;
-		}
-		
+
 		if(Z8.messagesContainer == null)
-		{
 			Z8.messagesContainer = Ext.DomHelper.insertFirst(document.body, { id: 'x-messages-container' }, true);
-		}
-		
+
 		Z8.messagesContainer.alignTo(document, 't-t');
-		
+
 		var boxMarkup = ['<div class="msg">',
 			'<div class="x-box-tl"><div class="x-box-tr"><div class="x-box-tc"></div></div></div>',
 			'<div class="x-box-ml"><div class="x-box-mr"><div class="x-box-mc"><h3>', title, '</h3>', text, '</div></div></div>',
@@ -625,162 +528,139 @@ Z8.Report.icons[Z8.Report.xls] = Z8.Report.excelIcon;
 Z8.Report.icons[Z8.Report.doc] = Z8.Report.wordIcon;
 Z8.Report.icons[Z8.Report.unknown] = Z8.Report.unknownIcon;
 
-function getRequestUrl()
-{
+function getRequestUrl() {
 	var url = window.document.URL;
 	var index = url.lastIndexOf('/');
 
 	if(index != -1)
-	{
 		url = url.substring(0, index);
-	}
 
 	return url;
 }
 
-function getRequestUrlParameters()
-{
+function getRequestUrlParameters() {
 	var url = window.document.URL;
-	
+
 	var index = url.indexOf('#');
-	
+
 	if(index != -1)
-	{
 		url = url.substring(0, index);
-	}
-	
+
 	index = url.indexOf('?');
 
 	var result = {};
 
-	if(index != -1)
-	{
+	if(index != -1) {
 		var params = url.substring(index + 1).split('&');
-		
-		for(var i = 0; i < params.length; i++)
-		{
+
+		for(var i = 0; i < params.length; i++) {
 			var p = params[i].split('=');
-			
+
 			var name = p[0];
 			var value = p.length > 1 ? p[1] : '';
-			
+
 			if(!Z8.isEmpty(name))
-			{
 				result[name] = value;
-			}
 		}
 	}
 
 	return result;
 }
 
-function getRequestDomain()
-{
+function getRequestDomain() {
 	var url = window.location.hostname;
 	var index = url.lastIndexOf('www.');
 	if(index != -1)
-	{
 		url = url.substring(index+4);
-	}
-
 
 	return url;
 }
 
 function cyr2lat(str) {
+	var cyr2latChars = new Array(
+			['а', 'a'], ['б', 'b'], ['в', 'v'], ['г', 'g'],
+			['д', 'd'],  ['е', 'e'], ['ё', 'yo'], ['ж', 'zh'], ['з', 'z'],
+			['и', 'i'], ['й', 'y'], ['к', 'k'], ['л', 'l'],
+			['м', 'm'],  ['н', 'n'], ['о', 'o'], ['п', 'p'],  ['р', 'r'],
+			['с', 's'], ['т', 't'], ['у', 'u'], ['ф', 'f'],
+			['х', 'h'],  ['ц', 'c'], ['ч', 'ch'],['ш', 'sh'], ['щ', 'shch'],
+			['ъ', ''],  ['ы', 'y'], ['ь', ''],  ['э', 'e'], ['ю', 'yu'], ['я', 'ya'],
 
-    var cyr2latChars = new Array(
-    		['а', 'a'], ['б', 'b'], ['в', 'v'], ['г', 'g'],
-    		['д', 'd'],  ['е', 'e'], ['ё', 'yo'], ['ж', 'zh'], ['з', 'z'],
-    		['и', 'i'], ['й', 'y'], ['к', 'k'], ['л', 'l'],
-    		['м', 'm'],  ['н', 'n'], ['о', 'o'], ['п', 'p'],  ['р', 'r'],
-    		['с', 's'], ['т', 't'], ['у', 'u'], ['ф', 'f'],
-    		['х', 'h'],  ['ц', 'c'], ['ч', 'ch'],['ш', 'sh'], ['щ', 'shch'],
-    		['ъ', ''],  ['ы', 'y'], ['ь', ''],  ['э', 'e'], ['ю', 'yu'], ['я', 'ya'],
-    		
-    		['А', 'A'], ['Б', 'B'],  ['В', 'V'], ['Г', 'G'],
-    		['Д', 'D'], ['Е', 'E'], ['Ё', 'YO'],  ['Ж', 'ZH'], ['З', 'Z'],
-    		['И', 'I'], ['Й', 'Y'],  ['К', 'K'], ['Л', 'L'],
-    		['М', 'M'], ['Н', 'N'], ['О', 'O'],  ['П', 'P'],  ['Р', 'R'],
-    		['С', 'S'], ['Т', 'T'],  ['У', 'U'], ['Ф', 'F'],
-    		['Х', 'H'], ['Ц', 'C'], ['Ч', 'CH'], ['Ш', 'SH'], ['Щ', 'SHCH'],
-    		['Ъ', ''],  ['Ы', 'Y'], ['Ь', ''], ['Э', 'E'], ['Ю', 'YU'], ['Я', 'YA'],
+			['А', 'A'], ['Б', 'B'],  ['В', 'V'], ['Г', 'G'],
+			['Д', 'D'], ['Е', 'E'], ['Ё', 'YO'],  ['Ж', 'ZH'], ['З', 'Z'],
+			['И', 'I'], ['Й', 'Y'],  ['К', 'K'], ['Л', 'L'],
+			['М', 'M'], ['Н', 'N'], ['О', 'O'],  ['П', 'P'],  ['Р', 'R'],
+			['С', 'S'], ['Т', 'T'],  ['У', 'U'], ['Ф', 'F'],
+			['Х', 'H'], ['Ц', 'C'], ['Ч', 'CH'], ['Ш', 'SH'], ['Щ', 'SHCH'],
+			['Ъ', ''],  ['Ы', 'Y'], ['Ь', ''], ['Э', 'E'], ['Ю', 'YU'], ['Я', 'YA'],
 
-    		['a', 'a'], ['b', 'b'], ['c', 'c'], ['d', 'd'], ['e', 'e'],
-    		['f', 'f'], ['g', 'g'], ['h', 'h'], ['i', 'i'], ['j', 'j'],
-    		['k', 'k'], ['l', 'l'], ['m', 'm'], ['n', 'n'], ['o', 'o'],
-    		['p', 'p'], ['q', 'q'], ['r', 'r'], ['s', 's'], ['t', 't'],
-    		['u', 'u'], ['v', 'v'], ['w', 'w'], ['x', 'x'], ['y', 'y'],
-    		['z', 'z'],
+			['a', 'a'], ['b', 'b'], ['c', 'c'], ['d', 'd'], ['e', 'e'],
+			['f', 'f'], ['g', 'g'], ['h', 'h'], ['i', 'i'], ['j', 'j'],
+			['k', 'k'], ['l', 'l'], ['m', 'm'], ['n', 'n'], ['o', 'o'],
+			['p', 'p'], ['q', 'q'], ['r', 'r'], ['s', 's'], ['t', 't'],
+			['u', 'u'], ['v', 'v'], ['w', 'w'], ['x', 'x'], ['y', 'y'],
+			['z', 'z'],
 
-    		['A', 'A'], ['B', 'B'], ['C', 'C'], ['D', 'D'],['E', 'E'],
-    		['F', 'F'],['G', 'G'],['H', 'H'],['I', 'I'],['J', 'J'],['K', 'K'],
-    		['L', 'L'], ['M', 'M'], ['N', 'N'], ['O', 'O'],['P', 'P'],
-    		['Q', 'Q'],['R', 'R'],['S', 'S'],['T', 'T'],['U', 'U'],['V', 'V'],
-    		['W', 'W'], ['X', 'X'], ['Y', 'Y'], ['Z', 'Z'],
+			['A', 'A'], ['B', 'B'], ['C', 'C'], ['D', 'D'],['E', 'E'],
+			['F', 'F'],['G', 'G'],['H', 'H'],['I', 'I'],['J', 'J'],['K', 'K'],
+			['L', 'L'], ['M', 'M'], ['N', 'N'], ['O', 'O'],['P', 'P'],
+			['Q', 'Q'],['R', 'R'],['S', 'S'],['T', 'T'],['U', 'U'],['V', 'V'],
+			['W', 'W'], ['X', 'X'], ['Y', 'Y'], ['Z', 'Z'],
 
-    		[' ', '-'],['0', '0'],['1', '1'],['2', '2'],['3', '3'],
-    		['4', '4'],['5', '5'],['6', '6'],['7', '7'],['8', '8'],['9', '9'],
-    		['-', '-']
-    );
+			[' ', '-'],['0', '0'],['1', '1'],['2', '2'],['3', '3'],
+			['4', '4'],['5', '5'],['6', '6'],['7', '7'],['8', '8'],['9', '9'],
+			['-', '-']
+	);
 
-    var newStr = new String();
+	var newStr = new String();
 
-    for (var i = 0; i < str.length; i++) {
+	for (var i = 0; i < str.length; i++) {
 
-        ch = str.charAt(i);
-        var newCh = '';
+		ch = str.charAt(i);
+		var newCh = '';
 
-        for (var j = 0; j < cyr2latChars.length; j++) {
-            if (ch == cyr2latChars[j][0]) {
-                newCh = cyr2latChars[j][1];
-
-            }
-        }
-        newStr += newCh;
-
-    }
-    return newStr.replace(/[-]{2,}/gim, '-').replace(/\n/gim, '');
+		for (var j = 0; j < cyr2latChars.length; j++) {
+			if (ch == cyr2latChars[j][0])
+				newCh = cyr2latChars[j][1];
+		}
+		newStr += newCh;
+	}
+	return newStr.replace(/[-]{2,}/gim, '-').replace(/\n/gim, '');
 }
 
 
 Z8.getEl = function (el, skipDeep) {
-	
-	if (Ext.isEmpty(el, false)) {
+	if(Ext.isEmpty(el, false))
 		return null;
-	}
-	if (el.isComposite) {
+	if(el.isComposite)
 		return el;
-	}
-	if (el.getEl) {
+	if(el.getEl)
 		return el.getEl();
-	}
-	if (el.el) {
+	if(el.el)
 		return el.el;
-	}
-	
+
 	var cmp = Ext.getCmp(el);
-	if (!Ext.isEmpty(cmp)) {
+	if (!Ext.isEmpty(cmp))
 		return cmp.getEl();
-	}
-	
+
 	var tEl = Ext.get(el);
+
 	if (Ext.isEmpty(tEl) && skipDeep !== true) {
 		try {
 			return Z8.getEl(eval("(" + el + ")"), true);
 		} catch (e) {}
 	}
-	
+
 	return tEl;
 };
 
 Z8.clone = function (o) {
-	if (!o || "object" !== typeof o) {
+	if (!o || "object" !== typeof o)
 		return o;
-	}
-	var c = "[object Array]" === Object.prototype.toString.call(o) ? [] : {},
-		p, v;
-	for (p in o) {
+
+	var c = "[object Array]" === Object.prototype.toString.call(o) ? [] : {}, p, v;
+
+	for(p in o) {
 		if (o.hasOwnProperty(p)) {
 			v = o[p];
 			c[p] = (v && "object" === typeof v) ? Z8.clone(v) : v;
@@ -790,14 +670,14 @@ Z8.clone = function (o) {
 };
 
 Z8.ProxyDDCreator = function (config) {
-	
+
 	Z8.ProxyDDCreator.superclass.constructor.call(this, config);
-    
-    this.config = config || {};
+
+	this.config = config || {};
 
 	if (!Ext.isEmpty(this.config.target, false)) {
 		var targetEl = Z8.getEl(this.config.target);
-		
+
 		if (!Ext.isEmpty(targetEl)) {
 			this.initDDControl(targetEl);
 		} else {
@@ -806,9 +686,8 @@ Z8.ProxyDDCreator = function (config) {
 				if (!Ext.isEmpty(targetEl)) {
 					this.task.cancel();
 					this.initDDControl(targetEl);
-				} else {
+				} else
 					this.task.delay(500);
-				}
 			}, this);
 			this.task.delay(1);
 		}
@@ -816,105 +695,88 @@ Z8.ProxyDDCreator = function (config) {
 };
 
 Ext.extend(Z8.ProxyDDCreator, Ext.util.Observable, {
-	
-    initDDControl: function (target) {
-        target = Z8.getEl(target);
-        if (target.isComposite) {
-            this.ddControl = [];
-            target.each(function (targetEl) {
-                this.ddControl.push(this.createControl(Ext.apply(Z8.clone(this.config), {
-                    id: Ext.id(targetEl)
-                })));
-            }, this);
-        } else {
-            this.ddControl = this.createControl(Ext.apply(Z8.clone(this.config), {
-                id: Ext.id(target)
-            }));
-        }
-    },
-    
-    createControl: function (config) {
-        var ddControl;
-        if (config.group) {
-            ddControl = new config.type(config.id, config.group, config.config);
-            Ext.apply(ddControl, config.config);
-        } else {
-            ddControl = new config.type(config.id, config.config);
-        }
-        return ddControl;
-    },
-    
-    lock: function () {
-        Ext.each(this.ddControl, function (dd) {
-            if (dd && dd.lock) {
-                dd.lock();
-            }
-        });
-    },
-    
-    unlock: function () {
-        Ext.each(this.ddControl, function (dd) {
-            if (dd && dd.unlock) {
-                dd.unlock();
-            }
-        });
-    },
-    
-    unreg: function () {
-        Ext.each(this.ddControl, function (dd) {
-            if (dd && dd.unreg) {
-                dd.unreg();
-            }
-        });
-    },
-    
-    destroy: function () {
-        Ext.each(this.ddControl, function (dd) {
-            if (dd && dd.unreg) {
-                dd.unreg();
-            }
-        });
-    }
+	initDDControl: function (target) {
+		target = Z8.getEl(target);
+		if (target.isComposite) {
+			this.ddControl = [];
+			target.each(function (targetEl) {
+				this.ddControl.push(this.createControl(Ext.apply(Z8.clone(this.config), { id: Ext.id(targetEl) })));
+			}, this);
+		} else {
+			this.ddControl = this.createControl(Ext.apply(Z8.clone(this.config), {
+				id: Ext.id(target)
+			}));
+		}
+	},
+
+	createControl: function (config) {
+		var ddControl;
+		if (config.group) {
+			ddControl = new config.type(config.id, config.group, config.config);
+			Ext.apply(ddControl, config.config);
+		} else
+			ddControl = new config.type(config.id, config.config);
+		return ddControl;
+	},
+
+	lock: function () {
+		Ext.each(this.ddControl, function (dd) {
+			if (dd && dd.lock)
+				dd.lock();
+		});
+	},
+
+	unlock: function () {
+		Ext.each(this.ddControl, function (dd) {
+			if (dd && dd.unlock) {
+				dd.unlock();
+			}
+		});
+	},
+
+	unreg: function () {
+		Ext.each(this.ddControl, function (dd) {
+			if (dd && dd.unreg)
+				dd.unreg();
+		});
+	},
+
+	destroy: function () {
+		Ext.each(this.ddControl, function (dd) {
+			if (dd && dd.unreg)
+				dd.unreg();
+		});
+	}
 });
 
-Z8.Callback = Ext.extend(Object, 
-{
+Z8.Callback = Ext.extend(Object, {
 	fn: Ext.emptyFn,
 	scope: null,
 	options: null,
-	
-	call: function()
-	{
+
+	call: function() {
 		var args = [];
-		
+
 		if(Ext.isArray(this.options))
-		{
 			args = [].concat(this.options);
-		}
 		else if(this.options != null)
-		{
 			args = [this.options];
-		}
-		
-		if(arguments != null)
-		{
+
+		if(arguments != null) {
 			for(var i = 0; i < arguments.length; i++)
-			{
 				args.push(arguments[i]);
-			}
 		}
-		
+
 		this.fn.apply(this.scope, args);
 	}
 });
 
-Z8.Callback.create = function(fn, scope, options)
-{
+Z8.Callback.create = function(fn, scope, options) {
 	var callback = new Z8.Callback();
 	callback.fn = fn;
 	callback.scope = scope;
 	callback.options = options;
-	
+
 	return callback;
 };
 
