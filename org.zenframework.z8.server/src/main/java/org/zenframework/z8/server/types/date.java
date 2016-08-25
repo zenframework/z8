@@ -1,5 +1,6 @@
 package org.zenframework.z8.server.types;
 
+import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -36,16 +37,13 @@ public final class date extends primary {
 		this(date.get());
 	}
 
-	public date(java.sql.Date date) {
-		set(date);
-	}
-
-	public date(java.sql.Timestamp datetime) {
+	public date(Timestamp datetime) {
 		set(datetime.getTime());
 	}
 
 	public date(long milliseconds) {
 		set(milliseconds);
+		nullTime();
 	}
 
 	public date(int year, int month, int day) {
@@ -135,17 +133,13 @@ public final class date extends primary {
 		set(date.get());
 	}
 
-	public void set(java.sql.Date date) {
-		set(date.getTime());
-	}
-
 	public void set(GregorianCalendar gc) {
 		set(gc.getTimeInMillis());
+		nullTime();
 	}
 
 	private void set(long milliseconds) {
 		value.setTimeInMillis(milliseconds);
-		nullTime();
 	}
 
 	public void setZoneOffset(int zoneOffset) {
@@ -169,6 +163,7 @@ public final class date extends primary {
 			} else {
 				Date date = new SimpleDateFormat(format).parse(s);
 				set(date.getTime());
+				nullTime();
 			}
 		} catch(ParseException e) {
 			throw new exception(e);

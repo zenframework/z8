@@ -4,36 +4,36 @@ import org.zenframework.z8.lang.Object;
 [native "org.zenframework.z8.server.base.json.parser.JsonObject"]
 
 public class JsonObject extends Object {
-    
+
 	public void operator = (string source);
 
-    public bool isEmpty();
-    public int length();
+	public bool isEmpty();
+	public int length();
 
-    public string[] getNames();
+	public string[] getNames();
 
-    public bool has(string name);
-    
-    public string getString(string name);
-    public int getInt(string name);
-    public decimal getDecimal(string name);
-    public bool getBool(string name);
-    public guid getGuid(string name);
-    public date getDate(string name);
-    public datetime getDatetime(string name);
-    public binary getBinary(string name);
+	public bool has(string name);
 
-    public JsonArray getJsonArray(string name);
-    public JsonObject getJsonObject(string name);
-    
-    public JsonObject put(string name, primary value);
-    public JsonObject put(string name, JsonArray value);
-    public JsonObject put(string name, JsonObject value);
-    
-    public JsonObject put(Field field);
-    
-    public JsonObject remove(string name);
-	
+	public string getString(string name);
+	public int getInt(string name);
+	public decimal getDecimal(string name);
+	public bool getBool(string name);
+	public guid getGuid(string name);
+	public date getDate(string name);
+	public datetime getDatetime(string name);
+	public binary getBinary(string name);
+
+	public JsonArray getJsonArray(string name);
+	public JsonObject getJsonObject(string name);
+
+	public JsonObject put(string name, primary value);
+	public JsonObject put(string name, JsonArray value);
+	public JsonObject put(string name, JsonObject value);
+
+	public JsonObject put(Field field);
+
+	public JsonObject remove(string name);
+
 	public string toString(int indentFactor);
 
 	public static JsonObject parse(string source);
@@ -41,5 +41,4 @@ public class JsonObject extends Object {
 	public static JsonObject fromPrimaryMap(primary[primary] map);
 	public static JsonObject fromJsonArrayMap(JsonArray[primary] map);
 	public static JsonObject fromJsonObjectMap(JsonObject[primary] map);
-
 }

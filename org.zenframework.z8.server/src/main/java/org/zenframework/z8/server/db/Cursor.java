@@ -2,7 +2,6 @@ package org.zenframework.z8.server.db;
 
 import java.io.InputStream;
 import java.math.BigDecimal;
-import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
@@ -92,18 +91,18 @@ public class Cursor {
 	}
 
 	public date getDate(int index) throws SQLException {
-		Date value = resultSet.getDate(index);
+		Timestamp value = resultSet.getTimestamp(index);
 		return value != null && !wasNull() ? new date(value) : date.MIN;
-	}
-
-	public datespan getDatespan(int index) throws SQLException {
-		integer value = getInteger(index);
-		return value != null ? new datespan(value) : null;
 	}
 
 	public datetime getDatetime(int index) throws SQLException {
 		Timestamp value = resultSet.getTimestamp(index);
 		return value != null && !wasNull() ? new datetime(value) : datetime.MIN;
+	}
+
+	public datespan getDatespan(int index) throws SQLException {
+		integer value = getInteger(index);
+		return value != null ? new datespan(value) : null;
 	}
 
 	public decimal getDecimal(int index) throws SQLException {
