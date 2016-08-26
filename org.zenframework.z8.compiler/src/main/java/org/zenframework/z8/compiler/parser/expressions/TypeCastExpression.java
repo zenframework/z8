@@ -53,9 +53,8 @@ public class TypeCastExpression extends LanguageElement {
 
 	@Override
 	public boolean checkSemantics(CompilationUnit compilationUnit, IType declaringType, IMethod declaringMethod, IVariable leftHandValue, IVariableType context) {
-		if(!super.checkSemantics(compilationUnit, declaringType, declaringMethod, null, null) || !expression.checkSemantics(compilationUnit, declaringType, declaringMethod, null, null) || !variableType.checkSemantics(compilationUnit, declaringType, declaringMethod, null, null)) {
+		if(!super.checkSemantics(compilationUnit, declaringType, declaringMethod, null, null) || !expression.checkSemantics(compilationUnit, declaringType, declaringMethod, null, null) || !variableType.checkSemantics(compilationUnit, declaringType, declaringMethod, null, null))
 			return false;
-		}
 
 		typeCast = expression.getVariableType().getCastTo(variableType);
 

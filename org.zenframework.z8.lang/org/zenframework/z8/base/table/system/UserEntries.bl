@@ -2,16 +2,14 @@ import org.zenframework.z8.base.table.Table;
 import org.zenframework.z8.base.table.value.Link;
 import org.zenframework.z8.base.table.value.IntegerField;
 
-[native "org.zenframework.z8.server.base.table.system.UserEntries"] 
-
 [name "SystemUserEntries"]
-public class UserEntries extends Table
-{
+[native "org.zenframework.z8.server.base.table.system.UserEntries"] 
+public class UserEntries extends Table {
 	readOnly = true;
 
 	public Users users;
 	public Entries entries;
-	
+
 	[name "UserId"]
 	public Link user = users;
 

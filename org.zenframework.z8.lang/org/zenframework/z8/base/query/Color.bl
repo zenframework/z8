@@ -2,8 +2,7 @@
 
 // http://www.w3schools.com/html/html_colornames.asp
 
-enum Color
-{
+enum Color {
 	AliceBlue,
 	AntiqueWhite,
 	Aqua,

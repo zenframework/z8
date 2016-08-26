@@ -32,10 +32,8 @@ public class MemberNestedType extends AbstractType implements IInitializer {
 
 	@Override
 	public IPosition getSourceRange() {
-		if(body != null) {
+		if(body != null)
 			return name.getSourceRange().union(body.getSourceRange());
-		}
-
 		return name.getSourceRange();
 	}
 
@@ -82,11 +80,7 @@ public class MemberNestedType extends AbstractType implements IInitializer {
 		setUserName(name.toString());
 		setJavaName(compilationUnit.createUniqueName());
 
-		if(body != null) {
-			return body.resolveTypes(compilationUnit, this);
-		}
-
-		return true;
+		return body != null ? body.resolveTypes(compilationUnit, this) : true;
 	}
 
 	@Override
@@ -127,9 +121,8 @@ public class MemberNestedType extends AbstractType implements IInitializer {
 
 	@Override
 	public boolean resolveNestedTypes(CompilationUnit compilationUnit, IType declaringType) {
-		if(nestedTypesResolved()) {
+		if(nestedTypesResolved())
 			return true;
-		}
 
 		setNestedTypesResolved(true);
 
@@ -157,31 +150,26 @@ public class MemberNestedType extends AbstractType implements IInitializer {
 	}
 
 	private IType findBaseType(IType type, int index) {
-		if(type == null) {
+		if(type == null)
 			return null;
-		}
 
 		String nameStr = name.toString(index);
 
 		IType result = type.getNestedType(nameStr);
 
-		if(result != null && result != this) {
+		if(result != null && result != this)
 			return result;
-		}
 
-		if(type.getBaseType() != null) {
+		if(type.getBaseType() != null)
 			return findBaseType(type.getBaseType(), index);
-		}
 
-		if(index == name.getTokenCount()) {
+		if(index == name.getTokenCount())
 			return name.getVariableType(index - 1).getType();
-		}
 
 		IVariableType variableType = name.getVariableType(index);
 
-		if(variableType != null) {
+		if(variableType != null)
 			return findBaseType(variableType.getType(), index + 1);
-		}
 
 		return null;
 	}
@@ -199,9 +187,8 @@ public class MemberNestedType extends AbstractType implements IInitializer {
 
 		codeGenerator.incrementIndent();
 
-		if(!extendsPrimary()) {
+		if(!extendsPrimary())
 			generateClassCode(codeGenerator);
-		}
 
 		body.getCode(codeGenerator);
 
@@ -246,9 +233,7 @@ public class MemberNestedType extends AbstractType implements IInitializer {
 	public void replaceTypeName(TextEdit parent, IType type, String newTypeName) {
 		super.replaceTypeName(parent, type, newTypeName);
 
-		if(body != null) {
+		if(body != null)
 			body.replaceTypeName(parent, type, newTypeName);
-		}
 	}
-
 }

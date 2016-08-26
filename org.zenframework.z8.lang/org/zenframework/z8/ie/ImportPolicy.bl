@@ -1,14 +1,5 @@
 [native "org.zenframework.z8.server.ie.ImportPolicy"]
 enum ImportPolicy {
-
-	/**
-	 * Если импортируемая запись существует, не менять
-	 */
 	KEEP,
-	
-	/**
-	 * Если импортируемая запись существует, обновить
-	 */
 	OVERRIDE
-	
 }

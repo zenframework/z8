@@ -1,12 +1,9 @@
 import org.zenframework.z8.base.table.Table;
 
-[native "org.zenframework.z8.server.base.table.system.SecurityGroups"]
-
 [name "SystemSecurityGroups"]
-class SecurityGroups extends Table
-{
-	records
-	{
+[native "org.zenframework.z8.server.base.table.system.SecurityGroups"]
+class SecurityGroups extends Table {
+	records {
 		[name "Администраторы"]
 		[description "Администраторы"]
 		Administators = 'DC08CA72-C668-412F-91B7-022F1C82AC09';

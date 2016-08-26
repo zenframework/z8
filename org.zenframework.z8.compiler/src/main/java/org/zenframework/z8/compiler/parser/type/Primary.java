@@ -101,11 +101,10 @@ public class Primary {
 	public static IType resolveType(CompilationUnit compilationUnit, String name) {
 		IType type = compilationUnit.resolveType(name);
 
-		if(type == null) {
+		if(type == null)
 			compilationUnit.error(compilationUnit.getType().getPosition(), name + " cannot be resolved to a type");
-		} else {
+		else
 			compilationUnit.addContributor(type.getCompilationUnit());
-		}
 
 		return type;
 	}

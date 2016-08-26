@@ -35,9 +35,8 @@ public class DefaultBuildMessageConsumer implements IBuildMessageConsumer {
 	public void report(Resource resource, BuildMessage[] messages) {
 		clearMessages(resource);
 
-		for(BuildMessage message : messages) {
+		for(BuildMessage message : messages)
 			consume(message);
-		}
 	}
 
 	@Override

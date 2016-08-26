@@ -126,9 +126,8 @@ public class UnaryExpression extends LanguageElement {
 
 		codeGenerator.append('.');
 
-		if(typeCast.getTarget().isReference()) {
+		if(typeCast.getTarget().isReference())
 			codeGenerator.append("get().");
-		}
 
 		codeGenerator.append(operator.getJavaName() + "()");
 	}

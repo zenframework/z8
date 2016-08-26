@@ -1,5 +1,4 @@
 [native "org.zenframework.z8.server.base.table.value.GuidField"]
-
 class GuidField extends Field {
 	virtual public guid getDefault();				// default guid.NULL
 	public void setDefault(guid defaultValue);

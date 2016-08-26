@@ -32,16 +32,14 @@ public class IfStatement extends LanguageElement implements IStatement {
 
 		this.ifStatement.setParent(this);
 
-		if(this.elseStatement != null) {
+		if(this.elseStatement != null)
 			this.elseStatement.setParent(this);
-		}
 	}
 
 	@Override
 	public IPosition getSourceRange() {
-		if(elseStatement != null) {
+		if(elseStatement != null)
 			return ifToken.getPosition().union(elseStatement.getSourceRange());
-		}
 		return ifToken.getPosition().union(ifStatement.getSourceRange());
 	}
 
@@ -92,9 +90,8 @@ public class IfStatement extends LanguageElement implements IStatement {
 
 		ifStatement.resolveNestedTypes(compilationUnit, declaringType);
 
-		if(elseStatement != null) {
+		if(elseStatement != null)
 			elseStatement.resolveNestedTypes(compilationUnit, declaringType);
-		}
 
 		return true;
 	}
@@ -118,9 +115,8 @@ public class IfStatement extends LanguageElement implements IStatement {
 	public void getClassCode(CodeGenerator codeGenerator) {
 		ifStatement.getClassCode(codeGenerator);
 
-		if(elseStatement != null) {
+		if(elseStatement != null)
 			elseStatement.getClassCode(codeGenerator);
-		}
 	}
 
 	@Override
@@ -143,9 +139,8 @@ public class IfStatement extends LanguageElement implements IStatement {
 		if(!braces)
 			codeGenerator.decrementIndent();
 
-		if(elseStatement == null) {
+		if(elseStatement == null)
 			return;
-		}
 
 		braces = elseStatement instanceof CompoundStatement;
 
@@ -176,9 +171,7 @@ public class IfStatement extends LanguageElement implements IStatement {
 
 		ifStatement.replaceTypeName(parent, type, newTypeName);
 
-		if(elseStatement != null) {
+		if(elseStatement != null)
 			elseStatement.replaceTypeName(parent, type, newTypeName);
-		}
 	}
-
 }

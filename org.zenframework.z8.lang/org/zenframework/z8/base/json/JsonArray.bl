@@ -2,9 +2,7 @@ import org.zenframework.z8.lang.Object;
 import org.zenframework.z8.base.json.JsonObject;
 
 [native "org.zenframework.z8.server.base.json.parser.JsonArray"]
-
 public class JsonArray extends Object {
-
 	public void operator = (string source);
 	public void operator = (primary[] source);
 

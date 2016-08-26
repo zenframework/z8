@@ -48,13 +48,12 @@ public class TypeBody extends LanguageElement {
 
 	@Override
 	public IPosition getSourceRange() {
-		if(rightBrace != null) {
+		if(rightBrace != null)
 			return leftBrace.getPosition().union(rightBrace.getPosition());
-		} else if(bottomMemberSourceRange != null) {
+		else if(bottomMemberSourceRange != null)
 			return leftBrace.getPosition().union(bottomMemberSourceRange);
-		} else {
+		else
 			return leftBrace.getPosition();
-		}
 	}
 
 	@Override
@@ -63,16 +62,14 @@ public class TypeBody extends LanguageElement {
 	}
 
 	public ILanguageElement[] getMembers() {
-		if(members == null) {
+		if(members == null)
 			return new ILanguageElement[0];
-		}
 		return members.toArray(new ILanguageElement[members.size()]);
 	}
 
 	public void addMember(ILanguageElement member) {
-		if(members == null) {
+		if(members == null)
 			members = new ArrayList<ILanguageElement>();
-		}
 
 		members.add(member);
 
@@ -80,20 +77,18 @@ public class TypeBody extends LanguageElement {
 	}
 
 	private void rearrangeMembers() {
-		if(members == null) {
+		if(members == null)
 			return;
-		}
 
 		List<ILanguageElement> declarators = new ArrayList<ILanguageElement>();
 
 		int index = 0;
 
 		while(index < members.size()) {
-			if(members.get(index) instanceof Member) {
+			if(members.get(index) instanceof Member)
 				declarators.add(members.remove(index));
-			} else {
+			else
 				index++;
-			}
 		}
 
 		members.addAll(0, declarators);
@@ -108,9 +103,8 @@ public class TypeBody extends LanguageElement {
 
 		ILanguageElement[] members = getMembers();
 
-		for(ILanguageElement member : members) {
+		for(ILanguageElement member : members)
 			member.resolveTypes(compilationUnit, declaringType);
-		}
 
 		return true;
 	}
@@ -122,9 +116,8 @@ public class TypeBody extends LanguageElement {
 
 		ILanguageElement[] members = getMembers();
 
-		for(ILanguageElement member : members) {
+		for(ILanguageElement member : members)
 			member.resolveStructure(compilationUnit, declaringType);
-		}
 
 		return true;
 	}
@@ -144,9 +137,8 @@ public class TypeBody extends LanguageElement {
 
 				IVariableType[] parameters = operator.getParameterTypes();
 
-				if(operator.isKindOf(IToken.ASSIGN) && parameters.length == 1 && parameters[0].compare(new VariableType(compilationUnit, declaringType))) {
+				if(operator.isKindOf(IToken.ASSIGN) && parameters.length == 1 && parameters[0].compare(new VariableType(compilationUnit, declaringType)))
 					assignOperator = operator;
-				}
 			}
 		}
 
@@ -165,9 +157,8 @@ public class TypeBody extends LanguageElement {
 
 		ILanguageElement[] members = getMembers();
 
-		for(ILanguageElement member : members) {
+		for(ILanguageElement member : members)
 			member.resolveNestedTypes(compilationUnit, declaringType);
-		}
 
 		initializers = new ArrayList<IInitializer>();
 		getReferences(getDeclaringType(), initializers);
@@ -181,29 +172,24 @@ public class TypeBody extends LanguageElement {
 		ILanguageElement[] members = getMembers();
 
 		for(ILanguageElement member : members) {
-			if(!(member instanceof IMethod)) {
+			if(!(member instanceof IMethod))
 				member.getCode(codeGenerator);
-			}
 		}
 
-		if(getDeclaringType().getContainerType() == null) {
+		if(getDeclaringType().getContainerType() == null)
 			getStaticBlock(codeGenerator);
-		}
 
-		if(getDeclaringType().getContainerType() == null) {
+		if(getDeclaringType().getContainerType() == null)
 			getStaticConstructor(codeGenerator);
-		}
 
-		if(getDeclaringType().extendsPrimary()) {
+		if(getDeclaringType().extendsPrimary())
 			getPrimaryTypeConstructor(codeGenerator);
-		} else {
+		else
 			getReferenceTypeConstructor(codeGenerator);
-		}
 
 		for(ILanguageElement member : members) {
-			if(member instanceof IMethod) {
+			if(member instanceof IMethod)
 				member.getCode(codeGenerator);
-			}
 		}
 	}
 
@@ -221,9 +207,8 @@ public class TypeBody extends LanguageElement {
 
 		ILanguageElement[] members = getMembers();
 
-		for(ILanguageElement member : members) {
+		for(ILanguageElement member : members)
 			member.getStaticBlock(codeGenerator);
-		}
 
 		codeGenerator.indent();
 		codeGenerator.append("staticConstructor();");
@@ -250,9 +235,8 @@ public class TypeBody extends LanguageElement {
 
 		ILanguageElement[] members = getMembers();
 
-		for(ILanguageElement member : members) {
+		for(ILanguageElement member : members)
 			member.getStaticConstructor(codeGenerator);
-		}
 
 		codeGenerator.decrementIndent();
 
@@ -339,30 +323,26 @@ public class TypeBody extends LanguageElement {
 	private void getConstructorBody(CodeGenerator codeGenerator) {
 		ILanguageElement[] members = getMembers();
 
-		for(ILanguageElement member : members) {
+		for(ILanguageElement member : members)
 			member.getConstructor(codeGenerator);
-		}
 	}
 
 	private void getReferences(IType type, List<IInitializer> references) {
-		if(type.getBaseType() != null) {
+		if(type.getBaseType() != null)
 			getReferences(type.getBaseType(), references);
-		}
 
 		IInitializer[] initializers = type.getInitializers();
 
 		for(IInitializer initializer : initializers) {
 			ILanguageElement rightElement = initializer.getRightElement();
 
-			if(rightElement == null) {
+			if(rightElement == null)
 				continue;
-			}
 
 			IToken operator = initializer.getOperator();
 
-			if(operator == null || operator.getId() != IToken.ASSIGN || !rightElement.isQualifiedName() && !rightElement.isOperatorNew()) {
+			if(operator == null || operator.getId() != IToken.ASSIGN || !rightElement.isQualifiedName() && !rightElement.isOperatorNew())
 				continue;
-			}
 
 			String leftName = initializer.getLeftName();
 
@@ -371,20 +351,17 @@ public class TypeBody extends LanguageElement {
 
 				String name = references.get(index).getLeftName();
 
-				if(initializer instanceof IType && !(reference instanceof IType) || reference instanceof IType && !(initializer instanceof IType)) {
+				if(initializer instanceof IType && !(reference instanceof IType) || reference instanceof IType && !(initializer instanceof IType))
 					continue;
-				}
 
-				if(name.equals(leftName) || name.startsWith(leftName + ".")) {
+				if(name.equals(leftName) || name.startsWith(leftName + "."))
 					references.remove(index);
-				}
 			}
 		}
 
 		for(IInitializer initializer : initializers) {
-			if(initializer.getVariableType().isReference() && initializer.getRightElement() != null) {
+			if(initializer.getVariableType().isReference() && initializer.getRightElement() != null)
 				references.add(initializer);
-			}
 		}
 	}
 
@@ -404,14 +381,12 @@ public class TypeBody extends LanguageElement {
 		while(true) {
 			int index = 0;
 			for(; index < initializers.size(); index++) {
-				if(checked.get(index) == null) {
+				if(checked.get(index) == null)
 					break;
-				}
 			}
 
-			if(index == initializers.size()) {
+			if(index == initializers.size())
 				return;
-			}
 
 			String rightName = initializers.get(index).getRightName();
 
@@ -528,9 +503,8 @@ public class TypeBody extends LanguageElement {
 	@Override
 	public void replaceTypeName(TextEdit parent, IType type, String newTypeName) {
 		ILanguageElement[] members = getMembers();
-		for(ILanguageElement element : members) {
+		for(ILanguageElement element : members)
 			element.replaceTypeName(parent, type, newTypeName);
-		}
 	}
 
 }

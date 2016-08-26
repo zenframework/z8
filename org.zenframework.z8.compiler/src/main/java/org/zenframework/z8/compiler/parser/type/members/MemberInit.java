@@ -68,16 +68,14 @@ public class MemberInit extends Initialization implements IInitializer {
 
 	@Override
 	public boolean equals(Object object) {
-		if(this == object) {
+		if(this == object)
 			return true;
-		}
 
 		if(object instanceof MemberInit) {
 			MemberInit memberInit = (MemberInit)object;
 
-			if(getDeclaringType().equals(memberInit.getDeclaringType())) {
+			if(getDeclaringType().equals(memberInit.getDeclaringType()))
 				return getLeftName().equals(memberInit.getLeftName());
-			}
 		}
 
 		return false;
@@ -88,9 +86,8 @@ public class MemberInit extends Initialization implements IInitializer {
 		if(!super.checkSemantics(compilationUnit, declaringType, declaringMethod, null, null))
 			return false;
 
-		if(getAttributes().length != 0 && !getVariableType().isReference()) {
+		if(getAttributes().length != 0 && !getVariableType().isReference())
 			setError(getLeftElement().getPosition(), "Attributes cannot be applied to variables of a primary type");
-		}
 
 		IInitializer initializer = declaringType.findInitializer(getName());
 
@@ -98,42 +95,10 @@ public class MemberInit extends Initialization implements IInitializer {
 			if(declaringType.equals(initializer.getDeclaringType())) {
 				setError(initializer.getLeftElement().getPosition(), "Duplicate initialization of " + initializer.getLeftName() + " in type " + declaringType.getUserName());
 				setError(getLeftElement().getPosition(), "Duplicate initialization of " + initializer.getLeftName() + " in type " + declaringType.getUserName());
-			}
-			/*
-			 * else if(initializer.getVariableType().isArray() &&
-			 * getOperator().getId() == IToken.ASSIGN) { setError(getPosition(),
-			 * "Array initialization conflicts with one in type " +
-			 * initializer.getDeclaringType().getUserName() +
-			 * "; use += instead"); }
-			 */
-			else {
+			} else
 				declaringType.addInitializer(this);
-			}
-		}
-		/*
-		 * else if(getVariableType().isArray() && getOperator() != null &&
-		 * getOperator().getId() == IToken.ASSIGN) { QualifiedName qualifiedName
-		 * = (QualifiedName)getLeftElement();
-		 * 
-		 * IToken[] tokens = qualifiedName.getTokens();
-		 * 
-		 * for(int i = 0; i < tokens.length - 1; i++) { String name =
-		 * qualifiedName.toString(i + 1);
-		 * 
-		 * initializer =
-		 * qualifiedName.getVariableType(i).getType().findInitializer(name);
-		 * 
-		 * if(initializer != null && initializer.getVariableType().isArray()) {
-		 * setError(getPosition(),
-		 * "Array initialization conflicts with one in type " +
-		 * initializer.getDeclaringType().getUserName() + "; use += instead");
-		 * return true; } }
-		 * 
-		 * declaringType.addInitializer(this); }
-		 */
-		else {
+		} else
 			declaringType.addInitializer(this);
-		}
 
 		return true;
 	}

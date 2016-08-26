@@ -57,9 +57,8 @@ public class PriorityOperator extends AbstractMethod {
 		if(!super.resolveStructure(compilationUnit, declaringType))
 			return false;
 
-		if(getParametersCount() != 0) {
+		if(getParametersCount() != 0)
 			setError(getPosition(), "Priority operator must not have parameter(s)");
-		}
 
 		return true;
 	}

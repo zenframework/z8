@@ -105,18 +105,16 @@ public class TernaryExpression extends LanguageElement {
 		conditionTypeCast.getCode(codeGenerator, condition);
 		codeGenerator.append(".get() ? ");
 
-		if(leftToRightTypeCast != null) {
+		if(leftToRightTypeCast != null)
 			leftToRightTypeCast.getCode(codeGenerator, left);
-		} else {
+		else
 			left.getCode(codeGenerator);
-		}
 
 		codeGenerator.append(" : ");
 
-		if(rightToLeftTypeCast != null) {
+		if(rightToLeftTypeCast != null)
 			rightToLeftTypeCast.getCode(codeGenerator, right);
-		} else {
+		else
 			right.getCode(codeGenerator);
-		}
 	}
 }

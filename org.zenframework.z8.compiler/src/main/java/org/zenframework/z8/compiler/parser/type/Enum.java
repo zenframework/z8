@@ -34,26 +34,23 @@ public class Enum extends AbstractType {
 	public IPosition getSourceRange() {
 		IPosition start = super.getSourceRange();
 
-		if(start == null) {
+		if(start == null)
 			start = enumToken.getPosition();
-		}
 
-		if(rightBrace != null) {
+		if(rightBrace != null)
 			return start.union(rightBrace.getPosition());
-		} else if(values != null) {
+		else if(values != null)
 			return start.union(values.get(values.size() - 1).getSourceRange());
-		} else if(nameToken != null) {
+		else if(nameToken != null)
 			return start.union(nameToken.getPosition());
-		} else {
+		else
 			return start;
-		}
 	}
 
 	@Override
 	public IPosition getPosition() {
-		if(nameToken != null) {
+		if(nameToken != null)
 			return enumToken.getPosition().union(nameToken.getPosition());
-		}
 		return enumToken.getPosition();
 	}
 
@@ -68,7 +65,6 @@ public class Enum extends AbstractType {
 	}
 
 	public void setNameToken(IToken nameToken) {
-
 		this.nameToken = nameToken;
 		super.setUserName(nameToken.getRawText());
 	}
@@ -82,9 +78,8 @@ public class Enum extends AbstractType {
 	}
 
 	public void addElement(IToken name) {
-		if(values == null) {
+		if(values == null)
 			values = new ArrayList<EnumElement>();
-		}
 		values.add(new EnumElement(name));
 	}
 
@@ -180,9 +175,8 @@ public class Enum extends AbstractType {
 			return false;
 
 		if(values != null) {
-			for(EnumElement value : values) {
+			for(EnumElement value : values)
 				value.resolveStructure(compilationUnit, this);
-			}
 		}
 
 		return true;
@@ -200,9 +194,8 @@ public class Enum extends AbstractType {
 		codeGenerator.incrementIndent();
 
 		if(values != null) {
-			for(EnumElement value : values) {
+			for(EnumElement value : values)
 				value.getCode(codeGenerator);
-			}
 		}
 
 		codeGenerator.decrementIndent();

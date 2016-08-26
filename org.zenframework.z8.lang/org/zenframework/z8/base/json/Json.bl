@@ -3,7 +3,6 @@ import org.zenframework.z8.base.table.value.Field;
 
 [native "org.zenframework.z8.server.base.json.Json"]
 public class Json extends Object {
-
 	static public string eventId;
 
 	static public string id;

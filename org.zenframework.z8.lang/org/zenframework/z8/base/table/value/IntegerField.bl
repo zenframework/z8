@@ -1,5 +1,4 @@
 [native "org.zenframework.z8.server.base.table.value.IntegerField"]
-
 class IntegerField extends Field {
 	aggregation = Aggregation.Sum;
 
@@ -13,7 +12,6 @@ class IntegerField extends Field {
 	public operator sql_int();
 
 	virtual public int get();
-	
+
 	public IntegerField operator = (int value);
-	
 }

@@ -16,7 +16,6 @@ import org.zenframework.z8.base.table.value.StringField;
 import org.zenframework.z8.base.table.value.StringExpression;
 
 [native "org.zenframework.z8.server.db.sql.functions.SqlFunctions"]
-
 class Sql {
 	/**
 	* Алгоритм работы IIF(sql_bool value, sql_type1 yes, sql_type1 no)

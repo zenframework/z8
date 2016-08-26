@@ -40,9 +40,9 @@ public class QualifiedName extends LanguageElement {
 	public IPosition getSourceRange() {
 		IPosition position = tokens.get(0).getPosition();
 
-		for(int i = 1; i < tokens.size(); i++) {
+		for(int i = 1; i < tokens.size(); i++)
 			position = position.union(tokens.get(i).getPosition());
-		}
+
 		return position;
 	}
 
@@ -57,10 +57,7 @@ public class QualifiedName extends LanguageElement {
 	}
 
 	public IVariableType getVariableType(int index) {
-		if(variableTypes != null) {
-			return variableTypes.get(index);
-		}
-		return null;
+		return variableTypes != null ? variableTypes.get(index) : null;
 	}
 
 	public int getTokenCount() {
@@ -105,9 +102,8 @@ public class QualifiedName extends LanguageElement {
 
 		count = count == -1 ? tokens.size() : count;
 
-		for(int i = index; i < count; i++) {
+		for(int i = index; i < count; i++)
 			name += (i == index ? "" : ".") + tokens.get(i).getRawText();
-		}
 
 		return name;
 	}
@@ -147,9 +143,8 @@ public class QualifiedName extends LanguageElement {
 			if(variable == null && declaringType != null) {
 				variable = declaringType.findMember(name);
 
-				if(variable != null && getStaticContext() && !((IMember)variable).isStatic()) {
+				if(variable != null && getStaticContext() && !((IMember)variable).isStatic())
 					setError(nameToken.getPosition(), "Cannot make a static reference to the non-static member " + name);
-				}
 			}
 
 			if(variable == null) {
@@ -171,9 +166,8 @@ public class QualifiedName extends LanguageElement {
 				if(variable instanceof IMember) {
 					IMember member = (IMember)variable;
 
-					if(member.getDeclaringType() != declaringType && member.isPrivate()) {
+					if(member.getDeclaringType() != declaringType && member.isPrivate())
 						setError(nameToken.getPosition(), "The member " + member.getDeclaringType().getUserName() + '.' + name + " is not visible");
-					}
 				}
 
 				variableType = variable.getVariableType();
@@ -204,20 +198,17 @@ public class QualifiedName extends LanguageElement {
 				return false;
 			}
 
-			if(!variableType.isStatic() && member.isStatic()) {
+			if(!variableType.isStatic() && member.isStatic())
 				setWarning(nameToken.getPosition(), "The static member " + variableType.getSignature() + '.' + name + " should be accessed in a static way");
-			}
 
 			IType memberDeclaringType = member.getDeclaringType();
 
 			if(memberDeclaringType != declaringType) {
 				if(declaringType == null) {
-					if(!member.isPublic()) {
+					if(!member.isPublic())
 						setError(nameToken.getPosition(), "The member " + memberDeclaringType.getUserName() + '.' + name + " is not visible");
-					}
-				} else if(member.isPrivate() && !memberDeclaringType.hasPrivateAccess(declaringType) || member.isProtected() && !memberDeclaringType.hasProtectedAccess(declaringType)) {
+				} else if(member.isPrivate() && !memberDeclaringType.hasPrivateAccess(declaringType) || member.isProtected() && !memberDeclaringType.hasProtectedAccess(declaringType))
 					setError(nameToken.getPosition(), "The member " + memberDeclaringType.getUserName() + '.' + name + " is not visible");
-				}
 			}
 
 			variableType = member.getVariableType();
@@ -240,17 +231,15 @@ public class QualifiedName extends LanguageElement {
 				if(staticType != null) {
 					codeGenerator.getCompilationUnit().importType(staticType);
 					codeGenerator.append(staticType.getJavaName());
-				} else {
+				} else
 					codeGenerator.append(tokens.get(0).getRawText());
-				}
 			} else {
 				IVariableType variableType = variableTypes.get(i - 1);
 
 				codeGenerator.append('.');
 
-				if(variableType.isReference() && !variableType.isStatic()) {
+				if(variableType.isReference() && !variableType.isStatic())
 					codeGenerator.append("get(" + getDeclaringType().getConstructionStage() + ").");
-				}
 
 				codeGenerator.append(tokens.get(i).getRawText());
 			}

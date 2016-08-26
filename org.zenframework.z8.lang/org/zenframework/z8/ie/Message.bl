@@ -7,7 +7,7 @@ class Message extends Object {
 
 	virtual protected void beforeExport();
 	virtual protected void afterExport();
-	
+
 	public string getAddress();
 	public void setAddress(string address);
 

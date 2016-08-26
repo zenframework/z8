@@ -64,9 +64,8 @@ public class DeclaratorNestedType extends AbstractType {
 			return false;
 		}
 
-		if(body != null) {
+		if(body != null)
 			body.resolveTypes(compilationUnit, this);
-		}
 
 		return true;
 	}
@@ -116,9 +115,8 @@ public class DeclaratorNestedType extends AbstractType {
 
 		codeGenerator.incrementIndent();
 
-		if(!extendsPrimary()) {
+		if(!extendsPrimary())
 			generateClassCode(codeGenerator);
-		}
 
 		body.getCode(codeGenerator);
 
@@ -160,8 +158,7 @@ public class DeclaratorNestedType extends AbstractType {
 
 		declarator.replaceTypeName(parent, type, newTypeName);
 
-		if(body != null) {
+		if(body != null)
 			body.replaceTypeName(parent, type, newTypeName);
-		}
 	}
 }

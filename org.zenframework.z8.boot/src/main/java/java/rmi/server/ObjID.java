@@ -35,12 +35,12 @@ public final class ObjID implements Serializable {
 	}
 
 	public boolean equals(Object obj) {
-        if (obj instanceof ObjID) {
-            ObjID id = (ObjID) obj;
-            return objNum == id.objNum;
-        }
+		if (obj instanceof ObjID) {
+			ObjID id = (ObjID) obj;
+			return objNum == id.objNum;
+		}
 
-        return false;
+		return false;
 	}
 
 	public String toString() {

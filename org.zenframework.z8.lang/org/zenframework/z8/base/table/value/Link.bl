@@ -4,6 +4,6 @@ import org.zenframework.z8.base.query.Query;
 [foreignKey true]
 class Link extends GuidField {
 	Join join = Join.Left;
-	
+
 	public void operator = (Query data);
 }

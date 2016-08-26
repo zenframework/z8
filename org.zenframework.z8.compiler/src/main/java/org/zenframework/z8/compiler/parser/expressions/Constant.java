@@ -40,10 +40,7 @@ public class Constant extends LanguageElement {
 
 	@Override
 	public IVariableType getVariableType() {
-		if(type != null) {
-			return new VariableType(getCompilationUnit(), type);
-		}
-		return null;
+		return type != null ? new VariableType(getCompilationUnit(), type) : null;
 	}
 
 	@Override

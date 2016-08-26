@@ -2,12 +2,10 @@ import org.zenframework.z8.lang.Object;
 
 [native "org.zenframework.z8.server.base.table.system.Property"]
 class Property extends Object {
-
 	public string key();
 	public string description();
 	public string defaultValue();
 
 	public static Property getProperty(primary[] idKeyValueDesc);
 	public static Property getProperty(guid id, string key, primary defaultValue, string description);
-
 }

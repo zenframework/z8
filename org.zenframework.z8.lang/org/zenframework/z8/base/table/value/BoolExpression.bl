@@ -1,5 +1,4 @@
 [native "org.zenframework.z8.server.base.table.value.BoolExpression"]
-
 class BoolExpression extends Expression {
 	width = 5; 
 	stretch = false;
@@ -9,10 +8,10 @@ class BoolExpression extends Expression {
 	virtual public bool get();
 
 	public BoolExpression operator = (bool value);
-	
+
 	public operator sql_bool();
 
 	virtual protected sql_bool expression();
-	
+
 	public void setExpression(sql_bool expression);
 }

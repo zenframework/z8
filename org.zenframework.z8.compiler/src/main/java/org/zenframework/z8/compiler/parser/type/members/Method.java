@@ -24,9 +24,8 @@ public class Method extends AbstractMethod implements IMethod {
 
 	@Override
 	public IPosition getNamePosition() {
-		if(nameToken == null) {
+		if(nameToken == null)
 			return null;
-		}
 		return nameToken.getPosition();
 	}
 

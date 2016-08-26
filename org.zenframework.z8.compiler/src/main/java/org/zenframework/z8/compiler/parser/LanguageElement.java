@@ -51,9 +51,8 @@ public abstract class LanguageElement implements ILanguageElement {
 	@Override
 	public IAttribute getAttribute(String name) {
 		for(IAttribute attribute : attributes) {
-			if(attribute.getName().equals(name)) {
+			if(attribute.getName().equals(name))
 				return attribute;
-			}
 		}
 		return null;
 	}
@@ -62,9 +61,8 @@ public abstract class LanguageElement implements ILanguageElement {
 	public void setAttributes(IAttribute[] attributes) {
 		this.attributes = attributes;
 
-		for(IAttribute attribute : this.attributes) {
+		for(IAttribute attribute : this.attributes)
 			attribute.setParent(this);
-		}
 	}
 
 	@Override
@@ -78,9 +76,8 @@ public abstract class LanguageElement implements ILanguageElement {
 	}
 
 	protected void setCompilationUnit(CompilationUnit compilationUnit) {
-		if(this.compilationUnit == null) {
+		if(this.compilationUnit == null)
 			this.compilationUnit = compilationUnit;
-		}
 	}
 
 	@Override
@@ -107,31 +104,27 @@ public abstract class LanguageElement implements ILanguageElement {
 	}
 
 	public static IToken getFirstToken(IAttribute[] attributes) {
-		if(attributes.length == 0) {
+		if(attributes.length == 0)
 			return null;
-		}
 
 		IToken token = attributes[0].getFirstToken();
 
-		if(attributes.length == 1) {
+		if(attributes.length == 1)
 			return token;
-		}
 
-		for(int i = 1; i < attributes.length; i++) {
+		for(int i = 1; i < attributes.length; i++)
 			token = getFirstToken(token, attributes[i].getFirstToken());
-		}
 
 		return token;
 	}
 
 	public static IToken getFirstToken(IToken first, IToken second) {
-		if(first != null && second != null) {
+		if(first != null && second != null)
 			return first.getPosition().getOffset() < second.getPosition().getOffset() ? first : second;
-		} else if(first != null) {
+		else if(first != null)
 			return first;
-		} else if(second != null) {
+		else if(second != null)
 			return second;
-		}
 
 		return null;
 	}
@@ -178,9 +171,8 @@ public abstract class LanguageElement implements ILanguageElement {
 	}
 
 	protected void setDeclaringType(IType declaringType) {
-		if(this.declaringType == null) {
+		if(this.declaringType == null)
 			this.declaringType = declaringType;
-		}
 	}
 
 	@Override
@@ -189,16 +181,14 @@ public abstract class LanguageElement implements ILanguageElement {
 	}
 
 	protected void setDeclaringMethod(IMethod declaringMethod) {
-		if(this.declaringMethod == null) {
+		if(this.declaringMethod == null)
 			this.declaringMethod = declaringMethod;
-		}
 	}
 
 	@Override
 	public boolean getStaticContext() {
 		if(!staticContext) {
 			IMethod method = getDeclaringMethod();
-
 			return method != null ? method.isStatic() : false;
 		}
 
@@ -258,9 +248,8 @@ public abstract class LanguageElement implements ILanguageElement {
 		initialize(compilationUnit, declaringType, null);
 
 		if(!hasFatalError()) {
-			for(IAttribute attribute : getAttributes()) {
+			for(IAttribute attribute : getAttributes())
 				attribute.resolveTypes(compilationUnit, declaringType);
-			}
 		}
 		return !hasFatalError();
 	}
@@ -270,9 +259,8 @@ public abstract class LanguageElement implements ILanguageElement {
 		initialize(compilationUnit, declaringType, null);
 
 		if(!hasFatalError()) {
-			for(IAttribute attribute : getAttributes()) {
+			for(IAttribute attribute : getAttributes())
 				attribute.resolveStructure(compilationUnit, declaringType);
-			}
 		}
 
 		return !hasFatalError();
@@ -283,9 +271,8 @@ public abstract class LanguageElement implements ILanguageElement {
 		initialize(compilationUnit, declaringType, declaringMethod);
 
 		if(!hasFatalError()) {
-			for(IAttribute attribute : getAttributes()) {
+			for(IAttribute attribute : getAttributes())
 				attribute.checkSemantics(compilationUnit, declaringType, declaringMethod, leftHandValue, context);
-			}
 		}
 		return !hasFatalError();
 	}
@@ -295,9 +282,8 @@ public abstract class LanguageElement implements ILanguageElement {
 		initialize(compilationUnit, declaringType, null);
 
 		if(!hasFatalError()) {
-			for(IAttribute attribute : getAttributes()) {
+			for(IAttribute attribute : getAttributes())
 				attribute.resolveNestedTypes(compilationUnit, declaringType);
-			}
 		}
 
 		return !hasFatalError();

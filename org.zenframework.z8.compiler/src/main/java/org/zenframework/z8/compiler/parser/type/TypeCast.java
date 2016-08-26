@@ -30,9 +30,8 @@ public class TypeCast implements ITypeCast {
 		IType baseType = sourceType;
 
 		while(!targetType.equals(baseType)) {
-			if(baseType == null) {
+			if(baseType == null)
 				return null;
-			}
 
 			distance++;
 			baseType = baseType.getBaseType();
@@ -49,13 +48,11 @@ public class TypeCast implements ITypeCast {
 			}
 		}
 
-		if(candidates.length == 0) {
+		if(candidates.length == 0)
 			return new ITypeCast[0];
-		}
 
-		if(candidates.length == 1) {
+		if(candidates.length == 1)
 			return candidates;
-		}
 
 		List<ITypeCast> list = Arrays.asList(candidates);
 		Collections.sort(list, new TypeCastComparator());
@@ -129,9 +126,8 @@ public class TypeCast implements ITypeCast {
 
 	@Override
 	public int compare(ITypeCast other) {
-		if(hasOperator() == other.hasOperator()) {
+		if(hasOperator() == other.hasOperator())
 			return distanceToBaseType() - other.distanceToBaseType();
-		}
 
 		return hasOperator() ? 1 : -1;
 	}
@@ -145,9 +141,8 @@ public class TypeCast implements ITypeCast {
 	public boolean equals(Object object) {
 		ITypeCast other = (ITypeCast)object;
 
-		if(hasOperator() == other.hasOperator()) {
+		if(hasOperator() == other.hasOperator())
 			return distanceToBaseType() == other.distanceToBaseType();
-		}
 
 		return hasOperator();
 	}
@@ -167,34 +162,18 @@ public class TypeCast implements ITypeCast {
 		}
 
 		IMethod operator = getOperator();
-		// IVariableType target = getTarget();
-
-		// boolean needNew = newValue && operator == null &&
-		// target.extendsPrimary() &&
-		// !target.getType().getUserName().equals(Primary.Primary) && !(element
-		// instanceof Constant);
-
-		/*
-		 * if(needNew) {
-		 * codeGenerator.getCompilationUnit().importType(getTarget().getType());
-		 * codeGenerator.append("new " + getTarget().getJavaName() + "("); }
-		 */
 		element.getCode(codeGenerator);
 
 		if(operator != null) {
 			codeGenerator.append('.');
 
-			if(element.getVariableType().isReference()) {
+			if(element.getVariableType().isReference())
 				codeGenerator.append("get(" + element.getDeclaringType().getConstructionStage() + ").");
-			}
 			codeGenerator.append(operator.getJavaName() + "()");
 		}
 
-		/*
-		 * if(needNew) { codeGenerator.append(')'); }
-		 */
-		if(method != null) {
+		if(method != null)
 			codeGenerator.append(')');
-		}
+
 	}
 }

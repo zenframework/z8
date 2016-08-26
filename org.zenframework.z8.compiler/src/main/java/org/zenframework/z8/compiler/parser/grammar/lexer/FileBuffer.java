@@ -48,19 +48,17 @@ public class FileBuffer {
 	}
 
 	public void advance(IPosition position) {
-		if(!isEOF(position) && ABC.isTabulator(charAt(position))) {
+		if(!isEOF(position) && ABC.isTabulator(charAt(position))) 
 			position.setColumn(position.getColumn() + ABC.TabulatorLength);
-		} else {
+		else
 			position.setColumn(position.getColumn() + 1);
-		}
 
 		position.setOffset(position.getOffset() + 1);
 	}
 
 	public void advance(IPosition position, int count) {
-		for(int i = 0; i < count; i++) {
+		for(int i = 0; i < count; i++)
 			advance(position);
-		}
 	}
 
 	public void breakLine(IPosition position) {

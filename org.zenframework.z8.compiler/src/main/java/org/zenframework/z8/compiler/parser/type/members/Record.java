@@ -129,9 +129,8 @@ public class Record extends LanguageElement implements IMember {
 
 		IAttribute[] attributes = getAttributes();
 
-		for(IAttribute attribute : attributes) {
+		for(IAttribute attribute : attributes)
 			attribute.resolveTypes(compilationUnit, declaringType);
-		}
 
 		return constant.resolveTypes(compilationUnit, declaringType);
 	}
@@ -150,9 +149,9 @@ public class Record extends LanguageElement implements IMember {
 			if(member.getDeclaringType() == declaringType) {
 				setError(nameToken.getPosition(), "Duplicate field " + declaringType.getUserName() + "." + getName());
 				setError(member.getPosition(), "Duplicate field " + declaringType.getUserName() + "." + getName());
-			} else {
+			} else
 				setError(getPosition(), getName() + ": redefinition of " + member.getDeclaringType().getUserName() + "." + getName());
-			}
+
 			return false;
 		}
 
@@ -211,12 +210,6 @@ public class Record extends LanguageElement implements IMember {
 				continue;
 			}
 
-			/*
-			 * if(attribute.getValueToken() == null) {
-			 * setError(attribute.getPosition(),
-			 * "The value is missing for the attribute " + attribute.getName());
-			 * continue; }
-			 */
 			IVariableType variableType = attribute.getVariableType();
 
 			if(variableType == null) {
@@ -239,9 +232,8 @@ public class Record extends LanguageElement implements IMember {
 
 				typeCast = memberType.getCastTo(constantType);
 
-				if(typeCast == null) {
+				if(typeCast == null)
 					setError(attribute.getPosition(), "The value of type " + variableType.getSignature() + " cannot be converted to " + member.getVariableType().getSignature() + ", (" + member.getDeclaringType().getUserName() + "." + member.getName() + ")");
-				}
 			}
 		}
 
@@ -260,9 +252,8 @@ public class Record extends LanguageElement implements IMember {
 	public void getAddRecordCode(CodeGenerator codeGenerator) {
 		IAttribute[] attributes = getAttributes();
 
-		if(attributes.length == 0) {
+		if(attributes.length == 0)
 			return;
-		}
 
 		codeGenerator.indent();
 		codeGenerator.append("{");

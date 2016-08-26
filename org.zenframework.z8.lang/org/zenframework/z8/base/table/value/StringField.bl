@@ -1,5 +1,4 @@
 [native "org.zenframework.z8.server.base.table.value.StringField"]
-
 class StringField extends Field {
 	aggregation = Aggregation.Sum;
 
@@ -14,6 +13,6 @@ class StringField extends Field {
 	public operator sql_string();
 
 	virtual public string get();
-	
+
 	public StringField operator = (string value);
 }

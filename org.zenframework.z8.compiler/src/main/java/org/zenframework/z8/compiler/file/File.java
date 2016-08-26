@@ -80,9 +80,8 @@ public class File {
 
 			java.io.File file = new java.io.File(path);
 
-			if(file.exists() && !file.canWrite() && !append) {
+			if(file.exists() && !file.canWrite() && !append)
 				file.delete();
-			}
 
 			stream = new FileOutputStream(getPath().toString(), append);
 			stream.write(string.getBytes(Charset));
@@ -92,9 +91,8 @@ public class File {
 			throw new FileException(path, e.getMessage());
 		} finally {
 			try {
-				if(stream != null) {
+				if(stream != null)
 					stream.close();
-				}
 			} catch(java.io.IOException e) {
 				throw new FileException(path, e.getMessage());
 			}
@@ -130,9 +128,8 @@ public class File {
 			String[] fileNames = path.toFile().list();
 			IPath[] result = new IPath[fileNames.length];
 
-			for(int i = 0; i < fileNames.length; i++) {
+			for(int i = 0; i < fileNames.length; i++)
 				result[i] = path.append(fileNames[i]);
-			}
 
 			return result;
 		} catch(SecurityException e) {

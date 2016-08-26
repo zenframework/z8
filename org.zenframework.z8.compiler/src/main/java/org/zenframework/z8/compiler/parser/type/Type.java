@@ -48,15 +48,13 @@ public class Type extends AbstractType {
 	public IPosition getSourceRange() {
 		IPosition start = super.getSourceRange();
 
-		if(start == null) {
+		if(start == null)
 			start = classToken.getPosition();
-		}
 
-		if(body != null) {
+		if(body != null)
 			return start.union(body.getSourceRange());
-		} else if(baseVariableType != null) {
+		else if(baseVariableType != null)
 			return start.union(baseVariableType.getPosition());
-		}
 
 		return start.union(typeNameToken.getPosition());
 	}
@@ -73,9 +71,8 @@ public class Type extends AbstractType {
 
 	@Override
 	public ILanguageElement getElementAt(IPosition position) {
-		if(getSourceRange().contains(position)) {
+		if(getSourceRange().contains(position))
 			return this;
-		}
 
 		return null;
 	}
@@ -124,9 +121,8 @@ public class Type extends AbstractType {
 
 		String typeName = getUserName();
 
-		if(typeName == null) {
+		if(typeName == null)
 			return false;
-		}
 
 		if(!isNative() && !Lexer.checkIdentifier(typeName)) {
 			setFatalError(typeNameToken.getPosition(), "Syntax error on token '" + typeName + "'. " + typeName + " is a reserved keyword.");
@@ -143,26 +139,18 @@ public class Type extends AbstractType {
 
 	@Override
 	public boolean canBeBaseTypeOf(IType type) {
-		if(equals(type)) {
+		if(equals(type))
 			return false;
-		}
 
-		if(baseVariableType == null) {
+		if(baseVariableType == null)
 			return true;
-		}
 
 		IType baseType = baseVariableType.getType();
 
-		if(type.equals(baseType)) {
+		if(type.equals(baseType))
 			return false;
-		}
 
-		if(baseType != null) {
-			return baseType.canBeBaseTypeOf(type);
-		}
-
-		return true;
-
+		return baseType != null ? baseType.canBeBaseTypeOf(type) : true;
 	}
 
 	@Override
@@ -198,9 +186,8 @@ public class Type extends AbstractType {
 
 		setupNativeAttribute();
 
-		if(body != null) {
+		if(body != null)
 			body.resolveTypes(compilationUnit, this);
-		}
 
 		return true;
 	}
@@ -270,13 +257,12 @@ public class Type extends AbstractType {
 
 		IType baseType = getBaseType();
 
-		if(baseType != null) {
+		if(baseType != null)
 			baseType.resolveNestedTypes(baseType.getCompilationUnit(), baseType);
-		}
 
-		if(body != null) {
+
+		if(body != null)
 			body.resolveNestedTypes(compilationUnit, declaringType);
-		}
 
 		return true;
 	}
@@ -342,17 +328,15 @@ public class Type extends AbstractType {
 	}
 
 	private void collectNestedTypes(Map<String, MemberInitializationInfo> result, IType type) {
-		if(type.getRecursionFlag()) {
+		if(type.getRecursionFlag())
 			return;
-		}
 
 		type.setRecursionFlag(true);
 
 		IType baseType = type.getBaseType();
 
-		if(baseType != null) {
+		if(baseType != null)
 			collectNestedTypes(result, baseType);
-		}
 
 		IType[] nestedTypes = type.getNestedTypes();
 
@@ -379,17 +363,15 @@ public class Type extends AbstractType {
 	}
 
 	private void collectInitializers(Map<String, MemberInitializationInfo> result, IType type) {
-		if(type.getRecursionFlag()) {
+		if(type.getRecursionFlag())
 			return;
-		}
 
 		type.setRecursionFlag(true);
 
 		IType baseType = type.getBaseType();
 
-		if(baseType != null) {
+		if(baseType != null)
 			collectInitializers(result, baseType);
-		}
 
 		IInitializer[] initializers = type.getInitializers();
 
@@ -411,9 +393,8 @@ public class Type extends AbstractType {
 				collectNestedTypes(result, (IType)initializer);
 			}
 
-			if(info != null) {
+			if(info != null)
 				info.addInitializer(initializer);
-			}
 		}
 
 		type.setRecursionFlag(false);
@@ -439,9 +420,8 @@ public class Type extends AbstractType {
 
 		codeGenerator.incrementIndent();
 
-		if(!extendsPrimary()) {
+		if(!extendsPrimary())
 			generateClassCode(codeGenerator);
-		}
 
 		if(body != null) {
 			codeGenerator.breakLine();

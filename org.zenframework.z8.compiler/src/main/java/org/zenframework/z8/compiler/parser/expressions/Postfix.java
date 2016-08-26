@@ -43,9 +43,8 @@ public class Postfix extends LanguageElement implements IJavaTypeCast {
 
 	@Override
 	public IPosition getSourceRange() {
-		if(postfix != null) {
+		if(postfix != null)
 			return prefix.getPosition().union(postfix.getPosition());
-		}
 
 		return prefix.getSourceRange();
 	}
@@ -73,18 +72,16 @@ public class Postfix extends LanguageElement implements IJavaTypeCast {
 	public IVariable getVariable() {
 		IVariable variable = postfix != null ? postfix.getVariable() : null;
 
-		if(variable != null) {
+		if(variable != null)
 			return variable instanceof LeftHandValue ? new LeftHandValue(this) : super.getVariable();
-		}
 
 		return prefix.getVariable();
 	}
 
 	@Override
 	public IVariableType getVariableType() {
-		if(postfix != null) {
+		if(postfix != null)
 			return postfix.getVariableType();
-		}
 
 		return prefix.getVariableType();
 	}
@@ -96,24 +93,21 @@ public class Postfix extends LanguageElement implements IJavaTypeCast {
 
 	@Override
 	public boolean checkSemantics(CompilationUnit compilationUnit, IType declaringType, IMethod declaringMethod, IVariable leftHandValue, IVariableType context) {
-		if(!super.checkSemantics(compilationUnit, declaringType, declaringMethod, null, null)) {
+		if(!super.checkSemantics(compilationUnit, declaringType, declaringMethod, null, null))
 			return false;
-		}
 
-		if(!prefix.checkSemantics(compilationUnit, declaringType, declaringMethod, null, context)) {
+		if(!prefix.checkSemantics(compilationUnit, declaringType, declaringMethod, null, context))
 			return false;
-		}
 
-		if(postfix != null) {
-			return postfix.checkSemantics(compilationUnit, declaringType, declaringMethod, null, prefix.getVariableType());
-		} else {
+		if(postfix == null) {
 			IVariableType prefixType = prefix.getVariableType();
 
 			if(prefixType.isStatic()) {
 				setFatalError(getPosition(), prefixType.getSignature() + " cannot be resolved");
 				return false;
 			}
-		}
+		} else
+			return postfix.checkSemantics(compilationUnit, declaringType, declaringMethod, null, prefix.getVariableType());
 
 		return true;
 	}
@@ -129,9 +123,8 @@ public class Postfix extends LanguageElement implements IJavaTypeCast {
 
 			codeGenerator.append('.');
 
-			if(needGet) {
+			if(needGet)
 				codeGenerator.append("get(" + getDeclaringType().getConstructionStage() + ").");
-			}
 
 			postfix.getCode(codeGenerator);
 		}
@@ -141,8 +134,7 @@ public class Postfix extends LanguageElement implements IJavaTypeCast {
 	public void replaceTypeName(TextEdit parent, IType type, String newTypeName) {
 		prefix.replaceTypeName(parent, type, newTypeName);
 
-		if(postfix != null) {
+		if(postfix != null)
 			postfix.replaceTypeName(parent, type, newTypeName);
-		}
 	}
 }

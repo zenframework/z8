@@ -8,8 +8,8 @@ class User extends Object {
 	string description;
 	string phone;
 	string email;
-	
+
 	SecurityGroup securityGroup;
-	
+
 	primary[string] parameters;
 }

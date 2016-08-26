@@ -41,11 +41,11 @@ public class ArrayInitializer extends LanguageElement {
 
 	@Override
 	public IPosition getSourceRange() {
-		if(rightBrace != null) {
+		if(rightBrace != null)
 			return leftBrace.getPosition().union(rightBrace.getPosition());
-		} else if(elements.size() > 0) {
+		else if(elements.size() > 0)
 			return leftBrace.getPosition().union(elements.get(elements.size() - 1).getSourceRange());
-		} else
+		else
 			return leftBrace.getPosition();
 	}
 
@@ -72,9 +72,8 @@ public class ArrayInitializer extends LanguageElement {
 	public void setStaticContext(boolean staticContext) {
 		super.setStaticContext(staticContext);
 
-		for(ILanguageElement element : elements) {
+		for(ILanguageElement element : elements)
 			element.setStaticContext(staticContext);
-		}
 	}
 
 	@Override
@@ -84,9 +83,8 @@ public class ArrayInitializer extends LanguageElement {
 
 		boolean result = true;
 
-		for(ILanguageElement element : elements) {
+		for(ILanguageElement element : elements)
 			result &= element.resolveTypes(compilationUnit, declaringType);
-		}
 
 		return result;
 	}
@@ -103,9 +101,8 @@ public class ArrayInitializer extends LanguageElement {
 			return false;
 		}
 
-		if(initType.getRightKey() == null) {
+		if(initType.getRightKey() == null)
 			initType.removeRightKey();
-		}
 
 		boolean result = true;
 

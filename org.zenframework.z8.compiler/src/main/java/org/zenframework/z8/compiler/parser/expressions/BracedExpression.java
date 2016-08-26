@@ -56,9 +56,8 @@ public class BracedExpression extends LanguageElement {
 		if(expression instanceof Postfix) {
 			Postfix postfix = (Postfix)expression;
 
-			if(postfix.getPostfix() != null) {
+			if(postfix.getPostfix() != null)
 				return null;
-			}
 
 			ILanguageElement prefix = postfix.getPrefix();
 
@@ -66,9 +65,8 @@ public class BracedExpression extends LanguageElement {
 				QualifiedName qualifiedName = (QualifiedName)prefix;
 				IToken[] tokens = qualifiedName.getTokens();
 
-				if(tokens.length == 1) {
+				if(tokens.length == 1)
 					return new TypeCastExpression(leftBrace, tokens[0], rightBrace);
-				}
 			}
 		}
 
@@ -104,17 +102,15 @@ public class BracedExpression extends LanguageElement {
 		if(methods.length == 1) {
 			expression.getCode(codeGenerator);
 
-			if(variableType.isReference()) {
+			if(variableType.isReference())
 				codeGenerator.append(".get()");
-			}
 
 			codeGenerator.append("." + methods[0].getJavaName() + "()");
 		} else if(expression instanceof TernaryExpression) {
 			codeGenerator.append('(');
 			expression.getCode(codeGenerator);
 			codeGenerator.append(')');
-		} else {
+		} else
 			expression.getCode(codeGenerator);
-		}
 	}
 }

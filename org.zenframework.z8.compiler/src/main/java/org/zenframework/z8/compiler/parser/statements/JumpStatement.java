@@ -30,9 +30,8 @@ public class JumpStatement extends LanguageElement implements IStatement {
 
 	@Override
 	public IPosition getSourceRange() {
-		if(expression != null) {
+		if(expression != null)
 			return jump.getPosition().union(expression.getSourceRange());
-		}
 		return jump.getPosition();
 	}
 
@@ -64,14 +63,12 @@ public class JumpStatement extends LanguageElement implements IStatement {
 
 			boolean isVoidMethod = false;
 
-			if(voidType != null) {
+			if(voidType != null)
 				isVoidMethod = returnType.getCastTo(voidType) != null;
-			}
 
 			if(expression != null) {
-				if(!expression.checkSemantics(compilationUnit, declaringType, declaringMethod, null, null)) {
+				if(!expression.checkSemantics(compilationUnit, declaringType, declaringMethod, null, null))
 					return false;
-				}
 
 				if(!isVoidMethod) {
 					typeCast = expression.getVariableType().getCastTo(returnType);

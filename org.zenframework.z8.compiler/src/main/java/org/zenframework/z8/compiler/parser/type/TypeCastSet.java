@@ -25,13 +25,11 @@ public class TypeCastSet implements ITypeCastSet {
 
 		}
 
-		if(candidates.length == 0) {
+		if(candidates.length == 0)
 			return new ITypeCastSet[0];
-		}
 
-		if(candidates.length == 1) {
+		if(candidates.length == 1)
 			return candidates;
-		}
 
 		List<ITypeCastSet> list = Arrays.asList(candidates);
 		Collections.sort(list, new TypeCastSetComparator());
@@ -59,9 +57,8 @@ public class TypeCastSet implements ITypeCastSet {
 	public int getWeight() {
 		int weight = 0;
 
-		for(ITypeCast typeCast : typeCasts) {
+		for(ITypeCast typeCast : typeCasts)
 			weight += typeCast.getWeight();
-		}
 
 		return weight;
 	}
@@ -74,19 +71,15 @@ public class TypeCastSet implements ITypeCastSet {
 
 	@Override
 	public ITypeCast[] get() {
-		if(typeCasts == null) {
+		if(typeCasts == null)
 			return new ITypeCast[0];
-		}
-
 		return typeCasts.toArray(new ITypeCast[typeCasts.size()]);
 	}
 
 	@Override
 	public void add(ITypeCast typeCast) {
-		if(typeCasts == null) {
+		if(typeCasts == null)
 			typeCasts = new ArrayList<ITypeCast>();
-		}
-
 		typeCasts.add(typeCast);
 	}
 

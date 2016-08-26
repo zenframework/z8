@@ -30,7 +30,7 @@ public class AuthorityCenter extends HubServer implements IAuthorityCenter {
 
 	private UserManager userManager;
 	private SessionManager sessionManager;
-	
+
 	public static IAuthorityCenter launch(ServerConfig config) throws RemoteException {
 		if(instance == null) {
 			instance = new AuthorityCenter();

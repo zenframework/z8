@@ -1,7 +1,6 @@
 [native "org.zenframework.z8.server.base.query.ChartType"]
 
-enum ChartType
-{
+enum ChartType {
 	Bar,
 	Column,
 	Line,

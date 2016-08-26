@@ -6,10 +6,8 @@ import java.util.Map;
 
 import org.zenframework.z8.server.security.IUser;
 
-public class UserManager
-{
-	private Map<String, IUser> users = Collections
-	        .synchronizedMap(new HashMap<String, IUser>());
+public class UserManager {
+	private Map<String, IUser> users = Collections.synchronizedMap(new HashMap<String, IUser>());
 
 	public UserManager() {
 	}

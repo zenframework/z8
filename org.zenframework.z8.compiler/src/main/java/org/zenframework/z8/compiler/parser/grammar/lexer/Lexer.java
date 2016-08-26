@@ -113,24 +113,22 @@ public class Lexer {
 
 			char chr = charAt(position);
 
-			if(ABC.isWhiteSpace(chr)) {
+			if(ABC.isWhiteSpace(chr))
 				token = getWhiteSpace(position);
-			} else if(ABC.isLineBreak(chr)) {
+			else if(ABC.isLineBreak(chr))
 				token = getLineBreak(position);
-			} else if(ABC.isPunctuator(chr)) {
+			else if(ABC.isPunctuator(chr))
 				token = getPunctuator(position);
-			} else if(ABC.isDigit(chr)) {
+			else if(ABC.isDigit(chr))
 				token = getDigit(position);
-			} else if(!ABC.isAllowed(chr)) {
+			else if(!ABC.isAllowed(chr))
 				throw new TokenException("not allowed character found : " + chr + "", new Position(position, 1));
-			} else {
+			else
 				token = getIdentifier(position);
-			}
 
 			if(skipSpaces) {
-				if(token.getId() == IToken.COMMENT || token.getId() == IToken.WHITESPACE || token.getId() == IToken.LINEBREAK) {
+				if(token.getId() == IToken.COMMENT || token.getId() == IToken.WHITESPACE || token.getId() == IToken.LINEBREAK)
 					continue;
-				}
 
 				break;
 			}
@@ -144,9 +142,8 @@ public class Lexer {
 	}
 
 	private boolean skipWhiteSpaces(IPosition position) {
-		while(!isEOF(position) && ABC.isWhiteSpace(charAt(position))) {
+		while(!isEOF(position) && ABC.isWhiteSpace(charAt(position)))
 			buffer.advance(position);
-		}
 		return !isEOF(position);
 	}
 
@@ -154,9 +151,8 @@ public class Lexer {
 		while(!isEOF(position) && ABC.isLineBreak(charAt(position))) {
 			int advance = 1;
 
-			if(charAt(position) == '\r' && nextCharAt(position) == '\n') {
+			if(charAt(position) == '\r' && nextCharAt(position) == '\n')
 				advance = 2;
-			}
 
 			buffer.advance(position, advance);
 			buffer.breakLine(position);
@@ -169,13 +165,12 @@ public class Lexer {
 		while(!isEOF(position)) {
 			char chr = charAt(position);
 
-			if(ABC.isWhiteSpace(chr)) {
+			if(ABC.isWhiteSpace(chr))
 				skipWhiteSpaces(position);
-			} else if(ABC.isLineBreak(chr)) {
+			else if(ABC.isLineBreak(chr))
 				skipLineBreaks(position);
-			} else {
+			else
 				break;
-			}
 		}
 
 		return !isEOF(position);
@@ -202,9 +197,8 @@ public class Lexer {
 
 		buffer.advance(position);
 
-		if(isEOF(position)) {
+		if(isEOF(position))
 			throw new TokenException("escape sequence expected", new Position(start, 1));
-		}
 
 		char chr = charAt(position);
 
@@ -260,9 +254,8 @@ public class Lexer {
 				return new IntegerToken(Long.parseLong(number, 16), new Position(start, position));
 			}
 
-			if(chr != '.') {
+			if(chr != '.')
 				number += getDigitSequence(position, 10);
-			}
 
 			if(charAt(position) == '.') {
 				number += getMantissa(position);
@@ -337,9 +330,9 @@ public class Lexer {
 			} else if(chr == '/' && nextChr == '*') {
 				level++;
 				buffer.advance(position, 2);
-			} else if(ABC.isLineBreak(chr)) {
+			} else if(ABC.isLineBreak(chr))
 				skipLineBreaks(position);
-			} else
+			else
 				buffer.advance(position);
 		}
 
@@ -383,19 +376,19 @@ public class Lexer {
 		char third = nextCharAt(position, 2);
 		char fourth = nextCharAt(position, 3);
 
-		if(first == '/' && (second == '*' || second == '/')) {
+		if(first == '/' && (second == '*' || second == '/'))
 			return getComment(position);
-		} else if(first == '"') {
+		else if(first == '"')
 			return getLiteral(position);
-		} else if(first == '_') {
+		else if(first == '_')
 			return getIdentifier(position);
-		} else if(isNumberSign(position)) {
+		else if(isNumberSign(position))
 			return getDigit(position);
-		} else if(first == '.' && ABC.isDigit(second)) {
+		else if(first == '.' && ABC.isDigit(second))
 			return getDigit(position);
-		} else if(first == '\'') {
+		else if(first == '\'')
 			return getSpecialConst(position);
-		} else if(first == '!' && second == '=') {
+		else if(first == '!' && second == '=') {
 			buffer.advance(position, 2);
 			return new OperatorToken(IToken.NOT_EQU, new Position(start, 2));
 		} else if(first == '=' && second == '=') {
@@ -584,13 +577,11 @@ public class Lexer {
 
 		String mantissa = ".";
 
-		if(ABC.isDigit(next)) {
+		if(ABC.isDigit(next))
 			mantissa += getDigitSequence(position, 10);
-		}
 
-		if(charAt(position) == 'e' || charAt(position) == 'E') {
+		if(charAt(position) == 'e' || charAt(position) == 'E')
 			mantissa += getDegree(position);
-		}
 
 		return mantissa;
 	}
@@ -728,9 +719,8 @@ public class Lexer {
 
 				if(!skipWhiteSpaces(position))
 					throw new TokenException(new Position(start, position));
-			} else {
+			} else
 				bHasSpace = true;
-			}
 
 			if(charAt(position) != '\'') {
 				if(!bHasSpace)

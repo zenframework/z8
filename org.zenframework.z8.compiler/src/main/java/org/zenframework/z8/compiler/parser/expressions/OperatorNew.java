@@ -47,10 +47,7 @@ public class OperatorNew extends LanguageElement {
 		if(!super.resolveTypes(compilationUnit, declaringType))
 			return false;
 
-		if(variableType != null) {
-			return variableType.resolveTypes(compilationUnit, declaringType);
-		}
-		return false;
+		return variableType != null ? variableType.resolveTypes(compilationUnit, declaringType) : false;
 	}
 
 	@Override

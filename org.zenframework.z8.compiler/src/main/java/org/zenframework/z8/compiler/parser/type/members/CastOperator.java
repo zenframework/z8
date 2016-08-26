@@ -48,11 +48,10 @@ public class CastOperator extends AbstractMethod {
 		if(!super.resolveStructure(compilationUnit, declaringType))
 			return false;
 
-		if(getParametersCount() == 0) {
+		if(getParametersCount() == 0)
 			getDeclaringType().addTypeCastOperator(this);
-		} else {
+		else
 			setError(getPosition(), "Type cast operator must not have parameter(s)");
-		}
 
 		return true;
 	}

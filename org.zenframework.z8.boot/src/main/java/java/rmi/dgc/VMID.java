@@ -67,5 +67,4 @@ public final class VMID implements java.io.Serializable {
 		result.append(uid.toString());
 		return result.toString();
 	}
-
 }

@@ -1,5 +1,4 @@
 [native "org.zenframework.z8.server.base.table.value.DatetimeField"]
-
 class DatetimeField extends Field {
 	stretch = false;
 
@@ -11,6 +10,6 @@ class DatetimeField extends Field {
 	public operator sql_date();
 
 	virtual public date get();
-	
+
 	public DatetimeField operator = (date value);
 }

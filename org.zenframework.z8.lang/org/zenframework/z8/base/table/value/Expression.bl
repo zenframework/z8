@@ -1,5 +1,4 @@
 [native "org.zenframework.z8.server.base.table.value.Expression"]
-
 class Expression extends Field {
 	public Field selector;
 	public Link[] options;

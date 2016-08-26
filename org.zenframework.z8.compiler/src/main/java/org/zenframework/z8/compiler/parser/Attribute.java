@@ -71,9 +71,8 @@ public class Attribute extends LanguageElement implements IAttribute {
 
 	@Override
 	public String getValueString() {
-		if(valueToken != null) {
+		if(valueToken != null)
 			return valueToken.getValueString();
-		}
 		return "";
 	}
 
@@ -94,9 +93,8 @@ public class Attribute extends LanguageElement implements IAttribute {
 
 	@Override
 	public IVariableType getVariableType() {
-		if(value != null) {
+		if(value != null)
 			return value.getVariableType();
-		}
 		return null;
 	}
 
@@ -121,17 +119,15 @@ public class Attribute extends LanguageElement implements IAttribute {
 	}
 
 	private boolean validateValue() {
-		if(valueToken != null || value == null) {
+		if(valueToken != null || value == null)
 			return true;
-		}
 
 		if(isTypeAttribute()) {
 			if(value instanceof Postfix) {
 				Postfix postfix = (Postfix)value;
 
-				if(postfix.getPostfix() == null && postfix.getPrefix() instanceof QualifiedName) {
+				if(postfix.getPostfix() == null && postfix.getPrefix() instanceof QualifiedName)
 					return true;
-				}
 			}
 
 			return false;
@@ -151,9 +147,8 @@ public class Attribute extends LanguageElement implements IAttribute {
 				return false;
 			}
 
-			if(!value.checkSemantics(compilationUnit, isTypeAttribute() ? null : declaringType, declaringMethod, null, null)) {
+			if(!value.checkSemantics(compilationUnit, isTypeAttribute() ? null : declaringType, declaringMethod, null, null))
 				return false;
-			}
 
 			IVariableType variableType = getVariableType();
 
@@ -163,9 +158,8 @@ public class Attribute extends LanguageElement implements IAttribute {
 			}
 		}
 
-		if(isRecordAttribute()) {
+		if(isRecordAttribute())
 			return true;
-		}
 
 		String name = getName();
 
@@ -226,9 +220,8 @@ public class Attribute extends LanguageElement implements IAttribute {
 	}
 
 	private boolean checkTypeAttribute(String name) {
-		if(!isTypeAttribute()) {
+		if(!isTypeAttribute())
 			return true;
-		}
 
 		CompilationUnit[] dependencies = getCompilationUnit().getProject().getDependencies();
 
@@ -236,39 +229,34 @@ public class Attribute extends LanguageElement implements IAttribute {
 			if(compilationUnit != getCompilationUnit()) {
 				IType type = compilationUnit.getType();
 
-				if(type != null && !checkAttributesAgainst(name, type.getAttributes())) {
+				if(type != null && !checkAttributesAgainst(name, type.getAttributes()))
 					return false;
-				}
 			}
 		}
 		return true;
 	}
 
 	private boolean checkMemberAttribute(IType type) {
-		if(isTypeAttribute()) {
+		if(isTypeAttribute())
 			return true;
-		}
 
 		IMember[] members = type.getMembers();
 		IInitializer[] initializers = type.getInitializers();
 
 		for(IMember member : members) {
-			if(member != getParent() && !checkAttributesAgainst(IAttribute.Name, member.getAttributes())) {
+			if(member != getParent() && !checkAttributesAgainst(IAttribute.Name, member.getAttributes()))
 				return false;
-			}
 		}
 
 		for(IInitializer initializer : initializers) {
-			if(initializer != getParent() && !checkAttributesAgainst(IAttribute.Name, initializer.getAttributes())) {
+			if(initializer != getParent() && !checkAttributesAgainst(IAttribute.Name, initializer.getAttributes()))
 				return false;
-			}
 		}
 
 		IType baseType = type.getBaseType();
 
-		if(baseType != null) {
+		if(baseType != null)
 			return checkMemberAttribute(baseType);
-		}
 
 		return true;
 	}
@@ -302,11 +290,10 @@ public class Attribute extends LanguageElement implements IAttribute {
 				} else {
 					value.getCode(codeGenerator);
 
-					if(variableType.getType() != org.zenframework.z8.compiler.parser.type.Primary.resolveType(getCompilationUnit(), org.zenframework.z8.compiler.parser.type.Primary.String)) {
+					if(variableType.getType() != org.zenframework.z8.compiler.parser.type.Primary.resolveType(getCompilationUnit(), org.zenframework.z8.compiler.parser.type.Primary.String))
 						codeGenerator.append(".toString()");
-					} else {
+					else
 						codeGenerator.append(".get()");
-					}
 				}
 			}
 		} else {

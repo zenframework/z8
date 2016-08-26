@@ -45,13 +45,12 @@ public class MethodCall extends LanguageElement implements IJavaTypeCast {
 
 	@Override
 	public IPosition getSourceRange() {
-		if(rightBrace != null) {
+		if(rightBrace != null)
 			return nameToken.getPosition().union(rightBrace.getPosition());
-		} else if(arguments.length > 0) {
+		else if(arguments.length > 0)
 			return nameToken.getPosition().union(arguments[arguments.length - 1].getSourceRange());
-		} else {
+		else
 			return nameToken.getPosition().union(leftBrace.getPosition());
-		}
 	}
 
 	@Override
@@ -70,9 +69,8 @@ public class MethodCall extends LanguageElement implements IJavaTypeCast {
 		buffer.append('(');
 
 		for(int i = 0; i < variableTypes.length; i++) {
-			if(i != 0) {
+			if(i != 0)
 				buffer.append(", ");
-			}
 			buffer.append(variableTypes[i].getSignature());
 		}
 
@@ -89,9 +87,8 @@ public class MethodCall extends LanguageElement implements IJavaTypeCast {
 
 		boolean result = true;
 
-		for(ILanguageElement argument : arguments) {
+		for(ILanguageElement argument : arguments)
 			result &= argument.resolveTypes(compilationUnit, declaringType);
-		}
 
 		return result;
 	}
@@ -108,17 +105,14 @@ public class MethodCall extends LanguageElement implements IJavaTypeCast {
 
 		boolean parametersChecked = true;
 
-		for(int i = 0; i < arguments.length; i++) {
+		for(int i = 0; i < arguments.length; i++)
 			parametersChecked &= arguments[i].checkSemantics(compilationUnit, declaringType, declaringMethod, null, null);
-		}
 
-		if(!parametersChecked) {
+		if(!parametersChecked)
 			return false;
-		}
 
-		for(int i = 0; i < arguments.length; i++) {
+		for(int i = 0; i < arguments.length; i++)
 			argumentTypes[i] = arguments[i].getVariableType();
-		}
 
 		contextType = context != null ? context.getVariableType() : new VariableType(getCompilationUnit(), declaringType);
 
@@ -153,9 +147,8 @@ public class MethodCall extends LanguageElement implements IJavaTypeCast {
 				candidates.add(typeCast);
 			}
 
-			if(argumentsCast) {
+			if(argumentsCast)
 				availableCasts.add(candidates);
-			}
 		}
 
 		ITypeCastSet[] result = TypeCastSet.findBestCast(availableCasts.toArray(new ITypeCastSet[availableCasts.size()]));
@@ -173,24 +166,20 @@ public class MethodCall extends LanguageElement implements IJavaTypeCast {
 		IMethod method = result[0].getContext();
 		addHyperlink(method);
 
-		if(contextType.isStatic() && !method.isStatic()) {
+		if(contextType.isStatic() && !method.isStatic())
 			setError(getPosition(), "Cannot make a static reference to the non-static method " + method.getSignature());
-		}
 
-		if(context != null && !contextType.isStatic() && method.isStatic()) {
+		if(context != null && !contextType.isStatic() && method.isStatic())
 			setWarning(getPosition(), "The static method " + contextType.getSignature() + '.' + method.getSignature() + " should be accessed in a static way");
-		}
 
-		if(context == null && getStaticContext() && !method.isStatic()) {
+		if(context == null && getStaticContext() && !method.isStatic())
 			setError(getPosition(), "Cannot make a static reference to the non-static method " + method.getSignature() + " from " + method.getDeclaringType().getUserName());
-		}
 
 		IType methodDeclaringType = method.getDeclaringType();
 
 		if(methodDeclaringType != null && methodDeclaringType != declaringType) {
-			if(method.isPrivate() && !methodDeclaringType.hasPrivateAccess(declaringType) || method.isProtected() && !methodDeclaringType.hasProtectedAccess(declaringType)) {
+			if(method.isPrivate() && !methodDeclaringType.hasPrivateAccess(declaringType) || method.isProtected() && !methodDeclaringType.hasProtectedAccess(declaringType))
 				setError(getPosition(), "The method " + method.getSignature() + " from the type " + methodDeclaringType.getUserName() + " is not visible");
-			}
 		}
 
 		typeCastSet = result[0];
@@ -203,9 +192,8 @@ public class MethodCall extends LanguageElement implements IJavaTypeCast {
 	protected void addHyperlink(IMethod method) {
 		CompilationUnit compilationUnit = method.getCompilationUnit();
 
-		if(compilationUnit != null) {
+		if(compilationUnit != null)
 			getCompilationUnit().addHyperlink(nameToken.getPosition(), compilationUnit, method.getNamePosition());
-		}
 	}
 
 	@Override
@@ -230,26 +218,22 @@ public class MethodCall extends LanguageElement implements IJavaTypeCast {
 			context.getCode(codeGenerator);
 			codeGenerator.append(".");
 
-			if(needGet) {
+			if(needGet)
 				codeGenerator.append("get(" + getDeclaringType().getConstructionStage() + ").");
-			}
 
 			typeCastSet.getCode(codeGenerator, arguments);
 
-			if(needCast) {
+			if(needCast)
 				codeGenerator.append(")");
-			}
-		} else {
+		} else
 			typeCastSet.getCode(codeGenerator, arguments);
-		}
 	}
 
 	public String getSignature() {
 		List<IVariableType> types = new ArrayList<IVariableType>();
 
-		for(ILanguageElement argument : arguments) {
+		for(ILanguageElement argument : arguments)
 			types.add(argument.getVariableType());
-		}
 
 		return nameToken.getRawText() + makeSignatureList(types.toArray(new IVariableType[0]));
 	}

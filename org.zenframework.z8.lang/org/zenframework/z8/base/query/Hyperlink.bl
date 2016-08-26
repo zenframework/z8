@@ -1,12 +1,11 @@
 import org.zenframework.z8.lang.Object;
 
 [native "org.zenframework.z8.server.base.query.Hyperlink"]
-class Hyperlink extends Object
-{
+class Hyperlink extends Object {
 	static public Hyperlink create(Query query, string text);
 	static public Hyperlink create(Query query, guid recordId, string text);
 
 	static public string externalLink(Query query, guid recordId, string text);
-	
+
 	public operator string();
 }

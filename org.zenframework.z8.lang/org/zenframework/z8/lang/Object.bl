@@ -14,7 +14,7 @@ class Object {
 	public string displayName();
 	public string className();
 
-    public void setAttribute(string attribute, primary value);
+	public void setAttribute(string attribute, primary value);
 	public void removeAttribute(string attribute);
 
 	public bool operator == (Object object);

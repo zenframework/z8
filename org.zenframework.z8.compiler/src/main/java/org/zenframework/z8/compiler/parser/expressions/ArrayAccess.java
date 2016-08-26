@@ -37,9 +37,8 @@ public class ArrayAccess extends LanguageElement implements IJavaTypeCast {
 
 	@Override
 	public IPosition getSourceRange() {
-		if(rightBracket != null) {
+		if(rightBracket != null)
 			return array.getPosition().union(rightBracket.getPosition());
-		}
 		return array.getPosition().union(expression.getSourceRange());
 	}
 
@@ -83,9 +82,8 @@ public class ArrayAccess extends LanguageElement implements IJavaTypeCast {
 
 		IType index = array.getVariableType().getRightKey();
 
-		if(index == null) {
+		if(index == null)
 			index = Primary.resolveType(compilationUnit, Primary.Integer);
-		}
 
 		if(index != null) {
 			typeCast = expression.getVariableType().getCastTo(index);
@@ -94,9 +92,8 @@ public class ArrayAccess extends LanguageElement implements IJavaTypeCast {
 				setError(expression.getPosition(), "Type mismatch: cannot convert from " + expression.getVariableType().getSignature() + " to " + index.getUserName());
 				return false;
 			}
-		} else {
+		} else
 			return false;
-		}
 
 		return true;
 	}
@@ -120,8 +117,7 @@ public class ArrayAccess extends LanguageElement implements IJavaTypeCast {
 		typeCast.getCode(codeGenerator, expression);
 		codeGenerator.append(")");
 
-		if(javaCastPending && !variableType.isArray()) {
+		if(javaCastPending && !variableType.isArray())
 			codeGenerator.append(")");
-		}
 	}
 }

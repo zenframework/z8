@@ -53,16 +53,14 @@ public class VariableType extends LanguageElement implements IVariableType {
 		setCompilationUnit(type.getCompilationUnit());
 		this.type = type.getType();
 
-		if(type.isArray()) {
+		if(type.isArray())
 			keys.addAll(Arrays.asList(type.getKeys()));
-		}
 	}
 
 	@Override
 	public IPosition getSourceRange() {
-		if(keyBrackets.size() > 0) {
+		if(keyBrackets.size() > 0)
 			return typeNameToken.getPosition().union(keyBrackets.get(keyBrackets.size() - 1));
-		}
 		return typeNameToken != null ? typeNameToken.getPosition() : null;
 	}
 
@@ -205,9 +203,8 @@ public class VariableType extends LanguageElement implements IVariableType {
 	public String getJavaNew(boolean staticContext) {
 		String newExpression = "new " + getJavaName();
 
-		if(isArray() || type.extendsPrimary()) {
+		if(isArray() || type.extendsPrimary())
 			return newExpression + "()";
-		}
 
 		return newExpression + "(" + (staticContext ? "null" : "this") + ")";
 	}
@@ -239,18 +236,15 @@ public class VariableType extends LanguageElement implements IVariableType {
 
 	@Override
 	public boolean isArrayOfReferences() {
-		if(!isArray()) {
+		if(!isArray())
 			return false;
-		}
 
-		if(!type.isEnum() && !type.extendsPrimary()) {
+		if(!type.isEnum() && !type.extendsPrimary())
 			return true;
-		}
 
 		for(IType key : getKeys()) {
-			if(key != null && !key.isEnum() && !key.extendsPrimary()) {
+			if(key != null && !key.isEnum() && !key.extendsPrimary())
 				return true;
-			}
 		}
 
 		return false;
@@ -278,14 +272,12 @@ public class VariableType extends LanguageElement implements IVariableType {
 
 	@Override
 	public ITypeCast getCastTo(IType context, IVariableType candidate) {
-		if(compare(candidate)) {
+		if(compare(candidate))
 			return new TypeCast(this, candidate, 0);
-		}
 
 		if(isArray()) {
-			if(getDimensions() != candidate.getDimensions() || TypeCast.getCastToBaseType(getCompilationUnit(), getType(), candidate.getType()) == null) {
+			if(getDimensions() != candidate.getDimensions() || TypeCast.getCastToBaseType(getCompilationUnit(), getType(), candidate.getType()) == null)
 				return null;
-			}
 
 			IType[] keys = getKeys();
 			IType[] candidateKeys = candidate.getKeys();
@@ -294,13 +286,11 @@ public class VariableType extends LanguageElement implements IVariableType {
 				IType key = keys[i];
 				IType candidateKey = candidateKeys[i];
 
-				if(key != null && candidateKey != null && TypeCast.getCastToBaseType(getCompilationUnit(), key, candidateKey) != null) {
+				if(key != null && candidateKey != null && TypeCast.getCastToBaseType(getCompilationUnit(), key, candidateKey) != null)
 					continue;
-				}
 
-				if(key == null && candidateKey == null) {
+				if(key == null && candidateKey == null)
 					continue;
-				}
 
 				return null;
 			}
@@ -308,31 +298,22 @@ public class VariableType extends LanguageElement implements IVariableType {
 			return new TypeCast(this, candidate, 0);
 		}
 
-		if(context == null) {
-			if(type != null) {
-				return type.getCastTo(candidate);
-			}
-			return null;
-		}
+		if(context == null)
+			return type != null ? type.getCastTo(candidate) : null;
 
 		return candidate.isArray() ? null : TypeCast.getCastToBaseType(getCompilationUnit(), getType(), candidate.getType());
 	}
 
 	@Override
 	public IMember findMember(String name) {
-		if(isArray() || getType() == null) {
-			return null;
-		}
-
-		return getType().findMember(name);
+		return isArray() || getType() == null ? null : getType().findMember(name);
 	}
 
 	@Override
 	public IMethod[] getMatchingMethods(String name) {
 		if(!isArray()) {
-			if(getType() != null) {
+			if(getType() != null)
 				return getType().getMatchingMethods(name);
-			}
 
 			return new IMethod[0];
 		}
@@ -342,9 +323,8 @@ public class VariableType extends LanguageElement implements IVariableType {
 		IMethod[] arrayMethods = ArrayMethods.get(getCompilationUnit(), this);
 
 		for(IMethod method : arrayMethods) {
-			if(method.getName().equals(name)) {
+			if(method.getName().equals(name))
 				result.add(method);
-			}
 		}
 
 		return result.toArray(new IMethod[result.size()]);
@@ -352,26 +332,22 @@ public class VariableType extends LanguageElement implements IVariableType {
 
 	@Override
 	public IMethod[] getTypeCastOperators() {
-		if(isArray() || isEnum()) {
+		if(isArray() || isEnum())
 			return new IMethod[0];
-		}
 
-		if(getType() == null) {
+		if(getType() == null)
 			return new IMethod[0];
-		}
 
 		return getType().getTypeCastOperators();
 	}
 
 	@Override
 	public IMember[] getAllMembers() {
-		if(isArray()) {
+		if(isArray())
 			return ArrayMethods.get(getCompilationUnit(), this);
-		}
 
-		if(getType() == null) {
+		if(getType() == null)
 			return new IMember[0];
-		}
 
 		return getType().getAllMembers();
 	}
@@ -381,17 +357,15 @@ public class VariableType extends LanguageElement implements IVariableType {
 		if(!super.resolveTypes(compilationUnit, declaringType))
 			return false;
 
-		if(typeNameToken == null && type != null) {
+		if(typeNameToken == null && type != null)
 			return true;
-		}
 
 		String name = typeNameToken.getRawText();
 
-		if(name.equals(declaringType.getUserName())) {
+		if(name.equals(declaringType.getUserName()))
 			type = declaringType;
-		} else {
+		else
 			type = compilationUnit.resolveType(name);
-		}
 
 		if(type == null) {
 			setFatalError(typeNameToken.getPosition(), name + " cannot be resolved to a type");
@@ -402,9 +376,8 @@ public class VariableType extends LanguageElement implements IVariableType {
 		compilationUnit.addContributor(type.getCompilationUnit());
 		compilationUnit.addContentProposal(typeNameToken.getPosition(), new VariableType(getCompilationUnit(), type));
 
-		if(type.getPosition() != null) {
+		if(type.getPosition() != null)
 			compilationUnit.addHyperlink(typeNameToken.getPosition(), type);
-		}
 
 		for(int i = 0; i < keyTokens.size(); i++) {
 			IToken key = keyTokens.get(i);
@@ -438,17 +411,14 @@ public class VariableType extends LanguageElement implements IVariableType {
 			IType declaringType = getDeclaringType();
 			IMethod declaringMethod = getDeclaringMethod();
 
-			if(declaringMethod != null) {
+			if(declaringMethod != null)
 				variable = declaringMethod.findLocalVariable(name);
-			}
 
-			if(variable == null && declaringType != null) {
+			if(variable == null && declaringType != null)
 				variable = declaringType.findMember(name);
-			}
 
-			if(variable != null) {
+			if(variable != null)
 				return variable.getVariableType();
-			}
 		}
 
 		return null;
@@ -459,9 +429,8 @@ public class VariableType extends LanguageElement implements IVariableType {
 		if(!super.checkSemantics(compilationUnit, declaringType, declaringMethod, null, null)) {
 			IVariableType variableType = resolveName(typeNameToken.getRawText());
 
-			if(variableType != null) {
+			if(variableType != null)
 				compilationUnit.addContentProposal(typeNameToken.getPosition(), variableType);
-			}
 
 			for(int i = 0; i < keyTokens.size(); i++) {
 				IToken key = keyTokens.get(i);
@@ -469,22 +438,20 @@ public class VariableType extends LanguageElement implements IVariableType {
 				if(key != null) {
 					variableType = resolveName(key.getRawText());
 
-					if(variableType != null) {
+					if(variableType != null)
 						compilationUnit.addContentProposal(key.getPosition(), variableType);
-					}
 				}
 			}
 			return false;
 		}
 
 		if(autoToken != null) {
-			if(declaringMethod != null || getDimensions() != 1 || getRightKey() != null) {
+			if(declaringMethod != null || getDimensions() != 1 || getRightKey() != null)
 				setError(autoToken.getPosition(), "The modifier auto can only be applied to class members of one-dimensional array type");
-			} else if(type.extendsPrimary()) {
+			else if(type.extendsPrimary())
 				setError(autoToken.getPosition(), "The modifier auto cannot be applied to an array of a primary type " + type.getUserName());
-			} else {
+			else
 				isAuto = true;
-			}
 		}
 		return true;
 	}

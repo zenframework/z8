@@ -123,9 +123,8 @@ public abstract class AbstractType extends LanguageElement implements IType {
 	public String getNestedJavaName() {
 		IType container = getContainerType();
 
-		if(container != null) {
+		if(container != null)
 			return container.getNestedJavaName() + '.' + getJavaName();
-		}
 
 		return getJavaName();
 	}
@@ -134,9 +133,8 @@ public abstract class AbstractType extends LanguageElement implements IType {
 	public String getNestedUserName() {
 		IType container = getContainerType();
 
-		if(container != null) {
+		if(container != null)
 			return container.getNestedUserName() + '.' + getUserName();
-		}
 
 		return getUserName();
 	}
@@ -176,9 +174,8 @@ public abstract class AbstractType extends LanguageElement implements IType {
 	public IType getTopLevelContainerType() {
 		IType container = getContainerType();
 
-		if(container == null) {
+		if(container == null)
 			return this;
-		}
 
 		return container.getTopLevelContainerType();
 	}
@@ -195,9 +192,8 @@ public abstract class AbstractType extends LanguageElement implements IType {
 
 	@Override
 	public ImportElement[] getImports() {
-		if(importBlock == null) {
+		if(importBlock == null)
 			return new ImportElement[0];
-		}
 
 		return importBlock.getImportElements();
 	}
@@ -214,15 +210,13 @@ public abstract class AbstractType extends LanguageElement implements IType {
 
 	@Override
 	public boolean extendsPrimary() {
-		if(isPrimary()) {
+		if(isPrimary())
 			return true;
-		}
 
 		IType baseType = getBaseType();
 
-		if(baseType != null) {
+		if(baseType != null)
 			return baseType.extendsPrimary();
-		}
 
 		return false;
 	}
@@ -304,9 +298,8 @@ public abstract class AbstractType extends LanguageElement implements IType {
 
 	@Override
 	public IType lookupNestedType(String qualifiedName) {
-		if(qualifiedName == null) {
+		if(qualifiedName == null)
 			return null;
-		}
 
 		List<String> names = new ArrayList<String>();
 
@@ -323,7 +316,6 @@ public abstract class AbstractType extends LanguageElement implements IType {
 
 			names.add(name);
 		}
-		;
 
 		IType type = this;
 
@@ -333,14 +325,12 @@ public abstract class AbstractType extends LanguageElement implements IType {
 			type = null;
 
 			for(IType nestedType : nestedTypes) {
-				if(nestedType.getJavaName().equals(name)) {
+				if(nestedType.getJavaName().equals(name))
 					type = nestedType;
-				}
 			}
 
-			if(type == null) {
+			if(type == null)
 				return null;
-			}
 		}
 
 		return type;
@@ -348,18 +338,16 @@ public abstract class AbstractType extends LanguageElement implements IType {
 
 	@Override
 	public void addNestedType(IType type) {
-		if(nestedTypes == null) {
+		if(nestedTypes == null)
 			nestedTypes = new ArrayList<IType>();
-		}
 
 		nestedTypes.add(type);
 	}
 
 	@Override
 	public IMember[] getMembers() {
-		if(members == null) {
+		if(members == null)
 			return new IMember[0];
-		}
 		return members.toArray(new IMember[members.size()]);
 	}
 
@@ -372,9 +360,8 @@ public abstract class AbstractType extends LanguageElement implements IType {
 		while(type != null) {
 			IMember[] members = type.getMembers();
 
-			for(IMember member : members) {
+			for(IMember member : members)
 				result.add(member);
-			}
 
 			IMethod[] methods = type.getMethods();
 
@@ -391,17 +378,15 @@ public abstract class AbstractType extends LanguageElement implements IType {
 
 	@Override
 	public IMethod[] getMethods() {
-		if(methods == null) {
+		if(methods == null)
 			return new IMethod[0];
-		}
 		return methods.toArray(new IMethod[methods.size()]);
 	}
 
 	@Override
 	public IInitializer[] getInitializers() {
-		if(initializers == null) {
+		if(initializers == null)
 			return new IInitializer[0];
-		}
 		return initializers.toArray(new IInitializer[initializers.size()]);
 	}
 
@@ -414,9 +399,8 @@ public abstract class AbstractType extends LanguageElement implements IType {
 		while(type != null) {
 			IInitializer[] initializers = type.getInitializers();
 
-			for(IInitializer initializer : initializers) {
+			for(IInitializer initializer : initializers)
 				result.add(0, initializer);
-			}
 
 			type = type.getBaseType();
 		}
@@ -437,9 +421,8 @@ public abstract class AbstractType extends LanguageElement implements IType {
 	protected void setupNativeAttribute() {
 		IAttribute attribute = getAttribute(IAttribute.Native);
 
-		if(attribute == null) {
+		if(attribute == null)
 			attribute = getAttribute(IAttribute.Primary);
-		}
 
 		if(attribute != null) {
 			String qualifiedName = attribute.getValueString();
@@ -473,17 +456,15 @@ public abstract class AbstractType extends LanguageElement implements IType {
 
 	@Override
 	public void addMember(IMember member) {
-		if(members == null) {
+		if(members == null)
 			members = new Set<IMember>();
-		}
 		members.add(member);
 	}
 
 	@Override
 	public void addMethod(IMethod method) {
-		if(methods == null) {
+		if(methods == null)
 			methods = new Set<IMethod>();
-		}
 		methods.add(method);
 	}
 
@@ -495,9 +476,8 @@ public abstract class AbstractType extends LanguageElement implements IType {
 
 		while(type != null) {
 			if(type.typeCastOperators != null) {
-				for(IMethod method : type.typeCastOperators) {
+				for(IMethod method : type.typeCastOperators)
 					result.add(method);
-				}
 			}
 
 			type = (AbstractType)type.getBaseType();
@@ -508,18 +488,15 @@ public abstract class AbstractType extends LanguageElement implements IType {
 
 	@Override
 	public void addTypeCastOperator(IMethod operator) {
-		if(typeCastOperators == null) {
+		if(typeCastOperators == null)
 			typeCastOperators = new ArrayList<IMethod>();
-		}
-
 		typeCastOperators.add(operator);
 	}
 
 	@Override
 	public void addInitializer(IInitializer initializer) {
-		if(initializers == null) {
+		if(initializers == null)
 			initializers = new Set<IInitializer>();
-		}
 		initializers.add(initializer);
 	}
 
@@ -527,13 +504,11 @@ public abstract class AbstractType extends LanguageElement implements IType {
 	public IMember findMember(String name) {
 		IMember member = getMember(name);
 
-		if(member != null) {
+		if(member != null)
 			return member;
-		}
 
-		if(getBaseType() != null) {
+		if(getBaseType() != null)
 			return getBaseType().findMember(name);
-		}
 
 		return null;
 	}
@@ -542,13 +517,11 @@ public abstract class AbstractType extends LanguageElement implements IType {
 	public IMethod findMethod(String signature) {
 		IMethod method = getMethod(signature);
 
-		if(method != null) {
+		if(method != null)
 			return method;
-		}
 
-		if(getBaseType() != null) {
+		if(getBaseType() != null)
 			return getBaseType().findMethod(signature);
-		}
 
 		return null;
 	}
@@ -557,13 +530,11 @@ public abstract class AbstractType extends LanguageElement implements IType {
 	public IInitializer findInitializer(String name) {
 		IInitializer initializer = getInitializer(name);
 
-		if(initializer != null) {
+		if(initializer != null)
 			return initializer;
-		}
 
-		if(getBaseType() != null) {
+		if(getBaseType() != null)
 			return getBaseType().findInitializer(name);
-		}
 
 		return null;
 	}
@@ -578,9 +549,8 @@ public abstract class AbstractType extends LanguageElement implements IType {
 			IMember[] members = type.getMembers();
 
 			for(IMember member : members) {
-				if(member.getVariableType().isAuto()) {
+				if(member.getVariableType().isAuto())
 					result.add(member);
-				}
 			}
 
 			type = type.getBaseType();
@@ -604,9 +574,8 @@ public abstract class AbstractType extends LanguageElement implements IType {
 			IMethod[] methods = type.getMethods();
 
 			for(IMethod method : methods) {
-				if(!method.getName().equals(name) || parametersCount != -1 && parametersCount != method.getParametersCount() || result.get(method) != null) {
+				if(!method.getName().equals(name) || parametersCount != -1 && parametersCount != method.getParametersCount() || result.get(method) != null)
 					continue;
-				}
 
 				result.add(method);
 			}
@@ -632,13 +601,11 @@ public abstract class AbstractType extends LanguageElement implements IType {
 
 	@Override
 	public boolean hasProtectedAccess(IType from) {
-		if(from == null) {
+		if(from == null)
 			return false;
-		}
 
-		if(from.isSubtypeOf(this)) {
+		if(from.isSubtypeOf(this))
 			return true;
-		}
 
 		IType container = from.getContainerType();
 
@@ -654,9 +621,8 @@ public abstract class AbstractType extends LanguageElement implements IType {
 
 	@Override
 	public boolean isContainerOf(IType candidate) {
-		if(candidate == null) {
+		if(candidate == null)
 			return false;
-		}
 
 		IType container = candidate.getContainerType();
 
@@ -675,9 +641,8 @@ public abstract class AbstractType extends LanguageElement implements IType {
 		if(!variableType.isArray()) {
 			ITypeCast typeCast = TypeCast.getCastToBaseType(getCompilationUnit(), this, variableType.getType());
 
-			if(typeCast != null) {
+			if(typeCast != null)
 				return typeCast;
-			}
 		}
 
 		Set<ITypeCast> candidates = new Set<ITypeCast>();
@@ -749,18 +714,16 @@ public abstract class AbstractType extends LanguageElement implements IType {
 		if(!super.resolveTypes(compilationUnit, declaringType))
 			return false;
 
-		if(importBlock != null) {
+		if(importBlock != null)
 			return importBlock.resolveTypes(compilationUnit, declaringType);
-		}
 
 		return true;
 	}
 
 	@Override
 	public boolean checkImportUsage(CompilationUnit compilationUnit) {
-		if(importBlock != null) {
+		if(importBlock != null)
 			return importBlock.checkImportUsage(compilationUnit);
-		}
 
 		return true;
 	}
@@ -782,17 +745,12 @@ public abstract class AbstractType extends LanguageElement implements IType {
 	public IAttribute findAttribute(String name) {
 		IAttribute attribute = super.getAttribute(name);
 
-		if(attribute != null) {
+		if(attribute != null)
 			return attribute;
-		}
 
 		IType baseType = getBaseType();
 
-		if(baseType != null) {
-			return baseType.getAttribute(name);
-		}
-
-		return null;
+		return baseType != null ? baseType.getAttribute(name) : null;
 	}
 
 	void getSetAttributesCode(IType type, CodeGenerator codeGenerator) {

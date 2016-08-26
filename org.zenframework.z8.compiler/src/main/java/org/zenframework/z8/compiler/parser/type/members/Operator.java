@@ -46,9 +46,8 @@ public class Operator extends AbstractMethod {
 
 	@Override
 	public boolean resolveStructure(CompilationUnit compilationUnit, IType declaringType) {
-		if(getParametersCount() > 1) {
+		if(getParametersCount() > 1)
 			setError(getPosition(), "Operator can not have more then 1 parameter");
-		}
 
 		return super.resolveStructure(compilationUnit, declaringType);
 	}

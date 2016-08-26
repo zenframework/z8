@@ -2,25 +2,22 @@ import org.zenframework.z8.base.table.value.BoolField;
 import org.zenframework.z8.base.table.value.Link;
 import org.zenframework.z8.base.table.Table;
 
-[native "org.zenframework.z8.server.base.table.system.Domains"]
-
 [name "SystemDomains"]
 [displayName "Домены"]
+[native "org.zenframework.z8.server.base.table.system.Domains"]
 class Domains extends Table {
-
 	static public string DefaultDomain;
 
 	public Users users;
-	
+
 	[name "UserId"]
 	public Link userLink = users;
-	
+
 	[displayName "Адрес"] id;
 	id.length = 256;
 	id.unique = true;
-	
+
 	[name "Owner"]
 	[displayName "Владелец"]
 	public BoolField owner;
-
 }

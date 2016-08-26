@@ -24,11 +24,10 @@ public class Records extends LanguageElement {
 
 	@Override
 	public IPosition getSourceRange() {
-		if(rightBrace != null) {
+		if(rightBrace != null)
 			return recordsToken.getPosition().union(rightBrace.getPosition());
-		} else if(elements != null) {
+		else if(elements != null)
 			return recordsToken.getPosition().union(elements[elements.length - 1].getSourceRange());
-		}
 		return recordsToken.getPosition();
 	}
 
@@ -54,9 +53,8 @@ public class Records extends LanguageElement {
 			return false;
 
 		if(elements != null) {
-			for(Record element : elements) {
+			for(Record element : elements)
 				element.resolveTypes(compilationUnit, declaringType);
-			}
 		}
 
 		return true;
@@ -68,9 +66,8 @@ public class Records extends LanguageElement {
 			return false;
 
 		if(elements != null) {
-			for(Record element : elements) {
+			for(Record element : elements)
 				element.resolveStructure(compilationUnit, declaringType);
-			}
 		}
 
 		return true;
@@ -82,9 +79,8 @@ public class Records extends LanguageElement {
 			return false;
 
 		if(elements != null) {
-			for(Record element : elements) {
+			for(Record element : elements)
 				element.checkSemantics(compilationUnit, declaringType, declaringMethod, null, null);
-			}
 		}
 
 		return true;
@@ -92,9 +88,8 @@ public class Records extends LanguageElement {
 
 	@Override
 	public void getCode(CodeGenerator codeGenerator) {
-		if(elements == null) {
+		if(elements == null)
 			return;
-		}
 
 		for(Record element : elements) {
 			codeGenerator.indent();
@@ -118,9 +113,8 @@ public class Records extends LanguageElement {
 		codeGenerator.append("super.initStaticRecords();");
 		codeGenerator.breakLine();
 
-		for(Record element : elements) {
+		for(Record element : elements)
 			element.getAddRecordCode(codeGenerator);
-		}
 
 		codeGenerator.decrementIndent();
 

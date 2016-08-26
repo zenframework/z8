@@ -61,9 +61,8 @@ public abstract class AbstractMethod extends LanguageElement implements IMethod 
 
 	@Override
 	public IPosition getSourceRange() {
-		if(body != null) {
+		if(body != null)
 			return getPosition().union(body.getSourceRange());
-		}
 		return getPosition();
 	}
 
@@ -105,18 +104,16 @@ public abstract class AbstractMethod extends LanguageElement implements IMethod 
 	public boolean isNative() {
 		IType type = getDeclaringType();
 
-		if(type.isNative()) {
+		if(type.isNative())
 			return true;
-		}
 
 		String signature = getSignature();
 
 		type = type.getBaseType();
 
 		while(type != null) {
-			if(type.isNative() && type.getMethod(signature) != null) {
+			if(type.isNative() && type.getMethod(signature) != null)
 				return true;
-			}
 			type = type.getBaseType();
 		}
 
@@ -137,9 +134,8 @@ public abstract class AbstractMethod extends LanguageElement implements IMethod 
 	public IVariableType[] getParameterTypes() {
 		IVariableType[] types = new IVariableType[getParametersCount()];
 
-		for(int i = 0; i < parameters.length; i++) {
+		for(int i = 0; i < parameters.length; i++)
 			types[i] = parameters[i].getVariableType();
-		}
 
 		return types;
 	}
@@ -148,9 +144,8 @@ public abstract class AbstractMethod extends LanguageElement implements IMethod 
 	public String[] getParameterNames() {
 		String[] types = new String[getParametersCount()];
 
-		for(int i = 0; i < parameters.length; i++) {
+		for(int i = 0; i < parameters.length; i++)
 			types[i] = parameters[i].getName();
-		}
 
 		return types;
 	}
@@ -227,9 +222,8 @@ public abstract class AbstractMethod extends LanguageElement implements IMethod 
 
 	@Override
 	public void openLocalScope() {
-		if(localScopes == null) {
+		if(localScopes == null)
 			localScopes = new ArrayList<Set<IVariable>>();
-		}
 
 		localScopes.add(0, new Set<IVariable>());
 	}
@@ -238,9 +232,8 @@ public abstract class AbstractMethod extends LanguageElement implements IMethod 
 	public void closeLocalScope() {
 		localScopes.remove(0);
 
-		if(localScopes.size() == 0) {
+		if(localScopes.size() == 0)
 			localScopes = null;
-		}
 	}
 
 	@Override
@@ -254,9 +247,8 @@ public abstract class AbstractMethod extends LanguageElement implements IMethod 
 			for(Set<IVariable> scope : localScopes) {
 				IVariable variable = scope.get(name);
 
-				if(variable != null) {
+				if(variable != null)
 					return variable;
-				}
 			}
 		}
 		return null;
@@ -285,9 +277,8 @@ public abstract class AbstractMethod extends LanguageElement implements IMethod 
 			return false;
 		}
 
-		if(body != null) {
+		if(body != null)
 			return body.resolveTypes(compilationUnit, declaringType);
-		}
 
 		return true;
 	}
@@ -317,33 +308,28 @@ public abstract class AbstractMethod extends LanguageElement implements IMethod 
 			}
 
 			if(!method.isStatic() && isStatic()) {
-				if(method.isVirtual()) {
+				if(method.isVirtual())
 					setError(getPosition(), "The method " + method.getVariableType().getSignature() + " " + getSignature() + " in type " + method.getDeclaringType().getUserName() + " is virtual and cannot be overriden with a static method");
-				} else {
+				else
 					setError(getPosition(), "The method " + method.getVariableType().getSignature() + " " + getSignature() + " in type " + method.getDeclaringType().getUserName() + " is not static and cannot be overriden with a static method");
-				}
 			} else if(method.isStatic() && !isStatic()) {
 				setError(getPosition(), "The method " + method.getVariableType().getSignature() + " " + getSignature() + " in type " + method.getDeclaringType().getUserName() + " is static and cannot be overriden with a non-static method");
 			} else if(!method.isStatic() && !isStatic()) {
 				isVirtual = method.isVirtual();
 
-				if(!method.isVirtual()) {
+				if(!method.isVirtual())
 					setError(getPosition(), "The method " + method.getVariableType().getSignature() + " " + getSignature() + " in type " + method.getDeclaringType().getUserName() + " is not virtual and cannot be overriden");
-				}
 			}
-		} else {
+		} else
 			isVirtual = virtualToken != null;
-		}
 
 		declaringType.addMethod(this);
 
-		if(method != null) {
+		if(method != null)
 			compilationUnit.addHyperlink(getNamePosition(), method.getCompilationUnit(), method.getNamePosition());
-		}
 
-		if(isStatic() && declaringType.getContainerType() != null) {
+		if(isStatic() && declaringType.getContainerType() != null)
 			setError(staticToken.getPosition(), "The modifier static cannot be used inside a nested type");
-		}
 
 		return true;
 	}
@@ -358,9 +344,8 @@ public abstract class AbstractMethod extends LanguageElement implements IMethod 
 		if(!variableType.checkSemantics(compilationUnit, declaringType, this, null, null))
 			return false;
 
-		if(body == null) {
+		if(body == null)
 			return true;
-		}
 
 		body.setAutoOpenScope(false);
 
@@ -368,9 +353,8 @@ public abstract class AbstractMethod extends LanguageElement implements IMethod 
 
 		if(parameters != null) {
 			for(Variable parameter : parameters) {
-				if(parameter.checkSemantics(compilationUnit, declaringType, declaringMethod, null, null)) {
+				if(parameter.checkSemantics(compilationUnit, declaringType, declaringMethod, null, null))
 					addLocalVariable(parameter);
-				}
 			}
 		}
 
@@ -382,9 +366,8 @@ public abstract class AbstractMethod extends LanguageElement implements IMethod 
 
 		IType voidType = Primary.resolveType(compilationUnit, Primary.Void);
 
-		if(!statement.returnsOnAllControlPaths() && variableType.getType() != voidType) {
+		if(!statement.returnsOnAllControlPaths() && variableType.getType() != voidType)
 			setError(getPosition(), "Method must return value of type " + variableType.getSignature());
-		}
 
 		return result;
 	}
@@ -399,10 +382,7 @@ public abstract class AbstractMethod extends LanguageElement implements IMethod 
 		if(!variableType.resolveNestedTypes(compilationUnit, declaringType))
 			return false;
 
-		if(body != null) {
-			return body.resolveNestedTypes(compilationUnit, declaringType);
-		}
-		return true;
+		return body != null ? body.resolveNestedTypes(compilationUnit, declaringType) : true;
 	}
 
 	@Override
@@ -447,12 +427,10 @@ public abstract class AbstractMethod extends LanguageElement implements IMethod 
 	public void replaceTypeName(TextEdit parent, IType type, String newTypeName) {
 		variableType.replaceTypeName(parent, type, newTypeName);
 
-		for(Variable parameter : parameters) {
+		for(Variable parameter : parameters)
 			parameter.replaceTypeName(parent, type, newTypeName);
-		}
 
-		if(body != null) {
+		if(body != null)
 			body.replaceTypeName(parent, type, newTypeName);
-		}
 	}
 }

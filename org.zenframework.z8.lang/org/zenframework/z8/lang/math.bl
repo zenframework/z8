@@ -50,7 +50,7 @@ final class math {
 	* <blockquote><pre>new java.util.Random</pre></blockquote> This
 	* new pseudorandom-number generator is used thereafter for all
 	* calls to this method and is used nowhere else.
-	* 
+	*
 	* <p>This method is properly synchronized to allow correct use by
 	* more than one thread. However, if many threads need to generate
 	* pseudorandom numbers at a great rate, it may reduce contention

@@ -38,9 +38,8 @@ abstract public class BuildMessage {
 
 		IPosition position = getPosition();
 
-		if(position != null) {
+		if(position != null)
 			text += " (" + position.getLine() + ", " + position.getColumn() + ")";
-		}
 
 		text += ": " + getDescription();
 		return text;

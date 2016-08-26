@@ -2,9 +2,7 @@ import org.zenframework.z8.lang.Object;
 import org.zenframework.z8.base.table.value.Field;
 
 [native "org.zenframework.z8.server.base.json.JsonWriter"]
-
 public class JsonWriter extends Object {
-
 	public JsonWriter startObject();
 	public JsonWriter startObject(string name);
 	public JsonWriter finishObject();
@@ -20,5 +18,4 @@ public class JsonWriter extends Object {
 	public JsonWriter writeProperty(Field field);
 
 	public string toString();
-
 }

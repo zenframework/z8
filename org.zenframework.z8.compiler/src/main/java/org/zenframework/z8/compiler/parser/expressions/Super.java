@@ -51,9 +51,8 @@ public class Super extends LanguageElement {
 		compilationUnit.addHyperlink(superToken.getPosition(), type);
 		compilationUnit.addContentProposal(superToken.getPosition(), variableType);
 
-		if(getStaticContext()) {
+		if(getStaticContext())
 			setError(getPosition(), "cannot use super in a static context");
-		}
 
 		return true;
 	}

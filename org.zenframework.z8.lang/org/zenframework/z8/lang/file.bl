@@ -1,6 +1,5 @@
 [primary "org.zenframework.z8.server.types.file"]
 public class file extends primary {
-
 	public string name;
 	public date time;
 	public int size;

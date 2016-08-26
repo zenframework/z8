@@ -74,9 +74,8 @@ public class Container extends LanguageElement {
 			type = container;
 		}
 
-		if(getStaticContext()) {
+		if(getStaticContext())
 			setError(getPosition(), "cannot use container in a static context");
-		}
 
 		return true;
 	}
@@ -85,9 +84,8 @@ public class Container extends LanguageElement {
 	public void getCode(CodeGenerator codeGenerator) {
 		String code = "";
 
-		for(int i = 0; i < tokens.size(); i++) {
+		for(int i = 0; i < tokens.size(); i++)
 			code += (i == 0 ? "" : ".") + "getContainer()";
-		}
 
 		IType type = getVariableType().getType();
 		String containerType = type.getNestedJavaName();
@@ -96,11 +94,10 @@ public class Container extends LanguageElement {
 
 		codeGenerator.getCompilationUnit().importType(topLevelContainer);
 
-		if(!variableType.extendsPrimary()) {
+		if(!variableType.extendsPrimary())
 			codeGenerator.append("((" + containerType + ".CLASS<" + containerType + ">)" + code + ".getCLASS())");
-		} else {
+		else
 			codeGenerator.append("((" + containerType + ")" + code + ")");
-		}
 	}
 
 	public int getNumber() {

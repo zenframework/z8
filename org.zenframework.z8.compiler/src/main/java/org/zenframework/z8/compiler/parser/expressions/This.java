@@ -49,20 +49,18 @@ public class This extends LanguageElement {
 		compilationUnit.addHyperlink(thisToken.getPosition(), declaringType);
 		compilationUnit.addContentProposal(thisToken.getPosition(), variableType);
 
-		if(getStaticContext()) {
+		if(getStaticContext())
 			setError(getPosition(), "cannot use this in a static context");
-		}
 
 		return true;
 	}
 
 	@Override
 	public void getCode(CodeGenerator codeGenerator) {
-		if(getDeclaringType().extendsPrimary()) {
-			codeGenerator.append("this");
-		} else {
+		if(!getDeclaringType().extendsPrimary()) {
 			String type = getVariableType().getType().getNestedJavaName();
 			codeGenerator.append("((" + type + ".CLASS<" + type + ">)getCLASS())");
-		}
+		} else
+			codeGenerator.append("this");
 	}
 }

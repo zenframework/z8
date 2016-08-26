@@ -36,16 +36,14 @@ public class Member extends LanguageElement implements IMember {
 		this.nameToken = nameToken;
 		this.initializer = initializer;
 
-		if(this.initializer != null) {
+		if(this.initializer != null)
 			this.initializer.setParent(this);
-		}
 	}
 
 	@Override
 	public IPosition getSourceRange() {
-		if(initializer != null) {
+		if(initializer != null)
 			return variableType.getSourceRange().union(initializer.getSourceRange());
-		}
 		return variableType.getSourceRange().union(nameToken.getPosition());
 	}
 
@@ -66,17 +64,13 @@ public class Member extends LanguageElement implements IMember {
 
 	@Override
 	public boolean equals(Object object) {
-		if(this == object) {
+		if(this == object)
 			return true;
-		}
 
 		if(object instanceof IMember) {
 			IMember member = (IMember)object;
-
 			String userName = getUserName();
-
 			return getDeclaringType().equals(member.getDeclaringType()) && userName != null && userName.equals(member.getUserName());
-
 		}
 
 		return false;
@@ -151,9 +145,8 @@ public class Member extends LanguageElement implements IMember {
 
 	@Override
 	public boolean resolveTypes(CompilationUnit compilationUnit, IType declaringType) {
-		if(declaringType.getContainerType() != null) {
+		if(declaringType.getContainerType() != null)
 			setFatalError(getPosition(), "Nested Duplicate field " + declaringType.getUserName() + "." + getName());
-		}
 
 		return super.resolveTypes(compilationUnit, declaringType) && variableType.resolveTypes(compilationUnit, declaringType) && (initializer == null || initializer.resolveTypes(compilationUnit, declaringType));
 	}
@@ -179,36 +172,31 @@ public class Member extends LanguageElement implements IMember {
 			if(member.getDeclaringType() == declaringType) {
 				setFatalError(getPosition(), "Duplicate field " + declaringType.getUserName() + "." + getName());
 				setFatalError(member.getPosition(), "Duplicate field " + declaringType.getUserName() + "." + getName());
-			} else {
+			} else
 				setFatalError(getPosition(), getName() + ": redefinition of " + member.getDeclaringType().getUserName() + "." + getName());
-			}
 			return false;
 		}
 
 		if(isStatic()) {
 			IVariableType variableType = getVariableType();
 
-			if(variableType.isReference() || variableType.isArrayOfReferences()) {
+			if(variableType.isReference() || variableType.isArrayOfReferences())
 				setError(staticToken.getPosition(), "The modifier static cannot be used for a reference type member");
-			}
 
-			if(declaringType.getContainerType() != null) {
+			if(declaringType.getContainerType() != null)
 				setError(staticToken.getPosition(), "The modifier static cannot be used inside a nested type");
-			}
 		}
 
-		if(getAttributes().length != 0 && !getVariableType().isReference()) {
+		if(getAttributes().length != 0 && !getVariableType().isReference())
 			setError(getPosition(), "Attributes can only be applied to variables of a reference type");
-		}
 
 		declaringType.addMember(this);
 
 		compilationUnit.addHyperlink(getPosition(), compilationUnit, getPosition());
 		compilationUnit.addContentProposal(nameToken.getPosition(), getVariableType());
 
-		if(initializer != null) {
+		if(initializer != null)
 			initializer.resolveStructure(compilationUnit, declaringType);
-		}
 
 		return true;
 	}
@@ -221,9 +209,8 @@ public class Member extends LanguageElement implements IMember {
 		if(!variableType.checkSemantics(compilationUnit, declaringType, declaringMethod, null, null))
 			return false;
 
-		if(initializer != null) {
+		if(initializer != null)
 			initializer.checkSemantics(compilationUnit, declaringType, declaringMethod, null, null);
-		}
 
 		return true;
 	}
@@ -233,9 +220,8 @@ public class Member extends LanguageElement implements IMember {
 		if(!super.resolveNestedTypes(compilationUnit, declaringType))
 			return false;
 
-		if(initializer != null) {
+		if(initializer != null)
 			initializer.resolveNestedTypes(compilationUnit, declaringType);
-		}
 
 		return true;
 	}
@@ -246,45 +232,39 @@ public class Member extends LanguageElement implements IMember {
 
 		codeGenerator.append("public ");
 
-		if(isStatic()) {
+		if(isStatic())
 			codeGenerator.append("static ");
-		}
 
 		variableType.getCode(codeGenerator);
 
 		codeGenerator.append(" " + getJavaName() + ";");
 		codeGenerator.breakLine();
 
-		if(initializer != null) {
+		if(initializer != null)
 			initializer.getCode(codeGenerator);
-		}
 	}
 
 	@Override
 	public void getStaticBlock(CodeGenerator codeGenerator) {
-		if(isStatic()) {
+		if(isStatic())
 			getConstructorCode(codeGenerator);
-		}
 	}
 
 	@Override
 	public void getStaticConstructor(CodeGenerator codeGenerator) {
 		if(isStatic()) {
-			if(initializer != null) {
+			if(initializer != null)
 				initializer.getConstructor2(codeGenerator);
-			}
 		}
 	}
 
 	@Override
 	public void getConstructor(CodeGenerator codeGenerator) {
-		if(!isStatic()) {
+		if(!isStatic())
 			getConstructorCode(codeGenerator);
-		}
 
-		if(initializer != null) {
+		if(initializer != null)
 			initializer.getConstructor(codeGenerator);
-		}
 	}
 
 	private void getConstructorCode(CodeGenerator codeGenerator) {
@@ -308,9 +288,8 @@ public class Member extends LanguageElement implements IMember {
 
 	@Override
 	public void getConstructor1(CodeGenerator codeGenerator) {
-		if(initializer != null) {
+		if(initializer != null)
 			initializer.getConstructor1(codeGenerator);
-		}
 	}
 
 	@Override
@@ -331,32 +310,23 @@ public class Member extends LanguageElement implements IMember {
 			codeGenerator.breakLine();
 		}
 
-		if(!isStatic() && initializer != null) {
+		if(!isStatic() && initializer != null)
 			initializer.getConstructor2(codeGenerator);
-		}
 	}
 
 	public IPosition getStaticTokenPosition() {
-		if(staticToken != null) {
-			return staticToken.getPosition();
-		}
-		return null;
+		return staticToken != null ? staticToken.getPosition() : null;
 	}
 
 	public IPosition getAccessTokenPosition() {
-		if(accessToken != null) {
-			return accessToken.getPosition();
-		}
-		return null;
+		return accessToken != null ? accessToken.getPosition() : null;
 	}
 
 	@Override
 	public void replaceTypeName(TextEdit parent, IType type, String newTypeName) {
 		variableType.replaceTypeName(parent, type, newTypeName);
 
-		if(initializer != null) {
+		if(initializer != null)
 			initializer.replaceTypeName(parent, type, newTypeName);
-		}
 	}
-
 }

@@ -50,11 +50,7 @@ public abstract class Initialization extends LanguageElement {
 
 	@Override
 	public IPosition getSourceRange() {
-		if(right != null) {
-			return left.getSourceRange().union(right.getSourceRange());
-		}
-
-		return left.getSourceRange();
+		return right != null ? left.getSourceRange().union(right.getSourceRange()) : left.getSourceRange();
 	}
 
 	@Override
@@ -194,8 +190,7 @@ public abstract class Initialization extends LanguageElement {
 	public void replaceTypeName(TextEdit parent, IType type, String newTypeName) {
 		left.replaceTypeName(parent, type, newTypeName);
 
-		if(right != null) {
+		if(right != null)
 			right.replaceTypeName(parent, type, newTypeName);
-		}
 	}
 }

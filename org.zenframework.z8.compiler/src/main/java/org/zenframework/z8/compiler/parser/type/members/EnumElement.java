@@ -103,11 +103,10 @@ public class EnumElement extends LanguageElement implements IMember {
 
 		IMember member = declaringType.findMember(name);
 
-		if(member != null) {
+		if(member != null)
 			setError(nameToken.getPosition(), name + ": redefinition of enumerator");
-		} else {
+		else
 			declaringType.addMember(this);
-		}
 
 		return true;
 	}
@@ -118,5 +117,4 @@ public class EnumElement extends LanguageElement implements IMember {
 		codeGenerator.append(getJavaName() + ",");
 		codeGenerator.breakLine();
 	}
-
 }

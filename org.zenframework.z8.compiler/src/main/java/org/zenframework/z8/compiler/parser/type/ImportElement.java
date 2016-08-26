@@ -121,9 +121,8 @@ public class ImportElement extends LanguageElement {
 
 				if(folder == null)
 					break;
-			} else {
+			} else
 				return folder.getCompilationUnit(name + ".bl");
-			}
 		}
 
 		return null;

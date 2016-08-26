@@ -164,9 +164,8 @@ public class Parser {
 	void onImportList(boolean create) {
 		ImportElement importElement = (ImportElement)pop();
 
-		if(create) {
+		if(create)
 			push(new ArrayList<ImportElement>());
-		}
 
 		List<ImportElement> list = (List<ImportElement>)peek();
 		list.add(importElement);
@@ -226,9 +225,8 @@ public class Parser {
 		public IToken getFirstToken() {
 			IAttribute[] attributes = new IAttribute[0];
 
-			if(this.attributes != null) {
+			if(this.attributes != null)
 				attributes = this.attributes.toArray(new IAttribute[0]);
-			}
 
 			IToken attribute = LanguageElement.getFirstToken(attributes);
 
@@ -278,9 +276,8 @@ public class Parser {
 				return;
 			}
 
-			if(checkAttribute(attribute)) {
+			if(checkAttribute(attribute))
 				attributes.add(attribute);
-			}
 		}
 
 		boolean checkAttribute(IAttribute attribute) {
@@ -298,9 +295,8 @@ public class Parser {
 	void onModifiers(boolean create) {
 		Object modifier = pop();
 
-		if(create) {
+		if(create)
 			push(new Modifiers());
-		}
 
 		Modifiers modifiers = (Modifiers)peek();
 
@@ -314,18 +310,16 @@ public class Parser {
 	}
 
 	void onQualifiedName(boolean create, IToken token) {
-		if(create) {
-			push(new QualifiedName(token));
-		} else {
+		if(!create) {
 			QualifiedName name = (QualifiedName)peek();
 			name.add(token);
-		}
+		} else
+			push(new QualifiedName(token));
 	}
 
 	void applyModifiers(Modifiers modifiers, ILanguageElement element) {
-		if(modifiers.attributes != null) {
+		if(modifiers.attributes != null)
 			element.setAttributes(modifiers.attributes.toArray(new IAttribute[modifiers.attributes.size()]));
-		}
 
 		if(element instanceof Member) {
 			Member member = (Member)element;
@@ -333,68 +327,56 @@ public class Parser {
 			member.setAccessToken(modifiers.accessToken);
 			member.setAutoToken(modifiers.autoToken);
 
-			if(modifiers.virtualToken != null) {
+			if(modifiers.virtualToken != null)
 				getCompilationUnit().error(modifiers.virtualToken.getPosition(), "Modifier is illegal in this context");
-			}
 		} else if(element instanceof AbstractMethod) {
 			AbstractMethod method = (AbstractMethod)element;
 			method.setStatic(modifiers.staticToken);
 			method.setAccess(modifiers.accessToken);
 
-			if(modifiers.staticToken != null && modifiers.virtualToken != null) {
+			if(modifiers.staticToken != null && modifiers.virtualToken != null)
 				getCompilationUnit().error(modifiers.virtualToken.getPosition(), "Modifier is illegal in this context");
-			} else {
+			else
 				method.setVirtual(modifiers.virtualToken);
-			}
 
-			if(modifiers.autoToken != null) {
+			if(modifiers.autoToken != null)
 				getCompilationUnit().error(modifiers.autoToken.getPosition(), "Modifier is illegal in this context");
-			}
 		} else if(element instanceof MemberNestedType) {
-			if(modifiers.accessToken != null) {
+			if(modifiers.accessToken != null)
 				getCompilationUnit().error(modifiers.accessToken.getPosition(), "Modifier is illegal in this context");
-			}
 
-			if(modifiers.staticToken != null) {
+			if(modifiers.staticToken != null)
 				getCompilationUnit().error(modifiers.staticToken.getPosition(), "Modifier is illegal in this context");
-			}
 
-			if(modifiers.autoToken != null) {
+			if(modifiers.autoToken != null)
 				getCompilationUnit().error(modifiers.autoToken.getPosition(), "Modifier is illegal in this context");
-			}
 
-			if(modifiers.virtualToken != null) {
+			if(modifiers.virtualToken != null)
 				getCompilationUnit().error(modifiers.virtualToken.getPosition(), "Modifier is illegal in this context");
-			}
 		} else if(element instanceof Record) {
 			Record record = (Record)element;
 			record.setAccess(modifiers.accessToken);
 
-			if(modifiers.autoToken != null) {
+			if(modifiers.autoToken != null)
 				getCompilationUnit().error(modifiers.autoToken.getPosition(), "Modifier is illegal in this context");
-			}
-			if(modifiers.staticToken != null) {
+
+			if(modifiers.staticToken != null)
 				getCompilationUnit().error(modifiers.staticToken.getPosition(), "Modifier is illegal in this context");
-			}
-			if(modifiers.virtualToken != null) {
+
+			if(modifiers.virtualToken != null)
 				getCompilationUnit().error(modifiers.virtualToken.getPosition(), "Modifier is illegal in this context");
-			}
 		} else if(element instanceof MemberInit) {
-			if(modifiers.accessToken != null) {
+			if(modifiers.accessToken != null)
 				getCompilationUnit().error(modifiers.accessToken.getPosition(), "Modifier is illegal in this context");
-			}
 
-			if(modifiers.staticToken != null) {
+			if(modifiers.staticToken != null)
 				getCompilationUnit().error(modifiers.staticToken.getPosition(), "Modifier is illegal in this context");
-			}
 
-			if(modifiers.autoToken != null) {
+			if(modifiers.autoToken != null)
 				getCompilationUnit().error(modifiers.autoToken.getPosition(), "Modifier is illegal in this context");
-			}
 
-			if(modifiers.virtualToken != null) {
+			if(modifiers.virtualToken != null)
 				getCompilationUnit().error(modifiers.virtualToken.getPosition(), "Modifier is illegal in this context");
-			}
 		}
 	}
 
@@ -405,9 +387,9 @@ public class Parser {
 		if(object instanceof VariableDeclarator) {
 			VariableDeclarator varaibleDeclarator = (VariableDeclarator)object;
 			varaibleDeclarator.setModifiers(modifiers);
-		} else if(object instanceof ILanguageElement) {
+		} else if(object instanceof ILanguageElement)
 			applyModifiers(modifiers, (ILanguageElement)object);
-		}
+
 		push(object);
 	}
 
@@ -423,9 +405,9 @@ public class Parser {
 	void addClassMember() {
 		List<Object> objects = new ArrayList<Object>();
 
-		while(!(peek() instanceof TypeBody)) {
+		while(!(peek() instanceof TypeBody))
 			objects.add(0, pop());
-		}
+
 
 		TypeBody typeBody = (TypeBody)peek();
 
@@ -434,12 +416,10 @@ public class Parser {
 				VariableDeclarator variableDeclarator = (VariableDeclarator)object;
 				ILanguageElement[] elements = variableDeclarator.getMembers();
 
-				for(ILanguageElement element : elements) {
+				for(ILanguageElement element : elements)
 					typeBody.addMember(element);
-				}
-			} else if(object instanceof ILanguageElement) {
+			} else if(object instanceof ILanguageElement)
 				typeBody.addMember((ILanguageElement)object);
-			}
 		}
 	}
 
@@ -553,11 +533,11 @@ public class Parser {
 		}
 
 		public IPosition getSourceRange() {
-			if(rightBracket != null) {
+			if(rightBracket != null)
 				return leftBracket.getPosition().union(rightBracket.getPosition());
-			} else if(expression != null) {
+			else if(expression != null)
 				return leftBracket.getPosition().union(expression.getPosition());
-			}
+
 			return leftBracket.getPosition();
 		}
 
@@ -582,18 +562,16 @@ public class Parser {
 	void onIndices(boolean create) {
 		Index index = (Index)pop();
 
-		if(create) {
+		if(create)
 			push(new Indices());
-		}
 
 		Indices indices = (Indices)peek();
 		indices.add(index);
 	}
 
 	boolean isQualifiedName(ILanguageElement element) {
-		if(element instanceof QualifiedName) {
+		if(element instanceof QualifiedName)
 			return true;
-		}
 
 		if(element instanceof Postfix) {
 			Postfix postfix = (Postfix)element;
@@ -612,9 +590,8 @@ public class Parser {
 			Postfix postfix = (Postfix)element;
 			ILanguageElement prefix = postfix.getPrefix();
 
-			if(prefix instanceof QualifiedName && postfix.getPostfix() == null) {
+			if(prefix instanceof QualifiedName && postfix.getPostfix() == null)
 				return (QualifiedName)prefix;
-			}
 		}
 
 		return null;
@@ -632,9 +609,8 @@ public class Parser {
 		public VariableType getVariableType() {
 			IToken[] tokens = qualifiedName.getTokens();
 
-			if(tokens.length > 1) {
+			if(tokens.length > 1)
 				getCompilationUnit().error(qualifiedName.getPosition(), "Syntax error, identifier expected");
-			}
 
 			VariableType variableType = new VariableType(tokens[0]);
 
@@ -650,9 +626,8 @@ public class Parser {
 					if(indexType == null || indexType.getTokens().length > 1) {
 						getCompilationUnit().error(index.expression.getPosition(), "Syntax error, identifier expected");
 						variableType.addKey(null, index.getSourceRange());
-					} else {
+					} else
 						variableType.addKey(indexType.getTokens()[0], index.getSourceRange());
-					}
 				}
 			}
 
@@ -693,11 +668,10 @@ public class Parser {
 
 			token = LanguageElement.getFirstToken(token, finalToken);
 
-			if(variableType != null) {
+			if(variableType != null)
 				token = LanguageElement.getFirstToken(token, variableType.getFirstToken());
-			} else {
+			else
 				token = LanguageElement.getFirstToken(token, qualifiedName.getFirstToken());
-			}
 
 			return token;
 
@@ -717,9 +691,9 @@ public class Parser {
 		}
 
 		public IToken getIdentifier() {
-			if(qualifiedName.getTokenCount() != 1) {
+			if(qualifiedName.getTokenCount() != 1)
 				getCompilationUnit().error(qualifiedName.getPosition(), "Syntax error, identifier expected");
-			}
+
 			return qualifiedName.getTokens()[0];
 		}
 
@@ -741,9 +715,8 @@ public class Parser {
 						ILanguageElement nestedType = new MemberNestedType(new QualifiedName(nameToken), type.getClassToken(), type.getBody());
 						ILanguageElement member = new Member(variableType, nameToken, nestedType);
 
-						if(modifiers != null) {
+						if(modifiers != null)
 							applyModifiers(modifiers, member);
-						}
 
 						return new ILanguageElement[] { member };
 					}
@@ -751,18 +724,16 @@ public class Parser {
 					ILanguageElement memberInitializer = new MemberInit(new QualifiedName(nameToken), operatorToken, initializer);
 					ILanguageElement member = new Member(variableType, nameToken, memberInitializer);
 
-					if(modifiers != null) {
+					if(modifiers != null)
 						applyModifiers(modifiers, member);
-					}
 
 					return new ILanguageElement[] { member };
 				}
 
 				ILanguageElement member = new Member(variableType, nameToken);
 
-				if(modifiers != null) {
+				if(modifiers != null)
 					applyModifiers(modifiers, member);
-				}
 
 				return new ILanguageElement[] { member };
 			}
@@ -771,17 +742,17 @@ public class Parser {
 				Type type = (Type)initializer;
 				ILanguageElement member = new MemberNestedType(qualifiedName, type.getClassToken(), type.getBody());
 
-				if(modifiers != null) {
+				if(modifiers != null)
 					applyModifiers(modifiers, member);
-				}
+
 				return new ILanguageElement[] { member };
 			}
 
 			ILanguageElement memberInit = new MemberInit(qualifiedName, operatorToken, initializer);
 
-			if(modifiers != null) {
+			if(modifiers != null)
 				applyModifiers(modifiers, memberInit);
-			}
+
 			return new ILanguageElement[] { memberInit };
 		}
 
@@ -883,19 +854,18 @@ public class Parser {
 		}
 
 		IPosition getPosition() {
-			if(rightBrace != null) {
+			if(rightBrace != null)
 				return leftBrace.getPosition().union(rightBrace.getPosition());
-			} else if(size() > 0) {
+			else if(size() > 0)
 				return leftBrace.getPosition().union(lastElement().getPosition());
-			} else {
-				return leftBrace.getPosition();
-			}
+
+			return leftBrace.getPosition();
 		}
 
 		void add(Parameter parameter) {
-			if(parameter.nameToken == null) {
+			if(parameter.nameToken == null)
 				return;
-			}
+
 
 			String name = parameter.nameToken.getRawText();
 
@@ -963,15 +933,13 @@ public class Parser {
 
 		list.add((ILanguageElement)pop());
 
-		while(!(peek() instanceof CompoundStatement)) {
+		while(!(peek() instanceof CompoundStatement))
 			list.add(0, (ILanguageElement)pop());
-		}
 
 		CompoundStatement compound = (CompoundStatement)peek();
 
-		for(ILanguageElement statement : list) {
+		for(ILanguageElement statement : list)
 			compound.addStatement(statement);
-		}
 	}
 
 	void finishCompound(IToken rightBrace) {
@@ -1146,13 +1114,12 @@ public class Parser {
 
 		Indices indices = variableTypeHelper.getIndices();
 
-		if(indices == null) {
-			push(new Postfix(variableTypeHelper.getQualifiedName()));
-		} else {
+		if(indices != null) {
 			push(variableTypeHelper.getQualifiedName());
 			push(variableTypeHelper.getIndices());
 			onArrayAccess();
-		}
+		} else
+			push(new Postfix(variableTypeHelper.getQualifiedName()));
 	}
 
 	void onArrayAccess() {
@@ -1184,13 +1151,12 @@ public class Parser {
 		}
 
 		IPosition getPosition() {
-			if(rightBrace != null) {
+			if(rightBrace != null)
 				return leftBrace.getPosition().union(rightBrace.getPosition());
-			} else if(size() > 0) {
+			else if(size() > 0)
 				return leftBrace.getPosition().union(get(size() - 1).getPosition());
-			} else {
-				return leftBrace.getPosition();
-			}
+
+			return leftBrace.getPosition();
 		}
 	}
 
@@ -1217,18 +1183,16 @@ public class Parser {
 		IToken methodNameToken = qualifiedName.remove(qualifiedName.getTokenCount() - 1);
 
 		if(qualifiedName.getTokenCount() != 0) {
-			if(prefix != null) {
+			if(prefix != null)
 				prefix = new Postfix(prefix, qualifiedName);
-			} else {
+			else
 				prefix = qualifiedName;
-			}
 		}
 
 		ILanguageElement methodCall = new MethodCall(prefix, methodNameToken, expressions.toArray(new ILanguageElement[expressions.size()]), expressions.leftBrace, expressions.rightBrace);
 
-		if(!hasPrefix) {
+		if(!hasPrefix)
 			methodCall = new Postfix(methodCall);
-		}
 
 		push(methodCall);
 	}
