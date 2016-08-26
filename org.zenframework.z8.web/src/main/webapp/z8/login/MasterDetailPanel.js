@@ -636,21 +636,16 @@ Z8.view.MasterDetailPanel = Ext.extend(Z8.Panel,
 		return isMasterDirty || isDetailDirty;
 	},
 
-	isMasterDirty: function()
-	{
+	isMasterDirty: function() {
 		return this.master.isDirty();
 	},
-	
-	isDetailDirty: function()
-	{
+
+	isDetailDirty: function() {
 		if(this.detail == null || !this.detail.isDirty())
-		{
 			return false;
-		}
-		
+
 		var recordId = this.detail.query.recordId;
 		var masterRecord = this.master.getStore().getById(recordId);
-			
 		return masterRecord != null;
 	},
 
@@ -703,22 +698,16 @@ Z8.view.MasterDetailPanel = Ext.extend(Z8.Panel,
 		return true;
 	},
 
-	reloadDetailStore: function(record)
-	{
-		if(this.detail != null)
-		{
-			var recordId = record != null ? record.id : "";
+	reloadDetailStore: function(record) {
+		if(this.detail != null) {
+			var recordId = record != null ? record.id : guid.Null;
 			var store = this.detail.getStore();
 			store.query.recordId = recordId;
-			
+
 			if(record != null)
-			{
 				store.load();
-			}
 			else if(store.getCount() != 0)
-			{
 				store.removeAll();
-			}
 
 			var readOnly = record == null || this.master.grid.getStore().isRecordLocked(record);
 			this.detail.setReadOnly(readOnly);
@@ -727,36 +716,30 @@ Z8.view.MasterDetailPanel = Ext.extend(Z8.Panel,
 		}
 
 		this.master.getStore().setCurrentRecord(record);
-		
 	},
 
-	onFailure: function(info)
-	{
+	onFailure: function(info) {
 		this.onMessage(this.query.text, info);
 	},
 
-	reloadDetailPanel: function(skipBackwards)
-	{
-		if(this.detailPanel != null)
-		{
+	reloadDetailPanel: function(skipBackwards) {
+		if(this.detailPanel != null) {
 			var records = this.master.getSelectedRecords();
 			var record = Z8.isEmpty(records) ? null : records[0];
-			
+
 			var params = {};
 			params.queryId = this.link.queryId;
-			params.recordId = record != null ? record.id : "";
-			
+
+			params.recordId = record != null ? record.id : guid.Null;
 			var success = this.createDetailPanel.createDelegate(this, [skipBackwards], true);
 			var error = this.onFailure;
-			
+
 			Z8.Ajax.request(this.query.requestId, success, error, params, this);
 		}
 	},
 
-	createDetailPanel: function(query, skipBackwards)
-	{
-		if(this.detail != null)
-		{
+	createDetailPanel: function(query, skipBackwards) {
+		if(this.detail != null) {
 			this.detail.getStore().un('beforeload', this.onDetailBeforeLoad, this);
 			this.detail.getStore().un('load', this.onDetailAfterLoad, this);
 			this.detail.getStore().un('exception', this.onDetailError, this);
@@ -767,11 +750,11 @@ Z8.view.MasterDetailPanel = Ext.extend(Z8.Panel,
 		var links = this.query.backwards;
 
 		query.master = this.query;
-		query.recordId = record != null ? record.id : "";
-		
+		query.recordId = record != null ? record.id : guid.Null;
+
 		this.detail = new Z8.view.GridView({parentLocked: this.masterLocked, showToolbarBtnText: false, forceFocus: false, query: query });
 		this.initDetailToolbar(links);
-		
+
 		this.detail.on('viewready', this.onDetailRendered, this);
 		this.detail.on('refresh', this.onRefresh, this);
 		this.detail.on('cellLinkClick', this.onCellLinkClick, this);
@@ -785,61 +768,48 @@ Z8.view.MasterDetailPanel = Ext.extend(Z8.Panel,
 		this.detail.on('notsaved', this.onNotSaved, this);
 		this.detail.on('required', this.onRequired.createDelegate(this, ['detail'], true), this);
 		this.detail.on('import', this.onImport, this);
-		
+
 		this.detailStateManager = new Z8.grid.GridStateManager();
 		this.detailStateManager.init(this.detail.grid);
 
 		this.detail.getStore().on('beforeload', this.onDetailBeforeLoad, this);
 		this.detail.getStore().on('load', this.onDetailAfterLoad, this);
 		this.detail.getStore().on('exception', this.onDetailError, this); // именно exception, а не error
-		
+
 		this.detailBackwards = new Z8.view.BackwardsView({data: links});
 		this.detailBackwards.on('backwardclick', this.onBackwardClick, this);
 
 
 		if(!Z8.isEmpty(links) && links.length > 1 && !skipBackwards)
-		{
 			this.detailPanel.add(this.detailBackwards);
-		}
 		else
-		{
 			this.detailPanel.add(this.detail);
-		}
-		
+
 		this.onMessage(this.query.text, query.info);
 
 		this.detailPanel.doLayout();
 	},
 
-	onDetailRendered: function()
-	{
+	onDetailRendered: function() {
 		if(this.states != null && this.states.detail != null)
-		{
 			this.detailStateManager.restoreStates(this.states.detail);
-		}
-		
+
 		var settings = Z8.getUserSettings();
-		
-		if (settings.dataviews)
-		{
+
+		if (settings.dataviews) {
 			var states = settings.dataviews[this.query.requestId];
-		
-			if (states)
-			{
+
+			if (states) {
 				Ext.iterate(states, function(key, state) {
 					if (state.isDefault && state.detail)
-					{
 						this.masterStateManager.restoreStates(state.detail);
-					}
 				}, this);
 			}
 		}
 	},
 
-	initDetailToolbar: function(links)
-	{
-		if(!Z8.isEmpty(links))
-		{
+	initDetailToolbar: function(links) {
+		if(!Z8.isEmpty(links)) {
 			if(links.length == 1)
 			{
 				this.detailButton = new Z8.Toolbar.TextItem({ text: this.link.text });
@@ -1157,55 +1127,43 @@ Z8.view.MasterDetailPanel = Ext.extend(Z8.Panel,
 		Z8.viewport.open(queryId, { filterBy: record.get(field.linkId) });
 	},
 	
-	onCellAltClick: function(editWith)
-	{
+	onCellAltClick: function(editWith) {
 		Z8.viewport.open(editWith);
 	},
 
-	onCellLinkClick: function(view, rowIndex, cellIndex)
-	{
+	onCellLinkClick: function(view, rowIndex, cellIndex) {
 		var grid = view.grid;
-		
+
 		var column = grid.getColumnModel().columns[cellIndex];
 		var record = grid.getRecord(rowIndex);
 
-		if(column.anchorPolicy == 'custom')
-		{
-			var link =
-			{
+		if(column.anchorPolicy == 'custom') {
+			var link = {
 				fieldId: column.dataIndex,
 				value: record.data[column.dataIndex]
 			};
-			
+
 			var query = grid.getStore().query;
-			
-			if(query.primaryKey != null)
-			{
+
+			if(query.primaryKey != null) {
 				link.recordId = record.id;
 			}
-			else if(query.groups != null)
-			{
+			else if(query.groups != null) {
 				var ids = [];
-				
+
 				for(var i = 0; i < query.groups.length; i++)
-				{
 					ids.push(record.data[query.groups[i]]);	
-				}
-				
+
 				link.groups = ids;
 			}
 
-			var callbackFn = function(info)
-			{
+			var callbackFn = function(info) {
 				this.onMessage(this.query.text, info);
 			};
-			
 			var callback = new Z8.Callback.create(callbackFn, this);
 			Z8.viewport.followLink(link, grid.getStore().query, callback, callback);
 		}
 		else
-		{
 			this.onGoToRecord(grid, grid.getStore().getAt(rowIndex), column.editWith, column.dataIndex);
-		}
 	}
 });

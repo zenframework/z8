@@ -15,7 +15,7 @@ public class MetaAction extends ReadAction {
 	static public final string LimitValue = new string("50");
 
 	public MetaAction(ActionParameters actionParameters) {
-		super(actionParameters);
+		super(actionParameters, actionParameters.getRecordId());
 	}
 
 	@Override

@@ -1,6 +1,10 @@
 Ext.isIE6 = false;
 Ext.BLANK_IMAGE_URL = 'resources/images/default/s.gif';
 
+guid = {
+	Null: '00000000-0000-0000-0000-000000000000'
+};
+
 Z8 = {
 	viewport: null,
 
