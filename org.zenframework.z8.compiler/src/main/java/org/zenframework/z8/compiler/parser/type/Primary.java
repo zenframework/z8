@@ -17,7 +17,6 @@ public class Primary {
 	final static public String Decimal = "decimal";
 	final static public String String = "string";
 	final static public String Date = "date";
-	final static public String Datetime = "datetime";
 	final static public String Datespan = "datespan";
 	final static public String Guid = "guid";
 	final static public String Binary = "binary";
@@ -29,7 +28,6 @@ public class Primary {
 	final static public String SqlDecimal = "sql_decimal";
 	final static public String SqlString = "sql_string";
 	final static public String SqlDate = "sql_date";
-	final static public String SqlDatetime = "sql_datetime";
 	final static public String SqlDatespan = "sql_datespan";
 	final static public String SqlGuid = "sql_guid";
 	final static public String SqlBinary = "sql_binary";
@@ -41,7 +39,6 @@ public class Primary {
 	final static public String DecimalPath = "org/zenframework/z8/lang/decimal.bl";
 	final static public String StringPath = "org/zenframework/z8/lang/string.bl";
 	final static public String DatePath = "org/zenframework/z8/lang/date.bl";
-	final static public String DatetimePath = "org/zenframework/z8/lang/datetime.bl";
 	final static public String DatespanPath = "org/zenframework/z8/lang/datespan.bl";
 	final static public String GuidPath = "org/zenframework/z8/lang/guid.bl";
 	final static public String BinaryPath = "org/zenframework/z8/lang/binary.bl";
@@ -53,7 +50,6 @@ public class Primary {
 	final static public String SqlDecimalPath = "org/zenframework/z8/lang/sql/sql_decimal.bl";
 	final static public String SqlStringPath = "org/zenframework/z8/lang/sql/sql_string.bl";
 	final static public String SqlDatePath = "org/zenframework/z8/lang/sql/sql_date.bl";
-	final static public String SqlDatetimePath = "org/zenframework/z8/lang/sql/sql_datetime.bl";
 	final static public String SqlDatespanPath = "org/zenframework/z8/lang/sql/sql_datespan.bl";
 	final static public String SqlGuidPath = "org/zenframework/z8/lang/sql/sql_guid.bl";
 	final static public String SqlBinaryPath = "org/zenframework/z8/lang/sql/sql_binary.bl";
@@ -71,7 +67,6 @@ public class Primary {
 		nameToPathMap.put(Decimal, new Path(DecimalPath));
 		nameToPathMap.put(String, new Path(StringPath));
 		nameToPathMap.put(Date, new Path(DatePath));
-		nameToPathMap.put(Datetime, new Path(DatetimePath));
 		nameToPathMap.put(Datespan, new Path(DatespanPath));
 		nameToPathMap.put(Guid, new Path(GuidPath));
 		nameToPathMap.put(Binary, new Path(BinaryPath));
@@ -83,7 +78,6 @@ public class Primary {
 		nameToPathMap.put(SqlDecimal, new Path(SqlDecimalPath));
 		nameToPathMap.put(SqlString, new Path(SqlStringPath));
 		nameToPathMap.put(SqlDate, new Path(SqlDatePath));
-		nameToPathMap.put(SqlDatetime, new Path(SqlDatetimePath));
 		nameToPathMap.put(SqlDatespan, new Path(SqlDatespanPath));
 		nameToPathMap.put(SqlGuid, new Path(SqlGuidPath));
 		nameToPathMap.put(SqlBinary, new Path(SqlBinaryPath));
@@ -95,7 +89,6 @@ public class Primary {
 		primaryToSqlMap.put(Decimal, SqlDecimal);
 		primaryToSqlMap.put(String, SqlString);
 		primaryToSqlMap.put(Date, SqlDate);
-		primaryToSqlMap.put(Datetime, SqlDatetime);
 		primaryToSqlMap.put(Datespan, SqlDatespan);
 		primaryToSqlMap.put(Guid, SqlGuid);
 		primaryToSqlMap.put(Binary, SqlBinary);

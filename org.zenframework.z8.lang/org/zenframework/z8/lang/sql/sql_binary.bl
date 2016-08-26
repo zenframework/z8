@@ -1,5 +1,4 @@
 [primary "org.zenframework.z8.server.types.sql.sql_binary"]
 
-final class sql_binary extends sql_primary
-{
+final class sql_binary extends sql_primary {
 }

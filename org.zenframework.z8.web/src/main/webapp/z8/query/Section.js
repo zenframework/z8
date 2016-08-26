@@ -1,8 +1,9 @@
 Z8.query.Section = Ext.extend(Ext.util.Observable, {
 	header: '',
-	controls: [],
 
 	constructor : function(section) {
+		this.controls = [];
+
 		if(Ext.isArray(section)) {
 			var sections = section;
 			for(var i = 0, length = sections.length; i < length; i++) {

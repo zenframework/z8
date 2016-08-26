@@ -1,7 +1,6 @@
 [primary "org.zenframework.z8.server.types.sql.sql_integer"]
 
-final class sql_int extends sql_primary
-{
+final class sql_int extends sql_primary {
 	public operator ();
 
 	public operator sql_decimal();

@@ -23,10 +23,10 @@ public class MetaAction extends ReadAction {
 		Map<string, string> requestParameters = requestParameters();
 
 		Query query = getQuery();
-		
+
 		if(query.showAsTree())
 			requestParameters.put(Json.parentId, new string(guid.NULL.toString()));
-		
+
 		super.initialize();
 	}
 
@@ -34,7 +34,7 @@ public class MetaAction extends ReadAction {
 	public void writeResponse(JsonWriter writer) throws Throwable {
 		ActionParameters actionParameters = actionParameters();
 		Map<string, string> requestParameters = requestParameters();
-		
+
 		Query query = getQuery();
 
 		writer.writeProperty(Json.isQuery, true);

@@ -7,7 +7,6 @@ class primary {
 	virtual public bool toBool();
 	virtual public guid toGuid();
 	virtual public date toDate();
-	virtual public datetime toDatetime();
 	virtual public datespan toDatespan();
 	virtual public decimal toDecimal();
 	virtual public int toInt();

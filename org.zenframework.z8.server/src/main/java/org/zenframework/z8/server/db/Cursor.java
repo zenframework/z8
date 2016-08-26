@@ -10,9 +10,8 @@ import java.util.UUID;
 import org.zenframework.z8.server.logs.Trace;
 import org.zenframework.z8.server.types.binary;
 import org.zenframework.z8.server.types.bool;
-import org.zenframework.z8.server.types.date;
 import org.zenframework.z8.server.types.datespan;
-import org.zenframework.z8.server.types.datetime;
+import org.zenframework.z8.server.types.date;
 import org.zenframework.z8.server.types.decimal;
 import org.zenframework.z8.server.types.guid;
 import org.zenframework.z8.server.types.integer;
@@ -95,11 +94,6 @@ public class Cursor {
 		return value != null && !wasNull() ? new date(value) : date.MIN;
 	}
 
-	public datetime getDatetime(int index) throws SQLException {
-		Timestamp value = resultSet.getTimestamp(index);
-		return value != null && !wasNull() ? new datetime(value) : datetime.MIN;
-	}
-
 	public datespan getDatespan(int index) throws SQLException {
 		integer value = getInteger(index);
 		return value != null ? new datespan(value) : null;
@@ -128,9 +122,8 @@ public class Cursor {
 		case String:
 			return getString(index);
 		case Date:
-			return getDate(index);
 		case Datetime:
-			return getDatetime(index);
+			return getDate(index);
 		case Datespan:
 			return getDatespan(index);
 		case Decimal:

@@ -51,7 +51,6 @@ class Field extends Control {
 	public bool bool();
 	public guid guid();
 	public date date();
-	public datetime datetime();
 	public datespan datespan();
 	public decimal decimal();
 	public int int();

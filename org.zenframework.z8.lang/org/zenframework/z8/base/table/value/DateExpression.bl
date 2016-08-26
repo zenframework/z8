@@ -1,19 +1,7 @@
 [native "org.zenframework.z8.server.base.table.value.DateExpression"]
 
-class DateExpression extends Expression {
+class DateExpression extends DatetimeExpression {
 	stretch = false;
 
 	format = "d/m/Y"; // http://php.net/manual/ru/function.date.php
-	
-	public void setDefault(date defaultValue);
-
-	virtual public date get();
-	
-	public DateExpression operator = (date value);
-
-	public operator sql_date();
-
-	virtual protected sql_date expression();
-
-	public void setExpression(sql_date expression);
 }

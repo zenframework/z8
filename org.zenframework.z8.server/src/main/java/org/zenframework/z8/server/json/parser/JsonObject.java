@@ -15,7 +15,6 @@ import java.util.ResourceBundle;
 
 import org.zenframework.z8.server.types.bool;
 import org.zenframework.z8.server.types.date;
-import org.zenframework.z8.server.types.datetime;
 import org.zenframework.z8.server.types.decimal;
 import org.zenframework.z8.server.types.guid;
 import org.zenframework.z8.server.types.integer;
@@ -1423,12 +1422,8 @@ public class JsonObject extends HashMap<String, Object> {
         } else if (value instanceof decimal) {
             return numberToString(((decimal) value).get());
         } else if (value instanceof date) {
-            date d = (date) value;
-            boolean minMax = d.equals(date.MIN) || d.equals(date.MAX);
-            return quote(minMax ? "" : value.toString());
-        } else if (value instanceof datetime) {
-            datetime dt = (datetime) value;
-            boolean minMax = dt.equals(datetime.MIN) || dt.equals(datetime.MAX);
+            date dt = (date) value;
+            boolean minMax = dt.equals(date.MIN) || dt.equals(date.MAX);
             return quote(minMax ? "" : value.toString());
         } else if (value instanceof JsonString) {
             return ((JsonString) value).toJSONString();

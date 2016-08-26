@@ -1,7 +1,6 @@
 [primary "org.zenframework.z8.server.types.decimal"]
 
-final class decimal extends primary
-{
+final class decimal extends primary {
 	static public int ROUND_UP = 0;
 	static public int ROUND_DOWN = 1;
 	static public int ROUND_CEILING = 2;

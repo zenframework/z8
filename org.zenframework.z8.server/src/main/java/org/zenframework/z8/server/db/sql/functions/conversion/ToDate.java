@@ -36,6 +36,6 @@ public class ToDate extends SqlToken {
 
 	@Override
 	public FieldType type() {
-		return FieldType.Date;
+		return FieldType.Datetime;
 	}
 }

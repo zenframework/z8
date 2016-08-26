@@ -15,9 +15,8 @@ public class RmiIOType {
 	public static final byte Double = 18;
 
 	public static final byte Primary = 30;
-	public static final byte Date = 31;
 	public static final byte Datespan = 32;
-	public static final byte Datetime = 33;
+	public static final byte Date = 33;
 	public static final byte Decimal = 34;
 	public static final byte Guid = 35;
 	public static final byte File = 36;

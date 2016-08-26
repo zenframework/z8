@@ -57,10 +57,6 @@ public class primary implements Serializable {
 		return (date) this;
 	}
 
-	public datetime datetime() {
-		return (datetime) this;
-	}
-
 	public datespan datespan() {
 		return (datespan) this;
 	}
@@ -82,10 +78,8 @@ public class primary implements Serializable {
 			return new binary(value);
 		else if(type == FieldType.Boolean)
 			return new bool(value);
-		else if(type == FieldType.Date)
+		else if(type == FieldType.Date || type == FieldType.Datetime)
 			return new date(value);
-		else if(type == FieldType.Datetime)
-			return new datetime(value);
 		else if(type == FieldType.Datespan)
 			return new datespan(value);
 		else if(type == FieldType.Decimal)
@@ -113,8 +107,6 @@ public class primary implements Serializable {
 			return new bool((bool) value);
 		else if(value instanceof date)
 			return new date((date) value);
-		else if(value instanceof datetime)
-			return new datetime((datetime) value);
 		else if(value instanceof datespan)
 			return new datespan((datespan) value);
 		else if(value instanceof decimal)
@@ -142,10 +134,6 @@ public class primary implements Serializable {
 
 	public date z8_toDate() {
 		return (date) this;
-	}
-
-	public datetime z8_toDatetime() {
-		return (datetime) this;
 	}
 
 	public datespan z8_toDatespan() {

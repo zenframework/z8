@@ -1,6 +1,5 @@
 [primary "org.zenframework.z8.server.types.sql.sql_primary"]
 
-class sql_primary
-{
+class sql_primary {
 	public sql_string toString();
 }

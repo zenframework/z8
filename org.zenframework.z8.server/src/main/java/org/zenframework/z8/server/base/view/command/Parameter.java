@@ -15,9 +15,8 @@ import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.runtime.OBJECT;
 import org.zenframework.z8.server.runtime.RCollection;
 import org.zenframework.z8.server.types.bool;
-import org.zenframework.z8.server.types.date;
 import org.zenframework.z8.server.types.datespan;
-import org.zenframework.z8.server.types.datetime;
+import org.zenframework.z8.server.types.date;
 import org.zenframework.z8.server.types.decimal;
 import org.zenframework.z8.server.types.file;
 import org.zenframework.z8.server.types.guid;
@@ -82,8 +81,6 @@ public class Parameter extends OBJECT implements IParameter {
 		if(value instanceof bool)
 			return type = FieldType.Boolean;
 		else if(value instanceof date)
-			return type = FieldType.Date;
-		else if(value instanceof datetime)
 			return type = FieldType.Datetime;
 		else if(value instanceof decimal)
 			return type = FieldType.Decimal;
@@ -135,10 +132,8 @@ public class Parameter extends OBJECT implements IParameter {
 			return new decimal(value);
 		else if(type == FieldType.Boolean)
 			return new bool(value);
-		else if(type == FieldType.Date)
+		else if(type == FieldType.Date || type == FieldType.Datetime)
 			return value.isEmpty() ? new date() : new date(value);
-		else if(type == FieldType.Datetime)
-			return value.isEmpty() ? new datetime() : new datetime(value);
 		else if(type == FieldType.Datespan)
 			return value.isEmpty() ? new datespan() : new datespan(value);
 		else if(type == FieldType.Guid)
@@ -200,22 +195,13 @@ public class Parameter extends OBJECT implements IParameter {
 		return toArray();
 	}
 
-	public date z8_date() {
-		return (date)value;
-	}
-
 	@SuppressWarnings("rawtypes")
 	public RCollection z8_dateArray() {
 		return toArray();
 	}
 
-	public datetime z8_datetime() {
-		return (datetime)value;
-	}
-
-	@SuppressWarnings("rawtypes")
-	public RCollection z8_datetimeArray() {
-		return toArray();
+	public date z8_date() {
+		return (date)value;
 	}
 
 	public decimal z8_decimal() {

@@ -19,9 +19,8 @@ import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.runtime.RCollection;
 import org.zenframework.z8.server.types.binary;
 import org.zenframework.z8.server.types.bool;
-import org.zenframework.z8.server.types.date;
 import org.zenframework.z8.server.types.datespan;
-import org.zenframework.z8.server.types.datetime;
+import org.zenframework.z8.server.types.date;
 import org.zenframework.z8.server.types.decimal;
 import org.zenframework.z8.server.types.guid;
 import org.zenframework.z8.server.types.integer;
@@ -311,10 +310,6 @@ abstract public class Field extends Control implements IValue, IField {
 		return (date)get();
 	}
 
-	public datetime datetime() {
-		return (datetime)get();
-	}
-
 	public datespan datespan() {
 		return (datespan)get();
 	}
@@ -362,10 +357,6 @@ abstract public class Field extends Control implements IValue, IField {
 
 	public date z8_date() {
 		return date();
-	}
-
-	public datetime z8_datetime() {
-		return datetime();
 	}
 
 	public datespan z8_datespan() {

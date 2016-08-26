@@ -5,20 +5,20 @@ import org.zenframework.z8.base.table.value.Field;
 
 public class JsonWriter extends Object {
 
-    public JsonWriter startObject();
-    public JsonWriter startObject(string name);
-    public JsonWriter finishObject();
+	public JsonWriter startObject();
+	public JsonWriter startObject(string name);
+	public JsonWriter finishObject();
 
-    public JsonWriter startArray();
-    public JsonWriter startArray(string name);
-    public JsonWriter finishArray();
+	public JsonWriter startArray();
+	public JsonWriter startArray(string name);
+	public JsonWriter finishArray();
 
-    public JsonWriter write(primary value);
-    public JsonWriter write(primary[] value);
+	public JsonWriter write(primary value);
+	public JsonWriter write(primary[] value);
 
-    public JsonWriter writeProperty(string name, primary value);
-    public JsonWriter writeProperty(Field field);
-    
-    public string toString();
+	public JsonWriter writeProperty(string name, primary value);
+	public JsonWriter writeProperty(Field field);
+
+	public string toString();
 
 }

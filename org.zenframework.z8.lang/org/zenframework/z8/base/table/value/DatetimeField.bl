@@ -5,12 +5,12 @@ class DatetimeField extends Field {
 
 	format = "d/m/Y H:i:s"; // http://php.net/manual/ru/function.date.php
 
-	virtual public datetime getDefault();	// default datetime.MIN_VALUE 
-	public void setDefault(datetime defaultValue);
+	virtual public date getDefault();	// default datetime.MIN_VALUE 
+	public void setDefault(date defaultValue);
 
-	public operator sql_datetime();
+	public operator sql_date();
 
-	virtual public datetime get();
+	virtual public date get();
 	
-	public DatetimeField operator = (datetime value);
+	public DatetimeField operator = (date value);
 }

@@ -2,7 +2,7 @@
 public class file extends primary {
 
 	public string name;
-	public datetime time;
+	public date time;
 	public int size;
 	public string path;
 	public guid id;

@@ -10,7 +10,6 @@ import org.zenframework.z8.server.json.parser.JsonObject;
 import org.zenframework.z8.server.runtime.RCollection;
 import org.zenframework.z8.server.types.bool;
 import org.zenframework.z8.server.types.date;
-import org.zenframework.z8.server.types.datetime;
 import org.zenframework.z8.server.types.decimal;
 import org.zenframework.z8.server.types.file;
 import org.zenframework.z8.server.types.integer;
@@ -147,12 +146,8 @@ public class JsonWriter {
 		} else if(value instanceof decimal) {
 			write(((decimal)value).get());
 		} else if(value instanceof date) {
-			date d = (date)value;
-			boolean minMax = d.equals(date.MIN) || d.equals(date.MAX);
-			write(minMax ? "" : value.toString());
-		} else if(value instanceof datetime) {
-			datetime dt = (datetime)value;
-			boolean minMax = dt.equals(datetime.MIN) || dt.equals(datetime.MAX);
+			date dt = (date)value;
+			boolean minMax = dt.equals(date.MIN) || dt.equals(date.MAX);
 			write(minMax ? "" : value.toString());
 		} else {
 			write(value.toString());
@@ -208,8 +203,8 @@ public class JsonWriter {
 			writeProperty(name, ((integer)value).get());
 		} else if(value instanceof decimal) {
 			writeProperty(name, ((decimal)value).get());
-		} else if(value instanceof date || value instanceof datetime) {
-			boolean minMax = value.equals(date.MIN) || value.equals(date.MAX) || value.equals(datetime.MIN) || value.equals(datetime.MAX);
+		} else if(value instanceof date) {
+			boolean minMax = value.equals(date.MIN) || value.equals(date.MAX);
 			writeProperty(name, '"' + (minMax ? "" : value.toString()) + '"', false);
 		} else {
 			writeProperty(name, value.toString(), true);

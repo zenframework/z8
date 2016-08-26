@@ -10,6 +10,7 @@ import org.zenframework.z8.server.base.query.Query;
 import org.zenframework.z8.server.base.table.value.Aggregation;
 import org.zenframework.z8.server.base.table.value.Field;
 import org.zenframework.z8.server.base.table.value.ILink;
+import org.zenframework.z8.server.base.table.value.Link;
 import org.zenframework.z8.server.db.sql.SortDirection;
 import org.zenframework.z8.server.engine.ApplicationServer;
 import org.zenframework.z8.server.json.Json;
@@ -111,12 +112,12 @@ public class ActionFactory {
 		result.requestQuery = requestQuery;
 
 		String queryId = requestParameter(Json.queryId);
-		String fieldId = requestParameter(Json.fieldId);
 		String actionName = requestParameter(Json.action);
+		String fieldId = requestParameter(Json.fieldId);
 
 		result.query = model;
 
-		Query fieldsQuery = model;
+		Query query = model;
 
 		if(context != null) {
 			if(queryId != null) {
@@ -135,59 +136,20 @@ public class ActionFactory {
 			} else if(fieldId == null)
 				result.fields = context.getFieldsVia(model);
 
-			fieldsQuery = context;
+			query = context;
 		}
 
 		if(actionName == null || actionName.equals(Action.readAction))
 			result.query.onRender();
 
-		if(fieldId != null) {
-			result.fields = new LinkedHashSet<Field>();
-
-			Field field = result.query.findFieldById(fieldId);
-
-			Collection<ILink> path = result.query.getPath(field);
-
-			result.fields.add(field);
-
-			for(ILink link : path) {
-				for(Field f : fieldsQuery.getFieldsVia(link.getQuery()))
-					result.fields.add(f);
-			}
-
-			if(context != null && result.query != fieldsQuery && result.query != model) {
-				Collection<Field> invisibleFields = model.getReachableFields(result.fields);
-				result.fields.removeAll(invisibleFields);
-			}
-
-			result.query = path.iterator().next().getQuery();
-			result.query.setContext(context != null ? context : requestQuery);
-
-			Collection<Field> columns = field.getColumns();
-
-			for(Field f : columns) {
-				if(result.query.findFieldById(f.id()) == f) {
-					f.visible = new bool(true);
-					result.fields.add(f);
-				}
-			}
-
-			if(!result.fields.isEmpty()) {
-				result.sortFields = new LinkedHashSet<Field>();
-				result.sortFields.add(field);
-			}
-
-			Field modelPrimaryKey = model.primaryKey();
-
-			if(result.query.findFieldById(modelPrimaryKey.id()) != null)
-				result.keyField = modelPrimaryKey;
-
-			result.link = path.iterator().next();
-		}
+		if(fieldId != null)
+			initializeWithField(query, fieldId, result);
+		else
+			initialize(result);
 
 		if(result.query != null) {
 			if(actionName == null) {
-				result.groupFields = new LinkedHashSet<Field>();
+				result.groupFields = new ArrayList<Field>();
 				result.groupFields.addAll(result.query.collectGroupFields());
 
 				if(result.sortFields == null) {
@@ -218,6 +180,77 @@ public class ActionFactory {
 		}
 
 		return result;
+	}
+
+	private void initializeWithField(Query query, String fieldId, ActionParameters result) {
+		result.fields = new LinkedHashSet<Field>();
+
+		Field field = result.query.findFieldById(fieldId);
+
+		Collection<ILink> path = result.query.getPath(field);
+
+		result.fields.add(field);
+
+		for(ILink link : path) {
+			for(Field f : query.getFieldsVia(link.getQuery()))
+				result.fields.add(f);
+		}
+
+		if(context != null && result.query != query && result.query != model) {
+			Collection<Field> invisibleFields = model.getReachableFields(result.fields);
+			result.fields.removeAll(invisibleFields);
+		}
+
+		result.query = path.iterator().next().getQuery();
+		result.query.setContext(context != null ? context : requestQuery);
+
+		Collection<Field> columns = field.getColumns();
+
+		for(Field f : columns) {
+			if(result.query.findFieldById(f.id()) == f) {
+				f.visible = new bool(true);
+				result.fields.add(f);
+			}
+		}
+
+		if(!result.fields.isEmpty()) {
+			result.sortFields = new LinkedHashSet<Field>();
+			result.sortFields.add(field);
+		}
+
+		Field modelPrimaryKey = model.primaryKey();
+
+		if(result.query.findFieldById(modelPrimaryKey.id()) != null)
+			result.keyField = modelPrimaryKey;
+
+		result.link = path.iterator().next();
+	}
+
+	private void initialize(ActionParameters result) {
+		String linkId = requestParameter(Json.link);
+
+		if(linkId == null)
+			return;
+
+		result.fields = new ArrayList<Field>();
+
+		Link link = (Link)result.requestQuery.findFieldById(linkId);
+		result.query = link.getQuery();
+
+		Collection<Field> fields = result.requestQuery.getFormFields();
+
+		for(Field field : fields) {
+			if(result.query.findFieldById(field.id()) != null)
+				result.fields.add(field);
+		}
+
+/*		String sort = requestParameter(Json.sort);
+
+		if(!result.fields.isEmpty()) {
+			result.sortFields = new ArrayList<Field>();
+			result.sortFields.add(field);
+		}
+*/
 	}
 
 	private RCollection<guid> getIds() {

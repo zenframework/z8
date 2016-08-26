@@ -6,5 +6,5 @@ class Attribute {
 	static public string Description = "description";
 	static public string Label = "label";
 	static public string Icon = "icon";
-    static public string Index = "index";
+	static public string Index = "index";
 }

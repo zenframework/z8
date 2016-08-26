@@ -14,7 +14,6 @@ import org.zenframework.z8.compiler.parser.grammar.lexer.token.BinaryToken;
 import org.zenframework.z8.compiler.parser.grammar.lexer.token.BooleanToken;
 import org.zenframework.z8.compiler.parser.grammar.lexer.token.DateToken;
 import org.zenframework.z8.compiler.parser.grammar.lexer.token.DatespanToken;
-import org.zenframework.z8.compiler.parser.grammar.lexer.token.DatetimeToken;
 import org.zenframework.z8.compiler.parser.grammar.lexer.token.DecimalToken;
 import org.zenframework.z8.compiler.parser.grammar.lexer.token.GuidToken;
 import org.zenframework.z8.compiler.parser.grammar.lexer.token.IntegerToken;
@@ -26,7 +25,6 @@ import org.zenframework.z8.compiler.parser.grammar.lexer.token.TokenException;
 import org.zenframework.z8.compiler.util.Binary;
 import org.zenframework.z8.compiler.util.Date;
 import org.zenframework.z8.compiler.util.Datespan;
-import org.zenframework.z8.compiler.util.Datetime;
 import org.zenframework.z8.compiler.util.Set;
 import org.zenframework.z8.compiler.workspace.CompilationUnit;
 
@@ -787,9 +785,8 @@ public class Lexer {
 			buffer.advance(position);
 
 			if(bHasDate) {
-				if(bHasTime) {
-					return new DatetimeToken(new Datetime(nYear, nMonth, nDay, nHour, nMinute, nSecond), new Position(start, position));
-				}
+				if(bHasTime)
+					return new DateToken(new Date(nYear, nMonth, nDay, nHour, nMinute, nSecond), new Position(start, position));
 
 				return new DateToken(new Date(nYear, nMonth, nDay, nHour, nMinute, nSecond), new Position(start, position));
 			}

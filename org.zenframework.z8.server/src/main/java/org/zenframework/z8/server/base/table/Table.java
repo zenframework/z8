@@ -13,7 +13,7 @@ import org.zenframework.z8.server.engine.ApplicationServer;
 import org.zenframework.z8.server.resources.Resources;
 import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.types.bool;
-import org.zenframework.z8.server.types.datetime;
+import org.zenframework.z8.server.types.date;
 import org.zenframework.z8.server.types.guid;
 import org.zenframework.z8.server.types.integer;
 
@@ -187,7 +187,7 @@ public class Table extends TableBase {
 
 	@Override
 	protected void beforeCreate(Query data, guid recordId, guid parentId, Query model, guid modelRecordId) {
-		createdAt.get().set(new datetime());
+		createdAt.get().set(new date());
 		createdBy.get().set(ApplicationServer.getUser().id());
 
 		super.beforeCreate(data, recordId, parentId, model, modelRecordId);
@@ -196,7 +196,7 @@ public class Table extends TableBase {
 	@Override
 	protected void beforeUpdate(Query data, guid recordId, Collection<Field> fields, Query model, guid modelRecordId) {
 		if(data == this && !fields.isEmpty()) {
-			modifiedAt.get().set(new datetime());
+			modifiedAt.get().set(new date());
 			modifiedBy.get().set(ApplicationServer.getUser().id());
 		}
 

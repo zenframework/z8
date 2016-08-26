@@ -7,10 +7,10 @@ import org.zenframework.z8.server.engine.ApplicationServer;
 import org.zenframework.z8.server.format.Format;
 import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.types.bool;
-import org.zenframework.z8.server.types.datetime;
+import org.zenframework.z8.server.types.date;
 import org.zenframework.z8.server.types.primary;
 import org.zenframework.z8.server.types.string;
-import org.zenframework.z8.server.types.sql.sql_datetime;
+import org.zenframework.z8.server.types.sql.sql_date;
 
 public class DatetimeField extends Field {
 	public static class CLASS<T extends DatetimeField> extends Field.CLASS<T> {
@@ -28,14 +28,14 @@ public class DatetimeField extends Field {
 
 	public DatetimeField(IObject container) {
 		super(container);
-		setDefault(datetime.MIN);
+		setDefault(date.MIN);
 		aggregation = Aggregation.Max;
 		format = new string(Format.datetime);
 		stretch = new bool(false);
 	}
 
-	public datetime z8_getDefault() {
-		return (datetime)super.getDefault();
+	public date z8_getDefault() {
+		return (date)super.getDefault();
 	}
 
 	@Override
@@ -53,8 +53,8 @@ public class DatetimeField extends Field {
 		return type().vendorType(vendor);
 	}
 
-	public sql_datetime sql_datetime() {
-		return new sql_datetime(new SqlField(this));
+	public sql_date sql_date() {
+		return new sql_date(new SqlField(this));
 	}
 
 	@Override
@@ -62,11 +62,11 @@ public class DatetimeField extends Field {
 		return z8_get();
 	}
 
-	public datetime z8_get() {
-		return (datetime)internalGet();
+	public date z8_get() {
+		return (date)internalGet();
 	}
 
-	public DatetimeField.CLASS<? extends DatetimeField> operatorAssign(datetime value) {
+	public DatetimeField.CLASS<? extends DatetimeField> operatorAssign(date value) {
 		set(value);
 		return (DatetimeField.CLASS<?>)this.getCLASS();
 	}

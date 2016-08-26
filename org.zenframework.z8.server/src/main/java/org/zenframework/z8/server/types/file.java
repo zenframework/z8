@@ -37,7 +37,7 @@ public class file extends primary implements RmiSerializable, Serializable {
 
 	public string name = new string();
 	public string path = new string();
-	public datetime time = new datetime();
+	public date time = new date();
 	public integer size = new integer();
 	public guid id = new guid();
 	
@@ -67,7 +67,7 @@ public class file extends primary implements RmiSerializable, Serializable {
 	}
 
 	public file(File file) {
-		this(null, file.getName(), null, file.getPath(), file.length(), new datetime(file.lastModified()));
+		this(null, file.getName(), null, file.getPath(), file.length(), new date(file.lastModified()));
 	}
 
 	public file(FileItem file) throws IOException {
@@ -83,13 +83,13 @@ public class file extends primary implements RmiSerializable, Serializable {
 		this(id, name, instanceId, path, 0, null);
 	}
 
-	public file(guid id, String name, String instanceId, String path, long size, datetime time) {
+	public file(guid id, String name, String instanceId, String path, long size, date time) {
 		super();
 		this.id = new guid(id);
 		this.path = new string(getRelativePath(path));
 		this.name = new string(name);
 		this.size = new integer(size);
-		this.time = new datetime(time);
+		this.time = new date(time);
 	}
 
 	public file(file file) {
@@ -124,7 +124,7 @@ public class file extends primary implements RmiSerializable, Serializable {
 	protected void set(JsonObject json) {
 		path = new string(json.getString(json.has(Json.file) ? Json.file : Json.path));
 		name = new string(json.has(Json.name) ? json.getString(Json.name) : "");
-		time = new datetime(json.has(Json.time) ? json.getString(Json.time) : "");
+		time = new date(json.has(Json.time) ? json.getString(Json.time) : "");
 		size = new integer(json.has(Json.size) ? json.getString(Json.size) : "");
 		id = new guid(json.has(Json.id) ? json.getString(Json.id) : "");
 
@@ -221,7 +221,7 @@ public class file extends primary implements RmiSerializable, Serializable {
 
 		RmiIO.writeString(out, name);
 		RmiIO.writeString(out, path);
-		RmiIO.writeDatetime(out, time);
+		RmiIO.writeDate(out, time);
 		RmiIO.writeInteger(out, size);
 		RmiIO.writeGuid(out, id);
 
@@ -250,7 +250,7 @@ public class file extends primary implements RmiSerializable, Serializable {
 
 		name = new string(RmiIO.readString(in));
 		path = new string(RmiIO.readString(in));
-		time = RmiIO.readDatetime(in);
+		time = RmiIO.readDate(in);
 		size = RmiIO.readInteger(in);
 		id = RmiIO.readGuid(in);
 

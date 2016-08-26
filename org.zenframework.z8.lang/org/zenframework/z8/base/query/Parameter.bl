@@ -5,20 +5,18 @@ import org.zenframework.z8.lang.Object;
 [native "org.zenframework.z8.server.base.view.command.Parameter"]
 class Parameter extends Object {
 	public string text;
-	
+
 	public bool bool();
 	public guid guid();
 	public date date();
-	public datetime datetime();
 	public decimal decimal();
 	public int int();
 	public string string();
 	public file file();
-	
+
 	public bool[] boolArray();
 	public guid[] guidArray();
 	public date[] dateArray();
-	public datetime[] datetimeArray();
 	public decimal[] decimalArray();
 	public int[] intArray();
 	public string[] stringArray();
@@ -27,7 +25,6 @@ class Parameter extends Object {
 
 	static public Parameter create(string text, bool value);
 	static public Parameter create(string text, date value);
-	static public Parameter create(string text, datetime value);
 	static public Parameter create(string text, decimal value);
 	static public Parameter create(string text, int value);
 	static public Parameter create(string text, string value);

@@ -225,12 +225,8 @@ public final class datespan extends primary {
 		set(value);
 	}
 
-	public datetime operatorAdd(date x) {
-		return operatorAdd(x.datetime());
-	}
-
-	public datetime operatorAdd(datetime x) {
-		return new datetime(x.get().getTimeInMillis() + milliseconds());
+	public date operatorAdd(date x) {
+		return new date(x.get().getTimeInMillis() + milliseconds());
 	}
 
 	public datespan operatorAdd(datespan x) {

@@ -1,7 +1,6 @@
 [primary "org.zenframework.z8.server.types.bool"]
 
-final class bool extends primary
-{
+final class bool extends primary {
 	public operator string();
 	public operator sql_bool();
 

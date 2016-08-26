@@ -1,17 +1,17 @@
 package org.zenframework.z8.server.request;
 
-import org.zenframework.z8.server.types.datetime;
+import org.zenframework.z8.server.types.date;
 
 public class Message {
-    private datetime time;
+    private date time;
     private String text;
 
     public Message(String text) {
-        time = new datetime();
+        time = new date();
         this.text = text;
     }
 
-    public datetime time() {
+    public date time() {
         return time;
     }
 

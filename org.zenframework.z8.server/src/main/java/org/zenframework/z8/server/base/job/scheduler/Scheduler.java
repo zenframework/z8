@@ -134,9 +134,9 @@ public class Scheduler implements Runnable {
 			job.className = className.string().get();
 			job.name = name.string().get();
 			job.user = user.guid();
-			job.from = from.datetime();
-			job.till = till.datetime();
-			job.lastStarted = lastStarted.datetime();
+			job.from = from.date();
+			job.till = till.date();
+			job.lastStarted = lastStarted.date();
 			job.repeat = repeat.integer().getInt();
 			job.active = active.bool().get();
 

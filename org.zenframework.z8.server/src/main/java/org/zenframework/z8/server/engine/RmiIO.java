@@ -25,9 +25,8 @@ import org.zenframework.z8.server.runtime.CLASS;
 import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.runtime.OBJECT;
 import org.zenframework.z8.server.types.bool;
-import org.zenframework.z8.server.types.date;
 import org.zenframework.z8.server.types.datespan;
-import org.zenframework.z8.server.types.datetime;
+import org.zenframework.z8.server.types.date;
 import org.zenframework.z8.server.types.decimal;
 import org.zenframework.z8.server.types.file;
 import org.zenframework.z8.server.types.guid;
@@ -88,10 +87,6 @@ public class RmiIO extends ObjectIO {
 	}
 
 	static public void writeDate(ObjectOutputStream out, date value) throws IOException {
-		writeLong(out, value.getTicks());
-	}
-
-	static public void writeDatetime(ObjectOutputStream out, datetime value) throws IOException {
 		writeLong(out, value.getTicks());
 	}
 
@@ -177,15 +172,12 @@ public class RmiIO extends ObjectIO {
 		if(value instanceof bool) {
 			writeByte(out, RmiIOType.Boolean);
 			writeBool(out, (bool)value);
-		} else if(value instanceof date) {
-			writeByte(out, RmiIOType.Date);
-			writeDate(out, (date)value);
 		} else if(value instanceof datespan) {
 			writeByte(out, RmiIOType.Datespan);
 			writeDatespan(out, (datespan)value);
-		} else if(value instanceof datetime) {
-			writeByte(out, RmiIOType.Datetime);
-			writeDatetime(out, (datetime)value);
+		} else if(value instanceof date) {
+			writeByte(out, RmiIOType.Date);
+			writeDate(out, (date)value);
 		} else if(value instanceof decimal) {
 			writeByte(out, RmiIOType.Decimal);
 			writeDecimal(out, (decimal)value);
@@ -378,10 +370,6 @@ public class RmiIO extends ObjectIO {
 		return new date(readLong(in));
 	}
 
-	static public datetime readDatetime(ObjectInputStream in) throws IOException {
-		return new datetime(readLong(in));
-	}
-
 	static public datespan readDatespan(ObjectInputStream in) throws IOException {
 		return new datespan(readLong(in));
 	}
@@ -473,12 +461,10 @@ public class RmiIO extends ObjectIO {
 
 		if(type == RmiIOType.Boolean)
 			return readBool(in);
-		else if(type == RmiIOType.Date)
-			return readDate(in);
 		else if(type == RmiIOType.Datespan)
 			return readDatespan(in);
-		else if(type == RmiIOType.Datetime)
-			return readDatetime(in);
+		else if(type == RmiIOType.Date)
+			return readDate(in);
 		else if(type == RmiIOType.Decimal)
 			return readDecimal(in);
 		else if(type == RmiIOType.Guid)

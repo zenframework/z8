@@ -5,15 +5,15 @@ class DatetimeExpression extends Expression {
 
 	format = "d/m/Y G:i:s"; // http://php.net/manual/ru/function.date.php
 
-	public void setDefault(datetime defaultValue);
+	public void setDefault(date defaultValue);
 
-	virtual public datetime get();
+	virtual public date get();
 
-	public DatetimeExpression operator = (datetime value);
+	public DateExpression operator = (date value);
 
-	public operator sql_datetime();
+	public operator sql_date();
 
-	virtual protected sql_datetime expression();
+	virtual protected sql_date expression();
 
-	public void setExpression(sql_datetime expression);
+	public void setExpression(sql_date expression);
 }

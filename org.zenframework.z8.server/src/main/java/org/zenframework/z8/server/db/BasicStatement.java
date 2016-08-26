@@ -14,9 +14,8 @@ import org.zenframework.z8.server.engine.Database;
 import org.zenframework.z8.server.logs.Trace;
 import org.zenframework.z8.server.types.binary;
 import org.zenframework.z8.server.types.bool;
-import org.zenframework.z8.server.types.date;
 import org.zenframework.z8.server.types.datespan;
-import org.zenframework.z8.server.types.datetime;
+import org.zenframework.z8.server.types.date;
 import org.zenframework.z8.server.types.decimal;
 import org.zenframework.z8.server.types.encoding;
 import org.zenframework.z8.server.types.guid;
@@ -163,11 +162,6 @@ public abstract class BasicStatement implements IStatement {
 
 	public void setDate(int position, date value) throws SQLException {
 		Timestamp timestamp = new Timestamp((value != null ? value : date.MIN).getTicks());
-		statement.setTimestamp(position, timestamp);
-	}
-
-	public void setDatetime(int position, datetime value) throws SQLException {
-		Timestamp timestamp = new Timestamp((value != null ? value : datetime.MIN).getTicks());
 		statement.setTimestamp(position, timestamp);
 	}
 

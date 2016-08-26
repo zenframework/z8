@@ -1,33 +1,27 @@
 [primary "org.zenframework.z8.server.types.date"]
 
-final class date extends primary
-{
-	static public date MIN = '01/01/0001';
-	static public date MAX = '01/01/5000';
+final class date extends primary {
+	static public date MIN = '01/01/0001 00:00:00';
+	static public date MAX = '01/01/5000 00:00:00';
 
+	static public date now();
 	static public date today();
 
-	public operator datetime();
 	public operator string();
 	public operator sql_date();
 
-	public datetime operator + (datespan value);
-	public datetime operator - (datespan value);
+	public date operator + (datespan value);
+	public date operator - (datespan value);
 	public datespan operator - (date value);
-	public datespan operator - (datetime value);
+	public date operator += (datespan value);
+	public date operator -= (datespan value);
 
 	public bool operator < (date value);
-	public bool operator < (datetime value);
 	public bool operator > (date value);
-	public bool operator > (datetime value);
 	public bool operator <= (date value);
-	public bool operator <= (datetime value);
 	public bool operator >= (date value);
-	public bool operator >= (datetime value);
 	public bool operator == (date value);
-	public bool operator == (datetime value);
 	public bool operator != (date value);
-	public bool operator != (datetime value);
 
 	public int year();
 	public int quarter();
@@ -36,20 +30,34 @@ final class date extends primary
 	public int day();
 	public int dayOfWeek();
 	public int dayOfYear();
+	public int hour();
+	public int minute();
+	public int second();
+	public int millisecond();
 
-	public void set(int year, int month, int day);
+	public void setDate(int year, int month, int day);
+	public void setTime(int hour, int minute, int second);
+	public void setTime(int hour, int minute, int second, int millisecond);
+
+	public void set(int year, int month, int day, int hour, int minute, int second);
+	public void set(int year, int month, int day, int hour, int minute, int second, int millisecond);
 
 	public date addYear(int years);
 	public date addQuarter(int quarters);
 	public date addMonth(int months);
 	public date addDay(int days);
+	public date addHour(int hours);
+	public date addMinute(int minutes);
+	public date addSecond(int seconds);
 
 	public date truncYear();
 	public date truncQuarter();
 	public date truncMonth();
-	public string toString(string frm);
+	public date truncDay();
+	public date truncHour();
+	public date truncMinute();
 
-	static public date parse(string string); // dd/MM/yyyy
+	public string toString(string frm);
 
 	/**
 	* G Обозначение эры Text AD 
@@ -72,5 +80,6 @@ final class date extends primary
 	* z Часовой пояс General time zone Pacific Standard Time; PST; GMT-08:00 
 	* Z Часовой пояс RFC 822 time zone -0800 
 	*/
+	static public date parse(string time);
 	static public date parse(string string, string frm);
 }

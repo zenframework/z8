@@ -21,10 +21,8 @@ public class DbUtil {
             statement.setString(posParam, (string)value);
             break;
         case Date:
-            statement.setDate(posParam, (date)value);
-            break;
         case Datetime:
-            statement.setDatetime(posParam, (datetime)value);
+            statement.setDate(posParam, (date)value);
             break;
         case Datespan:
             statement.setDatespan(posParam, (datespan)value);

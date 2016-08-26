@@ -13,7 +13,7 @@ import org.zenframework.z8.server.db.sql.SqlToken;
 import org.zenframework.z8.server.db.sql.expressions.And;
 import org.zenframework.z8.server.db.sql.expressions.Operation;
 import org.zenframework.z8.server.db.sql.expressions.Rel;
-import org.zenframework.z8.server.db.sql.functions.datetime.ServerTime;
+import org.zenframework.z8.server.db.sql.functions.date.ServerTime;
 import org.zenframework.z8.server.types.sql.sql_integer;
 
 public class FramedSelect extends Select {

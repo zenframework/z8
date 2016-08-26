@@ -1,5 +1,4 @@
 [primary "void"] 
 
-final class void
-{
+final class void {
 }

@@ -8,17 +8,15 @@ Z8.query.Query = Ext.extend(Ext.util.Observable, {
 	parentKey: null,
 	lockKey: null,
 
-	fields: [],
-	controls: [],
-
 	sort: null,
 	dir: null,
-
-	backwards: [],
 
 	store: null,
 
 	constructor : function(config) {
+		this.fields = [];
+		this.backwards = [];
+
 		Ext.apply(this, config);
 
 		for(var i = 0; i < this.fields.length; i++) {

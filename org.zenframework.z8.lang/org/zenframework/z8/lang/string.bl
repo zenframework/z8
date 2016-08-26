@@ -1,7 +1,6 @@
 [primary "org.zenframework.z8.server.types.string"]
 
-final class string extends primary
-{
+final class string extends primary {
 	public operator sql_string();
 
 	public operator exception();

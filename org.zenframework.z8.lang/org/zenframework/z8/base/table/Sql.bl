@@ -5,8 +5,6 @@ import org.zenframework.z8.base.table.value.DatetimeField;
 import org.zenframework.z8.base.table.value.DatetimeExpression;
 import org.zenframework.z8.base.table.value.BoolField;
 import org.zenframework.z8.base.table.value.BoolExpression;
-import org.zenframework.z8.base.table.value.DateField;
-import org.zenframework.z8.base.table.value.DateExpression;
 import org.zenframework.z8.base.table.value.DecimalField;
 import org.zenframework.z8.base.table.value.DecimalExpression;
 import org.zenframework.z8.base.table.value.GuidField;
@@ -19,15 +17,13 @@ import org.zenframework.z8.base.table.value.StringExpression;
 
 [native "org.zenframework.z8.server.db.sql.functions.SqlFunctions"]
 
-class Sql
-{
+class Sql {
 	/**
 	* Алгоритм работы IIF(sql_bool value, sql_type1 yes, sql_type1 no)
 	* следующий - если value true, то возвращается yes, иначе no
 	*/
-	static sql_date IIF(sql_bool value, sql_date yes, sql_date no);
 	static sql_datespan IIF(sql_bool value, sql_datespan yes, sql_datespan no);
-	static sql_datetime IIF(sql_bool value, sql_datetime yes, sql_datetime no);
+	static sql_date IIF(sql_bool value, sql_date yes, sql_date no);
 	static sql_decimal IIF(sql_bool value, sql_decimal yes, sql_decimal no);
 	static sql_guid IIF(sql_bool value, sql_guid yes, sql_guid no);
 	static sql_int IIF(sql_bool value, sql_int yes, sql_int no);
@@ -37,9 +33,8 @@ class Sql
 	* следующий - если value не null, то возвращается value, иначе defaultValue
 	*/
 	static sql_bool NVL(sql_bool value, sql_bool defaultValue);
-	static sql_date NVL(sql_date value, sql_date defaultValue);
 	static sql_datespan NVL(sql_datespan value, sql_datespan defaultValue);
-	static sql_datetime NVL(sql_datetime value, sql_datetime defaultValue);
+	static sql_date NVL(sql_date value, sql_date defaultValue);
 	static sql_decimal NVL(sql_decimal value, sql_decimal defaultValue);
 	static sql_guid NVL(sql_guid value, sql_guid defaultValue);
 	static sql_int NVL(sql_int value, sql_int defaultValue);
@@ -49,9 +44,8 @@ class Sql
 	* следующий - если в vectore содержится value, то возвращается true, иначе false
 	*/
 	static sql_bool inVector(sql_bool value, bool[] vector);
-	static sql_bool inVector(sql_date value, date[] vector);
 	static sql_bool inVector(sql_datespan value, datespan[] vector);
-	static sql_bool inVector(sql_datetime value, datetime[] vector);
+	static sql_bool inVector(sql_date value, date[] vector);
 	static sql_bool inVector(sql_decimal value, decimal[] vector);
 	static sql_bool inVector(sql_guid value, guid[] vector);
 	static sql_bool inVector(sql_int value, int[] vector);
@@ -63,12 +57,10 @@ class Sql
 	*/
 	static sql_bool in(sql_bool value, Query variants, BoolField field);
 	static sql_bool in(sql_bool value, Query variants, BoolExpression field);
-	static sql_bool in(sql_date value, Query variants, DateField field);
-	static sql_bool in(sql_date value, Query variants, DateExpression field);
 	static sql_bool in(sql_datespan value, Query variants, DatespanField field);
 	static sql_bool in(sql_datespan value, Query variants, DatespanExpression field);
-	static sql_bool in(sql_datetime value, Query variants, DatetimeField field);
-	static sql_bool in(sql_datetime value, Query variants, DatetimeExpression field);
+	static sql_bool in(sql_date value, Query variants, DatetimeField field);
+	static sql_bool in(sql_date value, Query variants, DatetimeExpression field);
 	static sql_bool in(sql_decimal value, Query variants, DecimalField field);
 	static sql_bool in(sql_decimal value, Query variants, DecimalExpression field);
 	static sql_bool in(sql_guid value, Query variants, GuidField field);

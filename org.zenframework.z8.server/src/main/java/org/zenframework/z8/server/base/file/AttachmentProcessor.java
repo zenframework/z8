@@ -14,7 +14,7 @@ import org.zenframework.z8.server.base.table.value.Field;
 import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.runtime.OBJECT;
 import org.zenframework.z8.server.runtime.RCollection;
-import org.zenframework.z8.server.types.datetime;
+import org.zenframework.z8.server.types.date;
 import org.zenframework.z8.server.types.file;
 import org.zenframework.z8.server.types.guid;
 import org.zenframework.z8.server.types.integer;
@@ -130,7 +130,7 @@ public class AttachmentProcessor extends OBJECT {
 
 	private void setPathIfEmpty(guid recordId, file file) {
 		if(file.path.isEmpty()) {
-			datetime time = new datetime();
+			date time = new date();
 			String path = FileUtils.getFile(Folders.Storage, time.format("yyyy.MM.dd"), getTable().classId(), recordId.toString(), field.name(), time.format("HH-mm-ss"), file.name.get()).toString();
 			file.path = new string(path);
 		}

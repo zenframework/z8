@@ -463,7 +463,7 @@ Z8 = {
 				(day < 10 ? '0' : '') + day + 'T' +
 				(hours < 10 ? '0' : '') + hours + ':' +
 				(minutes < 10 ? '0' : '') + minutes +
-				(seconds != 0 ? (seconds < 10 ? '0' : '') + seconds : '') + offset;
+				(seconds != 0 ? ':' + (seconds < 10 ? '0' : '') + seconds : '') + offset;
 		}
 	},
 

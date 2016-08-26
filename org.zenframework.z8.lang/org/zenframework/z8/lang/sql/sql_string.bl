@@ -1,7 +1,6 @@
 [primary "org.zenframework.z8.server.types.sql.sql_string"]
 
-final class sql_string extends sql_primary
-{
+final class sql_string extends sql_primary {
 	public operator ();
 
 	public sql_string operator + (sql_string value);
@@ -19,7 +18,6 @@ final class sql_string extends sql_primary
 	public sql_int toInt();
 	public sql_decimal toDecimal();
 	public sql_date toDate();
-	public sql_datetime toDatetime();
 
 	public sql_bool isEmpty();
 

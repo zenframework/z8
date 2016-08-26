@@ -18,7 +18,7 @@ import org.zenframework.z8.server.request.RequestDispatcher;
 import org.zenframework.z8.server.request.Response;
 import org.zenframework.z8.server.security.IUser;
 import org.zenframework.z8.server.security.User;
-import org.zenframework.z8.server.types.datetime;
+import org.zenframework.z8.server.types.date;
 import org.zenframework.z8.server.types.file;
 import org.zenframework.z8.server.types.guid;
 import org.zenframework.z8.server.types.string;
@@ -29,12 +29,12 @@ public class SchedulerJob implements Runnable {
 	public String className;
 	public guid user;
 	public String name;
-	public datetime from = new datetime();
-	public datetime till = new datetime().addDay(30);
+	public date from = new date();
+	public date till = new date().addDay(30);
 	public int repeat = 1;
 	public boolean active = true;
 
-	public datetime lastStarted = new datetime();
+	public date lastStarted = new date();
 
 	public boolean isRunning = false;
 
@@ -73,16 +73,16 @@ public class SchedulerJob implements Runnable {
 	}
 
 	public boolean readyToStart() {
-		long now = new datetime().getTicks();
+		long now = new date().getTicks();
 
 		return active && !isRunning && from.getTicks() < now && 
-				(till.equals(datetime.MIN) || now < till.getTicks()) && 
-				(lastStarted.equals(datetime.MIN) || lastStarted.addSecond(repeat).getTicks() < now);
+				(till.equals(date.MIN) || now < till.getTicks()) && 
+				(lastStarted.equals(date.MIN) || lastStarted.addSecond(repeat).getTicks() < now);
 	}
 
 	private boolean beforeStart() {
 
-		datetime lastStarted = new datetime();
+		date lastStarted = new date();
 
 		try {
 			if(id != null) {
@@ -114,7 +114,7 @@ public class SchedulerJob implements Runnable {
 		logs.job.get().set(id);
 		logs.files.get().set(new string(writer.toString()));
 		logs.started.get().set(lastStarted);
-		logs.finished.get().set(new datetime());
+		logs.finished.get().set(new date());
 		logs.create();
 	}
 	

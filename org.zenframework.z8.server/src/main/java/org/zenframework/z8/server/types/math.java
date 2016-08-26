@@ -57,18 +57,6 @@ public class math extends OBJECT {
 		return new date(a.operatorMoreEqu(b).get() ? a : b);
 	}
 
-	static public datetime z8_max(datetime a, date b) {
-		return new datetime(a.operatorMoreEqu(b).get() ? a : new datetime(b));
-	}
-
-	static public datetime z8_max(date a, datetime b) {
-		return new datetime(a.operatorMoreEqu(b).get() ? new datetime(a) : b);
-	}
-
-	static public datetime z8_max(datetime a, datetime b) {
-		return new datetime(a.operatorMoreEqu(b).get() ? a : b);
-	}
-
 	static public datespan z8_max(datespan a, datespan b) {
 		return new datespan(a.operatorMoreEqu(b).get() ? a : b);
 	}
@@ -79,18 +67,6 @@ public class math extends OBJECT {
 
 	static public date z8_min(date a, date b) {
 		return new date(a.operatorLessEqu(b).get() ? a : b);
-	}
-
-	static public datetime z8_min(datetime a, date b) {
-		return new datetime(a.operatorLessEqu(b).get() ? a : new datetime(b));
-	}
-
-	static public datetime z8_min(date a, datetime b) {
-		return new datetime(a.operatorLessEqu(b).get() ? new datetime(a) : b);
-	}
-
-	static public datetime z8_min(datetime a, datetime b) {
-		return new datetime(a.operatorLessEqu(b).get() ? a : b);
 	}
 
 	static public datespan z8_min(datespan a, datespan b) {

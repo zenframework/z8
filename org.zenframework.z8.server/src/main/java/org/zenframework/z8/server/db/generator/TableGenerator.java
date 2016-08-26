@@ -56,7 +56,6 @@ import org.zenframework.z8.server.exceptions.db.ObjectNotFoundException;
 import org.zenframework.z8.server.resources.Resources;
 import org.zenframework.z8.server.security.BuiltinUsers;
 import org.zenframework.z8.server.types.date;
-import org.zenframework.z8.server.types.datetime;
 import org.zenframework.z8.server.types.guid;
 import org.zenframework.z8.server.types.primary;
 import org.zenframework.z8.server.types.sql.sql_bool;
@@ -256,7 +255,7 @@ public class TableGenerator {
 		else
 			return true;
 
-		expression.setExpression(new SqlStringToken(dbDefault));
+		expression.setExpression(new SqlStringToken(dbDefault.isEmpty() ? "null" : dbDefault));
 		expression.setOwner(table);
 
 		Select select = new Select();
@@ -442,7 +441,7 @@ public class TableGenerator {
 			throw new SQLException(e);
 		}
 
-		updateDefaultDatetime();
+		updateDefaultDate();
 	}
 
 	private void createTable(String name) throws SQLException {
@@ -460,13 +459,13 @@ public class TableGenerator {
 		Statement.executeUpdate(connection, sql);
 	}
 
-	private void updateDefaultDatetime() throws SQLException {
+	private void updateDefaultDate() throws SQLException {
 		for(Field field : table.getDataFields()) {
 			if(field instanceof DateField || field instanceof DatetimeField) {
-				field.set(field instanceof DateField ? date.MIN : datetime.MIN);
+				field.set(date.MIN);
 				field.aggregation = Aggregation.None;
-				datetime min = new datetime(1900, 1, 1, 0, 0, 0);
-				sql_bool where = new sql_bool(new Rel(field, Operation.LT, min.sql_datetime()));
+				date min = new date(1900, 1, 1, 0, 0, 0);
+				sql_bool where = new sql_bool(new Rel(field, Operation.LT, min.sql_date()));
 				new Update(table, Arrays.asList(field), null, where).execute();
 			}
 		}

@@ -1,7 +1,6 @@
 [primary "org.zenframework.z8.server.types.sql.sql_bool"]
 
-final class sql_bool extends sql_primary
-{
+final class sql_bool extends sql_primary {
 	public operator ();
 
 	public sql_bool operator == (sql_bool value);
@@ -14,7 +13,6 @@ final class sql_bool extends sql_primary
 	public sql_bool IIF(sql_bool yes, sql_bool no);
 	public sql_date IIF(sql_date yes, sql_date no);
 	public sql_datespan IIF(sql_datespan yes, sql_datespan no);
-	public sql_datetime IIF(sql_datetime yes, sql_datetime no);
 	public sql_decimal IIF(sql_decimal yes, sql_decimal no);
 	public sql_guid IIF(sql_guid yes, sql_guid no);
 	public sql_int IIF(sql_int yes, sql_int no);

@@ -5,10 +5,10 @@ import org.zenframework.z8.server.db.sql.SqlField;
 import org.zenframework.z8.server.format.Format;
 import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.types.bool;
-import org.zenframework.z8.server.types.datetime;
+import org.zenframework.z8.server.types.date;
 import org.zenframework.z8.server.types.primary;
 import org.zenframework.z8.server.types.string;
-import org.zenframework.z8.server.types.sql.sql_datetime;
+import org.zenframework.z8.server.types.sql.sql_date;
 
 public class DatetimeExpression extends Expression {
     public static class CLASS<T extends DatetimeExpression> extends Expression.CLASS<T> {
@@ -28,7 +28,7 @@ public class DatetimeExpression extends Expression {
         format = new string(Format.datetime);
         stretch = new bool(false);
 
-        setDefault(new datetime(datetime.MIN));
+        setDefault(new date(date.MIN));
     }
 
     @Override
@@ -36,8 +36,8 @@ public class DatetimeExpression extends Expression {
         return FieldType.Datetime;
     }
 
-    public sql_datetime sql_datetime() {
-        return new sql_datetime(new SqlField(this));
+    public sql_date sql_date() {
+        return new sql_date(new SqlField(this));
     }
 
     @Override
@@ -45,11 +45,11 @@ public class DatetimeExpression extends Expression {
         return z8_get();
     }
 
-    public datetime z8_get() {
-        return (datetime)internalGet();
+    public date z8_get() {
+        return (date)internalGet();
     }
 
-    public DatetimeExpression.CLASS<? extends DatetimeExpression> operatorAssign(datetime value) {
+    public DatetimeExpression.CLASS<? extends DatetimeExpression> operatorAssign(date value) {
         set(value);
         return (DatetimeExpression.CLASS<?>) this.getCLASS();
     }
