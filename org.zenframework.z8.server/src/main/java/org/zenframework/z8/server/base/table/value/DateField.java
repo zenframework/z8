@@ -4,8 +4,6 @@ import org.zenframework.z8.server.db.FieldType;
 import org.zenframework.z8.server.format.Format;
 import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.types.bool;
-import org.zenframework.z8.server.types.date;
-import org.zenframework.z8.server.types.primary;
 import org.zenframework.z8.server.types.string;
 
 public class DateField extends DatetimeField {
@@ -31,13 +29,5 @@ public class DateField extends DatetimeField {
 	@Override
 	public FieldType type() {
 		return FieldType.Date;
-	}
-
-	@Override
-	public void setDefault(primary value) {
-		date date = (date)value;
-		date.setTime(0, 0, 0);
-
-		super.setDefault(date);
 	}
 }

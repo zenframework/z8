@@ -25,10 +25,7 @@ public class date extends primary {
 	final static public date MAX = getUTCDate(UTC_5000_01_01);
 
 	static private date getUTCDate(long utcMillis) {
-		GregorianCalendar calendar = new GregorianCalendar();
-		calendar.clear();
-		calendar.setTimeZone(TimeZone.getTimeZone("Etc/UTC"));
-		calendar.set(GregorianCalendar.ZONE_OFFSET, 0);
+		GregorianCalendar calendar = new GregorianCalendar(TimeZone.getTimeZone("Etc/UTC"));
 		calendar.setTimeInMillis(utcMillis);
 		return new date(calendar);
 	}
@@ -455,6 +452,14 @@ public class date extends primary {
 
 	static public date z8_today() {
 		return new date().truncDay();
+	}
+
+	static public date z8_yesterday() {
+		return z8_today().addDay(-1);
+	}
+
+	static public date z8_tomorrow() {
+		return z8_today().addDay(1);
 	}
 
 	public integer z8_year() {

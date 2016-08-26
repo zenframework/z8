@@ -150,7 +150,7 @@ public class Period extends OBJECT {
 		date start = new date(object.getString(Json.start));
 		start.setTime(0, 0, 0);
 		date finish = new date(object.getString(Json.finish));
-		finish.setTime(23, 59, 59, 9999);
+		finish.addDay(1);
 
 		return create(type, start, finish);
 	}

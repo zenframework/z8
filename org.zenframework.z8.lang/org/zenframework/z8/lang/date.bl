@@ -6,6 +6,8 @@ final class date extends primary {
 
 	static public date now();
 	static public date today();
+	static public date tomorrow();
+	static public date yesterday();
 
 	public operator string();
 	public operator sql_date();
