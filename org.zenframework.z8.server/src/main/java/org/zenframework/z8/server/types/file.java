@@ -25,7 +25,6 @@ import org.zenframework.z8.server.exceptions.ThreadInterruptedException;
 import org.zenframework.z8.server.json.Json;
 import org.zenframework.z8.server.json.parser.JsonArray;
 import org.zenframework.z8.server.json.parser.JsonObject;
-import org.zenframework.z8.server.logs.Trace;
 import org.zenframework.z8.server.runtime.RCollection;
 import org.zenframework.z8.server.runtime.RLinkedHashMap;
 import org.zenframework.z8.server.utils.IOUtils;
@@ -130,7 +129,7 @@ public class file extends primary implements RmiSerializable, Serializable {
 
 		String jsonTime = json.has(Json.time) ? json.getString(Json.time) : "";
 		try {
-			time = jsonTime.indexOf('/') == -1 ? new date(jsonTime) : new date(jsonTime, "D/M/y H:m:s");
+			time = jsonTime == null || jsonTime.indexOf('/') == -1 ? new date(jsonTime) : new date(jsonTime, "D/M/y H:m:s");
 		} catch(NumberFormatException e) {
 			time = new date(); 
 		}
