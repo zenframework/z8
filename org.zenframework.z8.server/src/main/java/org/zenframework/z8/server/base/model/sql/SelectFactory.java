@@ -134,7 +134,7 @@ public class SelectFactory {
 		result.setGroupBy(getGroupFields());
 		result.setHaving(groupFilter);
 
-		if(!isCounter)
+		if(isCounter)
 			return new CountingSelect(result);
 
 		result.setOrderBy(getSortFields());
