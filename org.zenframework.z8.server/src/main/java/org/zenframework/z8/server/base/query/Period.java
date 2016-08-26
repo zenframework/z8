@@ -151,7 +151,7 @@ public class Period extends OBJECT {
 			start.setTime(0, 0, 0);
 		date finish = new date(object.getString(Json.finish));
 		if(!finish.equals(date.MIN))
-			finish.setTime(23, 59, 59, 9999);
+			finish.setTime(23, 59, 59, 999);
 
 		return create(type, start, finish);
 	}

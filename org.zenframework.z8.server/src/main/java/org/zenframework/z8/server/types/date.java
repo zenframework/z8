@@ -202,7 +202,7 @@ public class date extends primary {
 	}
 
 	public void setTime(int hours, int minutes, int seconds, int milliseconds) {
-		value.set(GregorianCalendar.HOUR, hours);
+		value.set(GregorianCalendar.HOUR_OF_DAY, hours);
 		value.set(GregorianCalendar.MINUTE, minutes);
 		value.set(GregorianCalendar.SECOND, seconds);
 		value.set(GregorianCalendar.MILLISECOND, milliseconds);
@@ -283,7 +283,7 @@ public class date extends primary {
 
 	public date addHour(int hours) {
 		GregorianCalendar calendar = (GregorianCalendar)value.clone();
-		calendar.add(GregorianCalendar.HOUR, hours);
+		calendar.add(GregorianCalendar.HOUR_OF_DAY, hours);
 		return new date(calendar);
 	}
 
@@ -317,11 +317,11 @@ public class date extends primary {
 	}
 
 	public date truncHour() {
-		return new date(new GregorianCalendar(value.get(GregorianCalendar.YEAR), value.get(GregorianCalendar.MONTH), value.get(GregorianCalendar.DAY_OF_MONTH), value.get(GregorianCalendar.HOUR), 0, 0));
+		return new date(new GregorianCalendar(value.get(GregorianCalendar.YEAR), value.get(GregorianCalendar.MONTH), value.get(GregorianCalendar.DAY_OF_MONTH), value.get(GregorianCalendar.HOUR_OF_DAY), 0, 0));
 	}
 
 	public date truncMinute() {
-		return new date(new GregorianCalendar(value.get(GregorianCalendar.YEAR), value.get(GregorianCalendar.MONTH), value.get(GregorianCalendar.DAY_OF_MONTH), value.get(GregorianCalendar.HOUR), value.get(GregorianCalendar.MINUTE), 0));
+		return new date(new GregorianCalendar(value.get(GregorianCalendar.YEAR), value.get(GregorianCalendar.MONTH), value.get(GregorianCalendar.DAY_OF_MONTH), value.get(GregorianCalendar.HOUR_OF_DAY), value.get(GregorianCalendar.MINUTE), 0));
 	}
 
 	@Override
