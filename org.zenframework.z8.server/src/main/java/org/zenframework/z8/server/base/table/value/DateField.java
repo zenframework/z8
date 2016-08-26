@@ -9,7 +9,7 @@ import org.zenframework.z8.server.types.primary;
 import org.zenframework.z8.server.types.string;
 
 public class DateField extends DatetimeField {
-	public static class CLASS<T extends DateField> extends Field.CLASS<T> {
+	public static class CLASS<T extends DateField> extends DatetimeField.CLASS<T> {
 		public CLASS(IObject container) {
 			super(container);
 			setJavaClass(DateField.class);
