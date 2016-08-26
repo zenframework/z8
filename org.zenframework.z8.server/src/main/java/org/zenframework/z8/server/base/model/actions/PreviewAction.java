@@ -33,26 +33,26 @@ public class PreviewAction extends Action {
 		String fieldId = getFieldParameter();
 		Field field = query.findFieldById(fieldId);
 
-		if (field == null)
+		if(field == null)
 			throw new RuntimeException("Field '" + fieldId + "' does not exist in query '" + requestId + "'");
 
-		if (!query.readRecord(recordId, Arrays.<Field> asList(field)))
+		if(!query.readRecord(recordId, Arrays.<Field>asList(field)))
 			throw new RuntimeException("Record '" + recordId + "' does not exist in '" + query.getIndex() + "'");
 
 		Collection<file> attachments = file.parse(field.string().get());
 
-		if (attachments.size() == 0)
+		if(attachments.size() == 0)
 			throw new RuntimeException("'" + actionParameters().requestId + "." + fieldId + "' is empty");
 
 		List<File> converted = new ArrayList<File>(attachments.size());
 		String previewRelativePath = null;
-		for (file file : attachments) {
-			if (previewRelativePath == null)
+		for(file file : attachments) {
+			if(previewRelativePath == null)
 				previewRelativePath = getPreviewPath(file, requestId, recordId, field);
 
 			File preview = AttachmentUtils.getPreview(file);
-			
-			if (preview != null)
+
+			if(preview != null)
 				converted.add(preview);
 		}
 		File preview = new File(Folders.Base, previewRelativePath);
@@ -64,9 +64,8 @@ public class PreviewAction extends Action {
 	private static String getPreviewPath(file file, String requestId, guid recordId, Field field) {
 		try {
 			return new File(file.path.get()).getParentFile().getParent() + '/' + PREVIEW;
-		} catch (Throwable e) {
-			return new StringBuilder().append(Folders.Storage).append('/').append(requestId).append('/').append(recordId)
-					.append('/').append(field.name()).append('/').append(PREVIEW).toString();
+		} catch(Throwable e) {
+			return new StringBuilder().append(Folders.Storage).append('/').append(requestId).append('/').append(recordId).append('/').append(field.name()).append('/').append(PREVIEW).toString();
 		}
 	}
 

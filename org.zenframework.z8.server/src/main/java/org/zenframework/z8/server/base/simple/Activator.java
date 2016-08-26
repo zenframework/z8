@@ -5,38 +5,33 @@ import org.zenframework.z8.server.runtime.OBJECT;
 
 public class Activator extends OBJECT {
 
-    public static class CLASS<T extends Activator> extends OBJECT.CLASS<T> {
-        public CLASS(IObject container) {
-            super(container);
-            setJavaClass(Activator.class);
-        }
+	public static class CLASS<T extends Activator> extends OBJECT.CLASS<T> {
+		public CLASS(IObject container) {
+			super(container);
+			setJavaClass(Activator.class);
+		}
 
-        @Override
-        public Object newObject(IObject container) {
-            return new Activator(container);
-        }
-    }
+		@Override
+		public Object newObject(IObject container) {
+			return new Activator(container);
+		}
+	}
 
-    public Activator(IObject container) {
-        super(container);
-    }
+	public Activator(IObject container) {
+		super(container);
+	}
 
-    public void onInitialize() {
-        z8_onInitialize();
-    }
+	public void beforeDbGenerated() {
+		z8_beforeDbGenerated();
+	}
 
-    public void beforeDbGenerated() {
-        z8_beforeDbGenerated();
-    }
+	public void afterDbGenerated() {
+		z8_afterDbGenerated();
+	}
 
-    public void afterDbGenerated() {
-        z8_afterDbGenerated();
-    }
+	public void z8_beforeDbGenerated() {
+	}
 
-    public void z8_onInitialize() {}
-
-    public void z8_beforeDbGenerated() {}
-
-    public void z8_afterDbGenerated() {}
-
+	public void z8_afterDbGenerated() {
+	}
 }

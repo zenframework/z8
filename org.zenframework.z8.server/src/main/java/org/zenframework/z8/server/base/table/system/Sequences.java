@@ -11,65 +11,65 @@ import org.zenframework.z8.server.types.bool;
 import org.zenframework.z8.server.types.integer;
 
 public class Sequences extends Table {
-    final static public String TableName = "SystemSequences";
+	final static public String TableName = "SystemSequences";
 
-    static public class names {
-        public final static String Value = "Value";
-    }
+	static public class names {
+		public final static String Value = "Value";
+	}
 
-    static public class strings {
-        public final static String Title = "Sequences.title";
-        public final static String Value = "Sequences.value";
-    }
+	static public class strings {
+		public final static String Title = "Sequences.title";
+		public final static String Value = "Sequences.value";
+	}
 
-    public static class CLASS<T extends Sequences> extends Table.CLASS<T> {
-        public CLASS() {
-            this(null);
-        }
+	public static class CLASS<T extends Sequences> extends Table.CLASS<T> {
+		public CLASS() {
+			this(null);
+		}
 
-        public CLASS(IObject container) {
-            super(container);
-            setJavaClass(Sequences.class);
-            setName(TableName);
-            setDisplayName(Resources.get(strings.Title));
-        }
+		public CLASS(IObject container) {
+			super(container);
+			setJavaClass(Sequences.class);
+			setName(TableName);
+			setDisplayName(Resources.get(strings.Title));
+		}
 
-        @Override
-        public Object newObject(IObject container) {
-            return new Sequences(container);
-        }
-    }
+		@Override
+		public Object newObject(IObject container) {
+			return new Sequences(container);
+		}
+	}
 
-    public IntegerField.CLASS<IntegerField> value = new IntegerField.CLASS<IntegerField>(this);
+	public IntegerField.CLASS<IntegerField> value = new IntegerField.CLASS<IntegerField>(this);
 
-    public Sequences(IObject container) {
-        super(container);
-    }
+	public Sequences(IObject container) {
+		super(container);
+	}
 
-    @Override
-    public void constructor2() {
-        super.constructor2();
+	@Override
+	public void constructor2() {
+		super.constructor2();
 
-        value.setName(names.Value);
-        value.setIndex("value");
-        value.setDisplayName(Resources.get(strings.Value));
+		value.setName(names.Value);
+		value.setIndex("value");
+		value.setDisplayName(Resources.get(strings.Value));
 
-        readOnly.set(ApplicationServer.getUser().securityGroup() != SecurityGroup.Administrators);
+		readOnly.set(ApplicationServer.getUser().securityGroup() != SecurityGroup.Administrators);
 
-        registerDataField(value);
+		registerDataField(value);
 
-        id.get().indexed = new bool(true);
-        id.get().length = new integer(256);
+		id.get().indexed = new bool(true);
+		id.get().length = new integer(256);
 
-        id1.get().visible = new bool(false);
-        name.get().visible = new bool(false);
+		id1.get().visible = new bool(false);
+		name.get().visible = new bool(false);
 
-        id1.get().width = new integer(15);
+		id1.get().width = new integer(15);
 
-        description.get().width = new integer(100);
+		description.get().width = new integer(100);
 
-        sortFields.add(description);
-        
-        readLock = ReadLock.Update;
-    }
+		sortFields.add(description);
+
+		readLock = ReadLock.Update;
+	}
 }

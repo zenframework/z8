@@ -440,6 +440,9 @@ Z8 = {
 		},
 
 		isoDate: function(date) {
+			if(Ext.isEmpty(date))
+				return '';
+
 			var zoneOffset = -date.getTimezoneOffset();
 
 			var year = date.getFullYear();

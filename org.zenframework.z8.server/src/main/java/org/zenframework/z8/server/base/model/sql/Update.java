@@ -41,9 +41,8 @@ public class Update extends Statement {
 		this.where = where;
 
 		for(Field field : fields) {
-			if(!(field instanceof Expression)) {
+			if(!(field instanceof Expression))
 				this.fields.add(field);
-			}
 		}
 
 		sql = buildSql();
@@ -62,9 +61,8 @@ public class Update extends Statement {
 		String set = "";
 
 		for(Field field : fields) {
-			if(!field.isPrimaryKey()) {
+			if(!field.isPrimaryKey())
 				set += (set.isEmpty() ? "" : ", ") + vendor.quote(field.name()) + "=?";
-			}
 		}
 
 		String where = "";
@@ -74,9 +72,8 @@ public class Update extends Statement {
 			where = vendor.quote(primaryKey.name()) + "=" + recordId.sql_guid().format(vendor, new FormatOptions());
 		}
 
-		if(this.where != null) {
+		if(this.where != null)
 			where += (where.isEmpty() ? "" : " and ") + "(" + this.where.format(vendor, new FormatOptions(), true) + ")";
-		}
 
 		sql += " set " + set + (where.isEmpty() ? "" : " where " + where);
 

@@ -39,39 +39,38 @@ public class ActionFactory {
 		if(actionName == null)
 			return new MetaAction(actionParameters);
 
-		if(Action.newAction.equals(actionName)) {
+		if(Action.newAction.equals(actionName))
 			return actionParameters.getBoolean(Json.save) ? new CreateAction(actionParameters) : new NewAction(actionParameters);
-		} else if(Action.createAction.equals(actionName)) {
+		else if(Action.createAction.equals(actionName))
 			return new CreateAction(actionParameters);
-		} else if(Action.copyAction.equals(actionName)) {
+		else if(Action.copyAction.equals(actionName))
 			return new CopyAction(actionParameters);
-		} else if(Action.readAction.equals(actionName)) {
+		else if(Action.readAction.equals(actionName))
 			return new ReadAction(actionParameters, actionParameters.getId());
-		} else if(Action.updateAction.equals(actionName)) {
+		else if(Action.updateAction.equals(actionName))
 			return new UpdateAction(actionParameters);
-		} else if(Action.destroyAction.equals(actionName)) {
+		else if(Action.destroyAction.equals(actionName))
 			return new DestroyAction(actionParameters);
-		} else if(Action.moveAction.equals(actionName)) {
+		else if(Action.moveAction.equals(actionName))
 			return new MoveAction(actionParameters);
-		} else if(Action.commandAction.equals(actionName)) {
+		else if(Action.commandAction.equals(actionName))
 			return new CommandAction(actionParameters);
-		} else if(Action.reportAction.equals(actionName)) {
+		else if(Action.reportAction.equals(actionName))
 			return new ReportAction(actionParameters);
-		} else if(Action.previewAction.equals(actionName)) {
+		else if(Action.previewAction.equals(actionName))
 			return new PreviewAction(actionParameters);
-		} else if(Action.followAction.equals(actionName)) {
+		else if(Action.followAction.equals(actionName))
 			return new FollowAction(actionParameters);
-		} else if(Action.readRecordAction.equals(actionName)) {
+		else if(Action.readRecordAction.equals(actionName))
 			return new ReadRecordAction(actionParameters);
-		} else if(Action.modelAction.equals(actionName)) {
+		else if(Action.modelAction.equals(actionName))
 			return new ModelAction(actionParameters);
-		} else if(Action.attachAction.equals(actionName)) {
+		else if(Action.attachAction.equals(actionName))
 			return new AttachAction(actionParameters);
-		} else if(Action.detachAction.equals(actionName)) {
+		else if(Action.detachAction.equals(actionName))
 			return new DetachAction(actionParameters);
-		} else {
+		else
 			throw new RuntimeException("Unknown CRUD action: '" + actionName + "'");
-		}
 	}
 
 	public static ActionParameters getActionParameters(Query query) {
@@ -244,13 +243,12 @@ public class ActionFactory {
 				result.fields.add(field);
 		}
 
-/*		String sort = requestParameter(Json.sort);
-
-		if(!result.fields.isEmpty()) {
-			result.sortFields = new ArrayList<Field>();
-			result.sortFields.add(field);
-		}
-*/
+		/*
+		 * String sort = requestParameter(Json.sort);
+		 * 
+		 * if(!result.fields.isEmpty()) { result.sortFields = new
+		 * ArrayList<Field>(); result.sortFields.add(field); }
+		 */
 	}
 
 	private RCollection<guid> getIds() {
@@ -265,9 +263,8 @@ public class ActionFactory {
 
 		if(array != null) {
 			int length = array.length();
-			for(int index = 0; index < length; index++) {
+			for(int index = 0; index < length; index++)
 				ids.add(new guid(array.getString(index)));
-			}
 		}
 
 		return ids;
@@ -366,9 +363,8 @@ public class ActionFactory {
 		Collection<Field> sortFields = parseSortFields(query);
 		Collection<Field> groupFields = parseGroupFields(query);
 
-		if(sortFields.isEmpty() && groupFields.isEmpty()) {
+		if(sortFields.isEmpty() && groupFields.isEmpty())
 			return null;
-		}
 
 		Collection<Field> fields = new LinkedHashSet<Field>();
 		fields.addAll(groupFields);

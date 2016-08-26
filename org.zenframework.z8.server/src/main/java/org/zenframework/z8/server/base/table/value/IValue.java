@@ -5,13 +5,13 @@ import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.types.primary;
 
 public interface IValue extends IObject {
-    public FieldType type();
+	public FieldType type();
 
-    public primary get();
+	public primary get();
 
-    public void set(primary b);
+	public void set(primary b);
 
-    public boolean isNull();
+	public boolean isNull();
 
-    public boolean changed();
+	public boolean changed();
 }

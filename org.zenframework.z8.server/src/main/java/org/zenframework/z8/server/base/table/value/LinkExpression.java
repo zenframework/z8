@@ -8,78 +8,78 @@ import org.zenframework.z8.server.json.JsonWriter;
 import org.zenframework.z8.server.runtime.IObject;
 
 public class LinkExpression extends GuidExpression implements ILink, IForeignKey {
-    public static class CLASS<T extends LinkExpression> extends GuidExpression.CLASS<T> {
-        public CLASS(IObject container) {
-            super(container);
-            setJavaClass(LinkExpression.class);
-            setForeignKey(false);
-            setSystem(true);
-        }
+	public static class CLASS<T extends LinkExpression> extends GuidExpression.CLASS<T> {
+		public CLASS(IObject container) {
+			super(container);
+			setJavaClass(LinkExpression.class);
+			setForeignKey(false);
+			setSystem(true);
+		}
 
-        @Override
-        public Object newObject(IObject container) {
-            return new LinkExpression(container);
-        }
-    }
+		@Override
+		public Object newObject(IObject container) {
+			return new LinkExpression(container);
+		}
+	}
 
-    private Query.CLASS<Query> query = null;
+	private Query.CLASS<Query> query = null;
 
-    public LinkExpression(IObject container) {
-        super(container);
-    }
+	public LinkExpression(IObject container) {
+		super(container);
+	}
 
-    @Override
-    public Query.CLASS<Query> query() {
-        return query;
-    }
+	@Override
+	public Query.CLASS<Query> query() {
+		return query;
+	}
 
-    @Override
-    public Query getQuery() {
-        return query != null ? query.get() : null;
-    }
+	@Override
+	public Query getQuery() {
+		return query != null ? query.get() : null;
+	}
 
-    @Override
-    public boolean isDataField() {
-        return false;
-    }
+	@Override
+	public boolean isDataField() {
+		return false;
+	}
 
-    @Override
-    public ITable getReferencedTable() {
-        Query query = getQuery();
-        return query instanceof ITable ? (ITable)query : null;
-    }
+	@Override
+	public ITable getReferencedTable() {
+		Query query = getQuery();
+		return query instanceof ITable ? (ITable)query : null;
+	}
 
-    @Override
-    public IField getFieldDescriptor() {
-        return this;
-    }
+	@Override
+	public IField getFieldDescriptor() {
+		return this;
+	}
 
-    @Override
-    public IField getReferer() {
-        return getQuery().primaryKey();
-    }
+	@Override
+	public IField getReferer() {
+		return getQuery().primaryKey();
+	}
 
-    @Override
-    public void writeMeta(JsonWriter writer) {
-        super.writeMeta(writer);
-        writer.writeProperty(Json.link, true);
+	@Override
+	public void writeMeta(JsonWriter writer) {
+		super.writeMeta(writer);
+		writer.writeProperty(Json.link, true);
 
-        Query query = getQuery();
+		Query query = getQuery();
 
-        if(query != null) {
-            writer.writeProperty(Json.queryId, query.id());
-            writer.writeProperty(Json.linkedVia, query.primaryKey().id());
-            writer.writeProperty(Json.text, query.displayName());
-        }
-    }
+		if(query != null) {
+			writer.writeProperty(Json.queryId, query.id());
+			writer.writeProperty(Json.linkedVia, query.primaryKey().id());
+			writer.writeProperty(Json.text, query.displayName());
+		}
+	}
 
-    @SuppressWarnings({ "unchecked", "rawtypes" })
-    public void operatorAssign(Query.CLASS<? extends Query> data) {
-        query = (Query.CLASS)data;
-    }
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	public void operatorAssign(Query.CLASS<? extends Query> data) {
+		query = (Query.CLASS)data;
+	}
 
-    @Override
-    public Join getJoin() {
-        return Join.Left;
-    }
+	@Override
+	public Join getJoin() {
+		return Join.Left;
+	}
 }

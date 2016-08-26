@@ -73,9 +73,8 @@ public class Command extends Runnable implements ICommand {
 	public IParameter getParameter(String id) {
 		for(Parameter.CLASS<?> cls : parameters) {
 			Parameter parameter = (Parameter)cls.get();
-			if(parameter.id().equals(id)) {
+			if(parameter.id().equals(id))
 				return parameter;
-			}
 		}
 
 		return null;

@@ -9,46 +9,46 @@ import org.zenframework.z8.server.types.primary;
 import org.zenframework.z8.server.types.sql.sql_bool;
 
 public class BoolExpression extends Expression {
-    public static class CLASS<T extends BoolExpression> extends Expression.CLASS<T> {
-        public CLASS(IObject container) {
-            super(container);
-            setJavaClass(BoolExpression.class);
-        }
+	public static class CLASS<T extends BoolExpression> extends Expression.CLASS<T> {
+		public CLASS(IObject container) {
+			super(container);
+			setJavaClass(BoolExpression.class);
+		}
 
-        @Override
-        public Object newObject(IObject container) {
-            return new BoolExpression(container);
-        }
-    }
+		@Override
+		public Object newObject(IObject container) {
+			return new BoolExpression(container);
+		}
+	}
 
-    public BoolExpression(IObject container) {
-        super(container);
-        width = new integer(5);
-        stretch = new bool(false);
-        setDefault(new bool());
-    }
+	public BoolExpression(IObject container) {
+		super(container);
+		width = new integer(5);
+		stretch = new bool(false);
+		setDefault(new bool());
+	}
 
-    @Override
-    public FieldType type() {
-        return FieldType.Boolean;
-    }
+	@Override
+	public FieldType type() {
+		return FieldType.Boolean;
+	}
 
-    public sql_bool sql_bool() {
-        return new sql_bool(new SqlField(this));
-    }
+	public sql_bool sql_bool() {
+		return new sql_bool(new SqlField(this));
+	}
 
-    @Override
-    public primary get() {
-        return z8_get();
-    }
+	@Override
+	public primary get() {
+		return z8_get();
+	}
 
-    public bool z8_get() {
-        return (bool)internalGet();
-    }
+	public bool z8_get() {
+		return (bool)internalGet();
+	}
 
-    public BoolExpression.CLASS<? extends BoolExpression> operatorAssign(bool value) {
-        set(value);
-        return (BoolExpression.CLASS<?>) this.getCLASS();
-    }
+	public BoolExpression.CLASS<? extends BoolExpression> operatorAssign(bool value) {
+		set(value);
+		return (BoolExpression.CLASS<?>)this.getCLASS();
+	}
 
 }

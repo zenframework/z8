@@ -6,111 +6,109 @@ import org.zenframework.z8.server.json.Json;
 import org.zenframework.z8.server.json.JsonWriter;
 
 public class ModelAction extends Action {
-    public ModelAction(ActionParameters parameters) {
-        super(parameters);
-    }
+	public ModelAction(ActionParameters parameters) {
+		super(parameters);
+	}
 
-    @Override
-    public void writeResponse(JsonWriter writer) {
-        Query query = getQuery();
+	@Override
+	public void writeResponse(JsonWriter writer) {
+		Query query = getQuery();
 
-        if(query.getContext() != null) {
-            query = query.getContext();
-        }
+		if(query.getContext() != null)
+			query = query.getContext();
 
-        writer.writeProperty(Json.isQuery, true);
+		writer.writeProperty(Json.isQuery, true);
 
-        writer.writeProperty(Json.readOnly, true);
+		writer.writeProperty(Json.readOnly, true);
 
-        writer.writeProperty(Json.primaryKey, Json.id);
-        writer.writeProperty(Json.parentKey, Json.parentId);
-        writer.writeProperty(Json.children, Json.children);
+		writer.writeProperty(Json.primaryKey, Json.id);
+		writer.writeProperty(Json.parentKey, Json.parentId);
+		writer.writeProperty(Json.children, Json.children);
 
-        writer.startArray(Json.fields);
+		writer.startArray(Json.fields);
 
-        writer.startObject();
-        writer.writeProperty(Json.id, Json.id);
-        writer.writeProperty(Json.serverType, FieldType.String.toString());
-        writer.finishObject();
+		writer.startObject();
+		writer.writeProperty(Json.id, Json.id);
+		writer.writeProperty(Json.serverType, FieldType.String.toString());
+		writer.finishObject();
 
-        writer.startObject();
-        writer.writeProperty(Json.id, Json.parentId);
-        writer.writeProperty(Json.serverType, FieldType.String.toString());
-        writer.finishObject();
+		writer.startObject();
+		writer.writeProperty(Json.id, Json.parentId);
+		writer.writeProperty(Json.serverType, FieldType.String.toString());
+		writer.finishObject();
 
-        writer.startObject();
-        writer.writeProperty(Json.id, Json.name);
-        writer.writeProperty(Json.serverType, FieldType.String.toString());
-        writer.finishObject();
+		writer.startObject();
+		writer.writeProperty(Json.id, Json.name);
+		writer.writeProperty(Json.serverType, FieldType.String.toString());
+		writer.finishObject();
 
-        writer.startObject();
-        writer.writeProperty(Json.id, Json.displayName);
-        writer.writeProperty(Json.serverType, FieldType.String.toString());
-        writer.finishObject();
+		writer.startObject();
+		writer.writeProperty(Json.id, Json.displayName);
+		writer.writeProperty(Json.serverType, FieldType.String.toString());
+		writer.finishObject();
 
-        writer.startObject();
-        writer.writeProperty(Json.id, Json.children);
-        writer.writeProperty(Json.serverType, FieldType.Integer.toString());
-        writer.finishObject();
+		writer.startObject();
+		writer.writeProperty(Json.id, Json.children);
+		writer.writeProperty(Json.serverType, FieldType.Integer.toString());
+		writer.finishObject();
 
-        writer.finishArray();
+		writer.finishArray();
 
-        writer.writeProperty(Json.sort, Json.displayName);
+		writer.writeProperty(Json.sort, Json.displayName);
 
-        writer.startObject(Json.sections);
-        
-        writer.writeProperty(Json.isSection, true);
-        
-        writer.startArray(Json.controls);
-        
-        writer.startObject();
-        writer.writeProperty(Json.id, Json.displayName);
-        writer.writeProperty(Json.header, "Display Name");
-        writer.finishObject();
+		writer.startObject(Json.sections);
 
-        writer.startObject();
-        writer.writeProperty(Json.id, Json.name);
-        writer.writeProperty(Json.header, "Name");
-        writer.finishObject();
+		writer.writeProperty(Json.isSection, true);
 
-        writer.startObject();
-        writer.writeProperty(Json.id, Json.id);
-        writer.writeProperty(Json.header, "Id");
-        writer.finishObject();
-        
-        writer.finishArray();
-        
-        writer.finishObject();
+		writer.startArray(Json.controls);
 
-        writer.startArray(Json.data);
+		writer.startObject();
+		writer.writeProperty(Json.id, Json.displayName);
+		writer.writeProperty(Json.header, "Display Name");
+		writer.finishObject();
 
-        String parentId = getRequestParameter(Json.parentId);
+		writer.startObject();
+		writer.writeProperty(Json.id, Json.name);
+		writer.writeProperty(Json.header, "Name");
+		writer.finishObject();
 
-        boolean root = parentId == null || parentId.isEmpty();
+		writer.startObject();
+		writer.writeProperty(Json.id, Json.id);
+		writer.writeProperty(Json.header, "Id");
+		writer.finishObject();
 
-        if(!root) {
-            query = query.findQueryById(parentId);
+		writer.finishArray();
 
-            for(Query subquery : query.getQueries()) {
-                writer.startObject();
-                writer.writeProperty(Json.id, subquery.id());
-                writer.writeProperty(Json.parentId, parentId);
-                writer.writeProperty(Json.name, subquery.name());
-                writer.writeProperty(Json.displayName, subquery.displayName());
-                writer.writeProperty(Json.children, subquery.queries().size());
-                writer.finishObject();
-            }
-        }
-        else {
-            writer.startObject();
-            writer.writeProperty(Json.id, query.id());
-            writer.writeProperty(Json.parentId, "");
-            writer.writeProperty(Json.name, query.name());
-            writer.writeProperty(Json.displayName, query.displayName());
-            writer.writeProperty(Json.children, query.queries().size());
-            writer.finishObject();
-        }
+		writer.finishObject();
 
-        writer.finishArray();
-    }
+		writer.startArray(Json.data);
+
+		String parentId = getRequestParameter(Json.parentId);
+
+		boolean root = parentId == null || parentId.isEmpty();
+
+		if(!root) {
+			query = query.findQueryById(parentId);
+
+			for(Query subquery : query.getQueries()) {
+				writer.startObject();
+				writer.writeProperty(Json.id, subquery.id());
+				writer.writeProperty(Json.parentId, parentId);
+				writer.writeProperty(Json.name, subquery.name());
+				writer.writeProperty(Json.displayName, subquery.displayName());
+				writer.writeProperty(Json.children, subquery.queries().size());
+				writer.finishObject();
+			}
+		} else {
+			writer.startObject();
+			writer.writeProperty(Json.id, query.id());
+			writer.writeProperty(Json.parentId, "");
+			writer.writeProperty(Json.name, query.name());
+			writer.writeProperty(Json.displayName, query.displayName());
+			writer.writeProperty(Json.children, query.queries().size());
+			writer.finishObject();
+		}
+
+		writer.finishArray();
+	}
 }

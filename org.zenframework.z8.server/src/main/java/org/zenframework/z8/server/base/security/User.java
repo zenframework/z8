@@ -61,7 +61,7 @@ public class User extends OBJECT {
 		email = new string(user.email());
 
 		securityGroup = user.securityGroup();
-		
+
 		parameters = (RLinkedHashMap<string, primary>)user.parameters();
 	}
 }

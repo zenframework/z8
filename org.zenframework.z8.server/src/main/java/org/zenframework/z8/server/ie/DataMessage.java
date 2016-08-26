@@ -113,7 +113,7 @@ public class DataMessage extends Message {
 		dataMessage.setSender(getSender());
 		dataMessage.setSource(getSource());
 		dataMessage.setType(getType());
-		
+
 		TransportQueue.newInstance().add(dataMessage);
 
 		afterExport();

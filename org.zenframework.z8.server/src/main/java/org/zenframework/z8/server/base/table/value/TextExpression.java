@@ -9,49 +9,49 @@ import org.zenframework.z8.server.types.string;
 import org.zenframework.z8.server.types.sql.sql_string;
 
 public class TextExpression extends Expression {
-    public static class CLASS<T extends TextExpression> extends Expression.CLASS<T> {
-        public CLASS(IObject container) {
-            super(container);
-            setJavaClass(TextExpression.class);
-        }
+	public static class CLASS<T extends TextExpression> extends Expression.CLASS<T> {
+		public CLASS(IObject container) {
+			super(container);
+			setJavaClass(TextExpression.class);
+		}
 
-        @Override
-        public Object newObject(IObject container) {
-            return new TextExpression(container);
-        }
-    }
+		@Override
+		public Object newObject(IObject container) {
+			return new TextExpression(container);
+		}
+	}
 
-    public integer lines = new integer(5);
+	public integer lines = new integer(5);
 
-    public TextExpression(IObject container) {
-        super(container);
+	public TextExpression(IObject container) {
+		super(container);
 
-        setDefault(new string());
+		setDefault(new string());
 
-        length = new integer(0);
-        aggregation = Aggregation.None;
-    }
+		length = new integer(0);
+		aggregation = Aggregation.None;
+	}
 
-    @Override
-    public FieldType type() {
-        return FieldType.Text;
-    }
+	@Override
+	public FieldType type() {
+		return FieldType.Text;
+	}
 
-    public sql_string sql_string() {
-        return new sql_string(new SqlField(this));
-    }
+	public sql_string sql_string() {
+		return new sql_string(new SqlField(this));
+	}
 
-    @Override
-    public primary get() {
-        return z8_get();
-    }
+	@Override
+	public primary get() {
+		return z8_get();
+	}
 
-    public string z8_get() {
-        return (string)internalGet();
-    }
+	public string z8_get() {
+		return (string)internalGet();
+	}
 
-    public TextExpression.CLASS<? extends TextExpression> operatorAssign(string value) {
-        set(value);
-        return (TextExpression.CLASS<?>) this.getCLASS();
-    }
+	public TextExpression.CLASS<? extends TextExpression> operatorAssign(string value) {
+		set(value);
+		return (TextExpression.CLASS<?>)this.getCLASS();
+	}
 }

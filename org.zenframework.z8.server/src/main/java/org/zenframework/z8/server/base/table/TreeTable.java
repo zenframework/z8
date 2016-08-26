@@ -148,9 +148,8 @@ public class TreeTable extends Table {
 
 		List<guid> result = new ArrayList<guid>();
 
-		for(String level : levels) {
+		for(String level : levels)
 			result.add(new guid(level));
-		}
 
 		return result.toArray(new guid[0]);
 	}
@@ -196,9 +195,8 @@ public class TreeTable extends Table {
 					link.set(parent);
 				}
 				root.get().set(parents.length > 0 ? parents[0] : guid.NULL);
-			} else {
+			} else
 				root.get().set(recordId);
-			}
 
 			depthField.set(new integer(depth));
 			pathField.set(new string(path.toUpperCase()));
@@ -206,9 +204,8 @@ public class TreeTable extends Table {
 	}
 
 	private void readExistingRecord(guid parentId, Collection<Field> fields) {
-		if(!readRecord(parentId, fields)) {
+		if(!readRecord(parentId, fields))
 			throw new RuntimeException(Query.strings.ReadError);
-		}
 	}
 
 	protected void repairTree() {
@@ -228,9 +225,8 @@ public class TreeTable extends Table {
 
 		super.afterCreate(query, recordId, parentId, model, modelRecordId);
 
-		if(keepIntegrity.get() && query == this && parentId != null) {
+		if(keepIntegrity.get() && query == this && parentId != null)
 			addChild(parentId, 1);
-		}
 	}
 
 	@Override
@@ -246,9 +242,8 @@ public class TreeTable extends Table {
 				Collection<Field> fields = new ArrayList<Field>();
 				fields.add(parentId);
 
-				if(readRecord(recordId, fields)) {
+				if(readRecord(recordId, fields))
 					parentIdValue = parentId.get().guid();
-				}
 			} finally {
 				restoreState();
 			}
@@ -356,9 +351,8 @@ public class TreeTable extends Table {
 		}
 
 		for(guid part : path) {
-			if(part.equals(recordId)) {
+			if(part.equals(recordId))
 				throw new RuntimeException(Resources.get("Exception.wrongParentNode"));
-			}
 		}
 
 		guid oldParentId = getParent(recordId);
@@ -367,6 +361,5 @@ public class TreeTable extends Table {
 
 		this.addChild(oldParentId, -1);
 		this.addChild(parentId, 1);
-
 	}
 }

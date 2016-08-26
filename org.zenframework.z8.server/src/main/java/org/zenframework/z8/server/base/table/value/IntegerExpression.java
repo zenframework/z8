@@ -11,53 +11,53 @@ import org.zenframework.z8.server.types.string;
 import org.zenframework.z8.server.types.sql.sql_integer;
 
 public class IntegerExpression extends Expression {
-    public static class CLASS<T extends IntegerExpression> extends Expression.CLASS<T> {
-        public CLASS(IObject container) {
-            super(container);
-            setJavaClass(IntegerExpression.class);
-        }
+	public static class CLASS<T extends IntegerExpression> extends Expression.CLASS<T> {
+		public CLASS(IObject container) {
+			super(container);
+			setJavaClass(IntegerExpression.class);
+		}
 
-        @Override
-        public Object newObject(IObject container) {
-            return new IntegerExpression(container);
-        }
-    }
+		@Override
+		public Object newObject(IObject container) {
+			return new IntegerExpression(container);
+		}
+	}
 
-    public IntegerExpression(IObject container) {
-        super(container);
+	public IntegerExpression(IObject container) {
+		super(container);
 
-        format = new string(Format.integer);
-        stretch = new bool(false);
+		format = new string(Format.integer);
+		stretch = new bool(false);
 
-        aggregation = Aggregation.Sum;
+		aggregation = Aggregation.Sum;
 
-        setDefault(new integer());
-    }
+		setDefault(new integer());
+	}
 
-    public IntegerExpression() {
-        this(null);
-    }
+	public IntegerExpression() {
+		this(null);
+	}
 
-    @Override
-    public FieldType type() {
-        return FieldType.Integer;
-    }
+	@Override
+	public FieldType type() {
+		return FieldType.Integer;
+	}
 
-    public sql_integer sql_int() {
-        return new sql_integer(new SqlField(this));
-    }
+	public sql_integer sql_int() {
+		return new sql_integer(new SqlField(this));
+	}
 
-    @Override
-    public primary get() {
-        return z8_get();
-    }
+	@Override
+	public primary get() {
+		return z8_get();
+	}
 
-    public integer z8_get() {
-        return (integer)internalGet();
-    }
+	public integer z8_get() {
+		return (integer)internalGet();
+	}
 
-    public IntegerExpression.CLASS<? extends IntegerExpression> operatorAssign(integer value) {
-        set(value);
-        return (IntegerExpression.CLASS<?>) this.getCLASS();
-    }
+	public IntegerExpression.CLASS<? extends IntegerExpression> operatorAssign(integer value) {
+		set(value);
+		return (IntegerExpression.CLASS<?>)this.getCLASS();
+	}
 }

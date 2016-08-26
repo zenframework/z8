@@ -13,53 +13,53 @@ import org.zenframework.z8.server.types.primary;
 import org.zenframework.z8.server.types.string;
 
 public class SecurityGroups extends Table {
-    final static public String TableName = "SystemSecurityGroups";
+	final static public String TableName = "SystemSecurityGroups";
 
-    static public class strings {
-        public final static String Title = "SecurityGroups.title";
-        public final static String Name = "SecurityGroups.name";
-    }
+	static public class strings {
+		public final static String Title = "SecurityGroups.title";
+		public final static String Name = "SecurityGroups.name";
+	}
 
-    public static class CLASS<T extends SecurityGroups> extends Table.CLASS<T> {
-        public CLASS(IObject _container) {
-            super(_container);
-            setJavaClass(SecurityGroups.class);
-            setName(SecurityGroups.TableName);
-            setDisplayName(Resources.get(strings.Title));
-        }
+	public static class CLASS<T extends SecurityGroups> extends Table.CLASS<T> {
+		public CLASS(IObject _container) {
+			super(_container);
+			setJavaClass(SecurityGroups.class);
+			setName(SecurityGroups.TableName);
+			setDisplayName(Resources.get(strings.Title));
+		}
 
-        @Override
-        public Object newObject(IObject container) {
-            return new SecurityGroups(container);
-        }
-    }
+		@Override
+		public Object newObject(IObject container) {
+			return new SecurityGroups(container);
+		}
+	}
 
-    public SecurityGroups(IObject container) {
-        super(container);
-    }
+	public SecurityGroups(IObject container) {
+		super(container);
+	}
 
-    @Override
-    public void constructor2() {
-        super.constructor2();
+	@Override
+	public void constructor2() {
+		super.constructor2();
 
-        name.setDisplayName(Resources.get(strings.Name));
+		name.setDisplayName(Resources.get(strings.Name));
 
-        id.get().visible = new bool(false);
-        id1.get().visible = new bool(false);
+		id.get().visible = new bool(false);
+		id1.get().visible = new bool(false);
 
-        name.get().length = new integer(50);
+		name.get().length = new integer(50);
 
-        {
-            LinkedHashMap<IField, primary> values = new LinkedHashMap<IField, primary>();
-            values.put(name.get(), new string(Resources.get(SecurityGroup.strings.Administrators)));
-            values.put(description.get(), new string(Resources.get(SecurityGroup.strings.Administrators)));
-            addRecord(SecurityGroup.Administrators.guid(), values);
-        }
-        {
-            LinkedHashMap<IField, primary> values = new LinkedHashMap<IField, primary>();
-            values.put(name.get(), new string(Resources.get(SecurityGroup.strings.Users)));
-            values.put(description.get(), new string(Resources.get(SecurityGroup.strings.Users)));
-            addRecord(SecurityGroup.Users.guid(), values);
-        }
-    }
+		{
+			LinkedHashMap<IField, primary> values = new LinkedHashMap<IField, primary>();
+			values.put(name.get(), new string(Resources.get(SecurityGroup.strings.Administrators)));
+			values.put(description.get(), new string(Resources.get(SecurityGroup.strings.Administrators)));
+			addRecord(SecurityGroup.Administrators.guid(), values);
+		}
+		{
+			LinkedHashMap<IField, primary> values = new LinkedHashMap<IField, primary>();
+			values.put(name.get(), new string(Resources.get(SecurityGroup.strings.Users)));
+			values.put(description.get(), new string(Resources.get(SecurityGroup.strings.Users)));
+			addRecord(SecurityGroup.Users.guid(), values);
+		}
+	}
 }

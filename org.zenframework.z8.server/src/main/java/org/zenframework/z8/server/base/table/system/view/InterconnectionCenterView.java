@@ -34,7 +34,7 @@ public class InterconnectionCenterView extends HubServerView {
 	public InterconnectionCenterView(IObject container) {
 		super(container);
 	}
-	
+
 	@Override
 	protected synchronized IServerInfo[] getServers() throws Throwable {
 		return ServerConfig.interconnectionCenter().servers();

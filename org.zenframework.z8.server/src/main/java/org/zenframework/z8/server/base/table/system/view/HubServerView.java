@@ -66,17 +66,17 @@ abstract public class HubServerView extends Query {
 	private StringField.CLASS<StringField> active = new StringField.CLASS<StringField>(this);
 	private StringField.CLASS<StringField> domains = new StringField.CLASS<StringField>(this);
 	private StringField.CLASS<StringField> serverId = new StringField.CLASS<StringField>(this);
-	
+
 	public HubServerView(IObject container) {
 		super(container);
 	}
-	
+
 	@Override
 	public void constructor2() {
 		super.constructor2();
-		
+
 		readOnly = new bool(true);
-		
+
 		recordId.setIndex("recordId");
 
 		host.setIndex("host");
@@ -99,13 +99,13 @@ abstract public class HubServerView extends Query {
 		serverId.setDisplayName(displayNames.ServerId);
 		serverId.get().width = new integer(40);
 		serverId.get().stretch = new bool(false);
-		
+
 		registerFormField(host);
 		registerFormField(port);
 		registerFormField(active);
 		registerFormField(serverId);
 		registerFormField(domains);
-		
+
 		Command.CLASS<Command> commandCls = new Command.CLASS<Command>(this);
 		Command command = commandCls.get();
 		command.text = new string(displayNames.Unregister);
@@ -120,16 +120,16 @@ abstract public class HubServerView extends Query {
 	@Override
 	public void writeResponse(JsonWriter writer) throws Throwable {
 		String action = getParameter(Json.action);
-		
+
 		if(action == null || action.equals(Action.readAction)) {
 			writer.writeProperty(Json.isQuery, true);
 			writer.writeProperty(Json.requestId, classId());
 			writer.writeProperty(Json.primaryKey, recordId.get().id());
-	
+
 			Collection<Field> fields = getFormFields();
-			
+
 			writeMeta(writer, fields);
-			
+
 			writer.writeProperty(Json.remoteSort, false);
 			writeData(writer, action != null);
 		} else if(action.equals(Action.commandAction)) {
@@ -144,10 +144,10 @@ abstract public class HubServerView extends Query {
 
 	abstract protected IServerInfo[] getServers() throws Throwable;
 	abstract protected void unregister(IServerInfo server) throws Throwable;
-	
+
 	private void writeData(JsonWriter writer, boolean checkAlive) throws Throwable {
 		writer.startArray(Json.data);
-	
+
 		for(IServerInfo server : getServers()) {
 			writer.startObject();
 			writer.writeProperty(recordId.id(), getUrl(server));
@@ -158,7 +158,7 @@ abstract public class HubServerView extends Query {
 			writer.writeProperty(active.id(), checkAlive ? (server.isAlive() ? bool.trueString : bool.falseString) : "");
 			writer.finishObject();
 		}
-		
+
 		writer.finishArray();
 	}
 
@@ -175,13 +175,13 @@ abstract public class HubServerView extends Query {
 			}
 		}
 	}
-	
-    private String getDomains(IServerInfo server) {
+
+	private String getDomains(IServerInfo server) {
 		String[] domains = server.getDomains();
-		
+
 		if(domains == null)
 			return "";
-		
+
 		String result = Arrays.toString(server.getDomains());
 		return result.substring(1, result.length() - 1);
 	}

@@ -73,11 +73,11 @@ public class ServerConfig extends Properties {
 
 	static private int webServerUploadMax;
 	static private int webClientDownloadMax;
-	
+
 	static private boolean schedulerEnabled;
-	
+
 	static private int transportJobRepeat;
-	
+
 	static private boolean traceSql;
 	static private boolean traceSqlConnections;
 
@@ -124,14 +124,14 @@ public class ServerConfig extends Properties {
 
 		webServerUploadMax = getProperty(WebServerUploadMax, 5);
 		webClientDownloadMax = getProperty(WebClientDownloadMax, 1);
-		
+
 		traceSql = getProperty(TraceSql, false);
 		traceSqlConnections = getProperty(TraceSqlConnections, false);
 
 		schedulerEnabled = getProperty(SchedulerEnabled, true);
-		
+
 		transportJobRepeat = getProperty(TransportJobRepeat, 5 * 60);
-		
+
 		textExtensions = getProperty(TextExtensions, new String[] { "txt", "xml" });
 		imageExtensions = getProperty(ImageExtensions, new String[] { "tif", "tiff", "jpg", "jpeg", "gif", "png", "bmp" });
 		emailExtensions = getProperty(EmailExtensions, new String[] { "eml", "mime" });
@@ -177,37 +177,37 @@ public class ServerConfig extends Properties {
 
 	public String[] getProperty(String key, String[] defaultValue) {
 		String value = getProperty(key);
-		
+
 		if(value == null || value.trim().isEmpty())
 			return defaultValue;
 
 		String[] values = value.split("\\,");
-		
+
 		String[] result = new String[values.length];
-		
+
 		for(int i = 0; i < values.length; i++)
 			result[i] = values[i].trim().toLowerCase();
-		
+
 		return result;
 	}
 
 	public int[] getProperty(String key, int[] defaultValue) {
 		String value = getProperty(key);
-		
+
 		if(value == null || value.trim().isEmpty())
 			return defaultValue;
 
 		String[] values = value.split("\\,");
-		
+
 		int[] result = new int[values.length];
-		
+
 		try {
 			for(int i = 0; i < values.length; i++)
 				result[i] = Integer.parseInt(values[i].trim());
 		} catch(NumberFormatException e) {
 			return defaultValue;
 		}
-		
+
 		return result;
 	}
 
@@ -215,12 +215,6 @@ public class ServerConfig extends Properties {
 		String host = getProperty(key, Rmi.localhost);
 		return localhost.equals(host) ? Rmi.localhost : host;
 	}
-	
-	// Properties overrides
-	// ///////////////////////////////////////////////////////////////
-
-	// ///////////////////////////////////////////////////////////////
-	// getters
 
 	static public String get(String key) {
 		return instance.getProperty(key);
@@ -237,9 +231,6 @@ public class ServerConfig extends Properties {
 	static public int get(String key, int defaultValue) {
 		return instance.getProperty(key, defaultValue);
 	}
-
-	// getters
-	// ///////////////////////////////////////////////////////////////
 
 	static public String instanceId() {
 		return instanceId;

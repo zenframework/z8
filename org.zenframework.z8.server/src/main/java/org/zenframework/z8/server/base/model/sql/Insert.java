@@ -27,9 +27,8 @@ public class Insert extends Statement {
 		this.fields = new ArrayList<Field>();
 
 		for(Field field : fields) {
-			if(!(field instanceof Expression)) {
+			if(!(field instanceof Expression))
 				this.fields.add(field);
-			}
 		}
 
 		sql = buildSql();

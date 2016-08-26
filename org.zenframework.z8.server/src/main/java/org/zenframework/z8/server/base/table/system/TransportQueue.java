@@ -26,7 +26,7 @@ import org.zenframework.z8.server.types.string;
 public class TransportQueue extends Table {
 
 	static public String TableName = "SystemTransportQueue";
-	
+
 	static public class names {
 		static public String Address = "Address";
 		static public String Sender = "Sender";
@@ -150,7 +150,7 @@ public class TransportQueue extends Table {
 	public void setProcessed(guid id, String info) {
 		setProcessed(id, info, -1);
 	}
-	
+
 	public void setProcessed(guid id, String info, long bytes) {
 		destroy(id);
 	}
@@ -170,7 +170,7 @@ public class TransportQueue extends Table {
 
 		Field address = this.address.get();
 
-		Collection<Field> fields = Arrays.<Field> asList(address);
+		Collection<Field> fields = Arrays.<Field>asList(address);
 
 		group(fields, fields);
 
@@ -186,8 +186,8 @@ public class TransportQueue extends Table {
 		Field address = this.address.get();
 		Field processed = this.processed.get();
 
-		Collection<Field> fields = Arrays.<Field> asList(recordId.get());
-		Collection<Field> orderBy = Arrays.<Field> asList(ordinal.get());
+		Collection<Field> fields = Arrays.<Field>asList(recordId.get());
+		Collection<Field> orderBy = Arrays.<Field>asList(ordinal.get());
 
 		SqlToken where = new And(new IsNot(processed), new Equ(address, domain));
 
@@ -204,11 +204,11 @@ public class TransportQueue extends Table {
 		Field classId = this.classId.get();
 		Field bytesTransferred = this.bytesTransferred.get();
 
-		Collection<Field> fields = Arrays.<Field> asList(data, classId, bytesTransferred);
+		Collection<Field> fields = Arrays.<Field>asList(data, classId, bytesTransferred);
 
 		if(!readRecord(id, fields))
 			return null;
-				
+
 		Message result = (Message)Loader.getInstance(classId.string().get());
 		result.fromBinary(data.get().binary());
 		result.setId(recordId());

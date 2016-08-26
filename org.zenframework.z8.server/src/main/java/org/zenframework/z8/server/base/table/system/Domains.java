@@ -22,7 +22,7 @@ import org.zenframework.z8.server.types.string;
 
 public class Domains extends Table {
 
-	static public string DefaultDomain = new string(Users.displayNames.SystemName + " at "+ Rmi.localhost);
+	static public string DefaultDomain = new string(Users.displayNames.SystemName + " at " + Rmi.localhost);
 	static public String TableName = "SystemDomains";
 
 	static public class names {
@@ -45,7 +45,7 @@ public class Domains extends Table {
 		public final static String UserDescription = Resources.get(strings.UserDescription);
 		public final static String Owner = Resources.get(strings.Owner);
 	}
-	
+
 	public static class CLASS<T extends Domains> extends Table.CLASS<T> {
 		public CLASS() {
 			this(null);
@@ -120,23 +120,23 @@ public class Domains extends Table {
 		Field id = this.id.get();
 		Field user = this.userLink.get();
 		Field owner = this.owner.get();
-		
+
 		SqlToken where = new EqualsIgnoreCase(id, name);
-		
-		if (!readFirst(Arrays.<Field> asList(id, user, owner), where))
+
+		if(!readFirst(Arrays.<Field>asList(id, user, owner), where))
 			return Domain.system();
-		
+
 		return new Domain(id.string(), user.guid(), owner.bool());
 	}
 
 	public boolean isOwner(String name) {
 		Field owner = this.owner.get();
 		Field id = this.id.get();
-		
+
 		SqlToken isOwner = new Is(owner);
 		SqlToken nameEq = new EqualsIgnoreCase(id, name);
 		SqlToken where = new And(isOwner, nameEq);
-		
+
 		return count(where) == 1;
 	}
 
@@ -144,29 +144,29 @@ public class Domains extends Table {
 		Field id = this.id.get();
 		Field user = userLink.get();
 		Field owner = this.owner.get();
-		
-		read(Arrays.<Field> asList(id, user, owner), new Is(owner));
-		
+
+		read(Arrays.<Field>asList(id, user, owner), new Is(owner));
+
 		Collection<Domain> domains = new ArrayList<Domain>();
-		
+
 		domains.add(Domain.system());
 
-		while (next()) {
+		while(next()) {
 			Domain domain = new Domain(id.string(), user.guid(), owner.bool());
 			domains.add(domain);
 		}
-		
+
 		return domains;
 	}
 
 	public Collection<String> getNames() {
 		Collection<Domain> domains = getLocalDomains();
-		
+
 		Collection<String> result = new ArrayList<String>();
-		
+
 		for(Domain domain : domains)
 			result.add(domain.getName());
-		
+
 		return result;
 	}
 }

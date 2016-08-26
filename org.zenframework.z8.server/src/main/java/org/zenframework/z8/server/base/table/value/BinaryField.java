@@ -13,63 +13,61 @@ import java.io.InputStream;
 
 public class BinaryField extends Field {
 
-    public static class CLASS<T extends BinaryField> extends Field.CLASS<T> {
-        public CLASS(IObject container) {
-            super(container);
-            setJavaClass(BinaryField.class);
-        }
+	public static class CLASS<T extends BinaryField> extends Field.CLASS<T> {
+		public CLASS(IObject container) {
+			super(container);
+			setJavaClass(BinaryField.class);
+		}
 
-        @Override
-        public Object newObject(IObject container) {
-            return new BinaryField(container);
-        }
-    }
+		@Override
+		public Object newObject(IObject container) {
+			return new BinaryField(container);
+		}
+	}
 
-    public BinaryField(IObject container) {
-        super(container);
-        setDefault(new binary());
-    }
+	public BinaryField(IObject container) {
+		super(container);
+		setDefault(new binary());
+	}
 
-    public binary z8_getDefault() {
-        return (binary) super.getDefault();
-    }
+	public binary z8_getDefault() {
+		return (binary)super.getDefault();
+	}
 
-    @Override
-    public primary getDefault() {
-        return ApplicationServer.events() ? z8_getDefault() : super.getDefault();
-    }
+	@Override
+	public primary getDefault() {
+		return ApplicationServer.events() ? z8_getDefault() : super.getDefault();
+	}
 
-    @Override
-    public FieldType type() {
-        return FieldType.Binary;
-    }
+	@Override
+	public FieldType type() {
+		return FieldType.Binary;
+	}
 
-    @Override
-    public primary get() {
-        return z8_get();
-    }
+	@Override
+	public primary get() {
+		return z8_get();
+	}
 
-    public void set(InputStream inputStream){
-        set(new binary(inputStream));
-    }
+	public void set(InputStream inputStream) {
+		set(new binary(inputStream));
+	}
 
-    public binary z8_get() {
-        return (binary) internalGet();
-    }
+	public binary z8_get() {
+		return (binary)internalGet();
+	}
 
-    @Override
-    public String sqlType(DatabaseVendor vendor) {
-        String name = type().vendorType(vendor);
+	@Override
+	public String sqlType(DatabaseVendor vendor) {
+		String name = type().vendorType(vendor);
 
-        if (vendor == DatabaseVendor.SqlServer) {
-            return name + "(MAX)";
-        }
-        return name;
-    }
+		if(vendor == DatabaseVendor.SqlServer)
+			return name + "(MAX)";
 
-    public sql_binary sql_binary() {
-        return new sql_binary(new SqlField(this));
-    }
+		return name;
+	}
 
-
+	public sql_binary sql_binary() {
+		return new sql_binary(new SqlField(this));
+	}
 }

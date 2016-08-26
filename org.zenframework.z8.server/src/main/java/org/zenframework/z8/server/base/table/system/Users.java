@@ -70,8 +70,8 @@ public class Users extends Table {
 		public final static String SystemName = Resources.get("BuiltinUsers.System.name");
 		public final static String SystemDescription = Resources.get("BuiltinUsers.System.description");
 
-        public final static String AdministratorName = Resources.get("BuiltinUsers.Administrator.name");
-        public final static String AdministratorDescription = Resources.get("BuiltinUsers.Administrator.description");
+		public final static String AdministratorName = Resources.get("BuiltinUsers.Administrator.name");
+		public final static String AdministratorDescription = Resources.get("BuiltinUsers.Administrator.description");
 	}
 
 	public static class CLASS<T extends Users> extends Table.CLASS<T> {
@@ -96,7 +96,7 @@ public class Users extends Table {
 	static public Users newInstance() {
 		return (Users)Runtime.instance().getTableByName(Users.TableName).newInstance();
 	}
-	
+
 	public SecurityGroups.CLASS<SecurityGroups> securityGroups = new SecurityGroups.CLASS<SecurityGroups>(this);
 
 	public Link.CLASS<Link> securityGroup = new Link.CLASS<Link>(this);
@@ -259,9 +259,8 @@ public class Users extends Table {
 		if(changedFields.isEmpty())
 			return;
 
-		if((BuiltinUsers.Administrator.guid().equals(recordId) || BuiltinUsers.System.guid().equals(recordId)) && securityGroup.get().changed()) {
+		if((BuiltinUsers.Administrator.guid().equals(recordId) || BuiltinUsers.System.guid().equals(recordId)) && securityGroup.get().changed())
 			throw new exception("Unable to change the security group of the builtin user.");
-		}
 	}
 
 	@Override

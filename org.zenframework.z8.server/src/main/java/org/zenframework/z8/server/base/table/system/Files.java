@@ -34,7 +34,7 @@ public class Files extends Table {
 		public final static String Title = "Files.title";
 		public final static String Name = "Files.name";
 		public final static String Path = "Files.path";
-		
+
 	}
 
 	static public class displayNames {
@@ -108,7 +108,7 @@ public class Files extends Table {
 			name.get().set(file.name);
 			data.get().set(input);
 			path.get().set(file.path);
-			
+
 			if(create)
 				create(file.id);
 			else
@@ -117,13 +117,13 @@ public class Files extends Table {
 			IOUtils.closeQuietly(input);
 		}
 	}
-	
+
 	public static InputStream getInputStream(file file) throws IOException {
 		Files table = newInstance();
 
 		SqlToken where = new Equ(table.path.get(), file.path);
 
-		guid recordId = file.id; 
+		guid recordId = file.id;
 
 		Field data = table.data.get();
 		Collection<Field> fields = Arrays.asList(data);
@@ -136,19 +136,19 @@ public class Files extends Table {
 
 	public static file get(file file) throws IOException {
 		File path = new File(Folders.Base, file.path.get());
-		
+
 		if(!path.exists()) {
 			InputStream inputStream = getInputStream(file);
 
 			if(inputStream == null)
 				return null;
-			
+
 			FileUtils.copyInputStreamToFile(inputStream, path);
 		}
-		
+
 		file.set(new InputOnlyFileItem(path, file.name.get()));
 		file.size = new integer(path.length());
-		
+
 		return file;
 	}
 }

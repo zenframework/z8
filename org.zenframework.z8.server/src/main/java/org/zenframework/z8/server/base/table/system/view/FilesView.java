@@ -38,7 +38,7 @@ public class FilesView extends Files {
 		name.get().stretch = new bool(false);
 
 		path.get().stretch = new bool(true);
-		
+
 		registerFormField(createdAt);
 		registerFormField(name);
 		registerFormField(path);

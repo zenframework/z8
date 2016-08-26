@@ -64,11 +64,11 @@ public class AttachmentProcessor extends OBJECT {
 
 	public Collection<file> read(guid recordId) {
 		Table table = getTable();
-		
+
 		table.saveState();
-		
+
 		try {
-			if(getTable().readRecord(recordId, Arrays.<Field> asList(getField())))
+			if(getTable().readRecord(recordId, Arrays.<Field>asList(getField())))
 				return file.parse(getField().string().get());
 			return new ArrayList<file>();
 		} finally {
@@ -103,7 +103,7 @@ public class AttachmentProcessor extends OBJECT {
 			throw new RuntimeException(e);
 		}
 	}
-	
+
 	public Collection<file> update(guid attachTo, Collection<file> files) {
 		Collection<file> result = read(attachTo);
 

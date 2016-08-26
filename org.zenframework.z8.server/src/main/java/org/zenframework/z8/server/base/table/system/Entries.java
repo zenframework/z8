@@ -14,75 +14,74 @@ import org.zenframework.z8.server.types.primary;
 import org.zenframework.z8.server.types.string;
 
 public class Entries extends Table {
-    final static public String TableName = "SystemEntries";
+	final static public String TableName = "SystemEntries";
 
-    static public class names {
-        public final static String Granted = "Granted";
-    }
+	static public class names {
+		public final static String Granted = "Granted";
+	}
 
-    static public class strings {
-        public final static String Title = "Entries.title";
-        public final static String Id = "Entries.javaClass";
-        public final static String Name = "Entries.name";
-        public final static String Granted = "Entries.granted";
-    }
+	static public class strings {
+		public final static String Title = "Entries.title";
+		public final static String Id = "Entries.javaClass";
+		public final static String Name = "Entries.name";
+		public final static String Granted = "Entries.granted";
+	}
 
-    public static class CLASS<T extends Entries> extends Table.CLASS<T> {
-        public CLASS() {
-            this(null);
-        }
+	public static class CLASS<T extends Entries> extends Table.CLASS<T> {
+		public CLASS() {
+			this(null);
+		}
 
-        public CLASS(IObject container) {
-            super(container);
-            setJavaClass(Entries.class);
-            setName(TableName);
-            setDisplayName(Resources.get(strings.Title));
-        }
+		public CLASS(IObject container) {
+			super(container);
+			setJavaClass(Entries.class);
+			setName(TableName);
+			setDisplayName(Resources.get(strings.Title));
+		}
 
-        @Override
-        public Object newObject(IObject container) {
-            return new Entries(container);
-        }
-    }
+		@Override
+		public Object newObject(IObject container) {
+			return new Entries(container);
+		}
+	}
 
-    public Entries(IObject container) {
-        super(container);
+	public Entries(IObject container) {
+		super(container);
 
-        id.setDisplayName(Resources.get(strings.Id));
-        name.setDisplayName(Resources.get(strings.Name));
-    }
+		id.setDisplayName(Resources.get(strings.Id));
+		name.setDisplayName(Resources.get(strings.Name));
+	}
 
-    @Override
-    public void constructor2() {
-        super.constructor2();
+	@Override
+	public void constructor2() {
+		super.constructor2();
 
-        readOnly.set(true);
+		readOnly.set(true);
 
-        id.get().visible = new bool(false);
-        id.get().length = new integer(1024);
-        id.get().visible = new bool(false);
+		id.get().visible = new bool(false);
+		id.get().length = new integer(1024);
+		id.get().visible = new bool(false);
 
-        id1.get().visible = new bool(false);
+		id1.get().visible = new bool(false);
 
-        name.get().length = new integer(1024);
+		name.get().length = new integer(1024);
 
-        description.get().visible = new bool(false);
+		description.get().visible = new bool(false);
 
-        {
-            LinkedHashMap<IField, primary> record = new LinkedHashMap<IField, primary>();
-            record.put(name.get(), new string(Resources.get(SystemTools.strings.Title)));
-            record.put(id.get(), new string(SystemTools.class.getCanonicalName()));
-            addRecord(SystemTools.Id, record);
-        }
-    }
+		{
+			LinkedHashMap<IField, primary> record = new LinkedHashMap<IField, primary>();
+			record.put(name.get(), new string(Resources.get(SystemTools.strings.Title)));
+			record.put(id.get(), new string(SystemTools.class.getCanonicalName()));
+			addRecord(SystemTools.Id, record);
+		}
+	}
 
-    @Override
-    public integer z8_destroy(guid id) {
-        if(id.equals(SystemTools.Id.guid())) {
-            throw new exception("Unable to delete builtin system entrypoint !");
-        }
+	@Override
+	public integer z8_destroy(guid id) {
+		if(id.equals(SystemTools.Id.guid()))
+			throw new exception("Unable to delete builtin system entrypoint !");
 
-        return super.z8_destroy(id);
-    }
+		return super.z8_destroy(id);
+	}
 
 }

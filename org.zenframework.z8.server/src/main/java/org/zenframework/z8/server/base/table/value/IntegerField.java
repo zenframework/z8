@@ -52,9 +52,9 @@ public class IntegerField extends Field {
 	public String sqlType(DatabaseVendor vendor) {
 		String name = type().vendorType(vendor);
 
-		if(vendor == DatabaseVendor.Oracle) {
+		if(vendor == DatabaseVendor.Oracle)
 			return name + "(19, 0)";
-		}
+
 		return name;
 	}
 

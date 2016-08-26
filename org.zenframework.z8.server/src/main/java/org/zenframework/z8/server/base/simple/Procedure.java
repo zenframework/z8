@@ -49,21 +49,15 @@ public class Procedure extends Command {
 		monitor.print(message);
 	}
 
-	public void z8_setProfilerStatus(string status, integer percentDone) {
-		if(!status.get().isEmpty()) {
+	public void z8_setStatus(string status, integer percentDone) {
+		if(!status.get().isEmpty())
 			reportProgress(status.get(), percentDone.getInt());
-		} else {
+		else
 			reportProgress(percentDone.getInt());
-		}
 	}
 
-	public void z8_setProfilerText(string text) {
+	public void z8_setText(string text) {
 		print(text.get());
-	}
-
-	@Deprecated
-	public void z8_setProfilerText(string text, integer percent) {
-		z8_setProfilerStatus(text, percent);
 	}
 
 	protected void z8_exec() {
@@ -76,8 +70,6 @@ public class Procedure extends Command {
 	public void z8_onError(exception e) {
 		log(e);
 	}
-
-	// ///////////////////////////////////////////////////////////////
 
 	@Override
 	public void run() {
@@ -114,7 +106,7 @@ public class Procedure extends Command {
 		monitor.setWorked(monitor.getTotalWork());
 		monitor.log(e);
 		monitor.print(Resources.format("Procedure.jobError", ErrorUtils.getMessage(e)));
-		
+
 		if(useTransaction.get())
 			monitor.print(Resources.get("Procedure.rollback"));
 	}

@@ -82,9 +82,8 @@ public class QueryUtils {
 				fields.add(field);
 				values.add(value);
 
-				if(query.primaryKey() == field) {
+				if(query.primaryKey() == field)
 					recordId = new guid(value);
-				}
 			}
 		}
 

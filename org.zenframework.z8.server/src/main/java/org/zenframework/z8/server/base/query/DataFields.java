@@ -6,33 +6,33 @@ import org.zenframework.z8.server.base.table.value.Field;
 import org.zenframework.z8.server.runtime.RCollection;
 
 public class DataFields extends RCollection<Field.CLASS<? extends Field>> {
-    private static final long serialVersionUID = -434029387095730997L;
+	private static final long serialVersionUID = -434029387095730997L;
 
-    Query owner = null;
+	Query owner = null;
 
-    public DataFields(Query owner) {
-        super(/*true*/);
+	public DataFields(Query owner) {
+		super(/* true */);
 
-        this.owner = owner;
-    }
+		this.owner = owner;
+	}
 
-    @Override
-    public boolean add(Field.CLASS<? extends Field> field) {
-        field.setOwner(this.owner);
-        return super.add(field);
-    }
+	@Override
+	public boolean add(Field.CLASS<? extends Field> field) {
+		field.setOwner(this.owner);
+		return super.add(field);
+	}
 
-    @Override
-    public void add(int index, Field.CLASS<? extends Field> field) {
-        field.setOwner(this.owner);
-        super.add(index, field);
-    }
+	@Override
+	public void add(int index, Field.CLASS<? extends Field> field) {
+		field.setOwner(this.owner);
+		super.add(index, field);
+	}
 
-    @Override
-    public boolean addAll(int index, Collection<? extends Field.CLASS<? extends Field>> fields) {
-        for(Field.CLASS<? extends Field> field : fields)
-            field.setOwner(this.owner);
+	@Override
+	public boolean addAll(int index, Collection<? extends Field.CLASS<? extends Field>> fields) {
+		for(Field.CLASS<? extends Field> field : fields)
+			field.setOwner(this.owner);
 
-        return super.addAll(index, fields);
-    }
+		return super.addAll(index, fields);
+	}
 }

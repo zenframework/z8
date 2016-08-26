@@ -57,12 +57,12 @@ public class Sequencer extends OBJECT {
 
 		// old id for backward compatibility
 		String id = "id" + Integer.toString(key.hashCode()).replace('-', '_');
-		
+
 		SqlToken where = new Or(new Equ(idField, id), new Equ(idField, key));
 
 		long result = defaultValue;
 
-		if (sequences.readFirst(Arrays.<Field> asList(valueField), where)) {
+		if(sequences.readFirst(Arrays.<Field>asList(valueField), where)) {
 			result = valueField.integer().get() + Math.max(increment, 1);
 			valueField.set(new integer(result));
 			sequences.update(sequences.recordId());

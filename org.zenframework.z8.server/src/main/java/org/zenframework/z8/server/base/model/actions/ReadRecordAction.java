@@ -24,9 +24,8 @@ public class ReadRecordAction extends ReadAction {
 			Collection<Field> fields = new ArrayList<Field>();
 
 			for(Field field : fetchedFields) {
-				if(field.system() || field instanceof GuidField || field == getQuery().lockKey()) {
+				if(field.system() || field instanceof GuidField || field == getQuery().lockKey())
 					continue;
-				}
 				fields.add(field);
 			}
 

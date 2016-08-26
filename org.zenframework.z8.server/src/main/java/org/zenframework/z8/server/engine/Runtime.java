@@ -2,10 +2,8 @@ package org.zenframework.z8.server.engine;
 
 import java.io.IOException;
 import java.net.URL;
-import java.util.Collection;
 import java.util.Enumeration;
 
-import org.zenframework.z8.server.base.simple.Activator;
 import org.zenframework.z8.server.base.table.Table;
 import org.zenframework.z8.server.logs.Trace;
 import org.zenframework.z8.server.runtime.AbstractRuntime;
@@ -32,7 +30,6 @@ public class Runtime extends AbstractRuntime {
 		this(null);
 	}
 
-	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public Runtime(ClassLoader classLoader) {
 		if(classLoader == null)
 			classLoader = getClass().getClassLoader();
@@ -52,15 +49,6 @@ public class Runtime extends AbstractRuntime {
 			}
 		} catch(IOException e) {
 			throw new RuntimeException("Can't load " + Z8RuntimePath + " resources", e);
-		}
-		// Run activators
-		Collection<Activator.CLASS<? extends Activator>> activators = (Collection)activators();
-		for(Activator.CLASS<? extends Activator> activator : activators) {
-			try {
-				activator.get().onInitialize();
-			} catch(Throwable e) {
-				Trace.logError("Plugin initialization error.", e);
-			}
 		}
 	}
 

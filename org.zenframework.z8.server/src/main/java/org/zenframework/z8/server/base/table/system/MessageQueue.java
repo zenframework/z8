@@ -27,7 +27,7 @@ import org.zenframework.z8.server.types.string;
 public class MessageQueue extends Table {
 
 	static public String TableName = "SystemMessageQueue";
-	
+
 	static public class names {
 		static public String Address = "Address";
 		static public String Sender = "Sender";
@@ -138,7 +138,7 @@ public class MessageQueue extends Table {
 
 		Field address = this.address.get();
 
-		Collection<Field> fields = Arrays.<Field> asList(address);
+		Collection<Field> fields = Arrays.<Field>asList(address);
 
 		group(fields, fields);
 
@@ -156,8 +156,8 @@ public class MessageQueue extends Table {
 		Field data = this.data.get();
 		Field classId = this.classId.get();
 
-		Collection<Field> fields = Arrays.<Field> asList(data, classId);
-		Collection<Field> orderBy = Arrays.<Field> asList(ordinal.get());
+		Collection<Field> fields = Arrays.<Field>asList(data, classId);
+		Collection<Field> orderBy = Arrays.<Field>asList(ordinal.get());
 
 		SqlToken where = new And(new IsNot(processing), new Equ(address, domain));
 
@@ -172,7 +172,7 @@ public class MessageQueue extends Table {
 
 		return result;
 	}
-	
+
 	public void beginProcessing(guid id) {
 		processing.get().set(new bool(true));
 		update(id);

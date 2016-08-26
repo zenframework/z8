@@ -177,11 +177,10 @@ Ext.ux.grid.filter.DateFilter = Ext.extend(Ext.ux.grid.filter.Filter, {
 			fields.after.setChecked(false, true);
 		} else {
 			fields.on.setChecked(false, true);
-			if (field == fields.after && fields.before.menu.picker.value < value) {
+			if (field == fields.after && fields.before.menu.picker.value < value)
 				fields.before.setChecked(false, true);
-			} else if (field == fields.before && fields.after.menu.picker.value > value) {
+			else if (field == fields.before && fields.after.menu.picker.value > value)
 				fields.after.setChecked(false, true);
-			}
 		}
 		this.fireEvent('update', this);
 	},
@@ -194,9 +193,8 @@ Ext.ux.grid.filter.DateFilter = Ext.extend(Ext.ux.grid.filter.Filter, {
 	getValue : function () {
 		var key, result = {};
 		for (key in this.fields) {
-			if (this.fields[key].checked) {
+			if (this.fields[key].checked)
 				result[key] = this.fields[key].menu.picker.getValue();
-			}
 		}
 		return result;
 	},
@@ -215,9 +213,8 @@ Ext.ux.grid.filter.DateFilter = Ext.extend(Ext.ux.grid.filter.Filter, {
 			if(value[key]){
 				this.fields[key].menu.picker.setValue(value[key]);
 				this.fields[key].setChecked(true);
-			} else if (!preserve) {
+			} else if (!preserve)
 				this.fields[key].setChecked(false);
-			}
 		}
 		this.fireEvent('update', this);
 	},
@@ -231,9 +228,8 @@ Ext.ux.grid.filter.DateFilter = Ext.extend(Ext.ux.grid.filter.Filter, {
 	isActivatable : function () {
 		var key;
 		for (key in this.fields) {
-			if (this.fields[key].checked) {
+			if (this.fields[key].checked)
 				return true;
-			}
 		}
 		return false;
 	},
@@ -252,7 +248,7 @@ Ext.ux.grid.filter.DateFilter = Ext.extend(Ext.ux.grid.filter.Filter, {
 				args.push({
 					type: 'date',
 					comparison: this.compareMap[key],
-					value: this.getFieldValue(key).format(this.dateFormat)
+					value: Z8.Format.isoDate(this.getFieldValue(key))
 				});
 			}
 		}
@@ -288,24 +284,23 @@ Ext.ux.grid.filter.DateFilter = Ext.extend(Ext.ux.grid.filter.Filter, {
 		var key,
 			pickerValue,
 			val = record.get(this.dataIndex);
-			
-		if(!Ext.isDate(val)){
+
+		if(!Ext.isDate(val))
 			return false;
-		}
+
 		val = val.clearTime(true).getTime();
-		
+
 		for (key in this.fields) {
 			if (this.fields[key].checked) {
 				pickerValue = this.getFieldValue(key).clearTime(true).getTime();
-				if (key == 'before' && pickerValue <= val) {
+				if (key == 'before' && pickerValue <= val)
 					return false;
-				}
-				if (key == 'after' && pickerValue >= val) {
+
+				if (key == 'after' && pickerValue >= val)
 					return false;
-				}
-				if (key == 'on' && pickerValue != val) {
+
+				if (key == 'on' && pickerValue != val)
 					return false;
-				}
 			}
 		}
 		return true;

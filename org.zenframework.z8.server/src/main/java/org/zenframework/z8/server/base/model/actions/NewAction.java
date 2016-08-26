@@ -28,9 +28,8 @@ public class NewAction extends Action {
 
 		Field backwardLink = actionParameters().keyField;
 
-		if(backwardLink != null) {
+		if(backwardLink != null)
 			backwardLink.set(getRecordIdParameter());
-		}
 
 		Collection<Field> fields = run(query, recordId, parentId, modelRecordId);
 
@@ -77,9 +76,8 @@ public class NewAction extends Action {
 								for(Field actionField : action.selectFields) {
 									actionField.set(actionField.get());
 
-									if(!fields.contains(actionField)) {
+									if(!fields.contains(actionField))
 										fields.add(actionField);
-									}
 								}
 							}
 						} finally {
@@ -100,10 +98,8 @@ public class NewAction extends Action {
 					field.set(parentId);
 				} else {
 					primary value = field.getDefault();
-
-					if(!value.equals(field.getDefaultValue())) {
+					if(!value.equals(field.getDefaultValue()))
 						field.set(value);
-					}
 				}
 			}
 		}

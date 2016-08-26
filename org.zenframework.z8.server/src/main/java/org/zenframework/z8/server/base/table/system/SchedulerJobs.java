@@ -168,9 +168,8 @@ public class SchedulerJobs extends Table {
 	@Override
 	protected void afterUpdate(Query data, guid recordId, Collection<Field> fields, Query model, guid modelRecordId) {
 		super.afterUpdate(data, recordId, fields, model, modelRecordId);
-		if (!fields.contains(lastStarted.get())) {
+		if (!fields.contains(lastStarted.get()))
 			Scheduler.reset();
-		}
 	}
 
 	@Override
@@ -181,15 +180,18 @@ public class SchedulerJobs extends Table {
 
 	private void setTaskDefaults() {
 		Field jobField = job.get();
+
 		if (!jobField.changed() || description.get().changed())
 			return;
+
 		guid jobId = jobField.guid();
 		if (jobId.equals(guid.NULL))
 			return;
+
 		Jobs jobs = new Jobs.CLASS<Jobs>().get();
 		if (!jobs.readRecord(jobId, Arrays.<Field> asList(jobs.description.get())))
 			throw new exception(Resources.get(strings.ErrorNoJob));
+
 		description.get().set(jobs.description.get().string());
 	}
-
 }

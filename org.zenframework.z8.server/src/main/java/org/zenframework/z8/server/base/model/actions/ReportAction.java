@@ -22,161 +22,156 @@ import org.zenframework.z8.server.types.guid;
 import org.zenframework.z8.server.types.integer;
 
 class ReportReadAction extends ReadAction {
-    ReportReadAction(ActionParameters parameters) {
-        super(parameters);
-    }
+	ReportReadAction(ActionParameters parameters) {
+		super(parameters);
+	}
 
-    @Override
-    public String getFilterParameter() {
-        return null;
-    }
+	@Override
+	public String getFilterParameter() {
+		return null;
+	}
 
-    public List<Field> getFields() {
-        List<Field> result = new ArrayList<Field>();
+	public List<Field> getFields() {
+		List<Field> result = new ArrayList<Field>();
 
-        for(Field field : super.getSelectFields()) {
-            if(field.isDataField() && !field.system()) {
-                result.add(field);
-            }
-        }
+		for(Field field : super.getSelectFields()) {
+			if(field.isDataField() && !field.system())
+				result.add(field);
+		}
 
-        return result;
-    }
+		return result;
+	}
 }
 
 public class ReportAction extends Action {
-    private Collection<ReadAction> actions = new ArrayList<ReadAction>();
+	private Collection<ReadAction> actions = new ArrayList<ReadAction>();
 
-    private Collection<Field> groupFields;
-    private Collection<Field> columns;
-    private Collection<guid> ids;
+	private Collection<Field> groupFields;
+	private Collection<Field> columns;
+	private Collection<guid> ids;
 
-    public ReportAction(ActionParameters parameters) {
-        super(parameters);
+	public ReportAction(ActionParameters parameters) {
+		super(parameters);
 
-        String report = getReportParameter();
-        Query query = getQuery();
+		String report = getReportParameter();
+		Query query = getQuery();
 
-        if(report != null) {
-            ids = getIdList();
+		if(report != null) {
+			ids = getIdList();
 
-            String modelName = Query.getModel(getQuery()).getRootQuery().name();
+			String modelName = Query.getModel(getQuery()).getRootQuery().name();
 
-            Collection<Query> queries = query.onReport(report, ids);
+			Collection<Query> queries = query.onReport(report, ids);
 
-            for(Query reportQuery : queries) {
-                parameters = new ActionParameters(requestParameters());
-                parameters.query = reportQuery;
-                parameters.keyField = actionParameters().keyField;
+			for(Query reportQuery : queries) {
+				parameters = new ActionParameters(requestParameters());
+				parameters.query = reportQuery;
+				parameters.keyField = actionParameters().keyField;
 
-                ReadAction action = new ReportReadAction(parameters);
-                actions.add(action);
+				ReadAction action = new ReportReadAction(parameters);
+				actions.add(action);
 
-                if(!reportQuery.printAsList.get() && !ids.isEmpty()) {
-                    Query model = Query.getModel(reportQuery);
+				if(!reportQuery.printAsList.get() && !ids.isEmpty()) {
+					Query model = Query.getModel(reportQuery);
 
-                    if(model.getRootQuery().name().equals(modelName)) {
-                        action.addFilter(model.primaryKey(), ids.iterator().next());
-                    }
-                }
-            }
-        }
-        else {
-            groupFields = parameters.groupFields;
-            parameters.groupFields = null;
+					if(model.getRootQuery().name().equals(modelName))
+						action.addFilter(model.primaryKey(), ids.iterator().next());
+				}
+			}
+		} else {
+			groupFields = parameters.groupFields;
+			parameters.groupFields = null;
 
-            columns = getColumns();
-            parameters.fields = getFields();
-            
-            ReadAction action = new ReadAction(parameters);
-            actions.add(action);
-        }
-    }
+			columns = getColumns();
+			parameters.fields = getFields();
 
-    private Collection<Field> getColumns() {
-        Collection<Field> result = new ArrayList<Field>();
+			ReadAction action = new ReadAction(parameters);
+			actions.add(action);
+		}
+	}
 
-        JsonArray columns = new JsonArray(getColumnsParameter());
+	private Collection<Field> getColumns() {
+		Collection<Field> result = new ArrayList<Field>();
 
-        for(int index = 0; index < columns.length(); index++) {
-            JsonObject column = (JsonObject)columns.get(index);
+		JsonArray columns = new JsonArray(getColumnsParameter());
 
-            Field field = getQuery().findFieldById(column.getString(Json.id));
+		for(int index = 0; index < columns.length(); index++) {
+			JsonObject column = (JsonObject)columns.get(index);
 
-            if(field != null && !field.system()) {
-                int width = column.getInt(Json.width);
-                field.width = new integer(width);
-                result.add(field);
-            }
-        }
-        
-        return result;
-    }
+			Field field = getQuery().findFieldById(column.getString(Json.id));
 
-    private Collection<Field> getFields() {
-        Collection<Field> result = new ArrayList<Field>();
-        
-        result.addAll(columns);
-        
-        for(Field field: groupFields) {
-            if(!result.contains(field))
-                result.add(field);
-        }
-        
-        return result;
-    }
+			if(field != null && !field.system()) {
+				int width = column.getInt(Json.width);
+				field.width = new integer(width);
+				result.add(field);
+			}
+		}
 
-    private String getReportHeader() {
-        Query query = getQuery();
+		return result;
+	}
 
-        String header = query.displayName();
+	private Collection<Field> getFields() {
+		Collection<Field> result = new ArrayList<Field>();
 
-        if(query.period != null) {
-            header += ", " + query.period.get().displayName();
-        }
+		result.addAll(columns);
 
-        if(!header.isEmpty()) {
-            header += '.';
-        }
+		for(Field field : groupFields) {
+			if(!result.contains(field))
+				result.add(field);
+		}
 
-        return header;
-    }
+		return result;
+	}
 
-    @Override
-    public void writeResponse(JsonWriter writer) {
-        PrintOptions printOptions = new PrintOptions();
+	private String getReportHeader() {
+		Query query = getQuery();
 
-        String report = getReportParameter();
+		String header = query.displayName();
 
-        String reportFolder = Folders.Reports;
-        String reportTemplate = report != null ? report : null;
-        String reportCaption = "";
+		if(query.period != null)
+			header += ", " + query.period.get().displayName();
 
-        if(report == null) {
-            reportTemplate = Reports.DefaultDesign;
-            reportFolder = Folders.ReportDefaults;
-            reportCaption = getReportHeader();
+		if(!header.isEmpty())
+			header += '.';
 
-            JsonObject object = new JsonObject(getOptionsParameter());
+		return header;
+	}
 
-            printOptions.pageOrientation = PageOrientation.fromString(object.getString(Json.pageOrientation));
-            printOptions.pageFormat = PageFormat.fromString(object.getString(Json.pageFormat));
+	@Override
+	public void writeResponse(JsonWriter writer) {
+		PrintOptions printOptions = new PrintOptions();
 
-            printOptions.leftMargin = (float)object.getDouble(Json.leftMargin);
-            printOptions.rightMargin = (float)object.getDouble(Json.rightMargin);
-            printOptions.topMargin = (float)object.getDouble(Json.topMargin);
-            printOptions.bottomMargin = (float)object.getDouble(Json.bottomMargin);
-        }
+		String report = getReportParameter();
 
-        ReportOptions reportOptions = printOptions.getReportOptions(reportCaption, actions, reportFolder, reportTemplate);
-        reportOptions.setFormat(getFormatParameter());
+		String reportFolder = Folders.Reports;
+		String reportTemplate = report != null ? report : null;
+		String reportCaption = "";
 
-        BirtReportRunner reportRunner = new BirtReportRunner(reportOptions);
+		if(report == null) {
+			reportTemplate = Reports.DefaultDesign;
+			reportFolder = Folders.ReportDefaults;
+			reportCaption = getReportHeader();
 
-        String reportId = report != null ? reportRunner.execute() : reportRunner.execute(columns, groupFields);
+			JsonObject object = new JsonObject(getOptionsParameter());
 
-        writer.writeProperty(Json.source, reportId);
-        writer.writeProperty(Json.serverId, ApplicationServer.id);
-    }
+			printOptions.pageOrientation = PageOrientation.fromString(object.getString(Json.pageOrientation));
+			printOptions.pageFormat = PageFormat.fromString(object.getString(Json.pageFormat));
+
+			printOptions.leftMargin = (float)object.getDouble(Json.leftMargin);
+			printOptions.rightMargin = (float)object.getDouble(Json.rightMargin);
+			printOptions.topMargin = (float)object.getDouble(Json.topMargin);
+			printOptions.bottomMargin = (float)object.getDouble(Json.bottomMargin);
+		}
+
+		ReportOptions reportOptions = printOptions.getReportOptions(reportCaption, actions, reportFolder, reportTemplate);
+		reportOptions.setFormat(getFormatParameter());
+
+		BirtReportRunner reportRunner = new BirtReportRunner(reportOptions);
+
+		String reportId = report != null ? reportRunner.execute() : reportRunner.execute(columns, groupFields);
+
+		writer.writeProperty(Json.source, reportId);
+		writer.writeProperty(Json.serverId, ApplicationServer.id);
+	}
 
 }

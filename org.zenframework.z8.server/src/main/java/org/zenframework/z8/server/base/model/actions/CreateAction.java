@@ -14,71 +14,70 @@ import org.zenframework.z8.server.json.parser.JsonObject;
 import org.zenframework.z8.server.types.guid;
 
 public class CreateAction extends Action {
-    public CreateAction(ActionParameters parameters) {
-        super(parameters);
-    }
+	public CreateAction(ActionParameters parameters) {
+		super(parameters);
+	}
 
-    @Override
-    public void writeResponse(JsonWriter writer) {
-        Field backwardLink = actionParameters().keyField;
+	@Override
+	public void writeResponse(JsonWriter writer) {
+		Field backwardLink = actionParameters().keyField;
 
-        String jsonData = getDataParameter();
+		String jsonData = getDataParameter();
 
-        if(jsonData.charAt(0) == '{')
-            jsonData = "[" + jsonData + "]";
+		if(jsonData.charAt(0) == '{')
+			jsonData = "[" + jsonData + "]";
 
-        JsonArray records = new JsonArray(jsonData);
+		JsonArray records = new JsonArray(jsonData);
 
-        Query query = getQuery();
-        Query rootQuery = getRootQuery();
+		Query query = getQuery();
+		Query rootQuery = getRootQuery();
 
-        Field primaryKey = rootQuery.primaryKey();
-        Field parentKey = rootQuery.parentKey();
+		Field primaryKey = rootQuery.primaryKey();
+		Field parentKey = rootQuery.parentKey();
 
-        writer.startArray(Json.data);
+		writer.startArray(Json.data);
 
-        for(int index = 0; index < records.length(); index++) {
-            JsonObject record = (JsonObject)records.get(index);
+		for(int index = 0; index < records.length(); index++) {
+			JsonObject record = (JsonObject)records.get(index);
 
-            Collection<Field> fields = new ArrayList<Field>();
-            QueryUtils.parseRecord(record, query, fields);
+			Collection<Field> fields = new ArrayList<Field>();
+			QueryUtils.parseRecord(record, query, fields);
 
-            if(!fields.contains(primaryKey))
-                fields.add(primaryKey);
-            
-            guid recordId = primaryKey.guid();
+			if(!fields.contains(primaryKey))
+				fields.add(primaryKey);
 
-            if(recordId.isNull()) {
-                recordId = guid.create();
-                primaryKey.set(recordId);
-            }
-            
-            guid parentId = parentKey != null ? parentKey.guid() : null;
-            guid modelRecordId = getRecordIdParameter();
+			guid recordId = primaryKey.guid();
 
-            if(backwardLink != null) {
-                backwardLink.set(getRecordIdParameter());
-            }
+			if(recordId.isNull()) {
+				recordId = guid.create();
+				primaryKey.set(recordId);
+			}
 
-            query.insert(recordId, parentId, modelRecordId != null ? modelRecordId : recordId);
+			guid parentId = parentKey != null ? parentKey.guid() : null;
+			guid modelRecordId = getRecordIdParameter();
 
-            if(query.readRecord(recordId, fields)) {
-                writer.startObject();
+			if(backwardLink != null)
+				backwardLink.set(getRecordIdParameter());
 
-                for(Field field : fields)
-                    field.writeData(writer);
+			query.insert(recordId, parentId, modelRecordId != null ? modelRecordId : recordId);
 
-                Style style = query.renderRecord();
+			if(query.readRecord(recordId, fields)) {
+				writer.startObject();
 
-                if(style != null)
-                    style.write(writer);
+				for(Field field : fields)
+					field.writeData(writer);
 
-                writer.finishObject();
-            }
-            
-            primaryKey.set(guid.NULL);
-        }
+				Style style = query.renderRecord();
 
-        writer.finishArray();
-    }
+				if(style != null)
+					style.write(writer);
+
+				writer.finishObject();
+			}
+
+			primaryKey.set(guid.NULL);
+		}
+
+		writer.finishArray();
+	}
 }

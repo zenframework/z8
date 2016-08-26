@@ -15,9 +15,9 @@ import org.zenframework.z8.server.types.guid;
 
 public class SystemTools extends Desktop {
 	static public guid Id = new guid("00000000-0000-0000-0000-000000000001");
-	
+
 	static public String ClassName = SystemTools.class.getCanonicalName();
-	
+
 	static public class strings {
 		public final static String Title = "SystemTools.title";
 	}
@@ -69,7 +69,7 @@ public class SystemTools extends Desktop {
 		runnables.add(addresses);
 
 		guid user = ApplicationServer.getUser().id();
-		
+
 		if(user.equals(BuiltinUsers.Administrator.guid()) || user.equals(BuiltinUsers.System.guid())) {
 			runnables.add(authorityCenter);
 			runnables.add(interconnectionCenter);

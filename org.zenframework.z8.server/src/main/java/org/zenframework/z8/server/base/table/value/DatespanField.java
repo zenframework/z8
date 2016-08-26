@@ -10,62 +10,62 @@ import org.zenframework.z8.server.types.primary;
 import org.zenframework.z8.server.types.sql.sql_datespan;
 
 public class DatespanField extends Field {
-    public static class CLASS<T extends DatespanField> extends Field.CLASS<T> {
-        public CLASS(IObject container) {
-            super(container);
-            setJavaClass(DatespanField.class);
-        }
+	public static class CLASS<T extends DatespanField> extends Field.CLASS<T> {
+		public CLASS(IObject container) {
+			super(container);
+			setJavaClass(DatespanField.class);
+		}
 
-        @Override
-        public Object newObject(IObject container) {
-            return new DatespanField(container);
-        }
-    }
+		@Override
+		public Object newObject(IObject container) {
+			return new DatespanField(container);
+		}
+	}
 
-    public DatespanField(IObject _container) {
-        super(_container);
-        setDefault(new datespan());
-    }
+	public DatespanField(IObject _container) {
+		super(_container);
+		setDefault(new datespan());
+	}
 
-    public datespan z8_getDefault() {
-        return (datespan)super.getDefault();
-    }
+	public datespan z8_getDefault() {
+		return (datespan)super.getDefault();
+	}
 
-    @Override
-    public primary getDefault() {
-        return ApplicationServer.events() ? z8_getDefault() : super.getDefault();
-    }
+	@Override
+	public primary getDefault() {
+		return ApplicationServer.events() ? z8_getDefault() : super.getDefault();
+	}
 
-    @Override
-    public FieldType type() {
-        return FieldType.Datespan;
-    }
+	@Override
+	public FieldType type() {
+		return FieldType.Datespan;
+	}
 
-    @Override
-    public String sqlType(DatabaseVendor vendor) {
-        String name = type().vendorType(vendor);
+	@Override
+	public String sqlType(DatabaseVendor vendor) {
+		String name = type().vendorType(vendor);
 
-        if(vendor == DatabaseVendor.Oracle) {
-            return name + "(19, 0)";
-        }
-        return name;
-    }
+		if(vendor == DatabaseVendor.Oracle) {
+			return name + "(19, 0)";
+		}
+		return name;
+	}
 
-    public sql_datespan sql_datespan() {
-        return new sql_datespan(new SqlField(this));
-    }
+	public sql_datespan sql_datespan() {
+		return new sql_datespan(new SqlField(this));
+	}
 
-    @Override
-    public primary get() {
-        return z8_get();
-    }
+	@Override
+	public primary get() {
+		return z8_get();
+	}
 
-    public datespan z8_get() {
-        return (datespan)internalGet();
-    }
+	public datespan z8_get() {
+		return (datespan)internalGet();
+	}
 
-    public DatespanField.CLASS<? extends DatespanField> operatorAssign(datespan value) {
-        set(value);
-        return (DatespanField.CLASS<?>) this.getCLASS();
-    }
+	public DatespanField.CLASS<? extends DatespanField> operatorAssign(datespan value) {
+		set(value);
+		return (DatespanField.CLASS<?>)this.getCLASS();
+	}
 }

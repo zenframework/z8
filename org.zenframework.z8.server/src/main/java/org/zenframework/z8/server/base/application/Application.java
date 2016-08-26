@@ -20,11 +20,11 @@ public class Application {
 		user.initialize(ApplicationServer.getUser());
 		return cls;
 	}
-	
+
 	static public integer z8_currentTimeMillis() {
 		return new integer(System.currentTimeMillis());
 	}
-	
+
 	static public void z8_log(string text) {
 		Trace.logEvent(text.get());
 		ApplicationServer.getMonitor().log(text.get());
@@ -38,7 +38,7 @@ public class Application {
 	static public void z8_message(file file) {
 		ApplicationServer.getMonitor().print(file);
 	}
-	
+
 	static public RLinkedHashMap<string, string> z8_requestParameters() {
 		return (RLinkedHashMap<string, string>)ApplicationServer.getRequest().getParameters();
 	}
@@ -59,13 +59,13 @@ public class Application {
 
 	static public RCollection<string> z8_supportedFileTypes() {
 		RCollection<string> result = new RCollection<string>();
-		
+
 		result.add(new string(FileConverter.PDF_EXTENSION));
 		result.addAll(string.wrap(ServerConfig.textExtensions()));
 		result.addAll(string.wrap(ServerConfig.imageExtensions()));
 		result.addAll(string.wrap(ServerConfig.emailExtensions()));
 		result.addAll(string.wrap(ServerConfig.officeExtensions()));
-		
+
 		return result;
 	}
 }

@@ -80,13 +80,13 @@ public class Filter {
 			SqlToken right = new Rel(sqlField, Operation.LE, finish.sql_date());
 
 			return new And(left, right);
-		} else if(type == FieldType.Decimal) {
+		} else if(type == FieldType.Decimal)
 			return new Rel(field, operation, new decimal(value).sql_decimal());
-		} else if(type == FieldType.Integer) {
+		else if(type == FieldType.Integer)
 			return new Rel(field, operation, new integer(value).sql_int());
-		} else if(type == FieldType.Boolean) {
+		else if(type == FieldType.Boolean)
 			return new Rel(field, Operation.Eq, new bool(value).sql_bool());
-		} else if(type == FieldType.Guid) {
+		else if(type == FieldType.Guid) {
 			if(values.length != 1) {
 				List<guid> guids = getGuidValues();
 
@@ -117,37 +117,32 @@ public class Filter {
 				if(operation == null) {
 					boolean startStar = value.startsWith("*");
 
-					if(startStar) {
+					if(startStar)
 						value = value.length() > 1 ? value.substring(1) : "";
-					}
 
 					boolean endStar = value.length() > 1 ? value.endsWith("*") : false;
 
-					if(endStar) {
+					if(endStar)
 						value = value.substring(0, value.length() - 1);
-					}
 
 					if(!startStar && !endStar) {
-						if(!value.isEmpty()) {
+						if(!value.isEmpty())
 							value = "%" + value + "%";
-						}
 					} else {
 						value = (startStar ? "%" : "") + value + (endStar ? "%" : "");
 					}
-				} else if(operation == Operation.BeginsWith) {
+				} else if(operation == Operation.BeginsWith)
 					value += '%';
-				} else if(operation == Operation.EndsWith) {
+				else if(operation == Operation.EndsWith)
 					value = '%' + value;
-				} else if(operation == Operation.Contains) {
+				else if(operation == Operation.Contains)
 					value = '%' + value + '%';
-				}
 
 				SqlToken left = new Lower(field);
 				SqlToken right = new sql_string(value.toLowerCase());
 				return new Like(left, right, null);
-			} else if(operation == Operation.Eq || operation == Operation.NotEq || operation == Operation.LT || operation == Operation.LE || operation == Operation.GT || operation == Operation.GE) {
+			} else if(operation == Operation.Eq || operation == Operation.NotEq || operation == Operation.LT || operation == Operation.LE || operation == Operation.GT || operation == Operation.GE)
 				return new Rel(field, operation, new string(value).sql_string());
-			}
 		}
 
 		return null;
@@ -255,34 +250,30 @@ public class Filter {
 		String value = values[0];
 		FieldType type = field.type();
 
-		if(type == FieldType.Date || type == FieldType.Datetime || type == FieldType.Guid) {
+		if(type == FieldType.Date || type == FieldType.Datetime || type == FieldType.Guid)
 			return field.displayName() + " " + operation.toReadableString() + " '" + value.toString() + "'";
-		} else if(type == FieldType.Decimal) {
+		else if(type == FieldType.Decimal)
 			return field.displayName() + " " + operation.toReadableString() + " " + value.toString();
-		} else if(type == FieldType.Integer) {
+		else if(type == FieldType.Integer)
 			return field.displayName() + " " + operation.toReadableString() + " " + value.toString();
-		} else if(type == FieldType.Boolean) {
+		else if(type == FieldType.Boolean)
 			return field.displayName() + " " + operation.toReadableString() + " " + new bool(value).toString();
-		} else if(type == FieldType.String || type == FieldType.Text) {
+		else if(type == FieldType.String || type == FieldType.Text) {
 			if(values.length != 1) {
-				StringBuilder result = new StringBuilder();
-				result.append(field.displayName()).append(' ');
+				String result = field.displayName() + ' ';
 				if(operation == Operation.Not || operation == Operation.NotEq)
-					result.append(Resources.get("Operation.not")).append(' ');
-				result.append(Resources.get("Operation.inVector")).append(' ').append(Arrays.toString(values));
-				return result.toString();
+					result += Resources.get("Operation.not") + ' ';
+				result += Resources.get("Operation.inVector") + ' ' + Arrays.toString(values);
+				return result;
 			}
 			if(operation == null || operation == Operation.BeginsWith || operation == Operation.EndsWith || operation == Operation.Contains) {
-				if(value.isEmpty()) {
+				if(value.isEmpty())
 					return null;
-				}
 				return field.displayName() + " " + Resources.get("Operation.contains") + " '" + value.toString() + "'";
-			} else if(operation == Operation.Eq || operation == Operation.NotEq || operation == Operation.LT || operation == Operation.LE || operation == Operation.GT || operation == Operation.GE) {
+			} else if(operation == Operation.Eq || operation == Operation.NotEq || operation == Operation.LT || operation == Operation.LE || operation == Operation.GT || operation == Operation.GE)
 				return field.displayName() + " " + operation.toReadableString() + " '" + value.toString() + "'";
-			}
 		}
 
 		return null;
 	}
-
 }

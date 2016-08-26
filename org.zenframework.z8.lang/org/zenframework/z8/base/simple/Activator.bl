@@ -2,8 +2,6 @@ import org.zenframework.z8.lang.Object;
 
 [native "org.zenframework.z8.server.base.simple.Activator"]
 class Activator extends Object {
-	public virtual void onInitialize();
-
 	public virtual void beforeDbGenerated();
 	public virtual void afterDbGenerated();
 }

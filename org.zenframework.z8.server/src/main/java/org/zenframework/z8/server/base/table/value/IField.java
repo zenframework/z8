@@ -6,22 +6,23 @@ import org.zenframework.z8.server.db.FieldType;
 import org.zenframework.z8.server.types.primary;
 
 public interface IField {
-    public String name();
+	public String name();
 
-    public String displayName();
+	public String displayName();
 
-    public FieldType type();
+	public FieldType type();
 
-    public int size();
+	public int size();
 
-    public int scale();
+	public int scale();
 
-    public primary getDefaultValue();
+	public primary getDefaultValue();
 
-    public String sqlType(DatabaseVendor vendor);
-    
-    public Query owner();
-    
-    public primary get();
-    public void set(primary value);
+	public String sqlType(DatabaseVendor vendor);
+
+	public Query owner();
+
+	public primary get();
+
+	public void set(primary value);
 }

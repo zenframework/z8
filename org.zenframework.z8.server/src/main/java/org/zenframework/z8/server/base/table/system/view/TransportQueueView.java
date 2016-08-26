@@ -30,9 +30,9 @@ public class TransportQueueView extends TransportQueue {
 		super.constructor2();
 
 		readOnly = new bool(true);
-		
+
 		sortFields.add(ordinal);
-		
+
 		registerFormField(ordinal);
 		registerFormField(sender);
 		registerFormField(address);

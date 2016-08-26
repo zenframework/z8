@@ -13,51 +13,47 @@ import org.zenframework.z8.server.request.Loader;
 import org.zenframework.z8.server.types.guid;
 
 public class FollowAction extends MetaAction {
-    public FollowAction(ActionParameters parameters) {
-        super(getActionParameters(parameters));
-    }
+	public FollowAction(ActionParameters parameters) {
+		super(getActionParameters(parameters));
+	}
 
-    static private ActionParameters getActionParameters(ActionParameters actionParameters) {
-        String jsonData = actionParameters.requestParameter(Json.link);
+	static private ActionParameters getActionParameters(ActionParameters actionParameters) {
+		String jsonData = actionParameters.requestParameter(Json.link);
 
-        JsonObject object = new JsonObject(jsonData);
+		JsonObject object = new JsonObject(jsonData);
 
-        Collection<guid> ids = new ArrayList<guid>();
+		Collection<guid> ids = new ArrayList<guid>();
 
-        String recordIdString = object.has(Json.recordId) ? object.getString(Json.recordId) : null;
+		String recordIdString = object.has(Json.recordId) ? object.getString(Json.recordId) : null;
 
-        if(recordIdString != null) {
-            ids.add(new guid(recordIdString));
-        }
-        else {
-            JsonArray array = object.has(Json.groups) ? object.getJsonArray(Json.groups) : null;
+		if(recordIdString != null) {
+			ids.add(new guid(recordIdString));
+		} else {
+			JsonArray array = object.has(Json.groups) ? object.getJsonArray(Json.groups) : null;
 
-            if(array != null) {
-                int length = array.length();
-                for(int index = 0; index < length; index++) {
-                    ids.add(new guid(array.getString(index)));
-                }
-            }
-        }
+			if(array != null) {
+				int length = array.length();
+				for(int index = 0; index < length; index++)
+					ids.add(new guid(array.getString(index)));
+			}
+		}
 
-        Field field = actionParameters.query.findFieldById(object.getString(Json.fieldId));
+		Field field = actionParameters.query.findFieldById(object.getString(Json.fieldId));
 
-        Query query = actionParameters.query.onFollow(field, ids);
+		Query query = actionParameters.query.onFollow(field, ids);
 
-        if(query == null) {
-            throw new RuntimeException("No query to follow for field '" + field.owner().toString() + '.'
-                    + field.displayName() + "'.");
-        }
+		if(query == null)
+			throw new RuntimeException("No query to follow for field '" + field.owner().toString() + '.' + field.displayName() + "'.");
 
-        Query query1 = (Query)Loader.getInstance(query.classId());
+		Query query1 = (Query)Loader.getInstance(query.classId());
 
-        query1.recordIds = query.recordIds;
+		query1.recordIds = query.recordIds;
 
-        String periodData = actionParameters.requestParameter(Json.period);
+		String periodData = actionParameters.requestParameter(Json.period);
 
-        if(periodData != null && !periodData.isEmpty())
-            query1.setPeriod(Period.parse(periodData));
+		if(periodData != null && !periodData.isEmpty())
+			query1.setPeriod(Period.parse(periodData));
 
-        return ActionFactory.getActionParameters(query1);
-    }
+		return ActionFactory.getActionParameters(query1);
+	}
 }

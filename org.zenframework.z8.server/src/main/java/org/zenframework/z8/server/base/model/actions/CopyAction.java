@@ -82,18 +82,16 @@ public class CopyAction extends Action {
 			query.saveState();
 
 			if(query.readRecord(sourceId, fields)) {
-				for(Field field : fields) {
+				for(Field field : fields)
 					values.put(field, field.get());
-				}
 			}
 		} finally {
 			query.restoreState();
 		}
 
 		for(Field field : values.keySet()) {
-			if(canCopy(field) && !changed.contains(field)) {
+			if(canCopy(field) && !changed.contains(field))
 				field.set(values.get(field));
-			}
 		}
 
 		query.onCopy();

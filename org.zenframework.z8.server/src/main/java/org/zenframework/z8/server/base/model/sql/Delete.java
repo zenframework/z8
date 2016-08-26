@@ -12,37 +12,36 @@ import org.zenframework.z8.server.logs.Trace;
 import org.zenframework.z8.server.types.guid;
 
 public class Delete {
-    private Query query;
-    private guid recordId;
+	private Query query;
+	private guid recordId;
 
-    public Delete(Query query, guid recordId) {
-        if (recordId == null)
-            throw new RuntimeException("Delete: recordId == null");
-        this.query = query;
-        this.recordId = recordId;
-    }
+	public Delete(Query query, guid recordId) {
+		if(recordId == null)
+			throw new RuntimeException("Delete: recordId == null");
+		this.query = query;
+		this.recordId = recordId;
+	}
 
-    public int execute() {
-        Query rootQuery = query.getRootQuery();
-        Field primaryKey = rootQuery.primaryKey();
+	public int execute() {
+		Query rootQuery = query.getRootQuery();
+		Field primaryKey = rootQuery.primaryKey();
 
-        Connection connection = ConnectionManager.get();
-        Database database = connection.database();
-        DatabaseVendor vendor = connection.vendor();
+		Connection connection = ConnectionManager.get();
+		Database database = connection.database();
+		DatabaseVendor vendor = connection.vendor();
 
-        String sql = "delete from " + database.tableName(rootQuery.name());
+		String sql = "delete from " + database.tableName(rootQuery.name());
 
-        sql += " where " + vendor.quote(primaryKey.name()) + "="
-                + recordId.sql_guid().format(vendor, new FormatOptions(), true);
+		sql += " where " + vendor.quote(primaryKey.name()) + "=" + recordId.sql_guid().format(vendor, new FormatOptions(), true);
 
-        try {
-           return Statement.executeUpdate(connection, sql);
-        } catch (Throwable e) {
-            System.out.println(sql);
+		try {
+			return Statement.executeUpdate(connection, sql);
+		} catch(Throwable e) {
+			System.out.println(sql);
 
-            Trace.logError(e);
+			Trace.logError(e);
 
-            throw new RuntimeException(e);
-        }
-    }
+			throw new RuntimeException(e);
+		}
+	}
 }

@@ -31,8 +31,8 @@ public class ActionParameters {
 	public Field keyField;
 	public ILink link;
 
-    public ActionParameters() {
-    }
+	public ActionParameters() {
+	}
 
 	public ActionParameters(Map<string, string> requestParameters) {
 		this.requestParameters = requestParameters;

@@ -146,7 +146,7 @@ public class Dashboard extends RequestTarget {
 				writeDesktopData(writer, cls.newInstance(), cls.displayName());
 			writer.finishArray();
 		}
-		
+
 		writer.startObject(Json.parameters);
 		Map<string, primary> parameters = user.parameters();
 		for(string key : parameters.keySet())

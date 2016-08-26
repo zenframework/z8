@@ -254,5 +254,4 @@ public class Parameter extends OBJECT implements IParameter {
 		parameter.get().fieldId = fieldCls.id().replace(queryCls.id(), "");
 		return parameter;
 	}
-
 }

@@ -15,34 +15,34 @@ import org.zenframework.z8.server.types.guid;
 
 public class DetachAction extends Action {
 
-    public DetachAction(ActionParameters parameters) {
-        super(parameters);
-    }
+	public DetachAction(ActionParameters parameters) {
+		super(parameters);
+	}
 
-    @Override
-    public void writeResponse(JsonWriter writer) throws Throwable {
+	@Override
+	public void writeResponse(JsonWriter writer) throws Throwable {
 
-        List<file> files = new ArrayList<file>();
-        JsonArray jsonArray = new JsonArray(getDataParameter());
+		List<file> files = new ArrayList<file>();
+		JsonArray jsonArray = new JsonArray(getDataParameter());
 
-        for(int i = 0; i < jsonArray.length(); i++)
-            files.add(new file(jsonArray.getGuid(i)));
+		for(int i = 0; i < jsonArray.length(); i++)
+			files.add(new file(jsonArray.getGuid(i)));
 
-        Query query = getRootQuery();
-        guid target = getRecordIdParameter();
-        String fieldId = getFieldParameter();
+		Query query = getRootQuery();
+		guid target = getRecordIdParameter();
+		String fieldId = getFieldParameter();
 
-        Field field = fieldId != null ? query.findFieldById(fieldId) : null;
-        
-        AttachmentProcessor processor = new AttachmentProcessor((AttachmentField) field);
+		Field field = fieldId != null ? query.findFieldById(fieldId) : null;
 
-        writer.startArray(Json.data);
-        
-        for(file file : processor.remove(target, files))
-            writer.write(file.toJsonObject());
-        
-        writer.finishArray();
+		AttachmentProcessor processor = new AttachmentProcessor((AttachmentField)field);
 
-    }
+		writer.startArray(Json.data);
+
+		for(file file : processor.remove(target, files))
+			writer.write(file.toJsonObject());
+
+		writer.finishArray();
+
+	}
 
 }

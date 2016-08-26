@@ -11,7 +11,6 @@ import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.FileItemHeaders;
 
 public class InputOnlyFileItem implements FileItem {
-
 	private static final long serialVersionUID = -2878883966271701862L;
 
 	private File file;
@@ -101,5 +100,4 @@ public class InputOnlyFileItem implements FileItem {
 	public OutputStream getOutputStream() throws IOException {
 		return null;
 	}
-
 }
