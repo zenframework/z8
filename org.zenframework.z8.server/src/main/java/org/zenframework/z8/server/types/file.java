@@ -25,6 +25,7 @@ import org.zenframework.z8.server.exceptions.ThreadInterruptedException;
 import org.zenframework.z8.server.json.Json;
 import org.zenframework.z8.server.json.parser.JsonArray;
 import org.zenframework.z8.server.json.parser.JsonObject;
+import org.zenframework.z8.server.logs.Trace;
 import org.zenframework.z8.server.runtime.RCollection;
 import org.zenframework.z8.server.runtime.RLinkedHashMap;
 import org.zenframework.z8.server.utils.IOUtils;
@@ -124,9 +125,15 @@ public class file extends primary implements RmiSerializable, Serializable {
 	protected void set(JsonObject json) {
 		path = new string(json.getString(json.has(Json.file) ? Json.file : Json.path));
 		name = new string(json.has(Json.name) ? json.getString(Json.name) : "");
-		time = new date(json.has(Json.time) ? json.getString(Json.time) : "");
 		size = new integer(json.has(Json.size) ? json.getString(Json.size) : "");
 		id = new guid(json.has(Json.id) ? json.getString(Json.id) : "");
+
+		String jsonTime = json.has(Json.time) ? json.getString(Json.time) : "";
+		try {
+			time = jsonTime.indexOf('/') == -1 ? new date(jsonTime) : new date(jsonTime, "D/M/y H:m:s");
+		} catch(NumberFormatException e) {
+			time = new date(); 
+		}
 
 		this.json = json;
 	}
@@ -135,7 +142,7 @@ public class file extends primary implements RmiSerializable, Serializable {
 		List<file> result = new ArrayList<file>();
 
 		JsonArray array = new JsonArray(json);
-		
+
 		for(int i = 0; i < array.length(); i++)
 			result.add(new file(array.getJsonObject(i)));
 
