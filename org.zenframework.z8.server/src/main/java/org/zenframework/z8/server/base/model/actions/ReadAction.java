@@ -837,15 +837,22 @@ public class ReadAction extends Action {
 	private void writeGroupTotals(JsonWriter writer, Field groupField) throws SQLException {
 		Select select = cursor();
 
+		Collection<Field> fields = getSummaryFields(select.getFields());
+		fields.add(groupField);
+
 		if(select.isGrouped()) {
+			select.setFields(fields);
+
 			Select summary = new Select();
 			summary.setSubselect(select);
 			summary.setFields(select.getFields());
-			summary.setGroupBy(ArrayUtils.collection(groupField));
+			summary.setGroupBy(Arrays.asList(groupField));
 
 			select = summary;
-		} else
-			select.setGroupBy(ArrayUtils.collection(groupField));
+		} else {
+			select.setFields(fields);
+			select.setGroupBy(Arrays.asList(groupField));
+		}
 
 		Select frame = new FramedSelect(select, 1, 50);
 
@@ -856,10 +863,8 @@ public class ReadAction extends Action {
 		while(frame.next()) {
 			writer.startObject();
 
-			for(Field field : frame.getFields()) {
-				if(field.aggregation != Aggregation.None && field.type() != FieldType.Boolean)
-					field.writeData(writer);
-			}
+			for(Field field : frame.getFields())
+				field.writeData(writer);
 
 			writer.finishObject();
 		}
@@ -926,22 +931,34 @@ public class ReadAction extends Action {
 	private void writeTotals(JsonWriter writer) throws SQLException {
 		AggregatingSelect totals = totals();
 
+		totals.setFields(getSummaryFields(totals.getFields()));
+
 		try {
 			totals.open();
 
 			writer.startObject(Json.totalsData);
 
 			while(totals.next()) {
-				for(Field field : totals.getFields()) {
-					if(field.aggregation != Aggregation.None && field.type() != FieldType.Boolean)
-						field.writeData(writer);
-				}
+				for(Field field : totals.getFields())
+					field.writeData(writer);
 			}
 
 			writer.finishObject();
 		} finally {
 			totals.close();
 		}
+	}
+
+	private Collection<Field> getSummaryFields(Collection<Field> fields) {
+		Collection<Field> result = new ArrayList<Field>();
+
+		for(Field field : fields) {
+			Aggregation aggregation = field.aggregation;
+			if(aggregation == Aggregation.Count || aggregation != Aggregation.None && (field.type() == FieldType.Integer || field.type() == FieldType.Decimal))
+				result.add(field);
+		}
+
+		return result;
 	}
 
 	private void writeSummary(JsonWriter writer, Groupping groups) throws SQLException {
@@ -960,19 +977,25 @@ public class ReadAction extends Action {
 
 		select.addWhere(where);
 
+		Collection<Field> fields = getSummaryFields(select.getFields());
+
 		Field expression = createAggregatedExpression(groupField, groupField.aggregation, groupField.type());
 		Field count = createAggregatedExpression(groupField, Aggregation.Count, FieldType.Integer);
 
+		fields.add(groupField);
+
 		if(expression != null && expression != groupField)
-			select.addField(expression);
+			fields.add(expression);
 
 		if(count != groupField)
-			select.addField(count);
+			fields.add(count);
+
+		select.setFields(fields);
 
 		Select summary = new Select();
 		summary.setSubselect(select);
 		summary.setFields(select.getFields());
-		summary.setGroupBy(ArrayUtils.collection(groupField));
+		summary.setGroupBy(Arrays.asList(groupField));
 
 		try {
 			summary.aggregate();
@@ -989,7 +1012,7 @@ public class ReadAction extends Action {
 						writer.writeProperty(JsonObject.quote(groupField.id()), expression.get());
 					else if(field == count)
 						writer.writeProperty(Json.total, count.get());
-					else if(field.aggregation != Aggregation.None && field.type() != FieldType.Boolean)
+					else
 						field.writeData(writer);
 				}
 

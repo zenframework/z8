@@ -13,6 +13,7 @@ import org.zenframework.z8.server.db.sql.FormatOptions;
 import org.zenframework.z8.server.db.sql.SqlStringToken;
 import org.zenframework.z8.server.db.sql.functions.conversion.ToDate;
 import org.zenframework.z8.server.types.sql.sql_date;
+import org.zenframework.z8.server.utils.StringUtils;
 
 public class date extends primary {
 
@@ -29,7 +30,7 @@ public class date extends primary {
 		calendar.setTimeInMillis(utcMillis);
 		return new date(calendar);
 	}
-	
+
 	protected GregorianCalendar value = new GregorianCalendar();
 
 	public date() {
@@ -73,8 +74,8 @@ public class date extends primary {
 			return;
 		}
 
-		// yyyy-MM-ddThh:mm[:ss][+hh:mm[:ss]]
-		// 0123456789012345 678  901234 567
+		// yyyy-MM-ddThh:mm[:ss[.m]][+hh:mm[:ss]]
+		// 0123456789012345 678 9?   012345 678
 
 		int length = date.length(); 
 		int year = Integer.parseInt(date.substring(0, 4));
@@ -90,28 +91,36 @@ public class date extends primary {
 
 		int index = 19 - shift;
 
+		int millis = 0;
+		boolean hasMillis = length > index && date.charAt(index) == '.';
+
+		if(hasMillis) {
+			int offsetStart = StringUtils.indexOfAny(date, "-+");
+			int millisStart = index + 1;
+			int millisEnd = offsetStart != -1 ? offsetStart : length;
+			millis = Integer.parseInt(date.substring(millisStart, millisEnd));
+			index = millisEnd;
+		}
+
 		boolean hasZone = index < length;
 
 		if(hasZone) {
 			int zoneSign = date.charAt(index) == '+' ? 1 : -1;
 
-			index = 20 - shift;
-			int zoneHours = Integer.parseInt(date.substring(index, index + 2));
+			index += 3;
+			int zoneHours = Integer.parseInt(date.substring(index - 2, index));
 
-			index = 23 - shift;
-			int zoneMinutes = Integer.parseInt(date.substring(index, index + 2));
+			index += 3;
+			int zoneMinutes = Integer.parseInt(date.substring(index - 2, index));
 
-			index = 25 - shift;
-			boolean hasZoneSeconds = index < length;
-
-			index = 26 - shift;
-			int zoneSeconds = hasZoneSeconds ? Integer.parseInt(date.substring(index, index + 2)) : 0;
+			index += 3;
+			int zoneSeconds = index <= length ? Integer.parseInt(date.substring(index - 2, index)) : 0;
 
 			int zoneOffset = zoneSign * zoneHours * datespan.TicksPerHour + zoneMinutes * datespan.TicksPerMinute + zoneSeconds * datespan.TicksPerSecond;
 			setZoneOffset(zoneOffset);
 		}
 
-		set(year, month, day, hours, minutes, seconds);
+		set(year, month, day, hours, minutes, seconds, millis);
 	}
 
 	public date(String s, String format) {
@@ -190,7 +199,7 @@ public class date extends primary {
 	}
 
 	public void setDate(int year, int month, int day) {
-		set(year, month, day, hour(), minute(), second());
+		set(year, month, day, hours(), minutes(), seconds());
 	}
 
 	public void setTime(int hours, int minutes, int seconds) {
@@ -237,19 +246,19 @@ public class date extends primary {
 		return value.get(GregorianCalendar.DAY_OF_YEAR);
 	}
 
-	public int hour() {
+	public int hours() {
 		return value.get(GregorianCalendar.HOUR_OF_DAY);
 	}
 
-	public int minute() {
+	public int minutes() {
 		return value.get(GregorianCalendar.MINUTE);
 	}
 
-	public int second() {
+	public int seconds() {
 		return value.get(GregorianCalendar.SECOND);
 	}
 
-	public int millisecond() {
+	public int milliseconds() {
 		return value.get(GregorianCalendar.MILLISECOND);
 	}
 
@@ -330,9 +339,10 @@ public class date extends primary {
 		int month = month();
 		int year = year();
 
-		int hours = hour();
-		int minutes = minute();
-		int seconds = second();
+		int hours = hours();
+		int minutes = minutes();
+		int seconds = seconds();
+		int milliseconds = milliseconds();
 
 		long offset = zoneOffset();
 
@@ -341,14 +351,17 @@ public class date extends primary {
 		long offsetSeconds = Math.abs((offset % datespan.TicksPerHour) % datespan.TicksPerMinute / datespan.TicksPerSecond);
 
 		String result = "" + (year < 10 ? "000" : (year < 100 ? "00" : (year < 1000 ? "0" : ""))) + year +
-				'-' + (month < 10 ? "0" + month : month) + 
-				'-' + (day < 10 ? "0" + day : day) + 
+				"-" + (month < 10 ? "0" + month : month) + 
+				"-" + (day < 10 ? "0" + day : day) + 
 				"T" + (hours < 10 ? "0" + hours : hours) + ":" + (minutes < 10 ? "0" + minutes : minutes);
 
-		if(seconds != 0)
+		if(seconds != 0 || milliseconds != 0) {
 			result += ":" + (seconds < 10 ? "0" + seconds : seconds);
+			if(milliseconds != 0)
+				result += "." + milliseconds;
+		}
 
-		result += "" + (offset < 0 ? '-' : '+') +
+		result += "" + (offset < 0 ? "-" : "+") +
 			(offsetHours < 10 ? "0" + offsetHours : offsetHours) + ":" +
 			(offsetMinutes < 10 ? "0" + offsetMinutes : offsetMinutes);
 
@@ -490,20 +503,20 @@ public class date extends primary {
 		return new integer(dayOfYear());
 	}
 
-	public integer z8_hour() {
-		return new integer(hour());
+	public integer z8_hours() {
+		return new integer(hours());
 	}
 
-	public integer z8_minute() {
-		return new integer(minute());
+	public integer z8_minutes() {
+		return new integer(minutes());
 	}
 
 	public integer z8_second() {
-		return new integer(second());
+		return new integer(seconds());
 	}
 
-	public integer z8_millisecond() {
-		return new integer(millisecond());
+	public integer z8_milliseconds() {
+		return new integer(milliseconds());
 	}
 
 	public void z8_set(integer year, integer month, integer day, integer hour, integer minute, integer second) {

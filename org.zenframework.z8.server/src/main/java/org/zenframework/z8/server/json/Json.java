@@ -116,26 +116,32 @@ public interface Json {
 
 	string property = new string("property");
 	string record = new string("record");
+	string sort = new string("sort");
+	string group = new string("group");
+	string direction = new string("direction");
 	string lookupFields = new string("lookupFields");
 	string lookup = new string("lookup");
-	string sort = new string("sort");
+
+	string filter = new string("filter");
+	string operator = new string("operator");
+
+	string filter1 = new string("filter1");
+	string comparison = new string("comparison");
+	string andOr = new string("andOr");
+
+	string __search_text__ = new string("__search_text__");
+
+	/* Ext 3.1 values */
 	string groupBy = new string("groupBy");
 	string totalsBy = new string("totalsBy");
 	string dir = new string("dir");
-	string direction = new string("direction");
 	string groupDir = new string("groupDir");
 	string groupValue = new string("groupValue");
 	string groups = new string("groups");
 	string remoteSort = new string("remoteSort");
-	string __search_text__ = new string("__search_text__");
+	/* Ext 3.1 values */
 
 	string filterBy = new string("filterBy");
-
-	string filter = new string("filter");
-	string filter1 = new string("filter1");
-	string operator = new string("operator");
-	string comparison = new string("comparison");
-	string andOr = new string("andOr");
 
 	string primaryKey = new string("primaryKey");
 	string parentKey = new string("parentKey");

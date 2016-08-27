@@ -163,7 +163,7 @@ public class ActionFactory {
 				}
 			} else {
 				result.groupFields = getGroupFields(result.query);
-				result.sortFields = getSortFields(result.query);
+				result.sortFields = getSortFields(result.query, result.groupFields);
 			}
 
 			result.groupBy = result.query.collectGroupByFields();
@@ -290,16 +290,19 @@ public class ActionFactory {
 		}
 	}
 
-	private Collection<Field> parseSortFieldsInOldSchoolManner(Query query, String jsonData) {
-		Collection<Field> fields = new ArrayList<Field>();
+	private Collection<Field> getGroupFields(Query query) {
+		return parseGroupFields(query);
+	}
 
-		Field field = query.findFieldById(jsonData);
-		String dir = requestParameter(Json.dir);
+	private Collection<Field> getSortFields(Query query, Collection<Field> groupFields) {
+		Collection<Field> sortFields = parseSortFields(query);
 
-		if(field != null) {
-			field.sortDirection = SortDirection.fromString(dir);
-			fields.add(field);
-		}
+		if(sortFields.isEmpty() && groupFields.isEmpty())
+			return null;
+
+		Collection<Field> fields = new LinkedHashSet<Field>();
+		fields.addAll(groupFields);
+		fields.addAll(sortFields);
 
 		return fields;
 	}
@@ -333,13 +336,59 @@ public class ActionFactory {
 	}
 
 	private Collection<Field> parseGroupFields(Query query) {
-		Collection<Field> fields = new ArrayList<Field>();
-
-		String groupDir = requestParameter(Json.groupDir);
-		String jsonData = requestParameter(Json.groupBy);
+		String jsonData = requestParameter(Json.group);
 
 		if(jsonData == null)
+			return parseGroupFieldsInOldSchoolManner(query);
+
+		Collection<Field> fields = new ArrayList<Field>();
+
+		if(jsonData == null || jsonData.isEmpty())
 			return fields;
+
+		if(jsonData.charAt(0) != '[')
+			jsonData = '[' + jsonData + ']';
+
+		JsonArray array = new JsonArray(jsonData);
+
+		for(int index = 0; index < array.length(); index++) {
+			JsonObject object = array.getJsonObject(index);
+
+			Field field = query.findFieldById(object.getString(Json.property));
+			String direction = object.getString(Json.direction);
+
+			if(field != null) {
+				field.sortDirection = SortDirection.fromString(direction);
+				fields.add(field);
+			}
+		}
+
+		return fields;
+	}
+
+	private Collection<Field> parseSortFieldsInOldSchoolManner(Query query, String jsonData) {
+		Collection<Field> fields = new ArrayList<Field>();
+
+		Field field = query.findFieldById(jsonData);
+		String dir = requestParameter(Json.dir);
+
+		if(field != null) {
+			field.sortDirection = SortDirection.fromString(dir);
+			fields.add(field);
+		}
+
+		return fields;
+	}
+
+	private Collection<Field> parseGroupFieldsInOldSchoolManner(Query query) {
+		Collection<Field> fields = new ArrayList<Field>();
+
+		String jsonData = requestParameter(Json.groupBy);
+
+		if(jsonData == null || jsonData.isEmpty())
+			return fields;
+
+		String groupDir = requestParameter(Json.groupDir);
 
 		JsonArray array = new JsonArray(jsonData);
 
@@ -351,24 +400,6 @@ public class ActionFactory {
 				fields.add(field);
 			}
 		}
-
-		return fields;
-	}
-
-	private Collection<Field> getGroupFields(Query query) {
-		return parseGroupFields(query);
-	}
-
-	private Collection<Field> getSortFields(Query query) {
-		Collection<Field> sortFields = parseSortFields(query);
-		Collection<Field> groupFields = parseGroupFields(query);
-
-		if(sortFields.isEmpty() && groupFields.isEmpty())
-			return null;
-
-		Collection<Field> fields = new LinkedHashSet<Field>();
-		fields.addAll(groupFields);
-		fields.addAll(sortFields);
 
 		return fields;
 	}

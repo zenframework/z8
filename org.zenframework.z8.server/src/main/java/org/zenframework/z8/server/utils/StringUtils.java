@@ -7,12 +7,35 @@ import java.util.List;
 import java.util.Properties;
 
 public class StringUtils {
+	public static boolean isEmpty(String str) {
+		return str == null || str.length() == 0;
+	}
+
+	public static int indexOfAny(String str, char[] searchChars) {
+		if(isEmpty(str) || ArrayUtils.isEmpty(searchChars))
+			return -1;
+
+		for(int i = 0; i < str.length(); i++) {
+			char ch = str.charAt(i);
+			for(int j = 0; j < searchChars.length; j++) {
+				if(searchChars[j] == ch)
+					return i;
+			}
+		}
+		return -1;
+	}
+
+	public static int indexOfAny(String str, String searchChars) {
+		if(isEmpty(str) || isEmpty(searchChars))
+			return -1;
+		return indexOfAny(str, searchChars.toCharArray());
+	}
 
 	static public String unescapeJava(String string) {
 		Properties properties = new Properties();
 		try {
 			properties.load(new StringReader("key=" + string));
-		} catch (IOException e) {
+		} catch(IOException e) {
 			return string;
 		}
 		return properties.getProperty("key");
@@ -31,20 +54,16 @@ public class StringUtils {
 	public static List<String> asList(String str, String delimeter) {
 		String[] array = str.split(delimeter);
 		List<String> list = new ArrayList<String>(array.length);
-		for (String s : array) {
+		for(String s : array) {
 			list.add(s.trim());
 		}
 		return list;
 	}
 
-	public static String cut(String str, int maxLength) {
-		return str != null && str.length() > maxLength ? str.substring(0, maxLength) : str;
-	}
-
 	private static String padding(int repeat, char padChar) {
 		final char[] buf = new char[repeat];
 
-		for (int i = 0; i < buf.length; i++)
+		for(int i = 0; i < buf.length; i++)
 			buf[i] = padChar;
 
 		return new String(buf);

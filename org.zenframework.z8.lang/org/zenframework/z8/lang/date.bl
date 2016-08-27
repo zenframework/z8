@@ -32,10 +32,10 @@ final class date extends primary {
 	public int day();
 	public int dayOfWeek();
 	public int dayOfYear();
-	public int hour();
-	public int minute();
-	public int second();
-	public int millisecond();
+	public int hours();
+	public int minutes();
+	public int seconds();
+	public int milliseconds();
 
 	public void setDate(int year, int month, int day);
 	public void setTime(int hour, int minute, int second);

@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -29,7 +30,6 @@ import org.zenframework.z8.server.runtime.RLinkedHashMap;
 import org.zenframework.z8.server.types.guid;
 import org.zenframework.z8.server.types.primary;
 import org.zenframework.z8.server.types.string;
-import org.zenframework.z8.server.utils.ArrayUtils;
 import org.zenframework.z8.server.utils.IOUtils;
 import org.zenframework.z8.server.utils.NumericUtils;
 
@@ -53,31 +53,32 @@ public class User implements IUser {
 	private RLinkedHashMap<string, primary> parameters = new RLinkedHashMap<string, primary>();
 
 	static private User system = null;
-	
+
 	static public IUser system() {
-		if(system == null) {
-			guid id = BuiltinUsers.System.guid();
-			String login = Resources.get("BuiltinUsers.System.name");
-			String description = Resources.get("BuiltinUsers.System.description");
-			String password = "";
-			boolean blocked = false;
-	
-			system = new User();
-	
-			system.id = id;
-			system.name = login;
-			system.password = password;
-			system.description = description;
-			system.blocked = blocked;
-	
-			system.settings = "";
-			system.phone = "";
-			system.email = "";
-			system.securityGroup = SecurityGroup.Administrators;
-	
-			system.setComponents(ArrayUtils.collection(new Component(null, SystemTools.class.getCanonicalName(), Resources.get(SystemTools.strings.Title))));
-		}	
-		
+		if(system != null)
+			return system;
+
+		guid id = BuiltinUsers.System.guid();
+		String login = Resources.get("BuiltinUsers.System.name");
+		String description = Resources.get("BuiltinUsers.System.description");
+		String password = "";
+		boolean blocked = false;
+
+		system = new User();
+
+		system.id = id;
+		system.name = login;
+		system.password = password;
+		system.description = description;
+		system.blocked = blocked;
+
+		system.settings = "";
+		system.phone = "";
+		system.email = "";
+		system.securityGroup = SecurityGroup.Administrators;
+
+		system.setComponents(Arrays.asList(new Component(null, SystemTools.class.getCanonicalName(), Resources.get(SystemTools.strings.Title))));
+
 		return system;
 	}
 
@@ -142,7 +143,7 @@ public class User implements IUser {
 	static public IUser load(String login) {
 		return load(new string(login));
 	}
-	
+
 	static public IUser load(guid userId) {
 		return load((primary)userId);
 	}
@@ -150,13 +151,13 @@ public class User implements IUser {
 	static public IUser load(string login) {
 		return load((primary)login);
 	}
-	
+
 	static private IUser load(primary loginOrId) {
 		if(!ServerConfig.isSystemInstalled())
 			return User.system();
 
 		User user = new User();
-		
+
 		if(loginOrId instanceof string)
 			user.readInfo((string)loginOrId);
 		else
@@ -195,7 +196,7 @@ public class User implements IUser {
 		SqlToken where = new Equ(users.recordId.get(), id);
 		readInfo(users, where);
 	}
-	
+
 	private void readInfo(string login) {
 		Users users = Users.newInstance();
 		SqlToken where = new EqualsIgnoreCase(users.name.get(), login);
@@ -284,19 +285,19 @@ public class User implements IUser {
 		users.settings.get().set(new string(settings));
 		users.update(id);
 	}
-	
-    private void writeObject(ObjectOutputStream out)  throws IOException {
-    	serialize(out);
-    }
-    
-    private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
-    	deserialize(in);
-    }
 
-    @Override
+	private void writeObject(ObjectOutputStream out) throws IOException {
+		serialize(out);
+	}
+
+	private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
+		deserialize(in);
+	}
+
+	@Override
 	public void serialize(ObjectOutputStream out) throws IOException {
-    	RmiIO.writeLong(out, serialVersionUID);
-		
+		RmiIO.writeLong(out, serialVersionUID);
+
 		ByteArrayOutputStream bytes = new ByteArrayOutputStream(32 * NumericUtils.Kilobyte);
 		ObjectOutputStream objects = new ObjectOutputStream(bytes);
 
@@ -304,31 +305,31 @@ public class User implements IUser {
 
 		RmiIO.writeString(objects, name);
 		RmiIO.writeString(objects, password);
-		
+
 		RmiIO.writeGuid(objects, securityGroup.guid());
 
 		RmiIO.writeString(objects, description);
 		RmiIO.writeString(objects, phone);
 		RmiIO.writeString(objects, email);
-		
+
 		RmiIO.writeBoolean(objects, blocked);
 
 		RmiIO.writeString(objects, settings);
 
 		objects.writeObject(components);
 		objects.writeObject(parameters);
-		
+
 		objects.close();
 
 		RmiIO.writeBytes(out, IOUtils.zip(bytes.toByteArray()));
 	}
-	
+
 	@Override
-    @SuppressWarnings({ "unchecked", "rawtypes" })
-	public void deserialize(ObjectInputStream in) throws IOException, ClassNotFoundException {	
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	public void deserialize(ObjectInputStream in) throws IOException, ClassNotFoundException {
 		@SuppressWarnings("unused")
 		long version = RmiIO.readLong(in);
-		
+
 		ByteArrayInputStream bytes = new ByteArrayInputStream(IOUtils.unzip(RmiIO.readBytes(in)));
 		ObjectInputStream objects = new ObjectInputStream(bytes);
 
@@ -337,18 +338,18 @@ public class User implements IUser {
 		name = RmiIO.readString(objects);
 		password = RmiIO.readString(objects);
 		securityGroup = SecurityGroup.fromGuid(RmiIO.readGuid(objects));
-		
+
 		description = RmiIO.readString(objects);
 		phone = RmiIO.readString(objects);
 		email = RmiIO.readString(objects);
-		
+
 		blocked = RmiIO.readBoolean(objects);
 
 		settings = RmiIO.readString(objects);
 
 		components = (Collection)objects.readObject();
 		parameters = (RLinkedHashMap)objects.readObject();
-		
+
 		objects.close();
 	}
 }
