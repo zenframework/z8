@@ -7,13 +7,10 @@ import java.util.List;
 import java.util.Map;
 
 import org.zenframework.z8.server.base.form.Desktop;
-import org.zenframework.z8.server.base.simple.Activator;
 import org.zenframework.z8.server.base.table.Table;
-import org.zenframework.z8.server.base.table.system.Properties;
 import org.zenframework.z8.server.db.Connection;
 import org.zenframework.z8.server.engine.ApplicationServer;
 import org.zenframework.z8.server.engine.Runtime;
-import org.zenframework.z8.server.runtime.ServerRuntime;
 import org.zenframework.z8.server.utils.ErrorUtils;
 
 public class DBGenerator {
@@ -92,9 +89,8 @@ public class DBGenerator {
 		fireAfterDbGenerated();
 
 		String version = Runtime.version();
-		Properties.setProperty(ServerRuntime.DbSchemeControlSumProperty, version);
-		logger.message("Control sum: " + version);
 
+		logger.message("Control sum: " + version);
 		logger.progress(100);
 	}
 
@@ -123,15 +119,27 @@ public class DBGenerator {
 	}
 
 	private static void fireBeforeDbGenerated() {
-		for(Activator.CLASS<? extends Activator> activator : Runtime.instance().activators()) {
-			activator.get().beforeDbGenerated();
-		}
+		for(Listener listener : listeners)
+			listener.beforeStart();
 	}
 
 	private static void fireAfterDbGenerated() {
-		for(Activator.CLASS<? extends Activator> activator : Runtime.instance().activators()) {
-			activator.get().afterDbGenerated();
-		}
+		for(Listener listener : listeners)
+			listener.afterFinish();
 	}
 
+	static private Collection<Listener> listeners = new ArrayList<Listener>();
+
+	static public interface Listener {
+		public void beforeStart();
+		public void afterFinish();
+	}
+
+	static public void addListener(Listener listener) {
+		listeners.add(listener);
+	}
+
+	static public void removeListener(Listener listener) {
+		listeners.remove(listener);
+	}
 }

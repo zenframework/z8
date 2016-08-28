@@ -208,7 +208,7 @@ public class TreeTable extends Table {
 			throw new RuntimeException(Query.strings.ReadError);
 	}
 
-	protected void repairTree() {
+	public void repairTree() {
 		TreeTable counter = (TreeTable)getCLASS().newInstance();
 		read(Arrays.<Field> asList(recordId.get()));
 		while(next()) {

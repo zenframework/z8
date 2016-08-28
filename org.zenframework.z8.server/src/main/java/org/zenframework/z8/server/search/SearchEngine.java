@@ -114,9 +114,8 @@ public class SearchEngine {
 
 	private SearchIndex getIndex(Query query) {
 		String indexId = query.getAttribute(IObject.SearchIndex);
-		if(indexId == null) {
+		if(indexId == null)
 			throw new exception(Resources.format(strings.ErrorIndexUndefined, query.classId()));
-		}
 		return getIndex(indexId);
 	}
 
@@ -140,9 +139,8 @@ public class SearchEngine {
 	static public RCollection<string> z8_searchRecords(Query.CLASS<? extends Query> queryClass, string target) {
 		Collection<String> recordIds = INSTANCE.searchRecords(queryClass.get(), target.toString());
 		RCollection<string> result = new RCollection<string>(recordIds.size(), true);
-		for(String recordId : recordIds) {
+		for(String recordId : recordIds)
 			result.add(new string(recordId));
-		}
 		return result;
 	}
 
@@ -153,5 +151,4 @@ public class SearchEngine {
 	static public void z8_deleteRecord(Query.CLASS<? extends Query> queryClass, string recordId) {
 		INSTANCE.deleteRecord(queryClass.get(), recordId.get());
 	}
-
 }

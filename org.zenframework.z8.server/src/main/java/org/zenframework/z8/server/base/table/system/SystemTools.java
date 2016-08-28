@@ -43,7 +43,6 @@ public class SystemTools extends Desktop {
 	public final Logs.CLASS<Logs> taskLogs = new Logs.CLASS<Logs>(this);
 	public final Sequences.CLASS<Sequences> sequences = new Sequences.CLASS<Sequences>(this);
 	public final DBGenerateProcedure.CLASS<DBGenerateProcedure> generator = new DBGenerateProcedure.CLASS<DBGenerateProcedure>(this);
-	public final Properties.CLASS<Properties> properties = new Properties.CLASS<Properties>(this);
 	public final TransportQueueView.CLASS<TransportQueueView> exportMessages = new TransportQueueView.CLASS<TransportQueueView>(this);
 	public final FilesView.CLASS<FilesView> files = new FilesView.CLASS<FilesView>(this);
 	public final Domains.CLASS<Domains> addresses = new Domains.CLASS<Domains>(this);
@@ -63,7 +62,6 @@ public class SystemTools extends Desktop {
 		runnables.add(taskLogs);
 		runnables.add(sequences);
 		runnables.add(generator);
-		runnables.add(properties);
 		runnables.add(exportMessages);
 		runnables.add(files);
 		runnables.add(addresses);
@@ -78,7 +76,6 @@ public class SystemTools extends Desktop {
 		dataSets.add(userEntries);
 		dataSets.add(taskLogs);
 		dataSets.add(sequences);
-		dataSets.add(properties);
 		dataSets.add(exportMessages);
 		dataSets.add(files);
 		dataSets.add(addresses);

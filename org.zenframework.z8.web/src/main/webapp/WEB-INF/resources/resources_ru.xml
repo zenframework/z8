@@ -56,9 +56,6 @@
 	<entry key="SystemDomains.userDescription">Системный пользователь (описание)</entry>
 	<entry key="SystemDomains.owner">Владелец</entry>
 
-    <!-- Properties -->
-    <entry key="Properties.title">Системные свойства</entry>
-    <entry key="Properties.value">Значение</entry>
     
     <!-- MessageQueue -->
     <entry key="MessageQueue.title">Очередь сообщений</entry>

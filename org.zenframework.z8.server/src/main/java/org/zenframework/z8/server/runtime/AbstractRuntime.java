@@ -6,20 +6,15 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.zenframework.z8.server.base.simple.Activator;
 import org.zenframework.z8.server.base.simple.Procedure;
 import org.zenframework.z8.server.base.table.Table;
-import org.zenframework.z8.server.base.table.system.Property;
 
 public abstract class AbstractRuntime implements IRuntime {
-
 	private Map<String, Table.CLASS<? extends Table>> tableClasses = new HashMap<String, Table.CLASS<? extends Table>>();
 	private Map<String, Table.CLASS<? extends Table>> tableNames = new HashMap<String, Table.CLASS<? extends Table>>();
 
 	private List<OBJECT.CLASS<? extends OBJECT>> entries = new ArrayList<OBJECT.CLASS<? extends OBJECT>>();
 	private List<Procedure.CLASS<? extends Procedure>> jobs = new ArrayList<Procedure.CLASS<? extends Procedure>>();
-	private List<Activator.CLASS<? extends Activator>> activators = new ArrayList<Activator.CLASS<? extends Activator>>();
-	private List<Property> properties = new ArrayList<Property>();
 
 	@Override
 	public Collection<Table.CLASS<? extends Table>> tables() {
@@ -34,16 +29,6 @@ public abstract class AbstractRuntime implements IRuntime {
 	@Override
 	public Collection<Procedure.CLASS<? extends Procedure>> jobs() {
 		return jobs;
-	}
-
-	@Override
-	public Collection<Activator.CLASS<? extends Activator>> activators() {
-		return activators;
-	}
-
-	@Override
-	public Collection<Property> properties() {
-		return properties;
 	}
 
 	@Override
@@ -103,26 +88,6 @@ public abstract class AbstractRuntime implements IRuntime {
 		jobs.add(cls);
 	}
 
-	protected void addActivator(Activator.CLASS<? extends Activator> cls) {
-		for(CLASS<? extends Activator> activator : activators) {
-			if(activator.classId().equals(cls.classId()))
-				return;
-		}
-		activators.add(cls);
-	}
-
-	protected void addProperty(Property property) {
-		if(!properties.contains(property)) {
-			for(int i = 0; i < properties.size(); i++) {
-				if(property.getKey().compareTo(properties.get(i).getKey()) < 0) {
-					properties.add(i, property);
-					return;
-				}
-			}
-			properties.add(property);
-		}
-	}
-
 	protected void mergeWith(IRuntime runtime) {
 		for(Table.CLASS<? extends Table> table : runtime.tables())
 			addTable(table);
@@ -132,11 +97,5 @@ public abstract class AbstractRuntime implements IRuntime {
 
 		for(OBJECT.CLASS<? extends OBJECT> entry : runtime.entries())
 			addEntry(entry);
-
-		for(Activator.CLASS<? extends Activator> activator : runtime.activators())
-			addActivator(activator);
-
-		for(Property property : runtime.properties())
-			addProperty(property);
 	}
 }

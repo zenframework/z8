@@ -7,6 +7,7 @@ import org.eclipse.core.runtime.Path;
 
 import org.zenframework.z8.compiler.file.File;
 import org.zenframework.z8.compiler.file.FileException;
+import org.zenframework.z8.compiler.parser.grammar.lexer.ABC;
 
 public class StartupCodeGenerator {
 	private static final String RuntimePostfix = "Runtime";
@@ -41,24 +42,18 @@ public class StartupCodeGenerator {
 
 	public static String getRuntimeClassSimpleName(Project project) {
 		String projectName = project.getName();
-		StringBuilder str = new StringBuilder(projectName.length() + RuntimePostfix.length());
-		str.append(Character.toUpperCase(projectName.charAt(0)));
-		boolean toUpper = false;
-		for(int i = 1; i < projectName.length(); i++) {
-			char c = projectName.charAt(i);
-			if(isSymbolAllowed(c)) {
-				str.append(toUpper ? Character.toUpperCase(c) : c);
-				toUpper = false;
-			} else {
-				toUpper = true;
-			}
-		}
-		str.append(RuntimePostfix);
-		return str.toString();
-	}
+		String str = "";
 
-	private static boolean isSymbolAllowed(char c) {
-		return c >= 'a' && c <= 'z' || c >= 'A' && c <= 'Z' || c >= 'а' && c <= 'я' || c >= 'А' && c <= 'Я' || c >= '0' && c <= '9';
+		boolean toUpper = true;
+		for(int i = 0; i < projectName.length(); i++) {
+			char c = projectName.charAt(i);
+			if(ABC.isAlnum(c)) {
+				str += toUpper ? Character.toUpperCase(c) : c;
+				toUpper = false;
+			} else
+				toUpper = true;
+		}
+		return str + RuntimePostfix;
 	}
 
 	private static void generateResource(Project project, IPath resourcePath, String content) throws FileException {
@@ -86,32 +81,31 @@ public class StartupCodeGenerator {
 		String addTable = "";
 		String addJob = "";
 		String addEntry = "";
-		String addActivator = "";
 
 		for(CompilationUnit compilationUnit : compilationUnits) {
 			StartupCodeLines startupCodeLines = compilationUnit.getStartupCodeLines();
 
-			if(startupCodeLines.addTable != null) {
+			if(startupCodeLines.addTable != null)
 				addTable += "\t\t" + startupCodeLines.addTable + '\n';
-			}
 
-			if(startupCodeLines.addJob != null) {
+			if(startupCodeLines.addJob != null)
 				addJob += "\t\t" + startupCodeLines.addJob + '\n';
-			}
 
-			if(startupCodeLines.addEntry != null) {
+			if(startupCodeLines.addEntry != null)
 				addEntry += "\t\t" + startupCodeLines.addEntry + '\n';
-			}
-
-			if(startupCodeLines.addActivator != null) {
-				addActivator += "\t\t" + startupCodeLines.addActivator + '\n';
-			}
 		}
 
 		String className = getRuntimeClassSimpleName(project);
 
-		return "package org.zenframework.z8;\n\n" + "import org.zenframework.z8.server.runtime.*;\n" + "@SuppressWarnings(\"all\")\n" + "public final class " + className + " extends org.zenframework.z8.server.runtime.AbstractRuntime\n" + '{' + '\n' + '\t' + "public " + className
-				+ "()\n" + '\t' + '{' + '\n' + addTable + "\n\n" + addEntry + "\n\n" + addJob + "\n\n" + addActivator + "\n\t}\n}";
+		return "package org.zenframework.z8;\n\n" + 
+			"import org.zenframework.z8.server.runtime.*;\n" + 
+			"@SuppressWarnings(\"all\")\n" + 
+			"public final class " + className + " extends org.zenframework.z8.server.runtime.AbstractRuntime {\n\t" + 
+				"public " + className + "() {\n" + 
+					addTable + "\n\n" + 
+					addEntry + "\n\n" + 
+					addJob + "\n\t" +
+				"}\n" +
+			"}";
 	}
-
 }
