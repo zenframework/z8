@@ -210,7 +210,6 @@ public class Users extends Table {
 		settings.setDisplayName(displayNames.Settings);
 
 		id.get().visible = new bool(false);
-		id1.get().visible = new bool(false);
 		settings.get().visible = new bool(false);
 
 		name.get().length = new integer(IAuthorityCenter.MaxLoginLength);

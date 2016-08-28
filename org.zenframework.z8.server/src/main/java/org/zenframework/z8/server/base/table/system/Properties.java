@@ -41,10 +41,10 @@ public class Properties extends TreeTable {
 		@Override
 		public void run() {
 			Active.set(true);
-			while (Active.get()) {
+			while(Active.get()) {
 				try {
 
-				} catch (Throwable e) {
+				} catch(Throwable e) {
 					Trace.logError("Can't update Z8 properties values", e);
 				}
 			}
@@ -114,22 +114,20 @@ public class Properties extends TreeTable {
 		super.constructor2();
 
 		id.get().length = new integer(PropertyNameMaxLength);
-		
-		id1.get().visible = new bool(false);
-		
+
 		name.get().visible = new bool(false);
 		name.get().length = new integer(PropertyNameMaxLength);
-		
+
 		value.setName("Value");
 		value.setIndex("value");
 		value.setDisplayName(Resources.get(strings.Value));
 		value.setGendb_updatable(false);
 		value.get().colspan = new integer(3);
-		
+
 		description.get().colspan = new integer(3);
-		
+
 		sortFields.add(id);
-		
+
 		registerDataField(value);
 	}
 
@@ -138,12 +136,12 @@ public class Properties extends TreeTable {
 	}
 
 	public static void setProperty(String key, String value) {
-		if (!ServerConfig.database().tableExists(Properties.TableName))
+		if(!ServerConfig.database().tableExists(Properties.TableName))
 			throw new RuntimeException("Can not set property [" + key + "=" + value + "]. System is not installed");
 
 		Properties properties = new CLASS<Properties>().get();
 
-		if (!properties.readFirst(properties.getWhere(key)))
+		if(!properties.readFirst(properties.getWhere(key)))
 			throw new RuntimeException("Property [" + key + "] is not registered");
 
 		properties.value.get().set(value);
@@ -153,7 +151,7 @@ public class Properties extends TreeTable {
 	public static String getProperty(String key) {
 		String dbValue = getPropertyFromDb(key);
 
-		if (dbValue == null)
+		if(dbValue == null)
 			throw new RuntimeException("Property [" + key + "] does not exists");
 
 		return dbValue;
@@ -171,10 +169,10 @@ public class Properties extends TreeTable {
 	public static Map<String, String> getProperties() {
 		Map<String, String> values = new HashMap<String, String>();
 
-		for (Property property : Runtime.instance().properties())
+		for(Property property : Runtime.instance().properties())
 			values.put(property.getKey(), property.getDefaultValue());
 
-		if (ServerConfig.isSystemInstalled()) {
+		if(ServerConfig.isSystemInstalled()) {
 			Properties properties = new CLASS<Properties>().get();
 
 			Field id = properties.id.get();
@@ -186,7 +184,7 @@ public class Properties extends TreeTable {
 
 			properties.read(fields);
 
-			while (properties.next())
+			while(properties.next())
 				values.put(id.string().get(), value.string().get());
 		}
 
@@ -211,7 +209,7 @@ public class Properties extends TreeTable {
 
 	public static RLinkedHashMap<string, string> z8_getProperties() {
 		RLinkedHashMap<string, string> props = new RLinkedHashMap<string, string>();
-		for (Map.Entry<String, String> property : getProperties().entrySet()) {
+		for(Map.Entry<String, String> property : getProperties().entrySet()) {
 			props.put(new string(property.getKey()), new string(property.getValue()));
 		}
 		return props;
@@ -219,9 +217,8 @@ public class Properties extends TreeTable {
 
 	@SuppressWarnings("rawtypes")
 	@Override
-	public void z8_afterUpdate(Query.CLASS<? extends Query> query, guid recordId, RCollection changedFields,
-			Query.CLASS<? extends Query> model, guid modelRecordId) {
-		if (changedFields.contains(value) && readRecord(recordId)) {
+	public void z8_afterUpdate(Query.CLASS<? extends Query> query, guid recordId, RCollection changedFields, Query.CLASS<? extends Query> model, guid modelRecordId) {
+		if(changedFields.contains(value) && readRecord(recordId)) {
 			firePropertyChange(id.get().string().get(), value.get().string().get());
 		}
 	}
@@ -232,10 +229,10 @@ public class Properties extends TreeTable {
 
 	private guid getParentId(Map<String, guid> ids, String key) {
 		int pos = key.lastIndexOf('.');
-		if (pos < 0)
+		if(pos < 0)
 			return guid.NULL;
 		String parentKey = key.substring(0, pos);
-		if (ids.containsKey(parentKey))
+		if(ids.containsKey(parentKey))
 			return ids.get(parentKey);
 		guid parentRecordId = guid.create(0, parentKey.hashCode());
 		boolean exists = hasRecord(parentRecordId);
@@ -245,7 +242,7 @@ public class Properties extends TreeTable {
 		description.get().set("");
 		value.get().set("");
 		parentId.get().set(grandParentRecordId);
-		if (!exists) {
+		if(!exists) {
 			recordId.get().set(parentRecordId);
 			create();
 		} else {
@@ -257,11 +254,11 @@ public class Properties extends TreeTable {
 
 	private static String getPropertyFromDb(String key) {
 		String value = ServerConfig.get(key);
-		if (value != null)
+		if(value != null)
 			return value;
 
 		try {
-			if (ServerConfig.isSystemInstalled()) {
+			if(ServerConfig.isSystemInstalled()) {
 
 				try {
 					Properties properties = new CLASS<Properties>().get();
@@ -270,13 +267,13 @@ public class Properties extends TreeTable {
 					Collection<Field> fields = new ArrayList<Field>();
 					fields.add(valueField);
 
-					if (properties.readFirst(fields, properties.getWhere(key)))
+					if(properties.readFirst(fields, properties.getWhere(key)))
 						return valueField.string().get();
 				} finally {
 					ConnectionManager.release();
 				}
 			}
-		} catch (Throwable e) {
+		} catch(Throwable e) {
 			Trace.logError("Can't read property '" + key + "' from database", e);
 		}
 		return null;
@@ -284,7 +281,7 @@ public class Properties extends TreeTable {
 
 	private static void firePropertyChange(String key, String value) {
 		Collection<Listener> listeners = new ArrayList<Properties.Listener>(Listeners);
-		for (Listener listener : listeners) {
+		for(Listener listener : listeners) {
 			listener.onPropertyChange(key, value);
 		}
 	}
@@ -311,14 +308,14 @@ public class Properties extends TreeTable {
 		public void afterDbGenerated() {
 			Properties properties = new Properties.CLASS<Properties>().get();
 			Map<String, guid> ids = new HashMap<String, guid>();
-			for (Property property : Runtime.instance().properties()) {
+			for(Property property : Runtime.instance().properties()) {
 				boolean exists = properties.readRecord(property.getId());
 				guid parentId = properties.getParentId(ids, property.getKey());
 				properties.id.get().set(property.getKey());
 				properties.name.get().set(property.getKey());
 				properties.description.get().set(property.getDescription());
 				properties.parentId.get().set(parentId);
-				if (!exists) {
+				if(!exists) {
 					properties.recordId.get().set(property.getId());
 					properties.value.get().set(property.getDefaultValue());
 					properties.create();

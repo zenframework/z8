@@ -62,8 +62,6 @@ public class Entries extends Table {
 		id.get().length = new integer(1024);
 		id.get().visible = new bool(false);
 
-		id1.get().visible = new bool(false);
-
 		name.get().length = new integer(1024);
 
 		description.get().visible = new bool(false);

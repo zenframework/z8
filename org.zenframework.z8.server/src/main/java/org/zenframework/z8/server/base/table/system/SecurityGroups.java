@@ -45,7 +45,6 @@ public class SecurityGroups extends Table {
 		name.setDisplayName(Resources.get(strings.Name));
 
 		id.get().visible = new bool(false);
-		id1.get().visible = new bool(false);
 
 		name.get().length = new integer(50);
 

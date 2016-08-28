@@ -61,10 +61,7 @@ public class Sequences extends Table {
 		id.get().indexed = new bool(true);
 		id.get().length = new integer(256);
 
-		id1.get().visible = new bool(false);
 		name.get().visible = new bool(false);
-
-		id1.get().width = new integer(15);
 
 		description.get().width = new integer(100);
 

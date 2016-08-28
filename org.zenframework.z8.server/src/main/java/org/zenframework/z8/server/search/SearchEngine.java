@@ -20,7 +20,7 @@ import org.zenframework.z8.server.types.string;
 
 public class SearchEngine {
 	static private class strings {
-		static String ErrorIndexUndefined = "Search.errorIndexUndefined";
+		static String ErrorIndexUndefined = "SearchEngine.errorIndexUndefined";
 	}
 
 	static public final SearchEngine INSTANCE = new SearchEngine();

@@ -24,13 +24,12 @@ public class Table extends TableBase {
 		public final static String CreatedBy = "CreatedBy";
 		public final static String ModifiedAt = "ModifiedAt";
 		public final static String ModifiedBy = "ModifiedBy";
-		public final static String Archive = "Archive";
 
 		public final static String Id = "Id";
-		public final static String Id1 = "Id1";
 		public final static String Name = "Name";
 		public final static String Description = "Description";
 		public final static String Locked = "Locked";
+		public final static String Archive = "Archive";
 	}
 
 	static public class strings {
@@ -39,13 +38,12 @@ public class Table extends TableBase {
 		public final static String CreatedBy = "Table.createdBy";
 		public final static String ModifiedAt = "Table.modifiedAt";
 		public final static String ModifiedBy = "Table.modifiedBy";
-		public final static String Archive = "Table.archive";
 
 		public final static String Id = "Table.id";
-		public final static String Id1 = "Table.id1";
 		public final static String Name = "Table.name";
 		public final static String Description = "Table.description";
 		public final static String Locked = "Table.locked";
+		public final static String Archive = "Table.archive";
 	}
 
 	static public class displayNames {
@@ -54,13 +52,12 @@ public class Table extends TableBase {
 		public final static String CreatedBy = Resources.get(strings.CreatedBy);
 		public final static String ModifiedAt = Resources.get(strings.ModifiedAt);
 		public final static String ModifiedBy = Resources.get(strings.ModifiedBy);
-		public final static String Archive = Resources.get(strings.Archive);
 
 		public final static String Id = Resources.get(strings.Id);
-		public final static String Id1 = Resources.get(strings.Id1);
 		public final static String Name = Resources.get(strings.Name);
 		public final static String Description = Resources.get(strings.Description);
 		public final static String Locked = Resources.get(strings.Locked);
+		public final static String Archive = Resources.get(strings.Archive);
 	}
 
 	public static class CLASS<T extends Table> extends TableBase.CLASS<T> {
@@ -84,17 +81,14 @@ public class Table extends TableBase {
 	public GuidField.CLASS<? extends GuidField> createdBy = new GuidField.CLASS<GuidField>(this);
 	public GuidField.CLASS<? extends GuidField> modifiedBy = new GuidField.CLASS<GuidField>(this);
 
-	public BoolField.CLASS<? extends BoolField> archive = new BoolField.CLASS<BoolField>(this);
-
 	public StringField.CLASS<? extends StringField> id = new StringField.CLASS<StringField>(this);
-	public StringField.CLASS<? extends StringField> id1 = new StringField.CLASS<StringField>(this);
 	public StringField.CLASS<? extends StringField> name = new StringField.CLASS<StringField>(this);
 	public TextField.CLASS<? extends StringField> description = new TextField.CLASS<TextField>(this);
 
 	public BoolField.CLASS<? extends BoolField> locked = new BoolField.CLASS<BoolField>(this);
+	public BoolField.CLASS<? extends BoolField> archive = new BoolField.CLASS<BoolField>(this);
 
 	final static public int IdLength = 15;
-	final static public int Id1Length = 15;
 	final static public int NameLength = 50;
 	final static public int NameWidth = 20;
 
@@ -112,13 +106,6 @@ public class Table extends TableBase {
 		id.get().length = new integer(IdLength);
 		id.get().width = new integer(IdLength);
 		id.get().stretch = new bool(false);
-
-		id1.setName(names.Id1);
-		id1.setIndex("id1");
-		id1.setDisplayName(displayNames.Id1);
-		id1.get().length = new integer(Id1Length);
-		id1.get().width = new integer(Id1Length);
-		id1.get().stretch = new bool(false);
 
 		name.setName(names.Name);
 		name.setIndex("name");
@@ -174,7 +161,6 @@ public class Table extends TableBase {
 		registerDataField(archive);
 
 		registerDataField(id);
-		registerDataField(id1);
 		registerDataField(name);
 		registerDataField(description);
 		registerDataField(locked);

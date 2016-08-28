@@ -1,6 +1,6 @@
 Z8.query.Section = Ext.extend(Ext.util.Observable, {
 	header: '',
-
+	isSection: true,
 	constructor : function(section) {
 		this.controls = [];
 
