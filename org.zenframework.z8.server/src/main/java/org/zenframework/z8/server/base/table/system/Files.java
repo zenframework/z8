@@ -89,6 +89,8 @@ public class Files extends Table {
 
 		registerDataField(data);
 		registerDataField(path);
+
+		unregisterDataField(archive);
 	}
 
 	public void add(file file) {

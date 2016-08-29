@@ -355,12 +355,9 @@ public class ActionFactory {
 			JsonObject object = array.getJsonObject(index);
 
 			Field field = query.findFieldById(object.getString(Json.property));
-			String direction = object.getString(Json.direction);
 
-			if(field != null) {
-				field.sortDirection = SortDirection.fromString(direction);
+			if(field != null)
 				fields.add(field);
-			}
 		}
 
 		return fields;

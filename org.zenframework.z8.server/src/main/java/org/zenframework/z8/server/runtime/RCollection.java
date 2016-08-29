@@ -112,15 +112,14 @@ public class RCollection<TYPE> extends ArrayList<TYPE> {
 	}
 
 	public int indexOf(Object object) {
-    	for(int i = 0; i < size(); i++) {
-    	    Object element = get(i);
-    		if(element == object || element.equals(object))
-    			return i;
-        }
+		for(int i = 0; i < size(); i++) {
+			Object element = get(i);
+			if(element == object || element.equals(object))
+				return i;
+		}
+		return -1;
+	}
 
-        return -1;
-    }
-	
 	@Override
 	protected void removeRange(int fromIndex, int toIndex) {
 		throw new UnsupportedOperationException();
