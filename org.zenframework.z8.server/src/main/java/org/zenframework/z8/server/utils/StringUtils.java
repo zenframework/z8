@@ -11,11 +11,11 @@ public class StringUtils {
 		return str == null || str.length() == 0;
 	}
 
-	public static int indexOfAny(String str, char[] searchChars) {
+	public static int indexOfAny(String str, int position, char[] searchChars) {
 		if(isEmpty(str) || ArrayUtils.isEmpty(searchChars))
 			return -1;
 
-		for(int i = 0; i < str.length(); i++) {
+		for(int i = position; i < str.length(); i++) {
 			char ch = str.charAt(i);
 			for(int j = 0; j < searchChars.length; j++) {
 				if(searchChars[j] == ch)
@@ -25,10 +25,16 @@ public class StringUtils {
 		return -1;
 	}
 
+	public static int indexOfAny(String str, char[] searchChars) {
+		return indexOfAny(str, 0, searchChars);
+	}
+
 	public static int indexOfAny(String str, String searchChars) {
-		if(isEmpty(str) || isEmpty(searchChars))
-			return -1;
 		return indexOfAny(str, searchChars.toCharArray());
+	}
+
+	public static int indexOfAny(String str, int position, String searchChars) {
+		return indexOfAny(str, position, searchChars.toCharArray());
 	}
 
 	static public String unescapeJava(String string) {

@@ -95,7 +95,7 @@ public class date extends primary {
 		boolean hasMillis = length > index && date.charAt(index) == '.';
 
 		if(hasMillis) {
-			int offsetStart = StringUtils.indexOfAny(date, "-+");
+			int offsetStart = StringUtils.indexOfAny(date, index, "-+");
 			int millisStart = index + 1;
 			int millisEnd = offsetStart != -1 ? offsetStart : length;
 			millis = Integer.parseInt(date.substring(millisStart, millisEnd));
