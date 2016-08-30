@@ -87,6 +87,7 @@
     <entry key="Files.name">Имя файла</entry>
     <entry key="Files.path">Путь к файлу в кэше</entry>
     
+    <entry key="FileConverter.unsupportedFileFormat">Невозможно отобразить содержимое файла {0}. Формат '{1}' не поддерживается</entry>
     
     <!-- FilesView -->
     <entry key="FilesView.attachment">Вложение</entry>
