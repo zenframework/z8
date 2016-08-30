@@ -23,6 +23,7 @@ public class SearchEngine {
 		static String ErrorIndexUndefined = "SearchEngine.errorIndexUndefined";
 	}
 
+	private static final int SEARCH_NUMBER = 500;
 	static public final SearchEngine INSTANCE = new SearchEngine();
 
 	private final Map<String, SearchIndex> indicies = new HashMap<String, SearchIndex>();
@@ -63,7 +64,7 @@ public class SearchEngine {
 
 	public Collection<String> searchRecords(Query query, String target) {
 		SearchIndex index = getIndex(query);
-		return (target == null || target.isEmpty() || index == null) ? Collections.<String> emptyList() : index.search(target, 50);
+		return (target == null || target.isEmpty() || index == null) ? Collections.<String> emptyList() : index.search(target, SEARCH_NUMBER);
 	}
 
 	private Table findTable(String index) {
