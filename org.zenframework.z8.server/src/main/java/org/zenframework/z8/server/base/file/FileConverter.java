@@ -11,7 +11,6 @@ import org.artofsolving.jodconverter.office.OfficeException;
 import org.artofsolving.jodconverter.office.OfficeManager;
 import org.zenframework.z8.server.config.ServerConfig;
 import org.zenframework.z8.server.logs.Trace;
-import org.zenframework.z8.server.resources.Resources;
 import org.zenframework.z8.server.utils.ArrayUtils;
 import org.zenframework.z8.server.utils.EmlUtils;
 import org.zenframework.z8.server.utils.PdfUtils;
@@ -20,8 +19,6 @@ public class FileConverter {
 
 	private static final int OFFICE_PORT = 8100;
 	
-	private static final String UNSUPPORTED_FILE_FORMAT = "FileConverter.unsupportedFileFormat";
-
 	public static final String PDF_EXTENSION = "pdf";
 
 	private static OfficeManager officeManager;
@@ -50,8 +47,6 @@ public class FileConverter {
 					PdfUtils.textToPdf(EmlUtils.emailToString(srcFile), convertedFile);
 				else if (isOfficeExtension(extension))
 					convertOfficeToPdf(srcFile, convertedFile);
-				else
-					PdfUtils.textToPdf(Resources.format(UNSUPPORTED_FILE_FORMAT, srcFile.getName(), extension), convertedFile);
 			} catch (IOException e) {
 				Trace.logError("Can't convert " + srcFile + " to " + convertedFile, e);
 			}
