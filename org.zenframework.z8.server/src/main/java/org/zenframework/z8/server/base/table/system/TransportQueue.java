@@ -157,6 +157,7 @@ public class TransportQueue extends Table {
 
 	public void setBytesTrasferred(guid id, long bytes) {
 		bytesTransferred.get().set(new integer(bytes));
+		description.get().set(new string());
 		update(id);
 	}
 
