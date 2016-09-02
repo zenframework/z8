@@ -86,6 +86,7 @@ public class Dashboard extends RequestTarget {
 			writer.startObject();
 
 			writer.writeProperty(Json.text, displayName);
+			writer.writeProperty(Json.icon, desktop.icon());
 
 			writer.startArray(Json.items);
 			for(CLASS<?> cls : runnables)
