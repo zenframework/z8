@@ -168,7 +168,7 @@ public class Transport implements Runnable {
 
 				boolean reset = !server.accept(message);
 
-				transportQueue.setBytesTrasferred(message.getId(), reset ? 0 : file.offset());
+				transportQueue.setBytesTrasferred(message.getId(), !reset ? file.offset() + file.partLength() : 0);
 
 				connection.commit();
 
