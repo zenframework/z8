@@ -147,11 +147,7 @@ public class TransportQueue extends Table {
 		create();
 	}
 
-	public void setProcessed(guid id, String info) {
-		setProcessed(id, info, -1);
-	}
-
-	public void setProcessed(guid id, String info, long bytes) {
+	public void setProcessed(guid id) {
 		destroy(id);
 	}
 

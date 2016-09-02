@@ -40,7 +40,7 @@ public class Transport implements Runnable {
 	}
 
 	public void start() {
-		Thread thread = new Thread(this, domain);
+		thread = new Thread(this, domain);
 		Scheduler.register(thread);
 		workers.put(domain, this);
 		thread.start();
@@ -140,7 +140,7 @@ public class Transport implements Runnable {
 
 			if(server.accept(message)) {
 				messageQueue.endProcessing(message.getSourceId());
-				transportQueue.setProcessed(message.getId(), "OK");
+				transportQueue.setProcessed(message.getId());
 			}
 
 			connection.commit();
@@ -153,15 +153,14 @@ public class Transport implements Runnable {
 	}
 
 	private boolean sendFile(FileMessage message) throws Throwable {
-		file file = message.getFile();
-		long size = file.size.get();
-
 		if(server.has(message)) {
-			transportQueue.setProcessed(message.getId(), "Skipped");
+			transportQueue.setProcessed(message.getId());
 			return true;
 		}
 
 		Connection connection = ConnectionManager.get();
+
+		file file = message.getFile();
 
 		while((file = file.nextPart()) != null) {
 			try {
@@ -183,7 +182,7 @@ public class Transport implements Runnable {
 			}
 		}
 
-		transportQueue.setProcessed(message.getId(), "OK", size);
+		transportQueue.setProcessed(message.getId());
 		return true;
 	}
 }

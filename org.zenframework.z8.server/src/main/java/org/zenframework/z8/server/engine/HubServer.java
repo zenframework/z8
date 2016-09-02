@@ -27,7 +27,7 @@ abstract public class HubServer extends RmiServer implements IHubServer {
 	@Override
 	public void start() throws RemoteException {
 		super.start();
-		
+
 		restoreServers();
 	}
 
@@ -35,19 +35,19 @@ abstract public class HubServer extends RmiServer implements IHubServer {
 	public IServerInfo[] servers() throws RemoteException {
 		return getServers();
 	}
-	
+
 	protected IServerInfo[] getServers() {
 		synchronized(this) {
 			return servers.toArray(new IServerInfo[0]);
 		}
 	}
- 
+
 	private void add(IServerInfo server) {
 		synchronized(this) {
 			servers.add(server);
 		}
 	}
-	
+
 	private void remove(IServerInfo server) {
 		synchronized(this) {
 			servers.remove(server);
@@ -62,23 +62,23 @@ abstract public class HubServer extends RmiServer implements IHubServer {
 			}
 		}
 	}
-	
+
 	protected void addServer(IServerInfo server) {
 		IServerInfo existing = findServer(server.getServer());
-		
+
 		if(existing != null) {
 			existing.setId(server.getId());
 			existing.setDomains(server.getDomains());
 			existing.setServer(server.getServer());
 		} else
 			add(server);
-		
+
 		saveServers();
 	}
 
 	protected void removeServer(IApplicationServer server) {
 		IServerInfo info = findServer(server);
-		
+
 		if(info != null)
 			removeServer(info);
 	}
@@ -93,19 +93,19 @@ abstract public class HubServer extends RmiServer implements IHubServer {
 			if(existing.equals(server))
 				return existing;
 		}
-		
+
 		return null;
 	}
-	
+
 	abstract protected File cacheFile();
-	
+
 	private void saveServers() {
 		try {
 			OutputStream file = new FileOutputStream(cacheFile());
 			ObjectOutputStream out = new ObjectOutputStream(file);
 
 			out.writeLong(serialVersionUID);
-			
+
 			synchronized(this) {
 				out.writeObject(servers);
 			}

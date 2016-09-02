@@ -22,10 +22,10 @@ public class Scheduler implements Runnable {
 	private Thread thread = null;
 	private boolean resetPending = true;
 	private List<SchedulerJob> jobs = new ArrayList<SchedulerJob>();
-	
+
 	static private List<SchedulerJob> systemJobs = new ArrayList<SchedulerJob>();
 	static private Collection<Thread> threads = new ArrayList<Thread>();
-	
+
 	static {
 		if(ServerConfig.transportJobEnabled())
 			addSystemJob(TransportJob.class.getCanonicalName(), ServerConfig.transportJobRepeat());
@@ -39,7 +39,7 @@ public class Scheduler implements Runnable {
 	static public synchronized void register(Thread thread) {
 		threads.add(thread);
 	}
-	
+
 	static public synchronized void unregister(Thread thread) {
 		threads.remove(thread);
 	}
@@ -159,7 +159,7 @@ public class Scheduler implements Runnable {
 			if(thread.isAlive())
 				return true;
 		}
-		
+
 		return false;
 	}
 }

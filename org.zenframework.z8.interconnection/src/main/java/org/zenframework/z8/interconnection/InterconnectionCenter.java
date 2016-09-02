@@ -24,7 +24,7 @@ public class InterconnectionCenter extends HubServer implements IInterconnection
 	static public String id = guid.create().toString();
 
 	static private InterconnectionCenter instance = null;
-	
+
 	public static IInterconnectionCenter launch(ServerConfig config) throws RemoteException {
 		if(instance == null) {
 			instance = new InterconnectionCenter();
@@ -54,7 +54,7 @@ public class InterconnectionCenter extends HubServer implements IInterconnection
 		String[] domains = server.domains();
 		addServer(new ServerInfo(server, domains));
 	}
-	
+
 	@Override
 	public void unregister(IApplicationServer server) throws RemoteException {
 		removeServer(server);
@@ -62,7 +62,7 @@ public class InterconnectionCenter extends HubServer implements IInterconnection
 
 	@Override
 	public IApplicationServer connect(String domain) throws RemoteException {
-		IServerInfo server = findServer(domain); 
+		IServerInfo server = findServer(domain);
 		return server != null ? server.getServer() : null;
 	}
 
@@ -70,24 +70,24 @@ public class InterconnectionCenter extends HubServer implements IInterconnection
 	public boolean has(IApplicationServer server, Message message) throws RemoteException {
 		return server.has(message);
 	}
-	
+
 	@Override
 	public boolean accept(IApplicationServer server, Message message) throws RemoteException {
 		return server.accept(message);
 	}
-	
+
 	@Override
 	protected File cacheFile() {
 		return new File(Folders.Base, cache);
 	}
-	
+
 	private IServerInfo findServer(String domain) throws RemoteException {
 		IServerInfo[] servers = getServers();
 
 		for(IServerInfo server : servers) {
 			if(!ArrayUtils.contains(server.getDomains(), domain))
 				continue;
-			
+
 			if(!server.isAlive()) {
 				if(server.isDead())
 					unregister(server.getServer());

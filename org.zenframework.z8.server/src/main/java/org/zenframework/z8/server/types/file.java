@@ -40,14 +40,14 @@ public class file extends primary implements RmiSerializable, Serializable {
 	public date time = new date();
 	public integer size = new integer();
 	public guid id = new guid();
-	
+
 	public RLinkedHashMap<string, string> details = new RLinkedHashMap<string, string>();
 
 	private FileItem value;
 
 	private long offset = 0;
 	private int partLength = 0;
-	
+
 	public JsonObject json;
 
 	public static FileItem createFileItem(string name) {
@@ -57,7 +57,7 @@ public class file extends primary implements RmiSerializable, Serializable {
 	public static FileItem createFileItem(String name) {
 		return new DiskFileItem(null, null, false, name, NumericUtils.Megabyte, null);
 	}
-	
+
 	public file() {
 		super();
 	}
@@ -116,7 +116,7 @@ public class file extends primary implements RmiSerializable, Serializable {
 	public FileItem get() {
 		return value;
 	}
-	
+
 	public void set(FileItem value) {
 		this.value = value;
 	}
@@ -131,7 +131,7 @@ public class file extends primary implements RmiSerializable, Serializable {
 		try {
 			time = jsonTime == null || jsonTime.indexOf('/') == -1 ? new date(jsonTime) : new date(jsonTime, "D/M/y H:m:s");
 		} catch(NumberFormatException e) {
-			time = new date(); 
+			time = new date();
 		}
 
 		this.json = json;
@@ -160,7 +160,7 @@ public class file extends primary implements RmiSerializable, Serializable {
 	public long offset() {
 		return offset;
 	}
-	
+
 	public int partLength() {
 		return partLength;
 	}
@@ -207,7 +207,7 @@ public class file extends primary implements RmiSerializable, Serializable {
 
 	public OutputStream getOutputStream() {
 		try {
-			return value == null ? null  : value.getOutputStream();
+			return value == null ? null : value.getOutputStream();
 		} catch(IOException e) {
 			throw new RuntimeException(e);
 		}
@@ -262,7 +262,7 @@ public class file extends primary implements RmiSerializable, Serializable {
 
 		offset = RmiIO.readLong(in);
 		partLength = RmiIO.readInt(in);
-		
+
 		if(RmiIO.readBoolean(in)) {
 			long size = RmiIO.readLong(in);
 
@@ -291,7 +291,7 @@ public class file extends primary implements RmiSerializable, Serializable {
 	public void write(String content, encoding charset) {
 		try {
 			File file = new File(path.get());
-			
+
 			if(path.isEmpty()) {
 				file = getTempFile();
 				path.set(getRelativePath(file.getPath()));
@@ -311,7 +311,7 @@ public class file extends primary implements RmiSerializable, Serializable {
 	}
 
 	static public String getRelativePath(String path) {
-		if (path != null && path.startsWith(Folders.Base.getPath()))
+		if(path != null && path.startsWith(Folders.Base.getPath()))
 			return path.substring(Folders.Base.getPath().length() + 1);
 
 		return path;
@@ -320,21 +320,21 @@ public class file extends primary implements RmiSerializable, Serializable {
 	public file nextPart() throws IOException {
 		if(Thread.interrupted())
 			throw new ThreadInterruptedException();
-		
+
 		Files.get(this);
 
 		offset += partLength;
-		
+
 		if(offset == size.get())
 			return null;
-		
+
 		byte[] bytes = new byte[512 * NumericUtils.Kilobyte];
 		partLength = read(offset, bytes);
 
 		InputStream input = new ByteArrayInputStream(bytes, 0, partLength);
-		
+
 		set(createFileItem(name));
-		
+
 		IOUtils.zip(input, getOutputStream());
 
 		return this;
@@ -350,16 +350,15 @@ public class file extends primary implements RmiSerializable, Serializable {
 			IOUtils.closeQuietly(input);
 		}
 	}
-	
+
 	public boolean addPartTo(File target) throws IOException {
 		RandomAccessFile output = new RandomAccessFile(target.getPath(), "rw");
 		output.seek(offset);
-		
+
 		IOUtils.unzip(getInputStream(), output);
-		
 		return target.length() == size.get();
 	}
-	
+
 	public void operatorAssign(string path) {
 		File file = new File(path.get());
 
@@ -387,7 +386,7 @@ public class file extends primary implements RmiSerializable, Serializable {
 	public void z8_write(string content, encoding charset) {
 		write(content.get(), charset);
 	}
-	
+
 	static public string z8_name(string name) {
 		return new string(FilenameUtils.getName(name.get()));
 	}
@@ -399,7 +398,7 @@ public class file extends primary implements RmiSerializable, Serializable {
 	static public string z8_extension(string name) {
 		return new string(FilenameUtils.getExtension(name.get()));
 	}
-	
+
 	public bool z8_isDirectory() {
 		return z8_isDirectory(path);
 	}
@@ -411,13 +410,13 @@ public class file extends primary implements RmiSerializable, Serializable {
 	public RCollection<file> z8_listFiles() {
 		return z8_listFiles(path);
 	}
-	
+
 	static public RCollection<file> z8_listFiles(string path) {
 		File[] files = new File(path.get()).listFiles();
-		
+
 		RCollection<file> result = new RCollection<file>();
-		
-		for (File file : files)
+
+		for(File file : files)
 			result.add(new file(file));
 
 		return result;
