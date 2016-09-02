@@ -34,14 +34,14 @@ public class TransportJob extends Procedure {
 
 	Collection<String> getAddresses() {
 		Collection<String> result = TransportQueue.newInstance().getAddresses();
-		
+
 		for(String address : MessageQueue.newInstance().getAddresses()) {
 			if(!result.contains(address))
 				result.add(address);
 		}
 		return result;
 	}
-	
+
 	private void sendMessages() {
 		Collection<String> addresses = getAddresses();
 

@@ -42,11 +42,11 @@ public class DataMessage extends Message {
 
 	private String type;
 	private MessageSource source = new MessageSource();
-	
+
 	static public DataMessage newInstance() {
 		return new DataMessage.CLASS<DataMessage>(null).get();
 	}
-	
+
 	public DataMessage(IObject container) {
 		super(container);
 	}
@@ -129,7 +129,7 @@ public class DataMessage extends Message {
 		source.importData();
 		return true;
 	}
-	
+
 	public string z8_getType() {
 		return new string(type);
 	}
@@ -143,7 +143,7 @@ public class DataMessage extends Message {
 
 		for(Map.Entry<String, primary> entry : source.getProperties().entrySet())
 			properties.put(new string(entry.getKey()), entry.getValue());
-		
+
 		return properties;
 	}
 
@@ -180,7 +180,7 @@ public class DataMessage extends Message {
 	public void z8_addRule(Table.CLASS<? extends Table> table, ImportPolicy policy) {
 		source.addRule(table.get(), policy);
 	}
-	
+
 	public void z8_addRule(Table.CLASS<? extends Table> table, guid recordId, ImportPolicy policy) {
 		source.addRule(table.get(), recordId, policy);
 	}

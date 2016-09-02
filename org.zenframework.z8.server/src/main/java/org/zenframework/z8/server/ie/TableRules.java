@@ -58,7 +58,7 @@ public class TableRules implements RmiSerializable, Serializable {
 			fields = new HashMap<String, ImportPolicy>();
 			recordFields.put(recordId, fields);
 		}
-		
+
 		fields.put(field, policy);
 	}
 
@@ -73,26 +73,25 @@ public class TableRules implements RmiSerializable, Serializable {
 
 	public ImportPolicy getPolicy(guid recordId, String field) {
 		Map<String, ImportPolicy> fieldsMap = recordFields.get(recordId);
-		
+
 		ImportPolicy policy = null;
-		
+
 		if(fieldsMap != null)
 			policy = fieldsMap.get(field);
-		
+
 		if(policy != null)
 			return policy;
-		
+
 		policy = records.get(field);
-		
+
 		if(policy != null)
 			return policy;
 
 		policy = fields.get(field);
-		
+
 		return policy != null ? policy : defaultPolicy;
 	}
 
-	
 	private void writeObject(ObjectOutputStream out) throws IOException {
 		serialize(out);
 	}

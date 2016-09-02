@@ -38,11 +38,11 @@ public class FileMessage extends Message {
 	}
 
 	private file file;
-	
+
 	static public FileMessage newInstance() {
 		return new FileMessage.CLASS<FileMessage>(null).get();
 	}
-	
+
 	public FileMessage(IObject container) {
 		super(container);
 	}
@@ -54,7 +54,7 @@ public class FileMessage extends Message {
 	public void setFile(file file) {
 		this.file = file;
 	}
-	
+
 	public void setBytesTransferred(long bytesTransferred) {
 		file.setOffset(bytesTransferred);
 	}
@@ -116,7 +116,7 @@ public class FileMessage extends Message {
 			target.delete();
 		}
 	}
-	
+
 	public file z8_getFile() {
 		return getFile();
 	}

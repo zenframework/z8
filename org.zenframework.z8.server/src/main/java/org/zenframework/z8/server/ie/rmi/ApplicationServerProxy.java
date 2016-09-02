@@ -14,11 +14,11 @@ import org.zenframework.z8.server.types.file;
 
 public class ApplicationServerProxy implements IApplicationServer {
 	private IApplicationServer server;
-	
+
 	public ApplicationServerProxy(IApplicationServer server) {
 		this.server = server;
 	}
-	
+
 	@Override
 	public boolean has(Message message) throws RemoteException {
 		return ServerConfig.interconnectionCenter().has(server, message);

@@ -17,15 +17,15 @@ public class RecordInfo implements RmiSerializable, Serializable {
 	private guid id;
 	private String table;
 	private Collection<FieldInfo> fields = new ArrayList<FieldInfo>();
-	
+
 	public RecordInfo() {
 	}
-	
+
 	public RecordInfo(guid id, String name) {
 		this.id = id;
 		this.table = name;
 	}
-	
+
 	public guid id() {
 		return id;
 	}
@@ -70,4 +70,3 @@ public class RecordInfo implements RmiSerializable, Serializable {
 		fields = (Collection<FieldInfo>)in.readObject();
 	}
 }
-

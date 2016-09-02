@@ -33,10 +33,10 @@ public class ExportRules implements RmiSerializable, Serializable {
 			rules = new TableRules();
 			tables.put(table, rules);
 		}
-		
+
 		return rules;
 	}
-	
+
 	public void add(String table, ImportPolicy policy) {
 		TableRules rules = getTableRules(table);
 		rules.setPolicy(policy);
@@ -56,7 +56,7 @@ public class ExportRules implements RmiSerializable, Serializable {
 		TableRules rules = getTableRules(table);
 		rules.setPolicy(recordId, field, policy);
 	}
-	
+
 	private void writeObject(ObjectOutputStream out) throws IOException {
 		serialize(out);
 	}

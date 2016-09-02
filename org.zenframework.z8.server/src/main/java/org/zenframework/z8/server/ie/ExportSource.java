@@ -25,48 +25,48 @@ public class ExportSource implements RmiSerializable, Serializable {
 
 	private Table table;
 	private Collection<Field> fields;
-	
+
 	public ExportSource() {
 	}
-	
+
 	public ExportSource(Table table, Collection<Field> fields, Collection<guid> records) {
 		this(table, fields);
 		this.records = records;
 	}
-	
+
 	public ExportSource(Table table, Collection<Field> fields, SqlToken where) {
 		this(table, fields);
 
 		if(where != null)
 			initRecords(where);
 	}
-	
+
 	private ExportSource(Table table, Collection<Field> fields) {
 		this.table = table;
 		this.tableName = table.name();
 
 		this.fields = fields == null ? table.getPrimaryFields() : fields;
-		
+
 		for(Field field : this.fields) {
 			if(field.exportable())
 				this.fieldNames.add(field.name());
 		}
 	}
-	
+
 	private void initRecords(SqlToken where) {
 		records = new ArrayList<guid>();
-		
+
 		Table table = table();
-		
+
 		table.saveState();
-		
+
 		table.read(Arrays.asList((Field)table.recordId.get()), where);
 		while(table.next())
 			records.add(table.recordId());
-	
+
 		table.restoreState();
 	}
-	
+
 	public String name() {
 		return tableName;
 	}
@@ -80,21 +80,21 @@ public class ExportSource implements RmiSerializable, Serializable {
 	public Collection<Field> fields() {
 		if(fields != null)
 			return fields;
-		
+
 		Table table = table();
 
 		fields = new ArrayList<Field>();
-		
+
 		for(String fieldName : fieldNames) {
 			Field field = table.getFieldByName(fieldName);
 			if(field == null)
 				throw new RuntimeException("Field not found: '" + tableName + "'.'" + fieldName + "'; schema version: " + Runtime.version());
 			fields.add(field);
 		}
-		
+
 		return fields;
 	}
-	
+
 	public Collection<guid> records() {
 		return records;
 	}

@@ -15,10 +15,10 @@ public class FieldInfo implements RmiSerializable, Serializable {
 
 	private String name;
 	private primary value;
-	
+
 	public FieldInfo() {
 	}
-	
+
 	public FieldInfo(Field field) {
 		this.name = field.name();
 		this.value = field.get();
@@ -57,4 +57,3 @@ public class FieldInfo implements RmiSerializable, Serializable {
 		value = RmiIO.readPrimary(in);
 	}
 }
-
