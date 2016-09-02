@@ -22,6 +22,7 @@ import org.zenframework.z8.server.types.guid;
 import org.zenframework.z8.server.utils.ProxyUtils;
 
 public class Transport implements Runnable {
+	static private Object lock = new Object();
 	static private Map<String, Transport> workers = new HashMap<String, Transport>();
 
 	private String domain;
@@ -32,7 +33,21 @@ public class Transport implements Runnable {
 	private TransportQueue transportQueue = TransportQueue.newInstance();
 
 	static public Transport get(String domain) {
-		return workers.get(domain);
+		synchronized(lock) {
+			return workers.get(domain);
+		}
+	}
+
+	static public void register(Transport transport) {
+		synchronized(lock) {
+			workers.put(transport.domain, transport);
+		}
+	}
+
+	static public void unregister(Transport transport) {
+		synchronized(lock) {
+			workers.remove(transport.domain);
+		}
 	}
 
 	public Transport(String domain) {
@@ -42,7 +57,7 @@ public class Transport implements Runnable {
 	public void start() {
 		thread = new Thread(this, domain);
 		Scheduler.register(thread);
-		workers.put(domain, this);
+		Transport.register(this);
 		thread.start();
 	}
 
@@ -55,7 +70,7 @@ public class Transport implements Runnable {
 			Trace.logError(e);
 		} finally {
 			Scheduler.unregister(thread);
-			workers.remove(domain);
+			Transport.unregister(this);
 		}
 	}
 
