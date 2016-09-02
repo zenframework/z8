@@ -87,6 +87,7 @@
     <entry key="Files.name">Имя файла</entry>
     <entry key="Files.path">Путь к файлу в кэше</entry>
     
+    <entry key="Preview.unsupportedFileFormat">Невозможно отобразить содержимое файла {0}: формат не поддерживается.</entry>
     
     <!-- FilesView -->
     <entry key="FilesView.attachment">Вложение</entry>

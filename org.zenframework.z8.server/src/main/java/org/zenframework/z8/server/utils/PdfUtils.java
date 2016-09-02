@@ -59,12 +59,9 @@ public class PdfUtils {
 			text = " ";
 		Document document = new Document();
 		try {
-			Font font = new Font(BaseFont.createFont(
-					new File(Folders.Base, "fonts/times.ttf").getCanonicalPath(), BaseFont.IDENTITY_H,
-					BaseFont.EMBEDDED), 14);
 			PdfWriter.getInstance(document, new FileOutputStream(file));
 			document.open();
-			document.add(new Paragraph(text, font));
+			document.add(new Paragraph(text, getFont()));
 		} catch (DocumentException e) {
 			throw new IOException(e);
 		} finally {
@@ -112,7 +109,7 @@ public class PdfUtils {
 		}
 	}
 
-	public static void merge(List<File> sourceFiles, File mergedFile) throws IOException {
+	public static void merge(List<File> sourceFiles, File mergedFile, String comment) throws IOException {
 		Document document = new Document();
 		try {
 			PdfWriter writer = PdfWriter.getInstance(document, new FileOutputStream(mergedFile));
@@ -130,11 +127,20 @@ public class PdfUtils {
 					in.close();
 				}
 			}
+			if (comment != null && !comment.isEmpty()) {
+				document.newPage();
+				document.add(new Paragraph(comment, getFont()));
+			}
 		} catch (DocumentException e) {
 			throw new IOException(e);
 		} finally {
 			document.close();
 		}
+	}
+
+	private static Font getFont() throws DocumentException, IOException {
+		return new Font(BaseFont.createFont(new File(Folders.Base, "fonts/times.ttf").getCanonicalPath(),
+				BaseFont.IDENTITY_H, BaseFont.EMBEDDED), 14);
 	}
 
 	// PDFBox converter realization

@@ -16,8 +16,9 @@ import org.zenframework.z8.server.utils.EmlUtils;
 import org.zenframework.z8.server.utils.PdfUtils;
 
 public class FileConverter {
-	private static final int OFFICE_PORT = 8100;
 
+	private static final int OFFICE_PORT = 8100;
+	
 	public static final String PDF_EXTENSION = "pdf";
 
 	private static OfficeManager officeManager;

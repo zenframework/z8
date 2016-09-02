@@ -12,12 +12,15 @@ import org.zenframework.z8.server.base.table.value.Field;
 import org.zenframework.z8.server.engine.ApplicationServer;
 import org.zenframework.z8.server.json.Json;
 import org.zenframework.z8.server.json.JsonWriter;
+import org.zenframework.z8.server.resources.Resources;
 import org.zenframework.z8.server.types.file;
 import org.zenframework.z8.server.types.guid;
 import org.zenframework.z8.server.utils.AttachmentUtils;
 import org.zenframework.z8.server.utils.PdfUtils;
 
 public class PreviewAction extends Action {
+
+	private static final String UNSUPPORTED_FILE_FORMAT = "Preview.unsupportedFileFormat";
 
 	private static final String PREVIEW = "preview.pdf";
 
@@ -45,6 +48,7 @@ public class PreviewAction extends Action {
 			throw new RuntimeException("'" + actionParameters().requestId + "." + fieldId + "' is empty");
 
 		List<File> converted = new ArrayList<File>(attachments.size());
+		List<String> unsupported = new ArrayList<String>(attachments.size());
 		String previewRelativePath = null;
 		for(file file : attachments) {
 			if(previewRelativePath == null)
@@ -52,11 +56,17 @@ public class PreviewAction extends Action {
 
 			File preview = AttachmentUtils.getPreview(file);
 
-			if(preview != null)
+			if (preview != null)
 				converted.add(preview);
+			else
+				unsupported.add(file.name.get());
 		}
+		StringBuilder comment = new StringBuilder();
+		for (String fileName : unsupported)
+			comment.append(Resources.format(UNSUPPORTED_FILE_FORMAT, fileName)).append(' ');
 		File preview = new File(Folders.Base, previewRelativePath);
-		PdfUtils.merge(converted, preview);
+		preview.getParentFile().mkdirs();
+		PdfUtils.merge(converted, preview, comment.toString());
 		writer.writeProperty(Json.source, previewRelativePath);
 		writer.writeProperty(Json.serverId, ApplicationServer.id);
 	}
