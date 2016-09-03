@@ -20,7 +20,7 @@ public class ExportSource implements RmiSerializable, Serializable {
 	private static final long serialVersionUID = 9093748008996862263L;
 
 	private String tableName;
-	private Collection<String> fieldNames = new ArrayList<String>();
+	private Collection<String> fieldNames;
 	private Collection<guid> records;
 
 	private Table table;
@@ -45,11 +45,21 @@ public class ExportSource implements RmiSerializable, Serializable {
 		this.table = table;
 		this.tableName = table.name();
 
-		this.fields = fields == null ? table.getPrimaryFields() : fields;
+		initFields(fields);
+	}
 
-		for(Field field : this.fields) {
-			if(field.exportable())
+	private void initFields(Collection<Field> fields) {
+		if(fields == null)
+			fields =  table.getPrimaryFields();
+
+		this.fields = new ArrayList<Field>();
+		this.fieldNames = new ArrayList<String>();
+
+		for(Field field : fields) {
+			if(field.exportable()) {
+				this.fields.add(field);
 				this.fieldNames.add(field.name());
+			}
 		}
 	}
 
