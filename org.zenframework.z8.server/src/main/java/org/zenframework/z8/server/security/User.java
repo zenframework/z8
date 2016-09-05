@@ -6,7 +6,6 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -77,7 +76,7 @@ public class User implements IUser {
 		system.email = "";
 		system.securityGroup = SecurityGroup.Administrators;
 
-		system.setComponents(Arrays.asList(new Component(null, SystemTools.class.getCanonicalName(), Resources.get(SystemTools.strings.Title))));
+		system.addSystemTools();
 
 		return system;
 	}
