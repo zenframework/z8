@@ -4,7 +4,7 @@ public class file extends primary {
 	public date time;
 	public int size;
 	public string path;
-	public guid id;
+	public final guid id;
 
 	public string[string] details;
 
