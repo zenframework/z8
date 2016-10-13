@@ -104,7 +104,9 @@ class TimeoutChecker extends Thread {
 		}
 	}
 
+	@Override
 	public void destroy() {
 		interrupt();
 	}
+
 }
