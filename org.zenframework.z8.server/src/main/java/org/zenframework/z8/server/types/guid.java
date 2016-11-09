@@ -5,7 +5,6 @@ import java.util.UUID;
 
 import org.zenframework.z8.server.db.DatabaseVendor;
 import org.zenframework.z8.server.db.FieldType;
-import org.zenframework.z8.server.exceptions.UnsupportedException;
 import org.zenframework.z8.server.types.sql.sql_guid;
 
 public class guid extends primary {
@@ -22,7 +21,7 @@ public class guid extends primary {
 
 		@Override
 		public void set(String guid) {
-			throw new UnsupportedException();
+			throw new UnsupportedOperationException();
 		}
 
 	};

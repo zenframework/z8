@@ -58,26 +58,8 @@ public class Section extends Control {
 	public void writeMeta(JsonWriter writer) {
 		super.writeMeta(writer);
 
+		writer.writeProperty(Json.readOnly, readOnly);
 		writer.writeProperty(Json.columns, columns);
 		writer.writeProperty(Json.isSection, true);
-
-		writer.startArray(Json.controls);
-
-		for(Control control : getControls()) {
-			if(control instanceof Field) {
-				Field field = (Field)control;
-				if(!field.system()) {
-					writer.startObject();
-					writer.writeProperty(Json.id, field.id());
-					writer.finishObject();
-				}
-			} else {
-				writer.startObject();
-				control.writeMeta(writer);
-				writer.finishObject();
-			}
-		}
-
-		writer.finishArray();
 	}
 }

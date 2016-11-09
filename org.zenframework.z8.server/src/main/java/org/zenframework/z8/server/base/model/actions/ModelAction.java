@@ -14,9 +14,6 @@ public class ModelAction extends Action {
 	public void writeResponse(JsonWriter writer) {
 		Query query = getQuery();
 
-		if(query.getContext() != null)
-			query = query.getContext();
-
 		writer.writeProperty(Json.isQuery, true);
 
 		writer.writeProperty(Json.readOnly, true);

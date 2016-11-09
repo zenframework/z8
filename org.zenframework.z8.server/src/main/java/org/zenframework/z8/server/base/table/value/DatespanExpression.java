@@ -16,7 +16,7 @@ public class DatespanExpression extends Expression {
 
 		@Override
 		public Object newObject(IObject container) {
-			return new Expression(container);
+			return new DatespanExpression(container);
 		}
 	}
 

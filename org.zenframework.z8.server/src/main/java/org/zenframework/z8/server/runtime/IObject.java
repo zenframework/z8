@@ -26,6 +26,9 @@ public interface IObject extends INamedObject {
 
 	public String classId();
 
+	public String id();
+	public void resetId();
+	
 	public String name();
 
 	@Override

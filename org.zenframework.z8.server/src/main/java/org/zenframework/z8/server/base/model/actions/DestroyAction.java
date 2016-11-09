@@ -2,7 +2,6 @@ package org.zenframework.z8.server.base.model.actions;
 
 import org.zenframework.z8.server.base.model.sql.Delete;
 import org.zenframework.z8.server.base.query.Query;
-import org.zenframework.z8.server.json.Json;
 import org.zenframework.z8.server.json.JsonWriter;
 import org.zenframework.z8.server.json.parser.JsonArray;
 import org.zenframework.z8.server.json.parser.JsonObject;
@@ -25,25 +24,21 @@ public class DestroyAction extends Action {
 
 		for(int index = 0; index < records.length(); index++) {
 			Object object = records.get(index);
+			String property = getQuery().primaryKey().id();
 			// data: [{recordId: guid}] or data: [guid]
-			String value = object instanceof JsonObject ? ((JsonObject)object).getString(Json.recordId) : (String)object;
+			String value = object instanceof JsonObject ? ((JsonObject)object).getString(property) : (String)object;
 			guid recordId = new guid(value);
-			guid modelRecordId = getRecordIdParameter();
-			run(getQuery(), recordId, modelRecordId != null ? modelRecordId : recordId);
+			run(getQuery(), recordId);
 		}
 	}
 
-	static public int run(Query query, guid id, guid modelRecordId) {
+	static public int run(Query query, guid id) {
 		int result = 0;
 
 		if(!guid.NULL.equals(id)) {
-			Query model = Query.getModel(query);
-
-			query.beforeDestroy(id, model, modelRecordId);
-
+			query.beforeDestroy(id);
 			result = new Delete(query, id).execute();
-
-			query.afterDestroy(id, model, modelRecordId);
+			query.afterDestroy(id);
 		}
 
 		return result;

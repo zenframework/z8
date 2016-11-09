@@ -1,9 +1,14 @@
+import org.zenframework.z8.base.query.Query;
 import org.zenframework.z8.lang.Object;
 
 [native "org.zenframework.z8.server.base.form.Control"]
 class Control extends Object {
 	public int rowspan = 1;
 	public int colspan = 1;
+
+	bool readOnly = false;
+
+	public Query source;
 
 	public bool hidable = false;
 }

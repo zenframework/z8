@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<report xmlns="http://www.eclipse.org/birt/2005/design" version="3.2.21" id="1">
-    <property name="createdBy">Eclipse BIRT Designer Version 2.5.2.v20100208 Build &lt;2.5.2.v20100210-0630></property>
+<report xmlns="http://www.eclipse.org/birt/2005/design" version="3.2.23" id="1">
+    <property name="createdBy">Eclipse BIRT Designer Version 4.6.0.v201606072122</property>
     <property name="units">in</property>
     <property name="iconFile">/templates/blank_report.gif</property>
     <property name="layoutPreference">fixed layout</property>
@@ -206,14 +206,14 @@
             <property name="fontSize">small</property>
             <structure name="dateTimeFormat">
                 <property name="category">Custom</property>
-                <property name="pattern">dd/MM/yyyy</property>
+                <property name="pattern">dd.MM.yyyy</property>
             </structure>
         </style>
         <style name="DateTimeFormat" id="15">
             <property name="fontSize">small</property>
             <structure name="dateTimeFormat">
                 <property name="category">Custom</property>
-                <property name="pattern">dd/MM/yyyy H:mm:ss</property>
+                <property name="pattern">dd.MM.yyyy hh:mm</property>
             </structure>
         </style>
     </styles>

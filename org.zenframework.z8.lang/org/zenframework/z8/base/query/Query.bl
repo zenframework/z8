@@ -5,8 +5,6 @@ import org.zenframework.z8.base.table.value.Link;
 
 [native "org.zenframework.z8.server.base.query.Query"]
 class Query extends Runnable {
-	protected Query model;
-
 	public guid[] filterBy;
 
 	protected bool readOnly = false;
@@ -24,6 +22,8 @@ class Query extends Runnable {
 	public decimal height = 0.0;
 
 	public Control[] formFields;
+	public Field[] gridFields;
+	public Field[] nameFields;     // Поля для идентификации записи в UI, например, в навигаторе формы
 
 	public Field[] sortFields;
 	public Field[] groupFields;	// Соответствует пункту 'Группировать по полю' в меню колонки таблицы.
@@ -45,28 +45,28 @@ class Query extends Runnable {
 
 	public Period period;
 
-	virtual protected void onRender(Query query);
-	virtual protected Style renderRecord(Query query);
+	virtual protected void onRender();
+	virtual protected Style renderRecord();
 
-	virtual protected void onCommand(Query query, Command command, guid[] recordIds);
-	virtual protected void onReport(Query query, string report, guid[] recordIds);
+	virtual protected void onCommand(Command command, guid[] recordIds);
+	virtual protected void onReport(string report, guid[] recordIds);
 	virtual protected Query onFollow(Field field, guid[] recordIds);
 
-	virtual protected void onCopy(Query query);
+	virtual protected void onCopy();
 
-	virtual protected void onNew(Query query, guid recordId, guid parentId, guid modelRecordId);
+	virtual protected void onNew(guid recordId, guid parentId);
 
-	virtual protected void beforeRead(Query query, guid parentId, Query model, guid modelRecordId);
-	virtual protected void afterRead(Query query, guid parentId, Query model, guid modelRecordId);
+	virtual protected void beforeRead(guid parentId);
+	virtual protected void afterRead(guid parentId);
 
-	virtual protected void beforeCreate(Query query, guid recordId, guid parentId, Query model, guid modelRecordId);
-	virtual protected void afterCreate(Query query, guid recordId, guid parentId, Query model, guid modelRecordId);
+	virtual protected void beforeCreate(guid recordId, guid parentId);
+	virtual protected void afterCreate(guid recordId, guid parentId);
 
-	virtual protected void beforeUpdate(Query query, guid recordId, Field[] changedFields, Query model, guid modelRecordId);
-	virtual protected void afterUpdate(Query query, guid recordId, Field[] changedFields, Query model, guid modelRecordId);
+	virtual protected void beforeUpdate(guid recordId);
+	virtual protected void afterUpdate(guid recordId);
 
-	virtual protected void beforeDestroy(Query query, guid recordId, Query model, guid modelRecordId);
-	virtual protected void afterDestroy(Query query, guid recordId, Query model, guid modelRecordId);
+	virtual protected void beforeDestroy(guid recordId);
+	virtual protected void afterDestroy(guid recordId);
 
 	public bool hasRecord(guid recordId);
 	public bool hasRecord(sql_bool where);
@@ -145,7 +145,7 @@ class Query extends Runnable {
 	public void refreshRecord(guid id);
 
 	auto protected Query[] queries;
-	auto protected Field[] dataFields;
+	auto public Field[] dataFields;
 
 	virtual protected string getRecordFullText(guid recordId);
 }

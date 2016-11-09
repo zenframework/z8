@@ -28,7 +28,6 @@ public class ActionParameters {
 
 	private Map<string, string> requestParameters = new HashMap<string, string>();
 
-	public Field keyField;
 	public ILink link;
 
 	public ActionParameters() {

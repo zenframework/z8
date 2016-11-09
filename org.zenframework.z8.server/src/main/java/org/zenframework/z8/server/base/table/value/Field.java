@@ -57,9 +57,6 @@ abstract public class Field extends Control implements IValue, IField {
 	public SortDirection sortDirection = SortDirection.Asc;
 	public Aggregation aggregation = Aggregation.None;
 
-	public Query.CLASS<? extends Query> editWith = null;
-
-	public bool readOnly = null;
 	public bool selectable = null;
 	public bool required = null;
 	
@@ -239,10 +236,6 @@ abstract public class Field extends Control implements IValue, IField {
 
 	public boolean unique() {
 		return unique != null ? unique.get() : false;
-	}
-
-	public boolean readOnly() {
-		return readOnly != null ? readOnly.get() : false;
 	}
 
 	public boolean required() {

@@ -27,15 +27,15 @@ function createColumns(query, editable)
 			column.editor.parentQuery = query;
 		}
 
-		if(decoratedFields[field.id] != null)
+		if(decoratedFields[field.name] != null)
 			column.xtype = 'decoratedColumn';
-		
+
 		if(field.aggregation == 'count')
 		{
 			if(!counted)
 			{
 				counted = true;
-				
+
 				column.summaryType = field.aggregation;
 				column.summaryRenderer = function(v, params, data)
 				{

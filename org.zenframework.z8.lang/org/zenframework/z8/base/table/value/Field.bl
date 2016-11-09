@@ -1,5 +1,4 @@
 import org.zenframework.z8.base.table.SortDirection;
-import org.zenframework.z8.base.query.Query;
 import org.zenframework.z8.base.query.FollowPolicy;
 import org.zenframework.z8.base.form.Control;
 import org.zenframework.z8.base.table.Sequencer;
@@ -7,7 +6,6 @@ import org.zenframework.z8.base.table.Sequencer;
 [native "org.zenframework.z8.server.base.table.value.Field"]
 class Field extends Control {
 	public bool visible = true;
-	public bool readOnly = false;
 	public bool selectable = true;
 
 	public string format;
@@ -20,7 +18,6 @@ class Field extends Control {
 
 	public bool showLabel = true;
 
-	public Query editWith;
 	public bool anchor = false;		// подчеркивать при наведении курсора
 	public FollowPolicy anchorPolicy = FollowPolicy.Default;
 

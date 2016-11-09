@@ -1,6 +1,6 @@
 Z8.query.Field = Ext.extend(Ext.util.Observable, 
 {
-	id: null,
+	name: null,
 	type: Z8.Types.String,
 	aggregation: null,
 	serverType: Z8.ServerTypes.String,

@@ -750,7 +750,7 @@ public abstract class AbstractType extends LanguageElement implements IType {
 
 		IType baseType = getBaseType();
 
-		return baseType != null ? baseType.getAttribute(name) : null;
+		return baseType != null ? baseType.findAttribute(name) : null;
 	}
 
 	void getSetAttributesCode(IType type, CodeGenerator codeGenerator) {

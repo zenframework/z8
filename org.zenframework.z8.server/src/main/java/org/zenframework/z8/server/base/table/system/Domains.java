@@ -17,6 +17,7 @@ import org.zenframework.z8.server.resources.Resources;
 import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.security.Domain;
 import org.zenframework.z8.server.types.bool;
+import org.zenframework.z8.server.types.guid;
 import org.zenframework.z8.server.types.integer;
 import org.zenframework.z8.server.types.string;
 
@@ -31,11 +32,13 @@ public class Domains extends Table {
 	}
 
 	static public class strings {
-		public final static String Title = "SystemDomains.title";
-		public final static String Id = "SystemDomains.id";
-		public final static String User = "SystemDomains.user";
-		public final static String UserDescription = "SystemDomains.userDescription";
-		public final static String Owner = "SystemDomains.owner";
+		public final static String Title = "Domains.title";
+		public final static String Id = "Domains.id";
+		public final static String User = "Domains.user";
+		public final static String UserDescription = "Domains.userDescription";
+		public final static String Owner = "Domains.owner";
+
+		public final static String DefaultName = "Domains.name.default";
 	}
 
 	static public class displayNames {
@@ -44,6 +47,8 @@ public class Domains extends Table {
 		public final static String User = Resources.get(strings.User);
 		public final static String UserDescription = Resources.get(strings.UserDescription);
 		public final static String Owner = Resources.get(strings.Owner);
+
+		public final static String DefaultName = Resources.get(strings.DefaultName);
 	}
 
 	public static class CLASS<T extends Domains> extends Table.CLASS<T> {
@@ -107,6 +112,8 @@ public class Domains extends Table {
 		registerDataField(owner);
 
 		registerFormField(id);
+		registerFormField(name);
+		registerFormField(description);
 		registerFormField(users.get().name);
 		registerFormField(users.get().description);
 		registerFormField(owner);
@@ -114,6 +121,14 @@ public class Domains extends Table {
 		queries.add(users);
 
 		links.add(userLink);
+	}
+
+	@Override
+	public void onNew(guid recordId, guid parentId) {
+		super.onNew(recordId, parentId);
+
+		Field id = this.id.get();
+		id.set(new string(displayNames.DefaultName + id.getSequencer().next()));
 	}
 
 	public Domain getDomain(String name) {

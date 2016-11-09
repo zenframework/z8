@@ -23,12 +23,11 @@ public class TextField extends StringField {
 		}
 	}
 
-	public integer lines = new integer(5);
+	public integer height;
 
 	public TextField(IObject container) {
 		super(container);
 		length = new integer(0);
-		aggregation = Aggregation.None;
 	}
 
 	@Override
@@ -53,6 +52,6 @@ public class TextField extends StringField {
 	@Override
 	public void writeMeta(JsonWriter writer) {
 		super.writeMeta(writer);
-		writer.writeProperty(Json.lines, lines);
+		writer.writeProperty(Json.height, height);
 	}
 }

@@ -12,7 +12,6 @@ public class And extends Expression {
 
 	public And(SqlToken left, SqlToken right) {
 		super(left, Operation.And, right);
-		assert (left != null && right != null);
 	}
 
 	@Override

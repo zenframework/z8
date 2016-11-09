@@ -1,10 +1,8 @@
 package org.zenframework.z8.server.base.table.system;
 
 import java.util.Arrays;
-import java.util.Collection;
 
 import org.zenframework.z8.server.base.job.scheduler.Scheduler;
-import org.zenframework.z8.server.base.query.Query;
 import org.zenframework.z8.server.base.table.Table;
 import org.zenframework.z8.server.base.table.value.BoolField;
 import org.zenframework.z8.server.base.table.value.DatetimeField;
@@ -148,33 +146,33 @@ public class SchedulerJobs extends Table {
 	}
 
 	@Override
-	protected void beforeCreate(Query data, guid recordId, guid parentId, Query model, guid modelRecordId) {
-		super.beforeCreate(data, recordId, parentId, model, modelRecordId);
+	public void beforeCreate(guid recordId, guid parentId) {
+		super.beforeCreate(recordId, parentId);
 		setTaskDefaults();
 	}
 
 	@Override
-	protected void afterCreate(Query data, guid recordId, guid parentId, Query model, guid modelRecordId) {
-		super.afterCreate(data, recordId, parentId, model, modelRecordId);
+	public void afterCreate(guid recordId, guid parentId) {
+		super.afterCreate(recordId, parentId);
 		Scheduler.reset();
 	}
 
 	@Override
-	protected void beforeUpdate(Query data, guid recordId, Collection<Field> fields, Query model, guid modelRecordId) {
-		super.beforeUpdate(data, recordId, fields, model, modelRecordId);
+	public void beforeUpdate(guid recordId) {
+		super.beforeUpdate(recordId);
 		setTaskDefaults();
 	}
 
 	@Override
-	protected void afterUpdate(Query data, guid recordId, Collection<Field> fields, Query model, guid modelRecordId) {
-		super.afterUpdate(data, recordId, fields, model, modelRecordId);
-		if (!fields.contains(lastStarted.get()))
+	public void afterUpdate(guid recordId) {
+		super.afterUpdate(recordId);
+		if (!lastStarted.get().changed())
 			Scheduler.reset();
 	}
 
 	@Override
-	protected void afterDestroy(Query data, guid recordId, Query model, guid modelRecordId) {
-		super.afterDestroy(data, recordId, model, modelRecordId);
+	public void afterDestroy(guid recordId) {
+		super.afterDestroy(recordId);
 		Scheduler.reset();
 	}
 

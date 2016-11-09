@@ -13,7 +13,6 @@ import org.zenframework.z8.server.db.sql.expressions.Mul;
 import org.zenframework.z8.server.db.sql.expressions.Operation;
 import org.zenframework.z8.server.db.sql.functions.conversion.ToNumber;
 import org.zenframework.z8.server.db.sql.functions.numeric.Round;
-import org.zenframework.z8.server.exceptions.UnsupportedException;
 import org.zenframework.z8.server.exceptions.db.UnknownDatabaseException;
 import org.zenframework.z8.server.types.datespan;
 import org.zenframework.z8.server.types.integer;
@@ -37,7 +36,7 @@ public class Day extends SqlToken {
 		case Datetime:
 			switch(vendor) {
 			case Oracle:
-				return new ToNumber(new SqlStringToken("TO_CHAR(" + date.format(vendor, options) + ", 'DD')")).format(vendor, options);
+				return new ToNumber(new SqlStringToken("TO_CHAR(" + date.format(vendor, options) + ", 'DD')", FieldType.String)).format(vendor, options);
 			case SqlServer:
 				return "Day(" + date.format(vendor, options) + ")";
 			default:
@@ -48,7 +47,7 @@ public class Day extends SqlToken {
 			return new Round(new Mul(date, Operation.Div, new SqlConst(new integer(datespan.TicksPerDay))), null).format(vendor, options);
 
 		default:
-			throw new UnsupportedException();
+			throw new UnsupportedOperationException();
 		}
 	}
 

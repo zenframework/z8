@@ -221,7 +221,7 @@ public class IOUtils {
 	static public byte[] zip(byte[] bytes) {
 		return zip(bytes, 0, bytes.length);
 	}
-	
+
 	static public byte[] zip(byte[] bytes, int offset, int length) {
 		if(bytes == null)
 			return null;

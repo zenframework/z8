@@ -2,6 +2,7 @@ package org.zenframework.z8.server.runtime;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 
 import org.zenframework.z8.server.types.bool;
 import org.zenframework.z8.server.types.integer;
@@ -9,7 +10,7 @@ import org.zenframework.z8.server.types.integer;
 public class RCollection<TYPE> extends ArrayList<TYPE> {
 	private static final long serialVersionUID = -6377746293839490960L;
 
-	private final boolean uniqueElements;
+	private HashSet<Object> set;
 
 	public RCollection() {
 		this(10, false);
@@ -21,7 +22,8 @@ public class RCollection<TYPE> extends ArrayList<TYPE> {
 
 	public RCollection(int initialCapacity, boolean uniqueElements) {
 		super(initialCapacity);
-		this.uniqueElements = uniqueElements;
+		if(uniqueElements)
+			set = new HashSet<Object>();
 	}
 
 	@SuppressWarnings("unchecked")
@@ -44,18 +46,22 @@ public class RCollection<TYPE> extends ArrayList<TYPE> {
 		addAll(collection);
 	}
 
+	public boolean contains(Object o) {
+		return set != null ? set.contains(o) : super.contains(o);
+	}
+
 	public TYPE get(integer index) {
 		return get(index.getInt());
 	}
 
 	@Override
 	public boolean add(TYPE element) {
-		return uniqueElements && contains(element) ? true : super.add(element);
+		return set != null && contains(element) ? true : super.add(element);
 	}
 
 	@Override
 	public void add(int index, TYPE element) {
-		if(uniqueElements && contains(element))
+		if(set != null && contains(element))
 			return;
 
 		super.add(index, element);
@@ -81,7 +87,7 @@ public class RCollection<TYPE> extends ArrayList<TYPE> {
 
 	private <T extends TYPE> boolean doAddAll(int index, Collection<T> items) {
 		for(T item : items) {
-			if(!uniqueElements || !contains(item)) {
+			if(set == null || !contains(item)) {
 				super.add(index, item);
 				index++;
 			}
@@ -92,7 +98,7 @@ public class RCollection<TYPE> extends ArrayList<TYPE> {
 
 	private <T extends TYPE> boolean doAddAll(int index, T[] items) {
 		for(T item : items) {
-			if(!uniqueElements || !contains(item)) {
+			if(set == null || !contains(item)) {
 				super.add(index, item);
 				index++;
 			}
@@ -102,13 +108,20 @@ public class RCollection<TYPE> extends ArrayList<TYPE> {
 	}
 
 	public void remove(Collection<? extends TYPE> elements) {
-		for(TYPE element : elements)
-			remove(element);
+		if(set != null)
+			set.removeAll(elements);
+		super.removeAll(elements);
 	}
 
 	public void remove(TYPE[] elements) {
-		for(TYPE element : elements)
-			remove(element);
+		remove(new RCollection<TYPE>(elements));
+	}
+
+	@Override
+	public boolean remove(Object o) {
+		if(set != null)
+			set.remove(o);
+		return super.remove(o);
 	}
 
 	public int indexOf(Object object) {

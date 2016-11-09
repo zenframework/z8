@@ -46,16 +46,20 @@ public class CLASS<TYPE extends IObject> extends OBJECT implements IClass<TYPE> 
 		javaClass = (Class<TYPE>)cls;
 	}
 
-	@SuppressWarnings("unchecked")
-	public void setObject(IObject object) {
-		this.object = (TYPE)object;
-		this.stage = Constructor2;
+	@Override
+	public void resetId() {
+		super.resetId();
 
-		this.object.setContainer(getContainer());
-		setAttributes(object.getAttributes());
+		if(object != null)
+			object.resetId();
+	}
 
-		this.object.setCLASS(this);
-		this.object.setIndex(getIndex());
+	@Override
+	public void setContainer(IObject container) {
+		super.setContainer(container);
+
+		if(object != null)
+			object.setContainer(container);
 	}
 
 	@Override

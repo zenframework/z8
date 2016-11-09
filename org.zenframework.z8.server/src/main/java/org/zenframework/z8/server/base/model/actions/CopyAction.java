@@ -26,9 +26,8 @@ public class CopyAction extends Action {
 
 		guid sourceRecordId = getSourceParameter();
 		guid parentId = getParentIdParameter();
-		guid modelRecordId = getRecordIdParameter();
 
-		run(query, sourceRecordId, parentId, modelRecordId);
+		run(query, sourceRecordId, parentId);
 
 		Collection<Field> fields = new ArrayList<Field>();
 
@@ -68,12 +67,12 @@ public class CopyAction extends Action {
 		return !field.isPrimaryKey() && !field.unique();
 	}
 
-	static public guid run(Query query, guid sourceId, guid parentId, guid modelRecordId) {
+	static public guid run(Query query, guid sourceId, guid parentId) {
 		guid newRecordId = guid.create();
 
 		Collection<Field> changed = query.getRootQuery().getChangedFields();
 
-		NewAction.run(query, newRecordId, parentId, modelRecordId);
+		NewAction.run(query, newRecordId, parentId);
 
 		Collection<Field> fields = query.getRootQuery().getDataFields();
 		Map<Field, primary> values = new HashMap<Field, primary>();

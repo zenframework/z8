@@ -140,6 +140,10 @@ public final class string extends primary {
 		return false;
 	}
 
+	public boolean equalsIgnoreCase(String string) {
+		return value == string ? true : (value != null ? value.equalsIgnoreCase(string) : false);
+	}
+
 	public String trim() {
 		return get().trim();
 	}

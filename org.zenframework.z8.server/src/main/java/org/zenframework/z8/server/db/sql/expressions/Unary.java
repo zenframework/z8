@@ -10,7 +10,6 @@ import org.zenframework.z8.server.db.sql.FormatOptions;
 import org.zenframework.z8.server.db.sql.SqlField;
 import org.zenframework.z8.server.db.sql.SqlToken;
 import org.zenframework.z8.server.db.sql.functions.If;
-import org.zenframework.z8.server.exceptions.UnsupportedException;
 import org.zenframework.z8.server.exceptions.db.UnknownDatabaseException;
 import org.zenframework.z8.server.types.sql.sql_integer;
 
@@ -47,7 +46,7 @@ public class Unary extends SqlToken {
 			return "(-" + token.format(vendor, options) + ")";
 
 		default:
-			throw new UnsupportedException();
+			throw new UnsupportedOperationException();
 		}
 	}
 
@@ -63,7 +62,7 @@ public class Unary extends SqlToken {
 		}
 
 		default:
-			throw new UnsupportedException();
+			throw new UnsupportedOperationException();
 		}
 	}
 

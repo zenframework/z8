@@ -42,7 +42,6 @@ import org.zenframework.z8.server.json.Json;
 import org.zenframework.z8.server.json.JsonWriter;
 import org.zenframework.z8.server.json.parser.JsonArray;
 import org.zenframework.z8.server.json.parser.JsonObject;
-import org.zenframework.z8.server.logs.Trace;
 import org.zenframework.z8.server.types.bool;
 import org.zenframework.z8.server.types.guid;
 import org.zenframework.z8.server.types.primary;
@@ -69,7 +68,6 @@ public class ReadAction extends Action {
 	private Collection<Field> groupFilterFields = new LinkedHashSet<Field>();
 
 	guid recordId = null;
-	guid modelRecordId = null;
 	guid parentId = null;
 
 	private int start = -1;
@@ -124,7 +122,6 @@ public class ReadAction extends Action {
 	protected void initialize() {
 		ActionParameters parameters = actionParameters();
 
-		initFields();
 		initPeriod();
 		initQuery();
 
@@ -132,7 +129,7 @@ public class ReadAction extends Action {
 
 		Query query = getQuery();
 
-		Collection<Field> fields = parameters.fields != null && !parameters.fields.isEmpty() ? parameters.fields : query.getFormFields();
+		Collection<Field> fields = parameters.fields != null && !parameters.fields.isEmpty() ? parameters.fields : getFormFields(query);
 		Collection<Field> sortFields = parameters.sortFields != null ? parameters.sortFields : emptyFieldList;
 		Collection<Field> groupFields = parameters.groupFields != null ? parameters.groupFields : emptyFieldList;
 		Collection<Field> groupBy = parameters.groupBy != null ? parameters.groupBy : query.collectGroupByFields();
@@ -173,36 +170,42 @@ public class ReadAction extends Action {
 		}
 	}
 
-	private void initializeFilters() {
-		ActionParameters parameters = actionParameters();
-		Query query = getQuery();
+	private Collection<Field> getFormFields(Query query) {
+		String json = getRequestParameter(Json.fields);
 
-		collectUsedQueries(parameters.keyField);
+		if(json == null || json.isEmpty())
+			return query.getFormFields();
+
+		Collection<Field> fields = new ArrayList<Field>();
+
+		JsonArray names = new JsonArray(json);
+
+		if(names.length() == 0)
+			return query.getFormFields();
+
+		for(int index = 0; index < names.length(); index++) {
+			Field field = query.findFieldById(names.getString(index));
+			if(field != null)
+				fields.add(field);
+		}
+
+		return fields;
+	}
+
+	private void initFilters() {
+		Query query = getQuery();
 
 		Field primaryKey = query.primaryKey();
 		addNullRecordFilter(primaryKey);
 		addFilter(primaryKey, recordId, Operation.Eq);
 
 		if(recordId == null) {
-			Query context = query.getContext();
-			String fieldId = getParameter(Json.fieldId);
-
-			if(context != null && fieldId == null) {
-				addFilter(context.where());
-
-				Query contextRoot = context.getRootQuery();
-
-				if(contextRoot != null)
-					addFilter(contextRoot.where());
-			} else
-				addFilter(query.where());
+			addFilter(query.where());
 
 			collectFilters();
 
-			guid recordId = getRecordIdParameter();
 			guid filterBy = getFilterByParameter();
 
-			addFilter(parameters.keyField, recordId);
 			addFilter(query.primaryKey(), filterBy);
 
 			if(filterBy == null && query.showAsTree()) {
@@ -218,14 +221,11 @@ public class ReadAction extends Action {
 			if(lookupFields.size() != 0)
 				addLikeFilter(lookupFields, getLookupParameter());
 
-			Collection<Filter> filters = Filter.parse(getFilterParameter(), query);
-			for(Filter filter : filters) {
-				// if (isGrouped()) {
-				// addGroupFilter(filter.where());
-				// } else {
-				addFilter(filter.where());
-				// }
-			}
+			Filter filter = new Filter(getFilterParameter(), query);
+			addFilter(filter.where());
+
+			Filter where = new Filter(getWhereParameter(), query);
+			addFilter(where.where());
 
 			if(isGrouped())
 				addGroupFilter(getFilter1());
@@ -398,18 +398,8 @@ public class ReadAction extends Action {
 			selectFields.add(field);
 
 			if(hasPrimaryKey()) {
-				Collection<ILink> links = getLinks(field);
-
-				if(!links.isEmpty()) {
-					for(ILink link : links)
-						selectFields.add((Field)link);
-
-					Query owner = field.owner();
-					Field primaryKey = owner.primaryKey();
-
-					if(primaryKey != null)
-						selectFields.add(primaryKey);
-				}
+				for(ILink link : getLinks(field))
+					selectFields.add((Field)link);
 			}
 
 			collectUsedQueries(field);
@@ -594,158 +584,8 @@ public class ReadAction extends Action {
 		return json.getString(property);
 	}
 
-	public String getFilterAsText() {
-		String fieldFilter = getFieldFiltersText();
-		String filter1Text = getFilter1Text();
-
-		String result = fieldFilter != null && !fieldFilter.isEmpty() ? fieldFilter : "";
-
-		if(filter1Text == null || filter1Text.isEmpty())
-			return result;
-
-		return !result.isEmpty() ? result + " " + Operation.And.toReadableString() + " " + filter1Text : result;
-	}
-
-	protected String getFieldFiltersText() {
-		String result = null;
-
-		String filterData = getFilterParameter();
-
-		if(filterData == null)
-			return result;
-
-		JsonArray filters = new JsonArray(filterData);
-
-		for(int index = 0; index < filters.length(); index++) {
-			JsonObject filter = (JsonObject)filters.get(index);
-
-			if(filter.has(Json.value)) {
-				Field field = getQuery().findFieldById(filter.getString(filter.has(Json.field) ? Json.field : Json.property));
-				Collection<String> values = parseValues(filter.getString(Json.value));
-				String comparison = filter.has(Json.comparison) ? filter.getString(Json.comparison) : filter.has(Json.operator) ? filter.getString(Json.operator) : null;
-				Operation operation = comparison != null ? Operation.fromString(comparison) : null;
-
-				Filter f = new Filter(field, operation, values);
-
-				if(result == null)
-					result = f.toString();
-				else
-					result += " " + Operation.And.toReadableString() + " " + f.toString();
-			}
-		}
-
-		return result;
-	}
-
-	protected String getFilter1Text() {
-		String filter1 = getFilter1Parameter();
-
-		if(filter1 == null || filter1.isEmpty())
-			return null;
-
-		String result = null;
-
-		JsonObject object = new JsonObject(filter1);
-		JsonArray items = object.getJsonArray(Json.items);
-
-		for(int index = 0; index < items.length(); index++) {
-			JsonObject filter = (JsonObject)items.get(index);
-
-			String fieldId = parseJsonProperty(filter, filter.has(Json.field) ? Json.field : Json.property);
-			String value = parseJsonProperty(filter, Json.value);
-			String operator = parseJsonProperty(filter, Json.operator);
-
-			if(fieldId != null && value != null && operator != null) {
-				Field field = getQuery().findFieldById(fieldId);
-				Collection<String> values = parseValues(value);
-				Operation operation = Operation.fromString(operator);
-
-				Filter f = new Filter(field, operation, values);
-
-				if(index != 0) {
-					String andOr = parseJsonProperty(filter, Json.andOr);
-
-					if("and".equals(andOr))
-						result += " " + Operation.And.toReadableString() + f.toString();
-					else if("or".equals(andOr))
-						result += " " + Operation.Or.toReadableString() + f.toString();
-					else
-						throw new RuntimeException("Read.getFilter1Text() unknown token '" + andOr + "'");
-				} else
-					result = f.toString();
-			}
-		}
-
-		return result;
-	}
-
 	protected SqlToken getFilter1() {
-		String filter1 = getFilter1Parameter();
-
-		if(filter1 == null || filter1.isEmpty())
-			return null;
-
-		SqlToken result = null;
-
-		JsonObject object = new JsonObject(filter1);
-		JsonArray items = object.getJsonArray(Json.items);
-
-		for(int index = 0; index < items.length(); index++) {
-			JsonObject filter = (JsonObject)items.get(index);
-
-			String fieldId = parseJsonProperty(filter, filter.has(Json.field) ? Json.field : Json.property);
-			String value = parseJsonProperty(filter, Json.value);
-			String operator = parseJsonProperty(filter, Json.operator);
-
-			if(fieldId != null && value != null && operator != null) {
-				Field field = getQuery().findFieldById(fieldId);
-				Collection<String> values = parseValues(value);
-				Operation operation = Operation.fromString(operator);
-
-				SqlToken token = new Filter(field, operation, values).where();
-
-				if(token != null) {
-					if(result != null) {
-						String andOr = parseJsonProperty(filter, Json.andOr);
-
-						if("and".equals(andOr))
-							result = new And(result, token);
-						else if("or".equals(andOr))
-							result = new Or(result, token);
-						else
-							throw new RuntimeException("Read.getFilter1() unknown token '" + andOr + "'");
-					} else
-						result = token;
-				}
-			}
-		}
-
-		return result != null ? new Group(result) : null;
-	}
-
-	private void initFields() {
-		String recordData = getRecordParameter();
-
-		if(recordData == null || recordData.isEmpty())
-			return;
-
-		JsonObject record = new JsonObject(recordData);
-
-		Query query = actionParameters().requestQuery;
-
-		for(String fieldId : JsonObject.getNames(record)) {
-			Field field = query.findFieldById(fieldId);
-
-			if(field != null) {
-				String text = record.getString(fieldId);
-
-				if(text != null && !text.isEmpty()) {
-					primary value = primary.create(field.type(), text);
-					field.set(value);
-				}
-			} else
-				Trace.logEvent("ReadAction.initFields(): field '" + fieldId + "' cannot be found.");
-		}
+		return new Filter(getFilter1Parameter(), getQuery()).where();
 	}
 
 	private void initPeriod() {
@@ -1027,24 +867,17 @@ public class ReadAction extends Action {
 
 	private void beforeRead() {
 		Query query = getQuery();
-		Query model = Query.getModel(query);
+		Field parentKey = query.parentKey();
 
-		Query rootQuery = getRootQuery();
-		Field parentKey = rootQuery.parentKey();
-
-		modelRecordId = getRecordIdParameter();
 		parentId = parentKey != null ? getParentIdParameter() : null;
 
-		query.beforeRead(parentId, model, modelRecordId);
+		query.beforeRead(parentId);
 
-		initializeFilters();
+		initFilters();
 	}
 
 	private void afterRead() {
-		Query query = getQuery();
-		Query model = Query.getModel(query);
-
-		query.afterRead(parentId, model, modelRecordId);
+		getQuery().afterRead(parentId);
 	}
 
 	@Override

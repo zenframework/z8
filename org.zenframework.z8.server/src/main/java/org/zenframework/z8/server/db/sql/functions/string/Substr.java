@@ -13,44 +13,40 @@ import org.zenframework.z8.server.exceptions.db.UnknownDatabaseException;
 import org.zenframework.z8.server.types.integer;
 
 public class Substr extends StringFunction {
-    private SqlToken string;
-    private SqlToken position;
-    private SqlToken length;
+	private SqlToken string;
+	private SqlToken position;
+	private SqlToken length;
 
-    public Substr(SqlToken string, SqlToken position) {
-        this(string, position, null);
-    }
-    
-    public Substr(SqlToken string, SqlToken position, SqlToken length) {
-        this.string = string;
-        this.position = new Add(position, Operation.Add, new SqlConst(new integer(1)));
-        this.length = length != null ? length : new Length(string);
-    }
+	public Substr(SqlToken string, SqlToken position) {
+		this(string, position, null);
+	}
 
-    @Override
-    public void collectFields(Collection<IValue> fields) {
-        string.collectFields(fields);
-        position.collectFields(fields);
-        length.collectFields(fields);
-    }
+	public Substr(SqlToken string, SqlToken position, SqlToken length) {
+		this.string = string;
+		this.position = new Add(position, Operation.Add, new SqlConst(new integer(1)));
+		this.length = length != null ? length : new Length(string);
+	}
 
-    @Override
-    public String format(DatabaseVendor vendor, FormatOptions options, boolean logicalContext) {
-        String result = "";
+	@Override
+	public void collectFields(Collection<IValue> fields) {
+		string.collectFields(fields);
+		position.collectFields(fields);
+		length.collectFields(fields);
+	}
 
-        if(vendor == DatabaseVendor.Oracle || vendor == DatabaseVendor.Postgres) {
-            result = "substr(";
-        }
-        else if(vendor == DatabaseVendor.SqlServer) {
-            result = "subString(";
-        }
-        else {
-            throw new UnknownDatabaseException();
-        }
+	@Override
+	public String format(DatabaseVendor vendor, FormatOptions options, boolean logicalContext) {
+		String result = "";
 
-        result += string.format(vendor, options) + "," + position.format(vendor, options) + ","
-                + length.format(vendor, options) + ")";
+		if(vendor == DatabaseVendor.Oracle || vendor == DatabaseVendor.Postgres)
+			result = "substr(";
+		else if(vendor == DatabaseVendor.SqlServer)
+			result = "subString(";
+		else
+			throw new UnknownDatabaseException();
 
-        return result;
-    }
+		result += string.format(vendor, options) + "," + position.format(vendor, options) + "," + length.format(vendor, options) + ")";
+
+		return result;
+	}
 }

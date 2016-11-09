@@ -2,7 +2,6 @@ package org.zenframework.z8.server.base.table.system;
 
 import java.util.LinkedHashMap;
 
-import org.zenframework.z8.server.base.query.Query;
 import org.zenframework.z8.server.base.table.Table;
 import org.zenframework.z8.server.base.table.value.IField;
 import org.zenframework.z8.server.base.table.value.IntegerField;
@@ -10,7 +9,6 @@ import org.zenframework.z8.server.base.table.value.Link;
 import org.zenframework.z8.server.engine.ApplicationServer;
 import org.zenframework.z8.server.resources.Resources;
 import org.zenframework.z8.server.runtime.IObject;
-import org.zenframework.z8.server.runtime.RCollection;
 import org.zenframework.z8.server.security.BuiltinUsers;
 import org.zenframework.z8.server.security.SecurityGroup;
 import org.zenframework.z8.server.types.exception;
@@ -37,6 +35,13 @@ public class UserEntries extends Table {
 		public final static String User = "UserEntries.user";
 		public final static String Entry = "UserEntries.entry";
 		public final static String Position = "UserEntries.position";
+	}
+
+	static public class displayNames {
+		public final static String Title = Resources.get(strings.Title);
+		public final static String User = Resources.get(strings.User);
+		public final static String Entry = Resources.get(strings.Entry);
+		public final static String Position = Resources.get(strings.Position);
 	}
 
 	public static class CLASS<T extends UserEntries> extends Table.CLASS<T> {
@@ -125,13 +130,9 @@ public class UserEntries extends Table {
 		}
 	}
 
-	@SuppressWarnings("rawtypes")
 	@Override
-	public void z8_beforeUpdate(Query.CLASS<? extends Query> query, guid recordId, RCollection changedFields, Query.CLASS<? extends Query> model, guid modelRecordId) {
-		super.z8_beforeUpdate(query, recordId, changedFields, model, modelRecordId);
-
-		if(changedFields.isEmpty())
-			return;
+	public void beforeUpdate(guid recordId) {
+		super.beforeUpdate(recordId);
 
 		guid userId = user.get().get().guid();
 
@@ -145,11 +146,10 @@ public class UserEntries extends Table {
 	}
 
 	@Override
-	public void z8_beforeDestroy(Query.CLASS<? extends Query> query, guid recordId, Query.CLASS<? extends Query> model, guid modelRecordId) {
-		super.z8_beforeDestroy(query, recordId, model, modelRecordId);
+	public void beforeDestroy(guid recordId) {
+		super.beforeDestroy(recordId);
 
-		if(recordId.equals(UserEntries.Id)) {
+		if(recordId.equals(UserEntries.Id))
 			throw new exception("Builtin user's entrypoints can not be removed.");
-		}
 	}
 }

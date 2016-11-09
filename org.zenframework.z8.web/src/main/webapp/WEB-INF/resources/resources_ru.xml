@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
 <properties>
-    <comment>Файл ресурсов общей библиотеки для русского языка</comment>
+	<comment>Файл ресурсов общей библиотеки для русского языка</comment>
 
 	<!-- bool -->
 	<entry key="bool.true">да</entry>
 	<entry key="bool.false">нет</entry>
-		
+
 	<!-- Field -->
 	<entry key="Field.readException">Ошибка чтения поля {0}</entry>
 
@@ -48,49 +48,49 @@
 	<entry key="Users.settings">Настройки</entry>
 
 	<entry key="Users.name.default">User</entry>
-    
-	<!-- SystemDomains -->
-	<entry key="SystemDomains.title">Домены</entry>
-	<entry key="SystemDomains.id">Id</entry>
-	<entry key="SystemDomains.user">Системный пользователь</entry>
-	<entry key="SystemDomains.userDescription">Системный пользователь (описание)</entry>
-	<entry key="SystemDomains.owner">Владелец</entry>
 
-    
-    <!-- MessageQueue -->
-    <entry key="MessageQueue.title">Очередь сообщений</entry>
-    <entry key="MessageQueue.sender">Отправитель</entry>
-    <entry key="MessageQueue.address">Получатель</entry>
-    <entry key="MessagesQueue.ordinal">Номер</entry>
-    <entry key="MessagesQueue.processing">В обработке</entry>
+	<!-- Domains -->
+	<entry key="Domains.title">Домены</entry>
+	<entry key="Domains.id">Id</entry>
+	<entry key="Domains.user">Системный пользователь</entry>
+	<entry key="Domains.userDescription">Системный пользователь (описание)</entry>
+	<entry key="Domains.owner">Владелец</entry>
+	<entry key="Domains.name.default">Domain</entry>
 
-    <!-- TransportQueue -->
-    <entry key="TransportQueue.title">Очередь сообщений</entry>
-    <entry key="TransportQueue.sender">Отправитель</entry>
-    <entry key="TransportQueue.address">Получатель</entry>
-    <entry key="TransportQueue.result">Результат</entry>
-    <entry key="TransportQueue.ordinal">Номер</entry>
-    <entry key="TransportQueue.processed">Обработано</entry>
-    <entry key="TransportQueue.bytesTransferred">Bytes sent</entry>
+	<!-- MessageQueue -->
+	<entry key="MessageQueue.title">Очередь сообщений</entry>
+	<entry key="MessageQueue.sender">Отправитель</entry>
+	<entry key="MessageQueue.address">Получатель</entry>
+	<entry key="MessagesQueue.ordinal">Номер</entry>
+	<entry key="MessagesQueue.processing">В обработке</entry>
 
-    <!-- Transport routes -->
-    <entry key="TransportRoutes.title">Маршруты</entry>
-    <entry key="TransportRoutes.domain">Домен</entry>
-    <entry key="TransportRoutes.priority">Приоритет</entry>
-    <entry key="TransportRoutes.protocol">Протокол</entry>
-    <entry key="TransportRoutes.address">Адрес</entry>
-    <entry key="TransportRoutes.active">Активен</entry>
-    <entry key="TransportRoutes.error">Ошибка</entry>
+	<!-- TransportQueue -->
+	<entry key="TransportQueue.title">Очередь сообщений</entry>
+	<entry key="TransportQueue.sender">Отправитель</entry>
+	<entry key="TransportQueue.address">Получатель</entry>
+	<entry key="TransportQueue.result">Результат</entry>
+	<entry key="TransportQueue.ordinal">Номер</entry>
+	<entry key="TransportQueue.processed">Обработано</entry>
+	<entry key="TransportQueue.bytesTransferred">Bytes sent</entry>
 
-    <!-- Files -->
-    <entry key="Files.title">Файлы</entry>
-    <entry key="Files.name">Имя файла</entry>
-    <entry key="Files.path">Путь к файлу в кэше</entry>
-    
-    <entry key="Preview.unsupportedFileFormat">Невозможно отобразить содержимое файла {0}: формат не поддерживается.</entry>
-    
-    <!-- FilesView -->
-    <entry key="FilesView.attachment">Вложение</entry>
+	<!-- Transport routes -->
+	<entry key="TransportRoutes.title">Маршруты</entry>
+	<entry key="TransportRoutes.domain">Домен</entry>
+	<entry key="TransportRoutes.priority">Приоритет</entry>
+	<entry key="TransportRoutes.protocol">Протокол</entry>
+	<entry key="TransportRoutes.address">Адрес</entry>
+	<entry key="TransportRoutes.active">Активен</entry>
+	<entry key="TransportRoutes.error">Ошибка</entry>
+
+	<!-- Files -->
+	<entry key="Files.title">Файлы</entry>
+	<entry key="Files.name">Имя файла</entry>
+	<entry key="Files.path">Путь к файлу в кэше</entry>
+
+	<entry key="Preview.unsupportedFileFormat">Невозможно отобразить содержимое файла {0}: формат не поддерживается.</entry>
+
+	<!-- FilesView -->
+	<entry key="FilesView.attachment">Вложение</entry>
 
 	<!-- Entries -->
 	<entry key="Entries.title">Компоненты</entry>
@@ -102,9 +102,7 @@
 	<entry key="UserEntries.user">Пользователь</entry>
 	<entry key="UserEntries.entry">Компонент</entry>
 	<entry key="UserEntries.position">Позиция</entry>
-		
-	<!-- UserEntryPoints -->
-	<entry key="UserEntryPoints.title">Пользователи</entry>
+
 
 	<!-- HubServerView -->
 	<entry key="HubServerView.id">Id</entry>
@@ -134,7 +132,7 @@
 	<!-- SecurityGroups -->
 	<entry key="SecurityGroups.title">Группы безопасности</entry>
 	<entry key="SecurityGroups.name">Группа</entry>
-	
+
 	<!-- SecurityGroup -->
 	<entry key="SecurityGroup.administrators">Администраторы</entry>
 	<entry key="SecurityGroup.users">Пользователи</entry>

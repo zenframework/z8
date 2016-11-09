@@ -93,8 +93,7 @@ public class primary implements Serializable {
 		else if(type == FieldType.Text)
 			return new string(value);
 
-		assert (false);
-		return null;
+		throw new UnsupportedOperationException();
 	}
 
 	static public primary clone(primary value) {
@@ -120,8 +119,7 @@ public class primary implements Serializable {
 		else if(value instanceof string)
 			return new string((string) value);
 
-		assert (false);
-		return null;
+		throw new UnsupportedOperationException();
 	}
 
 	public bool z8_toBool() {

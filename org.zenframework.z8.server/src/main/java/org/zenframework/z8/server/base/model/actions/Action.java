@@ -104,10 +104,6 @@ public abstract class Action extends RequestTarget {
 		return getRequestParameter(Json.text);
 	}
 
-	public String getFieldIdParameter() {
-		return getRequestParameter(Json.fieldId);
-	}
-
 	public String getGroupByParameter() {
 		return getRequestParameter(Json.groupBy);
 	}
@@ -166,6 +162,10 @@ public abstract class Action extends RequestTarget {
 
 	public String getFilterParameter() {
 		return getRequestParameter(Json.filter);
+	}
+
+	public String getWhereParameter() {
+		return getRequestParameter(Json.where);
 	}
 
 	public String getFilter1Parameter() {

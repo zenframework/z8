@@ -28,6 +28,8 @@ public class DatetimeExpression extends Expression {
 		format = new string(Format.datetime);
 		stretch = new bool(false);
 
+		aggregation = Aggregation.Max;
+
 		setDefault(new date(date.MIN));
 	}
 

@@ -7,7 +7,6 @@ import org.zenframework.z8.server.db.DatabaseVendor;
 import org.zenframework.z8.server.db.FieldType;
 import org.zenframework.z8.server.db.sql.FormatOptions;
 import org.zenframework.z8.server.db.sql.SqlToken;
-import org.zenframework.z8.server.exceptions.UnsupportedException;
 import org.zenframework.z8.server.exceptions.db.UnknownDatabaseException;
 import org.zenframework.z8.server.types.datespan;
 
@@ -46,7 +45,7 @@ public class AddMinute extends SqlToken {
 			return date.format(vendor, options) + "+(" + minutes.format(vendor, options) + "*" + datespan.TicksPerMinute + ")";
 
 		default:
-			throw new UnsupportedException();
+			throw new UnsupportedOperationException();
 		}
 	}
 

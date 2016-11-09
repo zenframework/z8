@@ -13,6 +13,8 @@ import org.eclipse.datatools.connectivity.oda.OdaException;
 import org.zenframework.z8.server.base.model.actions.ReadAction;
 import org.zenframework.z8.server.base.model.sql.Select;
 import org.zenframework.z8.server.base.table.value.IValue;
+import org.zenframework.z8.server.db.Connection;
+import org.zenframework.z8.server.db.ConnectionManager;
 import org.zenframework.z8.server.resources.Resources;
 import org.zenframework.z8.server.types.bool;
 import org.zenframework.z8.server.types.date;
@@ -32,6 +34,9 @@ public class ResultSet implements IResultSet {
 	public ResultSet(ReadAction action) throws OdaException {
 		if(action == null)
 			throw new OdaException("Report generation is not supported in design mode.");
+
+		Connection connection = ConnectionManager.get();
+		connection.beginTransaction(); // for large cursors
 
 		cursor = action.getCursor();
 		columns = OdaQuery.getColumns(action);
@@ -58,6 +63,9 @@ public class ResultSet implements IResultSet {
 	@Override
 	public void close() throws OdaException {
 		if(cursor != null) {
+			Connection connection = ConnectionManager.get();
+			connection.rollback();
+
 			cursor.close();
 			cursor = null;
 		}

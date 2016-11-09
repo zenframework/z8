@@ -62,8 +62,6 @@ public class Logs extends Table {
 	public void constructor2() {
 		super.constructor2();
 
-		model = jobs;
-
 		jobs.setIndex("jobs");
 
 		job.setName(names.Job);

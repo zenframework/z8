@@ -1,4 +1,3 @@
-import org.zenframework.z8.base.table.value.Field;
 import org.zenframework.z8.base.table.value.FieldType;
 import org.zenframework.z8.lang.Object;
 
@@ -30,7 +29,4 @@ class Parameter extends Object {
 	static public Parameter create(string text, string value);
 	static public Parameter create(string text, guid value);
 	static public Parameter create(string text, file value);
-
-	static public Parameter create(string text, Query query);
-	static public Parameter create(string text, Query query, Field field);
 }

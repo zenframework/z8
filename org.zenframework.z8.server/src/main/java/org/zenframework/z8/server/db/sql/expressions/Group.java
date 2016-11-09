@@ -8,8 +8,8 @@ import org.zenframework.z8.server.db.sql.SqlToken;
 import org.zenframework.z8.server.types.sql.sql_bool;
 
 public class Group extends Expression {
-	public Group(SqlToken l) {
-		super(l, Operation.None, null);
+	public Group(SqlToken left) {
+		super(left, Operation.None, null);
 	}
 
 	@Override

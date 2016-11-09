@@ -93,14 +93,8 @@ public class Json extends Object {
 	static public string internal;
 
 	static public string queryId;
-	static public string groupId;
-	static public string fieldId;
-	static public string linkId;
 	static public string recordId;
 	static public string parentId;
-	static public string linked;
-	static public string linkedVia;
-	static public string depth;
 	static public string anchor;
 	static public string anchorPolicy;
 	static public string lookupFields;

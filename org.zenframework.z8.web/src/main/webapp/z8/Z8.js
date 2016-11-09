@@ -248,8 +248,8 @@ Z8 = {
 		newColumn: function(field) {
 			var column = {};
 
-			column.id = field.id;
-			column.dataIndex = field.id;
+			column.id = field.name;
+			column.dataIndex = field.name;
 			column.header = field.header;
 			column.tooltip = field.description || field.header;
 			column.width = this.fieldWidth(field.columnWidth || field.width, field);
@@ -337,8 +337,8 @@ Z8 = {
 			var width = Z8.Grid.fieldWidth(field.width, field);
 
 			var formField = {
-				dataIndex: field.id,
-				fieldId: field.id,
+				dataIndex: field.name,
+				fieldId: field.name,
 				linkId: field.linkId,
 				linkedVia: field.linkedVia,
 				fieldLabel: field.label || field.header,

@@ -27,8 +27,8 @@ Z8.query.Query = Ext.extend(Ext.util.Observable, {
 				this.fields[i].readOnly = true;
 		}
 
-		this.section = new Z8.query.Section(this.sections);
-		delete this.sections;
+		this.section = new Z8.query.Section(this.controls);
+		delete this.controls;
 
 		this.width = Math.max(Math.min(this.width || 1, 1), 0);
 		this.height = Math.max(Math.min(this.height || 1, 1), 0);
@@ -36,10 +36,10 @@ Z8.query.Query = Ext.extend(Ext.util.Observable, {
 		Z8.query.Query.superclass.constructor.call(this);
 	},
 
-	getFieldById: function(id) {
+	getFieldById: function(name) {
 		for(var i = 0; i < this.fields.length; i++) {
 			var field = this.fields[i];
-			if(field.id == id)
+			if(field.name == name)
 				return field;
 		}
 		return null;
@@ -65,7 +65,7 @@ Z8.query.Query = Ext.extend(Ext.util.Observable, {
 		var fields = [];
 
 		for(var i = 0; i < columns.length; i++) {
-			var field = this.getFieldById(columns[i].id);
+			var field = this.getFieldById(columns[i].name);
 			if(field != null)
 				fields.push(field);
 		}
@@ -132,7 +132,6 @@ Z8.query.Query = Ext.extend(Ext.util.Observable, {
 		for(var i = 0; i < this.fields.length; i++) {
 			var field = new Ext.data.Field(this.fields[i]);
 			field.useNull = !field.required;
-			field.name = field.id;
 
 			if(field.type == Z8.Types.Date) {
 				field.convert = function(value, record) {

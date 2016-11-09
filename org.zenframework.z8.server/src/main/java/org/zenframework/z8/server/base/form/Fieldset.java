@@ -26,7 +26,7 @@ public class Fieldset extends Section {
 		super.writeMeta(writer);
 
 		writer.writeProperty(Json.isFieldset, true);
-		writer.writeProperty(Json.header, displayName());
+		writer.writeProperty(Json.legend, displayName());
 		writer.writeProperty(Json.icon, icon());
 	}
 }

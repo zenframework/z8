@@ -155,13 +155,13 @@ public class TreeTable extends Table {
 	}
 
 	@Override
-	protected void beforeCreate(Query query, guid recordId, guid parentId, Query model, guid modelRecordId) {
-		super.beforeCreate(query, recordId, parentId, model, modelRecordId);
+	public void beforeCreate(guid recordId, guid parentId) {
+		super.beforeCreate(recordId, parentId);
 
 		parentId = parentKey().guid();
 		recordId = primaryKey().guid();
 
-		if(keepIntegrity.get() && query == this && parentId != null) {
+		if(keepIntegrity.get() && parentId != null) {
 			int depth = 0;
 
 			String path = recordId.toString();
@@ -219,19 +219,19 @@ public class TreeTable extends Table {
 	}
 
 	@Override
-	protected void afterCreate(Query query, guid recordId, guid parentId, Query model, guid modelRecordId) {
+	public void afterCreate(guid recordId, guid parentId) {
 		parentId = parentKey().guid();
 		recordId = primaryKey().guid();
 
-		super.afterCreate(query, recordId, parentId, model, modelRecordId);
+		super.afterCreate(recordId, parentId);
 
-		if(keepIntegrity.get() && query == this && parentId != null)
+		if(keepIntegrity.get() && parentId != null)
 			addChild(parentId, 1);
 	}
 
 	@Override
-	protected void beforeDestroy(Query query, guid recordId, Query model, guid modelRecordId) {
-		super.beforeDestroy(query, recordId, model, modelRecordId);
+	public void beforeDestroy(guid recordId) {
+		super.beforeDestroy(recordId);
 
 		if(keepIntegrity.get()) {
 			try {
@@ -251,8 +251,8 @@ public class TreeTable extends Table {
 	}
 
 	@Override
-	protected void afterDestroy(Query query, guid recordId, Query model, guid modelRecordId) {
-		super.afterDestroy(query, recordId, model, modelRecordId);
+	public void afterDestroy(guid recordId) {
+		super.afterDestroy(recordId);
 
 		if(keepIntegrity.get() && parentIdValue != null) {
 			addChild(parentIdValue, -1);

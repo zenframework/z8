@@ -6,12 +6,12 @@ Ext.data.Record.prototype.encode = function() {
 
 	for(var i = 0; i < fields.getCount(); i++) {
 		var field = fields.get(i);
-		var value = this.data[field.id];
+		var value = this.data[field.name];
 
 		if(field.serverType == Z8.ServerTypes.Date || field.serverType == Z8.ServerTypes.Datetime)
-			data[field.id] = Ext.isDate(value) ? Z8.Format.isoDate(value) : '';
+			data[field.name] = Ext.isDate(value) ? Z8.Format.isoDate(value) : '';
 		else
-			data[field.id] = this.data[field.id];
+			data[field.name] = this.data[field.name];
 	}
 	
 	return Ext.encode(data);

@@ -12,40 +12,40 @@ import org.zenframework.z8.server.db.sql.SqlToken;
 import org.zenframework.z8.server.exceptions.db.UnknownDatabaseException;
 
 public class ToChar extends SqlToken {
-    private SqlToken value;
+	private SqlToken value;
 
-    public ToChar(Field field) {
-        this(new SqlField(field));
-    }
+	public ToChar(Field field) {
+		this(new SqlField(field));
+	}
 
-    public ToChar(SqlToken value) {
-        this.value = value;
-    }
+	public ToChar(SqlToken value) {
+		this.value = value;
+	}
 
-    @Override
-    public void collectFields(Collection<IValue> fields) {
-        value.collectFields(fields);
-    }
+	@Override
+	public void collectFields(Collection<IValue> fields) {
+		value.collectFields(fields);
+	}
 
-    @Override
-    public String format(DatabaseVendor vendor, FormatOptions options, boolean logicalContext) {
-        switch(vendor) {
-        case Oracle:
-            return "TO_NCHAR(" + value.format(vendor, options) + ")";
-        case Postgres:
-            if(value.type() == FieldType.Guid)
-                return "cast(" + value.format(vendor, options) + "as varchar)";
-            
-            return "CONVERT_FROM(" + value.format(vendor, options) + ", 'UTF8')";
-        case SqlServer:
-            return "Cast(" + value.format(vendor, options) + " as nvarchar(max))";
-        default:
-            throw new UnknownDatabaseException();
-        }
-    }
+	@Override
+	public String format(DatabaseVendor vendor, FormatOptions options, boolean logicalContext) {
+		switch(vendor) {
+		case Oracle:
+			return "TO_NCHAR(" + value.format(vendor, options) + ")";
+		case Postgres:
+			if(value.type() == FieldType.Guid)
+				return "cast(" + value.format(vendor, options) + "as varchar)";
 
-    @Override
-    public FieldType type() {
-        return FieldType.String;
-    }
+			return "CONVERT_FROM(" + value.format(vendor, options) + ", 'UTF8')";
+		case SqlServer:
+			return "Cast(" + value.format(vendor, options) + " as nvarchar(max))";
+		default:
+			throw new UnknownDatabaseException();
+		}
+	}
+
+	@Override
+	public FieldType type() {
+		return FieldType.String;
+	}
 }

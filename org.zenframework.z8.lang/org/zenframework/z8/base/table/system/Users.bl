@@ -50,7 +50,6 @@ class Users extends Table {
 		name,
 		description,
 		phone,
-		email,
-		settings
+		email
 	};
 }

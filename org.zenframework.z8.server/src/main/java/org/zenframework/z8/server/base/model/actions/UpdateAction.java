@@ -1,8 +1,6 @@
 package org.zenframework.z8.server.base.model.actions;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 
 import org.zenframework.z8.server.base.model.sql.Update;
 import org.zenframework.z8.server.base.query.Query;
@@ -28,39 +26,36 @@ public class UpdateAction extends Action {
 		JsonArray records = new JsonArray(jsonData);
 
 		Query query = getQuery();
+		Field primaryKey = query.primaryKey();
 
 		for(int index = 0; index < records.length(); index++) {
 			JsonObject record = (JsonObject)records.get(index);
 
-			List<Field> fields = new ArrayList<Field>();
+			QueryUtils.parseRecord(record, query);
 
-			guid keyValue = QueryUtils.parseRecord(record, query, fields);
+			guid recordId = primaryKey.guid();
 
-			guid modelRecordId = getRecordIdParameter();
-
-			run(query, keyValue, fields, modelRecordId != null ? modelRecordId : keyValue);
+			run(query, recordId);
 		}
 	}
 
-	static public int run(Query query, guid keyValue, Collection<Field> fields, guid modelRecordId) {
-		return run(query, keyValue, fields, modelRecordId, true);
+	static public int run(Query query, guid recordId) {
+		return run(query, recordId, true);
 	}
 
-	static public int run(Query query, guid keyValue, Collection<Field> fields, guid modelRecordId, boolean resetChangedFields) {
+	static public int run(Query query, guid recordId, boolean resetChangedFields) {
 		int result = 0;
 
-		if(!fields.isEmpty() && (keyValue == null || !keyValue.equals(guid.NULL))) {
-			Query model = Query.getModel(query);
+		if(recordId == null || !recordId.equals(guid.NULL)) {
+			if(recordId != null)
+				query.beforeUpdate(recordId);
 
-			if(keyValue != null)
-				query.beforeUpdate(keyValue, fields, model, modelRecordId);
+			Collection<Field> changedFields = query.getChangedFields();
 
-			Collection<Field> changedFields = query.getRootQuery().getChangedFields();
+			result = changedFields.isEmpty() ? 0 : new Update(query, changedFields, recordId).execute();
 
-			result = changedFields.isEmpty() ? 0 : new Update(query, changedFields, keyValue).execute();
-
-			if(keyValue != null)
-				query.afterUpdate(keyValue, changedFields, model, modelRecordId);
+			if(recordId != null)
+				query.afterUpdate(recordId);
 
 			if(resetChangedFields) {
 				for(Field field : changedFields)

@@ -5,7 +5,6 @@ import org.zenframework.z8.server.db.FieldType;
 import org.zenframework.z8.server.db.sql.FormatOptions;
 import org.zenframework.z8.server.db.sql.SqlToken;
 import org.zenframework.z8.server.db.sql.functions.string.Concat;
-import org.zenframework.z8.server.exceptions.UnsupportedException;
 import org.zenframework.z8.server.exceptions.db.UnknownDatabaseException;
 import org.zenframework.z8.server.types.datespan;
 
@@ -44,7 +43,7 @@ public class Add extends Operator {
 		}
 
 		default:
-			throw new UnsupportedException();
+			throw new UnsupportedOperationException();
 		}
 	}
 }

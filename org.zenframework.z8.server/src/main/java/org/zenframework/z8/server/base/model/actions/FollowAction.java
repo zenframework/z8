@@ -38,7 +38,7 @@ public class FollowAction extends MetaAction {
 			}
 		}
 
-		Field field = actionParameters.query.findFieldById(object.getString(Json.fieldId));
+		Field field = actionParameters.query.findFieldById(object.getString(Json.field));
 
 		Query query = actionParameters.query.onFollow(field, ids);
 

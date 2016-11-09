@@ -29,7 +29,7 @@ public class Year extends SqlToken {
 		case Postgres:
 			return "cast(date_part('year', " + param1.format(vendor, options) + ") as bigint)";
 		case Oracle:
-			return new ToNumber(new SqlStringToken("TO_CHAR(" + param1.format(vendor, options) + ", 'YYYY')")).format(vendor, options);
+			return new ToNumber(new SqlStringToken("TO_CHAR(" + param1.format(vendor, options) + ", 'YYYY')", FieldType.String)).format(vendor, options);
 		case SqlServer:
 			return "Year(" + param1.format(vendor, options) + ")";
 		default:

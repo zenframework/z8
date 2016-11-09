@@ -82,7 +82,7 @@ public class Dashboard extends RequestTarget {
 	private void writeDesktopData(JsonWriter writer, Desktop desktop, String displayName) {
 		Collection<Runnable.CLASS> runnables = desktop.getRunnables();
 
-		if(!runnables.isEmpty()) {
+//		if(!runnables.isEmpty()) {
 			writer.startObject();
 
 			writer.writeProperty(Json.text, displayName);
@@ -94,7 +94,7 @@ public class Dashboard extends RequestTarget {
 			writer.finishArray();
 
 			writer.finishObject();
-		}
+//		}
 	}
 
 	private void writeDesktop(JsonWriter writer, Desktop desktop) {
@@ -117,7 +117,7 @@ public class Dashboard extends RequestTarget {
 				Trace.logError("Error loading entry point '" + component.className() + "'", e);
 			}
 		}
-		
+
 		return result;
 	}
 

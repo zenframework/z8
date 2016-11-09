@@ -14,40 +14,36 @@ import org.zenframework.z8.server.exceptions.db.UnknownDatabaseException;
 import org.zenframework.z8.server.types.integer;
 
 public class RegIndexOf extends SqlToken {
-    private SqlToken string;
-    private SqlToken pattern;
+	private SqlToken string;
+	private SqlToken pattern;
 
-    public RegIndexOf(SqlToken string, SqlToken pattern) {
-        this.string = string;
-        this.pattern = pattern;
-    }
+	public RegIndexOf(SqlToken string, SqlToken pattern) {
+		this.string = string;
+		this.pattern = pattern;
+	}
 
-    @Override
-    public void collectFields(Collection<IValue> fields) {
-        string.collectFields(fields);
-        pattern.collectFields(fields);
-    }
+	@Override
+	public void collectFields(Collection<IValue> fields) {
+		string.collectFields(fields);
+		pattern.collectFields(fields);
+	}
 
-    @Override
-    public String format(DatabaseVendor vendor, FormatOptions options, boolean logicalContext) {
-        String result = null;
-        
-        if(vendor == DatabaseVendor.Oracle) {
-            result = "RegExp_instr(" +
-                pattern.format(vendor, options) + ", " +
-                string.format(vendor, options) + ") - 1";
-        } else if(vendor == DatabaseVendor.SqlServer) {
-            result = "patIndex(" +
-                    pattern.format(vendor, options) + ", " +
-                    string.format(vendor, options) + ") - 1";
-        } else
-            throw new UnknownDatabaseException();
+	@Override
+	public String format(DatabaseVendor vendor, FormatOptions options, boolean logicalContext) {
+		String result = null;
 
-        return (new Nvl(new SqlStringToken(result), new SqlConst(new integer(-1)))).format(vendor, options);
-    }
+		if(vendor == DatabaseVendor.Oracle) {
+			result = "RegExp_instr(" + pattern.format(vendor, options) + ", " + string.format(vendor, options) + ") - 1";
+		} else if(vendor == DatabaseVendor.SqlServer) {
+			result = "patIndex(" + pattern.format(vendor, options) + ", " + string.format(vendor, options) + ") - 1";
+		} else
+			throw new UnknownDatabaseException();
 
-    @Override
-    public FieldType type() {
-        return FieldType.Integer;
-    }
+		return (new Nvl(new SqlStringToken(result, FieldType.Integer), new SqlConst(new integer(-1)))).format(vendor, options);
+	}
+
+	@Override
+	public FieldType type() {
+		return FieldType.Integer;
+	}
 }

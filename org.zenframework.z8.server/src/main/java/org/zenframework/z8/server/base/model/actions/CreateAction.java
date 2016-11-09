@@ -1,6 +1,5 @@
 package org.zenframework.z8.server.base.model.actions;
 
-import java.util.ArrayList;
 import java.util.Collection;
 
 import org.zenframework.z8.server.base.query.Query;
@@ -20,7 +19,7 @@ public class CreateAction extends Action {
 
 	@Override
 	public void writeResponse(JsonWriter writer) {
-		Field backwardLink = actionParameters().keyField;
+		boolean newAndSave = actionParameters().getBoolean(Json.save);
 
 		String jsonData = getDataParameter();
 
@@ -40,26 +39,23 @@ public class CreateAction extends Action {
 		for(int index = 0; index < records.length(); index++) {
 			JsonObject record = (JsonObject)records.get(index);
 
-			Collection<Field> fields = new ArrayList<Field>();
-			QueryUtils.parseRecord(record, query, fields);
+			guid recordId = extractKey(record, primaryKey);
+			guid parentId = extractKey(record, parentKey);
 
-			if(!fields.contains(primaryKey))
-				fields.add(primaryKey);
-
-			guid recordId = primaryKey.guid();
-
-			if(recordId.isNull()) {
+			if(recordId == null || recordId.isNull())
 				recordId = guid.create();
-				primaryKey.set(recordId);
-			}
 
-			guid parentId = parentKey != null ? parentKey.guid() : null;
-			guid modelRecordId = getRecordIdParameter();
+			if(newAndSave)
+				NewAction.run(query, recordId, parentId);
 
-			if(backwardLink != null)
-				backwardLink.set(getRecordIdParameter());
+			QueryUtils.parseRecord(record, query);
 
-			query.insert(recordId, parentId, modelRecordId != null ? modelRecordId : recordId);
+			primaryKey.set(recordId);
+
+			query.insert(recordId, parentId);
+
+			Collection<Field> fields = query.getFormFields();
+			fields.add(primaryKey);
 
 			if(query.readRecord(recordId, fields)) {
 				writer.startObject();
@@ -74,10 +70,16 @@ public class CreateAction extends Action {
 
 				writer.finishObject();
 			}
-
-			primaryKey.set(guid.NULL);
 		}
 
 		writer.finishArray();
+	}
+
+	private guid extractKey(JsonObject record, Field field) {
+		if(field == null)
+			return null;
+
+		String key = field.id();
+		return record.has(key) ? record.getGuid(key) : null;
 	}
 }

@@ -33,9 +33,6 @@ public class ArrayUtils {
 	}
 
 	static public <Type> Type[] insert(Type[] objects, Type object, int position) {
-		assert (objects != null);
-		assert (position <= objects.length);
-
 		int index = Arrays.binarySearch(objects, object);
 
 		if(index < 0) {

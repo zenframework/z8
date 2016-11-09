@@ -59,23 +59,20 @@ public class ReportAction extends Action {
 		if(report != null) {
 			ids = getIdList();
 
-			String modelName = Query.getModel(getQuery()).getRootQuery().name();
+			String modelName = getQuery().getRootQuery().name();
 
 			Collection<Query> queries = query.onReport(report, ids);
 
 			for(Query reportQuery : queries) {
 				parameters = new ActionParameters(requestParameters());
 				parameters.query = reportQuery;
-				parameters.keyField = actionParameters().keyField;
 
 				ReadAction action = new ReportReadAction(parameters);
 				actions.add(action);
 
 				if(!reportQuery.printAsList.get() && !ids.isEmpty()) {
-					Query model = Query.getModel(reportQuery);
-
-					if(model.getRootQuery().name().equals(modelName))
-						action.addFilter(model.primaryKey(), ids.iterator().next());
+					if(reportQuery.getRootQuery().name().equals(modelName))
+						action.addFilter(reportQuery.primaryKey(), ids.iterator().next());
 				}
 			}
 		} else {

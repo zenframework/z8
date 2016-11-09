@@ -500,7 +500,7 @@ public class BirtReportRunner {
 		if(format == null || format.isEmpty())
 			return null;
 
-		return format.get().replace("d", "dd").replace("m", "MM").replace("Y", "yyyy").replace("i", "mm").replace("s", "ss");
+		return format.get().replace("d", "dd").replace("m", "MM").replace("Y", "yyyy").replace("H", "hh").replace("i", "mm").replace("s", "ss");
 	}
 
 	private void setCellFormat(CellHandle cell, Column column) throws SemanticException {
@@ -515,11 +515,10 @@ public class BirtReportRunner {
 			String format = getColumnFormat(column);
 
 			if(styleHandle != null) {
-				if(format != null) {
+				if(format != null)
 					styleHandle.setDateFormat(format);
-				} else if(dateFormatStyle != null) {
+				else if(dateFormatStyle != null)
 					styleHandle.setDateFormat(dateFormatStyle.getDateTimeFormat());
-				}
 			}
 		} else if(type.equals(DesignChoiceConstants.COLUMN_DATA_TYPE_DATETIME)) {
 			StyleHandle styleHandle = cell.getPrivateStyle();
@@ -528,11 +527,10 @@ public class BirtReportRunner {
 			String format = getColumnFormat(column);
 
 			if(styleHandle != null) {
-				if(format != null) {
-					styleHandle.setDateFormat(format);
-				} else if(dateFormatStyle != null) {
-					styleHandle.setDateFormat(dateFormatStyle.getDateTimeFormat());
-				}
+				if(format != null)
+					styleHandle.setDateTimeFormat(format);
+				else if(dateFormatStyle != null)
+					styleHandle.setDateTimeFormat(dateFormatStyle.getDateTimeFormat());
 			}
 		} else if(type.equals(DesignChoiceConstants.COLUMN_DATA_TYPE_DECIMAL) || type.equals(DesignChoiceConstants.COLUMN_DATA_TYPE_FLOAT)) {
 			StyleHandle styleHandle = cell.getPrivateStyle();

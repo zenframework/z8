@@ -15,7 +15,6 @@ import org.zenframework.z8.server.db.sql.functions.Count;
 import org.zenframework.z8.server.db.sql.functions.Max;
 import org.zenframework.z8.server.db.sql.functions.Min;
 import org.zenframework.z8.server.db.sql.functions.Sum;
-import org.zenframework.z8.server.db.sql.functions.conversion.ToChar;
 import org.zenframework.z8.server.exceptions.db.UnknownDatabaseException;
 
 public class SqlField extends SqlToken {
@@ -49,14 +48,13 @@ public class SqlField extends SqlToken {
 	}
 
 	private SqlToken getToken(DatabaseVendor vendor, FormatOptions options, boolean logicalContext, Aggregation aggregation) {
-		if(field.type() == FieldType.Guid && (aggregation == Aggregation.Min || aggregation == Aggregation.Max))
-			return new ToChar(field);
+		FieldType type = field.type();
 
 		String alias = field.format(vendor, options);
-		if(field.type() == FieldType.Boolean)
+		if(type == FieldType.Boolean)
 			alias += logicalContext ? "=1" : "";
 
-		return new SqlStringToken(alias);
+		return new SqlStringToken(alias, type);
 	}
 
 	private SqlToken aggregate(SqlToken token, Aggregation aggregation) {

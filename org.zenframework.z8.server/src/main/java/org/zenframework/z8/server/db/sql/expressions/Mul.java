@@ -4,7 +4,6 @@ import org.zenframework.z8.server.db.DatabaseVendor;
 import org.zenframework.z8.server.db.sql.FormatOptions;
 import org.zenframework.z8.server.db.sql.SqlToken;
 import org.zenframework.z8.server.db.sql.functions.numeric.Mod;
-import org.zenframework.z8.server.exceptions.UnsupportedException;
 
 public class Mul extends Operator {
 	public Mul(SqlToken l, Operation oper, SqlToken r) {
@@ -27,7 +26,7 @@ public class Mul extends Operator {
 		}
 
 		default:
-			throw new UnsupportedException();
+			throw new UnsupportedOperationException();
 		}
 	}
 }

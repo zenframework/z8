@@ -142,8 +142,6 @@ public class SelectFactory {
 	}
 
 	private List<Field> getAggregatedFieldsFromRoot() {
-		assert (!aggregateBy.isEmpty());
-
 		List<Field> result = new ArrayList<Field>();
 		result.addAll(aggregateBy);
 

@@ -3,8 +3,6 @@ package org.zenframework.z8.server.base.view.command;
 import java.util.Collection;
 
 import org.zenframework.z8.server.base.model.command.IParameter;
-import org.zenframework.z8.server.base.query.Query;
-import org.zenframework.z8.server.base.table.value.Field;
 import org.zenframework.z8.server.db.FieldType;
 import org.zenframework.z8.server.engine.ApplicationServer;
 import org.zenframework.z8.server.json.Json;
@@ -15,8 +13,8 @@ import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.runtime.OBJECT;
 import org.zenframework.z8.server.runtime.RCollection;
 import org.zenframework.z8.server.types.bool;
-import org.zenframework.z8.server.types.datespan;
 import org.zenframework.z8.server.types.date;
+import org.zenframework.z8.server.types.datespan;
 import org.zenframework.z8.server.types.decimal;
 import org.zenframework.z8.server.types.file;
 import org.zenframework.z8.server.types.guid;
@@ -43,11 +41,8 @@ public class Parameter extends OBJECT implements IParameter {
 
 	public string text = new string();
 
-	private FieldType type = FieldType.None;
-	private Object value = new string(); // primary or RCollection<primary>
-
-	private String queryId = null;
-	private String fieldId = null;
+	protected FieldType type = FieldType.None;
+	protected Object value = new string(); // primary or RCollection<primary>
 
 	public Parameter(IObject container) {
 		super(container);
@@ -158,9 +153,6 @@ public class Parameter extends OBJECT implements IParameter {
 			writer.finishArray();
 		} else
 			writer.writeProperty(Json.value, (primary)value);
-
-		writer.writeProperty(Json.queryId, queryId);
-		writer.writeProperty(Json.fieldId, fieldId);
 	}
 
 	@SuppressWarnings("rawtypes")
@@ -237,21 +229,6 @@ public class Parameter extends OBJECT implements IParameter {
 		Parameter.CLASS<Parameter> parameter = new Parameter.CLASS<Parameter>();
 		parameter.get().text.set(name);
 		parameter.get().type = type;
-		return parameter;
-	}
-
-	@SuppressWarnings("unchecked")
-	static public Parameter.CLASS<? extends Parameter> z8_create(string name, Query.CLASS<? extends Query> queryCls) {
-		Parameter.CLASS<Parameter> parameter = (Parameter.CLASS<Parameter>)z8_create(name, new guid());
-		parameter.get().queryId = queryCls.classId();
-		return parameter;
-	}
-
-	@SuppressWarnings("unchecked")
-	static public Parameter.CLASS<? extends Parameter> z8_create(string name, Query.CLASS<? extends Query> queryCls, Field.CLASS<? extends Field> fieldCls) {
-		Parameter.CLASS<Parameter> parameter = (Parameter.CLASS<Parameter>)z8_create(name, new guid());
-		parameter.get().queryId = queryCls.classId();
-		parameter.get().fieldId = fieldCls.id().replace(queryCls.id(), "");
 		return parameter;
 	}
 }

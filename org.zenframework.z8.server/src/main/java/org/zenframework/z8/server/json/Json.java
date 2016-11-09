@@ -34,6 +34,9 @@ public interface Json {
 	string isJob = new string("isJob");
 	string isSection = new string("isSection");
 	string isFieldset = new string("isFieldset");
+	string isListbox = new string("isListbox");
+	string isCombobox = new string("isCombobox");
+	string isText = new string("isText");
 
 	string info = new string("info");
 	string messages = new string("messages");
@@ -61,14 +64,10 @@ public interface Json {
 	string visible = new string("visible");
 	string hidden = new string("hidden");
 	string hidable = new string("hidable");
-	string formula = new string("formula");
-	string evaluations = new string("evaluations");
-	string dependencies = new string("dependencies");
 	string width = new string("width");
 	string height = new string("height");
 	string length = new string("length");
 	string size = new string("size");
-	string lines = new string("lines");
 	string stretch = new string("stretch");
 	string priority = new string("priority");
 	string required = new string("required");
@@ -84,11 +83,8 @@ public interface Json {
 	string labelWidth = new string("labelWidth");
 
 	string link = new string("link");
-	string editWith = new string("editWith");
-	string editWithText = new string("editWithText");
+	string isLink = new string("isLink");
 
-	string grid = new string("grid");
-	string tree = new string("tree");
 	string parentsSelectable = new string("parentsSelectable");
 
 	string key = new string("key");
@@ -102,14 +98,8 @@ public interface Json {
 	string internal = new string("internal");
 
 	string queryId = new string("queryId");
-	string groupId = new string("groupId");
-	string fieldId = new string("fieldId");
-	string linkId = new string("linkId");
 	string recordId = new string("recordId");
 	string parentId = new string("parentId");
-	string linked = new string("linked");
-	string linkedVia = new string("linkedVia");
-	string depth = new string("depth");
 	string anchor = new string("anchor");
 	string anchorPolicy = new string("anchorPolicy");
 	string ids = new string("ids");
@@ -123,7 +113,12 @@ public interface Json {
 	string lookup = new string("lookup");
 
 	string filter = new string("filter");
+	string where = new string("where");
 	string operator = new string("operator");
+	string logical = new string("logical");
+	string and = new string("and");
+	string or = new string("or");
+	string expressions = new string("expressions");
 
 	string filter1 = new string("filter1");
 	string comparison = new string("comparison");
@@ -191,6 +186,10 @@ public interface Json {
 	string fields = new string("fields");
 	string sections = new string("sections");
 	string controls = new string("controls");
+	string gridFields = new string("gridFields");
+	string nameFields = new string("nameFields");
+	string grid = new string("grid");
+	string tree = new string("tree");
 	string actions = new string("actions");
 	string columns = new string("columns");
 	string backwards = new string("backwards");
@@ -220,6 +219,7 @@ public interface Json {
 	string text = new string("text");
 	string description = new string("description");
 	string label = new string("label");
+	string legend = new string("legend");
 	string header = new string("header");
 	string colspan = new string("colspan");
 	string rowspan = new string("rowspan");
@@ -235,6 +235,8 @@ public interface Json {
 	string update = new string("update");
 	string create = new string("create");
 	string destroy = new string("destroy");
+
+	string goToForm = new string("goToForm");
 
 	string experimental = new string("experimental");
 }

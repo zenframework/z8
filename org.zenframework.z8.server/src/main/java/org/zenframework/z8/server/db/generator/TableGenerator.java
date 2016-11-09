@@ -132,7 +132,7 @@ public class TableGenerator {
 				recreateTable();
 				break;
 			default:
-				assert (false);
+				throw new UnsupportedOperationException();
 			}
 		} catch(SQLException e) {
 			logger.error(e, Resources.format("Generator.createTableError", displayName(), "[" + connection.schema() + "]." + name(), ErrorUtils.getMessage(e)));
@@ -255,7 +255,7 @@ public class TableGenerator {
 		else
 			return true;
 
-		expression.setExpression(new SqlStringToken(dbDefault.isEmpty() ? "null" : dbDefault));
+		expression.setExpression(new SqlStringToken(dbDefault.isEmpty() ? "null" : dbDefault, type));
 		expression.setOwner(table);
 
 		Select select = new Select();
@@ -292,8 +292,9 @@ public class TableGenerator {
 			break;
 		case Postgres:
 			sql = "alter table " + database.tableName(oldTableName) + " rename to " + vendor.quote(newTableName);
+			break;
 		default:
-			assert (false);
+			throw new UnsupportedOperationException();
 		}
 
 		Statement.executeUpdate(connection, sql);
@@ -564,7 +565,7 @@ public class TableGenerator {
 					primary value = record.get(field);
 					field.set(value);
 				}
-				table.create(recordId, parentId, guid.NULL);
+				table.create(recordId, parentId);
 			} else {
 				for(Field field : fields) {
 					if(field.gendb_updatable()) {

@@ -131,8 +131,7 @@ public class Cursor {
 		case Binary:
 			return getBinary(index);
 		default:
-			assert (false);
-			return null;
+			throw new UnsupportedOperationException();
 		}
 	}
 }

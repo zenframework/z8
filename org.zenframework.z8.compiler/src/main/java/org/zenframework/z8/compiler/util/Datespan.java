@@ -95,7 +95,10 @@ public class Datespan {
 
 	@Override
 	public String toString() {
-		return "" + days() + " " + hours() + ":" + minutes() + ":" + seconds();
+		int hours = hours();
+		int minutes = minutes();
+		int seconds = seconds();
+		return "" + days() + " " + (hours < 10 ? "0" : "") + hours + ":" + (minutes < 10 ? "0" : "") + minutes + ":" + (seconds < 10 ? "0" : "") + seconds;
 	}
 
 	public Datespan add(Datespan d) {

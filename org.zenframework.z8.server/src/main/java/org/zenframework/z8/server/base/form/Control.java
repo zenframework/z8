@@ -1,5 +1,6 @@
 package org.zenframework.z8.server.base.form;
 
+import org.zenframework.z8.server.base.query.Query;
 import org.zenframework.z8.server.json.Json;
 import org.zenframework.z8.server.json.JsonWriter;
 import org.zenframework.z8.server.runtime.IObject;
@@ -24,20 +25,36 @@ public class Control extends OBJECT {
 		}
 	}
 
+	public bool readOnly = null;
+
 	public integer rowspan = null;
 	public integer colspan = null;
 	public bool showLabel = null;
 	public bool hidable = null;
 
+	public Query.CLASS<? extends Query> source = null;
+
+	public boolean readOnly() {
+		return readOnly != null ? readOnly.get() : false;
+	}
+
 	public void writeMeta(JsonWriter writer) {
-		writer.writeProperty(Json.id, id());
+		writer.writeProperty(Json.name, id());
 		writer.writeProperty(Json.header, displayName());
 		writer.writeProperty(Json.description, description());
+		writer.writeProperty(Json.icon, icon());
 		writer.writeProperty(Json.label, label());
 
 		writer.writeProperty(Json.rowspan, rowspan, new integer(1));
 		writer.writeProperty(Json.colspan, colspan, new integer(1));
 		writer.writeProperty(Json.showLabel, showLabel, new bool(true));
 		writer.writeProperty(Json.hidable, hidable, new bool(false));
+
+		if(source != null) {
+			writer.startObject(Json.source);
+			writer.writeProperty(Json.id, source.classId());
+			writer.writeProperty(Json.text, source.displayName());
+			writer.finishObject();
+		}
 	}
 }

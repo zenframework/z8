@@ -73,6 +73,11 @@ public class OBJECT extends RequestTarget implements IObject, RmiSerializable {
 	}
 
 	@Override
+	public void resetId() {
+		id = null;
+	}
+
+	@Override
 	public String name() {
 		return getAttribute(Name);
 	}
@@ -166,6 +171,10 @@ public class OBJECT extends RequestTarget implements IObject, RmiSerializable {
 
 	@Override
 	public void setContainer(IObject container) {
+		if(this.container != null) {
+			this.setIndex(null);
+			this.resetId();
+		}
 		this.container = container;
 	}
 
@@ -192,16 +201,14 @@ public class OBJECT extends RequestTarget implements IObject, RmiSerializable {
 
 	@Override
 	public String getIndex() {
-		if(container == null) {
+		if(container == null)
 			return "";
-		}
 
 		String index = getAttribute(Index);
 
-		if(index == null) {
+		if(index == null)
 			return "";
 			// throw new NullPointerException("OBJECT.index == null");
-		}
 
 		return index;
 	}

@@ -1,6 +1,6 @@
 [native "org.zenframework.z8.server.base.table.value.TextField"]
 class TextField extends Field {
-	int lines = 5;
+	int height = 150;
 
 	virtual public string getDefault();
 	public void setDefault(string defaultValue);

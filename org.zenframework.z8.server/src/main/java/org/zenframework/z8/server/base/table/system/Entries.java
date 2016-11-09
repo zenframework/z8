@@ -6,7 +6,6 @@ import org.zenframework.z8.server.base.table.Table;
 import org.zenframework.z8.server.base.table.value.IField;
 import org.zenframework.z8.server.resources.Resources;
 import org.zenframework.z8.server.runtime.IObject;
-import org.zenframework.z8.server.types.bool;
 import org.zenframework.z8.server.types.exception;
 import org.zenframework.z8.server.types.guid;
 import org.zenframework.z8.server.types.integer;
@@ -16,15 +15,10 @@ import org.zenframework.z8.server.types.string;
 public class Entries extends Table {
 	final static public String TableName = "SystemEntries";
 
-	static public class names {
-		public final static String Granted = "Granted";
-	}
-
 	static public class strings {
 		public final static String Title = "Entries.title";
 		public final static String Id = "Entries.javaClass";
 		public final static String Name = "Entries.name";
-		public final static String Granted = "Entries.granted";
 	}
 
 	public static class CLASS<T extends Entries> extends Table.CLASS<T> {
@@ -56,15 +50,8 @@ public class Entries extends Table {
 	public void constructor2() {
 		super.constructor2();
 
-		readOnly.set(true);
-
-		id.get().visible = new bool(false);
 		id.get().length = new integer(1024);
-		id.get().visible = new bool(false);
-
 		name.get().length = new integer(1024);
-
-		description.get().visible = new bool(false);
 
 		{
 			LinkedHashMap<IField, primary> record = new LinkedHashMap<IField, primary>();

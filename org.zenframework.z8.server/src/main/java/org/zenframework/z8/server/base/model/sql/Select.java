@@ -269,8 +269,6 @@ public class Select {
 	}
 
 	private String formatOrderBy(FormatOptions options) {
-		assert (orderBy != null);
-
 		String result = "";
 
 		for(Field field : orderBy)

@@ -31,11 +31,11 @@ public class Length extends SqlToken {
 
 		switch(vendor) {
 		case Oracle:
-			return new Nvl(new SqlStringToken("length(" + length + ")"), new SqlConst(new integer(0))).format(vendor, options);
+			return new Nvl(new SqlStringToken("length(" + length + ")", FieldType.Integer), new SqlConst(new integer(0))).format(vendor, options);
 		case Postgres:
-			return new SqlStringToken("length(" + length + ")").format(vendor, options);
+			return new SqlStringToken("length(" + length + ")", FieldType.Integer).format(vendor, options);
 		case SqlServer:
-			return new Nvl(new SqlStringToken("len(" + length + ")"), new SqlConst(new integer(0))).format(vendor, options);
+			return new Nvl(new SqlStringToken("len(" + length + ")", FieldType.Integer), new SqlConst(new integer(0))).format(vendor, options);
 		default:
 			throw new UnknownDatabaseException();
 		}

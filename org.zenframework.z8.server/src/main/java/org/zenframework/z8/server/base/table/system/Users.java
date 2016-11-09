@@ -2,7 +2,6 @@ package org.zenframework.z8.server.base.table.system;
 
 import java.util.LinkedHashMap;
 
-import org.zenframework.z8.server.base.query.Query;
 import org.zenframework.z8.server.base.table.Table;
 import org.zenframework.z8.server.base.table.value.BoolField;
 import org.zenframework.z8.server.base.table.value.IField;
@@ -13,7 +12,6 @@ import org.zenframework.z8.server.engine.IAuthorityCenter;
 import org.zenframework.z8.server.engine.Runtime;
 import org.zenframework.z8.server.resources.Resources;
 import org.zenframework.z8.server.runtime.IObject;
-import org.zenframework.z8.server.runtime.RCollection;
 import org.zenframework.z8.server.runtime.RLinkedHashMap;
 import org.zenframework.z8.server.security.BuiltinUsers;
 import org.zenframework.z8.server.security.IUser;
@@ -250,21 +248,17 @@ public class Users extends Table {
 		}
 	}
 
-	@SuppressWarnings("rawtypes")
 	@Override
-	public void z8_beforeUpdate(Query.CLASS<? extends Query> query, guid recordId, RCollection changedFields, Query.CLASS<? extends Query> model, guid modelRecordId) {
-		super.z8_beforeUpdate(query, recordId, changedFields, model, modelRecordId);
-
-		if(changedFields.isEmpty())
-			return;
+	public void beforeUpdate(guid recordId) {
+		super.beforeUpdate(recordId);
 
 		if((BuiltinUsers.Administrator.guid().equals(recordId) || BuiltinUsers.System.guid().equals(recordId)) && securityGroup.get().changed())
 			throw new exception("Unable to change the security group of the builtin user.");
 	}
 
 	@Override
-	public void z8_beforeDestroy(Query.CLASS<? extends Query> query, guid recordId, Query.CLASS<? extends Query> model, guid modelRecordId) {
-		super.z8_beforeDestroy(query, recordId, model, modelRecordId);
+	public void beforeDestroy(guid recordId) {
+		super.beforeDestroy(recordId);
 
 		if(BuiltinUsers.Administrator.guid().equals(recordId) || BuiltinUsers.System.guid().equals(recordId))
 			throw new exception("Unable to delete builtin user!");

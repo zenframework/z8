@@ -7,7 +7,6 @@ import org.zenframework.z8.server.base.xml.GNode;
 import org.zenframework.z8.server.config.ServerConfig;
 import org.zenframework.z8.server.engine.IApplicationServer;
 import org.zenframework.z8.server.engine.ISession;
-import org.zenframework.z8.server.exceptions.UnsupportedException;
 import org.zenframework.z8.server.ie.Message;
 import org.zenframework.z8.server.security.IUser;
 import org.zenframework.z8.server.types.file;
@@ -31,46 +30,46 @@ public class ApplicationServerProxy implements IApplicationServer {
 
 	@Override
 	public String id() throws RemoteException {
-		throw new UnsupportedException();
+		throw new UnsupportedOperationException();
 	}
 
 	@Override
 	public void start() throws RemoteException {
-		throw new UnsupportedException();
+		throw new UnsupportedOperationException();
 	}
 
 	@Override
 	public void stop() throws RemoteException {
-		throw new UnsupportedException();
+		throw new UnsupportedOperationException();
 	}
 
 	@Override
 	public void probe() throws RemoteException {
-		throw new UnsupportedException();
+		throw new UnsupportedOperationException();
 	}
 
 	@Override
 	public GNode processRequest(ISession session, GNode request) throws RemoteException {
-		throw new UnsupportedException();
+		throw new UnsupportedOperationException();
 	}
 
 	@Override
 	public file download(file file) throws RemoteException, IOException {
-		throw new UnsupportedException();
+		throw new UnsupportedOperationException();
 	}
 
 	@Override
 	public IUser login(String login) throws RemoteException {
-		throw new UnsupportedException();
+		throw new UnsupportedOperationException();
 	}
 
 	@Override
 	public IUser login(String login, String password) throws RemoteException {
-		throw new UnsupportedException();
+		throw new UnsupportedOperationException();
 	}
 
 	@Override
 	public String[] domains() throws RemoteException {
-		throw new UnsupportedException();
+		throw new UnsupportedOperationException();
 	}
 }

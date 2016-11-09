@@ -1,0 +1,10 @@
+import org.zenframework.z8.base.table.value.Link;
+import org.zenframework.z8.base.query.Query;
+
+[native "org.zenframework.z8.server.base.form.Listbox"]
+class Listbox extends Control {
+	public int height = 300;
+
+	public Query query;
+	public Link link;
+}

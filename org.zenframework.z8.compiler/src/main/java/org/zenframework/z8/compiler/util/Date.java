@@ -193,7 +193,13 @@ public class Date {
 
 	@Override
 	public String toString() {
-		return "" + day() + '/' + month() + '/' + year() + ' ' + hour() + ':' + minute() + ':' + second();
+		int month = month();
+		int day = day();
+		int hour = hour();
+		int minute = minute();
+		int second = second();
+		return year() + "-" + (month < 10 ? "0" : "") + month + '-' + (day < 10 ? "0" : "") + day + 'T' +
+				(hour < 10 ? "0" : "") + hour + ':' + (minute < 10 ? "0" : "") + minute + ':' + (second < 10 ? "0" : "") + second;
 	}
 
 	public static Date fromOADate(double d) {

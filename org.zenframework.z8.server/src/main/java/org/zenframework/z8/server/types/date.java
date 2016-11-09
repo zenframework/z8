@@ -238,6 +238,10 @@ public class date extends primary {
 		return value.get(GregorianCalendar.DAY_OF_MONTH);
 	}
 
+	public int firstDayOfWeek() {
+		return value.getFirstDayOfWeek();
+	}
+
 	public int dayOfWeek() {
 		return value.get(GregorianCalendar.DAY_OF_WEEK);
 	}
@@ -321,6 +325,14 @@ public class date extends primary {
 		return new date(new GregorianCalendar(value.get(GregorianCalendar.YEAR), value.get(GregorianCalendar.MONTH), 1));
 	}
 
+	public date truncWeek() {
+		int firstDayOfWeek = firstDayOfWeek();
+		int dayOfWeek = dayOfWeek();
+		int days = dayOfWeek < firstDayOfWeek ? dayOfWeek + 7 - firstDayOfWeek : (dayOfWeek - firstDayOfWeek);
+		date date = new date(new GregorianCalendar(value.get(GregorianCalendar.YEAR), value.get(GregorianCalendar.MONTH), value.get(GregorianCalendar.DAY_OF_MONTH)));
+		return days != 0 ? date.addDay(-days)  : date;
+	}
+
 	public date truncDay() {
 		return new date(new GregorianCalendar(value.get(GregorianCalendar.YEAR), value.get(GregorianCalendar.MONTH), value.get(GregorianCalendar.DAY_OF_MONTH)));
 	}
@@ -389,7 +401,7 @@ public class date extends primary {
 		if(vendor != DatabaseVendor.Postgres)
 			throw new UnsupportedOperationException();
 
-		return new ToDate(new SqlStringToken("'" + toString() + "'")).format(vendor, new FormatOptions());
+		return new ToDate(new SqlStringToken("'" + toString() + "'", FieldType.Datetime)).format(vendor, new FormatOptions());
 	}
 
 	@Override
@@ -511,7 +523,7 @@ public class date extends primary {
 		return new integer(minutes());
 	}
 
-	public integer z8_second() {
+	public integer z8_seconds() {
 		return new integer(seconds());
 	}
 
@@ -577,6 +589,10 @@ public class date extends primary {
 
 	public date z8_truncMonth() {
 		return truncMonth();
+	}
+
+	public date z8_truncWeek() {
+		return truncWeek();
 	}
 
 	public date z8_truncDay() {

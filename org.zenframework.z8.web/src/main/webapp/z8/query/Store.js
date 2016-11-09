@@ -317,6 +317,12 @@ Z8.data.Store = Ext.extend(Ext.data.JsonStore, {
 	onBeforeLoad: function(store, options) {
 		Ext.apply(store.baseParams, store.query.getDataRequestParams());
 
+		var params = options.params;
+		if(params != null) {
+			var sort = params.sort;
+			if(Ext.isArray(sort))
+				params.sort = Ext.encode(params.sort);
+		}
 		if(store.baseParams.limit == null)
 			store.baseParams.limit = Z8.defaultPageCount;
 	},

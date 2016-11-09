@@ -2,16 +2,14 @@ package org.zenframework.z8.server.base.query;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
 
 import org.zenframework.z8.server.base.table.value.Field;
 import org.zenframework.z8.server.base.table.value.ILink;
 import org.zenframework.z8.server.db.FieldType;
 import org.zenframework.z8.server.json.parser.JsonObject;
 import org.zenframework.z8.server.types.bool;
-import org.zenframework.z8.server.types.datespan;
 import org.zenframework.z8.server.types.date;
+import org.zenframework.z8.server.types.datespan;
 import org.zenframework.z8.server.types.decimal;
 import org.zenframework.z8.server.types.guid;
 import org.zenframework.z8.server.types.integer;
@@ -50,45 +48,14 @@ public class QueryUtils {
 			throw new UnsupportedOperationException();
 	}
 
-	static public void updateFields(Collection<Field> fields, Collection<String> values) {
-		assert (values.size() == fields.size());
-
-		Iterator<Field> fieldsIterator = fields.iterator();
-		Iterator<String> valuesIterator = values.iterator();
-
-		while(fieldsIterator.hasNext()) {
-			Field field = fieldsIterator.next();
-			String value = valuesIterator.next();
-
-			setFieldValue(field, value);
-		}
-	}
-
-	static public guid parseRecord(JsonObject record, Query query, Collection<Field> fields) {
-		assert (fields.size() == 0);
-
-		guid recordId = null;
-
-		List<String> values = new ArrayList<String>();
-
+	static public void parseRecord(JsonObject record, Query query) {
 		Query rootQuery = query.getRootQuery();
 
 		for(String fieldId : JsonObject.getNames(record)) {
 			Field field = rootQuery.findFieldById(fieldId);
 
 			String value = record.getString(fieldId);
-
-			if(field != null) {
-				fields.add(field);
-				values.add(value);
-
-				if(query.primaryKey() == field)
-					recordId = new guid(value);
-			}
+			setFieldValue(field, value);
 		}
-
-		QueryUtils.updateFields(fields, values);
-
-		return recordId;
 	}
 }

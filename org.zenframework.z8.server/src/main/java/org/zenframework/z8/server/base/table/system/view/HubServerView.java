@@ -81,24 +81,23 @@ abstract public class HubServerView extends Query {
 
 		host.setIndex("host");
 		host.setDisplayName(displayNames.Host);
-		host.get().width = new integer(25);
-		host.get().stretch = new bool(false);
+		host.get().width = new integer(100);
 
 		port.setIndex("port");
 		port.setDisplayName(displayNames.Port);
-
-		active.setIndex("active");
-		active.setDisplayName(displayNames.Active);
-		active.get().width = new integer(10);
-		active.get().stretch = new bool(false);
-
-		domains.setIndex("domains");
-		domains.setDisplayName(displayNames.Domains);
+		port.get().width = new integer(60);
 
 		serverId.setIndex("serverId");
 		serverId.setDisplayName(displayNames.ServerId);
-		serverId.get().width = new integer(40);
-		serverId.get().stretch = new bool(false);
+		serverId.get().width = new integer(150);
+
+		active.setIndex("active");
+		active.setDisplayName(displayNames.Active);
+		active.get().width = new integer(40);
+
+		domains.setIndex("domains");
+		domains.setDisplayName(displayNames.Domains);
+		domains.get().width = new integer(400);
 
 		registerFormField(host);
 		registerFormField(port);

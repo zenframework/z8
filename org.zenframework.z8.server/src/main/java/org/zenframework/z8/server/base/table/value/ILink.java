@@ -20,4 +20,6 @@ public interface ILink extends IObject {
 	public Join getJoin();
 
 	public sql_guid sql_guid();
+
+	public void enableLinkMeta(boolean enable);
 }

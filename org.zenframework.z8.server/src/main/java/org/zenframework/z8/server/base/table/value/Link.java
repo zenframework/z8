@@ -25,6 +25,8 @@ public class Link extends GuidField implements ILink, IForeignKey {
 
 	private Query.CLASS<Query> query = null;
 
+	private boolean writeLinkMeta = true;
+	
 	public Link(IObject container) {
 		super(container);
 	}
@@ -71,17 +73,30 @@ public class Link extends GuidField implements ILink, IForeignKey {
 	}
 
 	@Override
+	public void enableLinkMeta(boolean enable) {
+		writeLinkMeta = enable;
+	}
+
+	@Override
 	public void writeMeta(JsonWriter writer) {
 		super.writeMeta(writer);
-		writer.writeProperty(Json.link, true);
+
+		if(!writeLinkMeta)
+			return;
+
+		writer.writeProperty(Json.isLink, true);
+		writer.startObject(Json.query);
 
 		Query query = getQuery();
 
 		if(query != null) {
-			writer.writeProperty(Json.queryId, query.id());
-			writer.writeProperty(Json.linkedVia, query.primaryKey().id());
+			writer.writeProperty(Json.id, query.id());
+			writer.writeProperty(Json.primaryKey, query.primaryKey().id());
 			writer.writeProperty(Json.text, query.displayName());
+			writer.writeProperty(Json.icon, query.icon());
 		}
+
+		writer.finishObject();
 	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })

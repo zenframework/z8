@@ -41,11 +41,6 @@ public class MetaAction extends ReadAction {
 
 		writer.writeProperty(Json.queryId, getRequestParameter(Json.queryId));
 
-		if(actionParameters.link != null) {
-			writer.writeProperty(Json.fieldId, getRequestParameter(Json.fieldId));
-			writer.writeProperty(Json.linkId, actionParameters.link.id());
-		}
-
 		Collection<Field> fields = getSelectFields();
 		query.writeMeta(writer, fields);
 
@@ -61,12 +56,16 @@ public class MetaAction extends ReadAction {
 	}
 
 	private void writeSortFields(JsonWriter writer, Collection<Field> sortFields) {
-		if(!sortFields.isEmpty()) {
-			Field field = sortFields.iterator().next();
+		writer.startArray(Json.sort);
 
-			writer.writeProperty(Json.sort, field.id());
+		for(Field field : sortFields) {
+			writer.startObject();
+			writer.writeProperty(Json.property, field.id());
 			writer.writeProperty(Json.direction, field.sortDirection.toString());
+			writer.finishObject();
 		}
+
+		writer.finishArray();
 	}
 
 	private void writeGroupFields(JsonWriter writer, Collection<Field> groupFields) {

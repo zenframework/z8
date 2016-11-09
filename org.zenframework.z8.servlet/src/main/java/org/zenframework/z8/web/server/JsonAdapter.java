@@ -13,7 +13,7 @@ import org.zenframework.z8.web.servlet.Servlet;
 
 public class JsonAdapter extends Adapter {
 
-	private static final Object AdapterPath = "/request.json";
+	static private final String AdapterPath = "/request.json";
 
 	public JsonAdapter(Servlet servlet) {
 		super(servlet);
@@ -21,7 +21,7 @@ public class JsonAdapter extends Adapter {
 
 	@Override
 	public boolean canHandleRequest(HttpServletRequest request) {
-		return request.getServletPath().equals(AdapterPath);
+		return request.getServletPath().endsWith(AdapterPath);
 	}
 
 	private void writeError(HttpServletResponse response, String errorText, int status) throws IOException {

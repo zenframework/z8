@@ -56,7 +56,7 @@ class IndexGenerator {
 			dropIndexSQLServer(conn, tableName, indexName);
 			break;
 		default:
-			assert (false);
+			throw new UnsupportedOperationException();
 		}
 	}
 
