@@ -128,6 +128,7 @@ public class ServerInfo implements IServerInfo {
 		lastChecked = RmiIO.readLong(in);
 	}
 
+	@Override
 	public String toString() {
 		IApplicationServer proxy = getProxy(server);
 		return "[id: " + id + ", " + (proxy != null ? proxy.toString() : "") + "]";

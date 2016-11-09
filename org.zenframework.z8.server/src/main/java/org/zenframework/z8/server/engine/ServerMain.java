@@ -1,5 +1,7 @@
 package org.zenframework.z8.server.engine;
 
+import java.rmi.RemoteException;
+
 import org.apache.commons.cli.BasicParser;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
@@ -15,9 +17,9 @@ public final class ServerMain {
 	}
 
 	private static enum ServerType {
-		authcenter("org.zenframework.z8.auth.AuthorityCenter"),
-		appserver("org.zenframework.z8.server.engine.ApplicationServer"),
-		interconnection("org.zenframework.z8.interconnection.InterconnectionCenter");
+		authcenter("org.zenframework.z8.auth.AuthorityCenter"), appserver(
+				"org.zenframework.z8.server.engine.ApplicationServer"), interconnection(
+				"org.zenframework.z8.interconnection.InterconnectionCenter");
 
 		final String className;
 
@@ -52,15 +54,28 @@ public final class ServerMain {
 			ServerType server = ServerType.valueOf(cmd.getOptionValue(ServerOpt));
 			if (server == null)
 				throw new RuntimeException("Incorrect server type: " + cmd.getOptionValue(ServerOpt));
-			
-			Class<? extends IServer> serverClass = (Class<? extends IServer>) Class.forName(server.className);
-			
+
+			final Class<? extends IServer> serverClass = (Class<? extends IServer>) Class.forName(server.className);
+
 			ServerConfig config = new ServerConfig(cmd.hasOption(ConfigOpt) ? cmd.getOptionValue(ConfigOpt) : null);
 
-			if (!cmd.hasOption(StopOpt))
-				serverClass.getMethod("launch", ServerConfig.class).invoke(null, config);
-			else
+			if (cmd.hasOption(StopOpt)) {
 				Rmi.get(serverClass).stop();
+			} else {
+				serverClass.getMethod("launch", ServerConfig.class).invoke(null, config);
+				java.lang.Runtime.getRuntime().addShutdownHook(new Thread("Z8-shutdown") {
+
+					@Override
+					public void run() {
+						try {
+							Rmi.get(serverClass).stop();
+						} catch (RemoteException e) {
+							Trace.logError("Can't shutdown Z8 server " + serverClass, e);
+						}
+					}
+
+				});
+			}
 		} catch (Throwable e) {
 			Trace.logError(e);
 			System.exit(-1);

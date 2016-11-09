@@ -85,12 +85,12 @@ public class AttachmentProcessor extends OBJECT {
 		Files filesTable = Files.newInstance();
 
 		for(file file : files) {
-			if(file.id.isNull())
+			if(file.id.isNull()) {
 				file.id = guid.create();
-
-			setPathIfEmpty(attachTo, file);
-			putToCache(file);
-			filesTable.add(file);
+				setPathIfEmpty(attachTo, file);
+				putToCache(file);
+				filesTable.add(file);
+			}
 		}
 
 		return files;
