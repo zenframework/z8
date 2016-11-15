@@ -7,7 +7,6 @@ import org.zenframework.z8.server.base.query.Query;
 import org.zenframework.z8.server.base.table.value.Field;
 import org.zenframework.z8.server.json.Json;
 import org.zenframework.z8.server.json.JsonWriter;
-import org.zenframework.z8.server.types.guid;
 import org.zenframework.z8.server.types.string;
 
 public class MetaAction extends ReadAction {
@@ -20,13 +19,6 @@ public class MetaAction extends ReadAction {
 
 	@Override
 	protected void initialize() {
-		Map<string, string> requestParameters = requestParameters();
-
-		Query query = getQuery();
-
-		if(query.showAsTree())
-			requestParameters.put(Json.parentId, new string(guid.NULL.toString()));
-
 		super.initialize();
 	}
 
@@ -39,18 +31,16 @@ public class MetaAction extends ReadAction {
 
 		writer.writeProperty(Json.isQuery, true);
 
-		writer.writeProperty(Json.queryId, getRequestParameter(Json.queryId));
-
 		Collection<Field> fields = getSelectFields();
 		query.writeMeta(writer, fields);
 
 		writeSortFields(writer, actionParameters.sortFields);
 		writeGroupFields(writer, actionParameters.groupFields);
 
-		requestParameters.put(Json.start, StartValue);
-		requestParameters.put(Json.limit, LimitValue);
-
-		requestParameters.put(Json.limit, LimitValue);
+		if(requestParameters.get(Json.start) == null)
+			requestParameters.put(Json.start, StartValue);
+		if(requestParameters.get(Json.limit) == null)
+			requestParameters.put(Json.limit, LimitValue);
 
 		super.writeResponse(writer);
 	}

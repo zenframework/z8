@@ -59,8 +59,6 @@ public class ReportAction extends Action {
 		if(report != null) {
 			ids = getIdList();
 
-			String modelName = getQuery().getRootQuery().name();
-
 			Collection<Query> queries = query.onReport(report, ids);
 
 			for(Query reportQuery : queries) {
@@ -69,11 +67,6 @@ public class ReportAction extends Action {
 
 				ReadAction action = new ReportReadAction(parameters);
 				actions.add(action);
-
-				if(!reportQuery.printAsList.get() && !ids.isEmpty()) {
-					if(reportQuery.getRootQuery().name().equals(modelName))
-						action.addFilter(reportQuery.primaryKey(), ids.iterator().next());
-				}
 			}
 		} else {
 			groupFields = parameters.groupFields;
@@ -121,17 +114,7 @@ public class ReportAction extends Action {
 	}
 
 	private String getReportHeader() {
-		Query query = getQuery();
-
-		String header = query.displayName();
-
-		if(query.period != null)
-			header += ", " + query.period.get().displayName();
-
-		if(!header.isEmpty())
-			header += '.';
-
-		return header;
+		return getQuery().displayName();
 	}
 
 	@Override

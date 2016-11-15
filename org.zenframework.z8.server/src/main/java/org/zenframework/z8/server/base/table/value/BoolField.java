@@ -27,7 +27,6 @@ public class BoolField extends Field {
 		super(container);
 		setDefault(new bool(false));
 		width = new integer(5);
-		stretch = new bool(false);
 		aggregation = Aggregation.Max;
 	}
 

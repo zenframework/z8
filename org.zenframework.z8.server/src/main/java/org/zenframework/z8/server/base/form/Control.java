@@ -1,10 +1,11 @@
 package org.zenframework.z8.server.base.form;
 
-import org.zenframework.z8.server.base.query.Query;
+import org.zenframework.z8.server.base.table.value.Link;
 import org.zenframework.z8.server.json.Json;
 import org.zenframework.z8.server.json.JsonWriter;
 import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.runtime.OBJECT;
+import org.zenframework.z8.server.runtime.RCollection;
 import org.zenframework.z8.server.types.bool;
 import org.zenframework.z8.server.types.integer;
 
@@ -29,10 +30,29 @@ public class Control extends OBJECT {
 
 	public integer rowspan = null;
 	public integer colspan = null;
-	public bool showLabel = null;
-	public bool hidable = null;
 
-	public Query.CLASS<? extends Query> source = null;
+	/*
+	 * В ситуации зависимых компонентов, т.е. listbox или combobox, 
+	 * свойство dependsOn обозначает по какому полю будет фильтроваться содержимое.
+	 * Зависимость строится помещением зависимого компонента в массив dependencies
+	 * компонента, от которого он зависит:
+	 *
+	 * ....
+	 * Регион регион;
+	 * Город город;
+	 * Улица улица;
+	 * 
+	 * город.название.link = город.регион;
+	 * регион.dependencies = { город.название };
+	 * 
+	 * улица.название.link = улица.город;
+	 * город.dependencies = { улица.название };
+	 * .....
+	 * 
+	 * Здесь регион фильтрует список городов, который, в свою очередь, фильтрует улицы.
+	 **/
+	public Link.CLASS<? extends Link> dependsOn = null;
+	public RCollection<Control.CLASS<? extends Control>> dependencies = new RCollection<Control.CLASS<? extends Control>>();
 
 	public boolean readOnly() {
 		return readOnly != null ? readOnly.get() : false;
@@ -47,14 +67,19 @@ public class Control extends OBJECT {
 
 		writer.writeProperty(Json.rowspan, rowspan, new integer(1));
 		writer.writeProperty(Json.colspan, colspan, new integer(1));
-		writer.writeProperty(Json.showLabel, showLabel, new bool(true));
-		writer.writeProperty(Json.hidable, hidable, new bool(false));
 
-		if(source != null) {
-			writer.startObject(Json.source);
-			writer.writeProperty(Json.id, source.classId());
-			writer.writeProperty(Json.text, source.displayName());
-			writer.finishObject();
+		writeDependencies(writer);
+	}
+
+	protected void writeDependencies(JsonWriter writer) {
+		if(dependsOn != null)
+			writer.writeProperty(Json.dependsOn, dependsOn.id());
+
+		if(!dependencies.isEmpty()) {
+			writer.startArray(Json.dependencies);
+			for(Control.CLASS<? extends Control> control : dependencies)
+				writer.write(control.id());
+			writer.finishArray();
 		}
 	}
 }

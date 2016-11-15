@@ -6,7 +6,6 @@ import org.zenframework.z8.server.db.sql.SqlField;
 import org.zenframework.z8.server.engine.ApplicationServer;
 import org.zenframework.z8.server.format.Format;
 import org.zenframework.z8.server.runtime.IObject;
-import org.zenframework.z8.server.types.bool;
 import org.zenframework.z8.server.types.integer;
 import org.zenframework.z8.server.types.primary;
 import org.zenframework.z8.server.types.string;
@@ -29,8 +28,6 @@ public class IntegerField extends Field {
 		super(container);
 		setDefault(new integer());
 		format = new string(Format.integer);
-		stretch = new bool(false);
-
 		aggregation = Aggregation.Sum;
 	}
 

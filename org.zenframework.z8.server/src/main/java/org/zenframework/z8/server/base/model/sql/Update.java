@@ -10,7 +10,6 @@ import org.zenframework.z8.server.base.table.value.Field;
 import org.zenframework.z8.server.base.table.value.GuidField;
 import org.zenframework.z8.server.db.ConnectionManager;
 import org.zenframework.z8.server.db.DatabaseVendor;
-import org.zenframework.z8.server.db.DbUtil;
 import org.zenframework.z8.server.db.Statement;
 import org.zenframework.z8.server.db.sql.FormatOptions;
 import org.zenframework.z8.server.logs.Trace;
@@ -90,7 +89,7 @@ public class Update extends Statement {
 		for(Field field : fields) {
 			if(!field.isPrimaryKey()) {
 				primary value = field.getDefaultValue();
-				DbUtil.addParameter(this, position, field.type(), value);
+				setParameter(position, field.type(), value);
 				position++;
 			}
 		}

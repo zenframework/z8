@@ -18,7 +18,8 @@ public class Connection {
 	static public int TransactionRepeatableRead = java.sql.Connection.TRANSACTION_REPEATABLE_READ;
 	static public int TransactionSerializable = java.sql.Connection.TRANSACTION_SERIALIZABLE;
 
-	static private final int DefaultFetchSize = 1000;
+	static public final int DefaultFetchSize = 1000;
+	static public final int MaxBatchSize = 1000;
 
 	static private long FiveMinutes = 5 * datespan.TicksPerMinute;
 
@@ -27,6 +28,8 @@ public class Connection {
 	private Thread owner = null;
 
 	private int transactionCount = 0;
+	private Batch batch;
+
 	private long lastUsed = System.currentTimeMillis();
 
 	static private java.sql.Connection newConnection(Database database) {
@@ -58,6 +61,7 @@ public class Connection {
 		} finally {
 			connection = null;
 			transactionCount = 0;
+			batch = null;
 		}
 	}
 
@@ -88,8 +92,16 @@ public class Connection {
 		return connection == null;
 	}
 
+	public boolean inTransaction() {
+		return transactionCount != 0;
+	}
+
+	public boolean inBatchMode() {
+		return batch != null;
+	}
+
 	public void use() {
-		if(transactionCount != 0 || isClosed())
+		if(inTransaction() || isClosed())
 			reconnect();
 
 		lastUsed = System.currentTimeMillis();
@@ -99,7 +111,7 @@ public class Connection {
 	}
 
 	public void release() {
-		if(transactionCount == 0)
+		if(!inTransaction())
 			owner = null;
 	}
 
@@ -151,7 +163,7 @@ public class Connection {
 		// 08007 transaction resolution unknown
 		// 08P01 protocol violation
 
-		if(transactionCount != 0)
+		if(inTransaction())
 			throw exception;
 
 		reconnect();
@@ -168,8 +180,10 @@ public class Connection {
 
 	public void beginTransaction() {
 		try {
-			if(transactionCount == 0)
+			if(!inTransaction()) {
 				setAutoCommit(false);
+				batch = new Batch();
+			}
 
 			transactionCount++;
 		} catch(SQLException e) {
@@ -179,9 +193,11 @@ public class Connection {
 
 	public void commit() {
 		try {
-			if(transactionCount == 0)
-				throw new RuntimeException("Transactions count == 0");
+			if(!inTransaction())
+				throw new RuntimeException("Connection.commit() - not in transaction");
 			if(transactionCount == 1) {
+				batch.flush();
+				batch = null;
 				connection.commit();
 				setAutoCommit(true);
 			}
@@ -193,9 +209,11 @@ public class Connection {
 
 	public void rollback() {
 		try {
-			if(transactionCount == 0)
-				throw new RuntimeException("Transactions count == 0");
+			if(!inTransaction())
+				throw new RuntimeException("Connection.rollback() - not in transaction");
 			if(transactionCount == 1) {
+				batch.clear();
+				batch = null;
 				connection.rollback();
 				setAutoCommit(true);
 			}
@@ -216,7 +234,20 @@ public class Connection {
 
 	public PreparedStatement prepareStatement(String sql) throws SQLException {
 		try {
-			return connection.prepareStatement(sql);
+			PreparedStatement statement = null;
+
+			if(inTransaction()) {
+				statement = batch.statement(sql);
+				if(statement != null)
+					return statement;
+			}
+
+			statement = connection.prepareStatement(sql);
+
+			if(inTransaction())
+				batch.register(sql, statement);
+
+			return statement;
 		} catch(SQLException e) {
 			checkAndReconnect(e);
 			return connection.prepareStatement(sql);
@@ -251,6 +282,10 @@ public class Connection {
 
 	public int executeUpdate(BasicStatement statement) throws SQLException {
 		try {
+			if(inTransaction()) {
+				batch.add(statement.statement());
+				return 0;
+			}
 			return statement.statement().executeUpdate();
 		} catch(SQLException e) {
 			checkAndReconnect(e);

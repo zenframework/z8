@@ -12,7 +12,7 @@ import org.zenframework.z8.server.logs.Trace;
 public abstract class RmiServer implements IServer, Remote {
 	private TimeoutChecker timeoutChecker;
 	private Proxy proxy;
-	
+
 	protected RmiServer(int port) throws RemoteException {
 		export(port);
 	}
@@ -42,17 +42,17 @@ public abstract class RmiServer implements IServer, Remote {
 	protected void enableTimeoutChecking(long timeout) {
 		timeoutChecker = new TimeoutChecker(timeout, this, getClass().getSimpleName() + " Timeout Thread");
 	}
-	
+
 	protected void timeoutCheck() {
 	}
-	
+
 	private void export(int port) throws RemoteException {
 		if(port != 0) {
 			while(!safeExport(port))
 				port++;
 		}
 	}
-	
+
 	private boolean safeExport(int port) throws RemoteException {
 		try {
 			proxy = (Proxy)UnicastRemoteObject.exportObject(this, port);
@@ -64,7 +64,7 @@ public abstract class RmiServer implements IServer, Remote {
 			throw new RemoteException("", e);
 		}
 	}
-	
+
 	private void unexport() {
 		try {
 			UnicastRemoteObject.unexportObject(this, true);
@@ -74,29 +74,28 @@ public abstract class RmiServer implements IServer, Remote {
 	}
 }
 
-
 class TimeoutChecker extends Thread {
 	private RmiServer server;
 	private long timeout;
-	
+
 	public TimeoutChecker(long timeout, RmiServer server, String name) {
 		super(name);
-		
+
 		this.server = server;
 		this.timeout = timeout;
 
 		start();
 	}
-	
+
 	@Override
 	public void run() {
 		while(true) {
 			try {
 				server.timeoutCheck();
-	
+
 				if(Thread.interrupted())
 					return;
-			
+
 				Thread.sleep(timeout);
 			} catch(InterruptedException e) {
 				return;

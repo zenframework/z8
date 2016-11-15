@@ -1,8 +1,0 @@
-[native "org.zenframework.z8.server.base.query.ViewMode"]
-enum ViewMode {
-	Table,
-	Form,
-	Chart,
-	TableForm,
-	TableChart
-}

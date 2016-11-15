@@ -24,7 +24,6 @@ public class BoolExpression extends Expression {
 	public BoolExpression(IObject container) {
 		super(container);
 		width = new integer(5);
-		stretch = new bool(false);
 		setDefault(new bool());
 	}
 

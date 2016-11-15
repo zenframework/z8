@@ -1,4 +1,4 @@
-import org.zenframework.z8.base.query.Query;
+import org.zenframework.z8.base.table.value.Link;
 import org.zenframework.z8.lang.Object;
 
 [native "org.zenframework.z8.server.base.form.Control"]
@@ -8,7 +8,29 @@ class Control extends Object {
 
 	bool readOnly = false;
 
-	public Query source;
+	/*
+	* В ситуации зависимых компонентов, т.е. listbox или combobox, 
+	* свойство dependsOn обозначает по какому полю будет фильтроваться содержимое.
+	* Зависимость строится помещением зависимого компонента в массив dependencies
+	* компонента, от которого он зависит:
+	*
+	* ....
+	* Регион регион;
+	* Город город;
+	* Улица улица;
+	*
+	* город.название.link = город.регион;
+	* регион.название.dependencies = { город.название };
+	*
+	* улица.название.link = улица.город;
+	* город.название.dependencies = { улица.название };
+	*
+	* formFields = { регион.название, город.название, улица.название };
+	* .....
+	*
+	*  Здесь регион фильтрует список городов, который в свою очередь фильтрует улицы.
+	*/
 
-	public bool hidable = false;
+	public Link dependsOn;
+	public Control[] dependencies;
 }

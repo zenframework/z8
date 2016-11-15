@@ -2,8 +2,6 @@
 class DecimalField extends Field {
 	aggregation = Aggregation.Sum;
 
-	stretch = false;
-
 	format = "0,000.00";
 
 	public int precision = 19;

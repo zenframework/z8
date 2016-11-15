@@ -1,5 +1,0 @@
-[native "org.zenframework.z8.server.base.table.value.FollowPolicy"]
-enum FollowPolicy {
-	Default,	/* поведение по умолчанию - свойство editWith в классе Query */
-	Custom		/* активирует событие onFollow в классе Query */
-}

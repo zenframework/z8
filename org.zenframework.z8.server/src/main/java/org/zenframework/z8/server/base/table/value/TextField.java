@@ -7,6 +7,7 @@ import org.zenframework.z8.server.db.sql.functions.conversion.ToChar;
 import org.zenframework.z8.server.json.Json;
 import org.zenframework.z8.server.json.JsonWriter;
 import org.zenframework.z8.server.runtime.IObject;
+import org.zenframework.z8.server.types.bool;
 import org.zenframework.z8.server.types.integer;
 import org.zenframework.z8.server.types.sql.sql_string;
 
@@ -24,6 +25,7 @@ public class TextField extends StringField {
 	}
 
 	public integer height;
+	public bool html;
 
 	public TextField(IObject container) {
 		super(container);
@@ -53,5 +55,6 @@ public class TextField extends StringField {
 	public void writeMeta(JsonWriter writer) {
 		super.writeMeta(writer);
 		writer.writeProperty(Json.height, height);
+		writer.writeProperty(Json.html, html);
 	}
 }

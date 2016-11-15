@@ -1,5 +1,5 @@
+import org.zenframework.z8.base.query.Query;
 import org.zenframework.z8.base.table.SortDirection;
-import org.zenframework.z8.base.query.FollowPolicy;
 import org.zenframework.z8.base.form.Control;
 import org.zenframework.z8.base.table.Sequencer;
 
@@ -10,16 +10,7 @@ class Field extends Control {
 
 	public string format;
 
-	public int width = 0;			// ширина поля формы или колонки в символах
-	public int column = 0;			// индекс колонки
-	public int columnWidth = 0;		// ширина поля колонки в символах, если 0 - используется width
-	public int labelWidth = 0;		// ширина подписи поля формы
-	public bool stretch = true;
-
-	public bool showLabel = true;
-
-	public bool anchor = false;		// подчеркивать при наведении курсора
-	public FollowPolicy anchorPolicy = FollowPolicy.Default;
+	public int width = 0;           // ширина поля формы или колонки в символах
 
 	public bool required = false;
 
@@ -30,7 +21,7 @@ class Field extends Control {
 	public SortDirection sortDirection = SortDirection.Asc;
 	public Aggregation aggregation = Aggregation.None;
 
-	public Field[] columns;
+	public Query source;
 
 	public FieldType getType();
 	public string getTypeName();

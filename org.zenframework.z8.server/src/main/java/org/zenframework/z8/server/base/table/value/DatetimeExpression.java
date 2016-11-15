@@ -4,7 +4,6 @@ import org.zenframework.z8.server.db.FieldType;
 import org.zenframework.z8.server.db.sql.SqlField;
 import org.zenframework.z8.server.format.Format;
 import org.zenframework.z8.server.runtime.IObject;
-import org.zenframework.z8.server.types.bool;
 import org.zenframework.z8.server.types.date;
 import org.zenframework.z8.server.types.primary;
 import org.zenframework.z8.server.types.string;
@@ -26,10 +25,7 @@ public class DatetimeExpression extends Expression {
 	public DatetimeExpression(IObject container) {
 		super(container);
 		format = new string(Format.datetime);
-		stretch = new bool(false);
-
 		aggregation = Aggregation.Max;
-
 		setDefault(new date(date.MIN));
 	}
 

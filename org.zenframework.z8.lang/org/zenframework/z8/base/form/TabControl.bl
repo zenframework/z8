@@ -1,0 +1,6 @@
+[native "org.zenframework.z8.server.base.form.TabControl"]
+class TabControl extends Control {
+	public int height = 300;
+
+	public Tab[] tabs;
+}

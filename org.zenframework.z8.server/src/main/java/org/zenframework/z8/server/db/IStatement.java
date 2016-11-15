@@ -7,18 +7,19 @@ import org.zenframework.z8.server.engine.Database;
 import org.zenframework.z8.server.types.encoding;
 
 public interface IStatement {
-    public Connection connection();
+	public Connection connection();
 
-    public Database database();
-    public DatabaseVendor vendor();
+	public Database database();
 
-    public encoding charset();
+	public DatabaseVendor vendor();
 
-    public String sql();
+	public encoding charset();
 
-    public ResultSet executeQuery() throws SQLException;
+	public String sql();
 
-    public int executeUpdate() throws SQLException;
+	public ResultSet executeQuery() throws SQLException;
 
-    public void close();
+	public int executeUpdate() throws SQLException;
+
+	public void close();
 }

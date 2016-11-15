@@ -5,17 +5,10 @@ import org.zenframework.z8.base.table.value.Link;
 
 [native "org.zenframework.z8.server.base.query.Query"]
 class Query extends Runnable {
-	public guid[] filterBy;
-
 	protected bool readOnly = false;
 	public bool visible = true;
 	public bool collapseGroups = false;
 	public bool showTotals = false;
-
-	public RecordActions[] recordActions = { RecordActions.Add, RecordActions.Copy, RecordActions.Delete };
-
-	public ViewMode viewMode = ViewMode.Table;
-	public bool printAsList = false;
 
 	public int columns = 3;
 	public decimal width = 0.0;
@@ -23,25 +16,19 @@ class Query extends Runnable {
 
 	public Control[] formFields;
 	public Field[] gridFields;
-	public Field[] nameFields;     // Поля для идентификации записи в UI, например, в навигаторе формы
+	public Field[] nameFields;      // Поля для идентификации записи в UI, например, в навигаторе формы или заголовке
 
 	public Field[] sortFields;
-	public Field[] groupFields;	// Соответствует пункту 'Группировать по полю' в меню колонки таблицы.
-								// Не путать с groupBy - выбираемые данные не группируются.
+	public Field[] groupFields;     // Соответствует пункту 'Группировать по полю' в меню колонки таблицы.
+									// Не путать с groupBy - выбираемые данные не группируются.
 
 	public Field[] searchFields;
 	public Field searchId;
 
-	public Link[] aggregateBy;	// Поля из корневого запроса для группировки его перед выполнением основного.
-	public Field[] groupBy;		// Поля для группировки выбираемых данных.
-
-	public ChartType chartType = ChartType.Column;
-	public Field[] chartSeries;
+	public Link[] aggregateBy;      // Поля из корневого запроса для группировки его перед выполнением основного.
+	public Field[] groupBy;         // Поля для группировки выбираемых данных.
 
 	public Command[] commands;
-
-	// TODO переделать потом на primary (а primary дать методы приведения к нужным типам) и назвать как parameters
-	public guid[] recordIds;
 
 	public Period period;
 
@@ -49,8 +36,6 @@ class Query extends Runnable {
 	virtual protected Style renderRecord();
 
 	virtual protected void onCommand(Command command, guid[] recordIds);
-	virtual protected void onReport(string report, guid[] recordIds);
-	virtual protected Query onFollow(Field field, guid[] recordIds);
 
 	virtual protected void onCopy();
 
@@ -134,15 +119,12 @@ class Query extends Runnable {
 	virtual protected sql_bool having();
 
 	public void addWhere(sql_bool where);
-	public void addWhere(string where);         //[{property: "a", value: "u"}] или {property: "a", value: "u"}
-	public void addWhere(string[] where);       //{property: "a", value: "u"}
+	public void addWhere(string where);         // [{ property: "p", [operator: "o",] value: "v" }] или { property: "p", value: "v" }
+	public void addWhere(string[] where);       // { property: "p", value: "v" }
 
 	public void setWhere(sql_bool where);
 	public void setWhere(string where);
 	public void setWhere(string[] where);
-
-	public void refresh();
-	public void refreshRecord(guid id);
 
 	auto protected Query[] queries;
 	auto public Field[] dataFields;

@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 
-import org.zenframework.z8.server.base.json.Json;
 import org.zenframework.z8.server.base.model.actions.Action;
 import org.zenframework.z8.server.base.query.Query;
 import org.zenframework.z8.server.base.table.value.Field;
@@ -14,6 +13,7 @@ import org.zenframework.z8.server.base.table.value.StringField;
 import org.zenframework.z8.server.base.view.command.Command;
 import org.zenframework.z8.server.engine.IServerInfo;
 import org.zenframework.z8.server.engine.Rmi;
+import org.zenframework.z8.server.json.Json;
 import org.zenframework.z8.server.json.JsonWriter;
 import org.zenframework.z8.server.json.parser.JsonArray;
 import org.zenframework.z8.server.resources.Resources;
@@ -137,7 +137,6 @@ abstract public class HubServerView extends Query {
 			for(int i = 0; i < records.length(); i++)
 				urls.add(records.getString(i));
 			unregister(urls);
-			refresh();
 		}
 	}
 

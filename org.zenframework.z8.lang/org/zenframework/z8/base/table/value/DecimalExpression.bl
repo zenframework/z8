@@ -2,8 +2,6 @@
 class DecimalExpression extends Expression {
 	aggregation = Aggregation.Sum;
 
-	stretch = false;
-
 	format = "0,000.00";
 
 	public void setDefault(decimal defaultValue);

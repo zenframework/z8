@@ -1,7 +1,6 @@
 package org.zenframework.z8.server.base.table.value;
 
 import java.sql.SQLException;
-import java.util.Collection;
 
 import org.zenframework.z8.server.base.form.Control;
 import org.zenframework.z8.server.base.model.sql.Select;
@@ -19,8 +18,8 @@ import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.runtime.RCollection;
 import org.zenframework.z8.server.types.binary;
 import org.zenframework.z8.server.types.bool;
-import org.zenframework.z8.server.types.datespan;
 import org.zenframework.z8.server.types.date;
+import org.zenframework.z8.server.types.datespan;
 import org.zenframework.z8.server.types.decimal;
 import org.zenframework.z8.server.types.guid;
 import org.zenframework.z8.server.types.integer;
@@ -46,26 +45,19 @@ abstract public class Field extends Control implements IValue, IField {
 	public integer length = null;
 
 	public integer width = null;
-	public integer column = null;
-	public integer columnWidth = null;
-	public integer labelWidth = null;
-	public bool stretch = null;
-
-	public bool anchor = null;
-	public FollowPolicy anchorPolicy = FollowPolicy.Default;
 
 	public SortDirection sortDirection = SortDirection.Asc;
 	public Aggregation aggregation = Aggregation.None;
 
 	public bool selectable = null;
 	public bool required = null;
-	
+
 	public bool indexed = null;
 	public bool unique = null;
 
-	public RCollection<Field.CLASS<? extends Field>> indexFields = new RCollection<Field.CLASS<? extends Field>>();
+	public Query.CLASS<? extends Query> source = null;
 
-	public RCollection<Field.CLASS<? extends Field>> columns = new RCollection<Field.CLASS<? extends Field>>();
+	public RCollection<Field.CLASS<? extends Field>> indexFields = new RCollection<Field.CLASS<? extends Field>>();
 
 	private primary value = null;
 	private primary originalValue = null;
@@ -126,14 +118,6 @@ abstract public class Field extends Control implements IValue, IField {
 	@Override
 	public Query owner() {
 		return (Query)getOwner();
-	}
-
-	public Collection<Field.CLASS<? extends Field>> columns() {
-		return columns;
-	}
-
-	public Collection<Field> getColumns() {
-		return CLASS.asList(columns());
 	}
 
 	public final void setCursor(Select cursor) {
@@ -270,17 +254,18 @@ abstract public class Field extends Control implements IValue, IField {
 		writer.writeProperty(Json.visible, visible, new bool(true));
 		writer.writeProperty(Json.format, format, new string());
 		writer.writeProperty(Json.length, length, new integer(0));
-		writer.writeProperty(Json.anchor, anchor, new bool(false));
-		writer.writeProperty(Json.anchorPolicy, anchorPolicy.toString());
 
 		writer.writeProperty(Json.width, width, new integer(0));
-		writer.writeProperty(Json.column, column, new integer(0));
-		writer.writeProperty(Json.columnWidth, columnWidth, new integer(0));
-		writer.writeProperty(Json.labelWidth, labelWidth, new integer(0));
-		writer.writeProperty(Json.stretch, stretch, new bool(true));
 
 		if(aggregation != Aggregation.None)
 			writer.writeProperty(Json.aggregation, aggregation.toString());
+
+		if(source != null) {
+			writer.startObject(Json.source);
+			writer.writeProperty(Json.id, source.classId());
+			writer.writeProperty(Json.text, source.displayName());
+			writer.finishObject();
+		}
 	}
 
 	public void writeData(JsonWriter writer) {

@@ -14,7 +14,6 @@ import org.zenframework.z8.server.base.model.sql.CountingSelect;
 import org.zenframework.z8.server.base.model.sql.FramedSelect;
 import org.zenframework.z8.server.base.model.sql.Select;
 import org.zenframework.z8.server.base.model.sql.SelectFactory;
-import org.zenframework.z8.server.base.query.Period;
 import org.zenframework.z8.server.base.query.Query;
 import org.zenframework.z8.server.base.query.ReadLock;
 import org.zenframework.z8.server.base.query.Style;
@@ -42,7 +41,6 @@ import org.zenframework.z8.server.json.Json;
 import org.zenframework.z8.server.json.JsonWriter;
 import org.zenframework.z8.server.json.parser.JsonArray;
 import org.zenframework.z8.server.json.parser.JsonObject;
-import org.zenframework.z8.server.types.bool;
 import org.zenframework.z8.server.types.guid;
 import org.zenframework.z8.server.types.primary;
 import org.zenframework.z8.server.types.string;
@@ -121,9 +119,6 @@ public class ReadAction extends Action {
 
 	protected void initialize() {
 		ActionParameters parameters = actionParameters();
-
-		initPeriod();
-		initQuery();
 
 		beforeRead();
 
@@ -207,15 +202,6 @@ public class ReadAction extends Action {
 			guid filterBy = getFilterByParameter();
 
 			addFilter(query.primaryKey(), filterBy);
-
-			if(filterBy == null && query.showAsTree()) {
-				String id = getRequestParameter(Json.parentId);
-
-				if(id != null) {
-					guid parentId = id.isEmpty() ? guid.NULL : new guid(id);
-					addFilter(query.parentKey(), parentId);
-				}
-			}
 
 			Collection<String> lookupFields = getLookupFields();
 			if(lookupFields.size() != 0)
@@ -588,20 +574,6 @@ public class ReadAction extends Action {
 		return new Filter(getFilter1Parameter(), getQuery()).where();
 	}
 
-	private void initPeriod() {
-		String json = getPeriodParameter();
-
-		if(json != null && !json.isEmpty())
-			getQuery().setPeriod(Period.parse(json));
-	}
-
-	private void initQuery() {
-		String json = getGridParameter();
-
-		if(json != null)
-			getQuery().showAsGrid.set(new bool(json));
-	}
-
 	public Select getCursor() {
 		try {
 			Select cursor = cursor();
@@ -611,7 +583,6 @@ public class ReadAction extends Action {
 		} finally {
 			afterRead();
 		}
-
 	}
 
 	private Select cursor() {

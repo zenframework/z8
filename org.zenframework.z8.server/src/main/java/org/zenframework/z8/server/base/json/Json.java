@@ -8,9 +8,6 @@ import org.zenframework.z8.server.types.primary;
 import org.zenframework.z8.server.types.string;
 
 public class Json extends OBJECT {
-
-	final static public string eventId = org.zenframework.z8.server.json.Json.eventId;
-
 	final static public string id = org.zenframework.z8.server.json.Json.id;
 	final static public string index = org.zenframework.z8.server.json.Json.index;
 
@@ -45,8 +42,6 @@ public class Json extends OBJECT {
 
 	final static public string requestId = org.zenframework.z8.server.json.Json.requestId;
 	final static public string requestUrl = org.zenframework.z8.server.json.Json.requestUrl;
-	final static public string formToOpen = org.zenframework.z8.server.json.Json.formToOpen;
-	final static public string formId = org.zenframework.z8.server.json.Json.formId;
 	final static public string message = org.zenframework.z8.server.json.Json.message;
 	final static public string success = org.zenframework.z8.server.json.Json.success;
 	final static public string status = org.zenframework.z8.server.json.Json.status;
@@ -54,18 +49,13 @@ public class Json extends OBJECT {
 	final static public string serverType = org.zenframework.z8.server.json.Json.serverType;
 	final static public string aggregation = org.zenframework.z8.server.json.Json.aggregation;
 	final static public string readOnly = org.zenframework.z8.server.json.Json.readOnly;
-	final static public string writeAccess = org.zenframework.z8.server.json.Json.writeAccess;
-	final static public string deleteAccess = org.zenframework.z8.server.json.Json.deleteAccess;
-	final static public string importAccess = org.zenframework.z8.server.json.Json.importAccess;
 
 	final static public string visible = org.zenframework.z8.server.json.Json.visible;
 	final static public string hidden = org.zenframework.z8.server.json.Json.hidden;
-	final static public string hidable = org.zenframework.z8.server.json.Json.hidable;
 	final static public string width = org.zenframework.z8.server.json.Json.width;
 	final static public string height = org.zenframework.z8.server.json.Json.height;
 	final static public string length = org.zenframework.z8.server.json.Json.length;
 	final static public string size = org.zenframework.z8.server.json.Json.size;
-	final static public string stretch = org.zenframework.z8.server.json.Json.stretch;
 	final static public string priority = org.zenframework.z8.server.json.Json.priority;
 	final static public string required = org.zenframework.z8.server.json.Json.required;
 	final static public string period = org.zenframework.z8.server.json.Json.period;
@@ -76,15 +66,10 @@ public class Json extends OBJECT {
 	final static public string column = org.zenframework.z8.server.json.Json.column;
 	final static public string items = org.zenframework.z8.server.json.Json.items;
 
-	final static public string columnWidth = org.zenframework.z8.server.json.Json.columnWidth;
-	final static public string labelWidth = org.zenframework.z8.server.json.Json.labelWidth;
-
 	final static public string link = org.zenframework.z8.server.json.Json.link;
-	final static public string isLink = org.zenframework.z8.server.json.Json.isLink;
 
 	final static public string grid = org.zenframework.z8.server.json.Json.grid;
 	final static public string tree = org.zenframework.z8.server.json.Json.tree;
-	final static public string parentsSelectable = org.zenframework.z8.server.json.Json.parentsSelectable;
 
 	final static public string key = org.zenframework.z8.server.json.Json.key;
 	final static public string field = org.zenframework.z8.server.json.Json.field;
@@ -96,12 +81,8 @@ public class Json extends OBJECT {
 	final static public string external = org.zenframework.z8.server.json.Json.external;
 	final static public string internal = org.zenframework.z8.server.json.Json.internal;
 
-	final static public string queryId = org.zenframework.z8.server.json.Json.queryId;
 	final static public string recordId = org.zenframework.z8.server.json.Json.recordId;
 	final static public string parentId = org.zenframework.z8.server.json.Json.parentId;
-	final static public string anchor = org.zenframework.z8.server.json.Json.anchor;
-	final static public string anchorPolicy = org.zenframework.z8.server.json.Json.anchorPolicy;
-	final static public string ids = org.zenframework.z8.server.json.Json.ids;
 
 	final static public string property = org.zenframework.z8.server.json.Json.property;
 	final static public string record = org.zenframework.z8.server.json.Json.record;
@@ -123,8 +104,6 @@ public class Json extends OBJECT {
 	final static public string filter = org.zenframework.z8.server.json.Json.filter;
 	final static public string filter1 = org.zenframework.z8.server.json.Json.filter1;
 	final static public string operator = org.zenframework.z8.server.json.Json.operator;
-	final static public string logical = org.zenframework.z8.server.json.Json.logical;
-
 	final static public string comparison = org.zenframework.z8.server.json.Json.comparison;
 	final static public string andOr = org.zenframework.z8.server.json.Json.andOr;
 
@@ -139,7 +118,6 @@ public class Json extends OBJECT {
 	final static public string summaryData = org.zenframework.z8.server.json.Json.summaryData;
 	final static public string totalsData = org.zenframework.z8.server.json.Json.totalsData;
 	final static public string command = org.zenframework.z8.server.json.Json.command;
-	final static public string attach = org.zenframework.z8.server.json.Json.attach;
 
 	final static public string format = org.zenframework.z8.server.json.Json.format;
 	final static public string report = org.zenframework.z8.server.json.Json.report;
@@ -168,23 +146,17 @@ public class Json extends OBJECT {
 	final static public string image = org.zenframework.z8.server.json.Json.image;
 	final static public string time = org.zenframework.z8.server.json.Json.time;
 
-	final static public string refresh = org.zenframework.z8.server.json.Json.refresh;
 	final static public string queries = org.zenframework.z8.server.json.Json.queries;
 	final static public string records = org.zenframework.z8.server.json.Json.records;
 
 	final static public string fields = org.zenframework.z8.server.json.Json.fields;
-	final static public string sections = org.zenframework.z8.server.json.Json.sections;
 	final static public string controls = org.zenframework.z8.server.json.Json.controls;
 	final static public string actions = org.zenframework.z8.server.json.Json.actions;
 	final static public string columns = org.zenframework.z8.server.json.Json.columns;
-	final static public string backwards = org.zenframework.z8.server.json.Json.backwards;
 	final static public string commands = org.zenframework.z8.server.json.Json.commands;
 	final static public string parameters = org.zenframework.z8.server.json.Json.parameters;
 	final static public string reports = org.zenframework.z8.server.json.Json.reports;
-	final static public string collapseGroups = org.zenframework.z8.server.json.Json.collapseGroups;
 	final static public string showTotals = org.zenframework.z8.server.json.Json.showTotals;
-	final static public string viewMode = org.zenframework.z8.server.json.Json.viewMode;
-	final static public string fieldsToShow = org.zenframework.z8.server.json.Json.fieldsToShow;
 
 	final static public string chartType = org.zenframework.z8.server.json.Json.chartType;
 	final static public string chartSeries = org.zenframework.z8.server.json.Json.chartSeries;
@@ -206,7 +178,6 @@ public class Json extends OBJECT {
 	final static public string header = org.zenframework.z8.server.json.Json.header;
 	final static public string colspan = org.zenframework.z8.server.json.Json.colspan;
 	final static public string rowspan = org.zenframework.z8.server.json.Json.rowspan;
-	final static public string showLabel = org.zenframework.z8.server.json.Json.showLabel;
 	final static public string icon = org.zenframework.z8.server.json.Json.icon;
 	final static public string help = org.zenframework.z8.server.json.Json.help;
 

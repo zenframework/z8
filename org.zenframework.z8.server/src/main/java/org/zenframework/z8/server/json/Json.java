@@ -3,8 +3,6 @@ package org.zenframework.z8.server.json;
 import org.zenframework.z8.server.types.string;
 
 public interface Json {
-	string eventId = new string("eventId");
-
 	string id = new string("id");
 	string index = new string("index");
 	string instanceId = new string("instanceId");
@@ -16,6 +14,7 @@ public interface Json {
 	string ip = new string("ip");
 
 	string upload = new string("upload");
+	string download = new string("download");
 
 	string user = new string("user");
 	string name = new string("name");
@@ -37,6 +36,8 @@ public interface Json {
 	string isListbox = new string("isListbox");
 	string isCombobox = new string("isCombobox");
 	string isText = new string("isText");
+	string isTab = new string("isTab");
+	string isTabControl = new string("isTabControl");
 
 	string info = new string("info");
 	string messages = new string("messages");
@@ -48,8 +49,6 @@ public interface Json {
 
 	string requestId = new string("requestId");
 	string requestUrl = new string("requestUrl");
-	string formToOpen = new string("formToOpen");
-	string formId = new string("formId");
 	string message = new string("message");
 	string success = new string("success");
 	string status = new string("status");
@@ -57,35 +56,30 @@ public interface Json {
 	string serverType = new string("serverType");
 	string aggregation = new string("aggregation");
 	string readOnly = new string("readOnly");
-	string writeAccess = new string("writeAccess");
-	string deleteAccess = new string("deleteAccess");
-	string importAccess = new string("importAccess");
 
 	string visible = new string("visible");
 	string hidden = new string("hidden");
-	string hidable = new string("hidable");
 	string width = new string("width");
 	string height = new string("height");
 	string length = new string("length");
 	string size = new string("size");
-	string stretch = new string("stretch");
 	string priority = new string("priority");
 	string required = new string("required");
 	string period = new string("period");
 	string min = new string("min");
 	string max = new string("max");
 
+	string html = new string("html");
 	string row = new string("row");
 	string column = new string("column");
 	string items = new string("items");
+	string tabs = new string("tabs");
 
-	string columnWidth = new string("columnWidth");
-	string labelWidth = new string("labelWidth");
+	string dependsOn = new string("dependsOn");
+	string dependencies = new string("dependencies");
 
 	string link = new string("link");
 	string isLink = new string("isLink");
-
-	string parentsSelectable = new string("parentsSelectable");
 
 	string key = new string("key");
 	string field = new string("field");
@@ -97,12 +91,8 @@ public interface Json {
 	string external = new string("external");
 	string internal = new string("internal");
 
-	string queryId = new string("queryId");
 	string recordId = new string("recordId");
 	string parentId = new string("parentId");
-	string anchor = new string("anchor");
-	string anchorPolicy = new string("anchorPolicy");
-	string ids = new string("ids");
 
 	string property = new string("property");
 	string record = new string("record");
@@ -149,7 +139,6 @@ public interface Json {
 	string summaryData = new string("summaryData");
 	string totalsData = new string("totalsData");
 	string command = new string("command");
-	string attach = new string("attach");
 
 	string format = new string("format");
 	string report = new string("report");
@@ -179,10 +168,9 @@ public interface Json {
 	string time = new string("time");
 	string details = new string("details");
 
-	string refresh = new string("refresh");
-	string queries = new string("queries");
 	string records = new string("records");
 
+	string queries = new string("queries");
 	string fields = new string("fields");
 	string sections = new string("sections");
 	string controls = new string("controls");
@@ -192,14 +180,11 @@ public interface Json {
 	string tree = new string("tree");
 	string actions = new string("actions");
 	string columns = new string("columns");
-	string backwards = new string("backwards");
 	string commands = new string("commands");
 	string parameters = new string("parameters");
 	string reports = new string("reports");
-	string collapseGroups = new string("collapseGroups");
+
 	string showTotals = new string("showTotals");
-	string viewMode = new string("viewMode");
-	string fieldsToShow = new string("fieldsToShow");
 
 	string chartType = new string("chartType");
 	string chartSeries = new string("chartSeries");
@@ -223,7 +208,6 @@ public interface Json {
 	string header = new string("header");
 	string colspan = new string("colspan");
 	string rowspan = new string("rowspan");
-	string showLabel = new string("showLabel");
 	string icon = new string("icon");
 	string help = new string("help");
 
@@ -235,8 +219,6 @@ public interface Json {
 	string update = new string("update");
 	string create = new string("create");
 	string destroy = new string("destroy");
-
-	string goToForm = new string("goToForm");
 
 	string experimental = new string("experimental");
 }

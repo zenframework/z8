@@ -12,7 +12,6 @@ class Table extends TableBase {
 	public [name "Id"][displayName "Код"] StringField id;
 	id.length = 15;
 	id.width = 15;
-	id.stretch = false;
 
 	public [name "Name"][displayName "Наименование"] StringField name;
 	name.length = 50;

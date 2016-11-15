@@ -1,10 +1,29 @@
 import org.zenframework.z8.base.table.value.Link;
+import org.zenframework.z8.base.table.value.Field;
 import org.zenframework.z8.base.query.Query;
 
 [native "org.zenframework.z8.server.base.form.Listbox"]
 class Listbox extends Control {
 	public int height = 300;
 
+	/*
+	* Источник данных для компонента. Используется совместно со свойством link
+	*
+	* class Город extends Table {
+	*     ...
+	*     Listbox улицы = class {
+	*         Улица улица;
+	*         query = улица;
+	*         link = улица.городСвязь;
+	*     };
+	*     ...
+	*     formFields = { name, улицы };
+	* }
+	*
+	* Здесь форма про города, где список улиц отфильтрован по текущему городу.
+	*/
 	public Query query;
 	public Link link;
+
+	public Field[] sortFields;
 }

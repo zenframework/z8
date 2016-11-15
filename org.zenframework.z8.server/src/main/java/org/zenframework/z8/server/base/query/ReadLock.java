@@ -1,8 +1,11 @@
 package org.zenframework.z8.server.base.query;
 
 public enum ReadLock {
-
-	None(Names.None), Update(Names.Update), Share(Names.Share), UpdateNoWait(Names.UpdateNoWait), ShareNoWait(Names.ShareNoWait);
+	None(Names.None),
+	Update(Names.Update),
+	Share(Names.Share),
+	UpdateNoWait(Names.UpdateNoWait),
+	ShareNoWait(Names.ShareNoWait);
 
 	class Names {
 		static protected final String None = "";

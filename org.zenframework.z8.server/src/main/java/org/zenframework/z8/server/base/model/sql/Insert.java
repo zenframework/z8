@@ -9,7 +9,6 @@ import org.zenframework.z8.server.base.table.value.Expression;
 import org.zenframework.z8.server.base.table.value.Field;
 import org.zenframework.z8.server.db.ConnectionManager;
 import org.zenframework.z8.server.db.DatabaseVendor;
-import org.zenframework.z8.server.db.DbUtil;
 import org.zenframework.z8.server.db.Statement;
 import org.zenframework.z8.server.engine.Database;
 import org.zenframework.z8.server.logs.Trace;
@@ -69,14 +68,13 @@ public class Insert extends Statement {
 
 	@Override
 	public void prepare(String sql) throws SQLException {
-
 		super.prepare(sql);
 
 		int position = 1;
 
 		for(Field field : fields) {
 			primary value = field.get();
-			DbUtil.addParameter(this, position, field.type(), value);
+			setParameter(position, field.type(), value);
 			position++;
 		}
 	}

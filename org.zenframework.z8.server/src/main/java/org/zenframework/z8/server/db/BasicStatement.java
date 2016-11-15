@@ -8,18 +8,19 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.sql.Types;
-import java.util.ConcurrentModificationException;
 
 import org.zenframework.z8.server.engine.Database;
+import org.zenframework.z8.server.exceptions.db.UnknownDataTypeException;
 import org.zenframework.z8.server.logs.Trace;
 import org.zenframework.z8.server.types.binary;
 import org.zenframework.z8.server.types.bool;
-import org.zenframework.z8.server.types.datespan;
 import org.zenframework.z8.server.types.date;
+import org.zenframework.z8.server.types.datespan;
 import org.zenframework.z8.server.types.decimal;
 import org.zenframework.z8.server.types.encoding;
 import org.zenframework.z8.server.types.guid;
 import org.zenframework.z8.server.types.integer;
+import org.zenframework.z8.server.types.primary;
 import org.zenframework.z8.server.types.string;
 
 public abstract class BasicStatement implements IStatement {
@@ -92,15 +93,13 @@ public abstract class BasicStatement implements IStatement {
 	@Override
 	synchronized public void close() {
 		try {
-			if(statement != null && !statement.isClosed()) {
+			if(statement != null && !statement.isClosed() && !connection().inBatchMode())
 				statement.close();
-			}
 		} catch(SQLException e) {
 			Trace.logError(e);
-		} catch(ConcurrentModificationException e) {
-			Trace.logError(e);
 		} finally {
-			statement = null;
+			if(!connection().inTransaction())
+				statement = null;
 		}
 	}
 
@@ -190,6 +189,45 @@ public abstract class BasicStatement implements IStatement {
 			statement.setBinaryStream(position, stream, size);
 		} catch(IOException e) {
 			throw new RuntimeException(e);
+		}
+	}
+
+	public void setParameter(int posParam, FieldType type, primary value) throws SQLException {
+		switch(type) {
+		case Guid:
+			setGuid(posParam, (guid)value);
+			break;
+		case Boolean:
+			setBoolean(posParam, (bool)value);
+			break;
+		case Integer:
+			setInteger(posParam, (integer)value);
+			break;
+		case String:
+			setString(posParam, (string)value);
+			break;
+		case Date:
+		case Datetime:
+			setDate(posParam, (date)value);
+			break;
+		case Datespan:
+			setDatespan(posParam, (datespan)value);
+			break;
+		case Decimal:
+			setDecimal(posParam, (decimal)value);
+			break;
+		case Text:
+			string string = value != null ? (string)value : new string();
+			setBinary(posParam, new binary(string.getBytes(charset())));
+			break;
+		case Binary:
+			setBinary(posParam, (binary)value);
+			break;
+		case Null:
+			setNull(posParam);
+			break;
+		default:
+			throw new UnknownDataTypeException(type);
 		}
 	}
 }

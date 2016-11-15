@@ -2,8 +2,6 @@
 class IntegerField extends Field {
 	aggregation = Aggregation.Sum;
 
-	stretch = false;
-
 	format = "0,000";
 
 	virtual public int getDefault();

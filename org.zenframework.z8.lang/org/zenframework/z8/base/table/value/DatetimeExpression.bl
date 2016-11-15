@@ -2,8 +2,6 @@
 class DatetimeExpression extends Expression {
 	aggregation = Aggregation.Max;
 
-	stretch = false;
-
 	format = "d/m/Y G:i:s"; // http://php.net/manual/ru/function.date.php
 
 	public void setDefault(date defaultValue);

@@ -139,8 +139,6 @@ public class TreeTable extends Table {
 		path.setSystem(true);
 
 		path.get().length = new integer(1000);
-
-		showAsGrid.set(false);
 	}
 
 	private guid[] parsePath(String path) {

@@ -15,8 +15,6 @@ import org.zenframework.z8.server.engine.ApplicationServer;
 import org.zenframework.z8.server.json.Json;
 import org.zenframework.z8.server.json.parser.JsonArray;
 import org.zenframework.z8.server.json.parser.JsonObject;
-import org.zenframework.z8.server.runtime.RCollection;
-import org.zenframework.z8.server.types.guid;
 import org.zenframework.z8.server.types.string;
 
 public class ActionFactory {
@@ -54,8 +52,6 @@ public class ActionFactory {
 			return new ReportAction(actionParameters);
 		else if(Action.previewAction.equals(actionName))
 			return new PreviewAction(actionParameters);
-		else if(Action.followAction.equals(actionName))
-			return new FollowAction(actionParameters);
 		else if(Action.readRecordAction.equals(actionName))
 			return new ReadRecordAction(actionParameters);
 		else if(Action.modelAction.equals(actionName))
@@ -128,11 +124,6 @@ public class ActionFactory {
 
 			result.totalsBy = getTotalsBy(result.query);
 			setAggregation(result.query);
-
-			RCollection<guid> ids = getIds();
-
-			if(ids != null)
-				result.query.recordIds = ids;
 		}
 
 		return result;
@@ -162,25 +153,6 @@ public class ActionFactory {
 		 * if(!result.fields.isEmpty()) { result.sortFields = new
 		 * ArrayList<Field>(); result.sortFields.add(field); }
 		 */
-	}
-
-	private RCollection<guid> getIds() {
-		String jsonData = requestParameter(Json.ids);
-
-		if(jsonData == null || jsonData.isEmpty())
-			return null;
-
-		RCollection<guid> ids = new RCollection<guid>();
-
-		JsonArray array = new JsonArray(jsonData);
-
-		if(array != null) {
-			int length = array.length();
-			for(int index = 0; index < length; index++)
-				ids.add(new guid(array.getString(index)));
-		}
-
-		return ids;
 	}
 
 	private Field getTotalsBy(Query query) {

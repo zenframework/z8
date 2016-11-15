@@ -2,8 +2,6 @@
 class IntegerExpression extends Expression {
 	aggregation = Aggregation.Sum;
 
-	stretch = false;
-
 	format = "0,000";
 
 	public void setDefault(int defaultValue);

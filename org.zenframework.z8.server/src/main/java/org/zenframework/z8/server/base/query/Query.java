@@ -5,9 +5,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.regex.Pattern;
 
 import org.apache.commons.io.FileUtils;
@@ -15,6 +13,8 @@ import org.zenframework.z8.server.base.file.Folders;
 import org.zenframework.z8.server.base.form.Control;
 import org.zenframework.z8.server.base.form.Listbox;
 import org.zenframework.z8.server.base.form.Section;
+import org.zenframework.z8.server.base.form.Tab;
+import org.zenframework.z8.server.base.form.TabControl;
 import org.zenframework.z8.server.base.model.actions.ActionParameters;
 import org.zenframework.z8.server.base.model.actions.CopyAction;
 import org.zenframework.z8.server.base.model.actions.DestroyAction;
@@ -30,8 +30,6 @@ import org.zenframework.z8.server.base.table.TreeTable;
 import org.zenframework.z8.server.base.table.value.AttachmentField;
 import org.zenframework.z8.server.base.table.value.Expression;
 import org.zenframework.z8.server.base.table.value.Field;
-import org.zenframework.z8.server.base.table.value.FollowPolicy;
-import org.zenframework.z8.server.base.table.value.GuidField;
 import org.zenframework.z8.server.base.table.value.ILink;
 import org.zenframework.z8.server.base.table.value.IValue;
 import org.zenframework.z8.server.base.table.value.Link;
@@ -41,17 +39,12 @@ import org.zenframework.z8.server.base.view.filter.Filter;
 import org.zenframework.z8.server.db.FieldType;
 import org.zenframework.z8.server.db.sql.SqlToken;
 import org.zenframework.z8.server.db.sql.expressions.And;
-import org.zenframework.z8.server.db.sql.expressions.Group;
 import org.zenframework.z8.server.db.sql.expressions.True;
-import org.zenframework.z8.server.db.sql.functions.InVector;
 import org.zenframework.z8.server.engine.ApplicationServer;
 import org.zenframework.z8.server.json.Json;
 import org.zenframework.z8.server.json.JsonWriter;
 import org.zenframework.z8.server.logs.Trace;
 import org.zenframework.z8.server.reports.BirtFileReader;
-import org.zenframework.z8.server.reports.ReportBindingFileReader;
-import org.zenframework.z8.server.reports.ReportInfo;
-import org.zenframework.z8.server.request.IMonitor;
 import org.zenframework.z8.server.request.Loader;
 import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.runtime.OBJECT;
@@ -87,20 +80,13 @@ public class Query extends Runnable {
 
 	public bool readOnly = new bool(false);
 
-	public bool showAsGrid = new bool(true); // to show treeTable as an ordinary
-												// table
-	public ViewMode viewMode = ViewMode.Table;
-
 	public bool showTotals = new bool(false);
 	public bool visible = new bool(true);
 	public bool collapseGroups = new bool(false);
-	public bool printAsList = new bool(false);
 
 	public integer columns = new integer(4);
 	public decimal width = new decimal(0);
 	public decimal height = new decimal(0);
-
-	public bool parentsSelectable = new bool(true);
 
 	public RCollection<Query.CLASS<? extends Query>> queries = new RCollection<Query.CLASS<? extends Query>>(true);
 
@@ -115,21 +101,12 @@ public class Query extends Runnable {
 	public RCollection<Field.CLASS<? extends Field>> gridFields = new RCollection<Field.CLASS<? extends Field>>();
 	public RCollection<Field.CLASS<? extends Field>> nameFields = new RCollection<Field.CLASS<? extends Field>>();
 
-	public ChartType chartType = ChartType.Column;
-	public RCollection<Field.CLASS<? extends Field>> chartSeries = new RCollection<Field.CLASS<? extends Field>>();
-
 	public RCollection<Command.CLASS<? extends Command>> commands = new RCollection<Command.CLASS<? extends Command>>();
-
-	public RCollection<guid> recordIds = new RCollection<guid>();
-
-	public RCollection<guid> filterBy = new RCollection<guid>();
 
 	public RCollection<Link.CLASS<? extends Link>> aggregateBy = new RCollection<Link.CLASS<? extends Link>>();
 	public RCollection<Field.CLASS<? extends Field>> groupBy = new RCollection<Field.CLASS<? extends Field>>();
 
 	public Period.CLASS<? extends Period> period = null;
-
-	public RCollection<RecordActions> recordActions = new RCollection<RecordActions>();
 
 	private Query[] rootQueries;
 
@@ -163,15 +140,6 @@ public class Query extends Runnable {
 
 		for(Query.CLASS<? extends Query> cls : queries)
 			cls.resetId();
-	}
-
-	@Override
-	public void constructor2() {
-		super.constructor2();
-
-		recordActions.add(RecordActions.Add);
-		recordActions.add(RecordActions.Copy);
-		recordActions.add(RecordActions.Delete);
 	}
 
 	public boolean equals(Query query) {
@@ -387,28 +355,6 @@ public class Query extends Runnable {
 		z8_onReport(new string(report), ids);
 	}
 
-	public Query onFollow(Field field, Collection<guid> recordIds) {
-		Query result = null;
-
-		result = callOnFollow(field, recordIds);
-
-		if(result == null) {
-			Query rootQuery = getRootQuery();
-
-			if(rootQuery != this)
-				result = rootQuery.callOnFollow(field, recordIds);
-		}
-
-		return result;
-	}
-
-	@SuppressWarnings("unchecked")
-	private Query callOnFollow(Field field, Collection<guid> recordIds) {
-		RCollection<guid> ids = getGuidCollection(recordIds);
-		Query.CLASS<? extends Query> cls = z8_onFollow((Field.CLASS<? extends Field>)field.getCLASS(), ids);
-		return cls != null ? (Query)cls.get() : null;
-	}
-
 	public guid recordId() {
 		return (guid)primaryKey().get();
 	}
@@ -512,26 +458,12 @@ public class Query extends Runnable {
 		return myFields;
 	}
 
-	/*
-	 * public Statement batchStatement = null;
-	 * 
-	 * public boolean isBatching() { return batchStatement != null; }
-	 * 
-	 * public void startBatch() { batchStatement = new BatchStatement();
-	 * batchStatement.statement().. }
-	 * 
-	 * public void finishBatch() { batchStatement.executeBatch();
-	 * batchStatement.close(); }
-	 */
-	public void executeInsert(Collection<Field> fields) {
+	private void executeInsert(Collection<Field> fields) {
 		Query rootQuery = getRootQuery();
 
 		Insert insert = new Insert(rootQuery, fields);
 
 		try {
-			/*
-			 * if(isBatching()) batchStatement.addBatch(insert); else
-			 */
 			insert.execute();
 		} catch(SQLException e) {
 			throw new RuntimeException(e);
@@ -543,9 +475,7 @@ public class Query extends Runnable {
 
 		try {
 			beforeCreate(recordId, parentId);
-
 			executeInsert(fields);
-
 			afterCreate(recordId, parentId);
 		} catch(exception e) {
 			throw e;
@@ -933,6 +863,8 @@ public class Query extends Runnable {
 		for(Control.CLASS<? extends Control> field : formFields) {
 			if(field instanceof Section.CLASS)
 				result.addAll(((Section)field.get()).fields());
+			else if(field instanceof TabControl.CLASS)
+				result.addAll(((TabControl)field.get()).fields());
 			else if(field instanceof Field.CLASS)
 				result.add((Field.CLASS<?>)field);
 		}
@@ -1026,21 +958,8 @@ public class Query extends Runnable {
 	}
 
 	final public SqlToken where() {
-		if(where == null) {
+		if(where == null)
 			where = z8_where();
-
-			if(!filterBy.isEmpty()) {
-				GuidField primaryKey = (GuidField)primaryKey();
-				SqlToken inVector = new InVector(primaryKey.sql_guid(), filterBy);
-
-				SqlToken whereToken = where instanceof True ? null : where;
-
-				if(whereToken != null && !(whereToken instanceof Group))
-					whereToken = new Group(whereToken);
-
-				where = whereToken == null ? new sql_bool(inVector) : new sql_bool(new And(whereToken, inVector));
-			}
-		}
 		return where;
 	}
 
@@ -1629,11 +1548,6 @@ public class Query extends Runnable {
 
 	// ////////////////////////////////////////////////////////////////////////////////////////////////
 
-	public boolean showAsTree() {
-		Query rootQuery = getRootQuery();
-		return !rootQuery.showAsGrid.get();
-	}
-
 	private boolean readOnly() {
 		if(readOnly.get())
 			return true;
@@ -1721,48 +1635,17 @@ public class Query extends Runnable {
 		return searchId != null ? searchId.get() : primaryKey();
 	}
 
-	private static Object mutex = new Object();
-	private static Map<String, Collection<ReportInfo>> reports = new HashMap<String, Collection<ReportInfo>>();
-
-	private Collection<ReportInfo> getReports() {
-		String id = classId();
-
-		synchronized(mutex) {
-			Collection<ReportInfo> result = reports.get(id);
-
-			if(result == null) {
-				result = new ReportBindingFileReader().getReportTemplateFileNames(id);
-				reports.put(id, result);
-			}
-
-			return result;
-		}
-	}
-
-	public Collection<Field.CLASS<? extends Field>> chartSeries() {
-		return chartSeries;
-	}
-
-	private Collection<Field> getChartSeries() {
-		return CLASS.asList(chartSeries());
-	}
-
 	public void writeMeta(JsonWriter writer, Collection<Field> fields) {
 		Query rootQuery = getRootQuery();
 
 		writer.writeProperty(Json.id, id());
 		writer.writeProperty(Json.icon, icon());
 
-		writeRecordActions(writer);
-
 		writeKeys(writer, fields);
 
 		boolean hasGroupBy = writeGroupByFields(writer, fields);
 
 		writeFields(writer, fields);
-		writeOwners(writer);
-		writeReports(writer);
-		writeCharts(writer);
 		writeCommands(writer);
 		writePeriod(writer);
 
@@ -1773,22 +1656,12 @@ public class Query extends Runnable {
 
 		writer.writeProperty(Json.showTotals, showTotals);
 		writer.writeProperty(Json.columns, columns);
-		writer.writeProperty(Json.viewMode, viewMode.toString());
 		writer.writeProperty(Json.width, width);
 		writer.writeProperty(Json.height, height);
 
 		writeControls(writer, collectControls());
 		writeGridFields(writer);
 		writeNameFields(writer);
-	}
-
-	private void writeRecordActions(JsonWriter writer) {
-		writer.startArray(Json.actions);
-
-		for(RecordActions action : recordActions)
-			writer.write(action.toString());
-
-		writer.finishArray();
 	}
 
 	private void writeKeys(JsonWriter writer, Collection<Field> fields) {
@@ -1809,19 +1682,10 @@ public class Query extends Runnable {
 
 		Field parentKey = parentKey();
 
-		if(parentKey != null && fields.contains(parentKey) && showAsTree()) {
+		if(parentKey != null && fields.contains(parentKey)) {
 			writer.writeProperty(Json.parentKey, parentKey().id());
 			writer.writeProperty(Json.parentId, guid.NULL.toString());
-
 			writer.writeProperty(Json.children, children().id());
-			writer.writeProperty(Json.parentsSelectable, parentsSelectable);
-		}
-
-		if(!recordIds.isEmpty()) {
-			writer.startArray(Json.ids);
-			for(guid id : recordIds)
-				writer.write(id);
-			writer.finishArray();
 		}
 	}
 
@@ -1898,39 +1762,6 @@ public class Query extends Runnable {
 		field.writeMeta(writer);
 	}
 
-	private void writeOwners(JsonWriter writer) {
-		writer.startArray(Json.backwards);
-		for(Query owner : getOwners())
-			writeOwnerMeta(writer, owner);
-		writer.finishArray();
-	}
-
-	private void writeReports(JsonWriter writer) {
-		Collection<ReportInfo> reports = getReports();
-
-		writer.startArray(Json.reports);
-		for(ReportInfo report : reports) {
-			writer.startObject();
-			writer.writeProperty(Json.id, report.fileName());
-			writer.writeProperty(Json.text, report.displayName());
-			writer.finishObject();
-		}
-		writer.finishArray();
-	}
-
-	private void writeCharts(JsonWriter writer) {
-		writer.writeProperty(Json.chartType, chartType.toString());
-
-		Collection<Field> series = getChartSeries();
-
-		writer.startArray(Json.chartSeries);
-
-		for(Field field : series)
-			writer.write(field.id());
-
-		writer.finishArray();
-	}
-
 	private void writeCommands(JsonWriter writer) {
 		writer.startArray(Json.commands);
 
@@ -1950,36 +1781,6 @@ public class Query extends Runnable {
 			writer.writeProperty(Json.start, period.get().start);
 			writer.writeProperty(Json.finish, period.get().finish);
 			writer.finishObject();
-		}
-	}
-
-	private void writeOwnerMeta(JsonWriter writer, Query owner) {
-		while(owner != null) {
-			Query ownerRoot = owner.getRootQuery();
-
-			if(ownerRoot != null && owner.visible.get()) {
-				writer.startObject();
-				writer.writeProperty(Json.text, owner.getRootQuery().displayName());
-				writer.writeProperty(Json.queryId, owner.id());
-				writer.writeProperty(Json.icon, owner.getRootQuery().icon());
-				writer.finishObject();
-			}
-
-			int ownersCount = owner.getOwnersCount();
-
-			if(ownersCount == 0)
-				return;
-
-			if(ownersCount == 1 && owner.getOwner().getRootQuery() == owner)
-				owner = owner.getOwner();
-
-			if(ownersCount > 1) {
-				for(Query o : owner.getOwners())
-					writeOwnerMeta(writer, o);
-				return;
-			}
-
-			owner = owner.getOwner();
 		}
 	}
 
@@ -2007,6 +1808,18 @@ public class Query extends Runnable {
 				control.writeMeta(writer);
 				Section section = (Section)control;
 				writeControls(writer, section.getControls());
+			} else if(control instanceof TabControl) {
+				control.writeMeta(writer);
+				TabControl tabControl = (TabControl)control;
+
+				writer.startArray(Json.tabs);
+				for(Tab tab : tabControl.getTabs()) {
+					writer.startObject();
+					tab.writeMeta(writer);
+					writeControls(writer, tab.getControls());
+					writer.finishObject();
+				}
+				writer.finishArray();
 			} else if(control instanceof Listbox)
 				control.writeMeta(writer);
 			else
@@ -2326,47 +2139,6 @@ public class Query extends Runnable {
 
 	@SuppressWarnings("rawtypes")
 	public void z8_onReport(string report, RCollection recordIds) {
-	}
-
-	@SuppressWarnings({ "unchecked", "rawtypes" })
-	public Query.CLASS<? extends Query> z8_onFollow(Field.CLASS<? extends Field> fieldClass, RCollection recordIds) {
-		Field field = fieldClass.get();
-
-		if(field.anchorPolicy == FollowPolicy.Custom)
-			return null;
-
-		Class<?> cls = field.owner().getClass();
-
-		String classId = cls.getCanonicalName();
-
-		while(classId.indexOf(".__") != -1) {
-			cls = cls.getSuperclass();
-			classId = cls.getCanonicalName();
-		}
-
-		return (Query.CLASS<? extends Query>)Loader.loadClass(classId);
-	}
-
-	public void refresh() {
-		IMonitor monitor = ApplicationServer.getMonitor();
-
-		for(Query rootQuery : getRootQueries())
-			monitor.refresh(rootQuery.name());
-	}
-
-	public void z8_refresh() {
-		refresh();
-	}
-
-	public void refreshRecord(guid id) {
-		IMonitor monitor = ApplicationServer.getMonitor();
-
-		for(Query rootQuery : getRootQueries())
-			monitor.refresh(rootQuery.name(), id);
-	}
-
-	public void z8_refreshRecord(guid id) {
-		refreshRecord(id);
 	}
 
 	public string z8_getRecordFullText() {
