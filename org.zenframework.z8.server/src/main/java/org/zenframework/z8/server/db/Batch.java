@@ -1,5 +1,6 @@
 package org.zenframework.z8.server.db;
 
+import java.sql.BatchUpdateException;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -62,8 +63,14 @@ public class Batch {
 
 	public void flush() throws SQLException {
 		for(Data data : this.data) {
-			if(data.count != 0)
-				data.statement.executeBatch();
+			if(data.count != 0) {
+				try {
+					data.statement.executeBatch();
+				} catch(BatchUpdateException e) {
+					Trace.logError(e);
+					throw e.getNextException();
+				}
+			}
 			data.statement.close();
 		}
 		Trace.logEvent("Batch statements: " + data.size());

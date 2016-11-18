@@ -16,7 +16,8 @@ class Query extends Runnable {
 
 	public Control[] formFields;
 	public Field[] gridFields;
-	public Field[] nameFields;      // Поля для идентификации записи в UI, например, в навигаторе формы или заголовке
+	public Field[] nameFields;             // Поля для идентификации записи в UI, например, в навигаторе формы или заголовке
+	public Field[] quickFilterFields;      // Поля для быстрого поиска записей
 
 	public Field[] sortFields;
 	public Field[] groupFields;     // Соответствует пункту 'Группировать по полю' в меню колонки таблицы.

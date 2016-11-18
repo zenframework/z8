@@ -163,6 +163,10 @@ public abstract class Action extends RequestTarget {
 		return getRequestParameter(Json.filter);
 	}
 
+	public String getQuickFilterParameter() {
+		return getRequestParameter(Json.quickFilter);
+	}
+
 	public String getWhereParameter() {
 		return getRequestParameter(Json.where);
 	}

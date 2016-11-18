@@ -213,6 +213,9 @@ public class ReadAction extends Action {
 			Filter where = new Filter(getWhereParameter(), query);
 			addFilter(where.where());
 
+			Filter quickFilter = new Filter(getQuickFilterParameter(), query);
+			addFilter(quickFilter.where());
+
 			if(isGrouped())
 				addGroupFilter(getFilter1());
 			else

@@ -24,6 +24,7 @@ public class Section extends Control {
 	}
 
 	public integer columns = new integer(3);
+	public integer height;
 
 	public RCollection<Control.CLASS<? extends Control>> controls = new RCollection<Control.CLASS<? extends Control>>(true);
 
@@ -58,8 +59,9 @@ public class Section extends Control {
 	public void writeMeta(JsonWriter writer) {
 		super.writeMeta(writer);
 
+		writer.writeProperty(Json.isSection, true);
 		writer.writeProperty(Json.readOnly, readOnly);
 		writer.writeProperty(Json.columns, columns);
-		writer.writeProperty(Json.isSection, true);
+		writer.writeProperty(Json.height, height);
 	}
 }

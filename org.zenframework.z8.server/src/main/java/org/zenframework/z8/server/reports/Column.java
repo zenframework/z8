@@ -243,7 +243,7 @@ public class Column {
 			return Aggregation.None;
 
 		FieldType type = field.type();
-		return type != FieldType.String && type != FieldType.Text && type != FieldType.Boolean ? field.aggregation : Aggregation.None;
+		return type == FieldType.Integer || type == FieldType.Decimal ? field.aggregation : Aggregation.None;
 	}
 
 	public boolean hasAggregation() {

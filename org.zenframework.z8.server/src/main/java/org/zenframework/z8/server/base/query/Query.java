@@ -100,6 +100,7 @@ public class Query extends Runnable {
 	public RCollection<Control.CLASS<? extends Control>> formFields = new RCollection<Control.CLASS<? extends Control>>();
 	public RCollection<Field.CLASS<? extends Field>> gridFields = new RCollection<Field.CLASS<? extends Field>>();
 	public RCollection<Field.CLASS<? extends Field>> nameFields = new RCollection<Field.CLASS<? extends Field>>();
+	public RCollection<Field.CLASS<? extends Field>> quickFilterFields = new RCollection<Field.CLASS<? extends Field>>();
 
 	public RCollection<Command.CLASS<? extends Command>> commands = new RCollection<Command.CLASS<? extends Command>>();
 
@@ -473,13 +474,9 @@ public class Query extends Runnable {
 	public guid insert(guid recordId, guid parentId) {
 		Collection<Field> fields = getInsertFields(recordId, parentId);
 
-		try {
-			beforeCreate(recordId, parentId);
-			executeInsert(fields);
-			afterCreate(recordId, parentId);
-		} catch(exception e) {
-			throw e;
-		}
+		beforeCreate(recordId, parentId);
+		executeInsert(fields);
+		afterCreate(recordId, parentId);
 
 		recordId = primaryKey().guid();
 
@@ -879,6 +876,10 @@ public class Query extends Runnable {
 		return nameFields;
 	}
 
+	public Collection<Field.CLASS<? extends Field>> quickFilterFields() {
+		return quickFilterFields;
+	}
+
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public Collection<Control.CLASS<? extends Control>> controls() {
 		return formFields.isEmpty() ? (Collection)dataFields() : formFields;
@@ -906,6 +907,10 @@ public class Query extends Runnable {
 
 	public Collection<Field> getNameFields() {
 		return CLASS.asList(nameFields());
+	}
+
+	public Collection<Field> getQuickFilterFields() {
+		return CLASS.asList(quickFilterFields());
 	}
 
 	public Collection<Control> getControls() {
@@ -944,10 +949,6 @@ public class Query extends Runnable {
 
 	public void unregisterFormField(Control.CLASS<?> control) {
 		formFields.remove(control);
-	}
-
-	public boolean isShared() {
-		return false;
 	}
 
 	final public SqlToken having() {
@@ -1086,8 +1087,10 @@ public class Query extends Runnable {
 	private String alias = null;
 
 	public String getAlias() {
-		if(alias == null)
-			alias = "T" + Math.abs((id() + hashCode()).hashCode());
+		if(alias == null) {
+			String id = id().isEmpty() ? name() : id();
+			alias = "T" + Math.abs(id.hashCode());
+		}
 		return alias;
 	}
 
@@ -1662,6 +1665,7 @@ public class Query extends Runnable {
 		writeControls(writer, collectControls());
 		writeGridFields(writer);
 		writeNameFields(writer);
+		writeQuickFilterFields(writer);
 	}
 
 	private void writeKeys(JsonWriter writer, Collection<Field> fields) {
@@ -1794,6 +1798,13 @@ public class Query extends Runnable {
 	private void writeNameFields(JsonWriter writer) {
 		writer.startArray(Json.nameFields);
 		for(Field field : getNameFields())
+			writer.write(field.id());
+		writer.finishArray();
+	}
+
+	private void writeQuickFilterFields(JsonWriter writer) {
+		writer.startArray(Json.quickFilterFields);
+		for(Field field : getQuickFilterFields())
 			writer.write(field.id());
 		writer.finishArray();
 	}

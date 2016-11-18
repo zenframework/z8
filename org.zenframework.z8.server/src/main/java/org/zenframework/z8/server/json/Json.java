@@ -103,6 +103,7 @@ public interface Json {
 	string lookup = new string("lookup");
 
 	string filter = new string("filter");
+	string quickFilter = new string("quickFilter");
 	string where = new string("where");
 	string operator = new string("operator");
 	string logical = new string("logical");
@@ -176,6 +177,8 @@ public interface Json {
 	string controls = new string("controls");
 	string gridFields = new string("gridFields");
 	string nameFields = new string("nameFields");
+	string quickFilterFields = new string("quickFilterFields");
+
 	string grid = new string("grid");
 	string tree = new string("tree");
 	string actions = new string("actions");

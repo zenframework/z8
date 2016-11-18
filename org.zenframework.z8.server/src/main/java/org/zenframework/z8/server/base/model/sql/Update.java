@@ -7,9 +7,9 @@ import java.util.Collection;
 import org.zenframework.z8.server.base.query.Query;
 import org.zenframework.z8.server.base.table.value.Expression;
 import org.zenframework.z8.server.base.table.value.Field;
-import org.zenframework.z8.server.base.table.value.GuidField;
 import org.zenframework.z8.server.db.ConnectionManager;
 import org.zenframework.z8.server.db.DatabaseVendor;
+import org.zenframework.z8.server.db.FieldType;
 import org.zenframework.z8.server.db.Statement;
 import org.zenframework.z8.server.db.sql.FormatOptions;
 import org.zenframework.z8.server.logs.Trace;
@@ -66,10 +66,8 @@ public class Update extends Statement {
 
 		String where = "";
 
-		if(recordId != null) {
-			GuidField primaryKey = (GuidField)query.getRootQuery().primaryKey();
-			where = vendor.quote(primaryKey.name()) + "=" + recordId.sql_guid().format(vendor, new FormatOptions());
-		}
+		if(recordId != null)
+			where = vendor.quote(query.primaryKey().name()) + "=?";
 
 		if(this.where != null)
 			where += (where.isEmpty() ? "" : " and ") + "(" + this.where.format(vendor, new FormatOptions(), true) + ")";
@@ -93,6 +91,9 @@ public class Update extends Statement {
 				position++;
 			}
 		}
+
+		if(recordId != null)
+			setParameter(position, FieldType.Guid, recordId);
 	}
 
 	public int execute() {

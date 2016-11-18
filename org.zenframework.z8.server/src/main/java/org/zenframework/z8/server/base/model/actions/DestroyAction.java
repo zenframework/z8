@@ -2,6 +2,8 @@ package org.zenframework.z8.server.base.model.actions;
 
 import org.zenframework.z8.server.base.model.sql.Delete;
 import org.zenframework.z8.server.base.query.Query;
+import org.zenframework.z8.server.db.Connection;
+import org.zenframework.z8.server.db.ConnectionManager;
 import org.zenframework.z8.server.json.JsonWriter;
 import org.zenframework.z8.server.json.parser.JsonArray;
 import org.zenframework.z8.server.json.parser.JsonObject;
@@ -22,6 +24,25 @@ public class DestroyAction extends Action {
 
 		JsonArray records = new JsonArray(jsonData);
 
+		boolean transactive = records.length() > 1;
+		Connection connection = ConnectionManager.get();
+
+		try {
+			if(transactive)
+				connection.beginTransaction();
+
+			destroy(records);
+
+			if(transactive)
+				connection.commit();
+		} catch(Throwable e) {
+			if(transactive)
+				connection.rollback();
+			throw new RuntimeException(e);
+		}
+	}
+
+	private void destroy(JsonArray records) {
 		for(int index = 0; index < records.length(); index++) {
 			Object object = records.get(index);
 			String property = getQuery().primaryKey().id();
