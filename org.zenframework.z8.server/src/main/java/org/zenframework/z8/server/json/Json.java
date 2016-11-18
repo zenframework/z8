@@ -127,8 +127,6 @@ public interface Json {
 	string remoteSort = new string("remoteSort");
 	/* Ext 3.1 values */
 
-	string filterBy = new string("filterBy");
-
 	string primaryKey = new string("primaryKey");
 	string parentKey = new string("parentKey");
 	string children = new string("children");

@@ -99,8 +99,6 @@ public class Json extends OBJECT {
 	final static public string remoteSort = org.zenframework.z8.server.json.Json.remoteSort;
 	final static public string __search_text__ = org.zenframework.z8.server.json.Json.__search_text__;
 
-	final static public string filterBy = org.zenframework.z8.server.json.Json.filterBy;
-
 	final static public string filter = org.zenframework.z8.server.json.Json.filter;
 	final static public string filter1 = org.zenframework.z8.server.json.Json.filter1;
 	final static public string operator = org.zenframework.z8.server.json.Json.operator;

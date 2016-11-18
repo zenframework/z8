@@ -1,17 +1,14 @@
 package org.zenframework.z8.server.base.model.actions;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.zenframework.z8.server.base.query.Query;
-import org.zenframework.z8.server.base.query.QueryUtils;
 import org.zenframework.z8.server.base.query.Style;
 import org.zenframework.z8.server.base.table.value.Field;
 import org.zenframework.z8.server.json.Json;
 import org.zenframework.z8.server.json.JsonWriter;
-import org.zenframework.z8.server.json.parser.JsonObject;
 import org.zenframework.z8.server.types.guid;
 import org.zenframework.z8.server.types.primary;
 
@@ -24,42 +21,29 @@ public class CopyAction extends Action {
 	public void writeResponse(JsonWriter writer) {
 		Query query = getQuery();
 
-		guid sourceRecordId = getSourceParameter();
+		guid recordId = getRecordIdParameter();
 		guid parentId = getParentIdParameter();
 
-		run(query, sourceRecordId, parentId);
+		recordId = run(query, recordId, parentId);
 
-		Collection<Field> fields = new ArrayList<Field>();
-
-		String jsonData = getDataParameter();
-
-		JsonObject record = new JsonObject(jsonData);
-
-		for(String fieldId : JsonObject.getNames(record)) {
-			Field field = query.findFieldById(fieldId);
-
-			if(field != null) {
-				if(canCopy(field) && !field.changed()) {
-					String value = record.getString(fieldId);
-					QueryUtils.setFieldValue(field, value);
-				}
-
-				fields.add(field);
-			}
-		}
+		Collection<Field> fields = getFormFields(query);
 
 		writer.startArray(Json.data);
-		writer.startObject();
 
-		for(Field field : fields)
-			field.writeData(writer);
+		if(query.readRecord(recordId, fields)) {
+			writer.startObject();
 
-		Style style = query.renderRecord();
+			for(Field field : fields)
+				field.writeData(writer);
 
-		if(style != null)
-			style.write(writer);
+			Style style = query.renderRecord();
 
-		writer.finishObject();
+			if(style != null)
+				style.write(writer);
+
+			writer.finishObject();
+		}
+
 		writer.finishArray();
 	}
 
@@ -67,20 +51,20 @@ public class CopyAction extends Action {
 		return !field.isPrimaryKey() && !field.unique();
 	}
 
-	static public guid run(Query query, guid sourceId, guid parentId) {
+	static public guid run(Query query, guid recordId, guid parentId) {
 		guid newRecordId = guid.create();
 
-		Collection<Field> changed = query.getRootQuery().getChangedFields();
+		Collection<Field> changed = query.getChangedFields();
 
 		NewAction.run(query, newRecordId, parentId);
 
-		Collection<Field> fields = query.getRootQuery().getDataFields();
+		Collection<Field> fields = query.getPrimaryFields();
 		Map<Field, primary> values = new HashMap<Field, primary>();
 
 		try {
 			query.saveState();
 
-			if(query.readRecord(sourceId, fields)) {
+			if(query.readRecord(recordId, fields)) {
 				for(Field field : fields)
 					values.put(field, field.get());
 			}
@@ -88,13 +72,14 @@ public class CopyAction extends Action {
 			query.restoreState();
 		}
 
-		for(Field field : values.keySet()) {
+		for(Map.Entry<Field, primary> entry : values.entrySet()) {
+			Field field = entry.getKey();
 			if(canCopy(field) && !changed.contains(field))
-				field.set(values.get(field));
+				field.set(entry.getValue());
 		}
 
 		query.onCopy();
 
-		return newRecordId;
+		return query.insert(newRecordId, parentId);
 	}
 }

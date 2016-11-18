@@ -80,7 +80,7 @@ public class CreateAction extends Action {
 				Field field = fieldsMap.get(fieldId);
 
 				if(field == null) {
-					field = query.findFieldById(fieldId);
+					field = query.getFieldById(fieldId);
 					if(field == null)
 						continue;
 					fieldsMap.put(fieldId, field);
@@ -98,27 +98,6 @@ public class CreateAction extends Action {
 		}
 
 		return result;
-	}
-
-	private Collection<Field> getFormFields(Query query) {
-		String json = getRequestParameter(Json.fields);
-
-		if(json == null || json.isEmpty())
-			return query.getFormFields();
-
-		Collection<Field> fields = new ArrayList<Field>();
-
-		JsonArray names = new JsonArray(json);
-
-		if(names.length() == 0)
-			return query.getFormFields();
-
-		for(int index = 0; index < names.length(); index++) {
-			Field field = query.findFieldById(names.getString(index));
-			fields.add(field);
-		}
-
-		return fields;
 	}
 
 	private void write(JsonWriter writer, Collection<guid> recordIds) {

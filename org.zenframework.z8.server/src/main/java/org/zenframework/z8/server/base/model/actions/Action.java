@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.zenframework.z8.server.base.query.Query;
+import org.zenframework.z8.server.base.table.value.Field;
 import org.zenframework.z8.server.json.Json;
 import org.zenframework.z8.server.json.parser.JsonArray;
 import org.zenframework.z8.server.request.RequestTarget;
@@ -53,6 +54,28 @@ public abstract class Action extends RequestTarget {
 		return query != null ? query.getRootQuery() : null;
 	}
 
+	protected Collection<Field> getFormFields(Query query) {
+		String json = getRequestParameter(Json.fields);
+
+		if(json == null || json.isEmpty())
+			return query.getFormFields();
+
+		Collection<Field> fields = new ArrayList<Field>();
+
+		JsonArray names = new JsonArray(json);
+
+		if(names.length() == 0)
+			return query.getFormFields();
+
+		for(int index = 0; index < names.length(); index++) {
+			Field field = query.findFieldById(names.getString(index));
+			if(field != null)
+				fields.add(field);
+		}
+
+		return fields;
+	}
+
 	public String getRequestParameter(string key) {
 		return actionParameters.requestParameter(key);
 	}
@@ -82,16 +105,6 @@ public abstract class Action extends RequestTarget {
 
 	public String getDetailsParameter() {
 		return getRequestParameter(Json.details);
-	}
-
-	public guid getFilterByParameter() {
-		String recordId = getRequestParameter(Json.filterBy);
-		return recordId != null ? new guid(recordId) : null;
-	}
-
-	public guid getSourceParameter() {
-		String recordId = getRequestParameter(Json.source);
-		return recordId != null ? new guid(recordId) : null;
 	}
 
 	public int getTotalParameter() {

@@ -165,28 +165,6 @@ public class ReadAction extends Action {
 		}
 	}
 
-	private Collection<Field> getFormFields(Query query) {
-		String json = getRequestParameter(Json.fields);
-
-		if(json == null || json.isEmpty())
-			return query.getFormFields();
-
-		Collection<Field> fields = new ArrayList<Field>();
-
-		JsonArray names = new JsonArray(json);
-
-		if(names.length() == 0)
-			return query.getFormFields();
-
-		for(int index = 0; index < names.length(); index++) {
-			Field field = query.findFieldById(names.getString(index));
-			if(field != null)
-				fields.add(field);
-		}
-
-		return fields;
-	}
-
 	private void initFilters() {
 		Query query = getQuery();
 
@@ -198,10 +176,6 @@ public class ReadAction extends Action {
 			addFilter(query.where());
 
 			collectFilters();
-
-			guid filterBy = getFilterByParameter();
-
-			addFilter(query.primaryKey(), filterBy);
 
 			Collection<String> lookupFields = getLookupFields();
 			if(lookupFields.size() != 0)
