@@ -10,6 +10,7 @@ public class Folders {
 	public static final String Cache = "pdf.cache";
 	public static final String Lucene = "lucene";
 	public static final String Reports = "reports";
+	public static final String Fonts = "fonts";
 	public static final String Temp = "temp";
 	public static final String ReportDefaults = Reports + File.separatorChar + "defaults";
 	public static final String ReportsOutput = Reports + File.separatorChar + "generated";

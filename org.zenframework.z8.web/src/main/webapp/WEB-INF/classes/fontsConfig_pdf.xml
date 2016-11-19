@@ -6,6 +6,7 @@
 		<mapping name="monospace" font-family="Courier" />
 	</font-aliases>
 	<font-encodings>
+		<encoding font-family="EanGnivc" encoding="Cp1251" />
 		<encoding font-family="Times New Roman" encoding="Cp1251" />
 		<encoding font-family="Helvetica" encoding="Cp1252" />
 		<encoding font-family="Courier" encoding="Cp1252" />

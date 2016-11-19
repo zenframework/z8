@@ -68,7 +68,7 @@ public class BirtReportRunner {
 
 	public static final String DataProperty = "org.zenframework.z8.server.reports.Data";
 
-	public static final String TableStyle = "Table";
+	public static final String TableStyle = "ReportBody";
 
 	public static final String HeaderCellStyle = "HeaderCell";
 	public static final String DetailCellStyle = "DetailCell";
@@ -260,9 +260,8 @@ public class BirtReportRunner {
 
 				int indent = getIndentationColumns().length;
 
-				if(depth == 1 && indent != 0) {
+				if(depth == 1 && indent != 0)
 					headerRow.getCells().add(createIndentCell(indent, headerDepth - 1, HeaderCellStyle, -1));
-				}
 
 				for(Column column : layer) {
 					if(column.getHeight() == depth && !column.isIndentation()) {
@@ -407,9 +406,8 @@ public class BirtReportRunner {
 	}
 
 	private void setStyle(ReportElementHandle element, String style, int styleIndex) throws SemanticException {
-		if(styleIndex < 0 || !setStyle(element, style + (styleIndex + 1))) {
+		if(styleIndex < 0 || !setStyle(element, style + (styleIndex + 1)))
 			setStyle(element, style);
-		}
 	}
 
 	private boolean setStyle(ReportElementHandle element, String styleName) {
@@ -781,8 +779,8 @@ public class BirtReportRunner {
 			float tableWidth = getTotalWidth();
 
 			if(options.pagesWide != 0 && format().equalsIgnoreCase(Reports.Pdf)) {
-				float pageOverlapping = options.pagesWide > 1 ? options.m_pageOverlapping : 0;
-				float paperWidth = options.pagesWide * (options.getPageWidth() - options.getHorizontalMargins() - options.m_pageOverlapping) + pageOverlapping;
+				float pageOverlapping = options.pagesWide > 1 ? options.pageOverlapping : 0;
+				float paperWidth = options.pagesWide * (options.getPageWidth() - options.getHorizontalMargins() - options.pageOverlapping) + pageOverlapping;
 
 				scaleFactor = paperWidth / tableWidth;
 				pageWidth = options.pagesWide * options.getPageWidth();
@@ -834,7 +832,7 @@ public class BirtReportRunner {
 		initialize(rootColumn, groups);
 
 		float tableWidth = getTotalWidth();
-		float paperWidth = options.getPageWidth() - options.getHorizontalMargins() - options.m_pageOverlapping;
+		float paperWidth = options.getPageWidth() - options.getHorizontalMargins() - options.pageOverlapping;
 
 		return (int)Math.ceil(tableWidth / paperWidth);
 	}

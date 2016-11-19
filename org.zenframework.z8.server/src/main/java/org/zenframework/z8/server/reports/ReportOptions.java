@@ -17,176 +17,190 @@ import org.eclipse.birt.report.model.api.IDesignEngineFactory;
 import org.zenframework.z8.server.base.file.Folders;
 import org.zenframework.z8.server.base.model.actions.ReadAction;
 
+import com.lowagie.text.FontFactory;
+
 public class ReportOptions {
-    private String format = Reports.Pdf;
-    public int indentGroupsBy = Reports.DefaultGroupIndentation;
+	private String format = Reports.Pdf;
+	public int indentGroupsBy = Reports.DefaultGroupIndentation;
 
-    public boolean markGroupLevel = true;
+	public boolean markGroupLevel = true;
 
-    public boolean markTotals = true;
+	public boolean markTotals = true;
 
-    public boolean markGrandTotals = true;
+	public boolean markGrandTotals = true;
 
-    public boolean dropGroupDetail = false;
+	public boolean dropGroupDetail = false;
 
-    public boolean useBlackWhiteColors = true;
+	public boolean useBlackWhiteColors = true;
 
-    public int pagesWide = 1;
+	public int pagesWide = 1;
 
-    public boolean scaleContent = true;
+	public boolean scaleContent = true;
 
-    public boolean splitContent = false;
+	public boolean splitContent = false;
 
-    public int m_pageOverlapping = Reports.DefaultPageOverlapping;
+	public int pageOverlapping = Reports.DefaultPageOverlapping;
 
-    public String reportFolder = Folders.ReportDefaults;
-    public String reportTemplate = Reports.DefaultDesign;
+	public String reportFolder = Folders.ReportDefaults;
+	public String reportTemplate = Reports.DefaultDesign;
 
-    public Collection<ReadAction> actions = null;
+	public Collection<ReadAction> actions = null;
 
-    public Map<String, String> headers = new HashMap<String, String>();
+	public Map<String, String> headers = new HashMap<String, String>();
 
-    private float pageHeight = 0;
-    private float pageWidth = 0;
-    private float leftMargin = 0;
-    private float rightMargin = 0;
-    private float topMargin = 0;
-    private float bottomMargin = 0;
+	private float pageHeight = 0;
+	private float pageWidth = 0;
+	private float leftMargin = 0;
+	private float rightMargin = 0;
+	private float topMargin = 0;
+	private float bottomMargin = 0;
 
-    private static IReportEngine reportEngine = null;
-    private static IDesignEngine designEngine = null;
+	private static IReportEngine reportEngine = null;
+	private static IDesignEngine designEngine = null;
 
-    static public File getReportOutputFolder() {
-        File folder = new File(Folders.Base, Folders.ReportsOutput);
-        folder.mkdirs();
-        return folder;
-    }
+	static public File getReportOutputFolder() {
+		File folder = new File(Folders.Base, Folders.ReportsOutput);
+		folder.mkdirs();
+		return folder;
+	}
 
-    public ReportOptions() {
-        initializeEngine();
-    }
+	public ReportOptions() {
+		initializeEngine();
+	}
 
-    private void initializeEngine() throws RuntimeException {
-        if(reportEngine != null) {
-            return;
-        }
+	private void initializeEngine() throws RuntimeException {
+		if(reportEngine != null) {
+			return;
+		}
 
-        try {
-            EngineConfig engineConfig = new EngineConfig();
-            DesignConfig designConfig = new DesignConfig();
+		try {
+			registerFonts();
 
-            Platform.startup(engineConfig);
+			EngineConfig engineConfig = new EngineConfig();
+			DesignConfig designConfig = new DesignConfig();
 
-            IReportEngineFactory reportEngineFactory = (IReportEngineFactory)Platform
-                    .createFactoryObject(IReportEngineFactory.EXTENSION_REPORT_ENGINE_FACTORY);
-            reportEngine = reportEngineFactory.createReportEngine(engineConfig);
+			Platform.startup(engineConfig);
 
-            IDesignEngineFactory designEngineFactory = (IDesignEngineFactory)Platform
-                    .createFactoryObject(IDesignEngineFactory.EXTENSION_DESIGN_ENGINE_FACTORY);
-            designEngine = designEngineFactory.createDesignEngine(designConfig);
-        }
-        catch(BirtException e) {
-            throw new RuntimeException(e);
-        }
-    }
+			IReportEngineFactory reportEngineFactory = (IReportEngineFactory)Platform.createFactoryObject(IReportEngineFactory.EXTENSION_REPORT_ENGINE_FACTORY);
+			reportEngine = reportEngineFactory.createReportEngine(engineConfig);
 
-    public IReportEngine reportEngine() {
-        return reportEngine;
-    }
+			IDesignEngineFactory designEngineFactory = (IDesignEngineFactory)Platform.createFactoryObject(IDesignEngineFactory.EXTENSION_DESIGN_ENGINE_FACTORY);
+			designEngine = designEngineFactory.createDesignEngine(designConfig);
+		} catch(BirtException e) {
+			throw new RuntimeException(e);
+		}
+	}
 
-    public IDesignEngine designEngine() {
-        return designEngine;
-    }
+	private void registerFonts() {
+		File fontsFolder = new File(Folders.Base, Folders.Fonts);
 
-    public String getFormat() {
-        return format;
-    }
+		File[] files = fontsFolder.listFiles();
 
-    public void setTemplate(String template) {
-        if(template != null) {
-            this.reportTemplate = template;
-        }
-    }
+		for(File file : files) {
+			try {
+				FontFactory.register(file.getPath());
+			} catch(Throwable e) {
+			}
+		}
+	}
 
-    public void setFormat(String format) {
-        this.format = format;
-    }
+	public IReportEngine reportEngine() {
+		return reportEngine;
+	}
 
-    private String getReportDesignFileName(String format) {
-        return format + '.' + Reports.DesignExtension;
-    }
+	public IDesignEngine designEngine() {
+		return designEngine;
+	}
 
-    public File getReportDesign() {
-        String fileName = getReportDesignFileName(getFormat());
+	public String getFormat() {
+		return format;
+	}
 
-        File file = FileUtils.getFile(Folders.Base, reportFolder, fileName);
+	public void setTemplate(String template) {
+		if(template != null) {
+			this.reportTemplate = template;
+		}
+	}
 
-        if(file.exists())
-            return file;
+	public void setFormat(String format) {
+		this.format = format;
+	}
 
-        return FileUtils.getFile(Folders.Base, reportFolder, reportTemplate);
-    }
+	private String getReportDesignFileName(String format) {
+		return format + '.' + Reports.DesignExtension;
+	}
 
-    public float getPageWidth() {
-        return pageWidth;
-    }
+	public File getReportDesign() {
+		String fileName = getReportDesignFileName(getFormat());
 
-    public void setPageWidth(float pageWidth) {
-        this.pageWidth = pageWidth;
-    }
+		File file = FileUtils.getFile(Folders.Base, reportFolder, fileName);
 
-    public float getPageHeight() {
-        return pageHeight;
-    }
+		if(file.exists())
+			return file;
 
-    public void setPageHeight(float pageHeight) {
-        this.pageHeight = pageHeight;
-    }
+		return FileUtils.getFile(Folders.Base, reportFolder, reportTemplate);
+	}
 
-    public float getLeftMargin() {
-        return leftMargin;
-    }
+	public float getPageWidth() {
+		return pageWidth;
+	}
 
-    public void setLeftMargin(float leftMargin) {
-        this.leftMargin = leftMargin;
-    }
+	public void setPageWidth(float pageWidth) {
+		this.pageWidth = pageWidth;
+	}
 
-    public float getRightMargin() {
-        return rightMargin;
-    }
+	public float getPageHeight() {
+		return pageHeight;
+	}
 
-    public void setRightMargin(float rightMargin) {
-        this.rightMargin = rightMargin;
-    }
+	public void setPageHeight(float pageHeight) {
+		this.pageHeight = pageHeight;
+	}
 
-    public float getTopMargin() {
-        return topMargin;
-    }
+	public float getLeftMargin() {
+		return leftMargin;
+	}
 
-    public void setTopMargin(float topMargin) {
-        this.topMargin = topMargin;
-    }
+	public void setLeftMargin(float leftMargin) {
+		this.leftMargin = leftMargin;
+	}
 
-    public float getBottomMargin() {
-        return bottomMargin;
-    }
+	public float getRightMargin() {
+		return rightMargin;
+	}
 
-    public void setBottomMargin(float bottomMargin) {
-        this.bottomMargin = bottomMargin;
-    }
+	public void setRightMargin(float rightMargin) {
+		this.rightMargin = rightMargin;
+	}
 
-    public float getHorizontalMargins() {
-        return leftMargin + rightMargin;
-    }
+	public float getTopMargin() {
+		return topMargin;
+	}
 
-    public float getVerticalMargins() {
-        return topMargin + bottomMargin;
-    }
+	public void setTopMargin(float topMargin) {
+		this.topMargin = topMargin;
+	}
 
-    public String documentName() {
-        String name = headers.get(Reports.FIRSTPAGE_CAPTIONCENTER);
+	public float getBottomMargin() {
+		return bottomMargin;
+	}
 
-        return name != null ? name : "report";
-    }
+	public void setBottomMargin(float bottomMargin) {
+		this.bottomMargin = bottomMargin;
+	}
+
+	public float getHorizontalMargins() {
+		return leftMargin + rightMargin;
+	}
+
+	public float getVerticalMargins() {
+		return topMargin + bottomMargin;
+	}
+
+	public String documentName() {
+		String name = headers.get(Reports.FIRSTPAGE_CAPTIONCENTER);
+
+		return name != null ? name : "report";
+	}
 
 }

@@ -122,6 +122,7 @@
 	this issue, please add the font path to this section.
 -->
 	<font-paths>
+		<path path="fonts" />
 		<path path="/usr/lib/X11/fonts/ms.st/typefaces" />
 		<path path="C:/windows/fonts" />
 		<path path="d:/windows/fonts" />
@@ -176,6 +177,7 @@
 	PDF rendering.
 -->
 	<font-encodings>
+		<encoding font-family="EanGnivc" encoding="Cp1251" />
 		<encoding font-family="Times New Roman" encoding="Cp1251" />
 		<encoding font-family="Helvetica" encoding="Cp1252" />
 		<encoding font-family="Courier" encoding="Cp1252" />
