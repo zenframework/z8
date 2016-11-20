@@ -334,16 +334,5 @@
                 </cell>
             </row>
         </grid>
-        <label id="102">
-            <property name="fontFamily">"EanGnivc"</property>
-            <property name="fontSize">36pt</property>
-            <property name="textAlign">left</property>
-            <text-property name="text">#!000453-gdcdfd!</text-property>
-        </label>
-        <label id="104">
-            <property name="fontFamily">"Code 128"</property>
-            <property name="fontSize">36pt</property>
-            <text-property name="text">Ìz8.new 2.1.2 Ç  MD@C197206</text-property>
-        </label>
     </body>
 </report>
