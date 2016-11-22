@@ -52,10 +52,6 @@ public class ActionFactory {
 			return new ReportAction(actionParameters);
 		else if(Action.previewAction.equals(actionName))
 			return new PreviewAction(actionParameters);
-		else if(Action.readRecordAction.equals(actionName))
-			return new ReadRecordAction(actionParameters);
-		else if(Action.modelAction.equals(actionName))
-			return new ModelAction(actionParameters);
 		else if(Action.attachAction.equals(actionName))
 			return new AttachAction(actionParameters);
 		else if(Action.detachAction.equals(actionName))

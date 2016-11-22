@@ -24,8 +24,6 @@ public abstract class Action extends RequestTarget {
 	static public final String reportAction = "report";
 	static public final String previewAction = "preview";
 	static public final String commandAction = "command";
-	static public final String readRecordAction = "readRecord";
-	static public final String modelAction = "model";
 	static public final String attachAction = "attach";
 	static public final String detachAction = "detach";
 

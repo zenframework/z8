@@ -24,6 +24,8 @@ public enum Operation {
 	NotEndsWith(Names.NotEndsWith),
 	Contains(Names.Contains),
 	NotContains(Names.NotContains),
+	IsEmpty(Names.IsEmpty),
+	IsNotEmpty(Names.IsNotEmpty),
 
 	Yesterday(Names.Yesterday),
 	Today(Names.Today),
@@ -74,6 +76,8 @@ public enum Operation {
 		static protected final String NotEndsWith = "notEndsWith";
 		static protected final String Contains = "contains";
 		static protected final String NotContains = "notContains";
+		static protected final String IsEmpty = "isEmpty";
+		static protected final String IsNotEmpty = "isNotEmpty";
 
 		static protected final String Yesterday = "yesterday";
 		static protected final String Today = "today";
@@ -165,6 +169,10 @@ public enum Operation {
 			return Operation.Contains;
 		else if(Names.NotContains.toLowerCase().equals(string))
 			return Operation.NotContains;
+		else if(Names.IsEmpty.toLowerCase().equals(string))
+			return Operation.IsEmpty;
+		else if(Names.IsNotEmpty.toLowerCase().equals(string))
+			return Operation.IsNotEmpty;
 
 		else if(Names.LastWeek.toLowerCase().equals(string))
 			return Operation.LastWeek;

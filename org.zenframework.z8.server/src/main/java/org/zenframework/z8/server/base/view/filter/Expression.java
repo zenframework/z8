@@ -240,6 +240,10 @@ public class Expression implements IFilter {
 				SqlToken field = operation == Operation.Eq || operation == Operation.NotEq ? new Lower(this.field) : new SqlField(this.field);
 				sql_string string = new sql_string(operation == Operation.Eq || operation == Operation.NotEq ? value.toLowerCase() : value);
 				return new Rel(field, operation, string);
+			case IsEmpty:
+				return new Rel(this.field, Operation.Eq, new sql_string());
+			case IsNotEmpty:
+				return new Rel(this.field, Operation.NotEq, new sql_string());
 			default:
 				throw new UnsupportedOperationException();
 			}
