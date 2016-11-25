@@ -60,11 +60,11 @@ public class Procedure extends Command {
 		print(text.get());
 	}
 
-	protected void z8_exec() {
-		z8_exec(parameters);
+	protected void z8_execute() {
+		z8_execute(parameters);
 	}
 
-	protected void z8_exec(RCollection<Parameter.CLASS<? extends Parameter>> parameters) {
+	protected void z8_execute(RCollection<Parameter.CLASS<? extends Parameter>> parameters) {
 	}
 
 	public void z8_onError(exception e) {
@@ -81,7 +81,7 @@ public class Procedure extends Command {
 			if(connection != null)
 				connection.beginTransaction();
 
-			z8_exec();
+			z8_execute();
 
 			if(connection != null)
 				connection.commit();

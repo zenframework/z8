@@ -37,8 +37,8 @@ public class DBGenerateProcedure extends Procedure {
 
 	@Override
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	protected void z8_exec() {
-		super.z8_exec();
+	protected void z8_execute() {
+		super.z8_execute();
 
 		if(ApplicationServer.getUser().securityGroup() != SecurityGroup.Administrators) {
 			print("You must be a member of Administrators security group to perform this action.");

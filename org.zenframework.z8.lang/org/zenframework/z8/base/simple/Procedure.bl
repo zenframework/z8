@@ -3,7 +3,7 @@ import org.zenframework.z8.base.query.Parameter;
 
 [native "org.zenframework.z8.server.base.simple.Procedure"]
 class Procedure extends Command {
-	virtual protected void exec(Parameter[] parameters);
+	virtual protected void execute(Parameter[] parameters);
 
 	protected void setStatus(string status, int workPercent);
 	protected void setText(string text);
