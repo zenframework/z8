@@ -34,7 +34,6 @@ class Query extends Runnable {
 	public Period period;
 
 	virtual protected void onRender();
-	virtual protected Style renderRecord();
 
 	virtual protected void onCommand(Command command, guid[] recordIds);
 

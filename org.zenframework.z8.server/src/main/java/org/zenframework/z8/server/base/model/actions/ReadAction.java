@@ -4,6 +4,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
@@ -15,8 +16,6 @@ import org.zenframework.z8.server.base.model.sql.FramedSelect;
 import org.zenframework.z8.server.base.model.sql.Select;
 import org.zenframework.z8.server.base.model.sql.SelectFactory;
 import org.zenframework.z8.server.base.query.Query;
-import org.zenframework.z8.server.base.query.ReadLock;
-import org.zenframework.z8.server.base.query.Style;
 import org.zenframework.z8.server.base.table.value.Aggregation;
 import org.zenframework.z8.server.base.table.value.Expression;
 import org.zenframework.z8.server.base.table.value.Field;
@@ -72,6 +71,9 @@ public class ReadAction extends Action {
 	private int limit = -1;
 
 	private int totalCount = 0;
+
+	private Field primaryKey = null;
+	private Field parentKey = null;
 
 	public ReadAction(Query query) {
 		this(new ActionParameters(query), null);
@@ -152,11 +154,8 @@ public class ReadAction extends Action {
 			addGroupField(field);
 
 		if(hasPrimaryKey()) {
-			addSelectField(query.primaryKey());
-
-			addSelectField(query.parentKey());
-			addSelectField(query.parentKeys());
-			addSelectField(query.children());
+			primaryKey = addSelectField(query.primaryKey());
+			parentKey = addSelectField(query.parentKey());
 
 			if(parameters.requestId != null) {
 				addSelectField(query.lockKey());
@@ -356,7 +355,7 @@ public class ReadAction extends Action {
 			aggregateBy.add(link);
 	}
 
-	private void addSelectField(Field field) {
+	private Field addSelectField(Field field) {
 		if(field != null && checkAggregation(field)) {
 			selectFields.add(field);
 
@@ -367,11 +366,7 @@ public class ReadAction extends Action {
 
 			collectUsedQueries(field);
 		}
-	}
-
-	private void addSelectField(Field[] fields) {
-		for(Field field : fields)
-			addSelectField(field);
+		return field;
 	}
 
 	private void addSortField(Field field) {
@@ -661,59 +656,126 @@ public class ReadAction extends Action {
 	}
 
 	private Groupping writeFrame(JsonWriter writer) throws SQLException {
-		Query query = getQuery();
-
-		Groupping groups = new Groupping(this.groupFields);
-
-		boolean hasRecords = false;
-
 		FramedSelect frame = frame();
-
-		writer.startArray(Json.data);
 
 		try {
 			frame.saveState();
 
 			frame.open();
 
-			int recordsWritten = 0;
+			if(parentKey == null)
+				return writePlainData(frame, writer);
 
-			while(frame.next()) {
-				if(recordsWritten > 500)
-					throw new RuntimeException("Too many records fetched for a json client. Use limit parameter.");
-
-				writer.startObject();
-
-				primary[] group = !hasRecords ? groups.firstGroup : groups.lastGroup;
-
-				for(Field field : getSelectFields()) {
-					int index = ArrayUtils.indexOf(groups.fields, field);
-
-					if(index != -1)
-						group[index] = field.get();
-
-					field.writeData(writer);
-				}
-
-				hasRecords = true;
-
-				Style style = query.renderRecord();
-
-				if(style != null)
-					style.write(writer);
-
-				writer.finishObject();
-
-				recordsWritten++;
-			}
+			writeTreeData(frame, writer);
+			return null;
 		} finally {
 			frame.restoreState();
 			frame.close();
 		}
+	}
+
+	private Groupping writePlainData(Select cursor, JsonWriter writer) {
+		Groupping groups = new Groupping(this.groupFields);
+
+		writer.startArray(Json.data);
+
+		int records = 0;
+		while(cursor.next()) {
+			if(records > 500)
+				throw new RuntimeException("Too many records fetched for a json client. Use limit parameter.");
+
+			writer.startObject();
+
+			primary[] group = records == 0 ? groups.firstGroup : groups.lastGroup;
+
+			for(Field field : getSelectFields()) {
+				int index = ArrayUtils.indexOf(groups.fields, field);
+
+				if(index != -1)
+					group[index] = field.get();
+
+				field.writeData(writer);
+			}
+			records++;
+
+			writer.finishObject();
+		}
 
 		writer.finishArray();
 
-		return hasRecords && groups.fields.length != 0 ? groups : null;
+		return records != 0 && groups.fields.length != 0 ? groups : null;
+	}
+
+	class TreeData {
+		guid recordId;
+		guid parentId;
+		JsonWriter data;
+
+		public TreeData(JsonWriter data, guid recordId, guid parentId) {
+			this.data = data;
+			this.recordId = recordId;
+			this.parentId = parentId;
+		}
+	}
+
+	private void writeTreeData(Select cursor, JsonWriter writer) {
+		Collection<TreeData> roots = new ArrayList<TreeData>();
+		Map<guid, Collection<TreeData>> map = new HashMap<guid, Collection<TreeData>>();
+
+		writer.startArray(Json.data);
+
+		int records = 0;
+		while(cursor.next()) {
+			if(records > 500)
+				throw new RuntimeException("Too many records fetched for a json client. Use limit parameter.");
+
+			records++;
+
+			JsonWriter data = new JsonWriter();
+			data.startObject();
+
+			guid parentId = null;
+			guid recordId = null;
+
+			for(Field field : getSelectFields()) {
+				field.writeData(data);
+				if(field == parentKey)
+					parentId = field.guid();
+				if(field == primaryKey)
+					recordId = field.guid();
+			}
+
+			// finish object we'll call later;
+
+			TreeData treeData = new TreeData(data, recordId, parentId);
+			if(!parentId.isNull()) {
+				Collection<TreeData> children = map.get(parentId);
+				if(children == null) {
+					children = new ArrayList<TreeData>();
+					map.put(parentId, children);
+				}
+				children.add(treeData);
+			} else
+				roots.add(treeData);
+		}
+
+		writeTreeData(writer, roots, map, 0);
+
+		writer.finishArray();
+	}
+
+	private void writeTreeData(JsonWriter writer, Collection<TreeData> records, Map<guid, Collection<TreeData>> childrenMap, int level) {
+		for(TreeData record : records) {
+			Collection<TreeData> children = childrenMap.get(record.recordId);
+			JsonWriter data = record.data;
+			data.writeProperty(Json.hasChildren, children != null);
+			data.writeProperty(Json.level, level);
+			data.finishObject(); // start object was called in writeTreeData(Select, JsonWriter)
+			writer.write(data);
+
+			if(children != null)
+				writeTreeData(writer, children, childrenMap, level + 1);
+		}
 	}
 
 	private void writeTotals(JsonWriter writer) throws SQLException {
@@ -833,7 +895,6 @@ public class ReadAction extends Action {
 		Field totalsBy = actionParameters().totalsBy;
 
 		Query query = getQuery();
-		query.setReadLock(ReadLock.None);
 
 		try {
 			if(totalsBy == null) {

@@ -7,7 +7,6 @@ import java.util.Map;
 
 import org.zenframework.z8.server.base.query.Query;
 import org.zenframework.z8.server.base.query.QueryUtils;
-import org.zenframework.z8.server.base.query.Style;
 import org.zenframework.z8.server.base.table.value.Field;
 import org.zenframework.z8.server.db.Connection;
 import org.zenframework.z8.server.db.ConnectionManager;
@@ -118,15 +117,8 @@ public class CreateAction extends Action {
 
 		while(query.next()) {
 			writer.startObject();
-
 			for(Field field : fields)
 				field.writeData(writer);
-
-			Style style = query.renderRecord();
-
-			if(style != null)
-				style.write(writer);
-
 			writer.finishObject();
 		}
 

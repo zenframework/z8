@@ -5,7 +5,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.zenframework.z8.server.base.query.Query;
-import org.zenframework.z8.server.base.query.Style;
 import org.zenframework.z8.server.base.table.value.Field;
 import org.zenframework.z8.server.json.Json;
 import org.zenframework.z8.server.json.JsonWriter;
@@ -35,11 +34,6 @@ public class CopyAction extends Action {
 
 			for(Field field : fields)
 				field.writeData(writer);
-
-			Style style = query.renderRecord();
-
-			if(style != null)
-				style.write(writer);
 
 			writer.finishObject();
 		}

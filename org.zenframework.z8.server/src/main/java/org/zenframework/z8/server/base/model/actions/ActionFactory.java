@@ -44,8 +44,6 @@ public class ActionFactory {
 			return new UpdateAction(actionParameters);
 		else if(Action.destroyAction.equals(actionName))
 			return new DestroyAction(actionParameters);
-		else if(Action.moveAction.equals(actionName))
-			return new MoveAction(actionParameters);
 		else if(Action.commandAction.equals(actionName))
 			return new CommandAction(actionParameters);
 		else if(Action.reportAction.equals(actionName))

@@ -116,6 +116,12 @@ public class JsonWriter {
 		}
 	}
 
+	public void write(JsonWriter writer) {
+		stream.append(comma());
+		stream.append(writer.stream);
+		startSeparate();
+	}
+
 	public void write(double value) {
 		write(Double.toString(value), false);
 	}

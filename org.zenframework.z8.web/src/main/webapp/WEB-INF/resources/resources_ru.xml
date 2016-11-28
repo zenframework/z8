@@ -31,8 +31,6 @@
 
 	<!-- TreeTable -->
 	<entry key="TreeTable.parentId">parent id</entry>
-	<entry key="TreeTable.depth">depth</entry>
-	<entry key="TreeTable.children">children</entry>
 	<entry key="TreeTable.path">path</entry>
 
 	<!-- Users -->

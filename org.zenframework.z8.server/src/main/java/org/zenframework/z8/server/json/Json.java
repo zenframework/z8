@@ -128,10 +128,12 @@ public interface Json {
 	/* Ext 3.1 values */
 
 	string primaryKey = new string("primaryKey");
-	string parentKey = new string("parentKey");
-	string children = new string("children");
 	string lockKey = new string("lockKey");
 	string attachments = new string("attachments");
+
+	string parentKey = new string("parentKey");
+	string hasChildren = new string("hasChildren");
+	string level = new string("level");
 
 	string action = new string("xaction");
 	string data = new string("data");

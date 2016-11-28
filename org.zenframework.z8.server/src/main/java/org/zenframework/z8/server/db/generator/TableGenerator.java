@@ -12,9 +12,7 @@ import org.zenframework.z8.server.base.model.sql.CountingSelect;
 import org.zenframework.z8.server.base.model.sql.Select;
 import org.zenframework.z8.server.base.model.sql.Update;
 import org.zenframework.z8.server.base.query.Query;
-import org.zenframework.z8.server.base.query.ReadLock;
 import org.zenframework.z8.server.base.table.Table;
-import org.zenframework.z8.server.base.table.TreeTable;
 import org.zenframework.z8.server.base.table.system.Files;
 import org.zenframework.z8.server.base.table.system.Users;
 import org.zenframework.z8.server.base.table.value.Aggregation;
@@ -158,19 +156,10 @@ public class TableGenerator {
 	public void createRecords() {
 		createNullRecord();
 
-		for(Map<IField, primary> record : table().getStaticRecords()) {
+		for(Map<IField, primary> record : table().getStaticRecords())
 			createStaticRecord(record);
-		}
-
-		correctTreeTableStructure();
 
 		this.table = null;
-	}
-
-	public void correctTreeTableStructure() {
-		if(table() instanceof TreeTable) {
-			new TreeTableStructure((TreeTable)table()).run();
-		}
 	}
 
 	GeneratorAction checkAlter() {
@@ -261,7 +250,6 @@ public class TableGenerator {
 		Select select = new Select();
 
 		Query query = table();
-		query.setReadLock(ReadLock.None);
 		select.setFields(Arrays.asList((Field)expression));
 		select.setRootQuery(query);
 
@@ -587,7 +575,6 @@ public class TableGenerator {
 		CountingSelect select = new CountingSelect();
 
 		Query query = table();
-		query.setReadLock(ReadLock.None);
 		Field primaryKey = query.primaryKey();
 		SqlToken where = new Equ(primaryKey, recordId);
 

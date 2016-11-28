@@ -5,7 +5,6 @@ import java.util.Collection;
 
 import org.zenframework.z8.server.base.model.sql.Select;
 import org.zenframework.z8.server.base.query.Query;
-import org.zenframework.z8.server.base.query.Style;
 import org.zenframework.z8.server.base.table.value.Field;
 import org.zenframework.z8.server.base.table.value.Link;
 import org.zenframework.z8.server.json.Json;
@@ -34,12 +33,6 @@ public class NewAction extends Action {
 		writer.startObject();
 		for(Field field : fields)
 			field.writeData(writer);
-
-		Style style = query.renderRecord();
-
-		if(style != null)
-			style.write(writer);
-
 		writer.finishObject();
 
 		writer.finishArray();

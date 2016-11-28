@@ -286,22 +286,6 @@ public class Query extends Runnable {
 			rootQuery.onRender();
 	}
 
-	public Style renderRecord() {
-		Style.CLASS<? extends Style> style = null;
-
-		style = z8_renderRecord();
-
-		if(style != null)
-			return style.get();
-
-		Query rootQuery = getRootQuery();
-
-		if(rootQuery != this)
-			return rootQuery.renderRecord();
-
-		return null;
-	}
-
 	@SuppressWarnings("unchecked")
 	public void onCommand(Command command, Collection<guid> recordIds) {
 		RCollection<guid> ids = getGuidCollection(recordIds);
@@ -1073,17 +1057,6 @@ public class Query extends Runnable {
 		return null;
 	}
 
-	public Field children() {
-		Query rootQuery = getRootQuery();
-
-		if(rootQuery != null && rootQuery instanceof TreeTable) {
-			TreeTable table = (TreeTable)rootQuery;
-			return table.children.get();
-		}
-
-		return null;
-	}
-
 	private String alias = null;
 
 	public String getAlias() {
@@ -1670,27 +1643,20 @@ public class Query extends Runnable {
 
 	private void writeKeys(JsonWriter writer, Collection<Field> fields) {
 		Field primaryKey = primaryKey();
-
 		if(primaryKey != null && fields.contains(primaryKey))
 			writer.writeProperty(Json.primaryKey, primaryKey.id());
 
 		Field lockKey = lockKey();
-
 		if(lockKey != null && fields.contains(lockKey))
 			writer.writeProperty(Json.lockKey, lockKey.id());
 
 		Field attachments = getAttachmentField();
-
 		if(attachments != null && fields.contains(attachments))
 			writer.writeProperty(Json.attachments, attachments.id());
 
 		Field parentKey = parentKey();
-
-		if(parentKey != null && fields.contains(parentKey)) {
+		if(parentKey != null && fields.contains(parentKey))
 			writer.writeProperty(Json.parentKey, parentKey().id());
-			writer.writeProperty(Json.parentId, guid.NULL.toString());
-			writer.writeProperty(Json.children, children().id());
-		}
 	}
 
 	private boolean writeGroupByFields(JsonWriter writer, Collection<Field> fields) {
@@ -2142,10 +2108,6 @@ public class Query extends Runnable {
 	}
 
 	public void z8_onRender() {
-	}
-
-	public Style.CLASS<? extends Style> z8_renderRecord() {
-		return null;
 	}
 
 	@SuppressWarnings("rawtypes")

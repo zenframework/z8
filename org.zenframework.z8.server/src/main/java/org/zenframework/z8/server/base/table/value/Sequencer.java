@@ -2,6 +2,7 @@ package org.zenframework.z8.server.base.table.value;
 
 import java.util.Arrays;
 
+import org.zenframework.z8.server.base.query.ReadLock;
 import org.zenframework.z8.server.base.table.system.Sequences;
 import org.zenframework.z8.server.db.sql.SqlToken;
 import org.zenframework.z8.server.db.sql.expressions.Equ;
@@ -52,6 +53,8 @@ public class Sequencer extends OBJECT {
 
 	static public long next(String key, long defaultValue, long increment) {
 		Sequences sequences = new Sequences.CLASS<Sequences>().get();
+		sequences.setReadLock(ReadLock.Update);
+
 		IntegerField valueField = sequences.value.get();
 		StringField idField = sequences.id.get();
 

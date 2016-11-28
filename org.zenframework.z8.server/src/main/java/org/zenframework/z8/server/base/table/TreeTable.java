@@ -8,10 +8,7 @@ import java.util.List;
 import org.zenframework.z8.server.base.query.Query;
 import org.zenframework.z8.server.base.table.value.Field;
 import org.zenframework.z8.server.base.table.value.GuidField;
-import org.zenframework.z8.server.base.table.value.IntegerField;
 import org.zenframework.z8.server.base.table.value.StringField;
-import org.zenframework.z8.server.db.sql.expressions.Equ;
-import org.zenframework.z8.server.resources.Resources;
 import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.runtime.RCollection;
 import org.zenframework.z8.server.types.bool;
@@ -22,8 +19,6 @@ import org.zenframework.z8.server.types.string;
 public class TreeTable extends Table {
 	static public class names {
 		public final static String ParentId = "ParentId";
-		public final static String Depth = "Depth";
-		public final static String ChildrenCount = "Children";
 		public final static String Path = "Path";
 
 		public final static String Root = "Root";
@@ -37,8 +32,6 @@ public class TreeTable extends Table {
 
 	static public class strings {
 		public final static String ParentId = "TreeTable.parentId";
-		public final static String Depth = "TreeTable.depth";
-		public final static String ChildrenCount = "TreeTable.children";
 		public final static String Path = "TreeTable.path";
 	}
 
@@ -54,11 +47,7 @@ public class TreeTable extends Table {
 		}
 	}
 
-	private guid parentIdValue = null;
-
 	public GuidField.CLASS<? extends GuidField> parentId = new GuidField.CLASS<GuidField>(this);
-	public IntegerField.CLASS<? extends IntegerField> depth = new IntegerField.CLASS<IntegerField>(this);
-	public IntegerField.CLASS<? extends IntegerField> children = new IntegerField.CLASS<IntegerField>(this);
 	public StringField.CLASS<? extends StringField> path = new StringField.CLASS<StringField>(this);
 
 	public GuidField.CLASS<? extends GuidField> parent1 = new GuidField.CLASS<GuidField>(this);
@@ -86,14 +75,7 @@ public class TreeTable extends Table {
 		parentId.setIndex("parentId");
 		parentId.setDisplayName(strings.ParentId);
 		parentId.setAttribute(ParentKey, "");
-
-		depth.setName(names.Depth);
-		depth.setIndex("depth");
-		depth.setDisplayName(strings.Depth);
-
-		children.setName(names.ChildrenCount);
-		children.setIndex("children");
-		children.setDisplayName(strings.ChildrenCount);
+		parentId.get().indexed = new bool(true);
 
 		path.setName(names.Path);
 		path.setIndex("path");
@@ -101,28 +83,33 @@ public class TreeTable extends Table {
 
 		parent1.setName(names.Parent1);
 		parent1.setIndex("parent1");
+		parent1.get().indexed = new bool(true);
 
 		parent2.setName(names.Parent2);
 		parent2.setIndex("parent2");
+		parent2.get().indexed = new bool(true);
 
 		parent3.setName(names.Parent3);
 		parent3.setIndex("parent3");
+		parent3.get().indexed = new bool(true);
 
 		parent4.setName(names.Parent4);
 		parent4.setIndex("parent4");
+		parent4.get().indexed = new bool(true);
 
 		parent5.setName(names.Parent5);
 		parent5.setIndex("parent5");
+		parent5.get().indexed = new bool(true);
 
 		parent6.setName(names.Parent6);
 		parent6.setIndex("parent6");
+		parent6.get().indexed = new bool(true);
 
 		root.setName(names.Root);
 		root.setIndex("root");
+		root.get().indexed = new bool(true);
 
 		registerDataField(parentId);
-		registerDataField(depth);
-		registerDataField(children);
 		registerDataField(path);
 
 		registerDataField(parent1);
@@ -134,8 +121,6 @@ public class TreeTable extends Table {
 		registerDataField(root);
 
 		parentId.setSystem(true);
-		depth.setSystem(true);
-		children.setSystem(true);
 		path.setSystem(true);
 
 		path.get().length = new integer(1000);
@@ -160,25 +145,18 @@ public class TreeTable extends Table {
 		recordId = primaryKey().guid();
 
 		if(keepIntegrity.get() && parentId != null) {
-			int depth = 0;
-
 			String path = recordId.toString();
 			String parentPath = "";
 
-			Field depthField = this.depth.get();
 			Field pathField = this.path.get();
 
 			if(!parentId.isNull()) {
 				try {
 					saveState();
 
-					Collection<Field> fields = new ArrayList<Field>();
-					fields.add(depthField);
-					fields.add(pathField);
-
+					Collection<Field> fields = Arrays.asList(pathField);
 					readExistingRecord(parentId, fields);
 
-					depth = depthField.get().integer().getInt() + 1;
 					parentPath = pathField.get().string().get();
 					path = parentPath + (parentPath.isEmpty() ? "" : ".") + recordId;
 				} finally {
@@ -196,7 +174,6 @@ public class TreeTable extends Table {
 			} else
 				root.get().set(recordId);
 
-			depthField.set(new integer(depth));
 			pathField.set(new string(path.toUpperCase()));
 		}
 	}
@@ -204,77 +181,6 @@ public class TreeTable extends Table {
 	private void readExistingRecord(guid parentId, Collection<Field> fields) {
 		if(!readRecord(parentId, fields))
 			throw new RuntimeException(Query.strings.ReadError);
-	}
-
-	public void repairTree() {
-		TreeTable counter = (TreeTable)getCLASS().newInstance();
-		read(Arrays.<Field> asList(recordId.get()));
-		while(next()) {
-			int count = counter.count(new Equ(counter.parentId.get(), recordId()));
-			children.get().set(new integer(count));
-			update(recordId());
-		}
-	}
-
-	@Override
-	public void afterCreate(guid recordId, guid parentId) {
-		parentId = parentKey().guid();
-		recordId = primaryKey().guid();
-
-		super.afterCreate(recordId, parentId);
-
-		if(keepIntegrity.get() && parentId != null)
-			addChild(parentId, 1);
-	}
-
-	@Override
-	public void beforeDestroy(guid recordId) {
-		super.beforeDestroy(recordId);
-
-		if(keepIntegrity.get()) {
-			try {
-				saveState();
-
-				Field parentId = this.parentId.get();
-
-				Collection<Field> fields = new ArrayList<Field>();
-				fields.add(parentId);
-
-				if(readRecord(recordId, fields))
-					parentIdValue = parentId.get().guid();
-			} finally {
-				restoreState();
-			}
-		}
-	}
-
-	@Override
-	public void afterDestroy(guid recordId) {
-		super.afterDestroy(recordId);
-
-		if(keepIntegrity.get() && parentIdValue != null) {
-			addChild(parentIdValue, -1);
-			parentIdValue = null;
-		}
-	}
-
-	private void addChild(guid parentId, int count) {
-		try {
-			saveState();
-
-			Field children = this.children.get();
-
-			Collection<Field> fields = new ArrayList<Field>();
-			fields.add(children);
-
-			if(readRecord(parentId, fields)) {
-				int value = children.get().integer().getInt();
-				children.set(new integer(Math.max(0, value + count)));
-				update(parentId);
-			}
-		} finally {
-			restoreState();
-		}
 	}
 
 	public guid[] getPath(guid id) {
@@ -289,9 +195,7 @@ public class TreeTable extends Table {
 		try {
 			saveState();
 
-			Collection<Field> fields = new ArrayList<Field>();
-			fields.add(pathField);
-
+			Collection<Field> fields = Arrays.asList(pathField);
 			readExistingRecord(id, fields);
 
 			parentPath = pathField.get().string().get();
@@ -308,10 +212,9 @@ public class TreeTable extends Table {
 
 			Field parentId = this.parentId.get();
 
-			Collection<Field> fields = new ArrayList<Field>();
-			fields.add(parentId);
-
+			Collection<Field> fields = Arrays.asList(parentId);
 			readExistingRecord(recordId, fields);
+
 			return parentId.get().guid();
 		} finally {
 			restoreState();
@@ -332,32 +235,5 @@ public class TreeTable extends Table {
 
 	public RCollection<guid> z8_getPath() {
 		return new RCollection<guid>(parsePath(this.path.get().z8_get().get()));
-	}
-
-	private void changeParent(guid recordId, guid parentId) {
-		saveState();
-		this.parentId.get().set(parentId);
-		update(recordId);
-		restoreState();
-	}
-
-	public void move(guid recordId, guid parentId) {
-		guid[] path = getPath(parentId);
-
-		if(recordId.equals(parentId)) {
-			throw new RuntimeException(Resources.get("Exception.wrongParentNode"));
-		}
-
-		for(guid part : path) {
-			if(part.equals(recordId))
-				throw new RuntimeException(Resources.get("Exception.wrongParentNode"));
-		}
-
-		guid oldParentId = getParent(recordId);
-
-		changeParent(recordId, parentId);
-
-		this.addChild(oldParentId, -1);
-		this.addChild(parentId, 1);
 	}
 }
