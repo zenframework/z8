@@ -3,6 +3,7 @@ package org.zenframework.z8.server.types.sql;
 import org.zenframework.z8.server.db.sql.SqlConst;
 import org.zenframework.z8.server.db.sql.SqlToken;
 import org.zenframework.z8.server.db.sql.expressions.Add;
+import org.zenframework.z8.server.db.sql.expressions.EquDate;
 import org.zenframework.z8.server.db.sql.expressions.Group;
 import org.zenframework.z8.server.db.sql.expressions.Operation;
 import org.zenframework.z8.server.db.sql.expressions.Rel;
@@ -48,6 +49,22 @@ public class sql_date extends sql_primary {
 
 	public sql_date(SqlToken token) {
 		super(token);
+	}
+
+	static public sql_bool isEqualDate(date left, date right) {
+		return isEqualDate(left.sql_date(), right.sql_date());
+	}
+
+	static public sql_bool isEqualDate(date left, sql_date right) {
+		return isEqualDate(left.sql_date(), right);
+	}
+
+	static public sql_bool isEqualDate(sql_date left, date right) {
+		return isEqualDate(left, right.sql_date());
+	}
+
+	static public sql_bool isEqualDate(sql_date left, sql_date right) {
+		return new sql_bool(new EquDate(left, right));
 	}
 
 	static public sql_date z8_serverTime() {
@@ -205,5 +222,9 @@ public class sql_date extends sql_primary {
 
 	public sql_bool operatorNotEqu(SqlToken value) {
 		return new sql_bool(new Rel(this, Operation.NotEq, value));
+	}
+
+	static public sql_bool z8_isEqualDate(sql_date left, sql_date right) {
+		return isEqualDate(left, right);
 	}
 }

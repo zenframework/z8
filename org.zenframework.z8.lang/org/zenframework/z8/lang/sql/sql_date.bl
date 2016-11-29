@@ -11,8 +11,11 @@ final class sql_date extends sql_primary {
 	public sql_bool operator > (sql_date value);
 	public sql_bool operator <= (sql_date value);
 	public sql_bool operator >= (sql_date value);
+
 	public sql_bool operator == (sql_date value);
 	public sql_bool operator != (sql_date value);
+
+	static public sql_bool isEqualDate(sql_date date1, sql_date date2);
 
 	static public sql_date serverTime();
 

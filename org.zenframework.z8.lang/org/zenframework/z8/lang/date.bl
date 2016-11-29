@@ -22,8 +22,11 @@ final class date extends primary {
 	public bool operator > (date value);
 	public bool operator <= (date value);
 	public bool operator >= (date value);
+
 	public bool operator == (date value);
 	public bool operator != (date value);
+
+	static public bool isEqualDate(date date1, date date2);
 
 	public int year();
 	public int quarter();

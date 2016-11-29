@@ -345,6 +345,10 @@ public class date extends primary {
 		return new date(new GregorianCalendar(value.get(GregorianCalendar.YEAR), value.get(GregorianCalendar.MONTH), value.get(GregorianCalendar.DAY_OF_MONTH), value.get(GregorianCalendar.HOUR_OF_DAY), value.get(GregorianCalendar.MINUTE), 0));
 	}
 
+	static boolean isEqualDate(date left, date right) {
+		return left.year() == right.year() && left.month() == right.month() && left.day() == right.day();
+	}
+
 	@Override
 	public String toString() {
 		int day = day();
@@ -476,7 +480,7 @@ public class date extends primary {
 	}
 
 	static public date z8_today() {
-		return new date().truncDay();
+		return new date();
 	}
 
 	static public date z8_yesterday() {
@@ -605,6 +609,10 @@ public class date extends primary {
 
 	public date z8_truncMinute() {
 		return truncMinute();
+	}
+
+	static public bool z8_isEqualDate(date left, date right) {
+		return new bool(isEqualDate(left, right));
 	}
 
 	public string z8_toString(string format) {
