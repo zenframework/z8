@@ -2084,9 +2084,4 @@ public class Query extends Runnable {
 	@SuppressWarnings("rawtypes")
 	public void z8_onReport(string report, RCollection recordIds) {
 	}
-/*
-	public string z8_getRecordFullText() {
-		return new string(getRecordFullText());
-	}
-*/
 }
