@@ -51,7 +51,7 @@ public class Expression implements IFilter {
 			}
 		} else {
 			this.field = field != null ? query.findFieldById(field) : null;
-			this.values = parseValues(values);
+				this.values = parseValues(values);
 		}
 	}
 

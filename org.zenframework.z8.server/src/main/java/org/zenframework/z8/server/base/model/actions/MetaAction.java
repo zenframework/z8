@@ -60,7 +60,7 @@ public class MetaAction extends ReadAction {
 
 	private void writeGroupFields(JsonWriter writer, Collection<Field> groupFields) {
 		if(!groupFields.isEmpty()) {
-			writer.startArray(Json.groupBy);
+			writer.startArray(Json.group);
 
 			for(Field field : groupFields)
 				writer.write(field.id());

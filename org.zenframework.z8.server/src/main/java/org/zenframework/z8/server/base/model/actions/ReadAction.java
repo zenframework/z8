@@ -112,7 +112,7 @@ public class ReadAction extends Action {
 	}
 
 	public int getLimit() {
-		return getRequestParameter(Json.limit, limit);
+		return parentKey != null ? -1 : getRequestParameter(Json.limit, limit);
 	}
 
 	public void setLimit(int limit) {
@@ -129,8 +129,8 @@ public class ReadAction extends Action {
 		Collection<Field> fields = parameters.fields != null && !parameters.fields.isEmpty() ? parameters.fields : getFormFields(query);
 		Collection<Field> sortFields = parameters.sortFields != null ? parameters.sortFields : emptyFieldList;
 		Collection<Field> groupFields = parameters.groupFields != null ? parameters.groupFields : emptyFieldList;
-		Collection<Field> groupBy = parameters.groupBy != null ? parameters.groupBy : query.collectGroupByFields();
-		Collection<Link> aggregateBy = parameters.aggregateBy != null ? parameters.aggregateBy : query.collectAggregateByFields();
+		Collection<Field> groupBy = parameters.groupBy != null ? parameters.groupBy : query.getGroupByFields();
+		Collection<Link> aggregateBy = parameters.aggregateBy != null ? parameters.aggregateBy : query.getAggregateByFields();
 
 		for(Link field : aggregateBy)
 			addAggregateByField(field);
@@ -852,7 +852,7 @@ public class ReadAction extends Action {
 
 				for(Field field : summary.getFields()) {
 					if(field == groupField)
-						writer.writeProperty(Json.groupValue, groupField.get());
+						writer.writeProperty(Json.group, groupField.get());
 					else if(field == expression)
 						writer.writeProperty(JsonObject.quote(groupField.id()), expression.get());
 					else if(field == count)

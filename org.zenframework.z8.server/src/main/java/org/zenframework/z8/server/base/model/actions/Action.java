@@ -113,18 +113,6 @@ public abstract class Action extends RequestTarget {
 		return getRequestParameter(Json.text);
 	}
 
-	public String getGroupByParameter() {
-		return getRequestParameter(Json.groupBy);
-	}
-
-	public String getGroupDirectionParameter() {
-		return getRequestParameter(Json.groupDir);
-	}
-
-	public String getTotalsByParameter() {
-		return getRequestParameter(Json.totalsBy);
-	}
-
 	public String getLookupParameter() {
 		return getRequestParameter(Json.lookup);
 	}

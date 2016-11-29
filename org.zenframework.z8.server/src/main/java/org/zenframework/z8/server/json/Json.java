@@ -111,21 +111,13 @@ public interface Json {
 	string or = new string("or");
 	string expressions = new string("expressions");
 
+/* backward compatibility */
 	string filter1 = new string("filter1");
 	string comparison = new string("comparison");
 	string andOr = new string("andOr");
-
 	string __search_text__ = new string("__search_text__");
-
-	/* Ext 3.1 values */
-	string groupBy = new string("groupBy");
 	string totalsBy = new string("totalsBy");
-	string dir = new string("dir");
-	string groupDir = new string("groupDir");
-	string groupValue = new string("groupValue");
-	string groups = new string("groups");
-	string remoteSort = new string("remoteSort");
-	/* Ext 3.1 values */
+/* backward compatibility */
 
 	string primaryKey = new string("primaryKey");
 	string lockKey = new string("lockKey");
@@ -188,14 +180,6 @@ public interface Json {
 	string reports = new string("reports");
 
 	string showTotals = new string("showTotals");
-
-	string chartType = new string("chartType");
-	string chartSeries = new string("chartSeries");
-
-	string style = new string("style");
-	string color = new string("color");
-	string background = new string("background");
-	string bold = new string("bold");
 
 	string jobId = new string("jobId");
 	string done = new string("done");

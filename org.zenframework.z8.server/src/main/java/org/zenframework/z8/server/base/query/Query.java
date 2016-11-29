@@ -49,7 +49,6 @@ import org.zenframework.z8.server.request.Loader;
 import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.runtime.OBJECT;
 import org.zenframework.z8.server.runtime.RCollection;
-import org.zenframework.z8.server.search.SearchEngine;
 import org.zenframework.z8.server.types.bool;
 import org.zenframework.z8.server.types.decimal;
 import org.zenframework.z8.server.types.exception;
@@ -211,8 +210,8 @@ public class Query extends Runnable {
 		if(ApplicationServer.events())
 			z8_afterCreate(recordId, parentId);
 
-		if(hasAttribute(IObject.SearchIndex) && !searchFields.isEmpty())
-			SearchEngine.INSTANCE.updateRecord(this, recordId.toString());
+//		if(hasAttribute(IObject.SearchIndex) && !searchFields.isEmpty())
+//			SearchEngine.INSTANCE.updateRecord(this, recordId.toString());
 
 		Query rootQuery = getRootQuery();
 
@@ -233,7 +232,9 @@ public class Query extends Runnable {
 	}
 
 	public void afterUpdate(guid recordId) {
+/*
 		Collection<Field> changedFields = getChangedFields();
+
 		if(hasAttribute(IObject.SearchIndex) && !searchFields.isEmpty()) {
 			for(Field field : changedFields) {
 				if(searchFields.contains(field.getCLASS())) {
@@ -242,7 +243,7 @@ public class Query extends Runnable {
 				}
 			}
 		}
-
+*/
 		if(ApplicationServer.events())
 			z8_afterUpdate(recordId);
 
@@ -267,10 +268,10 @@ public class Query extends Runnable {
 	public void afterDestroy(guid recordId) {
 		if(ApplicationServer.events())
 			z8_afterDestroy(recordId);
-
+/*
 		if(hasAttribute(IObject.SearchIndex) && !searchFields.isEmpty())
 			SearchEngine.INSTANCE.deleteRecord(this, recordId.toString());
-
+*/
 		Query rootQuery = getRootQuery();
 
 		if(rootQuery != this)
@@ -981,11 +982,25 @@ public class Query extends Runnable {
 	}
 
 	public Collection<Link> getAggregateByFields() {
-		return CLASS.asList(aggregateBy);
+		Collection<Link> fields = CLASS.asList(aggregateBy);
+
+		if(fields.isEmpty()) {
+			Query rootQuery = getRootQuery();
+			return rootQuery != this ? rootQuery.getAggregateByFields() : fields;
+		}
+
+		return fields;
 	}
 
 	public Collection<Field> getGroupByFields() {
-		return CLASS.asList(groupBy);
+		Collection<Field> fields = CLASS.asList(groupBy);
+
+		if(fields.isEmpty()) {
+			Query rootQuery = getRootQuery();
+			return rootQuery != this ? rootQuery.getGroupByFields() : fields;
+		}
+
+		return fields;
 	}
 
 	private RCollection<guid> getGuidCollection(Collection<guid> guids) {
@@ -1558,28 +1573,6 @@ public class Query extends Runnable {
 		return fields;
 	}
 
-	public Collection<Link> collectAggregateByFields() {
-		Collection<Link> fields = getAggregateByFields();
-
-		Query rootQuery = getRootQuery();
-
-		if(fields.isEmpty() && rootQuery != null && rootQuery != this)
-			fields = rootQuery.getAggregateByFields();
-
-		return fields;
-	}
-
-	public Collection<Field> collectGroupByFields() {
-		Collection<Field> fields = getGroupByFields();
-
-		Query rootQuery = getRootQuery();
-
-		if(fields.isEmpty() && rootQuery != null && rootQuery != this)
-			fields = rootQuery.getGroupByFields();
-
-		return fields;
-	}
-
 	private String getSearchValue(Field field) {
 		if(field instanceof AttachmentField) {
 			Collection<file> files = file.parse(field.string().get());
@@ -1612,14 +1605,10 @@ public class Query extends Runnable {
 	}
 
 	public void writeMeta(JsonWriter writer, Collection<Field> fields) {
-		Query rootQuery = getRootQuery();
-
 		writer.writeProperty(Json.id, id());
 		writer.writeProperty(Json.icon, icon());
 
 		writeKeys(writer, fields);
-
-		boolean hasGroupBy = writeGroupByFields(writer, fields);
 
 		writeFields(writer, fields);
 		writeCommands(writer);
@@ -1628,7 +1617,8 @@ public class Query extends Runnable {
 		// visuals
 		writer.writeProperty(Json.text, displayName());
 
-		writer.writeProperty(Json.readOnly, hasGroupBy || rootQuery == null ? true : readOnly());
+		boolean isGrouped = !getGroupByFields().isEmpty() || !getAggregateByFields().isEmpty();
+		writer.writeProperty(Json.readOnly, isGrouped ? true : readOnly());
 
 		writer.writeProperty(Json.showTotals, showTotals);
 		writer.writeProperty(Json.columns, columns);
@@ -1657,25 +1647,6 @@ public class Query extends Runnable {
 		Field parentKey = parentKey();
 		if(parentKey != null && fields.contains(parentKey))
 			writer.writeProperty(Json.parentKey, parentKey().id());
-	}
-
-	private boolean writeGroupByFields(JsonWriter writer, Collection<Field> fields) {
-		Collection<? extends Field> groupByFields = collectGroupByFields();
-
-		if(groupByFields.isEmpty())
-			groupByFields = collectAggregateByFields();
-
-		if(groupByFields.isEmpty())
-			return false;
-
-		writer.startArray(Json.groups);
-
-		for(Field field : groupByFields)
-			writer.write(field.id());
-
-		writer.finishArray();
-
-		return true;
 	}
 
 	public void writeFields(JsonWriter writer, Collection<Field> fields) {
@@ -2113,8 +2084,9 @@ public class Query extends Runnable {
 	@SuppressWarnings("rawtypes")
 	public void z8_onReport(string report, RCollection recordIds) {
 	}
-
+/*
 	public string z8_getRecordFullText() {
 		return new string(getRecordFullText());
 	}
+*/
 }

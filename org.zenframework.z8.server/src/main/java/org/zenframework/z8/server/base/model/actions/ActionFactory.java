@@ -113,8 +113,8 @@ public class ActionFactory {
 				result.sortFields = getSortFields(result.query, result.groupFields);
 			}
 
-			result.groupBy = result.query.collectGroupByFields();
-			result.aggregateBy = result.query.collectAggregateByFields();
+			result.groupBy = result.query.getGroupByFields();
+			result.aggregateBy = result.query.getAggregateByFields();
 
 			result.totalsBy = getTotalsBy(result.query);
 			setAggregation(result.query);
@@ -194,9 +194,6 @@ public class ActionFactory {
 		if(jsonData == null || jsonData.isEmpty())
 			return fields;
 
-		if(jsonData.charAt(0) != '[')
-			return parseSortFieldsInOldSchoolManner(query, jsonData);
-
 		JsonArray array = new JsonArray(jsonData);
 
 		for(int index = 0; index < array.length(); index++) {
@@ -217,9 +214,6 @@ public class ActionFactory {
 	private Collection<Field> parseGroupFields(Query query) {
 		String jsonData = requestParameter(Json.group);
 
-		if(jsonData == null)
-			return parseGroupFieldsInOldSchoolManner(query);
-
 		Collection<Field> fields = new ArrayList<Field>();
 
 		if(jsonData == null || jsonData.isEmpty())
@@ -237,44 +231,6 @@ public class ActionFactory {
 
 			if(field != null)
 				fields.add(field);
-		}
-
-		return fields;
-	}
-
-	private Collection<Field> parseSortFieldsInOldSchoolManner(Query query, String jsonData) {
-		Collection<Field> fields = new ArrayList<Field>();
-
-		Field field = query.findFieldById(jsonData);
-		String dir = requestParameter(Json.dir);
-
-		if(field != null) {
-			field.sortDirection = SortDirection.fromString(dir);
-			fields.add(field);
-		}
-
-		return fields;
-	}
-
-	private Collection<Field> parseGroupFieldsInOldSchoolManner(Query query) {
-		Collection<Field> fields = new ArrayList<Field>();
-
-		String jsonData = requestParameter(Json.groupBy);
-
-		if(jsonData == null || jsonData.isEmpty())
-			return fields;
-
-		String groupDir = requestParameter(Json.groupDir);
-
-		JsonArray array = new JsonArray(jsonData);
-
-		for(int index = 0; index < array.length(); index++) {
-			Field field = query.findFieldById(array.getString(index));
-
-			if(field != null) {
-				field.sortDirection = groupDir == null || groupDir.isEmpty() ? SortDirection.Asc : SortDirection.fromString(groupDir);
-				fields.add(field);
-			}
 		}
 
 		return fields;

@@ -128,8 +128,6 @@ abstract public class HubServerView extends Query {
 			Collection<Field> fields = getFormFields();
 
 			writeMeta(writer, fields);
-
-			writer.writeProperty(Json.remoteSort, false);
 			writeData(writer, action != null);
 		} else if(action.equals(Action.commandAction)) {
 			Collection<String> urls = new ArrayList<String>();

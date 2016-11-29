@@ -89,14 +89,8 @@ public class Json extends OBJECT {
 	final static public string lookupFields = org.zenframework.z8.server.json.Json.lookupFields;
 	final static public string lookup = org.zenframework.z8.server.json.Json.lookup;
 	final static public string sort = org.zenframework.z8.server.json.Json.sort;
-	final static public string groupBy = org.zenframework.z8.server.json.Json.groupBy;
 	final static public string totalsBy = org.zenframework.z8.server.json.Json.totalsBy;
-	final static public string dir = org.zenframework.z8.server.json.Json.dir;
 	final static public string direction = org.zenframework.z8.server.json.Json.direction;
-	final static public string groupDir = org.zenframework.z8.server.json.Json.groupDir;
-	final static public string groupValue = org.zenframework.z8.server.json.Json.groupValue;
-	final static public string groups = org.zenframework.z8.server.json.Json.groups;
-	final static public string remoteSort = org.zenframework.z8.server.json.Json.remoteSort;
 	final static public string __search_text__ = org.zenframework.z8.server.json.Json.__search_text__;
 
 	final static public string filter = org.zenframework.z8.server.json.Json.filter;
@@ -154,14 +148,6 @@ public class Json extends OBJECT {
 	final static public string parameters = org.zenframework.z8.server.json.Json.parameters;
 	final static public string reports = org.zenframework.z8.server.json.Json.reports;
 	final static public string showTotals = org.zenframework.z8.server.json.Json.showTotals;
-
-	final static public string chartType = org.zenframework.z8.server.json.Json.chartType;
-	final static public string chartSeries = org.zenframework.z8.server.json.Json.chartSeries;
-
-	final static public string style = org.zenframework.z8.server.json.Json.style;
-	final static public string color = org.zenframework.z8.server.json.Json.color;
-	final static public string background = org.zenframework.z8.server.json.Json.background;
-	final static public string bold = org.zenframework.z8.server.json.Json.bold;
 
 	final static public string jobId = org.zenframework.z8.server.json.Json.jobId;
 	final static public string done = org.zenframework.z8.server.json.Json.done;
