@@ -12,7 +12,7 @@ import sun.rmi.transport.tcp.TCPEndpoint;
 public class Rmi {
 
 	static public String localhost = TCPEndpoint.getLocalEndpoint(0).getHost();
-	
+
 	static private Map<Class<?>, IServer> servers = new HashMap<Class<?>, IServer>();
 
 	static public void register(IServer server) {
@@ -36,7 +36,7 @@ public class Rmi {
 
 		Class<?>[] interfaces = { cls, IServer.class };
 		LiveRef liveRef = new LiveRef(new ObjID(), new TCPEndpoint(host, port), false);
-		
+
 		return (TYPE)ProxyUtils.newProxy(liveRef, interfaces);
 	}
 
@@ -45,14 +45,14 @@ public class Rmi {
 
 		if(cls.isInterface() && subinterface.isAssignableFrom(cls))
 			return cls;
-			
+
 		Class<?>[] interfaces = cls.getInterfaces();
-		
+
 		for(Class<?> i : interfaces) {
 			if(subinterface.isAssignableFrom(i))
 				subinterface = i;
 		}
-		
+
 		if(subinterface == IServer.class)
 			throw new RuntimeException("Class '" + cls.getCanonicalName() + "' does not implement subinterface of '" + IServer.class.getCanonicalName() + "'");
 
