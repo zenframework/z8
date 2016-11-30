@@ -8,6 +8,7 @@ import java.util.List;
 import org.zenframework.z8.server.base.query.Query;
 import org.zenframework.z8.server.base.table.value.Field;
 import org.zenframework.z8.server.db.FieldType;
+import org.zenframework.z8.server.db.sql.SqlField;
 import org.zenframework.z8.server.db.sql.SqlToken;
 import org.zenframework.z8.server.db.sql.expressions.And;
 import org.zenframework.z8.server.db.sql.expressions.Operation;
@@ -28,6 +29,7 @@ import org.zenframework.z8.server.types.decimal;
 import org.zenframework.z8.server.types.guid;
 import org.zenframework.z8.server.types.integer;
 import org.zenframework.z8.server.types.string;
+import org.zenframework.z8.server.types.sql.sql_date;
 import org.zenframework.z8.server.types.sql.sql_string;
 import org.zenframework.z8.server.utils.StringUtils;
 
@@ -69,10 +71,12 @@ public class Filter {
 		FieldType type = field.type();
 
 		if(type == FieldType.Date || type == FieldType.Datetime) { // Period or date + operation
-			SqlToken sqlField = new TruncDay(field);
+			SqlToken sqlField = operation == Operation.Eq && type == FieldType.Datetime ? new TruncDay(field) : new SqlField(field);
 
-			if(values.length == 1)
-				return new Rel(sqlField, operation, new date(value).sql_date());
+			if(values.length == 1) {
+				sql_date d = new date(value).sql_date();
+				return new Rel(sqlField, operation, operation == Operation.Eq && type == FieldType.Datetime ? new TruncDay(d) : d);
+			}
 
 			date start = new date(values[0]);
 			date finish = new date(values[1]);
