@@ -13,7 +13,6 @@ import org.zenframework.z8.server.db.DatabaseVendor;
 import org.zenframework.z8.server.db.Statement;
 import org.zenframework.z8.server.engine.Database;
 import org.zenframework.z8.server.exceptions.db.UnknownDatabaseException;
-import org.zenframework.z8.server.runtime.CLASS;
 
 class IndexGenerator {
 	private Table table;
@@ -38,12 +37,7 @@ class IndexGenerator {
 	}
 
 	private String formatIndexFields(DatabaseVendor vendor) {
-		String result = vendor.quote(this.field.name());
-
-		for(Field field : CLASS.asList(this.field.indexFields))
-			result += ", " + vendor.quote(field.name());
-
-		return result;
+		return vendor.quote(this.field.name());
 	}
 
 	static void dropIndex(Connection conn, String tableName, String indexName) throws SQLException {

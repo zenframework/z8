@@ -6,6 +6,9 @@ public class NamedObject implements INamedObject {
 	protected String id;
 	protected String name;
 
+	public NamedObject() {
+	}
+
 	public NamedObject(String id) {
 		this(id, null);
 	}

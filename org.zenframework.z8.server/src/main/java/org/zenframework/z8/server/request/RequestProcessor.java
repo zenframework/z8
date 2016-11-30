@@ -41,7 +41,7 @@ public class RequestProcessor {
 			info.request = request;
 			info.response = response;
 
-			id = guid.create().toString(false);
+			id = guid.create().toString();
 
 			requests.put(id, info);
 

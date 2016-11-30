@@ -10,6 +10,9 @@ import org.zenframework.z8.server.types.string;
 public abstract class RequestTarget extends NamedObject implements IRequestTarget {
 	private IRequest request;
 
+	public RequestTarget() {
+	}
+
 	public RequestTarget(String id) {
 		super(id);
 	}

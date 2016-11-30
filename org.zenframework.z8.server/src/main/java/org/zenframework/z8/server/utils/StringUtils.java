@@ -75,4 +75,33 @@ public class StringUtils {
 		return new String(buf);
 	}
 
+	static public byte[] charsToBytes(char[] chars) {
+		if(chars == null)
+			return null;
+
+		byte[] bytes = new byte[chars.length * 2];
+
+		for(int i = 0; i < chars.length; i++) {
+			int ch = chars[i];
+			bytes[i * 2] = (byte)(ch >>> 8);
+			bytes[i * 2 + 1] = (byte)ch;
+		}
+
+		return bytes;
+	}
+
+	static public char[] bytesToChars(byte[] bytes) {
+		if(bytes.length % 2 != 0)
+			throw new RuntimeException("StringUtils.bytesToChars: wrong byte array length");
+
+		char[] chars = new char[bytes.length / 2];
+
+		for(int i = 0; i < bytes.length; i += 2) {
+			int byte1 = bytes[i];
+			int byte2 = bytes[i + 1];
+			chars[i / 2] = (char)((byte1 << 8) + byte2);
+		}
+
+		return chars;
+	}
 }

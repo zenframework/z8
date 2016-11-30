@@ -71,7 +71,7 @@ public class TableBase extends Query implements ITable {
 		List<IField> result = new ArrayList<IField>();
 
 		for(Field field : getDataFields()) {
-			if((field.indexed() || !field.indexFields.isEmpty()) && !field.unique())
+			if(field.indexed() && !field.unique())
 				result.add(field);
 		}
 

@@ -50,7 +50,6 @@ import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.runtime.OBJECT;
 import org.zenframework.z8.server.runtime.RCollection;
 import org.zenframework.z8.server.types.bool;
-import org.zenframework.z8.server.types.decimal;
 import org.zenframework.z8.server.types.exception;
 import org.zenframework.z8.server.types.file;
 import org.zenframework.z8.server.types.guid;
@@ -84,8 +83,6 @@ public class Query extends Runnable {
 	public bool collapseGroups = new bool(false);
 
 	public integer columns = new integer(4);
-	public decimal width = new decimal(0);
-	public decimal height = new decimal(0);
 
 	public RCollection<Query.CLASS<? extends Query>> queries = new RCollection<Query.CLASS<? extends Query>>(true);
 
@@ -1366,7 +1363,7 @@ public class Query extends Runnable {
 	public ILink getLinkTo(Query query) {
 		for(OBJECT.CLASS<?> cls : getLinks()) {
 			ILink link = (ILink)cls.get();
-			if(link.getQuery() == query)
+			if(link.query() == query.getCLASS())
 				return link;
 		}
 
@@ -1622,8 +1619,6 @@ public class Query extends Runnable {
 
 		writer.writeProperty(Json.showTotals, showTotals);
 		writer.writeProperty(Json.columns, columns);
-		writer.writeProperty(Json.width, width);
-		writer.writeProperty(Json.height, height);
 
 		writeControls(writer, collectControls());
 		writeGridFields(writer);

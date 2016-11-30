@@ -11,8 +11,6 @@ class Query extends Runnable {
 	public bool showTotals = false;
 
 	public int columns = 3;
-	public decimal width = 0.0;
-	public decimal height = 0.0;
 
 	public Control[] formFields;
 	public Field[] gridFields;
