@@ -73,7 +73,6 @@ public class Batch {
 			}
 			data.statement.close();
 		}
-		Trace.logEvent("Batch statements: " + data.size());
 	}
 
 	public void clear() throws SQLException {
