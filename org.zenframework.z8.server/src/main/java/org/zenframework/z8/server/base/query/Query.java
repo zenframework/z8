@@ -5,7 +5,9 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.regex.Pattern;
 
 import org.apache.commons.io.FileUtils;
@@ -841,10 +843,7 @@ public class Query extends Runnable {
 	}
 
 	public Collection<Field.CLASS<? extends Field>> formFields() {
-		if(formFields.isEmpty())
-			return dataFields();
-
-		List<Field.CLASS<? extends Field>> result = new ArrayList<Field.CLASS<? extends Field>>(50);
+		Set<Field.CLASS<? extends Field>> result = new HashSet<Field.CLASS<? extends Field>>(50);
 
 		for(Control.CLASS<? extends Control> field : formFields) {
 			if(field instanceof Section.CLASS)
@@ -854,7 +853,11 @@ public class Query extends Runnable {
 			else if(field instanceof Field.CLASS)
 				result.add((Field.CLASS<?>)field);
 		}
-		return result;
+
+		result.addAll(nameFields());
+		result.addAll(gridFields());
+
+		return result.isEmpty() ? dataFields() : result;
 	}
 
 	public Collection<Field.CLASS<? extends Field>> gridFields() {
@@ -1729,23 +1732,28 @@ public class Query extends Runnable {
 
 	private void writeGridFields(JsonWriter writer) {
 		writer.startArray(Json.gridFields);
-		for(Field field : getGridFields())
-			writer.write(field.id());
+		writeFieldsMeta(writer, getGridFields());
 		writer.finishArray();
 	}
 
 	private void writeNameFields(JsonWriter writer) {
 		writer.startArray(Json.nameFields);
-		for(Field field : getNameFields())
-			writer.write(field.id());
+		writeFieldsMeta(writer, getNameFields());
 		writer.finishArray();
 	}
 
 	private void writeQuickFilterFields(JsonWriter writer) {
 		writer.startArray(Json.quickFilterFields);
-		for(Field field : getQuickFilterFields())
-			writer.write(field.id());
+		writeFieldsMeta(writer, getQuickFilterFields());
 		writer.finishArray();
+	}
+
+	private void writeFieldsMeta(JsonWriter writer, Collection<Field> fields) {
+		for(Field field : fields) {
+			writer.startObject();
+			field.writeMeta(writer);
+			writer.finishObject();
+		}
 	}
 
 	private void writeControls(JsonWriter writer, Collection<Control> controls) {
