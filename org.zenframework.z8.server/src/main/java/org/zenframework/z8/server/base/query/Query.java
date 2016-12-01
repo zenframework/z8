@@ -637,7 +637,14 @@ public class Query extends Runnable {
 			cursor.close();
 
 		cursor = action.getCursor();
-		return cursor.next();
+
+		if(!cursor.next()) {
+			cursor.close();
+			cursor = null;
+			return false;
+		}
+
+		return true;
 	}
 
 	protected boolean readFirst(Collection<Field> fields, Collection<Field> sortFields, Collection<Field> groupFields, SqlToken where, SqlToken having) {

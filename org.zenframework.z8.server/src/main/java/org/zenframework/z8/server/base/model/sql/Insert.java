@@ -53,12 +53,13 @@ public class Insert extends Statement {
 			prepare(sql);
 			executeUpdate();
 		} catch(Throwable e) {
+			Trace.logError(e);
+
 			System.out.println(sql());
 
 			for(Field field : fields)
-				System.out.println(field.name() + ": " + field.get());
+				System.out.println(field.name() + ": " + field.getDefault());
 
-			Trace.logError(e);
 
 			throw new RuntimeException(e);
 		} finally {
@@ -73,7 +74,7 @@ public class Insert extends Statement {
 		int position = 1;
 
 		for(Field field : fields) {
-			primary value = field.get();
+			primary value = field.getDefault();
 			setParameter(position, field.type(), value);
 			position++;
 		}

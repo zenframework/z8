@@ -6,7 +6,6 @@ import java.lang.management.MemoryUsage;
 
 import org.zenframework.z8.server.base.job.Job;
 import org.zenframework.z8.server.base.job.JobMonitor;
-import org.zenframework.z8.server.base.messenger.Messenger;
 import org.zenframework.z8.server.base.model.actions.Action;
 import org.zenframework.z8.server.base.model.actions.ActionFactory;
 import org.zenframework.z8.server.base.query.Query;
@@ -67,7 +66,6 @@ public class RequestDispatcher implements Runnable {
 
 	private void dispatch() throws Throwable {
 		String requestId = request.id();
-		String messageId = request.getParameter(Json.message);
 		String jobId = request.getParameter(Json.jobId);
 
 		if(jobId != null) {
@@ -82,8 +80,6 @@ public class RequestDispatcher implements Runnable {
 			ApplicationServer.getRequest().setMonitor(monitor);
 
 			monitor.processRequest(response);
-		} else if(messageId != null) {
-			new Messenger(messageId).processRequest(response);
 		} else {
 			long t = System.currentTimeMillis();
 

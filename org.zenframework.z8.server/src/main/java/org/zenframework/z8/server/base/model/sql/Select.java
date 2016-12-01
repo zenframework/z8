@@ -324,8 +324,10 @@ public class Select {
 	}
 
 	public void close() {
-		if(cursor != null)
+		if(cursor != null) {
+			deactivate();
 			cursor.close();
+		}
 	}
 
 	private class FieldState {
@@ -370,11 +372,15 @@ public class Select {
 	}
 
 	private void activate() {
-		for(Field field : fields) {
+		for(Field field : fields)
 			field.setCursor(this);
-		}
 	}
 
+	private void deactivate() {
+		for(Field field : fields)
+			field.setCursor(null);
+	}
+	
 	protected Cursor getCursor() {
 		return cursor;
 	}

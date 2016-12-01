@@ -34,6 +34,9 @@ public class RequestProcessor {
 		RequestInfo info;
 
 		if(id == null) {
+			if(request.id() == null)
+				return;
+
 			RequestDispatcher dispatcher = new RequestDispatcher(request, response);
 
 			info = new RequestInfo();

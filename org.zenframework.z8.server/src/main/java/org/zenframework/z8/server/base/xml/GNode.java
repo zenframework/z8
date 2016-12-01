@@ -20,6 +20,8 @@ import org.zenframework.z8.server.utils.NumericUtils;
 public class GNode implements RmiSerializable, Serializable {
 	private static final long serialVersionUID = 6229467644994428114L;
 
+	static private byte[] EmptyContent = {};
+
 	private Map<String, String> attributes;
 	private List<file> files;
 	private byte[] content = null;
@@ -29,7 +31,7 @@ public class GNode implements RmiSerializable, Serializable {
 
 	public GNode(String content) {
 		try {
-			this.content = content.getBytes(encoding.Default.toString());
+			this.content = content != null ? content.getBytes(encoding.Default.toString()) : EmptyContent;
 		} catch(UnsupportedEncodingException e) {
 			throw new RuntimeException(e);
 		}

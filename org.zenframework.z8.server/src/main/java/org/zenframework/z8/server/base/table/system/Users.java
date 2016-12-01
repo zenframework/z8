@@ -8,6 +8,7 @@ import org.zenframework.z8.server.base.table.value.IField;
 import org.zenframework.z8.server.base.table.value.Link;
 import org.zenframework.z8.server.base.table.value.StringField;
 import org.zenframework.z8.server.base.table.value.TextField;
+import org.zenframework.z8.server.engine.ApplicationServer;
 import org.zenframework.z8.server.engine.IAuthorityCenter;
 import org.zenframework.z8.server.engine.Runtime;
 import org.zenframework.z8.server.resources.Resources;
@@ -157,6 +158,9 @@ public class Users extends Table {
 
 		@Override
 		public primary getDefault() {
+			if(!ApplicationServer.events())
+				return super.getDefault();
+
 			Users users = (Users)getContainer();
 			if(users.recordId.get().guid().equals(guid.NULL))
 				return new string("");

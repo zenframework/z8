@@ -893,8 +893,10 @@ public class ReadAction extends Action {
 
 		try {
 			if(totalsBy == null) {
-				if(getStart() != -1 || getLimit() != -1)
-					totalCount = writeCount(writer);
+				if(getStart() != -1 || getLimit() != -1) {
+					if((totalCount = writeCount(writer)) == 0)
+						return;
+				}
 
 				Groupping groups = writeFrame(writer);
 

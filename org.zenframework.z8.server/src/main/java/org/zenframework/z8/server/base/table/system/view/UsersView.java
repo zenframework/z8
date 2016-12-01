@@ -47,6 +47,9 @@ public class UsersView extends Users {
 			super.constructor2();
 			registerFormField(entries.get().name);
 			registerFormField(entries.get().id);
+
+			gridFields.add(entries.get().name);
+			gridFields.add(entries.get().id);
 			sortFields.add(position);
 		}
 	};

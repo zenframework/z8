@@ -87,7 +87,6 @@ public class DBGenerateProcedure extends Procedure {
 
 		@Override
 		public void message(String message) {
-			Trace.logEvent(message);
 			print(message);
 		}
 
