@@ -48,14 +48,11 @@ public class QueryUtils {
 			throw new UnsupportedOperationException();
 	}
 
-	static public void parseRecord(JsonObject record, Query query) {
-		Query rootQuery = query.getRootQuery();
+	static public guid extractKey(JsonObject record, Field field) {
+		if(field == null)
+			return null;
 
-		for(String fieldId : JsonObject.getNames(record)) {
-			Field field = rootQuery.findFieldById(fieldId);
-
-			String value = record.getString(fieldId);
-			setFieldValue(field, value);
-		}
+		String key = field.id();
+		return record.has(key) ? record.getGuid(key) : null;
 	}
 }

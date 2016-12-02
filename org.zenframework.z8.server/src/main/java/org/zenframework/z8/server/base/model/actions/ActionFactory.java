@@ -33,7 +33,7 @@ public class ActionFactory {
 			return new MetaAction(actionParameters);
 
 		if(Action.newAction.equals(actionName))
-			return actionParameters.getBoolean(Json.save) ? new CreateAction(actionParameters) : new NewAction(actionParameters);
+			return new CreateAction(actionParameters); // new NewAction(actionParameters);
 		else if(Action.createAction.equals(actionName))
 			return new CreateAction(actionParameters);
 		else if(Action.copyAction.equals(actionName))
@@ -133,6 +133,7 @@ public class ActionFactory {
 
 		Link link = (Link)result.query.findFieldById(linkId);
 		result.query = link.getQuery();
+		result.link = link;
 
 		Collection<Field> fields = result.requestQuery.getFormFields();
 

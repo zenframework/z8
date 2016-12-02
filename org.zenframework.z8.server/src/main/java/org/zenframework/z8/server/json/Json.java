@@ -31,6 +31,8 @@ public interface Json {
 
 	string isQuery = new string("isQuery");
 	string isJob = new string("isJob");
+
+	string isForm = new string("isForm");
 	string isSection = new string("isSection");
 	string isFieldset = new string("isFieldset");
 	string isListbox = new string("isListbox");

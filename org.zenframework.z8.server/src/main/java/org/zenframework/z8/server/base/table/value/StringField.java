@@ -1,5 +1,6 @@
 package org.zenframework.z8.server.base.table.value;
 
+import org.zenframework.z8.server.base.query.Query;
 import org.zenframework.z8.server.db.DatabaseVendor;
 import org.zenframework.z8.server.db.FieldType;
 import org.zenframework.z8.server.db.sql.SqlField;
@@ -85,8 +86,8 @@ public class StringField extends Field {
 	}
 
 	@Override
-	public void writeMeta(JsonWriter writer) {
-		super.writeMeta(writer);
+	public void writeMeta(JsonWriter writer, Query query) {
+		super.writeMeta(writer, query);
 
 		writer.writeProperty(Json.min, minLength, new integer(0));
 		writer.writeProperty(Json.max, maxLength, length);

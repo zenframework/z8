@@ -34,11 +34,17 @@ public class Listbox extends Control {
 	}
 
 	@Override
-	public void writeMeta(JsonWriter writer) {
-		this.query.setContainer(null);
-		Query query = this.query.get();
+	public void writeMeta(JsonWriter writer, Query query) {
+		if(query == null)
+			throw new RuntimeException("Listbox.query is null : displayName: '"  + displayName() + "'");
 
-		super.writeMeta(writer);
+		if(link == null)
+			throw new RuntimeException("Listbox.link is null : displayName: '"  + displayName() + "'");
+
+		this.query.setContainer(null);
+		query = this.query.get();
+
+		super.writeMeta(writer, query);
 
 		writer.writeProperty(Json.isListbox, true);
 		writer.writeProperty(Json.header, displayName());
@@ -52,22 +58,8 @@ public class Listbox extends Control {
 		writer.writeProperty(Json.primaryKey, query.primaryKey().id());
 		writer.writeProperty(Json.text, query.displayName());
 		writer.writeProperty(Json.link, link.id());
-		query.writeFields(writer, query.getGridFields());
-		writeSortFields(writer);
+		writer.writeControls(Json.fields, query.getGridFields(), query);
+		writer.writeSort(CLASS.asList(sortFields));
 		writer.finishObject();
-	}
-
-	private void writeSortFields(JsonWriter writer) {
-		if(sortFields.isEmpty())
-			return;
-
-		writer.startArray(Json.sort);
-		for(Field field : CLASS.asList(sortFields)) {
-			writer.startObject();
-			writer.writeProperty(Json.property, field.id());
-			writer.writeProperty(Json.direction, field.sortDirection.toString());
-			writer.finishObject();
-		}
-		writer.finishArray();
 	}
 }

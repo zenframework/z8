@@ -7,11 +7,15 @@ import java.util.Map;
 
 import org.zenframework.z8.server.base.query.Query;
 import org.zenframework.z8.server.base.table.value.Field;
+import org.zenframework.z8.server.base.table.value.Link;
+import org.zenframework.z8.server.db.sql.functions.InVector;
 import org.zenframework.z8.server.json.Json;
+import org.zenframework.z8.server.json.JsonWriter;
 import org.zenframework.z8.server.json.parser.JsonArray;
 import org.zenframework.z8.server.request.RequestTarget;
 import org.zenframework.z8.server.types.guid;
 import org.zenframework.z8.server.types.string;
+import org.zenframework.z8.server.types.sql.sql_bool;
 
 public abstract class Action extends RequestTarget {
 	static public final String newAction = "new";
@@ -44,6 +48,14 @@ public abstract class Action extends RequestTarget {
 
 	public Query getQuery() {
 		return actionParameters.query;
+	}
+
+	public Query getRequestQuery() {
+		return actionParameters.requestQuery;
+	}
+
+	public Link getLink() {
+		return actionParameters.link;
 	}
 
 	public Query getRootQuery() {
@@ -192,5 +204,34 @@ public abstract class Action extends RequestTarget {
 		}
 
 		return ids;
+	}
+
+	protected void writeFormFields(JsonWriter writer, Query query, Collection<guid> recordIds) {
+		Field primaryKey = query.primaryKey();
+
+		Collection<Field> fields = getFormFields(query);
+		fields.add(primaryKey);
+
+		Link link = getLink();
+		if(link != null)
+			fields.add(link);
+
+		for(Field field : fields)
+			field.reset();
+
+		sql_bool where = new sql_bool(new InVector(primaryKey, recordIds));
+
+		query.read(fields, where);
+
+		writer.startArray(Json.data);
+
+		while(query.next()) {
+			writer.startObject();
+			for(Field field : fields)
+				field.writeData(writer);
+			writer.finishObject();
+		}
+
+		writer.finishArray();
 	}
 }

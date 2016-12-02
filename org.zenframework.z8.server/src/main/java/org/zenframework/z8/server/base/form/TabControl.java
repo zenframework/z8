@@ -3,6 +3,7 @@ package org.zenframework.z8.server.base.form;
 import java.util.Collection;
 import java.util.LinkedHashSet;
 
+import org.zenframework.z8.server.base.query.Query;
 import org.zenframework.z8.server.base.table.value.Field;
 import org.zenframework.z8.server.json.Json;
 import org.zenframework.z8.server.json.JsonWriter;
@@ -44,10 +45,11 @@ public class TabControl extends Control {
 	}
 
 	@Override
-	public void writeMeta(JsonWriter writer) {
-		super.writeMeta(writer);
+	public void writeMeta(JsonWriter writer, Query query) {
+		super.writeMeta(writer, query);
 
 		writer.writeProperty(Json.isTabControl, true);
 		writer.writeProperty(Json.height, height, new integer(300));
+		writer.writeControls(Json.tabs, getTabs(), query);
 	}
 }

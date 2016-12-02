@@ -1,6 +1,7 @@
 package org.zenframework.z8.server.base.table.value;
 
 import java.sql.SQLException;
+import java.util.Collection;
 
 import org.zenframework.z8.server.base.form.Control;
 import org.zenframework.z8.server.base.model.sql.Select;
@@ -244,8 +245,9 @@ abstract public class Field extends Control implements IValue, IField {
 	}
 
 	@Override
-	public void writeMeta(JsonWriter writer) {
-		super.writeMeta(writer);
+	@SuppressWarnings("unchecked")
+	public void writeMeta(JsonWriter writer, Query query) {
+		super.writeMeta(writer, query);
 
 		writer.writeProperty(Json.serverType, type().toString());
 		writer.writeProperty(Json.visible, visible, new bool(true));
@@ -256,6 +258,38 @@ abstract public class Field extends Control implements IValue, IField {
 
 		if(aggregation != Aggregation.None)
 			writer.writeProperty(Json.aggregation, aggregation.toString());
+
+		Collection<ILink> path = query.getPath(this);
+
+		boolean readOnly = false;
+		boolean required = false;
+
+		if(!path.isEmpty()) {
+			ILink link = path.iterator().next();
+			Field linkField = (Field)link;
+
+			writer.startObject(Json.link);
+			writer.writeProperty(Json.name, link.id());
+			writer.writeProperty(Json.primaryKey, link.getQuery().primaryKey().id());
+			writer.finishObject();
+
+			writer.writeProperty(Json.isCombobox, true);
+			writer.writeSort(link.getQuery().getSortFields());
+
+			if(source == null)
+				source = (Query.CLASS<? extends Query>)owner().getCLASS();
+
+			readOnly = path.size() > 1 || linkField.readOnly() || !selectable();
+			required = !readOnly && linkField.required();
+		} else {
+			readOnly = readOnly();
+			required = !readOnly && required();
+
+			writer.writeProperty(Json.isText, true);
+		}
+
+		writer.writeProperty(Json.required, required);
+		writer.writeProperty(Json.readOnly, readOnly);
 
 		if(source != null) {
 			writer.startObject(Json.source);

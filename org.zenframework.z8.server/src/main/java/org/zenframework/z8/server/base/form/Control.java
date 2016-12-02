@@ -1,5 +1,6 @@
 package org.zenframework.z8.server.base.form;
 
+import org.zenframework.z8.server.base.query.Query;
 import org.zenframework.z8.server.base.table.value.Link;
 import org.zenframework.z8.server.json.Json;
 import org.zenframework.z8.server.json.JsonWriter;
@@ -58,7 +59,7 @@ public class Control extends OBJECT {
 		return readOnly != null ? readOnly.get() : false;
 	}
 
-	public void writeMeta(JsonWriter writer) {
+	public void writeMeta(JsonWriter writer, Query query) {
 		writer.writeProperty(Json.name, id());
 		writer.writeProperty(Json.header, displayName());
 		writer.writeProperty(Json.description, description());

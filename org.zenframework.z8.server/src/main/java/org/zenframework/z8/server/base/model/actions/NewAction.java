@@ -78,16 +78,17 @@ public class NewAction extends Action {
 
 	static private Collection<Field> initFields(Collection<Field> fields, guid recordId, guid parentId) {
 		for(Field field : fields) {
-			if(!field.changed()) {
-				if(field.isPrimaryKey()) {
-					field.set(recordId);
-				} else if(field.isParentKey() && parentId != null) {
-					field.set(parentId);
-				} else {
-					primary value = field.getDefault();
-					if(!value.equals(field.getDefaultValue()))
-						field.set(value);
-				}
+			if(field.changed())
+				continue;
+
+			if(field.isPrimaryKey()) {
+				field.set(recordId);
+			} else if(field.isParentKey() && parentId != null) {
+				field.set(parentId);
+			} else {
+				primary value = field.getDefault();
+				if(!value.equals(field.getDefaultValue()))
+					field.set(value);
 			}
 		}
 

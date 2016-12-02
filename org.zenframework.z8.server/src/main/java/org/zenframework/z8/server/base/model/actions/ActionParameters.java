@@ -6,7 +6,6 @@ import java.util.Map;
 
 import org.zenframework.z8.server.base.query.Query;
 import org.zenframework.z8.server.base.table.value.Field;
-import org.zenframework.z8.server.base.table.value.ILink;
 import org.zenframework.z8.server.base.table.value.Link;
 import org.zenframework.z8.server.json.Json;
 import org.zenframework.z8.server.types.bool;
@@ -28,7 +27,7 @@ public class ActionParameters {
 
 	private Map<string, string> requestParameters = new HashMap<string, string>();
 
-	public ILink link;
+	public Link link;
 
 	public ActionParameters() {
 	}

@@ -50,6 +50,7 @@ public class UsersView extends Users {
 
 			gridFields.add(entries.get().name);
 			gridFields.add(entries.get().id);
+
 			sortFields.add(position);
 		}
 	};

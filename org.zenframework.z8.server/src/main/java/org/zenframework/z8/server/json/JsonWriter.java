@@ -2,8 +2,12 @@ package org.zenframework.z8.server.json;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
+import org.zenframework.z8.server.base.form.Control;
+import org.zenframework.z8.server.base.query.Query;
+import org.zenframework.z8.server.base.table.value.Field;
 import org.zenframework.z8.server.base.table.value.IValue;
 import org.zenframework.z8.server.json.parser.JsonArray;
 import org.zenframework.z8.server.json.parser.JsonObject;
@@ -281,6 +285,43 @@ public class JsonWriter {
 
 	public void writeProperty(String name, JsonArray value) {
 		writeProperty(name, value.toString(), false);
+	}
+
+	public void writeControls(string property, Collection<? extends Control> controls, Query query) {
+		if(controls.isEmpty())
+			return;
+
+		startArray(property);
+		for(Control control : controls) {
+			startObject();
+			control.writeMeta(this, query);
+			finishObject();
+		}
+		finishArray();
+	}
+
+	public void writeSort(Collection<Field> sortFields) {
+		if(sortFields.isEmpty())
+			return;
+
+		startArray(Json.sort);
+		for(Field field : sortFields) {
+			startObject();
+			writeProperty(Json.property, field.id());
+			writeProperty(Json.direction, field.sortDirection.toString());
+			finishObject();
+		}
+		finishArray();
+	}
+
+	public void writeGroup(Collection<Field> groupFields) {
+		if(groupFields.isEmpty())
+			return;
+
+		startArray(Json.group);
+		for(Field field : groupFields)
+			write(field.id());
+		finishArray();
 	}
 
 	public void startResponse(String requestId, boolean success) {

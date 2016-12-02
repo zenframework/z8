@@ -13,9 +13,7 @@ import java.util.regex.Pattern;
 import org.apache.commons.io.FileUtils;
 import org.zenframework.z8.server.base.file.Folders;
 import org.zenframework.z8.server.base.form.Control;
-import org.zenframework.z8.server.base.form.Listbox;
 import org.zenframework.z8.server.base.form.Section;
-import org.zenframework.z8.server.base.form.Tab;
 import org.zenframework.z8.server.base.form.TabControl;
 import org.zenframework.z8.server.base.model.actions.ActionParameters;
 import org.zenframework.z8.server.base.model.actions.CopyAction;
@@ -1615,9 +1613,13 @@ public class Query extends Runnable {
 		writer.writeProperty(Json.id, id());
 		writer.writeProperty(Json.icon, icon());
 
-		writeKeys(writer, fields);
+		writer.writeControls(Json.fields, fields, this);
+		writer.writeControls(Json.controls, getControls(), this);
+		writer.writeControls(Json.gridFields, getGridFields(), this);
+		writer.writeControls(Json.nameFields, getNameFields(), this);
+		writer.writeControls(Json.quickFilterFields, getQuickFilterFields(), this);
 
-		writeFields(writer, fields);
+		writeKeys(writer, fields);
 		writeCommands(writer);
 		writePeriod(writer);
 
@@ -1629,11 +1631,6 @@ public class Query extends Runnable {
 
 		writer.writeProperty(Json.showTotals, showTotals);
 		writer.writeProperty(Json.columns, columns);
-
-		writeControls(writer, collectControls());
-		writeGridFields(writer);
-		writeNameFields(writer);
-		writeQuickFilterFields(writer);
 	}
 
 	private void writeKeys(JsonWriter writer, Collection<Field> fields) {
@@ -1652,60 +1649,6 @@ public class Query extends Runnable {
 		Field parentKey = parentKey();
 		if(parentKey != null && fields.contains(parentKey))
 			writer.writeProperty(Json.parentKey, parentKey().id());
-	}
-
-	public void writeFields(JsonWriter writer, Collection<Field> fields) {
-		writeFields(writer, fields, Json.fields);
-	}
-
-	public void writeFields(JsonWriter writer, Collection<Field> fields, string property) {
-		writer.startArray(property);
-
-		for(Field field : fields) {
-			writer.startObject();
-			writeField(writer, field);
-			writer.finishObject();
-		}
-
-		writer.finishArray();
-	}
-
-	@SuppressWarnings("unchecked")
-	public void writeField(JsonWriter writer, Field field) {
-		Collection<ILink> path = getPath(field);
-
-		if(field instanceof ILink && !path.isEmpty())
-			((ILink)field).enableLinkMeta(false);
-
-		boolean readOnly = false;
-		boolean required = false;
-
-		if(!path.isEmpty()) {
-			ILink link = path.iterator().next();
-			Field linkField = (Field)link;
-
-			writer.startObject(Json.link);
-			writer.writeProperty(Json.name, link.id());
-			writer.writeProperty(Json.primaryKey, link.getQuery().primaryKey().id());
-			writer.finishObject();
-
-			writer.writeProperty(Json.isCombobox, true);
-			if(field.source == null)
-				field.source = (CLASS<? extends Query>)field.owner().getCLASS();
-
-			readOnly = path.size() > 1 || linkField.readOnly() || !field.selectable();
-			required = !readOnly && linkField.required();
-		} else {
-			readOnly = field.readOnly();
-			required = !readOnly && field.required();
-
-			writer.writeProperty(Json.isText, true);
-		}
-
-		writer.writeProperty(Json.required, required);
-		writer.writeProperty(Json.readOnly, readOnly);
-
-		field.writeMeta(writer);
 	}
 
 	private void writeCommands(JsonWriter writer) {
@@ -1728,76 +1671,6 @@ public class Query extends Runnable {
 			writer.writeProperty(Json.finish, period.get().finish);
 			writer.finishObject();
 		}
-	}
-
-	private void writeGridFields(JsonWriter writer) {
-		writer.startArray(Json.gridFields);
-		writeFieldsMeta(writer, getGridFields());
-		writer.finishArray();
-	}
-
-	private void writeNameFields(JsonWriter writer) {
-		writer.startArray(Json.nameFields);
-		writeFieldsMeta(writer, getNameFields());
-		writer.finishArray();
-	}
-
-	private void writeQuickFilterFields(JsonWriter writer) {
-		writer.startArray(Json.quickFilterFields);
-		writeFieldsMeta(writer, getQuickFilterFields());
-		writer.finishArray();
-	}
-
-	private void writeFieldsMeta(JsonWriter writer, Collection<Field> fields) {
-		for(Field field : fields) {
-			writer.startObject();
-			field.writeMeta(writer);
-			writer.finishObject();
-		}
-	}
-
-	private void writeControls(JsonWriter writer, Collection<Control> controls) {
-		writer.startArray(Json.controls);
-
-		for(Control control : controls) {
-			writer.startObject();
-
-			if(control instanceof Section) {
-				control.writeMeta(writer);
-				Section section = (Section)control;
-				writeControls(writer, section.getControls());
-			} else if(control instanceof TabControl) {
-				control.writeMeta(writer);
-				TabControl tabControl = (TabControl)control;
-
-				writer.startArray(Json.tabs);
-				for(Tab tab : tabControl.getTabs()) {
-					writer.startObject();
-					tab.writeMeta(writer);
-					writeControls(writer, tab.getControls());
-					writer.finishObject();
-				}
-				writer.finishArray();
-			} else if(control instanceof Listbox)
-				control.writeMeta(writer);
-			else
-				writeField(writer, (Field)control);
-
-			writer.finishObject();
-		}
-
-		writer.finishArray();
-	}
-
-	private Collection<Control> collectControls() {
-		Collection<Control> controls = getControls();
-
-		Query rootQuery = getRootQuery();
-
-		if(controls.isEmpty() && rootQuery != this)
-			controls = rootQuery.getControls();
-
-		return controls;
 	}
 
 	//////////////////////////////////////////////////////////////////////////////////////////////////

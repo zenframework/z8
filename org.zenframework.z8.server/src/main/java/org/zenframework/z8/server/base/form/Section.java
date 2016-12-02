@@ -3,6 +3,7 @@ package org.zenframework.z8.server.base.form;
 import java.util.Collection;
 import java.util.LinkedHashSet;
 
+import org.zenframework.z8.server.base.query.Query;
 import org.zenframework.z8.server.base.table.value.Field;
 import org.zenframework.z8.server.json.Json;
 import org.zenframework.z8.server.json.JsonWriter;
@@ -26,7 +27,7 @@ public class Section extends Control {
 	public integer columns = new integer(3);
 	public integer height;
 
-	public RCollection<Control.CLASS<? extends Control>> controls = new RCollection<Control.CLASS<? extends Control>>(true);
+	public RCollection<Control.CLASS<? extends Control>> controls = new RCollection<Control.CLASS<? extends Control>>();
 
 	public Section(IObject container) {
 		super(container);
@@ -56,12 +57,13 @@ public class Section extends Control {
 	}
 
 	@Override
-	public void writeMeta(JsonWriter writer) {
-		super.writeMeta(writer);
+	public void writeMeta(JsonWriter writer, Query query) {
+		super.writeMeta(writer, query);
 
 		writer.writeProperty(Json.isSection, true);
 		writer.writeProperty(Json.readOnly, readOnly);
 		writer.writeProperty(Json.columns, columns);
 		writer.writeProperty(Json.height, height);
+		writer.writeControls(Json.controls, getControls(), query); 
 	}
 }

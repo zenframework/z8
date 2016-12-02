@@ -1,5 +1,6 @@
 package org.zenframework.z8.server.base.form;
 
+import org.zenframework.z8.server.base.query.Query;
 import org.zenframework.z8.server.json.Json;
 import org.zenframework.z8.server.json.JsonWriter;
 import org.zenframework.z8.server.runtime.IObject;
@@ -22,8 +23,8 @@ public class Fieldset extends Section {
 	}
 
 	@Override
-	public void writeMeta(JsonWriter writer) {
-		super.writeMeta(writer);
+	public void writeMeta(JsonWriter writer, Query query) {
+		super.writeMeta(writer, query);
 
 		writer.writeProperty(Json.isFieldset, true);
 		writer.writeProperty(Json.legend, displayName());

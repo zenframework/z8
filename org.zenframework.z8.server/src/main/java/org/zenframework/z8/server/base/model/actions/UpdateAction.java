@@ -1,11 +1,15 @@
 package org.zenframework.z8.server.base.model.actions;
 
+import java.util.ArrayList;
 import java.util.Collection;
 
 import org.zenframework.z8.server.base.model.sql.Update;
 import org.zenframework.z8.server.base.query.Query;
 import org.zenframework.z8.server.base.query.QueryUtils;
 import org.zenframework.z8.server.base.table.value.Field;
+import org.zenframework.z8.server.base.table.value.Link;
+import org.zenframework.z8.server.db.Connection;
+import org.zenframework.z8.server.db.ConnectionManager;
 import org.zenframework.z8.server.json.JsonWriter;
 import org.zenframework.z8.server.json.parser.JsonArray;
 import org.zenframework.z8.server.json.parser.JsonObject;
@@ -26,16 +30,63 @@ public class UpdateAction extends Action {
 		JsonArray records = new JsonArray(jsonData);
 
 		Query query = getQuery();
+
 		Field primaryKey = query.primaryKey();
+		Field parentKey = query.parentKey();
+
+		Collection<guid> recordIds = new ArrayList<guid>();
 
 		for(int index = 0; index < records.length(); index++) {
 			JsonObject record = (JsonObject)records.get(index);
 
-			QueryUtils.parseRecord(record, query);
+			for(String fieldId : JsonObject.getNames(record)) {
+				Field field = query.getFieldById(fieldId);
+				if(field != null)
+					QueryUtils.setFieldValue(field, record.getString(fieldId));
+			}
 
 			guid recordId = primaryKey.guid();
 
-			run(query, recordId);
+			if(recordId.isNull())
+				recordId = createLink(record, query, primaryKey, parentKey);
+			else
+				run(query, recordId);
+
+			recordIds.add(recordId);
+		}
+
+		writeFormFields(writer, getRequestQuery(), recordIds);
+	}
+
+	private guid createLink(JsonObject record, Query query, Field primaryKey, Field parentKey) {
+		Connection connection = ConnectionManager.get();
+		connection.beginTransaction();
+
+		try {
+			guid newRecordId = guid.create();
+			primaryKey.set(newRecordId);
+
+			guid parentId = parentKey != null ? parentKey.guid() : null;
+
+			NewAction.run(query, newRecordId, parentId);
+			query.insert(newRecordId, parentId);
+
+			Query requestQuery = getRequestQuery();
+			Link link = getLink();
+
+			if(query == requestQuery)
+				throw new RuntimeException("UpdateAction - bad recordId"); 
+
+			link.set(newRecordId);
+			guid recordId = QueryUtils.extractKey(record, requestQuery.primaryKey());
+			requestQuery.update(recordId);
+
+			connection.commit();
+
+			return recordId;
+		} catch(Throwable e) {
+			connection.rollback();
+			throw new RuntimeException(e);
 		}
 	}
 
