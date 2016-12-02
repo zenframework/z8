@@ -68,8 +68,8 @@ public class Servlet extends HttpServlet {
 		}
 
 		adapters.add(new JsonAdapter(this));
+		adapters.add(new TrustedAuthAdapter(this));
 		adapters.add(new ConverterAdapter(this));
-        adapters.add(new TrustedAuthAdapter(this));
 
 		for(Adapter adapter : adapters)
 			adapter.start();
