@@ -74,56 +74,61 @@ public class TreeTable extends Table {
 		parentId.setName(names.ParentId);
 		parentId.setIndex("parentId");
 		parentId.setDisplayName(strings.ParentId);
+		parentId.setSystem(true);
 		parentId.setAttribute(ParentKey, "");
 		parentId.get().indexed = new bool(true);
 
 		path.setName(names.Path);
 		path.setIndex("path");
+		path.setSystem(true);
 		path.setDisplayName(strings.Path);
+		path.get().length = new integer(1000);
+
+		root.setName(names.Root);
+		root.setIndex("root");
+		root.setSystem(true);
+		root.get().indexed = new bool(true);
 
 		parent1.setName(names.Parent1);
 		parent1.setIndex("parent1");
+		parent1.setSystem(true);
 		parent1.get().indexed = new bool(true);
 
 		parent2.setName(names.Parent2);
 		parent2.setIndex("parent2");
+		parent2.setSystem(true);
 		parent2.get().indexed = new bool(true);
 
 		parent3.setName(names.Parent3);
 		parent3.setIndex("parent3");
+		parent3.setSystem(true);
 		parent3.get().indexed = new bool(true);
 
 		parent4.setName(names.Parent4);
 		parent4.setIndex("parent4");
+		parent4.setSystem(true);
 		parent4.get().indexed = new bool(true);
 
 		parent5.setName(names.Parent5);
 		parent5.setIndex("parent5");
+		parent5.setSystem(true);
 		parent5.get().indexed = new bool(true);
 
 		parent6.setName(names.Parent6);
 		parent6.setIndex("parent6");
+		parent6.setSystem(true);
 		parent6.get().indexed = new bool(true);
-
-		root.setName(names.Root);
-		root.setIndex("root");
-		root.get().indexed = new bool(true);
 
 		registerDataField(parentId);
 		registerDataField(path);
 
+		registerDataField(root);
 		registerDataField(parent1);
 		registerDataField(parent2);
 		registerDataField(parent3);
 		registerDataField(parent4);
 		registerDataField(parent5);
 		registerDataField(parent6);
-		registerDataField(root);
-
-		parentId.setSystem(true);
-		path.setSystem(true);
-
-		path.get().length = new integer(1000);
 	}
 
 	private guid[] parsePath(String path) {

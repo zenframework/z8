@@ -119,8 +119,6 @@ public class Domains extends Table {
 		registerFormField(owner);
 
 		queries.add(users);
-
-		links.add(userLink);
 	}
 
 	@Override

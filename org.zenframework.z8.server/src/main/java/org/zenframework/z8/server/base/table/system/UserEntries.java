@@ -112,9 +112,6 @@ public class UserEntries extends Table {
 		queries.add(users);
 		queries.add(entries);
 
-		links.add(user);
-		links.add(entry);
-
 		{
 			LinkedHashMap<IField, primary> record = new LinkedHashMap<IField, primary>();
 			record.put(user.get(), BuiltinUsers.Administrator.guid());

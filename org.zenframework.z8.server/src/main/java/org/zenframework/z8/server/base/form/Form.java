@@ -6,8 +6,8 @@ import org.zenframework.z8.server.json.Json;
 import org.zenframework.z8.server.json.JsonWriter;
 import org.zenframework.z8.server.runtime.IObject;
 
-public class Form extends Fieldset {
-	public static class CLASS<T extends Form> extends Fieldset.CLASS<T> {
+public class Form extends Section {
+	public static class CLASS<T extends Form> extends Section.CLASS<T> {
 		public CLASS(IObject container) {
 			super(container);
 			setJavaClass(Form.class);

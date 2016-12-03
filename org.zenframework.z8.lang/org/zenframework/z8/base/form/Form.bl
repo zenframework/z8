@@ -1,6 +1,6 @@
 import org.zenframework.z8.base.table.value.Link;
 [native "org.zenframework.z8.server.base.form.Form"]
 
-class Form extends Fieldset {
+class Form extends Section {
 	Link link;
 }

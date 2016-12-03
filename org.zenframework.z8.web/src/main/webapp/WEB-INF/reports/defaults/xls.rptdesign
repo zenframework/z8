@@ -48,8 +48,10 @@
             <property name="borderTopColor">#C0C0C0</property>
             <property name="borderTopStyle">solid</property>
             <property name="borderTopWidth">1px</property>
-            <property name="paddingTop">0pt</property>
-            <property name="paddingBottom">0pt</property>
+            <property name="paddingTop">5px</property>
+            <property name="paddingLeft">5px</property>
+            <property name="paddingBottom">5px</property>
+            <property name="paddingRight">5px</property>
             <property name="textAlign">center</property>
             <property name="verticalAlign">middle</property>
         </style>
@@ -108,10 +110,10 @@
             <property name="borderTopColor">#C0C0C0</property>
             <property name="borderTopStyle">solid</property>
             <property name="borderTopWidth">1px</property>
-            <property name="paddingTop">0pt</property>
-            <property name="paddingLeft">1pt</property>
-            <property name="paddingBottom">0pt</property>
-            <property name="paddingRight">1pt</property>
+            <property name="paddingTop">5px</property>
+            <property name="paddingLeft">5px</property>
+            <property name="paddingBottom">5px</property>
+            <property name="paddingRight">5px</property>
             <property name="pageBreakInside">auto</property>
         </style>
         <style name="GroupFooterCell2" id="12">
@@ -251,33 +253,15 @@
         <grid id="35">
             <property name="fontFamily">"Arial"</property>
             <property name="fontSize">16px</property>
-            <property name="borderBottomStyle">none</property>
-            <property name="borderLeftStyle">none</property>
-            <property name="borderRightStyle">none</property>
-            <property name="borderTopStyle">none</property>
             <property name="width">100%</property>
             <column id="37"/>
             <row id="39">
-                <property name="borderBottomStyle">none</property>
-                <property name="borderLeftStyle">none</property>
-                <property name="borderRightStyle">none</property>
-                <property name="borderTopStyle">none</property>
                 <cell id="41">
-                    <property name="paddingTop">0pt</property>
-                    <property name="paddingLeft">0pt</property>
-                    <property name="paddingBottom">0pt</property>
-                    <property name="paddingRight">0pt</property>
                     <label name="CaptionCenter" id="34">
-                        <property name="backgroundColor">black</property>
                         <property name="fontFamily">"Play"</property>
                         <property name="fontSize">18px</property>
                         <property name="fontWeight">bold</property>
                         <property name="fontVariant">normal</property>
-                        <property name="color">white</property>
-                        <property name="paddingTop">0pt</property>
-                        <property name="paddingLeft">0pt</property>
-                        <property name="paddingBottom">0pt</property>
-                        <property name="paddingRight">0pt</property>
                         <property name="textAlign">center</property>
                         <property name="lineHeight">normal</property>
                         <property name="pageBreakAfter">auto</property>
@@ -298,53 +282,6 @@
                     <property name="borderLeftStyle">none</property>
                     <property name="borderRightStyle">none</property>
                     <property name="borderTopStyle">none</property>
-                </cell>
-            </row>
-        </grid>
-        <grid id="46">
-            <property name="width">7.760416666666667in</property>
-            <column id="47">
-                <property name="width">1.15625in</property>
-            </column>
-            <column id="48">
-                <property name="width">5.145833333333333in</property>
-            </column>
-            <column id="49">
-                <property name="width">1.4583333333333333in</property>
-            </column>
-            <row id="50">
-                <cell id="51">
-                    <label name="FooterLeft" id="52">
-                        <property name="fontSize">large</property>
-                        <property name="fontVariant">normal</property>
-                        <property name="textAlign">center</property>
-                        <property name="lineHeight">normal</property>
-                        <property name="pageBreakAfter">auto</property>
-                        <property name="canShrink">false</property>
-                        <property name="height">20pt</property>
-                    </label>
-                </cell>
-                <cell id="53">
-                    <label name="FooterCenter" id="54">
-                        <property name="fontSize">large</property>
-                        <property name="fontVariant">normal</property>
-                        <property name="textAlign">center</property>
-                        <property name="lineHeight">normal</property>
-                        <property name="pageBreakAfter">auto</property>
-                        <property name="canShrink">false</property>
-                        <property name="height">20pt</property>
-                    </label>
-                </cell>
-                <cell id="55">
-                    <label name="FooterRight" id="56">
-                        <property name="fontSize">large</property>
-                        <property name="fontVariant">normal</property>
-                        <property name="textAlign">center</property>
-                        <property name="lineHeight">normal</property>
-                        <property name="pageBreakAfter">auto</property>
-                        <property name="canShrink">false</property>
-                        <property name="height">20pt</property>
-                    </label>
                 </cell>
             </row>
         </grid>

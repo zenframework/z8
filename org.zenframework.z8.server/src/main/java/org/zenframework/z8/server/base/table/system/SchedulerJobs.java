@@ -140,9 +140,6 @@ public class SchedulerJobs extends Table {
 
 		queries.add(jobs);
 		queries.add(users);
-
-		links.add(job);
-		links.add(user);
 	}
 
 	@Override

@@ -5,7 +5,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 
 import org.zenframework.z8.server.base.model.sql.CountingSelect;
@@ -172,7 +171,7 @@ public class TableGenerator {
 
 		dbFieldsAlter = new LinkedList<ColumnDescAlter>();
 
-		for(Field field : table().getTableFields()) {
+		for(Field field : table().getPrimaryFields()) {
 			ColumnDescGen columndesc = dbFields.get(field.name());
 
 			if(columndesc == null) {
@@ -436,11 +435,12 @@ public class TableGenerator {
 	private void createTable(String name) throws SQLException {
 		String sql = "create table " + database().tableName(name) + " (";
 
-		List<Field> fields = table().getTableFields();
+		boolean first =  true;
+		Collection<Field> fields = table().getPrimaryFields();
 
-		for(int i = 0; i < fields.size(); i++) {
-			Field field = fields.get(i);
-			sql += (i != 0 ? ", " : "") + getFieldForCreate(field);
+		for(Field field : fields) {
+			sql += (first ? "" : ", ") + getFieldForCreate(field);
+			first = false;
 		}
 
 		sql += ")";
@@ -591,7 +591,7 @@ public class TableGenerator {
 		Database database = database();
 		DatabaseVendor vendor = vendor();
 
-		for(Field field : table().getTableFields()) {
+		for(Field field : table().getPrimaryFields()) {
 			String name = field.name();
 
 			ColumnDescGen dbField = dbFields.get(name);

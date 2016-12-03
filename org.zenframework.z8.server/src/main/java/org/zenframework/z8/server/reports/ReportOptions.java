@@ -31,7 +31,7 @@ public class ReportOptions {
 
 	public boolean dropGroupDetail = false;
 
-	public boolean useBlackWhiteColors = true;
+	public boolean useBlackWhiteColors = false;
 
 	public int pagesWide = 1;
 

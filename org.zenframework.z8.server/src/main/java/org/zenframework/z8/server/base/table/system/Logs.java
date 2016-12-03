@@ -98,7 +98,5 @@ public class Logs extends Table {
 		registerFormField(jobs.get().active);
 
 		queries.add(jobs);
-
-		links.add(job);
 	}
 }

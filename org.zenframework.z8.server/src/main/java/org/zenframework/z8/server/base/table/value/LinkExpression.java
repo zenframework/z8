@@ -28,6 +28,7 @@ public class LinkExpression extends GuidExpression implements ILink, IForeignKey
 
 	public LinkExpression(IObject container) {
 		super(container);
+		setSystem(true);
 	}
 
 	@Override

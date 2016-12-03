@@ -96,12 +96,12 @@ public class ActionFactory {
 		if(result.query != null) {
 			if(actionName == null) {
 				result.groupFields = new ArrayList<Field>();
-				result.groupFields.addAll(result.query.collectGroupFields());
+				result.groupFields.addAll(result.query.getGroupFields());
 
 				if(result.sortFields == null) {
 					result.sortFields = new LinkedHashSet<Field>();
 					result.sortFields.addAll(result.groupFields);
-					result.sortFields.addAll(result.query.collectSortFields());
+					result.sortFields.addAll(result.query.getSortFields());
 				}
 
 				if(result.fields != null) {

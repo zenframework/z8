@@ -36,7 +36,6 @@ import org.zenframework.z8.server.base.table.value.Link;
 import org.zenframework.z8.server.base.table.value.LinkExpression;
 import org.zenframework.z8.server.base.view.command.Command;
 import org.zenframework.z8.server.base.view.filter.Filter;
-import org.zenframework.z8.server.db.FieldType;
 import org.zenframework.z8.server.db.sql.SqlToken;
 import org.zenframework.z8.server.db.sql.expressions.And;
 import org.zenframework.z8.server.db.sql.expressions.True;
@@ -51,7 +50,6 @@ import org.zenframework.z8.server.runtime.OBJECT;
 import org.zenframework.z8.server.runtime.RCollection;
 import org.zenframework.z8.server.types.bool;
 import org.zenframework.z8.server.types.exception;
-import org.zenframework.z8.server.types.file;
 import org.zenframework.z8.server.types.guid;
 import org.zenframework.z8.server.types.integer;
 import org.zenframework.z8.server.types.primary;
@@ -206,10 +204,10 @@ public class Query extends Runnable {
 	public void afterCreate(guid recordId, guid parentId) {
 		if(ApplicationServer.events())
 			z8_afterCreate(recordId, parentId);
-
-//		if(hasAttribute(IObject.SearchIndex) && !searchFields.isEmpty())
-//			SearchEngine.INSTANCE.updateRecord(this, recordId.toString());
-
+/*
+		if(hasAttribute(IObject.SearchIndex) && !searchFields.isEmpty())
+			SearchEngine.INSTANCE.updateRecord(this, recordId.toString());
+*/
 		Query rootQuery = getRootQuery();
 
 		if(rootQuery != this)
@@ -840,6 +838,17 @@ public class Query extends Runnable {
 		return dataFields;
 	}
 
+	public Collection<Field.CLASS<? extends Field>> primaryFields() {
+		Collection<Field.CLASS<? extends Field>> fields = new ArrayList<Field.CLASS<? extends Field>>(50);
+
+		for(Field.CLASS<? extends Field> field : dataFields()) {
+			if(!(field instanceof Expression.CLASS))
+				fields.add(field);
+		}
+
+		return fields;
+	}
+
 	public Collection<Field.CLASS<? extends Field>> formFields() {
 		Set<Field.CLASS<? extends Field>> result = new HashSet<Field.CLASS<? extends Field>>(50);
 
@@ -870,9 +879,36 @@ public class Query extends Runnable {
 		return quickFilterFields;
 	}
 
+	public Collection<Field.CLASS<? extends Field>> sortFields() {
+		if(sortFields.isEmpty()) {
+			Query rootQuery = getRootQuery();
+			if(rootQuery != this)
+				return rootQuery.sortFields;
+		}
+		return sortFields;
+	}
+
+	public Collection<Field.CLASS<? extends Field>> groupFields() {
+		if(groupFields.isEmpty()) {
+			Query rootQuery = getRootQuery();
+			if(rootQuery != this)
+				return rootQuery.groupFields;
+		}
+		return groupFields;
+	}
+
+	private Collection<Control.CLASS<? extends Control>> defaultControls() {
+		Collection<Control.CLASS<? extends Control>> result = new ArrayList<Control.CLASS<? extends Control>>();
+		for(Field.CLASS<? extends Field> field : dataFields) {
+			if(!field.system())
+				result.add(field);
+		}
+		return result;
+	}
+
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public Collection<Control.CLASS<? extends Control>> controls() {
-		return formFields.isEmpty() ? (Collection)dataFields() : formFields;
+		return formFields.isEmpty() ? (Collection)defaultControls() : formFields;
 	}
 
 	public Collection<Query.CLASS<? extends Query>> queries() {
@@ -885,6 +921,10 @@ public class Query extends Runnable {
 
 	public Collection<Field> getDataFields() {
 		return CLASS.asList(dataFields());
+	}
+
+	public Collection<Field> getPrimaryFields() {
+		return CLASS.asList(primaryFields());
 	}
 
 	public Collection<Field> getFormFields() {
@@ -901,6 +941,14 @@ public class Query extends Runnable {
 
 	public Collection<Field> getQuickFilterFields() {
 		return CLASS.asList(quickFilterFields());
+	}
+
+	public Collection<Field> getSortFields() {
+		return CLASS.asList(sortFields());
+	}
+
+	public Collection<Field> getGroupFields() {
+		return CLASS.asList(groupFields());
 	}
 
 	public Collection<Control> getControls() {
@@ -942,9 +990,8 @@ public class Query extends Runnable {
 	}
 
 	final public SqlToken having() {
-		if(having == null) {
+		if(having == null)
 			having = z8_having();
-		}
 		return having;
 	}
 
@@ -976,14 +1023,6 @@ public class Query extends Runnable {
 
 	final public void setWhere(SqlToken where) {
 		this.where = where;
-	}
-
-	public Collection<Field> getSortFields() {
-		return CLASS.asList(sortFields);
-	}
-
-	public Collection<Field> getGroupFields() {
-		return CLASS.asList(groupFields);
 	}
 
 	public Collection<Link> getAggregateByFields() {
@@ -1096,7 +1135,7 @@ public class Query extends Runnable {
 			query.addReference((Query.CLASS)getCLASS());
 	}
 
-	// ////////////////////////////////////////////////////////////////////////////////////////////////
+	//////////////////////////////////////////////////////////////////////////////////////////////////
 	// IQuery
 
 	@Override
@@ -1144,10 +1183,6 @@ public class Query extends Runnable {
 	public Query[] getRootQueries() {
 		initializeRootQueries();
 		return rootQueries;
-	}
-
-	public void setRootQuery(Query rootQuery) {
-		this.rootQueries = new Query[] { rootQuery };
 	}
 
 	public Collection<OBJECT.CLASS<? extends OBJECT>> getLinks() {
@@ -1444,25 +1479,6 @@ public class Query extends Runnable {
 		return null;
 	}
 
-	public Collection<Field.CLASS<? extends Field>> primaryFields() {
-		Collection<Field.CLASS<? extends Field>> fields = new ArrayList<Field.CLASS<? extends Field>>(50);
-
-		for(Field.CLASS<? extends Field> field : dataFields())
-			fields.add(field);
-
-		return fields;
-	}
-
-	public Collection<Field> getPrimaryFields() {
-		Collection<Field> dataFields = getDataFields();
-		Collection<Field> fields = new ArrayList<Field>(dataFields.size());
-		for(Field field : dataFields) {
-			if(!(field instanceof Expression))
-				fields.add(field);
-		}
-		return fields;
-	}
-
 	private boolean isReachableVia(Query query, Field field) {
 		if(field instanceof Expression) {
 			Expression expression = (Expression)field;
@@ -1556,28 +1572,7 @@ public class Query extends Runnable {
 		return false;
 	}
 
-	public Collection<Field> collectSortFields() {
-		Collection<Field> fields = getSortFields();
-
-		Query rootQuery = getRootQuery();
-
-		if(fields.isEmpty() && rootQuery != null && rootQuery != this)
-			fields = rootQuery.getSortFields();
-
-		return fields;
-	}
-
-	public Collection<Field> collectGroupFields() {
-		Collection<Field> fields = getGroupFields();
-
-		Query rootQuery = getRootQuery();
-
-		if(fields.isEmpty() && rootQuery != null && rootQuery != this)
-			fields = rootQuery.getGroupFields();
-
-		return fields;
-	}
-
+/*
 	private String getSearchValue(Field field) {
 		if(field instanceof AttachmentField) {
 			Collection<file> files = file.parse(field.string().get());
@@ -1591,17 +1586,18 @@ public class Query extends Runnable {
 		}
 		return field.get().toString();
 	}
-
+*/
 	public String getRecordFullText() {
+/*
 		Collection<Field> searchFields = getSearchFields();
-
+*/
 		String result = "";
-
+/*
 		for(Field field : searchFields) {
 			if(field.type() != FieldType.Guid)
 				result += (result.isEmpty() ? "" : " ") + getSearchValue(field);
 		}
-
+*/
 		return result;
 	}
 

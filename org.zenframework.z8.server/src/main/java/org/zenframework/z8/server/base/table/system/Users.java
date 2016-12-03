@@ -234,8 +234,6 @@ public class Users extends Table {
 
 		queries.add(securityGroups);
 
-		links.add(securityGroup);
-
 		{
 			LinkedHashMap<IField, primary> record = new LinkedHashMap<IField, primary>();
 			record.put(name.get(), new string(displayNames.SystemName));
