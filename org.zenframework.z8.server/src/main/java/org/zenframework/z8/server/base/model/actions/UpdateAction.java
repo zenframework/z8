@@ -31,9 +31,6 @@ public class UpdateAction extends Action {
 
 		Query query = getQuery();
 
-		Field primaryKey = query.primaryKey();
-		Field parentKey = query.parentKey();
-
 		Collection<guid> recordIds = new ArrayList<guid>();
 
 		for(int index = 0; index < records.length(); index++) {
@@ -45,24 +42,28 @@ public class UpdateAction extends Action {
 					QueryUtils.setFieldValue(field, record.getString(fieldId));
 			}
 
-			guid recordId = primaryKey.guid();
+			guid recordId = query.primaryKey().guid();
+			guid rootRecordId = QueryUtils.extractKey(record, getRequestQuery().primaryKey());
 
 			if(recordId.isNull())
-				recordId = createLink(record, query, primaryKey, parentKey);
+				createLink(query, rootRecordId);
 			else
 				run(query, recordId);
 
-			recordIds.add(recordId);
+			recordIds.add(rootRecordId);
 		}
 
 		writeFormFields(writer, getRequestQuery(), recordIds);
 	}
 
-	private guid createLink(JsonObject record, Query query, Field primaryKey, Field parentKey) {
+	private void createLink(Query query, guid rootRecordId) {
 		Connection connection = ConnectionManager.get();
 		connection.beginTransaction();
 
 		try {
+			Field primaryKey = query.primaryKey();
+			Field parentKey = query.parentKey();
+
 			guid newRecordId = guid.create();
 			primaryKey.set(newRecordId);
 
@@ -78,12 +79,9 @@ public class UpdateAction extends Action {
 				throw new RuntimeException("UpdateAction - bad recordId"); 
 
 			link.set(newRecordId);
-			guid recordId = QueryUtils.extractKey(record, requestQuery.primaryKey());
-			requestQuery.update(recordId);
+			requestQuery.update(rootRecordId);
 
 			connection.commit();
-
-			return recordId;
 		} catch(Throwable e) {
 			connection.rollback();
 			throw new RuntimeException(e);
