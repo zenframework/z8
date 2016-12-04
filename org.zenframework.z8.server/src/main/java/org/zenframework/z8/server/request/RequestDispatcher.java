@@ -73,7 +73,7 @@ public class RequestDispatcher implements Runnable {
 
 			if(monitor == null) {
 				monitor = new JobMonitor(null, jobId);
-				monitor.setTotalWork(100);
+				monitor.setTotal(100);
 				monitor.setWorked(100);
 			}
 

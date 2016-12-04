@@ -233,6 +233,9 @@ public class Expression implements IFilter {
 			case LE:
 			case GT:
 			case GE:
+				if(value == null)
+					return null;
+
 				SqlToken field = operation == Operation.Eq || operation == Operation.NotEq ? new Lower(this.field) : new SqlField(this.field);
 				sql_string string = new sql_string(operation == Operation.Eq || operation == Operation.NotEq ? value.toLowerCase() : value);
 				return new Rel(field, operation, string);

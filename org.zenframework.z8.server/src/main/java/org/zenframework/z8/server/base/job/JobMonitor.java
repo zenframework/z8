@@ -9,7 +9,7 @@ import org.zenframework.z8.server.types.string;
 public class JobMonitor extends Monitor {
 
 	private final Job job;
-	private int totalWork = 100;
+	private int total = 100;
 	private int worked = 0;
 
 	private Object mutex = new Object();
@@ -23,12 +23,12 @@ public class JobMonitor extends Monitor {
 		return job;
 	}
 
-	public int getTotalWork() {
-		return totalWork;
+	public int getTotal() {
+		return total;
 	}
 
-	public void setTotalWork(int totalWork) {
-		this.totalWork = totalWork;
+	public void setTotal(int total) {
+		this.total = total;
 	}
 
 	public int getWorked() {
@@ -65,10 +65,11 @@ public class JobMonitor extends Monitor {
 		synchronized (mutex) {
 			boolean isDone = isDone();
 
-			writer.writeProperty(Json.jobId, id());
+			writer.writeProperty(Json.isJob, true);
+			writer.writeProperty(Json.id, id());
 
 			writer.writeProperty(Json.done, isDone);
-			writer.writeProperty(Json.totalWork, totalWork);
+			writer.writeProperty(Json.total, total);
 			writer.writeProperty(Json.worked, worked);
 
 			writer.writeProperty(new string(Json.serverId), ApplicationServer.id);

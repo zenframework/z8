@@ -103,7 +103,7 @@ public class Procedure extends Command {
 		Trace.logError(e);
 
 		JobMonitor monitor = getMonitor();
-		monitor.setWorked(monitor.getTotalWork());
+		monitor.setWorked(monitor.getTotal());
 		monitor.log(e);
 		monitor.print(Resources.format("Procedure.jobError", ErrorUtils.getMessage(e)));
 
