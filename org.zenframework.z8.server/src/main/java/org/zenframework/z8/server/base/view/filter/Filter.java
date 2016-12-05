@@ -78,10 +78,10 @@ public class Filter {
 				return new Rel(sqlField, operation, operation == Operation.Eq && type == FieldType.Datetime ? new TruncDay(d) : d);
 			}
 
-			date start = new date(values[0]);
-			date finish = new date(values[1]);
+			date start = new date(values[0]).truncDay();
+			date finish = new date(values[1]).truncDay().addDay(1);
 			SqlToken left = new Rel(sqlField, Operation.GE, start.sql_date());
-			SqlToken right = new Rel(sqlField, Operation.LE, finish.sql_date());
+			SqlToken right = new Rel(sqlField, Operation.LT, finish.sql_date());
 
 			return new And(left, right);
 		} else if(type == FieldType.Decimal)
