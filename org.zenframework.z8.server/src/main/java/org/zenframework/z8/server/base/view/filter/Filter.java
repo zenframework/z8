@@ -71,11 +71,11 @@ public class Filter {
 		FieldType type = field.type();
 
 		if(type == FieldType.Date || type == FieldType.Datetime) { // Period or date + operation
-			SqlToken sqlField = operation == Operation.Eq && type == FieldType.Datetime ? new TruncDay(field) : new SqlField(field);
+			SqlToken sqlField = operation == Operation.Eq ? new TruncDay(field) : new SqlField(field);
 
 			if(values.length == 1) {
 				sql_date d = new date(value).sql_date();
-				return new Rel(sqlField, operation, operation == Operation.Eq && type == FieldType.Datetime ? new TruncDay(d) : d);
+				return new Rel(sqlField, operation, operation == Operation.Eq ? new TruncDay(d) : d);
 			}
 
 			date start = new date(values[0]).truncDay();
