@@ -3,10 +3,10 @@ package org.zenframework.z8.server.types.sql;
 import org.zenframework.z8.server.db.sql.SqlConst;
 import org.zenframework.z8.server.db.sql.SqlToken;
 import org.zenframework.z8.server.db.sql.expressions.Add;
-import org.zenframework.z8.server.db.sql.expressions.EquDate;
 import org.zenframework.z8.server.db.sql.expressions.Group;
 import org.zenframework.z8.server.db.sql.expressions.Operation;
 import org.zenframework.z8.server.db.sql.expressions.Rel;
+import org.zenframework.z8.server.db.sql.expressions.RelDate;
 import org.zenframework.z8.server.db.sql.functions.Count;
 import org.zenframework.z8.server.db.sql.functions.Max;
 import org.zenframework.z8.server.db.sql.functions.Min;
@@ -64,7 +64,7 @@ public class sql_date extends sql_primary {
 	}
 
 	static public sql_bool isEqualDate(sql_date left, sql_date right) {
-		return new sql_bool(new EquDate(left, right));
+		return new sql_bool(new RelDate(left, Operation.Eq, right));
 	}
 
 	static public sql_date z8_serverTime() {

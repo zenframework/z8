@@ -9,9 +9,9 @@ import org.zenframework.z8.server.db.FieldType;
 import org.zenframework.z8.server.db.sql.SqlField;
 import org.zenframework.z8.server.db.sql.SqlToken;
 import org.zenframework.z8.server.db.sql.expressions.And;
-import org.zenframework.z8.server.db.sql.expressions.EquDate;
 import org.zenframework.z8.server.db.sql.expressions.Operation;
 import org.zenframework.z8.server.db.sql.expressions.Rel;
+import org.zenframework.z8.server.db.sql.expressions.RelDate;
 import org.zenframework.z8.server.db.sql.expressions.Unary;
 import org.zenframework.z8.server.db.sql.functions.InVector;
 import org.zenframework.z8.server.db.sql.functions.string.Like;
@@ -133,6 +133,21 @@ public class Expression implements IFilter {
 			bool boolValue = operation == Operation.IsTrue ? new bool(true) : (operation == Operation.IsFalse ? new bool(false) : new bool(value));
 			return new Rel(field, Operation.Eq, new sql_bool(boolValue));
 		case Date:
+			switch(operation) {
+			case Eq:
+				return new RelDate(field, Operation.Eq, new date(value));
+			case NotEq:
+				return new RelDate(field, Operation.NotEq, new date(value));
+			case LT:
+				return new RelDate(field, Operation.LT, new date(value));
+			case LE:
+				return new RelDate(field, Operation.LE, new date(value));
+			case GT:
+				return new RelDate(field, Operation.GT, new date(value));
+			case GE:
+				return new RelDate(field, Operation.GE, new date(value));
+			default:
+			}
 		case Datetime:
 			switch(operation) {
 			case Eq:
@@ -144,11 +159,11 @@ public class Expression implements IFilter {
 				return new Rel(field, operation, new date(value).sql_date());
 
 			case Yesterday:
-				return new EquDate(field, new date().addDay(-1));
+				return new RelDate(field, Operation.Eq, new date().addDay(-1));
 			case Today:
-				return new EquDate(field, new date());
+				return new RelDate(field, Operation.Eq, new date());
 			case Tomorrow:
-				return new EquDate(field, new date().addDay(1));
+				return new RelDate(field, Operation.Eq, new date().addDay(1));
 
 			case LastWeek:
 				date date = new date().truncWeek().addDay(-7);

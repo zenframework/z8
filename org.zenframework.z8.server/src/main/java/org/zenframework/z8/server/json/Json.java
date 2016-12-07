@@ -152,6 +152,7 @@ public interface Json {
 	string finish = new string("finish");
 	string limit = new string("limit");
 	string count = new string("count");
+	string duration = new string("duration");
 
 	string log = new string("log");
 	string file = new string("file");

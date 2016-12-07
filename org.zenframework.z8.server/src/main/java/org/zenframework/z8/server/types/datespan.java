@@ -214,7 +214,7 @@ public final class datespan extends primary {
 		long hours = hours();
 		long minutes = minutes();
 		long seconds = seconds();
-		return "" + days + (hours < 10 ? "0" + hours : hours) + ":" + (minutes < 10 ? "0" + minutes : minutes) + ":" + (seconds < 10 ? "0" + seconds : seconds);
+		return "" + days + " " + (hours < 10 ? "0" : "") + hours + ":" + (minutes < 10 ? "0" : "") + minutes + ":" + (seconds < 10 ? "0" : "") + seconds;
 	}
 
 	public sql_datespan sql_datespan() {

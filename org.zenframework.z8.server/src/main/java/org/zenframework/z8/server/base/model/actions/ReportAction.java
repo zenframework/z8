@@ -46,6 +46,7 @@ class ReportReadAction extends ReadAction {
 public class ReportAction extends Action {
 	private Collection<ReadAction> actions = new ArrayList<ReadAction>();
 
+	private Collection<Field> sortFields;
 	private Collection<Field> groupFields;
 	private Collection<Field> columns;
 	private Collection<guid> ids;
@@ -62,8 +63,11 @@ public class ReportAction extends Action {
 			Collection<Query> queries = query.onReport(report, ids);
 
 			for(Query reportQuery : queries) {
+				sortFields = parameters.sortFields;
+				
 				parameters = new ActionParameters(requestParameters());
 				parameters.query = reportQuery;
+				parameters.sortFields = sortFields;
 
 				ReadAction action = new ReportReadAction(parameters);
 				actions.add(action);
