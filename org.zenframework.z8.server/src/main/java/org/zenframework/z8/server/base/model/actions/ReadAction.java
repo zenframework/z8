@@ -539,20 +539,16 @@ public class ReadAction extends Action {
 
 		SqlToken filter = null;
 
-		boolean first = true;
-
 		for(String id : fields) {
 			Field field = query.findFieldById(id);
 			FieldType type = field.type();
 
 			if(type == FieldType.String || type == FieldType.Text) {
 				Lower left = new Lower(field);
-				sql_string right = new sql_string((first ? "%" : "") + lookup.toLowerCase() + "%");
+				sql_string right = new sql_string("%" + lookup.toLowerCase() + "%");
 				SqlToken like = new Like(left, right, null);
 
 				filter = filter != null ? new Or(filter, like) : like;
-
-				first = false;
 			}
 		}
 
