@@ -46,7 +46,7 @@ import org.zenframework.z8.server.db.sql.expressions.Rel;
 import org.zenframework.z8.server.db.sql.functions.If;
 import org.zenframework.z8.server.db.sql.functions.IsNull;
 import org.zenframework.z8.server.db.sql.functions.conversion.ToBytes;
-import org.zenframework.z8.server.db.sql.functions.conversion.ToChar;
+import org.zenframework.z8.server.db.sql.functions.conversion.ToString;
 import org.zenframework.z8.server.engine.Database;
 import org.zenframework.z8.server.exceptions.db.ObjectAlreadyExistException;
 import org.zenframework.z8.server.exceptions.db.ObjectNotFoundException;
@@ -606,7 +606,7 @@ public class TableGenerator {
 				} else if(dbField.type.startsWith("character") && field.type() == FieldType.Text) {
 					name = new ToBytes(field).format(vendor, new FormatOptions());
 				} else if(dbField.type.startsWith("bytea") && field.type() == FieldType.String) {
-					name = new ToChar(field).format(vendor, new FormatOptions());
+					name = new ToString(field).format(vendor, new FormatOptions());
 				} else {
 					name = vendor.quote(name);
 				}

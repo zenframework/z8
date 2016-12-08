@@ -12,7 +12,7 @@ import org.zenframework.z8.server.db.sql.functions.Count;
 import org.zenframework.z8.server.db.sql.functions.If;
 import org.zenframework.z8.server.db.sql.functions.Max;
 import org.zenframework.z8.server.db.sql.functions.Min;
-import org.zenframework.z8.server.db.sql.functions.conversion.ToChar;
+import org.zenframework.z8.server.db.sql.functions.conversion.ToString;
 import org.zenframework.z8.server.types.bool;
 
 public class sql_bool extends sql_primary {
@@ -34,7 +34,7 @@ public class sql_bool extends sql_primary {
 
 	@Override
 	public sql_string z8_toString() {
-		return new sql_string(new ToChar(this));
+		return new sql_string(new ToString(this));
 	}
 
 	public sql_bool z8_IIF(sql_bool yes, sql_bool no) {

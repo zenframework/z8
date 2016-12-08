@@ -4,7 +4,7 @@ import org.zenframework.z8.server.base.query.Query;
 import org.zenframework.z8.server.db.DatabaseVendor;
 import org.zenframework.z8.server.db.FieldType;
 import org.zenframework.z8.server.db.sql.SqlField;
-import org.zenframework.z8.server.db.sql.functions.conversion.ToChar;
+import org.zenframework.z8.server.db.sql.functions.conversion.ToString;
 import org.zenframework.z8.server.json.Json;
 import org.zenframework.z8.server.json.JsonWriter;
 import org.zenframework.z8.server.runtime.IObject;
@@ -49,7 +49,7 @@ public class TextField extends StringField {
 
 	@Override
 	public sql_string sql_string() {
-		return new sql_string(new ToChar(new SqlField(this)));
+		return new sql_string(new ToString(new SqlField(this)));
 	}
 
 	@Override

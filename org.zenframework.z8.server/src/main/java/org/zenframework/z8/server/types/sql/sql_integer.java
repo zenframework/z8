@@ -14,7 +14,7 @@ import org.zenframework.z8.server.db.sql.functions.Max;
 import org.zenframework.z8.server.db.sql.functions.Min;
 import org.zenframework.z8.server.db.sql.functions.Sum;
 import org.zenframework.z8.server.db.sql.functions.conversion.IntToDecimal;
-import org.zenframework.z8.server.db.sql.functions.conversion.ToChar;
+import org.zenframework.z8.server.db.sql.functions.conversion.ToString;
 import org.zenframework.z8.server.db.sql.functions.numeric.Abs;
 import org.zenframework.z8.server.db.sql.functions.numeric.Floor;
 import org.zenframework.z8.server.db.sql.functions.numeric.Power;
@@ -40,7 +40,7 @@ public class sql_integer extends sql_primary {
 
 	@Override
 	public sql_string z8_toString() {
-		return new sql_string(new ToChar(this));
+		return new sql_string(new ToString(this));
 	}
 
 	public sql_integer z8_sign() {

@@ -14,10 +14,10 @@ import org.zenframework.z8.server.db.sql.functions.string.RegIndexOf;
 import org.zenframework.z8.server.types.integer;
 import org.zenframework.z8.server.types.sql.sql_string;
 
-public class IsIntegerStr extends SqlToken {
+public class IsIntString extends SqlToken {
 	private SqlToken string;
 
-	public IsIntegerStr(SqlToken string) {
+	public IsIntString(SqlToken string) {
 		this.string = string;
 	}
 

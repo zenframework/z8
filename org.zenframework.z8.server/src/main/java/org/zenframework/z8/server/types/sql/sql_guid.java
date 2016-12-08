@@ -5,7 +5,7 @@ import org.zenframework.z8.server.db.sql.SqlToken;
 import org.zenframework.z8.server.db.sql.expressions.Group;
 import org.zenframework.z8.server.db.sql.expressions.Operation;
 import org.zenframework.z8.server.db.sql.expressions.Rel;
-import org.zenframework.z8.server.db.sql.functions.conversion.GuidToChar;
+import org.zenframework.z8.server.db.sql.functions.conversion.ToString;
 import org.zenframework.z8.server.types.guid;
 
 public class sql_guid extends sql_primary {
@@ -27,7 +27,7 @@ public class sql_guid extends sql_primary {
 
 	@Override
 	public sql_string z8_toString() {
-		return new sql_string(new GuidToChar(this));
+		return new sql_string(new ToString(this));
 	}
 
 	public sql_guid operatorPriority() {

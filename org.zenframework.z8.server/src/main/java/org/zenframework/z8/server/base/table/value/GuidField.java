@@ -26,6 +26,7 @@ public class GuidField extends Field {
 	public GuidField(IObject container) {
 		super(container);
 		setDefault(new guid());
+		aggregation = Aggregation.Max;
 	}
 
 	public guid z8_getDefault() {

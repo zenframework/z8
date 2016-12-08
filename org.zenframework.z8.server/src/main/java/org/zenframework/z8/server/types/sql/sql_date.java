@@ -10,7 +10,7 @@ import org.zenframework.z8.server.db.sql.expressions.RelDate;
 import org.zenframework.z8.server.db.sql.functions.Count;
 import org.zenframework.z8.server.db.sql.functions.Max;
 import org.zenframework.z8.server.db.sql.functions.Min;
-import org.zenframework.z8.server.db.sql.functions.conversion.DateToChar;
+import org.zenframework.z8.server.db.sql.functions.conversion.DateToString;
 import org.zenframework.z8.server.db.sql.functions.date.AddDay;
 import org.zenframework.z8.server.db.sql.functions.date.AddHour;
 import org.zenframework.z8.server.db.sql.functions.date.AddMinute;
@@ -73,7 +73,7 @@ public class sql_date extends sql_primary {
 
 	@Override
 	public sql_string z8_toString() {
-		return new sql_string(new DateToChar(this));
+		return new sql_string(new DateToString(this));
 	}
 
 	public sql_integer z8_quarter() {

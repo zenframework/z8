@@ -2,7 +2,7 @@ package org.zenframework.z8.server.types.sql;
 
 import org.zenframework.z8.server.db.sql.SqlConst;
 import org.zenframework.z8.server.db.sql.SqlToken;
-import org.zenframework.z8.server.db.sql.functions.conversion.ToChar;
+import org.zenframework.z8.server.db.sql.functions.conversion.ToString;
 import org.zenframework.z8.server.types.binary;
 
 public class sql_binary extends sql_primary {
@@ -20,6 +20,6 @@ public class sql_binary extends sql_primary {
 
 	@Override
 	public sql_string z8_toString() {
-		return new sql_string(new ToChar(this));
+		return new sql_string(new ToString(this));
 	}
 }

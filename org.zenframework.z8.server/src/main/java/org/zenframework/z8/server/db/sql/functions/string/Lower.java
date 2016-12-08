@@ -9,7 +9,7 @@ import org.zenframework.z8.server.db.FieldType;
 import org.zenframework.z8.server.db.sql.FormatOptions;
 import org.zenframework.z8.server.db.sql.SqlField;
 import org.zenframework.z8.server.db.sql.SqlToken;
-import org.zenframework.z8.server.db.sql.functions.conversion.ToChar;
+import org.zenframework.z8.server.db.sql.functions.conversion.ToString;
 
 public class Lower extends StringFunction {
 	private SqlToken value;
@@ -29,7 +29,7 @@ public class Lower extends StringFunction {
 
 	@Override
 	public String format(DatabaseVendor vendor, FormatOptions options, boolean logicalContext) {
-		SqlToken token = value.type() != FieldType.String ? new ToChar(value) : value;
+		SqlToken token = value.type() != FieldType.String ? new ToString(value) : value;
 		return "LOWER(" + token.format(vendor, options) + ")";
 	}
 

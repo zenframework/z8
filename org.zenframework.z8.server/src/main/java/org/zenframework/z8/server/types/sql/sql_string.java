@@ -9,9 +9,9 @@ import org.zenframework.z8.server.db.sql.expressions.Rel;
 import org.zenframework.z8.server.db.sql.functions.Count;
 import org.zenframework.z8.server.db.sql.functions.Max;
 import org.zenframework.z8.server.db.sql.functions.Min;
-import org.zenframework.z8.server.db.sql.functions.conversion.IsIntegerStr;
-import org.zenframework.z8.server.db.sql.functions.conversion.IsNumericStr;
-import org.zenframework.z8.server.db.sql.functions.conversion.StrToInt;
+import org.zenframework.z8.server.db.sql.functions.conversion.IsIntString;
+import org.zenframework.z8.server.db.sql.functions.conversion.IsNumericString;
+import org.zenframework.z8.server.db.sql.functions.conversion.StringToInt;
 import org.zenframework.z8.server.db.sql.functions.conversion.ToDate;
 import org.zenframework.z8.server.db.sql.functions.conversion.ToDecimal;
 import org.zenframework.z8.server.db.sql.functions.string.IndexOf;
@@ -48,15 +48,15 @@ public class sql_string extends sql_primary {
 	}
 
 	public sql_bool z8_isInt() {
-		return new sql_bool(new IsIntegerStr(this));
+		return new sql_bool(new IsIntString(this));
 	}
 
 	public sql_bool z8_isNumeric() {
-		return new sql_bool(new IsNumericStr(this));
+		return new sql_bool(new IsNumericString(this));
 	}
 
 	public sql_integer z8_toInt() {
-		return new sql_integer(new StrToInt(this));
+		return new sql_integer(new StringToInt(this));
 	}
 
 	public sql_decimal z8_toDecimal() {

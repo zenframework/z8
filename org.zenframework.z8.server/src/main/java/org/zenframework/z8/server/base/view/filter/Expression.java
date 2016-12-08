@@ -14,6 +14,7 @@ import org.zenframework.z8.server.db.sql.expressions.Rel;
 import org.zenframework.z8.server.db.sql.expressions.RelDate;
 import org.zenframework.z8.server.db.sql.expressions.Unary;
 import org.zenframework.z8.server.db.sql.functions.InVector;
+import org.zenframework.z8.server.db.sql.functions.conversion.GuidToString;
 import org.zenframework.z8.server.db.sql.functions.string.Like;
 import org.zenframework.z8.server.db.sql.functions.string.Lower;
 import org.zenframework.z8.server.json.Json;
@@ -123,15 +124,13 @@ public class Expression implements IFilter {
 		String value = values.length != 0 ? values[0] : null;
 
 		switch(type) {
+		case Boolean:
+			bool boolValue = operation == Operation.IsTrue ? new bool(true) : (operation == Operation.IsFalse ? new bool(false) : new bool(value));
+			return new Rel(field, Operation.Eq, new sql_bool(boolValue));
 		case Decimal:
 			return new Rel(field, operation, new decimal(value).sql_decimal());
 		case Integer:
 			return new Rel(field, operation, new integer(value).sql_int());
-		case Guid:
-			return new Rel(field, operation != null ? operation : Operation.Eq, new guid(value).sql_guid());
-		case Boolean:
-			bool boolValue = operation == Operation.IsTrue ? new bool(true) : (operation == Operation.IsFalse ? new bool(false) : new bool(value));
-			return new Rel(field, Operation.Eq, new sql_bool(boolValue));
 		case Date:
 			switch(operation) {
 			case Eq:
@@ -215,8 +214,17 @@ public class Expression implements IFilter {
 			default:
 				throw new UnsupportedOperationException();
 			}
+		case Guid:
 		case String:
 		case Text:
+			SqlToken field = new SqlField(this.field);
+
+			if(type == FieldType.Guid) {
+				if(operation == Operation.Eq || operation == Operation.NotEq)
+					return new Rel(field, operation != null ? operation : Operation.Eq, new guid(value).sql_guid());
+				field = new GuidToString(field);
+			}
+
 			switch(operation) {
 			case BeginsWith:
 			case NotBeginsWith:
@@ -251,13 +259,13 @@ public class Expression implements IFilter {
 				if(value == null)
 					return null;
 
-				SqlToken field = operation == Operation.Eq || operation == Operation.NotEq ? new Lower(this.field) : new SqlField(this.field);
+				field = operation == Operation.Eq || operation == Operation.NotEq ? new Lower(this.field) : new SqlField(this.field);
 				sql_string string = new sql_string(operation == Operation.Eq || operation == Operation.NotEq ? value.toLowerCase() : value);
 				return new Rel(field, operation, string);
 			case IsEmpty:
-				return new Rel(this.field, Operation.Eq, new sql_string());
+				return new Rel(field, Operation.Eq, new sql_string());
 			case IsNotEmpty:
-				return new Rel(this.field, Operation.NotEq, new sql_string());
+				return new Rel(field, Operation.NotEq, new sql_string());
 			default:
 				throw new UnsupportedOperationException();
 			}

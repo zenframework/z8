@@ -24,6 +24,7 @@ public class GuidExpression extends Expression {
 	public GuidExpression(IObject container) {
 		super(container);
 		setDefault(new guid());
+		aggregation = Aggregation.Max;
 	}
 
 	@Override

@@ -7,7 +7,7 @@ import org.zenframework.z8.server.db.DatabaseVendor;
 import org.zenframework.z8.server.db.FieldType;
 import org.zenframework.z8.server.db.sql.FormatOptions;
 import org.zenframework.z8.server.db.sql.SqlToken;
-import org.zenframework.z8.server.db.sql.functions.conversion.ToChar;
+import org.zenframework.z8.server.db.sql.functions.conversion.ToString;
 
 public class Like extends SqlToken {
     private SqlToken value;
@@ -35,9 +35,9 @@ public class Like extends SqlToken {
 
     @Override
     public String format(DatabaseVendor vendor, FormatOptions options, boolean logicalContext) {
-        SqlToken valueToken = value.type() != FieldType.String ? new ToChar(value) : value;
-        SqlToken likeToken = like.type() != FieldType.String ? new ToChar(like) : like;
-        SqlToken escapeToken = escape != null && escape.type() != FieldType.String ? new ToChar(escape) : escape;
+        SqlToken valueToken = value.type() != FieldType.String ? new ToString(value) : value;
+        SqlToken likeToken = like.type() != FieldType.String ? new ToString(like) : like;
+        SqlToken escapeToken = escape != null && escape.type() != FieldType.String ? new ToString(escape) : escape;
  
         return valueToken.format(vendor, options) + " LIKE " + likeToken.format(vendor, options)
                 + (escapeToken == null ? "" : " ESCAPE " + escapeToken.format(vendor, options));

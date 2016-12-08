@@ -11,34 +11,33 @@ import org.zenframework.z8.server.db.sql.SqlField;
 import org.zenframework.z8.server.db.sql.SqlToken;
 import org.zenframework.z8.server.exceptions.db.UnknownDatabaseException;
 
-public class ToChar extends SqlToken {
-	private SqlToken value;
+public class GuidToString extends SqlToken {
+	private SqlToken guid;
 
-	public ToChar(Field field) {
+	public GuidToString(Field field) {
 		this(new SqlField(field));
 	}
 
-	public ToChar(SqlToken value) {
-		this.value = value;
+	public GuidToString(SqlToken guid) {
+		this.guid = guid;
 	}
-
+	
 	@Override
 	public void collectFields(Collection<IValue> fields) {
-		value.collectFields(fields);
+		guid.collectFields(fields);
 	}
 
 	@Override
 	public String format(DatabaseVendor vendor, FormatOptions options, boolean logicalContext) {
-		switch(vendor) {
-		case Oracle:
-			return "TO_NCHAR(" + value.format(vendor, options) + ")";
-		case Postgres:
-			if(value.type() == FieldType.Guid)
-				return "cast(" + value.format(vendor, options) + "as varchar)";
+		String param = guid.format(vendor, options);
 
-			return "CONVERT_FROM(" + value.format(vendor, options) + ", 'UTF8')";
+		switch(vendor) {
+		case Postgres:
+			return param + "::text";
+		case Oracle:
+			return "SUBSTR(RAWTOHEX(" + param + "), 0, 8)||'-'||SUBSTR(RAWTOHEX(" + param + "), 9, 4)||'-'||SUBSTR(RAWTOHEX(" + param + "), 13, 4)||'-'||SUBSTR(RAWTOHEX(" + param + "), 17, 4)||'-'||SUBSTR(RAWTOHEX(" + param + "), 21, 12)";
 		case SqlServer:
-			return "Cast(" + value.format(vendor, options) + " as nvarchar(max))";
+			return "Convert(nvarchar(40), " + param + ")";
 		default:
 			throw new UnknownDatabaseException();
 		}
