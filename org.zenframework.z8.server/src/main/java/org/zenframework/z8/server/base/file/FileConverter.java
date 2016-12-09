@@ -30,7 +30,7 @@ public class FileConverter {
 	}
 
 	public File getConvertedPdf(String relativePath, File srcFile) {
-		if (srcFile.getName().endsWith('.' + PDF_EXTENSION))
+		if (srcFile.getName().toLowerCase().endsWith('.' + PDF_EXTENSION))
 			return srcFile;
 
 		File convertedFile = new File(storage, relativePath + '.' + PDF_EXTENSION);
