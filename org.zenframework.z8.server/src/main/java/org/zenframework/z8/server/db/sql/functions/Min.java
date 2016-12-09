@@ -16,7 +16,7 @@ public class Min extends Window {
 	}
 
 	public String format(DatabaseVendor vendor, FormatOptions options, boolean logicalContext) throws UnknownDatabaseException {
-		String result = format(vendor, options, logicalContext);
+		String result = super.format(vendor, options, logicalContext);
 
 		switch(vendor) {
 		case Oracle:
