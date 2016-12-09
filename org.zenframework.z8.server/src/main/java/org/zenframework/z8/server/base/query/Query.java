@@ -5,7 +5,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.regex.Pattern;
@@ -850,7 +850,7 @@ public class Query extends Runnable {
 	}
 
 	public Collection<Field.CLASS<? extends Field>> formFields() {
-		Set<Field.CLASS<? extends Field>> result = new HashSet<Field.CLASS<? extends Field>>(50);
+		Set<Field.CLASS<? extends Field>> result = new LinkedHashSet<Field.CLASS<? extends Field>>(50);
 
 		for(Control.CLASS<? extends Control> field : formFields) {
 			if(field instanceof Section.CLASS)
