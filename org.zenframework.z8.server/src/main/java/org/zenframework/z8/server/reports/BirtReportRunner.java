@@ -515,11 +515,10 @@ public class BirtReportRunner {
 			String format = getColumnFormat(column);
 
 			if(styleHandle != null) {
-				if(format != null) {
+				if(format != null)
 					styleHandle.setDateFormat(format);
-				} else if(dateFormatStyle != null) {
+				else if(dateFormatStyle != null)
 					styleHandle.setDateFormat(dateFormatStyle.getDateTimeFormat());
-				}
 			}
 		} else if(type.equals(DesignChoiceConstants.COLUMN_DATA_TYPE_DATETIME)) {
 			StyleHandle styleHandle = cell.getPrivateStyle();
@@ -528,11 +527,10 @@ public class BirtReportRunner {
 			String format = getColumnFormat(column);
 
 			if(styleHandle != null) {
-				if(format != null) {
-					styleHandle.setDateFormat(format);
-				} else if(dateFormatStyle != null) {
-					styleHandle.setDateFormat(dateFormatStyle.getDateTimeFormat());
-				}
+				if(format != null)
+					styleHandle.setDateTimeFormat(format);
+				else if(dateFormatStyle != null)
+					styleHandle.setDateTimeFormat(dateFormatStyle.getDateTimeFormat());
 			}
 		} else if(type.equals(DesignChoiceConstants.COLUMN_DATA_TYPE_DECIMAL) || type.equals(DesignChoiceConstants.COLUMN_DATA_TYPE_FLOAT)) {
 			StyleHandle styleHandle = cell.getPrivateStyle();
@@ -542,7 +540,6 @@ public class BirtReportRunner {
 				styleHandle.setNumberFormat("#,##0.00");
 			}
 		}
-
 	}
 
 	private void createGroup(TableHandle table, Field groupField, int depth) {
