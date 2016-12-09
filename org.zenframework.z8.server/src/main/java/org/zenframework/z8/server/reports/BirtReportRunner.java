@@ -538,7 +538,6 @@ public class BirtReportRunner {
 				styleHandle.setNumberFormat("#,##0.00");
 			}
 		}
-
 	}
 
 	private void createGroup(TableHandle table, Field groupField, int depth) {
