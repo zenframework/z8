@@ -30,6 +30,8 @@ public class Users extends Table {
 	static public final guid System = BuiltinUsers.System.guid();
 	static public final guid Administrator = BuiltinUsers.Administrator.guid();
 
+	static private String defaultPassword = "d41d8cd98f00b204e9800998ecf8427e";
+
 	static public class names {
 		public final static String Password = "Password";
 		public final static String SecurityGroup = "SecurityGroup";
@@ -100,44 +102,11 @@ public class Users extends Table {
 
 	public Link.CLASS<Link> securityGroup = new Link.CLASS<Link>(this);
 
-	public PasswordField.CLASS<PasswordField> password = new PasswordField.CLASS<PasswordField>(this);
+	public StringField.CLASS<StringField> password = new StringField.CLASS<StringField>(this);
 	public StringField.CLASS<StringField> phone = new StringField.CLASS<StringField>(this);
 	public StringField.CLASS<StringField> email = new StringField.CLASS<StringField>(this);
 	public BoolField.CLASS<BoolField> blocked = new BoolField.CLASS<BoolField>(this);
 	public TextField.CLASS<TextField> settings = new TextField.CLASS<TextField>(this);
-
-	public static class PasswordField extends StringField {
-		public static class CLASS<T extends PasswordField> extends StringField.CLASS<T> {
-			public CLASS(IObject container) {
-				super(container);
-				setJavaClass(PasswordField.class);
-				setName(names.Password);
-				setDisplayName(displayNames.Password);
-				setExportable(false);
-				setIndex("password");
-			}
-
-			@Override
-			public Object newObject(IObject container) {
-				return new PasswordField(container);
-			}
-		}
-
-		public boolean mask = true;
-
-		public PasswordField(IObject container) {
-			super(container);
-		}
-
-		public String getPassword() {
-			return super.get().string().get();
-		}
-
-		@Override
-		public primary get() {
-			return !mask || changed() ? super.get() : new string("*******");
-		}
-	}
 
 	public static class NameField extends StringField {
 		public static class CLASS<T extends NameField> extends StringField.CLASS<T> {
@@ -188,6 +157,11 @@ public class Users extends Table {
 
 		name.setDisplayName(displayNames.Name);
 		name.setGendb_updatable(false);
+
+		password.setName(names.Password);
+		password.setDisplayName(displayNames.Password);
+		password.setExportable(false);
+		password.setIndex("password");
 
 		description.setDisplayName(displayNames.Description);
 
@@ -248,6 +222,12 @@ public class Users extends Table {
 			record.put(securityGroup.get(), SecurityGroup.Administrators.guid());
 			addRecord(BuiltinUsers.Administrator.guid(), record);
 		}
+	}
+
+	@Override
+	public void onNew(guid recordId, guid parentId) {
+		password.get().set(defaultPassword);
+		super.onNew(recordId, parentId);
 	}
 
 	@Override

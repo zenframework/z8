@@ -1606,8 +1606,11 @@ public class Query extends Runnable {
 	}
 
 	public void writeMeta(JsonWriter writer, Collection<Field> fields) {
+		writer.writeProperty(Json.isQuery, true);
+
 		writer.writeProperty(Json.id, id());
 		writer.writeProperty(Json.icon, icon());
+		writer.writeProperty(Json.form, form());
 
 		writer.writeControls(Json.fields, fields, this);
 		writer.writeControls(Json.controls, getControls(), this);

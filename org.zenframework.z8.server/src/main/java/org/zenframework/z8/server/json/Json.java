@@ -195,6 +195,7 @@ public interface Json {
 
 	string text = new string("text");
 	string description = new string("description");
+	string form = new string("form");
 	string label = new string("label");
 	string legend = new string("legend");
 	string header = new string("header");

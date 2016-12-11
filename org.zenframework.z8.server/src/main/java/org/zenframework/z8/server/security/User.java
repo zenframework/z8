@@ -33,7 +33,7 @@ import org.zenframework.z8.server.utils.IOUtils;
 import org.zenframework.z8.server.utils.NumericUtils;
 
 public class User implements IUser {
-	private static final long serialVersionUID = -4955893424674255525L;
+	static private final long serialVersionUID = -4955893424674255525L;
 
 	private guid id;
 
@@ -60,16 +60,14 @@ public class User implements IUser {
 		guid id = BuiltinUsers.System.guid();
 		String login = Resources.get("BuiltinUsers.System.name");
 		String description = Resources.get("BuiltinUsers.System.description");
-		String password = "";
-		boolean blocked = false;
 
 		system = new User();
 
 		system.id = id;
 		system.name = login;
-		system.password = password;
+		system.password = "";
 		system.description = description;
-		system.blocked = blocked;
+		system.blocked = false;
 
 		system.settings = "";
 		system.phone = "";
@@ -208,7 +206,6 @@ public class User implements IUser {
 		fields.add(users.recordId.get());
 		fields.add(users.name.get());
 		fields.add(users.password.get());
-		users.password.get().mask = false;
 		fields.add(users.settings.get());
 		fields.add(users.phone.get());
 		fields.add(users.email.get());

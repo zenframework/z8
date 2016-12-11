@@ -73,22 +73,20 @@ public class UsersView extends Users {
 		entries.get().link = userEntries.get().user;
 
 		name.get().colspan = new integer(4);
-		registerFormField(name);
 		securityGroups.get().name.get().colspan = new integer(4);
-		registerFormField(securityGroups.get().name);
-		password.get().colspan = new integer(4);
-		registerFormField(password);
 		phone.get().colspan = new integer(4);
-		registerFormField(phone);
 		email.get().colspan = new integer(4);
-		registerFormField(email);
 		blocked.get().colspan = new integer(4);
-		registerFormField(blocked);
-
 		description.get().colspan = new integer(6);
-		registerFormField(description);
 
 		entries.get().colspan = new integer(6);
+
+		registerFormField(name);
+		registerFormField(securityGroups.get().name);
+		registerFormField(phone);
+		registerFormField(email);
+		registerFormField(blocked);
+		registerFormField(description);
 		registerFormField(entries);
 
 		sortFields.add(name);

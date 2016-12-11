@@ -9,6 +9,7 @@ import org.zenframework.z8.server.base.table.system.Domains;
 import org.zenframework.z8.server.base.table.system.Files;
 import org.zenframework.z8.server.base.xml.GNode;
 import org.zenframework.z8.server.config.ServerConfig;
+import org.zenframework.z8.server.crypto.MD5;
 import org.zenframework.z8.server.db.ConnectionManager;
 import org.zenframework.z8.server.ie.Message;
 import org.zenframework.z8.server.ie.MessageAcceptor;
@@ -91,6 +92,8 @@ public class ApplicationServer extends RmiServer implements IApplicationServer {
 	@Override
 	public void start() throws RemoteException {
 		super.start();
+
+		System.out.println(MD5.get("fsgdsfgsdfgвырврывпрвы245245"));
 
 		checkSchemaVersion();
 

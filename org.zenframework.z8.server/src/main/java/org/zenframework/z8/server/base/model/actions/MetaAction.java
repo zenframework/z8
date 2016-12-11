@@ -29,8 +29,6 @@ public class MetaAction extends ReadAction {
 
 		Query query = getQuery();
 
-		writer.writeProperty(Json.isQuery, true);
-
 		Collection<Field> fields = getSelectFields();
 		query.writeMeta(writer, fields);
 
