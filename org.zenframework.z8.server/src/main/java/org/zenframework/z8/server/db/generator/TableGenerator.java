@@ -172,9 +172,9 @@ public class TableGenerator {
 		dbFieldsAlter = new LinkedList<ColumnDescAlter>();
 
 		for(Field field : table().getPrimaryFields()) {
-			ColumnDescGen columndesc = dbFields.get(field.name());
+			ColumnDescGen column = dbFields.get(field.name());
 
-			if(columndesc == null) {
+			if(column == null) {
 				dbFieldsAlter.add(new ColumnDescAlter(field, FieldAction.Create, true));
 				// result = GeneratorAction.Alter;
 				// continue;
@@ -182,16 +182,16 @@ public class TableGenerator {
 				break;
 			}
 
-			columndesc.DescExist = true;
+			column.DescExist = true;
 
 			String sqlType = field.sqlType(connection.vendor());
 
-			if(!sqlType.startsWith(columndesc.type)) {
+			if(!sqlType.startsWith(column.type)) {
 				result = GeneratorAction.Recreate;
 				break;
 			}
 
-			if(!checkDefaults(columndesc.defaultValue, field)) {
+			if(!checkLength(column.size, column.scale, field) || !checkDefaults(column.defaultValue, field)) {
 				result = GeneratorAction.Recreate;
 				break;
 			}
@@ -211,6 +211,16 @@ public class TableGenerator {
 
 	static Map<String, primary> defaults = new HashMap<String, primary>();
 
+	boolean checkLength(int size, int scale, Field field) {
+		FieldType type = field.type();
+
+		if(type == FieldType.String)
+			return field.size() == size;
+		else if(type == FieldType.Decimal)
+			return field.size() == size && field.scale() == scale;
+		return true;
+	}
+
 	boolean checkDefaults(String dbDefault, Field field) {
 		FieldType type = field.type();
 		String key = dbDefault + '/' + type;
@@ -220,7 +230,6 @@ public class TableGenerator {
 			return currentDefault.equals(field.getDefault());
 
 		Expression expression = null;
-
 
 		if(type == FieldType.Boolean)
 			expression = new BoolExpression.CLASS<BoolExpression>(null).get();
@@ -591,6 +600,9 @@ public class TableGenerator {
 		Database database = database();
 		DatabaseVendor vendor = vendor();
 
+		FormatOptions options = new FormatOptions();
+		options.disableAggregation();
+
 		for(Field field : table().getPrimaryFields()) {
 			String name = field.name();
 
@@ -602,17 +614,19 @@ public class TableGenerator {
 				if(field.type() == FieldType.Guid) {
 					SqlToken isNull = new IsNull(new SqlField(field));
 					SqlToken iif = new If(isNull, guid.NULL.sql_guid(), new SqlField(field));
-					name = iif.format(vendor, new FormatOptions());
+					name = iif.format(vendor, options);
 				} else if(dbField.type.startsWith("character") && field.type() == FieldType.Text) {
-					name = new ToBytes(field).format(vendor, new FormatOptions());
+					name = new ToBytes(field).format(vendor, options);
 				} else if(dbField.type.startsWith("bytea") && field.type() == FieldType.String) {
-					name = new ToString(field).format(vendor, new FormatOptions());
+					name = new ToString(field).format(vendor, options);
 				} else {
 					name = vendor.quote(name);
 				}
 				sourceFields += (sourceFields.isEmpty() ? "" : ", ") + name;
 			}
 		}
+
+		options.enableAggregation();
 
 		if(!targetFields.isEmpty()) {
 			String sql = "insert into " + database.tableName(dstTableName) + " (" + targetFields + ")";

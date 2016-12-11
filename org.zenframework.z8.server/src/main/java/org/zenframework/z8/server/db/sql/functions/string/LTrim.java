@@ -10,23 +10,23 @@ import org.zenframework.z8.server.db.sql.SqlField;
 import org.zenframework.z8.server.db.sql.SqlToken;
 
 public class LTrim extends StringFunction {
-    private SqlToken value;
+	private SqlToken value;
 
-    public LTrim(Field field) {
-        this(new SqlField(field));
-    }
+	public LTrim(Field field) {
+		this(new SqlField(field));
+	}
 
-    public LTrim(SqlToken value) {
-        this.value = value;
-    }
+	public LTrim(SqlToken value) {
+		this.value = value;
+	}
 
-    @Override
-    public void collectFields(Collection<IValue> fields) {
-        value.collectFields(fields);
-    }
+	@Override
+	public void collectFields(Collection<IValue> fields) {
+		value.collectFields(fields);
+	}
 
-    @Override
-    public String format(DatabaseVendor vendor, FormatOptions options, boolean logicalContext) {
-        return "LTRIM(" + value.format(vendor, options) + ")";
-    }
+	@Override
+	public String format(DatabaseVendor vendor, FormatOptions options, boolean logicalContext) {
+		return "LTRIM(" + value.format(vendor, options) + ")";
+	}
 }

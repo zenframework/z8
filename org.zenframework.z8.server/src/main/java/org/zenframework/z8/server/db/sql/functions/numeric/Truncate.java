@@ -10,36 +10,34 @@ import org.zenframework.z8.server.db.sql.SqlToken;
 import org.zenframework.z8.server.exceptions.db.UnknownDatabaseException;
 
 public class Truncate extends SqlToken {
-    private SqlToken number;
-    private SqlToken digits;
+	private SqlToken number;
+	private SqlToken digits;
 
-    public Truncate(SqlToken number, SqlToken digits) {
-        this.number = number;
-        this.digits = digits;
-    }
+	public Truncate(SqlToken number, SqlToken digits) {
+		this.number = number;
+		this.digits = digits;
+	}
 
-    @Override
-    public void collectFields(Collection<IValue> fields) {
-        number.collectFields(fields);
-        digits.collectFields(fields);
-    }
+	@Override
+	public void collectFields(Collection<IValue> fields) {
+		number.collectFields(fields);
+		digits.collectFields(fields);
+	}
 
-    @Override
-    public String format(DatabaseVendor vendor, FormatOptions options, boolean logicalContext) {
-        switch(vendor) {
-        case Oracle:
-            return "TRUNC(" + number.format(vendor, options) + ", "
-                    + (digits != null ? digits.format(vendor, options) : "0") + ")";
-        case SqlServer:
-            return "ROUND(" + number.format(vendor, options) + ", "
-                    + (digits != null ? digits.format(vendor, options) : "0") + ", 1)";
-        default:
-            throw new UnknownDatabaseException();
-        }
-    }
+	@Override
+	public String format(DatabaseVendor vendor, FormatOptions options, boolean logicalContext) {
+		switch(vendor) {
+		case Oracle:
+			return "TRUNC(" + number.format(vendor, options) + ", " + (digits != null ? digits.format(vendor, options) : "0") + ")";
+		case SqlServer:
+			return "ROUND(" + number.format(vendor, options) + ", " + (digits != null ? digits.format(vendor, options) : "0") + ", 1)";
+		default:
+			throw new UnknownDatabaseException();
+		}
+	}
 
-    @Override
-    public FieldType type() {
-        return number.type();
-    }
+	@Override
+	public FieldType type() {
+		return number.type();
+	}
 }

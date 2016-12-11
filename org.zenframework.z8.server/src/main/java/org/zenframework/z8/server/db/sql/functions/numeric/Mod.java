@@ -10,27 +10,27 @@ import org.zenframework.z8.server.db.sql.SqlToken;
 import org.zenframework.z8.server.exceptions.db.UnknownDatabaseException;
 
 public class Mod extends SqlToken {
-	private SqlToken param1;
-	private SqlToken param2;
+	private SqlToken value;
+	private SqlToken base;
 
-	public Mod(SqlToken p1, SqlToken p2) {
-		param1 = p1;
-		param2 = p2;
+	public Mod(SqlToken value, SqlToken base) {
+		this.value = value;
+		this.base = base;
 	}
 
 	@Override
 	public void collectFields(Collection<IValue> fields) {
-		param1.collectFields(fields);
-		param2.collectFields(fields);
+		value.collectFields(fields);
+		base.collectFields(fields);
 	}
 
 	@Override
 	public String format(DatabaseVendor vendor, FormatOptions options, boolean logicalContext) {
 		switch(vendor) {
 		case Oracle:
-			return "Mod(" + param1.format(vendor, options) + ", " + param2.format(vendor, options) + ")";
+			return "Mod(" + value.format(vendor, options) + ", " + base.format(vendor, options) + ")";
 		case SqlServer:
-			return param1.format(vendor, options) + " % " + param2.format(vendor, options);
+			return value.format(vendor, options) + " % " + base.format(vendor, options);
 		default:
 			throw new UnknownDatabaseException();
 		}

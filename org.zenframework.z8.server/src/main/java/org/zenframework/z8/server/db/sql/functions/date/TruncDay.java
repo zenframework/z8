@@ -12,30 +12,30 @@ import org.zenframework.z8.server.db.sql.SqlToken;
 import org.zenframework.z8.server.exceptions.db.UnknownDatabaseException;
 
 public class TruncDay extends SqlToken {
-	private SqlToken param1;
+	private SqlToken date;
 
 	public TruncDay(Field field) {
 		this(new SqlField(field));
 	}
 
-	public TruncDay(SqlToken token) {
-		param1 = token;
+	public TruncDay(SqlToken date) {
+		this.date = date;
 	}
 
 	@Override
 	public void collectFields(Collection<IValue> fields) {
-		param1.collectFields(fields);
+		date.collectFields(fields);
 	}
 
 	@Override
 	public String format(DatabaseVendor vendor, FormatOptions options, boolean logicalContext) {
 		switch(vendor) {
 		case Oracle:
-			return "TRUNC(" + param1.format(vendor, options) + ", 'DD')";
+			return "TRUNC(" + date.format(vendor, options) + ", 'DD')";
 		case Postgres:
-			return "date_trunc('day', " + param1.format(vendor, options) + ")";
+			return "date_trunc('day', " + date.format(vendor, options) + ")";
 		case SqlServer:
-			return "CONVERT(datetime, CONVERT(varchar(10)," + param1.format(vendor, options) + ", 120), 120)";
+			return "CONVERT(datetime, CONVERT(varchar(10)," + date.format(vendor, options) + ", 120), 120)";
 		default:
 			throw new UnknownDatabaseException();
 		}
@@ -43,6 +43,6 @@ public class TruncDay extends SqlToken {
 
 	@Override
 	public FieldType type() {
-		return param1.type();
+		return date.type();
 	}
 }

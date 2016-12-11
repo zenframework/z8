@@ -10,29 +10,29 @@ import org.zenframework.z8.server.db.sql.SqlToken;
 import org.zenframework.z8.server.exceptions.db.UnknownDatabaseException;
 
 public class AddQuarter extends SqlToken {
-	private SqlToken param1;
-	private SqlToken param2;
+	private SqlToken date;
+	private SqlToken quarters;
 
-	public AddQuarter(SqlToken p1, SqlToken p2) {
-		param1 = p1;
-		param2 = p2;
+	public AddQuarter(SqlToken date, SqlToken quarters) {
+		this.date = date;
+		this.quarters = quarters;
 	}
 
 	@Override
 	public void collectFields(Collection<IValue> fields) {
-		param1.collectFields(fields);
-		param2.collectFields(fields);
+		date.collectFields(fields);
+		quarters.collectFields(fields);
 	}
 
 	@Override
 	public String format(DatabaseVendor vendor, FormatOptions options, boolean logicalContext) {
 		switch(vendor) {
 		case Oracle:
-			return "ADD_MONTHS(" + param1.format(vendor, options) + ",(" + param2.format(vendor, options) + ")*3)";
+			return "ADD_MONTHS(" + date.format(vendor, options) + ",(" + quarters.format(vendor, options) + ")*3)";
 		case Postgres:
-			return "(" + param1.format(vendor, options) + " + (" + param2.format(vendor, options) + ") * interval '3 months')";
+			return "(" + date.format(vendor, options) + " + (" + quarters.format(vendor, options) + ") * interval '3 months')";
 		case SqlServer:
-			return "DATEADD(qq, " + param2.format(vendor, options) + ", " + param1.format(vendor, options) + ")";
+			return "DATEADD(qq, " + quarters.format(vendor, options) + ", " + date.format(vendor, options) + ")";
 		default:
 			throw new UnknownDatabaseException();
 		}
@@ -40,6 +40,6 @@ public class AddQuarter extends SqlToken {
 
 	@Override
 	public FieldType type() {
-		return param1.type();
+		return date.type();
 	}
 }

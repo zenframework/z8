@@ -14,20 +14,20 @@ import org.zenframework.z8.server.exceptions.db.UnknownDatabaseException;
 import org.zenframework.z8.server.types.integer;
 
 public class Length extends SqlToken {
-	private SqlToken param1;
+	private SqlToken string;
 
-	public Length(SqlToken p1) {
-		param1 = p1;
+	public Length(SqlToken string) {
+		this.string = string;
 	}
 
 	@Override
 	public void collectFields(Collection<IValue> fields) {
-		param1.collectFields(fields);
+		string.collectFields(fields);
 	}
 
 	@Override
 	public String format(DatabaseVendor vendor, FormatOptions options, boolean logicalContext) {
-		String length = param1.format(vendor, options);
+		String length = string.format(vendor, options);
 
 		switch(vendor) {
 		case Oracle:

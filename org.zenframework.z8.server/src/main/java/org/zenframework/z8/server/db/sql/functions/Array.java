@@ -10,36 +10,35 @@ import org.zenframework.z8.server.db.sql.SqlToken;
 import org.zenframework.z8.server.exceptions.db.UnknownDatabaseException;
 
 public class Array extends SqlToken {
-    private SqlToken token;
+	private SqlToken token;
 
-    public Array(SqlToken token) {
-        this.token = token;
-    }
+	public Array(SqlToken token) {
+		this.token = token;
+	}
 
-    @Override
-    public void collectFields(Collection<IValue> fields) {
-        token.collectFields(fields);
-    }
+	@Override
+	public void collectFields(Collection<IValue> fields) {
+		token.collectFields(fields);
+	}
 
-    @Override
-    public String format(DatabaseVendor vendor, FormatOptions options, boolean logicalContext)
-            throws UnknownDatabaseException {
-        StringBuilder str = new StringBuilder();
-        switch (vendor) {
-        case Oracle:
-            str.append("collect");
-            break;
-        case Postgres:
-            str.append("array_agg");
-            break;
-        default:
-            throw new UnknownDatabaseException();
-        }
-        return str.append('(').append(token.format(vendor, options)).append(')').toString();
-    }
+	@Override
+	public String format(DatabaseVendor vendor, FormatOptions options, boolean logicalContext) throws UnknownDatabaseException {
+		StringBuilder str = new StringBuilder();
+		switch(vendor) {
+		case Oracle:
+			str.append("collect");
+			break;
+		case Postgres:
+			str.append("array_agg");
+			break;
+		default:
+			throw new UnknownDatabaseException();
+		}
+		return str.append('(').append(token.format(vendor, options)).append(')').toString();
+	}
 
-    @Override
-    public FieldType type() {
-        return token.type();
-    }
+	@Override
+	public FieldType type() {
+		return token.type();
+	}
 }

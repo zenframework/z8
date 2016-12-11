@@ -10,24 +10,24 @@ import org.zenframework.z8.server.db.sql.SqlToken;
 import org.zenframework.z8.server.exceptions.db.UnknownDatabaseException;
 
 public class Ceil extends SqlToken {
-	private SqlToken param1;
+	private SqlToken token;
 
-	public Ceil(SqlToken p1) {
-		param1 = p1;
+	public Ceil(SqlToken token) {
+		this.token = token;
 	}
 
 	@Override
 	public void collectFields(Collection<IValue> fields) {
-		param1.collectFields(fields);
+		token.collectFields(fields);
 	}
 
 	@Override
 	public String format(DatabaseVendor vendor, FormatOptions options, boolean logicalContext) {
 		switch(vendor) {
 		case Oracle:
-			return "Ceil(" + param1.format(vendor, options) + ")";
+			return "Ceil(" + token.format(vendor, options) + ")";
 		case SqlServer:
-			return "Ceiling(" + param1.format(vendor, options) + ")";
+			return "Ceiling(" + token.format(vendor, options) + ")";
 		default:
 			throw new UnknownDatabaseException();
 		}

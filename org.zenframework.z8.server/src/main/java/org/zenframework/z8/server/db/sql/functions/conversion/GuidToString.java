@@ -21,7 +21,7 @@ public class GuidToString extends SqlToken {
 	public GuidToString(SqlToken guid) {
 		this.guid = guid;
 	}
-	
+
 	@Override
 	public void collectFields(Collection<IValue> fields) {
 		guid.collectFields(fields);

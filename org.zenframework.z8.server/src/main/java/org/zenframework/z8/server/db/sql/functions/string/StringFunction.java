@@ -4,10 +4,11 @@ import org.zenframework.z8.server.db.FieldType;
 import org.zenframework.z8.server.db.sql.SqlToken;
 
 public abstract class StringFunction extends SqlToken {
-    protected StringFunction() {}
+	protected StringFunction() {
+	}
 
-    @Override
-    public FieldType type() {
-        return FieldType.String;
-    }
+	@Override
+	public FieldType type() {
+		return FieldType.String;
+	}
 }

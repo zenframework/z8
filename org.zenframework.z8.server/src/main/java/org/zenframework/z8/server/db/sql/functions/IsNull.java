@@ -12,47 +12,47 @@ import org.zenframework.z8.server.exceptions.db.UnknownDatabaseException;
 import org.zenframework.z8.server.types.integer;
 
 public class IsNull extends SqlToken {
-    private SqlToken param1;
+	private SqlToken token;
 
-    public IsNull(SqlToken p1) {
-        param1 = p1;
-    }
+	public IsNull(SqlToken token) {
+		this.token = token;
+	}
 
-    @Override
-    public void collectFields(Collection<IValue> fields) {
-        param1.collectFields(fields);
-    }
+	@Override
+	public void collectFields(Collection<IValue> fields) {
+		token.collectFields(fields);
+	}
 
-    @Override
-    public String format(DatabaseVendor vendor, FormatOptions options, boolean logicalContext)
-            throws UnknownDatabaseException {
-        SqlToken t = new IsNullToken();
-        if(!logicalContext)
-            t = new If(t, new SqlConst(new integer(1)), new SqlConst(new integer(0)));
+	@Override
+	public String format(DatabaseVendor vendor, FormatOptions options, boolean logicalContext) throws UnknownDatabaseException {
+		SqlToken t = new IsNullToken();
+		if(!logicalContext)
+			t = new If(t, new SqlConst(new integer(1)), new SqlConst(new integer(0)));
 
-        return t.format(vendor, options, true);
-    }
+		return t.format(vendor, options, true);
+	}
 
-    @Override
-    public FieldType type() {
-        return FieldType.Boolean;
-    }
+	@Override
+	public FieldType type() {
+		return FieldType.Boolean;
+	}
 
-    private class IsNullToken extends SqlToken {
-        private IsNullToken() {}
+	private class IsNullToken extends SqlToken {
+		private IsNullToken() {
+		}
 
-        @Override
-        public void collectFields(Collection<IValue> fields) {}
+		@Override
+		public void collectFields(Collection<IValue> fields) {
+		}
 
-        @Override
-        public String format(DatabaseVendor vendor, FormatOptions options, boolean logicalContext)
-                throws UnknownDatabaseException {
-            return param1.format(vendor, options) + " is null";
-        }
+		@Override
+		public String format(DatabaseVendor vendor, FormatOptions options, boolean logicalContext) throws UnknownDatabaseException {
+			return token.format(vendor, options) + " is null";
+		}
 
-        @Override
-        public FieldType type() {
-            return FieldType.Boolean;
-        }
-    }
+		@Override
+		public FieldType type() {
+			return FieldType.Boolean;
+		}
+	}
 }

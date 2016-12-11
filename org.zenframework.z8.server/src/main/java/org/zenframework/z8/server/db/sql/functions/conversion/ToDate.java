@@ -10,15 +10,15 @@ import org.zenframework.z8.server.db.sql.SqlToken;
 import org.zenframework.z8.server.exceptions.db.UnknownDatabaseException;
 
 public class ToDate extends SqlToken {
-	private SqlToken param1;
+	private SqlToken token;
 
-	public ToDate(SqlToken p1) {
-		param1 = p1;
+	public ToDate(SqlToken token) {
+		this.token = token;
 	}
 
 	@Override
 	public void collectFields(Collection<IValue> fields) {
-		param1.collectFields(fields);
+		token.collectFields(fields);
 	}
 
 	@Override
@@ -26,9 +26,9 @@ public class ToDate extends SqlToken {
 		switch(vendor) {
 		case Oracle:
 		case Postgres:
-			return param1.format(vendor, options) + "::timestamp with time zone";
+			return token.format(vendor, options) + "::timestamp with time zone";
 		case SqlServer:
-			return "CONVERT([datetime]," + param1.format(vendor, options) + ",(103))";
+			return "CONVERT([datetime]," + token.format(vendor, options) + ",(103))";
 		default:
 			throw new UnknownDatabaseException();
 		}

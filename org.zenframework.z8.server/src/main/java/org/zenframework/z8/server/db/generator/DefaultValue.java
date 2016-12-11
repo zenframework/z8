@@ -11,9 +11,8 @@ public class DefaultValue {
 	static public String get(DatabaseVendor vendor, Field field) {
 		primary value = field.getDefaultValue();
 
-		if(field.type() == FieldType.Text) {
+		if(field.type() == FieldType.Text)
 			value = new binary((string)value);
-		}
 
 		return value.toDbConstant(vendor);
 	}

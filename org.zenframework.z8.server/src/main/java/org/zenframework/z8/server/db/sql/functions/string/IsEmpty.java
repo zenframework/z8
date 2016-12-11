@@ -15,24 +15,24 @@ import org.zenframework.z8.server.db.sql.expressions.Or;
 import org.zenframework.z8.server.db.sql.functions.IsNull;
 
 public class IsEmpty extends SqlToken {
-	private SqlToken value;
+	private SqlToken string;
 
 	public IsEmpty(Field field) {
 		this(new SqlField(field));
 	}
 
-	public IsEmpty(SqlToken value) {
-		this.value = value;
+	public IsEmpty(SqlToken string) {
+		this.string = string;
 	}
 
 	@Override
 	public void collectFields(Collection<IValue> fields) {
-		value.collectFields(fields);
+		string.collectFields(fields);
 	}
 
 	@Override
 	public String format(DatabaseVendor vendor, FormatOptions options, boolean logicalContext) {
-		SqlToken value = new Group(this.value);
+		SqlToken value = new Group(this.string);
 		SqlToken t = new Group(new Or(new IsNull(value), new Equ(value, "")));
 		return t.format(vendor, options, logicalContext);
 	}

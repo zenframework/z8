@@ -9,24 +9,24 @@ import org.zenframework.z8.server.db.sql.FormatOptions;
 import org.zenframework.z8.server.db.sql.SqlToken;
 
 public class Reverse extends SqlToken {
-    private SqlToken param1;
+	private SqlToken string;
 
-    public Reverse(SqlToken p1) {
-        param1 = p1;
-    }
+	public Reverse(SqlToken string) {
+		this.string = string;
+	}
 
-    @Override
-    public void collectFields(Collection<IValue> fields) {
-        param1.collectFields(fields);
-    }
+	@Override
+	public void collectFields(Collection<IValue> fields) {
+		string.collectFields(fields);
+	}
 
-    @Override
-    public String format(DatabaseVendor vendor, FormatOptions options, boolean logicalContext) {
-        return "REVERSE(" + param1.format(vendor, options) + ")";
-    }
+	@Override
+	public String format(DatabaseVendor vendor, FormatOptions options, boolean logicalContext) {
+		return "REVERSE(" + string.format(vendor, options) + ")";
+	}
 
-    @Override
-    public FieldType type() {
-        return param1.type();
-    }
+	@Override
+	public FieldType type() {
+		return string.type();
+	}
 }

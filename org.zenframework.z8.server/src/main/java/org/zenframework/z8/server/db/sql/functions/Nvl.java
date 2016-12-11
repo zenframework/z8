@@ -10,35 +10,35 @@ import org.zenframework.z8.server.db.sql.SqlToken;
 import org.zenframework.z8.server.exceptions.db.UnknownDatabaseException;
 
 public class Nvl extends SqlToken {
-    private SqlToken param1;
-    private SqlToken param2;
+	private SqlToken first;
+	private SqlToken second;
 
-    public Nvl(SqlToken p1, SqlToken p2) {
-        param1 = p1;
-        param2 = p2;
-    }
+	public Nvl(SqlToken first, SqlToken second) {
+		this.first = first;
+		this.second = second;
+	}
 
-    @Override
-    public void collectFields(Collection<IValue> fields) {
-        param1.collectFields(fields);
-        param2.collectFields(fields);
-    }
+	@Override
+	public void collectFields(Collection<IValue> fields) {
+		first.collectFields(fields);
+		second.collectFields(fields);
+	}
 
-    @Override
-    public String format(DatabaseVendor vendor, FormatOptions options, boolean logicalContext) {
-        switch(vendor) {
-        case Oracle:
-            return "nvl(" + param1.format(vendor, options) + "," + param2.format(vendor, options, logicalContext) + ")";
-        case SqlServer:
-            return "isNull(" + param1.format(vendor, options) + "," + param2.format(vendor, options, logicalContext) + ")";
-        case Postgres:
-        default:
-            throw new UnknownDatabaseException();
-        }
-    }
+	@Override
+	public String format(DatabaseVendor vendor, FormatOptions options, boolean logicalContext) {
+		switch(vendor) {
+		case Oracle:
+			return "nvl(" + first.format(vendor, options) + "," + second.format(vendor, options, logicalContext) + ")";
+		case SqlServer:
+			return "isNull(" + first.format(vendor, options) + "," + second.format(vendor, options, logicalContext) + ")";
+		case Postgres:
+		default:
+			throw new UnknownDatabaseException();
+		}
+	}
 
-    @Override
-    public FieldType type() {
-        return param1.type();
-    }
+	@Override
+	public FieldType type() {
+		return first.type();
+	}
 }

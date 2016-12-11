@@ -11,35 +11,33 @@ import org.zenframework.z8.server.exceptions.db.UnknownDatabaseException;
 import org.zenframework.z8.server.types.string;
 
 public class LPad extends StringFunction {
-    private SqlToken param1;
-    private SqlToken param2;
-    private SqlToken param3;
+	private SqlToken string;
+	private SqlToken length;
+	private SqlToken pad;
 
-    public LPad(SqlToken p1, SqlToken p2, SqlToken p3) {
-        param1 = p1;
-        param2 = p2;
-        param3 = p3;
-    }
+	public LPad(SqlToken string, SqlToken length, SqlToken pad) {
+		this.string = string;
+		this.length = length;
+		this.pad = pad;
+	}
 
-    @Override
-    public void collectFields(Collection<IValue> fields) {
-        param1.collectFields(fields);
-        param2.collectFields(fields);
-        param3.collectFields(fields);
-    }
+	@Override
+	public void collectFields(Collection<IValue> fields) {
+		string.collectFields(fields);
+		length.collectFields(fields);
+		pad.collectFields(fields);
+	}
 
-    @Override
-    public String format(DatabaseVendor vendor, FormatOptions options, boolean logicalContext) {
-        param3 = (param3 == null ? new SqlConst(new string(" ")) : param3);
-        switch(vendor) {
-        case Oracle:
-            return "LPAD(" + param1.format(vendor, options) + "," + param2.format(vendor, options) + ","
-                    + param3.format(vendor, options) + ")";
-        case SqlServer:
-            return "RIGHT(REPLICATE(" + param3.format(vendor, options) + "," + param2.format(vendor, options) + ")+"
-                    + param1.format(vendor, options) + "," + param2.format(vendor, options) + ")";
-        default:
-            throw new UnknownDatabaseException();
-        }
-    }
+	@Override
+	public String format(DatabaseVendor vendor, FormatOptions options, boolean logicalContext) {
+		pad = (pad == null ? new SqlConst(new string(" ")) : pad);
+		switch(vendor) {
+		case Oracle:
+			return "LPAD(" + string.format(vendor, options) + "," + length.format(vendor, options) + "," + pad.format(vendor, options) + ")";
+		case SqlServer:
+			return "RIGHT(REPLICATE(" + pad.format(vendor, options) + "," + length.format(vendor, options) + ")+" + string.format(vendor, options) + "," + length.format(vendor, options) + ")";
+		default:
+			throw new UnknownDatabaseException();
+		}
+	}
 }

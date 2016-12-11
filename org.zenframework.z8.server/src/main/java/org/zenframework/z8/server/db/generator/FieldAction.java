@@ -1,5 +1,8 @@
 package org.zenframework.z8.server.db.generator;
 
 public enum FieldAction {
-	Create, Alter, Default, AlterDefault
+	Create,
+	Alter,
+	Default,
+	AlterDefault
 }

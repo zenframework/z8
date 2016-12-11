@@ -10,29 +10,29 @@ import org.zenframework.z8.server.db.sql.SqlToken;
 import org.zenframework.z8.server.exceptions.db.UnknownDatabaseException;
 
 public class AddYear extends SqlToken {
-	private SqlToken param1;
-	private SqlToken param2;
+	private SqlToken date;
+	private SqlToken years;
 
-	public AddYear(SqlToken p1, SqlToken p2) {
-		param1 = p1;
-		param2 = p2;
+	public AddYear(SqlToken date, SqlToken years) {
+		this.date = date;
+		this.years = years;
 	}
 
 	@Override
 	public void collectFields(Collection<IValue> fields) {
-		param1.collectFields(fields);
-		param2.collectFields(fields);
+		date.collectFields(fields);
+		years.collectFields(fields);
 	}
 
 	@Override
 	public String format(DatabaseVendor vendor, FormatOptions options, boolean logicalContext) {
 		switch(vendor) {
 		case Oracle:
-			return "ADD_MONTHS(" + param1.format(vendor, options) + ",(" + param2.format(vendor, options) + ")*12)";
+			return "ADD_MONTHS(" + date.format(vendor, options) + ",(" + years.format(vendor, options) + ")*12)";
 		case Postgres:
-			return "(" + param1.format(vendor, options) + " + (" + param2.format(vendor, options) + ") * interval '1 year')";
+			return "(" + date.format(vendor, options) + " + (" + years.format(vendor, options) + ") * interval '1 year')";
 		case SqlServer:
-			return "DATEADD(YEAR, " + param2.format(vendor, options) + ", " + param1.format(vendor, options) + ")";
+			return "DATEADD(YEAR, " + years.format(vendor, options) + ", " + date.format(vendor, options) + ")";
 		default:
 			throw new UnknownDatabaseException();
 		}
@@ -40,6 +40,6 @@ public class AddYear extends SqlToken {
 
 	@Override
 	public FieldType type() {
-		return param1.type();
+		return date.type();
 	}
 }

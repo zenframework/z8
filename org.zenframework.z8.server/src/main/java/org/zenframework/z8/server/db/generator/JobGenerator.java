@@ -18,7 +18,6 @@ import org.zenframework.z8.server.types.integer;
 import org.zenframework.z8.server.types.string;
 
 public class JobGenerator {
-
 	public void run(ILogger logger) {
 		createJobs(logger);
 		deleteOldJobs(logger);

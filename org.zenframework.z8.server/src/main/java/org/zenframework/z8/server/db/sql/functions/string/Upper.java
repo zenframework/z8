@@ -12,24 +12,24 @@ import org.zenframework.z8.server.db.sql.SqlToken;
 import org.zenframework.z8.server.db.sql.functions.conversion.ToString;
 
 public class Upper extends StringFunction {
-	private SqlToken value;
+	private SqlToken string;
 
 	public Upper(Field field) {
 		this(new SqlField(field));
 	}
 
-	public Upper(SqlToken value) {
-		this.value = value;
+	public Upper(SqlToken string) {
+		this.string = string;
 	}
 
 	@Override
 	public void collectFields(Collection<IValue> fields) {
-		value.collectFields(fields);
+		string.collectFields(fields);
 	}
 
 	@Override
 	public String format(DatabaseVendor vendor, FormatOptions options, boolean logicalContext) {
-		SqlToken token = value.type() != FieldType.String ? new ToString(value) : value;
+		SqlToken token = string.type() != FieldType.String ? new ToString(string) : string;
 		return "UPPER(" + token.format(vendor, options) + ")";
 	}
 

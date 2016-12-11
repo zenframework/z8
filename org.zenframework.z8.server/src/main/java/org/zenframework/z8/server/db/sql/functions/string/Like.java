@@ -10,19 +10,19 @@ import org.zenframework.z8.server.db.sql.SqlToken;
 import org.zenframework.z8.server.db.sql.functions.conversion.ToString;
 
 public class Like extends SqlToken {
-    private SqlToken value;
+    private SqlToken string;
     private SqlToken like;
     private SqlToken escape;
 
-    public Like(SqlToken value, SqlToken like, SqlToken escape) {
-        this.value = value;
+    public Like(SqlToken string, SqlToken like, SqlToken escape) {
+        this.string = string;
         this.like = like;
         this.escape = escape;
     }
 
     @Override
     public void collectFields(Collection<IValue> fields) {
-        value.collectFields(fields);
+        string.collectFields(fields);
         like.collectFields(fields);
         if(escape != null)
             escape.collectFields(fields);
@@ -35,7 +35,7 @@ public class Like extends SqlToken {
 
     @Override
     public String format(DatabaseVendor vendor, FormatOptions options, boolean logicalContext) {
-        SqlToken valueToken = value.type() != FieldType.String ? new ToString(value) : value;
+        SqlToken valueToken = string.type() != FieldType.String ? new ToString(string) : string;
         SqlToken likeToken = like.type() != FieldType.String ? new ToString(like) : like;
         SqlToken escapeToken = escape != null && escape.type() != FieldType.String ? new ToString(escape) : escape;
  

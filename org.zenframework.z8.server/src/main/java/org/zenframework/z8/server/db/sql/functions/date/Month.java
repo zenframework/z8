@@ -12,24 +12,24 @@ import org.zenframework.z8.server.db.sql.functions.conversion.ToNumber;
 import org.zenframework.z8.server.exceptions.db.UnknownDatabaseException;
 
 public class Month extends SqlToken {
-	private SqlToken param1;
+	private SqlToken date;
 
-	public Month(SqlToken p1) {
-		param1 = p1;
+	public Month(SqlToken date) {
+		this.date = date;
 	}
 
 	@Override
 	public void collectFields(Collection<IValue> fields) {
-		param1.collectFields(fields);
+		date.collectFields(fields);
 	}
 
 	@Override
 	public String format(DatabaseVendor vendor, FormatOptions options, boolean logicalContext) {
 		switch(vendor) {
 		case Oracle:
-			return new ToNumber(new SqlStringToken("TO_CHAR(" + param1.format(vendor, options) + ", 'MM')", FieldType.String)).format(vendor, options);
+			return new ToNumber(new SqlStringToken("TO_CHAR(" + date.format(vendor, options) + ", 'MM')", FieldType.String)).format(vendor, options);
 		case SqlServer:
-			return "Month(" + param1.format(vendor, options) + ")";
+			return "Month(" + date.format(vendor, options) + ")";
 		default:
 			throw new UnknownDatabaseException();
 		}

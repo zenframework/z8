@@ -12,26 +12,26 @@ import org.zenframework.z8.server.db.sql.functions.conversion.ToNumber;
 import org.zenframework.z8.server.exceptions.db.UnknownDatabaseException;
 
 public class Year extends SqlToken {
-	private SqlToken param1;
+	private SqlToken date;
 
-	public Year(SqlToken p1) {
-		param1 = p1;
+	public Year(SqlToken date) {
+		this.date = date;
 	}
 
 	@Override
 	public void collectFields(Collection<IValue> fields) {
-		param1.collectFields(fields);
+		date.collectFields(fields);
 	}
 
 	@Override
 	public String format(DatabaseVendor vendor, FormatOptions options, boolean logicalContext) {
 		switch(vendor) {
 		case Postgres:
-			return "cast(date_part('year', " + param1.format(vendor, options) + ") as bigint)";
+			return "cast(date_part('year', " + date.format(vendor, options) + ") as bigint)";
 		case Oracle:
-			return new ToNumber(new SqlStringToken("TO_CHAR(" + param1.format(vendor, options) + ", 'YYYY')", FieldType.String)).format(vendor, options);
+			return new ToNumber(new SqlStringToken("TO_CHAR(" + date.format(vendor, options) + ", 'YYYY')", FieldType.String)).format(vendor, options);
 		case SqlServer:
-			return "Year(" + param1.format(vendor, options) + ")";
+			return "Year(" + date.format(vendor, options) + ")";
 		default:
 			throw new UnknownDatabaseException();
 		}

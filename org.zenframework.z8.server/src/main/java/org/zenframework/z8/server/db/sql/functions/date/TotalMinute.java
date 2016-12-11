@@ -15,25 +15,24 @@ import org.zenframework.z8.server.types.datespan;
 import org.zenframework.z8.server.types.integer;
 
 public class TotalMinute extends SqlToken {
-    private SqlToken param1;
+	private SqlToken span;
 
-    public TotalMinute(SqlToken p1) {
-        param1 = p1;
-    }
+	public TotalMinute(SqlToken span) {
+		this.span = span;
+	}
 
-    @Override
-    public void collectFields(Collection<IValue> fields) {
-        param1.collectFields(fields);
-    }
+	@Override
+	public void collectFields(Collection<IValue> fields) {
+		span.collectFields(fields);
+	}
 
-    @Override
-    public String format(DatabaseVendor vendor, FormatOptions options, boolean logicalContext) {
-        return new Round(new Mul(param1, Operation.Div, new SqlConst(new integer(datespan.TicksPerMinute))), null).format(
-                vendor, options);
-    }
+	@Override
+	public String format(DatabaseVendor vendor, FormatOptions options, boolean logicalContext) {
+		return new Round(new Mul(span, Operation.Div, new SqlConst(new integer(datespan.TicksPerMinute))), null).format(vendor, options);
+	}
 
-    @Override
-    public FieldType type() {
-        return FieldType.Integer;
-    }
+	@Override
+	public FieldType type() {
+		return FieldType.Integer;
+	}
 }

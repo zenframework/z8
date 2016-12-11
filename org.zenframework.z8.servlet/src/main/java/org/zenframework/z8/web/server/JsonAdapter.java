@@ -1,12 +1,14 @@
 package org.zenframework.z8.web.server;
 
 import java.io.IOException;
+import java.util.Arrays;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.zenframework.z8.server.json.Json;
 import org.zenframework.z8.server.json.JsonWriter;
+import org.zenframework.z8.server.request.Message;
 import org.zenframework.z8.server.resources.Resources;
 import org.zenframework.z8.server.types.encoding;
 import org.zenframework.z8.web.servlet.Servlet;
@@ -31,7 +33,7 @@ public class JsonAdapter extends Adapter {
 			errorText = "Internal server error.";
 
 		writer.startResponse(null, false, status);
-		writer.writeInfo(errorText);
+		writer.writeInfo(Arrays.asList(Message.error(errorText)), null, null);
 		writer.startArray(Json.data);
 		writer.finishArray();
 		writer.finishResponse();

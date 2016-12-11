@@ -10,32 +10,32 @@ import org.zenframework.z8.server.db.sql.SqlToken;
 import org.zenframework.z8.server.exceptions.db.UnknownDatabaseException;
 
 public class IntToDecimal extends SqlToken {
-    private SqlToken param1;
+	private SqlToken token;
 
-    public IntToDecimal(SqlToken p1) {
-        param1 = p1;
-    }
+	public IntToDecimal(SqlToken token) {
+		this.token = token;
+	}
 
-    @Override
-    public void collectFields(Collection<IValue> fields) {
-        param1.collectFields(fields);
-    }
+	@Override
+	public void collectFields(Collection<IValue> fields) {
+		token.collectFields(fields);
+	}
 
-    @Override
-    public String format(DatabaseVendor vendor, FormatOptions options, boolean logicalContext) {
-        switch(vendor) {
-        case Oracle:
-            return param1.format(vendor, options);
-        case SqlServer:
-        case Postgres:
-            return new ToDecimal(param1).format(vendor, options);
-        default:
-            throw new UnknownDatabaseException();
-        }
-    }
+	@Override
+	public String format(DatabaseVendor vendor, FormatOptions options, boolean logicalContext) {
+		switch(vendor) {
+		case Oracle:
+			return token.format(vendor, options);
+		case SqlServer:
+		case Postgres:
+			return new ToDecimal(token).format(vendor, options);
+		default:
+			throw new UnknownDatabaseException();
+		}
+	}
 
-    @Override
-    public FieldType type() {
-        return FieldType.Decimal;
-    }
+	@Override
+	public FieldType type() {
+		return FieldType.Decimal;
+	}
 }

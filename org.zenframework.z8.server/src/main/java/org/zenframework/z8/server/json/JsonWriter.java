@@ -337,16 +337,6 @@ public class JsonWriter {
 		writeProperty(Json.status, status);
 	}
 
-	public void writeInfo(String message) {
-		startObject(Json.info);
-
-		startArray(Json.messages);
-		write(message);
-		finishArray();
-
-		finishObject();
-	}
-
 	public void writeInfo(Collection<Message> messages, String serverId, file log) {
 		startObject(Json.info);
 

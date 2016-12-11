@@ -10,31 +10,33 @@ import org.zenframework.z8.server.db.sql.SqlToken;
 import org.zenframework.z8.server.exceptions.db.UnknownDatabaseException;
 
 public class ServerTime extends SqlToken {
-    public ServerTime() {}
+	public ServerTime() {
+	}
 
-    @Override
-    public void collectFields(Collection<IValue> fields) {}
+	@Override
+	public void collectFields(Collection<IValue> fields) {
+	}
 
-    public String format(DatabaseVendor vendor) {
-        return format(vendor, null);
-    }
+	public String format(DatabaseVendor vendor) {
+		return format(vendor, null);
+	}
 
-    @Override
-    public String format(DatabaseVendor vendor, FormatOptions options, boolean logicalContext) {
-        switch(vendor) {
-        case Oracle:
-            return "sysDate";
-        case SqlServer:
-            return "getDate()";
-        case Postgres:
-            return "current_timestamp";
-        default:
-            throw new UnknownDatabaseException();
-        }
-    }
+	@Override
+	public String format(DatabaseVendor vendor, FormatOptions options, boolean logicalContext) {
+		switch(vendor) {
+		case Oracle:
+			return "sysDate";
+		case SqlServer:
+			return "getDate()";
+		case Postgres:
+			return "current_timestamp";
+		default:
+			throw new UnknownDatabaseException();
+		}
+	}
 
-    @Override
-    public FieldType type() {
-        return FieldType.Datetime;
-    }
+	@Override
+	public FieldType type() {
+		return FieldType.Datetime;
+	}
 }

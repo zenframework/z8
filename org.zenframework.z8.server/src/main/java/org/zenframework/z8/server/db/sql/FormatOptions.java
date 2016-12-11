@@ -6,28 +6,28 @@ import java.util.Map;
 import org.zenframework.z8.server.base.table.value.IValue;
 
 public class FormatOptions {
-    private int enablesCount = 0;
-    
-    private Map<IValue, String> aliases = new HashMap<IValue, String>();
+	private int enablesCount = 0;
 
-    public String getFieldAlias(IValue field) {
-        return aliases.get(field);
-    }
+	private Map<IValue, String> aliases = new HashMap<IValue, String>();
 
-    public void setFieldAlias(IValue field, String alias) {
-        aliases.put(field, alias);
-    }
+	public String getFieldAlias(IValue field) {
+		return aliases.get(field);
+	}
 
-    public boolean isAggregationEnabled() {
-        return enablesCount == 0;
-    }
+	public void setFieldAlias(IValue field, String alias) {
+		aliases.put(field, alias);
+	}
 
-    public void enableAggregation() {
-        if(enablesCount > 0)
-            enablesCount--;
-    }
+	public boolean isAggregationEnabled() {
+		return enablesCount == 0;
+	}
 
-    public void disableAggregation() {
-        enablesCount++;
-    }
+	public void enableAggregation() {
+		if(enablesCount > 0)
+			enablesCount--;
+	}
+
+	public void disableAggregation() {
+		enablesCount++;
+	}
 }

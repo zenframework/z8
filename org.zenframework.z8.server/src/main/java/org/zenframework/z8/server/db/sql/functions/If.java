@@ -9,26 +9,28 @@ import org.zenframework.z8.server.db.sql.FormatOptions;
 import org.zenframework.z8.server.db.sql.SqlToken;
 
 public class If extends SqlToken {
-	private SqlToken param1, param2, param3;
+	private SqlToken condition;
+	private SqlToken trueToken;
+	private SqlToken falseToken;
 
-	public If(SqlToken p1, SqlToken p2, SqlToken p3) {
-		param1 = p1;
-		param2 = p2;
-		param3 = p3;
+	public If(SqlToken condition, SqlToken trueToken, SqlToken falseToken) {
+		this.condition = condition;
+		this.trueToken = trueToken;
+		this.falseToken = falseToken;
 	}
 
 	@Override
 	public void collectFields(Collection<IValue> fields) {
-		param1.collectFields(fields);
-		param2.collectFields(fields);
-		param3.collectFields(fields);
+		condition.collectFields(fields);
+		trueToken.collectFields(fields);
+		falseToken.collectFields(fields);
 	}
 
 	@Override
 	public String format(DatabaseVendor vendor, FormatOptions options, boolean logicalContext) {
 		CaseToken CaseToken = new CaseToken();
-		CaseToken.addWhen(param1, param2);
-		CaseToken.setElse(param3);
+		CaseToken.addWhen(condition, trueToken);
+		CaseToken.setElse(falseToken);
 
 		String result = CaseToken.format(vendor, options);
 
@@ -41,6 +43,6 @@ public class If extends SqlToken {
 
 	@Override
 	public FieldType type() {
-		return param2.type();
+		return trueToken.type();
 	}
 }
