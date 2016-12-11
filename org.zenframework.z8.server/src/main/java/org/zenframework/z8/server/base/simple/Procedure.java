@@ -43,21 +43,35 @@ public class Procedure extends Command {
 		monitor.setWorked(percentDone);
 	}
 
-	public void reportProgress(String message, int percentDone) {
+	public void info(String message) {
 		JobMonitor monitor = getMonitor();
-		monitor.setWorked(percentDone);
-		monitor.print(message);
+		monitor.info(message);
 	}
 
-	public void z8_setStatus(string status, integer percentDone) {
-		if(!status.get().isEmpty())
-			reportProgress(status.get(), percentDone.getInt());
-		else
-			reportProgress(percentDone.getInt());
+	public void warning(String message) {
+		JobMonitor monitor = getMonitor();
+		monitor.warning(message);
 	}
 
-	public void z8_setText(string text) {
-		print(text.get());
+	public void error(String message) {
+		JobMonitor monitor = getMonitor();
+		monitor.error(message);
+	}
+
+	public void z8_progress(integer percentDone) {
+		reportProgress(percentDone.getInt());
+	}
+
+	public void z8_info(string message) {
+		info(message.get());
+	}
+
+	public void z8_warning(string message) {
+		warning(message.get());
+	}
+
+	public void z8_error(string message) {
+		error(message.get());
 	}
 
 	protected void z8_execute() {
@@ -65,10 +79,6 @@ public class Procedure extends Command {
 	}
 
 	protected void z8_execute(RCollection<Parameter.CLASS<? extends Parameter>> parameters) {
-	}
-
-	public void z8_onError(exception e) {
-		log(e);
 	}
 
 	@Override
@@ -88,8 +98,6 @@ public class Procedure extends Command {
 		} catch(Throwable e) {
 			if(connection != null)
 				connection.rollback();
-
-			z8_onError(new exception(e));
 		} finally {
 			getMonitor().logMessages();
 		}
@@ -105,17 +113,10 @@ public class Procedure extends Command {
 		JobMonitor monitor = getMonitor();
 		monitor.setWorked(monitor.getTotal());
 		monitor.log(e);
-		monitor.print(Resources.format("Procedure.jobError", ErrorUtils.getMessage(e)));
+		monitor.error(Resources.format("Procedure.jobError", ErrorUtils.getMessage(e)));
 
 		if(useTransaction.get())
-			monitor.print(Resources.get("Procedure.rollback"));
-	}
-
-	public void print(String text) {
-		JobMonitor monitor = getMonitor();
-
-		if(monitor != null)
-			monitor.print(text);
+			monitor.info(Resources.get("Procedure.rollback"));
 	}
 
 	public JobMonitor getMonitor() {

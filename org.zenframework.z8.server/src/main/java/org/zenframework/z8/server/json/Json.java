@@ -42,6 +42,8 @@ public interface Json {
 	string isTabControl = new string("isTabControl");
 
 	string info = new string("info");
+	string warning = new string("warning");
+	string error = new string("error");
 	string messages = new string("messages");
 	string get = new string("get");
 	string send = new string("send");

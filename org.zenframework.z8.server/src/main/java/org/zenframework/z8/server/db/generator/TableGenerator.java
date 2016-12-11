@@ -411,7 +411,7 @@ public class TableGenerator {
 
 		// Никогда не пересоздаем SystemFiles - очень долго. Если что, то все изменения руками.
 		if(tableName.equals(Files.TableName)) {
-			logger.message(Files.TableName + " - skipped.");
+			logger.info(Files.TableName + " - skipped.");
 			return;
 		}
 

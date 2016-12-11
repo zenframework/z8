@@ -42,13 +42,32 @@ public class JobMonitor extends Monitor {
 	}
 
 	@Override
-	public void print(String text) {
+	public void info(String text) {
 		synchronized (mutex) {
-			super.print(text);
+			super.info(text);
 
-			if (job != null && job.scheduled()) {
-				log(text);
-			}
+			if (job != null && job.scheduled())
+				logInfo(text);
+		}
+	}
+
+	@Override
+	public void warning(String text) {
+		synchronized (mutex) {
+			super.warning(text);
+
+			if (job != null && job.scheduled())
+				logWarning(text);
+		}
+	}
+
+	@Override
+	public void error(String text) {
+		synchronized (mutex) {
+			super.warning(text);
+
+			if (job != null && job.scheduled())
+				logError(text);
 		}
 	}
 

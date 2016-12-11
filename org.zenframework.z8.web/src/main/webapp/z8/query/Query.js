@@ -186,15 +186,15 @@ Z8.query.Query = Ext.extend(Ext.util.Observable, {
 	},
 
 	canAdd: function() {
-		return this.actions.indexOf('add') != -1;
+		return true; //this.actions.indexOf('add') != -1;
 	},
 
 	canCopy: function() {
-		return this.actions.indexOf('copy') != -1;
+		return true; //this.actions.indexOf('copy') != -1;
 	},
 
 	canDelete: function() {
-		return this.actions.indexOf('delete') != -1;
+		return true; //this.actions.indexOf('delete') != -1;
 	},
 
 	canImport: function() {

@@ -1,6 +1,7 @@
 package org.zenframework.z8.server.request;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import org.zenframework.z8.server.engine.ApplicationServer;
@@ -18,7 +19,8 @@ public class Monitor extends RequestTarget implements IMonitor {
 	private file logFile;
 
 	private List<Message> logMessages = new ArrayList<Message>();
-	private List<Message> monitorMessages = new ArrayList<Message>();
+
+	private List<Message> messages = new ArrayList<Message>();
 
 	public Monitor() {
 		super(guid.create().toString());
@@ -29,13 +31,25 @@ public class Monitor extends RequestTarget implements IMonitor {
 	}
 
 	protected void collectLogMessages() {
-		logMessages.addAll(monitorMessages);
+		logMessages.addAll(messages);
 	}
 
 	@Override
-	public void print(String text) {
+	public void info(String text) {
 		Trace.logEvent(text);
-		monitorMessages.add(new Message(text));
+		messages.add(Message.info(text));
+	}
+
+	@Override
+	public void warning(String text) {
+		Trace.logEvent(text);
+		messages.add(Message.warning(text));
+	}
+
+	@Override
+	public void error(String text) {
+		Trace.logEvent(text);
+		messages.add(Message.error(text));
 	}
 
 	@Override
@@ -49,31 +63,39 @@ public class Monitor extends RequestTarget implements IMonitor {
 	}
 
 	@Override
-	public void log(String text) {
+	public void logInfo(String text) {
+		log(Message.info(text));
+	}
+
+	@Override
+	public void logWarning(String text) {
+		log(Message.warning(text));
+	}
+
+	@Override
+	public void logError(String text) {
+		log(Message.error(text));
+	}
+
+	private void log(Message message) {
 		if (logFile == null)
 			logFile = new file();
 
-		logFile.write(new Message(text) + file.EOL);
+		logFile.write(message + file.EOL);
 	}
 
 	@Override
 	public void log(Throwable exception) {
 		String message = ErrorUtils.getMessage(exception) + "\r\n" + ErrorUtils.getStackTrace(exception);
-		log(message);
+		logError(message);
 	}
 
-	public String[] getMessages() {
-		String[] result = new String[monitorMessages.size()];
-
-		for (int i = 0; i < monitorMessages.size(); i++) {
-			result[i] = monitorMessages.get(i).text();
-		}
-
-		return result;
+	public Collection<Message> getMessages() {
+		return new ArrayList<Message>(messages);
 	}
 
 	protected void clearMessages() {
-		monitorMessages.clear();
+		messages.clear();
 	}
 
 	@Override

@@ -1,3 +1,4 @@
+
 import org.zenframework.z8.base.security.User;
 import org.zenframework.z8.base.json.JsonWriter;
 import org.zenframework.z8.lang.Object;
@@ -8,10 +9,16 @@ class Application extends Object {
 
 	static public int currentTimeMillis();
 
-	static public void log(string text);
+	static public void logInfo(string text);
+	static public void logWarning(string text);
+	static public void logError(string text);
 
-	static public void message(string text);
-	static public void message(file file);
+	static public void info(string text);
+	static public void error(string text);
+	static public void warning(string text);
+
+	static public void print(file file);
+
 	static public string[string] requestParameters();
 	static public JsonWriter responseWriter();
 

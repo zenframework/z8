@@ -25,17 +25,37 @@ public class Application {
 		return new integer(System.currentTimeMillis());
 	}
 
-	static public void z8_log(string text) {
+	static public void z8_logInfo(string text) {
 		Trace.logEvent(text.get());
-		ApplicationServer.getMonitor().log(text.get());
+		ApplicationServer.getMonitor().logInfo(text.get());
 	}
 
-	static public void z8_message(string text) {
+	static public void z8_logWarning(string text) {
 		Trace.logEvent(text.get());
-		ApplicationServer.getMonitor().print(text.get());
+		ApplicationServer.getMonitor().logWarning(text.get());
 	}
 
-	static public void z8_message(file file) {
+	static public void z8_logError(string text) {
+		Trace.logEvent(text.get());
+		ApplicationServer.getMonitor().logError(text.get());
+	}
+
+	static public void z8_info(string text) {
+		Trace.logEvent(text.get());
+		ApplicationServer.getMonitor().info(text.get());
+	}
+
+	static public void z8_warning(string text) {
+		Trace.logEvent(text.get());
+		ApplicationServer.getMonitor().warning(text.get());
+	}
+
+	static public void z8_error(string text) {
+		Trace.logEvent(text.get());
+		ApplicationServer.getMonitor().error(text.get());
+	}
+
+	static public void z8_print(file file) {
 		ApplicationServer.getMonitor().print(file);
 	}
 

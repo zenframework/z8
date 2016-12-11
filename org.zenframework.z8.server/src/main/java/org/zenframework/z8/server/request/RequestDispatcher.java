@@ -47,7 +47,7 @@ public class RequestDispatcher implements Runnable {
 			writer.finishArray();
 
 			IMonitor monitor = request.getMonitor();
-			monitor.print(ErrorUtils.getMessage(exception));
+			monitor.error(ErrorUtils.getMessage(exception));
 			monitor.log(exception);
 
 			try {

@@ -11,6 +11,7 @@ import org.zenframework.z8.server.base.table.value.Field;
 import org.zenframework.z8.server.base.table.value.IValue;
 import org.zenframework.z8.server.json.parser.JsonArray;
 import org.zenframework.z8.server.json.parser.JsonObject;
+import org.zenframework.z8.server.request.Message;
 import org.zenframework.z8.server.runtime.RCollection;
 import org.zenframework.z8.server.types.bool;
 import org.zenframework.z8.server.types.date;
@@ -346,12 +347,17 @@ public class JsonWriter {
 		finishObject();
 	}
 
-	public void writeInfo(String[] messages, String serverId, file log) {
+	public void writeInfo(Collection<Message> messages, String serverId, file log) {
 		startObject(Json.info);
 
 		startArray(Json.messages);
-		for(String message : messages)
-			write(message);
+
+		for(Message message : messages) {
+			startObject();
+			message.write(this);
+			finishObject();
+		}
+
 		finishArray();
 
 		if(log != null) {

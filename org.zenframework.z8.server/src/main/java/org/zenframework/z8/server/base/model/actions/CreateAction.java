@@ -24,7 +24,9 @@ public class CreateAction extends Action {
 	public void writeResponse(JsonWriter writer) {
 		String jsonData = getDataParameter();
 
-		if(jsonData.charAt(0) == '{')
+		if(jsonData == null)
+			jsonData = "[{}]";
+		else if(jsonData.charAt(0) == '{')
 			jsonData = "[" + jsonData + "]";
 
 		JsonArray records = new JsonArray(jsonData);

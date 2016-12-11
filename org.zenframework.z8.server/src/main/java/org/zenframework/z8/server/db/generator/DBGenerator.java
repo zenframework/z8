@@ -90,7 +90,7 @@ public class DBGenerator {
 
 		String version = Runtime.version();
 
-		logger.message("Control sum: " + version);
+		logger.info("Control sum: " + version);
 		logger.progress(100);
 	}
 

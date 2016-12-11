@@ -10,7 +10,6 @@ import org.zenframework.z8.server.db.Connection;
 import org.zenframework.z8.server.db.ConnectionManager;
 import org.zenframework.z8.server.engine.ApplicationServer;
 import org.zenframework.z8.server.engine.Runtime;
-import org.zenframework.z8.server.logs.Trace;
 import org.zenframework.z8.server.resources.Resources;
 import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.security.SecurityGroup;
@@ -41,14 +40,16 @@ public class DBGenerateProcedure extends Procedure {
 		super.z8_execute();
 
 		if(ApplicationServer.getUser().securityGroup() != SecurityGroup.Administrators) {
-			print("You must be a member of Administrators security group to perform this action.");
+			error("You must be a member of Administrators security group to perform this action.");
 			reportProgress(100);
 			return;
 		}
 
 		reportProgress(0);
 		Scheduler.stop();
-		reportProgress(Resources.get("Generator.schedulerStopped"), 0);
+
+		reportProgress(0);
+		info(Resources.get("Generator.schedulerStopped"));
 
 		Logger logger = new Logger();
 
@@ -70,14 +71,14 @@ public class DBGenerateProcedure extends Procedure {
 
 		Scheduler.start();
 
-		reportProgress(Resources.get("Generator.schedulerStarted"), 100);
+		reportProgress(100);
+		info(Resources.get("Generator.schedulerStarted"));
 	}
 
 	private class Logger implements ILogger {
 		@Override
 		public void error(Throwable exception, String message) {
-			Trace.logError(message, exception);
-			print(message);
+			DBGenerateProcedure.this.error(message);
 		}
 
 		@Override
@@ -86,8 +87,13 @@ public class DBGenerateProcedure extends Procedure {
 		}
 
 		@Override
-		public void message(String message) {
-			print(message);
+		public void info(String message) {
+			DBGenerateProcedure.this.info(message);
+		}
+
+		@Override
+		public void warning(String message) {
+			DBGenerateProcedure.this.warning(message);
 		}
 
 		@Override
@@ -95,5 +101,4 @@ public class DBGenerateProcedure extends Procedure {
 			reportProgress(percentDone);
 		}
 	}
-
 }

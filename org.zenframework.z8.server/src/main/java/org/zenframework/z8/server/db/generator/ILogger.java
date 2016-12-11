@@ -1,7 +1,8 @@
 package org.zenframework.z8.server.db.generator;
 
 public interface ILogger {
-	public void message(String msg);
+	public void info(String msg);
+	public void warning(String msg);
 
 	public void error(Throwable exception);
 
