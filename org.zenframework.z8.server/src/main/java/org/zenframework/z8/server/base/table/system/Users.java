@@ -8,6 +8,7 @@ import org.zenframework.z8.server.base.table.value.IField;
 import org.zenframework.z8.server.base.table.value.Link;
 import org.zenframework.z8.server.base.table.value.StringField;
 import org.zenframework.z8.server.base.table.value.TextField;
+import org.zenframework.z8.server.crypto.MD5;
 import org.zenframework.z8.server.engine.ApplicationServer;
 import org.zenframework.z8.server.engine.IAuthorityCenter;
 import org.zenframework.z8.server.engine.Runtime;
@@ -30,7 +31,7 @@ public class Users extends Table {
 	static public final guid System = BuiltinUsers.System.guid();
 	static public final guid Administrator = BuiltinUsers.Administrator.guid();
 
-	static private String defaultPassword = "d41d8cd98f00b204e9800998ecf8427e";
+	static private String defaultPassword = MD5.get("");
 
 	static public class names {
 		public final static String Password = "Password";
@@ -108,45 +109,12 @@ public class Users extends Table {
 	public BoolField.CLASS<BoolField> blocked = new BoolField.CLASS<BoolField>(this);
 	public TextField.CLASS<TextField> settings = new TextField.CLASS<TextField>(this);
 
-	public static class NameField extends StringField {
-		public static class CLASS<T extends NameField> extends StringField.CLASS<T> {
-			public CLASS(IObject container) {
-				super(container);
-				setJavaClass(NameField.class);
-			}
-
-			@Override
-			public Object newObject(IObject container) {
-				return new NameField(container);
-			}
-		}
-
-		public NameField(IObject container) {
-			super(container);
-		}
-
-		@Override
-		public primary getDefault() {
-			if(!ApplicationServer.events())
-				return super.getDefault();
-
-			Users users = (Users)getContainer();
-			if(users.recordId.get().guid().equals(guid.NULL))
-				return new string("");
-			String userName = displayNames.DefaultName + getSequencer().next();
-
-			return new string(userName);
-		}
-	}
-
 	public Users() {
 		this(null);
 	}
 
 	public Users(IObject container) {
 		super(container);
-
-		name = new NameField.CLASS<NameField>(this);
 	}
 
 	@Override
@@ -157,25 +125,32 @@ public class Users extends Table {
 
 		name.setDisplayName(displayNames.Name);
 		name.setGendb_updatable(false);
+		name.get().length = new integer(IAuthorityCenter.MaxLoginLength);
+		name.get().unique = new bool(true);
 
 		password.setName(names.Password);
 		password.setDisplayName(displayNames.Password);
 		password.setExportable(false);
 		password.setIndex("password");
+		password.get().length = new integer(IAuthorityCenter.MaxPasswordLength);
 
 		description.setDisplayName(displayNames.Description);
 
 		securityGroup.setName(names.SecurityGroup);
 		securityGroup.setIndex("securityGroup");
 		securityGroup.setDisplayName(displayNames.SecurityGroup);
+		securityGroup.get().setDefault(SecurityGroup.Users.guid());
+		securityGroup.get().operatorAssign(securityGroups);
 
 		phone.setName(names.Phone);
 		phone.setIndex("phone");
 		phone.setDisplayName(displayNames.Phone);
+		phone.get().length = new integer(128);
 
 		email.setName(names.Email);
 		email.setIndex("email");
 		email.setDisplayName(displayNames.Email);
+		email.get().length = new integer(128);
 
 		blocked.setName(names.Blocked);
 		blocked.setIndex("blocked");
@@ -184,20 +159,6 @@ public class Users extends Table {
 		settings.setName(names.Settings);
 		settings.setIndex("settings");
 		settings.setDisplayName(displayNames.Settings);
-
-		id.get().visible = new bool(false);
-		settings.get().visible = new bool(false);
-
-		name.get().length = new integer(IAuthorityCenter.MaxLoginLength);
-		name.get().unique = new bool(true);
-
-		securityGroup.get().setDefault(SecurityGroup.Users.guid());
-		securityGroup.get().operatorAssign(securityGroups);
-
-		password.get().length = new integer(IAuthorityCenter.MaxPasswordLength);
-
-		phone.get().length = new integer(128);
-		email.get().length = new integer(128);
 
 		registerDataField(securityGroup);
 		registerDataField(password);
@@ -228,6 +189,18 @@ public class Users extends Table {
 	public void onNew(guid recordId, guid parentId) {
 		password.get().set(defaultPassword);
 		super.onNew(recordId, parentId);
+	}
+
+	@Override
+	public void beforeCreate(guid recordId, guid parentId) {
+		super.beforeCreate(recordId, parentId);
+
+		if(!ApplicationServer.events())
+			return;
+
+		StringField name = this.name.get();
+		if((!name.changed() || name.string().isEmpty()) && !recordId.equals(guid.NULL))
+			name.set(new string(displayNames.DefaultName + name.getSequencer().next()));
 	}
 
 	@Override
