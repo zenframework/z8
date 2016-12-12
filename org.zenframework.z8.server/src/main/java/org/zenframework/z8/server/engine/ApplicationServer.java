@@ -93,8 +93,6 @@ public class ApplicationServer extends RmiServer implements IApplicationServer {
 	public void start() throws RemoteException {
 		super.start();
 
-		System.out.println(MD5.get("fsgdsfgsdfgвырврывпрвы245245"));
-
 		checkSchemaVersion();
 
 		enableTimeoutChecking(1 * datespan.TicksPerMinute);

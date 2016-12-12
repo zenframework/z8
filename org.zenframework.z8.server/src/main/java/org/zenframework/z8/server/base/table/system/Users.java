@@ -9,7 +9,6 @@ import org.zenframework.z8.server.base.table.value.Link;
 import org.zenframework.z8.server.base.table.value.StringField;
 import org.zenframework.z8.server.base.table.value.TextField;
 import org.zenframework.z8.server.crypto.MD5;
-import org.zenframework.z8.server.engine.ApplicationServer;
 import org.zenframework.z8.server.engine.IAuthorityCenter;
 import org.zenframework.z8.server.engine.Runtime;
 import org.zenframework.z8.server.resources.Resources;
@@ -133,6 +132,7 @@ public class Users extends Table {
 		password.setExportable(false);
 		password.setIndex("password");
 		password.get().length = new integer(IAuthorityCenter.MaxPasswordLength);
+		password.get().setDefault(new string(defaultPassword));
 
 		description.setDisplayName(displayNames.Description);
 
@@ -194,9 +194,6 @@ public class Users extends Table {
 	@Override
 	public void beforeCreate(guid recordId, guid parentId) {
 		super.beforeCreate(recordId, parentId);
-
-		if(!ApplicationServer.events())
-			return;
 
 		StringField name = this.name.get();
 		if((!name.changed() || name.string().isEmpty()) && !recordId.equals(guid.NULL))
