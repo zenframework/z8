@@ -56,12 +56,12 @@ public class DBGenerateProcedure extends Procedure {
 		try {
 			Connection connection = ConnectionManager.get();
 
-			Collection<Table.CLASS<? extends Table>> tables = Runtime.instance().tables();
-			Collection<Desktop.CLASS<? extends Desktop>> entries = (Collection)Runtime.instance().entries();
+			Collection<Table.CLASS<Table>> tables = (Collection)Runtime.instance().tables();
+			Collection<Desktop.CLASS<Desktop>> entries = (Collection)Runtime.instance().entries();
 
 			try {
-				DBGenerator generator = new DBGenerator(connection);
-				generator.run(tables, entries, logger);
+				DBGenerator generator = new DBGenerator(connection, logger);
+				generator.run(tables, entries);
 			} catch(Throwable e) {
 				logger.error(e);
 			}

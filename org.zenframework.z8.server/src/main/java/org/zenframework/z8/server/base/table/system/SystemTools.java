@@ -5,6 +5,8 @@ import org.zenframework.z8.server.base.simple.Runnable;
 import org.zenframework.z8.server.base.table.system.view.AuthorityCenterView;
 import org.zenframework.z8.server.base.table.system.view.FilesView;
 import org.zenframework.z8.server.base.table.system.view.InterconnectionCenterView;
+import org.zenframework.z8.server.base.table.system.view.RoleTableAccessView;
+import org.zenframework.z8.server.base.table.system.view.TablesView;
 import org.zenframework.z8.server.base.table.system.view.TransportQueueView;
 import org.zenframework.z8.server.base.table.system.view.UsersView;
 import org.zenframework.z8.server.config.ServerConfig;
@@ -49,6 +51,9 @@ public class SystemTools extends Desktop {
 	public Runnable.CLASS<? extends Runnable> exportMessages = new TransportQueueView.CLASS<TransportQueueView>(this);
 	public Runnable.CLASS<? extends Runnable> files = new FilesView.CLASS<FilesView>(this);
 
+	public Runnable.CLASS<? extends Runnable> tables = new TablesView.CLASS<TablesView>(this);
+	public Runnable.CLASS<? extends Runnable> roles = new RoleTableAccessView.CLASS<RoleTableAccessView>(this);
+
 	public Runnable.CLASS<? extends Runnable> authorityCenter = new AuthorityCenterView.CLASS<AuthorityCenterView>(this);
 	public Runnable.CLASS<? extends Runnable> interconnectionCenter = new InterconnectionCenterView.CLASS<InterconnectionCenterView>(this);
 
@@ -70,6 +75,9 @@ public class SystemTools extends Desktop {
 
 			runnables.add(exportMessages);
 			runnables.add(files);
+
+			runnables.add(tables);
+			runnables.add(roles);
 
 			guid user = ApplicationServer.getUser().id();
 

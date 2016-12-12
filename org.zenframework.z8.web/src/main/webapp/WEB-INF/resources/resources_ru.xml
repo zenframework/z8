@@ -80,6 +80,24 @@
 	<entry key="TransportRoutes.active">Активен</entry>
 	<entry key="TransportRoutes.error">Ошибка</entry>
 
+	<!-- Tables -->
+	<entry key="Tables.title">Таблицы</entry>
+	<entry key="Tables.displayName">Заголовок</entry>
+
+	<!-- Fields -->
+	<entry key="Fields.title">Поля</entry>
+	<entry key="Fields.displayName">Заголовок</entry>
+	<entry key="Fields.type">Тип данных</entry>
+	<entry key="Fields.position">#</entry>
+
+	<!-- RoleTableAccess -->
+	<entry key="RoleTableAccess.title">Таблицы</entry>
+	<entry key="RoleTableAccess.read">Чтение</entry>
+	<entry key="RoleTableAccess.write">Изменение</entry>
+	<entry key="RoleTableAccess.create">Создание</entry>
+	<entry key="RoleTableAccess.copy">Копирование</entry>
+	<entry key="RoleTableAccess.destroy">Удаление</entry>
+
 	<!-- Files -->
 	<entry key="Files.title">Файлы</entry>
 	<entry key="Files.name">Имя файла</entry>
@@ -97,8 +115,6 @@
 
 	<!-- UserEntries -->
 	<entry key="UserEntries.title">Компоненты</entry>
-	<entry key="UserEntries.user">Пользователь</entry>
-	<entry key="UserEntries.entry">Компонент</entry>
 	<entry key="UserEntries.position">Позиция</entry>
 
 

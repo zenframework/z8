@@ -18,12 +18,19 @@ import org.zenframework.z8.server.types.integer;
 import org.zenframework.z8.server.types.string;
 
 public class JobGenerator {
-	public void run(ILogger logger) {
-		createJobs(logger);
-		deleteOldJobs(logger);
+	@SuppressWarnings("unused")
+	private ILogger logger;
+
+	public JobGenerator(ILogger logger) {
+		this.logger = logger;
 	}
 
-	private void createJobs(ILogger logger) {
+	public void run() {
+		createJobs();
+		deleteOldJobs();
+	}
+
+	private void createJobs() {
 		Collection<Procedure.CLASS<? extends Procedure>> jobs = Runtime.instance().jobs();
 
 		Jobs jobsTable = new Jobs.CLASS<Jobs>().get();
@@ -67,7 +74,7 @@ public class JobGenerator {
 		return result;
 	}
 
-	private void deleteOldJobs(ILogger logger) {
+	private void deleteOldJobs() {
 		Collection<String> jobs = jobs();
 
 		SchedulerJobs schedulerJobs = new SchedulerJobs.CLASS<SchedulerJobs>().get();

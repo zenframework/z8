@@ -17,8 +17,6 @@ import org.zenframework.z8.server.types.primary;
 
 public class UserEntries extends Table {
 	final static public guid Id = new guid("00000000-0000-0000-0000-000000000001");
-	final static public guid Id2 = new guid("00000000-0000-0000-0000-000000000002");
-	final static public guid Id3 = new guid("00000000-0000-0000-0000-000000000003");
 
 	final static public String TableName = "SystemUserEntries";
 
@@ -32,15 +30,11 @@ public class UserEntries extends Table {
 
 	static public class strings {
 		public final static String Title = "UserEntries.title";
-		public final static String User = "UserEntries.user";
-		public final static String Entry = "UserEntries.entry";
 		public final static String Position = "UserEntries.position";
 	}
 
 	static public class displayNames {
 		public final static String Title = Resources.get(strings.Title);
-		public final static String User = Resources.get(strings.User);
-		public final static String Entry = Resources.get(strings.Entry);
 		public final static String Position = Resources.get(strings.Position);
 	}
 
@@ -93,11 +87,9 @@ public class UserEntries extends Table {
 
 		user.setName(names.User);
 		user.setIndex("user");
-		user.setDisplayName(Resources.get(strings.User));
 
 		entry.setName(names.Entry);
 		entry.setIndex("entry");
-		entry.setDisplayName(Resources.get(strings.Entry));
 
 		position.setName(names.Position);
 		position.setIndex("position");

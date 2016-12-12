@@ -60,6 +60,7 @@ abstract public class Field extends Control implements IValue, IField {
 	private primary value = null;
 	private primary originalValue = null;
 	private boolean changed = false;
+	private Collection<ILink> path = null;
 
 	private Sequencer sequencer = null;
 
@@ -136,6 +137,14 @@ abstract public class Field extends Control implements IValue, IField {
 
 	public boolean isDataField() {
 		return !isPrimaryKey() && !isParentKey();
+	}
+
+	public void setPath(Collection<ILink> path) {
+		this.path = path;
+	}
+
+	public Collection<ILink> getPath() {
+		return path;
 	}
 
 	public String format(DatabaseVendor vendor, FormatOptions options) {
@@ -259,12 +268,10 @@ abstract public class Field extends Control implements IValue, IField {
 		if(aggregation != Aggregation.None)
 			writer.writeProperty(Json.aggregation, aggregation.toString());
 
-		Collection<ILink> path = query.getPath(this);
-
 		boolean readOnly = false;
 		boolean required = false;
 
-		if(!path.isEmpty()) {
+		if(path != null && !path.isEmpty()) {
 			ILink link = path.iterator().next();
 			Field linkField = (Field)link;
 

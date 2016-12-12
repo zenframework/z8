@@ -360,8 +360,10 @@ public class ReadAction extends Action {
 			selectFields.add(field);
 
 			if(hasPrimaryKey()) {
-				for(ILink link : getLinks(field))
+				Collection<ILink> links = getLinks(field); 
+				for(ILink link : links)
 					selectFields.add((Field)link);
+				field.setPath(links);
 			}
 
 			collectUsedQueries(field);
@@ -689,7 +691,8 @@ public class ReadAction extends Action {
 				if(index != -1)
 					group[index] = field.get();
 
-				field.writeData(writer);
+				if(field != primaryKey || !field.guid().isNull())
+					field.writeData(writer);
 			}
 			records++;
 

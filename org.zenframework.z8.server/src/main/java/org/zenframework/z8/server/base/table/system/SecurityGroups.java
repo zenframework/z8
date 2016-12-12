@@ -7,7 +7,6 @@ import org.zenframework.z8.server.base.table.value.IField;
 import org.zenframework.z8.server.resources.Resources;
 import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.security.SecurityGroup;
-import org.zenframework.z8.server.types.bool;
 import org.zenframework.z8.server.types.integer;
 import org.zenframework.z8.server.types.primary;
 import org.zenframework.z8.server.types.string;
@@ -43,9 +42,6 @@ public class SecurityGroups extends Table {
 		super.constructor2();
 
 		name.setDisplayName(Resources.get(strings.Name));
-
-		id.get().visible = new bool(false);
-
 		name.get().length = new integer(50);
 
 		{

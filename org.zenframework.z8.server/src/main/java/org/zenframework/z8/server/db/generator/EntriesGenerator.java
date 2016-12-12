@@ -14,7 +14,13 @@ import org.zenframework.z8.server.security.Component;
 import org.zenframework.z8.server.types.guid;
 
 public class EntriesGenerator {
-	public EntriesGenerator() {
+	private Collection<Desktop.CLASS<Desktop>> entryClasses;
+	@SuppressWarnings("unused")
+	private ILogger logger;
+
+	public EntriesGenerator(Collection<Desktop.CLASS<Desktop>> entryClasses, ILogger logger) {
+		this.entryClasses = entryClasses;
+		this.logger = logger;
 	}
 
 	public Component[] readComponents() {
@@ -38,7 +44,7 @@ public class EntriesGenerator {
 		return components.toArray(new Component[0]);
 	}
 
-	public void run(Collection<Desktop.CLASS<? extends Desktop>> entryClasses, ILogger logger) {
+	public void run() {
 		Component[] existingComponents = readComponents();
 
 		List<Component> toDelete = new ArrayList<Component>();
@@ -61,7 +67,7 @@ public class EntriesGenerator {
 			}
 		}
 
-		for(Desktop.CLASS<? extends Desktop> cls : entryClasses) {
+		for(Desktop.CLASS<Desktop> cls : entryClasses) {
 			boolean found = false;
 
 			for(Component component : existingComponents) {

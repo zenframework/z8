@@ -17,16 +17,18 @@ public class DBGenerator {
 	public static final String SchemaGenerateLock = "SchemaGenerate";
 
 	private Connection connection;
+	private ILogger logger;
 
-	public DBGenerator(Connection connection) {
+	public DBGenerator(Connection connection, ILogger logger) {
 		this.connection = connection;
+		this.logger = logger;
 	}
 
-	public void run(Collection<Table.CLASS<? extends Table>> tables, Collection<Desktop.CLASS<? extends Desktop>> entries, ILogger logger) {
+	public void run(Collection<Table.CLASS<Table>> tables, Collection<Desktop.CLASS<Desktop>> entries) {
 		ApplicationServer.disableEvents();
 
 		try {
-			run(tables, DataSchema.getTables(connection, "%"), logger, entries);
+			run(tables, DataSchema.getTables(connection, "%"), entries);
 		} catch(SQLException e) {
 			logger.error(e);
 		} finally {
@@ -34,8 +36,8 @@ public class DBGenerator {
 		}
 	}
 
-	private void run(Collection<Table.CLASS<? extends Table>> tables, Map<String, TableDescription> existingTables, ILogger logger, Collection<Desktop.CLASS<? extends Desktop>> entries) {
-		List<TableGenerator> generators = getTableGenerators(tables, existingTables, logger);
+	private void run(Collection<Table.CLASS<Table>> tables, Map<String, TableDescription> existingTables, Collection<Desktop.CLASS<Desktop>> entries) {
+		List<TableGenerator> generators = getTableGenerators(tables, existingTables);
 
 		logger.progress(0);
 
@@ -46,44 +48,49 @@ public class DBGenerator {
 
 		for(TableGenerator generator : generators) {
 			generator.dropAllKeys(connection);
-			progress++;
-			logger.progress(Math.round(progress / total * 100));
+			logger.progress(Math.round(++progress / total * 100));
 		}
 
 		for(TableGenerator generator : generators) {
 			generator.create(connection);
-			progress++;
-			logger.progress(Math.round(progress / total * 100));
+			logger.progress(Math.round(++progress / total * 100));
 		}
 
 		for(TableGenerator generator : generators) {
 			generator.createRecords();
-			progress++;
-			logger.progress(Math.round(progress / total * 100));
+			logger.progress(Math.round(++progress / total * 100));
 		}
 
 		for(TableGenerator generator : generators) {
 			generator.createPrimaryKey();
-			progress++;
-			logger.progress(Math.round(progress / total * 100));
+			logger.progress(Math.round(++progress / total * 100));
 		}
 
 		try {
-			new EntriesGenerator().run(entries, logger);
+			new EntriesGenerator(entries, logger).run();
 		} catch(Throwable e) {
 			logger.error(e, ErrorUtils.getMessage(e));
 		}
 
 		try {
-			new JobGenerator().run(logger);
+			new JobGenerator(logger).run();
+		} catch(Throwable e) {
+			logger.error(e, ErrorUtils.getMessage(e));
+		}
+
+		try {
+			new TableInfoGenerator(tables, logger).run();
 		} catch(Throwable e) {
 			logger.error(e, ErrorUtils.getMessage(e));
 		}
 
 		for(TableGenerator generator : generators) {
-			generator.createForeignKeys();
-			progress++;
-			logger.progress(Math.round(progress / total * 100));
+			try {
+				generator.createForeignKeys();
+			} catch(Throwable e) {
+				logger.error(e, ErrorUtils.getMessage(e));
+			}
+			logger.progress(Math.round(++progress / total * 100));
 		}
 
 		fireAfterDbGenerated();
@@ -94,7 +101,7 @@ public class DBGenerator {
 		logger.progress(100);
 	}
 
-	private List<TableGenerator> getTableGenerators(Collection<Table.CLASS<? extends Table>> tables, Map<String, TableDescription> existingTables, ILogger logger) {
+	private List<TableGenerator> getTableGenerators(Collection<Table.CLASS<Table>> tables, Map<String, TableDescription> existingTables) {
 		List<TableGenerator> generators = new ArrayList<TableGenerator>();
 
 		for(Table.CLASS<? extends Table> table : tables) {
