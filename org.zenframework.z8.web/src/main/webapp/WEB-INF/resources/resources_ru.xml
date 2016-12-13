@@ -56,14 +56,14 @@
 	<entry key="Domains.name.default">Domain</entry>
 
 	<!-- MessageQueue -->
-	<entry key="MessageQueue.title">Очередь сообщений</entry>
-	<entry key="MessageQueue.sender">Отправитель</entry>
-	<entry key="MessageQueue.address">Получатель</entry>
+	<entry key="MessagesQueue.title">Очередь сообщений</entry>
+	<entry key="MessagesQueue.sender">Отправитель</entry>
+	<entry key="MessagesQueue.address">Получатель</entry>
 	<entry key="MessagesQueue.ordinal">Номер</entry>
 	<entry key="MessagesQueue.processing">В обработке</entry>
 
 	<!-- TransportQueue -->
-	<entry key="TransportQueue.title">Очередь сообщений</entry>
+	<entry key="TransportQueue.title">Очередь отправки</entry>
 	<entry key="TransportQueue.sender">Отправитель</entry>
 	<entry key="TransportQueue.address">Получатель</entry>
 	<entry key="TransportQueue.result">Результат</entry>
@@ -82,6 +82,7 @@
 
 	<!-- Tables -->
 	<entry key="Tables.title">Таблицы</entry>
+	<entry key="Tables.name">DB name</entry>
 	<entry key="Tables.displayName">Заголовок</entry>
 
 	<!-- Fields -->
@@ -97,6 +98,11 @@
 	<entry key="RoleTableAccess.create">Создание</entry>
 	<entry key="RoleTableAccess.copy">Копирование</entry>
 	<entry key="RoleTableAccess.destroy">Удаление</entry>
+
+	<!-- RoleFieldAccess -->
+	<entry key="RoleFieldAccess.title">Поля</entry>
+	<entry key="RoleFieldAccess.read">Чтение</entry>
+	<entry key="RoleFieldAccess.write">Изменение</entry>
 
 	<!-- Files -->
 	<entry key="Files.title">Файлы</entry>

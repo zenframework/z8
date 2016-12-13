@@ -1,4 +1,4 @@
-import org.zenframework.z8.base.table.value.Link;
+import org.zenframework.z8.base.table.value.GuidField;
 import org.zenframework.z8.lang.Object;
 
 [native "org.zenframework.z8.server.base.form.Control"]
@@ -19,10 +19,10 @@ class Control extends Object {
 	* Город город;
 	* Улица улица;
 	*
-	* город.название.link = город.регион;
+	* город.название.dependsOn = город.регион;
 	* регион.название.dependencies = { город.название };
 	*
-	* улица.название.link = улица.город;
+	* улица.название.dependsOn = улица.город;
 	* город.название.dependencies = { улица.название };
 	*
 	* formFields = { регион.название, город.название, улица.название };
@@ -31,6 +31,6 @@ class Control extends Object {
 	*  Здесь регион фильтрует список городов, который в свою очередь фильтрует улицы.
 	*/
 
-	public Link dependsOn;
+	public GuidField dependsOn;
 	public Control[] dependencies;
 }

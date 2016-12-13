@@ -5,8 +5,6 @@ import java.util.Collection;
 
 import org.zenframework.z8.server.base.query.Query;
 import org.zenframework.z8.server.base.table.value.Field;
-import org.zenframework.z8.server.base.table.value.ILink;
-import org.zenframework.z8.server.base.table.value.Join;
 import org.zenframework.z8.server.db.FieldType;
 import org.zenframework.z8.server.db.sql.SqlField;
 import org.zenframework.z8.server.db.sql.SqlToken;
@@ -37,7 +35,6 @@ import org.zenframework.z8.server.types.sql.sql_string;
 import org.zenframework.z8.server.utils.StringUtils;
 
 public class Expression implements IFilter {
-	private Query query;
 	private Field field;
 	private Operation operation;
 	private String[] values;
@@ -48,7 +45,6 @@ public class Expression implements IFilter {
 		String operator = expression.has(Json.operator) ? expression.getString(Json.operator) : null;
 
 		this.operation = operator != null ? Operation.fromString(operator) : Operation.Eq;
-		this.query = query;
 
 		if(Json.__search_text__.equals(field)) {
 			if(values != null && !values.isEmpty()) {
@@ -222,7 +218,7 @@ public class Expression implements IFilter {
 			if(type == FieldType.Guid) {
 				if(operation == Operation.Eq || operation == Operation.NotEq) {
 					SqlToken rel = new Rel(field, operation != null ? operation : Operation.Eq, new guid(value).sql_guid());
-					return nullsAcceptable() ? new Or(rel, new IsNull(field)) : rel;
+					return this.field.isRightJoined() ? new Or(rel, new IsNull(field)) : rel;
 				}
 				field = new GuidToString(field);
 			}
@@ -274,17 +270,5 @@ public class Expression implements IFilter {
 		default:
 			throw new UnsupportedOperationException();
 		}
-	}
-
-	private boolean nullsAcceptable() {
-		Collection<ILink> path = field.getPath();
-
-		if(path == null)
-			path = query.getPath(field.owner());
-
-		if(path.isEmpty() && field instanceof ILink)
-			return ((ILink)field).getJoin() == Join.Right;
-
-		return !path.isEmpty() ? path.iterator().next().getJoin() == Join.Right : false;
 	}
 }

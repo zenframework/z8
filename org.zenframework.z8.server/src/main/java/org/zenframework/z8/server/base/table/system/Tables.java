@@ -15,11 +15,13 @@ public class Tables extends Table {
 
 	static public class strings {
 		public final static String Title = "Tables.title";
+		public final static String Name = "Tables.name";
 		public final static String DisplayName = "Tables.displayName";
 	}
 
 	static public class displayNames {
 		public final static String Title = Resources.get(strings.Title);
+		public final static String Name = Resources.get(strings.Name);
 		public final static String DisplayName = Resources.get(strings.DisplayName);
 	}
 
@@ -52,13 +54,14 @@ public class Tables extends Table {
 		super.constructor2();
 
 		id.get().length = new integer(256);
+
 		name.get().length = new integer(256);
+		name.setDisplayName(displayNames.Name);
 
 		displayName.setName(names.DisplayName);
 		displayName.setDisplayName(displayNames.DisplayName);
 		displayName.setIndex("displayName");
 		displayName.get().length = new integer(256);
-		displayName.setDisplayName(displayNames.DisplayName);
 
 		registerDataField(displayName);
 	}

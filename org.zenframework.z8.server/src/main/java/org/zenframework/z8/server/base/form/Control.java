@@ -1,7 +1,7 @@
 package org.zenframework.z8.server.base.form;
 
 import org.zenframework.z8.server.base.query.Query;
-import org.zenframework.z8.server.base.table.value.Link;
+import org.zenframework.z8.server.base.table.value.GuidField;
 import org.zenframework.z8.server.json.Json;
 import org.zenframework.z8.server.json.JsonWriter;
 import org.zenframework.z8.server.runtime.IObject;
@@ -52,7 +52,7 @@ public class Control extends OBJECT {
 	 * 
 	 * Здесь регион фильтрует список городов, который, в свою очередь, фильтрует улицы.
 	 **/
-	public Link.CLASS<? extends Link> dependsOn = null;
+	public GuidField.CLASS<? extends GuidField> dependsOn = null;
 	public RCollection<Control.CLASS<? extends Control>> dependencies = new RCollection<Control.CLASS<? extends Control>>();
 
 	public boolean readOnly() {

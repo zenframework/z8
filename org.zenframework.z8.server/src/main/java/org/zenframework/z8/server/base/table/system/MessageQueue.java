@@ -38,11 +38,11 @@ public class MessageQueue extends Table {
 	}
 
 	static public class strings {
-		static public String Title = "Messages.title";
-		static public String Sender = "Messages.sender";
-		static public String Address = "Messages.address";
-		static public String Ordinal = "Messages.ordinal";
-		static public String Processing = "Messages.processing";
+		static public String Title = "MessagesQueue.title";
+		static public String Sender = "MessagesQueue.sender";
+		static public String Address = "MessagesQueue.address";
+		static public String Ordinal = "MessagesQueue.ordinal";
+		static public String Processing = "MessagesQueue.processing";
 	}
 
 	static public class displayNames {

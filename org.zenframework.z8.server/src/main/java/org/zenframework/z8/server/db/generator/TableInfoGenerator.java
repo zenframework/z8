@@ -8,6 +8,7 @@ import org.zenframework.z8.server.base.table.system.Tables;
 import org.zenframework.z8.server.base.table.value.Field;
 import org.zenframework.z8.server.db.Connection;
 import org.zenframework.z8.server.db.ConnectionManager;
+import org.zenframework.z8.server.db.FieldType;
 import org.zenframework.z8.server.db.sql.expressions.And;
 import org.zenframework.z8.server.db.sql.expressions.Equ;
 import org.zenframework.z8.server.types.guid;
@@ -68,7 +69,7 @@ public class TableInfoGenerator {
 				fields.name.get().set(new string(fieldClass.name()));
 				fields.displayName.get().set(new string(fieldClass.displayName()));
 				fields.description.get().set(new string(fieldClass.description()));
-				fields.type.get().set(new string(fieldClass.get().type().toString()));
+				fields.type.get().set(new string(getFieldType(fieldClass.get())));
 				fields.position.get().set(new integer(position));
 
 				if(fields.next())
@@ -79,5 +80,10 @@ public class TableInfoGenerator {
 				position++;
 			}
 		}
+	}
+
+	private String getFieldType(Field field) {
+		FieldType type = field.type();
+		return type.toString() + (type == FieldType.String ? "(" + field.length.get() + ")" : "");
 	}
 }

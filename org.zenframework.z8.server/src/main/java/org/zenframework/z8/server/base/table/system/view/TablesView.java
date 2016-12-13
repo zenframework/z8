@@ -1,6 +1,7 @@
 package org.zenframework.z8.server.base.table.system.view;
 
 import org.zenframework.z8.server.base.form.Listbox;
+import org.zenframework.z8.server.base.query.Query;
 import org.zenframework.z8.server.base.table.system.Fields;
 import org.zenframework.z8.server.base.table.system.Tables;
 import org.zenframework.z8.server.runtime.IObject;
@@ -52,15 +53,10 @@ public class TablesView extends Tables {
 			registerFormField(displayName);
 			registerFormField(id);
 			registerFormField(description);
-
-			gridFields.add(name);
-			gridFields.add(type);
-			gridFields.add(displayName);
-
-			sortFields.add(position);
 		}
 	};
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public void constructor2() {
 		super.constructor2();
@@ -71,15 +67,25 @@ public class TablesView extends Tables {
 		fields.setIndex("fields");
 		fields.setDisplayName(Fields.displayNames.Title);
 
-		__Fields.CLASS<__Fields> fieldsCls = new __Fields.CLASS<__Fields>(this);
+		__Fields fieldsTable = new __Fields.CLASS<__Fields>(this).get();
 
-		fields.get().query = fieldsCls;
-		fields.get().link = fieldsCls.get().table;
+		fields.get().query = (Query.CLASS<Query>)fieldsTable.getCLASS();
+		fields.get().link = fieldsTable.table;
 		fields.get().height = new integer(600);
 
+		fieldsTable.gridFields.add(fieldsTable.name);
+		fieldsTable.gridFields.add(fieldsTable.type);
+		fieldsTable.gridFields.add(fieldsTable.displayName);
+
+		fieldsTable.sortFields.add(fieldsTable.position);
+
 		id.get().colspan = new integer(2);
+
 		name.get().colspan = new integer(1);
+		name.get().width = new integer(100);
+
 		displayName.get().colspan = new integer(2);
+		displayName.get().width = new integer(200);
 
 		description.get().colspan = new integer(6);
 
@@ -91,6 +97,7 @@ public class TablesView extends Tables {
 		registerFormField(description);
 		registerFormField(fields);
 
+		nameFields.add(displayName);
 		nameFields.add(name);
 		sortFields.add(name);
 	}

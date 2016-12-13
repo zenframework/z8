@@ -60,7 +60,9 @@ abstract public class Field extends Control implements IValue, IField {
 	private primary value = null;
 	private primary originalValue = null;
 	private boolean changed = false;
+
 	private Collection<ILink> path = null;
+	private boolean rightJoined = false;
 
 	private Sequencer sequencer = null;
 
@@ -145,6 +147,14 @@ abstract public class Field extends Control implements IValue, IField {
 
 	public Collection<ILink> getPath() {
 		return path;
+	}
+
+	public boolean isRightJoined() {
+		return rightJoined;
+	}
+
+	public void setRightJoined(boolean rightJoined) {
+		this.rightJoined = rightJoined;
 	}
 
 	public String format(DatabaseVendor vendor, FormatOptions options) {

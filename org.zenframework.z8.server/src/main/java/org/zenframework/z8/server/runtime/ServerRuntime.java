@@ -7,6 +7,7 @@ import org.zenframework.z8.server.base.table.system.Files;
 import org.zenframework.z8.server.base.table.system.Jobs;
 import org.zenframework.z8.server.base.table.system.Logs;
 import org.zenframework.z8.server.base.table.system.MessageQueue;
+import org.zenframework.z8.server.base.table.system.RoleFieldAccess;
 import org.zenframework.z8.server.base.table.system.RoleTableAccess;
 import org.zenframework.z8.server.base.table.system.SchedulerJobs;
 import org.zenframework.z8.server.base.table.system.SecurityGroups;
@@ -27,6 +28,7 @@ public class ServerRuntime extends AbstractRuntime {
 		addTable(new Fields.CLASS<Fields>(null));
 
 		addTable(new RoleTableAccess.CLASS<RoleTableAccess>(null));
+		addTable(new RoleFieldAccess.CLASS<RoleFieldAccess>(null));
 
 		addTable(new Domains.CLASS<Domains>(null));
 
