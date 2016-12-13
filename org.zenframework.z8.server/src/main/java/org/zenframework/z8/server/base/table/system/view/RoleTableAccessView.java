@@ -96,11 +96,21 @@ public class RoleTableAccessView extends SecurityGroups {
 
 		roleTable.tables.get().name.get().width = new integer(150);
 		roleTable.tables.get().displayName.get().width = new integer(150);
+
 		roleTable.read.get().width = new integer(30);
+		roleTable.read.setIcon("fa-eye");
+
 		roleTable.write.get().width = new integer(30);
+		roleTable.write.setIcon("fa-pencil");
+
 		roleTable.create.get().width = new integer(30);
+		roleTable.create.setIcon("fa-file-o");
+
 		roleTable.copy.get().width = new integer(30);
+		roleTable.copy.setIcon("fa-copy");
+
 		roleTable.destroy.get().width = new integer(30);
+		roleTable.destroy.setIcon("fa-trash");
 
 		roleTable.gridFields.add(roleTable.tables.get().name);
 		roleTable.gridFields.add(roleTable.tables.get().displayName);

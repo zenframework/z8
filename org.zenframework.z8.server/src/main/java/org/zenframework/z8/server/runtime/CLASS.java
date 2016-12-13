@@ -112,17 +112,6 @@ public class CLASS<TYPE extends IObject> extends OBJECT implements IClass<TYPE> 
 		return object;
 	}
 
-	@Override
-	public String displayName() {
-		String name = super.displayName();
-
-		if(name != null && !name.isEmpty())
-			return name;
-
-		name = name();
-		return name == null || name.isEmpty() ? getJavaClass().getSimpleName() : name;
-	}
-
 	public Object newObject(IObject container) {
 		return null;
 	}

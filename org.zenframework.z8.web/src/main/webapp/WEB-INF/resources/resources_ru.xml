@@ -37,7 +37,6 @@
 	<entry key="Users.title">Пользователи</entry>
 	<entry key="Users.name">Имя</entry>
 	<entry key="Users.description">Описание</entry>
-	<entry key="Users.password">Пароль</entry>
 	<entry key="Users.securityGroup">Группа безопасности</entry>
 	<entry key="Users.company">Организация</entry>
 	<entry key="Users.phone">Телефон</entry>

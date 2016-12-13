@@ -46,7 +46,6 @@ public class Users extends Table {
 		public final static String Title = "Users.title";
 		public final static String Name = "Users.name";
 		public final static String Description = "Users.description";
-		public final static String Password = "Users.password";
 		public final static String SecurityGroup = "Users.securityGroup";
 		public final static String Blocked = "Users.blocked";
 		public final static String Phone = "Users.phone";
@@ -58,7 +57,6 @@ public class Users extends Table {
 
 	static public class displayNames {
 		public final static String Name = Resources.get(strings.Name);
-		public final static String Password = Resources.get(strings.Password);
 		public final static String SecurityGroup = Resources.get(strings.SecurityGroup);
 		public final static String Blocked = Resources.get(strings.Blocked);
 		public final static String Phone = Resources.get(strings.Phone);
@@ -128,9 +126,9 @@ public class Users extends Table {
 		name.get().unique = new bool(true);
 
 		password.setName(names.Password);
-		password.setDisplayName(displayNames.Password);
 		password.setExportable(false);
 		password.setIndex("password");
+		password.setSystem(true);
 		password.get().length = new integer(IAuthorityCenter.MaxPasswordLength);
 		password.get().setDefault(new string(defaultPassword));
 

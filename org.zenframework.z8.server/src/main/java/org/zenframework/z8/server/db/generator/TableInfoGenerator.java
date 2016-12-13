@@ -67,7 +67,7 @@ public class TableInfoGenerator {
 
 				fields.table.get().set(tableId);
 				fields.name.get().set(new string(fieldClass.name()));
-				fields.displayName.get().set(new string(fieldClass.displayName()));
+				fields.displayName.get().set(new string(displayName(fieldClass)));
 				fields.description.get().set(new string(fieldClass.description()));
 				fields.type.get().set(new string(getFieldType(fieldClass.get())));
 				fields.position.get().set(new integer(position));
@@ -80,6 +80,16 @@ public class TableInfoGenerator {
 				position++;
 			}
 		}
+	}
+
+	private String displayName(Field.CLASS<Field> field) {
+		String name = field.displayName();
+
+		if(name != null && !name.isEmpty())
+			return name;
+
+		name = field.name();
+		return name == null || name.isEmpty() ? field.getJavaClass().getSimpleName() : name;
 	}
 
 	private String getFieldType(Field field) {
