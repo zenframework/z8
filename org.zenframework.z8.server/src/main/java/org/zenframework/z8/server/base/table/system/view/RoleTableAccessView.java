@@ -80,7 +80,9 @@ public class RoleTableAccessView extends SecurityGroups {
 	public void constructor2() {
 		super.constructor2();
 
-		columns = new integer(1);
+		columns = new integer(2);
+
+		name.get().colspan = new integer(2);
 
 		tables.setIndex("tables");
 		tables.setDisplayName(RoleTableAccess.displayNames.Title);
@@ -89,7 +91,7 @@ public class RoleTableAccessView extends SecurityGroups {
 
 		tables.get().query = (Query.CLASS<Query>)roleTable.getCLASS();
 		tables.get().link = roleTable.role;
-		tables.get().height = new integer(700);
+		tables.get().height = new integer(500);
 		tables.get().sortFields.add(roleTable.tables.get().name);
 
 		roleTable.tables.get().name.get().width = new integer(150);
@@ -114,7 +116,7 @@ public class RoleTableAccessView extends SecurityGroups {
 		fields.setDisplayName(Fields.displayNames.Title);
 		fields.get().query = (Query.CLASS<Query>)roleField.getCLASS();
 		fields.get().link = roleField.role;
-		fields.get().height = new integer(300);
+		fields.get().height = new integer(500);
 		fields.get().sortFields.add(roleField.fields.get().name);
 
 		roleField.fields.get().name.get().width = new integer(150);

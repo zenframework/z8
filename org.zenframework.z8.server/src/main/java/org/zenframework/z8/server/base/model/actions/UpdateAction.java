@@ -37,7 +37,7 @@ public class UpdateAction extends Action {
 			JsonObject record = (JsonObject)records.get(index);
 
 			for(String fieldId : JsonObject.getNames(record)) {
-				Field field = query.getFieldById(fieldId);
+				Field field = query.findFieldById(fieldId);
 				if(field != null)
 					QueryUtils.setFieldValue(field, record.getString(fieldId));
 			}
