@@ -13,7 +13,6 @@ import org.zenframework.z8.server.db.Connection;
 import org.zenframework.z8.server.db.ConnectionManager;
 import org.zenframework.z8.server.db.Cursor;
 import org.zenframework.z8.server.db.DatabaseVendor;
-import org.zenframework.z8.server.db.FieldType;
 import org.zenframework.z8.server.db.sql.FormatOptions;
 import org.zenframework.z8.server.db.sql.SqlField;
 import org.zenframework.z8.server.db.sql.SqlToken;
@@ -380,7 +379,7 @@ public class Select {
 		for(Field field : fields)
 			field.setCursor(null);
 	}
-	
+
 	protected Cursor getCursor() {
 		return cursor;
 	}
@@ -406,11 +405,7 @@ public class Select {
 	}
 
 	public primary get(Field field) throws SQLException {
-		return get(field.position + 1, field.type());
-	}
-
-	protected primary get(int index, FieldType fieldType) throws SQLException {
-		return getCursor().get(index, fieldType);
+		return cursor.get(field);
 	}
 
 	public Collection<Field> getFields() {

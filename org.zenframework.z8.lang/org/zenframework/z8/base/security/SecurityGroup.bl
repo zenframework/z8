@@ -1,5 +1,0 @@
-[native "org.zenframework.z8.server.security.SecurityGroup"]
-enum SecurityGroup {
-	Users,
-	Administrators
-}

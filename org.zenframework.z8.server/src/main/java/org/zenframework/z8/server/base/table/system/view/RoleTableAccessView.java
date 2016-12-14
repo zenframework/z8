@@ -5,13 +5,13 @@ import org.zenframework.z8.server.base.query.Query;
 import org.zenframework.z8.server.base.table.system.Fields;
 import org.zenframework.z8.server.base.table.system.RoleFieldAccess;
 import org.zenframework.z8.server.base.table.system.RoleTableAccess;
-import org.zenframework.z8.server.base.table.system.SecurityGroups;
+import org.zenframework.z8.server.base.table.system.Roles;
 import org.zenframework.z8.server.base.table.value.Join;
 import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.types.integer;
 
-public class RoleTableAccessView extends SecurityGroups {
-	public static class CLASS<T extends RoleTableAccessView> extends SecurityGroups.CLASS<T> {
+public class RoleTableAccessView extends Roles {
+	public static class CLASS<T extends RoleTableAccessView> extends Roles.CLASS<T> {
 		public CLASS(IObject container) {
 			super(container);
 			setJavaClass(RoleTableAccessView.class);
@@ -65,6 +65,8 @@ public class RoleTableAccessView extends SecurityGroups {
 		public void constructor2() {
 			super.constructor2();
 			field.get().join = Join.Right;
+			role.get().setRightJoined(true);
+
 		}
 	};
 
@@ -87,60 +89,65 @@ public class RoleTableAccessView extends SecurityGroups {
 		tables.setIndex("tables");
 		tables.setDisplayName(RoleTableAccess.displayNames.Title);
 
-		__RoleTableAccess roleTable = new __RoleTableAccess.CLASS<__RoleTableAccess>(this).get();
+		__RoleTableAccess rta = new __RoleTableAccess.CLASS<__RoleTableAccess>(this).get();
 
-		tables.get().query = (Query.CLASS<Query>)roleTable.getCLASS();
-		tables.get().link = roleTable.role;
+		tables.get().query = (Query.CLASS<Query>)rta.getCLASS();
+		tables.get().link = rta.role;
 		tables.get().height = new integer(500);
-		tables.get().sortFields.add(roleTable.tables.get().name);
+		tables.get().sortFields.add(rta.tables.get().name);
 
-		roleTable.tables.get().name.get().width = new integer(150);
-		roleTable.tables.get().displayName.get().width = new integer(150);
+		rta.tables.get().name.get().width = new integer(150);
+		rta.tables.get().displayName.get().width = new integer(150);
 
-		roleTable.read.get().width = new integer(30);
-		roleTable.read.setIcon("fa-eye");
+		rta.read.get().width = new integer(30);
+		rta.read.setIcon("fa-eye");
 
-		roleTable.write.get().width = new integer(30);
-		roleTable.write.setIcon("fa-pencil");
+		rta.write.get().width = new integer(30);
+		rta.write.setIcon("fa-pencil");
 
-		roleTable.create.get().width = new integer(30);
-		roleTable.create.setIcon("fa-file-o");
+		rta.create.get().width = new integer(30);
+		rta.create.setIcon("fa-file-o");
 
-		roleTable.copy.get().width = new integer(30);
-		roleTable.copy.setIcon("fa-copy");
+		rta.copy.get().width = new integer(30);
+		rta.copy.setIcon("fa-copy");
 
-		roleTable.destroy.get().width = new integer(30);
-		roleTable.destroy.setIcon("fa-trash");
+		rta.destroy.get().width = new integer(30);
+		rta.destroy.setIcon("fa-trash");
 
-		roleTable.gridFields.add(roleTable.tables.get().name);
-		roleTable.gridFields.add(roleTable.tables.get().displayName);
-		roleTable.gridFields.add(roleTable.read);
-		roleTable.gridFields.add(roleTable.write);
-		roleTable.gridFields.add(roleTable.create);
-		roleTable.gridFields.add(roleTable.copy);
-		roleTable.gridFields.add(roleTable.destroy);
+		rta.gridFields.add(rta.tables.get().name);
+		rta.gridFields.add(rta.tables.get().displayName);
+		rta.gridFields.add(rta.read);
+		rta.gridFields.add(rta.write);
+		rta.gridFields.add(rta.create);
+		rta.gridFields.add(rta.copy);
+		rta.gridFields.add(rta.destroy);
 
-		__RoleFieldAccess roleField = new __RoleFieldAccess.CLASS<__RoleFieldAccess>(this).get();
+		__RoleFieldAccess rfa = new __RoleFieldAccess.CLASS<__RoleFieldAccess>(this).get();
 
 		fields.setIndex("fields");
 		fields.setDisplayName(Fields.displayNames.Title);
-		fields.get().query = (Query.CLASS<Query>)roleField.getCLASS();
-		fields.get().link = roleField.role;
+		fields.get().query = (Query.CLASS<Query>)rfa.getCLASS();
+		fields.get().link = rfa.role;
 		fields.get().height = new integer(500);
-		fields.get().sortFields.add(roleField.fields.get().name);
+		fields.get().sortFields.add(rfa.fields.get().name);
 
-		roleField.fields.get().name.get().width = new integer(150);
-		roleField.fields.get().displayName.get().width = new integer(150);
-		roleField.read.get().width = new integer(30);
-		roleField.write.get().width = new integer(30);
+		rfa.fields.get().name.get().width = new integer(150);
+		rfa.fields.get().displayName.get().width = new integer(150);
 
-		roleField.gridFields.add(roleField.fields.get().name);
-		roleField.gridFields.add(roleField.fields.get().displayName);
-		roleField.gridFields.add(roleField.read);
-		roleField.gridFields.add(roleField.write);
+		rfa.read.get().width = new integer(30);
+		rfa.read.setIcon("fa-eye");
+
+		rfa.write.get().width = new integer(30);
+		rfa.write.setIcon("fa-pencil");
+
+		rfa.gridFields.add(rfa.fields.get().name);
+		rfa.gridFields.add(rfa.fields.get().displayName);
+		rfa.gridFields.add(rfa.read);
+		rfa.gridFields.add(rfa.write);
 
 		tables.get().dependencies.add(fields);
-		fields.get().dependsOn = roleField.fields.get().table;
+		fields.get().dependency = rfa.fields.get().table;
+		fields.get().dependsOn = rta.table;
 
 		registerFormField(name);
 		registerFormField(tables);

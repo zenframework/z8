@@ -23,6 +23,12 @@ public class Logs extends Table {
 		public final static String Finished = "Logs.finished";
 	}
 
+	static public class displayNames {
+		public final static String Title = Resources.get(strings.Title);
+		public final static String Started = Resources.get(strings.Started);
+		public final static String Finished = Resources.get(strings.Finished);
+	}
+
 	public static class CLASS<T extends Logs> extends Table.CLASS<T> {
 		public CLASS() {
 			this(null);
@@ -32,7 +38,7 @@ public class Logs extends Table {
 			super(container);
 			setJavaClass(Logs.class);
 			setName(TableName);
-			setDisplayName(Resources.get(Logs.strings.Title));
+			setDisplayName(displayNames.Title);
 		}
 
 		@Override
@@ -69,11 +75,11 @@ public class Logs extends Table {
 
 		started.setName(names.Started);
 		started.setIndex("started");
-		started.setDisplayName(Resources.get(strings.Started));
+		started.setDisplayName(displayNames.Started);
 
 		finished.setName(names.Finished);
 		finished.setIndex("finished");
-		finished.setDisplayName(Resources.get(strings.Finished));
+		finished.setDisplayName(displayNames.Finished);
 
 		files.setName(names.Files);
 		files.setIndex("files");

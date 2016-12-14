@@ -7,11 +7,12 @@ import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.UUID;
 
+import org.zenframework.z8.server.base.table.value.Field;
 import org.zenframework.z8.server.logs.Trace;
 import org.zenframework.z8.server.types.binary;
 import org.zenframework.z8.server.types.bool;
-import org.zenframework.z8.server.types.datespan;
 import org.zenframework.z8.server.types.date;
+import org.zenframework.z8.server.types.datespan;
 import org.zenframework.z8.server.types.decimal;
 import org.zenframework.z8.server.types.guid;
 import org.zenframework.z8.server.types.integer;
@@ -60,76 +61,130 @@ public class Cursor {
 		return resultSet.wasNull();
 	}
 
-	public guid getGuid(int index) throws SQLException {
-		Object value = resultSet.getObject(index);
-		return value != null && !wasNull() ? (value instanceof UUID ? new guid((UUID)value) : new guid((String)value)) : new guid();
+	public guid getGuid(int position) throws SQLException {
+		return getGuid(position, null);
+	}
+	
+	public guid getGuid(int position, Field field) throws SQLException {
+		Object value = resultSet.getObject(position);
+		boolean wasNull = value == null || wasNull();
+		if(field != null)
+			field.setWasNull(wasNull);
+		return !wasNull ? (value instanceof UUID ? new guid((UUID)value) : new guid((String)value)) : new guid();
 	}
 
-	public bool getBoolean(int index) throws SQLException {
-		boolean value = resultSet.getBoolean(index);
-		return !wasNull() ? new bool(value) : new bool();
+	public bool getBoolean(int position) throws SQLException {
+		return getBoolean(position, null);
 	}
 
-	public integer getInteger(int index) throws SQLException {
-		long value = resultSet.getLong(index);
-		return !wasNull() ? new integer(value) : new integer();
+	public bool getBoolean(int position, Field field) throws SQLException {
+		boolean value = resultSet.getBoolean(position);
+		boolean wasNull = wasNull();
+		if(field != null)
+			field.setWasNull(wasNull);
+		return !wasNull ? new bool(value) : new bool();
 	}
 
-	public string getString(int index) throws SQLException {
-		byte[] bytes = resultSet.getBytes(index);
-		return bytes != null && !wasNull() ? new string(bytes, statement.charset()) : new string();
+	public integer getInteger(int position) throws SQLException {
+		return getInteger(position, null);
 	}
 
-	public string getText(int index) throws SQLException {
-		return getString(index);
+	public integer getInteger(int position, Field field) throws SQLException {
+		long value = resultSet.getLong(position);
+		boolean wasNull = wasNull();
+		if(field != null)
+			field.setWasNull(wasNull);
+		return !wasNull ? new integer(value) : new integer();
 	}
 
-	public string getStringNotNull(int index) throws SQLException {
-		string value = getString(index);
-		return value == null ? new string() : value;
+	public string getString(int position) throws SQLException {
+		return getString(position, null);
+	}
+	
+	public string getString(int position, Field field) throws SQLException {
+		byte[] bytes = resultSet.getBytes(position);
+		boolean wasNull = bytes == null || wasNull();
+		if(field != null)
+			field.setWasNull(wasNull);
+		return !wasNull ? new string(bytes, statement.charset()) : new string();
 	}
 
-	public date getDate(int index) throws SQLException {
-		Timestamp value = resultSet.getTimestamp(index);
-		return value != null && !wasNull() ? new date(value) : date.MIN;
+	public string getText(int position) throws SQLException {
+		return getText(position, null);
 	}
 
-	public datespan getDatespan(int index) throws SQLException {
-		integer value = getInteger(index);
-		return value != null ? new datespan(value) : null;
+	public string getText(int position, Field field) throws SQLException {
+		return getString(position, field);
 	}
 
-	public decimal getDecimal(int index) throws SQLException {
-		BigDecimal value = resultSet.getBigDecimal(index);
-		return value != null && !wasNull() ? new decimal(value) : new decimal();
+	public date getDate(int position) throws SQLException {
+		return getDate(position, null);
 	}
 
-	public binary getBinary(int index) throws SQLException {
-		InputStream value = resultSet.getBinaryStream(index);
-		return value != null && !wasNull() ? new binary(value) : new binary();
+	public date getDate(int position, Field field) throws SQLException {
+		Timestamp value = resultSet.getTimestamp(position);
+		boolean wasNull = value == null || wasNull();
+		if(field != null)
+			field.setWasNull(wasNull);
+		return !wasNull ? new date(value) : date.MIN;
 	}
 
-	public primary get(int index, FieldType fieldType) throws SQLException {
-		switch(fieldType) {
+	public datespan getDatespan(int position) throws SQLException {
+		return getDatespan(position, null);
+	}
+
+	public datespan getDatespan(int position, Field field) throws SQLException {
+		return new datespan(getInteger(position, field));
+	}
+
+	public decimal getDecimal(int position) throws SQLException {
+		return getDecimal(position, null);
+	}
+
+	public decimal getDecimal(int position, Field field) throws SQLException {
+		BigDecimal value = resultSet.getBigDecimal(position);
+		boolean wasNull = value == null || wasNull();
+		if(field != null)
+			field.setWasNull(wasNull);
+		return !wasNull ? new decimal(value) : new decimal();
+	}
+
+	public binary getBinary(int position) throws SQLException {
+		return getBinary(position, null);
+	}
+
+	public binary getBinary(int position, Field field) throws SQLException {
+		InputStream value = resultSet.getBinaryStream(position);
+		boolean wasNull = value == null || wasNull();
+		if(field != null)
+			field.setWasNull(wasNull);
+		return !wasNull ? new binary(value) : new binary();
+	}
+
+	public primary get(Field field) throws SQLException {
+		FieldType type = field.type();
+		int position = field.position + 1;
+
+		switch(type) {
 		case Guid:
-			return getGuid(index);
+			return getGuid(position, field);
 		case Boolean:
-			return getBoolean(index);
+			return getBoolean(position, field);
 		case Integer:
-			return getInteger(index);
+			return getInteger(position, field);
 		case Text:
-			return getText(index);
+			return getText(position, field);
 		case String:
-			return getString(index);
+			return getString(position, field);
 		case Date:
 		case Datetime:
-			return getDate(index);
+			return getDate(position, field);
 		case Datespan:
-			return getDatespan(index);
+			return getDatespan(position, field);
 		case Decimal:
-			return getDecimal(index);
+			return getDecimal(position, field);
 		case Binary:
-			return getBinary(index);
+			return getBinary(position, field);
 		default:
 			throw new UnsupportedOperationException();
 		}

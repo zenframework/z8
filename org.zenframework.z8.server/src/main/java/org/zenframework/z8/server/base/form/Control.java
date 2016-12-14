@@ -34,7 +34,7 @@ public class Control extends OBJECT {
 
 	/*
 	 * В ситуации зависимых компонентов, т.е. listbox или combobox, 
-	 * свойство dependsOn обозначает по какому полю будет фильтроваться содержимое.
+	 * свойство dependency обозначает по какому полю будет фильтроваться содержимое.
 	 * Зависимость строится помещением зависимого компонента в массив dependencies
 	 * компонента, от которого он зависит:
 	 *
@@ -43,15 +43,17 @@ public class Control extends OBJECT {
 	 * Город город;
 	 * Улица улица;
 	 * 
-	 * город.название.link = город.регион;
+	 * город.название.dependency = город.регион;
 	 * регион.dependencies = { город.название };
 	 * 
-	 * улица.название.link = улица.город;
+	 * улица.название.dependency = улица.город;
+	 * улица.название.dependsOn = город.recordId;
 	 * город.dependencies = { улица.название };
 	 * .....
 	 * 
 	 * Здесь регион фильтрует список городов, который, в свою очередь, фильтрует улицы.
 	 **/
+	public GuidField.CLASS<? extends GuidField> dependency = null;
 	public GuidField.CLASS<? extends GuidField> dependsOn = null;
 	public RCollection<Control.CLASS<? extends Control>> dependencies = new RCollection<Control.CLASS<? extends Control>>();
 
@@ -73,6 +75,9 @@ public class Control extends OBJECT {
 	}
 
 	protected void writeDependencies(JsonWriter writer) {
+		if(dependency != null)
+			writer.writeProperty(Json.dependency, dependency.id());
+
 		if(dependsOn != null)
 			writer.writeProperty(Json.dependsOn, dependsOn.id());
 

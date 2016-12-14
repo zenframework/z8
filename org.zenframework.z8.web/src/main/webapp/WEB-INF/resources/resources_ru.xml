@@ -37,7 +37,7 @@
 	<entry key="Users.title">Пользователи</entry>
 	<entry key="Users.name">Имя</entry>
 	<entry key="Users.description">Описание</entry>
-	<entry key="Users.securityGroup">Группа безопасности</entry>
+	<entry key="Users.role">Группа безопасности</entry>
 	<entry key="Users.company">Организация</entry>
 	<entry key="Users.phone">Телефон</entry>
 	<entry key="Users.email">Email</entry>
@@ -98,10 +98,23 @@
 	<entry key="RoleTableAccess.copy">Копирование</entry>
 	<entry key="RoleTableAccess.destroy">Удаление</entry>
 
+	<!-- UserTableAccess -->
+	<entry key="UserTableAccess.title">Таблицы</entry>
+	<entry key="UserTableAccess.read">Чтение</entry>
+	<entry key="UserTableAccess.write">Изменение</entry>
+	<entry key="UserTableAccess.create">Создание</entry>
+	<entry key="UserTableAccess.copy">Копирование</entry>
+	<entry key="UserTableAccess.destroy">Удаление</entry>
+
 	<!-- RoleFieldAccess -->
 	<entry key="RoleFieldAccess.title">Поля</entry>
 	<entry key="RoleFieldAccess.read">Чтение</entry>
 	<entry key="RoleFieldAccess.write">Изменение</entry>
+
+	<!-- UserFieldAccess -->
+	<entry key="UserFieldAccess.title">Поля</entry>
+	<entry key="UserFieldAccess.read">Чтение</entry>
+	<entry key="UserFieldAccess.write">Изменение</entry>
 
 	<!-- Files -->
 	<entry key="Files.title">Файлы</entry>
@@ -139,22 +152,18 @@
 	<entry key="InterconnectionCenterView.title">Interconnection Center</entry>
 
 	<!-- BuiltinUsers -->
-	<entry key="BuiltinUsers.System.name">System</entry>
-	<entry key="BuiltinUsers.System.description">Системный вход</entry>
-	<entry key="BuiltinUsers.Administrator.name">Admin</entry>
-	<entry key="BuiltinUsers.Administrator.description">Администратор системы</entry>
+	<entry key="BuiltinUsers.system.name">System</entry>
+	<entry key="BuiltinUsers.system.description">Системный вход</entry>
+	<entry key="BuiltinUsers.administrator.name">Admin</entry>
+	<entry key="BuiltinUsers.administrator.description">Администратор системы</entry>
 
-	<!-- SecurityGroup -->
-	<entry key="SecurityGroup.administrators">Администраторы</entry>
-	<entry key="SecurityGroup.users">Пользователи</entry>
+	<!-- Role -->
+	<entry key="Role.administrator">Администраторы</entry>
+	<entry key="Role.user">Пользователи</entry>
 
-	<!-- SecurityGroups -->
-	<entry key="SecurityGroups.title">Группы безопасности</entry>
-	<entry key="SecurityGroups.name">Группа</entry>
-
-	<!-- SecurityGroup -->
-	<entry key="SecurityGroup.administrators">Администраторы</entry>
-	<entry key="SecurityGroup.users">Пользователи</entry>
+	<!-- Roles -->
+	<entry key="Roles.title">Группы безопасности</entry>
+	<entry key="Roles.name">Группа</entry>
 
 	<!-- SystemEventsType -->
 

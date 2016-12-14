@@ -7,11 +7,11 @@ import org.zenframework.z8.server.resources.Resources;
 import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.types.bool;
 
-public class RoleTableAccess extends Table {
-	final static public String TableName = "SystemRoleTableAccess";
+public class UserTableAccess extends Table {
+	final static public String TableName = "SystemUserTableAccess";
 
 	static public class names {
-		public final static String Role = "Role";
+		public final static String User = "User";
 		public final static String Table = "Table";
 		public final static String Read = "Read";
 		public final static String Write = "Write";
@@ -21,12 +21,12 @@ public class RoleTableAccess extends Table {
 	}
 
 	static public class strings {
-		public final static String Title = "RoleTableAccess.title";
-		public final static String Read = "RoleTableAccess.read";
-		public final static String Write = "RoleTableAccess.write";
-		public final static String Create = "RoleTableAccess.create";
-		public final static String Copy = "RoleTableAccess.copy";
-		public final static String Destroy = "RoleTableAccess.destroy";
+		public final static String Title = "UserTableAccess.title";
+		public final static String Read = "UserTableAccess.read";
+		public final static String Write = "UserTableAccess.write";
+		public final static String Create = "UserTableAccess.create";
+		public final static String Copy = "UserTableAccess.copy";
+		public final static String Destroy = "UserTableAccess.destroy";
 	}
 
 	static public class displayNames {
@@ -38,28 +38,28 @@ public class RoleTableAccess extends Table {
 		public final static String Destroy = Resources.get(strings.Destroy);
 	}
 
-	public static class CLASS<T extends RoleTableAccess> extends Table.CLASS<T> {
+	public static class CLASS<T extends UserTableAccess> extends Table.CLASS<T> {
 		public CLASS() {
 			this(null);
 		}
 
 		public CLASS(IObject container) {
 			super(container);
-			setJavaClass(RoleTableAccess.class);
+			setJavaClass(UserTableAccess.class);
 			setName(TableName);
 			setDisplayName(displayNames.Title);
 		}
 
 		@Override
 		public Object newObject(IObject container) {
-			return new RoleTableAccess(container);
+			return new UserTableAccess(container);
 		}
 	}
 
-	public Roles.CLASS<Roles> roles = new Roles.CLASS<Roles>(this);
+	public Users.CLASS<Users> users = new Users.CLASS<Users>(this);
 	public Tables.CLASS<Tables> tables = new Tables.CLASS<Tables>(this);
 
-	public Link.CLASS<Link> role = new Link.CLASS<Link>(this);
+	public Link.CLASS<Link> user = new Link.CLASS<Link>(this);
 	public Link.CLASS<Link> table = new Link.CLASS<Link>(this);
 
 	public BoolField.CLASS<BoolField> read = new BoolField.CLASS<BoolField>(this);
@@ -68,17 +68,17 @@ public class RoleTableAccess extends Table {
 	public BoolField.CLASS<BoolField> copy = new BoolField.CLASS<BoolField>(this);
 	public BoolField.CLASS<BoolField> destroy = new BoolField.CLASS<BoolField>(this);
 
-	public RoleTableAccess() {
+	public UserTableAccess() {
 		this(null);
 	}
 
-	public RoleTableAccess(IObject container) {
+	public UserTableAccess(IObject container) {
 		super(container);
 	}
 
 	@Override
 	public void constructor1() {
-		role.get(CLASS.Constructor1).operatorAssign(roles);
+		user.get(CLASS.Constructor1).operatorAssign(users);
 		table.get(CLASS.Constructor1).operatorAssign(tables);
 	}
 
@@ -86,11 +86,11 @@ public class RoleTableAccess extends Table {
 	public void constructor2() {
 		super.constructor2();
 
-		roles.setIndex("roles");
+		users.setIndex("users");
 		tables.setIndex("tables");
 
-		role.setName(names.Role);
-		role.setIndex("role");
+		user.setName(names.User);
+		user.setIndex("user");
 
 		table.setName(names.Table);
 		table.setIndex("table");
@@ -120,7 +120,7 @@ public class RoleTableAccess extends Table {
 		destroy.setDisplayName(displayNames.Destroy);
 		destroy.get().setDefault(new bool(false));
 
-		registerDataField(role);
+		registerDataField(user);
 		registerDataField(table);
 
 		registerDataField(read);
@@ -129,7 +129,7 @@ public class RoleTableAccess extends Table {
 		registerDataField(copy);
 		registerDataField(destroy);
 
-		queries.add(roles);
+		queries.add(users);
 		queries.add(tables);
 	}
 }

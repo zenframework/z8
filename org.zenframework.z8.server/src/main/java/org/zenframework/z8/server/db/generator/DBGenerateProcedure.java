@@ -12,7 +12,7 @@ import org.zenframework.z8.server.engine.ApplicationServer;
 import org.zenframework.z8.server.engine.Runtime;
 import org.zenframework.z8.server.resources.Resources;
 import org.zenframework.z8.server.runtime.IObject;
-import org.zenframework.z8.server.security.SecurityGroup;
+import org.zenframework.z8.server.security.Role;
 import org.zenframework.z8.server.utils.ErrorUtils;
 
 public class DBGenerateProcedure extends Procedure {
@@ -39,7 +39,7 @@ public class DBGenerateProcedure extends Procedure {
 	protected void z8_execute() {
 		super.z8_execute();
 
-		if(ApplicationServer.getUser().securityGroup() != SecurityGroup.Administrators) {
+		if(ApplicationServer.getUser().role() != Role.Administrator) {
 			error("You must be a member of Administrators security group to perform this action.");
 			reportProgress(100);
 			return;

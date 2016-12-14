@@ -39,7 +39,7 @@ public class User implements IUser {
 
 	private String name;
 	private String password;
-	private SecurityGroup securityGroup = SecurityGroup.Users;
+	private Role role = Role.User;
 
 	private String description;
 	private String phone;
@@ -72,7 +72,7 @@ public class User implements IUser {
 		system.settings = "";
 		system.phone = "";
 		system.email = "";
-		system.securityGroup = SecurityGroup.Administrators;
+		system.role = Role.Administrator;
 
 		system.addSystemTools();
 
@@ -98,8 +98,8 @@ public class User implements IUser {
 	}
 
 	@Override
-	public SecurityGroup securityGroup() {
-		return securityGroup;
+	public Role role() {
+		return role;
 	}
 
 	@Override
@@ -162,7 +162,7 @@ public class User implements IUser {
 
 		user.readComponents();
 
-		if(user.securityGroup == SecurityGroup.Administrators)
+		if(user.role == Role.Administrator)
 			user.addSystemTools();
 
 		ConnectionManager.release();
@@ -209,7 +209,7 @@ public class User implements IUser {
 		fields.add(users.settings.get());
 		fields.add(users.phone.get());
 		fields.add(users.email.get());
-		fields.add(users.securityGroup.get());
+		fields.add(users.role.get());
 
 		users.read(fields, where);
 
@@ -220,7 +220,7 @@ public class User implements IUser {
 			this.settings = users.settings.get().string().get();
 			this.phone = users.phone.get().string().get();
 			this.email = users.email.get().string().get();
-			this.securityGroup = SecurityGroup.fromGuid(users.securityGroup.get().guid());
+			this.role = Role.fromGuid(users.role.get().guid());
 		} else {
 			throw new AccessDeniedException();
 		}
@@ -302,7 +302,7 @@ public class User implements IUser {
 		RmiIO.writeString(objects, name);
 		RmiIO.writeString(objects, password);
 
-		RmiIO.writeGuid(objects, securityGroup.guid());
+		RmiIO.writeGuid(objects, role.guid());
 
 		RmiIO.writeString(objects, description);
 		RmiIO.writeString(objects, phone);
@@ -333,7 +333,7 @@ public class User implements IUser {
 
 		name = RmiIO.readString(objects);
 		password = RmiIO.readString(objects);
-		securityGroup = SecurityGroup.fromGuid(RmiIO.readGuid(objects));
+		role = Role.fromGuid(RmiIO.readGuid(objects));
 
 		description = RmiIO.readString(objects);
 		phone = RmiIO.readString(objects);

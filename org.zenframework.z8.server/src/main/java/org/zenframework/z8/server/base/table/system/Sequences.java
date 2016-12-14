@@ -5,7 +5,7 @@ import org.zenframework.z8.server.base.table.value.IntegerField;
 import org.zenframework.z8.server.engine.ApplicationServer;
 import org.zenframework.z8.server.resources.Resources;
 import org.zenframework.z8.server.runtime.IObject;
-import org.zenframework.z8.server.security.SecurityGroup;
+import org.zenframework.z8.server.security.Role;
 import org.zenframework.z8.server.types.bool;
 import org.zenframework.z8.server.types.integer;
 
@@ -21,6 +21,11 @@ public class Sequences extends Table {
 		public final static String Value = "Sequences.value";
 	}
 
+	static public class displayNames {
+		public final static String Title = Resources.get(strings.Title);
+		public final static String Value = Resources.get(strings.Value);
+	}
+
 	public static class CLASS<T extends Sequences> extends Table.CLASS<T> {
 		public CLASS() {
 			this(null);
@@ -30,7 +35,7 @@ public class Sequences extends Table {
 			super(container);
 			setJavaClass(Sequences.class);
 			setName(TableName);
-			setDisplayName(Resources.get(strings.Title));
+			setDisplayName(displayNames.Title);
 		}
 
 		@Override
@@ -51,9 +56,9 @@ public class Sequences extends Table {
 
 		value.setName(names.Value);
 		value.setIndex("value");
-		value.setDisplayName(Resources.get(strings.Value));
+		value.setDisplayName(displayNames.Value);
 
-		readOnly.set(ApplicationServer.getUser().securityGroup() != SecurityGroup.Administrators);
+		readOnly.set(ApplicationServer.getUser().role() != Role.Administrator);
 
 		registerDataField(value);
 

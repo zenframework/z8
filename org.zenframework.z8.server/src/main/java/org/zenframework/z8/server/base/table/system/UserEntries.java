@@ -10,7 +10,7 @@ import org.zenframework.z8.server.engine.ApplicationServer;
 import org.zenframework.z8.server.resources.Resources;
 import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.security.BuiltinUsers;
-import org.zenframework.z8.server.security.SecurityGroup;
+import org.zenframework.z8.server.security.Role;
 import org.zenframework.z8.server.types.exception;
 import org.zenframework.z8.server.types.guid;
 import org.zenframework.z8.server.types.primary;
@@ -47,7 +47,7 @@ public class UserEntries extends Table {
 			super(container);
 			setJavaClass(UserEntries.class);
 			setName(TableName);
-			setDisplayName(Resources.get(strings.Title));
+			setDisplayName(displayNames.Title);
 		}
 
 		@Override
@@ -93,9 +93,9 @@ public class UserEntries extends Table {
 
 		position.setName(names.Position);
 		position.setIndex("position");
-		position.setDisplayName(Resources.get(strings.Position));
+		position.setDisplayName(displayNames.Position);
 
-		readOnly.set(ApplicationServer.getUser().securityGroup() != SecurityGroup.Administrators);
+		readOnly.set(ApplicationServer.getUser().role() != Role.Administrator);
 
 		registerDataField(user);
 		registerDataField(entry);
@@ -103,7 +103,10 @@ public class UserEntries extends Table {
 
 		queries.add(users);
 		queries.add(entries);
+	}
 
+	@Override
+	public void initStaticRecords() {
 		{
 			LinkedHashMap<IField, primary> record = new LinkedHashMap<IField, primary>();
 			record.put(user.get(), BuiltinUsers.Administrator.guid());

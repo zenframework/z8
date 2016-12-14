@@ -4,7 +4,7 @@ import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.runtime.OBJECT;
 import org.zenframework.z8.server.runtime.RLinkedHashMap;
 import org.zenframework.z8.server.security.IUser;
-import org.zenframework.z8.server.security.SecurityGroup;
+import org.zenframework.z8.server.security.Role;
 import org.zenframework.z8.server.types.guid;
 import org.zenframework.z8.server.types.primary;
 import org.zenframework.z8.server.types.string;
@@ -34,7 +34,7 @@ public class User extends OBJECT {
 	public string phone;
 	public string email;
 
-	public SecurityGroup securityGroup = SecurityGroup.Users;
+	public Role role = Role.User;
 
 	public RLinkedHashMap<string, primary> parameters;
 
@@ -60,7 +60,7 @@ public class User extends OBJECT {
 		phone = new string(user.phone());
 		email = new string(user.email());
 
-		securityGroup = user.securityGroup();
+		role = user.role();
 
 		parameters = (RLinkedHashMap<string, primary>)user.parameters();
 	}

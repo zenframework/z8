@@ -8,7 +8,6 @@ import java.util.List;
 import org.zenframework.z8.server.base.form.Control;
 import org.zenframework.z8.server.base.query.Query;
 import org.zenframework.z8.server.base.table.value.Field;
-import org.zenframework.z8.server.base.table.value.IValue;
 import org.zenframework.z8.server.json.parser.JsonArray;
 import org.zenframework.z8.server.json.parser.JsonObject;
 import org.zenframework.z8.server.request.Message;
@@ -220,10 +219,6 @@ public class JsonWriter {
 		} else {
 			writeProperty(name, value.toString(), true);
 		}
-	}
-
-	public void writeProperty(IValue field) {
-		writeProperty('"' + field.id() + "'", field.get());
 	}
 
 	public void writeProperty(string name, double value) {

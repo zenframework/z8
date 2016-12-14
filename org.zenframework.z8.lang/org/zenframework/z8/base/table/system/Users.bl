@@ -7,10 +7,10 @@ import org.zenframework.z8.base.table.value.StringField;
 [displayName "Пользователи"]
 [native "org.zenframework.z8.server.base.table.system.Users"]
 class Users extends Table {
-	SecurityGroups securityGroups;
+	Roles roles;
 
-	[name "SecurityGroup"]
-	Link securityGroup = securityGroups;
+	[name "Role"]
+	Link role = roles;
 
 	[displayName "Имя"] name;
 	[displayName "Описание"] description;
@@ -36,12 +36,12 @@ class Users extends Table {
 	records {
 		[name "System"]
 		[description "Системный вход"]
-		[securityGroup SecurityGroups.Administators]
+		[role Roles.Administator]
 		System = '00000000-0000-0000-0000-000000000001';
 
 		[name "Admin"]
 		[description "Администратор системы"]
-		[securityGroup SecurityGroups.Administators]
+		[role Roles.Administator]
 		Administrator = '00000000-0000-0000-0000-000000000002';
 	}
 

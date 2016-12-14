@@ -21,6 +21,12 @@ public class Entries extends Table {
 		public final static String Name = "Entries.name";
 	}
 
+	static public class displayNames {
+		public final static String Title = Resources.get(strings.Title);
+		public final static String Id = Resources.get(strings.Id);
+		public final static String Name = Resources.get(strings.Name);
+	}
+
 	public static class CLASS<T extends Entries> extends Table.CLASS<T> {
 		public CLASS() {
 			this(null);
@@ -30,7 +36,7 @@ public class Entries extends Table {
 			super(container);
 			setJavaClass(Entries.class);
 			setName(TableName);
-			setDisplayName(Resources.get(strings.Title));
+			setDisplayName(displayNames.Title);
 		}
 
 		@Override
@@ -42,8 +48,8 @@ public class Entries extends Table {
 	public Entries(IObject container) {
 		super(container);
 
-		id.setDisplayName(Resources.get(strings.Id));
-		name.setDisplayName(Resources.get(strings.Name));
+		id.setDisplayName(displayNames.Id);
+		name.setDisplayName(displayNames.Name);
 	}
 
 	@Override
@@ -52,13 +58,14 @@ public class Entries extends Table {
 
 		id.get().length = new integer(1024);
 		name.get().length = new integer(1024);
+	}
 
-		{
-			LinkedHashMap<IField, primary> record = new LinkedHashMap<IField, primary>();
-			record.put(name.get(), new string(Resources.get(SystemTools.strings.Title)));
-			record.put(id.get(), new string(SystemTools.class.getCanonicalName()));
-			addRecord(SystemTools.Id, record);
-		}
+	@Override
+	public void initStaticRecords() {
+		LinkedHashMap<IField, primary> record = new LinkedHashMap<IField, primary>();
+		record.put(name.get(), new string(SystemTools.displayNames.Title));
+		record.put(id.get(), new string(SystemTools.class.getCanonicalName()));
+		addRecord(SystemTools.Id, record);
 	}
 
 	@Override

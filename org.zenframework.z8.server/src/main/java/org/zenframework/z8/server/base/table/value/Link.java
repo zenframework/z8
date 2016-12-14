@@ -7,6 +7,7 @@ import org.zenframework.z8.server.json.Json;
 import org.zenframework.z8.server.json.JsonWriter;
 import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.types.bool;
+import org.zenframework.z8.server.types.primary;
 
 public class Link extends GuidField implements ILink, IForeignKey {
 	public static class CLASS<T extends Link> extends GuidField.CLASS<T> {
@@ -71,6 +72,11 @@ public class Link extends GuidField implements ILink, IForeignKey {
 	@Override
 	public IField getReferer() {
 		return getQuery().primaryKey();
+	}
+
+	@Override
+	protected primary getNullValue() {
+		return getReferer().get();
 	}
 
 	@Override

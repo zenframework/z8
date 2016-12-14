@@ -29,7 +29,7 @@ public interface IUser extends RmiSerializable, Serializable {
 
 	public void setSettings(String settings);
 
-	public SecurityGroup securityGroup();
+	public Role role();
 
 	public Collection<Component> components();
 

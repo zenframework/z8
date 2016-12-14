@@ -20,6 +20,7 @@ import org.zenframework.z8.server.base.table.value.Aggregation;
 import org.zenframework.z8.server.base.table.value.Expression;
 import org.zenframework.z8.server.base.table.value.Field;
 import org.zenframework.z8.server.base.table.value.ILink;
+import org.zenframework.z8.server.base.table.value.Join;
 import org.zenframework.z8.server.base.table.value.Link;
 import org.zenframework.z8.server.base.view.filter.Filter;
 import org.zenframework.z8.server.db.FieldType;
@@ -57,6 +58,7 @@ public class ReadAction extends Action {
 	protected Collection<Field> sortFields = new LinkedHashSet<Field>();
 	protected Collection<Field> groupBy = new LinkedHashSet<Field>();
 	protected Collection<Link> aggregateBy = new LinkedHashSet<Link>();
+	protected Collection<Field> notNullFields = new HashSet<Field>();
 
 	private Collection<SqlToken> filters = new LinkedHashSet<SqlToken>();
 	private Collection<Field> filterFields = new LinkedHashSet<Field>();
@@ -122,8 +124,6 @@ public class ReadAction extends Action {
 	protected void initialize() {
 		ActionParameters parameters = actionParameters();
 
-		beforeRead();
-
 		Query query = getQuery();
 
 		Collection<Field> fields = parameters.fields != null && !parameters.fields.isEmpty() ? parameters.fields : getFormFields(query);
@@ -162,6 +162,8 @@ public class ReadAction extends Action {
 				addSelectField(query.getAttachmentField());
 			}
 		}
+
+		beforeRead();
 	}
 
 	private void initFilters() {
@@ -170,6 +172,9 @@ public class ReadAction extends Action {
 		Field primaryKey = query.primaryKey();
 		addNullRecordFilter(primaryKey);
 		addFilter(primaryKey, recordId, Operation.Eq);
+
+		for(Field field : notNullFields)
+			addNullRecordFilter(field);
 
 		if(recordId == null) {
 			addFilter(query.where());
@@ -361,8 +366,14 @@ public class ReadAction extends Action {
 
 			if(hasPrimaryKey()) {
 				Collection<ILink> links = getLinks(field); 
-				for(ILink link : links)
+				for(ILink link : links) {
 					selectFields.add((Field)link);
+					if(link.getJoin() == Join.Right) {
+						Field primaryKey = link.getQuery().primaryKey();
+						selectFields.add(primaryKey);
+						notNullFields.add(primaryKey);
+					}
+				}
 				field.setPath(links);
 			}
 
@@ -674,6 +685,8 @@ public class ReadAction extends Action {
 	private Groupping writePlainData(Select cursor, JsonWriter writer) {
 		Groupping groups = new Groupping(this.groupFields);
 
+		primaryKey.setWriteNulls(false);
+
 		writer.startArray(Json.data);
 
 		int records = 0;
@@ -691,8 +704,7 @@ public class ReadAction extends Action {
 				if(index != -1)
 					group[index] = field.get();
 
-				if(field != primaryKey || !field.guid().isNull())
-					field.writeData(writer);
+				field.writeData(writer);
 			}
 			records++;
 

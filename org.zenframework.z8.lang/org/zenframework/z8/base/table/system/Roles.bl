@@ -1,0 +1,15 @@
+import org.zenframework.z8.base.table.Table;
+
+[name "SystemRoles"]
+[native "org.zenframework.z8.server.base.table.system.Roles"]
+class Roles extends Table {
+	records {
+		[name "Администраторы"]
+		[description "Администраторы"]
+		Administator = 'DC08CA72-C668-412F-91B7-022F1C82AC09';
+
+		[name "Пользователи"]
+		[description "Пользователи"]
+		User = '421A8413-A8EC-4DAB-9235-9A5FF83341C5';
+	}
+}

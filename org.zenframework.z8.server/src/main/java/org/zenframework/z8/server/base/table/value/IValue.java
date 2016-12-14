@@ -11,7 +11,6 @@ public interface IValue extends IObject {
 
 	public void set(primary b);
 
-	public boolean isNull();
-
+	public boolean wasNull();
 	public boolean changed();
 }

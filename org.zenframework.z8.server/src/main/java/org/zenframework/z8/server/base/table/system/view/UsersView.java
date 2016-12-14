@@ -5,7 +5,7 @@ import org.zenframework.z8.server.base.table.system.UserEntries;
 import org.zenframework.z8.server.base.table.system.Users;
 import org.zenframework.z8.server.engine.ApplicationServer;
 import org.zenframework.z8.server.runtime.IObject;
-import org.zenframework.z8.server.security.SecurityGroup;
+import org.zenframework.z8.server.security.Role;
 import org.zenframework.z8.server.types.integer;
 
 public class UsersView extends Users {
@@ -61,7 +61,7 @@ public class UsersView extends Users {
 
 		columns = new integer(6);
 
-		boolean administrator = ApplicationServer.getUser().securityGroup() == SecurityGroup.Administrators;
+		boolean administrator = ApplicationServer.getUser().role() == Role.Administrator;
 		readOnly.set(!administrator);
 
 		entries.setIndex("entries");
@@ -73,7 +73,7 @@ public class UsersView extends Users {
 		entries.get().link = userEntries.get().user;
 
 		name.get().colspan = new integer(4);
-		securityGroups.get().name.get().colspan = new integer(4);
+		roles.get().name.get().colspan = new integer(4);
 		phone.get().colspan = new integer(4);
 		email.get().colspan = new integer(4);
 		blocked.get().colspan = new integer(4);
@@ -82,7 +82,7 @@ public class UsersView extends Users {
 		entries.get().colspan = new integer(6);
 
 		registerFormField(name);
-		registerFormField(securityGroups.get().name);
+		registerFormField(roles.get().name);
 		registerFormField(phone);
 		registerFormField(email);
 		registerFormField(blocked);

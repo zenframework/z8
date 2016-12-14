@@ -44,6 +44,17 @@ public class SchedulerJobs extends Table {
 		public final static String ErrorNoJob = "SchedulerJobs.error.noJob";
 	}
 
+	static public class displayNames {
+		public final static String Title = Resources.get(strings.Title);
+		public final static String Settings = Resources.get(strings.Settings);
+		public final static String From = Resources.get(strings.From);
+		public final static String Till = Resources.get(strings.Till);
+		public final static String Repeat = Resources.get(strings.Repeat);
+		public final static String Active = Resources.get(strings.Active);
+		public final static String LastStarted = Resources.get(strings.LastStarted);
+		public final static String ErrorNoJob = Resources.get(strings.ErrorNoJob);
+	}
+
 	public static class CLASS<T extends Table> extends Table.CLASS<T> {
 		public CLASS() {
 			this(null);
@@ -53,7 +64,7 @@ public class SchedulerJobs extends Table {
 			super(container);
 			setJavaClass(SchedulerJobs.class);
 			setName(TableName);
-			setDisplayName(Resources.get(SchedulerJobs.strings.Title));
+			setDisplayName(displayNames.Title);
 		}
 
 		@Override
@@ -86,7 +97,7 @@ public class SchedulerJobs extends Table {
 
 		users.setIndex("users");
 
-		description.setDisplayName(Resources.get(strings.Settings));
+		description.setDisplayName(displayNames.Settings);
 
 		job.setName(names.Job);
 		job.setIndex("job");
@@ -97,23 +108,23 @@ public class SchedulerJobs extends Table {
 
 		from.setName(names.From);
 		from.setIndex("from");
-		from.setDisplayName(Resources.get(strings.From));
+		from.setDisplayName(displayNames.From);
 
 		till.setName(names.Till);
 		till.setIndex("till");
-		till.setDisplayName(Resources.get(strings.Till));
+		till.setDisplayName(displayNames.Till);
 
 		repeat.setName(names.Repeat);
 		repeat.setIndex("repeat");
-		repeat.setDisplayName(Resources.get(strings.Repeat));
+		repeat.setDisplayName(displayNames.Repeat);
 
 		lastStarted.setName(names.LastStarted);
 		lastStarted.setIndex("lastStarted");
-		lastStarted.setDisplayName(Resources.get(strings.LastStarted));
+		lastStarted.setDisplayName(displayNames.LastStarted);
 
 		active.setName(names.Active);
 		active.setIndex("active");
-		active.setDisplayName(Resources.get(strings.Active));
+		active.setDisplayName(displayNames.Active);
 
 		job.get().operatorAssign(jobs);
 		user.get().operatorAssign(users);
@@ -185,7 +196,7 @@ public class SchedulerJobs extends Table {
 
 		Jobs jobs = new Jobs.CLASS<Jobs>().get();
 		if (!jobs.readRecord(jobId, Arrays.<Field> asList(jobs.description.get())))
-			throw new exception(Resources.get(strings.ErrorNoJob));
+			throw new exception(displayNames.ErrorNoJob);
 
 		description.get().set(jobs.description.get().string());
 	}

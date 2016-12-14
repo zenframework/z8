@@ -80,6 +80,7 @@ public interface Json {
 	string tabs = new string("tabs");
 
 	string dependsOn = new string("dependsOn");
+	string dependency = new string("dependency");
 	string dependencies = new string("dependencies");
 
 	string link = new string("link");

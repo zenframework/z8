@@ -67,6 +67,8 @@ abstract public class Field extends Control implements IValue, IField {
 	private Sequencer sequencer = null;
 
 	private Select cursor = null;
+	private boolean wasNull = true;
+	private boolean writeNulls = true;
 
 	public int position = -1;
 
@@ -173,8 +175,12 @@ abstract public class Field extends Control implements IValue, IField {
 	}
 
 	@Override
-	public boolean isNull() {
-		return get() == null;
+	public boolean wasNull() {
+		return wasNull;
+	}
+
+	public void setWasNull(boolean wasNull) {
+		this.wasNull= wasNull;
 	}
 
 	protected Select getCursor() {
@@ -316,8 +322,18 @@ abstract public class Field extends Control implements IValue, IField {
 		}
 	}
 
+	public void setWriteNulls(boolean writeNulls) {
+		this.writeNulls = writeNulls;
+	}
+
+	protected primary getNullValue() {
+		return getDefault();
+	}
+
 	public void writeData(JsonWriter writer) {
-		writer.writeProperty('"' + id() + '"', get());
+		primary value = get();
+		if(!wasNull() || writeNulls)
+			writer.writeProperty('"' + id() + '"', wasNull() ? getNullValue() : value);
 	}
 
 	public binary binary() {
@@ -405,8 +421,8 @@ abstract public class Field extends Control implements IValue, IField {
 		setDefault(value);
 	}
 
-	public bool z8_isNull() {
-		return new bool(isNull());
+	public bool z8_wasNull() {
+		return new bool(wasNull());
 	}
 
 	public bool z8_isChanged() {

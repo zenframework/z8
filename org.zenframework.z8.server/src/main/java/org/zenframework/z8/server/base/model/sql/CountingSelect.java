@@ -2,9 +2,7 @@ package org.zenframework.z8.server.base.model.sql;
 
 import java.sql.SQLException;
 
-import org.zenframework.z8.server.db.FieldType;
 import org.zenframework.z8.server.db.sql.FormatOptions;
-import org.zenframework.z8.server.types.integer;
 
 public class CountingSelect extends Select {
 	public CountingSelect() {
@@ -37,7 +35,7 @@ public class CountingSelect extends Select {
 	public int count() {
 		try {
 			open();
-			int result = next() ? ((integer)get(1, FieldType.Integer)).getInt() : 0;
+			int result = next() ? getCursor().getInteger(1).getInt() : 0;
 			close();
 			return result;
 		} catch(SQLException e) {

@@ -26,8 +26,8 @@ class Field extends Control {
 	public string getTypeName();
 
 	public bool isChanged();
+	public bool wasNull();
 
-	public bool isNull();
 	public sql_bool sqlIsNull();
 
 	public Sequencer getSequencer();

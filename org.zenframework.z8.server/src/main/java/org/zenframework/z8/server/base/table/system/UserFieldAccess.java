@@ -7,20 +7,20 @@ import org.zenframework.z8.server.resources.Resources;
 import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.types.bool;
 
-public class RoleFieldAccess extends Table {
-	final static public String TableName = "SystemRoleFieldAccess";
+public class UserFieldAccess extends Table {
+	final static public String TableName = "SystemUserFieldAccess";
 
 	static public class names {
-		public final static String Role = "Role";
+		public final static String User = "User";
 		public final static String Field = "Field";
 		public final static String Read = "Read";
 		public final static String Write = "Write";
 	}
 
 	static public class strings {
-		public final static String Title = "RoleFieldAccess.title";
-		public final static String Read = "RoleFieldAccess.read";
-		public final static String Write = "RoleFieldAccess.write";
+		public final static String Title = "UserFieldAccess.title";
+		public final static String Read = "UserFieldAccess.read";
+		public final static String Write = "UserFieldAccess.write";
 	}
 
 	static public class displayNames {
@@ -29,44 +29,44 @@ public class RoleFieldAccess extends Table {
 		public final static String Write = Resources.get(strings.Write);
 	}
 
-	public static class CLASS<T extends RoleFieldAccess> extends Table.CLASS<T> {
+	public static class CLASS<T extends UserFieldAccess> extends Table.CLASS<T> {
 		public CLASS() {
 			this(null);
 		}
 
 		public CLASS(IObject container) {
 			super(container);
-			setJavaClass(RoleFieldAccess.class);
+			setJavaClass(UserFieldAccess.class);
 			setName(TableName);
 			setDisplayName(displayNames.Title);
 		}
 
 		@Override
 		public Object newObject(IObject container) {
-			return new RoleFieldAccess(container);
+			return new UserFieldAccess(container);
 		}
 	}
 
-	public Roles.CLASS<Roles> roles = new Roles.CLASS<Roles>(this);
+	public Users.CLASS<Users> users = new Users.CLASS<Users>(this);
 	public Fields.CLASS<Fields> fields = new Fields.CLASS<Fields>(this);
 
-	public Link.CLASS<Link> role = new Link.CLASS<Link>(this);
+	public Link.CLASS<Link> user = new Link.CLASS<Link>(this);
 	public Link.CLASS<Link> field = new Link.CLASS<Link>(this);
 
 	public BoolField.CLASS<BoolField> read = new BoolField.CLASS<BoolField>(this);
 	public BoolField.CLASS<BoolField> write = new BoolField.CLASS<BoolField>(this);
 
-	public RoleFieldAccess() {
+	public UserFieldAccess() {
 		this(null);
 	}
 
-	public RoleFieldAccess(IObject container) {
+	public UserFieldAccess(IObject container) {
 		super(container);
 	}
 
 	@Override
 	public void constructor1() {
-		role.get(CLASS.Constructor1).operatorAssign(roles);
+		user.get(CLASS.Constructor1).operatorAssign(users);
 		field.get(CLASS.Constructor1).operatorAssign(fields);
 	}
 
@@ -74,11 +74,11 @@ public class RoleFieldAccess extends Table {
 	public void constructor2() {
 		super.constructor2();
 
-		roles.setIndex("roles");
+		users.setIndex("users");
 		fields.setIndex("fields");
 
-		role.setName(names.Role);
-		role.setIndex("role");
+		user.setName(names.User);
+		user.setIndex("user");
 
 		field.setName(names.Field);
 		field.setIndex("field");
@@ -93,13 +93,13 @@ public class RoleFieldAccess extends Table {
 		write.setDisplayName(displayNames.Write);
 		write.get().setDefault(new bool(true));
 
-		registerDataField(role);
+		registerDataField(user);
 		registerDataField(field);
 
 		registerDataField(read);
 		registerDataField(write);
 
-		queries.add(roles);
+		queries.add(users);
 		queries.add(fields);
 	}
 }
