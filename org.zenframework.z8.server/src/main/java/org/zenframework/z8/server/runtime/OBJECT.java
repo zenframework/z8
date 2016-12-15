@@ -5,6 +5,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 import org.zenframework.z8.server.base.application.Application;
 import org.zenframework.z8.server.base.json.parser.JsonArray;
@@ -15,6 +16,7 @@ import org.zenframework.z8.server.json.JsonWriter;
 import org.zenframework.z8.server.request.INamedObject;
 import org.zenframework.z8.server.request.RequestTarget;
 import org.zenframework.z8.server.types.bool;
+import org.zenframework.z8.server.types.guid;
 import org.zenframework.z8.server.types.primary;
 import org.zenframework.z8.server.types.string;
 
@@ -30,6 +32,9 @@ public class OBJECT extends RequestTarget implements IObject, RmiSerializable {
 			return new OBJECT(container);
 		}
 	}
+
+	private guid key = null;
+	private int ordinal = 0;
 
 	private IObject container = null;
 	private IObject owner = null;
@@ -75,6 +80,37 @@ public class OBJECT extends RequestTarget implements IObject, RmiSerializable {
 	@Override
 	public void resetId() {
 		id = null;
+	}
+
+	@Override
+	public guid key() {
+		if(key == null) {
+			String ownerName = owner != null ? owner.name() : null;
+			String name = name();
+
+			if(name == null)
+				throw new UnsupportedOperationException();
+
+			String value = (ownerName != null ? ownerName + "." : "") + name;
+			key = new guid(UUID.nameUUIDFromBytes(value.getBytes()));
+		}
+
+		return key;
+	}
+
+	@Override
+	public void setKey(guid key) {
+		this.key = key;
+	}
+
+	@Override
+	public int ordinal() {
+		return ordinal;
+	}
+
+	@Override
+	public void setOrdinal(int ordinal) {
+		this.ordinal = ordinal;
 	}
 
 	@Override

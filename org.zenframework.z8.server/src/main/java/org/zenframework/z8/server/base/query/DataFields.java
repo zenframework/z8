@@ -19,6 +19,7 @@ public class DataFields extends RCollection<Field.CLASS<? extends Field>> {
 	@Override
 	public boolean add(Field.CLASS<? extends Field> field) {
 		field.setOwner(this.owner);
+		field.setOrdinal(this.size());
 		return super.add(field);
 	}
 

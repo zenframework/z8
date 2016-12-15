@@ -6,7 +6,6 @@ import org.zenframework.z8.server.base.table.system.Fields;
 import org.zenframework.z8.server.base.table.system.RoleFieldAccess;
 import org.zenframework.z8.server.base.table.system.RoleTableAccess;
 import org.zenframework.z8.server.base.table.system.Roles;
-import org.zenframework.z8.server.base.table.value.Join;
 import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.types.integer;
 
@@ -22,53 +21,6 @@ public class RoleTableAccessView extends Roles {
 			return new RoleTableAccessView(container);
 		}
 	}
-
-	public static class __RoleTableAccess extends RoleTableAccess {
-		public static class CLASS<T extends __RoleTableAccess> extends RoleTableAccess.CLASS<T> {
-			public CLASS(IObject container) {
-				super(container);
-				setJavaClass(__RoleTableAccess.class);
-			}
-
-			public Object newObject(IObject container) {
-				return new __RoleTableAccess(container);
-			}
-		}
-
-		public __RoleTableAccess(IObject container) {
-			super(container);
-		}
-
-		public void constructor2() {
-			super.constructor2();
-			table.get().join = Join.Right;
-			role.get().setRightJoined(true);
-		}
-	};
-
-	public static class __RoleFieldAccess extends RoleFieldAccess {
-		public static class CLASS<T extends __RoleFieldAccess> extends RoleFieldAccess.CLASS<T> {
-			public CLASS(IObject container) {
-				super(container);
-				setJavaClass(__RoleFieldAccess.class);
-			}
-
-			public Object newObject(IObject container) {
-				return new __RoleFieldAccess(container);
-			}
-		}
-
-		public __RoleFieldAccess(IObject container) {
-			super(container);
-		}
-
-		public void constructor2() {
-			super.constructor2();
-			field.get().join = Join.Right;
-			role.get().setRightJoined(true);
-
-		}
-	};
 
 	public Listbox.CLASS<Listbox> tables = new Listbox.CLASS<Listbox>(this);
 	public Listbox.CLASS<Listbox> fields = new Listbox.CLASS<Listbox>(this);
@@ -89,7 +41,7 @@ public class RoleTableAccessView extends Roles {
 		tables.setIndex("tables");
 		tables.setDisplayName(RoleTableAccess.displayNames.Title);
 
-		__RoleTableAccess rta = new __RoleTableAccess.CLASS<__RoleTableAccess>(this).get();
+		RoleTableAccess rta = new RoleTableAccess.CLASS<RoleTableAccess>(this).get();
 
 		tables.get().query = (Query.CLASS<Query>)rta.getCLASS();
 		tables.get().link = rta.role;
@@ -122,7 +74,7 @@ public class RoleTableAccessView extends Roles {
 		rta.gridFields.add(rta.copy);
 		rta.gridFields.add(rta.destroy);
 
-		__RoleFieldAccess rfa = new __RoleFieldAccess.CLASS<__RoleFieldAccess>(this).get();
+		RoleFieldAccess rfa = new RoleFieldAccess.CLASS<RoleFieldAccess>(this).get();
 
 		fields.setIndex("fields");
 		fields.setDisplayName(Fields.displayNames.Title);
@@ -150,8 +102,8 @@ public class RoleTableAccessView extends Roles {
 		fields.get().dependsOn = rta.table;
 
 		registerFormField(name);
-		registerFormField(tables);
 		registerFormField(fields);
+		registerFormField(tables);
 
 		sortFields.add(name);
 	}

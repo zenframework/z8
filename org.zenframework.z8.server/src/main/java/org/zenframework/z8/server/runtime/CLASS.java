@@ -5,8 +5,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import org.zenframework.z8.server.logs.Trace;
-
 public class CLASS<TYPE extends IObject> extends OBJECT implements IClass<TYPE> {
 	public final static int Constructor = -1;
 	public final static int Constructor1 = 0;
@@ -68,6 +66,14 @@ public class CLASS<TYPE extends IObject> extends OBJECT implements IClass<TYPE> 
 
 		if(object != null)
 			object.setOwner(owner);
+	}
+
+	@Override
+	public void setOrdinal(int ordinal) {
+		super.setOrdinal(ordinal);
+
+		if(object != null)
+			object.setOrdinal(ordinal);
 	}
 
 	@Override
@@ -139,8 +145,8 @@ public class CLASS<TYPE extends IObject> extends OBJECT implements IClass<TYPE> 
 			object = constructObject(container);
 			object.setCLASS(this);
 			object.setOwner(getOwner());
+			object.setOrdinal(ordinal());
 		} catch(Throwable e) {
-			Trace.logError(e);
 			throw new RuntimeException(e);
 		}
 	}
@@ -173,7 +179,6 @@ public class CLASS<TYPE extends IObject> extends OBJECT implements IClass<TYPE> 
 			org.zenframework.z8.server.runtime.CLASS<TYPE> cls = (org.zenframework.z8.server.runtime.CLASS<TYPE>)constructor.newInstance(getContainer());
 			return cls.get();
 		} catch(Throwable e) {
-			Trace.logError(e);
 			throw new RuntimeException(e);
 		}
 	}

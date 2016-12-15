@@ -1,5 +1,8 @@
 package org.zenframework.z8.server.base.table;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.zenframework.z8.server.base.table.value.BoolField;
 import org.zenframework.z8.server.base.table.value.DatetimeField;
 import org.zenframework.z8.server.base.table.value.Field;
@@ -177,6 +180,15 @@ public class Table extends TableBase {
 		modifiedBy.get().set(ApplicationServer.getUser().id());
 
 		super.beforeUpdate(recordId);
+	}
+
+	public Map<guid, Field.CLASS<? extends Field>> getFieldsMap() {
+		Map<guid, Field.CLASS<? extends Field>> map = new HashMap<guid, Field.CLASS<? extends Field>>();
+
+		for(Field.CLASS<? extends Field> field : primaryFields())
+			map.put(field.key(), field);
+
+		return map;
 	}
 
 	public int controlSum() {

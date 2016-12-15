@@ -3,6 +3,7 @@ package org.zenframework.z8.server.runtime;
 import java.util.Map;
 
 import org.zenframework.z8.server.request.INamedObject;
+import org.zenframework.z8.server.types.guid;
 
 public interface IObject extends INamedObject {
 	static final public String System = "system";
@@ -29,7 +30,13 @@ public interface IObject extends INamedObject {
 
 	public String id();
 	public void resetId();
-	
+
+	public guid key();
+	public void setKey(guid key);
+
+	public int ordinal();
+	public void setOrdinal(int ordinal);
+
 	public String name();
 
 	@Override

@@ -8,10 +8,12 @@ import java.util.Map;
 
 import org.zenframework.z8.server.base.simple.Procedure;
 import org.zenframework.z8.server.base.table.Table;
+import org.zenframework.z8.server.types.guid;
 
 public abstract class AbstractRuntime implements IRuntime {
 	private Map<String, Table.CLASS<? extends Table>> tableClasses = new HashMap<String, Table.CLASS<? extends Table>>();
 	private Map<String, Table.CLASS<? extends Table>> tableNames = new HashMap<String, Table.CLASS<? extends Table>>();
+	private Map<guid, Table.CLASS<? extends Table>> tableKeys = new HashMap<guid, Table.CLASS<? extends Table>>();
 
 	private List<OBJECT.CLASS<? extends OBJECT>> entries = new ArrayList<OBJECT.CLASS<? extends OBJECT>>();
 	private List<Procedure.CLASS<? extends Procedure>> jobs = new ArrayList<Procedure.CLASS<? extends Procedure>>();
@@ -19,6 +21,11 @@ public abstract class AbstractRuntime implements IRuntime {
 	@Override
 	public Collection<Table.CLASS<? extends Table>> tables() {
 		return tableClasses.values();
+	}
+
+	@Override
+	public Collection<guid> tableKeys() {
+		return tableKeys.keySet();
 	}
 
 	@Override
@@ -39,6 +46,11 @@ public abstract class AbstractRuntime implements IRuntime {
 	@Override
 	public Table.CLASS<? extends Table> getTableByName(String name) {
 		return tableNames.get(name);
+	}
+
+	@Override
+	public Table.CLASS<? extends Table> getTableByKey(guid key) {
+		return tableKeys.get(key);
 	}
 
 	@Override
@@ -66,10 +78,12 @@ public abstract class AbstractRuntime implements IRuntime {
 			if(table.getClass().isAssignableFrom(cls.getClass())) {
 				tableClasses.remove(table.classId());
 				tableNames.remove(table.name());
+				tableKeys.remove(table.key());
 			}
 		}
 		tableClasses.put(cls.classId(), cls);
 		tableNames.put(cls.name(), cls);
+		tableKeys.put(cls.key(), cls);
 	}
 
 	protected void addEntry(OBJECT.CLASS<? extends OBJECT> cls) {
