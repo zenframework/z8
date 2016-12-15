@@ -102,8 +102,8 @@ public class RoleTableAccessView extends Roles {
 		fields.get().dependsOn = rta.table;
 
 		registerFormField(name);
-		registerFormField(fields);
 		registerFormField(tables);
+		registerFormField(fields);
 
 		sortFields.add(name);
 	}
