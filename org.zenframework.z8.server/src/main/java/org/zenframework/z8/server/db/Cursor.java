@@ -64,8 +64,8 @@ public class Cursor {
 	public guid getGuid(int position) throws SQLException {
 		return getGuid(position, null);
 	}
-	
-	public guid getGuid(int position, Field field) throws SQLException {
+
+	private guid getGuid(int position, Field field) throws SQLException {
 		Object value = resultSet.getObject(position);
 		boolean wasNull = value == null || wasNull();
 		if(field != null)
@@ -77,7 +77,7 @@ public class Cursor {
 		return getBoolean(position, null);
 	}
 
-	public bool getBoolean(int position, Field field) throws SQLException {
+	private bool getBoolean(int position, Field field) throws SQLException {
 		boolean value = resultSet.getBoolean(position);
 		boolean wasNull = wasNull();
 		if(field != null)
@@ -89,7 +89,7 @@ public class Cursor {
 		return getInteger(position, null);
 	}
 
-	public integer getInteger(int position, Field field) throws SQLException {
+	private integer getInteger(int position, Field field) throws SQLException {
 		long value = resultSet.getLong(position);
 		boolean wasNull = wasNull();
 		if(field != null)
@@ -100,8 +100,8 @@ public class Cursor {
 	public string getString(int position) throws SQLException {
 		return getString(position, null);
 	}
-	
-	public string getString(int position, Field field) throws SQLException {
+
+	private string getString(int position, Field field) throws SQLException {
 		byte[] bytes = resultSet.getBytes(position);
 		boolean wasNull = bytes == null || wasNull();
 		if(field != null)
@@ -113,7 +113,7 @@ public class Cursor {
 		return getText(position, null);
 	}
 
-	public string getText(int position, Field field) throws SQLException {
+	private string getText(int position, Field field) throws SQLException {
 		return getString(position, field);
 	}
 
@@ -121,7 +121,7 @@ public class Cursor {
 		return getDate(position, null);
 	}
 
-	public date getDate(int position, Field field) throws SQLException {
+	private date getDate(int position, Field field) throws SQLException {
 		Timestamp value = resultSet.getTimestamp(position);
 		boolean wasNull = value == null || wasNull();
 		if(field != null)
@@ -133,7 +133,7 @@ public class Cursor {
 		return getDatespan(position, null);
 	}
 
-	public datespan getDatespan(int position, Field field) throws SQLException {
+	private datespan getDatespan(int position, Field field) throws SQLException {
 		return new datespan(getInteger(position, field));
 	}
 
@@ -141,7 +141,7 @@ public class Cursor {
 		return getDecimal(position, null);
 	}
 
-	public decimal getDecimal(int position, Field field) throws SQLException {
+	private decimal getDecimal(int position, Field field) throws SQLException {
 		BigDecimal value = resultSet.getBigDecimal(position);
 		boolean wasNull = value == null || wasNull();
 		if(field != null)
@@ -153,7 +153,7 @@ public class Cursor {
 		return getBinary(position, null);
 	}
 
-	public binary getBinary(int position, Field field) throws SQLException {
+	private binary getBinary(int position, Field field) throws SQLException {
 		InputStream value = resultSet.getBinaryStream(position);
 		boolean wasNull = value == null || wasNull();
 		if(field != null)

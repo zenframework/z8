@@ -19,7 +19,7 @@ import org.zenframework.z8.server.types.guid;
 
 
 public class SystemTools extends Desktop {
-	static public guid Id = new guid("00000000-0000-0000-0000-000000000001");
+	static public guid Id = new guid("C186F658-C326-4620-BA53-402E9A4871D9");
 
 	static public String ClassName = SystemTools.class.getCanonicalName();
 

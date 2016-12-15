@@ -1,4 +1,3 @@
-import org.zenframework.z8.base.query.Query;
 import org.zenframework.z8.base.table.SortDirection;
 import org.zenframework.z8.base.form.Control;
 import org.zenframework.z8.base.table.Sequencer;
@@ -19,8 +18,6 @@ class Field extends Control {
 
 	public SortDirection sortDirection = SortDirection.Asc;
 	public Aggregation aggregation = Aggregation.None;
-
-	public Query source;
 
 	public FieldType getType();
 	public string getTypeName();

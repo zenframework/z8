@@ -5,7 +5,6 @@ import org.zenframework.z8.server.base.table.value.IntegerField;
 import org.zenframework.z8.server.engine.ApplicationServer;
 import org.zenframework.z8.server.resources.Resources;
 import org.zenframework.z8.server.runtime.IObject;
-import org.zenframework.z8.server.security.Role;
 import org.zenframework.z8.server.types.bool;
 import org.zenframework.z8.server.types.integer;
 
@@ -58,7 +57,7 @@ public class Sequences extends Table {
 		value.setIndex("value");
 		value.setDisplayName(displayNames.Value);
 
-		readOnly.set(ApplicationServer.getUser().role() != Role.Administrator);
+		readOnly.set(!ApplicationServer.getUser().isAdministrator());
 
 		registerDataField(value);
 

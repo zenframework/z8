@@ -55,8 +55,6 @@ abstract public class Field extends Control implements IValue, IField {
 	public bool indexed = null;
 	public bool unique = null;
 
-	public Query.CLASS<? extends Query> source = null;
-
 	private primary value = null;
 	private primary originalValue = null;
 	private boolean changed = false;
@@ -272,8 +270,6 @@ abstract public class Field extends Control implements IValue, IField {
 	@Override
 	@SuppressWarnings("unchecked")
 	public void writeMeta(JsonWriter writer, Query query) {
-		super.writeMeta(writer, query);
-
 		writer.writeProperty(Json.serverType, type().toString());
 		writer.writeProperty(Json.visible, visible, new bool(true));
 		writer.writeProperty(Json.format, format, new string());
@@ -287,7 +283,10 @@ abstract public class Field extends Control implements IValue, IField {
 		boolean readOnly = false;
 		boolean required = false;
 
-		if(path != null && !path.isEmpty()) {
+		if(path == null)
+			path = query.getPath(this);
+
+		if(!path.isEmpty()) {
 			ILink link = path.iterator().next();
 			Field linkField = (Field)link;
 
@@ -314,12 +313,7 @@ abstract public class Field extends Control implements IValue, IField {
 		writer.writeProperty(Json.required, required);
 		writer.writeProperty(Json.readOnly, readOnly);
 
-		if(source != null) {
-			writer.startObject(Json.source);
-			writer.writeProperty(Json.id, source.classId());
-			writer.writeProperty(Json.text, source.displayName());
-			writer.finishObject();
-		}
+		super.writeMeta(writer, query);
 	}
 
 	public void setWriteNulls(boolean writeNulls) {

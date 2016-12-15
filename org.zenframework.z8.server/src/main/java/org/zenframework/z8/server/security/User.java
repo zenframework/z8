@@ -6,18 +6,20 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
 import org.zenframework.z8.server.base.table.system.SystemTools;
 import org.zenframework.z8.server.base.table.system.UserEntries;
+import org.zenframework.z8.server.base.table.system.UserRoles;
 import org.zenframework.z8.server.base.table.system.Users;
 import org.zenframework.z8.server.base.table.value.Field;
 import org.zenframework.z8.server.config.ServerConfig;
 import org.zenframework.z8.server.db.ConnectionManager;
 import org.zenframework.z8.server.db.sql.SqlToken;
-import org.zenframework.z8.server.db.sql.expressions.And;
 import org.zenframework.z8.server.db.sql.expressions.Equ;
 import org.zenframework.z8.server.db.sql.functions.string.EqualsIgnoreCase;
 import org.zenframework.z8.server.engine.Database;
@@ -39,7 +41,7 @@ public class User implements IUser {
 
 	private String name;
 	private String password;
-	private Role role = Role.User;
+	private Collection<guid> roles = new HashSet<guid>(Arrays.asList(Role.User.guid()));
 
 	private String description;
 	private String phone;
@@ -72,7 +74,7 @@ public class User implements IUser {
 		system.settings = "";
 		system.phone = "";
 		system.email = "";
-		system.role = Role.Administrator;
+		system.roles = new HashSet<guid>(Arrays.asList(Role.Administrator.guid()));
 
 		system.addSystemTools();
 
@@ -98,8 +100,13 @@ public class User implements IUser {
 	}
 
 	@Override
-	public Role role() {
-		return role;
+	public Collection<guid> roles() {
+		return roles;
+	}
+
+	@Override
+	public boolean isAdministrator() {
+		return roles.contains(Role.Administrator.guid());
 	}
 
 	@Override
@@ -160,9 +167,10 @@ public class User implements IUser {
 		else
 			user.readInfo((guid)loginOrId);
 
+		user.readRoles();
 		user.readComponents();
 
-		if(user.role == Role.Administrator)
+		if(user.isAdministrator())
 			user.addSystemTools();
 
 		ConnectionManager.release();
@@ -209,7 +217,6 @@ public class User implements IUser {
 		fields.add(users.settings.get());
 		fields.add(users.phone.get());
 		fields.add(users.email.get());
-		fields.add(users.role.get());
 
 		users.read(fields, where);
 
@@ -220,7 +227,6 @@ public class User implements IUser {
 			this.settings = users.settings.get().string().get();
 			this.phone = users.phone.get().string().get();
 			this.email = users.email.get().string().get();
-			this.role = Role.fromGuid(users.role.get().guid());
 		} else {
 			throw new AccessDeniedException();
 		}
@@ -235,29 +241,41 @@ public class User implements IUser {
 		}
 	}
 
+	private void readRoles() {
+		UserRoles userRoles = new UserRoles.CLASS<UserRoles>().get();
+
+		Field user = userRoles.user.get();
+		Field role = userRoles.role.get();
+
+		Collection<Field> fields = Arrays.asList(role);
+		SqlToken where = new Equ(user, id);
+
+		userRoles.read(fields, where);
+
+		while(userRoles.next())
+			roles.add(role.guid());
+	}
+
 	private void readComponents() {
 		UserEntries userEntries = new UserEntries.CLASS<UserEntries>().get();
 
-		Collection<Field> fields = new ArrayList<Field>();
-		fields.add(userEntries.entries.get().id.get());
-		fields.add(userEntries.entries.get().name.get());
+		Field entryId = userEntries.entries.get().id.get();
+		Field entryName = userEntries.entries.get().name.get();
 
-		Collection<Field> sortFields = new ArrayList<Field>();
-		sortFields.add(userEntries.position.get());
+		Collection<Field> fields = Arrays.asList(entryId, entryName);
 
-		SqlToken first = new Equ(userEntries.user.get(), userEntries.users.get().recordId.get());
-		SqlToken second = new Equ(userEntries.entry.get(), userEntries.entries.get().recordId.get());
-		SqlToken third = new EqualsIgnoreCase(userEntries.users.get().name.get(), name());
+		Field position = userEntries.position.get();
+		Collection<Field> sortFields = Arrays.asList(position);
 
-		SqlToken where = new And(new And(first, second), third);
+		SqlToken where = new Equ(userEntries.user.get(), id);
 
 		userEntries.read(fields, sortFields, where);
 
 		List<Component> components = new ArrayList<Component>();
 
 		while(userEntries.next()) {
-			String className = userEntries.entries.get().id.get().string().get();
-			String title = userEntries.entries.get().name.get().string().get();
+			String className = entryId.string().get();
+			String title = entryName.string().get();
 			components.add(new Component(null, className, title));
 		}
 
@@ -302,8 +320,6 @@ public class User implements IUser {
 		RmiIO.writeString(objects, name);
 		RmiIO.writeString(objects, password);
 
-		RmiIO.writeGuid(objects, role.guid());
-
 		RmiIO.writeString(objects, description);
 		RmiIO.writeString(objects, phone);
 		RmiIO.writeString(objects, email);
@@ -312,6 +328,7 @@ public class User implements IUser {
 
 		RmiIO.writeString(objects, settings);
 
+		objects.writeObject(roles);
 		objects.writeObject(components);
 		objects.writeObject(parameters);
 
@@ -333,7 +350,6 @@ public class User implements IUser {
 
 		name = RmiIO.readString(objects);
 		password = RmiIO.readString(objects);
-		role = Role.fromGuid(RmiIO.readGuid(objects));
 
 		description = RmiIO.readString(objects);
 		phone = RmiIO.readString(objects);
@@ -343,6 +359,7 @@ public class User implements IUser {
 
 		settings = RmiIO.readString(objects);
 
+		roles = (Collection)objects.readObject();
 		components = (Collection)objects.readObject();
 		parameters = (RLinkedHashMap)objects.readObject();
 

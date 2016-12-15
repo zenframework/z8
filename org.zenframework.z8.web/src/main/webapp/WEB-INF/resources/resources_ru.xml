@@ -70,15 +70,6 @@
 	<entry key="TransportQueue.processed">Обработано</entry>
 	<entry key="TransportQueue.bytesTransferred">Bytes sent</entry>
 
-	<!-- Transport routes -->
-	<entry key="TransportRoutes.title">Маршруты</entry>
-	<entry key="TransportRoutes.domain">Домен</entry>
-	<entry key="TransportRoutes.priority">Приоритет</entry>
-	<entry key="TransportRoutes.protocol">Протокол</entry>
-	<entry key="TransportRoutes.address">Адрес</entry>
-	<entry key="TransportRoutes.active">Активен</entry>
-	<entry key="TransportRoutes.error">Ошибка</entry>
-
 	<!-- Tables -->
 	<entry key="Tables.title">Таблицы</entry>
 	<entry key="Tables.name">DB name</entry>
@@ -89,6 +80,9 @@
 	<entry key="Fields.displayName">Заголовок</entry>
 	<entry key="Fields.type">Тип данных</entry>
 	<entry key="Fields.position">#</entry>
+
+	<!-- UserRoles -->
+	<entry key="UserRoles.title">Роли пользователя</entry>
 
 	<!-- RoleTableAccess -->
 	<entry key="RoleTableAccess.title">Таблицы</entry>

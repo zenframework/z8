@@ -5,7 +5,6 @@ import java.util.LinkedHashMap;
 import org.zenframework.z8.server.base.table.Table;
 import org.zenframework.z8.server.base.table.value.BoolField;
 import org.zenframework.z8.server.base.table.value.IField;
-import org.zenframework.z8.server.base.table.value.Link;
 import org.zenframework.z8.server.base.table.value.StringField;
 import org.zenframework.z8.server.base.table.value.TextField;
 import org.zenframework.z8.server.crypto.MD5;
@@ -16,7 +15,6 @@ import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.runtime.RLinkedHashMap;
 import org.zenframework.z8.server.security.BuiltinUsers;
 import org.zenframework.z8.server.security.IUser;
-import org.zenframework.z8.server.security.Role;
 import org.zenframework.z8.server.types.bool;
 import org.zenframework.z8.server.types.exception;
 import org.zenframework.z8.server.types.guid;
@@ -34,7 +32,6 @@ public class Users extends Table {
 
 	static public class names {
 		public final static String Password = "Password";
-		public final static String Role = "Role";
 		public final static String Blocked = "Blocked";
 		public final static String Phone = "Phone";
 		public final static String Email = "Email";
@@ -45,7 +42,6 @@ public class Users extends Table {
 		public final static String Title = "Users.title";
 		public final static String Name = "Users.name";
 		public final static String Description = "Users.description";
-		public final static String Role = "Users.role";
 		public final static String Blocked = "Users.blocked";
 		public final static String Phone = "Users.phone";
 		public final static String Email = "Users.email";
@@ -56,7 +52,6 @@ public class Users extends Table {
 
 	static public class displayNames {
 		public final static String Name = Resources.get(strings.Name);
-		public final static String Role = Resources.get(strings.Role);
 		public final static String Blocked = Resources.get(strings.Blocked);
 		public final static String Phone = Resources.get(strings.Phone);
 		public final static String Email = Resources.get(strings.Email);
@@ -95,10 +90,6 @@ public class Users extends Table {
 		return (Users)Runtime.instance().getTableByName(Users.TableName).newInstance();
 	}
 
-	public Roles.CLASS<Roles> roles = new Roles.CLASS<Roles>(this);
-
-	public Link.CLASS<Link> role = new Link.CLASS<Link>(this);
-
 	public StringField.CLASS<StringField> password = new StringField.CLASS<StringField>(this);
 	public StringField.CLASS<StringField> phone = new StringField.CLASS<StringField>(this);
 	public StringField.CLASS<StringField> email = new StringField.CLASS<StringField>(this);
@@ -117,8 +108,6 @@ public class Users extends Table {
 	public void constructor2() {
 		super.constructor2();
 
-		roles.setIndex("roles");
-
 		name.setDisplayName(displayNames.Name);
 		name.setGendb_updatable(false);
 		name.get().length = new integer(IAuthorityCenter.MaxLoginLength);
@@ -132,12 +121,6 @@ public class Users extends Table {
 		password.get().setDefault(new string(defaultPassword));
 
 		description.setDisplayName(displayNames.Description);
-
-		role.setName(names.Role);
-		role.setIndex("role");
-		role.setDisplayName(displayNames.Role);
-		role.get().setDefault(Role.User.guid());
-		role.get().operatorAssign(roles);
 
 		phone.setName(names.Phone);
 		phone.setIndex("phone");
@@ -157,14 +140,11 @@ public class Users extends Table {
 		settings.setIndex("settings");
 		settings.setDisplayName(displayNames.Settings);
 
-		registerDataField(role);
 		registerDataField(password);
 		registerDataField(phone);
 		registerDataField(email);
 		registerDataField(blocked);
 		registerDataField(settings);
-
-		queries.add(roles);
 	}
 
 	@Override
@@ -173,14 +153,12 @@ public class Users extends Table {
 			LinkedHashMap<IField, primary> record = new LinkedHashMap<IField, primary>();
 			record.put(name.get(), new string(displayNames.SystemName));
 			record.put(description.get(), new string(displayNames.SystemDescription));
-			record.put(role.get(), Role.Administrator.guid());
 			addRecord(BuiltinUsers.System.guid(), record);
 		}
 		{
 			LinkedHashMap<IField, primary> record = new LinkedHashMap<IField, primary>();
 			record.put(name.get(), new string(displayNames.AdministratorName));
 			record.put(description.get(), new string(displayNames.AdministratorDescription));
-			record.put(role.get(), Role.Administrator.guid());
 			addRecord(BuiltinUsers.Administrator.guid(), record);
 		}
 	}
@@ -203,9 +181,10 @@ public class Users extends Table {
 	@Override
 	public void beforeUpdate(guid recordId) {
 		super.beforeUpdate(recordId);
-
+/*
 		if((BuiltinUsers.Administrator.guid().equals(recordId) || BuiltinUsers.System.guid().equals(recordId)) && role.get().changed())
 			throw new exception("Unable to change the security group of the builtin user.");
+*/
 	}
 
 	@Override

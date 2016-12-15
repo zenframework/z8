@@ -57,6 +57,8 @@ public class Control extends OBJECT {
 	public GuidField.CLASS<? extends GuidField> dependsOn = null;
 	public RCollection<Control.CLASS<? extends Control>> dependencies = new RCollection<Control.CLASS<? extends Control>>();
 
+	public Query.CLASS<? extends Query> source = null;
+
 	public boolean readOnly() {
 		return readOnly != null ? readOnly.get() : false;
 	}
@@ -70,6 +72,13 @@ public class Control extends OBJECT {
 
 		writer.writeProperty(Json.rowspan, rowspan, new integer(1));
 		writer.writeProperty(Json.colspan, colspan, new integer(1));
+
+		if(source != null) {
+			writer.startObject(Json.source);
+			writer.writeProperty(Json.id, source.classId());
+			writer.writeProperty(Json.text, source.displayName());
+			writer.finishObject();
+		}
 
 		writeDependencies(writer);
 	}

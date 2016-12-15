@@ -4,76 +4,71 @@ import java.util.LinkedHashMap;
 
 import org.zenframework.z8.server.base.table.Table;
 import org.zenframework.z8.server.base.table.value.IField;
-import org.zenframework.z8.server.base.table.value.IntegerField;
 import org.zenframework.z8.server.base.table.value.Link;
 import org.zenframework.z8.server.engine.ApplicationServer;
 import org.zenframework.z8.server.resources.Resources;
 import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.security.BuiltinUsers;
+import org.zenframework.z8.server.security.Role;
 import org.zenframework.z8.server.types.exception;
 import org.zenframework.z8.server.types.guid;
 import org.zenframework.z8.server.types.primary;
 
-public class UserEntries extends Table {
-	final static public String TableName = "SystemUserEntries";
+public class UserRoles extends Table {
+	final static public String TableName = "SystemUserRoles";
 
-	final static public guid System = new guid("4A50E864-CFD0-4439-88E9-E4AC2A9B08A5");
-	final static public guid Administrator = new guid("D53F3EBE-4D11-4ACE-99D7-07608B68B6C2");
+	final static public guid System = new guid("DAD7CCDE-51D8-4B24-884D-3F7C2C13F9EC");
+	final static public guid Administrator = new guid("8D05DB1E-1A17-4E19-949C-F2894920261E");
 
 	static public class names {
-		public final static String User = "UserId";
-		public final static String Entry = "EntryId";
-		public final static String Position = "Position";
+		public final static String User = "User";
+		public final static String Role = "Role";
 	}
 
 	static public class strings {
-		public final static String Title = "UserEntries.title";
-		public final static String Position = "UserEntries.position";
+		public final static String Title = "UserRoles.title";
 	}
 
 	static public class displayNames {
 		public final static String Title = Resources.get(strings.Title);
-		public final static String Position = Resources.get(strings.Position);
 	}
 
-	public static class CLASS<T extends UserEntries> extends Table.CLASS<T> {
+	public static class CLASS<T extends UserRoles> extends Table.CLASS<T> {
 		public CLASS() {
 			this(null);
 		}
 
 		public CLASS(IObject container) {
 			super(container);
-			setJavaClass(UserEntries.class);
+			setJavaClass(UserRoles.class);
 			setName(TableName);
 			setDisplayName(displayNames.Title);
 		}
 
 		@Override
 		public Object newObject(IObject container) {
-			return new UserEntries(container);
+			return new UserRoles(container);
 		}
 	}
 
 	public Users.CLASS<Users> users = new Users.CLASS<Users>(this);
-	public Entries.CLASS<Entries> entries = new Entries.CLASS<Entries>(this);
+	public Roles.CLASS<Roles> roles = new Roles.CLASS<Roles>(this);
 
 	public Link.CLASS<Link> user = new Link.CLASS<Link>(this);
-	public Link.CLASS<Link> entry = new Link.CLASS<Link>(this);
+	public Link.CLASS<Link> role = new Link.CLASS<Link>(this);
 
-	public IntegerField.CLASS<? extends IntegerField> position = new IntegerField.CLASS<IntegerField>(this);
-
-	public UserEntries() {
+	public UserRoles() {
 		this(null);
 	}
 
-	public UserEntries(IObject container) {
+	public UserRoles(IObject container) {
 		super(container);
 	}
 
 	@Override
 	public void constructor1() {
 		user.get(CLASS.Constructor1).operatorAssign(users);
-		entry.get(CLASS.Constructor1).operatorAssign(entries);
+		role.get(CLASS.Constructor1).operatorAssign(roles);
 	}
 
 	@Override
@@ -81,26 +76,21 @@ public class UserEntries extends Table {
 		super.constructor2();
 
 		users.setIndex("users");
-		entries.setIndex("entries");
+		roles.setIndex("roles");
 
 		user.setName(names.User);
 		user.setIndex("user");
 
-		entry.setName(names.Entry);
-		entry.setIndex("entry");
-
-		position.setName(names.Position);
-		position.setIndex("position");
-		position.setDisplayName(displayNames.Position);
+		role.setName(names.Role);
+		role.setIndex("role");
 
 		readOnly.set(!ApplicationServer.getUser().isAdministrator());
 
 		registerDataField(user);
-		registerDataField(entry);
-		registerDataField(position);
+		registerDataField(role);
 
 		queries.add(users);
-		queries.add(entries);
+		queries.add(roles);
 	}
 
 	@Override
@@ -108,14 +98,14 @@ public class UserEntries extends Table {
 		{
 			LinkedHashMap<IField, primary> record = new LinkedHashMap<IField, primary>();
 			record.put(user.get(), BuiltinUsers.Administrator.guid());
-			record.put(entry.get(), SystemTools.Id);
+			record.put(role.get(), Role.Administrator.guid());
 			addRecord(Administrator, record);
 		}
 
 		{
 			LinkedHashMap<IField, primary> record = new LinkedHashMap<IField, primary>();
 			record.put(user.get(), BuiltinUsers.System.guid());
-			record.put(entry.get(), SystemTools.Id);
+			record.put(role.get(), Role.Administrator.guid());
 			addRecord(System, record);
 		}
 	}
@@ -125,6 +115,6 @@ public class UserEntries extends Table {
 		super.beforeDestroy(recordId);
 
 		if(recordId.equals(Administrator) || recordId.equals(System))
-			throw new exception("Builtin user's entrypoints can not be removed.");
+			throw new exception("Builtin user's roles can not be removed.");
 	}
 }

@@ -1,11 +1,13 @@
 package org.zenframework.z8.server.base.table.system.view;
 
 import org.zenframework.z8.server.base.form.Listbox;
+import org.zenframework.z8.server.base.query.Query;
+import org.zenframework.z8.server.base.table.system.Roles;
 import org.zenframework.z8.server.base.table.system.UserEntries;
+import org.zenframework.z8.server.base.table.system.UserRoles;
 import org.zenframework.z8.server.base.table.system.Users;
 import org.zenframework.z8.server.engine.ApplicationServer;
 import org.zenframework.z8.server.runtime.IObject;
-import org.zenframework.z8.server.security.Role;
 import org.zenframework.z8.server.types.integer;
 
 public class UsersView extends Users {
@@ -22,71 +24,60 @@ public class UsersView extends Users {
 	}
 
 	public Listbox.CLASS<Listbox> entries = new Listbox.CLASS<Listbox>(this);
+	public Listbox.CLASS<Listbox> roles = new Listbox.CLASS<Listbox>(this);
 
 	public UsersView(IObject container) {
 		super(container);
 	}
 
-	public static class __UserEntries extends UserEntries {
-		public static class CLASS<T extends UsersView.__UserEntries> extends UserEntries.CLASS<T> {
-			public CLASS(IObject container) {
-				super(container);
-				setJavaClass(UsersView.__UserEntries.class);
-			}
-
-			public Object newObject(IObject container) {
-				return new UsersView.__UserEntries(container);
-			}
-		}
-
-		public __UserEntries(IObject container) {
-			super(container);
-		}
-
-		public void constructor2() {
-			super.constructor2();
-			registerFormField(entries.get().name);
-			registerFormField(entries.get().id);
-
-			gridFields.add(entries.get().name);
-			gridFields.add(entries.get().id);
-
-			sortFields.add(position);
-		}
-	};
-
 	@Override
+	@SuppressWarnings("unchecked")
 	public void constructor2() {
 		super.constructor2();
 
 		columns = new integer(6);
 
-		boolean administrator = ApplicationServer.getUser().role() == Role.Administrator;
-		readOnly.set(!administrator);
+		readOnly.set(!ApplicationServer.getUser().isAdministrator());
 
 		entries.setIndex("entries");
 		entries.setDisplayName(UserEntries.displayNames.Title);
 
-		__UserEntries.CLASS<__UserEntries> userEntries = new __UserEntries.CLASS<__UserEntries>(this);
+		roles.setIndex("roles");
+		roles.setDisplayName(UserRoles.displayNames.Title);
 
-		entries.get().query = userEntries;
-		entries.get().link = userEntries.get().user;
+		UserEntries userEntries = new UserEntries.CLASS<UserEntries>(this).get();
+
+		entries.get().query = (Query.CLASS<Query>)userEntries.getCLASS();
+		entries.get().link = userEntries.user;
+
+		userEntries.gridFields.add(userEntries.entries.get().name);
+		userEntries.gridFields.add(userEntries.entries.get().id);
+		userEntries.sortFields.add(userEntries.position);
+
+		UserRoles userRoles = new UserRoles.CLASS<UserRoles>(this).get();
+
+		roles.get().query = (Query.CLASS<Query>)userRoles.getCLASS();
+		roles.get().link = userRoles.user;
+		roles.get().source = new Roles.CLASS<Roles>(this);
+
+		userRoles.gridFields.add(userRoles.roles.get().name);
 
 		name.get().colspan = new integer(4);
-		roles.get().name.get().colspan = new integer(4);
 		phone.get().colspan = new integer(4);
 		email.get().colspan = new integer(4);
 		blocked.get().colspan = new integer(4);
 		description.get().colspan = new integer(6);
 
 		entries.get().colspan = new integer(6);
+		roles.get().colspan = new integer(6);
+		roles.get().height = new integer(200);
 
 		registerFormField(name);
-		registerFormField(roles.get().name);
 		registerFormField(phone);
 		registerFormField(email);
 		registerFormField(blocked);
 		registerFormField(description);
+		registerFormField(roles);
 		registerFormField(entries);
 
 		sortFields.add(name);

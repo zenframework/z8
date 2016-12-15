@@ -29,7 +29,8 @@ public interface IUser extends RmiSerializable, Serializable {
 
 	public void setSettings(String settings);
 
-	public Role role();
+	public Collection<guid> roles();
+	public boolean isAdministrator();
 
 	public Collection<Component> components();
 
