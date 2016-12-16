@@ -11,7 +11,6 @@ import org.zenframework.z8.server.db.ConnectionManager;
 import org.zenframework.z8.server.db.DatabaseVendor;
 import org.zenframework.z8.server.db.Statement;
 import org.zenframework.z8.server.engine.Database;
-import org.zenframework.z8.server.logs.Trace;
 import org.zenframework.z8.server.types.primary;
 
 public class Insert extends Statement {
@@ -48,18 +47,15 @@ public class Insert extends Statement {
 		return "insert into " + database.tableName(query.getRootQuery().name()) + " " + "(" + insertFields + ") values (" + insertValues + ")";
 	}
 
-	public void execute() throws SQLException {
+	public void execute() {
 		try {
 			prepare(sql);
 			executeUpdate();
 		} catch(Throwable e) {
-			Trace.logError(e);
-
 			System.out.println(sql());
 
 			for(Field field : fields)
 				System.out.println(field.name() + ": " + field.getDefault());
-
 
 			throw new RuntimeException(e);
 		} finally {
@@ -75,7 +71,7 @@ public class Insert extends Statement {
 
 		for(Field field : fields) {
 			primary value = field.getDefault();
-			setParameter(position, field.type(), value);
+			set(position, field.type(), value);
 			position++;
 		}
 	}

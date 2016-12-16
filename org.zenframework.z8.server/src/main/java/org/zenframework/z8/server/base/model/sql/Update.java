@@ -87,13 +87,13 @@ public class Update extends Statement {
 		for(Field field : fields) {
 			if(!field.isPrimaryKey()) {
 				primary value = field.getDefaultValue();
-				setParameter(position, field.type(), value);
+				set(position, field.type(), value);
 				position++;
 			}
 		}
 
 		if(recordId != null)
-			setParameter(position, FieldType.Guid, recordId);
+			set(position, FieldType.Guid, recordId);
 	}
 
 	public int execute() {

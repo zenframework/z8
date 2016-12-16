@@ -1,7 +1,5 @@
 package org.zenframework.z8.server.db;
 
-import org.zenframework.z8.server.exceptions.db.UnknownDataTypeException;
-
 import java.sql.Types;
 
 public enum FieldType {
@@ -47,45 +45,43 @@ public enum FieldType {
 	}
 
 	static public FieldType fromString(String string) {
-		if(DataTypes.None.equals(string)) {
+		if(DataTypes.None.equals(string))
 			return FieldType.None;
-		} else if(DataTypes.Guid.equals(string)) {
+		else if(DataTypes.Guid.equals(string))
 			return FieldType.Guid;
-		} else if(DataTypes.Boolean.equals(string)) {
+		else if(DataTypes.Boolean.equals(string))
 			return FieldType.Boolean;
-		} else if(DataTypes.Integer.equals(string)) {
+		else if(DataTypes.Integer.equals(string))
 			return FieldType.Integer;
-		} else if(DataTypes.String.equals(string)) {
+		else if(DataTypes.String.equals(string))
 			return FieldType.String;
-		} else if(DataTypes.Date.equals(string)) {
+		else if(DataTypes.Date.equals(string))
 			return FieldType.Date;
-		} else if(DataTypes.DateTime.equals(string)) {
+		else if(DataTypes.DateTime.equals(string))
 			return FieldType.Datetime;
-		} else if(DataTypes.DateSpan.equals(string)) {
+		else if(DataTypes.DateSpan.equals(string))
 			return FieldType.Datespan;
-		} else if(DataTypes.Decimal.equals(string)) {
+		else if(DataTypes.Decimal.equals(string))
 			return FieldType.Decimal;
-		} else if(DataTypes.Binary.equals(string)) {
+		else if(DataTypes.Binary.equals(string))
 			return FieldType.Binary;
-		} else if(DataTypes.Text.equals(string)) {
+		else if(DataTypes.Text.equals(string))
 			return FieldType.Text;
-		} else if(DataTypes.File.equals(string)) {
+		else if(DataTypes.File.equals(string))
 			return FieldType.File;
-		} else if(DataTypes.Null.equals(string)) {
+		else if(DataTypes.Null.equals(string))
 			return FieldType.Null;
-		} else {
+		else
 			throw new RuntimeException("Unknown data type: '" + string + "'");
-		}
 	}
 
 	static public FieldType fromExcel(String type) {
-		if(type.equalsIgnoreCase("VARCHAR") || type.equalsIgnoreCase("TEXT")) {
+		if(type.equalsIgnoreCase("VARCHAR") || type.equalsIgnoreCase("TEXT"))
 			return FieldType.String;
-		} else if(type.equalsIgnoreCase("NUMBER") || type.equalsIgnoreCase("CURRENCY")) {
+		else if(type.equalsIgnoreCase("NUMBER") || type.equalsIgnoreCase("CURRENCY"))
 			return FieldType.Decimal;
-		} else if(type.equalsIgnoreCase("DATETIME")) {
+		else if(type.equalsIgnoreCase("DATETIME"))
 			return FieldType.Datetime;
-		}
 
 		return FieldType.String;
 	}
@@ -112,66 +108,71 @@ public enum FieldType {
 		case Binary:
 			return Types.LONGVARBINARY;
 		default:
-			throw new UnknownDataTypeException(this);
+			throw new RuntimeException("Unknown data type: '" + toString() + "'");
 		}
 	}
 
 	public String vendorType(DatabaseVendor vendor) {
-		if(this == Guid) {
-			if(vendor == DatabaseVendor.Oracle)
-				return "RAW";
-			else if(vendor == DatabaseVendor.SqlServer)
-				return "UNIQUEIDENTIFIER";
-			else if(vendor == DatabaseVendor.Postgres)
-				return "uuid";
-		} else if(this == Boolean) {
-			if(vendor == DatabaseVendor.Oracle)
-				return "NUMBER";
-			else if(vendor == DatabaseVendor.SqlServer)
-				return "TINYINT";
-			else if(vendor == DatabaseVendor.Postgres)
-				return "smallint";
-		} else if(this == Datespan || this == Integer) {
-			if(vendor == DatabaseVendor.Oracle)
-				return "NUMBER";
-			else if(vendor == DatabaseVendor.SqlServer)
-				return "BIGINT";
-			else if(vendor == DatabaseVendor.Postgres)
-				return "bigint";
-		} else if(this == String) {
-			if(vendor == DatabaseVendor.Oracle)
-				return "NVARCHAR2";
-			else if(vendor == DatabaseVendor.SqlServer)
-				return "NVARCHAR";
-			else if(vendor == DatabaseVendor.Postgres)
-				return "character varying";
-		} else if(this == Date || this == Datetime) {
-			if(vendor == DatabaseVendor.Oracle)
-				return "DATE";
-			else if(vendor == DatabaseVendor.SqlServer)
-				return "DATETIME";
-			else if(vendor == DatabaseVendor.Postgres)
-				return "timestamp with time zone";
-		} else if(this == Decimal) {
-			if(vendor == DatabaseVendor.Oracle)
-				return "NUMBER";
-			else if(vendor == DatabaseVendor.SqlServer)
-				return "NUMERIC";
-			else if(vendor == DatabaseVendor.Postgres)
-				return "numeric";
-		} else if(this == Text || this == Binary) {
-			if(vendor == DatabaseVendor.Oracle)
-				return "BLOB";
-			else if(vendor == DatabaseVendor.SqlServer)
-				return "VARBINARY";
-			else if(vendor == DatabaseVendor.Postgres)
-				return "bytea";
-		} else if(this == File) {
-			if(vendor == DatabaseVendor.Postgres)
-				return "bytea";
-			throw new UnknownDataTypeException(this);
+		switch(this) {
+		case Binary:
+		case Text:
+			switch(vendor) {
+			case Oracle: return "BLOB";
+			case SqlServer: return "VARBINARY";
+			case Postgres: return "bytea";
+			default: throw new RuntimeException("Unknown data type: '" + toString() + "'");
+			}
+		case Boolean:
+			switch(vendor) {
+			case Oracle: return "NUMBER";
+			case SqlServer: return "TINYINT";
+			case Postgres: return "smallint";
+			default: throw new RuntimeException("Unknown data type: '" + toString() + "'");
+			}
+		case Date:
+		case Datetime:
+			switch(vendor) {
+			case Oracle: return "DATE";
+			case SqlServer: return "DATETIME";
+			case Postgres: return "timestamp with time zone";
+			default: throw new RuntimeException("Unknown data type: '" + toString() + "'");
+			}
+		case Datespan:
+		case Integer:
+			switch(vendor) {
+			case Oracle: return "NUMBER";
+			case SqlServer: return "BIGINT";
+			case Postgres: return "bigint";
+			default: throw new RuntimeException("Unknown data type: '" + toString() + "'");
+			}
+		case Decimal:
+			switch(vendor) {
+			case Oracle: return "NUMBER";
+			case SqlServer: return "NUMERIC";
+			case Postgres: return "numeric";
+			default: throw new RuntimeException("Unknown data type: '" + toString() + "'");
+			}
+		case File:
+			switch(vendor) {
+			case Postgres: return "bytea";
+			default: throw new RuntimeException("Unknown data type: '" + toString() + "'");
+			}
+		case Guid:
+			switch(vendor) {
+			case Oracle: return "RAW";
+			case SqlServer: return "UNIQUEIDENTIFIER";
+			case Postgres: return "uuid";
+			default: throw new RuntimeException("Unknown data type: '" + toString() + "'");
+			}
+		case String:
+			switch(vendor) {
+			case Oracle: return "NVARCHAR2";
+			case SqlServer: return "NVARCHAR";
+			case Postgres: return "character varying";
+			default: throw new RuntimeException("Unknown data type: '" + toString() + "'");
+			}
+		default: 
+			throw new RuntimeException("Unknown data type: '" + toString() + "'");
 		}
-
-		throw new UnknownDataTypeException(this);
 	}
 }

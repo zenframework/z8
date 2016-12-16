@@ -30,11 +30,6 @@ public class TreeTable extends Table {
 		public final static String Parent6 = "Parent6";
 	}
 
-	static public class strings {
-		public final static String ParentId = "TreeTable.parentId";
-		public final static String Path = "TreeTable.path";
-	}
-
 	public static class CLASS<T extends TreeTable> extends Table.CLASS<T> {
 		public CLASS(IObject container) {
 			super(container);
@@ -73,7 +68,6 @@ public class TreeTable extends Table {
 
 		parentId.setName(names.ParentId);
 		parentId.setIndex("parentId");
-		parentId.setDisplayName(strings.ParentId);
 		parentId.setSystem(true);
 		parentId.setAttribute(ParentKey, "");
 		parentId.get().indexed = new bool(true);
@@ -81,7 +75,6 @@ public class TreeTable extends Table {
 		path.setName(names.Path);
 		path.setIndex("path");
 		path.setSystem(true);
-		path.setDisplayName(strings.Path);
 		path.get().length = new integer(1000);
 
 		root.setName(names.Root);

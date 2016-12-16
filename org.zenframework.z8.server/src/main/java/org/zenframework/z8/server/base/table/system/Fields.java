@@ -22,14 +22,12 @@ public class Fields extends Table {
 		public final static String Title = "Fields.title";
 		public final static String DisplayName = "Fields.displayName";
 		public final static String Type = "Fields.type";
-		public final static String Position = "Fields.position";
 	}
 
 	static public class displayNames {
 		public final static String Title = Resources.get(strings.Title);
 		public final static String DisplayName = Resources.get(strings.DisplayName);
 		public final static String Type = Resources.get(strings.Type);
-		public final static String Position = Resources.get(strings.Position);
 	}
 
 	public Tables.CLASS<Tables> tables = new Tables.CLASS<Tables>(this);
@@ -85,7 +83,6 @@ public class Fields extends Table {
 		type.get().length = new integer(50);
 
 		position.setName(names.Position);
-		position.setDisplayName(displayNames.Position);
 		position.setIndex("position");
 
 		registerDataField(table);

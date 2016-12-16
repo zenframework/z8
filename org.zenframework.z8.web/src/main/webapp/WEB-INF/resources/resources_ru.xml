@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
 <properties>
-	<comment>Файл ресурсов общей библиотеки для русского языка</comment>
+	<comment></comment>
 
 	<!-- bool -->
 	<entry key="bool.true">да</entry>
@@ -11,7 +11,7 @@
 	<entry key="Field.readException">Ошибка чтения поля {0}</entry>
 
 	<!-- Query -->
-	<entry key="Query.readError">Ошибка чтения базы данных. Обновите данные и повторите операцию.</entry>
+	<entry key="Query.readError">Ошибка чтения базы данных</entry>
 
 	<!-- Table -->
 	<entry key="Table.recordId">UID</entry>
@@ -28,10 +28,6 @@
 	<entry key="Table.locked">Заблокирована</entry>
 	<entry key="Table.attachments">Файлы</entry>
 	<entry key="Table.users">Пользователи</entry>
-
-	<!-- TreeTable -->
-	<entry key="TreeTable.parentId">parent id</entry>
-	<entry key="TreeTable.path">path</entry>
 
 	<!-- Users -->
 	<entry key="Users.title">Пользователи</entry>
@@ -50,7 +46,7 @@
 	<entry key="Domains.title">Домены</entry>
 	<entry key="Domains.id">Id</entry>
 	<entry key="Domains.user">Системный пользователь</entry>
-	<entry key="Domains.userDescription">Системный пользователь (описание)</entry>
+	<entry key="Domains.user.description">Системный пользователь (описание)</entry>
 	<entry key="Domains.owner">Владелец</entry>
 	<entry key="Domains.name.default">Domain</entry>
 
@@ -79,7 +75,6 @@
 	<entry key="Fields.title">Поля</entry>
 	<entry key="Fields.displayName">Заголовок</entry>
 	<entry key="Fields.type">Тип данных</entry>
-	<entry key="Fields.position">#</entry>
 
 	<!-- UserRoles -->
 	<entry key="UserRoles.title">Роли пользователя</entry>
@@ -152,17 +147,19 @@
 	<entry key="BuiltinUsers.administrator.description">Администратор системы</entry>
 
 	<!-- Role -->
-	<entry key="Role.administrator">Администраторы</entry>
 	<entry key="Role.user">Пользователи</entry>
+	<entry key="Role.guest">Гости</entry>
+	<entry key="Role.administrator">Администраторы</entry>
 
 	<!-- Roles -->
 	<entry key="Roles.title">Группы безопасности</entry>
 	<entry key="Roles.name">Группа</entry>
-
-	<!-- SystemEventsType -->
-
-	<entry key="SystemEventsType.title">Типы системных событий</entry>
-	<entry key="SystemEventsType.name">Событие</entry>
+	<entry key="Roles.read">Чтение</entry>
+	<entry key="Roles.write">Изменение</entry>
+	<entry key="Roles.create">Создание</entry>
+	<entry key="Roles.copy">Копирование</entry>
+	<entry key="Roles.destroy">Удаление</entry>
+	<entry key="Roles.execute">Запуск задач</entry>
 
 	<!-- SchedulerJobs -->
 	<entry key="SchedulerJobs.settings">Настройки</entry>
@@ -172,7 +169,6 @@
 	<entry key="SchedulerJobs.repeat">Повтор (секунд)</entry>
 	<entry key="SchedulerJobs.active">Активна</entry>
 	<entry key="SchedulerJobs.lastStarted">Последний запуск</entry>
-	<entry key="SchedulerJobs.error.noJob">Не выбран тип процедура</entry>
 
 	<!-- Jobs -->
 	<entry key="Jobs.title">Задачи</entry>
@@ -193,15 +189,6 @@
 	<!-- Sequencer -->
 	<entry key="Sequencer.notInitialized">Sequencer не инициализирован. Используйте статические методы Sequencer.next() и Sequencer.reset().</entry>
 
-	<!-- Operation -->
-	<entry key="Operation.not">не</entry>
-	<entry key="Operation.and">и</entry>
-	<entry key="Operation.or">или</entry>
-	<entry key="Operation.beginsWith">начинается с</entry>
-	<entry key="Operation.endsWith">оканчивается на</entry>
-	<entry key="Operation.contains">содержит</entry>
-	<entry key="Operation.inVector">в</entry>
-
 	<!-- Procedure -->
 	<entry key="Procedure.rollback">Отменены все возможные изменения в данных, произошедшие в ходе выполнения задачи.</entry>
 	<entry key="Procedure.jobError">Выполнение задачи прервано из-за возникшей ошибки: {0}</entry>
@@ -212,13 +199,11 @@
 
 	<!-- Exceptions -->
 	<entry key="Exception.accessDenied">Неверный логин или пароль для входа</entry>
-	<entry key="Exception.unknownDataType">Неизвестный тип данных ''{0}''</entry>
 	<entry key="Exception.serverUnavailable">Сервер не отвечает.</entry>
 	<entry key="Exception.resourceNotFound">Ресурс не найден: {0}</entry>
 	<entry key="Exception.fileNotFound">Файл не найден: {0}</entry>
 	<entry key="Exception.fileSizeLimitExceeded">Размер файла ''{0}'' превышает допустимый {1}Mb</entry>
 
-	<entry key="Exception.wrongParentNode">Неверный родительский узел.</entry>
 	<entry key="Exception.unknownDatabase">Неподдерживаемая база данных</entry>
 
 	<!-- Generator -->

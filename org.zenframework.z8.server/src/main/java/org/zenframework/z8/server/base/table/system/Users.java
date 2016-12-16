@@ -179,20 +179,11 @@ public class Users extends Table {
 	}
 
 	@Override
-	public void beforeUpdate(guid recordId) {
-		super.beforeUpdate(recordId);
-/*
-		if((BuiltinUsers.Administrator.guid().equals(recordId) || BuiltinUsers.System.guid().equals(recordId)) && role.get().changed())
-			throw new exception("Unable to change the security group of the builtin user.");
-*/
-	}
-
-	@Override
 	public void beforeDestroy(guid recordId) {
 		super.beforeDestroy(recordId);
 
 		if(BuiltinUsers.Administrator.guid().equals(recordId) || BuiltinUsers.System.guid().equals(recordId))
-			throw new exception("Unable to delete builtin user!");
+			throw new exception("Builtin users can not be deleted");
 	}
 
 	public boolean getExtraParameters(IUser user, RLinkedHashMap<string, primary> parameters) {

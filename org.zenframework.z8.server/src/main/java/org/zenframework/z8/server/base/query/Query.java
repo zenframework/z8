@@ -1,7 +1,6 @@
 package org.zenframework.z8.server.base.query;
 
 import java.io.File;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -114,6 +113,7 @@ public class Query extends Runnable {
 
 	protected Select cursor;
 	protected ReadLock readLock = ReadLock.None;
+	private boolean transactive = false;
 
 	protected Query() {
 		this(null);
@@ -348,6 +348,14 @@ public class Query extends Runnable {
 		this.readLock = readLock;
 	}
 
+	public boolean isTransactive() {
+		return transactive;
+	}
+
+	public void setTransactive(boolean transactive) {
+		this.transactive = transactive;
+	}
+
 	public boolean hasRecord(guid recordId) {
 		try {
 			saveState();
@@ -443,12 +451,7 @@ public class Query extends Runnable {
 		Query rootQuery = getRootQuery();
 
 		Insert insert = new Insert(rootQuery, fields);
-
-		try {
-			insert.execute();
-		} catch(SQLException e) {
-			throw new RuntimeException(e);
-		}
+		insert.execute();
 	}
 
 	public guid insert(guid recordId, guid parentId) {

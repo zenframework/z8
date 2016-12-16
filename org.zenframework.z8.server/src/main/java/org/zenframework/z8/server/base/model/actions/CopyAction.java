@@ -6,6 +6,8 @@ import java.util.Map;
 
 import org.zenframework.z8.server.base.query.Query;
 import org.zenframework.z8.server.base.table.value.Field;
+import org.zenframework.z8.server.db.Connection;
+import org.zenframework.z8.server.db.ConnectionManager;
 import org.zenframework.z8.server.json.Json;
 import org.zenframework.z8.server.json.JsonWriter;
 import org.zenframework.z8.server.types.guid;
@@ -23,7 +25,22 @@ public class CopyAction extends Action {
 		guid recordId = getRecordIdParameter();
 		guid parentId = getParentIdParameter();
 
-		recordId = run(query, recordId, parentId);
+		boolean transactive = getQuery().isTransactive();
+		Connection connection = transactive ? ConnectionManager.get() : null;
+
+		try {
+			if(transactive)
+				connection.beginTransaction();
+
+			recordId = run(query, recordId, parentId);
+
+			if(transactive)
+				connection.commit();
+		} catch(Throwable e) {
+			if(transactive)
+				connection.rollback();
+			throw new RuntimeException(e);
+		}
 
 		Collection<Field> fields = getFormFields(query);
 

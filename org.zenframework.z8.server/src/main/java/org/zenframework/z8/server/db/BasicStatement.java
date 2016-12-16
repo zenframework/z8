@@ -10,7 +10,6 @@ import java.sql.Timestamp;
 import java.sql.Types;
 
 import org.zenframework.z8.server.engine.Database;
-import org.zenframework.z8.server.exceptions.db.UnknownDataTypeException;
 import org.zenframework.z8.server.logs.Trace;
 import org.zenframework.z8.server.types.binary;
 import org.zenframework.z8.server.types.bool;
@@ -192,42 +191,42 @@ public abstract class BasicStatement implements IStatement {
 		}
 	}
 
-	public void setParameter(int posParam, FieldType type, primary value) throws SQLException {
+	public void set(int position, FieldType type, primary value) throws SQLException {
 		switch(type) {
 		case Guid:
-			setGuid(posParam, (guid)value);
+			setGuid(position, (guid)value);
 			break;
 		case Boolean:
-			setBoolean(posParam, (bool)value);
+			setBoolean(position, (bool)value);
 			break;
 		case Integer:
-			setInteger(posParam, (integer)value);
+			setInteger(position, (integer)value);
 			break;
 		case String:
-			setString(posParam, (string)value);
+			setString(position, (string)value);
 			break;
 		case Date:
 		case Datetime:
-			setDate(posParam, (date)value);
+			setDate(position, (date)value);
 			break;
 		case Datespan:
-			setDatespan(posParam, (datespan)value);
+			setDatespan(position, (datespan)value);
 			break;
 		case Decimal:
-			setDecimal(posParam, (decimal)value);
+			setDecimal(position, (decimal)value);
 			break;
 		case Text:
 			string string = value != null ? (string)value : new string();
-			setBinary(posParam, new binary(string.getBytes(charset())));
+			setBinary(position, new binary(string.getBytes(charset())));
 			break;
 		case Binary:
-			setBinary(posParam, (binary)value);
+			setBinary(position, (binary)value);
 			break;
 		case Null:
-			setNull(posParam);
+			setNull(position);
 			break;
 		default:
-			throw new UnknownDataTypeException(type);
+			throw new RuntimeException("Unknown data type: '" + type + "'");
 		}
 	}
 }

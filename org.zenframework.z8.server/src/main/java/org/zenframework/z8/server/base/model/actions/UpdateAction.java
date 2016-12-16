@@ -29,9 +29,30 @@ public class UpdateAction extends Action {
 
 		JsonArray records = new JsonArray(jsonData);
 
+		boolean transactive = getQuery().isTransactive() || records.length() > 1;
+		Connection connection = transactive ? ConnectionManager.get() : null;
+
+		try {
+			if(transactive)
+				connection.beginTransaction();
+
+			Collection<guid> recordIds = update(records);
+
+			if(transactive)
+				connection.commit();
+
+			writeFormFields(writer, getRequestQuery(), recordIds);
+		} catch(Throwable e) {
+			if(transactive)
+				connection.rollback();
+			throw new RuntimeException(e);
+		}
+	}
+
+	private Collection<guid> update(JsonArray records) {
 		Query query = getQuery();
 
-		Collection<guid> recordIds = new ArrayList<guid>();
+		Collection<guid> result = new ArrayList<guid>();
 
 		for(int index = 0; index < records.length(); index++) {
 			JsonObject record = (JsonObject)records.get(index);
@@ -45,15 +66,16 @@ public class UpdateAction extends Action {
 			guid recordId = query.primaryKey().guid();
 			guid rootRecordId = QueryUtils.extractKey(record, getRequestQuery().primaryKey());
 
+	
 			if(recordId.isNull())
 				createLink(query, rootRecordId);
 			else
 				run(query, recordId);
 
-			recordIds.add(rootRecordId);
+			result.add(rootRecordId);
 		}
 
-		writeFormFields(writer, getRequestQuery(), recordIds);
+		return result;
 	}
 
 	private void createLink(Query query, guid rootRecordId) {

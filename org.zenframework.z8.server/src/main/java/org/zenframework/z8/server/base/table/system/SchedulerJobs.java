@@ -1,18 +1,14 @@
 package org.zenframework.z8.server.base.table.system;
 
-import java.util.Arrays;
-
 import org.zenframework.z8.server.base.job.scheduler.Scheduler;
 import org.zenframework.z8.server.base.table.Table;
 import org.zenframework.z8.server.base.table.value.BoolField;
 import org.zenframework.z8.server.base.table.value.DatetimeField;
-import org.zenframework.z8.server.base.table.value.Field;
 import org.zenframework.z8.server.base.table.value.IntegerField;
 import org.zenframework.z8.server.base.table.value.Link;
 import org.zenframework.z8.server.resources.Resources;
 import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.types.bool;
-import org.zenframework.z8.server.types.exception;
 import org.zenframework.z8.server.types.guid;
 import org.zenframework.z8.server.types.integer;
 
@@ -41,7 +37,6 @@ public class SchedulerJobs extends Table {
 		public final static String Repeat = "SchedulerJobs.repeat";
 		public final static String Active = "SchedulerJobs.active";
 		public final static String LastStarted = "SchedulerJobs.lastStarted";
-		public final static String ErrorNoJob = "SchedulerJobs.error.noJob";
 	}
 
 	static public class displayNames {
@@ -52,7 +47,6 @@ public class SchedulerJobs extends Table {
 		public final static String Repeat = Resources.get(strings.Repeat);
 		public final static String Active = Resources.get(strings.Active);
 		public final static String LastStarted = Resources.get(strings.LastStarted);
-		public final static String ErrorNoJob = Resources.get(strings.ErrorNoJob);
 	}
 
 	public static class CLASS<T extends Table> extends Table.CLASS<T> {
@@ -154,21 +148,9 @@ public class SchedulerJobs extends Table {
 	}
 
 	@Override
-	public void beforeCreate(guid recordId, guid parentId) {
-		super.beforeCreate(recordId, parentId);
-		setTaskDefaults();
-	}
-
-	@Override
 	public void afterCreate(guid recordId, guid parentId) {
 		super.afterCreate(recordId, parentId);
 		Scheduler.reset();
-	}
-
-	@Override
-	public void beforeUpdate(guid recordId) {
-		super.beforeUpdate(recordId);
-		setTaskDefaults();
 	}
 
 	@Override
@@ -182,22 +164,5 @@ public class SchedulerJobs extends Table {
 	public void afterDestroy(guid recordId) {
 		super.afterDestroy(recordId);
 		Scheduler.reset();
-	}
-
-	private void setTaskDefaults() {
-		Field jobField = job.get();
-
-		if (!jobField.changed() || description.get().changed())
-			return;
-
-		guid jobId = jobField.guid();
-		if (jobId.equals(guid.NULL))
-			return;
-
-		Jobs jobs = new Jobs.CLASS<Jobs>().get();
-		if (!jobs.readRecord(jobId, Arrays.<Field> asList(jobs.description.get())))
-			throw new exception(displayNames.ErrorNoJob);
-
-		description.get().set(jobs.description.get().string());
 	}
 }

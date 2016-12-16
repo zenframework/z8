@@ -35,7 +35,7 @@ public class Domains extends Table {
 		public final static String Title = "Domains.title";
 		public final static String Id = "Domains.id";
 		public final static String User = "Domains.user";
-		public final static String UserDescription = "Domains.userDescription";
+		public final static String UserDescription = "Domains.user.description";
 		public final static String Owner = "Domains.owner";
 
 		public final static String DefaultName = "Domains.name.default";

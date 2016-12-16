@@ -35,7 +35,7 @@ public class Delete extends Statement {
 	@Override
 	public void prepare(String sql) throws SQLException {
 		super.prepare(sql);
-		setParameter(1, FieldType.Guid, recordId);
+		set(1, FieldType.Guid, recordId);
 	}
 
 	public int execute() {

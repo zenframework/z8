@@ -81,10 +81,11 @@ public class RoleTableAccessView extends Roles {
 		fields.get().query = (Query.CLASS<Query>)rfa.getCLASS();
 		fields.get().link = rfa.role;
 		fields.get().height = new integer(500);
-		fields.get().sortFields.add(rfa.fields.get().name);
+		fields.get().sortFields.add(rfa.fields.get().position);
 
 		rfa.fields.get().name.get().width = new integer(150);
 		rfa.fields.get().displayName.get().width = new integer(150);
+		rfa.fields.get().type.get().width = new integer(90);
 
 		rfa.read.get().width = new integer(30);
 		rfa.read.setIcon("fa-eye");
@@ -94,6 +95,7 @@ public class RoleTableAccessView extends Roles {
 
 		rfa.gridFields.add(rfa.fields.get().name);
 		rfa.gridFields.add(rfa.fields.get().displayName);
+		rfa.gridFields.add(rfa.fields.get().type);
 		rfa.gridFields.add(rfa.read);
 		rfa.gridFields.add(rfa.write);
 

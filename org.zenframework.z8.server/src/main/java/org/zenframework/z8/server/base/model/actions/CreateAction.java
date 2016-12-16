@@ -31,8 +31,9 @@ public class CreateAction extends Action {
 
 		JsonArray records = new JsonArray(jsonData);
 
-		boolean transactive = records.length() > 1;
-		Connection connection = ConnectionManager.get();
+		boolean transactive = getQuery().isTransactive() || records.length() > 1;
+
+		Connection connection = transactive ? ConnectionManager.get() : null;
 
 		try {
 			if(transactive)
