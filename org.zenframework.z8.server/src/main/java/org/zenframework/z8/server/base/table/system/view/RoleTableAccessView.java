@@ -34,7 +34,7 @@ public class RoleTableAccessView extends Roles {
 	public void constructor2() {
 		super.constructor2();
 
-		columns = new integer(12);
+		columnCount = new integer(12);
 
 		name.get().colspan = new integer(12);
 
@@ -74,13 +74,13 @@ public class RoleTableAccessView extends Roles {
 		rta.destroy.get().width = new integer(30);
 		rta.destroy.setIcon("fa-trash");
 
-		rta.gridFields.add(rta.tables.get().name);
-		rta.gridFields.add(rta.tables.get().displayName);
-		rta.gridFields.add(rta.read);
-		rta.gridFields.add(rta.write);
-		rta.gridFields.add(rta.create);
-		rta.gridFields.add(rta.copy);
-		rta.gridFields.add(rta.destroy);
+		rta.columns.add(rta.tables.get().name);
+		rta.columns.add(rta.tables.get().displayName);
+		rta.columns.add(rta.read);
+		rta.columns.add(rta.write);
+		rta.columns.add(rta.create);
+		rta.columns.add(rta.copy);
+		rta.columns.add(rta.destroy);
 
 		RoleFieldAccess rfa = new RoleFieldAccess.CLASS<RoleFieldAccess>(this).get();
 
@@ -102,11 +102,11 @@ public class RoleTableAccessView extends Roles {
 		rfa.write.get().width = new integer(30);
 		rfa.write.setIcon("fa-pencil");
 
-		rfa.gridFields.add(rfa.fields.get().name);
-		rfa.gridFields.add(rfa.fields.get().displayName);
-		rfa.gridFields.add(rfa.fields.get().type);
-		rfa.gridFields.add(rfa.read);
-		rfa.gridFields.add(rfa.write);
+		rfa.columns.add(rfa.fields.get().name);
+		rfa.columns.add(rfa.fields.get().displayName);
+		rfa.columns.add(rfa.fields.get().type);
+		rfa.columns.add(rfa.read);
+		rfa.columns.add(rfa.write);
 
 		tables.get().dependencies.add(fields);
 		fields.get().dependency = rfa.fields.get().table;

@@ -10,12 +10,13 @@ class Query extends Runnable {
 	public bool collapseGroups = false;
 	public bool showTotals = false;
 
-	public int columns = 3;
+	public int columnCount = 3;
 
 	public Control[] formFields;
-	public Field[] gridFields;
-	public Field[] nameFields;             // Поля для идентификации записи в UI, например, в навигаторе формы или заголовке
-	public Field[] quickFilterFields;      // Поля для быстрого поиска записей
+
+	public Field[] columns;
+	public Field[] nameFields;        // Поля для идентификации записи в UI, например, в навигаторе формы или заголовке
+	public Field[] quickFilters;      // Поля для быстрого поиска записей
 
 	public Field[] sortFields;
 	public Field[] groupFields;     // Соответствует пункту 'Группировать по полю' в меню колонки таблицы.

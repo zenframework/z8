@@ -2,6 +2,7 @@ package org.zenframework.z8.server.base.table.system;
 
 import java.util.LinkedHashMap;
 
+import org.zenframework.z8.server.base.query.RecordLock;
 import org.zenframework.z8.server.base.table.Table;
 import org.zenframework.z8.server.base.table.value.BoolField;
 import org.zenframework.z8.server.base.table.value.IField;
@@ -109,7 +110,6 @@ public class Users extends Table {
 		super.constructor2();
 
 		name.setDisplayName(displayNames.Name);
-		name.setGendb_updatable(false);
 		name.get().length = new integer(IAuthorityCenter.MaxLoginLength);
 		name.get().unique = bool.True;
 
@@ -153,12 +153,14 @@ public class Users extends Table {
 			LinkedHashMap<IField, primary> record = new LinkedHashMap<IField, primary>();
 			record.put(name.get(), new string(displayNames.SystemName));
 			record.put(description.get(), new string(displayNames.SystemDescription));
+			record.put(locked.get(), RecordLock.Destroy);
 			addRecord(BuiltinUsers.System.guid(), record);
 		}
 		{
 			LinkedHashMap<IField, primary> record = new LinkedHashMap<IField, primary>();
 			record.put(name.get(), new string(displayNames.AdministratorName));
 			record.put(description.get(), new string(displayNames.AdministratorDescription));
+			record.put(locked.get(), RecordLock.Destroy);
 			addRecord(BuiltinUsers.Administrator.guid(), record);
 		}
 	}

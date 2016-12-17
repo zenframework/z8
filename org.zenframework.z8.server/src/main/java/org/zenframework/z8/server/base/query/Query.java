@@ -79,7 +79,7 @@ public class Query extends Runnable {
 	public bool visible = bool.True;
 	public bool collapseGroups = bool.False;
 
-	public integer columns = new integer(4);
+	public integer columnCount = new integer(4);
 
 	public RCollection<Query.CLASS<? extends Query>> queries = new RCollection<Query.CLASS<? extends Query>>(true);
 
@@ -91,9 +91,10 @@ public class Query extends Runnable {
 
 	public DataFields dataFields = new DataFields(this);
 	public RCollection<Control.CLASS<? extends Control>> formFields = new RCollection<Control.CLASS<? extends Control>>();
-	public RCollection<Field.CLASS<? extends Field>> gridFields = new RCollection<Field.CLASS<? extends Field>>();
 	public RCollection<Field.CLASS<? extends Field>> nameFields = new RCollection<Field.CLASS<? extends Field>>();
-	public RCollection<Field.CLASS<? extends Field>> quickFilterFields = new RCollection<Field.CLASS<? extends Field>>();
+
+	public RCollection<Field.CLASS<? extends Field>> columns = new RCollection<Field.CLASS<? extends Field>>();
+	public RCollection<Field.CLASS<? extends Field>> quickFilters = new RCollection<Field.CLASS<? extends Field>>();
 
 	public RCollection<Command.CLASS<? extends Command>> commands = new RCollection<Command.CLASS<? extends Command>>();
 
@@ -831,21 +832,21 @@ public class Query extends Runnable {
 		}
 
 		result.addAll(nameFields());
-		result.addAll(gridFields());
+		result.addAll(columns());
 
 		return result.isEmpty() ? dataFields() : result;
 	}
 
-	public Collection<Field.CLASS<? extends Field>> gridFields() {
-		return gridFields;
+	public Collection<Field.CLASS<? extends Field>> columns() {
+		return columns;
 	}
 
 	public Collection<Field.CLASS<? extends Field>> nameFields() {
 		return nameFields;
 	}
 
-	public Collection<Field.CLASS<? extends Field>> quickFilterFields() {
-		return quickFilterFields;
+	public Collection<Field.CLASS<? extends Field>> quickFilters() {
+		return quickFilters;
 	}
 
 	public Collection<Field.CLASS<? extends Field>> sortFields() {
@@ -900,16 +901,16 @@ public class Query extends Runnable {
 		return CLASS.asList(formFields());
 	}
 
-	public Collection<Field> getGridFields() {
-		return CLASS.asList(gridFields());
+	public Collection<Field> getColumns() {
+		return CLASS.asList(columns());
 	}
 
 	public Collection<Field> getNameFields() {
 		return CLASS.asList(nameFields());
 	}
 
-	public Collection<Field> getQuickFilterFields() {
-		return CLASS.asList(quickFilterFields());
+	public Collection<Field> getQuickFilters() {
+		return CLASS.asList(quickFilters());
 	}
 
 	public Collection<Field> getSortFields() {
@@ -1583,9 +1584,9 @@ public class Query extends Runnable {
 
 		writer.writeControls(Json.fields, fields, this);
 		writer.writeControls(Json.controls, getControls(), this);
-		writer.writeControls(Json.gridFields, getGridFields(), this);
+		writer.writeControls(Json.columns, getColumns(), this);
 		writer.writeControls(Json.nameFields, getNameFields(), this);
-		writer.writeControls(Json.quickFilterFields, getQuickFilterFields(), this);
+		writer.writeControls(Json.quickFilters, getQuickFilters(), this);
 
 		writeKeys(writer, fields);
 		writeCommands(writer);
@@ -1598,7 +1599,7 @@ public class Query extends Runnable {
 		writer.writeProperty(Json.readOnly, isGrouped ? true : readOnly());
 
 		writer.writeProperty(Json.showTotals, showTotals);
-		writer.writeProperty(Json.columns, columns);
+		writer.writeProperty(Json.columnCount, columnCount);
 	}
 
 	private void writeKeys(JsonWriter writer, Collection<Field> fields) {

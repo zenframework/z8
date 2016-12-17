@@ -13,6 +13,7 @@ import org.zenframework.z8.server.base.model.sql.Update;
 import org.zenframework.z8.server.base.query.Query;
 import org.zenframework.z8.server.base.table.Table;
 import org.zenframework.z8.server.base.table.system.Files;
+import org.zenframework.z8.server.base.table.system.Roles;
 import org.zenframework.z8.server.base.table.system.Users;
 import org.zenframework.z8.server.base.table.value.Aggregation;
 import org.zenframework.z8.server.base.table.value.BoolExpression;
@@ -52,6 +53,7 @@ import org.zenframework.z8.server.exceptions.db.ObjectAlreadyExistException;
 import org.zenframework.z8.server.exceptions.db.ObjectNotFoundException;
 import org.zenframework.z8.server.resources.Resources;
 import org.zenframework.z8.server.security.BuiltinUsers;
+import org.zenframework.z8.server.security.Role;
 import org.zenframework.z8.server.types.date;
 import org.zenframework.z8.server.types.guid;
 import org.zenframework.z8.server.types.primary;
@@ -564,15 +566,29 @@ public class TableGenerator {
 				}
 				table.create(recordId, parentId);
 			} else {
+				boolean isUsers = table instanceof Users && (BuiltinUsers.System.guid().equals(recordId) || 
+						BuiltinUsers.Administrator.guid().equals(recordId));
+
+				boolean isRoles = table instanceof Roles && (Role.Administrator.equals(recordId) || 
+						Role.User.equals(recordId) || Role.Guest.equals(recordId));
+
+				Users users = isUsers ? (Users)table : null;
+				Roles roles = isRoles ? (Roles)table : null;
+
 				for(Field field : fields) {
-					if(field.gendb_updatable()) {
-						primary value = record.get(field);
-						field.set(value);
-					}
+					if(isUsers && (field == users.password.get() || field == users.name.get() || field == users.description.get()))
+						continue;
+
+					if(isRoles && (field == roles.name.get() || field == roles.description.get() || 
+							field == roles.read.get() || field == roles.write.get() || field == roles.create.get() ||
+							field == roles.copy.get() || field == roles.destroy.get() || field == roles.execute.get()))
+						continue;
+
+					primary value = record.get(field);
+					field.set(value);
 				}
 
-				if(!(table instanceof Users) || !BuiltinUsers.System.guid().equals(recordId) && !BuiltinUsers.Administrator.guid().equals(recordId))
-					table.update(recordId);
+				table.update(recordId);
 			}
 		} catch(SQLException e) {
 			logger.error(e, Resources.format("Generator.insertRecordsError", recordId.toString(), table().displayName(), table().name(), ErrorUtils.getMessage(e)));

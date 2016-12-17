@@ -58,7 +58,7 @@ public class Listbox extends Control {
 		writer.writeProperty(Json.primaryKey, query.primaryKey().id());
 		writer.writeProperty(Json.text, query.displayName());
 		writer.writeProperty(Json.link, link.id());
-		writer.writeControls(Json.fields, query.getGridFields(), query);
+		writer.writeControls(Json.fields, query.getColumns(), query);
 		writer.writeSort(CLASS.asList(sortFields));
 		writer.finishObject();
 	}

@@ -2,7 +2,7 @@
 
 public class Section extends Control {
 	int height;
-	public int columns = 3;
+	public int columnCount = 3;
 
 	public Control[] controls;
 }

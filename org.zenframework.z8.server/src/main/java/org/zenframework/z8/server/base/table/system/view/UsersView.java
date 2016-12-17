@@ -35,7 +35,7 @@ public class UsersView extends Users {
 	public void constructor2() {
 		super.constructor2();
 
-		columns = new integer(6);
+		columnCount = new integer(6);
 
 		readOnly.set(!ApplicationServer.getUser().isAdministrator());
 
@@ -50,8 +50,8 @@ public class UsersView extends Users {
 		entries.get().query = (Query.CLASS<Query>)userEntries.getCLASS();
 		entries.get().link = userEntries.user;
 
-		userEntries.gridFields.add(userEntries.entries.get().name);
-		userEntries.gridFields.add(userEntries.entries.get().id);
+		userEntries.columns.add(userEntries.entries.get().name);
+		userEntries.columns.add(userEntries.entries.get().id);
 		userEntries.sortFields.add(userEntries.position);
 
 		UserRoles userRoles = new UserRoles.CLASS<UserRoles>(this).get();
@@ -60,7 +60,7 @@ public class UsersView extends Users {
 		roles.get().link = userRoles.user;
 		roles.get().source = new Roles.CLASS<Roles>(this);
 
-		userRoles.gridFields.add(userRoles.roles.get().name);
+		userRoles.columns.add(userRoles.roles.get().name);
 
 		name.get().colspan = new integer(4);
 		phone.get().colspan = new integer(4);

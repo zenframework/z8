@@ -1,0 +1,8 @@
+[native "org.zenframework.z8.server.base.query.RecordLock"]
+
+public class RecordLock {
+	static public int None = 0;
+	static public int Full = 1;
+	static public int Edit = 2;
+	static public int Destroy = 3;
+}

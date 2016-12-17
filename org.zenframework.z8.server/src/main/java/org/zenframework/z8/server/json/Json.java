@@ -171,16 +171,16 @@ public interface Json {
 
 	string queries = new string("queries");
 	string fields = new string("fields");
+	string columnCount = new string("columnCount");
+	string columns = new string("columns");
 	string sections = new string("sections");
 	string controls = new string("controls");
-	string gridFields = new string("gridFields");
 	string nameFields = new string("nameFields");
-	string quickFilterFields = new string("quickFilterFields");
+	string quickFilters = new string("quickFilters");
 
 	string grid = new string("grid");
 	string tree = new string("tree");
 	string actions = new string("actions");
-	string columns = new string("columns");
 	string commands = new string("commands");
 	string parameters = new string("parameters");
 	string reports = new string("reports");

@@ -21,7 +21,7 @@ public class Tab extends Section {
 
 	public Tab(IObject container) {
 		super(container);
-		columns = new integer(1);
+		columnCount = new integer(1);
 	}
 
 	@Override

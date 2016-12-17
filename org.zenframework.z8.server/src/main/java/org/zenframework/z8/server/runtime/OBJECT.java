@@ -163,15 +163,6 @@ public class OBJECT extends RequestTarget implements IObject, RmiSerializable {
 		setAttribute(Exportable, Boolean.toString(exportable));
 	}
 
-	public boolean gendb_updatable() {
-		String gendb_updatable = getAttribute(GenDbUpdatable);
-		return gendb_updatable == null || Boolean.parseBoolean(gendb_updatable);
-	}
-
-	public void setGendb_updatable(boolean gendb_updatable) {
-		setAttribute(GenDbUpdatable, Boolean.toString(gendb_updatable));
-	}
-
 	@Override
 	public String description() {
 		return getAttribute(Description);

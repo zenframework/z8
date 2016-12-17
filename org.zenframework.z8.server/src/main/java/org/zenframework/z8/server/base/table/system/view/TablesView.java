@@ -62,7 +62,7 @@ public class TablesView extends Tables {
 		super.constructor2();
 
 		readOnly = bool.True;
-		columns = new integer(6);
+		columnCount = new integer(6);
 
 		fields.setIndex("fields");
 		fields.setDisplayName(Fields.displayNames.Title);
@@ -73,9 +73,9 @@ public class TablesView extends Tables {
 		fields.get().link = fieldsTable.table;
 		fields.get().height = new integer(600);
 
-		fieldsTable.gridFields.add(fieldsTable.name);
-		fieldsTable.gridFields.add(fieldsTable.type);
-		fieldsTable.gridFields.add(fieldsTable.displayName);
+		fieldsTable.columns.add(fieldsTable.name);
+		fieldsTable.columns.add(fieldsTable.type);
+		fieldsTable.columns.add(fieldsTable.displayName);
 
 		fieldsTable.sortFields.add(fieldsTable.position);
 

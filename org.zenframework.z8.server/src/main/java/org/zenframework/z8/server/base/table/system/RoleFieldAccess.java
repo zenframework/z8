@@ -1,5 +1,6 @@
 package org.zenframework.z8.server.base.table.system;
 
+import org.zenframework.z8.server.base.query.RecordLock;
 import org.zenframework.z8.server.base.table.Table;
 import org.zenframework.z8.server.base.table.value.BoolField;
 import org.zenframework.z8.server.base.table.value.Link;
@@ -73,6 +74,8 @@ public class RoleFieldAccess extends Table {
 	@Override
 	public void constructor2() {
 		super.constructor2();
+
+		locked.get().setDefault(RecordLock.Destroy);
 
 		roles.setIndex("roles");
 		fields.setIndex("fields");

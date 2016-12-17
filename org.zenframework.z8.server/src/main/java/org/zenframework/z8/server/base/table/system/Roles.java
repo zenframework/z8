@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedHashMap;
 
+import org.zenframework.z8.server.base.query.RecordLock;
 import org.zenframework.z8.server.base.table.Table;
 import org.zenframework.z8.server.base.table.value.BoolField;
 import org.zenframework.z8.server.base.table.value.Field;
@@ -153,7 +154,7 @@ public class Roles extends Table {
 		values.put(copy.get(), new bool(access.copy()));
 		values.put(destroy.get(), new bool(access.destroy()));
 		values.put(execute.get(), new bool(access.execute()));
-		values.put(locked.get(), new integer(1));
+		values.put(locked.get(), RecordLock.Destroy);
 		addRecord(role.id(), values);
 	}
 
