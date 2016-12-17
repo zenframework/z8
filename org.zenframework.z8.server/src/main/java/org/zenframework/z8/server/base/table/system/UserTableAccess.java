@@ -5,7 +5,6 @@ import org.zenframework.z8.server.base.table.value.BoolField;
 import org.zenframework.z8.server.base.table.value.Link;
 import org.zenframework.z8.server.resources.Resources;
 import org.zenframework.z8.server.runtime.IObject;
-import org.zenframework.z8.server.types.bool;
 
 public class UserTableAccess extends Table {
 	final static public String TableName = "SystemUserTableAccess";
@@ -98,27 +97,22 @@ public class UserTableAccess extends Table {
 		read.setName(names.Read);
 		read.setIndex("read");
 		read.setDisplayName(displayNames.Read);
-		read.get().setDefault(new bool(true));
 
 		write.setName(names.Write);
 		write.setIndex("write");
 		write.setDisplayName(displayNames.Write);
-		write.get().setDefault(new bool(true));
 
 		create.setName(names.Create);
 		create.setIndex("create");
 		create.setDisplayName(displayNames.Create);
-		create.get().setDefault(new bool(true));
 
 		copy.setName(names.Copy);
 		copy.setIndex("copy");
 		copy.setDisplayName(displayNames.Copy);
-		copy.get().setDefault(new bool(false));
 
 		destroy.setName(names.Destroy);
 		destroy.setIndex("destroy");
 		destroy.setDisplayName(displayNames.Destroy);
-		destroy.get().setDefault(new bool(false));
 
 		registerDataField(user);
 		registerDataField(table);

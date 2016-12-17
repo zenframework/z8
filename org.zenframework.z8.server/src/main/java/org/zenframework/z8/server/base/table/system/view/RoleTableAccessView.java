@@ -34,9 +34,16 @@ public class RoleTableAccessView extends Roles {
 	public void constructor2() {
 		super.constructor2();
 
-		columns = new integer(2);
+		columns = new integer(12);
 
-		name.get().colspan = new integer(2);
+		name.get().colspan = new integer(12);
+
+		read.get().colspan = new integer(2);
+		write.get().colspan = new integer(2);
+		create.get().colspan = new integer(2);
+		copy.get().colspan = new integer(2);
+		destroy.get().colspan = new integer(2);
+		execute.get().colspan = new integer(2);
 
 		tables.setIndex("tables");
 		tables.setDisplayName(RoleTableAccess.displayNames.Title);
@@ -45,6 +52,7 @@ public class RoleTableAccessView extends Roles {
 
 		tables.get().query = (Query.CLASS<Query>)rta.getCLASS();
 		tables.get().link = rta.role;
+		tables.get().colspan = new integer(6);
 		tables.get().height = new integer(500);
 		tables.get().sortFields.add(rta.tables.get().name);
 
@@ -80,6 +88,7 @@ public class RoleTableAccessView extends Roles {
 		fields.setDisplayName(Fields.displayNames.Title);
 		fields.get().query = (Query.CLASS<Query>)rfa.getCLASS();
 		fields.get().link = rfa.role;
+		fields.get().colspan = new integer(6);
 		fields.get().height = new integer(500);
 		fields.get().sortFields.add(rfa.fields.get().position);
 
@@ -104,6 +113,14 @@ public class RoleTableAccessView extends Roles {
 		fields.get().dependsOn = rta.table;
 
 		registerFormField(name);
+
+		registerFormField(read);
+		registerFormField(write);
+		registerFormField(create);
+		registerFormField(copy);
+		registerFormField(destroy);
+		registerFormField(execute);
+
 		registerFormField(tables);
 		registerFormField(fields);
 

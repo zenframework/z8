@@ -7,6 +7,7 @@ import org.zenframework.z8.server.base.table.value.BoolField;
 import org.zenframework.z8.server.base.table.value.DatetimeField;
 import org.zenframework.z8.server.base.table.value.Field;
 import org.zenframework.z8.server.base.table.value.GuidField;
+import org.zenframework.z8.server.base.table.value.IntegerField;
 import org.zenframework.z8.server.base.table.value.StringField;
 import org.zenframework.z8.server.base.table.value.TextField;
 import org.zenframework.z8.server.engine.ApplicationServer;
@@ -84,7 +85,7 @@ public class Table extends TableBase {
 	public StringField.CLASS<? extends StringField> name = new StringField.CLASS<StringField>(this);
 	public TextField.CLASS<? extends StringField> description = new TextField.CLASS<TextField>(this);
 
-	public BoolField.CLASS<? extends BoolField> locked = new BoolField.CLASS<BoolField>(this);
+	public IntegerField.CLASS<? extends IntegerField> locked = new IntegerField.CLASS<IntegerField>(this);
 	public BoolField.CLASS<? extends BoolField> archive = new BoolField.CLASS<BoolField>(this);
 
 	final static public int IdLength = 15;
@@ -153,12 +154,12 @@ public class Table extends TableBase {
 		registerDataField(modifiedAt);
 		registerDataField(createdBy);
 		registerDataField(modifiedBy);
+		registerDataField(locked);
 		registerDataField(archive);
 
 		registerDataField(id);
 		registerDataField(name);
 		registerDataField(description);
-		registerDataField(locked);
 	}
 
 	@Override

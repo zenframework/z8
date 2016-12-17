@@ -111,7 +111,7 @@ public class Users extends Table {
 		name.setDisplayName(displayNames.Name);
 		name.setGendb_updatable(false);
 		name.get().length = new integer(IAuthorityCenter.MaxLoginLength);
-		name.get().unique = new bool(true);
+		name.get().unique = bool.True;
 
 		password.setName(names.Password);
 		password.setExportable(false);
@@ -174,7 +174,7 @@ public class Users extends Table {
 		super.beforeCreate(recordId, parentId);
 
 		StringField name = this.name.get();
-		if((!name.changed() || name.string().isEmpty()) && !recordId.equals(guid.NULL))
+		if((!name.changed() || name.string().isEmpty()) && !recordId.equals(guid.Null))
 			name.set(new string(displayNames.DefaultName + name.getSequencer().next()));
 	}
 
@@ -191,6 +191,6 @@ public class Users extends Table {
 	}
 
 	public bool z8_getParameters(guid id, string name, RLinkedHashMap<string, primary> parameters) {
-		return new bool(true);
+		return bool.True;
 	}
 }

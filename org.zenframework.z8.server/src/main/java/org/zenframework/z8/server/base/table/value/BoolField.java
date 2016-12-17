@@ -25,7 +25,7 @@ public class BoolField extends Field {
 
 	public BoolField(IObject container) {
 		super(container);
-		setDefault(new bool(false));
+		setDefault(bool.False);
 		width = new integer(50);
 		aggregation = Aggregation.Max;
 	}

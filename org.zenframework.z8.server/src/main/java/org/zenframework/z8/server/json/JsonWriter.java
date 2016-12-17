@@ -157,7 +157,7 @@ public class JsonWriter {
 			write(((decimal)value).get());
 		} else if(value instanceof date) {
 			date dt = (date)value;
-			boolean minMax = dt.equals(date.MIN) || dt.equals(date.MAX);
+			boolean minMax = dt.equals(date.Min) || dt.equals(date.Max);
 			write(minMax ? "" : value.toString());
 		} else {
 			write(value.toString());
@@ -214,7 +214,7 @@ public class JsonWriter {
 		} else if(value instanceof decimal) {
 			writeProperty(name, ((decimal)value).get());
 		} else if(value instanceof date) {
-			boolean minMax = value.equals(date.MIN) || value.equals(date.MAX);
+			boolean minMax = value.equals(date.Min) || value.equals(date.Max);
 			writeProperty(name, '"' + (minMax ? "" : value.toString()) + '"', false);
 		} else {
 			writeProperty(name, value.toString(), true);

@@ -174,7 +174,7 @@ public class MessageQueue extends Table {
 	}
 
 	public void beginProcessing(guid id) {
-		processing.get().set(new bool(true));
+		processing.get().set(bool.True);
 		update(id);
 	}
 

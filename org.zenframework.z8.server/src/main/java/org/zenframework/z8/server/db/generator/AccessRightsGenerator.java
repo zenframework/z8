@@ -1,6 +1,5 @@
 package org.zenframework.z8.server.db.generator;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
@@ -20,23 +19,26 @@ import org.zenframework.z8.server.db.sql.expressions.Equ;
 import org.zenframework.z8.server.db.sql.expressions.UnaryNot;
 import org.zenframework.z8.server.db.sql.functions.InVector;
 import org.zenframework.z8.server.engine.Runtime;
+import org.zenframework.z8.server.security.IAccess;
+import org.zenframework.z8.server.security.IRole;
+import org.zenframework.z8.server.types.bool;
 import org.zenframework.z8.server.types.guid;
 import org.zenframework.z8.server.types.integer;
 import org.zenframework.z8.server.types.string;
 
-public class TableInfoGenerator {
-	private Collection<guid> roles = null;
+public class AccessRightsGenerator {
+	private Tables tables = new Tables.CLASS<Tables>().get();
+	private Fields fields = new Fields.CLASS<Fields>().get();
+	private RoleTableAccess rta = new RoleTableAccess.CLASS<RoleTableAccess>().get();
+	private RoleFieldAccess rfa = new RoleFieldAccess.CLASS<RoleFieldAccess>().get();
 
-	Tables tables = new Tables.CLASS<Tables>().get();
-	Fields fields = new Fields.CLASS<Fields>().get();
-	RoleTableAccess rta = new RoleTableAccess.CLASS<RoleTableAccess>().get();
-	RoleFieldAccess rfa = new RoleFieldAccess.CLASS<RoleFieldAccess>().get();
-	Collection<guid> tableKeys = new HashSet<guid>();
+	private Collection<guid> tableKeys = new HashSet<guid>();
+	private Collection<IRole> roles = null;
 
 	@SuppressWarnings("unused")
 	private ILogger logger;
 
-	public TableInfoGenerator(ILogger logger) {
+	public AccessRightsGenerator(ILogger logger) {
 		this.logger = logger;
 		tableKeys.addAll(Runtime.instance().tableKeys());
 	}
@@ -87,9 +89,17 @@ public class TableInfoGenerator {
 
 			updateFields(table);
 
-			for(guid role : getRoles()) {
-				rta.role.get().set(role);
+			for(IRole role : getRoles()) {
+				IAccess access = role.access();
+
+				rta.role.get().set(role.id());
 				rta.table.get().set(key);
+
+				rta.read.get().set(new bool(access.read()));
+				rta.write.get().set(new bool(access.write()));
+				rta.create.get().set(new bool(access.create()));
+				rta.copy.get().set(new bool(access.copy()));
+				rta.destroy.get().set(new bool(access.destroy()));
 				rta.create();
 			}
 		}
@@ -111,9 +121,14 @@ public class TableInfoGenerator {
 		for(guid key : fieldKeys) {
 			setFieldProperties(fieldsMap.get(key), table.key());
 			fields.create(key);
-			for(guid role : getRoles()) {
-				rfa.role.get().set(role);
+			for(IRole role : getRoles()) {
+				IAccess access = role.access();
+
+				rfa.role.get().set(role.id());
 				rfa.field.get().set(key);
+
+				rfa.read.get().set(new bool(access.read()));
+				rfa.write.get().set(new bool(access.write()));
 				rfa.create();
 			}
 		}
@@ -135,18 +150,11 @@ public class TableInfoGenerator {
 		fields.position.get().set(new integer(field.ordinal()));
 	}
 
-	private Collection<guid> getRoles() {
-		if(roles != null)
-			return roles;
-
-		roles = new ArrayList<guid>();
-
-		Roles rolesTable = new Roles.CLASS<Roles>(null).get();
-		rolesTable.read(Arrays.asList(rolesTable.primaryKey()));
-
-		while(rolesTable.next())
-			roles.add(rolesTable.recordId());
-
+	private Collection<IRole> getRoles() {
+		if(roles == null) {
+			Roles rolesTable = new Roles.CLASS<Roles>(null).get();
+			roles = rolesTable.get();
+		}
 		return roles;
 	}
 

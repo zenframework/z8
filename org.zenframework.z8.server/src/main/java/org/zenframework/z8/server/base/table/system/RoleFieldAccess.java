@@ -86,12 +86,12 @@ public class RoleFieldAccess extends Table {
 		read.setName(names.Read);
 		read.setIndex("read");
 		read.setDisplayName(displayNames.Read);
-		read.get().setDefault(new bool(true));
+		read.get().setDefault(bool.True);
 
 		write.setName(names.Write);
 		write.setIndex("write");
 		write.setDisplayName(displayNames.Write);
-		write.get().setDefault(new bool(true));
+		write.get().setDefault(bool.True);
 
 		registerDataField(role);
 		registerDataField(field);

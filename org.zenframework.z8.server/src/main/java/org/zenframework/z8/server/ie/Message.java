@@ -50,8 +50,8 @@ abstract public class Message extends OBJECT implements RmiSerializable, Seriali
 		}
 	}
 
-	private guid id = guid.NULL;
-	private guid sourceId = guid.NULL;
+	private guid id = guid.Null;
+	private guid sourceId = guid.Null;
 	private String sender;
 	private String address;
 

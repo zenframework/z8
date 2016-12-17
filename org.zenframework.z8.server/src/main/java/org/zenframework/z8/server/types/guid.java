@@ -15,7 +15,7 @@ public class guid extends primary {
 
 	private UUID value;
 
-	static final public guid NULL = new guid() {
+	static final public guid Null = new guid() {
 
 		private static final long serialVersionUID = 1745933898572308263L;
 
@@ -51,7 +51,7 @@ public class guid extends primary {
 	}
 
 	public boolean isNull() {
-		return equals(guid.NULL);
+		return equals(guid.Null);
 	}
 
 	static public guid create() {

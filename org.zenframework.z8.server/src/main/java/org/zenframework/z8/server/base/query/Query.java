@@ -73,11 +73,11 @@ public class Query extends Runnable {
 		}
 	}
 
-	public bool readOnly = new bool(false);
+	public bool readOnly = bool.False;
 
-	public bool showTotals = new bool(false);
-	public bool visible = new bool(true);
-	public bool collapseGroups = new bool(false);
+	public bool showTotals = bool.False;
+	public bool visible = bool.True;
+	public bool collapseGroups = bool.False;
 
 	public integer columns = new integer(4);
 
@@ -420,7 +420,7 @@ public class Query extends Runnable {
 		Field parentKey = getRootQuery().parentKey();
 
 		if(parentKey != null)
-			return parentKey.changed() ? parentKey.guid() : guid.NULL;
+			return parentKey.changed() ? parentKey.guid() : guid.Null;
 
 		return null;
 	}
@@ -475,7 +475,7 @@ public class Query extends Runnable {
 	}
 
 	public guid create(guid recordId) {
-		return create(recordId, guid.NULL);
+		return create(recordId, guid.Null);
 	}
 
 	public guid create(guid recordId, guid parentId) {
@@ -487,44 +487,6 @@ public class Query extends Runnable {
 		guid parentId = getParentId();
 		guid newRecordId = CopyAction.run(this, recordId, parentId);
 		return insert(newRecordId, parentId);
-	}
-
-	public boolean readRecord(guid id) {
-		return readRecord(id, (Collection<Field>)null);
-	}
-
-	public void read() {
-		read(-1);
-	}
-
-	public void read(int limit) {
-		read(-1, limit);
-	}
-
-	public void read(int start, int limit) {
-		read((Collection<Field>)null, null, null, null, null, start, limit);
-	}
-
-	public boolean readFirst() {
-		read((SqlToken)null, 1);
-		return next();
-	}
-
-	public void read(SqlToken where) {
-		read(where, -1);
-	}
-
-	public void read(SqlToken where, int limit) {
-		read(where, -1, limit);
-	}
-
-	public void read(SqlToken where, int start, int limit) {
-		read(null, where, start, limit);
-	}
-
-	public boolean readFirst(SqlToken where) {
-		read(where, 1);
-		return next();
 	}
 
 	public void read(Collection<Field> fields) {
@@ -620,6 +582,10 @@ public class Query extends Runnable {
 
 	public void group(Collection<Field> fields, Collection<Field> groupFields, SqlToken where) {
 		read(fields, groupFields, where, -1);
+	}
+
+	public void group(Collection<Field> fields, Collection<Field> groupFields, SqlToken where, SqlToken having) {
+		read(fields, null, groupFields, where, having);
 	}
 
 	public void group(Collection<Field> fields, Collection<Field> groupFields, SqlToken where, int limit) {
@@ -1729,16 +1695,8 @@ public class Query extends Runnable {
 		return new integer(count(where));
 	}
 
-	public bool z8_aggregate() {
-		return z8_aggregate(null, null);
-	}
-
 	public bool z8_aggregate(RCollection<Field.CLASS<Field>> fieldClasses) {
 		return z8_aggregate(fieldClasses, null);
-	}
-
-	public bool z8_aggregate(sql_bool where) {
-		return z8_aggregate(null, where);
 	}
 
 	public bool z8_aggregate(RCollection<Field.CLASS<Field>> fieldClasses, sql_bool where) {
@@ -1780,29 +1738,9 @@ public class Query extends Runnable {
 		return copy(recordId);
 	}
 
-	public void z8_read() {
-		read();
-	}
-
-	public bool z8_readRecord(guid id) {
-		return new bool(readRecord(id));
-	}
-
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public bool z8_readRecord(guid id, RCollection fieldClasses) {
 		return new bool(readRecord(id, (RCollection<Field.CLASS<Field>>)fieldClasses));
-	}
-
-	public bool z8_readFirst() {
-		return new bool(readFirst());
-	}
-
-	public bool z8_readFirst(sql_bool where) {
-		return new bool(readFirst(where));
-	}
-
-	public void z8_read(sql_bool where) {
-		read(where);
 	}
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })

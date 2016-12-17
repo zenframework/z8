@@ -41,7 +41,7 @@ public class SearchEngine {
 					SearchIndex index = getIndex(query);
 					Field searchId = query.getSearchId();
 					String searchRecordId = searchId != null ? searchId.get().toString() : null;
-					index.updateDocument(searchRecordId == null || searchRecordId.equals(guid.NULL) ? recordId : searchRecordId, fullText);
+					index.updateDocument(searchRecordId == null || searchRecordId.equals(guid.Null) ? recordId : searchRecordId, fullText);
 					index.commit();
 				} catch(Throwable e) {
 					Trace.logEvent(e);

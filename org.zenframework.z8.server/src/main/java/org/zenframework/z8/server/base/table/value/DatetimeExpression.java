@@ -26,7 +26,7 @@ public class DatetimeExpression extends Expression {
 		super(container);
 		format = new string(Format.datetime);
 		aggregation = Aggregation.Max;
-		setDefault(new date(date.MIN));
+		setDefault(new date(date.Min));
 	}
 
 	@Override

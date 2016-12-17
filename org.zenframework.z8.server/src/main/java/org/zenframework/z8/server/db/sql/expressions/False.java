@@ -5,6 +5,6 @@ import org.zenframework.z8.server.types.sql.sql_bool;
 
 public class False extends sql_bool {
 	public False() {
-		super(new bool(false));
+		super(bool.False);
 	}
 }

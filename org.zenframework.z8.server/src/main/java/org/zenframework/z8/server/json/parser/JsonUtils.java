@@ -21,7 +21,7 @@ public class JsonUtils {
 			return ((bool)o).get();
 		} else if(o instanceof date) {
 			date dt = (date)o;
-			boolean minMax = dt.equals(date.MIN) || dt.equals(date.MAX);
+			boolean minMax = dt.equals(date.Min) || dt.equals(date.Max);
 			return minMax ? "" : dt.toString();
 		} else if(o instanceof datespan)
 			return ((datespan)o).get();

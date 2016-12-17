@@ -96,7 +96,7 @@ public abstract class Action extends RequestTarget {
 
 	public guid getParentIdParameter() {
 		String parentId = getRequestParameter(Json.parentId);
-		return parentId == null ? null : parentId.isEmpty() ? guid.NULL : new guid(parentId);
+		return parentId == null ? null : parentId.isEmpty() ? guid.Null : new guid(parentId);
 	}
 
 	public guid getRecordIdParameter() {

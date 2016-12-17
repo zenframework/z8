@@ -1,5 +1,8 @@
 package org.zenframework.z8.server.db.sql.expressions;
 
+import java.util.Collection;
+import java.util.Iterator;
+
 import org.zenframework.z8.server.db.DatabaseVendor;
 import org.zenframework.z8.server.db.FieldType;
 import org.zenframework.z8.server.db.sql.FormatOptions;
@@ -10,6 +13,19 @@ import org.zenframework.z8.server.types.sql.sql_integer;
 
 public class Or extends Expression {
 	static public String sqlOr = "or";
+
+	static public Or fromList(Collection<SqlToken> tokens) {
+		if(tokens.size() < 2)
+			throw new RuntimeException("Or.fromList: incorrect number of parameters");
+
+		Iterator<SqlToken> iterator = tokens.iterator();
+		Or or = new Or(iterator.next(), iterator.next());
+
+		while(iterator.hasNext())
+			or = new Or(or, iterator.next());
+
+		return or;
+	}
 
 	public Or(SqlToken left, SqlToken right) {
 		super(left, Operation.Or, right);

@@ -56,7 +56,7 @@ public class DestroyAction extends Action {
 	static public int run(Query query, guid id) {
 		int result = 0;
 
-		if(!guid.NULL.equals(id)) {
+		if(!guid.Null.equals(id)) {
 			query.beforeDestroy(id);
 			result = new Delete(query, id).execute();
 			query.afterDestroy(id);

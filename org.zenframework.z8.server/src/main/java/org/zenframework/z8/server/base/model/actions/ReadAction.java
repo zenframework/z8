@@ -483,7 +483,7 @@ public class ReadAction extends Action {
 	}
 
 	private void addNullRecordFilter(Field primaryKey) {
-		SqlToken left = getFilter(primaryKey, guid.NULL, Operation.NotEq);
+		SqlToken left = getFilter(primaryKey, guid.Null, Operation.NotEq);
 		SqlToken right = getIsNullFilter(primaryKey, Operation.None);
 		addFilter(new Group(new Or(left, right)));
 	}

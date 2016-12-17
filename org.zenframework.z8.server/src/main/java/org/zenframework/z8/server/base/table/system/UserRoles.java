@@ -1,14 +1,22 @@
 package org.zenframework.z8.server.base.table.system;
 
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 
 import org.zenframework.z8.server.base.table.Table;
+import org.zenframework.z8.server.base.table.value.Field;
 import org.zenframework.z8.server.base.table.value.IField;
 import org.zenframework.z8.server.base.table.value.Link;
+import org.zenframework.z8.server.db.sql.expressions.Equ;
 import org.zenframework.z8.server.engine.ApplicationServer;
 import org.zenframework.z8.server.resources.Resources;
 import org.zenframework.z8.server.runtime.IObject;
+import org.zenframework.z8.server.security.Access;
 import org.zenframework.z8.server.security.BuiltinUsers;
+import org.zenframework.z8.server.security.IAccess;
+import org.zenframework.z8.server.security.IRole;
 import org.zenframework.z8.server.security.Role;
 import org.zenframework.z8.server.types.exception;
 import org.zenframework.z8.server.types.guid;
@@ -98,14 +106,14 @@ public class UserRoles extends Table {
 		{
 			LinkedHashMap<IField, primary> record = new LinkedHashMap<IField, primary>();
 			record.put(user.get(), BuiltinUsers.Administrator.guid());
-			record.put(role.get(), Role.Administrator.guid());
+			record.put(role.get(), Role.Administrator);
 			addRecord(Administrator, record);
 		}
 
 		{
 			LinkedHashMap<IField, primary> record = new LinkedHashMap<IField, primary>();
 			record.put(user.get(), BuiltinUsers.System.guid());
-			record.put(role.get(), Role.Administrator.guid());
+			record.put(role.get(), Role.Administrator);
 			addRecord(System, record);
 		}
 	}
@@ -116,5 +124,35 @@ public class UserRoles extends Table {
 
 		if(recordId.equals(Administrator) || recordId.equals(System))
 			throw new exception("Builtin user's roles can not be removed.");
+	}
+
+	public Collection<IRole> get(guid userId) {
+		Field user = this.user.get();
+		Field role = this.role.get();
+		Field read = this.roles.get().read.get();
+		Field write = this.roles.get().write.get();
+		Field create = this.roles.get().create.get();
+		Field copy = this.roles.get().copy.get();
+		Field destroy = this.roles.get().destroy.get();
+		Field execute = this.roles.get().execute.get();
+
+		Collection<Field> fields = Arrays.asList(role, read, write, create, copy, destroy, execute);
+		read(fields, new Equ(user, userId));
+
+		Collection<IRole> roles = new HashSet<IRole>();
+
+		while(next()) {
+			IAccess access = new Access();
+			access.setRead(read.bool().get());
+			access.setWrite(write.bool().get());
+			access.setCreate(create.bool().get());
+			access.setCopy(copy.bool().get());
+			access.setDestroy(destroy.bool().get());
+			access.setExecute(execute.bool().get());
+
+			roles.add(new Role(role.guid(), access));
+		}
+
+		return roles;
 	}
 }

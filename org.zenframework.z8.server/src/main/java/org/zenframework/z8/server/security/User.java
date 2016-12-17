@@ -12,6 +12,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
+import org.zenframework.z8.server.base.table.system.RoleTableAccess;
 import org.zenframework.z8.server.base.table.system.SystemTools;
 import org.zenframework.z8.server.base.table.system.UserEntries;
 import org.zenframework.z8.server.base.table.system.UserRoles;
@@ -21,6 +22,10 @@ import org.zenframework.z8.server.config.ServerConfig;
 import org.zenframework.z8.server.db.ConnectionManager;
 import org.zenframework.z8.server.db.sql.SqlToken;
 import org.zenframework.z8.server.db.sql.expressions.Equ;
+import org.zenframework.z8.server.db.sql.expressions.Group;
+import org.zenframework.z8.server.db.sql.expressions.NotEqu;
+import org.zenframework.z8.server.db.sql.expressions.Or;
+import org.zenframework.z8.server.db.sql.functions.InVector;
 import org.zenframework.z8.server.db.sql.functions.string.EqualsIgnoreCase;
 import org.zenframework.z8.server.engine.Database;
 import org.zenframework.z8.server.engine.RmiIO;
@@ -31,6 +36,7 @@ import org.zenframework.z8.server.runtime.RLinkedHashMap;
 import org.zenframework.z8.server.types.guid;
 import org.zenframework.z8.server.types.primary;
 import org.zenframework.z8.server.types.string;
+import org.zenframework.z8.server.types.sql.sql_bool;
 import org.zenframework.z8.server.utils.IOUtils;
 import org.zenframework.z8.server.utils.NumericUtils;
 
@@ -41,7 +47,9 @@ public class User implements IUser {
 
 	private String name;
 	private String password;
-	private Collection<guid> roles = new HashSet<guid>(Arrays.asList(Role.User.guid()));
+
+	private Collection<IRole> roles;
+	private IPrivileges privileges;
 
 	private String description;
 	private String phone;
@@ -74,7 +82,7 @@ public class User implements IUser {
 		system.settings = "";
 		system.phone = "";
 		system.email = "";
-		system.roles = new HashSet<guid>(Arrays.asList(Role.Administrator.guid()));
+		system.roles = new HashSet<IRole>(Arrays.asList(Role.administrator()));
 
 		system.addSystemTools();
 
@@ -100,13 +108,17 @@ public class User implements IUser {
 	}
 
 	@Override
-	public Collection<guid> roles() {
+	public Collection<IRole> roles() {
 		return roles;
 	}
 
 	@Override
 	public boolean isAdministrator() {
-		return roles.contains(Role.Administrator.guid());
+		for(IRole role : roles) {
+			if(role.id().equals(Role.Administrator))
+				return true;
+		}
+		return false;
 	}
 
 	@Override
@@ -167,8 +179,8 @@ public class User implements IUser {
 		else
 			user.readInfo((guid)loginOrId);
 
-		user.readRoles();
-		user.readComponents();
+		user.loadRoles();
+		user.loadComponents();
 
 		if(user.isAdministrator())
 			user.addSystemTools();
@@ -241,22 +253,66 @@ public class User implements IUser {
 		}
 	}
 
-	private void readRoles() {
-		UserRoles userRoles = new UserRoles.CLASS<UserRoles>().get();
+	private Collection<guid> getRoles() {
+		Collection<guid> result = new ArrayList<guid>();
 
-		Field user = userRoles.user.get();
-		Field role = userRoles.role.get();
+		for(IRole role : roles)
+			result.add(role.id());
 
-		Collection<Field> fields = Arrays.asList(role);
-		SqlToken where = new Equ(user, id);
-
-		userRoles.read(fields, where);
-
-		while(userRoles.next())
-			roles.add(role.guid());
+		return result;
 	}
 
-	private void readComponents() {
+	private IAccess defaultAccess() {
+		IAccess access = new Access();
+
+		for(IRole role : roles)
+			access.apply(role.access());
+
+		return access;
+	}
+
+	private void loadRoles() {
+		UserRoles userRoles = new UserRoles.CLASS<UserRoles>().get();
+		roles = userRoles.get(id);
+
+		IAccess defaultAccess = defaultAccess();
+		IPrivileges privileges = new Privileges(defaultAccess);
+
+		RoleTableAccess rta = new RoleTableAccess.CLASS<RoleTableAccess>().get();
+		Field tableId = rta.table.get();
+		Field read = rta.read.get();
+		Field write = rta.write.get();
+		Field create = rta.create.get();
+		Field copy = rta.copy.get();
+		Field destroy = rta.destroy.get();
+
+		Collection<Field> groups = new ArrayList<Field>(Arrays.asList(rta.table.get()));
+		Collection<Field> fields = Arrays.asList(tableId, read, write, create, copy, destroy);
+
+		SqlToken where = new InVector(rta.role.get(), getRoles());
+
+		SqlToken notRead = new NotEqu(read, new sql_bool(defaultAccess.read()));
+		SqlToken notWrite = new NotEqu(write, new sql_bool(defaultAccess.write()));
+		SqlToken notCreate = new NotEqu(create, new sql_bool(defaultAccess.create()));
+		SqlToken notCopy = new NotEqu(copy, new sql_bool(defaultAccess.copy()));
+		SqlToken notDestroy = new NotEqu(destroy, new sql_bool(defaultAccess.destroy()));
+		SqlToken having = new Group(Or.fromList(Arrays.asList(notRead, notWrite, notCreate, notCopy, notDestroy)));
+
+		rta.group(fields, groups, where, having);
+		while(rta.next()) {
+			IAccess access = new Access();
+			access.setRead(read.bool().get());
+			access.setWrite(write.bool().get());
+			access.setCreate(create.bool().get());
+			access.setCopy(copy.bool().get());
+			access.setDestroy(destroy.bool().get());
+			privileges.setTableAccess(tableId.guid(), access);
+		}
+
+		System.out.println(privileges);
+	}
+
+	private void loadComponents() {
 		UserEntries userEntries = new UserEntries.CLASS<UserEntries>().get();
 
 		Field entryId = userEntries.entries.get().id.get();
@@ -329,6 +385,7 @@ public class User implements IUser {
 		RmiIO.writeString(objects, settings);
 
 		objects.writeObject(roles);
+		objects.writeObject(privileges);
 		objects.writeObject(components);
 		objects.writeObject(parameters);
 
@@ -360,6 +417,7 @@ public class User implements IUser {
 		settings = RmiIO.readString(objects);
 
 		roles = (Collection)objects.readObject();
+		privileges = (IPrivileges)objects.readObject();
 		components = (Collection)objects.readObject();
 		parameters = (RLinkedHashMap)objects.readObject();
 

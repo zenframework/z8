@@ -79,7 +79,7 @@ public class DBGenerator {
 		}
 
 		try {
-			new TableInfoGenerator(logger).run();
+			new AccessRightsGenerator(logger).run();
 		} catch(Throwable e) {
 			logger.error(e, ErrorUtils.getMessage(e));
 		}

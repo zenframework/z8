@@ -29,7 +29,7 @@ public class TransportQueueView extends TransportQueue {
 	public void constructor2() {
 		super.constructor2();
 
-		readOnly = new bool(true);
+		readOnly = bool.True;
 
 		sortFields.add(ordinal);
 

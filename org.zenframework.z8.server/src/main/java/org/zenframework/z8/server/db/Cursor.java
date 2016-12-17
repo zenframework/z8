@@ -82,7 +82,7 @@ public class Cursor {
 		boolean wasNull = wasNull();
 		if(field != null)
 			field.setWasNull(wasNull);
-		return !wasNull ? new bool(value) : new bool();
+		return !wasNull ? new bool(value) : bool.False;
 	}
 
 	public integer getInteger(int position) throws SQLException {
@@ -126,7 +126,7 @@ public class Cursor {
 		boolean wasNull = value == null || wasNull();
 		if(field != null)
 			field.setWasNull(wasNull);
-		return !wasNull ? new date(value) : date.MIN;
+		return !wasNull ? new date(value) : date.Min;
 	}
 
 	public datespan getDatespan(int position) throws SQLException {

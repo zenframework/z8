@@ -169,7 +169,13 @@ public class Select {
 
 		options.disableAggregation();
 
-		String result = "select" + fields + from + formatWhere(options) + formatGroupBy(options) + formatHaving(options) + orderBy + (rootQuery != null ? " " + rootQuery.getReadLock() : "");
+		String result = "select" + fields + from + formatWhere(options) + formatGroupBy(options);
+
+		options.enableAggregation();
+		result += formatHaving(options);
+
+		options.disableAggregation();
+		result += orderBy + (rootQuery != null ? " " + rootQuery.getReadLock() : "");
 
 		options.enableAggregation();
 

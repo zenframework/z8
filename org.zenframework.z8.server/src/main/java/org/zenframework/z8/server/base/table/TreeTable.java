@@ -53,8 +53,6 @@ public class TreeTable extends Table {
 	public GuidField.CLASS<? extends GuidField> parent6 = new GuidField.CLASS<GuidField>(this);
 	public GuidField.CLASS<? extends GuidField> root = new GuidField.CLASS<GuidField>(this);
 
-	public bool keepIntegrity = new bool(true);
-
 	@SuppressWarnings("rawtypes")
 	private GuidField.CLASS[] parentLinks = { parent1, parent2, parent3, parent4, parent5, parent6 };
 
@@ -70,7 +68,7 @@ public class TreeTable extends Table {
 		parentId.setIndex("parentId");
 		parentId.setSystem(true);
 		parentId.setAttribute(ParentKey, "");
-		parentId.get().indexed = new bool(true);
+		parentId.get().indexed = bool.True;
 
 		path.setName(names.Path);
 		path.setIndex("path");
@@ -80,37 +78,37 @@ public class TreeTable extends Table {
 		root.setName(names.Root);
 		root.setIndex("root");
 		root.setSystem(true);
-		root.get().indexed = new bool(true);
+		root.get().indexed = bool.True;
 
 		parent1.setName(names.Parent1);
 		parent1.setIndex("parent1");
 		parent1.setSystem(true);
-		parent1.get().indexed = new bool(true);
+		parent1.get().indexed = bool.True;
 
 		parent2.setName(names.Parent2);
 		parent2.setIndex("parent2");
 		parent2.setSystem(true);
-		parent2.get().indexed = new bool(true);
+		parent2.get().indexed = bool.True;
 
 		parent3.setName(names.Parent3);
 		parent3.setIndex("parent3");
 		parent3.setSystem(true);
-		parent3.get().indexed = new bool(true);
+		parent3.get().indexed = bool.True;
 
 		parent4.setName(names.Parent4);
 		parent4.setIndex("parent4");
 		parent4.setSystem(true);
-		parent4.get().indexed = new bool(true);
+		parent4.get().indexed = bool.True;
 
 		parent5.setName(names.Parent5);
 		parent5.setIndex("parent5");
 		parent5.setSystem(true);
-		parent5.get().indexed = new bool(true);
+		parent5.get().indexed = bool.True;
 
 		parent6.setName(names.Parent6);
 		parent6.setIndex("parent6");
 		parent6.setSystem(true);
-		parent6.get().indexed = new bool(true);
+		parent6.get().indexed = bool.True;
 
 		registerDataField(parentId);
 		registerDataField(path);
@@ -142,7 +140,7 @@ public class TreeTable extends Table {
 		parentId = parentKey().guid();
 		recordId = primaryKey().guid();
 
-		if(keepIntegrity.get() && parentId != null) {
+		if(parentId != null) {
 			String path = recordId.toString();
 			String parentPath = "";
 
@@ -168,7 +166,7 @@ public class TreeTable extends Table {
 					Field link = (Field)parentLinks[i].get();
 					link.set(parent);
 				}
-				root.get().set(parents.length > 0 ? parents[0] : guid.NULL);
+				root.get().set(parents.length > 0 ? parents[0] : guid.Null);
 			} else
 				root.get().set(recordId);
 

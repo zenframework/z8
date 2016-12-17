@@ -139,7 +139,7 @@ public abstract class BasicStatement implements IStatement {
 	}
 
 	public void setBoolean(int position, bool value) throws SQLException {
-		value = value != null ? value : new bool();
+		value = value != null ? value : bool.False;
 
 		switch(vendor()) {
 		case Postgres:
@@ -159,7 +159,7 @@ public abstract class BasicStatement implements IStatement {
 	}
 
 	public void setDate(int position, date value) throws SQLException {
-		Timestamp timestamp = new Timestamp((value != null ? value : date.MIN).getTicks());
+		Timestamp timestamp = new Timestamp((value != null ? value : date.Min).getTicks());
 		statement.setTimestamp(position, timestamp);
 	}
 

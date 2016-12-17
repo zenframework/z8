@@ -40,7 +40,7 @@ public class JobGenerator {
 			String classId = jobClass.classId();
 			guid jobRecordId;
 
-			jobsTable.read(new Equ(jobsTable.id.get(), classId));
+			jobsTable.read(Arrays.asList(jobsTable.primaryKey()), new Equ(jobsTable.id.get(), classId));
 
 			jobsTable.id.get().set(new string(classId));
 			jobsTable.name.get().set(new string(jobClass.displayName()));
@@ -55,7 +55,7 @@ public class JobGenerator {
 
 			if(jobValue != null && !jobValue.isEmpty()) {
 				int repeat = new integer(jobValue).getInt();
-				if(!schedulerJobs.readFirst(new Equ(schedulerJobs.job.get(), jobRecordId))) {
+				if(!schedulerJobs.hasRecord(new Equ(schedulerJobs.job.get(), jobRecordId))) {
 					schedulerJobs.active.get().set(new bool(repeat > 0));
 					schedulerJobs.job.get().set(jobRecordId);
 					schedulerJobs.repeat.get().set(new integer(repeat > SchedulerJobs.MinRepeat ? repeat : SchedulerJobs.DefaultRepeat));

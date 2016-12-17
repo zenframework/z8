@@ -30,7 +30,7 @@ public class Link extends GuidField implements ILink, IForeignKey {
 	public Link(IObject container) {
 		super(container);
 		setSystem(true);
-		indexed = new bool(true);
+		indexed = bool.True;
 	}
 
 	@Override

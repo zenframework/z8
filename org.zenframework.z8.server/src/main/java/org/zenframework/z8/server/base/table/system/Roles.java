@@ -1,15 +1,21 @@
 package org.zenframework.z8.server.base.table.system;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.LinkedHashMap;
 
 import org.zenframework.z8.server.base.table.Table;
 import org.zenframework.z8.server.base.table.value.BoolField;
+import org.zenframework.z8.server.base.table.value.Field;
 import org.zenframework.z8.server.base.table.value.IField;
 import org.zenframework.z8.server.db.sql.expressions.Equ;
 import org.zenframework.z8.server.engine.Runtime;
 import org.zenframework.z8.server.resources.Resources;
 import org.zenframework.z8.server.runtime.IObject;
+import org.zenframework.z8.server.security.Access;
+import org.zenframework.z8.server.security.IAccess;
+import org.zenframework.z8.server.security.IRole;
 import org.zenframework.z8.server.security.Role;
 import org.zenframework.z8.server.types.bool;
 import org.zenframework.z8.server.types.exception;
@@ -86,35 +92,37 @@ public class Roles extends Table {
 		name.setDisplayName(displayNames.Name);
 		name.get().length = new integer(50);
 
+		IAccess access = Access.guest();
+
 		read.setName(names.Read);
 		read.setIndex("read");
 		read.setDisplayName(displayNames.Read);
-		read.get().setDefault(new bool(true));
+		read.get().setDefault(new bool(access.read()));
 
 		write.setName(names.Write);
 		write.setIndex("write");
 		write.setDisplayName(displayNames.Write);
-		write.get().setDefault(new bool(true));
+		write.get().setDefault(new bool(access.write()));
 
 		create.setName(names.Create);
 		create.setIndex("create");
 		create.setDisplayName(displayNames.Create);
-		create.get().setDefault(new bool(true));
+		create.get().setDefault(new bool(access.create()));
 
 		copy.setName(names.Copy);
 		copy.setIndex("copy");
 		copy.setDisplayName(displayNames.Copy);
-		copy.get().setDefault(new bool(false));
+		copy.get().setDefault(new bool(access.copy()));
 
 		destroy.setName(names.Destroy);
 		destroy.setIndex("destroy");
 		destroy.setDisplayName(displayNames.Destroy);
-		destroy.get().setDefault(new bool(false));
+		destroy.get().setDefault(new bool(access.destroy()));
 
 		execute.setName(names.Execute);
 		execute.setIndex("execute");
 		execute.setDisplayName(displayNames.Execute);
-		execute.get().setDefault(new bool(false));
+		execute.get().setDefault(new bool(access.execute()));
 
 		registerDataField(read);
 		registerDataField(write);
@@ -128,46 +136,25 @@ public class Roles extends Table {
 
 	@Override
 	public void initStaticRecords() {
-		{
-			LinkedHashMap<IField, primary> values = new LinkedHashMap<IField, primary>();
-			values.put(name.get(), new string(Role.displayNames.Administrator));
-			values.put(description.get(), new string(Role.displayNames.Administrator));
-			values.put(read.get(), new bool(true));
-			values.put(write.get(), new bool(true));
-			values.put(create.get(), new bool(true));
-			values.put(copy.get(), new bool(true));
-			values.put(destroy.get(), new bool(true));
-			values.put(execute.get(), new bool(true));
-			values.put(locked.get(), new bool(true));
-			addRecord(Role.Administrator.guid(), values);
-		}
-		{
-			LinkedHashMap<IField, primary> values = new LinkedHashMap<IField, primary>();
-			values.put(name.get(), new string(Role.displayNames.User));
-			values.put(description.get(), new string(Role.displayNames.User));
-			values.put(read.get(), new bool(true));
-			values.put(write.get(), new bool(true));
-			values.put(create.get(), new bool(true));
-			values.put(copy.get(), new bool(true));
-			values.put(destroy.get(), new bool(true));
-			values.put(execute.get(), new bool(true));
-			values.put(locked.get(), new bool(true));
-			addRecord(Role.User.guid(), values);
-		}
+		initStaticRecord(Role.displayNames.Administrator, Role.administrator());
+		initStaticRecord(Role.displayNames.User, Role.user());
+		initStaticRecord(Role.displayNames.Guest, Role.guest());
+	}
 
-		{
-			LinkedHashMap<IField, primary> values = new LinkedHashMap<IField, primary>();
-			values.put(name.get(), new string(Role.displayNames.Guest));
-			values.put(description.get(), new string(Role.displayNames.Guest));
-			values.put(read.get(), new bool(true));
-			values.put(write.get(), new bool(false));
-			values.put(create.get(), new bool(false));
-			values.put(copy.get(), new bool(false));
-			values.put(destroy.get(), new bool(false));
-			values.put(execute.get(), new bool(false));
-			values.put(locked.get(), new bool(true));
-			addRecord(Role.Guest.guid(), values);
-		}
+	private void initStaticRecord(String displayName, IRole role) {
+		IAccess access = role.access();
+
+		LinkedHashMap<IField, primary> values = new LinkedHashMap<IField, primary>();
+		values.put(name.get(), new string(displayName));
+		values.put(description.get(), new string(displayName));
+		values.put(read.get(), new bool(access.read()));
+		values.put(write.get(), new bool(access.write()));
+		values.put(create.get(), new bool(access.create()));
+		values.put(copy.get(), new bool(access.copy()));
+		values.put(destroy.get(), new bool(access.destroy()));
+		values.put(execute.get(), new bool(access.execute()));
+		values.put(locked.get(), new integer(1));
+		addRecord(role.id(), values);
 	}
 
 	@Override
@@ -198,8 +185,8 @@ public class Roles extends Table {
 	public void beforeDestroy(guid recordId) {
 		super.beforeDestroy(recordId);
 
-		if(Role.Administrator.guid().equals(recordId) || Role.User.guid().equals(recordId) ||
-				Role.Guest.guid().equals(recordId))
+		if(Role.Administrator.equals(recordId) || Role.User.equals(recordId) ||
+				Role.Guest.equals(recordId))
 			throw new exception("Builtin roles can not be deleted");
 
 		RoleFieldAccess rfa = new RoleFieldAccess.CLASS<RoleFieldAccess>().get();
@@ -207,5 +194,32 @@ public class Roles extends Table {
 
 		RoleTableAccess rta = new RoleTableAccess.CLASS<RoleTableAccess>().get();
 		rta.destroy(new Equ(rta.role.get(), recordId));
+	}
+
+	public Collection<IRole> get() {
+		Field read = this.read.get();
+		Field write = this.write.get();
+		Field create = this.create.get();
+		Field copy = this.copy.get();
+		Field destroy = this.destroy.get();
+		Field execute = this.execute.get();
+
+		read(Arrays.asList(read, write, create, copy, destroy, execute));
+
+		Collection<IRole> roles = new ArrayList<IRole>();
+
+		while(next()) {
+			IAccess access = new Access();
+			access.setRead(read.bool().get());
+			access.setWrite(write.bool().get());
+			access.setCreate(create.bool().get());
+			access.setCopy(copy.bool().get());
+			access.setDestroy(destroy.bool().get());
+			access.setExecute(execute.bool().get());
+
+			roles.add(new Role(recordId(), access));
+		}
+
+		return roles;
 	}
 }

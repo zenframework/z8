@@ -5,7 +5,6 @@ import org.zenframework.z8.server.base.table.value.BoolField;
 import org.zenframework.z8.server.base.table.value.Link;
 import org.zenframework.z8.server.resources.Resources;
 import org.zenframework.z8.server.runtime.IObject;
-import org.zenframework.z8.server.types.bool;
 
 public class UserFieldAccess extends Table {
 	final static public String TableName = "SystemUserFieldAccess";
@@ -86,12 +85,10 @@ public class UserFieldAccess extends Table {
 		read.setName(names.Read);
 		read.setIndex("read");
 		read.setDisplayName(displayNames.Read);
-		read.get().setDefault(new bool(true));
 
 		write.setName(names.Write);
 		write.setIndex("write");
 		write.setDisplayName(displayNames.Write);
-		write.get().setDefault(new bool(true));
 
 		registerDataField(user);
 		registerDataField(field);

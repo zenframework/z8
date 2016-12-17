@@ -61,10 +61,10 @@ public class Sequences extends Table {
 
 		registerDataField(value);
 
-		id.get().indexed = new bool(true);
+		id.get().indexed = bool.True;
 		id.get().length = new integer(256);
 
-		name.get().visible = new bool(false);
+		name.get().visible = bool.False;
 
 		description.get().width = new integer(100);
 

@@ -2,10 +2,12 @@ package org.zenframework.z8.server.base.table.system;
 
 import org.zenframework.z8.server.base.table.Table;
 import org.zenframework.z8.server.base.table.value.BoolField;
+import org.zenframework.z8.server.base.table.value.Field;
 import org.zenframework.z8.server.base.table.value.Link;
 import org.zenframework.z8.server.resources.Resources;
 import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.types.bool;
+import org.zenframework.z8.server.types.guid;
 
 public class RoleTableAccess extends Table {
 	final static public String TableName = "SystemRoleTableAccess";
@@ -98,27 +100,22 @@ public class RoleTableAccess extends Table {
 		read.setName(names.Read);
 		read.setIndex("read");
 		read.setDisplayName(displayNames.Read);
-		read.get().setDefault(new bool(true));
 
 		write.setName(names.Write);
 		write.setIndex("write");
 		write.setDisplayName(displayNames.Write);
-		write.get().setDefault(new bool(true));
 
 		create.setName(names.Create);
 		create.setIndex("create");
 		create.setDisplayName(displayNames.Create);
-		create.get().setDefault(new bool(true));
 
 		copy.setName(names.Copy);
 		copy.setIndex("copy");
 		copy.setDisplayName(displayNames.Copy);
-		copy.get().setDefault(new bool(false));
 
 		destroy.setName(names.Destroy);
 		destroy.setIndex("destroy");
 		destroy.setDisplayName(displayNames.Destroy);
-		destroy.get().setDefault(new bool(false));
 
 		registerDataField(role);
 		registerDataField(table);
@@ -131,5 +128,28 @@ public class RoleTableAccess extends Table {
 
 		queries.add(roles);
 		queries.add(tables);
+	}
+
+	@Override
+	public void beforeUpdate(guid recordId) {
+		Field read = this.read.get();
+		Field write = this.write.get();
+		Field create = this.create.get();
+		Field copy = this.copy.get();
+		Field destroy = this.destroy.get();
+
+		if(read.changed() && !read.bool().get()) {
+			write.set(bool.False);
+			create.set(bool.False);
+			copy.set(bool.False);
+			destroy.set(bool.False);
+		} else if(write.changed() && !write.bool().get()) {
+			create.set(bool.False);
+			copy.set(bool.False);
+			destroy.set(bool.False);
+		} else if(create.changed() && !create.bool().get())
+			copy.set(bool.False);
+
+		super.beforeUpdate(recordId);
 	}
 }

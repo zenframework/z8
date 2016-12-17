@@ -110,7 +110,7 @@ public class Period extends OBJECT {
 	}
 
 	public bool z8_isEmpty() {
-		return new bool(start.equals(date.MIN) && finish.equals(date.MIN));
+		return new bool(start.equals(date.Min) && finish.equals(date.Min));
 	}
 
 	public Period.CLASS<? extends Period> z8_intersect(Period.CLASS<? extends Period> periodClass) {
@@ -120,8 +120,8 @@ public class Period extends OBJECT {
 		long myStart = this.start.getTicks();
 		long myFinish = this.finish.getTicks();
 
-		date resultStart = new date(date.MIN);
-		date resultFinish = new date(date.MIN);
+		date resultStart = new date(date.Min);
+		date resultFinish = new date(date.Min);
 
 		if(start <= myStart && myStart <= finish)
 			resultStart.set(new date(myStart));
@@ -147,10 +147,10 @@ public class Period extends OBJECT {
 
 		PeriodType type = PeriodType.fromString(object.getString(Json.period));
 		date start = new date(object.getString(Json.start));
-		if(!start.equals(date.MIN))
+		if(!start.equals(date.Min))
 			start.setTime(0, 0, 0);
 		date finish = new date(object.getString(Json.finish));
-		if(!finish.equals(date.MIN))
+		if(!finish.equals(date.Min))
 			finish.setTime(23, 59, 59, 999);
 
 		return create(type, start, finish);

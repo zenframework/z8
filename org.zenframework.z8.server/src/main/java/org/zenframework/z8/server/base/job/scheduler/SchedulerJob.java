@@ -76,8 +76,8 @@ public class SchedulerJob implements Runnable {
 		long now = new date().getTicks();
 
 		return active && !isRunning && from.getTicks() < now && 
-				(till.equals(date.MIN) || now < till.getTicks()) && 
-				(lastStarted.equals(date.MIN) || lastStarted.addSecond(repeat).getTicks() < now);
+				(till.equals(date.Min) || now < till.getTicks()) && 
+				(lastStarted.equals(date.Min) || lastStarted.addSecond(repeat).getTicks() < now);
 	}
 
 	private boolean beforeStart() {

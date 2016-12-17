@@ -36,7 +36,7 @@ public class Command extends Runnable implements ICommand {
 	public string description = new string();
 	public string icon = new string();
 
-	public bool useTransaction = new bool(true);
+	public bool useTransaction = bool.True;
 
 	public RCollection<Parameter.CLASS<? extends Parameter>> parameters = new RCollection<Parameter.CLASS<? extends Parameter>>();
 

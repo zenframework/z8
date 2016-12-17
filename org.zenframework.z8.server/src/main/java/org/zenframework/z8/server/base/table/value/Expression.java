@@ -27,8 +27,7 @@ public class Expression extends Field {
 
 	public Expression(IObject container) {
 		super(container);
-
-		readOnly = new bool(true);
+		readOnly = bool.True;
 	}
 
 	public Expression(SqlToken expression, FieldType expressionType) {

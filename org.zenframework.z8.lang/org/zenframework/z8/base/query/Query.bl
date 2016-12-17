@@ -62,8 +62,6 @@ class Query extends Runnable {
 	public int count();
 	public int count(sql_bool where);
 
-	public bool aggregate();
-	public bool aggregate(sql_bool where);
 	public bool aggregate(Field[] fields);
 	public bool aggregate(Field[] fields, sql_bool where);
 
@@ -71,23 +69,16 @@ class Query extends Runnable {
 	public guid create(guid recordId);
 	public guid copy(guid recordId);
 
-	public void read();
-	public void read(sql_bool where);
-
 	public void read(Field[] fields);
 	public void read(Field[] fields, sql_bool where);
 	public void read(Field[] fields, Field[] sortFields);
 	public void read(Field[] fields, Field[] sortFields, sql_bool where);
-
-	public bool readFirst();
-	public bool readFirst(sql_bool where);
 
 	public bool readFirst(Field[] fields);
 	public bool readFirst(Field[] fields, sql_bool where);
 	public bool readFirst(Field[] fields, Field[] sortFields);
 	public bool readFirst(Field[] fields, Field[] sortFields, sql_bool where);
 
-	public bool readRecord(guid id);
 	public bool readRecord(guid id, Field[] fields);
 
 	public void sort(Field[] sortFields);

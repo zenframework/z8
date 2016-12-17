@@ -75,7 +75,7 @@ abstract public class HubServerView extends Query {
 	public void constructor2() {
 		super.constructor2();
 
-		readOnly = new bool(true);
+		readOnly = bool.True;
 
 		recordId.setIndex("recordId");
 

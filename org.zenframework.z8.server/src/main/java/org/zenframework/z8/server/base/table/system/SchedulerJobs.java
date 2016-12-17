@@ -132,7 +132,7 @@ public class SchedulerJobs extends Table {
 		registerDataField(active);
 
 		repeat.get().setDefault(new integer(DefaultRepeat));
-		active.get().setDefault(new bool(true));
+		active.get().setDefault(bool.True);
 
 		registerFormField(jobs.get().name);
 		registerFormField(users.get().name);

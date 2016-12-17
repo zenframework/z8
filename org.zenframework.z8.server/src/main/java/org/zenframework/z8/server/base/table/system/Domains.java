@@ -94,7 +94,7 @@ public class Domains extends Table {
 
 		id.setDisplayName(displayNames.Id);
 		id.get().length = new integer(256);
-		id.get().unique = new bool(true);
+		id.get().unique = bool.True;
 
 		userLink.setName(names.User);
 		userLink.setIndex("userLink");

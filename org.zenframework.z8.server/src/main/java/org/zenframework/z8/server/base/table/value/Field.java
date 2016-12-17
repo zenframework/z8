@@ -271,7 +271,7 @@ abstract public class Field extends Control implements IValue, IField {
 	@SuppressWarnings("unchecked")
 	public void writeMeta(JsonWriter writer, Query query) {
 		writer.writeProperty(Json.serverType, type().toString());
-		writer.writeProperty(Json.visible, visible, new bool(true));
+		writer.writeProperty(Json.visible, visible, bool.True);
 		writer.writeProperty(Json.format, format, new string());
 		writer.writeProperty(Json.length, length, new integer(0));
 

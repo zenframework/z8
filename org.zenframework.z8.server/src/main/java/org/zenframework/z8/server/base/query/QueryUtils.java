@@ -37,9 +37,9 @@ public class QueryUtils {
 		else if(type == FieldType.Decimal)
 			field.set(value == null || value.isEmpty() ? new decimal() : new decimal(value));
 		else if(type == FieldType.Boolean)
-			field.set(value == null || value.isEmpty() ? new bool() : new bool(value));
+			field.set(value == null || value.isEmpty() ? bool.False : new bool(value));
 		else if(type == FieldType.Datetime || type == FieldType.Date)
-			field.set(value == null || value.isEmpty() ? new date(date.MIN) : new date(value));
+			field.set(value == null || value.isEmpty() ? new date(date.Min) : new date(value));
 		else if(type == FieldType.Datespan)
 			field.set(value == null || value.isEmpty() ? new datespan() : new datespan(value));
 		else if(type == FieldType.Guid)

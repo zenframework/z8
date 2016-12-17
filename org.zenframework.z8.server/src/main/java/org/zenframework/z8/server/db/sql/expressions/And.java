@@ -1,5 +1,8 @@
 package org.zenframework.z8.server.db.sql.expressions;
 
+import java.util.Collection;
+import java.util.Iterator;
+
 import org.zenframework.z8.server.db.DatabaseVendor;
 import org.zenframework.z8.server.db.FieldType;
 import org.zenframework.z8.server.db.sql.FormatOptions;
@@ -9,6 +12,19 @@ import org.zenframework.z8.server.types.sql.sql_integer;
 
 public class And extends Expression {
 	static public String sqlAnd = "and";
+
+	static public And fromList(Collection<SqlToken> tokens) {
+		if(tokens.size() < 2)
+			throw new RuntimeException("And.fromList: incorrect number of parameters");
+
+		Iterator<SqlToken> iterator = tokens.iterator();
+		And and = new And(iterator.next(), iterator.next());
+
+		while(iterator.hasNext())
+			and = new And(and, iterator.next());
+
+		return and;
+	}
 
 	public And(SqlToken left, SqlToken right) {
 		super(left, Operation.And, right);

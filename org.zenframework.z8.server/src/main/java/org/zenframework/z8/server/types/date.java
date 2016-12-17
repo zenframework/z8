@@ -22,8 +22,8 @@ public class date extends primary {
 	private static long UTC_0001_01_01 = -62135769600000l;
 	private static long UTC_5000_01_01 = 95617584000000l;
 
-	final static public date MIN = getUTCDate(UTC_0001_01_01);
-	final static public date MAX = getUTCDate(UTC_5000_01_01);
+	final static public date Min = getUTCDate(UTC_0001_01_01);
+	final static public date Max = getUTCDate(UTC_5000_01_01);
 
 	static private date getUTCDate(long utcMillis) {
 		GregorianCalendar calendar = new GregorianCalendar(TimeZone.getTimeZone("Etc/UTC"));
@@ -53,7 +53,7 @@ public class date extends primary {
 	}
 
 	public date(date d) {
-		set(d != null ? d.get() : MIN.get());
+		set(d != null ? d.get() : Min.get());
 	}
 
 	public date(java.sql.Date date) {
@@ -70,7 +70,7 @@ public class date extends primary {
 
 	public date(String date) {
 		if(date == null || date.isEmpty()) {
-			set(MIN);
+			set(Min);
 			return;
 		}
 
@@ -138,7 +138,7 @@ public class date extends primary {
 
 	@Override
 	public date defaultValue() {
-		return new date(MIN);
+		return new date(Min);
 	}
 
 	public GregorianCalendar get() {
@@ -188,7 +188,7 @@ public class date extends primary {
 	public void set(String s, String format) {
 		try {
 			if(s == null || s.isEmpty()) {
-				set(date.MIN);
+				set(date.Min);
 			} else {
 				Date date = new SimpleDateFormat(format).parse(s);
 				set(date.getTime());

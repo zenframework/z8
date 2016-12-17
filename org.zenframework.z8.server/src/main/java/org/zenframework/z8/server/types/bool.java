@@ -19,6 +19,9 @@ public final class bool extends primary {
 	static public String trueString = Resources.get(strings.True);
 	static public String falseString = Resources.get(strings.False);
 
+	public static bool False = new bool(false);
+	public static bool True = new bool(true);
+
 	public bool() {
 	}
 
@@ -46,7 +49,7 @@ public final class bool extends primary {
 
 	@Override
 	public bool defaultValue() {
-		return new bool();
+		return bool.False;
 	}
 
 	public String toNumber() {

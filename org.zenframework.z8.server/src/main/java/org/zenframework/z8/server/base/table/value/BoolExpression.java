@@ -24,7 +24,7 @@ public class BoolExpression extends Expression {
 	public BoolExpression(IObject container) {
 		super(container);
 		width = new integer(5);
-		setDefault(new bool());
+		setDefault(bool.False);
 	}
 
 	@Override

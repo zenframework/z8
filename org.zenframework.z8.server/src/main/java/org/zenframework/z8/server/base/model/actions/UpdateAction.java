@@ -117,7 +117,7 @@ public class UpdateAction extends Action {
 	static public int run(Query query, guid recordId, boolean resetChangedFields) {
 		int result = 0;
 
-		if(recordId == null || !recordId.equals(guid.NULL)) {
+		if(recordId == null || !recordId.equals(guid.Null)) {
 			if(recordId != null)
 				query.beforeUpdate(recordId);
 

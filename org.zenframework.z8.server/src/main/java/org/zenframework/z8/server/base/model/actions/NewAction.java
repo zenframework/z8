@@ -45,7 +45,7 @@ public class NewAction extends Action {
 				Link link = (Link)field;
 				guid recordId = link.guid();
 
-				if(!recordId.equals(guid.NULL)) {
+				if(!recordId.equals(guid.Null)) {
 					Query query = link.getQuery();
 
 					ActionParameters parameters = actionParameters();
@@ -98,7 +98,7 @@ public class NewAction extends Action {
 	static public Collection<Field> run(Query query, guid recordId, guid parentId) {
 		Collection<Field> fields = query.getRootQuery().getPrimaryFields();
 
-		query.onNew(recordId, parentId != null ? parentId : guid.NULL);
+		query.onNew(recordId, parentId != null ? parentId : guid.Null);
 
 		initFields(fields, recordId, parentId);
 

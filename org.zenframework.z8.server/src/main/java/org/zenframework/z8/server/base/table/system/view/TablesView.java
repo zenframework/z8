@@ -61,7 +61,7 @@ public class TablesView extends Tables {
 	public void constructor2() {
 		super.constructor2();
 
-		readOnly = new bool(true);
+		readOnly = bool.True;
 		columns = new integer(6);
 
 		fields.setIndex("fields");

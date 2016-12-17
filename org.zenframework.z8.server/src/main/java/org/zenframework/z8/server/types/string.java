@@ -431,7 +431,7 @@ public final class string extends primary {
 	public bool z8_next() {
 		try {
 			if(matcher == null)
-				return new bool(false);
+				return bool.False;
 
 			return new bool(matcher.find());
 		} catch(PatternSyntaxException e) {

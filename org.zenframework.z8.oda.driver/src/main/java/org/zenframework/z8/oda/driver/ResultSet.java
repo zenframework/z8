@@ -88,7 +88,7 @@ public class ResultSet implements IResultSet {
 		if(value instanceof date) {
 			date dt = (date)value;
 
-			if(dt.equals(date.MIN) || dt.equals(date.MAX))
+			if(dt.equals(date.Min) || dt.equals(date.Max))
 				return NULL_STRING;
 		} else if(value instanceof bool)
 			return ((bool)value).get() ? Resources.get("bool.true") : Resources.get("bool.false");
@@ -183,7 +183,7 @@ public class ResultSet implements IResultSet {
 		if(value instanceof date) {
 			date dt = (date)value;
 
-			if(dt.equals(date.MIN) || dt.equals(date.MAX))
+			if(dt.equals(date.Min) || dt.equals(date.Max))
 				wasNull = true;
 
 			return new Date(dt.getTicks());
@@ -209,7 +209,7 @@ public class ResultSet implements IResultSet {
 		if(value instanceof date) {
 			date dt = (date)value;
 
-			if(dt.equals(date.MIN) || dt.equals(date.MAX))
+			if(dt.equals(date.Min) || dt.equals(date.Max))
 				wasNull = true;
 
 			return new Time(dt.getTicks());
@@ -235,7 +235,7 @@ public class ResultSet implements IResultSet {
 		if(value instanceof date) {
 			date dt = (date)value;
 
-			if(dt.equals(date.MIN) || dt.equals(date.MAX))
+			if(dt.equals(date.Min) || dt.equals(date.Max))
 				wasNull = true;
 
 			return new Timestamp(dt.getTicks());

@@ -121,7 +121,7 @@ public class Expression implements IFilter {
 
 		switch(type) {
 		case Boolean:
-			bool boolValue = operation == Operation.IsTrue ? new bool(true) : (operation == Operation.IsFalse ? new bool(false) : new bool(value));
+			bool boolValue = operation == Operation.IsTrue ? bool.True : (operation == Operation.IsFalse ? bool.False : new bool(value));
 			return new Rel(field, Operation.Eq, new sql_bool(boolValue));
 		case Decimal:
 			return new Rel(field, operation, new decimal(value).sql_decimal());

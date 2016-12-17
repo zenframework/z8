@@ -460,7 +460,7 @@ public class TableGenerator {
 	private void updateDefaultDate() throws SQLException {
 		for(Field field : table.getDataFields()) {
 			if(field instanceof DateField || field instanceof DatetimeField) {
-				field.set(date.MIN);
+				field.set(date.Min);
 				field.aggregation = Aggregation.None;
 				date min = new date(1900, 1, 1, 0, 0, 0);
 				sql_bool where = new sql_bool(new Rel(field, Operation.LT, min.sql_date()));
@@ -533,10 +533,10 @@ public class TableGenerator {
 		Query query = table();
 
 		try {
-			if(!findRecord(guid.NULL))
-				query.create(guid.NULL);
+			if(!findRecord(guid.Null))
+				query.create(guid.Null);
 		} catch(Throwable e) {
-			logger.error(e, Resources.format("Generator.insertRecordsError", guid.NULL.toString(), table().displayName(), table().name(), ErrorUtils.getMessage(e)));
+			logger.error(e, Resources.format("Generator.insertRecordsError", guid.Null.toString(), table().displayName(), table().name(), ErrorUtils.getMessage(e)));
 		}
 	}
 
@@ -549,7 +549,7 @@ public class TableGenerator {
 		guid parentId = (guid)record.get(parentKey);
 
 		if(parentKey != null && parentId == null) {
-			parentId = guid.NULL;
+			parentId = guid.Null;
 		}
 
 		Collection<Field> fields = (Collection)record.keySet();
@@ -613,7 +613,7 @@ public class TableGenerator {
 
 				if(field.type() == FieldType.Guid) {
 					SqlToken isNull = new IsNull(new SqlField(field));
-					SqlToken iif = new If(isNull, guid.NULL.sql_guid(), new SqlField(field));
+					SqlToken iif = new If(isNull, guid.Null.sql_guid(), new SqlField(field));
 					name = iif.format(vendor, options);
 				} else if(dbField.type.startsWith("character") && field.type() == FieldType.Text) {
 					name = new ToBytes(field).format(vendor, options);

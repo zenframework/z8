@@ -27,7 +27,7 @@ public class DatetimeField extends Field {
 
 	public DatetimeField(IObject container) {
 		super(container);
-		setDefault(date.MIN);
+		setDefault(date.Min);
 		aggregation = Aggregation.Max;
 		format = new string(Format.datetime);
 	}

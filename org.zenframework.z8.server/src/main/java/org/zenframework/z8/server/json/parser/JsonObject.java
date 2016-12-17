@@ -1404,7 +1404,7 @@ public class JsonObject extends HashMap<String, Object> {
 			return numberToString(((decimal)value).get());
 		else if(value instanceof date) {
 			date dt = (date)value;
-			boolean minMax = dt.equals(date.MIN) || dt.equals(date.MAX);
+			boolean minMax = dt.equals(date.Min) || dt.equals(date.Max);
 			return quote(minMax ? "" : value.toString());
 		} else if(value instanceof JsonString)
 			return ((JsonString)value).toJSONString();
