@@ -13,9 +13,11 @@ import org.zenframework.z8.server.db.sql.SortDirection;
 import org.zenframework.z8.server.db.sql.SqlConst;
 import org.zenframework.z8.server.db.sql.SqlField;
 import org.zenframework.z8.server.db.sql.functions.IsNull;
+import org.zenframework.z8.server.engine.ApplicationServer;
 import org.zenframework.z8.server.json.Json;
 import org.zenframework.z8.server.json.JsonWriter;
 import org.zenframework.z8.server.runtime.IObject;
+import org.zenframework.z8.server.security.IAccess;
 import org.zenframework.z8.server.types.binary;
 import org.zenframework.z8.server.types.bool;
 import org.zenframework.z8.server.types.date;
@@ -70,6 +72,8 @@ abstract public class Field extends Control implements IValue, IField {
 
 	public int position = -1;
 
+	private IAccess access;
+	
 	protected Field(IObject container) {
 		super(container);
 	}
@@ -121,6 +125,11 @@ abstract public class Field extends Control implements IValue, IField {
 		return (Query)getOwner();
 	}
 
+	@Override
+	public IAccess access() {
+		return access != null ? access : (access = ApplicationServer.getUser().privileges().getAccess(this));
+	}
+
 	public final void setCursor(Select cursor) {
 		this.cursor = cursor;
 	}
@@ -143,10 +152,6 @@ abstract public class Field extends Control implements IValue, IField {
 
 	public void setPath(Collection<ILink> path) {
 		this.path = path;
-	}
-
-	public Collection<ILink> getPath() {
-		return path;
 	}
 
 	public boolean isRightJoined() {
@@ -283,7 +288,7 @@ abstract public class Field extends Control implements IValue, IField {
 		boolean readOnly = false;
 		boolean required = false;
 
-		if(path == null)
+		if(path == null || !path.isEmpty() && path.iterator().next().owner() != query)
 			path = query.getPath(this);
 
 		if(!path.isEmpty()) {
@@ -311,7 +316,8 @@ abstract public class Field extends Control implements IValue, IField {
 		}
 
 		writer.writeProperty(Json.required, required);
-		writer.writeProperty(Json.readOnly, readOnly);
+
+		this.readOnly = new bool(readOnly);
 
 		super.writeMeta(writer, query);
 	}

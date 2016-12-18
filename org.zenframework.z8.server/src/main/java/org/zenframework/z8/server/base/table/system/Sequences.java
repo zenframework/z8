@@ -57,7 +57,7 @@ public class Sequences extends Table {
 		value.setIndex("value");
 		value.setDisplayName(displayNames.Value);
 
-		readOnly.set(!ApplicationServer.getUser().isAdministrator());
+		readOnly= new bool(!ApplicationServer.getUser().isAdministrator());
 
 		registerDataField(value);
 

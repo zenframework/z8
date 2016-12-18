@@ -2,6 +2,7 @@ package org.zenframework.z8.server.base.table.system;
 
 import java.util.LinkedHashMap;
 
+import org.zenframework.z8.server.base.query.RecordLock;
 import org.zenframework.z8.server.base.table.Table;
 import org.zenframework.z8.server.base.table.value.IField;
 import org.zenframework.z8.server.base.table.value.IntegerField;
@@ -10,7 +11,7 @@ import org.zenframework.z8.server.engine.ApplicationServer;
 import org.zenframework.z8.server.resources.Resources;
 import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.security.BuiltinUsers;
-import org.zenframework.z8.server.types.exception;
+import org.zenframework.z8.server.types.bool;
 import org.zenframework.z8.server.types.guid;
 import org.zenframework.z8.server.types.primary;
 
@@ -93,7 +94,7 @@ public class UserEntries extends Table {
 		position.setIndex("position");
 		position.setDisplayName(displayNames.Position);
 
-		readOnly.set(!ApplicationServer.getUser().isAdministrator());
+		readOnly = new bool(!ApplicationServer.getUser().isAdministrator());
 
 		registerDataField(user);
 		registerDataField(entry);
@@ -109,6 +110,7 @@ public class UserEntries extends Table {
 			LinkedHashMap<IField, primary> record = new LinkedHashMap<IField, primary>();
 			record.put(user.get(), BuiltinUsers.Administrator.guid());
 			record.put(entry.get(), SystemTools.Id);
+			record.put(lock.get(), RecordLock.Destroy);
 			addRecord(Administrator, record);
 		}
 
@@ -116,15 +118,8 @@ public class UserEntries extends Table {
 			LinkedHashMap<IField, primary> record = new LinkedHashMap<IField, primary>();
 			record.put(user.get(), BuiltinUsers.System.guid());
 			record.put(entry.get(), SystemTools.Id);
+			record.put(lock.get(), RecordLock.Destroy);
 			addRecord(System, record);
 		}
-	}
-
-	@Override
-	public void beforeDestroy(guid recordId) {
-		super.beforeDestroy(recordId);
-
-		if(recordId.equals(Administrator) || recordId.equals(System))
-			throw new exception("Builtin user's entrypoints can not be removed.");
 	}
 }

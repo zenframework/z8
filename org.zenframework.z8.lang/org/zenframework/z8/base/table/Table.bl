@@ -3,7 +3,6 @@ import org.zenframework.z8.base.table.value.DatetimeField;
 import org.zenframework.z8.base.table.value.GuidField;
 import org.zenframework.z8.base.table.value.StringField;
 import org.zenframework.z8.base.table.value.TextField;
-import org.zenframework.z8.base.table.value.BoolExpression;
 
 [native "org.zenframework.z8.server.base.table.Table"]
 class Table extends TableBase {
@@ -19,13 +18,12 @@ class Table extends TableBase {
 
 	public [name "Description"][displayName "Описание"] TextField description;
 
-	public [name "Locked"][displayName "Заблокирована"] BoolExpression locked;
-	locked.readOnly = false;
+	public [name "Lock"] BoolField lock;
 
 	public [displayName "Создана"] DatetimeField createdAt;
 	createdAt.readOnly = true;
 
-	public [displayName "Создал"]  GuidField createdBy;
+	public [displayName "Создал"] GuidField createdBy;
 	createdBy.readOnly = true;
 
 	public [displayName "Изменена"] DatetimeField modifiedAt;

@@ -211,6 +211,7 @@ public abstract class Action extends RequestTarget {
 
 		Collection<Field> fields = getFormFields(query);
 		fields.add(primaryKey);
+		fields.add(query.lockKey());
 
 		Link link = getLink();
 		if(link != null)

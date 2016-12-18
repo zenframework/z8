@@ -13,12 +13,10 @@ public class Jobs extends Table {
 
 	static public class strings {
 		public final static String Title = "Jobs.title";
-		public final static String DefaultSettings = "Jobs.defaultSettings";
 	}
 
 	static public class displayNames {
 		public final static String Title = Resources.get(strings.Title);
-		public final static String DefaultSettings = Resources.get(strings.DefaultSettings);
 	}
 
 	public static class CLASS<T extends Jobs> extends Table.CLASS<T> {
@@ -46,8 +44,8 @@ public class Jobs extends Table {
 	@Override
 	public void constructor2() {
 		super.constructor2();
+
 		id.get().length = new integer(256);
 		name.get().length = new integer(256);
-		description.setDisplayName(displayNames.DefaultSettings);
 	}
 }

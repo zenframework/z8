@@ -1,17 +1,21 @@
 package org.zenframework.z8.server.db.generator;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashSet;
 
-import org.zenframework.z8.server.base.simple.Procedure;
+import org.zenframework.z8.server.base.query.RecordLock;
 import org.zenframework.z8.server.base.table.system.Jobs;
-import org.zenframework.z8.server.base.table.system.Logs;
-import org.zenframework.z8.server.base.table.system.SchedulerJobs;
-import org.zenframework.z8.server.base.table.value.Field;
+import org.zenframework.z8.server.base.table.system.ScheduledJobLogs;
+import org.zenframework.z8.server.base.table.system.ScheduledJobs;
+import org.zenframework.z8.server.db.Connection;
+import org.zenframework.z8.server.db.ConnectionManager;
 import org.zenframework.z8.server.db.sql.expressions.Equ;
+import org.zenframework.z8.server.db.sql.expressions.UnaryNot;
+import org.zenframework.z8.server.db.sql.functions.InVector;
 import org.zenframework.z8.server.engine.Runtime;
 import org.zenframework.z8.server.runtime.IObject;
+import org.zenframework.z8.server.runtime.OBJECT;
 import org.zenframework.z8.server.types.bool;
 import org.zenframework.z8.server.types.guid;
 import org.zenframework.z8.server.types.integer;
@@ -21,75 +25,74 @@ public class JobGenerator {
 	@SuppressWarnings("unused")
 	private ILogger logger;
 
+	private Jobs jobs = new Jobs.CLASS<Jobs>().get();
+	private ScheduledJobs scheduledJobs = new ScheduledJobs.CLASS<ScheduledJobs>().get();
+	private ScheduledJobLogs scheduledJobLogs = new ScheduledJobLogs.CLASS<ScheduledJobLogs>().get();
+
+	private Collection<guid> jobKeys = new HashSet<guid>();
+
 	public JobGenerator(ILogger logger) {
 		this.logger = logger;
+		jobKeys.addAll(Runtime.instance().jobKeys());
 	}
 
 	public void run() {
-		createJobs();
-		deleteOldJobs();
-	}
+		Connection connection = ConnectionManager.get();
 
-	private void createJobs() {
-		Collection<Procedure.CLASS<? extends Procedure>> jobs = Runtime.instance().jobs();
-
-		Jobs jobsTable = new Jobs.CLASS<Jobs>().get();
-		SchedulerJobs schedulerJobs = new SchedulerJobs.CLASS<SchedulerJobs>().get();
-
-		for(Procedure.CLASS<? extends Procedure> jobClass : jobs) {
-			String classId = jobClass.classId();
-			guid jobRecordId;
-
-			jobsTable.read(Arrays.asList(jobsTable.primaryKey()), new Equ(jobsTable.id.get(), classId));
-
-			jobsTable.id.get().set(new string(classId));
-			jobsTable.name.get().set(new string(jobClass.displayName()));
-
-			if(jobsTable.next()) {
-				jobRecordId = jobsTable.recordId();
-				jobsTable.update(jobRecordId);
-			} else
-				jobRecordId = jobsTable.create();
-
-			String jobValue = jobClass.getAttribute(IObject.Job);
-
-			if(jobValue != null && !jobValue.isEmpty()) {
-				int repeat = new integer(jobValue).getInt();
-				if(!schedulerJobs.hasRecord(new Equ(schedulerJobs.job.get(), jobRecordId))) {
-					schedulerJobs.active.get().set(new bool(repeat > 0));
-					schedulerJobs.job.get().set(jobRecordId);
-					schedulerJobs.repeat.get().set(new integer(repeat > SchedulerJobs.MinRepeat ? repeat : SchedulerJobs.DefaultRepeat));
-					schedulerJobs.create();
-				}
-			}
+		try {
+			connection.beginTransaction();
+			writeJobs();
+			connection.commit();
+		} catch(Throwable e) {
+			connection.rollback();
+			throw new RuntimeException(e);
 		}
 	}
 
-	private Collection<String> jobs() {
-		Collection<String> result = new ArrayList<String>();
+	private void writeJobs() {
+		jobs.read(Arrays.asList(jobs.primaryKey()), new UnaryNot(new InVector(jobs.primaryKey(), jobKeys)));
 
-		for(Procedure.CLASS<? extends Procedure> cls : Runtime.instance().jobs())
-			result.add(cls.classId());
+		while(jobs.next()) {
+			guid job = jobs.recordId();
+			scheduledJobLogs.destroy(new Equ(scheduledJobLogs.scheduledJobs.get().job.get(), job));
+			scheduledJobs.destroy(new Equ(scheduledJobs.job.get(), job));
+			jobs.destroy(job);
+		}
 
-		return result;
+		createJobs();
 	}
 
-	private void deleteOldJobs() {
-		Collection<String> jobs = jobs();
+	private void createJobs() {
+		jobs.read(Arrays.asList(jobs.primaryKey()), new InVector(jobs.primaryKey(), jobKeys));
+		while(jobs.next()) {
+			guid job = jobs.recordId();
+			setJobProperties(Runtime.instance().getJobByKey(job).newInstance());
+			jobs.update(job);
+			jobKeys.remove(job);
+		}
 
-		SchedulerJobs schedulerJobs = new SchedulerJobs.CLASS<SchedulerJobs>().get();
-		Field jobId = schedulerJobs.jobs.get().id.get();
+		for(guid key : jobKeys) {
+			setJobProperties(Runtime.instance().getJobByKey(key).newInstance());
+			jobs.create(key);
+		}
+	}
 
-		schedulerJobs.read(Arrays.asList(jobId));
+	private void setJobProperties(OBJECT job) {
+		jobs.id.get().set(job.classId());
+		jobs.name.get().set(new string(job.displayName()));
+		jobs.lock.get().set(RecordLock.Destroy);
 
-		Logs logs = new Logs.CLASS<Logs>().get();
+		String jobRepeat = job.getAttribute(IObject.Job);
 
-		while(schedulerJobs.next()) {
-			if(!jobs.contains(jobId.string().get())) {
-				guid recordId = schedulerJobs.recordId();
-				logs.destroy(new Equ(logs.job.get(), recordId));
-				schedulerJobs.destroy(recordId);
-			}
+		if(jobRepeat == null || jobRepeat.isEmpty())
+			return;
+
+		int repeat = new integer(jobRepeat).getInt();
+		if(!scheduledJobs.hasRecord(new Equ(scheduledJobs.job.get(), job.key()))) {
+			scheduledJobs.active.get().set(new bool(repeat > 0));
+			scheduledJobs.job.get().set(job.key());
+			scheduledJobs.repeat.get().set(new integer(repeat > ScheduledJobs.MinRepeat ? repeat : ScheduledJobs.DefaultRepeat));
+			scheduledJobs.create();
 		}
 	}
 }

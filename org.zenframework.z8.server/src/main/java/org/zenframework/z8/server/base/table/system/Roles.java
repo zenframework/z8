@@ -154,7 +154,7 @@ public class Roles extends Table {
 		values.put(copy.get(), new bool(access.copy()));
 		values.put(destroy.get(), new bool(access.destroy()));
 		values.put(execute.get(), new bool(access.execute()));
-		values.put(locked.get(), RecordLock.Destroy);
+		values.put(lock.get(), RecordLock.Destroy);
 		addRecord(role.id(), values);
 	}
 

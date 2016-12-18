@@ -10,6 +10,7 @@ import org.zenframework.z8.server.base.query.QueryUtils;
 import org.zenframework.z8.server.base.table.value.Field;
 import org.zenframework.z8.server.db.Connection;
 import org.zenframework.z8.server.db.ConnectionManager;
+import org.zenframework.z8.server.exceptions.AccessRightsViolationException;
 import org.zenframework.z8.server.json.JsonWriter;
 import org.zenframework.z8.server.json.parser.JsonArray;
 import org.zenframework.z8.server.json.parser.JsonObject;
@@ -22,6 +23,9 @@ public class CreateAction extends Action {
 
 	@Override
 	public void writeResponse(JsonWriter writer) {
+		if(!getQuery().access().create())
+			throw new AccessRightsViolationException();
+
 		String jsonData = getDataParameter();
 
 		if(jsonData == null)

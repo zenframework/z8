@@ -47,6 +47,7 @@ import org.zenframework.z8.server.request.Loader;
 import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.runtime.OBJECT;
 import org.zenframework.z8.server.runtime.RCollection;
+import org.zenframework.z8.server.security.IAccess;
 import org.zenframework.z8.server.types.bool;
 import org.zenframework.z8.server.types.exception;
 import org.zenframework.z8.server.types.guid;
@@ -116,6 +117,8 @@ public class Query extends Runnable {
 	protected ReadLock readLock = ReadLock.None;
 	private boolean transactive = false;
 
+	private IAccess access;
+
 	protected Query() {
 		this(null);
 	}
@@ -140,6 +143,10 @@ public class Query extends Runnable {
 
 	public boolean equals(Query query) {
 		return this == query;
+	}
+
+	public IAccess access() {
+		return access != null ? access : (access = ApplicationServer.getUser().privileges().getAccess(this));
 	}
 
 	public void onNew(guid recordId, guid parentId) {
@@ -1080,7 +1087,7 @@ public class Query extends Runnable {
 
 		if(rootQuery != null && rootQuery instanceof Table) {
 			Table table = (Table)rootQuery;
-			return table.locked.get();
+			return table.lock.get();
 		}
 
 		return null;

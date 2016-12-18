@@ -3,26 +3,24 @@ package org.zenframework.z8.server.base.table.value;
 import org.zenframework.z8.server.base.query.Query;
 import org.zenframework.z8.server.db.DatabaseVendor;
 import org.zenframework.z8.server.db.FieldType;
+import org.zenframework.z8.server.security.IAccess;
 import org.zenframework.z8.server.types.primary;
 
 public interface IField {
 	public String name();
-
 	public String displayName();
 
 	public FieldType type();
+	public String sqlType(DatabaseVendor vendor);
 
 	public int size();
-
 	public int scale();
 
 	public primary getDefaultValue();
 
-	public String sqlType(DatabaseVendor vendor);
+	public primary get();
+	public void set(primary value);
 
 	public Query owner();
-
-	public primary get();
-
-	public void set(primary value);
+	public IAccess access();
 }

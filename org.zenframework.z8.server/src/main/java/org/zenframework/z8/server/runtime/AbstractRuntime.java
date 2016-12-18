@@ -1,9 +1,7 @@
 package org.zenframework.z8.server.runtime;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.zenframework.z8.server.base.simple.Procedure;
@@ -15,8 +13,8 @@ public abstract class AbstractRuntime implements IRuntime {
 	private Map<String, Table.CLASS<? extends Table>> tableNames = new HashMap<String, Table.CLASS<? extends Table>>();
 	private Map<guid, Table.CLASS<? extends Table>> tableKeys = new HashMap<guid, Table.CLASS<? extends Table>>();
 
-	private List<OBJECT.CLASS<? extends OBJECT>> entries = new ArrayList<OBJECT.CLASS<? extends OBJECT>>();
-	private List<Procedure.CLASS<? extends Procedure>> jobs = new ArrayList<Procedure.CLASS<? extends Procedure>>();
+	private Map<guid, OBJECT.CLASS<? extends OBJECT>> entryKeys = new HashMap<guid, OBJECT.CLASS<? extends OBJECT>>();
+	private Map<guid, Procedure.CLASS<? extends Procedure>> jobKeys = new HashMap<guid, Procedure.CLASS<? extends Procedure>>();
 
 	@Override
 	public Collection<Table.CLASS<? extends Table>> tables() {
@@ -30,12 +28,22 @@ public abstract class AbstractRuntime implements IRuntime {
 
 	@Override
 	public Collection<OBJECT.CLASS<? extends OBJECT>> entries() {
-		return entries;
+		return entryKeys.values();
+	}
+
+	@Override
+	public Collection<guid> entryKeys() {
+		return entryKeys.keySet();
 	}
 
 	@Override
 	public Collection<Procedure.CLASS<? extends Procedure>> jobs() {
-		return jobs;
+		return jobKeys.values();
+	}
+
+	@Override
+	public Collection<guid> jobKeys() {
+		return jobKeys.keySet();
 	}
 
 	@Override
@@ -55,15 +63,25 @@ public abstract class AbstractRuntime implements IRuntime {
 
 	@Override
 	public OBJECT.CLASS<? extends OBJECT> getEntry(String name) {
-		return AbstractRuntime.<OBJECT.CLASS<? extends OBJECT>> get(name, entries);
+		return AbstractRuntime.<OBJECT.CLASS<? extends OBJECT>> get(name, entries());
+	}
+
+	@Override
+	public OBJECT.CLASS<? extends OBJECT> getEntryByKey(guid key) {
+		return entryKeys.get(key);
 	}
 
 	@Override
 	public Procedure.CLASS<? extends Procedure> getJob(String name) {
-		return AbstractRuntime.<Procedure.CLASS<? extends Procedure>> get(name, jobs);
+		return AbstractRuntime.<Procedure.CLASS<? extends Procedure>> get(name, jobs());
 	}
 
-	private static <T extends OBJECT.CLASS<? extends OBJECT>> T get(String name, List<T> list) {
+	@Override
+	public Procedure.CLASS<? extends Procedure> getJobByKey(guid key) {
+		return jobKeys.get(key);
+	}
+
+	private static <T extends OBJECT.CLASS<? extends OBJECT>> T get(String name, Collection<T> list) {
 		for(T cls : list) {
 			if(name.equals(cls.classId()))
 				return cls;
@@ -87,19 +105,13 @@ public abstract class AbstractRuntime implements IRuntime {
 	}
 
 	protected void addEntry(OBJECT.CLASS<? extends OBJECT> cls) {
-		for(CLASS<? extends OBJECT> entry : entries) {
-			if(entry.classId().equals(cls.classId()))
-				return;
-		}
-		entries.add(cls);
+		if(!entryKeys.containsKey(cls.key()))
+			entryKeys.put(cls.key(), cls);
 	}
 
 	protected void addJob(Procedure.CLASS<? extends Procedure> cls) {
-		for(CLASS<? extends Procedure> job : jobs) {
-			if(job.classId().equals(cls.classId()))
-				return;
-		}
-		jobs.add(cls);
+		if(!jobKeys.containsKey(cls.key()))
+			jobKeys.put(cls.key(), cls);
 	}
 
 	protected void mergeWith(IRuntime runtime) {

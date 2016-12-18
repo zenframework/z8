@@ -5,6 +5,7 @@ import org.zenframework.z8.server.base.simple.Runnable;
 import org.zenframework.z8.server.base.table.system.view.AuthorityCenterView;
 import org.zenframework.z8.server.base.table.system.view.FilesView;
 import org.zenframework.z8.server.base.table.system.view.InterconnectionCenterView;
+import org.zenframework.z8.server.base.table.system.view.JobsView;
 import org.zenframework.z8.server.base.table.system.view.RoleTableAccessView;
 import org.zenframework.z8.server.base.table.system.view.TablesView;
 import org.zenframework.z8.server.base.table.system.view.TransportQueueView;
@@ -19,9 +20,8 @@ import org.zenframework.z8.server.types.guid;
 
 
 public class SystemTools extends Desktop {
-	static public guid Id = new guid("C186F658-C326-4620-BA53-402E9A4871D9");
-
-	static public String ClassName = SystemTools.class.getCanonicalName();
+	static public guid Id = new SystemTools.CLASS<SystemTools>().key();
+	static public String ClassId = new SystemTools.CLASS<SystemTools>().classId();
 
 	static public class strings {
 		public final static String Title = "SystemTools.title";
@@ -32,6 +32,10 @@ public class SystemTools extends Desktop {
 	}
 
 	public static class CLASS<T extends SystemTools> extends Desktop.CLASS<T> {
+		public CLASS() {
+			this(null);
+		}
+
 		public CLASS(IObject container) {
 			super(container);
 			setJavaClass(SystemTools.class);
@@ -46,7 +50,7 @@ public class SystemTools extends Desktop {
 
 	public Runnable.CLASS<? extends Runnable> users = new UsersView.CLASS<UsersView>(this);
 	public Runnable.CLASS<? extends Runnable> domains = new Domains.CLASS<Domains>(this);
-	public Runnable.CLASS<? extends Runnable> tasks = new Logs.CLASS<Logs>(this);
+	public Runnable.CLASS<? extends Runnable> jobs = new JobsView.CLASS<JobsView>(this);
 	public Runnable.CLASS<? extends Runnable> sequences = new Sequences.CLASS<Sequences>(this);
 	public Runnable.CLASS<? extends Runnable> exportMessages = new TransportQueueView.CLASS<TransportQueueView>(this);
 	public Runnable.CLASS<? extends Runnable> files = new FilesView.CLASS<FilesView>(this);
@@ -70,7 +74,7 @@ public class SystemTools extends Desktop {
 		if(ServerConfig.isSystemInstalled()) {
 			runnables.add(users);
 			runnables.add(domains);
-			runnables.add(tasks);
+			runnables.add(jobs);
 			runnables.add(sequences);
 
 			runnables.add(exportMessages);

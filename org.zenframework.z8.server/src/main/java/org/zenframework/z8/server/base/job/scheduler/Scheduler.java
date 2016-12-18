@@ -5,7 +5,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
-import org.zenframework.z8.server.base.table.system.SchedulerJobs;
+import org.zenframework.z8.server.base.table.system.ScheduledJobs;
 import org.zenframework.z8.server.base.table.value.BoolField;
 import org.zenframework.z8.server.base.table.value.DatetimeField;
 import org.zenframework.z8.server.base.table.value.Field;
@@ -21,9 +21,9 @@ public class Scheduler implements Runnable {
 
 	private Thread thread = null;
 	private boolean resetPending = true;
-	private List<SchedulerJob> jobs = new ArrayList<SchedulerJob>();
+	private List<ScheduledJob> jobs = new ArrayList<ScheduledJob>();
 
-	static private List<SchedulerJob> systemJobs = new ArrayList<SchedulerJob>();
+	static private List<ScheduledJob> systemJobs = new ArrayList<ScheduledJob>();
 	static private Collection<Thread> threads = new ArrayList<Thread>();
 
 	static {
@@ -32,7 +32,7 @@ public class Scheduler implements Runnable {
 	}
 
 	static public void addSystemJob(String className, int repeat) {
-		SchedulerJob job = new SchedulerJob(className, repeat);
+		ScheduledJob job = new ScheduledJob(className, repeat);
 		systemJobs.add(job);
 	}
 
@@ -74,7 +74,7 @@ public class Scheduler implements Runnable {
 			if(Thread.interrupted())
 				return;
 
-			for(SchedulerJob job : jobs)
+			for(ScheduledJob job : jobs)
 				job.start();
 
 			try {
@@ -88,7 +88,7 @@ public class Scheduler implements Runnable {
 	private void stopJobs() {
 		thread.interrupt();
 
-		for(SchedulerJob job : jobs.toArray(new SchedulerJob[0]))
+		for(ScheduledJob job : jobs.toArray(new ScheduledJob[0]))
 			job.stop();
 
 		for(Thread thread : threads.toArray(new Thread[0]))
@@ -106,26 +106,26 @@ public class Scheduler implements Runnable {
 		if(!resetPending || !ServerConfig.isSystemInstalled())
 			return;
 
-		SchedulerJobs jobsTable = new SchedulerJobs.CLASS<SchedulerJobs>(null).get();
+		ScheduledJobs scheduledJobs = new ScheduledJobs.CLASS<ScheduledJobs>(null).get();
 
-		GuidField user = jobsTable.user.get();
-		DatetimeField from = jobsTable.from.get();
-		DatetimeField till = jobsTable.till.get();
-		IntegerField repeat = jobsTable.repeat.get();
-		DatetimeField lastStarted = jobsTable.lastStarted.get();
-		BoolField active = jobsTable.active.get();
-		StringField className = jobsTable.jobs.get().id.get();
-		StringField name = jobsTable.jobs.get().name.get();
+		GuidField user = scheduledJobs.user.get();
+		DatetimeField from = scheduledJobs.from.get();
+		DatetimeField till = scheduledJobs.till.get();
+		IntegerField repeat = scheduledJobs.repeat.get();
+		DatetimeField lastStarted = scheduledJobs.lastStarted.get();
+		BoolField active = scheduledJobs.active.get();
+		StringField className = scheduledJobs.jobs.get().id.get();
+		StringField name = scheduledJobs.jobs.get().name.get();
 
 		Collection<Field> fields = Arrays.asList(user, from, till, repeat, lastStarted, active, className, name);
 
-		jobsTable.read(fields);
+		scheduledJobs.read(fields);
 
-		List<SchedulerJob> result = new ArrayList<SchedulerJob>();
+		List<ScheduledJob> result = new ArrayList<ScheduledJob>();
 
-		while(jobsTable.next()) {
-			guid id = jobsTable.recordId();
-			SchedulerJob job = new SchedulerJob(id);
+		while(scheduledJobs.next()) {
+			guid id = scheduledJobs.recordId();
+			ScheduledJob job = new ScheduledJob(id);
 
 			int index = jobs.indexOf(job);
 			if(index != -1)
@@ -150,7 +150,7 @@ public class Scheduler implements Runnable {
 	}
 
 	private boolean hasRunningJobs() {
-		for(SchedulerJob job : jobs) {
+		for(ScheduledJob job : jobs) {
 			if(job.isRunning)
 				return true;
 		}

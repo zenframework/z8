@@ -28,7 +28,7 @@ public class Table extends TableBase {
 		public final static String Id = "Id";
 		public final static String Name = "Name";
 		public final static String Description = "Description";
-		public final static String Locked = "Locked";
+		public final static String Lock = "Lock";
 		public final static String Archive = "Archive";
 	}
 
@@ -42,8 +42,6 @@ public class Table extends TableBase {
 		public final static String Id = "Table.id";
 		public final static String Name = "Table.name";
 		public final static String Description = "Table.description";
-		public final static String Locked = "Table.locked";
-		public final static String Archive = "Table.archive";
 	}
 
 	static public class displayNames {
@@ -56,8 +54,6 @@ public class Table extends TableBase {
 		public final static String Id = Resources.get(strings.Id);
 		public final static String Name = Resources.get(strings.Name);
 		public final static String Description = Resources.get(strings.Description);
-		public final static String Locked = Resources.get(strings.Locked);
-		public final static String Archive = Resources.get(strings.Archive);
 	}
 
 	public static class CLASS<T extends Table> extends TableBase.CLASS<T> {
@@ -85,7 +81,7 @@ public class Table extends TableBase {
 	public StringField.CLASS<? extends StringField> name = new StringField.CLASS<StringField>(this);
 	public TextField.CLASS<? extends StringField> description = new TextField.CLASS<TextField>(this);
 
-	public IntegerField.CLASS<? extends IntegerField> locked = new IntegerField.CLASS<IntegerField>(this);
+	public IntegerField.CLASS<? extends IntegerField> lock = new IntegerField.CLASS<IntegerField>(this);
 	public BoolField.CLASS<? extends BoolField> archive = new BoolField.CLASS<BoolField>(this);
 
 	final static public int IdLength = 15;
@@ -113,10 +109,9 @@ public class Table extends TableBase {
 		description.setIndex("description");
 		description.setDisplayName(displayNames.Description);
 
-		locked.setName(names.Locked);
-		locked.setIndex("locked");
-		locked.setDisplayName(displayNames.Locked);
-		locked.setSystem(true);
+		lock.setName(names.Lock);
+		lock.setIndex("lock");
+		lock.setSystem(true);
 
 		recordId.setName(names.RecordId);
 		recordId.setIndex("recordId");
@@ -146,7 +141,6 @@ public class Table extends TableBase {
 
 		archive.setName(names.Archive);
 		archive.setIndex("archive");
-		archive.setDisplayName(displayNames.Archive);
 		archive.setSystem(true);
 
 		registerDataField(recordId);
@@ -154,7 +148,7 @@ public class Table extends TableBase {
 		registerDataField(modifiedAt);
 		registerDataField(createdBy);
 		registerDataField(modifiedBy);
-		registerDataField(locked);
+		registerDataField(lock);
 		registerDataField(archive);
 
 		registerDataField(id);

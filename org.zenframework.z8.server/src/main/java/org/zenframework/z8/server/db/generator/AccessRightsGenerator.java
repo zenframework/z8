@@ -49,7 +49,7 @@ public class AccessRightsGenerator {
 
 		try {
 			connection.beginTransaction();
-			writeTableInfo();
+			writeTables();
 			connection.commit();
 		} catch(Throwable e) {
 			connection.rollback();
@@ -57,7 +57,7 @@ public class AccessRightsGenerator {
 		}
 	}
 
-	private void writeTableInfo() {
+	private void writeTables() {
 		tables.read(Arrays.asList(tables.primaryKey()), new UnaryNot(new InVector(tables.primaryKey(), tableKeys)));
 
 		while(tables.next()) {
@@ -140,7 +140,7 @@ public class AccessRightsGenerator {
 		tables.name.get().set(new string(table.name()));
 		tables.displayName.get().set(new string(table.displayName()));
 		tables.description.get().set(new string(table.description()));
-		tables.locked.get().set(RecordLock.Full);
+		tables.lock.get().set(RecordLock.Full);
 	}
 
 	private void setFieldProperties(Field.CLASS<? extends Field> field, guid tableKey) {
@@ -150,7 +150,7 @@ public class AccessRightsGenerator {
 		fields.description.get().set(new string(field.description()));
 		fields.type.get().set(new string(getFieldType(field.get())));
 		fields.position.get().set(new integer(field.ordinal()));
-		fields.locked.get().set(RecordLock.Full);
+		fields.lock.get().set(RecordLock.Full);
 	}
 
 	private Collection<IRole> getRoles() {

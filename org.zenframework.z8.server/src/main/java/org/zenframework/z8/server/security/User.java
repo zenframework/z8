@@ -58,7 +58,7 @@ public class User implements IUser {
 
 	private String settings;
 
-	private Collection<Component> components = new ArrayList<Component>();
+	private Collection<Entry> entries = new ArrayList<Entry>();
 	private RLinkedHashMap<string, primary> parameters = new RLinkedHashMap<string, primary>();
 
 	static private User system = null;
@@ -113,6 +113,11 @@ public class User implements IUser {
 	}
 
 	@Override
+	public IPrivileges privileges() {
+		return privileges;
+	}
+
+	@Override
 	public boolean isAdministrator() {
 		for(IRole role : roles) {
 			if(role.id().equals(Role.Administrator))
@@ -142,13 +147,13 @@ public class User implements IUser {
 	}
 
 	@Override
-	public Collection<Component> components() {
-		return components;
+	public Collection<Entry> entries() {
+		return entries;
 	}
 
 	@Override
-	public void setComponents(Collection<Component> components) {
-		this.components = components;
+	public void setEntries(Collection<Entry> entries) {
+		this.entries = entries;
 	}
 
 	@Override
@@ -180,7 +185,7 @@ public class User implements IUser {
 			user.readInfo((guid)loginOrId);
 
 		user.loadRoles();
-		user.loadComponents();
+		user.loadEntries();
 
 		if(user.isAdministrator())
 			user.addSystemTools();
@@ -200,12 +205,13 @@ public class User implements IUser {
 	}
 
 	private void addSystemTools() {
-		for(Component component : components) {
-			if(component.className().equals(SystemTools.ClassName))
+		for(Entry entry : entries) {
+			if(entry.id().equals(SystemTools.Id))
 				return;
 		}
 
-		components.add(new Component(null, SystemTools.ClassName, Resources.get(SystemTools.strings.Title)));
+		SystemTools.CLASS<SystemTools> systemTools = new SystemTools.CLASS<SystemTools>();
+		entries.add(new Entry(systemTools.key(), systemTools.classId(), Resources.get(SystemTools.strings.Title)));
 	}
 
 	private void readInfo(guid id) {
@@ -276,7 +282,7 @@ public class User implements IUser {
 		roles = userRoles.get(id);
 
 		IAccess defaultAccess = defaultAccess();
-		IPrivileges privileges = new Privileges(defaultAccess);
+		privileges = new Privileges(defaultAccess);
 
 		RoleTableAccess rta = new RoleTableAccess.CLASS<RoleTableAccess>().get();
 		Field tableId = rta.table.get();
@@ -312,30 +318,28 @@ public class User implements IUser {
 		System.out.println(privileges);
 	}
 
-	private void loadComponents() {
+	private void loadEntries() {
 		UserEntries userEntries = new UserEntries.CLASS<UserEntries>().get();
 
-		Field entryId = userEntries.entries.get().id.get();
-		Field entryName = userEntries.entries.get().name.get();
+		Field entry = userEntries.entry.get();
+		Field id = userEntries.entries.get().id.get();
+		Field name = userEntries.entries.get().name.get();
 
-		Collection<Field> fields = Arrays.asList(entryId, entryName);
+		Collection<Field> fields = Arrays.asList(entry, id, name);
 
 		Field position = userEntries.position.get();
 		Collection<Field> sortFields = Arrays.asList(position);
 
-		SqlToken where = new Equ(userEntries.user.get(), id);
+		SqlToken where = new Equ(userEntries.user.get(), this.id);
 
 		userEntries.read(fields, sortFields, where);
 
-		List<Component> components = new ArrayList<Component>();
+		List<Entry> entries = new ArrayList<Entry>();
 
-		while(userEntries.next()) {
-			String className = entryId.string().get();
-			String title = entryName.string().get();
-			components.add(new Component(null, className, title));
-		}
+		while(userEntries.next())
+			entries.add(new Entry(entry.guid(), id.string().get(), name.string().get()));
 
-		setComponents(components);
+		setEntries(entries);
 	}
 
 	@Override
@@ -386,7 +390,7 @@ public class User implements IUser {
 
 		objects.writeObject(roles);
 		objects.writeObject(privileges);
-		objects.writeObject(components);
+		objects.writeObject(entries);
 		objects.writeObject(parameters);
 
 		objects.close();
@@ -418,7 +422,7 @@ public class User implements IUser {
 
 		roles = (Collection)objects.readObject();
 		privileges = (IPrivileges)objects.readObject();
-		components = (Collection)objects.readObject();
+		entries = (Collection)objects.readObject();
 		parameters = (RLinkedHashMap)objects.readObject();
 
 		objects.close();

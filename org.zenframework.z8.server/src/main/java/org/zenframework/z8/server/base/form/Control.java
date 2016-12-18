@@ -73,6 +73,8 @@ public class Control extends OBJECT {
 		writer.writeProperty(Json.rowspan, rowspan, new integer(1));
 		writer.writeProperty(Json.colspan, colspan, new integer(1));
 
+		writer.writeProperty(Json.readOnly, readOnly, bool.False);
+
 		if(source != null) {
 			writer.startObject(Json.source);
 			writer.writeProperty(Json.id, source.classId());

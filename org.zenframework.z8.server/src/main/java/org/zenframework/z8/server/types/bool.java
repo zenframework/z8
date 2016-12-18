@@ -65,11 +65,11 @@ public final class bool extends primary {
 		return value;
 	}
 
-	public void set(boolean value) {
+	private void set(boolean value) {
 		this.value = value;
 	}
 
-	public void set(bool value) {
+	private void set(bool value) {
 		set(value.get());
 	}
 

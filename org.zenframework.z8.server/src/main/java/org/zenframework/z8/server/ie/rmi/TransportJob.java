@@ -8,6 +8,7 @@ import org.zenframework.z8.server.base.table.system.TransportQueue;
 import org.zenframework.z8.server.base.view.command.Parameter;
 import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.runtime.RCollection;
+import org.zenframework.z8.server.types.bool;
 
 public class TransportJob extends Procedure {
 	public static class CLASS<T extends TransportJob> extends Procedure.CLASS<T> {
@@ -24,7 +25,7 @@ public class TransportJob extends Procedure {
 
 	public TransportJob(IObject container) {
 		super(container);
-		useTransaction.set(false);
+		useTransaction = bool.False;
 	}
 
 	@Override

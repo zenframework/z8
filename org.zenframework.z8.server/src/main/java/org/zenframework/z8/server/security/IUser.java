@@ -30,12 +30,12 @@ public interface IUser extends RmiSerializable, Serializable {
 	public void setSettings(String settings);
 
 	public Collection<IRole> roles();
+	public IPrivileges privileges();
 
 	public boolean isAdministrator();
 
-	public Collection<Component> components();
-
-	public void setComponents(Collection<Component> components);
+	public Collection<Entry> entries();
+	public void setEntries(Collection<Entry> entries);
 
 	public void save(Database database);
 

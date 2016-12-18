@@ -1,107 +1,79 @@
 package org.zenframework.z8.server.db.generator;
 
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
-import java.util.List;
+import java.util.HashSet;
 
-import org.zenframework.z8.server.base.form.Desktop;
+import org.zenframework.z8.server.base.query.RecordLock;
 import org.zenframework.z8.server.base.table.system.Entries;
 import org.zenframework.z8.server.base.table.system.UserEntries;
-import org.zenframework.z8.server.base.table.value.Field;
-import org.zenframework.z8.server.db.sql.SqlToken;
+import org.zenframework.z8.server.db.Connection;
+import org.zenframework.z8.server.db.ConnectionManager;
 import org.zenframework.z8.server.db.sql.expressions.Equ;
-import org.zenframework.z8.server.security.Component;
+import org.zenframework.z8.server.db.sql.expressions.UnaryNot;
+import org.zenframework.z8.server.db.sql.functions.InVector;
+import org.zenframework.z8.server.engine.Runtime;
+import org.zenframework.z8.server.runtime.OBJECT;
 import org.zenframework.z8.server.types.guid;
+import org.zenframework.z8.server.types.string;
 
 public class EntriesGenerator {
-	private Collection<Desktop.CLASS<Desktop>> entryClasses;
 	@SuppressWarnings("unused")
 	private ILogger logger;
 
-	public EntriesGenerator(Collection<Desktop.CLASS<Desktop>> entryClasses, ILogger logger) {
-		this.entryClasses = entryClasses;
+	private Entries entries = new Entries.CLASS<Entries>().get();
+	private UserEntries userEntries = new UserEntries.CLASS<UserEntries>().get();
+
+	private Collection<guid> entryKeys = new HashSet<guid>();
+
+	public EntriesGenerator(ILogger logger) {
 		this.logger = logger;
-	}
-
-	public Component[] readComponents() {
-		Entries entries = new Entries.CLASS<Entries>().get();
-
-		Collection<Field> fields = new ArrayList<Field>();
-		fields.add(entries.id.get());
-		fields.add(entries.name.get());
-
-		List<Component> components = new ArrayList<Component>();
-
-		entries.read(fields);
-
-		while(entries.next()) {
-			String recordId = entries.recordId().toString();
-			String className = entries.id.get().string().get();
-			String title = entries.name.get().string().get();
-			components.add(new Component(recordId, className, title));
-		}
-
-		return components.toArray(new Component[0]);
+		entryKeys.addAll(Runtime.instance().entryKeys());
 	}
 
 	public void run() {
-		Component[] existingComponents = readComponents();
+		Connection connection = ConnectionManager.get();
 
-		List<Component> toDelete = new ArrayList<Component>();
-		List<Component> toUpdate = new ArrayList<Component>();
-		List<Component> toCreate = new ArrayList<Component>();
+		try {
+			connection.beginTransaction();
+			writeEntries();
+			connection.commit();
+		} catch(Throwable e) {
+			connection.rollback();
+			throw new RuntimeException(e);
+		}
+	}
 
-		for(Component component : existingComponents) {
-			boolean found = false;
+	private void writeEntries() {
+		entries.read(Arrays.asList(entries.primaryKey()), new UnaryNot(new InVector(entries.primaryKey(), entryKeys)));
 
-			for(Desktop.CLASS<? extends Desktop> cls : entryClasses) {
-				if(component.className().equals(cls.classId())) {
-					toUpdate.add(new Component(component.id(), cls.classId(), cls.displayName()));
-					found = true;
-					break;
-				}
-			}
-
-			if(!found) {
-				toDelete.add(component);
-			}
+		while(entries.next()) {
+			guid entry = entries.recordId();
+			userEntries.destroy(new Equ(userEntries.entry.get(), entry));
+			entries.destroy(entry);
 		}
 
-		for(Desktop.CLASS<Desktop> cls : entryClasses) {
-			boolean found = false;
+		createEntries();
+	}
 
-			for(Component component : existingComponents) {
-				if(component.className().equals(cls.classId())) {
-					found = true;
-					break;
-				}
-			}
-
-			if(!found) {
-				toCreate.add(new Component(null, cls.classId(), cls.displayName()));
-			}
+	private void createEntries() {
+		entries.read(Arrays.asList(entries.primaryKey()), new InVector(entries.primaryKey(), entryKeys));
+		while(entries.next()) {
+			guid entry = entries.recordId();
+			setEntryProperties(Runtime.instance().getEntryByKey(entry).newInstance());
+			entries.update(entry);
+			entryKeys.remove(entry);
 		}
 
-		UserEntries userEntries = new UserEntries.CLASS<UserEntries>().get();
-		Entries entries = new Entries.CLASS<Entries>().get();
-
-		for(Component component : toDelete) {
-			SqlToken where = new Equ(userEntries.entry.get(), new guid(component.id()));
-
-			userEntries.destroy(where);
-			entries.destroy(new guid(component.id()));
+		for(guid key : entryKeys) {
+			setEntryProperties(Runtime.instance().getEntryByKey(key).newInstance());
+			entries.create(key);
 		}
+	}
 
-		for(Component component : toUpdate) {
-			entries.id.get().set(component.className());
-			entries.name.get().set(component.title());
-			entries.update(new guid(component.id()));
-		}
-
-		for(Component component : toCreate) {
-			entries.id.get().set(component.className());
-			entries.name.get().set(component.title());
-			entries.create();
-		}
+	private void setEntryProperties(OBJECT entry) {
+		entries.id.get().set(entry.classId());
+		entries.name.get().set(new string(entry.displayName()));
+		entries.lock.get().set(RecordLock.Destroy);
 	}
 }

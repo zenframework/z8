@@ -61,7 +61,6 @@ public class Section extends Control {
 		super.writeMeta(writer, query);
 
 		writer.writeProperty(Json.isSection, true);
-		writer.writeProperty(Json.readOnly, readOnly);
 		writer.writeProperty(Json.columnCount, columnCount);
 		writer.writeProperty(Json.height, height);
 		writer.writeControls(Json.controls, getControls(), query); 

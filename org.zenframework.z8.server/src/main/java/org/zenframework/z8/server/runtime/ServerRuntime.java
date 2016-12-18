@@ -5,12 +5,12 @@ import org.zenframework.z8.server.base.table.system.Entries;
 import org.zenframework.z8.server.base.table.system.Fields;
 import org.zenframework.z8.server.base.table.system.Files;
 import org.zenframework.z8.server.base.table.system.Jobs;
-import org.zenframework.z8.server.base.table.system.Logs;
+import org.zenframework.z8.server.base.table.system.ScheduledJobLogs;
 import org.zenframework.z8.server.base.table.system.MessageQueue;
 import org.zenframework.z8.server.base.table.system.RoleFieldAccess;
 import org.zenframework.z8.server.base.table.system.RoleTableAccess;
 import org.zenframework.z8.server.base.table.system.Roles;
-import org.zenframework.z8.server.base.table.system.SchedulerJobs;
+import org.zenframework.z8.server.base.table.system.ScheduledJobs;
 import org.zenframework.z8.server.base.table.system.Sequences;
 import org.zenframework.z8.server.base.table.system.SystemTools;
 import org.zenframework.z8.server.base.table.system.Tables;
@@ -43,8 +43,8 @@ public class ServerRuntime extends AbstractRuntime {
 		addTable(new UserEntries.CLASS<UserEntries>(null));
 
 		addTable(new Jobs.CLASS<Jobs>(null));
-		addTable(new SchedulerJobs.CLASS<SchedulerJobs>(null));
-		addTable(new Logs.CLASS<Logs>(null));
+		addTable(new ScheduledJobs.CLASS<ScheduledJobs>(null));
+		addTable(new ScheduledJobLogs.CLASS<ScheduledJobLogs>(null));
 
 		addTable(new Files.CLASS<Files>(null));
 

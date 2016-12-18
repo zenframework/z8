@@ -1,17 +1,10 @@
 package org.zenframework.z8.server.db.generator;
 
-import java.util.Collection;
-
-import org.zenframework.z8.server.base.form.Desktop;
-import org.zenframework.z8.server.base.job.scheduler.Scheduler;
 import org.zenframework.z8.server.base.simple.Procedure;
-import org.zenframework.z8.server.base.table.Table;
-import org.zenframework.z8.server.db.Connection;
-import org.zenframework.z8.server.db.ConnectionManager;
 import org.zenframework.z8.server.engine.ApplicationServer;
-import org.zenframework.z8.server.engine.Runtime;
 import org.zenframework.z8.server.resources.Resources;
 import org.zenframework.z8.server.runtime.IObject;
+import org.zenframework.z8.server.types.bool;
 import org.zenframework.z8.server.utils.ErrorUtils;
 
 public class DBGenerateProcedure extends Procedure {
@@ -30,48 +23,17 @@ public class DBGenerateProcedure extends Procedure {
 
 	public DBGenerateProcedure(IObject container) {
 		super(container);
-		useTransaction.set(false);
+		useTransaction = bool.False;
 	}
 
 	@Override
-	@SuppressWarnings({ "unchecked", "rawtypes" })
 	protected void z8_execute() {
-		super.z8_execute();
-
 		if(!ApplicationServer.getUser().isAdministrator()) {
 			error("You must be a member of Administrators security group to perform this action.");
-			reportProgress(100);
 			return;
 		}
 
-		reportProgress(0);
-		Scheduler.stop();
-
-		reportProgress(0);
-		info(Resources.get("Generator.schedulerStopped"));
-
-		Logger logger = new Logger();
-
-		try {
-			Connection connection = ConnectionManager.get();
-
-			Collection<Table.CLASS<Table>> tables = (Collection)Runtime.instance().tables();
-			Collection<Desktop.CLASS<Desktop>> entries = (Collection)Runtime.instance().entries();
-
-			try {
-				DBGenerator generator = new DBGenerator(connection, logger);
-				generator.run(tables, entries);
-			} catch(Throwable e) {
-				logger.error(e);
-			}
-		} catch(Throwable e) {
-			logger.error(e);
-		}
-
-		Scheduler.start();
-
-		reportProgress(100);
-		info(Resources.get("Generator.schedulerStarted"));
+		new DBGenerator(new Logger()).run();
 	}
 
 	private class Logger implements ILogger {

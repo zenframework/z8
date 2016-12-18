@@ -11,16 +11,18 @@ public interface IRuntime {
 	public Collection<guid> tableKeys();
 
 	public Collection<OBJECT.CLASS<? extends OBJECT>> entries();
+	public Collection<guid> entryKeys();
 
 	public Collection<Procedure.CLASS<? extends Procedure>> jobs();
+	public Collection<guid> jobKeys();
 
 	public Table.CLASS<? extends Table> getTable(String className);
-
 	public Table.CLASS<? extends Table> getTableByName(String name);
-
 	public Table.CLASS<? extends Table> getTableByKey(guid key);
 
 	public OBJECT.CLASS<? extends OBJECT> getEntry(String className);
+	public OBJECT.CLASS<? extends OBJECT> getEntryByKey(guid key);
 
 	public Procedure.CLASS<? extends Procedure> getJob(String className);
+	public Procedure.CLASS<? extends Procedure> getJobByKey(guid key);
 }

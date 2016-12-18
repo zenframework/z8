@@ -12,8 +12,8 @@ import org.zenframework.z8.server.types.bool;
 import org.zenframework.z8.server.types.guid;
 import org.zenframework.z8.server.types.integer;
 
-public class SchedulerJobs extends Table {
-	static public String TableName = "SystemTasks";
+public class ScheduledJobs extends Table {
+	static public String TableName = "SystemScheduledJobs";
 	static public int MinRepeat = 10;
 	static public int DefaultRepeat = 3600;
 
@@ -30,13 +30,13 @@ public class SchedulerJobs extends Table {
 	}
 
 	static public class strings {
-		public final static String Title = "SchedulerJobs.title";
-		public final static String Settings = "SchedulerJobs.settings";
-		public final static String From = "SchedulerJobs.from";
-		public final static String Till = "SchedulerJobs.till";
-		public final static String Repeat = "SchedulerJobs.repeat";
-		public final static String Active = "SchedulerJobs.active";
-		public final static String LastStarted = "SchedulerJobs.lastStarted";
+		public final static String Title = "ScheduledJobs.title";
+		public final static String Settings = "ScheduledJobs.settings";
+		public final static String From = "ScheduledJobs.from";
+		public final static String Till = "ScheduledJobs.till";
+		public final static String Repeat = "ScheduledJobs.repeat";
+		public final static String Active = "ScheduledJobs.active";
+		public final static String LastStarted = "ScheduledJobs.lastStarted";
 	}
 
 	static public class displayNames {
@@ -56,14 +56,14 @@ public class SchedulerJobs extends Table {
 
 		public CLASS(IObject container) {
 			super(container);
-			setJavaClass(SchedulerJobs.class);
+			setJavaClass(ScheduledJobs.class);
 			setName(TableName);
 			setDisplayName(displayNames.Title);
 		}
 
 		@Override
 		public Object newObject(IObject container) {
-			return new SchedulerJobs(container);
+			return new ScheduledJobs(container);
 		}
 	}
 
@@ -79,7 +79,7 @@ public class SchedulerJobs extends Table {
 	public IntegerField.CLASS<IntegerField> repeat = new IntegerField.CLASS<IntegerField>(this);
 	public BoolField.CLASS<BoolField> active = new BoolField.CLASS<BoolField>(this);
 
-	public SchedulerJobs(IObject container) {
+	public ScheduledJobs(IObject container) {
 		super(container);
 	}
 
@@ -133,15 +133,6 @@ public class SchedulerJobs extends Table {
 
 		repeat.get().setDefault(new integer(DefaultRepeat));
 		active.get().setDefault(bool.True);
-
-		registerFormField(jobs.get().name);
-		registerFormField(users.get().name);
-		registerFormField(description);
-		registerFormField(from);
-		registerFormField(till);
-		registerFormField(repeat);
-		registerFormField(lastStarted);
-		registerFormField(active);
 
 		queries.add(jobs);
 		queries.add(users);

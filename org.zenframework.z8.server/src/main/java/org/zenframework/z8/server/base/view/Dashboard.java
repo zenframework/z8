@@ -17,7 +17,7 @@ import org.zenframework.z8.server.logs.Trace;
 import org.zenframework.z8.server.request.Loader;
 import org.zenframework.z8.server.request.RequestTarget;
 import org.zenframework.z8.server.runtime.CLASS;
-import org.zenframework.z8.server.security.Component;
+import org.zenframework.z8.server.security.Entry;
 import org.zenframework.z8.server.security.IUser;
 import org.zenframework.z8.server.types.primary;
 import org.zenframework.z8.server.types.string;
@@ -107,14 +107,14 @@ public class Dashboard extends RequestTarget {
 	}
 
 	@SuppressWarnings("unchecked")
-	private Collection<Desktop.CLASS<Desktop>> loadComponents(Collection<Component> components) {
+	private Collection<Desktop.CLASS<Desktop>> loadEntries(Collection<Entry> entries) {
 		List<Desktop.CLASS<Desktop>> result = new ArrayList<Desktop.CLASS<Desktop>>();
 
-		for(Component component : components) {
+		for(Entry entry : entries) {
 			try {
-				result.add((Desktop.CLASS<Desktop>)Loader.loadClass(component.className()));
+				result.add((Desktop.CLASS<Desktop>)Loader.loadClass(entry.className()));
 			} catch(RuntimeException e) {
-				Trace.logError("Error loading entry point '" + component.className() + "'", e);
+				Trace.logError("Error loading entry point '" + entry.className() + "'", e);
 			}
 		}
 
@@ -135,8 +135,8 @@ public class Dashboard extends RequestTarget {
 		writer.writeProperty(Json.phone, user.phone());
 		writer.writeProperty(Json.settings, user.settings());
 
-		Collection<Desktop.CLASS<Desktop>> desktops = loadComponents(user.components());
-		writer.startArray(Json.components);
+		Collection<Desktop.CLASS<Desktop>> desktops = loadEntries(user.entries());
+		writer.startArray(Json.entries);
 		for(CLASS<?> cls : desktops)
 			writeData(writer, cls);
 		writer.finishArray();

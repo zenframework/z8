@@ -88,10 +88,7 @@ public class OBJECT extends RequestTarget implements IObject, RmiSerializable {
 			String ownerName = owner != null ? owner.name() : null;
 			String name = name();
 
-			if(name == null)
-				throw new UnsupportedOperationException();
-
-			String value = (ownerName != null ? ownerName + "." : "") + name;
+			String value = (ownerName != null ? ownerName + "." : "") + (name != null ? name : classId());
 			key = new guid(UUID.nameUUIDFromBytes(value.getBytes()));
 		}
 

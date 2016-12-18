@@ -19,15 +19,11 @@
 	<entry key="Table.modifiedAt">Изменено</entry>
 	<entry key="Table.createdBy">Создал</entry>
 	<entry key="Table.modifiedBy">Изменил</entry>
-	<entry key="Table.archive">Архив</entry>
-	<entry key="Table.scope">Область видимости</entry>
 
 	<entry key="Table.id">Код</entry>
 	<entry key="Table.name">Наименование</entry>
 	<entry key="Table.description">Описание</entry>
-	<entry key="Table.locked">Заблокирована</entry>
 	<entry key="Table.attachments">Файлы</entry>
-	<entry key="Table.users">Пользователи</entry>
 
 	<!-- Users -->
 	<entry key="Users.title">Пользователи</entry>
@@ -161,23 +157,22 @@
 	<entry key="Roles.destroy">Удаление</entry>
 	<entry key="Roles.execute">Запуск задач</entry>
 
-	<!-- SchedulerJobs -->
-	<entry key="SchedulerJobs.settings">Настройки</entry>
-	<entry key="SchedulerJobs.title">Задачи</entry>
-	<entry key="SchedulerJobs.from">С</entry>
-	<entry key="SchedulerJobs.till">По</entry>
-	<entry key="SchedulerJobs.repeat">Повтор (секунд)</entry>
-	<entry key="SchedulerJobs.active">Активна</entry>
-	<entry key="SchedulerJobs.lastStarted">Последний запуск</entry>
-
 	<!-- Jobs -->
 	<entry key="Jobs.title">Задачи</entry>
-	<entry key="Jobs.defaultSettings">Настройки по умолчанию</entry>
 
-	<!-- Logs -->
-	<entry key="Logs.title">Назначенные задачи</entry>
-	<entry key="Logs.started">Старт</entry>
-	<entry key="Logs.finished">Финиш</entry>
+	<!-- ScheduledJobs -->
+	<entry key="ScheduledJobs.title">Задачи</entry>
+	<entry key="ScheduledJobs.settings">Настройки</entry>
+	<entry key="ScheduledJobs.from">С</entry>
+	<entry key="ScheduledJobs.till">По</entry>
+	<entry key="ScheduledJobs.repeat">Повтор (секунд)</entry>
+	<entry key="ScheduledJobs.active">Активна</entry>
+	<entry key="ScheduledJobs.lastStarted">Последний запуск</entry>
+
+	<!-- ScheduledJobLogs -->
+	<entry key="ScheduledJobLogs.title">Сообщения</entry>
+	<entry key="ScheduledJobLogs.start">Старт</entry>
+	<entry key="ScheduledJobLogs.finish">Финиш</entry>
 
 	<!-- SystemTools -->
 	<entry key="SystemTools.title">Администрирование</entry>
@@ -199,6 +194,7 @@
 
 	<!-- Exceptions -->
 	<entry key="Exception.accessDenied">Неверный логин или пароль для входа</entry>
+	<entry key="Exception.accessRigthsViolation">Нарушение прав доступа</entry>
 	<entry key="Exception.serverUnavailable">Сервер не отвечает.</entry>
 	<entry key="Exception.resourceNotFound">Ресурс не найден: {0}</entry>
 	<entry key="Exception.fileNotFound">Файл не найден: {0}</entry>

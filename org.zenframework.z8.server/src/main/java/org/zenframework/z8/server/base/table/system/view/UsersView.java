@@ -8,6 +8,7 @@ import org.zenframework.z8.server.base.table.system.UserRoles;
 import org.zenframework.z8.server.base.table.system.Users;
 import org.zenframework.z8.server.engine.ApplicationServer;
 import org.zenframework.z8.server.runtime.IObject;
+import org.zenframework.z8.server.types.bool;
 import org.zenframework.z8.server.types.integer;
 
 public class UsersView extends Users {
@@ -35,9 +36,9 @@ public class UsersView extends Users {
 	public void constructor2() {
 		super.constructor2();
 
-		columnCount = new integer(6);
+		columnCount = new integer(12);
 
-		readOnly.set(!ApplicationServer.getUser().isAdministrator());
+		readOnly = new bool(!ApplicationServer.getUser().isAdministrator());
 
 		entries.setIndex("entries");
 		entries.setDisplayName(UserEntries.displayNames.Title);
@@ -63,14 +64,13 @@ public class UsersView extends Users {
 		userRoles.columns.add(userRoles.roles.get().name);
 
 		name.get().colspan = new integer(4);
-		phone.get().colspan = new integer(4);
-		email.get().colspan = new integer(4);
-		blocked.get().colspan = new integer(4);
-		description.get().colspan = new integer(6);
+		phone.get().colspan = new integer(3);
+		email.get().colspan = new integer(3);
+		blocked.get().colspan = new integer(2);
+		description.get().colspan = new integer(12);
 
 		entries.get().colspan = new integer(6);
 		roles.get().colspan = new integer(6);
-		roles.get().height = new integer(200);
 
 		registerFormField(name);
 		registerFormField(phone);

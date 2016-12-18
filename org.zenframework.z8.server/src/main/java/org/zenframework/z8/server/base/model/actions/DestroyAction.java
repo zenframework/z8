@@ -4,6 +4,7 @@ import org.zenframework.z8.server.base.model.sql.Delete;
 import org.zenframework.z8.server.base.query.Query;
 import org.zenframework.z8.server.db.Connection;
 import org.zenframework.z8.server.db.ConnectionManager;
+import org.zenframework.z8.server.exceptions.AccessRightsViolationException;
 import org.zenframework.z8.server.json.JsonWriter;
 import org.zenframework.z8.server.json.parser.JsonArray;
 import org.zenframework.z8.server.json.parser.JsonObject;
@@ -16,11 +17,13 @@ public class DestroyAction extends Action {
 
 	@Override
 	public void writeResponse(JsonWriter writer) {
+		if(!getQuery().access().destroy())
+			throw new AccessRightsViolationException();
+
 		String jsonData = getDataParameter();
 
-		if(jsonData.charAt(0) != '[') {
+		if(jsonData.charAt(0) != '[')
 			jsonData = "[" + jsonData + "]";
-		}
 
 		JsonArray records = new JsonArray(jsonData);
 

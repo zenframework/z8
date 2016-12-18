@@ -7,7 +7,6 @@ import org.zenframework.z8.server.json.Json;
 import org.zenframework.z8.server.json.JsonWriter;
 import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.runtime.RCollection;
-import org.zenframework.z8.server.types.bool;
 import org.zenframework.z8.server.types.integer;
 
 public class Listbox extends Control {
@@ -51,7 +50,6 @@ public class Listbox extends Control {
 		writer.writeProperty(Json.icon, icon());
 
 		writer.writeProperty(Json.height, height, new integer(300));
-		writer.writeProperty(Json.readOnly, readOnly, bool.False);
 
 		writer.startObject(Json.query);
 		writer.writeProperty(Json.id, query.classId());

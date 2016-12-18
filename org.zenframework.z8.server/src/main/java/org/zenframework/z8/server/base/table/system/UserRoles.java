@@ -18,6 +18,7 @@ import org.zenframework.z8.server.security.BuiltinUsers;
 import org.zenframework.z8.server.security.IAccess;
 import org.zenframework.z8.server.security.IRole;
 import org.zenframework.z8.server.security.Role;
+import org.zenframework.z8.server.types.bool;
 import org.zenframework.z8.server.types.exception;
 import org.zenframework.z8.server.types.guid;
 import org.zenframework.z8.server.types.primary;
@@ -92,7 +93,7 @@ public class UserRoles extends Table {
 		role.setName(names.Role);
 		role.setIndex("role");
 
-		readOnly.set(!ApplicationServer.getUser().isAdministrator());
+		readOnly = new bool(!ApplicationServer.getUser().isAdministrator());
 
 		registerDataField(user);
 		registerDataField(role);

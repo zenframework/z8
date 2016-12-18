@@ -5,8 +5,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.zenframework.z8.server.base.table.system.Logs;
-import org.zenframework.z8.server.base.table.system.SchedulerJobs;
+import org.zenframework.z8.server.base.table.system.ScheduledJobLogs;
+import org.zenframework.z8.server.base.table.system.ScheduledJobs;
 import org.zenframework.z8.server.engine.Session;
 import org.zenframework.z8.server.json.Json;
 import org.zenframework.z8.server.json.parser.JsonArray;
@@ -23,7 +23,7 @@ import org.zenframework.z8.server.types.file;
 import org.zenframework.z8.server.types.guid;
 import org.zenframework.z8.server.types.string;
 
-public class SchedulerJob implements Runnable {
+public class ScheduledJob implements Runnable {
 	public guid id;
 
 	public String className;
@@ -42,11 +42,11 @@ public class SchedulerJob implements Runnable {
 
 	private Thread thread;
 	
-	public SchedulerJob(guid id) {
+	public ScheduledJob(guid id) {
 		this.id = id;
 	}
 
-	public SchedulerJob(String className, int repeat) {
+	public ScheduledJob(String className, int repeat) {
 		this.className = className;
 		String[] names = className.split("\\.");
 		this.name = names[names.length - 1];
@@ -65,8 +65,8 @@ public class SchedulerJob implements Runnable {
 
 	@Override
 	public boolean equals(Object object) {
-		if(object instanceof SchedulerJob) {
-			SchedulerJob task = (SchedulerJob)object;
+		if(object instanceof ScheduledJob) {
+			ScheduledJob task = (ScheduledJob)object;
 			return id.equals(task.id);
 		}
 		return false;
@@ -86,7 +86,7 @@ public class SchedulerJob implements Runnable {
 
 		try {
 			if(id != null) {
-				SchedulerJobs tasks = new SchedulerJobs.CLASS<SchedulerJobs>(null).get();
+				ScheduledJobs tasks = new ScheduledJobs.CLASS<ScheduledJobs>(null).get();
 				tasks.lastStarted.get().set(lastStarted);
 				tasks.update(id);
 			}
@@ -110,11 +110,11 @@ public class SchedulerJob implements Runnable {
 		log.name = new string("error.log");
 		writer.put(log);
 
-		Logs logs = Logs.newInstance();
-		logs.job.get().set(id);
+		ScheduledJobLogs logs = ScheduledJobLogs.newInstance();
+		logs.scheduledJob.get().set(id);
 		logs.files.get().set(new string(writer.toString()));
-		logs.started.get().set(lastStarted);
-		logs.finished.get().set(new date());
+		logs.start.get().set(lastStarted);
+		logs.finish.get().set(new date());
 		logs.create();
 	}
 	

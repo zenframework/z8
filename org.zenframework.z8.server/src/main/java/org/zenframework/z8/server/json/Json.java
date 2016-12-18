@@ -26,7 +26,7 @@ public interface Json {
 	string phone = new string("phone");
 
 	string menu = new string("menu");
-	string components = new string("components");
+	string entries = new string("entries");
 	string settings = new string("settings");
 
 	string isQuery = new string("isQuery");

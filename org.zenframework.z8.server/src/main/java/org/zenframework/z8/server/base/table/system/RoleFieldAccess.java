@@ -3,10 +3,12 @@ package org.zenframework.z8.server.base.table.system;
 import org.zenframework.z8.server.base.query.RecordLock;
 import org.zenframework.z8.server.base.table.Table;
 import org.zenframework.z8.server.base.table.value.BoolField;
+import org.zenframework.z8.server.base.table.value.Field;
 import org.zenframework.z8.server.base.table.value.Link;
 import org.zenframework.z8.server.resources.Resources;
 import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.types.bool;
+import org.zenframework.z8.server.types.guid;
 
 public class RoleFieldAccess extends Table {
 	final static public String TableName = "SystemRoleFieldAccess";
@@ -75,7 +77,7 @@ public class RoleFieldAccess extends Table {
 	public void constructor2() {
 		super.constructor2();
 
-		locked.get().setDefault(RecordLock.Destroy);
+		lock.get().setDefault(RecordLock.Destroy);
 
 		roles.setIndex("roles");
 		fields.setIndex("fields");
@@ -104,5 +106,21 @@ public class RoleFieldAccess extends Table {
 
 		queries.add(roles);
 		queries.add(fields);
+	}
+
+	@Override
+	public void beforeUpdate(guid recordId) {
+		Field read = this.read.get();
+		Field write = this.write.get();
+
+		if(read.changed()) {
+			if(!read.bool().get())
+				write.set(bool.False);
+		} else if(write.changed()) {
+			if(write.bool().get())
+				read.set(bool.True);
+		}
+
+		super.beforeUpdate(recordId);
 	}
 }

@@ -64,7 +64,7 @@ public class Entries extends Table {
 	public void initStaticRecords() {
 		LinkedHashMap<IField, primary> record = new LinkedHashMap<IField, primary>();
 		record.put(name.get(), new string(SystemTools.displayNames.Title));
-		record.put(id.get(), new string(SystemTools.class.getCanonicalName()));
+		record.put(id.get(), new string(SystemTools.ClassId));
 		addRecord(SystemTools.Id, record);
 	}
 

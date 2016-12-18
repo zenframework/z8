@@ -89,7 +89,7 @@ public class RoleTableAccess extends Table {
 	public void constructor2() {
 		super.constructor2();
 
-		locked.get().setDefault(RecordLock.Destroy);
+		lock.get().setDefault(RecordLock.Destroy);
 
 		roles.setIndex("roles");
 		tables.setIndex("tables");
@@ -141,17 +141,37 @@ public class RoleTableAccess extends Table {
 		Field copy = this.copy.get();
 		Field destroy = this.destroy.get();
 
-		if(read.changed() && !read.bool().get()) {
-			write.set(bool.False);
-			create.set(bool.False);
-			copy.set(bool.False);
-			destroy.set(bool.False);
-		} else if(write.changed() && !write.bool().get()) {
-			create.set(bool.False);
-			copy.set(bool.False);
-			destroy.set(bool.False);
-		} else if(create.changed() && !create.bool().get())
-			copy.set(bool.False);
+		if(read.changed()) {
+			if(!read.bool().get()) {
+				write.set(bool.False);
+				create.set(bool.False);
+				copy.set(bool.False);
+				destroy.set(bool.False);
+			}
+		} else if(write.changed()) {
+			if(!write.bool().get()) {
+				create.set(bool.False);
+				copy.set(bool.False);
+				destroy.set(bool.False);
+			} else
+				read.set(bool.True);
+		} else if(create.changed()) {
+			if(!create.bool().get())
+				copy.set(bool.False);
+			else {
+				read.set(bool.True);
+				write.set(bool.True);
+			}
+		} else if(copy.changed()) {
+			if(copy.bool().get()) {
+				read.set(bool.True);
+				write.set(bool.True);
+				create.set(bool.True);
+			}
+		} else if(destroy.changed()) {
+			if(destroy.bool().get())
+				read.set(bool.True);
+		}
 
 		super.beforeUpdate(recordId);
 	}

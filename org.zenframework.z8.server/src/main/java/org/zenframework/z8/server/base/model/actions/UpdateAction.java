@@ -10,6 +10,7 @@ import org.zenframework.z8.server.base.table.value.Field;
 import org.zenframework.z8.server.base.table.value.Link;
 import org.zenframework.z8.server.db.Connection;
 import org.zenframework.z8.server.db.ConnectionManager;
+import org.zenframework.z8.server.exceptions.AccessRightsViolationException;
 import org.zenframework.z8.server.json.JsonWriter;
 import org.zenframework.z8.server.json.parser.JsonArray;
 import org.zenframework.z8.server.json.parser.JsonObject;
@@ -49,6 +50,12 @@ public class UpdateAction extends Action {
 		}
 	}
 
+	private boolean checkAccess(Field field) {
+		if(!field.access().write())
+			throw new AccessRightsViolationException();
+		return true;
+	}
+
 	private Collection<guid> update(JsonArray records) {
 		Query query = getQuery();
 
@@ -59,14 +66,14 @@ public class UpdateAction extends Action {
 
 			for(String fieldId : JsonObject.getNames(record)) {
 				Field field = query.findFieldById(fieldId);
-				if(field != null)
+
+				if(field != null && checkAccess(field))
 					QueryUtils.setFieldValue(field, record.getString(fieldId));
 			}
 
 			guid recordId = query.primaryKey().guid();
 			guid rootRecordId = QueryUtils.extractKey(record, getRequestQuery().primaryKey());
 
-	
 			if(recordId.isNull())
 				createLink(query, rootRecordId);
 			else
