@@ -7,17 +7,24 @@ import org.zenframework.z8.server.utils.ErrorUtils;
 public class AccessRightsViolationException extends exception {
 	private static final long serialVersionUID = 2127190490820439197L;
 
-	private static String message = Resources.get("Exception.accessRightsViolation");
-	
+	private static String Message = Resources.get("Exception.accessRightsViolation");
+
+	private String message;
+
 	public AccessRightsViolationException() {
-		super(message);
+		this(Message);
 	}
 
 	public AccessRightsViolationException(String message) {
-		super(message);
+		this.message = message;
 	}
 
 	public AccessRightsViolationException(Throwable e) {
-		super(message + "\n" + ErrorUtils.getMessage(e));
+		this(Message + "\n" + ErrorUtils.getMessage(e));
+	}
+
+	@Override
+	public String toString() {
+		return message;
 	}
 }

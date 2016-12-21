@@ -12,7 +12,7 @@ import org.eclipse.datatools.connectivity.oda.IResultSetMetaData;
 import org.eclipse.datatools.connectivity.oda.OdaException;
 import org.zenframework.z8.server.base.model.actions.ReadAction;
 import org.zenframework.z8.server.base.model.sql.Select;
-import org.zenframework.z8.server.base.table.value.IValue;
+import org.zenframework.z8.server.base.table.value.IField;
 import org.zenframework.z8.server.db.Connection;
 import org.zenframework.z8.server.db.ConnectionManager;
 import org.zenframework.z8.server.resources.Resources;
@@ -25,7 +25,7 @@ import org.zenframework.z8.server.types.primary;
 public class ResultSet implements IResultSet {
 	public final static String NULL_STRING = "";
 
-	private IValue[] columns = null;
+	private IField[] columns = null;
 	private Select cursor = null;
 
 	boolean wasNull = false;

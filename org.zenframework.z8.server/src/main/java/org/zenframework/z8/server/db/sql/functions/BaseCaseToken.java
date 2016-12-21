@@ -3,7 +3,7 @@ package org.zenframework.z8.server.db.sql.functions;
 import java.util.Collection;
 import java.util.LinkedList;
 
-import org.zenframework.z8.server.base.table.value.IValue;
+import org.zenframework.z8.server.base.table.value.IField;
 import org.zenframework.z8.server.db.FieldType;
 import org.zenframework.z8.server.db.sql.SqlToken;
 
@@ -50,7 +50,7 @@ public abstract class BaseCaseToken extends SqlToken {
 	}
 
 	@Override
-	public void collectFields(Collection<IValue> fields) {
+	public void collectFields(Collection<IField> fields) {
 		if(condition != null) {
 			condition.collectFields(fields);
 		}

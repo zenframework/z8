@@ -101,6 +101,11 @@
 	<entry key="UserFieldAccess.read">Чтение</entry>
 	<entry key="UserFieldAccess.write">Изменение</entry>
 
+	<!-- Privileges -->
+	<entry key="Privileges.noReadAccess">У вас отсутстуют права на просмотр этих данных</entry>
+	<entry key="Privileges.noWriteAccess">У вас отсутстуют права на изменение этих данных</entry>
+	<entry key="Privileges.noDestroyAccess">У вас отсутстуют права на удаление этих данных</entry>
+
 	<!-- Files -->
 	<entry key="Files.title">Файлы</entry>
 	<entry key="Files.name">Имя файла</entry>
@@ -193,8 +198,8 @@
 	<entry key="Report.groupGrandTotal">Всего</entry>
 
 	<!-- Exceptions -->
-	<entry key="Exception.accessDenied">Неверный логин или пароль для входа</entry>
-	<entry key="Exception.accessRigthsViolation">Нарушение прав доступа</entry>
+	<entry key="Exception.accessDenied">Неверный логин или пароль</entry>
+	<entry key="Exception.accessRightsViolation">Нарушение прав доступа</entry>
 	<entry key="Exception.serverUnavailable">Сервер не отвечает.</entry>
 	<entry key="Exception.resourceNotFound">Ресурс не найден: {0}</entry>
 	<entry key="Exception.fileNotFound">Файл не найден: {0}</entry>

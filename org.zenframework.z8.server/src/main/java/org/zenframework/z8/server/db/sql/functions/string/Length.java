@@ -2,7 +2,7 @@ package org.zenframework.z8.server.db.sql.functions.string;
 
 import java.util.Collection;
 
-import org.zenframework.z8.server.base.table.value.IValue;
+import org.zenframework.z8.server.base.table.value.IField;
 import org.zenframework.z8.server.db.DatabaseVendor;
 import org.zenframework.z8.server.db.FieldType;
 import org.zenframework.z8.server.db.sql.FormatOptions;
@@ -21,7 +21,7 @@ public class Length extends SqlToken {
 	}
 
 	@Override
-	public void collectFields(Collection<IValue> fields) {
+	public void collectFields(Collection<IField> fields) {
 		string.collectFields(fields);
 	}
 

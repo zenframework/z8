@@ -2,7 +2,7 @@ package org.zenframework.z8.server.db.sql.expressions;
 
 import java.util.Collection;
 
-import org.zenframework.z8.server.base.table.value.IValue;
+import org.zenframework.z8.server.base.table.value.IField;
 import org.zenframework.z8.server.db.FieldType;
 import org.zenframework.z8.server.db.sql.SqlConst;
 import org.zenframework.z8.server.db.sql.SqlToken;
@@ -25,7 +25,7 @@ abstract public class Expression extends SqlToken {
 	}
 
 	@Override
-	public void collectFields(Collection<IValue> fields) {
+	public void collectFields(Collection<IField> fields) {
 		if(left != null) {
 			left.collectFields(fields);
 		}

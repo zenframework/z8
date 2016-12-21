@@ -37,10 +37,12 @@ import org.zenframework.z8.server.db.sql.expressions.Unary;
 import org.zenframework.z8.server.db.sql.functions.IsNull;
 import org.zenframework.z8.server.db.sql.functions.string.Like;
 import org.zenframework.z8.server.db.sql.functions.string.Lower;
+import org.zenframework.z8.server.engine.ApplicationServer;
 import org.zenframework.z8.server.json.Json;
 import org.zenframework.z8.server.json.JsonWriter;
 import org.zenframework.z8.server.json.parser.JsonArray;
 import org.zenframework.z8.server.json.parser.JsonObject;
+import org.zenframework.z8.server.security.Privileges;
 import org.zenframework.z8.server.types.guid;
 import org.zenframework.z8.server.types.primary;
 import org.zenframework.z8.server.types.string;
@@ -902,9 +904,14 @@ public class ReadAction extends Action {
 
 	@Override
 	public void writeResponse(JsonWriter writer) throws Throwable {
-		Field totalsBy = actionParameters().totalsBy;
-
 		Query query = getQuery();
+
+		if(!query.access().read()) {
+			ApplicationServer.getMonitor().info(Privileges.displayNames.NoReadAccess);
+			return;
+		}
+
+		Field totalsBy = actionParameters().totalsBy;
 
 		try {
 			if(totalsBy == null) {

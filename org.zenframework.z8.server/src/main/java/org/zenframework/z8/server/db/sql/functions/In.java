@@ -5,7 +5,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.zenframework.z8.server.base.table.value.IValue;
+import org.zenframework.z8.server.base.table.value.IField;
 import org.zenframework.z8.server.db.DatabaseVendor;
 import org.zenframework.z8.server.db.FieldType;
 import org.zenframework.z8.server.db.sql.FormatOptions;
@@ -27,7 +27,7 @@ public class In extends SqlToken {
 	}
 
 	@Override
-	public void collectFields(Collection<IValue> fields) {
+	public void collectFields(Collection<IField> fields) {
 		if(condition != null) {
 			condition.collectFields(fields);
 		}
@@ -63,7 +63,7 @@ public class In extends SqlToken {
 
 	private class InToken extends SqlToken {
 		@Override
-		public void collectFields(Collection<IValue> fields) {
+		public void collectFields(Collection<IField> fields) {
 		}
 
 		@Override

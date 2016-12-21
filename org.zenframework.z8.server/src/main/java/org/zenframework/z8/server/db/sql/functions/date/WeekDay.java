@@ -2,7 +2,7 @@ package org.zenframework.z8.server.db.sql.functions.date;
 
 import java.util.Collection;
 
-import org.zenframework.z8.server.base.table.value.IValue;
+import org.zenframework.z8.server.base.table.value.IField;
 import org.zenframework.z8.server.db.DatabaseVendor;
 import org.zenframework.z8.server.db.FieldType;
 import org.zenframework.z8.server.db.sql.FormatOptions;
@@ -33,7 +33,7 @@ public class WeekDay extends SqlToken {
 	}
 
 	@Override
-	public void collectFields(Collection<IValue> fields) {
+	public void collectFields(Collection<IField> fields) {
 		date.collectFields(fields);
 	}
 
@@ -43,19 +43,19 @@ public class WeekDay extends SqlToken {
 	}
 
 	private class FuncToken extends SqlToken {
-		private String Func;
+		private String func;
 
-		private FuncToken(String _func) {
-			Func = _func;
+		private FuncToken(String func) {
+			this.func = func;
 		}
 
 		@Override
-		public void collectFields(Collection<IValue> fields) {
+		public void collectFields(Collection<IField> fields) {
 		}
 
 		@Override
 		public String format(DatabaseVendor vendor, FormatOptions options, boolean logicalContext) throws UnknownDatabaseException {
-			return Func;
+			return func;
 		}
 
 		@Override

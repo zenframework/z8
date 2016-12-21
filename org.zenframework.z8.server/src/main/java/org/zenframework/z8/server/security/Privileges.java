@@ -9,10 +9,23 @@ import java.util.Map;
 import org.zenframework.z8.server.base.query.Query;
 import org.zenframework.z8.server.base.table.value.Field;
 import org.zenframework.z8.server.engine.RmiIO;
+import org.zenframework.z8.server.resources.Resources;
 import org.zenframework.z8.server.types.guid;
 
 public class Privileges implements IPrivileges {
-	private static final long serialVersionUID = 8845983028465477335L;
+	static private final long serialVersionUID = 8845983028465477335L;
+
+	static public class strings {
+		static public final String NoReadAccess = "Privileges.noReadAccess";
+		static public final String NoWriteAccess = "Privileges.noWriteAccess";
+		static public final String NoDestroyAccess = "Privileges.noDestroyAccess";
+	}
+
+	static public class displayNames {
+		public final static String NoReadAccess = Resources.get(strings.NoReadAccess);
+		public final static String NoWriteAccess = Resources.get(strings.NoWriteAccess);
+		public final static String NoDestroyAccess = Resources.get(strings.NoDestroyAccess);
+	}
 
 	IAccess defaultAccess;
 

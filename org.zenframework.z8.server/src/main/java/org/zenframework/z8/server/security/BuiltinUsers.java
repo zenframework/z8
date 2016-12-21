@@ -25,7 +25,7 @@ public enum BuiltinUsers {
 		public final static String AdministratorName = Resources.get(strings.AdministratorName);
 		public final static String AdministratorDescription = Resources.get(strings.AdministratorDescription);
 	}
-	
+
 	private String fName = null;
 
 	BuiltinUsers(String name) {

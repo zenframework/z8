@@ -29,8 +29,8 @@ import org.zenframework.z8.server.base.table.TreeTable;
 import org.zenframework.z8.server.base.table.value.AttachmentField;
 import org.zenframework.z8.server.base.table.value.Expression;
 import org.zenframework.z8.server.base.table.value.Field;
+import org.zenframework.z8.server.base.table.value.IField;
 import org.zenframework.z8.server.base.table.value.ILink;
-import org.zenframework.z8.server.base.table.value.IValue;
 import org.zenframework.z8.server.base.table.value.Link;
 import org.zenframework.z8.server.base.table.value.LinkExpression;
 import org.zenframework.z8.server.base.view.command.Command;
@@ -1461,9 +1461,9 @@ public class Query extends Runnable {
 			Expression expression = (Expression)field;
 			SqlToken token = expression.expression();
 
-			Collection<IValue> values = token.getUsedFields();
+			Collection<IField> values = token.getUsedFields();
 
-			for(IValue value : values) {
+			for(IField value : values) {
 				if(query.findFieldById(value.id()) == null)
 					return false;
 			}
@@ -1543,10 +1543,10 @@ public class Query extends Runnable {
 
 		Query rootQuery = getRootQuery();
 
-		if(rootQuery != null && rootQuery != this)
-			return rootQuery.readOnly.get();
+		if(rootQuery != null && rootQuery != this && rootQuery.readOnly())
+			return true;
 
-		return false;
+		return !access().write();
 	}
 
 /*

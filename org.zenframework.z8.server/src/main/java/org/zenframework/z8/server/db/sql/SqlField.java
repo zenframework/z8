@@ -5,7 +5,7 @@ import java.util.Collection;
 import org.zenframework.z8.server.base.table.value.Aggregation;
 import org.zenframework.z8.server.base.table.value.Expression;
 import org.zenframework.z8.server.base.table.value.Field;
-import org.zenframework.z8.server.base.table.value.IValue;
+import org.zenframework.z8.server.base.table.value.IField;
 import org.zenframework.z8.server.db.DatabaseVendor;
 import org.zenframework.z8.server.db.FieldType;
 import org.zenframework.z8.server.db.sql.functions.Array;
@@ -25,7 +25,7 @@ public class SqlField extends SqlToken {
 	}
 
 	@Override
-	public void collectFields(Collection<IValue> fields) {
+	public void collectFields(Collection<IField> fields) {
 		if(field instanceof Expression) {
 			Expression expression = (Expression)field;
 			SqlToken token = expression.expression();

@@ -29,7 +29,7 @@ import org.zenframework.z8.server.types.primary;
 import org.zenframework.z8.server.types.string;
 import org.zenframework.z8.server.types.sql.sql_bool;
 
-abstract public class Field extends Control implements IValue, IField {
+abstract public class Field extends Control implements IField {
 	public static class strings {
 		public final static String ReadException = "Field.readException";
 	}
@@ -51,7 +51,6 @@ abstract public class Field extends Control implements IValue, IField {
 	public SortDirection sortDirection = SortDirection.Asc;
 	public Aggregation aggregation = Aggregation.None;
 
-	public bool selectable = null;
 	public bool required = null;
 
 	public bool indexed = null;
@@ -252,10 +251,6 @@ abstract public class Field extends Control implements IValue, IField {
 		return required != null ? required.get() : false;
 	}
 
-	public boolean selectable() {
-		return selectable != null ? selectable.get() : true;
-	}
-
 	public Sequencer getSequencer() {
 		if(sequencer == null) {
 			Sequencer.CLASS<Sequencer> cls = new Sequencer.CLASS<Sequencer>(this);
@@ -295,6 +290,8 @@ abstract public class Field extends Control implements IValue, IField {
 			ILink link = path.iterator().next();
 			Field linkField = (Field)link;
 
+			access = link.access();
+
 			writer.startObject(Json.link);
 			writer.writeProperty(Json.name, link.id());
 			writer.writeProperty(Json.primaryKey, link.getQuery().primaryKey().id());
@@ -306,10 +303,10 @@ abstract public class Field extends Control implements IValue, IField {
 			if(source == null)
 				source = (Query.CLASS<? extends Query>)owner().getCLASS();
 
-			readOnly = path.size() > 1 || linkField.readOnly() || !selectable();
+			readOnly = path.size() > 1 || linkField.readOnly() || !access().write();
 			required = !readOnly && linkField.required();
 		} else {
-			readOnly = readOnly();
+			readOnly = readOnly() || !access().write();
 			required = !readOnly && required();
 
 			writer.writeProperty(Json.isText, true);
@@ -332,7 +329,7 @@ abstract public class Field extends Control implements IValue, IField {
 
 	public void writeData(JsonWriter writer) {
 		primary value = get();
-		if(!wasNull() || writeNulls)
+		if(access().read() && (!wasNull() || writeNulls))
 			writer.writeProperty('"' + id() + '"', wasNull() ? getNullValue() : value);
 	}
 
