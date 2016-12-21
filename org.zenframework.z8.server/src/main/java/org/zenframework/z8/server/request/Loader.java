@@ -13,7 +13,7 @@ public class Loader {
 
 	static public CLASS<?> loadClass(String className) {
 		CLASS<?> cls = null;
-		
+
 		synchronized(mutex) {
 			cls = Loader.loadedClasses.get(className);
 		}

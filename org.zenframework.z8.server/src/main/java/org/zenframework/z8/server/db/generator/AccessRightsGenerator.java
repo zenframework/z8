@@ -16,6 +16,7 @@ import org.zenframework.z8.server.base.table.value.Field;
 import org.zenframework.z8.server.db.Connection;
 import org.zenframework.z8.server.db.ConnectionManager;
 import org.zenframework.z8.server.db.FieldType;
+import org.zenframework.z8.server.db.sql.expressions.And;
 import org.zenframework.z8.server.db.sql.expressions.Equ;
 import org.zenframework.z8.server.db.sql.expressions.UnaryNot;
 import org.zenframework.z8.server.db.sql.functions.InVector;
@@ -49,7 +50,8 @@ public class AccessRightsGenerator {
 
 		try {
 			connection.beginTransaction();
-			writeTables();
+			clearTables();
+			createTables();
 			connection.commit();
 		} catch(Throwable e) {
 			connection.rollback();
@@ -57,7 +59,7 @@ public class AccessRightsGenerator {
 		}
 	}
 
-	private void writeTables() {
+	private void clearTables() {
 		tables.read(Arrays.asList(tables.primaryKey()), new UnaryNot(new InVector(tables.primaryKey(), tableKeys)));
 
 		while(tables.next()) {
@@ -67,8 +69,6 @@ public class AccessRightsGenerator {
 			fields.destroy(new Equ(fields.table.get(), tableId));
 			tables.destroy(tableId);
 		}
-
-		createTables();
 	}
 
 	private void createTables() {
@@ -88,7 +88,7 @@ public class AccessRightsGenerator {
 			setTableProperties(table);
 			tables.create(key);
 
-			updateFields(table);
+			createFields(table);
 
 			for(IRole role : getRoles()) {
 				IAccess access = role.access();
@@ -108,7 +108,23 @@ public class AccessRightsGenerator {
 
 	private void updateFields(Table table) {
 		Map<guid, Field.CLASS<? extends Field>> fieldsMap = table.getFieldsMap();
-		Collection<guid> fieldKeys = fieldsMap.keySet();
+		Collection<guid> fieldKeys = new HashSet<guid>(fieldsMap.keySet());
+
+		fields.read(Arrays.asList(fields.primaryKey()),
+				new And(new Equ(fields.table.get(), table.key()), new UnaryNot(new InVector(fields.primaryKey(), fieldKeys))));
+
+		while(fields.next()) {
+			guid fieldId = fields.recordId();
+			rfa.destroy(new Equ(rfa.field.get(), fieldId));
+			fields.destroy(fieldId);
+		}
+
+		createFields(table);
+	}
+
+	private void createFields(Table table) {
+		Map<guid, Field.CLASS<? extends Field>> fieldsMap = table.getFieldsMap();
+		Collection<guid> fieldKeys = new HashSet<guid>(fieldsMap.keySet());
 
 		fields.read(Arrays.asList(fields.primaryKey()), new InVector(fields.primaryKey(), fieldKeys));
 		while(fields.next()) {

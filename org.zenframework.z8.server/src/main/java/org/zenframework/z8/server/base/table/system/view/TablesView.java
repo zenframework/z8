@@ -27,35 +27,6 @@ public class TablesView extends Tables {
 		super(container);
 	}
 
-	public static class __Fields extends Fields {
-		public static class CLASS<T extends TablesView.__Fields> extends Fields.CLASS<T> {
-			public CLASS(IObject container) {
-				super(container);
-				setJavaClass(TablesView.__Fields.class);
-			}
-
-			public Object newObject(IObject container) {
-				return new TablesView.__Fields(container);
-			}
-		}
-
-		public __Fields(IObject container) {
-			super(container);
-		}
-
-		public void constructor2() {
-			super.constructor2();
-
-			description.get().colspan = new integer(4);
-
-			registerFormField(name);
-			registerFormField(type);
-			registerFormField(displayName);
-			registerFormField(id);
-			registerFormField(description);
-		}
-	};
-
 	@SuppressWarnings("unchecked")
 	@Override
 	public void constructor2() {
@@ -67,21 +38,20 @@ public class TablesView extends Tables {
 		fields.setIndex("fields");
 		fields.setDisplayName(Fields.displayNames.Title);
 
-		__Fields fieldsTable = new __Fields.CLASS<__Fields>(this).get();
+		Fields fieldsTable = new Fields.CLASS<Fields>(this).get();
 
 		fields.get().query = (Query.CLASS<Query>)fieldsTable.getCLASS();
 		fields.get().link = fieldsTable.table;
 		fields.get().height = new integer(600);
+		fields.get().sortFields.add(fieldsTable.position);
 
 		fieldsTable.columns.add(fieldsTable.name);
 		fieldsTable.columns.add(fieldsTable.type);
 		fieldsTable.columns.add(fieldsTable.displayName);
 
-		fieldsTable.sortFields.add(fieldsTable.position);
-
 		id.get().colspan = new integer(2);
 
-		name.get().colspan = new integer(1);
+		name.get().colspan = new integer(2);
 		name.get().width = new integer(100);
 
 		displayName.get().colspan = new integer(2);
