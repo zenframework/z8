@@ -11,23 +11,25 @@ public class Message {
 
 	private date time;
 	private String text;
+	private String source;
 	private int type;
 
-	static public Message info(String text) {
-		return new Message(text, Info);
+	static public Message info(String text, String source) {
+		return new Message(text, source, Info);
 	}
 
-	static public Message warning(String text) {
-		return new Message(text, Warning);
+	static public Message warning(String text, String source) {
+		return new Message(text, source, Warning);
 	}
 
-	static public Message error(String text) {
-		return new Message(text, Error);
+	static public Message error(String text, String source) {
+		return new Message(text, source, Error);
 	}
 
-	private Message(String text, int type) {
+	private Message(String text, String source, int type) {
 		time = new date();
 		this.text = text;
+		this.source = source;
 		this.type = type;
 	}
 
@@ -39,8 +41,13 @@ public class Message {
 		return text;
 	}
 
+	public String source() {
+		return source;
+	}
+
 	public void write(JsonWriter writer) {
 		writer.writeProperty(Json.text, text);
+		writer.writeProperty(Json.source, source);
 		writer.writeProperty(Json.time, time);
 		writer.writeProperty(Json.type, type == Info ? Json.info : (type == Warning ? Json.warning : Json.error));
 	}

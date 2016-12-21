@@ -37,19 +37,19 @@ public class Monitor extends RequestTarget implements IMonitor {
 	@Override
 	public void info(String text) {
 		Trace.logEvent(text);
-		messages.add(Message.info(text));
+		messages.add(Message.info(text, request().displayName()));
 	}
 
 	@Override
 	public void warning(String text) {
 		Trace.logEvent(text);
-		messages.add(Message.warning(text));
+		messages.add(Message.warning(text, request().displayName()));
 	}
 
 	@Override
 	public void error(String text) {
 		Trace.logEvent(text);
-		messages.add(Message.error(text));
+		messages.add(Message.error(text, request().displayName()));
 	}
 
 	@Override
@@ -64,21 +64,21 @@ public class Monitor extends RequestTarget implements IMonitor {
 
 	@Override
 	public void logInfo(String text) {
-		log(Message.info(text));
+		log(Message.info(text, request().displayName()));
 	}
 
 	@Override
 	public void logWarning(String text) {
-		log(Message.warning(text));
+		log(Message.warning(text, request().displayName()));
 	}
 
 	@Override
 	public void logError(String text) {
-		log(Message.error(text));
+		log(Message.error(text, request().displayName()));
 	}
 
 	private void log(Message message) {
-		if (logFile == null)
+		if(logFile == null)
 			logFile = new file();
 
 		logFile.write(message + file.EOL);
@@ -100,11 +100,10 @@ public class Monitor extends RequestTarget implements IMonitor {
 
 	@Override
 	public void writeResponse(JsonWriter writer) {
-		if (outputFile != null)
+		if(outputFile != null)
 			writer.writeProperty(Json.source, outputFile.path.get().replace('\\', '/'));
 
 		writer.writeProperty(new string(Json.serverId), ApplicationServer.id);
 		writer.writeInfo(getMessages(), ApplicationServer.id, logFile);
 	}
-
 }

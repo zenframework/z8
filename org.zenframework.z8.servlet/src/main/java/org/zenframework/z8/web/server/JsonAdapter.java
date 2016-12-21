@@ -33,7 +33,7 @@ public class JsonAdapter extends Adapter {
 			errorText = "Internal server error.";
 
 		writer.startResponse(null, false, status);
-		writer.writeInfo(Arrays.asList(Message.error(errorText)), null, null);
+		writer.writeInfo(Arrays.asList(Message.error(errorText, null)), null, null);
 		writer.startArray(Json.data);
 		writer.finishArray();
 		writer.finishResponse();

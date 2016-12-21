@@ -29,7 +29,7 @@ public class Request extends IRequest {
 		this.session = session;
 		this.monitor = new Monitor();
 		this.response = new Response();
-		
+
 		for(Map.Entry<String, String> entry : parameters.entrySet())
 			this.parameters.put(new string(entry.getKey()), new string(entry.getValue()));
 	}
@@ -71,23 +71,22 @@ public class Request extends IRequest {
 	private String parametersAsString() {
 		String result = "";
 
-		for (Map.Entry<string, string> entry : parameters.entrySet()) {
+		for(Map.Entry<string, string> entry : parameters.entrySet()) {
 			string key = entry.getKey();
-			if (!Json.data.equals(key) && !Json.requestId.equals(key)) {
+			if(!Json.data.equals(key) && !Json.requestId.equals(key)) {
 				String value = entry.getValue().get();
 				result += (result.isEmpty() ? "" : ", ") + key + "=" + (value != null ? value : "");
 			}
 		}
 
 		String requestId = getParameter(Json.requestId);
-		
+
 		if(requestId != null) {
 			String[] ids = requestId.split("\\.");
 			requestId = ids[ids.length - 1];
 		} else
 			requestId = Json.retry + "(" + getParameter(Json.retry) + ")";
-		
-		
+
 		return requestId + "(" + hashCode() + ") = {" + result + "}";
 	}
 

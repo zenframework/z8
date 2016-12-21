@@ -51,9 +51,9 @@ public class UpdateAction extends Action {
 	}
 
 	private boolean checkAccess(Field field) {
-		if(!field.access().write())
+		//if(!field.access().write())
 			throw new AccessRightsViolationException();
-		return true;
+		//return true;
 	}
 
 	private Collection<guid> update(JsonArray records) {

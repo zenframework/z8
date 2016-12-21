@@ -41,7 +41,7 @@ public class ScheduledJob implements Runnable {
 	private int executionCount = 0;
 
 	private Thread thread;
-	
+
 	public ScheduledJob(guid id) {
 		this.id = id;
 	}
@@ -52,7 +52,7 @@ public class ScheduledJob implements Runnable {
 		this.name = names[names.length - 1];
 		this.repeat = repeat;
 	}
-	
+
 	@Override
 	public int hashCode() {
 		return id.hashCode();
@@ -75,9 +75,7 @@ public class ScheduledJob implements Runnable {
 	public boolean readyToStart() {
 		long now = new date().getTicks();
 
-		return active && !isRunning && from.getTicks() < now && 
-				(till.equals(date.Min) || now < till.getTicks()) && 
-				(lastStarted.equals(date.Min) || lastStarted.addSecond(repeat).getTicks() < now);
+		return active && !isRunning && from.getTicks() < now && (till.equals(date.Min) || now < till.getTicks()) && (lastStarted.equals(date.Min) || lastStarted.addSecond(repeat).getTicks() < now);
 	}
 
 	private boolean beforeStart() {
@@ -90,9 +88,9 @@ public class ScheduledJob implements Runnable {
 				tasks.lastStarted.get().set(lastStarted);
 				tasks.update(id);
 			}
-			
+
 			this.lastStarted = lastStarted;
-			
+
 			executionCount++;
 
 			return true;
@@ -117,7 +115,7 @@ public class ScheduledJob implements Runnable {
 		logs.finish.get().set(new date());
 		logs.create();
 	}
-	
+
 	@Override
 	public void run() {
 		try {
@@ -129,22 +127,22 @@ public class ScheduledJob implements Runnable {
 			Map<String, String> parameters = new HashMap<String, String>();
 			parameters.put(Json.requestId.get(), className);
 			parameters.put(Json.scheduled.get(), "true");
-	
+
 			List<file> files = new ArrayList<file>();
-	
+
 			IUser user = this.user != null ? User.load(this.user) : User.system();
 			IRequest request = new Request(parameters, files, new Session("", user));
 			IResponse response = new Response();
-	
+
 			new RequestDispatcher(request, response).run();
-	
+
 			afterFinish(request.getMonitor().getLog());
 		} finally {
 			isRunning = false;
 			thread = null;
 		}
 	}
-	
+
 	public void start() {
 		if(readyToStart()) {
 			thread = new Thread(this, toString());

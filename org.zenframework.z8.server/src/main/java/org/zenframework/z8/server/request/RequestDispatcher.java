@@ -22,8 +22,8 @@ import org.zenframework.z8.server.utils.ErrorUtils;
 
 public class RequestDispatcher implements Runnable {
 
-	private final IRequest request;
-	private final IResponse response;
+	private IRequest request;
+	private IResponse response;
 
 	public RequestDispatcher(IRequest request, IResponse response) {
 		this.request = request;
@@ -114,6 +114,8 @@ public class RequestDispatcher implements Runnable {
 			response.setContent(writer.toString());
 		} else {
 			OBJECT object = requestId != null ? Loader.getInstance(requestId) : null;
+
+			request.setTarget(object);
 
 			if(object != null && object.response() != null) {
 				object.processRequest(response);
