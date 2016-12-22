@@ -151,7 +151,7 @@ public class Dashboard extends RequestTarget {
 		writer.startObject(Json.parameters);
 		Map<string, primary> parameters = user.parameters();
 		for(string key : parameters.keySet())
-			writer.writeProperty('"' + key.get() + '"', parameters.get(key));
+			writer.writeProperty(key.get(), parameters.get(key));
 		writer.finishObject();
 
 		writer.finishObject();

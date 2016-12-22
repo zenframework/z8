@@ -92,7 +92,7 @@ public class JsonWriter extends OBJECT {
 	}
 
 	public CLASS<JsonWriter> z8_writeProperty(Field.CLASS<? extends Field> field) {
-		writer.writeProperty('"' + field.id() + "'", field.get().get());
+		writer.writeProperty(field.id(), field.get().get());
 		return (CLASS<JsonWriter>)this.getCLASS();
 	}
 

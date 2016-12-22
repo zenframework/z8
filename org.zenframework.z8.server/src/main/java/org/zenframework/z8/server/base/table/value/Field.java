@@ -330,7 +330,7 @@ abstract public class Field extends Control implements IField {
 	public void writeData(JsonWriter writer) {
 		primary value = get();
 		if(access().read() && (!wasNull() || writeNulls))
-			writer.writeProperty('"' + id() + '"', wasNull() ? getNullValue() : value);
+			writer.writeProperty(id(), wasNull() ? getNullValue() : value);
 	}
 
 	public binary binary() {

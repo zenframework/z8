@@ -67,7 +67,8 @@ public class JsonWriter {
 
 	public void startObject(String name) {
 		if(name != null) {
-			stream.append(comma() + name + ":" + '{');
+			name = quoteName ? JsonObject.quote(name) : ('"' + name + '"');
+			stream.append(comma() + name + ":{");
 			openScope();
 		} else {
 			startObject();
@@ -90,8 +91,8 @@ public class JsonWriter {
 
 	public void startArray(String name) {
 		if(name != null) {
-			name = quoteName ? JsonObject.quote(name) : name;
-			stream.append(comma() + name + ":" + '[');
+			name = quoteName ? JsonObject.quote(name) : ('"' + name + '"');
+			stream.append(comma() + name + ":[");
 			openScope();
 		} else {
 			startArray();
@@ -189,7 +190,7 @@ public class JsonWriter {
 
 	public void writeProperty(String name, String value, boolean quoteValue) {
 		if(value != null) {
-			name = quoteName ? JsonObject.quote(name) : name;
+			name = quoteName ? JsonObject.quote(name) : ('"' + name + '"');
 			value = quoteValue ? JsonObject.quote(value) : value;
 			stream.append(comma() + name + ":" + value);
 			startSeparate();

@@ -687,7 +687,8 @@ public class ReadAction extends Action {
 	private Groupping writePlainData(Select cursor, JsonWriter writer) {
 		Groupping groups = new Groupping(this.groupFields);
 
-		primaryKey.setWriteNulls(false);
+		if(primaryKey != null)
+			primaryKey.setWriteNulls(false);
 
 		writer.startArray(Json.data);
 
