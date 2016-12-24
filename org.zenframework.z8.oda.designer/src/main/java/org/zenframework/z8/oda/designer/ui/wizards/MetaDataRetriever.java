@@ -14,48 +14,48 @@ import org.eclipse.datatools.connectivity.oda.design.ui.designsession.DesignSess
 import org.zenframework.z8.oda.driver.Driver;
 
 class MetaDataRetriever {
-    private IResultSetMetaData resultMeta;
-    private IParameterMetaData paramMeta;
-    private IQuery query;
-    private IConnection connection;
+	private IResultSetMetaData resultMeta;
+	private IParameterMetaData paramMeta;
+	private IQuery query;
+	private IConnection connection;
 
-    MetaDataRetriever(DataSetDesign dataSetDesign) {
-        DataSourceDesign dataSourceDesign = dataSetDesign.getDataSourceDesign();
+	MetaDataRetriever(DataSetDesign dataSetDesign) {
+		DataSourceDesign dataSourceDesign = dataSetDesign.getDataSourceDesign();
 
-        IDriver driver = new Driver();
+		IDriver driver = new Driver();
 
-        try {
-            connection = driver.getConnection(dataSourceDesign.getOdaExtensionId());
-            Properties prop = DesignSessionUtil.getEffectiveDataSourceProperties(dataSourceDesign);
-            connection.open(prop);
+		try {
+			connection = driver.getConnection(dataSourceDesign.getOdaExtensionId());
+			Properties prop = DesignSessionUtil.getEffectiveDataSourceProperties(dataSourceDesign);
+			connection.open(prop);
 
-            query = connection.newQuery(dataSetDesign.getOdaExtensionDataSetId());
-            query.prepare(dataSetDesign.getQueryText());
+			query = connection.newQuery(dataSetDesign.getOdaExtensionDataSetId());
+			query.prepare(dataSetDesign.getQueryText());
 
-            paramMeta = query.getParameterMetaData();
+			paramMeta = query.getParameterMetaData();
 
-            resultMeta = query.getMetaData();
-        }
-        catch(OdaException e) {}
-    }
+			resultMeta = query.getMetaData();
+		} catch(OdaException e) {
+		}
+	}
 
-    IParameterMetaData getParameterMetaData() {
-        return this.paramMeta;
-    }
+	IParameterMetaData getParameterMetaData() {
+		return this.paramMeta;
+	}
 
-    IResultSetMetaData getResultSetMetaData() {
-        return this.resultMeta;
-    }
+	IResultSetMetaData getResultSetMetaData() {
+		return this.resultMeta;
+	}
 
-    void close() {
-        try {
-            if(query != null) {
-                query.close();
-            }
-            if(connection != null) {
-                connection.close();
-            }
-        }
-        catch(OdaException e) {}
-    }
+	void close() {
+		try {
+			if(query != null) {
+				query.close();
+			}
+			if(connection != null) {
+				connection.close();
+			}
+		} catch(OdaException e) {
+		}
+	}
 }

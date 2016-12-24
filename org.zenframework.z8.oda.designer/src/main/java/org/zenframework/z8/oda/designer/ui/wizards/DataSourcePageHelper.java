@@ -18,93 +18,92 @@ import org.eclipse.ui.dialogs.PropertyPage;
 import org.zenframework.z8.oda.designer.plugin.Plugin;
 
 public class DataSourcePageHelper {
-    private DialogPage page;
+	private DialogPage page;
 
-    private Text url;
+	private Text url;
 
-    private String DEFAULT_MESSAGE;
+	private String DEFAULT_MESSAGE;
 
-    final private static String EMPTY_URL = Plugin.getResourceString("error.emptyDatabaseUrl");
+	final private static String EMPTY_URL = Plugin.getResourceString("error.emptyDatabaseUrl");
 
-    DataSourcePageHelper(WizardPage page) {
-        DEFAULT_MESSAGE = Plugin.getResourceString("wizard.message.createDataSource");
-        this.page = page;
-    }
+	DataSourcePageHelper(WizardPage page) {
+		DEFAULT_MESSAGE = Plugin.getResourceString("wizard.message.createDataSource");
+		this.page = page;
+	}
 
-    DataSourcePageHelper(PreferencePage page) {
-        DEFAULT_MESSAGE = Plugin.getResourceString("wizard.message.editDataSource");
-        this.page = page;
-    }
+	DataSourcePageHelper(PreferencePage page) {
+		DEFAULT_MESSAGE = Plugin.getResourceString("wizard.message.editDataSource");
+		this.page = page;
+	}
 
-    void createCustomControl(Composite parent) {
-        Composite content = new Composite(parent, SWT.NONE);
+	void createCustomControl(Composite parent) {
+		Composite content = new Composite(parent, SWT.NONE);
 
-        GridLayout layout = new GridLayout();
-        layout.numColumns = 2;
-        layout.verticalSpacing = 10;
-        layout.marginBottom = 10;
-        content.setLayout(layout);
+		GridLayout layout = new GridLayout();
+		layout.numColumns = 2;
+		layout.verticalSpacing = 10;
+		layout.marginBottom = 10;
+		content.setLayout(layout);
 
-        GridData gridData;
+		GridData gridData;
 
-        new Label(content, SWT.RIGHT).setText(Plugin.getResourceString("wizard.label.url"));
+		new Label(content, SWT.RIGHT).setText(Plugin.getResourceString("wizard.label.url"));
 
-        gridData = new GridData();
-        gridData.horizontalSpan = 1;
-        gridData.horizontalAlignment = SWT.FILL;
-        gridData.grabExcessHorizontalSpace = true;
-        url = new Text(content, SWT.BORDER | SWT.READ_ONLY);
-        url.setLayoutData(gridData);
+		gridData = new GridData();
+		gridData.horizontalSpan = 1;
+		gridData.horizontalAlignment = SWT.FILL;
+		gridData.grabExcessHorizontalSpace = true;
+		url = new Text(content, SWT.BORDER | SWT.READ_ONLY);
+		url.setLayoutData(gridData);
 
-        addControlListeners();
-        verifyProperties();
-    }
+		addControlListeners();
+		verifyProperties();
+	}
 
-    void initCustomControl(Properties profileProps) {
-        url.setText(Plugin.getWebInfPath().toString());
+	void initCustomControl(Properties profileProps) {
+		url.setText(Plugin.getWebInfPath().toString());
 
-        verifyProperties();
-    }
+		verifyProperties();
+	}
 
-    Properties collectCustomProperties(Properties props) {
-        if(props == null)
-            props = new Properties();
+	Properties collectCustomProperties(Properties props) {
+		if(props == null)
+			props = new Properties();
 
-        return props;
-    }
+		return props;
+	}
 
-    private void addControlListeners() {
-        url.addModifyListener(new ModifyListener() {
+	private void addControlListeners() {
+		url.addModifyListener(new ModifyListener() {
 
-            @Override
-            public void modifyText(ModifyEvent e) {
-                if(!url.isFocusControl() && url.getText().trim().length() == 0) {
-                    return;
-                }
-                verifyProperties();
-            }
-        });
-    }
+			@Override
+			public void modifyText(ModifyEvent e) {
+				if(!url.isFocusControl() && url.getText().trim().length() == 0) {
+					return;
+				}
+				verifyProperties();
+			}
+		});
+	}
 
+	private boolean isURLBlank() {
+		return Plugin.getWebInfPath().toString().isEmpty();
+	}
 
-    private boolean isURLBlank() {
-        return Plugin.getWebInfPath().toString().isEmpty();
-    }
+	private void verifyProperties() {
+		boolean urlBlank = isURLBlank();
+		setPageComplete(!urlBlank);
+		setMessage(urlBlank ? EMPTY_URL : DEFAULT_MESSAGE, urlBlank ? IMessageProvider.ERROR : IMessageProvider.INFORMATION);
+	}
 
-    private void verifyProperties() {
-        boolean urlBlank = isURLBlank();
-        setPageComplete(!urlBlank);
-        setMessage(urlBlank ? EMPTY_URL : DEFAULT_MESSAGE, urlBlank ? IMessageProvider.ERROR : IMessageProvider.INFORMATION);
-    }
+	private void setPageComplete(boolean complete) {
+		if(page instanceof WizardPage)
+			((WizardPage)page).setPageComplete(complete);
+		else if(page instanceof PropertyPage)
+			((PropertyPage)page).setValid(complete);
+	}
 
-    private void setPageComplete(boolean complete) {
-        if(page instanceof WizardPage)
-            ((WizardPage)page).setPageComplete(complete);
-        else if(page instanceof PropertyPage)
-            ((PropertyPage)page).setValid(complete);
-    }
-
-    private void setMessage(String message, int type) {
-        page.setMessage(message, type);
-    }
+	private void setMessage(String message, int type) {
+		page.setMessage(message, type);
+	}
 }
