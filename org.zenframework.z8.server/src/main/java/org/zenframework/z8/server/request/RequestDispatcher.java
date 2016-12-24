@@ -33,12 +33,10 @@ public class RequestDispatcher implements Runnable {
 	public void run() {
 		try {
 			ApplicationServer.setRequest(request);
-
 			dispatch();
 		} catch(Throwable exception) {
-			if(!Dashboard.Id.equals(request.id())) {
+			if(!Dashboard.Id.equals(request.id()))
 				Trace.logError(request.toString(), exception);
-			}
 
 			JsonWriter writer = new JsonWriter();
 			writer.startResponse(request.id(), false);
@@ -131,5 +129,4 @@ public class RequestDispatcher implements Runnable {
 			}
 		}
 	}
-
 }

@@ -31,7 +31,6 @@ public class JsonWriter {
 
 	public JsonWriter(boolean quoteName) {
 		this();
-
 		this.quoteName = quoteName;
 	}
 
@@ -39,6 +38,10 @@ public class JsonWriter {
 		stream = new StringBuilder();
 		scopes = new ArrayList<Boolean>();
 		openScope();
+	}
+
+	private String quoteName(String name) {
+		return quoteName ? JsonObject.quote(name) : ('"' + name + '"');
 	}
 
 	private String comma() {
@@ -56,9 +59,8 @@ public class JsonWriter {
 	}
 
 	private void startSeparate() {
-		if(scopes.size() != 0) {
+		if(scopes.size() != 0)
 			scopes.set(scopes.size() - 1, true);
-		}
 	}
 
 	public void startObject(string name) {
@@ -67,12 +69,10 @@ public class JsonWriter {
 
 	public void startObject(String name) {
 		if(name != null) {
-			name = quoteName ? JsonObject.quote(name) : ('"' + name + '"');
-			stream.append(comma() + name + ":{");
+			stream.append(comma() + quoteName(name) + ":{");
 			openScope();
-		} else {
+		} else
 			startObject();
-		}
 	}
 
 	public void startObject() {
@@ -91,13 +91,10 @@ public class JsonWriter {
 
 	public void startArray(String name) {
 		if(name != null) {
-			name = quoteName ? JsonObject.quote(name) : ('"' + name + '"');
-			stream.append(comma() + name + ":[");
+			stream.append(comma() + quoteName(name) + ":[");
 			openScope();
-		} else {
+		} else
 			startArray();
-		}
-
 	}
 
 	public void startArray() {
@@ -148,21 +145,20 @@ public class JsonWriter {
 	}
 
 	public void write(primary value) {
-		if(value == null) {
+		if(value == null)
 			write("null", false);
-		} else if(value instanceof bool) {
+		else if(value instanceof bool)
 			write(((bool)value).get());
-		} else if(value instanceof integer) {
+		else if(value instanceof integer)
 			write(((integer)value).get());
-		} else if(value instanceof decimal) {
+		else if(value instanceof decimal)
 			write(((decimal)value).get());
-		} else if(value instanceof date) {
+		else if(value instanceof date) {
 			date dt = (date)value;
 			boolean minMax = dt.equals(date.Min) || dt.equals(date.Max);
 			write(minMax ? "" : value.toString());
-		} else {
+		} else
 			write(value.toString());
-		}
 	}
 
 	public void write(RCollection<primary> value) {
@@ -190,9 +186,8 @@ public class JsonWriter {
 
 	public void writeProperty(String name, String value, boolean quoteValue) {
 		if(value != null) {
-			name = quoteName ? JsonObject.quote(name) : ('"' + name + '"');
 			value = quoteValue ? JsonObject.quote(value) : value;
-			stream.append(comma() + name + ":" + value);
+			stream.append(comma() + quoteName(name) + ":" + value);
 			startSeparate();
 		}
 	}
@@ -206,20 +201,19 @@ public class JsonWriter {
 	}
 
 	public void writeProperty(String name, primary value) {
-		if(value == null) {
+		if(value == null)
 			writeNull(name);
-		} else if(value instanceof bool) {
+		else if(value instanceof bool)
 			writeProperty(name, ((bool)value).get());
-		} else if(value instanceof integer) {
+		else if(value instanceof integer)
 			writeProperty(name, ((integer)value).get());
-		} else if(value instanceof decimal) {
+		else if(value instanceof decimal)
 			writeProperty(name, ((decimal)value).get());
-		} else if(value instanceof date) {
+		else if(value instanceof date) {
 			boolean minMax = value.equals(date.Min) || value.equals(date.Max);
 			writeProperty(name, '"' + (minMax ? "" : value.toString()) + '"', false);
-		} else {
+		} else
 			writeProperty(name, value.toString(), true);
-		}
 	}
 
 	public void writeProperty(string name, double value) {
@@ -227,8 +221,7 @@ public class JsonWriter {
 	}
 
 	public void writeProperty(String name, double value) {
-		name = quoteName ? JsonObject.quote(name) : name;
-		stream.append(comma() + name + ":" + Double.toString(value));
+		stream.append(comma() + quoteName(name) + ":" + Double.toString(value));
 		startSeparate();
 	}
 
@@ -369,5 +362,4 @@ public class JsonWriter {
 	public String toString() {
 		return stream.toString();
 	}
-
 }

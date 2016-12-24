@@ -99,5 +99,4 @@ public class Job extends RequestTarget {
 		monitors.put(monitor.id(), monitor);
 		return monitor;
 	}
-
 }
