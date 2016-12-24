@@ -27,7 +27,6 @@ import org.zenframework.z8.server.db.sql.expressions.NotEqu;
 import org.zenframework.z8.server.db.sql.expressions.Or;
 import org.zenframework.z8.server.db.sql.functions.InVector;
 import org.zenframework.z8.server.db.sql.functions.string.EqualsIgnoreCase;
-import org.zenframework.z8.server.engine.Database;
 import org.zenframework.z8.server.engine.RmiIO;
 import org.zenframework.z8.server.exceptions.AccessDeniedException;
 import org.zenframework.z8.server.logs.Trace;
@@ -353,7 +352,7 @@ public class User implements IUser {
 	}
 
 	@Override
-	public void save(Database database) {
+	public void save() {
 		Users users = new Users.CLASS<Users>().get();
 
 		users.settings.get().set(new string(settings));
