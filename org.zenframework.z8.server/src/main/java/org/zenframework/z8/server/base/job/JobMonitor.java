@@ -21,6 +21,11 @@ public class JobMonitor extends Monitor {
 		this.job = job;
 	}
 
+	@Override
+	public String displayName() {
+		return job != null ? job.displayName() : null;
+	}
+
 	public Job getJob() {
 		return job;
 	}

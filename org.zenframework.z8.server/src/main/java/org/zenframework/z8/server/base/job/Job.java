@@ -29,6 +29,11 @@ public class Job extends RequestTarget {
 		monitor = createMonitor(this);
 	}
 
+	@Override
+	public String displayName() {
+		return procedure.displayName();
+	}
+
 	public Thread getThread() {
 		return thread;
 	}

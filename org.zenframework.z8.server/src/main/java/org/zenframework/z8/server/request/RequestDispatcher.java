@@ -76,8 +76,9 @@ public class RequestDispatcher implements Runnable {
 				monitor.setWorked(100);
 			}
 
-			ApplicationServer.getRequest().setMonitor(monitor);
-
+			IRequest request = ApplicationServer.getRequest();
+			request.setTarget(monitor);
+			request.setMonitor(monitor);
 			monitor.processRequest(response);
 		} else {
 			long t = System.currentTimeMillis();

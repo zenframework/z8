@@ -7,7 +7,6 @@ import java.util.Map;
 
 import org.zenframework.z8.server.engine.ISession;
 import org.zenframework.z8.server.json.Json;
-import org.zenframework.z8.server.runtime.OBJECT;
 import org.zenframework.z8.server.types.encoding;
 import org.zenframework.z8.server.types.file;
 import org.zenframework.z8.server.types.string;
@@ -18,7 +17,7 @@ public abstract class IRequest {
 	abstract public List<file> getFiles();
 
 	private int events = 0;
-	private OBJECT target;
+	private RequestTarget target;
 
 	public String getParameter(string key) {
 		Map<string, string> parameters = getParameters();
@@ -52,11 +51,11 @@ public abstract class IRequest {
 		return events == 0;
 	}
 
-	public OBJECT getTarget() {
+	public RequestTarget getTarget() {
 		return target;
 	}
 
-	public void setTarget(OBJECT target) {
+	public void setTarget(RequestTarget target) {
 		this.target = target;
 	}
 
