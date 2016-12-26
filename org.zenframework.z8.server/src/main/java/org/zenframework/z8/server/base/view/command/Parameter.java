@@ -144,7 +144,7 @@ public class Parameter extends OBJECT implements IParameter {
 	public void write(JsonWriter writer) {
 		writer.writeProperty(Json.id, text);
 		writer.writeProperty(Json.text, text);
-		writer.writeProperty(Json.serverType, getType().toString());
+		writer.writeProperty(Json.type, getType().toString());
 
 		if(value instanceof RCollection) {
 			writer.startArray(Json.value);

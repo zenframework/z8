@@ -46,7 +46,6 @@ public class Json extends OBJECT {
 	final static public string success = org.zenframework.z8.server.json.Json.success;
 	final static public string status = org.zenframework.z8.server.json.Json.status;
 
-	final static public string serverType = org.zenframework.z8.server.json.Json.serverType;
 	final static public string aggregation = org.zenframework.z8.server.json.Json.aggregation;
 	final static public string readOnly = org.zenframework.z8.server.json.Json.readOnly;
 

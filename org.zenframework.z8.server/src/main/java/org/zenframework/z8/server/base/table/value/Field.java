@@ -270,7 +270,7 @@ abstract public class Field extends Control implements IField {
 	@Override
 	@SuppressWarnings("unchecked")
 	public void writeMeta(JsonWriter writer, Query query) {
-		writer.writeProperty(Json.serverType, type().toString());
+		writer.writeProperty(Json.type, type().toString());
 		writer.writeProperty(Json.visible, visible, bool.True);
 		writer.writeProperty(Json.format, format, new string());
 		writer.writeProperty(Json.length, length, new integer(0));
@@ -310,6 +310,8 @@ abstract public class Field extends Control implements IField {
 			required = !readOnly && required();
 
 			writer.writeProperty(Json.isText, true);
+			if(query.primaryKey() == this)
+				writer.writeProperty(Json.primaryKey, true);
 		}
 
 		writer.writeProperty(Json.required, required);

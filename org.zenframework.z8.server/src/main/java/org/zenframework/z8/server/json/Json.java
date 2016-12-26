@@ -57,7 +57,6 @@ public interface Json {
 	string success = new string("success");
 	string status = new string("status");
 
-	string serverType = new string("serverType");
 	string aggregation = new string("aggregation");
 	string readOnly = new string("readOnly");
 
