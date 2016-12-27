@@ -1,5 +1,6 @@
 package org.zenframework.z8.server.base.model.actions;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -8,7 +9,6 @@ import org.zenframework.z8.server.base.query.Query;
 import org.zenframework.z8.server.base.table.value.Field;
 import org.zenframework.z8.server.db.Connection;
 import org.zenframework.z8.server.db.ConnectionManager;
-import org.zenframework.z8.server.json.Json;
 import org.zenframework.z8.server.json.JsonWriter;
 import org.zenframework.z8.server.types.guid;
 import org.zenframework.z8.server.types.primary;
@@ -25,7 +25,7 @@ public class CopyAction extends Action {
 		guid recordId = getRecordIdParameter();
 		guid parentId = getParentIdParameter();
 
-		boolean transactive = getQuery().isTransactive();
+		boolean transactive = query.isTransactive();
 		Connection connection = transactive ? ConnectionManager.get() : null;
 
 		try {
@@ -42,20 +42,7 @@ public class CopyAction extends Action {
 			throw new RuntimeException(e);
 		}
 
-		Collection<Field> fields = getFormFields(query);
-
-		writer.startArray(Json.data);
-
-		if(query.readRecord(recordId, fields)) {
-			writer.startObject();
-
-			for(Field field : fields)
-				field.writeData(writer);
-
-			writer.finishObject();
-		}
-
-		writer.finishArray();
+		writeFormFields(writer, query, Arrays.asList(recordId));
 	}
 
 	static private boolean canCopy(Field field) {
