@@ -131,7 +131,7 @@ public interface Json {
 	string hasChildren = new string("hasChildren");
 	string level = new string("level");
 
-	string action = new string("xaction");
+	string action = new string("action");
 	string data = new string("data");
 	string summaryData = new string("summaryData");
 	string totalsData = new string("totalsData");
