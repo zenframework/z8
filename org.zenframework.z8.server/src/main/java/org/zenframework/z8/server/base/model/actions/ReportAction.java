@@ -155,7 +155,7 @@ public class ReportAction extends Action {
 		String reportId = report != null ? reportRunner.execute() : reportRunner.execute(columns, groupFields);
 
 		writer.writeProperty(Json.source, reportId);
-		writer.writeProperty(Json.serverId, ApplicationServer.id);
+		writer.writeProperty(Json.server, ApplicationServer.id);
 	}
 
 }

@@ -58,8 +58,8 @@ public abstract class Adapter {
 
 			String login = parameters.get(Json.login);
 			String password = parameters.get(Json.password);
-			String sessionId = parameters.get(Json.sessionId);
-			String serverId = parameters.get(Json.serverId);
+			String sessionId = parameters.get(Json.session);
+			String serverId = parameters.get(Json.server);
 
 			if(login != null && password != null) {
 

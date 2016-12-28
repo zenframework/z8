@@ -35,8 +35,7 @@ public class RequestDispatcher implements Runnable {
 			ApplicationServer.setRequest(request);
 			dispatch();
 		} catch(Throwable exception) {
-			if(!Dashboard.Id.equals(request.id()))
-				Trace.logError(request.toString(), exception);
+			Trace.logError(request.toString(), exception);
 
 			JsonWriter writer = new JsonWriter();
 			writer.startResponse(request.id(), false);
@@ -63,7 +62,7 @@ public class RequestDispatcher implements Runnable {
 
 	private void dispatch() throws Throwable {
 		String requestId = request.id();
-		String jobId = request.getParameter(Json.jobId);
+		String jobId = request.getParameter(Json.job);
 
 		if(jobId != null) {
 			JobMonitor monitor = Job.getMonitor(jobId);
@@ -83,7 +82,7 @@ public class RequestDispatcher implements Runnable {
 
 			processRequest(request, response, requestId);
 
-			if(!Dashboard.Id.equals(requestId) && !Json.settings.equals(requestId))
+			if(!Json.login.equals(requestId) && !Json.settings.equals(requestId))
 				Trace.logEvent(request.toString() + "\n\t " + (System.currentTimeMillis() - t) + "ms; " + getMemoryUsage());
 		}
 	}
@@ -96,7 +95,7 @@ public class RequestDispatcher implements Runnable {
 	}
 
 	private void processRequest(IRequest request, IResponse response, String requestId) throws Throwable {
-		if(Dashboard.Id.equals(requestId)) {
+		if(Json.login.equals(requestId)) {
 			Dashboard dashboard = new Dashboard();
 			dashboard.processRequest(response);
 		} else if(Json.settings.equals(requestId)) {

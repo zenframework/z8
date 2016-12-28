@@ -125,7 +125,7 @@ public class ScheduledJob implements Runnable {
 				return;
 
 			Map<String, String> parameters = new HashMap<String, String>();
-			parameters.put(Json.requestId.get(), className);
+			parameters.put(Json.request.get(), className);
 			parameters.put(Json.scheduled.get(), "true");
 
 			List<file> files = new ArrayList<file>();

@@ -73,21 +73,21 @@ public class Request extends IRequest {
 
 		for(Map.Entry<string, string> entry : parameters.entrySet()) {
 			string key = entry.getKey();
-			if(!Json.data.equals(key) && !Json.requestId.equals(key)) {
+			if(!Json.data.equals(key) && !Json.request.equals(key)) {
 				String value = entry.getValue().get();
 				result += (result.isEmpty() ? "" : ", ") + key + "=" + (value != null ? value : "");
 			}
 		}
 
-		String requestId = getParameter(Json.requestId);
+		String request = getParameter(Json.request);
 
-		if(requestId != null) {
-			String[] ids = requestId.split("\\.");
-			requestId = ids[ids.length - 1];
+		if(request != null) {
+			String[] ids = request.split("\\.");
+			request = ids[ids.length - 1];
 		} else
-			requestId = Json.retry + "(" + getParameter(Json.retry) + ")";
+			request = Json.retry + "(" + getParameter(Json.retry) + ")";
 
-		return requestId + "(" + hashCode() + ") = {" + result + "}";
+		return request + "(" + hashCode() + ") = {" + result + "}";
 	}
 
 	@Override

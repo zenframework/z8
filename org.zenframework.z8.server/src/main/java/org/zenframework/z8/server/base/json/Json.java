@@ -11,8 +11,8 @@ public class Json extends OBJECT {
 	final static public string id = org.zenframework.z8.server.json.Json.id;
 	final static public string index = org.zenframework.z8.server.json.Json.index;
 
-	final static public string sessionId = org.zenframework.z8.server.json.Json.sessionId;
-	final static public string serverId = org.zenframework.z8.server.json.Json.serverId;
+	final static public string session = org.zenframework.z8.server.json.Json.session;
+	final static public string server = org.zenframework.z8.server.json.Json.server;
 	final static public string service = org.zenframework.z8.server.json.Json.service;
 	final static public string retry = org.zenframework.z8.server.json.Json.retry;
 
@@ -40,7 +40,7 @@ public class Json extends OBJECT {
 	final static public string recipient = org.zenframework.z8.server.json.Json.recipient;
 	final static public string sender = org.zenframework.z8.server.json.Json.sender;
 
-	final static public string requestId = org.zenframework.z8.server.json.Json.requestId;
+	final static public string request = org.zenframework.z8.server.json.Json.request;
 	final static public string requestUrl = org.zenframework.z8.server.json.Json.requestUrl;
 	final static public string message = org.zenframework.z8.server.json.Json.message;
 	final static public string success = org.zenframework.z8.server.json.Json.success;
@@ -148,7 +148,7 @@ public class Json extends OBJECT {
 	final static public string reports = org.zenframework.z8.server.json.Json.reports;
 	final static public string showTotals = org.zenframework.z8.server.json.Json.showTotals;
 
-	final static public string jobId = org.zenframework.z8.server.json.Json.jobId;
+	final static public string job = org.zenframework.z8.server.json.Json.job;
 	final static public string done = org.zenframework.z8.server.json.Json.done;
 	final static public string totalWork = org.zenframework.z8.server.json.Json.totalWork;
 	final static public string worked = org.zenframework.z8.server.json.Json.worked;

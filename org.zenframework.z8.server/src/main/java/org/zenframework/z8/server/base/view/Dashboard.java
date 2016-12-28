@@ -23,10 +23,8 @@ import org.zenframework.z8.server.types.primary;
 import org.zenframework.z8.server.types.string;
 
 public class Dashboard extends RequestTarget {
-	public static final String Id = "desktop";
-
 	public Dashboard() {
-		super(Id);
+		super();
 	}
 
 	@Override
@@ -124,7 +122,7 @@ public class Dashboard extends RequestTarget {
 	protected void writeLoginInfo(JsonWriter writer) {
 		IUser user = ApplicationServer.getUser();
 
-		writer.writeProperty(Json.sessionId, ApplicationServer.getSession().id());
+		writer.writeProperty(Json.session, ApplicationServer.getSession().id());
 
 		writer.startObject(Json.user);
 

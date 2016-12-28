@@ -51,7 +51,7 @@ public class Job extends RequestTarget {
 			thread.start();
 
 			writer.writeProperty(Json.id, monitor.id());
-			writer.writeProperty(Json.serverId, ApplicationServer.id);
+			writer.writeProperty(Json.server, ApplicationServer.id);
 			writer.writeProperty(Json.text, procedure.displayName());
 		} else {
 			procedure.run();

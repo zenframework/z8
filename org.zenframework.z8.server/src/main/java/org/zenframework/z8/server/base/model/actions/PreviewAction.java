@@ -68,7 +68,7 @@ public class PreviewAction extends Action {
 		preview.getParentFile().mkdirs();
 		PdfUtils.merge(converted, preview, comment.toString());
 		writer.writeProperty(Json.source, previewRelativePath);
-		writer.writeProperty(Json.serverId, ApplicationServer.id);
+		writer.writeProperty(Json.server, ApplicationServer.id);
 	}
 
 	private static String getPreviewPath(file file, String requestId, guid recordId, Field field) {

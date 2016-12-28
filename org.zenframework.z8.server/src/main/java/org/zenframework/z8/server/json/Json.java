@@ -7,8 +7,9 @@ public interface Json {
 	string index = new string("index");
 	string instanceId = new string("instanceId");
 
-	string sessionId = new string("sessionId");
-	string serverId = new string("serverId");
+	string request = new string("request");
+	string session = new string("session");
+	string server = new string("server");
 	string service = new string("service");
 	string retry = new string("retry");
 	string ip = new string("ip");
@@ -51,7 +52,6 @@ public interface Json {
 	string recipient = new string("recipient");
 	string sender = new string("sender");
 
-	string requestId = new string("requestId");
 	string requestUrl = new string("requestUrl");
 	string message = new string("message");
 	string success = new string("success");
@@ -186,7 +186,7 @@ public interface Json {
 
 	string showTotals = new string("showTotals");
 
-	string jobId = new string("jobId");
+	string job = new string("job");
 	string done = new string("done");
 	string totalWork = new string("totalWork");
 	string worked = new string("worked");

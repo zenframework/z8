@@ -32,7 +32,7 @@ public abstract class IRequest {
 
 	public String id() {
 		try {
-			String id = getParameter(Json.requestId);
+			String id = getParameter(Json.request);
 			return id != null ? URLDecoder.decode(id, encoding.UTF8.toString()) : null;
 		} catch(UnsupportedEncodingException e) {
 			throw new RuntimeException(e);

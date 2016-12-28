@@ -103,7 +103,7 @@ public class Monitor extends RequestTarget implements IMonitor {
 		if(outputFile != null)
 			writer.writeProperty(Json.source, outputFile.path.get().replace('\\', '/'));
 
-		writer.writeProperty(new string(Json.serverId), ApplicationServer.id);
+		writer.writeProperty(new string(Json.server), ApplicationServer.id);
 		writer.writeInfo(getMessages(), ApplicationServer.id, logFile);
 	}
 }

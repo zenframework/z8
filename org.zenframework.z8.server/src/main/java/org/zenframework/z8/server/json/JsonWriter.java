@@ -316,7 +316,7 @@ public class JsonWriter {
 
 	public void startResponse(String requestId, boolean success) {
 		startObject();
-		writeProperty(new string(Json.requestId), requestId);
+		writeProperty(new string(Json.request), requestId);
 		writeProperty(new string(Json.success), success);
 		writeProperty(new string(Json.type), "event");
 	}
@@ -333,7 +333,7 @@ public class JsonWriter {
 		finishObject();
 	}
 
-	public void writeInfo(Collection<Message> messages, String serverId, file log) {
+	public void writeInfo(Collection<Message> messages, String server, file log) {
 		startObject(Json.info);
 
 		startArray(Json.messages);
@@ -347,7 +347,7 @@ public class JsonWriter {
 		finishArray();
 
 		if(log != null) {
-			writeProperty(new string(Json.serverId), serverId);
+			writeProperty(new string(Json.server), server);
 			writeProperty(new string(Json.log), log.path.get());
 		}
 

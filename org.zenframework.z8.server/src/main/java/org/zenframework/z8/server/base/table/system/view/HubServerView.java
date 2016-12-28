@@ -122,7 +122,7 @@ abstract public class HubServerView extends Query {
 
 		if(action == null || action.equals(Action.readAction)) {
 			writer.writeProperty(Json.isQuery, true);
-			writer.writeProperty(Json.requestId, classId());
+			writer.writeProperty(Json.request, classId());
 			writer.writeProperty(Json.primaryKey, recordId.get().id());
 
 			Collection<Field> fields = getFormFields();
