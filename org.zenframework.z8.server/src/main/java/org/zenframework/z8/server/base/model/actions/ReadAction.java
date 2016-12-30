@@ -908,7 +908,7 @@ public class ReadAction extends Action {
 		Query query = getQuery();
 
 		if(!query.access().read()) {
-			ApplicationServer.getMonitor().info(Privileges.displayNames.NoReadAccess);
+			ApplicationServer.getMonitor().warning(Privileges.displayNames.NoReadAccess);
 			return;
 		}
 
