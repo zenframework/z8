@@ -2,6 +2,7 @@ package org.zenframework.z8.server.base.table.value;
 
 import org.zenframework.z8.server.base.query.Query;
 import org.zenframework.z8.server.base.table.ITable;
+import org.zenframework.z8.server.base.table.Table;
 import org.zenframework.z8.server.db.generator.IForeignKey;
 import org.zenframework.z8.server.json.Json;
 import org.zenframework.z8.server.json.JsonWriter;
@@ -61,7 +62,13 @@ public class Link extends GuidField implements ILink, IForeignKey {
 	@Override
 	public ITable getReferencedTable() {
 		Query query = getQuery();
-		return query instanceof ITable ? (ITable)query : null;
+		if(query instanceof ITable)
+			return (ITable)query;
+
+		if(query == null && isParentKey())
+			return (Table)getOwner();
+
+		return null;
 	}
 
 	@Override
@@ -71,7 +78,7 @@ public class Link extends GuidField implements ILink, IForeignKey {
 
 	@Override
 	public IField getReferer() {
-		return getQuery().primaryKey();
+		return ((Table)getReferencedTable()).primaryKey();
 	}
 
 	@Override

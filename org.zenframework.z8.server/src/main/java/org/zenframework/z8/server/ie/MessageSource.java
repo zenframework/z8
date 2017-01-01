@@ -190,7 +190,10 @@ public class MessageSource implements RmiSerializable, Serializable {
 		if(!isLink && !isParentKey)
 			return true;
 
-		Table table = (Table)(isParentKey ? field.getOwner() : ((Link)field).getQuery());
+		Table table = (Table)((Link)field).getQuery();
+
+		if(isParentKey && table == null)
+			table = (Table)field.getOwner();
 
 		String name = table.name();
 		guid value = field.guid();

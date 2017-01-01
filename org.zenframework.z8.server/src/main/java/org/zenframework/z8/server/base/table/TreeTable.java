@@ -8,6 +8,7 @@ import java.util.List;
 import org.zenframework.z8.server.base.query.Query;
 import org.zenframework.z8.server.base.table.value.Field;
 import org.zenframework.z8.server.base.table.value.GuidField;
+import org.zenframework.z8.server.base.table.value.Link;
 import org.zenframework.z8.server.base.table.value.StringField;
 import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.runtime.RCollection;
@@ -42,7 +43,7 @@ public class TreeTable extends Table {
 		}
 	}
 
-	public GuidField.CLASS<? extends GuidField> parentId = new GuidField.CLASS<GuidField>(this);
+	public Link.CLASS<? extends Link> parentId = new Link.CLASS<Link>(this);
 	public StringField.CLASS<? extends StringField> path = new StringField.CLASS<StringField>(this);
 
 	public GuidField.CLASS<? extends GuidField> parent1 = new GuidField.CLASS<GuidField>(this);
@@ -65,9 +66,8 @@ public class TreeTable extends Table {
 		super.constructor2();
 
 		parentId.setName(names.ParentId);
-		parentId.setIndex("parentId");
-		parentId.setSystem(true);
 		parentId.setAttribute(ParentKey, "");
+		parentId.setIndex("parentId");
 		parentId.get().indexed = bool.True;
 
 		path.setName(names.Path);

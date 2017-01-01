@@ -1,9 +1,10 @@
+import org.zenframework.z8.base.table.value.Link;
 import org.zenframework.z8.base.table.value.GuidField;
 import org.zenframework.z8.base.table.value.StringField;
 
 [native "org.zenframework.z8.server.base.table.TreeTable"]
 class TreeTable extends Table {
-	public [name "ParentId"] GuidField parentId;
+	public [name "ParentId"] Link parentId;
 
 	public [name "Path"] StringField path;
 	public [name "Root"] GuidField root;
