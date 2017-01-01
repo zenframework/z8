@@ -28,6 +28,7 @@ public class Control extends OBJECT {
 	}
 
 	public bool readOnly = null;
+	public bool required = null;
 
 	public integer rowspan = null;
 	public integer colspan = null;
@@ -63,6 +64,10 @@ public class Control extends OBJECT {
 		return readOnly != null ? readOnly.get() : false;
 	}
 
+	public boolean required() {
+		return required != null ? required.get() : false;
+	}
+
 	public void writeMeta(JsonWriter writer, Query query) {
 		writer.writeProperty(Json.name, id());
 		writer.writeProperty(Json.header, displayName());
@@ -73,8 +78,8 @@ public class Control extends OBJECT {
 		writer.writeProperty(Json.rowspan, rowspan, new integer(1));
 		writer.writeProperty(Json.colspan, colspan, new integer(1));
 
-		boolean readOnly = readOnly() || !query.access().write();
-		writer.writeProperty(Json.readOnly, readOnly);
+		writer.writeProperty(Json.readOnly, readOnly());
+		writer.writeProperty(Json.required, required());
 
 		if(source != null) {
 			writer.startObject(Json.source);

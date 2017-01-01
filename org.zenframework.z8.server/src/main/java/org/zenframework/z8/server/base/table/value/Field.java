@@ -51,8 +51,6 @@ abstract public class Field extends Control implements IField {
 	public SortDirection sortDirection = SortDirection.Asc;
 	public Aggregation aggregation = Aggregation.None;
 
-	public bool required = null;
-
 	public bool indexed = null;
 	public bool unique = null;
 
@@ -247,10 +245,6 @@ abstract public class Field extends Control implements IField {
 		return unique != null ? unique.get() : false;
 	}
 
-	public boolean required() {
-		return required != null ? required.get() : false;
-	}
-
 	public Sequencer getSequencer() {
 		if(sequencer == null) {
 			Sequencer.CLASS<Sequencer> cls = new Sequencer.CLASS<Sequencer>(this);
@@ -268,7 +262,6 @@ abstract public class Field extends Control implements IField {
 	}
 
 	@Override
-	@SuppressWarnings("unchecked")
 	public void writeMeta(JsonWriter writer, Query query) {
 		writer.writeProperty(Json.type, type().toString());
 		writer.writeProperty(Json.visible, visible, bool.True);
@@ -300,9 +293,6 @@ abstract public class Field extends Control implements IField {
 			writer.writeProperty(Json.isCombobox, true);
 			writer.writeSort(link.getQuery().getSortFields());
 
-			if(source == null)
-				source = (Query.CLASS<? extends Query>)owner().getCLASS();
-
 			readOnly = path.size() > 1 || linkField.readOnly() || !access().write();
 			required = !readOnly && linkField.required();
 		} else {
@@ -314,9 +304,8 @@ abstract public class Field extends Control implements IField {
 				writer.writeProperty(Json.primaryKey, true);
 		}
 
-		writer.writeProperty(Json.required, required);
-
 		this.readOnly = new bool(readOnly);
+		this.required = new bool(required);
 
 		super.writeMeta(writer, query);
 	}

@@ -155,7 +155,7 @@ public class TreeTable extends Table {
 
 		if(!recordId.isNull()) {
 			path = getPath(parentId);
-			path = (path != null ? "." : "") + recordId;
+			path = path + (path.isEmpty() ? "" : ".") + recordId;
 			parents = parsePath(path);
 		}
 
@@ -176,7 +176,7 @@ public class TreeTable extends Table {
 
 		guid parentId = parentKey.guid();
 		String newPath = getPath(parentId);
-		newPath = newPath + (newPath != null ? "." : "") + recordId;
+		newPath = newPath + (newPath.isEmpty() ? "" : ".") + recordId;
 
 		String oldPath = getPath(recordId);
 
@@ -220,7 +220,7 @@ public class TreeTable extends Table {
 
 	public String getPath(guid id) {
 		if(id.isNull())
-			return null;
+			return "";
 
 		try {
 			saveState();
