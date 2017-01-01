@@ -5,15 +5,13 @@ import org.zenframework.z8.base.table.value.StringField;
 [native "org.zenframework.z8.server.base.table.TreeTable"]
 class TreeTable extends Table {
 	public [name "ParentId"] Link parentId;
-
-	public [name "Path"] StringField path;
-	public [name "Root"] GuidField root;
 	public [name "Parent1"] GuidField parent1;
 	public [name "Parent2"] GuidField parent2;
 	public [name "Parent3"] GuidField parent3;
 	public [name "Parent4"] GuidField parent4;
 	public [name "Parent5"] GuidField parent5;
 	public [name "Parent6"] GuidField parent6;
+	public [name "Path"] StringField path;
 
 	public guid[] getParentsOf(guid recordId);
 	public guid[] getPathTo(guid recordId);

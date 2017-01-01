@@ -10,19 +10,23 @@ import org.zenframework.z8.server.base.table.value.Field;
 import org.zenframework.z8.server.base.table.value.GuidField;
 import org.zenframework.z8.server.base.table.value.Link;
 import org.zenframework.z8.server.base.table.value.StringField;
+import org.zenframework.z8.server.db.Connection;
+import org.zenframework.z8.server.db.ConnectionManager;
+import org.zenframework.z8.server.db.sql.SqlToken;
+import org.zenframework.z8.server.db.sql.functions.string.Like;
 import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.runtime.RCollection;
 import org.zenframework.z8.server.types.bool;
 import org.zenframework.z8.server.types.guid;
 import org.zenframework.z8.server.types.integer;
 import org.zenframework.z8.server.types.string;
+import org.zenframework.z8.server.types.sql.sql_string;
 
 public class TreeTable extends Table {
 	static public class names {
 		public final static String ParentId = "ParentId";
 		public final static String Path = "Path";
 
-		public final static String Root = "Root";
 		public final static String Parent1 = "Parent1";
 		public final static String Parent2 = "Parent2";
 		public final static String Parent3 = "Parent3";
@@ -43,6 +47,8 @@ public class TreeTable extends Table {
 		}
 	}
 
+	private boolean updating = false;
+
 	public Link.CLASS<? extends Link> parentId = new Link.CLASS<Link>(this);
 	public StringField.CLASS<? extends StringField> path = new StringField.CLASS<StringField>(this);
 
@@ -52,7 +58,6 @@ public class TreeTable extends Table {
 	public GuidField.CLASS<? extends GuidField> parent4 = new GuidField.CLASS<GuidField>(this);
 	public GuidField.CLASS<? extends GuidField> parent5 = new GuidField.CLASS<GuidField>(this);
 	public GuidField.CLASS<? extends GuidField> parent6 = new GuidField.CLASS<GuidField>(this);
-	public GuidField.CLASS<? extends GuidField> root = new GuidField.CLASS<GuidField>(this);
 
 	@SuppressWarnings("rawtypes")
 	private GuidField.CLASS[] parentLinks = { parent1, parent2, parent3, parent4, parent5, parent6 };
@@ -74,11 +79,6 @@ public class TreeTable extends Table {
 		path.setIndex("path");
 		path.setSystem(true);
 		path.get().length = new integer(1000);
-
-		root.setName(names.Root);
-		root.setIndex("root");
-		root.setSystem(true);
-		root.get().indexed = bool.True;
 
 		parent1.setName(names.Parent1);
 		parent1.setIndex("parent1");
@@ -113,7 +113,6 @@ public class TreeTable extends Table {
 		registerDataField(parentId);
 		registerDataField(path);
 
-		registerDataField(root);
 		registerDataField(parent1);
 		registerDataField(parent2);
 		registerDataField(parent3);
@@ -140,37 +139,81 @@ public class TreeTable extends Table {
 		parentId = parentKey().guid();
 		recordId = primaryKey().guid();
 
-		if(parentId != null) {
-			String path = recordId.toString();
-			String parentPath = "";
+		if(parentId != null)
+			parentId = guid.Null;
 
-			Field pathField = this.path.get();
+		guid[] parents = new guid[0];
+		String path = "";
 
-			if(!parentId.isNull()) {
-				try {
-					saveState();
+		if(!recordId.isNull()) {
+			path = getPath(parentId);
+			path = (path != null ? "." : "") + recordId;
+			parents = parsePath(path);
+		}
 
-					Collection<Field> fields = Arrays.asList(pathField);
-					readExistingRecord(parentId, fields);
+		setParents(parents);
+		this.path.get().set(path);
+	}
 
-					parentPath = pathField.get().string().get();
-					path = parentPath + (parentPath.isEmpty() ? "" : ".") + recordId;
-				} finally {
-					restoreState();
-				}
+	@Override
+	public void beforeUpdate(guid recordId) {
+		super.beforeUpdate(recordId);
 
-				guid[] parents = parsePath(parentPath);
+		parentIdBeforeUpdate(recordId);
+	}
 
-				for(int i = 0; i < parentLinks.length && i < parents.length; i++) {
-					guid parent = parents[i];
-					Field link = (Field)parentLinks[i].get();
-					link.set(parent);
-				}
-				root.get().set(parents.length > 0 ? parents[0] : guid.Null);
-			} else
-				root.get().set(recordId);
+	private void parentIdBeforeUpdate(guid recordId) {
+		if(updating)
+			return;
 
-			pathField.set(new string(path.toUpperCase()));
+		Field parentKey = this.parentKey();
+		if(!parentKey.changed())
+			return;
+
+		guid parentId = parentKey.guid();
+		String newPath = getPath(parentId);
+		newPath = newPath + (newPath != null ? "." : "") + recordId;
+
+		String oldPath = getPath(recordId);
+
+		Connection connection = ConnectionManager.get();
+
+		try {
+			updating = true;
+			saveState();
+
+			connection.beginTransaction();
+
+			parentKey.set(parentId);
+			update(recordId);
+
+			Field path = this.path.get();
+
+			SqlToken where = new Like(path, new sql_string(oldPath + '%'));
+			read(Arrays.asList(path), where);
+
+			while(next()) {
+				String child = path.string().get().replace(oldPath, newPath);
+				setParents(parsePath(child));
+				path.set(new string(child));
+				update(recordId());
+			}
+
+			connection.commit();
+		} catch(Throwable e) {
+			connection.rollback();
+			throw new RuntimeException(e);
+		} finally {
+			restoreState();
+			updating = false;
+		}
+	}
+
+	private void setParents(guid[] path) {
+		for(int i = 0; i < parentLinks.length; i++) {
+			guid parent = i < path.length ? path[i] : guid.Null;
+			Field field = (Field)parentLinks[i].get();
+			field.set(parent);
 		}
 	}
 
@@ -179,27 +222,21 @@ public class TreeTable extends Table {
 			throw new RuntimeException(Query.strings.ReadError);
 	}
 
-	public guid[] getPath(guid id) {
-		if(id.isNull()) {
-			return new guid[0];
-		}
-
-		String parentPath = "";
-
-		Field pathField = this.path.get();
+	public String getPath(guid id) {
+		if(id.isNull())
+			return null;
 
 		try {
 			saveState();
 
+			Field pathField = this.path.get();
 			Collection<Field> fields = Arrays.asList(pathField);
 			readExistingRecord(id, fields);
 
-			parentPath = pathField.get().string().get();
+			return pathField.string().get();
 		} finally {
 			restoreState();
 		}
-
-		return parsePath(parentPath);
 	}
 
 	public guid getParent(guid recordId) {
@@ -207,25 +244,24 @@ public class TreeTable extends Table {
 			saveState();
 
 			Field parentId = this.parentId.get();
-
 			Collection<Field> fields = Arrays.asList(parentId);
 			readExistingRecord(recordId, fields);
 
-			return parentId.get().guid();
+			return parentId.guid();
 		} finally {
 			restoreState();
 		}
 	}
 
 	public RCollection<guid> z8_getParentsOf(guid recordId) {
-		guid[] parents = getPath(recordId);
+		guid[] parents = parsePath(getPath(recordId));
 		parents = Arrays.copyOf(parents, parents.length - 1);
 
 		return new RCollection<guid>(parents);
 	}
 
 	public RCollection<guid> z8_getPathTo(guid recordId) {
-		guid[] parents = getPath(recordId);
+		guid[] parents = parsePath(getPath(recordId));
 		return new RCollection<guid>(parents);
 	}
 

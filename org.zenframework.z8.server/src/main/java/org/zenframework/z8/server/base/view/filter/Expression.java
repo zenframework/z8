@@ -242,7 +242,7 @@ public class Expression implements IFilter {
 
 				SqlToken left = new Lower(field);
 				SqlToken right = new sql_string(value.toLowerCase());
-				SqlToken result = new Like(left, right, null);
+				SqlToken result = new Like(left, right);
 
 				if(operation == Operation.NotBeginsWith || operation == Operation.NotEndsWith || operation == Operation.NotContains)
 					result = new Unary(Operation.Not, result);

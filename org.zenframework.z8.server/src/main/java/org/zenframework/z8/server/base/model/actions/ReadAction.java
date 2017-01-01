@@ -509,7 +509,7 @@ public class ReadAction extends Action {
 			if(type == FieldType.String || type == FieldType.Text) {
 				Lower left = new Lower(field);
 				sql_string right = new sql_string('%' + lookup.toLowerCase() + '%');
-				SqlToken like = new Like(left, right, null);
+				SqlToken like = new Like(left, right);
 				filter = filter != null ? new Or(filter, like) : like;
 			}
 		}
