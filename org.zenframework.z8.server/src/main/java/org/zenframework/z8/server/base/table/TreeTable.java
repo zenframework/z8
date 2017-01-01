@@ -132,6 +132,14 @@ public class TreeTable extends Table {
 		return result.toArray(new guid[0]);
 	}
 
+	private void setParents(guid[] path) {
+		for(int i = 0; i < parentLinks.length; i++) {
+			guid parent = i < path.length ? path[i] : guid.Null;
+			Field field = (Field)parentLinks[i].get();
+			field.set(parent);
+		}
+	}
+
 	@Override
 	public void beforeCreate(guid recordId, guid parentId) {
 		super.beforeCreate(recordId, parentId);
@@ -157,14 +165,10 @@ public class TreeTable extends Table {
 
 	@Override
 	public void beforeUpdate(guid recordId) {
-		super.beforeUpdate(recordId);
-
-		parentIdBeforeUpdate(recordId);
-	}
-
-	private void parentIdBeforeUpdate(guid recordId) {
 		if(updating)
 			return;
+
+		super.beforeUpdate(recordId);
 
 		Field parentKey = this.parentKey();
 		if(!parentKey.changed())
@@ -209,14 +213,6 @@ public class TreeTable extends Table {
 		}
 	}
 
-	private void setParents(guid[] path) {
-		for(int i = 0; i < parentLinks.length; i++) {
-			guid parent = i < path.length ? path[i] : guid.Null;
-			Field field = (Field)parentLinks[i].get();
-			field.set(parent);
-		}
-	}
-
 	private void readExistingRecord(guid parentId, Collection<Field> fields) {
 		if(!readRecord(parentId, fields))
 			throw new RuntimeException(Query.strings.ReadError);
@@ -230,8 +226,7 @@ public class TreeTable extends Table {
 			saveState();
 
 			Field pathField = this.path.get();
-			Collection<Field> fields = Arrays.asList(pathField);
-			readExistingRecord(id, fields);
+			readExistingRecord(id, Arrays.asList(pathField));
 
 			return pathField.string().get();
 		} finally {
@@ -256,7 +251,6 @@ public class TreeTable extends Table {
 	public RCollection<guid> z8_getParentsOf(guid recordId) {
 		guid[] parents = parsePath(getPath(recordId));
 		parents = Arrays.copyOf(parents, parents.length - 1);
-
 		return new RCollection<guid>(parents);
 	}
 
