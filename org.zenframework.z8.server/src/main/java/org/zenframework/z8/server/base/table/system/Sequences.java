@@ -64,8 +64,6 @@ public class Sequences extends Table {
 		id.get().indexed = bool.True;
 		id.get().length = new integer(256);
 
-		name.get().visible = bool.False;
-
 		description.get().width = new integer(100);
 
 		sortFields.add(description);

@@ -29,6 +29,7 @@ public class Control extends OBJECT {
 
 	public bool readOnly = null;
 	public bool required = null;
+	public bool editable = null;
 
 	public integer rowspan = null;
 	public integer colspan = null;
@@ -80,6 +81,7 @@ public class Control extends OBJECT {
 
 		writer.writeProperty(Json.readOnly, readOnly());
 		writer.writeProperty(Json.required, required());
+		writer.writeProperty(Json.editable, editable);
 
 		if(source != null) {
 			writer.startObject(Json.source);

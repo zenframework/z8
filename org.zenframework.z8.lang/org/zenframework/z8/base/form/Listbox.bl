@@ -6,6 +6,8 @@ import org.zenframework.z8.base.query.Query;
 class Listbox extends Control {
 	public int height = 300;
 
+	editable = true;
+
 	/*
 	* Источник данных для компонента. Используется совместно со свойством link
 	*

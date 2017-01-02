@@ -7,6 +7,7 @@ import org.zenframework.z8.server.base.table.system.RoleFieldAccess;
 import org.zenframework.z8.server.base.table.system.RoleTableAccess;
 import org.zenframework.z8.server.base.table.system.Roles;
 import org.zenframework.z8.server.runtime.IObject;
+import org.zenframework.z8.server.types.bool;
 import org.zenframework.z8.server.types.integer;
 
 public class RoleTableAccessView extends Roles {
@@ -59,18 +60,23 @@ public class RoleTableAccessView extends Roles {
 		rta.tables.get().name.get().width = new integer(150);
 		rta.tables.get().displayName.get().width = new integer(150);
 
+		rta.read.get().editable = bool.True;
 		rta.read.get().width = new integer(30);
 		rta.read.setIcon("fa-eye");
 
+		rta.write.get().editable = bool.True;
 		rta.write.get().width = new integer(30);
 		rta.write.setIcon("fa-pencil");
 
+		rta.create.get().editable = bool.True;
 		rta.create.get().width = new integer(30);
 		rta.create.setIcon("fa-file-o");
 
+		rta.copy.get().editable = bool.True;
 		rta.copy.get().width = new integer(30);
 		rta.copy.setIcon("fa-copy");
 
+		rta.destroy.get().editable = bool.True;
 		rta.destroy.get().width = new integer(30);
 		rta.destroy.setIcon("fa-trash");
 
@@ -96,9 +102,11 @@ public class RoleTableAccessView extends Roles {
 		rfa.fields.get().displayName.get().width = new integer(150);
 		rfa.fields.get().type.get().width = new integer(90);
 
+		rfa.read.get().editable = bool.True;
 		rfa.read.get().width = new integer(30);
 		rfa.read.setIcon("fa-eye");
 
+		rfa.write.get().editable = bool.True;
 		rfa.write.get().width = new integer(30);
 		rfa.write.setIcon("fa-pencil");
 

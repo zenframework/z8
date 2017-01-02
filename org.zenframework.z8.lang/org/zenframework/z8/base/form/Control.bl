@@ -7,7 +7,9 @@ class Control extends Object {
 	public int rowspan = 1;
 	public int colspan = 1;
 
-	bool readOnly = false;
+	public bool readOnly = false;
+	public bool required = false;
+	public bool editable = false;
 
 	/*
 	 * В ситуации зависимых компонентов, т.е. listbox или combobox, 

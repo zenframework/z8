@@ -4,14 +4,9 @@ import org.zenframework.z8.base.table.Sequencer;
 
 [native "org.zenframework.z8.server.base.table.value.Field"]
 class Field extends Control {
-	public bool visible = true;
-	public bool selectable = true;
-
 	public string format;
 
 	public int width = 0;           // ширина поля формы или колонки в символах
-
-	public bool required = false;
 
 	public bool indexed = false;
 	public bool unique = false;

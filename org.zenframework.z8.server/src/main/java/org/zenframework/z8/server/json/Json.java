@@ -68,6 +68,7 @@ public interface Json {
 	string size = new string("size");
 	string priority = new string("priority");
 	string required = new string("required");
+	string editable = new string("editable");
 	string period = new string("period");
 	string min = new string("min");
 	string max = new string("max");
@@ -128,8 +129,12 @@ public interface Json {
 	string attachments = new string("attachments");
 
 	string parentKey = new string("parentKey");
+	string parentKeys = new string("parentKeys");
 	string hasChildren = new string("hasChildren");
 	string level = new string("level");
+
+	string isPrimaryKey = new string("isPrimaryKey");
+	string isParentKey = new string("isParentKey");
 
 	string action = new string("action");
 	string data = new string("data");

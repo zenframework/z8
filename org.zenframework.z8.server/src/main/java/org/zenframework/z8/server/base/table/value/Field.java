@@ -42,35 +42,37 @@ abstract public class Field extends Control implements IField {
 		}
 	}
 
-	public bool visible = null;
-	public string format = null;
-	public integer length = null;
+	public integer length;
 
-	public integer width = null;
+	public string format;
+	public integer width;
 
 	public SortDirection sortDirection = SortDirection.Asc;
 	public Aggregation aggregation = Aggregation.None;
 
-	public bool indexed = null;
-	public bool unique = null;
+	public bool indexed;
+	public bool unique;
 
-	private primary value = null;
-	private primary originalValue = null;
+	private primary value;
+	private primary originalValue;
 	private boolean changed = false;
 
-	private Collection<ILink> path = null;
+	private Collection<ILink> path;
 	private boolean rightJoined = false;
 
-	private Sequencer sequencer = null;
+	private Sequencer sequencer;
 
-	private Select cursor = null;
+	private Select cursor;
 	private boolean wasNull = true;
 	private boolean writeNulls = true;
 
 	public int position = -1;
 
 	private IAccess access;
-	
+
+	private bool isPrimaryKey;
+	private bool isParentKey;
+
 	protected Field(IObject container) {
 		super(container);
 	}
@@ -136,11 +138,15 @@ abstract public class Field extends Control implements IField {
 	}
 
 	public boolean isPrimaryKey() {
-		return hasAttribute(IObject.PrimaryKey);
+		if(isPrimaryKey == null)
+			isPrimaryKey = new bool(hasAttribute(IObject.PrimaryKey));
+		return isPrimaryKey.get();
 	}
 
 	public boolean isParentKey() {
-		return hasAttribute(IObject.ParentKey);
+		if(isParentKey == null)
+			isParentKey = new bool(hasAttribute(IObject.ParentKey));
+		return isParentKey.get();
 	}
 
 	public boolean isDataField() {
@@ -264,7 +270,6 @@ abstract public class Field extends Control implements IField {
 	@Override
 	public void writeMeta(JsonWriter writer, Query query) {
 		writer.writeProperty(Json.type, type().toString());
-		writer.writeProperty(Json.visible, visible, bool.True);
 		writer.writeProperty(Json.format, format, new string());
 		writer.writeProperty(Json.length, length, new integer(0));
 
@@ -288,6 +293,13 @@ abstract public class Field extends Control implements IField {
 			writer.startObject(Json.link);
 			writer.writeProperty(Json.name, link.id());
 			writer.writeProperty(Json.primaryKey, link.getQuery().primaryKey().id());
+			if(link.isParentKey()) {
+				writer.writeProperty(Json.isParentKey, true);
+				writer.startArray(Json.parentKeys);
+				for(Field parentKey : link.getQuery().parentKeys())
+					writer.write(parentKey.id());
+				writer.finishArray();
+			}
 			writer.finishObject();
 
 			writer.writeProperty(Json.isCombobox, true);
@@ -300,8 +312,9 @@ abstract public class Field extends Control implements IField {
 			required = !readOnly && required();
 
 			writer.writeProperty(Json.isText, true);
+
 			if(query.primaryKey() == this)
-				writer.writeProperty(Json.primaryKey, true);
+				writer.writeProperty(Json.isPrimaryKey, true);
 		}
 
 		this.readOnly = new bool(readOnly);
@@ -429,5 +442,4 @@ abstract public class Field extends Control implements IField {
 		String name = name() + " " + sqlType(DatabaseVendor.Postgres);
 		return Math.abs(name.hashCode());
 	}
-
 }

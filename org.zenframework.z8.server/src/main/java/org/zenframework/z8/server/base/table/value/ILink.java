@@ -10,6 +10,8 @@ public interface ILink extends IField {
 
 	public Query getQuery();
 
+	public boolean isParentKey();
+
 	public ITable getReferencedTable();
 	public IField getReferer();
 
