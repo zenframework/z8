@@ -103,6 +103,7 @@ public class Users extends Table {
 
 	public Users(IObject container) {
 		super(container);
+		setTransactive(true);
 	}
 
 	@Override
@@ -181,11 +182,23 @@ public class Users extends Table {
 	}
 
 	@Override
+	public void beforeUpdate(guid recordId) {
+		super.beforeUpdate(recordId);
+
+		if(blocked.get().changed() && isSystemUser(recordId))
+			throw new exception("Builtin users can not be blocked");
+	}
+
+	@Override
 	public void beforeDestroy(guid recordId) {
 		super.beforeDestroy(recordId);
 
-		if(BuiltinUsers.Administrator.guid().equals(recordId) || BuiltinUsers.System.guid().equals(recordId))
+		if(isSystemUser(recordId))
 			throw new exception("Builtin users can not be deleted");
+	}
+
+	private boolean isSystemUser(guid recordId) {
+		return BuiltinUsers.Administrator.guid().equals(recordId) || BuiltinUsers.System.guid().equals(recordId);
 	}
 
 	public boolean getExtraParameters(IUser user, RLinkedHashMap<string, primary> parameters) {

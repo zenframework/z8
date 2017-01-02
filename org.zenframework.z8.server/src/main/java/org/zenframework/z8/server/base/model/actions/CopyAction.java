@@ -9,6 +9,7 @@ import org.zenframework.z8.server.base.query.Query;
 import org.zenframework.z8.server.base.table.value.Field;
 import org.zenframework.z8.server.db.Connection;
 import org.zenframework.z8.server.db.ConnectionManager;
+import org.zenframework.z8.server.exceptions.AccessRightsViolationException;
 import org.zenframework.z8.server.json.JsonWriter;
 import org.zenframework.z8.server.types.guid;
 import org.zenframework.z8.server.types.primary;
@@ -18,9 +19,23 @@ public class CopyAction extends Action {
 		super(parameters);
 	}
 
+	private boolean checkAccess(Query query) {
+		if(!query.access().copy())
+			throw new AccessRightsViolationException();
+
+		for(Field field : query.getPrimaryFields()) {
+			if(!field.access().write())
+				throw new AccessRightsViolationException();
+		}
+
+		return true;
+	}
+
 	@Override
 	public void writeResponse(JsonWriter writer) {
 		Query query = getQuery();
+
+		checkAccess(query);
 
 		guid recordId = getRecordIdParameter();
 		guid parentId = getParentIdParameter();

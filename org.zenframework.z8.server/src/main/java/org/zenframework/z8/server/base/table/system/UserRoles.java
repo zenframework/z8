@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 
+import org.zenframework.z8.server.base.query.RecordLock;
 import org.zenframework.z8.server.base.table.Table;
 import org.zenframework.z8.server.base.table.value.Field;
 import org.zenframework.z8.server.base.table.value.IField;
@@ -108,6 +109,7 @@ public class UserRoles extends Table {
 			LinkedHashMap<IField, primary> record = new LinkedHashMap<IField, primary>();
 			record.put(user.get(), BuiltinUsers.Administrator.guid());
 			record.put(role.get(), Role.Administrator);
+			record.put(lock.get(), RecordLock.Full);
 			addRecord(Administrator, record);
 		}
 
@@ -115,6 +117,7 @@ public class UserRoles extends Table {
 			LinkedHashMap<IField, primary> record = new LinkedHashMap<IField, primary>();
 			record.put(user.get(), BuiltinUsers.System.guid());
 			record.put(role.get(), Role.Administrator);
+			record.put(lock.get(), RecordLock.Full);
 			addRecord(System, record);
 		}
 	}

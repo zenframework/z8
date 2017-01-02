@@ -67,6 +67,7 @@ public class UsersView extends Users {
 		phone.get().colspan = new integer(3);
 		email.get().colspan = new integer(3);
 		blocked.get().colspan = new integer(2);
+		blocked.get().setIcon("fa-ban");
 		description.get().colspan = new integer(12);
 
 		entries.get().colspan = new integer(6);
