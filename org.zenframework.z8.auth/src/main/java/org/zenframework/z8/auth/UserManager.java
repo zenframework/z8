@@ -13,7 +13,7 @@ public class UserManager {
 	}
 
 	public void add(IUser user) {
-		users.put(user.name().toLowerCase(), user);
+		users.put(user.login().toLowerCase(), user);
 	}
 
 	public IUser get(String login) {

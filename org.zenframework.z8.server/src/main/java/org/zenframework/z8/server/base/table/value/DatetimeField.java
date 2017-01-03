@@ -16,7 +16,6 @@ public class DatetimeField extends Field {
 		public CLASS(IObject container) {
 			super(container);
 			setJavaClass(DatetimeField.class);
-			setAttribute("native", DatetimeField.class.getCanonicalName());
 		}
 
 		@Override

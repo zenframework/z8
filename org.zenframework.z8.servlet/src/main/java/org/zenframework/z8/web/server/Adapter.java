@@ -27,7 +27,9 @@ import org.zenframework.z8.server.engine.ISession;
 import org.zenframework.z8.server.exceptions.AccessDeniedException;
 import org.zenframework.z8.server.exceptions.ServerUnavailableException;
 import org.zenframework.z8.server.json.Json;
+import org.zenframework.z8.server.json.JsonWriter;
 import org.zenframework.z8.server.logs.Trace;
+import org.zenframework.z8.server.request.Message;
 import org.zenframework.z8.server.resources.Resources;
 import org.zenframework.z8.server.types.encoding;
 import org.zenframework.z8.server.types.file;
@@ -136,9 +138,37 @@ public abstract class Adapter {
 
 	abstract public boolean canHandleRequest(HttpServletRequest request);
 
+	protected void service(ISession session, Map<String, String> parameters, List<file> files, HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
+		GNode node = new GNode(parameters, files);
+
+		IApplicationServer server = session.getServerInfo().getServer();
+		node = server.processRequest(session, node);
+
+		if(response != null)
+			writeResponse(response, node.getContent());
+	}
+
 	protected void processError(HttpServletResponse response, Throwable e) throws IOException, ServletException {
-		response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-		writeResponse(response, (e.getMessage() != null ? e.getMessage() : "Internal server error").getBytes(encoding.Default.toString()));
+		writeError(response, e.getMessage(), HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+	}
+
+	protected void processAccessDenied(HttpServletResponse response) throws IOException {
+		writeError(response, Resources.get("Exception.accessDenied"), HttpServletResponse.SC_UNAUTHORIZED);
+	}
+
+	private void writeError(HttpServletResponse response, String errorText, int status) throws IOException {
+		JsonWriter writer = new JsonWriter();
+
+		if(errorText == null || errorText.isEmpty())
+			errorText = "Internal server error.";
+
+		writer.startResponse(null, false, status);
+		writer.writeInfo(Arrays.asList(Message.error(errorText, null)), null, null);
+		writer.startArray(Json.data);
+		writer.finishArray();
+		writer.finishResponse();
+
+		writeResponse(response, writer.toString().getBytes(encoding.Default.toString()));
 	}
 
 	protected void writeResponse(HttpServletResponse response, byte[] content) throws IOException {
@@ -148,18 +178,5 @@ public abstract class Adapter {
 		out.write(content);
 		out.flush();
 		out.close();
-	}
-
-	protected void processAccessDenied(HttpServletResponse response) throws IOException {
-	}
-
-	protected void service(ISession session, Map<String, String> parameters, List<file> files, HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
-		GNode node = new GNode(parameters, files);
-
-		IApplicationServer server = session.getServerInfo().getServer();
-		node = server.processRequest(session, node);
-
-		if(response != null)
-			writeResponse(response, node.getContent());
 	}
 }

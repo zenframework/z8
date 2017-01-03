@@ -11,6 +11,8 @@ public class CLASS<TYPE extends IObject> extends OBJECT implements IClass<TYPE> 
 	public final static int Constructor2 = 1;
 
 	private Class<TYPE> javaClass;
+	private String classId;
+
 	private TYPE object = null;
 	private int stage = Constructor;
 
@@ -185,6 +187,6 @@ public class CLASS<TYPE extends IObject> extends OBJECT implements IClass<TYPE> 
 
 	@Override
 	public String classId() {
-		return javaClass.getCanonicalName();
+		return classId == null ? classId = javaClass.getCanonicalName() : classId;
 	}
 }

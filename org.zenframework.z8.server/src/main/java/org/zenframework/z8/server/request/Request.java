@@ -92,7 +92,7 @@ public class Request extends IRequest {
 
 	@Override
 	public String toString() {
-		return parametersAsString() + ", user=" + session.user().name();
+		return parametersAsString() + ", user=" + session.user().login();
 	}
 
 }

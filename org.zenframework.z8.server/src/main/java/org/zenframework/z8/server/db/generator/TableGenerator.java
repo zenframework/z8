@@ -249,7 +249,7 @@ public class TableGenerator {
 			expression = new DecimalExpression.CLASS<DecimalExpression>(null).get();
 		else if(type == FieldType.String)
 			expression = new StringExpression.CLASS<StringExpression>(null).get();
-		else if(type == FieldType.Text)
+		else if(type == FieldType.Text || type == FieldType.Attachments)
 			expression = new TextExpression.CLASS<TextExpression>(null).get();
 		else
 			return true;

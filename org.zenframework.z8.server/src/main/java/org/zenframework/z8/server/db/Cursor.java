@@ -173,6 +173,7 @@ public class Cursor {
 		case Integer:
 			return getInteger(position, field);
 		case Text:
+		case Attachments:
 			return getText(position, field);
 		case String:
 			return getString(position, field);

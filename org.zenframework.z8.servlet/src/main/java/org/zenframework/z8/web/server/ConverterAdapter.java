@@ -116,7 +116,7 @@ public class ConverterAdapter extends Adapter {
 			if(in != null)
 				IOUtils.copy(in, path);
 			else
-				throw new IOException("File '" + file.path.get() + "' does not exist");
+				throw new IOException("File '" + file.name.get() + "' does not exist");
 		}
 
 		return downloadedFile;

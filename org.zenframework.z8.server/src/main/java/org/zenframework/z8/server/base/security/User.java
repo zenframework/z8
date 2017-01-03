@@ -26,8 +26,10 @@ public class User extends OBJECT {
 	}
 
 	public guid id;
-	public string name;
-	public guid company;
+	public string login;
+	public string firstName;
+	public string middleName;
+	public string lastName;
 
 	public string description;
 	public string phone;
@@ -51,7 +53,11 @@ public class User extends OBJECT {
 			user = org.zenframework.z8.server.security.User.system();
 
 		id = user.id();
-		name = new string(user.name());
+		login = new string(user.login());
+
+		firstName = new string(user.firstName());
+		middleName = new string(user.middleName());
+		lastName = new string(user.lastName());
 
 		description = new string(user.description());
 		phone = new string(user.phone());

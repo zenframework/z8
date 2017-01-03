@@ -88,9 +88,7 @@ public class primary implements Serializable {
 			return new guid(value);
 		else if(type == FieldType.Integer)
 			return new integer(value);
-		else if(type == FieldType.String)
-			return new string(value);
-		else if(type == FieldType.Text)
+		else if(type == FieldType.String || type == FieldType.Text || type == FieldType.Attachments)
 			return new string(value);
 
 		throw new UnsupportedOperationException();

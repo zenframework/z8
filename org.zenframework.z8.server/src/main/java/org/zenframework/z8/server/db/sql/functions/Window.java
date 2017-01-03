@@ -34,7 +34,7 @@ public class Window extends SqlToken {
 
 		SqlToken token = this.token;
 
-		if(vendor == DatabaseVendor.Postgres && (type == FieldType.Guid || type == FieldType.Text))
+		if(vendor == DatabaseVendor.Postgres && (type == FieldType.Guid || type == FieldType.Text || type == FieldType.Attachments))
 			token = new ToString(token);
 
 		result += token.format(vendor, options);

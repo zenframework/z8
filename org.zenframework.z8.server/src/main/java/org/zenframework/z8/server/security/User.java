@@ -44,8 +44,12 @@ public class User implements IUser {
 
 	private guid id;
 
-	private String name;
+	private String login;
 	private String password;
+
+	private String firstName;
+	private String middleName;
+	private String lastName;
 
 	private Collection<IRole> roles;
 	private IPrivileges privileges;
@@ -73,7 +77,7 @@ public class User implements IUser {
 		system = new User();
 
 		system.id = id;
-		system.name = login;
+		system.login = login;
 		system.password = "";
 		system.description = description;
 		system.blocked = false;
@@ -97,13 +101,41 @@ public class User implements IUser {
 	}
 
 	@Override
-	public String name() {
-		return name;
+	public String login() {
+		return login;
 	}
 
 	@Override
 	public String password() {
 		return password;
+	}
+
+	@Override
+	public String firstName() {
+		return firstName;
+	}
+
+	@Override
+	public String middleName() {
+		return middleName;
+	}
+
+	@Override
+	public String lastName() {
+		return lastName;
+	}
+
+	@Override
+	public String name() {
+		String name = firstName;
+		return name + (name.isEmpty() ? "" : " ") + lastName;
+	}
+
+	@Override
+	public String fullName() {
+		String name = firstName;
+		name += (name.isEmpty() ? "" : " ") + middleName;
+		return name + (name.isEmpty() ? "" : " ") + lastName;
 	}
 
 	@Override
@@ -231,6 +263,9 @@ public class User implements IUser {
 		fields.add(users.recordId.get());
 		fields.add(users.name.get());
 		fields.add(users.password.get());
+		fields.add(users.firstName.get());
+		fields.add(users.middleName.get());
+		fields.add(users.lastName.get());
 		fields.add(users.settings.get());
 		fields.add(users.phone.get());
 		fields.add(users.email.get());
@@ -239,8 +274,11 @@ public class User implements IUser {
 
 		if(users.next()) {
 			this.id = users.recordId.get().guid();
-			this.name = users.name.get().string().get();
+			this.login = users.name.get().string().get();
 			this.password = users.password.get().string().get();
+			this.firstName = users.firstName.get().string().get();
+			this.middleName = users.middleName.get().string().get();
+			this.lastName = users.lastName.get().string().get();
 			this.settings = users.settings.get().string().get();
 			this.phone = users.phone.get().string().get();
 			this.email = users.email.get().string().get();
@@ -376,7 +414,7 @@ public class User implements IUser {
 
 		RmiIO.writeGuid(objects, id);
 
-		RmiIO.writeString(objects, name);
+		RmiIO.writeString(objects, login);
 		RmiIO.writeString(objects, password);
 
 		RmiIO.writeString(objects, description);
@@ -408,7 +446,7 @@ public class User implements IUser {
 
 		id = RmiIO.readGuid(objects);
 
-		name = RmiIO.readString(objects);
+		login = RmiIO.readString(objects);
 		password = RmiIO.readString(objects);
 
 		description = RmiIO.readString(objects);

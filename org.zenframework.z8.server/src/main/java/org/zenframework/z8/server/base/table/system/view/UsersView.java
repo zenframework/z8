@@ -63,20 +63,28 @@ public class UsersView extends Users {
 
 		userRoles.columns.add(userRoles.roles.get().name);
 
-		name.get().colspan = new integer(4);
+		name.get().colspan = new integer(3);
+		lastName.get().colspan = new integer(3);
+		firstName.get().colspan = new integer(3);
+		middleName.get().colspan = new integer(3);
+
 		phone.get().colspan = new integer(3);
 		email.get().colspan = new integer(3);
-		blocked.get().colspan = new integer(2);
-		blocked.get().setIcon("fa-ban");
+		enabled.get().colspan = new integer(3);
+		enabled.get().setIcon("fa-ban");
+
 		description.get().colspan = new integer(12);
 
 		entries.get().colspan = new integer(6);
 		roles.get().colspan = new integer(6);
 
 		registerFormField(name);
+		registerFormField(lastName);
+		registerFormField(firstName);
+		registerFormField(middleName);
 		registerFormField(phone);
 		registerFormField(email);
-		registerFormField(blocked);
+		registerFormField(enabled);
 		registerFormField(description);
 		registerFormField(roles);
 		registerFormField(entries);

@@ -12,9 +12,14 @@ import org.zenframework.z8.server.types.string;
 public interface IUser extends RmiSerializable, Serializable {
 	public guid id();
 
-	public String name();
-
+	public String login();
 	public String password();
+
+	public String name();
+	public String firstName();
+	public String middleName();
+	public String lastName();
+	public String fullName();
 
 	public String description();
 

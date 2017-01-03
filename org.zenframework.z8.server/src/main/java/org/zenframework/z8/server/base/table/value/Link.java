@@ -88,7 +88,7 @@ public class Link extends GuidField implements ILink, IForeignKey {
 
 	@Override
 	public void writeMeta(JsonWriter writer, Query query) {
-		if(this.query == null)
+		if(this.query == null && !isParentKey())
 			throw new RuntimeException("Link.query is null : displayName: '"  + displayName() + "'; name: '" + name() + "'");
 
 		super.writeMeta(writer, query);
@@ -99,14 +99,12 @@ public class Link extends GuidField implements ILink, IForeignKey {
 		writer.writeProperty(Json.isLink, true);
 		writer.startObject(Json.query);
 
-		query = getQuery();
+		query = ((query = getQuery()) == null) ? owner() : query;
 
-		if(query != null) {
-			writer.writeProperty(Json.id, query.id());
-			writer.writeProperty(Json.primaryKey, query.primaryKey().id());
-			writer.writeProperty(Json.text, query.displayName());
-			writer.writeProperty(Json.icon, query.icon());
-		}
+		writer.writeProperty(Json.id, query.id());
+		writer.writeProperty(Json.primaryKey, query.primaryKey().id());
+		writer.writeProperty(Json.text, query.displayName());
+		writer.writeProperty(Json.icon, query.icon());
 
 		writer.finishObject();
 	}

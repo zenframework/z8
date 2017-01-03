@@ -27,13 +27,15 @@
 
 	<!-- Users -->
 	<entry key="Users.title">Пользователи</entry>
-	<entry key="Users.name">Имя</entry>
+	<entry key="Users.login">Логин</entry>
+	<entry key="Users.firstName">Имя</entry>
+	<entry key="Users.middleName">Отчество</entry>
+	<entry key="Users.lastName">Фамилия</entry>
 	<entry key="Users.description">Описание</entry>
-	<entry key="Users.role">Группа безопасности</entry>
 	<entry key="Users.company">Организация</entry>
 	<entry key="Users.phone">Телефон</entry>
 	<entry key="Users.email">Email</entry>
-	<entry key="Users.blocked">Блокирован</entry>
+	<entry key="Users.enabled">Доступ в систему</entry>
 	<entry key="Users.settings">Настройки</entry>
 
 	<entry key="Users.name.default">User</entry>

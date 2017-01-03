@@ -17,7 +17,6 @@ public class DecimalField extends Field {
 		public CLASS(IObject container) {
 			super(container);
 			setJavaClass(DecimalField.class);
-			setAttribute("native", DecimalField.class.getCanonicalName());
 		}
 
 		@Override

@@ -216,6 +216,7 @@ public abstract class BasicStatement implements IStatement {
 			setDecimal(position, (decimal)value);
 			break;
 		case Text:
+		case Attachments:
 			string string = value != null ? (string)value : new string();
 			setBinary(position, new binary(string.getBytes(charset())));
 			break;

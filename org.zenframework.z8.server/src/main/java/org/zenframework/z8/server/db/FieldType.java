@@ -14,6 +14,7 @@ public enum FieldType {
 	Decimal(DataTypes.Decimal),
 	Binary(DataTypes.Binary),
 	Text(DataTypes.Text),
+	Attachments(DataTypes.Attachments),
 	File(DataTypes.File),
 	Null(DataTypes.Null);
 
@@ -29,6 +30,7 @@ public enum FieldType {
 		static protected final String Decimal = "float";
 		static protected final String Binary = "binary";
 		static protected final String Text = "text";
+		static protected final String Attachments = "attachments";
 		static protected final String File = "file";
 		static protected final String Null = "null";
 	}
@@ -67,6 +69,8 @@ public enum FieldType {
 			return FieldType.Binary;
 		else if(DataTypes.Text.equals(string))
 			return FieldType.Text;
+		else if(DataTypes.Attachments.equals(string))
+			return FieldType.Attachments;
 		else if(DataTypes.File.equals(string))
 			return FieldType.File;
 		else if(DataTypes.Null.equals(string))
@@ -104,8 +108,9 @@ public enum FieldType {
 			return Types.BIGINT;
 		case Decimal:
 			return Types.DECIMAL;
-		case Text:
+		case Attachments:
 		case Binary:
+		case Text:
 			return Types.LONGVARBINARY;
 		default:
 			throw new RuntimeException("Unknown data type: '" + toString() + "'");
@@ -114,6 +119,7 @@ public enum FieldType {
 
 	public String vendorType(DatabaseVendor vendor) {
 		switch(this) {
+		case Attachments:
 		case Binary:
 		case Text:
 			switch(vendor) {

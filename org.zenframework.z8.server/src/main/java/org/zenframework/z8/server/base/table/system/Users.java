@@ -33,7 +33,10 @@ public class Users extends Table {
 
 	static public class names {
 		public final static String Password = "Password";
-		public final static String Blocked = "Blocked";
+		public final static String FirstName = "First Name";
+		public final static String MiddleName = "Middle Name";
+		public final static String LastName = "Last Name";
+		public final static String Enabled = "Enabled";
 		public final static String Phone = "Phone";
 		public final static String Email = "Email";
 		public final static String Settings = "Settings";
@@ -41,9 +44,12 @@ public class Users extends Table {
 
 	static public class strings {
 		public final static String Title = "Users.title";
-		public final static String Name = "Users.name";
+		public final static String Login = "Users.login";
+		public final static String FirstName = "Users.firstName";
+		public final static String MiddleName = "Users.middleName";
+		public final static String LastName = "Users.lastName";
 		public final static String Description = "Users.description";
-		public final static String Blocked = "Users.blocked";
+		public final static String Enabled = "Users.enabled";
 		public final static String Phone = "Users.phone";
 		public final static String Email = "Users.email";
 		public final static String Settings = "Users.settings";
@@ -52,8 +58,11 @@ public class Users extends Table {
 	}
 
 	static public class displayNames {
-		public final static String Name = Resources.get(strings.Name);
-		public final static String Blocked = Resources.get(strings.Blocked);
+		public final static String Login = Resources.get(strings.Login);
+		public final static String FirstName = Resources.get(strings.FirstName);
+		public final static String MiddleName = Resources.get(strings.MiddleName);
+		public final static String LastName = Resources.get(strings.LastName);
+		public final static String Enabled = Resources.get(strings.Enabled);
 		public final static String Phone = Resources.get(strings.Phone);
 		public final static String Email = Resources.get(strings.Email);
 		public final static String Settings = Resources.get(strings.Settings);
@@ -92,9 +101,12 @@ public class Users extends Table {
 	}
 
 	public StringField.CLASS<StringField> password = new StringField.CLASS<StringField>(this);
+	public StringField.CLASS<StringField> firstName = new StringField.CLASS<StringField>(this);
+	public StringField.CLASS<StringField> middleName = new StringField.CLASS<StringField>(this);
+	public StringField.CLASS<StringField> lastName = new StringField.CLASS<StringField>(this);
 	public StringField.CLASS<StringField> phone = new StringField.CLASS<StringField>(this);
 	public StringField.CLASS<StringField> email = new StringField.CLASS<StringField>(this);
-	public BoolField.CLASS<BoolField> blocked = new BoolField.CLASS<BoolField>(this);
+	public BoolField.CLASS<BoolField> enabled = new BoolField.CLASS<BoolField>(this);
 	public TextField.CLASS<TextField> settings = new TextField.CLASS<TextField>(this);
 
 	public Users() {
@@ -110,7 +122,7 @@ public class Users extends Table {
 	public void constructor2() {
 		super.constructor2();
 
-		name.setDisplayName(displayNames.Name);
+		name.setDisplayName(displayNames.Login);
 		name.get().length = new integer(IAuthorityCenter.MaxLoginLength);
 		name.get().unique = bool.True;
 
@@ -120,6 +132,21 @@ public class Users extends Table {
 		password.setSystem(true);
 		password.get().length = new integer(IAuthorityCenter.MaxPasswordLength);
 		password.get().setDefault(new string(defaultPassword));
+
+		firstName.setName(names.FirstName);
+		firstName.setIndex("firstName");
+		firstName.setDisplayName(displayNames.FirstName);
+		firstName.get().length = new integer(100);
+
+		middleName.setName(names.MiddleName);
+		middleName.setIndex("middleName");
+		middleName.setDisplayName(displayNames.MiddleName);
+		middleName.get().length = new integer(100);
+
+		lastName.setName(names.LastName);
+		lastName.setIndex("lastName");
+		lastName.setDisplayName(displayNames.LastName);
+		lastName.get().length = new integer(100);
 
 		description.setDisplayName(displayNames.Description);
 
@@ -133,18 +160,22 @@ public class Users extends Table {
 		email.setDisplayName(displayNames.Email);
 		email.get().length = new integer(128);
 
-		blocked.setName(names.Blocked);
-		blocked.setIndex("blocked");
-		blocked.setDisplayName(displayNames.Blocked);
+		enabled.setName(names.Enabled);
+		enabled.setIndex("enabled");
+		enabled.setDisplayName(displayNames.Enabled);
+		enabled.get().setDefault(bool.True);
 
 		settings.setName(names.Settings);
 		settings.setIndex("settings");
 		settings.setDisplayName(displayNames.Settings);
 
 		registerDataField(password);
+		registerDataField(firstName);
+		registerDataField(middleName);
+		registerDataField(lastName);
 		registerDataField(phone);
 		registerDataField(email);
-		registerDataField(blocked);
+		registerDataField(enabled);
 		registerDataField(settings);
 	}
 
@@ -185,7 +216,7 @@ public class Users extends Table {
 	public void beforeUpdate(guid recordId) {
 		super.beforeUpdate(recordId);
 
-		if(blocked.get().changed() && isSystemUser(recordId))
+		if(enabled.get().changed() && isSystemUser(recordId))
 			throw new exception("Builtin users can not be blocked");
 	}
 
@@ -202,7 +233,7 @@ public class Users extends Table {
 	}
 
 	public boolean getExtraParameters(IUser user, RLinkedHashMap<string, primary> parameters) {
-		return z8_getParameters(user.id(), new string(user.name()), parameters).get();
+		return z8_getParameters(user.id(), new string(user.login()), parameters).get();
 	}
 
 	public bool z8_getParameters(guid id, string name, RLinkedHashMap<string, primary> parameters) {

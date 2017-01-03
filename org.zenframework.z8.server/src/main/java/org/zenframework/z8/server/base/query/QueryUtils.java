@@ -30,7 +30,7 @@ public class QueryUtils {
 	static public void setFieldValue(Field field, String value) {
 		FieldType type = field.type();
 
-		if(type == FieldType.String || type == FieldType.Text)
+		if(type == FieldType.String || type == FieldType.Text || type == FieldType.Attachments)
 			field.set(new string(value));
 		else if(type == FieldType.Integer)
 			field.set(value == null || value.isEmpty() ? new integer() : new integer(value));

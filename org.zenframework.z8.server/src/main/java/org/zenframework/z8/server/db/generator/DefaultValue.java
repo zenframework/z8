@@ -10,8 +10,9 @@ import org.zenframework.z8.server.types.string;
 public class DefaultValue {
 	static public String get(DatabaseVendor vendor, Field field) {
 		primary value = field.getDefaultValue();
+		FieldType type = field.type();
 
-		if(field.type() == FieldType.Text)
+		if(type == FieldType.Text || type == FieldType.Attachments)
 			value = new binary((string)value);
 
 		return value.toDbConstant(vendor);

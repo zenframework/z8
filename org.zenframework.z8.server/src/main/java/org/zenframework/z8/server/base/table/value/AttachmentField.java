@@ -1,6 +1,7 @@
 package org.zenframework.z8.server.base.table.value;
 
 import org.zenframework.z8.server.base.file.AttachmentProcessor;
+import org.zenframework.z8.server.db.FieldType;
 import org.zenframework.z8.server.runtime.IObject;
 
 public class AttachmentField extends TextField {
@@ -8,7 +9,6 @@ public class AttachmentField extends TextField {
 		public CLASS(IObject container) {
 			super(container);
 			setJavaClass(AttachmentField.class);
-			setAttribute("native", AttachmentField.class.getCanonicalName());
 			setSystem(true);
 		}
 
@@ -20,6 +20,11 @@ public class AttachmentField extends TextField {
 
 	public AttachmentField(IObject container) {
 		super(container);
+	}
+
+	@Override
+	public FieldType type() {
+		return FieldType.Attachments;
 	}
 
 	public AttachmentProcessor getAttachmentProcessor() {

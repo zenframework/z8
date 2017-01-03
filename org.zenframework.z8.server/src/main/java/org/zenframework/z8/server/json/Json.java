@@ -41,6 +41,7 @@ public interface Json {
 	string isText = new string("isText");
 	string isTab = new string("isTab");
 	string isTabControl = new string("isTabControl");
+	string isAttachment = new string("isAttachment");
 
 	string info = new string("info");
 	string warning = new string("warning");
@@ -169,6 +170,7 @@ public interface Json {
 	string target = new string("target");
 	string image = new string("image");
 	string time = new string("time");
+	string author = new string("author");
 	string details = new string("details");
 
 	string records = new string("records");

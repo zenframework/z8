@@ -128,7 +128,7 @@ public class Dashboard extends RequestTarget {
 
 		writer.writeProperty(Json.id, user.id());
 		writer.writeProperty(Json.name, user.description());
-		writer.writeProperty(Json.login, user.name());
+		writer.writeProperty(Json.login, user.login());
 		writer.writeProperty(Json.email, user.email());
 		writer.writeProperty(Json.phone, user.phone());
 		writer.writeProperty(Json.settings, user.settings());
