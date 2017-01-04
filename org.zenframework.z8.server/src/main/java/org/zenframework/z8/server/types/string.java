@@ -18,10 +18,10 @@ public final class string extends primary {
 
 	private static final long serialVersionUID = 8678133849134310611L;
 
-	private String value = null;
+	private String value;
 
-	private Pattern pattern = null;
-	private Matcher matcher = null;
+	private Pattern pattern;
+	private Matcher matcher;
 
 	public string() {
 	}

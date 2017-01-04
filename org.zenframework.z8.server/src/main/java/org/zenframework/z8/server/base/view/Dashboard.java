@@ -9,6 +9,7 @@ import org.zenframework.z8.server.base.form.Desktop;
 import org.zenframework.z8.server.base.simple.Procedure;
 import org.zenframework.z8.server.base.simple.Runnable;
 import org.zenframework.z8.server.base.table.system.Users;
+import org.zenframework.z8.server.config.ServerConfig;
 import org.zenframework.z8.server.engine.ApplicationServer;
 import org.zenframework.z8.server.exceptions.AccessDeniedException;
 import org.zenframework.z8.server.json.Json;
@@ -123,12 +124,17 @@ public class Dashboard extends RequestTarget {
 		IUser user = ApplicationServer.getUser();
 
 		writer.writeProperty(Json.session, ApplicationServer.getSession().id());
+		writer.writeProperty(Json.maxUploadSize, ServerConfig.webServerUploadMax());
+		writer.writeProperty(Json.session, ApplicationServer.getSession().id());
 
 		writer.startObject(Json.user);
 
 		writer.writeProperty(Json.id, user.id());
-		writer.writeProperty(Json.name, user.description());
 		writer.writeProperty(Json.login, user.login());
+		writer.writeProperty(Json.firstName, user.firstName());
+		writer.writeProperty(Json.middleName, user.middleName());
+		writer.writeProperty(Json.lastName, user.lastName());
+		writer.writeProperty(Json.description, user.description());
 		writer.writeProperty(Json.email, user.email());
 		writer.writeProperty(Json.phone, user.phone());
 		writer.writeProperty(Json.settings, user.settings());

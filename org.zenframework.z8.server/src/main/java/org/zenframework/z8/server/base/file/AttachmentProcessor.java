@@ -11,9 +11,11 @@ import org.zenframework.z8.server.base.table.Table;
 import org.zenframework.z8.server.base.table.system.Files;
 import org.zenframework.z8.server.base.table.value.AttachmentField;
 import org.zenframework.z8.server.base.table.value.Field;
+import org.zenframework.z8.server.engine.ApplicationServer;
 import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.runtime.OBJECT;
 import org.zenframework.z8.server.runtime.RCollection;
+import org.zenframework.z8.server.security.IUser;
 import org.zenframework.z8.server.types.date;
 import org.zenframework.z8.server.types.file;
 import org.zenframework.z8.server.types.guid;
@@ -87,6 +89,7 @@ public class AttachmentProcessor extends OBJECT {
 		for(file file : files) {
 			if(file.id.isNull()) {
 				file.id = guid.create();
+				setUser(file);
 				setPathIfEmpty(attachTo, file);
 				putToCache(file);
 				filesTable.add(file);
@@ -134,6 +137,13 @@ public class AttachmentProcessor extends OBJECT {
 			String path = FileUtils.getFile(Folders.Storage, time.format("yyyy.MM.dd"), getTable().classId(), recordId.toString(), field.name(), time.format("HH-mm-ss"), file.name.get()).toString();
 			file.path = new string(path);
 		}
+	}
+
+	private void setUser(file file) {
+		IUser user = ApplicationServer.getUser();
+		String name = user.name();
+		file.author = new string(name + (name.isEmpty() ? "" : " - ") + user.login());
+		file.user = user.id();
 	}
 
 	public int getPageCount(guid recordId) {

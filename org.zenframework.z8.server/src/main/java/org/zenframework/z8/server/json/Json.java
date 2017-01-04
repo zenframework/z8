@@ -4,6 +4,8 @@ import org.zenframework.z8.server.types.string;
 
 public interface Json {
 	string id = new string("id");
+	string name = new string("name");
+	string displayName = new string("displayName");
 	string index = new string("index");
 	string instanceId = new string("instanceId");
 
@@ -16,11 +18,13 @@ public interface Json {
 
 	string upload = new string("upload");
 	string download = new string("download");
+	string maxUploadSize = new string("maxUploadSize");
 
 	string user = new string("user");
-	string name = new string("name");
-	string displayName = new string("displayName");
 	string login = new string("login");
+	string firstName = new string("firstName");
+	string middleName = new string("middleName");
+	string lastName = new string("lastName");
 	string password = new string("password");
 	string newPassword = new string("newPassword");
 	string email = new string("email");

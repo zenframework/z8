@@ -57,7 +57,7 @@ public class User implements IUser {
 	private String description;
 	private String phone;
 	private String email;
-	private boolean blocked;
+	private boolean enabled;
 
 	private String settings;
 
@@ -71,16 +71,19 @@ public class User implements IUser {
 			return system;
 
 		guid id = BuiltinUsers.System.guid();
-		String login = Resources.get("BuiltinUsers.System.name");
-		String description = Resources.get("BuiltinUsers.System.description");
+		String login = BuiltinUsers.displayNames.SystemName;
+		String description = BuiltinUsers.displayNames.SystemDescription;
 
 		system = new User();
 
 		system.id = id;
 		system.login = login;
 		system.password = "";
+		system.firstName = "";
+		system.middleName = "";
+		system.lastName = "";
 		system.description = description;
-		system.blocked = false;
+		system.enabled = true;
 
 		system.settings = "";
 		system.phone = "";
@@ -173,8 +176,8 @@ public class User implements IUser {
 	}
 
 	@Override
-	public boolean blocked() {
-		return blocked;
+	public boolean enabled() {
+		return enabled;
 	}
 
 	@Override
@@ -229,8 +232,8 @@ public class User implements IUser {
 	static public IUser load(String login, String password) {
 		IUser user = load(login);
 
-		if(password == null || !password.equals(user.password()) || user.blocked())
-			throw new AccessDeniedException();
+//		if(password == null || !password.equals(user.password()) || !user.enabled())
+//			throw new AccessDeniedException();
 
 		return user;
 	}
@@ -417,11 +420,15 @@ public class User implements IUser {
 		RmiIO.writeString(objects, login);
 		RmiIO.writeString(objects, password);
 
+		RmiIO.writeString(objects, firstName);
+		RmiIO.writeString(objects, middleName);
+		RmiIO.writeString(objects, lastName);
+
 		RmiIO.writeString(objects, description);
 		RmiIO.writeString(objects, phone);
 		RmiIO.writeString(objects, email);
 
-		RmiIO.writeBoolean(objects, blocked);
+		RmiIO.writeBoolean(objects, enabled);
 
 		RmiIO.writeString(objects, settings);
 
@@ -449,11 +456,15 @@ public class User implements IUser {
 		login = RmiIO.readString(objects);
 		password = RmiIO.readString(objects);
 
+		firstName = RmiIO.readString(objects);
+		middleName = RmiIO.readString(objects);
+		lastName = RmiIO.readString(objects);
+
 		description = RmiIO.readString(objects);
 		phone = RmiIO.readString(objects);
 		email = RmiIO.readString(objects);
 
-		blocked = RmiIO.readBoolean(objects);
+		enabled = RmiIO.readBoolean(objects);
 
 		settings = RmiIO.readString(objects);
 

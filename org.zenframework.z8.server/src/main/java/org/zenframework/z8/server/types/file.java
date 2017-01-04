@@ -19,7 +19,6 @@ import org.apache.commons.fileupload.disk.DiskFileItem;
 import org.apache.commons.io.FilenameUtils;
 import org.zenframework.z8.server.base.file.Folders;
 import org.zenframework.z8.server.base.table.system.Files;
-import org.zenframework.z8.server.engine.ApplicationServer;
 import org.zenframework.z8.server.engine.RmiIO;
 import org.zenframework.z8.server.engine.RmiSerializable;
 import org.zenframework.z8.server.exceptions.ThreadInterruptedException;
@@ -28,7 +27,6 @@ import org.zenframework.z8.server.json.parser.JsonArray;
 import org.zenframework.z8.server.json.parser.JsonObject;
 import org.zenframework.z8.server.runtime.RCollection;
 import org.zenframework.z8.server.runtime.RLinkedHashMap;
-import org.zenframework.z8.server.security.IUser;
 import org.zenframework.z8.server.utils.IOUtils;
 import org.zenframework.z8.server.utils.NumericUtils;
 
@@ -37,11 +35,12 @@ public class file extends primary implements RmiSerializable, Serializable {
 	private static final long serialVersionUID = -2542688680678439014L;
 	static public final String EOL = "\r\n";
 
+	public guid id = guid.Null;
 	public string name = new string();
 	public string path = new string();
 	public date time = new date();
 	public integer size = new integer();
-	public guid id = new guid();
+	public guid user = guid.Null;
 	public string author = new string();
 
 	public RLinkedHashMap<string, string> details = new RLinkedHashMap<string, string>();
@@ -92,11 +91,7 @@ public class file extends primary implements RmiSerializable, Serializable {
 		this.path = new string(getRelativePath(path));
 		this.name = new string(name);
 		this.size = new integer(size);
-		this.time = time == null ? time : new date();
-
-		IUser user = ApplicationServer.getUser();
-		name = user.name();
-		this.author = new string(name + (name.isEmpty() ? "" : " - ") + user.login());
+		this.time = time != null ? time : new date();
 	}
 
 	public file(file file) {
@@ -115,6 +110,7 @@ public class file extends primary implements RmiSerializable, Serializable {
 		this.path = file.path;
 		this.time = file.time;
 		this.size = file.size;
+		this.user = file.user;
 		this.author = file.author;
 		this.value = file.value;
 		this.details = file.details;
@@ -134,6 +130,7 @@ public class file extends primary implements RmiSerializable, Serializable {
 		name = new string(json.has(Json.name) ? json.getString(Json.name) : "");
 		size = new integer(json.has(Json.size) ? json.getString(Json.size) : "");
 		id = new guid(json.has(Json.id) ? json.getString(Json.id) : "");
+		user = new guid(json.has(Json.user) ? json.getString(Json.user) : "");
 		author = new string(json.has(Json.author) ? json.getString(Json.author) : "");
 
 		String jsonTime = json.has(Json.time) ? json.getString(Json.time) : "";
@@ -186,6 +183,7 @@ public class file extends primary implements RmiSerializable, Serializable {
 			json.put(Json.size, size);
 			json.put(Json.path, path);
 			json.put(Json.id, id);
+			json.put(Json.user, user);
 			json.put(Json.author, author);
 			json.put(Json.details, details);
 		}
@@ -240,6 +238,7 @@ public class file extends primary implements RmiSerializable, Serializable {
 		RmiIO.writeString(out, path);
 		RmiIO.writeDate(out, time);
 		RmiIO.writeInteger(out, size);
+		RmiIO.writeGuid(out, user);
 		RmiIO.writeString(out, author);
 
 		RmiIO.writeLong(out, offset);
@@ -270,6 +269,7 @@ public class file extends primary implements RmiSerializable, Serializable {
 		path = new string(RmiIO.readString(in));
 		time = RmiIO.readDate(in);
 		size = RmiIO.readInteger(in);
+		user = RmiIO.readGuid(in);
 		author = new string(RmiIO.readString(in));
 
 		offset = RmiIO.readLong(in);
