@@ -287,9 +287,12 @@ public class Attribute extends LanguageElement implements IAttribute {
 					codeGenerator.append(nameToken.getRawText());
 					codeGenerator.append('"');
 					codeGenerator.append(')');
+				} else if(valueToken != null) {
+					codeGenerator.append('"');
+					codeGenerator.append(getValueString());
+					codeGenerator.append('"');
 				} else {
 					value.getCode(codeGenerator);
-
 					if(variableType.getType() != org.zenframework.z8.compiler.parser.type.Primary.resolveType(getCompilationUnit(), org.zenframework.z8.compiler.parser.type.Primary.String))
 						codeGenerator.append(".toString()");
 					else

@@ -9,7 +9,7 @@ public class BuiltinNative {
 
 	static public String Constructor = "CLASS.Constructor";
 	static public String Constructor1 = "CLASS.Constructor1";
-	static public String Constructor2 = "CLASS.Constructor2";
+	static public String Constructor2 = "";
 
 	static public String Class = "CLASS";
 	static public String ClassQualifiedName = "org.zenframework.z8.server.runtime.CLASS";

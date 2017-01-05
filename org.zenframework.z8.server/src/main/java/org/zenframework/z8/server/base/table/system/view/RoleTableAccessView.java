@@ -54,7 +54,7 @@ public class RoleTableAccessView extends Roles {
 		tables.get().query = (Query.CLASS<Query>)rta.getCLASS();
 		tables.get().link = rta.role;
 		tables.get().colspan = new integer(6);
-		tables.get().height = new integer(500);
+		tables.get().height = new integer(6);
 		tables.get().sortFields.add(rta.tables.get().name);
 
 		rta.tables.get().name.get().width = new integer(150);
@@ -95,7 +95,7 @@ public class RoleTableAccessView extends Roles {
 		fields.get().query = (Query.CLASS<Query>)rfa.getCLASS();
 		fields.get().link = rfa.role;
 		fields.get().colspan = new integer(6);
-		fields.get().height = new integer(500);
+		fields.get().height = new integer(6);
 		fields.get().sortFields.add(rfa.fields.get().position);
 
 		rfa.fields.get().name.get().width = new integer(150);

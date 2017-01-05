@@ -42,7 +42,7 @@ public class TablesView extends Tables {
 
 		fields.get().query = (Query.CLASS<Query>)fieldsTable.getCLASS();
 		fields.get().link = fieldsTable.table;
-		fields.get().height = new integer(600);
+		fields.get().height = new integer(6);
 		fields.get().sortFields.add(fieldsTable.position);
 
 		fieldsTable.columns.add(fieldsTable.name);

@@ -51,7 +51,7 @@ public class Listbox extends Control {
 		writer.writeProperty(Json.header, displayName());
 		writer.writeProperty(Json.icon, icon());
 
-		writer.writeProperty(Json.height, height, new integer(300));
+		writer.writeProperty(Json.height, height, new integer(4));
 
 		writer.startObject(Json.query);
 		writer.writeProperty(Json.id, query.classId());

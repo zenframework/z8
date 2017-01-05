@@ -10,6 +10,7 @@ import org.zenframework.z8.compiler.core.IToken;
 import org.zenframework.z8.compiler.core.IType;
 import org.zenframework.z8.compiler.core.IVariable;
 import org.zenframework.z8.compiler.core.IVariableType;
+import org.zenframework.z8.compiler.parser.BuiltinNative;
 import org.zenframework.z8.compiler.parser.expressions.Initialization;
 import org.zenframework.z8.compiler.parser.expressions.OperatorNew;
 import org.zenframework.z8.compiler.parser.expressions.QualifiedName;
@@ -121,6 +122,17 @@ public class MemberInit extends Initialization implements IInitializer {
 			codeGenerator.append(";");
 			codeGenerator.breakLine();
 		}
+	}
+
+	protected void getRightSideCode(CodeGenerator codeGenerator) {
+		String stage = getDeclaringType().getConstructionStage();
+
+		if(stage.equals(BuiltinNative.Constructor2))
+			getDeclaringType().setConstructionStage(BuiltinNative.Constructor1);
+
+		super.getRightSideCode(codeGenerator);
+
+		getDeclaringType().setConstructionStage(stage);
 	}
 
 	@Override

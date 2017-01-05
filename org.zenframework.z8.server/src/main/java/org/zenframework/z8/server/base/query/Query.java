@@ -283,15 +283,6 @@ public class Query extends Runnable {
 			rootQuery.afterDestroy(recordId);
 	}
 
-	public void onRender() {
-		z8_onRender();
-
-		Query rootQuery = getRootQuery();
-
-		if(rootQuery != this)
-			rootQuery.onRender();
-	}
-
 	@SuppressWarnings("unchecked")
 	public void onCommand(Command command, Collection<guid> recordIds) {
 		RCollection<guid> ids = getGuidCollection(recordIds);
@@ -1906,9 +1897,6 @@ public class Query extends Runnable {
 
 	@SuppressWarnings("rawtypes")
 	public void z8_onCommand(Command.CLASS<? extends Command> command, RCollection recordIds) {
-	}
-
-	public void z8_onRender() {
 	}
 
 	@SuppressWarnings("rawtypes")

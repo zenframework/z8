@@ -88,9 +88,6 @@ public class ActionFactory {
 
 		result.query = requestQuery;
 
-		if(actionName == null || actionName.equals(Action.readAction))
-			result.query.onRender();
-
 		initialize(result);
 
 		if(result.query != null) {

@@ -170,20 +170,27 @@ public abstract class Initialization extends LanguageElement {
 	@Override
 	public void getCode(CodeGenerator codeGenerator) {
 		if(right != null) {
-			if(typeCast.getContext() != null) {
-				left.getCode(codeGenerator);
-
-				codeGenerator.append('.');
-
-				if(getVariableType().isReference())
-					codeGenerator.append("get(" + getDeclaringType().getConstructionStage() + ").");
-			} else {
-				left.getCode(codeGenerator);
-				codeGenerator.append(" = ");
-			}
-
-			typeCast.getCode(codeGenerator, right);
+			getLeftSideCode(codeGenerator);
+			getRightSideCode(codeGenerator);
 		}
+	}
+
+	protected void getLeftSideCode(CodeGenerator codeGenerator) {
+		if(typeCast.getContext() != null) {
+			left.getCode(codeGenerator);
+
+			codeGenerator.append('.');
+
+			if(getVariableType().isReference())
+				codeGenerator.append("get(" + getDeclaringType().getConstructionStage() + ").");
+		} else {
+			left.getCode(codeGenerator);
+			codeGenerator.append(" = ");
+		}
+	}
+
+	protected void getRightSideCode(CodeGenerator codeGenerator) {
+		typeCast.getCode(codeGenerator, right);
 	}
 
 	@Override
