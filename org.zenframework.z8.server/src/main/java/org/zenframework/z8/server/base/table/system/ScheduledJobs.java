@@ -7,6 +7,7 @@ import org.zenframework.z8.server.base.table.value.DatetimeField;
 import org.zenframework.z8.server.base.table.value.IntegerField;
 import org.zenframework.z8.server.base.table.value.Link;
 import org.zenframework.z8.server.resources.Resources;
+import org.zenframework.z8.server.runtime.IClass;
 import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.types.bool;
 import org.zenframework.z8.server.types.guid;
@@ -84,6 +85,12 @@ public class ScheduledJobs extends Table {
 	}
 
 	@Override
+	public void constructor1() {
+		job.get(IClass.Constructor1).operatorAssign(jobs);
+		user.get(IClass.Constructor1).operatorAssign(users);
+	}
+
+	@Override
 	public void constructor2() {
 		super.constructor2();
 
@@ -119,9 +126,6 @@ public class ScheduledJobs extends Table {
 		active.setName(names.Active);
 		active.setIndex("active");
 		active.setDisplayName(displayNames.Active);
-
-		job.get().operatorAssign(jobs);
-		user.get().operatorAssign(users);
 
 		registerDataField(job);
 		registerDataField(user);

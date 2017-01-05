@@ -7,8 +7,8 @@ public class BuiltinNative {
 	static public String IObject = "IObject";
 	static public String Object = "Object";
 
-	static public String Constructor = "CLASS.Constructor";
-	static public String Constructor1 = "CLASS.Constructor1";
+	static public String Constructor = "IClass.Constructor";
+	static public String Constructor1 = "IClass.Constructor1";
 	static public String Constructor2 = "";
 
 	static public String Class = "CLASS";

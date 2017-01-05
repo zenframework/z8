@@ -838,19 +838,13 @@ public abstract class AbstractType extends LanguageElement implements IType {
 		String type = getNestedJavaName();
 
 		codeGenerator.indent();
-		codeGenerator.append("public static class CLASS<T extends " + type + "> extends " + base + ".CLASS<T>");
-		codeGenerator.breakLine();
-		codeGenerator.indent();
-		codeGenerator.append("{");
+		codeGenerator.append("public static class CLASS<T extends " + type + "> extends " + base + ".CLASS<T> {");
 		codeGenerator.breakLine();
 
 		codeGenerator.incrementIndent();
 
 		codeGenerator.indent();
-		codeGenerator.append("public CLASS" + "(" + BuiltinNative.IObject + " container)");
-		codeGenerator.breakLine();
-		codeGenerator.indent();
-		codeGenerator.append("{");
+		codeGenerator.append("public CLASS" + "(" + BuiltinNative.IObject + " container) {");
 		codeGenerator.breakLine();
 
 		codeGenerator.incrementIndent();
@@ -872,10 +866,7 @@ public abstract class AbstractType extends LanguageElement implements IType {
 
 		codeGenerator.breakLine();
 		codeGenerator.indent();
-		codeGenerator.append("public Object" + " newObject(" + BuiltinNative.IObject + " container)");
-		codeGenerator.breakLine();
-		codeGenerator.indent();
-		codeGenerator.append("{");
+		codeGenerator.append("public Object" + " newObject(" + BuiltinNative.IObject + " container) {");
 		codeGenerator.breakLine();
 
 		codeGenerator.incrementIndent();

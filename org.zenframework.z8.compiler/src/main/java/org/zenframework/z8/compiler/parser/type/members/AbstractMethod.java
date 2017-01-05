@@ -412,9 +412,7 @@ public abstract class AbstractMethod extends LanguageElement implements IMethod 
 			}
 		}
 
-		codeGenerator.append(")");
-		codeGenerator.breakLine();
-		codeGenerator.indent();
+		codeGenerator.append(") ");
 		body.getCode(codeGenerator);
 	}
 

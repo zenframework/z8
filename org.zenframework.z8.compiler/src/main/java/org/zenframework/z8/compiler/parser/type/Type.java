@@ -412,10 +412,7 @@ public class Type extends AbstractType {
 		codeGenerator.append("@SuppressWarnings(\"all\")");
 		codeGenerator.breakLine();
 		codeGenerator.indent();
-		codeGenerator.append("public class " + getJavaName() + " extends " + base);
-		codeGenerator.breakLine();
-		codeGenerator.indent();
-		codeGenerator.append("{");
+		codeGenerator.append("public class " + getJavaName() + " extends " + base + " {");
 		codeGenerator.breakLine();
 
 		codeGenerator.incrementIndent();

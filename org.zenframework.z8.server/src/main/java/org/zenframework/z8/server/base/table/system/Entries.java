@@ -47,16 +47,16 @@ public class Entries extends Table {
 
 	public Entries(IObject container) {
 		super(container);
-
-		id.setDisplayName(displayNames.Id);
-		name.setDisplayName(displayNames.Name);
 	}
 
 	@Override
 	public void constructor2() {
 		super.constructor2();
 
+		id.setDisplayName(displayNames.Id);
 		id.get().length = new integer(1024);
+
+		name.setDisplayName(displayNames.Name);
 		name.get().length = new integer(1024);
 	}
 

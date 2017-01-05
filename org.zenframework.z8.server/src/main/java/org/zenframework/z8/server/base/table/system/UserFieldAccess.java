@@ -4,6 +4,7 @@ import org.zenframework.z8.server.base.table.Table;
 import org.zenframework.z8.server.base.table.value.BoolField;
 import org.zenframework.z8.server.base.table.value.Link;
 import org.zenframework.z8.server.resources.Resources;
+import org.zenframework.z8.server.runtime.IClass;
 import org.zenframework.z8.server.runtime.IObject;
 
 public class UserFieldAccess extends Table {
@@ -65,8 +66,8 @@ public class UserFieldAccess extends Table {
 
 	@Override
 	public void constructor1() {
-		user.get(CLASS.Constructor1).operatorAssign(users);
-		field.get(CLASS.Constructor1).operatorAssign(fields);
+		user.get(IClass.Constructor1).operatorAssign(users);
+		field.get(IClass.Constructor1).operatorAssign(fields);
 	}
 
 	@Override

@@ -5,6 +5,7 @@ import org.zenframework.z8.server.base.table.value.IntegerField;
 import org.zenframework.z8.server.base.table.value.Link;
 import org.zenframework.z8.server.base.table.value.StringField;
 import org.zenframework.z8.server.resources.Resources;
+import org.zenframework.z8.server.runtime.IClass;
 import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.types.integer;
 
@@ -60,6 +61,11 @@ public class Fields extends Table {
 	}
 
 	@Override
+	public void constructor1() {
+		table.get(IClass.Constructor1).operatorAssign(tables);
+	}
+
+	@Override
 	public void constructor2() {
 		super.constructor2();
 
@@ -67,7 +73,6 @@ public class Fields extends Table {
 
 		table.setName(names.Table);
 		table.setIndex("table");
-		table.get().operatorAssign(tables);
 
 		id.get().length = new integer(256);
 		name.get().length = new integer(256);

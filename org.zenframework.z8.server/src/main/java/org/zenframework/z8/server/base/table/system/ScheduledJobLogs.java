@@ -5,6 +5,7 @@ import org.zenframework.z8.server.base.table.value.AttachmentField;
 import org.zenframework.z8.server.base.table.value.DatetimeField;
 import org.zenframework.z8.server.base.table.value.Link;
 import org.zenframework.z8.server.resources.Resources;
+import org.zenframework.z8.server.runtime.IClass;
 import org.zenframework.z8.server.runtime.IObject;
 
 public class ScheduledJobLogs extends Table {
@@ -65,6 +66,11 @@ public class ScheduledJobLogs extends Table {
 	}
 
 	@Override
+	public void constructor1() {
+		scheduledJob.get(IClass.Constructor1).operatorAssign(scheduledJobs);
+	}
+
+	@Override
 	public void constructor2() {
 		super.constructor2();
 
@@ -83,8 +89,6 @@ public class ScheduledJobLogs extends Table {
 
 		files.setName(names.Files);
 		files.setIndex("files");
-
-		scheduledJob.get().operatorAssign(scheduledJobs);
 
 		registerDataField(scheduledJob);
 		registerDataField(start);

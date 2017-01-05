@@ -14,6 +14,7 @@ import org.zenframework.z8.server.db.sql.expressions.Is;
 import org.zenframework.z8.server.db.sql.functions.string.EqualsIgnoreCase;
 import org.zenframework.z8.server.engine.Rmi;
 import org.zenframework.z8.server.resources.Resources;
+import org.zenframework.z8.server.runtime.IClass;
 import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.security.Domain;
 import org.zenframework.z8.server.types.bool;
@@ -83,7 +84,7 @@ public class Domains extends Table {
 
 	@Override
 	public void constructor1() {
-		userLink.get(CLASS.Constructor1).operatorAssign(users);
+		userLink.get(IClass.Constructor1).operatorAssign(users);
 	}
 
 	@Override

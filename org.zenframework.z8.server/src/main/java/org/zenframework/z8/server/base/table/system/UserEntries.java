@@ -9,6 +9,7 @@ import org.zenframework.z8.server.base.table.value.IntegerField;
 import org.zenframework.z8.server.base.table.value.Link;
 import org.zenframework.z8.server.engine.ApplicationServer;
 import org.zenframework.z8.server.resources.Resources;
+import org.zenframework.z8.server.runtime.IClass;
 import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.security.BuiltinUsers;
 import org.zenframework.z8.server.types.bool;
@@ -73,8 +74,8 @@ public class UserEntries extends Table {
 
 	@Override
 	public void constructor1() {
-		user.get(CLASS.Constructor1).operatorAssign(users);
-		entry.get(CLASS.Constructor1).operatorAssign(entries);
+		user.get(IClass.Constructor1).operatorAssign(users);
+		entry.get(IClass.Constructor1).operatorAssign(entries);
 	}
 
 	@Override

@@ -13,6 +13,7 @@ import org.zenframework.z8.server.base.table.value.Link;
 import org.zenframework.z8.server.db.sql.expressions.Equ;
 import org.zenframework.z8.server.engine.ApplicationServer;
 import org.zenframework.z8.server.resources.Resources;
+import org.zenframework.z8.server.runtime.IClass;
 import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.security.Access;
 import org.zenframework.z8.server.security.BuiltinUsers;
@@ -77,8 +78,8 @@ public class UserRoles extends Table {
 
 	@Override
 	public void constructor1() {
-		user.get(CLASS.Constructor1).operatorAssign(users);
-		role.get(CLASS.Constructor1).operatorAssign(roles);
+		user.get(IClass.Constructor1).operatorAssign(users);
+		role.get(IClass.Constructor1).operatorAssign(roles);
 	}
 
 	@Override

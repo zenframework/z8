@@ -6,15 +6,12 @@ import java.util.Collection;
 import java.util.List;
 
 public class CLASS<TYPE extends IObject> extends OBJECT implements IClass<TYPE> {
-	public final static int Constructor = -1;
-	public final static int Constructor1 = 0;
-	public final static int Constructor2 = 1;
 
 	private Class<TYPE> javaClass;
 	private String classId;
 
 	private TYPE object = null;
-	private int stage = Constructor;
+	private int stage = IClass.Constructor;
 
 	Constructor<?> constructor = null;
 
@@ -46,6 +43,11 @@ public class CLASS<TYPE extends IObject> extends OBJECT implements IClass<TYPE> 
 		javaClass = (Class<TYPE>)cls;
 	}
 
+	@Override
+	public int stage() {
+		return stage;
+	}
+	
 	@Override
 	public void resetId() {
 		super.resetId();
@@ -108,12 +110,20 @@ public class CLASS<TYPE extends IObject> extends OBJECT implements IClass<TYPE> 
 		return get(Constructor2);
 	}
 
-	public/* final */TYPE get(int stage) {
+	public TYPE get(int stage) {
+		IObject container = getContainer();
+
+		if(container != null) {
+			IClass<? extends IObject> containerClass = container.getCLASS();
+			if(containerClass.stage() < stage)
+				containerClass.get(stage);
+		}
+
 		if(object != null && this.stage >= stage)
 			return object;
 
 		if(object == null)
-			create(getContainer());
+			create(container);
 
 		callConstructors(stage);
 

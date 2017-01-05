@@ -197,10 +197,7 @@ public class TypeBody extends LanguageElement {
 	public void getStaticBlock(CodeGenerator codeGenerator) {
 		codeGenerator.breakLine();
 		codeGenerator.indent();
-		codeGenerator.append("static");
-		codeGenerator.breakLine();
-		codeGenerator.indent();
-		codeGenerator.append("{");
+		codeGenerator.append("static {");
 		codeGenerator.breakLine();
 
 		codeGenerator.incrementIndent();
@@ -225,10 +222,7 @@ public class TypeBody extends LanguageElement {
 	public void getStaticConstructor(CodeGenerator codeGenerator) {
 		codeGenerator.breakLine();
 		codeGenerator.indent();
-		codeGenerator.append("public static void staticConstructor()");
-		codeGenerator.breakLine();
-		codeGenerator.indent();
-		codeGenerator.append("{");
+		codeGenerator.append("public static void staticConstructor() {");
 		codeGenerator.breakLine();
 
 		codeGenerator.incrementIndent();
@@ -253,10 +247,7 @@ public class TypeBody extends LanguageElement {
 
 	private void getPrimaryTypeConstructor(CodeGenerator codeGenerator) {
 		codeGenerator.indent();
-		codeGenerator.append("public " + getDeclaringType().getJavaName() + "()");
-		codeGenerator.breakLine();
-		codeGenerator.indent();
-		codeGenerator.append("{");
+		codeGenerator.append("public " + getDeclaringType().getJavaName() + "() {");
 		codeGenerator.breakLine();
 
 		codeGenerator.incrementIndent();
@@ -273,10 +264,7 @@ public class TypeBody extends LanguageElement {
 		codeGenerator.breakLine();
 
 		codeGenerator.indent();
-		codeGenerator.append("public " + getDeclaringType().getJavaName() + '(' + getDeclaringType().getJavaName() + " value" + ')');
-		codeGenerator.breakLine();
-		codeGenerator.indent();
-		codeGenerator.append("{");
+		codeGenerator.append("public " + getDeclaringType().getJavaName() + "(" + getDeclaringType().getJavaName() + " value) {");
 		codeGenerator.breakLine();
 
 		codeGenerator.incrementIndent();
@@ -299,10 +287,7 @@ public class TypeBody extends LanguageElement {
 	public void getConstructor(CodeGenerator codeGenerator) {
 		codeGenerator.breakLine();
 		codeGenerator.indent();
-		codeGenerator.append("public " + getDeclaringType().getJavaName() + "(" + BuiltinNative.IObject + " container)");
-		codeGenerator.breakLine();
-		codeGenerator.indent();
-		codeGenerator.append("{");
+		codeGenerator.append("public " + getDeclaringType().getJavaName() + "(" + BuiltinNative.IObject + " container) {");
 		codeGenerator.breakLine();
 
 		codeGenerator.incrementIndent();
@@ -412,10 +397,7 @@ public class TypeBody extends LanguageElement {
 	public void getConstructor1(CodeGenerator codeGenerator) {
 		codeGenerator.breakLine();
 		codeGenerator.indent();
-		codeGenerator.append("public void constructor1()");
-		codeGenerator.breakLine();
-		codeGenerator.indent();
-		codeGenerator.append("{");
+		codeGenerator.append("public void constructor1() {");
 		codeGenerator.breakLine();
 
 		codeGenerator.incrementIndent();
@@ -444,10 +426,7 @@ public class TypeBody extends LanguageElement {
 	public void getConstructor2(CodeGenerator codeGenerator) {
 		codeGenerator.breakLine();
 		codeGenerator.indent();
-		codeGenerator.append("public void constructor2()");
-		codeGenerator.breakLine();
-		codeGenerator.indent();
-		codeGenerator.append("{");
+		codeGenerator.append("public void constructor2() {");
 		codeGenerator.breakLine();
 
 		codeGenerator.incrementIndent();
@@ -496,8 +475,6 @@ public class TypeBody extends LanguageElement {
 
 			}
 		}
-
-		// getDeclaringType().setConstructionStage(BuiltinNative.Constructor2);
 	}
 
 	@Override
@@ -506,5 +483,4 @@ public class TypeBody extends LanguageElement {
 		for(ILanguageElement element : members)
 			element.replaceTypeName(parent, type, newTypeName);
 	}
-
 }

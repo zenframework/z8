@@ -6,6 +6,7 @@ import org.zenframework.z8.server.base.table.value.BoolField;
 import org.zenframework.z8.server.base.table.value.Field;
 import org.zenframework.z8.server.base.table.value.Link;
 import org.zenframework.z8.server.resources.Resources;
+import org.zenframework.z8.server.runtime.IClass;
 import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.types.bool;
 import org.zenframework.z8.server.types.guid;
@@ -81,8 +82,8 @@ public class RoleTableAccess extends Table {
 
 	@Override
 	public void constructor1() {
-		role.get(CLASS.Constructor1).operatorAssign(roles);
-		table.get(CLASS.Constructor1).operatorAssign(tables);
+		role.get(IClass.Constructor1).operatorAssign(roles);
+		table.get(IClass.Constructor1).operatorAssign(tables);
 	}
 
 	@Override
