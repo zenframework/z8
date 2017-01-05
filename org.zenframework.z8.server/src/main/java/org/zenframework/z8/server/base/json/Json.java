@@ -101,7 +101,6 @@ public class Json extends OBJECT {
 	final static public string primaryKey = org.zenframework.z8.server.json.Json.primaryKey;
 	final static public string parentKey = org.zenframework.z8.server.json.Json.parentKey;
 	final static public string lockKey = org.zenframework.z8.server.json.Json.lockKey;
-	final static public string attachments = org.zenframework.z8.server.json.Json.attachments;
 
 	final static public string action = org.zenframework.z8.server.json.Json.action;
 	final static public string data = org.zenframework.z8.server.json.Json.data;

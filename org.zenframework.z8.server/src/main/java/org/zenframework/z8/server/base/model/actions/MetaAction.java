@@ -10,9 +10,6 @@ import org.zenframework.z8.server.json.JsonWriter;
 import org.zenframework.z8.server.types.string;
 
 public class MetaAction extends ReadAction {
-	static public final string StartValue = new string("0");
-	static public final string LimitValue = new string("50");
-
 	public MetaAction(ActionParameters actionParameters) {
 		super(actionParameters);
 	}
@@ -36,9 +33,9 @@ public class MetaAction extends ReadAction {
 		writer.writeGroup(actionParameters.groupFields);
 
 		if(requestParameters.get(Json.start) == null)
-			requestParameters.put(Json.start, StartValue);
+			requestParameters.put(Json.start, new string(DefaultStart));
 		if(requestParameters.get(Json.limit) == null)
-			requestParameters.put(Json.limit, LimitValue);
+			requestParameters.put(Json.limit, new string(DefaultLimit));
 
 		super.writeResponse(writer);
 	}

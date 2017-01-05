@@ -102,16 +102,18 @@ public class Query extends Runnable {
 	public RCollection<Link.CLASS<? extends Link>> aggregateBy = new RCollection<Link.CLASS<? extends Link>>();
 	public RCollection<Field.CLASS<? extends Field>> groupBy = new RCollection<Field.CLASS<? extends Field>>();
 
-	public Period.CLASS<? extends Period> period = null;
+	public Field.CLASS<? extends Field> attachments;
+	public Period.CLASS<? extends Period> period;
 
 	private Query[] rootQueries;
 
-	private Collection<OBJECT.CLASS<? extends OBJECT>> links = null;
+	private Collection<OBJECT.CLASS<? extends OBJECT>> links;
 
-	private Field primaryKey = null;
+	private Field primaryKey;
 
-	private SqlToken where = null;
-	private SqlToken having = null;
+	private String alias;
+	private SqlToken where;
+	private SqlToken having;
 
 	protected Select cursor;
 	protected ReadLock readLock = ReadLock.None;
@@ -945,9 +947,8 @@ public class Query extends Runnable {
 		return result;
 	}
 
-	public Field getAttachmentField() {
-		Collection<Field> attachmentFields = getAttachments();
-		return attachmentFields.isEmpty() ? null : attachmentFields.iterator().next();
+	public Field attachmentKey() {
+		return attachments != null ? attachments.get() : null;
 	}
 
 	public void registerDataField(Field.CLASS<?> field) {
@@ -1092,8 +1093,6 @@ public class Query extends Runnable {
 
 		return null;
 	}
-
-	private String alias = null;
 
 	public String getAlias() {
 		if(alias == null) {
@@ -1618,9 +1617,9 @@ public class Query extends Runnable {
 		if(lockKey != null && fields.contains(lockKey))
 			writer.writeProperty(Json.lockKey, lockKey.id());
 
-		Field attachments = getAttachmentField();
+		Field attachments = attachmentKey();
 		if(attachments != null && fields.contains(attachments))
-			writer.writeProperty(Json.attachments, attachments.id());
+			writer.writeProperty(Json.attachmentsKey, attachments.id());
 
 		Field parentKey = parentKey();
 		if(parentKey != null && fields.contains(parentKey))

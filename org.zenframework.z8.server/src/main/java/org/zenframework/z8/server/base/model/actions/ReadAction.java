@@ -50,6 +50,9 @@ import org.zenframework.z8.server.types.sql.sql_string;
 import org.zenframework.z8.server.utils.ArrayUtils;
 
 public class ReadAction extends Action {
+	static public int DefaultStart = 0;
+	static public int DefaultLimit = 200;
+
 	static private final Collection<Field> emptyFieldList = new ArrayList<Field>();
 
 	private Map<Field, Collection<Query>> fieldToQueries = new LinkedHashMap<Field, Collection<Query>>();
@@ -161,7 +164,7 @@ public class ReadAction extends Action {
 
 			if(parameters.requestId != null) {
 				addSelectField(query.lockKey());
-				addSelectField(query.getAttachmentField());
+				addSelectField(query.attachmentKey());
 			}
 		}
 
@@ -647,7 +650,7 @@ public class ReadAction extends Action {
 			select.setGroupBy(Arrays.asList(groupField));
 		}
 
-		Select frame = new FramedSelect(select, 1, 50);
+		Select frame = new FramedSelect(select, DefaultStart + 1, DefaultLimit);
 
 		frame.aggregate();
 

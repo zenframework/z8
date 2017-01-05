@@ -22,6 +22,8 @@ class Query extends Runnable {
 	public Field[] groupFields;     // Соответствует пункту 'Группировать по полю' в меню колонки таблицы.
 									// Не путать с groupBy - выбираемые данные не группируются.
 
+	public Field attachments;
+
 	public Field[] searchFields;
 	public Field searchId;
 

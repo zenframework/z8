@@ -34,6 +34,10 @@ public final class string extends primary {
 		set(str);
 	}
 
+	public string(int number) {
+		set(Integer.toString(number));
+	}
+
 	public string(byte[] str) {
 		this(str, encoding.UTF8);
 	}
