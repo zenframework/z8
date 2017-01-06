@@ -1,7 +1,7 @@
 import org.zenframework.z8.base.table.value.FieldType;
 import org.zenframework.z8.lang.Object;
 
-[native "org.zenframework.z8.server.base.view.command.Parameter"]
+[native "org.zenframework.z8.server.base.Parameter"]
 class Parameter extends Object {
 	public string text;
 

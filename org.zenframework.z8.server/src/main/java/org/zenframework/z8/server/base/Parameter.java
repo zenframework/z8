@@ -1,4 +1,4 @@
-package org.zenframework.z8.server.base.view.command;
+package org.zenframework.z8.server.base;
 
 import java.util.Collection;
 

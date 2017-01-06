@@ -18,19 +18,11 @@ class Table extends TableBase {
 
 	public [name "Description"][displayName "Описание"] TextField description;
 
-	public [name "Lock"] BoolField lock;
-
 	public [displayName "Создана"] DatetimeField createdAt;
-	createdAt.readOnly = true;
-
 	public [displayName "Создал"] GuidField createdBy;
-	createdBy.readOnly = true;
-
 	public [displayName "Изменена"] DatetimeField modifiedAt;
-	modifiedAt.readOnly = true;
-
 	public [displayName "Изменил"] GuidField modifiedBy;
-	modifiedBy.readOnly = true;
 
+	public [name "Lock"] BoolField lock;
 	public [displayName "Архив"] BoolField archive;
 }

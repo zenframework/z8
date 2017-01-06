@@ -1,6 +1,6 @@
 package org.zenframework.z8.server.db.generator;
 
-import org.zenframework.z8.server.base.simple.Procedure;
+import org.zenframework.z8.server.base.Procedure;
 import org.zenframework.z8.server.engine.ApplicationServer;
 import org.zenframework.z8.server.resources.Resources;
 import org.zenframework.z8.server.runtime.IObject;

@@ -4,8 +4,8 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.zenframework.z8.server.base.Procedure;
 import org.zenframework.z8.server.base.model.command.IParameter;
-import org.zenframework.z8.server.base.simple.Procedure;
 import org.zenframework.z8.server.engine.ApplicationServer;
 import org.zenframework.z8.server.json.Json;
 import org.zenframework.z8.server.json.JsonWriter;

@@ -5,9 +5,8 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
+import org.zenframework.z8.server.base.Procedure;
 import org.zenframework.z8.server.base.form.Desktop;
-import org.zenframework.z8.server.base.simple.Procedure;
-import org.zenframework.z8.server.base.simple.Runnable;
 import org.zenframework.z8.server.base.table.system.Users;
 import org.zenframework.z8.server.config.ServerConfig;
 import org.zenframework.z8.server.engine.ApplicationServer;
@@ -18,6 +17,7 @@ import org.zenframework.z8.server.logs.Trace;
 import org.zenframework.z8.server.request.Loader;
 import org.zenframework.z8.server.request.RequestTarget;
 import org.zenframework.z8.server.runtime.CLASS;
+import org.zenframework.z8.server.runtime.OBJECT;
 import org.zenframework.z8.server.security.Entry;
 import org.zenframework.z8.server.security.IUser;
 import org.zenframework.z8.server.types.primary;
@@ -79,7 +79,7 @@ public class Dashboard extends RequestTarget {
 
 	@SuppressWarnings("rawtypes")
 	private void writeDesktopData(JsonWriter writer, Desktop desktop, String displayName) {
-		Collection<Runnable.CLASS> runnables = desktop.getRunnables();
+		Collection<OBJECT.CLASS> runnables = desktop.getRunnables();
 
 //		if(!runnables.isEmpty()) {
 			writer.startObject();

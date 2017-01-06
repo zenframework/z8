@@ -4,7 +4,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.zenframework.z8.server.base.simple.Procedure;
+import org.zenframework.z8.server.base.Procedure;
 import org.zenframework.z8.server.base.table.Table;
 import org.zenframework.z8.server.types.guid;
 

@@ -2,10 +2,10 @@ package org.zenframework.z8.server.ie.rmi;
 
 import java.util.Collection;
 
-import org.zenframework.z8.server.base.simple.Procedure;
+import org.zenframework.z8.server.base.Parameter;
+import org.zenframework.z8.server.base.Procedure;
 import org.zenframework.z8.server.base.table.system.MessageQueue;
 import org.zenframework.z8.server.base.table.system.TransportQueue;
-import org.zenframework.z8.server.base.view.command.Parameter;
 import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.runtime.RCollection;
 import org.zenframework.z8.server.types.bool;

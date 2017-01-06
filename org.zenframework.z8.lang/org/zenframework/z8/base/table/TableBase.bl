@@ -3,7 +3,5 @@ import org.zenframework.z8.base.query.Query;
 
 [native "org.zenframework.z8.server.base.table.TableBase"]
 class TableBase extends Query {
-	public bool operator == (TableBase table);
-
 	protected void addRecord(guid recordId, primary[Field] values);
 }

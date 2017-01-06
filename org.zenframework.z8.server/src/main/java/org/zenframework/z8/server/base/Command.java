@@ -1,21 +1,21 @@
-package org.zenframework.z8.server.base.view.command;
+package org.zenframework.z8.server.base;
 
 import java.util.Collection;
 
 import org.zenframework.z8.server.base.model.command.ICommand;
 import org.zenframework.z8.server.base.model.command.IParameter;
-import org.zenframework.z8.server.base.simple.Runnable;
 import org.zenframework.z8.server.json.Json;
 import org.zenframework.z8.server.json.JsonWriter;
 import org.zenframework.z8.server.request.INamedObject;
 import org.zenframework.z8.server.runtime.IObject;
+import org.zenframework.z8.server.runtime.OBJECT;
 import org.zenframework.z8.server.runtime.RCollection;
 import org.zenframework.z8.server.types.bool;
 import org.zenframework.z8.server.types.guid;
 import org.zenframework.z8.server.types.string;
 
-public class Command extends Runnable implements ICommand {
-	static public class CLASS<T extends Command> extends Runnable.CLASS<T> {
+public class Command extends OBJECT implements Runnable, ICommand {
+	static public class CLASS<T extends Command> extends OBJECT.CLASS<T> {
 		public CLASS() {
 			this(null);
 		}
@@ -97,6 +97,10 @@ public class Command extends Runnable implements ICommand {
 		}
 
 		writer.finishArray();
+	}
+
+	@Override
+	public void run() {
 	}
 
 	static public Command.CLASS<? extends Command> z8_create(string id, string text) {

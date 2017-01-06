@@ -10,6 +10,7 @@ import java.util.Set;
 import java.util.regex.Pattern;
 
 import org.apache.commons.io.FileUtils;
+import org.zenframework.z8.server.base.Command;
 import org.zenframework.z8.server.base.file.Folders;
 import org.zenframework.z8.server.base.form.Control;
 import org.zenframework.z8.server.base.form.Section;
@@ -23,7 +24,6 @@ import org.zenframework.z8.server.base.model.actions.UpdateAction;
 import org.zenframework.z8.server.base.model.command.ICommand;
 import org.zenframework.z8.server.base.model.sql.Insert;
 import org.zenframework.z8.server.base.model.sql.Select;
-import org.zenframework.z8.server.base.simple.Runnable;
 import org.zenframework.z8.server.base.table.Table;
 import org.zenframework.z8.server.base.table.TreeTable;
 import org.zenframework.z8.server.base.table.value.AttachmentField;
@@ -33,7 +33,6 @@ import org.zenframework.z8.server.base.table.value.IField;
 import org.zenframework.z8.server.base.table.value.ILink;
 import org.zenframework.z8.server.base.table.value.Link;
 import org.zenframework.z8.server.base.table.value.LinkExpression;
-import org.zenframework.z8.server.base.view.command.Command;
 import org.zenframework.z8.server.base.view.filter.Filter;
 import org.zenframework.z8.server.db.sql.SqlToken;
 import org.zenframework.z8.server.db.sql.expressions.And;
@@ -56,12 +55,12 @@ import org.zenframework.z8.server.types.primary;
 import org.zenframework.z8.server.types.string;
 import org.zenframework.z8.server.types.sql.sql_bool;
 
-public class Query extends Runnable {
+public class Query extends OBJECT {
 	static public class strings {
 		public final static String ReadError = "Query.readError";
 	}
 
-	public static class CLASS<T extends Query> extends Runnable.CLASS<T> {
+	public static class CLASS<T extends Query> extends OBJECT.CLASS<T> {
 
 		public CLASS(IObject container) {
 			super(container);

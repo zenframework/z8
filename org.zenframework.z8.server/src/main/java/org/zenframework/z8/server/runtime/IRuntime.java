@@ -2,7 +2,7 @@ package org.zenframework.z8.server.runtime;
 
 import java.util.Collection;
 
-import org.zenframework.z8.server.base.simple.Procedure;
+import org.zenframework.z8.server.base.Procedure;
 import org.zenframework.z8.server.base.table.Table;
 import org.zenframework.z8.server.types.guid;
 

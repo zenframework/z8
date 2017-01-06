@@ -1,7 +1,7 @@
 package org.zenframework.z8.server.base.model.actions;
 
+import org.zenframework.z8.server.base.Command;
 import org.zenframework.z8.server.base.model.command.IParameter;
-import org.zenframework.z8.server.base.view.command.Command;
 import org.zenframework.z8.server.db.Connection;
 import org.zenframework.z8.server.db.ConnectionManager;
 import org.zenframework.z8.server.json.JsonWriter;

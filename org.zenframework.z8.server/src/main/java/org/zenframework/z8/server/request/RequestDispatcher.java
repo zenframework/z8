@@ -4,12 +4,12 @@ import java.lang.management.ManagementFactory;
 import java.lang.management.MemoryMXBean;
 import java.lang.management.MemoryUsage;
 
+import org.zenframework.z8.server.base.Procedure;
 import org.zenframework.z8.server.base.job.Job;
 import org.zenframework.z8.server.base.job.JobMonitor;
 import org.zenframework.z8.server.base.model.actions.Action;
 import org.zenframework.z8.server.base.model.actions.ActionFactory;
 import org.zenframework.z8.server.base.query.Query;
-import org.zenframework.z8.server.base.simple.Procedure;
 import org.zenframework.z8.server.base.view.Dashboard;
 import org.zenframework.z8.server.engine.ApplicationServer;
 import org.zenframework.z8.server.json.Json;

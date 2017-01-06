@@ -1,6 +1,6 @@
 import org.zenframework.z8.lang.Object;
 
-[native "org.zenframework.z8.server.base.simple.Transaction"]
+[native "org.zenframework.z8.server.base.query.Transaction"]
 class Transaction extends Object {
 	/*
 		try {

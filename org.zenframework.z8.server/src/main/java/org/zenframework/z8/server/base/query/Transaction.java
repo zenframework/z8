@@ -1,4 +1,4 @@
-package org.zenframework.z8.server.base.simple;
+package org.zenframework.z8.server.base.query;
 
 import org.zenframework.z8.server.db.ConnectionManager;
 import org.zenframework.z8.server.runtime.OBJECT;

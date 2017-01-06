@@ -1,7 +1,6 @@
 package org.zenframework.z8.server.base.table.system;
 
 import org.zenframework.z8.server.base.form.Desktop;
-import org.zenframework.z8.server.base.simple.Runnable;
 import org.zenframework.z8.server.base.table.system.view.AuthorityCenterView;
 import org.zenframework.z8.server.base.table.system.view.FilesView;
 import org.zenframework.z8.server.base.table.system.view.InterconnectionCenterView;
@@ -15,6 +14,7 @@ import org.zenframework.z8.server.db.generator.DBGenerateProcedure;
 import org.zenframework.z8.server.engine.ApplicationServer;
 import org.zenframework.z8.server.resources.Resources;
 import org.zenframework.z8.server.runtime.IObject;
+import org.zenframework.z8.server.runtime.OBJECT;
 import org.zenframework.z8.server.security.BuiltinUsers;
 import org.zenframework.z8.server.types.guid;
 
@@ -48,20 +48,20 @@ public class SystemTools extends Desktop {
 		}
 	}
 
-	public Runnable.CLASS<? extends Runnable> users = new UsersView.CLASS<UsersView>(this);
-	public Runnable.CLASS<? extends Runnable> domains = new Domains.CLASS<Domains>(this);
-	public Runnable.CLASS<? extends Runnable> jobs = new JobsView.CLASS<JobsView>(this);
-	public Runnable.CLASS<? extends Runnable> sequences = new Sequences.CLASS<Sequences>(this);
-	public Runnable.CLASS<? extends Runnable> exportMessages = new TransportQueueView.CLASS<TransportQueueView>(this);
-	public Runnable.CLASS<? extends Runnable> files = new FilesView.CLASS<FilesView>(this);
+	public OBJECT.CLASS<? extends OBJECT> users = new UsersView.CLASS<UsersView>(this);
+	public OBJECT.CLASS<? extends OBJECT> domains = new Domains.CLASS<Domains>(this);
+	public OBJECT.CLASS<? extends OBJECT> jobs = new JobsView.CLASS<JobsView>(this);
+	public OBJECT.CLASS<? extends OBJECT> sequences = new Sequences.CLASS<Sequences>(this);
+	public OBJECT.CLASS<? extends OBJECT> exportMessages = new TransportQueueView.CLASS<TransportQueueView>(this);
+	public OBJECT.CLASS<? extends OBJECT> files = new FilesView.CLASS<FilesView>(this);
 
-	public Runnable.CLASS<? extends Runnable> tables = new TablesView.CLASS<TablesView>(this);
-	public Runnable.CLASS<? extends Runnable> roles = new RoleTableAccessView.CLASS<RoleTableAccessView>(this);
+	public OBJECT.CLASS<? extends OBJECT> tables = new TablesView.CLASS<TablesView>(this);
+	public OBJECT.CLASS<? extends OBJECT> roles = new RoleTableAccessView.CLASS<RoleTableAccessView>(this);
 
-	public Runnable.CLASS<? extends Runnable> authorityCenter = new AuthorityCenterView.CLASS<AuthorityCenterView>(this);
-	public Runnable.CLASS<? extends Runnable> interconnectionCenter = new InterconnectionCenterView.CLASS<InterconnectionCenterView>(this);
+	public OBJECT.CLASS<? extends OBJECT> authorityCenter = new AuthorityCenterView.CLASS<AuthorityCenterView>(this);
+	public OBJECT.CLASS<? extends OBJECT> interconnectionCenter = new InterconnectionCenterView.CLASS<InterconnectionCenterView>(this);
 
-	public Runnable.CLASS<? extends Runnable> generator = new DBGenerateProcedure.CLASS<DBGenerateProcedure>(this);
+	public OBJECT.CLASS<? extends OBJECT> generator = new DBGenerateProcedure.CLASS<DBGenerateProcedure>(this);
 
 	public SystemTools(IObject container) {
 		super(container);

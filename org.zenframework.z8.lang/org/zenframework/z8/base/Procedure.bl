@@ -1,7 +1,4 @@
-import org.zenframework.z8.base.query.Command;
-import org.zenframework.z8.base.query.Parameter;
-
-[native "org.zenframework.z8.server.base.simple.Procedure"]
+[native "org.zenframework.z8.server.base.Procedure"]
 class Procedure extends Command {
 	virtual protected void execute(Parameter[] parameters);
 
