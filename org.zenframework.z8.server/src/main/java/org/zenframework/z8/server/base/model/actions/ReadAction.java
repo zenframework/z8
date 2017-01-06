@@ -199,6 +199,9 @@ public class ReadAction extends Action {
 			Filter quickFilter = new Filter(getQuickFilterParameter(), query);
 			addFilter(quickFilter.where());
 
+			Filter period = new Filter(getPeriodParameter(), query);
+			addFilter(period.where());
+
 			if(isGrouped())
 				addGroupFilter(getFilter1());
 			else

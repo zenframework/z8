@@ -132,6 +132,7 @@ public interface Json {
 	string primaryKey = new string("primaryKey");
 	string lockKey = new string("lockKey");
 	string attachmentsKey = new string("attachmentsKey");
+	string periodKey = new string("periodKey");
 	string parentKey = new string("parentKey");
 	string parentKeys = new string("parentKeys");
 	string hasChildren = new string("hasChildren");

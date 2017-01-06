@@ -1,3 +1,4 @@
+import org.zenframework.z8.base.table.value.DatetimeField;
 import org.zenframework.z8.base.Command;
 import org.zenframework.z8.lang.Object;
 import org.zenframework.z8.base.form.Control;
@@ -24,6 +25,7 @@ class Query extends Object {
 									// Не путать с groupBy - выбираемые данные не группируются.
 
 	public Field attachments;
+	public DatetimeField period;
 
 	public Field[] searchFields;
 	public Field searchId;
@@ -32,8 +34,6 @@ class Query extends Object {
 	public Field[] groupBy;         // Поля для группировки выбираемых данных.
 
 	public Command[] commands;
-
-	public Period period;
 
 	virtual protected void onCommand(Command command, guid[] recordIds);
 

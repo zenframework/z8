@@ -1,9 +1,0 @@
-[native "org.zenframework.z8.server.base.query.PeriodType"]
-enum PeriodType {
-	Year,
-	HalfYear,
-	Quarter,
-	Month,
-	Week,
-	Default
-}

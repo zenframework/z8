@@ -102,7 +102,7 @@ public class Query extends OBJECT {
 	public RCollection<Field.CLASS<? extends Field>> groupBy = new RCollection<Field.CLASS<? extends Field>>();
 
 	public Field.CLASS<? extends Field> attachments;
-	public Period.CLASS<? extends Period> period;
+	public Field.CLASS<? extends Field> period;
 
 	private Query[] rootQueries;
 
@@ -941,6 +941,10 @@ public class Query extends OBJECT {
 		return attachments != null ? attachments.get() : null;
 	}
 
+	public Field periodKey() {
+		return period != null ? period.get() : null;
+	}
+
 	public void registerDataField(Field.CLASS<?> field) {
 		dataFields.add(field);
 	}
@@ -1486,27 +1490,6 @@ public class Query extends OBJECT {
 		return result;
 	}
 
-	public Period getPeriod() {
-		if(period != null)
-			return period.get();
-
-		Query rootQuery = getRootQuery();
-
-		if(rootQuery != null && rootQuery.period != null)
-			return rootQuery.period.get();
-
-		return null;
-	}
-
-	public void setPeriod(Period.CLASS<? extends Period> period) {
-		Query rootQuery = getRootQuery();
-
-		if(rootQuery.period != null)
-			rootQuery.period = period;
-		else
-			this.period = period;
-	}
-
 	public Collection<Command> commands() {
 		return CLASS.asList(commands);
 	}
@@ -1586,7 +1569,6 @@ public class Query extends OBJECT {
 
 		writeKeys(writer, fields);
 		writeCommands(writer);
-		writePeriod(writer);
 
 		// visuals
 		writer.writeProperty(Json.text, displayName());
@@ -1611,6 +1593,10 @@ public class Query extends OBJECT {
 		if(attachments != null && fields.contains(attachments))
 			writer.writeProperty(Json.attachmentsKey, attachments.id());
 
+		Field period = periodKey();
+		if(period != null)
+			writer.writeProperty(Json.periodKey, period.id());
+
 		Field parentKey = parentKey();
 		if(parentKey != null && fields.contains(parentKey))
 			writer.writeProperty(Json.parentKey, parentKey().id());
@@ -1626,16 +1612,6 @@ public class Query extends OBJECT {
 		}
 
 		writer.finishArray();
-	}
-
-	private void writePeriod(JsonWriter writer) {
-		if(period != null) {
-			writer.startObject(Json.period);
-			writer.writeProperty(Json.period, period.get().type.toString());
-			writer.writeProperty(Json.start, period.get().start);
-			writer.writeProperty(Json.finish, period.get().finish);
-			writer.finishObject();
-		}
 	}
 
 	//////////////////////////////////////////////////////////////////////////////////////////////////
