@@ -34,9 +34,6 @@ public class RequestProcessor {
 		RequestInfo info;
 
 		if(id == null) {
-			if(request.id() == null)
-				return;
-
 			RequestDispatcher dispatcher = new RequestDispatcher(request, response);
 
 			info = new RequestInfo();
@@ -52,7 +49,7 @@ public class RequestProcessor {
 		} else {
 			info = requests.get(id);
 			if(info == null)
-				return;
+				throw new RuntimeException("Bad retry request. Params: " + request.getParameters());
 		}
 
 		if(isThreadAlive(info.thread)) {
