@@ -266,6 +266,7 @@ public class User implements IUser {
 		fields.add(users.recordId.get());
 		fields.add(users.name.get());
 		fields.add(users.password.get());
+		fields.add(users.enabled.get());
 		fields.add(users.firstName.get());
 		fields.add(users.middleName.get());
 		fields.add(users.lastName.get());
@@ -279,6 +280,7 @@ public class User implements IUser {
 			this.id = users.recordId.get().guid();
 			this.login = users.name.get().string().get();
 			this.password = users.password.get().string().get();
+			this.enabled = users.enabled.get().bool().get();
 			this.firstName = users.firstName.get().string().get();
 			this.middleName = users.middleName.get().string().get();
 			this.lastName = users.lastName.get().string().get();
