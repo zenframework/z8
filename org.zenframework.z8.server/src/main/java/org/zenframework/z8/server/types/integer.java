@@ -32,7 +32,7 @@ public final class integer extends primary {
 	}
 
 	public integer(String x) {
-		set(z8_parse(new string(x)));
+		set(parse(x));
 	}
 
 	@Override
@@ -43,6 +43,21 @@ public final class integer extends primary {
 	@Override
 	public String toString() {
 		return format(10);
+	}
+
+	static integer parse(String value) {
+		return parse(value, 10);
+	}
+
+	static integer parse(String value, int radix) {
+		if(value == null || value.isEmpty())
+			return new integer();
+
+		char lastChar = value.charAt(value.length() - 1);
+		if(lastChar == 'L' || lastChar == 'l')
+			value = value.substring(0, value.length() - 1);
+
+		return new integer(Long.parseLong(value, radix));
 	}
 
 	public String format(int radix) {
@@ -363,19 +378,10 @@ public final class integer extends primary {
 	}
 
 	static public integer z8_parse(string string) {
-		return z8_parse(string, new integer(10));
+		return parse(string.get(), 10);
 	}
 
 	static public integer z8_parse(string string, integer radix) {
-		try {
-			String v = string.get();
-
-			if (v.trim().length() == 0)
-				v = "0";
-
-			return new integer(Long.parseLong(v, radix.getInt()));
-		} catch (NumberFormatException e) {
-			throw new exception(e);
-		}
+		return parse(string.get(), radix.getInt());
 	}
 }

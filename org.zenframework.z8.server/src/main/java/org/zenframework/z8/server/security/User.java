@@ -232,8 +232,8 @@ public class User implements IUser {
 	static public IUser load(String login, String password) {
 		IUser user = load(login);
 
-//		if(password == null || !password.equals(user.password()) || !user.enabled())
-//			throw new AccessDeniedException();
+		if(password == null || !password.equals(user.password()) || !user.enabled())
+			throw new AccessDeniedException();
 
 		return user;
 	}
