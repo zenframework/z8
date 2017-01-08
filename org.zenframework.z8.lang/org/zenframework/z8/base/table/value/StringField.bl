@@ -4,9 +4,6 @@ class StringField extends Field {
 
 	public int length = 30;
 
-	public int minLength = 0;
-	public int maxLength = 0;
-
 	virtual public string getDefault();
 	public void setDefault(string defaultValue);
 

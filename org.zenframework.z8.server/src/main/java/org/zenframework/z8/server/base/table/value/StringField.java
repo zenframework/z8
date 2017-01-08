@@ -28,9 +28,6 @@ public class StringField extends Field {
 		}
 	}
 
-	public integer minLength = null;
-	public integer maxLength = null;
-
 	public StringField(IObject container) {
 		super(container);
 		setDefault(new string(""));
@@ -89,7 +86,6 @@ public class StringField extends Field {
 	public void writeMeta(JsonWriter writer, Query query) {
 		super.writeMeta(writer, query);
 
-		writer.writeProperty(Json.min, minLength, new integer(0));
-		writer.writeProperty(Json.max, maxLength, length);
+		writer.writeProperty(Json.length, length);
 	}
 }
