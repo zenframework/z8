@@ -99,14 +99,12 @@ public class DocsGenerator {
 				start = offset + length;
 			}
 
-			String name = compilationUnit.getQualifiedName();
-			System.out.println(name);
-
 			result += content.substring(start).replaceAll("<", "&lt;");
-
 			result = result.replaceAll("((public|protected|private|virtual|class|enum|extends|import|static|final|return|break|if|else|for|while|do|try|catch|finally|throw)\\b)", "<span class='keyword'>$1</span>");
 			result = result.replaceAll("(/\\*+((([^\\*])+)|([\\*]+(?!/)))[*]+/|//.*)", "<span class='comment'>$1</span>");
 			result = result.replaceAll("(\"(\\\\\"|[^\"]|[\\r\\n])*\")", "<span class='string'>$1</span>");
+
+			String name = compilationUnit.getQualifiedName();
 			result = template.replace("{0}", name).replace("{1}", result);
 
 			new File(outputPath.append(name + ".html")).write(result);
