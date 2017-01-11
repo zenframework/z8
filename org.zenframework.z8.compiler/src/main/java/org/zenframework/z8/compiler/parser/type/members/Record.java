@@ -144,10 +144,11 @@ public class Record extends LanguageElement implements IMember {
 			return false;
 
 		IMember member = declaringType.findMember(getName());
+		IPosition position = nameToken.getPosition();
 
 		if(member != null) {
 			if(member.getDeclaringType() == declaringType) {
-				setError(nameToken.getPosition(), "Duplicate field " + declaringType.getUserName() + "." + getName());
+				setError(position, "Duplicate field " + declaringType.getUserName() + "." + getName());
 				setError(member.getPosition(), "Duplicate field " + declaringType.getUserName() + "." + getName());
 			} else
 				setError(getPosition(), getName() + ": redefinition of " + member.getDeclaringType().getUserName() + "." + getName());
@@ -156,7 +157,7 @@ public class Record extends LanguageElement implements IMember {
 		}
 
 		if(constant == null) {
-			setFatalError(nameToken.getPosition(), "The member " + nameToken.getRawText() + " must be initialized with guid constant");
+			setFatalError(position, "The member " + nameToken.getRawText() + " must be initialized with guid constant");
 			return false;
 		}
 
@@ -166,6 +167,7 @@ public class Record extends LanguageElement implements IMember {
 		}
 
 		declaringType.addMember(this);
+		compilationUnit.addHyperlink(position, compilationUnit, position);
 
 		return true;
 	}

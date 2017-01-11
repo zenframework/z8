@@ -61,6 +61,10 @@ public class Roles extends Table {
 		public final static String Execute = Resources.get(strings.Execute);
 	}
 
+	static public guid User = Role.User;
+	static public guid Guest = Role.Guest;
+	static public guid Administrator = Role.Administrator;
+
 	public BoolField.CLASS<BoolField> read = new BoolField.CLASS<BoolField>(this);
 	public BoolField.CLASS<BoolField> write = new BoolField.CLASS<BoolField>(this);
 	public BoolField.CLASS<BoolField> create = new BoolField.CLASS<BoolField>(this);

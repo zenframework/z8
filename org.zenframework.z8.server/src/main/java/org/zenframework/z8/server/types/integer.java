@@ -8,8 +8,8 @@ public final class integer extends primary {
 
 	private static final long serialVersionUID = 2882942660543308166L;
 
-	static public integer MIN_VALUE = new integer(Long.MIN_VALUE + 1); // 0x8000000000000000  + 1 = -0x7fffffffffffffff
-	static public integer MAX_VALUE = new integer(Long.MAX_VALUE); // 0x7fffffffffffffff
+	static public integer Min = new integer(Long.MIN_VALUE + 1); // 0x8000000000000000  + 1 = -0x7fffffffffffffff
+	static public integer Max = new integer(Long.MAX_VALUE); // 0x7fffffffffffffff
 
 	private long value = 0;
 

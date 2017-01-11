@@ -95,19 +95,21 @@ public class EnumElement extends LanguageElement implements IMember {
 			return false;
 
 		String name = nameToken.getRawText();
+		IPosition position = nameToken.getPosition();
 
 		if(!Lexer.checkIdentifier(name)) {
-			setFatalError(nameToken.getPosition(), "Syntax error on token '" + name + "'. " + name + " is a reserved keyword.");
+			setFatalError(position, "Syntax error on token '" + name + "'. " + name + " is a reserved keyword.");
 			return false;
 		}
 
 		IMember member = declaringType.findMember(name);
 
 		if(member != null)
-			setError(nameToken.getPosition(), name + ": redefinition of enumerator");
+			setError(position, name + ": redefinition of enumerator");
 		else
 			declaringType.addMember(this);
 
+		compilationUnit.addHyperlink(position, compilationUnit, position);
 		return true;
 	}
 

@@ -7,7 +7,6 @@ import java.util.StringTokenizer;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
-
 import org.zenframework.z8.compiler.error.DefaultBuildMessageConsumer;
 import org.zenframework.z8.compiler.file.File;
 import org.zenframework.z8.compiler.file.FileException;
@@ -20,8 +19,10 @@ import org.zenframework.z8.compiler.workspace.Workspace;
 public class Main {
 
 	public static final String OUTPUT_KEY = "-output:";
+	public static final String DOCS_KEY = "-docs:";
+	public static final String DOC_TEMPLATE_KEY = "-doctemplate:";
 	public static final String REQUIRED_KEY = "-requires:";
-	public static final String PROJECT_NAME_KEY = "-projectName:";
+	public static final String PROJECT_NAME_KEY = "-projectname:";
 	private static IPath CURRENT_DIRECTORY = new Path(new Path("/").toFile().getAbsolutePath());
 
 	static private void outputHello() {
@@ -32,7 +33,9 @@ public class Main {
 		System.out.println("java -classpath <classpath> <project path> " +
 				"-projectName:<Project name> " +
 				"[-requires:<comma or semicolon separated required projects>] " +
-				"-output:<output path relative to project path>");
+				"-output:<output path relative to project path> " + 
+				"-docs:<docs output path (relative to project path)> " + 
+				"-docTemplate:<doc template file path (relative to project path)>");
 	}
 
 	static private void outputUsageAndExit() {
@@ -110,7 +113,7 @@ public class Main {
 		return result.toArray(new String[result.size()]);
 	}
 
-	static private boolean initializeWorkspaceAndBuild(String projectName, IPath projectPath, IPath[] requiredPaths, IPath outputPath) {
+	static private boolean initializeWorkspaceAndBuild(String projectName, IPath projectPath, IPath[] requiredPaths, IPath outputPath, IPath docsPath, IPath docTemplatePath) {
 		Workspace workspace = Workspace.initialize(new DummyResource());
 
 		Project project = workspace.createProject(new DummyProject(projectName, workspace.getResource(), projectPath));
@@ -139,6 +142,7 @@ public class Main {
 		project.build(consumer);
 
 		generateSourceList(project, outputPath);
+		generateDocs(projects, docsPath, docTemplatePath);
 
 		return consumer.getErrorCount() == 0;
 	}
@@ -148,7 +152,6 @@ public class Main {
 
 		CompilationUnit[] compilationUnits = project.getCompilationUnits();
 
-		System.out.println("compilationUnits: " + compilationUnits.length);
 		for(CompilationUnit compilationUnit : compilationUnits) {
 			if(!compilationUnit.containsNativeType())
 				sources.append("\"" + compilationUnit.getOutputPath().toString() + "\"" + "\n");
@@ -161,6 +164,16 @@ public class Main {
 			outputPath = outputPath.append("javafiles.lst");
 			File.fromPath(outputPath).write(sources.toString());
 		} catch(FileException e) {
+			outputErrorAndExit(e.getMessage());
+		}
+	}
+
+	static protected void generateDocs(Project[] projects, IPath docsPath, IPath docTemplatePath) {
+		try {
+			if(docsPath != null) {
+				new DocsGenerator(projects, docsPath, docTemplatePath).run();
+			}
+		} catch(Throwable e) {
 			outputErrorAndExit(e.getMessage());
 		}
 	}
@@ -209,6 +222,8 @@ public class Main {
 		String projectName = null;
 		String projectPathValue = null;
 		String outputPathValue = null;
+		String docsPathValue = null;
+		String docTemplatePathValue = null;
 
 		String[] requiredPathValues = null;
 
@@ -223,6 +238,16 @@ public class Main {
 					outputUsageAndExit();
 
 				outputPathValue = argument.substring(OUTPUT_KEY.length());
+			} else if(argument.toLowerCase().startsWith(DOCS_KEY)) {
+				if(docsPathValue != null)
+					outputUsageAndExit();
+
+				docsPathValue = argument.substring(DOCS_KEY.length());
+			} else if(argument.toLowerCase().startsWith(DOC_TEMPLATE_KEY)) {
+				if(docTemplatePathValue != null)
+					outputUsageAndExit();
+
+				docTemplatePathValue = argument.substring(DOC_TEMPLATE_KEY.length());
 			} else if(argument.toLowerCase().startsWith(REQUIRED_KEY)) {
 				if(requiredPathValues != null)
 					outputUsageAndExit();
@@ -249,18 +274,29 @@ public class Main {
 			outputErrorAndExit("Missing <output path> argument");
 		}
 
+		if(docsPathValue != null && docTemplatePathValue == null) {
+			outputUsage();
+			outputErrorAndExit("Missing <<doc template file path> argument");
+		}
+
+		if(docsPathValue == null && docTemplatePathValue != null) {
+			outputUsage();
+			outputErrorAndExit("Missing <<docs output path> argument");
+		}
+
 		try {
-			compile(projectName, projectPathValue, outputPathValue, requiredPathValues);
+			compile(projectName, projectPathValue, requiredPathValues, outputPathValue, docsPathValue, docTemplatePathValue);
 		} catch(CompilerException e) {
 			outputErrorAndExit(e.getMessage());
 		}
 	}
 
-	public static void compile(String projectName, String projectPathValue, String outputPathValue, String[] requiredPathValues) throws CompilerException {
-
+	public static void compile(String projectName, String projectPathValue, String[] requiredPathValues, String outputPathValue, String docsPathValue, String docTemplatePathValue) throws CompilerException {
 		IPath projectPath = getValidPath(projectPathValue);
 		CURRENT_DIRECTORY = projectPath;
 		IPath outputPath = getValidPath(outputPathValue);
+		IPath docsPath = docsPathValue != null ? getValidPath(docsPathValue) : null;
+		IPath docTemplatePath = docTemplatePathValue != null ? getValidPath(docTemplatePathValue) : null;
 		IPath[] requiredPaths = getValidPath(requiredPathValues);
 
 		if(requiredPathValues == null)
@@ -274,7 +310,7 @@ public class Main {
 			throw new CompilerException(e.getMessage());
 		}
 
-		if(!initializeWorkspaceAndBuild(projectName, projectPath, requiredPaths, outputPath)) {
+		if(!initializeWorkspaceAndBuild(projectName, projectPath, requiredPaths, outputPath, docsPath, docTemplatePath)) {
 			throw new CompilerException("COMPILATION FAILED");
 		}
 	}

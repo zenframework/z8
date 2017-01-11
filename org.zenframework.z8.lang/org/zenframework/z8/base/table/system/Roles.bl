@@ -6,10 +6,14 @@ class Roles extends Table {
 	records {
 		[name "Администраторы"]
 		[description "Администраторы"]
-		Administator = 'DC08CA72-C668-412F-91B7-022F1C82AC09';
+		Administrator = 'DC08CA72-C668-412F-91B7-022F1C82AC09';
 
 		[name "Пользователи"]
 		[description "Пользователи"]
 		User = '421A8413-A8EC-4DAB-9235-9A5FF83341C5';
+
+		[name "Гости"]
+		[description "Гости"]
+		Guest = 'BE41CEB5-02DF-44EE-885F-B82DDEDCAA08';
 	}
 }

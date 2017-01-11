@@ -322,6 +322,10 @@ public class CompilationUnit extends Resource {
 		hyperlinks.put(position, hyperlink);
 	}
 
+	public Map<IPosition, Hyperlink> getHyperlinks() {
+		return this.hyperlinks;
+	}
+
 	public IPosition getHyperlinkPosition(int offset) {
 		if(hyperlinks != null) {
 			IPosition[] positions;

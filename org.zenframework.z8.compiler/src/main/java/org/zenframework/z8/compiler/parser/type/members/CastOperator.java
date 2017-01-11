@@ -25,7 +25,7 @@ public class CastOperator extends AbstractMethod {
 
 	@Override
 	public IPosition getNamePosition() {
-		return operatorKeyword.getPosition().union(getVariableType().getPosition());
+		return operatorKeyword.getPosition();
 	}
 
 	@Override

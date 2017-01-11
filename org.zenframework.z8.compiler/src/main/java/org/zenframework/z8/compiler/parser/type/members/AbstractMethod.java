@@ -325,8 +325,7 @@ public abstract class AbstractMethod extends LanguageElement implements IMethod 
 
 		declaringType.addMethod(this);
 
-		if(method != null)
-			compilationUnit.addHyperlink(getNamePosition(), method.getCompilationUnit(), method.getNamePosition());
+		compilationUnit.addHyperlink(getNamePosition(), method != null ? method.getCompilationUnit() : compilationUnit, method != null ? method.getNamePosition() : getNamePosition());
 
 		if(isStatic() && declaringType.getContainerType() != null)
 			setError(staticToken.getPosition(), "The modifier static cannot be used inside a nested type");

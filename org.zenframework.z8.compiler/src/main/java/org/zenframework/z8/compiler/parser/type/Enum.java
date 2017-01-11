@@ -111,6 +111,7 @@ public class Enum extends AbstractType {
 				return false;
 			}
 
+			compilationUnit.addHyperlink(nameToken.getPosition(), this);
 			return true;
 		}
 

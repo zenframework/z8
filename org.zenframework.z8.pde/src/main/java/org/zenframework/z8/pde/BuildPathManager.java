@@ -11,61 +11,66 @@ import org.eclipse.core.runtime.Path;
 import org.zenframework.z8.pde.build.Z8ProjectBuilder;
 
 public class BuildPathManager {
-    final static String JAVA_OUTPUT_DEFAULT_FOLDER = "src";
-    final static String JAVA_CLASS_DEFAULT_FOLDER = "classes";
+	final static String JAVA_OUTPUT_DEFAULT_FOLDER = "src";
+	final static String JAVA_CLASS_DEFAULT_FOLDER = "classes";
+	final static String DOCS_DEFAULT_FOLDER = "docs";
 
-    final static String JAVA_OUTPUT_PATH_KEY = "JavaSource";
-    final static String CLASS_OUTPUT_PATH_KEY = "JavaClasses";
+	final static String JAVA_OUTPUT_PATH_KEY = "JavaSource";
+	final static String CLASS_OUTPUT_PATH_KEY = "JavaClasses";
+	final static String DOCS_OUTPUT_PATH_KEY = "Docs";
 
-    static public IPath getJavaOutputPath(IProject project) {
-        return getPath(project, JAVA_OUTPUT_PATH_KEY, JAVA_OUTPUT_DEFAULT_FOLDER);
-    }
+	static public IPath getJavaOutputPath(IProject project) {
+		return getPath(project, JAVA_OUTPUT_PATH_KEY, JAVA_OUTPUT_DEFAULT_FOLDER);
+	}
 
-    static public IPath getClassOutputPath(IProject project) {
-        return getPath(project, CLASS_OUTPUT_PATH_KEY, JAVA_CLASS_DEFAULT_FOLDER);
-    }
+	static public IPath getClassOutputPath(IProject project) {
+		return getPath(project, CLASS_OUTPUT_PATH_KEY, JAVA_CLASS_DEFAULT_FOLDER);
+	}
 
-    /*static public IPath getWebInfPath(IProject project)
-    {
-    	return getPath(project, WEBINF_PATH_KEY, null);
-    }*/
+	static public IPath getDocsOutputPath(IProject project) {
+		return getPath(project, DOCS_OUTPUT_PATH_KEY, DOCS_DEFAULT_FOLDER);
+	}
 
-    static protected IPath getPath(IProject project, String key, String defaultFolder) {
-        IPath projectPath = project.getLocation();
+	/*
+	 * static public IPath getWebInfPath(IProject project) { return
+	 * getPath(project, WEBINF_PATH_KEY, null); }
+	 */
 
-        try {
-            IPath outputPath = null;
+	static protected IPath getPath(IProject project, String key, String defaultFolder) {
+		IPath projectPath = project.getLocation();
 
-            ICommand[] commands = project.getDescription().getBuildSpec();
+		try {
+			IPath outputPath = null;
 
-            for(ICommand command : commands) {
-                if(Z8ProjectBuilder.Id.equals(command.getBuilderName())) {
-                    Map<String, String> arguments = command.getArguments();
+			ICommand[] commands = project.getDescription().getBuildSpec();
 
-                    if(arguments != null) {
-                        String value = arguments.get(key);
+			for(ICommand command : commands) {
+				if(Z8ProjectBuilder.Id.equals(command.getBuilderName())) {
+					Map<String, String> arguments = command.getArguments();
 
-                        if(value != null) {
-                            outputPath = new Path(value);
-                        }
-                    }
+					if(arguments != null) {
+						String value = arguments.get(key);
 
-                    break;
-                }
-            }
+						if(value != null) {
+							outputPath = new Path(value);
+						}
+					}
 
-            if(outputPath != null && !outputPath.isAbsolute()) {
-                if(outputPath.isAbsolute()) {
-                    return outputPath;
-                }
+					break;
+				}
+			}
 
-                return projectPath.append(outputPath);
-            }
-        }
-        catch(CoreException e) {
-            Plugin.log(e);
-        }
+			if(outputPath != null && !outputPath.isAbsolute()) {
+				if(outputPath.isAbsolute()) {
+					return outputPath;
+				}
 
-        return defaultFolder != null ? projectPath.append(defaultFolder) : projectPath;
-    }
+				return projectPath.append(outputPath);
+			}
+		} catch(CoreException e) {
+			Plugin.log(e);
+		}
+
+		return defaultFolder != null ? projectPath.append(defaultFolder) : projectPath;
+	}
 }

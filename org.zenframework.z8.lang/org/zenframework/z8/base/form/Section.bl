@@ -1,7 +1,7 @@
 [native "org.zenframework.z8.server.base.form.Section"]
 
 public class Section extends Control {
-	int height;
+	public int height;
 	public int columnCount = 3;
 
 	public Control[] controls;

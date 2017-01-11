@@ -27,7 +27,7 @@ public class Operator extends AbstractMethod {
 
 	@Override
 	public IPosition getNamePosition() {
-		return operatorKeyword.getPosition().union(operatorToken.getPosition());
+		return operatorKeyword.getPosition();
 	}
 
 	public boolean isKindOf(int operator) {
