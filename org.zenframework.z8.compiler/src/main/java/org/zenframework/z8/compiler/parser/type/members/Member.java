@@ -1,6 +1,7 @@
 package org.zenframework.z8.compiler.parser.type.members;
 
 import org.eclipse.text.edits.TextEdit;
+import org.zenframework.z8.compiler.content.HyperlinkKind;
 import org.zenframework.z8.compiler.core.CodeGenerator;
 import org.zenframework.z8.compiler.core.IAttribute;
 import org.zenframework.z8.compiler.core.IInitializer;
@@ -192,7 +193,7 @@ public class Member extends LanguageElement implements IMember {
 
 		declaringType.addMember(this);
 
-		compilationUnit.addHyperlink(getPosition(), compilationUnit, getPosition());
+		compilationUnit.addHyperlink(getPosition(), compilationUnit, getPosition(), isStatic() ? HyperlinkKind.StaticMember : HyperlinkKind.Member);
 		compilationUnit.addContentProposal(nameToken.getPosition(), getVariableType());
 
 		if(initializer != null)

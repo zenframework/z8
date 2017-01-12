@@ -3,6 +3,7 @@ package org.zenframework.z8.compiler.parser.expressions;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.zenframework.z8.compiler.content.HyperlinkKind;
 import org.zenframework.z8.compiler.core.CodeGenerator;
 import org.zenframework.z8.compiler.core.IJavaTypeCast;
 import org.zenframework.z8.compiler.core.ILanguageElement;
@@ -193,7 +194,7 @@ public class MethodCall extends LanguageElement implements IJavaTypeCast {
 		CompilationUnit compilationUnit = method.getCompilationUnit();
 
 		if(compilationUnit != null)
-			getCompilationUnit().addHyperlink(nameToken.getPosition(), compilationUnit, method.getNamePosition());
+			getCompilationUnit().addHyperlink(nameToken.getPosition(), compilationUnit, method.getNamePosition(), method.isStatic() ? HyperlinkKind.StaticMethod : HyperlinkKind.Method);
 	}
 
 	@Override

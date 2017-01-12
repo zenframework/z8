@@ -1,5 +1,6 @@
 package org.zenframework.z8.compiler.parser.type.members;
 
+import org.zenframework.z8.compiler.content.HyperlinkKind;
 import org.zenframework.z8.compiler.core.CodeGenerator;
 import org.zenframework.z8.compiler.core.IAttribute;
 import org.zenframework.z8.compiler.core.IInitializer;
@@ -167,7 +168,7 @@ public class Record extends LanguageElement implements IMember {
 		}
 
 		declaringType.addMember(this);
-		compilationUnit.addHyperlink(position, compilationUnit, position);
+		compilationUnit.addHyperlink(position, compilationUnit, position, HyperlinkKind.StaticMember);
 
 		return true;
 	}

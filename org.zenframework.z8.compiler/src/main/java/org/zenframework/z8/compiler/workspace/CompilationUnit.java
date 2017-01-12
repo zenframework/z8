@@ -9,8 +9,8 @@ import java.util.Map;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.text.edits.TextEdit;
-
 import org.zenframework.z8.compiler.content.Hyperlink;
+import org.zenframework.z8.compiler.content.HyperlinkKind;
 import org.zenframework.z8.compiler.content.TypeHyperlink;
 import org.zenframework.z8.compiler.core.CodeGenerator;
 import org.zenframework.z8.compiler.core.ILanguageElement;
@@ -308,7 +308,11 @@ public class CompilationUnit extends Resource {
 	}
 
 	public void addHyperlink(IPosition position, CompilationUnit compilationUnit, IPosition targetPosition) {
-		addHyperlink(position, new Hyperlink(compilationUnit, targetPosition));
+		addHyperlink(position, compilationUnit, targetPosition, HyperlinkKind.None);
+	}
+
+	public void addHyperlink(IPosition position, CompilationUnit compilationUnit, IPosition targetPosition, HyperlinkKind kind) {
+		addHyperlink(position, new Hyperlink(compilationUnit, targetPosition, kind));
 	}
 
 	public void addHyperlink(IPosition position, IType type) {

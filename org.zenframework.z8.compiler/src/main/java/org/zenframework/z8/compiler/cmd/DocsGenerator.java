@@ -7,6 +7,7 @@ import java.util.Map;
 
 import org.eclipse.core.runtime.IPath;
 import org.zenframework.z8.compiler.content.Hyperlink;
+import org.zenframework.z8.compiler.content.HyperlinkKind;
 import org.zenframework.z8.compiler.core.IPosition;
 import org.zenframework.z8.compiler.file.File;
 import org.zenframework.z8.compiler.workspace.CompilationUnit;
@@ -82,6 +83,7 @@ public class DocsGenerator {
 			for(Link link : links) {
 				IPosition from = link.position;
 				Hyperlink hyperlink = link.hyperlink;
+				HyperlinkKind kind = hyperlink.getKind();
 				IPosition to = hyperlink.getPosition();
 
 				boolean local = compilationUnit == hyperlink.getCompilationUnit();
@@ -91,17 +93,19 @@ public class DocsGenerator {
 				int offset = from.getOffset();
 				int length = from.getLength();
 
-				result += content.substring(start, offset).replaceAll("<", "&lt;");
-				result += self ? "<span id='" + offset + "'>" : ("<a href='" + url + "#" + to.getOffset() + "'>");
-				result += content.substring(offset, offset + length).replaceAll("<", "&lt;");
+				result += decorateKeywords(content.substring(start, offset));
+				result += (self ? "<span id='" + offset : "<a href='" + url + "#" + to.getOffset()) + "'" + getHtmlClass(kind) + ">";
+				result += decorateKeywords(content.substring(offset, offset + length));
 				result += self ? "</span>" : "</a>";
 
 				start = offset + length;
 			}
 
-			result += content.substring(start).replaceAll("<", "&lt;");
-			result = result.replaceAll("((public|protected|private|virtual|class|enum|extends|import|static|final|return|break|if|else|for|while|do|try|catch|finally|throw)\\b)", "<span class='keyword'>$1</span>");
+			result += decorateKeywords(content.substring(start));
+
+			// decorate comments
 			result = result.replaceAll("(/\\*+((([^\\*])+)|([\\*]+(?!/)))[*]+/|//.*)", "<span class='comment'>$1</span>");
+			// decorate string literals
 			result = result.replaceAll("(\"(\\\\\"|[^\"]|[\\r\\n])*\")", "<span class='string'>$1</span>");
 
 			String name = compilationUnit.getQualifiedName();
@@ -111,5 +115,22 @@ public class DocsGenerator {
 		}
 
 		return compilationUnits.length;
+	}
+
+	private String decorateKeywords(String text) {
+		return text.replaceAll("<", "&lt;").
+				replaceAll("((public|protected|private|virtual|class|enum|extends|import|static|final|new|return|break|if|else|for|while|do|try|catch|finally|throw)\\b)", "<span class='keyword'>$1</span>");
+	}
+
+	private String getHtmlClass(HyperlinkKind kind) {
+		switch(kind) {
+		case Type: return " class='type'";
+		case Local: return " class='local'";
+		case Member: return " class='member'";
+		case Method: return " class='method'";
+		case StaticMember: return " class='static member'";
+		case StaticMethod: return " class='static method'";
+		default: return "";
+		}
 	}
 }

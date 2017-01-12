@@ -6,7 +6,7 @@ public class TypeHyperlink extends Hyperlink {
 	private IType type;
 
 	public TypeHyperlink(IType type) {
-		super(type.getCompilationUnit(), type.getPosition());
+		super(type.getCompilationUnit(), type.getPosition(), HyperlinkKind.Type);
 		this.type = type;
 	}
 

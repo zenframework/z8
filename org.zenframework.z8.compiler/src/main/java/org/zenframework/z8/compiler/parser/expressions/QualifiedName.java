@@ -5,7 +5,7 @@ import java.util.List;
 
 import org.eclipse.text.edits.ReplaceEdit;
 import org.eclipse.text.edits.TextEdit;
-
+import org.zenframework.z8.compiler.content.HyperlinkKind;
 import org.zenframework.z8.compiler.core.CodeGenerator;
 import org.zenframework.z8.compiler.core.IMember;
 import org.zenframework.z8.compiler.core.IMethod;
@@ -130,21 +130,28 @@ public class QualifiedName extends LanguageElement {
 		List<IVariable> variables = new ArrayList<IVariable>();
 		List<IVariableType> variableTypes = new ArrayList<IVariableType>();
 
+		HyperlinkKind hyperlinkKind = HyperlinkKind.None;
+
 		if(variableType == null) {
 			IToken nameToken = tokens.get(i);
 			String name = nameToken.getRawText();
 
 			IVariable variable = null;
 
-			if(declaringMethod != null) {
+			if(declaringMethod != null)
 				variable = declaringMethod.findLocalVariable(name);
-			}
+
+			if(variable != null)
+				hyperlinkKind = HyperlinkKind.Local;
 
 			if(variable == null && declaringType != null) {
 				variable = declaringType.findMember(name);
 
 				if(variable != null && getStaticContext() && !((IMember)variable).isStatic())
 					setError(nameToken.getPosition(), "Cannot make a static reference to the non-static member " + name);
+
+				if(variable != null)
+					hyperlinkKind = ((IMember)variable).isStatic() ? HyperlinkKind.StaticMember : HyperlinkKind.Member;
 			}
 
 			if(variable == null) {
@@ -174,7 +181,7 @@ public class QualifiedName extends LanguageElement {
 				variables.add(variable);
 				variableTypes.add(variableType);
 
-				compilationUnit.addHyperlink(nameToken.getPosition(), variable.getCompilationUnit(), variable.getPosition());
+				compilationUnit.addHyperlink(nameToken.getPosition(), variable.getCompilationUnit(), variable.getPosition(), hyperlinkKind);
 			}
 
 			i = 1;
@@ -215,7 +222,7 @@ public class QualifiedName extends LanguageElement {
 			variableTypes.add(variableType);
 			variables.add(member);
 
-			compilationUnit.addHyperlink(nameToken.getPosition(), member.getDeclaringType().getCompilationUnit(), member.getPosition());
+			compilationUnit.addHyperlink(nameToken.getPosition(), member.getDeclaringType().getCompilationUnit(), member.getPosition(), member.isStatic() ? HyperlinkKind.StaticMember : HyperlinkKind.Member);
 			compilationUnit.addContentProposal(nameToken.getPosition(), variableType);
 		}
 

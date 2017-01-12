@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.text.edits.TextEdit;
-
+import org.zenframework.z8.compiler.content.HyperlinkKind;
 import org.zenframework.z8.compiler.core.CodeGenerator;
 import org.zenframework.z8.compiler.core.IInitializer;
 import org.zenframework.z8.compiler.core.ILanguageElement;
@@ -325,7 +325,7 @@ public abstract class AbstractMethod extends LanguageElement implements IMethod 
 
 		declaringType.addMethod(this);
 
-		compilationUnit.addHyperlink(getNamePosition(), method != null ? method.getCompilationUnit() : compilationUnit, method != null ? method.getNamePosition() : getNamePosition());
+		compilationUnit.addHyperlink(getNamePosition(), method != null ? method.getCompilationUnit() : compilationUnit, method != null ? method.getNamePosition() : getNamePosition(), isStatic() ? HyperlinkKind.StaticMethod : HyperlinkKind.Method);
 
 		if(isStatic() && declaringType.getContainerType() != null)
 			setError(staticToken.getPosition(), "The modifier static cannot be used inside a nested type");

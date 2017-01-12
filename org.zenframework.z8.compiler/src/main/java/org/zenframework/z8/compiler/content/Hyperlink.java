@@ -6,10 +6,16 @@ import org.zenframework.z8.compiler.workspace.CompilationUnit;
 public class Hyperlink {
 	private CompilationUnit compilationUnit;
 	private IPosition position;
+	private HyperlinkKind kind = HyperlinkKind.None;
 
 	public Hyperlink(CompilationUnit compilationUnit, IPosition position) {
+		this(compilationUnit, position, HyperlinkKind.None);
+	}
+
+	public Hyperlink(CompilationUnit compilationUnit, IPosition position, HyperlinkKind kind) {
 		this.compilationUnit = compilationUnit;
 		this.position = position;
+		this.kind = kind;
 	}
 
 	public CompilationUnit getCompilationUnit() {
@@ -18,6 +24,10 @@ public class Hyperlink {
 
 	public IPosition getPosition() {
 		return position;
+	}
+
+	public HyperlinkKind getKind() {
+		return kind;
 	}
 
 	@Override
