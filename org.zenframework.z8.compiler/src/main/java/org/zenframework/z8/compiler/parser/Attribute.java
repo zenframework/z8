@@ -1,5 +1,6 @@
 package org.zenframework.z8.compiler.parser;
 
+import org.zenframework.z8.compiler.content.HyperlinkKind;
 import org.zenframework.z8.compiler.core.CodeGenerator;
 import org.zenframework.z8.compiler.core.IAttribute;
 import org.zenframework.z8.compiler.core.IInitializer;
@@ -160,6 +161,9 @@ public class Attribute extends LanguageElement implements IAttribute {
 
 		if(isRecordAttribute())
 			return true;
+
+		IPosition position = getNameToken().getPosition();
+		compilationUnit.addHyperlink(position, compilationUnit, position, HyperlinkKind.Attribute);
 
 		String name = getName();
 

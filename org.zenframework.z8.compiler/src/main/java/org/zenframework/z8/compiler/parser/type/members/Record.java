@@ -238,6 +238,9 @@ public class Record extends LanguageElement implements IMember {
 				if(typeCast == null)
 					setError(attribute.getPosition(), "The value of type " + variableType.getSignature() + " cannot be converted to " + member.getVariableType().getSignature() + ", (" + member.getDeclaringType().getUserName() + "." + member.getName() + ")");
 			}
+
+			IPosition position = attribute.getNameToken().getPosition();
+			compilationUnit.addHyperlink(position, member.getCompilationUnit(), member.getPosition(), HyperlinkKind.Record);
 		}
 
 		return true;

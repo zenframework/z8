@@ -1,5 +1,6 @@
 package org.zenframework.z8.compiler.parser.expressions;
 
+import org.zenframework.z8.compiler.content.HyperlinkKind;
 import org.zenframework.z8.compiler.content.LabelEntry;
 import org.zenframework.z8.compiler.content.LabelProvider;
 import org.zenframework.z8.compiler.core.CodeGenerator;
@@ -65,6 +66,9 @@ public class Constant extends LanguageElement {
 	public boolean checkSemantics(CompilationUnit compilationUnit, IType declaringType, IMethod declaringMethod, IVariable leftHandValue, IVariableType context) {
 		if(!super.checkSemantics(compilationUnit, declaringType, declaringMethod, null, null) || type == null)
 			return false;
+
+		IPosition position = getPosition();
+		compilationUnit.addHyperlink(position, compilationUnit, position, HyperlinkKind.Literal);
 
 		if(isNLSString()) {
 			ConstantToken token = getToken();

@@ -93,20 +93,15 @@ public class DocsGenerator {
 				int offset = from.getOffset();
 				int length = from.getLength();
 
-				result += decorateKeywords(content.substring(start, offset));
+				result += decorate(content.substring(start, offset));
 				result += (self ? "<span id='" + offset : "<a href='" + url + "#" + to.getOffset()) + "'" + getHtmlClass(kind) + ">";
-				result += decorateKeywords(content.substring(offset, offset + length));
+				result += decorate(content.substring(offset, offset + length));
 				result += self ? "</span>" : "</a>";
 
 				start = offset + length;
 			}
 
-			result += decorateKeywords(content.substring(start));
-
-			// decorate comments
-			result = result.replaceAll("(/\\*+((([^\\*])+)|([\\*]+(?!/)))[*]+/|//.*)", "<span class='comment'>$1</span>");
-			// decorate string literals
-			result = result.replaceAll("(\"(\\\\\"|[^\"]|[\\r\\n])*\")", "<span class='string'>$1</span>");
+			result += decorate(content.substring(start));
 
 			String name = compilationUnit.getQualifiedName();
 			result = template.replace("{0}", name).replace("{1}", result);
@@ -117,14 +112,21 @@ public class DocsGenerator {
 		return compilationUnits.length;
 	}
 
-	private String decorateKeywords(String text) {
+	private String decorate(String text) {
 		return text.replaceAll("<", "&lt;").
-				replaceAll("((public|protected|private|virtual|class|enum|extends|import|static|final|new|return|break|if|else|for|while|do|try|catch|finally|throw)\\b)", "<span class='keyword'>$1</span>");
+				// decorate keywords
+				replaceAll("((public|protected|private|virtual|class|enum|extends|import|static|final|this|super|new|records|return|break|if|else|for|while|do|try|catch|finally|throw)\\b)", "<span class='keyword'>$1</span>").
+				// decorate comments
+				replaceAll("(/\\*+((([^\\*])+)|([\\*]+(?!/)))[*]+/|//.*)", "<span class='comment'>$1</span>");
 	}
 
 	private String getHtmlClass(HyperlinkKind kind) {
 		switch(kind) {
 		case Type: return " class='type'";
+		case Enum: return " class='enum'";
+		case Attribute: return " class='attribute'";
+		case Literal: return " class='literal'";
+		case Record: return " class='record'";
 		case Local: return " class='local'";
 		case Member: return " class='member'";
 		case Method: return " class='method'";

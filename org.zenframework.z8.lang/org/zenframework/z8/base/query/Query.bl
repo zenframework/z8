@@ -1,3 +1,4 @@
+import org.zenframework.z8.base.table.value.AttachmentField;
 import org.zenframework.z8.base.table.value.DatetimeField;
 import org.zenframework.z8.base.Command;
 import org.zenframework.z8.lang.Object;
@@ -17,21 +18,21 @@ class Query extends Object {
 	public Control[] formFields;
 
 	public Field[] columns;
-	public Field[] nameFields;        // Поля для идентификации записи в UI, например, в навигаторе формы или заголовке
-	public Field[] quickFilters;      // Поля для быстрого поиска записей
+	public Field[] nameFields;          // Поля для идентификации записи в UI, например, в навигаторе формы или заголовке
+	public Field[] quickFilters;        // Поля для быстрого поиска записей
 
 	public Field[] sortFields;
-	public Field[] groupFields;     // Соответствует пункту 'Группировать по полю' в меню колонки таблицы.
-									// Не путать с groupBy - выбираемые данные не группируются.
+	public Field[] groupFields;         // Соответствует пункту 'Группировать по полю' в меню колонки таблицы.
+										// Не путать с groupBy - выбираемые данные не группируются.
 
-	public Field attachments;
 	public DatetimeField period;
+	public AttachmentField attachments;
 
 	public Field[] searchFields;
 	public Field searchId;
 
-	public Link[] aggregateBy;      // Поля из корневого запроса для группировки его перед выполнением основного.
-	public Field[] groupBy;         // Поля для группировки выбираемых данных.
+	public Link[] aggregateBy;          // Поля из корневого запроса для группировки его перед выполнением основного.
+	public Field[] groupBy;
 
 	public Command[] commands;
 
@@ -110,8 +111,8 @@ class Query extends Object {
 	virtual protected sql_bool having();
 
 	public void addWhere(sql_bool where);
-	public void addWhere(string where);         // [{ property: "p", [operator: "o",] value: "v" }] или { property: "p", value: "v" }
-	public void addWhere(string[] where);       // { property: "p", value: "v" }
+	public void addWhere(string where);         // [{ property: "p", [operator: "o",] value: "v" }] или { property: "p", [operator: "o",] value: "v" }
+	public void addWhere(string[] where);       // { property: "p", [operator: "o",] value: "v" }
 
 	public void setWhere(sql_bool where);
 	public void setWhere(string where);

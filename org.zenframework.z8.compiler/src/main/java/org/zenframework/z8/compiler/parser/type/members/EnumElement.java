@@ -1,5 +1,6 @@
 package org.zenframework.z8.compiler.parser.type.members;
 
+import org.zenframework.z8.compiler.content.HyperlinkKind;
 import org.zenframework.z8.compiler.core.CodeGenerator;
 import org.zenframework.z8.compiler.core.IInitializer;
 import org.zenframework.z8.compiler.core.IMember;
@@ -109,7 +110,7 @@ public class EnumElement extends LanguageElement implements IMember {
 		else
 			declaringType.addMember(this);
 
-		compilationUnit.addHyperlink(position, compilationUnit, position);
+		compilationUnit.addHyperlink(position, compilationUnit, position, HyperlinkKind.Enum);
 		return true;
 	}
 

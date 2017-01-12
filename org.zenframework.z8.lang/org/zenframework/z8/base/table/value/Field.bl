@@ -6,7 +6,7 @@ import org.zenframework.z8.base.table.Sequencer;
 class Field extends Control {
 	public string format;
 
-	public int width = 0;           // ширина поля формы или колонки в символах
+	public int width = 0;
 
 	public bool indexed = false;
 	public bool unique = false;

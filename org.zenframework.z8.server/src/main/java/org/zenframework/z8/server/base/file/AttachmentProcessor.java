@@ -146,7 +146,7 @@ public class AttachmentProcessor extends OBJECT {
 		file.user = user.id();
 	}
 
-	public int getPageCount(guid recordId) {
+	public int getTotalPageCount(guid recordId) {
 		int result = 0;
 
 		Collection<file> files = read(recordId);
@@ -173,7 +173,11 @@ public class AttachmentProcessor extends OBJECT {
 		return new RCollection<file>(update(target, files));
 	}
 
-	public integer z8_getPageCount(guid recordId) {
-		return new integer(getPageCount(recordId));
+	public RCollection<file> z8_remove(guid target, RCollection<file> files) {
+		return new RCollection<file>(remove(target, files));
+	}
+
+	public integer z8_getTotalPageCount(guid recordId) {
+		return new integer(getTotalPageCount(recordId));
 	}
 }

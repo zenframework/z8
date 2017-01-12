@@ -1,7 +1,5 @@
 [native "org.zenframework.z8.server.base.table.value.BoolField"]
 class BoolField extends Field {
-	width = 5; 
-
 	virtual public bool getDefault();
 	public void setDefault(bool defaultValue);
 

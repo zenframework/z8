@@ -8,8 +8,8 @@ final class bool extends primary {
 	public bool operator != (bool value);
 
 	public bool operator ! ();
-	public bool operator & (bool value);
-	public bool operator | (bool value);
+	public bool operator && (bool value);
+	public bool operator || (bool value);
 
 	static public bool parse(string string);
 }

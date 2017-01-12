@@ -7,8 +7,8 @@ final class sql_bool extends sql_primary {
 	public sql_bool operator != (sql_bool value);
 
 	public sql_bool operator ! ();
-	public sql_bool operator & (sql_bool value);
-	public sql_bool operator | (sql_bool value);
+	public sql_bool operator && (sql_bool value);
+	public sql_bool operator || (sql_bool value);
 
 	public sql_bool IIF(sql_bool yes, sql_bool no);
 	public sql_date IIF(sql_date yes, sql_date no);

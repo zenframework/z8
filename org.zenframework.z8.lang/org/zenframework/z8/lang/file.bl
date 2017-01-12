@@ -1,10 +1,10 @@
 [primary "org.zenframework.z8.server.types.file"]
 public class file extends primary {
+	public guid id;
 	public string name;
 	public date time;
 	public int size;
 	public string path;
-	public final guid id;
 
 	public string[string] details;
 

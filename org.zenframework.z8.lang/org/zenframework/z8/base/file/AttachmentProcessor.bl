@@ -5,12 +5,9 @@ class AttachmentProcessor extends Object {
 	static public file[] parse(string json);
 
 	public file[] read(guid recordId);
-
 	public file[] create(guid recordId, file[] files);
-	public file[] create(guid recordId, file[] files, string[string] details);
-
 	public file[] update(guid recordId, file[] files);
-	public file[] update(guid recordId, file[] files, string[string] details);
+	public file[] remove(guid recordId, file[] files);
 
-	public int getPageCount(guid recordId);
+	public int getTotalPageCount(guid recordId);
 }
