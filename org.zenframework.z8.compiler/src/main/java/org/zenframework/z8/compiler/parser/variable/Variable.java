@@ -1,7 +1,7 @@
 package org.zenframework.z8.compiler.parser.variable;
 
 import org.eclipse.text.edits.TextEdit;
-
+import org.zenframework.z8.compiler.content.HyperlinkKind;
 import org.zenframework.z8.compiler.core.CodeGenerator;
 import org.zenframework.z8.compiler.core.IMethod;
 import org.zenframework.z8.compiler.core.IPosition;
@@ -95,7 +95,7 @@ public class Variable extends LanguageElement implements IVariable {
 			return false;
 
 		IPosition position = nameToken.getPosition();
-		compilationUnit.addHyperlink(position, compilationUnit, position);
+		compilationUnit.addHyperlink(position, compilationUnit, position, HyperlinkKind.Local);
 		return true;
 	}
 

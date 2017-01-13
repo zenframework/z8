@@ -86,15 +86,14 @@ public class DocsGenerator {
 				HyperlinkKind kind = hyperlink.getKind();
 				IPosition to = hyperlink.getPosition();
 
-				boolean local = compilationUnit == hyperlink.getCompilationUnit();
-				boolean self = local && from.getOffset() == to.getOffset(); 
-				String url = !local ? hyperlink.getCompilationUnit().getQualifiedName() + ".html" : "";
+				boolean self = compilationUnit == hyperlink.getCompilationUnit() && from.getOffset() == to.getOffset(); 
+				String url = hyperlink.getCompilationUnit().getQualifiedName();
 
 				int offset = from.getOffset();
 				int length = from.getLength();
 
 				result += decorate(content.substring(start, offset));
-				result += (self ? "<span id='id" + offset : "<a href='" + url + "#id" + to.getOffset()) + "'" + getHtmlClass(kind) + ">";
+				result += (self ? "<span id='sc" + offset : "<a href='" + url + "#sc" + to.getOffset()) + "'" + getHtmlClass(kind) + ">";
 				result += decorate(content.substring(offset, offset + length));
 				result += self ? "</span>" : "</a>";
 
@@ -106,7 +105,7 @@ public class DocsGenerator {
 			String name = compilationUnit.getQualifiedName();
 			result = template.replace("{0}", name).replace("{1}", result);
 
-			new File(outputPath.append(name + ".html")).write(result);
+			new File(outputPath.append(name)).write(result);
 		}
 
 		return compilationUnits.length;

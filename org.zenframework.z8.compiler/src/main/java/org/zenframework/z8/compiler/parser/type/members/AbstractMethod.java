@@ -266,10 +266,8 @@ public abstract class AbstractMethod extends LanguageElement implements IMethod 
 			return false;
 
 		if(parameters != null) {
-			for(IVariable e : parameters) {
-				Variable parameter = (Variable)e;
+			for(Variable parameter : parameters)
 				parameter.resolveTypes(compilationUnit, declaringType);
-			}
 		}
 
 		if(body == null && !declaringType.isNative()) {
