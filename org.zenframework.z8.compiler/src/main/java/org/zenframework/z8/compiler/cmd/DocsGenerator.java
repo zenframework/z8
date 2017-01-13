@@ -94,7 +94,7 @@ public class DocsGenerator {
 				int length = from.getLength();
 
 				result += decorate(content.substring(start, offset));
-				result += (self ? "<span id='" + offset : "<a href='" + url + "#" + to.getOffset()) + "'" + getHtmlClass(kind) + ">";
+				result += (self ? "<span id='id" + offset : "<a href='" + url + "#id" + to.getOffset()) + "'" + getHtmlClass(kind) + ">";
 				result += decorate(content.substring(offset, offset + length));
 				result += self ? "</span>" : "</a>";
 
