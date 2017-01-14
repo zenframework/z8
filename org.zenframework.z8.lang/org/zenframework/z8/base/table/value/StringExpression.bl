@@ -1,5 +1,5 @@
 [native "org.zenframework.z8.server.base.table.value.StringExpression"]
-class StringExpression extends Expression {
+public class StringExpression extends Expression {
 	aggregation = Aggregation.Sum;
 
 	public void setDefault(string defaultValue);

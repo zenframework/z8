@@ -5,7 +5,7 @@ import org.zenframework.z8.base.table.value.StringField;
 [name "SystemUsers"]
 [displayName "Пользователи"]
 [native "org.zenframework.z8.server.base.table.system.Users"]
-class Users extends Table {
+public class Users extends Table {
 	[displayName "Имя"] name;
 	[displayName "Описание"] description;
 

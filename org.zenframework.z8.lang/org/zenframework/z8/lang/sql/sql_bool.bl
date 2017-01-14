@@ -1,6 +1,5 @@
 [primary "org.zenframework.z8.server.types.sql.sql_bool"]
-
-final class sql_bool extends sql_primary {
+public final class sql_bool extends sql_primary {
 	public operator ();
 
 	public sql_bool operator == (sql_bool value);

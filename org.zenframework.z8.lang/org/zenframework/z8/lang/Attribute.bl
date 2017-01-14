@@ -1,6 +1,5 @@
 [native "org.zenframework.z8.server.runtime.Attribute"]
-class Attribute {
-	static public string ObjectId = "objectId";
+public class Attribute {
 	static public string Name = "name";
 	static public string DisplayName = "displayName";
 	static public string Description = "description";

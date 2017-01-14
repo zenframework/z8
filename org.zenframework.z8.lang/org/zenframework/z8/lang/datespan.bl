@@ -1,6 +1,5 @@
 [primary "org.zenframework.z8.server.types.datespan"]
-
-final class datespan extends primary {
+public final class datespan extends primary {
 	public operator string();
 	public operator sql_datespan();
 

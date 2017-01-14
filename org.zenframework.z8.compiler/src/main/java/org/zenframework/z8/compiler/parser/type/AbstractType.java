@@ -15,6 +15,7 @@ import org.zenframework.z8.compiler.core.IMethod;
 import org.zenframework.z8.compiler.core.IToken;
 import org.zenframework.z8.compiler.core.IType;
 import org.zenframework.z8.compiler.core.ITypeCast;
+import org.zenframework.z8.compiler.core.IVariable;
 import org.zenframework.z8.compiler.core.IVariableType;
 import org.zenframework.z8.compiler.parser.BuiltinNative;
 import org.zenframework.z8.compiler.parser.LanguageElement;
@@ -717,6 +718,12 @@ public abstract class AbstractType extends LanguageElement implements IType {
 		if(importBlock != null)
 			return importBlock.resolveTypes(compilationUnit, declaringType);
 
+		return true;
+	}
+
+	public boolean checkSemantics(CompilationUnit compilationUnit, IType declaringType, IMethod declaringMethod, IVariable leftHandValue, IVariableType context) {
+		if(importBlock != null)
+			return importBlock.checkSemantics(compilationUnit, declaringType, declaringMethod, leftHandValue, context);
 		return true;
 	}
 

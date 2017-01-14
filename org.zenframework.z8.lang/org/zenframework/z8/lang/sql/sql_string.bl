@@ -1,6 +1,5 @@
 [primary "org.zenframework.z8.server.types.sql.sql_string"]
-
-final class sql_string extends sql_primary {
+public final class sql_string extends sql_primary {
 	public operator ();
 
 	public sql_string operator + (sql_string value);

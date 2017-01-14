@@ -361,9 +361,8 @@ public class Project extends Folder {
 					String result = "Project compiled(reconciled) in " + (System.currentTimeMillis() - ticks) / 1000.0 + " seconds\n" + "Files written " + filesWritten + ", skipped " + filesSkipped + '\n' + "Error(s) " + getMessageConsumer().getErrorCount() + ", warning(s) "
 							+ getMessageConsumer().getWarningCount();
 					System.out.println(result);
-				} else {
+				} else
 					System.out.println("Building(reconciling) project " + getName() + " cancelled by user");
-				}
 			}
 
 			setMessageConsumer(null);
@@ -400,7 +399,6 @@ public class Project extends Folder {
 				System.gc();
 				System.out.println("Heap: " + memoryUsed + "K; after GC " + getMemoryUsage() + 'K');
 			}
-
 		}
 	}
 
@@ -433,9 +431,8 @@ public class Project extends Folder {
 		CompilationUnit[] dependencies = getDependencies();
 
 		for(CompilationUnit compilationUnit : dependencies) {
-			if(compilationUnit.containsError()) {
+			if(compilationUnit.containsError())
 				return true;
-			}
 		}
 
 		return false;
@@ -446,47 +443,36 @@ public class Project extends Folder {
 		CompilationUnit[] dependencies = getDependencies();
 
 		for(CompilationUnit compilationUnit : dependencies) {
-			if(compilationUnit.containsWarning()) {
+			if(compilationUnit.containsWarning())
 				return true;
-			}
 		}
 
 		return false;
 	}
 
 	public boolean generateStartupCode() {
-		if(!containsError() && Project.isBuilding() && getOutputPath() != null) {
+		if(!containsError() && Project.isBuilding() && getOutputPath() != null)
 			return StartupCodeGenerator.generate(this);
-		}
-
 		return false;
 	}
 
 	public CompilationUnit findCompilationUnit(String simpleName) {
 		IPath path = Primary.nameToPath(simpleName);
-
-		if(path != null) {
-			return findCompilationUnit(path);
-		}
-
-		return null;
+		return path != null ? findCompilationUnit(path) : null;
 	}
 
 	private CompilationUnit findCompilationUnit(IPath path) {
 		CompilationUnit unit = getCompilationUnit(path);
 
-		if(unit != null) {
+		if(unit != null)
 			return unit;
-		}
 
 		Project[] referencedProjects = getReferencedProjects();
 
 		for(Project project : referencedProjects) {
 			unit = project.getCompilationUnit(path);
-
-			if(unit != null) {
+			if(unit != null)
 				return unit;
-			}
 		}
 
 		return null;
@@ -499,9 +485,8 @@ public class Project extends Folder {
 
 		Project[] referencedProjects = getReferencedProjects();
 
-		for(Project project : referencedProjects) {
+		for(Project project : referencedProjects)
 			project.lookupCompilationUnits(simpleName, result);
-		}
 
 		return result.toArray(new CompilationUnit[result.size()]);
 	}
@@ -510,14 +495,12 @@ public class Project extends Folder {
 		ResourceVisitor visitor = new ResourceVisitor() {
 			@Override
 			public boolean visit(CompilationUnit compilationUnit) {
-				if(simpleName.equals(compilationUnit.getSimpleName())) {
+				if(simpleName.equals(compilationUnit.getSimpleName()))
 					result.add(compilationUnit);
-				}
 				return true;
 			}
 		};
 
 		iterate(visitor);
 	}
-
 }

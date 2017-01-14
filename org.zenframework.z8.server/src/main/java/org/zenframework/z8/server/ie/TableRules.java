@@ -18,7 +18,7 @@ public class TableRules implements RmiSerializable, Serializable {
 	private Map<guid, Map<String, ImportPolicy>> recordFields = new HashMap<guid, Map<String, ImportPolicy>>();
 	private Map<guid, ImportPolicy> records = new HashMap<guid, ImportPolicy>();
 	private Map<String, ImportPolicy> fields = new HashMap<String, ImportPolicy>();
-	private ImportPolicy defaultPolicy = ImportPolicy.DEFAULT;
+	private ImportPolicy defaultPolicy = ImportPolicy.Default;
 
 	public TableRules() {
 	}

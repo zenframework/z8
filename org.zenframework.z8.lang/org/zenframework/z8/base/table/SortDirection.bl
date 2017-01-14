@@ -1,6 +1,6 @@
 [native "org.zenframework.z8.server.db.sql.SortDirection"]
 
-enum SortDirection {
+public enum SortDirection {
 	Asc,
 	Desc
 }

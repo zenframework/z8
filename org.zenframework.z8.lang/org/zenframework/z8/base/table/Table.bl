@@ -5,7 +5,7 @@ import org.zenframework.z8.base.table.value.StringField;
 import org.zenframework.z8.base.table.value.TextField;
 
 [native "org.zenframework.z8.server.base.table.Table"]
-class Table extends TableBase {
+public class Table extends TableBase {
 	public [name "RecordId"] GuidField recordId;
 
 	public [name "Id"][displayName "Код"] StringField id;

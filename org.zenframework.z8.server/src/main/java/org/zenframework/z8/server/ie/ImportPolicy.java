@@ -5,12 +5,12 @@ public enum ImportPolicy {
 	/**
 	 * Если импортируемое запись существует, не менять
 	 */
-	KEEP,
+	Keep,
 
 	/**
 	 * Если импортируемая запись существует, обновить
 	 */
-	OVERRIDE;
+	Override;
 
-	public static final ImportPolicy DEFAULT = KEEP;
+	public static final ImportPolicy Default = Keep;
 }

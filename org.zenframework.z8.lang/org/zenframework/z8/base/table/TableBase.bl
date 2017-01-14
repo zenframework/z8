@@ -2,6 +2,6 @@ import org.zenframework.z8.base.table.value.Field;
 import org.zenframework.z8.base.query.Query;
 
 [native "org.zenframework.z8.server.base.table.TableBase"]
-class TableBase extends Query {
+public class TableBase extends Query {
 	protected void addRecord(guid recordId, primary[Field] values);
 }

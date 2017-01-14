@@ -1,6 +1,5 @@
 [native "org.zenframework.z8.server.types.math"]
-
-final class math {
+public final class math {
 	static public int max(int a, int b);
 	static public decimal max(int a, decimal b);
 	static public decimal max(decimal a, int b);

@@ -1,7 +1,7 @@
 import org.zenframework.z8.lang.Object;
 
 [native "org.zenframework.z8.server.base.table.value.Sequencer"]
-class Sequencer extends Object {
+public class Sequencer extends Object {
 	static public int next(string key); 									// defaultValue = 0, increment = 1
 	static public int next(string key, int defaultValue);					// increment = 1
 	static public int next(string key, int defaultValue, int increment);

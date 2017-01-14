@@ -7,7 +7,7 @@ import org.zenframework.z8.base.table.value.Field;
 import org.zenframework.z8.base.table.value.Link;
 
 [native "org.zenframework.z8.server.base.query.Query"]
-class Query extends Object {
+public class Query extends Object {
 	protected bool readOnly = false;
 	public bool visible = true;
 	public bool collapseGroups = false;

@@ -2,7 +2,7 @@ import org.zenframework.z8.base.table.Table;
 
 [name "SystemRoles"]
 [native "org.zenframework.z8.server.base.table.system.Roles"]
-class Roles extends Table {
+public class Roles extends Table {
 	records {
 		[name "Администраторы"]
 		[description "Администраторы"]

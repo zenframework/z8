@@ -1,7 +1,5 @@
-
 [primary "org.zenframework.z8.server.types.guid"]
-
-final class guid extends primary {
+public final class guid extends primary {
 	static public guid Null = '00000000-0000-0000-0000-000000000000';
 
 	static public guid create();

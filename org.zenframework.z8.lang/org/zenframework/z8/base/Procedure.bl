@@ -1,5 +1,5 @@
 [native "org.zenframework.z8.server.base.Procedure"]
-class Procedure extends Command {
+public class Procedure extends Command {
 	virtual protected void execute(Parameter[] parameters);
 
 	protected void progress(int workPercent);

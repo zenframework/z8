@@ -1,4 +1,3 @@
 [primary "void"]
-
-final class void {
+public final class void {
 }

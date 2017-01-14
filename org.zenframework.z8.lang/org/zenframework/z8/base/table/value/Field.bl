@@ -3,7 +3,7 @@ import org.zenframework.z8.base.form.Control;
 import org.zenframework.z8.base.table.Sequencer;
 
 [native "org.zenframework.z8.server.base.table.value.Field"]
-class Field extends Control {
+public class Field extends Control {
 	public string format;
 
 	public int width = 0;

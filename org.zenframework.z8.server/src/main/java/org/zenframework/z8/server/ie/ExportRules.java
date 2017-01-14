@@ -15,7 +15,7 @@ public class ExportRules implements RmiSerializable, Serializable {
 	private static final long serialVersionUID = -1372906719057513100L;
 
 	private Map<String, TableRules> tables = new HashMap<String, TableRules>();
-	private ImportPolicy defaultPolicy = ImportPolicy.DEFAULT;
+	private ImportPolicy defaultPolicy = ImportPolicy.Default;
 
 	public ImportPolicy getPolicy(String table, String field, guid recordId) {
 		TableRules rules = tables.get(table);

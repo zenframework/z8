@@ -3,7 +3,7 @@ import org.zenframework.z8.base.table.value.Field;
 import org.zenframework.z8.base.query.Query;
 
 [native "org.zenframework.z8.server.base.form.Listbox"]
-class Listbox extends Control {
+public class Listbox extends Control {
 	public int height;
 
 	editable = true;

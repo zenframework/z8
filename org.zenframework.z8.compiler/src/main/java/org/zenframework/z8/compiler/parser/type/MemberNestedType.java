@@ -43,6 +43,11 @@ public class MemberNestedType extends AbstractType implements IInitializer {
 	}
 
 	@Override
+	public IToken getNameToken() {
+		return classToken;
+	}
+
+	@Override
 	public IPosition getPosition() {
 		return name.getPosition();
 	}
@@ -136,7 +141,7 @@ public class MemberNestedType extends AbstractType implements IInitializer {
 		setBaseType(baseType);
 
 		if(baseType != null) {
-			compilationUnit.addHyperlink(classToken.getPosition(), baseType.getCompilationUnit(), baseType.getPosition());
+			compilationUnit.addHyperlink(classToken.getPosition(), baseType);
 			baseType.resolveNestedTypes(baseType.getCompilationUnit(), baseType.getDeclaringType());
 		}
 

@@ -1,4 +1,3 @@
 [primary "org.zenframework.z8.server.types.binary"]
-
-final class binary extends primary {
+public final class binary extends primary {
 }

@@ -7,9 +7,12 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.text.edits.TextEdit;
 
 import org.zenframework.z8.compiler.core.CodeGenerator;
+import org.zenframework.z8.compiler.core.IMethod;
 import org.zenframework.z8.compiler.core.IPosition;
 import org.zenframework.z8.compiler.core.IToken;
 import org.zenframework.z8.compiler.core.IType;
+import org.zenframework.z8.compiler.core.IVariable;
+import org.zenframework.z8.compiler.core.IVariableType;
 import org.zenframework.z8.compiler.parser.LanguageElement;
 import org.zenframework.z8.compiler.workspace.CompilationUnit;
 
@@ -72,6 +75,12 @@ public class ImportBlock extends LanguageElement {
 				setError(element.getPosition(), "The import " + element.getQualifiedName() + " collides with another import statement");
 		}
 
+		return true;
+	}
+
+	public boolean checkSemantics(CompilationUnit compilationUnit, IType declaringType, IMethod declaringMethod, IVariable leftHandValue, IVariableType context) {
+		for(ImportElement element : elements)
+			element.checkSemantics(compilationUnit, declaringType, declaringMethod, leftHandValue, context);
 		return true;
 	}
 

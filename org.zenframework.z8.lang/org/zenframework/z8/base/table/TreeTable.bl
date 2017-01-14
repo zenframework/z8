@@ -3,7 +3,7 @@ import org.zenframework.z8.base.table.value.GuidField;
 import org.zenframework.z8.base.table.value.StringField;
 
 [native "org.zenframework.z8.server.base.table.TreeTable"]
-class TreeTable extends Table {
+public class TreeTable extends Table {
 	public [name "ParentId"] Link parentId;
 	public [name "Parent1"] GuidField parent1;
 	public [name "Parent2"] GuidField parent2;

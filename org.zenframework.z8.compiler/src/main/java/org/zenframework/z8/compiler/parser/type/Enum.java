@@ -111,7 +111,6 @@ public class Enum extends AbstractType {
 				return false;
 			}
 
-			compilationUnit.addHyperlink(nameToken.getPosition(), this);
 			return true;
 		}
 
@@ -165,6 +164,8 @@ public class Enum extends AbstractType {
 			addMethod(enumEquOperator);
 			addMethod(enumNotEquOperator);
 		}
+
+		compilationUnit.addHyperlink(nameToken.getPosition(), this);
 
 		setupNativeAttribute();
 		return true;

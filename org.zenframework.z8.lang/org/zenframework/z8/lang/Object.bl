@@ -2,7 +2,7 @@ import org.zenframework.z8.base.json.JsonArray;
 import org.zenframework.z8.base.security.User;
 
 [native "org.zenframework.z8.server.runtime.OBJECT"]
-class Object {
+public class Object {
 	static public bool isNull(Object object);
 	static public User user();
 

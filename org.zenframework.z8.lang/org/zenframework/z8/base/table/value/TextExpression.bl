@@ -1,5 +1,5 @@
 [native "org.zenframework.z8.server.base.table.value.TextExpression"]
-class TextExpression extends Expression {
+public class TextExpression extends Expression {
 	aggregation = Aggregation.None;
 
 	public void setDefault(string defaultValue);

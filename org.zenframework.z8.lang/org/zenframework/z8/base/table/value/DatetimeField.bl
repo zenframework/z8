@@ -1,5 +1,5 @@
 [native "org.zenframework.z8.server.base.table.value.DatetimeField"]
-class DatetimeField extends Field {
+public class DatetimeField extends Field {
 	format = "d.m.Y H:i"; // http://php.net/manual/ru/function.date.php
 
 	virtual public date getDefault();	// default datetime.Min

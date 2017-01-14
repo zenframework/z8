@@ -1,6 +1,5 @@
 [primary "org.zenframework.z8.server.types.sql.sql_guid"]
-
-final class sql_guid extends sql_primary {
+public final class sql_guid extends sql_primary {
 	public operator ();
 
 	public sql_bool operator == (sql_guid value);

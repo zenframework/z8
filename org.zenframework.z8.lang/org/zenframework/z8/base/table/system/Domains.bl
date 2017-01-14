@@ -5,7 +5,7 @@ import org.zenframework.z8.base.table.Table;
 [name "SystemDomains"]
 [displayName "Домены"]
 [native "org.zenframework.z8.server.base.table.system.Domains"]
-class Domains extends Table {
+public class Domains extends Table {
 	static public string DefaultDomain;
 
 	public Users users;

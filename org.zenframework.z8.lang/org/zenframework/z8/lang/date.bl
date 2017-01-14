@@ -1,6 +1,5 @@
 [primary "org.zenframework.z8.server.types.date"]
-
-final class date extends primary {
+public final class date extends primary {
 	static public date Min = '01/01/0001 00:00:00';
 	static public date Max = '01/01/5000 00:00:00';
 

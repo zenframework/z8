@@ -1,6 +1,5 @@
 [native "org.zenframework.z8.server.types.encoding"]
-
-enum encoding {
+public enum encoding {
 	Default,
 
 	KOI8R,

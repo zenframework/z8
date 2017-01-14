@@ -5,9 +5,12 @@ import org.eclipse.text.edits.ReplaceEdit;
 import org.eclipse.text.edits.TextEdit;
 
 import org.zenframework.z8.compiler.core.CodeGenerator;
+import org.zenframework.z8.compiler.core.IMethod;
 import org.zenframework.z8.compiler.core.IPosition;
 import org.zenframework.z8.compiler.core.IToken;
 import org.zenframework.z8.compiler.core.IType;
+import org.zenframework.z8.compiler.core.IVariable;
+import org.zenframework.z8.compiler.core.IVariableType;
 import org.zenframework.z8.compiler.parser.LanguageElement;
 import org.zenframework.z8.compiler.parser.expressions.QualifiedName;
 import org.zenframework.z8.compiler.workspace.CompilationUnit;
@@ -79,31 +82,36 @@ public class ImportElement extends LanguageElement {
 
 		importedUnit = resolveToCompilationUnit(thisProject);
 
-		if(importedUnit == null) {
-			Project[] projects = thisProject.getReferencedProjects();
+		if(importedUnit != null) {
+			compilationUnit.addContributor(importedUnit);
+			return true;
+		}
 
-			for(Project project : projects) {
-				importedUnit = resolveToCompilationUnit(project);
+		Project[] projects = thisProject.getReferencedProjects();
 
-				if(importedUnit != null) {
-					if(importedUnit.resolveType() != null) {
-						compilationUnit.addHyperlink(qualifiedName.getLastToken().getPosition(), importedUnit.getType());
-						compilationUnit.addContributor(importedUnit);
-						return true;
-					}
-					return false;
+		for(Project project : projects) {
+			importedUnit = resolveToCompilationUnit(project);
+
+			if(importedUnit != null) {
+				if(importedUnit.resolveType() != null) {
+					compilationUnit.addContributor(importedUnit);
+					return true;
 				}
+				return false;
 			}
 		}
 
-		if(importedUnit == null) {
-			setError(qualifiedName.getFirstToken().getPosition().union(qualifiedName.getTokens()[lastResolvedToken].getPosition()), "The import " + qualifiedName.toString(0, lastResolvedToken + 1) + " cannot be resolved");
-			return false;
-		}
-
-		return true;
+		setError(qualifiedName.getFirstToken().getPosition().union(qualifiedName.getTokens()[lastResolvedToken].getPosition()), "The import " + qualifiedName.toString(0, lastResolvedToken + 1) + " cannot be resolved");
+		return false;
 	}
 
+	public boolean checkSemantics(CompilationUnit compilationUnit, IType declaringType, IMethod declaringMethod, IVariable leftHandValue, IVariableType context) {
+		IType type = importedUnit.getType();
+		if(type != null)
+			compilationUnit.addHyperlink(qualifiedName.getLastToken().getPosition(), type);
+		return true;
+	}
+	
 	private CompilationUnit resolveToCompilationUnit(Project project) {
 		Folder folder = project;
 

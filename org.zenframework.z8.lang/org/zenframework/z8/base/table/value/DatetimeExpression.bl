@@ -1,5 +1,5 @@
 [native "org.zenframework.z8.server.base.table.value.DatetimeExpression"]
-class DatetimeExpression extends Expression {
+public class DatetimeExpression extends Expression {
 	aggregation = Aggregation.Max;
 
 	format = "d/m/Y G:i:s"; // http://php.net/manual/ru/function.date.php

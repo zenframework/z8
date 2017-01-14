@@ -1,7 +1,7 @@
 import org.zenframework.z8.lang.Object;
 
 [native "org.zenframework.z8.server.base.query.Transaction"]
-class Transaction extends Object {
+public class Transaction extends Object {
 	/*
 		try {
 			Transaction.begin();

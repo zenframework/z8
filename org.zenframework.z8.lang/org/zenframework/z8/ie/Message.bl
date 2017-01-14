@@ -1,7 +1,7 @@
 import org.zenframework.z8.lang.Object;
 
 [native "org.zenframework.z8.server.ie.Message"]
-class Message extends Object {
+public class Message extends Object {
 	virtual protected void beforeImport();
 	virtual protected void afterImport();
 

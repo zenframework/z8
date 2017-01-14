@@ -1,6 +1,5 @@
 [primary "org.zenframework.z8.server.types.primary"]
-
-class primary {
+public class primary {
 	virtual public string toString();
 	virtual public int hashCode();
 

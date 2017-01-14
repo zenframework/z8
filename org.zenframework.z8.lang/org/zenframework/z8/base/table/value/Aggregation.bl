@@ -1,5 +1,5 @@
 [native "org.zenframework.z8.server.base.table.value.Aggregation"]
-enum Aggregation {
+public enum Aggregation {
 	None,
 	Sum,
 	Max,

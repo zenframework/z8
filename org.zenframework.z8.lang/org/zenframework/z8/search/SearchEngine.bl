@@ -1,7 +1,7 @@
 import org.zenframework.z8.base.query.Query;
 
 [native "org.zenframework.z8.server.search.SearchEngine"]
-class SearchEngine {
+public class SearchEngine {
 	public static void rebuildIndex(string indexId);
 	public static void updateIndex(Query query);
 	public static string[] searchRecords(Query query, string target);

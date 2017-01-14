@@ -1,5 +1,5 @@
 [native "org.zenframework.z8.server.base.table.value.StringField"]
-class StringField extends Field {
+public class StringField extends Field {
 	aggregation = Aggregation.Max;
 
 	public int length = 30;

@@ -1,5 +1,5 @@
 [native "org.zenframework.z8.server.db.FieldType"]
-enum FieldType {
+public enum FieldType {
 	None,
 	Guid,
 	Boolean,

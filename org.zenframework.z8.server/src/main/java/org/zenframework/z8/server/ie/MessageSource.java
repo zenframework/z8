@@ -283,7 +283,7 @@ public class MessageSource implements RmiSerializable, Serializable {
 
 			ImportPolicy fieldPolicy = exportRules.getPolicy(tableName, fieldName, recordId);
 
-			if(!exists || fieldPolicy == ImportPolicy.OVERRIDE) {
+			if(!exists || fieldPolicy == ImportPolicy.Override) {
 				primary value = fieldInfo.value();
 
 				if(exists && field instanceof AttachmentField)

@@ -1,4 +1,4 @@
-class MoneyField extends DecimalField {
+public class MoneyField extends DecimalField {
 	precision = 20;
 	scale = 2;
 }

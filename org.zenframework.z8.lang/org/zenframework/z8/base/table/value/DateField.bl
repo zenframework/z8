@@ -1,4 +1,4 @@
 [native "org.zenframework.z8.server.base.table.value.DateField"]
-class DateField extends DatetimeField {
+public class DateField extends DatetimeField {
 	format = "d.m.Y"; // http://php.net/manual/ru/function.date.php
 }

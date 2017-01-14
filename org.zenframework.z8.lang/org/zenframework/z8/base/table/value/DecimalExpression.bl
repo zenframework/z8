@@ -1,5 +1,5 @@
 [native "org.zenframework.z8.server.base.table.value.DecimalExpression"]
-class DecimalExpression extends Expression {
+public class DecimalExpression extends Expression {
 	aggregation = Aggregation.Sum;
 
 	format = "0,000.00";

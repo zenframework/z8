@@ -12,14 +12,14 @@ public final class decimal extends primary {
 
 	private static final long serialVersionUID = 2752764281506888344L;
 
-	static public integer ROUND_UP = new integer(BigDecimal.ROUND_UP);
-	static public integer ROUND_DOWN = new integer(BigDecimal.ROUND_DOWN);
-	static public integer ROUND_CEILING = new integer(BigDecimal.ROUND_CEILING);
-	static public integer ROUND_FLOOR = new integer(BigDecimal.ROUND_FLOOR);
-	static public integer ROUND_HALF_UP = new integer(BigDecimal.ROUND_HALF_UP);
-	static public integer ROUND_HALF_DOWN = new integer(BigDecimal.ROUND_HALF_DOWN);
-	static public integer ROUND_HALF_EVEN = new integer(BigDecimal.ROUND_HALF_EVEN);
-	static public integer ROUND_UNNECESSARY = new integer(BigDecimal.ROUND_UNNECESSARY);
+	static public integer RoundUp = new integer(BigDecimal.ROUND_UP);
+	static public integer RoundDown = new integer(BigDecimal.ROUND_DOWN);
+	static public integer RoundCeiling = new integer(BigDecimal.ROUND_CEILING);
+	static public integer RoundFloor = new integer(BigDecimal.ROUND_FLOOR);
+	static public integer RoundHalfUp = new integer(BigDecimal.ROUND_HALF_UP);
+	static public integer RoundHalfDown = new integer(BigDecimal.ROUND_HALF_DOWN);
+	static public integer RoundHalfEven = new integer(BigDecimal.ROUND_HALF_EVEN);
+	static public integer RoundUnnecessary = new integer(BigDecimal.ROUND_UNNECESSARY);
 
 	private BigDecimal value = new BigDecimal(0);
 
@@ -334,7 +334,7 @@ public final class decimal extends primary {
 	}
 
 	public decimal round(int digits) {
-		return round(digits, ROUND_HALF_UP);
+		return round(digits, RoundHalfUp);
 	}
 
 	public decimal round(int digits, integer mode) {

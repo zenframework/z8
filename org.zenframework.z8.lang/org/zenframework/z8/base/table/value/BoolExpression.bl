@@ -1,5 +1,5 @@
 [native "org.zenframework.z8.server.base.table.value.BoolExpression"]
-class BoolExpression extends Expression {
+public class BoolExpression extends Expression {
 	width = 5; 
 
 	public void setDefault(bool defaultValue);

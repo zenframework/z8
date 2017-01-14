@@ -1,6 +1,5 @@
 [primary "org.zenframework.z8.server.types.integer"]
-
-final class int extends primary {
+public final class int extends primary {
 	static public int Min = -0x7fffffffffffffff;
 	static public int Max =  0x7fffffffffffffff; 
 
