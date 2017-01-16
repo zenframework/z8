@@ -1572,6 +1572,7 @@ public class Query extends OBJECT {
 		writer.writeProperty(Json.id, id());
 		writer.writeProperty(Json.icon, icon());
 		writer.writeProperty(Json.form, form());
+		writer.writeProperty(Json.sourceCode, sourceCodeLocation());
 
 		writer.writeControls(Json.fields, fields, this);
 		writer.writeControls(Json.controls, getControls(), this);

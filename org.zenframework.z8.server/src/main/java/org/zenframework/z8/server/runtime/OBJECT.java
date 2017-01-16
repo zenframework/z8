@@ -312,6 +312,12 @@ public class OBJECT extends RequestTarget implements IObject, RmiSerializable {
 		return new bool(this != object.get());
 	}
 
+	public String sourceCodeLocation() {
+		String id = classId();
+		int index = id.indexOf(".__");
+		return index != -1 ? id.substring(0, index) : id;
+	}
+
 	public void write(JsonWriter writer) {
 		writer.writeProperty(Json.text, displayName());
 		writer.writeProperty(Json.description, description());
