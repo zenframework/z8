@@ -338,6 +338,10 @@ public class ServerConfig extends Properties {
 		return database().isSystemInstalled();
 	}
 
+	static public boolean isLatestVersion() {
+		return database().isLatestVersion();
+	}
+
 	static public IAuthorityCenter authorityCenter() {
 		if(authorityCenter == null)
 			authorityCenter = Rmi.get(IAuthorityCenter.class, authorityCenterHost(), authorityCenterPort());

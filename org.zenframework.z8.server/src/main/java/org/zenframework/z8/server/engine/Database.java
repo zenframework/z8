@@ -3,6 +3,7 @@ package org.zenframework.z8.server.engine;
 import java.sql.SQLException;
 import java.util.Properties;
 
+import org.zenframework.z8.server.base.table.system.Settings;
 import org.zenframework.z8.server.base.table.system.Users;
 import org.zenframework.z8.server.db.BasicSelect;
 import org.zenframework.z8.server.db.ConnectionManager;
@@ -19,7 +20,9 @@ public class Database {
 	private String connection = null;
 	private String driver = null;
 	private encoding charset = encoding.UTF8;
-	private boolean systemInstalled = false;
+
+	private boolean isSystemInstalled = false;
+	private boolean isLatestVersion = false;
 
 	private DatabaseVendor vendor = DatabaseVendor.SqlServer;
 
@@ -120,22 +123,30 @@ public class Database {
 	}
 
 	public boolean isSystemInstalled() {
-		if(systemInstalled)
-			return systemInstalled;
+		if(isSystemInstalled)
+			return isSystemInstalled;
 
 		try {
-			systemInstalled = tableExists(Users.TableName);
+			isSystemInstalled = tableExists(Users.TableName);
 		} catch(Throwable e) {
 			Trace.logEvent(e);
 		} finally {
 			ConnectionManager.release(this);
 		}
 
-		return systemInstalled;
+		return isSystemInstalled;
 	}
 
-	/*
-	 * public String version() { return
-	 * ServerRuntime.DbSchemeControlSumProperty.get. }
-	 */
+	public boolean isLatestVersion() {
+		if(isLatestVersion)
+			return isLatestVersion;
+
+		if(!tableExists(Settings.TableName))
+			return false;
+
+		String version = Runtime.version();
+		String currentVersion = Settings.version();
+
+		return (isLatestVersion = version.equals(currentVersion));
+	}
 }

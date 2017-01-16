@@ -36,7 +36,7 @@ public class Users extends Table {
 		public final static String FirstName = "First Name";
 		public final static String MiddleName = "Middle Name";
 		public final static String LastName = "Last Name";
-		public final static String Enabled = "Enabled";
+		public final static String Banned = "Banned";
 		public final static String Phone = "Phone";
 		public final static String Email = "Email";
 		public final static String Settings = "Settings";
@@ -49,7 +49,7 @@ public class Users extends Table {
 		public final static String MiddleName = "Users.middleName";
 		public final static String LastName = "Users.lastName";
 		public final static String Description = "Users.description";
-		public final static String Enabled = "Users.enabled";
+		public final static String Banned = "Users.banned";
 		public final static String Phone = "Users.phone";
 		public final static String Email = "Users.email";
 		public final static String Settings = "Users.settings";
@@ -62,7 +62,7 @@ public class Users extends Table {
 		public final static String FirstName = Resources.get(strings.FirstName);
 		public final static String MiddleName = Resources.get(strings.MiddleName);
 		public final static String LastName = Resources.get(strings.LastName);
-		public final static String Enabled = Resources.get(strings.Enabled);
+		public final static String Banned = Resources.get(strings.Banned);
 		public final static String Phone = Resources.get(strings.Phone);
 		public final static String Email = Resources.get(strings.Email);
 		public final static String Settings = Resources.get(strings.Settings);
@@ -106,7 +106,7 @@ public class Users extends Table {
 	public StringField.CLASS<StringField> lastName = new StringField.CLASS<StringField>(this);
 	public StringField.CLASS<StringField> phone = new StringField.CLASS<StringField>(this);
 	public StringField.CLASS<StringField> email = new StringField.CLASS<StringField>(this);
-	public BoolField.CLASS<BoolField> enabled = new BoolField.CLASS<BoolField>(this);
+	public BoolField.CLASS<BoolField> banned = new BoolField.CLASS<BoolField>(this);
 	public TextField.CLASS<TextField> settings = new TextField.CLASS<TextField>(this);
 
 	public Users() {
@@ -160,10 +160,9 @@ public class Users extends Table {
 		email.setDisplayName(displayNames.Email);
 		email.get().length = new integer(128);
 
-		enabled.setName(names.Enabled);
-		enabled.setIndex("enabled");
-		enabled.setDisplayName(displayNames.Enabled);
-		enabled.get().setDefault(bool.True);
+		banned.setName(names.Banned);
+		banned.setIndex("banned");
+		banned.setDisplayName(displayNames.Banned);
 
 		settings.setName(names.Settings);
 		settings.setIndex("settings");
@@ -175,7 +174,7 @@ public class Users extends Table {
 		registerDataField(lastName);
 		registerDataField(phone);
 		registerDataField(email);
-		registerDataField(enabled);
+		registerDataField(banned);
 		registerDataField(settings);
 	}
 
@@ -216,8 +215,8 @@ public class Users extends Table {
 	public void beforeUpdate(guid recordId) {
 		super.beforeUpdate(recordId);
 
-		if(enabled.get().changed() && isSystemUser(recordId))
-			throw new exception("Builtin users can not be blocked");
+		if(banned.get().changed() && isSystemUser(recordId))
+			throw new exception("Builtin users can not be banned");
 	}
 
 	@Override

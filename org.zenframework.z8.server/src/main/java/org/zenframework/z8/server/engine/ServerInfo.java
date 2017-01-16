@@ -20,7 +20,7 @@ public class ServerInfo implements IServerInfo {
 
 	private long firstFailure = 0;
 	private long lastChecked = 0;
-	
+
 	public ServerInfo() {
 	}
 
@@ -43,7 +43,7 @@ public class ServerInfo implements IServerInfo {
 	public IApplicationServer getServer() {
 		return server;
 	}
-	
+
 	@Override
 	public void setServer(IApplicationServer server) {
 		this.server = server;
@@ -59,7 +59,7 @@ public class ServerInfo implements IServerInfo {
 	public void setId(String id) {
 		this.id = id;
 	}
-	
+
 	@Override
 	public String[] getDomains() {
 		return domains;
@@ -74,18 +74,18 @@ public class ServerInfo implements IServerInfo {
 	public boolean isAlive() throws RemoteException {
 		if(lastChecked != 0 && System.currentTimeMillis() - lastChecked < TenMinutes)
 			return false;
-		
+
 		try {
 			server.probe();
 			firstFailure = lastChecked = 0;
 			return true;
 		} catch(RemoteException e) {
 		}
-		
+
 		long time = System.currentTimeMillis();
 		if(lastChecked == 0)
 			firstFailure = time;
-		
+
 		lastChecked = time;
 		return false;
 	}
@@ -133,24 +133,24 @@ public class ServerInfo implements IServerInfo {
 		IApplicationServer proxy = getProxy(server);
 		return "[id: " + id + ", " + (proxy != null ? proxy.toString() : "") + "]";
 	}
-	
+
 	static private IApplicationServer getProxy(IApplicationServer server) {
 		if(server instanceof RmiServer)
 			return (IApplicationServer)((RmiServer)server).proxy();
 		return server;
 	}
-	
+
 	@Override
 	public boolean equals(Object object) {
 		if(this == object)
 			return true;
-		
+
 		IApplicationServer server1 = getProxy(server);
 		IApplicationServer server2 = null;
-		
+
 		if(object instanceof ServerInfo)
 			server2 = getProxy(((ServerInfo)object).getServer());
-		
+
 		if(object instanceof IApplicationServer)
 			server2 = getProxy((IApplicationServer)object);
 

@@ -70,8 +70,8 @@ public class UsersView extends Users {
 
 		phone.get().colspan = new integer(3);
 		email.get().colspan = new integer(3);
-		enabled.get().colspan = new integer(3);
-		enabled.get().setIcon("fa-ban");
+		banned.get().colspan = new integer(3);
+		banned.get().setIcon("fa-ban");
 
 		description.get().colspan = new integer(12);
 
@@ -84,7 +84,7 @@ public class UsersView extends Users {
 		registerFormField(middleName);
 		registerFormField(phone);
 		registerFormField(email);
-		registerFormField(enabled);
+		registerFormField(banned);
 		registerFormField(description);
 		registerFormField(roles);
 		registerFormField(entries);

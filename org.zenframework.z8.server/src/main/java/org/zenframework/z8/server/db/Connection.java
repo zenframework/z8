@@ -58,6 +58,7 @@ public class Connection {
 			if(connection != null)
 				connection.close();
 		} catch(SQLException e) {
+			Trace.logError(e);
 		} finally {
 			connection = null;
 			transactionCount = 0;
@@ -153,7 +154,6 @@ public class Connection {
 
 		System.out.println(message + "(error code: " + errorCode + "; sqlState: " + sqlState + ") - reconnecting...");
 
-		
 		// Postgres; Class 08 — Connection Exception SQLState Description
 		// 08000 connection exception 
 		// 08003 connection does not exist

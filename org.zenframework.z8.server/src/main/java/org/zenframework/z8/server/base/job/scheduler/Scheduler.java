@@ -103,7 +103,7 @@ public class Scheduler implements Runnable {
 	}
 
 	private synchronized void initializeJobs() {
-		if(!resetPending || !ServerConfig.isSystemInstalled())
+		if(!resetPending || !ServerConfig.isLatestVersion())
 			return;
 
 		ScheduledJobs scheduledJobs = new ScheduledJobs.CLASS<ScheduledJobs>(null).get();

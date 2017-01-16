@@ -660,9 +660,20 @@ public class Query extends OBJECT {
 		return UpdateAction.run(this, id, true);
 	}
 
-	public int update(SqlToken where) {
-		Collection<Field> changedFields = getChangedFields();
+	public void updateOrCreate(guid id) {
+		if(UpdateAction.run(this, id, false) == 0)
+			create(id);
+		else
+			resetChangedFields();
+	}
 
+	private void resetChangedFields() {
+		Collection<Field> changedFields = getChangedFields();
+		for(Field field : changedFields)
+			field.reset();
+	}
+
+	public int update(SqlToken where) {
 		Collection<Field> fields = new ArrayList<Field>();
 		fields.add(primaryKey());
 
@@ -675,8 +686,7 @@ public class Query extends OBJECT {
 			result += UpdateAction.run(this, id, false);
 		}
 
-		for(Field field : changedFields)
-			field.reset();
+		resetChangedFields();
 
 		return result;
 	}
@@ -1190,8 +1200,10 @@ public class Query extends OBJECT {
 		referers.addAll(references);
 
 		for(Query.CLASS<? extends Query> query : referers) {
-			if(!query.hasInstance())
+			if(!query.hasInstance()) {
+				references.remove(query);
 				continue;
+			}
 
 			for(OBJECT.CLASS<? extends OBJECT> cls : query.get().getLinks()) {
 				if(!cls.hasInstance())

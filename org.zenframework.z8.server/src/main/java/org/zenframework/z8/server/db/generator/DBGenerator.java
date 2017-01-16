@@ -7,6 +7,7 @@ import java.util.Map;
 
 import org.zenframework.z8.server.base.job.scheduler.Scheduler;
 import org.zenframework.z8.server.base.table.Table;
+import org.zenframework.z8.server.base.table.system.Settings;
 import org.zenframework.z8.server.db.Connection;
 import org.zenframework.z8.server.db.ConnectionManager;
 import org.zenframework.z8.server.engine.ApplicationServer;
@@ -106,6 +107,7 @@ public class DBGenerator {
 		fireAfterDbGenerated();
 
 		String version = Runtime.version();
+		Settings.set(Settings.Version, version);
 
 		logger.info("Control sum: " + version);
 		logger.progress(100);

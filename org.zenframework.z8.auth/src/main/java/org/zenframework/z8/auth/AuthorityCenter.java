@@ -123,7 +123,7 @@ public class AuthorityCenter extends HubServer implements IAuthorityCenter {
 		IUser user = password != null ? loginServer.login(login, password) : loginServer.login(login);
 		userManager.add(user);
 
-		Session session = sessionManager.create(user);
+		ISession session = sessionManager.create(user);
 		session.setServerInfo(serverInfo);
 		return session;
 	}

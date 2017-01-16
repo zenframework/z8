@@ -29,6 +29,7 @@ import org.zenframework.z8.server.db.sql.functions.InVector;
 import org.zenframework.z8.server.db.sql.functions.string.EqualsIgnoreCase;
 import org.zenframework.z8.server.engine.RmiIO;
 import org.zenframework.z8.server.exceptions.AccessDeniedException;
+import org.zenframework.z8.server.exceptions.InvalidVersionException;
 import org.zenframework.z8.server.logs.Trace;
 import org.zenframework.z8.server.resources.Resources;
 import org.zenframework.z8.server.runtime.RLinkedHashMap;
@@ -57,7 +58,7 @@ public class User implements IUser {
 	private String description;
 	private String phone;
 	private String email;
-	private boolean enabled;
+	private boolean banned;
 
 	private String settings;
 
@@ -83,7 +84,7 @@ public class User implements IUser {
 		system.middleName = "";
 		system.lastName = "";
 		system.description = description;
-		system.enabled = true;
+		system.banned = false;
 
 		system.settings = "";
 		system.phone = "";
@@ -153,11 +154,13 @@ public class User implements IUser {
 
 	@Override
 	public boolean isAdministrator() {
-		for(IRole role : roles) {
-			if(role.id().equals(Role.Administrator))
-				return true;
+		if(roles != null) {
+			for(IRole role : roles) {
+				if(role.id().equals(Role.Administrator))
+					return true;
+			}
 		}
-		return false;
+		return id.equals(Users.Administrator) || id.equals(Users.System);
 	}
 
 	@Override
@@ -176,8 +179,8 @@ public class User implements IUser {
 	}
 
 	@Override
-	public boolean enabled() {
-		return enabled;
+	public boolean banned() {
+		return banned;
 	}
 
 	@Override
@@ -213,13 +216,18 @@ public class User implements IUser {
 
 		User user = new User();
 
-		if(loginOrId instanceof string)
-			user.readInfo((string)loginOrId);
-		else
-			user.readInfo((guid)loginOrId);
+		boolean isLatestVersion = ServerConfig.isLatestVersion();
 
-		user.loadRoles();
-		user.loadEntries();
+		if(loginOrId instanceof string)
+			user.readInfo((string)loginOrId, !isLatestVersion);
+		else
+			user.readInfo((guid)loginOrId, !isLatestVersion);
+
+		if(isLatestVersion) {
+			user.loadRoles();
+			user.loadEntries();
+		} else if(!user.isAdministrator())
+			throw new InvalidVersionException();
 
 		if(user.isAdministrator())
 			user.addSystemTools();
@@ -232,7 +240,7 @@ public class User implements IUser {
 	static public IUser load(String login, String password) {
 		IUser user = load(login);
 
-		if(password == null || !password.equals(user.password()) || !user.enabled())
+		if(password == null || !password.equals(user.password()) || user.banned())
 			throw new AccessDeniedException();
 
 		return user;
@@ -248,31 +256,33 @@ public class User implements IUser {
 		entries.add(new Entry(systemTools.key(), systemTools.classId(), Resources.get(SystemTools.strings.Title)));
 	}
 
-	private void readInfo(guid id) {
+	private void readInfo(guid id, boolean shortInfo) {
 		Users users = Users.newInstance();
 		SqlToken where = new Equ(users.recordId.get(), id);
-		readInfo(users, where);
+		readInfo(users, where, shortInfo);
 	}
 
-	private void readInfo(string login) {
+	private void readInfo(string login, boolean shortInfo) {
 		Users users = Users.newInstance();
 		SqlToken where = new EqualsIgnoreCase(users.name.get(), login);
-		readInfo(users, where);
+		readInfo(users, where, shortInfo);
 	}
 
-	private void readInfo(Users users, SqlToken where) {
-
+	private void readInfo(Users users, SqlToken where, boolean shortInfo) {
 		Collection<Field> fields = new ArrayList<Field>();
 		fields.add(users.recordId.get());
 		fields.add(users.name.get());
 		fields.add(users.password.get());
-		fields.add(users.enabled.get());
-		fields.add(users.firstName.get());
-		fields.add(users.middleName.get());
-		fields.add(users.lastName.get());
-		fields.add(users.settings.get());
-		fields.add(users.phone.get());
-		fields.add(users.email.get());
+
+		if(!shortInfo) {
+			fields.add(users.banned.get());
+			fields.add(users.firstName.get());
+			fields.add(users.middleName.get());
+			fields.add(users.lastName.get());
+			fields.add(users.settings.get());
+			fields.add(users.phone.get());
+			fields.add(users.email.get());
+		}
 
 		users.read(fields, where);
 
@@ -280,7 +290,7 @@ public class User implements IUser {
 			this.id = users.recordId.get().guid();
 			this.login = users.name.get().string().get();
 			this.password = users.password.get().string().get();
-			this.enabled = users.enabled.get().bool().get();
+			this.banned = users.banned.get().bool().get();
 			this.firstName = users.firstName.get().string().get();
 			this.middleName = users.middleName.get().string().get();
 			this.lastName = users.lastName.get().string().get();
@@ -290,6 +300,9 @@ public class User implements IUser {
 		} else {
 			throw new AccessDeniedException();
 		}
+
+		if(shortInfo)
+			return;
 
 		try {
 			if(!users.getExtraParameters(this, parameters))
@@ -430,7 +443,7 @@ public class User implements IUser {
 		RmiIO.writeString(objects, phone);
 		RmiIO.writeString(objects, email);
 
-		RmiIO.writeBoolean(objects, enabled);
+		RmiIO.writeBoolean(objects, banned);
 
 		RmiIO.writeString(objects, settings);
 
@@ -466,7 +479,7 @@ public class User implements IUser {
 		phone = RmiIO.readString(objects);
 		email = RmiIO.readString(objects);
 
-		enabled = RmiIO.readBoolean(objects);
+		banned = RmiIO.readBoolean(objects);
 
 		settings = RmiIO.readString(objects);
 

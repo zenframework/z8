@@ -130,7 +130,7 @@ public class UpdateAction extends Action {
 
 			Collection<Field> changedFields = query.getChangedFields();
 
-			result = changedFields.isEmpty() ? 0 : new Update(query, changedFields, recordId).execute();
+			result = changedFields.isEmpty() ? 0 : new Update(query, query.getChangedFields(), recordId).execute();
 
 			if(recordId != null)
 				query.afterUpdate(recordId);

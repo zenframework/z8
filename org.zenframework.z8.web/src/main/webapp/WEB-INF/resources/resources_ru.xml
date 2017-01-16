@@ -25,6 +25,11 @@
 	<entry key="Table.description">Описание</entry>
 	<entry key="Table.attachments">Файлы</entry>
 
+	<!-- Settings -->
+	<entry key="Settings.title">Системные свойства</entry>
+	<entry key="Settings.name">Свойство</entry>
+	<entry key="Settings.value">Значение</entry>
+
 	<!-- Users -->
 	<entry key="Users.title">Пользователи</entry>
 	<entry key="Users.login">Логин</entry>
@@ -35,7 +40,7 @@
 	<entry key="Users.company">Организация</entry>
 	<entry key="Users.phone">Телефон</entry>
 	<entry key="Users.email">Email</entry>
-	<entry key="Users.enabled">Доступ в систему</entry>
+	<entry key="Users.banned">Заблокирован</entry>
 	<entry key="Users.settings">Настройки</entry>
 
 	<entry key="Users.name.default">User</entry>
@@ -199,7 +204,30 @@
 	<entry key="Report.groupTotal">Итого по </entry>
 	<entry key="Report.groupGrandTotal">Всего</entry>
 
+	<!-- Accounts -->
+	<entry key="SiteAccounts.title">Пользователи сайта</entry>
+	<entry key="SiteAccounts.email">Email</entry>
+	<entry key="SiteAccounts.login">Логин</entry>
+	<entry key="SiteAccounts.firstName">Имя</entry>
+	<entry key="SiteAccounts.lastName">Фамилия</entry>
+	<entry key="SiteAccounts.banned">Ban</entry>
+
+	<!-- Topics -->
+	<entry key="SiteTopics.title">Темы</entry>
+	<entry key="SiteTopics.headline">Заголовок</entry>
+	<entry key="SiteTopics.text">Текст</entry>
+	<entry key="SiteTopics.author">Автор</entry>
+	<entry key="Sitetopics.time">Время</entry>
+
+	<!-- Comments -->
+	<entry key="SiteComments.title">Комментарии</entry>
+	<entry key="SiteComments.headline">Тема</entry>
+	<entry key="SiteComments.text">Текст</entry>
+	<entry key="SiteComments.author">Автор</entry>
+	<entry key="SiteComments.time">Время</entry>
+
 	<!-- Exceptions -->
+	<entry key="Exception.invalidVersion">Версия схемы базы данных не соответствует версии сервера.</entry>
 	<entry key="Exception.accessDenied">Неверный логин или пароль</entry>
 	<entry key="Exception.accessRightsViolation">Нарушение прав доступа</entry>
 	<entry key="Exception.serverUnavailable">Сервер не отвечает.</entry>

@@ -26,13 +26,12 @@ public class Session implements ISession {
 
 	public Session(String id, IUser user) {
 		this.id = id;
-		this.user = user;
-		this.lastAccessTime = System.currentTimeMillis();
+		setUser(user);
 	}
 
-	public Session(Session session) {
-		this.id = session.id;
-		this.user = session.user;
+	public Session(ISession session) {
+		this.id = session.id();
+		this.user = session.user();
 	}
 
 	@Override
@@ -46,10 +45,17 @@ public class Session implements ISession {
 	}
 
 	@Override
+	public void setUser(IUser user) {
+		this.user = user;
+		lastAccessTime = System.currentTimeMillis();
+	}
+
+	@Override
 	public IServerInfo getServerInfo() {
 		return serverInfo;
 	}
 
+	@Override
 	public void setServerInfo(IServerInfo serverInfo) {
 		this.serverInfo = serverInfo;
 	}
@@ -59,6 +65,7 @@ public class Session implements ISession {
 		return lastAccessTime;
 	}
 
+	@Override
 	public void access() {
 		lastAccessTime = System.currentTimeMillis();
 	}

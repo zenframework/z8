@@ -71,7 +71,7 @@ public class SystemTools extends Desktop {
 	public void constructor2() {
 		super.constructor2();
 
-		if(ServerConfig.isSystemInstalled()) {
+		if(ServerConfig.isLatestVersion()) {
 			runnables.add(users);
 			runnables.add(domains);
 			runnables.add(jobs);

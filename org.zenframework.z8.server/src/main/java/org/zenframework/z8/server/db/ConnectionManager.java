@@ -67,10 +67,10 @@ public class ConnectionManager {
 
 		while(iterator.hasNext()) {
 			Connection connection = iterator.next();
-			
+
 			if(connection.isCurrent())
 				connection.release();
-			
+
 			if(connection.isUnused()) {
 				connection.close();
 				iterator.remove();

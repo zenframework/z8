@@ -23,7 +23,7 @@ public interface IUser extends RmiSerializable, Serializable {
 
 	public String description();
 
-	public boolean enabled();
+	public boolean banned();
 
 	public String phone();
 

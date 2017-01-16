@@ -58,16 +58,12 @@ public class guid extends primary {
 		return new guid(UUID.randomUUID());
 	}
 
+	static public guid create(String value) {
+		return new guid(UUID.nameUUIDFromBytes(value.getBytes()));
+	}
+
 	static public guid create(long n1, long n2) {
 		return new guid(new UUID(n1, n2));
-	}
-
-	static public guid z8_create() {
-		return create();
-	}
-
-	static public guid z8_create(integer n1, integer n2) {
-		return create(n1.get(), n2.get());
 	}
 
 	@Override
@@ -152,6 +148,18 @@ public class guid extends primary {
 
 	public bool operatorNotEqu(guid x) {
 		return new bool(!value.equals(x.value));
+	}
+
+	static public guid z8_create() {
+		return create();
+	}
+
+	static public guid z8_create(integer n1, integer n2) {
+		return create(n1.get(), n2.get());
+	}
+
+	static public guid z8_create(string value) {
+		return create(value.get());
 	}
 
 	static public guid z8_parse(string string) {

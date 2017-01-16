@@ -3,6 +3,7 @@ public final class guid extends primary {
 	static public guid Null = '00000000-0000-0000-0000-000000000000';
 
 	static public guid create();
+	static public guid create(string value);
 	static public guid create(int n1, int n2);
 
 	public operator string();

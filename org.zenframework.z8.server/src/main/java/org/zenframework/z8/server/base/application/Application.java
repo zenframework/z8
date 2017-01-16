@@ -41,18 +41,15 @@ public class Application {
 	}
 
 	static public void z8_info(string text) {
-		Trace.logEvent(text.get());
-		ApplicationServer.getMonitor().info(text.get());
+		ApplicationServer.info(text.get());
 	}
 
 	static public void z8_warning(string text) {
-		Trace.logEvent(text.get());
-		ApplicationServer.getMonitor().warning(text.get());
+		ApplicationServer.warning(text.get());
 	}
 
 	static public void z8_error(string text) {
-		Trace.logEvent(text.get());
-		ApplicationServer.getMonitor().error(text.get());
+		ApplicationServer.error(text.get());
 	}
 
 	static public void z8_print(file file) {

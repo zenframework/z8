@@ -94,5 +94,7 @@ public class Fields extends Table {
 		registerDataField(displayName);
 		registerDataField(type);
 		registerDataField(position);
+
+		queries.add(tables);
 	}
 }
