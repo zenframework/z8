@@ -7,6 +7,7 @@ import org.zenframework.z8.server.base.table.value.Link;
 import org.zenframework.z8.server.base.table.value.StringField;
 import org.zenframework.z8.server.crypto.MD5;
 import org.zenframework.z8.server.engine.IAuthorityCenter;
+import org.zenframework.z8.server.engine.Runtime;
 import org.zenframework.z8.server.resources.Resources;
 import org.zenframework.z8.server.runtime.IClass;
 import org.zenframework.z8.server.runtime.IObject;
@@ -20,8 +21,8 @@ public class Accounts extends Table {
 	static private String defaultPassword = MD5.get("");
 
 	static public class names {
+		public final static String Login = "Login";
 		public final static String Password = "Password";
-		public final static String Email = "Email";
 		public final static String FirstName = "First Name";
 		public final static String LastName = "Last Name";
 		public final static String Banned = "Banned";
@@ -30,7 +31,6 @@ public class Accounts extends Table {
 
 	static public class strings {
 		public final static String Title = "SiteAccounts.title";
-		public final static String Email = "SiteAccounts.email";
 		public final static String Login = "SiteAccounts.login";
 		public final static String FirstName = "SiteAccounts.firstName";
 		public final static String LastName = "SiteAccounts.lastName";
@@ -40,7 +40,6 @@ public class Accounts extends Table {
 	static public class displayNames {
 		public final static String Title = Resources.get(strings.Title);
 		public final static String Login = Resources.get(strings.Login);
-		public final static String Email = Resources.get(strings.Email);
 		public final static String FirstName = Resources.get(strings.FirstName);
 		public final static String LastName = Resources.get(strings.LastName);
 		public final static String Banned = Resources.get(strings.Banned);
@@ -64,12 +63,16 @@ public class Accounts extends Table {
 		}
 	}
 
+	static public Accounts newInstance() {
+		return (Accounts)Runtime.instance().getTableByName(Accounts.TableName).newInstance();
+	}
+
 	public Users.CLASS<Users> users = new Users.CLASS<Users>(this);
 
+	public StringField.CLASS<StringField> login = new StringField.CLASS<StringField>(this);
 	public StringField.CLASS<StringField> password = new StringField.CLASS<StringField>(this);
 	public StringField.CLASS<StringField> firstName = new StringField.CLASS<StringField>(this);
 	public StringField.CLASS<StringField> lastName = new StringField.CLASS<StringField>(this);
-	public StringField.CLASS<StringField> email = new StringField.CLASS<StringField>(this);
 	public BoolField.CLASS<BoolField> banned = new BoolField.CLASS<BoolField>(this);
 
 	public Link.CLASS<Link> user = new Link.CLASS<Link>(this);
@@ -96,8 +99,11 @@ public class Accounts extends Table {
 		user.setName(names.User);
 		user.setIndex("user");
 
-		name.setDisplayName(displayNames.Login);
-		name.get().length = new integer(IAuthorityCenter.MaxLoginLength);
+		login.setName(names.Login);
+		login.setIndex("login");
+		login.setDisplayName(displayNames.Login);
+		login.get().length = new integer(IAuthorityCenter.MaxLoginLength);
+		login.get().unique = bool.True;
 
 		password.setName(names.Password);
 		password.setExportable(false);
@@ -105,12 +111,6 @@ public class Accounts extends Table {
 		password.setSystem(true);
 		password.get().length = new integer(IAuthorityCenter.MaxPasswordLength);
 		password.get().setDefault(new string(defaultPassword));
-
-		email.setName(names.Email);
-		email.setIndex("email");
-		email.setDisplayName(displayNames.Email);
-		email.get().length = new integer(128);
-		email.get().unique = bool.True;
 
 		firstName.setName(names.FirstName);
 		firstName.setIndex("firstName");
@@ -126,8 +126,8 @@ public class Accounts extends Table {
 		banned.setIndex("banned");
 		banned.setDisplayName(displayNames.Banned);
 
+		registerDataField(login);
 		registerDataField(password);
-		registerDataField(email);
 		registerDataField(firstName);
 		registerDataField(lastName);
 		registerDataField(banned);

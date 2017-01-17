@@ -64,14 +64,11 @@ public abstract class Adapter {
 			String serverId = parameters.get(Json.server);
 
 			if(login != null && password != null) {
-
 				if(login.isEmpty() || login.length() > IAuthorityCenter.MaxLoginLength || password.length() > IAuthorityCenter.MaxPasswordLength)
 					throw new AccessDeniedException();
-
-				session = ServerConfig.authorityCenter().login(login, password);
-			} else if(sessionId != null) {
-				session = ServerConfig.authorityCenter().server(sessionId, serverId);
-			}
+				session = login(login, password);
+			} else
+				session = authorize(sessionId, serverId, parameters.get(Json.request));
 
 			if(session == null)
 				throw serverId == null ? new AccessDeniedException() : new ServerUnavailableException(serverId);
@@ -90,6 +87,14 @@ public abstract class Adapter {
 				processError(response, e);
 			}
 		}
+	}
+
+	protected ISession login(String login, String password) throws IOException, ServletException {
+		return ServerConfig.authorityCenter().login(login, password);
+	}
+
+	protected ISession authorize(String sessionId, String serverId, String request) throws IOException, ServletException {
+		return sessionId != null ? ServerConfig.authorityCenter().server(sessionId, serverId) : null;
 	}
 
 	private void parseRequest(HttpServletRequest request, Map<String, String> parameters, List<file> files) throws IOException {

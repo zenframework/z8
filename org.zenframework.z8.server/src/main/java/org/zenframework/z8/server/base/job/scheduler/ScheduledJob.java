@@ -130,7 +130,7 @@ public class ScheduledJob implements Runnable {
 
 			List<file> files = new ArrayList<file>();
 
-			IUser user = this.user != null ? User.load(this.user) : User.system();
+			IUser user = this.user != null ? User.read(this.user) : User.system();
 			IRequest request = new Request(parameters, files, new Session("", user));
 			IResponse response = new Response();
 

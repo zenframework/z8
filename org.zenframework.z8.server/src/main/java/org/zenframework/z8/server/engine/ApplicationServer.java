@@ -19,6 +19,8 @@ import org.zenframework.z8.server.request.IResponse;
 import org.zenframework.z8.server.request.Request;
 import org.zenframework.z8.server.request.RequestDispatcher;
 import org.zenframework.z8.server.request.RequestProcessor;
+import org.zenframework.z8.server.security.Account;
+import org.zenframework.z8.server.security.IAccount;
 import org.zenframework.z8.server.security.IUser;
 import org.zenframework.z8.server.security.User;
 import org.zenframework.z8.server.types.datespan;
@@ -120,13 +122,13 @@ public class ApplicationServer extends RmiServer implements IApplicationServer {
 	}
 
 	@Override
-	public IUser login(String login) {
-		return User.load(login);
+	public IUser user(String login, String password) {
+		return User.load(login, password);
 	}
 
 	@Override
-	public IUser login(String login, String password) {
-		return User.load(login, password);
+	public IAccount account(String login, String password) {
+		return Account.load(login, password);
 	}
 
 	@Override

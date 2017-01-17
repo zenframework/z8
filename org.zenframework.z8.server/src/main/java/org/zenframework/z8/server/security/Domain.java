@@ -34,7 +34,7 @@ public class Domain {
 	}
 
 	public IUser getSystemUser() {
-		return user.equals(guid.Null) ? system().getSystemUser() : User.load(user);
+		return user.isNull() ? system().getSystemUser() : User.read(user);
 	}
 
 	public boolean isOwner() {

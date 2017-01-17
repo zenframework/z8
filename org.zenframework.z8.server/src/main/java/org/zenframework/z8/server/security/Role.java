@@ -14,6 +14,7 @@ public class Role implements IRole {
 	static public guid User = new guid("421A8413-A8EC-4DAB-9235-9A5FF83341C5");
 	static public guid Guest = new guid("BE41CEB5-02DF-44EE-885F-B82DDEDCAA08");
 	static public guid Administrator = new guid("DC08CA72-C668-412F-91B7-022F1C82AC09");
+	static public guid Site = new guid("A991DAB6-24E2-4A92-8460-CA043C302B13");
 
 	static public class strings {
 		static public final String User = "Role.user";
@@ -40,6 +41,10 @@ public class Role implements IRole {
 
 	static public Role guest() {
 		return new Role(Guest, Access.guest());
+	}
+
+	static public Role site() {
+		return new Role(Site, Access.site());
 	}
 
 	public Role() {

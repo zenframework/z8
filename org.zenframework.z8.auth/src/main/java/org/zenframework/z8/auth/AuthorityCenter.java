@@ -1,3 +1,4 @@
+
 package org.zenframework.z8.auth;
 
 import java.io.File;
@@ -13,10 +14,10 @@ import org.zenframework.z8.server.engine.IInterconnectionCenter;
 import org.zenframework.z8.server.engine.IServerInfo;
 import org.zenframework.z8.server.engine.ISession;
 import org.zenframework.z8.server.engine.ServerInfo;
-import org.zenframework.z8.server.engine.Session;
 import org.zenframework.z8.server.exceptions.AccessDeniedException;
 import org.zenframework.z8.server.logs.Trace;
 import org.zenframework.z8.server.request.RequestDispatcher;
+import org.zenframework.z8.server.security.IAccount;
 import org.zenframework.z8.server.security.IUser;
 import org.zenframework.z8.server.types.datespan;
 import org.zenframework.z8.server.types.guid;
@@ -89,21 +90,16 @@ public class AuthorityCenter extends HubServer implements IAuthorityCenter {
 	}
 
 	@Override
-	public ISession login(String login) throws RemoteException {
-		return doLogin(login, null);
-	}
-
-	@Override
 	public ISession login(String login, String password) throws RemoteException {
 		if(password == null)
 			throw new AccessDeniedException();
 
-		return doLogin(login, password);
+		return login(login, password, false);
 	}
 
 	@Override
 	public ISession server(String sessionId, String serverId) throws RemoteException {
-		Session session = sessionManager.get(sessionId);
+		ISession session = sessionManager.systemSession(sessionId);
 		IServerInfo server = findServer(serverId);
 
 		if(server == null)
@@ -113,17 +109,46 @@ public class AuthorityCenter extends HubServer implements IAuthorityCenter {
 		return session;
 	}
 
-	private ISession doLogin(String login, String password) throws RemoteException {
+	@Override
+	public ISession siteLogin(String login, String password) throws RemoteException {
+		if(password == null)
+			throw new AccessDeniedException();
+
+		return login(login, password, true);
+	}
+
+	@Override
+	public ISession siteServer(String sessionId, String serverId) throws RemoteException {
+		ISession session = sessionManager.siteSession(sessionId);
+		IServerInfo server = findServer(serverId);
+
+		if(server == null)
+			return null;
+
+		session.setServerInfo(server);
+		return session;
+	}
+
+	private ISession login(String login, String password, boolean site) throws RemoteException {
 		IServerInfo serverInfo = findServer((String)null);
 
-		if(serverInfo == null)
+		if(serverInfo == null || password == null)
 			throw new AccessDeniedException();
 
 		IApplicationServer loginServer = serverInfo.getServer();
-		IUser user = password != null ? loginServer.login(login, password) : loginServer.login(login);
-		userManager.add(user);
 
-		ISession session = sessionManager.create(user);
+		ISession session = null;
+
+		if(site) {
+			IAccount account = loginServer.account(login, password);
+			userManager.add(account);
+			session = sessionManager.create(account);
+		} else {
+			IUser user = loginServer.user(login, password);
+			userManager.add(user);
+			session = sessionManager.create(user);
+		}
+
 		session.setServerInfo(serverInfo);
 		return session;
 	}

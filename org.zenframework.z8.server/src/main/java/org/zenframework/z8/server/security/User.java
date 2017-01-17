@@ -66,6 +66,7 @@ public class User implements IUser {
 	private RLinkedHashMap<string, primary> parameters = new RLinkedHashMap<string, primary>();
 
 	static private User system = null;
+	static private User site = null;
 
 	static public IUser system() {
 		if(system != null)
@@ -94,6 +95,23 @@ public class User implements IUser {
 		system.addSystemTools();
 
 		return system;
+	}
+
+	static public IUser site() {
+		if(site != null)
+			return site;
+
+		guid id = BuiltinUsers.Site.guid();
+
+		site = new User();
+
+		site.id = id;
+		site.login = "";
+		site.password = "";
+		site.banned = true;
+		site.roles = new HashSet<IRole>(Arrays.asList(Role.site()));
+		site.privileges = new Privileges(Access.site());
+		return site;
 	}
 
 	public User() {
@@ -198,19 +216,15 @@ public class User implements IUser {
 		return parameters;
 	}
 
-	static public IUser load(String login) {
-		return load(new string(login));
+	static public IUser read(guid userId) {
+		return userId.isNull() ? null : read((primary)userId);
 	}
 
-	static public IUser load(guid userId) {
-		return load((primary)userId);
+	static private IUser read(String login) {
+		return read(new string(login));
 	}
 
-	static public IUser load(string login) {
-		return load((primary)login);
-	}
-
-	static private IUser load(primary loginOrId) {
+	static private IUser read(primary loginOrId) {
 		if(!ServerConfig.isSystemInstalled())
 			return User.system();
 
@@ -238,9 +252,9 @@ public class User implements IUser {
 	}
 
 	static public IUser load(String login, String password) {
-		IUser user = load(login);
+		IUser user = read(login);
 
-		if(password == null || !password.equals(user.password()) || user.banned())
+		if(password == null || !password.equals(user.password()) || user.banned() || user.id().equals(Users.Site))
 			throw new AccessDeniedException();
 
 		return user;

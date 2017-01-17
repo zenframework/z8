@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
+import org.zenframework.z8.server.security.IAccount;
 import org.zenframework.z8.server.security.IUser;
 import org.zenframework.z8.server.security.User;
 import org.zenframework.z8.server.utils.IOUtils;
@@ -16,6 +17,7 @@ public class Session implements ISession {
 
 	private String id;
 	private IUser user;
+	private IAccount account;
 	private IServerInfo serverInfo;
 
 	private long lastAccessTime;
@@ -27,6 +29,11 @@ public class Session implements ISession {
 	public Session(String id, IUser user) {
 		this.id = id;
 		setUser(user);
+	}
+
+	public Session(String id, IAccount account) {
+		this.id = id;
+		setAccount(account);
 	}
 
 	public Session(ISession session) {
@@ -41,12 +48,23 @@ public class Session implements ISession {
 
 	@Override
 	public IUser user() {
-		return user;
+		return account != null ? account.user() : user;
+	}
+
+	@Override
+	public IAccount account() {
+		return account;
 	}
 
 	@Override
 	public void setUser(IUser user) {
 		this.user = user;
+		lastAccessTime = System.currentTimeMillis();
+	}
+
+	@Override
+	public void setAccount(IAccount account) {
+		this.account = account;
 		lastAccessTime = System.currentTimeMillis();
 	}
 
@@ -88,6 +106,7 @@ public class Session implements ISession {
 		RmiIO.writeString(objects, id);
 
 		objects.writeObject(user);
+		objects.writeObject(account);
 		objects.writeObject(serverInfo);
 
 		objects.close();
@@ -106,8 +125,9 @@ public class Session implements ISession {
 		id = RmiIO.readString(objects);
 
 		user = (IUser)objects.readObject();
+		account = (IAccount)objects.readObject();
 		serverInfo = (ServerInfo)objects.readObject();
-		
+
 		objects.close();
 	}
 }

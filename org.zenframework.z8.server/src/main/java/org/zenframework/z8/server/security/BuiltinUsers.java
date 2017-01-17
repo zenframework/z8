@@ -4,15 +4,19 @@ import org.zenframework.z8.server.resources.Resources;
 import org.zenframework.z8.server.types.guid;
 
 public enum BuiltinUsers {
+	Site(names.site),
 	System(names.system),
 	Administrator(names.administrator);
 
 	class names {
 		static final String system = "00000000-0000-0000-0000-000000000001";
 		static final String administrator = "00000000-0000-0000-0000-000000000002";
+		static final String site = "00000000-0000-0000-0000-000000000003";
 	}
 
 	static public class strings {
+		static public final String SiteName = "BuiltinUsers.site.name";
+		static public final String SiteDescription = "BuiltinUsers.site.description";
 		static public final String SystemName = "BuiltinUsers.system.name";
 		static public final String SystemDescription = "BuiltinUsers.system.description";
 		static public final String AdministratorName = "BuiltinUsers.administrator.name";
@@ -20,6 +24,8 @@ public enum BuiltinUsers {
 	}
 
 	static public class displayNames {
+		public final static String SiteName = Resources.get(strings.SiteName);
+		public final static String SiteDescription = Resources.get(strings.SiteDescription);
 		public final static String SystemName = Resources.get(strings.SystemName);
 		public final static String SystemDescription = Resources.get(strings.SystemDescription);
 		public final static String AdministratorName = Resources.get(strings.AdministratorName);
@@ -46,13 +52,13 @@ public enum BuiltinUsers {
 	}
 
 	static public BuiltinUsers fromString(String string) {
-		if(names.system.equals(string)) {
+		if(names.site.equals(string))
+			return BuiltinUsers.Site;
+		else if(names.system.equals(string))
 			return BuiltinUsers.System;
-		} else if(names.administrator.equals(string)) {
+		else if(names.administrator.equals(string))
 			return BuiltinUsers.Administrator;
-		} else {
+		else
 			throw new RuntimeException("Unknown builtin user id: '" + string + "'");
-		}
 	}
-
 }

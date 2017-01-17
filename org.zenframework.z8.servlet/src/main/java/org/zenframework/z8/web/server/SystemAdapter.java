@@ -4,11 +4,11 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.zenframework.z8.web.servlet.Servlet;
 
-public class JsonAdapter extends Adapter {
+public class SystemAdapter extends Adapter {
 
 	static private final String AdapterPath = "/request.json";
 
-	public JsonAdapter(Servlet servlet) {
+	public SystemAdapter(Servlet servlet) {
 		super(servlet);
 	}
 

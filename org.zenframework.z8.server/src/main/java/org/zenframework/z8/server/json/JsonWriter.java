@@ -318,7 +318,6 @@ public class JsonWriter {
 		startObject();
 		writeProperty(new string(Json.request), requestId);
 		writeProperty(new string(Json.success), success);
-		writeProperty(new string(Json.type), "event");
 	}
 
 	public void startResponse(String requestId, boolean success, int status) {

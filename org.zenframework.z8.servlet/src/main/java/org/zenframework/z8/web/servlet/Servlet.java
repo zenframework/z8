@@ -23,8 +23,8 @@ import org.zenframework.z8.server.logs.Trace;
 import org.zenframework.z8.server.types.encoding;
 import org.zenframework.z8.web.server.Adapter;
 import org.zenframework.z8.web.server.ConverterAdapter;
-import org.zenframework.z8.web.server.JsonAdapter;
-import org.zenframework.z8.web.server.TrustedAuthAdapter;
+import org.zenframework.z8.web.server.SiteAdapter;
+import org.zenframework.z8.web.server.SystemAdapter;
 
 public class Servlet extends HttpServlet {
 
@@ -33,8 +33,6 @@ public class Servlet extends HttpServlet {
 	}
 
 	private static final long serialVersionUID = 6442937554115725675L;
-
-	static private final String ParamWorkingPath = "working-path";
 
 	private final List<Adapter> adapters = new ArrayList<Adapter>();
 
@@ -48,9 +46,7 @@ public class Servlet extends HttpServlet {
 
 		ServletContext context = getServletContext();
 
-		String workingPath = servletConfig.getInitParameter(ParamWorkingPath);
-		if(workingPath == null)
-			workingPath = context.getRealPath("WEB-INF");
+		String workingPath = context.getRealPath("WEB-INF");
 
 		try {
 			ServerConfig config = new ServerConfig(new File(workingPath, ServerConfig.DefaultConfigurationFileName).getPath());
@@ -67,9 +63,9 @@ public class Servlet extends HttpServlet {
 			throw new ServletException(e);
 		}
 
-		adapters.add(new JsonAdapter(this));
+		adapters.add(new SystemAdapter(this));
+		adapters.add(new SiteAdapter(this));
 		adapters.add(new ConverterAdapter(this));
-		adapters.add(new TrustedAuthAdapter(this));
 
 		for(Adapter adapter : adapters)
 			adapter.start();
