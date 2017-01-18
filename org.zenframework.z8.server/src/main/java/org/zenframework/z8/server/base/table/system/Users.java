@@ -227,8 +227,12 @@ public class Users extends Table {
 	public void beforeUpdate(guid recordId) {
 		super.beforeUpdate(recordId);
 
-		if(banned.get().changed() && isSystemUser(recordId))
-			throw new exception("Builtin users can not be banned");
+		if(banned.get().changed() && isSystemUser(recordId)) {
+			boolean ban = banned.get().bool().get();
+			if(!ban && Site.equals(recordId) ||
+					ban  && (System.equals(recordId) || Administrator.equals(recordId)))
+				throw new exception("Builtin users ban state can not be changed");
+		}
 	}
 
 	@Override

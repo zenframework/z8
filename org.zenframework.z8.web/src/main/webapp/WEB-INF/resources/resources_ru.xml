@@ -149,6 +149,8 @@
 	<entry key="InterconnectionCenterView.title">Interconnection Center</entry>
 
 	<!-- BuiltinUsers -->
+	<entry key="BuiltinUsers.site.name">Site</entry>
+	<entry key="BuiltinUsers.site.description">Системный вход с сайта, ограниченная функциональность</entry>
 	<entry key="BuiltinUsers.system.name">System</entry>
 	<entry key="BuiltinUsers.system.description">Системный вход</entry>
 	<entry key="BuiltinUsers.administrator.name">Admin</entry>

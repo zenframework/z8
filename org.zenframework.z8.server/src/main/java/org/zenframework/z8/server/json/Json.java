@@ -21,6 +21,7 @@ public interface Json {
 	string maxUploadSize = new string("maxUploadSize");
 
 	string user = new string("user");
+	string account = new string("account");
 	string login = new string("login");
 	string firstName = new string("firstName");
 	string middleName = new string("middleName");

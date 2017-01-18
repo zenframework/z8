@@ -176,6 +176,10 @@ public abstract class Adapter {
 		writeResponse(response, writer.toString().getBytes(encoding.Default.toString()));
 	}
 
+	protected void writeResponse(HttpServletResponse response, String content) throws IOException {
+		writeResponse(response, content.getBytes(encoding.Default.toString()));
+	}
+
 	protected void writeResponse(HttpServletResponse response, byte[] content) throws IOException {
 		response.setContentType("text/html;charset=" + encoding.Default.toString());
 
