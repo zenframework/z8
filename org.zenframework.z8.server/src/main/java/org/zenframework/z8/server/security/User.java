@@ -102,11 +102,12 @@ public class User implements IUser {
 			return site;
 
 		guid id = BuiltinUsers.Site.guid();
+		String login = BuiltinUsers.displayNames.SiteName;
 
 		site = new User();
 
 		site.id = id;
-		site.login = "";
+		site.login = login;
 		site.password = "";
 		site.banned = true;
 		site.roles = new HashSet<IRole>(Arrays.asList(Role.site()));
