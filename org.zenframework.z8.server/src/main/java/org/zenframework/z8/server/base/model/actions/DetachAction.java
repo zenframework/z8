@@ -28,7 +28,7 @@ public class DetachAction extends Action {
 		for(int i = 0; i < jsonArray.length(); i++)
 			files.add(new file(jsonArray.getGuid(i)));
 
-		Query query = getRootQuery();
+		Query query = getQuery();
 		guid target = getRecordIdParameter();
 		String fieldId = getFieldParameter();
 

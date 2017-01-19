@@ -252,7 +252,7 @@ public class Select {
 			String name = link.getQuery().name();
 
 			if(name != null) {
-				Query query = link.getQuery().getRootQuery();
+				Query query = link.getQuery();
 				SqlToken token = new Equ(link.sql_guid(), query.primaryKey());
 
 				options.disableAggregation();

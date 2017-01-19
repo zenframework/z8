@@ -23,7 +23,6 @@ public class Delete extends Statement {
 
 		this.recordId = recordId;
 
-		query = query.getRootQuery();
 		Connection connection = ConnectionManager.get();
 		Database database = connection.database();
 		DatabaseVendor vendor = connection.vendor();

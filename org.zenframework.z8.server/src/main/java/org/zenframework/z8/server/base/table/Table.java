@@ -164,6 +164,11 @@ public class Table extends TableBase {
 	}
 
 	@Override
+	public Field lockKey() {
+		return lock.get();
+	}
+
+	@Override
 	public void beforeCreate(guid recordId, guid parentId) {
 		createdAt.get().set(new date());
 		createdBy.get().set(ApplicationServer.getUser().id());

@@ -47,7 +47,7 @@ public class Privileges implements IPrivileges {
 		if(tableAccess == null)
 			return defaultAccess;
 
-		IAccess access = tableAccess.get(table.getRootQuery().key());
+		IAccess access = tableAccess.get(table.key());
 		return access != null ? access : defaultAccess;
 	}
 

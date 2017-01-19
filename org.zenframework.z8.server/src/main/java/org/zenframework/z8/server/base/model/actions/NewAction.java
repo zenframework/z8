@@ -96,7 +96,7 @@ public class NewAction extends Action {
 	}
 
 	static public Collection<Field> run(Query query, guid recordId, guid parentId) {
-		Collection<Field> fields = query.getRootQuery().getPrimaryFields();
+		Collection<Field> fields = query.getPrimaryFields();
 
 		query.onNew(recordId, parentId != null ? parentId : guid.Null);
 

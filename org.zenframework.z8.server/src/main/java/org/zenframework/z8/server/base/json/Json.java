@@ -77,9 +77,6 @@ public class Json extends OBJECT {
 	final static public string query = org.zenframework.z8.server.json.Json.query;
 	final static public string table = org.zenframework.z8.server.json.Json.table;
 
-	final static public string external = org.zenframework.z8.server.json.Json.external;
-	final static public string internal = org.zenframework.z8.server.json.Json.internal;
-
 	final static public string recordId = org.zenframework.z8.server.json.Json.recordId;
 	final static public string parentId = org.zenframework.z8.server.json.Json.parentId;
 
@@ -145,7 +142,6 @@ public class Json extends OBJECT {
 	final static public string commands = org.zenframework.z8.server.json.Json.commands;
 	final static public string parameters = org.zenframework.z8.server.json.Json.parameters;
 	final static public string reports = org.zenframework.z8.server.json.Json.reports;
-	final static public string showTotals = org.zenframework.z8.server.json.Json.showTotals;
 
 	final static public string job = org.zenframework.z8.server.json.Json.job;
 	final static public string done = org.zenframework.z8.server.json.Json.done;

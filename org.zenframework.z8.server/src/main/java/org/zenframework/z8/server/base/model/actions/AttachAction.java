@@ -25,7 +25,7 @@ public class AttachAction extends Action {
 	public void writeResponse(JsonWriter writer) throws Throwable {
 		List<file> files = request().getFiles();
 
-		Query query = getRootQuery();
+		Query query = getQuery();
 		guid target = getRecordIdParameter();
 		String fieldId = getFieldParameter();
 

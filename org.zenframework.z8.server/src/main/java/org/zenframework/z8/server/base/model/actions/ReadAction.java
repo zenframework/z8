@@ -633,10 +633,14 @@ public class ReadAction extends Action {
 		primary[] lastGroup;
 	}
 
+	/*
+	* группировка для chart'ов
+	*/
+	@SuppressWarnings("unused")
 	private void writeGroupTotals(JsonWriter writer, Field groupField) throws SQLException {
 		Select select = cursor();
 
-		Collection<Field> fields = getSummaryFields(select.getFields());
+		Collection<Field> fields = getTotalsFields(select.getFields());
 		fields.add(groupField);
 
 		if(select.isGrouped()) {
@@ -800,14 +804,14 @@ public class ReadAction extends Action {
 	private void writeTotals(JsonWriter writer) throws SQLException {
 		AggregatingSelect totals = totals();
 
-		totals.setFields(getSummaryFields(totals.getFields()));
+		totals.setFields(getTotalsFields(totals.getFields()));
 
 		try {
 			totals.open();
 
-			writer.startObject(Json.totalsData);
+			writer.startObject(Json.data);
 
-			while(totals.next()) {
+			if(totals.next()) {
 				for(Field field : totals.getFields())
 					field.writeData(writer);
 			}
@@ -818,7 +822,7 @@ public class ReadAction extends Action {
 		}
 	}
 
-	private Collection<Field> getSummaryFields(Collection<Field> fields) {
+	private Collection<Field> getTotalsFields(Collection<Field> fields) {
 		Collection<Field> result = new ArrayList<Field>();
 
 		for(Field field : fields) {
@@ -846,7 +850,7 @@ public class ReadAction extends Action {
 
 		select.addWhere(where);
 
-		Collection<Field> fields = getSummaryFields(select.getFields());
+		Collection<Field> fields = getTotalsFields(select.getFields());
 
 		Field expression = createAggregatedExpression(groupField, groupField.aggregation, groupField.type());
 		Field count = createAggregatedExpression(groupField, Aggregation.Count, FieldType.Integer);
@@ -918,27 +922,27 @@ public class ReadAction extends Action {
 			return;
 		}
 
-		Field totalsBy = actionParameters().totalsBy;
-
 		try {
-			if(totalsBy == null) {
-				if(getStart() != -1 || getLimit() != -1) {
-					if((totalCount = writeCount(writer)) == 0)
-						return;
-				}
-
-				Groupping groups = writeFrame(writer);
-
-				if(query.showTotals.get())
-					writeTotals(writer);
-
-				if(groups != null)
-					writeSummary(writer, groups);
-			} else
-				writeGroupTotals(writer, totalsBy);
+			writeData(writer);
 		} finally {
 			afterRead();
 		}
+	}
+
+	private void writeData(JsonWriter writer) throws Throwable {
+		if(getTotalsParameter()) {
+			writeTotals(writer);
+			return;
+		}
+
+		if(getStart() != -1 || getLimit() != -1) {
+			if((totalCount = writeCount(writer)) == 0)
+				return;
+		}
+
+		Groupping groups = writeFrame(writer);
+		if(groups != null)
+			writeSummary(writer, groups);
 	}
 
 	private Field createAggregatedExpression(final Field field, Aggregation aggregation, FieldType type) {

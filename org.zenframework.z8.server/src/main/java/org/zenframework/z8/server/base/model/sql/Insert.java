@@ -44,7 +44,7 @@ public class Insert extends Statement {
 			insertValues += (insertValues.isEmpty() ? "" : ", ") + "?";
 		}
 
-		return "insert into " + database.tableName(query.getRootQuery().name()) + " " + "(" + insertFields + ") values (" + insertValues + ")";
+		return "insert into " + database.tableName(query.name()) + " " + "(" + insertFields + ") values (" + insertValues + ")";
 	}
 
 	public void execute() {

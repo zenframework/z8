@@ -13,6 +13,7 @@ import org.zenframework.z8.server.json.Json;
 import org.zenframework.z8.server.json.JsonWriter;
 import org.zenframework.z8.server.json.parser.JsonArray;
 import org.zenframework.z8.server.request.RequestTarget;
+import org.zenframework.z8.server.types.bool;
 import org.zenframework.z8.server.types.guid;
 import org.zenframework.z8.server.types.string;
 import org.zenframework.z8.server.types.sql.sql_bool;
@@ -56,11 +57,6 @@ public abstract class Action extends RequestTarget {
 
 	public Link getLink() {
 		return actionParameters.link;
-	}
-
-	public Query getRootQuery() {
-		Query query = getQuery();
-		return query != null ? query.getRootQuery() : null;
 	}
 
 	protected Collection<Field> getFormFields(Query query) {
@@ -116,9 +112,9 @@ public abstract class Action extends RequestTarget {
 		return getRequestParameter(Json.details);
 	}
 
-	public int getTotalParameter() {
-		String total = getRequestParameter(Json.total);
-		return total != null ? Integer.parseInt(total) : -1;
+	public boolean getTotalsParameter() {
+		String totals = getRequestParameter(Json.totals);
+		return new bool(totals).get();
 	}
 
 	public String getTextParameter() {

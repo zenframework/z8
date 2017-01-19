@@ -8,10 +8,8 @@ import org.zenframework.z8.base.table.value.Link;
 
 [native "org.zenframework.z8.server.base.query.Query"]
 public class Query extends Object {
-	protected bool readOnly = false;
-	public bool visible = true;
-	public bool collapseGroups = false;
-	public bool showTotals = false;
+	public bool readOnly = false;
+	public bool totals = false;
 
 	public int columnCount = 3;
 

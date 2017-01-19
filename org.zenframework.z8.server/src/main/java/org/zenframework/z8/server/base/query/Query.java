@@ -24,8 +24,6 @@ import org.zenframework.z8.server.base.model.actions.UpdateAction;
 import org.zenframework.z8.server.base.model.command.ICommand;
 import org.zenframework.z8.server.base.model.sql.Insert;
 import org.zenframework.z8.server.base.model.sql.Select;
-import org.zenframework.z8.server.base.table.Table;
-import org.zenframework.z8.server.base.table.TreeTable;
 import org.zenframework.z8.server.base.table.value.AttachmentField;
 import org.zenframework.z8.server.base.table.value.Expression;
 import org.zenframework.z8.server.base.table.value.Field;
@@ -40,7 +38,6 @@ import org.zenframework.z8.server.db.sql.expressions.True;
 import org.zenframework.z8.server.engine.ApplicationServer;
 import org.zenframework.z8.server.json.Json;
 import org.zenframework.z8.server.json.JsonWriter;
-import org.zenframework.z8.server.logs.Trace;
 import org.zenframework.z8.server.reports.BirtFileReader;
 import org.zenframework.z8.server.request.Loader;
 import org.zenframework.z8.server.runtime.IObject;
@@ -74,12 +71,8 @@ public class Query extends OBJECT {
 	}
 
 	public bool readOnly = bool.False;
-
-	public bool showTotals = bool.False;
-	public bool visible = bool.True;
-	public bool collapseGroups = bool.False;
-
 	public integer columnCount = new integer(4);
+	public bool totals = bool.False;
 
 	public RCollection<Query.CLASS<? extends Query>> queries = new RCollection<Query.CLASS<? extends Query>>(true);
 
@@ -104,11 +97,7 @@ public class Query extends OBJECT {
 	public Field.CLASS<? extends Field> attachments;
 	public Field.CLASS<? extends Field> period;
 
-	private Query[] rootQueries;
-
 	private Collection<OBJECT.CLASS<? extends OBJECT>> links;
-
-	private Field primaryKey;
 
 	private String alias;
 	private SqlToken where;
@@ -151,63 +140,28 @@ public class Query extends OBJECT {
 	}
 
 	public void onNew(guid recordId, guid parentId) {
-		if(!ApplicationServer.events())
-			return;
-
-		z8_onNew(recordId, parentId);
-
-		Query rootQuery = getRootQuery();
-
-		if(rootQuery != this)
-			rootQuery.onNew(recordId, parentId);
+		if(ApplicationServer.events())
+			z8_onNew(recordId, parentId);
 	}
 
 	public void onCopy() {
-		if(!ApplicationServer.events())
-			return;
-
-		z8_onCopy();
-
-		Query rootQuery = getRootQuery();
-
-		if(rootQuery != this)
-			rootQuery.onCopy();
+		if(ApplicationServer.events())
+			z8_onCopy();
 	}
 
 	public void beforeRead(guid parentId) {
-		if(!ApplicationServer.events())
-			return;
-
-		z8_beforeRead(parentId);
-
-		Query rootQuery = getRootQuery();
-
-		if(rootQuery != this)
-			rootQuery.beforeRead(parentId);
+		if(ApplicationServer.events())
+			z8_beforeRead(parentId);
 	}
 
 	public void afterRead(guid parentId) {
-		if(!ApplicationServer.events())
-			return;
-
-		z8_afterRead(parentId);
-
-		Query rootQuery = getRootQuery();
-
-		if(rootQuery != this)
-			rootQuery.afterRead(parentId);
+		if(ApplicationServer.events())
+			z8_afterRead(parentId);
 	}
 
 	public void beforeCreate(guid recordId, guid parentId) {
-		if(!ApplicationServer.events())
-			return;
-
-		z8_beforeCreate(recordId, parentId);
-
-		Query rootQuery = getRootQuery();
-
-		if(rootQuery != this)
-			rootQuery.beforeCreate(recordId, parentId);
+		if(ApplicationServer.events())
+			z8_beforeCreate(recordId, parentId);
 	}
 
 	public void afterCreate(guid recordId, guid parentId) {
@@ -217,22 +171,11 @@ public class Query extends OBJECT {
 		if(hasAttribute(IObject.SearchIndex) && !searchFields.isEmpty())
 			SearchEngine.INSTANCE.updateRecord(this, recordId.toString());
 */
-		Query rootQuery = getRootQuery();
-
-		if(rootQuery != this)
-			rootQuery.afterCreate(recordId, parentId);
 	}
 
 	public void beforeUpdate(guid recordId) {
-		if(!ApplicationServer.events())
-			return;
-
-		z8_beforeUpdate(recordId);
-
-		Query rootQuery = getRootQuery();
-
-		if(rootQuery != this)
-			rootQuery.beforeUpdate(recordId);
+		if(ApplicationServer.events())
+			z8_beforeUpdate(recordId);
 	}
 
 	public void afterUpdate(guid recordId) {
@@ -250,23 +193,11 @@ public class Query extends OBJECT {
 */
 		if(ApplicationServer.events())
 			z8_afterUpdate(recordId);
-
-		Query rootQuery = getRootQuery();
-
-		if(rootQuery != this)
-			rootQuery.afterUpdate(recordId);
 	}
 
 	public void beforeDestroy(guid recordId) {
-		if(!ApplicationServer.events())
-			return;
-
-		z8_beforeDestroy(recordId);
-
-		Query rootQuery = getRootQuery();
-
-		if(rootQuery != this)
-			rootQuery.beforeDestroy(recordId);
+		if(ApplicationServer.events())
+			z8_beforeDestroy(recordId);
 	}
 
 	public void afterDestroy(guid recordId) {
@@ -276,21 +207,12 @@ public class Query extends OBJECT {
 		if(hasAttribute(IObject.SearchIndex) && !searchFields.isEmpty())
 			SearchEngine.INSTANCE.deleteRecord(this, recordId.toString());
 */
-		Query rootQuery = getRootQuery();
-
-		if(rootQuery != this)
-			rootQuery.afterDestroy(recordId);
 	}
 
 	@SuppressWarnings("unchecked")
 	public void onCommand(Command command, Collection<guid> recordIds) {
 		RCollection<guid> ids = getGuidCollection(recordIds);
 		z8_onCommand((Command.CLASS<? extends Command>)command.getCLASS(), ids);
-
-		Query rootQuery = getRootQuery();
-
-		if(rootQuery != this)
-			rootQuery.onCommand(command, recordIds);
 	}
 
 	public Collection<Query> onReport(String report, Collection<guid> recordIds) {
@@ -324,11 +246,6 @@ public class Query extends OBJECT {
 
 	private void onReport(Query query, String report, Collection<guid> recordIds) {
 		query.callOnReport(report, recordIds);
-
-		Query rootQuery = query.getRootQuery();
-
-		if(rootQuery != query)
-			rootQuery.callOnReport(report, recordIds);
 	}
 
 	private void callOnReport(String report, Collection<guid> recordIds) {
@@ -417,7 +334,7 @@ public class Query extends OBJECT {
 	}
 
 	private guid getParentId() {
-		Field parentKey = getRootQuery().parentKey();
+		Field parentKey = parentKey();
 
 		if(parentKey != null)
 			return parentKey.changed() ? parentKey.guid() : guid.Null;
@@ -426,13 +343,11 @@ public class Query extends OBJECT {
 	}
 
 	private Collection<Field> getInsertFields(guid recordId, guid parentId) {
-		Query query = getRootQuery();
-
 		Collection<Field> myFields = new ArrayList<Field>();
-		Collection<Field> fields = query.getPrimaryFields();
+		Collection<Field> fields = getPrimaryFields();
 
 		for(Field field : fields) {
-			if(field.owner() != query)
+			if(field.owner() != this)
 				continue;
 
 			if(field.isPrimaryKey() && !field.changed())
@@ -448,9 +363,7 @@ public class Query extends OBJECT {
 	}
 
 	private void executeInsert(Collection<Field> fields) {
-		Query rootQuery = getRootQuery();
-
-		Insert insert = new Insert(rootQuery, fields);
+		Insert insert = new Insert(this, fields);
 		insert.execute();
 	}
 
@@ -644,11 +557,9 @@ public class Query extends OBJECT {
 	}
 
 	public Collection<Field> getChangedFields() {
-		Query query = getRootQuery();
-
 		Collection<Field> fields = new ArrayList<Field>();
 
-		for(Field.CLASS<? extends Field> field : query.primaryFields()) {
+		for(Field.CLASS<? extends Field> field : primaryFields()) {
 			if(field.hasInstance() && field.get().changed())
 				fields.add(field.get());
 		}
@@ -859,20 +770,10 @@ public class Query extends OBJECT {
 	}
 
 	public Collection<Field.CLASS<? extends Field>> sortFields() {
-		if(sortFields.isEmpty()) {
-			Query rootQuery = getRootQuery();
-			if(rootQuery != this)
-				return rootQuery.sortFields;
-		}
 		return sortFields;
 	}
 
 	public Collection<Field.CLASS<? extends Field>> groupFields() {
-		if(groupFields.isEmpty()) {
-			Query rootQuery = getRootQuery();
-			if(rootQuery != this)
-				return rootQuery.groupFields;
-		}
 		return groupFields;
 	}
 
@@ -1008,25 +909,11 @@ public class Query extends OBJECT {
 	}
 
 	public Collection<Link> getAggregateByFields() {
-		Collection<Link> fields = CLASS.asList(aggregateBy);
-
-		if(fields.isEmpty()) {
-			Query rootQuery = getRootQuery();
-			return rootQuery != this ? rootQuery.getAggregateByFields() : fields;
-		}
-
-		return fields;
+		return CLASS.asList(aggregateBy);
 	}
 
 	public Collection<Field> getGroupByFields() {
-		Collection<Field> fields = CLASS.asList(groupBy);
-
-		if(fields.isEmpty()) {
-			Query rootQuery = getRootQuery();
-			return rootQuery != this ? rootQuery.getGroupByFields() : fields;
-		}
-
-		return fields;
+		return CLASS.asList(groupBy);
 	}
 
 	private RCollection<guid> getGuidCollection(Collection<guid> guids) {
@@ -1038,48 +925,15 @@ public class Query extends OBJECT {
 		return result;
 	}
 
-	private Field findPrimaryKey() {
-		for(Field.CLASS<? extends Field> field : dataFields()) {
-			if(field.getAttribute(IObject.PrimaryKey) != null)
-				return field.get();
-		}
-
+	public Field primaryKey() {
 		return null;
 	}
 
-	public Field primaryKey() {
-		if(primaryKey != null)
-			return primaryKey;
-
-		Query[] rootQueries = getRootQueries();
-
-		if(rootQueries.length == 1) {
-			Query rootQuery = rootQueries[0];
-			primaryKey = rootQuery.findPrimaryKey();
-		}
-
-		return primaryKey;
-	}
-
 	public Field parentKey() {
-		Query rootQuery = getRootQuery();
-
-		if(rootQuery != null && rootQuery instanceof TreeTable) {
-			TreeTable table = (TreeTable)rootQuery;
-			return table.parentId.get();
-		}
-
 		return null;
 	}
 
 	public Field[] parentKeys() {
-		Query rootQuery = getRootQuery();
-
-		if(rootQuery != null && rootQuery instanceof TreeTable) {
-			TreeTable table = (TreeTable)rootQuery;
-			return new Field[] { table.parent1.get(), table.parent2.get(), table.parent3.get(), table.parent4.get(), table.parent5.get(), table.parent6.get() };
-		}
-
 		return new Field[0];
 	}
 
@@ -1088,13 +942,6 @@ public class Query extends OBJECT {
 	}
 
 	public Field lockKey() {
-		Query rootQuery = getRootQuery();
-
-		if(rootQuery != null && rootQuery instanceof Table) {
-			Table table = (Table)rootQuery;
-			return table.lock.get();
-		}
-
 		return null;
 	}
 
@@ -1146,25 +993,6 @@ public class Query extends OBJECT {
 		return result;
 	}
 
-	public Query getRootQuery() {
-		Query[] rootQueries = getRootQueries();
-
-		if(rootQueries.length != 1)
-			return null;
-
-		Query rootQuery = rootQueries[0];
-
-		if(rootQuery == this)
-			return rootQuery;
-
-		return rootQuery.getRootQuery();
-	}
-
-	public Query[] getRootQueries() {
-		initializeRootQueries();
-		return rootQueries;
-	}
-
 	public Collection<OBJECT.CLASS<? extends OBJECT>> getLinks() {
 		if(links == null) {
 			links = new ArrayList<OBJECT.CLASS<? extends OBJECT>>(10);
@@ -1176,69 +1004,6 @@ public class Query extends OBJECT {
 		}
 
 		return links;
-	}
-
-	@SuppressWarnings("unchecked")
-	private void initializeRootQueries() {
-		if(rootQueries != null)
-			return;
-
-		Query.CLASS<Query> me = (Query.CLASS<Query>)this.getCLASS();
-
-		if(queries.size() == 0) {
-			rootQueries = new Query[] { this };
-			return;
-		}
-
-		List<Query.CLASS<? extends Query>> references = new ArrayList<Query.CLASS<? extends Query>>(10);
-		references.addAll(queries());
-
-		if(getLinks().size() != 0)
-			references.add(me);
-
-		List<Query.CLASS<? extends Query>> referers = new ArrayList<Query.CLASS<? extends Query>>(10);
-		referers.addAll(references);
-
-		for(Query.CLASS<? extends Query> query : referers) {
-			if(!query.hasInstance()) {
-				references.remove(query);
-				continue;
-			}
-
-			for(OBJECT.CLASS<? extends OBJECT> cls : query.get().getLinks()) {
-				if(!cls.hasInstance())
-					continue;
-
-				ILink link = (ILink)cls.get();
-				Query.CLASS<Query> linkedQuery = link.query();
-
-				if(linkedQuery != me && linkedQuery != query)
-					references.remove(linkedQuery);
-			}
-		}
-
-		if(references.size() != 1) {
-			for(int index = references.size() - 1; index >= 0; index--) {
-				Query query = references.get(index).get();
-
-				if(query.getLinks().size() == 0) {
-					Trace.logEvent("Unused query found. " + this + '.' + query);
-					references.remove(index);
-				}
-			}
-		}
-
-		if(references.size() > 1) {
-			String message = "Model inconsistency. Multiple root queries detected in " + classId();
-
-			for(Query.CLASS<? extends Query> query : references)
-				message += ("\n\t" + query.get());
-
-			Trace.logEvent(message);
-		} else if(references.size() == 0)
-			Trace.logEvent("Model inconsistency. No root query detected. " + this);
-
-		rootQueries = CLASS.asList(references).toArray(new Query[0]);
 	}
 
 	private static Pattern pattern = Pattern.compile("\\.");
@@ -1343,7 +1108,7 @@ public class Query extends OBJECT {
 
 		if(ownersCount > 1) {
 			for(Query o : query.getOwners()) {
-				if(!getRouteByOwners(o).isEmpty() || getRootQuery() == o) {
+				if(!getRouteByOwners(o).isEmpty() || this == o) {
 					owner = o;
 					break;
 				}
@@ -1351,10 +1116,10 @@ public class Query extends OBJECT {
 		} else if(ownersCount == 1)
 			owner = query.getOwner();
 
-		Query rootQuery = getRootQuery();
+		Query rootQuery = this;
 
 		while(owner != null && query != this && query != rootQuery) {
-			Query root = owner.getRootQuery();
+			Query root = owner;
 
 			while(query != root) {
 				ILink link = owner.getLinkTo(query);
@@ -1406,7 +1171,7 @@ public class Query extends OBJECT {
 		Query current = this;
 
 		for(Query q : route) {
-			if(current.getRootQuery() != q) {
+			if(current != q) {
 				ILink link = current.getLinkTo(q);
 
 				if(link != null)
@@ -1428,7 +1193,7 @@ public class Query extends OBJECT {
 		Query current = this;
 
 		for(Query query : route) {
-			if(query != current.getRootQuery()) {
+			if(query != current) {
 				ILink link = current.getLinkTo(query);
 
 				if(link != null)
@@ -1519,17 +1284,9 @@ public class Query extends OBJECT {
 		return null;
 	}
 
-	// ////////////////////////////////////////////////////////////////////////////////////////////////
-
 	private boolean readOnly() {
 		if(readOnly.get())
 			return true;
-
-		Query rootQuery = getRootQuery();
-
-		if(rootQuery != null && rootQuery != this && rootQuery.readOnly())
-			return true;
-
 		return !access().write();
 	}
 
@@ -1589,7 +1346,7 @@ public class Query extends OBJECT {
 		boolean isGrouped = !getGroupByFields().isEmpty() || !getAggregateByFields().isEmpty();
 		writer.writeProperty(Json.readOnly, isGrouped ? true : readOnly());
 
-		writer.writeProperty(Json.showTotals, showTotals);
+		writer.writeProperty(Json.totals, totals);
 		writer.writeProperty(Json.columnCount, columnCount);
 	}
 

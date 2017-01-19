@@ -55,7 +55,7 @@ public class Update extends Statement {
 	private String buildSql() {
 		DatabaseVendor vendor = vendor();
 
-		String sql = "update " + tableName(query.getRootQuery());
+		String sql = "update " + tableName(query);
 
 		String set = "";
 

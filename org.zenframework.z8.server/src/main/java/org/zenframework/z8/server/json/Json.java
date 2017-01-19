@@ -84,6 +84,7 @@ public interface Json {
 	string column = new string("column");
 	string items = new string("items");
 	string tabs = new string("tabs");
+	string totals = new string("totals");
 
 	string dependsOn = new string("dependsOn");
 	string dependency = new string("dependency");
@@ -98,9 +99,6 @@ public interface Json {
 	string type = new string("type");
 	string query = new string("query");
 	string table = new string("table");
-
-	string external = new string("external");
-	string internal = new string("internal");
 
 	string recordId = new string("recordId");
 	string parentId = new string("parentId");
@@ -195,8 +193,6 @@ public interface Json {
 	string commands = new string("commands");
 	string parameters = new string("parameters");
 	string reports = new string("reports");
-
-	string showTotals = new string("showTotals");
 
 	string job = new string("job");
 	string done = new string("done");

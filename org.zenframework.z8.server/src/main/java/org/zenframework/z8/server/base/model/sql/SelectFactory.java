@@ -96,7 +96,7 @@ public class SelectFactory {
 
 			subselect = new Select();
 			subselect.setFields(groupedSelectFields);
-			subselect.setRootQuery(action.getRootQuery());
+			subselect.setRootQuery(action.getQuery());
 			subselect.setLinks(links);
 			subselect.setWhere(filter);
 			subselect.setGroupBy((Collection)aggregateBy);
@@ -117,7 +117,7 @@ public class SelectFactory {
 		if(aggregateBy.isEmpty())
 			usedQueries.addAll(action.getFilterQueries());
 		else
-			usedQueries.remove(action.getRootQuery());
+			usedQueries.remove(action.getQuery());
 
 		usedQueries = filterUsedQueries(usedQueries);
 
@@ -127,7 +127,7 @@ public class SelectFactory {
 
 		Select result = new Select();
 		result.setFields(selectFields);
-		result.setRootQuery(action.getRootQuery());
+		result.setRootQuery(action.getQuery());
 		result.setLinks(links);
 		result.setSubselect(subselect);
 		result.setWhere(filter);
@@ -146,7 +146,7 @@ public class SelectFactory {
 		result.addAll(aggregateBy);
 
 		for(Field field : action.getSelectFields()) {
-			if(field.owner() == action.getRootQuery() || field.owner() == action.getQuery()) {
+			if(field.owner() == action.getQuery() || field.owner() == action.getQuery()) {
 				if(field.getAggregation() != Aggregation.None)
 					result.add(field);
 			}

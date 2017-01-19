@@ -61,6 +61,7 @@ public class Listbox extends Control {
 		if(parentKey != null)
 			writer.writeProperty(Json.parentKey, parentKey.id());
 
+		writer.writeProperty(Json.totals, query.totals);
 		writer.writeProperty(Json.text, query.displayName());
 		writer.writeProperty(Json.link, link.id());
 		writer.writeControls(Json.fields, query.getColumns(), query);
