@@ -23,8 +23,8 @@ public class Fieldset extends Section {
 	}
 
 	@Override
-	public void writeMeta(JsonWriter writer, Query query) {
-		super.writeMeta(writer, query);
+	public void writeMeta(JsonWriter writer, Query query, Query context) {
+		super.writeMeta(writer, query, context);
 
 		writer.writeProperty(Json.isFieldset, true);
 		writer.writeProperty(Json.legend, displayName());

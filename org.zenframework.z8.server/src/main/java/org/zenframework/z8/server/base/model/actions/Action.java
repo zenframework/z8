@@ -222,7 +222,7 @@ public abstract class Action extends RequestTarget {
 
 		sql_bool where = new sql_bool(new InVector(primaryKey, recordIds));
 
-		query.read(fields, where);
+		fields = query.read(fields, where);
 
 		writer.startArray(Json.data);
 

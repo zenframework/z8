@@ -200,7 +200,7 @@ public class Attribute extends LanguageElement implements IAttribute {
 			for(int i = 0; i < chars.length; i++) {
 				char ch = chars[i];
 
-				if(ch == '_' || ABC.isAlpha(ch) || ch == ' ' && i > 0 || ABC.isDigit(ch) && i > 0)
+				if(ch == '_' || ABC.isAlpha(ch) || i > 0 && (ch == ' ' || ABC.isDigit(ch) || ABC.isPunctuator(ch)))
 					continue;
 
 				compilationUnit.error(valueToken.getPosition(), "The attribute '" + name + "' has an illegal value");

@@ -53,8 +53,8 @@ public class TextField extends StringField {
 	}
 
 	@Override
-	public void writeMeta(JsonWriter writer, Query query) {
-		super.writeMeta(writer, query);
+	public void writeMeta(JsonWriter writer, Query query, Query context) {
+		super.writeMeta(writer, query, context);
 		writer.writeProperty(Json.height, height);
 		writer.writeProperty(Json.html, html);
 	}

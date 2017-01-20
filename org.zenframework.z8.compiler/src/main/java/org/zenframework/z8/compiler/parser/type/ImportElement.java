@@ -106,12 +106,16 @@ public class ImportElement extends LanguageElement {
 	}
 
 	public boolean checkSemantics(CompilationUnit compilationUnit, IType declaringType, IMethod declaringMethod, IVariable leftHandValue, IVariableType context) {
+		if(importedUnit == null)
+			return true;
+
 		IType type = importedUnit.getType();
 		if(type != null)
 			compilationUnit.addHyperlink(qualifiedName.getLastToken().getPosition(), type);
+
 		return true;
 	}
-	
+
 	private CompilationUnit resolveToCompilationUnit(Project project) {
 		Folder folder = project;
 

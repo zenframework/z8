@@ -1,6 +1,10 @@
 package org.zenframework.z8.server.base.form;
 
+import java.util.Collection;
+import java.util.LinkedHashSet;
+
 import org.zenframework.z8.server.base.query.Query;
+import org.zenframework.z8.server.base.table.value.Field;
 import org.zenframework.z8.server.base.table.value.Link;
 import org.zenframework.z8.server.json.Json;
 import org.zenframework.z8.server.json.JsonWriter;
@@ -20,25 +24,36 @@ public class Form extends Section {
 	}
 
 	public Link.CLASS<? extends Link> link = null;
+	public Query.CLASS<? extends Query> query = null;
 
 	public Form(IObject container) {
 		super(container);
 	}
 
+	public Collection<Field.CLASS<Field>> fields() {
+		return link != null ? super.fields() : new LinkedHashSet<Field.CLASS<Field>>();
+	}
+
 	@Override
-	public void writeMeta(JsonWriter writer, Query query) {
-		if(link == null)
-			throw new RuntimeException("Form.link is null : '" + displayName() + "'");
+	public void writeMeta(JsonWriter writer, Query query, Query context) {
+		if(link == null && this.query == null)
+			throw new RuntimeException("Both Form.link and Form.query are null : '" + displayName() + "'");
 
-		Link link = this.link.get();
-
-		super.writeMeta(writer, link.getQuery());
-
-		writer.writeProperty(Json.name, link.id());
 		writer.writeProperty(Json.isForm, true);
 
-		writer.startObject(Json.link);
-		link.writeMeta(writer, query);
+		if(this.link != null) {
+			super.writeMeta(writer, link.get().getQuery(), query);
+
+			writer.writeProperty(Json.name, link.id());
+
+			writer.startObject(Json.link);
+			link.get().writeMeta(writer, query, context);
+			writer.finishObject();
+		} else
+			super.writeMeta(writer, this.query.get(), null);
+
+		writer.startObject(Json.query);
+		writer.writeProperty(Json.id, this.query != null ? this.query.classId() : query.classId());
 		writer.finishObject();
 	}
 }

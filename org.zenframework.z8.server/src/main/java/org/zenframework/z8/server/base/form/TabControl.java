@@ -45,11 +45,11 @@ public class TabControl extends Control {
 	}
 
 	@Override
-	public void writeMeta(JsonWriter writer, Query query) {
-		super.writeMeta(writer, query);
+	public void writeMeta(JsonWriter writer, Query query, Query context) {
+		super.writeMeta(writer, query, context);
 
 		writer.writeProperty(Json.isTabControl, true);
 		writer.writeProperty(Json.height, height, new integer(300));
-		writer.writeControls(Json.tabs, getTabs(), query);
+		writer.writeControls(Json.tabs, getTabs(), query, context);
 	}
 }

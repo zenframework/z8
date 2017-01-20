@@ -35,8 +35,8 @@ public class Listbox extends Control {
 	}
 
 	@Override
-	public void writeMeta(JsonWriter writer, Query query) {
-		if(query == null)
+	public void writeMeta(JsonWriter writer, Query query, Query context) {
+		if(this.query == null)
 			throw new RuntimeException("Listbox.query is null : displayName: '"  + displayName() + "'");
 
 		if(link == null)
@@ -45,7 +45,7 @@ public class Listbox extends Control {
 		this.query.setContainer(null);
 		query = this.query.get();
 
-		super.writeMeta(writer, query);
+		super.writeMeta(writer, query, context);
 
 		writer.writeProperty(Json.isListbox, true);
 		writer.writeProperty(Json.header, displayName());
@@ -64,7 +64,8 @@ public class Listbox extends Control {
 		writer.writeProperty(Json.totals, query.totals);
 		writer.writeProperty(Json.text, query.displayName());
 		writer.writeProperty(Json.link, link.id());
-		writer.writeControls(Json.fields, query.getColumns(), query);
+		writer.writeControls(Json.fields, query.getFormFields(), query, context);
+		writer.writeControls(Json.columns, query.getColumns(), query, context);
 		writer.writeSort(CLASS.asList(sortFields));
 		writer.finishObject();
 	}

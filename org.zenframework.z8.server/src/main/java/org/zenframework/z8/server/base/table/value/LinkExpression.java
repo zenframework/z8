@@ -63,8 +63,8 @@ public class LinkExpression extends GuidExpression implements ILink, IForeignKey
 	}
 
 	@Override
-	public void writeMeta(JsonWriter writer, Query query) {
-		super.writeMeta(writer, query);
+	public void writeMeta(JsonWriter writer, Query query, Query context) {
+		super.writeMeta(writer, query, context);
 
 		if(!writeLinkMeta)
 			return;

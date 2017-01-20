@@ -277,14 +277,14 @@ public class JsonWriter {
 		writeProperty(name, value.toString(), false);
 	}
 
-	public void writeControls(string property, Collection<? extends Control> controls, Query query) {
+	public void writeControls(string property, Collection<? extends Control> controls, Query query, Query context) {
 		if(controls.isEmpty())
 			return;
 
 		startArray(property);
 		for(Control control : controls) {
 			startObject();
-			control.writeMeta(this, query);
+			control.writeMeta(this, query, context);
 			finishObject();
 		}
 		finishArray();

@@ -268,7 +268,7 @@ abstract public class Field extends Control implements IField {
 	}
 
 	@Override
-	public void writeMeta(JsonWriter writer, Query query) {
+	public void writeMeta(JsonWriter writer, Query query, Query context) {
 		writer.writeProperty(Json.type, type().toString());
 		writer.writeProperty(Json.format, format, new string());
 		writer.writeProperty(Json.length, length, new integer(0));
@@ -290,19 +290,28 @@ abstract public class Field extends Control implements IField {
 
 			access = link.access();
 
+			Query linkOwner = context != null ? context : link.owner();
+			Query linkQuery = link.getQuery();
+
+			writer.writeProperty(Json.isCombobox, true);
+
+			writer.startObject(Json.query);
+			writer.writeProperty(Json.id, linkOwner.classId());
+			writer.writeProperty(Json.primaryKey, linkOwner.primaryKey().id());
+			writer.finishObject();
+
 			writer.startObject(Json.link);
 			writer.writeProperty(Json.name, link.id());
-			writer.writeProperty(Json.primaryKey, link.getQuery().primaryKey().id());
+			writer.writeProperty(Json.primaryKey, linkQuery.primaryKey().id());
 			if(link.isParentKey()) {
 				writer.writeProperty(Json.isParentKey, true);
 				writer.startArray(Json.parentKeys);
-				for(Field parentKey : link.getQuery().parentKeys())
+				for(Field parentKey : linkQuery.parentKeys())
 					writer.write(parentKey.id());
 				writer.finishArray();
 			}
 			writer.finishObject();
 
-			writer.writeProperty(Json.isCombobox, true);
 			writer.writeSort(link.getQuery().getSortFields());
 
 			readOnly = path.size() > 1 || linkField.readOnly() || !access().write();
@@ -320,7 +329,7 @@ abstract public class Field extends Control implements IField {
 		this.readOnly = new bool(readOnly);
 		this.required = new bool(required);
 
-		super.writeMeta(writer, query);
+		super.writeMeta(writer, query, context);
 	}
 
 	public void setWriteNulls(boolean writeNulls) {

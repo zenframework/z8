@@ -83,8 +83,8 @@ public class StringField extends Field {
 	}
 
 	@Override
-	public void writeMeta(JsonWriter writer, Query query) {
-		super.writeMeta(writer, query);
+	public void writeMeta(JsonWriter writer, Query query, Query context) {
+		super.writeMeta(writer, query, context);
 
 		writer.writeProperty(Json.length, length);
 	}

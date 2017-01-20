@@ -69,7 +69,7 @@ public class Control extends OBJECT {
 		return required != null ? required.get() : false;
 	}
 
-	public void writeMeta(JsonWriter writer, Query query) {
+	public void writeMeta(JsonWriter writer, Query query, Query context) {
 		writer.writeProperty(Json.name, id());
 		writer.writeProperty(Json.header, displayName());
 		writer.writeProperty(Json.description, description());

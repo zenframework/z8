@@ -1,6 +1,8 @@
+import org.zenframework.z8.base.query.Query;
 import org.zenframework.z8.base.table.value.Link;
 [native "org.zenframework.z8.server.base.form.Form"]
 
 public class Form extends Section {
 	public Link link;
+	public Query query;
 }

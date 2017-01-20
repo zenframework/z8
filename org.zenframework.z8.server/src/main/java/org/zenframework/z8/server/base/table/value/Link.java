@@ -87,11 +87,11 @@ public class Link extends GuidField implements ILink, IForeignKey {
 	}
 
 	@Override
-	public void writeMeta(JsonWriter writer, Query query) {
+	public void writeMeta(JsonWriter writer, Query query, Query context) {
 		if(this.query == null && !isParentKey())
 			throw new RuntimeException("Link.query is null : displayName: '"  + displayName() + "'; name: '" + name() + "'");
 
-		super.writeMeta(writer, query);
+		super.writeMeta(writer, query, context);
 
 		if(!query.getPath(this).isEmpty())
 			return;

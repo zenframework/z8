@@ -419,16 +419,16 @@ public class Query extends OBJECT {
 		return next();
 	}
 
-	public void read(Collection<Field> fields, SqlToken where) {
-		read(fields, where, -1);
+	public Collection<Field> read(Collection<Field> fields, SqlToken where) {
+		return read(fields, where, -1);
 	}
 
-	public void read(Collection<Field> fields, SqlToken where, int limit) {
-		read(fields, where, -1, limit);
+	public Collection<Field> read(Collection<Field> fields, SqlToken where, int limit) {
+		return read(fields, where, -1, limit);
 	}
 
-	public void read(Collection<Field> fields, SqlToken where, int start, int limit) {
-		read(fields, null, null, where, null, start, limit);
+	public Collection<Field> read(Collection<Field> fields, SqlToken where, int start, int limit) {
+		return read(fields, null, null, where, null, start, limit);
 	}
 
 	public boolean readFirst(Collection<Field> fields, SqlToken where) {
@@ -536,7 +536,7 @@ public class Query extends OBJECT {
 		read(fields, sortFields, groupFields, where, having, -1, -1);
 	}
 
-	protected void read(Collection<Field> fields, Collection<Field> sortFields, Collection<Field> groupFields, SqlToken where, SqlToken having, int start, int limit) {
+	protected Collection<Field> read(Collection<Field> fields, Collection<Field> sortFields, Collection<Field> groupFields, SqlToken where, SqlToken having, int start, int limit) {
 		ActionParameters parameters = new ActionParameters();
 		parameters.query = this;
 		parameters.fields = fields;
@@ -554,6 +554,7 @@ public class Query extends OBJECT {
 			cursor.close();
 
 		cursor = action.getCursor();
+		return cursor.getFields();
 	}
 
 	public Collection<Field> getChangedFields() {
@@ -754,7 +755,7 @@ public class Query extends OBJECT {
 		result.addAll(nameFields());
 		result.addAll(columns());
 
-		return result.isEmpty() ? dataFields() : result;
+		return result;
 	}
 
 	public Collection<Field.CLASS<? extends Field>> columns() {
@@ -1331,11 +1332,11 @@ public class Query extends OBJECT {
 		writer.writeProperty(Json.form, form());
 		writer.writeProperty(Json.sourceCode, sourceCodeLocation());
 
-		writer.writeControls(Json.fields, fields, this);
-		writer.writeControls(Json.controls, getControls(), this);
-		writer.writeControls(Json.columns, getColumns(), this);
-		writer.writeControls(Json.nameFields, getNameFields(), this);
-		writer.writeControls(Json.quickFilters, getQuickFilters(), this);
+		writer.writeControls(Json.fields, fields, this, null);
+		writer.writeControls(Json.controls, getControls(), this, null);
+		writer.writeControls(Json.columns, getColumns(), this, null);
+		writer.writeControls(Json.nameFields, getNameFields(), this, null);
+		writer.writeControls(Json.quickFilters, getQuickFilters(), this, null);
 
 		writeKeys(writer, fields);
 		writeCommands(writer);

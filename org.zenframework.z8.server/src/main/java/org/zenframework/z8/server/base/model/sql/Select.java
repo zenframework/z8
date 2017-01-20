@@ -79,6 +79,10 @@ public class Select {
 		return database().vendor();
 	}
 
+	public Collection<Field> getFields() {
+		return fields;
+	}
+
 	public void setFields(Collection<Field> fields) {
 		this.fields = fields == null ? new ArrayList<Field>() : fields;
 
@@ -414,7 +418,4 @@ public class Select {
 		return cursor.get(field);
 	}
 
-	public Collection<Field> getFields() {
-		return fields;
-	}
 }

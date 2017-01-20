@@ -57,12 +57,12 @@ public class Section extends Control {
 	}
 
 	@Override
-	public void writeMeta(JsonWriter writer, Query query) {
-		super.writeMeta(writer, query);
+	public void writeMeta(JsonWriter writer, Query query, Query context) {
+		super.writeMeta(writer, query, context);
 
 		writer.writeProperty(Json.isSection, true);
 		writer.writeProperty(Json.columnCount, columnCount);
 		writer.writeProperty(Json.height, height);
-		writer.writeControls(Json.controls, getControls(), query); 
+		writer.writeControls(Json.controls, getControls(), query, context); 
 	}
 }
