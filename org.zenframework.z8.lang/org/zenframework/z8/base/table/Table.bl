@@ -1,3 +1,4 @@
+import org.zenframework.z8.base.query.Query;
 import org.zenframework.z8.base.table.value.BoolField;
 import org.zenframework.z8.base.table.value.DatetimeField;
 import org.zenframework.z8.base.table.value.GuidField;
@@ -5,7 +6,7 @@ import org.zenframework.z8.base.table.value.StringField;
 import org.zenframework.z8.base.table.value.TextField;
 
 [native "org.zenframework.z8.server.base.table.Table"]
-public class Table extends TableBase {
+public class Table extends Query {
 	public [name "RecordId"] GuidField recordId;
 
 	public [name "Id"][displayName "Код"] StringField id;
