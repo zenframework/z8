@@ -30,22 +30,16 @@ public class UpdateAction extends Action {
 
 		JsonArray records = new JsonArray(jsonData);
 
-		boolean transactive = getQuery().isTransactive() || records.length() > 1;
-		Connection connection = transactive ? ConnectionManager.get() : null;
+		Connection connection = ConnectionManager.get();
 
 		try {
-			if(transactive)
-				connection.beginTransaction();
-
+			connection.beginTransaction();
 			Collection<guid> recordIds = update(records);
-
-			if(transactive)
-				connection.commit();
+			connection.commit();
 
 			writeFormFields(writer, getRequestQuery(), recordIds);
 		} catch(Throwable e) {
-			if(transactive)
-				connection.rollback();
+			connection.rollback();
 			throw new RuntimeException(e);
 		}
 	}

@@ -79,7 +79,6 @@ public class Update extends Statement {
 
 	@Override
 	public void prepare(String sql) throws SQLException {
-
 		super.prepare(sql);
 
 		int position = 1;
@@ -97,7 +96,6 @@ public class Update extends Statement {
 	}
 
 	public int execute() {
-
 		try {
 			prepare(sql);
 			return executeUpdate();

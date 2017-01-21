@@ -27,20 +27,14 @@ public class DestroyAction extends Action {
 
 		JsonArray records = new JsonArray(jsonData);
 
-		boolean transactive = getQuery().isTransactive() || records.length() > 1;
-		Connection connection = transactive ? ConnectionManager.get() : null;
+		Connection connection = ConnectionManager.get();
 
 		try {
-			if(transactive)
-				connection.beginTransaction();
-
+			connection.beginTransaction();
 			destroy(records);
-
-			if(transactive)
-				connection.commit();
+			connection.commit();
 		} catch(Throwable e) {
-			if(transactive)
-				connection.rollback();
+			connection.rollback();
 			throw new RuntimeException(e);
 		}
 	}

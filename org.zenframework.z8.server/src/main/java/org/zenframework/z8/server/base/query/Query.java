@@ -105,7 +105,7 @@ public class Query extends OBJECT {
 
 	protected Select cursor;
 	protected ReadLock readLock = ReadLock.None;
-	private boolean transactive = false;
+	private boolean transactive = true;
 
 	private IAccess access;
 

@@ -40,20 +40,14 @@ public class CopyAction extends Action {
 		guid recordId = getRecordIdParameter();
 		guid parentId = getParentIdParameter();
 
-		boolean transactive = query.isTransactive();
-		Connection connection = transactive ? ConnectionManager.get() : null;
+		Connection connection = ConnectionManager.get();
 
 		try {
-			if(transactive)
-				connection.beginTransaction();
-
+			connection.beginTransaction();
 			recordId = run(query, recordId, parentId);
-
-			if(transactive)
-				connection.commit();
+			connection.commit();
 		} catch(Throwable e) {
-			if(transactive)
-				connection.rollback();
+			connection.rollback();
 			throw new RuntimeException(e);
 		}
 
