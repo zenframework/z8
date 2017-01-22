@@ -11,19 +11,17 @@ public class Table extends Query {
 
 	public [name "Id"][displayName "Код"] StringField id;
 	id.length = 15;
-	id.width = 15;
 
 	public [name "Name"][displayName "Наименование"] StringField name;
 	name.length = 50;
-	name.width = 20;
 
 	public [name "Description"][displayName "Описание"] TextField description;
 
-	public [displayName "Создана"] DatetimeField createdAt;
-	public [displayName "Создал"] GuidField createdBy;
-	public [displayName "Изменена"] DatetimeField modifiedAt;
-	public [displayName "Изменил"] GuidField modifiedBy;
+	public [name "CreatedAt"][displayName "Создана"] DatetimeField createdAt;
+	public [name "CreatedBy"][displayName "Создал"] GuidField createdBy;
+	public [name "ModifiedAt"][displayName "Изменена"] DatetimeField modifiedAt;
+	public [name "ModifiedBy"][displayName "Изменил"] GuidField modifiedBy;
 
 	public [name "Lock"] BoolField lock;
-	public [displayName "Архив"] BoolField archive;
+	public [name "Archive"] BoolField archive;
 }
