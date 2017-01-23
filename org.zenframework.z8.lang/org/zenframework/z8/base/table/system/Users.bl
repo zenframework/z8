@@ -36,12 +36,4 @@ public class Users extends Table {
 		[description "Администратор системы"]
 		Administrator = '00000000-0000-0000-0000-000000000002';
 	}
-
-	formFields = {
-		id,
-		name,
-		description,
-		phone,
-		email
-	};
 }

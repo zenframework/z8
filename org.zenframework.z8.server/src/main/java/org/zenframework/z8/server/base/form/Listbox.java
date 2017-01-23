@@ -40,8 +40,8 @@ public class Listbox extends Control {
 		if(this.query == null)
 			throw new RuntimeException("Listbox.query is null : displayName: '"  + displayName() + "'");
 
-		if(link == null)
-			throw new RuntimeException("Listbox.link is null : displayName: '"  + displayName() + "'");
+		if(link == null && dependency == null)
+			throw new RuntimeException("Both Listbox.link and Control.dependency are null: '"  + displayName() + "'");
 
 		this.query.setContainer(null);
 		query = this.query.get();
@@ -55,19 +55,20 @@ public class Listbox extends Control {
 		writer.writeProperty(Json.height, height, new integer(4));
 
 		writer.startObject(Json.query);
-		writer.writeProperty(Json.id, query.classId());
-		writer.writeProperty(Json.primaryKey, query.primaryKey().id());
+			writer.writeProperty(Json.id, query.classId());
+			writer.writeProperty(Json.primaryKey, query.primaryKey().id());
 
-		Field parentKey = query.parentKey();
-		if(parentKey != null)
-			writer.writeProperty(Json.parentKey, parentKey.id());
+			Field parentKey = query.parentKey();
+			if(parentKey != null)
+				writer.writeProperty(Json.parentKey, parentKey.id());
 
-		writer.writeProperty(Json.totals, query.totals);
-		writer.writeProperty(Json.text, query.displayName());
-		writer.writeProperty(Json.link, link.id());
-		writer.writeControls(Json.fields, query.getFormFields(), query, context);
-		writer.writeControls(Json.columns, columns.isEmpty() ? query.getColumns() : CLASS.asList(columns), query, context);
-		writer.writeSort(sortFields.isEmpty() ? query.getSortFields() : CLASS.asList(sortFields));
+			writer.writeProperty(Json.totals, query.totals);
+			writer.writeProperty(Json.text, query.displayName());
+			if(link != null)
+				writer.writeProperty(Json.link, link.id());
+			writer.writeControls(Json.fields, query.getFormFields(), query, context);
+			writer.writeControls(Json.columns, columns.isEmpty() ? query.getColumns() : CLASS.asList(columns), query, context);
+			writer.writeSort(sortFields.isEmpty() ? query.getSortFields() : CLASS.asList(sortFields));
 		writer.finishObject();
 	}
 }

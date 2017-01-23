@@ -7,21 +7,37 @@ import org.zenframework.z8.base.table.value.TextField;
 
 [native "org.zenframework.z8.server.base.table.Table"]
 public class Table extends Query {
-	public [name "RecordId"] GuidField recordId;
+	[name "RecordId"]
+	public GuidField recordId;
 
-	public [name "Id"][displayName "Код"] StringField id;
+	[name "Id"]
+	[displayName "Код"] 
+	public StringField id;
 	id.length = 15;
 
-	public [name "Name"][displayName "Наименование"] StringField name;
+	[name "Name"]
+	public StringField name;
 	name.length = 50;
 
-	public [name "Description"][displayName "Описание"] TextField description;
+	[name "Description"]
+	[displayName "Описание"]
+	public TextField description;
 
-	public [name "CreatedAt"][displayName "Создана"] DatetimeField createdAt;
-	public [name "CreatedBy"][displayName "Создал"] GuidField createdBy;
-	public [name "ModifiedAt"][displayName "Изменена"] DatetimeField modifiedAt;
-	public [name "ModifiedBy"][displayName "Изменил"] GuidField modifiedBy;
+	[name "CreatedAt"]
+	public DatetimeField createdAt;
 
-	public [name "Lock"] BoolField lock;
-	public [name "Archive"] BoolField archive;
+	[name "CreatedBy"]
+	public GuidField createdBy;
+
+	[name "ModifiedAt"]
+	public DatetimeField modifiedAt;
+
+	[name "ModifiedBy"]
+	public GuidField modifiedBy;
+
+	[name "Lock"]
+	public BoolField lock;
+
+	[name "Archive"]
+	public BoolField archive;
 }

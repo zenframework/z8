@@ -1,12 +1,12 @@
 [primary "org.zenframework.z8.server.types.primary"]
 public class primary {
-	virtual public string toString();
-	virtual public int hashCode();
+	public string toString();
+	public int hashCode();
 
-	virtual public bool toBool();
-	virtual public guid toGuid();
-	virtual public date toDate();
-	virtual public datespan toDatespan();
-	virtual public decimal toDecimal();
-	virtual public int toInt();
+	public bool toBool();
+	public guid toGuid();
+	public date toDate();
+	public datespan toDatespan();
+	public decimal toDecimal();
+	public int toInt();
 }
