@@ -35,11 +35,6 @@ public class Link extends GuidField implements ILink, IForeignKey {
 	}
 
 	@Override
-	public void onInitialized() {
-		super.onInitialized();
-	}
-
-	@Override
 	public Query.CLASS<Query> query() {
 		return query;
 	}

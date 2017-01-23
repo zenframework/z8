@@ -1,7 +1,5 @@
 package org.zenframework.z8.server.runtime;
 
-import java.util.List;
-
 public interface IClass<TYPE extends IObject> {
 	public final static int Constructor = -1;
 	public final static int Constructor1 = 0;
@@ -20,12 +18,8 @@ public interface IClass<TYPE extends IObject> {
 	public TYPE newInstance();
 
 	public String getAttribute(String key);
-
 	public void setAttribute(String key, String value);
-
 	public boolean hasAttribute(String key);
-
-	public List<IClass<TYPE>> getReferences();
 
 	public String classId();
 

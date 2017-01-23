@@ -10,7 +10,6 @@ public interface IObject extends INamedObject {
 	static final public String DisplayName = "displayName";
 	static final public String Description = "description";
 	static final public String Form = "form";
-	static final public String Label = "label";
 	static final public String Name = "name";
 	static final public String Native = "native";
 	static final public String Icon = "icon";
@@ -26,6 +25,7 @@ public interface IObject extends INamedObject {
 	static final public String UniqueField = "uniqueField";
 
 	public String classId();
+	public int controlSum();
 
 	public String id();
 	public void resetId();
@@ -37,67 +37,49 @@ public interface IObject extends INamedObject {
 	public void setOrdinal(int ordinal);
 
 	public String name();
+	public void setName(String name);
 
 	@Override
 	public String displayName();
-
-	public void setName(String name);
-
 	public void setDisplayName(String name);
 
 	public String description();
-
 	public void setDescription(String name);
 
 	public boolean system();
-
 	public void setSystem(boolean system);
 
 	public String form();
 	public void setForm(String form);
 
-	public String label();
-	public void setLabel(String label);
-
 	public boolean foreignKey();
-
 	public void setForeignKey(boolean foreignKey);
 
 	public IObject getContainer();
-
 	public void setContainer(IObject container);
 
 	public IObject getOwner();
-
 	public void setOwner(IObject owner);
 
 	public IClass<? extends IObject> getCLASS();
-
 	public void setCLASS(IClass<? extends IObject> cls);
 
 	public String getIndex();
-
 	public void setIndex(String index);
 
 	public Map<String, String> getAttributes();
-
 	public void setAttributes(Map<String, String> attributes);
 
 	public boolean hasAttribute(String key);
-
+	
 	public String getAttribute(String key);
-
 	public void setAttribute(String key, String value);
-
 	public void removeAttribute(String key);
 
 	public void constructor1();
-
 	public void constructor2();
-
-	public void onInitialized();
+	public void constructor();
 
 	public String toDebugString();
 
-	public void constructor();
 }

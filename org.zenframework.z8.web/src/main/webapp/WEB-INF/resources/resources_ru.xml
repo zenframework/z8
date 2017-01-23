@@ -14,16 +14,8 @@
 	<entry key="Query.readError">Ошибка чтения базы данных</entry>
 
 	<!-- Table -->
-	<entry key="Table.recordId">UID</entry>
-	<entry key="Table.createdAt">Создано</entry>
-	<entry key="Table.modifiedAt">Изменено</entry>
-	<entry key="Table.createdBy">Создал</entry>
-	<entry key="Table.modifiedBy">Изменил</entry>
-
 	<entry key="Table.id">Код</entry>
-	<entry key="Table.name">Наименование</entry>
 	<entry key="Table.description">Описание</entry>
-	<entry key="Table.attachments">Файлы</entry>
 
 	<!-- Settings -->
 	<entry key="Settings.title">Системные свойства</entry>

@@ -4,6 +4,8 @@ public class StringField extends Field {
 
 	public int length = 30;
 
+	public string defaultValue = "";
+
 	virtual public string getDefault();
 	public void setDefault(string defaultValue);
 

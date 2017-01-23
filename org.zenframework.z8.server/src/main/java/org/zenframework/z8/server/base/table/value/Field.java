@@ -53,7 +53,7 @@ abstract public class Field extends Control implements IField {
 	public bool indexed;
 	public bool unique;
 
-	private primary value;
+	public primary defaultValue;
 	private primary originalValue;
 	private boolean changed = false;
 
@@ -100,15 +100,15 @@ abstract public class Field extends Control implements IField {
 
 	@Override
 	final public primary getDefaultValue() {
-		return value;
+		return defaultValue;
 	}
 
 	public primary getDefault() {
-		return value;
+		return defaultValue;
 	}
 
 	public void setDefault(primary value) {
-		this.value = value;
+		this.defaultValue = value;
 	}
 
 	public boolean isAggregated() {
@@ -121,7 +121,8 @@ abstract public class Field extends Control implements IField {
 
 	@Override
 	public Query owner() {
-		return (Query)getOwner();
+		IObject owner = getOwner();
+		return owner instanceof Query ? (Query)owner : null;
 	}
 
 	@Override
@@ -211,7 +212,7 @@ abstract public class Field extends Control implements IField {
 	@Override
 	public void set(primary value) {
 		if(!changed) {
-			originalValue = this.value;
+			originalValue = this.defaultValue;
 			changed = true;
 		}
 		setDefault(primary.clone(value));
@@ -224,7 +225,7 @@ abstract public class Field extends Control implements IField {
 
 	public void reset() {
 		if(changed) {
-			value = originalValue;
+			defaultValue = originalValue;
 			changed = false;
 		}
 	}
@@ -447,6 +448,7 @@ abstract public class Field extends Control implements IField {
 		return new sql_bool(new IsNull(new SqlField(this)));
 	}
 
+	@Override
 	public int controlSum() {
 		String name = name() + " " + sqlType(DatabaseVendor.Postgres);
 		return Math.abs(name.hashCode());

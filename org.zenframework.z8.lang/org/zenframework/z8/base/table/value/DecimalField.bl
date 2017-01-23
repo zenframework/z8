@@ -7,6 +7,8 @@ public class DecimalField extends Field {
 	public int precision = 19;
 	public int scale = 4; 
 
+	public decimal defaultValue = 0.0;
+
 	virtual public decimal getDefault();
 	public void setDefault(decimal defaultValue);
 

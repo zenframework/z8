@@ -74,7 +74,6 @@ public class Control extends OBJECT {
 		writer.writeProperty(Json.header, displayName());
 		writer.writeProperty(Json.description, description());
 		writer.writeProperty(Json.icon, icon());
-		writer.writeProperty(Json.label, label());
 
 		writer.writeProperty(Json.rowspan, rowspan, new integer(1));
 		writer.writeProperty(Json.colspan, colspan, new integer(1));

@@ -62,6 +62,11 @@ public class OBJECT extends RequestTarget implements IObject, RmiSerializable {
 	}
 
 	@Override
+	public int controlSum() {
+		return 0;
+	}
+
+	@Override
 	public String id() {
 		if(id == null) {
 			id = "";
@@ -180,16 +185,6 @@ public class OBJECT extends RequestTarget implements IObject, RmiSerializable {
 		setAttribute(Form, form);
 	}
 
-	@Override
-	public String label() {
-		return getAttribute(Label);
-	}
-
-	@Override
-	public void setLabel(String label) {
-		setAttribute(Label, label);
-	}
-
 	public String icon() {
 		return getAttribute(Icon);
 	}
@@ -291,17 +286,13 @@ public class OBJECT extends RequestTarget implements IObject, RmiSerializable {
 	}
 
 	@Override
-	public void onInitialized() {
+	public void constructor() {
+		z8_constructor();
 	}
 
 	@Override
 	public String toDebugString() {
 		return null;
-	}
-
-	@Override
-	public void constructor() {
-		z8_constructor();
 	}
 
 	public bool operatorEqu(OBJECT.CLASS<? extends OBJECT> object) {

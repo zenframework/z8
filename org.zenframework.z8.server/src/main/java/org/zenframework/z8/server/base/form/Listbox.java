@@ -27,6 +27,7 @@ public class Listbox extends Control {
 
 	public Query.CLASS<? extends Query> query = null;
 	public Link.CLASS<? extends Link> link = null;
+	public RCollection<Field.CLASS<? extends Field>> columns = new RCollection<Field.CLASS<? extends Field>>();
 	public RCollection<Field.CLASS<? extends Field>> sortFields = new RCollection<Field.CLASS<? extends Field>>();
 
 	public Listbox(IObject container) {
@@ -65,8 +66,8 @@ public class Listbox extends Control {
 		writer.writeProperty(Json.text, query.displayName());
 		writer.writeProperty(Json.link, link.id());
 		writer.writeControls(Json.fields, query.getFormFields(), query, context);
-		writer.writeControls(Json.columns, query.getColumns(), query, context);
-		writer.writeSort(CLASS.asList(sortFields));
+		writer.writeControls(Json.columns, columns.isEmpty() ? query.getColumns() : CLASS.asList(columns), query, context);
+		writer.writeSort(sortFields.isEmpty() ? query.getSortFields() : CLASS.asList(sortFields));
 		writer.finishObject();
 	}
 }

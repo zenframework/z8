@@ -15,8 +15,6 @@ public class CLASS<TYPE extends IObject> extends OBJECT implements IClass<TYPE> 
 
 	Constructor<?> constructor = null;
 
-	private List<IClass<TYPE>> references = null;
-
 	static public <T extends IObject> List<T> asList(Collection<? extends org.zenframework.z8.server.runtime.CLASS<? extends T>> collection) {
 		List<T> result = new ArrayList<T>();
 
@@ -78,22 +76,6 @@ public class CLASS<TYPE extends IObject> extends OBJECT implements IClass<TYPE> 
 
 		if(object != null)
 			object.setOrdinal(ordinal);
-	}
-
-	@Override
-	public List<IClass<TYPE>> getReferences() {
-		if(references == null)
-			references = new ArrayList<IClass<TYPE>>();
-
-		return references;
-	}
-
-	public void addReference(IClass<TYPE> reference) {
-		if(references == null)
-			references = new ArrayList<IClass<TYPE>>();
-
-		if(!references.contains(reference))
-			references.add(reference);
 	}
 
 	public boolean instanceOf(Class<?> cls) {
@@ -177,7 +159,6 @@ public class CLASS<TYPE extends IObject> extends OBJECT implements IClass<TYPE> 
 		if(this.stage < Constructor2 && stage >= Constructor2) {
 			this.stage = Constructor2;
 			object.constructor2();
-			object.onInitialized();
 			object.constructor();
 		}
 	}

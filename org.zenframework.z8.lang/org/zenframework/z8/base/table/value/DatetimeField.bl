@@ -2,7 +2,9 @@
 public class DatetimeField extends Field {
 	format = "d.m.Y H:i"; // http://php.net/manual/ru/function.date.php
 
-	virtual public date getDefault();	// default datetime.Min
+	public date defaultValue = date.Min;
+
+	virtual public date getDefault();
 	public void setDefault(date defaultValue);
 
 	public operator sql_date();

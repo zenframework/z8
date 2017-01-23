@@ -955,43 +955,13 @@ public class Query extends OBJECT {
 	}
 
 	@Override
-	@SuppressWarnings({ "unchecked", "rawtypes" })
-	public void onInitialized() {
-		super.onInitialized();
-
-		for(Query.CLASS<? extends Query> query : queries())
-			query.addReference((Query.CLASS)getCLASS());
-	}
-
-	//////////////////////////////////////////////////////////////////////////////////////////////////
-	// IQuery
-
-	@Override
 	public String toString() {
 		return id();
 	}
 
-	public int getOwnersCount() {
-		return owners().size();
-	}
-
-	@Override
-	public Query getOwner() {
-		return getOwnersCount() == 1 ? owners().iterator().next().get() : null;
-	}
-
-	@SuppressWarnings({ "unchecked", "rawtypes" })
-	public Collection<Query.CLASS<Query>> owners() {
-		return (Collection)getCLASS().getReferences();
-	}
-
-	public Collection<Query> getOwners() {
-		Collection<Query> result = new ArrayList<Query>();
-
-		for(Query.CLASS<Query> owner : owners())
-			result.add(owner.get());
-
-		return result;
+	public Query owner() {
+		IObject owner = getOwner();
+		return owner instanceof Query ? (Query)owner : null;
 	}
 
 	public Collection<OBJECT.CLASS<? extends OBJECT>> getLinks() {
@@ -1087,67 +1057,8 @@ public class Query extends OBJECT {
 		return result != null ? result.query : null;
 	}
 
-	public Query findQueryByFieldId(String id) {
-		FindQueryResult result = findQueryById(id, true);
-		return result != null ? result.query : null;
-	}
-
 	public Collection<Query> getRoute(Query query) {
 		FindQueryResult result = findQueryById(query.id(), false);
-		return result != null ? result.route : null;
-	}
-
-	private Collection<ILink> getRouteByOwners(Query query) {
-		List<ILink> path = new ArrayList<ILink>();
-
-		if(query == this)
-			return path;
-
-		Query owner = null;
-
-		int ownersCount = query.getOwnersCount();
-
-		if(ownersCount > 1) {
-			for(Query o : query.getOwners()) {
-				if(!getRouteByOwners(o).isEmpty() || this == o) {
-					owner = o;
-					break;
-				}
-			}
-		} else if(ownersCount == 1)
-			owner = query.getOwner();
-
-		Query rootQuery = this;
-
-		while(owner != null && query != this && query != rootQuery) {
-			Query root = owner;
-
-			while(query != root) {
-				ILink link = owner.getLinkTo(query);
-
-				if(link != null) {
-					path.add(0, link);
-					query = owner;
-				} else
-					break;
-			}
-
-			query = owner;
-
-			if(query.getOwnersCount() > 1) {
-				Collection<ILink> pathFromTop = rootQuery.getRouteByOwners(query);
-				pathFromTop.addAll(path);
-				return pathFromTop;
-			}
-
-			owner = owner.getOwner();
-		}
-
-		return owner == null ? new ArrayList<ILink>() : path;
-	}
-
-	public Collection<Query> getRoute(Field field) {
-		FindQueryResult result = findQueryById(field.id(), true);
 		return result != null ? result.route : null;
 	}
 
@@ -1163,9 +1074,6 @@ public class Query extends OBJECT {
 
 	public Collection<ILink> getPath(Query query) {
 		Collection<Query> route = getRoute(query);
-
-		if(route == null)
-			return getRouteByOwners(query);
 
 		Collection<ILink> path = new ArrayList<ILink>(10);
 
@@ -1184,26 +1092,7 @@ public class Query extends OBJECT {
 	}
 
 	public Collection<ILink> getPath(Field field) {
-		Collection<Query> route = getRoute(field);
-
-		if(route == null)
-			return getRouteByOwners(field.owner());
-
-		Collection<ILink> path = new ArrayList<ILink>(10);
-
-		Query current = this;
-
-		for(Query query : route) {
-			if(query != current) {
-				ILink link = current.getLinkTo(query);
-
-				if(link != null)
-					path.add(link);
-			}
-			current = query;
-		}
-
-		return path;
+		return getPath(field.owner());
 	}
 
 	public Field findFieldById(String id) {

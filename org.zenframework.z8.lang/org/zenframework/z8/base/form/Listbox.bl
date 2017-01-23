@@ -27,5 +27,6 @@ public class Listbox extends Control {
 	public Query query;
 	public Link link;
 
+	public Field[] columns;
 	public Field[] sortFields;
 }

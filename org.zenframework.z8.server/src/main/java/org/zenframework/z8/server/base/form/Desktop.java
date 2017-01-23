@@ -48,4 +48,14 @@ public class Desktop extends OBJECT {
 	public Collection<Query.CLASS> getDataSets() {
 		return (Collection)dataSets;
 	}
+
+	@Override
+	public int controlSum() {
+		int result = 0;
+
+		for(OBJECT.CLASS<? extends OBJECT> cls : runnables)
+			result += Math.abs(cls.classId().hashCode());
+
+		return result;
+	}
 }

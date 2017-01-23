@@ -35,26 +35,12 @@ public class Table extends TableBase {
 	}
 
 	static public class strings {
-		public final static String RecordId = "Table.recordId";
-		public final static String CreatedAt = "Table.createdAt";
-		public final static String CreatedBy = "Table.createdBy";
-		public final static String ModifiedAt = "Table.modifiedAt";
-		public final static String ModifiedBy = "Table.modifiedBy";
-
 		public final static String Id = "Table.id";
-		public final static String Name = "Table.name";
 		public final static String Description = "Table.description";
 	}
 
 	static public class displayNames {
-		public final static String RecordId = Resources.get(strings.RecordId);
-		public final static String CreatedAt = Resources.get(strings.CreatedAt);
-		public final static String CreatedBy = Resources.get(strings.CreatedBy);
-		public final static String ModifiedAt = Resources.get(strings.ModifiedAt);
-		public final static String ModifiedBy = Resources.get(strings.ModifiedBy);
-
 		public final static String Id = Resources.get(strings.Id);
-		public final static String Name = Resources.get(strings.Name);
 		public final static String Description = Resources.get(strings.Description);
 	}
 
@@ -104,7 +90,6 @@ public class Table extends TableBase {
 
 		name.setName(names.Name);
 		name.setIndex("name");
-		name.setDisplayName(displayNames.Name);
 		name.get().length = new integer(NameLength);
 
 		description.setName(names.Description);
@@ -117,28 +102,23 @@ public class Table extends TableBase {
 
 		recordId.setName(names.RecordId);
 		recordId.setIndex("recordId");
-		recordId.setDisplayName(displayNames.RecordId);
 		recordId.setAttribute(PrimaryKey, "");
 		recordId.setSystem(true);
 
 		createdAt.setName(names.CreatedAt);
 		createdAt.setIndex("createdAt");
-		createdAt.setDisplayName(displayNames.CreatedAt);
 		createdAt.setSystem(true);
 
 		createdBy.setName(names.CreatedBy);
 		createdBy.setIndex("createdBy");
-		createdBy.setDisplayName(displayNames.CreatedBy);
 		createdBy.setSystem(true);
 
 		modifiedAt.setName(names.ModifiedAt);
 		modifiedAt.setIndex("modifiedAt");
-		modifiedAt.setDisplayName(displayNames.ModifiedAt);
 		modifiedAt.setSystem(true);
 
 		modifiedBy.setName(names.ModifiedBy);
 		modifiedBy.setIndex("modifiedBy");
-		modifiedBy.setDisplayName(displayNames.ModifiedBy);
 		modifiedBy.setSystem(true);
 
 		archive.setName(names.Archive);
@@ -156,6 +136,15 @@ public class Table extends TableBase {
 		registerDataField(id);
 		registerDataField(name);
 		registerDataField(description);
+	}
+
+	@Override
+	public void constructor() {
+		super.constructor();
+
+		String displayName = name.displayName();
+		if(displayName == null || displayName.isEmpty())
+			name.setDisplayName(displayName());
 	}
 
 	@Override
@@ -193,6 +182,7 @@ public class Table extends TableBase {
 		return map;
 	}
 
+	@Override
 	public int controlSum() {
 		int result = 0;
 

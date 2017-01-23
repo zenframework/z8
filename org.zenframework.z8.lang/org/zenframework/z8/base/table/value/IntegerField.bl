@@ -4,6 +4,8 @@ public class IntegerField extends Field {
 
 	format = "0,000";
 
+	public int defaultValue = 0;
+
 	virtual public int getDefault();
 	public void setDefault(int defaultValue);
 

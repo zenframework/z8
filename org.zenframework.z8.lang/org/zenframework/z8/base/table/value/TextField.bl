@@ -3,6 +3,8 @@ public class TextField extends Field {
 	public int height;
 	public bool html = false;
 
+	public string defaultValue = "";
+
 	virtual public string getDefault();
 	public void setDefault(string defaultValue);
 

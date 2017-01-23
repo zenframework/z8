@@ -5,9 +5,11 @@ import java.net.URL;
 import java.util.Enumeration;
 
 import org.zenframework.z8.server.base.table.Table;
+import org.zenframework.z8.server.base.table.system.SystemTools;
 import org.zenframework.z8.server.logs.Trace;
 import org.zenframework.z8.server.runtime.AbstractRuntime;
 import org.zenframework.z8.server.runtime.IRuntime;
+import org.zenframework.z8.server.runtime.OBJECT;
 import org.zenframework.z8.server.runtime.ServerRuntime;
 import org.zenframework.z8.server.utils.IOUtils;
 import org.zenframework.z8.server.utils.StringUtils;
@@ -69,9 +71,12 @@ public class Runtime extends AbstractRuntime {
 
 		int controlSum = 0;
 
-		for(Table.CLASS<? extends Table> cls : instance().tables()) {
-			Table table = cls.newInstance();
-			controlSum += table.controlSum();
+		for(Table.CLASS<? extends Table> cls : instance().tables())
+			controlSum += cls.newInstance().controlSum();
+
+		for(OBJECT.CLASS<? extends OBJECT> cls : instance().entries()) {
+			if(!cls.instanceOf(SystemTools.class))
+				controlSum += cls.newInstance().controlSum();
 		}
 
 		version = StringUtils.padLeft("" + Math.abs(controlSum), 10, '0');

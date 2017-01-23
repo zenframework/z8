@@ -1,5 +1,7 @@
 [native "org.zenframework.z8.server.base.table.value.BoolField"]
 public class BoolField extends Field {
+	public bool defaultValue = false;
+
 	virtual public bool getDefault();
 	public void setDefault(bool defaultValue);
 
