@@ -1,6 +1,6 @@
 import org.zenframework.z8.base.table.Table;
-import org.zenframework.z8.base.table.value.Link;
 import org.zenframework.z8.base.table.value.IntegerField;
+import org.zenframework.z8.base.table.value.Link;
 
 [name "SystemUserEntries"]
 [native "org.zenframework.z8.server.base.table.system.UserEntries"] 

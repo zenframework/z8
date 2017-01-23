@@ -1,6 +1,6 @@
-import org.zenframework.z8.base.table.value.TextField;
 import org.zenframework.z8.base.table.Table;
 import org.zenframework.z8.base.table.value.StringField;
+import org.zenframework.z8.base.table.value.TextField;
 
 [name "SystemUsers"]
 [displayName "Пользователи"]
@@ -33,7 +33,7 @@ public class Users extends Table {
 		System = '00000000-0000-0000-0000-000000000001';
 
 		[name "Admin"]
-		[description "Администратор системы"]
+		[description "Администратор сист��мы"]
 		Administrator = '00000000-0000-0000-0000-000000000002';
 	}
 }

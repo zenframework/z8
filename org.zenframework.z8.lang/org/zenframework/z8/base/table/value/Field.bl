@@ -1,6 +1,6 @@
-import org.zenframework.z8.base.table.SortDirection;
 import org.zenframework.z8.base.form.Control;
 import org.zenframework.z8.base.table.Sequencer;
+import org.zenframework.z8.base.table.SortDirection;
 
 [native "org.zenframework.z8.server.base.table.value.Field"]
 public class Field extends Control {
@@ -34,7 +34,7 @@ public class Field extends Control {
 	public int int();
 	public string string();
 
-	// Оператор закомментирован, чтобы можно было сравнивать поля как объекты
+	// Оператор закомментирован, чтобы можно было сравнивать поля как объе��ты
 	// При необходимости сравнить два поля, например, в where, нужно привести одно из них к sql_<...> типу
 	//public sql_bool operator == (Field field);
 

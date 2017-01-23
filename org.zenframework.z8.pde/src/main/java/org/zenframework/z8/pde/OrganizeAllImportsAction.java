@@ -1,6 +1,7 @@
 package org.zenframework.z8.pde;
 
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -248,24 +249,25 @@ public class OrganizeAllImportsAction implements IWorkbenchWindowActionDelegate 
 		try {
 			InputStream in = file.getContents();
 			// String s = "";
-			StringBuffer s = new StringBuffer();
-			// Transfer bytes from in to out
+			ByteArrayOutputStream out = new ByteArrayOutputStream();
+
 			byte[] buf = new byte[1024];
 			int len;
-
 			while((len = in.read(buf)) > 0)
-				s.append(new String(buf, 0, len, file.getCharset()));
+				out.write(buf, 0, len);
 
 			in.close();
 
+			StringBuffer content = new StringBuffer(out.toString(file.getCharset()));
+
 			if(importBlock == null)
-				s.replace(0, 0, organizedImports + (organizedImports.length() > 0 ? "\r\n" : ""));
+				content.replace(0, 0, organizedImports + (organizedImports.length() > 0 ? "\r\n" : ""));
 			else
-				s.replace(importBlock.getPosition().getOffset(), importBlock.getPosition().getLength() + importBlock.getPosition().getOffset(), organizedImports);
+				content.replace(importBlock.getPosition().getOffset(), importBlock.getPosition().getLength() + importBlock.getPosition().getOffset(), organizedImports);
 
 			boolean readonly = file.isReadOnly();
 			file.setReadOnly(false);
-			file.setContents(new ByteArrayInputStream(s.toString().getBytes(file.getCharset())), true, true, null);
+			file.setContents(new ByteArrayInputStream(content.toString().getBytes(file.getCharset())), true, true, null);
 			file.setReadOnly(readonly);
 		} catch(CoreException e) {
 			Plugin.log(e);

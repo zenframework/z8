@@ -1,6 +1,6 @@
+import org.zenframework.z8.base.table.Table;
 import org.zenframework.z8.base.table.value.BoolField;
 import org.zenframework.z8.base.table.value.Link;
-import org.zenframework.z8.base.table.Table;
 
 [name "SystemDomains"]
 [displayName "Домены"]
