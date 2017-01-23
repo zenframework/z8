@@ -1,6 +1,7 @@
 package org.zenframework.z8.server.base.form;
 
 import org.zenframework.z8.server.base.query.Query;
+import org.zenframework.z8.server.base.table.TreeTable;
 import org.zenframework.z8.server.base.table.value.Field;
 import org.zenframework.z8.server.base.table.value.Link;
 import org.zenframework.z8.server.json.Json;
@@ -55,20 +56,36 @@ public class Listbox extends Control {
 		writer.writeProperty(Json.height, height, new integer(4));
 
 		writer.startObject(Json.query);
-			writer.writeProperty(Json.id, query.classId());
-			writer.writeProperty(Json.primaryKey, query.primaryKey().id());
 
-			Field parentKey = query.parentKey();
-			if(parentKey != null)
-				writer.writeProperty(Json.parentKey, parentKey.id());
+		writer.writeProperty(Json.id, query.classId());
+		writer.writeProperty(Json.primaryKey, query.primaryKey().id());
 
-			writer.writeProperty(Json.totals, query.totals);
-			writer.writeProperty(Json.text, query.displayName());
-			if(link != null)
-				writer.writeProperty(Json.link, link.id());
-			writer.writeControls(Json.fields, query.getFormFields(), query, context);
-			writer.writeControls(Json.columns, columns.isEmpty() ? query.getColumns() : CLASS.asList(columns), query, context);
-			writer.writeSort(sortFields.isEmpty() ? query.getSortFields() : CLASS.asList(sortFields));
+		Field parentKey = query.parentKey();
+		if(parentKey != null)
+			writer.writeProperty(Json.parentKey, parentKey.id());
+
+		writer.writeProperty(Json.totals, query.totals);
+		writer.writeProperty(Json.text, query.displayName());
+
+		writer.writeControls(Json.fields, query.getFormFields(), query, context);
+		writer.writeControls(Json.columns, columns.isEmpty() ? query.getColumns() : CLASS.asList(columns), query, context);
+		writer.writeSort(sortFields.isEmpty() ? query.getSortFields() : CLASS.asList(sortFields));
+
+		if(link != null) {
+			writer.startObject(Json.link);
+
+			writer.writeProperty(Json.id, link.id());
+
+			if(link.get().query().instanceOf(TreeTable.class)) {
+				writer.startArray(Json.parentKeys);
+				for(Field parent : link.get().getQuery().parentKeys())
+					writer.write(parent.id());
+				writer.finishArray();
+			}
+
+			writer.finishObject();
+		}
+
 		writer.finishObject();
 	}
 }

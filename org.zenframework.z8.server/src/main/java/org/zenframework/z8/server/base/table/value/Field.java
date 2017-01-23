@@ -316,7 +316,7 @@ abstract public class Field extends Control implements IField {
 			writer.writeSort(link.getQuery().getSortFields());
 
 			readOnly = path.size() > 1 || linkField.readOnly() || !access().write();
-			required = !readOnly && linkField.required();
+			required = !readOnly && (required() || linkField.required());
 		} else {
 			readOnly = readOnly() || !access().write();
 			required = !readOnly && required();
