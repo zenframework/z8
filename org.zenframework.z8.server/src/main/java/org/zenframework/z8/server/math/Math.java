@@ -1,26 +1,12 @@
-package org.zenframework.z8.server.types;
+package org.zenframework.z8.server.math;
 
-import org.zenframework.z8.server.runtime.IObject;
-import org.zenframework.z8.server.runtime.OBJECT;
+import org.zenframework.z8.server.types.date;
+import org.zenframework.z8.server.types.datespan;
+import org.zenframework.z8.server.types.decimal;
+import org.zenframework.z8.server.types.integer;
+import org.zenframework.z8.server.types.string;
 
-public class math extends OBJECT {
-
-	public static class CLASS<T extends math> extends OBJECT.CLASS<T> {
-		public CLASS(IObject container) {
-			super(container);
-			setJavaClass(math.class);
-		}
-
-		@Override
-		public Object newObject(IObject container) {
-			return new math(container);
-		}
-	}
-
-	public math(IObject container) {
-		super(container);
-	}
-
+public class Math {
 	static public integer z8_max(integer a, integer b) {
 		return new integer(a.operatorMoreEqu(b).get() ? a : b);
 	}
@@ -78,10 +64,10 @@ public class math extends OBJECT {
 	}
 
 	static public decimal z8_hypot(decimal x, decimal y) {
-		return new decimal(Math.hypot(x.get().doubleValue(), y.get().doubleValue()));
+		return new decimal(java.lang.Math.hypot(x.get().doubleValue(), y.get().doubleValue()));
 	}
 
 	static public decimal z8_random() {
-		return new decimal(Math.random());
+		return new decimal(java.lang.Math.random());
 	}
 }

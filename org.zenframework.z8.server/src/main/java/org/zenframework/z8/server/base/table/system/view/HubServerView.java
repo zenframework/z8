@@ -125,7 +125,7 @@ abstract public class HubServerView extends Query {
 			writer.writeProperty(Json.request, classId());
 			writer.writeProperty(Json.primaryKey, recordId.get().id());
 
-			Collection<Field> fields = getFormFields();
+			Collection<Field> fields = formFields();
 
 			writeMeta(writer, fields);
 			writeData(writer, action != null);

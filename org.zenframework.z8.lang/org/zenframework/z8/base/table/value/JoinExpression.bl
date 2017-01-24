@@ -1,0 +1,8 @@
+import org.zenframework.z8.base.query.Query;
+
+[native "org.zenframework.z8.server.base.table.value.JoinExpression"]
+public class JoinExpression extends Expression {
+	public void operator = (Query data);
+
+	virtual sql_bool expression();
+}

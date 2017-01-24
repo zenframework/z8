@@ -30,8 +30,8 @@ public class Form extends Section {
 		super(container);
 	}
 
-	public Collection<Field.CLASS<Field>> fields() {
-		return link != null ? super.fields() : new LinkedHashSet<Field.CLASS<Field>>();
+	public Collection<Field> fields() {
+		return link != null ? super.fields() : new LinkedHashSet<Field>();
 	}
 
 	@Override

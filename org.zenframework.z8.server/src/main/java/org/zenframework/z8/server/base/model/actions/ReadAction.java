@@ -21,7 +21,9 @@ import org.zenframework.z8.server.base.table.value.Expression;
 import org.zenframework.z8.server.base.table.value.Field;
 import org.zenframework.z8.server.base.table.value.ILink;
 import org.zenframework.z8.server.base.table.value.Join;
+import org.zenframework.z8.server.base.table.value.JoinExpression;
 import org.zenframework.z8.server.base.table.value.Link;
+import org.zenframework.z8.server.base.table.value.LinkExpression;
 import org.zenframework.z8.server.base.view.filter.Filter;
 import org.zenframework.z8.server.db.FieldType;
 import org.zenframework.z8.server.db.sql.SqlConst;
@@ -326,7 +328,7 @@ public class ReadAction extends Action {
 		links = new LinkedHashSet<ILink>();
 
 		for(ILink link : getQuery().getPath(query)) {
-			if(link instanceof Expression) {
+			if(link instanceof LinkExpression) {
 				Collection<Field> usedFields = getUsedFields((Field)link);
 				Collection<Query> owners = getOwners(usedFields);
 
@@ -373,9 +375,10 @@ public class ReadAction extends Action {
 			selectFields.add(field);
 
 			if(hasPrimaryKey()) {
-				Collection<ILink> links = getLinks(field); 
+				Collection<ILink> links = getLinks(field);
 				for(ILink link : links) {
-					selectFields.add((Field)link);
+					if(!(link instanceof JoinExpression))
+						selectFields.add((Field)link);
 					if(link.getJoin() == Join.Right) {
 						Field primaryKey = link.getQuery().primaryKey();
 						selectFields.add(primaryKey);

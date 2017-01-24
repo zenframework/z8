@@ -9,7 +9,7 @@ import java.util.Map;
 import org.zenframework.z8.server.base.query.Query;
 import org.zenframework.z8.server.base.table.value.Aggregation;
 import org.zenframework.z8.server.base.table.value.Field;
-import org.zenframework.z8.server.base.table.value.Link;
+import org.zenframework.z8.server.base.table.value.ILink;
 import org.zenframework.z8.server.db.sql.SortDirection;
 import org.zenframework.z8.server.engine.ApplicationServer;
 import org.zenframework.z8.server.json.Json;
@@ -93,12 +93,12 @@ public class ActionFactory {
 		if(result.query != null) {
 			if(actionName == null) {
 				result.groupFields = new ArrayList<Field>();
-				result.groupFields.addAll(result.query.getGroupFields());
+				result.groupFields.addAll(result.query.groupFields());
 
 				if(result.sortFields == null) {
 					result.sortFields = new LinkedHashSet<Field>();
 					result.sortFields.addAll(result.groupFields);
-					result.sortFields.addAll(result.query.getSortFields());
+					result.sortFields.addAll(result.query.sortFields());
 				}
 
 				if(result.fields != null) {
@@ -128,11 +128,11 @@ public class ActionFactory {
 
 		result.fields = new ArrayList<Field>();
 
-		Link link = (Link)result.query.findFieldById(linkId);
+		ILink link = (ILink)result.query.findFieldById(linkId);
 		result.query = link.getQuery();
 		result.link = link;
 
-		Collection<Field> fields = result.requestQuery.getFormFields();
+		Collection<Field> fields = result.requestQuery.formFields();
 
 		for(Field field : fields) {
 			if(result.query.findFieldById(field.id()) != null)

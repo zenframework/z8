@@ -2,6 +2,7 @@ package org.zenframework.z8.server.base.table.value;
 
 import java.sql.SQLException;
 import java.util.Collection;
+import java.util.LinkedHashSet;
 
 import org.zenframework.z8.server.base.form.Control;
 import org.zenframework.z8.server.base.model.sql.Select;
@@ -54,6 +55,9 @@ abstract public class Field extends Control implements IField {
 	public bool unique;
 
 	public primary defaultValue;
+
+	public Field.CLASS<? extends Field> sourceField;
+
 	private primary originalValue;
 	private boolean changed = false;
 
@@ -268,6 +272,14 @@ abstract public class Field extends Control implements IField {
 		return sequencer;
 	}
 
+	public Collection<Field> fields() {
+		Collection<Field> result = new LinkedHashSet<Field>();
+		result.add(this);
+		if(sourceField != null)
+			result.add(sourceField.get());
+		return result;
+	}
+
 	@Override
 	public void writeMeta(JsonWriter writer, Query query, Query context) {
 		writer.writeProperty(Json.type, type().toString());
@@ -313,7 +325,7 @@ abstract public class Field extends Control implements IField {
 			}
 			writer.finishObject();
 
-			writer.writeSort(link.getQuery().getSortFields());
+			writer.writeSort(link.getQuery().sortFields());
 
 			readOnly = path.size() > 1 || linkField.readOnly() || !access().write();
 			required = !readOnly && (required() || linkField.required());
@@ -325,6 +337,9 @@ abstract public class Field extends Control implements IField {
 
 			if(query.primaryKey() == this)
 				writer.writeProperty(Json.isPrimaryKey, true);
+
+			if(sourceField != null)
+				writer.writeProperty(Json.sourceField, sourceField.id());
 		}
 
 		this.readOnly = new bool(readOnly);

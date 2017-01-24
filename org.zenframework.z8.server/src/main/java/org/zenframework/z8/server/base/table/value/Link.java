@@ -4,11 +4,14 @@ import org.zenframework.z8.server.base.query.Query;
 import org.zenframework.z8.server.base.table.ITable;
 import org.zenframework.z8.server.base.table.Table;
 import org.zenframework.z8.server.db.generator.IForeignKey;
+import org.zenframework.z8.server.db.sql.SqlToken;
+import org.zenframework.z8.server.db.sql.expressions.Equ;
 import org.zenframework.z8.server.json.Json;
 import org.zenframework.z8.server.json.JsonWriter;
 import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.types.bool;
 import org.zenframework.z8.server.types.primary;
+import org.zenframework.z8.server.types.sql.sql_bool;
 
 public class Link extends GuidField implements ILink, IForeignKey {
 	public static class CLASS<T extends Link> extends GuidField.CLASS<T> {
@@ -47,6 +50,12 @@ public class Link extends GuidField implements ILink, IForeignKey {
 	@Override
 	public Join getJoin() {
 		return join;
+	}
+
+	@Override
+	public sql_bool on() {
+		SqlToken on = new Equ(sql_guid(), query.get().primaryKey());
+		return new sql_bool(on);
 	}
 
 	@Override

@@ -55,9 +55,7 @@ public class TableBase extends Query implements ITable {
 	public Collection<IForeignKey> getForeignKeys() {
 		LinkedHashSet<IForeignKey> foreignKeys = new LinkedHashSet<IForeignKey>();
 		for(OBJECT.CLASS<? extends OBJECT> link : getLinks()) {
-			if(!(link instanceof Link.CLASS))
-				continue;
-			if(link.foreignKey())
+			if(link instanceof IForeignKey && link.foreignKey())
 				foreignKeys.add((IForeignKey)link.get());
 		}
 		return foreignKeys;
@@ -67,7 +65,7 @@ public class TableBase extends Query implements ITable {
 	public Collection<IField> getIndices() {
 		List<IField> result = new ArrayList<IField>();
 
-		for(Field field : getDataFields()) {
+		for(Field field : dataFields()) {
 			if(field.indexed() && !field.unique())
 				result.add(field);
 		}
@@ -79,7 +77,7 @@ public class TableBase extends Query implements ITable {
 	public Collection<IField> getUniqueIndices() {
 		List<IField> result = new ArrayList<IField>();
 
-		for(Field field : getDataFields()) {
+		for(Field field : dataFields()) {
 			if(field.unique() && !(field instanceof Link))
 				result.add(field);
 		}

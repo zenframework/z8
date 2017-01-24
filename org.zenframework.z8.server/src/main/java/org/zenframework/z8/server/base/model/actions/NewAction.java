@@ -49,7 +49,7 @@ public class NewAction extends Action {
 					Query query = link.getQuery();
 
 					ActionParameters parameters = actionParameters();
-					Collection<Field> queryFields = parameters.fields != null ? parameters.fields : query.getFormFields();
+					Collection<Field> queryFields = parameters.fields != null ? parameters.fields : query.formFields();
 					queryFields = query.getReachableFields(queryFields);
 
 					if(queryFields.size() != 0) {

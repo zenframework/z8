@@ -29,6 +29,7 @@ import org.zenframework.z8.server.base.table.value.Expression;
 import org.zenframework.z8.server.base.table.value.Field;
 import org.zenframework.z8.server.base.table.value.IField;
 import org.zenframework.z8.server.base.table.value.ILink;
+import org.zenframework.z8.server.base.table.value.JoinExpression;
 import org.zenframework.z8.server.base.table.value.Link;
 import org.zenframework.z8.server.base.table.value.LinkExpression;
 import org.zenframework.z8.server.base.view.filter.Filter;
@@ -703,7 +704,7 @@ public class Query extends OBJECT {
 	}
 
 	public void saveState() {
-		states.add(new State(getDataFields(), cursor));
+		states.add(new State(dataFields(), cursor));
 
 		if(cursor != null)
 			cursor.saveState();
@@ -725,57 +726,15 @@ public class Query extends OBJECT {
 		state.restore();
 	}
 
-	public Collection<Field.CLASS<? extends Field>> dataFields() {
-		return dataFields;
-	}
-
 	public Collection<Field.CLASS<? extends Field>> primaryFields() {
 		Collection<Field.CLASS<? extends Field>> fields = new ArrayList<Field.CLASS<? extends Field>>(50);
 
-		for(Field.CLASS<? extends Field> field : dataFields()) {
+		for(Field.CLASS<? extends Field> field : dataFields) {
 			if(!(field instanceof Expression.CLASS))
 				fields.add(field);
 		}
 
 		return fields;
-	}
-
-	public Collection<Field.CLASS<? extends Field>> formFields() {
-		Set<Field.CLASS<? extends Field>> result = new LinkedHashSet<Field.CLASS<? extends Field>>(50);
-
-		for(Control.CLASS<? extends Control> field : formFields) {
-			if(field instanceof Section.CLASS)
-				result.addAll(((Section)field.get()).fields());
-			else if(field instanceof TabControl.CLASS)
-				result.addAll(((TabControl)field.get()).fields());
-			else if(field instanceof Field.CLASS)
-				result.add((Field.CLASS<?>)field);
-		}
-
-		result.addAll(nameFields());
-		result.addAll(columns());
-
-		return result;
-	}
-
-	public Collection<Field.CLASS<? extends Field>> columns() {
-		return columns;
-	}
-
-	public Collection<Field.CLASS<? extends Field>> nameFields() {
-		return nameFields;
-	}
-
-	public Collection<Field.CLASS<? extends Field>> quickFilters() {
-		return quickFilters;
-	}
-
-	public Collection<Field.CLASS<? extends Field>> sortFields() {
-		return sortFields;
-	}
-
-	public Collection<Field.CLASS<? extends Field>> groupFields() {
-		return groupFields;
 	}
 
 	private Collection<Control.CLASS<? extends Control>> defaultControls() {
@@ -787,62 +746,68 @@ public class Query extends OBJECT {
 		return result;
 	}
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
-	public Collection<Control.CLASS<? extends Control>> controls() {
-		return formFields.isEmpty() ? (Collection)defaultControls() : formFields;
+	public Collection<Query> queries() {
+		return CLASS.asList(queries);
 	}
 
-	public Collection<Query.CLASS<? extends Query>> queries() {
-		return (Collection<Query.CLASS<? extends Query>>)queries;
-	}
-
-	public Collection<Query> getQueries() {
-		return CLASS.asList(queries());
-	}
-
-	public Collection<Field> getDataFields() {
-		return CLASS.asList(dataFields());
+	public Collection<Field> dataFields() {
+		return CLASS.asList(dataFields);
 	}
 
 	public Collection<Field> getPrimaryFields() {
 		return CLASS.asList(primaryFields());
 	}
 
-	public Collection<Field> getFormFields() {
-		return CLASS.asList(formFields());
+	public Collection<Field> formFields() {
+		Set<Field> result = new LinkedHashSet<Field>(50);
+
+		for(Control control : CLASS.asList(formFields)) {
+			if(control instanceof Section)
+				result.addAll(((Section)control).fields());
+			else if(control instanceof TabControl)
+				result.addAll(((TabControl)control).fields());
+			else if(control instanceof Field)
+				result.addAll(((Field)control).fields());
+
+			result.addAll(nameFields());
+			result.addAll(columns());
+		}
+
+		return result;
 	}
 
-	public Collection<Field> getColumns() {
-		return CLASS.asList(columns());
+	public Collection<Field> columns() {
+		return CLASS.asList(columns);
 	}
 
-	public Collection<Field> getNameFields() {
-		return CLASS.asList(nameFields());
+	public Collection<Field> nameFields() {
+		return CLASS.asList(nameFields);
 	}
 
-	public Collection<Field> getQuickFilters() {
-		return CLASS.asList(quickFilters());
+	public Collection<Field> quickFilters() {
+		return CLASS.asList(quickFilters);
 	}
 
-	public Collection<Field> getSortFields() {
-		return CLASS.asList(sortFields());
+	public Collection<Field> sortFields() {
+		return CLASS.asList(sortFields);
 	}
 
-	public Collection<Field> getGroupFields() {
-		return CLASS.asList(groupFields());
+	public Collection<Field> groupFields() {
+		return CLASS.asList(groupFields);
 	}
 
-	public Collection<Control> getControls() {
-		return CLASS.asList(controls());
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	public Collection<Control> controls() {
+		return CLASS.asList(formFields.isEmpty() ? (Collection)defaultControls() : formFields);
 	}
 
-	public Collection<Field> getSearchFields() {
+	public Collection<Field> searchFields() {
 		return CLASS.asList(searchFields);
 	}
 
-	public Collection<Field> getAttachments() {
+	public Collection<Field> attachments() {
 		Collection<Field> result = new ArrayList<Field>();
-		for(Field field : getDataFields()) {
+		for(Field field : dataFields()) {
 			if(field instanceof AttachmentField)
 				result.add(field);
 		}
@@ -968,8 +933,9 @@ public class Query extends OBJECT {
 		if(links == null) {
 			links = new ArrayList<OBJECT.CLASS<? extends OBJECT>>(10);
 
-			for(Field.CLASS<? extends Field> field : dataFields()) {
-				if(field instanceof Link.CLASS || field instanceof LinkExpression.CLASS)
+			for(Field.CLASS<? extends Field> field : dataFields) {
+				if(field instanceof Link.CLASS || field instanceof LinkExpression.CLASS || 
+						field instanceof JoinExpression.CLASS)
 					links.add(field);
 			}
 		}
@@ -998,7 +964,7 @@ public class Query extends OBJECT {
 	}
 
 	private Query getQueryById(String id) {
-		for(Query.CLASS<? extends Query> query : queries()) {
+		for(Query.CLASS<? extends Query> query : queries) {
 			if(query.id().startsWith(id()) && query.getIndex().equals(id))
 				return query.get();
 		}
@@ -1006,7 +972,7 @@ public class Query extends OBJECT {
 	}
 
 	private Query getMatchedQuery(String id) {
-		for(Query.CLASS<? extends Query> query : queries()) {
+		for(Query.CLASS<? extends Query> query : queries) {
 			if(id.startsWith(query.id()))
 				return query.get();
 		}
@@ -1101,7 +1067,7 @@ public class Query extends OBJECT {
 	}
 
 	public Field getFieldById(String id) {
-		for(Field.CLASS<? extends Field> field : dataFields()) {
+		for(Field.CLASS<? extends Field> field : dataFields) {
 			if(id.equals(field.id()))
 				return field.get();
 		}
@@ -1109,7 +1075,7 @@ public class Query extends OBJECT {
 	}
 
 	public Field getFieldByName(String name) {
-		for(Field.CLASS<? extends Field> field : dataFields()) {
+		for(Field.CLASS<? extends Field> field : dataFields) {
 			if(name.equals(field.name()))
 				return field.get();
 		}
@@ -1134,11 +1100,11 @@ public class Query extends OBJECT {
 
 	public Collection<Field> getFieldsVia(Query query) {
 		if(this == query)
-			return getFormFields();
+			return formFields();
 
 		Collection<Field> result = new ArrayList<Field>(50);
 
-		for(Field field : getFormFields()) {
+		for(Field field : formFields()) {
 			if(isReachableVia(query, field))
 				result.add(field);
 		}
@@ -1222,10 +1188,10 @@ public class Query extends OBJECT {
 		writer.writeProperty(Json.sourceCode, sourceCodeLocation());
 
 		writer.writeControls(Json.fields, fields, this, null);
-		writer.writeControls(Json.controls, getControls(), this, null);
-		writer.writeControls(Json.columns, getColumns(), this, null);
-		writer.writeControls(Json.nameFields, getNameFields(), this, null);
-		writer.writeControls(Json.quickFilters, getQuickFilters(), this, null);
+		writer.writeControls(Json.controls, controls(), this, null);
+		writer.writeControls(Json.columns, columns(), this, null);
+		writer.writeControls(Json.nameFields, nameFields(), this, null);
+		writer.writeControls(Json.quickFilters, quickFilters(), this, null);
 
 		writeKeys(writer, fields);
 		writeCommands(writer);

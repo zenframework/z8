@@ -17,7 +17,6 @@ import org.zenframework.z8.server.db.sql.FormatOptions;
 import org.zenframework.z8.server.db.sql.SqlField;
 import org.zenframework.z8.server.db.sql.SqlToken;
 import org.zenframework.z8.server.db.sql.expressions.And;
-import org.zenframework.z8.server.db.sql.expressions.Equ;
 import org.zenframework.z8.server.engine.Database;
 import org.zenframework.z8.server.logs.Trace;
 import org.zenframework.z8.server.types.primary;
@@ -256,13 +255,8 @@ public class Select {
 			String name = link.getQuery().name();
 
 			if(name != null) {
-				Query query = link.getQuery();
-				SqlToken token = new Equ(link.sql_guid(), query.primaryKey());
-
 				options.disableAggregation();
-
-				join += "\n\t" + link.getJoin() + " join " + queryName(query) + " on " + token.format(vendor(), options, true);
-
+				join += "\n\t" + link.getJoin() + " join " + queryName(link.getQuery()) + " on " + link.on().format(vendor(), options, true);
 				options.enableAggregation();
 			}
 		}

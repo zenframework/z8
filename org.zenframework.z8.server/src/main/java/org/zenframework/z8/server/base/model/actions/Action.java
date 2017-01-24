@@ -7,7 +7,7 @@ import java.util.Map;
 
 import org.zenframework.z8.server.base.query.Query;
 import org.zenframework.z8.server.base.table.value.Field;
-import org.zenframework.z8.server.base.table.value.Link;
+import org.zenframework.z8.server.base.table.value.ILink;
 import org.zenframework.z8.server.db.sql.functions.InVector;
 import org.zenframework.z8.server.json.Json;
 import org.zenframework.z8.server.json.JsonWriter;
@@ -55,7 +55,7 @@ public abstract class Action extends RequestTarget {
 		return actionParameters.requestQuery;
 	}
 
-	public Link getLink() {
+	public ILink getLink() {
 		return actionParameters.link;
 	}
 
@@ -63,14 +63,14 @@ public abstract class Action extends RequestTarget {
 		String json = getRequestParameter(Json.fields);
 
 		if(json == null || json.isEmpty())
-			return query.getFormFields();
+			return query.formFields();
 
 		Collection<Field> fields = new ArrayList<Field>();
 
 		JsonArray names = new JsonArray(json);
 
 		if(names.length() == 0)
-			return query.getFormFields();
+			return query.formFields();
 
 		for(int index = 0; index < names.length(); index++) {
 			Field field = query.findFieldById(names.getString(index));
@@ -213,9 +213,9 @@ public abstract class Action extends RequestTarget {
 		fields.add(primaryKey);
 		fields.add(query.lockKey());
 
-		Link link = getLink();
+		ILink link = getLink();
 		if(link != null)
-			fields.add(link);
+			fields.add((Field)link);
 
 		for(Field field : fields)
 			field.reset();

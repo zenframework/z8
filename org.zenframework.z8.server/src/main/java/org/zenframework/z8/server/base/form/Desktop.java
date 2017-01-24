@@ -51,11 +51,6 @@ public class Desktop extends OBJECT {
 
 	@Override
 	public int controlSum() {
-		int result = 0;
-
-		for(OBJECT.CLASS<? extends OBJECT> cls : runnables)
-			result += Math.abs(cls.classId().hashCode());
-
-		return result;
+		return Math.abs(classId().hashCode());
 	}
 }

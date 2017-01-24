@@ -51,8 +51,10 @@ public class UsersView extends Users {
 		entries.get().query = (Query.CLASS<Query>)userEntries.getCLASS();
 		entries.get().link = userEntries.user;
 
+		userEntries.position.get().editable = bool.True;
+
 		userEntries.columns.add(userEntries.entries.get().name);
-		userEntries.columns.add(userEntries.entries.get().id);
+		userEntries.columns.add(userEntries.position);
 		userEntries.sortFields.add(userEntries.position);
 
 		UserRoles userRoles = new UserRoles.CLASS<UserRoles>(this).get();

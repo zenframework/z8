@@ -186,6 +186,7 @@ public interface Json {
 	string controls = new string("controls");
 	string nameFields = new string("nameFields");
 	string quickFilters = new string("quickFilters");
+	string sourceField = new string("sourceField");
 
 	string grid = new string("grid");
 	string tree = new string("tree");

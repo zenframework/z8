@@ -24,4 +24,7 @@ public interface IField extends IObject {
 
 	public Query owner();
 	public IAccess access();
+
+	public boolean isPrimaryKey();
+	public boolean isParentKey();
 }

@@ -7,7 +7,7 @@ import org.zenframework.z8.server.base.model.sql.Update;
 import org.zenframework.z8.server.base.query.Query;
 import org.zenframework.z8.server.base.query.QueryUtils;
 import org.zenframework.z8.server.base.table.value.Field;
-import org.zenframework.z8.server.base.table.value.Link;
+import org.zenframework.z8.server.base.table.value.ILink;
 import org.zenframework.z8.server.db.Connection;
 import org.zenframework.z8.server.db.ConnectionManager;
 import org.zenframework.z8.server.exceptions.AccessRightsViolationException;
@@ -96,7 +96,7 @@ public class UpdateAction extends Action {
 			query.insert(newRecordId, parentId);
 
 			Query requestQuery = getRequestQuery();
-			Link link = getLink();
+			ILink link = getLink();
 
 			if(query == requestQuery)
 				throw new RuntimeException("UpdateAction - bad recordId"); 

@@ -2,31 +2,27 @@ package org.zenframework.z8.server.base.table.value;
 
 import org.zenframework.z8.server.base.query.Query;
 import org.zenframework.z8.server.base.table.ITable;
-import org.zenframework.z8.server.db.sql.expressions.Equ;
-import org.zenframework.z8.server.json.Json;
 import org.zenframework.z8.server.json.JsonWriter;
 import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.types.sql.sql_bool;
 
-public class LinkExpression extends GuidExpression implements ILink {
-	public static class CLASS<T extends LinkExpression> extends GuidExpression.CLASS<T> {
+public class JoinExpression extends Expression implements ILink {
+	public static class CLASS<T extends JoinExpression> extends Expression.CLASS<T> {
 		public CLASS(IObject container) {
 			super(container);
-			setJavaClass(LinkExpression.class);
+			setJavaClass(JoinExpression.class);
 			setSystem(true);
 		}
 
 		@Override
 		public Object newObject(IObject container) {
-			return new LinkExpression(container);
+			return new JoinExpression(container);
 		}
 	}
 
 	private Query.CLASS<Query> query = null;
 
-	private boolean writeLinkMeta = true;
-
-	public LinkExpression(IObject container) {
+	public JoinExpression(IObject container) {
 		super(container);
 		setSystem(true);
 	}
@@ -59,7 +55,11 @@ public class LinkExpression extends GuidExpression implements ILink {
 
 	@Override
 	public sql_bool on() {
-		return new sql_bool(new Equ(sql_guid(), query.get().primaryKey()));
+		return new sql_bool(z8_expression());
+	}
+
+	protected sql_bool z8_expression() {
+		return new sql_bool();
 	}
 
 	@Override
@@ -69,27 +69,7 @@ public class LinkExpression extends GuidExpression implements ILink {
 
 	@Override
 	public void writeMeta(JsonWriter writer, Query query, Query context) {
-		super.writeMeta(writer, query, context);
-
-		if(!writeLinkMeta)
-			return;
-
-		if(!query.getPath(this).isEmpty())
-			return;
-
-		writer.writeProperty(Json.isLink, true);
-		writer.startObject(Json.query);
-
-		query = getQuery();
-
-		if(query != null) {
-			writer.writeProperty(Json.id, query.id());
-			writer.writeProperty(Json.primaryKey, query.primaryKey().id());
-			writer.writeProperty(Json.text, query.displayName());
-			writer.writeProperty(Json.icon, query.icon());
-		}
-
-		writer.finishObject();
+		throw new UnsupportedOperationException();
 	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })

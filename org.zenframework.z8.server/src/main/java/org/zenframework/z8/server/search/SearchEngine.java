@@ -34,7 +34,7 @@ public class SearchEngine {
 	public void updateRecord(Query query, String recordId) {
 		query.saveState();
 
-		if(query.readFirst(query.getSearchFields(), new Equ(query.getSearchId(), recordId))) {
+		if(query.readFirst(query.searchFields(), new Equ(query.getSearchId(), recordId))) {
 			String fullText = query.getRecordFullText();
 			if(fullText != null && !fullText.isEmpty()) {
 				try {
@@ -96,7 +96,7 @@ public class SearchEngine {
 	}
 
 	private void updateIndex(SearchIndex index, Query query) {
-		Collection<Field> fields = query.getSearchFields();
+		Collection<Field> fields = query.searchFields();
 
 		if(fields.isEmpty())
 			return;

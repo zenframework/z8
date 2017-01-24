@@ -33,15 +33,14 @@ public class Section extends Control {
 		super(container);
 	}
 
-	@SuppressWarnings("unchecked")
-	public Collection<Field.CLASS<Field>> fields() {
-		Collection<Field.CLASS<Field>> result = new LinkedHashSet<Field.CLASS<Field>>();
+	public Collection<Field> fields() {
+		Collection<Field> result = new LinkedHashSet<Field>();
 
-		for(Control.CLASS<? extends Control> control : controls) {
-			if(control instanceof Field.CLASS)
-				result.add((Field.CLASS<Field>)control);
-			else if(control instanceof Section.CLASS)
-				result.addAll(((Section)control.get()).fields());
+		for(Control control : CLASS.asList(controls)) {
+			if(control instanceof Field)
+				result.add((Field)control);
+			else if(control instanceof Section)
+				result.addAll(((Section)control).fields());
 		}
 
 		return result;

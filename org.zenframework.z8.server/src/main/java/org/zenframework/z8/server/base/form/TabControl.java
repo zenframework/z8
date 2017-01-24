@@ -31,11 +31,11 @@ public class TabControl extends Control {
 		super(container);
 	}
 
-	public Collection<Field.CLASS<Field>> fields() {
-		Collection<Field.CLASS<Field>> result = new LinkedHashSet<Field.CLASS<Field>>();
+	public Collection<Field> fields() {
+		Collection<Field> result = new LinkedHashSet<Field>();
 
-		for(Tab.CLASS<? extends Tab> tab : tabs)
-			result.addAll(tab.get().fields());
+		for(Tab tab : CLASS.asList(tabs))
+			result.addAll(tab.fields());
 
 		return result;
 	}

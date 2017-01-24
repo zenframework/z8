@@ -187,7 +187,7 @@ public class TableGenerator {
 			}
 		}
 
-		Collection<Field> attachments = table.getAttachments();
+		Collection<Field> attachments = table.attachments();
 		if(attachments.isEmpty())
 			return;
 
@@ -511,7 +511,7 @@ public class TableGenerator {
 	}
 
 	private void updateDefaultDate() throws SQLException {
-		for(Field field : table.getDataFields()) {
+		for(Field field : table.dataFields()) {
 			if(field instanceof DateField || field instanceof DatetimeField) {
 				field.set(date.Min);
 				field.aggregation = Aggregation.None;
