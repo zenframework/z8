@@ -1,0 +1,7 @@
+[native "org.zenframework.z8.server.base.table.value.JoinType"]
+public enum JoinType {
+	Inner,
+	Left,
+	Right,
+	Full
+}

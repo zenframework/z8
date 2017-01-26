@@ -6,6 +6,7 @@ import java.util.Collection;
 import org.zenframework.z8.server.base.table.value.Field;
 import org.zenframework.z8.server.base.table.value.ILink;
 import org.zenframework.z8.server.db.FieldType;
+import org.zenframework.z8.server.json.parser.JsonArray;
 import org.zenframework.z8.server.json.parser.JsonObject;
 import org.zenframework.z8.server.types.bool;
 import org.zenframework.z8.server.types.date;
@@ -54,5 +55,38 @@ public class QueryUtils {
 
 		String key = field.id();
 		return record.has(key) ? record.getGuid(key) : null;
+	}
+
+	static public void setFieldValues(Query query, String json) {
+		if(json == null || json.isEmpty())
+			return;
+
+		JsonObject record = new JsonObject(json);
+
+		for(String fieldId : JsonObject.getNames(record)) {
+			Field field = query.findFieldById(fieldId);
+			if(field != null)
+				QueryUtils.setFieldValue(field, record.getString(fieldId));
+		}
+	}
+
+	static public Collection<Field> parseFormFields(Query query, String json) {
+		if(json == null || json.isEmpty())
+			return query.formFields();
+
+		Collection<Field> fields = new ArrayList<Field>();
+
+		JsonArray names = new JsonArray(json);
+
+		if(names.length() == 0)
+			return query.formFields();
+
+		for(int index = 0; index < names.length(); index++) {
+			Field field = query.findFieldById(names.getString(index));
+			if(field != null)
+				fields.add(field);
+		}
+
+		return fields;
 	}
 }

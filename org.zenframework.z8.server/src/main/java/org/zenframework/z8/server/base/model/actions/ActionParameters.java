@@ -7,7 +7,6 @@ import java.util.Map;
 import org.zenframework.z8.server.base.query.Query;
 import org.zenframework.z8.server.base.table.value.Field;
 import org.zenframework.z8.server.base.table.value.ILink;
-import org.zenframework.z8.server.base.table.value.Link;
 import org.zenframework.z8.server.json.Json;
 import org.zenframework.z8.server.types.bool;
 import org.zenframework.z8.server.types.guid;
@@ -22,9 +21,6 @@ public class ActionParameters {
 	public Collection<Field> fields;
 	public Collection<Field> sortFields;
 	public Collection<Field> groupFields;
-	public Collection<Field> groupBy;
-	public Collection<Link> aggregateBy;
-	public Field totalsBy;
 
 	private Map<string, string> requestParameters = new HashMap<string, string>();
 

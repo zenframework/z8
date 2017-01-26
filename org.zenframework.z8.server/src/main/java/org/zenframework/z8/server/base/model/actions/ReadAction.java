@@ -16,12 +16,13 @@ import org.zenframework.z8.server.base.model.sql.FramedSelect;
 import org.zenframework.z8.server.base.model.sql.Select;
 import org.zenframework.z8.server.base.model.sql.SelectFactory;
 import org.zenframework.z8.server.base.query.Query;
+import org.zenframework.z8.server.base.query.QueryUtils;
 import org.zenframework.z8.server.base.table.value.Aggregation;
 import org.zenframework.z8.server.base.table.value.Expression;
 import org.zenframework.z8.server.base.table.value.Field;
 import org.zenframework.z8.server.base.table.value.ILink;
+import org.zenframework.z8.server.base.table.value.JoinType;
 import org.zenframework.z8.server.base.table.value.Join;
-import org.zenframework.z8.server.base.table.value.JoinExpression;
 import org.zenframework.z8.server.base.table.value.Link;
 import org.zenframework.z8.server.base.table.value.LinkExpression;
 import org.zenframework.z8.server.base.view.filter.Filter;
@@ -133,11 +134,11 @@ public class ReadAction extends Action {
 
 		Query query = getQuery();
 
-		Collection<Field> fields = parameters.fields != null && !parameters.fields.isEmpty() ? parameters.fields : getFormFields(query);
+		Collection<Field> fields = parameters.fields != null && !parameters.fields.isEmpty() ? parameters.fields : getFormFields();
 		Collection<Field> sortFields = parameters.sortFields != null ? parameters.sortFields : emptyFieldList;
 		Collection<Field> groupFields = parameters.groupFields != null ? parameters.groupFields : emptyFieldList;
-		Collection<Field> groupBy = parameters.groupBy != null ? parameters.groupBy : query.getGroupByFields();
-		Collection<Link> aggregateBy = parameters.aggregateBy != null ? parameters.aggregateBy : query.getAggregateByFields();
+		Collection<Field> groupBy = query.getGroupByFields();
+		Collection<Link> aggregateBy = query.getAggregateByFields();
 
 		for(Link field : aggregateBy)
 			addAggregateByField(field);
@@ -310,16 +311,16 @@ public class ReadAction extends Action {
 		addFilter(field, keyValue, Operation.Eq);
 	}
 
-	private Collection<ILink> getLinks(Field field) {
+	private Collection<ILink> getPath(Field field) {
 		Query owner = field.owner();
 
 		if(!(field instanceof Expression) || getQuery().getPath(owner).size() != 0)
-			return getLinks(owner);
+			return getPath(owner);
 
 		return new ArrayList<ILink>();
 	}
 
-	private Collection<ILink> getLinks(Query query) {
+	private Collection<ILink> getPath(Query query) {
 		Collection<ILink> links = queryToPath.get(query);
 
 		if(links != null)
@@ -327,13 +328,18 @@ public class ReadAction extends Action {
 
 		links = new LinkedHashSet<ILink>();
 
-		for(ILink link : getQuery().getPath(query)) {
+		Collection<ILink> path = getQuery().getPath(query);
+
+		if(path == null)
+			path = getRequestQuery().getPath(query);
+
+		for(ILink link : path) {
 			if(link instanceof LinkExpression) {
 				Collection<Field> usedFields = getUsedFields((Field)link);
 				Collection<Query> owners = getOwners(usedFields);
 
 				for(Query owner : owners)
-					links.addAll(getLinks(owner));
+					links.addAll(getPath(owner));
 			}
 
 			links.add(link);
@@ -348,7 +354,7 @@ public class ReadAction extends Action {
 		Collection<ILink> links = new LinkedHashSet<ILink>();
 
 		for(Query query : queries)
-			links.addAll(getLinks(query));
+			links.addAll(getPath(query));
 
 		return links;
 	}
@@ -375,16 +381,19 @@ public class ReadAction extends Action {
 			selectFields.add(field);
 
 			if(hasPrimaryKey()) {
-				Collection<ILink> links = getLinks(field);
+				Collection<ILink> links = getPath(field);
+
 				for(ILink link : links) {
-					if(!(link instanceof JoinExpression))
+					if(!(link instanceof Join))
 						selectFields.add((Field)link);
-					if(link.getJoin() == Join.Right) {
+
+					if(link.getJoin() == JoinType.Right) {
 						Field primaryKey = link.getQuery().primaryKey();
 						selectFields.add(primaryKey);
 						notNullFields.add(primaryKey);
 					}
 				}
+
 				field.setPath(links);
 			}
 
@@ -413,7 +422,7 @@ public class ReadAction extends Action {
 			Collection<Query> queries = getOwners(usedFields);
 
 			for(Query query : queries.toArray(new Query[0])) {
-				for(ILink link : getLinks(query)) {
+				for(ILink link : getPath(query)) {
 					Field linkField = (Field)link;
 					if(linkField instanceof Expression) {
 						for(Field usedField : getUsedFields(linkField))
@@ -906,6 +915,8 @@ public class ReadAction extends Action {
 		Field parentKey = query.parentKey();
 
 		parentId = parentKey != null ? getParentIdParameter() : null;
+
+		QueryUtils.setFieldValues(getRequestQuery(), getRequestParameter(Json.values));
 
 		query.beforeRead(parentId);
 

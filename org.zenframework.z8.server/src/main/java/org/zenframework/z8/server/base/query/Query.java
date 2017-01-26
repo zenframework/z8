@@ -13,6 +13,7 @@ import org.apache.commons.io.FileUtils;
 import org.zenframework.z8.server.base.Command;
 import org.zenframework.z8.server.base.file.Folders;
 import org.zenframework.z8.server.base.form.Control;
+import org.zenframework.z8.server.base.form.Form;
 import org.zenframework.z8.server.base.form.Section;
 import org.zenframework.z8.server.base.form.TabControl;
 import org.zenframework.z8.server.base.model.actions.ActionParameters;
@@ -29,7 +30,7 @@ import org.zenframework.z8.server.base.table.value.Expression;
 import org.zenframework.z8.server.base.table.value.Field;
 import org.zenframework.z8.server.base.table.value.IField;
 import org.zenframework.z8.server.base.table.value.ILink;
-import org.zenframework.z8.server.base.table.value.JoinExpression;
+import org.zenframework.z8.server.base.table.value.Join;
 import org.zenframework.z8.server.base.table.value.Link;
 import org.zenframework.z8.server.base.table.value.LinkExpression;
 import org.zenframework.z8.server.base.view.filter.Filter;
@@ -76,6 +77,7 @@ public class Query extends OBJECT {
 	public bool totals = bool.False;
 
 	public RCollection<Query.CLASS<? extends Query>> queries = new RCollection<Query.CLASS<? extends Query>>(true);
+	public RCollection<Form.CLASS<? extends Form>> forms = new RCollection<Form.CLASS<? extends Form>>(true);
 
 	public RCollection<Field.CLASS<? extends Field>> sortFields = new RCollection<Field.CLASS<? extends Field>>();
 	public RCollection<Field.CLASS<? extends Field>> groupFields = new RCollection<Field.CLASS<? extends Field>>();
@@ -99,6 +101,8 @@ public class Query extends OBJECT {
 	public Field.CLASS<? extends Field> period;
 
 	private Collection<OBJECT.CLASS<? extends OBJECT>> links;
+
+	private Collection<Field> selectFields;
 
 	private String alias;
 	private SqlToken where;
@@ -542,7 +546,6 @@ public class Query extends OBJECT {
 		parameters.query = this;
 		parameters.fields = fields;
 		parameters.sortFields = sortFields;
-		parameters.groupBy = groupFields;
 
 		ReadAction action = new ReadAction(parameters);
 		action.addFilter(where);
@@ -724,6 +727,14 @@ public class Query extends OBJECT {
 			cursor.restoreState();
 
 		state.restore();
+	}
+
+	public Collection<Field> selectFields() {
+		return selectFields;
+	}
+
+	public void setSelectFields(Collection<Field> selectFields) {
+		this.selectFields = selectFields;
 	}
 
 	public Collection<Field.CLASS<? extends Field>> primaryFields() {
@@ -935,7 +946,7 @@ public class Query extends OBJECT {
 
 			for(Field.CLASS<? extends Field> field : dataFields) {
 				if(field instanceof Link.CLASS || field instanceof LinkExpression.CLASS || 
-						field instanceof JoinExpression.CLASS)
+						field instanceof Join.CLASS)
 					links.add(field);
 			}
 		}
@@ -963,12 +974,22 @@ public class Query extends OBJECT {
 		return Arrays.copyOfRange(ids, myId.isEmpty() ? 0 : 1, ids.length);
 	}
 
-	private Query getQueryById(String id) {
-		for(Query.CLASS<? extends Query> query : queries) {
-			if(query.id().startsWith(id()) && query.getIndex().equals(id))
-				return query.get();
+	@SuppressWarnings("rawtypes")
+	private IObject getObjectById(Collection objects, String id) {
+		for(Object object : objects) {
+			OBJECT.CLASS cls = (OBJECT.CLASS)object;
+			if(cls.id().startsWith(id()) && cls.getIndex().equals(id))
+				return cls.get();
 		}
 		return null;
+	}
+
+	private Query getQueryById(String id) {
+		return (Query)getObjectById(queries, id);
+	}
+
+	private Form getFormById(String id) {
+		return (Form)getObjectById(forms, id);
 	}
 
 	private Query getMatchedQuery(String id) {
@@ -1008,11 +1029,16 @@ public class Query extends OBJECT {
 			return result;
 
 		for(int i = 0; i < count; i++) {
-			result.query = result.query.getQueryById(path[i]);
-			result.route.add(result.query);
+			Query query = result.query.getQueryById(path[i]);
 
-			if(result.query == null)
-				return null;
+			if(query != null) {
+				result.query = query;
+				result.route.add(query);
+			} else {
+				Form form = result.query.getFormById(path[i]);
+				if(form == null)
+					return null;
+			}
 		}
 
 		return result;
@@ -1041,10 +1067,12 @@ public class Query extends OBJECT {
 	public Collection<ILink> getPath(Query query) {
 		Collection<Query> route = getRoute(query);
 
+		if(route == null)
+			return null;
+
 		Collection<ILink> path = new ArrayList<ILink>(10);
 
 		Query current = this;
-
 		for(Query q : route) {
 			if(current != q) {
 				ILink link = current.getLinkTo(q);
@@ -1179,7 +1207,7 @@ public class Query extends OBJECT {
 		return searchId != null ? searchId.get() : primaryKey();
 	}
 
-	public void writeMeta(JsonWriter writer, Collection<Field> fields) {
+	public void writeMeta(JsonWriter writer, Query context) {
 		writer.writeProperty(Json.isQuery, true);
 
 		writer.writeProperty(Json.id, id());
@@ -1187,13 +1215,13 @@ public class Query extends OBJECT {
 		writer.writeProperty(Json.form, form());
 		writer.writeProperty(Json.sourceCode, sourceCodeLocation());
 
-		writer.writeControls(Json.fields, fields, this, null);
-		writer.writeControls(Json.controls, controls(), this, null);
-		writer.writeControls(Json.columns, columns(), this, null);
-		writer.writeControls(Json.nameFields, nameFields(), this, null);
-		writer.writeControls(Json.quickFilters, quickFilters(), this, null);
+		writer.writeControls(Json.fields, selectFields(), this, context);
+		writer.writeControls(Json.controls, controls(), this, context);
+		writer.writeControls(Json.columns, columns(), this, context);
+		writer.writeControls(Json.nameFields, nameFields(), this, context);
+		writer.writeControls(Json.quickFilters, quickFilters(), this, context);
 
-		writeKeys(writer, fields);
+		writeKeys(writer, selectFields());
 		writeCommands(writer);
 
 		// visuals

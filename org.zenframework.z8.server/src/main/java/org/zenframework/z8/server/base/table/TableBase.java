@@ -55,7 +55,7 @@ public class TableBase extends Query implements ITable {
 	public Collection<IForeignKey> getForeignKeys() {
 		LinkedHashSet<IForeignKey> foreignKeys = new LinkedHashSet<IForeignKey>();
 		for(OBJECT.CLASS<? extends OBJECT> link : getLinks()) {
-			if(link instanceof IForeignKey && link.foreignKey())
+			if(link.instanceOf(IForeignKey.class) && link.foreignKey())
 				foreignKeys.add((IForeignKey)link.get());
 		}
 		return foreignKeys;

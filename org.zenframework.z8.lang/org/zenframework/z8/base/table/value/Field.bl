@@ -14,7 +14,8 @@ public class Field extends Control {
 	public SortDirection sortDirection = SortDirection.Asc;
 	public Aggregation aggregation = Aggregation.None;
 
-	public Field sourceField;
+	public Field valueFrom;                   // Из какого поля брать значение при создании
+	public Field valueFor;                    // Для какого поля является значением
 
 	public FieldType getType();
 	public string getTypeName();
@@ -36,7 +37,7 @@ public class Field extends Control {
 	public int int();
 	public string string();
 
-	// Оператор закомментирован, чтобы можно было сравнивать поля как объе��ты
+	// Оператор закомментирован, чтобы можно было сравнивать поля как объекты
 	// При необходимости сравнить два поля, например, в where, нужно привести одно из них к sql_<...> типу
 	//public sql_bool operator == (Field field);
 

@@ -7,7 +7,7 @@ import java.util.LinkedHashSet;
 import java.util.Map;
 
 import org.zenframework.z8.server.base.query.Query;
-import org.zenframework.z8.server.base.table.value.Aggregation;
+import org.zenframework.z8.server.base.query.QueryUtils;
 import org.zenframework.z8.server.base.table.value.Field;
 import org.zenframework.z8.server.base.table.value.ILink;
 import org.zenframework.z8.server.db.sql.SortDirection;
@@ -90,81 +90,50 @@ public class ActionFactory {
 
 		initialize(result);
 
-		if(result.query != null) {
-			if(actionName == null) {
-				result.groupFields = new ArrayList<Field>();
-				result.groupFields.addAll(result.query.groupFields());
+		if(actionName == null) {
+			result.groupFields = new ArrayList<Field>();
+			result.groupFields.addAll(result.query.groupFields());
 
-				if(result.sortFields == null) {
-					result.sortFields = new LinkedHashSet<Field>();
-					result.sortFields.addAll(result.groupFields);
-					result.sortFields.addAll(result.query.sortFields());
-				}
-
-				if(result.fields != null) {
-					result.groupFields.retainAll(result.fields);
-					result.sortFields.retainAll(result.fields);
-				}
-			} else {
-				result.groupFields = getGroupFields(result.query);
-				result.sortFields = getSortFields(result.query, result.groupFields);
+			if(result.sortFields == null) {
+				result.sortFields = new LinkedHashSet<Field>();
+				result.sortFields.addAll(result.groupFields);
+				result.sortFields.addAll(result.query.sortFields());
 			}
 
-			result.groupBy = result.query.getGroupByFields();
-			result.aggregateBy = result.query.getAggregateByFields();
-
-			result.totalsBy = getTotalsBy(result.query);
-			setAggregation(result.query);
+			if(result.fields != null) {
+				result.groupFields.retainAll(result.fields);
+				result.sortFields.retainAll(result.fields);
+			}
+		} else {
+			result.groupFields = getGroupFields(result.requestQuery);
+			result.sortFields = getSortFields(result.requestQuery, result.groupFields);
 		}
 
 		return result;
 	}
 
 	private void initialize(ActionParameters result) {
-		String linkId = requestParameter(Json.link);
+		if(!initializeWithLink(result, requestParameter(Json.link)))
+			initializeWithQuery(result, requestParameter(Json.query));
 
-		if(linkId == null || linkId.isEmpty())
-			return;
-
-		result.fields = new ArrayList<Field>();
-
-		ILink link = (ILink)result.query.findFieldById(linkId);
-		result.query = link.getQuery();
-		result.link = link;
-
-		Collection<Field> fields = result.requestQuery.formFields();
-
-		for(Field field : fields) {
-			if(result.query.findFieldById(field.id()) != null)
-				result.fields.add(field);
-		}
-
-		/*
-		 * String sort = requestParameter(Json.sort);
-		 * 
-		 * if(!result.fields.isEmpty()) { result.sortFields = new
-		 * ArrayList<Field>(); result.sortFields.add(field); }
-		 */
+		Query query = result.requestQuery;
+		String json = requestParameter(Json.fields);
+		result.fields = QueryUtils.parseFormFields(query, json);
 	}
 
-	private Field getTotalsBy(Query query) {
-		String totalsBy = requestParameter(Json.totalsBy);
-		return totalsBy != null ? query.findFieldById(totalsBy) : null;
+	private boolean initializeWithLink(ActionParameters result, String id) {
+		if(id != null && !id.isEmpty()) {
+			ILink link = (ILink)result.query.findFieldById(id);
+			result.query = link.getQuery();
+			result.link = link;
+			return true;
+		}
+		return false;
 	}
 
-	private void setAggregation(Query query) {
-		String aggregation = requestParameter(Json.aggregation);
-
-		if(aggregation != null) {
-			JsonArray array = new JsonArray(aggregation);
-
-			for(int index = 0; index < array.length(); index++) {
-				Field field = query.findFieldById(array.getString(index));
-
-				if(field != null)
-					field.aggregation = Aggregation.Sum;
-			}
-		}
+	private void initializeWithQuery(ActionParameters result, String id) {
+		if(id != null && !id.isEmpty())
+			result.query = result.requestQuery.findQueryById(id);
 	}
 
 	private Collection<Field> getGroupFields(Query query) {

@@ -30,14 +30,19 @@ public class UpdateAction extends Action {
 
 		JsonArray records = new JsonArray(jsonData);
 
+		Query query = getQuery();
+
+		ILink link = this.getLink();
+		Query owner = link != null ? link.owner() : null;
+
 		Connection connection = ConnectionManager.get();
 
 		try {
 			connection.beginTransaction();
-			Collection<guid> recordIds = update(records);
+			Collection<guid> recordIds = update(records, owner, link, query);
 			connection.commit();
 
-			writeFormFields(writer, getRequestQuery(), recordIds);
+			writeFormFields(writer, owner != null ? owner : query, recordIds);
 		} catch(Throwable e) {
 			connection.rollback();
 			throw new RuntimeException(e);
@@ -50,65 +55,59 @@ public class UpdateAction extends Action {
 		return true;
 	}
 
-	private Collection<guid> update(JsonArray records) {
-		Query query = getQuery();
-
+	private Collection<guid> update(JsonArray records, Query owner, ILink link, Query query) {
 		Collection<guid> result = new ArrayList<guid>();
 
+		Query requestQuery = getRequestQuery();
 		for(int index = 0; index < records.length(); index++) {
 			JsonObject record = (JsonObject)records.get(index);
 
 			for(String fieldId : JsonObject.getNames(record)) {
-				Field field = query.findFieldById(fieldId);
+				Field field = requestQuery.findFieldById(fieldId);
 
 				if(field != null && checkAccess(field))
 					QueryUtils.setFieldValue(field, record.getString(fieldId));
 			}
 
-			guid recordId = query.primaryKey().guid();
-			guid rootRecordId = QueryUtils.extractKey(record, getRequestQuery().primaryKey());
+			guid id = query.primaryKey().guid();
+			guid ownerId = owner != null ? owner.primaryKey().guid() : null;
 
-			if(recordId.isNull())
-				createLink(query, rootRecordId);
-			else
-				run(query, recordId);
+			if(link != null) {
+				boolean idNull = id.isNull();
+				boolean ownerIdNull = ownerId.isNull();
 
-			result.add(rootRecordId);
+				if(idNull && ownerIdNull)
+					throw new RuntimeException("UpdateAction - bad recordId"); 
+
+				if(idNull)
+					createLink(owner, link, ownerId, query);
+				else
+					run(query, id);
+
+				result.add(ownerId);
+			} else {
+				run(query, id);
+				result.add(id);
+			}
 		}
 
 		return result;
 	}
 
-	private void createLink(Query query, guid rootRecordId) {
-		Connection connection = ConnectionManager.get();
-		connection.beginTransaction();
+	private void createLink(Query owner, ILink link, guid ownerId, Query query) {
+		Field primaryKey = query.primaryKey();
+		Field parentKey = query.parentKey();
 
-		try {
-			Field primaryKey = query.primaryKey();
-			Field parentKey = query.parentKey();
+		guid recordId = guid.create();
+		primaryKey.set(recordId);
 
-			guid newRecordId = guid.create();
-			primaryKey.set(newRecordId);
+		guid parentId = parentKey != null ? parentKey.guid() : null;
 
-			guid parentId = parentKey != null ? parentKey.guid() : null;
+		NewAction.run(query, recordId, parentId);
+		query.insert(recordId, parentId);
 
-			NewAction.run(query, newRecordId, parentId);
-			query.insert(newRecordId, parentId);
-
-			Query requestQuery = getRequestQuery();
-			ILink link = getLink();
-
-			if(query == requestQuery)
-				throw new RuntimeException("UpdateAction - bad recordId"); 
-
-			link.set(newRecordId);
-			requestQuery.update(rootRecordId);
-
-			connection.commit();
-		} catch(Throwable e) {
-			connection.rollback();
-			throw new RuntimeException(e);
-		}
+		link.set(recordId);
+		owner.update(ownerId);
 	}
 
 	static public int run(Query query, guid recordId) {

@@ -1,39 +1,79 @@
 package org.zenframework.z8.server.base.table.value;
 
-public enum Join {
-	Inner(Names.Inner),
-	Left(Names.Left),
-	Right(Names.Right),
-	Full(Names.Full);
+import org.zenframework.z8.server.base.query.Query;
+import org.zenframework.z8.server.base.table.ITable;
+import org.zenframework.z8.server.json.JsonWriter;
+import org.zenframework.z8.server.runtime.IObject;
+import org.zenframework.z8.server.types.sql.sql_bool;
 
-	class Names {
-		static protected final String Inner = "inner";
-		static protected final String Left = "left";
-		static protected final String Right = "right";
-		static protected final String Full = "full";
+public class Join extends Expression implements IJoin {
+	public static class CLASS<T extends Join> extends Expression.CLASS<T> {
+		public CLASS(IObject container) {
+			super(container);
+			setJavaClass(Join.class);
+			setSystem(true);
+		}
+
+		@Override
+		public Object newObject(IObject container) {
+			return new Join(container);
+		}
 	}
 
-	private String fName = null;
+	private Query.CLASS<Query> query = null;
 
-	Join(String name) {
-		fName = name;
+	public Join(IObject container) {
+		super(container);
+		setSystem(true);
 	}
 
 	@Override
-	public String toString() {
-		return fName;
+	public Query.CLASS<Query> query() {
+		return query;
 	}
 
-	static public Join fromString(String string) {
-		if(Names.Inner.equals(string))
-			return Join.Inner;
-		else if(Names.Left.equals(string))
-			return Join.Left;
-		else if(Names.Right.equals(string))
-			return Join.Right;
-		else if(Names.Full.equals(string))
-			return Join.Full;
-		else
-			throw new RuntimeException("Unknown join type: '" + string + "'");
+	@Override
+	public Query getQuery() {
+		return query != null ? query.get() : null;
+	}
+
+	@Override
+	public ITable getReferencedTable() {
+		Query query = getQuery();
+		return query instanceof ITable ? (ITable)query : null;
+	}
+
+	@Override
+	public IField getReferer() {
+		return getQuery().primaryKey();
+	}
+
+	@Override
+	public JoinType getJoin() {
+		return JoinType.Left;
+	}
+
+	@Override
+	public sql_bool on() {
+		return new sql_bool(z8_expression());
+	}
+
+	protected sql_bool z8_expression() {
+		return new sql_bool();
+	}
+
+	@Override
+	public boolean isDataField() {
+		return false;
+	}
+
+	@Override
+	public void writeMeta(JsonWriter writer, Query query, Query context) {
+		throw new UnsupportedOperationException();
+	}
+
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	public void operatorAssign(Query.CLASS<? extends Query> data) {
+		query = (Query.CLASS)data;
 	}
 }

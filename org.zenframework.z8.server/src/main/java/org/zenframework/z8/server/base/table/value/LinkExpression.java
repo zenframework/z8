@@ -53,8 +53,8 @@ public class LinkExpression extends GuidExpression implements ILink {
 	}
 
 	@Override
-	public Join getJoin() {
-		return Join.Left;
+	public JoinType getJoin() {
+		return JoinType.Left;
 	}
 
 	@Override

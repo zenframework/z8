@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.zenframework.z8.server.base.query.Query;
+import org.zenframework.z8.server.base.query.QueryUtils;
 import org.zenframework.z8.server.base.table.value.Field;
 import org.zenframework.z8.server.base.table.value.ILink;
 import org.zenframework.z8.server.db.sql.functions.InVector;
@@ -59,26 +60,9 @@ public abstract class Action extends RequestTarget {
 		return actionParameters.link;
 	}
 
-	protected Collection<Field> getFormFields(Query query) {
+	protected Collection<Field> getFormFields() {
 		String json = getRequestParameter(Json.fields);
-
-		if(json == null || json.isEmpty())
-			return query.formFields();
-
-		Collection<Field> fields = new ArrayList<Field>();
-
-		JsonArray names = new JsonArray(json);
-
-		if(names.length() == 0)
-			return query.formFields();
-
-		for(int index = 0; index < names.length(); index++) {
-			Field field = query.findFieldById(names.getString(index));
-			if(field != null)
-				fields.add(field);
-		}
-
-		return fields;
+		return QueryUtils.parseFormFields(getRequestQuery(), json);
 	}
 
 	public String getRequestParameter(string key) {
@@ -209,7 +193,7 @@ public abstract class Action extends RequestTarget {
 	protected void writeFormFields(JsonWriter writer, Query query, Collection<guid> recordIds) {
 		Field primaryKey = query.primaryKey();
 
-		Collection<Field> fields = getFormFields(query);
+		Collection<Field> fields = getFormFields();
 		fields.add(primaryKey);
 		fields.add(query.lockKey());
 
@@ -219,6 +203,8 @@ public abstract class Action extends RequestTarget {
 
 		for(Field field : fields)
 			field.reset();
+
+		QueryUtils.setFieldValues(query, getRequestParameter(Json.values));
 
 		sql_bool where = new sql_bool(new InVector(primaryKey, recordIds));
 

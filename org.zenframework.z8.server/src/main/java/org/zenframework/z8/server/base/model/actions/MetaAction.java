@@ -1,10 +1,8 @@
 package org.zenframework.z8.server.base.model.actions;
 
-import java.util.Collection;
 import java.util.Map;
 
 import org.zenframework.z8.server.base.query.Query;
-import org.zenframework.z8.server.base.table.value.Field;
 import org.zenframework.z8.server.json.Json;
 import org.zenframework.z8.server.json.JsonWriter;
 import org.zenframework.z8.server.types.string;
@@ -26,8 +24,8 @@ public class MetaAction extends ReadAction {
 
 		Query query = getQuery();
 
-		Collection<Field> fields = getSelectFields();
-		query.writeMeta(writer, fields);
+		query.setSelectFields(getSelectFields());
+		query.writeMeta(writer, getRequestQuery());
 
 		writer.writeSort(actionParameters.sortFields);
 		writer.writeGroup(actionParameters.groupFields);

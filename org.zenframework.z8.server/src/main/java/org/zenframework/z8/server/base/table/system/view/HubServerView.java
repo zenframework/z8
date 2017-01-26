@@ -8,7 +8,6 @@ import java.util.Collection;
 import org.zenframework.z8.server.base.Command;
 import org.zenframework.z8.server.base.model.actions.Action;
 import org.zenframework.z8.server.base.query.Query;
-import org.zenframework.z8.server.base.table.value.Field;
 import org.zenframework.z8.server.base.table.value.IntegerField;
 import org.zenframework.z8.server.base.table.value.StringField;
 import org.zenframework.z8.server.engine.IServerInfo;
@@ -125,9 +124,9 @@ abstract public class HubServerView extends Query {
 			writer.writeProperty(Json.request, classId());
 			writer.writeProperty(Json.primaryKey, recordId.get().id());
 
-			Collection<Field> fields = formFields();
+			setSelectFields(formFields());
 
-			writeMeta(writer, fields);
+			writeMeta(writer, this);
 			writeData(writer, action != null);
 		} else if(action.equals(Action.commandAction)) {
 			Collection<String> urls = new ArrayList<String>();

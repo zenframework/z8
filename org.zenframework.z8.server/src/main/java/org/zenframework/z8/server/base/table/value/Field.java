@@ -56,7 +56,8 @@ abstract public class Field extends Control implements IField {
 
 	public primary defaultValue;
 
-	public Field.CLASS<? extends Field> sourceField;
+	public Field.CLASS<? extends Field> valueFrom;
+	public Field.CLASS<? extends Field> valueFor;
 
 	private primary originalValue;
 	private boolean changed = false;
@@ -275,8 +276,8 @@ abstract public class Field extends Control implements IField {
 	public Collection<Field> fields() {
 		Collection<Field> result = new LinkedHashSet<Field>();
 		result.add(this);
-		if(sourceField != null)
-			result.add(sourceField.get());
+		if(valueFrom != null)
+			result.add(valueFrom.get());
 		return result;
 	}
 
@@ -303,18 +304,21 @@ abstract public class Field extends Control implements IField {
 
 			access = link.access();
 
-			Query linkOwner = context != null ? context : link.owner();
+			Query linkOwner = link.owner();
 			Query linkQuery = link.getQuery();
 
 			writer.writeProperty(Json.isCombobox, true);
 
 			writer.startObject(Json.query);
-			writer.writeProperty(Json.id, linkOwner.classId());
+			writer.writeProperty(Json.id, context.classId());
+			writer.writeProperty(Json.name, linkQuery.id());
 			writer.writeProperty(Json.primaryKey, linkOwner.primaryKey().id());
+			writer.writeProperty(Json.lockKey, linkOwner.lockKey().id());
 			writer.finishObject();
 
 			writer.startObject(Json.link);
 			writer.writeProperty(Json.name, link.id());
+			writer.writeProperty(Json.isBackward, link instanceof IJoin);
 			writer.writeProperty(Json.primaryKey, linkQuery.primaryKey().id());
 			if(link.isParentKey()) {
 				writer.writeProperty(Json.isParentKey, true);
@@ -337,13 +341,16 @@ abstract public class Field extends Control implements IField {
 
 			if(query.primaryKey() == this)
 				writer.writeProperty(Json.isPrimaryKey, true);
-
-			if(sourceField != null)
-				writer.writeProperty(Json.sourceField, sourceField.id());
 		}
 
 		this.readOnly = new bool(readOnly);
 		this.required = new bool(required);
+
+		if(valueFrom != null)
+			writer.writeProperty(Json.valueFrom, valueFrom.get().id());
+
+		if(valueFor != null)
+			writer.writeProperty(Json.valueFor, valueFor.get().id());
 
 		super.writeMeta(writer, query, context);
 	}
