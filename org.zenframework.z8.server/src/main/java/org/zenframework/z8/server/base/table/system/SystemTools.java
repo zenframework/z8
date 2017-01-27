@@ -72,25 +72,25 @@ public class SystemTools extends Desktop {
 		super.constructor2();
 
 		if(ServerConfig.isLatestVersion()) {
-			runnables.add(users);
-			runnables.add(domains);
-			runnables.add(jobs);
-			runnables.add(sequences);
+			objects.add(users);
+			objects.add(domains);
+			objects.add(jobs);
+			objects.add(sequences);
 
-			runnables.add(exportMessages);
-			runnables.add(files);
+			objects.add(exportMessages);
+			objects.add(files);
 
-			runnables.add(tables);
-			runnables.add(roles);
+			objects.add(tables);
+			objects.add(roles);
 
 			guid user = ApplicationServer.getUser().id();
 
 			if(user.equals(BuiltinUsers.Administrator.guid()) || user.equals(BuiltinUsers.System.guid())) {
-				runnables.add(authorityCenter);
-				runnables.add(interconnectionCenter);
+				objects.add(authorityCenter);
+				objects.add(interconnectionCenter);
 			}
 		}
 
-		runnables.add(generator);
+		objects.add(generator);
 	}
 }
