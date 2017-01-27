@@ -103,9 +103,9 @@ public class Comments extends TreeTable {
 		registerDataField(text);
 		registerDataField(time);
 
-		queries.add(parentComment);
-		queries.add(topics);
-		queries.add(authors);
+		objects.add(parentComment);
+		objects.add(topics);
+		objects.add(authors);
 	}
 
 	@Override

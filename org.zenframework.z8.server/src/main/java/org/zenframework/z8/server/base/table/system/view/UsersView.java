@@ -1,7 +1,6 @@
 package org.zenframework.z8.server.base.table.system.view;
 
 import org.zenframework.z8.server.base.form.Listbox;
-import org.zenframework.z8.server.base.query.Query;
 import org.zenframework.z8.server.base.table.system.Roles;
 import org.zenframework.z8.server.base.table.system.UserEntries;
 import org.zenframework.z8.server.base.table.system.UserRoles;
@@ -24,32 +23,37 @@ public class UsersView extends Users {
 		}
 	}
 
-	public Listbox.CLASS<Listbox> entries = new Listbox.CLASS<Listbox>(this);
-	public Listbox.CLASS<Listbox> roles = new Listbox.CLASS<Listbox>(this);
+	public Listbox.CLASS<Listbox> entriesListbox = new Listbox.CLASS<Listbox>(this);
+	public Listbox.CLASS<Listbox> rolesListbox = new Listbox.CLASS<Listbox>(this);
 
+	private UserEntries.CLASS<UserEntries> userEntries = new UserEntries.CLASS<UserEntries>(this);
+	private UserRoles.CLASS<UserRoles> userRoles = new UserRoles.CLASS<UserRoles>(this);
+	
 	public UsersView(IObject container) {
 		super(container);
 	}
 
 	@Override
-	@SuppressWarnings("unchecked")
 	public void constructor2() {
 		super.constructor2();
+
+		userEntries.setIndex("userEntries");
+		userRoles.setIndex("userRoles");
 
 		columnCount = new integer(12);
 
 		readOnly = new bool(!ApplicationServer.getUser().isAdministrator());
 
-		entries.setIndex("entries");
-		entries.setDisplayName(UserEntries.displayNames.Title);
+		entriesListbox.setIndex("entriesListbox");
+		entriesListbox.setDisplayName(UserEntries.displayNames.Title);
 
-		roles.setIndex("roles");
-		roles.setDisplayName(UserRoles.displayNames.Title);
+		rolesListbox.setIndex("rolesListbox");
+		rolesListbox.setDisplayName(UserRoles.displayNames.Title);
 
-		UserEntries userEntries = new UserEntries.CLASS<UserEntries>(this).get();
+		UserEntries userEntries = this.userEntries.get();
 
-		entries.get().query = (Query.CLASS<Query>)userEntries.getCLASS();
-		entries.get().link = userEntries.user;
+		entriesListbox.get().query = this.userEntries;
+		entriesListbox.get().link = userEntries.user;
 
 		userEntries.position.get().editable = bool.True;
 
@@ -57,11 +61,11 @@ public class UsersView extends Users {
 		userEntries.columns.add(userEntries.position);
 		userEntries.sortFields.add(userEntries.position);
 
-		UserRoles userRoles = new UserRoles.CLASS<UserRoles>(this).get();
+		UserRoles userRoles = this.userRoles.get();
 
-		roles.get().query = (Query.CLASS<Query>)userRoles.getCLASS();
-		roles.get().link = userRoles.user;
-		roles.get().source = new Roles.CLASS<Roles>(this);
+		rolesListbox.get().query = this.userRoles;
+		rolesListbox.get().link = userRoles.user;
+		rolesListbox.get().source = new Roles.CLASS<Roles>(this);
 
 		userRoles.columns.add(userRoles.roles.get().name);
 
@@ -77,8 +81,8 @@ public class UsersView extends Users {
 
 		description.get().colspan = new integer(12);
 
-		entries.get().colspan = new integer(6);
-		roles.get().colspan = new integer(6);
+		entriesListbox.get().colspan = new integer(6);
+		rolesListbox.get().colspan = new integer(6);
 
 		registerFormField(name);
 		registerFormField(lastName);
@@ -88,9 +92,12 @@ public class UsersView extends Users {
 		registerFormField(email);
 		registerFormField(banned);
 		registerFormField(description);
-		registerFormField(roles);
-		registerFormField(entries);
+		registerFormField(rolesListbox);
+		registerFormField(entriesListbox);
 
 		sortFields.add(name);
+
+		objects.add(this.userEntries);
+		objects.add(this.userRoles);
 	}
 }

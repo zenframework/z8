@@ -77,9 +77,8 @@ public class Dashboard extends RequestTarget {
 		}
 	}
 
-	@SuppressWarnings("rawtypes")
 	private void writeDesktopData(JsonWriter writer, Desktop desktop, String displayName) {
-		Collection<OBJECT.CLASS> runnables = desktop.getRunnables();
+		Collection<OBJECT.CLASS<OBJECT>> runnables = desktop.getRunnables();
 
 //		if(!runnables.isEmpty()) {
 			writer.startObject();

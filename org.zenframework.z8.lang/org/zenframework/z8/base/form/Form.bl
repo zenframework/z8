@@ -5,6 +5,4 @@ import org.zenframework.z8.base.table.value.Link;
 public class Form extends Section {
 	public Link link;
 	public Query query;
-
-	auto public Query[] queries;
 }

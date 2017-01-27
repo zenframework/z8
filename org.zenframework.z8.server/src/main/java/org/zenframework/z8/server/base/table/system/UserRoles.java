@@ -100,8 +100,8 @@ public class UserRoles extends Table {
 		registerDataField(user);
 		registerDataField(role);
 
-		queries.add(users);
-		queries.add(roles);
+		objects.add(users);
+		objects.add(roles);
 	}
 
 	@Override

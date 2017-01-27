@@ -1,11 +1,5 @@
-import org.zenframework.z8.base.query.Query;
 import org.zenframework.z8.lang.Object;
 
 [native "org.zenframework.z8.server.base.form.Desktop"]
 public class Desktop extends Object {
-	virtual protected void checkAccess();
-
-	auto private Object[] runnables;
-	auto private Desktop[] subDesktops;
-	auto private Query[] dataSets;
 }

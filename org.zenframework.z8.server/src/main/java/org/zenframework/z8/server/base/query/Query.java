@@ -13,7 +13,6 @@ import org.apache.commons.io.FileUtils;
 import org.zenframework.z8.server.base.Command;
 import org.zenframework.z8.server.base.file.Folders;
 import org.zenframework.z8.server.base.form.Control;
-import org.zenframework.z8.server.base.form.Form;
 import org.zenframework.z8.server.base.form.Section;
 import org.zenframework.z8.server.base.form.TabControl;
 import org.zenframework.z8.server.base.model.actions.ActionParameters;
@@ -30,9 +29,7 @@ import org.zenframework.z8.server.base.table.value.Expression;
 import org.zenframework.z8.server.base.table.value.Field;
 import org.zenframework.z8.server.base.table.value.IField;
 import org.zenframework.z8.server.base.table.value.ILink;
-import org.zenframework.z8.server.base.table.value.Join;
 import org.zenframework.z8.server.base.table.value.Link;
-import org.zenframework.z8.server.base.table.value.LinkExpression;
 import org.zenframework.z8.server.base.view.filter.Filter;
 import org.zenframework.z8.server.db.sql.SqlToken;
 import org.zenframework.z8.server.db.sql.expressions.And;
@@ -42,6 +39,7 @@ import org.zenframework.z8.server.json.Json;
 import org.zenframework.z8.server.json.JsonWriter;
 import org.zenframework.z8.server.reports.BirtFileReader;
 import org.zenframework.z8.server.request.Loader;
+import org.zenframework.z8.server.runtime.IClass;
 import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.runtime.OBJECT;
 import org.zenframework.z8.server.runtime.RCollection;
@@ -76,16 +74,12 @@ public class Query extends OBJECT {
 	public integer columnCount = new integer(4);
 	public bool totals = bool.False;
 
-	public RCollection<Query.CLASS<? extends Query>> queries = new RCollection<Query.CLASS<? extends Query>>(true);
-	public RCollection<Form.CLASS<? extends Form>> forms = new RCollection<Form.CLASS<? extends Form>>(true);
-
 	public RCollection<Field.CLASS<? extends Field>> sortFields = new RCollection<Field.CLASS<? extends Field>>();
 	public RCollection<Field.CLASS<? extends Field>> groupFields = new RCollection<Field.CLASS<? extends Field>>();
 
 	public Field.CLASS<? extends Field> searchId;
 	public RCollection<Field.CLASS<? extends Field>> searchFields = new RCollection<Field.CLASS<? extends Field>>();
 
-	public DataFields dataFields = new DataFields(this);
 	public RCollection<Control.CLASS<? extends Control>> formFields = new RCollection<Control.CLASS<? extends Control>>();
 	public RCollection<Field.CLASS<? extends Field>> nameFields = new RCollection<Field.CLASS<? extends Field>>();
 
@@ -100,7 +94,9 @@ public class Query extends OBJECT {
 	public Field.CLASS<? extends Field> attachments;
 	public Field.CLASS<? extends Field> period;
 
-	private Collection<OBJECT.CLASS<? extends OBJECT>> links;
+	private Collection<Field.CLASS<Field>> dataFields;
+	private Collection<Field.CLASS<Field>> primaryFields;
+	private Collection<Field.CLASS<Field>> links;
 
 	private Collection<Field> selectFields;
 
@@ -120,20 +116,6 @@ public class Query extends OBJECT {
 
 	protected Query(IObject container) {
 		super(container);
-	}
-
-	@Override
-	public void setContainer(IObject container) {
-		super.setContainer(container);
-
-		for(Field.CLASS<? extends Field> cls : dataFields)
-			cls.resetId();
-
-		for(Control.CLASS<? extends Control> cls : formFields)
-			cls.resetId();
-
-		for(Query.CLASS<? extends Query> cls : queries)
-			cls.resetId();
 	}
 
 	public boolean equals(Query query) {
@@ -689,11 +671,11 @@ public class Query extends OBJECT {
 		private Select cursor;
 		private Collection<FieldState> fieldStates = new ArrayList<FieldState>();
 
-		public State(Collection<Field> fields, Select cursor) {
+		public State(Collection<Field.CLASS<Field>> fields, Select cursor) {
 			this.cursor = cursor;
 
-			for(Field field : fields)
-				fieldStates.add(new FieldState(field));
+			for(Field.CLASS<Field> field : fields)
+				fieldStates.add(field.hasInstance() ? new FieldState(field.get()) : null);
 		}
 
 		public Select cursor() {
@@ -702,7 +684,8 @@ public class Query extends OBJECT {
 
 		public void restore() {
 			for(FieldState state : fieldStates)
-				state.restore();
+				if(state != null)
+					state.restore();
 		}
 	}
 
@@ -737,32 +720,48 @@ public class Query extends OBJECT {
 		this.selectFields = selectFields;
 	}
 
-	public Collection<Field.CLASS<? extends Field>> primaryFields() {
-		Collection<Field.CLASS<? extends Field>> fields = new ArrayList<Field.CLASS<? extends Field>>(50);
+	@SuppressWarnings("unchecked")
+	public Collection<Field.CLASS<Field>> dataFields() {
+		if(dataFields != null)
+			return dataFields;
 
-		for(Field.CLASS<? extends Field> field : dataFields) {
-			if(!(field instanceof Expression.CLASS))
-				fields.add(field);
+		dataFields = new ArrayList<Field.CLASS<Field>>(20);
+
+		for(IClass<? extends IObject> member : members()) {
+			if(member instanceof Field.CLASS) {
+				member.setOwner(this);
+				dataFields.add((Field.CLASS<Field>)member);
+			}
 		}
 
-		return fields;
+		return dataFields;
+	}
+
+	public Collection<Field.CLASS<Field>> primaryFields() {
+		if(primaryFields != null)
+			return primaryFields;
+
+		primaryFields = new ArrayList<Field.CLASS<Field>>(20);
+
+		for(Field.CLASS<Field> field : dataFields()) {
+			if(!(field instanceof Expression.CLASS))
+				primaryFields.add(field);
+		}
+
+		return primaryFields;
 	}
 
 	private Collection<Control.CLASS<? extends Control>> defaultControls() {
 		Collection<Control.CLASS<? extends Control>> result = new ArrayList<Control.CLASS<? extends Control>>();
-		for(Field.CLASS<? extends Field> field : dataFields) {
+		for(Field.CLASS<Field> field : dataFields()) {
 			if(!field.system())
 				result.add(field);
 		}
 		return result;
 	}
 
-	public Collection<Query> queries() {
-		return CLASS.asList(queries);
-	}
-
-	public Collection<Field> dataFields() {
-		return CLASS.asList(dataFields);
+	public Collection<Field> getDataFields() {
+		return CLASS.asList(dataFields());
 	}
 
 	public Collection<Field> getPrimaryFields() {
@@ -818,9 +817,9 @@ public class Query extends OBJECT {
 
 	public Collection<Field> attachments() {
 		Collection<Field> result = new ArrayList<Field>();
-		for(Field field : dataFields()) {
-			if(field instanceof AttachmentField)
-				result.add(field);
+		for(Field.CLASS<Field> field : dataFields()) {
+			if(field instanceof AttachmentField.CLASS)
+				result.add(field.get());
 		}
 		return result;
 	}
@@ -834,19 +833,12 @@ public class Query extends OBJECT {
 	}
 
 	public void registerDataField(Field.CLASS<?> field) {
-		dataFields.add(field);
-	}
-
-	public void unregisterDataField(Field.CLASS<?> field) {
-		dataFields.remove(field);
+//		dataFields.add(field);
+		objects.add(field);
 	}
 
 	public void registerFormField(Control.CLASS<?> control) {
 		formFields.add(control);
-	}
-
-	public void unregisterFormField(Control.CLASS<?> control) {
-		formFields.remove(control);
 	}
 
 	final public SqlToken having() {
@@ -940,13 +932,12 @@ public class Query extends OBJECT {
 		return owner instanceof Query ? (Query)owner : null;
 	}
 
-	public Collection<OBJECT.CLASS<? extends OBJECT>> getLinks() {
+	public Collection<Field.CLASS<Field>> getLinks() {
 		if(links == null) {
-			links = new ArrayList<OBJECT.CLASS<? extends OBJECT>>(10);
+			links = new ArrayList<Field.CLASS<Field>>(10);
 
-			for(Field.CLASS<? extends Field> field : dataFields) {
-				if(field instanceof Link.CLASS || field instanceof LinkExpression.CLASS || 
-						field instanceof Join.CLASS)
+			for(Field.CLASS<Field> field : dataFields()) {
+				if(field.instanceOf(ILink.class))
 					links.add(field);
 			}
 		}
@@ -974,84 +965,39 @@ public class Query extends OBJECT {
 		return Arrays.copyOfRange(ids, myId.isEmpty() ? 0 : 1, ids.length);
 	}
 
-	@SuppressWarnings("rawtypes")
-	private IObject getObjectById(Collection objects, String id) {
-		for(Object object : objects) {
-			OBJECT.CLASS cls = (OBJECT.CLASS)object;
-			if(cls.id().startsWith(id()) && cls.getIndex().equals(id))
-				return cls.get();
-		}
-		return null;
+	private class MemberSearch {
+		public IObject member;
+		public Collection<IObject> path = new ArrayList<IObject>(10);
 	}
 
-	private Query getQueryById(String id) {
-		return (Query)getObjectById(queries, id);
-	}
-
-	private Form getFormById(String id) {
-		return (Form)getObjectById(forms, id);
-	}
-
-	private Query getMatchedQuery(String id) {
-		for(Query.CLASS<? extends Query> query : queries) {
-			if(id.startsWith(query.id()))
-				return query.get();
-		}
-
-		return null;
-	}
-
-	private class FindQueryResult {
-		public Query query = null;
-		public Collection<Query> route = new ArrayList<Query>(10);
-	}
-
-	private FindQueryResult findQueryById(String id, boolean ignoreLast) {
-		FindQueryResult result = new FindQueryResult();
-
-		result.query = this;
-
+	private MemberSearch findMember(String id) {
 		String[] path = parseId(id);
 
-		if(path == null) {
-			result.query = getMatchedQuery(id);
+		if(path == null)
+			return null;
 
-			if(result.query == null)
+		MemberSearch result = new MemberSearch();
+		result.member = this;
+
+		for(String name : path) {
+			IObject member = result.member.getMember(name).get();
+			if(member == null)
 				return null;
-
-			result.route.add(result.query);
-			path = result.query.parseId(id);
-		}
-
-		int count = path.length - (ignoreLast ? 1 : 0);
-
-		if(path.length == 0 || count == 0)
-			return result;
-
-		for(int i = 0; i < count; i++) {
-			Query query = result.query.getQueryById(path[i]);
-
-			if(query != null) {
-				result.query = query;
-				result.route.add(query);
-			} else {
-				Form form = result.query.getFormById(path[i]);
-				if(form == null)
-					return null;
-			}
+			result.member = member;
+			result.path.add(member);
 		}
 
 		return result;
 	}
 
 	public Query findQueryById(String id) {
-		FindQueryResult result = findQueryById(id, false);
-		return result != null ? result.query : null;
+		MemberSearch result = findMember(id);
+		return result != null && result.member instanceof Query ? (Query)result.member : null;
 	}
 
-	public Collection<Query> getRoute(Query query) {
-		FindQueryResult result = findQueryById(query.id(), false);
-		return result != null ? result.route : null;
+	public Field findFieldById(String id) {
+		MemberSearch result = findMember(id);
+		return result != null && result.member instanceof Field ? (Field)result.member : null;
 	}
 
 	public ILink getLinkTo(Query query) {
@@ -1065,23 +1011,24 @@ public class Query extends OBJECT {
 	}
 
 	public Collection<ILink> getPath(Query query) {
-		Collection<Query> route = getRoute(query);
-
-		if(route == null)
+		MemberSearch result = findMember(query.id());
+		if(result == null || !(result.member instanceof Query))
 			return null;
 
 		Collection<ILink> path = new ArrayList<ILink>(10);
 
 		Query current = this;
-		for(Query q : route) {
-			if(current != q) {
-				ILink link = current.getLinkTo(q);
 
+		for(IObject object : result.path) {
+			if(object instanceof Query) {
+				query = (Query)object;
+				ILink link = current.getLinkTo(query);
 				if(link != null)
 					path.add(link);
+				current = query;
 			}
-			current = q;
 		}
+
 		return path;
 	}
 
@@ -1089,13 +1036,9 @@ public class Query extends OBJECT {
 		return getPath(field.owner());
 	}
 
-	public Field findFieldById(String id) {
-		FindQueryResult result = findQueryById(id, true);
-		return result != null ? result.query.getFieldById(id) : null;
-	}
 
 	public Field getFieldById(String id) {
-		for(Field.CLASS<? extends Field> field : dataFields) {
+		for(Field.CLASS<? extends Field> field : dataFields()) {
 			if(id.equals(field.id()))
 				return field.get();
 		}
@@ -1103,7 +1046,7 @@ public class Query extends OBJECT {
 	}
 
 	public Field getFieldByName(String name) {
-		for(Field.CLASS<? extends Field> field : dataFields) {
+		for(Field.CLASS<? extends Field> field : dataFields()) {
 			if(name.equals(field.name()))
 				return field.get();
 		}

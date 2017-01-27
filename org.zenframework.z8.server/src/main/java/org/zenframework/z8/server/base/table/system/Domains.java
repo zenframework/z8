@@ -119,7 +119,7 @@ public class Domains extends Table {
 		registerFormField(users.get().description);
 		registerFormField(owner);
 
-		queries.add(users);
+		objects.add(users);
 	}
 
 	@Override

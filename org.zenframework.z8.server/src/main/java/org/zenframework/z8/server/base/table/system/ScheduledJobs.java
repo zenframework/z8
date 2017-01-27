@@ -138,8 +138,8 @@ public class ScheduledJobs extends Table {
 		repeat.get().setDefault(new integer(DefaultRepeat));
 		active.get().setDefault(bool.True);
 
-		queries.add(jobs);
-		queries.add(users);
+		objects.add(jobs);
+		objects.add(users);
 	}
 
 	@Override

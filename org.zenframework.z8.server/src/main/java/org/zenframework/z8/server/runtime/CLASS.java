@@ -45,22 +45,6 @@ public class CLASS<TYPE extends IObject> extends OBJECT implements IClass<TYPE> 
 	public int stage() {
 		return stage;
 	}
-	
-	@Override
-	public void resetId() {
-		super.resetId();
-
-		if(object != null)
-			object.resetId();
-	}
-
-	@Override
-	public void setContainer(IObject container) {
-		super.setContainer(container);
-
-		if(object != null)
-			object.setContainer(container);
-	}
 
 	@Override
 	public void setOwner(IObject owner) {

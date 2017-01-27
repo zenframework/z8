@@ -95,6 +95,6 @@ public class ScheduledJobLogs extends Table {
 		registerDataField(finish);
 		registerDataField(files);
 
-		queries.add(scheduledJobs);
+		objects.add(scheduledJobs);
 	}
 }

@@ -65,7 +65,7 @@ public class TableBase extends Query implements ITable {
 	public Collection<IField> getIndices() {
 		List<IField> result = new ArrayList<IField>();
 
-		for(Field field : dataFields()) {
+		for(Field field : getDataFields()) {
 			if(field.indexed() && !field.unique())
 				result.add(field);
 		}
@@ -77,7 +77,7 @@ public class TableBase extends Query implements ITable {
 	public Collection<IField> getUniqueIndices() {
 		List<IField> result = new ArrayList<IField>();
 
-		for(Field field : dataFields()) {
+		for(Field field : getDataFields()) {
 			if(field.unique() && !(field instanceof Link))
 				result.add(field);
 		}

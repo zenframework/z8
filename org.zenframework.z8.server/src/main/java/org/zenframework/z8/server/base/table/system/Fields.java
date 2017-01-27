@@ -95,6 +95,6 @@ public class Fields extends Table {
 		registerDataField(type);
 		registerDataField(position);
 
-		queries.add(tables);
+		objects.add(tables);
 	}
 }

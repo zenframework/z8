@@ -130,8 +130,8 @@ public class RoleTableAccess extends Table {
 		registerDataField(copy);
 		registerDataField(destroy);
 
-		queries.add(roles);
-		queries.add(tables);
+		objects.add(roles);
+		objects.add(tables);
 	}
 
 	@Override

@@ -133,6 +133,6 @@ public class Accounts extends Table {
 		registerDataField(banned);
 		registerDataField(user);
 
-		queries.add(users);
+		objects.add(users);
 	}
 }

@@ -30,8 +30,6 @@ public class Loader {
 		String className = cls.classId();
 
 		if(!loadedClasses.containsKey(className)) {
-			cls.setContainer(null);
-
 			synchronized(mutex) {
 				loadedClasses.put(className, cls);
 			}
@@ -49,9 +47,8 @@ public class Loader {
 		className = className.replaceAll("." + innerClassPrefix, "\\$" + innerClassPrefix) + "$CLASS";
 
 		try {
-			OBJECT container = new OBJECT();
 			Class<?> cls = Class.forName(className);
-			CLASS<?> result = (CLASS<?>)cls.getDeclaredConstructor(IObject.class).newInstance(container);
+			CLASS<?> result = (CLASS<?>)cls.getDeclaredConstructor(IObject.class).newInstance((OBJECT)null);
 			addToCache(result);
 			return result;
 		} catch(Throwable e) {

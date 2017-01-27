@@ -101,8 +101,8 @@ public class UserEntries extends Table {
 		registerDataField(entry);
 		registerDataField(position);
 
-		queries.add(users);
-		queries.add(entries);
+		objects.add(users);
+		objects.add(entries);
 	}
 
 	@Override

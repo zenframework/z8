@@ -3,6 +3,7 @@ package org.zenframework.z8.server.runtime;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -42,6 +43,8 @@ public class OBJECT extends RequestTarget implements IObject, RmiSerializable {
 
 	private Map<String, String> attributes = new HashMap<String, String>();
 
+	public Members objects = new Members(this);
+
 	public OBJECT() {
 		this(null);
 	}
@@ -75,16 +78,11 @@ public class OBJECT extends RequestTarget implements IObject, RmiSerializable {
 
 			if(container != null) {
 				id = container.id();
-				id = id + (id.isEmpty() ? "" : ".") + getIndex();
+				id = id + (id.isEmpty() ? "" : ".") + index();
 			}
 		}
 
 		return id;
-	}
-
-	@Override
-	public void resetId() {
-		id = null;
 	}
 
 	@Override
@@ -199,12 +197,17 @@ public class OBJECT extends RequestTarget implements IObject, RmiSerializable {
 	}
 
 	@Override
-	public void setContainer(IObject container) {
-		if(this.container != null) {
-			this.setIndex(null);
-			this.resetId();
+	public Collection<IClass<? extends IObject>> members() {
+		return objects;
+	}
+
+	@Override
+	public IClass<? extends IObject> getMember(String id) {
+		for(IClass<? extends IObject> member : objects) {
+			if(member.index().equals(id))
+				return member;
 		}
-		this.container = container;
+		return null;
 	}
 
 	@Override
@@ -229,7 +232,7 @@ public class OBJECT extends RequestTarget implements IObject, RmiSerializable {
 	}
 
 	@Override
-	public String getIndex() {
+	public String index() {
 		if(container == null)
 			return "";
 
@@ -355,7 +358,7 @@ public class OBJECT extends RequestTarget implements IObject, RmiSerializable {
 	}
 
 	public string z8_index() {
-		return new string(getIndex());
+		return new string(index());
 	}
 
 	public string z8_name() {

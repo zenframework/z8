@@ -1,6 +1,5 @@
 import org.zenframework.z8.base.Command;
 import org.zenframework.z8.base.form.Control;
-import org.zenframework.z8.base.form.Form;
 import org.zenframework.z8.base.table.value.AttachmentField;
 import org.zenframework.z8.base.table.value.DatetimeField;
 import org.zenframework.z8.base.table.value.Field;
@@ -116,8 +115,4 @@ public class Query extends Object {
 	public void setWhere(sql_bool where);
 	public void setWhere(string where);
 	public void setWhere(string[] where);
-
-	auto public Query[] queries;
-	auto public Field[] dataFields;
-	auto public Form[] forms;
 }

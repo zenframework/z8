@@ -1,5 +1,6 @@
 package org.zenframework.z8.server.runtime;
 
+import java.util.Collection;
 import java.util.Map;
 
 import org.zenframework.z8.server.request.INamedObject;
@@ -28,7 +29,6 @@ public interface IObject extends INamedObject {
 	public int controlSum();
 
 	public String id();
-	public void resetId();
 
 	public guid key();
 	public void setKey(guid key);
@@ -56,7 +56,9 @@ public interface IObject extends INamedObject {
 	public void setForeignKey(boolean foreignKey);
 
 	public IObject getContainer();
-	public void setContainer(IObject container);
+
+	public Collection<IClass<? extends IObject>> members();
+	public IClass<? extends IObject> getMember(String name);
 
 	public IObject getOwner();
 	public void setOwner(IObject owner);
@@ -64,7 +66,7 @@ public interface IObject extends INamedObject {
 	public IClass<? extends IObject> getCLASS();
 	public void setCLASS(IClass<? extends IObject> cls);
 
-	public String getIndex();
+	public String index();
 	public void setIndex(String index);
 
 	public Map<String, String> getAttributes();

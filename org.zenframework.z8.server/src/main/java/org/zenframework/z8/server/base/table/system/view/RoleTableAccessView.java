@@ -1,7 +1,6 @@
 package org.zenframework.z8.server.base.table.system.view;
 
 import org.zenframework.z8.server.base.form.Listbox;
-import org.zenframework.z8.server.base.query.Query;
 import org.zenframework.z8.server.base.table.system.Fields;
 import org.zenframework.z8.server.base.table.system.RoleFieldAccess;
 import org.zenframework.z8.server.base.table.system.RoleTableAccess;
@@ -23,17 +22,22 @@ public class RoleTableAccessView extends Roles {
 		}
 	}
 
-	public Listbox.CLASS<Listbox> tables = new Listbox.CLASS<Listbox>(this);
-	public Listbox.CLASS<Listbox> fields = new Listbox.CLASS<Listbox>(this);
+	public Listbox.CLASS<Listbox> tablesListbox = new Listbox.CLASS<Listbox>(this);
+	public Listbox.CLASS<Listbox> fieldsListbox = new Listbox.CLASS<Listbox>(this);
+
+	private RoleTableAccess.CLASS<RoleTableAccess> rta = new RoleTableAccess.CLASS<RoleTableAccess>(this);
+	private RoleFieldAccess.CLASS<RoleFieldAccess> rfa = new RoleFieldAccess.CLASS<RoleFieldAccess>(this);
 
 	public RoleTableAccessView(IObject container) {
 		super(container);
 	}
 
 	@Override
-	@SuppressWarnings("unchecked")
 	public void constructor2() {
 		super.constructor2();
+
+		rta.setIndex("rta");
+		rfa.setIndex("rfa");
 
 		columnCount = new integer(12);
 
@@ -46,16 +50,16 @@ public class RoleTableAccessView extends Roles {
 		destroy.get().colspan = new integer(2);
 		execute.get().colspan = new integer(2);
 
-		tables.setIndex("tables");
-		tables.setDisplayName(RoleTableAccess.displayNames.Title);
+		tablesListbox.setIndex("tablesListbox");
+		tablesListbox.setDisplayName(RoleTableAccess.displayNames.Title);
 
-		RoleTableAccess rta = new RoleTableAccess.CLASS<RoleTableAccess>(this).get();
+		RoleTableAccess rta = this.rta.get();
 
-		tables.get().query = (Query.CLASS<Query>)rta.getCLASS();
-		tables.get().link = rta.role;
-		tables.get().colspan = new integer(6);
-		tables.get().height = new integer(6);
-		tables.get().sortFields.add(rta.tables.get().name);
+		tablesListbox.get().query = this.rta;
+		tablesListbox.get().link = rta.role;
+		tablesListbox.get().colspan = new integer(6);
+		tablesListbox.get().height = new integer(6);
+		tablesListbox.get().sortFields.add(rta.tables.get().name);
 
 		rta.tables.get().name.get().width = new integer(150);
 		rta.tables.get().displayName.get().width = new integer(150);
@@ -88,15 +92,15 @@ public class RoleTableAccessView extends Roles {
 		rta.columns.add(rta.copy);
 		rta.columns.add(rta.destroy);
 
-		RoleFieldAccess rfa = new RoleFieldAccess.CLASS<RoleFieldAccess>(this).get();
+		RoleFieldAccess rfa = this.rfa.get();
 
-		fields.setIndex("fields");
-		fields.setDisplayName(Fields.displayNames.Title);
-		fields.get().query = (Query.CLASS<Query>)rfa.getCLASS();
-		fields.get().link = rfa.role;
-		fields.get().colspan = new integer(6);
-		fields.get().height = new integer(6);
-		fields.get().sortFields.add(rfa.fields.get().position);
+		fieldsListbox.setIndex("fieldsListbox");
+		fieldsListbox.setDisplayName(Fields.displayNames.Title);
+		fieldsListbox.get().query = this.rfa;
+		fieldsListbox.get().link = rfa.role;
+		fieldsListbox.get().colspan = new integer(6);
+		fieldsListbox.get().height = new integer(6);
+		fieldsListbox.get().sortFields.add(rfa.fields.get().position);
 
 		rfa.fields.get().name.get().width = new integer(150);
 		rfa.fields.get().displayName.get().width = new integer(150);
@@ -116,9 +120,9 @@ public class RoleTableAccessView extends Roles {
 		rfa.columns.add(rfa.read);
 		rfa.columns.add(rfa.write);
 
-		tables.get().dependencies.add(fields);
-		fields.get().dependency = rfa.fields.get().table;
-		fields.get().dependsOn = rta.table;
+		tablesListbox.get().dependencies.add(fieldsListbox);
+		fieldsListbox.get().dependency = rfa.fields.get().table;
+		fieldsListbox.get().dependsOn = rta.table;
 
 		registerFormField(name);
 
@@ -129,9 +133,12 @@ public class RoleTableAccessView extends Roles {
 		registerFormField(destroy);
 		registerFormField(execute);
 
-		registerFormField(tables);
-		registerFormField(fields);
+		registerFormField(tablesListbox);
+		registerFormField(fieldsListbox);
 
 		sortFields.add(name);
+
+		objects.add(this.rta);
+		objects.add(this.rfa);
 	}
 }

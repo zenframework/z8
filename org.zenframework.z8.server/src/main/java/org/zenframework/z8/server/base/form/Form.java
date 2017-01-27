@@ -9,7 +9,6 @@ import org.zenframework.z8.server.base.table.value.Link;
 import org.zenframework.z8.server.json.Json;
 import org.zenframework.z8.server.json.JsonWriter;
 import org.zenframework.z8.server.runtime.IObject;
-import org.zenframework.z8.server.runtime.RCollection;
 
 public class Form extends Section {
 	public static class CLASS<T extends Form> extends Section.CLASS<T> {
@@ -26,8 +25,6 @@ public class Form extends Section {
 
 	public Link.CLASS<? extends Link> link = null;
 	public Query.CLASS<? extends Query> query = null;
-
-	public RCollection<Query.CLASS<? extends Query>> queries = new RCollection<Query.CLASS<? extends Query>>(true);
 
 	public Form(IObject container) {
 		super(container);

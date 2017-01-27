@@ -37,10 +37,10 @@ public class PreviewAction extends Action {
 		Field field = query.findFieldById(fieldId);
 
 		if(field == null)
-			throw new RuntimeException("Field '" + fieldId + "' does not exist in query '" + requestId + "'");
+			throw new RuntimeException("Field '" + fieldId + "' does not exist");
 
 		if(!query.readRecord(recordId, Arrays.<Field>asList(field)))
-			throw new RuntimeException("Record '" + recordId + "' does not exist in '" + query.getIndex() + "'");
+			throw new RuntimeException("Record '" + recordId + "' does not exist");
 
 		Collection<file> attachments = file.parse(field.string().get());
 

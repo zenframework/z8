@@ -97,7 +97,7 @@ public class UserFieldAccess extends Table {
 		registerDataField(read);
 		registerDataField(write);
 
-		queries.add(users);
-		queries.add(fields);
+		objects.add(users);
+		objects.add(fields);
 	}
 }

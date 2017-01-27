@@ -105,8 +105,8 @@ public class RoleFieldAccess extends Table {
 		registerDataField(read);
 		registerDataField(write);
 
-		queries.add(roles);
-		queries.add(fields);
+		objects.add(roles);
+		objects.add(fields);
 	}
 
 	@Override

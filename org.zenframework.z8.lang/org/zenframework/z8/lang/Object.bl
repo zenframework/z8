@@ -23,4 +23,6 @@ public class Object {
 	virtual public string toString();
 
 	virtual protected JsonArray response(string[string] parameters);
+
+	auto public Object[] objects;
 }

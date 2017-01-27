@@ -102,7 +102,7 @@ public class Topics extends Table {
 		registerDataField(author);
 		registerDataField(time);
 
-		queries.add(authors);
+		objects.add(authors);
 	}
 
 	@Override

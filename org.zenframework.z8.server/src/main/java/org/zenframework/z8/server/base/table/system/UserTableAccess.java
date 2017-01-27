@@ -124,7 +124,7 @@ public class UserTableAccess extends Table {
 		registerDataField(copy);
 		registerDataField(destroy);
 
-		queries.add(users);
-		queries.add(tables);
+		objects.add(users);
+		objects.add(tables);
 	}
 }
