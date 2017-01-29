@@ -1,7 +1,5 @@
 package org.zenframework.z8.compiler.parser.statements;
 
-import org.eclipse.text.edits.TextEdit;
-
 import org.zenframework.z8.compiler.core.CodeGenerator;
 import org.zenframework.z8.compiler.core.ILanguageElement;
 import org.zenframework.z8.compiler.core.IMethod;
@@ -155,16 +153,4 @@ public class ForStatement extends LanguageElement implements IStatement {
 			codeGenerator.breakLine();
 		}
 	}
-
-	@Override
-	public void replaceTypeName(TextEdit parent, IType type, String newTypeName) {
-		if(init != null) {
-			init.replaceTypeName(parent, type, newTypeName);
-		}
-
-		condition.replaceTypeName(parent, type, newTypeName);
-		expression.replaceTypeName(parent, type, newTypeName);
-		statement.replaceTypeName(parent, type, newTypeName);
-	}
-
 }

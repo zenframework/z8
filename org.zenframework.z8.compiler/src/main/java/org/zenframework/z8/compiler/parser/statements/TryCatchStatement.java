@@ -3,7 +3,6 @@ package org.zenframework.z8.compiler.parser.statements;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.eclipse.text.edits.TextEdit;
 import org.zenframework.z8.compiler.core.CodeGenerator;
 import org.zenframework.z8.compiler.core.IMethod;
 import org.zenframework.z8.compiler.core.IPosition;
@@ -173,16 +172,5 @@ public class TryCatchStatement extends LanguageElement implements IStatement {
 			codeGenerator.indent().append("finally ");
 			finallyStatement.getCode(codeGenerator);
 		}
-	}
-
-	@Override
-	public void replaceTypeName(TextEdit parent, IType type, String newTypeName) {
-		tryStatement.replaceTypeName(parent, type, newTypeName);
-
-		for(CatchClause catchStatement : catchClauses)
-			catchStatement.replaceTypeName(parent, type, newTypeName);
-
-		if(finallyStatement != null)
-			finallyStatement.replaceTypeName(parent, type, newTypeName);
 	}
 }

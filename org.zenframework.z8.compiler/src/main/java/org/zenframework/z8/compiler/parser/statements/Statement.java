@@ -1,7 +1,5 @@
 package org.zenframework.z8.compiler.parser.statements;
 
-import org.eclipse.text.edits.TextEdit;
-
 import org.zenframework.z8.compiler.core.CodeGenerator;
 import org.zenframework.z8.compiler.core.IJavaTypeCast;
 import org.zenframework.z8.compiler.core.ILanguageElement;
@@ -78,10 +76,5 @@ public class Statement extends LanguageElement implements IStatement {
 			codeGenerator.append(";");
 			codeGenerator.breakLine();
 		}
-	}
-
-	@Override
-	public void replaceTypeName(TextEdit parent, IType type, String newTypeName) {
-		expression.replaceTypeName(parent, type, newTypeName);
 	}
 }

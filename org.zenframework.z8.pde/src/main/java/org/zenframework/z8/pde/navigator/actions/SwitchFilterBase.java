@@ -14,78 +14,77 @@ import org.zenframework.z8.pde.navigator.NavigatorPreferences;
 
 public class SwitchFilterBase extends Action {
 
-    private StructuredViewer m_viewer;
+	private StructuredViewer m_viewer;
 
-    private ViewerFilter m_filter = new NativeTypeMembersFilter();
+	private ViewerFilter m_filter = new NativeTypeMembersFilter();
 
-    class NativeTypeMembersFilter extends ViewerFilter {
-        @Override
-        public boolean select(Viewer viewer, Object parentElement, Object element) {
-            if(element instanceof IMember) {
-                IType type = null;
+	class NativeTypeMembersFilter extends ViewerFilter {
+		@Override
+		public boolean select(Viewer viewer, Object parentElement, Object element) {
+			if(element instanceof IMember) {
+				IType type = null;
 
-                if(parentElement instanceof IType) {
-                    type = (IType)parentElement;
-                }
+				if(parentElement instanceof IType) {
+					type = (IType)parentElement;
+				}
 
-                if(parentElement instanceof IMember) {
-                    type = ((IMember)parentElement).getDeclaringType();
-                }
+				if(parentElement instanceof IMember) {
+					type = ((IMember)parentElement).getDeclaringType();
+				}
 
-                if(type != null) {
-                    IMember member = (IMember)element;
-                    return member.getDeclaringType() == type;
-                }
-            }
+				if(type != null) {
+					IMember member = (IMember)element;
+					return member.getDeclaringType() == type;
+				}
+			}
 
-            return true;
-        }
-    };
+			return true;
+		}
+	};
 
-    public SwitchFilterBase(StructuredViewer viewer) {
-        m_viewer = viewer;
+	public SwitchFilterBase(StructuredViewer viewer) {
+		m_viewer = viewer;
 
-        if(hasFilter()) {
-            m_viewer.addFilter(m_filter);
-        }
+		if(hasFilter()) {
+			m_viewer.addFilter(m_filter);
+		}
 
-        setChecked(hasFilter());
-    }
+		setChecked(hasFilter());
+	}
 
-    private boolean hasFilter() {
-        return NavigatorPreferences.getFilterBaseTypeMembers();
-    }
+	private boolean hasFilter() {
+		return NavigatorPreferences.getFilterBaseTypeMembers();
+	}
 
-    @Override
-    public void run() {
-        if(hasFilter()) {
-            m_viewer.removeFilter(m_filter);
-        }
-        else {
-            m_viewer.addFilter(m_filter);
-        }
+	@Override
+	public void run() {
+		if(hasFilter()) {
+			m_viewer.removeFilter(m_filter);
+		} else {
+			m_viewer.addFilter(m_filter);
+		}
 
-        NavigatorPreferences.setFilterBaseTypeMembers(!hasFilter());
-    }
+		NavigatorPreferences.setFilterBaseTypeMembers(!hasFilter());
+	}
 
-    @Override
-    public String getToolTipText() {
-        return NavigatorMessages.ShowBaseTypeMembers_tooltip;
-    }
+	@Override
+	public String getToolTipText() {
+		return NavigatorMessages.ShowBaseTypeMembers_tooltip;
+	}
 
-    @Override
-    public int getStyle() {
-        return AS_CHECK_BOX;
-    }
+	@Override
+	public int getStyle() {
+		return AS_CHECK_BOX;
+	}
 
-    @Override
-    public String getText() {
-        return NavigatorMessages.ShowBaseTypeMembers;
-    }
+	@Override
+	public String getText() {
+		return NavigatorMessages.ShowBaseTypeMembers;
+	}
 
-    @Override
-    public ImageDescriptor getImageDescriptor() {
-        return PluginImages.DESC_OUTLINE_BASE;
-    }
+	@Override
+	public ImageDescriptor getImageDescriptor() {
+		return PluginImages.DESC_OUTLINE_BASE;
+	}
 
 }

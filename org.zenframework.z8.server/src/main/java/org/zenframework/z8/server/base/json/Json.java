@@ -86,7 +86,6 @@ public class Json extends OBJECT {
 	final static public string lookup = org.zenframework.z8.server.json.Json.lookup;
 	final static public string sort = org.zenframework.z8.server.json.Json.sort;
 	final static public string direction = org.zenframework.z8.server.json.Json.direction;
-	final static public string __search_text__ = org.zenframework.z8.server.json.Json.__search_text__;
 
 	final static public string filter = org.zenframework.z8.server.json.Json.filter;
 	final static public string filter1 = org.zenframework.z8.server.json.Json.filter1;

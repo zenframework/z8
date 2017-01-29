@@ -31,8 +31,10 @@ public class Control extends OBJECT {
 	public bool required = null;
 	public bool editable = null;
 
-	public integer rowspan = null;
 	public integer colspan = null;
+	public integer flex = null;
+
+	public integer height;
 
 	/*
 	 * В ситуации зависимых компонентов, т.е. listbox или combobox, 
@@ -75,8 +77,9 @@ public class Control extends OBJECT {
 		writer.writeProperty(Json.description, description());
 		writer.writeProperty(Json.icon, icon());
 
-		writer.writeProperty(Json.rowspan, rowspan, new integer(1));
-		writer.writeProperty(Json.colspan, colspan, new integer(1));
+		writer.writeProperty(Json.height, height);
+		writer.writeProperty(Json.colspan, colspan);
+		writer.writeProperty(Json.flex, flex);
 
 		writer.writeProperty(Json.readOnly, readOnly());
 		writer.writeProperty(Json.required, required());

@@ -9,27 +9,28 @@ import org.zenframework.z8.pde.PluginImages;
 
 public class OverrideAnnotationImageProvider implements IAnnotationImageProvider {
 
-    public OverrideAnnotationImageProvider() {}
+	public OverrideAnnotationImageProvider() {
+	}
 
-    private final static ImageDescriptor OVER = PluginImages.DESC_OVR_OVERRIDES;
-    private final static ImageDescriptor IMPL = PluginImages.DESC_OVR_IMPLEMENTS;
+	private final static ImageDescriptor OVER = PluginImages.DESC_OVR_OVERRIDES;
+	private final static ImageDescriptor IMPL = PluginImages.DESC_OVR_IMPLEMENTS;
 
-    private final static String ID_OVER = "override";
-    private final static String ID_IMPL = "implement";
+	private final static String ID_OVER = "override";
+	private final static String ID_IMPL = "implement";
 
-    @Override
-    public ImageDescriptor getImageDescriptor(String imageDescritporId) {
-        return imageDescritporId.equals(ID_OVER) ? OVER : IMPL;
-    }
+	@Override
+	public ImageDescriptor getImageDescriptor(String imageDescritporId) {
+		return imageDescritporId.equals(ID_OVER) ? OVER : IMPL;
+	}
 
-    @Override
-    public String getImageDescriptorId(Annotation annotation) {
-        return ((OverrideAnnotation)annotation).isOverride() ? ID_OVER : ID_IMPL;
-    }
+	@Override
+	public String getImageDescriptorId(Annotation annotation) {
+		return ((OverrideAnnotation)annotation).isOverride() ? ID_OVER : ID_IMPL;
+	}
 
-    @Override
-    public Image getManagedImage(Annotation annotation) {
-        return null;
-    }
+	@Override
+	public Image getManagedImage(Annotation annotation) {
+		return null;
+	}
 
 }

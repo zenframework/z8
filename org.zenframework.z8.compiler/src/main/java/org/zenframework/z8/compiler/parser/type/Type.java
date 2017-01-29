@@ -3,9 +3,6 @@ package org.zenframework.z8.compiler.parser.type;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.eclipse.text.edits.ReplaceEdit;
-import org.eclipse.text.edits.TextEdit;
-
 import org.zenframework.z8.compiler.core.CodeGenerator;
 import org.zenframework.z8.compiler.core.IInitializer;
 import org.zenframework.z8.compiler.core.ILanguageElement;
@@ -28,6 +25,7 @@ public class Type extends AbstractType {
 	private IToken finalToken;
 	private IToken classToken;
 	private IToken typeNameToken;
+	@SuppressWarnings("unused")
 	private IToken baseTypeNameToken;
 
 	private VariableType baseVariableType;
@@ -455,23 +453,5 @@ public class Type extends AbstractType {
 	@Override
 	public TypeBody getTypeBody() {
 		return body;
-	}
-
-	@Override
-	public void replaceTypeName(TextEdit parent, IType type, String newTypeName) {
-		super.replaceTypeName(parent, type, newTypeName);
-
-		if(type.equals(this) && typeNameToken != null) {
-			IPosition position = typeNameToken.getPosition();
-			parent.addChild(new ReplaceEdit(position.getOffset(), position.getLength(), newTypeName));
-		}
-
-		if(type.equals(getBaseType())) {
-			IPosition position = baseTypeNameToken.getPosition();
-			parent.addChild(new ReplaceEdit(position.getOffset(), position.getLength(), newTypeName));
-		}
-
-		if(body != null)
-			body.replaceTypeName(parent, type, newTypeName);
 	}
 }

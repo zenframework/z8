@@ -4,5 +4,5 @@ import org.zenframework.z8.compiler.core.IAttributed;
 
 public interface IAttributedProvider {
 
-    public IAttributed getAttributed();
+	public IAttributed getAttributed();
 }

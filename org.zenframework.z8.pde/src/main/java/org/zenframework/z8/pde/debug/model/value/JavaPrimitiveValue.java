@@ -8,48 +8,48 @@ import com.sun.jdi.PrimitiveValue;
 import com.sun.jdi.Value;
 
 public class JavaPrimitiveValue extends JDXValue {
-    public JavaPrimitiveValue(JDXDebugTarget target, JDXThread thread, JDXVariable variable, Value value) {
-        super(target, thread, variable, value);
-    }
+	public JavaPrimitiveValue(JDXDebugTarget target, JDXThread thread, JDXVariable variable, Value value) {
+		super(target, thread, variable, value);
+	}
 
-    protected PrimitiveValue getUnderlyingPrimitiveValue() {
-        return (PrimitiveValue)getUnderlyingValue();
-    }
+	protected PrimitiveValue getUnderlyingPrimitiveValue() {
+		return (PrimitiveValue)getUnderlyingValue();
+	}
 
-    public boolean getBooleanValue() {
-        return getUnderlyingPrimitiveValue().booleanValue();
-    }
+	public boolean getBooleanValue() {
+		return getUnderlyingPrimitiveValue().booleanValue();
+	}
 
-    public byte getByteValue() {
-        return getUnderlyingPrimitiveValue().byteValue();
-    }
+	public byte getByteValue() {
+		return getUnderlyingPrimitiveValue().byteValue();
+	}
 
-    public char getCharValue() {
-        return getUnderlyingPrimitiveValue().charValue();
-    }
+	public char getCharValue() {
+		return getUnderlyingPrimitiveValue().charValue();
+	}
 
-    public double getDoubleValue() {
-        return getUnderlyingPrimitiveValue().doubleValue();
-    }
+	public double getDoubleValue() {
+		return getUnderlyingPrimitiveValue().doubleValue();
+	}
 
-    public float getFloatValue() {
-        return getUnderlyingPrimitiveValue().floatValue();
-    }
+	public float getFloatValue() {
+		return getUnderlyingPrimitiveValue().floatValue();
+	}
 
-    public int getIntValue() {
-        return getUnderlyingPrimitiveValue().intValue();
-    }
+	public int getIntValue() {
+		return getUnderlyingPrimitiveValue().intValue();
+	}
 
-    public long getLongValue() {
-        return getUnderlyingPrimitiveValue().longValue();
-    }
+	public long getLongValue() {
+		return getUnderlyingPrimitiveValue().longValue();
+	}
 
-    public short getShortValue() {
-        return getUnderlyingPrimitiveValue().shortValue();
-    }
+	public short getShortValue() {
+		return getUnderlyingPrimitiveValue().shortValue();
+	}
 
-    @Override
-    public boolean hasVariables() {
-        return false;
-    }
+	@Override
+	public boolean hasVariables() {
+		return false;
+	}
 }

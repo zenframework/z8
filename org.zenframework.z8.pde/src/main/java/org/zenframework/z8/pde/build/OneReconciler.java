@@ -12,36 +12,36 @@ import org.zenframework.z8.compiler.workspace.ResourceListener;
 
 public class OneReconciler implements ResourceListener {
 
-    private CompilationUnit m_unit;
+	private CompilationUnit m_unit;
 
-    private Runnable m_runnable;
+	private Runnable m_runnable;
 
-    public OneReconciler(CompilationUnit unit, Runnable run) {
-        m_unit = unit;
-        m_runnable = run;
-        if(unit.getType() != null)
-            m_runnable.run();
-        else {
-            unit.installResourceListener(this);
-            Job job = new Job("Build") {
-                @Override
-                public IStatus run(IProgressMonitor monitor) {
-                    ReconcileMessageConsumer consumer = new ReconcileMessageConsumer();
-                    m_unit.getProject().reconcile(m_unit.getResource(), null, consumer);
-                    return Status.OK_STATUS;
-                }
-            };
-            job.schedule();
-        }
+	public OneReconciler(CompilationUnit unit, Runnable run) {
+		m_unit = unit;
+		m_runnable = run;
+		if(unit.getType() != null)
+			m_runnable.run();
+		else {
+			unit.installResourceListener(this);
+			Job job = new Job("Build") {
+				@Override
+				public IStatus run(IProgressMonitor monitor) {
+					ReconcileMessageConsumer consumer = new ReconcileMessageConsumer();
+					m_unit.getProject().reconcile(m_unit.getResource(), null, consumer);
+					return Status.OK_STATUS;
+				}
+			};
+			job.schedule();
+		}
 
-    }
+	}
 
-    @Override
-    public void event(int type, Resource resource, Object object) {
-        if(resource == m_unit && type == RESOURCE_CHANGED) {
-            resource.uninstallResourceListener(this);
-            Display.getDefault().asyncExec(m_runnable);
-        }
-    }
+	@Override
+	public void event(int type, Resource resource, Object object) {
+		if(resource == m_unit && type == RESOURCE_CHANGED) {
+			resource.uninstallResourceListener(this);
+			Display.getDefault().asyncExec(m_runnable);
+		}
+	}
 
 }

@@ -226,9 +226,6 @@ public class User implements IUser {
 	}
 
 	static private IUser read(primary loginOrId) {
-		if(!ServerConfig.isSystemInstalled())
-			return User.system();
-
 		User user = new User();
 
 		boolean isLatestVersion = ServerConfig.isLatestVersion();
@@ -253,6 +250,9 @@ public class User implements IUser {
 	}
 
 	static public IUser load(String login, String password) {
+		if(!ServerConfig.isSystemInstalled())
+			return User.system();
+
 		IUser user = read(login);
 
 		if(password == null || !password.equals(user.password()) || user.banned() || user.id().equals(Users.Site))

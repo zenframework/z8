@@ -164,6 +164,9 @@ public class TreeTable extends Table {
 		String path = "";
 
 		if(!recordId.isNull()) {
+			Connection connection = ConnectionManager.get();
+			connection.flush();
+
 			path = getPath(parentId);
 			path = path + (path.isEmpty() ? "" : ".") + recordId;
 			parents = parsePath(path);
@@ -204,6 +207,7 @@ public class TreeTable extends Table {
 			Field path = this.path.get();
 
 			SqlToken where = new Like(path, new sql_string(oldPath + '%'));
+
 			read(Arrays.asList(path), where);
 
 			while(next()) {

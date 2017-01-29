@@ -12,26 +12,26 @@ import org.zenframework.z8.pde.Z8EditorMessages;
  */
 
 public class PresentationAction extends TextEditorAction {
-    /**
-     * Constructs and updates the action.
-     */
-    public PresentationAction() {
-        super(Z8EditorMessages.getResourceBundle(), "TogglePresentation.", null);
-        update();
-    }
+	/**
+	 * Constructs and updates the action.
+	 */
+	public PresentationAction() {
+		super(Z8EditorMessages.getResourceBundle(), "TogglePresentation.", null);
+		update();
+	}
 
-    @Override
-    public void run() {
-        ITextEditor editor = getTextEditor();
-        editor.resetHighlightRange();
-        boolean show = editor.showsHighlightRangeOnly();
-        setChecked(!show);
-        editor.showHighlightRangeOnly(!show);
-    }
+	@Override
+	public void run() {
+		ITextEditor editor = getTextEditor();
+		editor.resetHighlightRange();
+		boolean show = editor.showsHighlightRangeOnly();
+		setChecked(!show);
+		editor.showHighlightRangeOnly(!show);
+	}
 
-    @Override
-    public void update() {
-        setChecked(getTextEditor() != null && getTextEditor().showsHighlightRangeOnly());
-        setEnabled(true);
-    }
+	@Override
+	public void update() {
+		setChecked(getTextEditor() != null && getTextEditor().showsHighlightRangeOnly());
+		setEnabled(true);
+	}
 }

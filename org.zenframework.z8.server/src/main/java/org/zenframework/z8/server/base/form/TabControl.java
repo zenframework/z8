@@ -9,7 +9,6 @@ import org.zenframework.z8.server.json.Json;
 import org.zenframework.z8.server.json.JsonWriter;
 import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.runtime.RCollection;
-import org.zenframework.z8.server.types.integer;
 
 public class TabControl extends Control {
 	public static class CLASS<T extends TabControl> extends Control.CLASS<T> {
@@ -24,7 +23,6 @@ public class TabControl extends Control {
 		}
 	}
 
-	public integer height;
 	public RCollection<Tab.CLASS<? extends Tab>> tabs = new RCollection<Tab.CLASS<? extends Tab>>();
 
 	public TabControl(IObject container) {
@@ -49,7 +47,6 @@ public class TabControl extends Control {
 		super.writeMeta(writer, query, context);
 
 		writer.writeProperty(Json.isTabControl, true);
-		writer.writeProperty(Json.height, height, new integer(300));
 		writer.writeControls(Json.tabs, getTabs(), query, context);
 	}
 }

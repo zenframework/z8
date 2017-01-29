@@ -7,8 +7,8 @@ import org.eclipse.debug.core.sourcelookup.ISourcePathComputerDelegate;
 import org.eclipse.debug.core.sourcelookup.containers.WorkspaceSourceContainer;
 
 public class SourcePathComputerDelegate implements ISourcePathComputerDelegate {
-    @Override
-    public ISourceContainer[] computeSourceContainers(ILaunchConfiguration configuration, IProgressMonitor monitor) {
-        return new ISourceContainer[] { new WorkspaceSourceContainer() };
-    }
+	@Override
+	public ISourceContainer[] computeSourceContainers(ILaunchConfiguration configuration, IProgressMonitor monitor) {
+		return new ISourceContainer[] { new WorkspaceSourceContainer() };
+	}
 }

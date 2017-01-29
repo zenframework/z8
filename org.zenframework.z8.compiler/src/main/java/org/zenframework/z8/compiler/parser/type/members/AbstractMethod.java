@@ -3,7 +3,6 @@ package org.zenframework.z8.compiler.parser.type.members;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.eclipse.text.edits.TextEdit;
 import org.zenframework.z8.compiler.content.HyperlinkKind;
 import org.zenframework.z8.compiler.core.CodeGenerator;
 import org.zenframework.z8.compiler.core.IInitializer;
@@ -416,16 +415,5 @@ public abstract class AbstractMethod extends LanguageElement implements IMethod 
 	@Override
 	public ILanguageElement getBody() {
 		return body;
-	}
-
-	@Override
-	public void replaceTypeName(TextEdit parent, IType type, String newTypeName) {
-		variableType.replaceTypeName(parent, type, newTypeName);
-
-		for(Variable parameter : parameters)
-			parameter.replaceTypeName(parent, type, newTypeName);
-
-		if(body != null)
-			body.replaceTypeName(parent, type, newTypeName);
 	}
 }

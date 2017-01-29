@@ -1,8 +1,5 @@
 package org.zenframework.z8.compiler.core;
 
-import org.eclipse.core.runtime.IPath;
-import org.eclipse.text.edits.TextEdit;
-
 import org.zenframework.z8.compiler.workspace.CompilationUnit;
 
 public interface ILanguageElement extends IAttributed, ISource {
@@ -55,10 +52,6 @@ public interface ILanguageElement extends IAttributed, ISource {
 	void getConstructor1(CodeGenerator codeGenerator);
 
 	void getConstructor2(CodeGenerator codeGenerator);
-
-	void replaceTypeName(TextEdit parent, IType type, String newTypeName);
-
-	void replaceImport(TextEdit parent, IPath oldImport, IPath newImport);
 
 	ILanguageElement getElementAt(int offset);
 

@@ -7,9 +7,8 @@ import org.eclipse.debug.ui.ILaunchConfigurationTab;
 import org.eclipse.debug.ui.sourcelookup.SourceLookupTab;
 
 public class TabGroup extends AbstractLaunchConfigurationTabGroup {
-    @Override
-    public void createTabs(ILaunchConfigurationDialog dialog, String mode) {
-        setTabs(new ILaunchConfigurationTab[] { new LaunchMainTab(), new SourceLookupTab(), new CommonTab(),
-                new ProjectXMLTab() });
-    }
+	@Override
+	public void createTabs(ILaunchConfigurationDialog dialog, String mode) {
+		setTabs(new ILaunchConfigurationTab[] { new LaunchMainTab(), new SourceLookupTab(), new CommonTab(), new ProjectXMLTab() });
+	}
 }

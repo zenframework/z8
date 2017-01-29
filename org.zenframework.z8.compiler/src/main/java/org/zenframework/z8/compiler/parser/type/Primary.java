@@ -5,7 +5,6 @@ import java.util.Map;
 
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
-
 import org.zenframework.z8.compiler.core.IType;
 import org.zenframework.z8.compiler.workspace.CompilationUnit;
 

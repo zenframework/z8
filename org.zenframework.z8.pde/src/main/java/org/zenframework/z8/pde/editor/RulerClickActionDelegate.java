@@ -9,9 +9,9 @@ import org.zenframework.z8.pde.Z8ResourceBundle;
 
 public class RulerClickActionDelegate extends AbstractRulerActionDelegate {
 
-    @Override
-    protected IAction createAction(ITextEditor editor, IVerticalRulerInfo rulerInfo) {
-        return new RulerClickAction(new Z8ResourceBundle(), "SelectAnnotationRulerAction.", (Z8Editor)editor, rulerInfo);
-    }
+	@Override
+	protected IAction createAction(ITextEditor editor, IVerticalRulerInfo rulerInfo) {
+		return new RulerClickAction(new Z8ResourceBundle(), "SelectAnnotationRulerAction.", (Z8Editor)editor, rulerInfo);
+	}
 
 }

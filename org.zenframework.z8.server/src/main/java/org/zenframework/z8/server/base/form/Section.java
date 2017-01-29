@@ -25,7 +25,6 @@ public class Section extends Control {
 	}
 
 	public integer columnCount = new integer(3);
-	public integer height;
 
 	public RCollection<Control.CLASS<? extends Control>> controls = new RCollection<Control.CLASS<? extends Control>>();
 
@@ -61,7 +60,6 @@ public class Section extends Control {
 
 		writer.writeProperty(Json.isSection, true);
 		writer.writeProperty(Json.columnCount, columnCount);
-		writer.writeProperty(Json.height, height);
 		writer.writeControls(Json.controls, getControls(), query, context); 
 	}
 }

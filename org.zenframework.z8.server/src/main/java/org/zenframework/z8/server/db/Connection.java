@@ -196,7 +196,7 @@ public class Connection {
 			if(!inTransaction())
 				throw new RuntimeException("Connection.commit() - not in transaction");
 			if(transactionCount == 1) {
-				batch.flush();
+				batch.commit();
 				batch = null;
 				connection.commit();
 				setAutoCommit(true);
@@ -212,12 +212,23 @@ public class Connection {
 			if(!inTransaction())
 				throw new RuntimeException("Connection.rollback() - not in transaction");
 			if(transactionCount == 1) {
-				batch.clear();
+				batch.rollback();
 				batch = null;
 				connection.rollback();
 				setAutoCommit(true);
 			}
 			transactionCount--;
+		} catch(SQLException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	public void flush() {
+		if(!inTransaction())
+			return;
+
+		try {
+			batch.flush();
 		} catch(SQLException e) {
 			throw new RuntimeException(e);
 		}

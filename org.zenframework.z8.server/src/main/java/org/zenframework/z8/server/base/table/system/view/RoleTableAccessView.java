@@ -58,7 +58,7 @@ public class RoleTableAccessView extends Roles {
 		tablesListbox.get().query = this.rta;
 		tablesListbox.get().link = rta.role;
 		tablesListbox.get().colspan = new integer(6);
-		tablesListbox.get().height = new integer(6);
+		tablesListbox.get().flex = new integer(1);
 		tablesListbox.get().sortFields.add(rta.tables.get().name);
 
 		rta.tables.get().name.get().width = new integer(150);
@@ -99,7 +99,7 @@ public class RoleTableAccessView extends Roles {
 		fieldsListbox.get().query = this.rfa;
 		fieldsListbox.get().link = rfa.role;
 		fieldsListbox.get().colspan = new integer(6);
-		fieldsListbox.get().height = new integer(6);
+		fieldsListbox.get().flex = new integer(1);
 		fieldsListbox.get().sortFields.add(rfa.fields.get().position);
 
 		rfa.fields.get().name.get().width = new integer(150);

@@ -1,7 +1,5 @@
 package org.zenframework.z8.compiler.parser.statements;
 
-import org.eclipse.text.edits.TextEdit;
-
 import org.zenframework.z8.compiler.core.CodeGenerator;
 import org.zenframework.z8.compiler.core.ILanguageElement;
 import org.zenframework.z8.compiler.core.IMethod;
@@ -73,10 +71,4 @@ public class LoopCondition extends LanguageElement {
 		typeCast.getCode(codeGenerator, expression);
 		codeGenerator.append(".get()");
 	}
-
-	@Override
-	public void replaceTypeName(TextEdit parent, IType type, String newTypeName) {
-		expression.replaceTypeName(parent, type, newTypeName);
-	}
-
 }

@@ -7,9 +7,9 @@ import org.zenframework.z8.compiler.workspace.ResourceListener;
 
 public class MyPropertySheetEnrty extends PropertySheetEntry implements ResourceListener {
 
-    @Override
-    public void event(int type, Resource resource, Object object) {
-        refreshFromRoot();
-    }
+	@Override
+	public void event(int type, Resource resource, Object object) {
+		refreshFromRoot();
+	}
 
 }

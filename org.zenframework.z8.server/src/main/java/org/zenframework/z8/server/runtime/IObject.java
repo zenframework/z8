@@ -22,7 +22,6 @@ public interface IObject extends INamedObject {
 	static final public String Index = "index";
 	static final public String Exportable = "exportable";
 	static final public String ForeignKey = "foreignKey";
-	static final public String SearchIndex = "searchIndex";
 	static final public String UniqueField = "uniqueField";
 
 	public String classId();

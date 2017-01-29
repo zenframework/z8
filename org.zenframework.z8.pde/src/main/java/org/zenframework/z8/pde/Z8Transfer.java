@@ -4,36 +4,37 @@ import org.eclipse.swt.dnd.ByteArrayTransfer;
 
 public class Z8Transfer extends ByteArrayTransfer {
 
-    private static Z8Transfer instance = new Z8Transfer();
+	private static Z8Transfer instance = new Z8Transfer();
 
-    private Object object;
+	private Object object;
 
-    private static final String TYPE_NAME = "Local Z8 Transfer"//$NON-NLS-1$
-            + System.currentTimeMillis() + ":" + instance.hashCode();//$NON-NLS-1$
-    private static final int TYPEID = registerType(TYPE_NAME);
+	private static final String TYPE_NAME = "Local Z8 Transfer"//$NON-NLS-1$
+			+ System.currentTimeMillis() + ":" + instance.hashCode();//$NON-NLS-1$
+	private static final int TYPEID = registerType(TYPE_NAME);
 
-    private Z8Transfer() {}
+	private Z8Transfer() {
+	}
 
-    public static Z8Transfer getInstance() {
-        return instance;
-    }
+	public static Z8Transfer getInstance() {
+		return instance;
+	}
 
-    @Override
-    protected int[] getTypeIds() {
-        return new int[] { TYPEID };
-    }
+	@Override
+	protected int[] getTypeIds() {
+		return new int[] { TYPEID };
+	}
 
-    @Override
-    protected String[] getTypeNames() {
-        return new String[] { TYPE_NAME };
-    }
+	@Override
+	protected String[] getTypeNames() {
+		return new String[] { TYPE_NAME };
+	}
 
-    public Object getObject() {
-        return object;
-    }
+	public Object getObject() {
+		return object;
+	}
 
-    public void setObject(Object obj) {
-        object = obj;
-    }
+	public void setObject(Object obj) {
+		object = obj;
+	}
 
 }

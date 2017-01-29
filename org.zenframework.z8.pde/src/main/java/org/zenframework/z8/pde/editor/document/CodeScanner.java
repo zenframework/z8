@@ -16,58 +16,55 @@ import org.eclipse.jface.text.rules.WordRule;
 import org.zenframework.z8.pde.ColorProvider;
 
 public class CodeScanner extends RuleBasedScanner {
-    private static String[] fgKeywords = { "auto", "break", "catch", "class", "container", "continue", "do", "else", "enum",
-            "extends", "finally", "for", "if", "new", "private", "protected", "public", "records", "return", "static",
-            "super", "this", "throw", "try", "while", "virtual", "operator", "import", "final" };
+	private static String[] fgKeywords = { "auto", "break", "catch", "class", "container", "continue", "do", "else", "enum", "extends", "finally", "for", "if", "new", "private", "protected", "public", "records", "return", "static", "super", "this", "throw", "try", "while",
+			"virtual", "operator", "import", "final" };
 
-    private static String[] fgAttributes = { "name", "native", "displayName", "sql", "generatable", "entry" };
+	private static String[] fgAttributes = { "name", "native", "displayName", "sql", "generatable", "entry" };
 
-    private static String[] fgTypes = { "void", "binary", "bool", "date", "datetime", "datespan", "decimal", "guid", "int",
-            "string", "sql_binary", "sql_bool", "sql_date", "sql_datetime", "sql_datespan", "sql_decimal", "sql_guid",
-            "sql_int", "sql_string" };
+	private static String[] fgTypes = { "void", "binary", "bool", "date", "datetime", "datespan", "decimal", "guid", "int", "string", "sql_binary", "sql_bool", "sql_date", "sql_datetime", "sql_datespan", "sql_decimal", "sql_guid", "sql_int", "sql_string" };
 
-    private static String[] fgConstants = { "false", "true" };
+	private static String[] fgConstants = { "false", "true" };
 
-    public CodeScanner(ColorProvider provider) {
-        IToken keyword = new Token(new TextAttribute(provider.getColor(ColorProvider.KEYWORD)));
-        IToken attribute = new Token(new TextAttribute(provider.getColor(ColorProvider.ATTRIBUTE)));
-        IToken type = new Token(new TextAttribute(provider.getColor(ColorProvider.TYPE)));
-        IToken string = new Token(new TextAttribute(provider.getColor(ColorProvider.STRING)));
-        IToken comment = new Token(new TextAttribute(provider.getColor(ColorProvider.SINGLE_LINE_COMMENT)));
-        IToken other = new Token(new TextAttribute(provider.getColor(ColorProvider.DEFAULT)));
+	public CodeScanner(ColorProvider provider) {
+		IToken keyword = new Token(new TextAttribute(provider.getColor(ColorProvider.KEYWORD)));
+		IToken attribute = new Token(new TextAttribute(provider.getColor(ColorProvider.ATTRIBUTE)));
+		IToken type = new Token(new TextAttribute(provider.getColor(ColorProvider.TYPE)));
+		IToken string = new Token(new TextAttribute(provider.getColor(ColorProvider.STRING)));
+		IToken comment = new Token(new TextAttribute(provider.getColor(ColorProvider.SINGLE_LINE_COMMENT)));
+		IToken other = new Token(new TextAttribute(provider.getColor(ColorProvider.DEFAULT)));
 
-        List<IRule> rules = new ArrayList<IRule>();
+		List<IRule> rules = new ArrayList<IRule>();
 
-        // Add rule for single line comments.
-        rules.add(new EndOfLineRule("//", comment)); //$NON-NLS-1$
+		// Add rule for single line comments.
+		rules.add(new EndOfLineRule("//", comment)); //$NON-NLS-1$
 
-        // Add rule for strings and character constants.
-        rules.add(new SingleLineRule("\"", "\"", string, '\\')); //$NON-NLS-2$ //$NON-NLS-1$
-        rules.add(new SingleLineRule("'", "'", string, '\\')); //$NON-NLS-2$ //$NON-NLS-1$
+		// Add rule for strings and character constants.
+		rules.add(new SingleLineRule("\"", "\"", string, '\\')); //$NON-NLS-2$ //$NON-NLS-1$
+		rules.add(new SingleLineRule("'", "'", string, '\\')); //$NON-NLS-2$ //$NON-NLS-1$
 
-        // Add generic whitespace rule.
-        rules.add(new WhitespaceRule(new WhitespaceDetector()));
+		// Add generic whitespace rule.
+		rules.add(new WhitespaceRule(new WhitespaceDetector()));
 
-        // Add word rule for keywords, attributes, types, and constants.
-        WordRule wordRule = new WordRule(new WordDetector(), other);
+		// Add word rule for keywords, attributes, types, and constants.
+		WordRule wordRule = new WordRule(new WordDetector(), other);
 
-        for(int i = 0; i < fgKeywords.length; i++)
-            wordRule.addWord(fgKeywords[i], keyword);
+		for(int i = 0; i < fgKeywords.length; i++)
+			wordRule.addWord(fgKeywords[i], keyword);
 
-        for(int i = 0; i < fgAttributes.length; i++)
-            wordRule.addWord(fgAttributes[i], attribute);
+		for(int i = 0; i < fgAttributes.length; i++)
+			wordRule.addWord(fgAttributes[i], attribute);
 
-        for(int i = 0; i < fgTypes.length; i++)
-            wordRule.addWord(fgTypes[i], type);
+		for(int i = 0; i < fgTypes.length; i++)
+			wordRule.addWord(fgTypes[i], type);
 
-        for(int i = 0; i < fgConstants.length; i++)
-            wordRule.addWord(fgConstants[i], type);
+		for(int i = 0; i < fgConstants.length; i++)
+			wordRule.addWord(fgConstants[i], type);
 
-        rules.add(wordRule);
+		rules.add(wordRule);
 
-        IRule[] result = new IRule[rules.size()];
-        rules.toArray(result);
+		IRule[] result = new IRule[rules.size()];
+		rules.toArray(result);
 
-        setRules(result);
-    }
+		setRules(result);
+	}
 }

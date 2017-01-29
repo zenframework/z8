@@ -20,57 +20,56 @@ import org.zenframework.z8.compiler.workspace.Project;
 import org.zenframework.z8.compiler.workspace.Workspace;
 
 public class EditorTestAction implements IWorkbenchWindowActionDelegate {
-    private IWorkbenchWindow m_window;
+	private IWorkbenchWindow m_window;
 
-    @Override
-    public void dispose() {}
+	@Override
+	public void dispose() {
+	}
 
-    @Override
-    public void init(IWorkbenchWindow window) {
-        m_window = window;
-    }
+	@Override
+	public void init(IWorkbenchWindow window) {
+		m_window = window;
+	}
 
-    @Override
-    public void run(IAction action) {
-        try {
-            PlatformUI.getWorkbench().getProgressService().busyCursorWhile(new IRunnableWithProgress() {
+	@Override
+	public void run(IAction action) {
+		try {
+			PlatformUI.getWorkbench().getProgressService().busyCursorWhile(new IRunnableWithProgress() {
 
-                @Override
-                public void run(final IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
-                    int count = 0;
-                    for(Project p : Workspace.getInstance().getProjects()) {
-                        count += p.getCompilationUnits().length;
-                    }
-                    monitor.beginTask("Editor test", count);
-                    for(final Project p : Workspace.getInstance().getProjects()) {
-                        for(final CompilationUnit u : p.getCompilationUnits()) {
-                            Display.getDefault().asyncExec(new Runnable() {
+				@Override
+				public void run(final IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
+					int count = 0;
+					for(Project p : Workspace.getInstance().getProjects()) {
+						count += p.getCompilationUnits().length;
+					}
+					monitor.beginTask("Editor test", count);
+					for(final Project p : Workspace.getInstance().getProjects()) {
+						for(final CompilationUnit u : p.getCompilationUnits()) {
+							Display.getDefault().asyncExec(new Runnable() {
 
-                                @Override
-                                public void run() {
-                                    try {
-                                        IEditorPart editor = IDE.openEditor(m_window.getActivePage(), new FileEditorInput(
-                                                (IFile)u.getResource()), "org.zenframework.z8.forms.editors.MultiEditor", false);
-                                        m_window.getActivePage().closeEditor(editor, false);
-                                    }
-                                    catch(Exception e) {
-                                        Plugin.log(e);
-                                    }
-                                    finally {
-                                        monitor.worked(1);
-                                    }
-                                }
-                            });
-                        }
-                    }
-                    monitor.done();
-                }
+								@Override
+								public void run() {
+									try {
+										IEditorPart editor = IDE.openEditor(m_window.getActivePage(), new FileEditorInput((IFile)u.getResource()), "org.zenframework.z8.forms.editors.MultiEditor", false);
+										m_window.getActivePage().closeEditor(editor, false);
+									} catch(Exception e) {
+										Plugin.log(e);
+									} finally {
+										monitor.worked(1);
+									}
+								}
+							});
+						}
+					}
+					monitor.done();
+				}
 
-            });
-        }
-        catch(Exception e) {}
-    }
+			});
+		} catch(Exception e) {
+		}
+	}
 
-    @Override
-    public void selectionChanged(IAction action, ISelection selection) {}
+	@Override
+	public void selectionChanged(IAction action, ISelection selection) {
+	}
 }

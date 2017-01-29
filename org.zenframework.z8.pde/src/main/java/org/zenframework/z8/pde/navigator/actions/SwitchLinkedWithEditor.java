@@ -7,34 +7,34 @@ import org.zenframework.z8.pde.PluginImages;
 import org.zenframework.z8.pde.navigator.ClassesNavigator;
 
 public class SwitchLinkedWithEditor extends Action {
-    private ClassesNavigator navigator;
+	private ClassesNavigator navigator;
 
-    public SwitchLinkedWithEditor(ClassesNavigator p) {
-        this.navigator = p;
-    }
+	public SwitchLinkedWithEditor(ClassesNavigator p) {
+		this.navigator = p;
+	}
 
-    @Override
-    public void run() {
-        navigator.setLinkedWithEditor(!navigator.isLinkedWithEditor());
-    }
+	@Override
+	public void run() {
+		navigator.setLinkedWithEditor(!navigator.isLinkedWithEditor());
+	}
 
-    @Override
-    public String getToolTipText() {
-        return ("Связать с редактором");
-    }
+	@Override
+	public String getToolTipText() {
+		return ("пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ");
+	}
 
-    @Override
-    public int getStyle() {
-        return AS_CHECK_BOX;
-    }
+	@Override
+	public int getStyle() {
+		return AS_CHECK_BOX;
+	}
 
-    @Override
-    public String getText() {
-        return "Связь с редактором";
-    }
+	@Override
+	public String getText() {
+		return "пїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ";
+	}
 
-    @Override
-    public ImageDescriptor getImageDescriptor() {
-        return PluginImages.DESC_OUTLINE_SYNCHRONIZED;
-    }
+	@Override
+	public ImageDescriptor getImageDescriptor() {
+		return PluginImages.DESC_OUTLINE_SYNCHRONIZED;
+	}
 }

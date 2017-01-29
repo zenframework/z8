@@ -1,8 +1,5 @@
 package org.zenframework.z8.compiler.parser;
 
-import org.eclipse.core.runtime.IPath;
-import org.eclipse.text.edits.TextEdit;
-
 import org.zenframework.z8.compiler.core.CodeGenerator;
 import org.zenframework.z8.compiler.core.IAttribute;
 import org.zenframework.z8.compiler.core.ILanguageElement;
@@ -155,14 +152,6 @@ public abstract class LanguageElement implements ILanguageElement {
 	@Override
 	public boolean isOperatorNew() {
 		return false;
-	}
-
-	@Override
-	public void replaceTypeName(TextEdit parent, IType type, String newTypeName) {
-	}
-
-	@Override
-	public void replaceImport(TextEdit parent, IPath oldImport, IPath newImport) {
 	}
 
 	@Override

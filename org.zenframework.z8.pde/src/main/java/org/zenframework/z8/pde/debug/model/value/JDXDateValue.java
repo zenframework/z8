@@ -16,19 +16,19 @@ import com.sun.jdi.StringReference;
 import com.sun.jdi.Value;
 
 public class JDXDateValue extends JDXObjectValue {
-    public JDXDateValue(JDXDebugTarget target, JDXThread thread, JDXVariable variable, ObjectReference value) {
-        super(target, thread, variable, value);
-    }
+	public JDXDateValue(JDXDebugTarget target, JDXThread thread, JDXVariable variable, ObjectReference value) {
+		super(target, thread, variable, value);
+	}
 
-    @Override
-    public String getValueString() throws DebugException {
-        ObjectReference object = (ObjectReference)getUnderlyingValue();
-        ReferenceType type = object.referenceType();
+	@Override
+	public String getValueString() throws DebugException {
+		ObjectReference object = (ObjectReference)getUnderlyingValue();
+		ReferenceType type = object.referenceType();
 
-        List<Method> method = type.methodsByName("toString", "()Ljava/lang/String;");
-        assert (method.size() == 1);
+		List<Method> method = type.methodsByName("toString", "()Ljava/lang/String;");
+		assert (method.size() == 1);
 
-        Value stringValue = getJDXThread().invokeMethod(object, method.get(0), new ArrayList<Value>());
-        return ((StringReference)stringValue).value();
-    }
+		Value stringValue = getJDXThread().invokeMethod(object, method.get(0), new ArrayList<Value>());
+		return ((StringReference)stringValue).value();
+	}
 }

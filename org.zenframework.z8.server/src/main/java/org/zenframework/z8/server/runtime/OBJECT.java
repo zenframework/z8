@@ -85,6 +85,10 @@ public class OBJECT extends RequestTarget implements IObject, RmiSerializable {
 		return id;
 	}
 
+	public void resetId() {
+		id = null;
+	}
+
 	@Override
 	public guid key() {
 		if(key == null) {
@@ -235,14 +239,8 @@ public class OBJECT extends RequestTarget implements IObject, RmiSerializable {
 	public String index() {
 		if(container == null)
 			return "";
-
 		String index = getAttribute(Index);
-
-		if(index == null)
-			return "";
-			// throw new NullPointerException("OBJECT.index == null");
-
-		return index;
+		return index != null ? index : "";
 	}
 
 	@Override
@@ -357,6 +355,12 @@ public class OBJECT extends RequestTarget implements IObject, RmiSerializable {
 		return new string(id());
 	}
 
+	public void z8_setId(primary value) {
+		setIndex(value.toString());
+		resetId();
+		getCLASS().resetId();
+	}
+
 	public string z8_index() {
 		return new string(index());
 	}
@@ -369,6 +373,10 @@ public class OBJECT extends RequestTarget implements IObject, RmiSerializable {
 		return new string(displayName());
 	}
 
+	public void z8_setDisplayName(primary value) {
+		setDisplayName(value.toString());
+	}
+
 	public string z8_className() {
 		return new string(classId());
 	}
@@ -379,13 +387,5 @@ public class OBJECT extends RequestTarget implements IObject, RmiSerializable {
 
 	public JsonArray.CLASS<? extends JsonArray> z8_response(RLinkedHashMap<string, string> parameters) {
 		return null;
-	}
-
-	public void z8_setAttribute(string attribute, primary value) {
-		setAttribute(attribute.get(), value.toString());
-	}
-
-	public void z8_removeAttribute(string attribute) {
-		removeAttribute(attribute.get());
 	}
 }

@@ -40,10 +40,10 @@ public class TablesView extends Tables {
 		fieldsListbox.setDisplayName(Fields.displayNames.Title);
 
 		Fields fields = this.fields.get();
+		fields.readOnly = bool.True;
 
 		fieldsListbox.get().query = this.fields;
 		fieldsListbox.get().link = fields.table;
-		fieldsListbox.get().height = new integer(6);
 		fieldsListbox.get().sortFields.add(fields.position);
 
 		fields.columns.add(fields.name);
@@ -59,8 +59,10 @@ public class TablesView extends Tables {
 		displayName.get().width = new integer(200);
 
 		description.get().colspan = new integer(6);
+		description.get().height = new integer(2);
 
 		fieldsListbox.get().colspan = new integer(6);
+		fieldsListbox.get().flex = new integer(1);
 
 		registerFormField(id);
 		registerFormField(name);

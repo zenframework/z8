@@ -8,23 +8,22 @@ import org.zenframework.z8.pde.Plugin;
 
 public class NewProjectWizard extends BasicNewProjectResourceWizard {
 
-    @Override
-    public boolean performFinish() {
-        if(!super.performFinish())
-            return false;
-        updateNatures();
-        return true;
-    }
+	@Override
+	public boolean performFinish() {
+		if(!super.performFinish())
+			return false;
+		updateNatures();
+		return true;
+	}
 
-    protected void updateNatures() {
-        try {
-            IProjectDescription d = getNewProject().getDescription();
-            d.setNatureIds(new String[] { Z8ProjectNature.Id });
-            getNewProject().setDescription(d, 0, null);
-        }
-        catch(Exception e) {
-            Plugin.log(e);
-        }
-    }
+	protected void updateNatures() {
+		try {
+			IProjectDescription d = getNewProject().getDescription();
+			d.setNatureIds(new String[] { Z8ProjectNature.Id });
+			getNewProject().setDescription(d, 0, null);
+		} catch(Exception e) {
+			Plugin.log(e);
+		}
+	}
 
 }

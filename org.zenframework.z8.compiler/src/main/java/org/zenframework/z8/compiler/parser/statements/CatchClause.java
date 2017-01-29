@@ -1,7 +1,5 @@
 package org.zenframework.z8.compiler.parser.statements;
 
-import org.eclipse.text.edits.TextEdit;
-
 import org.zenframework.z8.compiler.core.CodeGenerator;
 import org.zenframework.z8.compiler.core.IMethod;
 import org.zenframework.z8.compiler.core.IPosition;
@@ -132,10 +130,5 @@ public class CatchClause extends LanguageElement implements IStatement {
 			codeGenerator.append("catch(" + declaration + ")").breakLine().indent();
 			statement.getCode(codeGenerator);
 		}
-	}
-
-	@Override
-	public void replaceTypeName(TextEdit parent, IType type, String newTypeName) {
-		statement.replaceTypeName(parent, type, newTypeName);
 	}
 }

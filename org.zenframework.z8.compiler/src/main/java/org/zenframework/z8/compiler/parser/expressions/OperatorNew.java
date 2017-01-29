@@ -1,7 +1,5 @@
 package org.zenframework.z8.compiler.parser.expressions;
 
-import org.eclipse.text.edits.TextEdit;
-
 import org.zenframework.z8.compiler.core.CodeGenerator;
 import org.zenframework.z8.compiler.core.IMethod;
 import org.zenframework.z8.compiler.core.IPosition;
@@ -65,12 +63,5 @@ public class OperatorNew extends LanguageElement {
 	public void getCode(CodeGenerator codeGenerator) {
 		codeGenerator.getCompilationUnit().importType(variableType.getType());
 		codeGenerator.append(variableType.getJavaNew(getStaticContext()));
-	}
-
-	@Override
-	public void replaceTypeName(TextEdit parent, IType type, String newTypeName) {
-		if(variableType != null) {
-			variableType.replaceTypeName(parent, type, newTypeName);
-		}
 	}
 }

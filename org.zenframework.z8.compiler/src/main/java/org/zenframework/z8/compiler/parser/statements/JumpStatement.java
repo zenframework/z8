@@ -1,7 +1,5 @@
 package org.zenframework.z8.compiler.parser.statements;
 
-import org.eclipse.text.edits.TextEdit;
-
 import org.zenframework.z8.compiler.core.CodeGenerator;
 import org.zenframework.z8.compiler.core.ILanguageElement;
 import org.zenframework.z8.compiler.core.IMethod;
@@ -145,11 +143,5 @@ public class JumpStatement extends LanguageElement implements IStatement {
 
 	public ILanguageElement getExpression() {
 		return expression;
-	}
-
-	@Override
-	public void replaceTypeName(TextEdit parent, IType type, String newTypeName) {
-		if(expression != null)
-			expression.replaceTypeName(parent, type, newTypeName);
 	}
 }

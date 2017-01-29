@@ -259,8 +259,8 @@ public class DataSetEditorPage extends DataSetWizardPage {
 		Desktop desktop = (Desktop)desktopClass.get();
 		String currentClass = getCurrentDataSetClassName();
 
-		Collection<Desktop.CLASS> desktopClasses = desktop.getSubDesktops();
-		Collection<Query.CLASS> dataSetClasses = desktop.getDataSets();
+		Collection<Desktop.CLASS<Desktop>> desktopClasses = desktop.getSubDesktops();
+		Collection<Query.CLASS<Query>> dataSetClasses = desktop.getDataSets();
 
 		for(Desktop.CLASS subDesktopClass : desktopClasses) {
 			initializeDesktop(item, subDesktopClass);

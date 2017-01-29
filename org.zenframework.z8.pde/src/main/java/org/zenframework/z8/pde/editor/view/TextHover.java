@@ -14,76 +14,76 @@ import org.eclipse.jface.text.source.IAnnotationModel;
 import org.eclipse.jface.text.source.ISourceViewer;
 
 public class TextHover implements ITextHover {
-    @Override
-    public String getHoverInfo(ITextViewer textViewer, IRegion hoverRegion) {
-        IAnnotationModel model = ((ISourceViewer)textViewer).getAnnotationModel();
+	@Override
+	public String getHoverInfo(ITextViewer textViewer, IRegion hoverRegion) {
+		IAnnotationModel model = ((ISourceViewer)textViewer).getAnnotationModel();
 
-        Iterator<Annotation> iterator = model.getAnnotationIterator();
+		Iterator<Annotation> iterator = model.getAnnotationIterator();
 
-        while(iterator.hasNext()) {
-            Annotation annotation = (Annotation)iterator.next();
+		while(iterator.hasNext()) {
+			Annotation annotation = (Annotation)iterator.next();
 
-            if(!annotation.getType().equals("org.zenframework.z8.pde.error")) {
-                continue;
-            }
+			if(!annotation.getType().equals("org.zenframework.z8.pde.error")) {
+				continue;
+			}
 
-            Position position = model.getPosition(annotation);
+			Position position = model.getPosition(annotation);
 
-            if(position.overlapsWith(hoverRegion.getOffset(), hoverRegion.getLength())) {
-                return annotation.getText();
-            }
-        }
-        return null;
-    }
+			if(position.overlapsWith(hoverRegion.getOffset(), hoverRegion.getLength())) {
+				return annotation.getText();
+			}
+		}
+		return null;
+	}
 
-    @Override
-    public IRegion getHoverRegion(ITextViewer textViewer, int offset) {
-        return findWord(textViewer.getDocument(), offset);
-    }
+	@Override
+	public IRegion getHoverRegion(ITextViewer textViewer, int offset) {
+		return findWord(textViewer.getDocument(), offset);
+	}
 
-    private IRegion findWord(IDocument document, int offset) {
-        int start = -1;
-        int end = -1;
+	private IRegion findWord(IDocument document, int offset) {
+		int start = -1;
+		int end = -1;
 
-        try {
+		try {
 
-            int pos = offset;
-            char c;
+			int pos = offset;
+			char c;
 
-            while(pos >= 0) {
-                c = document.getChar(pos);
-                if(!Character.isJavaIdentifierPart(c))
-                    break;
-                --pos;
-            }
+			while(pos >= 0) {
+				c = document.getChar(pos);
+				if(!Character.isJavaIdentifierPart(c))
+					break;
+				--pos;
+			}
 
-            start = pos;
+			start = pos;
 
-            pos = offset;
-            int length = document.getLength();
+			pos = offset;
+			int length = document.getLength();
 
-            while(pos < length) {
-                c = document.getChar(pos);
-                if(!Character.isJavaIdentifierPart(c))
-                    break;
-                ++pos;
-            }
+			while(pos < length) {
+				c = document.getChar(pos);
+				if(!Character.isJavaIdentifierPart(c))
+					break;
+				++pos;
+			}
 
-            end = pos;
+			end = pos;
 
-        }
-        catch(BadLocationException x) {}
+		} catch(BadLocationException x) {
+		}
 
-        if(start > -1 && end > -1) {
-            if(start == offset && end == offset)
-                return new Region(offset, 0);
-            else if(start == offset)
-                return new Region(start, end - start);
-            else
-                return new Region(start + 1, end - start - 1);
-        }
+		if(start > -1 && end > -1) {
+			if(start == offset && end == offset)
+				return new Region(offset, 0);
+			else if(start == offset)
+				return new Region(start, end - start);
+			else
+				return new Region(start + 1, end - start - 1);
+		}
 
-        return null;
-    }
+		return null;
+	}
 
 }

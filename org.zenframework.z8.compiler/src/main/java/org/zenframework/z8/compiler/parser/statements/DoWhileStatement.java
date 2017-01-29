@@ -1,7 +1,5 @@
 package org.zenframework.z8.compiler.parser.statements;
 
-import org.eclipse.text.edits.TextEdit;
-
 import org.zenframework.z8.compiler.core.CodeGenerator;
 import org.zenframework.z8.compiler.core.ILanguageElement;
 import org.zenframework.z8.compiler.core.IMethod;
@@ -108,11 +106,5 @@ public class DoWhileStatement extends LanguageElement implements IStatement {
 		codeGenerator.append(")");
 		codeGenerator.append(";");
 		codeGenerator.breakLine();
-	}
-
-	@Override
-	public void replaceTypeName(TextEdit parent, IType type, String newTypeName) {
-		statement.replaceTypeName(parent, type, newTypeName);
-		condition.replaceTypeName(parent, type, newTypeName);
 	}
 }

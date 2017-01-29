@@ -339,8 +339,8 @@ public class DummyResource implements IResource, IContainer {
 		throw new UnsupportedOperationException();
 	}
 
-	@SuppressWarnings("rawtypes")
 	@Override
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public Object getAdapter(Class adapter) {
 		throw new UnsupportedOperationException();
 	}

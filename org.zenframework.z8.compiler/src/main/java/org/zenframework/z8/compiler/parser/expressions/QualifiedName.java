@@ -3,8 +3,6 @@ package org.zenframework.z8.compiler.parser.expressions;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.eclipse.text.edits.ReplaceEdit;
-import org.eclipse.text.edits.TextEdit;
 import org.zenframework.z8.compiler.content.HyperlinkKind;
 import org.zenframework.z8.compiler.core.CodeGenerator;
 import org.zenframework.z8.compiler.core.IMember;
@@ -250,14 +248,6 @@ public class QualifiedName extends LanguageElement {
 
 				codeGenerator.append(tokens.get(i).getRawText());
 			}
-		}
-	}
-
-	@Override
-	public void replaceTypeName(TextEdit parent, IType type, String newTypeName) {
-		if(staticType == type) {
-			IPosition position = getFirstToken().getPosition();
-			parent.addChild(new ReplaceEdit(position.getOffset(), position.getLength(), newTypeName));
 		}
 	}
 }

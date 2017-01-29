@@ -3,9 +3,6 @@ package org.zenframework.z8.compiler.parser.type;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.eclipse.core.runtime.IPath;
-import org.eclipse.text.edits.TextEdit;
-
 import org.zenframework.z8.compiler.core.CodeGenerator;
 import org.zenframework.z8.compiler.core.IMethod;
 import org.zenframework.z8.compiler.core.IPosition;
@@ -124,19 +121,5 @@ public class ImportBlock extends LanguageElement {
 
 	public ImportElement[] getImportElements() {
 		return elements;
-	}
-
-	@Override
-	public void replaceTypeName(TextEdit parent, IType type, String newTypeName) {
-		if(importedElements != null) {
-			for(ImportElement element : importedElements)
-				element.replaceTypeName(parent, type, newTypeName);
-		}
-	}
-
-	@Override
-	public void replaceImport(TextEdit parent, IPath oldImport, IPath newImport) {
-		for(ImportElement element : elements)
-			element.replaceImport(parent, oldImport, newImport);
 	}
 }

@@ -3,9 +3,6 @@ package org.zenframework.z8.compiler.parser.type;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.eclipse.core.runtime.IPath;
-import org.eclipse.text.edits.TextEdit;
-
 import org.zenframework.z8.compiler.core.CodeGenerator;
 import org.zenframework.z8.compiler.core.IAttribute;
 import org.zenframework.z8.compiler.core.IInitializer;
@@ -829,19 +826,6 @@ public abstract class AbstractType extends LanguageElement implements IType {
 
 		return baseType != null ? baseType.isSubtypeOf(typeName) : false;
 
-	}
-
-	@Override
-	public void replaceTypeName(TextEdit parent, IType type, String newTypeName) {
-		if(importBlock != null)
-			importBlock.replaceTypeName(parent, type, newTypeName);
-	}
-
-	@Override
-	public void replaceImport(TextEdit parent, IPath oldImport, IPath newImport) {
-		if(importBlock != null) {
-			importBlock.replaceImport(parent, oldImport, newImport);
-		}
 	}
 
 	protected void generateClassCode(CodeGenerator codeGenerator) {

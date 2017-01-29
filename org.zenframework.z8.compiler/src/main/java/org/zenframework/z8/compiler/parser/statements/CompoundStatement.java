@@ -3,8 +3,6 @@ package org.zenframework.z8.compiler.parser.statements;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.eclipse.text.edits.TextEdit;
-
 import org.zenframework.z8.compiler.core.CodeGenerator;
 import org.zenframework.z8.compiler.core.ILanguageElement;
 import org.zenframework.z8.compiler.core.IMethod;
@@ -181,13 +179,5 @@ public class CompoundStatement extends LanguageElement implements IStatement {
 
 	public List<ILanguageElement> getElements() {
 		return elements;
-	}
-
-	@Override
-	public void replaceTypeName(TextEdit parent, IType type, String newTypeName) {
-		if(elements != null) {
-			for(ILanguageElement element : elements)
-				element.replaceTypeName(parent, type, newTypeName);
-		}
 	}
 }

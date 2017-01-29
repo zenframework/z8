@@ -1,6 +1,5 @@
 package org.zenframework.z8.compiler.parser.type.members;
 
-import org.eclipse.text.edits.TextEdit;
 import org.zenframework.z8.compiler.content.HyperlinkKind;
 import org.zenframework.z8.compiler.core.CodeGenerator;
 import org.zenframework.z8.compiler.core.IAttribute;
@@ -321,13 +320,5 @@ public class Member extends LanguageElement implements IMember {
 
 	public IPosition getAccessTokenPosition() {
 		return accessToken != null ? accessToken.getPosition() : null;
-	}
-
-	@Override
-	public void replaceTypeName(TextEdit parent, IType type, String newTypeName) {
-		variableType.replaceTypeName(parent, type, newTypeName);
-
-		if(initializer != null)
-			initializer.replaceTypeName(parent, type, newTypeName);
 	}
 }

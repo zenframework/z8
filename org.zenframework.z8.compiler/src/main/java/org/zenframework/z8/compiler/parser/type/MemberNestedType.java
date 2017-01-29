@@ -1,7 +1,5 @@
 package org.zenframework.z8.compiler.parser.type;
 
-import org.eclipse.text.edits.TextEdit;
-
 import org.zenframework.z8.compiler.core.CodeGenerator;
 import org.zenframework.z8.compiler.core.IAttribute;
 import org.zenframework.z8.compiler.core.IInitializer;
@@ -232,13 +230,5 @@ public class MemberNestedType extends AbstractType implements IInitializer {
 	@Override
 	public TypeBody getTypeBody() {
 		return body;
-	}
-
-	@Override
-	public void replaceTypeName(TextEdit parent, IType type, String newTypeName) {
-		super.replaceTypeName(parent, type, newTypeName);
-
-		if(body != null)
-			body.replaceTypeName(parent, type, newTypeName);
 	}
 }

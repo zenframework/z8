@@ -3,8 +3,6 @@ package org.zenframework.z8.compiler.parser.expressions;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.eclipse.text.edits.TextEdit;
-
 import org.zenframework.z8.compiler.core.CodeGenerator;
 import org.zenframework.z8.compiler.core.ILanguageElement;
 import org.zenframework.z8.compiler.core.IMethod;
@@ -191,13 +189,5 @@ public abstract class Initialization extends LanguageElement {
 
 	protected void getRightSideCode(CodeGenerator codeGenerator) {
 		typeCast.getCode(codeGenerator, right);
-	}
-
-	@Override
-	public void replaceTypeName(TextEdit parent, IType type, String newTypeName) {
-		left.replaceTypeName(parent, type, newTypeName);
-
-		if(right != null)
-			right.replaceTypeName(parent, type, newTypeName);
 	}
 }

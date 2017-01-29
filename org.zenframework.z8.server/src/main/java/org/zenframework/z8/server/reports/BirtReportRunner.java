@@ -118,7 +118,7 @@ public class BirtReportRunner {
 		return options.getReportDesign();
 	}
 
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({ "unchecked" })
 	private boolean checkNewName(SlotHandle slotHandle, String name) {
 		Iterator<DesignElementHandle> iterator = slotHandle.iterator();
 

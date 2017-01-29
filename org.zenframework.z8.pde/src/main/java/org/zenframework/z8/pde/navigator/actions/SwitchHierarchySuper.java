@@ -11,48 +11,47 @@ import org.zenframework.z8.pde.navigator.HierarchyNavigator;
 
 public class SwitchHierarchySuper extends Action {
 
-    private static ImageDescriptor imageDescriptor;
+	private static ImageDescriptor imageDescriptor;
 
-    private static Image image;
+	private static Image image;
 
-    static {
-        try {
-            image = new Image(null, FileLocator.openStream(Plugin.getDefault().getBundle(), new Path("icons/hierarchy.bmp"),
-                    true));
-            imageDescriptor = ImageDescriptor.createFromImage(image);
-        }
-        catch(Exception e) {}
-    }
+	static {
+		try {
+			image = new Image(null, FileLocator.openStream(Plugin.getDefault().getBundle(), new Path("icons/hierarchy.bmp"), true));
+			imageDescriptor = ImageDescriptor.createFromImage(image);
+		} catch(Exception e) {
+		}
+	}
 
-    private HierarchyNavigator m_navigator;
+	private HierarchyNavigator m_navigator;
 
-    public SwitchHierarchySuper(HierarchyNavigator p) {
-        this.m_navigator = p;
-    }
+	public SwitchHierarchySuper(HierarchyNavigator p) {
+		this.m_navigator = p;
+	}
 
-    @Override
-    public void run() {
-        m_navigator.setShowSuper(!m_navigator.isShowSuper());
-    }
+	@Override
+	public void run() {
+		m_navigator.setShowSuper(!m_navigator.isShowSuper());
+	}
 
-    @Override
-    public String getToolTipText() {
-        return ("Показать полную иерархию");
-    }
+	@Override
+	public String getToolTipText() {
+		return ("пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ");
+	}
 
-    @Override
-    public int getStyle() {
-        return AS_CHECK_BOX;
-    }
+	@Override
+	public int getStyle() {
+		return AS_CHECK_BOX;
+	}
 
-    @Override
-    public String getText() {
-        return "Полная иерархия";
-    }
+	@Override
+	public String getText() {
+		return "пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ";
+	}
 
-    @Override
-    public ImageDescriptor getImageDescriptor() {
-        return imageDescriptor;
-    }
+	@Override
+	public ImageDescriptor getImageDescriptor() {
+		return imageDescriptor;
+	}
 
 }

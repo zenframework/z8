@@ -14,48 +14,47 @@ import org.zenframework.z8.pde.Plugin;
 import org.zenframework.z8.pde.editor.Z8Editor;
 
 public class Transactioner implements ResourceListener {
-    private IDocument doc;
-    private CompilationUnit unit;
-    private List<Transaction> transactions = new ArrayList<Transaction>();
+	private IDocument doc;
+	private CompilationUnit unit;
+	private List<Transaction> transactions = new ArrayList<Transaction>();
 
-    public Transactioner(Z8Editor editor) {
-        doc = editor.getDocumentProvider().getDocument(editor.getEditorInput());
-        unit = Workspace.getInstance().getCompilationUnit(((FileEditorInput)editor.getEditorInput()).getFile());
-        unit.installResourceListener(this);
-    }
+	public Transactioner(Z8Editor editor) {
+		doc = editor.getDocumentProvider().getDocument(editor.getEditorInput());
+		unit = Workspace.getInstance().getCompilationUnit(((FileEditorInput)editor.getEditorInput()).getFile());
+		unit.installResourceListener(this);
+	}
 
-    private void reset() {
-        transactions.clear();
-    }
+	private void reset() {
+		transactions.clear();
+	}
 
-    public void append(Transaction transaction) {
-        System.out.println("append");
-        for(int i = 0; i < transactions.size(); i++) {
-            Transaction t = transactions.get(i);
-            if(t.getOffset() < transaction.getOffset())
-                transaction.shift(t.getShift());
-        }
-        try {
-            doc.replace(transaction.getOffset(), transaction.getLength(), transaction.getWhat());
-        }
-        catch(Exception e) {
-            Plugin.log(e);
-        }
-        transactions.add(transaction);
-    }
+	public void append(Transaction transaction) {
+		System.out.println("append");
+		for(int i = 0; i < transactions.size(); i++) {
+			Transaction t = transactions.get(i);
+			if(t.getOffset() < transaction.getOffset())
+				transaction.shift(t.getShift());
+		}
+		try {
+			doc.replace(transaction.getOffset(), transaction.getLength(), transaction.getWhat());
+		} catch(Exception e) {
+			Plugin.log(e);
+		}
+		transactions.add(transaction);
+	}
 
-    @Override
-    public void event(int type, Resource resource, Object object) {
-        System.out.println("reset");
-        reset();
-    }
+	@Override
+	public void event(int type, Resource resource, Object object) {
+		System.out.println("reset");
+		reset();
+	}
 
-    public CompilationUnit getCompilationUnit() {
-        return unit;
-    }
+	public CompilationUnit getCompilationUnit() {
+		return unit;
+	}
 
-    public IDocument getDocument() {
-        return doc;
-    }
+	public IDocument getDocument() {
+		return doc;
+	}
 
 }

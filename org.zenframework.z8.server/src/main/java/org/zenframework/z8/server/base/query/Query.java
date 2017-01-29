@@ -45,7 +45,6 @@ import org.zenframework.z8.server.runtime.OBJECT;
 import org.zenframework.z8.server.runtime.RCollection;
 import org.zenframework.z8.server.security.IAccess;
 import org.zenframework.z8.server.types.bool;
-import org.zenframework.z8.server.types.exception;
 import org.zenframework.z8.server.types.guid;
 import org.zenframework.z8.server.types.integer;
 import org.zenframework.z8.server.types.primary;
@@ -76,9 +75,6 @@ public class Query extends OBJECT {
 
 	public RCollection<Field.CLASS<? extends Field>> sortFields = new RCollection<Field.CLASS<? extends Field>>();
 	public RCollection<Field.CLASS<? extends Field>> groupFields = new RCollection<Field.CLASS<? extends Field>>();
-
-	public Field.CLASS<? extends Field> searchId;
-	public RCollection<Field.CLASS<? extends Field>> searchFields = new RCollection<Field.CLASS<? extends Field>>();
 
 	public RCollection<Control.CLASS<? extends Control>> formFields = new RCollection<Control.CLASS<? extends Control>>();
 	public RCollection<Field.CLASS<? extends Field>> nameFields = new RCollection<Field.CLASS<? extends Field>>();
@@ -154,10 +150,6 @@ public class Query extends OBJECT {
 	public void afterCreate(guid recordId, guid parentId) {
 		if(ApplicationServer.events())
 			z8_afterCreate(recordId, parentId);
-/*
-		if(hasAttribute(IObject.SearchIndex) && !searchFields.isEmpty())
-			SearchEngine.INSTANCE.updateRecord(this, recordId.toString());
-*/
 	}
 
 	public void beforeUpdate(guid recordId) {
@@ -166,18 +158,6 @@ public class Query extends OBJECT {
 	}
 
 	public void afterUpdate(guid recordId) {
-/*
-		Collection<Field> changedFields = getChangedFields();
-
-		if(hasAttribute(IObject.SearchIndex) && !searchFields.isEmpty()) {
-			for(Field field : changedFields) {
-				if(searchFields.contains(field.getCLASS())) {
-					SearchEngine.INSTANCE.updateRecord(this, recordId.toString());
-					break;
-				}
-			}
-		}
-*/
 		if(ApplicationServer.events())
 			z8_afterUpdate(recordId);
 	}
@@ -811,10 +791,6 @@ public class Query extends OBJECT {
 		return CLASS.asList(formFields.isEmpty() ? (Collection)defaultControls() : formFields);
 	}
 
-	public Collection<Field> searchFields() {
-		return CLASS.asList(searchFields);
-	}
-
 	public Collection<Field> attachments() {
 		Collection<Field> result = new ArrayList<Field>();
 		for(Field.CLASS<Field> field : dataFields()) {
@@ -875,6 +851,10 @@ public class Query extends OBJECT {
 
 	final public void setWhere(SqlToken where) {
 		this.where = where;
+	}
+
+	public boolean isGrouped() {
+		return !groupBy.isEmpty() || !aggregateBy.isEmpty();
 	}
 
 	public Collection<Link> getAggregateByFields() {
@@ -1111,43 +1091,8 @@ public class Query extends OBJECT {
 		return null;
 	}
 
-	private boolean readOnly() {
-		if(readOnly.get())
-			return true;
-		return !access().write();
-	}
-
-/*
-	private String getSearchValue(Field field) {
-		if(field instanceof AttachmentField) {
-			Collection<file> files = file.parse(field.string().get());
-
-			String result = "";
-
-			for(file file : files)
-				result += (result.isEmpty() ? "" : " ") + file.name;
-
-			return result;
-		}
-		return field.get().toString();
-	}
-*/
-	public String getRecordFullText() {
-/*
-		Collection<Field> searchFields = getSearchFields();
-*/
-		String result = "";
-/*
-		for(Field field : searchFields) {
-			if(field.type() != FieldType.Guid)
-				result += (result.isEmpty() ? "" : " ") + getSearchValue(field);
-		}
-*/
-		return result;
-	}
-
-	public Field getSearchId() {
-		return searchId != null ? searchId.get() : primaryKey();
+	public boolean readOnly() {
+		return readOnly.get() || isGrouped() || !access().write();
 	}
 
 	public void writeMeta(JsonWriter writer, Query context) {
@@ -1170,7 +1115,7 @@ public class Query extends OBJECT {
 		// visuals
 		writer.writeProperty(Json.text, displayName());
 
-		boolean isGrouped = !getGroupByFields().isEmpty() || !getAggregateByFields().isEmpty();
+		boolean isGrouped = isGrouped();
 		writer.writeProperty(Json.readOnly, isGrouped ? true : readOnly());
 
 		writer.writeProperty(Json.totals, totals);
@@ -1289,19 +1234,11 @@ public class Query extends OBJECT {
 	}
 
 	public guid z8_create() {
-		try {
-			return create();
-		} catch(Throwable e) {
-			throw new exception(e);
-		}
+		return create();
 	}
 
 	public guid z8_create(guid recordId) {
-		try {
-			return create(recordId);
-		} catch(Throwable e) {
-			throw new exception(e);
-		}
+		return create(recordId);
 	}
 
 	public guid z8_copy(guid recordId) {

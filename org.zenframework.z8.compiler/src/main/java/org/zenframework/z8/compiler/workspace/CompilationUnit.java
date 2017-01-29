@@ -8,7 +8,6 @@ import java.util.Map;
 
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.IPath;
-import org.eclipse.text.edits.TextEdit;
 import org.zenframework.z8.compiler.content.Hyperlink;
 import org.zenframework.z8.compiler.content.HyperlinkKind;
 import org.zenframework.z8.compiler.content.TypeHyperlink;
@@ -604,18 +603,6 @@ public class CompilationUnit extends Resource {
 	@Override
 	public ILanguageElement getElementAt(IPosition position) {
 		return type != null ? type.getElementAt(position) : null;
-	}
-
-	@Override
-	public void replaceTypeName(TextEdit parent, IType type, String newTypeName) {
-		if(this.type != null)
-			this.type.replaceTypeName(parent, type, newTypeName);
-	}
-
-	@Override
-	public void replaceImport(TextEdit parent, IPath oldImport, IPath newImport) {
-		if(type != null)
-			type.replaceImport(parent, oldImport, newImport);
 	}
 
 	public void setTargetLinesOffset(int targetLinesOffset) {

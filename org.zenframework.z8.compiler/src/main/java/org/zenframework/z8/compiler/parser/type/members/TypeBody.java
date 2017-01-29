@@ -6,8 +6,6 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Vector;
 
-import org.eclipse.text.edits.TextEdit;
-
 import org.zenframework.z8.compiler.core.CodeGenerator;
 import org.zenframework.z8.compiler.core.IInitializer;
 import org.zenframework.z8.compiler.core.ILanguageElement;
@@ -475,12 +473,5 @@ public class TypeBody extends LanguageElement {
 
 			}
 		}
-	}
-
-	@Override
-	public void replaceTypeName(TextEdit parent, IType type, String newTypeName) {
-		ILanguageElement[] members = getMembers();
-		for(ILanguageElement element : members)
-			element.replaceTypeName(parent, type, newTypeName);
 	}
 }

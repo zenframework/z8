@@ -4,8 +4,6 @@ import org.zenframework.z8.base.table.value.Link;
 
 [native "org.zenframework.z8.server.base.form.Listbox"]
 public class Listbox extends Control {
-	public int height;
-
 	editable = true;
 
 	/*

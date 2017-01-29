@@ -12,50 +12,48 @@ import org.zenframework.z8.compiler.workspace.Resource;
 import org.zenframework.z8.pde.Plugin;
 
 public class BuildMessageConsumer extends DefaultBuildMessageConsumer {
-    public BuildMessageConsumer() {}
+	public BuildMessageConsumer() {
+	}
 
-    @Override
-    public void clearMessages(Resource resource) {
-        try {
-            resource.getResource().deleteMarkers(IMarker.PROBLEM, true, IResource.DEPTH_ZERO);
-        }
-        catch(CoreException e) {
-            Plugin.info(e);
-        }
-    }
+	@Override
+	public void clearMessages(Resource resource) {
+		try {
+			resource.getResource().deleteMarkers(IMarker.PROBLEM, true, IResource.DEPTH_ZERO);
+		} catch(CoreException e) {
+			Plugin.info(e);
+		}
+	}
 
-    @Override
-    public void consume(BuildMessage message) {
-        super.consume(message);
+	@Override
+	public void consume(BuildMessage message) {
+		super.consume(message);
 
-        try {
-            IResource resource = message.getResource();
+		try {
+			IResource resource = message.getResource();
 
-            IMarker marker = resource.createMarker(IMarker.PROBLEM);
+			IMarker marker = resource.createMarker(IMarker.PROBLEM);
 
-            if(marker.exists()) {
-                marker.setAttribute(IMarker.MESSAGE, message.getDescription());
-                marker.setAttribute(IMarker.PRIORITY, IMarker.PRIORITY_HIGH);
-                marker.setAttribute(IMarker.SEVERITY, message instanceof BuildError ? IMarker.SEVERITY_ERROR
-                        : IMarker.SEVERITY_WARNING);
+			if(marker.exists()) {
+				marker.setAttribute(IMarker.MESSAGE, message.getDescription());
+				marker.setAttribute(IMarker.PRIORITY, IMarker.PRIORITY_HIGH);
+				marker.setAttribute(IMarker.SEVERITY, message instanceof BuildError ? IMarker.SEVERITY_ERROR : IMarker.SEVERITY_WARNING);
 
-                IPosition position = message.getPosition();
+				IPosition position = message.getPosition();
 
-                if(position != null) {
-                    marker.setAttribute(IMarker.LINE_NUMBER, position.getLine() + 1);
-                    marker.setAttribute(IMarker.CHAR_START, position.getOffset());
-                    marker.setAttribute(IMarker.CHAR_END, position.getOffset() + position.getLength());
-                }
-            }
+				if(position != null) {
+					marker.setAttribute(IMarker.LINE_NUMBER, position.getLine() + 1);
+					marker.setAttribute(IMarker.CHAR_START, position.getOffset());
+					marker.setAttribute(IMarker.CHAR_END, position.getOffset() + position.getLength());
+				}
+			}
 
-            Throwable throwable = message.getException();
+			Throwable throwable = message.getException();
 
-            if(throwable != null) {
-                Plugin.info(throwable);
-            }
-        }
-        catch(CoreException e) {
-            Plugin.log(e);
-        }
-    }
+			if(throwable != null) {
+				Plugin.info(throwable);
+			}
+		} catch(CoreException e) {
+			Plugin.log(e);
+		}
+	}
 }

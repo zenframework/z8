@@ -22,139 +22,138 @@ import com.sun.jdi.ReferenceType;
 import com.sun.jdi.Value;
 
 public class JDXArrayValue extends JDXObjectValue implements IIndexedValue {
-    private int m_length = -1;
+	private int m_length = -1;
 
-    public JDXArrayValue(JDXDebugTarget target, JDXThread thread, JDXVariable variable, ObjectReference value) {
-        super(target, thread, variable, value);
-    }
+	public JDXArrayValue(JDXDebugTarget target, JDXThread thread, JDXVariable variable, ObjectReference value) {
+		super(target, thread, variable, value);
+	}
 
-    public IValue[] getValues() throws DebugException {
-        List<Value> list = getUnderlyingValues();
+	public IValue[] getValues() throws DebugException {
+		List<Value> list = getUnderlyingValues();
 
-        int count = list.size();
+		int count = list.size();
 
-        IValue[] values = new IValue[count];
+		IValue[] values = new IValue[count];
 
-        JDXDebugTarget target = getJDXDebugTarget();
+		JDXDebugTarget target = getJDXDebugTarget();
 
-        for(int i = 0; i < count; i++) {
-            Value value = (Value)list.get(i);
-            values[i] = JDXValue.createValue(target, getJDXThread(), getJDXVariable(), value);
-        }
-        return values;
-    }
+		for(int i = 0; i < count; i++) {
+			Value value = (Value)list.get(i);
+			values[i] = JDXValue.createValue(target, getJDXThread(), getJDXVariable(), value);
+		}
+		return values;
+	}
 
-    public IValue getValue(int index) throws DebugException {
-        Value v = getUnderlyingValue(index);
-        return JDXValue.createValue(getJDXDebugTarget(), getJDXThread(), getJDXVariable(), v);
-    }
+	public IValue getValue(int index) throws DebugException {
+		Value v = getUnderlyingValue(index);
+		return JDXValue.createValue(getJDXDebugTarget(), getJDXThread(), getJDXVariable(), v);
+	}
 
-    public synchronized int getLength() throws DebugException {
-        ObjectReference object = getUnderlyingObject();
-        ReferenceType type = object.referenceType();
+	public synchronized int getLength() throws DebugException {
+		ObjectReference object = getUnderlyingObject();
+		ReferenceType type = object.referenceType();
 
-        List<Method> method = type.methodsByName("size", "()I");
+		List<Method> method = type.methodsByName("size", "()I");
 
-        assert (method.size() == 1);
+		assert (method.size() == 1);
 
-        Value intValue = getJDXThread().invokeMethod(object, method.get(0), new ArrayList<Value>());
+		Value intValue = getJDXThread().invokeMethod(object, method.get(0), new ArrayList<Value>());
 
-        m_length = ((IntegerValue)intValue).value();
+		m_length = ((IntegerValue)intValue).value();
 
-        return m_length;
-    }
+		return m_length;
+	}
 
-    public void setValue(int index, IValue value) {
-        assert (false);
-    }
+	public void setValue(int index, IValue value) {
+		assert (false);
+	}
 
-    public Value getUnderlyingValue(int index) throws DebugException {
-        ObjectReference object = (ObjectReference)getUnderlyingValue();
-        ReferenceType type = object.referenceType();
+	public Value getUnderlyingValue(int index) throws DebugException {
+		ObjectReference object = (ObjectReference)getUnderlyingValue();
+		ReferenceType type = object.referenceType();
 
-        List<Method> method = type.methodsByName("get", "(I)Ljava/lang/Object;");
+		List<Method> method = type.methodsByName("get", "(I)Ljava/lang/Object;");
 
-        assert (method.size() == 1);
+		assert (method.size() == 1);
 
-        Value arg = object.virtualMachine().mirrorOf(index);
-        List<Value> args = new ArrayList<Value>();
-        args.add(arg);
+		Value arg = object.virtualMachine().mirrorOf(index);
+		List<Value> args = new ArrayList<Value>();
+		args.add(arg);
 
-        return getJDXThread().invokeMethod(object, method.get(0), args);
-    }
+		return getJDXThread().invokeMethod(object, method.get(0), args);
+	}
 
-    protected List<Value> getUnderlyingValues() throws DebugException {
-        List<Value> values = new ArrayList<Value>();
+	protected List<Value> getUnderlyingValues() throws DebugException {
+		List<Value> values = new ArrayList<Value>();
 
-        for(int i = 0; i < getLength(); i++) {
-            values.add(getUnderlyingValue(i));
-        }
+		for(int i = 0; i < getLength(); i++) {
+			values.add(getUnderlyingValue(i));
+		}
 
-        return values;
-    }
+		return values;
+	}
 
-    @Override
-    public int getSize() throws DebugException {
-        return getLength();
-    }
+	@Override
+	public int getSize() throws DebugException {
+		return getLength();
+	}
 
-    @Override
-    public IVariable getVariable(int offset) throws DebugException {
-        if(offset >= getLength()) {
-            requestFailed(JDXMessages.JDXArrayValue_6, null);
-        }
-        return new JDXArrayEntryVariable(getJDXDebugTarget(), getJDXThread(), this, offset);
-    }
+	@Override
+	public IVariable getVariable(int offset) throws DebugException {
+		if(offset >= getLength()) {
+			requestFailed(JDXMessages.JDXArrayValue_6, null);
+		}
+		return new JDXArrayEntryVariable(getJDXDebugTarget(), getJDXThread(), this, offset);
+	}
 
-    @Override
-    public IVariable[] getVariables(int offset, int length) throws DebugException {
-        if(offset >= getLength()) {
-            requestFailed(JDXMessages.JDXArrayValue_6, null);
-        }
-        if((offset + length - 1) >= getLength()) {
-            requestFailed(JDXMessages.JDXArrayValue_8, null);
-        }
-        IVariable[] variables = new IVariable[length];
-        int index = offset;
-        for(int i = 0; i < length; i++) {
-            variables[i] = new JDXArrayEntryVariable(getJDXDebugTarget(), getJDXThread(), this, index);
-            index++;
-        }
-        return variables;
-    }
+	@Override
+	public IVariable[] getVariables(int offset, int length) throws DebugException {
+		if(offset >= getLength()) {
+			requestFailed(JDXMessages.JDXArrayValue_6, null);
+		}
+		if((offset + length - 1) >= getLength()) {
+			requestFailed(JDXMessages.JDXArrayValue_8, null);
+		}
+		IVariable[] variables = new IVariable[length];
+		int index = offset;
+		for(int i = 0; i < length; i++) {
+			variables[i] = new JDXArrayEntryVariable(getJDXDebugTarget(), getJDXThread(), this, index);
+			index++;
+		}
+		return variables;
+	}
 
-    @Override
-    protected synchronized List<IVariable> getVariablesList() throws DebugException {
-        List<IVariable> variables = new ArrayList<IVariable>();
+	@Override
+	protected synchronized List<IVariable> getVariablesList() throws DebugException {
+		List<IVariable> variables = new ArrayList<IVariable>();
 
-        try {
-            int length = getLength();
+		try {
+			int length = getLength();
 
-            ArrayList<IVariable> list = new ArrayList<IVariable>(length);
+			ArrayList<IVariable> list = new ArrayList<IVariable>(length);
 
-            for(int i = 0; i < length; i++) {
-                list.add(new JDXArrayEntryVariable(getJDXDebugTarget(), getJDXThread(), this, i));
-            }
+			for(int i = 0; i < length; i++) {
+				list.add(new JDXArrayEntryVariable(getJDXDebugTarget(), getJDXThread(), this, i));
+			}
 
-            variables = list;
-        }
-        catch(DebugException e) {
-            if(e.getCause() instanceof ObjectCollectedException) {
-                return new ArrayList<IVariable>();
-            }
-            throw e;
-        }
+			variables = list;
+		} catch(DebugException e) {
+			if(e.getCause() instanceof ObjectCollectedException) {
+				return new ArrayList<IVariable>();
+			}
+			throw e;
+		}
 
-        return variables;
-    }
+		return variables;
+	}
 
-    @Override
-    public int getInitialOffset() {
-        return 0;
-    }
+	@Override
+	public int getInitialOffset() {
+		return 0;
+	}
 
-    @Override
-    public String getReferenceTypeName() throws DebugException {
-        return getJDXVariable().getReferenceTypeName();
-    }
+	@Override
+	public String getReferenceTypeName() throws DebugException {
+		return getJDXVariable().getReferenceTypeName();
+	}
 }

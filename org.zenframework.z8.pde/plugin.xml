@@ -531,13 +531,7 @@
 			   class="org.zenframework.z8.pde.OrganizeAllImportsAction"
 			   definitionId="org.zenframework.z8.pde.imports">
 		   </action>
-		    <action id="org.zenframework.z8.pde.clearOrphaned"
-			   menubarPath="org.zenframework.z8.pde.Menu/group1"
-			   label="Удаление неиспользуемого кода"
-			   tooltip="Удаление неиспользуемого кода"
-			   class="org.zenframework.z8.pde.ClearOrphanedCodeAction"
-			   definitionId="org.zenframework.z8.pde.clearOrphaned">
-		   </action>
+
       <action
             class="org.zenframework.z8.pde.OrganizeAllImportsAction"
             definitionId="org.zenframework.z8.pde.createguid"

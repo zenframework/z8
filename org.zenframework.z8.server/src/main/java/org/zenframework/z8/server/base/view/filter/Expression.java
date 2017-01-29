@@ -22,7 +22,6 @@ import org.zenframework.z8.server.db.sql.functions.string.Lower;
 import org.zenframework.z8.server.json.Json;
 import org.zenframework.z8.server.json.parser.JsonArray;
 import org.zenframework.z8.server.json.parser.JsonObject;
-import org.zenframework.z8.server.search.SearchEngine;
 import org.zenframework.z8.server.types.bool;
 import org.zenframework.z8.server.types.date;
 import org.zenframework.z8.server.types.decimal;
@@ -32,7 +31,6 @@ import org.zenframework.z8.server.types.primary;
 import org.zenframework.z8.server.types.string;
 import org.zenframework.z8.server.types.sql.sql_bool;
 import org.zenframework.z8.server.types.sql.sql_string;
-import org.zenframework.z8.server.utils.StringUtils;
 
 public class Expression implements IFilter {
 	private Field field;
@@ -46,16 +44,8 @@ public class Expression implements IFilter {
 
 		this.operation = operator != null ? Operation.fromString(operator) : Operation.Eq;
 
-		if(Json.__search_text__.equals(field)) {
-			if(values != null && !values.isEmpty()) {
-				Collection<String> foundIds = SearchEngine.INSTANCE.searchRecords(query, StringUtils.unescapeJava(values));
-				this.field = query.getSearchId();
-				this.values = foundIds.toArray(new String[0]);
-			}
-		} else {
-			this.field = field != null ? query.findFieldById(field) : null;
-				this.values = parseValues(values);
-		}
+		this.field = field != null ? query.findFieldById(field) : null;
+			this.values = parseValues(values);
 	}
 
 	private String[] parseValues(String jsonData) {

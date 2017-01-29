@@ -1,9 +1,5 @@
 package org.zenframework.z8.compiler.parser.type;
 
-import org.eclipse.core.runtime.IPath;
-import org.eclipse.text.edits.ReplaceEdit;
-import org.eclipse.text.edits.TextEdit;
-
 import org.zenframework.z8.compiler.core.CodeGenerator;
 import org.zenframework.z8.compiler.core.IMethod;
 import org.zenframework.z8.compiler.core.IPosition;
@@ -145,23 +141,5 @@ public class ImportElement extends LanguageElement {
 		String qualifiedName = importedUnit.getType().getQualifiedJavaName();
 		codeGenerator.append("import " + qualifiedName + ';');
 		codeGenerator.breakLine();
-	}
-
-	@Override
-	public void replaceTypeName(TextEdit parent, IType type, String newTypeName) {
-		if(importedUnit != null && importedUnit.getType() == type) {
-			IPosition position = qualifiedName.getLastToken().getPosition();
-			parent.addChild(new ReplaceEdit(position.getOffset(), position.getLength(), newTypeName));
-		}
-	}
-
-	@Override
-	public void replaceImport(TextEdit parent, IPath oldImport, IPath newImport) {
-		String qName = qualifiedName.toString();
-
-		if(qName.equals(oldImport.toString().replace(IPath.SEPARATOR, '.'))) {
-			IPosition position = qualifiedName.getPosition();
-			parent.addChild(new ReplaceEdit(position.getOffset(), position.getLength(), newImport.toString().replace(IPath.SEPARATOR, '.')));
-		}
 	}
 }

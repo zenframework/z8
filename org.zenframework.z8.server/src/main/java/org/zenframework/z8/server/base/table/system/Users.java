@@ -201,10 +201,10 @@ public class Users extends Table {
 		}
 		{
 			LinkedHashMap<IField, primary> record = new LinkedHashMap<IField, primary>();
-			record.put(name.get(), new string(displayNames.SiteName));
-			record.put(description.get(), new string(displayNames.AdministratorDescription));
+			record.put(name.get(), new string(displayNames.SystemName));
+			record.put(description.get(), new string(displayNames.SystemDescription));
 			record.put(lock.get(), RecordLock.Destroy);
-			addRecord(BuiltinUsers.Administrator.guid(), record);
+			addRecord(BuiltinUsers.System.guid(), record);
 		}
 	}
 

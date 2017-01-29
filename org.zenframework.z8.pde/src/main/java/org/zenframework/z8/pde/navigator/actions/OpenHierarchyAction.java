@@ -9,32 +9,30 @@ import org.zenframework.z8.pde.navigator.HierarchyNavigator;
 
 public class OpenHierarchyAction extends Action {
 
-    private IType m_type;
+	private IType m_type;
 
-    public OpenHierarchyAction(IType type) {
-        m_type = type;
-    }
+	public OpenHierarchyAction(IType type) {
+		m_type = type;
+	}
 
-    @Override
-    public String getText() {
-        return "Открыть иерархию";
-    }
+	@Override
+	public String getText() {
+		return "Открыть иерархию";
+	}
 
-    @Override
-    public String getToolTipText() {
-        return "Открыть в иерархии типов";
-    }
+	@Override
+	public String getToolTipText() {
+		return "Открыть в иерархии типов";
+	}
 
-    @Override
-    public void run() {
-        try {
-            HierarchyNavigator navigator = (HierarchyNavigator)PlatformUI.getWorkbench().getActiveWorkbenchWindow()
-                    .getActivePage().showView("org.zenframework.views.hierarchy");
-            navigator.setInput(m_type);
-        }
-        catch(Exception e) {
-            Plugin.log(e);
-        }
-    }
+	@Override
+	public void run() {
+		try {
+			HierarchyNavigator navigator = (HierarchyNavigator)PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().showView("org.zenframework.views.hierarchy");
+			navigator.setInput(m_type);
+		} catch(Exception e) {
+			Plugin.log(e);
+		}
+	}
 
 }

@@ -8,14 +8,15 @@ public class Object {
 
 	virtual protected void constructor();
 
-	public string id();
 	public string index();
 	public string name();
-	public string displayName();
 	public string className();
 
-	public void setAttribute(string attribute, primary value);
-	public void removeAttribute(string attribute);
+	public string id();
+	public void setId(string id);
+
+	public string displayName();
+	public void setDisplayName(string displayName);
 
 	public bool operator == (Object object);
 	public bool operator != (Object object);

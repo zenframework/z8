@@ -174,6 +174,7 @@ public class ApplicationServer extends RmiServer implements IApplicationServer {
 		try {
 			ServerConfig.authorityCenter().register(this);
 		} catch(Throwable e) {
+			Trace.logError(e);
 		}
 	}
 	

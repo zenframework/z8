@@ -7,7 +7,7 @@ import org.zenframework.z8.pde.debug.model.variable.JDXVariable;
 import com.sun.jdi.ObjectReference;
 
 public class JDXStringValue extends JDXPrimitiveValue {
-    public JDXStringValue(JDXDebugTarget target, JDXThread thread, JDXVariable variable, ObjectReference value) {
-        super(target, thread, variable, value);
-    }
+	public JDXStringValue(JDXDebugTarget target, JDXThread thread, JDXVariable variable, ObjectReference value) {
+		super(target, thread, variable, value);
+	}
 }

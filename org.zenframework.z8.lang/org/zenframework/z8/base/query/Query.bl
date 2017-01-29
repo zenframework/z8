@@ -26,9 +26,6 @@ public class Query extends Object {
 	public DatetimeField period;
 	public AttachmentField attachments;
 
-	public Field[] searchFields;
-	public Field searchId;
-
 	public Link[] aggregateBy;          // Поля из корневого запроса для группировки его перед выполнением основного.
 	public Field[] groupBy;
 

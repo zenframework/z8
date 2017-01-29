@@ -1,7 +1,5 @@
 package org.zenframework.z8.compiler.parser.statements;
 
-import org.eclipse.text.edits.TextEdit;
-
 import org.zenframework.z8.compiler.core.CodeGenerator;
 import org.zenframework.z8.compiler.core.ILanguageElement;
 import org.zenframework.z8.compiler.core.IMethod;
@@ -163,15 +161,5 @@ public class IfStatement extends LanguageElement implements IStatement {
 
 		if(!braces)
 			codeGenerator.decrementIndent();
-	}
-
-	@Override
-	public void replaceTypeName(TextEdit parent, IType type, String newTypeName) {
-		condition.replaceTypeName(parent, type, newTypeName);
-
-		ifStatement.replaceTypeName(parent, type, newTypeName);
-
-		if(elseStatement != null)
-			elseStatement.replaceTypeName(parent, type, newTypeName);
 	}
 }

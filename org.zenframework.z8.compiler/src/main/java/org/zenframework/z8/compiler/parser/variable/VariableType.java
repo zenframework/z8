@@ -4,9 +4,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import org.eclipse.text.edits.ReplaceEdit;
-import org.eclipse.text.edits.TextEdit;
-
 import org.zenframework.z8.compiler.core.CodeGenerator;
 import org.zenframework.z8.compiler.core.IMember;
 import org.zenframework.z8.compiler.core.IMethod;
@@ -461,23 +458,4 @@ public class VariableType extends LanguageElement implements IVariableType {
 		codeGenerator.getCompilationUnit().importType(type);
 		codeGenerator.append(getDeclaringJavaName());
 	}
-
-	@Override
-	public void replaceTypeName(TextEdit parent, IType type, String newTypeName) {
-		if(this.type != null && this.type.equals(type)) {
-			IPosition position = typeNameToken.getPosition();
-			parent.addChild(new ReplaceEdit(position.getOffset(), position.getLength(), newTypeName));
-		}
-
-		IType[] keys = getKeys();
-		IToken[] keyTokens = getKeyTokens();
-
-		for(int i = 0; i < keys.length; i++) {
-			if(keys[i] != null && keys[i].equals(type)) {
-				IPosition position = keyTokens[i].getPosition();
-				parent.addChild(new ReplaceEdit(position.getOffset(), position.getLength(), newTypeName));
-			}
-		}
-	}
-
 }

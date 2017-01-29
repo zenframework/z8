@@ -54,6 +54,7 @@ public class UsersView extends Users {
 
 		entriesListbox.get().query = this.userEntries;
 		entriesListbox.get().link = userEntries.user;
+		entriesListbox.get().flex = new integer(1);
 
 		userEntries.position.get().editable = bool.True;
 
@@ -66,6 +67,7 @@ public class UsersView extends Users {
 		rolesListbox.get().query = this.userRoles;
 		rolesListbox.get().link = userRoles.user;
 		rolesListbox.get().source = new Roles.CLASS<Roles>(this);
+		rolesListbox.get().flex = new integer(1);
 
 		userRoles.columns.add(userRoles.roles.get().name);
 

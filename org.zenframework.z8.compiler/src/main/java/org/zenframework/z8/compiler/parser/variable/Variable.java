@@ -1,6 +1,5 @@
 package org.zenframework.z8.compiler.parser.variable;
 
-import org.eclipse.text.edits.TextEdit;
 import org.zenframework.z8.compiler.content.HyperlinkKind;
 import org.zenframework.z8.compiler.core.CodeGenerator;
 import org.zenframework.z8.compiler.core.IMethod;
@@ -125,9 +124,5 @@ public class Variable extends LanguageElement implements IVariable {
 		VariableType type = (VariableType)getVariableType();
 		type.getCode(codeGenerator);
 		codeGenerator.append(" " + name);
-	}
-
-	public void rename(TextEdit parent, IType type, String newTypeName) {
-		variableType.replaceTypeName(parent, type, newTypeName);
 	}
 }

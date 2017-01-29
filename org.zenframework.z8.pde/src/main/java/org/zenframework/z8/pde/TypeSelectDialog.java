@@ -18,91 +18,92 @@ import org.zenframework.z8.compiler.workspace.Project;
 
 public class TypeSelectDialog extends FilteredListDialog {
 
-    public interface TypeTester {
-        public int test(IType t);
-    }
+	public interface TypeTester {
+		public int test(IType t);
+	}
 
-    public TypeSelectDialog(Shell parent, final Project p, final TypeTester tester, String title, String message) {
-        super(parent);
-        setTitle(title);
-        setMessage(message);
-        setLabelProvider(new LabelProvider() {
-            @Override
-            public String getText(Object element) {
-                return ((IType)element).getUserName();
-            }
-        });
+	public TypeSelectDialog(Shell parent, final Project p, final TypeTester tester, String title, String message) {
+		super(parent);
+		setTitle(title);
+		setMessage(message);
+		setLabelProvider(new LabelProvider() {
+			@Override
+			public String getText(Object element) {
+				return ((IType)element).getUserName();
+			}
+		});
 
-        setContentProvider(new IStructuredContentProvider() {
+		setContentProvider(new IStructuredContentProvider() {
 
-            @Override
-            public Object[] getElements(Object inputElement) {
-                final Map<IType, Integer> types = new HashMap<IType, Integer>();
-                List<Project> projects = new ArrayList<Project>();
-                for(Project p1 : p.getReferencedProjects()) {
-                    projects.add(p1);
-                }
-                ;
-                projects.add(0, p);
-                for(Project p1 : projects)
-                    for(IType t : p1.getTypes()) {
-                        if(t != null)
-                            if(!(t instanceof MemberNestedType)) {
-                                int test = tester.test(t);
-                                if(test > 0)
-                                    types.put(t, test);
-                            }
-                    }
-                IType[] arr = new IType[types.size()];
-                types.keySet().toArray(arr);
-                Arrays.sort(arr, new Comparator<IType>() {
-                    @Override
-                    public int compare(IType arg0, IType arg1) {
-                        int diff = types.get(arg0) - types.get(arg1);
-                        if(diff != 0)
-                            return diff;
-                        return arg0.getUserName().compareToIgnoreCase(arg1.getUserName());
-                    }
-                });
-                return arr;
-            }
+			@Override
+			public Object[] getElements(Object inputElement) {
+				final Map<IType, Integer> types = new HashMap<IType, Integer>();
+				List<Project> projects = new ArrayList<Project>();
+				for(Project p1 : p.getReferencedProjects()) {
+					projects.add(p1);
+				}
+				;
+				projects.add(0, p);
+				for(Project p1 : projects)
+					for(IType t : p1.getTypes()) {
+						if(t != null)
+							if(!(t instanceof MemberNestedType)) {
+								int test = tester.test(t);
+								if(test > 0)
+									types.put(t, test);
+							}
+					}
+				IType[] arr = new IType[types.size()];
+				types.keySet().toArray(arr);
+				Arrays.sort(arr, new Comparator<IType>() {
+					@Override
+					public int compare(IType arg0, IType arg1) {
+						int diff = types.get(arg0) - types.get(arg1);
+						if(diff != 0)
+							return diff;
+						return arg0.getUserName().compareToIgnoreCase(arg1.getUserName());
+					}
+				});
+				return arr;
+			}
 
-            @Override
-            public void dispose() {}
+			@Override
+			public void dispose() {
+			}
 
-            @Override
-            public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {}
+			@Override
+			public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
+			}
 
-        });
+		});
 
-        setInput(new Integer(0));
+		setInput(new Integer(0));
 
-    }
+	}
 
-    public TypeSelectDialog(Shell parent, final Project p, final String typeName, String title, String message) {
-        this(parent, p, new TypeTester() {
+	public TypeSelectDialog(Shell parent, final Project p, final String typeName, String title, String message) {
+		this(parent, p, new TypeTester() {
 
-            @Override
-            public int test(IType t) {
-                if(t.isSubtypeOf(typeName))
-                    return 1;
-                return 0;
+			@Override
+			public int test(IType t) {
+				if(t.isSubtypeOf(typeName))
+					return 1;
+				return 0;
 
-            }
+			}
 
-        }, title, message);
-    }
+		}, title, message);
+	}
 
-    public TypeSelectDialog(Shell parent, final Project p, final IType type, final boolean addThis, String title,
-            String message) {
-        this(parent, p, new TypeTester() {
+	public TypeSelectDialog(Shell parent, final Project p, final IType type, final boolean addThis, String title, String message) {
+		this(parent, p, new TypeTester() {
 
-            @Override
-            public int test(IType t) {
-                return t.isSubtypeOf(type) && (addThis || (type != t)) ? 1 : 0;
-            }
+			@Override
+			public int test(IType t) {
+				return t.isSubtypeOf(type) && (addThis || (type != t)) ? 1 : 0;
+			}
 
-        }, title, message);
-    }
+		}, title, message);
+	}
 
 }

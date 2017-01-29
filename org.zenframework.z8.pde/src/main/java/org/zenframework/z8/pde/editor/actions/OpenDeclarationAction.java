@@ -14,25 +14,24 @@ import org.zenframework.z8.pde.Z8EditorMessages;
 import org.zenframework.z8.pde.editor.view.EditorHyperlink;
 
 public class OpenDeclarationAction extends TextEditorAction {
-    public OpenDeclarationAction(String prefix, ITextEditor editor) {
-        super(Z8EditorMessages.getResourceBundle(), prefix, editor);
-    }
+	public OpenDeclarationAction(String prefix, ITextEditor editor) {
+		super(Z8EditorMessages.getResourceBundle(), prefix, editor);
+	}
 
-    @Override
-    public void run() {
-        IResource resource = ((FileEditorInput)getTextEditor().getEditorInput()).getFile();
-        CompilationUnit compilationUnit = Workspace.getInstance().getCompilationUnit(resource);
+	@Override
+	public void run() {
+		IResource resource = ((FileEditorInput)getTextEditor().getEditorInput()).getFile();
+		CompilationUnit compilationUnit = Workspace.getInstance().getCompilationUnit(resource);
 
-        IPosition position = compilationUnit.getHyperlinkPosition(((TextSelection)getTextEditor().getSelectionProvider()
-                .getSelection()).getOffset());
-        Hyperlink hyperlink = compilationUnit.getHyperlink(position);
+		IPosition position = compilationUnit.getHyperlinkPosition(((TextSelection)getTextEditor().getSelectionProvider().getSelection()).getOffset());
+		Hyperlink hyperlink = compilationUnit.getHyperlink(position);
 
-        if(hyperlink == null) {
-            notifyResult(false);
-            return;
-        }
+		if(hyperlink == null) {
+			notifyResult(false);
+			return;
+		}
 
-        new EditorHyperlink(position, hyperlink).open();
-        notifyResult(true);
-    }
+		new EditorHyperlink(position, hyperlink).open();
+		notifyResult(true);
+	}
 }

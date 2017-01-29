@@ -8,16 +8,15 @@ import org.zenframework.z8.pde.debug.model.variable.JDXVariable;
 import com.sun.jdi.ClassObjectReference;
 
 public class JDXClassObjectValue extends JDXObjectValue {
-    public JDXClassObjectValue(JDXDebugTarget target, JDXThread thread, JDXVariable variable, ClassObjectReference object) {
-        super(target, thread, variable, object);
-    }
+	public JDXClassObjectValue(JDXDebugTarget target, JDXThread thread, JDXVariable variable, ClassObjectReference object) {
+		super(target, thread, variable, object);
+	}
 
-    public JDXType getInstanceType() {
-        return JDXType.createType(getJDXDebugTarget(), getJDXThread(), getJDXVariable(), getUnderlyingClassObject()
-                .reflectedType());
-    }
+	public JDXType getInstanceType() {
+		return JDXType.createType(getJDXDebugTarget(), getJDXThread(), getJDXVariable(), getUnderlyingClassObject().reflectedType());
+	}
 
-    protected ClassObjectReference getUnderlyingClassObject() {
-        return (ClassObjectReference)getUnderlyingValue();
-    }
+	protected ClassObjectReference getUnderlyingClassObject() {
+		return (ClassObjectReference)getUnderlyingValue();
+	}
 }

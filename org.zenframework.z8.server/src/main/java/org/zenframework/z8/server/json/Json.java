@@ -128,7 +128,6 @@ public interface Json {
 	static public string filter1 = new string("filter1");
 	static public string comparison = new string("comparison");
 	static public string andOr = new string("andOr");
-	static public string __search_text__ = new string("__search_text__");
 /* backward compatibility */
 
 	static public string primaryKey = new string("primaryKey");
@@ -212,6 +211,7 @@ public interface Json {
 	static public string header = new string("header");
 	static public string colspan = new string("colspan");
 	static public string rowspan = new string("rowspan");
+	static public string flex = new string("flex");
 	static public string icon = new string("icon");
 	static public string help = new string("help");
 

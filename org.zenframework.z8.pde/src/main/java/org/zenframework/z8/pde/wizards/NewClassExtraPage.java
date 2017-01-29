@@ -20,176 +20,179 @@ import org.zenframework.z8.pde.Model;
 
 public class NewClassExtraPage extends WizardPage {
 
-    private Composite topLevel;
+	private Composite topLevel;
 
-    private String name = null;
+	private String name = null;
 
-    private List<CGenerator> generators = new ArrayList<CGenerator>();
+	private List<CGenerator> generators = new ArrayList<CGenerator>();
 
-    public class CGenerator {
-        List<String> getImports() {
-            return new ArrayList<String>(0);
-        };
+	public class CGenerator {
+		List<String> getImports() {
+			return new ArrayList<String>(0);
+		};
 
-        String getBeforeClass() {
-            return "";
-        };
+		String getBeforeClass() {
+			return "";
+		};
 
-        String getContent() {
-            return "";
-        };
+		String getContent() {
+			return "";
+		};
 
-        void updateName(String name) {};
+		void updateName(String name) {
+		};
 
-        void dispose() {};
-    }
+		void dispose() {
+		};
+	}
 
-    private class BoolAttributeGenerator extends CGenerator {
-        String attr;
+	private class BoolAttributeGenerator extends CGenerator {
+		String attr;
 
-        Composite c;
+		Composite c;
 
-        Button b;
+		Button b;
 
-        public BoolAttributeGenerator(String a, Composite c1, boolean enabled) {
-            this.attr = a;
-            c = new Composite(c1, SWT.NONE);
-            c.setLayout(new GridLayout());
-            c.setLayoutData(new GridData());
-            b = new Button(c, SWT.CHECK);
-            b.setSelection(enabled);
-            b.setText("Атрибут " + attr);
-            b.setLayoutData(new GridData());
-        }
+		public BoolAttributeGenerator(String a, Composite c1, boolean enabled) {
+			this.attr = a;
+			c = new Composite(c1, SWT.NONE);
+			c.setLayout(new GridLayout());
+			c.setLayoutData(new GridData());
+			b = new Button(c, SWT.CHECK);
+			b.setSelection(enabled);
+			b.setText("пїЅпїЅпїЅпїЅпїЅпїЅпїЅ " + attr);
+			b.setLayoutData(new GridData());
+		}
 
-        @Override
-        String getBeforeClass() {
-            if(b.getSelection()) {
-                return "[" + attr + "]\r\n";
-            }
-            return super.getBeforeClass();
-        }
+		@Override
+		String getBeforeClass() {
+			if(b.getSelection()) {
+				return "[" + attr + "]\r\n";
+			}
+			return super.getBeforeClass();
+		}
 
-        @Override
-        void dispose() {
-            c.dispose();
-        }
-    }
+		@Override
+		void dispose() {
+			c.dispose();
+		}
+	}
 
-    private class StringAttributeGenerator extends CGenerator {
-        String attr;
+	private class StringAttributeGenerator extends CGenerator {
+		String attr;
 
-        Composite c;
+		Composite c;
 
-        Button b;
+		Button b;
 
-        Text t;
+		Text t;
 
-        public StringAttributeGenerator(String a, Composite c1, boolean enabled) {
-            this.attr = a;
-            c = new Composite(c1, SWT.NONE);
-            c.setLayout(new GridLayout(2, false));
-            c.setLayoutData(new GridData());
-            b = new Button(c, SWT.CHECK);
-            b.setSelection(enabled);
-            b.setText("Атрибут " + attr + ":");
-            b.setLayoutData(new GridData());
-            t = new Text(c, SWT.BORDER);
-            t.setLayoutData(new GridData(150, SWT.DEFAULT));
-            t.setEnabled(enabled);
-            b.addSelectionListener(new SelectionListener() {
-                @Override
-                public void widgetDefaultSelected(SelectionEvent e) {}
+		public StringAttributeGenerator(String a, Composite c1, boolean enabled) {
+			this.attr = a;
+			c = new Composite(c1, SWT.NONE);
+			c.setLayout(new GridLayout(2, false));
+			c.setLayoutData(new GridData());
+			b = new Button(c, SWT.CHECK);
+			b.setSelection(enabled);
+			b.setText("пїЅпїЅпїЅпїЅпїЅпїЅпїЅ " + attr + ":");
+			b.setLayoutData(new GridData());
+			t = new Text(c, SWT.BORDER);
+			t.setLayoutData(new GridData(150, SWT.DEFAULT));
+			t.setEnabled(enabled);
+			b.addSelectionListener(new SelectionListener() {
+				@Override
+				public void widgetDefaultSelected(SelectionEvent e) {
+				}
 
-                @Override
-                public void widgetSelected(SelectionEvent e) {
-                    t.setEnabled(b.getSelection());
-                }
-            });
-            updateName(name);
-        }
+				@Override
+				public void widgetSelected(SelectionEvent e) {
+					t.setEnabled(b.getSelection());
+				}
+			});
+			updateName(name);
+		}
 
-        void setName(String name, Text t) {
-            t.setText(name);
-        }
+		void setName(String name, Text t) {
+			t.setText(name);
+		}
 
-        @Override
-        void updateName(String name) {
-            setName(name, t);
-        }
+		@Override
+		void updateName(String name) {
+			setName(name, t);
+		}
 
-        @Override
-        String getBeforeClass() {
-            if(b.getSelection()) {
-                return "[" + attr + " \"" + t.getText() + "\"]\r\n";
-            }
-            return super.getBeforeClass();
-        }
+		@Override
+		String getBeforeClass() {
+			if(b.getSelection()) {
+				return "[" + attr + " \"" + t.getText() + "\"]\r\n";
+			}
+			return super.getBeforeClass();
+		}
 
-        @Override
-        void dispose() {
-            c.dispose();
-        }
-    }
+		@Override
+		void dispose() {
+			c.dispose();
+		}
+	}
 
-    private class NamedAttributeGenerator extends StringAttributeGenerator {
+	private class NamedAttributeGenerator extends StringAttributeGenerator {
 
-        public NamedAttributeGenerator(String a, Composite c1, boolean enabled) {
-            super(a, c1, enabled);
-        }
+		public NamedAttributeGenerator(String a, Composite c1, boolean enabled) {
+			super(a, c1, enabled);
+		}
 
-        @Override
-        void setName(String name, Text t) {
-            t.setText(name.toUpperCase());
-        }
+		@Override
+		void setName(String name, Text t) {
+			t.setText(name.toUpperCase());
+		}
 
-    }
+	}
 
-    protected NewClassExtraPage(String pageName, String title, ImageDescriptor titleImage) {
-        super(pageName, title, titleImage);
-    }
+	protected NewClassExtraPage(String pageName, String title, ImageDescriptor titleImage) {
+		super(pageName, title, titleImage);
+	}
 
-    @Override
-    public void createControl(Composite parent) {
-        topLevel = new Composite(parent, SWT.NONE);
-        GridLayout gl = new GridLayout(1, false);
-        topLevel.setLayout(gl);
-        topLevel.setData(new GridData(SWT.LEFT, SWT.TOP, true, true));
-        setControl(topLevel);
-    }
+	@Override
+	public void createControl(Composite parent) {
+		topLevel = new Composite(parent, SWT.NONE);
+		GridLayout gl = new GridLayout(1, false);
+		topLevel.setLayout(gl);
+		topLevel.setData(new GridData(SWT.LEFT, SWT.TOP, true, true));
+		setControl(topLevel);
+	}
 
-    public void updateParent(String type) {
-        for(CGenerator g : generators)
-            g.dispose();
-        generators.clear();
-        if(type != null) {
-            IType t = Model.getTypeFromQualifiedName(type);
-            addGenerators(t);
-        }
-        topLevel.layout(true);
-    }
+	public void updateParent(String type) {
+		for(CGenerator g : generators)
+			g.dispose();
+		generators.clear();
+		if(type != null) {
+			IType t = Model.getTypeFromQualifiedName(type);
+			addGenerators(t);
+		}
+		topLevel.layout(true);
+	}
 
-    public void updateName(String name) {
-        this.name = name;
-        for(CGenerator g : generators)
-            g.updateName(name);
-    }
+	public void updateName(String name) {
+		this.name = name;
+		for(CGenerator g : generators)
+			g.updateName(name);
+	}
 
-    public List<CGenerator> getGenerators() {
-        return generators;
-    }
+	public List<CGenerator> getGenerators() {
+		return generators;
+	}
 
-    private void addGenerators(IType t) {
-        generators.add(new StringAttributeGenerator(IAttribute.DisplayName, topLevel, true));
-        if(t.isSubtypeOf("Runnable")) {
-            generators.add(new StringAttributeGenerator(IAttribute.Job, topLevel, false));
-            generators.add(new BoolAttributeGenerator(IAttribute.Entry, topLevel, false));
+	private void addGenerators(IType t) {
+		generators.add(new StringAttributeGenerator(IAttribute.DisplayName, topLevel, true));
+		if(t.isSubtypeOf("Runnable")) {
+			generators.add(new StringAttributeGenerator(IAttribute.Job, topLevel, false));
+			generators.add(new BoolAttributeGenerator(IAttribute.Entry, topLevel, false));
 
-        }
-        if(t.isSubtypeOf("TableBase") || t.isSubtypeOf("Field"))
-            generators.add(new NamedAttributeGenerator(IAttribute.Name, topLevel, true));
-        if(t.isSubtypeOf("Table"))
-            generators.add(new BoolAttributeGenerator(IAttribute.Generatable, topLevel, true));
-    }
+		}
+		if(t.isSubtypeOf("TableBase") || t.isSubtypeOf("Field"))
+			generators.add(new NamedAttributeGenerator(IAttribute.Name, topLevel, true));
+		if(t.isSubtypeOf("Table"))
+			generators.add(new BoolAttributeGenerator(IAttribute.Generatable, topLevel, true));
+	}
 
 }

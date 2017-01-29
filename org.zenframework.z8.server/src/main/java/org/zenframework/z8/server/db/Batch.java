@@ -62,6 +62,19 @@ public class Batch {
 	}
 
 	public void flush() throws SQLException {
+		flush(false);
+	}
+
+	public void commit() throws SQLException {
+		flush(true);
+	}
+
+	public void rollback() throws SQLException {
+		for(Data data : this.data)
+			data.statement.close();
+	}
+
+	private void flush(boolean close) throws SQLException {
 		for(Data data : this.data) {
 			if(data.count != 0) {
 				try {
@@ -71,12 +84,8 @@ public class Batch {
 					throw e.getNextException();
 				}
 			}
-			data.statement.close();
+			if(close)
+				data.statement.close();
 		}
-	}
-
-	public void clear() throws SQLException {
-		for(Data data : this.data)
-			data.statement.close();
 	}
 }

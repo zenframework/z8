@@ -47,6 +47,7 @@ public class JobsView extends ScheduledJobs {
 		logs.get().link = logsTable.scheduledJob;
 		logs.get().readOnly = bool.True;
 		logs.get().colspan = new integer(12);
+		logs.get().flex = new integer(1);
 
 		logsTable.columns.add(logsTable.start);
 		logsTable.columns.add(logsTable.finish);

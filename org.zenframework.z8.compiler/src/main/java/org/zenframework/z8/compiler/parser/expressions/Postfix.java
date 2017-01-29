@@ -1,7 +1,5 @@
 package org.zenframework.z8.compiler.parser.expressions;
 
-import org.eclipse.text.edits.TextEdit;
-
 import org.zenframework.z8.compiler.core.CodeGenerator;
 import org.zenframework.z8.compiler.core.IJavaTypeCast;
 import org.zenframework.z8.compiler.core.ILanguageElement;
@@ -128,13 +126,5 @@ public class Postfix extends LanguageElement implements IJavaTypeCast {
 
 			postfix.getCode(codeGenerator);
 		}
-	}
-
-	@Override
-	public void replaceTypeName(TextEdit parent, IType type, String newTypeName) {
-		prefix.replaceTypeName(parent, type, newTypeName);
-
-		if(postfix != null)
-			postfix.replaceTypeName(parent, type, newTypeName);
 	}
 }

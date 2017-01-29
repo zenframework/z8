@@ -13,81 +13,79 @@ import org.zenframework.z8.pde.Plugin;
 
 public class SwitchFilterSuper extends Action {
 
-    private static ImageDescriptor imageDescriptor;
+	private static ImageDescriptor imageDescriptor;
 
-    private static Image image;
+	private static Image image;
 
-    private boolean added = Plugin.getDefault().getPreferenceStore().getBoolean(PREFERENCE_STRING);
+	private boolean added = Plugin.getDefault().getPreferenceStore().getBoolean(PREFERENCE_STRING);
 
-    private final static ViewerFilter FILTER = new ViewerFilter() {
+	private final static ViewerFilter FILTER = new ViewerFilter() {
 
-        @Override
-        public boolean select(Viewer viewer, Object parentElement, Object element) {
-            /*if (element instanceof TreeMember) {
-            	TreeMember tm = (TreeMember) element;
-            	if (tm.getInit()==null && !tm.isChildInited()){
-            		IType parentType=null;
-            		if (tm.getTreeParent() instanceof IType) {
-            			parentType = (IType) tm.getTreeParent();
-            		}
-            		else if (((TreeMember)tm.getTreeParent()).getInit() instanceof MemberNestedType){
-            			parentType = (IType)((TreeMember)tm.getTreeParent()).getInit();
-            		}
-            		if (parentType!=null) return tm.getMember().getCompilationUnit().equals(parentType.getCompilationUnit());
-            	}
-            }*/
-            return true;
-        }
-    };
+		@Override
+		public boolean select(Viewer viewer, Object parentElement, Object element) {
+			/*
+			 * if (element instanceof TreeMember) { TreeMember tm = (TreeMember)
+			 * element; if (tm.getInit()==null && !tm.isChildInited()){ IType
+			 * parentType=null; if (tm.getTreeParent() instanceof IType) {
+			 * parentType = (IType) tm.getTreeParent(); } else if
+			 * (((TreeMember)tm.getTreeParent()).getInit() instanceof
+			 * MemberNestedType){ parentType =
+			 * (IType)((TreeMember)tm.getTreeParent()).getInit(); } if
+			 * (parentType!=null) return
+			 * tm.getMember().getCompilationUnit().equals(parentType.
+			 * getCompilationUnit()); } }
+			 */
+			return true;
+		}
+	};
 
-    private static final String PREFERENCE_STRING = "Navigator.FilterSuper";
+	private static final String PREFERENCE_STRING = "Navigator.FilterSuper";
 
-    static {
-        try {
-            image = new Image(null, FileLocator.openStream(Plugin.getDefault().getBundle(), new Path(
-                    "icons/filter_super.bmp"), true));
-            imageDescriptor = ImageDescriptor.createFromImage(image);
-        }
-        catch(Exception e) {}
-    }
+	static {
+		try {
+			image = new Image(null, FileLocator.openStream(Plugin.getDefault().getBundle(), new Path("icons/filter_super.bmp"), true));
+			imageDescriptor = ImageDescriptor.createFromImage(image);
+		} catch(Exception e) {
+		}
+	}
 
-    private StructuredViewer viewer;
+	private StructuredViewer viewer;
 
-    public SwitchFilterSuper(StructuredViewer v) {
-        viewer = v;
-        if(added)
-            v.addFilter(FILTER);
-        setChecked(!added);
-    }
+	public SwitchFilterSuper(StructuredViewer v) {
+		viewer = v;
+		if(added)
+			v.addFilter(FILTER);
+		setChecked(!added);
+	}
 
-    @Override
-    public void run() {
-        if(added)
-            viewer.removeFilter(FILTER);
-        else
-            viewer.addFilter(FILTER);
-        added = !added;
-        Plugin.getDefault().getPreferenceStore().setValue(PREFERENCE_STRING, added);
-    }
+	@Override
+	public void run() {
+		if(added)
+			viewer.removeFilter(FILTER);
+		else
+			viewer.addFilter(FILTER);
+		added = !added;
+		Plugin.getDefault().getPreferenceStore().setValue(PREFERENCE_STRING, added);
+	}
 
-    @Override
-    public String getToolTipText() {
-        return ("Показывать элементы из родительских классов");
-    }
+	@Override
+	public String getToolTipText() {
+		return ("пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ");
+	}
 
-    @Override
-    public int getStyle() {
-        return AS_CHECK_BOX;
-    }
+	@Override
+	public int getStyle() {
+		return AS_CHECK_BOX;
+	}
 
-    @Override
-    public String getText() {
-        return "Показывать из базовых";
-    }
+	@Override
+	public String getText() {
+		return "пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ";
+	}
 
-    @Override
-    public ImageDescriptor getImageDescriptor() {
-        return imageDescriptor;
-    }
+	@Override
+	public ImageDescriptor getImageDescriptor() {
+		return imageDescriptor;
+	}
 
 }

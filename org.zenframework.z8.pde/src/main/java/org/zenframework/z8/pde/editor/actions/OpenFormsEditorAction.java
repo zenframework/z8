@@ -14,26 +14,24 @@ import org.zenframework.z8.pde.Z8EditorMessages;
 import org.zenframework.z8.pde.Plugin;
 
 public class OpenFormsEditorAction extends TextEditorAction {
-    public OpenFormsEditorAction(String prefix, ITextEditor editor) {
-        super(Z8EditorMessages.getResourceBundle(), prefix, editor);
-    }
+	public OpenFormsEditorAction(String prefix, ITextEditor editor) {
+		super(Z8EditorMessages.getResourceBundle(), prefix, editor);
+	}
 
-    @Override
-    public void run() {
-        IResource resource = ((FileEditorInput)getTextEditor().getEditorInput()).getFile();
-        CompilationUnit compilationUnit = Workspace.getInstance().getCompilationUnit(resource);
-        //		getTextEditor().close(true);
-        open(compilationUnit);
-    }
+	@Override
+	public void run() {
+		IResource resource = ((FileEditorInput)getTextEditor().getEditorInput()).getFile();
+		CompilationUnit compilationUnit = Workspace.getInstance().getCompilationUnit(resource);
+		// getTextEditor().close(true);
+		open(compilationUnit);
+	}
 
-    public static void open(CompilationUnit unit) {
-        FileEditorInput input = new FileEditorInput((IFile)unit.getResource());
-        try {
-            IDE.openEditor(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage(), input,
-                    "org.zenframework.z8.forms.editors.MultiEditor");
-        }
-        catch(Exception e) {
-            Plugin.log(e);
-        }
-    }
+	public static void open(CompilationUnit unit) {
+		FileEditorInput input = new FileEditorInput((IFile)unit.getResource());
+		try {
+			IDE.openEditor(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage(), input, "org.zenframework.z8.forms.editors.MultiEditor");
+		} catch(Exception e) {
+			Plugin.log(e);
+		}
+	}
 }

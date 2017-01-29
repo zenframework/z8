@@ -9,7 +9,6 @@ import org.zenframework.z8.server.json.JsonWriter;
 import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.runtime.RCollection;
 import org.zenframework.z8.server.types.bool;
-import org.zenframework.z8.server.types.integer;
 
 public class Listbox extends Control {
 	public static class CLASS<T extends Listbox> extends Control.CLASS<T> {
@@ -24,8 +23,6 @@ public class Listbox extends Control {
 		}
 	}
 
-	public integer height;
-
 	public Query.CLASS<? extends Query> query = null;
 	public Link.CLASS<? extends Link> link = null;
 	public RCollection<Field.CLASS<? extends Field>> columns = new RCollection<Field.CLASS<? extends Field>>();
@@ -34,6 +31,10 @@ public class Listbox extends Control {
 	public Listbox(IObject container) {
 		super(container);
 		this.editable = bool.True;
+	}
+
+	public boolean readOnly() {
+		return super.readOnly() || query.get().readOnly();
 	}
 
 	@Override
@@ -53,14 +54,15 @@ public class Listbox extends Control {
 		writer.writeProperty(Json.header, displayName());
 		writer.writeProperty(Json.icon, icon());
 
-		writer.writeProperty(Json.height, height, new integer(4));
-
 		writer.startObject(Json.query);
 
 		writer.writeProperty(Json.id, requestId);
 		writer.writeProperty(Json.name, query.id());
-		writer.writeProperty(Json.primaryKey, query.primaryKey().id());
-		writer.writeProperty(Json.lockKey, query.lockKey().id());
+
+		if(!this.readOnly()) {
+			writer.writeProperty(Json.primaryKey, query.primaryKey().id());
+			writer.writeProperty(Json.lockKey, query.lockKey().id());
+		}
 
 		Field parentKey = query.parentKey();
 		if(parentKey != null)
