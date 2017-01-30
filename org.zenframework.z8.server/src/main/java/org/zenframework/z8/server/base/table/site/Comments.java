@@ -14,7 +14,7 @@ import org.zenframework.z8.server.types.guid;
 public class Comments extends TreeTable {
 	final static public String TableName = "SiteComments";
 
-	static public class names {
+	static public class fieldNames {
 		public final static String Topic = "Topic";
 		public final static String Author = "Author";
 		public final static String Text = "Text";
@@ -84,17 +84,17 @@ public class Comments extends TreeTable {
 		authors.setIndex("authors");
 		parentComment.setIndex("parentComment");
 
-		topic.setName(names.Topic);
+		topic.setName(fieldNames.Topic);
 		topic.setIndex("topic");
 
-		author.setName(names.Author);
+		author.setName(fieldNames.Author);
 		author.setIndex("author");
 
-		text.setName(names.Text);
+		text.setName(fieldNames.Text);
 		text.setIndex("text");
 		text.setDisplayName(displayNames.Text);
 
-		time.setName(names.Time);
+		time.setName(fieldNames.Time);
 		time.setIndex("time");
 		time.setDisplayName(displayNames.Time);
 

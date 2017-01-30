@@ -72,14 +72,14 @@ public class QueryUtils {
 
 	static public Collection<Field> parseFormFields(Query query, String json) {
 		if(json == null || json.isEmpty())
-			return query.formFields();
+			return query.fields();
 
 		Collection<Field> fields = new ArrayList<Field>();
 
 		JsonArray names = new JsonArray(json);
 
 		if(names.length() == 0)
-			return query.formFields();
+			return query.fields();
 
 		for(int index = 0; index < names.length(); index++) {
 			Field field = query.findFieldById(names.getString(index));

@@ -25,7 +25,7 @@ import org.zenframework.z8.server.utils.IOUtils;
 public class Files extends Table {
 	public static final String TableName = "SystemFiles";
 
-	static public class names {
+	static public class fieldNames {
 		public final static String File = "File";
 		public final static String Path = "Path";
 	}
@@ -79,10 +79,10 @@ public class Files extends Table {
 		name.setDisplayName(displayNames.Name);
 		name.get().length = new integer(512);
 
-		data.setName(names.File);
+		data.setName(fieldNames.File);
 		data.setIndex("data");
 
-		path.setName(names.Path);
+		path.setName(fieldNames.Path);
 		path.setIndex("path");
 		path.setDisplayName(displayNames.Path);
 		path.get().length = new integer(512);

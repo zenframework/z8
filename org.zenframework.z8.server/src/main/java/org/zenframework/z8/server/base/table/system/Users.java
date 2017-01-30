@@ -32,7 +32,7 @@ public class Users extends Table {
 
 	static private String defaultPassword = MD5.get("");
 
-	static public class names {
+	static public class fieldNames {
 		public final static String Password = "Password";
 		public final static String FirstName = "First Name";
 		public final static String MiddleName = "Middle Name";
@@ -130,45 +130,45 @@ public class Users extends Table {
 		name.get().length = new integer(IAuthorityCenter.MaxLoginLength);
 		name.get().unique = bool.True;
 
-		password.setName(names.Password);
+		password.setName(fieldNames.Password);
 		password.setExportable(false);
 		password.setIndex("password");
 		password.setSystem(true);
 		password.get().length = new integer(IAuthorityCenter.MaxPasswordLength);
 		password.get().setDefault(new string(defaultPassword));
 
-		firstName.setName(names.FirstName);
+		firstName.setName(fieldNames.FirstName);
 		firstName.setIndex("firstName");
 		firstName.setDisplayName(displayNames.FirstName);
 		firstName.get().length = new integer(100);
 
-		middleName.setName(names.MiddleName);
+		middleName.setName(fieldNames.MiddleName);
 		middleName.setIndex("middleName");
 		middleName.setDisplayName(displayNames.MiddleName);
 		middleName.get().length = new integer(100);
 
-		lastName.setName(names.LastName);
+		lastName.setName(fieldNames.LastName);
 		lastName.setIndex("lastName");
 		lastName.setDisplayName(displayNames.LastName);
 		lastName.get().length = new integer(100);
 
 		description.setDisplayName(displayNames.Description);
 
-		phone.setName(names.Phone);
+		phone.setName(fieldNames.Phone);
 		phone.setIndex("phone");
 		phone.setDisplayName(displayNames.Phone);
 		phone.get().length = new integer(128);
 
-		email.setName(names.Email);
+		email.setName(fieldNames.Email);
 		email.setIndex("email");
 		email.setDisplayName(displayNames.Email);
 		email.get().length = new integer(128);
 
-		banned.setName(names.Banned);
+		banned.setName(fieldNames.Banned);
 		banned.setIndex("banned");
 		banned.setDisplayName(displayNames.Banned);
 
-		settings.setName(names.Settings);
+		settings.setName(fieldNames.Settings);
 		settings.setIndex("settings");
 		settings.setDisplayName(displayNames.Settings);
 

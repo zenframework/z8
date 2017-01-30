@@ -10,18 +10,17 @@ import java.util.Set;
 import java.util.regex.Pattern;
 
 import org.apache.commons.io.FileUtils;
-import org.zenframework.z8.server.base.Command;
 import org.zenframework.z8.server.base.file.Folders;
 import org.zenframework.z8.server.base.form.Control;
 import org.zenframework.z8.server.base.form.Section;
 import org.zenframework.z8.server.base.form.TabControl;
-import org.zenframework.z8.server.base.model.actions.ActionParameters;
+import org.zenframework.z8.server.base.form.action.Action;
+import org.zenframework.z8.server.base.model.actions.ActionConfig;
 import org.zenframework.z8.server.base.model.actions.CopyAction;
 import org.zenframework.z8.server.base.model.actions.DestroyAction;
 import org.zenframework.z8.server.base.model.actions.NewAction;
 import org.zenframework.z8.server.base.model.actions.ReadAction;
 import org.zenframework.z8.server.base.model.actions.UpdateAction;
-import org.zenframework.z8.server.base.model.command.ICommand;
 import org.zenframework.z8.server.base.model.sql.Insert;
 import org.zenframework.z8.server.base.model.sql.Select;
 import org.zenframework.z8.server.base.table.value.AttachmentField;
@@ -71,24 +70,22 @@ public class Query extends OBJECT {
 
 	public bool readOnly = bool.False;
 	public integer columnCount = new integer(4);
-	public bool totals = bool.False;
-
-	public RCollection<Field.CLASS<? extends Field>> sortFields = new RCollection<Field.CLASS<? extends Field>>();
-	public RCollection<Field.CLASS<? extends Field>> groupFields = new RCollection<Field.CLASS<? extends Field>>();
-
-	public RCollection<Control.CLASS<? extends Control>> formFields = new RCollection<Control.CLASS<? extends Control>>();
-	public RCollection<Field.CLASS<? extends Field>> nameFields = new RCollection<Field.CLASS<? extends Field>>();
-
-	public RCollection<Field.CLASS<? extends Field>> columns = new RCollection<Field.CLASS<? extends Field>>();
-	public RCollection<Field.CLASS<? extends Field>> quickFilters = new RCollection<Field.CLASS<? extends Field>>();
-
-	public RCollection<Command.CLASS<? extends Command>> commands = new RCollection<Command.CLASS<? extends Command>>();
-
-	public RCollection<Link.CLASS<? extends Link>> aggregateBy = new RCollection<Link.CLASS<? extends Link>>();
-	public RCollection<Field.CLASS<? extends Field>> groupBy = new RCollection<Field.CLASS<? extends Field>>();
 
 	public Field.CLASS<? extends Field> attachments;
 	public Field.CLASS<? extends Field> period;
+
+	public bool totals = bool.False;
+
+	public RCollection<Control.CLASS<? extends Control>> controls = new RCollection<Control.CLASS<? extends Control>>();
+	public RCollection<Field.CLASS<? extends Field>> names = new RCollection<Field.CLASS<? extends Field>>();
+	public RCollection<Field.CLASS<? extends Field>> columns = new RCollection<Field.CLASS<? extends Field>>();
+	public RCollection<Field.CLASS<? extends Field>> quickFilters = new RCollection<Field.CLASS<? extends Field>>();
+	public RCollection<Field.CLASS<? extends Field>> sortFields = new RCollection<Field.CLASS<? extends Field>>();
+	public RCollection<Field.CLASS<? extends Field>> groupFields = new RCollection<Field.CLASS<? extends Field>>();
+	public RCollection<Action.CLASS<? extends Action>> actions = new RCollection<Action.CLASS<? extends Action>>();
+
+	public RCollection<Link.CLASS<? extends Link>> aggregateBy = new RCollection<Link.CLASS<? extends Link>>();
+	public RCollection<Field.CLASS<? extends Field>> groupBy = new RCollection<Field.CLASS<? extends Field>>();
 
 	private Collection<Field.CLASS<Field>> dataFields;
 	private Collection<Field.CLASS<Field>> primaryFields;
@@ -101,7 +98,7 @@ public class Query extends OBJECT {
 	private SqlToken having;
 
 	protected Select cursor;
-	protected ReadLock readLock = ReadLock.None;
+	public ReadLock readLock = ReadLock.None;
 	private boolean transactive = true;
 
 	private IAccess access;
@@ -177,9 +174,9 @@ public class Query extends OBJECT {
 	}
 
 	@SuppressWarnings("unchecked")
-	public void onCommand(Command command, Collection<guid> recordIds) {
+	public void onAction(Action action, Collection<guid> recordIds) {
 		RCollection<guid> ids = getGuidCollection(recordIds);
-		z8_onCommand((Command.CLASS<? extends Command>)command.getCLASS(), ids);
+		z8_onAction((Action.CLASS<? extends Action>)action.getCLASS(), ids);
 	}
 
 	public Collection<Query> onReport(String report, Collection<guid> recordIds) {
@@ -504,12 +501,12 @@ public class Query extends OBJECT {
 	}
 
 	protected Collection<Field> read(Collection<Field> fields, Collection<Field> sortFields, Collection<Field> groupFields, SqlToken where, SqlToken having, int start, int limit) {
-		ActionParameters parameters = new ActionParameters();
-		parameters.query = this;
-		parameters.fields = fields;
-		parameters.sortFields = sortFields;
+		ActionConfig config = new ActionConfig();
+		config.query = this;
+		config.fields = fields;
+		config.sortFields = sortFields;
 
-		ReadAction action = new ReadAction(parameters);
+		ReadAction action = new ReadAction(config);
 		action.addFilter(where);
 		action.addGroupFilter(having);
 
@@ -731,15 +728,6 @@ public class Query extends OBJECT {
 		return primaryFields;
 	}
 
-	private Collection<Control.CLASS<? extends Control>> defaultControls() {
-		Collection<Control.CLASS<? extends Control>> result = new ArrayList<Control.CLASS<? extends Control>>();
-		for(Field.CLASS<Field> field : dataFields()) {
-			if(!field.system())
-				result.add(field);
-		}
-		return result;
-	}
-
 	public Collection<Field> getDataFields() {
 		return CLASS.asList(dataFields());
 	}
@@ -748,10 +736,10 @@ public class Query extends OBJECT {
 		return CLASS.asList(primaryFields());
 	}
 
-	public Collection<Field> formFields() {
+	public Collection<Field> fields() {
 		Set<Field> result = new LinkedHashSet<Field>(50);
 
-		for(Control control : CLASS.asList(formFields)) {
+		for(Control control : CLASS.asList(controls)) {
 			if(control instanceof Section)
 				result.addAll(((Section)control).fields());
 			else if(control instanceof TabControl)
@@ -759,7 +747,7 @@ public class Query extends OBJECT {
 			else if(control instanceof Field)
 				result.addAll(((Field)control).fields());
 
-			result.addAll(nameFields());
+			result.addAll(names());
 			result.addAll(columns());
 		}
 
@@ -770,8 +758,8 @@ public class Query extends OBJECT {
 		return CLASS.asList(columns);
 	}
 
-	public Collection<Field> nameFields() {
-		return CLASS.asList(nameFields);
+	public Collection<Field> names() {
+		return CLASS.asList(names);
 	}
 
 	public Collection<Field> quickFilters() {
@@ -786,9 +774,18 @@ public class Query extends OBJECT {
 		return CLASS.asList(groupFields);
 	}
 
+	private Collection<Control.CLASS<? extends Control>> defaultControls() {
+		Collection<Control.CLASS<? extends Control>> result = new ArrayList<Control.CLASS<? extends Control>>();
+		for(Field.CLASS<Field> field : dataFields()) {
+			if(!field.system())
+				result.add(field);
+		}
+		return result;
+	}
+
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public Collection<Control> controls() {
-		return CLASS.asList(formFields.isEmpty() ? (Collection)defaultControls() : formFields);
+		return CLASS.asList(controls.isEmpty() ? (Collection)defaultControls() : controls);
 	}
 
 	public Collection<Field> attachments() {
@@ -809,12 +806,11 @@ public class Query extends OBJECT {
 	}
 
 	public void registerDataField(Field.CLASS<?> field) {
-//		dataFields.add(field);
 		objects.add(field);
 	}
 
-	public void registerFormField(Control.CLASS<?> control) {
-		formFields.add(control);
+	public void registerControl(Control.CLASS<?> control) {
+		controls.add(control);
 	}
 
 	final public SqlToken having() {
@@ -980,6 +976,11 @@ public class Query extends OBJECT {
 		return result != null && result.member instanceof Field ? (Field)result.member : null;
 	}
 
+	public Action findActionById(String id) {
+		MemberSearch result = findMember(id);
+		return result != null && result.member instanceof Action ? (Action)result.member : null;
+	}
+
 	public ILink getLinkTo(Query query) {
 		for(OBJECT.CLASS<?> cls : getLinks()) {
 			ILink link = (ILink)cls.get();
@@ -1051,11 +1052,11 @@ public class Query extends OBJECT {
 
 	public Collection<Field> getFieldsVia(Query query) {
 		if(this == query)
-			return formFields();
+			return fields();
 
 		Collection<Field> result = new ArrayList<Field>(50);
 
-		for(Field field : formFields()) {
+		for(Field field : fields()) {
 			if(isReachableVia(query, field))
 				result.add(field);
 		}
@@ -1074,18 +1075,14 @@ public class Query extends OBJECT {
 		return result;
 	}
 
-	public Collection<Command> commands() {
-		return CLASS.asList(commands);
+	public Collection<Action> actions() {
+		return CLASS.asList(actions);
 	}
 
-	public Collection<Command> getCommands() {
-		return commands();
-	}
-
-	public Command getCommand(String id) {
-		for(Command command : getCommands()) {
-			if(command.id().equals(id))
-				return command;
+	public Action getAction(String id) {
+		for(Action action : actions()) {
+			if(action.id().equals(id))
+				return action;
 		}
 
 		return null;
@@ -1101,22 +1098,19 @@ public class Query extends OBJECT {
 		writer.writeProperty(Json.id, id());
 		writer.writeProperty(Json.icon, icon());
 		writer.writeProperty(Json.form, form());
+		writer.writeProperty(Json.text, displayName());
 		writer.writeProperty(Json.sourceCode, sourceCodeLocation());
 
 		writer.writeControls(Json.fields, selectFields(), this, context);
 		writer.writeControls(Json.controls, controls(), this, context);
 		writer.writeControls(Json.columns, columns(), this, context);
-		writer.writeControls(Json.nameFields, nameFields(), this, context);
+		writer.writeControls(Json.nameFields, names(), this, context);
 		writer.writeControls(Json.quickFilters, quickFilters(), this, context);
+		writer.writeActions(actions());
 
 		writeKeys(writer, selectFields());
-		writeCommands(writer);
 
-		// visuals
-		writer.writeProperty(Json.text, displayName());
-
-		boolean isGrouped = isGrouped();
-		writer.writeProperty(Json.readOnly, isGrouped ? true : readOnly());
+		writer.writeProperty(Json.readOnly, isGrouped() || readOnly());
 
 		writer.writeProperty(Json.totals, totals);
 		writer.writeProperty(Json.columnCount, columnCount);
@@ -1142,18 +1136,6 @@ public class Query extends OBJECT {
 		Field parentKey = parentKey();
 		if(parentKey != null && fields.contains(parentKey))
 			writer.writeProperty(Json.parentKey, parentKey().id());
-	}
-
-	private void writeCommands(JsonWriter writer) {
-		writer.startArray(Json.commands);
-
-		for(ICommand command : getCommands()) {
-			writer.startObject();
-			command.write(writer);
-			writer.finishObject();
-		}
-
-		writer.finishArray();
 	}
 
 	//////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1405,7 +1387,7 @@ public class Query extends OBJECT {
 	}
 
 	@SuppressWarnings("rawtypes")
-	public void z8_onCommand(Command.CLASS<? extends Command> command, RCollection recordIds) {
+	public void z8_onAction(Action.CLASS<? extends Action> action, RCollection recordIds) {
 	}
 
 	@SuppressWarnings("rawtypes")

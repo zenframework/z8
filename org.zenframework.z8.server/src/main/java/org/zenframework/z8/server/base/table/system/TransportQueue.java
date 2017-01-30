@@ -27,7 +27,7 @@ public class TransportQueue extends Table {
 
 	static public String TableName = "SystemTransportQueue";
 
-	static public class names {
+	static public class fieldNames {
 		static public String Address = "Address";
 		static public String Sender = "Sender";
 		static public String Ordinal = "Ordinal";
@@ -98,34 +98,34 @@ public class TransportQueue extends Table {
 	public void constructor2() {
 		super.constructor2();
 
-		sender.setName(names.Sender);
+		sender.setName(fieldNames.Sender);
 		sender.setIndex("sender");
 		sender.setDisplayName(displayNames.Sender);
 		sender.get().length = new integer(50);
 
-		address.setName(names.Address);
+		address.setName(fieldNames.Address);
 		address.setIndex("address");
 		address.setDisplayName(displayNames.Address);
 		address.get().length = new integer(50);
 
 		description.setDisplayName(displayNames.Result);
 
-		ordinal.setName(names.Ordinal);
+		ordinal.setName(fieldNames.Ordinal);
 		ordinal.setIndex("ordinal");
 		ordinal.setDisplayName(displayNames.Ordinal);
 
-		classId.setName(names.ClassId);
+		classId.setName(fieldNames.ClassId);
 		classId.setIndex("classId");
 		classId.get().length = new integer(100);
 
-		data.setName(names.Data);
+		data.setName(fieldNames.Data);
 		data.setIndex("data");
 
-		bytesTransferred.setName(names.BytesTransferred);
+		bytesTransferred.setName(fieldNames.BytesTransferred);
 		bytesTransferred.setIndex("bytesTransferred");
 		bytesTransferred.setDisplayName(displayNames.BytesTransferred);
 
-		processed.setName(names.Processed);
+		processed.setName(fieldNames.Processed);
 		processed.setIndex("processed");
 		processed.setDisplayName(displayNames.Processed);
 

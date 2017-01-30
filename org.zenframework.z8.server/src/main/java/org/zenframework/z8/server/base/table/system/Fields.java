@@ -12,7 +12,7 @@ import org.zenframework.z8.server.types.integer;
 public class Fields extends Table {
 	final static public String TableName = "SystemFields";
 
-	static public class names {
+	static public class fieldNames {
 		public final static String Table = "Table";
 		public final static String DisplayName = "Display Name";
 		public final static String Type = "Type";
@@ -71,23 +71,23 @@ public class Fields extends Table {
 
 		tables.setIndex("tables");
 
-		table.setName(names.Table);
+		table.setName(fieldNames.Table);
 		table.setIndex("table");
 
 		id.get().length = new integer(256);
 		name.get().length = new integer(256);
 
-		displayName.setName(names.DisplayName);
+		displayName.setName(fieldNames.DisplayName);
 		displayName.setDisplayName(displayNames.DisplayName);
 		displayName.setIndex("displayName");
 		displayName.get().length = new integer(256);
 
-		type.setName(names.Type);
+		type.setName(fieldNames.Type);
 		type.setDisplayName(displayNames.Type);
 		type.setIndex("type");
 		type.get().length = new integer(50);
 
-		position.setName(names.Position);
+		position.setName(fieldNames.Position);
 		position.setIndex("position");
 
 		registerDataField(table);

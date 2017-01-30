@@ -1,20 +1,28 @@
 package org.zenframework.z8.server.base.model.actions;
 
-import org.zenframework.z8.server.base.Command;
-import org.zenframework.z8.server.base.model.command.IParameter;
+import java.util.Collection;
+
+import org.zenframework.z8.server.base.form.action.Action;
+import org.zenframework.z8.server.base.form.action.IParameter;
+import org.zenframework.z8.server.base.query.Query;
 import org.zenframework.z8.server.db.Connection;
 import org.zenframework.z8.server.db.ConnectionManager;
+import org.zenframework.z8.server.json.Json;
 import org.zenframework.z8.server.json.JsonWriter;
 import org.zenframework.z8.server.json.parser.JsonObject;
+import org.zenframework.z8.server.types.guid;
 
-public class CommandAction extends Action {
-	public CommandAction(ActionParameters parameters) {
-		super(parameters);
+public class CommandAction extends RequestAction {
+	public CommandAction(ActionConfig config) {
+		super(config);
 	}
 
 	@Override
 	public void writeResponse(JsonWriter writer) {
-		Command command = getQuery().getCommand(getCommandParameter());
+		Query context = getRequestQuery();
+		Query query = getQuery();
+
+		Action action = context.findActionById(getRequestParameter(Json.id));
 
 		JsonObject object = new JsonObject(getParametersParameter());
 
@@ -23,21 +31,26 @@ public class CommandAction extends Action {
 
 			if(names != null) {
 				for(String parameterId : names) {
-					IParameter parameter = command.getParameter(parameterId);
+					IParameter parameter = action.getParameter(parameterId);
 					String value = object.getString(parameterId);
 					parameter.parse(value);
 				}
 			}
 		}
 
-		Connection connection = command.useTransaction.get() ? ConnectionManager.get() : null;
+		Connection connection = action.useTransaction.get() ? ConnectionManager.get() : null;
 
 		try {
 			if(connection != null)
 				connection.beginTransaction();
 
-			getQuery().onCommand(command, getIdList());
+			guid recordId = getRecordIdParameter();
+			Collection<guid> selected = getIdList();
 
+			action.execute(recordId, context, selected, query);
+//////////
+			getQuery().onAction(action, selected);
+//////////
 			if(connection != null)
 				connection.commit();
 		} catch(Throwable e) {

@@ -12,9 +12,9 @@ import org.zenframework.z8.server.json.JsonWriter;
 import org.zenframework.z8.server.types.guid;
 import org.zenframework.z8.server.types.primary;
 
-public class NewAction extends Action {
-	public NewAction(ActionParameters parameters) {
-		super(parameters);
+public class NewAction extends RequestAction {
+	public NewAction(ActionConfig config) {
+		super(config);
 	}
 
 	@Override
@@ -48,8 +48,8 @@ public class NewAction extends Action {
 				if(!recordId.equals(guid.Null)) {
 					Query query = link.getQuery();
 
-					ActionParameters parameters = actionParameters();
-					Collection<Field> queryFields = parameters.fields != null ? parameters.fields : query.formFields();
+					ActionConfig config = config();
+					Collection<Field> queryFields = config.fields != null ? config.fields : query.fields();
 					queryFields = query.getReachableFields(queryFields);
 
 					if(queryFields.size() != 0) {

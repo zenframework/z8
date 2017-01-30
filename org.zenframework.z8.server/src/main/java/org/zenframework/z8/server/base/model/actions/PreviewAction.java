@@ -18,19 +18,19 @@ import org.zenframework.z8.server.types.guid;
 import org.zenframework.z8.server.utils.AttachmentUtils;
 import org.zenframework.z8.server.utils.PdfUtils;
 
-public class PreviewAction extends Action {
+public class PreviewAction extends RequestAction {
 
 	private static final String UNSUPPORTED_FILE_FORMAT = "Preview.unsupportedFileFormat";
 
 	private static final String PREVIEW = "preview.pdf";
 
-	public PreviewAction(ActionParameters parameters) {
-		super(parameters);
+	public PreviewAction(ActionConfig config) {
+		super(config);
 	}
 
 	@Override
 	public void writeResponse(JsonWriter writer) throws Throwable {
-		String requestId = actionParameters().requestId;
+		String requestId = config().requestId;
 		guid recordId = getRecordIdParameter();
 		Query query = getQuery();
 		String fieldId = getFieldParameter();
@@ -45,7 +45,7 @@ public class PreviewAction extends Action {
 		Collection<file> attachments = file.parse(field.string().get());
 
 		if(attachments.size() == 0)
-			throw new RuntimeException("'" + actionParameters().requestId + "." + fieldId + "' is empty");
+			throw new RuntimeException("'" + config().requestId + "." + fieldId + "' is empty");
 
 		List<File> converted = new ArrayList<File>(attachments.size());
 		List<String> unsupported = new ArrayList<String>(attachments.size());

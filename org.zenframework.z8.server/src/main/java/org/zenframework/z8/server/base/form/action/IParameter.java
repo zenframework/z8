@@ -1,4 +1,4 @@
-package org.zenframework.z8.server.base.model.command;
+package org.zenframework.z8.server.base.form.action;
 
 import org.zenframework.z8.server.db.FieldType;
 import org.zenframework.z8.server.json.JsonWriter;

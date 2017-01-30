@@ -10,7 +10,7 @@ import org.zenframework.z8.server.runtime.IObject;
 public class UserFieldAccess extends Table {
 	final static public String TableName = "SystemUserFieldAccess";
 
-	static public class names {
+	static public class fieldNames {
 		public final static String User = "User";
 		public final static String Field = "Field";
 		public final static String Read = "Read";
@@ -77,17 +77,17 @@ public class UserFieldAccess extends Table {
 		users.setIndex("users");
 		fields.setIndex("fields");
 
-		user.setName(names.User);
+		user.setName(fieldNames.User);
 		user.setIndex("user");
 
-		field.setName(names.Field);
+		field.setName(fieldNames.Field);
 		field.setIndex("field");
 
-		read.setName(names.Read);
+		read.setName(fieldNames.Read);
 		read.setIndex("read");
 		read.setDisplayName(displayNames.Read);
 
-		write.setName(names.Write);
+		write.setName(fieldNames.Write);
 		write.setIndex("write");
 		write.setDisplayName(displayNames.Write);
 

@@ -1,0 +1,8 @@
+[native "org.zenframework.z8.server.base.form.action.ActionType"]
+
+public enum ActionType {
+	Default,
+	Danger,
+	Primary,
+	Success
+}

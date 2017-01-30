@@ -1,8 +1,7 @@
-package org.zenframework.z8.server.base;
+package org.zenframework.z8.server.base.form.action;
 
 import java.util.Collection;
 
-import org.zenframework.z8.server.base.model.command.IParameter;
 import org.zenframework.z8.server.db.FieldType;
 import org.zenframework.z8.server.engine.ApplicationServer;
 import org.zenframework.z8.server.json.Json;

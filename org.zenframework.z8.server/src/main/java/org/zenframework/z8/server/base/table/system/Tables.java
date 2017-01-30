@@ -9,7 +9,7 @@ import org.zenframework.z8.server.types.integer;
 public class Tables extends Table {
 	final static public String TableName = "SystemTables";
 
-	static public class names {
+	static public class fieldNames {
 		public final static String DisplayName = "Display Name";
 	}
 
@@ -58,7 +58,7 @@ public class Tables extends Table {
 		name.get().length = new integer(256);
 		name.setDisplayName(displayNames.Name);
 
-		displayName.setName(names.DisplayName);
+		displayName.setName(fieldNames.DisplayName);
 		displayName.setDisplayName(displayNames.DisplayName);
 		displayName.setIndex("displayName");
 		displayName.get().length = new integer(256);

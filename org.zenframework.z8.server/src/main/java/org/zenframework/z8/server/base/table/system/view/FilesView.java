@@ -35,8 +35,8 @@ public class FilesView extends Files {
 
 		name.get().width = new integer(30);
 
-		registerFormField(createdAt);
-		registerFormField(name);
-		registerFormField(path);
+		registerControl(createdAt);
+		registerControl(name);
+		registerControl(path);
 	}
 }

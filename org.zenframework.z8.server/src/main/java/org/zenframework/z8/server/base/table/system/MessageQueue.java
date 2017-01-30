@@ -28,7 +28,7 @@ public class MessageQueue extends Table {
 
 	static public String TableName = "SystemMessageQueue";
 
-	static public class names {
+	static public class fieldNames {
 		static public String Address = "Address";
 		static public String Sender = "Sender";
 		static public String Ordinal = "Ordinal";
@@ -91,28 +91,28 @@ public class MessageQueue extends Table {
 	public void constructor2() {
 		super.constructor2();
 
-		sender.setName(names.Sender);
+		sender.setName(fieldNames.Sender);
 		sender.setIndex("sender");
 		sender.setDisplayName(displayNames.Sender);
 		sender.get().length = new integer(50);
 
-		address.setName(names.Address);
+		address.setName(fieldNames.Address);
 		address.setIndex("address");
 		address.setDisplayName(displayNames.Address);
 		address.get().length = new integer(50);
 
-		ordinal.setName(names.Ordinal);
+		ordinal.setName(fieldNames.Ordinal);
 		ordinal.setIndex("ordinal");
 		ordinal.setDisplayName(displayNames.Ordinal);
 
-		classId.setName(names.ClassId);
+		classId.setName(fieldNames.ClassId);
 		classId.setIndex("classId");
 		classId.get().length = new integer(100);
 
-		data.setName(names.Data);
+		data.setName(fieldNames.Data);
 		data.setIndex("data");
 
-		processing.setName(names.Processing);
+		processing.setName(fieldNames.Processing);
 		processing.setIndex("processing");
 		processing.setDisplayName(displayNames.Processing);
 

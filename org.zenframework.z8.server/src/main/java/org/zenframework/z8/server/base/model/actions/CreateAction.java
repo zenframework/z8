@@ -16,9 +16,9 @@ import org.zenframework.z8.server.json.parser.JsonArray;
 import org.zenframework.z8.server.json.parser.JsonObject;
 import org.zenframework.z8.server.types.guid;
 
-public class CreateAction extends Action {
-	public CreateAction(ActionParameters parameters) {
-		super(parameters);
+public class CreateAction extends RequestAction {
+	public CreateAction(ActionConfig config) {
+		super(config);
 	}
 
 	@Override

@@ -8,7 +8,7 @@ import org.zenframework.z8.server.types.integer;
 public class Jobs extends Table {
 	final static public String TableName = "SystemJobs";
 
-	static public class names {
+	static public class fieldNames {
 	}
 
 	static public class strings {

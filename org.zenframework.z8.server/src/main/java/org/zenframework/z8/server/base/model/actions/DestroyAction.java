@@ -10,9 +10,9 @@ import org.zenframework.z8.server.json.parser.JsonArray;
 import org.zenframework.z8.server.json.parser.JsonObject;
 import org.zenframework.z8.server.types.guid;
 
-public class DestroyAction extends Action {
-	public DestroyAction(ActionParameters parameters) {
-		super(parameters);
+public class DestroyAction extends RequestAction {
+	public DestroyAction(ActionConfig config) {
+		super(config);
 	}
 
 	@Override

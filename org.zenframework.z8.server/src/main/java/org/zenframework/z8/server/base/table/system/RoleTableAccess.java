@@ -14,7 +14,7 @@ import org.zenframework.z8.server.types.guid;
 public class RoleTableAccess extends Table {
 	final static public String TableName = "SystemRoleTableAccess";
 
-	static public class names {
+	static public class fieldNames {
 		public final static String Role = "Role";
 		public final static String Table = "Table";
 		public final static String Read = "Read";
@@ -95,29 +95,29 @@ public class RoleTableAccess extends Table {
 		roles.setIndex("roles");
 		tables.setIndex("tables");
 
-		role.setName(names.Role);
+		role.setName(fieldNames.Role);
 		role.setIndex("role");
 
-		table.setName(names.Table);
+		table.setName(fieldNames.Table);
 		table.setIndex("table");
 
-		read.setName(names.Read);
+		read.setName(fieldNames.Read);
 		read.setIndex("read");
 		read.setDisplayName(displayNames.Read);
 
-		write.setName(names.Write);
+		write.setName(fieldNames.Write);
 		write.setIndex("write");
 		write.setDisplayName(displayNames.Write);
 
-		create.setName(names.Create);
+		create.setName(fieldNames.Create);
 		create.setIndex("create");
 		create.setDisplayName(displayNames.Create);
 
-		copy.setName(names.Copy);
+		copy.setName(fieldNames.Copy);
 		copy.setIndex("copy");
 		copy.setDisplayName(displayNames.Copy);
 
-		destroy.setName(names.Destroy);
+		destroy.setName(fieldNames.Destroy);
 		destroy.setIndex("destroy");
 		destroy.setDisplayName(displayNames.Destroy);
 

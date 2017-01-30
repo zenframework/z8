@@ -15,10 +15,10 @@ import org.zenframework.z8.server.types.file;
 import org.zenframework.z8.server.types.guid;
 import org.zenframework.z8.server.types.string;
 
-public class AttachAction extends Action {
+public class AttachAction extends RequestAction {
 
-	public AttachAction(ActionParameters parameters) {
-		super(parameters);
+	public AttachAction(ActionConfig config) {
+		super(config);
 	}
 
 	@Override

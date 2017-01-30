@@ -64,14 +64,14 @@ public class TablesView extends Tables {
 		fieldsListbox.get().colspan = new integer(6);
 		fieldsListbox.get().flex = new integer(1);
 
-		registerFormField(id);
-		registerFormField(name);
-		registerFormField(displayName);
-		registerFormField(description);
-		registerFormField(fieldsListbox);
+		registerControl(id);
+		registerControl(name);
+		registerControl(displayName);
+		registerControl(description);
+		registerControl(fieldsListbox);
 
-		nameFields.add(displayName);
-		nameFields.add(name);
+		names.add(displayName);
+		names.add(name);
 		sortFields.add(name);
 
 		objects.add(this.fields);

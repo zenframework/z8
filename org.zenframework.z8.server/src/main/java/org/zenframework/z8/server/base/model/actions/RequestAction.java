@@ -19,7 +19,7 @@ import org.zenframework.z8.server.types.guid;
 import org.zenframework.z8.server.types.string;
 import org.zenframework.z8.server.types.sql.sql_bool;
 
-public abstract class Action extends RequestTarget {
+public abstract class RequestAction extends RequestTarget {
 	static public final String newAction = "new";
 	static public final String createAction = "create";
 	static public final String copyAction = "copy";
@@ -32,32 +32,32 @@ public abstract class Action extends RequestTarget {
 	static public final String attachAction = "attach";
 	static public final String detachAction = "detach";
 
-	private ActionParameters actionParameters;
+	private ActionConfig config;
 
-	public Action(ActionParameters parameters) {
-		super(parameters.requestId);
+	public RequestAction(ActionConfig config) {
+		super(config.requestId);
 
-		this.actionParameters = parameters;
+		this.config = config;
 	}
 
-	public ActionParameters actionParameters() {
-		return actionParameters;
+	public ActionConfig config() {
+		return config;
 	}
 
 	public Map<string, string> requestParameters() {
-		return actionParameters.requestParameters();
+		return config.requestParameters();
 	}
 
 	public Query getQuery() {
-		return actionParameters.query;
+		return config.query;
 	}
 
 	public Query getRequestQuery() {
-		return actionParameters.requestQuery;
+		return config.requestQuery;
 	}
 
 	public ILink getLink() {
-		return actionParameters.link;
+		return config.link;
 	}
 
 	protected Collection<Field> getFormFields() {
@@ -66,7 +66,7 @@ public abstract class Action extends RequestTarget {
 	}
 
 	public String getRequestParameter(string key) {
-		return actionParameters.requestParameter(key);
+		return config.requestParameter(key);
 	}
 
 	public int getRequestParameter(string key, int defaultValue) {

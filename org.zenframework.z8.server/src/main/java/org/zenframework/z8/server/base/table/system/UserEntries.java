@@ -22,7 +22,7 @@ public class UserEntries extends Table {
 	final static public guid System = new guid("4A50E864-CFD0-4439-88E9-E4AC2A9B08A5");
 	final static public guid Administrator = new guid("D53F3EBE-4D11-4ACE-99D7-07608B68B6C2");
 
-	static public class names {
+	static public class fieldNames {
 		public final static String User = "UserId";
 		public final static String Entry = "EntryId";
 		public final static String Position = "Position";
@@ -85,13 +85,13 @@ public class UserEntries extends Table {
 		users.setIndex("users");
 		entries.setIndex("entries");
 
-		user.setName(names.User);
+		user.setName(fieldNames.User);
 		user.setIndex("user");
 
-		entry.setName(names.Entry);
+		entry.setName(fieldNames.Entry);
 		entry.setIndex("entry");
 
-		position.setName(names.Position);
+		position.setName(fieldNames.Position);
 		position.setIndex("position");
 		position.setDisplayName(displayNames.Position);
 

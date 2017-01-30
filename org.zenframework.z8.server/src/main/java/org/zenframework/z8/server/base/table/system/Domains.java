@@ -27,7 +27,7 @@ public class Domains extends Table {
 	static public string DefaultDomain = new string(Users.displayNames.SystemName + " at " + Rmi.localhost);
 	static public String TableName = "SystemDomains";
 
-	static public class names {
+	static public class fieldNames {
 		public final static String User = "UserId";
 		public final static String Owner = "Owner";
 	}
@@ -97,14 +97,14 @@ public class Domains extends Table {
 		id.get().length = new integer(256);
 		id.get().unique = bool.True;
 
-		userLink.setName(names.User);
+		userLink.setName(fieldNames.User);
 		userLink.setIndex("userLink");
 		userLink.setExportable(false);
 
 		users.get().name.setDisplayName(displayNames.User);
 		users.get().description.setDisplayName(displayNames.UserDescription);
 
-		owner.setName(names.Owner);
+		owner.setName(fieldNames.Owner);
 		owner.setIndex("owner");
 		owner.setDisplayName(displayNames.Owner);
 		owner.setExportable(false);
@@ -112,12 +112,12 @@ public class Domains extends Table {
 		registerDataField(userLink);
 		registerDataField(owner);
 
-		registerFormField(id);
-		registerFormField(name);
-		registerFormField(description);
-		registerFormField(users.get().name);
-		registerFormField(users.get().description);
-		registerFormField(owner);
+		registerControl(id);
+		registerControl(name);
+		registerControl(description);
+		registerControl(users.get().name);
+		registerControl(users.get().description);
+		registerControl(owner);
 
 		objects.add(users);
 	}

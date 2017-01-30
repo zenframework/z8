@@ -5,8 +5,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 
-import org.zenframework.z8.server.base.Command;
-import org.zenframework.z8.server.base.model.actions.Action;
+import org.zenframework.z8.server.base.form.action.Action;
+import org.zenframework.z8.server.base.model.actions.RequestAction;
 import org.zenframework.z8.server.base.query.Query;
 import org.zenframework.z8.server.base.table.value.IntegerField;
 import org.zenframework.z8.server.base.table.value.StringField;
@@ -98,16 +98,16 @@ abstract public class HubServerView extends Query {
 		domains.setDisplayName(displayNames.Domains);
 		domains.get().width = new integer(400);
 
-		registerFormField(host);
-		registerFormField(port);
-		registerFormField(active);
-		registerFormField(serverId);
-		registerFormField(domains);
+		registerControl(host);
+		registerControl(port);
+		registerControl(active);
+		registerControl(serverId);
+		registerControl(domains);
 
-		Command.CLASS<Command> commandCls = new Command.CLASS<Command>(this);
-		Command command = commandCls.get();
+		Action.CLASS<Action> commandCls = new Action.CLASS<Action>(this);
+		Action command = commandCls.get();
 		command.text = new string(displayNames.Unregister);
-		commands.add(commandCls);
+		actions.add(commandCls);
 	}
 
 	@Override
@@ -119,16 +119,16 @@ abstract public class HubServerView extends Query {
 	public void writeResponse(JsonWriter writer) throws Throwable {
 		String action = getParameter(Json.action);
 
-		if(action == null || action.equals(Action.readAction)) {
+		if(action == null || action.equals(RequestAction.readAction)) {
 			writer.writeProperty(Json.isQuery, true);
 			writer.writeProperty(Json.request, classId());
 			writer.writeProperty(Json.primaryKey, recordId.get().id());
 
-			setSelectFields(formFields());
+			setSelectFields(fields());
 
 			writeMeta(writer, this);
 			writeData(writer, action != null);
-		} else if(action.equals(Action.commandAction)) {
+		} else if(action.equals(RequestAction.commandAction)) {
 			Collection<String> urls = new ArrayList<String>();
 			JsonArray records = new JsonArray(getParameter(Json.data));
 			for(int i = 0; i < records.length(); i++)

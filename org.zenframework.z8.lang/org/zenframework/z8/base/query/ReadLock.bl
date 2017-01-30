@@ -1,0 +1,8 @@
+[native "org.zenframework.z8.server.base.query.ReadLock"]
+public enum ReadLock {
+	None,
+	Update,
+	Share,
+	UpdateNoWait,
+	ShareNoWait
+}

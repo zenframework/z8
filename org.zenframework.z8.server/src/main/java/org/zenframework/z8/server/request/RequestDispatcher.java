@@ -7,7 +7,7 @@ import java.lang.management.MemoryUsage;
 import org.zenframework.z8.server.base.Procedure;
 import org.zenframework.z8.server.base.job.Job;
 import org.zenframework.z8.server.base.job.JobMonitor;
-import org.zenframework.z8.server.base.model.actions.Action;
+import org.zenframework.z8.server.base.model.actions.RequestAction;
 import org.zenframework.z8.server.base.model.actions.ActionFactory;
 import org.zenframework.z8.server.base.query.Query;
 import org.zenframework.z8.server.base.view.Dashboard;
@@ -119,7 +119,7 @@ public class RequestDispatcher implements Runnable {
 				object.processRequest(response);
 			} else if(object instanceof Query) {
 				Query query = (Query)object;
-				Action action = ActionFactory.create(query);
+				RequestAction action = ActionFactory.create(query);
 				action.processRequest(response);
 			} else if(object instanceof Procedure) {
 				Procedure procedure = (Procedure)object;

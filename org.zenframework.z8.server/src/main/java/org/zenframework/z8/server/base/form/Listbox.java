@@ -1,5 +1,6 @@
 package org.zenframework.z8.server.base.form;
 
+import org.zenframework.z8.server.base.form.action.Action;
 import org.zenframework.z8.server.base.query.Query;
 import org.zenframework.z8.server.base.table.TreeTable;
 import org.zenframework.z8.server.base.table.value.Field;
@@ -25,8 +26,10 @@ public class Listbox extends Control {
 
 	public Query.CLASS<? extends Query> query = null;
 	public Link.CLASS<? extends Link> link = null;
+
 	public RCollection<Field.CLASS<? extends Field>> columns = new RCollection<Field.CLASS<? extends Field>>();
 	public RCollection<Field.CLASS<? extends Field>> sortFields = new RCollection<Field.CLASS<? extends Field>>();
+	public RCollection<Action.CLASS<? extends Action>> actions = new RCollection<Action.CLASS<? extends Action>>();
 
 	public Listbox(IObject container) {
 		super(container);
@@ -71,9 +74,10 @@ public class Listbox extends Control {
 		writer.writeProperty(Json.totals, query.totals);
 		writer.writeProperty(Json.text, query.displayName());
 
-		writer.writeControls(Json.fields, query.formFields(), query, context);
+		writer.writeControls(Json.fields, query.fields(), query, context);
 		writer.writeControls(Json.columns, columns.isEmpty() ? query.columns() : CLASS.asList(columns), query, context);
 		writer.writeSort(sortFields.isEmpty() ? query.sortFields() : CLASS.asList(sortFields));
+		writer.writeActions(CLASS.asList(actions)); 
 
 		if(link != null) {
 			writer.startObject(Json.link);

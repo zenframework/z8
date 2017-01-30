@@ -28,7 +28,7 @@ import org.zenframework.z8.server.types.string;
 public class Roles extends Table {
 	final static public String TableName = "SystemRoles";
 
-	static public class names {
+	static public class fieldNames {
 		public final static String Role = "Role";
 		public final static String Table = "Table";
 		public final static String Read = "Read";
@@ -99,32 +99,32 @@ public class Roles extends Table {
 
 		IAccess access = Access.guest();
 
-		read.setName(names.Read);
+		read.setName(fieldNames.Read);
 		read.setIndex("read");
 		read.setDisplayName(displayNames.Read);
 		read.get().setDefault(new bool(access.read()));
 
-		write.setName(names.Write);
+		write.setName(fieldNames.Write);
 		write.setIndex("write");
 		write.setDisplayName(displayNames.Write);
 		write.get().setDefault(new bool(access.write()));
 
-		create.setName(names.Create);
+		create.setName(fieldNames.Create);
 		create.setIndex("create");
 		create.setDisplayName(displayNames.Create);
 		create.get().setDefault(new bool(access.create()));
 
-		copy.setName(names.Copy);
+		copy.setName(fieldNames.Copy);
 		copy.setIndex("copy");
 		copy.setDisplayName(displayNames.Copy);
 		copy.get().setDefault(new bool(access.copy()));
 
-		destroy.setName(names.Destroy);
+		destroy.setName(fieldNames.Destroy);
 		destroy.setIndex("destroy");
 		destroy.setDisplayName(displayNames.Destroy);
 		destroy.get().setDefault(new bool(access.destroy()));
 
-		execute.setName(names.Execute);
+		execute.setName(fieldNames.Execute);
 		execute.setIndex("execute");
 		execute.setDisplayName(displayNames.Execute);
 		execute.get().setDefault(new bool(access.execute()));

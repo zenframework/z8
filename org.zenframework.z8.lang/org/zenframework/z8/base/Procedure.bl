@@ -1,5 +1,8 @@
+import org.zenframework.z8.base.form.action.Action;
+import org.zenframework.z8.base.form.action.Parameter;
+
 [native "org.zenframework.z8.server.base.Procedure"]
-public class Procedure extends Command {
+public class Procedure extends Action {
 	virtual protected void execute(Parameter[] parameters);
 
 	protected void progress(int workPercent);

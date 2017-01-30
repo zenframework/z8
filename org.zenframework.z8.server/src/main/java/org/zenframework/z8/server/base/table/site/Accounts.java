@@ -20,7 +20,7 @@ public class Accounts extends Table {
 
 	static private String defaultPassword = MD5.get("");
 
-	static public class names {
+	static public class fieldNames {
 		public final static String Login = "Login";
 		public final static String Password = "Password";
 		public final static String FirstName = "First Name";
@@ -96,33 +96,33 @@ public class Accounts extends Table {
 
 		users.setIndex("users");
 
-		user.setName(names.User);
+		user.setName(fieldNames.User);
 		user.setIndex("user");
 
-		login.setName(names.Login);
+		login.setName(fieldNames.Login);
 		login.setIndex("login");
 		login.setDisplayName(displayNames.Login);
 		login.get().length = new integer(IAuthorityCenter.MaxLoginLength);
 		login.get().unique = bool.True;
 
-		password.setName(names.Password);
+		password.setName(fieldNames.Password);
 		password.setExportable(false);
 		password.setIndex("password");
 		password.setSystem(true);
 		password.get().length = new integer(IAuthorityCenter.MaxPasswordLength);
 		password.get().setDefault(new string(defaultPassword));
 
-		firstName.setName(names.FirstName);
+		firstName.setName(fieldNames.FirstName);
 		firstName.setIndex("firstName");
 		firstName.setDisplayName(displayNames.FirstName);
 		firstName.get().length = new integer(100);
 
-		lastName.setName(names.LastName);
+		lastName.setName(fieldNames.LastName);
 		lastName.setIndex("lastName");
 		lastName.setDisplayName(displayNames.LastName);
 		lastName.get().length = new integer(100);
 
-		banned.setName(names.Banned);
+		banned.setName(fieldNames.Banned);
 		banned.setIndex("banned");
 		banned.setDisplayName(displayNames.Banned);
 

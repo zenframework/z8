@@ -23,44 +23,44 @@ public class ActionFactory {
 
 	private Map<string, string> requestParameters;
 
-	public static Action create(Query query) {
+	public static RequestAction create(Query query) {
 		ActionFactory factory = new ActionFactory(query, null);
-		ActionParameters actionParameters = factory.getActionParameters();
+		ActionConfig config = factory.getActionConfig();
 
-		String actionName = actionParameters.requestParameter(Json.action);
+		String actionName = config.requestParameter(Json.action);
 
 		if(actionName == null)
-			return new MetaAction(actionParameters);
+			return new MetaAction(config);
 
-		if(Action.newAction.equals(actionName))
-			return new CreateAction(actionParameters); // new NewAction(actionParameters);
-		else if(Action.createAction.equals(actionName))
-			return new CreateAction(actionParameters);
-		else if(Action.copyAction.equals(actionName))
-			return new CopyAction(actionParameters);
-		else if(Action.readAction.equals(actionName))
-			return new ReadAction(actionParameters, actionParameters.getId());
-		else if(Action.updateAction.equals(actionName))
-			return new UpdateAction(actionParameters);
-		else if(Action.destroyAction.equals(actionName))
-			return new DestroyAction(actionParameters);
-		else if(Action.commandAction.equals(actionName))
-			return new CommandAction(actionParameters);
-		else if(Action.reportAction.equals(actionName))
-			return new ReportAction(actionParameters);
-		else if(Action.previewAction.equals(actionName))
-			return new PreviewAction(actionParameters);
-		else if(Action.attachAction.equals(actionName))
-			return new AttachAction(actionParameters);
-		else if(Action.detachAction.equals(actionName))
-			return new DetachAction(actionParameters);
+		if(RequestAction.newAction.equals(actionName))
+			return new CreateAction(config); // new NewAction(actionParameters);
+		else if(RequestAction.createAction.equals(actionName))
+			return new CreateAction(config);
+		else if(RequestAction.copyAction.equals(actionName))
+			return new CopyAction(config);
+		else if(RequestAction.readAction.equals(actionName))
+			return new ReadAction(config, config.getId());
+		else if(RequestAction.updateAction.equals(actionName))
+			return new UpdateAction(config);
+		else if(RequestAction.destroyAction.equals(actionName))
+			return new DestroyAction(config);
+		else if(RequestAction.commandAction.equals(actionName))
+			return new CommandAction(config);
+		else if(RequestAction.reportAction.equals(actionName))
+			return new ReportAction(config);
+		else if(RequestAction.previewAction.equals(actionName))
+			return new PreviewAction(config);
+		else if(RequestAction.attachAction.equals(actionName))
+			return new AttachAction(config);
+		else if(RequestAction.detachAction.equals(actionName))
+			return new DetachAction(config);
 		else
 			throw new RuntimeException("Unknown CRUD action: '" + actionName + "'");
 	}
 
-	public static ActionParameters getActionParameters(Query query) {
+	public static ActionConfig getActionParameters(Query query) {
 		ActionFactory factory = new ActionFactory(query, new HashMap<string, string>());
-		return factory.getActionParameters();
+		return factory.getActionConfig();
 	}
 
 	private ActionFactory(Query query, Map<string, string> requestParameters) {
@@ -77,63 +77,63 @@ public class ActionFactory {
 		return value != null ? value.get() : null;
 	}
 
-	private ActionParameters getActionParameters() {
-		ActionParameters result = new ActionParameters(requestParameters);
+	private ActionConfig getActionConfig() {
+		ActionConfig config = new ActionConfig(requestParameters);
 
-		result.requestId = requestId;
+		config.requestId = requestId;
 
-		result.requestQuery = requestQuery;
+		config.requestQuery = requestQuery;
 
 		String actionName = requestParameter(Json.action);
 
-		result.query = requestQuery;
+		config.query = requestQuery;
 
-		initialize(result);
+		initialize(config);
 
 		if(actionName == null) {
-			result.groupFields = new ArrayList<Field>();
-			result.groupFields.addAll(result.query.groupFields());
+			config.groupFields = new ArrayList<Field>();
+			config.groupFields.addAll(config.query.groupFields());
 
-			if(result.sortFields == null) {
-				result.sortFields = new LinkedHashSet<Field>();
-				result.sortFields.addAll(result.groupFields);
-				result.sortFields.addAll(result.query.sortFields());
+			if(config.sortFields == null) {
+				config.sortFields = new LinkedHashSet<Field>();
+				config.sortFields.addAll(config.groupFields);
+				config.sortFields.addAll(config.query.sortFields());
 			}
 
-			if(result.fields != null) {
-				result.groupFields.retainAll(result.fields);
-				result.sortFields.retainAll(result.fields);
+			if(config.fields != null) {
+				config.groupFields.retainAll(config.fields);
+				config.sortFields.retainAll(config.fields);
 			}
 		} else {
-			result.groupFields = getGroupFields(result.requestQuery);
-			result.sortFields = getSortFields(result.requestQuery, result.groupFields);
+			config.groupFields = getGroupFields(config.requestQuery);
+			config.sortFields = getSortFields(config.requestQuery, config.groupFields);
 		}
 
-		return result;
+		return config;
 	}
 
-	private void initialize(ActionParameters result) {
-		if(!initializeWithLink(result, requestParameter(Json.link)))
-			initializeWithQuery(result, requestParameter(Json.query));
+	private void initialize(ActionConfig config) {
+		if(!initializeWithLink(config, requestParameter(Json.link)))
+			initializeWithQuery(config, requestParameter(Json.query));
 
-		Query query = result.requestQuery;
+		Query query = config.requestQuery;
 		String json = requestParameter(Json.fields);
-		result.fields = QueryUtils.parseFormFields(query, json);
+		config.fields = QueryUtils.parseFormFields(query, json);
 	}
 
-	private boolean initializeWithLink(ActionParameters result, String id) {
+	private boolean initializeWithLink(ActionConfig config, String id) {
 		if(id != null && !id.isEmpty()) {
-			ILink link = (ILink)result.query.findFieldById(id);
-			result.query = link.getQuery();
-			result.link = link;
+			ILink link = (ILink)config.query.findFieldById(id);
+			config.query = link.getQuery();
+			config.link = link;
 			return true;
 		}
 		return false;
 	}
 
-	private void initializeWithQuery(ActionParameters result, String id) {
+	private void initializeWithQuery(ActionConfig config, String id) {
 		if(id != null && !id.isEmpty())
-			result.query = result.requestQuery.findQueryById(id);
+			config.query = config.requestQuery.findQueryById(id);
 	}
 
 	private Collection<Field> getGroupFields(Query query) {

@@ -1,5 +1,7 @@
 package org.zenframework.z8.server.base;
 
+import org.zenframework.z8.server.base.form.action.Action;
+import org.zenframework.z8.server.base.form.action.Parameter;
 import org.zenframework.z8.server.base.job.JobMonitor;
 import org.zenframework.z8.server.db.Connection;
 import org.zenframework.z8.server.db.ConnectionManager;
@@ -16,8 +18,8 @@ import org.zenframework.z8.server.types.integer;
 import org.zenframework.z8.server.types.string;
 import org.zenframework.z8.server.utils.ErrorUtils;
 
-public class Procedure extends Command {
-	public static class CLASS<T extends Procedure> extends Command.CLASS<T> {
+public class Procedure extends Action {
+	public static class CLASS<T extends Procedure> extends Action.CLASS<T> {
 		public CLASS(IObject container) {
 			super(container);
 			setJavaClass(Procedure.class);

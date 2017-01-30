@@ -13,10 +13,10 @@ import org.zenframework.z8.server.json.parser.JsonArray;
 import org.zenframework.z8.server.types.file;
 import org.zenframework.z8.server.types.guid;
 
-public class DetachAction extends Action {
+public class DetachAction extends RequestAction {
 
-	public DetachAction(ActionParameters parameters) {
-		super(parameters);
+	public DetachAction(ActionConfig config) {
+		super(config);
 	}
 
 	@Override

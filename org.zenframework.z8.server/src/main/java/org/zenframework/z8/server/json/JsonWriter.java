@@ -6,6 +6,8 @@ import java.util.Collection;
 import java.util.List;
 
 import org.zenframework.z8.server.base.form.Control;
+import org.zenframework.z8.server.base.form.action.Action;
+import org.zenframework.z8.server.base.form.action.IAction;
 import org.zenframework.z8.server.base.query.Query;
 import org.zenframework.z8.server.base.table.value.Field;
 import org.zenframework.z8.server.json.parser.JsonArray;
@@ -311,6 +313,21 @@ public class JsonWriter {
 		startArray(Json.group);
 		for(Field field : groupFields)
 			write(field.id());
+		finishArray();
+	}
+
+	public void writeActions(Collection<Action> actions) {
+		if(actions.isEmpty())
+			return;
+
+		startArray(Json.actions);
+
+		for(IAction action : actions) {
+			startObject();
+			action.write(this);
+			finishObject();
+		}
+
 		finishArray();
 	}
 

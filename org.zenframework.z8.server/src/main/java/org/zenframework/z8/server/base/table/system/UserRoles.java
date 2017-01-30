@@ -31,7 +31,7 @@ public class UserRoles extends Table {
 	final static public guid System = new guid("DAD7CCDE-51D8-4B24-884D-3F7C2C13F9EC");
 	final static public guid Administrator = new guid("8D05DB1E-1A17-4E19-949C-F2894920261E");
 
-	static public class names {
+	static public class fieldNames {
 		public final static String User = "User";
 		public final static String Role = "Role";
 	}
@@ -89,10 +89,10 @@ public class UserRoles extends Table {
 		users.setIndex("users");
 		roles.setIndex("roles");
 
-		user.setName(names.User);
+		user.setName(fieldNames.User);
 		user.setIndex("user");
 
-		role.setName(names.Role);
+		role.setName(fieldNames.Role);
 		role.setIndex("role");
 
 		readOnly = new bool(!ApplicationServer.getUser().isAdministrator());

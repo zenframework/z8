@@ -12,7 +12,7 @@ import org.zenframework.z8.server.types.bool;
 import org.zenframework.z8.server.types.guid;
 import org.zenframework.z8.server.types.string;
 
-public class ActionParameters {
+public class ActionConfig {
 	public String requestId;
 
 	public Query requestQuery;
@@ -26,18 +26,18 @@ public class ActionParameters {
 
 	public ILink link;
 
-	public ActionParameters() {
+	public ActionConfig() {
 	}
 
-	public ActionParameters(Map<string, string> requestParameters) {
+	public ActionConfig(Map<string, string> requestParameters) {
 		this.requestParameters = requestParameters;
 	}
 
-	public ActionParameters(Query query) {
+	public ActionConfig(Query query) {
 		this.query = query;
 	}
 
-	public ActionParameters(Query query, Collection<Field> fields) {
+	public ActionConfig(Query query, Collection<Field> fields) {
 		this(query);
 		this.fields = fields;
 	}

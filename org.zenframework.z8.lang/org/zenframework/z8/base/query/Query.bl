@@ -1,5 +1,5 @@
-import org.zenframework.z8.base.Command;
 import org.zenframework.z8.base.form.Control;
+import org.zenframework.z8.base.form.action.Action;
 import org.zenframework.z8.base.table.value.AttachmentField;
 import org.zenframework.z8.base.table.value.DatetimeField;
 import org.zenframework.z8.base.table.value.Field;
@@ -13,10 +13,10 @@ public class Query extends Object {
 
 	public int columnCount = 3;
 
-	public Control[] formFields;
+	public Control[] controls;
 
 	public Field[] columns;
-	public Field[] nameFields;          // Поля для идентификации записи в UI, например, в навигаторе формы или заголовке
+	public Field[] names;               // Поля для идентификации записи в UI, например, в навигаторе формы или заголовке
 	public Field[] quickFilters;        // Поля для быстрого поиска записей
 
 	public Field[] sortFields;
@@ -26,12 +26,12 @@ public class Query extends Object {
 	public DatetimeField period;
 	public AttachmentField attachments;
 
+	public Action[] actions;
+
 	public Link[] aggregateBy;          // Поля из корневого запроса для группировки его перед выполнением основного.
 	public Field[] groupBy;
 
-	public Command[] commands;
-
-	virtual protected void onCommand(Command command, guid[] recordIds);
+	virtual protected void onAction(Action action, guid[] recordIds);
 
 	virtual protected void onCopy();
 
@@ -66,6 +66,8 @@ public class Query extends Object {
 	public guid create();
 	public guid create(guid recordId);
 	public guid copy(guid recordId);
+
+	public ReadLock readLock = ReadLock.None;
 
 	public void read(Field[] fields);
 	public void read(Field[] fields, sql_bool where);

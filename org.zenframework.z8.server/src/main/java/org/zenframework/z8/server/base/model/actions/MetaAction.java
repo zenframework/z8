@@ -8,8 +8,8 @@ import org.zenframework.z8.server.json.JsonWriter;
 import org.zenframework.z8.server.types.string;
 
 public class MetaAction extends ReadAction {
-	public MetaAction(ActionParameters actionParameters) {
-		super(actionParameters);
+	public MetaAction(ActionConfig config) {
+		super(config);
 	}
 
 	@Override
@@ -19,7 +19,7 @@ public class MetaAction extends ReadAction {
 
 	@Override
 	public void writeResponse(JsonWriter writer) throws Throwable {
-		ActionParameters actionParameters = actionParameters();
+		ActionConfig config = config();
 		Map<string, string> requestParameters = requestParameters();
 
 		Query query = getQuery();
@@ -27,8 +27,8 @@ public class MetaAction extends ReadAction {
 		query.setSelectFields(getSelectFields());
 		query.writeMeta(writer, getRequestQuery());
 
-		writer.writeSort(actionParameters.sortFields);
-		writer.writeGroup(actionParameters.groupFields);
+		writer.writeSort(config.sortFields);
+		writer.writeGroup(config.groupFields);
 
 		if(requestParameters.get(Json.start) == null)
 			requestParameters.put(Json.start, new string(DefaultStart));

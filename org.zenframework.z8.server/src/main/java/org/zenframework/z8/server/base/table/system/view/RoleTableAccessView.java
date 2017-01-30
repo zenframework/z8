@@ -124,17 +124,17 @@ public class RoleTableAccessView extends Roles {
 		fieldsListbox.get().dependency = rfa.fields.get().table;
 		fieldsListbox.get().dependsOn = rta.table;
 
-		registerFormField(name);
+		registerControl(name);
 
-		registerFormField(read);
-		registerFormField(write);
-		registerFormField(create);
-		registerFormField(copy);
-		registerFormField(destroy);
-		registerFormField(execute);
+		registerControl(read);
+		registerControl(write);
+		registerControl(create);
+		registerControl(copy);
+		registerControl(destroy);
+		registerControl(execute);
 
-		registerFormField(tablesListbox);
-		registerFormField(fieldsListbox);
+		registerControl(tablesListbox);
+		registerControl(fieldsListbox);
 
 		sortFields.add(name);
 

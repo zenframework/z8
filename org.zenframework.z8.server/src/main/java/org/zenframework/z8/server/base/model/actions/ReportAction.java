@@ -22,8 +22,8 @@ import org.zenframework.z8.server.types.guid;
 import org.zenframework.z8.server.types.integer;
 
 class ReportReadAction extends ReadAction {
-	ReportReadAction(ActionParameters parameters) {
-		super(parameters);
+	ReportReadAction(ActionConfig config) {
+		super(config);
 	}
 
 	@Override
@@ -43,7 +43,7 @@ class ReportReadAction extends ReadAction {
 	}
 }
 
-public class ReportAction extends Action {
+public class ReportAction extends RequestAction {
 	private Collection<ReadAction> actions = new ArrayList<ReadAction>();
 
 	private Collection<Field> sortFields;
@@ -51,8 +51,8 @@ public class ReportAction extends Action {
 	private Collection<Field> columns;
 	private Collection<guid> ids;
 
-	public ReportAction(ActionParameters parameters) {
-		super(parameters);
+	public ReportAction(ActionConfig config) {
+		super(config);
 
 		String report = getReportParameter();
 		Query query = getQuery();
@@ -63,23 +63,23 @@ public class ReportAction extends Action {
 			Collection<Query> queries = query.onReport(report, ids);
 
 			for(Query reportQuery : queries) {
-				sortFields = parameters.sortFields;
-				
-				parameters = new ActionParameters(requestParameters());
-				parameters.query = reportQuery;
-				parameters.sortFields = sortFields;
+				sortFields = config.sortFields;
 
-				ReadAction action = new ReportReadAction(parameters);
+				config = new ActionConfig(requestParameters());
+				config.query = reportQuery;
+				config.sortFields = sortFields;
+
+				ReadAction action = new ReportReadAction(config);
 				actions.add(action);
 			}
 		} else {
-			groupFields = parameters.groupFields;
-			parameters.groupFields = null;
+			groupFields = config.groupFields;
+			config.groupFields = null;
 
 			columns = getColumns();
-			parameters.fields = getFields();
+			config.fields = getFields();
 
-			ReadAction action = new ReadAction(parameters);
+			ReadAction action = new ReadAction(config);
 			actions.add(action);
 		}
 	}

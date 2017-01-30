@@ -20,7 +20,7 @@ import org.zenframework.z8.server.types.integer;
 import org.zenframework.z8.server.types.primary;
 
 public class Table extends TableBase {
-	static public class names {
+	static public class fieldNames {
 		public final static String RecordId = "RecordId";
 		public final static String CreatedAt = "CreatedAt";
 		public final static String CreatedBy = "CreatedBy";
@@ -83,45 +83,45 @@ public class Table extends TableBase {
 	public void constructor2() {
 		super.constructor2();
 
-		id.setName(names.Id);
+		id.setName(fieldNames.Id);
 		id.setIndex("id");
 		id.setDisplayName(displayNames.Id);
 		id.get().length = new integer(IdLength);
 
-		name.setName(names.Name);
+		name.setName(fieldNames.Name);
 		name.setIndex("name");
 		name.get().length = new integer(NameLength);
 
-		description.setName(names.Description);
+		description.setName(fieldNames.Description);
 		description.setIndex("description");
 		description.setDisplayName(displayNames.Description);
 
-		lock.setName(names.Lock);
+		lock.setName(fieldNames.Lock);
 		lock.setIndex("lock");
 		lock.setSystem(true);
 
-		recordId.setName(names.RecordId);
+		recordId.setName(fieldNames.RecordId);
 		recordId.setIndex("recordId");
 		recordId.setAttribute(PrimaryKey, "");
 		recordId.setSystem(true);
 
-		createdAt.setName(names.CreatedAt);
+		createdAt.setName(fieldNames.CreatedAt);
 		createdAt.setIndex("createdAt");
 		createdAt.setSystem(true);
 
-		createdBy.setName(names.CreatedBy);
+		createdBy.setName(fieldNames.CreatedBy);
 		createdBy.setIndex("createdBy");
 		createdBy.setSystem(true);
 
-		modifiedAt.setName(names.ModifiedAt);
+		modifiedAt.setName(fieldNames.ModifiedAt);
 		modifiedAt.setIndex("modifiedAt");
 		modifiedAt.setSystem(true);
 
-		modifiedBy.setName(names.ModifiedBy);
+		modifiedBy.setName(fieldNames.ModifiedBy);
 		modifiedBy.setIndex("modifiedBy");
 		modifiedBy.setSystem(true);
 
-		archive.setName(names.Archive);
+		archive.setName(fieldNames.Archive);
 		archive.setIndex("archive");
 		archive.setSystem(true);
 

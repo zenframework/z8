@@ -86,16 +86,16 @@ public class UsersView extends Users {
 		entriesListbox.get().colspan = new integer(6);
 		rolesListbox.get().colspan = new integer(6);
 
-		registerFormField(name);
-		registerFormField(lastName);
-		registerFormField(firstName);
-		registerFormField(middleName);
-		registerFormField(phone);
-		registerFormField(email);
-		registerFormField(banned);
-		registerFormField(description);
-		registerFormField(rolesListbox);
-		registerFormField(entriesListbox);
+		registerControl(name);
+		registerControl(lastName);
+		registerControl(firstName);
+		registerControl(middleName);
+		registerControl(phone);
+		registerControl(email);
+		registerControl(banned);
+		registerControl(description);
+		registerControl(rolesListbox);
+		registerControl(entriesListbox);
 
 		sortFields.add(name);
 

@@ -22,7 +22,7 @@ public class Settings extends Table {
 
 	final static public guid Version = guid.create(strings.Version);
 
-	static public class names {
+	static public class fieldNames {
 		public final static String Value = "Value";
 	}
 
@@ -79,7 +79,7 @@ public class Settings extends Table {
 		name.setDisplayName(displayNames.Name);
 		name.get().length = new integer(256);
 
-		value.setName(names.Value);
+		value.setName(fieldNames.Value);
 		value.setIndex("value");
 
 		registerDataField(value);

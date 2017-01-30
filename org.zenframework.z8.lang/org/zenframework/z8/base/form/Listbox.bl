@@ -1,3 +1,4 @@
+import org.zenframework.z8.base.form.action.Action;
 import org.zenframework.z8.base.query.Query;
 import org.zenframework.z8.base.table.value.Field;
 import org.zenframework.z8.base.table.value.Link;
@@ -27,4 +28,5 @@ public class Listbox extends Control {
 
 	public Field[] columns;
 	public Field[] sortFields;
+	public Action[] actions;
 }

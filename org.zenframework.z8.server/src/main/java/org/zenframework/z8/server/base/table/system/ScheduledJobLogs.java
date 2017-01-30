@@ -11,7 +11,7 @@ import org.zenframework.z8.server.runtime.IObject;
 public class ScheduledJobLogs extends Table {
 	final static public String TableName = "SystemScheduledJobLogs";
 
-	static public class names {
+	static public class fieldNames {
 		public final static String Start = "Start";
 		public final static String Finished = "Finish";
 		public final static String ScheduledJob = "ScheduledJob";
@@ -76,18 +76,18 @@ public class ScheduledJobLogs extends Table {
 
 		scheduledJobs.setIndex("scheduledJobs");
 
-		scheduledJob.setName(names.ScheduledJob);
+		scheduledJob.setName(fieldNames.ScheduledJob);
 		scheduledJob.setIndex("scheduledJob");
 
-		start.setName(names.Start);
+		start.setName(fieldNames.Start);
 		start.setIndex("start");
 		start.setDisplayName(displayNames.Start);
 
-		finish.setName(names.Finished);
+		finish.setName(fieldNames.Finished);
 		finish.setIndex("finish");
 		finish.setDisplayName(displayNames.Finish);
 
-		files.setName(names.Files);
+		files.setName(fieldNames.Files);
 		files.setIndex("files");
 
 		registerDataField(scheduledJob);

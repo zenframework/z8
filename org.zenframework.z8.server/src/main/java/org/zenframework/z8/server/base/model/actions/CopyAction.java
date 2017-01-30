@@ -14,9 +14,9 @@ import org.zenframework.z8.server.json.JsonWriter;
 import org.zenframework.z8.server.types.guid;
 import org.zenframework.z8.server.types.primary;
 
-public class CopyAction extends Action {
-	public CopyAction(ActionParameters parameters) {
-		super(parameters);
+public class CopyAction extends RequestAction {
+	public CopyAction(ActionConfig config) {
+		super(config);
 	}
 
 	private boolean checkAccess(Query query) {

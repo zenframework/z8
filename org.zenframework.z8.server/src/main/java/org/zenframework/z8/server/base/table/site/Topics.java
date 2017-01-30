@@ -15,7 +15,7 @@ import org.zenframework.z8.server.types.integer;
 public class Topics extends Table {
 	final static public String TableName = "SiteTopics";
 
-	static public class names {
+	static public class fieldNames {
 		public final static String Headline = "Headline";
 		public final static String Content = "Content";
 		public final static String Author = "Author";
@@ -81,19 +81,19 @@ public class Topics extends Table {
 
 		authors.setIndex("authors");
 
-		author.setName(names.Author);
+		author.setName(fieldNames.Author);
 		author.setIndex("author");
 
-		headline.setName(names.Headline);
+		headline.setName(fieldNames.Headline);
 		headline.setIndex("headline");
 		headline.setDisplayName(displayNames.Headline);
 		headline.get().length = new integer(256);
 
-		text.setName(names.Content);
+		text.setName(fieldNames.Content);
 		text.setIndex("text");
 		text.setDisplayName(displayNames.Text);
 
-		time.setName(names.Time);
+		time.setName(fieldNames.Time);
 		time.setIndex("time");
 		time.setDisplayName(displayNames.Time);
 

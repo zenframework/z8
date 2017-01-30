@@ -45,7 +45,7 @@ public class Expression implements IFilter {
 		this.operation = operator != null ? Operation.fromString(operator) : Operation.Eq;
 
 		this.field = field != null ? query.findFieldById(field) : null;
-			this.values = parseValues(values);
+		this.values = parseValues(values);
 	}
 
 	private String[] parseValues(String jsonData) {

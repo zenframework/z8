@@ -33,11 +33,11 @@ public class TransportQueueView extends TransportQueue {
 
 		sortFields.add(ordinal);
 
-		registerFormField(ordinal);
-		registerFormField(sender);
-		registerFormField(address);
-		registerFormField(description);
-		registerFormField(processed);
-		registerFormField(bytesTransferred);
+		registerControl(ordinal);
+		registerControl(sender);
+		registerControl(address);
+		registerControl(description);
+		registerControl(processed);
+		registerControl(bytesTransferred);
 	}
 }

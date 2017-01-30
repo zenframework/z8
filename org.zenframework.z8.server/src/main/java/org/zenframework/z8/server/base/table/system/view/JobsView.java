@@ -60,12 +60,12 @@ public class JobsView extends ScheduledJobs {
 		repeat.get().colspan = new integer(2);
 		active.get().colspan = new integer(2);
 
-		registerFormField(jobs.get().name);
-		registerFormField(from);
-		registerFormField(till);
-		registerFormField(repeat);
-		registerFormField(active);
-		registerFormField(logs);
+		registerControl(jobs.get().name);
+		registerControl(from);
+		registerControl(till);
+		registerControl(repeat);
+		registerControl(active);
+		registerControl(logs);
 
 		sortFields.add(jobs.get().name);
 	}

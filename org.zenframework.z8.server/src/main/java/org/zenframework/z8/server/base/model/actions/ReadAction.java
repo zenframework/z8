@@ -52,7 +52,7 @@ import org.zenframework.z8.server.types.string;
 import org.zenframework.z8.server.types.sql.sql_string;
 import org.zenframework.z8.server.utils.ArrayUtils;
 
-public class ReadAction extends Action {
+public class ReadAction extends RequestAction {
 	static public int DefaultStart = 0;
 	static public int DefaultLimit = 200;
 
@@ -86,27 +86,27 @@ public class ReadAction extends Action {
 	private Field parentKey = null;
 
 	public ReadAction(Query query) {
-		this(new ActionParameters(query), null);
+		this(new ActionConfig(query), null);
 	}
 
 	public ReadAction(Query query, guid recordId) {
-		this(new ActionParameters(query), recordId);
+		this(new ActionConfig(query), recordId);
 	}
 
 	public ReadAction(Query query, Collection<Field> fields) {
-		this(new ActionParameters(query, fields), null);
+		this(new ActionConfig(query, fields), null);
 	}
 
 	public ReadAction(Query query, Collection<Field> fields, guid recordId) {
-		this(new ActionParameters(query, fields), recordId);
+		this(new ActionConfig(query, fields), recordId);
 	}
 
-	public ReadAction(ActionParameters actionParameters) {
-		this(actionParameters, null);
+	public ReadAction(ActionConfig config) {
+		this(config, null);
 	}
 
-	protected ReadAction(ActionParameters actionParameters, guid recordId) {
-		super(actionParameters);
+	protected ReadAction(ActionConfig config, guid recordId) {
+		super(config);
 
 		this.recordId = recordId;
 
@@ -130,7 +130,7 @@ public class ReadAction extends Action {
 	}
 
 	protected void initialize() {
-		ActionParameters parameters = actionParameters();
+		ActionConfig parameters = config();
 
 		Query query = getQuery();
 

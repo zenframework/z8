@@ -11,7 +11,7 @@ import org.zenframework.z8.server.types.integer;
 public class Sequences extends Table {
 	final static public String TableName = "SystemSequences";
 
-	static public class names {
+	static public class fieldNames {
 		public final static String Value = "Value";
 	}
 
@@ -53,7 +53,7 @@ public class Sequences extends Table {
 	public void constructor2() {
 		super.constructor2();
 
-		value.setName(names.Value);
+		value.setName(fieldNames.Value);
 		value.setIndex("value");
 		value.setDisplayName(displayNames.Value);
 

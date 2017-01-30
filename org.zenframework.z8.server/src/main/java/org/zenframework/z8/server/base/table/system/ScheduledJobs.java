@@ -18,7 +18,7 @@ public class ScheduledJobs extends Table {
 	static public int MinRepeat = 10;
 	static public int DefaultRepeat = 3600;
 
-	static public class names {
+	static public class fieldNames {
 		public final static String Jobs = "Jobs";
 		public final static String Users = "Users";
 		public final static String Job = "Job";
@@ -100,30 +100,30 @@ public class ScheduledJobs extends Table {
 
 		description.setDisplayName(displayNames.Settings);
 
-		job.setName(names.Job);
+		job.setName(fieldNames.Job);
 		job.setIndex("job");
 
-		user.setName(names.User);
+		user.setName(fieldNames.User);
 		user.setIndex("user");
 		user.get().setDefault(Users.System);
 
-		from.setName(names.From);
+		from.setName(fieldNames.From);
 		from.setIndex("from");
 		from.setDisplayName(displayNames.From);
 
-		till.setName(names.Till);
+		till.setName(fieldNames.Till);
 		till.setIndex("till");
 		till.setDisplayName(displayNames.Till);
 
-		repeat.setName(names.Repeat);
+		repeat.setName(fieldNames.Repeat);
 		repeat.setIndex("repeat");
 		repeat.setDisplayName(displayNames.Repeat);
 
-		lastStarted.setName(names.LastStarted);
+		lastStarted.setName(fieldNames.LastStarted);
 		lastStarted.setIndex("lastStarted");
 		lastStarted.setDisplayName(displayNames.LastStarted);
 
-		active.setName(names.Active);
+		active.setName(fieldNames.Active);
 		active.setIndex("active");
 		active.setDisplayName(displayNames.Active);
 
