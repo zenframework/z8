@@ -417,7 +417,7 @@ public class BirtReportRunner {
 
 			try {
 				float fontSize = BirtUnitsConverter.convertToPoints(style.getFontSize());
-				style.setProperty(IStyleModel.FONT_SIZE_PROP, "" + Math.max(fontSize * Math.min(scaleFactor, 1), Reports.MinimalFontSize) + "pt");
+				style.setProperty(IStyleModel.FONT_SIZE_PROP, "" + Math.max(fontSize /* * Math.min(scaleFactor, 1)*/, Reports.MinimalFontSize) + "pt");
 			} catch(SemanticException e) {
 			}
 
