@@ -11,6 +11,7 @@ import org.zenframework.z8.server.base.model.actions.RequestAction;
 import org.zenframework.z8.server.base.model.actions.ActionFactory;
 import org.zenframework.z8.server.base.query.Query;
 import org.zenframework.z8.server.base.view.Dashboard;
+import org.zenframework.z8.server.db.ConnectionManager;
 import org.zenframework.z8.server.engine.ApplicationServer;
 import org.zenframework.z8.server.json.Json;
 import org.zenframework.z8.server.json.JsonWriter;
@@ -56,6 +57,7 @@ public class RequestDispatcher implements Runnable {
 
 			response.setContent(writer.toString());
 		} finally {
+			ConnectionManager.get().release();
 			ApplicationServer.setRequest(null);
 		}
 	}

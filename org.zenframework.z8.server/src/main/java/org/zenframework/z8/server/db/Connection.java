@@ -5,6 +5,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLClientInfoException;
 import java.sql.SQLException;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.zenframework.z8.server.config.ServerConfig;
 import org.zenframework.z8.server.engine.Database;
@@ -31,6 +33,8 @@ public class Connection {
 	private Batch batch;
 
 	private long lastUsed = System.currentTimeMillis();
+
+	private Set<BasicStatement> statements = new HashSet<BasicStatement>();
 
 	static private java.sql.Connection newConnection(Database database) {
 		try {
@@ -63,6 +67,7 @@ public class Connection {
 			connection = null;
 			transactionCount = 0;
 			batch = null;
+			statements.clear();
 		}
 	}
 
@@ -114,6 +119,10 @@ public class Connection {
 	public void release() {
 		if(!inTransaction())
 			owner = null;
+
+		for(BasicStatement statement : statements)
+			statement.safeClose();
+		statements.clear();
 	}
 
 	private void initClientInfo() {
@@ -282,7 +291,9 @@ public class Connection {
 
 	public ResultSet executeQuery(BasicStatement statement) throws SQLException {
 		try {
-			return doExecuteQuery(statement);
+			ResultSet resultSet = doExecuteQuery(statement);
+			statements.add(statement);
+			return resultSet;
 		} catch(SQLException e) {
 			checkAndReconnect(e);
 			statement.safeClose();

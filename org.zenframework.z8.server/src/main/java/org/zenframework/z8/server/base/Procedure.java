@@ -130,12 +130,9 @@ public class Procedure extends Action {
 
 	@Override
 	public void write(JsonWriter writer) {
-		id.set(classId());
-		text.set(displayName());
-		description.set(description());
+		super.write(writer);
 
 		writer.writeProperty(Json.isJob, true);
-
-		super.write(writer);
+		writer.writeProperty(Json.id, classId());
 	}
 }

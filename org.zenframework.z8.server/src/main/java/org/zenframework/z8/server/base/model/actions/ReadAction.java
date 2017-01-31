@@ -85,6 +85,8 @@ public class ReadAction extends RequestAction {
 	private Field primaryKey = null;
 	private Field parentKey = null;
 
+	private boolean hasRightJoin = false;
+
 	public ReadAction(Query query) {
 		this(new ActionConfig(query), null);
 	}
@@ -343,6 +345,9 @@ public class ReadAction extends RequestAction {
 			}
 
 			links.add(link);
+
+			if(link.getJoin() == JoinType.Right)
+				hasRightJoin = true;
 		}
 
 		queryToPath.put(query, links);
@@ -504,8 +509,12 @@ public class ReadAction extends RequestAction {
 
 	private void addNullRecordFilter(Field primaryKey) {
 		SqlToken left = getFilter(primaryKey, guid.Null, Operation.NotEq);
-		SqlToken right = getIsNullFilter(primaryKey, Operation.None);
-		addFilter(new Group(new Or(left, right)));
+
+		if(hasRightJoin) {
+			SqlToken right = getIsNullFilter(primaryKey, Operation.None);
+			addFilter(new Group(new Or(left, right)));
+		} else
+			addFilter(left);
 	}
 
 	private void addFilter(Field field, guid value, Operation operation) {
