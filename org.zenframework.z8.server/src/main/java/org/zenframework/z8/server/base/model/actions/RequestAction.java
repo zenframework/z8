@@ -52,8 +52,8 @@ public abstract class RequestAction extends RequestTarget {
 		return config.query;
 	}
 
-	public Query getRequestQuery() {
-		return config.requestQuery;
+	public Query getContextQuery() {
+		return config.contextQuery;
 	}
 
 	public ILink getLink() {
@@ -62,7 +62,7 @@ public abstract class RequestAction extends RequestTarget {
 
 	protected Collection<Field> getFormFields() {
 		String json = getRequestParameter(Json.fields);
-		return QueryUtils.parseFormFields(getRequestQuery(), json);
+		return QueryUtils.parseFormFields(getContextQuery(), json);
 	}
 
 	public String getRequestParameter(string key) {

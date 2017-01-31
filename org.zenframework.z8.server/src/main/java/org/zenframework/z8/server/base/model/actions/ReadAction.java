@@ -333,7 +333,7 @@ public class ReadAction extends RequestAction {
 		Collection<ILink> path = getQuery().getPath(query);
 
 		if(path == null)
-			path = getRequestQuery().getPath(query);
+			path = getContextQuery().getPath(query);
 
 		for(ILink link : path) {
 			if(link instanceof LinkExpression) {
@@ -925,7 +925,7 @@ public class ReadAction extends RequestAction {
 
 		parentId = parentKey != null ? getParentIdParameter() : null;
 
-		QueryUtils.setFieldValues(getRequestQuery(), getRequestParameter(Json.values));
+		QueryUtils.setFieldValues(getContextQuery(), getRequestParameter(Json.values));
 
 		query.beforeRead(parentId);
 

@@ -58,7 +58,7 @@ public class UpdateAction extends RequestAction {
 	private Collection<guid> update(JsonArray records, Query owner, ILink link, Query query) {
 		Collection<guid> result = new ArrayList<guid>();
 
-		Query requestQuery = getRequestQuery();
+		Query requestQuery = getContextQuery();
 		for(int index = 0; index < records.length(); index++) {
 			JsonObject record = (JsonObject)records.get(index);
 

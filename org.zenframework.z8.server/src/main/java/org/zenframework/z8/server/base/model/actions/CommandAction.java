@@ -19,7 +19,7 @@ public class CommandAction extends RequestAction {
 
 	@Override
 	public void writeResponse(JsonWriter writer) {
-		Query context = getRequestQuery();
+		Query context = getContextQuery();
 		Query query = getQuery();
 
 		Action action = context.findActionById(getRequestParameter(Json.id));

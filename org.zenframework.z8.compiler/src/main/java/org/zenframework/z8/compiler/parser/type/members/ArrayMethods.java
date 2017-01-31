@@ -105,11 +105,13 @@ public class ArrayMethods {
 				methods.add(new Method(new VariableType(compilationUnit, voidType), "remove", parameters));
 			}
 
+/*
 			// void operatorAssign(TYPE[])
 			{
 				Variable[] parameters = new Variable[] { new Variable(variableType, "elements") };
 				methods.add(new Operator(new VariableType(compilationUnit, voidType), new OperatorToken(IToken.ASSIGN, null), parameters));
 			}
+*/
 
 			// void operatorAddAssign(TYPE[])
 			{
@@ -186,11 +188,13 @@ public class ArrayMethods {
 				methods.add(new Method(returnType, "values", null));
 			}
 
+/*
 			// void operatorAssign(TYPE[])
 			{
 				Variable[] parameters = new Variable[] { new Variable(variableType, "elements") };
 				methods.add(new Operator(new VariableType(compilationUnit, voidType), new OperatorToken(IToken.ASSIGN, null), parameters));
 			}
+*/
 
 			// void operatorAddAssign(TYPE[])
 			{

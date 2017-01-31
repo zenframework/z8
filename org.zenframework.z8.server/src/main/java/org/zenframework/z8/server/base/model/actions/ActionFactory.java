@@ -19,7 +19,7 @@ import org.zenframework.z8.server.types.string;
 
 public class ActionFactory {
 	private String requestId;
-	private Query requestQuery;
+	private Query contextQuery;
 
 	private Map<string, string> requestParameters;
 
@@ -68,7 +68,7 @@ public class ActionFactory {
 
 		if(query != null) {
 			requestId = query.classId();
-			requestQuery = query;
+			contextQuery = query;
 		}
 	}
 
@@ -81,12 +81,9 @@ public class ActionFactory {
 		ActionConfig config = new ActionConfig(requestParameters);
 
 		config.requestId = requestId;
-
-		config.requestQuery = requestQuery;
+		config.contextQuery = config.query = contextQuery;
 
 		String actionName = requestParameter(Json.action);
-
-		config.query = requestQuery;
 
 		initialize(config);
 
@@ -105,8 +102,8 @@ public class ActionFactory {
 				config.sortFields.retainAll(config.fields);
 			}
 		} else {
-			config.groupFields = getGroupFields(config.requestQuery);
-			config.sortFields = getSortFields(config.requestQuery, config.groupFields);
+			config.groupFields = getGroupFields(config.contextQuery);
+			config.sortFields = getSortFields(config.contextQuery, config.groupFields);
 		}
 
 		return config;
@@ -116,7 +113,7 @@ public class ActionFactory {
 		if(!initializeWithLink(config, requestParameter(Json.link)))
 			initializeWithQuery(config, requestParameter(Json.query));
 
-		Query query = config.requestQuery;
+		Query query = config.contextQuery;
 		String json = requestParameter(Json.fields);
 		config.fields = QueryUtils.parseFormFields(query, json);
 	}
@@ -133,7 +130,7 @@ public class ActionFactory {
 
 	private void initializeWithQuery(ActionConfig config, String id) {
 		if(id != null && !id.isEmpty())
-			config.query = config.requestQuery.findQueryById(id);
+			config.query = config.contextQuery.findQueryById(id);
 	}
 
 	private Collection<Field> getGroupFields(Query query) {

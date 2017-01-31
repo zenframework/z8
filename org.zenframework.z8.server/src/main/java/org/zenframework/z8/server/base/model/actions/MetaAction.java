@@ -25,7 +25,7 @@ public class MetaAction extends ReadAction {
 		Query query = getQuery();
 
 		query.setSelectFields(getSelectFields());
-		query.writeMeta(writer, getRequestQuery());
+		query.writeMeta(writer, getContextQuery());
 
 		writer.writeSort(config.sortFields);
 		writer.writeGroup(config.groupFields);

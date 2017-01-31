@@ -82,11 +82,12 @@ public class Listbox extends Control {
 		if(link != null) {
 			writer.startObject(Json.link);
 
-			writer.writeProperty(Json.id, link.id());
+			Link link = this.link.get();
+			link.writeMeta(writer, query, context);
 
-			if(link.get().query().instanceOf(TreeTable.class)) {
+			if(link.query().instanceOf(TreeTable.class)) {
 				writer.startArray(Json.parentKeys);
-				for(Field parent : link.get().getQuery().parentKeys())
+				for(Field parent : link.getQuery().parentKeys())
 					writer.write(parent.id());
 				writer.finishArray();
 			}

@@ -15,7 +15,7 @@ import org.zenframework.z8.server.types.string;
 public class ActionConfig {
 	public String requestId;
 
-	public Query requestQuery;
+	public Query contextQuery;
 
 	public Query query;
 	public Collection<Field> fields;
@@ -34,7 +34,7 @@ public class ActionConfig {
 	}
 
 	public ActionConfig(Query query) {
-		this.query = query;
+		this.query = contextQuery = query;
 	}
 
 	public ActionConfig(Query query, Collection<Field> fields) {

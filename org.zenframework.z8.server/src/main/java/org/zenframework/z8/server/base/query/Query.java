@@ -955,6 +955,9 @@ public class Query extends OBJECT {
 		MemberSearch result = new MemberSearch();
 		result.member = this;
 
+		if(path.length > 0 && path[path.length - 1].isEmpty())
+			return result;
+
 		for(String name : path) {
 			IObject member = result.member.getMember(name).get();
 			if(member == null)
@@ -993,6 +996,7 @@ public class Query extends OBJECT {
 
 	public Collection<ILink> getPath(Query query) {
 		MemberSearch result = findMember(query.id());
+
 		if(result == null || !(result.member instanceof Query))
 			return null;
 

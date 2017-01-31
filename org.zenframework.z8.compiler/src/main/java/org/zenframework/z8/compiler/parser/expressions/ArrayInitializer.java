@@ -163,6 +163,7 @@ public class ArrayInitializer extends LanguageElement {
 			index++;
 		}
 
+		codeGenerator.append("new " + (isMap ? BuiltinNative.Map : BuiltinNative.Array) + "(");
 		codeGenerator.append("new " + BuiltinNative.Object + "[]");
 		codeGenerator.append('{');
 		codeGenerator.append(keys.toString());
@@ -176,6 +177,7 @@ public class ArrayInitializer extends LanguageElement {
 			codeGenerator.append(values.toString());
 			codeGenerator.append('}');
 		}
+		codeGenerator.append(')');
 	}
 
 	public ILanguageElement[] getElements() {
