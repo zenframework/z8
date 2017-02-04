@@ -8,7 +8,9 @@ import org.zenframework.z8.server.base.table.value.BoolField;
 import org.zenframework.z8.server.base.table.value.IField;
 import org.zenframework.z8.server.base.table.value.StringField;
 import org.zenframework.z8.server.base.table.value.TextField;
+import org.zenframework.z8.server.config.ServerConfig;
 import org.zenframework.z8.server.crypto.MD5;
+import org.zenframework.z8.server.engine.ApplicationServer;
 import org.zenframework.z8.server.engine.IAuthorityCenter;
 import org.zenframework.z8.server.engine.Runtime;
 import org.zenframework.z8.server.resources.Resources;
@@ -112,6 +114,8 @@ public class Users extends Table {
 	public StringField.CLASS<StringField> email = new StringField.CLASS<StringField>(this);
 	public BoolField.CLASS<BoolField> banned = new BoolField.CLASS<BoolField>(this);
 	public TextField.CLASS<TextField> settings = new TextField.CLASS<TextField>(this);
+
+	private boolean notifyBlock = false;
 
 	public Users() {
 		this(null);
@@ -236,6 +240,11 @@ public class Users extends Table {
 	}
 
 	@Override
+	public void afterUpdate(guid recordId) {
+		notifyUserChange(recordId);
+	}
+
+	@Override
 	public void beforeDestroy(guid recordId) {
 		super.beforeDestroy(recordId);
 
@@ -243,9 +252,34 @@ public class Users extends Table {
 			throw new exception("Builtin users can not be deleted");
 	}
 
+	@Override
+	public void afterDestroy(guid recordId) {
+		notifyUserChange(recordId);
+	}
+
+	static public void saveSettings(guid user, String settings) {
+		Users users = new Users.CLASS<Users>().get();
+		users.settings.get().set(new string(settings));
+		users.notifyBlock = true;
+		users.update(user);
+	}
+
 	private boolean isSystemUser(guid recordId) {
 		return Administrator.equals(recordId) || System.equals(recordId) ||
 				Site.equals(recordId);
+	}
+
+	private void notifyUserChange(guid user) {
+		if(notifyBlock)
+			return;
+
+		try {
+			guid currentUser = ApplicationServer.getUser().id();
+			if(!currentUser.equals(user) && !System.equals(user) && !Administrator.equals(user))
+				ServerConfig.authorityCenter().userChanged(user);
+		} catch(Throwable e) {
+			throw new RuntimeException(e);
+		}
 	}
 
 	public boolean getExtraParameters(IUser user, RLinkedHashMap<string, primary> parameters) {

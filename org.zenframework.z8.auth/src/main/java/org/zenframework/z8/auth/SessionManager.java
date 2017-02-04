@@ -88,6 +88,15 @@ public class SessionManager {
 		return session;
 	}
 
+	synchronized public void dropUserSessions(guid user) {
+		ISession session = users.get(user);
+
+		if(session != null) {
+			users.remove(user);
+			systemSessions.remove(session.id());
+		}
+	}
+
 	public void check() {
 		if(sessionTimeout == 0)
 			return;

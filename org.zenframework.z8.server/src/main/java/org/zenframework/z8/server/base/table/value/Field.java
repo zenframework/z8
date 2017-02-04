@@ -82,6 +82,12 @@ abstract public class Field extends Control implements IField {
 		super(container);
 	}
 
+	@Override
+	public String displayName() {
+		String name = super.displayName();
+		return name == null || name.isEmpty() ? name() : name;
+	}
+
 	/*
 	 * public void operatorAssign(RField.CLASS<? extends RField> field) {
 	 * set(field.get().get()); }

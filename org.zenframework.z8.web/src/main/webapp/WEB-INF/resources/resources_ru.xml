@@ -161,13 +161,13 @@
 	<entry key="Roles.create">Создание</entry>
 	<entry key="Roles.copy">Копирование</entry>
 	<entry key="Roles.destroy">Удаление</entry>
-	<entry key="Roles.execute">Запуск задач</entry>
+	<entry key="Roles.execute">Запуск заданий</entry>
 
 	<!-- Jobs -->
-	<entry key="Jobs.title">Задачи</entry>
+	<entry key="Jobs.title">Задания</entry>
 
 	<!-- ScheduledJobs -->
-	<entry key="ScheduledJobs.title">Задачи</entry>
+	<entry key="ScheduledJobs.title">Задания</entry>
 	<entry key="ScheduledJobs.settings">Настройки</entry>
 	<entry key="ScheduledJobs.from">С</entry>
 	<entry key="ScheduledJobs.till">По</entry>
@@ -191,8 +191,8 @@
 	<entry key="Sequencer.notInitialized">Sequencer не инициализирован. Используйте статические методы Sequencer.next() и Sequencer.reset().</entry>
 
 	<!-- Procedure -->
-	<entry key="Procedure.rollback">Отменены все возможные изменения в данных, произошедшие в ходе выполнения задачи.</entry>
-	<entry key="Procedure.jobError">Выполнение задачи прервано из-за возникшей ошибки: {0}</entry>
+	<entry key="Procedure.rollback">Отменены все возможные изменения в данных, произошедшие в ходе выполнения задания.</entry>
+	<entry key="Procedure.jobError">Выполнение задания прервано из-за возникшей ошибки: {0}</entry>
 
 	<!-- Reports -->
 	<entry key="Report.groupTotal">Итого по </entry>
@@ -233,8 +233,8 @@
 
 	<!-- Generator -->
 	<entry key="Generator.displayName">Генерация схемы данных</entry>
-	<entry key="Generator.schedulerStopped">Планировщик задач остановлен</entry>
-	<entry key="Generator.schedulerStarted">Планировщик задач запущен</entry>
+	<entry key="Generator.schedulerStopped">Планировщик заданий остановлен</entry>
+	<entry key="Generator.schedulerStarted">Планировщик заданий запущен</entry>
 	<entry key="Generator.recreatringTable">Таблица ''{0}''({1}) требует регенерации</entry>
 	<entry key="Generator.droppingTable">Таблица ''{0}'' требует удаления</entry>
 	<entry key="Generator.createTableError">Ошибка. Таблица ''{0}''({1}) - генерация не выполнена.{2}</entry>

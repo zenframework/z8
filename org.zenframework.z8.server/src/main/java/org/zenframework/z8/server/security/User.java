@@ -420,14 +420,8 @@ public class User implements IUser {
 	@Override
 	public void setSettings(String settings) {
 		this.settings = settings;
-	}
 
-	@Override
-	public void save() {
-		Users users = new Users.CLASS<Users>().get();
-
-		users.settings.get().set(new string(settings));
-		users.update(id);
+		Users.saveSettings(id, settings);
 	}
 
 	private void writeObject(ObjectOutputStream out) throws IOException {

@@ -318,13 +318,32 @@ public class file extends primary implements RmiSerializable, Serializable {
 		}
 	}
 
+	public String getAbsolutePath() {
+		return getAbsolutePath(new File(path.get())).getPath();
+	}
+
+	static public File getAbsolutePath(String path) {
+		return getAbsolutePath(new File(path));
+	}
+
+	static public File getAbsolutePath(File file) {
+		if(file.isAbsolute())
+			return file;
+
+		file = new File(new File(Folders.Base, Folders.Files), file.getPath());
+		return file;
+	}
+
 	static public String getRelativePath(File file) {
 		return getRelativePath(file.getPath());
 	}
 
 	static public String getRelativePath(String path) {
-		if(path != null && path.startsWith(Folders.Base.getPath()))
-			return path.substring(Folders.Base.getPath().length() + 1);
+		if(path != null && path.startsWith(Folders.Base.getPath())) {
+			path = path.substring(Folders.Base.getPath().length() + 1);
+			if(path.startsWith(Folders.Files))
+				path = path.substring(Folders.Files.length() + 1);
+		}
 
 		return path;
 	}
@@ -374,21 +393,29 @@ public class file extends primary implements RmiSerializable, Serializable {
 	public void operatorAssign(string path) {
 		File file = new File(path.get());
 
+		this.path.set(path.get());
+
 		if(!file.isAbsolute())
-			file = new File(new File(Folders.Base, Folders.Files), file.getPath());
+			file = getAbsolutePath(file);
 
 		if(!file.isDirectory())
 			file.getParentFile().mkdirs();
-
-		this.path.set(file.getPath());
 	}
 
-	static public RCollection<file> z8_parse(string json) {
-		return new RCollection<file>(parse(json.get()));
+	public bool z8_isDirectory() {
+		File file = getAbsolutePath(path.get());
+		return new bool(file.isDirectory());
 	}
 
-	static public string z8_toJson(RCollection<file> classes) {
-		return new string(toJson(classes));
+	public RCollection<file> z8_listFiles() {
+		File[] files = getAbsolutePath(path.get()).listFiles();
+
+		RCollection<file> result = new RCollection<file>();
+
+		for(File file : files)
+			result.add(new file(file));
+
+		return result;
 	}
 
 	public void z8_write(string content) {
@@ -397,6 +424,14 @@ public class file extends primary implements RmiSerializable, Serializable {
 
 	public void z8_write(string content, encoding charset) {
 		write(content.get(), charset);
+	}
+
+	static public RCollection<file> z8_parse(string json) {
+		return new RCollection<file>(parse(json.get()));
+	}
+
+	static public string z8_toJson(RCollection<file> classes) {
+		return new string(toJson(classes));
 	}
 
 	static public string z8_name(string name) {
@@ -409,28 +444,5 @@ public class file extends primary implements RmiSerializable, Serializable {
 
 	static public string z8_extension(string name) {
 		return new string(FilenameUtils.getExtension(name.get()));
-	}
-
-	public bool z8_isDirectory() {
-		return z8_isDirectory(path);
-	}
-
-	static public bool z8_isDirectory(string path) {
-		return new bool(new File(path.get()).isDirectory());
-	}
-
-	public RCollection<file> z8_listFiles() {
-		return z8_listFiles(path);
-	}
-
-	static public RCollection<file> z8_listFiles(string path) {
-		File[] files = new File(path.get()).listFiles();
-
-		RCollection<file> result = new RCollection<file>();
-
-		for(File file : files)
-			result.add(new file(file));
-
-		return result;
 	}
 }

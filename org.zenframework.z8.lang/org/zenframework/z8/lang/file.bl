@@ -13,9 +13,6 @@ public class file extends primary {
 	public bool isDirectory();
 	public file[] listFiles();
 
-	static public bool isDirectory(string path);
-	static public file[] listFiles(string path);
-
 	static public string name(string path);
 	static public string baseName(string path);
 	static public string extension(string path);

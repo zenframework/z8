@@ -30,7 +30,6 @@ public interface IUser extends RmiSerializable, Serializable {
 	public String email();
 
 	public String settings();
-
 	public void setSettings(String settings);
 
 	public Collection<IRole> roles();
@@ -40,8 +39,6 @@ public interface IUser extends RmiSerializable, Serializable {
 
 	public Collection<Entry> entries();
 	public void setEntries(Collection<Entry> entries);
-
-	public void save();
 
 	public Map<string, primary> parameters();
 }

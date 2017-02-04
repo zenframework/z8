@@ -104,8 +104,6 @@ public class RequestDispatcher implements Runnable {
 			IUser user = ApplicationServer.getUser();
 			user.setSettings(request.getParameter(Json.data));
 
-			user.save();
-
 			JsonWriter writer = new JsonWriter();
 			writer.startResponse(requestId, true);
 			writer.writeInfo();

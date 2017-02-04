@@ -178,7 +178,7 @@ public class BirtReportRunner {
 		case Guid:
 		case Boolean:
 			return DesignChoiceConstants.COLUMN_DATA_TYPE_STRING;
-			// return DesignChoiceConstants.COLUMN_DATA_TYPE_BOOLEAN;
+		// return DesignChoiceConstants.COLUMN_DATA_TYPE_BOOLEAN;
 		case Integer:
 			return DesignChoiceConstants.COLUMN_DATA_TYPE_INTEGER;
 		case String:
@@ -417,7 +417,8 @@ public class BirtReportRunner {
 
 			try {
 				float fontSize = BirtUnitsConverter.convertToPoints(style.getFontSize());
-				style.setProperty(IStyleModel.FONT_SIZE_PROP, "" + Math.max(fontSize /* * Math.min(scaleFactor, 1)*/, Reports.MinimalFontSize) + "pt");
+				style.setProperty(IStyleModel.FONT_SIZE_PROP,
+						"" + Math.max(fontSize /* * Math.min(scaleFactor, 1) */, Reports.MinimalFontSize) + "pt");
 			} catch(SemanticException e) {
 			}
 
@@ -1009,18 +1010,5 @@ public class BirtReportRunner {
 			if(task != null)
 				task.close();
 		}
-	}
-
-	static List<String> getReportTemplates(String className) {
-		ReportBindingFileReader xmlReader = new ReportBindingFileReader();
-		List<ReportInfo> reports = xmlReader.getReportTemplateFileNames(className);
-
-		List<String> result = new ArrayList<String>();
-
-		for(ReportInfo info : reports) {
-			result.add(info.fileName());
-		}
-
-		return result;
 	}
 }

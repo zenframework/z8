@@ -98,6 +98,7 @@ public class Procedure extends Action {
 		} catch(Throwable e) {
 			if(connection != null)
 				connection.rollback();
+			getMonitor().error(ErrorUtils.getMessage(e));
 		} finally {
 			getMonitor().logMessages();
 		}

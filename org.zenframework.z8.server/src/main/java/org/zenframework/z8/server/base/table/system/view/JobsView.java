@@ -1,7 +1,6 @@
 package org.zenframework.z8.server.base.table.system.view;
 
 import org.zenframework.z8.server.base.form.Listbox;
-import org.zenframework.z8.server.base.query.Query;
 import org.zenframework.z8.server.base.table.system.ScheduledJobLogs;
 import org.zenframework.z8.server.base.table.system.ScheduledJobs;
 import org.zenframework.z8.server.db.sql.SortDirection;
@@ -23,14 +22,14 @@ public class JobsView extends ScheduledJobs {
 		}
 	}
 
-	public Listbox.CLASS<Listbox> logs = new Listbox.CLASS<Listbox>(this);
+	public Listbox.CLASS<Listbox> logsListbox = new Listbox.CLASS<Listbox>(this);
+	public ScheduledJobLogs.CLASS<ScheduledJobLogs> logs = new ScheduledJobLogs.CLASS<ScheduledJobLogs>(this);
 
 	public JobsView(IObject container) {
 		super(container);
 	}
 
 	@Override
-	@SuppressWarnings("unchecked")
 	public void constructor2() {
 		super.constructor2();
 
@@ -39,20 +38,21 @@ public class JobsView extends ScheduledJobs {
 		readOnly = new bool(!ApplicationServer.getUser().isAdministrator());
 
 		logs.setIndex("logs");
-		logs.setDisplayName(ScheduledJobLogs.displayNames.Title);
 
-		ScheduledJobLogs logsTable = new ScheduledJobLogs.CLASS<ScheduledJobLogs>(this).get();
+		logsListbox.setIndex("logsListbox");
+		logsListbox.setDisplayName(ScheduledJobLogs.displayNames.Title);
 
-		logs.get().query = (Query.CLASS<Query>)logsTable.getCLASS();
-		logs.get().link = logsTable.scheduledJob;
-		logs.get().readOnly = bool.True;
-		logs.get().colspan = new integer(12);
-		logs.get().flex = new integer(1);
+		logsListbox.get().query = logs;
+		logsListbox.get().link = logs.get().scheduledJob;
+		logsListbox.get().readOnly = bool.True;
+		logsListbox.get().colspan = new integer(12);
+		logsListbox.get().flex = new integer(1);
 
-		logsTable.columns.add(logsTable.start);
-		logsTable.columns.add(logsTable.finish);
-		logsTable.sortFields.add(logsTable.start);
-		logsTable.start.get().sortDirection = SortDirection.Desc;
+		logsListbox.get().columns.add(logs.get().start);
+		logsListbox.get().columns.add(logs.get().finish);
+		logsListbox.get().sortFields.add(logs.get().start);
+
+		logs.get().start.get().sortDirection = SortDirection.Desc;
 
 		jobs.get().name.get().colspan = new integer(4);
 		from.get().colspan = new integer(2);
@@ -65,8 +65,10 @@ public class JobsView extends ScheduledJobs {
 		registerControl(till);
 		registerControl(repeat);
 		registerControl(active);
-		registerControl(logs);
+		registerControl(logsListbox);
 
 		sortFields.add(jobs.get().name);
+
+		objects.add(logs);
 	}
 }

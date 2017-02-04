@@ -505,6 +505,7 @@ public class Query extends OBJECT {
 		config.query = this;
 		config.fields = fields;
 		config.sortFields = sortFields;
+		config.groupBy = groupFields;
 
 		ReadAction action = new ReadAction(config);
 		action.addFilter(where);

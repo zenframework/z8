@@ -82,6 +82,7 @@ public class UsersView extends Users {
 		banned.get().setIcon("fa-ban");
 
 		description.get().colspan = new integer(12);
+		description.get().height = new integer(3);
 
 		entriesListbox.get().colspan = new integer(6);
 		rolesListbox.get().colspan = new integer(6);

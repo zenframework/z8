@@ -29,7 +29,6 @@ public class AuthorityCenter extends HubServer implements IAuthorityCenter {
 
 	static private AuthorityCenter instance = null;
 
-	private UserManager userManager;
 	private SessionManager sessionManager;
 
 	public static IAuthorityCenter launch(ServerConfig config) throws RemoteException {
@@ -52,8 +51,6 @@ public class AuthorityCenter extends HubServer implements IAuthorityCenter {
 	@Override
 	public void start() throws RemoteException {
 		super.start();
-
-		userManager = new UserManager();
 
 		sessionManager = new SessionManager();
 		sessionManager.start();
@@ -141,16 +138,18 @@ public class AuthorityCenter extends HubServer implements IAuthorityCenter {
 
 		if(site) {
 			IAccount account = loginServer.account(login, password);
-			userManager.add(account);
 			session = sessionManager.create(account);
 		} else {
 			IUser user = loginServer.user(login, password);
-			userManager.add(user);
 			session = sessionManager.create(user);
 		}
 
 		session.setServerInfo(serverInfo);
 		return session;
+	}
+
+	public void userChanged(guid user) {
+		sessionManager.dropUserSessions(user);
 	}
 
 	private IServerInfo findServer(String serverId) throws RemoteException {

@@ -139,7 +139,7 @@ public class ReadAction extends RequestAction {
 		Collection<Field> fields = parameters.fields != null && !parameters.fields.isEmpty() ? parameters.fields : getFormFields();
 		Collection<Field> sortFields = parameters.sortFields != null ? parameters.sortFields : emptyFieldList;
 		Collection<Field> groupFields = parameters.groupFields != null ? parameters.groupFields : emptyFieldList;
-		Collection<Field> groupBy = query.getGroupByFields();
+		Collection<Field> groupBy = parameters.groupBy != null ? parameters.groupBy : query.getGroupByFields();
 		Collection<Link> aggregateBy = query.getAggregateByFields();
 
 		for(Link field : aggregateBy)

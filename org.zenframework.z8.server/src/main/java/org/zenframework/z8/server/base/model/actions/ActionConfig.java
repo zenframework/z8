@@ -21,6 +21,7 @@ public class ActionConfig {
 	public Collection<Field> fields;
 	public Collection<Field> sortFields;
 	public Collection<Field> groupFields;
+	public Collection<Field> groupBy;
 
 	private Map<string, string> requestParameters = new HashMap<string, string>();
 

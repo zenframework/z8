@@ -49,30 +49,31 @@ public class PdfSplitter {
 
 			int margin = 10;
 			Document document = new Document(dstPgRect, margin, margin, margin, margin);
-			
+
 			try {
 				PdfWriter writer = PdfWriter.getInstance(document, output);
 				document.open();
-	
+
 				PdfContentByte cb = writer.getDirectContent();
-	
+
 				for(int nPage = 1; nPage < totalPages + 1; nPage++) {
 					for(int nVt = 0; nVt < vtCount; nVt++) {
 						for(int nHz = 0; nHz < hzCount; nHz++) {
 							float rem = width - options.getHorizontalMargins() - nHz * (dstPgRect.getWidth() - options.getHorizontalMargins() - options.pageOverlapping);
-	
+
 							if(rem < options.pageOverlapping)
 								continue;
-	
+
 							document.newPage();
-	
+
 							PdfImportedPage page = writer.getImportedPage(reader, nPage);
-	
+
 							if(rotation == 0)
 								cb.addTemplate(page, 1, 0, 0, 1, 0 - nHz * (dstPgRect.getWidth() - options.getHorizontalMargins() - options.pageOverlapping),
 										0 + nVt * (dstPgRect.getHeight() - options.pageOverlapping - options.getVerticalMargins()) - (height - dstPgRect.getHeight()));
 							else
-								cb.addTemplate(page, 0, -1, 1, 0, 0 - nHz * (dstPgRect.getWidth() - options.pageOverlapping - options.getHorizontalMargins()), 0 - nVt * (dstPgRect.getHeight() - options.pageOverlapping - options.getBottomMargin() - options.getTopMargin()) + width);
+								cb.addTemplate(page, 0, -1, 1, 0, 0 - nHz * (dstPgRect.getWidth() - options.pageOverlapping - options.getHorizontalMargins()),
+										0 - nVt * (dstPgRect.getHeight() - options.pageOverlapping - options.getBottomMargin() - options.getTopMargin()) + width);
 						}
 					}
 				}
