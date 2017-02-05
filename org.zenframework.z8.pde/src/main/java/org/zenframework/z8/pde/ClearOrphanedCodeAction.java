@@ -57,10 +57,8 @@ public class ClearOrphanedCodeAction implements IWorkbenchWindowActionDelegate {
 		for(Project p : Workspace.getInstance().getProjects())
 			collect(needed, p);
 		final List<CompilationUnit> neededList = new ArrayList<CompilationUnit>();
-		for(CompilationUnit unit : needed) {
+		for(CompilationUnit unit : needed)
 			neededList.add(unit);
-			// System.out.println(unit.getName());
-		}
 
 		LabelProvider labelProvider = new LabelProvider() {
 			@Override

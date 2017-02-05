@@ -215,22 +215,6 @@ public class ContentOutlinePage extends org.eclipse.ui.views.contentoutline.Cont
 				final CompilationUnit unit = Workspace.getInstance().getCompilationUnit(((FileEditorInput)m_editor.getEditorInput()).getFile());
 				final IType type = unit.getReconciledType();
 				final LanguageElementImageProvider leip = new LanguageElementImageProvider();
-				/*
-				 * if (type==null) return; type = type.getBaseType();
-				 * List<String> realized = new ArrayList<String>(); while
-				 * (type!=null){ for (final IMethod m : type.getMethods()){ if
-				 * (m.isVirtual()){ if (m.getBody()==null){ if
-				 * (!realized.contains(m.getSignature())) manager.add(new
-				 * Action(){ public String getText() { return m.getSignature();
-				 * }
-				 * 
-				 * public void run(){
-				 * System.out.println(m.getVariableType().toString() + " " +
-				 * m.getSignature()); }
-				 * 
-				 * }); } else realized.add(m.getSignature()); } } type =
-				 * type.getBaseType(); }
-				 */
 
 				List<IAction> actions = new ArrayList<IAction>();
 				IType curr = type.getBaseType();

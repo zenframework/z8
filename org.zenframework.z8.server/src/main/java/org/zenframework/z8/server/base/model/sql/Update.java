@@ -100,10 +100,10 @@ public class Update extends Statement {
 			prepare(sql);
 			return executeUpdate();
 		} catch(Throwable e) {
-			System.out.println(sql());
+			Trace.logEvent(sql());
 
 			for(Field field : fields)
-				System.out.println(field.name() + ": " + field.get());
+				Trace.logEvent(field.name() + ": " + field.get());
 
 			Trace.logError(e);
 

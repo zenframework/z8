@@ -124,11 +124,21 @@ public class UserRoles extends Table {
 	}
 
 	@Override
+	public void afterCreate(guid recordId, guid parentId) {
+		super.afterCreate(recordId, parentId);
+		Users.notifyUserChange(user.get().guid());
+	}
+
+	@Override
 	public void beforeDestroy(guid recordId) {
 		super.beforeDestroy(recordId);
 
 		if(recordId.equals(Administrator) || recordId.equals(System))
 			throw new exception("Builtin user's roles can not be removed.");
+
+		Field user = this.user.get();
+		if(readRecord(recordId, Arrays.asList(user)))
+			Users.notifyUserChange(user.guid());
 	}
 
 	public Collection<IRole> get(guid userId) {

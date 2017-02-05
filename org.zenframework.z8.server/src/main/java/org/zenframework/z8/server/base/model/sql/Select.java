@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 import org.zenframework.z8.server.base.query.Query;
+import org.zenframework.z8.server.base.query.ReadLock;
 import org.zenframework.z8.server.base.table.value.Field;
 import org.zenframework.z8.server.base.table.value.ILink;
 import org.zenframework.z8.server.config.ServerConfig;
@@ -178,7 +179,10 @@ public class Select {
 		result += formatHaving(options);
 
 		options.disableAggregation();
-		result += orderBy + (rootQuery != null ? " " + rootQuery.getReadLock() : "");
+		result += orderBy;
+
+		if(rootQuery != null && rootQuery.getReadLock() != ReadLock.None)
+			result += " " + rootQuery.getReadLock() + " of " + rootQuery.getAlias();
 
 		options.enableAggregation();
 

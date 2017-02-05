@@ -385,7 +385,7 @@ public class User implements IUser {
 			privileges.setTableAccess(tableId.guid(), access);
 		}
 
-		System.out.println(privileges);
+		Trace.logEvent(privileges);
 	}
 
 	private void loadEntries() {

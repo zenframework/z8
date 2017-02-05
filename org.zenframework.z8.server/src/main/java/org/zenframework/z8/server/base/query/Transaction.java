@@ -15,4 +15,8 @@ public class Transaction extends OBJECT {
 	static public void z8_rollback() {
 		ConnectionManager.get().rollback();
 	}
+
+	static public void z8_flush() {
+		ConnectionManager.get().flush();
+	}
 }

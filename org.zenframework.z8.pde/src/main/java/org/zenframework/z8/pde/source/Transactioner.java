@@ -29,7 +29,6 @@ public class Transactioner implements ResourceListener {
 	}
 
 	public void append(Transaction transaction) {
-		System.out.println("append");
 		for(int i = 0; i < transactions.size(); i++) {
 			Transaction t = transactions.get(i);
 			if(t.getOffset() < transaction.getOffset())
@@ -45,7 +44,6 @@ public class Transactioner implements ResourceListener {
 
 	@Override
 	public void event(int type, Resource resource, Object object) {
-		System.out.println("reset");
 		reset();
 	}
 

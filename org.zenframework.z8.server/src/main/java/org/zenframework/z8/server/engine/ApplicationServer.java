@@ -100,7 +100,7 @@ public class ApplicationServer extends RmiServer implements IApplicationServer {
 
 		Scheduler.start();
 
-		Trace.logEvent("JVM startup options: " + ManagementFactory.getRuntimeMXBean().getInputArguments().toString() + "\n\t" + RequestDispatcher.getMemoryUsage());
+		Trace.logEvent("Application Server JVM startup options: " + ManagementFactory.getRuntimeMXBean().getInputArguments().toString() + "\n\t" + RequestDispatcher.getMemoryUsage());
 	}
 
 	@Override
@@ -187,7 +187,7 @@ public class ApplicationServer extends RmiServer implements IApplicationServer {
 
 	private void checkSchemaVersion() {
 		String version = Runtime.version();
-		System.out.println("Runtime schema version: " + version);
+		Trace.logEvent("Runtime schema version: " + version);
 	}
 
 	static public void info(String text) {

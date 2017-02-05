@@ -42,8 +42,8 @@ public class Delete extends Statement {
 			prepare(sql);
 			return executeUpdate();
 		} catch(Throwable e) {
-			System.out.println(sql());
-			System.out.println("recordId: " + recordId);
+			Trace.logEvent(sql());
+			Trace.logEvent("recordId: " + recordId);
 			Trace.logError(e);
 			throw new RuntimeException(e);
 		} finally {

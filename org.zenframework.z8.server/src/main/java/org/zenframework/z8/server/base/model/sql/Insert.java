@@ -11,6 +11,7 @@ import org.zenframework.z8.server.db.ConnectionManager;
 import org.zenframework.z8.server.db.DatabaseVendor;
 import org.zenframework.z8.server.db.Statement;
 import org.zenframework.z8.server.engine.Database;
+import org.zenframework.z8.server.logs.Trace;
 import org.zenframework.z8.server.types.primary;
 
 public class Insert extends Statement {
@@ -52,10 +53,10 @@ public class Insert extends Statement {
 			prepare(sql);
 			executeUpdate();
 		} catch(Throwable e) {
-			System.out.println(sql());
+			Trace.logEvent(sql());
 
 			for(Field field : fields)
-				System.out.println(field.name() + ": " + field.getDefault());
+				Trace.logEvent(field.name() + ": " + field.getDefault());
 
 			throw new RuntimeException(e);
 		} finally {

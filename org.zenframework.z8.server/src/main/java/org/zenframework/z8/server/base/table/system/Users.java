@@ -241,7 +241,8 @@ public class Users extends Table {
 
 	@Override
 	public void afterUpdate(guid recordId) {
-		notifyUserChange(recordId);
+		if(!notifyBlock)
+			notifyUserChange(recordId);
 	}
 
 	@Override
@@ -265,14 +266,10 @@ public class Users extends Table {
 	}
 
 	private boolean isSystemUser(guid recordId) {
-		return Administrator.equals(recordId) || System.equals(recordId) ||
-				Site.equals(recordId);
+		return Administrator.equals(recordId) || System.equals(recordId) || Site.equals(recordId);
 	}
 
-	private void notifyUserChange(guid user) {
-		if(notifyBlock)
-			return;
-
+	static public void notifyUserChange(guid user) {
 		try {
 			guid currentUser = ApplicationServer.getUser().id();
 			if(!currentUser.equals(user) && !System.equals(user) && !Administrator.equals(user))

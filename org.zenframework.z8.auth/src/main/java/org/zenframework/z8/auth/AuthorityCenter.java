@@ -57,7 +57,7 @@ public class AuthorityCenter extends HubServer implements IAuthorityCenter {
 
 		enableTimeoutChecking(1 * datespan.TicksPerMinute);
 
-		Trace.logEvent("JVM startup options: " + ManagementFactory.getRuntimeMXBean().getInputArguments().toString() + "\n\t" + RequestDispatcher.getMemoryUsage());
+		Trace.logEvent("Authority Center JVM startup options: " + ManagementFactory.getRuntimeMXBean().getInputArguments().toString() + "\n\t" + RequestDispatcher.getMemoryUsage());
 	}
 
 	@Override

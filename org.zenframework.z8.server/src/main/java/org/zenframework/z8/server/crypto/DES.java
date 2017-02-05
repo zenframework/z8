@@ -24,29 +24,29 @@ public class DES {
 			SecretKey key = generateKey();
 
 			String uuid = UUID.randomUUID().toString();
-			System.out.println("UUID: " + uuid);
+			Trace.logEvent("UUID: " + uuid);
 			uuid = uuid.replace("-", "");
 			byte[] data = uuid.getBytes();
-			System.out.println("S: " + Arrays.toString(data));
+			Trace.logEvent("S: " + Arrays.toString(data));
 
 			ByteArrayInputStream in = new ByteArrayInputStream(data);
 			ByteArrayOutputStream out = new ByteArrayOutputStream();
 			encrypt(key, in, out);
 
 			byte[] encripted = out.toByteArray();
-			System.out.println("E: " + Arrays.toString(encripted));
+			Trace.logEvent("E: " + Arrays.toString(encripted));
 
-			System.out.println("D/E :" + data.length + "/" + encripted.length);
+			Trace.logEvent("D/E :" + data.length + "/" + encripted.length);
 
 			ByteArrayInputStream in1 = new ByteArrayInputStream(encripted);
 			ByteArrayOutputStream out1 = new ByteArrayOutputStream();
 			decrypt(key, in1, out1);
 
 			byte[] decripted = out1.toByteArray();
-			System.out.println("D: " + Arrays.toString(decripted));
-			System.out.println("S: " + Arrays.toString(data));
+			Trace.logEvent("D: " + Arrays.toString(decripted));
+			Trace.logEvent("S: " + Arrays.toString(data));
 		} catch(Exception e) {
-			System.out.println(e);
+			Trace.logError(e);
 		}
 	}
 */

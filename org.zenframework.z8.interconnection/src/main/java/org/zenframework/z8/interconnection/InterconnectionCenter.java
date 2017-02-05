@@ -46,7 +46,7 @@ public class InterconnectionCenter extends HubServer implements IInterconnection
 	public void start() throws RemoteException {
 		super.start();
 
-		Trace.logEvent("JVM startup options: " + ManagementFactory.getRuntimeMXBean().getInputArguments().toString() + "\n\t" + RequestDispatcher.getMemoryUsage());
+		Trace.logEvent("Interconnection Center JVM startup options: " + ManagementFactory.getRuntimeMXBean().getInputArguments().toString() + "\n\t" + RequestDispatcher.getMemoryUsage());
 	}
 
 	@Override

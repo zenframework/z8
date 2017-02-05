@@ -449,7 +449,6 @@ public class JavaBuilder {
 
 					if(out != null) {
 						out.write(bytes, 0, bytesRead);
-						System.out.write(bytes, 0, bytesRead);
 						out.flush();
 					}
 				} catch(IOException e) {

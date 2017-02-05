@@ -33,7 +33,7 @@ public class Users extends Table {
 		System = '00000000-0000-0000-0000-000000000001';
 
 		[name "Admin"]
-		[description "Администратор сист��мы"]
+		[description "Администратор системы"]
 		Administrator = '00000000-0000-0000-0000-000000000002';
 	}
 }

@@ -161,7 +161,7 @@ public class Connection {
 
 		SqlExceptionConverter.rethrowIfKnown(database.vendor(), exception);
 
-		System.out.println(message + "(error code: " + errorCode + "; sqlState: " + sqlState + ") - reconnecting...");
+		Trace.logEvent(message + "(error code: " + errorCode + "; sqlState: " + sqlState + ") - reconnecting...");
 
 		// Postgres; Class 08 — Connection Exception SQLState Description
 		// 08000 connection exception 
