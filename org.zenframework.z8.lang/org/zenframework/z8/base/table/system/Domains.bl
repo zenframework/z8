@@ -13,9 +13,8 @@ public class Domains extends Table {
 	[name "UserId"]
 	public Link userLink = users;
 
-	[displayName "Адрес"] id;
-	id.length = 256;
-	id.unique = true;
+	[displayName "Имя"] name;
+	name.unique = true;
 
 	[name "Owner"]
 	[displayName "Владелец"]

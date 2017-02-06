@@ -53,6 +53,7 @@ import org.zenframework.z8.server.types.file;
 import org.zenframework.z8.server.types.guid;
 import org.zenframework.z8.server.types.primary;
 import org.zenframework.z8.server.types.string;
+import org.zenframework.z8.server.types.sql.sql_integer;
 import org.zenframework.z8.server.utils.ErrorUtils;
 
 public class TableGenerator {
@@ -660,6 +661,8 @@ public class TableGenerator {
 					SqlToken isNull = new IsNull(new SqlField(field));
 					SqlToken iif = new If(isNull, guid.Null.sql_guid(), new SqlField(field));
 					name = iif.format(vendor, options);
+				} else if(dbField.type.startsWith("character") && field.type() == FieldType.Integer) {
+					name = new sql_integer().format(vendor, options);
 				} else if(dbField.type.startsWith("character") && field.type() == FieldType.Text) {
 					name = new ToBytes(field).format(vendor, options);
 				} else if(dbField.type.startsWith("bytea") && field.type() == FieldType.String) {

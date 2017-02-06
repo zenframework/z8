@@ -14,6 +14,7 @@ public class Fields extends Table {
 
 	static public class fieldNames {
 		public final static String Table = "Table";
+		public final static String ClassId = "Class";
 		public final static String DisplayName = "Display Name";
 		public final static String Type = "Type";
 		public final static String Position = "Position";
@@ -21,22 +22,17 @@ public class Fields extends Table {
 
 	static public class strings {
 		public final static String Title = "Fields.title";
+		public final static String ClassId = "Fields.classId";
 		public final static String DisplayName = "Fields.displayName";
 		public final static String Type = "Fields.type";
 	}
 
 	static public class displayNames {
 		public final static String Title = Resources.get(strings.Title);
+		public final static String ClassId = Resources.get(strings.ClassId);
 		public final static String DisplayName = Resources.get(strings.DisplayName);
 		public final static String Type = Resources.get(strings.Type);
 	}
-
-	public Tables.CLASS<Tables> tables = new Tables.CLASS<Tables>(this);
-	public Link.CLASS<Link> table = new Link.CLASS<Link>(this);
-
-	public StringField.CLASS<? extends StringField> displayName = new StringField.CLASS<StringField>(this);
-	public StringField.CLASS<? extends StringField> type = new StringField.CLASS<StringField>(this);
-	public IntegerField.CLASS<? extends IntegerField> position = new IntegerField.CLASS<IntegerField>(this);
 
 	public static class CLASS<T extends Fields> extends Table.CLASS<T> {
 		public CLASS() {
@@ -56,6 +52,14 @@ public class Fields extends Table {
 		}
 	}
 
+	public Tables.CLASS<Tables> tables = new Tables.CLASS<Tables>(this);
+	public Link.CLASS<Link> table = new Link.CLASS<Link>(this);
+
+	public StringField.CLASS<? extends StringField> classId = new StringField.CLASS<StringField>(this);
+	public StringField.CLASS<? extends StringField> displayName = new StringField.CLASS<StringField>(this);
+	public StringField.CLASS<? extends StringField> type = new StringField.CLASS<StringField>(this);
+	public IntegerField.CLASS<? extends IntegerField> position = new IntegerField.CLASS<IntegerField>(this);
+
 	public Fields(IObject container) {
 		super(container);
 	}
@@ -74,8 +78,12 @@ public class Fields extends Table {
 		table.setName(fieldNames.Table);
 		table.setIndex("table");
 
-		id.get().length = new integer(256);
 		name.get().length = new integer(256);
+
+		classId.setIndex("classId");
+		classId.setName(fieldNames.ClassId);
+		classId.setDisplayName(displayNames.ClassId);
+		classId.get().length = new integer(256);
 
 		displayName.setName(fieldNames.DisplayName);
 		displayName.setDisplayName(displayNames.DisplayName);
@@ -90,6 +98,7 @@ public class Fields extends Table {
 		position.setName(fieldNames.Position);
 		position.setIndex("position");
 
+		registerDataField(classId);
 		registerDataField(table);
 		registerDataField(displayName);
 		registerDataField(type);

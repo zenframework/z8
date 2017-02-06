@@ -72,7 +72,7 @@ public class EntriesGenerator {
 	}
 
 	private void setEntryProperties(OBJECT entry) {
-		entries.id.get().set(entry.classId());
+		entries.classId.get().set(entry.classId());
 		entries.name.get().set(new string(entry.displayName()));
 		entries.lock.get().set(RecordLock.Destroy);
 	}

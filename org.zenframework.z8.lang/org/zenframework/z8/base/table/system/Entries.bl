@@ -1,6 +1,9 @@
 import org.zenframework.z8.base.table.Table;
+import org.zenframework.z8.base.table.value.StringField;
 
 [name "SystemEntries"]
 [native "org.zenframework.z8.server.base.table.system.Entries"] 
 public class Entries extends Table {
+	[name "Class"]
+	StringField classId;
 }

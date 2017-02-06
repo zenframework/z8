@@ -6,7 +6,6 @@ import org.zenframework.z8.server.base.query.ReadLock;
 import org.zenframework.z8.server.base.table.system.Sequences;
 import org.zenframework.z8.server.db.sql.SqlToken;
 import org.zenframework.z8.server.db.sql.expressions.Equ;
-import org.zenframework.z8.server.db.sql.expressions.Or;
 import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.runtime.OBJECT;
 import org.zenframework.z8.server.types.integer;
@@ -39,7 +38,7 @@ public class Sequencer extends OBJECT {
 	static public void reset(String key) {
 		Sequences sequences = new Sequences.CLASS<Sequences>().get();
 
-		SqlToken where = new Equ(sequences.id.get(), key.toLowerCase());
+		SqlToken where = new Equ(sequences.key.get(), key.toLowerCase());
 		sequences.destroy(where);
 	}
 
@@ -55,13 +54,10 @@ public class Sequencer extends OBJECT {
 		Sequences sequences = new Sequences.CLASS<Sequences>().get();
 		sequences.setReadLock(ReadLock.Update);
 
+		StringField keyField = sequences.key.get();
 		IntegerField valueField = sequences.value.get();
-		StringField idField = sequences.id.get();
 
-		// old id for backward compatibility
-		String id = "id" + Integer.toString(key.hashCode()).replace('-', '_');
-
-		SqlToken where = new Or(new Equ(idField, id), new Equ(idField, key));
+		SqlToken where = new Equ(keyField, key);
 
 		long result = defaultValue;
 
@@ -70,7 +66,7 @@ public class Sequencer extends OBJECT {
 			valueField.set(new integer(result));
 			sequences.update(sequences.recordId());
 		} else {
-			idField.set(new string(key));
+			keyField.set(new string(key));
 			valueField.set(new integer(result));
 			sequences.create();
 		}

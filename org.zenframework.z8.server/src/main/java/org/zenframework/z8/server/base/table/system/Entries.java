@@ -4,6 +4,7 @@ import java.util.LinkedHashMap;
 
 import org.zenframework.z8.server.base.table.Table;
 import org.zenframework.z8.server.base.table.value.IField;
+import org.zenframework.z8.server.base.table.value.StringField;
 import org.zenframework.z8.server.resources.Resources;
 import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.types.exception;
@@ -15,15 +16,19 @@ import org.zenframework.z8.server.types.string;
 public class Entries extends Table {
 	final static public String TableName = "SystemEntries";
 
+	static public class fieldNames {
+		public final static String ClassId = "Class";
+	}
+
 	static public class strings {
 		public final static String Title = "Entries.title";
-		public final static String Id = "Entries.javaClass";
+		public final static String ClassId = "Entries.classId";
 		public final static String Name = "Entries.name";
 	}
 
 	static public class displayNames {
 		public final static String Title = Resources.get(strings.Title);
-		public final static String Id = Resources.get(strings.Id);
+		public final static String ClassId = Resources.get(strings.ClassId);
 		public final static String Name = Resources.get(strings.Name);
 	}
 
@@ -45,6 +50,8 @@ public class Entries extends Table {
 		}
 	}
 
+	public StringField.CLASS<StringField> classId = new StringField.CLASS<StringField>(this);
+
 	public Entries(IObject container) {
 		super(container);
 	}
@@ -53,18 +60,22 @@ public class Entries extends Table {
 	public void constructor2() {
 		super.constructor2();
 
-		id.setDisplayName(displayNames.Id);
-		id.get().length = new integer(1024);
+		classId.setIndex("classId");
+		classId.setName(fieldNames.ClassId);
+		classId.setDisplayName(displayNames.ClassId);
+		classId.get().length = new integer(1024);
 
 		name.setDisplayName(displayNames.Name);
 		name.get().length = new integer(1024);
+
+		registerDataField(classId);
 	}
 
 	@Override
 	public void initStaticRecords() {
 		LinkedHashMap<IField, primary> record = new LinkedHashMap<IField, primary>();
 		record.put(name.get(), new string(SystemTools.displayNames.Title));
-		record.put(id.get(), new string(SystemTools.ClassId));
+		record.put(classId.get(), new string(SystemTools.ClassId));
 		addRecord(SystemTools.Id, record);
 	}
 

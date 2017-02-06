@@ -39,7 +39,7 @@
 
 	<!-- Domains -->
 	<entry key="Domains.title">Домены</entry>
-	<entry key="Domains.id">Id</entry>
+	<entry key="Domains.name">Имя</entry>
 	<entry key="Domains.user">Системный пользователь</entry>
 	<entry key="Domains.user.description">Системный пользователь (описание)</entry>
 	<entry key="Domains.owner">Владелец</entry>
@@ -63,11 +63,13 @@
 
 	<!-- Tables -->
 	<entry key="Tables.title">Таблицы</entry>
+	<entry key="Tables.classId">Системное имя</entry>
 	<entry key="Tables.name">DB name</entry>
 	<entry key="Tables.displayName">Заголовок</entry>
 
 	<!-- Fields -->
 	<entry key="Fields.title">Поля</entry>
+	<entry key="Fields.classId">Системное имя</entry>
 	<entry key="Fields.displayName">Заголовок</entry>
 	<entry key="Fields.type">Тип данных</entry>
 
@@ -117,13 +119,12 @@
 
 	<!-- Entries -->
 	<entry key="Entries.title">Компоненты</entry>
-	<entry key="Entries.javaClass">Системное имя</entry>
+	<entry key="Entries.classId">Системное имя</entry>
 	<entry key="Entries.name">Имя</entry>
 
 	<!-- UserEntries -->
 	<entry key="UserEntries.title">Компоненты</entry>
 	<entry key="UserEntries.position">Позиция</entry>
-
 
 	<!-- HubServerView -->
 	<entry key="HubServerView.id">Id</entry>
@@ -165,6 +166,7 @@
 
 	<!-- Jobs -->
 	<entry key="Jobs.title">Задания</entry>
+	<entry key="Jobs.classId">Системное имя</entry>
 
 	<!-- ScheduledJobs -->
 	<entry key="ScheduledJobs.title">Задания</entry>
@@ -185,6 +187,7 @@
 
 	<!-- SystemSequences -->
 	<entry key="Sequences.title">Последовательности</entry>
+	<entry key="Sequences.key">Ключ</entry>
 	<entry key="Sequences.value">Значение</entry>
 
 	<!-- Sequencer -->

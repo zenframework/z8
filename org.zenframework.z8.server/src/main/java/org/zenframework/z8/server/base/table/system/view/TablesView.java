@@ -50,7 +50,7 @@ public class TablesView extends Tables {
 		fields.columns.add(fields.type);
 		fields.columns.add(fields.displayName);
 
-		id.get().colspan = new integer(2);
+		classId.get().colspan = new integer(2);
 
 		name.get().colspan = new integer(2);
 		name.get().width = new integer(100);
@@ -64,7 +64,7 @@ public class TablesView extends Tables {
 		fieldsListbox.get().colspan = new integer(6);
 		fieldsListbox.get().flex = new integer(1);
 
-		registerControl(id);
+		registerControl(classId);
 		registerControl(name);
 		registerControl(displayName);
 		registerControl(description);

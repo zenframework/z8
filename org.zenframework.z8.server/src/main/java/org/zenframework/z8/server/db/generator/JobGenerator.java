@@ -78,7 +78,7 @@ public class JobGenerator {
 	}
 
 	private void setJobProperties(OBJECT job) {
-		jobs.id.get().set(job.classId());
+		jobs.classId.get().set(job.classId());
 		jobs.name.get().set(new string(job.displayName()));
 		jobs.lock.get().set(RecordLock.Destroy);
 

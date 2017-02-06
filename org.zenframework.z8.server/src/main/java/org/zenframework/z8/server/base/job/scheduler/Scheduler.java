@@ -114,10 +114,10 @@ public class Scheduler implements Runnable {
 		IntegerField repeat = scheduledJobs.repeat.get();
 		DatetimeField lastStarted = scheduledJobs.lastStarted.get();
 		BoolField active = scheduledJobs.active.get();
-		StringField className = scheduledJobs.jobs.get().id.get();
+		StringField classId = scheduledJobs.jobs.get().classId.get();
 		StringField name = scheduledJobs.jobs.get().name.get();
 
-		Collection<Field> fields = Arrays.asList(user, from, till, repeat, lastStarted, active, className, name);
+		Collection<Field> fields = Arrays.asList(user, from, till, repeat, lastStarted, active, classId, name);
 
 		scheduledJobs.read(fields);
 
@@ -131,7 +131,7 @@ public class Scheduler implements Runnable {
 			if(index != -1)
 				job = jobs.get(index);
 
-			job.className = className.string().get();
+			job.classId = classId.string().get();
 			job.name = name.string().get();
 			job.user = user.guid();
 			job.from = from.date();

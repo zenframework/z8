@@ -2,6 +2,7 @@ package org.zenframework.z8.server.base.table.system;
 
 import org.zenframework.z8.server.base.table.Table;
 import org.zenframework.z8.server.base.table.value.IntegerField;
+import org.zenframework.z8.server.base.table.value.StringField;
 import org.zenframework.z8.server.engine.ApplicationServer;
 import org.zenframework.z8.server.resources.Resources;
 import org.zenframework.z8.server.runtime.IObject;
@@ -12,16 +13,19 @@ public class Sequences extends Table {
 	final static public String TableName = "SystemSequences";
 
 	static public class fieldNames {
+		public final static String Key = "Key";
 		public final static String Value = "Value";
 	}
 
 	static public class strings {
 		public final static String Title = "Sequences.title";
+		public final static String Key = "Sequences.key";
 		public final static String Value = "Sequences.value";
 	}
 
 	static public class displayNames {
 		public final static String Title = Resources.get(strings.Title);
+		public final static String Key = Resources.get(strings.Key);
 		public final static String Value = Resources.get(strings.Value);
 	}
 
@@ -43,6 +47,7 @@ public class Sequences extends Table {
 		}
 	}
 
+	public StringField.CLASS<StringField> key = new StringField.CLASS<StringField>(this);
 	public IntegerField.CLASS<IntegerField> value = new IntegerField.CLASS<IntegerField>(this);
 
 	public Sequences(IObject container) {
@@ -53,18 +58,20 @@ public class Sequences extends Table {
 	public void constructor2() {
 		super.constructor2();
 
+		key.setName(fieldNames.Key);
+		key.setIndex("key");
+		key.setDisplayName(displayNames.Key);
+		key.get().indexed = bool.True;
+		key.get().length = new integer(256);
+
 		value.setName(fieldNames.Value);
 		value.setIndex("value");
 		value.setDisplayName(displayNames.Value);
 
 		readOnly= new bool(!ApplicationServer.getUser().isAdministrator());
 
+		registerDataField(key);
 		registerDataField(value);
-
-		id.get().indexed = bool.True;
-		id.get().length = new integer(256);
-
-		description.get().width = new integer(100);
 
 		sortFields.add(description);
 	}

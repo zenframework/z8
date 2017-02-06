@@ -2,6 +2,7 @@ import org.zenframework.z8.base.query.Query;
 import org.zenframework.z8.base.table.value.BoolField;
 import org.zenframework.z8.base.table.value.DatetimeField;
 import org.zenframework.z8.base.table.value.GuidField;
+import org.zenframework.z8.base.table.value.IntegerField;
 import org.zenframework.z8.base.table.value.StringField;
 import org.zenframework.z8.base.table.value.TextField;
 
@@ -12,8 +13,10 @@ public class Table extends Query {
 
 	[name "Id"]
 	[displayName "Код"] 
-	public StringField id;
-	id.length = 15;
+	public IntegerField id;
+
+	[name "Short name"]
+	public StringField shortName;
 
 	[name "Name"]
 	public StringField name;

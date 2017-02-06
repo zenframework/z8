@@ -3,6 +3,7 @@ package org.zenframework.z8.server.base.table;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.zenframework.z8.server.base.table.value.Aggregation;
 import org.zenframework.z8.server.base.table.value.BoolField;
 import org.zenframework.z8.server.base.table.value.DatetimeField;
 import org.zenframework.z8.server.base.table.value.Field;
@@ -29,6 +30,7 @@ public class Table extends TableBase {
 
 		public final static String Id = "Id";
 		public final static String Name = "Name";
+		public final static String ShortName = "Short name";
 		public final static String Description = "Description";
 		public final static String Lock = "Lock";
 		public final static String Archive = "Archive";
@@ -65,14 +67,15 @@ public class Table extends TableBase {
 	public GuidField.CLASS<? extends GuidField> createdBy = new GuidField.CLASS<GuidField>(this);
 	public GuidField.CLASS<? extends GuidField> modifiedBy = new GuidField.CLASS<GuidField>(this);
 
-	public StringField.CLASS<? extends StringField> id = new StringField.CLASS<StringField>(this);
+	public IntegerField.CLASS<? extends IntegerField> id = new IntegerField.CLASS<IntegerField>(this);
 	public StringField.CLASS<? extends StringField> name = new StringField.CLASS<StringField>(this);
+	public StringField.CLASS<? extends StringField> shortName = new StringField.CLASS<StringField>(this);
 	public TextField.CLASS<? extends StringField> description = new TextField.CLASS<TextField>(this);
 
 	public IntegerField.CLASS<? extends IntegerField> lock = new IntegerField.CLASS<IntegerField>(this);
 	public BoolField.CLASS<? extends BoolField> archive = new BoolField.CLASS<BoolField>(this);
 
-	final static public int IdLength = 15;
+	final static public int ShortNameLength = 15;
 	final static public int NameLength = 50;
 
 	public Table(IObject container) {
@@ -86,11 +89,15 @@ public class Table extends TableBase {
 		id.setName(fieldNames.Id);
 		id.setIndex("id");
 		id.setDisplayName(displayNames.Id);
-		id.get().length = new integer(IdLength);
+		id.get().aggregation = Aggregation.None;
 
 		name.setName(fieldNames.Name);
 		name.setIndex("name");
 		name.get().length = new integer(NameLength);
+
+		shortName.setName(fieldNames.ShortName);
+		shortName.setIndex("shortName");
+		shortName.get().length = new integer(ShortNameLength);
 
 		description.setName(fieldNames.Description);
 		description.setIndex("description");
@@ -135,6 +142,7 @@ public class Table extends TableBase {
 
 		registerDataField(id);
 		registerDataField(name);
+		registerDataField(shortName);
 		registerDataField(description);
 	}
 

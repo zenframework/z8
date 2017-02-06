@@ -26,7 +26,7 @@ import org.zenframework.z8.server.types.string;
 public class ScheduledJob implements Runnable {
 	public guid id;
 
-	public String className;
+	public String classId;
 	public guid user;
 	public String name;
 	public date from = new date();
@@ -47,7 +47,7 @@ public class ScheduledJob implements Runnable {
 	}
 
 	public ScheduledJob(String className, int repeat) {
-		this.className = className;
+		this.classId = className;
 		String[] names = className.split("\\.");
 		this.name = names[names.length - 1];
 		this.repeat = repeat;
@@ -125,7 +125,7 @@ public class ScheduledJob implements Runnable {
 				return;
 
 			Map<String, String> parameters = new HashMap<String, String>();
-			parameters.put(Json.request.get(), className);
+			parameters.put(Json.request.get(), classId);
 			parameters.put(Json.scheduled.get(), "true");
 
 			List<file> files = new ArrayList<file>();

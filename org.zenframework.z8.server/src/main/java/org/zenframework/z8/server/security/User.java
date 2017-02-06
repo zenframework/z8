@@ -392,7 +392,7 @@ public class User implements IUser {
 		UserEntries userEntries = new UserEntries.CLASS<UserEntries>().get();
 
 		Field entry = userEntries.entry.get();
-		Field id = userEntries.entries.get().id.get();
+		Field id = userEntries.entries.get().classId.get();
 		Field name = userEntries.entries.get().name.get();
 
 		Collection<Field> fields = Arrays.asList(entry, id, name);

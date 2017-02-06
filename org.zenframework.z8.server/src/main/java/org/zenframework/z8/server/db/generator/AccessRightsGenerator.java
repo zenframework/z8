@@ -152,7 +152,7 @@ public class AccessRightsGenerator {
 	}
 
 	private void setTableProperties(Table table) {
-		tables.id.get().set(new string(table.classId()));
+		tables.classId.get().set(new string(table.classId()));
 		tables.name.get().set(new string(table.name()));
 		tables.displayName.get().set(new string(table.displayName()));
 		tables.description.get().set(new string(table.description()));
