@@ -22,6 +22,7 @@ public class ActionConfig {
 	public Collection<Field> sortFields;
 	public Collection<Field> groupFields;
 	public Collection<Field> groupBy;
+	public guid recordId = null;
 
 	private Map<string, string> requestParameters = new HashMap<string, string>();
 
@@ -32,14 +33,24 @@ public class ActionConfig {
 
 	public ActionConfig(Map<string, string> requestParameters) {
 		this.requestParameters = requestParameters;
+		this.recordId = getRecordId();
 	}
 
 	public ActionConfig(Query query) {
 		this.query = contextQuery = query;
 	}
 
-	public ActionConfig(Query query, Collection<Field> fields) {
+	public ActionConfig(Query query, guid recordId) {
 		this(query);
+		this.recordId = recordId;
+	}
+
+	public ActionConfig(Query query, Collection<Field> fields) {
+		this(query, fields, null);
+	}
+
+	public ActionConfig(Query query, Collection<Field> fields, guid recordId) {
+		this(query, recordId);
 		this.fields = fields;
 	}
 
@@ -50,11 +61,6 @@ public class ActionConfig {
 	public String requestParameter(string key) {
 		string value = requestParameters.get(key);
 		return value != null ? value.get() : null;
-	}
-
-	public guid getId() {
-		String id = requestParameter(Json.id);
-		return id != null ? new guid(id) : null;
 	}
 
 	public guid getRecordId() {

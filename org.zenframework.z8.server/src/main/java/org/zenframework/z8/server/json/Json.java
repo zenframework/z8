@@ -77,6 +77,7 @@ public interface Json {
 	static public string priority = new string("priority");
 	static public string required = new string("required");
 	static public string editable = new string("editable");
+	static public string important = new string("important");
 	static public string period = new string("period");
 	static public string min = new string("min");
 	static public string max = new string("max");

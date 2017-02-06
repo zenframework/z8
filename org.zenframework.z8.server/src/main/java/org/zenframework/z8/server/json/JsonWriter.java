@@ -204,8 +204,9 @@ public class JsonWriter {
 
 	public void writeProperty(String name, primary value) {
 		if(value == null)
-			writeNull(name);
-		else if(value instanceof bool)
+			return;
+
+		if(value instanceof bool)
 			writeProperty(name, ((bool)value).get());
 		else if(value instanceof integer)
 			writeProperty(name, ((integer)value).get());

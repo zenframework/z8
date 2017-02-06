@@ -27,12 +27,14 @@ public class Control extends OBJECT {
 		}
 	}
 
-	public bool readOnly = null;
-	public bool required = null;
-	public bool editable = null;
+	public bool readOnly;
+	public bool required;
+	public bool editable;
+	public bool important;
 
-	public integer colspan = null;
-	public integer flex = null;
+
+	public integer colspan;
+	public integer flex;
 
 	public integer height;
 
@@ -57,11 +59,11 @@ public class Control extends OBJECT {
 	 * 
 	 * Здесь регион фильтрует список городов, который, в свою очередь, фильтрует улицы.
 	 **/
-	public GuidField.CLASS<? extends GuidField> dependency = null;
-	public GuidField.CLASS<? extends GuidField> dependsOn = null;
+	public GuidField.CLASS<? extends GuidField> dependency;
+	public GuidField.CLASS<? extends GuidField> dependsOn;
 	public RCollection<Control.CLASS<? extends Control>> dependencies = new RCollection<Control.CLASS<? extends Control>>();
 
-	public Query.CLASS<? extends Query> source = null;
+	public Query.CLASS<? extends Query> source;
 
 	public boolean readOnly() {
 		return readOnly != null ? readOnly.get() : false;
@@ -84,6 +86,8 @@ public class Control extends OBJECT {
 		writer.writeProperty(Json.readOnly, readOnly());
 		writer.writeProperty(Json.required, required());
 		writer.writeProperty(Json.editable, editable);
+		writer.writeProperty(Json.important, important);
+
 
 		if(source != null) {
 			writer.startObject(Json.source);

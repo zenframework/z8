@@ -39,7 +39,7 @@ public class ActionFactory {
 		else if(RequestAction.copyAction.equals(actionName))
 			return new CopyAction(config);
 		else if(RequestAction.readAction.equals(actionName))
-			return new ReadAction(config, config.getId());
+			return new ReadAction(config);
 		else if(RequestAction.updateAction.equals(actionName))
 			return new UpdateAction(config);
 		else if(RequestAction.destroyAction.equals(actionName))

@@ -11,6 +11,7 @@ public class Control extends Object {
 	public bool readOnly = false;
 	public bool required = false;
 	public bool editable = false;
+	public bool important = false;
 
 	/*
 	В ситуации зависимых компонентов, т.е. listbox или combobox, 

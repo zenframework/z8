@@ -74,7 +74,6 @@ public class ReadAction extends RequestAction {
 	private Collection<SqlToken> groupFilters = new LinkedHashSet<SqlToken>();
 	private Collection<Field> groupFilterFields = new LinkedHashSet<Field>();
 
-	guid recordId = null;
 	guid parentId = null;
 
 	private int start = -1;
@@ -88,30 +87,23 @@ public class ReadAction extends RequestAction {
 	private boolean hasRightJoin = false;
 
 	public ReadAction(Query query) {
-		this(new ActionConfig(query), null);
+		this(new ActionConfig(query));
 	}
 
 	public ReadAction(Query query, guid recordId) {
-		this(new ActionConfig(query), recordId);
+		this(new ActionConfig(query, recordId));
 	}
 
 	public ReadAction(Query query, Collection<Field> fields) {
-		this(new ActionConfig(query, fields), null);
+		this(new ActionConfig(query, fields));
 	}
 
 	public ReadAction(Query query, Collection<Field> fields, guid recordId) {
-		this(new ActionConfig(query, fields), recordId);
+		this(new ActionConfig(query, fields, recordId));
 	}
 
 	public ReadAction(ActionConfig config) {
-		this(config, null);
-	}
-
-	protected ReadAction(ActionConfig config, guid recordId) {
 		super(config);
-
-		this.recordId = recordId;
-
 		initialize();
 	}
 
@@ -181,6 +173,8 @@ public class ReadAction extends RequestAction {
 
 		Field primaryKey = query.primaryKey();
 		addNullRecordFilter(primaryKey);
+
+		guid recordId = config().recordId;
 		addFilter(primaryKey, recordId, Operation.Eq);
 
 		for(Field field : notNullFields)
