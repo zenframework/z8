@@ -133,6 +133,7 @@ public class CLASS<TYPE extends IObject> extends OBJECT implements IClass<TYPE> 
 		if(this.stage < Constructor1 && stage >= Constructor1) {
 			this.stage = Constructor1;
 			object.constructor1();
+			object.initMembers();
 			object.setAttributes(getAttributes());
 		}
 

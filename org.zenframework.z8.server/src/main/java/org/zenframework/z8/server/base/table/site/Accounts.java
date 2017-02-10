@@ -91,6 +91,20 @@ public class Accounts extends Table {
 	}
 
 	@Override
+	public void initMembers() {
+		super.initMembers();
+
+		objects.add(login);
+		objects.add(password);
+		objects.add(firstName);
+		objects.add(lastName);
+		objects.add(banned);
+		objects.add(user);
+
+		objects.add(users);
+	}
+
+	@Override
 	public void constructor2() {
 		super.constructor2();
 
@@ -125,14 +139,5 @@ public class Accounts extends Table {
 		banned.setName(fieldNames.Banned);
 		banned.setIndex("banned");
 		banned.setDisplayName(displayNames.Banned);
-
-		registerDataField(login);
-		registerDataField(password);
-		registerDataField(firstName);
-		registerDataField(lastName);
-		registerDataField(banned);
-		registerDataField(user);
-
-		objects.add(users);
 	}
 }

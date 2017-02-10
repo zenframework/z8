@@ -56,6 +56,7 @@ public interface IObject extends INamedObject {
 
 	public IObject getContainer();
 
+	public void initMembers();
 	public Collection<IClass<? extends IObject>> members();
 	public IClass<? extends IObject> getMember(String name);
 

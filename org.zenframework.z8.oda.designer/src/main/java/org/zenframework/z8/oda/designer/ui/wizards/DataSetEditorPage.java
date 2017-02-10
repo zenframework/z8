@@ -3,8 +3,8 @@ package org.zenframework.z8.oda.designer.ui.wizards;
 import java.io.File;
 import java.sql.Types;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
@@ -26,50 +26,53 @@ import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.resource.ImageRegistry;
 import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.MouseEvent;
+import org.eclipse.swt.events.MouseListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
-import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableItem;
-import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeItem;
 import org.eclipse.ui.PlatformUI;
-import org.zenframework.z8.oda.designer.ExceptionHandler;
 import org.zenframework.z8.oda.designer.plugin.Plugin;
-import org.zenframework.z8.oda.driver.OdaQuery;
 import org.zenframework.z8.oda.driver.RuntimeLoader;
-import org.zenframework.z8.server.base.form.Desktop;
 import org.zenframework.z8.server.base.query.Query;
-import org.zenframework.z8.server.base.table.value.IField;
-import org.zenframework.z8.server.runtime.CLASS;
+import org.zenframework.z8.server.base.table.Table;
+import org.zenframework.z8.server.base.table.value.Field;
+import org.zenframework.z8.server.base.table.value.ILink;
+import org.zenframework.z8.server.json.Json;
+import org.zenframework.z8.server.json.JsonWriter;
+import org.zenframework.z8.server.runtime.IRuntime;
 
 public class DataSetEditorPage extends DataSetWizardPage {
-	private static String ROOT_ICON = DataSetEditorPage.class.getName() + ".RootIcon";
-	private static String DESKTOP_ICON = DataSetEditorPage.class.getName() + ".DesktopIcon";
-	private static String TABLE_ICON = DataSetEditorPage.class.getName() + ".TableIcon";
-	private static String VIEW_ICON = DataSetEditorPage.class.getName() + ".ViewIcon";
-	private static String COLUMN_ICON = DataSetEditorPage.class.getName() + ".ColumnIcon";
+	private static String RootIcon = DataSetEditorPage.class.getName() + ".RootIcon";
+	private static String DesktopIcon = DataSetEditorPage.class.getName() + ".DesktopIcon";
+	private static String TableIcon = DataSetEditorPage.class.getName() + ".TableIcon";
+	private static String ViewIcon = DataSetEditorPage.class.getName() + ".ViewIcon";
+	private static String ColumnIcon = DataSetEditorPage.class.getName() + ".ColumnIcon";
 
 	static {
 		ImageRegistry registry = JFaceResources.getImageRegistry();
 
-		registry.put(ROOT_ICON, ImageDescriptor.createFromFile(Plugin.class, "icons/data_source.gif"));
-		registry.put(DESKTOP_ICON, ImageDescriptor.createFromFile(Plugin.class, "icons/desktop.gif"));
-		registry.put(TABLE_ICON, ImageDescriptor.createFromFile(Plugin.class, "icons/table.gif"));
-		registry.put(VIEW_ICON, ImageDescriptor.createFromFile(Plugin.class, "icons/view.gif"));
-		registry.put(COLUMN_ICON, ImageDescriptor.createFromFile(Plugin.class, "icons/column.gif"));
+		registry.put(RootIcon, ImageDescriptor.createFromFile(Plugin.class, "icons/data_source.gif"));
+		registry.put(DesktopIcon, ImageDescriptor.createFromFile(Plugin.class, "icons/desktop.gif"));
+		registry.put(TableIcon, ImageDescriptor.createFromFile(Plugin.class, "icons/table.gif"));
+		registry.put(ViewIcon, ImageDescriptor.createFromFile(Plugin.class, "icons/view.gif"));
+		registry.put(ColumnIcon, ImageDescriptor.createFromFile(Plugin.class, "icons/column.gif"));
 	}
 
-	private String dataSetClassName;
+//	private String dataSetClassName;
 	private DataSetDesign dataSetDesign = null;
 
-	private Tree tables = null;
-	private Table fields = null;
+	private org.eclipse.swt.widgets.Table queries = null;
+	private org.eclipse.swt.widgets.Tree structure = null;
+	private org.eclipse.swt.widgets.Table fields = null;
 
 	private static String DEFAULT_MESSAGE = Plugin.getResourceString("dataset.select.data.object");
 	private static String ERROR_MESSAGE = Plugin.getResourceString("dataset.no.data.object.selected");
@@ -108,7 +111,7 @@ public class DataSetEditorPage extends DataSetWizardPage {
 	private Control createPageControl(Composite parent) {
 		Composite pageContainer = new Composite(parent, SWT.NONE);
 		GridLayout layout = new GridLayout();
-		layout.numColumns = 2;
+		layout.numColumns = 3;
 		layout.makeColumnsEqualWidth = true;
 		layout.marginWidth = 0;
 		layout.marginHeight = 0;
@@ -133,148 +136,152 @@ public class DataSetEditorPage extends DataSetWizardPage {
 	}
 
 	private Control createDBMetaDataSelectionComposite(Composite parent) {
-		// Tables
-		Composite tablesComposite = new Composite(parent, SWT.NONE);
-		tablesComposite.setLayout(new GridLayout());
+		// Sources
+		GridData compositeData = new GridData(GridData.FILL_BOTH);
+		compositeData.grabExcessVerticalSpace = true;
+		compositeData.grabExcessHorizontalSpace = true;
 
-		GridData tablesCompositeData = new GridData(GridData.FILL_BOTH);
-		tablesCompositeData.grabExcessVerticalSpace = true;
-		tablesCompositeData.grabExcessHorizontalSpace = true;
-		tablesComposite.setLayoutData(tablesCompositeData);
+		GridData controlData = new GridData(GridData.FILL_BOTH);
+		controlData.grabExcessHorizontalSpace = true;
+		controlData.grabExcessVerticalSpace = true;
+		controlData.heightHint = 150;
 
-		Label tablesLabel = new Label(tablesComposite, SWT.LEFT);
-		tablesLabel.setText(Plugin.getResourceString("tablepage.label.availableTables"));
-		GridData tablesLabelData = new GridData();
-		tablesLabel.setLayoutData(tablesLabelData);
+		Composite queriesComposite = new Composite(parent, SWT.NONE);
+		queriesComposite.setLayout(new GridLayout());
+		queriesComposite.setLayoutData(compositeData);
 
-		tables = new Tree(tablesComposite, SWT.BORDER | SWT.SINGLE);
-		GridData tablesData = new GridData(GridData.FILL_BOTH);
-		tablesData.grabExcessHorizontalSpace = true;
-		tablesData.grabExcessVerticalSpace = true;
-		tablesData.heightHint = 150;
-		tables.setLayoutData(tablesData);
+		Label queriesLabel = new Label(queriesComposite, SWT.LEFT);
+		queriesLabel.setText(Plugin.getResourceString("tablepage.label.queries"));
+		queriesLabel.setLayoutData(new GridData());
 
-		// Fields
+		queries = new org.eclipse.swt.widgets.Table(queriesComposite, SWT.BORDER);
+		queries.setLayoutData(controlData);
+
+		// Structure
+		Composite structureComposite = new Composite(parent, SWT.NONE);
+		structureComposite.setLayout(new GridLayout());
+		structureComposite.setLayoutData(compositeData);
+
+		Label structureLabel = new Label(structureComposite, SWT.LEFT);
+		structureLabel.setText(Plugin.getResourceString("tablepage.label.structure"));
+		structureLabel.setLayoutData(new GridData());
+
+		structure = new org.eclipse.swt.widgets.Tree(structureComposite, SWT.BORDER | SWT.SINGLE);
+		structure.setLayoutData(controlData);
+
+		// Content
 		Composite fieldsComposite = new Composite(parent, SWT.NONE);
 		fieldsComposite.setLayout(new GridLayout());
-
-		GridData fieldsCompositeData = new GridData(GridData.FILL_BOTH);
-		fieldsCompositeData.grabExcessVerticalSpace = true;
-		fieldsCompositeData.grabExcessHorizontalSpace = true;
-		fieldsComposite.setLayoutData(tablesCompositeData);
+		fieldsComposite.setLayoutData(compositeData);
 
 		Label fieldsLabel = new Label(fieldsComposite, SWT.LEFT);
-		fieldsLabel.setText(Plugin.getResourceString("tablepage.label.availableFields"));
-		GridData fieldsLabelData = new GridData();
-		fieldsLabel.setLayoutData(fieldsLabelData);
+		fieldsLabel.setText(Plugin.getResourceString("tablepage.label.selectedFields"));
+		fieldsLabel.setLayoutData(new GridData());
 
-		fields = new Table(fieldsComposite, SWT.BORDER);
-		GridData fieldsData = new GridData(GridData.FILL_BOTH);
-		fieldsData.grabExcessHorizontalSpace = true;
-		fieldsData.grabExcessVerticalSpace = true;
-		fieldsData.heightHint = 150;
-		fields.setLayoutData(fieldsData);
+		fields = new org.eclipse.swt.widgets.Table(fieldsComposite, SWT.BORDER);
+		fields.setLayoutData(controlData);
 
-		addFetchDbObjectListener();
+		installQuerySelectionListener();
+		installStructureDblClickListener();
+		installFieldsDblClickListener();
 
-		initializeTree();
+		initializeTables();
 
-		return tablesComposite;
+		return queriesComposite;
 	}
 
 	public Image getImage(String name) {
 		return JFaceResources.getImageRegistry().get(name);
 	}
 
-	@SuppressWarnings({ "rawtypes", "unchecked" })
-	private Desktop.CLASS[] getDesktops() throws Throwable {
-		List<Desktop.CLASS> desktops = new ArrayList<Desktop.CLASS>();
+	private Collection<Table> getTables() throws Throwable {
+		List<Table> tables = new ArrayList<Table>();
 
-		for(CLASS cls : RuntimeLoader.getRuntime(getUrl()).entries()) {
-			if(cls != null && cls.instanceOf(Desktop.class))
-				desktops.add((Desktop.CLASS)cls);
-		}
+		IRuntime runtime = RuntimeLoader.getRuntime(getUrl());
+		for(Table.CLASS<? extends Table> cls : runtime.tables())
+			tables.add(cls.newInstance());
 
-		Desktop.CLASS[] result = desktops.toArray(new Desktop.CLASS[0]);
-
-		Comparator<Desktop.CLASS> comparator = new Comparator<Desktop.CLASS>() {
+		Comparator<Table> comparator = new Comparator<Table>() {
 			@Override
-			public int compare(Desktop.CLASS o1, Desktop.CLASS o2) {
+			public int compare(Table o1, Table o2) {
 				return o1.displayName().compareTo(o2.displayName());
 			}
 		};
 
-		Arrays.sort(result, comparator);
-		return result;
+		Collections.sort(tables, comparator);
+		return tables;
 	}
 
-	@SuppressWarnings("rawtypes")
-	private void initializeTree() {
-		TreeItem root = new TreeItem(tables, SWT.NONE);
-		root.setText(getDataSetDesign().getDataSourceDesign().getName());
-		root.setImage(getImage(ROOT_ICON));
-
+	private void initializeTables() {
 		try {
-			Desktop.CLASS[] desktops = getDesktops();
-
-			for(Desktop.CLASS desktop : desktops) {
-				initializeDesktop(root, desktop);
+			for(Table table : getTables()) {
+				TableItem item = new TableItem(queries, SWT.NONE);
+				item.setText(table.displayName());
+				item.setImage(getImage(TableIcon));
+				item.setData(table);
 			}
 		} catch(Throwable e) {
 			throw new RuntimeException(e);
 		}
 	}
 
-	class DesktopTreeData {
-		private CLASS<? extends Desktop> dataClass;
+	private Collection<Table> getLinkedTables(Table table) {
+		Collection<Table> tables = new ArrayList<Table>();
 
-		DesktopTreeData(CLASS<? extends Desktop> dataClass) {
-			this.dataClass = dataClass;
+		for(Field.CLASS<Field> field : table.getLinks()) {
+			ILink link = (ILink)field.get();
+			Query.CLASS<Query> query = link.query();
+			if(query != null)
+				tables.add((Table)query.get());
 		}
 
-		CLASS<? extends Desktop> get() {
-			return dataClass;
-		}
+		return tables;
 	}
 
-	class DataSetTreeData {
-		private CLASS<? extends Query> dataClass;
-
-		DataSetTreeData(CLASS<? extends Query> dataClass) {
-			this.dataClass = dataClass;
-		}
-
-		CLASS<? extends Query> get() {
-			return dataClass;
-		}
+	private void initializeTree(Table table) {
+		structure.removeAll();
+		fields.removeAll();
+		initializeTableItem(null, table);
 	}
 
-	@SuppressWarnings({ "rawtypes", "unchecked" })
-	private void initializeDesktop(TreeItem parent, Desktop.CLASS desktopClass) {
-		TreeItem item = new TreeItem(parent, SWT.NONE);
-		item.setText(desktopClass.displayName());
-		item.setImage(getImage(DESKTOP_ICON));
-		item.setData(new DesktopTreeData(desktopClass));
+	private boolean checkCicle(TreeItem item, Table table) {
+		TreeItem parent;
 
-		Desktop desktop = (Desktop)desktopClass.get();
+		while((parent = item.getParentItem()) != null) {
+			Table t = (Table)parent.getData();
+			if(t != null && t.classId().equals(table.classId()))
+				return false;
+			item = parent;
+		}
+
+		return true;
+	}
+
+	private void initializeTableItem(TreeItem parent, Table table) {
+/*
 		String currentClass = getCurrentDataSetClassName();
+*/
+		for(Table linkedTable : getLinkedTables(table)) {
+			TreeItem item = parent == null ? new TreeItem(structure, SWT.NONE) : new TreeItem(parent, SWT.NONE);
+			item.setText(linkedTable.displayName() + " (" + linkedTable.index() + ")");
+			item.setImage(getImage(TableIcon));
+			item.setData(linkedTable);
 
-		Collection<Desktop.CLASS<Desktop>> desktopClasses = desktop.getSubDesktops();
-		Collection<Query.CLASS<Query>> dataSetClasses = desktop.getDataSets();
-
-		for(Desktop.CLASS subDesktopClass : desktopClasses) {
-			initializeDesktop(item, subDesktopClass);
+			if(checkCicle(item, linkedTable))
+				initializeTableItem(item, linkedTable);
 		}
 
-		for(CLASS<? extends Query> dataSetClass : dataSetClasses) {
-			TreeItem dataSetItem = new TreeItem(item, SWT.NONE);
-			dataSetItem.setText(dataSetClass.displayName());
-			dataSetItem.setImage(getImage(TABLE_ICON));
-			dataSetItem.setData(new DataSetTreeData(dataSetClass));
-			dataSetItem.setExpanded(true);
-
+		for(Field field : table.getDataFields()) {
+			if(!field.system()) {
+				TreeItem fieldItem = parent == null ? new TreeItem(structure, SWT.NONE) : new TreeItem(parent, SWT.NONE);
+				fieldItem.setText(field.displayName() + " (" + field.index() + ")");
+				fieldItem.setImage(getImage(ColumnIcon));
+				fieldItem.setData(field);
+			}
+/*
 			if(dataSetClass.classId().equals(currentClass))
 				dataSetItem.getParent().select(dataSetItem);
+*/
 		}
 	}
 
@@ -283,11 +290,42 @@ public class DataSetEditorPage extends DataSetWizardPage {
 		return text.split(";")[0];
 	}
 
+	private String getDatasetInfo() {
+		if(queries.getSelectionCount() == 0)
+			return null;
+
+		Table query = (Table)queries.getSelection()[0].getData();
+
+		JsonWriter writer = new JsonWriter();
+
+		writer.startObject();
+
+		writer.writeProperty(Json.path, getUrl().getPath());
+
+		writer.startObject(Json.query);
+		writer.writeProperty(Json.displayName, query.displayName());
+		writer.writeProperty(Json.id, query.classId());
+		writer.startArray(Json.fields);
+		for(TableItem item : fields.getItems()) {
+			Field field = (Field)item.getData();
+			writer.startObject();
+			writer.writeProperty(Json.displayName, field.displayName());
+			writer.writeProperty(Json.id, field.id());
+			writer.finishObject();
+		}
+		writer.finishArray();
+		writer.finishObject();
+
+		writer.finishObject();
+
+		return writer.toString();
+	}
+
 	@Override
 	protected DataSetDesign collectDataSetDesign(DataSetDesign design) {
-		dataSetClassName = getSelectedDataSetClassName();
+//		dataSetClassName = getSelectedDataSetClassName();
 
-		design.setQueryText(dataSetClassName + ";" + getUrl());
+		design.setQueryText(getDatasetInfo());
 		MetaDataRetriever retriever = new MetaDataRetriever(design);
 		IResultSetMetaData resultsetMeta = retriever.getResultSetMetaData();
 		IParameterMetaData paramMeta = retriever.getParameterMetaData();
@@ -333,18 +371,18 @@ public class DataSetEditorPage extends DataSetWizardPage {
 		}
 	}
 
-	private void addFetchDbObjectListener() {
-		tables.addSelectionListener(new SelectionAdapter() {
+	private void installQuerySelectionListener() {
+		queries.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(final SelectionEvent event) {
 				PlatformUI.getWorkbench().getDisplay().asyncExec(new Runnable() {
 					@Override
 					public void run() {
 						if(canLeave()) {
-							initFields((TreeItem)event.item);
+							initializeTree((Table)event.item.getData());
 							setMessage(DEFAULT_MESSAGE, IMessageProvider.NONE);
 						} else {
-							fields.removeAll();
+							structure.removeAll();
 							setMessage(ERROR_MESSAGE, IMessageProvider.ERROR);
 						}
 
@@ -357,6 +395,66 @@ public class DataSetEditorPage extends DataSetWizardPage {
 		});
 	}
 
+	private void installStructureDblClickListener() {
+		structure.addMouseListener(new MouseListener() {
+			@Override
+			public void mouseDoubleClick(final MouseEvent event) {
+				PlatformUI.getWorkbench().getDisplay().asyncExec(new Runnable() {
+					@Override
+					public void run() {
+						Point point = new Point(event.x, event.y);
+						TreeItem item = structure.getItem(point);
+						if(item == null)
+							return;
+
+						Object data = item.getData();
+						if(data instanceof Field) {
+							Field field = (Field)data;
+							TableItem fieldItem = new TableItem(fields, SWT.NONE);
+							fieldItem.setText(field.displayName() + " (" + field.id() + ")");
+							fieldItem.setImage(getImage(ColumnIcon));
+							fieldItem.setData(field);
+						}
+					}
+				});
+			}
+
+			@Override
+			public void mouseDown(MouseEvent e) {
+			}
+
+			@Override
+			public void mouseUp(MouseEvent e) {
+			}
+		});
+	}
+
+	private void installFieldsDblClickListener() {
+		fields.addMouseListener(new MouseListener() {
+			@Override
+			public void mouseDoubleClick(final MouseEvent event) {
+				PlatformUI.getWorkbench().getDisplay().asyncExec(new Runnable() {
+					@Override
+					public void run() {
+						Point point = new Point(event.x, event.y);
+						TableItem item = fields.getItem(point);
+						if(item != null)
+							item.dispose();
+					}
+				});
+			}
+
+			@Override
+			public void mouseDown(MouseEvent e) {
+			}
+
+			@Override
+			public void mouseUp(MouseEvent e) {
+			}
+		});
+	}
+
+/*
 	private void initFields(TreeItem item) {
 		try {
 			fields.removeAll();
@@ -373,7 +471,7 @@ public class DataSetEditorPage extends DataSetWizardPage {
 						if(name != null) {
 							TableItem root = new TableItem(fields, SWT.NONE);
 							root.setText(name);
-							root.setImage(getImage(COLUMN_ICON));
+							root.setImage(getImage(ColumnIcon));
 							root.setData(field);
 						}
 					}
@@ -383,20 +481,17 @@ public class DataSetEditorPage extends DataSetWizardPage {
 			ExceptionHandler.showException(PlatformUI.getWorkbench().getDisplay().getActiveShell(), Plugin.getResourceString("exceptionHandler.title.error"), e.getLocalizedMessage(), e);
 		}
 	}
-
+*/
 	@Override
 	protected boolean canLeave() {
-		return !getSelectedDataSetClassName().isEmpty(); // getSelection()
-															// instanceof
-															// DataSetTreeData;
+		return !getSelectedDataSetClassName().isEmpty();
 	}
 
 	private Object getSelection() {
-		TreeItem[] selection = tables != null ? tables.getSelection() : null;
+		TableItem[] selection = queries != null ? queries.getSelection() : null;
 
-		if(selection != null && selection.length > 0) {
+		if(selection != null && selection.length > 0)
 			return selection[0].getData();
-		}
 
 		return null;
 	}
@@ -404,9 +499,8 @@ public class DataSetEditorPage extends DataSetWizardPage {
 	private String getSelectedDataSetClassName() {
 		Object data = getSelection();
 
-		if(data instanceof DataSetTreeData) {
-			return ((DataSetTreeData)data).get().classId();
-		}
+		if(data instanceof Table)
+			return ((Table)data).classId();
 
 		return getCurrentDataSetClassName();
 	}

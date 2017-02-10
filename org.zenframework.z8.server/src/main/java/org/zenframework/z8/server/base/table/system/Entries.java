@@ -57,6 +57,12 @@ public class Entries extends Table {
 	}
 
 	@Override
+	public void initMembers() {
+		super.initMembers();
+		objects.add(classId);
+	}
+
+	@Override
 	public void constructor2() {
 		super.constructor2();
 
@@ -67,8 +73,6 @@ public class Entries extends Table {
 
 		name.setDisplayName(displayNames.Name);
 		name.get().length = new integer(1024);
-
-		registerDataField(classId);
 	}
 
 	@Override

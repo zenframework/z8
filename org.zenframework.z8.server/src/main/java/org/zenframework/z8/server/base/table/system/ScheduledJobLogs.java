@@ -71,6 +71,18 @@ public class ScheduledJobLogs extends Table {
 	}
 
 	@Override
+	public void initMembers() {
+		super.initMembers();
+
+		objects.add(scheduledJob);
+		objects.add(start);
+		objects.add(finish);
+		objects.add(files);
+
+		objects.add(scheduledJobs);
+	}
+
+	@Override
 	public void constructor2() {
 		super.constructor2();
 
@@ -89,12 +101,5 @@ public class ScheduledJobLogs extends Table {
 
 		files.setName(fieldNames.Files);
 		files.setIndex("files");
-
-		registerDataField(scheduledJob);
-		registerDataField(start);
-		registerDataField(finish);
-		registerDataField(files);
-
-		objects.add(scheduledJobs);
 	}
 }

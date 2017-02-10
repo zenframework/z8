@@ -89,6 +89,16 @@ public class Domains extends Table {
 	}
 
 	@Override
+	public void initMembers() {
+		super.initMembers();
+
+		objects.add(userLink);
+		objects.add(owner);
+
+		objects.add(users);
+	}
+
+	@Override
 	public void constructor2() {
 		super.constructor2();
 
@@ -109,16 +119,11 @@ public class Domains extends Table {
 		owner.setDisplayName(displayNames.Owner);
 		owner.setExportable(false);
 
-		registerDataField(userLink);
-		registerDataField(owner);
-
 		registerControl(name);
 		registerControl(description);
 		registerControl(users.get().name);
 		registerControl(users.get().description);
 		registerControl(owner);
-
-		objects.add(users);
 	}
 
 	@Override

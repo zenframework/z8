@@ -33,6 +33,14 @@ public class RoleTableAccessView extends Roles {
 	}
 
 	@Override
+	public void initMembers() {
+		super.initMembers();
+
+		objects.add(rta);
+		objects.add(rfa);
+	}
+
+	@Override
 	public void constructor2() {
 		super.constructor2();
 
@@ -137,8 +145,5 @@ public class RoleTableAccessView extends Roles {
 		registerControl(fieldsListbox);
 
 		sortFields.add(name);
-
-		objects.add(this.rta);
-		objects.add(this.rfa);
 	}
 }

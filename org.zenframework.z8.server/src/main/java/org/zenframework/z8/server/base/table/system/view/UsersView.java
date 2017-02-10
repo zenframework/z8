@@ -28,9 +28,17 @@ public class UsersView extends Users {
 
 	private UserEntries.CLASS<UserEntries> userEntries = new UserEntries.CLASS<UserEntries>(this);
 	private UserRoles.CLASS<UserRoles> userRoles = new UserRoles.CLASS<UserRoles>(this);
-	
+
 	public UsersView(IObject container) {
 		super(container);
+	}
+
+	@Override
+	public void initMembers() {
+		super.initMembers();
+
+		objects.add(this.userEntries);
+		objects.add(this.userRoles);
 	}
 
 	@Override
@@ -99,8 +107,5 @@ public class UsersView extends Users {
 		registerControl(entriesListbox);
 
 		sortFields.add(name);
-
-		objects.add(this.userEntries);
-		objects.add(this.userRoles);
 	}
 }

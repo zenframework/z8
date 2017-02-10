@@ -71,6 +71,17 @@ abstract public class HubServerView extends Query {
 	}
 
 	@Override
+	public void initMembers() {
+		super.initMembers();
+
+		objects.add(host);
+		objects.add(port);
+		objects.add(active);
+		objects.add(serverId);
+		objects.add(domains);
+	}
+
+	@Override
 	public void constructor2() {
 		super.constructor2();
 

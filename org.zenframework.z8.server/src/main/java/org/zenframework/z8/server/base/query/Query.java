@@ -806,10 +806,6 @@ public class Query extends OBJECT {
 		return period != null ? period.get() : null;
 	}
 
-	public void registerDataField(Field.CLASS<?> field) {
-		objects.add(field);
-	}
-
 	public void registerControl(Control.CLASS<?> control) {
 		controls.add(control);
 	}

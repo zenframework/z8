@@ -75,6 +75,20 @@ public class RoleFieldAccess extends Table {
 	}
 
 	@Override
+	public void initMembers() {
+		super.initMembers();
+
+		objects.add(role);
+		objects.add(field);
+
+		objects.add(read);
+		objects.add(write);
+
+		objects.add(roles);
+		objects.add(fields);
+	}
+
+	@Override
 	public void constructor2() {
 		super.constructor2();
 
@@ -98,15 +112,6 @@ public class RoleFieldAccess extends Table {
 		write.setIndex("write");
 		write.setDisplayName(displayNames.Write);
 		write.get().setDefault(bool.True);
-
-		registerDataField(role);
-		registerDataField(field);
-
-		registerDataField(read);
-		registerDataField(write);
-
-		objects.add(roles);
-		objects.add(fields);
 	}
 
 	@Override

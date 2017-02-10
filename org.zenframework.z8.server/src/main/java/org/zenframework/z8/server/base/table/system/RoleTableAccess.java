@@ -87,6 +87,23 @@ public class RoleTableAccess extends Table {
 	}
 
 	@Override
+	public void initMembers() {
+		super.initMembers();
+
+		objects.add(role);
+		objects.add(table);
+
+		objects.add(read);
+		objects.add(write);
+		objects.add(create);
+		objects.add(copy);
+		objects.add(destroy);
+
+		objects.add(roles);
+		objects.add(tables);
+	}
+
+	@Override
 	public void constructor2() {
 		super.constructor2();
 
@@ -120,18 +137,6 @@ public class RoleTableAccess extends Table {
 		destroy.setName(fieldNames.Destroy);
 		destroy.setIndex("destroy");
 		destroy.setDisplayName(displayNames.Destroy);
-
-		registerDataField(role);
-		registerDataField(table);
-
-		registerDataField(read);
-		registerDataField(write);
-		registerDataField(create);
-		registerDataField(copy);
-		registerDataField(destroy);
-
-		objects.add(roles);
-		objects.add(tables);
 	}
 
 	@Override

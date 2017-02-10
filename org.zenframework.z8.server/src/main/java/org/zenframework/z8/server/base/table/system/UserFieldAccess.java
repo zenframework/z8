@@ -71,6 +71,20 @@ public class UserFieldAccess extends Table {
 	}
 
 	@Override
+	public void initMembers() {
+		super.initMembers();
+
+		objects.add(user);
+		objects.add(field);
+
+		objects.add(read);
+		objects.add(write);
+
+		objects.add(users);
+		objects.add(fields);
+	}
+
+	@Override
 	public void constructor2() {
 		super.constructor2();
 
@@ -90,14 +104,5 @@ public class UserFieldAccess extends Table {
 		write.setName(fieldNames.Write);
 		write.setIndex("write");
 		write.setDisplayName(displayNames.Write);
-
-		registerDataField(user);
-		registerDataField(field);
-
-		registerDataField(read);
-		registerDataField(write);
-
-		objects.add(users);
-		objects.add(fields);
 	}
 }

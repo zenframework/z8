@@ -83,6 +83,17 @@ public class UserRoles extends Table {
 	}
 
 	@Override
+	public void initMembers() {
+		super.initMembers();
+
+		objects.add(user);
+		objects.add(role);
+
+		objects.add(users);
+		objects.add(roles);
+	}
+
+	@Override
 	public void constructor2() {
 		super.constructor2();
 
@@ -96,12 +107,6 @@ public class UserRoles extends Table {
 		role.setIndex("role");
 
 		readOnly = new bool(!ApplicationServer.getUser().isAdministrator());
-
-		registerDataField(user);
-		registerDataField(role);
-
-		objects.add(users);
-		objects.add(roles);
 	}
 
 	@Override

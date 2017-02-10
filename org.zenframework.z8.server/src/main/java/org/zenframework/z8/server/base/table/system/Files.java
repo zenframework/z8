@@ -73,6 +73,14 @@ public class Files extends Table {
 	}
 
 	@Override
+	public void initMembers() {
+		super.initMembers();
+
+		objects.add(data);
+		objects.add(path);
+	}
+
+	@Override
 	public void constructor2() {
 		super.constructor2();
 
@@ -86,9 +94,6 @@ public class Files extends Table {
 		path.setIndex("path");
 		path.setDisplayName(displayNames.Path);
 		path.get().length = new integer(512);
-
-		registerDataField(data);
-		registerDataField(path);
 	}
 
 	public void add(file file) {

@@ -76,6 +76,18 @@ public class Topics extends Table {
 	}
 
 	@Override
+	public void initMembers() {
+		super.initMembers();
+
+		objects.add(headline);
+		objects.add(text);
+		objects.add(author);
+		objects.add(time);
+
+		objects.add(authors);
+	}
+
+	@Override
 	public void constructor2() {
 		super.constructor2();
 
@@ -96,13 +108,6 @@ public class Topics extends Table {
 		time.setName(fieldNames.Time);
 		time.setIndex("time");
 		time.setDisplayName(displayNames.Time);
-
-		registerDataField(headline);
-		registerDataField(text);
-		registerDataField(author);
-		registerDataField(time);
-
-		objects.add(authors);
 	}
 
 	@Override

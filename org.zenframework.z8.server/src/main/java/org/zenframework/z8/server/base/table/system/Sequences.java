@@ -55,6 +55,14 @@ public class Sequences extends Table {
 	}
 
 	@Override
+	public void initMembers() {
+		super.initMembers();
+
+		objects.add(key);
+		objects.add(value);
+	}
+
+	@Override
 	public void constructor2() {
 		super.constructor2();
 
@@ -68,10 +76,7 @@ public class Sequences extends Table {
 		value.setIndex("value");
 		value.setDisplayName(displayNames.Value);
 
-		readOnly= new bool(!ApplicationServer.getUser().isAdministrator());
-
-		registerDataField(key);
-		registerDataField(value);
+		readOnly = new bool(!ApplicationServer.getUser().isAdministrator());
 
 		sortFields.add(description);
 	}

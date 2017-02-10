@@ -68,8 +68,8 @@ public class SystemTools extends Desktop {
 	}
 
 	@Override
-	public void constructor2() {
-		super.constructor2();
+	public void initMembers() {
+		super.initMembers();
 
 		if(ServerConfig.isLatestVersion()) {
 			objects.add(users);

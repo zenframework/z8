@@ -91,6 +91,22 @@ public class ScheduledJobs extends Table {
 	}
 
 	@Override
+	public void initMembers() {
+		super.initMembers();
+
+		objects.add(job);
+		objects.add(user);
+		objects.add(from);
+		objects.add(till);
+		objects.add(repeat);
+		objects.add(lastStarted);
+		objects.add(active);
+
+		objects.add(jobs);
+		objects.add(users);
+	}
+
+	@Override
 	public void constructor2() {
 		super.constructor2();
 
@@ -127,19 +143,8 @@ public class ScheduledJobs extends Table {
 		active.setIndex("active");
 		active.setDisplayName(displayNames.Active);
 
-		registerDataField(job);
-		registerDataField(user);
-		registerDataField(from);
-		registerDataField(till);
-		registerDataField(repeat);
-		registerDataField(lastStarted);
-		registerDataField(active);
-
 		repeat.get().setDefault(new integer(DefaultRepeat));
 		active.get().setDefault(bool.True);
-
-		objects.add(jobs);
-		objects.add(users);
 	}
 
 	@Override

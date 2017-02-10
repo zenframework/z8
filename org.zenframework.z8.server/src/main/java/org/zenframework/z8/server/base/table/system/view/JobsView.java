@@ -30,6 +30,13 @@ public class JobsView extends ScheduledJobs {
 	}
 
 	@Override
+	public void initMembers() {
+		super.initMembers();
+
+		objects.add(logs);
+	}
+
+	@Override
 	public void constructor2() {
 		super.constructor2();
 
@@ -68,7 +75,5 @@ public class JobsView extends ScheduledJobs {
 		registerControl(logsListbox);
 
 		sortFields.add(jobs.get().name);
-
-		objects.add(logs);
 	}
 }

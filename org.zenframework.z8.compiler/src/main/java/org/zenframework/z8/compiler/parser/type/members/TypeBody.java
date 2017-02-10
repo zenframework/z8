@@ -240,6 +240,7 @@ public class TypeBody extends LanguageElement {
 	private void getReferenceTypeConstructor(CodeGenerator codeGenerator) {
 		getConstructor(codeGenerator);
 		getConstructor1(codeGenerator);
+		getInitMembers(codeGenerator);
 		getConstructor2(codeGenerator);
 	}
 
@@ -420,6 +421,51 @@ public class TypeBody extends LanguageElement {
 		}
 	}
 
+	private void getInitMembers(CodeGenerator codeGenerator) {
+		codeGenerator.breakLine();
+		codeGenerator.indent();
+		codeGenerator.append("public void initMembers() {");
+		codeGenerator.breakLine();
+
+		codeGenerator.incrementIndent();
+
+		codeGenerator.indent();
+		codeGenerator.append("super.initMembers();");
+		codeGenerator.breakLine();
+
+		initAutoArrays(codeGenerator);
+
+		codeGenerator.decrementIndent();
+
+		codeGenerator.indent();
+		codeGenerator.append("}");
+		codeGenerator.breakLine();
+	}
+
+	private void initAutoArrays(CodeGenerator codeGenerator) {
+		IType declaringType = getDeclaringType();
+
+		IMember[] autoArrays = declaringType.getAutoArrays();
+		IMember[] members = declaringType.getMembers();
+
+		for(IMember member : members) {
+			IVariableType memberType = new VariableType(member.getVariableType());
+
+			for(IMember array : autoArrays) {
+				IVariableType arrayElementType = new VariableType(array.getVariableType());
+				arrayElementType.removeRightKey();
+
+				ITypeCast typeCast = memberType.getCastTo(arrayElementType);
+
+				if(typeCast != null && !typeCast.hasOperator()) {
+					codeGenerator.indent();
+					codeGenerator.append(array.getName() + ".add(" + member.getJavaName() + ");");
+					codeGenerator.breakLine();
+				}
+			}
+		}
+	}
+
 	@Override
 	public void getConstructor2(CodeGenerator codeGenerator) {
 		codeGenerator.breakLine();
@@ -447,31 +493,7 @@ public class TypeBody extends LanguageElement {
 
 		ILanguageElement[] elements = getMembers();
 
-		for(ILanguageElement element : elements) {
+		for(ILanguageElement element : elements)
 			element.getConstructor2(codeGenerator);
-		}
-
-		IType declaringType = getDeclaringType();
-
-		IMember[] autoArrays = declaringType.getAutoArrays();
-		IMember[] members = declaringType.getMembers();
-
-		for(IMember member : members) {
-			IVariableType memberType = new VariableType(member.getVariableType());
-
-			for(IMember array : autoArrays) {
-				IVariableType arrayElementType = new VariableType(array.getVariableType());
-				arrayElementType.removeRightKey();
-
-				ITypeCast typeCast = memberType.getCastTo(arrayElementType);
-
-				if(typeCast != null && !typeCast.hasOperator()) {
-					codeGenerator.indent();
-					codeGenerator.append(array.getName() + ".add(" + member.getJavaName() + ");");
-					codeGenerator.breakLine();
-				}
-
-			}
-		}
 	}
 }

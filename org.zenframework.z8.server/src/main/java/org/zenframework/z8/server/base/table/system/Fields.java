@@ -70,6 +70,19 @@ public class Fields extends Table {
 	}
 
 	@Override
+	public void initMembers() {
+		super.initMembers();
+
+		objects.add(classId);
+		objects.add(table);
+		objects.add(displayName);
+		objects.add(type);
+		objects.add(position);
+
+		objects.add(tables);
+	}
+
+	@Override
 	public void constructor2() {
 		super.constructor2();
 
@@ -97,13 +110,5 @@ public class Fields extends Table {
 
 		position.setName(fieldNames.Position);
 		position.setIndex("position");
-
-		registerDataField(classId);
-		registerDataField(table);
-		registerDataField(displayName);
-		registerDataField(type);
-		registerDataField(position);
-
-		objects.add(tables);
 	}
 }

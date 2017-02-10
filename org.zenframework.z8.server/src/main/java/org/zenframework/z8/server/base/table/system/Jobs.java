@@ -48,6 +48,13 @@ public class Jobs extends Table {
 	}
 
 	@Override
+	public void initMembers() {
+		super.initMembers();
+
+		objects.add(classId);
+	}
+
+	@Override
 	public void constructor2() {
 		super.constructor2();
 
@@ -57,7 +64,5 @@ public class Jobs extends Table {
 		classId.get().length = new integer(1024);
 
 		name.get().length = new integer(256);
-
-		registerDataField(classId);
 	}
 }

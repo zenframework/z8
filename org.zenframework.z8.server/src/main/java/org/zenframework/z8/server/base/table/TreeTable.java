@@ -67,6 +67,21 @@ public class TreeTable extends Table {
 	}
 
 	@Override
+	public void initMembers() {
+		super.initMembers();
+
+		objects.add(parentId);
+		objects.add(path);
+
+		objects.add(parent1);
+		objects.add(parent2);
+		objects.add(parent3);
+		objects.add(parent4);
+		objects.add(parent5);
+		objects.add(parent6);
+	}
+
+	@Override
 	public void constructor2() {
 		super.constructor2();
 
@@ -109,16 +124,6 @@ public class TreeTable extends Table {
 		parent6.setIndex("parent6");
 		parent6.setSystem(true);
 		parent6.get().indexed = bool.True;
-
-		registerDataField(parentId);
-		registerDataField(path);
-
-		registerDataField(parent1);
-		registerDataField(parent2);
-		registerDataField(parent3);
-		registerDataField(parent4);
-		registerDataField(parent5);
-		registerDataField(parent6);
 	}
 
 	@Override

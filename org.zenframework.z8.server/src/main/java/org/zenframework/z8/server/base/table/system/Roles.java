@@ -91,6 +91,18 @@ public class Roles extends Table {
 	}
 
 	@Override
+	public void initMembers() {
+		super.initMembers();
+
+		objects.add(read);
+		objects.add(write);
+		objects.add(create);
+		objects.add(copy);
+		objects.add(destroy);
+		objects.add(execute);
+	}
+
+	@Override
 	public void constructor2() {
 		super.constructor2();
 
@@ -128,13 +140,6 @@ public class Roles extends Table {
 		execute.setIndex("execute");
 		execute.setDisplayName(displayNames.Execute);
 		execute.get().setDefault(new bool(access.execute()));
-
-		registerDataField(read);
-		registerDataField(write);
-		registerDataField(create);
-		registerDataField(copy);
-		registerDataField(destroy);
-		registerDataField(execute);
 
 		this.setTransactive(true);
 	}

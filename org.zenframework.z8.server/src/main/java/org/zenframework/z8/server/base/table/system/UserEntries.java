@@ -79,6 +79,18 @@ public class UserEntries extends Table {
 	}
 
 	@Override
+	public void initMembers() {
+		super.initMembers();
+
+		objects.add(user);
+		objects.add(entry);
+		objects.add(position);
+
+		objects.add(users);
+		objects.add(entries);
+	}
+
+	@Override
 	public void constructor2() {
 		super.constructor2();
 
@@ -96,13 +108,6 @@ public class UserEntries extends Table {
 		position.setDisplayName(displayNames.Position);
 
 		readOnly = new bool(!ApplicationServer.getUser().isAdministrator());
-
-		registerDataField(user);
-		registerDataField(entry);
-		registerDataField(position);
-
-		objects.add(users);
-		objects.add(entries);
 	}
 
 	@Override

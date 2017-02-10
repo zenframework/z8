@@ -85,7 +85,12 @@ abstract public class Field extends Control implements IField {
 	@Override
 	public String displayName() {
 		String name = super.displayName();
-		return name == null || name.isEmpty() ? name() : name;
+
+		if(name != null && !name.isEmpty())
+			return name;
+
+		name = name();
+		return name == null || name.isEmpty() ? id() : name;
 	}
 
 	/*

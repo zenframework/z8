@@ -88,6 +88,18 @@ public class MessageQueue extends Table {
 	}
 
 	@Override
+	public void initMembers() {
+		super.initMembers();
+
+		objects.add(address);
+		objects.add(sender);
+		objects.add(ordinal);
+		objects.add(classId);
+		objects.add(data);
+		objects.add(processing);
+	}
+
+	@Override
 	public void constructor2() {
 		super.constructor2();
 
@@ -115,13 +127,6 @@ public class MessageQueue extends Table {
 		processing.setName(fieldNames.Processing);
 		processing.setIndex("processing");
 		processing.setDisplayName(displayNames.Processing);
-
-		registerDataField(address);
-		registerDataField(sender);
-		registerDataField(ordinal);
-		registerDataField(classId);
-		registerDataField(data);
-		registerDataField(processing);
 	}
 
 	public void add(Message message) {

@@ -83,6 +83,24 @@ public class Table extends TableBase {
 	}
 
 	@Override
+	public void initMembers() {
+		super.initMembers();
+
+		objects.add(recordId);
+		objects.add(createdAt);
+		objects.add(modifiedAt);
+		objects.add(createdBy);
+		objects.add(modifiedBy);
+		objects.add(lock);
+		objects.add(archive);
+
+		objects.add(id);
+		objects.add(name);
+		objects.add(shortName);
+		objects.add(description);
+	}
+
+	@Override
 	public void constructor2() {
 		super.constructor2();
 
@@ -131,19 +149,6 @@ public class Table extends TableBase {
 		archive.setName(fieldNames.Archive);
 		archive.setIndex("archive");
 		archive.setSystem(true);
-
-		registerDataField(recordId);
-		registerDataField(createdAt);
-		registerDataField(modifiedAt);
-		registerDataField(createdBy);
-		registerDataField(modifiedBy);
-		registerDataField(lock);
-		registerDataField(archive);
-
-		registerDataField(id);
-		registerDataField(name);
-		registerDataField(shortName);
-		registerDataField(description);
 	}
 
 	@Override

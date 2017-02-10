@@ -95,6 +95,19 @@ public class TransportQueue extends Table {
 	}
 
 	@Override
+	public void initMembers() {
+		super.initMembers();
+
+		objects.add(address);
+		objects.add(sender);
+		objects.add(ordinal);
+		objects.add(classId);
+		objects.add(data);
+		objects.add(bytesTransferred);
+		objects.add(processed);
+	}
+
+	@Override
 	public void constructor2() {
 		super.constructor2();
 
@@ -128,14 +141,6 @@ public class TransportQueue extends Table {
 		processed.setName(fieldNames.Processed);
 		processed.setIndex("processed");
 		processed.setDisplayName(displayNames.Processed);
-
-		registerDataField(address);
-		registerDataField(sender);
-		registerDataField(ordinal);
-		registerDataField(classId);
-		registerDataField(data);
-		registerDataField(bytesTransferred);
-		registerDataField(processed);
 	}
 
 	public void add(Message message) {

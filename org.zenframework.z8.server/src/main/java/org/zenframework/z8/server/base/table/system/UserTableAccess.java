@@ -83,6 +83,22 @@ public class UserTableAccess extends Table {
 	}
 
 	@Override
+	public void initMembers() {
+		super.initMembers();
+
+		objects.add(user);
+		objects.add(table);
+
+		objects.add(read);
+		objects.add(write);
+		objects.add(create);
+		objects.add(copy);
+		objects.add(destroy);
+
+		objects.add(users);
+		objects.add(tables);
+	}
+	@Override
 	public void constructor2() {
 		super.constructor2();
 
@@ -114,17 +130,5 @@ public class UserTableAccess extends Table {
 		destroy.setName(fieldNames.Destroy);
 		destroy.setIndex("destroy");
 		destroy.setDisplayName(displayNames.Destroy);
-
-		registerDataField(user);
-		registerDataField(table);
-
-		registerDataField(read);
-		registerDataField(write);
-		registerDataField(create);
-		registerDataField(copy);
-		registerDataField(destroy);
-
-		objects.add(users);
-		objects.add(tables);
 	}
 }

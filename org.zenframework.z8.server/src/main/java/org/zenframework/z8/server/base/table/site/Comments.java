@@ -77,6 +77,20 @@ public class Comments extends TreeTable {
 	}
 
 	@Override
+	public void initMembers() {
+		super.initMembers();
+
+		objects.add(topic);
+		objects.add(author);
+		objects.add(text);
+		objects.add(time);
+
+		objects.add(parentComment);
+		objects.add(topics);
+		objects.add(authors);
+	}
+
+	@Override
 	public void constructor2() {
 		super.constructor2();
 
@@ -97,15 +111,6 @@ public class Comments extends TreeTable {
 		time.setName(fieldNames.Time);
 		time.setIndex("time");
 		time.setDisplayName(displayNames.Time);
-
-		registerDataField(topic);
-		registerDataField(author);
-		registerDataField(text);
-		registerDataField(time);
-
-		objects.add(parentComment);
-		objects.add(topics);
-		objects.add(authors);
 	}
 
 	@Override

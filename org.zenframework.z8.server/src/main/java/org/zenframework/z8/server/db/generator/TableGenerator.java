@@ -12,7 +12,6 @@ import org.zenframework.z8.server.base.model.sql.Select;
 import org.zenframework.z8.server.base.query.Query;
 import org.zenframework.z8.server.base.table.Table;
 import org.zenframework.z8.server.base.table.TreeTable;
-import org.zenframework.z8.server.base.table.system.Files;
 import org.zenframework.z8.server.base.table.system.Roles;
 import org.zenframework.z8.server.base.table.system.Users;
 import org.zenframework.z8.server.base.table.value.BoolExpression;
@@ -464,11 +463,13 @@ public class TableGenerator {
 	private void recreateTable() throws SQLException {
 		String tableName = table().name();
 
+/*
 		// Никогда не пересоздаем SystemFiles - очень долго. Если что, то все изменения руками.
 		if(tableName.equals(Files.TableName)) {
 			logger.info(Files.TableName + " - skipped.");
 			return;
 		}
+*/
 
 		String name = tableName + "_" + guid.create().toString();
 

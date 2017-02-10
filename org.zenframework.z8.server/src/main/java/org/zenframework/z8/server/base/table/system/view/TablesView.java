@@ -28,6 +28,12 @@ public class TablesView extends Tables {
 	}
 
 	@Override
+	public void initMembers() {
+		super.initMembers();
+		objects.add(this.fields);
+	}
+
+	@Override
 	public void constructor2() {
 		super.constructor2();
 
@@ -73,7 +79,5 @@ public class TablesView extends Tables {
 		names.add(displayName);
 		names.add(name);
 		sortFields.add(name);
-
-		objects.add(this.fields);
 	}
 }

@@ -201,6 +201,10 @@ public class OBJECT extends RequestTarget implements IObject, RmiSerializable {
 	}
 
 	@Override
+	public void initMembers() {
+	}
+
+	@Override
 	public Collection<IClass<? extends IObject>> members() {
 		return objects;
 	}

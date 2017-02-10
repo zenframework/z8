@@ -54,6 +54,14 @@ public class Tables extends Table {
 	}
 
 	@Override
+	public void initMembers() {
+		super.initMembers();
+
+		objects.add(classId);
+		objects.add(displayName);
+	}
+
+	@Override
 	public void constructor2() {
 		super.constructor2();
 
@@ -69,8 +77,5 @@ public class Tables extends Table {
 		displayName.setName(fieldNames.DisplayName);
 		displayName.setDisplayName(displayNames.DisplayName);
 		displayName.get().length = new integer(256);
-
-		registerDataField(classId);
-		registerDataField(displayName);
 	}
 }

@@ -127,6 +127,20 @@ public class Users extends Table {
 	}
 
 	@Override
+	public void initMembers() {
+		super.initMembers();
+
+		objects.add(password);
+		objects.add(firstName);
+		objects.add(middleName);
+		objects.add(lastName);
+		objects.add(phone);
+		objects.add(email);
+		objects.add(banned);
+		objects.add(settings);
+	}
+
+	@Override
 	public void constructor2() {
 		super.constructor2();
 
@@ -175,15 +189,6 @@ public class Users extends Table {
 		settings.setName(fieldNames.Settings);
 		settings.setIndex("settings");
 		settings.setDisplayName(displayNames.Settings);
-
-		registerDataField(password);
-		registerDataField(firstName);
-		registerDataField(middleName);
-		registerDataField(lastName);
-		registerDataField(phone);
-		registerDataField(email);
-		registerDataField(banned);
-		registerDataField(settings);
 	}
 
 	@Override
