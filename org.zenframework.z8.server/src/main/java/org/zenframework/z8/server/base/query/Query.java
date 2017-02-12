@@ -15,6 +15,7 @@ import org.zenframework.z8.server.base.form.Control;
 import org.zenframework.z8.server.base.form.Section;
 import org.zenframework.z8.server.base.form.TabControl;
 import org.zenframework.z8.server.base.form.action.Action;
+import org.zenframework.z8.server.base.form.report.Report;
 import org.zenframework.z8.server.base.model.actions.ActionConfig;
 import org.zenframework.z8.server.base.model.actions.CopyAction;
 import org.zenframework.z8.server.base.model.actions.DestroyAction;
@@ -83,6 +84,7 @@ public class Query extends OBJECT {
 	public RCollection<Field.CLASS<? extends Field>> sortFields = new RCollection<Field.CLASS<? extends Field>>();
 	public RCollection<Field.CLASS<? extends Field>> groupFields = new RCollection<Field.CLASS<? extends Field>>();
 	public RCollection<Action.CLASS<? extends Action>> actions = new RCollection<Action.CLASS<? extends Action>>();
+	public RCollection<Report.CLASS<? extends Report>> reports = new RCollection<Report.CLASS<? extends Report>>();
 
 	public RCollection<Link.CLASS<? extends Link>> aggregateBy = new RCollection<Link.CLASS<? extends Link>>();
 	public RCollection<Field.CLASS<? extends Field>> groupBy = new RCollection<Field.CLASS<? extends Field>>();
@@ -1004,7 +1006,6 @@ public class Query extends OBJECT {
 			if(link.query() == query.getCLASS())
 				return link;
 		}
-
 		return null;
 	}
 
@@ -1034,7 +1035,6 @@ public class Query extends OBJECT {
 	public Collection<ILink> getPath(Field field) {
 		return getPath(field.owner());
 	}
-
 
 	public Field getFieldById(String id) {
 		for(Field.CLASS<? extends Field> field : dataFields()) {
@@ -1102,7 +1102,18 @@ public class Query extends OBJECT {
 			if(action.id().equals(id))
 				return action;
 		}
+		return null;
+	}
 
+	public Collection<Report> reports() {
+		return CLASS.asList(reports);
+	}
+
+	public Report getReport(String id) {
+		for(Report report : reports()) {
+			if(report.id().equals(id))
+				return report;
+		}
 		return null;
 	}
 
@@ -1124,7 +1135,9 @@ public class Query extends OBJECT {
 		writer.writeControls(Json.columns, columns(), this, context);
 		writer.writeControls(Json.nameFields, names(), this, context);
 		writer.writeControls(Json.quickFilters, quickFilters(), this, context);
+
 		writer.writeActions(actions());
+		writer.writeReports(reports());
 
 		writeKeys(writer, selectFields());
 

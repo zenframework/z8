@@ -8,6 +8,8 @@ import java.util.List;
 import org.zenframework.z8.server.base.form.Control;
 import org.zenframework.z8.server.base.form.action.Action;
 import org.zenframework.z8.server.base.form.action.IAction;
+import org.zenframework.z8.server.base.form.report.IReport;
+import org.zenframework.z8.server.base.form.report.Report;
 import org.zenframework.z8.server.base.query.Query;
 import org.zenframework.z8.server.base.table.value.Field;
 import org.zenframework.z8.server.json.parser.JsonArray;
@@ -326,6 +328,21 @@ public class JsonWriter {
 		for(IAction action : actions) {
 			startObject();
 			action.write(this);
+			finishObject();
+		}
+
+		finishArray();
+	}
+
+	public void writeReports(Collection<Report> reports) {
+		if(reports.isEmpty())
+			return;
+
+		startArray(Json.reports);
+
+		for(IReport report : reports) {
+			startObject();
+			report.write(this);
 			finishObject();
 		}
 

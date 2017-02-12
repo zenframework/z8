@@ -1,5 +1,6 @@
 import org.zenframework.z8.base.form.Control;
 import org.zenframework.z8.base.form.action.Action;
+import org.zenframework.z8.base.form.report.Report;
 import org.zenframework.z8.base.table.value.AttachmentField;
 import org.zenframework.z8.base.table.value.DatetimeField;
 import org.zenframework.z8.base.table.value.Field;
@@ -27,6 +28,7 @@ public class Query extends Object {
 	public AttachmentField attachments;
 
 	public Action[] actions;
+	public Report[] reports;
 
 	public Link[] aggregateBy;          // Поля из корневого запроса для группировки его перед выполнением основного.
 	public Field[] groupBy;

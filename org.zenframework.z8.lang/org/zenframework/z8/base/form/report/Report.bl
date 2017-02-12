@@ -1,0 +1,8 @@
+import org.zenframework.z8.lang.Object;
+
+[native "org.zenframework.z8.server.base.form.report.Report"]
+public class Report extends Object {
+	public string template;
+
+	virtual protected void execute(guid recordId);
+}
