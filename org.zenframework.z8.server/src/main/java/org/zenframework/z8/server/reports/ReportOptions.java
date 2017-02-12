@@ -198,7 +198,7 @@ public class ReportOptions {
 	}
 
 	public String documentName() {
-		String name = headers.get(Reports.FIRSTPAGE_CAPTIONCENTER);
+		String name = headers.get(Reports.FirstPageCaptionCenter);
 
 		return name != null ? name : "report";
 	}

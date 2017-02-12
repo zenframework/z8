@@ -21,12 +21,11 @@ public enum PageOrientation {
 	}
 
 	static public PageOrientation fromString(String string) {
-		if(Names.Portrait.equalsIgnoreCase(string)) {
+		if(Names.Portrait.equalsIgnoreCase(string))
 			return PageOrientation.Portrait;
-		} else if(Names.Landscape.equalsIgnoreCase(string)) {
+		else if(Names.Landscape.equalsIgnoreCase(string))
 			return PageOrientation.Landscape;
-		} else {
+		else
 			throw new RuntimeException("Unknown page orientation: '" + string + "'");
-		}
 	}
 }

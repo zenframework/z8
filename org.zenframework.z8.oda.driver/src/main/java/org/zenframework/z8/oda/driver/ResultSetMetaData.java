@@ -1,51 +1,57 @@
 package org.zenframework.z8.oda.driver;
 
+import java.util.List;
+
 import org.eclipse.datatools.connectivity.oda.IResultSetMetaData;
 import org.eclipse.datatools.connectivity.oda.OdaException;
-
-import org.zenframework.z8.server.base.table.value.IField;
-import org.zenframework.z8.server.db.FieldType;
+import org.zenframework.z8.server.base.table.value.Field;
 
 public class ResultSetMetaData implements IResultSetMetaData {
-	private IField[] m_columns = null;
+	private List<Field> columns = null;
 
-	public ResultSetMetaData(IField[] columns) {
-		m_columns = columns;
+	public ResultSetMetaData(List<Field> columns) {
+		this.columns = columns;
 	}
 
 	@Override
 	public int getColumnCount() throws OdaException {
-		return m_columns.length;
+		return columns.size();
+	}
+
+	public Field getColumn(int index) throws OdaException {
+		return columns.get(index - 1);
 	}
 
 	@Override
 	public String getColumnName(int index) throws OdaException {
-		return m_columns[index - 1].id();
+		return getColumn(index).id();
 	}
 
 	@Override
 	public String getColumnLabel(int index) throws OdaException {
-		IField value = m_columns[index - 1];
-		String displayName = value.displayName();
-		return displayName != null ? displayName : value.id();
+		return getColumn(index).displayName();
 	}
 
 	@Override
 	public int getColumnType(int index) throws OdaException {
-		if(m_columns[index - 1].type() == FieldType.Guid || m_columns[index - 1].type() == FieldType.String || m_columns[index - 1].type() == FieldType.Boolean)
-			return 1;
-		// else if (m_columns[index - 1].type() == FieldType.Boolean)
-		// return 16;
-		else if(m_columns[index - 1].type() == FieldType.Integer)
-			return 4;
-		else if(m_columns[index - 1].type() == FieldType.Date)
-			return 91;
-		else if(m_columns[index - 1].type() == FieldType.Datetime)
-			return 93;
-		else if(m_columns[index - 1].type() == FieldType.Decimal)
-			return 3;
+		Field column = getColumn(index);
 
-		return 1;
+		switch(column.type()) {
+		case Guid:
+		case String:
+		case Boolean:
+			return 1;
+		case Integer:
+			return 4;
+		case Date:
+			return 91;
+		case Datetime:
+			return 93;
+		case Decimal:
+			return 3;
+		default:
+			return 1;
+		}
 	}
 
 	@Override

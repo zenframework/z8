@@ -40,7 +40,7 @@ public class PrintOptions {
 		options.setTopMargin(BirtUnitsConverter.convertToPoints(topMargin, DesignChoiceConstants.UNITS_MM));
 		options.setBottomMargin(BirtUnitsConverter.convertToPoints(bottomMargin, DesignChoiceConstants.UNITS_MM));
 
-		options.headers.put(Reports.FIRSTPAGE_CAPTIONCENTER, captionCenter);
+		options.headers.put(Reports.FirstPageCaptionCenter, captionCenter);
 
 		return options;
 	}

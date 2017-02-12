@@ -20,20 +20,19 @@ public class BirtUnitsConverter {
 	}
 
 	public static float convertToPoints(float measure, String units) {
-		if(DesignChoiceConstants.UNITS_PX.equalsIgnoreCase(units)) {
+		if(DesignChoiceConstants.UNITS_PX.equalsIgnoreCase(units))
 			return measure;
-		}
-		if(DesignChoiceConstants.UNITS_IN.equalsIgnoreCase(units)) {
+
+		if(DesignChoiceConstants.UNITS_IN.equalsIgnoreCase(units))
 			return measure * PX_PER_INCH;
-		} else if(DesignChoiceConstants.UNITS_PT.equalsIgnoreCase(units)) {
+		else if(DesignChoiceConstants.UNITS_PT.equalsIgnoreCase(units))
 			return measure * PX_PER_PT;
-		} else if(DesignChoiceConstants.UNITS_PC.equalsIgnoreCase(units)) {
+		else if(DesignChoiceConstants.UNITS_PC.equalsIgnoreCase(units))
 			return measure * PX_PER_PT * PT_PER_PC;
-		} else if(DesignChoiceConstants.UNITS_MM.equalsIgnoreCase(units)) {
+		else if(DesignChoiceConstants.UNITS_MM.equalsIgnoreCase(units))
 			return (measure / MM_PER_INCH) * PX_PER_INCH;
-		} else if(DesignChoiceConstants.UNITS_CM.equalsIgnoreCase(units)) {
+		else if(DesignChoiceConstants.UNITS_CM.equalsIgnoreCase(units))
 			return (measure / CM_PER_INCH) * PX_PER_INCH;
-		}
 
 		return 0;
 	}

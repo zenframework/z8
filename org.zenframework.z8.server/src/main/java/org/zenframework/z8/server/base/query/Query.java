@@ -217,6 +217,23 @@ public class Query extends OBJECT {
 		z8_onReport(new string(report), ids);
 	}
 
+	public void writeReportMeta(JsonWriter writer, Collection<Field> fields) {
+		writer.startObject();
+		writer.writeProperty(Json.displayName, displayName());
+		writer.writeProperty(Json.id, classId());
+		writer.startArray(Json.fields);
+
+		for(Field field : fields) {
+			writer.startObject();
+			writer.writeProperty(Json.displayName, field.displayName());
+			writer.writeProperty(Json.id, field.id());
+			writer.finishObject();
+		}
+
+		writer.finishArray();
+		writer.finishObject();
+	}
+
 	public guid recordId() {
 		return (guid)primaryKey().get();
 	}

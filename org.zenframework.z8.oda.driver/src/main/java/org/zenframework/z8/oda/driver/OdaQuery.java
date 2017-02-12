@@ -1,6 +1,5 @@
 package org.zenframework.z8.oda.driver;
 
-import java.io.File;
 import java.math.BigDecimal;
 import java.sql.Date;
 import java.sql.Time;
@@ -17,51 +16,40 @@ import org.eclipse.datatools.connectivity.oda.OdaException;
 import org.eclipse.datatools.connectivity.oda.SortSpec;
 import org.eclipse.datatools.connectivity.oda.spec.QuerySpecification;
 import org.zenframework.z8.server.base.model.actions.ReadAction;
-import org.zenframework.z8.server.base.query.Query;
+import org.zenframework.z8.server.base.model.sql.Select;
 import org.zenframework.z8.server.base.table.value.Field;
-import org.zenframework.z8.server.base.table.value.IField;
+import org.zenframework.z8.server.json.Json;
+import org.zenframework.z8.server.json.parser.JsonObject;
 
 public class OdaQuery implements IQuery {
-	private ReadAction dataSet = null;
-	private Map<Object, Object> context = null;
+	private List<Field> fields;
 
-	public static IField[] getColumns(Query data) throws OdaException {
-		return getColumns(new ReadAction(data));
-	}
-
-	public static IField[] getColumns(ReadAction action) throws OdaException {
-		List<IField> values = new ArrayList<IField>();
-
-		for(Field field : action.getSelectFields()) {
-			if(!field.system()) {
-				values.add(field);
-			}
-		}
-
-		return values.toArray(new IField[0]);
-	}
+	private ReadAction readAction;
+	private Map<Object, Object> context;
 
 	public OdaQuery() {
 	}
 
+	public List<Field> getFields() {
+		if(fields == null)
+			fields = new ArrayList<Field>(readAction.config().fields);
+		return fields;
+	}
+
+	public Select getCursor() {
+		return readAction.getCursor();
+	}
+
 	@Override
-	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public void prepare(String queryText) throws OdaException {
-		String[] parameters = queryText.split(";");
-		String name = parameters[0];
+		JsonObject json = new JsonObject(queryText);
 
-		if(context != null)
-			dataSet = (ReadAction)context.get(name);
+		String classId = json.getString(Json.id);
 
-		if(dataSet == null) {
-			try {
-				File path = new File(parameters[1]);
-				Query.CLASS<Query> queryClass = (Query.CLASS)RuntimeLoader.loadClass(name, path);
-				dataSet = new ReadAction(queryClass.get());
-			} catch(Throwable e) {
-				throw new OdaException(e);
-			}
-		}
+		if(context == null)
+			throw new RuntimeException("OdaQuery.setApplicationContext never been called");
+
+		readAction = (ReadAction)context.get(classId);
 	}
 
 	@Override
@@ -72,18 +60,18 @@ public class OdaQuery implements IQuery {
 
 	@Override
 	public void close() throws OdaException {
-		dataSet = null;
+		readAction = null;
 		context = null;
 	}
 
 	@Override
 	public IResultSetMetaData getMetaData() throws OdaException {
-		return new ResultSetMetaData(getColumns(dataSet));
+		return new ResultSetMetaData(getFields());
 	}
 
 	@Override
 	public IResultSet executeQuery() throws OdaException {
-		return new ResultSet(dataSet);
+		return new ResultSet(this);
 	}
 
 	@Override

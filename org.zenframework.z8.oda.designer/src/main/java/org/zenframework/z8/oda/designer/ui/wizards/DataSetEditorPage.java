@@ -1,25 +1,17 @@
 package org.zenframework.z8.oda.designer.ui.wizards;
 
-import java.io.File;
-import java.sql.Types;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Iterator;
 import java.util.List;
 
-import org.eclipse.datatools.connectivity.oda.IParameterMetaData;
-import org.eclipse.datatools.connectivity.oda.IResultSetMetaData;
-import org.eclipse.datatools.connectivity.oda.OdaException;
+import org.eclipse.datatools.connectivity.oda.design.ColumnDefinition;
+import org.eclipse.datatools.connectivity.oda.design.DataElementAttributes;
 import org.eclipse.datatools.connectivity.oda.design.DataSetDesign;
-import org.eclipse.datatools.connectivity.oda.design.DataSetParameters;
 import org.eclipse.datatools.connectivity.oda.design.DesignFactory;
-import org.eclipse.datatools.connectivity.oda.design.ParameterDefinition;
-import org.eclipse.datatools.connectivity.oda.design.ParameterMode;
 import org.eclipse.datatools.connectivity.oda.design.ResultSetColumns;
 import org.eclipse.datatools.connectivity.oda.design.ResultSetDefinition;
-import org.eclipse.datatools.connectivity.oda.design.ui.designsession.DesignSessionUtil;
 import org.eclipse.datatools.connectivity.oda.design.ui.wizards.DataSetWizardPage;
 import org.eclipse.jface.dialogs.IMessageProvider;
 import org.eclipse.jface.resource.ImageDescriptor;
@@ -41,14 +33,11 @@ import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.TreeItem;
 import org.eclipse.ui.PlatformUI;
 import org.zenframework.z8.oda.designer.plugin.Plugin;
-import org.zenframework.z8.oda.driver.RuntimeLoader;
 import org.zenframework.z8.server.base.query.Query;
 import org.zenframework.z8.server.base.table.Table;
 import org.zenframework.z8.server.base.table.value.Field;
 import org.zenframework.z8.server.base.table.value.ILink;
-import org.zenframework.z8.server.json.Json;
 import org.zenframework.z8.server.json.JsonWriter;
-import org.zenframework.z8.server.runtime.IRuntime;
 
 public class DataSetEditorPage extends DataSetWizardPage {
 	private static String RootIcon = DataSetEditorPage.class.getName() + ".RootIcon";
@@ -67,7 +56,6 @@ public class DataSetEditorPage extends DataSetWizardPage {
 		registry.put(ColumnIcon, ImageDescriptor.createFromFile(Plugin.class, "icons/column.gif"));
 	}
 
-//	private String dataSetClassName;
 	private DataSetDesign dataSetDesign = null;
 
 	private org.eclipse.swt.widgets.Table queries = null;
@@ -85,15 +73,6 @@ public class DataSetEditorPage extends DataSetWizardPage {
 	}
 
 	private void prepareConnection(DataSetDesign dataSetDesign) {
-	}
-
-	private File getUrl() {
-		File path = Plugin.getWebInfPath();
-
-		if(path.toString().isEmpty())
-			throw new RuntimeException("WEB-INF path is not set. See Preferences - Z8 Property Page");
-
-		return path;
 	}
 
 	private DataSetDesign getDataSetDesign() {
@@ -197,8 +176,7 @@ public class DataSetEditorPage extends DataSetWizardPage {
 	private Collection<Table> getTables() throws Throwable {
 		List<Table> tables = new ArrayList<Table>();
 
-		IRuntime runtime = RuntimeLoader.getRuntime(getUrl());
-		for(Table.CLASS<? extends Table> cls : runtime.tables())
+		for(Table.CLASS<? extends Table> cls : RuntimeLoader.getRuntime().tables())
 			tables.add(cls.newInstance());
 
 		Comparator<Table> comparator = new Comparator<Table>() {
@@ -285,90 +263,52 @@ public class DataSetEditorPage extends DataSetWizardPage {
 		}
 	}
 
-	private String getCurrentDataSetClassName() {
-		String text = getDataSetDesign().getQueryText();
-		return text.split(";")[0];
+	private Collection<Field> getSelectedFields() {
+		Collection<Field> result = new ArrayList<Field>();
+
+		if(fields == null)
+			return result;
+
+		for(TableItem item : fields.getItems())
+			result.add((Field)item.getData());
+
+		return result;
 	}
 
 	private String getDatasetInfo() {
+		if(queries == null)
+			return getDataSetDesign().getQueryText();
+
 		if(queries.getSelectionCount() == 0)
 			return null;
 
 		Table query = (Table)queries.getSelection()[0].getData();
 
 		JsonWriter writer = new JsonWriter();
-
-		writer.startObject();
-
-		writer.writeProperty(Json.path, getUrl().getPath());
-
-		writer.startObject(Json.query);
-		writer.writeProperty(Json.displayName, query.displayName());
-		writer.writeProperty(Json.id, query.classId());
-		writer.startArray(Json.fields);
-		for(TableItem item : fields.getItems()) {
-			Field field = (Field)item.getData();
-			writer.startObject();
-			writer.writeProperty(Json.displayName, field.displayName());
-			writer.writeProperty(Json.id, field.id());
-			writer.finishObject();
-		}
-		writer.finishArray();
-		writer.finishObject();
-
-		writer.finishObject();
+		query.writeReportMeta(writer, getSelectedFields());
 
 		return writer.toString();
 	}
 
 	@Override
 	protected DataSetDesign collectDataSetDesign(DataSetDesign design) {
-//		dataSetClassName = getSelectedDataSetClassName();
-
 		design.setQueryText(getDatasetInfo());
-		MetaDataRetriever retriever = new MetaDataRetriever(design);
-		IResultSetMetaData resultsetMeta = retriever.getResultSetMetaData();
-		IParameterMetaData paramMeta = retriever.getParameterMetaData();
-		saveDataSetDesign(design, resultsetMeta, paramMeta);
-		retriever.close();
+
+		ResultSetDefinition resultSet = DesignFactory.eINSTANCE.createResultSetDefinition();
+		ResultSetColumns columns = DesignFactory.eINSTANCE.createResultSetColumns();
+
+		for(Field field : getSelectedFields()) {
+			ColumnDefinition column = DesignFactory.eINSTANCE.createColumnDefinition();
+			DataElementAttributes attributes = column.getAttributes();
+			attributes.setName(field.id());
+			attributes.setUiDisplayName(field.displayName() + " (" + field.id() + ")");
+			columns.getResultColumnDefinitions().add(column);
+		}
+
+		resultSet.setResultSetColumns(columns);
+		design.setPrimaryResultSet(resultSet);
 
 		return design;
-	}
-
-	@SuppressWarnings({ "rawtypes" })
-	public void saveDataSetDesign(DataSetDesign design, IResultSetMetaData meta, IParameterMetaData paramMeta) {
-		try {
-			if(paramMeta != null && design != null) {
-				DataSetParameters dataSetParameter = DesignSessionUtil.toDataSetParametersDesign(paramMeta, ParameterMode.IN_LITERAL);
-
-				if(dataSetParameter != null) {
-					Iterator iter = dataSetParameter.getParameterDefinitions().iterator();
-
-					while(iter.hasNext()) {
-						ParameterDefinition defn = (ParameterDefinition)iter.next();
-
-						if(defn.getAttributes().getNativeDataTypeCode() == Types.NULL) {
-							defn.getAttributes().setNativeDataTypeCode(Types.CHAR);
-						}
-					}
-				}
-
-				design.setParameters(dataSetParameter);
-			}
-
-			ResultSetColumns columns = DesignSessionUtil.toResultSetColumnsDesign(meta);
-
-			if(columns != null) {
-				ResultSetDefinition resultSetDefn = DesignFactory.eINSTANCE.createResultSetDefinition();
-				resultSetDefn.setResultSetColumns(columns);
-				design.setPrimaryResultSet(resultSetDefn);
-				design.getResultSets().setDerivedMetaData(true);
-			} else {
-				design.setResultSets(null);
-			}
-		} catch(OdaException e) {
-			design.setResultSets(null);
-		}
 	}
 
 	private void installQuerySelectionListener() {
@@ -454,55 +394,9 @@ public class DataSetEditorPage extends DataSetWizardPage {
 		});
 	}
 
-/*
-	private void initFields(TreeItem item) {
-		try {
-			fields.removeAll();
-
-			Object data = item.getData();
-
-			if(data != null && data instanceof DataSetTreeData) {
-				IField[] queryFields = OdaQuery.getColumns(((DataSetTreeData)data).get().get());
-
-				if(queryFields != null) {
-					for(IField field : queryFields) {
-						String name = field.displayName();
-
-						if(name != null) {
-							TableItem root = new TableItem(fields, SWT.NONE);
-							root.setText(name);
-							root.setImage(getImage(ColumnIcon));
-							root.setData(field);
-						}
-					}
-				}
-			}
-		} catch(Throwable e) {
-			ExceptionHandler.showException(PlatformUI.getWorkbench().getDisplay().getActiveShell(), Plugin.getResourceString("exceptionHandler.title.error"), e.getLocalizedMessage(), e);
-		}
-	}
-*/
 	@Override
 	protected boolean canLeave() {
-		return !getSelectedDataSetClassName().isEmpty();
-	}
-
-	private Object getSelection() {
-		TableItem[] selection = queries != null ? queries.getSelection() : null;
-
-		if(selection != null && selection.length > 0)
-			return selection[0].getData();
-
-		return null;
-	}
-
-	private String getSelectedDataSetClassName() {
-		Object data = getSelection();
-
-		if(data instanceof Table)
-			return ((Table)data).classId();
-
-		return getCurrentDataSetClassName();
+		return true;
 	}
 
 	@Override

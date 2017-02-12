@@ -15,12 +15,13 @@ public class Table extends Query {
 	[displayName "Код"] 
 	public IntegerField id;
 
-	[name "Short name"]
-	public StringField shortName;
-
 	[name "Name"]
 	public StringField name;
 	name.length = 50;
+
+	[name "Short name"]
+	public StringField shortName;
+	shortName.length = 15;
 
 	[name "Description"]
 	[displayName "Описание"]

@@ -171,6 +171,7 @@ public interface Json {
 	static public string log = new string("log");
 	static public string file = new string("file");
 	static public string path = new string("path");
+	static public string url = new string("url");
 	static public string files = new string("files");
 	static public string source = new string("source");
 	static public string target = new string("target");

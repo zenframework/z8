@@ -41,33 +41,32 @@ public enum PageFormat {
 	}
 
 	static public PageFormat fromString(String string) {
-		if(Names.A0.equalsIgnoreCase(string)) {
+		if(Names.A0.equalsIgnoreCase(string))
 			return PageFormat.A0;
-		} else if(Names.A1.equalsIgnoreCase(string)) {
+		else if(Names.A1.equalsIgnoreCase(string))
 			return PageFormat.A1;
-		} else if(Names.A2.equalsIgnoreCase(string)) {
+		else if(Names.A2.equalsIgnoreCase(string))
 			return PageFormat.A2;
-		} else if(Names.A3.equalsIgnoreCase(string)) {
+		else if(Names.A3.equalsIgnoreCase(string))
 			return PageFormat.A3;
-		} else if(Names.A4.equalsIgnoreCase(string)) {
+		else if(Names.A4.equalsIgnoreCase(string))
 			return PageFormat.A4;
-		} else if(Names.A5.equalsIgnoreCase(string)) {
+		else if(Names.A5.equalsIgnoreCase(string))
 			return PageFormat.A5;
-		} else if(Names.A6.equalsIgnoreCase(string)) {
+		else if(Names.A6.equalsIgnoreCase(string))
 			return PageFormat.A6;
-		} else if(Names.C3.equalsIgnoreCase(string)) {
+		else if(Names.C3.equalsIgnoreCase(string))
 			return PageFormat.C3;
-		} else if(Names.C4.equalsIgnoreCase(string)) {
+		else if(Names.C4.equalsIgnoreCase(string))
 			return PageFormat.C4;
-		} else if(Names.C5.equalsIgnoreCase(string)) {
+		else if(Names.C5.equalsIgnoreCase(string))
 			return PageFormat.C5;
-		} else if(Names.C6.equalsIgnoreCase(string)) {
+		else if(Names.C6.equalsIgnoreCase(string))
 			return PageFormat.C6;
-		} else if(Names.Letter.equalsIgnoreCase(string)) {
+		else if(Names.Letter.equalsIgnoreCase(string))
 			return PageFormat.Letter;
-		} else {
+		else
 			throw new RuntimeException("Unknown page format: '" + string + "'");
-		}
 	}
 
 	static public float pageWidth(PageFormat format) {

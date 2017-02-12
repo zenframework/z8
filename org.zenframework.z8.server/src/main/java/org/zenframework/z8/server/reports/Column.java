@@ -6,13 +6,12 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.eclipse.birt.report.model.api.elements.DesignChoiceConstants;
-
 import org.zenframework.z8.server.base.table.value.Aggregation;
 import org.zenframework.z8.server.base.table.value.Field;
 import org.zenframework.z8.server.db.FieldType;
 
 public class Column {
-	public static final int DEFAULT_COLUMN_WIDTH = 100;
+	public static final int DefaultColumnWidth = 100;
 
 	private float width;
 	private String displayName;
@@ -28,11 +27,11 @@ public class Column {
 	}
 
 	public Column(String caption) {
-		this(caption, DEFAULT_COLUMN_WIDTH);
+		this(caption, DefaultColumnWidth);
 	}
 
 	public Column(String caption, int width) {
-		this(caption, Math.max(DEFAULT_COLUMN_WIDTH, width), false);
+		this(caption, Math.max(DefaultColumnWidth, width), false);
 	}
 
 	private Column(String caption, int width, boolean isIndentationColumn) {
@@ -149,8 +148,6 @@ public class Column {
 						lst.add(col);
 					}
 
-					// (LinkedList<Column>)column.subcolumns.clone();
-
 					Collections.reverse(lst);
 
 					for(Column col : lst) {
@@ -188,26 +185,21 @@ public class Column {
 		return width;
 	}
 
-	public Column[] getColumns() {
+	public List<Column> getColumns() {
 		List<Column> columns = new ArrayList<Column>();
 
 		for(Column column : subcolumns) {
-			if(column.hasSubcolumns()) {
-				Column[] subcolumns = column.getColumns();
-
-				for(Column subcolumn : subcolumns) {
-					columns.add(subcolumn);
-				}
-			} else {
+			if(column.hasSubcolumns())
+				columns.addAll(column.getColumns());
+			else
 				columns.add(column);
-			}
 		}
 
-		return columns.toArray(new Column[0]);
+		return columns;
 	}
 
-	public Column[] getSubcolumns() {
-		return subcolumns.toArray(new Column[0]);
+	public List<Column> getSubcolumns() {
+		return subcolumns;
 	}
 
 	public String getStringValue() {

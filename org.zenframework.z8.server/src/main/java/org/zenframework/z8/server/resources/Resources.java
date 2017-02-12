@@ -36,19 +36,13 @@ public class Resources {
 	}
 
 	private String getString(String key) {
-		Properties props = boundles.get(DefaultLanguage);
+		Properties properties = boundles.get(DefaultLanguage);
 
-		if(props == null) {
-			return "${" + key + "}";
-		}
+		if(properties == null)
+			return key;
 
-		String value = props.getProperty(key);
-
-		if(value == null) {
-			return "${" + key + "}";
-		}
-
-		return value;
+		String value = properties.getProperty(key);
+		return value != null ? value : key;
 	}
 
 	static public String format(String key, Object... format) {
@@ -72,7 +66,6 @@ public class Resources {
 			public boolean accept(File file) {
 				if(!file.isFile())
 					return false;
-				
 				String name = file.getName();
 				return name.endsWith(xml) || name.endsWith(nls);
 			}

@@ -94,7 +94,7 @@ public class ReportAction extends RequestAction {
 
 			Field field = getQuery().findFieldById(column.getString(Json.id));
 
-			if(field != null && !field.system()) {
+			if(field != null) {
 				int width = column.getInt(Json.width);
 				field.width = new integer(width);
 				result.add(field);

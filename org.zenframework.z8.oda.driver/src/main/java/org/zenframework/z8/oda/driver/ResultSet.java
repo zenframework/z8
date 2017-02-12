@@ -10,9 +10,8 @@ import org.eclipse.datatools.connectivity.oda.IClob;
 import org.eclipse.datatools.connectivity.oda.IResultSet;
 import org.eclipse.datatools.connectivity.oda.IResultSetMetaData;
 import org.eclipse.datatools.connectivity.oda.OdaException;
-import org.zenframework.z8.server.base.model.actions.ReadAction;
 import org.zenframework.z8.server.base.model.sql.Select;
-import org.zenframework.z8.server.base.table.value.IField;
+import org.zenframework.z8.server.base.table.value.Field;
 import org.zenframework.z8.server.db.Connection;
 import org.zenframework.z8.server.db.ConnectionManager;
 import org.zenframework.z8.server.resources.Resources;
@@ -25,26 +24,23 @@ import org.zenframework.z8.server.types.primary;
 public class ResultSet implements IResultSet {
 	public final static String NULL_STRING = "";
 
-	private IField[] columns = null;
-	private Select cursor = null;
+	private OdaQuery query;
+	private Select cursor;
 
 	boolean wasNull = false;
 	boolean eof = false;
 
-	public ResultSet(ReadAction action) throws OdaException {
-		if(action == null)
-			throw new OdaException("Report generation is not supported in design mode.");
-
+	public ResultSet(OdaQuery query) throws OdaException {
 		Connection connection = ConnectionManager.get();
 		connection.beginTransaction(); // for large cursors
 
-		cursor = action.getCursor();
-		columns = OdaQuery.getColumns(action);
+		this.query = query;
+		cursor = query.getCursor();
 	}
 
 	@Override
 	public IResultSetMetaData getMetaData() throws OdaException {
-		return new ResultSetMetaData(columns);
+		return new ResultSetMetaData(query.getFields());
 	}
 
 	@Override
@@ -76,9 +72,17 @@ public class ResultSet implements IResultSet {
 		return cursor.isAfterLast() ? -1 : 0;
 	}
 
+	private Field getColumn(int index) {
+		return query.getFields().get(index - 1);
+	}
+
+	private primary getValue(int index) {
+		return getColumn(index).get();
+	}
+
 	@Override
 	public String getString(int index) throws OdaException {
-		primary value = columns[index - 1].get();
+		primary value = getValue(index);
 
 		wasNull = value == null;
 
@@ -103,19 +107,17 @@ public class ResultSet implements IResultSet {
 
 	@Override
 	public int getInt(int index) throws OdaException {
-		primary value = columns[index - 1].get();
+		primary value = getValue(index);
 
 		wasNull = value == null;
 
-		if(wasNull) {
+		if(wasNull)
 			return 0;
-		}
 
-		if(value instanceof bool) {
+		if(value instanceof bool)
 			return ((bool)value).get() ? 1 : 0;
-		} else if(value instanceof integer) {
+		else if(value instanceof integer)
 			return ((integer)value).getInt();
-		}
 
 		throw new UnsupportedOperationException();
 	}
@@ -127,17 +129,15 @@ public class ResultSet implements IResultSet {
 
 	@Override
 	public double getDouble(int index) throws OdaException {
-		primary value = columns[index - 1].get();
+		primary value = getValue(index);
 
-		if(wasNull) {
+		if(wasNull)
 			return Double.NaN;
-		}
 
-		if(value instanceof integer) {
+		if(value instanceof integer)
 			return ((integer)value).get();
-		} else if(value instanceof decimal) {
+		else if(value instanceof decimal)
 			return ((decimal)value).getDouble();
-		}
 
 		throw new UnsupportedOperationException();
 	}
@@ -149,19 +149,17 @@ public class ResultSet implements IResultSet {
 
 	@Override
 	public BigDecimal getBigDecimal(int index) throws OdaException {
-		primary value = columns[index - 1].get();
+		primary value = getValue(index);
 
 		wasNull = value == null;
 
-		if(wasNull) {
+		if(wasNull)
 			return BigDecimal.ZERO;
-		}
 
-		if(value instanceof integer) {
+		if(value instanceof integer)
 			return new BigDecimal(((integer)value).get());
-		} else if(value instanceof decimal) {
+		else if(value instanceof decimal)
 			return ((decimal)value).get();
-		}
 
 		throw new UnsupportedOperationException();
 	}
@@ -173,7 +171,7 @@ public class ResultSet implements IResultSet {
 
 	@Override
 	public Date getDate(int index) throws OdaException {
-		primary value = columns[index - 1].get();
+		primary value = getValue(index);
 
 		wasNull = value == null;
 
@@ -199,7 +197,7 @@ public class ResultSet implements IResultSet {
 
 	@Override
 	public Time getTime(int index) throws OdaException {
-		primary value = columns[index - 1].get();
+		primary value = getValue(index);
 
 		wasNull = value == null;
 
@@ -225,7 +223,7 @@ public class ResultSet implements IResultSet {
 
 	@Override
 	public Timestamp getTimestamp(int index) throws OdaException {
-		primary value = columns[index - 1].get();
+		primary value = getValue(index);
 
 		wasNull = value == null;
 
@@ -271,17 +269,15 @@ public class ResultSet implements IResultSet {
 
 	@Override
 	public boolean getBoolean(int index) throws OdaException {
-		primary value = columns[index - 1].get();
+		primary value = getValue(index);
 
 		wasNull = value == null;
 
-		if(wasNull) {
+		if(wasNull)
 			return false;
-		}
 
-		if(value instanceof bool) {
+		if(value instanceof bool)
 			return ((bool)value).get();
-		}
 
 		throw new UnsupportedOperationException();
 	}
@@ -298,10 +294,11 @@ public class ResultSet implements IResultSet {
 
 	@Override
 	public int findColumn(String columnName) throws OdaException {
-		for(int index = 0; index < columns.length; index++) {
-			if(columnName.equals(columns[index].id())) {
-				return index + 1;
-			}
+		int index = 1;
+		for(Field field : query.getFields()) {
+			if(columnName.equals(field.id()))
+				return index;
+			index++;
 		}
 		return 0;
 	}

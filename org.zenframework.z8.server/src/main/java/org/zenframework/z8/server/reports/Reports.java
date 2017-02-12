@@ -7,12 +7,13 @@ public class Reports {
 	public static final String DefaultDesign = "default.rptdesign";
 
 	// for Layout:
-	public static String FIRSTPAGE_CAPTIONCENTER = "CaptionCenter";
-	public static String REPORT_BODY = "ReportBody";
+	public static final String FirstPageCaptionCenter = "CaptionCenter";
+	public static final String ReportBody = "ReportBody";
+
 	// for MasterPage:
-	public static String EACHPAGE_PAGE_NUMBER = "PageNumber";
-	public static String EACHPAGE_TIMESTAMP = "DateTimeStamp";
-	public static String EACHPAGE_REPORTNAME = "ReportName";
+	public static final String PageNumber = "PageNumber";
+	public static final String PageTimestamp = "DateTimeStamp";
+	public static final String ReplicateHeader = "ReportName";
 
 	// others
 	public static final String Pdf = "pdf";
