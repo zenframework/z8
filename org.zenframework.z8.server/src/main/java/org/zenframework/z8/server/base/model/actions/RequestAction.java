@@ -20,17 +20,18 @@ import org.zenframework.z8.server.types.string;
 import org.zenframework.z8.server.types.sql.sql_bool;
 
 public abstract class RequestAction extends RequestTarget {
-	static public final String newAction = "new";
-	static public final String createAction = "create";
-	static public final String copyAction = "copy";
-	static public final String readAction = "read";
-	static public final String updateAction = "update";
-	static public final String destroyAction = "destroy";
-	static public final String reportAction = "report";
-	static public final String previewAction = "preview";
-	static public final String commandAction = "command";
-	static public final String attachAction = "attach";
-	static public final String detachAction = "detach";
+	static public final String New = "new";
+	static public final String Create = "create";
+	static public final String Copy = "copy";
+	static public final String Read = "read";
+	static public final String Update = "update";
+	static public final String Destroy = "destroy";
+	static public final String Export = "export";
+	static public final String Report = "report";
+	static public final String Preview = "preview";
+	static public final String Action = "action";
+	static public final String Attach = "attach";
+	static public final String Detach = "detach";
 
 	private ActionConfig config;
 

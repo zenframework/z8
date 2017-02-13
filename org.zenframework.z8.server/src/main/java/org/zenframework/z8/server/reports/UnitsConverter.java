@@ -4,7 +4,7 @@ import org.eclipse.birt.report.model.api.DimensionHandle;
 import org.eclipse.birt.report.model.api.elements.DesignChoiceConstants;
 import org.eclipse.birt.report.model.api.metadata.DimensionValue;
 
-public class BirtUnitsConverter {
+public class UnitsConverter {
 	static public float PX_PER_INCH = 72;
 	static public float PX_PER_PT = 1;
 	static public float PT_PER_PC = 12;

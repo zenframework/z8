@@ -2,8 +2,6 @@ package org.zenframework.z8.server.reports;
 
 import java.io.File;
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
 
 import org.apache.commons.io.FileUtils;
 import org.eclipse.birt.core.exception.BirtException;
@@ -20,7 +18,8 @@ import org.zenframework.z8.server.base.model.actions.ReadAction;
 import com.lowagie.text.FontFactory;
 
 public class ReportOptions {
-	private String format = Reports.Pdf;
+	public String format = Reports.Pdf;
+
 	public int indentGroupsBy = Reports.DefaultGroupIndentation;
 
 	public boolean markGroupLevel = true;
@@ -41,19 +40,14 @@ public class ReportOptions {
 
 	public int pageOverlapping = Reports.DefaultPageOverlapping;
 
-	public String reportFolder = Folders.ReportDefaults;
-	public String reportTemplate = Reports.DefaultDesign;
+	public String templateFolder = Folders.DefaultReports;
+	public String template = Reports.DefaultDesign;
 
 	public Collection<ReadAction> actions = null;
 
-	public Map<String, String> headers = new HashMap<String, String>();
+	public String header = "";
 
-	private float pageHeight = 0;
-	private float pageWidth = 0;
-	private float leftMargin = 0;
-	private float rightMargin = 0;
-	private float topMargin = 0;
-	private float bottomMargin = 0;
+	public PrintOptions printOptions;
 
 	private static IReportEngine reportEngine = null;
 	private static IDesignEngine designEngine = null;
@@ -65,6 +59,12 @@ public class ReportOptions {
 	}
 
 	public ReportOptions() {
+		this(new PrintOptions());
+	}
+
+	public ReportOptions(PrintOptions printOptions) {
+		this.printOptions = printOptions;
+
 		initializeEngine();
 	}
 
@@ -112,95 +112,54 @@ public class ReportOptions {
 		return designEngine;
 	}
 
-	public String getFormat() {
-		return format;
-	}
-
-	public void setTemplate(String template) {
-		if(template != null) {
-			this.reportTemplate = template;
-		}
-	}
-
-	public void setFormat(String format) {
-		this.format = format;
-	}
-
 	private String getReportDesignFileName(String format) {
 		return format + '.' + Reports.DesignExtension;
 	}
 
 	public File getReportDesign() {
-		String fileName = getReportDesignFileName(getFormat());
+		String fileName = getReportDesignFileName(format);
 
-		File file = FileUtils.getFile(Folders.Base, reportFolder, fileName);
+		File file = FileUtils.getFile(Folders.Base, templateFolder, fileName);
 
 		if(file.exists())
 			return file;
 
-		return FileUtils.getFile(Folders.Base, reportFolder, reportTemplate);
+		return FileUtils.getFile(Folders.Base, templateFolder, template);
 	}
 
-	public float getPageWidth() {
-		return pageWidth;
+	public float pageWidth() {
+		return printOptions.pageWidth();
 	}
 
-	public void setPageWidth(float pageWidth) {
-		this.pageWidth = pageWidth;
+	public float pageHeight() {
+		return printOptions.pageHeight();
 	}
 
-	public float getPageHeight() {
-		return pageHeight;
+	public float leftMargin() {
+		return printOptions.leftMargin();
 	}
 
-	public void setPageHeight(float pageHeight) {
-		this.pageHeight = pageHeight;
+	public float rightMargin() {
+		return printOptions.rightMargin();
 	}
 
-	public float getLeftMargin() {
-		return leftMargin;
+	public float topMargin() {
+		return printOptions.topMargin();
 	}
 
-	public void setLeftMargin(float leftMargin) {
-		this.leftMargin = leftMargin;
+	public float bottomMargin() {
+		return printOptions.bottomMargin();
 	}
 
-	public float getRightMargin() {
-		return rightMargin;
+	public float horizontalMargins() {
+		return leftMargin() + rightMargin();
 	}
 
-	public void setRightMargin(float rightMargin) {
-		this.rightMargin = rightMargin;
-	}
-
-	public float getTopMargin() {
-		return topMargin;
-	}
-
-	public void setTopMargin(float topMargin) {
-		this.topMargin = topMargin;
-	}
-
-	public float getBottomMargin() {
-		return bottomMargin;
-	}
-
-	public void setBottomMargin(float bottomMargin) {
-		this.bottomMargin = bottomMargin;
-	}
-
-	public float getHorizontalMargins() {
-		return leftMargin + rightMargin;
-	}
-
-	public float getVerticalMargins() {
-		return topMargin + bottomMargin;
+	public float verticalMargins() {
+		return topMargin() + bottomMargin();
 	}
 
 	public String documentName() {
-		String name = headers.get(Reports.FirstPageCaptionCenter);
-
-		return name != null ? name : "report";
+		return header;
 	}
-
 }

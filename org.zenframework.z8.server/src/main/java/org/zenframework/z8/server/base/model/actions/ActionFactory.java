@@ -32,30 +32,32 @@ public class ActionFactory {
 		if(actionName == null)
 			return new MetaAction(config);
 
-		if(RequestAction.newAction.equals(actionName))
+		if(RequestAction.New.equals(actionName))
 			return new CreateAction(config); // new NewAction(actionParameters);
-		else if(RequestAction.createAction.equals(actionName))
+		else if(RequestAction.Create.equals(actionName))
 			return new CreateAction(config);
-		else if(RequestAction.copyAction.equals(actionName))
+		else if(RequestAction.Copy.equals(actionName))
 			return new CopyAction(config);
-		else if(RequestAction.readAction.equals(actionName))
+		else if(RequestAction.Read.equals(actionName))
 			return new ReadAction(config);
-		else if(RequestAction.updateAction.equals(actionName))
+		else if(RequestAction.Update.equals(actionName))
 			return new UpdateAction(config);
-		else if(RequestAction.destroyAction.equals(actionName))
+		else if(RequestAction.Destroy.equals(actionName))
 			return new DestroyAction(config);
-		else if(RequestAction.commandAction.equals(actionName))
+		else if(RequestAction.Action.equals(actionName))
 			return new CommandAction(config);
-		else if(RequestAction.reportAction.equals(actionName))
+		else if(RequestAction.Export.equals(actionName))
+			return new ExportAction(config);
+		else if(RequestAction.Report.equals(actionName))
 			return new ReportAction(config);
-		else if(RequestAction.previewAction.equals(actionName))
+		else if(RequestAction.Preview.equals(actionName))
 			return new PreviewAction(config);
-		else if(RequestAction.attachAction.equals(actionName))
+		else if(RequestAction.Attach.equals(actionName))
 			return new AttachAction(config);
-		else if(RequestAction.detachAction.equals(actionName))
+		else if(RequestAction.Detach.equals(actionName))
 			return new DetachAction(config);
 		else
-			throw new RuntimeException("Unknown CRUD action: '" + actionName + "'");
+			throw new RuntimeException("Unknown action: '" + actionName + "'");
 	}
 
 	public static ActionConfig getActionParameters(Query query) {

@@ -7,7 +7,7 @@ public class Reports {
 	public static final String DefaultDesign = "default.rptdesign";
 
 	// for Layout:
-	public static final String FirstPageCaptionCenter = "CaptionCenter";
+	public static final String FirstPageHeader = "CaptionCenter";
 	public static final String ReportBody = "ReportBody";
 
 	// for MasterPage:

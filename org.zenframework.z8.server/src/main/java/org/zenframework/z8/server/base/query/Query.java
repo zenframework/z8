@@ -1000,6 +1000,11 @@ public class Query extends OBJECT {
 		return result != null && result.member instanceof Action ? (Action)result.member : null;
 	}
 
+	public Report findReportById(String id) {
+		MemberSearch result = findMember(id);
+		return result != null && result.member instanceof Report ? (Report)result.member : null;
+	}
+
 	public ILink getLinkTo(Query query) {
 		for(OBJECT.CLASS<?> cls : getLinks()) {
 			ILink link = (ILink)cls.get();

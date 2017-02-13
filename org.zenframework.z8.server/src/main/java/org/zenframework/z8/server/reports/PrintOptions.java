@@ -1,14 +1,12 @@
 package org.zenframework.z8.server.reports;
 
-import java.util.Collection;
-
 import org.eclipse.birt.report.model.api.elements.DesignChoiceConstants;
-
-import org.zenframework.z8.server.base.model.actions.ReadAction;
+import org.zenframework.z8.server.json.Json;
+import org.zenframework.z8.server.json.parser.JsonObject;
 
 public class PrintOptions {
 	public PageFormat pageFormat = PageFormat.A4;
-	public PageOrientation pageOrientation = PageOrientation.Portrait;
+	public PageOrientation pageOrientation = PageOrientation.Landscape;
 
 	public float leftMargin = 10;
 	public float rightMargin = 10;
@@ -18,30 +16,46 @@ public class PrintOptions {
 	public PrintOptions() {
 	}
 
-	public ReportOptions getReportOptions(String captionCenter, Collection<ReadAction> actions, String reportFolder, String reportTemplate) {
-		ReportOptions options = new ReportOptions();
-		options.actions = actions;
-		options.reportFolder = reportFolder;
-		options.reportTemplate = reportTemplate;
+	public PrintOptions(String json) {
+		if(json == null || json.isEmpty())
+			return;
 
-		float width = PageFormat.pageWidth(pageFormat);
-		float height = PageFormat.pageHeight(pageFormat);
+		JsonObject object = new JsonObject(json);
 
-		if(pageOrientation.equals(PageOrientation.Landscape)) {
-			float t = height;
-			height = width;
-			width = t;
-		}
+		pageOrientation = PageOrientation.fromString(object.getString(Json.pageOrientation));
+		pageFormat = PageFormat.fromString(object.getString(Json.pageFormat));
 
-		options.setPageHeight(BirtUnitsConverter.convertToPoints(height, DesignChoiceConstants.UNITS_MM));
-		options.setPageWidth(BirtUnitsConverter.convertToPoints(width, DesignChoiceConstants.UNITS_MM));
-		options.setLeftMargin(BirtUnitsConverter.convertToPoints(leftMargin, DesignChoiceConstants.UNITS_MM));
-		options.setRightMargin(BirtUnitsConverter.convertToPoints(rightMargin, DesignChoiceConstants.UNITS_MM));
-		options.setTopMargin(BirtUnitsConverter.convertToPoints(topMargin, DesignChoiceConstants.UNITS_MM));
-		options.setBottomMargin(BirtUnitsConverter.convertToPoints(bottomMargin, DesignChoiceConstants.UNITS_MM));
+		leftMargin = (float)object.getDouble(Json.leftMargin);
+		rightMargin = (float)object.getDouble(Json.rightMargin);
+		topMargin = (float)object.getDouble(Json.topMargin);
+		bottomMargin = (float)object.getDouble(Json.bottomMargin);
+	}
 
-		options.headers.put(Reports.FirstPageCaptionCenter, captionCenter);
+	public float pageHeight() {
+		boolean portrait = pageOrientation == PageOrientation.Portrait;
+		float height = portrait ? PageFormat.pageHeight(pageFormat) : PageFormat.pageWidth(pageFormat);
+		return UnitsConverter.convertToPoints(height, DesignChoiceConstants.UNITS_MM);
+	}
 
-		return options;
+	public float pageWidth() {
+		boolean portrait = pageOrientation == PageOrientation.Portrait;
+		float width = portrait ? PageFormat.pageWidth(pageFormat) : PageFormat.pageHeight(pageFormat);
+		return UnitsConverter.convertToPoints(width, DesignChoiceConstants.UNITS_MM);
+	}
+
+	public float leftMargin() {
+		return UnitsConverter.convertToPoints(leftMargin, DesignChoiceConstants.UNITS_MM);
+	}
+
+	public float rightMargin() {
+		return UnitsConverter.convertToPoints(rightMargin, DesignChoiceConstants.UNITS_MM);
+	}
+
+	public float topMargin() {
+		return UnitsConverter.convertToPoints(topMargin, DesignChoiceConstants.UNITS_MM);
+	}
+
+	public float bottomMargin() {
+		return UnitsConverter.convertToPoints(bottomMargin, DesignChoiceConstants.UNITS_MM);
 	}
 }

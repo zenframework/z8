@@ -130,7 +130,7 @@ abstract public class HubServerView extends Query {
 	public void writeResponse(JsonWriter writer) throws Throwable {
 		String action = getParameter(Json.action);
 
-		if(action == null || action.equals(RequestAction.readAction)) {
+		if(action == null || action.equals(RequestAction.Read)) {
 			writer.writeProperty(Json.isQuery, true);
 			writer.writeProperty(Json.request, classId());
 			writer.writeProperty(Json.primaryKey, recordId.get().id());
@@ -139,7 +139,7 @@ abstract public class HubServerView extends Query {
 
 			writeMeta(writer, this);
 			writeData(writer, action != null);
-		} else if(action.equals(RequestAction.commandAction)) {
+		} else if(action.equals(RequestAction.Action)) {
 			Collection<String> urls = new ArrayList<String>();
 			JsonArray records = new JsonArray(getParameter(Json.data));
 			for(int i = 0; i < records.length(); i++)

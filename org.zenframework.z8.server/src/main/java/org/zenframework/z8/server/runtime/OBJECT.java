@@ -89,16 +89,14 @@ public class OBJECT extends RequestTarget implements IObject, RmiSerializable {
 		id = null;
 	}
 
+	protected String keyString() {
+		return name();
+	}
+
 	@Override
 	public guid key() {
-		if(key == null) {
-			String ownerName = owner != null ? owner.name() : null;
-			String name = name();
-
-			String value = (ownerName != null ? ownerName + "." : "") + (name != null ? name : classId());
-			key = new guid(UUID.nameUUIDFromBytes(value.getBytes()));
-		}
-
+		if(key == null)
+			key = new guid(UUID.nameUUIDFromBytes(keyString().getBytes()));
 		return key;
 	}
 
@@ -119,7 +117,8 @@ public class OBJECT extends RequestTarget implements IObject, RmiSerializable {
 
 	@Override
 	public String name() {
-		return getAttribute(Name);
+		String name = getAttribute(Name);
+		return name != null ? name : classId();
 	}
 
 	@Override

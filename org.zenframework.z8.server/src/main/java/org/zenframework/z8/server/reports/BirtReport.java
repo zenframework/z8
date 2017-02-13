@@ -10,7 +10,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.birt.report.engine.api.EngineException;
@@ -58,7 +57,7 @@ import org.zenframework.z8.server.resources.Resources;
 import org.zenframework.z8.server.types.string;
 import org.zenframework.z8.server.utils.IOUtils;
 
-public class BirtReportRunner {
+public class BirtReport {
 	public static final String DataSourceExtensionId = "org.zenframework.z8.oda.driver";
 	public static final String DataSetExtensionId = "org.zenframework.z8.oda.driver.DataSet";
 
@@ -90,16 +89,16 @@ public class BirtReportRunner {
 
 	private boolean initialized = false;
 
-	public BirtReportRunner() {
+	public BirtReport() {
 		this(new ReportOptions());
 	}
 
-	public BirtReportRunner(ReportOptions options) {
+	public BirtReport(ReportOptions options) {
 		this.options = options;
 	}
 
 	private String format() {
-		return options.getFormat();
+		return options.format;
 	}
 
 	private boolean dropGroupDetail() {
@@ -308,7 +307,7 @@ public class BirtReportRunner {
 	}
 
 	private void setAutoText(ReportDesignHandle reportDesignHandle, String name) throws SemanticException {
-		boolean drop = !options.headers.containsKey(name);
+		boolean drop = true; /* !options.headers.containsKey(name); */
 
 		DesignElementHandle text = getElement(reportDesignHandle, name);
 
@@ -324,20 +323,17 @@ public class BirtReportRunner {
 		setAutoText(reportDesignHandle, Reports.PageNumber);
 		setAutoText(reportDesignHandle, Reports.PageTimestamp);
 
-		for(Map.Entry<String, String> entry : options.headers.entrySet()) {
-			String name = entry.getKey();
+		DesignElementHandle element = getElement(reportDesignHandle, Reports.FirstPageHeader);
 
-			DesignElementHandle element = getElement(reportDesignHandle, name);
+		if(element == null)
+			return;
 
-			if(element != null && !isAutoText(name)) {
-				try {
-					element.setProperty("content", entry.getValue());
-				} catch(SemanticException e) {
-					try {
-						element.setProperty("text", entry.getValue());
-					} catch(SemanticException e1) {
-					}
-				}
+		try {
+			element.setProperty("content", options.header);
+		} catch(SemanticException e) {
+			try {
+				element.setProperty("text", options.header);
+			} catch(SemanticException e1) {
 			}
 		}
 	}
@@ -404,7 +400,7 @@ public class BirtReportRunner {
 			style.setStyleName(styleName);
 
 			try {
-				float fontSize = BirtUnitsConverter.convertToPoints(style.getFontSize());
+				float fontSize = UnitsConverter.convertToPoints(style.getFontSize());
 				style.setProperty(IStyleModel.FONT_SIZE_PROP,
 						"" + Math.max(fontSize /* * Math.min(scaleFactor, 1) */, Reports.MinimalFontSize) + "pt");
 			} catch(SemanticException e) {
@@ -777,22 +773,22 @@ public class BirtReportRunner {
 
 			if(options.pagesWide != 0 && format().equalsIgnoreCase(Reports.Pdf)) {
 				float pageOverlapping = options.pagesWide > 1 ? options.pageOverlapping : 0;
-				float paperWidth = options.pagesWide * (options.getPageWidth() - options.getHorizontalMargins() - options.pageOverlapping) + pageOverlapping;
+				float paperWidth = options.pagesWide * (options.pageWidth() - options.horizontalMargins() - options.pageOverlapping) + pageOverlapping;
 
 				scaleFactor = paperWidth / tableWidth;
-				pageWidth = options.pagesWide * options.getPageWidth();
+				pageWidth = options.pagesWide * options.pageWidth();
 			} else
-				pageWidth = getTotalWidth() + options.getHorizontalMargins();
+				pageWidth = getTotalWidth() + options.horizontalMargins();
 
 			masterPage.setProperty(IMasterPageModel.TYPE_PROP, DesignChoiceConstants.PAGE_SIZE_CUSTOM);
 
 			masterPage.setProperty(IMasterPageModel.WIDTH_PROP, "" + pageWidth + "pt");
-			masterPage.setProperty(IMasterPageModel.HEIGHT_PROP, "" + options.getPageHeight() + "pt");
+			masterPage.setProperty(IMasterPageModel.HEIGHT_PROP, "" + options.pageHeight() + "pt");
 
-			masterPage.setProperty(IMasterPageModel.LEFT_MARGIN_PROP, "" + options.getLeftMargin() + "pt");
-			masterPage.setProperty(IMasterPageModel.RIGHT_MARGIN_PROP, "" + options.getRightMargin() + "pt");
-			masterPage.setProperty(IMasterPageModel.TOP_MARGIN_PROP, "" + options.getTopMargin() + "pt");
-			masterPage.setProperty(IMasterPageModel.BOTTOM_MARGIN_PROP, "" + options.getBottomMargin() + "pt");
+			masterPage.setProperty(IMasterPageModel.LEFT_MARGIN_PROP, "" + options.leftMargin() + "pt");
+			masterPage.setProperty(IMasterPageModel.RIGHT_MARGIN_PROP, "" + options.rightMargin() + "pt");
+			masterPage.setProperty(IMasterPageModel.TOP_MARGIN_PROP, "" + options.topMargin() + "pt");
+			masterPage.setProperty(IMasterPageModel.BOTTOM_MARGIN_PROP, "" + options.bottomMargin() + "pt");
 		} catch(Exception e) {
 			throw new RuntimeException(e);
 		}
@@ -831,7 +827,7 @@ public class BirtReportRunner {
 		initialize(rootColumn, groups);
 
 		float tableWidth = getTotalWidth();
-		float paperWidth = options.getPageWidth() - options.getHorizontalMargins() - options.pageOverlapping;
+		float paperWidth = options.pageWidth() - options.horizontalMargins() - options.pageOverlapping;
 
 		return (int)Math.ceil(tableWidth / paperWidth);
 	}

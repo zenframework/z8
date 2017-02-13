@@ -93,6 +93,12 @@ abstract public class Field extends Control implements IField {
 		return name == null || name.isEmpty() ? id() : name;
 	}
 
+	@Override
+	protected String keyString() {
+		IObject owner = owner();
+		return (owner != null ? owner.name() + "." : "") + name();
+	}
+
 	/*
 	 * public void operatorAssign(RField.CLASS<? extends RField> field) {
 	 * set(field.get().get()); }

@@ -30,21 +30,21 @@ public class PdfSplitter {
 		float height = psize.getHeight();
 		int rotation = reader.getPageRotation(1);
 
-		Rectangle dstPgRect = getPageRectangle(options.getPageHeight(), options.getPageWidth());
+		Rectangle dstPgRect = getPageRectangle(options.pageHeight(), options.pageWidth());
 
 		int hzCount = 0;
 
 		if(rtWidth <= dstPgRect.getWidth() + 5)
 			hzCount = 1;
 		else
-			hzCount = (int)Math.ceil((rtWidth - options.getHorizontalMargins()) / (dstPgRect.getWidth() - options.pageOverlapping));
+			hzCount = (int)Math.ceil((rtWidth - options.horizontalMargins()) / (dstPgRect.getWidth() - options.pageOverlapping));
 
 		int vtCount = 0;
 
 		if(rtHeight <= dstPgRect.getHeight() + 5)
 			vtCount = 1;
 		else
-			vtCount = (int)Math.ceil((rtHeight - options.getVerticalMargins()) / (dstPgRect.getHeight() - options.getVerticalMargins() - options.pageOverlapping));
+			vtCount = (int)Math.ceil((rtHeight - options.verticalMargins()) / (dstPgRect.getHeight() - options.verticalMargins() - options.pageOverlapping));
 
 		int margin = 10;
 		Document document = new Document(dstPgRect, margin, margin, margin, margin);
@@ -58,7 +58,7 @@ public class PdfSplitter {
 			for(int nPage = 1; nPage < totalPages + 1; nPage++) {
 				for(int nVt = 0; nVt < vtCount; nVt++) {
 					for(int nHz = 0; nHz < hzCount; nHz++) {
-						float rem = width - options.getHorizontalMargins() - nHz * (dstPgRect.getWidth() - options.getHorizontalMargins() - options.pageOverlapping);
+						float rem = width - options.horizontalMargins() - nHz * (dstPgRect.getWidth() - options.horizontalMargins() - options.pageOverlapping);
 
 						if(rem < options.pageOverlapping)
 							continue;
@@ -68,11 +68,11 @@ public class PdfSplitter {
 						PdfImportedPage page = writer.getImportedPage(reader, nPage);
 
 						if(rotation == 0)
-							cb.addTemplate(page, 1, 0, 0, 1, 0 - nHz * (dstPgRect.getWidth() - options.getHorizontalMargins() - options.pageOverlapping),
-									0 + nVt * (dstPgRect.getHeight() - options.pageOverlapping - options.getVerticalMargins()) - (height - dstPgRect.getHeight()));
+							cb.addTemplate(page, 1, 0, 0, 1, 0 - nHz * (dstPgRect.getWidth() - options.horizontalMargins() - options.pageOverlapping),
+									0 + nVt * (dstPgRect.getHeight() - options.pageOverlapping - options.verticalMargins()) - (height - dstPgRect.getHeight()));
 						else
-							cb.addTemplate(page, 0, -1, 1, 0, 0 - nHz * (dstPgRect.getWidth() - options.pageOverlapping - options.getHorizontalMargins()),
-									0 - nVt * (dstPgRect.getHeight() - options.pageOverlapping - options.getBottomMargin() - options.getTopMargin()) + width);
+							cb.addTemplate(page, 0, -1, 1, 0, 0 - nHz * (dstPgRect.getWidth() - options.pageOverlapping - options.horizontalMargins()),
+									0 - nVt * (dstPgRect.getHeight() - options.pageOverlapping - options.bottomMargin() - options.topMargin()) + width);
 					}
 				}
 			}

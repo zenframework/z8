@@ -62,10 +62,10 @@ public class Listbox extends Control {
 		writer.writeProperty(Json.id, requestId);
 		writer.writeProperty(Json.name, query.id());
 
-		if(!this.readOnly()) {
-			writer.writeProperty(Json.primaryKey, query.primaryKey().id());
+		writer.writeProperty(Json.primaryKey, query.primaryKey().id());
+
+		if(!this.readOnly())
 			writer.writeProperty(Json.lockKey, query.lockKey().id());
-		}
 
 		Field parentKey = query.parentKey();
 		if(parentKey != null)

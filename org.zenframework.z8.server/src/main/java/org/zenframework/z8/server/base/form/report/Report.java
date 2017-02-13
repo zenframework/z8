@@ -1,7 +1,11 @@
 package org.zenframework.z8.server.base.form.report;
 
+import org.zenframework.z8.server.base.file.Folders;
 import org.zenframework.z8.server.json.Json;
 import org.zenframework.z8.server.json.JsonWriter;
+import org.zenframework.z8.server.reports.BirtReport;
+import org.zenframework.z8.server.reports.ReportOptions;
+import org.zenframework.z8.server.reports.Reports;
 import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.runtime.OBJECT;
 import org.zenframework.z8.server.types.guid;
@@ -31,6 +35,10 @@ public class Report extends OBJECT implements Runnable, IReport {
 	}
 
 	@Override
+	public void run() {
+	}
+
+	@Override
 	public void write(JsonWriter writer) {
 		writer.writeProperty(Json.id, id());
 		writer.writeProperty(Json.text, displayName());
@@ -38,12 +46,14 @@ public class Report extends OBJECT implements Runnable, IReport {
 		writer.writeProperty(Json.icon, icon());
 	}
 
-	public void execute(guid recordId) {
+	public String execute(guid recordId) {
 		z8_execute(recordId);
-	}
 
-	@Override
-	public void run() {
+		ReportOptions options = new ReportOptions();
+		options.templateFolder = Folders.Reports;
+		options.template = template.get() + '.' + Reports.DesignExtension;
+
+		return new BirtReport(options).execute();
 	}
 
 	public void z8_execute(guid recordId) {
