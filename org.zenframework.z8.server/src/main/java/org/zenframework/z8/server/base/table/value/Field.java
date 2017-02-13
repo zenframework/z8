@@ -94,7 +94,7 @@ abstract public class Field extends Control implements IField {
 	}
 
 	@Override
-	protected String keyString() {
+	public String keyString() {
 		IObject owner = owner();
 		return (owner != null ? owner.name() + "." : "") + name();
 	}

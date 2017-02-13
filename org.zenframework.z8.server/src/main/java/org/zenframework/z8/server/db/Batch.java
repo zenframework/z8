@@ -38,7 +38,7 @@ public class Batch {
 		return null;
 	}
 
-	public Data count(PreparedStatement statement) {
+	public Data getStatementData(PreparedStatement statement) {
 		for(Data data: this.data) {
 			if(data.statement == statement)
 				return data;
@@ -52,13 +52,10 @@ public class Batch {
 
 		totalCount++;
 
-		if(totalCount % Connection.MaxBatchSize == 0) {
-			for(Data data : this.data) {
-				data.count = 0;
-				data.statement.executeBatch();
-			}
-		} else
-			count(statement).count++;
+		if(totalCount % Connection.MaxBatchSize == 0)
+			flush();
+		else
+			getStatementData(statement).count++;
 	}
 
 	public void flush() throws SQLException {
@@ -78,6 +75,7 @@ public class Batch {
 		for(Data data : this.data) {
 			if(data.count != 0) {
 				try {
+					data.count = 0;
 					data.statement.executeBatch();
 				} catch(BatchUpdateException e) {
 					Trace.logError(e);

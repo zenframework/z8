@@ -186,10 +186,10 @@ public class Table extends TableBase {
 		super.beforeUpdate(recordId);
 	}
 
-	public Map<guid, Field.CLASS<? extends Field>> getFieldsMap() {
-		Map<guid, Field.CLASS<? extends Field>> map = new HashMap<guid, Field.CLASS<? extends Field>>();
+	public Map<guid, Field> getFieldsMap() {
+		Map<guid, Field> map = new HashMap<guid, Field>();
 
-		for(Field.CLASS<? extends Field> field : primaryFields())
+		for(Field field : getPrimaryFields())
 			map.put(field.key(), field);
 
 		return map;

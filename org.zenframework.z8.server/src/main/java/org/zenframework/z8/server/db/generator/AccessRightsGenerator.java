@@ -107,7 +107,7 @@ public class AccessRightsGenerator {
 	}
 
 	private void updateFields(Table table) {
-		Map<guid, Field.CLASS<? extends Field>> fieldsMap = table.getFieldsMap();
+		Map<guid, Field> fieldsMap = table.getFieldsMap();
 		Collection<guid> fieldKeys = new HashSet<guid>(fieldsMap.keySet());
 
 		fields.read(Arrays.asList(fields.primaryKey()),
@@ -123,7 +123,7 @@ public class AccessRightsGenerator {
 	}
 
 	private void createFields(Table table) {
-		Map<guid, Field.CLASS<? extends Field>> fieldsMap = table.getFieldsMap();
+		Map<guid, Field> fieldsMap = table.getFieldsMap();
 		Collection<guid> fieldKeys = new HashSet<guid>(fieldsMap.keySet());
 
 		fields.read(Arrays.asList(fields.primaryKey()), new InVector(fields.primaryKey(), fieldKeys));
@@ -159,12 +159,12 @@ public class AccessRightsGenerator {
 		tables.lock.get().set(RecordLock.Full);
 	}
 
-	private void setFieldProperties(Field.CLASS<? extends Field> field, guid tableKey) {
+	private void setFieldProperties(Field field, guid tableKey) {
 		fields.table.get().set(tableKey);
 		fields.name.get().set(new string(field.name()));
 		fields.displayName.get().set(new string(displayName(field)));
 		fields.description.get().set(new string(field.description()));
-		fields.type.get().set(new string(getFieldType(field.get())));
+		fields.type.get().set(new string(getFieldType(field)));
 		fields.position.get().set(new integer(field.ordinal()));
 		fields.lock.get().set(RecordLock.Full);
 	}
@@ -177,14 +177,14 @@ public class AccessRightsGenerator {
 		return roles;
 	}
 
-	private String displayName(Field.CLASS<? extends Field> field) {
+	private String displayName(Field field) {
 		String name = field.displayName();
 
 		if(name != null && !name.isEmpty())
 			return name;
 
 		name = field.name();
-		return name == null || name.isEmpty() ? field.getJavaClass().getSimpleName() : name;
+		return name == null || name.isEmpty() ? field.getClass().getSimpleName() : name;
 	}
 
 	private String getFieldType(Field field) {

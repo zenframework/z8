@@ -89,7 +89,7 @@ public class OBJECT extends RequestTarget implements IObject, RmiSerializable {
 		id = null;
 	}
 
-	protected String keyString() {
+	public String keyString() {
 		return name();
 	}
 
