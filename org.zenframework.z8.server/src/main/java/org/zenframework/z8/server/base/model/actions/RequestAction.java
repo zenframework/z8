@@ -102,6 +102,11 @@ public abstract class RequestAction extends RequestTarget {
 		return new bool(totals).get();
 	}
 
+	public boolean getCountParameter() {
+		String count = getRequestParameter(Json.count);
+		return new bool(count).get();
+	}
+
 	public String getTextParameter() {
 		return getRequestParameter(Json.text);
 	}

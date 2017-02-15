@@ -76,7 +76,7 @@ public class ReadAction extends RequestAction {
 
 	guid parentId = null;
 
-	private int start = -1;
+	private int start = DefaultStart;
 	private int limit = -1;
 
 	private int totalCount = 0;
@@ -108,7 +108,7 @@ public class ReadAction extends RequestAction {
 	}
 
 	public int getStart() {
-		return getRequestParameter(Json.start, start);
+		return start;
 	}
 
 	public void setStart(int start) {
@@ -116,7 +116,7 @@ public class ReadAction extends RequestAction {
 	}
 
 	public int getLimit() {
-		return parentKey != null ? -1 : getRequestParameter(Json.limit, limit);
+		return limit;
 	}
 
 	public void setLimit(int limit) {
@@ -672,7 +672,7 @@ public class ReadAction extends RequestAction {
 			select.setGroupBy(Arrays.asList(groupField));
 		}
 
-		Select frame = new FramedSelect(select, DefaultStart + 1, DefaultLimit);
+		Select frame = new FramedSelect(select, DefaultStart, DefaultLimit);
 
 		frame.aggregate();
 
@@ -952,9 +952,17 @@ public class ReadAction extends RequestAction {
 			return;
 		}
 
-		if(getStart() != -1 || getLimit() != -1) {
-			if((totalCount = writeCount(writer)) == 0)
+		limit = parentKey != null ? -1 : getRequestParameter(Json.limit, DefaultLimit);
+		start = getRequestParameter(Json.start, DefaultStart);
+
+		if(getCountParameter()) {
+			totalCount = writeCount(writer);
+
+			if(totalCount == 0 || start <= totalCount)
 				return;
+
+			int pages = totalCount / limit + (totalCount % limit != 0 ? 1 : 0);
+			start = (pages - 1) * limit;
 		}
 
 		Groupping groups = writeFrame(writer);

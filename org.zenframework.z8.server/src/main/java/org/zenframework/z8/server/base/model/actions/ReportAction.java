@@ -43,7 +43,7 @@ public class ReportAction extends RequestAction {
 	public ReportAction(ActionConfig config) {
 		super(config);
 
-		String report = getReportParameter();
+/*		String report = getReportParameter();
 		Query query = getQuery();
 
 		ids = getIdList();
@@ -60,6 +60,7 @@ public class ReportAction extends RequestAction {
 			ReadAction action = new ReportReadAction(config);
 			actions.add(action);
 		}
+*/
 	}
 
 	@Override

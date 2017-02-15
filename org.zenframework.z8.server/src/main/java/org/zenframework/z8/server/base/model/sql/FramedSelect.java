@@ -17,7 +17,7 @@ import org.zenframework.z8.server.db.sql.functions.date.ServerTime;
 import org.zenframework.z8.server.types.sql.sql_integer;
 
 public class FramedSelect extends Select {
-	int start = -1;
+	int start = 0;
 	int limit = -1;
 
 	public FramedSelect(Select select, int start, int limit) {
@@ -52,7 +52,7 @@ public class FramedSelect extends Select {
 		} else {
 			String sql = super.sql(options);
 
-			sql += "\nlimit " + (limit != -1 ? limit : "all") + " offset " + (start - 1);
+			sql += "\nlimit " + (limit != -1 ? limit : "all") + " offset " + start;
 			return sql;
 		}
 	}

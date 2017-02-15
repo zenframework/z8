@@ -148,6 +148,7 @@ public class AuthorityCenter extends HubServer implements IAuthorityCenter {
 		return session;
 	}
 
+	@Override
 	public void userChanged(guid user) {
 		sessionManager.dropUserSessions(user);
 	}
