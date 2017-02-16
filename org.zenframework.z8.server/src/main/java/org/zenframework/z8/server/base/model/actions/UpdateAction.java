@@ -49,10 +49,11 @@ public class UpdateAction extends RequestAction {
 		}
 	}
 
-	private boolean checkAccess(Field field) {
-		if(!field.access().write())
-			throw new AccessRightsViolationException();
-		return true;
+	private void checkAccess(Collection<Field> fields) {
+		for(Field field : fields) {
+			if(!field.access().write())
+				throw new AccessRightsViolationException();
+		}
 	}
 
 	private Collection<guid> update(JsonArray records, Query owner, ILink link, Query query) {
@@ -62,11 +63,22 @@ public class UpdateAction extends RequestAction {
 		for(int index = 0; index < records.length(); index++) {
 			JsonObject record = (JsonObject)records.get(index);
 
+			Collection<Field> ownerFields = new ArrayList<Field>();
+			Collection<Field> queryFields = new ArrayList<Field>();
+
 			for(String fieldId : JsonObject.getNames(record)) {
 				Field field = requestQuery.findFieldById(fieldId);
 
-				if(field != null && checkAccess(field))
+				if(field != null) {
 					QueryUtils.setFieldValue(field, record.getString(fieldId));
+
+					Query fieldOwner = field.owner();
+					if(fieldOwner == owner)
+						ownerFields.add(field);
+
+					if(fieldOwner == query)
+						queryFields.add(field);
+				}
 			}
 
 			guid id = query.primaryKey().guid();
@@ -79,13 +91,18 @@ public class UpdateAction extends RequestAction {
 				if(idNull && ownerIdNull)
 					throw new RuntimeException("UpdateAction - bad recordId"); 
 
-				if(idNull)
+				if(idNull) {
+					checkAccess(ownerFields);
+					checkAccess(queryFields);
 					createLink(owner, link, ownerId, query);
-				else
+				} else {
+					checkAccess(queryFields);
 					run(query, id);
+				}
 
 				result.add(ownerId);
 			} else {
+				checkAccess(queryFields);
 				run(query, id);
 				result.add(id);
 			}
