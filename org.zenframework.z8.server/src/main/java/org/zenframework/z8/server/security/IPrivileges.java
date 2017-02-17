@@ -11,8 +11,11 @@ public interface IPrivileges extends RmiSerializable, Serializable {
 	public void setDefaultAccess(IAccess access);
 
 	public IAccess getAccess(Query table);
-	public void setTableAccess(guid table, IAccess access);
-
 	public IAccess getAccess(Field field);
+
+	public IAccess getAccess(guid table);
+	public IAccess getAccess(guid table, guid field);
+
+	public void setTableAccess(guid table, IAccess access);
 	public void setFieldAccess(guid field, IAccess access);
 }

@@ -3,7 +3,6 @@ package org.zenframework.z8.server.base.table.system;
 import org.zenframework.z8.server.base.table.Table;
 import org.zenframework.z8.server.base.table.value.IntegerField;
 import org.zenframework.z8.server.base.table.value.StringField;
-import org.zenframework.z8.server.engine.ApplicationServer;
 import org.zenframework.z8.server.resources.Resources;
 import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.types.bool;
@@ -75,9 +74,5 @@ public class Sequences extends Table {
 		value.setName(fieldNames.Value);
 		value.setIndex("value");
 		value.setDisplayName(displayNames.Value);
-
-		readOnly = new bool(!ApplicationServer.getUser().isAdministrator());
-
-		sortFields.add(description);
 	}
 }

@@ -12,6 +12,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
+import org.zenframework.z8.server.base.table.system.RoleFieldAccess;
 import org.zenframework.z8.server.base.table.system.RoleTableAccess;
 import org.zenframework.z8.server.base.table.system.SystemTools;
 import org.zenframework.z8.server.base.table.system.UserEntries;
@@ -354,6 +355,13 @@ public class User implements IUser {
 		IAccess defaultAccess = defaultAccess();
 		privileges = new Privileges(defaultAccess);
 
+		loadTablesAccess(privileges, defaultAccess);
+		loadFieldsAccess(privileges, defaultAccess);
+
+		Trace.logEvent(privileges);
+	}
+
+	private void loadTablesAccess(IPrivileges privileges, IAccess defaultAccess) {
 		RoleTableAccess rta = new RoleTableAccess.CLASS<RoleTableAccess>().get();
 		Field tableId = rta.table.get();
 		Field read = rta.read.get();
@@ -362,7 +370,7 @@ public class User implements IUser {
 		Field copy = rta.copy.get();
 		Field destroy = rta.destroy.get();
 
-		Collection<Field> groups = new ArrayList<Field>(Arrays.asList(rta.table.get()));
+		Collection<Field> groups = new ArrayList<Field>(Arrays.asList(tableId));
 		Collection<Field> fields = Arrays.asList(tableId, read, write, create, copy, destroy);
 
 		SqlToken where = new InVector(rta.role.get(), getRoles());
@@ -384,8 +392,42 @@ public class User implements IUser {
 			access.setDestroy(destroy.bool().get());
 			privileges.setTableAccess(tableId.guid(), access);
 		}
+	}
 
-		Trace.logEvent(privileges);
+	private void loadFieldsAccess(IPrivileges privileges, IAccess defaultAccess) {
+		RoleFieldAccess rfa = new RoleFieldAccess.CLASS<RoleFieldAccess>().get();
+		Field tableId = rfa.fields.get().table.get();
+		Field fieldId = rfa.field.get();
+		Field read = rfa.read.get();
+		Field write = rfa.write.get();
+
+		Collection<Field> groups = new ArrayList<Field>(Arrays.asList(fieldId));
+		Collection<Field> fields = Arrays.asList(tableId, read, write);
+
+		SqlToken where = new InVector(rfa.role.get(), getRoles());
+
+		SqlToken notRead = new NotEqu(read, new sql_bool(defaultAccess.read()));
+		SqlToken notWrite = new NotEqu(write, new sql_bool(defaultAccess.write()));
+		SqlToken having = new Group(Or.fromList(Arrays.asList(notRead, notWrite)));
+
+		rfa.group(fields, groups, where, having);
+		while(rfa.next()) {
+			guid table = tableId.guid();
+
+			IAccess tableAccess = privileges.getAccess(table);
+			if(!tableAccess.read() || !tableAccess.write())
+				continue;
+
+			boolean readable = read.bool().get();
+			boolean writable = write.bool().get();
+
+			if(!readable || !writable) {
+				IAccess access = new Access();
+				access.setRead(readable);
+				access.setWrite(writable);
+				privileges.setFieldAccess(fieldId.guid(), access);
+			}
+		}
 	}
 
 	private void loadEntries() {

@@ -6,6 +6,7 @@ import org.zenframework.z8.server.base.table.system.view.FilesView;
 import org.zenframework.z8.server.base.table.system.view.InterconnectionCenterView;
 import org.zenframework.z8.server.base.table.system.view.JobsView;
 import org.zenframework.z8.server.base.table.system.view.RoleTableAccessView;
+import org.zenframework.z8.server.base.table.system.view.SequencesView;
 import org.zenframework.z8.server.base.table.system.view.TablesView;
 import org.zenframework.z8.server.base.table.system.view.TransportQueueView;
 import org.zenframework.z8.server.base.table.system.view.UsersView;
@@ -51,7 +52,7 @@ public class SystemTools extends Desktop {
 	public OBJECT.CLASS<? extends OBJECT> users = new UsersView.CLASS<UsersView>(this);
 	public OBJECT.CLASS<? extends OBJECT> domains = new Domains.CLASS<Domains>(this);
 	public OBJECT.CLASS<? extends OBJECT> jobs = new JobsView.CLASS<JobsView>(this);
-	public OBJECT.CLASS<? extends OBJECT> sequences = new Sequences.CLASS<Sequences>(this);
+	public OBJECT.CLASS<? extends OBJECT> sequences = new SequencesView.CLASS<SequencesView>(this);
 	public OBJECT.CLASS<? extends OBJECT> exportMessages = new TransportQueueView.CLASS<TransportQueueView>(this);
 	public OBJECT.CLASS<? extends OBJECT> files = new FilesView.CLASS<FilesView>(this);
 

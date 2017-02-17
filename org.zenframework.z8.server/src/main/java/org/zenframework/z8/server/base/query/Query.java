@@ -1,6 +1,5 @@
 package org.zenframework.z8.server.base.query;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -9,8 +8,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.regex.Pattern;
 
-import org.apache.commons.io.FileUtils;
-import org.zenframework.z8.server.base.file.Folders;
 import org.zenframework.z8.server.base.form.Control;
 import org.zenframework.z8.server.base.form.Section;
 import org.zenframework.z8.server.base.form.TabControl;
@@ -37,8 +34,6 @@ import org.zenframework.z8.server.db.sql.expressions.True;
 import org.zenframework.z8.server.engine.ApplicationServer;
 import org.zenframework.z8.server.json.Json;
 import org.zenframework.z8.server.json.JsonWriter;
-import org.zenframework.z8.server.reports.BirtFileReader;
-import org.zenframework.z8.server.request.Loader;
 import org.zenframework.z8.server.runtime.IClass;
 import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.runtime.OBJECT;
@@ -179,44 +174,6 @@ public class Query extends OBJECT {
 	public void onAction(Action action, Collection<guid> recordIds) {
 		RCollection<guid> ids = getGuidCollection(recordIds);
 		z8_onAction((Action.CLASS<? extends Action>)action.getCLASS(), ids);
-	}
-
-	public Collection<Query> onReport(String report, Collection<guid> recordIds) {
-		Collection<Query> queries = getReportQueries(report, recordIds);
-
-		if(queries.isEmpty())
-			queries.add(this);
-
-		for(Query query : queries)
-			onReport(query, report, recordIds);
-
-		return queries;
-	}
-
-	private Collection<Query> getReportQueries(String report, Collection<guid> recordIds) {
-		File reportFile = FileUtils.getFile(Folders.Base, Folders.Reports, report);
-
-		BirtFileReader birtXMLReader = new BirtFileReader(reportFile);
-
-		Collection<Query> result = new ArrayList<Query>();
-
-		Collection<String> classNames = birtXMLReader.getDataSets();
-
-		for(String className : classNames) {
-			className = className.split(";")[0];
-			result.add((Query)Loader.getInstance(className));
-		}
-
-		return result;
-	}
-
-	private void onReport(Query query, String report, Collection<guid> recordIds) {
-		query.callOnReport(report, recordIds);
-	}
-
-	private void callOnReport(String report, Collection<guid> recordIds) {
-		RCollection<guid> ids = getGuidCollection(recordIds);
-		z8_onReport(new string(report), ids);
 	}
 
 	public void writeReportMeta(JsonWriter writer, Collection<Field> fields) {

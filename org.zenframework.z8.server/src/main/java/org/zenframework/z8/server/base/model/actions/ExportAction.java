@@ -1,7 +1,6 @@
 package org.zenframework.z8.server.base.model.actions;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 
 import org.zenframework.z8.server.base.table.value.Field;
@@ -79,7 +78,7 @@ public class ExportAction extends ReadAction {
 		ReportOptions report = new ReportOptions(printOptions);
 		report.header = getReportHeader();
 		report.format = getFormatParameter();
-		report.actions = Arrays.asList((ReadAction)this);
+		report.action = this;
 
 		BirtReport birtReport = new BirtReport(report);
 		String reportId = birtReport.execute(columns, groupFields);

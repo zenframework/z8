@@ -36,18 +36,21 @@ public class OdaQuery implements IQuery {
 		return fields;
 	}
 
+	public String getQueryId() {
+		return readAction.getQuery().id();
+	}
+
 	public Select getCursor() {
 		return readAction.getCursor();
 	}
 
 	@Override
 	public void prepare(String queryText) throws OdaException {
-		JsonObject json = new JsonObject(queryText);
-
-		String classId = json.getString(Json.id);
-
 		if(context == null)
 			throw new RuntimeException("OdaQuery.setApplicationContext never been called");
+
+		JsonObject json = new JsonObject(queryText);
+		String classId = json.getString(Json.id);
 
 		readAction = (ReadAction)context.get(classId);
 	}
@@ -66,7 +69,7 @@ public class OdaQuery implements IQuery {
 
 	@Override
 	public IResultSetMetaData getMetaData() throws OdaException {
-		return new ResultSetMetaData(getFields());
+		return new ResultSetMetaData(getFields(), getQueryId());
 	}
 
 	@Override

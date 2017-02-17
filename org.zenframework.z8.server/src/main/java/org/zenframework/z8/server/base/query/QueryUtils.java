@@ -6,6 +6,7 @@ import java.util.Collection;
 import org.zenframework.z8.server.base.table.value.Field;
 import org.zenframework.z8.server.base.table.value.ILink;
 import org.zenframework.z8.server.db.FieldType;
+import org.zenframework.z8.server.json.Json;
 import org.zenframework.z8.server.json.parser.JsonArray;
 import org.zenframework.z8.server.json.parser.JsonObject;
 import org.zenframework.z8.server.types.bool;
@@ -17,6 +18,14 @@ import org.zenframework.z8.server.types.integer;
 import org.zenframework.z8.server.types.string;
 
 public class QueryUtils {
+	static public Query findByClassId(Collection<Query> queries, String classId) {
+		for(Query query : queries) {
+			if(query.classId().equals(classId))
+				return query;
+		}
+		return null;
+	}
+
 	static public Collection<Query> getOwners(Collection<ILink> links) {
 		Collection<Query> queries = new ArrayList<Query>();
 
@@ -70,19 +79,33 @@ public class QueryUtils {
 		}
 	}
 
+	/*
+	 *
+	 * ["field", "field", ...] или [{ id: "field" }, { id: "field" }, ...]
+	 *
+	 */
 	static public Collection<Field> parseFormFields(Query query, String json) {
 		if(json == null || json.isEmpty())
 			return query.fields();
 
+		return parseFields(query, new JsonArray(json));
+	}
+
+	static public Collection<Field> parseFields(Query query, JsonArray json) {
+		return parseFields(query, json, null);
+	}
+
+	static public Collection<Field> parseFields(Query query, JsonArray json, String context) {
 		Collection<Field> fields = new ArrayList<Field>();
 
-		JsonArray names = new JsonArray(json);
-
-		if(names.length() == 0)
+		if(json.length() == 0)
 			return query.fields();
 
-		for(int index = 0; index < names.length(); index++) {
-			Field field = query.findFieldById(names.getString(index));
+		for(int index = 0; index < json.length(); index++) {
+			Object object = json.get(index);
+			String name = (context != null && !context.isEmpty() ? context + '.' : "") +
+					(object instanceof JsonObject ? ((JsonObject)object).getString(Json.id) : (String)object);
+			Field field = query.findFieldById(name);
 			if(field != null)
 				fields.add(field);
 		}

@@ -40,7 +40,7 @@ public class ResultSet implements IResultSet {
 
 	@Override
 	public IResultSetMetaData getMetaData() throws OdaException {
-		return new ResultSetMetaData(query.getFields());
+		return new ResultSetMetaData(query.getFields(), query.getQueryId());
 	}
 
 	@Override

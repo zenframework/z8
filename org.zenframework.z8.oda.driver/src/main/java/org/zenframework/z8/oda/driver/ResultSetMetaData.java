@@ -7,10 +7,12 @@ import org.eclipse.datatools.connectivity.oda.OdaException;
 import org.zenframework.z8.server.base.table.value.Field;
 
 public class ResultSetMetaData implements IResultSetMetaData {
-	private List<Field> columns = null;
+	private List<Field> columns;
+	private String context;
 
-	public ResultSetMetaData(List<Field> columns) {
+	public ResultSetMetaData(List<Field> columns, String context) {
 		this.columns = columns;
+		this.context = context;
 	}
 
 	@Override
@@ -24,7 +26,10 @@ public class ResultSetMetaData implements IResultSetMetaData {
 
 	@Override
 	public String getColumnName(int index) throws OdaException {
-		return getColumn(index).id();
+		String id = getColumn(index).id();
+		if(context != null && context != null && id.startsWith(context + "."))
+			return id.substring(context.length() + 1);
+		return id;
 	}
 
 	@Override

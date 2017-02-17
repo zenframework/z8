@@ -137,6 +137,12 @@ public class Access implements IAccess {
 
 	@Override
 	public String toString() {
-		return "read = " + read + "; write = " + write + "; create = " + create + "; copy = " + copy + "; destroy = " + destroy + "; execute = " + execute;
+		String result = read ? "read" : "";
+		result += write ? (result.isEmpty() ? "" : "/") + "write" : "";
+		result += create ? (result.isEmpty() ? "" : "/") + "create": "";
+		result += copy ? (result.isEmpty() ? "" : "/") + "copy" : "";
+		result += destroy ? (result.isEmpty() ? "" : "/") + "destroy" : "";
+		result += execute ? (result.isEmpty() ? "" : "/") + "execute" : "";
+		return result;
 	}
 }

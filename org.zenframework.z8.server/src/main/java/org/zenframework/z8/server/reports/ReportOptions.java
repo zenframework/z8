@@ -14,6 +14,7 @@ import org.eclipse.birt.report.model.api.IDesignEngine;
 import org.eclipse.birt.report.model.api.IDesignEngineFactory;
 import org.zenframework.z8.server.base.file.Folders;
 import org.zenframework.z8.server.base.model.actions.ReadAction;
+import org.zenframework.z8.server.base.query.Query;
 
 import com.lowagie.text.FontFactory;
 
@@ -43,9 +44,10 @@ public class ReportOptions {
 	public String templateFolder = Folders.DefaultReports;
 	public String template = Reports.DefaultDesign;
 
-	public Collection<ReadAction> actions = null;
+	public ReadAction action = null;
+	public Collection<Query> queries = null;
 
-	public String header = "";
+	public String header = "document";
 
 	public PrintOptions printOptions;
 

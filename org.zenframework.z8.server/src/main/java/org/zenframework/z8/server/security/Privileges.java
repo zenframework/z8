@@ -44,10 +44,14 @@ public class Privileges implements IPrivileges {
 	}
 
 	public IAccess getAccess(Query table) {
+		return getAccess(table.key());
+	}
+
+	public IAccess getAccess(guid table) {
 		if(tableAccess == null)
 			return defaultAccess;
 
-		IAccess access = tableAccess.get(table.key());
+		IAccess access = tableAccess.get(table);
 		return access != null ? access : defaultAccess;
 	}
 
@@ -58,15 +62,19 @@ public class Privileges implements IPrivileges {
 	}
 
 	public IAccess getAccess(Field field) {
-		if(fieldAccess == null)
-			return getAccess(field.owner());
+		return getAccess(field.owner().key(), field.key());
+	}
 
-		IAccess access = fieldAccess.get(field.key());
+	public IAccess getAccess(guid table, guid field) {
+		if(fieldAccess == null)
+			return getAccess(table);
+
+		IAccess access = fieldAccess.get(field);
 
 		if(access == null)
-			return getAccess(field.owner());
+			return getAccess(table);
 
-		return defaultAccess;
+		return access;
 	}
 
 	public void setFieldAccess(guid field, IAccess access) {

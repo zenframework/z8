@@ -33,10 +33,10 @@ public class FilesView extends Files {
 	public void constructor2() {
 		super.constructor2();
 
-		name.get().width = new integer(30);
+		path.get().colspan = new integer(4);
 
-		registerControl(createdAt);
 		registerControl(name);
+		registerControl(createdAt);
 		registerControl(path);
 	}
 }

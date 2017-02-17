@@ -3,7 +3,6 @@ package org.zenframework.z8.server.reports;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -51,8 +50,12 @@ import org.eclipse.birt.report.model.elements.interfaces.IStyleModel;
 import org.eclipse.birt.report.model.elements.interfaces.ITableColumnModel;
 import org.zenframework.z8.server.base.file.Folders;
 import org.zenframework.z8.server.base.model.actions.ReadAction;
+import org.zenframework.z8.server.base.query.Query;
+import org.zenframework.z8.server.base.query.QueryUtils;
 import org.zenframework.z8.server.base.table.value.Field;
+import org.zenframework.z8.server.json.Json;
 import org.zenframework.z8.server.json.JsonWriter;
+import org.zenframework.z8.server.json.parser.JsonObject;
 import org.zenframework.z8.server.resources.Resources;
 import org.zenframework.z8.server.types.string;
 import org.zenframework.z8.server.utils.IOUtils;
@@ -812,7 +815,7 @@ public class BirtReport {
 			reportDesignHandle.getDataSets().add(dataSetHandle);
 			dataSetHandle.setDataSource(dataSourceHandle.getName());
 
-			ReadAction action = options.actions.iterator().next();
+			ReadAction action = options.action;
 
 			JsonWriter writer = new JsonWriter();
 			action.getQuery().writeReportMeta(writer, getFields());
@@ -904,7 +907,6 @@ public class BirtReport {
 
 		if(isSplitNeeded()) {
 			splittedFile = getUniqueFileName(folder, options.documentName(), format());
-			splittedFile.deleteOnExit();
 
 			FileOutputStream output = null;
 			FileInputStream input = null;
@@ -930,18 +932,10 @@ public class BirtReport {
 	}
 
 	private String runAndRenderReport() {
-		File temporaryFile = null;
-
-		try {
-			File folder = ReportOptions.getReportOutputFolder();
-			temporaryFile = File.createTempFile("report", "." + format(), folder);
-
-			run(temporaryFile);
-
-			return new File(Folders.ReportsOutput, temporaryFile.getName()).getPath();
-		} catch(IOException e) {
-			throw new RuntimeException(e);
-		} 
+		File folder = ReportOptions.getReportOutputFolder();
+		File output = getUniqueFileName(folder, options.documentName(), format());
+		run(output);
+		return new File(Folders.ReportsOutput, output.getName()).getPath();
 	}
 
 	private void run(ReportDesignHandle reportDesignHandle, File outputFile) {
@@ -962,14 +956,39 @@ public class BirtReport {
 		}
 	}
 
+	private ReadAction parseReportMeta(String json, Collection<Query> queries) {
+		JsonObject meta = new JsonObject(json);
+
+		String id = meta.getString(Json.id);
+		Query query = QueryUtils.findByClassId(queries, id);
+
+		if(query == null)
+			throw new RuntimeException("Reports: query '" + id + "' is missing");
+
+		Collection<Field> fields = QueryUtils.parseFields(query, meta.getJsonArray(Json.fields), query.id());
+
+		return new ReadAction(query, fields);
+	}
+
 	private void run(IReportRunnable runnable, File outputFile) {
 		IRunAndRenderTask task = null;
 		task = options.reportEngine().createRunAndRenderTask(runnable);
 
 		HashMap<String, Object> contextMap = new HashMap<String, Object>();
 
-		for(ReadAction action : options.actions)
-			contextMap.put(action.getQuery().classId(), action);
+		if(options.action != null)
+			contextMap.put(options.action.getQuery().classId(), options.action);
+
+		if(options.queries != null) {
+			ReportDesignHandle design = (ReportDesignHandle)runnable.getDesignHandle();
+			SlotHandle dataSets = design.getDataSets();
+
+			for(int i = 0; i < dataSets.getCount(); i++) {
+				OdaDataSetHandle dataSet = (OdaDataSetHandle)dataSets.get(i);
+				ReadAction action = parseReportMeta(dataSet.getQueryText(), options.queries);
+				contextMap.put(action.getQuery().classId(), action);
+			}
+		}
 
 		task.setAppContext(contextMap);
 

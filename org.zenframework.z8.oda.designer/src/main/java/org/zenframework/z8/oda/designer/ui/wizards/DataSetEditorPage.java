@@ -299,9 +299,10 @@ public class DataSetEditorPage extends DataSetWizardPage {
 
 		for(Field field : getSelectedFields()) {
 			ColumnDefinition column = DesignFactory.eINSTANCE.createColumnDefinition();
-			DataElementAttributes attributes = column.getAttributes();
+			DataElementAttributes attributes = DesignFactory.eINSTANCE.createDataElementAttributes();
 			attributes.setName(field.id());
 			attributes.setUiDisplayName(field.displayName() + " (" + field.id() + ")");
+			column.setAttributes(attributes);
 			columns.getResultColumnDefinitions().add(column);
 		}
 

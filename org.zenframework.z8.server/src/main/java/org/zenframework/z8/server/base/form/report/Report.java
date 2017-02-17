@@ -1,11 +1,16 @@
 package org.zenframework.z8.server.base.form.report;
 
+import java.util.ArrayList;
+import java.util.Collection;
+
 import org.zenframework.z8.server.base.file.Folders;
+import org.zenframework.z8.server.base.query.Query;
 import org.zenframework.z8.server.json.Json;
 import org.zenframework.z8.server.json.JsonWriter;
 import org.zenframework.z8.server.reports.BirtReport;
 import org.zenframework.z8.server.reports.ReportOptions;
 import org.zenframework.z8.server.reports.Reports;
+import org.zenframework.z8.server.runtime.IClass;
 import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.runtime.OBJECT;
 import org.zenframework.z8.server.types.guid;
@@ -29,9 +34,22 @@ public class Report extends OBJECT implements Runnable, IReport {
 	}
 
 	public string template;
+	public string name;
 
 	public Report(IObject container) {
 		super(container);
+	}
+
+	@Override
+	public Collection<Query> queries() {
+		Collection<Query> datasets = new ArrayList<Query>();
+
+		for(IClass<? extends IObject> member : members()) {
+			if(member instanceof Query.CLASS)
+				datasets.add((Query)member.get());
+		}
+
+		return datasets;
 	}
 
 	@Override
@@ -49,11 +67,13 @@ public class Report extends OBJECT implements Runnable, IReport {
 	public String execute(guid recordId) {
 		z8_execute(recordId);
 
-		ReportOptions options = new ReportOptions();
-		options.templateFolder = Folders.Reports;
-		options.template = template.get() + '.' + Reports.DesignExtension;
+		ReportOptions report = new ReportOptions();
+		report.templateFolder = Folders.Reports;
+		report.template = template.get() + '.' + Reports.DesignExtension;
+		report.queries = queries();
+		report.header = name.get();
 
-		return new BirtReport(options).execute();
+		return new BirtReport(report).execute();
 	}
 
 	public void z8_execute(guid recordId) {
