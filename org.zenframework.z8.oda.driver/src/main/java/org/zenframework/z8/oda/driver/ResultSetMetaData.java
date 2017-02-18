@@ -4,13 +4,13 @@ import java.util.List;
 
 import org.eclipse.datatools.connectivity.oda.IResultSetMetaData;
 import org.eclipse.datatools.connectivity.oda.OdaException;
-import org.zenframework.z8.server.base.table.value.Field;
+import org.zenframework.z8.server.base.table.value.IField;
 
 public class ResultSetMetaData implements IResultSetMetaData {
-	private List<Field> columns;
+	private List<IField> columns;
 	private String context;
 
-	public ResultSetMetaData(List<Field> columns, String context) {
+	public ResultSetMetaData(List<IField> columns, String context) {
 		this.columns = columns;
 		this.context = context;
 	}
@@ -20,7 +20,7 @@ public class ResultSetMetaData implements IResultSetMetaData {
 		return columns.size();
 	}
 
-	public Field getColumn(int index) throws OdaException {
+	public IField getColumn(int index) throws OdaException {
 		return columns.get(index - 1);
 	}
 
@@ -39,7 +39,7 @@ public class ResultSetMetaData implements IResultSetMetaData {
 
 	@Override
 	public int getColumnType(int index) throws OdaException {
-		Field column = getColumn(index);
+		IField column = getColumn(index);
 
 		switch(column.type()) {
 		case Guid:

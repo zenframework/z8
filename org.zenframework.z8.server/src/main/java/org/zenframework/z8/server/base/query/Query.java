@@ -186,6 +186,7 @@ public class Query extends OBJECT {
 			writer.startObject();
 			writer.writeProperty(Json.displayName, field.displayName());
 			writer.writeProperty(Json.id, field.id());
+			writer.writeProperty(Json.type, field.type().toString());
 			writer.finishObject();
 		}
 

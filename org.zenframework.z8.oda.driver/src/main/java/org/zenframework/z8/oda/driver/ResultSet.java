@@ -11,7 +11,7 @@ import org.eclipse.datatools.connectivity.oda.IResultSet;
 import org.eclipse.datatools.connectivity.oda.IResultSetMetaData;
 import org.eclipse.datatools.connectivity.oda.OdaException;
 import org.zenframework.z8.server.base.model.sql.Select;
-import org.zenframework.z8.server.base.table.value.Field;
+import org.zenframework.z8.server.base.table.value.IField;
 import org.zenframework.z8.server.db.Connection;
 import org.zenframework.z8.server.db.ConnectionManager;
 import org.zenframework.z8.server.resources.Resources;
@@ -53,7 +53,7 @@ public class ResultSet implements IResultSet {
 
 	@Override
 	public boolean next() throws OdaException {
-		return cursor.next();
+		return cursor != null ? cursor.next() : false;
 	}
 
 	@Override
@@ -72,7 +72,7 @@ public class ResultSet implements IResultSet {
 		return cursor.isAfterLast() ? -1 : 0;
 	}
 
-	private Field getColumn(int index) {
+	private IField getColumn(int index) {
 		return query.getFields().get(index - 1);
 	}
 
@@ -295,7 +295,7 @@ public class ResultSet implements IResultSet {
 	@Override
 	public int findColumn(String columnName) throws OdaException {
 		int index = 1;
-		for(Field field : query.getFields()) {
+		for(IField field : query.getFields()) {
 			if(columnName.equals(field.id()))
 				return index;
 			index++;

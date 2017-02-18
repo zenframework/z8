@@ -17,31 +17,31 @@ import org.eclipse.datatools.connectivity.oda.SortSpec;
 import org.eclipse.datatools.connectivity.oda.spec.QuerySpecification;
 import org.zenframework.z8.server.base.model.actions.ReadAction;
 import org.zenframework.z8.server.base.model.sql.Select;
-import org.zenframework.z8.server.base.table.value.Field;
+import org.zenframework.z8.server.base.table.value.IField;
 import org.zenframework.z8.server.json.Json;
+import org.zenframework.z8.server.json.parser.JsonArray;
 import org.zenframework.z8.server.json.parser.JsonObject;
 
 public class OdaQuery implements IQuery {
-	private List<Field> fields;
-
 	private ReadAction readAction;
 	private Map<Object, Object> context;
+
+	private List<IField> fields;
 
 	public OdaQuery() {
 	}
 
-	public List<Field> getFields() {
-		if(fields == null)
-			fields = new ArrayList<Field>(readAction.config().fields);
+
+	public List<IField> getFields() {
 		return fields;
 	}
 
 	public String getQueryId() {
-		return readAction.getQuery().id();
+		return readAction != null ? readAction.getQuery().id() : null;
 	}
 
 	public Select getCursor() {
-		return readAction.getCursor();
+		return readAction != null ? readAction.getCursor() : null;
 	}
 
 	@Override
@@ -53,6 +53,21 @@ public class OdaQuery implements IQuery {
 		String classId = json.getString(Json.id);
 
 		readAction = (ReadAction)context.get(classId);
+
+		if(readAction != null) {
+			fields = new ArrayList<IField>(readAction.config().fields);
+			return;
+		}
+
+		// inside birt report designer
+		fields = new ArrayList<IField>();
+
+		JsonArray jsonFields = json.getJsonArray(Json.fields);
+
+		for(int index = 0; index < jsonFields.length(); index++) {
+			JsonObject field = jsonFields.getJsonObject(index);
+			fields.add(new OdaField(field));
+		}
 	}
 
 	@Override

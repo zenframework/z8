@@ -10,10 +10,12 @@ import org.eclipse.datatools.connectivity.oda.design.ColumnDefinition;
 import org.eclipse.datatools.connectivity.oda.design.DataElementAttributes;
 import org.eclipse.datatools.connectivity.oda.design.DataSetDesign;
 import org.eclipse.datatools.connectivity.oda.design.DesignFactory;
+import org.eclipse.datatools.connectivity.oda.design.OutputElementAttributes;
 import org.eclipse.datatools.connectivity.oda.design.ResultSetColumns;
 import org.eclipse.datatools.connectivity.oda.design.ResultSetDefinition;
 import org.eclipse.datatools.connectivity.oda.design.ui.wizards.DataSetWizardPage;
 import org.eclipse.jface.dialogs.IMessageProvider;
+import org.eclipse.jface.preference.IPreferencePageContainer;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.resource.ImageRegistry;
 import org.eclipse.jface.resource.JFaceResources;
@@ -37,7 +39,10 @@ import org.zenframework.z8.server.base.query.Query;
 import org.zenframework.z8.server.base.table.Table;
 import org.zenframework.z8.server.base.table.value.Field;
 import org.zenframework.z8.server.base.table.value.ILink;
+import org.zenframework.z8.server.json.Json;
 import org.zenframework.z8.server.json.JsonWriter;
+import org.zenframework.z8.server.json.parser.JsonArray;
+import org.zenframework.z8.server.json.parser.JsonObject;
 
 public class DataSetEditorPage extends DataSetWizardPage {
 	private static String RootIcon = DataSetEditorPage.class.getName() + ".RootIcon";
@@ -58,33 +63,56 @@ public class DataSetEditorPage extends DataSetWizardPage {
 
 	private DataSetDesign dataSetDesign = null;
 
-	private org.eclipse.swt.widgets.Table queries = null;
-	private org.eclipse.swt.widgets.Tree structure = null;
+	private org.eclipse.swt.widgets.Table tables = null;
+	private org.eclipse.swt.widgets.Tree tableTree = null;
 	private org.eclipse.swt.widgets.Table fields = null;
 
-	private static String DEFAULT_MESSAGE = Plugin.getResourceString("dataset.select.data.object");
-	private static String ERROR_MESSAGE = Plugin.getResourceString("dataset.no.data.object.selected");
+	static private String SelectTableMessage = Plugin.getResourceString("dataset.select.table");
+	static private String SelectFieldsMessage = Plugin.getResourceString("dataset.select.fields");
 
 	public DataSetEditorPage(String pageName) {
 		super(pageName);
-	}
-
-	private void readPreferences() {
-	}
-
-	private void prepareConnection(DataSetDesign dataSetDesign) {
 	}
 
 	private DataSetDesign getDataSetDesign() {
 		return dataSetDesign == null ? getInitializationDesign() : dataSetDesign;
 	}
 
+	private String getQueryText() {
+		return getDataSetDesign().getQueryText();
+	}
+
+	private String getCurrentTable() {
+		String json = getQueryText();
+
+		if(json == null || json.isEmpty())
+			return null;
+
+		JsonObject query = new JsonObject(json);
+		return query.getString(Json.id);
+	}
+
+	private Collection<String> getCurrentFields() {
+		String json = getQueryText();
+
+		if(json == null || json.isEmpty())
+			return null;
+
+		JsonObject query = new JsonObject(json);
+		JsonArray fields = query.getJsonArray(Json.fields);
+
+		Collection<String> result = new ArrayList<String>();
+		for(int index = 0; index < fields.length(); index++) {
+			JsonObject field = fields.getJsonObject(index);
+			result.add(field.getString(Json.id));
+		}
+
+		return result;
+	}
+
 	@Override
 	public void createPageCustomControl(Composite parent) {
-		readPreferences();
-		prepareConnection(getDataSetDesign());
 		setControl(createPageControl(parent));
-		initializeControl();
 	}
 
 	private Control createPageControl(Composite parent) {
@@ -98,7 +126,7 @@ public class DataSetEditorPage extends DataSetWizardPage {
 		pageContainer.setLayout(layout);
 		pageContainer.setLayoutData(new GridData(GridData.FILL_BOTH));
 
-		Control control = createDBMetaDataSelectionComposite(pageContainer);
+		Control control = createControls(pageContainer);
 
 		setWidthHints(pageContainer, control);
 		return pageContainer;
@@ -110,11 +138,7 @@ public class DataSetEditorPage extends DataSetWizardPage {
 		data.widthHint = totalWidth;
 	}
 
-	private void initializeControl() {
-		setMessage(DEFAULT_MESSAGE, IMessageProvider.NONE);
-	}
-
-	private Control createDBMetaDataSelectionComposite(Composite parent) {
+	private Control createControls(Composite parent) {
 		// Sources
 		GridData compositeData = new GridData(GridData.FILL_BOTH);
 		compositeData.grabExcessVerticalSpace = true;
@@ -133,8 +157,8 @@ public class DataSetEditorPage extends DataSetWizardPage {
 		queriesLabel.setText(Plugin.getResourceString("tablepage.label.queries"));
 		queriesLabel.setLayoutData(new GridData());
 
-		queries = new org.eclipse.swt.widgets.Table(queriesComposite, SWT.BORDER);
-		queries.setLayoutData(controlData);
+		tables = new org.eclipse.swt.widgets.Table(queriesComposite, SWT.BORDER);
+		tables.setLayoutData(controlData);
 
 		// Structure
 		Composite structureComposite = new Composite(parent, SWT.NONE);
@@ -145,8 +169,8 @@ public class DataSetEditorPage extends DataSetWizardPage {
 		structureLabel.setText(Plugin.getResourceString("tablepage.label.structure"));
 		structureLabel.setLayoutData(new GridData());
 
-		structure = new org.eclipse.swt.widgets.Tree(structureComposite, SWT.BORDER | SWT.SINGLE);
-		structure.setLayoutData(controlData);
+		tableTree = new org.eclipse.swt.widgets.Tree(structureComposite, SWT.BORDER | SWT.SINGLE);
+		tableTree.setLayoutData(controlData);
 
 		// Content
 		Composite fieldsComposite = new Composite(parent, SWT.NONE);
@@ -160,13 +184,19 @@ public class DataSetEditorPage extends DataSetWizardPage {
 		fields = new org.eclipse.swt.widgets.Table(fieldsComposite, SWT.BORDER);
 		fields.setLayoutData(controlData);
 
-		installQuerySelectionListener();
+		installTableSelectionListener();
 		installStructureDblClickListener();
 		installFieldsDblClickListener();
 
 		initializeTables();
 
 		return queriesComposite;
+	}
+
+	private void updateButtons() {
+		IPreferencePageContainer container = getEditorContainer();
+		if(container != null)
+			container.updateButtons();
 	}
 
 	public Image getImage(String name) {
@@ -191,13 +221,26 @@ public class DataSetEditorPage extends DataSetWizardPage {
 	}
 
 	private void initializeTables() {
+		String currentTable = getCurrentTable();
+		Collection<String> currentFields = getCurrentFields();
 		try {
+			boolean selected = false;
 			for(Table table : getTables()) {
-				TableItem item = new TableItem(queries, SWT.NONE);
+				TableItem item = new TableItem(tables, SWT.NONE);
 				item.setText(table.displayName());
 				item.setImage(getImage(TableIcon));
 				item.setData(table);
+				if(table.classId().equals(currentTable)) {
+					tables.setSelection(item);
+					initializeTableTree(table, currentFields);
+					selected = true;
+				}
 			}
+
+			if(!selected)
+				setMessage(SelectTableMessage, IMessageProvider.ERROR);
+
+			updateButtons();
 		} catch(Throwable e) {
 			throw new RuntimeException(e);
 		}
@@ -216,10 +259,10 @@ public class DataSetEditorPage extends DataSetWizardPage {
 		return tables;
 	}
 
-	private void initializeTree(Table table) {
-		structure.removeAll();
-		fields.removeAll();
-		initializeTableItem(null, table);
+	private void initializeTableTree(Table table, Collection<String> fields) {
+		this.tableTree.removeAll();
+		this.fields.removeAll();
+		initializeTableTreeItem(null, table, fields);
 	}
 
 	private boolean checkCicle(TreeItem item, Table table) {
@@ -235,31 +278,27 @@ public class DataSetEditorPage extends DataSetWizardPage {
 		return true;
 	}
 
-	private void initializeTableItem(TreeItem parent, Table table) {
-/*
-		String currentClass = getCurrentDataSetClassName();
-*/
+	private void initializeTableTreeItem(TreeItem parent, Table table, Collection<String> fields) {
 		for(Table linkedTable : getLinkedTables(table)) {
-			TreeItem item = parent == null ? new TreeItem(structure, SWT.NONE) : new TreeItem(parent, SWT.NONE);
+			TreeItem item = parent == null ? new TreeItem(tableTree, SWT.NONE) : new TreeItem(parent, SWT.NONE);
 			item.setText(linkedTable.displayName() + " (" + linkedTable.index() + ")");
 			item.setImage(getImage(TableIcon));
 			item.setData(linkedTable);
 
 			if(checkCicle(item, linkedTable))
-				initializeTableItem(item, linkedTable);
+				initializeTableTreeItem(item, linkedTable, fields);
 		}
 
 		for(Field field : table.getDataFields()) {
 			if(!field.system()) {
-				TreeItem fieldItem = parent == null ? new TreeItem(structure, SWT.NONE) : new TreeItem(parent, SWT.NONE);
+				TreeItem fieldItem = parent == null ? new TreeItem(tableTree, SWT.NONE) : new TreeItem(parent, SWT.NONE);
 				fieldItem.setText(field.displayName() + " (" + field.index() + ")");
 				fieldItem.setImage(getImage(ColumnIcon));
 				fieldItem.setData(field);
+
+				if(fields != null && fields.contains(field.id()))
+					addField(field);
 			}
-/*
-			if(dataSetClass.classId().equals(currentClass))
-				dataSetItem.getParent().select(dataSetItem);
-*/
 		}
 	}
 
@@ -275,14 +314,11 @@ public class DataSetEditorPage extends DataSetWizardPage {
 		return result;
 	}
 
-	private String getDatasetInfo() {
-		if(queries == null)
-			return getDataSetDesign().getQueryText();
+	private String buildQueryString() {
+		if(tables.getSelectionCount() == 0)
+			throw new RuntimeException("No table selected");
 
-		if(queries.getSelectionCount() == 0)
-			return null;
-
-		Table query = (Table)queries.getSelection()[0].getData();
+		Table query = (Table)tables.getSelection()[0].getData();
 
 		JsonWriter writer = new JsonWriter();
 		query.writeReportMeta(writer, getSelectedFields());
@@ -292,17 +328,28 @@ public class DataSetEditorPage extends DataSetWizardPage {
 
 	@Override
 	protected DataSetDesign collectDataSetDesign(DataSetDesign design) {
-		design.setQueryText(getDatasetInfo());
+		if(this.tables == null)
+			return design;
+
+		design.setQueryText(buildQueryString());
 
 		ResultSetDefinition resultSet = DesignFactory.eINSTANCE.createResultSetDefinition();
 		ResultSetColumns columns = DesignFactory.eINSTANCE.createResultSetColumns();
 
 		for(Field field : getSelectedFields()) {
 			ColumnDefinition column = DesignFactory.eINSTANCE.createColumnDefinition();
+
 			DataElementAttributes attributes = DesignFactory.eINSTANCE.createDataElementAttributes();
 			attributes.setName(field.id());
 			attributes.setUiDisplayName(field.displayName() + " (" + field.id() + ")");
+
+			OutputElementAttributes outputAttributes = DesignFactory.eINSTANCE.createOutputElementAttributes();
+			attributes.setName(field.id());
+			attributes.setUiDisplayName(field.displayName() + " (" + field.id() + ")");
+
 			column.setAttributes(attributes);
+			column.setUsageHints(outputAttributes);
+
 			columns.getResultColumnDefinitions().add(column);
 		}
 
@@ -312,24 +359,23 @@ public class DataSetEditorPage extends DataSetWizardPage {
 		return design;
 	}
 
-	private void installQuerySelectionListener() {
-		queries.addSelectionListener(new SelectionAdapter() {
+	private void installTableSelectionListener() {
+		tables.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(final SelectionEvent event) {
 				PlatformUI.getWorkbench().getDisplay().asyncExec(new Runnable() {
 					@Override
 					public void run() {
-						if(canLeave()) {
-							initializeTree((Table)event.item.getData());
+						tableTree.removeAll();
+						initializeTableTree((Table)event.item.getData(), null);
+						setMessage(SelectFieldsMessage, IMessageProvider.ERROR);
+/*
+						if(canLeave())
 							setMessage(DEFAULT_MESSAGE, IMessageProvider.NONE);
-						} else {
-							structure.removeAll();
-							setMessage(ERROR_MESSAGE, IMessageProvider.ERROR);
-						}
-
-						if(getEditorContainer() != null) {
+						else
+*/
+						if(getEditorContainer() != null)
 							getEditorContainer().updateButtons();
-						}
 					}
 				});
 			}
@@ -337,25 +383,20 @@ public class DataSetEditorPage extends DataSetWizardPage {
 	}
 
 	private void installStructureDblClickListener() {
-		structure.addMouseListener(new MouseListener() {
+		tableTree.addMouseListener(new MouseListener() {
 			@Override
 			public void mouseDoubleClick(final MouseEvent event) {
 				PlatformUI.getWorkbench().getDisplay().asyncExec(new Runnable() {
 					@Override
 					public void run() {
 						Point point = new Point(event.x, event.y);
-						TreeItem item = structure.getItem(point);
+						TreeItem item = tableTree.getItem(point);
 						if(item == null)
 							return;
 
 						Object data = item.getData();
-						if(data instanceof Field) {
-							Field field = (Field)data;
-							TableItem fieldItem = new TableItem(fields, SWT.NONE);
-							fieldItem.setText(field.displayName() + " (" + field.id() + ")");
-							fieldItem.setImage(getImage(ColumnIcon));
-							fieldItem.setData(field);
-						}
+						if(data instanceof Field)
+							addField((Field)data);
 					}
 				});
 			}
@@ -368,6 +409,13 @@ public class DataSetEditorPage extends DataSetWizardPage {
 			public void mouseUp(MouseEvent e) {
 			}
 		});
+	}
+
+	private void addField(Field field) {
+		TableItem fieldItem = new TableItem(fields, SWT.NONE);
+		fieldItem.setText(field.displayName() + " (" + field.id() + ")");
+		fieldItem.setImage(getImage(ColumnIcon));
+		fieldItem.setData(field);
 	}
 
 	private void installFieldsDblClickListener() {
@@ -397,13 +445,12 @@ public class DataSetEditorPage extends DataSetWizardPage {
 
 	@Override
 	protected boolean canLeave() {
-		return true;
+		return fields == null || fields.getItemCount() != 0;
 	}
 
 	@Override
 	protected void refresh(DataSetDesign dataSetDesign) {
 		this.dataSetDesign = dataSetDesign;
-		initializeControl();
 	}
 
 	@Override
