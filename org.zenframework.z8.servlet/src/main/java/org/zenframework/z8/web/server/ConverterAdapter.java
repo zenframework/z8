@@ -126,10 +126,13 @@ public class ConverterAdapter extends Adapter {
 		String agent = request.getHeader("USER-AGENT").toLowerCase();
 
 		if(agent == null)
-			return "attachment;filename=\"" + MimeUtility.encodeText(fileName, "utf8", "B") + "\"";
+			return "attachment; filename=\"" + MimeUtility.encodeText(fileName, "utf8", "B") + "\"";
 
 		if(agent.contains("msie"))
-			return "attachment;filename=\"" + toHexString(fileName) + "\"";
+			return "attachment; filename=\"" + toHexString(fileName) + "\"";
+
+		if(agent.contains("safari"))
+			return "attachment; filename=" + fileName;
 
 		if(agent.contains("opera")) {
 			int version = -1;
@@ -159,7 +162,7 @@ public class ConverterAdapter extends Adapter {
 				return "attachment;filename*=utf8''" + toHexString(fileName);
 		}
 
-		return "attachment;filename=\"" + MimeUtility.encodeText(fileName, "utf8", "B") + "\"";
+		return "attachment; filename=\"" + MimeUtility.encodeText(fileName, "utf8", "B") + "\"";
 	}
 
 	private String toHexString(String s) throws UnsupportedEncodingException {
