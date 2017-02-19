@@ -6,6 +6,5 @@ public class Report extends Object {
 	public string template;
 
 	virtual protected void prepare(guid recordId);
-
-	public void execute(guid recordId);
+	virtual public void execute(guid recordId);
 }
