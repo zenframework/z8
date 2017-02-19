@@ -367,23 +367,27 @@ public class JsonWriter {
 		finishObject();
 	}
 
-	public void writeInfo(Collection<Message> messages, String server, file log) {
+	public void writeInfo(Collection<Message> messages, Collection<file> files, String server) {
 		startObject(Json.info);
 
 		startArray(Json.messages);
-
 		for(Message message : messages) {
 			startObject();
 			message.write(this);
 			finishObject();
 		}
-
 		finishArray();
 
-		if(log != null) {
-			writeProperty(new string(Json.server), server);
-			writeProperty(new string(Json.log), log.path.get());
+		startArray(Json.files);
+		for(file file : files) {
+			startObject();
+			file.write(this);
+			finishObject();
 		}
+		finishArray();
+
+		if(!files.isEmpty())
+			writeProperty(new string(Json.server), server);
 
 		finishObject();
 	}

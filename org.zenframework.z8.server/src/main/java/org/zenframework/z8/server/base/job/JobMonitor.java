@@ -1,5 +1,7 @@
 package org.zenframework.z8.server.base.job;
 
+import java.util.Collections;
+
 import org.zenframework.z8.server.engine.ApplicationServer;
 import org.zenframework.z8.server.json.Json;
 import org.zenframework.z8.server.json.JsonWriter;
@@ -86,6 +88,7 @@ public class JobMonitor extends Monitor {
 		return job != null ? job.isDone() : true;
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public void writeResponse(JsonWriter writer) {
 		synchronized (mutex) {
@@ -101,7 +104,7 @@ public class JobMonitor extends Monitor {
 			writer.writeProperty(Json.duration, new date().operatorSub(start));
 
 			writer.writeProperty(new string(Json.server), ApplicationServer.id);
-			writer.writeInfo(getMessages(), ApplicationServer.id, isDone ? getLog() : null);
+			writer.writeInfo(getMessages(), isDone ? getFiles() : Collections.EMPTY_LIST, ApplicationServer.id);
 
 			collectLogMessages();
 			clearMessages();

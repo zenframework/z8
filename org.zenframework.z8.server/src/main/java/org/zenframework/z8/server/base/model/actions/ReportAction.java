@@ -1,7 +1,6 @@
 package org.zenframework.z8.server.base.model.actions;
 
 import org.zenframework.z8.server.base.form.report.Report;
-import org.zenframework.z8.server.engine.ApplicationServer;
 import org.zenframework.z8.server.json.Json;
 import org.zenframework.z8.server.json.JsonWriter;
 
@@ -18,9 +17,6 @@ public class ReportAction extends RequestAction {
 		if(report == null)
 			throw new RuntimeException("No report with id: '" + id + "'");
 
-		String file = report.execute(getRecordIdParameter());
-
-		writer.writeProperty(Json.source, file);
-		writer.writeProperty(Json.server, ApplicationServer.id);
+		report.execute(getRecordIdParameter());
 	}
 }

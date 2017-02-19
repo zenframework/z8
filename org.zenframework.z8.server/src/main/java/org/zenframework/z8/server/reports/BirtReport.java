@@ -835,7 +835,7 @@ public class BirtReport {
 		return (int)Math.ceil(tableWidth / paperWidth);
 	}
 
-	public String execute(Collection<Field> fields, Collection<Field> groupFields) {
+	public File execute(Collection<Field> fields, Collection<Field> groupFields) {
 		Column column = new Column();
 
 		for(Field field : fields) {
@@ -848,7 +848,7 @@ public class BirtReport {
 		return executeDynamic(column, groupFields);
 	}
 
-	public String executeDynamic(Column rootColumn, Collection<Field> groups) {
+	public File executeDynamic(Column rootColumn, Collection<Field> groups) {
 		initialize(rootColumn, groups);
 
 		SessionHandle session = options.designEngine().newSessionHandle(null);
@@ -894,7 +894,7 @@ public class BirtReport {
 		}
 	}
 
-	private String generateAndSplit(ReportDesignHandle reportDesignHandle) {
+	private File generateAndSplit(ReportDesignHandle reportDesignHandle) {
 		File outputFile = null;
 		File splittedFile = null;
 
@@ -922,20 +922,20 @@ public class BirtReport {
 				IOUtils.closeQuietly(input);
 			}
 
-			return new File(Folders.ReportsOutput, splittedFile.getName()).getPath();
+			return new File(Folders.ReportsOutput, splittedFile.getName());
 		} else
-			return new File(Folders.ReportsOutput, outputFile.getName()).getPath();
+			return new File(Folders.ReportsOutput, outputFile.getName());
 	}
 
-	public String execute() {
+	public File execute() {
 		return runAndRenderReport();
 	}
 
-	private String runAndRenderReport() {
+	private File runAndRenderReport() {
 		File folder = ReportOptions.getReportOutputFolder();
 		File output = getUniqueFileName(folder, options.documentName(), format());
 		run(output);
-		return new File(Folders.ReportsOutput, output.getName()).getPath();
+		return new File(Folders.ReportsOutput, output.getName());
 	}
 
 	private void run(ReportDesignHandle reportDesignHandle, File outputFile) {

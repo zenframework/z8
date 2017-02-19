@@ -23,6 +23,7 @@ import org.zenframework.z8.server.engine.RmiIO;
 import org.zenframework.z8.server.engine.RmiSerializable;
 import org.zenframework.z8.server.exceptions.ThreadInterruptedException;
 import org.zenframework.z8.server.json.Json;
+import org.zenframework.z8.server.json.JsonWriter;
 import org.zenframework.z8.server.json.parser.JsonArray;
 import org.zenframework.z8.server.json.parser.JsonObject;
 import org.zenframework.z8.server.runtime.RCollection;
@@ -188,6 +189,21 @@ public class file extends primary implements RmiSerializable, Serializable {
 			json.put(Json.details, details);
 		}
 		return json;
+	}
+
+	public void write(JsonWriter writer) {
+		writer.writeProperty(Json.name, name);
+		writer.writeProperty(Json.time, time);
+		writer.writeProperty(Json.size, size);
+		writer.writeProperty(Json.path, path);
+		writer.writeProperty(Json.id, id);
+		writer.writeProperty(Json.user, user);
+		writer.writeProperty(Json.author, author);
+
+		writer.startObject(Json.details);
+		for(string key : details.keySet())
+			writer.writeProperty(key, details.get(key));
+		writer.finishObject();
 	}
 
 	@Override

@@ -7,6 +7,7 @@ import java.rmi.NoSuchObjectException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -161,6 +162,7 @@ public abstract class Adapter {
 		writeError(response, Resources.get("Exception.accessDenied"), HttpServletResponse.SC_UNAUTHORIZED);
 	}
 
+	@SuppressWarnings("unchecked")
 	private void writeError(HttpServletResponse response, String errorText, int status) throws IOException {
 		JsonWriter writer = new JsonWriter();
 
@@ -168,7 +170,7 @@ public abstract class Adapter {
 			errorText = "Internal server error.";
 
 		writer.startResponse(null, false, status);
-		writer.writeInfo(Arrays.asList(Message.error(errorText, null)), null, null);
+		writer.writeInfo(Arrays.asList(Message.error(errorText, null)), Collections.EMPTY_LIST, null);
 		writer.startArray(Json.data);
 		writer.finishArray();
 		writer.finishResponse();

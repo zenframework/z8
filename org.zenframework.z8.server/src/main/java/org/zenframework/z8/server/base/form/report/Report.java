@@ -5,6 +5,7 @@ import java.util.Collection;
 
 import org.zenframework.z8.server.base.file.Folders;
 import org.zenframework.z8.server.base.query.Query;
+import org.zenframework.z8.server.engine.ApplicationServer;
 import org.zenframework.z8.server.json.Json;
 import org.zenframework.z8.server.json.JsonWriter;
 import org.zenframework.z8.server.reports.BirtReport;
@@ -13,6 +14,7 @@ import org.zenframework.z8.server.reports.Reports;
 import org.zenframework.z8.server.runtime.IClass;
 import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.runtime.OBJECT;
+import org.zenframework.z8.server.types.file;
 import org.zenframework.z8.server.types.guid;
 import org.zenframework.z8.server.types.string;
 
@@ -64,8 +66,8 @@ public class Report extends OBJECT implements Runnable, IReport {
 		writer.writeProperty(Json.icon, icon());
 	}
 
-	public String execute(guid recordId) {
-		z8_execute(recordId);
+	public void execute(guid recordId) {
+		prepare(recordId);
 
 		ReportOptions report = new ReportOptions();
 		report.templateFolder = Folders.Reports;
@@ -73,9 +75,18 @@ public class Report extends OBJECT implements Runnable, IReport {
 		report.queries = queries();
 		report.header = name.get();
 
-		return new BirtReport(report).execute();
+		file file = new file(new BirtReport(report).execute());
+		ApplicationServer.getMonitor().print(file);
+	}
+
+	public void prepare(guid recordId) {
+		z8_prepare(recordId);
+	}
+
+	public void z8_prepare(guid recordId) {
 	}
 
 	public void z8_execute(guid recordId) {
+		execute(recordId);
 	}
 }

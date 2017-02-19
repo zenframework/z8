@@ -1,6 +1,7 @@
 package org.zenframework.z8.server.base.job.scheduler;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -9,7 +10,7 @@ import org.zenframework.z8.server.base.table.system.ScheduledJobLogs;
 import org.zenframework.z8.server.base.table.system.ScheduledJobs;
 import org.zenframework.z8.server.engine.Session;
 import org.zenframework.z8.server.json.Json;
-import org.zenframework.z8.server.json.parser.JsonArray;
+import org.zenframework.z8.server.json.JsonWriter;
 import org.zenframework.z8.server.logs.Trace;
 import org.zenframework.z8.server.request.IRequest;
 import org.zenframework.z8.server.request.IResponse;
@@ -100,13 +101,18 @@ public class ScheduledJob implements Runnable {
 		}
 	}
 
-	private void afterFinish(file log) {
-		if(id == null || log == null)
+	private void afterFinish(Collection<file> files) {
+		if(id == null || files.isEmpty())
 			return;
 
-		JsonArray writer = new JsonArray();
-		log.name = new string("error.log");
-		writer.put(log);
+		JsonWriter writer = new JsonWriter();
+		writer.startArray();
+		for(file file : files) {
+			writer.startObject();
+			file.write(writer);
+			writer.finishObject();
+		}
+		writer.finishArray();
 
 		ScheduledJobLogs logs = ScheduledJobLogs.newInstance();
 		logs.scheduledJob.get().set(id);
@@ -136,7 +142,7 @@ public class ScheduledJob implements Runnable {
 
 			new RequestDispatcher(request, response).run();
 
-			afterFinish(request.getMonitor().getLog());
+			afterFinish(request.getMonitor().getFiles());
 		} finally {
 			isRunning = false;
 			thread = null;

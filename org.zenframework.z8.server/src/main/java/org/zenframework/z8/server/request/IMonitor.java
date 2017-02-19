@@ -1,5 +1,7 @@
 package org.zenframework.z8.server.request;
 
+import java.util.Collection;
+
 import org.zenframework.z8.server.types.file;
 
 public interface IMonitor extends IRequestTarget {
@@ -19,6 +21,6 @@ public interface IMonitor extends IRequestTarget {
 
 	public void print(file file);
 
-	public file getLog();
+	public Collection<file> getFiles();
 
 }

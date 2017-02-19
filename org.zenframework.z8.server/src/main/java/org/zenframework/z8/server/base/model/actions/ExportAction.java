@@ -12,6 +12,7 @@ import org.zenframework.z8.server.json.parser.JsonObject;
 import org.zenframework.z8.server.reports.BirtReport;
 import org.zenframework.z8.server.reports.PrintOptions;
 import org.zenframework.z8.server.reports.ReportOptions;
+import org.zenframework.z8.server.types.file;
 import org.zenframework.z8.server.types.integer;
 
 public class ExportAction extends ReadAction {
@@ -81,9 +82,8 @@ public class ExportAction extends ReadAction {
 		report.action = this;
 
 		BirtReport birtReport = new BirtReport(report);
-		String reportId = birtReport.execute(columns, groupFields);
+		file file = new file(birtReport.execute(columns, groupFields));
 
-		writer.writeProperty(Json.source, reportId);
-		writer.writeProperty(Json.server, ApplicationServer.id);
+		ApplicationServer.getMonitor().print(file);
 	}
 }
