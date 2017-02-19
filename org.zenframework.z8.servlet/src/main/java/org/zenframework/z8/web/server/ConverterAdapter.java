@@ -131,8 +131,8 @@ public class ConverterAdapter extends Adapter {
 		if(agent.contains("msie"))
 			return "attachment; filename=\"" + toHexString(fileName) + "\"";
 
-		if(agent.contains("safari"))
-			return "attachment; filename=" + fileName;
+		if(agent.contains("webkit"))
+			return "attachment; filename*=" + fileName;
 
 		if(agent.contains("opera")) {
 			int version = -1;
