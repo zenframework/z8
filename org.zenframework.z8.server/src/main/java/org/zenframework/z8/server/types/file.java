@@ -309,22 +309,27 @@ public class file extends primary implements RmiSerializable, Serializable {
 		write(content, encoding.Default);
 	}
 
-	private File getTempFile() throws IOException {
+	static public file createTempFile(String extension) {
 		File folder = new File(Folders.Base, Folders.Files);
 		folder.mkdirs();
 
-		return File.createTempFile("tmp", ".txt", folder);
+		if(extension != null && !extension.isEmpty())
+			extension = extension.charAt(0) != '.' ? "." + extension : extension;
+		else
+			extension = "";
+
+		String name = new date().format("Y-M-d H-m-s") + extension;
+		return new file(new File(folder, name));
 	}
 
 	public void write(String content, encoding charset) {
 		try {
-			File file = new File(path.get());
-
 			if(path.isEmpty()) {
-				file = getTempFile();
-				path.set(getRelativePath(file.getPath()));
-			} else if(!file.isAbsolute())
-				file = new File(Folders.Base, path.get());
+				set(createTempFile("txt"));
+				path.set(getRelativePath(path.get()));
+			}
+
+			File file = getAbsolutePath(path.get());
 
 			OutputStream output = new FileOutputStream(file, true);
 			output.write(content.getBytes(charset.toString()));
@@ -346,7 +351,7 @@ public class file extends primary implements RmiSerializable, Serializable {
 		if(file.isAbsolute())
 			return file;
 
-		file = new File(new File(Folders.Base, Folders.Files), file.getPath());
+		file = new File(Folders.Base, file.getPath());
 		return file;
 	}
 
@@ -355,11 +360,8 @@ public class file extends primary implements RmiSerializable, Serializable {
 	}
 
 	static public String getRelativePath(String path) {
-		if(path != null && path.startsWith(Folders.Base.getPath())) {
+		if(path != null && path.startsWith(Folders.Base.getPath()))
 			path = path.substring(Folders.Base.getPath().length() + 1);
-			if(path.startsWith(Folders.Files))
-				path = path.substring(Folders.Files.length() + 1);
-		}
 
 		return path;
 	}

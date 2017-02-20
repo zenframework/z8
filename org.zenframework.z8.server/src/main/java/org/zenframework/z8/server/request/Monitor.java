@@ -8,7 +8,6 @@ import org.zenframework.z8.server.engine.ApplicationServer;
 import org.zenframework.z8.server.json.Json;
 import org.zenframework.z8.server.json.JsonWriter;
 import org.zenframework.z8.server.logs.Trace;
-import org.zenframework.z8.server.types.date;
 import org.zenframework.z8.server.types.file;
 import org.zenframework.z8.server.types.guid;
 import org.zenframework.z8.server.types.string;
@@ -73,10 +72,9 @@ public class Monitor extends RequestTarget implements IMonitor {
 		log(Message.error(text, request().displayName()));
 	}
 
-	private void log(Message message) {
+	protected void log(Message message) {
 		if(log == null) {
-			log = new file();
-			log.name = new string(new date().format("Y-M-d H-m-s") + ".log");
+			log = file.createTempFile("log");
 			files.add(log);
 		}
 

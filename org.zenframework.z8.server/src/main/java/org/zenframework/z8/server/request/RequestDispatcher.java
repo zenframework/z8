@@ -45,7 +45,6 @@ public class RequestDispatcher implements Runnable {
 
 			IMonitor monitor = request.getMonitor();
 			monitor.error(ErrorUtils.getMessage(exception));
-			monitor.log(exception);
 
 			try {
 				monitor.writeResponse(writer);
