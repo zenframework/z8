@@ -62,8 +62,12 @@ public abstract class RequestAction extends RequestTarget {
 	}
 
 	protected Collection<Field> getFormFields() {
+		return getFormFields(null);
+	}
+
+	protected Collection<Field> getFormFields(Query query) {
 		String json = getRequestParameter(Json.fields);
-		return QueryUtils.parseFormFields(getContextQuery(), json);
+		return QueryUtils.parseFormFields(query != null ? query : getContextQuery(), json);
 	}
 
 	public String getRequestParameter(string key) {
@@ -199,7 +203,7 @@ public abstract class RequestAction extends RequestTarget {
 	protected void writeFormFields(JsonWriter writer, Query query, Collection<guid> recordIds) {
 		Field primaryKey = query.primaryKey();
 
-		Collection<Field> fields = getFormFields();
+		Collection<Field> fields = getFormFields(query);
 		fields.add(primaryKey);
 		fields.add(query.lockKey());
 

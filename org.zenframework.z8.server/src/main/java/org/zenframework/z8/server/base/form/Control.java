@@ -1,6 +1,9 @@
 package org.zenframework.z8.server.base.form;
 
+import java.util.Collection;
+
 import org.zenframework.z8.server.base.query.Query;
+import org.zenframework.z8.server.base.table.value.Field;
 import org.zenframework.z8.server.base.table.value.GuidField;
 import org.zenframework.z8.server.json.Json;
 import org.zenframework.z8.server.json.JsonWriter;
@@ -71,6 +74,10 @@ public class Control extends OBJECT {
 
 	public boolean required() {
 		return required != null ? required.get() : false;
+	}
+
+	public Collection<Field> fields() {
+		throw new UnsupportedOperationException();
 	}
 
 	public void writeMeta(JsonWriter writer, Query query, Query context) {

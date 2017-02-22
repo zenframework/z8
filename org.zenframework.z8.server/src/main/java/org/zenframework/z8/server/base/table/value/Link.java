@@ -101,6 +101,7 @@ public class Link extends GuidField implements ILink, IForeignKey {
 			return;
 
 		writer.writeProperty(Json.isLink, true);
+
 		writer.startObject(Json.query);
 
 		query = ((query = getQuery()) == null) ? owner() : query;

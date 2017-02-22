@@ -40,10 +40,11 @@
 	<!-- Domains -->
 	<entry key="Domains.title">Домены</entry>
 	<entry key="Domains.name">Имя</entry>
+	<entry key="Domains.address">Адрес</entry>
 	<entry key="Domains.user">Системный пользователь</entry>
 	<entry key="Domains.user.description">Системный пользователь (описание)</entry>
 	<entry key="Domains.owner">Владелец</entry>
-	<entry key="Domains.name.default">Domain</entry>
+	<entry key="Domains.address.default">Domain</entry>
 
 	<!-- MessageQueue -->
 	<entry key="MessagesQueue.title">Очередь сообщений</entry>

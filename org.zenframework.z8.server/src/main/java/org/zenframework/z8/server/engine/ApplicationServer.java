@@ -115,7 +115,7 @@ public class ApplicationServer extends RmiServer implements IApplicationServer {
 	@Override
 	public String[] domains() {
 		try {
-			return Domains.newInstance().getNames().toArray(new String[0]);
+			return Domains.newInstance().getAddresses().toArray(new String[0]);
 		} finally {
 			ConnectionManager.release();
 		}

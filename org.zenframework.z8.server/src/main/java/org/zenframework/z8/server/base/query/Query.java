@@ -9,8 +9,6 @@ import java.util.Set;
 import java.util.regex.Pattern;
 
 import org.zenframework.z8.server.base.form.Control;
-import org.zenframework.z8.server.base.form.Section;
-import org.zenframework.z8.server.base.form.TabControl;
 import org.zenframework.z8.server.base.form.action.Action;
 import org.zenframework.z8.server.base.form.report.Report;
 import org.zenframework.z8.server.base.model.actions.ActionConfig;
@@ -74,6 +72,7 @@ public class Query extends OBJECT {
 
 	public RCollection<Control.CLASS<? extends Control>> controls = new RCollection<Control.CLASS<? extends Control>>();
 	public RCollection<Field.CLASS<? extends Field>> names = new RCollection<Field.CLASS<? extends Field>>();
+	public RCollection<Field.CLASS<? extends Field>> extras = new RCollection<Field.CLASS<? extends Field>>();
 	public RCollection<Field.CLASS<? extends Field>> columns = new RCollection<Field.CLASS<? extends Field>>();
 	public RCollection<Field.CLASS<? extends Field>> quickFilters = new RCollection<Field.CLASS<? extends Field>>();
 	public RCollection<Field.CLASS<? extends Field>> sortFields = new RCollection<Field.CLASS<? extends Field>>();
@@ -717,17 +716,12 @@ public class Query extends OBJECT {
 	public Collection<Field> fields() {
 		Set<Field> result = new LinkedHashSet<Field>(50);
 
-		for(Control control : CLASS.asList(controls)) {
-			if(control instanceof Section)
-				result.addAll(((Section)control).fields());
-			else if(control instanceof TabControl)
-				result.addAll(((TabControl)control).fields());
-			else if(control instanceof Field)
-				result.addAll(((Field)control).fields());
+		for(Control control : CLASS.asList(controls))
+			result.addAll(control.fields());
 
-			result.addAll(names());
-			result.addAll(columns());
-		}
+		result.addAll(extras());
+		result.addAll(names());
+		result.addAll(columns());
 
 		return result;
 	}
@@ -738,6 +732,10 @@ public class Query extends OBJECT {
 
 	public Collection<Field> names() {
 		return CLASS.asList(names);
+	}
+
+	public Collection<Field> extras() {
+		return CLASS.asList(extras);
 	}
 
 	public Collection<Field> quickFilters() {
@@ -1093,11 +1091,12 @@ public class Query extends OBJECT {
 		writer.writeProperty(Json.text, displayName());
 		writer.writeProperty(Json.sourceCode, sourceCodeLocation());
 
-		writer.writeControls(Json.fields, selectFields(), this, context);
 		writer.writeControls(Json.controls, controls(), this, context);
 		writer.writeControls(Json.columns, columns(), this, context);
 		writer.writeControls(Json.nameFields, names(), this, context);
 		writer.writeControls(Json.quickFilters, quickFilters(), this, context);
+
+		writer.writeControls(Json.fields, selectFields(), this, context);
 
 		writer.writeActions(actions());
 		writer.writeReports(reports());

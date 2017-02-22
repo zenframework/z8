@@ -59,7 +59,7 @@ public class UpdateAction extends RequestAction {
 	private Collection<guid> update(JsonArray records, Query owner, ILink link, Query query) {
 		Collection<guid> result = new ArrayList<guid>();
 
-		Query requestQuery = getContextQuery();
+		Query contextQuery = getContextQuery();
 		for(int index = 0; index < records.length(); index++) {
 			JsonObject record = (JsonObject)records.get(index);
 
@@ -67,7 +67,7 @@ public class UpdateAction extends RequestAction {
 			Collection<Field> queryFields = new ArrayList<Field>();
 
 			for(String fieldId : JsonObject.getNames(record)) {
-				Field field = requestQuery.findFieldById(fieldId);
+				Field field = contextQuery.findFieldById(fieldId);
 
 				if(field != null) {
 					QueryUtils.setFieldValue(field, record.getString(fieldId));

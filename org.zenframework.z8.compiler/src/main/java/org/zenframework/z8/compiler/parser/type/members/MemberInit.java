@@ -124,6 +124,17 @@ public class MemberInit extends Initialization implements IInitializer {
 		}
 	}
 
+	protected void getLeftSideCode(CodeGenerator codeGenerator) {
+		String stage = getDeclaringType().getConstructionStage();
+
+		if(stage.equals(BuiltinNative.Constructor1))
+			getDeclaringType().setConstructionStage(BuiltinNative.Constructor);
+
+		super.getLeftSideCode(codeGenerator);
+
+		getDeclaringType().setConstructionStage(stage);
+	}
+
 	protected void getRightSideCode(CodeGenerator codeGenerator) {
 		String stage = getDeclaringType().getConstructionStage();
 

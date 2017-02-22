@@ -7,7 +7,7 @@ import org.zenframework.z8.server.types.guid;
 import org.zenframework.z8.server.types.string;
 
 public class Domain {
-	private String name;
+	private String address;
 	private guid user;
 	private boolean isOwner;
 
@@ -19,18 +19,18 @@ public class Domain {
 		return system;
 	}
 	
-	public Domain(string name, guid user, bool owner) {
-		this(name.get(), user, owner.get());
+	public Domain(string address, guid user, bool owner) {
+		this(address.get(), user, owner.get());
 	}
 
-	public Domain(String name, guid user, boolean isOwner) {
-		this.name = name;
+	public Domain(String address, guid user, boolean isOwner) {
+		this.address = address;
 		this.user = user;
 		this.isOwner = isOwner;
 	}
 
-	public String getName() {
-		return name;
+	public String getAddress() {
+		return address;
 	}
 
 	public IUser getSystemUser() {

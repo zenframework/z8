@@ -34,14 +34,15 @@ public class Section extends Control {
 		super(container);
 	}
 
+	@Override
 	public Collection<Field> fields() {
 		Collection<Field> result = new LinkedHashSet<Field>();
 
 		for(Control control : CLASS.asList(controls)) {
 			if(control instanceof Field)
 				result.add((Field)control);
-			else if(control instanceof Section)
-				result.addAll(((Section)control).fields());
+			else
+				result.addAll(control.fields());
 		}
 
 		return result;

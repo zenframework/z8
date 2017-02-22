@@ -8,6 +8,7 @@ import org.zenframework.z8.server.base.table.Table;
 import org.zenframework.z8.server.base.table.value.BoolField;
 import org.zenframework.z8.server.base.table.value.Field;
 import org.zenframework.z8.server.base.table.value.Link;
+import org.zenframework.z8.server.base.table.value.StringField;
 import org.zenframework.z8.server.db.sql.SqlToken;
 import org.zenframework.z8.server.db.sql.expressions.And;
 import org.zenframework.z8.server.db.sql.expressions.Is;
@@ -19,6 +20,7 @@ import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.security.Domain;
 import org.zenframework.z8.server.types.bool;
 import org.zenframework.z8.server.types.guid;
+import org.zenframework.z8.server.types.integer;
 import org.zenframework.z8.server.types.string;
 
 public class Domains extends Table {
@@ -27,6 +29,7 @@ public class Domains extends Table {
 	static public String TableName = "SystemDomains";
 
 	static public class fieldNames {
+		public final static String Address = "Address";
 		public final static String User = "User";
 		public final static String Owner = "Owner";
 	}
@@ -34,21 +37,23 @@ public class Domains extends Table {
 	static public class strings {
 		public final static String Title = "Domains.title";
 		public final static String Name = "Domains.name";
+		public final static String Address = "Domains.address";
 		public final static String User = "Domains.user";
 		public final static String UserDescription = "Domains.user.description";
 		public final static String Owner = "Domains.owner";
 
-		public final static String DefaultName = "Domains.name.default";
+		public final static String DefaultAddress = "Domains.address.default";
 	}
 
 	static public class displayNames {
 		public final static String Title = Resources.get(strings.Title);
 		public final static String Name = Resources.get(strings.Name);
+		public final static String Address = Resources.get(strings.Address);
 		public final static String User = Resources.get(strings.User);
 		public final static String UserDescription = Resources.get(strings.UserDescription);
 		public final static String Owner = Resources.get(strings.Owner);
 
-		public final static String DefaultName = Resources.get(strings.DefaultName);
+		public final static String DefaultAddress = Resources.get(strings.DefaultAddress);
 	}
 
 	public static class CLASS<T extends Domains> extends Table.CLASS<T> {
@@ -71,8 +76,8 @@ public class Domains extends Table {
 
 	public final Users.CLASS<Users> users = new Users.CLASS<Users>(this);
 
+	public final StringField.CLASS<StringField> address = new StringField.CLASS<StringField>(this);
 	public final Link.CLASS<Link> userLink = new Link.CLASS<Link>(this);
-
 	public final BoolField.CLASS<BoolField> owner = new BoolField.CLASS<BoolField>(this);
 
 	static public Domains newInstance() {
@@ -92,6 +97,7 @@ public class Domains extends Table {
 	public void initMembers() {
 		super.initMembers();
 
+		objects.add(address);
 		objects.add(userLink);
 		objects.add(owner);
 
@@ -105,7 +111,12 @@ public class Domains extends Table {
 		users.setIndex("users");
 
 		name.setDisplayName(displayNames.Name);
-		name.get().unique = bool.True;
+
+		address.setIndex("address");
+		address.setName(fieldNames.Address);
+		address.setDisplayName(displayNames.Address);
+		address.get().length = new integer(256);
+		address.get().unique = bool.True;
 
 		userLink.setName(fieldNames.User);
 		userLink.setIndex("userLink");
@@ -120,6 +131,7 @@ public class Domains extends Table {
 		owner.setExportable(false);
 
 		registerControl(name);
+		registerControl(address);
 		registerControl(description);
 		registerControl(users.get().name);
 		registerControl(users.get().description);
@@ -130,60 +142,60 @@ public class Domains extends Table {
 	public void onNew(guid recordId, guid parentId) {
 		super.onNew(recordId, parentId);
 
-		Field name = this.name.get();
-		name.set(new string(displayNames.DefaultName + name.getSequencer().next()));
+		Field address = this.address.get();
+		address.set(new string(displayNames.DefaultAddress + address.getSequencer().next()));
 	}
 
 	public Domain getDomain(String domain) {
-		Field name = this.name.get();
+		Field address = this.address.get();
 		Field user = this.userLink.get();
 		Field owner = this.owner.get();
 
-		SqlToken where = new EqualsIgnoreCase(name, domain);
+		SqlToken where = new EqualsIgnoreCase(address, domain);
 
-		if(!readFirst(Arrays.<Field>asList(name, user, owner), where))
+		if(!readFirst(Arrays.<Field>asList(address, user, owner), where))
 			return Domain.system();
 
-		return new Domain(name.string(), user.guid(), owner.bool());
+		return new Domain(address.string(), user.guid(), owner.bool());
 	}
 
 	public boolean isOwner(String domain) {
 		Field owner = this.owner.get();
-		Field name = this.name.get();
+		Field address = this.address.get();
 
 		SqlToken isOwner = new Is(owner);
-		SqlToken nameEq = new EqualsIgnoreCase(name, domain);
-		SqlToken where = new And(isOwner, nameEq);
+		SqlToken addressEq = new EqualsIgnoreCase(address, domain);
+		SqlToken where = new And(isOwner, addressEq);
 
 		return count(where) == 1;
 	}
 
 	public Collection<Domain> getLocalDomains() {
-		Field name = this.name.get();
+		Field address = this.address.get();
 		Field user = userLink.get();
 		Field owner = this.owner.get();
 
-		read(Arrays.<Field>asList(name, user, owner), new Is(owner));
+		read(Arrays.<Field>asList(address, user, owner), new Is(owner));
 
 		Collection<Domain> domains = new ArrayList<Domain>();
 
 		domains.add(Domain.system());
 
 		while(next()) {
-			Domain domain = new Domain(name.string(), user.guid(), owner.bool());
+			Domain domain = new Domain(address.string(), user.guid(), owner.bool());
 			domains.add(domain);
 		}
 
 		return domains;
 	}
 
-	public Collection<String> getNames() {
+	public Collection<String> getAddresses() {
 		Collection<Domain> domains = getLocalDomains();
 
 		Collection<String> result = new ArrayList<String>();
 
 		for(Domain domain : domains)
-			result.add(domain.getName());
+			result.add(domain.getAddress());
 
 		return result;
 	}

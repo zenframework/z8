@@ -1,7 +1,7 @@
 package org.zenframework.z8.server.base.form;
 
 import java.util.Collection;
-import java.util.LinkedHashSet;
+import java.util.Collections;
 
 import org.zenframework.z8.server.base.query.Query;
 import org.zenframework.z8.server.base.table.value.Field;
@@ -30,8 +30,15 @@ public class Form extends Section {
 		super(container);
 	}
 
+	@Override
+	@SuppressWarnings("unchecked")
 	public Collection<Field> fields() {
-		return link != null ? super.fields() : new LinkedHashSet<Field>();
+		if(link == null)
+			return Collections.EMPTY_LIST;
+
+		Collection<Field> fields = super.fields();
+		fields.add(link.get().owner().primaryKey());
+		return fields;
 	}
 
 	@Override
@@ -41,16 +48,16 @@ public class Form extends Section {
 
 		writer.writeProperty(Json.isForm, true);
 
-		if(this.link != null) {
-			super.writeMeta(writer, link.get().getQuery(), context);
+		Link link = this.link != null ? this.link.get() : null; 
 
-			writer.writeProperty(Json.name, link.id());
-
+		if(link != null) {
 			writer.startObject(Json.link);
-			link.get().writeMeta(writer, query, context);
+			writer.writeProperty(Json.primaryKey, link.owner().primaryKey().id());
+			link.writeMeta(writer, query, context);
 			writer.finishObject();
-		} else
-			super.writeMeta(writer, this.query.get(), context);
+		}
+
+		super.writeMeta(writer, link != null ? link.getQuery() : this.query.get(), context);
 
 		writer.startObject(Json.query);
 		writer.writeProperty(Json.id, this.query != null ? this.query.id() : query.id());

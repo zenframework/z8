@@ -1,12 +1,18 @@
 import org.zenframework.z8.base.table.Table;
 import org.zenframework.z8.base.table.value.BoolField;
 import org.zenframework.z8.base.table.value.Link;
+import org.zenframework.z8.base.table.value.StringField;
 
 [name "SystemDomains"]
 [displayName "Домены"]
 [native "org.zenframework.z8.server.base.table.system.Domains"]
 public class Domains extends Table {
 	static public string DefaultDomain;
+
+	[name "Address"]
+	[displayName "Адрес"]
+	public StringField address;
+	address.length = 256;
 
 	public Users users;
 

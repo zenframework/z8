@@ -1,5 +1,8 @@
 package org.zenframework.z8.server.base.form;
 
+import java.util.Collection;
+import java.util.Collections;
+
 import org.zenframework.z8.server.base.form.action.Action;
 import org.zenframework.z8.server.base.query.Query;
 import org.zenframework.z8.server.base.table.TreeTable;
@@ -38,6 +41,12 @@ public class Listbox extends Control {
 
 	public boolean readOnly() {
 		return super.readOnly() || query.get().readOnly();
+	}
+
+	@Override
+	@SuppressWarnings("unchecked")
+	public Collection<Field> fields() {
+		return Collections.EMPTY_LIST;
 	}
 
 	@Override

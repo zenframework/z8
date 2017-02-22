@@ -18,6 +18,7 @@ public class Query extends Object {
 
 	public Field[] columns;
 	public Field[] names;               // Поля для идентификации записи в UI, например, в навигаторе формы или заголовке
+	public Field[] extras;              // Неотображаемые, но требующиеся поля
 	public Field[] quickFilters;        // Поля для быстрого поиска записей
 
 	public Field[] sortFields;
