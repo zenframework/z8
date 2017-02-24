@@ -8,6 +8,7 @@ import java.util.Collection;
 import org.zenframework.z8.server.base.form.action.Action;
 import org.zenframework.z8.server.base.model.actions.RequestAction;
 import org.zenframework.z8.server.base.query.Query;
+import org.zenframework.z8.server.base.table.value.BoolField;
 import org.zenframework.z8.server.base.table.value.IntegerField;
 import org.zenframework.z8.server.base.table.value.StringField;
 import org.zenframework.z8.server.engine.IServerInfo;
@@ -62,7 +63,7 @@ abstract public class HubServerView extends Query {
 	private StringField.CLASS<StringField> recordId = new StringField.CLASS<StringField>(this);
 	private StringField.CLASS<StringField> host = new StringField.CLASS<StringField>(this);
 	private IntegerField.CLASS<IntegerField> port = new IntegerField.CLASS<IntegerField>(this);
-	private StringField.CLASS<StringField> active = new StringField.CLASS<StringField>(this);
+	private BoolField.CLASS<BoolField> active = new BoolField.CLASS<BoolField>(this);
 	private StringField.CLASS<StringField> domains = new StringField.CLASS<StringField>(this);
 	private StringField.CLASS<StringField> serverId = new StringField.CLASS<StringField>(this);
 
@@ -103,11 +104,10 @@ abstract public class HubServerView extends Query {
 
 		active.setIndex("active");
 		active.setDisplayName(displayNames.Active);
-		active.get().width = new integer(40);
 
 		domains.setIndex("domains");
 		domains.setDisplayName(displayNames.Domains);
-		domains.get().width = new integer(400);
+		domains.get().colspan = new integer(4);
 
 		registerControl(host);
 		registerControl(port);

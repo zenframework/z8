@@ -97,7 +97,8 @@ public abstract class AbstractRuntime implements IRuntime {
 				tableClasses.remove(table.classId());
 				tableNames.remove(table.name());
 				tableKeys.remove(table.key());
-			}
+			} else if(cls.getClass().isAssignableFrom(table.getClass()))
+				return;
 		}
 		tableClasses.put(cls.classId(), cls);
 		tableNames.put(cls.name(), cls);

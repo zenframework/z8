@@ -129,11 +129,11 @@
 
 	<!-- HubServerView -->
 	<entry key="HubServerView.id">Id</entry>
-	<entry key="HubServerView.host">Хост</entry>
-	<entry key="HubServerView.port">Порт</entry>
+	<entry key="HubServerView.host">Application server host</entry>
+	<entry key="HubServerView.port">Port</entry>
 	<entry key="HubServerView.active">Up</entry>
 	<entry key="HubServerView.serverId">Server Id</entry>
-	<entry key="HubServerView.domains">Домены</entry>
+	<entry key="HubServerView.domains">Domains</entry>
 	<entry key="HubServerView.unregister">Удалить</entry>
 
 	<!-- AuthorityCenterView -->
