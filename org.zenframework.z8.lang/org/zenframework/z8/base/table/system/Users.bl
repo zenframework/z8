@@ -1,4 +1,5 @@
 import org.zenframework.z8.base.table.Table;
+import org.zenframework.z8.base.table.value.BoolField;
 import org.zenframework.z8.base.table.value.StringField;
 import org.zenframework.z8.base.table.value.TextField;
 
@@ -6,12 +7,30 @@ import org.zenframework.z8.base.table.value.TextField;
 [displayName "Пользователи"]
 [native "org.zenframework.z8.server.base.table.system.Users"]
 public class Users extends Table {
-	[displayName "Имя"] name;
-	[displayName "Описание"] description;
+	[displayName "Логин"] name;
+	name.length = 32;
 
 	[name "Password"]
 	[displayName "Пароль"]
 	public StringField password;
+	password.length = 32;
+
+	[displayName "Описание"] description;
+
+	[name "First Name"] 
+	[displayName "Имя"] 
+	public StringField firstName;
+	firstName.length = 100;
+
+	[name "Middle Name"] 
+	[displayName "Отчество"] 
+	public StringField middleName;
+	middleName.length = 100;
+
+	[name "Last Name"] 
+	[displayName "Фамилия"] 
+	public StringField lastName;
+	lastName.length = 100;
 
 	[name "Phone"]
 	[displayName "Телефон"]
@@ -20,6 +39,10 @@ public class Users extends Table {
 	[name "Email"]
 	[displayName "email"]
 	public StringField email;
+
+	[name "Banned"]
+	[displayName "Заблокирован"]
+	public BoolField banned;
 
 	[name "Settings"]
 	[displayName "Настройки"]
@@ -35,5 +58,9 @@ public class Users extends Table {
 		[name "Admin"]
 		[description "Администратор системы"]
 		Administrator = '00000000-0000-0000-0000-000000000002';
+
+		[name "Site"]
+		[description "Сайт"]
+		Site = '00000000-0000-0000-0000-000000000003';
 	}
 }
