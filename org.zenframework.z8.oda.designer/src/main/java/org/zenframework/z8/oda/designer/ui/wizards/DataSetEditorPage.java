@@ -366,14 +366,14 @@ public class DataSetEditorPage extends DataSetWizardPage {
 				PlatformUI.getWorkbench().getDisplay().asyncExec(new Runnable() {
 					@Override
 					public void run() {
+						TableItem[] selection = tables.getSelection();
+						if(selection.length == 1 && selection[0] == event.item)
+							return;
+
 						tableTree.removeAll();
 						initializeTableTree((Table)event.item.getData(), null);
-						setMessage(SelectFieldsMessage, IMessageProvider.ERROR);
-/*
-						if(canLeave())
-							setMessage(DEFAULT_MESSAGE, IMessageProvider.NONE);
-						else
-*/
+						if(getSelectedFields().isEmpty())
+							setMessage(SelectFieldsMessage, IMessageProvider.ERROR);
 						if(getEditorContainer() != null)
 							getEditorContainer().updateButtons();
 					}
@@ -416,6 +416,8 @@ public class DataSetEditorPage extends DataSetWizardPage {
 		fieldItem.setText(field.displayName() + " (" + field.id() + ")");
 		fieldItem.setImage(getImage(ColumnIcon));
 		fieldItem.setData(field);
+
+		setMessage("", IMessageProvider.NONE);
 	}
 
 	private void installFieldsDblClickListener() {
