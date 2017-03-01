@@ -3,6 +3,7 @@ package org.zenframework.z8.server.base.table.system.view;
 import org.zenframework.z8.server.base.table.system.TransportQueue;
 import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.types.bool;
+import org.zenframework.z8.server.types.integer;
 
 public class TransportQueueView extends TransportQueue {
 	public static class CLASS<T extends TransportQueueView> extends TransportQueue.CLASS<T> {
@@ -33,11 +34,20 @@ public class TransportQueueView extends TransportQueue {
 
 		sortFields.add(ordinal);
 
+		columnCount = new integer(12);
+
+		ordinal.get().colspan = new integer(2);
 		registerControl(ordinal);
+		sender.get().colspan = new integer(3);
 		registerControl(sender);
+		address.get().colspan = new integer(3);
 		registerControl(address);
-		registerControl(description);
-		registerControl(processed);
+		bytesTransferred.get().colspan = new integer(2);
 		registerControl(bytesTransferred);
+		processed.get().colspan = new integer(2);
+		registerControl(processed);
+
+		description.get().colspan = new integer(12);
+		registerControl(description);
 	}
 }

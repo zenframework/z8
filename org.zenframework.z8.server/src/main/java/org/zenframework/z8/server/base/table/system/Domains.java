@@ -129,13 +129,6 @@ public class Domains extends Table {
 		owner.setName(fieldNames.Owner);
 		owner.setDisplayName(displayNames.Owner);
 		owner.setExportable(false);
-
-		registerControl(name);
-		registerControl(address);
-		registerControl(description);
-		registerControl(users.get().name);
-		registerControl(users.get().description);
-		registerControl(owner);
 	}
 
 	@Override
