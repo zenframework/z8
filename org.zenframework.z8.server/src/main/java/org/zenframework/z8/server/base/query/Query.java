@@ -931,9 +931,10 @@ public class Query extends OBJECT {
 			return result;
 
 		for(String name : path) {
-			IObject member = result.member.getMember(name).get();
-			if(member == null)
+			IClass<? extends IObject> memberCls = result.member.getMember(name);
+			if(memberCls == null)
 				return null;
+			IObject member = memberCls.get();
 			result.member = member;
 			result.path.add(member);
 		}
