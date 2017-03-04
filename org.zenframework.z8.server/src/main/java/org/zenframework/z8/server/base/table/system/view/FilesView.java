@@ -2,6 +2,7 @@ package org.zenframework.z8.server.base.table.system.view;
 
 import org.zenframework.z8.server.base.table.system.Files;
 import org.zenframework.z8.server.runtime.IObject;
+import org.zenframework.z8.server.types.bool;
 import org.zenframework.z8.server.types.integer;
 
 public class FilesView extends Files {
@@ -33,6 +34,7 @@ public class FilesView extends Files {
 	public void constructor2() {
 		super.constructor2();
 
+		readOnly = bool.True;
 		path.get().colspan = new integer(4);
 
 		registerControl(name);
