@@ -316,7 +316,7 @@ abstract public class Field extends Control implements IField {
 		if(path == null || !path.isEmpty() && path.iterator().next().owner() != query)
 			path = query.getPath(this);
 
-		if(!path.isEmpty()) {
+		if(path != null && !path.isEmpty()) {
 			ILink link = path.iterator().next();
 			Field linkField = (Field)link;
 

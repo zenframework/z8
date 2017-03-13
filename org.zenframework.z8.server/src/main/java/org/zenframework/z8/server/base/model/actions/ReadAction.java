@@ -4,6 +4,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -307,10 +308,14 @@ public class ReadAction extends RequestAction {
 		addFilter(field, keyValue, Operation.Eq);
 	}
 
+	@SuppressWarnings("unchecked")
 	private Collection<ILink> getPath(Field field) {
-		Query owner = field.owner();
+		if(field instanceof Expression)
+			return Collections.EMPTY_LIST;
 
-		if(!(field instanceof Expression) || getQuery().getPath(owner).size() != 0)
+		Query owner = field.owner();
+		Collection<ILink> path = getQuery().getPath(owner);
+		if(path != null && !path.isEmpty())
 			return getPath(owner);
 
 		return new ArrayList<ILink>();

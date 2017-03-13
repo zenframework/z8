@@ -72,7 +72,7 @@ public class BirtReport {
 	public static final String GroupHeaderCellStyle = "GroupHeaderCell";
 	public static final String GroupFooterCellStyle = "GroupFooterCell";
 	public static final String GroupDetailCellStyle = "DetailCell";
-	public static final String GranTotalCellStyle = "GrandTotalsCell";
+	public static final String GrandTotalCellStyle = "GrandTotalsCell";
 
 	public static final String DateFormatStyle = "DateFormat";
 	public static final String DateTimeFormatStyle = "DateTimeFormat";
@@ -434,14 +434,6 @@ public class BirtReport {
 		return label;
 	}
 
-	private void modifyStyle(CellHandle cell) throws SemanticException {
-		// cell.setProperty(StyleHandle.BORDER_LEFT_WIDTH_PROP, "0pt");
-		// cell.setProperty(StyleHandle.BORDER_RIGHT_WIDTH_PROP, "0pt");
-		cell.setProperty(StyleHandle.BORDER_TOP_WIDTH_PROP, "0pt");
-		cell.setProperty(StyleHandle.BORDER_BOTTOM_WIDTH_PROP, "0pt");
-		cell.setProperty(StyleHandle.BACKGROUND_COLOR_PROP, "white");
-	}
-
 	private CellHandle createCell(int columnSpan, int rowSpan, String styleName, int styleIndex) throws SemanticException {
 		CellHandle cell = elementFactory.newCell();
 		cell.setColumnSpan(columnSpan);
@@ -459,7 +451,6 @@ public class BirtReport {
 	private CellHandle createIndentCell(int columnSpan, int rowSpan, String styleName, int styleIndex, String text) throws SemanticException {
 		CellHandle cell = createCell(columnSpan, rowSpan, styleName, styleIndex);
 		cell.getContent().add(createLabel(text));
-		modifyStyle(cell);
 		return cell;
 	}
 
@@ -524,6 +515,13 @@ public class BirtReport {
 				styleHandle.setNumberFormatCategory("Fixed");
 				styleHandle.setNumberFormat("#,##0.00");
 			}
+		} else if(type.equals(DesignChoiceConstants.COLUMN_DATA_TYPE_INTEGER)) {
+			StyleHandle styleHandle = cell.getPrivateStyle();
+
+			if(styleHandle != null) {
+				styleHandle.setNumberFormatCategory("Fixed");
+				styleHandle.setNumberFormat("#,##0");
+			}
 		}
 	}
 
@@ -587,7 +585,7 @@ public class BirtReport {
 			}
 
 			if(hasAggregation()) {
-				String style = (depth == -1 ? GranTotalCellStyle : GroupFooterCellStyle);
+				String style = (depth == -1 ? GrandTotalCellStyle : GroupFooterCellStyle);
 
 				RowHandle groupFooter = elementFactory.newTableRow();
 
@@ -602,7 +600,7 @@ public class BirtReport {
 
 					int colspan_text_groupTotal = colCount_beforeAggregation - currentIndent;
 					if(depth != -1) {
-						text = options.markTotals ? Resources.get(Reports.GroupTotalText) : "";
+						text = options.markTotals ? Resources.get(Reports.GroupTotalText) : " ";
 						cell = createCell(colspan_text_groupTotal, 1, GroupFooterCellStyle, depth);
 
 						ComputedColumn computedColumn = StructureFactory.createComputedColumn();
@@ -616,8 +614,8 @@ public class BirtReport {
 						dataHandle.setResultSetColumn(computedColumn.getName());
 						cell.getContent().add(dataHandle);
 					} else {
-						text = options.markGrandTotals ? Resources.get(Reports.GroupGrandTotalText) : "";
-						cell = createCell(colspan_text_groupTotal, 1, GranTotalCellStyle, depth, text);
+						text = options.markGrandTotals ? Resources.get(Reports.GroupGrandTotalText) : " ";
+						cell = createCell(colspan_text_groupTotal, 1, GrandTotalCellStyle, depth, text);
 					}
 
 					cell.setProperty(DesignChoiceConstants.CHOICE_TEXT_ALIGN, DesignChoiceConstants.TEXT_ALIGN_LEFT);

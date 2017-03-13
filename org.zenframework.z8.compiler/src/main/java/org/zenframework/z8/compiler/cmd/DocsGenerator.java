@@ -114,7 +114,7 @@ public class DocsGenerator {
 	private String decorate(String text) {
 		return text.replaceAll("<", "&lt;").
 				// decorate keywords
-				replaceAll("(\\b(public|protected|private|virtual|class|enum|extends|import|static|final|this|super|new|records|return|break|if|else|for|while|do|try|catch|finally|throw)\\b)", "<span class='keyword'>$1</span>").
+				replaceAll("(\\b(public|protected|private|virtual|auto|class|enum|extends|import|static|final|this|super|new|records|return|break|if|else|for|while|do|try|catch|finally|throw)\\b)", "<span class='keyword'>$1</span>").
 				// decorate comments
 				replaceAll("(/\\*+((([^\\*])+)|([\\*]+(?!/)))[*]+/|//.*)", "<span class='comment'>$1</span>");
 	}
