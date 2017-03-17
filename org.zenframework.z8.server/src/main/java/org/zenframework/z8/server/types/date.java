@@ -312,6 +312,12 @@ public class date extends primary {
 		return new date(calendar);
 	}
 
+	public date addMillisecond(int milliseconds) {
+		GregorianCalendar calendar = (GregorianCalendar)value.clone();
+		calendar.add(GregorianCalendar.MILLISECOND, milliseconds);
+		return new date(calendar);
+	}
+
 	public date truncYear() {
 		return new date(new GregorianCalendar(value.get(GregorianCalendar.YEAR), 0, 1));
 	}
@@ -581,6 +587,10 @@ public class date extends primary {
 
 	public date z8_addSecond(integer seconds) {
 		return addSecond(seconds.getInt());
+	}
+
+	public date z8_addMillisecond(integer milliseconds) {
+		return addMillisecond(milliseconds.getInt());
 	}
 
 	public date z8_truncYear() {

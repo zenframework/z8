@@ -40,7 +40,7 @@ public class Table extends Query {
 	public GuidField modifiedBy;
 
 	[name "Lock"]
-	public BoolField lock;
+	public IntegerField lock;
 
 	[name "Archive"]
 	public BoolField archive;

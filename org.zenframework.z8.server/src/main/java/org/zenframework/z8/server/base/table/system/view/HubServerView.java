@@ -161,7 +161,7 @@ abstract public class HubServerView extends Query {
 			writer.writeProperty(host.id(), getHost(server));
 			writer.writeProperty(port.id(), getPort(server));
 			writer.writeProperty(domains.id(), getDomains(server));
-			writer.writeProperty(active.id(), checkAlive ? (server.isAlive() ? bool.trueString : bool.falseString) : "");
+			writer.writeProperty(active.id(), server.isAlive());
 			writer.finishObject();
 		}
 
