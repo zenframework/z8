@@ -361,16 +361,22 @@ abstract public class Field extends Control implements IField {
 				writer.writeProperty(Json.isPrimaryKey, true);
 		}
 
-		this.readOnly = new bool(readOnly);
-		this.required = new bool(required);
-
 		if(valueFrom != null)
 			writer.writeProperty(Json.valueFrom, valueFrom.get().id());
 
 		if(valueFor != null)
 			writer.writeProperty(Json.valueFor, valueFor.get().id());
 
+		bool wasReadOnly = this.readOnly;
+		bool wasRequired = this.required;
+
+		this.readOnly = new bool(readOnly() || readOnly);
+		this.required = new bool(required() || required);
+
 		super.writeMeta(writer, query, context);
+
+		this.readOnly = wasReadOnly;
+		this.required = wasRequired;
 	}
 
 	public void setWriteNulls(boolean writeNulls) {
