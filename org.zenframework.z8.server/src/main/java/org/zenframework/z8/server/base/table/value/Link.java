@@ -6,6 +6,7 @@ import org.zenframework.z8.server.db.generator.IForeignKey;
 import org.zenframework.z8.server.json.Json;
 import org.zenframework.z8.server.json.JsonWriter;
 import org.zenframework.z8.server.runtime.IObject;
+import org.zenframework.z8.server.types.bool;
 
 public class Link extends GuidField implements ILink, IForeignKey {
 	public static class CLASS<T extends Link> extends GuidField.CLASS<T> {
@@ -27,6 +28,7 @@ public class Link extends GuidField implements ILink, IForeignKey {
 
 	public Link(IObject container) {
 		super(container);
+		indexed = new bool(true);
 	}
 
 	@Override
