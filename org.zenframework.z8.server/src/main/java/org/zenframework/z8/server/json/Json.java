@@ -53,6 +53,7 @@ public interface Json {
 	static public string info = new string("info");
 	static public string warning = new string("warning");
 	static public string error = new string("error");
+	static public string fatal = new string("fatal");
 	static public string messages = new string("messages");
 	static public string get = new string("get");
 	static public string send = new string("send");

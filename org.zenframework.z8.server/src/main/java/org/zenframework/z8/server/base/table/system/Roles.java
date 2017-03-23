@@ -168,6 +168,12 @@ public class Roles extends Table {
 	}
 
 	@Override
+	public void onCopy() {
+		super.onCopy();
+		lock.get().set(RecordLock.None);
+	}
+
+	@Override
 	public void afterCreate(guid recordId, guid parentId) {
 		super.beforeCreate(recordId, parentId);
 

@@ -2,6 +2,17 @@ package org.zenframework.z8.server.utils;
 
 public class ErrorUtils {
 
+	static public Throwable unwrapRuntimeException(Throwable exception) {
+		while(exception instanceof RuntimeException) {
+			Throwable cause = exception.getCause();
+			if(cause instanceof RuntimeException)
+				exception = cause;
+			else
+				return cause == null ? exception : cause;
+		}
+		return exception;
+	}
+
 	static public Throwable getCause(Throwable exception) {
 		Throwable cause = exception;
 

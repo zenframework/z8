@@ -8,16 +8,14 @@ public interface IMonitor extends IRequestTarget {
 	public void log(Throwable exception);
 
 	public void info(String text);
-
 	public void warning(String text);
-
 	public void error(String text);
+	public void fatalError(String text);
 
 	public void logInfo(String text);
-
 	public void logWarning(String text);
-
 	public void logError(String text);
+	public void logFatalError(String text);
 
 	public void print(file file);
 

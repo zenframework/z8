@@ -47,16 +47,9 @@ public class RoleTableAccessView extends Roles {
 		rta.setIndex("rta");
 		rfa.setIndex("rfa");
 
-		columnCount = new integer(12);
+		columnCount = new integer(2);
 
-		name.get().colspan = new integer(12);
-
-		read.get().colspan = new integer(2);
-		write.get().colspan = new integer(2);
-		create.get().colspan = new integer(2);
-		copy.get().colspan = new integer(2);
-		destroy.get().colspan = new integer(2);
-		execute.get().colspan = new integer(2);
+		name.get().colspan = new integer(2);
 
 		tablesListbox.setIndex("tablesListbox");
 		tablesListbox.setDisplayName(RoleTableAccess.displayNames.Title);
@@ -65,31 +58,22 @@ public class RoleTableAccessView extends Roles {
 
 		tablesListbox.get().query = this.rta;
 		tablesListbox.get().link = rta.role;
-		tablesListbox.get().colspan = new integer(6);
 		tablesListbox.get().flex = new integer(1);
 		tablesListbox.get().sortFields.add(rta.tables.get().name);
 
-		rta.tables.get().name.get().width = new integer(150);
-		rta.tables.get().displayName.get().width = new integer(150);
-
 		rta.read.get().editable = bool.True;
-		rta.read.get().width = new integer(30);
 		rta.read.setIcon("fa-eye");
 
 		rta.write.get().editable = bool.True;
-		rta.write.get().width = new integer(30);
 		rta.write.setIcon("fa-pencil");
 
 		rta.create.get().editable = bool.True;
-		rta.create.get().width = new integer(30);
 		rta.create.setIcon("fa-file-o");
 
 		rta.copy.get().editable = bool.True;
-		rta.copy.get().width = new integer(30);
 		rta.copy.setIcon("fa-copy");
 
 		rta.destroy.get().editable = bool.True;
-		rta.destroy.get().width = new integer(30);
 		rta.destroy.setIcon("fa-trash");
 
 		rta.columns.add(rta.tables.get().name);
@@ -106,7 +90,6 @@ public class RoleTableAccessView extends Roles {
 		fieldsListbox.setDisplayName(Fields.displayNames.Title);
 		fieldsListbox.get().query = this.rfa;
 		fieldsListbox.get().link = rfa.role;
-		fieldsListbox.get().colspan = new integer(6);
 		fieldsListbox.get().flex = new integer(1);
 		fieldsListbox.get().sortFields.add(rfa.fields.get().position);
 
@@ -115,11 +98,9 @@ public class RoleTableAccessView extends Roles {
 		rfa.fields.get().type.get().width = new integer(90);
 
 		rfa.read.get().editable = bool.True;
-		rfa.read.get().width = new integer(30);
 		rfa.read.setIcon("fa-eye");
 
 		rfa.write.get().editable = bool.True;
-		rfa.write.get().width = new integer(30);
 		rfa.write.setIcon("fa-pencil");
 
 		rfa.columns.add(rfa.fields.get().name);
@@ -133,13 +114,6 @@ public class RoleTableAccessView extends Roles {
 		fieldsListbox.get().dependsOn = rta.table;
 
 		registerControl(name);
-
-		registerControl(read);
-		registerControl(write);
-		registerControl(create);
-		registerControl(copy);
-		registerControl(destroy);
-		registerControl(execute);
 
 		registerControl(tablesListbox);
 		registerControl(fieldsListbox);

@@ -7,8 +7,8 @@ import java.lang.management.MemoryUsage;
 import org.zenframework.z8.server.base.Procedure;
 import org.zenframework.z8.server.base.job.Job;
 import org.zenframework.z8.server.base.job.JobMonitor;
-import org.zenframework.z8.server.base.model.actions.RequestAction;
 import org.zenframework.z8.server.base.model.actions.ActionFactory;
+import org.zenframework.z8.server.base.model.actions.RequestAction;
 import org.zenframework.z8.server.base.query.Query;
 import org.zenframework.z8.server.base.view.Dashboard;
 import org.zenframework.z8.server.db.ConnectionManager;
@@ -18,6 +18,7 @@ import org.zenframework.z8.server.json.JsonWriter;
 import org.zenframework.z8.server.logs.Trace;
 import org.zenframework.z8.server.runtime.OBJECT;
 import org.zenframework.z8.server.security.IUser;
+import org.zenframework.z8.server.types.exception;
 import org.zenframework.z8.server.utils.ErrorUtils;
 
 public class RequestDispatcher implements Runnable {
@@ -36,6 +37,8 @@ public class RequestDispatcher implements Runnable {
 			ApplicationServer.setRequest(request);
 			dispatch();
 		} catch(Throwable exception) {
+			exception = ErrorUtils.unwrapRuntimeException(exception);
+
 			Trace.logError(request.toString(), exception);
 
 			JsonWriter writer = new JsonWriter();
@@ -44,7 +47,10 @@ public class RequestDispatcher implements Runnable {
 			writer.finishArray();
 
 			IMonitor monitor = request.getMonitor();
-			monitor.error(ErrorUtils.getMessage(exception));
+			if(exception instanceof exception)
+				monitor.error(ErrorUtils.getMessage(exception));
+			else
+				monitor.fatalError(ErrorUtils.getMessage(exception));
 
 			try {
 				monitor.writeResponse(writer);

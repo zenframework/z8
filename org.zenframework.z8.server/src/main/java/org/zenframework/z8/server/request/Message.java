@@ -8,6 +8,7 @@ public class Message {
 	static private int Info = 0;
 	static private int Warning = 1;
 	static private int Error = 2;
+	static private int FatalError = 3;
 
 	private date time;
 	private String text;
@@ -24,6 +25,10 @@ public class Message {
 
 	static public Message error(String text, String source) {
 		return new Message(text, source, Error);
+	}
+
+	static public Message fatalError(String text, String source) {
+		return new Message(text, source, FatalError);
 	}
 
 	private Message(String text, String source, int type) {
@@ -49,7 +54,7 @@ public class Message {
 		writer.writeProperty(Json.text, text);
 		writer.writeProperty(Json.source, source);
 		writer.writeProperty(Json.time, time);
-		writer.writeProperty(Json.type, type == Info ? Json.info : (type == Warning ? Json.warning : Json.error));
+		writer.writeProperty(Json.type, type == Info ? Json.info : (type == Warning ? Json.warning : (type == Error ? Json.error: Json.fatal)));
 	}
 
 	@Override

@@ -53,6 +53,12 @@ public class Monitor extends RequestTarget implements IMonitor {
 	}
 
 	@Override
+	public void fatalError(String text) {
+		Trace.logEvent(text);
+		messages.add(Message.fatalError(text, request().displayName()));
+	}
+
+	@Override
 	public void print(file file) {
 		files.add(file);
 	}
@@ -70,6 +76,11 @@ public class Monitor extends RequestTarget implements IMonitor {
 	@Override
 	public void logError(String text) {
 		log(Message.error(text, request().displayName()));
+	}
+
+	@Override
+	public void logFatalError(String text) {
+		log(Message.fatalError(text, request().displayName()));
 	}
 
 	protected void log(Message message) {
