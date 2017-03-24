@@ -26,6 +26,7 @@ public class ErrorUtils {
 
 	static public String getMessage(Throwable exception) {
 		String message = getCause(exception).toString();
+		message = message.replace(exception.getClass().getCanonicalName() + ": ", "");
 		return message == null || message.isEmpty() ? "Internal server error." : message;
 	}
 
