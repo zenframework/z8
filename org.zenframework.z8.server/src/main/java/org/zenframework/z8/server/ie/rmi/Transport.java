@@ -142,7 +142,8 @@ public class Transport implements Runnable {
 		try {
 			return message instanceof FileMessage ? sendFile((FileMessage)message) : sendMessage((DataMessage)message);
 		} catch(Throwable e) {
-			transportQueue.setInfo(message.getId(), e.getMessage());
+		    String msg = e.getMessage();
+			transportQueue.setInfo(message.getId(), msg == null ? e.getClass().getCanonicalName() : msg);
 			throw e;
 		}
 	}
