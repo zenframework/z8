@@ -82,6 +82,7 @@ public class Control extends OBJECT {
 
 	public void writeMeta(JsonWriter writer, Query query, Query context) {
 		writer.writeProperty(Json.name, id());
+		writer.writeProperty(Json.ui, ui());
 		writer.writeProperty(Json.header, displayName());
 		writer.writeProperty(Json.description, description());
 		writer.writeProperty(Json.icon, icon());

@@ -114,12 +114,12 @@ public class OdaField implements IField {
 	}
 
 	@Override
-	public String form() {
+	public String ui() {
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
-	public void setForm(String form) {
+	public void setUi(String form) {
 		throw new UnsupportedOperationException();
 	}
 

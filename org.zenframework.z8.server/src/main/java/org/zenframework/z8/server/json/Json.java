@@ -208,7 +208,7 @@ public interface Json {
 
 	static public string text = new string("text");
 	static public string description = new string("description");
-	static public string form = new string("form");
+	static public string ui = new string("ui");
 	static public string label = new string("label");
 	static public string legend = new string("legend");
 	static public string header = new string("header");

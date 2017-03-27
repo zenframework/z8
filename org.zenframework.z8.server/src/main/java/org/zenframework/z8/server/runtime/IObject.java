@@ -10,7 +10,7 @@ public interface IObject extends INamedObject {
 	static final public String System = "system";
 	static final public String DisplayName = "displayName";
 	static final public String Description = "description";
-	static final public String Form = "form";
+	static final public String UI = "ui";
 	static final public String Name = "name";
 	static final public String Native = "native";
 	static final public String Icon = "icon";
@@ -48,8 +48,8 @@ public interface IObject extends INamedObject {
 	public boolean system();
 	public void setSystem(boolean system);
 
-	public String form();
-	public void setForm(String form);
+	public String ui();
+	public void setUi(String form);
 
 	public boolean foreignKey();
 	public void setForeignKey(boolean foreignKey);
