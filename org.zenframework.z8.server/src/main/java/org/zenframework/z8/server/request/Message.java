@@ -59,6 +59,6 @@ public class Message {
 
 	@Override
 	public String toString() {
-		return type == Info ? "INFO" : (type == Warning ? "WARNING" : "ERROR") + ": [" + time.toString() + "] " + text;
+		return (type == Info ? "INFO" : (type == Warning ? "WARNING" : "ERROR")) + ": [" + time.toString() + "] " + text;
 	}
 }
