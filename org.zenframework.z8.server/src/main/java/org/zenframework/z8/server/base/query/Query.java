@@ -163,10 +163,6 @@ public class Query extends OBJECT {
 	public void afterDestroy(guid recordId) {
 		if(ApplicationServer.events())
 			z8_afterDestroy(recordId);
-/*
-		if(hasAttribute(IObject.SearchIndex) && !searchFields.isEmpty())
-			SearchEngine.INSTANCE.deleteRecord(this, recordId.toString());
-*/
 	}
 
 	@SuppressWarnings("unchecked")
