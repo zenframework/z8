@@ -36,9 +36,7 @@ public class ToString extends SqlToken {
 			FieldType type = value.type();
 			if(type == FieldType.Guid)
 				return new GuidToString(value).format(vendor, options);
-			else if(type == FieldType.Date || type == FieldType.Datetime)
-				return new DateToString(value).format(vendor, options);
-			else if(type == FieldType.Date || type == FieldType.Datetime)
+			else if(type == FieldType.Date)
 				return new DateToString(value).format(vendor, options);
 			else
 				return "CONVERT_FROM(" + value.format(vendor, options) + ", 'UTF8')";

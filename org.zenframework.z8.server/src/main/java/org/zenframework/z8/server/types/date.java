@@ -403,7 +403,7 @@ public class date extends primary {
 
 	@Override
 	public FieldType type() {
-		return FieldType.Datetime;
+		return FieldType.Date;
 	}
 
 	@Override
@@ -411,7 +411,7 @@ public class date extends primary {
 		if(vendor != DatabaseVendor.Postgres)
 			throw new UnsupportedOperationException();
 
-		return new ToDate(new SqlStringToken("'" + toString() + "'", FieldType.Datetime)).format(vendor, new FormatOptions());
+		return new ToDate(new SqlStringToken("'" + toString() + "'", FieldType.Date)).format(vendor, new FormatOptions());
 	}
 
 	@Override

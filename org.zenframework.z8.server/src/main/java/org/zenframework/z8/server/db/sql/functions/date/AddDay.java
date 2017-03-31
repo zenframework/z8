@@ -29,7 +29,6 @@ public class AddDay extends SqlToken {
 	public String format(DatabaseVendor vendor, FormatOptions options, boolean logicalContext) {
 		switch(date.type()) {
 		case Date:
-		case Datetime:
 			switch(vendor) {
 			case Oracle:
 				return "(" + date.format(vendor, options) + " + (" + days.format(vendor, options) + "))";

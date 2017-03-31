@@ -9,7 +9,6 @@ public enum FieldType {
 	Integer(DataTypes.Integer),
 	String(DataTypes.String),
 	Date(DataTypes.Date),
-	Datetime(DataTypes.DateTime),
 	Datespan(DataTypes.DateSpan),
 	Decimal(DataTypes.Decimal),
 	Binary(DataTypes.Binary),
@@ -25,7 +24,6 @@ public enum FieldType {
 		static protected final String Integer = "int";
 		static protected final String String = "string";
 		static protected final String Date = "date";
-		static protected final String DateTime = "datetime";
 		static protected final String DateSpan = "datespan";
 		static protected final String Decimal = "float";
 		static protected final String Binary = "binary";
@@ -59,8 +57,6 @@ public enum FieldType {
 			return FieldType.String;
 		else if(DataTypes.Date.equals(string))
 			return FieldType.Date;
-		else if(DataTypes.DateTime.equals(string))
-			return FieldType.Datetime;
 		else if(DataTypes.DateSpan.equals(string))
 			return FieldType.Datespan;
 		else if(DataTypes.Decimal.equals(string))
@@ -85,7 +81,7 @@ public enum FieldType {
 		else if(type.equalsIgnoreCase("NUMBER") || type.equalsIgnoreCase("CURRENCY"))
 			return FieldType.Decimal;
 		else if(type.equalsIgnoreCase("DATETIME"))
-			return FieldType.Datetime;
+			return FieldType.Date;
 
 		return FieldType.String;
 	}
@@ -101,8 +97,6 @@ public enum FieldType {
 		case String:
 			return Types.VARCHAR;
 		case Date:
-			return Types.DATE;
-		case Datetime:
 			return Types.TIMESTAMP;
 		case Datespan:
 			return Types.BIGINT;
@@ -136,7 +130,6 @@ public enum FieldType {
 			default: throw new RuntimeException("Unknown data type: '" + toString() + "'");
 			}
 		case Date:
-		case Datetime:
 			switch(vendor) {
 			case Oracle: return "DATE";
 			case SqlServer: return "DATETIME";

@@ -75,7 +75,7 @@ public class Parameter extends OBJECT implements IParameter {
 		if(value instanceof bool)
 			return type = FieldType.Boolean;
 		else if(value instanceof date)
-			return type = FieldType.Datetime;
+			return type = FieldType.Date;
 		else if(value instanceof decimal)
 			return type = FieldType.Decimal;
 		else if(value instanceof integer)
@@ -118,24 +118,26 @@ public class Parameter extends OBJECT implements IParameter {
 	}
 
 	public primary parse(String value, FieldType type) {
-		if(type == FieldType.String)
+		switch(type) {
+		case String:
 			return new string(value);
-		else if(type == FieldType.Integer)
+		case Integer:
 			return new integer(value);
-		else if(type == FieldType.Decimal)
+		case Decimal:
 			return new decimal(value);
-		else if(type == FieldType.Boolean)
+		case Boolean:
 			return new bool(value);
-		else if(type == FieldType.Date || type == FieldType.Datetime)
+		case Date:
 			return value.isEmpty() ? new date() : new date(value);
-		else if(type == FieldType.Datespan)
+		case Datespan:
 			return value.isEmpty() ? new datespan() : new datespan(value);
-		else if(type == FieldType.Guid)
+		case Guid:
 			return new guid(value);
-		else if(type == FieldType.File)
+		case File:
 			return ApplicationServer.getRequest().getFiles().get(Integer.parseInt(value));
-
-		throw new RuntimeException("Unsupported parameter type: '" + type + "'");
+		default:
+			throw new RuntimeException("Unsupported parameter type: '" + type + "'");
+		}
 	}
 
 	@Override

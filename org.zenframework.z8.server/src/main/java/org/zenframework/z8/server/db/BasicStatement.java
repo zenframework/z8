@@ -206,7 +206,6 @@ public abstract class BasicStatement implements IStatement {
 			setString(position, (string)value);
 			break;
 		case Date:
-		case Datetime:
 			setDate(position, (date)value);
 			break;
 		case Datespan:

@@ -17,7 +17,7 @@ abstract public class Expression extends SqlToken {
 
 	public Expression(SqlToken left, Operation operation, SqlToken right) {
 		this.left = left;
-		SetNewExpression(operation, right);
+		setNewExpression(operation, right);
 	}
 
 	public Operation getSQLOperation() {
@@ -39,24 +39,22 @@ abstract public class Expression extends SqlToken {
 		return right;
 	}
 
-	public void SetNewExpression(Operation operation, SqlToken right) {
+	private void setNewExpression(Operation operation, SqlToken right) {
 		this.operation = operation;
 
-		if(IsDateSpanWithDate(left, right)) {
-			left = ConvertDateSpanToDate(left);
-		}
-		if(IsDateSpanWithDate(right, left)) {
-			this.right = ConvertDateSpanToDate(right);
-		} else {
+		if(isDateSpanWithDate(left, right))
+			left = convertDateSpanToDate(left);
+		if(isDateSpanWithDate(right, left))
+			this.right = convertDateSpanToDate(right);
+		else
 			this.right = right;
-		}
 	}
 
-	private boolean IsDateSpanWithDate(SqlToken l, SqlToken r) {
-		return (l != null) && (r != null) && (l.type() == FieldType.Datespan) && ((r.type() == FieldType.Date) || (r.type() == FieldType.Datetime));
+	private boolean isDateSpanWithDate(SqlToken left, SqlToken right) {
+		return left != null && right != null && left.type() == FieldType.Datespan && right.type() == FieldType.Date;
 	}
 
-	private SqlToken ConvertDateSpanToDate(SqlToken t) {
+	private SqlToken convertDateSpanToDate(SqlToken t) {
 		integer hourInDay = new integer(24 * 60 * 60 * 1000);
 		return new DateSpanRound(new Mul(new ToNumber(t), Operation.Div, new SqlConst(hourInDay)), new SqlConst(new integer(5)));
 	}

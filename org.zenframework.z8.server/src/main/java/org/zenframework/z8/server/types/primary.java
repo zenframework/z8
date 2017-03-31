@@ -74,24 +74,28 @@ public class primary implements Serializable {
 	}
 
 	static public primary create(FieldType type, String value) {
-		if(type == FieldType.Binary)
+		switch(type) {
+		case Binary:
 			return new binary(value);
-		else if(type == FieldType.Boolean)
+		case Boolean:
 			return new bool(value);
-		else if(type == FieldType.Date || type == FieldType.Datetime)
+		case Date:
 			return new date(value);
-		else if(type == FieldType.Datespan)
+		case Datespan:
 			return new datespan(value);
-		else if(type == FieldType.Decimal)
+		case Decimal:
 			return new decimal(value);
-		else if(type == FieldType.Guid)
+		case Guid:
 			return new guid(value);
-		else if(type == FieldType.Integer)
+		case Integer:
 			return new integer(value);
-		else if(type == FieldType.String || type == FieldType.Text || type == FieldType.Attachments)
+		case String:
+		case Text:
+		case Attachments:
 			return new string(value);
-
-		throw new UnsupportedOperationException();
+		default:
+			throw new UnsupportedOperationException();
+		}
 	}
 
 	static public primary clone(primary value) {

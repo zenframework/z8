@@ -33,7 +33,7 @@ public class SetDate extends SqlToken {
 
 	@Override
 	public FieldType type() {
-		return hour != null ? FieldType.Datetime : FieldType.Date;
+		return FieldType.Date;
 	}
 
 	@Override

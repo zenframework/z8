@@ -31,7 +31,6 @@ public class Hour extends SqlToken {
 	public String format(DatabaseVendor vendor, FormatOptions options, boolean logicalContext) {
 		switch(time.type()) {
 		case Date:
-		case Datetime:
 			switch(vendor) {
 			case Oracle:
 				return new ToNumber(new SqlStringToken("TO_CHAR(" + time.format(vendor, options) + ", 'HH24')", FieldType.String)).format(vendor, options);

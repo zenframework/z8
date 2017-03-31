@@ -4,6 +4,8 @@ import java.util.List;
 
 import org.eclipse.datatools.connectivity.oda.IResultSetMetaData;
 import org.eclipse.datatools.connectivity.oda.OdaException;
+import org.zenframework.z8.server.base.table.value.DateExpression;
+import org.zenframework.z8.server.base.table.value.DateField;
 import org.zenframework.z8.server.base.table.value.IField;
 
 public class ResultSetMetaData implements IResultSetMetaData {
@@ -49,9 +51,7 @@ public class ResultSetMetaData implements IResultSetMetaData {
 		case Integer:
 			return 4;
 		case Date:
-			return 91;
-		case Datetime:
-			return 93;
+			return column instanceof DateField || column instanceof DateExpression ? 91 : 93;
 		case Decimal:
 			return 3;
 		default:

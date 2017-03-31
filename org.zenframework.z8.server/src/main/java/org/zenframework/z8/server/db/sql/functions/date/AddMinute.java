@@ -29,7 +29,6 @@ public class AddMinute extends SqlToken {
 	public String format(DatabaseVendor vendor, FormatOptions options, boolean logicalContext) {
 		switch(date.type()) {
 		case Date:
-		case Datetime:
 			switch(vendor) {
 			case Oracle:
 				return "(" + date.format(vendor, options) + "+(" + minutes.format(vendor, options) + ")/(24*60))";

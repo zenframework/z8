@@ -29,7 +29,6 @@ public class Second extends SqlToken {
 	public String format(DatabaseVendor vendor, FormatOptions options, boolean logicalContext) {
 		switch(time.type()) {
 		case Date:
-		case Datetime:
 			switch(vendor) {
 			case Oracle:
 				return "TO_NUMBER(TO_CHAR(" + time.format(vendor, options) + ", 'SS'))";

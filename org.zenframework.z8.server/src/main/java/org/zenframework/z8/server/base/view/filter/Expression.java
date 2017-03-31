@@ -70,8 +70,8 @@ public class Expression implements IFilter {
 		Collection<primary> result = new ArrayList<primary>();
 
 		for(String value : values) {
-			if(type == FieldType.Date || type == FieldType.Datetime)
-				result.add(new date(value).truncDay());
+			if(type == FieldType.Date)
+				result.add(new date(value));
 			else if(type == FieldType.Guid)
 				result.add(new guid(value));
 			else if(type == FieldType.Decimal)
@@ -96,7 +96,7 @@ public class Expression implements IFilter {
 		FieldType type = field.type();
 
 		if(values.length > 1) {
-			if(operation != Operation.Eq && operation != Operation.NotEq || type == FieldType.Date || type == FieldType.Datetime)
+			if(operation != Operation.Eq && operation != Operation.NotEq || type == FieldType.Date)
 				throw new UnsupportedOperationException();
 
 			SqlToken result = new InVector(new SqlField(field), getValues(type));
@@ -118,22 +118,6 @@ public class Expression implements IFilter {
 		case Integer:
 			return new Rel(field, operation, new integer(value).sql_int());
 		case Date:
-			switch(operation) {
-			case Eq:
-				return new RelDate(field, Operation.Eq, new date(value));
-			case NotEq:
-				return new RelDate(field, Operation.NotEq, new date(value));
-			case LT:
-				return new RelDate(field, Operation.LT, new date(value));
-			case LE:
-				return new RelDate(field, Operation.LE, new date(value));
-			case GT:
-				return new RelDate(field, Operation.GT, new date(value));
-			case GE:
-				return new RelDate(field, Operation.GE, new date(value));
-			default:
-			}
-		case Datetime:
 			switch(operation) {
 			case Eq:
 			case NotEq:

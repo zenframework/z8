@@ -31,7 +31,6 @@ public class TruncSecond extends SqlToken {
 	public String format(DatabaseVendor vendor, FormatOptions options, boolean logicalContext) {
 		switch(time.type()) {
 		case Date:
-		case Datetime:
 			switch(vendor) {
 			case Oracle:
 				return new ToDate(time).format(vendor, options);

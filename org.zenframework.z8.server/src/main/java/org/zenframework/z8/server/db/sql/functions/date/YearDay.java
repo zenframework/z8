@@ -27,7 +27,6 @@ public class YearDay extends SqlToken {
 	public String format(DatabaseVendor vendor, FormatOptions options, boolean logicalContext) {
 		switch(date.type()) {
 		case Date:
-		case Datetime:
 			switch(vendor) {
 			case Oracle:
 				return new ToNumber(new SqlStringToken("TO_CHAR(" + date.format(vendor, options) + ", 'DDD')", FieldType.String)).format(vendor, options);

@@ -31,7 +31,7 @@ public class DatetimeExpression extends Expression {
 
 	@Override
 	public FieldType type() {
-		return FieldType.Datetime;
+		return FieldType.Date;
 	}
 
 	public sql_date sql_date() {

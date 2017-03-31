@@ -42,7 +42,7 @@ public class DatetimeField extends Field {
 
 	@Override
 	public FieldType type() {
-		return FieldType.Datetime;
+		return FieldType.Date;
 	}
 
 	@Override

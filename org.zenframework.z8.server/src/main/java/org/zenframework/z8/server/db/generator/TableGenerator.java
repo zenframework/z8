@@ -15,7 +15,6 @@ import org.zenframework.z8.server.base.table.TreeTable;
 import org.zenframework.z8.server.base.table.system.Roles;
 import org.zenframework.z8.server.base.table.system.Users;
 import org.zenframework.z8.server.base.table.value.BoolExpression;
-import org.zenframework.z8.server.base.table.value.DateExpression;
 import org.zenframework.z8.server.base.table.value.DatespanExpression;
 import org.zenframework.z8.server.base.table.value.DatetimeExpression;
 import org.zenframework.z8.server.base.table.value.DecimalExpression;
@@ -281,8 +280,6 @@ public class TableGenerator {
 		else if(type == FieldType.Guid)
 			expression = new GuidExpression.CLASS<GuidExpression>(null).get();
 		else if(type == FieldType.Date)
-			expression = new DateExpression.CLASS<DateExpression>(null).get();
-		else if(type == FieldType.Datetime)
 			expression = new DatetimeExpression.CLASS<DatetimeExpression>(null).get();
 		else if(type == FieldType.Datespan)
 			expression = new DatespanExpression.CLASS<DatespanExpression>(null).get();
