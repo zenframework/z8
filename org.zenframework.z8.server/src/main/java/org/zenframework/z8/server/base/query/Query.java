@@ -1277,8 +1277,10 @@ public class Query extends Runnable {
 	private String alias = null;
 
 	public String getAlias() {
-		if(alias == null)
-			alias = "T" + Math.abs((id() + hashCode()).hashCode());
+		if(alias == null) {
+		    String id = id().isEmpty() ? name() : id();
+			alias = "T" + Math.abs(id.hashCode());
+		}
 		return alias;
 	}
 
