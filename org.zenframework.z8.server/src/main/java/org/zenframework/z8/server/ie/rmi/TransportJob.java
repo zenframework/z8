@@ -6,6 +6,7 @@ import org.zenframework.z8.server.base.Procedure;
 import org.zenframework.z8.server.base.form.action.Parameter;
 import org.zenframework.z8.server.base.table.system.MessageQueue;
 import org.zenframework.z8.server.base.table.system.TransportQueue;
+import org.zenframework.z8.server.config.ServerConfig;
 import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.runtime.RCollection;
 import org.zenframework.z8.server.types.bool;
@@ -44,6 +45,11 @@ public class TransportJob extends Procedure {
 	}
 
 	private void sendMessages() {
+		int maxTreadsCount = ServerConfig.transportJobThreads();
+
+		if(Transport.getCount() == maxTreadsCount)
+			return;
+
 		Collection<String> addresses = getAddresses();
 
 		for(String address : addresses) {
@@ -51,6 +57,9 @@ public class TransportJob extends Procedure {
 
 			if(thread == null)
 				new Transport(address).start();
+
+			if(Transport.getCount() == maxTreadsCount)
+				return;
 		}
 	}
 }
