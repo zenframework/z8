@@ -10,6 +10,7 @@ import org.zenframework.z8.server.config.ServerConfig;
 import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.runtime.RCollection;
 import org.zenframework.z8.server.types.bool;
+import org.zenframework.z8.server.utils.ArrayUtils;
 
 public class TransportJob extends Procedure {
 	public static class CLASS<T extends TransportJob> extends Procedure.CLASS<T> {
@@ -54,14 +55,10 @@ public class TransportJob extends Procedure {
 
 		String[] addresses = getAddresses().toArray(new String[0]);
 
-		int count = addresses.length;
-
-		if(count == 0)
+		if(addresses.length == 0)
 			return;
 
-		lastPosition = lastPosition < count ? lastPosition : 0;
-
-		int startPosition = lastPosition;
+		int startPosition = lastPosition = ArrayUtils.range(lastPosition, addresses.length);
 
 		do {
 			String address = addresses[lastPosition];
@@ -74,7 +71,7 @@ public class TransportJob extends Procedure {
 			if(Transport.getCount() == maxTreadsCount)
 				return;
 
-			lastPosition = lastPosition < count - 1 ? lastPosition + 1 : 0;
+			lastPosition = ArrayUtils.range(lastPosition + 1, addresses.length);
 		} while(lastPosition != startPosition);
 	}
 }

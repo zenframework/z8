@@ -9,6 +9,10 @@ public class ArrayUtils {
 		return array == null || array.length == 0;
 	}
 
+	static public int range(int index, int count) {
+		return index < count ? index : 0;
+	}
+
 	static public <Type> boolean contains(Type[] objects, Type object) {
 		return indexOf(objects, object) != -1;
 	}
