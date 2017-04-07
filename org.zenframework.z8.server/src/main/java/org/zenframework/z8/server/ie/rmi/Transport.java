@@ -38,6 +38,10 @@ public class Transport implements Runnable {
 		}
 	}
 
+	static public int getCount() {
+		return workers.size();
+	}
+
 	static public void register(Transport transport) {
 		synchronized(lock) {
 			workers.put(transport.domain, transport);
