@@ -34,6 +34,8 @@ public class Listbox extends Control {
 	public RCollection<Field.CLASS<? extends Field>> sortFields = new RCollection<Field.CLASS<? extends Field>>();
 	public RCollection<Action.CLASS<? extends Action>> actions = new RCollection<Action.CLASS<? extends Action>>();
 
+	public Field.CLASS<? extends Field> period;
+
 	public Listbox(IObject container) {
 		super(container);
 		this.editable = bool.True;
@@ -72,6 +74,10 @@ public class Listbox extends Control {
 		writer.writeProperty(Json.name, query.id());
 
 		writer.writeProperty(Json.primaryKey, query.primaryKey().id());
+
+		Field period = this.period != null ? this.period.get() : query.periodKey();
+		if(period != null)
+			writer.writeProperty(Json.periodKey, period.id());
 
 		if(!this.readOnly())
 			writer.writeProperty(Json.lockKey, query.lockKey().id());
