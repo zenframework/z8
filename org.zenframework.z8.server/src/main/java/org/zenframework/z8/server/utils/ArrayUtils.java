@@ -9,6 +9,10 @@ public class ArrayUtils {
 		return array == null || array.length == 0;
 	}
 
+	static public int range(int index, int count) {
+		return index < count ? index : 0;
+	}
+
 	static public <Type> boolean contains(Type[] objects, Type object) {
 		return indexOf(objects, object) != -1;
 	}
@@ -33,9 +37,6 @@ public class ArrayUtils {
 	}
 
 	static public <Type> Type[] insert(Type[] objects, Type object, int position) {
-		assert (objects != null);
-		assert (position <= objects.length);
-
 		int index = Arrays.binarySearch(objects, object);
 
 		if(index < 0) {
