@@ -24,6 +24,8 @@ public class TransportJob extends Procedure {
 		}
 	}
 
+	static private int lastPosition = 0;
+
 	public TransportJob(IObject container) {
 		super(container);
 		useTransaction = bool.False;
@@ -50,9 +52,20 @@ public class TransportJob extends Procedure {
 		if(Transport.getCount() == maxTreadsCount)
 			return;
 
-		Collection<String> addresses = getAddresses();
+		String[] addresses = getAddresses().toArray(new String[0]);
 
-		for(String address : addresses) {
+		int count = addresses.length;
+
+		if(count == 0)
+			return;
+
+		lastPosition = lastPosition < count ? lastPosition : 0;
+
+		int startPosition = lastPosition;
+
+		do {
+			String address = addresses[lastPosition];
+
 			Transport thread = Transport.get(address);
 
 			if(thread == null)
@@ -60,6 +73,8 @@ public class TransportJob extends Procedure {
 
 			if(Transport.getCount() == maxTreadsCount)
 				return;
-		}
+
+			lastPosition = lastPosition < count - 1 ? lastPosition + 1 : 0;
+		} while(lastPosition != startPosition);
 	}
 }
