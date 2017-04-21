@@ -343,25 +343,21 @@ public final class string extends primary {
 	}
 
 	public string z8_padLeft(integer length, string padding) {
-		try {
-			String value = get();
+		String value = get();
 
-			int len = length.getInt();
+		int len = length.getInt();
 
-			if(value.length() >= len)
-				return new string(value.substring(0, len));
+		if(value.length() >= len)
+			return new string(value);
 
-			String s = "";
+		String result = "";
 
-			for(int i = 0; i < len - value.length(); i++)
-				s += padding.get();
+		for(int i = 0; i < len - value.length(); i++)
+			result += padding.get();
 
-			s = s.substring(0, len - value.length());
-
-			return new string(s + value);
-		} catch(IndexOutOfBoundsException e) {
-			throw new exception(e);
-		}
+		result += value;
+		result = result.length() == len ? result : result.substring(result.length() - len);
+		return new string(result);
 	}
 
 	public string z8_padRight(integer length) {
@@ -369,25 +365,19 @@ public final class string extends primary {
 	}
 
 	public string z8_padRight(integer length, string padding) {
-		try {
-			String value = get();
-			
-			int len = length.getInt();
+		String value = get();
+		int len = length.getInt();
 
-			if(value.length() >= len)
-				return new string(value.substring(value.length() - len, value.length()));
+		if(value.length() >= len)
+			return new string(value);
 
-			String s = value;
+		String result = new String(value);
 
-			while(s.length() < len)
-				s += padding.get();
+		while(result.length() < len)
+			result += padding;
 
-			s = s.substring(0, len);
-
-			return new string(s);
-		} catch(IndexOutOfBoundsException e) {
-			throw new exception(e);
-		}
+		result = result.length() == len ? result : result.substring(0, len);
+		return new string(result);
 	}
 
 	public string z8_insert(integer index, string what) {

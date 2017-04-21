@@ -73,5 +73,4 @@ public class SiteAdapter extends SystemAdapter {
 		} else
 			super.service(session, parameters, files, request, response);
 	}
-
 }
