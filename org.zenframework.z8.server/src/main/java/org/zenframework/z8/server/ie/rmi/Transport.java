@@ -144,10 +144,17 @@ public class Transport implements Runnable {
 			return false;
 
 		try {
-			return message instanceof FileMessage ? sendFile((FileMessage)message) : sendMessage((DataMessage)message);
+			boolean result = message instanceof FileMessage ? sendFile((FileMessage)message) : sendMessage((DataMessage)message);
+			if (result)
+				transportQueue.setProcessed(message.getId());
+			return result;
 		} catch(Throwable e) {
-		    String msg = e.getMessage();
-			transportQueue.setInfo(message.getId(), msg == null ? e.getClass().getCanonicalName() : msg);
+			if (ServerConfig.transportJobIgnoreErrors()) {
+				transportQueue.setProcessed(message.getId());
+			} else {
+				String msg = e.getMessage();
+				transportQueue.setInfo(message.getId(), msg == null ? e.getClass().getCanonicalName() : msg);
+			}
 			throw e;
 		}
 	}
@@ -160,7 +167,6 @@ public class Transport implements Runnable {
 
 			if(server.accept(message)) {
 				messageQueue.endProcessing(message.getSourceId());
-				transportQueue.setProcessed(message.getId());
 			}
 
 			connection.commit();
@@ -173,10 +179,8 @@ public class Transport implements Runnable {
 	}
 
 	private boolean sendFile(FileMessage message) throws Throwable {
-		if(server.has(message)) {
-			transportQueue.setProcessed(message.getId());
+		if(server.has(message))
 			return true;
-		}
 
 		Connection connection = ConnectionManager.get();
 
@@ -202,7 +206,6 @@ public class Transport implements Runnable {
 			}
 		}
 
-		transportQueue.setProcessed(message.getId());
 		return true;
 	}
 }

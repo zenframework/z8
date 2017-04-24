@@ -2,6 +2,7 @@ package org.zenframework.z8.server.types;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -344,6 +345,8 @@ public class file extends primary implements RmiSerializable, Serializable {
 		InputStream input = null;
 		try {
 			input = getInputStream();
+			if (input == null)
+				throw new FileNotFoundException("File '" + path + "' does not exist");
 			input.skip(offset);
 			return IOUtils.read(input, bytes);
 		} finally {

@@ -43,6 +43,7 @@ public class ServerConfig extends Properties {
 	
 	static private String TransportJobRepeat = "transport.job.repeat";
 	static private String TransportJobTreads = "transport.job.treads";
+	static private String TransportJobIgnoreErrors = "transport.job.ignoreErrors";
 
 	static private String TraceSql = "trace.sql";
 	static private String TraceSqlConnections = "trace.sql.connections";
@@ -79,6 +80,7 @@ public class ServerConfig extends Properties {
 
 	static private int transportJobRepeat;
 	static private int transportJobTreads;
+	static private boolean transportJobIgnoreErrors;
 
 	static private boolean traceSql;
 	static private boolean traceSqlConnections;
@@ -134,6 +136,7 @@ public class ServerConfig extends Properties {
 
 		transportJobRepeat = getProperty(TransportJobRepeat, 5 * 60);
 		transportJobTreads = getProperty(TransportJobTreads, 10);
+		transportJobIgnoreErrors = getProperty(TransportJobIgnoreErrors, false);
 
 		textExtensions = getProperty(TextExtensions, new String[] { "txt", "xml" });
 		imageExtensions = getProperty(ImageExtensions, new String[] { "tif", "tiff", "jpg", "jpeg", "gif", "png", "bmp" });
@@ -309,6 +312,10 @@ public class ServerConfig extends Properties {
 
 	static public int transportJobThreads() {
 		return transportJobTreads;
+	}
+
+	static public boolean transportJobIgnoreErrors() {
+		return transportJobIgnoreErrors;
 	}
 
 	static public int transportJobRepeat() {
