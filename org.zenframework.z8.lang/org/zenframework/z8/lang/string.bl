@@ -53,6 +53,18 @@ public final class string extends primary {
 	public string replace(int pos, int len, string replacement);
 
 	public bool matches(string regex);
+
+	/* usage of setupMatcher, next, getGroup
+	*
+	*    string str = "aBcDe";
+	*    str.setupMatcher("([a-z])([A-Z])"); // two matches: "aB" and "cD"
+	*    if(str.next()) { // takes the first match
+	*        string pattern = str.getGroup(0); // pattern is "aB" since 0 denotes the entire pattern
+	*        string group1 = str.getGroup(1);  // group1 is "a" - capturing groups are indexed from left to right starting at one
+	*        string group2 = str.getGroup(2);  // group2 is "B"
+	*    }
+	*
+	*/
 	public void setupMatcher(string regex);
 	public bool next();
 	public string getGroup(int groupNumber);
