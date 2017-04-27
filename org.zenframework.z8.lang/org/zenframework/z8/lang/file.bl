@@ -5,18 +5,52 @@ public class file extends primary {
 	public date time;
 	public int size;
 	public string path;
-
+	public guid user;
+	public string author;
 	public string[string] details;
 
+	/*
+	*    Assignment operator. Allows to write code like this:
+	*    file someFile = 'storage/folder/file.name';
+	*/
 	public void operator = (string path);
 
 	public bool isDirectory();
 	public file[] listFiles();
 
+	/*
+	*    Gets the name minus the path from a full filename.
+	*/
 	static public string name(string path);
+
+	/*
+	*     Gets the base name, minus the full path and extension, from a full filename.
+	*/
 	static public string baseName(string path);
+
+	/*
+	*    Gets the extension of a filename.
+	*/
 	static public string extension(string path);
 
+	/*
+	*    Parses JSON like below:
+	*
+	*    [{
+	*        id: '8D9C5AC1-F500-426F-9CDA-4258B4C79154',    // guid
+	*        name: 'file.name',                             // readable file name
+	*        time: '2010-12-24T01:10:20.032+03:00',         // UTC time
+	*        size: 12342345,                                // size in bytes
+	*        path: 'storage/01/file1.ext',                  // relative path
+	*        user: '33B3487D-C975-453C-AE5B-49D215009DA2'   // guid, user id
+	*        author: 'John Doe',                            // author info
+	*        details: { key: value }                        // extra info
+	*    }]
+	*/
 	static public file[] parse(string json);
+
+	/*
+	*    Convers array of files to JSON array, see file.parse()
+	*/
 	static public string toJson(file[] files);
 }
