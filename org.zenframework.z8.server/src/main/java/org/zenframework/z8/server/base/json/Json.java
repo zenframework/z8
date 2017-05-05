@@ -151,8 +151,8 @@ public class Json extends OBJECT {
 	final static public string description = org.zenframework.z8.server.json.Json.description;
 	final static public string label = org.zenframework.z8.server.json.Json.label;
 	final static public string header = org.zenframework.z8.server.json.Json.header;
-	final static public string colspan = org.zenframework.z8.server.json.Json.colspan;
-	final static public string rowspan = org.zenframework.z8.server.json.Json.rowspan;
+	final static public string colSpan = org.zenframework.z8.server.json.Json.colSpan;
+	final static public string rowSpan = org.zenframework.z8.server.json.Json.rowSpan;
 	final static public string icon = org.zenframework.z8.server.json.Json.icon;
 	final static public string help = org.zenframework.z8.server.json.Json.help;
 

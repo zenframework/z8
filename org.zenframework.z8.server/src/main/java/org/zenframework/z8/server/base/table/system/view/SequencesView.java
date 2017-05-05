@@ -33,7 +33,7 @@ public class SequencesView extends Sequences {
 
 		readOnly = new bool(!ApplicationServer.getUser().isAdministrator());
 
-		description.get().colspan = new integer(4);
+		description.get().colSpan = new integer(4);
 
 		registerControl(key);
 		registerControl(value);

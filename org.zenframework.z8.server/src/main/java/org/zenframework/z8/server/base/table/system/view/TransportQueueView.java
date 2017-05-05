@@ -34,20 +34,20 @@ public class TransportQueueView extends TransportQueue {
 
 		sortFields.add(ordinal);
 
-		columnCount = new integer(12);
+		colCount = new integer(12);
 
-		ordinal.get().colspan = new integer(2);
+		ordinal.get().colSpan = new integer(2);
 		registerControl(ordinal);
-		sender.get().colspan = new integer(3);
+		sender.get().colSpan = new integer(3);
 		registerControl(sender);
-		address.get().colspan = new integer(3);
+		address.get().colSpan = new integer(3);
 		registerControl(address);
-		bytesTransferred.get().colspan = new integer(2);
+		bytesTransferred.get().colSpan = new integer(2);
 		registerControl(bytesTransferred);
-		processed.get().colspan = new integer(2);
+		processed.get().colSpan = new integer(2);
 		registerControl(processed);
 
-		description.get().colspan = new integer(12);
+		description.get().colSpan = new integer(12);
 		registerControl(description);
 	}
 }

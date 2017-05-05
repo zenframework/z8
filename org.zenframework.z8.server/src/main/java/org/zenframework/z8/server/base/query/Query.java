@@ -63,7 +63,7 @@ public class Query extends OBJECT {
 	}
 
 	public bool readOnly = bool.False;
-	public integer columnCount = new integer(4);
+	public integer colCount = new integer(4);
 
 	public Field.CLASS<? extends Field> attachments;
 	public Field.CLASS<? extends Field> period;
@@ -1103,7 +1103,7 @@ public class Query extends OBJECT {
 		writer.writeProperty(Json.readOnly, isGrouped() || readOnly());
 
 		writer.writeProperty(Json.totals, totals);
-		writer.writeProperty(Json.columnCount, columnCount);
+		writer.writeProperty(Json.colCount, colCount);
 	}
 
 	private void writeKeys(JsonWriter writer, Collection<Field> fields) {

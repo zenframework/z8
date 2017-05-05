@@ -48,7 +48,7 @@ public class UsersView extends Users {
 		userEntries.setIndex("userEntries");
 		userRoles.setIndex("userRoles");
 
-		columnCount = new integer(12);
+		colCount = new integer(12);
 
 		readOnly = new bool(!ApplicationServer.getUser().isAdministrator());
 
@@ -79,21 +79,21 @@ public class UsersView extends Users {
 
 		userRoles.columns.add(userRoles.roles.get().name);
 
-		name.get().colspan = new integer(3);
-		lastName.get().colspan = new integer(3);
-		firstName.get().colspan = new integer(3);
-		middleName.get().colspan = new integer(3);
+		name.get().colSpan = new integer(3);
+		lastName.get().colSpan = new integer(3);
+		firstName.get().colSpan = new integer(3);
+		middleName.get().colSpan = new integer(3);
 
-		phone.get().colspan = new integer(3);
-		email.get().colspan = new integer(3);
-		banned.get().colspan = new integer(3);
+		phone.get().colSpan = new integer(3);
+		email.get().colSpan = new integer(3);
+		banned.get().colSpan = new integer(3);
 		banned.get().setIcon("fa-ban");
 
-		description.get().colspan = new integer(12);
+		description.get().colSpan = new integer(12);
 		description.get().height = new integer(3);
 
-		entriesListbox.get().colspan = new integer(6);
-		rolesListbox.get().colspan = new integer(6);
+		entriesListbox.get().colSpan = new integer(6);
+		rolesListbox.get().colSpan = new integer(6);
 
 		registerControl(name);
 		registerControl(lastName);

@@ -47,9 +47,9 @@ public class RoleTableAccessView extends Roles {
 		rta.setIndex("rta");
 		rfa.setIndex("rfa");
 
-		columnCount = new integer(2);
+		colCount = new integer(2);
 
-		name.get().colspan = new integer(2);
+		name.get().colSpan = new integer(2);
 
 		tablesListbox.setIndex("tablesListbox");
 		tablesListbox.setDisplayName(RoleTableAccess.displayNames.Title);

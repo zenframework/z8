@@ -36,7 +36,7 @@ public class Control extends OBJECT {
 	public bool important;
 
 
-	public integer colspan;
+	public integer colSpan;
 	public integer flex;
 
 	public integer height;
@@ -88,7 +88,7 @@ public class Control extends OBJECT {
 		writer.writeProperty(Json.icon, icon());
 
 		writer.writeProperty(Json.height, height);
-		writer.writeProperty(Json.colspan, colspan);
+		writer.writeProperty(Json.colSpan, colSpan);
 		writer.writeProperty(Json.flex, flex);
 
 		writer.writeProperty(Json.readOnly, readOnly());

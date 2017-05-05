@@ -35,7 +35,7 @@ public class FilesView extends Files {
 		super.constructor2();
 
 		readOnly = bool.True;
-		path.get().colspan = new integer(4);
+		path.get().colSpan = new integer(4);
 
 		registerControl(name);
 		registerControl(createdAt);

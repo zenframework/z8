@@ -185,7 +185,7 @@ public interface Json {
 
 	static public string queries = new string("queries");
 	static public string fields = new string("fields");
-	static public string columnCount = new string("columnCount");
+	static public string colCount = new string("colCount");
 	static public string columns = new string("columns");
 	static public string sections = new string("sections");
 	static public string controls = new string("controls");
@@ -212,8 +212,8 @@ public interface Json {
 	static public string label = new string("label");
 	static public string legend = new string("legend");
 	static public string header = new string("header");
-	static public string colspan = new string("colspan");
-	static public string rowspan = new string("rowspan");
+	static public string colSpan = new string("colSpan");
+	static public string rowSpan = new string("rowSpan");
 	static public string flex = new string("flex");
 	static public string icon = new string("icon");
 	static public string help = new string("help");

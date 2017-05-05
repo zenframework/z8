@@ -4,7 +4,7 @@ import org.zenframework.z8.lang.Object;
 
 [native "org.zenframework.z8.server.base.form.Control"]
 public class Control extends Object {
-	public int colspan = 1;
+	public int colSpan = 1;
 	public int flex = 0;
 	public int height;
 

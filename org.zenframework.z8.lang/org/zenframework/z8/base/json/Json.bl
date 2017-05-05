@@ -189,8 +189,8 @@ public class Json extends Object {
 	static public string description;
 	static public string label;
 	static public string header;
-	static public string colspan;
-	static public string rowspan;
+	static public string colSpan;
+	static public string rowSpan;
 	static public string showLabel;
 	static public string icon;
 	static public string help;

@@ -40,7 +40,7 @@ public class JobsView extends ScheduledJobs {
 	public void constructor2() {
 		super.constructor2();
 
-		columnCount = new integer(12);
+		colCount = new integer(12);
 
 		readOnly = new bool(!ApplicationServer.getUser().isAdministrator());
 
@@ -52,7 +52,7 @@ public class JobsView extends ScheduledJobs {
 		logsListbox.get().query = logs;
 		logsListbox.get().link = logs.get().scheduledJob;
 		logsListbox.get().readOnly = bool.True;
-		logsListbox.get().colspan = new integer(12);
+		logsListbox.get().colSpan = new integer(12);
 		logsListbox.get().flex = new integer(1);
 
 		logsListbox.get().columns.add(logs.get().start);
@@ -62,11 +62,11 @@ public class JobsView extends ScheduledJobs {
 
 		logs.get().start.get().sortDirection = SortDirection.Desc;
 
-		jobs.get().name.get().colspan = new integer(4);
-		from.get().colspan = new integer(2);
-		till.get().colspan = new integer(2);
-		repeat.get().colspan = new integer(2);
-		active.get().colspan = new integer(2);
+		jobs.get().name.get().colSpan = new integer(4);
+		from.get().colSpan = new integer(2);
+		till.get().colSpan = new integer(2);
+		repeat.get().colSpan = new integer(2);
+		active.get().colSpan = new integer(2);
 
 		registerControl(jobs.get().name);
 		registerControl(from);

@@ -33,13 +33,13 @@ public class DomainsView extends Domains {
 
 		readOnly = new bool(!ApplicationServer.getUser().isAdministrator());
 
-		columnCount = new integer(4);
+		colCount = new integer(4);
 
 		registerControl(name);
 		registerControl(address);
 		registerControl(users.get().name);
 		registerControl(owner);
-		description.get().colspan = new integer(4);
+		description.get().colSpan = new integer(4);
 		registerControl(description);
 	}
 }

@@ -40,7 +40,7 @@ public class TablesView extends Tables {
 		fields.setIndex("fields");
 
 		readOnly = bool.True;
-		columnCount = new integer(6);
+		colCount = new integer(6);
 
 		fieldsListbox.setIndex("fieldsListbox");
 		fieldsListbox.setDisplayName(Fields.displayNames.Title);
@@ -56,18 +56,18 @@ public class TablesView extends Tables {
 		fields.columns.add(fields.type);
 		fields.columns.add(fields.displayName);
 
-		classId.get().colspan = new integer(2);
+		classId.get().colSpan = new integer(2);
 
-		name.get().colspan = new integer(2);
+		name.get().colSpan = new integer(2);
 		name.get().width = new integer(100);
 
-		displayName.get().colspan = new integer(2);
+		displayName.get().colSpan = new integer(2);
 		displayName.get().width = new integer(200);
 
-		description.get().colspan = new integer(6);
+		description.get().colSpan = new integer(6);
 		description.get().height = new integer(2);
 
-		fieldsListbox.get().colspan = new integer(6);
+		fieldsListbox.get().colSpan = new integer(6);
 		fieldsListbox.get().flex = new integer(1);
 
 		registerControl(classId);

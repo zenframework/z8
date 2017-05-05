@@ -12,7 +12,7 @@ public class Query extends Object {
 	public bool readOnly = false;
 	public bool totals = false;
 
-	public int columnCount = 3;
+	public int colCount = 4;
 
 	public Control[] controls;
 

@@ -107,7 +107,7 @@ abstract public class HubServerView extends Query {
 
 		domains.setIndex("domains");
 		domains.setDisplayName(displayNames.Domains);
-		domains.get().colspan = new integer(4);
+		domains.get().colSpan = new integer(4);
 
 		registerControl(host);
 		registerControl(port);
