@@ -1,5 +1,8 @@
 package org.zenframework.z8.server.utils;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
+
 public class ErrorUtils {
 
 	static public Throwable getCause(Throwable exception) {
@@ -19,11 +22,9 @@ public class ErrorUtils {
 	}
 
 	static public String getStackTrace(Throwable throwable) {
-		String result = "";
-
-		for(StackTraceElement element : throwable.getStackTrace())
-			result += (result.isEmpty() ? "" : "\t") + element.toString() + "\r\n";
-
-		return result;
+		StringWriter out = new StringWriter();
+		throwable.printStackTrace(new PrintWriter(out));
+		return out.toString();
 	}
+
 }
