@@ -16,14 +16,15 @@ import org.zenframework.z8.server.base.model.sql.CountingSelect;
 import org.zenframework.z8.server.base.model.sql.FramedSelect;
 import org.zenframework.z8.server.base.model.sql.Select;
 import org.zenframework.z8.server.base.model.sql.SelectFactory;
+import org.zenframework.z8.server.base.query.Period;
 import org.zenframework.z8.server.base.query.Query;
 import org.zenframework.z8.server.base.query.QueryUtils;
 import org.zenframework.z8.server.base.table.value.Aggregation;
 import org.zenframework.z8.server.base.table.value.Expression;
 import org.zenframework.z8.server.base.table.value.Field;
 import org.zenframework.z8.server.base.table.value.ILink;
-import org.zenframework.z8.server.base.table.value.JoinType;
 import org.zenframework.z8.server.base.table.value.Join;
+import org.zenframework.z8.server.base.table.value.JoinType;
 import org.zenframework.z8.server.base.table.value.Link;
 import org.zenframework.z8.server.base.table.value.LinkExpression;
 import org.zenframework.z8.server.base.view.filter.Filter;
@@ -199,13 +200,8 @@ public class ReadAction extends RequestAction {
 			Filter quickFilter = new Filter(getQuickFilterParameter(), query);
 			addFilter(quickFilter.where());
 
-			Filter period = new Filter(getPeriodParameter(), query);
+			Period period = new Period(query.periodKey(), getPeriodParameter());
 			addFilter(period.where());
-
-			if(isGrouped())
-				addGroupFilter(getFilter1());
-			else
-				addFilter(getFilter1());
 		}
 	}
 
@@ -213,6 +209,7 @@ public class ReadAction extends RequestAction {
 		return groupBy.isEmpty() && aggregateBy.isEmpty();
 	}
 
+	@SuppressWarnings("unused")
 	private boolean isGrouped() {
 		return !groupBy.isEmpty() || !aggregateBy.isEmpty();
 	}
@@ -576,10 +573,6 @@ public class ReadAction extends RequestAction {
 
 	protected String parseJsonProperty(JsonObject json, string property) {
 		return json.getString(property);
-	}
-
-	protected SqlToken getFilter1() {
-		return new Filter(getFilter1Parameter(), getQuery()).where();
 	}
 
 	public Select getCursor() {

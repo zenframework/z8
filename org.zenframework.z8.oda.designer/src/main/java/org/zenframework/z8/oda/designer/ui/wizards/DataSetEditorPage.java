@@ -366,9 +366,9 @@ public class DataSetEditorPage extends DataSetWizardPage {
 				PlatformUI.getWorkbench().getDisplay().asyncExec(new Runnable() {
 					@Override
 					public void run() {
-						TableItem[] selection = tables.getSelection();
-						if(selection.length == 1 && selection[0] == event.item)
-							return;
+//						TableItem[] selection = tables.getSelection();
+//						if(selection.length == 1 && (Table)selection[0].getData().clas == event.item)
+//							return;
 
 						tableTree.removeAll();
 						initializeTableTree((Table)event.item.getData(), null);

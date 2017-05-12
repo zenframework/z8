@@ -126,12 +126,6 @@ public interface Json {
 	static public string or = new string("or");
 	static public string expressions = new string("expressions");
 
-/* backward compatibility */
-	static public string filter1 = new string("filter1");
-	static public string comparison = new string("comparison");
-	static public string andOr = new string("andOr");
-/* backward compatibility */
-
 	static public string primaryKey = new string("primaryKey");
 	static public string lockKey = new string("lockKey");
 	static public string attachmentsKey = new string("attachmentsKey");
@@ -162,6 +156,7 @@ public interface Json {
 	static public string topMargin = new string("topMargin");
 	static public string bottomMargin = new string("bottomMargin");
 
+	static public string active = new string("active");
 	static public string total = new string("total");
 	static public string start = new string("start");
 	static public string finish = new string("finish");

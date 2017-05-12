@@ -115,9 +115,6 @@ public class Json extends Object {
 	static public string filterBy;
 
 	static public string filter;
-	static public string filter1;
-	static public string comparison;
-	static public string andOr;
 
 	static public string primaryKey;
 	static public string parentKey;

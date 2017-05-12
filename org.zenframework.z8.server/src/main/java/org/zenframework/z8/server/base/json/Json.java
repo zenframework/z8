@@ -88,10 +88,7 @@ public class Json extends OBJECT {
 	final static public string direction = org.zenframework.z8.server.json.Json.direction;
 
 	final static public string filter = org.zenframework.z8.server.json.Json.filter;
-	final static public string filter1 = org.zenframework.z8.server.json.Json.filter1;
 	final static public string operator = org.zenframework.z8.server.json.Json.operator;
-	final static public string comparison = org.zenframework.z8.server.json.Json.comparison;
-	final static public string andOr = org.zenframework.z8.server.json.Json.andOr;
 
 	final static public string primaryKey = org.zenframework.z8.server.json.Json.primaryKey;
 	final static public string parentKey = org.zenframework.z8.server.json.Json.parentKey;
@@ -206,7 +203,6 @@ public class Json extends OBJECT {
 		filter.get().z8_put(org.zenframework.z8.server.json.Json.property, field);
 		filter.get().z8_put(org.zenframework.z8.server.json.Json.operator, operator);
 		filter.get().z8_put(org.zenframework.z8.server.json.Json.value, value);
-		filter.get().z8_put(org.zenframework.z8.server.json.Json.andOr, andOr);
 		return filter;
 	}
 

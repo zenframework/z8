@@ -175,10 +175,6 @@ public abstract class RequestAction extends RequestTarget {
 		return getRequestParameter(Json.period);
 	}
 
-	public String getFilter1Parameter() {
-		return getRequestParameter(Json.filter1);
-	}
-
 	public String getRecordParameter() {
 		return getRequestParameter(Json.record);
 	}
