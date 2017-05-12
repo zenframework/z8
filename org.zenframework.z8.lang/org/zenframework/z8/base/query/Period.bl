@@ -1,0 +1,12 @@
+import org.zenframework.z8.base.table.value.DatetimeField;
+import org.zenframework.z8.lang.Object;
+
+[native "org.zenframework.z8.server.base.query.Period"]
+public class Period extends Object {
+	public date start = date.Min;
+	public date finish = date.Max;
+
+	public DatetimeField field;
+
+	public sql_bool where();
+}
