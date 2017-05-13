@@ -207,6 +207,6 @@ public class Table extends TableBase {
 				result += Math.abs(value.hashCode());
 		}
 
-		return result;
+		return Math.abs(Integer.toString(result).hashCode());
 	}
 }
