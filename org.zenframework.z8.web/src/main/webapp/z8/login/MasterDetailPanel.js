@@ -198,97 +198,47 @@ Z8.view.MasterDetailPanel = Ext.extend(Z8.Panel,
 		}
 		else
 		{
+			button.setBusy(true);
+
 			var parameters = command.parameters;
 			var record = command.record;
 
-			if(parameters.length != 0)
+			var onOk = this.onParametersOk.createDelegate(this, [command, button], true);
+			var onError = this.onParametersError.createDelegate(this, [command, button], true);
+
+			var records = this.master.getSelectedRecords();
+
+			var ids = [];
+			for(var i = 0; i < records.length; i++)
+				ids.push(records[i].id);
+
+			var baseParams =
 			{
-				var parametersWindow = new Z8.view.ParametersWindow({ parameters: parameters, record: record, title: command.text });
-				
-				var onOk = this.onParametersOk.createDelegate(this, [command, button], true);
-				var onError = this.onParametersError.createDelegate(this, [command], true);
-				
-				parametersWindow.on('ok', onOk, this);
-				parametersWindow.on('error', onError, this);
-				parametersWindow.show();
-			}	
-			else
-			{
-				this.onParametersOk({}, null, command, button);
-			}
+				requestId: this.query.requestId,
+				xaction: 'command', 
+				command: command.id,
+				data: Ext.encode(ids)
+			};
+
+			var parametersWindow = new Z8.view.ParametersWindow({ parameters: parameters, record: record, title: command.text, baseParams: baseParams, success: onOk, failure: onError });
+			parametersWindow.show();
 		}
 	},
 	
-	onParametersError: function(info, command)
-	{
-		this.onMessage(command.text, info);
-	},
-	
-	onParametersOk: function(source, serverId, command, button)
-	{
-		button.setBusy(true);
-
-		var callback = Z8.Callback.create(this.onCommandComplete, this, button);
-
-		var records = this.master.getSelectedRecords();
-
-		var ids = [];
-
-		for(var i = 0; i < records.length; i++)
-		{
-			ids.push(records[i].id);
-		}
-
-		var params =
-		{
-			xaction: 'command', 
-			command: command.id,
-			parameters: Ext.encode(source),
-			data: Ext.encode(ids)
-		};
-		
-		if(serverId != null)
-		{
-			params.serverId = serverId;
-		}
-		
-		var success = this.onCommandSuccess.createDelegate(this, [callback, command], true);
-		var error = this.onCommandFailure.createDelegate(this, [callback, command], true);
-		
-		this.query.request(success, error, params, this);
-	},
-	
-	onCommandComplete: function(button, info)
+	onParametersError: function(info, command, button)
 	{
 		button.setBusy(false);
-		
-		this.onMessage(this.query.text, info);
-	},
-	
-	onCommandSuccess: function(result, callback, command)
-	{
-		if(result.source != null)
-		{
-			Z8.FileViewer.download(result, this.query.text);
-		}
-		
-		if(result.refresh != null)
-		{
-			this.onRefresh(this, result.refresh);
-		}
-		
-		callback.call();
-		this.updateButtons();
-		this.onMessage(command.text, result.info);
-	},
-
-	onCommandFailure: function(info, callback, command)
-	{
-		callback.call();
 		this.updateButtons();
 		this.onMessage(command.text, info);
 	},
-
+	
+	onParametersOk: function(result, command, button)
+	{
+		button.setBusy(false);
+		this.updateButtons();
+		this.onMessage(this.query.text);
+	},
+	
 	onMessage: function(title, info)
 	{
 		if(info != null && (!Z8.isEmpty(info.messages) || info.log != null))
