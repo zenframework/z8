@@ -18,14 +18,17 @@ public class JsonArray extends Object {
 	public JsonArray getJsonArray(int i);
 	public JsonObject getJsonObject(int i);
 
-	public JsonArray put(primary value);
-	public JsonArray put(JsonArray value);
-	public JsonArray put(JsonObject value);
+	public JsonArray add(primary value);
+	public JsonArray add(JsonArray value);
+	public JsonArray add(JsonObject value);
+
+	public JsonArray insert(int index, primary value);
+	public JsonArray insert(int index, JsonArray value);
+	public JsonArray insert(int index, JsonObject value);
 
 	public JsonArray put(int index, primary value);
 	public JsonArray put(int index, JsonArray value);
 	public JsonArray put(int index, JsonObject value);
-	public JsonArray insert(int index, JsonObject value);
 
 	public JsonArray remove(int index);
 

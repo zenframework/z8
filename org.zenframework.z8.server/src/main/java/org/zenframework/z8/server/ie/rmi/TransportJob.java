@@ -37,7 +37,7 @@ public class TransportJob extends Procedure {
 		sendMessages();
 	}
 
-	Collection<String> getAddresses() {
+	private Collection<String> getAddresses() {
 		Collection<String> result = TransportQueue.newInstance().getAddresses();
 
 		for(String address : MessageQueue.newInstance().getAddresses()) {

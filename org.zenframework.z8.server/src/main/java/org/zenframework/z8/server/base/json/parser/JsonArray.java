@@ -93,32 +93,44 @@ public class JsonArray extends OBJECT {
 	}
 
 	@SuppressWarnings("unchecked")
-	public JsonArray.CLASS<? extends JsonArray> z8_put(primary value) {
+	public JsonArray.CLASS<? extends JsonArray> z8_add(primary value) {
 		array.put(JsonUtils.unwrap(value));
 		return (JsonArray.CLASS<? extends JsonArray>)getCLASS();
 	}
 
 	@SuppressWarnings("unchecked")
-	public JsonArray.CLASS<? extends JsonArray> z8_put(JsonArray.CLASS<? extends JsonArray> value) {
+	public JsonArray.CLASS<? extends JsonArray> z8_add(JsonArray.CLASS<? extends JsonArray> value) {
 		array.put(value.get().get());
 		return (JsonArray.CLASS<? extends JsonArray>)getCLASS();
 	}
 
 	@SuppressWarnings("unchecked")
-	public JsonArray.CLASS<? extends JsonArray> z8_put(JsonObject.CLASS<? extends JsonObject> value) {
+	public JsonArray.CLASS<? extends JsonArray> z8_add(JsonObject.CLASS<? extends JsonObject> value) {
 		array.put(value.get().getInternalObject());
 		return (JsonArray.CLASS<? extends JsonArray>)getCLASS();
 	}
 
 	@SuppressWarnings("unchecked")
-	public JsonArray.CLASS<? extends JsonArray> z8_put(integer index, primary value) {
-		array.put(index.getInt(), JsonUtils.unwrap(value));
+	public JsonArray.CLASS<? extends JsonArray> z8_insert(integer index, primary value) {
+		array.insert(index.getInt(), JsonUtils.unwrap(value));
+		return (JsonArray.CLASS<? extends JsonArray>)getCLASS();
+	}
+
+	@SuppressWarnings("unchecked")
+	public JsonArray.CLASS<? extends JsonArray> z8_insert(integer index, JsonArray.CLASS<? extends JsonArray> value) {
+		array.insert(index.getInt(), value.get().get());
 		return (JsonArray.CLASS<? extends JsonArray>)getCLASS();
 	}
 
 	@SuppressWarnings("unchecked")
 	public JsonArray.CLASS<? extends JsonArray> z8_insert(integer index, JsonObject.CLASS<? extends JsonObject> value) {
 		array.insert(index.getInt(), value.get().getInternalObject());
+		return (JsonArray.CLASS<? extends JsonArray>)getCLASS();
+	}
+
+	@SuppressWarnings("unchecked")
+	public JsonArray.CLASS<? extends JsonArray> z8_put(integer index, primary value) {
+		array.put(index.getInt(), JsonUtils.unwrap(value));
 		return (JsonArray.CLASS<? extends JsonArray>)getCLASS();
 	}
 
