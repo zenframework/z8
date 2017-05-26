@@ -82,7 +82,7 @@ public class TableRules implements RmiSerializable, Serializable {
 		if(policy != null)
 			return policy;
 
-		policy = records.get(field);
+		policy = records.get(recordId);
 
 		if(policy != null)
 			return policy;
