@@ -48,11 +48,11 @@ public class JsonWriter {
 		return quoteName ? JsonObject.quote(name) : ('"' + name + '"');
 	}
 
-	private String comma() {
+	private StringBuilder appendComma() {
 		int size = scopes.size();
-		return (size > 0 && scopes.get(size - 1)) ? "," : "";
+		return size > 0 && scopes.get(size - 1) ? stream.append(",") : stream;
 	}
-
+	
 	private void openScope() {
 		scopes.add(false);
 	}
@@ -73,14 +73,14 @@ public class JsonWriter {
 
 	public void startObject(String name) {
 		if(name != null) {
-			stream.append(comma() + quoteName(name) + ":{");
+			appendComma().append(quoteName(name)).append(":{");
 			openScope();
 		} else
 			startObject();
 	}
 
 	public void startObject() {
-		stream.append(comma() + '{');
+		appendComma().append('{');
 		openScope();
 	}
 
@@ -95,14 +95,14 @@ public class JsonWriter {
 
 	public void startArray(String name) {
 		if(name != null) {
-			stream.append(comma() + quoteName(name) + ":[");
+			appendComma().append(quoteName(name)).append(":[");
 			openScope();
 		} else
 			startArray();
 	}
 
 	public void startArray() {
-		stream.append(comma() + '[');
+		appendComma().append('[');
 		openScope();
 	}
 
@@ -117,14 +117,13 @@ public class JsonWriter {
 
 	public void write(String value, boolean quote) {
 		if(value != null) {
-			stream.append(comma() + (quote ? JsonObject.quote(value) : value));
+			appendComma().append(quote ? JsonObject.quote(value) : value);
 			startSeparate();
 		}
 	}
 
 	public void write(JsonWriter writer) {
-		stream.append(comma());
-		stream.append(writer.stream);
+		appendComma().append(writer.stream);
 		startSeparate();
 	}
 
@@ -190,8 +189,7 @@ public class JsonWriter {
 
 	public void writeProperty(String name, String value, boolean quoteValue) {
 		if(value != null) {
-			value = quoteValue ? JsonObject.quote(value) : value;
-			stream.append(comma() + quoteName(name) + ":" + value);
+			appendComma().append(quoteName(name)).append(":").append(quoteValue ? JsonObject.quote(value) : value);
 			startSeparate();
 		}
 	}
@@ -226,7 +224,7 @@ public class JsonWriter {
 	}
 
 	public void writeProperty(String name, double value) {
-		stream.append(comma() + quoteName(name) + ":" + Double.toString(value));
+		appendComma().append(quoteName(name)).append(":").append(Double.toString(value));
 		startSeparate();
 	}
 

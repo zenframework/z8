@@ -122,8 +122,8 @@ abstract public class HubServerView extends Query {
 	}
 
 	@Override
-	public JsonArray response() {
-		return new JsonArray();
+	public boolean isResponsable() {
+		return true;
 	}
 
 	@Override

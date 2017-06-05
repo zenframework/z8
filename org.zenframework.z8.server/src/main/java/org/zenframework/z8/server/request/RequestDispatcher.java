@@ -120,7 +120,7 @@ public class RequestDispatcher implements Runnable {
 
 			request.setTarget(object);
 
-			if(object != null && object.response() != null) {
+			if(object != null && object.isResponsable()) {
 				object.processRequest(response);
 			} else if(object instanceof Query) {
 				Query query = (Query)object;

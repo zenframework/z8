@@ -44,6 +44,7 @@ public class OBJECT extends RequestTarget implements IObject, RmiSerializable {
 	private Map<String, String> attributes = new HashMap<String, String>();
 
 	public Members objects = new Members(this);
+	JsonArray response = null;
 
 	public OBJECT() {
 		this(null);
@@ -322,9 +323,8 @@ public class OBJECT extends RequestTarget implements IObject, RmiSerializable {
 
 	@Override
 	public void writeResponse(JsonWriter writer) throws Throwable {
-		org.zenframework.z8.server.json.parser.JsonArray response = response();
 		if(response != null)
-			writer.writeProperty(Json.data, response);
+			writer.writeProperty(Json.data, response.get());
 	}
 
 	@Override
@@ -335,12 +335,14 @@ public class OBJECT extends RequestTarget implements IObject, RmiSerializable {
 	public void deserialize(ObjectInputStream stream) throws IOException, ClassNotFoundException {
 	}
 
-	public org.zenframework.z8.server.json.parser.JsonArray response() {
+	public boolean isResponsable() {
+		if(response != null)
+			return true;
+
 		RLinkedHashMap<string, string> parameters = (RLinkedHashMap<string, string>)getParameters();
-
-		JsonArray.CLASS<? extends JsonArray> response = z8_response(parameters);
-
-		return response != null ? response.get().get() : null;
+		JsonArray.CLASS<? extends JsonArray> cls = z8_response(parameters);
+		response = cls != null ? cls.get() : null;
+		return response != null;
 	}
 
 	static public bool z8_isNull(IObject object) {
