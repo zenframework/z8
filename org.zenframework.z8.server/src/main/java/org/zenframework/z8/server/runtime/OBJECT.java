@@ -323,8 +323,10 @@ public class OBJECT extends RequestTarget implements IObject, RmiSerializable {
 
 	@Override
 	public void writeResponse(JsonWriter writer) throws Throwable {
-		if(response != null)
+		if(response != null) {
+			writer.writeProperty(Json.ui, ui());
 			writer.writeProperty(Json.data, response.get());
+		}
 	}
 
 	@Override

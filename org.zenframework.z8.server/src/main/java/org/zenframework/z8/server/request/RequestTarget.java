@@ -35,7 +35,7 @@ public abstract class RequestTarget extends NamedObject implements IRequestTarge
 	public void processRequest(IResponse response) throws Throwable {
 		JsonWriter writer = new JsonWriter();
 
-		writer.startResponse(id(), true);
+		writer.startResponse(request().id(), true);
 
 		response.setWriter(writer);
 
