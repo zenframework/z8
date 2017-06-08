@@ -1,21 +1,17 @@
 package org.zenframework.z8.server.base.table.system.view;
 
 import java.lang.reflect.Proxy;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 
 import org.zenframework.z8.server.base.form.action.Action;
-import org.zenframework.z8.server.base.model.actions.RequestAction;
 import org.zenframework.z8.server.base.query.Query;
 import org.zenframework.z8.server.base.table.value.BoolField;
 import org.zenframework.z8.server.base.table.value.IntegerField;
 import org.zenframework.z8.server.base.table.value.StringField;
 import org.zenframework.z8.server.engine.IServerInfo;
 import org.zenframework.z8.server.engine.Rmi;
-import org.zenframework.z8.server.json.Json;
-import org.zenframework.z8.server.json.JsonWriter;
 import org.zenframework.z8.server.json.parser.JsonArray;
+import org.zenframework.z8.server.json.parser.JsonObject;
 import org.zenframework.z8.server.resources.Resources;
 import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.types.bool;
@@ -122,60 +118,29 @@ abstract public class HubServerView extends Query {
 	}
 
 	@Override
-	public void writeResponse(JsonWriter writer) throws Throwable {
-		String action = getParameter(Json.action);
+	public JsonArray getData() {
+		JsonArray data = new JsonArray();
 
-		if(action == null || action.equals(RequestAction.Read)) {
-			writer.writeProperty(Json.isQuery, true);
-			writer.writeProperty(Json.request, classId());
-			writer.writeProperty(Json.primaryKey, recordId.get().id());
+		try {
+			for(IServerInfo server : getServers()) {
+				JsonObject object = new JsonObject();
+				object.put(recordId.id(), getUrl(server));
+				object.put(serverId.id(), server.getId());
+				object.put(host.id(), getHost(server));
+				object.put(port.id(), getPort(server));
+				object.put(domains.id(), getDomains(server));
+				object.put(active.id(), server.isAlive());
+				data.add(object);
+			}
 
-			setSelectFields(fields());
-
-			writeMeta(writer, this);
-			writeData(writer, action != null);
-		} else if(action.equals(RequestAction.Action)) {
-			Collection<String> urls = new ArrayList<String>();
-			JsonArray records = new JsonArray(getParameter(Json.data));
-			for(int i = 0; i < records.length(); i++)
-				urls.add(records.getString(i));
-			unregister(urls);
+			return data;
+		} catch(Throwable e) {
+			throw new RuntimeException(e);
 		}
 	}
 
 	abstract protected IServerInfo[] getServers() throws Throwable;
 	abstract protected void unregister(IServerInfo server) throws Throwable;
-
-	private void writeData(JsonWriter writer, boolean checkAlive) throws Throwable {
-		writer.startArray(Json.data);
-
-		for(IServerInfo server : getServers()) {
-			writer.startObject();
-			writer.writeProperty(recordId.id(), getUrl(server));
-			writer.writeProperty(serverId.id(), server.getId());
-			writer.writeProperty(host.id(), getHost(server));
-			writer.writeProperty(port.id(), getPort(server));
-			writer.writeProperty(domains.id(), getDomains(server));
-			writer.writeProperty(active.id(), server.isAlive());
-			writer.finishObject();
-		}
-
-		writer.finishArray();
-	}
-
-	private void unregister(Collection<String> urls) throws Throwable {
-		IServerInfo[] servers = getServers();
-
-		for(String url : urls) {
-			for(int i = 0; i < servers.length; i++) {
-				IServerInfo server = servers[i];
-				if(getUrl(server).equals(url)) {
-					unregister(server);
-					return;
-				}
-			}
-		}
-	}
 
 	private String getDomains(IServerInfo server) {
 		String[] domains = server.getDomains();
