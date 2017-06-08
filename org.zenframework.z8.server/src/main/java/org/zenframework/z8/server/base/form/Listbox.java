@@ -87,8 +87,12 @@ public class Listbox extends Control {
 		writer.writeProperty(Json.totals, query.totals);
 		writer.writeProperty(Json.text, query.displayName());
 
-		writer.writeControls(Json.fields, query.fields(), query, context);
-		writer.writeControls(Json.columns, columns.isEmpty() ? query.columns() : CLASS.asList(columns), query, context);
+		Collection<Field> fields = query.fields();
+		Collection<Field> columns = CLASS.asList(this.columns);
+		fields.addAll(columns);
+
+		writer.writeControls(Json.fields, fields, query, context);
+		writer.writeControls(Json.columns, columns.isEmpty() ? query.columns() : columns, query, context);
 		writer.writeSort(sortFields.isEmpty() ? query.sortFields() : CLASS.asList(sortFields));
 		writer.writeActions(CLASS.asList(actions)); 
 

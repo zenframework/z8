@@ -81,5 +81,4 @@ public interface IObject extends INamedObject {
 	public void constructor();
 
 	public String toDebugString();
-
 }

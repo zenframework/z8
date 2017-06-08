@@ -938,7 +938,11 @@ public class ReadAction extends RequestAction {
 		}
 
 		try {
-			writeData(writer);
+			JsonArray data = query.getData();
+			if(data != null)
+				writer.writeProperty(Json.data, data);
+			else
+				writeData(writer);
 		} finally {
 			afterRead();
 		}

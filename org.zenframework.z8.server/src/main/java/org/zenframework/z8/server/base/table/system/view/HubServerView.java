@@ -122,11 +122,6 @@ abstract public class HubServerView extends Query {
 	}
 
 	@Override
-	public boolean isResponsable() {
-		return true;
-	}
-
-	@Override
 	public void writeResponse(JsonWriter writer) throws Throwable {
 		String action = getParameter(Json.action);
 

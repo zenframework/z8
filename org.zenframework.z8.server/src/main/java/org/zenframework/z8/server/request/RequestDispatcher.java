@@ -120,9 +120,7 @@ public class RequestDispatcher implements Runnable {
 
 			request.setTarget(object);
 
-			if(object != null && object.isResponsable()) {
-				object.processRequest(response);
-			} else if(object instanceof Query) {
+			if(object instanceof Query) {
 				Query query = (Query)object;
 				RequestAction action = ActionFactory.create(query);
 				action.processRequest(response);
@@ -130,7 +128,8 @@ public class RequestDispatcher implements Runnable {
 				Procedure procedure = (Procedure)object;
 				Job job = new Job(procedure);
 				job.processRequest(response);
-			}
+			} else
+				object.processRequest(response);
 		}
 	}
 }
