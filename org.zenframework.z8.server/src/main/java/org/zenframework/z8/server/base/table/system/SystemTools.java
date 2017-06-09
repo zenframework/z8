@@ -17,7 +17,6 @@ import org.zenframework.z8.server.engine.ApplicationServer;
 import org.zenframework.z8.server.resources.Resources;
 import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.runtime.OBJECT;
-import org.zenframework.z8.server.security.BuiltinUsers;
 import org.zenframework.z8.server.types.guid;
 
 
@@ -85,9 +84,7 @@ public class SystemTools extends Desktop {
 			objects.add(tables);
 			objects.add(roles);
 
-			guid user = ApplicationServer.getUser().id();
-
-			if(user.equals(BuiltinUsers.Administrator.guid()) || user.equals(BuiltinUsers.System.guid())) {
+			if(ApplicationServer.getUser().isAdministrator()) {
 				objects.add(authorityCenter);
 				objects.add(interconnectionCenter);
 			}
