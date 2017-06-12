@@ -4,6 +4,7 @@ import java.sql.SQLException;
 
 import org.zenframework.z8.server.base.Procedure;
 import org.zenframework.z8.server.base.form.action.Parameter;
+import org.zenframework.z8.server.logs.Trace;
 import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.runtime.RCollection;
 import org.zenframework.z8.server.types.bool;
@@ -33,9 +34,11 @@ public class MaintenanceJob extends Procedure {
 			return;
 
 		try {
+			Trace.logEvent("VACUUM ANALYZE started.");
 			Statement.executeUpdate(connection, "vacuum analyze");
+			Trace.logEvent("VACUUM ANALYZE finished successfully.");
 		} catch(SQLException e) {
-			throw new RuntimeException(e);
+			Trace.logError("VACUUM ANALYZE finished with error.", e);
 		}
 	}
 }

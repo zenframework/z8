@@ -9,7 +9,6 @@ import org.zenframework.z8.server.base.query.Query;
 import org.zenframework.z8.server.base.query.QueryUtils;
 import org.zenframework.z8.server.base.table.value.Field;
 import org.zenframework.z8.server.base.table.value.ILink;
-import org.zenframework.z8.server.db.sql.functions.InVector;
 import org.zenframework.z8.server.json.Json;
 import org.zenframework.z8.server.json.JsonWriter;
 import org.zenframework.z8.server.json.parser.JsonArray;
@@ -17,7 +16,6 @@ import org.zenframework.z8.server.request.RequestTarget;
 import org.zenframework.z8.server.types.bool;
 import org.zenframework.z8.server.types.guid;
 import org.zenframework.z8.server.types.string;
-import org.zenframework.z8.server.types.sql.sql_bool;
 
 public abstract class RequestAction extends RequestTarget {
 	static public final String New = "new";
@@ -212,9 +210,7 @@ public abstract class RequestAction extends RequestTarget {
 
 		QueryUtils.setFieldValues(query, getRequestParameter(Json.values));
 
-		sql_bool where = new sql_bool(new InVector(primaryKey, recordIds));
-
-		fields = query.read(fields, where);
+		fields = query.readRecords(recordIds, fields);
 
 		writer.startArray(Json.data);
 

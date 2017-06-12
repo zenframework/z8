@@ -39,6 +39,7 @@ import org.zenframework.z8.server.db.sql.expressions.Or;
 import org.zenframework.z8.server.db.sql.expressions.Rel;
 import org.zenframework.z8.server.db.sql.expressions.True;
 import org.zenframework.z8.server.db.sql.expressions.Unary;
+import org.zenframework.z8.server.db.sql.functions.InVector;
 import org.zenframework.z8.server.db.sql.functions.IsNull;
 import org.zenframework.z8.server.db.sql.functions.string.Like;
 import org.zenframework.z8.server.db.sql.functions.string.Lower;
@@ -93,7 +94,7 @@ public class ReadAction extends RequestAction {
 	}
 
 	public ReadAction(Query query, guid recordId) {
-		this(new ActionConfig(query, recordId));
+		this(new ActionConfig(query, null, recordId != null ? Arrays.asList(recordId) : null));
 	}
 
 	public ReadAction(Query query, Collection<Field> fields) {
@@ -101,7 +102,11 @@ public class ReadAction extends RequestAction {
 	}
 
 	public ReadAction(Query query, Collection<Field> fields, guid recordId) {
-		this(new ActionConfig(query, fields, recordId));
+		this(new ActionConfig(query, fields, recordId != null ? Arrays.asList(recordId) : null));
+	}
+
+	public ReadAction(Query query, Collection<Field> fields, Collection<guid> recordIds) {
+		this(new ActionConfig(query, fields, recordIds));
 	}
 
 	public ReadAction(ActionConfig config) {
@@ -176,13 +181,13 @@ public class ReadAction extends RequestAction {
 		Field primaryKey = query.primaryKey();
 		addNullRecordFilter(primaryKey);
 
-		guid recordId = config().recordId;
-		addFilter(primaryKey, recordId, Operation.Eq);
+		Collection<guid> recordIds = config().recordIds;
+		addFilter(primaryKey, recordIds, Operation.Eq);
 
 		for(Field field : notNullFields)
 			addNullRecordFilter(field);
 
-		if(recordId == null) {
+		if(recordIds == null) {
 			addFilter(query.where());
 
 			collectFilters();
@@ -503,6 +508,12 @@ public class ReadAction extends RequestAction {
 		return field != null && value != null ? new Rel(field, operation, value.sql_guid()) : null;
 	}
 
+	private SqlToken getFilter(Field field, Collection<guid> value, Operation operation) {
+		if(field == null || value == null)
+			return null;
+		return value.size() == 1 ? getFilter(field, value.iterator().next(), operation) : new InVector(field, value);
+	}
+
 	private void addNullRecordFilter(Field primaryKey) {
 		SqlToken left = getFilter(primaryKey, guid.Null, Operation.NotEq);
 
@@ -514,6 +525,10 @@ public class ReadAction extends RequestAction {
 	}
 
 	private void addFilter(Field field, guid value, Operation operation) {
+		addFilter(getFilter(field, value, operation));
+	}
+
+	private void addFilter(Field field, Collection<guid> value, Operation operation) {
 		addFilter(getFilter(field, value, operation));
 	}
 

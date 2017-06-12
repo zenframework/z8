@@ -338,16 +338,16 @@ public class Query extends OBJECT {
 		return insert(newRecordId, parentId);
 	}
 
-	public void read(Collection<Field> fields) {
-		read(fields, -1);
+	public Collection<Field> read(Collection<Field> fields) {
+		return read(fields, -1);
 	}
 
-	public void read(Collection<Field> fields, int limit) {
-		read(fields, 0, limit);
+	public Collection<Field>  read(Collection<Field> fields, int limit) {
+		return read(fields, 0, limit);
 	}
 
-	public void read(Collection<Field> fields, int start, int limit) {
-		read(fields, null, start, limit);
+	public Collection<Field>  read(Collection<Field> fields, int start, int limit) {
+		return read(fields, null, start, limit);
 	}
 
 	public boolean readFirst(Collection<Field> fields) {
@@ -447,7 +447,6 @@ public class Query extends OBJECT {
 
 	public boolean readRecord(guid id, Collection<Field> fields) {
 		ReadAction action = new ReadAction(this, fields, id);
-		action.addFilter(where);
 
 		if(cursor != null)
 			cursor.close();
@@ -461,6 +460,16 @@ public class Query extends OBJECT {
 		}
 
 		return true;
+	}
+
+	public Collection<Field> readRecords(Collection<guid> ids, Collection<Field> fields) {
+		ReadAction action = new ReadAction(this, fields, ids);
+
+		if(cursor != null)
+			cursor.close();
+
+		cursor = action.getCursor();
+		return cursor.getFields();
 	}
 
 	protected boolean readFirst(Collection<Field> fields, Collection<Field> sortFields, Collection<Field> groupFields, SqlToken where, SqlToken having) {

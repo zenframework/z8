@@ -1,5 +1,6 @@
 package org.zenframework.z8.server.base.model.actions;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -22,7 +23,7 @@ public class ActionConfig {
 	public Collection<Field> sortFields;
 	public Collection<Field> groupFields;
 	public Collection<Field> groupBy;
-	public guid recordId = null;
+	public Collection<guid> recordIds = null;
 
 	private Map<string, string> requestParameters = new HashMap<string, string>();
 
@@ -33,25 +34,22 @@ public class ActionConfig {
 
 	public ActionConfig(Map<string, string> requestParameters) {
 		this.requestParameters = requestParameters;
-		this.recordId = getRecordId();
+		guid recordId = getRecordId();
+		this.recordIds = recordId != null ? Arrays.asList(recordId) : null;
 	}
 
 	public ActionConfig(Query query) {
 		this.query = contextQuery = query;
 	}
 
-	public ActionConfig(Query query, guid recordId) {
-		this(query);
-		this.recordId = recordId;
-	}
-
 	public ActionConfig(Query query, Collection<Field> fields) {
 		this(query, fields, null);
 	}
 
-	public ActionConfig(Query query, Collection<Field> fields, guid recordId) {
-		this(query, recordId);
+	public ActionConfig(Query query, Collection<Field> fields, Collection<guid> recordIds) {
+		this(query);
 		this.fields = fields;
+		this.recordIds = recordIds;
 	}
 
 	public Map<string, string> requestParameters() {
