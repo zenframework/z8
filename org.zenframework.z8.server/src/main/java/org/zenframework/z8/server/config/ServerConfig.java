@@ -40,7 +40,7 @@ public class ServerConfig extends Properties {
 	static private String WebClientDownloadMax = "web.client.download.max";
 
 	static private String SchedulerEnabled = "scheduler.enabled";
-	
+	static private String MaintenenceJobRepeat = "maintenance.job.repeat";
 	static private String TransportJobRepeat = "transport.job.repeat";
 	static private String TransportJobTreads = "transport.job.treads";
 
@@ -76,6 +76,8 @@ public class ServerConfig extends Properties {
 	static private int webClientDownloadMax;
 
 	static private boolean schedulerEnabled;
+
+	static private int maintenanceJobRepeat;
 
 	static private int transportJobRepeat;
 	static private int transportJobTreads;
@@ -131,7 +133,7 @@ public class ServerConfig extends Properties {
 		traceSqlConnections = getProperty(TraceSqlConnections, false);
 
 		schedulerEnabled = getProperty(SchedulerEnabled, true);
-
+		maintenanceJobRepeat = getProperty(MaintenenceJobRepeat, 60 * 60);
 		transportJobRepeat = getProperty(TransportJobRepeat, 5 * 60);
 		transportJobTreads = getProperty(TransportJobTreads, 10);
 
@@ -303,6 +305,14 @@ public class ServerConfig extends Properties {
 		return schedulerEnabled;
 	}
 
+	static public boolean maintenanceJobEnabled() {
+		return maintenanceJobRepeat() != 0;
+	}
+
+	static public int maintenanceJobRepeat() {
+		return maintenanceJobRepeat;
+	}
+
 	static public boolean transportJobEnabled() {
 		return transportJobRepeat() != 0;
 	}
@@ -314,6 +324,7 @@ public class ServerConfig extends Properties {
 	static public int transportJobRepeat() {
 		return transportJobRepeat;
 	}
+
 	static public String[] textExtensions() {
 		return textExtensions;
 	}

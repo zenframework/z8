@@ -13,6 +13,7 @@ import org.zenframework.z8.server.base.table.value.GuidField;
 import org.zenframework.z8.server.base.table.value.IntegerField;
 import org.zenframework.z8.server.base.table.value.StringField;
 import org.zenframework.z8.server.config.ServerConfig;
+import org.zenframework.z8.server.db.MaintenanceJob;
 import org.zenframework.z8.server.ie.rmi.TransportJob;
 import org.zenframework.z8.server.types.guid;
 
@@ -27,6 +28,8 @@ public class Scheduler implements Runnable {
 	static private Collection<Thread> threads = new ArrayList<Thread>();
 
 	static {
+		if(ServerConfig.maintenanceJobEnabled())
+			addSystemJob(MaintenanceJob.class.getCanonicalName(), ServerConfig.maintenanceJobRepeat());
 		if(ServerConfig.transportJobEnabled())
 			addSystemJob(TransportJob.class.getCanonicalName(), ServerConfig.transportJobRepeat());
 	}
