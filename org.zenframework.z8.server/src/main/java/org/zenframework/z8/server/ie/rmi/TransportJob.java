@@ -50,7 +50,7 @@ public class TransportJob extends Procedure {
 	private void sendMessages() {
 		int maxTreadsCount = ServerConfig.transportJobThreads();
 
-		if(Transport.getCount() == maxTreadsCount)
+		if(Transport.getCount() >= maxTreadsCount)
 			return;
 
 		String[] addresses = getAddresses().toArray(new String[0]);
@@ -68,10 +68,7 @@ public class TransportJob extends Procedure {
 			if(thread == null)
 				new Transport(address).start();
 
-			if(Transport.getCount() == maxTreadsCount)
-				return;
-
 			lastPosition = ArrayUtils.range(lastPosition + 1, addresses.length);
-		} while(lastPosition != startPosition);
+		} while(lastPosition != startPosition && Transport.getCount() <= maxTreadsCount);
 	}
 }

@@ -32,8 +32,6 @@ public class TransportQueueView extends TransportQueue {
 
 		readOnly = bool.True;
 
-		sortFields.add(ordinal);
-
 		colCount = new integer(12);
 
 		ordinal.get().colSpan = new integer(2);
@@ -49,5 +47,12 @@ public class TransportQueueView extends TransportQueue {
 
 		description.get().colSpan = new integer(12);
 		registerControl(description);
+
+		sortFields.add(address);
+		sortFields.add(ordinal);
+
+		names.add(address);
+		names.add(sender);
+		names.add(ordinal);
 	}
 }

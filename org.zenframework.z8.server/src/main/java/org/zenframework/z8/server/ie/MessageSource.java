@@ -8,7 +8,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import org.zenframework.z8.server.base.table.Table;
 import org.zenframework.z8.server.base.table.value.AttachmentField;
@@ -241,6 +243,7 @@ public class MessageSource implements RmiSerializable, Serializable {
 
 	private Map<String, Table> tableCache = new HashMap<String, Table>();
 	private Map<String, Field> fieldCache = new HashMap<String, Field>();
+	private Set<guid> insertedRecords = new HashSet<guid>();
 
 	private Table getTable(String name) {
 		Table table = tableCache.get(name);
@@ -293,18 +296,27 @@ public class MessageSource implements RmiSerializable, Serializable {
 			}
 		}
 
-		if(!exists)
+		if(!exists) {
 			table.create(recordId);
-		else
+			insertedRecords.add(recordId);
+		} else
 			table.update(recordId);
 	}
 
 	private void update(RecordInfo record) {
 		String tableName = record.table();
 		Table table = getTable(tableName);
+		guid recordId = record.id();
 
 		for(FieldInfo fieldInfo : record.fields()) {
 			String fieldName = fieldInfo.name();
+
+			if(!insertedRecords.contains(recordId)) {
+				ImportPolicy fieldPolicy = exportRules.getPolicy(tableName, fieldName, recordId);
+				if(fieldPolicy != ImportPolicy.Override)
+					continue;
+			}
+
 			Field field = getField(tableName, fieldName);
 
 			if(field == null)

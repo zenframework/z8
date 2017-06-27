@@ -73,7 +73,7 @@ public class Request extends IRequest {
 
 		for(Map.Entry<string, string> entry : parameters.entrySet()) {
 			string key = entry.getKey();
-			if(!Json.data.equals(key) && !Json.request.equals(key)) {
+			if(/*!Json.data.equals(key) &&*/ !Json.request.equals(key)) {
 				String value = entry.getValue().get();
 				result += (result.isEmpty() ? "" : ", ") + key + "=" + (value != null ? value : "");
 			}
