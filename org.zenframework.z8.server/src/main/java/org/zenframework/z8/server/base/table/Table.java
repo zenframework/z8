@@ -3,7 +3,6 @@ package org.zenframework.z8.server.base.table;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.zenframework.z8.server.base.table.value.Aggregation;
 import org.zenframework.z8.server.base.table.value.BoolField;
 import org.zenframework.z8.server.base.table.value.DatetimeField;
 import org.zenframework.z8.server.base.table.value.Field;
@@ -13,7 +12,6 @@ import org.zenframework.z8.server.base.table.value.IntegerField;
 import org.zenframework.z8.server.base.table.value.StringField;
 import org.zenframework.z8.server.base.table.value.TextField;
 import org.zenframework.z8.server.engine.ApplicationServer;
-import org.zenframework.z8.server.resources.Resources;
 import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.types.date;
 import org.zenframework.z8.server.types.guid;
@@ -28,22 +26,11 @@ public class Table extends TableBase {
 		public final static String ModifiedAt = "ModifiedAt";
 		public final static String ModifiedBy = "ModifiedBy";
 
-		public final static String Id = "Id";
 		public final static String Name = "Name";
 		public final static String ShortName = "Short name";
 		public final static String Description = "Description";
 		public final static String Lock = "Lock";
 		public final static String Archive = "Archive";
-	}
-
-	static public class strings {
-		public final static String Id = "Table.id";
-		public final static String Description = "Table.description";
-	}
-
-	static public class displayNames {
-		public final static String Id = Resources.get(strings.Id);
-		public final static String Description = Resources.get(strings.Description);
 	}
 
 	public static class CLASS<T extends Table> extends TableBase.CLASS<T> {
@@ -67,7 +54,6 @@ public class Table extends TableBase {
 	public GuidField.CLASS<? extends GuidField> createdBy = new GuidField.CLASS<GuidField>(this);
 	public GuidField.CLASS<? extends GuidField> modifiedBy = new GuidField.CLASS<GuidField>(this);
 
-	public IntegerField.CLASS<? extends IntegerField> id = new IntegerField.CLASS<IntegerField>(this);
 	public StringField.CLASS<? extends StringField> name = new StringField.CLASS<StringField>(this);
 	public StringField.CLASS<? extends StringField> shortName = new StringField.CLASS<StringField>(this);
 	public TextField.CLASS<? extends StringField> description = new TextField.CLASS<TextField>(this);
@@ -94,7 +80,6 @@ public class Table extends TableBase {
 		objects.add(lock);
 		objects.add(archive);
 
-		objects.add(id);
 		objects.add(name);
 		objects.add(shortName);
 		objects.add(description);
@@ -103,11 +88,6 @@ public class Table extends TableBase {
 	@Override
 	public void constructor2() {
 		super.constructor2();
-
-		id.setName(fieldNames.Id);
-		id.setIndex("id");
-		id.setDisplayName(displayNames.Id);
-		id.get().aggregation = Aggregation.None;
 
 		name.setName(fieldNames.Name);
 		name.setIndex("name");
@@ -119,7 +99,6 @@ public class Table extends TableBase {
 
 		description.setName(fieldNames.Description);
 		description.setIndex("description");
-		description.setDisplayName(displayNames.Description);
 
 		lock.setName(fieldNames.Lock);
 		lock.setIndex("lock");

@@ -29,7 +29,7 @@ public class Domains extends Table {
 	static public String TableName = "SystemDomains";
 
 	static public class fieldNames {
-		public final static String Address = "Address";
+		public final static String Address = "Id";
 		public final static String User = "User";
 		public final static String Owner = "Owner";
 	}

@@ -9,7 +9,7 @@ import org.zenframework.z8.base.table.value.StringField;
 public class Domains extends Table {
 	static public string DefaultDomain;
 
-	[name "Address"]
+	[name "Id"]
 	[displayName "Адрес"]
 	public StringField address;
 	address.length = 256;

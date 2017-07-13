@@ -11,10 +11,6 @@ public class Table extends Query {
 	[name "RecordId"]
 	public GuidField recordId;
 
-	[name "Id"]
-	[displayName "Код"] 
-	public IntegerField id;
-
 	[name "Name"]
 	public StringField name;
 	name.length = 50;
@@ -24,7 +20,6 @@ public class Table extends Query {
 	shortName.length = 15;
 
 	[name "Description"]
-	[displayName "Описание"]
 	public TextField description;
 
 	[name "CreatedAt"]
