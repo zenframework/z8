@@ -13,6 +13,7 @@ import org.zenframework.z8.server.base.table.value.GuidField;
 import org.zenframework.z8.server.base.table.value.IntegerField;
 import org.zenframework.z8.server.base.table.value.StringField;
 import org.zenframework.z8.server.config.ServerConfig;
+import org.zenframework.z8.server.db.ConnectionManager;
 import org.zenframework.z8.server.db.MaintenanceJob;
 import org.zenframework.z8.server.ie.rmi.TransportJob;
 import org.zenframework.z8.server.types.guid;
@@ -150,6 +151,8 @@ public class Scheduler implements Runnable {
 		jobs = result;
 
 		resetPending = false;
+
+		ConnectionManager.release();
 	}
 
 	private boolean hasRunningJobs() {
