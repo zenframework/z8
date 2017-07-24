@@ -358,7 +358,9 @@ public class User implements IUser {
 		loadTablesAccess(privileges, defaultAccess);
 		loadFieldsAccess(privileges, defaultAccess);
 
+/*
 		Trace.logEvent(privileges);
+*/
 	}
 
 	private void loadTablesAccess(IPrivileges privileges, IAccess defaultAccess) {
