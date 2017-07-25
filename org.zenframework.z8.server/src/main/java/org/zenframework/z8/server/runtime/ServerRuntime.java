@@ -3,14 +3,15 @@ package org.zenframework.z8.server.runtime;
 import org.zenframework.z8.server.base.table.site.Accounts;
 import org.zenframework.z8.server.base.table.site.Comments;
 import org.zenframework.z8.server.base.table.site.Topics;
-import org.zenframework.z8.server.base.table.system.Requests;
 import org.zenframework.z8.server.base.table.system.Domains;
 import org.zenframework.z8.server.base.table.system.Entries;
 import org.zenframework.z8.server.base.table.system.Fields;
 import org.zenframework.z8.server.base.table.system.Files;
 import org.zenframework.z8.server.base.table.system.Jobs;
 import org.zenframework.z8.server.base.table.system.MessageQueue;
+import org.zenframework.z8.server.base.table.system.Requests;
 import org.zenframework.z8.server.base.table.system.RoleFieldAccess;
+import org.zenframework.z8.server.base.table.system.RoleRequestAccess;
 import org.zenframework.z8.server.base.table.system.RoleTableAccess;
 import org.zenframework.z8.server.base.table.system.Roles;
 import org.zenframework.z8.server.base.table.system.ScheduledJobLogs;
@@ -35,17 +36,17 @@ public class ServerRuntime extends AbstractRuntime {
 
 		addTable(new Tables.CLASS<Tables>(null));
 		addTable(new Fields.CLASS<Fields>(null));
+		addTable(new Requests.CLASS<Requests>(null));
 
 		addTable(new RoleTableAccess.CLASS<RoleTableAccess>(null));
 		addTable(new RoleFieldAccess.CLASS<RoleFieldAccess>(null));
+		addTable(new RoleRequestAccess.CLASS<RoleRequestAccess>(null));
 
 		addTable(new UserRoles.CLASS<UserRoles>(null));
 		addTable(new UserTableAccess.CLASS<UserTableAccess>(null));
 		addTable(new UserFieldAccess.CLASS<UserFieldAccess>(null));
 
 		addTable(new Domains.CLASS<Domains>(null));
-
-		addTable(new Requests.CLASS<Requests>(null));
 
 		addTable(new Entries.CLASS<Entries>(null));
 		addTable(new UserEntries.CLASS<UserEntries>(null));

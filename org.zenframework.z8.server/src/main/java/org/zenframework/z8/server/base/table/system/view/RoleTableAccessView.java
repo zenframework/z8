@@ -3,6 +3,7 @@ package org.zenframework.z8.server.base.table.system.view;
 import org.zenframework.z8.server.base.form.Listbox;
 import org.zenframework.z8.server.base.table.system.Fields;
 import org.zenframework.z8.server.base.table.system.RoleFieldAccess;
+import org.zenframework.z8.server.base.table.system.RoleRequestAccess;
 import org.zenframework.z8.server.base.table.system.RoleTableAccess;
 import org.zenframework.z8.server.base.table.system.Roles;
 import org.zenframework.z8.server.runtime.IObject;
@@ -24,9 +25,11 @@ public class RoleTableAccessView extends Roles {
 
 	public Listbox.CLASS<Listbox> tablesListbox = new Listbox.CLASS<Listbox>(this);
 	public Listbox.CLASS<Listbox> fieldsListbox = new Listbox.CLASS<Listbox>(this);
+	public Listbox.CLASS<Listbox> requestsListbox = new Listbox.CLASS<Listbox>(this);
 
 	private RoleTableAccess.CLASS<RoleTableAccess> rta = new RoleTableAccess.CLASS<RoleTableAccess>(this);
 	private RoleFieldAccess.CLASS<RoleFieldAccess> rfa = new RoleFieldAccess.CLASS<RoleFieldAccess>(this);
+	private RoleRequestAccess.CLASS<RoleRequestAccess> rra = new RoleRequestAccess.CLASS<RoleRequestAccess>(this);
 
 	public RoleTableAccessView(IObject container) {
 		super(container);
@@ -38,6 +41,7 @@ public class RoleTableAccessView extends Roles {
 
 		objects.add(rta);
 		objects.add(rfa);
+		objects.add(rra);
 	}
 
 	@Override
@@ -46,15 +50,17 @@ public class RoleTableAccessView extends Roles {
 
 		rta.setIndex("rta");
 		rfa.setIndex("rfa");
+		rra.setIndex("rra");
 
 		colCount = new integer(2);
 
 		name.get().colSpan = new integer(2);
 
+		/* Tables */
+		RoleTableAccess rta = this.rta.get();
+
 		tablesListbox.setIndex("tablesListbox");
 		tablesListbox.setDisplayName(RoleTableAccess.displayNames.Title);
-
-		RoleTableAccess rta = this.rta.get();
 
 		tablesListbox.get().query = this.rta;
 		tablesListbox.get().link = rta.role;
@@ -83,7 +89,9 @@ public class RoleTableAccessView extends Roles {
 		rta.columns.add(rta.create);
 		rta.columns.add(rta.copy);
 		rta.columns.add(rta.destroy);
+		/* Tables */
 
+		/* Fields */
 		RoleFieldAccess rfa = this.rfa.get();
 
 		fieldsListbox.setIndex("fieldsListbox");
@@ -112,11 +120,33 @@ public class RoleTableAccessView extends Roles {
 		tablesListbox.get().dependencies.add(fieldsListbox);
 		fieldsListbox.get().dependency = rfa.fields.get().table;
 		fieldsListbox.get().dependsOn = rta.table;
+		/* Fields */
+
+		/* Requests */
+		RoleRequestAccess rra = this.rra.get();
+
+		requestsListbox.setIndex("requestsListbox");
+		requestsListbox.setDisplayName(RoleRequestAccess.displayNames.Title);
+
+		requestsListbox.get().query = this.rra;
+		requestsListbox.get().link = rra.role;
+		requestsListbox.get().flex = new integer(1);
+		requestsListbox.get().colSpan = new integer(2);
+		requestsListbox.get().sortFields.add(rra.requests.get().name);
+
+		rra.execute.get().editable = bool.True;
+		rra.execute.setIcon("fa-eye");
+
+		rra.columns.add(rra.requests.get().name);
+		rra.columns.add(rra.requests.get().classId);
+		rra.columns.add(rra.execute);
+		/* Requests */
 
 		registerControl(name);
 
 		registerControl(tablesListbox);
 		registerControl(fieldsListbox);
+		registerControl(requestsListbox);
 
 		sortFields.add(name);
 	}

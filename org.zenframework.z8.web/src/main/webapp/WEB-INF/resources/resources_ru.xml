@@ -103,6 +103,10 @@
 	<entry key="UserFieldAccess.read">Чтение</entry>
 	<entry key="UserFieldAccess.write">Изменение</entry>
 
+	<!-- RoleRequestAccess -->
+	<entry key="RoleRequestAccess.title">Запросы</entry>
+	<entry key="RoleRequestAccess.execute">Исполнение</entry>
+
 	<!-- Privileges -->
 	<entry key="Privileges.noReadAccess">У вас отсутстуют права на просмотр этих данных</entry>
 	<entry key="Privileges.noWriteAccess">У вас отсутстуют права на изменение этих данных</entry>

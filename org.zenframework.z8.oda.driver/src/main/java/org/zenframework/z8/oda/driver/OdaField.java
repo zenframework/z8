@@ -54,6 +54,11 @@ public class OdaField implements IField {
 	}
 
 	@Override
+	public guid classIdKey() {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
 	public int controlSum() {
 		throw new UnsupportedOperationException();
 	}

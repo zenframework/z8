@@ -78,12 +78,6 @@ public class DBGenerator {
 		}
 
 		try {
-			new RequestGenerator(logger).run();
-		} catch(Throwable e) {
-			logger.error(e, ErrorUtils.getMessage(e));
-		}
-
-		try {
 			new EntriesGenerator(logger).run();
 		} catch(Throwable e) {
 			logger.error(e, ErrorUtils.getMessage(e));

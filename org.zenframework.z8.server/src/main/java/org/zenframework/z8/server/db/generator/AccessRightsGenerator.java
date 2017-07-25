@@ -8,7 +8,9 @@ import java.util.Map;
 import org.zenframework.z8.server.base.query.RecordLock;
 import org.zenframework.z8.server.base.table.Table;
 import org.zenframework.z8.server.base.table.system.Fields;
+import org.zenframework.z8.server.base.table.system.Requests;
 import org.zenframework.z8.server.base.table.system.RoleFieldAccess;
+import org.zenframework.z8.server.base.table.system.RoleRequestAccess;
 import org.zenframework.z8.server.base.table.system.RoleTableAccess;
 import org.zenframework.z8.server.base.table.system.Roles;
 import org.zenframework.z8.server.base.table.system.Tables;
@@ -21,6 +23,7 @@ import org.zenframework.z8.server.db.sql.expressions.Equ;
 import org.zenframework.z8.server.db.sql.expressions.UnaryNot;
 import org.zenframework.z8.server.db.sql.functions.InVector;
 import org.zenframework.z8.server.engine.Runtime;
+import org.zenframework.z8.server.runtime.OBJECT;
 import org.zenframework.z8.server.security.IAccess;
 import org.zenframework.z8.server.security.IRole;
 import org.zenframework.z8.server.types.bool;
@@ -31,10 +34,14 @@ import org.zenframework.z8.server.types.string;
 public class AccessRightsGenerator {
 	private Tables tables = new Tables.CLASS<Tables>().get();
 	private Fields fields = new Fields.CLASS<Fields>().get();
+	private Requests requests = new Requests.CLASS<Requests>().get();
+
 	private RoleTableAccess rta = new RoleTableAccess.CLASS<RoleTableAccess>().get();
 	private RoleFieldAccess rfa = new RoleFieldAccess.CLASS<RoleFieldAccess>().get();
+	private RoleRequestAccess rra = new RoleRequestAccess.CLASS<RoleRequestAccess>().get();
 
 	private Collection<guid> tableKeys = new HashSet<guid>();
+	private Collection<guid> requestKeys = new HashSet<guid>();
 	private Collection<IRole> roles = null;
 
 	@SuppressWarnings("unused")
@@ -43,6 +50,7 @@ public class AccessRightsGenerator {
 	public AccessRightsGenerator(ILogger logger) {
 		this.logger = logger;
 		tableKeys.addAll(Runtime.instance().tableKeys());
+		requestKeys.addAll(Runtime.instance().requestKeys());
 	}
 
 	public void run() {
@@ -50,8 +58,13 @@ public class AccessRightsGenerator {
 
 		try {
 			connection.beginTransaction();
+
 			clearTables();
 			createTables();
+
+			clearRequests();
+			createRequests();
+
 			connection.commit();
 		} catch(Throwable e) {
 			connection.rollback();
@@ -102,6 +115,43 @@ public class AccessRightsGenerator {
 				rta.copy.get().set(new bool(access.copy()));
 				rta.destroy.get().set(new bool(access.destroy()));
 				rta.create();
+			}
+		}
+	}
+
+	private void clearRequests() {
+		requests.read(Arrays.asList(requests.primaryKey()), new UnaryNot(new InVector(requests.primaryKey(), requestKeys)));
+
+		while(requests.next()) {
+			guid requestId = requests.recordId();
+			rra.destroy(new Equ(rra.request.get(), requestId));
+			requests.destroy(requestId);
+		}
+	}
+
+	private void createRequests() {
+		requests.read(Arrays.asList(requests.primaryKey()), new InVector(requests.primaryKey(), requestKeys));
+		while(requests.next()) {
+			guid requestId = requests.recordId();
+			OBJECT request = Runtime.instance().getRequestByKey(requestId).newInstance();
+			setRequestProperties(request);
+			requests.update(requestId);
+			requestKeys.remove(requestId);
+		}
+
+		for(guid key : requestKeys) {
+			OBJECT request = Runtime.instance().getRequestByKey(key).newInstance();
+			setRequestProperties(request);
+			requests.create(key);
+
+			for(IRole role : getRoles()) {
+				IAccess access = role.access();
+
+				rra.role.get().set(role.id());
+				rra.request.get().set(key);
+
+				rra.execute.get().set(new bool(access.execute()));
+				rra.create();
 			}
 		}
 	}
@@ -167,6 +217,12 @@ public class AccessRightsGenerator {
 		fields.type.get().set(new string(getFieldType(field)));
 		fields.position.get().set(new integer(field.ordinal()));
 		fields.lock.get().set(RecordLock.Full);
+	}
+
+	private void setRequestProperties(OBJECT request) {
+		requests.classId.get().set(request.classId());
+		requests.name.get().set(new string(request.displayName()));
+		requests.lock.get().set(RecordLock.Full);
 	}
 
 	private Collection<IRole> getRoles() {
