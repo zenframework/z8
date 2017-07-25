@@ -16,6 +16,7 @@ import org.zenframework.z8.compiler.parser.expressions.Constant;
 import org.zenframework.z8.compiler.parser.expressions.Postfix;
 import org.zenframework.z8.compiler.parser.expressions.QualifiedName;
 import org.zenframework.z8.compiler.parser.grammar.lexer.ABC;
+import org.zenframework.z8.compiler.parser.grammar.lexer.token.BooleanToken;
 import org.zenframework.z8.compiler.parser.grammar.lexer.token.ConstantToken;
 import org.zenframework.z8.compiler.parser.grammar.lexer.token.IntegerToken;
 import org.zenframework.z8.compiler.parser.type.Enum;
@@ -178,7 +179,12 @@ public class Attribute extends LanguageElement implements IAttribute {
 		}
 
 		if(name.equals(IAttribute.Job) && valueToken != null && !(valueToken instanceof IntegerToken)) {
-			getCompilationUnit().error(valueToken.getPosition(), "The attribute " + name + " must be integer");
+			getCompilationUnit().error(valueToken.getPosition(), "The attribute " + name + " must be an integer");
+			return false;
+		}
+
+		if(name.equals(IAttribute.Request) && valueToken != null && !(valueToken instanceof BooleanToken)) {
+			getCompilationUnit().error(valueToken.getPosition(), "The attribute " + name + " must be a boolean");
 			return false;
 		}
 

@@ -169,6 +169,10 @@
 	<entry key="Jobs.title">Задания</entry>
 	<entry key="Jobs.classId">Системное имя</entry>
 
+	<!-- Requests -->
+	<entry key="Requests.title">Задания</entry>
+	<entry key="Requests.classId">Системное имя</entry>
+
 	<!-- ScheduledJobs -->
 	<entry key="ScheduledJobs.title">Задания</entry>
 	<entry key="ScheduledJobs.settings">Настройки</entry>

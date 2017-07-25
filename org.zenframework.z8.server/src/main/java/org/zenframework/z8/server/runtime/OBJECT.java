@@ -35,6 +35,7 @@ public class OBJECT extends RequestTarget implements IObject, RmiSerializable {
 	}
 
 	private guid key = null;
+	private guid classIdKey = null;
 	private int ordinal = 0;
 
 	private IObject container = null;
@@ -91,6 +92,13 @@ public class OBJECT extends RequestTarget implements IObject, RmiSerializable {
 
 	public String keyString() {
 		return name();
+	}
+
+	@Override
+	public guid classIdKey() {
+		if(classIdKey == null)
+			classIdKey = new guid(UUID.nameUUIDFromBytes(classId().getBytes()));
+		return classIdKey;
 	}
 
 	@Override

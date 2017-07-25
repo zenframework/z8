@@ -19,7 +19,7 @@ public class CodeScanner extends RuleBasedScanner {
 	private static String[] fgKeywords = { "auto", "break", "catch", "class", "container", "continue", "do", "else", "enum", "extends", "finally", "for", "if", "new", "private", "protected", "public", "records", "return", "static", "super", "this", "throw", "try", "while",
 			"virtual", "operator", "import", "final" };
 
-	private static String[] fgAttributes = { "name", "native", "displayName", "sql", "generatable", "entry" };
+	private static String[] fgAttributes = { "name", "native", "displayName", "generatable", "entry", "request" };
 
 	private static String[] fgTypes = { "void", "binary", "bool", "date", "datetime", "datespan", "decimal", "guid", "int", "string", "sql_binary", "sql_bool", "sql_date", "sql_datetime", "sql_datespan", "sql_decimal", "sql_guid", "sql_int", "sql_string" };
 

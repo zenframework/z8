@@ -81,6 +81,7 @@ public class StartupCodeGenerator {
 		String addTable = "";
 		String addJob = "";
 		String addEntry = "";
+		String addRequest = "";
 
 		for(CompilationUnit compilationUnit : compilationUnits) {
 			StartupCodeLines startupCodeLines = compilationUnit.getStartupCodeLines();
@@ -93,11 +94,14 @@ public class StartupCodeGenerator {
 
 			if(startupCodeLines.addEntry != null)
 				addEntry += "\t\t" + startupCodeLines.addEntry + '\n';
+
+			if(startupCodeLines.addRequest != null)
+				addRequest += "\t\t" + startupCodeLines.addRequest + '\n';
 		}
 
 		String className = getRuntimeClassSimpleName(project);
 
 		return "package org.zenframework.z8;\n\n" + "import org.zenframework.z8.server.runtime.*;\n" + "@SuppressWarnings(\"all\")\n" + "public final class " + className + " extends org.zenframework.z8.server.runtime.AbstractRuntime {\n\t" + "public " + className + "() {\n"
-				+ addTable + "\n\n" + addEntry + "\n\n" + addJob + "\n\t" + "}\n" + "}";
+				+ addTable + "\n" + addEntry + "\n" + addJob + "\n" + addRequest + "\n\t" + "}\n" + "}";
 	}
 }

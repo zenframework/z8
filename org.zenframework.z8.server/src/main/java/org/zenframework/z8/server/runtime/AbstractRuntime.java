@@ -14,6 +14,7 @@ public abstract class AbstractRuntime implements IRuntime {
 	private Map<guid, Table.CLASS<? extends Table>> tableKeys = new HashMap<guid, Table.CLASS<? extends Table>>();
 
 	private Map<guid, OBJECT.CLASS<? extends OBJECT>> entryKeys = new HashMap<guid, OBJECT.CLASS<? extends OBJECT>>();
+	private Map<guid, OBJECT.CLASS<? extends OBJECT>> requestKeys = new HashMap<guid, OBJECT.CLASS<? extends OBJECT>>();
 	private Map<guid, Procedure.CLASS<? extends Procedure>> jobKeys = new HashMap<guid, Procedure.CLASS<? extends Procedure>>();
 
 	@Override
@@ -24,6 +25,16 @@ public abstract class AbstractRuntime implements IRuntime {
 	@Override
 	public Collection<guid> tableKeys() {
 		return tableKeys.keySet();
+	}
+
+	@Override
+	public Collection<OBJECT.CLASS<? extends OBJECT>> requests() {
+		return requestKeys.values();
+	}
+
+	@Override
+	public Collection<guid> requestKeys() {
+		return requestKeys.keySet();
 	}
 
 	@Override
@@ -59,6 +70,16 @@ public abstract class AbstractRuntime implements IRuntime {
 	@Override
 	public Table.CLASS<? extends Table> getTableByKey(guid key) {
 		return tableKeys.get(key);
+	}
+
+	@Override
+	public OBJECT.CLASS<? extends OBJECT> getRequestByKey(guid key) {
+		return requestKeys.get(key);
+	}
+
+	@Override
+	public OBJECT.CLASS<? extends OBJECT> getRequest(String name) {
+		return AbstractRuntime.<OBJECT.CLASS<? extends OBJECT>> get(name, requests());
 	}
 
 	@Override
@@ -105,14 +126,19 @@ public abstract class AbstractRuntime implements IRuntime {
 		tableKeys.put(cls.key(), cls);
 	}
 
+	protected void addRequest(OBJECT.CLASS<? extends OBJECT> cls) {
+		if(!requestKeys.containsKey(cls.classIdKey()))
+			requestKeys.put(cls.classIdKey(), cls);
+	}
+
 	protected void addEntry(OBJECT.CLASS<? extends OBJECT> cls) {
-		if(!entryKeys.containsKey(cls.key()))
-			entryKeys.put(cls.key(), cls);
+		if(!entryKeys.containsKey(cls.classIdKey()))
+			entryKeys.put(cls.classIdKey(), cls);
 	}
 
 	protected void addJob(Procedure.CLASS<? extends Procedure> cls) {
-		if(!jobKeys.containsKey(cls.key()))
-			jobKeys.put(cls.key(), cls);
+		if(!jobKeys.containsKey(cls.classIdKey()))
+			jobKeys.put(cls.classIdKey(), cls);
 	}
 
 	protected void mergeWith(IRuntime runtime) {
@@ -124,5 +150,8 @@ public abstract class AbstractRuntime implements IRuntime {
 
 		for(OBJECT.CLASS<? extends OBJECT> entry : runtime.entries())
 			addEntry(entry);
+
+		for(OBJECT.CLASS<? extends OBJECT> request : runtime.requests())
+			addRequest(request);
 	}
 }

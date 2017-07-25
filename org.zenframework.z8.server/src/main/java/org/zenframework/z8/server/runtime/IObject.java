@@ -23,6 +23,8 @@ public interface IObject extends INamedObject {
 	static final public String ForeignKey = "foreignKey";
 
 	public String classId();
+	public guid classIdKey();
+
 	public int controlSum();
 
 	public String id();

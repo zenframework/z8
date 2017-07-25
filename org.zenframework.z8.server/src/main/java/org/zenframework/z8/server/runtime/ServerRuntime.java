@@ -3,6 +3,7 @@ package org.zenframework.z8.server.runtime;
 import org.zenframework.z8.server.base.table.site.Accounts;
 import org.zenframework.z8.server.base.table.site.Comments;
 import org.zenframework.z8.server.base.table.site.Topics;
+import org.zenframework.z8.server.base.table.system.Requests;
 import org.zenframework.z8.server.base.table.system.Domains;
 import org.zenframework.z8.server.base.table.system.Entries;
 import org.zenframework.z8.server.base.table.system.Fields;
@@ -43,6 +44,8 @@ public class ServerRuntime extends AbstractRuntime {
 		addTable(new UserFieldAccess.CLASS<UserFieldAccess>(null));
 
 		addTable(new Domains.CLASS<Domains>(null));
+
+		addTable(new Requests.CLASS<Requests>(null));
 
 		addTable(new Entries.CLASS<Entries>(null));
 		addTable(new UserEntries.CLASS<UserEntries>(null));
