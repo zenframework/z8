@@ -6,7 +6,6 @@ import java.io.ObjectOutputStream;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.UUID;
 
 import org.zenframework.z8.server.base.application.Application;
 import org.zenframework.z8.server.base.json.parser.JsonArray;
