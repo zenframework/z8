@@ -112,7 +112,7 @@ public class Query extends OBJECT {
 	}
 
 	public IAccess access() {
-		return access != null ? access : (access = ApplicationServer.getUser().privileges().getAccess(this));
+		return access != null ? access : (access = ApplicationServer.getUser().privileges().getTableAccess(this));
 	}
 
 	public void onNew(guid recordId, guid parentId) {

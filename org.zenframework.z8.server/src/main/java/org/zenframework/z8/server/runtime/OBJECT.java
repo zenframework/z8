@@ -97,14 +97,14 @@ public class OBJECT extends RequestTarget implements IObject, RmiSerializable {
 	@Override
 	public guid classIdKey() {
 		if(classIdKey == null)
-			classIdKey = new guid(UUID.nameUUIDFromBytes(classId().getBytes()));
+			classIdKey = guid.create(classId());
 		return classIdKey;
 	}
 
 	@Override
 	public guid key() {
 		if(key == null)
-			key = new guid(UUID.nameUUIDFromBytes(keyString().getBytes()));
+			key = guid.create(keyString());
 		return key;
 	}
 

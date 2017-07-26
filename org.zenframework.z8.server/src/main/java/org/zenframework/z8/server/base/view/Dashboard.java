@@ -19,6 +19,7 @@ import org.zenframework.z8.server.request.RequestTarget;
 import org.zenframework.z8.server.runtime.CLASS;
 import org.zenframework.z8.server.runtime.OBJECT;
 import org.zenframework.z8.server.security.Entry;
+import org.zenframework.z8.server.security.IPrivileges;
 import org.zenframework.z8.server.security.IUser;
 import org.zenframework.z8.server.types.primary;
 import org.zenframework.z8.server.types.string;
@@ -86,9 +87,13 @@ public class Dashboard extends RequestTarget {
 			writer.writeProperty(Json.text, displayName);
 			writer.writeProperty(Json.icon, desktop.icon());
 
+			IPrivileges privileges = ApplicationServer.getUser().privileges();
+
 			writer.startArray(Json.items);
-			for(CLASS<?> cls : runnables)
-				writeData(writer, cls);
+			for(CLASS<?> cls : runnables) {
+				if(privileges.getRequestAccess(cls.classIdKey()).execute() || true)
+					writeData(writer, cls);
+			}
 			writer.finishArray();
 
 			writer.finishObject();

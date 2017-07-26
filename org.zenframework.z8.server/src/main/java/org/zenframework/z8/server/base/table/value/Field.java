@@ -149,7 +149,7 @@ abstract public class Field extends Control implements IField {
 
 	@Override
 	public IAccess access() {
-		return access != null ? access : (access = ApplicationServer.getUser().privileges().getAccess(this));
+		return access != null ? access : (access = ApplicationServer.getUser().privileges().getFieldAccess(this));
 	}
 
 	public final void setCursor(Select cursor) {

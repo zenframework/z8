@@ -13,12 +13,15 @@ import org.zenframework.z8.server.base.query.Query;
 import org.zenframework.z8.server.base.view.Dashboard;
 import org.zenframework.z8.server.db.ConnectionManager;
 import org.zenframework.z8.server.engine.ApplicationServer;
+import org.zenframework.z8.server.exceptions.AccessRightsViolationException;
 import org.zenframework.z8.server.json.Json;
 import org.zenframework.z8.server.json.JsonWriter;
 import org.zenframework.z8.server.logs.Trace;
 import org.zenframework.z8.server.runtime.OBJECT;
 import org.zenframework.z8.server.security.IUser;
+import org.zenframework.z8.server.security.Privileges;
 import org.zenframework.z8.server.types.exception;
+import org.zenframework.z8.server.types.guid;
 import org.zenframework.z8.server.utils.ErrorUtils;
 
 public class RequestDispatcher implements Runnable {
@@ -116,6 +119,9 @@ public class RequestDispatcher implements Runnable {
 
 			response.setContent(writer.toString());
 		} else {
+			if(!ApplicationServer.getUser().privileges().getRequestAccess(guid.create(requestId)).execute() || false)
+				throw new AccessRightsViolationException(Privileges.displayNames.NoExecuteAccess);
+
 			OBJECT object = requestId != null ? Loader.getInstance(requestId) : null;
 
 			request.setTarget(object);

@@ -19,18 +19,21 @@ public class Privileges implements IPrivileges {
 		static public final String NoReadAccess = "Privileges.noReadAccess";
 		static public final String NoWriteAccess = "Privileges.noWriteAccess";
 		static public final String NoDestroyAccess = "Privileges.noDestroyAccess";
+		static public final String NoExecuteAccess = "Privileges.noExecuteAccess";
 	}
 
 	static public class displayNames {
 		public final static String NoReadAccess = Resources.get(strings.NoReadAccess);
 		public final static String NoWriteAccess = Resources.get(strings.NoWriteAccess);
 		public final static String NoDestroyAccess = Resources.get(strings.NoDestroyAccess);
+		public final static String NoExecuteAccess = Resources.get(strings.NoExecuteAccess);
 	}
 
 	IAccess defaultAccess;
 
 	Map<guid, IAccess> tableAccess;
 	Map<guid, IAccess> fieldAccess;
+	Map<guid, IAccess> requestAccess;
 
 	public Privileges() {
 	}
@@ -43,11 +46,11 @@ public class Privileges implements IPrivileges {
 		this.defaultAccess = defaultAccess;
 	}
 
-	public IAccess getAccess(Query table) {
-		return getAccess(table.key());
+	public IAccess getTableAccess(Query table) {
+		return getTableAccess(table.key());
 	}
 
-	public IAccess getAccess(guid table) {
+	public IAccess getTableAccess(guid table) {
 		if(tableAccess == null)
 			return defaultAccess;
 
@@ -61,18 +64,18 @@ public class Privileges implements IPrivileges {
 		tableAccess.put(table, access);
 	}
 
-	public IAccess getAccess(Field field) {
-		return getAccess(field.owner().key(), field.key());
+	public IAccess getFieldAccess(Field field) {
+		return getFieldAccess(field.owner().key(), field.key());
 	}
 
-	public IAccess getAccess(guid table, guid field) {
+	public IAccess getFieldAccess(guid table, guid field) {
 		if(fieldAccess == null)
-			return getAccess(table);
+			return getTableAccess(table);
 
 		IAccess access = fieldAccess.get(field);
 
 		if(access == null)
-			return getAccess(table);
+			return getTableAccess(table);
 
 		return access;
 	}
@@ -81,6 +84,20 @@ public class Privileges implements IPrivileges {
 		if(fieldAccess == null)
 			fieldAccess = new HashMap<guid, IAccess>();
 		fieldAccess.put(field, access);
+	}
+
+	public IAccess getRequestAccess(guid request) {
+		if(requestAccess == null)
+			return defaultAccess;
+
+		IAccess access = requestAccess.get(request);
+		return access != null ? access : defaultAccess;
+	}
+
+	public void setRequestAccess(guid request, IAccess access) {
+		if(requestAccess == null)
+			requestAccess = new HashMap<guid, IAccess>();
+		requestAccess.put(request, access);
 	}
 
 	private void writeObject(ObjectOutputStream out) throws IOException {
@@ -98,6 +115,7 @@ public class Privileges implements IPrivileges {
 		out.writeObject(defaultAccess);
 		out.writeObject(tableAccess);
 		out.writeObject(fieldAccess);
+		out.writeObject(requestAccess);
 	}
 
 	@Override
@@ -108,7 +126,8 @@ public class Privileges implements IPrivileges {
 
 		defaultAccess = (IAccess)in.readObject();
 		tableAccess = (Map<guid, IAccess>)in.readObject();
-		fieldAccess= (Map<guid, IAccess>)in.readObject();
+		fieldAccess = (Map<guid, IAccess>)in.readObject();
+		requestAccess = (Map<guid, IAccess>)in.readObject();
 	}
 
 	@Override

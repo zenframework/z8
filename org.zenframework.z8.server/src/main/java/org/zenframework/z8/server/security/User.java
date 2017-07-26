@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.zenframework.z8.server.base.table.system.RoleFieldAccess;
+import org.zenframework.z8.server.base.table.system.RoleRequestAccess;
 import org.zenframework.z8.server.base.table.system.RoleTableAccess;
 import org.zenframework.z8.server.base.table.system.SystemTools;
 import org.zenframework.z8.server.base.table.system.UserEntries;
@@ -239,7 +240,9 @@ public class User implements IUser {
 		if(isLatestVersion) {
 			user.loadRoles();
 			user.loadEntries();
-		} else if(!user.isAdministrator())
+		} else if(user.isAdministrator())
+			user.privileges = new Privileges(Access.administrator());
+		else
 			throw new InvalidVersionException();
 
 		if(user.isAdministrator())
@@ -357,6 +360,7 @@ public class User implements IUser {
 
 		loadTablesAccess(privileges, defaultAccess);
 		loadFieldsAccess(privileges, defaultAccess);
+		loadRequestAccess(privileges, defaultAccess);
 
 /*
 		Trace.logEvent(privileges);
@@ -416,7 +420,7 @@ public class User implements IUser {
 		while(rfa.next()) {
 			guid table = tableId.guid();
 
-			IAccess tableAccess = privileges.getAccess(table);
+			IAccess tableAccess = privileges.getTableAccess(table);
 			if(!tableAccess.read() || !tableAccess.write())
 				continue;
 
@@ -429,6 +433,27 @@ public class User implements IUser {
 				access.setWrite(writable);
 				privileges.setFieldAccess(fieldId.guid(), access);
 			}
+		}
+	}
+
+	private void loadRequestAccess(IPrivileges privileges, IAccess defaultAccess) {
+		RoleRequestAccess rra = new RoleRequestAccess.CLASS<RoleRequestAccess>().get();
+		Field requestId = rra.request.get();
+		Field execute = rra.execute.get();
+
+		Collection<Field> groups = new ArrayList<Field>(Arrays.asList(requestId));
+		Collection<Field> fields = Arrays.asList(requestId, execute);
+
+		SqlToken where = new InVector(rra.role.get(), getRoles());
+
+		SqlToken notExecute = new NotEqu(execute, new sql_bool(defaultAccess.execute()));
+		SqlToken having = new Group(notExecute);
+
+		rra.group(fields, groups, where, having);
+		while(rra.next()) {
+			IAccess access = new Access();
+			access.setExecute(execute.bool().get());
+			privileges.setRequestAccess(requestId.guid(), access);
 		}
 	}
 
