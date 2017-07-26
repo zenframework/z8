@@ -78,26 +78,36 @@ public class Dashboard extends RequestTarget {
 		}
 	}
 
+	private Collection<OBJECT.CLASS<OBJECT>> getRunnables(Desktop desktop) {
+		Collection<OBJECT.CLASS<OBJECT>> result = new ArrayList<OBJECT.CLASS<OBJECT>>();
+
+		IPrivileges privileges = ApplicationServer.getUser().privileges();
+
+		for(OBJECT.CLASS<OBJECT> cls : desktop.getRunnables()) {
+			if(privileges.getRequestAccess(cls.classIdKey()).execute())
+				result.add(cls);
+		}
+
+		return result;
+	}
+
 	private void writeDesktopData(JsonWriter writer, Desktop desktop, String displayName) {
-		Collection<OBJECT.CLASS<OBJECT>> runnables = desktop.getRunnables();
+		Collection<OBJECT.CLASS<OBJECT>> runnables = getRunnables(desktop);
 
-//		if(!runnables.isEmpty()) {
-			writer.startObject();
+		if(runnables.isEmpty())
+			return;
 
-			writer.writeProperty(Json.text, displayName);
-			writer.writeProperty(Json.icon, desktop.icon());
+		writer.startObject();
 
-			IPrivileges privileges = ApplicationServer.getUser().privileges();
+		writer.writeProperty(Json.text, displayName);
+		writer.writeProperty(Json.icon, desktop.icon());
 
-			writer.startArray(Json.items);
-			for(CLASS<?> cls : runnables) {
-				if(privileges.getRequestAccess(cls.classIdKey()).execute() || true)
-					writeData(writer, cls);
-			}
-			writer.finishArray();
+		writer.startArray(Json.items);
+		for(OBJECT.CLASS<OBJECT> cls : runnables)
+			writeData(writer, cls);
+		writer.finishArray();
 
-			writer.finishObject();
-//		}
+		writer.finishObject();
 	}
 
 	private void writeDesktop(JsonWriter writer, Desktop desktop) {
