@@ -10,15 +10,15 @@ import org.zenframework.z8.server.db.sql.SqlToken;
 import org.zenframework.z8.server.exceptions.db.UnknownDatabaseException;
 
 public class Concat extends SqlToken {
-	private SqlToken param1;
+	private SqlToken token;
 
-	public Concat(SqlToken p1) {
-		param1 = p1;
+	public Concat(SqlToken token) {
+		this.token = token;
 	}
 
 	@Override
 	public void collectFields(Collection<IField> fields) {
-		param1.collectFields(fields);
+		token.collectFields(fields);
 	}
 
 	@Override
@@ -31,7 +31,7 @@ public class Concat extends SqlToken {
 		default:
 			throw new UnknownDatabaseException();
 		}
-		return str.append('(').append(param1.format(vendor, options)).append(",',')").toString();
+		return str.append('(').append(token.format(vendor, options)).append(",',')").toString();
 	}
 
 	@Override

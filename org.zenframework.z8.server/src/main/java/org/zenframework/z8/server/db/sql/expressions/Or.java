@@ -36,7 +36,7 @@ public class Or extends Expression {
 		String result = left.format(vendor, options, true) + " OR " + right.format(vendor, options, true);
 
 		if(!logicalContext) {
-			SqlToken token = new If(new SqlStringToken(result, FieldType.Boolean), new sql_integer(1), new sql_integer(0));
+			SqlToken token = new If(new SqlStringToken(result, FieldType.Boolean), sql_integer.One, sql_integer.Zero);
 			return token.format(vendor, options, false);
 		}
 

@@ -43,13 +43,13 @@ public class QueryUtils {
 		if(type == FieldType.String || type == FieldType.Text || type == FieldType.Attachments)
 			field.set(new string(value));
 		else if(type == FieldType.Integer)
-			field.set(value == null || value.isEmpty() ? new integer() : new integer(value));
+			field.set(value == null || value.isEmpty() ? integer.Zero : new integer(value));
 		else if(type == FieldType.Decimal)
-			field.set(value == null || value.isEmpty() ? new decimal() : new decimal(value));
+			field.set(value == null || value.isEmpty() ? decimal.Zero : new decimal(value));
 		else if(type == FieldType.Boolean)
 			field.set(value == null || value.isEmpty() ? bool.False : new bool(value));
 		else if(type == FieldType.Date)
-			field.set(value == null || value.isEmpty() ? new date(date.Min) : new date(value));
+			field.set(value == null || value.isEmpty() ? date.Min : new date(value));
 		else if(type == FieldType.Datespan)
 			field.set(value == null || value.isEmpty() ? new datespan() : new datespan(value));
 		else if(type == FieldType.Guid)

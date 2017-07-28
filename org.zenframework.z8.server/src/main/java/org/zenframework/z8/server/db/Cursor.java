@@ -94,7 +94,7 @@ public class Cursor {
 		boolean wasNull = wasNull();
 		if(field != null)
 			field.setWasNull(wasNull);
-		return !wasNull ? new integer(value) : new integer();
+		return !wasNull ? new integer(value) : integer.Zero;
 	}
 
 	public string getString(int position) throws SQLException {
@@ -146,7 +146,7 @@ public class Cursor {
 		boolean wasNull = value == null || wasNull();
 		if(field != null)
 			field.setWasNull(wasNull);
-		return !wasNull ? new decimal(value) : new decimal();
+		return !wasNull ? new decimal(value) : decimal.Zero;
 	}
 
 	public binary getBinary(int position) throws SQLException {

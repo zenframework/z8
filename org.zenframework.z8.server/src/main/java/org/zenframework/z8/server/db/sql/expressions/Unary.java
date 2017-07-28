@@ -38,13 +38,11 @@ public class Unary extends SqlToken {
 		case Not: {
 			SqlToken t = new UNOTToken();
 			if(!logicalContext)
-				t = new If(t, new sql_integer(1), new sql_integer(0));
+				t = new If(t, sql_integer.One, sql_integer.Zero);
 			return t.format(vendor, options, logicalContext);
 		}
-
 		case Minus:
 			return "(-" + token.format(vendor, options) + ")";
-
 		default:
 			throw new UnsupportedOperationException();
 		}
@@ -53,14 +51,10 @@ public class Unary extends SqlToken {
 	@Override
 	public FieldType type() {
 		switch(operation) {
-		case Not: {
+		case Not:
 			return FieldType.Boolean;
-		}
-
-		case Minus: {
+		case Minus:
 			return token.type();
-		}
-
 		default:
 			throw new UnsupportedOperationException();
 		}

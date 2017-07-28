@@ -48,7 +48,7 @@ public class And extends Expression {
 			}
 			return null;
 		} else {
-			SqlToken token = new If(this, new sql_integer(1), new sql_integer(0));
+			SqlToken token = new If(this, sql_integer.One, sql_integer.Zero);
 			return token.format(vendor, options);
 		}
 	}

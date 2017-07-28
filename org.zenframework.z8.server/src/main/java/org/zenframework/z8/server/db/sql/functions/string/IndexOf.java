@@ -14,6 +14,7 @@ import org.zenframework.z8.server.db.sql.expressions.Operation;
 import org.zenframework.z8.server.db.sql.functions.Nvl;
 import org.zenframework.z8.server.exceptions.db.UnknownDatabaseException;
 import org.zenframework.z8.server.types.integer;
+import org.zenframework.z8.server.types.sql.sql_integer;
 
 public class IndexOf extends SqlToken {
 	private SqlToken what;
@@ -50,7 +51,7 @@ public class IndexOf extends SqlToken {
 		} else
 			throw new UnknownDatabaseException();
 
-		return (new Nvl(new SqlStringToken(result, FieldType.Integer), new SqlConst(new integer(-1)))).format(vendor, options);
+		return (new Nvl(new SqlStringToken(result, FieldType.Integer), sql_integer.MinusOne)).format(vendor, options);
 	}
 
 	@Override

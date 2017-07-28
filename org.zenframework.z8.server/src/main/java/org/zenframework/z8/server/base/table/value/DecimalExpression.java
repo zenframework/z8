@@ -27,7 +27,7 @@ public class DecimalExpression extends Expression {
 		format = new string(Format.decimal);
 		aggregation = Aggregation.Sum;
 
-		setDefault(new decimal());
+		setDefault(decimal.Zero);
 	}
 
 	@Override

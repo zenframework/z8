@@ -11,6 +11,10 @@ public final class integer extends primary {
 	static public integer Min = new integer(Long.MIN_VALUE + 1); // 0x8000000000000000  + 1 = -0x7fffffffffffffff
 	static public integer Max = new integer(Long.MAX_VALUE); // 0x7fffffffffffffff
 
+	static public integer Zero = new integer(0);
+	static public integer One = new integer(1);
+	static public integer MinusOne = new integer(-1);
+
 	private long value = 0;
 
 	public integer() {}
@@ -37,7 +41,7 @@ public final class integer extends primary {
 
 	@Override
 	public integer defaultValue() {
-		return new integer();
+		return integer.Zero;
 	}
 
 	@Override
@@ -51,7 +55,7 @@ public final class integer extends primary {
 
 	static integer parse(String value, int radix) {
 		if(value == null || value.isEmpty())
-			return new integer();
+			return integer.Zero;
 
 		char lastChar = value.charAt(value.length() - 1);
 		if(lastChar == 'L' || lastChar == 'l')

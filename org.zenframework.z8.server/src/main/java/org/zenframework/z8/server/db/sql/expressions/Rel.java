@@ -46,7 +46,7 @@ public class Rel extends Expression {
 		String rel = left.format(vendor, options) + operations.get(this.operation) + right.format(vendor, options);
 
 		if(!logicalContext)
-			return new If(new SqlStringToken(rel, FieldType.Boolean), new sql_integer(1), new sql_integer(0)).format(vendor, options);
+			return new If(new SqlStringToken(rel, FieldType.Boolean), sql_integer.One, sql_integer.Zero).format(vendor, options);
 
 		return rel;
 	}

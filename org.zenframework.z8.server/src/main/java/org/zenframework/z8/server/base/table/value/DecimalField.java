@@ -30,7 +30,7 @@ public class DecimalField extends Field {
 
 	public DecimalField(IObject container) {
 		super(container);
-		setDefault(new decimal());
+		setDefault(decimal.Zero);
 		format = new string(Format.decimal);
 		aggregation = Aggregation.Sum;
 	}

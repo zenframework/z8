@@ -31,6 +31,6 @@ public class CountExpression extends IntegerExpression {
 
 	@Override
 	protected SqlToken z8_expression() {
-		return field != null ? new SqlField(field.get()) : new sql_integer(1);
+		return field != null ? new SqlField(field.get()) : sql_integer.One;
 	}
 }

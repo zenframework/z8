@@ -80,12 +80,12 @@ public class sql_string extends sql_primary {
 	}
 
 	public sql_bool z8_contains(sql_string pattern) {
-		return z8_contains(pattern, new sql_integer(0));
+		return z8_contains(pattern, sql_integer.Zero);
 	}
 
 	public sql_bool z8_contains(sql_string pattern, sql_integer position) {
 		sql_integer index = z8_indexOf(pattern, position);
-		return new sql_bool(new Rel(index, Operation.NotEq, new sql_integer(-1)));
+		return new sql_bool(new Rel(index, Operation.NotEq, sql_integer.MinusOne));
 	}
 
 	public sql_integer z8_indexOf(sql_string pattern) {

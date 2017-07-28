@@ -9,7 +9,6 @@ import org.zenframework.z8.server.db.FieldType;
 import org.zenframework.z8.server.types.sql.sql_decimal;
 
 public final class decimal extends primary {
-
 	private static final long serialVersionUID = 2752764281506888344L;
 
 	static public integer RoundUp = new integer(BigDecimal.ROUND_UP);
@@ -20,6 +19,8 @@ public final class decimal extends primary {
 	static public integer RoundHalfDown = new integer(BigDecimal.ROUND_HALF_DOWN);
 	static public integer RoundHalfEven = new integer(BigDecimal.ROUND_HALF_EVEN);
 	static public integer RoundUnnecessary = new integer(BigDecimal.ROUND_UNNECESSARY);
+
+	static public decimal Zero = new decimal(0);
 
 	private BigDecimal value = new BigDecimal(0);
 
@@ -58,7 +59,7 @@ public final class decimal extends primary {
 
 	@Override
 	public decimal defaultValue() {
-		return new decimal();
+		return decimal.Zero;
 	}
 
 	@Override
@@ -501,7 +502,7 @@ public final class decimal extends primary {
 		try {
 			String string = value.get();
 			if(string.isEmpty())
-				return  new decimal();
+				return decimal.Zero;
 			return new decimal(new BigDecimal(string));
 		} catch(NumberFormatException e) {
 			throw new RuntimeException("Invalid value for decimal: '" + value.get() + "'");
