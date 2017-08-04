@@ -85,23 +85,10 @@
 	<entry key="RoleTableAccess.copy">Копирование</entry>
 	<entry key="RoleTableAccess.destroy">Удаление</entry>
 
-	<!-- UserTableAccess -->
-	<entry key="UserTableAccess.title">Таблицы</entry>
-	<entry key="UserTableAccess.read">Чтение</entry>
-	<entry key="UserTableAccess.write">Изменение</entry>
-	<entry key="UserTableAccess.create">Создание</entry>
-	<entry key="UserTableAccess.copy">Копирование</entry>
-	<entry key="UserTableAccess.destroy">Удаление</entry>
-
 	<!-- RoleFieldAccess -->
 	<entry key="RoleFieldAccess.title">Поля</entry>
 	<entry key="RoleFieldAccess.read">Чтение</entry>
 	<entry key="RoleFieldAccess.write">Изменение</entry>
-
-	<!-- UserFieldAccess -->
-	<entry key="UserFieldAccess.title">Поля</entry>
-	<entry key="UserFieldAccess.read">Чтение</entry>
-	<entry key="UserFieldAccess.write">Изменение</entry>
 
 	<!-- RoleRequestAccess -->
 	<entry key="RoleRequestAccess.title">Запросы</entry>

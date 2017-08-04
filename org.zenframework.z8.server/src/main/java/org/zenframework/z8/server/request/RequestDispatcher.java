@@ -119,7 +119,7 @@ public class RequestDispatcher implements Runnable {
 
 			response.setContent(writer.toString());
 		} else {
-			if(!ApplicationServer.getUser().privileges().getRequestAccess(guid.create(requestId)).execute() || false)
+			if(!ApplicationServer.getUser().privileges().getRequestAccess(guid.create(requestId)).execute())
 				throw new AccessRightsViolationException(Privileges.displayNames.NoExecuteAccess);
 
 			OBJECT object = requestId != null ? Loader.getInstance(requestId) : null;

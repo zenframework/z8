@@ -168,14 +168,14 @@ public class Roles extends Table {
 	}
 
 	@Override
-	public void onCopy() {
-		super.onCopy();
+	public void z8_onCopy() {
+		super.z8_onCopy();
 		lock.get().set(RecordLock.None);
 	}
 
 	@Override
-	public void afterCreate(guid recordId, guid parentId) {
-		super.beforeCreate(recordId, parentId);
+	public void z8_afterCreate(guid recordId, guid parentId) {
+		super.z8_beforeCreate(recordId, parentId);
 
 		RoleTableAccess rta = new RoleTableAccess.CLASS<RoleTableAccess>().get();
 
@@ -198,8 +198,8 @@ public class Roles extends Table {
 	}
 
 	@Override
-	public void beforeDestroy(guid recordId) {
-		super.beforeDestroy(recordId);
+	public void z8_beforeDestroy(guid recordId) {
+		super.z8_beforeDestroy(recordId);
 
 		if(Role.Administrator.equals(recordId) || Role.User.equals(recordId) ||
 				Role.Guest.equals(recordId))

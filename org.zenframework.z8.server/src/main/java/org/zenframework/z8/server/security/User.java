@@ -93,6 +93,7 @@ public class User implements IUser {
 		system.phone = "";
 		system.email = "";
 		system.roles = new HashSet<IRole>(Arrays.asList(Role.administrator()));
+		system.privileges = new Privileges(Access.administrator());
 
 		system.addSystemTools();
 
