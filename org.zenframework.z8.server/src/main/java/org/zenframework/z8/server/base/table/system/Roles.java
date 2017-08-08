@@ -175,7 +175,7 @@ public class Roles extends Table {
 
 	@Override
 	public void z8_afterCreate(guid recordId, guid parentId) {
-		super.z8_beforeCreate(recordId, parentId);
+		super.z8_afterCreate(recordId, parentId);
 
 		RoleTableAccess rta = new RoleTableAccess.CLASS<RoleTableAccess>().get();
 
