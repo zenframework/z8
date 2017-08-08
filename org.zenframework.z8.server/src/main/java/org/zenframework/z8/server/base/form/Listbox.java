@@ -77,6 +77,8 @@ public class Listbox extends Control {
 		if(periodKey != null)
 			writer.writeProperty(Json.periodKey, periodKey.id());
 
+		writer.writeAccess(query.access());
+
 		if(!this.readOnly())
 			writer.writeProperty(Json.lockKey, query.lockKey().id());
 

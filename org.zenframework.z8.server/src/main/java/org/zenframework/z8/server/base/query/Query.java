@@ -1106,6 +1106,7 @@ public class Query extends OBJECT {
 
 		writer.writeActions(actions());
 		writer.writeReports(reports());
+		writer.writeAccess(access());
 
 		writeKeys(writer, selectFields());
 

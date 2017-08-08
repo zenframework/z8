@@ -194,6 +194,13 @@ public interface Json {
 	static public string parameters = new string("parameters");
 	static public string reports = new string("reports");
 
+	static public string access = new string("access");
+	static public string read = new string("read");
+	static public string write = new string("write");
+/*  static public string create = new string("create"); */
+	static public string copy = new string("copy");
+/*  static public string destroy = new string("destroy"); */
+
 	static public string job = new string("job");
 	static public string done = new string("done");
 	static public string totalWork = new string("totalWork");

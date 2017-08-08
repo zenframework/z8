@@ -16,6 +16,7 @@ import org.zenframework.z8.server.json.parser.JsonArray;
 import org.zenframework.z8.server.json.parser.JsonObject;
 import org.zenframework.z8.server.request.Message;
 import org.zenframework.z8.server.runtime.RCollection;
+import org.zenframework.z8.server.security.IAccess;
 import org.zenframework.z8.server.types.bool;
 import org.zenframework.z8.server.types.date;
 import org.zenframework.z8.server.types.decimal;
@@ -345,6 +346,16 @@ public class JsonWriter {
 		}
 
 		finishArray();
+	}
+
+	public void writeAccess(IAccess access) {
+		startObject(Json.access);
+		writeProperty(Json.read, access.read());
+		writeProperty(Json.write, access.write());
+		writeProperty(Json.create, access.create());
+		writeProperty(Json.copy, access.copy());
+		writeProperty(Json.destroy, access.destroy());
+		finishObject();
 	}
 
 	public void startResponse(String requestId, boolean success) {
