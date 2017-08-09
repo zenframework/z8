@@ -2,7 +2,6 @@ package org.zenframework.z8.server.base.model.actions;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 import java.util.Map;
 
 import org.zenframework.z8.server.base.query.Query;
@@ -181,10 +180,15 @@ public abstract class RequestAction extends RequestTarget {
 		return getRequestParameter(Json.columns);
 	}
 
-	public List<guid> getIdList() {
-		List<guid> ids = new ArrayList<guid>();
+	public Collection<guid> getGuidCollection(string property) {
+		Collection<guid> ids = new ArrayList<guid>();
 
-		JsonArray records = new JsonArray(getDataParameter());
+		String json = getRequestParameter(property);
+
+		if(json == null || json.isEmpty())
+			return ids;
+
+		JsonArray records = new JsonArray(getRequestParameter(property));
 
 		for(int index = 0; index < records.length(); index++) {
 			String id = records.getString(index);

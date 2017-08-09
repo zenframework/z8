@@ -22,7 +22,11 @@ public class CommandAction extends RequestAction {
 		Query context = getContextQuery();
 		Query query = getQuery();
 
-		Action action = context.findActionById(getRequestParameter(Json.id));
+		String actionId = getRequestParameter(Json.id);
+		Action action = context.findActionById(actionId);
+
+		if(action == null)
+			throw new RuntimeException("Action '" + actionId + "' is not found in " + context.displayName());
 
 		JsonObject object = new JsonObject(getParametersParameter());
 
@@ -44,13 +48,11 @@ public class CommandAction extends RequestAction {
 			if(connection != null)
 				connection.beginTransaction();
 
-			guid recordId = getRecordIdParameter();
-			Collection<guid> selected = getIdList();
+			Collection<guid> records = getGuidCollection(Json.records);
+			Collection<guid> selected = getGuidCollection(Json.selection);
 
-			action.execute(recordId, context, selected, query);
-//////////
-			getQuery().onAction(action, selected);
-//////////
+			action.execute(records, context, selected, query);
+
 			if(connection != null)
 				connection.commit();
 		} catch(Throwable e) {

@@ -10,7 +10,6 @@ import org.zenframework.z8.server.runtime.OBJECT;
 import org.zenframework.z8.server.runtime.RCollection;
 import org.zenframework.z8.server.types.bool;
 import org.zenframework.z8.server.types.guid;
-import org.zenframework.z8.server.types.string;
 
 public class Action extends OBJECT implements Runnable, IAction {
 	static public class CLASS<T extends Action> extends OBJECT.CLASS<T> {
@@ -29,10 +28,6 @@ public class Action extends OBJECT implements Runnable, IAction {
 		}
 	}
 
-	public string id = guid.create().string();
-	public string text = new string();
-	public string description = new string();
-	public string icon = new string();
 	public ActionType type = ActionType.Default;
 
 	public bool useTransaction = bool.True;
@@ -80,40 +75,21 @@ public class Action extends OBJECT implements Runnable, IAction {
 	}
 
 	@SuppressWarnings("unchecked")
-	public void execute(guid recordId, Query context, Collection<guid> selected, Query query) {
-		z8_execute(recordId, (Query.CLASS<? extends Query>)context.getCLASS(), new RCollection<guid>(selected), (Query.CLASS<? extends Query>)query.getCLASS());
+	public void execute(Collection<guid> records, Query context, Collection<guid> selected, Query query) {
+		z8_execute(new RCollection<guid>(records), (Query.CLASS<? extends Query>)context.getCLASS(), new RCollection<guid>(selected), (Query.CLASS<? extends Query>)query.getCLASS());
 	}
 
 	@Override
 	public void run() {
 	}
 
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	public void z8_execute(RCollection records, Query.CLASS<? extends Query> context, RCollection selected, Query.CLASS<? extends Query> query) {
+		for(guid record : (Collection<guid>)records)
+			z8_execute(record, context, selected, query);
+	}
+
 	@SuppressWarnings("rawtypes")
-	public void z8_execute(guid recordId, Query.CLASS<? extends Query> context, RCollection selected, Query.CLASS<? extends Query> query) {
-	}
-
-	static public Action.CLASS<? extends Action> z8_create(string id, string text) {
-		return z8_create(id, text, new string());
-	}
-
-	static public Action.CLASS<? extends Action> z8_create(string id, string text, Parameter.CLASS<? extends Parameter> parameter) {
-		Action.CLASS<? extends Action> action = z8_create(id, text);
-		action.get().parameters.add(parameter);
-		return action;
-	}
-
-	@SuppressWarnings({ "unchecked", "rawtypes" })
-	static public Action.CLASS<? extends Action> z8_create(string id, string text, RCollection parameters) {
-		Action.CLASS<? extends Action> action = z8_create(id, text);
-		action.get().parameters.addAll(parameters);
-		return action;
-	}
-
-	static public Action.CLASS<? extends Action> z8_create(string id, string text, string icon) {
-		Action.CLASS<Action> action = new Action.CLASS<Action>();
-		action.get().id.set(id);
-		action.get().text.set(text);
-		action.get().icon.set(icon);
-		return action;
+	public void z8_execute(guid record, Query.CLASS<? extends Query> context, RCollection selected, Query.CLASS<? extends Query> query) {
 	}
 }

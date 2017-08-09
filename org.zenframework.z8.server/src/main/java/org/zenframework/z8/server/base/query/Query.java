@@ -103,6 +103,12 @@ public class Query extends OBJECT {
 		this(null);
 	}
 
+	@Override
+	public String displayName() {
+		String name = super.displayName();
+		return name == null || name.isEmpty() ? name() : name;
+	}
+
 	protected Query(IObject container) {
 		super(container);
 	}
@@ -163,12 +169,6 @@ public class Query extends OBJECT {
 	public void afterDestroy(guid recordId) {
 		if(ApplicationServer.events())
 			z8_afterDestroy(recordId);
-	}
-
-	@SuppressWarnings("unchecked")
-	public void onAction(Action action, Collection<guid> recordIds) {
-		RCollection<guid> ids = getGuidCollection(recordIds);
-		z8_onAction((Action.CLASS<? extends Action>)action.getCLASS(), ids);
 	}
 
 	public void writeReportMeta(JsonWriter writer, Collection<Field> fields) {
@@ -838,15 +838,6 @@ public class Query extends OBJECT {
 		return CLASS.asList(groupBy);
 	}
 
-	private RCollection<guid> getGuidCollection(Collection<guid> guids) {
-		RCollection<guid> result = new RCollection<guid>();
-
-		for(guid id : guids)
-			result.add(id);
-
-		return result;
-	}
-
 	public Field primaryKey() {
 		return null;
 	}
@@ -1384,10 +1375,6 @@ public class Query extends OBJECT {
 	}
 
 	public void z8_afterDestroy(guid recordId) {
-	}
-
-	@SuppressWarnings("rawtypes")
-	public void z8_onAction(Action.CLASS<? extends Action> action, RCollection recordIds) {
 	}
 
 	@SuppressWarnings("rawtypes")

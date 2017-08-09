@@ -40,12 +40,6 @@ public class TableBase extends Query implements ITable {
 	}
 
 	@Override
-	public String displayName() {
-		String name = super.displayName();
-		return name == null || name.isEmpty() ? name() : name;
-	}
-
-	@Override
 	public Collection<Map<IField, primary>> getStaticRecords() {
 		initStaticRecords();
 		return staticRecords;

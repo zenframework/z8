@@ -177,6 +177,7 @@ public interface Json {
 	static public string details = new string("details");
 
 	static public string records = new string("records");
+	static public string selection = new string("selection");
 
 	static public string queries = new string("queries");
 	static public string fields = new string("fields");

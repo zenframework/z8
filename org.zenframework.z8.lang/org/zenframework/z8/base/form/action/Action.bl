@@ -3,19 +3,10 @@ import org.zenframework.z8.lang.Object;
 
 [native "org.zenframework.z8.server.base.form.action.Action"]
 public class Action extends Object {
-	public string id;
-	public string text;
-	public string icon;
+	public Parameter[] parameters;
 	public ActionType type = ActionType.Default;
-
 	public bool useTransaction = true;
 
-	public Parameter[] parameters;
-
-	static public Action create(string id, string text);
-	static public Action create(string id, string text, Parameter[] parameters);
-	static public Action create(string id, string text, Parameter parameter);
-	static public Action create(string id, string text, string icon);
-
+	virtual protected void execute(guid[] recordIds, Query context, guid[] selected, Query query);
 	virtual protected void execute(guid recordId, Query context, guid[] selected, Query query);
 }

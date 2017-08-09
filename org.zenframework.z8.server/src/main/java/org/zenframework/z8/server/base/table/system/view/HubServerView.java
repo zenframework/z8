@@ -16,7 +16,6 @@ import org.zenframework.z8.server.resources.Resources;
 import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.types.bool;
 import org.zenframework.z8.server.types.integer;
-import org.zenframework.z8.server.types.string;
 import org.zenframework.z8.server.utils.ProxyUtils;
 
 abstract public class HubServerView extends Query {
@@ -63,6 +62,8 @@ abstract public class HubServerView extends Query {
 	private StringField.CLASS<StringField> domains = new StringField.CLASS<StringField>(this);
 	private StringField.CLASS<StringField> serverId = new StringField.CLASS<StringField>(this);
 
+	private Action.CLASS<Action> unregister = new Action.CLASS<Action>(this);
+
 	public HubServerView(IObject container) {
 		super(container);
 	}
@@ -76,6 +77,7 @@ abstract public class HubServerView extends Query {
 		objects.add(active);
 		objects.add(serverId);
 		objects.add(domains);
+		objects.add(unregister);
 	}
 
 	@Override
@@ -111,10 +113,8 @@ abstract public class HubServerView extends Query {
 		registerControl(serverId);
 		registerControl(domains);
 
-		Action.CLASS<Action> commandCls = new Action.CLASS<Action>(this);
-		Action command = commandCls.get();
-		command.text = new string(displayNames.Unregister);
-		actions.add(commandCls);
+		unregister.setDisplayName(displayNames.Unregister);
+		actions.add(unregister);
 	}
 
 	@Override
