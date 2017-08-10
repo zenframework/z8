@@ -15,4 +15,5 @@ public interface IAuthorityCenter extends IHubServer {
 	public ISession siteServer(String session, String server) throws RemoteException;
 
 	public void userChanged(guid user) throws RemoteException;
+	public void roleChanged(guid role) throws RemoteException;
 }

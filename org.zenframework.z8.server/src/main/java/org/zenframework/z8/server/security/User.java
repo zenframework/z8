@@ -422,18 +422,20 @@ public class User implements IUser {
 			guid table = tableId.guid();
 
 			IAccess tableAccess = privileges.getTableAccess(table);
-			if(!tableAccess.read() || !tableAccess.write())
-				continue;
+
+			boolean tableReadable = tableAccess.read();
+			boolean tableWritable = tableAccess.write();
 
 			boolean readable = read.bool().get();
 			boolean writable = write.bool().get();
 
-			if(!readable || !writable) {
-				IAccess access = new Access();
-				access.setRead(readable);
-				access.setWrite(writable);
-				privileges.setFieldAccess(fieldId.guid(), access);
-			}
+			if(tableReadable == readable && tableWritable == writable)
+				continue;
+
+			IAccess access = new Access();
+			access.setRead(readable);
+			access.setWrite(writable);
+			privileges.setFieldAccess(fieldId.guid(), access);
 		}
 	}
 

@@ -1,5 +1,7 @@
 package org.zenframework.z8.server.base.table.system;
 
+import java.util.Arrays;
+
 import org.zenframework.z8.server.base.query.RecordLock;
 import org.zenframework.z8.server.base.table.Table;
 import org.zenframework.z8.server.base.table.value.BoolField;
@@ -115,7 +117,7 @@ public class RoleFieldAccess extends Table {
 	}
 
 	@Override
-	public void beforeUpdate(guid recordId) {
+	public void z8_beforeUpdate(guid recordId) {
 		Field read = this.read.get();
 		Field write = this.write.get();
 
@@ -127,6 +129,16 @@ public class RoleFieldAccess extends Table {
 				read.set(bool.True);
 		}
 
-		super.beforeUpdate(recordId);
+		super.z8_beforeUpdate(recordId);
 	}
+
+	@Override
+	public void z8_afterUpdate(guid recordId) {
+		super.z8_afterUpdate(recordId);
+
+		Field role = this.role.get();
+		if(readRecord(recordId, Arrays.asList(role)))
+			Roles.notifyRoleChange(role.guid());
+	}
+
 }

@@ -1076,7 +1076,7 @@ public class Query extends OBJECT {
 	}
 
 	public boolean readOnly() {
-		return readOnly.get() || isGrouped() || !access().write();
+		return readOnly.get() || isGrouped();
 	}
 
 	public void writeMeta(JsonWriter writer, Query context) {

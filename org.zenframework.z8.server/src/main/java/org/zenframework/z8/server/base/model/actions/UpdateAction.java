@@ -51,7 +51,7 @@ public class UpdateAction extends RequestAction {
 
 	private void checkAccess(Collection<Field> fields) {
 		for(Field field : fields) {
-			if(!field.access().write())
+			if(!field.isPrimaryKey() && !field.access().write())
 				throw new AccessRightsViolationException();
 		}
 	}

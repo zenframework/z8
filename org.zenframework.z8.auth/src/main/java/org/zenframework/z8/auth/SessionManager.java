@@ -8,6 +8,7 @@ import org.zenframework.z8.server.engine.ISession;
 import org.zenframework.z8.server.engine.Session;
 import org.zenframework.z8.server.exceptions.AccessDeniedException;
 import org.zenframework.z8.server.security.IAccount;
+import org.zenframework.z8.server.security.IRole;
 import org.zenframework.z8.server.security.IUser;
 import org.zenframework.z8.server.security.User;
 import org.zenframework.z8.server.types.guid;
@@ -94,6 +95,22 @@ public class SessionManager {
 		if(session != null) {
 			users.remove(user);
 			systemSessions.remove(session.id());
+		}
+	}
+
+	synchronized public void dropRoleSessions(guid roleId) {
+		for(ISession session : users.values()) {
+			IUser user = session.user();
+			if(user.isAdministrator())
+				continue;
+
+			for(IRole role : user.roles()) {
+				if(role.id().equals(roleId)) {
+					users.remove(user.id());
+					systemSessions.remove(session.id());
+					break;
+				}
+			}
 		}
 	}
 
