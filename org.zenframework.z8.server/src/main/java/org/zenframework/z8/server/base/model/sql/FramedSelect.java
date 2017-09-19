@@ -30,7 +30,7 @@ public class FramedSelect extends Select {
 			Field rowNum = new Expression(new SqlStringToken("ROWNUM", FieldType.Integer), FieldType.Integer);
 			getFields().add(rowNum);
 
-			if(limit != 0) {
+			if(limit > 0) {
 				setSubselect(new Select(this));
 				setRootQuery(null);
 				setLinks(null);
