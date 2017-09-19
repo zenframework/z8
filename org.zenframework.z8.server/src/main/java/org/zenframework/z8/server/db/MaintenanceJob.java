@@ -35,7 +35,7 @@ public class MaintenanceJob extends Procedure {
 
 		try {
 			Trace.logEvent("VACUUM ANALYZE started.");
-			Statement.executeUpdate(connection, "vacuum analyze");
+			Statement.executeUpdate("vacuum analyze");
 			Trace.logEvent("VACUUM ANALYZE finished successfully.");
 		} catch(SQLException e) {
 			Trace.logError("VACUUM ANALYZE finished with error.", e);

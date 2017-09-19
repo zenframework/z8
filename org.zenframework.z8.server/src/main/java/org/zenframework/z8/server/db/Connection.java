@@ -37,6 +37,8 @@ public class Connection {
 	private Set<BasicStatement> statements = new HashSet<BasicStatement>();
 
 	static private java.sql.Connection newConnection(Database database) {
+		ConnectionSavePoint savePoint = ConnectionSavePoint.create(database);
+
 		try {
 			Class.forName(database.driver());
 
@@ -45,6 +47,8 @@ public class Connection {
 			return connection;
 		} catch(Throwable e) {
 			throw new RuntimeException(e);
+		} finally {
+			savePoint.restore();
 		}
 	}
 

@@ -1,6 +1,5 @@
 package org.zenframework.z8.server.db.generator;
 
-import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Hashtable;
@@ -9,124 +8,102 @@ import java.util.LinkedList;
 import java.util.Map;
 
 import org.zenframework.z8.server.db.BasicSelect;
-import org.zenframework.z8.server.db.Connection;
+import org.zenframework.z8.server.db.ConnectionManager;
 import org.zenframework.z8.server.db.Cursor;
 import org.zenframework.z8.server.db.DatabaseVendor;
 import org.zenframework.z8.server.db.FieldType;
-import org.zenframework.z8.server.db.Statement;
 import org.zenframework.z8.server.exceptions.db.UnknownDatabaseException;
-import org.zenframework.z8.server.types.guid;
 
 public class DataSchema {
-	public static Map<String, TableDescription> getTables(Connection connection, String tablePattern) throws SQLException {
+	public static Map<String, TableDescription> getTables(String tablePattern) throws SQLException {
 		LinkedHashMap<String, TableDescription> tables = new LinkedHashMap<String, TableDescription>();
 
-		switch(connection.vendor()) {
+		switch(ConnectionManager.vendor()) {
 		case Oracle:
-			collectOracleColumns(connection, tables);
+			collectOracleColumns(tables);
 			break;
 		case SqlServer:
-			collectSqlServerColumns(connection, tables, tablePattern);
+			collectSqlServerColumns(tables, tablePattern);
 			break;
 		case Postgres:
-			collectPostgresColumns(connection, tables);
+			collectPostgresColumns(tables);
 			break;
 		default:
 			throw new UnknownDatabaseException();
 		}
 
-		for(Map.Entry<String, PrimaryKey> eidx : getPrimaryKeys(connection, tablePattern).entrySet()) {
-			if(tables.containsKey(eidx.getKey())) {
+		for(Map.Entry<String, PrimaryKey> eidx : getPrimaryKeys(tablePattern).entrySet()) {
+			if(tables.containsKey(eidx.getKey()))
 				tables.get(eidx.getKey()).setPK(eidx.getValue());
-			}
 		}
-		for(Index idx : getIndices(connection, false, tablePattern)) {
-			if(tables.containsKey(idx.tableName)) {
+
+		for(Index idx : getIndices(false, tablePattern)) {
+			if(tables.containsKey(idx.tableName))
 				tables.get(idx.tableName).addIndex(idx);
-			}
 		}
-		for(Index idx : getIndices(connection, true, tablePattern)) {
-			if(tables.containsKey(idx.tableName)) {
+
+		for(Index idx : getIndices(true, tablePattern)) {
+			if(tables.containsKey(idx.tableName))
 				tables.get(idx.tableName).addUniqueIndex(idx);
-			}
 		}
-		for(ForeignKey relation : getForeignKeys(connection, tablePattern)) {
-			if(tables.containsKey(relation.table)) {
+
+		for(ForeignKey relation : getForeignKeys(tablePattern)) {
+			if(tables.containsKey(relation.table))
 				tables.get(relation.table).addLink(relation);
-			}
 		}
+
 		return tables;
 	}
 
-	static private void collectOracleColumns(Connection connection, Map<String, TableDescription> tables) throws SQLException {
-		String tempTable = ("TMP_GEN_" + guid.create().hashCode()).replace("-", "");
+	static private void collectOracleColumns(Map<String, TableDescription> tables) throws SQLException {
+		String sql = 
+			"SELECT " + 
+				"TABLE_NAME, " +
+				"COLUMN_NAME, " +
+				"DATA_TYPE, " +
+				"COALESCE(CHAR_COL_DECL_LENGTH, DATA_PRECISION, 0), " +
+				"COALESCE(DATA_SCALE, 0), " + 
+				"CASE WHEN NULLABLE = 'NO' THEN 0 ELSE 1 END, " +
+				"NVL(DATA_DEFAULT, '') " +
+			"FROM ALL_TAB_COLUMNS " +
+			"WHERE OWNER = '" + ConnectionManager.database().schema() + "' " +
+			"ORDER BY TABLE_NAME, COLUMN_ID";
 
-		try {
-			{
-				String sql = " CREATE TABLE " + tempTable + "  (" + "    TABLE_NAME     NVARCHAR2(30) ," + "    COLUMN_NAME    NVARCHAR2(30) ," + "    COLUMN_ID      NUMBER       ," + "    TYPE_NAME      NVARCHAR2(30) ," + "    DATA_PRECISION NUMBER       ,"
-						+ "    DATA_SCALE     NUMBER       ," + "    NULLABLE       NUMBER(1,0)  ," + "    DEFAULT_LENGTH NUMBER       ," + "    DATA_DEFAULT NCLOB" + "  )";
-				Statement.executeUpdate(connection, sql);
-			}
-
-			{
-				String sql = "INSERT INTO " + tempTable + " " + " SELECT /*+CHOOSE*/ TO_NCHAR(t.table_name), TO_NCHAR(t.column_name) column_name, t.column_id column_id, " + " TO_NCHAR(t.data_type) type_name, decode(t.data_precision, null, decode(t.char_used, 'C', t.char_length,"
-						+ " t.data_length), t.data_precision) AS column_size, NVL(t.data_scale, 0) decimal_digits," + " decode(t.nullable, 'N', 0, 1) AS nullable," + " t.default_length default_length, TO_LOB(t.data_default) column_def" + " FROM all_tab_columns t" + " WHERE"
-						+ " t.owner = '" + connection.database().schema() + "'";
-				Statement.executeUpdate(connection, sql);
-			}
-
-			String sql = " SELECT" + "    TABLE_NAME," + "    COLUMN_NAME," + "    TYPE_NAME," + "    DATA_PRECISION," + "    DATA_SCALE," + "    NULLABLE," + "    DEFAULT_LENGTH," + "    TO_NCHAR(DATA_DEFAULT)" + "  FROM " + tempTable + " ORDER BY TABLE_NAME, COLUMN_ID";
-			Cursor cursor = BasicSelect.cursor(connection, sql);
-
-			while(cursor.next()) {
-				String tableName = cursor.getString(1).get();
-
-				if(tableName.equals(tempTable)) {
-					continue;
-				}
-
-				if(!tables.containsKey(tableName)) {
-					tables.put(tableName, new TableDescription(tableName, false));
-				}
-				tables.get(tableName).addField(new Column(cursor.getString(2).get(), cursor.getString(3).get(), cursor.getInteger(4).getInt(), cursor.getInteger(5).getInt(), cursor.getInteger(6).getInt() == DatabaseMetaData.columnNullable,
-						(cursor.getInteger(7).get() == 0 ? "" : cursor.getString(8).get())));
-			}
-
-			cursor.close();
-		} finally {
-			String sql = " DROP TABLE " + tempTable;
-			Statement.executeUpdate(connection, sql);
-		}
-	}
-
-	static private void collectSqlServerColumns(Connection connection, Map<String, TableDescription> tables, String tablePattern) throws SQLException {
-		String sql = "SELECT " + "cast(TABLE_NAME as nvarchar(max)), " + "cast(COLUMN_NAME as nvarchar(max)), " + "cast(DATA_TYPE as nvarchar(max)), " + "isnull(CHARACTER_MAXIMUM_LENGTH, isnull(NUMERIC_PRECISION, 0)) COLUMN_SIZE, " + "isnull(NUMERIC_SCALE, 0) DECIMAL_DIGITS, "
-				+ "(case when IS_NULLABLE = 'NO' then 0 else 1 end) NULLABLE, " + "cast(isnull(COLUMN_DEFAULT, '') as nvarchar(max)) " + "FROM " + "INFORMATION_SCHEMA.COLUMNS " + "WHERE " + "lower(TABLE_NAME) like lower('" + tablePattern + "')" + "ORDER BY "
-				+ "TABLE_NAME, ORDINAL_POSITION";
-
-		Cursor cursor = BasicSelect.cursor(connection, sql);
+		Cursor cursor = BasicSelect.cursor(sql);
 
 		while(cursor.next()) {
-			String tableName = cursor.getString(1).get().toUpperCase();
+			String tableName = cursor.getString(1).get();
 
-			if(!tables.containsKey(tableName)) {
-				tables.put(tableName, new TableDescription(tableName, isView(tableName, connection)));
-			}
+			if(!tables.containsKey(tableName))
+				tables.put(tableName, new TableDescription(tableName, false));
 
-			String field_name = cursor.getString(2).get();
-			String type_name = cursor.getString(3).get();
+			String fieldName = cursor.getString(2).get();
+			String typeName = cursor.getString(3).get();
+			int length = cursor.getInteger(4).getInt();
+			int scale = cursor.getInteger(5).getInt();
+			boolean nullable = cursor.getBoolean(6).get();
+			String defaultValue = cursor.getString(7).get().replace("::" + typeName, "");
 
-			tables.get(tableName).addField(new Column(field_name, type_name, (type_name.equalsIgnoreCase("uniqueidentifier") ? 36 : cursor.getInteger(4).getInt()), cursor.getInteger(5).getInt(), cursor.getBoolean(6).get(), cursor.getString(7).get()));
+			tables.get(tableName).addField(new Column(fieldName, typeName, length, scale, nullable, defaultValue));
 		}
 
 		cursor.close();
 	}
 
-	static private void collectPostgresColumns(Connection connection, Map<String, TableDescription> tables) throws SQLException {
-		String sql = "SELECT " + "table_name, " + "column_name, " + "data_type, " + "coalesce(character_maximum_length, numeric_precision, 0), " + "coalesce(numeric_scale, 0), " + "case when is_nullable = 'NO' then 0 else 1 end, " + "coalesce(column_default, '') " + "FROM "
-				+ "information_schema.columns " + "WHERE " + "table_schema = '" + connection.database().schema() + "' " + "ORDER BY " + "table_name, ordinal_position";
+	static private void collectPostgresColumns(Map<String, TableDescription> tables) throws SQLException {
+		String sql = 
+			"SELECT " + 
+				"table_name, " +
+				"column_name, " +
+				"data_type, " +
+				"coalesce(character_maximum_length, numeric_precision, 0), " +
+				"coalesce(numeric_scale, 0), " + "case when is_nullable = 'NO' then 0 else 1 end, " +
+				"coalesce(column_default, '') " +
+			"FROM information_schema.columns " + 
+			"WHERE table_schema = '" + ConnectionManager.database().schema() + "' " +
+			"ORDER BY table_name, ordinal_position";
 
-		Cursor cursor = BasicSelect.cursor(connection, sql);
+		Cursor cursor = BasicSelect.cursor(sql);
 
 		while(cursor.next()) {
 			String tableName = cursor.getString(1).get();
@@ -154,9 +131,32 @@ public class DataSchema {
 		cursor.close();
 	}
 
-	static boolean isView(String table, Connection connection) throws SQLException {
+	static private void collectSqlServerColumns(Map<String, TableDescription> tables, String tablePattern) throws SQLException {
+		String sql = "SELECT " + "cast(TABLE_NAME as nvarchar(max)), " + "cast(COLUMN_NAME as nvarchar(max)), " + "cast(DATA_TYPE as nvarchar(max)), " + "isnull(CHARACTER_MAXIMUM_LENGTH, isnull(NUMERIC_PRECISION, 0)) COLUMN_SIZE, " + "isnull(NUMERIC_SCALE, 0) DECIMAL_DIGITS, "
+				+ "(case when IS_NULLABLE = 'NO' then 0 else 1 end) NULLABLE, " + "cast(isnull(COLUMN_DEFAULT, '') as nvarchar(max)) " + "FROM " + "INFORMATION_SCHEMA.COLUMNS " + "WHERE " + "lower(TABLE_NAME) like lower('" + tablePattern + "')" + "ORDER BY "
+				+ "TABLE_NAME, ORDINAL_POSITION";
+
+		Cursor cursor = BasicSelect.cursor(sql);
+
+		while(cursor.next()) {
+			String tableName = cursor.getString(1).get().toUpperCase();
+
+			if(!tables.containsKey(tableName)) {
+				tables.put(tableName, new TableDescription(tableName, isView(tableName)));
+			}
+
+			String field_name = cursor.getString(2).get();
+			String type_name = cursor.getString(3).get();
+
+			tables.get(tableName).addField(new Column(field_name, type_name, (type_name.equalsIgnoreCase("uniqueidentifier") ? 36 : cursor.getInteger(4).getInt()), cursor.getInteger(5).getInt(), cursor.getBoolean(6).get(), cursor.getString(7).get()));
+		}
+
+		cursor.close();
+	}
+
+	static boolean isView(String table) throws SQLException {
 		String sql = "select type from sys.objects where type_desc = 'VIEW' and lower(name) = lower('" + table + "')";
-		Cursor cursor = BasicSelect.cursor(connection, sql);
+		Cursor cursor = BasicSelect.cursor(sql);
 
 		boolean isView = cursor.next();
 		cursor.close();
@@ -164,9 +164,10 @@ public class DataSchema {
 		return isView;
 	}
 
-	static private Map<String, PrimaryKey> getPrimaryKeys(Connection connection, String tableLike) throws SQLException {
+	static private Map<String, PrimaryKey> getPrimaryKeys(String tableLike) throws SQLException {
 		String sql;
-		switch(connection.vendor()) {
+
+		switch(ConnectionManager.vendor()) {
 		case Oracle: {
 			sql = "SELECT TO_NCHAR(pkCols.CONSTRAINT_NAME)," + "  TO_NCHAR(pkCols.TABLE_NAME)," + "  TO_NCHAR(pkCols.COLUMN_NAME)" + " FROM user_constraints pk," + "  user_cons_columns pkCols" + " WHERE pk.constraint_type = 'P'"
 					+ "  AND pk.CONSTRAINT_NAME     =pkCols.CONSTRAINT_NAME" + "  AND lower(pkCols.TABLE_NAME) LIKE lower('" + tableLike + "')" + " ORDER BY pkCols.TABLE_NAME," + "  pkCols.POSITION";
@@ -179,7 +180,7 @@ public class DataSchema {
 		}
 		case Postgres: {
 			sql = "select " + "keys.constraint_name, " + "keys.table_name, " + "cols.column_name " + "from " + "information_schema.table_constraints keys, " + "information_schema.key_column_usage cols " + "where " + "keys.constraint_name = cols.constraint_name and "
-					+ "keys.constraint_type = 'PRIMARY KEY' and " + "keys.constraint_schema = '" + connection.database().schema() + "'" + "order by " + "keys.table_name, cols.ordinal_position";
+					+ "keys.constraint_type = 'PRIMARY KEY' and " + "keys.constraint_schema = '" + ConnectionManager.database().schema() + "'" + "order by " + "keys.table_name, cols.ordinal_position";
 			break;
 		}
 		default:
@@ -188,7 +189,7 @@ public class DataSchema {
 
 		Map<String, PrimaryKey> primaryKeys = new Hashtable<String, PrimaryKey>();
 
-		Cursor cursor = BasicSelect.cursor(connection, sql);
+		Cursor cursor = BasicSelect.cursor(sql);
 
 		while(cursor.next()) {
 			String pk_name = cursor.getString(1).get();
@@ -207,10 +208,10 @@ public class DataSchema {
 		return primaryKeys;
 	}
 
-	static private Iterable<Index> getIndices(Connection connection, boolean unique, String tableLike) throws SQLException {
+	static private Iterable<Index> getIndices(boolean unique, String tableLike) throws SQLException {
 		String sql;
 
-		switch(connection.vendor()) {
+		switch(ConnectionManager.vendor()) {
 		case Oracle: {
 			sql = "SELECT TO_NCHAR(a.INDEX_NAME) INDEX_NAME, TO_NCHAR(a.TABLE_NAME) TABLE_NAME, TO_NCHAR(a.COLUMN_NAME) COLUMN_NAME" + "  FROM user_ind_columns a ," + " (SELECT a.INDEX_NAME" + "    FROM user_indexes a" + "   WHERE UNIQUENESS = '"
 					+ (unique ? "UNIQUE" : "NONUNIQUE") + "'" + " AND lower(a.table_name) LIKE lower('" + tableLike + "')" + " ) b" + " WHERE a.INDEX_NAME = b.INDEX_NAME" + " AND NOT EXISTS" + "  (SELECT 0" + "     FROM user_constraints pk" + "    WHERE pk.constraint_type = 'P'"
@@ -228,7 +229,7 @@ public class DataSchema {
 		case Postgres: {
 			sql = "select " + "indexes.relname as index, " + "tables.relname as table, " + "columns.attname as column " + "from " + "pg_class tables, " + "pg_class indexes, " + "pg_namespace owners, " + "pg_index root, " + "pg_attribute columns " + "where "
 					+ "tables.oid = root.indrelid and " + "indexes.oid = root.indexrelid and " + "owners.oid = tables.relnamespace and " + "tables.oid = columns.attrelid and " + "columns.attnum = ANY(root.indkey) and " + "tables.relkind = 'r' and " + "root.indisunique = '"
-					+ (unique ? "t" : "f") + "' and " + "not root.indisprimary and " + "owners.nspname = '" + connection.database().schema() + "'";
+					+ (unique ? "t" : "f") + "' and " + "not root.indisprimary and " + "owners.nspname = '" + ConnectionManager.database().schema() + "'";
 
 			break;
 		}
@@ -239,7 +240,7 @@ public class DataSchema {
 
 		Map<String, Index> indexes = new Hashtable<String, Index>();
 
-		Cursor cursor = BasicSelect.cursor(connection, sql);
+		Cursor cursor = BasicSelect.cursor(sql);
 
 		while(cursor.next()) {
 			String index = cursor.getString(1).get();
@@ -258,9 +259,10 @@ public class DataSchema {
 		return indexes.values();
 	}
 
-	static private Iterable<ForeignKey> getForeignKeys(Connection connection, String tableLike) throws SQLException {
+	static private Iterable<ForeignKey> getForeignKeys(String tableLike) throws SQLException {
 		String sql;
-		switch(connection.vendor()) {
+
+		switch(ConnectionManager.vendor()) {
 		case Oracle:
 			sql = "SELECT TO_NCHAR(pk.TABLE_NAME) PK_TABNAME," + " TO_NCHAR(pkCols.COLUMN_NAME) PK_COLNAME ," + " TO_NCHAR(fk.TABLE_NAME) FK_TABNAME      ," + " TO_NCHAR(fkCols.COLUMN_NAME) FK_COLNAME ," + " TO_NCHAR(fk.CONSTRAINT_NAME) CONSTRAINT_NAME" + "  FROM"
 					+ " (SELECT CONSTRAINT_NAME," + "   constraint_type      ," + "   TABLE_NAME           ," + "   R_CONSTRAINT_NAME" + "    FROM user_constraints a" + "   WHERE constraint_type = 'R'" + " AND lower(TABLE_NAME) LIKE lower('" + tableLike + "')"
@@ -276,7 +278,7 @@ public class DataSchema {
 
 		case Postgres:
 			sql = "select " + "pk.table_name, " + "pk.column_name, " + "fk.table_name, " + "fk.column_name, " + "fk.constraint_name " + "from " + "information_schema.key_column_usage fk, " + "information_schema.referential_constraints refc, "
-					+ "information_schema.key_column_usage pk " + "where " + "fk.constraint_name = refc.constraint_name and " + "refc.unique_constraint_name = pk.constraint_name and " + "fk.constraint_schema = '" + connection.database().schema() + "'";
+					+ "information_schema.key_column_usage pk " + "where " + "fk.constraint_name = refc.constraint_name and " + "refc.unique_constraint_name = pk.constraint_name and " + "fk.constraint_schema = '" + ConnectionManager.database().schema() + "'";
 			break;
 		default:
 			throw new UnknownDatabaseException();
@@ -284,7 +286,7 @@ public class DataSchema {
 
 		Collection<ForeignKey> foreignKeys = new LinkedList<ForeignKey>();
 
-		Cursor cursor = BasicSelect.cursor(connection, sql);
+		Cursor cursor = BasicSelect.cursor(sql);
 
 		while(cursor.next()) {
 			foreignKeys.add(new ForeignKey(cursor.getString(1).get(), cursor.getString(2).get(), cursor.getString(3).get(), cursor.getString(4).get(), cursor.getString(5).get()));

@@ -111,7 +111,7 @@ public class Database {
 		Cursor cursor = null;
 
 		try {
-			cursor = BasicSelect.cursor(ConnectionManager.get(this), sql);
+			cursor = BasicSelect.cursor(sql);
 			return cursor.next() && cursor.getInteger(1).get() != 0;
 		} catch(SQLException e) {
 			Trace.logError(e);

@@ -1,5 +1,7 @@
 package org.zenframework.z8.server.db;
 
+import org.zenframework.z8.server.utils.StringUtils;
+
 public enum DatabaseVendor {
 	Oracle(names.Oracle),
 	SqlServer(names.SqlServer),
@@ -40,8 +42,12 @@ public enum DatabaseVendor {
 		}
 	}
 
+	public String sqlName(String name) {
+		return this == Oracle && name.length() > 15 ? StringUtils.translit(name, 30) : name;
+	}
+
 	public String quote(String name) {
-		return quoteOpen() + name + quoteClose();
+		return quoteOpen() + sqlName(name) + quoteClose();
 	}
 
 	private char quoteOpen() {

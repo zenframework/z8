@@ -354,9 +354,12 @@ public class date extends primary {
 	static boolean isEqualDate(date left, date right) {
 		return left.year() == right.year() && left.month() == right.month() && left.day() == right.day();
 	}
-
 	@Override
 	public String toString() {
+		return toString("T", "");
+	}
+
+	public String toString(String timeSeparator, String zoneSeparator) {
 		int day = day();
 		int month = month();
 		int year = year();
@@ -375,15 +378,13 @@ public class date extends primary {
 		String result = "" + (year < 10 ? "000" : (year < 100 ? "00" : (year < 1000 ? "0" : ""))) + year +
 				"-" + (month < 10 ? "0" + month : month) + 
 				"-" + (day < 10 ? "0" + day : day) + 
-				"T" + (hours < 10 ? "0" + hours : hours) + ":" + (minutes < 10 ? "0" + minutes : minutes);
+				timeSeparator + (hours < 10 ? "0" + hours : hours) + ":" + (minutes < 10 ? "0" + minutes : minutes);
 
-		if(seconds != 0 || milliseconds != 0) {
-			result += ":" + (seconds < 10 ? "0" + seconds : seconds);
-			if(milliseconds != 0)
-				result += "." + milliseconds;
-		}
+		result += ":" + (seconds < 10 ? "0" + seconds : seconds);
+		if(milliseconds != 0)
+			result += "." + milliseconds;
 
-		result += "" + (offset < 0 ? "-" : "+") +
+		result += zoneSeparator + (offset < 0 ? "-" : "+") +
 			(offsetHours < 10 ? "0" + offsetHours : offsetHours) + ":" +
 			(offsetMinutes < 10 ? "0" + offsetMinutes : offsetMinutes);
 
@@ -408,10 +409,16 @@ public class date extends primary {
 
 	@Override
 	public String toDbConstant(DatabaseVendor vendor) {
-		if(vendor != DatabaseVendor.Postgres)
+		String date; 
+
+		if(vendor == DatabaseVendor.Postgres)
+			date = "'" + toString("T", "") + "'";
+		else if(vendor == DatabaseVendor.Oracle)
+			date = "'" + toString(" ", " ") + "'";
+		else
 			throw new UnsupportedOperationException();
 
-		return new ToDate(new SqlStringToken("'" + toString() + "'", FieldType.Date)).format(vendor, new FormatOptions());
+		return new ToDate(new SqlStringToken(date, FieldType.Date)).format(vendor, new FormatOptions());
 	}
 
 	@Override

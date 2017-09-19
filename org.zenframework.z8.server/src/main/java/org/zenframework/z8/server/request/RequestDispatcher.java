@@ -136,6 +136,8 @@ public class RequestDispatcher implements Runnable {
 				job.processRequest(response);
 			} else
 				object.processRequest(response);
+
+			ConnectionManager.release();
 		}
 	}
 }

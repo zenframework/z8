@@ -106,9 +106,9 @@ public class ApplicationServer extends RmiServer implements IApplicationServer {
 	@Override
 	public void stop() throws RemoteException {
 		Scheduler.stop();
-	
+
 		unregister();
-		
+
 		super.stop();
 	}
 

@@ -10,8 +10,6 @@ import org.zenframework.z8.server.base.table.value.Field;
 import org.zenframework.z8.server.base.table.value.ILink;
 import org.zenframework.z8.server.config.ServerConfig;
 import org.zenframework.z8.server.db.BasicSelect;
-import org.zenframework.z8.server.db.Connection;
-import org.zenframework.z8.server.db.ConnectionManager;
 import org.zenframework.z8.server.db.Cursor;
 import org.zenframework.z8.server.db.DatabaseVendor;
 import org.zenframework.z8.server.db.sql.FormatOptions;
@@ -181,14 +179,27 @@ public class Select {
 		options.disableAggregation();
 		result += orderBy;
 
-		if(rootQuery != null && rootQuery.getReadLock() != ReadLock.None)
-			result += " " + rootQuery.getReadLock() + " of " + rootQuery.getAlias();
+		result += formatReadLock(options);
 
 		options.enableAggregation();
 
 		updateAliases(options);
 
 		return result;
+	}
+
+	private String formatReadLock(FormatOptions options) {
+		String readLock = "";
+
+		if(rootQuery == null || rootQuery.getReadLock() == ReadLock.None)
+			return readLock;
+
+		readLock = '\n' + rootQuery.getReadLock().toString();
+
+		if(vendor() == DatabaseVendor.Postgres)
+			readLock += " of " + rootQuery.getAlias();
+
+		return readLock;
 	}
 
 	private Collection<Field> getAggregatedFields() {
@@ -309,15 +320,13 @@ public class Select {
 	}
 
 	public void open() {
-		Connection connection = ConnectionManager.get(database);
-
 		String sql = sql(new FormatOptions());
 
 		boolean traceSql = ServerConfig.traceSql();
 		long startAt = traceSql ? System.currentTimeMillis() : 0;
 
 		try {
-			cursor = BasicSelect.cursor(connection, sql);
+			cursor = BasicSelect.cursor(sql);
 		} catch(Throwable e) {
 			close();
 			Trace.logError(sql, e);

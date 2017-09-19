@@ -112,7 +112,7 @@ public final class string extends primary {
 	public String toDbConstant(DatabaseVendor vendor) {
 		String string = get().replaceAll("'", "''");
 
-		if(vendor == DatabaseVendor.SqlServer)
+		if(vendor == DatabaseVendor.SqlServer || vendor == DatabaseVendor.Oracle)
 			return "N'" + string + "'";
 
 		return "'" + string + "'";

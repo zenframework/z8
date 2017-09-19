@@ -17,6 +17,14 @@ public class ConnectionManager {
 		return get(ServerConfig.database());
 	}
 
+	public static Database database() {
+		return get().database();
+	}
+
+	public static DatabaseVendor vendor() {
+		return database().vendor();
+	}
+
 	public static synchronized Connection get(Database database) {
 		if(Thread.interrupted())
 			throw new ThreadInterruptedException();

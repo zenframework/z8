@@ -96,10 +96,9 @@ public class guid extends primary {
 		if (guid == null || guid.trim().equals("") || guid.trim().equals("0")) {
 			value = nullValue;
 		} else {
-			if (guid.length() == 32) {
+			if (guid.length() == 32)
 				guid = guid.substring(0, 8) + "-" + guid.substring(8, 12) + "-" + guid.substring(12, 16) + "-"
 						+ guid.substring(16, 20) + "-" + guid.substring(20, 32);
-			}
 			value = UUID.fromString(guid);
 		}
 	}

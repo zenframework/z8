@@ -25,6 +25,7 @@ public class ToDate extends SqlToken {
 	public String format(DatabaseVendor vendor, FormatOptions options, boolean logicalContext) {
 		switch(vendor) {
 		case Oracle:
+			return "TIMESTAMP " + token.format(vendor, options);
 		case Postgres:
 			return token.format(vendor, options) + "::timestamp with time zone";
 		case SqlServer:

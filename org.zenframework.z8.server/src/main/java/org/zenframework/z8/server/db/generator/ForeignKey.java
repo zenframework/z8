@@ -3,6 +3,7 @@ package org.zenframework.z8.server.db.generator;
 import java.sql.SQLException;
 
 import org.zenframework.z8.server.db.Connection;
+import org.zenframework.z8.server.db.ConnectionManager;
 import org.zenframework.z8.server.db.DatabaseVendor;
 import org.zenframework.z8.server.db.Statement;
 import org.zenframework.z8.server.engine.Database;
@@ -24,8 +25,8 @@ public class ForeignKey {
 		this.field = field;
 	}
 
-	public ForeignKey(String table, IForeignKey fk, int c) {
-		this.name = "FK_" + table + "_" + c;
+	public ForeignKey(String table, IForeignKey fk, int index) {
+		this.name = "FK" + index + "_" + table;
 		this.referenceTable = fk.getReferencedTable().name();
 		this.referenceField = fk.getReferer().name();
 		this.table = table;
@@ -42,13 +43,14 @@ public class ForeignKey {
 		return o != null ? hashCode() == o.hashCode() : false;
 	}
 
-	public void drop(Connection connection) throws SQLException {
+	public void drop() throws SQLException {
 		if(!dropped) {
+			Connection connection = ConnectionManager.get();
 			Database database = connection.database();
 			DatabaseVendor vendor = database.vendor();
 
 			String sql = "alter table " + database.tableName(table) + " drop constraint " + vendor.quote(name);
-			Statement.executeUpdate(connection, sql);
+			Statement.executeUpdate(sql);
 
 			dropped = true;
 		}

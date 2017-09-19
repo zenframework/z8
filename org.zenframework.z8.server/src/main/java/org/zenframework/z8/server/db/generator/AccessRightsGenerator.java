@@ -69,6 +69,8 @@ public class AccessRightsGenerator {
 		} catch(Throwable e) {
 			connection.rollback();
 			throw new RuntimeException(e);
+		} finally {
+			connection.release();
 		}
 	}
 

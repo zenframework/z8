@@ -8,6 +8,7 @@ import org.zenframework.z8.server.base.table.Table;
 import org.zenframework.z8.server.base.table.value.Field;
 import org.zenframework.z8.server.db.BasicSelect;
 import org.zenframework.z8.server.db.Connection;
+import org.zenframework.z8.server.db.ConnectionManager;
 import org.zenframework.z8.server.db.Cursor;
 import org.zenframework.z8.server.db.DatabaseVendor;
 import org.zenframework.z8.server.db.Statement;
@@ -17,37 +18,41 @@ import org.zenframework.z8.server.exceptions.db.UnknownDatabaseException;
 class IndexGenerator {
 	private Table table;
 	private Field field;
-	private int id;
+	private int index;
 	private boolean unique;
 
-	IndexGenerator(Table table, Field field, int id, boolean unique) {
+	IndexGenerator(Table table, Field field, int index, boolean unique) {
 		this.table = table;
 		this.field = field;
-		this.id = id;
+		this.index = index;
 		this.unique = unique;
 	}
 
-	void run(Connection connection) throws SQLException {
+	void run() throws SQLException {
+		Connection connection = ConnectionManager.get();
+
 		Database database = connection.database();
 		DatabaseVendor vendor = database.vendor();
 
-		String sql = "CREATE " + (unique ? "UNIQUE " : "") + "INDEX " + vendor.quote((unique ? "UNQ_" : "IDX_") + table.name() + "_" + id) + " " + "ON " + database.tableName(table.name()) + "(" + formatIndexFields(vendor) + ")" + getTableSpace(connection);
+		String sql = "CREATE " + (unique ? "UNIQUE " : "") + "INDEX " + vendor.quote((unique ? "UNQ" : "IDX") + index + "_" + table.name()) + " " + "ON " + database.tableName(table.name()) + "(" + formatIndexFields(vendor) + ")" + getTableSpace(connection);
 
-		Statement.executeUpdate(connection, sql);
+		Statement.executeUpdate(sql);
 	}
 
 	private String formatIndexFields(DatabaseVendor vendor) {
 		return vendor.quote(this.field.name());
 	}
 
-	static void dropIndex(Connection conn, String tableName, String indexName) throws SQLException {
-		switch(conn.vendor()) {
+	static void dropIndex(String tableName, String indexName) throws SQLException {
+		Connection connection = ConnectionManager.get();
+
+		switch(connection.vendor()) {
 		case Postgres:
 		case Oracle:
-			dropIndexOracle(conn, tableName, indexName);
+			dropIndexOracle(connection, tableName, indexName);
 			break;
 		case SqlServer:
-			dropIndexSQLServer(conn, tableName, indexName);
+			dropIndexSQLServer(connection, tableName, indexName);
 			break;
 		default:
 			throw new UnsupportedOperationException();
@@ -57,13 +62,13 @@ class IndexGenerator {
 	private static void dropIndexOracle(Connection connection, String tableName, String indexName) throws SQLException {
 		Database database = connection.database();
 		String sql = "drop index " + database.tableName(indexName);
-		Statement.executeUpdate(connection, sql);
+		Statement.executeUpdate(sql);
 	}
 
 	private static void dropIndexSQLServer(Connection connection, String tableName, String indexName) throws SQLException {
 		DatabaseVendor vendor = connection.vendor();
 		String sql = "drop index " + vendor.quote(tableName) + "." + vendor.quote(indexName);
-		Statement.executeUpdate(connection, sql);
+		Statement.executeUpdate(sql);
 	}
 
 	static private Map<String, String> tableSpaces = new HashMap<String, String>();
@@ -98,13 +103,12 @@ class IndexGenerator {
 		}
 		}
 
-		Cursor cursor = BasicSelect.cursor(connection, sql);
+		Cursor cursor = BasicSelect.cursor(sql);
 		result = cursor.next() ? cursor.getString(1).get() : "";
 		cursor.close();
 
-		if(result.isEmpty()) {
+		if(result.isEmpty())
 			return result;
-		}
 
 		switch(connection.vendor()) {
 		case Oracle:

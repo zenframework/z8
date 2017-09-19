@@ -313,6 +313,9 @@ abstract public class Field extends Control implements IField {
 		boolean readOnly = false;
 		boolean required = false;
 
+		bool wasReadOnly = this.readOnly;
+		bool wasRequired = this.required;
+
 		if(path == null || !path.isEmpty() && path.iterator().next().owner() != query)
 			path = query.getPath(this);
 
@@ -349,11 +352,17 @@ abstract public class Field extends Control implements IField {
 
 			writer.writeSort(link.getQuery().sortFields());
 
-			readOnly = path.size() > 1 || linkField.readOnly() || !access().write();
+			readOnly = linkField.readOnly() || !linkField.access().write();
 			required = !readOnly && (required() || linkField.required());
+
+			this.readOnly = new bool(readOnly);
+			this.required = new bool(required);
 		} else {
 			readOnly = readOnly() || !access().write();
 			required = !readOnly && required();
+
+			this.readOnly = new bool(readOnly() || readOnly);
+			this.required = new bool(required() || required);
 
 			writer.writeProperty(Json.isText, true);
 
@@ -367,11 +376,6 @@ abstract public class Field extends Control implements IField {
 		if(valueFor != null)
 			writer.writeProperty(Json.valueFor, valueFor.get().id());
 
-		bool wasReadOnly = this.readOnly;
-		bool wasRequired = this.required;
-
-		this.readOnly = new bool(readOnly() || readOnly);
-		this.required = new bool(required() || required);
 
 		super.writeMeta(writer, query, context);
 

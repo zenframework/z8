@@ -26,6 +26,7 @@ import org.zenframework.z8.server.base.table.value.IField;
 import org.zenframework.z8.server.base.table.value.ILink;
 import org.zenframework.z8.server.base.table.value.Link;
 import org.zenframework.z8.server.base.view.filter.Filter;
+import org.zenframework.z8.server.db.ConnectionManager;
 import org.zenframework.z8.server.db.sql.SqlToken;
 import org.zenframework.z8.server.db.sql.expressions.And;
 import org.zenframework.z8.server.db.sql.expressions.True;
@@ -236,6 +237,8 @@ public class Query extends OBJECT {
 
 	public int count(SqlToken where) {
 		try {
+			ConnectionManager.get().flush();
+
 			saveState();
 			ReadAction action = new ReadAction(this);
 			action.addFilter(where);
@@ -334,8 +337,7 @@ public class Query extends OBJECT {
 
 	public guid copy(guid recordId) {
 		guid parentId = getParentId();
-		guid newRecordId = CopyAction.run(this, recordId, parentId);
-		return insert(newRecordId, parentId);
+		return CopyAction.run(this, recordId, parentId);
 	}
 
 	public Collection<Field> read(Collection<Field> fields) {

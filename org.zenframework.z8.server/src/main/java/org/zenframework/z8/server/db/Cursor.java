@@ -7,7 +7,16 @@ import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.UUID;
 
+import org.zenframework.z8.server.base.table.value.BinaryField;
+import org.zenframework.z8.server.base.table.value.BoolField;
+import org.zenframework.z8.server.base.table.value.DateField;
+import org.zenframework.z8.server.base.table.value.DatespanField;
+import org.zenframework.z8.server.base.table.value.DecimalField;
 import org.zenframework.z8.server.base.table.value.Field;
+import org.zenframework.z8.server.base.table.value.GuidField;
+import org.zenframework.z8.server.base.table.value.IntegerField;
+import org.zenframework.z8.server.base.table.value.StringField;
+import org.zenframework.z8.server.base.table.value.TextField;
 import org.zenframework.z8.server.logs.Trace;
 import org.zenframework.z8.server.types.binary;
 import org.zenframework.z8.server.types.bool;
@@ -41,7 +50,14 @@ public class Cursor {
 		return resultSet.isAfterLast();
 	}
 
+	public boolean isClosed() {
+		return resultSet == null;
+	}
+
 	public void close() {
+		if(isClosed())
+			return;
+
 		try {
 			if(resultSet != null) {
 				resultSet.close();
@@ -62,55 +78,65 @@ public class Cursor {
 	}
 
 	public guid getGuid(int position) throws SQLException {
-		return getGuid(position, null);
+		return getGuid(position, new GuidField(null));
 	}
 
 	private guid getGuid(int position, Field field) throws SQLException {
-		Object value = resultSet.getObject(position);
+		Object value = null;
+
+		if(statement.vendor() == DatabaseVendor.Oracle)
+			value = resultSet.getString(position);
+		else if(statement.vendor() == DatabaseVendor.Postgres)
+			value = resultSet.getObject(position);
+
 		boolean wasNull = value == null || wasNull();
-		if(field != null)
-			field.setWasNull(wasNull);
+		field.setWasNull(wasNull);
+
 		return !wasNull ? (value instanceof UUID ? new guid((UUID)value) : new guid((String)value)) : new guid();
 	}
 
 	public bool getBoolean(int position) throws SQLException {
-		return getBoolean(position, null);
+		return getBoolean(position, new BoolField(null));
 	}
 
 	private bool getBoolean(int position, Field field) throws SQLException {
 		boolean value = resultSet.getBoolean(position);
 		boolean wasNull = wasNull();
-		if(field != null)
-			field.setWasNull(wasNull);
+		field.setWasNull(wasNull);
 		return !wasNull ? new bool(value) : bool.False;
 	}
 
 	public integer getInteger(int position) throws SQLException {
-		return getInteger(position, null);
+		return getInteger(position, new IntegerField(null));
 	}
 
 	private integer getInteger(int position, Field field) throws SQLException {
 		long value = resultSet.getLong(position);
 		boolean wasNull = wasNull();
-		if(field != null)
-			field.setWasNull(wasNull);
+		field.setWasNull(wasNull);
 		return !wasNull ? new integer(value) : integer.Zero;
 	}
 
 	public string getString(int position) throws SQLException {
-		return getString(position, null);
+		return getString(position, new StringField(null));
 	}
 
 	private string getString(int position, Field field) throws SQLException {
-		byte[] bytes = resultSet.getBytes(position);
-		boolean wasNull = bytes == null || wasNull();
-		if(field != null)
-			field.setWasNull(wasNull);
-		return !wasNull ? new string(bytes, statement.charset()) : new string();
+		Object value = null;
+
+		if(statement.vendor() == DatabaseVendor.Oracle)
+			value = field.type() == FieldType.String ? resultSet.getString(position) : resultSet.getBytes(position);
+		else if(statement.vendor() == DatabaseVendor.Postgres)
+			value = resultSet.getBytes(position);
+
+		boolean wasNull = value == null || wasNull();
+		field.setWasNull(wasNull);
+
+		return !wasNull ? (value instanceof String ? new string((String)value) : new string((byte[])value, statement.charset())) : new string();
 	}
 
 	public string getText(int position) throws SQLException {
-		return getText(position, null);
+		return getText(position, new TextField(null));
 	}
 
 	private string getText(int position, Field field) throws SQLException {
@@ -118,19 +144,18 @@ public class Cursor {
 	}
 
 	public date getDate(int position) throws SQLException {
-		return getDate(position, null);
+		return getDate(position, new DateField(null));
 	}
 
 	private date getDate(int position, Field field) throws SQLException {
 		Timestamp value = resultSet.getTimestamp(position);
 		boolean wasNull = value == null || wasNull();
-		if(field != null)
-			field.setWasNull(wasNull);
+		field.setWasNull(wasNull);
 		return !wasNull ? new date(value) : date.Min;
 	}
 
 	public datespan getDatespan(int position) throws SQLException {
-		return getDatespan(position, null);
+		return getDatespan(position, new DatespanField(null));
 	}
 
 	private datespan getDatespan(int position, Field field) throws SQLException {
@@ -138,26 +163,24 @@ public class Cursor {
 	}
 
 	public decimal getDecimal(int position) throws SQLException {
-		return getDecimal(position, null);
+		return getDecimal(position, new DecimalField(null));
 	}
 
 	private decimal getDecimal(int position, Field field) throws SQLException {
 		BigDecimal value = resultSet.getBigDecimal(position);
 		boolean wasNull = value == null || wasNull();
-		if(field != null)
-			field.setWasNull(wasNull);
+		field.setWasNull(wasNull);
 		return !wasNull ? new decimal(value) : decimal.Zero;
 	}
 
 	public binary getBinary(int position) throws SQLException {
-		return getBinary(position, null);
+		return getBinary(position, new BinaryField(null));
 	}
 
 	private binary getBinary(int position, Field field) throws SQLException {
 		InputStream value = resultSet.getBinaryStream(position);
 		boolean wasNull = value == null || wasNull();
-		if(field != null)
-			field.setWasNull(wasNull);
+		field.setWasNull(wasNull);
 		return !wasNull ? new binary(value) : new binary();
 	}
 

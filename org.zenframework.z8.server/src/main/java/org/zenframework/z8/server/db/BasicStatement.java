@@ -93,12 +93,16 @@ public abstract class BasicStatement implements IStatement {
 	synchronized public void close() {
 		try {
 			if(statement != null && !statement.isClosed() && !connection().inBatchMode())
-				statement.close();
+				cleanup();
 		} catch(SQLException e) {
 			Trace.logError(e);
-		} finally {
-			if(!connection().inTransaction())
-				statement = null;
+		}
+	}
+
+	protected void cleanup() throws SQLException {
+		if(!connection().inTransaction()) {
+			statement.close();
+			statement = null;
 		}
 	}
 

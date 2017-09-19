@@ -41,6 +41,8 @@ public class EntriesGenerator {
 		} catch(Throwable e) {
 			connection.rollback();
 			throw new RuntimeException(e);
+		} finally {
+			connection.release();
 		}
 	}
 

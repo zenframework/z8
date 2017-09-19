@@ -29,6 +29,7 @@ import org.zenframework.z8.server.base.table.value.StringExpression;
 import org.zenframework.z8.server.base.table.value.TextExpression;
 import org.zenframework.z8.server.db.BasicSelect;
 import org.zenframework.z8.server.db.Connection;
+import org.zenframework.z8.server.db.ConnectionManager;
 import org.zenframework.z8.server.db.Cursor;
 import org.zenframework.z8.server.db.DatabaseVendor;
 import org.zenframework.z8.server.db.FieldType;
@@ -65,8 +66,6 @@ public class TableGenerator {
 	private Collection<ColumnDescAlter> dbFieldsAlter;
 	private TableDescription dbTable;
 
-	private Connection connection = null;
-
 	public TableGenerator(Table.CLASS<? extends Table> tableClass, GeneratorAction action, TableDescription dbTable, ILogger logger) {
 		this.action = action;
 		this.dbTable = dbTable;
@@ -74,10 +73,6 @@ public class TableGenerator {
 		this.logger = logger;
 
 		this.tableClass = tableClass;
-	}
-
-	public void setConnection(Connection connection) {
-		this.connection = connection;
 	}
 
 	public String name() {
@@ -98,17 +93,19 @@ public class TableGenerator {
 		return action;
 	}
 
+	private Connection connection() {
+		return ConnectionManager.get();
+	}
+
 	private Database database() {
-		return connection.database();
+		return connection().database();
 	}
 
 	private DatabaseVendor vendor() {
-		return connection.vendor();
+		return connection().vendor();
 	}
 
-	public void create(Connection connection) {
-		this.connection = connection;
-
+	public void create() {
 		try {
 			if(action == GeneratorAction.Alter)
 				action = checkAlter();
@@ -129,7 +126,7 @@ public class TableGenerator {
 				throw new UnsupportedOperationException();
 			}
 		} catch(SQLException e) {
-			logger.error(e, Resources.format("Generator.createTableError", displayName(), "[" + connection.schema() + "]." + name(), ErrorUtils.getMessage(e)));
+			logger.error(e, Resources.format("Generator.createTableError", displayName(), "[" + connection().schema() + "]." + name(), ErrorUtils.getMessage(e)));
 		} finally {
 			this.table = null;
 
@@ -160,6 +157,8 @@ public class TableGenerator {
 
 	@SuppressWarnings("unused")
 	private void repairTable() {
+		Connection connection = connection();
+
 		if(table instanceof TreeTable) {
 			try {
 				connection.beginTransaction();
@@ -216,8 +215,10 @@ public class TableGenerator {
 
 		dbFieldsAlter = new LinkedList<ColumnDescAlter>();
 
+		DatabaseVendor vendor = vendor();
+
 		for(Field field : table().getPrimaryFields()) {
-			ColumnDescGen column = dbFields.get(field.name());
+			ColumnDescGen column = dbFields.get(vendor.sqlName(field.name()));
 
 			if(column == null) {
 				dbFieldsAlter.add(new ColumnDescAlter(field, FieldAction.Create, true));
@@ -229,7 +230,7 @@ public class TableGenerator {
 
 			column.DescExist = true;
 
-			String sqlType = field.sqlType(connection.vendor());
+			String sqlType = field.sqlType(vendor);
 
 			if(!sqlType.startsWith(column.type)) {
 				result = GeneratorAction.Recreate;
@@ -317,14 +318,16 @@ public class TableGenerator {
 		return fieldDefault.equals(currentDefault);
 	}
 
-	static void renameTable(Connection connection, String oldTableName, String newTableName) throws SQLException {
+	static void renameTable(String oldTableName, String newTableName) throws SQLException {
 		String sql = null;
 
+		Connection connection = ConnectionManager.get();
 		Database database = connection.database();
 		DatabaseVendor vendor = connection.vendor();
+
 		switch(vendor) {
 		case Oracle:
-			sql = "rename " + database.tableName(oldTableName) + " to " + vendor.quote(newTableName);
+			sql = "alter table " + database.tableName(oldTableName) + " rename  to " + vendor.quote(newTableName);
 			break;
 		case SqlServer:
 			sql = "sp_rename " + database.tableName(oldTableName) + ", " + vendor.quote(newTableName);
@@ -336,13 +339,12 @@ public class TableGenerator {
 			throw new UnsupportedOperationException();
 		}
 
-		Statement.executeUpdate(connection, sql);
+		Statement.executeUpdate(sql);
 	}
 
-	public void dropAllKeys(Connection connection) {
-		this.connection = connection;
-		dropFKs(connection, dbTable.getRelations(), logger);
-		dropIdxs(connection, dbTable, logger);
+	public void dropAllKeys() {
+		dropFKs(dbTable.getRelations(), logger);
+		dropIdxs(dbTable, logger);
 	}
 
 	private String getFieldForCreate(Field field) {
@@ -361,7 +363,7 @@ public class TableGenerator {
 	}
 
 	private String getFieldForAlter(Field field) {
-		DatabaseVendor vendor = connection.vendor();
+		DatabaseVendor vendor = connection().vendor();
 		return vendor.quote(field.name()) + " " + field.sqlType(vendor);
 	}
 
@@ -397,7 +399,7 @@ public class TableGenerator {
 					if(bModify)
 						modifyColumnSql += ", ";
 
-					String defaultValue = DefaultValue.get(connection.vendor(), fld.field);
+					String defaultValue = DefaultValue.get(vendor, fld.field);
 					modifyColumnSql += vendor.quote(fld.field.name()) + " default " + defaultValue;
 					bModify = true;
 				} else if(vendor == DatabaseVendor.SqlServer) {
@@ -436,11 +438,11 @@ public class TableGenerator {
 		}
 
 		if(bAdd) {
-			Statement.executeUpdate(connection, addColumnSql);
+			Statement.executeUpdate(addColumnSql);
 		}
 
 		if(bModify) {
-			Statement.executeUpdate(connection, modifyColumnSql);
+			Statement.executeUpdate(modifyColumnSql);
 		}
 	}
 
@@ -449,18 +451,17 @@ public class TableGenerator {
 
 		if((defaultValue != null) && (defaultValue.length() > 0)) {
 			String sql = "alter table " + database().tableName(table().name()) + " drop constraint " + vendor().quote(defaultValue);
-			Statement.executeUpdate(connection, sql);
+			Statement.executeUpdate(sql);
 		}
 
 		defaultValue = DefaultValue.get(vendor(), fld.field);
 
 		String sql = "alter table " + database().tableName(table().name()) + " add constraint " + vendor().quote("DF_" + table().name() + fld.field.name()) + " default " + defaultValue + " for " + vendor().quote(fld.field.name());
-		Statement.executeUpdate(connection, sql);
+		Statement.executeUpdate(sql);
 	}
 
 	private void recreateTable() throws SQLException {
 		String tableName = table().name();
-
 
 		// Никогда не пересоздаем SystemFiles - очень долго. Если что - все изменения руками.
 		if(tableName.equals(Files.TableName)) {
@@ -468,15 +469,16 @@ public class TableGenerator {
 			return;
 		}
 
+		String name = "" + Math.abs(tableName.hashCode());
 
-		String name = tableName + "_" + guid.create().toString();
+		Connection connection = connection();
 
 		try {
 			connection.beginTransaction();
 			createTable(name);
 			moveData(name);
-			dropTable(connection, table().name());
-			renameTable(connection, name, table().name());
+			dropTable(table().name());
+			renameTable(name, table().name());
 			connection.commit();
 		} catch(Throwable e) {
 			connection.rollback();
@@ -497,42 +499,42 @@ public class TableGenerator {
 
 		sql += ")";
 
-		Statement.executeUpdate(connection, sql);
+		Statement.executeUpdate(sql);
 	}
 
 	public void createPrimaryKey() {
 		try {
-			new PrimaryKeyGenerator(table()).run(connection);
+			new PrimaryKeyGenerator(table()).run();
 		} catch(ObjectAlreadyExistException e) {
 		} catch(SQLException e) {
-			logger.error(e, Resources.format("Generator.createUniqueIndexError", displayName(), "[" + connection.schema() + "]." + name(), ErrorUtils.getMessage(e)));
+			logger.error(e, Resources.format("Generator.createUniqueIndexError", displayName(), "[" + connection().schema() + "]." + name(), ErrorUtils.getMessage(e)));
 		} finally {
 			this.table = null;
 		}
 	}
 
 	private void packFK() {
-		int c = 0;
+		int index = 0;
 		if(table().getForeignKeys() != null) {
-			for(IForeignKey fkGen : table().getForeignKeys()) {
+			for(IForeignKey foreignKey : table().getForeignKeys()) {
 				while(true) {
 					try {
-						createFK(fkGen, c);
+						createForeignKey(foreignKey, index);
 						break;
 					} catch(ObjectAlreadyExistException e) {
-						c++;
+						index++;
 					}
 				}
-				c++;
+				index++;
 			}
 		}
 	}
 
-	private void createFK(IForeignKey fk, int c) {
+	private void createForeignKey(IForeignKey foreignKey, int index) {
 		try {
-			new ForeignKeyGenerator(new ForeignKey(name(), fk, c)).run(connection);
+			new ForeignKeyGenerator(new ForeignKey(name(), foreignKey, index)).run();
 		} catch(SQLException e) {
-			logger.error(e, Resources.format("Generator.createForeignKeyError", table().displayName(), table().name(), fk.getReferencedTable().displayName(), fk.getReferencedTable().name(), ErrorUtils.getMessage(e)));
+			logger.error(e, Resources.format("Generator.createForeignKeyError", table().displayName(), table().name(), foreignKey.getReferencedTable().displayName(), foreignKey.getReferencedTable().name(), ErrorUtils.getMessage(e)));
 		}
 	}
 
@@ -541,7 +543,7 @@ public class TableGenerator {
 		for(IField field : table().getIndices()) {
 			try {
 				index++;
-				new IndexGenerator(table(), (Field)field, index, false).run(connection);
+				new IndexGenerator(table(), (Field)field, index, false).run();
 			} catch(SQLException e) {
 				logger.error(e, Resources.format("Generator.createIndexError", field.displayName(), table().displayName(), table().name(), ErrorUtils.getMessage(e)));
 			}
@@ -553,7 +555,7 @@ public class TableGenerator {
 		for(IField field : table().getUniqueIndices()) {
 			try {
 				index++;
-				new IndexGenerator(table(), (Field)field, index, true).run(connection);
+				new IndexGenerator(table(), (Field)field, index, true).run();
 			} catch(SQLException e) {
 				logger.error(e, Resources.format("Generator.createUniqueIndexError", field.displayName(), table().displayName(), table().name()));
 			}
@@ -679,14 +681,14 @@ public class TableGenerator {
 			String sql = "insert into " + database.tableName(dstTableName) + " (" + targetFields + ")";
 			sql += " select " + sourceFields + " from " + database.tableName(table().name()) + (vendor == DatabaseVendor.SqlServer ? " as " : "") + table().getAlias();
 
-			Statement.executeUpdate(connection, sql);
+			Statement.executeUpdate(sql);
 		}
 	}
 
-	static void dropFKs(Connection connection, Collection<ForeignKey> fks, ILogger logger) {
+	static void dropFKs(Collection<ForeignKey> fks, ILogger logger) {
 		for(ForeignKey fk : fks) {
 			try {
-				fk.drop(connection);
+				fk.drop();
 			} catch(ObjectNotFoundException e) {
 			} catch(SQLException e) {
 				logger.error(e, Resources.format("Generator.dropForeignKeyError", fk.table, fk.name, ErrorUtils.getMessage(e)));
@@ -694,10 +696,10 @@ public class TableGenerator {
 		}
 	}
 
-	static void dropIdxs(Connection connection, TableDescription dbTable, ILogger logger) {
+	static void dropIdxs(TableDescription dbTable, ILogger logger) {
 		for(Index idx : dbTable.getIndexes()) {
 			try {
-				IndexGenerator.dropIndex(connection, idx.tableName, idx.name);
+				IndexGenerator.dropIndex(idx.tableName, idx.name);
 			} catch(ObjectNotFoundException e) {
 			} catch(SQLException e) {
 				logger.error(e, Resources.format("Generator.dropIndexError", idx.tableName, idx.name, ErrorUtils.getMessage(e)));
@@ -706,7 +708,7 @@ public class TableGenerator {
 
 		for(Index idx : dbTable.getUniqueIndexes()) {
 			try {
-				IndexGenerator.dropIndex(connection, idx.tableName, idx.name);
+				IndexGenerator.dropIndex( idx.tableName, idx.name);
 			} catch(ObjectNotFoundException e) {
 			} catch(SQLException e) {
 				logger.error(e, Resources.format("Generator.dropIndexError", idx.tableName, idx.name, ErrorUtils.getMessage(e)));
@@ -714,17 +716,18 @@ public class TableGenerator {
 		}
 	}
 
-	static void dropTable(Connection connection, String tableName) throws SQLException {
+	static void dropTable(String tableName) throws SQLException {
+		Connection connection = ConnectionManager.get();
 		Database database = connection.database();
 
 		String sql = "drop table " + database.tableName(tableName);
-		Statement.executeUpdate(connection, sql);
+		Statement.executeUpdate(sql);
 	}
 
 	public String getDefault(String tableName, String fieldName) throws SQLException {
 		String sql = "select so.name from sysobjects so, sysobjects so2, syscolumns sc where sc.name = '" + fieldName + "' and sc.id = so2.id and so2.name = " + database().tableName(tableName) + " and so.id = sc.cdefault and so.xtype = 'D'";
 
-		Cursor cursor = BasicSelect.cursor(connection, sql);
+		Cursor cursor = BasicSelect.cursor(sql);
 
 		String result = cursor.next() ? cursor.getString(1).get() : "";
 		cursor.close();

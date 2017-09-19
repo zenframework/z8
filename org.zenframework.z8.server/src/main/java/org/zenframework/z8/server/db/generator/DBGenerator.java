@@ -1,3 +1,4 @@
+
 package org.zenframework.z8.server.db.generator;
 
 import java.util.ArrayList;
@@ -8,8 +9,8 @@ import java.util.Map;
 import org.zenframework.z8.server.base.job.scheduler.Scheduler;
 import org.zenframework.z8.server.base.table.Table;
 import org.zenframework.z8.server.base.table.system.Settings;
-import org.zenframework.z8.server.db.Connection;
 import org.zenframework.z8.server.db.ConnectionManager;
+import org.zenframework.z8.server.db.DatabaseVendor;
 import org.zenframework.z8.server.engine.ApplicationServer;
 import org.zenframework.z8.server.engine.Runtime;
 import org.zenframework.z8.server.resources.Resources;
@@ -18,13 +19,11 @@ import org.zenframework.z8.server.utils.ErrorUtils;
 public class DBGenerator {
 	public static final String SchemaGenerateLock = "SchemaGenerate";
 
-	private Connection connection;
 	private ILogger logger;
 	private Collection<Table.CLASS<Table>> tables;
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public DBGenerator(ILogger logger) {
-		this.connection = ConnectionManager.get();
 		this.logger = logger;
 		tables = (Collection)Runtime.instance().tables();
 	}
@@ -36,7 +35,7 @@ public class DBGenerator {
 
 			ApplicationServer.disableEvents();
 
-			run(DataSchema.getTables(connection, "%"));
+			run(DataSchema.getTables("%"));
 		} catch(Throwable e) {
 			logger.error(e);
 		} finally {
@@ -58,18 +57,20 @@ public class DBGenerator {
 		fireBeforeDbGenerated();
 
 		for(TableGenerator generator : generators) {
-			generator.dropAllKeys(connection);
+			generator.dropAllKeys();
 			logger.progress(Math.round(++progress / total * 100));
 		}
 
 		for(TableGenerator generator : generators) {
-			generator.create(connection);
+			generator.create();
 			logger.progress(Math.round(++progress / total * 100));
+			ConnectionManager.release();
 		}
 
 		for(TableGenerator generator : generators) {
 			generator.createRecords();
 			logger.progress(Math.round(++progress / total * 100));
+			ConnectionManager.release();
 		}
 
 		for(TableGenerator generator : generators) {
@@ -119,7 +120,8 @@ public class DBGenerator {
 		for(Table.CLASS<? extends Table> table : tables) {
 			GeneratorAction action;
 
-			TableDescription description = existingTables.get(table.name());
+			DatabaseVendor vendor = ConnectionManager.get().vendor();
+			TableDescription description = existingTables.get(vendor.sqlName(table.name()));
 
 			if(description != null && description.isView())
 				continue;

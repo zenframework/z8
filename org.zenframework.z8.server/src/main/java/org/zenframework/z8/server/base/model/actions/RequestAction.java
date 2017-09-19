@@ -64,7 +64,12 @@ public abstract class RequestAction extends RequestTarget {
 
 	private Collection<Field> getFormFields(Query query) {
 		String json = getRequestParameter(Json.fields);
-		return QueryUtils.parseFormFields(query != null ? query : getContextQuery(), json);
+		if(query == null) {
+			query = getContextQuery();
+			if(query == null)
+				query = getQuery();
+		}
+		return QueryUtils.parseFormFields(query, json);
 	}
 
 	public String getRequestParameter(string key) {

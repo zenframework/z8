@@ -108,6 +108,7 @@ abstract public class Message extends OBJECT implements RmiSerializable, Seriali
 	}
 
 	protected void afterImport() {
+		ConnectionManager.get().flush();
 		z8_afterImport();
 	}
 
@@ -200,6 +201,8 @@ abstract public class Message extends OBJECT implements RmiSerializable, Seriali
 
 		if(sender == null || sender.isEmpty())
 			setSender(Domains.DefaultDomain.get());
+
+		ConnectionManager.get().flush();
 
 		if(Domains.newInstance().isOwner(address))
 			accept(true);

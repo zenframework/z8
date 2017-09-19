@@ -81,7 +81,7 @@ public class CLASS<TYPE extends IObject> extends OBJECT implements IClass<TYPE> 
 
 		if(container != null) {
 			IClass<? extends IObject> containerClass = container.getCLASS();
-			if(containerClass.stage() < stage)
+			if(containerClass != null && containerClass.stage() < stage)
 				containerClass.get(stage);
 		}
 

@@ -13,13 +13,18 @@ public class Statement extends BasicStatement {
 		this.statement = connection().prepareStatement(sql);
 	}
 
-	public static int executeUpdate(Connection connection, String sql) throws SQLException {
+	public static int executeUpdate(String sql) throws SQLException {
+		Connection connection = ConnectionManager.get();
+
 		Statement statement = new Statement(connection);
 		statement.prepare(sql);
+
 		try {
 			return statement.executeUpdate();
 		} catch(SQLException e) {
 			SqlExceptionConverter.rethrow(statement.vendor(), e);
+		} finally {
+			statement.close();
 		}
 
 		return 0;

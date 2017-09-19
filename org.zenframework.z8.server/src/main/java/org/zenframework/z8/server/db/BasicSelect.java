@@ -4,6 +4,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class BasicSelect extends BasicStatement {
+	private Cursor cursor = null;
+
 	public BasicSelect(Connection connection) {
 		super(connection);
 	}
@@ -15,11 +17,21 @@ public class BasicSelect extends BasicStatement {
 	}
 
 	public Cursor execute() throws SQLException {
-		return new Cursor(this);
+		if(cursor != null)
+			cursor.close();
+		return cursor = new Cursor(this);
 	}
 
-	public static Cursor cursor(Connection connection, String sql) throws SQLException {
-		BasicSelect select = new BasicSelect(connection);
+	protected void cleanup() throws SQLException {
+		if(cursor != null && !cursor.isClosed()) {
+			cursor.close();
+			cursor = null;
+		}
+		super.cleanup();
+	}
+
+	public static Cursor cursor(String sql) throws SQLException {
+		BasicSelect select = new BasicSelect(ConnectionManager.get());
 		select.prepare(sql);
 		return select.execute();
 	}

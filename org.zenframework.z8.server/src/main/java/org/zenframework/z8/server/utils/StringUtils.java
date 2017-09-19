@@ -7,6 +7,77 @@ import java.util.List;
 import java.util.Properties;
 
 public class StringUtils {
+	private static final String[] charTable = new String[65536];
+
+	static {
+		charTable['А'] = "A";
+		charTable['Б'] = "B";
+		charTable['В'] = "V";
+		charTable['Г'] = "G";
+		charTable['Д'] = "D";
+		charTable['Е'] = "E";
+		charTable['Ё'] = "E";
+		charTable['Ж'] = "Z";
+		charTable['З'] = "Z";
+		charTable['И'] = "I";
+		charTable['Й'] = "I";
+		charTable['К'] = "K";
+		charTable['Л'] = "L";
+		charTable['М'] = "M";
+		charTable['Н'] = "N";
+		charTable['О'] = "O";
+		charTable['П'] = "P";
+		charTable['Р'] = "R";
+		charTable['С'] = "S";
+		charTable['Т'] = "T";
+		charTable['У'] = "U";
+		charTable['Ф'] = "F";
+		charTable['Х'] = "H";
+		charTable['Ц'] = "C";
+		charTable['Ч'] = "C";
+		charTable['Ш'] = "S";
+		charTable['Щ'] = "S";
+		charTable['Ъ'] = "";
+		charTable['Ы'] = "Y";
+		charTable['Ь'] = "";
+		charTable['Э'] = "E";
+		charTable['Ю'] = "U";
+		charTable['Я'] = "Y";
+		charTable['а'] = "a";
+		charTable['б'] = "b";
+		charTable['в'] = "v";
+		charTable['г'] = "g";
+		charTable['д'] = "d";
+		charTable['е'] = "e";
+		charTable['ё'] = "e";
+		charTable['ж'] = "z";
+		charTable['з'] = "z";
+		charTable['и'] = "i";
+		charTable['й'] = "i";
+		charTable['к'] = "k";
+		charTable['л'] = "l";
+		charTable['м'] = "m";
+		charTable['н'] = "n";
+		charTable['о'] = "o";
+		charTable['п'] = "p";
+		charTable['р'] = "r";
+		charTable['с'] = "s";
+		charTable['т'] = "t";
+		charTable['у'] = "u";
+		charTable['ф'] = "f";
+		charTable['х'] = "h";
+		charTable['ц'] = "c";
+		charTable['ч'] = "c";
+		charTable['ш'] = "s";
+		charTable['щ'] = "s";
+		charTable['ъ'] = "";
+		charTable['ы'] = "y";
+		charTable['ь'] = "";
+		charTable['э'] = "e";
+		charTable['ю'] = "u";
+		charTable['я'] = "y";
+	}
+
 	public static boolean isEmpty(String str) {
 		return str == null || str.length() == 0;
 	}
@@ -103,5 +174,24 @@ public class StringUtils {
 		}
 
 		return chars;
+	}
+
+	public static String translit(String value) {
+		return translit(value, 0);
+	}
+
+	public static String translit(String value, int maxLength) {
+		char chars[] = value.toCharArray();
+		StringBuffer sb = new StringBuffer(maxLength != 0 ? maxLength : value.length());
+
+		for(int i = 0; i < chars.length; i++) {
+			char ch = chars[i];
+			String replacement = charTable[ch];
+			sb.append(replacement != null ? replacement : ch);
+
+			if(sb.length() == maxLength)
+				break;
+		}
+		return sb.toString();
 	}
 }

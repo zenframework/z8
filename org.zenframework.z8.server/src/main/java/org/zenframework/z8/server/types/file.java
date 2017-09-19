@@ -430,6 +430,9 @@ public class file extends primary implements RmiSerializable, Serializable {
 
 		RCollection<file> result = new RCollection<file>();
 
+		if(files == null)
+			return result;
+
 		for(File file : files)
 			result.add(new file(file));
 
