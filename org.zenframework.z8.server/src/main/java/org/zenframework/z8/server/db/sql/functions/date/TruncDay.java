@@ -1,6 +1,7 @@
 package org.zenframework.z8.server.db.sql.functions.date;
 
 import java.util.Collection;
+import java.util.TimeZone;
 
 import org.zenframework.z8.server.base.table.value.Field;
 import org.zenframework.z8.server.base.table.value.IField;
@@ -31,7 +32,11 @@ public class TruncDay extends SqlToken {
 	public String format(DatabaseVendor vendor, FormatOptions options, boolean logicalContext) {
 		switch(vendor) {
 		case Oracle:
-			return "TRUNC(" + date.format(vendor, options) + ", 'DD')";
+			String dt = date.format(vendor, options);
+			String offset = "(" + TimeZone.getDefault().getRawOffset() + ")";
+			//return "(" + dt + " - MOD(" + dt + ", 86400000))";
+			return "(" + dt + " + " + offset + " - MOD(" + dt + " + " + offset + ", 86400000)) - " + offset;
+			//return TRUNC(" + date.format(vendor, options) + ", 'DD')";
 		case Postgres:
 			return "date_trunc('day', " + date.format(vendor, options) + ")";
 		case SqlServer:

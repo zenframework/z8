@@ -382,7 +382,7 @@ public class date extends primary {
 
 		result += ":" + (seconds < 10 ? "0" + seconds : seconds);
 		if(milliseconds != 0)
-			result += "." + milliseconds;
+			result += "." + (milliseconds < 100 ? (milliseconds < 10 ? "00" : "0") : "") + milliseconds;
 
 		result += zoneSeparator + (offset < 0 ? "-" : "+") +
 			(offsetHours < 10 ? "0" + offsetHours : offsetHours) + ":" +
@@ -414,7 +414,7 @@ public class date extends primary {
 		if(vendor == DatabaseVendor.Postgres)
 			date = "'" + toString("T", "") + "'";
 		else if(vendor == DatabaseVendor.Oracle)
-			date = "'" + toString(" ", " ") + "'";
+			date = "" + getTicks(); //"'" + toString(" ", " ") + "'";
 		else
 			throw new UnsupportedOperationException();
 

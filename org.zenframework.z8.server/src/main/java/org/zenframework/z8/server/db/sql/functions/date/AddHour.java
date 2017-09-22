@@ -31,7 +31,9 @@ public class AddHour extends SqlToken {
 		case Date:
 			switch(vendor) {
 			case Oracle:
-				return "(" + date.format(vendor, options) + "+(" + hours.format(vendor, options) + ")/24)";
+				String dt = date.format(vendor, options);
+				return "(" + dt + " + " + hours.format(vendor, options) + " * 3600000)";
+//				return "(" + date.format(vendor, options) + "+(" + hours.format(vendor, options) + ")/24)";
 			case Postgres:
 				return "(" + date.format(vendor, options) + " + (" + hours.format(vendor, options) + ") * interval '1 hour')";
 			case SqlServer:

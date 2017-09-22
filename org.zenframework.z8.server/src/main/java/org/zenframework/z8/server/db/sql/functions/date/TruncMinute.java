@@ -32,7 +32,9 @@ public class TruncMinute extends SqlToken {
 		case Date:
 			switch(vendor) {
 			case Oracle:
-				return "Trunc(" + time.format(vendor, options) + ", 'MI')";
+				String dt = time.format(vendor, options);
+				return "(" + dt + " - MOD(" + dt + ", 60000))";
+				//return "Trunc(" + time.format(vendor, options) + ", 'MI')";
 			case Postgres:
 				return "date_trunc('minute', " + time.format(vendor, options) + ")";
 			case SqlServer:

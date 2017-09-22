@@ -34,6 +34,9 @@ public class DatetimeExpression extends Expression {
 		return FieldType.Date;
 	}
 
+	protected String metaType() {
+		return DatetimeField.MetaType;
+	}
 	public sql_date sql_date() {
 		return new sql_date(new SqlField(this));
 	}

@@ -1,5 +1,6 @@
 package org.zenframework.z8.server.base.table.value;
 
+import org.zenframework.z8.server.db.FieldType;
 import org.zenframework.z8.server.format.Format;
 import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.types.string;
@@ -21,5 +22,9 @@ public class DateField extends DatetimeField {
 		super(container);
 		aggregation = Aggregation.Max;
 		format = new string(Format.date);
+	}
+
+	protected String metaType() {
+		return FieldType.Date.toString();
 	}
 }

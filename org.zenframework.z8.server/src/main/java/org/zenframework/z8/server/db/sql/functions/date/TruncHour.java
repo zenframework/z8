@@ -32,7 +32,9 @@ public class TruncHour extends SqlToken {
 		case Date:
 			switch(vendor) {
 			case Oracle:
-				return "Trunc(" + time.format(vendor, options) + ", 'HH24')";
+				String dt = time.format(vendor, options);
+				return "(" + dt + " - MOD(" + dt + ", 3600000))";
+				//return "Trunc(" + time.format(vendor, options) + ", 'HH24')";
 			case Postgres:
 				return "date_trunc('hour', " + time.format(vendor, options) + ")";
 			case SqlServer:

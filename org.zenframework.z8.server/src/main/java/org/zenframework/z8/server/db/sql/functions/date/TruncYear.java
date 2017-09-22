@@ -25,7 +25,8 @@ public class TruncYear extends SqlToken {
 	public String format(DatabaseVendor vendor, FormatOptions options, boolean logicalContext) {
 		switch(vendor) {
 		case Oracle:
-			return "Trunc(" + date.format(vendor, options) + ", 'YYYY')";
+			throw new UnsupportedOperationException();
+//			return "Trunc(" + date.format(vendor, options) + ", 'YYYY')";
 		case Postgres:
 			return "date_trunc('year', " + date.format(vendor, options) + ")";
 		case SqlServer:

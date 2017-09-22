@@ -28,7 +28,8 @@ public class AddYear extends SqlToken {
 	public String format(DatabaseVendor vendor, FormatOptions options, boolean logicalContext) {
 		switch(vendor) {
 		case Oracle:
-			return "ADD_MONTHS(" + date.format(vendor, options) + ",(" + years.format(vendor, options) + ")*12)";
+			throw new UnsupportedOperationException();
+//			return "ADD_MONTHS(" + date.format(vendor, options) + ",(" + years.format(vendor, options) + ")*12)";
 		case Postgres:
 			return "(" + date.format(vendor, options) + " + (" + years.format(vendor, options) + ") * interval '1 year')";
 		case SqlServer:

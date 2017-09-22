@@ -163,8 +163,14 @@ public abstract class BasicStatement implements IStatement {
 	}
 
 	public void setDate(int position, date value) throws SQLException {
-		Timestamp timestamp = new Timestamp((value != null ? value : date.Min).getTicks());
-		statement.setTimestamp(position, timestamp);
+		value = value != null ? value : date.Min;
+
+		if(vendor() != DatabaseVendor.Oracle) {
+			value = value != null ? value : date.Min;
+			Timestamp timestamp = new Timestamp(value.getTicks());
+			statement.setTimestamp(position, timestamp);
+		} else
+			statement.setLong(position, value.getTicks());
 	}
 
 	public void setDatespan(int position, datespan value) throws SQLException {

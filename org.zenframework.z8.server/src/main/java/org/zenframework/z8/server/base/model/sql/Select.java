@@ -52,7 +52,7 @@ public class Select {
 		if(select != null) {
 			database = select.database;
 
-			fields = select.fields;
+			fields.addAll(select.fields);
 
 			rootQuery = select.rootQuery;
 			links = select.links;

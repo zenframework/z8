@@ -16,6 +16,7 @@ public final class sql_date extends sql_primary {
 
 	static public sql_bool isEqualDate(sql_date date1, sql_date date2);
 
+/*
 	static public sql_date serverTime();
 
 	public sql_int quarter();
@@ -27,20 +28,20 @@ public final class sql_date extends sql_primary {
 	public sql_int hour();
 	public sql_int minute();
 	public sql_int second();
+*/
+//	public void set(sql_int year, sql_int month, sql_int day, sql_int hour, sql_int minute, sql_int second);
 
-	public void set(sql_int year, sql_int month, sql_int day, sql_int hour, sql_int minute, sql_int second);
-
-	public sql_date truncQuarter();
+/*	public sql_date truncQuarter();
 	public sql_date truncYear();
-	public sql_date truncMonth();
+	public sql_date truncMonth();*/
 	public sql_date truncDay();
 	public sql_date truncHour();
 	public sql_date truncMinute();
 	public sql_date truncSecond();
 
-	public sql_date addQuarter(sql_int count);
+/*	public sql_date addQuarter(sql_int count);
 	public sql_date addYear(sql_int count);
-	public sql_date addMonth(sql_int count);
+	public sql_date addMonth(sql_int count);*/
 	public sql_date addDay(sql_int count);
 	public sql_date addHour(sql_int count);
 	public sql_date addMinute(sql_int count);

@@ -477,7 +477,7 @@ public class BirtReport {
 		if(format == null || format.isEmpty())
 			return null;
 
-		return format.get().replace("d", "dd").replace("m", "MM").replace("Y", "yyyy").replace("H", "hh").replace("i", "mm").replace("s", "ss");
+		return format.get().replace("d", "dd").replace("m", "MM").replace("Y", "yyyy").replace("H", "HH").replace("i", "mm").replace("s", "ss").replace("S", "SSS");
 	}
 
 	private void setCellFormat(CellHandle cell, Column column) throws SemanticException {

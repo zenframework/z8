@@ -299,9 +299,13 @@ abstract public class Field extends Control implements IField {
 		return result;
 	}
 
+	protected String metaType() {
+		return type().toString();
+	}
+
 	@Override
 	public void writeMeta(JsonWriter writer, Query query, Query context) {
-		writer.writeProperty(Json.type, type().toString());
+		writer.writeProperty(Json.type, metaType());
 		writer.writeProperty(Json.format, format, new string());
 		writer.writeProperty(Json.length, length, new integer(0));
 

@@ -31,7 +31,9 @@ public class AddSecond extends SqlToken {
 		case Date:
 			switch(vendor) {
 			case Oracle:
-				return "(" + date.format(vendor, options) + "+(" + seconds.format(vendor, options) + ")/(24*60*60))";
+				String dt = date.format(vendor, options);
+				return "(" + dt + " + " + seconds.format(vendor, options) + " * 1000)";
+//				return "(" + date.format(vendor, options) + "+(" + seconds.format(vendor, options) + ")/(24*60*60))";
 			case Postgres:
 				return "(" + date.format(vendor, options) + " + (" + seconds.format(vendor, options) + ") * interval '1 second')";
 			case SqlServer:

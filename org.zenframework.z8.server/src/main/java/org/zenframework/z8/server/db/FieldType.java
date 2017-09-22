@@ -131,7 +131,7 @@ public enum FieldType {
 			}
 		case Date:
 			switch(vendor) {
-			case Oracle: return "TIMESTAMP(6) WITH TIME ZONE";
+			case Oracle: return "NUMBER"; //"TIMESTAMP(6) WITH TIME ZONE";
 			case SqlServer: return "DATETIME";
 			case Postgres: return "timestamp with time zone";
 			default: throw new RuntimeException("Unknown data type: '" + toString() + "'");

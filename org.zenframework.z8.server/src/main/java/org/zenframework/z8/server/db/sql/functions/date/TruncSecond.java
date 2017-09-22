@@ -10,7 +10,6 @@ import org.zenframework.z8.server.db.sql.SqlConst;
 import org.zenframework.z8.server.db.sql.SqlToken;
 import org.zenframework.z8.server.db.sql.expressions.Mul;
 import org.zenframework.z8.server.db.sql.expressions.Operation;
-import org.zenframework.z8.server.db.sql.functions.conversion.ToDate;
 import org.zenframework.z8.server.exceptions.db.UnknownDatabaseException;
 import org.zenframework.z8.server.types.datespan;
 import org.zenframework.z8.server.types.integer;
@@ -33,7 +32,9 @@ public class TruncSecond extends SqlToken {
 		case Date:
 			switch(vendor) {
 			case Oracle:
-				return new ToDate(time).format(vendor, options);
+				String dt = time.format(vendor, options);
+				return "(" + dt + " - MOD(" + dt + ", 1000))";
+				//return new ToDate(time).format(vendor, options);
 			case Postgres:
 				return "date_trunc('second', " + time.format(vendor, options) + ")";
 			case SqlServer:

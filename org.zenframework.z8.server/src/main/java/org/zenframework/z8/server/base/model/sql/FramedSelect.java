@@ -27,8 +27,10 @@ public class FramedSelect extends Select {
 		DatabaseVendor vendor = database().vendor();
 
 		if(vendor == DatabaseVendor.Oracle) {
+			if(limit <= 0 && start == 0)
+				return super.sql(options);
+
 			Field rowNum = new Expression(new SqlStringToken("ROWNUM", FieldType.Integer), FieldType.Integer);
-			getFields().add(rowNum);
 
 			if(limit > 0) {
 				setSubselect(new Select(this));
@@ -38,6 +40,9 @@ public class FramedSelect extends Select {
 				setGroupBy(null);
 				setOrderBy(null);
 				setHaving(null);
+
+				if(start != 0)
+					getFields().add(rowNum);
 			}
 
 			if(start != 0) {

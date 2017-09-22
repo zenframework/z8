@@ -25,7 +25,8 @@ public class DateToString extends SqlToken {
 	public String format(DatabaseVendor vendor, FormatOptions options, boolean logicalContext) {
 		switch(vendor) {
 		case Oracle:
-			return "TO_NCHAR(" + date.format(vendor, options) + ", 'DD/MM/YYYY HH24:MI:SS')";
+			throw new UnsupportedOperationException();
+//			return "TO_NCHAR(" + date.format(vendor, options) + ", 'DD/MM/YYYY HH24:MI:SS')";
 		case SqlServer:
 			return "Convert(nvarchar, " + date.format(vendor, options) + ", 103) + ' ' + Convert(nvarchar(8), " + date.format(vendor, options) + ", 114)";
 		default:

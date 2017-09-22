@@ -31,7 +31,9 @@ public class AddDay extends SqlToken {
 		case Date:
 			switch(vendor) {
 			case Oracle:
-				return "(" + date.format(vendor, options) + " + (" + days.format(vendor, options) + "))";
+				String dt = date.format(vendor, options);
+				return "(" + dt + " + " + days.format(vendor, options) + " * 86400000)";
+//				return "(" + date.format(vendor, options) + " + (" + days.format(vendor, options) + "))";
 			case Postgres:
 				return "(" + date.format(vendor, options) + " + (" + days.format(vendor, options) + ") * interval '1 day')";
 			case SqlServer:

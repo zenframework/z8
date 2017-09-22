@@ -31,7 +31,9 @@ public class AddMinute extends SqlToken {
 		case Date:
 			switch(vendor) {
 			case Oracle:
-				return "(" + date.format(vendor, options) + "+(" + minutes.format(vendor, options) + ")/(24*60))";
+				String dt = date.format(vendor, options);
+				return "(" + dt + " + " + minutes.format(vendor, options) + " * 60000)";
+//				return "(" + date.format(vendor, options) + "+(" + minutes.format(vendor, options) + ")/(24*60))";
 			case Postgres:
 				return "(" + date.format(vendor, options) + " + (" + minutes.format(vendor, options) + ") * interval '1 munute')";
 			case SqlServer:

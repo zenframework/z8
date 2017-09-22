@@ -28,7 +28,8 @@ public class AddQuarter extends SqlToken {
 	public String format(DatabaseVendor vendor, FormatOptions options, boolean logicalContext) {
 		switch(vendor) {
 		case Oracle:
-			return "ADD_MONTHS(" + date.format(vendor, options) + ",(" + quarters.format(vendor, options) + ")*3)";
+			throw new UnsupportedOperationException();
+//			return "ADD_MONTHS(" + date.format(vendor, options) + ",(" + quarters.format(vendor, options) + ")*3)";
 		case Postgres:
 			return "(" + date.format(vendor, options) + " + (" + quarters.format(vendor, options) + ") * interval '3 months')";
 		case SqlServer:

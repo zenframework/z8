@@ -25,7 +25,8 @@ public class TruncQuarter extends SqlToken {
 	public String format(DatabaseVendor vendor, FormatOptions options, boolean logicalContext) {
 		switch(vendor) {
 		case Oracle:
-			return "Trunc(" + date.format(vendor, options) + ", 'Q')";
+			throw new UnsupportedOperationException();
+//			return "Trunc(" + date.format(vendor, options) + ", 'Q')";
 		case Postgres:
 			return "date_trunc('quarter', " + date.format(vendor, options) + ")";
 		case SqlServer:
