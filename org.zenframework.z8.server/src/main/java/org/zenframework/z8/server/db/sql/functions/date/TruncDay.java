@@ -34,9 +34,7 @@ public class TruncDay extends SqlToken {
 		case Oracle:
 			String dt = date.format(vendor, options);
 			String offset = "(" + TimeZone.getDefault().getRawOffset() + ")";
-			//return "(" + dt + " - MOD(" + dt + ", 86400000))";
 			return "(" + dt + " + " + offset + " - MOD(" + dt + " + " + offset + ", 86400000)) - " + offset;
-			//return TRUNC(" + date.format(vendor, options) + ", 'DD')";
 		case Postgres:
 			return "date_trunc('day', " + date.format(vendor, options) + ")";
 		case SqlServer:
@@ -48,6 +46,6 @@ public class TruncDay extends SqlToken {
 
 	@Override
 	public FieldType type() {
-		return date.type();
+		return FieldType.Date;
 	}
 }

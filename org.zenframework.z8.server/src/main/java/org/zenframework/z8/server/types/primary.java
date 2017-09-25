@@ -80,6 +80,7 @@ public class primary implements Serializable {
 		case Boolean:
 			return new bool(value);
 		case Date:
+		case Datetime:
 			return new date(value);
 		case Datespan:
 			return new datespan(value);

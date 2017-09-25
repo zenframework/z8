@@ -27,7 +27,8 @@ public class DateExpression extends DatetimeExpression {
 		format = new string(Format.date);
 	}
 
-	protected String metaType() {
-		return FieldType.Date.toString();
+	@Override
+	public FieldType type() {
+		return FieldType.Date;
 	}
 }

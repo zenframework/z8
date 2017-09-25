@@ -1,4 +1,4 @@
-package org.zenframework.z8.server.db.sql.functions.date;
+package org.zenframework.z8.server.db.sql.functions.datespan;
 
 import java.util.Collection;
 
@@ -10,14 +10,13 @@ import org.zenframework.z8.server.db.sql.SqlConst;
 import org.zenframework.z8.server.db.sql.SqlToken;
 import org.zenframework.z8.server.db.sql.expressions.Mul;
 import org.zenframework.z8.server.db.sql.expressions.Operation;
-import org.zenframework.z8.server.db.sql.functions.numeric.Round;
 import org.zenframework.z8.server.types.datespan;
 import org.zenframework.z8.server.types.integer;
 
-public class TotalSecond extends SqlToken {
+public class TruncSecond extends SqlToken {
 	private SqlToken span;
 
-	public TotalSecond(SqlToken span) {
+	public TruncSecond(SqlToken span) {
 		this.span = span;
 	}
 
@@ -28,11 +27,11 @@ public class TotalSecond extends SqlToken {
 
 	@Override
 	public String format(DatabaseVendor vendor, FormatOptions options, boolean logicalContext) {
-		return new Round(new Mul(span, Operation.Div, new SqlConst(new integer(datespan.TicksPerSecond))), null).format(vendor, options);
+		return new Mul(new TotalMinutes(span), Operation.Mul, new SqlConst(new integer(datespan.TicksPerMinute))).format(vendor, options);
 	}
 
 	@Override
 	public FieldType type() {
-		return FieldType.Integer;
+		return FieldType.Datespan;
 	}
 }

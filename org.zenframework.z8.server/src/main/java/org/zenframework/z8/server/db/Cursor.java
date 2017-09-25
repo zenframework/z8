@@ -208,6 +208,7 @@ public class Cursor {
 		case String:
 			return getString(position, field);
 		case Date:
+		case Datetime:
 			return getDate(position, field);
 		case Datespan:
 			return getDatespan(position, field);

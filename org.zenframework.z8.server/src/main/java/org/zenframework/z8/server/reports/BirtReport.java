@@ -52,8 +52,6 @@ import org.zenframework.z8.server.base.file.Folders;
 import org.zenframework.z8.server.base.model.actions.ReadAction;
 import org.zenframework.z8.server.base.query.Query;
 import org.zenframework.z8.server.base.query.QueryUtils;
-import org.zenframework.z8.server.base.table.value.DateExpression;
-import org.zenframework.z8.server.base.table.value.DateField;
 import org.zenframework.z8.server.base.table.value.Field;
 import org.zenframework.z8.server.json.Json;
 import org.zenframework.z8.server.json.JsonWriter;
@@ -181,8 +179,9 @@ public class BirtReport {
 		case String:
 			return DesignChoiceConstants.COLUMN_DATA_TYPE_STRING;
 		case Date:
-			return value instanceof DateField || value instanceof DateExpression ? DesignChoiceConstants.COLUMN_DATA_TYPE_DATE :
-					DesignChoiceConstants.COLUMN_DATA_TYPE_DATETIME;
+			return DesignChoiceConstants.COLUMN_DATA_TYPE_DATE;
+		case Datetime:
+			return DesignChoiceConstants.COLUMN_DATA_TYPE_DATETIME;
 		case Decimal:
 			return DesignChoiceConstants.COLUMN_DATA_TYPE_DECIMAL;
 		default:

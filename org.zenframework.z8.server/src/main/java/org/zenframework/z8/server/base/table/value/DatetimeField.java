@@ -12,8 +12,6 @@ import org.zenframework.z8.server.types.string;
 import org.zenframework.z8.server.types.sql.sql_date;
 
 public class DatetimeField extends Field {
-	static public final String MetaType = "datetime";
-
 	public static class CLASS<T extends DatetimeField> extends Field.CLASS<T> {
 		public CLASS(IObject container) {
 			super(container);
@@ -44,11 +42,7 @@ public class DatetimeField extends Field {
 
 	@Override
 	public FieldType type() {
-		return FieldType.Date;
-	}
-
-	protected String metaType() {
-		return MetaType;
+		return FieldType.Datetime;
 	}
 
 	@Override

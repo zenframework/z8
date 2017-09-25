@@ -51,7 +51,7 @@ abstract public class Expression extends SqlToken {
 	}
 
 	private boolean isDateSpanWithDate(SqlToken left, SqlToken right) {
-		return left != null && right != null && left.type() == FieldType.Datespan && right.type() == FieldType.Date;
+		return left != null && right != null && left.type() == FieldType.Datespan && (right.type() == FieldType.Date || right.type() == FieldType.Datetime);
 	}
 
 	private SqlToken convertDateSpanToDate(SqlToken t) {

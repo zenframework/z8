@@ -70,7 +70,7 @@ public class Expression implements IFilter {
 		Collection<primary> result = new ArrayList<primary>();
 
 		for(String value : values) {
-			if(type == FieldType.Date)
+			if(type == FieldType.Date || type == FieldType.Datetime)
 				result.add(new date(value));
 			else if(type == FieldType.Guid)
 				result.add(new guid(value));
@@ -96,7 +96,7 @@ public class Expression implements IFilter {
 		FieldType type = field.type();
 
 		if(values.length > 1) {
-			if(operation != Operation.Eq && operation != Operation.NotEq || type == FieldType.Date)
+			if(operation != Operation.Eq && operation != Operation.NotEq || type == FieldType.Date || type == FieldType.Datetime)
 				throw new UnsupportedOperationException();
 
 			SqlToken result = new InVector(new SqlField(field), getValues(type));

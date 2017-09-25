@@ -39,7 +39,7 @@ abstract public class SqlToken {
 	}
 
 	public boolean isDate() {
-		return type() == FieldType.Date;
+		return type() == FieldType.Date || type() == FieldType.Datetime;
 	}
 
 	public boolean isDatespan() {

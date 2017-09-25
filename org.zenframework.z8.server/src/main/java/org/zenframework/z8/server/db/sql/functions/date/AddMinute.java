@@ -27,31 +27,21 @@ public class AddMinute extends SqlToken {
 
 	@Override
 	public String format(DatabaseVendor vendor, FormatOptions options, boolean logicalContext) {
-		switch(date.type()) {
-		case Date:
-			switch(vendor) {
-			case Oracle:
-				String dt = date.format(vendor, options);
-				return "(" + dt + " + " + minutes.format(vendor, options) + " * 60000)";
-//				return "(" + date.format(vendor, options) + "+(" + minutes.format(vendor, options) + ")/(24*60))";
-			case Postgres:
-				return "(" + date.format(vendor, options) + " + (" + minutes.format(vendor, options) + ") * interval '1 munute')";
-			case SqlServer:
-				return "DATEADD(mi, " + minutes.format(vendor, options) + ", " + date.format(vendor, options) + ")";
-			default:
-				throw new UnknownDatabaseException();
-			}
-
-		case Datespan:
-			return date.format(vendor, options) + "+(" + minutes.format(vendor, options) + "*" + datespan.TicksPerMinute + ")";
-
+		switch(vendor) {
+		case Oracle:
+			String dt = date.format(vendor, options);
+			return "(" + dt + " + " + minutes.format(vendor, options) + " *" + datespan.TicksPerMinute + ")";
+		case Postgres:
+			return "(" + date.format(vendor, options) + " + (" + minutes.format(vendor, options) + ") * interval '1 munute')";
+		case SqlServer:
+			return "DATEADD(mi, " + minutes.format(vendor, options) + ", " + date.format(vendor, options) + ")";
 		default:
-			throw new UnsupportedOperationException();
+			throw new UnknownDatabaseException();
 		}
 	}
 
 	@Override
 	public FieldType type() {
-		return date.type();
+		return FieldType.Date;
 	}
 }

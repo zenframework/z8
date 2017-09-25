@@ -6,13 +6,8 @@ import org.zenframework.z8.server.base.table.value.IField;
 import org.zenframework.z8.server.db.DatabaseVendor;
 import org.zenframework.z8.server.db.FieldType;
 import org.zenframework.z8.server.db.sql.FormatOptions;
-import org.zenframework.z8.server.db.sql.SqlConst;
 import org.zenframework.z8.server.db.sql.SqlToken;
-import org.zenframework.z8.server.db.sql.expressions.Mul;
-import org.zenframework.z8.server.db.sql.expressions.Operation;
 import org.zenframework.z8.server.exceptions.db.UnknownDatabaseException;
-import org.zenframework.z8.server.types.datespan;
-import org.zenframework.z8.server.types.integer;
 
 public class TruncMinute extends SqlToken {
 	private SqlToken time;
@@ -28,31 +23,21 @@ public class TruncMinute extends SqlToken {
 
 	@Override
 	public String format(DatabaseVendor vendor, FormatOptions options, boolean logicalContext) {
-		switch(time.type()) {
-		case Date:
-			switch(vendor) {
-			case Oracle:
-				String dt = time.format(vendor, options);
-				return "(" + dt + " - MOD(" + dt + ", 60000))";
-				//return "Trunc(" + time.format(vendor, options) + ", 'MI')";
-			case Postgres:
-				return "date_trunc('minute', " + time.format(vendor, options) + ")";
-			case SqlServer:
-				return "Convert(datetime, convert(varchar(16)," + time.format(vendor, options) + ", 120) + ':00', 120)";
-			default:
-				throw new UnknownDatabaseException();
-			}
-
-		case Datespan:
-			return new Mul(new TotalHour(time), Operation.Mul, new SqlConst(new integer(datespan.TicksPerHour))).format(vendor, options);
-
+		switch(vendor) {
+		case Oracle:
+			String dt = time.format(vendor, options);
+			return "(" + dt + " - MOD(" + dt + ", 60000))";
+		case Postgres:
+			return "date_trunc('minute', " + time.format(vendor, options) + ")";
+		case SqlServer:
+			return "Convert(datetime, convert(varchar(16)," + time.format(vendor, options) + ", 120) + ':00', 120)";
 		default:
-			throw new UnsupportedOperationException();
+			throw new UnknownDatabaseException();
 		}
 	}
 
 	@Override
 	public FieldType type() {
-		return time.type();
+		return FieldType.Date;
 	}
 }

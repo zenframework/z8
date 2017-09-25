@@ -1,4 +1,4 @@
-package org.zenframework.z8.server.db.sql.functions.date;
+package org.zenframework.z8.server.db.sql.functions.datespan;
 
 import java.util.Collection;
 
@@ -6,31 +6,27 @@ import org.zenframework.z8.server.base.table.value.IField;
 import org.zenframework.z8.server.db.DatabaseVendor;
 import org.zenframework.z8.server.db.FieldType;
 import org.zenframework.z8.server.db.sql.FormatOptions;
+import org.zenframework.z8.server.db.sql.SqlConst;
 import org.zenframework.z8.server.db.sql.SqlToken;
-import org.zenframework.z8.server.exceptions.db.UnknownDatabaseException;
+import org.zenframework.z8.server.db.sql.functions.numeric.Mod;
+import org.zenframework.z8.server.db.sql.functions.numeric.Round;
+import org.zenframework.z8.server.types.integer;
 
-public class Quarter extends SqlToken {
-	private SqlToken date;
+public class Seconds extends SqlToken {
+	private SqlToken span;
 
-	public Quarter(SqlToken date) {
-		this.date = date;
+	public Seconds(SqlToken span) {
+		this.span = span;
 	}
 
 	@Override
 	public void collectFields(Collection<IField> fields) {
-		date.collectFields(fields);
+		span.collectFields(fields);
 	}
 
 	@Override
 	public String format(DatabaseVendor vendor, FormatOptions options, boolean logicalContext) {
-		switch(vendor) {
-		case Oracle:
-			return "TRUNC((TO_NUMBER(TO_CHAR(" + date.format(vendor, options) + ", 'MM'))-1)/3)+1";
-		case SqlServer:
-			return "DatePart(q, " + date.format(vendor, options) + ")";
-		default:
-			throw new UnknownDatabaseException();
-		}
+		return new Round(new Mod(new TotalSeconds(span), new SqlConst(new integer(60))), null).format(vendor, options);
 	}
 
 	@Override

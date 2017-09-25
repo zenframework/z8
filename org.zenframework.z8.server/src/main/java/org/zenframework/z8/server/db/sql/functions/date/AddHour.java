@@ -27,31 +27,21 @@ public class AddHour extends SqlToken {
 
 	@Override
 	public String format(DatabaseVendor vendor, FormatOptions options, boolean logicalContext) {
-		switch(date.type()) {
-		case Date:
-			switch(vendor) {
-			case Oracle:
-				String dt = date.format(vendor, options);
-				return "(" + dt + " + " + hours.format(vendor, options) + " * 3600000)";
-//				return "(" + date.format(vendor, options) + "+(" + hours.format(vendor, options) + ")/24)";
-			case Postgres:
-				return "(" + date.format(vendor, options) + " + (" + hours.format(vendor, options) + ") * interval '1 hour')";
-			case SqlServer:
-				return "DATEADD(hh, " + hours.format(vendor, options) + ", " + date.format(vendor, options) + ")";
-			default:
-				throw new UnknownDatabaseException();
-			}
-
-		case Datespan:
-			return date.format(vendor, options) + "+(" + hours.format(vendor, options) + "*" + datespan.TicksPerHour + ")";
-
+		switch(vendor) {
+		case Oracle:
+			String dt = date.format(vendor, options);
+			return "(" + dt + " + " + hours.format(vendor, options) + " *" + datespan.TicksPerHour + ")";
+		case Postgres:
+			return "(" + date.format(vendor, options) + " + (" + hours.format(vendor, options) + ") * interval '1 hour')";
+		case SqlServer:
+			return "DATEADD(hh, " + hours.format(vendor, options) + ", " + date.format(vendor, options) + ")";
 		default:
-			throw new UnsupportedOperationException();
+			throw new UnknownDatabaseException();
 		}
 	}
 
 	@Override
 	public FieldType type() {
-		return date.type();
+		return FieldType.Date;
 	}
 }

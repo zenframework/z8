@@ -24,7 +24,8 @@ public class DateField extends DatetimeField {
 		format = new string(Format.date);
 	}
 
-	protected String metaType() {
-		return FieldType.Date.toString();
+	@Override
+	public FieldType type() {
+		return FieldType.Date;
 	}
 }

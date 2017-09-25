@@ -12,20 +12,20 @@ import org.zenframework.z8.server.db.sql.functions.Max;
 import org.zenframework.z8.server.db.sql.functions.Min;
 import org.zenframework.z8.server.db.sql.functions.Sum;
 import org.zenframework.z8.server.db.sql.functions.conversion.DatespanToString;
-import org.zenframework.z8.server.db.sql.functions.date.AddDay;
-import org.zenframework.z8.server.db.sql.functions.date.AddHour;
-import org.zenframework.z8.server.db.sql.functions.date.AddMinute;
-import org.zenframework.z8.server.db.sql.functions.date.AddSecond;
-import org.zenframework.z8.server.db.sql.functions.date.Day;
-import org.zenframework.z8.server.db.sql.functions.date.Hour;
-import org.zenframework.z8.server.db.sql.functions.date.Minute;
-import org.zenframework.z8.server.db.sql.functions.date.Second;
-import org.zenframework.z8.server.db.sql.functions.date.TotalHour;
-import org.zenframework.z8.server.db.sql.functions.date.TotalMinute;
-import org.zenframework.z8.server.db.sql.functions.date.TotalSecond;
-import org.zenframework.z8.server.db.sql.functions.date.TruncHour;
-import org.zenframework.z8.server.db.sql.functions.date.TruncMinute;
-import org.zenframework.z8.server.db.sql.functions.date.TruncSecond;
+import org.zenframework.z8.server.db.sql.functions.datespan.AddDay;
+import org.zenframework.z8.server.db.sql.functions.datespan.AddHour;
+import org.zenframework.z8.server.db.sql.functions.datespan.AddMinute;
+import org.zenframework.z8.server.db.sql.functions.datespan.AddSecond;
+import org.zenframework.z8.server.db.sql.functions.datespan.Days;
+import org.zenframework.z8.server.db.sql.functions.datespan.Hours;
+import org.zenframework.z8.server.db.sql.functions.datespan.Minutes;
+import org.zenframework.z8.server.db.sql.functions.datespan.Seconds;
+import org.zenframework.z8.server.db.sql.functions.datespan.TotalHours;
+import org.zenframework.z8.server.db.sql.functions.datespan.TotalMinutes;
+import org.zenframework.z8.server.db.sql.functions.datespan.TotalSeconds;
+import org.zenframework.z8.server.db.sql.functions.datespan.TruncHour;
+import org.zenframework.z8.server.db.sql.functions.datespan.TruncMinute;
+import org.zenframework.z8.server.db.sql.functions.datespan.TruncSecond;
 import org.zenframework.z8.server.types.datespan;
 
 public class sql_datespan extends sql_primary {
@@ -46,32 +46,32 @@ public class sql_datespan extends sql_primary {
 		return new sql_string(new DatespanToString(this));
 	}
 
-	public sql_integer z8_day() {
-		return new sql_integer(new Day(this));
+	public sql_integer z8_days() {
+		return new sql_integer(new Days(this));
 	}
 
-	public sql_integer z8_hour() {
-		return new sql_integer(new Hour(this));
+	public sql_integer z8_hours() {
+		return new sql_integer(new Hours(this));
 	}
 
-	public sql_integer z8_minute() {
-		return new sql_integer(new Minute(this));
+	public sql_integer z8_minutes() {
+		return new sql_integer(new Minutes(this));
 	}
 
-	public sql_integer z8_second() {
-		return new sql_integer(new Second(this));
+	public sql_integer z8_seconds() {
+		return new sql_integer(new Seconds(this));
 	}
 
 	public sql_integer z8_totalHours() {
-		return new sql_integer(new TotalHour(this));
+		return new sql_integer(new TotalHours(this));
 	}
 
 	public sql_integer z8_totalMinutes() {
-		return new sql_integer(new TotalMinute(this));
+		return new sql_integer(new TotalMinutes(this));
 	}
 
 	public sql_integer z8_totalSeconds() {
-		return new sql_integer(new TotalSecond(this));
+		return new sql_integer(new TotalSeconds(this));
 	}
 
 	public sql_datespan z8_truncHour() {
@@ -86,20 +86,20 @@ public class sql_datespan extends sql_primary {
 		return new sql_datespan(new TruncSecond(this));
 	}
 
-	public sql_datespan z8_addDay(sql_integer count) {
-		return new sql_datespan(new AddDay(this, count));
+	public sql_datespan z8_addDay(sql_integer days) {
+		return new sql_datespan(new AddDay(this, days));
 	}
 
-	public sql_datespan z8_addHour(sql_integer count) {
-		return new sql_datespan(new AddHour(this, count));
+	public sql_datespan z8_addHour(sql_integer hours) {
+		return new sql_datespan(new AddHour(this, hours));
 	}
 
-	public sql_datespan z8_addMinute(sql_integer count) {
-		return new sql_datespan(new AddMinute(this, count));
+	public sql_datespan z8_addMinute(sql_integer minutes) {
+		return new sql_datespan(new AddMinute(this, minutes));
 	}
 
-	public sql_datespan z8_addSecond(sql_integer count) {
-		return new sql_datespan(new AddSecond(this, count));
+	public sql_datespan z8_addSecond(sql_integer seconds) {
+		return new sql_datespan(new AddSecond(this, seconds));
 	}
 
 	public sql_datespan z8_max() {

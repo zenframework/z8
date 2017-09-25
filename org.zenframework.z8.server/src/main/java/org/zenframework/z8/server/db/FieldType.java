@@ -9,7 +9,8 @@ public enum FieldType {
 	Integer(DataTypes.Integer),
 	String(DataTypes.String),
 	Date(DataTypes.Date),
-	Datespan(DataTypes.DateSpan),
+	Datetime(DataTypes.Datetime),
+	Datespan(DataTypes.Datespan),
 	Decimal(DataTypes.Decimal),
 	Binary(DataTypes.Binary),
 	Text(DataTypes.Text),
@@ -24,7 +25,8 @@ public enum FieldType {
 		static protected final String Integer = "int";
 		static protected final String String = "string";
 		static protected final String Date = "date";
-		static protected final String DateSpan = "datespan";
+		static protected final String Datetime= "datetime";
+		static protected final String Datespan = "datespan";
 		static protected final String Decimal = "float";
 		static protected final String Binary = "binary";
 		static protected final String Text = "text";
@@ -57,7 +59,9 @@ public enum FieldType {
 			return FieldType.String;
 		else if(DataTypes.Date.equals(string))
 			return FieldType.Date;
-		else if(DataTypes.DateSpan.equals(string))
+		else if(DataTypes.Datetime.equals(string))
+			return FieldType.Datetime;
+		else if(DataTypes.Datespan.equals(string))
 			return FieldType.Datespan;
 		else if(DataTypes.Decimal.equals(string))
 			return FieldType.Decimal;
@@ -97,6 +101,7 @@ public enum FieldType {
 		case String:
 			return Types.VARCHAR;
 		case Date:
+		case Datetime:
 			return Types.TIMESTAMP;
 		case Datespan:
 			return Types.BIGINT;
@@ -130,8 +135,9 @@ public enum FieldType {
 			default: throw new RuntimeException("Unknown data type: '" + toString() + "'");
 			}
 		case Date:
+		case Datetime:
 			switch(vendor) {
-			case Oracle: return "NUMBER"; //"TIMESTAMP(6) WITH TIME ZONE";
+			case Oracle: return "NUMBER";
 			case SqlServer: return "DATETIME";
 			case Postgres: return "timestamp with time zone";
 			default: throw new RuntimeException("Unknown data type: '" + toString() + "'");

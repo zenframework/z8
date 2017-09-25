@@ -128,6 +128,7 @@ public class Parameter extends OBJECT implements IParameter {
 		case Boolean:
 			return new bool(value);
 		case Date:
+		case Datetime:
 			return value.isEmpty() ? new date() : new date(value);
 		case Datespan:
 			return value.isEmpty() ? new datespan() : new datespan(value);

@@ -27,31 +27,21 @@ public class AddDay extends SqlToken {
 
 	@Override
 	public String format(DatabaseVendor vendor, FormatOptions options, boolean logicalContext) {
-		switch(date.type()) {
-		case Date:
-			switch(vendor) {
-			case Oracle:
-				String dt = date.format(vendor, options);
-				return "(" + dt + " + " + days.format(vendor, options) + " * 86400000)";
-//				return "(" + date.format(vendor, options) + " + (" + days.format(vendor, options) + "))";
-			case Postgres:
-				return "(" + date.format(vendor, options) + " + (" + days.format(vendor, options) + ") * interval '1 day')";
-			case SqlServer:
-				return "DATEADD(dd, " + days.format(vendor, options) + ", " + date.format(vendor, options) + ")";
-			default:
-				throw new UnknownDatabaseException();
-			}
-
-		case Datespan:
-			return date.format(vendor, options) + "+(" + days.format(vendor, options) + "*" + datespan.TicksPerDay + ")";
-
+		switch(vendor) {
+		case Oracle:
+			String dt = date.format(vendor, options);
+			return "(" + dt + " + " + days.format(vendor, options) + " * " + datespan.TicksPerDay + ")";
+		case Postgres:
+			return "(" + date.format(vendor, options) + " + (" + days.format(vendor, options) + ") * interval '1 day')";
+		case SqlServer:
+			return "DATEADD(dd, " + days.format(vendor, options) + ", " + date.format(vendor, options) + ")";
 		default:
-			throw new UnsupportedOperationException();
+			throw new UnknownDatabaseException();
 		}
 	}
 
 	@Override
 	public FieldType type() {
-		return date.type();
+		return FieldType.Date;
 	}
 }

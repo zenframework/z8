@@ -414,7 +414,7 @@ public class date extends primary {
 		if(vendor == DatabaseVendor.Postgres)
 			date = "'" + toString("T", "") + "'";
 		else if(vendor == DatabaseVendor.Oracle)
-			date = "" + getTicks(); //"'" + toString(" ", " ") + "'";
+			date = "" + getTicks();
 		else
 			throw new UnsupportedOperationException();
 

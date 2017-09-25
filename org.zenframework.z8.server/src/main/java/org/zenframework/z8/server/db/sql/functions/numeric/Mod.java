@@ -28,7 +28,9 @@ public class Mod extends SqlToken {
 	public String format(DatabaseVendor vendor, FormatOptions options, boolean logicalContext) {
 		switch(vendor) {
 		case Oracle:
-			return "Mod(" + value.format(vendor, options) + ", " + base.format(vendor, options) + ")";
+			return "MOD(" + value.format(vendor, options) + ", " + base.format(vendor, options) + ")";
+		case Postgres:
+			return "mod(" + value.format(vendor, options) + ", " + base.format(vendor, options) + ")";
 		case SqlServer:
 			return value.format(vendor, options) + " % " + base.format(vendor, options);
 		default:

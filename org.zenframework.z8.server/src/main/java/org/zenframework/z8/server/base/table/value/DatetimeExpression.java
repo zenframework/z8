@@ -31,12 +31,9 @@ public class DatetimeExpression extends Expression {
 
 	@Override
 	public FieldType type() {
-		return FieldType.Date;
+		return FieldType.Datetime;
 	}
 
-	protected String metaType() {
-		return DatetimeField.MetaType;
-	}
 	public sql_date sql_date() {
 		return new sql_date(new SqlField(this));
 	}

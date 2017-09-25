@@ -281,7 +281,7 @@ public class TableGenerator {
 			expression = new BoolExpression.CLASS<BoolExpression>(null).get();
 		else if(type == FieldType.Guid)
 			expression = new GuidExpression.CLASS<GuidExpression>(null).get();
-		else if(type == FieldType.Date)
+		else if(type == FieldType.Date || type == FieldType.Datetime)
 			expression = new DatetimeExpression.CLASS<DatetimeExpression>(null).get();
 		else if(type == FieldType.Datespan)
 			expression = new DatespanExpression.CLASS<DatespanExpression>(null).get();

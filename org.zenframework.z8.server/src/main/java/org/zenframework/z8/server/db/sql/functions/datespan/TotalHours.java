@@ -1,4 +1,4 @@
-package org.zenframework.z8.server.db.sql.functions.date;
+package org.zenframework.z8.server.db.sql.functions.datespan;
 
 import java.util.Collection;
 
@@ -14,10 +14,10 @@ import org.zenframework.z8.server.db.sql.functions.numeric.Round;
 import org.zenframework.z8.server.types.datespan;
 import org.zenframework.z8.server.types.integer;
 
-public class TotalHour extends SqlToken {
+public class TotalHours extends SqlToken {
 	private SqlToken span;
 
-	public TotalHour(SqlToken span) {
+	public TotalHours(SqlToken span) {
 		this.span = span;
 	}
 
