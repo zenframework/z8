@@ -48,7 +48,7 @@ public class TextField extends StringField {
 
 	@Override
 	public sql_string sql_string() {
-		return new sql_string(new ToString(new SqlField(this)));
+		return new sql_string(new ToString(this));
 	}
 
 	@Override

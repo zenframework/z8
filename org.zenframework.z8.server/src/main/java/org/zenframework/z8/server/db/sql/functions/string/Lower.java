@@ -29,8 +29,7 @@ public class Lower extends StringFunction {
 
 	@Override
 	public String format(DatabaseVendor vendor, FormatOptions options, boolean logicalContext) {
-		SqlToken token = string.type() != FieldType.String ? new ToString(string) : string;
-		return "LOWER(" + token.format(vendor, options) + ")";
+		return "LOWER(" + new ToString(string).format(vendor, options) + ")";
 	}
 
 	@Override

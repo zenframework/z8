@@ -29,19 +29,37 @@ public class ToString extends SqlToken {
 
 	@Override
 	public String format(DatabaseVendor vendor, FormatOptions options, boolean logicalContext) {
+		FieldType type = value.type();
+
 		switch(vendor) {
 		case Oracle:
-			return "TO_NCHAR(" + value.format(vendor, options) + ")";
-		case Postgres:
-			FieldType type = value.type();
-			if(type == FieldType.Guid)
+			switch(type) {
+			case Guid:
 				return new GuidToString(value).format(vendor, options);
-			else if(type == FieldType.Date || type == FieldType.Datetime)
+			case Text:
+			case Attachments:
+				return "UTL_RAW.CAST_TO_NVARCHAR2(" + value.format(vendor, options) + ")";
+			default:
+				return value.format(vendor, options);
+			}
+
+		case Postgres:
+			switch(type) {
+			case Guid:
+				return new GuidToString(value).format(vendor, options);
+			case Date:
+			case Datetime:
 				return new DateToString(value).format(vendor, options);
-			else
+			case Text:
+			case Attachments:
 				return "CONVERT_FROM(" + value.format(vendor, options) + ", 'UTF8')";
+			default:
+				return value.format(vendor, options);
+			}
+
 		case SqlServer:
 			return "Cast(" + value.format(vendor, options) + " as nvarchar(max))";
+
 		default:
 			throw new UnknownDatabaseException();
 		}

@@ -34,16 +34,31 @@ public class Window extends SqlToken {
 
 		SqlToken token = this.token;
 
-		if(vendor == DatabaseVendor.Postgres && (type == FieldType.Guid || type == FieldType.Text || type == FieldType.Attachments))
-			token = new ToString(token);
+		switch(vendor) {
+		case Postgres:
+		case Oracle:
+			if(type == FieldType.Guid || type == FieldType.Text || type == FieldType.Attachments)
+				token = new ToString(token);
+			break;
+		default:
+		}
 
 		result += token.format(vendor, options);
 		options.enableAggregation();
 
 		result += options.isAggregationEnabled() ? ")" : "";
 
-		if(vendor == DatabaseVendor.Postgres && type == FieldType.Guid)
-			result += "::uuid";
+		switch(vendor) {
+		case Postgres:
+			if(type == FieldType.Guid)
+				result += "::uuid";
+			break;
+		case Oracle:
+			if(type == FieldType.Guid)
+				result = "HEXTORAW(" + result + ")";
+			break;
+		default:
+		}
 
 		return result;
 	}

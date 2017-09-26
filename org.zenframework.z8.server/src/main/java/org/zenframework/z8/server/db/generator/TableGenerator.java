@@ -646,6 +646,8 @@ public class TableGenerator {
 
 		Database database = database();
 		DatabaseVendor vendor = vendor();
+		boolean postgres = vendor == DatabaseVendor.Postgres;
+		boolean oracle = vendor == DatabaseVendor.Oracle;
 
 		FormatOptions options = new FormatOptions();
 		options.disableAggregation();
@@ -658,19 +660,19 @@ public class TableGenerator {
 			if(dbField != null) {
 				targetFields += (targetFields.isEmpty() ? "" : ", ") + vendor.quote(name);
 
-				if(field.type() == FieldType.Guid) {
-					SqlToken isNull = new IsNull(new SqlField(field));
-					SqlToken iif = new If(isNull, guid.Null.sql_guid(), new SqlField(field));
-					name = iif.format(vendor, options);
-				} else if(dbField.type.startsWith("character") && field.type() == FieldType.Integer) {
+				if(field.type() == FieldType.Guid)
+					name = new If(new IsNull(field), guid.Null.sql_guid(), new SqlField(field)).format(vendor, options);
+				else if(postgres && dbField.type.startsWith("character") && field.type() == FieldType.Integer)
 					name = new sql_integer().format(vendor, options);
-				} else if(dbField.type.startsWith("character") && field.type() == FieldType.Text) {
+				else if(postgres && dbField.type.startsWith("character") && field.type() == FieldType.Text)
 					name = new ToBytes(field).format(vendor, options);
-				} else if(dbField.type.startsWith("bytea") && field.type() == FieldType.String) {
+				else if(postgres && dbField.type.startsWith("bytea") && field.type() == FieldType.String)
 					name = new ToString(field).format(vendor, options);
-				} else {
+				else if(oracle && (dbField.type.startsWith("BLOB") || dbField.type.startsWith("NCLOB")))
+					name = "null";
+				else
 					name = vendor.quote(name);
-				}
+
 				sourceFields += (sourceFields.isEmpty() ? "" : ", ") + name;
 			}
 		}

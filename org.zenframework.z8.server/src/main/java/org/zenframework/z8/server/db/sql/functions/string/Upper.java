@@ -29,8 +29,7 @@ public class Upper extends StringFunction {
 
 	@Override
 	public String format(DatabaseVendor vendor, FormatOptions options, boolean logicalContext) {
-		SqlToken token = string.type() != FieldType.String ? new ToString(string) : string;
-		return "UPPER(" + token.format(vendor, options) + ")";
+		return "UPPER(" + new ToString(string).format(vendor, options) + ")";
 	}
 
 	@Override

@@ -35,7 +35,7 @@ public class GuidToString extends SqlToken {
 		case Postgres:
 			return param + "::text";
 		case Oracle:
-			return "SUBSTR(RAWTOHEX(" + param + "), 0, 8)||'-'||SUBSTR(RAWTOHEX(" + param + "), 9, 4)||'-'||SUBSTR(RAWTOHEX(" + param + "), 13, 4)||'-'||SUBSTR(RAWTOHEX(" + param + "), 17, 4)||'-'||SUBSTR(RAWTOHEX(" + param + "), 21, 12)";
+			return "RAWTOHEX(" + param + ")";
 		case SqlServer:
 			return "Convert(nvarchar(40), " + param + ")";
 		default:
