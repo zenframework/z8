@@ -55,7 +55,8 @@ public abstract class RmiServer implements IServer, Remote {
 
 	private boolean safeExport(int port) throws RemoteException {
 		try {
-			proxy = (Proxy)UnicastRemoteObject.exportObject(this, port);
+			UnicastRemoteObject.exportObject(this, port);
+			proxy = Rmi.getProxy(this.getClass(), Rmi.localhost, port);
 			return true;
 		} catch(ExportException e) {
 			return false;

@@ -1,5 +1,6 @@
 package org.zenframework.z8.server.engine;
 
+import java.lang.reflect.Proxy;
 import java.rmi.server.ObjID;
 import java.util.HashMap;
 import java.util.Map;
@@ -38,6 +39,13 @@ public class Rmi {
 		LiveRef liveRef = new LiveRef(new ObjID(), new TCPEndpoint(host, port), false);
 
 		return (TYPE)ProxyUtils.newProxy(liveRef, interfaces);
+	}
+
+	@SuppressWarnings("rawtypes")
+	static public Proxy getProxy(Class cls, String host, int port) {
+		Class<?>[] interfaces = { cls, IServer.class };
+		LiveRef liveRef = new LiveRef(new ObjID(), new TCPEndpoint(host, port), false);
+		return ProxyUtils.newProxy(liveRef, interfaces);
 	}
 
 	static public Class<?> serverClass(Class<?> cls) {

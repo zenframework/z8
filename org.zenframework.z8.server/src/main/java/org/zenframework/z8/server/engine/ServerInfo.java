@@ -134,7 +134,7 @@ public class ServerInfo implements IServerInfo {
 		return "[id: " + id + ", " + (proxy != null ? proxy.toString() : "") + "]";
 	}
 
-	static private IApplicationServer getProxy(IApplicationServer server) {
+	static public IApplicationServer getProxy(IApplicationServer server) {
 		if(server instanceof RmiServer)
 			return (IApplicationServer)((RmiServer)server).proxy();
 		return server;
