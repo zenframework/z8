@@ -43,7 +43,7 @@ public class Rmi {
 
 	@SuppressWarnings("rawtypes")
 	static public Proxy getProxy(Class cls, String host, int port) {
-		Class<?>[] interfaces = { cls, IServer.class };
+		Class<?>[] interfaces = { serverClass(cls), IServer.class };
 		LiveRef liveRef = new LiveRef(new ObjID(), new TCPEndpoint(host, port), false);
 		return ProxyUtils.newProxy(liveRef, interfaces);
 	}
