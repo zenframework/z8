@@ -203,7 +203,7 @@ public class TableGenerator {
 				break;
 			}
 
-			if(!checkDefaults(columndesc.defaultValue, field)) {
+			if(!checkLength(columndesc.size, columndesc.scale, field) || !checkDefaults(columndesc.defaultValue, field)) {
 				result = GeneratorAction.Recreate;
 				break;
 			}
@@ -219,6 +219,16 @@ public class TableGenerator {
 		}
 
 		return result;
+	}
+
+	boolean checkLength(int size, int scale, Field field) {
+		FieldType type = field.type();
+
+		if(type == FieldType.String)
+			return field.size() == size;
+		else if(type == FieldType.Decimal)
+			return field.size() == size && field.scale() == scale;
+		return true;
 	}
 
 	static Map<String, primary> defaults = new HashMap<String, primary>();
