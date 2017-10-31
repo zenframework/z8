@@ -32,7 +32,7 @@ public class AddMinute extends SqlToken {
 			String dt = date.format(vendor, options);
 			return "(" + dt + " + " + minutes.format(vendor, options) + " *" + datespan.TicksPerMinute + ")";
 		case Postgres:
-			return "(" + date.format(vendor, options) + " + (" + minutes.format(vendor, options) + ") * interval '1 munute')";
+			return "(" + date.format(vendor, options) + " + (" + minutes.format(vendor, options) + ") * interval '1 minute')";
 		case SqlServer:
 			return "DATEADD(mi, " + minutes.format(vendor, options) + ", " + date.format(vendor, options) + ")";
 		default:

@@ -65,7 +65,7 @@ public class RequestDispatcher implements Runnable {
 
 			response.setContent(writer.toString());
 		} finally {
-			ConnectionManager.get().release();
+			ConnectionManager.release();
 			ApplicationServer.setRequest(null);
 		}
 	}

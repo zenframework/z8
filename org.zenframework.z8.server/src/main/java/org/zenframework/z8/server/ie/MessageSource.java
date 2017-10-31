@@ -200,7 +200,10 @@ public class MessageSource implements RmiSerializable, Serializable {
 		String name = table.name();
 		guid value = field.guid();
 
-		if(value.equals(guid.Null) || BuiltinUsers.System.guid().equals(value) || BuiltinUsers.Administrator.guid().equals(value))
+		if(value.equals(guid.Null))
+			return true;
+
+		if(BuiltinUsers.System.guid().equals(value) || BuiltinUsers.Administrator.guid().equals(value))
 			return false;
 
 		Boolean state = recordStates.get(makeUniqueId(name, value));
