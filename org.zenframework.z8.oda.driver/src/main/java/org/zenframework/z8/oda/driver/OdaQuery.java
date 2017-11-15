@@ -15,12 +15,12 @@ import org.eclipse.datatools.connectivity.oda.IResultSetMetaData;
 import org.eclipse.datatools.connectivity.oda.OdaException;
 import org.eclipse.datatools.connectivity.oda.SortSpec;
 import org.eclipse.datatools.connectivity.oda.spec.QuerySpecification;
-import org.zenframework.z8.server.base.model.actions.ReadAction;
-import org.zenframework.z8.server.base.model.sql.Select;
 import org.zenframework.z8.server.base.table.value.IField;
+import org.zenframework.z8.server.db.Select;
 import org.zenframework.z8.server.json.Json;
 import org.zenframework.z8.server.json.parser.JsonArray;
 import org.zenframework.z8.server.json.parser.JsonObject;
+import org.zenframework.z8.server.request.actions.ReadAction;
 
 public class OdaQuery implements IQuery {
 	private ReadAction readAction;

@@ -1,9 +1,7 @@
-package org.zenframework.z8.server.base.model.sql;
+package org.zenframework.z8.server.db;
 
 import org.zenframework.z8.server.base.table.value.Expression;
 import org.zenframework.z8.server.base.table.value.Field;
-import org.zenframework.z8.server.db.DatabaseVendor;
-import org.zenframework.z8.server.db.FieldType;
 import org.zenframework.z8.server.db.sql.FormatOptions;
 import org.zenframework.z8.server.db.sql.SqlStringToken;
 import org.zenframework.z8.server.db.sql.expressions.Operation;

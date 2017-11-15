@@ -1,4 +1,4 @@
-package org.zenframework.z8.server.base.model.actions;
+package org.zenframework.z8.server.request.actions;
 
 import org.zenframework.z8.server.base.form.report.Report;
 import org.zenframework.z8.server.json.Json;

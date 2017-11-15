@@ -118,6 +118,7 @@ public class Expression implements IFilter {
 		case Integer:
 			return new Rel(field, operation, new integer(value).sql_int());
 		case Date:
+		case Datetime:
 			switch(operation) {
 			case Eq:
 			case NotEq:

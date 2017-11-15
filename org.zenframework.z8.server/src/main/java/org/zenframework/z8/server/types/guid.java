@@ -62,6 +62,10 @@ public class guid extends primary {
 		return new guid(UUID.nameUUIDFromBytes(value.getBytes()));
 	}
 
+	static public guid create(long value) {
+		return create(0, value);
+	}
+
 	static public guid create(long n1, long n2) {
 		return new guid(new UUID(n1, n2));
 	}
@@ -155,6 +159,10 @@ public class guid extends primary {
 
 	static public guid z8_create(integer n1, integer n2) {
 		return create(n1.get(), n2.get());
+	}
+
+	static public guid z8_create(integer value) {
+		return create(value.get());
 	}
 
 	static public guid z8_create(string value) {

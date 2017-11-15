@@ -147,6 +147,18 @@ public class Cursor {
 		return getDate(position, new DateField(null));
 	}
 
+	public date getTimestamp(int position) throws SQLException {
+		return getTimestamp(position, new DateField(null));
+	}
+
+	private date getTimestamp(int position, Field field) throws SQLException {
+		Object value = resultSet.getTimestamp(position);
+		boolean wasNull = value == null || wasNull();
+		field.setWasNull(wasNull);
+
+		return !wasNull ? new date(value instanceof Timestamp ? (Timestamp)value : new Timestamp((Long)value)) : date.Min;
+	}
+
 	private date getDate(int position, Field field) throws SQLException {
 		Object value = null;
 

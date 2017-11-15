@@ -1,15 +1,15 @@
-package org.zenframework.z8.server.base.model.actions;
+package org.zenframework.z8.server.request.actions;
 
 import java.util.ArrayList;
 import java.util.Collection;
 
-import org.zenframework.z8.server.base.model.sql.Update;
 import org.zenframework.z8.server.base.query.Query;
 import org.zenframework.z8.server.base.query.QueryUtils;
 import org.zenframework.z8.server.base.table.value.Field;
 import org.zenframework.z8.server.base.table.value.ILink;
 import org.zenframework.z8.server.db.Connection;
 import org.zenframework.z8.server.db.ConnectionManager;
+import org.zenframework.z8.server.db.Update;
 import org.zenframework.z8.server.exceptions.AccessRightsViolationException;
 import org.zenframework.z8.server.json.JsonWriter;
 import org.zenframework.z8.server.json.parser.JsonArray;

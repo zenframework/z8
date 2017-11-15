@@ -1,4 +1,4 @@
-package org.zenframework.z8.server.base.model.sql;
+package org.zenframework.z8.server.db;
 
 import java.sql.SQLException;
 

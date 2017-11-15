@@ -1,4 +1,4 @@
-package org.zenframework.z8.server.base.model.sql;
+package org.zenframework.z8.server.db;
 
 import java.util.ArrayList;
 import java.util.Collection;

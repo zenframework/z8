@@ -1,0 +1,24 @@
+import org.zenframework.z8.lang.Object;
+
+/*
+*   {
+*       schema: "schema",
+*       user: "user",
+*       password: "...",
+*       connection: "jdbc:oracle:thin:@192.168.41.219:1521:dbname",
+*       driver: "oracle.jdbc.OracleDriver",
+*       charset: "UTF-8"
+*   }
+*
+*/
+[native "org.zenframework.z8.server.base.sql.Database"]
+public class Database extends Object {
+	static public string Schema = "schema";
+	static public string User = "user";
+	static public string Password = "password";
+	static public string Connection = "connection";
+	static public string Driver = "driver";
+	static public string Charset = "charset";
+
+	static public Database fromJson(string json);
+}

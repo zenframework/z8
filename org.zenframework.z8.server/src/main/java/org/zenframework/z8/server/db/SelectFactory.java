@@ -1,4 +1,4 @@
-package org.zenframework.z8.server.base.model.sql;
+package org.zenframework.z8.server.db;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -6,7 +6,6 @@ import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 
-import org.zenframework.z8.server.base.model.actions.ReadAction;
 import org.zenframework.z8.server.base.query.Query;
 import org.zenframework.z8.server.base.table.value.Aggregation;
 import org.zenframework.z8.server.base.table.value.Expression;
@@ -14,6 +13,7 @@ import org.zenframework.z8.server.base.table.value.Field;
 import org.zenframework.z8.server.base.table.value.ILink;
 import org.zenframework.z8.server.base.table.value.Link;
 import org.zenframework.z8.server.db.sql.SqlToken;
+import org.zenframework.z8.server.request.actions.ReadAction;
 
 public class SelectFactory {
 	private ReadAction action;

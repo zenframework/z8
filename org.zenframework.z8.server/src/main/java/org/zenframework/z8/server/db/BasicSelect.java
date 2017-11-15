@@ -3,6 +3,8 @@ package org.zenframework.z8.server.db;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+import org.zenframework.z8.server.engine.Database;
+
 public class BasicSelect extends BasicStatement {
 	private Cursor cursor = null;
 
@@ -31,7 +33,11 @@ public class BasicSelect extends BasicStatement {
 	}
 
 	public static Cursor cursor(String sql) throws SQLException {
-		BasicSelect select = new BasicSelect(ConnectionManager.get());
+		return cursor(null, sql);
+	}
+
+	public static Cursor cursor(Database database, String sql) throws SQLException {
+		BasicSelect select = new BasicSelect(ConnectionManager.get(database));
 		select.prepare(sql);
 		return select.execute();
 	}

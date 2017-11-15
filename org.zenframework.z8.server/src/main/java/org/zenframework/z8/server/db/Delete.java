@@ -1,13 +1,8 @@
-package org.zenframework.z8.server.base.model.sql;
+package org.zenframework.z8.server.db;
 
 import java.sql.SQLException;
 
 import org.zenframework.z8.server.base.query.Query;
-import org.zenframework.z8.server.db.Connection;
-import org.zenframework.z8.server.db.ConnectionManager;
-import org.zenframework.z8.server.db.DatabaseVendor;
-import org.zenframework.z8.server.db.FieldType;
-import org.zenframework.z8.server.db.Statement;
 import org.zenframework.z8.server.engine.Database;
 import org.zenframework.z8.server.logs.Trace;
 import org.zenframework.z8.server.types.guid;

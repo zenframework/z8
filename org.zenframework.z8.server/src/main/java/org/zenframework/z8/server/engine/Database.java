@@ -9,11 +9,11 @@ import org.zenframework.z8.server.db.BasicSelect;
 import org.zenframework.z8.server.db.ConnectionManager;
 import org.zenframework.z8.server.db.Cursor;
 import org.zenframework.z8.server.db.DatabaseVendor;
+import org.zenframework.z8.server.json.parser.JsonObject;
 import org.zenframework.z8.server.logs.Trace;
 import org.zenframework.z8.server.types.encoding;
 
 public class Database {
-
 	private String schema = null;
 	private String user = null;
 	private String password = null;
@@ -36,6 +36,17 @@ public class Database {
 		setConnection(prop.getProperty("application.database.connection"));
 		setDriver(prop.getProperty("application.database.driver"));
 		setCharset(encoding.fromString(prop.getProperty("application.database.charset")));
+	}
+
+	public Database(String json) {
+		JsonObject object = new JsonObject(json);
+
+		setSchema(object.getString("schema"));
+		setUser(object.getString("user"));
+		setPassword(object.getString("password"));
+		setConnection(object.getString("connection"));
+		setDriver(object.getString("driver"));
+		setCharset(encoding.fromString(object.getString("charset")));
 	}
 
 	public DatabaseVendor vendor() {

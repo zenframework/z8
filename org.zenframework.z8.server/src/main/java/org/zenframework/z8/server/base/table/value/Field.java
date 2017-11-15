@@ -5,10 +5,10 @@ import java.util.Collection;
 import java.util.LinkedHashSet;
 
 import org.zenframework.z8.server.base.form.Control;
-import org.zenframework.z8.server.base.model.sql.Select;
 import org.zenframework.z8.server.base.query.Query;
 import org.zenframework.z8.server.db.DatabaseVendor;
 import org.zenframework.z8.server.db.FieldType;
+import org.zenframework.z8.server.db.Select;
 import org.zenframework.z8.server.db.sql.FormatOptions;
 import org.zenframework.z8.server.db.sql.SortDirection;
 import org.zenframework.z8.server.db.sql.SqlConst;

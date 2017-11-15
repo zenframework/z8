@@ -1,0 +1,16 @@
+import org.zenframework.z8.base.sql.Database;
+import org.zenframework.z8.lang.Object;
+
+[native "org.zenframework.z8.server.base.sql.Cursor"]
+public class Cursor extends Object {
+	static public Cursor open(Database database, string sql);
+
+	public bool next();
+
+	public string string(int position);
+	public int integer(int position);
+	public decimal decimal(int position);
+	public date date(int position);
+	public date timestamp(int position);
+	public guid guid(int position);
+}

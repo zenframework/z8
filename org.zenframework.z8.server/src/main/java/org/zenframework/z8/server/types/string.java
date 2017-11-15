@@ -8,6 +8,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
+import org.apache.commons.lang.StringUtils;
 import org.zenframework.z8.server.db.DatabaseVendor;
 import org.zenframework.z8.server.db.FieldType;
 import org.zenframework.z8.server.resources.Resources;
@@ -338,46 +339,28 @@ public final class string extends primary {
 		}
 	}
 
+	public string padLeft(int length, String padding) {
+		return new string(StringUtils.leftPad(get(), length, padding));
+	}
+
 	public string z8_padLeft(integer length) {
-		return z8_padLeft(length, new string(" "));
+		return padLeft(length.getInt(), " ");
 	}
 
 	public string z8_padLeft(integer length, string padding) {
-		String value = get();
+		return padLeft(length.getInt(), padding.get());
+	}
 
-		int len = length.getInt();
-
-		if(value.length() >= len)
-			return new string(value);
-
-		String result = "";
-
-		for(int i = 0; i < len - value.length(); i++)
-			result += padding.get();
-
-		result += value;
-		result = result.length() == len ? result : result.substring(result.length() - len);
-		return new string(result);
+	public string padRight(int length, String padding) {
+		return new string(StringUtils.rightPad(get(), length, padding));
 	}
 
 	public string z8_padRight(integer length) {
-		return z8_padRight(length, new string(" "));
+		return padRight(length.getInt(), " ");
 	}
 
 	public string z8_padRight(integer length, string padding) {
-		String value = get();
-		int len = length.getInt();
-
-		if(value.length() >= len)
-			return new string(value);
-
-		String result = new String(value);
-
-		while(result.length() < len)
-			result += padding;
-
-		result = result.length() == len ? result : result.substring(0, len);
-		return new string(result);
+		return padRight(length.getInt(), padding.get());
 	}
 
 	public string z8_insert(integer index, string what) {

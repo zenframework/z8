@@ -1,6 +1,4 @@
-package org.zenframework.z8.server.base.model;
-
-import org.zenframework.z8.server.request.INamedObject;
+package org.zenframework.z8.server.request;
 
 public class NamedObject implements INamedObject {
 	protected String id;

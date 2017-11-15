@@ -2,7 +2,6 @@ package org.zenframework.z8.server.request;
 
 import java.util.Map;
 
-import org.zenframework.z8.server.base.model.NamedObject;
 import org.zenframework.z8.server.engine.ApplicationServer;
 import org.zenframework.z8.server.json.JsonWriter;
 import org.zenframework.z8.server.types.string;
