@@ -303,11 +303,7 @@ public class TableGenerator {
 		expression.setOwner(table);
 
 		Select select = new Select();
-
-		Query query = table();
 		select.setFields(Arrays.asList((Field)expression));
-		select.setRootQuery(query);
-
 		select.open();
 
 		if(!select.next())

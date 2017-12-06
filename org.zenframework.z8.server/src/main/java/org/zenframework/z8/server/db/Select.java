@@ -271,6 +271,17 @@ public class Select {
 		return query != null ? database.tableName(query.name()) + (vendor == DatabaseVendor.SqlServer ? " as " : " ") + query.getAlias() : "";
 	}
 
+	private String emptyFrom() {
+		switch(vendor()){
+		case Postgres:
+			return "";
+		case Oracle:
+			return " from dual";
+		default:
+			throw new UnsupportedOperationException();
+		}
+	}
+
 	protected String formatFrom(FormatOptions options) {
 		String join = "";
 
@@ -285,6 +296,9 @@ public class Select {
 				options.enableAggregation();
 			}
 		}
+
+		if(root == null && rootQuery == null)
+			return emptyFrom();
 
 		return "\nfrom " + (root != null ? root : queryName(rootQuery)) + join;
 	}
