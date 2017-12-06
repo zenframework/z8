@@ -5,7 +5,6 @@ import org.zenframework.z8.server.base.json.JsonWriter;
 import org.zenframework.z8.server.base.security.User;
 import org.zenframework.z8.server.config.ServerConfig;
 import org.zenframework.z8.server.engine.ApplicationServer;
-import org.zenframework.z8.server.logs.Trace;
 import org.zenframework.z8.server.runtime.RCollection;
 import org.zenframework.z8.server.runtime.RLinkedHashMap;
 import org.zenframework.z8.server.types.file;
