@@ -19,6 +19,7 @@ import org.zenframework.z8.server.ie.Message;
 import org.zenframework.z8.server.request.Loader;
 import org.zenframework.z8.server.resources.Resources;
 import org.zenframework.z8.server.runtime.IObject;
+import org.zenframework.z8.server.types.binary;
 import org.zenframework.z8.server.types.guid;
 import org.zenframework.z8.server.types.integer;
 import org.zenframework.z8.server.types.string;
@@ -212,7 +213,7 @@ public class TransportQueue extends Table {
 			return null;
 
 		Message result = (Message)Loader.getInstance(classId.string().get());
-		result.fromBinary(data.get().binary());
+		result.fromBinary((binary)data.get());
 		result.setId(recordId());
 		result.setBytesTransferred(bytesTransferred.integer().get());
 		return result;

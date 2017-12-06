@@ -20,8 +20,6 @@ import org.zenframework.z8.server.db.ConnectionManager;
 import org.zenframework.z8.server.db.FieldType;
 import org.zenframework.z8.server.db.sql.expressions.And;
 import org.zenframework.z8.server.db.sql.expressions.Equ;
-import org.zenframework.z8.server.db.sql.expressions.UnaryNot;
-import org.zenframework.z8.server.db.sql.functions.InVector;
 import org.zenframework.z8.server.engine.Runtime;
 import org.zenframework.z8.server.runtime.OBJECT;
 import org.zenframework.z8.server.security.IAccess;
@@ -75,7 +73,7 @@ public class AccessRightsGenerator {
 	}
 
 	private void clearTables() {
-		tables.read(Arrays.asList(tables.primaryKey()), new UnaryNot(new InVector(tables.primaryKey(), tableKeys)));
+		tables.read(Arrays.asList(tables.primaryKey()), tables.primaryKey().notInVector(tableKeys));
 
 		while(tables.next()) {
 			guid tableId = tables.recordId();
@@ -87,7 +85,7 @@ public class AccessRightsGenerator {
 	}
 
 	private void createTables() {
-		tables.read(Arrays.asList(tables.primaryKey()), new InVector(tables.primaryKey(), tableKeys));
+		tables.read(Arrays.asList(tables.primaryKey()), tables.primaryKey().inVector(tableKeys));
 		while(tables.next()) {
 			guid tableId = tables.recordId();
 			Table table = Runtime.instance().getTableByKey(tableId).newInstance();
@@ -122,7 +120,7 @@ public class AccessRightsGenerator {
 	}
 
 	private void clearRequests() {
-		requests.read(Arrays.asList(requests.primaryKey()), new UnaryNot(new InVector(requests.primaryKey(), requestKeys)));
+		requests.read(Arrays.asList(requests.primaryKey()), requests.primaryKey().notInVector(requestKeys));
 
 		while(requests.next()) {
 			guid requestId = requests.recordId();
@@ -132,7 +130,7 @@ public class AccessRightsGenerator {
 	}
 
 	private void createRequests() {
-		requests.read(Arrays.asList(requests.primaryKey()), new InVector(requests.primaryKey(), requestKeys));
+		requests.read(Arrays.asList(requests.primaryKey()), requests.primaryKey().inVector(requestKeys));
 		while(requests.next()) {
 			guid requestId = requests.recordId();
 			OBJECT request = Runtime.instance().getRequestByKey(requestId).newInstance();
@@ -163,7 +161,7 @@ public class AccessRightsGenerator {
 		Collection<guid> fieldKeys = new HashSet<guid>(fieldsMap.keySet());
 
 		fields.read(Arrays.asList(fields.primaryKey()),
-				new And(new Equ(fields.table.get(), table.key()), new UnaryNot(new InVector(fields.primaryKey(), fieldKeys))));
+				new And(new Equ(fields.table.get(), table.key()), fields.primaryKey().notInVector(fieldKeys)));
 
 		while(fields.next()) {
 			guid fieldId = fields.recordId();
@@ -178,7 +176,7 @@ public class AccessRightsGenerator {
 		Map<guid, Field> fieldsMap = table.getFieldsMap();
 		Collection<guid> fieldKeys = new HashSet<guid>(fieldsMap.keySet());
 
-		fields.read(Arrays.asList(fields.primaryKey()), new InVector(fields.primaryKey(), fieldKeys));
+		fields.read(Arrays.asList(fields.primaryKey()), fields.primaryKey().inVector(fieldKeys));
 		while(fields.next()) {
 			guid fieldId = fields.recordId();
 			setFieldProperties(fieldsMap.get(fieldId), table.key());

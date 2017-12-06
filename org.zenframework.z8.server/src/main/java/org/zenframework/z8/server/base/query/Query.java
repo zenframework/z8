@@ -23,7 +23,6 @@ import org.zenframework.z8.server.db.Insert;
 import org.zenframework.z8.server.db.Select;
 import org.zenframework.z8.server.db.sql.SqlToken;
 import org.zenframework.z8.server.db.sql.expressions.And;
-import org.zenframework.z8.server.db.sql.expressions.True;
 import org.zenframework.z8.server.engine.ApplicationServer;
 import org.zenframework.z8.server.json.Json;
 import org.zenframework.z8.server.json.JsonWriter;
@@ -73,9 +72,9 @@ public class Query extends OBJECT {
 
 	public RCollection<Control.CLASS<? extends Control>> controls = new RCollection<Control.CLASS<? extends Control>>();
 	public RCollection<Field.CLASS<? extends Field>> names = new RCollection<Field.CLASS<? extends Field>>();
-	public RCollection<Field.CLASS<? extends Field>> extras = new RCollection<Field.CLASS<? extends Field>>();
 	public RCollection<Field.CLASS<? extends Field>> columns = new RCollection<Field.CLASS<? extends Field>>();
 	public RCollection<Field.CLASS<? extends Field>> quickFilters = new RCollection<Field.CLASS<? extends Field>>();
+	public RCollection<Field.CLASS<? extends Field>> extraFields = new RCollection<Field.CLASS<? extends Field>>();
 	public RCollection<Field.CLASS<? extends Field>> sortFields = new RCollection<Field.CLASS<? extends Field>>();
 	public RCollection<Field.CLASS<? extends Field>> groupFields = new RCollection<Field.CLASS<? extends Field>>();
 	public RCollection<Action.CLASS<? extends Action>> actions = new RCollection<Action.CLASS<? extends Action>>();
@@ -83,7 +82,8 @@ public class Query extends OBJECT {
 
 	public RCollection<Link.CLASS<? extends Link>> aggregateBy = new RCollection<Link.CLASS<? extends Link>>();
 	public RCollection<Field.CLASS<? extends Field>> groupBy = new RCollection<Field.CLASS<? extends Field>>();
-
+	private int groupingDisabled = 0;
+	
 	private Collection<Field.CLASS<Field>> dataFields;
 	private Collection<Field.CLASS<Field>> primaryFields;
 	private Collection<Field.CLASS<Field>> links;
@@ -558,7 +558,9 @@ public class Query extends OBJECT {
 		Collection<Field> fields = new ArrayList<Field>();
 		fields.add(primaryKey());
 
+		disableGrouping();
 		read(fields, where);
+		enableGrouping();
 
 		int result = 0;
 
@@ -726,9 +728,9 @@ public class Query extends OBJECT {
 		for(Control control : CLASS.asList(controls))
 			result.addAll(control.fields());
 
-		result.addAll(extras());
 		result.addAll(names());
 		result.addAll(columns());
+		result.addAll(extraFields());
 
 		return result;
 	}
@@ -741,8 +743,8 @@ public class Query extends OBJECT {
 		return CLASS.asList(names);
 	}
 
-	public Collection<Field> extras() {
-		return CLASS.asList(extras);
+	public Collection<Field> extraFields() {
+		return CLASS.asList(extraFields);
 	}
 
 	public Collection<Field> quickFilters() {
@@ -828,16 +830,28 @@ public class Query extends OBJECT {
 		this.where = where;
 	}
 
+	private boolean isGroupingEnabled() {
+		return groupingDisabled == 0;
+	}
+
+	private void enableGrouping() {
+		groupingDisabled = Math.max(0, groupingDisabled - 1);
+	}
+
+	private void disableGrouping() {
+		groupingDisabled++;
+	}
+
 	public boolean isGrouped() {
-		return !groupBy.isEmpty() || !aggregateBy.isEmpty();
+		return isGroupingEnabled() && (!groupBy.isEmpty() || !aggregateBy.isEmpty());
 	}
 
 	public Collection<Link> getAggregateByFields() {
-		return CLASS.asList(aggregateBy);
+		return isGroupingEnabled() ? CLASS.asList(aggregateBy) : new ArrayList<Link>();
 	}
 
 	public Collection<Field> getGroupByFields() {
-		return CLASS.asList(groupBy);
+		return isGroupingEnabled() ? CLASS.asList(groupBy) : new ArrayList<Field>();
 	}
 
 	public Field primaryKey() {
@@ -1134,11 +1148,11 @@ public class Query extends OBJECT {
 	//////////////////////////////////////////////////////////////////////////////////////////////////
 
 	public sql_bool z8_having() {
-		return new True();
+		return sql_bool.True;
 	}
 
 	public sql_bool z8_where() {
-		return new True();
+		return sql_bool.True;
 	}
 
 	public void z8_addWhere(sql_bool where) {

@@ -36,9 +36,7 @@ import org.zenframework.z8.server.db.sql.expressions.Group;
 import org.zenframework.z8.server.db.sql.expressions.Operation;
 import org.zenframework.z8.server.db.sql.expressions.Or;
 import org.zenframework.z8.server.db.sql.expressions.Rel;
-import org.zenframework.z8.server.db.sql.expressions.True;
 import org.zenframework.z8.server.db.sql.expressions.Unary;
-import org.zenframework.z8.server.db.sql.functions.InVector;
 import org.zenframework.z8.server.db.sql.functions.IsNull;
 import org.zenframework.z8.server.db.sql.functions.string.Like;
 import org.zenframework.z8.server.db.sql.functions.string.Lower;
@@ -51,6 +49,7 @@ import org.zenframework.z8.server.security.Privileges;
 import org.zenframework.z8.server.types.guid;
 import org.zenframework.z8.server.types.primary;
 import org.zenframework.z8.server.types.string;
+import org.zenframework.z8.server.types.sql.sql_bool;
 import org.zenframework.z8.server.types.sql.sql_string;
 import org.zenframework.z8.server.utils.ArrayUtils;
 
@@ -465,7 +464,7 @@ public class ReadAction extends RequestAction {
 	}
 
 	private void collectFilterQueries(SqlToken filter, Collection<SqlToken> filters, Collection<Field> filterFields) {
-		if(filter != null && !(filter instanceof True) && !filters.contains(filter)) {
+		if(filter != null && !(filter == sql_bool.True) && !filters.contains(filter)) {
 			Collection<Field> fields = getUsedFields(filter);
 
 			for(Field field : fields)
@@ -506,7 +505,7 @@ public class ReadAction extends RequestAction {
 	private SqlToken getFilter(Field field, Collection<guid> value, Operation operation) {
 		if(field == null || value == null)
 			return null;
-		return value.size() == 1 ? getFilter(field, value.iterator().next(), operation) : new InVector(field, value);
+		return value.size() == 1 ? getFilter(field, value.iterator().next(), operation) : field.inVector(value);
 	}
 
 	private void addNullRecordFilter(Field primaryKey) {
@@ -827,6 +826,13 @@ public class ReadAction extends RequestAction {
 	private void writeTotals(JsonWriter writer) throws SQLException {
 		AggregatingSelect totals = totals();
 
+		totals.setFormatCallback(new Select.IFormatCallback() {
+			public void on(Field field) {
+				if(field.type().isNumeric() || field.aggregation == Aggregation.Count)
+					field.aggregation = Aggregation.Sum;
+			}
+		});
+
 		totals.setFields(getTotalsFields(totals.getFields()));
 
 		try {
@@ -849,9 +855,13 @@ public class ReadAction extends RequestAction {
 		Collection<Field> result = new ArrayList<Field>();
 
 		for(Field field : fields) {
+			FieldType type = field.type();
 			Aggregation aggregation = field.aggregation;
-			if(aggregation == Aggregation.Count || aggregation != Aggregation.None && (field.type() == FieldType.Integer || field.type() == FieldType.Decimal))
-				result.add(field);
+
+			if(aggregation == Aggregation.None || !type.isNumeric() && aggregation != Aggregation.Count)
+				continue;
+
+			result.add(field);
 		}
 
 		return result;

@@ -116,7 +116,6 @@ public final class integer extends primary {
 		return false;
 	}
 
-	@Override
 	public decimal decimal() {
 		return new decimal(this);
 	}

@@ -2,11 +2,4 @@
 public class primary {
 	public string toString();
 	public int hashCode();
-
-	public bool toBool();
-	public guid toGuid();
-	public date toDate();
-	public datespan toDatespan();
-	public decimal toDecimal();
-	public int toInt();
 }

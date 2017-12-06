@@ -10,7 +10,8 @@ import org.zenframework.z8.server.db.FieldType;
 import org.zenframework.z8.server.db.sql.FormatOptions;
 import org.zenframework.z8.server.db.sql.SqlField;
 import org.zenframework.z8.server.db.sql.SqlToken;
-import org.zenframework.z8.server.exceptions.db.UnknownDatabaseException;
+import org.zenframework.z8.server.types.date;
+import org.zenframework.z8.server.types.datespan;
 
 public class TruncDay extends SqlToken {
 	private SqlToken date;
@@ -28,20 +29,21 @@ public class TruncDay extends SqlToken {
 		date.collectFields(fields);
 	}
 
+	private date getConst() {
+		return date.isConst() && date.isDate() ? date.date() : null;
+	}
+
 	@Override
 	public String format(DatabaseVendor vendor, FormatOptions options, boolean logicalContext) {
-		switch(vendor) {
-		case Oracle:
-			String dt = date.format(vendor, options);
-			String offset = "(" + TimeZone.getDefault().getRawOffset() + ")";
-			return "(" + dt + " + " + offset + " - MOD(" + dt + " + " + offset + ", 86400000)) - " + offset;
-		case Postgres:
-			return "date_trunc('day', " + date.format(vendor, options) + ")";
-		case SqlServer:
-			return "CONVERT(datetime, CONVERT(varchar(10)," + date.format(vendor, options) + ", 120), 120)";
-		default:
-			throw new UnknownDatabaseException();
+		date date = getConst();
+
+		if(date!= null) {
+			date.set(date.truncDay());
+			return this.date.format(vendor, options);
 		}
+
+		String field = this.date.format(vendor, options);
+		return "(" + field + " - MOD(" + field + " + (" + TimeZone.getDefault().getRawOffset() + "), " + datespan.TicksPerDay + "))";
 	}
 
 	@Override

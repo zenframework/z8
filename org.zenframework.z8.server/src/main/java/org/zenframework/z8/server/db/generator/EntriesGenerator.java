@@ -10,8 +10,6 @@ import org.zenframework.z8.server.base.table.system.UserEntries;
 import org.zenframework.z8.server.db.Connection;
 import org.zenframework.z8.server.db.ConnectionManager;
 import org.zenframework.z8.server.db.sql.expressions.Equ;
-import org.zenframework.z8.server.db.sql.expressions.UnaryNot;
-import org.zenframework.z8.server.db.sql.functions.InVector;
 import org.zenframework.z8.server.engine.Runtime;
 import org.zenframework.z8.server.runtime.OBJECT;
 import org.zenframework.z8.server.types.guid;
@@ -47,7 +45,7 @@ public class EntriesGenerator {
 	}
 
 	private void writeEntries() {
-		entries.read(Arrays.asList(entries.primaryKey()), new UnaryNot(new InVector(entries.primaryKey(), entryKeys)));
+		entries.read(Arrays.asList(entries.primaryKey()), entries.primaryKey().notInVector(entryKeys));
 
 		while(entries.next()) {
 			guid entry = entries.recordId();
@@ -59,7 +57,7 @@ public class EntriesGenerator {
 	}
 
 	private void createEntries() {
-		entries.read(Arrays.asList(entries.primaryKey()), new InVector(entries.primaryKey(), entryKeys));
+		entries.read(Arrays.asList(entries.primaryKey()), entries.primaryKey().inVector(entryKeys));
 		while(entries.next()) {
 			guid entry = entries.recordId();
 			setEntryProperties(Runtime.instance().getEntryByKey(entry).newInstance());

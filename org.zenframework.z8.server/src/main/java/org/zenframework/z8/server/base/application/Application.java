@@ -26,17 +26,14 @@ public class Application {
 	}
 
 	static public void z8_logInfo(string text) {
-		Trace.logEvent(text.get());
 		ApplicationServer.getMonitor().logInfo(text.get());
 	}
 
 	static public void z8_logWarning(string text) {
-		Trace.logEvent(text.get());
 		ApplicationServer.getMonitor().logWarning(text.get());
 	}
 
 	static public void z8_logError(string text) {
-		Trace.logEvent(text.get());
 		ApplicationServer.getMonitor().logError(text.get());
 	}
 

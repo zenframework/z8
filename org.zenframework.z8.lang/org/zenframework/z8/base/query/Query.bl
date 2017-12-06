@@ -18,9 +18,9 @@ public class Query extends Object {
 
 	public Field[] columns;
 	public Field[] names;               // Поля для идентификации записи в UI, например, в навигаторе формы или заголовке
-	public Field[] extras;              // Неотображаемые, но требующиеся поля
 	public Field[] quickFilters;        // Поля для быстрого поиска записей
 
+	public Field[] extraFields;         // Неотображаемые, но требующиеся поля
 	public Field[] sortFields;
 	public Field[] groupFields;         // Соответствует пункту 'Группировать по полю' в меню колонки таблицы.
 										// Не путать с groupBy - выбираемые данные не группируются.

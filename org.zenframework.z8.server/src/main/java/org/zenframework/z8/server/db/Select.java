@@ -21,6 +21,12 @@ public class Select {
 	private static String SelectAlias = "S";
 	private static String FieldAlias = "F";
 
+	public static interface IFormatCallback {
+		void on(Field field);
+	}
+
+	private IFormatCallback formatCallback;
+
 	private Collection<Field> fields = new ArrayList<Field>();
 
 	private Query rootQuery = null;
@@ -78,6 +84,10 @@ public class Select {
 		return fields;
 	}
 
+	public void setFormatCallback(IFormatCallback formatCallback) {
+		this.formatCallback = formatCallback;
+	}
+	
 	public void setFields(Collection<Field> fields) {
 		this.fields = fields == null ? new ArrayList<Field>() : fields;
 
@@ -231,6 +241,9 @@ public class Select {
 	}
 
 	private String aggregate(Field field, DatabaseVendor vendor, FormatOptions options) {
+		if(formatCallback != null)
+			formatCallback.on(field);
+
 		return new SqlField(field).format(vendor, options);
 	}
 

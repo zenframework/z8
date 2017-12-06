@@ -7,7 +7,6 @@ import org.zenframework.z8.server.db.DatabaseVendor;
 import org.zenframework.z8.server.db.FieldType;
 import org.zenframework.z8.server.db.sql.FormatOptions;
 import org.zenframework.z8.server.db.sql.SqlToken;
-import org.zenframework.z8.server.exceptions.db.UnknownDatabaseException;
 import org.zenframework.z8.server.types.datespan;
 
 public class AddMinute extends SqlToken {
@@ -27,17 +26,8 @@ public class AddMinute extends SqlToken {
 
 	@Override
 	public String format(DatabaseVendor vendor, FormatOptions options, boolean logicalContext) {
-		switch(vendor) {
-		case Oracle:
-			String dt = date.format(vendor, options);
-			return "(" + dt + " + " + minutes.format(vendor, options) + " *" + datespan.TicksPerMinute + ")";
-		case Postgres:
-			return "(" + date.format(vendor, options) + " + (" + minutes.format(vendor, options) + ") * interval '1 minute')";
-		case SqlServer:
-			return "DATEADD(mi, " + minutes.format(vendor, options) + ", " + date.format(vendor, options) + ")";
-		default:
-			throw new UnknownDatabaseException();
-		}
+		String dt = date.format(vendor, options);
+		return "(" + dt + " + " + minutes.format(vendor, options) + " *" + datespan.TicksPerMinute + ")";
 	}
 
 	@Override

@@ -1,7 +1,6 @@
 package org.zenframework.z8.server.base.table.value;
 
 public enum Aggregation {
-	
 	None(Names.None),
 	Sum(Names.Sum),
 	Min(Names.Min),
@@ -33,4 +32,7 @@ public enum Aggregation {
 		return fName;
 	}
 
+	public boolean isMinMax() {
+		return this == Min || this == Max;
+	}
 }

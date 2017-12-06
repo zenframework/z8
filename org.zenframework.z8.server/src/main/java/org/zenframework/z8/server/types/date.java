@@ -9,9 +9,6 @@ import java.util.TimeZone;
 
 import org.zenframework.z8.server.db.DatabaseVendor;
 import org.zenframework.z8.server.db.FieldType;
-import org.zenframework.z8.server.db.sql.FormatOptions;
-import org.zenframework.z8.server.db.sql.SqlStringToken;
-import org.zenframework.z8.server.db.sql.functions.conversion.ToDate;
 import org.zenframework.z8.server.types.sql.sql_date;
 import org.zenframework.z8.server.utils.StringUtils;
 
@@ -19,16 +16,15 @@ public class date extends primary {
 
 	private static final long serialVersionUID = -5362639596768531077L;
 
-	private static long UTC_0001_01_01 = -62135769600000l;
-	private static long UTC_5000_01_01 = 95617584000000l;
+	public static long UtcMin = -62135769600000l;
+	public static long UtcMax = 95617584000000l;
 
-	final static public date Min = getUTCDate(UTC_0001_01_01);
-	final static public date Max = getUTCDate(UTC_5000_01_01);
+	final static public String DefaultTimeZoneId = "Europe/Moscow";
+	final static public date Min = new date(UtcMin);
+	final static public date Max = new date(UtcMax);
 
-	static private date getUTCDate(long utcMillis) {
-		GregorianCalendar calendar = new GregorianCalendar(TimeZone.getTimeZone("Etc/UTC"));
-		calendar.setTimeInMillis(utcMillis);
-		return new date(calendar);
+	static {
+		TimeZone.setDefault(TimeZone.getTimeZone(DefaultTimeZoneId));
 	}
 
 	protected GregorianCalendar value = new GregorianCalendar();
@@ -45,7 +41,7 @@ public class date extends primary {
 	}
 
 	public date(long milliseconds) {
-		set(milliseconds);
+		setTicks(milliseconds);
 	}
 
 	public date(GregorianCalendar gc) {
@@ -61,11 +57,11 @@ public class date extends primary {
 	}
 
 	public date(java.util.Date date) {
-		set(date.getTime());
+		setTicks(date.getTime());
 	}
 
 	public date(java.sql.Timestamp date) {
-		set(date.getTime());
+		setTicks(date.getTime());
 	}
 
 	public date(String date) {
@@ -149,7 +145,7 @@ public class date extends primary {
 		return value.getTimeInMillis();
 	}
 
-	private void set(long milliseconds) {
+	private void setTicks(long milliseconds) {
 		value.setTimeInMillis(milliseconds);
 	}
 
@@ -163,12 +159,12 @@ public class date extends primary {
 
 	public void set(java.sql.Date date) {
 		if(date != null)
-			set(date.getTime());
+			setTicks(date.getTime());
 	}
 
 	public void set(java.util.Date date) {
 		if(date != null)
-			set(date.getTime());
+			setTicks(date.getTime());
 	}
 
 	public void set(int year, int month, int day, int hour, int minute, int second) {
@@ -191,7 +187,7 @@ public class date extends primary {
 				set(date.Min);
 			} else {
 				Date date = new SimpleDateFormat(format).parse(s);
-				set(date.getTime());
+				setTicks(date.getTime());
 			}
 		} catch(ParseException e) {
 			throw new exception(e);
@@ -215,6 +211,10 @@ public class date extends primary {
 		value.set(GregorianCalendar.MINUTE, minutes);
 		value.set(GregorianCalendar.SECOND, seconds);
 		value.set(GregorianCalendar.MILLISECOND, milliseconds);
+	}
+
+	public int daysInMonth() {
+		return value.getActualMaximum(GregorianCalendar.DAY_OF_MONTH);
 	}
 
 	public int year() {
@@ -409,16 +409,7 @@ public class date extends primary {
 
 	@Override
 	public String toDbConstant(DatabaseVendor vendor) {
-		String date; 
-
-		if(vendor == DatabaseVendor.Postgres)
-			date = "'" + toString("T", "") + "'";
-		else if(vendor == DatabaseVendor.Oracle)
-			date = "" + getTicks();
-		else
-			throw new UnsupportedOperationException();
-
-		return new ToDate(new SqlStringToken(date, FieldType.Date)).format(vendor, new FormatOptions());
+		return "" + getTicks();
 	}
 
 	@Override
@@ -462,6 +453,10 @@ public class date extends primary {
 	public date operatorSubAssign(datespan x) {
 		set(operatorSub(x));
 		return this;
+	}
+
+	public int compare(date x) {
+		return value.compareTo(x.get());
 	}
 
 	public bool operatorEqu(date x) {
@@ -530,6 +525,10 @@ public class date extends primary {
 
 	public integer z8_dayOfYear() {
 		return new integer(dayOfYear());
+	}
+
+	public integer z8_daysInMonth() {
+		return new integer(daysInMonth());
 	}
 
 	public integer z8_hours() {

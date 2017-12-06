@@ -136,12 +136,6 @@ public enum FieldType {
 			}
 		case Date:
 		case Datetime:
-			switch(vendor) {
-			case Oracle: return "NUMBER";
-			case SqlServer: return "DATETIME";
-			case Postgres: return "timestamp with time zone";
-			default: throw new RuntimeException("Unknown data type: '" + toString() + "'");
-			}
 		case Datespan:
 		case Integer:
 			switch(vendor) {
@@ -179,5 +173,13 @@ public enum FieldType {
 		default: 
 			throw new RuntimeException("Unknown data type: '" + toString() + "'");
 		}
+	}
+
+	public boolean isNumeric() {
+		return this == Integer || this == Decimal;
+	}
+
+	public boolean isDate() {
+		return this == Date || this == Datetime;
 	}
 }

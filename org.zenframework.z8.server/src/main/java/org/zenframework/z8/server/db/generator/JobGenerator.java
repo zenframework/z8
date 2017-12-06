@@ -11,8 +11,6 @@ import org.zenframework.z8.server.base.table.system.ScheduledJobs;
 import org.zenframework.z8.server.db.Connection;
 import org.zenframework.z8.server.db.ConnectionManager;
 import org.zenframework.z8.server.db.sql.expressions.Equ;
-import org.zenframework.z8.server.db.sql.expressions.UnaryNot;
-import org.zenframework.z8.server.db.sql.functions.InVector;
 import org.zenframework.z8.server.engine.Runtime;
 import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.runtime.OBJECT;
@@ -52,7 +50,7 @@ public class JobGenerator {
 	}
 
 	private void writeJobs() {
-		jobs.read(Arrays.asList(jobs.primaryKey()), new UnaryNot(new InVector(jobs.primaryKey(), jobKeys)));
+		jobs.read(Arrays.asList(jobs.primaryKey()), jobs.primaryKey().notInVector(jobKeys));
 
 		while(jobs.next()) {
 			guid job = jobs.recordId();
@@ -65,7 +63,7 @@ public class JobGenerator {
 	}
 
 	private void createJobs() {
-		jobs.read(Arrays.asList(jobs.primaryKey()), new InVector(jobs.primaryKey(), jobKeys));
+		jobs.read(Arrays.asList(jobs.primaryKey()), jobs.primaryKey().inVector(jobKeys));
 		while(jobs.next()) {
 			guid job = jobs.recordId();
 			setJobProperties(Runtime.instance().getJobByKey(job).newInstance());

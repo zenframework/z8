@@ -27,7 +27,6 @@ import org.zenframework.z8.server.db.sql.expressions.Equ;
 import org.zenframework.z8.server.db.sql.expressions.Group;
 import org.zenframework.z8.server.db.sql.expressions.NotEqu;
 import org.zenframework.z8.server.db.sql.expressions.Or;
-import org.zenframework.z8.server.db.sql.functions.InVector;
 import org.zenframework.z8.server.db.sql.functions.string.EqualsIgnoreCase;
 import org.zenframework.z8.server.engine.RmiIO;
 import org.zenframework.z8.server.exceptions.AccessDeniedException;
@@ -380,7 +379,7 @@ public class User implements IUser {
 		Collection<Field> groups = new ArrayList<Field>(Arrays.asList(tableId));
 		Collection<Field> fields = Arrays.asList(tableId, read, write, create, copy, destroy);
 
-		SqlToken where = new InVector(rta.role.get(), getRoles());
+		SqlToken where = rta.role.get().inVector(getRoles());
 
 		SqlToken notRead = new NotEqu(read, new sql_bool(defaultAccess.read()));
 		SqlToken notWrite = new NotEqu(write, new sql_bool(defaultAccess.write()));
@@ -411,7 +410,7 @@ public class User implements IUser {
 		Collection<Field> groups = new ArrayList<Field>(Arrays.asList(fieldId));
 		Collection<Field> fields = Arrays.asList(tableId, read, write);
 
-		SqlToken where = new InVector(rfa.role.get(), getRoles());
+		SqlToken where = rfa.role.get().inVector(getRoles());
 
 		SqlToken notRead = new NotEqu(read, new sql_bool(defaultAccess.read()));
 		SqlToken notWrite = new NotEqu(write, new sql_bool(defaultAccess.write()));
@@ -447,7 +446,7 @@ public class User implements IUser {
 		Collection<Field> groups = new ArrayList<Field>(Arrays.asList(requestId));
 		Collection<Field> fields = Arrays.asList(requestId, execute);
 
-		SqlToken where = new InVector(rra.role.get(), getRoles());
+		SqlToken where = rra.role.get().inVector(getRoles());
 
 		SqlToken notExecute = new NotEqu(execute, new sql_bool(defaultAccess.execute()));
 		SqlToken having = new Group(notExecute);

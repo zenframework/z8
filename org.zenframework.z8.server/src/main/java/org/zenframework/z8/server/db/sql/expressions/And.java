@@ -8,6 +8,7 @@ import org.zenframework.z8.server.db.FieldType;
 import org.zenframework.z8.server.db.sql.FormatOptions;
 import org.zenframework.z8.server.db.sql.SqlToken;
 import org.zenframework.z8.server.db.sql.functions.If;
+import org.zenframework.z8.server.types.sql.sql_bool;
 import org.zenframework.z8.server.types.sql.sql_integer;
 
 public class And extends Expression {
@@ -33,8 +34,8 @@ public class And extends Expression {
 	@Override
 	public String format(DatabaseVendor vendor, FormatOptions options, boolean logicalContext) {
 		if(logicalContext) {
-			SqlToken left = this.left instanceof True ? null : (this.left instanceof Group ? this.left : new Group(this.left));
-			SqlToken right = this.right instanceof True ? null : (this.right instanceof Group ? this.right : new Group(this.right));
+			SqlToken left = this.left == sql_bool.True ? null : (this.left instanceof Group ? this.left : new Group(this.left));
+			SqlToken right = this.right == sql_bool.True ? null : (this.right instanceof Group ? this.right : new Group(this.right));
 
 			String leftText = left == null ? null : left.format(vendor, options, true);
 			String rightText = right == null ? null : right.format(vendor, options, true);

@@ -85,7 +85,7 @@ public class Entries extends Table {
 
 	@Override
 	public integer z8_destroy(guid id) {
-		if(id.equals(SystemTools.Id.guid()))
+		if(id.equals(SystemTools.Id))
 			throw new exception("Unable to delete builtin system entrypoint !");
 
 		return super.z8_destroy(id);

@@ -37,6 +37,9 @@ public class Field extends Control {
 	public int int();
 	public string string();
 
+	public sql_bool inVector(primary[] values);
+	public sql_bool notInVector(primary[] values);
+
 	// Оператор закомментирован, чтобы можно было сравнивать поля как объекты
 	// При необходимости сравнить два поля, например, в where, нужно привести одно из них к sql_<...> типу
 	//public sql_bool operator == (Field field);

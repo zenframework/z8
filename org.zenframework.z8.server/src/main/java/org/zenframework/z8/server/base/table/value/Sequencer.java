@@ -4,6 +4,7 @@ import java.util.Arrays;
 
 import org.zenframework.z8.server.base.query.ReadLock;
 import org.zenframework.z8.server.base.table.system.Sequences;
+import org.zenframework.z8.server.db.ConnectionManager;
 import org.zenframework.z8.server.db.sql.SqlToken;
 import org.zenframework.z8.server.db.sql.expressions.Equ;
 import org.zenframework.z8.server.runtime.IObject;
@@ -12,8 +13,6 @@ import org.zenframework.z8.server.types.integer;
 import org.zenframework.z8.server.types.string;
 
 public class Sequencer extends OBJECT {
-	final static public String ProcedureName = "NextInSequence";
-
 	public static class CLASS<T extends Sequencer> extends OBJECT.CLASS<T> {
 		public CLASS(IObject container) {
 			super(container);
@@ -70,6 +69,8 @@ public class Sequencer extends OBJECT {
 			valueField.set(new integer(result));
 			sequences.create();
 		}
+
+		ConnectionManager.get().flush();
 
 		return result;
 	}

@@ -95,22 +95,24 @@ public class BracedExpression extends LanguageElement {
 
 	@Override
 	public void getCode(CodeGenerator codeGenerator) {
-		IVariableType variableType = getVariableType();
-
-		IMethod[] methods = variableType.getMatchingMethods(PriorityOperator.Name);
-
-		if(methods.length == 1) {
-			expression.getCode(codeGenerator);
-
-			if(variableType.isReference())
-				codeGenerator.append(".get()");
-
-			codeGenerator.append("." + methods[0].getJavaName() + "()");
-		} else if(expression instanceof TernaryExpression) {
+		if(expression instanceof TernaryExpression) {
 			codeGenerator.append('(');
 			expression.getCode(codeGenerator);
 			codeGenerator.append(')');
-		} else
-			expression.getCode(codeGenerator);
+		} else {
+			IVariableType variableType = getVariableType();
+
+			IMethod[] methods = variableType.getMatchingMethods(PriorityOperator.Name);
+
+			if(methods.length == 1) {
+				expression.getCode(codeGenerator);
+
+				if(variableType.isReference())
+					codeGenerator.append(".get()");
+
+				codeGenerator.append("." + methods[0].getJavaName() + "()");
+			} else
+				expression.getCode(codeGenerator);
+		}
 	}
 }

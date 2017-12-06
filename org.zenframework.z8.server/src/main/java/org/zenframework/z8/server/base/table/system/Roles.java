@@ -196,7 +196,18 @@ public class Roles extends Table {
 			rfa.field.get().set(fields.recordId());
 			rfa.create();
 		}
-	}
+
+		Requests requests = new Requests.CLASS<Requests>().get();
+		RoleRequestAccess rra = new RoleRequestAccess.CLASS<RoleRequestAccess>().get();
+
+		requests.read(Arrays.asList(requests.primaryKey()));
+
+		while(requests.next()) {
+			rra.role.get().set(recordId);
+			rra.request.get().set(requests.recordId());
+			rra.create();
+		}
+}
 
 	@Override
 	public void z8_beforeDestroy(guid recordId) {
@@ -211,7 +222,10 @@ public class Roles extends Table {
 
 		RoleTableAccess rta = new RoleTableAccess.CLASS<RoleTableAccess>().get();
 		rta.destroy(new Equ(rta.role.get(), recordId));
-	}
+
+		RoleRequestAccess rra = new RoleRequestAccess.CLASS<RoleRequestAccess>().get();
+		rra.destroy(new Equ(rra.role.get(), recordId));
+}
 
 	public Collection<IRole> get() {
 		Field read = this.read.get();

@@ -158,7 +158,7 @@ public class ApplicationServer extends RmiServer implements IApplicationServer {
 	public boolean has(Message message) throws RemoteException {
 		return MessageAcceptor.has(message);
 	}
-	
+
 	@Override
 	public boolean accept(Message message) {
 		return MessageAcceptor.accept(message);
@@ -169,7 +169,7 @@ public class ApplicationServer extends RmiServer implements IApplicationServer {
 		register();
 		ConnectionManager.release();
 	}
-	
+
 	private void register() {
 		try {
 			ServerConfig.authorityCenter().register(this);
@@ -177,7 +177,7 @@ public class ApplicationServer extends RmiServer implements IApplicationServer {
 			Trace.logError(e);
 		}
 	}
-	
+
 	private void unregister() {
 		try {
 			ServerConfig.authorityCenter().unregister(this);
@@ -191,21 +191,18 @@ public class ApplicationServer extends RmiServer implements IApplicationServer {
 	}
 
 	static public void info(String text) {
-		Trace.logEvent(text);
 		IMonitor monitor = ApplicationServer.getMonitor();
 		if(monitor != null)
 			monitor.info(text);
 	}
 
 	static public void warning(String text) {
-		Trace.logEvent(text);
 		IMonitor monitor = ApplicationServer.getMonitor();
 		if(monitor != null)
 			monitor.warning(text);
 	}
 
 	static public void error(String text) {
-		Trace.logEvent(text);
 		IMonitor monitor = ApplicationServer.getMonitor();
 		if(monitor != null)
 			monitor.error(text);

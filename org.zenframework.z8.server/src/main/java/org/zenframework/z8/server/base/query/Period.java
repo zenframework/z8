@@ -5,7 +5,6 @@ import org.zenframework.z8.server.db.sql.SqlToken;
 import org.zenframework.z8.server.db.sql.expressions.And;
 import org.zenframework.z8.server.db.sql.expressions.Operation;
 import org.zenframework.z8.server.db.sql.expressions.Rel;
-import org.zenframework.z8.server.db.sql.expressions.True;
 import org.zenframework.z8.server.json.Json;
 import org.zenframework.z8.server.json.parser.JsonObject;
 import org.zenframework.z8.server.runtime.IObject;
@@ -80,6 +79,6 @@ public class Period extends OBJECT {
 
 	public sql_bool z8_where() {
 		sql_bool where = where();
-		return where != null ? where : new True();
+		return where != null ? where : sql_bool.True;
 	}
 }

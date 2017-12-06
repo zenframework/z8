@@ -6,7 +6,15 @@ import org.zenframework.z8.server.base.table.value.IField;
 import org.zenframework.z8.server.db.DatabaseVendor;
 import org.zenframework.z8.server.db.FieldType;
 import org.zenframework.z8.server.db.sql.FormatOptions;
+import org.zenframework.z8.server.db.sql.SqlConst;
 import org.zenframework.z8.server.db.sql.SqlToken;
+import org.zenframework.z8.server.types.bool;
+import org.zenframework.z8.server.types.date;
+import org.zenframework.z8.server.types.datespan;
+import org.zenframework.z8.server.types.decimal;
+import org.zenframework.z8.server.types.guid;
+import org.zenframework.z8.server.types.integer;
+import org.zenframework.z8.server.types.primary;
 
 public class sql_primary extends SqlToken {
 	private SqlToken token;
@@ -24,6 +32,46 @@ public class sql_primary extends SqlToken {
 
 	public void setToken(SqlToken token) {
 		this.token = token;
+	}
+
+	@Override
+	public boolean isConst() {
+		return token instanceof SqlConst;
+	}
+
+	@Override
+	public primary primary() {
+		return token.primary();
+	}
+
+	@Override
+	public bool bool() {
+		return token.bool();
+	}
+
+	@Override
+	public guid guid() {
+		return token.guid();
+	}
+
+	@Override
+	public date date() {
+		return token.date();
+	}
+
+	@Override
+	public datespan datespan() {
+		return token.datespan();
+	}
+
+	@Override
+	public decimal decimal() {
+		return token.decimal();
+	}
+
+	@Override
+	public integer integer() {
+		return token.integer();
 	}
 
 	@Override

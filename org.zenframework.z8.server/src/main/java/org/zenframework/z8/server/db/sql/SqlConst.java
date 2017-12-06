@@ -6,7 +6,14 @@ import org.zenframework.z8.server.base.table.value.IField;
 import org.zenframework.z8.server.db.DatabaseVendor;
 import org.zenframework.z8.server.db.FieldType;
 import org.zenframework.z8.server.exceptions.db.UnknownDatabaseException;
+import org.zenframework.z8.server.types.bool;
+import org.zenframework.z8.server.types.date;
+import org.zenframework.z8.server.types.datespan;
+import org.zenframework.z8.server.types.decimal;
+import org.zenframework.z8.server.types.guid;
+import org.zenframework.z8.server.types.integer;
 import org.zenframework.z8.server.types.primary;
+import org.zenframework.z8.server.types.string;
 
 public class SqlConst extends SqlToken {
 	private primary value;
@@ -15,8 +22,49 @@ public class SqlConst extends SqlToken {
 		this.value = value;
 	}
 
-	public primary getValue() {
+	@Override
+	public boolean isConst() {
+		return true;
+	}
+
+	@Override
+	public primary primary() {
 		return value;
+	}
+
+	@Override
+	public bool bool() {
+		return (bool)value;
+	}
+
+	@Override
+	public guid guid() {
+		return (guid)value;
+	}
+
+	@Override
+	public date date() {
+		return (date)value;
+	}
+
+	@Override
+	public datespan datespan() {
+		return (datespan)value;
+	}
+
+	@Override
+	public decimal decimal() {
+		return (decimal)value;
+	}
+
+	@Override
+	public integer integer() {
+		return (integer)value;
+	}
+
+	@Override
+	public string string() {
+		return null;
 	}
 
 	@Override

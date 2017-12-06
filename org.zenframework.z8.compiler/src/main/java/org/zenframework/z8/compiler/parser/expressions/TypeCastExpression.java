@@ -20,6 +20,7 @@ public class TypeCastExpression extends LanguageElement {
 	private ILanguageElement expression;
 
 	private ITypeCast typeCast;
+	private ITypeCast typeDowncast;
 
 	public TypeCastExpression(IToken leftBrace, IToken typeNameToken, IToken rightBrace) {
 		this.leftBrace = leftBrace;
@@ -59,6 +60,11 @@ public class TypeCastExpression extends LanguageElement {
 		typeCast = expression.getVariableType().getCastTo(variableType);
 
 		if(typeCast == null) {
+			ITypeCast downcast = variableType.getCastTo(expression.getVariableType());
+			typeDowncast = downcast != null && downcast.isBaseTypeCast() ? downcast : null;
+		}
+
+		if(typeCast == null && typeDowncast == null) {
 			setError(getPosition(), "Type mismatch: cannot convert from " + expression.getVariableType().getSignature() + " to " + getVariableType().getSignature());
 			return false;
 		}
@@ -68,6 +74,12 @@ public class TypeCastExpression extends LanguageElement {
 
 	@Override
 	public void getCode(CodeGenerator codeGenerator) {
-		typeCast.getCode(codeGenerator, expression);
+		if(typeDowncast != null) {
+			codeGenerator.append('(');
+			codeGenerator.append('(' + variableType.getJavaName() + ')');
+			expression.getCode(codeGenerator);
+			codeGenerator.append(')');
+		} else if(typeCast != null)
+			typeCast.getCode(codeGenerator, expression);
 	}
 }

@@ -34,6 +34,7 @@ public final class date extends primary {
 	public int day();
 	public int dayOfWeek();
 	public int dayOfYear();
+	public int daysInMonth();
 	public int hours();
 	public int minutes();
 	public int seconds();

@@ -156,7 +156,7 @@ public class ArrayInitializer extends LanguageElement {
 				values.append(valueCodeGenerator.toString() + (isLast ? "" : ", "));
 			} else {
 				CodeGenerator keyCodeGenerator = new CodeGenerator(getCompilationUnit());
-				typeCast.get(index).getCode(keyCodeGenerator, element, true);
+				typeCast.get(index).getCode(keyCodeGenerator, element);
 				keys.append(keyCodeGenerator.toString() + (isLast ? "" : ", "));
 			}
 

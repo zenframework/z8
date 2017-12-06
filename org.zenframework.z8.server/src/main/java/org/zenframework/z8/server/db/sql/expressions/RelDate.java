@@ -1,3 +1,4 @@
+/*
 package org.zenframework.z8.server.db.sql.expressions;
 
 import org.zenframework.z8.server.base.table.value.Field;
@@ -26,6 +27,8 @@ public class RelDate extends Rel {
 	}
 
 	public RelDate(SqlToken left, Operation operation, SqlToken right) {
-		super(new TruncDay(left), operation, new TruncDay(right));
+		super(left, operation, new TruncDay(right));
 	}
 }
+
+*/

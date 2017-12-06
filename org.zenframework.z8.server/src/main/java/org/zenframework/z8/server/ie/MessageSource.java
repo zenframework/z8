@@ -17,7 +17,6 @@ import org.zenframework.z8.server.base.table.value.AttachmentField;
 import org.zenframework.z8.server.base.table.value.Field;
 import org.zenframework.z8.server.base.table.value.Link;
 import org.zenframework.z8.server.db.sql.SqlToken;
-import org.zenframework.z8.server.db.sql.functions.InVector;
 import org.zenframework.z8.server.engine.RmiIO;
 import org.zenframework.z8.server.engine.RmiSerializable;
 import org.zenframework.z8.server.engine.Runtime;
@@ -140,7 +139,7 @@ public class MessageSource implements RmiSerializable, Serializable {
 		table.saveState();
 
 		Collection<guid> records = source.records();
-		SqlToken where = records != null ? new InVector(table.primaryKey(), records) : null;
+		SqlToken where = records != null ? table.primaryKey().inVector(records) : null;
 		table.setWhere(where); // to replace existing where
 		table.read(fields);
 

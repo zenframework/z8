@@ -489,7 +489,7 @@ public final class string extends primary {
 
 	public static string[] wrap(String... strings) {
 		string[] result = new string[strings.length];
-		
+
 		for(int i = 0; i < strings.length; i++)
 			result[i] = new string(strings[i]);
 
@@ -498,7 +498,7 @@ public final class string extends primary {
 
 	public static String[] unwrap(string... strings) {
 		String[] result = new String[strings.length];
-		
+
 		for(int i = 0; i < strings.length; i++)
 			result[i] = strings[i].get();
 

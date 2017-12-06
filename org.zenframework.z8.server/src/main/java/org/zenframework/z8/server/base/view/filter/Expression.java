@@ -12,9 +12,7 @@ import org.zenframework.z8.server.db.sql.expressions.And;
 import org.zenframework.z8.server.db.sql.expressions.Operation;
 import org.zenframework.z8.server.db.sql.expressions.Or;
 import org.zenframework.z8.server.db.sql.expressions.Rel;
-import org.zenframework.z8.server.db.sql.expressions.RelDate;
 import org.zenframework.z8.server.db.sql.expressions.Unary;
-import org.zenframework.z8.server.db.sql.functions.InVector;
 import org.zenframework.z8.server.db.sql.functions.IsNull;
 import org.zenframework.z8.server.db.sql.functions.conversion.GuidToString;
 import org.zenframework.z8.server.db.sql.functions.string.Like;
@@ -30,6 +28,7 @@ import org.zenframework.z8.server.types.integer;
 import org.zenframework.z8.server.types.primary;
 import org.zenframework.z8.server.types.string;
 import org.zenframework.z8.server.types.sql.sql_bool;
+import org.zenframework.z8.server.types.sql.sql_date;
 import org.zenframework.z8.server.types.sql.sql_string;
 
 public class Expression implements IFilter {
@@ -99,7 +98,7 @@ public class Expression implements IFilter {
 			if(operation != Operation.Eq && operation != Operation.NotEq || type == FieldType.Date || type == FieldType.Datetime)
 				throw new UnsupportedOperationException();
 
-			SqlToken result = new InVector(new SqlField(field), getValues(type));
+			SqlToken result = field.inVector(getValues(type));
 
 			if(operation == Operation.NotEq)
 				result = new Unary(Operation.Not, result);
@@ -117,8 +116,8 @@ public class Expression implements IFilter {
 			return new Rel(field, operation, new decimal(value).sql_decimal());
 		case Integer:
 			return new Rel(field, operation, new integer(value).sql_int());
-		case Date:
 		case Datetime:
+		case Date:
 			switch(operation) {
 			case Eq:
 			case NotEq:
@@ -127,13 +126,12 @@ public class Expression implements IFilter {
 			case GT:
 			case GE:
 				return new Rel(field, operation, new date(value).sql_date());
-
 			case Yesterday:
-				return new RelDate(field, Operation.Eq, new date().addDay(-1));
+				return new Rel(field, Operation.Eq, new date().addDay(-1).sql_date());
 			case Today:
-				return new RelDate(field, Operation.Eq, new date());
+				return new Rel(field, Operation.Eq, new sql_date());
 			case Tomorrow:
-				return new RelDate(field, Operation.Eq, new date().addDay(1));
+				return new Rel(field, Operation.Eq, new date().addDay(1).sql_date());
 
 			case LastWeek:
 				date date = new date().truncWeek().addDay(-7);

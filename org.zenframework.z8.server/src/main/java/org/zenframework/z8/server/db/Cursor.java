@@ -152,25 +152,20 @@ public class Cursor {
 	}
 
 	private date getTimestamp(int position, Field field) throws SQLException {
-		Object value = resultSet.getTimestamp(position);
+		Timestamp value = (Timestamp)resultSet.getTimestamp(position);
 		boolean wasNull = value == null || wasNull();
 		field.setWasNull(wasNull);
 
-		return !wasNull ? new date(value instanceof Timestamp ? (Timestamp)value : new Timestamp((Long)value)) : date.Min;
+		return !wasNull ? new date(value) : date.Min;
 	}
 
 	private date getDate(int position, Field field) throws SQLException {
-		Object value = null;
+		long value = resultSet.getLong(position);
 
-		if(statement.vendor() == DatabaseVendor.Oracle)
-			value = resultSet.getLong(position);
-		else
-			value = resultSet.getTimestamp(position);
-
-		boolean wasNull = value == null || wasNull();
+		boolean wasNull = wasNull();
 		field.setWasNull(wasNull);
 
-		return !wasNull ? new date(value instanceof Timestamp ? (Timestamp)value : new Timestamp((Long)value)) : date.Min;
+		return !wasNull ? new date(value) : date.Min;
 	}
 
 	public datespan getDatespan(int position) throws SQLException {

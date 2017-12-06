@@ -30,7 +30,7 @@ public class sql_integer extends sql_primary {
 		this(integer.Zero);
 	}
 
-	public sql_integer(int value) {
+	public sql_integer(long value) {
 		this(new integer(value));
 	}
 

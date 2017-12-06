@@ -6,7 +6,6 @@ import java.math.BigInteger;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Timestamp;
 import java.sql.Types;
 
 import org.zenframework.z8.server.engine.Database;
@@ -163,14 +162,7 @@ public abstract class BasicStatement implements IStatement {
 	}
 
 	public void setDate(int position, date value) throws SQLException {
-		value = value != null ? value : date.Min;
-
-		if(vendor() != DatabaseVendor.Oracle) {
-			value = value != null ? value : date.Min;
-			Timestamp timestamp = new Timestamp(value.getTicks());
-			statement.setTimestamp(position, timestamp);
-		} else
-			statement.setLong(position, value.getTicks());
+		statement.setLong(position, value != null ? value.getTicks() : date.UtcMin);
 	}
 
 	public void setDatespan(int position, datespan value) throws SQLException {

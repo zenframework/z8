@@ -206,6 +206,10 @@ public class RCollection<TYPE> extends ArrayList<TYPE> {
 		add(index.getInt(), element);
 	}
 
+	public void z8_set(integer index, TYPE element) {
+		set(index.getInt(), element);
+	}
+
 	@SuppressWarnings({ "unchecked" })
 	public void z8_addAll(Object elements) {
 		if(elements instanceof Collection)

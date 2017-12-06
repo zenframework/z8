@@ -13,11 +13,14 @@ import org.zenframework.z8.server.db.sql.FormatOptions;
 import org.zenframework.z8.server.db.sql.SortDirection;
 import org.zenframework.z8.server.db.sql.SqlConst;
 import org.zenframework.z8.server.db.sql.SqlField;
+import org.zenframework.z8.server.db.sql.expressions.UnaryNot;
+import org.zenframework.z8.server.db.sql.functions.InVector;
 import org.zenframework.z8.server.db.sql.functions.IsNull;
 import org.zenframework.z8.server.engine.ApplicationServer;
 import org.zenframework.z8.server.json.Json;
 import org.zenframework.z8.server.json.JsonWriter;
 import org.zenframework.z8.server.runtime.IObject;
+import org.zenframework.z8.server.runtime.RCollection;
 import org.zenframework.z8.server.security.IAccess;
 import org.zenframework.z8.server.types.binary;
 import org.zenframework.z8.server.types.bool;
@@ -237,7 +240,7 @@ abstract public class Field extends Control implements IField {
 			originalValue = this.defaultValue;
 			changed = true;
 		}
-		setDefault(primary.clone(value));
+		setDefault(value);
 	}
 
 	@Override
@@ -429,6 +432,16 @@ abstract public class Field extends Control implements IField {
 		return (string)get();
 	}
 
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	public sql_bool inVector(Collection values) {
+		return new sql_bool(new InVector(this, (Collection<primary>)values));
+	}
+
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	public sql_bool notInVector(Collection values) {
+		return new sql_bool(new UnaryNot(new InVector(this, (Collection<primary>)values)));
+	}
+
 	public FieldType z8_getType() {
 		return type();
 	}
@@ -496,6 +509,16 @@ abstract public class Field extends Control implements IField {
 
 	public sql_bool z8_sqlIsNull() {
 		return new sql_bool(new IsNull(new SqlField(this)));
+	}
+
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	public sql_bool z8_inVector(RCollection values) {
+		return inVector((Collection<primary>)values);
+	}
+
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	public sql_bool z8_notInVector(RCollection values) {
+		return notInVector((Collection<primary>)values);
 	}
 
 	@Override

@@ -104,16 +104,16 @@ public class MapElement extends LanguageElement {
 
 	@Override
 	public void getCode(CodeGenerator codeGenerator) {
-		keyTypeCast.getCode(codeGenerator, key, true);
+		keyTypeCast.getCode(codeGenerator, key);
 		codeGenerator.append(", ");
-		valueTypeCast.getCode(codeGenerator, value, true);
+		valueTypeCast.getCode(codeGenerator, value);
 	}
 
 	public void getKeyCode(CodeGenerator codeGenerator) {
-		keyTypeCast.getCode(codeGenerator, key, true);
+		keyTypeCast.getCode(codeGenerator, key);
 	}
 
 	public void getValueCode(CodeGenerator codeGenerator) {
-		valueTypeCast.getCode(codeGenerator, value, true);
+		valueTypeCast.getCode(codeGenerator, value);
 	}
 }

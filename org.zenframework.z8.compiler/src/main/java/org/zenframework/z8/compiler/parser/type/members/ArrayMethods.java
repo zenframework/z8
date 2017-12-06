@@ -75,6 +75,12 @@ public class ArrayMethods {
 				methods.add(new Method(new VariableType(compilationUnit, voidType), "add", parameters));
 			}
 
+			// void set(int index, TYPE element)
+			{
+				Variable[] parameters = new Variable[] { new Variable(new VariableType(compilationUnit, integerType), "index"), new Variable(value, "element") };
+				methods.add(new Method(new VariableType(compilationUnit, voidType), "set", parameters));
+			}
+
 			// void addAll(TYPE[] elements)
 			{
 				Variable[] parameters = new Variable[] { new Variable(variableType, "elements") };

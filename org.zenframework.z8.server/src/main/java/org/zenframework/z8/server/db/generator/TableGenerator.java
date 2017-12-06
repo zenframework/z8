@@ -39,6 +39,8 @@ import org.zenframework.z8.server.db.sql.SqlField;
 import org.zenframework.z8.server.db.sql.SqlStringToken;
 import org.zenframework.z8.server.db.sql.SqlToken;
 import org.zenframework.z8.server.db.sql.expressions.Equ;
+import org.zenframework.z8.server.db.sql.expressions.Operation;
+import org.zenframework.z8.server.db.sql.expressions.Rel;
 import org.zenframework.z8.server.db.sql.functions.If;
 import org.zenframework.z8.server.db.sql.functions.IsNull;
 import org.zenframework.z8.server.db.sql.functions.conversion.ToBytes;
@@ -49,6 +51,7 @@ import org.zenframework.z8.server.exceptions.db.ObjectNotFoundException;
 import org.zenframework.z8.server.resources.Resources;
 import org.zenframework.z8.server.security.BuiltinUsers;
 import org.zenframework.z8.server.security.Role;
+import org.zenframework.z8.server.types.date;
 import org.zenframework.z8.server.types.file;
 import org.zenframework.z8.server.types.guid;
 import org.zenframework.z8.server.types.primary;
@@ -465,8 +468,8 @@ public class TableGenerator {
 
 		// Никогда не пересоздаем SystemFiles - очень долго. Если что - все изменения руками.
 		if(tableName.equals(Files.TableName)) {
-			logger.info(Files.TableName + " - skipped.");
-			return;
+//			logger.info(Files.TableName + " - skipped.");
+//			return;
 		}
 
 		String name = "" + Math.abs(tableName.hashCode());
@@ -658,19 +661,26 @@ public class TableGenerator {
 			ColumnDescGen dbField = dbFields.get(name);
 
 			if(dbField != null) {
+				FieldType type = field.type();
+
 				targetFields += (targetFields.isEmpty() ? "" : ", ") + vendor.quote(name);
 
-				if(field.type() == FieldType.Guid)
+				if(type == FieldType.Guid)
 					name = new If(new IsNull(field), guid.Null.sql_guid(), new SqlField(field)).format(vendor, options);
-				else if(postgres && dbField.type.startsWith("character") && field.type() == FieldType.Integer)
+				else if(postgres && dbField.type.startsWith("character") && type == FieldType.Integer)
 					name = new sql_integer().format(vendor, options);
-				else if(postgres && dbField.type.startsWith("character") && field.type() == FieldType.Text)
+				else if(postgres && dbField.type.startsWith("character") && type == FieldType.Text)
 					name = new ToBytes(field).format(vendor, options);
-				else if(postgres && dbField.type.startsWith("bytea") && field.type() == FieldType.String)
+				else if(postgres && dbField.type.startsWith("bytea") && type == FieldType.String)
 					name = new ToString(field).format(vendor, options);
 				else if(oracle && (dbField.type.startsWith("BLOB") || dbField.type.startsWith("NCLOB")))
 					name = "null";
-				else
+				else if(postgres && dbField.type.startsWith("timestamp") && (type == FieldType.Date || type == FieldType.Datetime)) {
+					SqlToken condition = new Rel(field, Operation.LT, new SqlStringToken("'1900-01-01 00:00:00'", FieldType.Datetime));
+					SqlToken yes = new sql_integer(date.UtcMin);
+					SqlToken no = new SqlStringToken("extract(epoch from " + new SqlField(field).format(vendor, options) + ") * 1000", FieldType.Integer);
+					name = new If(condition, yes, no).format(vendor, options);
+				} else
 					name = vendor.quote(name);
 
 				sourceFields += (sourceFields.isEmpty() ? "" : ", ") + name;
