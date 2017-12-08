@@ -10,6 +10,7 @@ public interface ITypeCast {
 	int getWeight();
 
 	boolean hasOperator();
+	boolean isBaseTypeCast();
 
 	IMethod getContext();
 
@@ -22,6 +23,4 @@ public interface ITypeCast {
 	int distanceToBaseType();
 
 	void getCode(CodeGenerator codeGenerator, ILanguageElement element);
-
-	void getCode(CodeGenerator codeGenerator, ILanguageElement element, boolean newValue);
 }

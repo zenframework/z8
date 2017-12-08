@@ -97,7 +97,7 @@ public class TypeCastSet implements ITypeCastSet {
 		for(int i = 0; i < elements.length; i++) {
 			if(i != 0)
 				codeGenerator.append(", ");
-			typeCasts[i].getCode(codeGenerator, elements[i], true);
+			typeCasts[i].getCode(codeGenerator, elements[i]);
 		}
 
 		if(method != null)

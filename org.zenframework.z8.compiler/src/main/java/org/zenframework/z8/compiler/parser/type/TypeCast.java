@@ -94,6 +94,10 @@ public class TypeCast implements ITypeCast {
 	}
 
 	@Override
+	public boolean isBaseTypeCast() {
+		return operator == null;
+	}
+	@Override
 	public IMethod getContext() {
 		return context;
 	}
@@ -149,11 +153,6 @@ public class TypeCast implements ITypeCast {
 
 	@Override
 	public void getCode(CodeGenerator codeGenerator, ILanguageElement element) {
-		getCode(codeGenerator, element, false);
-	}
-
-	@Override
-	public void getCode(CodeGenerator codeGenerator, ILanguageElement element, boolean newValue) {
 		IMethod method = getContext();
 
 		if(method != null) {
