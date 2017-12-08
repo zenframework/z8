@@ -119,6 +119,11 @@ public class DataMessage extends Message {
 		afterExport();
 	}
 
+	@SuppressWarnings("unchecked")
+	public void onMerge(Table source, Table target, String tableName) {
+		z8_onMerge((Table.CLASS<? extends Table>) source.getCLASS(), (Table.CLASS<? extends Table>) target.getCLASS());
+	}
+
 	@Override
 	protected boolean transactive() {
 		return true;
@@ -126,8 +131,12 @@ public class DataMessage extends Message {
 
 	@Override
 	protected boolean apply() {
-		source.importData();
+		source.importData(this);
 		return true;
+	}
+
+	public void z8_onMerge(Table.CLASS<? extends Table> source, Table.CLASS<? extends Table> target) {
+		throw new UnsupportedOperationException();
 	}
 
 	public string z8_getType() {

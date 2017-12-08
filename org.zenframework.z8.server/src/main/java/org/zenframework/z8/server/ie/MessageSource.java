@@ -230,12 +230,12 @@ public class MessageSource implements RmiSerializable, Serializable {
         return name + "/" + id;
     }
 
-    public void importData() {
+    public void importData(MergeHandler mergeHandler) {
         for(RecordInfo record : inserts)
             insert(record);
 
         for(RecordInfo record : updates)
-            update(record);
+            update(record, mergeHandler);
 
         fieldCache.clear();
         tableCache.clear();
@@ -303,29 +303,46 @@ public class MessageSource implements RmiSerializable, Serializable {
             table.update(recordId);
     }
 
-    private void update(RecordInfo record) {
+    private void update(RecordInfo record, MergeHandler mergeHandler) {
         String tableName = record.table();
-        Table table = getTable(tableName);
+        Table target = getTable(tableName);
         guid recordId = record.id();
 
-        for(FieldInfo fieldInfo : record.fields()) {
-            String fieldName = fieldInfo.name();
-
-            if(!insertedRecords.contains(recordId)) {
-                ImportPolicy fieldPolicy = exportRules.getPolicy(tableName, fieldName, recordId);
-                if(fieldPolicy != ImportPolicy.OVERRIDE)
-                    continue;
+        boolean useMerge = false;
+        for (FieldInfo fieldInfo : record.fields()) {
+            if (exportRules.getPolicy(tableName, fieldInfo.name(), recordId) == ImportPolicy.MERGE) {
+                useMerge = true;
+                break;
             }
-
-            Field field = getField(tableName, fieldName);
-
-            if(field == null)
-                throw new RuntimeException("Incorrect record format. Table '" + tableName + "' has no field '" + fieldName + "'");
-
-            field.set(fieldInfo.value());
         }
 
-        table.update(record.id());
+        if (useMerge) {
+
+            Table source = (Table) Runtime.instance().getTableByName(tableName).newInstance();
+            for (FieldInfo fieldInfo : record.fields())
+                source.getFieldByName(fieldInfo.name()).set(fieldInfo.value());
+            mergeHandler.merge(source, target, tableName);
+
+        } else {
+            for(FieldInfo fieldInfo : record.fields()) {
+                String fieldName = fieldInfo.name();
+
+                if(!insertedRecords.contains(recordId)) {
+                    ImportPolicy fieldPolicy = exportRules.getPolicy(tableName, fieldName, recordId);
+                    if(fieldPolicy != ImportPolicy.OVERRIDE)
+                        continue;
+                }
+
+                Field field = getField(tableName, fieldName);
+
+                if(field == null)
+                    throw new RuntimeException("Incorrect record format. Table '" + tableName + "' has no field '" + fieldName + "'");
+
+                field.set(fieldInfo.value());
+            }
+        }
+
+        target.update(record.id());
     }
 
     static private string mergeAttachments(string value1, string value2) {

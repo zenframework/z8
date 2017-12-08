@@ -10,7 +10,12 @@ public enum ImportPolicy {
 	/**
 	 * Если импортируемая запись существует, обновить
 	 */
-	OVERRIDE;
+	OVERRIDE,
+	
+	/**
+	 * Если импортируемая запись существует, использовать метод <code>DataMessage.merge()</code>
+	 */
+	MERGE;
 
 	public static final ImportPolicy DEFAULT = KEEP;
 }
