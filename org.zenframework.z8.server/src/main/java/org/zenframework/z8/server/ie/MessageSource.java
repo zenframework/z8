@@ -230,12 +230,12 @@ public class MessageSource implements RmiSerializable, Serializable {
         return name + "/" + id;
     }
 
-    public void importData(MergeHandler mergeHandler) {
+    public void importData(DataMessage dataMessage) {
         for(RecordInfo record : inserts)
             insert(record);
 
         for(RecordInfo record : updates)
-            update(record, mergeHandler);
+            update(record, dataMessage);
 
         fieldCache.clear();
         tableCache.clear();
@@ -303,7 +303,7 @@ public class MessageSource implements RmiSerializable, Serializable {
             table.update(recordId);
     }
 
-    private void update(RecordInfo record, MergeHandler mergeHandler) {
+    private void update(RecordInfo record, DataMessage dataMessage) {
         String tableName = record.table();
         Table target = getTable(tableName);
         guid recordId = record.id();
@@ -321,7 +321,7 @@ public class MessageSource implements RmiSerializable, Serializable {
             Table source = (Table) Runtime.instance().getTableByName(tableName).newInstance();
             for (FieldInfo fieldInfo : record.fields())
                 source.getFieldByName(fieldInfo.name()).set(fieldInfo.value());
-            mergeHandler.merge(source, target, tableName);
+            dataMessage.onMerge(source, target, tableName);
 
         } else {
             for(FieldInfo fieldInfo : record.fields()) {
