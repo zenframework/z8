@@ -28,5 +28,5 @@ class DataMessage extends Message {
 	public void addRule(guid recordId, Field field, ImportPolicy policy);
 	public void addRule(guid recordId, Field[] fields, ImportPolicy policy);
 	
-	public void onMerge(Table source, Table target);
+	virtual protected void onMerge(Table source, Table target);
 }
