@@ -107,5 +107,8 @@ public class UsersView extends Users {
 		registerControl(entriesListbox);
 
 		sortFields.add(name);
+
+		names.add(name);
+		names.add(lastName);
 	}
 }

@@ -14,4 +14,9 @@ public class User extends Object {
 	public string email;
 
 	public primary[string] parameters;
+
+	public string getParameter(string key, string defaultValue);
+	public guid getParameter(string key, guid defaultValue);
+	public int getParameter(string key, int defaultValue);
+	public bool getParameter(string key, bool defaultValue);
 }

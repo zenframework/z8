@@ -4,7 +4,9 @@ import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.runtime.OBJECT;
 import org.zenframework.z8.server.runtime.RLinkedHashMap;
 import org.zenframework.z8.server.security.IUser;
+import org.zenframework.z8.server.types.bool;
 import org.zenframework.z8.server.types.guid;
+import org.zenframework.z8.server.types.integer;
 import org.zenframework.z8.server.types.primary;
 import org.zenframework.z8.server.types.string;
 
@@ -64,5 +66,21 @@ public class User extends OBJECT {
 		email = new string(user.email());
 
 		parameters = (RLinkedHashMap<string, primary>)user.parameters();
+	}
+
+	public string z8_getParameter(string key, string defaultValue) {
+		return parameters.containsKey(key) ? (string)parameters.get(key) : defaultValue;
+	}
+
+	public guid z8_getParameter(string key, guid defaultValue) {
+		return parameters.containsKey(key) ? (guid)parameters.get(key) : defaultValue;
+	}
+
+	public integer z8_getParameter(string key, integer defaultValue) {
+		return parameters.containsKey(key) ? (integer)parameters.get(key) : defaultValue;
+	}
+
+	public bool z8_getParameter(string key, bool defaultValue) {
+		return parameters.containsKey(key) ? (bool)parameters.get(key) : defaultValue;
 	}
 }
