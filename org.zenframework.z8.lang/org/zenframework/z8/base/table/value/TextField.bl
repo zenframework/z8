@@ -1,6 +1,7 @@
 [native "org.zenframework.z8.server.base.table.value.TextField"]
 public class TextField extends Field {
 	public bool html = false;
+	public bool singleLine = false;
 
 	public string defaultValue = "";
 

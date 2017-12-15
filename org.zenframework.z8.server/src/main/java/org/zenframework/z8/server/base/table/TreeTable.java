@@ -162,7 +162,7 @@ public class TreeTable extends Table {
 		parentId = parentKey().guid();
 		recordId = primaryKey().guid();
 
-		if(parentId != null)
+		if(parentId == null)
 			parentId = guid.Null;
 
 		guid[] parents = new guid[0];

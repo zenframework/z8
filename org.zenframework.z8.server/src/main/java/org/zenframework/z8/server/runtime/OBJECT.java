@@ -189,8 +189,18 @@ public class OBJECT extends RequestTarget implements IObject, RmiSerializable {
 	}
 
 	@Override
-	public void setUi(String form) {
-		setAttribute(UI, form);
+	public void setUi(String ui) {
+		setAttribute(UI, ui);
+	}
+
+	@Override
+	public String presentation() {
+		return getAttribute(Presentation);
+	}
+
+	@Override
+	public void setPresentation(String presentation) {
+		setAttribute(Presentation, presentation);
 	}
 
 	public String icon() {

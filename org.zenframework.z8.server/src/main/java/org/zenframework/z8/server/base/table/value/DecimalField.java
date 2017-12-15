@@ -41,7 +41,7 @@ public class DecimalField extends Field {
 
 	@Override
 	public primary getDefault() {
-		return ApplicationServer.events() ? z8_getDefault() : super.getDefault();
+		return (ApplicationServer.events() && !changed()) ? z8_getDefault() : super.getDefault();
 	}
 
 	@Override

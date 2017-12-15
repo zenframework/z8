@@ -13,7 +13,7 @@ public class BasicSelect extends BasicStatement {
 	}
 
 	@Override
-	public void prepare(String sql) throws SQLException {
+	public void prepare(String sql, int priority) throws SQLException {
 		this.sql = sql;
 		this.statement = connection().prepareStatement(sql, ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
 	}

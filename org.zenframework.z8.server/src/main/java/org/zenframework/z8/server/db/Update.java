@@ -74,8 +74,8 @@ public class Update extends Statement {
 	}
 
 	@Override
-	public void prepare(String sql) throws SQLException {
-		super.prepare(sql);
+	public void prepare(String sql, int priority) throws SQLException {
+		super.prepare(sql, priority);
 
 		int position = 1;
 
@@ -93,7 +93,7 @@ public class Update extends Statement {
 
 	public int execute() {
 		try {
-			prepare(sql);
+			prepare(sql, query.priority());
 			return executeUpdate();
 		} catch(Throwable e) {
 			Trace.logEvent(sql());

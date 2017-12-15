@@ -114,7 +114,7 @@ public abstract class AbstractRuntime implements IRuntime {
 	protected void addTable(Table.CLASS<? extends Table> cls) {
 		for(Map.Entry<String, Table.CLASS<? extends Table>> entry : tableClasses.entrySet().toArray(new Map.Entry[0])) {
 			Table.CLASS<? extends Table> table = entry.getValue();
-			if(table.getClass().isAssignableFrom(cls.getClass())) {
+			if(table.getClass().isAssignableFrom(cls.getClass()) && table.name().equals(cls.name())) {
 				tableClasses.remove(table.classId());
 				tableNames.remove(table.name());
 				tableKeys.remove(table.key());

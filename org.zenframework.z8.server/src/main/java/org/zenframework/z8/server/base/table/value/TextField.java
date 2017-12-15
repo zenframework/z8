@@ -25,6 +25,7 @@ public class TextField extends StringField {
 	}
 
 	public bool html;
+	public bool singleLine;
 
 	public TextField(IObject container) {
 		super(container);
@@ -34,6 +35,11 @@ public class TextField extends StringField {
 	@Override
 	public FieldType type() {
 		return FieldType.Text;
+	}
+
+	@Override
+	public FieldType metaType() {
+		return bool.True.equals(singleLine) ? FieldType.String : super.metaType();
 	}
 
 	@Override

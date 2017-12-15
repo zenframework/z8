@@ -47,7 +47,7 @@ public class Insert extends Statement {
 
 	public void execute() {
 		try {
-			prepare(sql);
+			prepare(sql, query.priority());
 			executeUpdate();
 		} catch(Throwable e) {
 			Trace.logEvent(sql());
@@ -62,8 +62,8 @@ public class Insert extends Statement {
 	}
 
 	@Override
-	public void prepare(String sql) throws SQLException {
-		super.prepare(sql);
+	public void prepare(String sql, int priority) throws SQLException {
+		super.prepare(sql, priority);
 
 		int position = 1;
 

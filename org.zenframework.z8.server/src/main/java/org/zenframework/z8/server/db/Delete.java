@@ -9,6 +9,7 @@ import org.zenframework.z8.server.types.guid;
 
 public class Delete extends Statement {
 	private guid recordId;
+	private Query query;
 
 	public Delete(Query query, guid recordId) {
 		super(ConnectionManager.get());
@@ -16,6 +17,7 @@ public class Delete extends Statement {
 		if(recordId == null)
 			throw new RuntimeException("Delete: recordId == null");
 
+		this.query = query; 
 		this.recordId = recordId;
 
 		Connection connection = ConnectionManager.get();
@@ -27,14 +29,14 @@ public class Delete extends Statement {
 	}
 
 	@Override
-	public void prepare(String sql) throws SQLException {
-		super.prepare(sql);
+	public void prepare(String sql, int priority) throws SQLException {
+		super.prepare(sql, priority);
 		set(1, FieldType.Guid, recordId);
 	}
 
 	public int execute() {
 		try {
-			prepare(sql);
+			prepare(sql, query.priority());
 			return executeUpdate();
 		} catch(Throwable e) {
 			Trace.logEvent(sql());

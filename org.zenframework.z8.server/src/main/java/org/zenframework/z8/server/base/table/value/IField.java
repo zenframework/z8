@@ -9,6 +9,8 @@ import org.zenframework.z8.server.types.primary;
 
 public interface IField extends IObject {
 	public FieldType type();
+	public FieldType metaType();
+
 	public String sqlType(DatabaseVendor vendor);
 
 	public int size();

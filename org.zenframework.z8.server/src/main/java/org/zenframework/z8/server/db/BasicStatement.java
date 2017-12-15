@@ -25,9 +25,10 @@ public abstract class BasicStatement implements IStatement {
 	private Connection connection;
 
 	protected String sql;
+	protected int priority;
 	protected PreparedStatement statement;
 
-	public abstract void prepare(String sql) throws SQLException;
+	public abstract void prepare(String sql, int priority) throws SQLException;
 
 	protected BasicStatement(Connection connection) {
 		this.connection = connection;
@@ -62,8 +63,12 @@ public abstract class BasicStatement implements IStatement {
 		return statement;
 	}
 
+	public void prepare(String sql) throws SQLException {
+		prepare(sql, 0);
+	}
+
 	public void prepare() throws SQLException {
-		prepare(sql);
+		prepare(sql, priority);
 	}
 
 	@Override

@@ -49,6 +49,11 @@ public class OdaField implements IField {
 	}
 
 	@Override
+	public FieldType metaType() {
+		return type();
+	}
+
+	@Override
 	public String classId() {
 		throw new UnsupportedOperationException();
 	}
@@ -124,7 +129,17 @@ public class OdaField implements IField {
 	}
 
 	@Override
-	public void setUi(String form) {
+	public void setUi(String ui) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public String presentation() {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public void setPresentation(String presentation) {
 		throw new UnsupportedOperationException();
 	}
 

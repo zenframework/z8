@@ -9,6 +9,8 @@ import org.zenframework.z8.lang.Object;
 
 [native "org.zenframework.z8.server.base.query.Query"]
 public class Query extends Object {
+	public int priority = 0;
+
 	public bool readOnly = false;
 	public bool totals = false;
 

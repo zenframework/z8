@@ -4,27 +4,38 @@ import java.sql.BatchUpdateException;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Collection;
 
 import org.zenframework.z8.server.logs.Trace;
 
 public class Batch {
-	class Data {
+	private class Data {
 		public int hash;
 		public PreparedStatement statement;
 		public int count = 0;
+		public int priority = 0;
 
-		Data(String sql, PreparedStatement statement) {
+		Data(String sql, PreparedStatement statement, int priority) {
 			hash = sql.hashCode();
 			this.statement = statement;
+			this.priority = priority;
 		}
 	}
 
-	int totalCount = 0;
-	Collection<Data> data = new ArrayList<Data>(100);
+	private int totalCount = 0;
+	private ArrayList<Data> data = new ArrayList<Data>(100);
 
-	public void register(String sql, PreparedStatement statement) {
-		data.add(new Data(sql, statement));
+	public void register(String sql, PreparedStatement statement, int priority) {
+		Data newData = new Data(sql, statement, priority);
+
+		for(int i = 0, size = data.size(); i < size; i++) {
+			Data d = data.get(i);
+			if(d.priority > priority) {
+				data.add(i, newData);
+				return;
+			}
+		}
+
+		data.add(newData);
 	}
 
 	public PreparedStatement statement(String sql) {

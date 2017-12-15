@@ -257,6 +257,10 @@ public class Connection {
 	}
 
 	public PreparedStatement prepareStatement(String sql) throws SQLException {
+		return prepareStatement(sql, 0);
+	}
+
+	public PreparedStatement prepareStatement(String sql, int priority) throws SQLException {
 		try {
 			PreparedStatement statement = null;
 
@@ -269,7 +273,7 @@ public class Connection {
 			statement = connection.prepareStatement(sql);
 
 			if(inTransaction())
-				batch.register(sql, statement);
+				batch.register(sql, statement, priority);
 
 			return statement;
 		} catch(SQLException e) {

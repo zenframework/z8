@@ -62,6 +62,7 @@ public class Query extends OBJECT {
 		}
 	}
 
+	public integer priority = integer.Zero;
 	public bool readOnly = bool.False;
 	public integer colCount = new integer(4);
 
@@ -1091,6 +1092,10 @@ public class Query extends OBJECT {
 		return null;
 	}
 
+	public int priority() {
+		return priority.getInt();
+	}
+
 	public boolean readOnly() {
 		return readOnly.get() || isGrouped();
 	}
@@ -1101,6 +1106,7 @@ public class Query extends OBJECT {
 		writer.writeProperty(Json.id, id());
 		writer.writeProperty(Json.icon, icon());
 		writer.writeProperty(Json.ui, ui());
+		writer.writeProperty(Json.presentation, presentation());
 		writer.writeProperty(Json.text, displayName());
 		writer.writeProperty(Json.sourceCode, sourceCodeLocation());
 

@@ -8,16 +8,21 @@ public class Statement extends BasicStatement {
 	}
 
 	@Override
-	public void prepare(String sql) throws SQLException {
+	public void prepare(String sql, int priority) throws SQLException {
 		this.sql = sql;
-		this.statement = connection().prepareStatement(sql);
+		this.priority = priority;
+		this.statement = connection().prepareStatement(sql, priority);
 	}
 
 	public static int executeUpdate(String sql) throws SQLException {
+		return executeUpdate(sql, 0);
+	}
+	
+	public static int executeUpdate(String sql, int priority) throws SQLException {
 		Connection connection = ConnectionManager.get();
 
 		Statement statement = new Statement(connection);
-		statement.prepare(sql);
+		statement.prepare(sql, priority);
 
 		try {
 			return statement.executeUpdate();
