@@ -1,7 +1,6 @@
 package org.zenframework.z8.server.base.table.system.view;
 
 import org.zenframework.z8.server.base.form.Listbox;
-import org.zenframework.z8.server.base.table.system.Roles;
 import org.zenframework.z8.server.base.table.system.UserEntries;
 import org.zenframework.z8.server.base.table.system.UserRoles;
 import org.zenframework.z8.server.base.table.system.Users;
@@ -74,7 +73,7 @@ public class UsersView extends Users {
 
 		rolesListbox.get().query = this.userRoles;
 		rolesListbox.get().link = userRoles.user;
-		rolesListbox.get().source = new Roles.CLASS<Roles>(this);
+		rolesListbox.get().source = new RoleTableAccessView.CLASS<RoleTableAccessView>(this);
 		rolesListbox.get().flex = new integer(1);
 
 		userRoles.columns.add(userRoles.roles.get().name);
