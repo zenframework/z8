@@ -174,6 +174,11 @@ public class User implements IUser {
 	}
 
 	@Override
+	public boolean isBuiltinAdministrator() {
+		return id.equals(Users.Administrator) || id.equals(Users.System);
+	}
+
+	@Override
 	public boolean isAdministrator() {
 		if(roles != null) {
 			for(IRole role : roles) {
@@ -181,7 +186,7 @@ public class User implements IUser {
 					return true;
 			}
 		}
-		return id.equals(Users.Administrator) || id.equals(Users.System);
+		return isBuiltinAdministrator();
 	}
 
 	@Override
@@ -245,7 +250,7 @@ public class User implements IUser {
 		else
 			throw new InvalidVersionException();
 
-		if(user.isAdministrator())
+		if(user.isBuiltinAdministrator())
 			user.addSystemTools();
 
 		ConnectionManager.release();

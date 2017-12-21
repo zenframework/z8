@@ -43,6 +43,10 @@ public class JsonArray extends OBJECT {
 		this.array = array;
 	}
 
+	public string string() {
+		return new string(toString());
+	}
+
 	public void operatorAssign(string source) {
 		array = source.isEmpty() ? new org.zenframework.z8.server.json.parser.JsonArray() : new org.zenframework.z8.server.json.parser.JsonArray(source.get());
 	}

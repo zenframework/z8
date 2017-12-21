@@ -49,6 +49,10 @@ public class JsonObject extends OBJECT {
 		this.object = object;
 	}
 
+	public string string() {
+		return new string(toString());
+	}
+
 	public void operatorAssign(string source) {
 		object = source.isEmpty() ? new org.zenframework.z8.server.json.parser.JsonObject() : new org.zenframework.z8.server.json.parser.JsonObject(source.get());
 	}

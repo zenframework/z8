@@ -36,6 +36,7 @@ public interface IUser extends RmiSerializable, Serializable {
 	public IPrivileges privileges();
 
 	public boolean isAdministrator();
+	public boolean isBuiltinAdministrator();
 
 	public Collection<Entry> entries();
 	public void setEntries(Collection<Entry> entries);

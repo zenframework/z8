@@ -11,6 +11,7 @@ import org.zenframework.z8.compiler.core.IMethod;
 import org.zenframework.z8.compiler.core.IType;
 import org.zenframework.z8.compiler.core.ITypeCast;
 import org.zenframework.z8.compiler.core.IVariableType;
+import org.zenframework.z8.compiler.parser.expressions.TernaryExpression;
 import org.zenframework.z8.compiler.parser.variable.VariableType;
 import org.zenframework.z8.compiler.workspace.CompilationUnit;
 
@@ -162,7 +163,13 @@ public class TypeCast implements ITypeCast {
 		}
 
 		IMethod operator = getOperator();
-		element.getCode(codeGenerator);
+
+		if(element instanceof TernaryExpression && operator != null) {
+			codeGenerator.append('(');
+			element.getCode(codeGenerator);
+			codeGenerator.append(')');
+		} else
+			element.getCode(codeGenerator);
 
 		if(operator != null) {
 			codeGenerator.append('.');
