@@ -9,6 +9,7 @@ import org.zenframework.z8.server.db.Connection;
 import org.zenframework.z8.server.db.ConnectionManager;
 import org.zenframework.z8.server.json.Json;
 import org.zenframework.z8.server.json.JsonWriter;
+import org.zenframework.z8.server.json.parser.JsonArray;
 import org.zenframework.z8.server.json.parser.JsonObject;
 import org.zenframework.z8.server.types.guid;
 
@@ -28,19 +29,7 @@ public class CommandAction extends RequestAction {
 		if(action == null)
 			throw new RuntimeException("Action '" + actionId + "' is not found in " + context.displayName());
 
-		JsonObject object = new JsonObject(getParametersParameter());
-
-		if(object != null) {
-			String[] names = JsonObject.getNames(object);
-
-			if(names != null) {
-				for(String parameterId : names) {
-					IParameter parameter = action.getParameter(parameterId);
-					String value = object.getString(parameterId);
-					parameter.parse(value);
-				}
-			}
-		}
+		parseParameters(action);
 
 		Connection connection = action.useTransaction.get() ? ConnectionManager.get() : null;
 
@@ -60,6 +49,21 @@ public class CommandAction extends RequestAction {
 				connection.rollback();
 
 			throw new RuntimeException(e);
+		}
+	}
+
+	private void parseParameters(Action action) {
+		String json = getParametersParameter();
+
+		if(json == null)
+			return;
+
+		JsonArray parameters = new JsonArray(json);
+
+		for(int i = 0; i < parameters.length(); i++) {
+			JsonObject object = parameters.getJsonObject(i);
+			IParameter parameter = action.getParameter(object.getString(Json.id));
+			parameter.parse(object.getString(Json.value));
 		}
 	}
 }
