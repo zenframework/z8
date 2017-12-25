@@ -132,6 +132,21 @@ public final class decimal extends primary {
 		return false;
 	}
 
+	@Override
+	public int compareTo(primary primary) {
+		if(primary instanceof decimal) {
+			decimal decimal = (decimal)primary;
+			return value.compareTo(decimal.value);
+		}
+
+		if(primary instanceof integer) {
+			integer integer = (integer)primary;
+			return value.compareTo(integer.decimal().value);
+		}
+
+		return -1;
+	}
+
 	public int precision() {
 		return value.precision();
 	}

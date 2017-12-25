@@ -137,6 +137,16 @@ public class guid extends primary {
 		return false;
 	}
 
+	@Override
+	public int compareTo(primary primary) {
+		if(primary instanceof guid) {
+			guid guid = (guid)primary;
+			return value.compareTo(guid.value);
+		}
+
+		return -1;
+	}
+
 	public sql_guid sql_guid() {
 		return new sql_guid(this);
 	}

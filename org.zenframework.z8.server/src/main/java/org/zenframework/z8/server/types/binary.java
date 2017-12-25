@@ -108,6 +108,11 @@ public class binary extends primary {
 	}
 
 	@Override
+	public int compareTo(primary primary) {
+		return 0;
+	}
+
+	@Override
 	public String toString() {
 		return "binary value";
 	}

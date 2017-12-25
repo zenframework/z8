@@ -209,6 +209,15 @@ public final class datespan extends primary {
 	}
 
 	@Override
+	public int compareTo(primary primary) {
+		if(primary instanceof datespan) {
+			datespan datespan = (datespan)primary;
+			return (int)Math.signum(ticks = - datespan.ticks);
+		}
+		return -1;
+	}
+
+	@Override
 	public String toString() {
 		long days = days();
 		long hours = hours();

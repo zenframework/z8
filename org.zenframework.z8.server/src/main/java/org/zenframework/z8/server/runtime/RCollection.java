@@ -2,7 +2,9 @@ package org.zenframework.z8.server.runtime;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 
 import org.zenframework.z8.server.types.bool;
 import org.zenframework.z8.server.types.integer;
@@ -240,5 +242,10 @@ public class RCollection<TYPE> extends ArrayList<TYPE> {
 
 	public void z8_remove(TYPE[] elements) {
 		remove(elements);
+	}
+
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	public void z8_sort() {
+		Collections.sort((List<Comparable>)this);
 	}
 }

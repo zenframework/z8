@@ -119,6 +119,21 @@ public final class integer extends primary {
 		return false;
 	}
 
+	@Override
+	public int compareTo(primary primary) {
+		if(primary instanceof decimal) {
+			decimal decimal = (decimal)primary;
+			return (int)Math.signum(value - decimal.round().value);
+		}
+
+		if(primary instanceof integer) {
+			integer integer = (integer)primary;
+			return (int)Math.signum(value - integer.value);
+		}
+
+		return -1;
+	}
+
 	public decimal decimal() {
 		return new decimal(this);
 	}

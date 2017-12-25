@@ -131,6 +131,11 @@ public class ArrayMethods {
 				methods.add(new Operator(variableType, new OperatorToken(IToken.PLUS, null), parameters));
 			}
 
+			// void sort()
+			{
+				methods.add(new Method(new VariableType(compilationUnit, voidType), "sort", null));
+			}
+
 		} else // map methods
 		{
 			IVariableType key = new VariableType(compilationUnit, keyType);

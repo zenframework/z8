@@ -145,6 +145,16 @@ public final class string extends primary {
 		return false;
 	}
 
+	@Override
+	public int compareTo(primary primary) {
+		if(primary instanceof string) {
+			string string = (string)primary;
+			return value != null ? value.compareTo(string.value) : -1;
+		}
+
+		return -1;
+	}
+
 	public boolean equalsIgnoreCase(String string) {
 		return value == string ? true : (value != null ? value.equalsIgnoreCase(string) : false);
 	}

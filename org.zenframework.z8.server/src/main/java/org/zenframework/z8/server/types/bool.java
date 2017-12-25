@@ -132,4 +132,13 @@ public final class bool extends primary {
 	public bool operatorNotEqu(bool x) {
 		return new bool(value != x.value);
 	}
+
+	@Override
+	public int compareTo(primary primary) {
+		if(primary instanceof bool) {
+			bool bool = (bool)primary;
+			return value != bool.value ? (value ? 1 : -1) : 0;
+		}
+		return -1;
+	}
 }

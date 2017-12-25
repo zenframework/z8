@@ -217,6 +217,11 @@ public class file extends primary implements RmiSerializable, Serializable {
 	}
 
 	@Override
+	public int compareTo(primary primary) {
+		return 0;
+	}
+
+	@Override
 	public String toString() {
 		return toJsonObject().toString();
 	}

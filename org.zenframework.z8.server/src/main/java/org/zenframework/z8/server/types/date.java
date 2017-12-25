@@ -425,6 +425,15 @@ public class date extends primary {
 		return false;
 	}
 
+	@Override
+	public int compareTo(primary primary) {
+		if(primary instanceof date) {
+			date date = (date)primary;
+			return (int)Math.signum(getTicks() - date.getTicks());
+		}
+		return -1;
+	}
+	
 	public sql_date sql_date() {
 		return new sql_date(this);
 	}
