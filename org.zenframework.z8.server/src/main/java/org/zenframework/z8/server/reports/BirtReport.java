@@ -471,12 +471,22 @@ public class BirtReport {
 	}
 
 	private String getColumnFormat(Column column) {
-		string format = column.getField().format;
+		Field field = column.getField();
+		string format = field.format;
 
 		if(format == null || format.isEmpty())
 			return null;
 
-		return format.get().replace("d", "dd").replace("m", "MM").replace("Y", "yyyy").replace("H", "HH").replace("i", "mm").replace("s", "ss").replace("S", "SSS");
+		switch(field.type()) {
+		case Date:
+		case Datetime:
+			return format.get().replace("d", "dd").replace("m", "MM").replace("Y", "yyyy").replace("H", "HH").replace("i", "mm").replace("s", "ss").replace("S", "SSS");
+		case Integer:
+		case Decimal:
+			return format.get().replaceAll("0", "#").replace("#.##", "0.00");
+		default:
+			return format.get();
+		}
 	}
 
 	private void setCellFormat(CellHandle cell, Column column) throws SemanticException {
@@ -500,9 +510,8 @@ public class BirtReport {
 			StyleHandle styleHandle = cell.getPrivateStyle();
 			StyleHandle dateFormatStyle = getStyle(DateTimeFormatStyle);
 
-			String format = getColumnFormat(column);
-
 			if(styleHandle != null) {
+				String format = getColumnFormat(column);
 				if(format != null)
 					styleHandle.setDateTimeFormat(format);
 				else if(dateFormatStyle != null)
@@ -510,17 +519,17 @@ public class BirtReport {
 			}
 		} else if(type.equals(DesignChoiceConstants.COLUMN_DATA_TYPE_DECIMAL) || type.equals(DesignChoiceConstants.COLUMN_DATA_TYPE_FLOAT)) {
 			StyleHandle styleHandle = cell.getPrivateStyle();
-
 			if(styleHandle != null) {
+				String format = getColumnFormat(column);
 				styleHandle.setNumberFormatCategory("Fixed");
-				styleHandle.setNumberFormat("#,##0.00");
+				styleHandle.setNumberFormat(format != null ? format : "#,##0.00");
 			}
 		} else if(type.equals(DesignChoiceConstants.COLUMN_DATA_TYPE_INTEGER)) {
 			StyleHandle styleHandle = cell.getPrivateStyle();
-
 			if(styleHandle != null) {
+				String format = getColumnFormat(column);
 				styleHandle.setNumberFormatCategory("Fixed");
-				styleHandle.setNumberFormat("#,##0");
+				styleHandle.setNumberFormat(format != null ? format : "#,###");
 			}
 		}
 	}
