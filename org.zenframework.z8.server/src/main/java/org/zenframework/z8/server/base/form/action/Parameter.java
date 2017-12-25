@@ -162,7 +162,7 @@ public class Parameter extends OBJECT implements IParameter {
 		return (RCollection)value;
 	}
 
-	public bool z8_bool() {
+	public bool bool() {
 		return (bool)value;
 	}
 
@@ -171,7 +171,7 @@ public class Parameter extends OBJECT implements IParameter {
 		return toArray();
 	}
 
-	public guid z8_guid() {
+	public guid guid() {
 		return (guid)value;
 	}
 
@@ -180,7 +180,7 @@ public class Parameter extends OBJECT implements IParameter {
 		return toArray();
 	}
 
-	public integer z8_int() {
+	public integer integer() {
 		return (integer)value;
 	}
 
@@ -189,16 +189,16 @@ public class Parameter extends OBJECT implements IParameter {
 		return toArray();
 	}
 
+	public date date() {
+		return (date)value;
+	}
+
 	@SuppressWarnings("rawtypes")
 	public RCollection z8_dateArray() {
 		return toArray();
 	}
 
-	public date z8_date() {
-		return (date)value;
-	}
-
-	public decimal z8_decimal() {
+	public decimal decimal() {
 		return (decimal)value;
 	}
 
@@ -207,11 +207,11 @@ public class Parameter extends OBJECT implements IParameter {
 		return toArray();
 	}
 
-	public file z8_file() {
+	public file file() {
 		return (file)value;
 	}
 
-	public string z8_string() {
+	public string string() {
 		return (string)value;
 	}
 

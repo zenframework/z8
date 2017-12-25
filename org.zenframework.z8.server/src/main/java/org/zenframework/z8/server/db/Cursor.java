@@ -124,10 +124,7 @@ public class Cursor {
 	private string getString(int position, Field field) throws SQLException {
 		Object value = null;
 
-		if(statement.vendor() == DatabaseVendor.Oracle)
-			value = field.type() == FieldType.String ? resultSet.getString(position) : resultSet.getBytes(position);
-		else if(statement.vendor() == DatabaseVendor.Postgres)
-			value = resultSet.getBytes(position);
+		value = field.type() == FieldType.String ? resultSet.getString(position) : resultSet.getBytes(position);
 
 		boolean wasNull = value == null || wasNull();
 		field.setWasNull(wasNull);

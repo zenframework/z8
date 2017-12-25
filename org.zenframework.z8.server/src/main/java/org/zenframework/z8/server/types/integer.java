@@ -8,7 +8,9 @@ public final class integer extends primary {
 
 	private static final long serialVersionUID = 2882942660543308166L;
 
-	static public integer Min = new integer(Long.MIN_VALUE + 1); // 0x8000000000000000  + 1 = -0x7fffffffffffffff
+	static public integer Min = new integer(Long.MIN_VALUE + 1); // 0x8000000000000000
+																	// + 1 =
+																	// -0x7fffffffffffffff
 	static public integer Max = new integer(Long.MAX_VALUE); // 0x7fffffffffffffff
 
 	static public integer Zero = new integer(0);
@@ -17,7 +19,8 @@ public final class integer extends primary {
 
 	private long value = 0;
 
-	public integer() {}
+	public integer() {
+	}
 
 	public integer(integer x) {
 		set(x.value);
@@ -73,7 +76,7 @@ public final class integer extends primary {
 	}
 
 	public int getInt() {
-		return (int) value;
+		return (int)value;
 	}
 
 	public void set(long x) {
@@ -95,7 +98,7 @@ public final class integer extends primary {
 
 	@Override
 	public String toDbConstant(DatabaseVendor dbtype) {
-		switch (dbtype) {
+		switch(dbtype) {
 		case SqlServer:
 			return toString();
 		default:
@@ -109,9 +112,9 @@ public final class integer extends primary {
 	}
 
 	@Override
-	public boolean equals(Object l) {
-		if (l instanceof integer) {
-			return value == ((integer) l).value;
+	public boolean equals(Object object) {
+		if(object instanceof integer) {
+			return value == ((integer)object).value;
 		}
 		return false;
 	}
@@ -167,7 +170,7 @@ public final class integer extends primary {
 	public integer operatorDiv(integer x) {
 		try {
 			return new integer(value / x.value);
-		} catch (ArithmeticException e) {
+		} catch(ArithmeticException e) {
 			throw new exception(e);
 		}
 	}
@@ -175,7 +178,7 @@ public final class integer extends primary {
 	public integer operatorMod(integer x) {
 		try {
 			return new integer(value % x.value);
-		} catch (ArithmeticException e) {
+		} catch(ArithmeticException e) {
 			throw new exception(e);
 		}
 	}
@@ -223,7 +226,7 @@ public final class integer extends primary {
 		try {
 			set(value / x.value);
 			return this;
-		} catch (ArithmeticException e) {
+		} catch(ArithmeticException e) {
 			throw new exception(e);
 		}
 	}
@@ -281,7 +284,7 @@ public final class integer extends primary {
 	}
 
 	public integer z8_signum() {
-		return new integer((long) Math.signum(value));
+		return new integer((long)Math.signum(value));
 	}
 
 	public integer z8_not() {

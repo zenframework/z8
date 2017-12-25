@@ -5,13 +5,13 @@ import org.zenframework.z8.lang.Object;
 public class Parameter extends Object {
 	public string text;
 
-	public bool bool();
-	public guid guid();
-	public date date();
-	public decimal decimal();
-	public int int();
-	public string string();
-	public file file();
+	public operator bool();
+	public operator guid();
+	public operator date();
+	public operator decimal();
+	public operator int();
+	public operator string();
+	public operator file();
 
 	public bool[] boolArray();
 	public guid[] guidArray();
