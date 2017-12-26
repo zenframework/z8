@@ -1,0 +1,183 @@
+.builder {
+	padding: 2.14285714em;
+}
+
+.filter-editor {
+	height: 100%;
+	padding: .71428571em;
+}
+
+.filter-editor>.filters.list-box {
+	float: left;
+	width: 25%;
+	height: 100%;
+}
+
+.filter-editor>.filter {
+	float: left;
+	width: calc(75% - .71428571em);
+	margin-left: .71428571em;
+	height: 100%;
+}
+
+.filter-editor>.filter>.filter-control {
+	height: calc(100% - 11.42857142em);
+	margin-bottom: .71428571em;
+}
+
+.filter-editor>.filter>.text {
+	height: 10.71428571em;
+}
+
+.filter-control>.expression {
+	height: 100%;
+	overflow-y: auto;
+	border: 1px solid #eee;
+}
+
+.filter-control .group {
+	position: relative;
+	display: inline-block;
+	float: left;
+	clear: both;
+}
+
+.filter-control .group>.btn-group-vertical {
+	position: absolute;
+	top: -1px;
+	bottom: 0;
+	width: 2.14285714em;
+}
+
+.filter-control .group>.btn-group-vertical.open {
+	z-index: 5;
+}
+
+.filter-control .group>.btn-group-vertical>.btn {
+	position: absolute;
+	width: 100%;
+	border-radius: 0;
+	padding: 0;
+	border-radius: 0 !important;
+	box-shadow: none;
+	text-align: center;
+	font-weight: 500;
+	z-index: 1;
+}
+
+.filter-control .group>.btn-group-vertical>.btn:focus {
+	z-index: 2;
+}
+
+.filter-control .group>.btn-group-vertical>.btn:not(:hover):not(:active):not(:focus):not(.active):not(.focus) {
+	background-color: #fff;
+}
+
+.filter-control .group>.btn-group-vertical>.btn:first-child {
+	top: 0;
+	bottom: 1.07142857em;
+}
+
+.filter-control .group>.btn-group-vertical>.btn>.fa {
+	font-weight: 400;
+}
+
+.filter-control .group>.btn-group-vertical>.btn:first-child>.text {
+	position: absolute;
+	width: 100%;
+	left: 0;
+	top: calc(50% + .28571429em);
+	font-size: .85714286em;
+}
+
+.filter-control .group>.btn-group-vertical>.btn:first-child>.fa {
+	position: absolute;
+	left: .5em;
+	top: .71428571em;
+}
+
+.filter-control .group>.btn-group-vertical>.btn-trigger {
+	bottom: 0;
+}
+
+.filter-control .group:not(.expression)>.group .btn:first-child>.fa {
+	left: .57142857em;
+}
+
+.filter-control .group.active>.group,
+.filter-control .group.active>.line,
+.filter-control .group>.btn:hover~.group,
+.filter-control .group>.btn:hover~.line,
+.filter-control .line.active {
+	background-color: #fafafa;
+}
+
+.filter-control .group,
+.filter-control .line {
+	padding-left: 2.14285714em;
+	width: 100%;
+	margin-left: -1px;
+}
+
+.filter-control>.expression>.group,
+.filter-control>.expression>.line {
+	padding-left: 0;
+}
+
+.filter-control>.expression>.group>.btn-group-vertical {
+	left: 0;
+}
+
+.filter-control>.expression {
+	padding-left: .28571429em;
+	padding-right: .28571429em;
+	padding-top: .28571429em;
+	padding-bottom: .71428571em;
+}
+
+.filter-control .line {
+	clear: left;
+	float: left;
+	position: relative;
+	padding-top: .35714286em;
+	padding-bottom: .35714286em;
+	padding-right: 0;
+
+	display: flex;
+	flex-direction: row;
+}
+
+.filter-control .line>.control-group.invalid>.control {
+	border-color: #c9302c;
+}
+
+.filter-control .line>.checkbox {
+	width: 2.14285714em !important;
+	justify-content: center;
+	margin-right: 0 !important;
+	text-align: center;
+	margin-top: 0;
+}
+
+.filter-control .line>.property,
+.filter-control .line>.operator,
+.filter-control .line>.value {
+	float: left;
+}
+
+.filter-control .line>.property,
+.filter-control .line>.operator {
+	margin-right: 1.78571429em;
+}
+
+.filter-control .line>.property {
+	flex: 1;
+}
+
+.filter-control .line>.operator {
+	width: 17.85714285em;
+}
+
+.filter-control .line>.value {
+	width: 21.42857142em;
+}

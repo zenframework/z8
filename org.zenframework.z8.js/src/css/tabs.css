@@ -1,0 +1,78 @@
+.tabs {
+	display: flex;
+	flex-direction: column;
+
+	width: 100%;
+	border: 1px solid #dfdfdf;
+}
+
+.tabs>.header {
+	display: inline-block;
+
+	margin: 0;
+	border-bottom: 1px solid #eee;
+	background-color: #fcfcfc;
+	width: 100%;
+}
+
+.tabs>.body {
+	position: relative;
+	flex: 1;
+}
+
+.tabs>.header>.tag {
+	height: 3em;
+	border: .14285714em solid transparent;
+	padding-left: 1.42857143em;
+	padding-top: .71428571em;
+	padding-right: 1.42857143em;
+	border-radius: 0;
+	outline: none;
+	background: none;
+	box-shadow: none;
+	font-weight: 500;
+	color: #555;
+
+	float: left;
+	max-width: 14.28571428em;
+	overflow-x: hidden;
+	overflow-y: hidden;
+	text-overflow: ellipsis;
+
+	-webkit-transition: border-color ease-in-out .15s, color ease-in-out .15s, padding-top ease-in-out .15s;
+	-o-transition: border-color ease-in-out .15s, color ease-in-out .15s, padding-top ease-in-out .15s;
+	transition: border-color ease-in-out .15s, color ease-in-out .15s, padding-top ease-in-out .15s;
+}
+
+.tabs>.header>.tag>.fa {
+	width: auto;
+}
+
+.tabs>.header>.tag.active {
+	padding-top: 1.07142857em;
+	border-bottom-color: #888;
+	color: inherit;
+}
+
+.tabs>.header>.tag:hover,
+.tabs>.header>.tag:focus {
+	color: #39c;
+}
+
+.tabs>.header>.tag.active:focus {
+	border-bottom-color: #39c;
+}
+
+.tabs>.body>.tab {
+	width: 100%;
+	height: 100%;
+	position: absolute;
+	overflow-x: hidden;
+	overflow-y: auto;
+	z-index: 1;
+}
+
+.tabs>.body>.tab.inactive {
+	visibility: hidden;
+	z-index: 0 !important;
+}

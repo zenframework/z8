@@ -1,0 +1,338 @@
+.calendar {
+	color: #555;
+	min-height: 18.4642857em;
+}
+
+.calendar>.header {
+	position: relative;
+	text-align: center;
+}
+
+.calendar>.header>.month {
+	padding-right: .21428571em;
+	font-weight: bold;
+}
+
+.calendar>.header>.year {
+	padding-left: .21428571em;
+	font-weight: bold;
+}
+
+.calendar>.header>.previous-month,
+.calendar>.header>.next-month {
+	width: 1.42857143em;
+}
+
+.calendar>.header>.previous-month {
+	float: left;
+	margin-left: .71428571em;
+}
+
+.calendar>.header>.next-month {
+	float: right;
+	margin-right: .71428571em;
+}
+
+.calendar>.header,
+.calendar>.days,
+.calendar>.days-of-week {
+	clear: both;
+}
+
+.calendar>.days>.day,
+.calendar>.days-of-week>.day {
+	float: left;
+	width: 2.25em;
+	height: 2.25em;
+	padding-top: .625em;
+	padding-bottom: .625em;
+	text-align: center;
+	color: #404040;
+	border-radius: 50%;
+}
+
+.calendar>.days-of-week>.day {
+	padding-top: .925em;
+	padding-bottom: .325em;
+}
+
+.calendar>.days-of-week,
+.calendar>.days {
+	min-width: 15.75em;
+	min-width: 15.75em;
+	margin-left: .35714286em;
+	margin-right: .35714286em;
+}
+
+.calendar>.days {
+	height: 13.5em;
+}
+
+.calendar>.days>.day:focus,
+.calendar>.days>.day:hover,
+.calendar>.days>.day.selected,
+.calendar>.header>.years>.year:hover,
+.calendar>.header>.years>.year:focus,
+.calendar>.header>.months>.month:hover,
+.calendar>.header>.months>.month:focus,
+.calendar>.time>.hours>.hour:hover,
+.calendar>.time>.hours>.hour:focus,
+.calendar>.time>.minutes>.minute:hover,
+.calendar>.time>.minutes>.minute:focus {
+	background-color: #ebebeb;
+}
+
+.calendar>.header>.previous-month,
+.calendar>.header>.next-month,
+.calendar>.header>.years>.previous-year,
+.calendar>.header>.years>.next-year,
+.calendar>.header>.year,
+.calendar>.header>.month,
+.calendar>.time>.hour,
+.calendar>.time>.minute {
+	transition: color .15s linear;
+}
+
+.calendar>.header>.previous-month:hover,
+.calendar>.header>.previous-month:focus,
+.calendar>.header>.next-month:hover,
+.calendar>.header>.next-month:focus,
+.calendar>.header>.years>.previous-year:hover,
+.calendar>.header>.years>.previous-year:focus,
+.calendar>.header>.years>.next-year:hover,
+.calendar>.header>.years>.next-year:focus,
+.calendar>.header>.year:hover,
+.calendar>.header>.year:focus,
+.calendar>.header>.month:hover,
+.calendar>.header>.month:focus,
+.calendar>.time>.hour:hover,
+.calendar>.time>.hour:focus,
+.calendar>.time>.minute:hover,
+.calendar>.time>.minute:focus {
+	color: #39c;
+}
+
+.calendar>.days>.day.today {
+	font-weight: 500;
+}
+
+.calendar>.days-of-week>.day.week-end,
+.calendar>.days>.day.week-end {
+	color: #d43f3a;
+}
+
+.calendar>.days>.day.previous-month,
+.calendar>.days>.day.next-month {
+	color: #a6a6a6;
+}
+
+.calendar>.days>.day.previous-month.week-end,
+.calendar>.days>.day.next-month.week-end {
+	color: #e6918e;
+}
+
+.calendar>.days>.day.selected:focus {
+	color: white;
+	background-color: #39c;
+}
+
+.calendar>.days>.day.selected.week-end:focus {
+	background-color: #ef5350;
+}
+
+.calendar>.time {
+	position: relative;
+	padding-top: .57142857em;
+	border-top: 1px solid #dfdfdf;
+	text-align: center;
+}
+
+.calendar>.time>.hour,
+.calendar>.time>.minute {
+	font-weight: bold;
+}
+
+.calendar>.time>.hour {
+	padding-left: .71428571em;
+}
+
+.calendar>.days>.day,
+.calendar>.header>.previous-month,
+.calendar>.header>.next-month,
+.calendar>.header>.year,
+.calendar>.header>.month,
+.calendar>.header>.years>.year,
+.calendar>.header>.years>.previous-year,
+.calendar>.header>.years>.next-year,
+.calendar>.header>.months>.month,
+.calendar>.time>.hour,
+.calendar>.time>.hours>.hour,
+.calendar>.time>.minute,
+.calendar>.time>.minutes>.minute {
+	cursor: pointer;
+}
+
+.calendar>.header>.years,
+.calendar>.header>.months,
+.calendar>.time>.hours,
+.calendar>.time>.minutes {
+	position: absolute;
+	margin-top: .35714286em;
+	background-color: white;
+	border-top: 1px solid #dfdfdf;
+	border-left: 1px solid #dfdfdf;
+}
+
+.calendar>.header>.years>.year,
+.calendar>.header>.months>.month,
+.calendar>.time>.hours>.hour,
+.calendar>.time>.minutes>.minute {
+	float: left;
+	height: 2em;
+	line-height: 2em;
+	text-align: center;
+	color: #404040;
+	border-right: 1px solid #dfdfdf;
+	border-bottom: 1px solid #dfdfdf;
+}
+
+.calendar>.header>.years>.year,
+.calendar>.header>.months>.month {
+	width: 3.57142857em;
+}
+
+.calendar>.time>.hours>.hour,
+.calendar>.time>.minutes>.minute {
+	width: 2.5em;
+}
+
+.calendar>.header>.months {
+	left: 0;
+}
+
+.calendar>.header>.years {
+	right: 0;
+	padding-left: 1.42857143em;
+	padding-right: 1.42857143em;
+}
+
+.calendar>.header>.years>.previous-year,
+.calendar>.header>.years>.next-year {
+	position: absolute;
+	width: 1.42857143em;
+	height: 8em;
+	padding-top: 3.42857143em;
+	text-align: center;
+	border-right: 1px solid #dfdfdf;
+	border-bottom: 1px solid #dfdfdf;
+}
+
+.calendar>.header>.years>.previous-year {
+	left: 0;
+}
+
+.calendar>.header>.years>.next-year {
+	right: 0;
+}
+
+.calendar>.time>.hours {
+	bottom: 2.14285714em;
+	left: 0;
+}
+
+.calendar>.time>.minutes {
+	bottom: 2.14285714em;
+	right: 0;
+}
+
+.calendar>.header>.years>.year-3,
+.calendar>.header>.years>.year-6,
+.calendar>.header>.years>.year-9,
+.calendar>.header>.months>.month-3,
+.calendar>.header>.months>.month-6,
+.calendar>.header>.months>.month-9,
+.calendar>.days>.day-7,
+.calendar>.days>.day-14,
+.calendar>.days>.day-21,
+.calendar>.days>.day-28,
+.calendar>.days>.day-35,
+.calendar>.time>.hours>.hour-6,
+.calendar>.time>.hours>.hour-12,
+.calendar>.time>.hours>.hour-18,
+.calendar>.time>.minutes>.minute-4,
+.calendar>.time>.minutes>.minute-8 {
+	clear: left;
+}
+
+.calendar>.header>.years,
+.calendar>.header>.months,
+.calendar>.time>.hours,
+.calendar>.time>.minutes {
+	-webkit-box-shadow: 0 6px 12px rgba(0, 0, 0, 0.175);
+	box-shadow: 0 6px 12px rgba(0, 0, 0, 0.175);
+}
+
+.calendar.dropdown {
+	padding: .57142857em 0;
+	min-height: 19.75em;
+	background-color: #fff;
+	border: 1px solid #ccc;
+	border-radius: .28571429em;
+	-webkit-box-shadow: 0 6px 12px rgba(0, 0, 0, 0.175);
+	box-shadow: 0 6px 12px rgba(0, 0, 0, 0.175);
+	position: absolute;
+	top: 100%;
+	left: 0;
+	z-index: 1000;
+	float: left;
+}
+
+.period>.body {
+	display: flex;
+	flex-direction: row;
+	padding: .71428571em;
+}
+
+.period>.body>.calendar {
+	border: 1px solid #eee;
+	padding: .71428571em; 
+}
+
+.period>.body>.calendar.finish {
+	margin-left: .71428571em; 
+}
+
+.period>.body>.selector {
+	margin-left: .71428571em; 
+}
+
+.period>.body>.selector>.btn {
+	margin-left: .71428571em; 
+}
+
+.period>.body>.selector>.separator {
+	margin-top: .35714286em;
+	margin-bottom: .35714286em;
+	border-bottom: 1px solid #eee;
+}
+
+.period>.body>.selector>.btn {
+	border: none; 
+	padding-left: 0;
+	padding-right: 1em;
+	padding-top: .35714286em;
+	padding-bottom: .35714286em;
+	text-align: left;
+	background: none;
+	box-shadow: none;
+}
+
+.period>.buttons {
+	display: flex;
+	flex-direction: row;
+	justify-content: flex-end;
+}
+
+.period>.buttons>.btn {
+	margin-right: .71428571em;
+}

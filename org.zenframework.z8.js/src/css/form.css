@@ -1,0 +1,113 @@
+.form.fieldset {
+	padding-top: 1.07142857em;
+	padding-left: 1.07142857em;
+	padding-right: 1.07142857em;
+	margin: 0;
+	overflow-y: auto;
+	overflow-x: hidden;
+	border: none;
+}
+
+.fieldset {
+	position: relative;
+	padding-top: 1.42857143em;
+	padding-left: .71428571em;
+	padding-right: .71428571em;
+	border: 1px solid #ccc;
+	border-radius: .28571429em;
+	margin-top: .71428571em;
+	margin-bottom: .71428571em;
+}
+
+.fieldset.section {
+	padding: 0;
+	border: none;
+	margin-top: 0;
+	margin-bottom: 0;
+}
+
+.fieldset>.legend {
+	position: absolute;
+	top: -.57142857em;
+	padding-left: .71428571em;
+	padding-right: .71428571em;
+	color: #555;
+	background-color: #fff;
+}
+
+.fieldset>.legend>.fa {
+	margin-right: .5em;
+}
+
+.fieldset>.row {
+	position: relative;
+}
+.fieldset>.row>.cell>.tabs,
+.fieldset>.row>.cell>.control-group,
+.fieldset>.row>.cell>.control,
+.fieldset>.row>.cell>.btn-group,
+.fieldset>.row>.cell>.btn {
+	margin-bottom: .71428571em;
+}
+
+.fieldset>.row>.cell>.btn-group,
+.fieldset>.row>.cell>.btn {
+	margin-left: .71428571em;
+}
+
+.fieldset>.row>.cell>.tabs,
+.fieldset>.row>.cell>.control-group,
+.fieldset>.row>.cell>.control {
+	width: 100%;
+}
+
+@media screen and (min-width: 768px) {
+	.fieldset {
+		display: flex;
+		flex-direction: column;
+	}
+
+	.fieldset>.row {
+		display: flex;
+		flex-direction: row;
+		align-items: stretch;
+	}
+
+	.fieldset.flexed,
+	.tabs.flexed,
+	.image.flexed,
+	.control-group.flexed {
+		position: absolute;
+		top: 0;
+		left: 1.07142857em;
+		right: 1.07142857em;
+		bottom: 0;
+		height: auto !important;
+		width: auto !important;
+	}
+}
+
+.fieldset>.row>.cell.actions {
+	height: 4em;
+	display: flex;
+	flex-direction: row;
+	justify-content: flex-end;
+	align-items: flex-end;
+}
+
+.form .control.checkbox {
+	border: none;
+	box-shadow: none;
+}
+
+.form textarea {
+	resize: vertical;
+	overflow-x: hidden;
+	overflow-y: hidden;
+}
+
+.form .tab.fieldset {
+	padding-top: .71428571em;
+	padding-left: .71428571em;
+	padding-right: .71428571em;
+}

@@ -1,0 +1,64 @@
+.navigator {
+	height: 100%;
+	width: 100%;
+
+	display: flex;
+	flex-direction: column;
+	align-items: stretch;
+	background-color: #fff;
+}
+
+.navigator>.body {
+	display: flex;
+	align-items: stretch;
+	flex: 1;
+	padding-left: .14285714em;
+}
+
+.navigator>.body>.list,
+.navigator>.body>.list-box {
+	margin-top: .35714286em;
+	margin-bottom: .71428571em;
+	width: 25%;
+}
+
+.navigator>.body>.list-box .label .btn-text {
+	padding-top: 0;
+	padding-left: 0;
+	padding-bottom: 0;
+	padding-right: .71428571em;
+	box-shadow: none;
+	text-shadow: none;
+	font-weight: 500;
+	border: none;
+	background: none;
+}
+
+.navigator>.body>.list-box.focus .label .btn-text {
+	color: #39c;
+}
+
+.navigator>.body>.list-box .label .btn-text:not(.btn-trigger)>.fa {
+	width: auto;
+	padding-right: .5em;
+}
+
+.navigator>.body>.list-box .label .btn-text:not(.btn-trigger)>.fa.no-icon {
+	padding-right: 0;
+}
+
+.navigator>.body>.form {
+	flex: 1;
+	min-height: 0 !important;
+	padding-top: .35714286em;
+}
+
+.navigator>.body>.table {
+	width: 100%;
+	margin-top: 0;
+	margin-bottom: 0;
+}
+
+.navigator>.body>.table>.control {
+	border-top-width: 0;
+}

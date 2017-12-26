@@ -1,0 +1,35 @@
+.job-monitor>.body {
+	display: flex;
+	flex-direction: row;
+	padding: .71428571em;
+}
+
+.job-monitor>.body>.tasks {
+	width: 60%;
+	margin-right: 1.42857143em;
+}
+
+.job-monitor>.body>.messages {
+	width: calc(40% - 1.42857143em);
+}
+
+.job-monitor>.body>.messages>.control {
+	resize: none;
+	padding: .71428571em;
+}
+
+.job-monitor>.body>.messages>.control>.header {
+	margin-top: .71428571em;
+	margin-bottom: 0;
+	font-weight: bold;
+}
+
+.job-monitor>.body>.messages>.control>.header>i {
+	padding-right: .71428571em;
+}
+
+.job-monitor>.body>.messages>.control>.text {
+	margin-top: .35714286em;
+	margin-bottom: .35714286em;
+	padding-left: 1.78571429em;
+}

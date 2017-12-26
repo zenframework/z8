@@ -1,0 +1,100 @@
+.fa-error:before { /* fa-exclamation-triangle */
+	content: "\f071";
+}
+
+.fa-fatal:before { /* fa-exclamation-triangle */
+	content: "\f071";
+}
+
+.fa-math-divide,
+.fa-math-lt,
+.fa-math-gt,
+.fa-math-le,
+.fa-math-ge,
+.fa-math-eq,
+.fa-math-not-eq,
+.fa-subset-of,
+.fa-superset-of,
+.fa-not-subset-of,
+.fa-not-superset-of {
+	font: 700 1em Roboto, 'Segoe UI', helvetica, arial !important;
+}
+
+.fa-math-divide:before {
+	content: "\2236";
+}
+
+.fa-math-lt:before {
+	content: "<";
+}
+
+.fa-math-gt:before {
+	content: ">";
+}
+
+.fa-math-le:before {
+	content: "\2264";
+}
+
+.fa-math-ge:before {
+	content: "\2265";
+}
+
+.fa-math-eq:before {
+	content: "=";
+}
+
+.fa-math-not-eq:before {
+	content: "\2260";
+}
+
+.fa-subset-of:before {
+	content: "\2282";
+}
+
+.fa-not-subset-of:before {
+	content: "\2284";
+}
+
+.fa-superset-of:before {
+	content: "\2283";
+}
+
+.fa-not-superset-of:before {
+	content: "\2285";
+}
+
+.fa-rotate--90 {
+	-ms-filter: "progid:DXImageTransform.Microsoft.BasicImage(rotation=-1)";
+	-webkit-transform: rotate(-90deg);
+	-ms-transform: rotate(-90deg);
+	transform: rotate(-90deg);
+}
+
+.fa-rotate--180 {
+	-ms-filter: "progid:DXImageTransform.Microsoft.BasicImage(rotation=-2)";
+	-webkit-transform: rotate(-180deg);
+	-ms-transform: rotate(-180deg);
+	transform: rotate(-180deg);
+}
+
+.fa-rotate--270 {
+	-ms-filter: "progid:DXImageTransform.Microsoft.BasicImage(rotation=-3)";
+	-webkit-transform: rotate(-270deg);
+	-ms-transform: rotate(-270deg);
+	transform: rotate(-270deg);
+}
+
+.fa-rotate-360 {
+	-ms-filter: "progid:DXImageTransform.Microsoft.BasicImage(rotation=4)";
+	-webkit-transform: rotate(360deg);
+	-ms-transform: rotate(360deg);
+	transform: rotate(360deg);
+}
+
+.fa-rotate--360 {
+	-ms-filter: "progid:DXImageTransform.Microsoft.BasicImage(rotation=-4)";
+	-webkit-transform: rotate(-360deg);
+	-ms-transform: rotate(-360deg);
+	transform: rotate(-360deg);
+}
