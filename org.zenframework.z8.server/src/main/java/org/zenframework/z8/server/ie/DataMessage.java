@@ -12,6 +12,7 @@ import org.zenframework.z8.server.engine.RmiIO;
 import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.runtime.RCollection;
 import org.zenframework.z8.server.runtime.RLinkedHashMap;
+import org.zenframework.z8.server.types.bool;
 import org.zenframework.z8.server.types.file;
 import org.zenframework.z8.server.types.guid;
 import org.zenframework.z8.server.types.primary;
@@ -210,5 +211,13 @@ public class DataMessage extends Message {
 	public void z8_addRule(guid recordId, RCollection<Field.CLASS<? extends Field>> fields, ImportPolicy policy) {
 		for(Field.CLASS<? extends Field> field : fields)
 			z8_addRule(recordId, field, policy);
+	}
+	
+	public void z8_setExportAll(bool exportAll) {
+		source.setExportAll(exportAll.get());
+	}
+	
+	public bool z8_isExportAll() {
+		return new bool(source.isExportAll());
 	}
 }
