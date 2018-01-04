@@ -6743,6 +6743,7 @@ Z8.define('Z8.list.HeaderFilter', {
 			searchBox.on('search', this.onSearch, this);
 			searchBox.on('focusIn', this.onFocusIn, this);
 			searchBox.on('focusOut', this.onFocusOut, this);
+			searchBox.on('keyDown', this.onKeyDown, this);
 			break;
 		}
 
@@ -6775,8 +6776,17 @@ Z8.define('Z8.list.HeaderFilter', {
 		this.fireEvent('focusIn', this);
 	},
 
-	onFocusOut: function(serach) {
+	onFocusOut: function(search) {
 		this.fireEvent('focusOut', this);
+	},
+
+	onKeyDown: function(search, event, target) {
+		var key = event.getKey();
+
+		if(key == Event.DOWN) {
+			this.list.focus();
+			event.stopEvent();
+		}
 	}
 });
 Z8.define('Z8.list.HeaderCheck', {
@@ -7994,11 +8004,15 @@ Z8.define('Z8.list.List', {
 
 		this.adjustAutoFit();
 
+		var callback = function(store, records, success) {
+			this.focus();
+		};
+
 		if(!show) {
 			var store = this.store;
 			var quickFilter = store.getQuickFilter();
 			if(quickFilter.length != 0)
-				store.quickFilter([]);
+				store.quickFilter([], { fn: callback, scope: this });
 			this.resetQuickFilter();
 		} else
 			this.focusQuickFilter();
@@ -11427,8 +11441,10 @@ Z8.define('Z8.form.field.Search', {
 			this.search();
 		else if(key == Event.ESC)
 			return this.clear();
-		else
+		else {
+			this.fireEvent('keyDown', this, event, target);
 			return false;
+		}
 
 		return true;
 	},

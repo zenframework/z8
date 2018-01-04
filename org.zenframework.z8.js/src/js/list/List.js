@@ -1172,11 +1172,15 @@ Z8.define('Z8.list.List', {
 
 		this.adjustAutoFit();
 
+		var callback = function(store, records, success) {
+			this.focus();
+		};
+
 		if(!show) {
 			var store = this.store;
 			var quickFilter = store.getQuickFilter();
 			if(quickFilter.length != 0)
-				store.quickFilter([]);
+				store.quickFilter([], { fn: callback, scope: this });
 			this.resetQuickFilter();
 		} else
 			this.focusQuickFilter();

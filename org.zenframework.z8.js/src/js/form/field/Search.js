@@ -85,8 +85,10 @@ Z8.define('Z8.form.field.Search', {
 			this.search();
 		else if(key == Event.ESC)
 			return this.clear();
-		else
+		else {
+			this.fireEvent('keyDown', this, event, target);
 			return false;
+		}
 
 		return true;
 	},
