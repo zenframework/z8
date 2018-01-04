@@ -6,5 +6,5 @@ public class Join extends Expression {
 
 	public void operator = (Query data);
 
-	virtual sql_bool expression();
+	virtual protected sql_bool expression();
 }
