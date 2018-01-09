@@ -325,6 +325,15 @@ Date.prototype.truncDay = function() {
 	return this;
 };
 
+Date.prototype.truncMonth = function() {
+	this.setDate(1);
+	this.setHours(0);
+	this.setMinutes(0);
+	this.setSeconds(0);
+	this.setMilliseconds(0);
+	return this;
+};
+
 Date.prototype.toISOString = function() {
 	var zoneOffset = -this.getTimezoneOffset();
 
@@ -3281,6 +3290,7 @@ Z8.define('Z8.data.Store', {
 	},
 
 	setFilter: function(filters) {
+		this.page = 0;
 		filters = filters || [];
 		return (this.filters = Array.isArray(filters) ? filters : [filters]);
 	},
@@ -3290,6 +3300,7 @@ Z8.define('Z8.data.Store', {
 	},
 
 	setQuickFilter: function(quickFilters) {
+		this.page = 0;
 		quickFilters = quickFilters || [];
 		return (this.quickFilters = Array.isArray(quickFilters) ? quickFilters : [quickFilters]);
 	},
@@ -3299,6 +3310,7 @@ Z8.define('Z8.data.Store', {
 	},
 
 	setPeriod: function(period) {
+		this.page = 0;
 		return this.period = period;
 	},
 

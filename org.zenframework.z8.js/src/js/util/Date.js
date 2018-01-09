@@ -207,6 +207,15 @@ Date.prototype.truncDay = function() {
 	return this;
 };
 
+Date.prototype.truncMonth = function() {
+	this.setDate(1);
+	this.setHours(0);
+	this.setMinutes(0);
+	this.setSeconds(0);
+	this.setMilliseconds(0);
+	return this;
+};
+
 Date.prototype.toISOString = function() {
 	var zoneOffset = -this.getTimezoneOffset();
 
