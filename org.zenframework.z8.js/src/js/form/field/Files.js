@@ -134,7 +134,7 @@ Z8.define('Z8.form.field.Files', {
 		this.downloadTool.setBusy(true);
 
 		for(var i = 0, length = files.length; i < length; i++)
-			DOM.download(HttpRequest.hostUrl() + '/' + files[i].get('path'), null, { fn: callback, scope: this });
+			DOM.download(files[i].get('path'), null, { fn: callback, scope: this });
 	},
 
 	onFileInputChange: function() {

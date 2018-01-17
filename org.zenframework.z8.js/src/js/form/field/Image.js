@@ -7,6 +7,6 @@ Z8.define('Z8.form.field.Image', {
 	},
 
 	setSource: function(source) {
-		DOM.setStyle(this.document, 'backgroundImage', source != null ? 'url(' + source + ')' : 'none');
+		DOM.setStyle(this.document, 'backgroundImage', source != null ? 'url(' +  source + ')' : 'none');
 	}
 });

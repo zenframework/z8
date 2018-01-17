@@ -40,10 +40,6 @@ Z8.define('Z8.data.HttpRequest', {
 			return location.origin + path;
 		},
 
-		hostUrl: function() {
-			return window.location.origin;
-		},
-
 		send: function(params, callback) {
 			new HttpRequest().send(params, callback);
 		},
@@ -219,6 +215,6 @@ Z8.define('Z8.data.HttpRequest', {
 			return;
 
 		for(var i = 0, length = files.length; i < length; i++)
-			DOM.download(HttpRequest.hostUrl() + '/' + files[i].path, info.serverId);
+			DOM.download(files[i].path, info.serverId);
 	}
 });
