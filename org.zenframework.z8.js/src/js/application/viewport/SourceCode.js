@@ -132,6 +132,9 @@ Z8.define('Z8.application.viewport.SourceCode', {
 
 		var selected = this.selected = DOM.selectNode(this, id);
 
+		if(selected == null)
+			return;
+
 		var parent = selected.offsetParent;
 
 		var left = selected.offsetLeft;
