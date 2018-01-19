@@ -74,8 +74,12 @@ Z8.define('Z8.calendar.Calendar', {
 
 	createDate: function(year, month) {
 		var date = new Date(this.date);
-		date.setFullYear(year != null ? year : this.currentYear());
-		date.setMonth(month != null ? month : this.currentMonth());
+
+		year = year != null ? year : this.currentYear();
+		month = month != null ? month : this.currentMonth();
+		var day = Math.min(date.getDate(), new Date(year, month).getDaysInMonth());
+
+		date.setFullYear(year, month, day);
 		return date;
 	},
 
