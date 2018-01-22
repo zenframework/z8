@@ -30,7 +30,7 @@ import org.zenframework.z8.server.types.string;
 import org.zenframework.z8.server.types.sql.sql_bool;
 
 public class MessageSource implements RmiSerializable, Serializable {
-	private static final long serialVersionUID = -145929531248527279L;
+	private static final long serialVersionUID = -145929531248527278L;
 
 	private boolean exportAll;
 	private ExportRules exportRules = new ExportRules();
@@ -106,6 +106,8 @@ public class MessageSource implements RmiSerializable, Serializable {
 	public void serialize(ObjectOutputStream out) throws IOException {
 		RmiIO.writeLong(out, serialVersionUID);
 
+		RmiIO.writeBoolean(out, exportAll);
+
 		out.writeObject(exportRules);
 		out.writeObject(sources);
 		out.writeObject(properties);
@@ -114,13 +116,17 @@ public class MessageSource implements RmiSerializable, Serializable {
 		out.writeObject(updates);
 
 		out.writeObject(files);
+	
 	}
 
 	@Override
 	@SuppressWarnings("unchecked")
 	public void deserialize(ObjectInputStream in) throws IOException, ClassNotFoundException {
-		@SuppressWarnings("unused")
+		//@SuppressWarnings("unused")
 		long version = RmiIO.readLong(in);
+
+		if(version == serialVersionUID)
+			exportAll = RmiIO.readBoolean(in);
 
 		exportRules = (ExportRules) in.readObject();
 		sources = (Collection<ExportSource>) in.readObject();
