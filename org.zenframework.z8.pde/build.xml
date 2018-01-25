@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="org.zenframework.z8.pde" default="makejar" basedir=".">
+	<copy todir="bin/main/java/icons" overwrite="true"><fileset dir="icons" includes="**"/></copy>
+	<copy todir="bin/main/java/lib" overwrite="true"><fileset dir="lib" includes="**"/></copy>
+	<copy file="plugin.xml" tofile="bin/main/java/plugin.xml" overwrite="true"/>
+	<target name ="makejar" description="org.zenframework.z8.pde.jar">
+		<jar jarfile="bin/org.zenframework.z8.pde.jar" includes="**" basedir="bin/main/java" manifest="META-INF/MANIFEST.MF"/>
+	</target>
+</project>

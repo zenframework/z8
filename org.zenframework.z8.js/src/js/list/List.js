@@ -136,8 +136,10 @@ Z8.define('Z8.list.List', {
 			var field = fields[i];
 			var type = field.type;
 
-			if(!field.editable || type == null || type == Type.Boolean)
+			if(!field.editable || type == null || type == Type.Boolean) {
+				editors.push(null);
 				continue;
+			}
 
 			var config = Z8.apply({}, field);
 			config.label = false;
@@ -145,11 +147,7 @@ Z8.define('Z8.list.List', {
 			config.enterOnce = true;
 			config.height = null;
 
-			var editor = field.editor;
-
-			if(editor == null)
-				editor = field.editor = Z8.form.Helper.createControl(config);
-
+			editor = Z8.form.Helper.createControl(config);
 			editor.on('change', this.onItemEditorChange, this);
 			editor.index = i;
 			editors.push(editor);
@@ -787,6 +785,10 @@ Z8.define('Z8.list.List', {
 		return this.headers;
 	},
 
+	getEditors: function() {
+		return this.editors;
+	},
+
 	getHeader: function(name) {
 		var headers = this.headers;
 		var start = 0 + (this.checks ? 1 : 0) + (this.locks ? 1 : 0);
@@ -1335,10 +1337,9 @@ Z8.define('Z8.list.List', {
 	},
 
 	getFirstEditorIndex: function(index) {
-		var fields = this.fields;
-		for(var i = index == null ? 0 : index, length = fields.length; i < length; i++) {
-			var editor = fields[i].editor;
-			if(editor != null)
+		var editors = this.editors;
+		for(var i = index == null ? 0 : index, length = editors.length; i < length; i++) {
+			if(editors[i] != null)
 				return i;
 		}
 		return -1;
@@ -1358,8 +1359,7 @@ Z8.define('Z8.list.List', {
 		if(index == -1)
 			return false;
 
-		var field = this.fields[index];
-		var editor = field.editor;
+		var editor = this.editors[index];
 
 		if(editor == null)
 			return false;
@@ -1502,11 +1502,11 @@ Z8.define('Z8.list.List', {
 	},
 
 	getNextEditor: function(item, editor) {
-		var fields = this.fields;
+		var editors = this.editors;
 		var index = editor.index + 1;
 
-		for(var i = index, length = fields.length; i < length; i++) {
-			editor = fields[i].editor;
+		for(var i = index, length = editors.length; i < length; i++) {
+			var editor = editors[i];
 			if(editor != null)
 				return { item: item, editor: editor };
 		}
@@ -1514,8 +1514,8 @@ Z8.define('Z8.list.List', {
 		var itemIndex = this.getIndex(item) + 1;
 		item = this.getAt(itemIndex != this.getCount() ? itemIndex : 0); 
 
-		for(var i = 0, length = fields.length; i < length; i++) {
-			editor = fields[i].editor;
+		for(var i = 0, length = editors.length; i < length; i++) {
+			var editor = editors[i];
 			if(editor != null)
 				return { item: item, editor: editor };
 		}
@@ -1524,11 +1524,11 @@ Z8.define('Z8.list.List', {
 	},
 
 	getPreviousEditor: function(item, editor) {
-		var fields = this.fields;
+		var editors = this.editors;
 		var index = editor.index - 1;
 
 		for(var i = index; i >= 0; i--) {
-			editor = fields[i].editor;
+			var editor = editors[i];
 			if(editor != null)
 				return { item: item, editor: editor };
 		}
@@ -1536,8 +1536,8 @@ Z8.define('Z8.list.List', {
 		var itemIndex = this.getIndex(item) - 1;
 		item = this.getAt(itemIndex != -1 ? itemIndex : this.getCount() - 1); 
 
-		for(var i = fields.length - 1; i >= 0; i--) {
-			editor = fields[i].editor;
+		for(var i = editors.length - 1; i >= 0; i--) {
+			var editor = editors[i];
 			if(editor != null)
 				return { item: item, editor: editor };
 		}

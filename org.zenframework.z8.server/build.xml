@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="org.zenframework.z8.server" default="makejar" basedir=".">
+	<target name ="makejar" description="org.zenframework.z8.server.jar">
+		<jar jarfile="bin/org.zenframework.z8.server.jar" includes="**/*.class" basedir="bin/main/java"/>
+		<copy file="bin/org.zenframework.z8.server.jar" toDir="../org.zenframework.z8.pde/lib" overwrite="true"/>
+	</target>
+</project>

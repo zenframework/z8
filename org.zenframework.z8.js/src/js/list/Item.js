@@ -323,9 +323,8 @@ Z8.define('Z8.list.Item', {
 			return;
 
 		var index = this.findCellIndex(target);
-		var field = index != -1 ? this.list.getFields()[index] : null;
 
-		if(field == null || !DOM.isParentOf(field.editor, target))
+		if(index != -1 || !DOM.isParentOf(this.list.getEditors()[index], target))
 			this.list.onItemDblClick(this, index);
 	},
 
