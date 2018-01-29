@@ -43,7 +43,7 @@
 		<module>org.zenframework.z8.oda.driver</module>
 		<module>org.zenframework.z8.server</module>
 		<module>org.zenframework.z8.servlet</module>
-		<module>org.zenframework.z8.web</module>
+		<module>org.zenframework.z8.js</module>
 	</modules>
 
 	<profiles>
