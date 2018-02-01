@@ -176,11 +176,11 @@ public class TypeCast implements ITypeCast {
 
 			if(element.getVariableType().isReference())
 				codeGenerator.append("get(" + element.getDeclaringType().getConstructionStage() + ").");
+
 			codeGenerator.append(operator.getJavaName() + "()");
 		}
 
 		if(method != null)
 			codeGenerator.append(')');
-
 	}
 }

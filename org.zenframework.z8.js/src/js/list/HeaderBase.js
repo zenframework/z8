@@ -3,14 +3,14 @@ Z8.define('Z8.list.HeaderBase', {
 	shortClassName: 'HeaderBase',
 
 	statics: {
-		Numeric: Ems.pixelsToEms(70),
-		Date: Ems.pixelsToEms(70),
-		Datetime: Ems.pixelsToEms(130),
+		Numeric: 5.83333333,     // 70px
+		Date: 5.83333333,        // 70px
+		Datetime: 10.83333333,   // 130px
 
-		Icon: Ems.pixelsToEms(24),
+		Icon: 2,                 // 24px
 
-		Min: Ems.pixelsToEms(110),
-		Stretch: Ems.pixelsToEms(5000)
+		Min: 9.16666667,         // 110
+		Stretch: 416.66666667    // 5000px
 	},
 
 	initComponent: function() {

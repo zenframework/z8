@@ -55,7 +55,8 @@ public class Action extends OBJECT implements Runnable, IAction {
 	}
 
 	@Override
-	public void write(JsonWriter writer) {
+	public void write(JsonWriter writer, String requestId) {
+		writer.writeProperty(Json.request, requestId);
 		writer.writeProperty(Json.id, id());
 		writer.writeProperty(Json.text, displayName());
 		writer.writeProperty(Json.description, description());

@@ -2,6 +2,8 @@ Z8.define('Z8.form.Fieldset', {
 	extend: 'Z8.Component',
 	shortClassName: 'Fieldset',
 
+	mixins: ['Z8.form.field.Field'],
+
 	statics: {
 		MarginTop: .71428571,
 		MarginBottom: .71428571,
@@ -182,7 +184,7 @@ Z8.define('Z8.form.Fieldset', {
 		for(var i = 0, length = actions.length; i < length; i++) {
 			var action = actions[i];
 			var type = action.type;
-			var button = new Z8.button.Button({ name: action.id, text: action.text, tooltip: action.description, icon: action.icon, action: action, primary: type == 'primary', success: type == 'success', danger: type == 'danger' });
+			var button = new Z8.button.Button({ name: action.id, text: action.text, tooltip: action.description, icon: action.icon, action: action, primary: type == 'primary', success: type == 'success', danger: type == 'danger', handler: this.onAction, scope: this });
 			controls.push(button);
 			markup.insert(button.htmlMarkup());
 		}
@@ -222,5 +224,50 @@ Z8.define('Z8.form.Fieldset', {
 				return true;
 		}
 		return false;
+	},
+
+	onAction: function(button) {
+		button.setBusy(true);
+
+		var action = button.action;
+
+		if(!Z8.isEmpty(action.parameters))
+			this.requestActionParameters(button);
+		else
+			this.runAction(button);
+	},
+
+	requestActionParameters: function(button) {
+		this.runAction(button);
+	},
+
+	runAction: function(button) {
+		var action = button.action;
+
+		var record = this.record;
+
+		var params = {
+			request: action.request,
+			action: 'action',
+			id: action.id,
+			records: (record != null && !record.phantom) ? [record.id] : null,
+			parameters: action.parameters
+		};
+
+		var callback = function(response, success) {
+			button.setBusy(false);
+			this.onActionComplete(button, record, response, success);
+		};
+
+		HttpRequest.send(params, { fn: callback, scope: this });
+	},
+
+	onActionComplete: function(button, record, response, success) {
+		if(success && this.record == record) {
+			var reloadCallback = function(record, success) {
+				button.setBusy(false);
+			};
+			record.reload({ fn: reloadCallback, scope: this });
+		}
 	}
 });

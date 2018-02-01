@@ -4,6 +4,7 @@ import org.zenframework.z8.compiler.core.IPosition;
 import org.zenframework.z8.compiler.core.IToken;
 import org.zenframework.z8.compiler.core.IType;
 import org.zenframework.z8.compiler.parser.grammar.lexer.token.KeywordToken;
+import org.zenframework.z8.compiler.parser.type.Primary;
 import org.zenframework.z8.compiler.parser.variable.Variable;
 import org.zenframework.z8.compiler.parser.variable.VariableType;
 import org.zenframework.z8.compiler.workspace.CompilationUnit;
@@ -40,7 +41,8 @@ public class CastOperator extends AbstractMethod {
 
 	@Override
 	public String getJavaName() {
-		return getName();
+		String name = getName();
+		return Primary.Integer.equals(name) ? "integer" : name;
 	}
 
 	@Override

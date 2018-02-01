@@ -698,7 +698,8 @@ Z8.define('Z8.form.field.Listbox', {
 			};
 
 			var form = new Z8.Container({ cls: 'padding-15', items: [selector], height: '100%' });
-			this.selector = new Z8.window.Window({ cls: 'air', header: this.query.text, icon: 'fa-plus-circle', autoClose: false, body: [form], selector: selector, handler: addRecordCallback, scope: this });
+			var cls = DOM.parseCls(this.selectorCls).pushIf('air');
+			this.selector = new Z8.window.Window({ cls: cls, header: this.query.text, icon: 'fa-plus-circle', autoClose: false, body: [form], selector: selector, handler: addRecordCallback, scope: this });
 			this.selector.open();
 		};
 
@@ -895,7 +896,7 @@ Z8.define('Z8.form.field.Listbox', {
 		var query = this.query;
 
 		var params = {
-			request: this.store.getModelName(),
+			request: action.request,
 			action: 'action',
 			id: action.id,
 			query: query.name,

@@ -10,7 +10,19 @@ Z8.define('Z8.form.Helper', {
 
 			var readOnly = field.readOnly;
 			var label = field.label !== false ? { text: field.header, icon: field.icon, align: 'top' } : false;
-			var config = { label: label, placeholder: field.header, name: field.name, field: field, colSpan: field.colSpan, flex: field.flex, readOnly: readOnly, editable: field.editable, enterOnce: field.enterOnce, source: field.source };
+			var config = { label: label, placeholder: field.header, name: field.name, field: field, colSpan: field.colSpan, flex: field.flex, readOnly: readOnly, editable: field.editable, required: field.required, enterOnce: field.enterOnce, source: field.source };
+
+			if(field.cls != null)
+				config.cls = field.cls;
+
+			if(field.validation != null)
+				config.validation = field.validation;
+
+			if(field.value != null)
+				config.value = field.value;
+
+			if(field.displayValue != null)
+				config.displayValue = field.displayValue;
 
 			if(field.format != null)
 				config.format = field.format;
@@ -22,7 +34,6 @@ Z8.define('Z8.form.Helper', {
 				config.displayName = field.name;
 				config.fields = field;
 				config.name = field.link.name;
-				config.required = field.required;
 				config.checks = false;
 				config.pagerMode = 'visible';
 				return cls != null ? Z8.create(cls, config) : new Z8.form.field.Combobox(config);

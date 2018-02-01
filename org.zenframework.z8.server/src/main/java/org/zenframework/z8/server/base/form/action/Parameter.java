@@ -102,7 +102,7 @@ public class Parameter extends OBJECT implements IParameter {
 	public void parse(String json) {
 		FieldType type = getType();
 
-		if(json.startsWith("[")) {
+		if(json != null && json.startsWith("[")) {
 			JsonArray array = new JsonArray(json);
 
 			RCollection<primary> value = new RCollection<primary>();

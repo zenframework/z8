@@ -393,6 +393,23 @@ Z8.define('Z8.application.form.Navigator', {
 		return this.getActiveListbox().getSelection();
 	},
 
+	getChecked: function() {
+		return this.getActiveListbox().getChecked();
+	},
+
+	getSelectedIds: function() {
+		var records = [];
+		var selected = this.getChecked();
+
+		for(var i = 0, length = selected.length; i < length; i++) {
+			var record = selected[i];
+			if(!record.phantom)
+				records.push(selected[i].id);
+		}
+
+		return records;
+	},
+
 	addRecord: function(button) {
 		this.getActiveListbox().onAddRecord(button);
 	},
@@ -627,13 +644,13 @@ Z8.define('Z8.application.form.Navigator', {
 		this.actionsButton.setBusy(true);
 
 		var action = item.action;
-		var record = this.getSelection();
+		var records = this.getSelectedIds();
 
 		var params = {
-			request: this.store.getModelName(),
+			request: action.request,
 			action: 'action',
 			id: action.id,
-			records: (record != null && !record.phantom) ? [record.id] : null
+			records: records
 		};
 
 		var callback = function(response, success) {

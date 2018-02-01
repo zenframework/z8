@@ -318,7 +318,7 @@ public class JsonWriter {
 		finishArray();
 	}
 
-	public void writeActions(Collection<Action> actions) {
+	public void writeActions(Collection<Action> actions, String requestId) {
 		if(actions.isEmpty())
 			return;
 
@@ -326,7 +326,7 @@ public class JsonWriter {
 
 		for(IAction action : actions) {
 			startObject();
-			action.write(this);
+			action.write(this, requestId);
 			finishObject();
 		}
 

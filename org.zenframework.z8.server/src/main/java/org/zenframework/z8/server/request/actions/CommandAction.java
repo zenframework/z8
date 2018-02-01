@@ -63,7 +63,7 @@ public class CommandAction extends RequestAction {
 		for(int i = 0; i < parameters.length(); i++) {
 			JsonObject object = parameters.getJsonObject(i);
 			IParameter parameter = action.getParameter(object.getString(Json.id));
-			parameter.parse(object.getString(Json.value));
+			parameter.parse(object.has(Json.value) ? object.getString(Json.value) : null);
 		}
 	}
 }

@@ -1,8 +1,6 @@
 Z8.define('Z8.form.Form', {
 	extend: 'Z8.form.Fieldset',
 
-	mixins: ['Z8.form.field.Field'],
-
 	isForm: true,
 	autoSave: false,
 
@@ -108,6 +106,8 @@ Z8.define('Z8.form.Form', {
 
 		for(var i = 0, length = controls.length; i < length; i++)
 			this.initControl(controls[i], fieldset);
+
+		this.addField(fieldset);
 
 		return fieldset;
 	},

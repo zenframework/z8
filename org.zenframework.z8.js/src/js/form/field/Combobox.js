@@ -448,14 +448,14 @@ Z8.define('Z8.form.field.Combobox', {
 
 		var left = DOM.getOffsetLeft(this.input);
 		DOM.setLeft(dropdown, left);
-		DOM.setRight(dropdown, Ems.pixelsToEms(-1));
+		DOM.setRight(dropdown, -0.08333333 /* Ems.pixelsToEms(1) */);
 
 		var item = this.currentItem();
 		var focusAt = keepFocus ? false : item;
 
 		var pagerSize = this.getPagerSize();
 
-		dropdown.setAlignmentOffset(0, pagerSize.height, Ems.pixelsToEms(17));
+		dropdown.setAlignmentOffset(0, pagerSize.height, 1.41666667 /* Ems.pixelsToEms(17) */);
 		dropdown.show(null, null, focusAt);
 	},
 

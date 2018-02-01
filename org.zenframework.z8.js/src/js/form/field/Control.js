@@ -157,8 +157,7 @@ Z8.define('Z8.form.field.Control', {
 	setValid: function(valid) {
 		this.mixins.field.setValid.call(this, valid);
 		DOM.swapCls(this, !valid, 'invalid');
-		if(this.validationCallback != null)
-			this.validationCallback(this, valid);
+		Z8.callback(this.validation, valid);
 	},
 
 	validate: function() {
