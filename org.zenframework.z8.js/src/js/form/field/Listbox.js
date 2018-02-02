@@ -585,8 +585,8 @@ Z8.define('Z8.form.field.Listbox', {
 		if(query == null)
 			return null;
 
-		var store = Z8.form.Helper.storeConfig({ isListbox: true, query: { id: query.id, name: query.name, fields: query.fields, primaryKey: query.primaryKey }, values: this.getValues() });
-		return new Z8.form.field.Listbox({ name: query.link, fields: query.fields, label: query.label, store: store, tools: false, pagerMode: 'visible', checks: true, height: '100%' });
+		var store = Z8.form.Helper.storeConfig({ isListbox: true, query: { id: query.id, name: query.name, fields: query.fields, primaryKey: null }, values: this.getValues() });
+		return new Z8.form.field.Listbox({ primaryKey: query.primaryKey, name: query.link, fields: query.fields, label: query.label, store: store, tools: false, pagerMode: 'visible', checks: true, height: '100%' });
 	},
 
 	newRecord: function() {
@@ -680,11 +680,12 @@ Z8.define('Z8.form.field.Listbox', {
 				var checked = listbox.getChecked();
 				var name = listbox.name;
 				var valueFromFields = this.getValueFromFields();
+				var primaryKey = listbox.primaryKey;
 
 				for(var i = 0, length = checked.length; i < length; i++) {
 					var record = this.newRecord();
 					var checkedRecord = checked[i];
-					record.set(name, checkedRecord.id);
+					record.set(name, checkedRecord.get(primaryKey));
 
 					for(var j = 0, length1 = valueFromFields.length; j < length1; j++) {
 						var valueFromField = valueFromFields[j];

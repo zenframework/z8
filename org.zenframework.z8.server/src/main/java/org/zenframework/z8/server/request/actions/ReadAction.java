@@ -20,7 +20,6 @@ import org.zenframework.z8.server.base.table.value.ILink;
 import org.zenframework.z8.server.base.table.value.Join;
 import org.zenframework.z8.server.base.table.value.JoinType;
 import org.zenframework.z8.server.base.table.value.Link;
-import org.zenframework.z8.server.base.table.value.LinkExpression;
 import org.zenframework.z8.server.base.view.filter.Filter;
 import org.zenframework.z8.server.db.AggregatingSelect;
 import org.zenframework.z8.server.db.CountingSelect;
@@ -331,12 +330,14 @@ public class ReadAction extends RequestAction {
 			path = getContextQuery().getPath(query);
 
 		for(ILink link : path) {
-			if(link instanceof LinkExpression) {
+			if(link instanceof Expression) {
 				Collection<Field> usedFields = getUsedFields((Field)link);
 				Collection<Query> owners = getOwners(usedFields);
 
-				for(Query owner : owners)
-					links.addAll(getPath(owner));
+				for(Query owner : owners) {
+					if(owner != query)
+						links.addAll(getPath(owner));
+				}
 			}
 
 			links.add(link);

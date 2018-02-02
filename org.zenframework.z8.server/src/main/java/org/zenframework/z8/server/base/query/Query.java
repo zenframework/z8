@@ -465,16 +465,6 @@ public class Query extends OBJECT {
 		return true;
 	}
 
-	public Collection<Field> readRecords(Collection<guid> ids, Collection<Field> fields) {
-		ReadAction action = new ReadAction(this, fields, ids);
-
-		if(cursor != null)
-			cursor.close();
-
-		cursor = action.getCursor();
-		return cursor.getFields();
-	}
-
 	protected boolean readFirst(Collection<Field> fields, Collection<Field> sortFields, Collection<Field> groupFields, SqlToken where, SqlToken having) {
 		read(fields, sortFields, groupFields, where, having);
 		return next();
@@ -795,16 +785,20 @@ public class Query extends OBJECT {
 		controls.add(control);
 	}
 
-	final public SqlToken having() {
-		if(having == null)
-			having = z8_having();
-		return having;
+	final public SqlToken where() {
+		return where == null ? z8_where() : where;
 	}
 
-	final public SqlToken where() {
-		if(where == null)
-			where = z8_where();
-		return where;
+	final public void setWhere(SqlToken where) {
+		this.where = where;
+	}
+
+	final public void setWhere(String json) {
+		setWhere(new Filter(json, this).where());
+	}
+
+	final public void setWhere(Collection<String> json) {
+		setWhere(new Filter(json, this).where());
 	}
 
 	final public void addWhere(String json) {
@@ -819,16 +813,12 @@ public class Query extends OBJECT {
 		this.where = new And(where(), where);
 	}
 
-	final public void setWhere(String json) {
-		setWhere(new Filter(json, this).where());
+	final public SqlToken having() {
+		return having == null ? z8_having() : having;
 	}
 
-	final public void setWhere(Collection<String> json) {
-		setWhere(new Filter(json, this).where());
-	}
-
-	final public void setWhere(SqlToken where) {
-		this.where = where;
+	final public void setHaving(SqlToken having) {
+		this.having = having;
 	}
 
 	private boolean isGroupingEnabled() {

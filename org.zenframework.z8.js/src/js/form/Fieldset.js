@@ -73,10 +73,24 @@ Z8.define('Z8.form.Fieldset', {
 
 		var rows = (this.plain ? [] : [legend]).concat(this.rowsMarkup());
 
-		var cls = DOM.parseCls(this.cls).pushIf('fieldset', this.plain ? 'section' : '',
-			!this.isEnabled() ? 'disabled' : '', this.isReadOnly() ? 'readonly' : '', this.flex ? 'flexed' : '').join(' ');
+		var cls = DOM.parseCls(this.cls).pushIf('fieldset');
 
-		return { id: this.getId(), cls: cls, cn: rows };
+		if(this.plain)
+			cls.pushIf('section');
+
+		if(!this.isEnabled())
+			cls.pushIf('disabled');
+
+		if(this.isReadOnly())
+			cls.pushIf('readonly');
+
+		if(this.flex)
+			cls.pushIf('flexed');
+
+		if(this.name != null)
+			cls.pushIf(this.name.replace(/\./g, '-').toLowerCase());
+
+		return { id: this.getId(), cls: cls.join(' '), cn: rows };
 	},
 
 	rowsMarkup: function() {
@@ -266,6 +280,7 @@ Z8.define('Z8.form.Fieldset', {
 		if(success && this.record == record) {
 			var reloadCallback = function(record, success) {
 				button.setBusy(false);
+				this.form.loadRecord(record);
 			};
 			record.reload({ fn: reloadCallback, scope: this });
 		}
