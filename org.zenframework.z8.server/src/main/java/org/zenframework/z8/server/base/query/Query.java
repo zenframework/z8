@@ -128,6 +128,11 @@ public class Query extends OBJECT {
 			z8_onNew(recordId, parentId);
 	}
 
+	public void onCopyAction(guid recordId) {
+		if(ApplicationServer.events())
+			z8_onCopyAction(recordId);
+	}
+
 	public void onCopy() {
 		if(ApplicationServer.events())
 			z8_onCopy();
@@ -143,6 +148,11 @@ public class Query extends OBJECT {
 			z8_afterRead(parentId);
 	}
 
+	public void onCreateAction(guid recordId) {
+		if(ApplicationServer.events())
+			z8_onCreateAction(recordId);
+	}
+
 	public void beforeCreate(guid recordId, guid parentId) {
 		if(ApplicationServer.events())
 			z8_beforeCreate(recordId, parentId);
@@ -153,6 +163,11 @@ public class Query extends OBJECT {
 			z8_afterCreate(recordId, parentId);
 	}
 
+	public void onUpdateAction(guid recordId) {
+		if(ApplicationServer.events())
+			z8_onUpdateAction(recordId);
+	}
+
 	public void beforeUpdate(guid recordId) {
 		if(ApplicationServer.events())
 			z8_beforeUpdate(recordId);
@@ -161,6 +176,11 @@ public class Query extends OBJECT {
 	public void afterUpdate(guid recordId) {
 		if(ApplicationServer.events())
 			z8_afterUpdate(recordId);
+	}
+
+	public void onDestroyAction(guid recordId) {
+		if(ApplicationServer.events())
+			z8_onDestroyAction(recordId);
 	}
 
 	public void beforeDestroy(guid recordId) {
@@ -1362,6 +1382,9 @@ public class Query extends OBJECT {
 	public void z8_onNew(guid recordId, guid parentId) {
 	}
 
+	public void z8_onCopyAction(guid recordId) {
+	}
+
 	public void z8_onCopy() {
 	}
 
@@ -1371,16 +1394,25 @@ public class Query extends OBJECT {
 	public void z8_afterRead(guid parentId) {
 	}
 
+	public void z8_onCreateAction(guid recordId) {
+	}
+
 	public void z8_beforeCreate(guid recordId, guid parentId) {
 	}
 
 	public void z8_afterCreate(guid recordId, guid parentId) {
 	}
 
+	public void z8_onUpdateAction(guid recordId) {
+	}
+
 	public void z8_beforeUpdate(guid recordId) {
 	}
 
 	public void z8_afterUpdate(guid recordId) {
+	}
+
+	public void z8_onDestroyAction(guid recordId) {
 	}
 
 	public void z8_beforeDestroy(guid recordId) {

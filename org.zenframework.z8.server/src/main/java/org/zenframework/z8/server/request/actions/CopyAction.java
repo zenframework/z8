@@ -44,6 +44,7 @@ public class CopyAction extends RequestAction {
 
 		try {
 			connection.beginTransaction();
+			query.onCopyAction(recordId);
 			recordId = run(query, recordId, parentId);
 			connection.commit();
 		} catch(Throwable e) {

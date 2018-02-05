@@ -36,6 +36,11 @@ public class Query extends Object {
 	public Link[] aggregateBy;          // Поля из корневого запроса для группировки его перед выполнением основного.
 	public Field[] groupBy;
 
+	virtual protected void onCopyAction(guid recordId);
+	virtual protected void onCreateAction(guid recordId);
+	virtual protected void onUpdateAction(guid recordId);
+	virtual protected void onDestroyAction(guid recordId);
+
 	virtual protected void onNew(guid recordId, guid parentId);
 	virtual protected void onCopy();
 

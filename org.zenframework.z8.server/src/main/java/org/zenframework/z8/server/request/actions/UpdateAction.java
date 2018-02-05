@@ -81,8 +81,8 @@ public class UpdateAction extends RequestAction {
 				}
 			}
 
-			guid id = query.primaryKey().guid();
-			guid ownerId = owner != null ? owner.primaryKey().guid() : null;
+			guid id = extractPrimaryKeyValue(query);
+			guid ownerId = extractPrimaryKeyValue(owner);
 
 			if(link != null) {
 				boolean idNull = id.isNull();
@@ -97,18 +97,30 @@ public class UpdateAction extends RequestAction {
 					createLink(owner, link, ownerId, query);
 				} else {
 					checkAccess(queryFields);
+					query.onUpdateAction(id);
 					run(query, id);
 				}
 
 				result.add(ownerId);
 			} else {
 				checkAccess(queryFields);
+				query.onUpdateAction(id);
 				run(query, id);
 				result.add(id);
 			}
 		}
 
 		return result;
+	}
+
+	private guid extractPrimaryKeyValue(Query query) {
+		if(query == null)
+			return null;
+
+		Field primaryKey = query.primaryKey();
+		guid id = primaryKey.guid();
+		primaryKey.reset();
+		return id;
 	}
 
 	private void createLink(Query owner, ILink link, guid ownerId, Query query) {
@@ -121,6 +133,7 @@ public class UpdateAction extends RequestAction {
 		guid parentId = parentKey != null ? parentKey.guid() : null;
 
 		NewAction.run(query, recordId, parentId);
+		query.onCreateAction(recordId);
 		query.insert(recordId, parentId);
 
 		link.set(recordId);

@@ -40,13 +40,17 @@ public class DestroyAction extends RequestAction {
 	}
 
 	private void destroy(JsonArray records) {
+		Query query = getQuery();
+
 		for(int index = 0; index < records.length(); index++) {
 			Object object = records.get(index);
 			String property = getQuery().primaryKey().id();
 			// data: [{recordId: guid}] or data: [guid]
 			String value = object instanceof JsonObject ? ((JsonObject)object).getString(property) : (String)object;
 			guid recordId = new guid(value);
-			run(getQuery(), recordId);
+
+			query.onDestroyAction(recordId);
+			run(query, recordId);
 		}
 	}
 

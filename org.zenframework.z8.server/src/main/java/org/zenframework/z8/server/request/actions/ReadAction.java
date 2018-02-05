@@ -309,10 +309,11 @@ public class ReadAction extends RequestAction {
 
 	private Collection<ILink> getPath(Field field) {
 		Query owner = field.owner();
-		Collection<ILink> path = getQuery().getPath(owner);
-		if(path != null && !path.isEmpty())
-			return getPath(owner);
-
+		if(owner != null) {
+			Collection<ILink> path = getQuery().getPath(owner);
+			if(path != null && !path.isEmpty())
+				return getPath(owner);
+		}
 		return new ArrayList<ILink>();
 	}
 

@@ -85,6 +85,7 @@ public class CreateAction extends RequestAction {
 
 			primaryKey.set(recordId);
 
+			query.onCreateAction(recordId);
 			query.insert(recordId, parentId);
 
 			result.add(recordId);
