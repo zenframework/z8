@@ -5,6 +5,8 @@ import org.zenframework.z8.lang.Object;
 public class Cursor extends Object {
 	static public Cursor open(Database database, string sql);
 
+	public void close();
+
 	public bool next();
 
 	public string string(int position);

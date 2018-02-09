@@ -53,6 +53,10 @@ public class Cursor extends OBJECT {
 		}
 	}
 
+	public void z8_close() {
+		cursor.close();
+	}
+
 	public string z8_string(integer position) {
 		try {
 			return cursor.getString(position.getInt());
