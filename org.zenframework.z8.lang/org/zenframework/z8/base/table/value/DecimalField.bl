@@ -15,6 +15,7 @@ public class DecimalField extends Field {
 	public operator sql_decimal();
 
 	virtual public decimal get();
+	virtual public decimal[] array();
 
 	public DecimalField operator = (decimal value);
 }

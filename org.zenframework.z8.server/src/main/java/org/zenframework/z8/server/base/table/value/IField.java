@@ -21,6 +21,8 @@ public interface IField extends IObject {
 	public primary get();
 	public void set(primary value);
 
+	public primary parse(String value);
+
 	public boolean wasNull();
 	public boolean changed();
 

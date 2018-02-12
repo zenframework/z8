@@ -196,7 +196,10 @@ public class Cursor {
 	}
 
 	public primary get(Field field) throws SQLException {
-		FieldType type = field.type();
+		return get(field, field.type());
+	}
+
+	public primary get(Field field, FieldType type) throws SQLException {
 		int position = field.position + 1;
 
 		switch(type) {

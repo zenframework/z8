@@ -48,6 +48,11 @@ public class DecimalExpression extends Expression {
 		return (decimal)internalGet();
 	}
 
+	@Override
+	public primary parse(String value) {
+		return new decimal(value);
+	}
+
 	public DecimalExpression.CLASS<? extends DecimalExpression> operatorAssign(decimal value) {
 		set(value);
 		return (DecimalExpression.CLASS<?>)this.getCLASS();

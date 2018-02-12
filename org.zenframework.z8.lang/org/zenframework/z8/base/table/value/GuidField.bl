@@ -8,6 +8,7 @@ public class GuidField extends Field {
 	public operator sql_guid();
 
 	virtual public guid get();
+	virtual public guid[] array();
 
 	public GuidField operator = (guid value);
 }

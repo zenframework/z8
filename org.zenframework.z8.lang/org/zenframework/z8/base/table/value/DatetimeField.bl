@@ -10,6 +10,7 @@ public class DatetimeField extends Field {
 	public operator sql_date();
 
 	virtual public date get();
+	virtual public date[] array();
 
 	public DatetimeField operator = (date value);
 }

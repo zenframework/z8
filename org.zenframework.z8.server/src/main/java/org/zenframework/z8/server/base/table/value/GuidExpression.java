@@ -41,6 +41,11 @@ public class GuidExpression extends Expression {
 		return z8_get();
 	}
 
+	@Override
+	public primary parse(String value) {
+		return new guid(value);
+	}
+
 	public guid z8_get() {
 		return (guid)internalGet();
 	}

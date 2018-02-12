@@ -60,6 +60,11 @@ public class DatespanField extends Field {
 		return z8_get();
 	}
 
+	@Override
+	public primary parse(String value) {
+		return new datespan(Long.parseLong(value));
+	}
+
 	public datespan z8_get() {
 		return (datespan)internalGet();
 	}

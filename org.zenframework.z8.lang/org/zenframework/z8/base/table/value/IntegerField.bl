@@ -12,6 +12,7 @@ public class IntegerField extends Field {
 	public operator sql_int();
 
 	virtual public int get();
+	virtual public int[] array();
 
 	public IntegerField operator = (int value);
 }

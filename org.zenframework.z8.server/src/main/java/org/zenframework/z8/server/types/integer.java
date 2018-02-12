@@ -52,11 +52,11 @@ public final class integer extends primary {
 		return format(10);
 	}
 
-	static integer parse(String value) {
+	static public integer parse(String value) {
 		return parse(value, 10);
 	}
 
-	static integer parse(String value, int radix) {
+	static public integer parse(String value, int radix) {
 		if(value == null || value.isEmpty())
 			return integer.Zero;
 

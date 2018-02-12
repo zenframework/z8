@@ -7,6 +7,7 @@ public class DecimalExpression extends Expression {
 	public void setDefault(decimal defaultValue);
 
 	virtual public decimal get();
+	virtual public decimal[] array();
 
 	public operator sql_decimal();
 

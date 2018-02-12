@@ -7,6 +7,7 @@ public class IntegerExpression extends Expression {
 	public void setDefault(int defaultValue);
 
 	virtual public int get();
+	virtual public int[] array();
 
 	public IntegerExpression operator = (int value);
 

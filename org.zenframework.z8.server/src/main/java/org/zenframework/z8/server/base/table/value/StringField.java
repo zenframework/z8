@@ -73,6 +73,11 @@ public class StringField extends Field {
 		return z8_get();
 	}
 
+	@Override
+	public primary parse(String value) {
+		return new string(value);
+	}
+
 	public string z8_get() {
 		return (string)internalGet();
 	}

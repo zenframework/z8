@@ -220,7 +220,9 @@ abstract public class Field extends Control implements IField {
 	}
 
 	protected primary read() throws SQLException {
-		return cursor.get(this);
+		if(aggregation != Aggregation.Array)
+			return cursor.get(this);
+		return cursor.get(this, FieldType.String);
 	}
 
 	protected primary internalGet() {
@@ -234,6 +236,22 @@ abstract public class Field extends Control implements IField {
 	@Override
 	abstract public primary get();
 
+	@Override
+	abstract public primary parse(String value);
+
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	public RCollection z8_array() {
+		RCollection result = new RCollection();
+
+		String array = ((string)internalGet()).get();
+		String[] values = array.substring(1, array.length() - 1).split(",");
+
+		for(String value : values)
+			result.add(parse(value));
+
+		return result;
+	}
+	
 	@Override
 	public void set(primary value) {
 		if(!changed) {

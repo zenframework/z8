@@ -329,17 +329,19 @@ Z8.define('Z8.application.form.Navigator', {
 		var names = this.getNames();
 		var quickFilters = this.getQuickFilterFields();
 		var label = this.getListboxLabel(names);
+		var store = this.store;
 
 		return {
 			cls: this.isFormPresentation() ? '' : 'display-none',
-			store: this.store,
+			store: store,
 			fields: names,
 			names: names,
 			label: label,
 			quickFilters: quickFilters,
 			filters: quickFilters.length == 0,
 			editable: true,
-			locks: !this.isReadOnly()
+			locks: !this.isReadOnly(),
+			totals: store.hasTotals()
 		};
 	},
 

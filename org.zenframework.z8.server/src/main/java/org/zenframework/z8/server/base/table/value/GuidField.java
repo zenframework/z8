@@ -66,6 +66,11 @@ public class GuidField extends Field {
 		return (guid)internalGet();
 	}
 
+	@Override
+	public primary parse(String value) {
+		return new guid(value);
+	}
+
 	public GuidField.CLASS<? extends GuidField> operatorAssign(guid value) {
 		set(value);
 		return (GuidField.CLASS<?>)this.getCLASS();

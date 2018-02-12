@@ -72,6 +72,11 @@ public class IntegerField extends Field {
 		return (integer)internalGet();
 	}
 
+	@Override
+	public primary parse(String value) {
+		return new integer(value);
+	}
+
 	public IntegerField.CLASS<? extends IntegerField> operatorAssign(integer value) {
 		set(value);
 		return (IntegerField.CLASS<?>)this.getCLASS();

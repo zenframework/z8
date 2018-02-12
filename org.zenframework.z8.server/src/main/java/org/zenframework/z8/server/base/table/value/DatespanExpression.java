@@ -44,6 +44,11 @@ public class DatespanExpression extends Expression {
 		return (datespan)internalGet();
 	}
 
+	@Override
+	public primary parse(String value) {
+		return new datespan(Long.parseLong(value));
+	}
+
 	public DatespanExpression.CLASS<? extends DatespanExpression> operatorAssign(datespan value) {
 		set(value);
 		return (DatespanExpression.CLASS<?>)this.getCLASS();

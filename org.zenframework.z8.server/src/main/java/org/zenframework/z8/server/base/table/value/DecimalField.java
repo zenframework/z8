@@ -78,6 +78,11 @@ public class DecimalField extends Field {
 		return (decimal)internalGet();
 	}
 
+	@Override
+	public primary parse(String value) {
+		return new decimal(value);
+	}
+
 	public DecimalField.CLASS<? extends DecimalField> operatorAssign(decimal value) {
 		set(value);
 		return (DecimalField.CLASS<?>)this.getCLASS();

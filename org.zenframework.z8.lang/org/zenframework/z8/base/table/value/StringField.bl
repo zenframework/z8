@@ -12,6 +12,7 @@ public class StringField extends Field {
 	public operator sql_string();
 
 	virtual public string get();
+	virtual public string[] array();
 
 	public StringField operator = (string value);
 }

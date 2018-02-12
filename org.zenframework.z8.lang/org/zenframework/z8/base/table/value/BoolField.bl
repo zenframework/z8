@@ -8,6 +8,7 @@ public class BoolField extends Field {
 	public operator sql_bool();
 
 	virtual public bool get();
+	virtual public bool[] array();
 
 	public BoolField operator = (bool value);
 }

@@ -1,5 +1,7 @@
 package org.zenframework.z8.server.base.table.value;
 
+import java.io.InputStream;
+
 import org.zenframework.z8.server.db.DatabaseVendor;
 import org.zenframework.z8.server.db.FieldType;
 import org.zenframework.z8.server.db.sql.SqlField;
@@ -8,8 +10,6 @@ import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.types.binary;
 import org.zenframework.z8.server.types.primary;
 import org.zenframework.z8.server.types.sql.sql_binary;
-
-import java.io.InputStream;
 
 public class BinaryField extends Field {
 
@@ -55,6 +55,11 @@ public class BinaryField extends Field {
 
 	public binary z8_get() {
 		return (binary)internalGet();
+	}
+
+	@Override
+	public primary parse(String value) {
+		throw new UnsupportedOperationException();
 	}
 
 	@Override

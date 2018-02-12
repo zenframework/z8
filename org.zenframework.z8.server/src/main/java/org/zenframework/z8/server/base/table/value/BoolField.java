@@ -63,6 +63,11 @@ public class BoolField extends Field {
 		return z8_get();
 	}
 
+	@Override
+	public primary parse(String value) {
+		return new bool(value);
+	}
+
 	public bool z8_get() {
 		return (bool)internalGet();
 	}

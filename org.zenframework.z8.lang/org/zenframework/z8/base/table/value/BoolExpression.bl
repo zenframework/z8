@@ -5,6 +5,7 @@ public class BoolExpression extends Expression {
 	public void setDefault(bool defaultValue);
 
 	virtual public bool get();
+	virtual public bool[] array();
 
 	public BoolExpression operator = (bool value);
 

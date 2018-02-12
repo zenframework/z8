@@ -59,6 +59,11 @@ public class DatetimeField extends Field {
 		return z8_get();
 	}
 
+	@Override
+	public primary parse(String value) {
+		return new date(Long.parseLong(value));
+	}
+
 	public date z8_get() {
 		return (date)internalGet();
 	}

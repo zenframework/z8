@@ -52,6 +52,11 @@ public class IntegerExpression extends Expression {
 		return (integer)internalGet();
 	}
 
+	@Override
+	public primary parse(String value) {
+		return new integer(value);
+	}
+
 	public IntegerExpression.CLASS<? extends IntegerExpression> operatorAssign(integer value) {
 		set(value);
 		return (IntegerExpression.CLASS<?>)this.getCLASS();

@@ -5,6 +5,7 @@ public class TextExpression extends Expression {
 	public void setDefault(string defaultValue);
 
 	virtual public string get();
+	virtual public string[] array();
 
 	public TextExpression operator = (string value);
 

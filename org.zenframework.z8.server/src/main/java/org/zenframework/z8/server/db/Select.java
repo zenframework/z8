@@ -449,4 +449,7 @@ public class Select {
 		return cursor.get(field);
 	}
 
+	public primary get(Field field, FieldType type) throws SQLException {
+		return cursor.get(field, type);
+	}
 }

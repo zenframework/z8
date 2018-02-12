@@ -45,6 +45,11 @@ public class BoolExpression extends Expression {
 		return (bool)internalGet();
 	}
 
+	@Override
+	public primary parse(String value) {
+		return new bool(value);
+	}
+
 	public BoolExpression.CLASS<? extends BoolExpression> operatorAssign(bool value) {
 		set(value);
 		return (BoolExpression.CLASS<?>)this.getCLASS();

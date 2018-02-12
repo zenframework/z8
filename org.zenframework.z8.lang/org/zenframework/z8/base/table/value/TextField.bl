@@ -9,6 +9,7 @@ public class TextField extends Field {
 	public void setDefault(string defaultValue);
 
 	virtual public string get();
+	virtual public string[] array();
 
 	public TextField operator = (string value);
 

@@ -70,6 +70,11 @@ public class Expression extends Field {
 		return internalGet();
 	}
 
+	@Override
+	public primary parse(String value) {
+		throw new UnsupportedOperationException();
+	}
+
 	protected SqlToken z8_expression() {
 		return new SqlConst(getDefault());
 	}
