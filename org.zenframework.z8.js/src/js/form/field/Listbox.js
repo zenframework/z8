@@ -8,6 +8,7 @@ Z8.define('Z8.form.field.Listbox', {
 	tools: false,
 	locks: false,
 	totals: false,
+	autoFit: true,
 
 	editable: false,
 
@@ -353,7 +354,7 @@ Z8.define('Z8.form.field.Listbox', {
 		this.setExportTool(exportAs);
 		tools.push(exportAs);
 
-		var autoFit = new Z8.button.Tool({ icon: 'fa-arrows-h', tooltip: 'Auto fit columns', toggled: true });
+		var autoFit = new Z8.button.Tool({ icon: 'fa-arrows-h', tooltip: 'Auto fit columns', toggled: this.autoFit });
 		autoFit.on('toggle', this.onAutoFit, this);
 		this.setAutoFitTool(autoFit);
 		tools.push(autoFit);
@@ -413,7 +414,7 @@ Z8.define('Z8.form.field.Listbox', {
 	},
 
 	controlMarkup: function() {
-		var list = this.list = new Z8.list.List({ cls: 'control', store: this.store, items: this.items, totals: this.totals, locks: this.locks, name: this.name, fields: this.fields, editable: this.isEditable(), itemType: this.itemType, value: this.getValue(), icons: this.icons, checks: this.checks, filters: this.filters, useENTER: false });
+		var list = this.list = new Z8.list.List({ cls: 'control', store: this.store, items: this.items, totals: this.totals, locks: this.locks, name: this.name, fields: this.fields, editable: this.isEditable(), itemType: this.itemType, value: this.getValue(), icons: this.icons, checks: this.checks, filters: this.filters, useENTER: false, autoFit: this.autoFit });
 		list.on('select', this.onSelect, this);
 		list.on('contentChange', this.onContentChange, this);
 		list.on('itemEditorChange', this.onItemEditorChange, this);

@@ -289,6 +289,11 @@ public class OdaField implements IField {
 	}
 
 	@Override
+	public primary parse(String value) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
 	public boolean wasNull() {
 		throw new UnsupportedOperationException();
 	}
