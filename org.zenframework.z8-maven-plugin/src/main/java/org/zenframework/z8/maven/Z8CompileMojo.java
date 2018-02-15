@@ -60,8 +60,8 @@ public class Z8CompileMojo extends Z8AbstractMojo {
         }
         try {
             FileUtils.forceMkdir(new File(outputPath));
-            Main.compile(project.getArtifactId(), sourcePath, outputPath,
-                    requiresPaths.toArray(new String[requiresPaths.size()]));
+            Main.compile(project.getArtifactId(), sourcePath,
+                    requiresPaths.toArray(new String[requiresPaths.size()]), outputPath, null, null);
         } catch (Throwable e) {
             throw new MojoFailureException("Compilation error: " + e.getMessage(), e);
         }
