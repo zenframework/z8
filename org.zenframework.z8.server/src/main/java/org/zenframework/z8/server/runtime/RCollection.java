@@ -8,6 +8,8 @@ import java.util.List;
 
 import org.zenframework.z8.server.types.bool;
 import org.zenframework.z8.server.types.integer;
+import org.zenframework.z8.server.types.primary;
+import org.zenframework.z8.server.types.string;
 
 public class RCollection<TYPE> extends ArrayList<TYPE> {
 	private static final long serialVersionUID = -6377746293839490960L;
@@ -247,5 +249,30 @@ public class RCollection<TYPE> extends ArrayList<TYPE> {
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public void z8_sort() {
 		Collections.sort((List<Comparable>)this);
+	}
+
+	public string z8_join() {
+		return z8_join(new string(""));
+	}
+
+	@SuppressWarnings("rawtypes")
+	public string z8_join(string separator) {
+		String result = "";
+		boolean first = true;
+		for(TYPE element : this) {
+			result += first ? "" : separator.get();
+			first = false;
+
+			if(element instanceof CLASS) {
+				OBJECT object = (OBJECT)((CLASS)element).get();
+				result += object.z8_toString();
+			} else if(element instanceof primary) {
+				primary primary = (primary)element;
+				result += primary.toString();
+			} else
+				result += element.toString();
+		}
+
+		return new string(result);
 	}
 }
