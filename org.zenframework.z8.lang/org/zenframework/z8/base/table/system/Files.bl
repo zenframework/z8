@@ -1,0 +1,12 @@
+import org.zenframework.z8.base.table.value.StringField;
+import org.zenframework.z8.base.table.Table;
+
+[name "SystemFiles"]
+[displayName "Файлы"]
+[native "org.zenframework.z8.server.base.table.system.Files"]
+class Files extends Table {
+	[name "Path"]
+	[displayName "Путь к файлу в кэше"]
+	public StringField path;
+	path.length = 512;
+}
