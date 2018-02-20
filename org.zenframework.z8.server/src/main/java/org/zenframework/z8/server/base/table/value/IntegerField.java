@@ -26,7 +26,7 @@ public class IntegerField extends Field {
 
 	public IntegerField(IObject container) {
 		super(container);
-		setDefault(integer.Zero);
+		setDefault(integer.zero());
 		format = new string(Format.integer);
 		aggregation = Aggregation.Sum;
 	}

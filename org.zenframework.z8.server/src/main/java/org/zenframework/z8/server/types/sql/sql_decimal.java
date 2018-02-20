@@ -26,10 +26,10 @@ import org.zenframework.z8.server.db.sql.functions.numeric.Truncate;
 import org.zenframework.z8.server.types.decimal;
 
 public class sql_decimal extends sql_primary {
-	static public sql_decimal Zero = new sql_decimal(decimal.Zero);
+	static public sql_decimal Zero = new sql_decimal(decimal.zero());
 
 	public sql_decimal() {
-		this(decimal.Zero);
+		this(decimal.zero());
 	}
 
 	public sql_decimal(decimal value) {

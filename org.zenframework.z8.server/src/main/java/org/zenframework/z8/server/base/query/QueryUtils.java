@@ -43,9 +43,9 @@ public class QueryUtils {
 		if(type == FieldType.String || type == FieldType.Text || type == FieldType.Attachments)
 			field.set(new string(value));
 		else if(type == FieldType.Integer)
-			field.set(value == null || value.isEmpty() ? integer.Zero : new integer(value));
+			field.set(value == null || value.isEmpty() ? integer.zero() : new integer(value));
 		else if(type == FieldType.Decimal)
-			field.set(value == null || value.isEmpty() ? decimal.Zero : new decimal(value));
+			field.set(value == null || value.isEmpty() ? decimal.zero() : new decimal(value));
 		else if(type == FieldType.Boolean)
 			field.set(value == null || value.isEmpty() ? bool.False : new bool(value));
 		else if(type == FieldType.Date || type == FieldType.Datetime)

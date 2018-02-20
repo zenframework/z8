@@ -22,12 +22,12 @@ import org.zenframework.z8.server.db.sql.functions.numeric.Sign;
 import org.zenframework.z8.server.types.integer;
 
 public class sql_integer extends sql_primary {
-	static public sql_integer Zero = new sql_integer(integer.Zero);
-	static public sql_integer One = new sql_integer(integer.One);
-	static public sql_integer MinusOne = new sql_integer(integer.MinusOne);
+	static public sql_integer Zero = new sql_integer(integer.zero());
+	static public sql_integer One = new sql_integer(integer.one());
+	static public sql_integer MinusOne = new sql_integer(integer.minusOne());
 
 	public sql_integer() {
-		this(integer.Zero);
+		this(integer.zero());
 	}
 
 	public sql_integer(long value) {

@@ -40,7 +40,7 @@ public class file extends primary implements RmiSerializable, Serializable {
 	public string name = new string();
 	public string path = new string();
 	public date time = new date();
-	public integer size = integer.Zero;
+	public integer size = integer.zero();
 	public guid user = guid.Null;
 	public string author = new string();
 

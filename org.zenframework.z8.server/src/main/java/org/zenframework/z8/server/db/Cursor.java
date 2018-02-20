@@ -114,7 +114,7 @@ public class Cursor {
 		long value = resultSet.getLong(position);
 		boolean wasNull = wasNull();
 		field.setWasNull(wasNull);
-		return !wasNull ? new integer(value) : integer.Zero;
+		return !wasNull ? new integer(value) : integer.zero();
 	}
 
 	public string getString(int position) throws SQLException {
@@ -181,7 +181,7 @@ public class Cursor {
 		BigDecimal value = resultSet.getBigDecimal(position);
 		boolean wasNull = value == null || wasNull();
 		field.setWasNull(wasNull);
-		return !wasNull ? new decimal(value) : decimal.Zero;
+		return !wasNull ? new decimal(value) : decimal.zero();
 	}
 
 	public binary getBinary(int position) throws SQLException {

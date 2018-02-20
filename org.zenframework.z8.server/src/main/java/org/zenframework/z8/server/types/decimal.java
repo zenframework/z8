@@ -20,11 +20,13 @@ public final class decimal extends primary {
 	static public integer RoundHalfEven = new integer(BigDecimal.ROUND_HALF_EVEN);
 	static public integer RoundUnnecessary = new integer(BigDecimal.ROUND_UNNECESSARY);
 
-	static public decimal Zero = new decimal(0);
-
 	private BigDecimal value = new BigDecimal(0);
 
 	private static int maxPrecision = 38;
+
+	static public decimal zero() {
+		return new decimal(0);
+	}
 
 	public decimal() {
 	}
@@ -59,7 +61,7 @@ public final class decimal extends primary {
 
 	@Override
 	public decimal defaultValue() {
-		return decimal.Zero;
+		return decimal.zero();
 	}
 
 	@Override
@@ -517,7 +519,7 @@ public final class decimal extends primary {
 		try {
 			String string = value.get();
 			if(string.isEmpty())
-				return decimal.Zero;
+				return decimal.zero();
 			return new decimal(new BigDecimal(string));
 		} catch(NumberFormatException e) {
 			throw new RuntimeException("Invalid value for decimal: '" + value.get() + "'");
