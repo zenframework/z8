@@ -306,7 +306,8 @@ public class Member extends LanguageElement implements IMember {
 
 		if(getVariableType().isReference()) {
 			codeGenerator.indent();
-			codeGenerator.append(getJavaName() + "." + "setAttribute(" + '"' + "index" + '"' + ", " + '"' + getName() + '"' + ");");
+			codeGenerator.append(getJavaName() + "." + "setIndex(" + '"' + getName() + '"' + ")");
+			codeGenerator.append(';');
 			codeGenerator.breakLine();
 		}
 

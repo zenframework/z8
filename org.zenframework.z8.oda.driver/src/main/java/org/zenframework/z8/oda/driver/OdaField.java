@@ -39,6 +39,16 @@ public class OdaField implements IField {
 	}
 
 	@Override
+	public void setId(String id) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public void resetId() {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
 	public String displayName() {
 		return displayName;
 	}

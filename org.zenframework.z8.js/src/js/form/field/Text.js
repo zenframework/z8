@@ -108,7 +108,7 @@ Z8.define('Z8.form.field.Text', {
 
 	setRawValue: function(value) {
 		DOM.setValue(this.input, value);
-		DOM.setAttribute(this.input, 'title', value);
+		DOM.setAttribute(this.input, 'title', value || '');
 	},
 
 	setTabIndex: function(tabIndex) {

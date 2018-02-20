@@ -205,10 +205,8 @@ public class MemberNestedType extends AbstractType implements IInitializer {
 	@Override
 	public void getConstructor(CodeGenerator codeGenerator) {
 		codeGenerator.indent();
-
 		name.getCode(codeGenerator);
 		codeGenerator.append(" = " + getVariableType().getJavaNew(getStaticContext()));
-
 		codeGenerator.append(';');
 		codeGenerator.breakLine();
 	}

@@ -47,6 +47,14 @@ public class CLASS<TYPE extends IObject> extends OBJECT implements IClass<TYPE> 
 	}
 
 	@Override
+	public void setIndex(String index) {
+		super.setIndex(index);
+
+		if(object != null)
+			object.setIndex(index);
+	}
+
+	@Override
 	public void setOwner(IObject owner) {
 		super.setOwner(owner);
 

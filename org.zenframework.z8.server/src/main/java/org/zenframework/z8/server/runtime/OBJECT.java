@@ -85,8 +85,17 @@ public class OBJECT extends RequestTarget implements IObject, RmiSerializable {
 		return id;
 	}
 
+	@Override
+	public void setId(String value) {
+		setIndex(value.toString());
+		resetId();
+	}
+
+	@Override
 	public void resetId() {
 		id = null;
+		if(cls != null)
+			cls.resetId();
 	}
 
 	public String keyString() {
@@ -373,9 +382,7 @@ public class OBJECT extends RequestTarget implements IObject, RmiSerializable {
 	}
 
 	public void z8_setId(primary value) {
-		setIndex(value.toString());
-		resetId();
-		getCLASS().resetId();
+		setId(value.toString());
 	}
 
 	public string z8_index() {

@@ -50,7 +50,7 @@ Z8.define('Z8.form.field.Control', {
 			var labelText = label.text;
 			var isControl = labelText != null && typeof labelText == 'object';
 			var control = this.labelTextControl = isControl ? labelText : null;
-			var title = label.title || (isControl ? null : labelText);
+			var title = label.title || (isControl ? '' : labelText);
 			var text = isControl ? (control.htmlMarkup != null ? control.htmlMarkup() : control) : String.htmlText(labelText);
 
 			var cn = [{ cls: 'text' + (control != null ? ' has-control' : ''), cn: icon != null ? [icon, text] : [text] }];

@@ -29,6 +29,8 @@ public interface IObject extends INamedObject {
 	public int controlSum();
 
 	public String id();
+	public void setId(String id);
+	public void resetId();
 
 	public guid key();
 	public void setKey(guid key);
