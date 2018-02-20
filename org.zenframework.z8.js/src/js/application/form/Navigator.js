@@ -185,15 +185,16 @@ Z8.define('Z8.application.form.Navigator', {
 			buttons.push(formTable);
 
 		var print = this.printButton = this.createPrintButton();
-		buttons.push(print);
-
-		var actions = this.actionsButton = this.createActionsButton();
-		if(actions != null)
-			buttons.push(actions);
+		if(print != null)
+			buttons.push(print);
 
 		var reports = this.reportsButton = this.createReportsButton();
 		if(reports != null)
 			buttons.push(reports);
+
+		var actions = this.actionsButton = this.createActionsButton();
+		if(actions != null)
+			buttons.push(actions);
 
 		var sourceCode = this.sourceCodeButton = this.createSourceCodeButton();
 		if(sourceCode != null)

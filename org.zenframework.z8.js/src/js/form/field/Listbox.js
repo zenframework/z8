@@ -329,6 +329,11 @@ Z8.define('Z8.form.field.Listbox', {
 
 		var filterSort = [];
 
+		var period = this.createPeriodTool();
+		this.setPeriodTool(period);
+		if(period != null)
+			tools.push(period);
+
 		if(this.filter !== false) {
 			var filter = new Z8.button.Tool({ icon: 'fa-filter', tooltip: 'Фильтрация (Ctrl+F)', toggled: false });
 			this.setFilterTool(filter);
@@ -344,11 +349,6 @@ Z8.define('Z8.form.field.Listbox', {
 		var filterSort = new Z8.button.Group({ items: filterSort });
 
 		tools.push(filterSort);
-
-		var period = this.createPeriodTool();
-		this.setPeriodTool(period);
-		if(period != null)
-			tools.push(period);
 
 		var exportAs = this.createExportTool();
 		this.setExportTool(exportAs);

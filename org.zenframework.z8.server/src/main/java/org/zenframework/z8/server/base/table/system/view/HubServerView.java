@@ -114,7 +114,9 @@ abstract public class HubServerView extends Query {
 		registerControl(domains);
 
 		unregister.setDisplayName(displayNames.Unregister);
+/*
 		actions.add(unregister);
+*/
 	}
 
 	@Override
