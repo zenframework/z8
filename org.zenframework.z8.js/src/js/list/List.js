@@ -141,13 +141,17 @@ Z8.define('Z8.list.List', {
 				continue;
 			}
 
-			var config = Z8.apply({}, field);
-			config.label = false;
-			config.type = type != Type.Text ? type : Type.String;
-			config.enterOnce = true;
-			config.height = null;
+			var editor = field.editor;
 
-			editor = Z8.form.Helper.createControl(config);
+			if(editor == null) {
+				var config = Z8.apply({}, field);
+				config.label = false;
+				config.type = type != Type.Text ? type : Type.String;
+				config.enterOnce = true;
+				config.height = null;
+				editor = Z8.form.Helper.createControl(config);
+			}
+
 			editor.on('change', this.onItemEditorChange, this);
 			editor.index = i;
 			editors.push(editor);

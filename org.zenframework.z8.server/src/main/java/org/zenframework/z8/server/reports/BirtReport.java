@@ -55,6 +55,7 @@ import org.zenframework.z8.server.base.table.value.Field;
 import org.zenframework.z8.server.json.Json;
 import org.zenframework.z8.server.json.JsonWriter;
 import org.zenframework.z8.server.json.parser.JsonObject;
+import org.zenframework.z8.server.request.actions.ActionConfig;
 import org.zenframework.z8.server.request.actions.ReadAction;
 import org.zenframework.z8.server.resources.Resources;
 import org.zenframework.z8.server.types.string;
@@ -974,7 +975,9 @@ public class BirtReport {
 
 		Collection<Field> fields = QueryUtils.parseFields(query, meta.getJsonArray(Json.fields), query.id());
 
-		return new ReadAction(query, fields);
+		ActionConfig config = new ActionConfig(query, fields);
+		config.sortFields = query.sortFields();
+		return new ReadAction(config);
 	}
 
 	private void run(IReportRunnable runnable, File outputFile) {
