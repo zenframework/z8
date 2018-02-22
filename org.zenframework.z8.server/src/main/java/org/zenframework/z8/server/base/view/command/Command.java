@@ -112,7 +112,7 @@ public class Command extends Runnable implements ICommand {
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	static public Command.CLASS<? extends Command> z8_create(string id, string text, RCollection parameters) {
 		Command.CLASS<? extends Command> command = z8_create(id, text);
-		command.get().parameters.addAll(parameters);
+		command.get().parameters = parameters;
 		return command;
 	}
 
