@@ -991,7 +991,7 @@ Z8.define('Z8.form.field.Listbox', {
 				copyTool.handler.call(copyTool.scope, copyTool);
 				event.stopEvent();
 			}
-		} else if(key == Event.DELETE) {
+		} else if(key == Event.DELETE && !DOM.isParentOf(this.pager, target)) {
 			var removeTool = this.removeTool;
 			if(removeTool == null || !removeTool.isEnabled())
 				return;

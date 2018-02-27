@@ -145,6 +145,12 @@ public class Table extends TableBase {
 	}
 
 	@Override
+	public Field parentKey() {
+		Field.CLASS<? extends Field> cls = z8_parentKey();
+		return cls != null ? cls.get() : null;
+	}
+
+	@Override
 	public Field lockKey() {
 		return lock.get();
 	}
@@ -187,5 +193,9 @@ public class Table extends TableBase {
 		}
 
 		return Math.abs(Integer.toString(result).hashCode());
+	}
+
+	public GuidField.CLASS<? extends GuidField> z8_parentKey() {
+		return null;
 	}
 }

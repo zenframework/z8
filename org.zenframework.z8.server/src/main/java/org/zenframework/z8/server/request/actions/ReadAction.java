@@ -860,7 +860,8 @@ public class ReadAction extends RequestAction {
 			FieldType type = field.type();
 			Aggregation aggregation = field.aggregation;
 
-			if(aggregation == Aggregation.None || !type.isNumeric() && aggregation != Aggregation.Count)
+			if(aggregation == Aggregation.None || aggregation == Aggregation.Min || aggregation == Aggregation.Max || 
+					!type.isNumeric() && aggregation != Aggregation.Count)
 				continue;
 
 			result.add(field);

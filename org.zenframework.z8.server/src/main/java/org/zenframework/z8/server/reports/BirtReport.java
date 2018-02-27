@@ -380,14 +380,12 @@ public class BirtReport {
 		switch(column.getAggregation()) {
 		case Sum:
 			return DesignChoiceConstants.AGGREGATION_FUNCTION_SUM;
-		case Max:
-			return DesignChoiceConstants.AGGREGATION_FUNCTION_MAX;
-		case Min:
-			return DesignChoiceConstants.AGGREGATION_FUNCTION_MIN;
 		case Average:
 			return DesignChoiceConstants.AGGREGATION_FUNCTION_AVERAGE;
 		case Count:
 			return DesignChoiceConstants.AGGREGATION_FUNCTION_COUNT;
+		case Max:
+		case Min:
 		default:
 			return null;
 		}
