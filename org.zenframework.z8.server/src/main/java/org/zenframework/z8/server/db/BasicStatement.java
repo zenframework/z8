@@ -210,6 +210,7 @@ public abstract class BasicStatement implements IStatement {
 			setInteger(position, (integer)value);
 			break;
 		case String:
+		case GeoJson:
 			setString(position, (string)value);
 			break;
 		case Date:
@@ -226,9 +227,6 @@ public abstract class BasicStatement implements IStatement {
 		case Attachments:
 			string string = value != null ? (string)value : new string();
 			setBinary(position, new binary(string.getBytes(charset())));
-			break;
-		case Binary:
-			setBinary(position, (binary)value);
 			break;
 		case Null:
 			setNull(position);

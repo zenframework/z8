@@ -51,6 +51,7 @@ import org.zenframework.z8.server.exceptions.db.ObjectNotFoundException;
 import org.zenframework.z8.server.resources.Resources;
 import org.zenframework.z8.server.security.BuiltinUsers;
 import org.zenframework.z8.server.security.Role;
+import org.zenframework.z8.server.types.binary;
 import org.zenframework.z8.server.types.date;
 import org.zenframework.z8.server.types.file;
 import org.zenframework.z8.server.types.guid;
@@ -292,7 +293,7 @@ public class TableGenerator {
 			expression = new IntegerExpression.CLASS<IntegerExpression>(null).get();
 		else if(type == FieldType.Decimal)
 			expression = new DecimalExpression.CLASS<DecimalExpression>(null).get();
-		else if(type == FieldType.String)
+		else if(type == FieldType.String || type == FieldType.GeoJson)
 			expression = new StringExpression.CLASS<StringExpression>(null).get();
 		else if(type == FieldType.Text || type == FieldType.Attachments)
 			expression = new TextExpression.CLASS<TextExpression>(null).get();
@@ -346,12 +347,25 @@ public class TableGenerator {
 		dropIdxs(dbTable, logger);
 	}
 
+	private String formatDefaultValue(DatabaseVendor vendor, Field field) {
+		primary value = field.getDefaultValue();
+		FieldType type = field.type();
+
+		if(type == FieldType.Text || type == FieldType.Attachments)
+			value = new binary((string)value);
+
+		if(type == FieldType.GeoJson)
+			return field.wrapForUpdate(value.toDbConstant(vendor), vendor);
+
+		return value.toDbConstant(vendor);
+	}
+
 	private String getFieldForCreate(Field field) {
 		DatabaseVendor vendor = vendor();
 		String result = vendor.quote(field.name()) + ' ' + field.sqlType(vendor);
 
 		if(vendor == DatabaseVendor.SqlServer || vendor == DatabaseVendor.Oracle || vendor == DatabaseVendor.Postgres) {
-			result += " default " + DefaultValue.get(vendor, field);
+			result += " default " + formatDefaultValue(vendor, field);
 
 			if(field.isPrimaryKey() || field instanceof GuidField) {
 				result += " not null";
@@ -398,7 +412,7 @@ public class TableGenerator {
 					if(bModify)
 						modifyColumnSql += ", ";
 
-					String defaultValue = DefaultValue.get(vendor, fld.field);
+					String defaultValue = formatDefaultValue(vendor, fld.field);
 					modifyColumnSql += vendor.quote(fld.field.name()) + " default " + defaultValue;
 					bModify = true;
 				} else if(vendor == DatabaseVendor.SqlServer) {
@@ -453,7 +467,7 @@ public class TableGenerator {
 			Statement.executeUpdate(sql);
 		}
 
-		defaultValue = DefaultValue.get(vendor(), fld.field);
+		defaultValue = formatDefaultValue(vendor(), fld.field);
 
 		String sql = "alter table " + database().tableName(table().name()) + " add constraint " + vendor().quote("DF_" + table().name() + fld.field.name()) + " default " + defaultValue + " for " + vendor().quote(fld.field.name());
 		Statement.executeUpdate(sql);

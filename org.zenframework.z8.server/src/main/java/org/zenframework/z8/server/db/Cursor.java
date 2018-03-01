@@ -212,6 +212,7 @@ public class Cursor {
 		case Text:
 		case Attachments:
 			return getText(position, field);
+		case GeoJson:
 		case String:
 			return getString(position, field);
 		case Date:

@@ -195,8 +195,9 @@ abstract public class Field extends Control implements IField {
 		String alias = options.getFieldAlias(this);
 
 		if(alias == null) {
-			Query data = owner();
-			return data.getAlias() + '.' + vendor.quote(name());
+			Query owner = owner();
+			String name = owner.getAlias() + '.' + vendor.quote(name());
+			return wrapForSelect(name, vendor);
 		}
 
 		return alias;
@@ -548,5 +549,17 @@ abstract public class Field extends Control implements IField {
 	public int controlSum() {
 		String name = name() + " " + sqlType(DatabaseVendor.Postgres);
 		return Math.abs(name.hashCode());
+	}
+
+	public String wrapForSelect(String value, DatabaseVendor vendor) {
+		return value;
+	}
+
+	public String wrapForInsert(String value, DatabaseVendor vendor) {
+		return value;
+	}
+
+	public String wrapForUpdate(String value, DatabaseVendor vendor) {
+		return wrapForInsert(value, vendor);
 	}
 }

@@ -1,7 +1,5 @@
 package org.zenframework.z8.server.db;
 
-import java.sql.Types;
-
 public enum FieldType {
 	None(DataTypes.None),
 	Guid(DataTypes.Guid),
@@ -16,6 +14,7 @@ public enum FieldType {
 	Text(DataTypes.Text),
 	Attachments(DataTypes.Attachments),
 	File(DataTypes.File),
+	GeoJson(DataTypes.GeoJson),
 	Null(DataTypes.Null);
 
 	class DataTypes {
@@ -32,6 +31,7 @@ public enum FieldType {
 		static protected final String Text = "text";
 		static protected final String Attachments = "attachments";
 		static protected final String File = "file";
+		static protected final String GeoJson = "geojson";
 		static protected final String Null = "null";
 	}
 
@@ -73,6 +73,8 @@ public enum FieldType {
 			return FieldType.Attachments;
 		else if(DataTypes.File.equals(string))
 			return FieldType.File;
+		else if(DataTypes.GeoJson.equals(string))
+			return FieldType.GeoJson;
 		else if(DataTypes.Null.equals(string))
 			return FieldType.Null;
 		else
@@ -88,32 +90,6 @@ public enum FieldType {
 			return FieldType.Date;
 
 		return FieldType.String;
-	}
-
-	public int jdbcType() {
-		switch(this) {
-		case Guid:
-			return Types.CHAR;
-		case Boolean:
-			return Types.BIT;
-		case Integer:
-			return Types.BIGINT;
-		case String:
-			return Types.VARCHAR;
-		case Date:
-		case Datetime:
-			return Types.TIMESTAMP;
-		case Datespan:
-			return Types.BIGINT;
-		case Decimal:
-			return Types.DECIMAL;
-		case Attachments:
-		case Binary:
-		case Text:
-			return Types.LONGVARBINARY;
-		default:
-			throw new RuntimeException("Unknown data type: '" + toString() + "'");
-		}
 	}
 
 	public String vendorType(DatabaseVendor vendor) {
@@ -161,6 +137,14 @@ public enum FieldType {
 			case Oracle: return "RAW";
 			case SqlServer: return "UNIQUEIDENTIFIER";
 			case Postgres: return "uuid";
+			default: throw new RuntimeException("Unknown data type: '" + toString() + "'");
+			}
+		case GeoJson:
+			switch(vendor) {
+			case Postgres: return "geometry";
+			case Oracle:
+			case SqlServer:
+				throw new RuntimeException("Unsupported data type: '" + toString() + "'");
 			default: throw new RuntimeException("Unknown data type: '" + toString() + "'");
 			}
 		case String:

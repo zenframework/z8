@@ -40,7 +40,7 @@ public class QueryUtils {
 	static public void setFieldValue(Field field, String value) {
 		FieldType type = field.type();
 
-		if(type == FieldType.String || type == FieldType.Text || type == FieldType.Attachments)
+		if(type == FieldType.String || type == FieldType.Text || type == FieldType.Attachments || type == FieldType.GeoJson)
 			field.set(new string(value));
 		else if(type == FieldType.Integer)
 			field.set(value == null || value.isEmpty() ? integer.zero() : new integer(value));
