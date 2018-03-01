@@ -16,6 +16,7 @@ import org.zenframework.z8.server.types.date;
 import org.zenframework.z8.server.types.datespan;
 import org.zenframework.z8.server.types.decimal;
 import org.zenframework.z8.server.types.encoding;
+import org.zenframework.z8.server.types.geometry;
 import org.zenframework.z8.server.types.guid;
 import org.zenframework.z8.server.types.integer;
 import org.zenframework.z8.server.types.primary;
@@ -166,6 +167,10 @@ public abstract class BasicStatement implements IStatement {
 		statement.setString(position, value != null ? value.get() : null);
 	}
 
+	public void setGeometry(int position, geometry value) throws SQLException {
+		statement.setString(position, value != null ? value.get() : null);
+	}
+
 	public void setDate(int position, date value) throws SQLException {
 		statement.setLong(position, value != null ? value.getTicks() : date.UtcMin);
 	}
@@ -210,8 +215,10 @@ public abstract class BasicStatement implements IStatement {
 			setInteger(position, (integer)value);
 			break;
 		case String:
-		case GeoJson:
 			setString(position, (string)value);
+			break;
+		case Geometry:
+			setGeometry(position, (geometry)value);
 			break;
 		case Date:
 		case Datetime:

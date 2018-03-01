@@ -14,7 +14,7 @@ public enum FieldType {
 	Text(DataTypes.Text),
 	Attachments(DataTypes.Attachments),
 	File(DataTypes.File),
-	GeoJson(DataTypes.GeoJson),
+	Geometry(DataTypes.Geometry),
 	Null(DataTypes.Null);
 
 	class DataTypes {
@@ -31,7 +31,7 @@ public enum FieldType {
 		static protected final String Text = "text";
 		static protected final String Attachments = "attachments";
 		static protected final String File = "file";
-		static protected final String GeoJson = "geojson";
+		static protected final String Geometry = "geometry";
 		static protected final String Null = "null";
 	}
 
@@ -73,8 +73,8 @@ public enum FieldType {
 			return FieldType.Attachments;
 		else if(DataTypes.File.equals(string))
 			return FieldType.File;
-		else if(DataTypes.GeoJson.equals(string))
-			return FieldType.GeoJson;
+		else if(DataTypes.Geometry.equals(string))
+			return FieldType.Geometry;
 		else if(DataTypes.Null.equals(string))
 			return FieldType.Null;
 		else
@@ -139,7 +139,7 @@ public enum FieldType {
 			case Postgres: return "uuid";
 			default: throw new RuntimeException("Unknown data type: '" + toString() + "'");
 			}
-		case GeoJson:
+		case Geometry:
 			switch(vendor) {
 			case Postgres: return "geometry";
 			case Oracle:

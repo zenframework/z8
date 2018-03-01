@@ -293,7 +293,7 @@ public class TableGenerator {
 			expression = new IntegerExpression.CLASS<IntegerExpression>(null).get();
 		else if(type == FieldType.Decimal)
 			expression = new DecimalExpression.CLASS<DecimalExpression>(null).get();
-		else if(type == FieldType.String || type == FieldType.GeoJson)
+		else if(type == FieldType.String || type == FieldType.Geometry)
 			expression = new StringExpression.CLASS<StringExpression>(null).get();
 		else if(type == FieldType.Text || type == FieldType.Attachments)
 			expression = new TextExpression.CLASS<TextExpression>(null).get();
@@ -354,10 +354,7 @@ public class TableGenerator {
 		if(type == FieldType.Text || type == FieldType.Attachments)
 			value = new binary((string)value);
 
-		if(type == FieldType.GeoJson)
-			return field.wrapForUpdate(value.toDbConstant(vendor), vendor);
-
-		return value.toDbConstant(vendor);
+		return field.wrapForUpdate(value.toDbConstant(vendor), vendor);
 	}
 
 	private String getFieldForCreate(Field field) {

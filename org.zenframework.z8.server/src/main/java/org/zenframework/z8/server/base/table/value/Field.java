@@ -194,11 +194,8 @@ abstract public class Field extends Control implements IField {
 	public String format(DatabaseVendor vendor, FormatOptions options) {
 		String alias = options.getFieldAlias(this);
 
-		if(alias == null) {
-			Query owner = owner();
-			String name = owner.getAlias() + '.' + vendor.quote(name());
-			return wrapForSelect(name, vendor);
-		}
+		if(alias == null)
+			return owner().getAlias() + '.' + vendor.quote(name());
 
 		return alias;
 	}
@@ -252,7 +249,7 @@ abstract public class Field extends Control implements IField {
 
 		return result;
 	}
-	
+
 	@Override
 	public void set(primary value) {
 		if(!changed) {

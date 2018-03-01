@@ -53,7 +53,7 @@ public class Rel extends Expression {
 		return rel;
 	}
 
-	private String doFormat(DatabaseVendor vendor, FormatOptions options) {
+	protected String doFormat(DatabaseVendor vendor, FormatOptions options) {
 		if(left.type() == FieldType.Date && right.type() == FieldType.Date) {
 			boolean leftConst = left.isConst();
 			boolean rightConst = right.isConst();

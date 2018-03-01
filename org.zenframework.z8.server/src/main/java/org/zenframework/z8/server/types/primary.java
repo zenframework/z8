@@ -9,16 +9,8 @@ public abstract class primary implements Comparable<primary>, Serializable {
 
 	private static final long serialVersionUID = -6139111122281366413L;
 
-	public primary defaultValue() {
-		throw new UnsupportedOperationException();
-	}
-
 	public FieldType type() {
 		throw new UnsupportedOperationException();
-	}
-
-	public String format() {
-		return toString();
 	}
 
 	public String toDbConstant(DatabaseVendor dbtype) {

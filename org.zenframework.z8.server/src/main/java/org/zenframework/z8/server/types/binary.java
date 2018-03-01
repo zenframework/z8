@@ -75,11 +75,6 @@ public class binary extends primary {
 		return stream;
 	}
 
-	@Override
-	public binary defaultValue() {
-		return new binary();
-	}
-
 	private void close() {
 		try {
 			if (stream != null) {

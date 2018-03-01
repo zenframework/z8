@@ -71,11 +71,6 @@ public class guid extends primary {
 	}
 
 	@Override
-	public guid defaultValue() {
-		return new guid();
-	}
-
-	@Override
 	public String toString() {
 		return value.toString().toUpperCase();
 	}
@@ -131,9 +126,8 @@ public class guid extends primary {
 
 	@Override
 	public boolean equals(Object obj) {
-		if (obj instanceof guid) {
+		if (obj instanceof guid)
 			return operatorEqu((guid) obj).get();
-		}
 		return false;
 	}
 

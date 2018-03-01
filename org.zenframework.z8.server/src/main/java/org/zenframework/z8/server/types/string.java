@@ -57,11 +57,6 @@ public final class string extends primary {
 		set(((Character)ch).toString());
 	}
 
-	@Override
-	public string defaultValue() {
-		return new string();
-	}
-
 	public String get() {
 		return value != null ? value : "";
 	}
@@ -102,11 +97,6 @@ public final class string extends primary {
 	@Override
 	public FieldType type() {
 		return FieldType.String;
-	}
-
-	@Override
-	public String format() {
-		return '"' + get() + "'";
 	}
 
 	@Override
@@ -186,7 +176,11 @@ public final class string extends primary {
 	}
 
 	public exception exception() {
-		return new exception(get());
+		return new exception(this);
+	}
+
+	public geometry geometry() {
+		return new geometry(this);
 	}
 
 	public sql_string sql_string() {

@@ -13,6 +13,7 @@ import org.zenframework.z8.server.base.table.value.DateField;
 import org.zenframework.z8.server.base.table.value.DatespanField;
 import org.zenframework.z8.server.base.table.value.DecimalField;
 import org.zenframework.z8.server.base.table.value.Field;
+import org.zenframework.z8.server.base.table.value.GeometryField;
 import org.zenframework.z8.server.base.table.value.GuidField;
 import org.zenframework.z8.server.base.table.value.IntegerField;
 import org.zenframework.z8.server.base.table.value.StringField;
@@ -23,6 +24,7 @@ import org.zenframework.z8.server.types.bool;
 import org.zenframework.z8.server.types.date;
 import org.zenframework.z8.server.types.datespan;
 import org.zenframework.z8.server.types.decimal;
+import org.zenframework.z8.server.types.geometry;
 import org.zenframework.z8.server.types.guid;
 import org.zenframework.z8.server.types.integer;
 import org.zenframework.z8.server.types.primary;
@@ -115,6 +117,14 @@ public class Cursor {
 		boolean wasNull = wasNull();
 		field.setWasNull(wasNull);
 		return !wasNull ? new integer(value) : integer.zero();
+	}
+
+	public geometry getGeometry(int position) throws SQLException {
+		return getGeometry(position, new GeometryField(null));
+	}
+
+	private geometry getGeometry(int position, Field field) throws SQLException {
+		return new geometry(getString(position, field));
 	}
 
 	public string getString(int position) throws SQLException {
@@ -212,7 +222,8 @@ public class Cursor {
 		case Text:
 		case Attachments:
 			return getText(position, field);
-		case GeoJson:
+		case Geometry:
+			return getGeometry(position, field);
 		case String:
 			return getString(position, field);
 		case Date:

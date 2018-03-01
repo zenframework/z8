@@ -47,11 +47,6 @@ public final class bool extends primary {
 		set(x);
 	}
 
-	@Override
-	public bool defaultValue() {
-		return bool.False;
-	}
-
 	public String toNumber() {
 		return (value ? "1" : "0");
 	}

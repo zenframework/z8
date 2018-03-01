@@ -9,6 +9,7 @@ import org.zenframework.z8.server.db.FieldType;
 import org.zenframework.z8.server.db.sql.SqlField;
 import org.zenframework.z8.server.db.sql.SqlToken;
 import org.zenframework.z8.server.db.sql.expressions.And;
+import org.zenframework.z8.server.db.sql.expressions.Intersects;
 import org.zenframework.z8.server.db.sql.expressions.Operation;
 import org.zenframework.z8.server.db.sql.expressions.Or;
 import org.zenframework.z8.server.db.sql.expressions.Rel;
@@ -29,6 +30,7 @@ import org.zenframework.z8.server.types.primary;
 import org.zenframework.z8.server.types.string;
 import org.zenframework.z8.server.types.sql.sql_bool;
 import org.zenframework.z8.server.types.sql.sql_date;
+import org.zenframework.z8.server.types.sql.sql_geometry;
 import org.zenframework.z8.server.types.sql.sql_string;
 
 public class Expression implements IFilter {
@@ -241,6 +243,8 @@ public class Expression implements IFilter {
 			default:
 				throw new UnsupportedOperationException();
 			}
+		case Geometry:
+			return new Intersects(this.field, new sql_geometry(value));
 		default:
 			throw new UnsupportedOperationException();
 		}

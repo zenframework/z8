@@ -38,7 +38,7 @@ class IndexGenerator {
 		String name = "(" + vendor.quote(this.field.name()) + ")";
 
 		switch(field.type()) {
-		case GeoJson:
+		case Geometry:
 			return "using gist " + name;
 		default:
 			return name;

@@ -58,9 +58,8 @@ public class Expression extends Field {
 	public String format(DatabaseVendor vendor, FormatOptions options) {
 		String alias = options.getFieldAlias(this);
 
-		if(alias == null) {
+		if(alias == null)
 			return expression().format(vendor, options, false);
-		}
 
 		return alias;
 	}

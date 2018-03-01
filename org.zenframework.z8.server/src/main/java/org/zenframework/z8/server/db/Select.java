@@ -244,22 +244,32 @@ public class Select {
 		if(formatCallback != null)
 			formatCallback.on(field);
 
-		return new SqlField(field).format(vendor, options);
+		String result = new SqlField(field).format(vendor, options);
+
+		return result;
 	}
 
 	protected String formatField(Field field, int index, DatabaseVendor vendor, FormatOptions options) {
-		return aggregate(field, vendor, options) + " as " + getFieldAlias(index);
+		boolean hasAlias = options.getFieldAlias(field) != null;
+
+		String result = aggregate(field, vendor, options);
+
+		if(!hasAlias)
+			result = field.wrapForSelect(result, vendor);
+
+		return result + " as " + getFieldAlias(index);
 	}
 
 	protected String formatFields(FormatOptions options) {
 		if(fields.isEmpty())
 			return "\n\tcount(0)" + " as " + getFieldAlias(0);
 
+		DatabaseVendor vendor = vendor();
 		String result = "";
 
 		int index = 0;
 		for(Field field : fields) {
-			result += (result.isEmpty() ? "" : ", ") + "\n\t" + formatField(field, index, vendor(), options);
+			result += (result.isEmpty() ? "" : ", ") + "\n\t" + formatField(field, index, vendor, options);
 			index++;
 		}
 		return result;

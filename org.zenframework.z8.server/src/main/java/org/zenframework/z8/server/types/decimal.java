@@ -60,11 +60,6 @@ public final class decimal extends primary {
 	}
 
 	@Override
-	public decimal defaultValue() {
-		return decimal.zero();
-	}
-
-	@Override
 	public String toString() {
 		return value.toPlainString();
 	}

@@ -6,7 +6,7 @@ import java.util.Map;
 import org.zenframework.z8.server.base.table.value.IField;
 
 public class FormatOptions {
-	private int enablesCount = 0;
+	private int aggregationEnabled = 0;
 
 	private Map<IField, String> aliases = new HashMap<IField, String>();
 
@@ -19,15 +19,15 @@ public class FormatOptions {
 	}
 
 	public boolean isAggregationEnabled() {
-		return enablesCount == 0;
+		return aggregationEnabled == 0;
 	}
 
 	public void enableAggregation() {
-		if(enablesCount > 0)
-			enablesCount--;
+		if(aggregationEnabled > 0)
+			aggregationEnabled--;
 	}
 
 	public void disableAggregation() {
-		enablesCount++;
+		aggregationEnabled++;
 	}
 }

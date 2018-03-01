@@ -1,0 +1,9 @@
+[primary "org.zenframework.z8.server.types.sql.sql_geometry"]
+public final class sql_geometry extends sql_primary {
+	public operator ();
+
+	public sql_bool operator == (sql_geometry value);
+	public sql_bool operator != (sql_geometry value);
+
+	public sql_bool operator && (sql_geometry value);
+}

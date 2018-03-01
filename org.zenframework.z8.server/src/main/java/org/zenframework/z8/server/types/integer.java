@@ -51,11 +51,6 @@ public final class integer extends primary {
 	}
 
 	@Override
-	public integer defaultValue() {
-		return integer.zero();
-	}
-
-	@Override
 	public String toString() {
 		return format(10);
 	}

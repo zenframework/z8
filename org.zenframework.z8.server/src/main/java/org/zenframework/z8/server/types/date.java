@@ -132,11 +132,6 @@ public class date extends primary {
 		}
 	}
 
-	@Override
-	public date defaultValue() {
-		return new date(Min);
-	}
-
 	public GregorianCalendar get() {
 		return value;
 	}

@@ -13,6 +13,7 @@ import org.zenframework.z8.server.types.bool;
 import org.zenframework.z8.server.types.date;
 import org.zenframework.z8.server.types.datespan;
 import org.zenframework.z8.server.types.decimal;
+import org.zenframework.z8.server.types.geometry;
 import org.zenframework.z8.server.types.guid;
 import org.zenframework.z8.server.types.integer;
 import org.zenframework.z8.server.types.string;
@@ -40,8 +41,10 @@ public class QueryUtils {
 	static public void setFieldValue(Field field, String value) {
 		FieldType type = field.type();
 
-		if(type == FieldType.String || type == FieldType.Text || type == FieldType.Attachments || type == FieldType.GeoJson)
+		if(type == FieldType.String || type == FieldType.Text || type == FieldType.Attachments)
 			field.set(new string(value));
+		else if(type == FieldType.Geometry)
+			field.set(new geometry(value));
 		else if(type == FieldType.Integer)
 			field.set(value == null || value.isEmpty() ? integer.zero() : new integer(value));
 		else if(type == FieldType.Decimal)

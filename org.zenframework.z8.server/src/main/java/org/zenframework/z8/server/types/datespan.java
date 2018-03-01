@@ -70,11 +70,6 @@ public final class datespan extends primary {
 		set(days, hours, minutes, seconds, milliseconds);
 	}
 
-	@Override
-	public datespan defaultValue() {
-		return new datespan();
-	}
-
 	public long get() {
 		return ticks;
 	}

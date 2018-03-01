@@ -12,6 +12,10 @@ public class exception extends RuntimeException {
 		super(message);
 	}
 
+	public exception(string message) {
+		this(message.get());
+	}
+
 	public exception(String message, Throwable e) {
 		super(message, e);
 	}

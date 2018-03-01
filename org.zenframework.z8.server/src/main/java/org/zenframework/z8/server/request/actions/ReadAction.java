@@ -460,8 +460,10 @@ public class ReadAction extends RequestAction {
 		Collection<Query> queries = getAllQueries();
 
 		for(Query query : queries) {
-			collectFilterQueries(query.where(), filters, filterFields);
-			collectFilterQueries(query.having(), groupFilters, groupFilterFields);
+			if(query != getQuery()) {
+				collectFilterQueries(query.where(), filters, filterFields);
+				collectFilterQueries(query.having(), groupFilters, groupFilterFields);
+			}
 		}
 	}
 

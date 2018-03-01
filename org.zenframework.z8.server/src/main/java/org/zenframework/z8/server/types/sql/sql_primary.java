@@ -12,6 +12,7 @@ import org.zenframework.z8.server.types.bool;
 import org.zenframework.z8.server.types.date;
 import org.zenframework.z8.server.types.datespan;
 import org.zenframework.z8.server.types.decimal;
+import org.zenframework.z8.server.types.geometry;
 import org.zenframework.z8.server.types.guid;
 import org.zenframework.z8.server.types.integer;
 import org.zenframework.z8.server.types.primary;
@@ -47,6 +48,11 @@ public class sql_primary extends SqlToken {
 	@Override
 	public bool bool() {
 		return token.bool();
+	}
+
+	@Override
+	public geometry geometry() {
+		return token.geometry();
 	}
 
 	@Override

@@ -1,0 +1,12 @@
+[native "org.zenframework.z8.server.base.table.value.GeometryField"]
+public class GeometryField extends Field {
+	virtual public geometry getDefault();
+	public void setDefault(geometry defaultValue);
+
+	virtual public geometry get();
+	virtual public geometry[] array();
+
+	public GeometryField operator = (string value);
+
+	public operator sql_geometry();
+}

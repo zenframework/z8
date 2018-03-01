@@ -8,19 +8,20 @@ Z8.define('Z8.server.type', {
 	shortClassName: 'Type',
 
 	statics: {
-		Guid: 'guid',
-		Integer: 'int',
-		Float: 'float',
+		Binary: 'binary',
 		Boolean: 'boolean',
 		Date: 'date',
 		Datetime: 'datetime',
 		Datespan: 'datespan',
-		String: 'string',
-		Binary: 'binary',
-		Text: 'text',
 		File: 'file',
 		Files: 'attachments',
-		Json: 'json'
+		Float: 'float',
+		Geometry: 'geometry',
+		Guid: 'guid',
+		Integer: 'int',
+		Json: 'json',
+		String: 'string',
+		Text: 'text'
 	}
 });
 

@@ -3,6 +3,7 @@ public final class string extends primary {
 	public operator sql_string();
 
 	public operator exception();
+	public operator geometry();
 
 	public string operator + (string value);
 	public string operator += (string value);

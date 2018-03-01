@@ -16,12 +16,14 @@ import org.eclipse.jface.text.rules.WordRule;
 import org.zenframework.z8.pde.ColorProvider;
 
 public class CodeScanner extends RuleBasedScanner {
-	private static String[] fgKeywords = { "auto", "break", "catch", "class", "container", "continue", "do", "else", "enum", "extends", "finally", "for", "if", "new", "private", "protected", "public", "records", "return", "static", "super", "this", "throw", "try", "while",
+	private static String[] fgKeywords = { "auto", "break", "catch", "class", "container", "continue", "do", "else", "enum", "extends", "exception",
+			"finally", "for", "if", "new", "private", "protected", "public", "records", "return", "static", "super", "this", "throw", "try", "while",
 			"virtual", "operator", "import", "final" };
 
-	private static String[] fgAttributes = { "name", "native", "displayName", "generatable", "entry", "request", "ui", "presentation", "system", "description", "icon", "job", "exportable", "foreignKey" };
+	private static String[] fgAttributes = { "name", "native", "displayName", "generatable", "entry", "request", "ui", "presentation", "system", 
+			"description", "icon", "job", "exportable", "foreignKey" };
 
-	private static String[] fgTypes = { "void", "binary", "bool", "date", "datetime", "datespan", "decimal", "guid", "int", "string", "sql_binary", "sql_bool", "sql_date", "sql_datetime", "sql_datespan", "sql_decimal", "sql_guid", "sql_int", "sql_string" };
+	private static String[] fgTypes = { "void", "binary", "bool", "date", "datetime", "datespan", "decimal", "guid", "geometry", "file", "int", "string", "sql_binary", "sql_bool", "sql_date", "sql_datetime", "sql_datespan", "sql_decimal", "sql_guid", "sql_geometry", "sql_int", "sql_string" };
 
 	private static String[] fgConstants = { "false", "true" };
 
