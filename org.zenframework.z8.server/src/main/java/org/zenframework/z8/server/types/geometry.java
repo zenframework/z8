@@ -7,7 +7,11 @@ import org.zenframework.z8.server.types.sql.sql_geometry;
 public final class geometry extends primary {
 	private static final long serialVersionUID = 8678133849134310611L;
 
-	private String value = "{\"type\": \"Point\", \"coordinates\": [0, 0] }";
+	static private String emptyValue = "{\"type\": \"Point\", \"coordinates\": [0, 0] }";
+
+	static public geometry Null = new geometry();
+
+	private String value = emptyValue;
 
 	static public integer DefaultSRS = new integer(96872);
 
@@ -29,11 +33,11 @@ public final class geometry extends primary {
 	}
 
 	public String get() {
-		return value != null ? value : "";
+		return value;
 	}
 
-	public void set(geometry str) {
-		set(str != null ? str.value : null);
+	public void set(geometry geometry) {
+		set(geometry != null ? geometry.value : null);
 	}
 
 	public void set(string value) {
@@ -41,7 +45,7 @@ public final class geometry extends primary {
 	}
 
 	public void set(String value) {
-		this.value = value;
+		this.value = (value != null && !value.isEmpty()) ? value : emptyValue;
 	}
 
 	@Override
