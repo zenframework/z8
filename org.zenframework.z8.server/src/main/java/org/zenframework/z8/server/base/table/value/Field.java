@@ -19,6 +19,7 @@ import org.zenframework.z8.server.db.sql.functions.IsNull;
 import org.zenframework.z8.server.engine.ApplicationServer;
 import org.zenframework.z8.server.json.Json;
 import org.zenframework.z8.server.json.JsonWriter;
+import org.zenframework.z8.server.json.parser.JsonArray;
 import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.runtime.RCollection;
 import org.zenframework.z8.server.security.IAccess;
@@ -237,15 +238,19 @@ abstract public class Field extends Control implements IField {
 	@Override
 	abstract public primary parse(String value);
 
-	@SuppressWarnings({ "rawtypes", "unchecked" })
+	@SuppressWarnings("rawtypes")
 	public RCollection z8_array() {
+		return array((string)internalGet());
+	}
+
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	public RCollection array(string array) {
+		String value = array.get();
+		JsonArray jsonArray = new JsonArray('[' + value.substring(1, value.length() - 1) + ']');
+
 		RCollection result = new RCollection();
-
-		String array = ((string)internalGet()).get();
-		String[] values = array.substring(1, array.length() - 1).split(",");
-
-		for(String value : values)
-			result.add(parse(value));
+		for(int i = 0; i < jsonArray.length(); i++)
+			result.add(parse(jsonArray.getString(i)));
 
 		return result;
 	}

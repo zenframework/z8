@@ -1,5 +1,7 @@
 package org.zenframework.z8.server.base.table.value;
 
+import java.sql.SQLException;
+
 import org.zenframework.z8.server.db.DatabaseVendor;
 import org.zenframework.z8.server.db.FieldType;
 import org.zenframework.z8.server.db.sql.SqlField;
@@ -56,6 +58,17 @@ public class GeometryField extends Field {
 
 	public sql_geometry sql_geometry() {
 		return new sql_geometry(new SqlField(this));
+	}
+
+
+	@Override
+	protected primary read() throws SQLException {
+		primary value = super.read();
+
+		if(aggregation != Aggregation.Array)
+			return value;
+
+		return geometry.z8_fromArray(array((string)value));
 	}
 
 	@Override

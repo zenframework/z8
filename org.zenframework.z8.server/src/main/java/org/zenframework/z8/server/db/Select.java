@@ -10,7 +10,9 @@ import org.zenframework.z8.server.base.table.value.Field;
 import org.zenframework.z8.server.base.table.value.ILink;
 import org.zenframework.z8.server.config.ServerConfig;
 import org.zenframework.z8.server.db.sql.FormatOptions;
+import org.zenframework.z8.server.db.sql.Sql;
 import org.zenframework.z8.server.db.sql.SqlField;
+import org.zenframework.z8.server.db.sql.SqlStringToken;
 import org.zenframework.z8.server.db.sql.SqlToken;
 import org.zenframework.z8.server.db.sql.expressions.And;
 import org.zenframework.z8.server.engine.Database;
@@ -20,12 +22,6 @@ import org.zenframework.z8.server.types.primary;
 public class Select {
 	private static String SelectAlias = "S";
 	private static String FieldAlias = "F";
-
-	public static interface IFormatCallback {
-		void on(Field field);
-	}
-
-	private IFormatCallback formatCallback;
 
 	private Collection<Field> fields = new ArrayList<Field>();
 
@@ -84,10 +80,6 @@ public class Select {
 		return fields;
 	}
 
-	public void setFormatCallback(IFormatCallback formatCallback) {
-		this.formatCallback = formatCallback;
-	}
-	
 	public void setFields(Collection<Field> fields) {
 		this.fields = fields == null ? new ArrayList<Field>() : fields;
 
@@ -240,24 +232,19 @@ public class Select {
 		return FieldAlias + (index + 1);
 	}
 
-	private String aggregate(Field field, DatabaseVendor vendor, FormatOptions options) {
-		if(formatCallback != null)
-			formatCallback.on(field);
-
-		String result = new SqlField(field).format(vendor, options);
-
-		return result;
-	}
-
 	protected String formatField(Field field, int index, DatabaseVendor vendor, FormatOptions options) {
 		boolean hasAlias = options.getFieldAlias(field) != null;
 
-		String result = aggregate(field, vendor, options);
+		options.disableAggregation();
+
+		String result = new SqlField(field).format(vendor, options);
 
 		if(!hasAlias)
 			result = field.wrapForSelect(result, vendor);
 
-		return result + " as " + getFieldAlias(index);
+		options.enableAggregation();
+
+		return Sql.aggregate(new SqlStringToken(result, field.type()), field.aggregation).format(vendor, options, false) + " as " + getFieldAlias(index);
 	}
 
 	protected String formatFields(FormatOptions options) {
@@ -324,7 +311,7 @@ public class Select {
 		String result = "";
 
 		for(Field field : orderBy)
-			result += (result.isEmpty() ? "" : ", ") + aggregate(field, vendor(), options) + " " + field.sortDirection;
+			result += (result.isEmpty() ? "" : ", ") + new SqlField(field).format(vendor(), options) + " " + field.sortDirection;
 
 		return result.isEmpty() ? "" : ("\norder by\n\t" + result);
 	}

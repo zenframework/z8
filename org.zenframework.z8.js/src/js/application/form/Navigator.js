@@ -244,10 +244,10 @@ Z8.define('Z8.application.form.Navigator', {
 		var isForm = this.isFormPresentation();
 
 		var formButton = this.formButton = new Z8.button.Button({ cls: 'btn-sm', icon: 'fa-wpforms', tooltip: 'В виде формы', toggled: isForm });
-		formButton.on('toggle', this.toggleForm, this);
+		formButton.on('toggle', this.toggleView, this);
 
 		var tableButton = this.tableButton = new Z8.button.Button({ cls: 'btn-sm', icon: 'fa-table', tooltip: 'В виде таблицы', toggled: !isForm });
-		tableButton.on('toggle', this.toggleTable, this);
+		tableButton.on('toggle', this.toggleView, this);
 
 		return new Z8.button.Group({ items: [formButton, tableButton], radio: true });
 	},
@@ -454,6 +454,13 @@ Z8.define('Z8.application.form.Navigator', {
 
 		if(enabled && filesButton.control == null)
 			filesButton.store.loadData(record.getFiles());
+	},
+
+	toggleView: function(button) {
+		if(button == this.formButton)
+			this.toggleForm(button);
+		else if(button == this.tableButton)
+			this.toggleTable(button);
 	},
 
 	toggleForm: function(button) {

@@ -830,13 +830,6 @@ public class ReadAction extends RequestAction {
 	private void writeTotals(JsonWriter writer) throws SQLException {
 		AggregatingSelect totals = totals();
 
-		totals.setFormatCallback(new Select.IFormatCallback() {
-			public void on(Field field) {
-				if(field.type().isNumeric() || field.aggregation == Aggregation.Count)
-					field.aggregation = Aggregation.Sum;
-			}
-		});
-
 		totals.setFields(getTotalsFields(totals.getFields()));
 
 		try {
@@ -859,12 +852,13 @@ public class ReadAction extends RequestAction {
 		Collection<Field> result = new ArrayList<Field>();
 
 		for(Field field : fields) {
-			FieldType type = field.type();
 			Aggregation aggregation = field.aggregation;
 
-			if(aggregation == Aggregation.None || aggregation == Aggregation.Min || aggregation == Aggregation.Max || 
-					!type.isNumeric() && aggregation != Aggregation.Count)
+			if(aggregation == Aggregation.None || aggregation == Aggregation.Min || aggregation == Aggregation.Max)
 				continue;
+
+			if(aggregation == Aggregation.Count)
+				field.aggregation = Aggregation.Sum;
 
 			result.add(field);
 		}
@@ -872,6 +866,7 @@ public class ReadAction extends RequestAction {
 		return result;
 	}
 
+	@SuppressWarnings("unused")
 	private void writeSummary(JsonWriter writer, Groupping groups) throws SQLException {
 		sortFields.clear();
 
@@ -992,9 +987,7 @@ public class ReadAction extends RequestAction {
 			start = (pages - 1) * limit;
 		}
 
-		Groupping groups = writeFrame(writer);
-		if(groups != null)
-			writeSummary(writer, groups);
+		writeFrame(writer);
 	}
 
 	private Field createAggregatedExpression(final Field field, Aggregation aggregation, FieldType type) {

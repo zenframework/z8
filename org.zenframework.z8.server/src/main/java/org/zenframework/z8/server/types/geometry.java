@@ -1,7 +1,10 @@
 package org.zenframework.z8.server.types;
 
+import java.util.Collection;
+
 import org.zenframework.z8.server.db.DatabaseVendor;
 import org.zenframework.z8.server.db.FieldType;
+import org.zenframework.z8.server.runtime.RCollection;
 import org.zenframework.z8.server.types.sql.sql_geometry;
 
 public final class geometry extends primary {
@@ -111,5 +114,18 @@ public final class geometry extends primary {
 
 	public void operatorAssign(string value) {
 		set(value);
+	}
+
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	public static geometry z8_fromArray(RCollection array) {
+		String result = "{\"type\":\"FeatureCollection\",\"totalFeatures\":" + array.size() + ",\"features\":[";
+
+		boolean first = true;
+		for(geometry geometry : (Collection<geometry>)array) {
+			result += (first ? "" : ",") + "{\"type\":\"Feature\",\"geometry\":" + geometry.get() + ",\"properties\":null}";
+			first = false; 
+		}
+
+		return new geometry(result + "]}");
 	}
 }
