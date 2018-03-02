@@ -134,19 +134,19 @@ public enum FieldType {
 			case Postgres: return "bytea";
 			default: throw new RuntimeException("Unknown data type: '" + toString() + "'");
 			}
-		case Guid:
-			switch(vendor) {
-			case Oracle: return "RAW";
-			case SqlServer: return "UNIQUEIDENTIFIER";
-			case Postgres: return "uuid";
-			default: throw new RuntimeException("Unknown data type: '" + toString() + "'");
-			}
 		case Geometry:
 			switch(vendor) {
 			case Postgres: return "geometry";
 			case Oracle:
 			case SqlServer:
 				throw new RuntimeException("Unsupported data type: '" + toString() + "'");
+			default: throw new RuntimeException("Unknown data type: '" + toString() + "'");
+			}
+		case Guid:
+			switch(vendor) {
+			case Oracle: return "RAW";
+			case SqlServer: return "UNIQUEIDENTIFIER";
+			case Postgres: return "uuid";
 			default: throw new RuntimeException("Unknown data type: '" + toString() + "'");
 			}
 		case String:

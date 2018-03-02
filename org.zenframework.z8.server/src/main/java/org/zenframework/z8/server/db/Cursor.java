@@ -213,19 +213,13 @@ public class Cursor {
 		int position = field.position + 1;
 
 		switch(type) {
-		case Guid:
-			return getGuid(position, field);
+		case Attachments:
+		case Text:
+			return getText(position, field);
+		case Binary:
+			return getBinary(position, field);
 		case Boolean:
 			return getBoolean(position, field);
-		case Integer:
-			return getInteger(position, field);
-		case Text:
-		case Attachments:
-			return getText(position, field);
-		case Geometry:
-			return getGeometry(position, field);
-		case String:
-			return getString(position, field);
 		case Date:
 		case Datetime:
 			return getDate(position, field);
@@ -233,8 +227,14 @@ public class Cursor {
 			return getDatespan(position, field);
 		case Decimal:
 			return getDecimal(position, field);
-		case Binary:
-			return getBinary(position, field);
+		case Geometry:
+			return getGeometry(position, field);
+		case Guid:
+			return getGuid(position, field);
+		case Integer:
+			return getInteger(position, field);
+		case String:
+			return getString(position, field);
 		default:
 			throw new UnsupportedOperationException();
 		}

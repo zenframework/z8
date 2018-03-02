@@ -205,23 +205,16 @@ public abstract class BasicStatement implements IStatement {
 
 	public void set(int position, FieldType type, primary value) throws SQLException {
 		switch(type) {
-		case Guid:
-			setGuid(position, (guid)value);
+		case Attachments:
+		case Text:
+			string string = value != null ? (string)value : new string();
+			setBinary(position, new binary(string.getBytes(charset())));
 			break;
 		case Binary:
 			setBinary(position, (binary)value);
 			break;
 		case Boolean:
 			setBoolean(position, (bool)value);
-			break;
-		case Integer:
-			setInteger(position, (integer)value);
-			break;
-		case String:
-			setString(position, (string)value);
-			break;
-		case Geometry:
-			setGeometry(position, (geometry)value);
 			break;
 		case Date:
 		case Datetime:
@@ -233,10 +226,17 @@ public abstract class BasicStatement implements IStatement {
 		case Decimal:
 			setDecimal(position, (decimal)value);
 			break;
-		case Text:
-		case Attachments:
-			string string = value != null ? (string)value : new string();
-			setBinary(position, new binary(string.getBytes(charset())));
+		case Geometry:
+			setGeometry(position, (geometry)value);
+			break;
+		case Guid:
+			setGuid(position, (guid)value);
+			break;
+		case Integer:
+			setInteger(position, (integer)value);
+			break;
+		case String:
+			setString(position, (string)value);
 			break;
 		case Null:
 			setNull(position);
