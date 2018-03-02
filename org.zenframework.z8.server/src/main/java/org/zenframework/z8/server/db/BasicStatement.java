@@ -208,6 +208,9 @@ public abstract class BasicStatement implements IStatement {
 		case Guid:
 			setGuid(position, (guid)value);
 			break;
+		case Binary:
+			setBinary(position, (binary)value);
+			break;
 		case Boolean:
 			setBoolean(position, (bool)value);
 			break;

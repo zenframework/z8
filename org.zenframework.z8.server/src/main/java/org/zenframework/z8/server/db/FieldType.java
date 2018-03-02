@@ -2,37 +2,39 @@ package org.zenframework.z8.server.db;
 
 public enum FieldType {
 	None(DataTypes.None),
-	Guid(DataTypes.Guid),
+	Null(DataTypes.Null),
+
+	Attachments(DataTypes.Attachments),
+	Binary(DataTypes.Binary),
 	Boolean(DataTypes.Boolean),
-	Integer(DataTypes.Integer),
-	String(DataTypes.String),
 	Date(DataTypes.Date),
 	Datetime(DataTypes.Datetime),
 	Datespan(DataTypes.Datespan),
 	Decimal(DataTypes.Decimal),
-	Binary(DataTypes.Binary),
-	Text(DataTypes.Text),
-	Attachments(DataTypes.Attachments),
 	File(DataTypes.File),
 	Geometry(DataTypes.Geometry),
-	Null(DataTypes.Null);
+	Guid(DataTypes.Guid),
+	Integer(DataTypes.Integer),
+	String(DataTypes.String),
+	Text(DataTypes.Text);
 
 	class DataTypes {
 		static protected final String None = "none";
-		static protected final String Guid = "guid";
+		static protected final String Null = "null";
+
+		static protected final String Attachments = "attachments";
+		static protected final String Binary = "binary";
 		static protected final String Boolean = "boolean";
-		static protected final String Integer = "int";
-		static protected final String String = "string";
 		static protected final String Date = "date";
 		static protected final String Datetime= "datetime";
 		static protected final String Datespan = "datespan";
 		static protected final String Decimal = "float";
-		static protected final String Binary = "binary";
-		static protected final String Text = "text";
-		static protected final String Attachments = "attachments";
 		static protected final String File = "file";
 		static protected final String Geometry = "geometry";
-		static protected final String Null = "null";
+		static protected final String Guid = "guid";
+		static protected final String Integer = "int";
+		static protected final String String = "string";
+		static protected final String Text = "text";
 	}
 
 	private String fName = null;
@@ -49,14 +51,14 @@ public enum FieldType {
 	static public FieldType fromString(String string) {
 		if(DataTypes.None.equals(string))
 			return FieldType.None;
-		else if(DataTypes.Guid.equals(string))
-			return FieldType.Guid;
+		else if(DataTypes.Null.equals(string))
+			return FieldType.Null;
+		else if(DataTypes.Attachments.equals(string))
+			return FieldType.Attachments;
+		else if(DataTypes.Binary.equals(string))
+			return FieldType.Binary;
 		else if(DataTypes.Boolean.equals(string))
 			return FieldType.Boolean;
-		else if(DataTypes.Integer.equals(string))
-			return FieldType.Integer;
-		else if(DataTypes.String.equals(string))
-			return FieldType.String;
 		else if(DataTypes.Date.equals(string))
 			return FieldType.Date;
 		else if(DataTypes.Datetime.equals(string))
@@ -65,18 +67,18 @@ public enum FieldType {
 			return FieldType.Datespan;
 		else if(DataTypes.Decimal.equals(string))
 			return FieldType.Decimal;
-		else if(DataTypes.Binary.equals(string))
-			return FieldType.Binary;
-		else if(DataTypes.Text.equals(string))
-			return FieldType.Text;
-		else if(DataTypes.Attachments.equals(string))
-			return FieldType.Attachments;
 		else if(DataTypes.File.equals(string))
 			return FieldType.File;
 		else if(DataTypes.Geometry.equals(string))
 			return FieldType.Geometry;
-		else if(DataTypes.Null.equals(string))
-			return FieldType.Null;
+		else if(DataTypes.Guid.equals(string))
+			return FieldType.Guid;
+		else if(DataTypes.Integer.equals(string))
+			return FieldType.Integer;
+		else if(DataTypes.String.equals(string))
+			return FieldType.String;
+		else if(DataTypes.Text.equals(string))
+			return FieldType.Text;
 		else
 			throw new RuntimeException("Unknown data type: '" + string + "'");
 	}
