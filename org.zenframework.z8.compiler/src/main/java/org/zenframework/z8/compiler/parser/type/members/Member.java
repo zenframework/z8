@@ -41,6 +41,14 @@ public class Member extends LanguageElement implements IMember {
 	}
 
 	@Override
+	public void setAttributes(IAttribute[] attributes) {
+		if(initializer instanceof IType)
+			initializer.setAttributes(attributes);
+		else
+			super.setAttributes(attributes);
+	}
+	
+	@Override
 	public IPosition getSourceRange() {
 		if(initializer != null)
 			return variableType.getSourceRange().union(initializer.getSourceRange());
@@ -310,9 +318,6 @@ public class Member extends LanguageElement implements IMember {
 			codeGenerator.append(';');
 			codeGenerator.breakLine();
 		}
-
-		if(!isStatic() && initializer != null)
-			initializer.getConstructor2(codeGenerator);
 	}
 
 	public IPosition getStaticTokenPosition() {

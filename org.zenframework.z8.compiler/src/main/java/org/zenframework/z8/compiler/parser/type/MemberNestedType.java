@@ -1,7 +1,6 @@
 package org.zenframework.z8.compiler.parser.type;
 
 import org.zenframework.z8.compiler.core.CodeGenerator;
-import org.zenframework.z8.compiler.core.IAttribute;
 import org.zenframework.z8.compiler.core.IInitializer;
 import org.zenframework.z8.compiler.core.ILanguageElement;
 import org.zenframework.z8.compiler.core.IMethod;
@@ -209,20 +208,6 @@ public class MemberNestedType extends AbstractType implements IInitializer {
 		codeGenerator.append(" = " + getVariableType().getJavaNew(getStaticContext()));
 		codeGenerator.append(';');
 		codeGenerator.breakLine();
-	}
-
-	@Override
-	public void getConstructor2(CodeGenerator codeGenerator) {
-		IAttribute[] attributes = getAttributes();
-
-		for(IAttribute attribute : attributes) {
-			codeGenerator.indent();
-			name.getCode(codeGenerator);
-			codeGenerator.append("." + "setAttribute(" + '"' + attribute.getName() + '"' + ", ");
-			attribute.getCode(codeGenerator);
-			codeGenerator.append(");");
-			codeGenerator.breakLine();
-		}
 	}
 
 	@Override
