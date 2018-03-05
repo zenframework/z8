@@ -287,6 +287,11 @@ public class JsonWriter {
 		writeProperty(name, value.toString(), false);
 	}
 
+	public void writeJsonProperty(String name, String json) {
+		appendComma().append(quoteName(name)).append(":").append(json);
+		startSeparate();
+	}
+
 	public void writeControls(string property, Collection<? extends Control> controls, Query query, Query context) {
 		if(controls.isEmpty())
 			return;

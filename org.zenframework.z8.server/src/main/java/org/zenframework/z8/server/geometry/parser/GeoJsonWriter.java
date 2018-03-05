@@ -7,18 +7,26 @@ import org.zenframework.z8.server.types.geometry;
 
 public class GeoJsonWriter {
 	private JsonWriter writer = new JsonWriter();
-	private geometry source;
+	private Object source;
 
 	static public String write(geometry source) {
 		return new GeoJsonWriter(source).write();
 	}
 
-	private GeoJsonWriter(geometry source) {
+	static public String write(Collection<geometry> geometries) {
+		return new GeoJsonWriter(geometries).write();
+	}
+
+	private GeoJsonWriter(Object source) {
 		this.source = source;
 	}
 
+	@SuppressWarnings("unchecked")
 	public String write() {
-		writeGeometry(source);
+		if(source instanceof geometry)
+			writeGeometry((geometry)source);
+		else
+			writeFeatureCollection((Collection<geometry>)source);
 		return writer.toString();
 	}
 
@@ -125,5 +133,28 @@ public class GeoJsonWriter {
 			writeGeometry(geometry);
 
 		writer.finishArray();
+	}
+
+	private void writeFeature(geometry geometry) {
+		writer.startObject();
+		writer.writeProperty(GeoJson.Type, GeoJson.Feature);
+		writer.writeJsonProperty(GeoJson.Geometry, new GeoJsonWriter(source).write());
+		writer.finishObject();
+	}
+
+	private void writeFeatureCollection(Collection<geometry> geometries) {
+		writer.startObject();
+
+		writer.writeProperty(GeoJson.Type, GeoJson.FeatureCollection);
+
+		writer.startObject(GeoJson.Properties);
+		writer.finishObject();
+
+		writer.startArray(GeoJson.Features);
+		for(geometry geometry : geometries)
+			writeFeature(geometry);
+		writer.finishArray();
+
+		writer.finishObject();
 	}
 }
