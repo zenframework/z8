@@ -39,7 +39,7 @@ public class Insert extends Statement {
 
 		for(Field field : fields) {
 			insertFields += (insertFields.isEmpty() ? "" : ", ") + vendor.quote(field.name());
-			insertValues += (insertValues.isEmpty() ? "" : ", ") + field.wrapForInsert("?", vendor);
+			insertValues += (insertValues.isEmpty() ? "" : ", ") + "?";
 		}
 
 		return "insert into " + database.tableName(query.name()) + " " + "(" + insertFields + ") values (" + insertValues + ")";

@@ -244,9 +244,8 @@ abstract public class Field extends Control implements IField {
 	}
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
-	public RCollection array(string array) {
-		String value = array.get();
-		JsonArray jsonArray = new JsonArray('[' + value.substring(1, value.length() - 1) + ']');
+	public RCollection array(string json) {
+		JsonArray jsonArray = new JsonArray(json.get());
 
 		RCollection result = new RCollection();
 		for(int i = 0; i < jsonArray.length(); i++)
@@ -551,17 +550,5 @@ abstract public class Field extends Control implements IField {
 	public int controlSum() {
 		String name = name() + " " + sqlType(DatabaseVendor.Postgres);
 		return Math.abs(name.hashCode());
-	}
-
-	public String wrapForSelect(String value, DatabaseVendor vendor) {
-		return value;
-	}
-
-	public String wrapForInsert(String value, DatabaseVendor vendor) {
-		return value;
-	}
-
-	public String wrapForUpdate(String value, DatabaseVendor vendor) {
-		return wrapForInsert(value, vendor);
 	}
 }

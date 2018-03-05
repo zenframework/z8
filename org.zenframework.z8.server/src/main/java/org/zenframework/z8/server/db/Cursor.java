@@ -79,22 +79,15 @@ public class Cursor {
 		return resultSet.wasNull();
 	}
 
-	public guid getGuid(int position) throws SQLException {
-		return getGuid(position, new GuidField(null));
+	public binary getBinary(int position) throws SQLException {
+		return getBinary(position, new BinaryField(null));
 	}
 
-	private guid getGuid(int position, Field field) throws SQLException {
-		Object value = null;
-
-		if(statement.vendor() == DatabaseVendor.Oracle)
-			value = resultSet.getString(position);
-		else if(statement.vendor() == DatabaseVendor.Postgres)
-			value = resultSet.getObject(position);
-
+	private binary getBinary(int position, Field field) throws SQLException {
+		InputStream value = resultSet.getBinaryStream(position);
 		boolean wasNull = value == null || wasNull();
 		field.setWasNull(wasNull);
-
-		return !wasNull ? (value instanceof UUID ? new guid((UUID)value) : new guid((String)value)) : new guid();
+		return !wasNull ? new binary(value) : new binary();
 	}
 
 	public bool getBoolean(int position) throws SQLException {
@@ -108,62 +101,8 @@ public class Cursor {
 		return !wasNull ? new bool(value) : bool.False;
 	}
 
-	public integer getInteger(int position) throws SQLException {
-		return getInteger(position, new IntegerField(null));
-	}
-
-	private integer getInteger(int position, Field field) throws SQLException {
-		long value = resultSet.getLong(position);
-		boolean wasNull = wasNull();
-		field.setWasNull(wasNull);
-		return !wasNull ? new integer(value) : integer.zero();
-	}
-
-	public geometry getGeometry(int position) throws SQLException {
-		return getGeometry(position, new GeometryField(null));
-	}
-
-	private geometry getGeometry(int position, Field field) throws SQLException {
-		return new geometry(getString(position, field));
-	}
-
-	public string getString(int position) throws SQLException {
-		return getString(position, new StringField(null));
-	}
-
-	private string getString(int position, Field field) throws SQLException {
-		Object value = null;
-
-		value = field.type() == FieldType.String ? resultSet.getString(position) : resultSet.getBytes(position);
-
-		boolean wasNull = value == null || wasNull();
-		field.setWasNull(wasNull);
-
-		return !wasNull ? (value instanceof String ? new string((String)value) : new string((byte[])value, statement.charset())) : new string();
-	}
-
-	public string getText(int position) throws SQLException {
-		return getText(position, new TextField(null));
-	}
-
-	private string getText(int position, Field field) throws SQLException {
-		return getString(position, field);
-	}
-
 	public date getDate(int position) throws SQLException {
 		return getDate(position, new DateField(null));
-	}
-
-	public date getTimestamp(int position) throws SQLException {
-		return getTimestamp(position, new DateField(null));
-	}
-
-	private date getTimestamp(int position, Field field) throws SQLException {
-		Timestamp value = (Timestamp)resultSet.getTimestamp(position);
-		boolean wasNull = value == null || wasNull();
-		field.setWasNull(wasNull);
-
-		return !wasNull ? new date(value) : date.Min;
 	}
 
 	private date getDate(int position, Field field) throws SQLException {
@@ -194,15 +133,76 @@ public class Cursor {
 		return !wasNull ? new decimal(value) : decimal.zero();
 	}
 
-	public binary getBinary(int position) throws SQLException {
-		return getBinary(position, new BinaryField(null));
+	public geometry getGeometry(int position) throws SQLException {
+		return getGeometry(position, new GeometryField(null));
 	}
 
-	private binary getBinary(int position, Field field) throws SQLException {
-		InputStream value = resultSet.getBinaryStream(position);
+	private geometry getGeometry(int position, Field field) throws SQLException {
+		return new geometry(getString(position, field).get());
+	}
+
+	public guid getGuid(int position) throws SQLException {
+		return getGuid(position, new GuidField(null));
+	}
+
+	private guid getGuid(int position, Field field) throws SQLException {
+		Object value = null;
+
+		if(statement.vendor() == DatabaseVendor.Oracle)
+			value = resultSet.getString(position);
+		else if(statement.vendor() == DatabaseVendor.Postgres)
+			value = resultSet.getObject(position);
+
 		boolean wasNull = value == null || wasNull();
 		field.setWasNull(wasNull);
-		return !wasNull ? new binary(value) : new binary();
+
+		return !wasNull ? (value instanceof UUID ? new guid((UUID)value) : new guid((String)value)) : new guid();
+	}
+
+	public integer getInteger(int position) throws SQLException {
+		return getInteger(position, new IntegerField(null));
+	}
+
+	private integer getInteger(int position, Field field) throws SQLException {
+		long value = resultSet.getLong(position);
+		boolean wasNull = wasNull();
+		field.setWasNull(wasNull);
+		return !wasNull ? new integer(value) : integer.zero();
+	}
+
+	public string getString(int position) throws SQLException {
+		return getString(position, new StringField(null));
+	}
+
+	private string getString(int position, Field field) throws SQLException {
+		Object value = null;
+
+		value = field.type() == FieldType.String ? resultSet.getString(position) : resultSet.getBytes(position);
+
+		boolean wasNull = value == null || wasNull();
+		field.setWasNull(wasNull);
+
+		return !wasNull ? (value instanceof String ? new string((String)value) : new string((byte[])value, statement.charset())) : new string();
+	}
+
+	public string getText(int position) throws SQLException {
+		return getText(position, new TextField(null));
+	}
+
+	private string getText(int position, Field field) throws SQLException {
+		return getString(position, field);
+	}
+
+	public date getTimestamp(int position) throws SQLException {
+		return getTimestamp(position, new DateField(null));
+	}
+
+	private date getTimestamp(int position, Field field) throws SQLException {
+		Timestamp value = (Timestamp)resultSet.getTimestamp(position);
+		boolean wasNull = value == null || wasNull();
+		field.setWasNull(wasNull);
+
+		return !wasNull ? new date(value) : date.Min;
 	}
 
 	public primary get(Field field) throws SQLException {

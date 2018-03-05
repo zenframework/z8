@@ -12,6 +12,7 @@ import org.zenframework.z8.server.base.form.report.IReport;
 import org.zenframework.z8.server.base.form.report.Report;
 import org.zenframework.z8.server.base.query.Query;
 import org.zenframework.z8.server.base.table.value.Field;
+import org.zenframework.z8.server.geometry.parser.GeoJsonWriter;
 import org.zenframework.z8.server.json.parser.JsonArray;
 import org.zenframework.z8.server.json.parser.JsonObject;
 import org.zenframework.z8.server.request.Message;
@@ -21,6 +22,7 @@ import org.zenframework.z8.server.types.bool;
 import org.zenframework.z8.server.types.date;
 import org.zenframework.z8.server.types.decimal;
 import org.zenframework.z8.server.types.file;
+import org.zenframework.z8.server.types.geometry;
 import org.zenframework.z8.server.types.integer;
 import org.zenframework.z8.server.types.primary;
 import org.zenframework.z8.server.types.string;
@@ -153,6 +155,8 @@ public class JsonWriter {
 			write("null", false);
 		else if(value instanceof bool)
 			write(((bool)value).get());
+		else if(value instanceof geometry)
+			write(GeoJsonWriter.write((geometry)value), true);
 		else if(value instanceof integer)
 			write(((integer)value).get());
 		else if(value instanceof decimal)
@@ -209,6 +213,8 @@ public class JsonWriter {
 
 		if(value instanceof bool)
 			writeProperty(name, ((bool)value).get());
+		else if(value instanceof geometry)
+				writeProperty(name, GeoJsonWriter.write((geometry)value), true);
 		else if(value instanceof integer)
 			writeProperty(name, ((integer)value).get());
 		else if(value instanceof decimal)

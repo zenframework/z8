@@ -27,8 +27,8 @@ public class Intersects extends Rel {
 
 	protected String doFormat(DatabaseVendor vendor, FormatOptions options) {
 		return "st_intersects(" +
-			(left.isConst() ? left.geometry().toDbGeometry(vendor) : left.format(vendor, options)) + ", " +
-			(right.isConst() ? right.geometry().toDbGeometry(vendor) : right.format(vendor, options)) + ")";
+			(left.isConst() ? left.geometry().toDbConstant(vendor) : left.format(vendor, options)) + ", " +
+			(right.isConst() ? right.geometry().toDbConstant(vendor) : right.format(vendor, options)) + ")";
 	}
 
 	@Override

@@ -115,6 +115,58 @@ public abstract class BasicStatement implements IStatement {
 		statement.setNull(position, Types.NULL);
 	}
 
+	public void setBinary(int position, binary value) throws SQLException {
+		try {
+			value = value != null ? value : new binary();
+			InputStream stream = value.get();
+
+			long size = stream.available();
+
+			statement.setBinaryStream(position, stream, size);
+		} catch(IOException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	public void setBoolean(int position, bool value) throws SQLException {
+		value = value != null ? value : bool.False;
+
+		switch(vendor()) {
+		case Postgres:
+			statement.setInt(position, value.get() ? 1 : 0);
+			break;
+		default:
+			statement.setBoolean(position, value.get());
+		}
+	}
+
+	public void setDate(int position, date value) throws SQLException {
+		statement.setLong(position, value != null ? value.getTicks() : date.UtcMin);
+	}
+
+	public void setDatespan(int position, datespan value) throws SQLException {
+		setInteger(position, new integer(value.get()));
+	}
+
+	public void setDecimal(int position, decimal value) throws SQLException {
+		value = value != null ? value : decimal.zero();
+
+		double d = value.getDouble();
+
+		if(Math.abs(d) < 0.1)
+			statement.setDouble(position, d);
+		else
+			statement.setBigDecimal(position, value.get());
+	}
+
+	public void setGeometry(int position, geometry value) throws SQLException {
+		InputStream stream = value != null ? value.stream() : null;
+		if(stream != null)
+			statement.setBinaryStream(position,  stream);
+		else
+			setNull(position);
+	}
+
 	public void setGuid(int position, guid value) throws SQLException {
 		value = value != null ? value : new guid();
 
@@ -147,60 +199,12 @@ public abstract class BasicStatement implements IStatement {
 		}
 	}
 
-	public void setBoolean(int position, bool value) throws SQLException {
-		value = value != null ? value : bool.False;
-
-		switch(vendor()) {
-		case Postgres:
-			statement.setInt(position, value.get() ? 1 : 0);
-			break;
-		default:
-			statement.setBoolean(position, value.get());
-		}
-	}
-
 	public void setInteger(int position, integer value) throws SQLException {
 		statement.setLong(position, value != null ? value.get() : 0);
 	}
 
 	public void setString(int position, string value) throws SQLException {
 		statement.setString(position, value != null ? value.get() : null);
-	}
-
-	public void setGeometry(int position, geometry value) throws SQLException {
-		statement.setString(position, value != null ? value.get() : null);
-	}
-
-	public void setDate(int position, date value) throws SQLException {
-		statement.setLong(position, value != null ? value.getTicks() : date.UtcMin);
-	}
-
-	public void setDatespan(int position, datespan value) throws SQLException {
-		setInteger(position, new integer(value.get()));
-	}
-
-	public void setDecimal(int position, decimal value) throws SQLException {
-		value = value != null ? value : decimal.zero();
-
-		double d = value.getDouble();
-
-		if(Math.abs(d) < 0.1)
-			statement.setDouble(position, d);
-		else
-			statement.setBigDecimal(position, value.get());
-	}
-
-	public void setBinary(int position, binary value) throws SQLException {
-		try {
-			value = value != null ? value : new binary();
-			InputStream stream = value.get();
-
-			long size = stream.available();
-
-			statement.setBinaryStream(position, stream, size);
-		} catch(IOException e) {
-			throw new RuntimeException(e);
-		}
 	}
 
 	public void set(int position, FieldType type, primary value) throws SQLException {

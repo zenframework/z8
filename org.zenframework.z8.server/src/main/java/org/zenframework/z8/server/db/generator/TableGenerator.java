@@ -354,7 +354,7 @@ public class TableGenerator {
 		if(type == FieldType.Text || type == FieldType.Attachments)
 			value = new binary((string)value);
 
-		return field.wrapForUpdate(value.toDbConstant(vendor), vendor);
+		return value.toDbConstant(vendor);
 	}
 
 	private String getFieldForCreate(Field field) {

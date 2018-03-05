@@ -6,7 +6,7 @@ public class GeometryField extends Field {
 	virtual public geometry get();
 	virtual public geometry[] array();
 
-	public GeometryField operator = (string value);
+	public GeometryField operator = (geometry value);
 
 	public operator sql_geometry();
 }

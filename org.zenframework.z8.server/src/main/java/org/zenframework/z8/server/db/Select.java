@@ -10,9 +10,7 @@ import org.zenframework.z8.server.base.table.value.Field;
 import org.zenframework.z8.server.base.table.value.ILink;
 import org.zenframework.z8.server.config.ServerConfig;
 import org.zenframework.z8.server.db.sql.FormatOptions;
-import org.zenframework.z8.server.db.sql.Sql;
 import org.zenframework.z8.server.db.sql.SqlField;
-import org.zenframework.z8.server.db.sql.SqlStringToken;
 import org.zenframework.z8.server.db.sql.SqlToken;
 import org.zenframework.z8.server.db.sql.expressions.And;
 import org.zenframework.z8.server.engine.Database;
@@ -233,18 +231,7 @@ public class Select {
 	}
 
 	protected String formatField(Field field, int index, DatabaseVendor vendor, FormatOptions options) {
-		boolean hasAlias = options.getFieldAlias(field) != null;
-
-		options.disableAggregation();
-
-		String result = new SqlField(field).format(vendor, options);
-
-		if(!hasAlias)
-			result = field.wrapForSelect(result, vendor);
-
-		options.enableAggregation();
-
-		return Sql.aggregate(new SqlStringToken(result, field.type()), field.aggregation).format(vendor, options, false) + " as " + getFieldAlias(index);
+		return new SqlField(field).format(vendor, options) + " as " + getFieldAlias(index);
 	}
 
 	protected String formatFields(FormatOptions options) {

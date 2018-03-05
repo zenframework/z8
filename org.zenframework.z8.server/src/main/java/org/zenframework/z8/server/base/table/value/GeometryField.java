@@ -51,7 +51,7 @@ public class GeometryField extends Field {
 		String name = type().vendorType(vendor);
 
 		if(vendor == DatabaseVendor.Postgres)
-			return name + "(Geometry, " + geometry.DefaultSRS.get() + ")";
+			return name + "(Geometry, " + geometry.DefaultSRS + ")";
 
 		return name;
 	}
@@ -85,23 +85,8 @@ public class GeometryField extends Field {
 		return new geometry(value);
 	}
 
-	@Override
-	public String wrapForSelect(String value, DatabaseVendor vendor) {
-		return "st_asGeoJson(" + value + ")";
-	}
-
-	@Override
-	public String wrapForInsert(String value, DatabaseVendor vendor) {
-		return geometry.toDbGeometry(value);
-	}
-
-	public GeometryField.CLASS<? extends GeometryField> operatorAssign(geometry value) {
-		set(value);
-		return (GeometryField.CLASS<?>)this.getCLASS();
-	}
-
-	public GeometryField.CLASS<? extends GeometryField> operatorAssign(string value) {
-		set(new geometry(value));
+	public GeometryField.CLASS<? extends GeometryField> operatorAssign(geometry geometry) {
+		set(geometry);
 		return (GeometryField.CLASS<?>)this.getCLASS();
 	}
 }

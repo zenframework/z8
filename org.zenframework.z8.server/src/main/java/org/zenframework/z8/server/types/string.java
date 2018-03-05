@@ -179,10 +179,6 @@ public final class string extends primary {
 		return new exception(this);
 	}
 
-	public geometry geometry() {
-		return new geometry(this);
-	}
-
 	public sql_string sql_string() {
 		return new sql_string(this);
 	}

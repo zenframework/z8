@@ -1,54 +1,131 @@
 package org.zenframework.z8.server.types;
 
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
 import java.util.Collection;
 
 import org.zenframework.z8.server.db.DatabaseVendor;
 import org.zenframework.z8.server.db.FieldType;
+import org.zenframework.z8.server.geometry.parser.BinaryReader;
+import org.zenframework.z8.server.geometry.parser.BinaryWriter;
+import org.zenframework.z8.server.geometry.parser.GeoJsonReader;
 import org.zenframework.z8.server.runtime.RCollection;
 import org.zenframework.z8.server.types.sql.sql_geometry;
 
 public final class geometry extends primary {
 	private static final long serialVersionUID = 8678133849134310611L;
 
-	static private String emptyValue = "{\"type\": \"Point\", \"coordinates\": [0, 0] }";
+	static public final int None = -1;
+	static public final int Ring = 0;
+	static public final int Point = 1;
+	static public final int Line = 2;
+	static public final int Polygon = 3;
+	static public final int MultiPoint = 4;
+	static public final int MultiLine = 5;
+	static public final int MultiPolygon = 6;
+	static public final int Collection = 7;
 
-	static public geometry Null = new geometry();
+	static public int DefaultSRS = 96872;
 
-	private String value = emptyValue;
+	private String bytes;
 
-	static public integer DefaultSRS = new integer(96872);
+	private int shape = None;
+	private double x;
+	private double y;
+	private Collection<geometry> points;
 
-	public integer srs = DefaultSRS;
+	private int srs = DefaultSRS;
 
 	public geometry() {
+		this((geometry)null);
 	}
 
-	public geometry(geometry str) {
-		set(str);
+	public geometry(geometry geometry) {
+		set(geometry);
 	}
 
-	public geometry(String str) {
-		set(str);
+	public geometry(double x, double y) {
+		this(x, y, DefaultSRS, null);
 	}
 
-	public geometry(string str) {
-		set(str.get());
+	public geometry(double x, double y, int srs, String bytes) {
+		this.bytes = bytes;
+		shape = Point;
+		this.srs = srs;
+		this.x = x;
+		this.y = y;
+	}
+
+	public geometry(Collection<geometry> points, int shape) {
+		this(points, shape, DefaultSRS, null);
+	}
+
+	public geometry(Collection<geometry> points, int shape, int srs, String bytes) {
+		this.bytes = bytes;
+		this.shape = shape;
+		this.srs = srs;
+		this.points = points;
+	}
+
+	public geometry(String bytes) {
+		this.bytes = (bytes == null || bytes.isEmpty()) ? null : bytes;
+	}
+
+	public int shape() {
+		checkShape();
+		return shape;
+	}
+
+	public int srs() {
+		checkShape();
+		return srs;
+	}
+
+	public double x() {
+		checkShape();
+		return x;
+	}
+
+	public double y() {
+		checkShape();
+		return y;
+	}
+
+	public Collection<geometry> points() {
+		checkShape();
+		return points;
+	}
+
+	private void checkShape() {
+		if(bytes != null && shape == None)
+			set(BinaryReader.read(bytes));
+	}
+
+	private void checkBytes() {
+		if(bytes == null && shape != None)
+			bytes = BinaryWriter.write(this);
+	}
+
+	public boolean isEmpty() {
+		return bytes == null && shape == None;
 	}
 
 	public String get() {
-		return value;
+		checkBytes();
+		return bytes;
+	}
+
+	public InputStream stream() {
+		return isEmpty() ? null : new ByteArrayInputStream(BinaryWriter.writeBytes(this));
 	}
 
 	public void set(geometry geometry) {
-		set(geometry != null ? geometry.value : null);
-	}
-
-	public void set(string value) {
-		set(value.get());
-	}
-
-	public void set(String value) {
-		this.value = (value != null && !value.isEmpty()) ? value : emptyValue;
+		bytes = geometry != null ? geometry.bytes : null;
+		shape = geometry != null ? geometry.shape : None;
+		x = geometry != null ? geometry.x : 0;
+		y = geometry != null ? geometry.y : 0;
+		points = geometry != null ? geometry.points : null;
+		srs = geometry != null ? geometry.srs : DefaultSRS;
 	}
 
 	@Override
@@ -63,34 +140,31 @@ public final class geometry extends primary {
 
 	@Override
 	public String toDbConstant(DatabaseVendor vendor) {
-		return "'" + get() + "'";
-	}
-
-	static public String toDbGeometry(String value) {
-		return "st_setSRID(st_geomFromGeoJson(" + value + "), " + DefaultSRS.get() + ")";
-	}
-
-	public String toDbGeometry(DatabaseVendor vendor) {
-		return "st_setSRID(st_geomFromGeoJson(" + toDbConstant(vendor) + "), " + srs.get() + ")";
+		return shape != None ? "st_geomFromEWKT('" + get() + "')" : null;
 	}
 
 	@Override
 	public int hashCode() {
-		return get().hashCode();
+		String bytes = get();
+		return bytes != null ? bytes.hashCode() : super.hashCode();
 	}
 
 	@Override
 	public boolean equals(Object object) {
-		if (object instanceof geometry)
-			return operatorEqu((geometry)object).get();
+		String bytes = get();
+		if(bytes != null && object instanceof geometry) {
+			geometry geometry = (geometry)object;
+			return bytes.equals(geometry.get());
+		}
 		return false;
 	}
 
 	@Override
 	public int compareTo(primary primary) {
-		if(primary instanceof geometry) {
+		String bytes = get();
+		if(bytes != null && primary instanceof geometry) {
 			geometry geometry = (geometry)primary;
-			return value.compareTo(geometry.value);
+			return bytes.compareTo(geometry.get());
 		}
 
 		return -1;
@@ -101,31 +175,27 @@ public final class geometry extends primary {
 	}
 
 	public bool operatorEqu(geometry x) {
-		return new bool(value.equals(x.value));
+		return new bool(equals(x));
 	}
 
 	public bool operatorNotEqu(geometry x) {
-		return new bool(!value.equals(x.value));
+		return new bool(!equals(x));
 	}
 
 	public void operatorAssign(geometry value) {
 		set(value);
 	}
 
-	public void operatorAssign(string value) {
-		set(value);
+	static public geometry z8_fromBinary(string binary) {
+		return new geometry(binary.get());
+	}
+
+	static public geometry z8_fromGeoJson(string json) {
+		return json.isEmpty() ? new geometry() : GeoJsonReader.read(json.get());
 	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	public static geometry z8_fromArray(RCollection array) {
-		String result = "{\"type\":\"FeatureCollection\",\"totalFeatures\":" + array.size() + ",\"features\":[";
-
-		boolean first = true;
-		for(geometry geometry : (Collection<geometry>)array) {
-			result += (first ? "" : ",") + "{\"type\":\"Feature\",\"geometry\":" + geometry.get() + ",\"properties\":null}";
-			first = false; 
-		}
-
-		return new geometry(result + "]}");
+	static public geometry z8_fromArray(RCollection geometries) {
+		return new geometry(geometries, Collection);
 	}
 }

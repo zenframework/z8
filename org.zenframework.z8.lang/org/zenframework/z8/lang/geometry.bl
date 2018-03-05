@@ -3,10 +3,11 @@ public final class geometry extends primary {
 	public operator string();
 	public operator sql_geometry();
 
-	public void operator = (string value);
-
 	public bool operator == (guid value);
 	public bool operator != (guid value);
+
+	static public geometry fromBinary(string binary);
+	static public geometry fromGeoJson(string binary);
 
 	static public geometry fromArray(geometry[] geometries);
 }

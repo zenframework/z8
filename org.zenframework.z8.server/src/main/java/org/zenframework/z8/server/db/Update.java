@@ -57,7 +57,7 @@ public class Update extends Statement {
 
 		for(Field field : fields) {
 			if(!field.isPrimaryKey())
-				set += (set.isEmpty() ? "" : ", ") + vendor.quote(field.name()) + "=" + field.wrapForUpdate("?", vendor);
+				set += (set.isEmpty() ? "" : ", ") + vendor.quote(field.name()) + "=" + "?";
 		}
 
 		String where = "";
