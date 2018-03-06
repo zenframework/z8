@@ -33,6 +33,7 @@ public final class geometry extends primary {
 	private double x;
 	private double y;
 	private Collection<geometry> points;
+	private double[][] extent;                 // [[xMin, yMin], [xMax, yMax]]
 
 	private int srs = DefaultSRS;
 
@@ -184,6 +185,65 @@ public final class geometry extends primary {
 
 	public void operatorAssign(geometry value) {
 		set(value);
+	}
+
+	public double width() {
+		double[][] extent = extent();
+		return extent[1][0] - extent[0][0];
+	}
+
+	public double height() {
+		double[][] extent = extent();
+		return extent[1][1] - extent[0][1];
+	}
+
+	private double[] point() {
+		int shape = shape();
+		if(shape == Point || shape == None)
+			return new double[] { x, y };
+		throw new IllegalArgumentException("Geometry type must be 1 (Point), have " + shape);
+	}
+
+	public double[][] extent() {
+		if(extent != null)
+			return extent;
+
+		switch(shape()) {
+		case None:
+		case Point:
+			return extent = new double[][]{ point(), point() };
+		case Line:
+		case Ring:
+		case Polygon:
+		case MultiPoint:
+		case MultiLine:
+		case MultiPolygon:
+		case Collection:
+			for(geometry geometry : points()) {
+				if(extent == null)
+					extent = geometry.extent();
+				else
+					extent = unionExtents(extent, geometry.extent());
+			}
+			return extent;
+		default:
+			throw new IllegalArgumentException("Unknown geometry type: " + shape);
+		}
+	}
+
+	static public double[][] unionExtents(double[][] extent1, double[][] extent2) {
+		return new double[][] {
+			new double[] { Math.min(extent1[0][0], extent2[0][0]), Math.min(extent1[0][1], extent2[0][1]) },
+			new double[] { Math.max(extent1[1][0], extent2[1][0]), Math.max(extent1[1][1], extent2[1][1]) }
+		};
+	}
+
+	public decimal z8_width() {
+		return new decimal(width());
+	}
+
+	public decimal z8_height() {
+		return new decimal(height());
 	}
 
 	static public geometry z8_fromBinary(string binary) {

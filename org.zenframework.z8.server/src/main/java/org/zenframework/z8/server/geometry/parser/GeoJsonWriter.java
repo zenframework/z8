@@ -129,8 +129,10 @@ public class GeoJsonWriter {
 	private void writeCollection(geometry collection) {
 		writer.startArray(GeoJson.Geometries);
 
-		for(geometry geometry : collection.points())
-			writeGeometry(geometry);
+		for(geometry element : collection.points()) {
+			if(element.isEmpty())
+				writeGeometry(element);
+		}
 
 		writer.finishArray();
 	}

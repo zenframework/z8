@@ -60,19 +60,23 @@ Z8.define('Z8.application.form.Navigator', {
 	htmlMarkup: function() {
 		this.cls = DOM.parseCls(this.cls).pushIf('navigator');
 
-		var items = this.createForm().add(this.createTable());
+		var items = this.createItems();
 		var body = this.body = new Z8.Container({ cls: 'body', items: items });
 		var toolbar = this.createToolbar();
 
 		var isForm = this.isFormPresentation();
-		this.setListboxTools(this.listbox, isForm);
-		this.setListboxTools(this.table, !isForm);
+		this.setTools(this.listbox, isForm);
+		this.setTools(this.table, !isForm);
 
 		this.items = [toolbar, body];
 
 		this.updateSortState();
 
 		return this.callParent();
+	},
+
+	createItems: function() {
+		return this.createForm().add(this.createTable());
 	},
 
 	completeRender: function() {
@@ -123,11 +127,10 @@ Z8.define('Z8.application.form.Navigator', {
 		var fields = this.getColumns();
 		var store = this.store;
 		var cls = 'table' + (isTable ? '' : ' display-none');
-		var table = this.table = new Z8.form.field.Listbox({ cls: cls, store: store, fields: fields, locks: !this.isReadOnly(), editable: true, readOnly: this.isReadOnly(), totals: store.hasTotals(), pagingMode: 'always' });
-		return table;
+		return this.table = new Z8.form.field.Listbox({ cls: cls, store: store, fields: fields, locks: !this.isReadOnly(), editable: true, readOnly: this.isReadOnly(), totals: store.hasTotals(), pagingMode: 'always' });
 	},
 
-	setListboxTools: function(listbox, set) {
+	setTools: function(listbox, set) {
 		listbox.setAddTool(set ? this.addButton : null);
 		listbox.setCopyTool(set ? this.copyButton : null);
 		listbox.setRefreshTool(set ? this.refreshButton : null);
@@ -468,8 +471,8 @@ Z8.define('Z8.application.form.Navigator', {
 		this.listbox.show();
 		this.form.show();
 
-		this.setListboxTools(this.listbox, true);
-		this.setListboxTools(this.table, false);
+		this.setTools(this.listbox, true);
+		this.setTools(this.table, false);
 
 		this.presentation = 'form';
 		this.focus();
@@ -480,8 +483,8 @@ Z8.define('Z8.application.form.Navigator', {
 		this.form.hide();
 		this.table.show();
 
-		this.setListboxTools(this.table, true);
-		this.setListboxTools(this.listbox, false);
+		this.setTools(this.table, true);
+		this.setTools(this.listbox, false);
 
 		this.presentation = 'table';
 		this.focus();

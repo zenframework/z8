@@ -155,9 +155,11 @@ public class JsonWriter {
 			write("null", false);
 		else if(value instanceof bool)
 			write(((bool)value).get());
-		else if(value instanceof geometry)
-			write(GeoJsonWriter.write((geometry)value), true);
-		else if(value instanceof integer)
+		else if(value instanceof geometry) {
+			geometry geometry = (geometry)value;
+			if(!geometry.isEmpty())
+				writeProperty(GeoJsonWriter.write(geometry), true);
+		} else if(value instanceof integer)
 			write(((integer)value).get());
 		else if(value instanceof decimal)
 			write(((decimal)value).get());
@@ -213,9 +215,11 @@ public class JsonWriter {
 
 		if(value instanceof bool)
 			writeProperty(name, ((bool)value).get());
-		else if(value instanceof geometry)
-				writeProperty(name, GeoJsonWriter.write((geometry)value), true);
-		else if(value instanceof integer)
+		else if(value instanceof geometry) {
+			geometry geometry = (geometry)value;
+			if(!geometry.isEmpty())
+				writeProperty(name, GeoJsonWriter.write(geometry), true);
+		} else if(value instanceof integer)
 			writeProperty(name, ((integer)value).get());
 		else if(value instanceof decimal)
 			writeProperty(name, ((decimal)value).get());

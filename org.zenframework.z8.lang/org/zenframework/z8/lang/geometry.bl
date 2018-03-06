@@ -1,5 +1,8 @@
 [primary "org.zenframework.z8.server.types.geometry"]
 public final class geometry extends primary {
+	public decimal width();
+	public decimal height();
+
 	public operator string();
 	public operator sql_geometry();
 
