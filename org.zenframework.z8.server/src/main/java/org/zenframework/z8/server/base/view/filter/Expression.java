@@ -24,6 +24,7 @@ import org.zenframework.z8.server.json.parser.JsonObject;
 import org.zenframework.z8.server.types.bool;
 import org.zenframework.z8.server.types.date;
 import org.zenframework.z8.server.types.decimal;
+import org.zenframework.z8.server.types.geometry;
 import org.zenframework.z8.server.types.guid;
 import org.zenframework.z8.server.types.integer;
 import org.zenframework.z8.server.types.primary;
@@ -244,7 +245,7 @@ public class Expression implements IFilter {
 				throw new UnsupportedOperationException();
 			}
 		case Geometry:
-			return new Intersects(this.field, new sql_geometry(value));
+			return new Intersects(this.field, new sql_geometry(geometry.fromGeoJson(value)));
 		default:
 			throw new UnsupportedOperationException();
 		}

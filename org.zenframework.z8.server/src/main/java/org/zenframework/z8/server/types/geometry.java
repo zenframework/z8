@@ -246,12 +246,20 @@ public final class geometry extends primary {
 		return new decimal(height());
 	}
 
+	static public geometry fromBinary(String binary) {
+		return new geometry(binary);
+	}
+
+	static public geometry fromGeoJson(String json) {
+		return (json == null || json.isEmpty()) ? new geometry() : GeoJsonReader.read(json);
+	}
+
 	static public geometry z8_fromBinary(string binary) {
-		return new geometry(binary.get());
+		return fromBinary(binary.get());
 	}
 
 	static public geometry z8_fromGeoJson(string json) {
-		return json.isEmpty() ? new geometry() : GeoJsonReader.read(json.get());
+		return fromGeoJson(json.get());
 	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })

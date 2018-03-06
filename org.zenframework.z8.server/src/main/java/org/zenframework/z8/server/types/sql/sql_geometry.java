@@ -14,10 +14,6 @@ public class sql_geometry extends sql_primary {
 		super(new SqlConst(new geometry()));
 	}
 
-	public sql_geometry(String value) {
-		super(new SqlConst(new geometry(value)));
-	}
-
 	public sql_geometry(geometry value) {
 		super(new SqlConst(value));
 	}
