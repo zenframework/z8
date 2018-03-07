@@ -9,8 +9,8 @@ public final class geometry extends primary {
 	public bool operator == (guid value);
 	public bool operator != (guid value);
 
-	static public geometry fromBinary(string binary);
-	static public geometry fromGeoJson(string binary);
+	static public geometry fromHexString(string hexString);
+	static public geometry fromGeoJson(string geoJson);
 
 	static public geometry fromArray(geometry[] geometries);
 }

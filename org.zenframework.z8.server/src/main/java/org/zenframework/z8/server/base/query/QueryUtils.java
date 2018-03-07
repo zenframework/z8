@@ -6,6 +6,7 @@ import java.util.Collection;
 import org.zenframework.z8.server.base.table.value.Field;
 import org.zenframework.z8.server.base.table.value.ILink;
 import org.zenframework.z8.server.db.FieldType;
+import org.zenframework.z8.server.geometry.parser.GeoJsonReader;
 import org.zenframework.z8.server.json.Json;
 import org.zenframework.z8.server.json.parser.JsonArray;
 import org.zenframework.z8.server.json.parser.JsonObject;
@@ -44,7 +45,7 @@ public class QueryUtils {
 		if(type == FieldType.String || type == FieldType.Text || type == FieldType.Attachments)
 			field.set(new string(value));
 		else if(type == FieldType.Geometry)
-			field.set(new geometry(value));
+			field.set(value == null || value.isEmpty() ? new geometry() : GeoJsonReader.read(value));
 		else if(type == FieldType.Integer)
 			field.set(value == null || value.isEmpty() ? integer.zero() : new integer(value));
 		else if(type == FieldType.Decimal)

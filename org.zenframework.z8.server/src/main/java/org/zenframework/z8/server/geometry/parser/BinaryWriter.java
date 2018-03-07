@@ -12,7 +12,7 @@ public class BinaryWriter {
 
 	static private final char[] hextypes = "0123456789ABCDEF".toCharArray();
 
-	static public String write(geometry source) {
+	static public String writeHexString(geometry source) {
 		return new String(new BinaryWriter(source, true).write());
 	}
 

@@ -104,7 +104,7 @@ public final class geometry extends primary {
 
 	private void checkBytes() {
 		if(bytes == null && shape != None)
-			bytes = BinaryWriter.write(this);
+			bytes = BinaryWriter.writeHexString(this);
 	}
 
 	public boolean isEmpty() {
@@ -246,16 +246,16 @@ public final class geometry extends primary {
 		return new decimal(height());
 	}
 
-	static public geometry fromBinary(String binary) {
-		return new geometry(binary);
+	static public geometry fromHexString(String hexString) {
+		return new geometry(hexString);
 	}
 
 	static public geometry fromGeoJson(String json) {
 		return (json == null || json.isEmpty()) ? new geometry() : GeoJsonReader.read(json);
 	}
 
-	static public geometry z8_fromBinary(string binary) {
-		return fromBinary(binary.get());
+	static public geometry z8_fromHexString(string hexString) {
+		return fromHexString(hexString.get());
 	}
 
 	static public geometry z8_fromGeoJson(string json) {
