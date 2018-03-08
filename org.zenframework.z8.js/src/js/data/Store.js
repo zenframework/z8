@@ -668,6 +668,8 @@ Z8.define('Z8.data.Store', {
 			this.onParentIdChanged(record, modified[parentIdProperty]);
 
 		this.loadTotals();
+
+		this.fireEvent('recordChange', this, record, modified);
 	},
 
 	onIdChanged: function(record, oldId) {
