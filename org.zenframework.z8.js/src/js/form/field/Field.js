@@ -4,6 +4,8 @@ Z8.define('Z8.form.field.Field', {
 	mixinId: 'field',
 
 	autoSave: false,
+	instantAutoSave: false,
+
 	updatingDependencies: 0,
 	suspendCheckChange: 0,
 
@@ -80,7 +82,7 @@ Z8.define('Z8.form.field.Field', {
 	setAutoSave: function(autoSave) {
 		if(this.autoSave != autoSave) {
 			this.autoSave = autoSave;
-			if(!this.isCombobox && !this.isCheckbox)
+			if(!this.instantAutoSave)
 				this.suspendCheckChange += autoSave ? 1 : -1;
 		}
 	},

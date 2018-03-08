@@ -2,6 +2,7 @@ Z8.define('Z8.form.field.Checkbox', {
 	extend: 'Z8.form.field.Control',
 
 	isCheckbox: true,
+	instantAutoSave: true,
 
 	initComponent: function() {
 		this.callParent();
