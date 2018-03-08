@@ -302,6 +302,9 @@ public class Member extends LanguageElement implements IMember {
 
 	@Override
 	public void getConstructor2(CodeGenerator codeGenerator) {
+		if(initializer != null)
+			initializer.getConstructor2(codeGenerator);
+
 		IAttribute[] attributes = getAttributes();
 
 		for(IAttribute attribute : attributes) {
