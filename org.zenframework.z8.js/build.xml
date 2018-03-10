@@ -1,206 +1,218 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project name="org.zenframework.z8.web" basedir=".">
-	<concat destfile="web/debug/css/revolt.css" encoding="UTF-8">
-		<filelist dir="src/css"
-			files="
-				font-awesome-0.css,
-				font-awesome-1.css,
-				font-roboto.css,
-				font-courgette.css,
-				themes/std.css,
-				themes/air.css,
-				breadcrumbs.css,
-				commons.css,
-				calendar.css,
-				form.css,
-				checkbox.css,
-				image.css,
-				file.css,
-				list.css,
-				tabs.css,
-				toolbar.css,
-				filter.css,
-				window.css,
-				viewport.css,
-				sidebar.css,
-				source-code.css,
-				view.css,
-				job-monitor.css"/>
-	</concat>
+<project name="org.zenframework.z8.web" basedir="." default="all">
+	
+	<target name="all" depends="css,js" />
 
-	<mkdir dir="web/css"/>
+	<target name="css">
 
-	<exec dir="web" executable="java">
-		<arg line="-jar ../../org.zenframework.z8.commons/minimizers/yuicompressor.jar -v --type css -o css/revolt.css debug/css/revolt.css"/>
-	</exec>
+		<concat destfile="web/debug/css/revolt.css" encoding="UTF-8">
+			<filelist dir="src/css"
+				files="
+					font-awesome-0.css,
+					font-awesome-1.css,
+					font-roboto.css,
+					font-courgette.css,
+					themes/std.css,
+					themes/air.css,
+					breadcrumbs.css,
+					commons.css,
+					calendar.css,
+					form.css,
+					checkbox.css,
+					image.css,
+					file.css,
+					list.css,
+					tabs.css,
+					toolbar.css,
+					filter.css,
+					window.css,
+					viewport.css,
+					sidebar.css,
+					source-code.css,
+					view.css,
+					job-monitor.css"/>
+		</concat>
+	
+		<mkdir dir="web/css"/>
+	
+		<exec dir="web" executable="java">
+			<arg line="-jar ../../org.zenframework.z8.commons/minimizers/yuicompressor.jar -v --type css -o css/revolt.css debug/css/revolt.css"/>
+		</exec>
+	
+		<!--
+			yuicompressor breaks css 'calc(point + point)' rule by removing spaces around '+' (while '-' stays intact). 
+			The next line fixes it.
+		 -->
+		<replaceregexp file="web/css/revolt.css" match="(calc\([\d|\.]+[^+]*)(\+)" replace="\1 \2 " flags="g"/>
+	
+		<concat destfile="web/debug/css/fonts.css" encoding="UTF-8">
+			<filelist dir="src/css"
+				files="
+					font-awesome-0.css,
+					font-awesome-1.css,
+					font-roboto.css,
+					font-courgette.css"/>
+		</concat>
+	
+		<exec dir="web" executable="java">
+			<arg line="-jar ../../org.zenframework.z8.commons/minimizers/yuicompressor.jar -v --type css -o css/fonts.css debug/css/fonts.css"/>
+		</exec>
 
-	<!--
-		yuicompressor breaks css 'calc(point + point)' rule by removing spaces around '+' (while '-' stays intact). 
-		The next line fixes it.
-	 -->
-	<replaceregexp file="web/css/revolt.css" match="(calc\([\d|\.]+[^+]*)(\+)" replace="\1 \2 " flags="g"/>
+		<copy todir="web/css">
+			<fileset dir="src/css" includes="fonts/**"/>
+			<fileset dir="src/css" includes="img/**"/>
+		</copy>
+	
+		<copy todir="web/debug/css">
+			<fileset dir="src/css" includes="fonts/**"/>
+			<fileset dir="src/css" includes="img/**"/>
+		</copy>
 
-	<concat destfile="web/debug/css/fonts.css" encoding="UTF-8">
-		<filelist dir="src/css"
-			files="
-				font-awesome-0.css,
-				font-awesome-1.css,
-				font-roboto.css,
-				font-courgette.css"/>
-	</concat>
+	</target>
 
-	<exec dir="web" executable="java">
-		<arg line="-jar ../../org.zenframework.z8.commons/minimizers/yuicompressor.jar -v --type css -o css/fonts.css debug/css/fonts.css"/>
-	</exec>
+	<target name="js">
 
-	<concat destfile="web/debug/revolt.js" encoding="UTF-8">
-		<filelist dir="src/js"
-			files="
-			util/Number.js,
-			util/String.js,
-			util/Array.js,
-			util/Date.js,
-			util/JSON.js,
-			Z8.js,
-			dom/Event.js,
-			dom/Dom.js,
-			util/Ems.js,
-			util/Rect.js,
-			util/Types.js,
-			util/Format.js,
-			util/Parser.js,
-			util/MD5.js,
-			util/DelayedTask.js,
-			Object.js,
-			data/HttpRequest.js,
-			data/Model.js,
-			data/Store.js,
-			data/Batch.js,
-			data/Action.js,
-			data/Filter.js,
-			data/Period.js,
-			data/field/Field.js,
-			data/field/String.js,
-			data/field/Boolean.js,
-			data/field/Datetime.js,
-			data/field/Date.js,
-			data/field/Guid.js,
-			data/field/Float.js,
-			data/field/Integer.js,
-			data/field/Json.js,
-			data/field/Files.js,
-			Component.js,
-			Container.js,
-			button/Button.js,
-			button/Trigger.js,
-			button/Tool.js,
-			button/File.js,
-			button/Group.js,
-			calendar/Markup.js,
-			calendar/Calendar.js,
-			calendar/Dropdown.js,
-			calendar/Period.js,
-			calendar/Button.js,
-			list/Item.js,
-			list/Divider.js,
-			list/HeaderBase.js,
-			list/Total.js,
-			list/Header.js,
-			list/HeaderIcon.js,
-			list/HeaderFilter.js,
-			list/HeaderCheck.js,
-			list/List.js,
-			list/Dropdown.js,
-			form/field/Field.js,
-			form/field/Control.js,
-			form/field/Html.js,
-			form/field/Document.js,
-			form/field/Image.js,
-			form/field/File.js,
-			form/field/Text.js,
-			form/field/Number.js,
-			form/field/Integer.js,
-			form/field/Float.js,
-			form/field/Checkbox.js,
-			form/field/TextArea.js,
-			form/field/Combobox.js,
-			form/field/Listbox.js,
-			form/field/Files.js,
-			form/field/Date.js,
-			form/field/Datetime.js,
-			form/field/Search.js,
-			form/field/Filter.js,
-			form/Fieldset.js,
-			form/Form.js,
-			form/Helper.js,
-			form/Tab.js,
-			form/Tabs.js,
-			menu/Item.js,
-			menu/Menu.js,
-			pager/Pager.js,
-			toolbar/Toolbar.js,
-			window/Window.js,
-			filter/expression/Operator.js,
-			filter/expression/Element.js,
-			filter/expression/Line.js,
-			filter/expression/Group.js,
-			filter/expression/Expression.js,
-			filter/Button.js,
-			filter/Editor.js,
-			filter/Dialog.js,
-			application/sidebar/Item.js,
-			application/sidebar/Menu.js,
-			application/sidebar/Sidebar.js,
-			application/viewport/Login.js,
-			application/viewport/Messages.js,
-			application/viewport/Form.js,
-			application/viewport/SourceCode.js,
-			application/viewport/Viewport.js,
-			application/User.js,
-			application/Application.js,
-			application/job/Job.js,
-			application/job/JobMonitor.js,
-			application/query/Store.js,
-			application/form/Navigator.js"/>
-	</concat>
+		<concat destfile="web/debug/revolt.js" encoding="UTF-8">
+			<filelist dir="src/js"
+				files="
+				util/Number.js,
+				util/String.js,
+				util/Array.js,
+				util/Date.js,
+				util/JSON.js,
+				Z8.js,
+				dom/Event.js,
+				dom/Dom.js,
+				util/Ems.js,
+				util/Rect.js,
+				util/Types.js,
+				util/Format.js,
+				util/Parser.js,
+				util/MD5.js,
+				util/DelayedTask.js,
+				Object.js,
+				data/HttpRequest.js,
+				data/Model.js,
+				data/Store.js,
+				data/Batch.js,
+				data/Action.js,
+				data/Filter.js,
+				data/Period.js,
+				data/field/Field.js,
+				data/field/String.js,
+				data/field/Boolean.js,
+				data/field/Datetime.js,
+				data/field/Date.js,
+				data/field/Guid.js,
+				data/field/Float.js,
+				data/field/Integer.js,
+				data/field/Json.js,
+				data/field/Files.js,
+				Component.js,
+				Container.js,
+				button/Button.js,
+				button/Trigger.js,
+				button/Tool.js,
+				button/File.js,
+				button/Group.js,
+				calendar/Markup.js,
+				calendar/Calendar.js,
+				calendar/Dropdown.js,
+				calendar/Period.js,
+				calendar/Button.js,
+				list/Item.js,
+				list/Divider.js,
+				list/HeaderBase.js,
+				list/Total.js,
+				list/Header.js,
+				list/HeaderIcon.js,
+				list/HeaderFilter.js,
+				list/HeaderCheck.js,
+				list/List.js,
+				list/Dropdown.js,
+				form/field/Field.js,
+				form/field/Control.js,
+				form/field/Html.js,
+				form/field/Document.js,
+				form/field/Image.js,
+				form/field/File.js,
+				form/field/Text.js,
+				form/field/Number.js,
+				form/field/Integer.js,
+				form/field/Float.js,
+				form/field/Checkbox.js,
+				form/field/TextArea.js,
+				form/field/Combobox.js,
+				form/field/Listbox.js,
+				form/field/Files.js,
+				form/field/Date.js,
+				form/field/Datetime.js,
+				form/field/SearchText.js,
+				form/field/SearchCombobox.js,
+				form/field/Filter.js,
+				form/Fieldset.js,
+				form/Form.js,
+				form/Helper.js,
+				form/Tab.js,
+				form/Tabs.js,
+				menu/Item.js,
+				menu/Menu.js,
+				pager/Pager.js,
+				toolbar/Toolbar.js,
+				window/Window.js,
+				filter/expression/Operator.js,
+				filter/expression/Element.js,
+				filter/expression/Line.js,
+				filter/expression/Group.js,
+				filter/expression/Expression.js,
+				filter/Button.js,
+				filter/Editor.js,
+				filter/Dialog.js,
+				application/sidebar/Item.js,
+				application/sidebar/Menu.js,
+				application/sidebar/Sidebar.js,
+				application/viewport/Login.js,
+				application/viewport/Messages.js,
+				application/viewport/Form.js,
+				application/viewport/SourceCode.js,
+				application/viewport/Viewport.js,
+				application/User.js,
+				application/Application.js,
+				application/job/Job.js,
+				application/job/JobMonitor.js,
+				application/query/Store.js,
+				application/form/Navigator.js"/>
+		</concat>
+	
+		<exec dir="web" executable="java">
+			<arg line="-jar ../../org.zenframework.z8.commons/minimizers/closure.jar --rewrite_polyfills false --js_output_file revolt.js debug/revolt.js"/>
+		</exec>
+	
+		<concat destfile="web/debug/revolt.utils.js" encoding="UTF-8">
+			<filelist dir="src/js"
+				files="
+				util/Number.js,
+				util/String.js,
+				util/Array.js,
+				util/Date.js,
+				util/JSON.js,
+				Z8.js,
+				dom/Event.js,
+				dom/Dom.js,
+				util/Ems.js,
+				util/Rect.js,
+				util/Types.js,
+				util/Format.js,
+				util/Parser.js,
+				util/MD5.js,
+				util/DelayedTask.js,
+				Object.js"/>
+		</concat>
+	
+		<exec dir="web" executable="java">
+			<arg line="-jar ../../org.zenframework.z8.commons/minimizers/closure.jar --rewrite_polyfills false --js_output_file revolt.utils.js debug/revolt.utils.js"/>
+		</exec>
 
-	<exec dir="web" executable="java">
-		<arg line="-jar ../../org.zenframework.z8.commons/minimizers/closure.jar --rewrite_polyfills false --js_output_file revolt.js debug/revolt.js"/>
-	</exec>
+	</target>
 
-	<concat destfile="web/debug/revolt.utils.js" encoding="UTF-8">
-		<filelist dir="src/js"
-			files="
-			util/Number.js,
-			util/String.js,
-			util/Array.js,
-			util/Date.js,
-			util/JSON.js,
-			Z8.js,
-			dom/Event.js,
-			dom/Dom.js,
-			util/Ems.js,
-			util/Rect.js,
-			util/Types.js,
-			util/Format.js,
-			util/Parser.js,
-			util/MD5.js,
-			util/DelayedTask.js,
-			Object.js"/>
-	</concat>
-
-	<exec dir="web" executable="java">
-		<arg line="-jar ../../org.zenframework.z8.commons/minimizers/closure.jar --rewrite_polyfills false --js_output_file revolt.utils.js debug/revolt.utils.js"/>
-	</exec>
-
-
-	<copy todir="web/css">
-		<fileset dir="src/css" includes="fonts/**"/>
-		<fileset dir="src/css" includes="img/**"/>
-	</copy>
-
-	<copy todir="web/debug/css">
-		<fileset dir="src/css" includes="fonts/**"/>
-		<fileset dir="src/css" includes="img/**"/>
-	</copy>
 </project>

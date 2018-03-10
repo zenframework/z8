@@ -1,4 +1,4 @@
-Z8.define('Z8.form.field.Search', {
+Z8.define('Z8.form.field.SearchText', {
 	extend: 'Z8.form.field.Text',
 
 	triggers: [{ icon: 'fa-search' }],

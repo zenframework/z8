@@ -59,6 +59,6 @@
 .toolbar>.control-group>.btn-trigger,
 .toolbar>.control-group.label-none>.btn-trigger {
 	top: .35714286em;
-	right: .14285714em;
+	/*right: .14285714em;*/
 	margin-top: 0;
 }

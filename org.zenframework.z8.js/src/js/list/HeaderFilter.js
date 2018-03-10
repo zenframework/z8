@@ -25,7 +25,7 @@ Z8.define('Z8.list.HeaderFilter', {
 		switch(field.type) {
 		case Type.String:
 		case Type.Text:
-			searchBox = new Z8.form.field.Search({ field: field, placeholder: field.header });
+			searchBox = new Z8.form.field.SearchText({ field: field, placeholder: field.header });
 			searchBox.on('search', this.onSearch, this);
 			searchBox.on('focusIn', this.onFocusIn, this);
 			searchBox.on('focusOut', this.onFocusOut, this);

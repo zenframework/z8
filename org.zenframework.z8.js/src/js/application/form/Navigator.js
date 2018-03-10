@@ -226,12 +226,36 @@ Z8.define('Z8.application.form.Navigator', {
 		var quickFilters = [];
 		var fields = this.getQuickFilterFields();
 		for(var i = 0, length = fields.length; i < length; i++) {
-			var field = fields[i];
-			var quickFilter = new Z8.form.field.Search({ field: field, width: 10, label: false, placeholder: field.header, tooltip: field.header });
+			var quickFilter = this.createQuickFilter(fields[i]);
 			quickFilter.on('search', this.onSearch, this);
 			quickFilters.push(quickFilter);
 		}
 		return quickFilters;
+	},
+
+	createQuickFilter: function(field) {
+		var config = {
+			field: field,
+			width: 10,
+			label: false,
+			placeholder: field.header,
+			tooltip: field.header
+		};
+		if (field.isCombobox) {
+			var name = field.name;
+			field = Object.assign({}, field, {
+				name: field.query.name + '.name'
+			});
+			field.query.fields = [ { name: field.name }, { name: field.query.name + '.name' } ];
+			config.store = Z8.query.Store.config(field);
+			config.fields = field;
+			config.name = name;
+			config.displayName = field.name;
+			config.checks = false;
+			config.pagerMode = 'visible';
+			return new Z8.form.field.SearchCombobox(config);
+		}
+		return new Z8.form.field.SearchText(config);
 	},
 
 	createFilterButton: function() {
