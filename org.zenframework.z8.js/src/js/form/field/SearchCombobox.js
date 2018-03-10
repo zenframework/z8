@@ -3,7 +3,8 @@ Z8.define('Z8.form.field.SearchCombobox', {
 
 	setValue: function(value) {
 		this.callParent(value);
-		this.fireEvent('search', this, value);
+		var record = this.getSelectedRecord();
+		this.fireEvent('search', this, record ? record.get(this.name) : '');
 	},
 	
 	setBusy: function(busy) {

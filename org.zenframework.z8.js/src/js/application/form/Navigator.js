@@ -246,7 +246,7 @@ Z8.define('Z8.application.form.Navigator', {
 			field = Object.assign({}, field, {
 				name: field.query.name + '.name'
 			});
-			field.query.fields = [ { name: field.name }, { name: field.query.name + '.name' } ];
+			field.query.fields = [ { name: name }, { name: field.name } ];
 			config.store = Z8.query.Store.config(field);
 			config.fields = field;
 			config.name = name;
