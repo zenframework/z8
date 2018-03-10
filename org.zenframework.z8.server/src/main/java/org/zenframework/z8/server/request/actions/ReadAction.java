@@ -6,6 +6,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
@@ -755,20 +756,22 @@ public class ReadAction extends RequestAction {
 		return records != 0 && groups.fields.length != 0 ? groups : null;
 	}
 
-	class TreeData {
-		guid recordId;
-		guid parentId;
-		JsonWriter data;
+	private class TreeData {
 
-		public TreeData(JsonWriter data, guid recordId, guid parentId) {
+		final guid recordId;
+		final guid parentId;
+		final JsonWriter data;
+
+		TreeData(JsonWriter data, guid recordId, guid parentId) {
 			this.data = data;
 			this.recordId = recordId;
 			this.parentId = parentId;
 		}
+
 	}
 
 	private void writeTreeData(Select cursor, JsonWriter writer) {
-		Collection<TreeData> roots = new ArrayList<TreeData>();
+		Map<guid, TreeData> roots = new LinkedHashMap<guid, TreeData>();
 		Map<guid, Collection<TreeData>> map = new HashMap<guid, Collection<TreeData>>();
 
 		writer.startArray(Json.data);
@@ -797,18 +800,24 @@ public class ReadAction extends RequestAction {
 			// finish object we'll call later;
 
 			TreeData treeData = new TreeData(data, recordId, parentId);
-			if(!parentId.isNull()) {
-				Collection<TreeData> children = map.get(parentId);
-				if(children == null) {
-					children = new ArrayList<TreeData>();
-					map.put(parentId, children);
+			Collection<TreeData> children = new ArrayList<TreeData>();
+			map.put(recordId, children);
+			if (map.containsKey(parentId)) {
+				map.get(parentId).add(treeData);
+			} else {
+				roots.put(recordId, treeData);
+			}
+			Iterator<Map.Entry<guid, TreeData>> it = roots.entrySet().iterator();
+			while (it.hasNext()) {
+				Map.Entry<guid, TreeData> root = it.next();
+				if (root.getValue().parentId.equals(recordId)) {
+					it.remove();
+					children.add(root.getValue());
 				}
-				children.add(treeData);
-			} else
-				roots.add(treeData);
+			}
 		}
 
-		writeTreeData(writer, roots, map, 0);
+		writeTreeData(writer, roots.values(), map, 0);
 
 		writer.finishArray();
 	}
