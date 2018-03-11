@@ -771,7 +771,7 @@ public class ReadAction extends RequestAction {
 	}
 
 	private void writeTreeData(Select cursor, JsonWriter writer) {
-		Map<guid, TreeData> roots = new LinkedHashMap<guid, TreeData>();
+		Collection<TreeData> roots = new ArrayList<TreeData>();
 		Map<guid, Collection<TreeData>> map = new HashMap<guid, Collection<TreeData>>();
 
 		writer.startArray(Json.data);
@@ -805,19 +805,19 @@ public class ReadAction extends RequestAction {
 			if (map.containsKey(parentId)) {
 				map.get(parentId).add(treeData);
 			} else {
-				roots.put(recordId, treeData);
+				roots.add(treeData);
 			}
-			Iterator<Map.Entry<guid, TreeData>> it = roots.entrySet().iterator();
+			Iterator<TreeData> it = roots.iterator();
 			while (it.hasNext()) {
-				Map.Entry<guid, TreeData> root = it.next();
-				if (root.getValue().parentId.equals(recordId)) {
+				TreeData root = it.next();
+				if (root.parentId.equals(recordId)) {
 					it.remove();
-					children.add(root.getValue());
+					children.add(root);
 				}
 			}
 		}
 
-		writeTreeData(writer, roots.values(), map, 0);
+		writeTreeData(writer, roots, map, 0);
 
 		writer.finishArray();
 	}

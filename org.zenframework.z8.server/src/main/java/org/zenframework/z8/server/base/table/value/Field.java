@@ -363,6 +363,17 @@ abstract public class Field extends Control implements IField {
 			writer.writeProperty(Json.name, linkQuery.id());
 			writer.writeProperty(Json.primaryKey, linkOwner.primaryKey().id());
 			writer.writeProperty(Json.lockKey, linkOwner.lockKey().id());
+			Collection<Field> sortFields = linkQuery.sortFields();
+			if (!sortFields.isEmpty()) {
+				writer.startArray(Json.sort);
+				for (Field sortField : sortFields) {
+					writer.startObject();
+					writer.writeProperty(Json.property, sortField.id());
+					writer.writeProperty(Json.direction, SortDirection.Asc.toString());
+					writer.finishObject();
+				}
+				writer.finishArray();
+			}
 			writer.finishObject();
 
 			writer.startObject(Json.link);
