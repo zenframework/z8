@@ -729,7 +729,7 @@ public class ReadAction extends RequestAction {
 
 		int records = 0;
 		while(cursor.next()) {
-			if(records > 500)
+			if(records > 1000)
 				throw new RuntimeException("Too many records fetched for a json client. Use limit parameter.");
 
 			writer.startObject();
