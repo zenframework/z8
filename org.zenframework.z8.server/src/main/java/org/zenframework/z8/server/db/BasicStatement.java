@@ -105,7 +105,7 @@ public abstract class BasicStatement implements IStatement {
 	}
 
 	protected void cleanup() throws SQLException {
-		if(!connection().inTransaction()) {
+		if(!connection().inTransaction() && statement != null) {
 			statement.close();
 			statement = null;
 		}

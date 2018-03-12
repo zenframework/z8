@@ -29,7 +29,7 @@ public class GeometryField extends Field {
 	public GeometryField(IObject container) {
 		super(container);
 		setDefault(new geometry());
-		aggregation = Aggregation.Max;
+		aggregation = Aggregation.Array;
 	}
 
 	public geometry z8_getDefault() {
@@ -65,10 +65,10 @@ public class GeometryField extends Field {
 	protected primary read() throws SQLException {
 		primary value = super.read();
 
-		if(aggregation != Aggregation.Array)
-			return value;
+		if(getCursor().isGrouped() && aggregation == Aggregation.Array)
+			return geometry.z8_fromArray(array((string)value));
 
-		return geometry.z8_fromArray(array((string)value));
+		return value;
 	}
 
 	@Override

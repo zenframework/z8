@@ -219,9 +219,9 @@ abstract public class Field extends Control implements IField {
 	}
 
 	protected primary read() throws SQLException {
-		if(aggregation != Aggregation.Array)
-			return cursor.get(this);
-		return cursor.get(this, FieldType.String);
+		if(cursor.isGrouped() && aggregation == Aggregation.Array)
+			return cursor.get(this, FieldType.String);
+		return cursor.get(this);
 	}
 
 	protected primary internalGet() {

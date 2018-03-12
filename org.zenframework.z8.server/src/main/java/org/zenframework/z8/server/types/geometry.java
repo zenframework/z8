@@ -3,6 +3,7 @@ package org.zenframework.z8.server.types;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.util.Collection;
+import java.util.Iterator;
 
 import org.zenframework.z8.server.db.DatabaseVendor;
 import org.zenframework.z8.server.db.FieldType;
@@ -24,6 +25,8 @@ public final class geometry extends primary {
 	static public final int MultiLine = 5;
 	static public final int MultiPolygon = 6;
 	static public final int Collection = 7;
+
+	static public double[][] EmptyExtent = { {0, 0}, {0, 0} };
 
 	static public int DefaultSRS = 96872;
 
@@ -225,7 +228,7 @@ public final class geometry extends primary {
 				else
 					extent = unionExtents(extent, geometry.extent());
 			}
-			return extent;
+			return extent = extent == null ? EmptyExtent : extent;
 		default:
 			throw new IllegalArgumentException("Unknown geometry type: " + shape);
 		}
@@ -264,6 +267,11 @@ public final class geometry extends primary {
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	static public geometry z8_fromArray(RCollection geometries) {
+		Iterator<geometry> iterator = (Iterator<geometry>)geometries.iterator();
+		while(iterator.hasNext()) {
+			if(iterator.next().isEmpty())
+				iterator.remove();
+		}
 		return new geometry(geometries, Collection);
 	}
 }
