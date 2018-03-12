@@ -49,38 +49,10 @@ public enum FieldType {
 	}
 
 	static public FieldType fromString(String string) {
-		if(DataTypes.None.equals(string))
-			return FieldType.None;
-		else if(DataTypes.Null.equals(string))
-			return FieldType.Null;
-		else if(DataTypes.Attachments.equals(string))
-			return FieldType.Attachments;
-		else if(DataTypes.Binary.equals(string))
-			return FieldType.Binary;
-		else if(DataTypes.Boolean.equals(string))
-			return FieldType.Boolean;
-		else if(DataTypes.Date.equals(string))
-			return FieldType.Date;
-		else if(DataTypes.Datetime.equals(string))
-			return FieldType.Datetime;
-		else if(DataTypes.Datespan.equals(string))
-			return FieldType.Datespan;
-		else if(DataTypes.Decimal.equals(string))
-			return FieldType.Decimal;
-		else if(DataTypes.File.equals(string))
-			return FieldType.File;
-		else if(DataTypes.Geometry.equals(string))
-			return FieldType.Geometry;
-		else if(DataTypes.Guid.equals(string))
-			return FieldType.Guid;
-		else if(DataTypes.Integer.equals(string))
-			return FieldType.Integer;
-		else if(DataTypes.String.equals(string))
-			return FieldType.String;
-		else if(DataTypes.Text.equals(string))
-			return FieldType.Text;
-		else
-			throw new RuntimeException("Unknown data type: '" + string + "'");
+		for (FieldType type : values())
+			if (type.fName.equals(string))
+				return type;
+		throw new RuntimeException("Unknown data type: '" + string + "'");
 	}
 
 	static public FieldType fromExcel(String type) {

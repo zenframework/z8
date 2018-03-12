@@ -7,9 +7,10 @@ Z8.define('Z8.query.Store', {
 		config: function(field) {
 			var config = {};
 
+			var isCombobox = field.isCombobox;
 			var isListbox = field.isListbox;
 
-			if(!field.isCombobox && !isListbox)
+			if(!isCombobox && !isListbox)
 				throw 'Z8.query.Store.config() accepts only listbox or combobox config';
 
 			var query = field.query;
@@ -33,7 +34,7 @@ Z8.define('Z8.query.Store', {
 			config.link = !isListbox ? link.name : null;
 			config.query = query.name;
 			config.totals = isListbox ? query.totals : false;
-			config.sort = isListbox ? query.sort : null;
+			config.sort = isListbox || isCombobox ? query.sort : null;
 			config.values = field.values;
 			config.access = query.access;
 

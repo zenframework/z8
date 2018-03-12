@@ -21,11 +21,9 @@ public enum SortDirection {
 	}
 
 	static public SortDirection fromString(String string) {
-		if(Names.Asc.equalsIgnoreCase(string))
-			return SortDirection.Asc;
-		else if(Names.Desc.equalsIgnoreCase(string))
-			return SortDirection.Desc;
-		else
-			throw new RuntimeException("Unknown sort direction: '" + string + "'");
+		for (SortDirection dir : values())
+			if (dir.fName.equals(string))
+				return dir;
+		throw new RuntimeException("Unknown sort direction: '" + string + "'");
 	}
 }
