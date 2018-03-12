@@ -194,6 +194,14 @@ Z8.define('Z8.data.Store', {
 		return this.getModel().prototype.getQuickFilters();
 	},
 
+	getLimit: function() {
+		return (this.isTree() ? 0 : this.limit) || 0;
+	},
+
+	getPage: function()  {
+		return this.page || 0;
+	},
+
 	getCount: function() {
 		return this.records.length;
 	},
@@ -544,8 +552,8 @@ Z8.define('Z8.data.Store', {
 			sort: this.getSorter(),
 			period: this.getPeriod(),
 			values: this.getValues(),
-			start: this.page * this.limit,
-			limit: this.limit // not to send limit if unlimited, e.g. limit == 0
+			start: this.getPage() * this.getLimit(),
+			limit: this.getLimit() // not to send limit if unlimited, e.g. limit == 0
 		};
 	},
 
@@ -575,7 +583,7 @@ Z8.define('Z8.data.Store', {
 
 		var count = this.getCount();
 
-		if(count == 0 || !this.isRemote()) {
+		if(count == 0 || !this.isRemote() || this.isTree()) {
 			this.calcTotalCount(count);
 			this.fireEvent('count', this, true);
 			Z8.callback(options, this, true);
@@ -600,7 +608,7 @@ Z8.define('Z8.data.Store', {
 
 	calcTotalCount: function(totalCount) {
 		this.totalCount = totalCount;
-		var limit = this.limit || 0;
+		var limit = this.getLimit();
 		this.page = limit != 0 && totalCount != 0 ? Math.min(this.page || 0, Math.floor(totalCount / limit) + (totalCount % limit == 0 ? 0 : 1) - 1) : 0;
 	},
 

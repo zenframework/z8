@@ -353,7 +353,6 @@ abstract public class Field extends Control implements IField {
 
 			access = link.access();
 
-			Query linkOwner = link.owner();
 			Query linkQuery = link.getQuery();
 
 			writer.writeProperty(Json.isCombobox, true);
@@ -361,8 +360,9 @@ abstract public class Field extends Control implements IField {
 			writer.startObject(Json.query);
 			writer.writeProperty(Json.id, context.classId());
 			writer.writeProperty(Json.name, linkQuery.id());
-			writer.writeProperty(Json.primaryKey, linkOwner.primaryKey().id());
-			writer.writeProperty(Json.lockKey, linkOwner.lockKey().id());
+			writer.writeProperty(Json.primaryKey, linkQuery.primaryKey().id());
+			writer.writeProperty(Json.parentKey, linkQuery.parentKey() != null ? linkQuery.parentKey().id() : null);
+			writer.writeProperty(Json.lockKey, linkQuery.lockKey().id());
 			writer.finishObject();
 
 			writer.startObject(Json.link);

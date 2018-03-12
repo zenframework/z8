@@ -4,9 +4,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
@@ -731,7 +729,7 @@ public class ReadAction extends RequestAction {
 
 		int records = 0;
 		while(cursor.next()) {
-			if(records > 1000)
+			if(records > 500)
 				throw new RuntimeException("Too many records fetched for a json client. Use limit parameter.");
 
 			writer.startObject();
@@ -756,29 +754,27 @@ public class ReadAction extends RequestAction {
 		return records != 0 && groups.fields.length != 0 ? groups : null;
 	}
 
-	private class TreeData {
+	class TreeData {
+		guid recordId;
+		guid parentId;
+		JsonWriter data;
 
-		final guid recordId;
-		final guid parentId;
-		final JsonWriter data;
-
-		TreeData(JsonWriter data, guid recordId, guid parentId) {
+		public TreeData(JsonWriter data, guid recordId, guid parentId) {
 			this.data = data;
 			this.recordId = recordId;
 			this.parentId = parentId;
 		}
-
 	}
 
 	private void writeTreeData(Select cursor, JsonWriter writer) {
-		Map<guid, TreeData> roots = new LinkedHashMap<guid, TreeData>();
-		Map<guid, Collection<TreeData>> map = new HashMap<guid, Collection<TreeData>>();
+		Collection<TreeData> roots = new ArrayList<TreeData>();
+		Map<guid, Collection<TreeData>> map = new LinkedHashMap<guid, Collection<TreeData>>();
 
 		writer.startArray(Json.data);
 
 		int records = 0;
 		while(cursor.next()) {
-			if(records > 1000)
+			if(records > 500)
 				throw new RuntimeException("Too many records fetched for a json client. Use limit parameter.");
 
 			records++;
@@ -800,24 +796,18 @@ public class ReadAction extends RequestAction {
 			// finish object we'll call later;
 
 			TreeData treeData = new TreeData(data, recordId, parentId);
-			Collection<TreeData> children = new ArrayList<TreeData>();
-			map.put(recordId, children);
-			if (map.containsKey(parentId)) {
-				map.get(parentId).add(treeData);
-			} else {
-				roots.put(recordId, treeData);
-			}
-			Iterator<Map.Entry<guid, TreeData>> it = roots.entrySet().iterator();
-			while (it.hasNext()) {
-				Map.Entry<guid, TreeData> root = it.next();
-				if (root.getValue().parentId.equals(recordId)) {
-					it.remove();
-					children.add(root.getValue());
+			if(!parentId.isNull()) {
+				Collection<TreeData> children = map.get(parentId);
+				if(children == null) {
+					children = new ArrayList<TreeData>();
+					map.put(parentId, children);
 				}
-			}
+				children.add(treeData);
+			} else
+				roots.add(treeData);
 		}
 
-		writeTreeData(writer, roots.values(), map, 0);
+		writeTreeData(writer, roots, map, 0);
 
 		writer.finishArray();
 	}
@@ -831,8 +821,18 @@ public class ReadAction extends RequestAction {
 			data.finishObject(); // start object was called in writeTreeData(Select, JsonWriter)
 			writer.write(data);
 
-			if(children != null)
+			if(children != null) {
 				writeTreeData(writer, children, childrenMap, level + 1);
+				childrenMap.remove(record.recordId);
+			}
+		}
+
+		if(level == 0 && !childrenMap.isEmpty()) {
+			for(guid recordId : childrenMap.keySet().toArray(new guid[0])) {
+				Collection<TreeData> children = childrenMap.remove(recordId);
+				if(children != null)
+					writeTreeData(writer, children, childrenMap, 0);
+			}
 		}
 	}
 

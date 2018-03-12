@@ -13,8 +13,8 @@ Z8.define('Z8.query.Store', {
 				throw 'Z8.query.Store.config() accepts only listbox or combobox config';
 
 			var query = field.query;
-			var primaryKey = isListbox ? query.primaryKey : field.link.primaryKey;
-			var parentKey = isListbox ? field.query.parentKey : null;
+			var primaryKey = query.primaryKey;
+			var parentKey = field.query.parentKey;
 			var periodKey = isListbox ? field.query.periodKey : null;
 			var lockKey = field.query.lockKey;
 

@@ -71,7 +71,7 @@ Z8.define('Z8.pager.Pager', {
 	},
 
 	getPage: function() {
-		return this.store != null ? this.store.page : 0;
+		return this.store != null ? this.store.getPage() : 0;
 	},
 
 	count: function() {
@@ -83,7 +83,7 @@ Z8.define('Z8.pager.Pager', {
 	},
 
 	pageSize: function() {
-		return this.store != null ? this.store.limit : 0;
+		return this.store != null ? this.store.getLimit() : 0;
 	},
 
 	pageCount: function() {
