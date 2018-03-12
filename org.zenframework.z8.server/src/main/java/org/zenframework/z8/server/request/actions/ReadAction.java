@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
@@ -774,7 +775,7 @@ public class ReadAction extends RequestAction {
 
 		int records = 0;
 		while(cursor.next()) {
-			if(records > 500)
+			if(records > 1000)
 				throw new RuntimeException("Too many records fetched for a json client. Use limit parameter.");
 
 			records++;
@@ -796,15 +797,21 @@ public class ReadAction extends RequestAction {
 			// finish object we'll call later;
 
 			TreeData treeData = new TreeData(data, recordId, parentId);
-			if(!parentId.isNull()) {
-				Collection<TreeData> children = map.get(parentId);
-				if(children == null) {
-					children = new ArrayList<TreeData>();
-					map.put(parentId, children);
-				}
-				children.add(treeData);
-			} else
+			Collection<TreeData> children = new ArrayList<TreeData>();
+			map.put(recordId, children);
+			if (map.containsKey(parentId))
+				map.get(parentId).add(treeData);
+			else
 				roots.add(treeData);
+
+			Iterator<TreeData> it = roots.iterator();
+			while (it.hasNext()) {
+				TreeData root = it.next();
+				if (root.parentId.equals(recordId)) {
+					it.remove();
+					children.add(root);
+				}
+			}
 		}
 
 		writeTreeData(writer, roots, map, 0);
@@ -816,23 +823,13 @@ public class ReadAction extends RequestAction {
 		for(TreeData record : records) {
 			Collection<TreeData> children = childrenMap.get(record.recordId);
 			JsonWriter data = record.data;
-			data.writeProperty(Json.hasChildren, children != null);
+			data.writeProperty(Json.hasChildren, !children.isEmpty());
 			data.writeProperty(Json.level, level);
 			data.finishObject(); // start object was called in writeTreeData(Select, JsonWriter)
 			writer.write(data);
 
-			if(children != null) {
+			if(!children.isEmpty())
 				writeTreeData(writer, children, childrenMap, level + 1);
-				childrenMap.remove(record.recordId);
-			}
-		}
-
-		if(level == 0 && !childrenMap.isEmpty()) {
-			for(guid recordId : childrenMap.keySet().toArray(new guid[0])) {
-				Collection<TreeData> children = childrenMap.remove(recordId);
-				if(children != null)
-					writeTreeData(writer, children, childrenMap, 0);
-			}
 		}
 	}
 
