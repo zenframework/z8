@@ -127,11 +127,6 @@ public class TreeTable extends Table {
 	}
 
 	@Override
-	public Field parentKey() {
-		return parentId.get();
-	}
-
-	@Override
 	public Field[] parentKeys() {
 		return new Field[] { parent1.get(), parent2.get(), parent3.get(), parent4.get(), parent5.get(), parent6.get() };
 	}

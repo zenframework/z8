@@ -101,6 +101,9 @@ public class Query extends OBJECT {
 
 	private IAccess access;
 
+	private Field parentKey = null;
+	private boolean parentKeyFound = false;
+
 	protected Query() {
 		this(null);
 	}
@@ -870,7 +873,16 @@ public class Query extends OBJECT {
 	}
 
 	public Field parentKey() {
-		return null;
+		if (!parentKeyFound) {
+			for (Field.CLASS<Field> field : dataFields()) {
+				if (field.get().isParentKey()) {
+					parentKey = field.get();
+					break;
+				}
+			}
+			parentKeyFound = true;
+		}
+		return parentKey;
 	}
 
 	public Field[] parentKeys() {

@@ -171,8 +171,10 @@ abstract public class Field extends Control implements IField {
 	}
 
 	public boolean isParentKey() {
-		if(isParentKey == null)
-			isParentKey = new bool(hasAttribute(IObject.ParentKey));
+		if(isParentKey == null) {
+			String value = getAttribute(IObject.ParentKey);
+			isParentKey = new bool(value != null && !value.equalsIgnoreCase("false"));
+		}
 		return isParentKey.get();
 	}
 
