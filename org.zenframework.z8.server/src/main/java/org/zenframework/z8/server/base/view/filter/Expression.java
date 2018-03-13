@@ -207,24 +207,35 @@ public class Expression implements IFilter {
 			case NotEndsWith:
 			case Contains:
 			case NotContains:
-				if(value == null || value.isEmpty())
+				if(value == null || value.trim().isEmpty())
 					return null;
 
+				String values[] = {};
 				if(operation == Operation.BeginsWith || operation == Operation.NotBeginsWith)
-					value += '%';
+					values = new String[] { value + '%' };
 				else if(operation == Operation.EndsWith || operation == Operation.NotEndsWith)
-					value = '%' + value;
-				else if(operation == Operation.Contains || operation == Operation.NotContains)
-					value = '%' + value + '%';
+					values = new String[] { '%' + value };
+				else if(operation == Operation.Contains || operation == Operation.NotContains) {
+					value = value.trim();
+					if (value.charAt(0) == '"' && value.charAt(value.length() - 1) == '"') {
+						values = new String[] { '%' + value.substring(1, value.length() - 1) + '%' };
+					} else {
+						values = value.split("\\s+");
+						for (int i = 0; i < values.length; i++)
+							values[i] = "%" + values[i] + "%";
+					}
+				}
 
-				SqlToken left = new Lower(field);
-				SqlToken right = new sql_string(value.toLowerCase());
-				SqlToken result = new Like(left, right);
+				SqlToken token = new Like(new Lower(field), new sql_string(values[0].toLowerCase()));
+				for (int i = 1; i < values.length; i++) {
+					SqlToken t = new Like(new Lower(field), new sql_string(values[i].toLowerCase()));
+					token = new And(token, t);
+				}
 
 				if(operation == Operation.NotBeginsWith || operation == Operation.NotEndsWith || operation == Operation.NotContains)
-					result = new Unary(Operation.Not, result);
+					token = new Unary(Operation.Not, token);
 
-				return result;
+				return token;
 			case Eq:
 			case NotEq:
 			case LT:
