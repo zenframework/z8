@@ -127,7 +127,7 @@ public class UpdateAction extends RequestAction {
 		Field primaryKey = query.primaryKey();
 		Field parentKey = query.parentKey();
 
-		guid recordId = guid.create();
+		guid recordId = ownerId;
 		primaryKey.set(recordId);
 
 		guid parentId = parentKey != null ? parentKey.guid() : null;
