@@ -82,6 +82,10 @@ Z8.define('Z8.form.field.Listbox', {
 		return this.store.getModel();
 	},
 
+	getStore: function() {
+		return this.store;
+	},
+
 	getFields: function() {
 		return this.list.getFields();
 	},
@@ -205,6 +209,7 @@ Z8.define('Z8.form.field.Listbox', {
 		var loadCallback = function(store, records, success) {
 			this.setDependsOnValue(dependsOnValue);
 			this.validate();
+			this.updateTools();
 		};
 
 		if(record != null) {
@@ -464,12 +469,13 @@ Z8.define('Z8.form.field.Listbox', {
 			this.list.setFields(fields);
 	},
 
-	onSelect: function(item) {
+	onSelect: function(item, oldItem) {
+		var oldRecord = oldItem != null ? oldItem.record : null;
 		var record = item != null ? item.record : null;
 
 		this.mixins.field.setValue.call(this, record != null ? record.id : guid.Null);
 
-		this.fireEvent('select', this, record);
+		this.fireEvent('select', this, record, oldRecord);
 		this.updateTools();
 
 		if(this.selectTask == null)

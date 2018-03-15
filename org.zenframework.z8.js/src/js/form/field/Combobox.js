@@ -2,7 +2,7 @@ Z8.define('Z8.form.field.Combobox', {
 	extend: 'Z8.form.field.Text',
 
 	isCombobox: true,
-	instantAutoSave: true, 
+	instantAutoSave: true,
 
 	displayName: 'name',
 	name: 'id',

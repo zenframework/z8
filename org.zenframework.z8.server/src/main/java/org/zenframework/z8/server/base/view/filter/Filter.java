@@ -13,7 +13,7 @@ import org.zenframework.z8.server.json.parser.JsonArray;
 import org.zenframework.z8.server.json.parser.JsonObject;
 
 public class Filter implements IFilter {
-	private boolean logicalOr;
+	private String logical;
 	private Collection<IFilter> expressions;
 
 	public Filter(String json, Query query) {
@@ -31,7 +31,7 @@ public class Filter implements IFilter {
 	}
 
 	protected Filter(JsonObject json, Query query) {
-		this.logicalOr = Json.or.equalsIgnoreCase(json.getString(Json.logical));
+		this.logical = json.getString(Json.logical);
 		JsonArray expressions = json.getJsonArray(Json.expressions);
 		for(Object object : expressions)
 			addExpression((JsonObject)object, query);
@@ -50,18 +50,20 @@ public class Filter implements IFilter {
 		if(expressions == null)
 			return null;
 
+		boolean unaryNot = Json.not.equalsIgnoreCase(logical);
+
 		for(IFilter expression : expressions) {
 			SqlToken where = expression.where();
 			if(where == null)
 				continue;
 			if(result == null)
 				result = where;
-			else if(logicalOr)
+			else if(Json.or.equalsIgnoreCase(logical))
 				result = new Or(result, where);
 			else
 				result = new And(result, where);
 		}
 
-		return result != null ? Sql.group(result) : null;
+		return result != null ? (unaryNot ? Sql.not(result) : Sql.group(result)) : null;
 	}
 }

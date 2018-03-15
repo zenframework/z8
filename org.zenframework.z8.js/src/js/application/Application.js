@@ -8,6 +8,12 @@ Z8.define('Z8.application.Application', {
 	viewportCls: null,
 	userCls: null,
 
+	geometry: {
+		url: '',
+		serverType: 'geoserver',
+		params: { 'LAYERS': 'ar:egko', 'VERSION': '1.1.1', 'SRS': 'EPSG:96872' }
+	},
+
 	subclasses: {
 	},
 

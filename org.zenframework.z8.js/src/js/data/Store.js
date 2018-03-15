@@ -716,7 +716,7 @@ Z8.define('Z8.data.Store', {
 				if(result != 0)
 					return sorter.direction == 'asc' ? result : -result;
 			}
-			return 0;
+			return -1;
 		};
 
 		this.records.sort(sortFn);
@@ -765,17 +765,26 @@ Z8.define('Z8.data.Store', {
 
 		for(var i = 0, length = records.length; i < length; i++) {
 			var record = records[i];
+			var recordId = record.id;
 			var parentId = record.parentId;
 
-			if(parentId != guid.Null) {
-				var children = map[parentId];
+			var children = [];
+			map[recordId] = children;
 
-				if(children == null)
-					map[parentId] = children = [];
+			var parentChildren = map[parentId];
+			if(parentChildren != null)
+				parentChildren.push(record);
+			else
+				roots.add(record);
 
-				children.push(record);
-			} else
-				roots.push(record);
+			for(var i = 0, length = roots.length; i < length; i++) {
+				var root = roots[i];
+				if (root.parentId == recordId) {
+					children.push(root);
+					roots.removeAt(i);
+					i--;
+				}
+			}
 		}
 
 		var populate = function(records, level) {
@@ -783,10 +792,10 @@ Z8.define('Z8.data.Store', {
 				var record = records[i];
 				var children = map[record.id];
 				var data = record.data;
-				data.hasChildren = children != null;
+				var hasChildren = data.hasChildren = children.length != 0;
 				data.level = level;
 				result.push(record);
-				if(children != null)
+				if(hasChildren)
 					populate(children, level + 1);
 			}
 		};

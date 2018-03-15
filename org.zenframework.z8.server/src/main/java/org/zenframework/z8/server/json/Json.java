@@ -124,6 +124,7 @@ public interface Json {
 	static public string logical = new string("logical");
 	static public string and = new string("and");
 	static public string or = new string("or");
+	static public string not = new string("not");
 	static public string expressions = new string("expressions");
 
 	static public string primaryKey = new string("primaryKey");

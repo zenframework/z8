@@ -1019,7 +1019,7 @@ Z8.define('Z8.list.List', {
 		this.setValue(item != null && item.getValue != null ? item.getValue() : null);
 
 		if(forceEvent || !this.confirmSelection && item != currentItem)
-			this.fireEvent('select', item, this);
+			this.fireEvent('select', item, currentItem, this);
 	},
 
 	setSelection: function(item) {

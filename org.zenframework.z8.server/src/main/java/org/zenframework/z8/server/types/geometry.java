@@ -2,8 +2,8 @@ package org.zenframework.z8.server.types;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Iterator;
 
 import org.zenframework.z8.server.db.DatabaseVendor;
 import org.zenframework.z8.server.db.FieldType;
@@ -190,6 +190,22 @@ public final class geometry extends primary {
 		set(value);
 	}
 
+	public double x1() {
+		return extent()[0][0];
+	}
+
+	public double y1() {
+		return extent()[0][1];
+	}
+
+	public double x2() {
+		return extent()[1][0];
+	}
+
+	public double y2() {
+		return extent()[1][1];
+	}
+
 	public double width() {
 		double[][] extent = extent();
 		return extent[1][0] - extent[0][0];
@@ -241,6 +257,28 @@ public final class geometry extends primary {
 		};
 	}
 
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	public RCollection z8_extent() {
+		double[][] extent = extent();
+		return new RCollection(new decimal[][] { { new decimal(extent[0][0]), new decimal(extent[0][1]) }, { new decimal(extent[1][0]), new decimal(extent[1][1]) } });
+	}
+
+	public decimal z8_x1() {
+		return new decimal(x1());
+	}
+
+	public decimal z8_y1() {
+		return new decimal(y1());
+	}
+
+	public decimal z8_x2() {
+		return new decimal(x2());
+	}
+
+	public decimal z8_y2() {
+		return new decimal(y2());
+	}
+
 	public decimal z8_width() {
 		return new decimal(width());
 	}
@@ -267,11 +305,13 @@ public final class geometry extends primary {
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	static public geometry z8_fromArray(RCollection geometries) {
-		Iterator<geometry> iterator = (Iterator<geometry>)geometries.iterator();
-		while(iterator.hasNext()) {
-			if(iterator.next().isEmpty())
-				iterator.remove();
+		Collection<geometry> points = new ArrayList<geometry>();
+		for(geometry geometry : (Collection<geometry>)geometries) {
+			if(geometry.shape() == Collection)
+				points.addAll(geometry.points());
+			else if(geometry.shape() != None)
+				points.add(geometry);
 		}
-		return new geometry(geometries, Collection);
+		return new geometry(points, Collection);
 	}
 }

@@ -398,7 +398,7 @@ Z8.define('Z8.application.form.Navigator', {
 			var controls = this.form.getFields();
 			for(var i = 0, length = controls.length; i < length; i++) {
 				var field = controls[i].field;
-				if(field != null && !field.isListbox && !field.isContainer && !field.isFieldset)
+				if(field != null && !field.isListbox && !field.isContainer && !field.isFieldset && !field.isGeometry)
 					columns.push(field);
 			}
 		}
@@ -574,18 +574,18 @@ Z8.define('Z8.application.form.Navigator', {
 		return this.getActiveListbox().focus();
 	},
 
-	select: function(listbox, record) {
+	select: function(listbox, newRecord, oldRecord) {
 		if(!this.disposed) {
-			this.form.loadRecord(record);
+			this.form.loadRecord(newRecord);
 			this.updateToolbar();
 		}
 	},
 
-	onSelect: function(listbox, record) {
+	onSelect: function(listbox, newRecord, oldRecord) {
 		if(this.selectTask == null)
 			this.selectTask = new Z8.util.DelayedTask();
 
-		this.selectTask.delay(50, this.select, this, listbox, record);
+		this.selectTask.delay(50, this.select, this, listbox, newRecord, oldRecord);
 	},
 
 	onKeyDown: function(event, target) {

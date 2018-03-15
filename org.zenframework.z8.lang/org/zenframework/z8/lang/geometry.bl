@@ -1,5 +1,12 @@
 [primary "org.zenframework.z8.server.types.geometry"]
 public final class geometry extends primary {
+	public decimal[][] extent();
+
+	public decimal x1();
+	public decimal y1();
+	public decimal x2();
+	public decimal y2();
+
 	public decimal width();
 	public decimal height();
 

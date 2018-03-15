@@ -1,0 +1,18 @@
+.control.geometry {
+	border-width: 1px !important;
+	padding-left: 0;
+	padding-right: 0;
+}
+
+.control.geometry>.ol-viewport {
+	position: absolute !important;
+}
+
+.control.geometry>.ol-viewport>.ol-overlaycontainer-stopevent {
+	display: none;
+}
+
+.ol-dragbox {
+	background-color: rgba(255,255,255,0.4);
+	border-color: rgba(100,150,0,1);
+}

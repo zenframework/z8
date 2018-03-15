@@ -76,7 +76,7 @@ Z8.define('Z8.form.Helper', {
 				return cls != null ? Z8.create(cls, config) : new Z8.form.field.Text(config);
 
 			if(type == Type.Geometry)
-				return cls != null ? Z8.create(cls, config) : new Z8.form.field.Text(config);
+				return cls != null ? Z8.create(cls, config) : new Z8.form.field.Geometry(config);
 
 			if(type == Type.Text) {
 				config.minHeight = Ems.unitsToEms(field.height);
