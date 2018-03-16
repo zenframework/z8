@@ -48,3 +48,7 @@ String.prototype.endsWith = function(string) {
 
 	return this.substr(length - string.length, string.length) == string;
 };
+
+String.prototype.firstCharToLower = function() {
+	return this.length ? this.charAt(0).toLowerCase() + this.substring(1) : this;
+};
