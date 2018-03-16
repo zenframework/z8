@@ -154,16 +154,20 @@ public class TreeTable extends Table {
 	public void beforeCreate(guid recordId, guid parentId) {
 		super.beforeCreate(recordId, parentId);
 
-		parentId = parentKey().guid();
+		Field parentKey = this.parentKey();
+		if(parentKey == null)
+			return;
+
+		parentId = parentKey != null ? parentKey.guid() : null;
 		recordId = primaryKey().guid();
 
 		if(parentId == null)
 			parentId = guid.Null;
 
-		guid[] parents = new guid[0];
+		guid[] parents = {};
 		String path = "";
 
-		if(!recordId.isNull()) {
+		if(!parentId.isNull()) {
 			Connection connection = ConnectionManager.get();
 			connection.flush();
 
@@ -184,7 +188,7 @@ public class TreeTable extends Table {
 		super.beforeUpdate(recordId);
 
 		Field parentKey = this.parentKey();
-		if(!parentKey.changed())
+		if(parentKey == null || !parentKey.changed())
 			return;
 
 		guid parentId = parentKey.guid();
@@ -243,20 +247,6 @@ public class TreeTable extends Table {
 			readExistingRecord(id, Arrays.asList(pathField));
 
 			return pathField.string().get();
-		} finally {
-			restoreState();
-		}
-	}
-
-	public guid getParent(guid recordId) {
-		try {
-			saveState();
-
-			Field parentId = this.parentId.get();
-			Collection<Field> fields = Arrays.asList(parentId);
-			readExistingRecord(recordId, fields);
-
-			return parentId.guid();
 		} finally {
 			restoreState();
 		}
