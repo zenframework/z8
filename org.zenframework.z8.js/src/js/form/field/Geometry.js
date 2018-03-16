@@ -37,30 +37,44 @@ Z8.define('Z8.form.field.Geometry', {
 		var select = this.selectButton = new Z8.button.Tool({ icon: 'fa-mouse-pointer', tooltip: 'Выбор объектов', toggled: true });
 		select.on('toggle', this.onInteractionToggle, this);
 
-		var move = this.moveButton = new Z8.button.Tool({ icon: 'fa-arrows', tooltip: 'Переместить объект', toggled: false, enabled: false });
+		var move = this.moveButton = new Z8.button.Tool({ icon: 'fa-hand-paper-o', tooltip: 'Переместить объект', toggled: false, enabled: false });
 		move.on('toggle', this.onInteractionToggle, this);
 
-		var edit = this.editButton = new Z8.button.Tool({ icon: 'fa-pencil', tooltip: 'Изменить объект', toggled: false, enabled: false });
+		var edit = this.editButton = new Z8.button.Tool({ icon: 'fa-arrows', tooltip: 'Изменить объект', toggled: false, enabled: false });
 		edit.on('toggle', this.onInteractionToggle, this);
 
-		var interactions = new Z8.button.Group({ items: [select, move, edit], radio: true });
+		var draw = this.drawButton = new Z8.button.Tool({ icon: 'fa-pencil', tooltip: 'Нарисовать объект', toggled: false, enabled: false });
+		draw.on('toggle', this.onInteractionToggle, this);
+/*
+		var erase = this.eraseButton = new Z8.button.Tool({ icon: 'fa-eraser', tooltip: 'Удалить объект', toggled: false, enabled: false });
+		edit.on('toggle', this.onInteractionToggle, this);
+*/
+		var interactions = new Z8.button.Group({ items: [select, move, edit, draw/*, erase*/], radio: true });
 
 		return [zoom, interactions];
 	},
 
 	updateTools: function() {
-		var enabled = !this.isReadOnly() && this.isEnabled();
+		if(this.selectButton == null)
+			return;
 
-		if(this.moveButton != null)
-			this.moveButton.setEnabled(enabled);
-		if(this.editButton != null)
-			this.editButton.setEnabled(enabled);
+		var enabled = !this.isReadOnly() && this.isEnabled();
+		var canMove = this.canMove();
+		var canEdit = this.canEdit();
+		var canDraw = this.canDraw();
+
+		if(!enabled || !canMove && this.moveButton.toggled || 
+				!canEdit && this.editButton.toggled || !canDraw && this.drawButton.toggled)
+			this.toggleSelect();
+
+		this.moveButton.setEnabled(enabled && canMove);
+		this.editButton.setEnabled(enabled && canEdit);
+		this.drawButton.setEnabled(enabled && canDraw);
 	},
 
 	completeRender: function() {
 		this.callParent();
 		this.createMap();
-//		this.setValue(this.getValue());
 		this.updateTools();
 	},
 
@@ -170,7 +184,7 @@ Z8.define('Z8.form.field.Geometry', {
 	},
 
 	rawToValue: function(value) {
-		return value != null ? new ol.format.GeoJSON().writeFeature(value) : null;
+		return this.writeFeature(value);
 	},
 
 	getRawValue: function(value) {
@@ -186,7 +200,6 @@ Z8.define('Z8.form.field.Geometry', {
 	setValue: function(value, displayValue) {
 		this.cancelEdit(false);
 		this.callParent(value, displayValue);
-		this.updateInteractions();
 	},
 
 	setRecord: function(record) {
@@ -207,24 +220,29 @@ Z8.define('Z8.form.field.Geometry', {
 		if(feature == null || this.vectorSource == null)
 			return;
 
-		feature = !Array.isArray(feature) ? [feature] : feature;
+		var features = !Array.isArray(feature) ? [feature] : feature;
 
-		for(var i = 0, length = feature.length; i < length; i++)
-			this.saveGeometry(feature[i]);
-
-		this.vectorSource.addFeatures(feature);
+		for(var i = 0, length = features.length; i < length; i++) {
+			feature = features[i];
+			if(feature.getGeometry() != null) {
+				this.saveGeometry(feature);
+				this.vectorSource.addFeature(feature);
+			}
+		}
 	},
 
 	removeFeatures: function(feature) {
 		if(feature == null || this.vectorSource == null)
 			return;
 
-		feature = !Array.isArray(feature) ? [feature] : feature;
-
 		var source = this.vectorSource;
+		var features = !Array.isArray(feature) ? [feature] : feature;
 
-		for(var i = 0, length = feature.length; i < length; i++)
-			source.removeFeature(feature[i]);
+		for(var i = 0, length = features.length; i < length; i++) {
+			feature = features[i];
+			if(feature.getGeometry() != null)
+				source.removeFeature(feature);
+		}
 	},
 
 	clear: function() {
@@ -306,9 +324,9 @@ Z8.define('Z8.form.field.Geometry', {
 			return;
 		}
 
-		var wasDrawing = this.isDrawing();
+		var isDrawing = this.isDrawing();
 
-		if(wasDrawing) {
+		if(isDrawing) {
 			var polygon = this.lineToPolygon(feature.getGeometry());
 			if(polygon == null) {
 				this.cancelEdit();
@@ -384,10 +402,6 @@ Z8.define('Z8.form.field.Geometry', {
 		}
 	},
 
-	canSelect: function() {
-		return !this.edit.getActive() && !this.draw.getActive();
-	},
-
 	setZoom: function(zoom) {
 		zoom = Math.min(Math.max(zoom, this.getMinZoom()), this.getMaxZoom());
 		this.view.animate({ zoom: zoom });
@@ -411,28 +425,31 @@ Z8.define('Z8.form.field.Geometry', {
 		this.editButton.setToggled(true);
 	},
 
-	onInteractionToggle: function(button) {
-		var feature = this.feature;
-		var hasRecord = this.record != null;
-		var hasFeatures = this.hasFeatures();
-
-		this.cancelEdit(false);
-
-		this.move.setActive(button == this.moveButton && hasFeatures);
-		this.edit.setActive(button == this.editButton && (feature != null || (!hasRecord && hasFeatures)));
-		this.draw.setActive(button == this.editButton && feature == null && hasRecord);
+	toggleDraw: function() {
+		this.drawButton.setToggled(true);
 	},
 
-	updateInteractions: function() {
-		if(this.getDom() == null)
-			return;
+	canSelect: function() {
+		return true;
+	},
 
-		if(this.selectButton.toggled)
-			this.onInteractionToggle(this.selectButton);
-		if(this.moveButton.toggled)
-			this.onInteractionToggle(this.moveButton);
-		if(this.editButton.toggled)
-			this.onInteractionToggle(this.editButton);
+	canMove: function() {
+		return this.hasFeatures();
+	},
+
+	canEdit: function() {
+		return this.hasFeatures();
+	},
+
+	canDraw: function() {
+		return this.record != null && this.feature == null;
+	},
+
+	onInteractionToggle: function(button) {
+		this.cancelEdit(false);
+		this.move.setActive(button == this.moveButton && this.canMove());
+		this.edit.setActive(button == this.editButton && this.canEdit());
+		this.draw.setActive(button == this.drawButton && this.canDraw());
 	},
 
 	getExtent: function() {
@@ -467,12 +484,19 @@ Z8.define('Z8.form.field.Geometry', {
 	},
 
 	readFeature: function(value) {
+		if(Z8.isEmpty(value))
+			return null;
+
 		if(String.isString(value)) {
 			var parser = new ol.format.GeoJSON();
 			return parser.readFeature(value);
 		}
 
 		return value;
+	},
+
+	writeFeature: function(value) {
+		return value != null && value.getGeometry() != null ? new ol.format.GeoJSON().writeFeature(value) : null;
 	},
 
 	saveStyle: function(feature) {
