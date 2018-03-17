@@ -221,8 +221,6 @@ public abstract class RequestAction extends RequestTarget {
 		QueryUtils.setFieldValues(query, getRequestParameter(Json.values));
 
 		ReadAction action = new ReadAction(query, fields, recordIds);
-		action.addFilter(query.where());
-
 		Select cursor = action.getCursor();
 		fields = cursor.getFields();
 
