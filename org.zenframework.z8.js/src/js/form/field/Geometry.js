@@ -280,8 +280,8 @@ Z8.define('Z8.form.field.Geometry', {
 		this.updateZoomTools(this.getZoom());
 	},
 
-	saveGeometry: function(feature) {
-		if(feature.cachedGeometry == null) {
+	saveGeometry: function(feature, force) {
+		if(feature.cachedGeometry == null || force) {
 			var geometry = feature.getGeometry();
 			if(geometry != null)
 				feature.cachedGeometry = feature.getGeometry().clone();
