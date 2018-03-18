@@ -356,21 +356,26 @@ Z8.define('Z8.form.field.Combobox', {
 			var items = this.dropdown.getItems();
 			var count = items.length;
 
-			if(direction == 'next')
-				index = index != count - 1 ? index + 1 : 0;
-			else if(direction == 'previous')
-				index = index != 0 ? index - 1 : (count - 1);
-			else if(direction == 'first')
-				index = 0;
-			else if(direction == 'last')
-				index = count - 1;
+			var startIndex = index;
 
-			index = Math.min(Math.max(index, 0), count - 1);
+			do {
+				if(direction == 'next')
+					index = index != count - 1 ? index + 1 : 0;
+				else if(direction == 'previous')
+					index = index != 0 ? index - 1 : (count - 1);
+				else if(direction == 'first')
+					index = 0;
+				else if(direction == 'last')
+					index = count - 1;
+	
+				index = Math.min(Math.max(index, 0), count - 1);
+	
+				if(index == -1 || index == startIndex)
+					return;
 
-			if(index == -1)
-				return;
+				item = items[index];
+			} while(item.isHidden());
 
-			item = items[index];
 			this.setValue(item.getValue(), item.getText(this.displayName));
 		};
 

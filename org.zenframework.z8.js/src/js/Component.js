@@ -57,6 +57,16 @@ Z8.define('Z8.Component', {
 		return this.dom;
 	},
 
+	getCell: function() {
+		var dom = this.dom;
+		return dom != null ? dom.parentNode : null;
+	},
+
+	getRow: function() {
+		var dom = this.dom;
+		return dom != null ? dom.parentNode.parentNode : null;
+	},
+
 	getTitle: function() {
 		return this.title;
 	},

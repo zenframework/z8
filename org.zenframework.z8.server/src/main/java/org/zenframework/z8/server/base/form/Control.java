@@ -35,7 +35,6 @@ public class Control extends OBJECT {
 	public bool editable;
 	public bool important;
 
-
 	public integer colSpan;
 	public integer flex;
 

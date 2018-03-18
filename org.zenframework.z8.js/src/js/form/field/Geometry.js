@@ -85,7 +85,12 @@ Z8.define('Z8.form.field.Geometry', {
 
 		var vectorSource = this.vectorSource = new ol.source.Vector({ strategy : ol.loadingstrategy.bbox, wrapX: false });
 		vectorSource.on('changefeature', this.onFeatureChange, this);
-		var vectorLayer = new ol.layer.Vector({ source : vectorSource });
+
+		var me = this;
+		var callback = function(feature, resolution) {
+			return me.getStyle(feature, me.getZoom(), resolution);
+		};
+		var vectorLayer = new ol.layer.Vector({ source : vectorSource, style: callback });
 
 		var projection = new ol.proj.Projection({ code: 'EPSG:96872', units: 'm', axisOrientation: 'enu', global: false });
 		var view = this.view = new ol.View({ center: [0, 0], zoom : 17, minZoom: 11, maxZoom: 21, projection: projection });
@@ -254,6 +259,10 @@ Z8.define('Z8.form.field.Geometry', {
 		}
 
 		this.feature = null;
+	},
+
+	getResolution: function() {
+		return this.view.getResolution();
 	},
 
 	getZoom: function() {
@@ -499,19 +508,8 @@ Z8.define('Z8.form.field.Geometry', {
 		return value != null && value.getGeometry() != null ? new ol.format.GeoJSON().writeFeature(value) : null;
 	},
 
-	saveStyle: function(feature) {
-		if(feature != null)
-			feature.style = feature.getStyle();
-	},
-
-	restoreStyle: function(feature) {
-		if(feature != null)
-			feature.setStyle(feature.style);
-	},
-
-	setStyle: function(feature, style) {
-		if(feature != null)
-			feature.setStyle(style);
+	getStyle: function(feature, zoom, resolution) {
+		return null;
 	},
 
 	lineToPolygon: function(line) {

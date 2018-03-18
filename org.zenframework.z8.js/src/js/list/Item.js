@@ -15,9 +15,12 @@ Z8.define('Z8.list.Item', {
 	*     handlers: null
 	*/
 
-	collapsed: false,
-
-	hidden: 0,
+	constructor: function(config) {
+		config = config || {};
+		config.collapsed = config.collapsed !== false;
+		config.hidden = 0;
+		this.callParent(config);
+	},
 
 	initComponent: function() {
 		this.callParent();
@@ -28,12 +31,23 @@ Z8.define('Z8.list.Item', {
 			this.level = record.get('level');
 			this.children = record.get('hasChildren');
 
+			if(record.parentId != null)
+				this.list.on('contentChange', this.updateCollapsedState, this);
+
 			var icon = record.get('icon');
 			this.icon = icon != null ? icon : this.icon;
 
 			if(record.on != null)
 				record.on('change', this.onRecordChange, this);
 		}
+	},
+
+	updateCollapsedState: function(list) {
+		list.un('contentChange', this.updateCollapsedState, this);
+
+		var parent = list.getItem(this.record.parentId);
+		if(parent != null && (parent.isCollapsed() || parent.isHidden()))
+			this.hide(true);
 	},
 
 	isReadOnly: function() {
@@ -90,10 +104,13 @@ Z8.define('Z8.list.Item', {
 			var fields = this.list.getFields();
 
 			var hasChildren = this.hasChildren();
+			var collapsed = this.isCollapsed();
 
 			if(hasChildren != null) {
+				this.rotation = hasChildren && collapsed ? 90 : -90;
+
 				var level = this.getLevel();
-				var collapserIcon = { tag: 'i', cls: (hasChildren ? 'fa fa-chevron-down ' : '') + 'icon', html: String.htmlText() };
+				var collapserIcon = { tag: 'i', cls: (hasChildren ? 'fa fa-chevron-' + (collapsed ? 'right' : 'down') + ' ' : '') + 'icon', html: String.htmlText() };
 				var collapser = { tag: 'span', cls: 'collapser tree-level-' + (hasChildren ? level : level + 1), cn: [collapserIcon] };
 				icons.insert(collapser, 0);
 			}
@@ -151,6 +168,9 @@ Z8.define('Z8.list.Item', {
 
 		if(this.active)
 			cls.pushIf('active');
+
+		if(this.isHidden())
+			cls.pushIf('display-none');
 
 		return { tag: 'tr', id: this.getId(), cls: cls.join(' '), tabIndex: this.getTabIndex(), cn: this.columnsMarkup() };
 	},
@@ -253,6 +273,10 @@ Z8.define('Z8.list.Item', {
 		return this.children && !this.collapsed;
 	},
 
+	isHidden: function() {
+		return this.hidden != 0;
+	},
+
 	getLevel: function() {
 		return this.level;
 	},
@@ -269,7 +293,7 @@ Z8.define('Z8.list.Item', {
 	collapse: function(collapsed) {
 		if(this.collapsed != collapsed) {
 			this.collapsed = collapsed;
-			DOM.rotate(this.collapser, collapsed ? -90 : 0);
+			DOM.rotate(this.collapser, this.rotation == 90 ? (collapsed ? 0 : 90) : (collapsed ? -90 : 0));
 			this.list.onItemCollapse(this, collapsed);
 		}
 	},
