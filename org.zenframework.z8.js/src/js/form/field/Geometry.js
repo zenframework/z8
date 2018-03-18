@@ -90,7 +90,7 @@ Z8.define('Z8.form.field.Geometry', {
 		var callback = function(feature, resolution) {
 			return me.getStyle(feature, me.getZoom(), resolution);
 		};
-		var vectorLayer = new ol.layer.Vector({ source : vectorSource, style: callback });
+		var vectorLayer = new ol.layer.Vector({ source : vectorSource, style: this.getStyle != null ? callback : undefined });
 
 		var projection = new ol.proj.Projection({ code: 'EPSG:96872', units: 'm', axisOrientation: 'enu', global: false });
 		var view = this.view = new ol.View({ center: [0, 0], zoom : 17, minZoom: 11, maxZoom: 21, projection: projection });
@@ -126,7 +126,7 @@ Z8.define('Z8.form.field.Geometry', {
 		edit.on('modifyend', this.onEditEnd, this);
 		map.addInteraction(edit);
 
-		var draw = this.draw = new ol.interaction.Draw({ source: this.vectorSource, type: 'LineString' });
+		var draw = this.draw = new ol.interaction.Draw({ source: this.vectorSource, snapTolerance: 0, type: this.getDrawType() });
 		draw.setActive(false);
 		draw.on('drawstart', this.onEditStart, this);
 		draw.on('drawend', this.onEditEnd, this);
@@ -229,25 +229,24 @@ Z8.define('Z8.form.field.Geometry', {
 
 		for(var i = 0, length = features.length; i < length; i++) {
 			feature = features[i];
-			if(feature.getGeometry() != null) {
-				this.saveGeometry(feature);
-				this.vectorSource.addFeature(feature);
-			}
+			this.saveGeometry(feature);
+			this.vectorSource.addFeature(feature);
 		}
 	},
 
-	removeFeatures: function(feature) {
+	removeFeatures: function(feature, delay) {
 		if(feature == null || this.vectorSource == null)
 			return;
 
 		var source = this.vectorSource;
-		var features = !Array.isArray(feature) ? [feature] : feature;
 
-		for(var i = 0, length = features.length; i < length; i++) {
-			feature = features[i];
-			if(feature.getGeometry() != null)
-				source.removeFeature(feature);
+		var callback = function() {
+			var features = !Array.isArray(feature) ? [feature] : feature;
+			for(var i = 0, length = features.length; i < length; i++)
+				source.removeFeature(features[i]);
 		}
+
+		delay != null ? new Z8.util.DelayedTask().delay(delay, callback) : callback();
 	},
 
 	clear: function() {
@@ -298,10 +297,7 @@ Z8.define('Z8.form.field.Geometry', {
 	},
 
 	restoreGeometry: function(feature) {
-		if(feature.cachedGeometry != null)
-			feature.setGeometry(feature.cachedGeometry.clone());
-		else
-			this.removeFeatures(feature);
+		feature.setGeometry(feature.cachedGeometry != null ? feature.cachedGeometry.clone() : null);
 	},
 
 	isModifying: function() {
@@ -326,26 +322,27 @@ Z8.define('Z8.form.field.Geometry', {
 		if(!this.isEditing)
 			return;
 
-		var feature = this.editingFeature;
+		var workingFeature = this.editingFeature;
 
-		if(feature == null) { // edit:end before any feature:change
+		if(workingFeature == null) { // edit:end before any feature:change
 			this.isEditing = false;
 			return;
 		}
 
 		var isDrawing = this.isDrawing();
+		var feature = isDrawing ? this.getDrawingFeature() : workingFeature;
+		var record = feature.record;
 
 		if(isDrawing) {
-			var polygon = this.lineToPolygon(feature.getGeometry());
-			if(polygon == null) {
+			var geometry = this.convertDrawGeometry(workingFeature.getGeometry());
+			if(geometry == null) {
 				this.cancelEdit();
 				return;
 			}
-			feature.setGeometry(polygon);
+			feature.setGeometry(geometry);
+			this.removeFeatures(workingFeature, 1);
 			this.toggleSelect();
 		}
-
-		this.resetEdit();
 
 		this.isEditing = false;
 		this.editingFeature = null;
@@ -450,8 +447,20 @@ Z8.define('Z8.form.field.Geometry', {
 		return this.hasFeatures();
 	},
 
+	getDrawType: function() {
+		return 'LineString';
+	},
+
 	canDraw: function() {
 		return this.record != null && this.feature == null;
+	},
+
+	getDrawingFeature: function() {
+		return this.editingFeature;
+	},
+
+	convertDrawGeometry: function(geometry) {
+		return geometry;
 	},
 
 	onInteractionToggle: function(button) {
@@ -508,11 +517,12 @@ Z8.define('Z8.form.field.Geometry', {
 		return value != null && value.getGeometry() != null ? new ol.format.GeoJSON().writeFeature(value) : null;
 	},
 
-	getStyle: function(feature, zoom, resolution) {
-		return null;
-	},
+/*
+ *  Default styling, should be defined as function(feature, zoom, resolution) to use customized styles 
+*/
+	getStyle: null,
 
-	lineToPolygon: function(line) {
+	lineToPolygon: function(line, width) {
 		var coordinates = line.getCoordinates();
 
 		if(coordinates.length < 2)
@@ -520,7 +530,7 @@ Z8.define('Z8.form.field.Geometry', {
 
 		var left = [];
 		var right = [];
-		var width = 1;
+		width = (width || 2) / 2;
 
 		for(var i = 1, length = coordinates.length; i < length; i += 1) {
 			var start = coordinates[i - 1];
@@ -610,5 +620,22 @@ Z8.define('Z8.form.field.Geometry', {
 			first[1][0] = second[0][0] = x;
 			first[1][1] = second[0][1] = y;
 		}
+	},
+
+	pointToPolygon: function(point, width) {
+		var coordinates = point.getCoordinates();
+		var x = coordinates[0];
+		var y = coordinates[1];
+		var width = (width || 1) / 2;
+		var points = [[x - width, y - width], [x - width, y + width], [x + width, y + width], [x + width, y - width], [x - width, y - width]];
+		var polygon = new ol.geom.Polygon([points]);
+		return new ol.geom.GeometryCollection([polygon, point]);
+	},
+
+	pointToCircle: function(point, width) {
+		var center = point.getCoordinates();
+		var circle = new ol.geom.Circle(center, (width || 1) / 2);
+		var polygon = ol.geom.Polygon.fromCircle(circle);
+		return new ol.geom.GeometryCollection([polygon, point]);
 	}
 });

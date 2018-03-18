@@ -110,7 +110,7 @@ public class GeoJsonReader {
 	private geometry readCollection(JsonArray geometries) {
 		Collection<geometry> result = new ArrayList<geometry>();
 		for(int i = 0; i < geometries.size(); i++)
-			geometries.add(readGeometry(geometries.getJsonObject(i)));
+			result.add(readGeometry(geometries.getJsonObject(i)));
 		return new geometry(result, geometry.Collection);
 	}
 

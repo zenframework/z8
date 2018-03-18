@@ -142,16 +142,24 @@ Z8.define('Z8.form.field.Listbox', {
 		return values;
 	},
 
+	attachRecordChange: function(record) {
+		if(record != null)
+			record.on('change', this.onRecordChange, this);
+	},
+
+	detachRecordChange: function(record) {
+		if(record != null)
+			record.un('change', this.onRecordChange, this);
+	},
+
 	setRecord: function(record) {
 		var current = this.getRecord();
 
-		if(current != null)
-			current.un('change', this.onRecordChange, this);
+		this.detachRecordChange(current);
 
 		this.callParent(record);
 
-		if(record != null)
-			record.on('change', this.onRecordChange, this);
+		this.attachRecordChange(record);
 
 		this.afterRecordSet(record);
 		this.onRecordChange(record, {});
@@ -453,7 +461,7 @@ Z8.define('Z8.form.field.Listbox', {
 	},
 
 	onDestroy: function() {
-		this.setRecord(null);
+		this.detachRecordChange(this.getRecord());
 
 		var store = this.store;
 		store.un('beforeLoad', this.onBeforeLoad, this);
