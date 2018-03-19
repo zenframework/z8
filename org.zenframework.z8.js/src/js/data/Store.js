@@ -710,9 +710,9 @@ Z8.define('Z8.data.Store', {
 				var sorter = sorters[i];
 				var property = sorter.property;
 				var field = fields[i];
-				left = left.get(property);
-				right = right.get(property);
-				var result = fields[i].compare(left, right);
+				var leftValue = left.get(property);
+				var rightValue = right.get(property);
+				var result = fields[i].compare(leftValue, rightValue);
 				if(result != 0)
 					return sorter.direction == 'asc' ? result : -result;
 			}
