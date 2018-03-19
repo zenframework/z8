@@ -573,7 +573,8 @@ Z8.define('Z8.form.field.Geometry', {
 
 		points.push(left[0][0]);
 
-		return new ol.geom.Polygon([points]);
+		var polygon = new ol.geom.Polygon([points]);
+		return new ol.geom.GeometryCollection([polygon, line]);
 	},
 
 	intersect: function(segments) {

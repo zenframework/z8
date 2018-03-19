@@ -40,19 +40,19 @@ public class BinaryReader {
 		int srs = hasSRS ? Math.max(getInt(), 0) : 0;
 
 		switch(type & 0x1FFFFFFF) {
-		case geometry.Point:
+		case geometry.point:
 			return readPoint(srs, bytes);
-		case geometry.Line:
+		case geometry.line:
 			return readLine(srs, bytes);
-		case geometry.Polygon:
+		case geometry.polygon:
 			return readPolygon(srs, bytes);
-		case geometry.MultiPoint:
+		case geometry.multiPoint:
 			return readMultiPoint(srs, bytes);
-		case geometry.MultiLine:
+		case geometry.multiLine:
 			return readMultiLine(srs, bytes);
-		case geometry.MultiPolygon:
+		case geometry.multiPolygon:
 			return readMultiPolygon(srs, bytes);
-		case geometry.Collection:
+		case geometry.collection:
 			return readCollection(srs, bytes);
 		default:
 			throw new IllegalArgumentException("Unknown Geometry Type: " + type);
@@ -115,19 +115,19 @@ public class BinaryReader {
 	}
 
 	private geometry readMultiPoint(int srs, String bytes) {
-		return new geometry(readGeometry(getInt()), geometry.MultiPoint, srs, bytes);
+		return new geometry(readGeometry(getInt()), geometry.multiPoint, srs, bytes);
 	}
 
 	private geometry readLine(int srs, String bytes) {
-		return new geometry(readPoints(srs), geometry.Line, srs, bytes);
+		return new geometry(readPoints(srs), geometry.line, srs, bytes);
 	}
 
 	private geometry readMultiLine(int srs, String bytes) {
-		return new geometry(readGeometry(getInt()), geometry.MultiLine, srs, bytes);
+		return new geometry(readGeometry(getInt()), geometry.multiLine, srs, bytes);
 	}
 
 	private geometry readRing(int srs) {
-		return new geometry(readPoints(srs), geometry.Ring, srs, null);
+		return new geometry(readPoints(srs), geometry.ring, srs, null);
 	}
 
 	private geometry readPolygon(int srs, String bytes) {
@@ -135,14 +135,14 @@ public class BinaryReader {
 		Collection<geometry> rings = new ArrayList<geometry>();
 		for(int i = 0; i < ringCount; i++)
 			rings.add(readRing(srs));
-		return new geometry(rings, geometry.Polygon, srs, bytes);
+		return new geometry(rings, geometry.polygon, srs, bytes);
 	}
 
 	private geometry readMultiPolygon(int srs, String bytes) {
-		return new geometry(readGeometry(getInt()), geometry.MultiPolygon, srs, bytes);
+		return new geometry(readGeometry(getInt()), geometry.multiPolygon, srs, bytes);
 	}
 
 	private geometry readCollection(int srs, String bytes) {
-		return new geometry(readGeometry(getInt()), geometry.Collection, srs, bytes);
+		return new geometry(readGeometry(getInt()), geometry.collection, srs, bytes);
 	}
 }

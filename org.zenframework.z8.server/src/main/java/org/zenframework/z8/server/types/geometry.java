@@ -16,15 +16,25 @@ import org.zenframework.z8.server.types.sql.sql_geometry;
 public final class geometry extends primary {
 	private static final long serialVersionUID = 8678133849134310611L;
 
-	static public final int None = -1;
-	static public final int Ring = 0;
-	static public final int Point = 1;
-	static public final int Line = 2;
-	static public final int Polygon = 3;
-	static public final int MultiPoint = 4;
-	static public final int MultiLine = 5;
-	static public final int MultiPolygon = 6;
-	static public final int Collection = 7;
+	static public final int none = -1;
+	static public final int ring = 0;
+	static public final int point = 1;
+	static public final int line = 2;
+	static public final int polygon = 3;
+	static public final int multiPoint = 4;
+	static public final int multiLine = 5;
+	static public final int multiPolygon = 6;
+	static public final int collection = 7;
+
+	static public final integer None = new integer(none);
+	static public final integer Ring = new integer(ring);
+	static public final integer Point = new integer(point);
+	static public final integer Line = new integer(line);
+	static public final integer Polygon = new integer(polygon);
+	static public final integer MultiPoint = new integer(multiPoint);
+	static public final integer MultiLine = new integer(multiLine);
+	static public final integer MultiPolygon = new integer(multiPolygon);
+	static public final integer Collection = new integer(collection);
 
 	static public double[][] EmptyExtent = { {0, 0}, {0, 0} };
 
@@ -32,7 +42,7 @@ public final class geometry extends primary {
 
 	private String bytes;
 
-	private int shape = None;
+	private int shape = none;
 	private double x;
 	private double y;
 	private Collection<geometry> points;
@@ -54,7 +64,7 @@ public final class geometry extends primary {
 
 	public geometry(double x, double y, int srs, String bytes) {
 		this.bytes = bytes;
-		shape = Point;
+		shape = point;
 		this.srs = srs;
 		this.x = x;
 		this.y = y;
@@ -101,17 +111,17 @@ public final class geometry extends primary {
 	}
 
 	private void checkShape() {
-		if(bytes != null && shape == None)
+		if(bytes != null && shape == none)
 			set(BinaryReader.read(bytes));
 	}
 
 	private void checkBytes() {
-		if(bytes == null && shape != None)
+		if(bytes == null && shape != none)
 			bytes = BinaryWriter.writeHexString(this);
 	}
 
 	public boolean isEmpty() {
-		return bytes == null && shape == None;
+		return bytes == null && shape == none;
 	}
 
 	public String get() {
@@ -125,7 +135,7 @@ public final class geometry extends primary {
 
 	public void set(geometry geometry) {
 		bytes = geometry != null ? geometry.bytes : null;
-		shape = geometry != null ? geometry.shape : None;
+		shape = geometry != null ? geometry.shape : none;
 		x = geometry != null ? geometry.x : 0;
 		y = geometry != null ? geometry.y : 0;
 		points = geometry != null ? geometry.points : null;
@@ -144,7 +154,7 @@ public final class geometry extends primary {
 
 	@Override
 	public String toDbConstant(DatabaseVendor vendor) {
-		return shape != None ? "st_geomFromEWKT('" + get() + "')" : null;
+		return shape != none ? "st_geomFromEWKT('" + get() + "')" : null;
 	}
 
 	@Override
@@ -218,7 +228,7 @@ public final class geometry extends primary {
 
 	private double[] point() {
 		int shape = shape();
-		if(shape == Point || shape == None)
+		if(shape == point || shape == none)
 			return new double[] { x, y };
 		throw new IllegalArgumentException("Geometry type must be 1 (Point), have " + shape);
 	}
@@ -228,16 +238,16 @@ public final class geometry extends primary {
 			return extent;
 
 		switch(shape()) {
-		case None:
-		case Point:
+		case none:
+		case point:
 			return extent = new double[][]{ point(), point() };
-		case Line:
-		case Ring:
-		case Polygon:
-		case MultiPoint:
-		case MultiLine:
-		case MultiPolygon:
-		case Collection:
+		case line:
+		case ring:
+		case polygon:
+		case multiPoint:
+		case multiLine:
+		case multiPolygon:
+		case collection:
 			for(geometry geometry : points()) {
 				if(extent == null)
 					extent = geometry.extent();
@@ -255,6 +265,23 @@ public final class geometry extends primary {
 			new double[] { Math.min(extent1[0][0], extent2[0][0]), Math.min(extent1[0][1], extent2[0][1]) },
 			new double[] { Math.max(extent1[1][0], extent2[1][0]), Math.max(extent1[1][1], extent2[1][1]) }
 		};
+	}
+
+	public integer z8_shape() {
+		return new integer(shape());
+	}
+
+	public decimal z8_x() {
+		return new decimal(x());
+	}
+
+	public decimal z8_y() {
+		return new decimal(y());
+	}
+
+	@SuppressWarnings("rawtypes")
+	public RCollection z8_points() {
+		return new RCollection<geometry>(points());
 	}
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
@@ -287,6 +314,20 @@ public final class geometry extends primary {
 		return new decimal(height());
 	}
 
+	static public geometry z8_point(decimal x, decimal y) {
+		return new geometry(x.getDouble(), y.getDouble());
+	}
+
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	static public geometry z8_line(RCollection points) {
+		return new geometry(points, line);
+	}
+
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	static public geometry z8_collection(RCollection geometries) {
+		return new geometry(geometries, collection);
+	}
+
 	static public geometry fromHexString(String hexString) {
 		return new geometry(hexString);
 	}
@@ -307,11 +348,11 @@ public final class geometry extends primary {
 	static public geometry z8_fromArray(RCollection geometries) {
 		Collection<geometry> points = new ArrayList<geometry>();
 		for(geometry geometry : (Collection<geometry>)geometries) {
-			if(geometry.shape() == Collection)
+			if(geometry.shape() == collection)
 				points.addAll(geometry.points());
-			else if(geometry.shape() != None)
+			else if(geometry.shape() != none)
 				points.add(geometry);
 		}
-		return new geometry(points, Collection);
+		return new geometry(points, collection);
 	}
 }

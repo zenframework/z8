@@ -23,37 +23,37 @@ public class GeoJson {
 
 	static public int geometryType(String type) {
 		if(type.equals(Point))
-			return geometry.Point;
+			return geometry.point;
 		else if(type.equals(Line))
-			return geometry.Line;
+			return geometry.line;
 		else if(type.equals(Polygon))
-			return geometry.Polygon;
+			return geometry.polygon;
 		else if(type.equals(MultiPoint))
-			return geometry.MultiPoint;
+			return geometry.multiPoint;
 		else if(type.equals(MultiLine))
-			return geometry.MultiLine;
+			return geometry.multiLine;
 		else if(type.equals(MultiPolygon))
-			return geometry.MultiPolygon;
+			return geometry.multiPolygon;
 		else if(type.equals(Collection))
-			return geometry.Collection;
-		return geometry.None;
+			return geometry.collection;
+		return geometry.none;
 	}
 
 	static public String geoJsonType(int type) {
 		switch(type) {
-		case geometry.Point:
+		case geometry.point:
 			return Point;
-		case geometry.Line:
+		case geometry.line:
 			return Line;
-		case geometry.Polygon:
+		case geometry.polygon:
 			return Polygon;
-		case geometry.MultiPoint:
+		case geometry.multiPoint:
 			return MultiPoint;
-		case geometry.MultiLine:
+		case geometry.multiLine:
 			return MultiLine;
-		case geometry.MultiPolygon:
+		case geometry.multiPolygon:
 			return MultiPolygon;
-		case geometry.Collection:
+		case geometry.collection:
 			return Collection;
 		default:
 			throw new IllegalArgumentException("Unknown Geometry Type: " + type);

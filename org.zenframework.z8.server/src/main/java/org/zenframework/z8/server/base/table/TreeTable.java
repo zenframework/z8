@@ -167,7 +167,7 @@ public class TreeTable extends Table {
 		guid[] parents = {};
 		String path = "";
 
-		if(!parentId.isNull()) {
+		if(!recordId.isNull()) {
 			Connection connection = ConnectionManager.get();
 			connection.flush();
 

@@ -34,26 +34,26 @@ public class GeoJsonReader {
 			return readFeatureCollection(json);
 		else {
 			int geoType = GeoJson.geometryType(type);
-			JsonArray coordinates = json.getJsonArray(geoType != geometry.Collection ? GeoJson.Coordinates : GeoJson.Geometries);
+			JsonArray coordinates = json.getJsonArray(geoType != geometry.collection ? GeoJson.Coordinates : GeoJson.Geometries);
 			return readGeometry(coordinates, geoType);
 		}
 	}
 
 	private geometry readGeometry(JsonArray coordinates, int type) {
 		switch(type) {
-		case geometry.Point:
+		case geometry.point:
 			return readPoint(coordinates);
-		case geometry.Line:
+		case geometry.line:
 			return readLine(coordinates);
-		case geometry.Polygon:
+		case geometry.polygon:
 			return readPolygon(coordinates);
-		case geometry.MultiPoint:
+		case geometry.multiPoint:
 			return readMultiPoint(coordinates);
-		case geometry.MultiLine:
+		case geometry.multiLine:
 			return readMultiLine(coordinates);
-		case geometry.MultiPolygon:
+		case geometry.multiPolygon:
 			return readMultiPolygon(coordinates);
-		case geometry.Collection:
+		case geometry.collection:
 			return readCollection(coordinates);
 		default:
 			return new geometry();
@@ -81,37 +81,37 @@ public class GeoJsonReader {
 	}
 
 	private geometry readLine(JsonArray coordinates) {
-		return new geometry(readPoints(coordinates), geometry.Line);
+		return new geometry(readPoints(coordinates), geometry.line);
 	}
 
 	private geometry readRing(JsonArray coordinates) {
-		return new geometry(readPoints(coordinates), geometry.Ring);
+		return new geometry(readPoints(coordinates), geometry.ring);
 	}
 
 	private geometry readPolygon(JsonArray coordinates) {
 		Collection<geometry> rings = new ArrayList<geometry>();
 		for(int i = 0; i < coordinates.size(); i++)
 			rings.add(readRing(coordinates.getJsonArray(i)));
-		return new geometry(rings, geometry.Polygon);
+		return new geometry(rings, geometry.polygon);
 	}
 
 	private geometry readMultiPoint(JsonArray coordinates) {
-		return new geometry(readCoordinates(coordinates, geometry.Point), geometry.MultiPoint);
+		return new geometry(readCoordinates(coordinates, geometry.point), geometry.multiPoint);
 	}
 
 	private geometry readMultiLine(JsonArray coordinates) {
-		return new geometry(readCoordinates(coordinates, geometry.Line), geometry.MultiLine);
+		return new geometry(readCoordinates(coordinates, geometry.line), geometry.multiLine);
 	}
 
 	private geometry readMultiPolygon(JsonArray coordinates) {
-		return new geometry(readCoordinates(coordinates, geometry.Polygon), geometry.Polygon);
+		return new geometry(readCoordinates(coordinates, geometry.polygon), geometry.polygon);
 	}
 
 	private geometry readCollection(JsonArray geometries) {
 		Collection<geometry> result = new ArrayList<geometry>();
 		for(int i = 0; i < geometries.size(); i++)
 			result.add(readGeometry(geometries.getJsonObject(i)));
-		return new geometry(result, geometry.Collection);
+		return new geometry(result, geometry.collection);
 	}
 
 	private geometry readFeature(JsonObject json) {
@@ -123,6 +123,6 @@ public class GeoJsonReader {
 		JsonArray features = json.getJsonArray(GeoJson.Features);
 		for(int i = 0; i < features.size(); i++)
 			geometries.add(readFeature(features.getJsonObject(i)));
-		return new geometry(geometries, geometry.Collection);
+		return new geometry(geometries, geometry.collection);
 	}
 }

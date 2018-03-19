@@ -42,25 +42,25 @@ public class BinaryWriter {
 			setInt(srs);
 
 		switch(shape) {
-		case geometry.Point:
+		case geometry.point:
 			writePoint(geo);
 			break;
-		case geometry.Line:
+		case geometry.line:
 			writeLine(geo);
 			break;
-		case geometry.Polygon:
+		case geometry.polygon:
 			writePolygon(geo);
 			break;
-		case geometry.MultiPoint:
+		case geometry.multiPoint:
 			writeMultiPoint(geo);
 			break;
-		case geometry.MultiLine:
+		case geometry.multiLine:
 			writeMultiLine(geo);
 			break;
-		case geometry.MultiPolygon:
+		case geometry.multiPolygon:
 			writeMultiPolygon(geo);
 			break;
-		case geometry.Collection:
+		case geometry.collection:
 			writeCollection(geo);
 			break;
 		default :
