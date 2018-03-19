@@ -40,10 +40,10 @@ Z8.define('Z8.form.field.Geometry', {
 		var move = this.moveButton = new Z8.button.Tool({ icon: 'fa-hand-paper-o', tooltip: 'Переместить объект', toggled: false, enabled: false });
 		move.on('toggle', this.onInteractionToggle, this);
 
-		var edit = this.editButton = new Z8.button.Tool({ icon: 'fa-arrows', tooltip: 'Изменить объект', toggled: false, enabled: false });
+		var edit = this.editButton = new Z8.button.Tool({ icon: 'fa-pencil', tooltip: 'Изменить объект', toggled: false, enabled: false });
 		edit.on('toggle', this.onInteractionToggle, this);
 
-		var draw = this.drawButton = new Z8.button.Tool({ icon: 'fa-pencil', tooltip: 'Нарисовать объект', toggled: false, enabled: false });
+		var draw = this.drawButton = new Z8.button.Tool({ icon: 'fa-pencil-square-o', tooltip: 'Нарисовать объект', toggled: false, enabled: false });
 		draw.on('toggle', this.onInteractionToggle, this);
 /*
 		var erase = this.eraseButton = new Z8.button.Tool({ icon: 'fa-eraser', tooltip: 'Удалить объект', toggled: false, enabled: false });
