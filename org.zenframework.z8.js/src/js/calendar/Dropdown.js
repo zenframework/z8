@@ -2,11 +2,7 @@ Z8.define('Z8.calendar.Dropdown', {
 	extend: 'Z8.calendar.Calendar',
 
 	cls: 'dropdown display-none',
-
-	initComponent: function() {
-		this.callParent();
-		this.visible = false;
-	},
+	visible: false,
 
 	show: function(top, left) {
 		if(this.visible) {

@@ -492,7 +492,7 @@ Z8.define('Z8.form.field.Combobox', {
 	},
 
 	toggleDropdown: function() {
-		if(this.dropdown.visible)
+		if(this.dropdown.isVisible())
 			this.cancelDropdown();
 		else
 			this.openDropdown();
@@ -546,7 +546,7 @@ Z8.define('Z8.form.field.Combobox', {
 
 		var editable = this.editable;
 		var dropdown = this.dropdown;
-		var dropdownOpen = dropdown.visible;
+		var dropdownOpen = dropdown.isVisible();
 		var currentItem = this.dropdown.currentItem();
 
 		var me = this;

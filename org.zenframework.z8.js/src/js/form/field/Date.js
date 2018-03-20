@@ -86,7 +86,7 @@ Z8.define('Z8.form.field.Date', {
 	},
 
 	toggleDropdown: function() {
-		if(this.dropdown.visible)
+		if(this.dropdown.isVisible())
 			this.cancelDropdown();
 		else
 			this.openDropdown();
@@ -118,7 +118,7 @@ Z8.define('Z8.form.field.Date', {
 
 		var editable = this.editable;
 		var dropdown = this.dropdown;
-		var dropdownOpen = dropdown.visible;
+		var dropdownOpen = dropdown.isVisible();
 
 		var me = this;
 		var isTrigger = function() {

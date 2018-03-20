@@ -3,6 +3,7 @@ Z8.define('Z8.application.viewport.Login', {
 	extend: 'Z8.form.Fieldset',
 
 	plain: true,
+	visible: false,
 
 	initComponent: function() {
 		this.cls = DOM.parseCls(this.cls).pushIf('login', 'air', 'display-none');
@@ -32,16 +33,14 @@ Z8.define('Z8.application.viewport.Login', {
 	},
 
 	show: function() {
-		if(this.visible) {
+		if(this.isVisible()) {
 			this.focus();
 			return;
 		}
 
-		this.visible = true;
-
 		this.mask = DOM.append(Viewport.getBody(), { cls: 'window-mask login' }); 
 
-		DOM.removeCls(this, 'display-none');
+		this.callParent();
 		DOM.addCls(this, 'open', 100);
 
 		this.focus();
@@ -50,16 +49,14 @@ Z8.define('Z8.application.viewport.Login', {
 	},
 
 	hide: function() {
-		if(!this.visible)
+		if(!this.isVisible())
 			return;
-
-		this.visible = false;
 
 		DOM.remove(this.mask);
 		this.mask = null;
 
 		DOM.removeCls(this, 'open');
-		DOM.addCls(this, 'display-none', 200);
+		this.callParent();
 
 		this.passwordField.setValue('');
 		this.fireEvent('hide', this);

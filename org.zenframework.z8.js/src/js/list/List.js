@@ -689,7 +689,7 @@ Z8.define('Z8.list.List', {
 
 		this.setItems(items);
 
-		if(this.visible)
+		if(this.isVisible())
 			this.renderItems();
 	},
 
@@ -697,7 +697,7 @@ Z8.define('Z8.list.List', {
 		var items = this.createItems(records || this.store.geRecords());
 		this.addItems(items, index, true);
 
-		if(this.visible)
+		if(this.isVisible())
 			this.renderItems();
 	},
 

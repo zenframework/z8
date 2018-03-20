@@ -5,6 +5,7 @@ Z8.define('Z8.Component', {
 	isComponent: true,
 
 	enabled: true,
+	visible: true,
 	tabIndex: -1,
 
 	statics: {
