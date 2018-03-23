@@ -218,7 +218,13 @@ Z8.define('Z8.form.field.Geometry', {
 	},
 
 	hasFeatures: function() {
-		return this.vectorSource != null && this.vectorSource.getFeatures().length != 0;
+		var source = this.vectorSource;
+		return source != null && source.getFeatures().length != 0;
+	},
+
+	getFeatureById: function(id) {
+		var source = this.vectorSource;
+		return source != null && source.getFeatureById(id);
 	},
 
 	addFeatures: function(feature) {
@@ -251,11 +257,8 @@ Z8.define('Z8.form.field.Geometry', {
 
 	clear: function() {
 		var source = this.vectorSource;
-		if(source != null) {
-			this.onMoveLock = true;
+		if(source != null)
 			source.clear();
-			this.onMoveLock = false;
-		}
 
 		this.feature = null;
 	},
@@ -272,8 +275,16 @@ Z8.define('Z8.form.field.Geometry', {
 		return this.view.getMinZoom();
 	},
 
+	setMinZoom: function(minZoom) {
+		this.view.setMinZoom(minZoom);
+	},
+
 	getMaxZoom: function() {
 		return this.view.getMaxZoom();
+	},
+
+	setMaxZoom: function(maxZoom) {
+		this.view.setMaxZoom(maxZoom);
 	},
 
 	onZoomOut: function(button) {
@@ -371,8 +382,7 @@ Z8.define('Z8.form.field.Geometry', {
 	},
 
 	onMove: function(event) {
-		if(!this.onMoveLock)
-			this.fireEvent('move', this);
+		this.fireEvent('move', this);
 	},
 
 	onKeyDown: function(event, target) {
@@ -494,10 +504,9 @@ Z8.define('Z8.form.field.Geometry', {
 			var view = this.view;
 			var center = view.getCenter();
 			var newCenter = [(extent[0] + extent[2]) / 2, (extent[1] + extent[3]) / 2];
+
 			if(center[0] != newCenter[0] || center[1] != newCenter[1])
 				view.setCenter(newCenter);
-			else
-				this.onMove();
 		}
 	},
 
