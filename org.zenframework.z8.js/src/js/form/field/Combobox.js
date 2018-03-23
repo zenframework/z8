@@ -172,13 +172,6 @@ Z8.define('Z8.form.field.Combobox', {
 		this.updateWhere(value);
 	},
 
-	setRecord: function(record) {
-		this.callParent(record);
-
-		if(record != null)
-			this.updateWhere(this.dependsOn != null ? record.get(this.dependsOn.name) : null);
-	},
-
 	updateWhere: function(value) {
 		var where = this.getWhere(value);
 
