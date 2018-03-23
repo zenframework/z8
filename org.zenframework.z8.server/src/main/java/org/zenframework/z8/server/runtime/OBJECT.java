@@ -72,6 +72,10 @@ public class OBJECT extends RequestTarget implements IObject, RmiSerializable {
 	@Override
 	public String id() {
 		if(id == null) {
+			OBJECT.CLASS<? extends OBJECT> cls = getCLASS();
+			if(cls != null)
+				cls.get();
+			
 			id = "";
 
 			IObject container = getContainer();
