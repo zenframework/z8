@@ -126,7 +126,7 @@ Z8.define('Z8.form.field.Geometry', {
 		edit.on('modifyend', this.onEditEnd, this);
 		map.addInteraction(edit);
 
-		var draw = this.draw = new ol.interaction.Draw({ source: this.vectorSource, snapTolerance: 0, type: this.getDrawType() });
+		var draw = this.draw = new ol.interaction.Draw({ source: this.vectorSource, snapTolerance: 0, freehandCondition: ol.events.condition.never, type: this.getDrawType() });
 		draw.setActive(false);
 		draw.on('drawstart', this.onEditStart, this);
 		draw.on('drawend', this.onEditEnd, this);
@@ -393,9 +393,12 @@ Z8.define('Z8.form.field.Geometry', {
 			event.stopEvent();
 		}
 
-		if(key == Event.SHIFT) {
-			this.snap.setActive(true);
-			event.stopEvent();
+		if(key == Event.CTRL) {
+			var snap = this.snap;
+			if(!snap.getActive()) {
+				snap.setActive(true);
+				event.stopEvent();
+			}
 		}
 
 		if(key == Event.ENTER) {
@@ -405,9 +408,12 @@ Z8.define('Z8.form.field.Geometry', {
 	},
 
 	onKeyUp: function(event, target) {
-		if(event.getKey() == Event.SHIFT) {
-			this.snap.setActive(false);
-			event.stopEvent();
+		if(event.getKey() == Event.CTRL) {
+			var snap = this.snap;
+			if(snap.getActive()) {
+				snap.setActive(false);
+				event.stopEvent();
+			}
 		}
 	},
 
@@ -632,12 +638,12 @@ Z8.define('Z8.form.field.Geometry', {
 		}
 	},
 
-	pointToPolygon: function(point, width) {
+	pointToPolygon: function(point, width, height) {
 		var coordinates = point.getCoordinates();
 		var x = coordinates[0];
 		var y = coordinates[1];
 		var width = (width || 1) / 2;
-		var points = [[x - width, y - width], [x - width, y + width], [x + width, y + width], [x + width, y - width], [x - width, y - width]];
+		var points = [[x - width, y - height], [x - width, y + height], [x + width, y + height], [x + width, y - height], [x - width, y - height]];
 		var polygon = new ol.geom.Polygon([points]);
 		return new ol.geom.GeometryCollection([polygon, point]);
 	},
