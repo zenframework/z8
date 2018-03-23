@@ -149,6 +149,10 @@ Z8.define('Z8.form.field.Combobox', {
 		this.callParent(value, displayValue);
 	},
 
+	isEqual: function(v1, v2) {
+		return (Z8.isEmpty(v1) || v1 == guid.Null) && (Z8.isEmpty(v2) || v2 == guid.Null) || this.callParent(v1, v2);
+	},
+
 	updateDependenciesByValue: function(value) {
 		var store = this.getStore();
 		if(store == null || this.dependencies == null || this.isEqual(this.getValue(), value))
@@ -166,7 +170,6 @@ Z8.define('Z8.form.field.Combobox', {
 	onDependencyChange: function(record) {
 		var value = this.dependsOnValue = record != null ? (this.hasDependsOnField() ? record.get(this.getDependsOnField()) : record.id) : null;
 		this.updateWhere(value);
-		this.setValue(this.emptyValue);
 	},
 
 	setRecord: function(record) {
