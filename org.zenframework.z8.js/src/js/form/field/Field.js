@@ -172,7 +172,7 @@ Z8.define('Z8.form.field.Field', {
 	},
 
 	updateDependencies: function(record) {
-		if(this.dependencies == null || this.updatingDependencies != 0 || this.disposed)
+		if(this.dependencies == null || !this.isActive() || this.updatingDependencies != 0 || this.disposed)
 			return;
 
 		this.updatingDependencies++;

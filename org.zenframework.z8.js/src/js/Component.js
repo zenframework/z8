@@ -8,6 +8,8 @@ Z8.define('Z8.Component', {
 	visible: true,
 	tabIndex: -1,
 
+	inactive: false,
+
 	statics: {
 		idSeed: 0,
 
@@ -83,6 +85,14 @@ Z8.define('Z8.Component', {
 	setEnabled: function(enabled) {
 		this.enabled = enabled;
 		this.setTabIndex(enabled ? this.tabIndex: -1);
+	},
+
+	isActive: function() {
+		return !this.inactive;
+	},
+
+	setActive: function(active) {
+		this.inactive = !active;
 	},
 
 	getTabIndex: function() {

@@ -20,6 +20,7 @@ Z8.define('Z8.form.Tabs', {
 			DOM.addCls(this.getActiveTab(), 'inactive');
 			var active = this.activeTab = tag.tab;
 			DOM.removeCls(active, 'inactive');
+			this.onActivateTab(active);
 		};
 
 		var tags = [];
@@ -61,8 +62,18 @@ Z8.define('Z8.form.Tabs', {
 			DOM.addCls(tab, 'inactive');
 	},
 
-	activateTab: function(tab) {
-		tab.tag.setToggled(true);
+	activateTab: function(activeTab) {
+		activeTab.tag.setToggled(true);
+		this.onActivateTab(activeTab);
+	},
+
+	onActivateTab: function(activeTab) {
+		var tabs = this.controls;
+		var isActive = this.isActive();
+		for(var i = 0, length = tabs.length; i < length; i++) {
+			var tab = tabs[i];
+			tab.setActive(isActive && tab == activeTab);
+		}
 	},
 
 	isReadOnly: function() {
@@ -83,4 +94,15 @@ Z8.define('Z8.form.Tabs', {
 		DOM.swapCls(this, readOnly, 'readonly');
 	},
 
+	setActive: function(active) {
+		this.callParent(active);
+
+		var activeTab = this.activeTab;
+		var controls = this.controls;
+
+		for(var i = 0, length = controls.length; i < length; i++) {
+			var tab = controls[i];
+			tab.setActive(active && tab == activeTab);
+		}
+	},
 });

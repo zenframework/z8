@@ -191,14 +191,19 @@ Z8.define('Z8.form.field.Listbox', {
 
 	afterRecordSet: function(record) {
 		if(record != null) {
-			if(!this.isDependent()) {
-				var filter = this.getFilter(record);
-				this.store.setValues(this.getValues());
-				var loadCallback = function(store, records, success) {
-					this.validate();
-				};
-				this.store.filter(filter, { fn: loadCallback, scope: this });
-			}
+			if(this.isDependent())
+				return;
+
+			this.store.setFilter(this.getFilter(record));
+			this.store.setValues(this.getValues());
+			var loadCallback = function(store, records, success) {
+				this.validate();
+			};
+
+			var active = this.isActive();
+			this.refreshOnActivate = !active;
+			if(active)
+				this.store.load({ fn: loadCallback, scope: this });
 		} else {
 			this.clear();
 			this.validate();
@@ -226,11 +231,27 @@ Z8.define('Z8.form.field.Listbox', {
 			if(this.hasLink())
 				where.push({ property: this.getLink(), value: recordId });
 			this.store.setWhere(where);
-			this.store.load({ fn: loadCallback, scope: this });
+
+			var active = this.isActive();
+			this.refreshOnActivate = !active;
+			if(active)
+				this.store.load({ fn: loadCallback, scope: this });
+
 		} else {
 			this.store.removeAll();
 			loadCallback.call(this, this.store, [], true);
 			this.onSelect(null);
+		}
+	},
+
+	setActive: function(active) {
+		var wasActive = this.isActive();
+
+		this.callParent(active);
+
+		if(!wasActive && this.isActive() && this.refreshOnActivate) {
+			this.onRefresh(this.refreshTool, true);
+			this.refreshOnActivate = false;
 		}
 	},
 
@@ -756,13 +777,14 @@ Z8.define('Z8.form.field.Listbox', {
 			this.refreshTool.setBusy(false);
 	},
 
-	onRefresh: function(button) {
+	onRefresh: function(button, skipFocus) {
 		button = button || this.refreshTool;
 
 		if(button != null) {
 			var callback = function(records, success) {
 				button.setBusy(false);
-				this.focus();
+				if(!skipFocus)
+					this.focus();
 			};
 			button.setBusy(true);
 			this.store.load({ fn: callback, scope: this });

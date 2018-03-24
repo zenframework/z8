@@ -230,6 +230,14 @@ Z8.define('Z8.form.Fieldset', {
 		DOM.swapCls(this, readOnly, 'readonly');
 	},
 
+	setActive: function(active) {
+		this.callParent(active);
+
+		var controls = this.controls;
+		for(var i = 0, length = controls.length; i < length; i++)
+			controls[i].setActive(active);
+	},
+
 	focus: function() {
 		var controls = this.controls;
 		for(var i = 0, length = controls.length; i < length; i++) {

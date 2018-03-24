@@ -583,7 +583,7 @@ Z8.define('Z8.data.Store', {
 
 		var count = this.getCount();
 
-		if(count == 0 || !this.isRemote() || this.isTree()) {
+		if(count == 0 || (count <= this.getLimit() && this.getPage() == 0) || !this.isRemote() || this.isTree()) {
 			this.calcTotalCount(count);
 			this.fireEvent('count', this, true);
 			Z8.callback(options, this, true);
