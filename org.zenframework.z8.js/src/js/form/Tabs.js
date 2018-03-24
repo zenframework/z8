@@ -17,10 +17,7 @@ Z8.define('Z8.form.Tabs', {
 		this.bodyCls = DOM.parseCls(this.bodyCls).pushIf('body');
 
 		var callback = function(tag, toggled) {
-			DOM.addCls(this.getActiveTab(), 'inactive');
-			var active = this.activeTab = tag.tab;
-			DOM.removeCls(active, 'inactive');
-			this.onActivateTab(active);
+			this.activateTab(tag.tab);
 		};
 
 		var tags = [];
@@ -63,8 +60,21 @@ Z8.define('Z8.form.Tabs', {
 	},
 
 	activateTab: function(activeTab) {
-		activeTab.tag.setToggled(true);
+		if(this.activeTab == activeTab)
+			return;
+
+		if(this.activeTab != null)
+			this.fireEvent('deactivateTab', this, this.activeTab);
+
+		DOM.addCls(this.activeTab, 'inactive');
+		this.activeTab = activeTab;
+		DOM.removeCls(activeTab, 'inactive');
+
+		activeTab.tag.setToggled(true, true);
+
 		this.onActivateTab(activeTab);
+
+		this.fireEvent('activateTab', this, this.activeTab);
 	},
 
 	onActivateTab: function(activeTab) {
