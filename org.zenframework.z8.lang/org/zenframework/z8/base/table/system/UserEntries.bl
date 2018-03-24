@@ -1,5 +1,5 @@
 import org.zenframework.z8.base.table.Table;
-import org.zenframework.z8.base.table.value.IntegerField;
+import org.zenframework.z8.base.table.value.IntField;
 import org.zenframework.z8.base.table.value.Link;
 
 [name "SystemUserEntries"]
@@ -17,5 +17,5 @@ public class UserEntries extends Table {
 	public Link entry = entries;
 
 	[name "Position"]
-	public IntegerField position;
+	public IntField position;
 }
