@@ -33,10 +33,6 @@ Z8.define('Z8.application.viewport.Viewport', {
 		return this.callParent();
 	},
 
-	completeRender: function() {
-		this.callParent();
-	},
-
 	login: function(options) {
 		this.handlers.push(options);
 		var login = this.loginForm;
@@ -334,8 +330,15 @@ Z8.define('Z8.application.viewport.Viewport', {
 
 	onKeyDown: function(event, target) {
 		var key = event.getKey();
+
 		if(key == Event.ESC) {
 			this.openMenu();
+			event.stopEvent();
+		} else if(key == Event.MINUS && event.shiftKey) {
+			Ems.enlarge(-1);
+			event.stopEvent();
+		} else if(key == Event.PLUS && event.shiftKey) {
+			Ems.enlarge(1);
 			event.stopEvent();
 		}
 	}

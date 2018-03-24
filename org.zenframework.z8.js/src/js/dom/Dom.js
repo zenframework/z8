@@ -607,6 +607,10 @@ Z8.define('Z8.dom.Dom', {
 			var agent = window.navigator.userAgent;
 			if(agent.toLowerCase().indexOf('gecko/') != -1)
 				DOM.addCls(document.body, 'gecko');
+		},
+
+		callWindowResize: function() {
+			window.dispatchEvent(new Event('resize'));
 		}
 	}
 });

@@ -17,7 +17,16 @@ Z8.define('Z8.util.Ems', {
 
 		emsToPixels: function(ems) {
 			return Math.ceil(ems * Ems.Base);
-		}
+		},
 
+		enlarge: function(value) {
+			var base = Ems.Base + value;
+			if(8 <= base && base <= 17) {
+				Ems.Base = base;
+				DOM.setStyle(document.body, 'font-size', base + 'px');
+				DOM.setStyle(document.body, 'line-height', base + 'px');
+				DOM.callWindowResize();
+			}
+		}
 	}
 });

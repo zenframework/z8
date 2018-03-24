@@ -163,7 +163,7 @@ Z8.define('Z8.form.field.Geometry', {
 		var mapContainer = this.mapContainer;
 
 		DOM.un(mapContainer, 'keyUp', this.onKeyUp, this);
-		DOM.on(mapContainer, 'keyDown', this.onKeyDown, this);
+		DOM.un(mapContainer, 'keyDown', this.onKeyDown, this);
 		DOM.un(mapContainer, 'contextMenu', this.onContextMenu, this);
 
 		if(mapContainer != null) {
