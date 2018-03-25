@@ -92,7 +92,7 @@ Z8.define('Z8.form.field.Geometry', {
 		};
 		var vectorLayer = new ol.layer.Vector({ source : vectorSource, style: this.getStyle != null ? callback : undefined });
 
-		var projection = new ol.proj.Projection({ code: 'EPSG:96872', units: 'm', axisOrientation: 'enu', global: false });
+		var projection = new ol.proj.Projection({ code: 'EPSG:96872', units: 'm', axisOrientation: 'enu' });
 		var view = this.view = new ol.View({ center: [0, 0], zoom : 17, minZoom: 11, maxZoom: 21, projection: projection });
 		view.on('change:resolution', this.onResolutionChange, this);
 
@@ -643,6 +643,7 @@ Z8.define('Z8.form.field.Geometry', {
 		var x = coordinates[0];
 		var y = coordinates[1];
 		var width = (width || 1) / 2;
+		var height = (height || 1) / 2;
 		var points = [[x - width, y - height], [x - width, y + height], [x + width, y + height], [x + width, y - height], [x - width, y - height]];
 		var polygon = new ol.geom.Polygon([points]);
 		return new ol.geom.GeometryCollection([polygon, point]);
