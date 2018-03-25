@@ -60,7 +60,7 @@ Z8.define('Z8.form.Tabs', {
 	},
 
 	activateTab: function(activeTab) {
-		if(this.activeTab == activeTab)
+		if(this.activateLock || this.activeTab == activeTab)
 			return;
 
 		if(this.activeTab != null)
@@ -70,7 +70,9 @@ Z8.define('Z8.form.Tabs', {
 		this.activeTab = activeTab;
 		DOM.removeCls(activeTab, 'inactive');
 
-		activeTab.tag.setToggled(true, true);
+		this.activateLock = true;
+		activeTab.tag.setToggled(true);
+		this.activateLock = false;
 
 		this.onActivateTab(activeTab);
 
