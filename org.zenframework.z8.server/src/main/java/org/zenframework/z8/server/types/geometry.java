@@ -226,6 +226,15 @@ public final class geometry extends primary {
 		return extent[1][1] - extent[0][1];
 	}
 
+	public geometry center() {
+		int shape = shape();
+		if(shape == point || shape == none)
+			return this;
+
+		double[][] extent = extent();
+		return new geometry((extent[0][0] + extent[1][0]) / 2, (extent[0][1] + extent[1][1]) / 2);
+	}
+
 	private double[] point() {
 		int shape = shape();
 		if(shape == point || shape == none)
@@ -277,6 +286,10 @@ public final class geometry extends primary {
 
 	public decimal z8_y() {
 		return new decimal(y());
+	}
+
+	public geometry z8_center() {
+		return center();
 	}
 
 	@SuppressWarnings("rawtypes")

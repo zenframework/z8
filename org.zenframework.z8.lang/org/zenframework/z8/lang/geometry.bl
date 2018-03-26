@@ -17,6 +17,7 @@ public final class geometry extends primary {
 	public decimal y();
 
 	public decimal[][] extent();
+	public geometry center();
 
 	public decimal x1();
 	public decimal y1();

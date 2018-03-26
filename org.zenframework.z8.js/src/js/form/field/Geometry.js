@@ -636,23 +636,5 @@ Z8.define('Z8.form.field.Geometry', {
 			first[1][0] = second[0][0] = x;
 			first[1][1] = second[0][1] = y;
 		}
-	},
-
-	pointToPolygon: function(point, width, height) {
-		var coordinates = point.getCoordinates();
-		var x = coordinates[0];
-		var y = coordinates[1];
-		var width = (width || 1) / 2;
-		var height = (height || 1) / 2;
-		var points = [[x - width, y - height], [x - width, y + height], [x + width, y + height], [x + width, y - height], [x - width, y - height]];
-		var polygon = new ol.geom.Polygon([points]);
-		return new ol.geom.GeometryCollection([polygon, point]);
-	},
-
-	pointToCircle: function(point, width) {
-		var center = point.getCoordinates();
-		var circle = new ol.geom.Circle(center, (width || 1) / 2);
-		var polygon = ol.geom.Polygon.fromCircle(circle);
-		return new ol.geom.GeometryCollection([polygon, point]);
 	}
 });
