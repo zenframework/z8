@@ -2,7 +2,8 @@ Z8.define('Z8.application.form.Navigator', {
 	extend: 'viewport.Form',
 
 	presentation: 'form',
-
+	quickFilterWidth: 10,
+	
 	initComponent: function() {
 		var store = this.store;
 
@@ -236,7 +237,7 @@ Z8.define('Z8.application.form.Navigator', {
 	createQuickFilter: function(field) {
 		var config = {
 			field: field,
-			width: 15,
+			width: this.quickFilterWidth,
 			label: false,
 			placeholder: field.header,
 			tooltip: field.header
