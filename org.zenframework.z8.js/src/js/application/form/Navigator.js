@@ -236,7 +236,7 @@ Z8.define('Z8.application.form.Navigator', {
 	createQuickFilter: function(field) {
 		var config = {
 			field: field,
-			width: 10,
+			width: 15,
 			label: false,
 			placeholder: field.header,
 			tooltip: field.header

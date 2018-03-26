@@ -46,8 +46,8 @@ Z8.define('Z8.form.Helper', {
 				config.fields = query.columns;
 				config.tools = true;
 				config.pagerMode = 'visible';
-				config.checks = true;
-				config.locks = query.lockKey != null;
+				config.checks = Application.listbox.locks !== false;
+				config.locks = Application.listbox.locks !== false && query.lockKey != null;
 				config.totals = query.totals;
 				config.minHeight = config.height = Ems.unitsToEms(field.height || 5);
 				return cls != null ? Z8.create(cls, config) : new Z8.form.field.Listbox(config);

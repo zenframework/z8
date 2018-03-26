@@ -357,7 +357,7 @@ Z8.define('Z8.form.field.Listbox', {
 		var tools = [];
 
 		if(addCopyRemove.length != 0) {
-			addCopyRemove = new Z8.button.Group({ items: addCopyRemove });
+			addCopyRemove = new Z8.button.Group({ cls: 'add-copy-remove', items: addCopyRemove });
 			tools.push(addCopyRemove);
 		}
 
@@ -380,7 +380,7 @@ Z8.define('Z8.form.field.Listbox', {
 		this.setSortTool(sort);
 		filterSort.push(sort);
 
-		var filterSort = new Z8.button.Group({ items: filterSort });
+		var filterSort = new Z8.button.Group({ cls: 'filter-sort', items: filterSort });
 
 		tools.push(filterSort);
 
@@ -388,7 +388,7 @@ Z8.define('Z8.form.field.Listbox', {
 		this.setExportTool(exportAs);
 		tools.push(exportAs);
 
-		var autoFit = new Z8.button.Tool({ icon: 'fa-arrows-h', tooltip: 'Auto fit columns', toggled: this.autoFit });
+		var autoFit = new Z8.button.Tool({ cls: 'auto-fit', icon: 'fa-arrows-h', tooltip: 'Auto fit columns', toggled: this.autoFit });
 		autoFit.on('toggle', this.onAutoFit, this);
 		this.setAutoFitTool(autoFit);
 		tools.push(autoFit);
@@ -419,7 +419,8 @@ Z8.define('Z8.form.field.Listbox', {
 		var menu = new Z8.menu.Menu({ items: items });
 		menu.on('itemClick', this.onMenuExportAs, this);
 
-		return new Z8.button.Tool({ cls: 'btn-sm', icon: 'fa-file-pdf-o', tooltip: 'Сохранить как PDF', menu: menu, handler: this.exportAs, scope: this, format: 'pdf' });
+		var button = new Z8.button.Tool({ cls: 'btn-sm', icon: 'fa-file-pdf-o', tooltip: 'Сохранить как PDF', menu: menu, handler: this.exportAs, scope: this, format: 'pdf' });
+		return new Z8.button.Group({ cls: 'export-as', items: button });
 	},
 
 	createActions: function() {

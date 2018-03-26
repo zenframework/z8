@@ -8,6 +8,11 @@ Z8.define('Z8.application.Application', {
 	viewportCls: null,
 	userCls: null,
 
+	listbox: {
+		locks: true,
+		checks: true
+	},
+
 	geometry: {
 		url: '',
 		serverType: 'geoserver',
