@@ -20,31 +20,35 @@ Z8.define('Z8.form.field.Geometry', {
 
 	htmlMarkup: function() {
 		var label = this.label;
-		if(label == null)
-			label = this.label = {};
-
-		if(label.tools == null)
-			label.tools = new Z8.button.Group({ items: this.createTools() });
-
+		if(label !== false) {
+			if(label == null)
+				label = this.label = {};
+			if(label.tools == null)
+				label.tools = new Z8.button.Group({ items: this.createTools() });
+		}
 		return this.callParent();
 	},
 
 	createTools: function() {
-		var zoomOut = this.zoomOutButton = new Z8.button.Tool({ icon: 'fa-minus-circle', tooltip: 'Уменьшить', handler: this.onZoomOut, scope: this });
-		var zoomIn = this.zoomInButton = new Z8.button.Tool({ icon: 'fa-plus-circle', tooltip: 'Увеличить', handler: this.onZoomIn, scope: this });
+		var zoomOut = new Z8.button.Tool({ icon: 'fa-minus-circle', tooltip: 'Уменьшить' });
+		this.setZoomOutTool(zoomOut);
+
+		var zoomIn = new Z8.button.Tool({ icon: 'fa-plus-circle', tooltip: 'Увеличить' });
+		this.setZoomInTool(zoomIn);
+
 		var zoom = new Z8.button.Group({ items: [zoomOut, zoomIn] });
 
-		var select = this.selectButton = new Z8.button.Tool({ icon: 'fa-mouse-pointer', tooltip: 'Выбор объектов', toggled: true });
-		select.on('toggle', this.onInteractionToggle, this);
+		var select = new Z8.button.Tool({ icon: 'fa-mouse-pointer', tooltip: 'Выбор объектов', toggled: true });
+		this.setSelectTool(select);
 
-		var move = this.moveButton = new Z8.button.Tool({ icon: 'fa-hand-paper-o', tooltip: 'Переместить объект', toggled: false, enabled: false });
-		move.on('toggle', this.onInteractionToggle, this);
+		var move = new Z8.button.Tool({ icon: 'fa-hand-paper-o', tooltip: 'Переместить объект', toggled: false, enabled: false });
+		this.setMoveTool(move);
 
-		var edit = this.editButton = new Z8.button.Tool({ icon: 'fa-pencil', tooltip: 'Изменить объект', toggled: false, enabled: false });
-		edit.on('toggle', this.onInteractionToggle, this);
+		var edit = new Z8.button.Tool({ icon: 'fa-pencil', tooltip: 'Изменить объект', toggled: false, enabled: false });
+		this.setEditTool(edit);
 
-		var draw = this.drawButton = new Z8.button.Tool({ icon: 'fa-pencil-square-o', tooltip: 'Нарисовать объект', toggled: false, enabled: false });
-		draw.on('toggle', this.onInteractionToggle, this);
+		var draw = new Z8.button.Tool({ icon: 'fa-pencil-square-o', tooltip: 'Нарисовать объект', toggled: false, enabled: false });
+		this.setDrawTool(draw);
 /*
 		var erase = this.eraseButton = new Z8.button.Tool({ icon: 'fa-eraser', tooltip: 'Удалить объект', toggled: false, enabled: false });
 		edit.on('toggle', this.onInteractionToggle, this);
@@ -54,22 +58,61 @@ Z8.define('Z8.form.field.Geometry', {
 		return [zoom, interactions];
 	},
 
+	setZoomOutTool: function(tool) {
+		tool.on('click', this.onZoomOut, this);
+		this.zoomOutTool = tool;
+	},
+
+	setZoomInTool: function(tool) {
+		tool.on('click', this.onZoomIn, this);
+		this.zoomInTool = tool;
+	},
+
+	setSelectTool: function(tool) {
+		tool.on('toggle', this.onInteractionToggle, this);
+		this.selectTool = tool;
+	},
+
+	setMoveTool: function(tool) {
+		tool.on('toggle', this.onInteractionToggle, this);
+		this.moveTool = tool;
+	},
+
+	setEditTool: function(tool) {
+		tool.on('toggle', this.onInteractionToggle, this);
+		this.editTool = tool;
+	},
+
+	setDrawTool: function(tool) {
+		tool.on('toggle', this.onInteractionToggle, this);
+		this.drawTool = tool;
+	},
+
 	updateTools: function() {
-		if(this.selectButton == null)
+		if(this.selectTool == null)
 			return;
+
+		var move = this.moveTool;
+		var edit = this.editTool;
+		var draw = this.drawTool;
 
 		var enabled = !this.isReadOnly() && this.isEnabled();
 		var canMove = this.canMove();
+		var moveToggled = move != null && move.toggled;
 		var canEdit = this.canEdit();
+		var editToggled = edit != null && edit.toggled;
 		var canDraw = this.canDraw();
+		var drawToggled = draw != null && draw.toggled;
 
-		if(!enabled || !canMove && this.moveButton.toggled || 
-				!canEdit && this.editButton.toggled || !canDraw && this.drawButton.toggled)
+		if(!enabled || !canMove && moveToggled || !canEdit && editToggled || !canDraw && drawToggled)
 			this.toggleSelect();
 
-		this.moveButton.setEnabled(enabled && canMove);
-		this.editButton.setEnabled(enabled && canEdit);
-		this.drawButton.setEnabled(enabled && canDraw);
+		if(move != null)
+			move.setEnabled(enabled && canMove);
+		if(edit != null)
+			edit.setEnabled(enabled && canEdit);
+		if(draw != null)
+			draw.setEnabled(enabled && canDraw);
 	},
 
 	completeRender: function() {
@@ -79,7 +122,9 @@ Z8.define('Z8.form.field.Geometry', {
 	},
 
 	createMap: function() {
-		var imageParams = Z8.apply({ ratio: 1}, Application.geometry);
+		var geometry = Application.geometry;
+
+		var imageParams = Z8.apply({ ratio: 1}, geometry.tiles);
 		var imageSource = new ol.source.ImageWMS(imageParams);
 		var imageLayer = new ol.layer.Image({ source: imageSource });
 
@@ -92,7 +137,8 @@ Z8.define('Z8.form.field.Geometry', {
 		};
 		var vectorLayer = new ol.layer.Vector({ source : vectorSource, style: this.getStyle != null ? callback : undefined });
 
-		var projection = new ol.proj.Projection({ code: 'EPSG:96872', units: 'm', axisOrientation: 'enu' });
+		var projection = new ol.proj.Projection({ code: geometry.code, units: 'm', axisOrientation: 'enu' });
+
 		var view = this.view = new ol.View({ center: [0, 0], zoom : 17, minZoom: 11, maxZoom: 21, projection: projection });
 		view.on('change:resolution', this.onResolutionChange, this);
 
@@ -287,11 +333,11 @@ Z8.define('Z8.form.field.Geometry', {
 		this.view.setMaxZoom(maxZoom);
 	},
 
-	onZoomOut: function(button) {
+	onZoomOut: function(tool) {
 		this.setZoom(this.getZoom() - 1);
 	},
 
-	onZoomIn: function(button) {
+	onZoomIn: function(tool) {
 		this.setZoom(this.getZoom() + 1);
 	},
 
@@ -431,24 +477,30 @@ Z8.define('Z8.form.field.Geometry', {
 	},
 
 	updateZoomTools: function(zoom) {
-		this.zoomInButton.setEnabled(zoom < this.getMaxZoom());
-		this.zoomOutButton.setEnabled(zoom > this.getMinZoom());
+		if(this.zoomInTool != null)
+			this.zoomInTool.setEnabled(zoom < this.getMaxZoom());
+		if(this.zoomOutTool != null)
+			this.zoomOutTool.setEnabled(zoom > this.getMinZoom());
 	},
 
 	toggleSelect: function() {
-		this.selectButton.setToggled(true);
+		if(this.selectTool != null)
+			this.selectTool.setToggled(true);
 	},
 
 	toggleMove: function() {
-		this.moveButton.setToggled(true);
+		if(this.moveTool != null)
+			this.moveTool.setToggled(true);
 	},
 
 	toggleEdit: function() {
-		this.editButton.setToggled(true);
+		if(this.editTool != null)
+			this.editTool.setToggled(true);
 	},
 
 	toggleDraw: function() {
-		this.drawButton.setToggled(true);
+		if(this.drawTool != null)
+			this.drawTool.setToggled(true);
 	},
 
 	canSelect: function() {
@@ -479,11 +531,11 @@ Z8.define('Z8.form.field.Geometry', {
 		return geometry;
 	},
 
-	onInteractionToggle: function(button) {
+	onInteractionToggle: function(tool) {
 		this.cancelEdit(false);
-		this.move.setActive(button == this.moveButton && this.canMove());
-		this.edit.setActive(button == this.editButton && this.canEdit());
-		this.draw.setActive(button == this.drawButton && this.canDraw());
+		this.move.setActive(tool == this.moveTool && this.canMove());
+		this.edit.setActive(tool == this.editTool && this.canEdit());
+		this.draw.setActive(tool == this.drawTool && this.canDraw());
 	},
 
 	getExtent: function() {

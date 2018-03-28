@@ -14,9 +14,9 @@ Z8.define('Z8.application.Application', {
 	},
 
 	geometry: {
-		url: '',
-		serverType: 'geoserver',
-		params: { 'LAYERS': 'ar:egko', 'VERSION': '1.1.1', 'SRS': 'EPSG:96872' }
+		tiles: { url: '', serverType: 'geoserver', params: {} },
+		code: '',
+		extent: [0, 0, 0, 0]
 	},
 
 	subclasses: {

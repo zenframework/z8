@@ -117,6 +117,11 @@ Z8.define('Z8.form.field.Text', {
 		return tabIndex;
 	},
 
+	setLabel: function(label) {
+		this.callParent(label);
+		DOM.setAttribute(this.input, 'placeholder', label);
+	},
+
 	getInputTag: function() {
 		return this.editable ? this.tag : 'div';
 	},

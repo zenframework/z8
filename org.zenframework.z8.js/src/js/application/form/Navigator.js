@@ -139,6 +139,16 @@ Z8.define('Z8.application.form.Navigator', {
 	},
 
 	createToolbar: function() {
+		var buttons = this.createTools();
+
+		var sourceCode = this.sourceCodeButton = this.createSourceCodeButton();
+		if(sourceCode != null)
+			buttons.push(sourceCode);
+
+		return new Z8.toolbar.Toolbar({ items: buttons });
+	},
+
+	createTools: function() {
 		var store = this.store;
 
 		var buttons = [];
@@ -200,11 +210,7 @@ Z8.define('Z8.application.form.Navigator', {
 		if(actions != null)
 			buttons.push(actions);
 
-		var sourceCode = this.sourceCodeButton = this.createSourceCodeButton();
-		if(sourceCode != null)
-			buttons.push(sourceCode);
-
-		return new Z8.toolbar.Toolbar({ items: buttons });
+		return buttons;
 	},
 
 	createFilesButton: function() {

@@ -134,7 +134,7 @@ Z8.define('Z8.form.field.Combobox', {
 	},
 
 	setValue: function(value, displayValue) {
-		if(displayValue == undefined) {
+		if(displayValue === undefined) {
 			var record = this.getSelectedRecord(value);
 			displayValue = record != null ? record.get(this.displayName) : null;
 		}
