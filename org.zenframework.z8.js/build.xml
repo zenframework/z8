@@ -36,8 +36,8 @@
 	
 		<mkdir dir="web/css"/>
 	
-		<exec dir="web" executable="java">
-			<arg line="-jar ../../org.zenframework.z8.commons/minimizers/yuicompressor.jar -v --type css -o css/revolt.css debug/css/revolt.css"/>
+		<exec dir="." executable="java">
+			<arg line="-jar ../org.zenframework.z8.commons/minimizers/yuicompressor.jar -v --type css -o web/css/revolt.css web/debug/css/revolt.css"/>
 		</exec>
 	
 		<!--
@@ -55,8 +55,8 @@
 					font-courgette.css"/>
 		</concat>
 	
-		<exec dir="web" executable="java">
-			<arg line="-jar ../../org.zenframework.z8.commons/minimizers/yuicompressor.jar -v --type css -o css/fonts.css debug/css/fonts.css"/>
+		<exec dir="." executable="java">
+			<arg line="-jar ../org.zenframework.z8.commons/minimizers/yuicompressor.jar -v --type css -o web/css/fonts.css web/debug/css/fonts.css"/>
 		</exec>
 
 		<copy todir="web/css">
@@ -186,8 +186,8 @@
 				application/form/Navigator.js"/>
 		</concat>
 	
-		<exec dir="web" executable="java">
-			<arg line="-jar ../../org.zenframework.z8.commons/minimizers/closure.jar --rewrite_polyfills false --js_output_file revolt.js debug/revolt.js"/>
+		<exec dir="." executable="java">
+			<arg line="-jar ../org.zenframework.z8.commons/minimizers/closure.jar --rewrite_polyfills false --js_output_file web/revolt.js web/debug/revolt.js"/>
 		</exec>
 	
 		<concat destfile="web/debug/revolt.utils.js" encoding="UTF-8">
@@ -211,8 +211,8 @@
 				Object.js"/>
 		</concat>
 	
-		<exec dir="web" executable="java">
-			<arg line="-jar ../../org.zenframework.z8.commons/minimizers/closure.jar --rewrite_polyfills false --js_output_file revolt.utils.js debug/revolt.utils.js"/>
+		<exec dir="." executable="java">
+			<arg line="-jar ../org.zenframework.z8.commons/minimizers/closure.jar --rewrite_polyfills false --js_output_file web/revolt.utils.js web/debug/revolt.utils.js"/>
 		</exec>
 
 	</target>
