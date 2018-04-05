@@ -112,9 +112,9 @@ public class Cursor extends OBJECT {
 	public RCollection z8_string_array(integer position) {
 		try {
 			RCollection array = new RCollection();
-			JsonArray json = new JsonArray(cursor.getString(position.getInt()));
+			JsonArray json = new JsonArray(cursor.getString(position.getInt()).get());
 			for (int i = 0; i < json.size(); i++)
-				array.add(new string(json.getString(i)));
+				array.add(new string(json.isNull(i) ? "" : json.getString(i)));
 			return array;
 		} catch(SQLException e) {
 			throw new RuntimeException(e);
@@ -124,9 +124,9 @@ public class Cursor extends OBJECT {
 	public RCollection z8_integer_array(integer position) {
 		try {
 			RCollection array = new RCollection();
-			JsonArray json = new JsonArray(cursor.getString(position.getInt()));
+			JsonArray json = new JsonArray(cursor.getString(position.getInt()).get());
 			for (int i = 0; i < json.size(); i++)
-				array.add(new integer(json.getLong(i)));
+				array.add(new integer(json.isNull(i) ? 0 : json.getLong(i)));
 			return array;
 		} catch(SQLException e) {
 			throw new RuntimeException(e);
@@ -136,9 +136,9 @@ public class Cursor extends OBJECT {
 	public RCollection z8_decimal_array(integer position) {
 		try {
 			RCollection array = new RCollection();
-			JsonArray json = new JsonArray(cursor.getString(position.getInt()));
+			JsonArray json = new JsonArray(cursor.getString(position.getInt()).get());
 			for (int i = 0; i < json.size(); i++)
-				array.add(new decimal(json.getDouble(i)));
+				array.add(new decimal(json.isNull(i) ? 0 : json.getDouble(i)));
 			return array;
 		} catch(SQLException e) {
 			throw new RuntimeException(e);
@@ -148,9 +148,9 @@ public class Cursor extends OBJECT {
 	public RCollection z8_date_array(integer position) {
 		try {
 			RCollection array = new RCollection();
-			JsonArray json = new JsonArray(cursor.getString(position.getInt()));
+			JsonArray json = new JsonArray(cursor.getString(position.getInt()).get());
 			for (int i = 0; i < json.size(); i++)
-				array.add(new date(json.getString(i)));
+				array.add(json.isNull(i) ? date.Min : new date(json.getString(i)));
 			return array;
 		} catch(SQLException e) {
 			throw new RuntimeException(e);
@@ -160,9 +160,9 @@ public class Cursor extends OBJECT {
 	public RCollection z8_guid_array(integer position) {
 		try {
 			RCollection array = new RCollection();
-			JsonArray json = new JsonArray(cursor.getString(position.getInt()));
+			JsonArray json = new JsonArray(cursor.getString(position.getInt()).get());
 			for (int i = 0; i < json.size(); i++)
-				array.add(json.getGuid(i));
+				array.add(json.isNull(i) ? guid.Null : json.getGuid(i));
 			return array;
 		} catch(SQLException e) {
 			throw new RuntimeException(e);
