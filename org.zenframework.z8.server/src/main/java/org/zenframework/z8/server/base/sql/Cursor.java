@@ -126,7 +126,7 @@ public class Cursor extends OBJECT {
 			RCollection array = new RCollection();
 			JsonArray json = new JsonArray(cursor.getString(position.getInt()));
 			for (int i = 0; i < json.size(); i++)
-				array.add(new integer(json.getString(i)));
+				array.add(new integer(json.getLong(i)));
 			return array;
 		} catch(SQLException e) {
 			throw new RuntimeException(e);
@@ -138,7 +138,7 @@ public class Cursor extends OBJECT {
 			RCollection array = new RCollection();
 			JsonArray json = new JsonArray(cursor.getString(position.getInt()));
 			for (int i = 0; i < json.size(); i++)
-				array.add(new decimal(json.getString(i)));
+				array.add(new decimal(json.getDouble(i)));
 			return array;
 		} catch(SQLException e) {
 			throw new RuntimeException(e);
@@ -162,7 +162,7 @@ public class Cursor extends OBJECT {
 			RCollection array = new RCollection();
 			JsonArray json = new JsonArray(cursor.getString(position.getInt()));
 			for (int i = 0; i < json.size(); i++)
-				array.add(new guid(json.getString(i)));
+				array.add(json.getGuid(i));
 			return array;
 		} catch(SQLException e) {
 			throw new RuntimeException(e);
