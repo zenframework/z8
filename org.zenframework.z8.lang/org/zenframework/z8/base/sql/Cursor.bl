@@ -15,4 +15,10 @@ public class Cursor extends Object {
 	public date date(int position);
 	public date timestamp(int position);
 	public guid guid(int position);
+
+	public string[] string_array(int position);
+	public int[] integer_array(int position);
+	public decimal[] decimal_array(int position);
+	public date[] date_array(int position);
+	public guid[] guid_array(int position);
 }
