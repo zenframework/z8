@@ -240,8 +240,8 @@ Z8.define('Z8.form.Form', {
 	},
 
 	isMyRecord: function(record) {
-		if(!this.isDependent())
-			return true;
+//		if(!this.isDependent())
+//			return true;
 
 		var query = this.getQuery();
 		return record == null || query == null || query == record.getQuery();
@@ -291,7 +291,7 @@ Z8.define('Z8.form.Form', {
 			var field = fields[i];
 
 			var form = field.form;
-			if(form != this && !form.isMyRecord(record))
+			if(this != form && !form.isMyRecord(record))
 				continue;
 
 			if(record != null) {

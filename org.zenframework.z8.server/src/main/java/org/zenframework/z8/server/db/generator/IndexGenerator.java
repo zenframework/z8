@@ -7,7 +7,11 @@ import org.zenframework.z8.server.base.table.value.Field;
 import org.zenframework.z8.server.db.Connection;
 import org.zenframework.z8.server.db.ConnectionManager;
 import org.zenframework.z8.server.db.DatabaseVendor;
+import org.zenframework.z8.server.db.FieldType;
 import org.zenframework.z8.server.db.Statement;
+import org.zenframework.z8.server.db.sql.FormatOptions;
+import org.zenframework.z8.server.db.sql.SqlStringToken;
+import org.zenframework.z8.server.db.sql.functions.string.Lower;
 import org.zenframework.z8.server.engine.Database;
 
 class IndexGenerator {
@@ -29,15 +33,17 @@ class IndexGenerator {
 		Database database = connection.database();
 		DatabaseVendor vendor = database.vendor();
 
-		String sql = "create " + (unique ? "unique " : "") + "index " + vendor.quote((unique ? "Unq" : "Idx") + index + table.name()) + " " + "on " + database.tableName(table.name()) + " " + formatIndexField(vendor);
+		String sql = "create " + (unique ? "unique " : "") + "index " + vendor.quote((unique ? "Unq" : "Idx") + index + table.name()) + " " + "on " + database.tableName(table.name()) + " (" + formatIndexField(vendor) + ")";
 
 		Statement.executeUpdate(sql);
 	}
 
 	private String formatIndexField(DatabaseVendor vendor) {
-		String name = "(" + vendor.quote(this.field.name()) + ")";
+		String name = vendor.quote(field.name());
 
 		switch(field.type()) {
+		case String:
+			return new Lower(new SqlStringToken(name, FieldType.String)).format(vendor, new FormatOptions());
 		case Geometry:
 			return "using gist " + name;
 		default:

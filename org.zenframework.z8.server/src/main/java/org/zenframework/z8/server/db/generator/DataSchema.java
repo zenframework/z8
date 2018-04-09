@@ -227,9 +227,15 @@ public class DataSchema {
 		}
 
 		case Postgres: {
-			sql = "select " + "indexes.relname as index, " + "tables.relname as table, " + "columns.attname as column " + "from " + "pg_class tables, " + "pg_class indexes, " + "pg_namespace owners, " + "pg_index root, " + "pg_attribute columns " + "where "
-					+ "tables.oid = root.indrelid and " + "indexes.oid = root.indexrelid and " + "owners.oid = tables.relnamespace and " + "tables.oid = columns.attrelid and " + "columns.attnum = ANY(root.indkey) and " + "tables.relkind = 'r' and " + "root.indisunique = '"
-					+ (unique ? "t" : "f") + "' and " + "not root.indisprimary and " + "owners.nspname = '" + ConnectionManager.database().schema() + "'";
+			sql =
+				"select " + "indexes.relname as index, " + "max(tables.relname) as table, " + "max(columns.attname) as column " + 
+					"from " +
+						"pg_class tables, " + "pg_class indexes, " + "pg_namespace owners, " + "pg_index root, " + "pg_attribute columns " +
+					"where " +
+						"tables.oid = root.indrelid and indexes.oid = root.indexrelid and owners.oid = tables.relnamespace and tables.oid = columns.attrelid and " +
+						"columns.attnum > 0 and (columns.attnum = ANY(root.indkey) or root.indkey = '0' and root.indexprs is not null) and  tables.relkind = 'r' and " +
+						"root.indisunique = '" + (unique ? "t" : "f") + "' and not root.indisprimary and owners.nspname = '" + ConnectionManager.database().schema() + "' " +
+					"group by index";
 
 			break;
 		}

@@ -124,18 +124,32 @@ Z8.define('Z8.form.field.Geometry', {
 	createMap: function() {
 		var geometry = Application.geometry;
 
-		var imageParams = Z8.apply({ ratio: 1}, geometry.tiles);
-		var imageSource = new ol.source.ImageWMS(imageParams);
-		var imageLayer = new ol.layer.Image({ source: imageSource });
+		var layers = [];
 
-		var vectorSource = this.vectorSource = new ol.source.Vector({ strategy : ol.loadingstrategy.bbox, wrapX: false });
-		vectorSource.on('changefeature', this.onFeatureChange, this);
+		if(this.hasTiles !== false) {
+			var imageParams = Z8.apply({ ratio: 1}, geometry.tiles);
+			var imageSource = new ol.source.ImageWMS(imageParams);
+			layers.add(new ol.layer.Image({ source: imageSource }));
+		}
 
 		var me = this;
-		var callback = function(feature, resolution) {
+		var getGridStyle = function(feature, resolution) {
+			return me.getGridStyle(feature, me.getZoom(), resolution);
+		};
+
+
+		var getStyle = function(feature, resolution) {
 			return me.getStyle(feature, me.getZoom(), resolution);
 		};
-		var vectorLayer = new ol.layer.Vector({ source : vectorSource, style: this.getStyle != null ? callback : undefined });
+
+		var gridSource = this.gridSource = new ol.source.Vector({ wrapX: false });
+		var gridLayer = this.gridLayer = new ol.layer.Vector({ source : gridSource, style: this.getGridStyle != null ? getGridStyle : undefined });
+		layers.add(gridLayer);
+
+		var vectorSource = this.vectorSource = new ol.source.Vector({ wrapX: false });
+		vectorSource.on('changefeature', this.onFeatureChange, this);
+		var vectorLayer = this.vectorLayer = new ol.layer.Vector({ source : vectorSource, style: this.getStyle != null ? getStyle : undefined });
+		layers.add(vectorLayer);
 
 		var projection = new ol.proj.Projection({ code: geometry.code, units: 'm', axisOrientation: 'enu' });
 
@@ -143,7 +157,7 @@ Z8.define('Z8.form.field.Geometry', {
 		view.on('change:resolution', this.onResolutionChange, this);
 
 		var mapContainer = this.mapContainer = this.selectNode('.control');
-		var map = this.map = new ol.Map({ layers: [imageLayer, vectorLayer], target: mapContainer, view: view });
+		var map = this.map = new ol.Map({ layers: layers, target: mapContainer, view: view });
 		map.on('moveend', this.onMove, this);
 
 		this.installEdit();
@@ -220,7 +234,7 @@ Z8.define('Z8.form.field.Geometry', {
 			this.uninstallEdit();
 		}
 
-		this.mapContainer = this.map = this.vectorSource = this.view = null;
+		this.mapContainer = this.map = this.gridSource = this.vectorSource = this.vectorLayer = this.gridLayer = this.view = null;
 
 		this.callParent();
 	},
@@ -323,6 +337,7 @@ Z8.define('Z8.form.field.Geometry', {
 
 	setMinZoom: function(minZoom) {
 		this.view.setMinZoom(minZoom);
+		this.updateZoomTools();
 	},
 
 	getMaxZoom: function() {
@@ -331,6 +346,7 @@ Z8.define('Z8.form.field.Geometry', {
 
 	setMaxZoom: function(maxZoom) {
 		this.view.setMaxZoom(maxZoom);
+		this.updateZoomTools();
 	},
 
 	onZoomOut: function(tool) {
@@ -552,20 +568,27 @@ Z8.define('Z8.form.field.Geometry', {
 		return geometry != null ? ol.extent.containsExtent(view, geometry.getExtent()) : true;
 	},
 
-	setCenter: function(feature) {
-		if(feature != null) {
+	setCenter: function(x, y) {
+		var newCenter = null; 
+
+		if(x instanceof ol.Feature) {
+			var feature = x;
 			var geometry = feature.getGeometry();
 			if(geometry == null)
 				return;
 
 			var extent = geometry.getExtent();
-			var view = this.view;
-			var center = view.getCenter();
-			var newCenter = [(extent[0] + extent[2]) / 2, (extent[1] + extent[3]) / 2];
+			newCenter = [(extent[0] + extent[2]) / 2, (extent[1] + extent[3]) / 2];
+		} else if(Number.isNumber(x) && Number.isNumber(y))
+			newCenter = [x, y];
 
-			if(center[0] != newCenter[0] || center[1] != newCenter[1])
-				view.setCenter(newCenter);
-		}
+		if(newCenter == null)
+			return;
+
+		var view = this.view;
+		var center = view.getCenter();
+		if(center[0] != newCenter[0] || center[1] != newCenter[1])
+			view.setCenter(newCenter);
 	},
 
 	readFeature: function(value) {
