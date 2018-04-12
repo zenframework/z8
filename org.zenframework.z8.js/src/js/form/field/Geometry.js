@@ -38,24 +38,40 @@ Z8.define('Z8.form.field.Geometry', {
 
 		var zoom = new Z8.button.Group({ items: [zoomOut, zoomIn] });
 
-		var select = new Z8.button.Tool({ icon: 'fa-mouse-pointer', tooltip: 'Выбор объектов', toggled: true });
-		this.setSelectTool(select);
+		return [zoom].add(this.createInteractionTools());
+	},
 
-		var move = new Z8.button.Tool({ icon: 'fa-hand-paper-o', tooltip: 'Переместить объект', toggled: false, enabled: false });
-		this.setMoveTool(move);
+	createInteractionTools: function() {
+		var interactions = [];
 
-		var edit = new Z8.button.Tool({ icon: 'fa-pencil', tooltip: 'Изменить объект', toggled: false, enabled: false });
-		this.setEditTool(edit);
+		if(this.selectTool !== false) {
+			var select = new Z8.button.Tool({ icon: 'fa-mouse-pointer', tooltip: 'Выбор объектов', toggled: true });
+			this.setSelectTool(select);
+			interactions.add(select);
+		}
 
-		var draw = new Z8.button.Tool({ icon: 'fa-pencil-square-o', tooltip: 'Нарисовать объект', toggled: false, enabled: false });
-		this.setDrawTool(draw);
+		if(this.moveTool !== false) {
+			var move = new Z8.button.Tool({ icon: 'fa-hand-paper-o', tooltip: 'Переместить объект', toggled: false, enabled: false });
+			this.setMoveTool(move);
+			interactions.add(move);
+		}
+
+		if(this.editTool !== false) {
+			var edit = new Z8.button.Tool({ icon: 'fa-pencil', tooltip: 'Изменить объект', toggled: false, enabled: false });
+			this.setEditTool(edit);
+			interactions.add(edit);
+		}
+
+		if(this.drawTool !== false) {
+			var draw = new Z8.button.Tool({ icon: 'fa-pencil-square-o', tooltip: 'Нарисовать объект', toggled: false, enabled: false });
+			this.setDrawTool(draw);
+			interactions.add(draw);
+		}
 /*
 		var erase = this.eraseButton = new Z8.button.Tool({ icon: 'fa-eraser', tooltip: 'Удалить объект', toggled: false, enabled: false });
 		edit.on('toggle', this.onInteractionToggle, this);
 */
-		var interactions = new Z8.button.Group({ items: [select, move, edit, draw/*, erase*/], radio: true });
-
-		return [zoom, interactions];
+		return [new Z8.button.Group({ items: interactions, radio: true })];
 	},
 
 	setZoomOutTool: function(tool) {
@@ -88,37 +104,74 @@ Z8.define('Z8.form.field.Geometry', {
 		this.drawTool = tool;
 	},
 
-	updateTools: function() {
-		if(this.selectTool == null)
-			return;
+	isToolToggled: function(tool) {
+		return tool != null && tool.toggled;
+	},
 
-		var move = this.moveTool;
-		var edit = this.editTool;
-		var draw = this.drawTool;
+	enableTool: function(tool, enable) {
+		return tool != null && tool.setEnabled(enable);
+	},
+
+	updateTools: function() {
+		if(this.getDom() == null)
+			return;
 
 		var enabled = !this.isReadOnly() && this.isEnabled();
 		var canMove = this.canMove();
-		var moveToggled = move != null && move.toggled;
 		var canEdit = this.canEdit();
-		var editToggled = edit != null && edit.toggled;
 		var canDraw = this.canDraw();
-		var drawToggled = draw != null && draw.toggled;
 
-		if(!enabled || !canMove && moveToggled || !canEdit && editToggled || !canDraw && drawToggled)
+		if(!enabled || !canMove && this.isToolToggled(this.move) || !canEdit && this.isToolToggled(this.edit) || !canDraw && this.isToolToggled(this.draw))
 			this.toggleSelect();
 
-		if(move != null)
-			move.setEnabled(enabled && canMove);
-		if(edit != null)
-			edit.setEnabled(enabled && canEdit);
-		if(draw != null)
-			draw.setEnabled(enabled && canDraw);
+		this.enableTool(this.moveTool, enabled && canMove);
+		this.enableTool(this.editTool, enabled && canEdit);
+		this.enableTool(this.drawTool, enabled && canDraw);
 	},
 
 	completeRender: function() {
 		this.callParent();
 		this.createMap();
 		this.updateTools();
+	},
+
+	getVectorLayer: function() {
+		return this.vectorLayer;
+	},
+
+	getGridLayer: function() {
+		return this.gridLayer;
+	},
+
+	getSource: function(layer) {
+		return layer != null ? layer.getSource() : null;
+	},
+
+	getVectorSource: function() {
+		return this.getSource(this.getVectorLayer());
+	},
+
+	getGridSource: function() {
+		return this.getSource(this.getGridLayer());
+	},
+
+	clearLayer: function(layer) {
+		if(layer != null)
+			layer.getSource().clear();
+	},
+
+	clearVector: function() {
+		this.clearLayer(this.getVectorLayer());
+	},
+
+	clearGrid: function() {
+		this.clearLayer(this.getGridLayer());
+	},
+
+	clear: function() {
+		this.clearVector();
+		this.clearGrid();
+		this.feature = null;
 	},
 
 	createMap: function() {
@@ -142,14 +195,14 @@ Z8.define('Z8.form.field.Geometry', {
 			return me.getStyle(feature, me.getZoom(), resolution);
 		};
 
-		var gridSource = this.gridSource = new ol.source.Vector({ wrapX: false });
-		var gridLayer = this.gridLayer = new ol.layer.Vector({ source : gridSource, style: this.getGridStyle != null ? getGridStyle : undefined });
-		layers.add(gridLayer);
+		var source = new ol.source.Vector({ wrapX: false });
+		source.on('changefeature', this.onFeatureChange, this);
+		var layer = this.vectorLayer = new ol.layer.Vector({ source: source, style: this.getStyle != null ? getStyle : undefined });
+		layers.add(layer);
 
-		var vectorSource = this.vectorSource = new ol.source.Vector({ wrapX: false });
-		vectorSource.on('changefeature', this.onFeatureChange, this);
-		var vectorLayer = this.vectorLayer = new ol.layer.Vector({ source : vectorSource, style: this.getStyle != null ? getStyle : undefined });
-		layers.add(vectorLayer);
+		source = new ol.source.Vector({ wrapX: false });
+		layer = this.gridLayer = new ol.layer.Vector({ source: source, style: this.getGridStyle != null ? getGridStyle : undefined });
+		layers.add(layer);
 
 		var projection = new ol.proj.Projection({ code: geometry.code, units: 'm', axisOrientation: 'enu' });
 
@@ -162,7 +215,7 @@ Z8.define('Z8.form.field.Geometry', {
 
 		this.installEdit();
 
-		var snap = this.snap = new ol.interaction.Snap({ source: vectorSource });
+		var snap = this.snap = new ol.interaction.Snap({ source: this.getVectorSource() });
 		snap.setActive(false);
 		map.addInteraction(snap);
 
@@ -171,47 +224,72 @@ Z8.define('Z8.form.field.Geometry', {
 		DOM.on(mapContainer, 'contextMenu', this.onContextMenu, this);
 	},
 
+	createMove: function() {
+		return new ol.interaction.Translate({ hitTolerance: 5 });
+	},
+
+	createEdit: function() {
+		return new ol.interaction.Modify({ source: this.getVectorSource() });
+	},
+
+	createDraw: function() {
+		return new ol.interaction.Draw({ source: this.getVectorSource(), snapTolerance: 0, freehandCondition: ol.events.condition.never, type: this.getDrawType() });
+	},
+
 	installEdit: function() {
 		var map = this.map;
 
-		var move = this.move = new ol.interaction.Translate({ hitTolerance: 5 });
-		move.setActive(false);
-		move.on('translatestart', this.onEditStart, this);
-		move.on('translateend', this.onEditEnd, this);
-		map.addInteraction(move);
+		if(this.move !== false) {
+			var move = this.move = this.createMove();
+			move.setActive(false);
+			move.on('translatestart', this.onEditStart, this);
+			move.on('translateend', this.onEditEnd, this);
+			map.addInteraction(move);
+		}
 
-		var edit = this.edit = new ol.interaction.Modify({ source: this.vectorSource });
-		edit.setActive(false);
-		edit.on('modifystart', this.onEditStart, this);
-		edit.on('modifyend', this.onEditEnd, this);
-		map.addInteraction(edit);
+		if(this.edit != false) {
+			var edit = this.edit = this.createEdit();
+			edit.setActive(false);
+			edit.on('modifystart', this.onEditStart, this);
+			edit.on('modifyend', this.onEditEnd, this);
+			map.addInteraction(edit);
+		}
 
-		var draw = this.draw = new ol.interaction.Draw({ source: this.vectorSource, snapTolerance: 0, freehandCondition: ol.events.condition.never, type: this.getDrawType() });
-		draw.setActive(false);
-		draw.on('drawstart', this.onEditStart, this);
-		draw.on('drawend', this.onEditEnd, this);
-		map.addInteraction(draw);
+		if(this.draw != false) {
+			var draw = this.draw = this.createDraw();
+			draw.setActive(false);
+			draw.on('drawstart', this.onEditStart, this);
+			draw.on('drawend', this.onEditEnd, this);
+			map.addInteraction(draw);
+		}
 	},
 
 	uninstallEdit: function() {
 		var map = this.map;
 
 		var move = this.move;
-		move.un('translatestart', this.onEditStart, this);
-		move.un('translateend', this.onEditEnd, this);
-		map.removeInteraction(move);
+		if(move !== false) {
+			move.un('translatestart', this.onEditStart, this);
+			move.un('translateend', this.onEditEnd, this);
+			map.removeInteraction(move);
+			this.move = null;
+		}
 
 		var edit = this.edit;
-		edit.un('modifystart', this.onEditStart, this);
-		edit.un('modifyend', this.onEditEnd, this);
-		map.removeInteraction(edit);
+		if(edit !== false) {
+			edit.un('modifystart', this.onEditStart, this);
+			edit.un('modifyend', this.onEditEnd, this);
+			map.removeInteraction(edit);
+			this.edit = null;
+		}
 
 		var draw = this.draw;
-		draw.un('drawstart', this.onEditStart, this);
-		draw.un('drawend', this.onEditEnd, this);
-		map.removeInteraction(draw);
-
-		this.move = this.edit = this.draw = null;
+		if(draw !== false) {
+			draw.un('drawstart', this.onEditStart, this);
+			draw.un('drawend', this.onEditEnd, this);
+			map.removeInteraction(draw);
+			this.draw = null;
+		}
 	},
 
 	resetEdit: function() {
@@ -220,6 +298,8 @@ Z8.define('Z8.form.field.Geometry', {
 	},
 
 	onDestroy: function() {
+		this.clear();
+
 		var mapContainer = this.mapContainer;
 
 		DOM.un(mapContainer, 'keyUp', this.onKeyUp, this);
@@ -229,12 +309,12 @@ Z8.define('Z8.form.field.Geometry', {
 		if(mapContainer != null) {
 			this.map.un('moveend', this.onMove, this);
 			this.view.un('change:resolution', this.onResolutionChange, this);
-			this.vectorSource.un('changefeature', this.onFeatureChange, this);
+			this.getVectorSource().un('changefeature', this.onFeatureChange, this);
 
 			this.uninstallEdit();
 		}
 
-		this.mapContainer = this.map = this.gridSource = this.vectorSource = this.vectorLayer = this.gridLayer = this.view = null;
+		this.mapContainer = this.map = this.vectorLayer = this.gridLayer = this.view = null;
 
 		this.callParent();
 	},
@@ -278,33 +358,40 @@ Z8.define('Z8.form.field.Geometry', {
 	},
 
 	hasFeatures: function() {
-		var source = this.vectorSource;
+		var source = this.getVectorSource();
 		return source != null && source.getFeatures().length != 0;
 	},
 
 	getFeatureById: function(id) {
-		var source = this.vectorSource;
+		var source = this.getVectorSource();
 		return source != null && source.getFeatureById(id);
 	},
 
 	addFeatures: function(feature) {
-		if(feature == null || this.vectorSource == null)
+		if(feature == null)
 			return;
+
+		var source = this.getVectorSource();
+		if(source == null)
+			return null;
 
 		var features = !Array.isArray(feature) ? [feature] : feature;
 
 		for(var i = 0, length = features.length; i < length; i++) {
 			feature = features[i];
 			this.saveGeometry(feature);
-			this.vectorSource.addFeature(feature);
+			source.addFeature(feature);
 		}
 	},
 
 	removeFeatures: function(feature, delay) {
-		if(feature == null || this.vectorSource == null)
+		if(feature == null)
 			return;
 
-		var source = this.vectorSource;
+		var source = this.getVectorSource();
+
+		if(source == null)
+			return;
 
 		var callback = function() {
 			var features = !Array.isArray(feature) ? [feature] : feature;
@@ -313,14 +400,6 @@ Z8.define('Z8.form.field.Geometry', {
 		}
 
 		delay != null ? new Z8.util.DelayedTask().delay(delay, callback) : callback();
-	},
-
-	clear: function() {
-		var source = this.vectorSource;
-		if(source != null)
-			source.clear();
-
-		this.feature = null;
 	},
 
 	getResolution: function() {
@@ -374,11 +453,11 @@ Z8.define('Z8.form.field.Geometry', {
 	},
 
 	isModifying: function() {
-		return this.isEditing && (this.move.getActive() || this.edit.getActive());
+		return this.isEditing && (this.isActiveInteraction(this.move) || this.isActiveInteraction(this.edit));
 	},
 
 	isDrawing: function() {
-		return this.isEditing && this.draw.getActive();
+		return this.isEditing && this.isActiveInteraction(this.draw);
 	},
 
 	onFeatureChange: function(event) {
@@ -493,30 +572,32 @@ Z8.define('Z8.form.field.Geometry', {
 	},
 
 	updateZoomTools: function(zoom) {
+		zoom = zoom || this.getZoom();
 		if(this.zoomInTool != null)
 			this.zoomInTool.setEnabled(zoom < this.getMaxZoom());
 		if(this.zoomOutTool != null)
 			this.zoomOutTool.setEnabled(zoom > this.getMinZoom());
 	},
 
+	toggleTool: function(tool, toggled) {
+		if(tool != null)
+			tool.setToggled(toggled);
+	},
+
 	toggleSelect: function() {
-		if(this.selectTool != null)
-			this.selectTool.setToggled(true);
+		this.toggleTool(this.selectTool, true);
 	},
 
 	toggleMove: function() {
-		if(this.moveTool != null)
-			this.moveTool.setToggled(true);
+		this.toggleTool(this.moveTool, true);
 	},
 
 	toggleEdit: function() {
-		if(this.editTool != null)
-			this.editTool.setToggled(true);
+		this.toggleTool(this.editTool, true);
 	},
 
 	toggleDraw: function() {
-		if(this.drawTool != null)
-			this.drawTool.setToggled(true);
+		this.toggleTool(this.drawTool, true);
 	},
 
 	canSelect: function() {
@@ -547,11 +628,20 @@ Z8.define('Z8.form.field.Geometry', {
 		return geometry;
 	},
 
+	isActiveInteraction: function(interaction) {
+		return interaction !== false ? interaction.getActive() : false;
+	},
+
+	activateInteraction: function(interaction, activate) {
+		if(interaction !== false)
+			interaction.setActive(activate);
+	},
+
 	onInteractionToggle: function(tool) {
 		this.cancelEdit(false);
-		this.move.setActive(tool == this.moveTool && this.canMove());
-		this.edit.setActive(tool == this.editTool && this.canEdit());
-		this.draw.setActive(tool == this.drawTool && this.canDraw());
+		this.activateInteraction(this.move, tool == this.moveTool && this.canMove());
+		this.activateInteraction(this.edit, tool == this.editTool && this.canEdit());
+		this.activateInteraction(this.draw, tool == this.drawTool && this.canDraw());
 	},
 
 	getExtent: function() {
@@ -611,6 +701,7 @@ Z8.define('Z8.form.field.Geometry', {
  *  Default styling, should be defined as function(feature, zoom, resolution) to use customized styles 
 */
 	getStyle: null,
+	getGridStyle: null,
 
 	lineToPolygon: function(line, width) {
 		var coordinates = line.getCoordinates();
