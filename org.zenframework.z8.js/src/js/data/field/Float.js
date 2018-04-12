@@ -1,7 +1,7 @@
 Z8.define('Z8.data.field.Float', {
 	extend: 'Z8.data.field.Field',
 
-	type: Type.Integer,
+	type: Type.Float,
 
 	convert: function(value) {
 		if(Number.isNumber(value))
