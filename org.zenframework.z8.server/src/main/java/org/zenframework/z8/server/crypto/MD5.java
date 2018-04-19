@@ -4,8 +4,10 @@ import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
+import org.zenframework.z8.server.types.string;
+
 public class MD5 {
-	public static String get(String value) {
+	public static String hex(String value) {
 		MessageDigest messageDigest = null;
 
 		try {
@@ -17,5 +19,9 @@ public class MD5 {
 		} catch(NoSuchAlgorithmException e) {
 			throw new RuntimeException(e);
 		}
+	}
+
+	public static string z8_hex(string value) {
+		return new string(hex(value.get()));
 	}
 }

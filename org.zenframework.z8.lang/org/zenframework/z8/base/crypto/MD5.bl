@@ -1,0 +1,4 @@
+[native "org.zenframework.z8.server.crypto.MD5"]
+public class MD5 {
+	public static string hex(string value);
+}

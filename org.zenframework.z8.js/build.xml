@@ -1,10 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project name="org.zenframework.z8.web" basedir="." default="all">
-	
 	<target name="all" depends="css,js" />
 
 	<target name="css">
-
 		<concat destfile="web/debug/css/revolt.css" encoding="UTF-8">
 			<filelist dir="src/css"
 				files="
@@ -33,19 +31,19 @@
 					view.css,
 					job-monitor.css"/>
 		</concat>
-	
+
 		<mkdir dir="web/css"/>
-	
+
 		<exec dir="." executable="java">
 			<arg line="-jar ../org.zenframework.z8.commons/minimizers/yuicompressor.jar -v --type css -o web/css/revolt.css web/debug/css/revolt.css"/>
 		</exec>
-	
+
 		<!--
 			yuicompressor breaks css 'calc(point + point)' rule by removing spaces around '+' (while '-' stays intact). 
 			The next line fixes it.
 		 -->
 		<replaceregexp file="web/css/revolt.css" match="(calc\([\d|\.]+[^+]*)(\+)" replace="\1 \2 " flags="g"/>
-	
+
 		<concat destfile="web/debug/css/fonts.css" encoding="UTF-8">
 			<filelist dir="src/css"
 				files="
@@ -54,7 +52,7 @@
 					font-roboto.css,
 					font-courgette.css"/>
 		</concat>
-	
+
 		<exec dir="." executable="java">
 			<arg line="-jar ../org.zenframework.z8.commons/minimizers/yuicompressor.jar -v --type css -o web/css/fonts.css web/debug/css/fonts.css"/>
 		</exec>
@@ -63,16 +61,14 @@
 			<fileset dir="src/css" includes="fonts/**"/>
 			<fileset dir="src/css" includes="img/**"/>
 		</copy>
-	
+
 		<copy todir="web/debug/css">
 			<fileset dir="src/css" includes="fonts/**"/>
 			<fileset dir="src/css" includes="img/**"/>
 		</copy>
-
 	</target>
 
 	<target name="js">
-
 		<concat destfile="web/debug/revolt.js" encoding="UTF-8">
 			<filelist dir="src/js"
 				files="
@@ -90,6 +86,7 @@
 				util/Format.js,
 				util/Parser.js,
 				util/MD5.js,
+				util/Base64.js,
 				util/DelayedTask.js,
 				Object.js,
 				data/HttpRequest.js,
@@ -185,11 +182,11 @@
 				application/query/Store.js,
 				application/form/Navigator.js"/>
 		</concat>
-	
+
 		<exec dir="." executable="java">
 			<arg line="-jar ../org.zenframework.z8.commons/minimizers/closure.jar --rewrite_polyfills false --js_output_file web/revolt.js web/debug/revolt.js"/>
 		</exec>
-	
+
 		<concat destfile="web/debug/revolt.utils.js" encoding="UTF-8">
 			<filelist dir="src/js"
 				files="
@@ -207,14 +204,13 @@
 				util/Format.js,
 				util/Parser.js,
 				util/MD5.js,
+				util/Base64.js,
 				util/DelayedTask.js,
 				Object.js"/>
 		</concat>
-	
+
 		<exec dir="." executable="java">
 			<arg line="-jar ../org.zenframework.z8.commons/minimizers/closure.jar --rewrite_polyfills false --js_output_file web/revolt.utils.js web/debug/revolt.utils.js"/>
 		</exec>
-
 	</target>
-
 </project>

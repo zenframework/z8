@@ -18,7 +18,7 @@ import org.zenframework.z8.server.types.string;
 public class Accounts extends Table {
 	final static public String TableName = "SiteAccounts";
 
-	static private String defaultPassword = MD5.get("");
+	static private String defaultPassword = MD5.hex("");
 
 	static public class fieldNames {
 		public final static String Login = "Login";

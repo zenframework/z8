@@ -32,7 +32,7 @@ public class Users extends Table {
 	static public final guid System = BuiltinUsers.System.guid();
 	static public final guid Administrator = BuiltinUsers.Administrator.guid();
 
-	static private String defaultPassword = MD5.get("");
+	static private String defaultPassword = MD5.hex("");
 
 	static public class fieldNames {
 		public final static String Password = "Password";
