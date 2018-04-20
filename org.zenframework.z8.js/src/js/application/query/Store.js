@@ -70,6 +70,7 @@ Z8.define('Z8.query.Store', {
 			lockProperty: config.lockKey,
 			periodProperty: config.periodKey,
 			filesProperty: config.attachmentsKey,
+			iconProperty: fields.iconProperty,
 			sourceCode: config.sourceCode,
 
 			fields: fields.data,
@@ -118,6 +119,8 @@ Z8.define('Z8.query.Store', {
 		result.links = this.getFieldsBy(result.data, 'isLink');
 		result.valueFor = this.getFieldsBy(result.data, 'valueFor');
 		result.valueFrom = this.getFieldsBy(result.data, 'valueFrom');
+		var icons = this.getFieldsBy(result.data, 'icon');
+		result.iconProperty = icons.length != 0 ? icons[0].name : null;
 		result.hash = MD5.hex(Object.keys(fieldsMap).sort().join(';') + config.link + config.primaryKey);
 
 		return result;
@@ -132,6 +135,8 @@ Z8.define('Z8.query.Store', {
 		for(var i = 0, length = configs.length; i < length; i++) {
 			var config = configs[i];
 			var name = config.name;
+			if(name == 'icon' || name.endsWith('.icon'))
+				config.icon = true;
 			var field = fieldsMap[name];
 			if(field == null) {
 				var type = this.getFieldType(config);

@@ -34,7 +34,7 @@ Z8.define('Z8.list.Item', {
 			if(record.parentId != null)
 				this.list.on('contentChange', this.updateCollapsedState, this);
 
-			var icon = record.get('icon');
+			var icon = record.get(record.getIconProperty());
 			this.icon = icon != null ? icon : this.icon;
 
 			if(record.on != null)
