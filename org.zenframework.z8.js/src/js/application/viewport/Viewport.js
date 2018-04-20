@@ -334,10 +334,10 @@ Z8.define('Z8.application.viewport.Viewport', {
 		if(key == Event.ESC) {
 			this.openMenu();
 			event.stopEvent();
-		} else if(key == Event.MINUS && event.shiftKey) {
+		} else if(key == Event.MINUS && event.shiftKey && (!DOM.isInput(target) || DOM.isReadOnly(target))) {
 			Ems.enlarge(-1);
 			event.stopEvent();
-		} else if(key == Event.PLUS && event.shiftKey) {
+		} else if(key == Event.PLUS && event.shiftKey && (!DOM.isInput(target) || DOM.isReadOnly(target))) {
 			Ems.enlarge(1);
 			event.stopEvent();
 		}

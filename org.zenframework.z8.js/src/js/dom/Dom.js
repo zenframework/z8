@@ -337,17 +337,27 @@ Z8.define('Z8.dom.Dom', {
 			return classes;
 		},
 
+		isInput: function(dom) {
+			if((dom = DOM.get(dom)) == null)
+				return false;
+			var tag = dom.tagName;
+			return tag == 'INPUT' || tag == 'TEXTAREA';
+		},
+
+		isReadOnly: function(dom) {
+			return DOM.getAttribute(dom, 'readonly') != null;
+		},
+
 		getValue: function(dom) {
 			if((dom = DOM.get(dom)) == null)
 				return null;
 			var tag = dom.tagName;
-			return tag == 'INPUT' || tag == 'TEXTAREA' ? (dom.type == 'checkbox' ? dom.checked : dom.value) : dom.textContent;
+			return DOM.isInput(dom) ? (dom.type == 'checkbox' ? dom.checked : dom.value) : dom.textContent;
 		},
 
 		setValue: function(dom, value, delay) {
 			if((dom = DOM.get(dom)) != null) {
-				var tag = dom.tagName;
-				var property = tag == 'INPUT' || tag == 'TEXTAREA' ? (dom.type == 'checkbox' ? 'checked' : 'value') : 'textContent';
+				var property = DOM.isInput(dom) ? (dom.type == 'checkbox' ? 'checked' : 'value') : 'textContent';
 				DOM.setProperty(dom, property, value || '', delay);
 			}
 		},
