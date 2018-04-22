@@ -222,6 +222,7 @@ Z8.define('Z8.form.field.Geometry', {
 		DOM.on(mapContainer, 'keyDown', this.onKeyDown, this);
 		DOM.on(mapContainer, 'keyUp', this.onKeyUp, this);
 		DOM.on(mapContainer, 'contextMenu', this.onContextMenu, this);
+		DOM.on(window, 'resize', this.onResize, this);
 	},
 
 	createMove: function() {
@@ -305,6 +306,7 @@ Z8.define('Z8.form.field.Geometry', {
 		DOM.un(mapContainer, 'keyUp', this.onKeyUp, this);
 		DOM.un(mapContainer, 'keyDown', this.onKeyDown, this);
 		DOM.un(mapContainer, 'contextMenu', this.onContextMenu, this);
+		DOM.un(window, 'resize', this.onResize, this);
 
 		if(mapContainer != null) {
 			this.map.un('moveend', this.onMove, this);
@@ -319,9 +321,23 @@ Z8.define('Z8.form.field.Geometry', {
 		this.callParent();
 	},
 
-	show: function() {
-		this.callParent();
-		this.map.updateSize();
+	setActive: function(active) {
+		if(this.isActive() == active)
+			return;
+
+		this.callParent(active);
+
+		if(active && this.updateSizePending) {
+			this.map.updateSize();
+			this.updateSizePending = false;
+		}
+	},
+
+	onResize: function(event, target) {
+		if(this.isActive())
+			this.map.updateSize();
+		else
+			this.updateSizePending = true;
 	},
 
 	valueToRaw: function(value) {

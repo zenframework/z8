@@ -245,11 +245,15 @@ Z8.define('Z8.form.field.Listbox', {
 	},
 
 	setActive: function(active) {
-		var wasActive = this.isActive();
+		if(this.isActive() == active)
+			return;
 
 		this.callParent(active);
 
-		if(!wasActive && this.isActive() && this.refreshOnActivate) {
+		if(this.list != null)
+			this.list.setActive(active);
+
+		if(active && this.refreshOnActivate) {
 			this.onRefresh(this.refreshTool, true);
 			this.refreshOnActivate = false;
 		}

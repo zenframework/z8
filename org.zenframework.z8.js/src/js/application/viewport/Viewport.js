@@ -247,7 +247,10 @@ Z8.define('Z8.application.viewport.Viewport', {
 				button.originalText = null;
 			}
 
-			DOM.removeCls(forms[i], 'display-none');
+			if(forms[i] != null) {
+				DOM.removeCls(forms[i], 'display-none');
+				forms[i].setActive(true);
+			}
 		} 
 
 		if(form != null && forms.indexOf(form) == -1) {
@@ -257,10 +260,14 @@ Z8.define('Z8.application.viewport.Viewport', {
 				button.setText(header);
 			}
 			button = this.createBreadcrumb(form, forms.length + 1);
-			DOM.addCls(forms[forms.length - 1], 'display-none');
+			if(forms[forms.length - 1] != null) {
+				DOM.addCls(forms[forms.length - 1], 'display-none');
+				forms[forms.length - 1].setActive(false);
+			}
 			breadcrumbs.add(button);
 			body.add(form);
 			forms.push(form);
+			form.setActive(true);
 		}
 
 		this.focus();

@@ -66,6 +66,10 @@ Z8.define('Z8.list.Item', {
 
 		if(this.list.locks)
 			DOM.swapCls(this.lockIcon, this.isReadOnly(), 'fa-lock', '');
+
+		var icon = record.getIconProperty();
+		if(icon != null && modified.hasOwnProperty(icon))
+			this.setIcon(record.get(icon));
 	},
 
 	columnsMarkup: function() {
