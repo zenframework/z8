@@ -119,7 +119,7 @@ Z8.define('Z8.query.Store', {
 		result.links = this.getFieldsBy(result.data, 'isLink');
 		result.valueFor = this.getFieldsBy(result.data, 'valueFor');
 		result.valueFrom = this.getFieldsBy(result.data, 'valueFrom');
-		var icons = this.getFieldsBy(result.data, 'icon');
+		var icons = this.getFieldsBy(result.data, 'hasIcon');
 		result.iconProperty = icons.length != 0 ? icons[0].name : null;
 		result.hash = MD5.hex(Object.keys(fieldsMap).sort().join(';') + config.link + config.primaryKey);
 
@@ -136,7 +136,7 @@ Z8.define('Z8.query.Store', {
 			var config = configs[i];
 			var name = config.name;
 			if(name == 'icon' || name.endsWith('.icon'))
-				config.icon = true;
+				config.hasIcon = true;
 			var field = fieldsMap[name];
 			if(field == null) {
 				var type = this.getFieldType(config);

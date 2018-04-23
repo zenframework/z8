@@ -190,7 +190,6 @@ Z8.define('Z8.form.field.Geometry', {
 			return me.getGridStyle(feature, me.getZoom(), resolution);
 		};
 
-
 		var getStyle = function(feature, resolution) {
 			return me.getStyle(feature, me.getZoom(), resolution);
 		};
