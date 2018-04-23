@@ -73,7 +73,7 @@
 		align-items: stretch;
 	}
 
-	.fieldset.flexed,
+	.fieldset:not(.tab).flexed,
 	.tabs.flexed,
 	.image.flexed,
 	.control-group.flexed {

@@ -4,7 +4,7 @@ Z8.define('Z8.form.field.Geometry', {
 	isGeometry: true,
 	instantAutoSave: true,
 
-	minHeight: Ems.unitsToEms(6),
+	minHeight: Ems.unitsToEms(4),
 
 	tag: 'div',
 
@@ -320,6 +320,10 @@ Z8.define('Z8.form.field.Geometry', {
 		this.callParent();
 	},
 
+	updateMapSize: function() {
+		this.map.updateSize();
+	},
+
 	setActive: function(active) {
 		if(this.isActive() == active)
 			return;
@@ -327,14 +331,14 @@ Z8.define('Z8.form.field.Geometry', {
 		this.callParent(active);
 
 		if(active && this.updateSizePending) {
-			this.map.updateSize();
+			this.updateMapSize();
 			this.updateSizePending = false;
 		}
 	},
 
 	onResize: function(event, target) {
 		if(this.isActive())
-			this.map.updateSize();
+			this.updateMapSize();
 		else
 			this.updateSizePending = true;
 	},
@@ -659,6 +663,10 @@ Z8.define('Z8.form.field.Geometry', {
 		this.activateInteraction(this.draw, tool == this.drawTool && this.canDraw());
 	},
 
+	getCenter: function() {
+		return this.view.getCenter();
+	},
+
 	getExtent: function() {
 		var view = this.view;
 		return view != null ? view.calculateExtent() : null;
@@ -690,10 +698,9 @@ Z8.define('Z8.form.field.Geometry', {
 		if(newCenter == null)
 			return;
 
-		var view = this.view;
-		var center = view.getCenter();
+		var center = this.getCenter();
 		if(center[0] != newCenter[0] || center[1] != newCenter[1])
-			view.setCenter(newCenter);
+			this.view.setCenter(newCenter);
 	},
 
 	readFeature: function(value) {
