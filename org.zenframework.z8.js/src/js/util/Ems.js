@@ -3,6 +3,7 @@ Z8.define('Z8.util.Ems', {
 
 	statics: {
 		Base: parseFloat(DOM.getComputedStyle(document.body).fontSize),
+		OriginalBase: parseFloat(DOM.getComputedStyle(document.body).fontSize),
 
 		UnitHeight: 4,
 		UnitSpacing: .71428571,
@@ -19,14 +20,23 @@ Z8.define('Z8.util.Ems', {
 			return Math.ceil(ems * Ems.Base);
 		},
 
+		setBase: function(base) {
+			Ems.Base = base;
+			DOM.setStyle(document.body, 'font-size', base + 'px');
+			DOM.setStyle(document.body, 'line-height', base + 'px');
+			DOM.callWindowResize();
+		},
+
 		enlarge: function(value) {
 			var base = Ems.Base + value;
-			if(8 <= base && base <= 17) {
-				Ems.Base = base;
-				DOM.setStyle(document.body, 'font-size', base + 'px');
-				DOM.setStyle(document.body, 'line-height', base + 'px');
-				DOM.callWindowResize();
-			}
+
+			if(8 <= base && base <= 17)
+				Ems.setBase(base);
+		},
+
+		reset: function(value) {
+			if(Ems.Base != Ems.OriginalBase)
+				Ems.setBase(Ems.OriginalBase);
 		}
 	}
 });

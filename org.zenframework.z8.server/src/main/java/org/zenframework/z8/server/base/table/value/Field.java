@@ -393,8 +393,7 @@ abstract public class Field extends Control implements IField {
 
 			writer.writeSort(link.getQuery().sortFields());
 
-			readOnly = wasReadOnly != null ? wasReadOnly.get() : false;
-			readOnly = readOnly || linkField.readOnly() || !linkField.access().write();
+			readOnly = linkField.readOnly() || !linkField.access().write();
 			required = !readOnly && (required() || linkField.required());
 
 			this.readOnly = new bool(readOnly);

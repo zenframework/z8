@@ -243,8 +243,8 @@ Z8.define('Z8.form.Form', {
 	},
 
 	isMyRecord: function(record) {
-		var query = this.getQuery();
-		return record == null || query == null || query == record.getQuery();
+		var query = this.getQuery() || '';
+		return record == null || query == null || query == (record.getQuery() || '');
 	},
 
 	setRecord: function(record) {
