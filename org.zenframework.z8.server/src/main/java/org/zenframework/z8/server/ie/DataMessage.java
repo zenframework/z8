@@ -182,6 +182,11 @@ public class DataMessage extends Message {
 	public void z8_add(Table.CLASS<? extends Table> table, RCollection fields, sql_bool where) {
 		source.add(table.get(), CLASS.asList(fields), where);
 	}
+	
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	public RCollection z8_getRecords(Table.CLASS<? extends Table> table) {
+		return new RCollection(source.getRecords(table.get().name()));
+	}
 
 	public void z8_addRule(ImportPolicy policy) {
 		source.addRule(policy);

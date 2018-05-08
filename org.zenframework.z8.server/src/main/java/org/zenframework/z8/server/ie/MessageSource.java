@@ -46,6 +46,17 @@ public class MessageSource implements RmiSerializable, Serializable {
 		return exportRules;
 	}
 
+	public Collection<guid> getRecords(String tableName) {
+		Collection<guid> result = new ArrayList<guid>();
+		
+		for(ExportSource src : sources) {
+			if(src.name().equals(tableName))
+				result.addAll(src.records());
+		}
+		
+		return result;
+	}
+	
 	public void add(Table table, Collection<Field> fields, sql_bool where) {
 		if (table.exportable() || exportAll) {
 			sources.add(new ExportSource(table, fields, exportAll, where));
