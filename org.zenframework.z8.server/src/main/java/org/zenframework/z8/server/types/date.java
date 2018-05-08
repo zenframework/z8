@@ -503,6 +503,10 @@ public class date extends primary {
 		return z8_today().addDay(1);
 	}
 
+	public integer z8_ticks() {
+		return new integer(getTicks());
+	}
+
 	public integer z8_year() {
 		return new integer(year());
 	}

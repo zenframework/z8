@@ -27,6 +27,8 @@ public final class date extends primary {
 
 	static public bool isEqualDate(date date1, date date2);
 
+	public int ticks();
+
 	public int year();
 	public int quarter();
 	public int month();
