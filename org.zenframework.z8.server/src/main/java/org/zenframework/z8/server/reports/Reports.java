@@ -3,7 +3,6 @@ package org.zenframework.z8.server.reports;
 public class Reports {
 	public static final String DesignExtension = "rptdesign";
 
-	public static final String Bindings = "bindings.xml";
 	public static final String DefaultDesign = "default.rptdesign";
 
 	// for Layout:

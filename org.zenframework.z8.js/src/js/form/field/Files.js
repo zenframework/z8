@@ -39,6 +39,11 @@ Z8.define('Z8.form.field.Files', {
 			this.store.loadData(value);
 	},
 
+	onRecordChange: function(record, modified) {
+		if(modified.hasOwnProperty(this.name))
+			this.setValue(record.get(this.name));
+	},
+
 	afterRecordSet: function(record) {
 	},
 
@@ -114,8 +119,6 @@ Z8.define('Z8.form.field.Files', {
 
 		var callback = function(record, files, success) {
 			this.removeTool.setBusy(false);
-			if(success && this.getRecord() == record)
-				this.setValue(files);
 		};
 
 		var record = this.getRecord();
@@ -195,7 +198,6 @@ Z8.define('Z8.form.field.Files', {
 		var callback = function(record, files, success) {
 			this.uploadTool.setBusy(false);
 			if(success && this.getRecord() == record) {
-				this.setValue(files);
 				var file = files.last();
 				this.select(file != null ? file.id : null);
 				this.focus();

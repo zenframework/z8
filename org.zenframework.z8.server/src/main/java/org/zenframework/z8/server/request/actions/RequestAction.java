@@ -73,6 +73,10 @@ public abstract class RequestAction extends RequestTarget {
 		return QueryUtils.parseFormFields(query, json);
 	}
 
+	public boolean hasRequestParameter(string key) {
+		return getRequestParameter(key) != null;
+	}
+
 	public String getRequestParameter(string key) {
 		return config.requestParameter(key);
 	}

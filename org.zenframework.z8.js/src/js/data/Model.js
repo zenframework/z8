@@ -486,7 +486,7 @@ Z8.define('Z8.data.Model', {
 
 		var requestCallback = function(response, success) {
 			if(success) {
-				this.set(name, response.data, true);
+				this.set(name, response.data);
 				Z8.callback(callback, this, this.get(name), true);
 			} else
 				Z8.callback(callback, this, [], false);
@@ -503,7 +503,7 @@ Z8.define('Z8.data.Model', {
 
 		var requestCallback = function(response, success) {
 			if(success) {
-				this.set(name, response.data, true);
+				this.set(name, response.data);
 				Z8.callback(callback, this, this.get(name), true);
 			} else
 				Z8.callback(callback, this, [], false);

@@ -1,0 +1,13 @@
+[native "org.zenframework.z8.server.base.table.value.BinaryField"]
+public class BinaryField extends Field {
+	public binary defaultValue;
+
+	virtual public binary getDefault();
+	public void setDefault(binary defaultValue);
+
+	public operator sql_binary();
+
+	virtual public binary get();
+
+	public BinaryField operator = (binary value);
+}

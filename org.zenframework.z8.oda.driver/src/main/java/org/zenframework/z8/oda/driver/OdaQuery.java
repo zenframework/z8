@@ -50,9 +50,14 @@ public class OdaQuery implements IQuery {
 			throw new RuntimeException("OdaQuery.setApplicationContext never been called");
 
 		JsonObject json = new JsonObject(queryText);
+
+		String name = json.getString(Json.name);
 		String classId = json.getString(Json.id);
 
-		readAction = (ReadAction)context.get(classId);
+		readAction = (ReadAction)context.get(name);
+
+		if(readAction == null)
+			readAction = (ReadAction)context.get(classId);
 
 		if(readAction != null) {
 			fields = new ArrayList<IField>(readAction.config().fields);

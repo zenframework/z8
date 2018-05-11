@@ -222,6 +222,10 @@ Z8.define('Z8.form.field.Geometry', {
 		DOM.on(mapContainer, 'keyUp', this.onKeyUp, this);
 		DOM.on(mapContainer, 'contextMenu', this.onContextMenu, this);
 		DOM.on(window, 'resize', this.onResize, this);
+
+		this.map.once('postcompose', function(event) {
+			this.canvas = event.context.canvas;
+		}, this);
 	},
 
 	createMove: function() {
@@ -315,7 +319,7 @@ Z8.define('Z8.form.field.Geometry', {
 			this.uninstallEdit();
 		}
 
-		this.mapContainer = this.map = this.vectorLayer = this.gridLayer = this.view = null;
+		this.mapContainer = this.map = this.canvas = this.vectorLayer = this.gridLayer = this.view = null;
 
 		this.callParent();
 	},
@@ -377,8 +381,20 @@ Z8.define('Z8.form.field.Geometry', {
 	},
 
 	hasFeatures: function() {
+		return this.getFeatures().length != 0;
+	},
+
+	getFeatures: function() {
 		var source = this.getVectorSource();
-		return source != null && source.getFeatures().length != 0;
+		return source != null ? source.getFeatures() : [];
+	},
+
+	cloneFeatures: function() {
+		var result = [];
+		var features = this.getFeatures();
+		for(var i = 0, length = features.length; i < length; i++)
+			result.add(features[i].clone());
+		return result;
 	},
 
 	getFeatureById: function(id) {

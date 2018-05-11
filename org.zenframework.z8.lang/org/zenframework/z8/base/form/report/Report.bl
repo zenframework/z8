@@ -2,9 +2,16 @@ import org.zenframework.z8.lang.Object;
 
 [native "org.zenframework.z8.server.base.form.report.Report"]
 public class Report extends Object {
+	static public final string Pdf;
+	static public final string Excel;
+	static public final string Word;
+	static public final string Html;
+	static public final string Powerpoint;
+
 	public string name;
 	public string template;
+	public string format;
 
 	virtual protected void prepare(guid recordId);
-	virtual public void execute(guid recordId);
+	virtual public file execute(guid recordId);
 }

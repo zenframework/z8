@@ -572,7 +572,7 @@ Z8.define('Z8.dom.Dom', {
 			var config = { tag: 'iframe', html: '<head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"></head>', src: '', hidden: true };
 			var frame = DOM.append(document.body, config);
 
-			frame.src = encodeURI('/' + url.replace(/\\/g, '/')) + '?&session=' + Application.session + (serverId != null ? '&serverId=' + serverId : '');
+			frame.src = encodeURI((window._DEBUG_ ? '/' : '') + url.replace(/\\/g, '/')) + '?&session=' + Application.session + (serverId != null ? '&serverId=' + serverId : '');
 
 			new Z8.util.DelayedTask().delay(500, DOM.downloadCallback, this, url, frame, callback);
 		},

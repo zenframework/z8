@@ -35,6 +35,7 @@ import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.TreeItem;
 import org.eclipse.ui.PlatformUI;
 import org.zenframework.z8.oda.designer.plugin.Plugin;
+import org.zenframework.z8.oda.driver.ResultSetMetaData;
 import org.zenframework.z8.server.base.query.Query;
 import org.zenframework.z8.server.base.table.Table;
 import org.zenframework.z8.server.base.table.value.Field;
@@ -314,14 +315,14 @@ public class DataSetEditorPage extends DataSetWizardPage {
 		return result;
 	}
 
-	private String buildQueryString() {
+	private String buildQueryString(String name) {
 		if(tables.getSelectionCount() == 0)
 			throw new RuntimeException("No table selected");
 
 		Table query = (Table)tables.getSelection()[0].getData();
 
 		JsonWriter writer = new JsonWriter();
-		query.writeReportMeta(writer, getSelectedFields());
+		query.writeReportMeta(writer, name, getSelectedFields());
 
 		return writer.toString();
 	}
@@ -331,7 +332,7 @@ public class DataSetEditorPage extends DataSetWizardPage {
 		if(this.tables == null)
 			return design;
 
-		design.setQueryText(buildQueryString());
+		design.setQueryText(buildQueryString(design.getName()));
 
 		ResultSetDefinition resultSet = DesignFactory.eINSTANCE.createResultSetDefinition();
 		ResultSetColumns columns = DesignFactory.eINSTANCE.createResultSetColumns();
@@ -342,6 +343,7 @@ public class DataSetEditorPage extends DataSetWizardPage {
 			DataElementAttributes attributes = DesignFactory.eINSTANCE.createDataElementAttributes();
 			attributes.setName(field.id());
 			attributes.setUiDisplayName(field.displayName() + " (" + field.id() + ")");
+			attributes.setNativeDataTypeCode(ResultSetMetaData.getNativeTypeCode(field));
 
 			OutputElementAttributes outputAttributes = DesignFactory.eINSTANCE.createOutputElementAttributes();
 			attributes.setName(field.id());

@@ -196,9 +196,10 @@ public class Query extends OBJECT {
 			z8_afterDestroy(recordId);
 	}
 
-	public void writeReportMeta(JsonWriter writer, Collection<Field> fields) {
+	public void writeReportMeta(JsonWriter writer, String name, Collection<Field> fields) {
 		writer.startObject();
 		writer.writeProperty(Json.displayName, displayName());
+		writer.writeProperty(Json.name, name);
 		writer.writeProperty(Json.id, classId());
 		writer.startArray(Json.fields);
 

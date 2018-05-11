@@ -1,0 +1,19 @@
+import org.zenframework.z8.base.table.Table;
+import org.zenframework.z8.base.table.value.BinaryField;
+import org.zenframework.z8.base.table.value.StringField;
+
+[name "SystemFiles"]
+[displayName "Файлы"]
+[native "org.zenframework.z8.server.base.table.system.Files"]
+public class Files extends Table {
+	[displayName "Имя файла"] name;
+	name.length = 512;
+
+	[name "Path"]
+	[displayName "Путь к файлу в кэше"]
+	public StringField path;
+	path.length = 512;
+
+	[name "File"]
+	public BinaryField data;
+}
