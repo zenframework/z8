@@ -166,10 +166,10 @@ public class ActionFactory {
 			JsonObject object = array.getJsonObject(index);
 
 			Field field = query.findFieldById(object.getString(Json.property));
-			String dir = object.getString(Json.direction);
+			String dir = object.containsKey(Json.direction) ? object.getString(Json.direction) : null;
 
 			if(field != null) {
-				field.sortDirection = SortDirection.fromString(dir);
+				field.sortDirection = dir != null ? SortDirection.fromString(dir) : SortDirection.Asc;
 				fields.add(field);
 			}
 		}
