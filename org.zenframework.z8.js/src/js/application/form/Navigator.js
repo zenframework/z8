@@ -248,20 +248,6 @@ Z8.define('Z8.application.form.Navigator', {
 			placeholder: field.header,
 			tooltip: field.header
 		};
-		if (field.isCombobox) {
-			var name = field.name;
-			field = Object.assign({}, field, {
-				name: field.query.name + '.name'
-			});
-			field.query.fields = [ { name: name }, { name: field.name } ];
-			config.store = Z8.query.Store.config(field);
-			config.fields = field;
-			config.name = name;
-			config.displayName = field.name;
-			config.checks = false;
-			config.pagerMode = 'visible';
-			return new Z8.form.field.SearchCombobox(config);
-		}
 		return new Z8.form.field.SearchText(config);
 	},
 
