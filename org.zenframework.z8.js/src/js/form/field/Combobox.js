@@ -170,6 +170,7 @@ Z8.define('Z8.form.field.Combobox', {
 	onDependencyChange: function(record) {
 		var value = this.dependsOnValue = record != null ? (this.hasDependsOnField() ? record.get(this.getDependsOnField()) : record.id) : null;
 		this.updateWhere(value);
+		this.setValue(guid.Null);
 	},
 
 	updateWhere: function(value) {
