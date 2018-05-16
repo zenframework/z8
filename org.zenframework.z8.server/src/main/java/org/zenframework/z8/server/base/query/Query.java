@@ -719,7 +719,7 @@ public class Query extends OBJECT {
 		if(primaryFields != null)
 			return primaryFields;
 
-		primaryFields = new ArrayList<Field.CLASS<Field>>(20);
+		primaryFields = new ArrayList<Field.CLASS<Field>>(dataFields.size());
 
 		for(Field.CLASS<Field> field : dataFields()) {
 			if(!(field instanceof Expression.CLASS))
@@ -1239,6 +1239,16 @@ public class Query extends OBJECT {
 
 	public guid z8_recordId() {
 		return recordId();
+	}
+
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	public RCollection z8_fields() {
+		return new RCollection(dataFields());
+	}
+
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	public RCollection z8_primaryFields() {
+		return new RCollection(primaryFields());
 	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
