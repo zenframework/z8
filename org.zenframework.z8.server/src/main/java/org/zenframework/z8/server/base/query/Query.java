@@ -719,7 +719,7 @@ public class Query extends OBJECT {
 		if(primaryFields != null)
 			return primaryFields;
 
-		primaryFields = new ArrayList<Field.CLASS<Field>>(dataFields.size());
+		primaryFields = new ArrayList<Field.CLASS<Field>>(20);
 
 		for(Field.CLASS<Field> field : dataFields()) {
 			if(!(field instanceof Expression.CLASS))
