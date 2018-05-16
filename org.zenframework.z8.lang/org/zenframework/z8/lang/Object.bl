@@ -18,6 +18,9 @@ public class Object {
 	public string displayName();
 	public void setDisplayName(string displayName);
 
+	public string getAttribute(string attribute);
+	public void setAttribute(string attribute, primary value);
+
 	public bool operator == (Object object);
 	public bool operator != (Object object);
 

@@ -5,6 +5,9 @@ Z8.define('Z8.form.field.Geometry', {
 	instantAutoSave: true,
 
 	minHeight: Ems.unitsToEms(4),
+	zoom: 17,
+	minZoom: 11,
+	maxZoom: 21,
 
 	tag: 'div',
 
@@ -205,7 +208,7 @@ Z8.define('Z8.form.field.Geometry', {
 
 		var projection = new ol.proj.Projection({ code: geometry.code, units: 'm', axisOrientation: 'enu' });
 
-		var view = this.view = new ol.View({ center: [0, 0], zoom : 17, minZoom: 11, maxZoom: 21, projection: projection });
+		var view = this.view = new ol.View({ center: [0, 0], zoom : this.zoom, minZoom: this.minZoom, maxZoom: this.maxZoom, projection: projection });
 		view.on('change:resolution', this.onResolutionChange, this);
 
 		var mapContainer = this.mapContainer = this.selectNode('.control');

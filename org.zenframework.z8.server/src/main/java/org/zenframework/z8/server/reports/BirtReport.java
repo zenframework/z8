@@ -14,11 +14,9 @@ import java.util.Set;
 import org.apache.commons.io.FileUtils;
 import org.eclipse.birt.report.engine.api.EngineException;
 import org.eclipse.birt.report.engine.api.IExcelRenderOption;
-import org.eclipse.birt.report.engine.api.IPDFRenderOption;
 import org.eclipse.birt.report.engine.api.IRenderOption;
 import org.eclipse.birt.report.engine.api.IReportRunnable;
 import org.eclipse.birt.report.engine.api.IRunAndRenderTask;
-import org.eclipse.birt.report.engine.api.PDFRenderOption;
 import org.eclipse.birt.report.engine.api.RenderOption;
 import org.eclipse.birt.report.model.api.CellHandle;
 import org.eclipse.birt.report.model.api.DataItemHandle;
@@ -861,11 +859,13 @@ public class BirtReport {
 
 	public File execute() {
 		try {
+/*
 			if(format().equalsIgnoreCase(Reports.Pdf)) {
 				options.splitContent = true;
 				options.printOptions.pageFormat = PageFormat.A4;
 				options.printOptions.pageOrientation = PageOrientation.Portrait;
 			}
+*/
 			IReportRunnable runnable = options.reportEngine().openReportDesign(reportDesignFile().getAbsolutePath());
 			return generateAndSplit(runnable);
 		} catch(EngineException e) {
@@ -1001,10 +1001,10 @@ public class BirtReport {
 			options.setOption(IExcelRenderOption.OFFICE_VERSION, "office2007"); 
 			options.setOption(IRenderOption.EMITTER_ID, "uk.co.spudsoft.birt.emitters.excel.XlsEmitter");
 			options.setOutputFormat("xls_spudsoft"); // pdf, doc, ppt, html, xls_spudsoft
-		} else if(format().equalsIgnoreCase(Reports.Pdf)) {
+		}/* else if(format().equalsIgnoreCase(Reports.Pdf)) {
 			options = new PDFRenderOption(options);
 			options.setOption(IPDFRenderOption.PAGE_OVERFLOW, PDFRenderOption.ENLARGE_PAGE_SIZE);
-		}
+		}*/
 
 		task.setRenderOption(options);
 
