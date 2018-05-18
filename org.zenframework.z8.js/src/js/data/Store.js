@@ -777,12 +777,12 @@ Z8.define('Z8.data.Store', {
 			else
 				roots.add(record);
 
-			for(var i = 0, length = roots.length; i < length; i++) {
-				var root = roots[i];
+			for(var j = 0, length1 = roots.length; j < length1; j++) {
+				var root = roots[j];
 				if (root.parentId == recordId) {
 					children.push(root);
-					roots.removeAt(i);
-					i--;
+					roots.removeAt(j);
+					j--;
 				}
 			}
 		}

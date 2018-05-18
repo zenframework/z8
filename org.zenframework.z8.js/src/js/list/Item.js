@@ -45,9 +45,10 @@ Z8.define('Z8.list.Item', {
 	updateCollapsedState: function(list) {
 		list.un('contentChange', this.updateCollapsedState, this);
 
-		var parent = list.getItem(this.record.parentId);
-		if(parent != null && (parent.isCollapsed() || parent.isHidden()))
-			this.hide(true);
+		var parent = list.getParent(this);
+
+		if(parent != null)
+			this.hidden = parent.hidden + parent.isCollapsed();
 	},
 
 	isReadOnly: function() {
