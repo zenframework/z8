@@ -128,7 +128,7 @@ Z8.define('Z8.application.form.Navigator', {
 		var fields = this.getColumns();
 		var store = this.store;
 		var cls = 'table' + (isTable ? '' : ' display-none');
-		return this.table = new Z8.form.field.Listbox({ cls: cls, store: store, fields: fields, locks: !this.isReadOnly(), editable: true, readOnly: this.isReadOnly(), totals: store.hasTotals(), pagingMode: 'always' });
+		return this.table = new Z8.form.field.Listbox({ cls: cls, store: store, fields: fields, locks: !this.isReadOnly() && Application.listbox.locks, checks: Application.listbox.checks, editable: true, readOnly: this.isReadOnly(), totals: store.hasTotals(), pagingMode: 'always' });
 	},
 
 	setTools: function(listbox, set) {
@@ -361,7 +361,8 @@ Z8.define('Z8.application.form.Navigator', {
 			quickFilters: quickFilters,
 			filters: quickFilters.length == 0,
 			editable: true,
-			locks: !this.isReadOnly(),
+			locks: !this.isReadOnly() && Application.listbox.locks,
+			checks: Application.listbox.checks,
 			totals: store.hasTotals()
 		};
 	},

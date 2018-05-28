@@ -52,3 +52,7 @@ Array.prototype.last = function() {
 	var length = this.length;
 	return length > 0 ? this[length - 1] : null;
 };
+
+Array.prototype.contains = function(value) {
+	return this.indexOf(value) != -1;
+};

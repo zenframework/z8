@@ -33,9 +33,10 @@ public class LPad extends StringFunction {
 		pad = (pad == null ? new SqlConst(new string(" ")) : pad);
 		switch(vendor) {
 		case Oracle:
-			return "LPAD(" + string.format(vendor, options) + "," + length.format(vendor, options) + "," + pad.format(vendor, options) + ")";
 		case SqlServer:
 			return "RIGHT(REPLICATE(" + pad.format(vendor, options) + "," + length.format(vendor, options) + ")+" + string.format(vendor, options) + "," + length.format(vendor, options) + ")";
+		case Postgres:
+			return "lpad(" + string.format(vendor, options) + ", " + length.format(vendor, options) + ", " + pad.format(vendor, options) + ")";
 		default:
 			throw new UnknownDatabaseException();
 		}
