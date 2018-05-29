@@ -186,6 +186,7 @@ public class ReadAction extends RequestAction {
 
 		if(recordIds == null) {
 			addFilter(query.where());
+			addGroupFilter(query.having());
 
 			collectFilters();
 
