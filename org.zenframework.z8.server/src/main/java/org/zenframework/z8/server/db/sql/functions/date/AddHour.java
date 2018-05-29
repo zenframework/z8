@@ -27,7 +27,7 @@ public class AddHour extends SqlToken {
 	@Override
 	public String format(DatabaseVendor vendor, FormatOptions options, boolean logicalContext) {
 		String dt = date.format(vendor, options);
-		return "(" + dt + " + " + hours.format(vendor, options) + " *" + datespan.TicksPerHour + ")";
+		return "(" + dt + " + " + hours.format(vendor, options) + " *" + datespan.TicksPerHour + (vendor == DatabaseVendor.Postgres ? "::bigint" : "") + ")";
 	}
 
 	@Override

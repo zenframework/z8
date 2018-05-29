@@ -27,7 +27,7 @@ public class AddSecond extends SqlToken {
 	@Override
 	public String format(DatabaseVendor vendor, FormatOptions options, boolean logicalContext) {
 		String dt = date.format(vendor, options);
-		return "(" + dt + " + " + seconds.format(vendor, options) + " * " + datespan.TicksPerSecond + ")";
+		return "(" + dt + " + " + seconds.format(vendor, options) + " * " + datespan.TicksPerSecond + (vendor == DatabaseVendor.Postgres ? "::bigint" : "") + ")";
 	}
 
 	@Override

@@ -27,7 +27,7 @@ public class AddMinute extends SqlToken {
 	@Override
 	public String format(DatabaseVendor vendor, FormatOptions options, boolean logicalContext) {
 		String dt = date.format(vendor, options);
-		return "(" + dt + " + " + minutes.format(vendor, options) + " *" + datespan.TicksPerMinute + ")";
+		return "(" + dt + " + " + minutes.format(vendor, options) + " *" + datespan.TicksPerMinute + (vendor == DatabaseVendor.Postgres ? "::bigint" : "") + ")";
 	}
 
 	@Override
