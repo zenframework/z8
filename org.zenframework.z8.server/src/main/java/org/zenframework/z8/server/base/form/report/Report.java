@@ -97,7 +97,6 @@ public class Report extends OBJECT implements Runnable, IReport {
 		File diskFile = new File(Folders.Base, new BirtReport(report).execute().getPath());
 		file file = new file(diskFile);
 		file.set(new InputOnlyFileItem(diskFile, diskFile.getName()));
-		file.path = new string();
 
 		return file;
 	}
