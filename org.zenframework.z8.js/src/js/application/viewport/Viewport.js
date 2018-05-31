@@ -74,8 +74,10 @@ Z8.define('Z8.application.viewport.Viewport', {
 		menu.on('close', this.onMenuClose, this);
 		this.add(menu);
 
-		var sourceCode = this.sourceCode = new Z8.application.viewport.SourceCode();
-		this.add(sourceCode);
+		if(User.administrator) {
+			var sourceCode = this.sourceCode = new Z8.application.viewport.SourceCode();
+			this.add(sourceCode);
+		}
 
 		this.openMenu();
 
@@ -144,11 +146,13 @@ Z8.define('Z8.application.viewport.Viewport', {
 	},
 
 	showSourceCode: function(show) {
-		show ? this.sourceCode.open() : this.sourceCode.close();
+		if(this.sourceCode != null)
+			show ? this.sourceCode.open() : this.sourceCode.close();
 	},
 
 	initSourceCode: function(source) {
-		this.sourceCode.load(source);
+		if(this.sourceCode != null)
+			this.sourceCode.load(source);
 	},
 
 	onMenuToggleMouseDown: function(event, target) {

@@ -51,6 +51,7 @@ abstract public class Field extends Control implements IField {
 
 	public string format;
 	public integer width;
+	public integer minWidth;
 
 	public SortDirection sortDirection = SortDirection.Asc;
 	public Aggregation aggregation = Aggregation.None;
@@ -329,6 +330,14 @@ abstract public class Field extends Control implements IField {
 		return type();
 	}
 
+	private boolean hasReadOnlyLinks(Collection<ILink> links) {
+		for(ILink link : links) {
+			if(((Field)link).readOnly())
+				return true;
+		}
+		return false;
+	}
+
 	@Override
 	public void writeMeta(JsonWriter writer, Query query, Query context) {
 		writer.writeProperty(Json.type, metaType().toString());
@@ -393,7 +402,7 @@ abstract public class Field extends Control implements IField {
 
 			writer.writeSort(link.getQuery().sortFields());
 
-			readOnly = linkField.readOnly() || !linkField.access().write();
+			readOnly = hasReadOnlyLinks(path) || !linkField.access().write();
 			required = !readOnly && (required() || linkField.required());
 
 			this.readOnly = new bool(readOnly);

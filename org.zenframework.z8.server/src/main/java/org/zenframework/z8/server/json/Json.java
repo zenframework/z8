@@ -23,6 +23,7 @@ public interface Json {
 	static public string user = new string("user");
 	static public string account = new string("account");
 	static public string login = new string("login");
+	static public string administrator = new string("administrator");
 	static public string firstName = new string("firstName");
 	static public string middleName = new string("middleName");
 	static public string lastName = new string("lastName");
@@ -73,6 +74,10 @@ public interface Json {
 	static public string hidden = new string("hidden");
 	static public string width = new string("width");
 	static public string height = new string("height");
+	static public string minWidth = new string("minWidth");
+	static public string minHeight = new string("minHeight");
+	static public string maxWidth = new string("maxWidth");
+	static public string maxHeight = new string("maxHeight");
 	static public string length = new string("length");
 	static public string size = new string("size");
 	static public string priority = new string("priority");

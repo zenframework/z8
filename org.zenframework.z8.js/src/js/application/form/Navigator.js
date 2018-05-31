@@ -84,15 +84,19 @@ Z8.define('Z8.application.form.Navigator', {
 		this.callParent();
 		DOM.on(this, 'keyDown', this.onKeyDown, this);
 
-		Viewport.sourceCode.owner = this.sourceCodeButton;
-		Viewport.sourceCode.on('show', this.onSourceCodeShow, this);
-		Viewport.sourceCode.on('hide', this.onSourceCodeHide, this);
+		if(Viewport.sourceCode != null) {
+			Viewport.sourceCode.owner = this.sourceCodeButton;
+			Viewport.sourceCode.on('show', this.onSourceCodeShow, this);
+			Viewport.sourceCode.on('hide', this.onSourceCodeHide, this);
+		}
 	},
 
 	onDestroy: function() {
-		Viewport.sourceCode.un('show', this.onSourceCodeShow, this);
-		Viewport.sourceCode.un('hide', this.onSourceCodeHide, this);
-		Viewport.sourceCode.owner = null;
+		if(Viewport.sourceCode != null) {
+			Viewport.sourceCode.un('show', this.onSourceCodeShow, this);
+			Viewport.sourceCode.un('hide', this.onSourceCodeHide, this);
+			Viewport.sourceCode.owner = null;
+		}
 
 		DOM.un(this, 'keyDown', this.onKeyDown, this);
 
@@ -132,6 +136,9 @@ Z8.define('Z8.application.form.Navigator', {
 	},
 
 	setTools: function(listbox, set) {
+		if(listbox == null)
+			return;
+
 		listbox.setAddTool(set ? this.addButton : null);
 		listbox.setCopyTool(set ? this.copyButton : null);
 		listbox.setRefreshTool(set ? this.refreshButton : null);
@@ -332,18 +339,24 @@ Z8.define('Z8.application.form.Navigator', {
 	},
 
 	createSourceCodeButton: function() {
+		if(Viewport.sourceCode == null)
+			return null;
+
 		var sourceCode = new Z8.button.Button({ cls: 'btn-sm float-right', text: 'Исходный код', success: true, icon: 'fa-code', tooltip: 'Как это сделано', toggled: false });
 		sourceCode.on('toggle', this.toggleSourceCode, this);
 		return sourceCode;
 	},
 
 	onSourceCodeShow: function() {
-		this.sourceCodeButton.setToggled(true, true);
+		if(this.sourceCodeButton != null)
+			this.sourceCodeButton.setToggled(true, true);
 	},
 
 	onSourceCodeHide: function() {
-		this.sourceCodeButton.setToggled(false, true);
-		this.focus();
+		if(this.sourceCodeButton != null) {
+			this.sourceCodeButton.setToggled(false, true);
+			this.focus();
+		}
 	},
 
 	getListboxConfig: function() {
@@ -640,7 +653,7 @@ Z8.define('Z8.application.form.Navigator', {
 			var header = headers[i];
 			var field = header.field;
 			if(field != null && field.type != Type.Text)
-				columns.push({ id: field.name, width: Ems.emsToPixels(header.getWidth()) });
+				columns.push({ id: field.name, width: Ems.emsToPixels(header.getWidth()), minWidth: Ems.emsToPixels(header.getMinWidth()) });
 		}
 
 		var store = this.store;

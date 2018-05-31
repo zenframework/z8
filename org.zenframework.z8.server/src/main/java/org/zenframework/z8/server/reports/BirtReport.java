@@ -90,8 +90,6 @@ public class BirtReport {
 	private Collection<Field> fields;
 	private Collection<Field> groups;
 
-	float scaleFactor = 1;
-
 	private ReportOptions options;
 
 	private boolean initialized = false;
@@ -345,9 +343,51 @@ public class BirtReport {
 		}
 	}
 
+	private Collection<Column> scaleColumns() {
+		Collection<Column> columns = getColumns();
+
+		float pageWidth = options.pagesWide * (options.pageWidth() - options.horizontalMargins());
+		float scaleFactor = pageWidth / getTotalWidth();
+
+		float totalWidth = 0;
+		float fixedWidth = 0;
+
+		for(Column column : columns) {
+			float width = Math.max(column.getWidth() * scaleFactor, column.getMinWidth());
+			column.setWidth(width);
+			totalWidth += width;
+			fixedWidth += column.getWidth() == column.getMinWidth() ? width : 0;
+		}
+
+		if(totalWidth <= pageWidth)
+			return columns;
+
+		scaleFactor = (pageWidth - fixedWidth) / (totalWidth - fixedWidth);
+
+		totalWidth = 0;
+		for(Column column : columns) {
+			float width = column.getWidth();
+			if(width != column.getMinWidth()) {
+				width = Math.max(width * scaleFactor, column.getMinWidth());
+				column.setWidth(width);
+			}
+			totalWidth += width;
+		}
+
+		if(totalWidth <= pageWidth)
+			return columns;
+
+		scaleFactor = pageWidth / totalWidth;
+
+		for(Column column : columns)
+			column.setWidth(column.getWidth() * scaleFactor);
+
+		return columns;
+	}
+
 	private TableHandle createTable(ReportDesignHandle reportDesignHandle, String dataSetName) {
 		try {
-			Collection<Column> columns = getColumns();
+			Collection<Column> columns = scaleColumns();
 
 			TableHandle table = elementFactory.newTableItem(null, columns.size(), 0, 0, 0);
 			table.setProperty(TableHandle.DATA_SET_PROP, dataSetName);
@@ -356,7 +396,7 @@ public class BirtReport {
 			int index = 0;
 
 			for(Column column : columns) {
-				float width = column.getWidth() * scaleFactor;
+				float width = column.getWidth();
 				DesignElementHandle tableColumn = table.getColumns().get(index++);
 				tableColumn.getElement().setProperty(ITableColumnModel.WIDTH_PROP, new DimensionValue(width, DesignChoiceConstants.UNITS_PT));
 			}
@@ -406,8 +446,7 @@ public class BirtReport {
 
 			try {
 				float fontSize = UnitsConverter.convertToPoints(style.getFontSize());
-				style.setProperty(IStyleModel.FONT_SIZE_PROP,
-						"" + Math.max(fontSize /* * Math.min(scaleFactor, 1) */, Reports.MinimalFontSize) + "pt");
+				style.setProperty(IStyleModel.FONT_SIZE_PROP, "" + Math.max(fontSize, Reports.MinimalFontSize) + "pt");
 			} catch(SemanticException e) {
 			}
 
@@ -780,17 +819,9 @@ public class BirtReport {
 				reportDesignHandle.getMasterPages().add(masterPage);
 			}
 
-			float pageWidth = 0;
-			float tableWidth = getTotalWidth();
-
-			if(options.pagesWide != 0 && format().equalsIgnoreCase(Reports.Pdf)) {
-				float pageOverlapping = options.pagesWide > 1 ? options.pageOverlapping : 0;
-				float paperWidth = options.pagesWide * (options.pageWidth() - options.horizontalMargins() - options.pageOverlapping) + pageOverlapping;
-
-				scaleFactor = paperWidth / tableWidth;
-				pageWidth = options.pagesWide * options.pageWidth();
-			} else
-				pageWidth = getTotalWidth() + options.horizontalMargins();
+			float pageWidth = (options.pagesWide != 0 && format().equalsIgnoreCase(Reports.Pdf)) ? 
+					options.pagesWide * options.pageWidth() :
+					(getTotalWidth() + options.horizontalMargins());
 
 			masterPage.setProperty(IMasterPageModel.TYPE_PROP, DesignChoiceConstants.PAGE_SIZE_CUSTOM);
 
@@ -835,37 +866,17 @@ public class BirtReport {
 		}
 	}
 
-	public int calculateMaxPagesWide(Column rootColumn, List<Field> groups) {
-		initialize(rootColumn, groups);
-
-		float tableWidth = getTotalWidth();
-		float paperWidth = options.pageWidth() - options.horizontalMargins() - options.pageOverlapping;
-
-		return (int)Math.ceil(tableWidth / paperWidth);
-	}
-
-	public File execute(Collection<Field> fields, Collection<Field> groupFields) {
+	public File execute(Collection<Column> columns, Collection<Field> groupFields) {
 		Column column = new Column();
 
-		for(Field field : fields) {
-			Column c = new Column(field.displayName());
-			c.setField(field);
-			c.setWidth(field.width());
+		for(Column c : columns)
 			column.addColumn(c);
-		}
 
 		return execute(column, groupFields);
 	}
 
 	public File execute() {
 		try {
-/*
-			if(format().equalsIgnoreCase(Reports.Pdf)) {
-				options.splitContent = true;
-				options.printOptions.pageFormat = PageFormat.A4;
-				options.printOptions.pageOrientation = PageOrientation.Portrait;
-			}
-*/
 			IReportRunnable runnable = options.reportEngine().openReportDesign(reportDesignFile().getAbsolutePath());
 			return generateAndSplit(runnable);
 		} catch(EngineException e) {
@@ -1001,10 +1012,7 @@ public class BirtReport {
 			options.setOption(IExcelRenderOption.OFFICE_VERSION, "office2007"); 
 			options.setOption(IRenderOption.EMITTER_ID, "uk.co.spudsoft.birt.emitters.excel.XlsEmitter");
 			options.setOutputFormat("xls_spudsoft"); // pdf, doc, ppt, html, xls_spudsoft
-		}/* else if(format().equalsIgnoreCase(Reports.Pdf)) {
-			options = new PDFRenderOption(options);
-			options.setOption(IPDFRenderOption.PAGE_OVERFLOW, PDFRenderOption.ENLARGE_PAGE_SIZE);
-		}*/
+		}
 
 		task.setRenderOption(options);
 

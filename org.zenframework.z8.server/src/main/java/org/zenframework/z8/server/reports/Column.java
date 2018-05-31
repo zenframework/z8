@@ -14,6 +14,7 @@ public class Column {
 	public static final int DefaultColumnWidth = 100;
 
 	private float width;
+	private float minWidth;
 	private String displayName;
 
 	private Field field;
@@ -88,16 +89,27 @@ public class Column {
 		return subcolumns.size() > 0;
 	}
 
+	public float getWidth() {
+		return width;
+	}
+
 	public void setWidth(float width) {
 		this.width = width;
+	}
+
+	public float getMinWidth() {
+		return minWidth;
+	}
+
+	public void setMinWidth(float width) {
+		this.minWidth = width;
 	}
 
 	public int getDepth() {
 		int depth = 0;
 
-		for(Column subColumn : subcolumns) {
+		for(Column subColumn : subcolumns)
 			depth = Math.max(subColumn.getDepth(), depth);
-		}
 
 		return depth + 1;
 	}
@@ -116,17 +128,14 @@ public class Column {
 	}
 
 	// calculates width of the table in cells
-
 	public int getColspan() {
-		if(subcolumns.size() == 0) {
+		if(subcolumns.size() == 0)
 			return 1;
-		}
 
 		int width = 0;
 
-		for(Column column : subcolumns) {
+		for(Column column : subcolumns)
 			width += column.getColspan();
-		}
 
 		return width;
 	}
@@ -144,25 +153,19 @@ public class Column {
 				if(column.hasSubcolumns()) {
 					LinkedList<Column> lst = new LinkedList<Column>();
 
-					for(Column col : column.subcolumns) {
+					for(Column col : column.subcolumns)
 						lst.add(col);
-					}
 
 					Collections.reverse(lst);
 
-					for(Column col : lst) {
+					for(Column col : lst)
 						stack.addFirst(col);
-					}
-				} else {
+				} else
 					layer.add(column);
-				}
-			}
-
-			else if(!column.hasSubcolumns() || column.getHeight() == depth) {
-
+			} else if(!column.hasSubcolumns() || column.getHeight() == depth)
 				layer.add(column);
-			}
 		}
+
 		return layer;
 	}
 
@@ -178,10 +181,6 @@ public class Column {
 			width = this.width;
 		}
 
-		return width;
-	}
-
-	public float getWidth() {
 		return width;
 	}
 
@@ -203,11 +202,7 @@ public class Column {
 	}
 
 	public String getStringValue() {
-		if(!isIndentation()) {
-			return field.toString();
-		}
-
-		return "";
+		return !isIndentation() ? field.toString() : "";
 	}
 
 	public Field getField() {
@@ -219,15 +214,16 @@ public class Column {
 	}
 
 	public String getHorizontalAlignment() {
-		String ret = DesignChoiceConstants.TEXT_ALIGN_LEFT;
-
-		if(field.type() == FieldType.Decimal || field.type() == FieldType.Integer || field.type() == FieldType.Datespan) {
-			ret = DesignChoiceConstants.TEXT_ALIGN_RIGHT;
+		switch(field.type()) {
+		case Decimal:
+		case Integer:
+		case Datespan:
+			return DesignChoiceConstants.TEXT_ALIGN_RIGHT;
+		case Boolean:
+			return DesignChoiceConstants.TEXT_ALIGN_CENTER;
+		default:
+			return DesignChoiceConstants.TEXT_ALIGN_LEFT;
 		}
-		if(field.type() == FieldType.Boolean) {
-			ret = DesignChoiceConstants.TEXT_ALIGN_CENTER;
-		}
-		return ret;
 	}
 
 	public Aggregation getAggregation() {

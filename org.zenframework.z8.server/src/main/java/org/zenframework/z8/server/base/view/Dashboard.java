@@ -18,6 +18,7 @@ import org.zenframework.z8.server.request.Loader;
 import org.zenframework.z8.server.request.RequestTarget;
 import org.zenframework.z8.server.runtime.CLASS;
 import org.zenframework.z8.server.runtime.OBJECT;
+import org.zenframework.z8.server.security.BuiltinUsers;
 import org.zenframework.z8.server.security.Entry;
 import org.zenframework.z8.server.security.IPrivileges;
 import org.zenframework.z8.server.security.IUser;
@@ -145,6 +146,7 @@ public class Dashboard extends RequestTarget {
 
 		writer.writeProperty(Json.id, user.id());
 		writer.writeProperty(Json.login, user.login());
+		writer.writeProperty(Json.administrator, user.id().equals(BuiltinUsers.Administrator.guid()));
 		writer.writeProperty(Json.firstName, user.firstName());
 		writer.writeProperty(Json.middleName, user.middleName());
 		writer.writeProperty(Json.lastName, user.lastName());

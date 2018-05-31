@@ -892,7 +892,7 @@ Z8.define('Z8.form.field.Listbox', {
 			var header = headers[i];
 			var field = header.field;
 			if(field != null && field.type != Type.Text)
-				columns.push({ id: field.name, width: Ems.emsToPixels(header.getWidth()) });
+				columns.push({ id: field.name, width: Ems.emsToPixels(header.getWidth()), minWidth: Ems.emsToPixels(header.getMinWidth()) });
 		}
 
 		var store = this.store;
