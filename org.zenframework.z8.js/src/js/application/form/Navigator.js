@@ -2,7 +2,7 @@ Z8.define('Z8.application.form.Navigator', {
 	extend: 'viewport.Form',
 
 	presentation: 'form',
-	quickFilterWidth: 10,
+	quickFilterWidth: 15,
 	
 	initComponent: function() {
 		var store = this.store;
