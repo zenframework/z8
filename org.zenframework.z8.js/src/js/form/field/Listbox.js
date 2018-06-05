@@ -220,7 +220,6 @@ Z8.define('Z8.form.field.Listbox', {
 		var dependsOnValue = null;
 
 		var loadCallback = function(store, records, success) {
-			this.setDependsOnValue(dependsOnValue);
 			this.validate();
 			this.updateTools();
 		};
@@ -231,11 +230,13 @@ Z8.define('Z8.form.field.Listbox', {
 			if(this.hasLink())
 				where.push({ property: this.getLink(), value: recordId });
 			this.store.setWhere(where);
+			this.setDependsOnValue(dependsOnValue);
 
 			var active = this.isActive();
 			this.refreshOnActivate = !active;
 			if(active)
 				this.store.load({ fn: loadCallback, scope: this });
+
 
 		} else {
 			this.store.removeAll();
@@ -245,11 +246,15 @@ Z8.define('Z8.form.field.Listbox', {
 	},
 
 	setActive: function(active) {
-		var wasActive = this.isActive();
+		if(this.isActive() == active)
+			return;
 
 		this.callParent(active);
 
-		if(!wasActive && this.isActive() && this.refreshOnActivate) {
+		if(this.list != null)
+			this.list.setActive(active);
+
+		if(active && this.refreshOnActivate) {
 			this.onRefresh(this.refreshTool, true);
 			this.refreshOnActivate = false;
 		}
@@ -786,6 +791,8 @@ Z8.define('Z8.form.field.Listbox', {
 				button.setBusy(false);
 				if(!skipFocus)
 					this.focus();
+				this.validate();
+				this.updateTools();
 			};
 			button.setBusy(true);
 			this.store.load({ fn: callback, scope: this });
@@ -885,7 +892,7 @@ Z8.define('Z8.form.field.Listbox', {
 			var header = headers[i];
 			var field = header.field;
 			if(field != null && field.type != Type.Text)
-				columns.push({ id: field.name, width: Ems.emsToPixels(header.getWidth()) });
+				columns.push({ id: field.name, width: Ems.emsToPixels(header.getWidth()), minWidth: Ems.emsToPixels(header.getMinWidth()) });
 		}
 
 		var store = this.store;

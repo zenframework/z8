@@ -11,8 +11,9 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.commons.io.FileUtils;
 import org.eclipse.birt.report.engine.api.EngineException;
-import org.eclipse.birt.report.engine.api.HTMLRenderOption;
+import org.eclipse.birt.report.engine.api.IExcelRenderOption;
 import org.eclipse.birt.report.engine.api.IRenderOption;
 import org.eclipse.birt.report.engine.api.IReportRunnable;
 import org.eclipse.birt.report.engine.api.IRunAndRenderTask;
@@ -48,7 +49,6 @@ import org.eclipse.birt.report.model.elements.interfaces.IGroupElementModel;
 import org.eclipse.birt.report.model.elements.interfaces.IMasterPageModel;
 import org.eclipse.birt.report.model.elements.interfaces.IStyleModel;
 import org.eclipse.birt.report.model.elements.interfaces.ITableColumnModel;
-import org.zenframework.z8.server.base.file.Folders;
 import org.zenframework.z8.server.base.query.Query;
 import org.zenframework.z8.server.base.query.QueryUtils;
 import org.zenframework.z8.server.base.table.value.Field;
@@ -58,6 +58,9 @@ import org.zenframework.z8.server.json.parser.JsonObject;
 import org.zenframework.z8.server.request.actions.ActionConfig;
 import org.zenframework.z8.server.request.actions.ReadAction;
 import org.zenframework.z8.server.resources.Resources;
+import org.zenframework.z8.server.types.date;
+import org.zenframework.z8.server.types.file;
+import org.zenframework.z8.server.types.guid;
 import org.zenframework.z8.server.types.string;
 import org.zenframework.z8.server.utils.IOUtils;
 
@@ -86,8 +89,6 @@ public class BirtReport {
 	private List<Column> indentationColumns;
 	private Collection<Field> fields;
 	private Collection<Field> groups;
-
-	float scaleFactor = 1;
 
 	private ReportOptions options;
 
@@ -342,9 +343,51 @@ public class BirtReport {
 		}
 	}
 
+	private Collection<Column> scaleColumns() {
+		Collection<Column> columns = getColumns();
+
+		float pageWidth = options.pagesWide * (options.pageWidth() - options.horizontalMargins());
+		float scaleFactor = pageWidth / getTotalWidth();
+
+		float totalWidth = 0;
+		float fixedWidth = 0;
+
+		for(Column column : columns) {
+			float width = Math.max(column.getWidth() * scaleFactor, column.getMinWidth());
+			column.setWidth(width);
+			totalWidth += width;
+			fixedWidth += column.getWidth() == column.getMinWidth() ? width : 0;
+		}
+
+		if(totalWidth <= pageWidth)
+			return columns;
+
+		scaleFactor = (pageWidth - fixedWidth) / (totalWidth - fixedWidth);
+
+		totalWidth = 0;
+		for(Column column : columns) {
+			float width = column.getWidth();
+			if(width != column.getMinWidth()) {
+				width = Math.max(width * scaleFactor, column.getMinWidth());
+				column.setWidth(width);
+			}
+			totalWidth += width;
+		}
+
+		if(totalWidth <= pageWidth)
+			return columns;
+
+		scaleFactor = pageWidth / totalWidth;
+
+		for(Column column : columns)
+			column.setWidth(column.getWidth() * scaleFactor);
+
+		return columns;
+	}
+
 	private TableHandle createTable(ReportDesignHandle reportDesignHandle, String dataSetName) {
 		try {
-			Collection<Column> columns = getColumns();
+			Collection<Column> columns = scaleColumns();
 
 			TableHandle table = elementFactory.newTableItem(null, columns.size(), 0, 0, 0);
 			table.setProperty(TableHandle.DATA_SET_PROP, dataSetName);
@@ -353,7 +396,7 @@ public class BirtReport {
 			int index = 0;
 
 			for(Column column : columns) {
-				float width = column.getWidth() * scaleFactor;
+				float width = column.getWidth();
 				DesignElementHandle tableColumn = table.getColumns().get(index++);
 				tableColumn.getElement().setProperty(ITableColumnModel.WIDTH_PROP, new DimensionValue(width, DesignChoiceConstants.UNITS_PT));
 			}
@@ -403,8 +446,7 @@ public class BirtReport {
 
 			try {
 				float fontSize = UnitsConverter.convertToPoints(style.getFontSize());
-				style.setProperty(IStyleModel.FONT_SIZE_PROP,
-						"" + Math.max(fontSize /* * Math.min(scaleFactor, 1) */, Reports.MinimalFontSize) + "pt");
+				style.setProperty(IStyleModel.FONT_SIZE_PROP, "" + Math.max(fontSize, Reports.MinimalFontSize) + "pt");
 			} catch(SemanticException e) {
 			}
 
@@ -777,17 +819,9 @@ public class BirtReport {
 				reportDesignHandle.getMasterPages().add(masterPage);
 			}
 
-			float pageWidth = 0;
-			float tableWidth = getTotalWidth();
-
-			if(options.pagesWide != 0 && format().equalsIgnoreCase(Reports.Pdf)) {
-				float pageOverlapping = options.pagesWide > 1 ? options.pageOverlapping : 0;
-				float paperWidth = options.pagesWide * (options.pageWidth() - options.horizontalMargins() - options.pageOverlapping) + pageOverlapping;
-
-				scaleFactor = paperWidth / tableWidth;
-				pageWidth = options.pagesWide * options.pageWidth();
-			} else
-				pageWidth = getTotalWidth() + options.horizontalMargins();
+			float pageWidth = (options.pagesWide != 0 && format().equalsIgnoreCase(Reports.Pdf)) ? 
+					options.pagesWide * options.pageWidth() :
+					(getTotalWidth() + options.horizontalMargins());
 
 			masterPage.setProperty(IMasterPageModel.TYPE_PROP, DesignChoiceConstants.PAGE_SIZE_CUSTOM);
 
@@ -824,7 +858,7 @@ public class BirtReport {
 			ReadAction action = options.action;
 
 			JsonWriter writer = new JsonWriter();
-			action.getQuery().writeReportMeta(writer, getFields());
+			action.getQuery().writeReportMeta(writer, "", getFields());
 			dataSetHandle.setProperty("queryText", writer.toString());
 			return dataSetHandle;
 		} catch(Exception e) {
@@ -832,29 +866,25 @@ public class BirtReport {
 		}
 	}
 
-	public int calculateMaxPagesWide(Column rootColumn, List<Field> groups) {
-		initialize(rootColumn, groups);
-
-		float tableWidth = getTotalWidth();
-		float paperWidth = options.pageWidth() - options.horizontalMargins() - options.pageOverlapping;
-
-		return (int)Math.ceil(tableWidth / paperWidth);
-	}
-
-	public File execute(Collection<Field> fields, Collection<Field> groupFields) {
+	public File execute(Collection<Column> columns, Collection<Field> groupFields) {
 		Column column = new Column();
 
-		for(Field field : fields) {
-			Column c = new Column(field.displayName());
-			c.setField(field);
-			c.setWidth(field.width());
+		for(Column c : columns)
 			column.addColumn(c);
-		}
 
-		return executeDynamic(column, groupFields);
+		return execute(column, groupFields);
 	}
 
-	public File executeDynamic(Column rootColumn, Collection<Field> groups) {
+	public File execute() {
+		try {
+			IReportRunnable runnable = options.reportEngine().openReportDesign(reportDesignFile().getAbsolutePath());
+			return generateAndSplit(runnable);
+		} catch(EngineException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	private File execute(Column rootColumn, Collection<Field> groups) {
 		initialize(rootColumn, groups);
 
 		SessionHandle session = options.designEngine().newSessionHandle(null);
@@ -878,38 +908,35 @@ public class BirtReport {
 		createReportDetail(table);
 		createGroups(table);
 
-		return generateAndSplit(reportDesignHandle);
+		try {
+			IReportRunnable runnable = options.reportEngine().openReportDesign(reportDesignHandle);
+			return generateAndSplit(runnable);
+		} catch(EngineException e) {
+			throw new RuntimeException(e);
+		}
 	}
 
 	private File getUniqueFileName(File folder, String name, String extension) {
-		int index = 0;
-
 		name = name.replace('/', '-').replace('\\', '-').replace(':', '-').replace('\n', ' ');
 
 		if(name.endsWith("."))
 			name = name.substring(0, name.length() - 1);
 
-		while(true) {
-			String suffix = index != 0 ? (" (" + index + ")") : "";
-			File file = new File(folder, name + suffix + "." + extension);
-
-			if(!file.exists())
-				return file;
-
-			index++;
-		}
+		date time = new date();
+		File file = FileUtils.getFile(folder, time.format("yyyy.MM.dd"), guid.create().toString(), name + "." + extension);
+		file.getParentFile().mkdirs();
+		return file;
 	}
 
-	private File generateAndSplit(ReportDesignHandle reportDesignHandle) {
+	private File generateAndSplit(IReportRunnable reportRunnable) {
 		File outputFile = null;
 		File splittedFile = null;
 
 		File folder = ReportOptions.getReportOutputFolder();
 
 		outputFile = getUniqueFileName(folder, options.documentName(), format());
-		outputFile.deleteOnExit();
 
-		run(reportDesignHandle, outputFile);
+		run(reportRunnable, outputFile);
 
 		if(isSplitNeeded()) {
 			splittedFile = getUniqueFileName(folder, options.documentName(), format());
@@ -928,48 +955,24 @@ public class BirtReport {
 				IOUtils.closeQuietly(input);
 			}
 
-			return new File(Folders.ReportsOutput, splittedFile.getName());
+			return new File(file.getRelativePath(splittedFile));
 		} else
-			return new File(Folders.ReportsOutput, outputFile.getName());
-	}
-
-	public File execute() {
-		return runAndRenderReport();
-	}
-
-	private File runAndRenderReport() {
-		File folder = ReportOptions.getReportOutputFolder();
-		File output = getUniqueFileName(folder, options.documentName(), format());
-		run(output);
-		return new File(Folders.ReportsOutput, output.getName());
-	}
-
-	private void run(ReportDesignHandle reportDesignHandle, File outputFile) {
-		try {
-			IReportRunnable runnable = options.reportEngine().openReportDesign(reportDesignHandle);
-			run(runnable, outputFile);
-		} catch(EngineException e) {
-			throw new RuntimeException(e);
-		}
-	}
-
-	private void run(File outputFile) {
-		try {
-			IReportRunnable runnable = options.reportEngine().openReportDesign(reportDesignFile().getAbsolutePath());
-			run(runnable, outputFile);
-		} catch(EngineException e) {
-			throw new RuntimeException(e);
-		}
+			return new File(file.getRelativePath(outputFile));
 	}
 
 	private ReadAction parseReportMeta(String json, Collection<Query> queries) {
 		JsonObject meta = new JsonObject(json);
 
+		String name = meta.getString(Json.name);
 		String id = meta.getString(Json.id);
-		Query query = QueryUtils.findByClassId(queries, id);
+
+		Query query = QueryUtils.findByIndex(queries, name);
 
 		if(query == null)
-			throw new RuntimeException("Reports: query '" + id + "' is missing");
+			query = QueryUtils.findByClassId(queries, id);
+
+		if(query == null)
+			throw new RuntimeException("Reports: query '" + name + "' ('" + id + "') is missing");
 
 		Collection<Field> fields = QueryUtils.parseFields(query, meta.getJsonArray(Json.fields), query.id());
 
@@ -995,20 +998,20 @@ public class BirtReport {
 				OdaDataSetHandle dataSet = (OdaDataSetHandle)dataSets.get(i);
 				ReadAction action = parseReportMeta(dataSet.getQueryText(), options.queries);
 				contextMap.put(action.getQuery().classId(), action);
+				contextMap.put(action.getQuery().index(), action);
 			}
 		}
 
 		task.setAppContext(contextMap);
 
 		IRenderOption options = new RenderOption();
-		options.setOutputFormat(format()); // pdf, doc, ppt, html, xls
+		options.setOutputFormat(format()); // pdf, doc, ppt, html, xls_spudsoft
 		options.setOutputFileName(outputFile.getAbsolutePath());
 
-		if(format().equalsIgnoreCase(Reports.Html)) {
-			HTMLRenderOption htmlOptions = new HTMLRenderOption(options);
-			htmlOptions.setHtmlPagination(true);
-			htmlOptions.setImageDirectory("image");
-			options = htmlOptions;
+		if(format().equalsIgnoreCase(Reports.Excel)) {
+			options.setOption(IExcelRenderOption.OFFICE_VERSION, "office2007"); 
+			options.setOption(IRenderOption.EMITTER_ID, "uk.co.spudsoft.birt.emitters.excel.XlsEmitter");
+			options.setOutputFormat("xls_spudsoft"); // pdf, doc, ppt, html, xls_spudsoft
 		}
 
 		task.setRenderOption(options);

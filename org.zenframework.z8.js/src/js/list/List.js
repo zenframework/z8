@@ -1081,8 +1081,23 @@ Z8.define('Z8.list.List', {
 		this.itemsScroller.scrollLeft = scroller.scrollLeft;
 	},
 
+	setActive: function(active) {
+		if(this.isActive() == active)
+			return;
+
+		this.callParent(active);
+
+		if(active && this.adjustAutoFitPending) {
+			this.adjustAutoFit();
+			this.adjustAutoFitPending = false;
+		}
+	},
+
 	onResize: function(event, target) {
-		this.adjustAutoFit();
+		if(this.isActive())
+			this.adjustAutoFit();
+		else
+			this.adjustAutoFitPending = true;
 	},
 
 	onHeaderSort: function(header) {

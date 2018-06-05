@@ -10,14 +10,14 @@ import org.zenframework.z8.server.json.JsonWriter;
 import org.zenframework.z8.server.json.parser.JsonArray;
 import org.zenframework.z8.server.json.parser.JsonObject;
 import org.zenframework.z8.server.reports.BirtReport;
+import org.zenframework.z8.server.reports.Column;
 import org.zenframework.z8.server.reports.PrintOptions;
 import org.zenframework.z8.server.reports.ReportOptions;
 import org.zenframework.z8.server.types.file;
-import org.zenframework.z8.server.types.integer;
 
 public class ExportAction extends ReadAction {
 	private Collection<Field> groupFields;
-	private Collection<Field> columns;
+	private Collection<Column> columns;
 
 	public ExportAction(ActionConfig config) {
 		super(config);
@@ -35,20 +35,22 @@ public class ExportAction extends ReadAction {
 		super.initialize();
 	}
 
-	private Collection<Field> getColumns() {
-		Collection<Field> result = new ArrayList<Field>();
+	private Collection<Column> getColumns() {
+		Collection<Column> result = new ArrayList<Column>();
 
 		JsonArray columns = new JsonArray(getColumnsParameter());
 
 		for(int index = 0; index < columns.length(); index++) {
-			JsonObject column = (JsonObject)columns.get(index);
+			JsonObject json = (JsonObject)columns.get(index);
 
-			Field field = getQuery().findFieldById(column.getString(Json.id));
+			Field field = getQuery().findFieldById(json.getString(Json.id));
 
 			if(field != null) {
-				int width = column.getInt(Json.width);
-				field.width = new integer(width);
-				result.add(field);
+				Column c = new Column(field.displayName());
+				c.setField(field);
+				c.setWidth(json.getInt(Json.width));
+				c.setMinWidth(json.getInt(Json.minWidth));
+				result.add(c);
 			}
 		}
 
@@ -58,7 +60,8 @@ public class ExportAction extends ReadAction {
 	private Collection<Field> getFields() {
 		Collection<Field> result = new ArrayList<Field>();
 
-		result.addAll(columns);
+		for(Column column : columns)
+			result.add(column.getField());
 
 		for(Field field : groupFields) {
 			if(!result.contains(field))

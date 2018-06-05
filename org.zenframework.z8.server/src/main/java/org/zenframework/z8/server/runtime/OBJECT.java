@@ -381,6 +381,14 @@ public class OBJECT extends RequestTarget implements IObject, RmiSerializable {
 	protected void z8_constructor() {
 	}
 
+	public string z8_getAttribute(string attribute) {
+		return new string(getAttribute(attribute.get()));
+	}
+
+	public void z8_setAttribute(string attribute, primary value) {
+		setAttribute(attribute.get(), value.toString());
+	}
+
 	public string z8_id() {
 		return new string(id());
 	}

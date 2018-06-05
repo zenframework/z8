@@ -74,8 +74,10 @@ Z8.define('Z8.application.viewport.Viewport', {
 		menu.on('close', this.onMenuClose, this);
 		this.add(menu);
 
-		var sourceCode = this.sourceCode = new Z8.application.viewport.SourceCode();
-		this.add(sourceCode);
+		if(User.administrator) {
+			var sourceCode = this.sourceCode = new Z8.application.viewport.SourceCode();
+			this.add(sourceCode);
+		}
 
 		this.openMenu();
 
@@ -144,11 +146,13 @@ Z8.define('Z8.application.viewport.Viewport', {
 	},
 
 	showSourceCode: function(show) {
-		show ? this.sourceCode.open() : this.sourceCode.close();
+		if(this.sourceCode != null)
+			show ? this.sourceCode.open() : this.sourceCode.close();
 	},
 
 	initSourceCode: function(source) {
-		this.sourceCode.load(source);
+		if(this.sourceCode != null)
+			this.sourceCode.load(source);
 	},
 
 	onMenuToggleMouseDown: function(event, target) {
@@ -247,7 +251,10 @@ Z8.define('Z8.application.viewport.Viewport', {
 				button.originalText = null;
 			}
 
-			DOM.removeCls(forms[i], 'display-none');
+			if(forms[i] != null) {
+				DOM.removeCls(forms[i], 'display-none');
+				forms[i].setActive(true);
+			}
 		} 
 
 		if(form != null && forms.indexOf(form) == -1) {
@@ -257,10 +264,14 @@ Z8.define('Z8.application.viewport.Viewport', {
 				button.setText(header);
 			}
 			button = this.createBreadcrumb(form, forms.length + 1);
-			DOM.addCls(forms[forms.length - 1], 'display-none');
+			if(forms[forms.length - 1] != null) {
+				DOM.addCls(forms[forms.length - 1], 'display-none');
+				forms[forms.length - 1].setActive(false);
+			}
 			breadcrumbs.add(button);
 			body.add(form);
 			forms.push(form);
+			form.setActive(true);
 		}
 
 		this.focus();
@@ -334,11 +345,14 @@ Z8.define('Z8.application.viewport.Viewport', {
 		if(key == Event.ESC) {
 			this.openMenu();
 			event.stopEvent();
-		} else if(key == Event.MINUS && event.shiftKey) {
+		} else if((key == Event.MINUS || key == Event.NUM_MINUS) && event.shiftKey && event.altKey && (!DOM.isInput(target) || DOM.isReadOnly(target))) {
 			Ems.enlarge(-1);
 			event.stopEvent();
-		} else if(key == Event.PLUS && event.shiftKey) {
+		} else if((key == Event.PLUS || key == Event.NUM_PLUS) && event.shiftKey && event.altKey && (!DOM.isInput(target) || DOM.isReadOnly(target))) {
 			Ems.enlarge(1);
+			event.stopEvent();
+		} else if((key == Event.ZERO || key == Event.NUM_ZERO) && event.shiftKey && event.altKey && (!DOM.isInput(target) || DOM.isReadOnly(target))) {
+			Ems.reset();
 			event.stopEvent();
 		}
 	}

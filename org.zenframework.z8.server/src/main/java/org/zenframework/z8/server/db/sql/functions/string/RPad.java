@@ -36,6 +36,8 @@ public class RPad extends StringFunction {
 			return "RPAD(" + string.format(vendor, options) + "," + length.format(vendor, options) + "," + pad.format(vendor, options) + ")";
 		case SqlServer:
 			return "LEFT(" + string.format(vendor, options) + "+REPLICATE(" + pad.format(vendor, options) + "," + length.format(vendor, options) + ")" + "," + length.format(vendor, options) + ")";
+		case Postgres:
+			return "rpad(" + string.format(vendor, options) + ", " + length.format(vendor, options) + ", " + pad.format(vendor, options) + ")";
 		default:
 			throw new UnknownDatabaseException();
 		}

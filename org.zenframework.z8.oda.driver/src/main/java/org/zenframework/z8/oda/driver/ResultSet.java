@@ -1,5 +1,7 @@
 package org.zenframework.z8.oda.driver;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.math.BigDecimal;
 import java.sql.Date;
 import java.sql.Time;
@@ -15,6 +17,7 @@ import org.zenframework.z8.server.db.Connection;
 import org.zenframework.z8.server.db.ConnectionManager;
 import org.zenframework.z8.server.db.Select;
 import org.zenframework.z8.server.resources.Resources;
+import org.zenframework.z8.server.types.binary;
 import org.zenframework.z8.server.types.bool;
 import org.zenframework.z8.server.types.date;
 import org.zenframework.z8.server.types.decimal;
@@ -249,7 +252,33 @@ public class ResultSet implements IResultSet {
 
 	@Override
 	public IBlob getBlob(int index) throws OdaException {
-		throw new UnsupportedOperationException();
+		final binary value = (binary)getValue(index);
+
+		wasNull = value == null;
+
+		if(wasNull)
+			return null;
+
+		return new IBlob() {
+			@Override
+			public InputStream getBinaryStream() throws OdaException {
+				return value.get();
+			}
+
+			@Override
+			public byte[] getBytes(long offset, int length) throws OdaException {
+				throw new UnsupportedOperationException();
+			}
+
+			@Override
+			public long length() throws OdaException {
+				try {
+					return getBinaryStream().available();
+				} catch(IOException e) {
+					throw new OdaException(e);
+				}
+			}
+		};
 	}
 
 	@Override
@@ -304,12 +333,12 @@ public class ResultSet implements IResultSet {
 	}
 
 	@Override
-	public Object getObject(int arg0) throws OdaException {
+	public Object getObject(int index) throws OdaException {
 		return null;
 	}
 
 	@Override
-	public Object getObject(String arg0) throws OdaException {
+	public Object getObject(String columnName) throws OdaException {
 		return null;
 	}
 }

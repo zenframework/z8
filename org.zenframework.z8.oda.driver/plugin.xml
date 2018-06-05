@@ -62,6 +62,10 @@
 				nativeDataTypeCode="16"
 				odaScalarDataType="Boolean"
 				nativeDataType="Boolean"/>
+			<dataTypeMapping
+				nativeDataTypeCode="2004"
+				odaScalarDataType="Blob"
+				nativeDataType="BLOB"/>
 		</dataSet>
 	</extension>
 </plugin>

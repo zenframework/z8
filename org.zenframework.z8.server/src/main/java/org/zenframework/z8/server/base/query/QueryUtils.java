@@ -28,6 +28,14 @@ public class QueryUtils {
 		return null;
 	}
 
+	static public Query findByIndex(Collection<Query> queries, String index) {
+		for(Query query : queries) {
+			if(query.index().equals(index))
+				return query;
+		}
+		return null;
+	}
+
 	static public Collection<Query> getOwners(Collection<ILink> links) {
 		Collection<Query> queries = new ArrayList<Query>();
 

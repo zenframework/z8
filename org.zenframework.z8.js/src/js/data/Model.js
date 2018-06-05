@@ -123,6 +123,10 @@ Z8.define('Z8.data.Model', {
 		return this.filesProperty;
 	},
 
+	getIconProperty: function() {
+		return this.iconProperty || 'icon';
+	},
+
 	isEqual: function(left, right) {
 		if(left instanceof Date && right instanceof Date)
 			return Date.isEqual(left, right);
@@ -163,6 +167,10 @@ Z8.define('Z8.data.Model', {
 
 	getValueFrom: function() {
 		return this.valueFrom;
+	},
+
+	getIcons: function() {
+		return this.icons;
 	},
 
 	getLink: function() {
@@ -478,7 +486,7 @@ Z8.define('Z8.data.Model', {
 
 		var requestCallback = function(response, success) {
 			if(success) {
-				this.set(name, response.data, true);
+				this.set(name, response.data);
 				Z8.callback(callback, this, this.get(name), true);
 			} else
 				Z8.callback(callback, this, [], false);
@@ -495,7 +503,7 @@ Z8.define('Z8.data.Model', {
 
 		var requestCallback = function(response, success) {
 			if(success) {
-				this.set(name, response.data, true);
+				this.set(name, response.data);
 				Z8.callback(callback, this, this.get(name), true);
 			} else
 				Z8.callback(callback, this, [], false);

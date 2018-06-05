@@ -9,14 +9,14 @@
 	<extension
 		point="org.eclipse.ui.editors">
 		<editor
-        class="org.zenframework.z8.pde.editor.Z8Editor"
-        contributorClass="org.zenframework.z8.pde.editor.actions.ActionContributor"
-        default="false"
-        extensions="bl"
-        icon="icons/obj16/z8.gif"
-        id="org.zenframework.z8.pde.Z8Editor"
-        name="Z8 Editor">
-        </editor>
+			class="org.zenframework.z8.pde.editor.Z8Editor"
+			contributorClass="org.zenframework.z8.pde.editor.actions.ActionContributor"
+			default="false"
+			extensions="bl"
+			icon="icons/obj16/z8.gif"
+			id="org.zenframework.z8.pde.Z8Editor"
+			name="Z8 Editor">
+		</editor>
 	</extension>
 
 	<extension

@@ -94,6 +94,7 @@ public class TreeTable extends Table {
 		path.setIndex("path");
 		path.setSystem(true);
 		path.get().length = new integer(1000);
+		path.get().indexed = bool.True;
 
 		parent1.setName(fieldNames.Parent1);
 		parent1.setIndex("parent1");

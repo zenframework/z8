@@ -39,10 +39,7 @@ public class ResultSetMetaData implements IResultSetMetaData {
 		return getColumn(index).displayName();
 	}
 
-	@Override
-	public int getColumnType(int index) throws OdaException {
-		IField column = getColumn(index);
-
+	static public int getNativeTypeCode(IField column) {
 		switch(column.type()) {
 		case Guid:
 		case String:
@@ -54,9 +51,17 @@ public class ResultSetMetaData implements IResultSetMetaData {
 			return column instanceof DateField || column instanceof DateExpression ? 91 : 93;
 		case Decimal:
 			return 3;
+		case Binary:
+			return 2004;
 		default:
 			return 1;
 		}
+	}
+
+	@Override
+	public int getColumnType(int index) throws OdaException {
+		IField column = getColumn(index);
+		return getNativeTypeCode(column);
 	}
 
 	@Override

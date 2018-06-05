@@ -12,7 +12,6 @@ import org.zenframework.z8.server.types.primary;
 import org.zenframework.z8.server.types.sql.sql_binary;
 
 public class BinaryField extends Field {
-
 	public static class CLASS<T extends BinaryField> extends Field.CLASS<T> {
 		public CLASS(IObject container) {
 			super(container);

@@ -61,6 +61,9 @@ public class Query extends Object {
 
 	public guid[] findRecords(sql_bool where);
 
+	public Field[] fields();
+	public Field[] primaryFields();
+
 	public Field getFieldById(string id);
 	public Field getFieldByName(string name);
 

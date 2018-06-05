@@ -146,7 +146,7 @@ public class TableGenerator {
 			packIndex();
 			packUnique();
 		} finally {
-			this.table = null;
+			table = null;
 		}
 	}
 

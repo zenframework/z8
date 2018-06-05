@@ -196,9 +196,10 @@ public class Query extends OBJECT {
 			z8_afterDestroy(recordId);
 	}
 
-	public void writeReportMeta(JsonWriter writer, Collection<Field> fields) {
+	public void writeReportMeta(JsonWriter writer, String name, Collection<Field> fields) {
 		writer.startObject();
 		writer.writeProperty(Json.displayName, displayName());
+		writer.writeProperty(Json.name, name);
 		writer.writeProperty(Json.id, classId());
 		writer.startArray(Json.fields);
 
@@ -1238,6 +1239,16 @@ public class Query extends OBJECT {
 
 	public guid z8_recordId() {
 		return recordId();
+	}
+
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	public RCollection z8_fields() {
+		return new RCollection(dataFields());
+	}
+
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	public RCollection z8_primaryFields() {
+		return new RCollection(primaryFields());
 	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })

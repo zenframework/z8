@@ -3,8 +3,10 @@ package org.zenframework.z8.server.base.sql;
 import java.sql.SQLException;
 
 import org.zenframework.z8.server.db.BasicSelect;
+import org.zenframework.z8.server.json.parser.JsonArray;
 import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.runtime.OBJECT;
+import org.zenframework.z8.server.runtime.RCollection;
 import org.zenframework.z8.server.types.bool;
 import org.zenframework.z8.server.types.date;
 import org.zenframework.z8.server.types.decimal;
@@ -12,7 +14,9 @@ import org.zenframework.z8.server.types.guid;
 import org.zenframework.z8.server.types.integer;
 import org.zenframework.z8.server.types.string;
 
+@SuppressWarnings({ "rawtypes", "unchecked" })
 public class Cursor extends OBJECT {
+
 	public static class CLASS<T extends Cursor> extends OBJECT.CLASS<T> {
 		public CLASS() {
 			this(null);
@@ -104,4 +108,65 @@ public class Cursor extends OBJECT {
 			throw new RuntimeException(e);
 		}
 	}
+	
+	public RCollection z8_string_array(integer position) {
+		try {
+			RCollection array = new RCollection();
+			JsonArray json = new JsonArray(cursor.getString(position.getInt()).get());
+			for (int i = 0; i < json.size(); i++)
+				array.add(new string(json.isNull(i) ? "" : json.getString(i)));
+			return array;
+		} catch(SQLException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	public RCollection z8_integer_array(integer position) {
+		try {
+			RCollection array = new RCollection();
+			JsonArray json = new JsonArray(cursor.getString(position.getInt()).get());
+			for (int i = 0; i < json.size(); i++)
+				array.add(new integer(json.isNull(i) ? 0 : json.getLong(i)));
+			return array;
+		} catch(SQLException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	public RCollection z8_decimal_array(integer position) {
+		try {
+			RCollection array = new RCollection();
+			JsonArray json = new JsonArray(cursor.getString(position.getInt()).get());
+			for (int i = 0; i < json.size(); i++)
+				array.add(new decimal(json.isNull(i) ? 0 : json.getDouble(i)));
+			return array;
+		} catch(SQLException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	public RCollection z8_date_array(integer position) {
+		try {
+			RCollection array = new RCollection();
+			JsonArray json = new JsonArray(cursor.getString(position.getInt()).get());
+			for (int i = 0; i < json.size(); i++)
+				array.add(json.isNull(i) ? date.Min : new date(json.getString(i)));
+			return array;
+		} catch(SQLException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	public RCollection z8_guid_array(integer position) {
+		try {
+			RCollection array = new RCollection();
+			JsonArray json = new JsonArray(cursor.getString(position.getInt()).get());
+			for (int i = 0; i < json.size(); i++)
+				array.add(json.isNull(i) ? guid.Null : json.getGuid(i));
+			return array;
+		} catch(SQLException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
 }

@@ -186,6 +186,7 @@ public class ReadAction extends RequestAction {
 
 		if(recordIds == null) {
 			addFilter(query.where());
+			addGroupFilter(query.having());
 
 			collectFilters();
 
@@ -729,8 +730,10 @@ public class ReadAction extends RequestAction {
 		writer.startArray(Json.data);
 
 		int records = 0;
+		boolean hasLimit = hasRequestParameter(Json.limit);
+
 		while(cursor.next()) {
-			if(records > 500)
+			if(records > 500 && !hasLimit)
 				throw new RuntimeException("Too many records fetched for a json client. Use limit parameter.");
 
 			writer.startObject();

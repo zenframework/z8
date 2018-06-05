@@ -169,9 +169,10 @@ Z8.define('Z8.button.Button', {
 	},
 
 	setText: function(text) {
-		this.text = text || '';
+		text = this.text = text || '';
 		var noText = Z8.isEmpty(text);
 		DOM.setValue(this.textElement, String.htmlText(text));
+		DOM.setTitle(this.textElement, text);
 		this.iconCls = DOM.swapCls(this.icon, noText, 'no-text') || this.iconCls;
 	},
 

@@ -8,6 +8,6 @@ Z8.define('Z8.form.field.Integer', {
 	},
 
 	valueToRaw: function(value) {
-		return Format.integer(value);
+		return Format.integer(value, this.format);
 	}
 });

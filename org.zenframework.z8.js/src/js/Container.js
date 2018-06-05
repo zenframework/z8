@@ -126,5 +126,19 @@ Z8.define('Z8.Container', {
 			if(item.isComponent && !item.enabledLock)
 				item.setEnabled(enabled);
 		}
+	},
+
+	setActive: function(active) {
+		if(this.isActive() == active)
+			return;
+
+		this.callParent(active);
+
+		var items = this.items;
+		for(var i = 0, length = items.length; i < length; i++) {
+			var item = items[i];
+			if(item.setActive != null)
+				item.setActive(active);
+		}
 	}
 });

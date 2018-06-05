@@ -6,6 +6,6 @@ Z8.define('Z8.form.field.Float', {
 	},
 
 	valueToRaw: function(value) {
-		return Format.float(value);
+		return Format.float(value, this.format);
 	}
 });

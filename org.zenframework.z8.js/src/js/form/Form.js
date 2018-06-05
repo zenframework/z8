@@ -182,6 +182,18 @@ Z8.define('Z8.form.Form', {
 		}
 	},
 
+	getUpdateParams: function(record) {
+		var link = this.link;
+		if(link == null)
+			return null;
+
+		var owner = link.primaryKey;
+		var query = link.query.primaryKey;
+		record.set(owner, record.get(owner), false, true);
+		record.set(query, record.get(link.name), false, true);
+		return { link: link.name };
+	},
+
 	autoSaveCallback: function(control, newValue, oldValue) {
 		if(!this.autoSave || (!control.isValid() && !control.isDependent()))
 			return;
@@ -194,16 +206,7 @@ Z8.define('Z8.form.Form', {
 		if(control.displayName != null)
 			record.set(control.displayName, control.getDisplayValue());
 
-		var params = {};
-		var link = this.link;
-
-		if(link != null) {
-			params.link = link.name;
-			var owner = link.primaryKey;
-			var query = link.query.primaryKey;
-			record.set(owner, record.get(owner), false, true);
-			record.set(query, record.get(link.name), false, true);
-		}
+		var params = this.getUpdateParams(record);
 
 		var callback = function(record, success) {
 			if(success) {
@@ -240,11 +243,8 @@ Z8.define('Z8.form.Form', {
 	},
 
 	isMyRecord: function(record) {
-		if(!this.isDependent())
-			return true;
-
-		var query = this.getQuery();
-		return record == null || query == null || query == record.getQuery();
+		var query = this.getQuery() || '';
+		return record == null || query == null || query == (record.getQuery() || '');
 	},
 
 	setRecord: function(record) {

@@ -27,7 +27,7 @@ public class AddDay extends SqlToken {
 	@Override
 	public String format(DatabaseVendor vendor, FormatOptions options, boolean logicalContext) {
 		String dt = date.format(vendor, options);
-		return "(" + dt + " + " + days.format(vendor, options) + " * " + datespan.TicksPerDay + ")";
+		return "(" + dt + " + " + days.format(vendor, options) + " * " + datespan.TicksPerDay + (vendor == DatabaseVendor.Postgres ? "::bigint" : "") + ")";
 	}
 
 	@Override

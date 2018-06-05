@@ -107,7 +107,10 @@ Z8.define('Z8.form.Tabs', {
 	},
 
 	setActive: function(active) {
-		this.callParent(active);
+		if(this.isActive() == active)
+			return;
+
+		this.inactive = !active;
 
 		var activeTab = this.activeTab;
 		var controls = this.controls;

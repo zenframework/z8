@@ -73,7 +73,7 @@ public class file extends primary implements RmiSerializable, Serializable {
 		this(null, file.getName(), null, file.getPath(), file.length(), new date(file.lastModified()));
 	}
 
-	public file(FileItem file) throws IOException {
+	public file(FileItem file) {
 		this(file, null, null);
 	}
 

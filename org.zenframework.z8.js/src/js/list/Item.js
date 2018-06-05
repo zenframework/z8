@@ -34,7 +34,7 @@ Z8.define('Z8.list.Item', {
 			if(record.parentId != null)
 				this.list.on('contentChange', this.updateCollapsedState, this);
 
-			var icon = record.get('icon');
+			var icon = record.get(record.getIconProperty());
 			this.icon = icon != null ? icon : this.icon;
 
 			if(record.on != null)
@@ -45,9 +45,10 @@ Z8.define('Z8.list.Item', {
 	updateCollapsedState: function(list) {
 		list.un('contentChange', this.updateCollapsedState, this);
 
-		var parent = list.getItem(this.record.parentId);
-		if(parent != null && (parent.isCollapsed() || parent.isHidden()))
-			this.hide(true);
+		var parent = list.getParent(this);
+
+		if(parent != null)
+			this.hidden = parent.hidden + parent.isCollapsed();
 	},
 
 	isReadOnly: function() {
@@ -66,6 +67,10 @@ Z8.define('Z8.list.Item', {
 
 		if(this.list.locks)
 			DOM.swapCls(this.lockIcon, this.isReadOnly(), 'fa-lock', '');
+
+		var icon = record.getIconProperty();
+		if(icon != null && modified.hasOwnProperty(icon))
+			this.setIcon(record.get(icon));
 	},
 
 	columnsMarkup: function() {

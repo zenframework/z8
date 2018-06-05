@@ -337,17 +337,27 @@ Z8.define('Z8.dom.Dom', {
 			return classes;
 		},
 
+		isInput: function(dom) {
+			if((dom = DOM.get(dom)) == null)
+				return false;
+			var tag = dom.tagName;
+			return tag == 'INPUT' || tag == 'TEXTAREA';
+		},
+
+		isReadOnly: function(dom) {
+			return DOM.getAttribute(dom, 'readonly') != null;
+		},
+
 		getValue: function(dom) {
 			if((dom = DOM.get(dom)) == null)
 				return null;
 			var tag = dom.tagName;
-			return tag == 'INPUT' || tag == 'TEXTAREA' ? (dom.type == 'checkbox' ? dom.checked : dom.value) : dom.textContent;
+			return DOM.isInput(dom) ? (dom.type == 'checkbox' ? dom.checked : dom.value) : dom.textContent;
 		},
 
 		setValue: function(dom, value, delay) {
 			if((dom = DOM.get(dom)) != null) {
-				var tag = dom.tagName;
-				var property = tag == 'INPUT' || tag == 'TEXTAREA' ? (dom.type == 'checkbox' ? 'checked' : 'value') : 'textContent';
+				var property = DOM.isInput(dom) ? (dom.type == 'checkbox' ? 'checked' : 'value') : 'textContent';
 				DOM.setProperty(dom, property, value || '', delay);
 			}
 		},
@@ -562,7 +572,7 @@ Z8.define('Z8.dom.Dom', {
 			var config = { tag: 'iframe', html: '<head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"></head>', src: '', hidden: true };
 			var frame = DOM.append(document.body, config);
 
-			frame.src = encodeURI(url.replace(/\\/g, '/')) + '?&session=' + Application.session + (serverId != null ? '&serverId=' + serverId : '');
+			frame.src = encodeURI((window._DEBUG_ ? '/' : '') + url.replace(/\\/g, '/')) + '?&session=' + Application.session + (serverId != null ? '&serverId=' + serverId : '');
 
 			new Z8.util.DelayedTask().delay(500, DOM.downloadCallback, this, url, frame, callback);
 		},

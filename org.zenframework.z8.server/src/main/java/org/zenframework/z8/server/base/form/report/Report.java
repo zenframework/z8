@@ -1,11 +1,12 @@
 package org.zenframework.z8.server.base.form.report;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 
 import org.zenframework.z8.server.base.file.Folders;
+import org.zenframework.z8.server.base.file.InputOnlyFileItem;
 import org.zenframework.z8.server.base.query.Query;
-import org.zenframework.z8.server.engine.ApplicationServer;
 import org.zenframework.z8.server.json.Json;
 import org.zenframework.z8.server.json.JsonWriter;
 import org.zenframework.z8.server.reports.BirtReport;
@@ -35,8 +36,15 @@ public class Report extends OBJECT implements Runnable, IReport {
 		}
 	}
 
+	static public final string Pdf = new string(Reports.Pdf);
+	static public final string Excel = new string(Reports.Excel);
+	static public final string Word = new string(Reports.Word);
+	static public final string Html = new string(Reports.Html);
+	static public final string Powerpoint = new string(Reports.Powerpoint);
+
 	public string template;
 	public string name;
+	public string format;
 
 	public Report(IObject container) {
 		super(container);
@@ -66,17 +74,9 @@ public class Report extends OBJECT implements Runnable, IReport {
 		writer.writeProperty(Json.icon, icon());
 	}
 
-	public void execute(guid recordId) {
+	public file execute(guid recordId) {
 		prepare(recordId);
-
-		ReportOptions report = new ReportOptions();
-		report.templateFolder = Folders.Reports;
-		report.template = template.get() + '.' + Reports.DesignExtension;
-		report.queries = queries();
-		report.header = name.get();
-
-		file file = new file(new BirtReport(report).execute());
-		ApplicationServer.getMonitor().print(file);
+		return z8_execute(recordId);
 	}
 
 	public void prepare(guid recordId) {
@@ -86,7 +86,18 @@ public class Report extends OBJECT implements Runnable, IReport {
 	public void z8_prepare(guid recordId) {
 	}
 
-	public void z8_execute(guid recordId) {
-		execute(recordId);
+	public file z8_execute(guid recordId) {
+		ReportOptions report = new ReportOptions();
+		report.templateFolder = Folders.Reports;
+		report.template = template.get() + '.' + Reports.DesignExtension;
+		report.queries = queries();
+		report.header = name.get();
+		report.format = format != null ? format.get() : Reports.Pdf;
+
+		File diskFile = new File(Folders.Base, new BirtReport(report).execute().getPath());
+		file file = new file(diskFile);
+		file.set(new InputOnlyFileItem(diskFile, diskFile.getName()));
+
+		return file;
 	}
 }

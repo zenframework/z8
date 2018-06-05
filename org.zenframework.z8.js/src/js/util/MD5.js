@@ -91,7 +91,7 @@ Z8.define('Z8.util.MD5', {
 
 				for(var j = 0; j < 4; j++) {
 					if(i * 8 + j * 6 > input.length * 8)
-						output += b64pad;
+						output += MD5.b64pad;
 					else
 						output += tab.charAt((triplet >>> 6*(3-j)) & 0x3F);
 				}

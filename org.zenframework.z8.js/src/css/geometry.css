@@ -1,3 +1,7 @@
+.ol-viewport>canvas {
+	background-color: transparent;
+}
+
 .control.geometry {
 	border-width: 1px !important;
 	padding-left: 0;
