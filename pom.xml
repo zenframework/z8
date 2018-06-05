@@ -26,6 +26,7 @@
 		<eclipse.core.version>[3.7.0,3.11.0)</eclipse.core.version>
 		<eclipse.text.version>[3.5.0,)</eclipse.text.version>
 		<birt.version>4.4.0</birt.version>
+		<jetty.version>9.2.20.v20161216</jetty.version>
 		<cxf.version>2.6.0</cxf.version>
 
 		<!-- Версии плагинов -->
@@ -44,6 +45,7 @@
 		<module>org.zenframework.z8.server</module>
 		<module>org.zenframework.z8.servlet</module>
 		<module>org.zenframework.z8.js</module>
+		<module>org.zenframework.z8.webserver</module>
 	</modules>
 
 	<profiles>

@@ -6,9 +6,10 @@ import org.apache.commons.cli.BasicParser;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.Options;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.zenframework.z8.rmi.ObjectIO;
 import org.zenframework.z8.server.config.ServerConfig;
-import org.zenframework.z8.server.logs.Trace;
 
 public final class ServerMain {
 
@@ -16,10 +17,13 @@ public final class ServerMain {
 		ObjectIO.initialize(new RmiIO());
 	}
 
+	private static final Log LOG = LogFactory.getLog(ServerMain.class);
+
 	private static enum ServerType {
-		authcenter("org.zenframework.z8.auth.AuthorityCenter"), appserver(
-				"org.zenframework.z8.server.engine.ApplicationServer"), interconnection(
-				"org.zenframework.z8.interconnection.InterconnectionCenter");
+		authcenter("org.zenframework.z8.auth.AuthorityCenter"),
+		appserver("org.zenframework.z8.server.engine.ApplicationServer"),
+		interconnection("org.zenframework.z8.interconnection.InterconnectionCenter"),
+		webserver("org.zenframework.z8.webserver.WebServer");
 
 		final String className;
 
@@ -70,14 +74,14 @@ public final class ServerMain {
 						try {
 							Rmi.get(serverClass).stop();
 						} catch (RemoteException e) {
-							Trace.logError("Can't shutdown Z8 server " + serverClass, e);
+							LOG.error("Can't shutdown Z8 server " + serverClass, e);
 						}
 					}
 
 				});
 			}
 		} catch (Throwable e) {
-			Trace.logError(e);
+			LOG.error("Couldn't start server " + args, e);
 			System.exit(-1);
 		}
 	}
