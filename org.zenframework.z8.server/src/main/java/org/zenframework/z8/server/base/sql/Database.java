@@ -1,5 +1,7 @@
 package org.zenframework.z8.server.base.sql;
 
+import org.zenframework.z8.server.base.json.parser.JsonObject;
+import org.zenframework.z8.server.config.ServerConfig;
 import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.runtime.OBJECT;
 import org.zenframework.z8.server.types.string;
@@ -34,9 +36,32 @@ public class Database extends OBJECT {
 		super(container);
 	}
 
+	public JsonObject.CLASS<JsonObject> z8_toJson() {
+		JsonObject.CLASS<JsonObject> json = new JsonObject.CLASS<JsonObject>();
+		json.get().z8_put(Schema, new string(database.schema()));
+		json.get().z8_put(User, new string(database.user()));
+		json.get().z8_put(Password, new string(database.password()));
+		json.get().z8_put(Connection, new string(database.connection()));
+		json.get().z8_put(Driver, new string(database.driver()));
+		json.get().z8_put(Charset, new string(database.charset().toString()));
+		return json;
+	}
+
 	static public Database.CLASS<? extends Database> z8_fromJson(string json) {
 		Database.CLASS<Database> cls = new Database.CLASS<Database>(null);
 		cls.get().database = new org.zenframework.z8.server.engine.Database(json.get());
+		return cls;
+	}
+
+	static public Database.CLASS<? extends Database> z8_fromJson(JsonObject.CLASS<? extends JsonObject> json) {
+		Database.CLASS<Database> cls = new Database.CLASS<Database>(null);
+		cls.get().database = new org.zenframework.z8.server.engine.Database(json.get().getInternalObject());
+		return cls;
+	}
+
+	static public Database.CLASS<? extends Database> z8_currentDatabase() {
+		Database.CLASS<Database> cls = new Database.CLASS<Database>(null);
+		cls.get().database = ServerConfig.database();
 		return cls;
 	}
 }

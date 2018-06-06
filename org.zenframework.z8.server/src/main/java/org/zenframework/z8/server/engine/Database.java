@@ -39,14 +39,16 @@ public class Database {
 	}
 
 	public Database(String json) {
-		JsonObject object = new JsonObject(json);
+		this(new JsonObject(json));
+	}
 
-		setSchema(object.getString("schema"));
-		setUser(object.getString("user"));
-		setPassword(object.getString("password"));
-		setConnection(object.getString("connection"));
-		setDriver(object.getString("driver"));
-		setCharset(encoding.fromString(object.getString("charset")));
+	public Database(JsonObject json) {
+		setSchema(json.getString("schema"));
+		setUser(json.getString("user"));
+		setPassword(json.getString("password"));
+		setConnection(json.getString("connection"));
+		setDriver(json.getString("driver"));
+		setCharset(encoding.fromString(json.getString("charset")));
 	}
 
 	public DatabaseVendor vendor() {
