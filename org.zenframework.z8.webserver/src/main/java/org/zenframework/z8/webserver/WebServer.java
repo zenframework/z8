@@ -46,7 +46,7 @@ public class WebServer implements IServer {
 	private static final String PROP_WEB_SERVER_MAPPINGS = "web.server.content.map";
 
 	private static final int DEFAULT_WEB_SERVER_PORT = 80;
-	private static final String DEFAULT_WEB_SERVER_WEBAPP = "./webapp";
+	private static final String DEFAULT_WEB_SERVER_WEBAPP = "..";
 
 	private Server server;
 	private ContextHandler context;
@@ -62,7 +62,7 @@ public class WebServer implements IServer {
 			mappings = getMappings(System.getProperty(PROP_WEB_SERVER_MAPPINGS));
 
 			context = new ContextHandler("/");
-			context.setResourceBase(webapp.getCanonicalPath());
+			context.setResourceBase(webapp.getAbsolutePath());
 
 			servlet = new Servlet();
 			servlet.init(new ServletConfig() {
