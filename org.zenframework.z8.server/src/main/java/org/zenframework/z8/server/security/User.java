@@ -351,7 +351,7 @@ public class User implements IUser {
 		IAccess access = new Access();
 
 		for(IRole role : roles)
-			access.apply(role.access());
+			access = access.or(role.access());
 
 		return access;
 	}

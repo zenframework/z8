@@ -23,5 +23,6 @@ public interface IAccess extends RmiSerializable, Serializable {
 	public boolean execute();
 	public void setExecute(boolean execute);
 
-	public void apply(IAccess access);
+	public IAccess or(IAccess access);
+	public IAccess and(IAccess access);
 }

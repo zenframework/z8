@@ -93,13 +93,26 @@ public class Access implements IAccess {
 		this.execute = execute;
 	}
 
-	public void apply(IAccess access) {
-		read = read || access.read();
-		write = write || access.write();
-		create = create || access.create();
-		copy = copy || access.copy();
-		destroy = destroy || access.destroy();
-		execute = execute || access.execute();
+	public IAccess or(IAccess access) {
+		Access result = new Access();
+		result.read = read || access.read();
+		result.write = write || access.write();
+		result.create = create || access.create();
+		result.copy = copy || access.copy();
+		result.destroy = destroy || access.destroy();
+		result.execute = execute || access.execute();
+		return result;
+	}
+
+	public IAccess and(IAccess access) {
+		Access result = new Access();
+		result.read = read && access.read();
+		result.write = write && access.write();
+		result.create = create && access.create();
+		result.copy = copy && access.copy();
+		result.destroy = destroy && access.destroy();
+		result.execute = execute && access.execute();
+		return result;
 	}
 
 	private void writeObject(ObjectOutputStream out) throws IOException {

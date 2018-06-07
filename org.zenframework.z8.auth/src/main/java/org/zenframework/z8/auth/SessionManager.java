@@ -99,7 +99,7 @@ public class SessionManager {
 	}
 
 	synchronized public void dropRoleSessions(guid roleId) {
-		for(ISession session : users.values()) {
+		for(ISession session : users.values().toArray(new ISession[0])) {
 			IUser user = session.user();
 			if(user.isAdministrator())
 				continue;

@@ -69,15 +69,13 @@ public class Privileges implements IPrivileges {
 	}
 
 	public IAccess getFieldAccess(guid table, guid field) {
+		IAccess tableAccess = getTableAccess(table);
+
 		if(fieldAccess == null)
-			return getTableAccess(table);
+			return tableAccess;
 
 		IAccess access = fieldAccess.get(field);
-
-		if(access == null)
-			return getTableAccess(table);
-
-		return access;
+		return access != null ? tableAccess.and(access) : tableAccess;
 	}
 
 	public void setFieldAccess(guid field, IAccess access) {
