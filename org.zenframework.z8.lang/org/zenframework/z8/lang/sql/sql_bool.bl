@@ -16,4 +16,5 @@ public final class sql_bool extends sql_primary {
 	public sql_guid IIF(sql_guid yes, sql_guid no);
 	public sql_int IIF(sql_int yes, sql_int no);
 	public sql_string IIF(sql_string yes, sql_string no);
+	public sql_geometry IIF(sql_geometry yes, sql_geometry no);
 }

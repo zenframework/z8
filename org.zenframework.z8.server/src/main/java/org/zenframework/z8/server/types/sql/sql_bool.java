@@ -68,6 +68,10 @@ public class sql_bool extends sql_primary {
 		return new sql_string(new If(this, yes, no));
 	}
 
+	public sql_geometry z8_IIF(sql_geometry yes, sql_geometry no) {
+		return new sql_geometry(new If(this, yes, no));
+	}
+
 	public sql_bool z8_max() {
 		return new sql_bool(new Max(this));
 	}

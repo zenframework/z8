@@ -1,5 +1,6 @@
 [primary "org.zenframework.z8.server.types.geometry"]
 public final class geometry extends primary {
+	
 	static public final int None = -1;
 	static public final int Ring = 0;
 	static public final int Point = 1;
@@ -10,6 +11,16 @@ public final class geometry extends primary {
 	static public final int MultiPolygon = 6;
 	static public final int Collection = 7;
 
+	static public final string StrNone = "NONE";
+	static public final string StrRing = "RING";
+	static public final string StrPoint = "POINT";
+	static public final string StrLine = "LINE";
+	static public final string StrPolygon = "POLYGON";
+	static public final string StrMultiPoint = "MULTIPOINT";
+	static public final string StrMultiLine = "MULTILINE";
+	static public final string StrMultiPolygon = "MULTIPOLYGON";
+	static public final string StrCollection = "COLLECTION";
+
 	public int shape();
 	public geometry[] points();
 
@@ -18,6 +29,7 @@ public final class geometry extends primary {
 
 	public decimal[][] extent();
 	public geometry center();
+	public decimal length();
 
 	public decimal x1();
 	public decimal y1();

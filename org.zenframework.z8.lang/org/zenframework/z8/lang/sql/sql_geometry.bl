@@ -6,4 +6,16 @@ public final class sql_geometry extends sql_primary {
 	public sql_bool operator != (sql_geometry value);
 
 	public sql_bool operator && (sql_geometry value);
+
+	public sql_int collectionSize();
+	public sql_decimal length();
+	public sql_geometry element(sql_int n);
+	public sql_geometry split(sql_geometry splitter);
+	public sql_geometry extract(sql_int type);
+	public sql_string strType();
+	public sql_bool intersects(sql_geometry geom);
+	public sql_geometry intersect(sql_geometry geom);
+	public sql_geometry startPoint();
+	public sql_geometry endPoint();
+	public sql_geometry union();
 }

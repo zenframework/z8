@@ -4,6 +4,7 @@ import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Iterator;
 
 import org.zenframework.z8.server.db.DatabaseVendor;
 import org.zenframework.z8.server.db.FieldType;
@@ -26,6 +27,16 @@ public final class geometry extends primary {
 	static public final int multiPolygon = 6;
 	static public final int collection = 7;
 
+	static public final String strNone = "NONE";
+	static public final String strRing = "RING";
+	static public final String strPoint = "POINT";
+	static public final String strLine = "LINE";
+	static public final String strPolygon = "POLYGON";
+	static public final String strMultiPoint = "MULTIPOINT";
+	static public final String strMultiLine = "MULTILINE";
+	static public final String strMultiPolygon = "MULTIPOLYGON";
+	static public final String strCollection = "COLLECTION";
+
 	static public final integer None = new integer(none);
 	static public final integer Ring = new integer(ring);
 	static public final integer Point = new integer(point);
@@ -35,6 +46,16 @@ public final class geometry extends primary {
 	static public final integer MultiLine = new integer(multiLine);
 	static public final integer MultiPolygon = new integer(multiPolygon);
 	static public final integer Collection = new integer(collection);
+
+	static public final string StrNone = new string(strNone);
+	static public final string StrRing = new string(strRing);
+	static public final string StrPoint = new string(strPoint);
+	static public final string StrLine = new string(strLine);
+	static public final string StrPolygon = new string(strPolygon);
+	static public final string StrMultiPoint = new string(strMultiPoint);
+	static public final string StrMultiLine = new string(strMultiLine);
+	static public final string StrMultiPolygon = new string(strMultiPolygon);
+	static public final string StrCollection = new string(strCollection);
 
 	static public double[][] EmptyExtent = { {0, 0}, {0, 0} };
 
@@ -47,6 +68,7 @@ public final class geometry extends primary {
 	private double y;
 	private Collection<geometry> points;
 	private double[][] extent;                 // [[xMin, yMin], [xMax, yMax]]
+	private double length = -1.0;
 
 	private int srs = DefaultSRS;
 
@@ -269,6 +291,36 @@ public final class geometry extends primary {
 		}
 	}
 
+	public double length() {
+		if(length > -1)
+			return length;
+
+		length = 0;
+		switch(shape()) {
+		case none:
+		case point:
+		case multiPoint:
+			return length;
+		case line:
+			Iterator<geometry> it = points().iterator();
+			for (geometry a = it.next(), b = it.next(); it.hasNext(); a = b, b = it.next())
+				length += distance(a, b);
+			return length;
+		case multiLine:
+		case collection:
+			for(geometry geometry : points())
+				length += geometry.length();
+			return length;
+		case ring:
+			// TODO
+		case polygon:
+		case multiPolygon:
+			throw new IllegalArgumentException("Can't get length for shape " + shape);
+		default:
+			throw new IllegalArgumentException("Unknown geometry type: " + shape);
+		}
+	}
+
 	static public double[][] unionExtents(double[][] extent1, double[][] extent2) {
 		return new double[][] {
 			new double[] { Math.min(extent1[0][0], extent2[0][0]), Math.min(extent1[0][1], extent2[0][1]) },
@@ -368,4 +420,11 @@ public final class geometry extends primary {
 		}
 		return new geometry(points, collection);
 	}
+	
+	static private double distance(geometry a, geometry b) {
+		if (a.shape() != point || b.shape() != point)
+			throw new IllegalArgumentException("Can't get distance between shapes " + a.shape() + " and " + b.shape());
+		return Math.sqrt(Math.pow(a.x() - b.x(), 2) + Math.pow(a.y() - b.y(), 2));
+	}
+
 }
