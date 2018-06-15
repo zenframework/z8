@@ -793,6 +793,16 @@ Z8.define('Z8.list.List', {
 		return this.editors;
 	},
 
+	getEditor: function(name) {
+		var editors = this.editors;
+		for(var i = 0, length = editors.length; i < length; i++) {
+			var editor = editors[i];
+			if(editor != null && editor.field.name == name)
+				return editor;
+		}
+		return null;
+	},
+
 	getHeader: function(name) {
 		var headers = this.headers;
 		var start = 0 + (this.checks ? 1 : 0) + (this.locks ? 1 : 0);

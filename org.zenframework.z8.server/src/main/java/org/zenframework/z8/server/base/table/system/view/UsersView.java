@@ -79,8 +79,10 @@ public class UsersView extends Users {
 		userRoles.columns.add(userRoles.roles.get().name);
 
 		name.get().colSpan = new integer(3);
-		lastName.get().colSpan = new integer(3);
+		name.get().editable = bool.True;
 		firstName.get().colSpan = new integer(3);
+		lastName.get().colSpan = new integer(3);
+		lastName.get().editable = bool.True;
 		middleName.get().colSpan = new integer(3);
 
 		phone.get().colSpan = new integer(3);

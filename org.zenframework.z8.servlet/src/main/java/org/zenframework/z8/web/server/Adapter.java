@@ -114,7 +114,6 @@ public abstract class Adapter {
 					parameters.put(fileItem.getFieldName(), fileItem.getString(encoding.Default.toString()));
 			}
 		} else {
-			@SuppressWarnings("unchecked")
 			Map<String, String[]> requestParameters = request.getParameterMap();
 
 			for(String name : requestParameters.keySet()) {

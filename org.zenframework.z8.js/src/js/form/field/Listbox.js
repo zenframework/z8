@@ -109,6 +109,14 @@ Z8.define('Z8.form.field.Listbox', {
 		return this.list.getHeaders();
 	},
 
+	getEditors: function() {
+		return this.list.getEditors();
+	},
+
+	getEditor: function(name) {
+		return this.list.getEditor(name);
+	},
+
 	needsValues: function() {
 		var values = this.getValues();
 		if(values == null)

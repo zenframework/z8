@@ -118,7 +118,7 @@ public class Expression implements IFilter {
 		case Decimal:
 			return new Rel(field, operation, new decimal(value).sql_decimal());
 		case Integer:
-			return new Rel(field, operation, new integer(value).sql_int());
+			return new Rel(field, Operation.Eq, new integer(value).sql_int());
 		case Datetime:
 		case Date:
 			switch(operation) {

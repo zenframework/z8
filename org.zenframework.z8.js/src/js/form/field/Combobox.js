@@ -34,7 +34,7 @@ Z8.define('Z8.form.field.Combobox', {
 	},
 
 	isEmptyValue: function(value) {
-		return value == this.emptyValue || this.callParent(value);
+		return value == this.emptyValue/* || this.callParent(value)*/;
 	},
 
 	getStore: function() {
@@ -123,6 +123,10 @@ Z8.define('Z8.form.field.Combobox', {
 			return value != null ? Format.date(value, field.format) : '';
 		case Type.Boolean:
 			return Parser.boolean(value) ? 'да' : 'нет';
+		case Type.Integer:
+			return value !== null ? Format.integer(value, field.format) : '';
+		case Type.Float:
+			return value !== null ? Format.float(value, field.format) : '';
 		default:
 			return value;
 		}
@@ -141,7 +145,7 @@ Z8.define('Z8.form.field.Combobox', {
 
 		this.entered = true;
 
-		this.displayValue = displayValue = this.formatValue(displayValue || '');
+		this.displayValue = displayValue = this.formatValue(displayValue/* || ''*/);
 
 		this.updateDependenciesByValue(value);
 
@@ -205,7 +209,7 @@ Z8.define('Z8.form.field.Combobox', {
 	},
 
 	valueToRaw: function(value) {
-		return this.displayValue;
+		return this.formatValue(this.displayValue);
 	},
 
 	currentItem: function() {
@@ -321,10 +325,12 @@ Z8.define('Z8.form.field.Combobox', {
 		var index = start;
 		var count = items.length;
 
+		text = text.toLowerCase();
+
 		while(index < count) {
 			var item = items[index];
-			var itemText = (item.getText(this.displayName) || '').toLowerCase();
-			if(itemText.startsWith(text.toLowerCase()))
+			var value = this.formatValue(item.getText(this.displayName)).toLowerCase();
+			if(value.startsWith(text))
 				return item;
 
 			index = index < count -1 ? index + 1 : 0;
