@@ -12,6 +12,8 @@ public final class guid extends primary {
 
 	public bool operator == (guid value);
 	public bool operator != (guid value);
+	
+	public int[] components();
 
 	static public guid parse(string value);
 }

@@ -1,10 +1,12 @@
 package org.zenframework.z8.server.types;
 
 import java.math.BigInteger;
+import java.util.Arrays;
 import java.util.UUID;
 
 import org.zenframework.z8.server.db.DatabaseVendor;
 import org.zenframework.z8.server.db.FieldType;
+import org.zenframework.z8.server.runtime.RCollection;
 import org.zenframework.z8.server.types.sql.sql_guid;
 
 public class guid extends primary {
@@ -155,6 +157,10 @@ public class guid extends primary {
 
 	public bool operatorNotEqu(guid x) {
 		return new bool(!value.equals(x.value));
+	}
+
+	public RCollection<integer> z8_components() {
+		return new RCollection<integer>(Arrays.asList(new integer(value.getMostSignificantBits()), new integer(value.getLeastSignificantBits())));
 	}
 
 	static public guid z8_create() {
