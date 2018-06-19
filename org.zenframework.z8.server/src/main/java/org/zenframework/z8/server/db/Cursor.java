@@ -106,12 +106,15 @@ public class Cursor {
 	}
 
 	private date getDate(int position, Field field) throws SQLException {
-		long value = resultSet.getLong(position);
-
 		boolean wasNull = wasNull();
 		field.setWasNull(wasNull);
-
-		return !wasNull ? new date(value) : date.Min;
+		if (wasNull)
+			return date.Min;
+		try {
+			return new date(resultSet.getLong(position));
+		} catch (SQLException e) {
+			return new date(resultSet.getString(position));
+		}
 	}
 
 	public datespan getDatespan(int position) throws SQLException {
@@ -148,10 +151,10 @@ public class Cursor {
 	private guid getGuid(int position, Field field) throws SQLException {
 		Object value = null;
 
-		if(statement.vendor() == DatabaseVendor.Oracle)
-			value = resultSet.getString(position);
-		else if(statement.vendor() == DatabaseVendor.Postgres)
+		if(statement.vendor() == DatabaseVendor.Postgres)
 			value = resultSet.getObject(position);
+		else
+			value = resultSet.getString(position);
 
 		boolean wasNull = value == null || wasNull();
 		field.setWasNull(wasNull);
