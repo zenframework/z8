@@ -7,12 +7,17 @@ import org.zenframework.z8.server.config.ServerConfig;
 import org.zenframework.z8.server.engine.ApplicationServer;
 import org.zenframework.z8.server.runtime.RCollection;
 import org.zenframework.z8.server.runtime.RLinkedHashMap;
+import org.zenframework.z8.server.types.bool;
 import org.zenframework.z8.server.types.file;
 import org.zenframework.z8.server.types.integer;
 import org.zenframework.z8.server.types.string;
 import org.zenframework.z8.server.utils.NumericUtils;
 
 public class Application {
+	static public bool z8_isSystemInstalled() {
+		return new bool(ServerConfig.database().isSystemInstalled());
+	}
+	
 	static public User.CLASS<? extends User> z8_user() {
 		User.CLASS<User> cls = new User.CLASS<User>(null);
 		User user = cls.get();

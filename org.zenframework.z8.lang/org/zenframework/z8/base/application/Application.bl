@@ -4,6 +4,8 @@ import org.zenframework.z8.lang.Object;
 
 [native "org.zenframework.z8.server.base.application.Application"]
 public class Application extends Object {
+	static public bool isSystemInstalled();
+	
 	static public User user();
 
 	static public int currentTimeMillis();
