@@ -257,9 +257,9 @@ Z8.define('Z8.list.Item', {
 		return record != null ? record.id : this.getId();
 	},
 
-	getText: function(field) {
+	getText: function(fieldName) {
 		var record = this.record;
-		return record != null ? record.get(field) || '' : this.text;
+		return this.formatText(this.list.getField(fieldName), record != null ? record.get(fieldName) : '');
 	},
 
 	hasChildren: function() {

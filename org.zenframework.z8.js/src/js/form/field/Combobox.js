@@ -113,6 +113,24 @@ Z8.define('Z8.form.field.Combobox', {
 		this.callParent(readOnly);
 	},
 
+	getFilterOperation: function() {
+		switch(this.getType()) {
+		case Type.Integer:
+		case Type.Float:
+			return Operation.Eq;
+		case Type.Date:
+		case Type.Datetime:
+		case Type.Boolean:
+		case Type.String:
+		default:
+			return Operation.Contains;
+		}
+	},
+
+	getType: function() {
+		return this.field != null ? this.field.type : Type.String;
+	},
+
 	formatValue: function(value) {
 		var field = this.field || {};
 
@@ -298,7 +316,7 @@ Z8.define('Z8.form.field.Combobox', {
 				}
 			};
 
-			var filter = !Z8.isEmpty(text) ? [{ property: this.displayName, operator: Operation.Contains, value: text, anyMatch: true }] : [];
+			var filter = !Z8.isEmpty(text) ? [{ property: this.displayName, operator: this.getFilterOperation, value: text, anyMatch: true }] : [];
 			this.load({ fn: callback, scope: this }, filter);
 		};
 

@@ -793,6 +793,16 @@ Z8.define('Z8.list.List', {
 		return this.editors;
 	},
 
+	getField: function(name) {
+		var fields = this.fields;
+		for(var i = 0, length = fields.length; i < length; i++) {
+			var field = fields[i];
+			if(field.name == name)
+				return field;
+		}
+		return null;
+	},
+
 	getEditor: function(name) {
 		var editors = this.editors;
 		for(var i = 0, length = editors.length; i < length; i++) {
