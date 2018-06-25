@@ -198,8 +198,13 @@ Z8.define('Z8.application.form.Navigator', {
 			buttons.push(period);
 
 		var filter = this.filterButton = this.createFilterButton();
+		if(filter != null)
+			buttons.push(filter);
+
+/*
 		var sort = this.sortButton = new Z8.button.Button({ enabled: false, cls: 'btn-sm', icon: 'fa-sort', tooltip: 'Порядок сортировки', triggerTooltip: 'Настроить порядок сортировки', split: true, handler: this.toggleSortOrder, scope: this });
-		buttons.push(filter, sort);
+		buttons.push(sort);
+*/
 
 		var formTable = this.createFormTableGroup();
 		if(formTable != null)

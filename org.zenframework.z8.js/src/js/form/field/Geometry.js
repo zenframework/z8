@@ -51,25 +51,29 @@ Z8.define('Z8.form.field.Geometry', {
 			var select = new Z8.button.Tool({ icon: 'fa-mouse-pointer', tooltip: 'Выбор объектов', toggled: true });
 			this.setSelectTool(select);
 			interactions.add(select);
-		}
+		} else
+			this.selectTool = null;
 
 		if(this.moveTool !== false) {
 			var move = new Z8.button.Tool({ icon: 'fa-hand-paper-o', tooltip: 'Переместить объект', toggled: false, enabled: false });
 			this.setMoveTool(move);
 			interactions.add(move);
-		}
+		} else
+			this.moveTool = null;
 
 		if(this.editTool !== false) {
 			var edit = new Z8.button.Tool({ icon: 'fa-pencil', tooltip: 'Изменить объект', toggled: false, enabled: false });
 			this.setEditTool(edit);
 			interactions.add(edit);
-		}
+		} else
+			this.editTool = null;
 
 		if(this.drawTool !== false) {
 			var draw = new Z8.button.Tool({ icon: 'fa-pencil-square-o', tooltip: 'Нарисовать объект', toggled: false, enabled: false });
 			this.setDrawTool(draw);
 			interactions.add(draw);
-		}
+		} else
+			this.drawTool = null;
 /*
 		var erase = this.eraseButton = new Z8.button.Tool({ icon: 'fa-eraser', tooltip: 'Удалить объект', toggled: false, enabled: false });
 		edit.on('toggle', this.onInteractionToggle, this);
