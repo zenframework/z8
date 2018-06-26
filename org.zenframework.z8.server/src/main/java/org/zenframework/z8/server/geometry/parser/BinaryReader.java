@@ -1,7 +1,7 @@
 package org.zenframework.z8.server.geometry.parser;
 
 import java.util.ArrayList;
-import java.util.Collection;
+import java.util.List;
 
 import org.zenframework.z8.server.types.geometry;
 
@@ -91,9 +91,9 @@ public class BinaryReader {
 		return Double.longBitsToDouble(getLong());
 	}
 
-	private Collection<geometry> readPoints(int srs) {
+	private List<geometry> readPoints(int srs) {
 		int count = getInt();
-		Collection<geometry> points = new ArrayList<geometry>(count);
+		List<geometry> points = new ArrayList<geometry>(count);
 
 		for(int i = 0; i < count; i++)
 			points.add(readPoint(srs, null));
@@ -101,8 +101,8 @@ public class BinaryReader {
 		return points;
 	}
 
-	private Collection<geometry> readGeometry(int count) {
-		Collection<geometry> geometries = new ArrayList<geometry>();
+	private List<geometry> readGeometry(int count) {
+		List<geometry> geometries = new ArrayList<geometry>();
 
 		for(int i = 0; i < count; i++)
 			geometries.add(readGeometry(null));
@@ -132,7 +132,7 @@ public class BinaryReader {
 
 	private geometry readPolygon(int srs, String bytes) {
 		int ringCount = getInt();
-		Collection<geometry> rings = new ArrayList<geometry>();
+		List<geometry> rings = new ArrayList<geometry>();
 		for(int i = 0; i < ringCount; i++)
 			rings.add(readRing(srs));
 		return new geometry(rings, geometry.polygon, srs, bytes);

@@ -19,4 +19,5 @@ public final class sql_geometry extends sql_primary {
 	public sql_geometry endPoint();
 	public sql_geometry union();
 	public sql_geometry centroid();
+	public sql_geometry interpolatePoint(sql_decimal fraction);
 }

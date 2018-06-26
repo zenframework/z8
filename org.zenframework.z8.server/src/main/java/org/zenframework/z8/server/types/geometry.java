@@ -4,7 +4,7 @@ import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Iterator;
+import java.util.List;
 
 import org.zenframework.z8.server.db.DatabaseVendor;
 import org.zenframework.z8.server.db.FieldType;
@@ -66,7 +66,7 @@ public final class geometry extends primary {
 	private int shape = none;
 	private double x;
 	private double y;
-	private Collection<geometry> points;
+	private List<geometry> points;
 	private double[][] extent;                 // [[xMin, yMin], [xMax, yMax]]
 	private double length = -1.0;
 
@@ -92,11 +92,11 @@ public final class geometry extends primary {
 		this.y = y;
 	}
 
-	public geometry(Collection<geometry> points, int shape) {
+	public geometry(List<geometry> points, int shape) {
 		this(points, shape, DefaultSRS, null);
 	}
 
-	public geometry(Collection<geometry> points, int shape, int srs, String bytes) {
+	public geometry(List<geometry> points, int shape, int srs, String bytes) {
 		this.bytes = bytes;
 		this.shape = shape;
 		this.srs = srs;
@@ -127,7 +127,7 @@ public final class geometry extends primary {
 		return y;
 	}
 
-	public Collection<geometry> points() {
+	public List<geometry> points() {
 		checkShape();
 		return points;
 	}
@@ -302,9 +302,9 @@ public final class geometry extends primary {
 		case multiPoint:
 			return length;
 		case line:
-			Iterator<geometry> it = points().iterator();
-			for (geometry a = it.next(), b = it.next(); it.hasNext(); a = b, b = it.next())
-				length += distance(a, b);
+			List<geometry> points = points();
+			for (int i = 0; i < points.size() - 1; i++)
+				length += distance(points.get(i), points.get(i + 1));
 			return length;
 		case multiLine:
 		case collection:
@@ -338,6 +338,10 @@ public final class geometry extends primary {
 
 	public decimal z8_y() {
 		return new decimal(y());
+	}
+
+	public decimal z8_length() {
+		return new decimal(length());
 	}
 
 	public geometry z8_center() {
@@ -379,6 +383,10 @@ public final class geometry extends primary {
 		return new decimal(height());
 	}
 
+	static public geometry z8_none() {
+		return new geometry();
+	}
+
 	static public geometry z8_point(decimal x, decimal y) {
 		return new geometry(x.getDouble(), y.getDouble());
 	}
@@ -391,6 +399,27 @@ public final class geometry extends primary {
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	static public geometry z8_collection(RCollection geometries) {
 		return new geometry(geometries, collection);
+	}
+
+	static public geometry z8_pointOnLine(geometry line, decimal distance) {
+		return pointOnLine(line, distance.getDouble());
+	}
+
+	static public geometry pointOnLine(geometry line, double distance) {
+		if (line.shape() == geometry.line) {
+			double l = 0.0;
+			List<geometry> points = line.points();
+			for (int i = 0; i < points.size() - 1; i++) {
+				geometry a = points.get(i), b = points.get(i + 1);
+				double d = distance(a, b);
+				if (distance >= l && distance <= l + d) {
+					double k = (distance - l) / d;
+					return new geometry((b.x() - a.x()) * k + a.x(), (b.y() - a.y()) * k + a.y());
+				}
+				l += d;
+			}
+		}
+		return new geometry();
 	}
 
 	static public geometry fromHexString(String hexString) {
@@ -411,7 +440,7 @@ public final class geometry extends primary {
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	static public geometry z8_fromArray(RCollection geometries) {
-		Collection<geometry> points = new ArrayList<geometry>();
+		List<geometry> points = new ArrayList<geometry>();
 		for(geometry geometry : (Collection<geometry>)geometries) {
 			if(geometry.shape() == collection)
 				points.addAll(geometry.points());

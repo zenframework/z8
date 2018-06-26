@@ -13,6 +13,7 @@ import org.zenframework.z8.server.db.sql.functions.geometry.Element;
 import org.zenframework.z8.server.db.sql.functions.geometry.EndPoint;
 import org.zenframework.z8.server.db.sql.functions.geometry.Extract;
 import org.zenframework.z8.server.db.sql.functions.geometry.GeometryType;
+import org.zenframework.z8.server.db.sql.functions.geometry.InterpolatePoint;
 import org.zenframework.z8.server.db.sql.functions.geometry.Intersection;
 import org.zenframework.z8.server.db.sql.functions.geometry.Length;
 import org.zenframework.z8.server.db.sql.functions.geometry.Split;
@@ -100,5 +101,9 @@ public class sql_geometry extends sql_primary {
 	
 	public sql_geometry z8_centroid() {
 		return new sql_geometry(new Centroid(this));
+	}
+
+	public sql_geometry z8_interpolatePoint(sql_decimal fraction) {
+		return new sql_geometry(new InterpolatePoint(this, fraction));
 	}
 }

@@ -1,7 +1,7 @@
 package org.zenframework.z8.server.geometry.parser;
 
 import java.util.ArrayList;
-import java.util.Collection;
+import java.util.List;
 
 import org.zenframework.z8.server.json.parser.JsonArray;
 import org.zenframework.z8.server.json.parser.JsonObject;
@@ -66,15 +66,15 @@ public class GeoJsonReader {
 		return new geometry(x, y);
 	}
 
-	private Collection<geometry> readPoints(JsonArray points) {
-		Collection<geometry> result = new ArrayList<geometry>();
+	private List<geometry> readPoints(JsonArray points) {
+		List<geometry> result = new ArrayList<geometry>();
 		for(int i = 0; i < points.size(); i++)
 			result.add(readPoint(points.getJsonArray(i)));
 		return result;
 	}
 
-	private Collection<geometry> readCoordinates(JsonArray geometries, int type) {
-		Collection<geometry> result = new ArrayList<geometry>();
+	private List<geometry> readCoordinates(JsonArray geometries, int type) {
+		List<geometry> result = new ArrayList<geometry>();
 		for(int i = 0; i < geometries.size(); i++)
 			result.add(readGeometry(geometries.getJsonArray(i), type));
 		return result;
@@ -89,7 +89,7 @@ public class GeoJsonReader {
 	}
 
 	private geometry readPolygon(JsonArray coordinates) {
-		Collection<geometry> rings = new ArrayList<geometry>();
+		List<geometry> rings = new ArrayList<geometry>();
 		for(int i = 0; i < coordinates.size(); i++)
 			rings.add(readRing(coordinates.getJsonArray(i)));
 		return new geometry(rings, geometry.polygon);
@@ -108,7 +108,7 @@ public class GeoJsonReader {
 	}
 
 	private geometry readCollection(JsonArray geometries) {
-		Collection<geometry> result = new ArrayList<geometry>();
+		List<geometry> result = new ArrayList<geometry>();
 		for(int i = 0; i < geometries.size(); i++)
 			result.add(readGeometry(geometries.getJsonObject(i)));
 		return new geometry(result, geometry.collection);
@@ -119,7 +119,7 @@ public class GeoJsonReader {
 	}
 
 	private geometry readFeatureCollection(JsonObject json) {
-		Collection<geometry> geometries = new ArrayList<geometry>();
+		List<geometry> geometries = new ArrayList<geometry>();
 		JsonArray features = json.getJsonArray(GeoJson.Features);
 		for(int i = 0; i < features.size(); i++)
 			geometries.add(readFeature(features.getJsonObject(i)));

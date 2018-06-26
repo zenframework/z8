@@ -45,9 +45,12 @@ public final class geometry extends primary {
 	public bool operator == (guid value);
 	public bool operator != (guid value);
 
+	static public geometry none();
 	static public geometry point(decimal x, decimal y);
 	static public geometry line(geometry[] points);
 	static public geometry collection(geometry[] geometries);
+
+	static public geometry pointOnLine(geometry line, decimal distance);
 
 	static public geometry fromHexString(string hexString);
 	static public geometry fromGeoJson(string geoJson);
