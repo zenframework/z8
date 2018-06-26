@@ -8,6 +8,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.Reader;
+import java.net.URLDecoder;
 import java.rmi.RemoteException;
 import java.util.Enumeration;
 import java.util.Properties;
@@ -115,7 +116,7 @@ public class WebServer implements IServer {
 				@Override
 				public void handle(String target, Request baseRequest, HttpServletRequest request,
 						HttpServletResponse response) throws IOException, ServletException {
-					String path = baseRequest.getRequestURI();
+					String path = URLDecoder.decode(baseRequest.getRequestURI(), "UTF-8");
 					baseRequest.setServletPath(path);
 					LOG.debug("REQUEST: " + path);
 					response.setCharacterEncoding("UTF-8");
