@@ -707,12 +707,15 @@ Z8.define('Z8.data.Store', {
 
 		var sortFn = function(left, right) {
 			for(var i = 0, length = sorters.length; i < length; i++) {
+				var field = fields[i];
+				if(field == null)
+					continue;
+
 				var sorter = sorters[i];
 				var property = sorter.property;
-				var field = fields[i];
 				var leftValue = left.get(property);
 				var rightValue = right.get(property);
-				var result = fields[i].compare(leftValue, rightValue);
+				var result = field.compare(leftValue, rightValue);
 				if(result != 0)
 					return sorter.direction == 'asc' ? result : -result;
 			}
