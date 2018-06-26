@@ -30,6 +30,7 @@ public class Field extends Control {
 	public primary primary();
 	public binary binary();
 	public bool bool();
+	public geometry geometry();
 	public guid guid();
 	public date date();
 	public datespan datespan();
