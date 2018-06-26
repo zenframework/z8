@@ -545,6 +545,8 @@ Z8.define('Z8.form.field.Geometry', {
 	},
 
 	cancelEdit: function(toggleSelect) {
+		this.resetEdit();
+
 		if(!this.isEditing)
 			return;
 
@@ -556,8 +558,6 @@ Z8.define('Z8.form.field.Geometry', {
 
 		if(toggleSelect !== false)
 			this.toggleSelect();
-
-		this.resetEdit();
 	},
 
 	finishEdit: function() {
