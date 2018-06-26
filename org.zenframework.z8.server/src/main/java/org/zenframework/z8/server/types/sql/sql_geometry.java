@@ -7,6 +7,7 @@ import org.zenframework.z8.server.db.sql.expressions.Intersects;
 import org.zenframework.z8.server.db.sql.expressions.Operation;
 import org.zenframework.z8.server.db.sql.expressions.Rel;
 import org.zenframework.z8.server.db.sql.functions.conversion.ToString;
+import org.zenframework.z8.server.db.sql.functions.geometry.Centroid;
 import org.zenframework.z8.server.db.sql.functions.geometry.CollectionSize;
 import org.zenframework.z8.server.db.sql.functions.geometry.Element;
 import org.zenframework.z8.server.db.sql.functions.geometry.EndPoint;
@@ -95,5 +96,9 @@ public class sql_geometry extends sql_primary {
 
 	public sql_geometry z8_union() {
 		return new sql_geometry(new Union(this));
+	}
+	
+	public sql_geometry z8_centroid() {
+		return new sql_geometry(new Centroid(this));
 	}
 }

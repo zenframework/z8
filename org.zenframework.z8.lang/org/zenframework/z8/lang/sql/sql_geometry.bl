@@ -18,4 +18,5 @@ public final class sql_geometry extends sql_primary {
 	public sql_geometry startPoint();
 	public sql_geometry endPoint();
 	public sql_geometry union();
+	public sql_geometry centroid();
 }
