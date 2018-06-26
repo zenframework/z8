@@ -249,8 +249,10 @@ Z8.define('Z8.form.field.Geometry', {
 
 	installEdit: function() {
 		var map = this.map;
+		if(map == null)
+			return;
 
-		if(this.move !== false) {
+		if(this.moveTool != null) {
 			var move = this.move = this.createMove();
 			move.setActive(false);
 			move.on('translatestart', this.onEditStart, this);
@@ -258,7 +260,7 @@ Z8.define('Z8.form.field.Geometry', {
 			map.addInteraction(move);
 		}
 
-		if(this.edit != false) {
+		if(this.editTool != null) {
 			var edit = this.edit = this.createEdit();
 			edit.setActive(false);
 			edit.on('modifystart', this.onEditStart, this);
@@ -266,7 +268,7 @@ Z8.define('Z8.form.field.Geometry', {
 			map.addInteraction(edit);
 		}
 
-		if(this.draw != false) {
+		if(this.drawTool != null) {
 			var draw = this.draw = this.createDraw();
 			draw.setActive(false);
 			draw.on('drawstart', this.onEditStart, this);
@@ -277,9 +279,11 @@ Z8.define('Z8.form.field.Geometry', {
 
 	uninstallEdit: function() {
 		var map = this.map;
+		if(map == null)
+			return;
 
 		var move = this.move;
-		if(move !== false) {
+		if(move != null) {
 			move.un('translatestart', this.onEditStart, this);
 			move.un('translateend', this.onEditEnd, this);
 			map.removeInteraction(move);
@@ -287,7 +291,7 @@ Z8.define('Z8.form.field.Geometry', {
 		}
 
 		var edit = this.edit;
-		if(edit !== false) {
+		if(edit != null) {
 			edit.un('modifystart', this.onEditStart, this);
 			edit.un('modifyend', this.onEditEnd, this);
 			map.removeInteraction(edit);
@@ -295,7 +299,7 @@ Z8.define('Z8.form.field.Geometry', {
 		}
 
 		var draw = this.draw;
-		if(draw !== false) {
+		if(draw != null) {
 			draw.un('drawstart', this.onEditStart, this);
 			draw.un('drawend', this.onEditEnd, this);
 			map.removeInteraction(draw);
@@ -671,11 +675,11 @@ Z8.define('Z8.form.field.Geometry', {
 	},
 
 	isActiveInteraction: function(interaction) {
-		return interaction !== false ? interaction.getActive() : false;
+		return interaction != null ? interaction.getActive() : false;
 	},
 
 	activateInteraction: function(interaction, activate) {
-		if(interaction !== false)
+		if(interaction != null)
 			interaction.setActive(activate);
 	},
 
