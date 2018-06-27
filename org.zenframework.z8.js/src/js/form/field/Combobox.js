@@ -316,7 +316,7 @@ Z8.define('Z8.form.field.Combobox', {
 				}
 			};
 
-			var filter = !Z8.isEmpty(text) ? [{ property: this.displayName, operator: this.getFilterOperation, value: text, anyMatch: true }] : [];
+			var filter = !Z8.isEmpty(text) ? [{ property: this.displayName, operator: this.getFilterOperation(), value: text, anyMatch: true }] : [];
 			this.load({ fn: callback, scope: this }, filter);
 		};
 
