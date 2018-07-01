@@ -78,7 +78,7 @@ public final class string extends primary {
 	public string toLowerCase();
 	public string toUpperCase();
 
-	public string format(string[] frm); // {n} <=> [n]
+	public string format(primary[] frm); // {n} <=> [n]
 
 	static public string replicate(string str, int count);
 }

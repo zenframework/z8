@@ -28,4 +28,29 @@ public abstract class primary implements Comparable<primary>, Serializable {
 	public string string() {
 		return z8_toString();
 	}
+	
+	public Object getValue() {
+		if (this instanceof binary)
+			return ((binary) this).get();
+		if (this instanceof bool)
+			return ((bool) this).get();
+		if (this instanceof date)
+			return ((date) this).get();
+		if (this instanceof datespan)
+			return ((datespan) this).get();
+		if (this instanceof decimal)
+			return ((decimal) this).get();
+		if (this instanceof file)
+			return ((file) this).get();
+		if (this instanceof geometry)
+			return ((geometry) this).get();
+		if (this instanceof guid)
+			return ((guid) this).get();
+		if (this instanceof integer)
+			return ((integer) this).get();
+		if (this instanceof string)
+			return ((string) this).get();
+		throw new IllegalStateException();
+	}
+
 }

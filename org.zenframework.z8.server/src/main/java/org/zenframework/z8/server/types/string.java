@@ -472,9 +472,12 @@ public final class string extends primary {
 		return new string(get().toUpperCase());
 	}
 
-	public string z8_format(RCollection<string> format) {
+	public string z8_format(RCollection<primary> format) {
+		Object[] args = new Object[format.size()];
+		for (int i = 0; i < args.length; i++)
+			args[i] = format.get(i).getValue();
 		MessageFormat form = new MessageFormat(get());
-		return new string(form.format(format.toArray()));
+		return new string(form.format(args));
 	}
 
 	static public string z8_replicate(string str, integer count) {
