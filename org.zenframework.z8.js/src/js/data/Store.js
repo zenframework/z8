@@ -292,6 +292,7 @@ Z8.define('Z8.data.Store', {
 			this.attach(added);
 			this.totalCount += added.length;
 
+			this.sortRecords();
 			this.treefyRecords();
 
 			var ranges = this.getIndexRanges(added);
@@ -525,10 +526,12 @@ Z8.define('Z8.data.Store', {
 			if(this.isLocal() && this.getSorter().length != 0)
 				this.sortRecords();
 
+			this.treefyRecords();
+
 			this.loadCount++;
 		}
 
-		return records;
+		return this.records;
 	},
 
 	isLoaded: function() {
@@ -691,6 +694,7 @@ Z8.define('Z8.data.Store', {
 	},
 
 	onParentIdChanged: function(record, oldId) {
+		this.sortRecords();
 		this.treefyRecords();
 		this.fireEvent('load', this, this.getRecords(), true);
 	},
@@ -756,8 +760,6 @@ Z8.define('Z8.data.Store', {
 	},
 
 	treefyRecords: function() {
-		this.sortRecords();
-
 		if(!this.isTree())
 			return;
 
@@ -780,7 +782,7 @@ Z8.define('Z8.data.Store', {
 			else
 				roots.add(record);
 
-			for(var j = 0, length1 = roots.length; j < length1; j++) {
+			for(var j = 0; j < roots.length; j++) {
 				var root = roots[j];
 				if (root.parentId == recordId) {
 					children.push(root);
@@ -795,7 +797,7 @@ Z8.define('Z8.data.Store', {
 				var record = records[i];
 				var children = map[record.id];
 				var data = record.data;
-				var hasChildren = data.hasChildren = children.length != 0;
+				var hasChildren = data.hasChildren = children != null && children.length != 0;
 				data.level = level;
 				result.push(record);
 				if(hasChildren)

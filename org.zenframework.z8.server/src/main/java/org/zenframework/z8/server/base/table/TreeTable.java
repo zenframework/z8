@@ -155,15 +155,10 @@ public class TreeTable extends Table {
 	public void beforeCreate(guid recordId, guid parentId) {
 		super.beforeCreate(recordId, parentId);
 
-		Field parentKey = this.parentKey();
-		if(parentKey == null)
-			return;
+		Field parentKey = this.parentId.get();
 
-		parentId = parentKey != null ? parentKey.guid() : null;
+		parentId = parentKey.guid();
 		recordId = primaryKey().guid();
-
-		if(parentId == null)
-			parentId = guid.Null;
 
 		guid[] parents = {};
 		String path = "";
@@ -188,8 +183,8 @@ public class TreeTable extends Table {
 
 		super.beforeUpdate(recordId);
 
-		Field parentKey = this.parentKey();
-		if(parentKey == null || !parentKey.changed())
+		Field parentKey = this.parentId.get();
+		if(!parentKey.changed())
 			return;
 
 		guid parentId = parentKey.guid();

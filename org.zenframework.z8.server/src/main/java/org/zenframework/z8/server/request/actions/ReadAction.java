@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
@@ -707,21 +706,15 @@ public class ReadAction extends RequestAction {
 
 		try {
 			frame.saveState();
-
 			frame.open();
-
-			if(parentKey == null)
-				return writePlainData(frame, writer);
-
-			writeTreeData(frame, writer);
-			return null;
+			return writeData(frame, writer);
 		} finally {
 			frame.restoreState();
 			frame.close();
 		}
 	}
 
-	private Groupping writePlainData(Select cursor, JsonWriter writer) {
+	private Groupping writeData(Select cursor, JsonWriter writer) {
 		Groupping groups = new Groupping(this.groupFields);
 
 		if(primaryKey != null)
@@ -756,84 +749,6 @@ public class ReadAction extends RequestAction {
 		writer.finishArray();
 
 		return records != 0 && groups.fields.length != 0 ? groups : null;
-	}
-
-	class TreeData {
-		guid recordId;
-		guid parentId;
-		JsonWriter data;
-
-		public TreeData(JsonWriter data, guid recordId, guid parentId) {
-			this.data = data;
-			this.recordId = recordId;
-			this.parentId = parentId;
-		}
-	}
-
-	private void writeTreeData(Select cursor, JsonWriter writer) {
-		Collection<TreeData> roots = new ArrayList<TreeData>();
-		Map<guid, Collection<TreeData>> map = new LinkedHashMap<guid, Collection<TreeData>>();
-
-		writer.startArray(Json.data);
-
-		int records = 0;
-		while(cursor.next()) {
-			if(records > 1000)
-				throw new RuntimeException("Too many records fetched for a json client. Use limit parameter.");
-
-			records++;
-
-			JsonWriter data = new JsonWriter();
-			data.startObject();
-
-			guid parentId = null;
-			guid recordId = null;
-
-			for(Field field : getSelectFields()) {
-				field.writeData(data);
-				if(field == parentKey)
-					parentId = field.guid();
-				if(field == primaryKey)
-					recordId = field.guid();
-			}
-
-			// finish object we'll call later;
-
-			TreeData treeData = new TreeData(data, recordId, parentId);
-			Collection<TreeData> children = new ArrayList<TreeData>();
-			map.put(recordId, children);
-			if (map.containsKey(parentId))
-				map.get(parentId).add(treeData);
-			else
-				roots.add(treeData);
-
-			Iterator<TreeData> it = roots.iterator();
-			while (it.hasNext()) {
-				TreeData root = it.next();
-				if (root.parentId.equals(recordId)) {
-					it.remove();
-					children.add(root);
-				}
-			}
-		}
-
-		writeTreeData(writer, roots, map, 0);
-
-		writer.finishArray();
-	}
-
-	private void writeTreeData(JsonWriter writer, Collection<TreeData> records, Map<guid, Collection<TreeData>> childrenMap, int level) {
-		for(TreeData record : records) {
-			Collection<TreeData> children = childrenMap.get(record.recordId);
-			JsonWriter data = record.data;
-			data.writeProperty(Json.hasChildren, !children.isEmpty());
-			data.writeProperty(Json.level, level);
-			data.finishObject(); // start object was called in writeTreeData(Select, JsonWriter)
-			writer.write(data);
-
-			if(!children.isEmpty())
-				writeTreeData(writer, children, childrenMap, level + 1);
-		}
 	}
 
 	private void writeTotals(JsonWriter writer) throws SQLException {

@@ -31,10 +31,10 @@ Z8.define('Z8.query.Store', {
 			config.parentKey = parentKey;
 			config.lockKey = lockKey;
 			config.periodKey = periodKey;
-			config.link = !isListbox ? link.name : null;
+			config.link = isCombobox ? link.name : null;
 			config.query = query.name;
 			config.totals = isListbox ? query.totals : false;
-			config.sort = isListbox || isCombobox ? query.sort : null;
+			config.sort = (isListbox || isCombobox) ? query.sort : null;
 			config.values = field.values;
 			config.access = query.access;
 
