@@ -549,12 +549,14 @@ Z8.define('Z8.form.field.Geometry', {
 	},
 
 	cancelEdit: function(toggleSelect) {
+		var wasModifying = this.isModifying();
+
 		this.resetEdit();
 
 		if(!this.isEditing)
 			return;
 
-		if(this.isModifying())
+		if(wasModifying)
 			this.restoreGeometry(this.editingFeature);
 
 		this.isEditing = false;

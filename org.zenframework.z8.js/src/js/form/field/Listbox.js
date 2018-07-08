@@ -651,8 +651,8 @@ Z8.define('Z8.form.field.Listbox', {
 		return record;
 	},
 
-	createRecords: function(records) {
-		var callback = function(records, success) {
+	createRecords: function(records, callback) {
+		var batchCallback = function(records, success) {
 			if(success) {
 				this.reloadRecord();
 
@@ -672,10 +672,12 @@ Z8.define('Z8.form.field.Listbox', {
 				else
 					this.selector.setBusy(false);
 			}
+
+			Z8.callback(callback, records, success);
 		};
 
 		var batch = new Z8.data.Batch({ model: this.getModel() });
-		batch.create( records, { fn: callback, scope: this }, { values: this.getValues() });
+		batch.create( records, { fn: batchCallback, scope: this }, { values: this.getValues() });
 	},
 
 	closeSelector: function() {

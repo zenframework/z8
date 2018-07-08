@@ -23,6 +23,8 @@ Z8.define('Z8.query.Store', {
 			var fields = query.fields || query.columns || [field];
 			if(isListbox && link != null)
 				fields = fields.concat([link]);
+			if(field.fields != null)
+				fields = fields.concat(field.fields);
 
 			config.request = query.id;
 			config.fields = fields;

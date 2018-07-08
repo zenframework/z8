@@ -68,6 +68,10 @@ Z8.define('Z8.form.Tabs', {
 
 		DOM.addCls(this.activeTab, 'inactive');
 		this.activeTab = activeTab;
+
+		if(activeTab == null)
+			return;
+
 		DOM.removeCls(activeTab, 'inactive');
 
 		this.activateLock = true;

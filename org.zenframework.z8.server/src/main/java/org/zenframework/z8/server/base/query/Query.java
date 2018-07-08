@@ -1008,6 +1008,9 @@ public class Query extends OBJECT {
 	}
 
 	public Collection<ILink> getPath(Query query) {
+		if(query == null)
+			return null;
+
 		MemberSearch result = findMember(query.id());
 
 		if(result == null || !(result.member instanceof Query))

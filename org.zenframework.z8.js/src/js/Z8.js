@@ -178,7 +178,7 @@ var Z8 = {
 	},
 
 	isEmpty: function(value) {
-		if(value == null || value === '')
+		if(value === undefined || value === null || value === '')
 			return true;
 		if(Array.isArray(value))
 			return value.length == 0;

@@ -1421,7 +1421,7 @@ Z8.define('Z8.list.List', {
 			return true;
 		}
 
-		var value = record.get(editor.name) || null;
+		var value = record.get(editor.name);
 		var displayValue = record.get(editor.displayName);
 
 		editor.initValue(value, displayValue);
