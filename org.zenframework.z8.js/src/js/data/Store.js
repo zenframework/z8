@@ -146,6 +146,10 @@ Z8.define('Z8.data.Store', {
 		return this.getModel().prototype.getFilesProperty();
 	},
 
+	getIconProperty: function() {
+		return this.getModel().prototype.getIconProperty();
+	},
+
 	getValueForFields: function() {
 		return this.getModel().prototype.getValueFor();
 	},

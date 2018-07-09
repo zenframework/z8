@@ -20,6 +20,10 @@ Z8.define('Z8.application.form.Navigator', {
 		this.initPeriod(User.getPeriod(this.registryEntry()));
 	},
 
+	getStore: function() {
+		return this.store;
+	},
+
 	registryEntry: function() {
 		return this.store.getModelName();
 	},
