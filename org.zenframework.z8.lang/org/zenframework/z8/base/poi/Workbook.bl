@@ -1,0 +1,9 @@
+import org.zenframework.z8.lang.Object;
+
+[native "org.zenframework.z8.server.base.poi.Workbook"]
+public class Workbook extends Object {
+	public void operator=(file file);
+
+	public Sheet getSheet(int index);
+	public void close();
+}

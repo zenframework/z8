@@ -1,0 +1,8 @@
+import org.zenframework.z8.base.poi.Row;
+import org.zenframework.z8.lang.Object;
+
+[native "org.zenframework.z8.server.base.poi.Sheet"]
+public class Sheet extends Object {
+	public int getRowCount();
+	public Row getRow(int index);
+}

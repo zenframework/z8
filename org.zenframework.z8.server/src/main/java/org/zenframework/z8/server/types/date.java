@@ -368,8 +368,9 @@ public class date extends primary {
 
 		long offsetHours = Math.abs(offset / datespan.TicksPerHour);
 		long offsetMinutes = Math.abs((offset % datespan.TicksPerHour) / datespan.TicksPerMinute);
+/*
 		long offsetSeconds = Math.abs((offset % datespan.TicksPerHour) % datespan.TicksPerMinute / datespan.TicksPerSecond);
-
+*/
 		String result = "" + (year < 10 ? "000" : (year < 100 ? "00" : (year < 1000 ? "0" : ""))) + year +
 				"-" + (month < 10 ? "0" + month : month) + 
 				"-" + (day < 10 ? "0" + day : day) + 
@@ -382,10 +383,10 @@ public class date extends primary {
 		result += zoneSeparator + (offset < 0 ? "-" : "+") +
 			(offsetHours < 10 ? "0" + offsetHours : offsetHours) + ":" +
 			(offsetMinutes < 10 ? "0" + offsetMinutes : offsetMinutes);
-
+/*
 		if(offsetSeconds != 0)
 			result += ":" + (offsetSeconds < 10 ? "0" + offsetSeconds : offsetSeconds);
-
+*/
 		return result;
 	}
 

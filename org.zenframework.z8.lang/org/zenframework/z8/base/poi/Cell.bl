@@ -1,0 +1,8 @@
+import org.zenframework.z8.lang.Object;
+[native "org.zenframework.z8.server.base.poi.Cell"]
+
+public class Cell extends Object {
+	public string getString();
+	public decimal getDecimal();
+	public int getInt();
+}

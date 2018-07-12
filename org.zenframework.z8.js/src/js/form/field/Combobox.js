@@ -134,13 +134,15 @@ Z8.define('Z8.form.field.Combobox', {
 	formatValue: function(value) {
 		var field = this.field || {};
 
+		if(String.isString(value))
+			return value;
+
 		switch(field.type) {
 		case Type.Date:
 		case Type.Datetime:
-			value = String.isString(value) ? Parser.datetime(value) : value;
 			return value != null ? Format.date(value, field.format) : '';
 		case Type.Boolean:
-			return Parser.boolean(value) ? 'да' : 'нет';
+			return value ? 'да' : 'нет';
 		case Type.Integer:
 			return value !== null ? Format.integer(value, field.format) : '';
 		case Type.Float:
