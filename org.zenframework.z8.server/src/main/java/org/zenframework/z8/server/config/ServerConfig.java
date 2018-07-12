@@ -3,12 +3,14 @@ package org.zenframework.z8.server.config;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.Collection;
 import java.util.Properties;
 
 import org.zenframework.z8.server.engine.Database;
 import org.zenframework.z8.server.engine.IAuthorityCenter;
 import org.zenframework.z8.server.engine.IInterconnectionCenter;
 import org.zenframework.z8.server.engine.Rmi;
+import org.zenframework.z8.server.utils.StringUtils;
 
 public class ServerConfig extends Properties {
 
@@ -17,42 +19,48 @@ public class ServerConfig extends Properties {
 
 	static private ServerConfig instance;
 
-	static public String DefaultInstanceId = "Z8 Server";
-	static public String DefaultConfigurationFileName = "project.xml";
+	static final public String DefaultInstanceId = "Z8 Server";
+	static final public String DefaultConfigurationFileName = "project.xml";
 
-	static private String InstanceId = "z8.instance.id";
+	static final private String InstanceId = "z8.instance.id";
 
-	static private String ApplicationServerHost = "application.server.host";
-	static private String ApplicationServerPort = "application.server.port";
+	static final private String ApplicationServerHost = "application.server.host";
+	static final private String ApplicationServerPort = "application.server.port";
 
-	static private String AuthorityCenterHost = "authority.center.host";
-	static private String AuthorityCenterPort = "authority.center.port";
-	static private String AuthorityCenterSessionTimeout = "authority.center.session.timeout";
+	static final private String AuthorityCenterHost = "authority.center.host";
+	static final private String AuthorityCenterPort = "authority.center.port";
+	static final private String AuthorityCenterSessionTimeout = "authority.center.session.timeout";
 
-	static private String InterconnectionCenterHost = "interconnection.center.host";
-	static private String InterconnectionCenterPort = "interconnection.center.port";
+	static final private String InterconnectionCenterHost = "interconnection.center.host";
+	static final private String InterconnectionCenterPort = "interconnection.center.port";
 
-	static private String WebServerStartApplicationServer = "web.server.start.application.server";
-	static private String WebServerStartAuthorityCenter = "web.server.start.authority.center";
-	static private String WebServerStartInterconnectionCenter = "web.server.start.interconnection.center";
+	static final private String WebServerStartApplicationServer = "web.server.start.application.server";
+	static final private String WebServerStartAuthorityCenter = "web.server.start.authority.center";
+	static final private String WebServerStartInterconnectionCenter = "web.server.start.interconnection.center";
 
-	static private String WebServerUploadMax = "web.server.upload.max";
-	static private String WebClientDownloadMax = "web.client.download.max";
+	static final private String WebServerUploadMax = "web.server.upload.max";
+	static final private String WebClientDownloadMax = "web.client.download.max";
 
-	static private String SchedulerEnabled = "scheduler.enabled";
-	static private String MaintenenceJobRepeat = "maintenance.job.repeat";
-	static private String TransportJobRepeat = "transport.job.repeat";
-	static private String TransportJobTreads = "transport.job.treads";
+	static final private String SchedulerEnabled = "scheduler.enabled";
+	static final private String MaintenenceJobRepeat = "maintenance.job.repeat";
+	static final private String TransportJobRepeat = "transport.job.repeat";
+	static final private String TransportJobTreads = "transport.job.treads";
 
-	static private String TraceSql = "trace.sql";
-	static private String TraceSqlConnections = "trace.sql.connections";
+	static final private String TraceSql = "trace.sql";
+	static final private String TraceSqlConnections = "trace.sql.connections";
 
-	static public String TextExtensions = "file.converter.text";
-	static public String ImageExtensions = "file.converter.image";
-	static public String EmailExtensions = "file.converter.email";
-	static public String OfficeExtensions = "file.converter.office";
+	static final public String TextExtensions = "file.converter.text";
+	static final public String ImageExtensions = "file.converter.image";
+	static final public String EmailExtensions = "file.converter.email";
+	static final public String OfficeExtensions = "file.converter.office";
 
-	static private String OfficeHome = "office.home";
+	static final private String OfficeHome = "office.home";
+
+	static final private String ClientHashPassword = "client.hashPassword";
+
+	static final private String LdapUrl = "ldap.url";
+	static final private String LdapDefaultDomain = "ldap.default.domain";
+	static final private String LdapIgnoreUsers = "ldap.ignore.users";
 
 	static private File workingPath;
 
@@ -86,6 +94,12 @@ public class ServerConfig extends Properties {
 	static private boolean traceSqlConnections;
 
 	static private String officeHome;
+
+	static private boolean clientHashPassword;
+
+	static private String ldapUrl;
+	static private String ldapDefaultDomain;
+	static private Collection<String> ldapIgnoreUsers;
 
 	static private Database database;
 
@@ -143,6 +157,12 @@ public class ServerConfig extends Properties {
 		officeExtensions = getProperty(OfficeExtensions, new String[] { "doc", "docx", "xls", "xlsx", "ppt", "pptx", "odt", "odp", "ods", "odf", "odg", "wpd", "sxw", "sxi", "sxc", "sxd", "stw", "vsd" });
 
 		officeHome = getProperty(OfficeHome, "C:/Program Files (x86)/LibreOffice 4.0");
+
+		clientHashPassword = getProperty(ClientHashPassword, false);
+
+		ldapUrl = getProperty(LdapUrl, "ldap://localhost:389");
+		ldapDefaultDomain = getProperty(LdapDefaultDomain, "");
+		ldapIgnoreUsers = StringUtils.asList(getProperty(LdapIgnoreUsers, "Admin"), "\\,");
 
 		instance = this;
 	}
@@ -343,6 +363,22 @@ public class ServerConfig extends Properties {
 
 	static public String officeHome() {
 		return officeHome;
+	}
+
+	static public boolean clientHashPassword() {
+		return clientHashPassword;
+	}
+
+	static public String ldapUrl() {
+		return ldapUrl;
+	}
+	
+	static public String ldapDefaultDomain() {
+		return ldapDefaultDomain;
+	}
+
+	static public Collection<String> ldapIgnoreUsers() {
+		return ldapIgnoreUsers;
 	}
 
 	static public Database database() {

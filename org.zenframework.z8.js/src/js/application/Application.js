@@ -10,7 +10,8 @@ Z8.define('Z8.application.Application', {
 
 	listbox: {
 		locks: true,
-		checks: true
+		checks: true,
+		hashPassword: true
 	},
 
 	geometry: {

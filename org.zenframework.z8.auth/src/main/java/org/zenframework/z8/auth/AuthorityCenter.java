@@ -4,9 +4,19 @@ package org.zenframework.z8.auth;
 import java.io.File;
 import java.lang.management.ManagementFactory;
 import java.rmi.RemoteException;
+import java.util.Collection;
+import java.util.Hashtable;
+
+import javax.naming.AuthenticationException;
+import javax.naming.AuthenticationNotSupportedException;
+import javax.naming.Context;
+import javax.naming.NamingException;
+import javax.naming.directory.DirContext;
+import javax.naming.directory.InitialDirContext;
 
 import org.zenframework.z8.server.base.file.Folders;
 import org.zenframework.z8.server.config.ServerConfig;
+import org.zenframework.z8.server.crypto.MD5;
 import org.zenframework.z8.server.engine.HubServer;
 import org.zenframework.z8.server.engine.IApplicationServer;
 import org.zenframework.z8.server.engine.IAuthorityCenter;
@@ -29,6 +39,11 @@ public class AuthorityCenter extends HubServer implements IAuthorityCenter {
 
 	static private AuthorityCenter instance = null;
 
+	private final boolean clientHashPassword;
+	private final String ldapUrl;
+	private final String ldapDefaultDomain;
+	private final Collection<String> ldapIgnoreUsers;
+
 	private SessionManager sessionManager;
 
 	public static IAuthorityCenter launch(ServerConfig config) throws RemoteException {
@@ -41,6 +56,10 @@ public class AuthorityCenter extends HubServer implements IAuthorityCenter {
 
 	private AuthorityCenter() throws RemoteException {
 		super(ServerConfig.authorityCenterPort());
+		clientHashPassword = ServerConfig.clientHashPassword();
+		ldapUrl = ServerConfig.ldapUrl();
+		ldapDefaultDomain = ServerConfig.ldapDefaultDomain();
+		ldapIgnoreUsers = ServerConfig.ldapIgnoreUsers();
 	}
 
 	@Override
@@ -58,6 +77,9 @@ public class AuthorityCenter extends HubServer implements IAuthorityCenter {
 		enableTimeoutChecking(1 * datespan.TicksPerMinute);
 
 		Trace.logEvent("Authority Center JVM startup options: " + ManagementFactory.getRuntimeMXBean().getInputArguments().toString() + "\n\t" + RequestDispatcher.getMemoryUsage());
+
+		if (!ldapUrl.isEmpty())
+			Trace.logEvent("Authority Center uses LDAP: " + ldapUrl);
 	}
 
 	@Override
@@ -88,9 +110,6 @@ public class AuthorityCenter extends HubServer implements IAuthorityCenter {
 
 	@Override
 	public ISession login(String login, String password) throws RemoteException {
-		if(password == null)
-			throw new AccessDeniedException();
-
 		return login(login, password, false);
 	}
 
@@ -108,9 +127,6 @@ public class AuthorityCenter extends HubServer implements IAuthorityCenter {
 
 	@Override
 	public ISession siteLogin(String login, String password) throws RemoteException {
-		if(password == null)
-			throw new AccessDeniedException();
-
 		return login(login, password, true);
 	}
 
@@ -129,23 +145,53 @@ public class AuthorityCenter extends HubServer implements IAuthorityCenter {
 	private ISession login(String login, String password, boolean site) throws RemoteException {
 		IServerInfo serverInfo = findServer((String)null);
 
-		if(serverInfo == null || password == null)
+		if(serverInfo == null)
 			throw new AccessDeniedException();
 
 		IApplicationServer loginServer = serverInfo.getServer();
 
 		ISession session = null;
+		
+		if(password == null)
+			password = "";
 
 		if(site) {
 			IAccount account = loginServer.account(login, password);
 			session = sessionManager.create(account);
 		} else {
-			IUser user = loginServer.user(login, password);
+			if (!ldapUrl.isEmpty() && !ldapIgnoreUsers.contains(login)) {
+				checkLdapLogin(login, password);
+				password = "";
+			}
+			IUser user = loginServer.user(login, clientHashPassword ? password : MD5.hex(password));
 			session = sessionManager.create(user);
 		}
 
 		session.setServerInfo(serverInfo);
 		return session;
+	}
+
+	private void checkLdapLogin(String login, String password) {
+		Hashtable<String, String> environment = new Hashtable<String, String>();
+		environment.put(Context.INITIAL_CONTEXT_FACTORY, "com.sun.jndi.ldap.LdapCtxFactory");
+		environment.put(Context.PROVIDER_URL, ldapUrl);
+		environment.put(Context.SECURITY_AUTHENTICATION, "simple");
+		environment.put(Context.SECURITY_PRINCIPAL, (!login.contains("\\") && !ldapDefaultDomain.isEmpty()
+				? ldapDefaultDomain + '\\' : "") + login);
+		environment.put(Context.SECURITY_CREDENTIALS, password);
+		try {
+			DirContext context = new InitialDirContext(environment);
+			context.close();
+		} catch (AuthenticationNotSupportedException e) {
+			Trace.logError("The authentication method is not supported by the server", e);
+			throw new AccessDeniedException();
+		} catch (AuthenticationException e) {
+			Trace.logError("Incorrect password or username", e);
+			throw new AccessDeniedException();
+		} catch (NamingException e) {
+			Trace.logError("Error when trying to create the context", e);
+			throw new AccessDeniedException();
+		}
 	}
 
 	@Override

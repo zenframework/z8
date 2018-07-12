@@ -75,9 +75,10 @@ Z8.define('Z8.application.viewport.Login', {
 				this.loginField.focus();
 		}
 
+		var password = this.passwordField.getValue() || '';
 		var parameters = {
 			login: this.loginField.getValue(), 
-			password: MD5.hex(this.passwordField.getValue() || ''),
+			password: Application.hashPassword ? MD5.hex(password) : password,
 			experimental: true
 		};
 

@@ -64,8 +64,8 @@ public abstract class Adapter {
 			String sessionId = parameters.get(Json.session);
 			String serverId = parameters.get(Json.server);
 
-			if(login != null && password != null) {
-				if(login.isEmpty() || login.length() > IAuthorityCenter.MaxLoginLength || password.length() > IAuthorityCenter.MaxPasswordLength)
+			if(login != null) {
+				if(login.isEmpty() || login.length() > IAuthorityCenter.MaxLoginLength || password != null && password.length() > IAuthorityCenter.MaxPasswordLength)
 					throw new AccessDeniedException();
 				session = login(login, password);
 			} else
@@ -98,6 +98,7 @@ public abstract class Adapter {
 		return sessionId != null ? ServerConfig.authorityCenter().server(sessionId, serverId) : null;
 	}
 
+	@SuppressWarnings("unchecked")
 	private void parseRequest(HttpServletRequest request, Map<String, String> parameters, List<file> files) throws IOException {
 		if(ServletFileUpload.isMultipartContent(request)) {
 			List<FileItem> fileItems = parseMultipartRequest(request);
