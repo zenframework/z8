@@ -186,7 +186,6 @@ public class AuthorityCenter extends HubServer implements IAuthorityCenter {
 			Trace.logError("The authentication method is not supported by the server", e);
 			throw new AccessDeniedException();
 		} catch (AuthenticationException e) {
-			Trace.logError("Incorrect password or username", e);
 			throw new AccessDeniedException();
 		} catch (NamingException e) {
 			Trace.logError("Error when trying to create the context", e);
