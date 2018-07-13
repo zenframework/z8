@@ -158,7 +158,7 @@ public class ServerConfig extends Properties {
 
 		officeHome = getProperty(OfficeHome, "C:/Program Files (x86)/LibreOffice 4.0");
 
-		clientHashPassword = getProperty(ClientHashPassword, false);
+		clientHashPassword = getProperty(ClientHashPassword, true);
 
 		ldapUrl = getProperty(LdapUrl, "ldap://localhost:389");
 		ldapDefaultDomain = getProperty(LdapDefaultDomain, "");
