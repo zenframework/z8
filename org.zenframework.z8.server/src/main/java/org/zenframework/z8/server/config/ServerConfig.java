@@ -160,7 +160,7 @@ public class ServerConfig extends Properties {
 
 		clientHashPassword = getProperty(ClientHashPassword, true);
 
-		ldapUrl = getProperty(LdapUrl, "ldap://localhost:389");
+		ldapUrl = getProperty(LdapUrl, "");
 		ldapDefaultDomain = getProperty(LdapDefaultDomain, "");
 		ldapIgnoreUsers = StringUtils.asList(getProperty(LdapIgnoreUsers, "Admin"), "\\,");
 
