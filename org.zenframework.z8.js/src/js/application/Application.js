@@ -5,15 +5,16 @@ Z8.define('Z8.application.Application', {
 	name: 'Revolt',
 	title: 'Revolt software',
 
+	hashPassword: true,
+
 	viewportCls: null,
 	userCls: null,
 
 	listbox: {
 		locks: true,
 		checks: true,
+		collapsed: true
 	},
-
-	hashPassword: true,
 
 	geometry: {
 		tiles: { url: '', serverType: 'geoserver', params: {} },
@@ -73,3 +74,4 @@ Z8.define('Z8.application.Application', {
 var Application = new Z8.application.Application();
 
 DOM.onReady(Application.login, Application);
+

@@ -642,7 +642,7 @@ Z8.define('Z8.list.List', {
 	},
 
 	createItem: function(record) {
-		var config = { list: this, record: record, name: this.name || 'id', icon: this.icons ? '' : null, useENTER: this.useENTER };
+		var config = { list: this, record: record, name: this.name || 'id', icon: this.icons ? '' : null, collapsed: Application.listbox.collapsed, useENTER: this.useENTER };
 		return this.itemType != null ? Z8.create(this.itemType, config) : new  Z8.list.Item(config); 
 	},
 

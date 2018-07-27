@@ -98,7 +98,6 @@ public abstract class Adapter {
 		return sessionId != null ? ServerConfig.authorityCenter().server(sessionId, serverId) : null;
 	}
 
-	@SuppressWarnings("unchecked")
 	private void parseRequest(HttpServletRequest request, Map<String, String> parameters, List<file> files) throws IOException {
 		if(ServletFileUpload.isMultipartContent(request)) {
 			List<FileItem> fileItems = parseMultipartRequest(request);

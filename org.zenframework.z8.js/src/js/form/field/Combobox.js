@@ -173,11 +173,16 @@ Z8.define('Z8.form.field.Combobox', {
 		this.callParent(value, displayValue);
 	},
 
+	setRecord: function(record) {
+		this.callParent(record);
+		this.updateWhere(this.dependsOnValue);
+	},
+
 	isEqual: function(v1, v2) {
 		return (Z8.isEmpty(v1) || v1 == guid.Null) && (Z8.isEmpty(v2) || v2 == guid.Null) || this.callParent(v1, v2);
 	},
 
-	updateDependenciesByValue: function(value, force) {
+	updateDependenciesByValue: function(value) {
 		var store = this.getStore();
 		if(store == null || this.dependencies == null)
 			return;

@@ -79,7 +79,10 @@ Z8.define('Z8.application.viewport.Viewport', {
 			this.add(sourceCode);
 		}
 
-		this.openMenu();
+		if(Application.startupForm == null)
+			this.openMenu();
+		else
+			this.open(Application.startupForm, true);
 
 		DOM.on(menuToggle, 'mouseDown', this.onMenuToggleMouseDown, this);
 		DOM.on(document.body, 'keyDown', this.onKeyDown, this);

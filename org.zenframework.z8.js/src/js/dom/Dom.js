@@ -155,8 +155,11 @@ Z8.define('Z8.dom.Dom', {
 
 		remove: function(dom, delay) {
 			if((dom = DOM.get(dom)) == null)
-				return null;
+				return;
 
+			if(dom.parentElement == null)
+				return;
+	
 			if(delay != null) {
 				var remove = function(dom) {
 					dom.parentElement.removeChild(dom);
