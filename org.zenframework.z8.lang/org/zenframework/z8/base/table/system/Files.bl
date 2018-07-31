@@ -9,4 +9,6 @@ class Files extends Table {
 	[displayName "Путь к файлу в кэше"]
 	public StringField path;
 	path.length = 512;
+	
+	public void saveTo(string rootPath, sql_bool where);
 }

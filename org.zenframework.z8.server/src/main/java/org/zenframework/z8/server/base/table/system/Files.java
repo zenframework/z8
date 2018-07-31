@@ -20,6 +20,8 @@ import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.types.file;
 import org.zenframework.z8.server.types.guid;
 import org.zenframework.z8.server.types.integer;
+import org.zenframework.z8.server.types.string;
+import org.zenframework.z8.server.types.sql.sql_bool;
 import org.zenframework.z8.server.utils.IOUtils;
 
 public class Files extends Table {
@@ -135,7 +137,11 @@ public class Files extends Table {
 	}
 
 	public static file get(file file) throws IOException {
-		File path = new File(Folders.Base, file.path.get());
+		return get(file, Folders.Base);
+	}
+	
+	public static file get(file file, File base) throws IOException {
+		File path = new File(base, file.path.get());
 
 		if(!path.exists()) {
 			InputStream inputStream = getInputStream(file);
@@ -150,5 +156,24 @@ public class Files extends Table {
 		file.size = new integer(path.length());
 
 		return file;
+	}
+	
+	public void z8_saveTo(string rootPath, sql_bool where) {
+		Field name = this.name.get();
+		Field path = this.path.get();
+		Collection<Field> fields = Arrays.asList(name, path);
+		
+		read(fields, where);
+		File base = new File(rootPath.get());
+		
+		while(next()) {
+			file f = new file(recordId(), name.string().get(), null, path.string().get());
+			try {
+				get(f, base);
+			} catch (IOException e) {
+				throw new RuntimeException("Can't save file \"" + f.path.get() + "\" to \"" + base.getAbsolutePath() + "\"");
+			}
+		}
+		
 	}
 }
