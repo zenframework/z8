@@ -60,7 +60,7 @@ Z8.define('Z8.form.field.Control', {
 				cn.push(tools.htmlMarkup());
 			}
 
-			var style = label.width != null ? 'min-width:' + label.width + 'px;width:' + label.width + 'px;' : '';
+			var style = label.width != null ? 'min-width:' + label.width + ';width:' + label.width + ';' : '';
 			label = { tag: 'span', name: 'label', cls: this.getLabelCls().join(' '), title: title || '', style: style, cn: cn };
 
 			align == 'right' ? controlMarkup.add(label) : controlMarkup.insert(label, 0);

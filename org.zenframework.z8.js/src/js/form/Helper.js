@@ -30,13 +30,14 @@ Z8.define('Z8.form.Helper', {
 			var cls = Application.getSubclass(field.ui);
 
 			if(field.isCombobox) {
+				var link = field.link;
 				config.store = this.storeConfig(field);
-				config.displayName = field.name;
+				config.displayName = link == null ? field.displayName || field.name : field.name;
 				config.fields = field;
-				config.name = field.link.name;
+				config.name = link != null ? link.name : field.name;
 				config.checks = false;
 				config.pagerMode = 'visible';
-				return cls != null ? Z8.create(cls, config) : new Z8.form.field.Combobox(config);
+				return cls != null ? Z8.create(cls, config) : (field.isSearch ? new Z8.form.field.SearchCombobox(config) : new Z8.form.field.Combobox(config));
 			}
 
 			if(field.isListbox) {

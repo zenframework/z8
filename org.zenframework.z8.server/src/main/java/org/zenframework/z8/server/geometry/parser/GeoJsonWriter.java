@@ -70,18 +70,26 @@ public class GeoJsonWriter {
 		writer.write(position.y());
 	}
 
-	private void writePoint(geometry geometry) {
-		writer.startArray(GeoJson.Coordinates);
-		writePosition(geometry);
-		writer.finishArray();
-	}
-
 	private void writePoints(Collection<geometry> positions) {
 		for(geometry position :  positions) {
 			writer.startArray();
 			writePosition(position);
 			writer.finishArray();
 		}
+	}
+
+	private void writePolygonPoints(geometry polygon) {
+		for(geometry ring : polygon.points()) {
+			writer.startArray();
+			writePoints(ring.points());
+			writer.finishArray();
+		}
+	}
+
+	private void writePoint(geometry geometry) {
+		writer.startArray(GeoJson.Coordinates);
+		writePosition(geometry);
+		writer.finishArray();
 	}
 
 	private void writeLine(geometry geometry) {
@@ -92,13 +100,7 @@ public class GeoJsonWriter {
 
 	private void writePolygon(geometry geometry) {
 		writer.startArray(GeoJson.Coordinates);
-
-		for(geometry ring : geometry.points()) {
-			writer.startArray();
-			writePoints(ring.points());
-			writer.finishArray();
-		}
-
+		writePolygonPoints(geometry);
 		writer.finishArray();
 	}
 
@@ -111,8 +113,11 @@ public class GeoJsonWriter {
 	private void writeMultiLine(geometry geometry) {
 		writer.startArray(GeoJson.Coordinates);
 
-		for(geometry line : geometry.points())
+		for(geometry line : geometry.points()) {
+			writer.startArray();
 			writePoints(line.points());
+			writer.finishArray();
+		}
 
 		writer.finishArray();
 	}
@@ -120,8 +125,11 @@ public class GeoJsonWriter {
 	private void writeMultiPolygon(geometry geometry) {
 		writer.startArray(GeoJson.Coordinates);
 
-		for(geometry line : geometry.points())
-			writePoints(line.points());
+		for(geometry polygon : geometry.points()) {
+			writer.startArray();
+			writePolygonPoints(polygon);
+			writer.finishArray();
+		}
 
 		writer.finishArray();
 	}

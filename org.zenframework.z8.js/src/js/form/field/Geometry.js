@@ -215,7 +215,7 @@ Z8.define('Z8.form.field.Geometry', {
 		var view = this.view = new ol.View({ center: [0, 0], zoom : this.zoom, minZoom: this.minZoom, maxZoom: this.maxZoom, projection: projection });
 		view.on('change:resolution', this.onResolutionChange, this);
 
-		var mapContainer = this.mapContainer = this.selectNode('.control');
+		var mapContainer = this.mapContainer = this.selectNode('.control.geometry');
 		var map = this.map = new ol.Map({ layers: layers, target: mapContainer, view: view });
 		map.on('moveend', this.onMove, this);
 

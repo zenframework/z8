@@ -9,8 +9,8 @@ Z8.define('Z8.application.viewport.Login', {
 		this.cls = DOM.parseCls(this.cls).pushIf('login', 'air', 'display-none');
 
 		var header = { cls: 'header', html: 'Авторизация' };
-		var login = this.loginField = new Z8.form.field.Text({ label: { text: 'Логин', icon: 'fa-user', width: '5.71428571em', align: 'left' }, placeholder: 'Логин', value: 'Admin' });
-		var password = this.passwordField = new Z8.form.field.Text({ label: { text: 'Пароль',  icon: 'fa-key', align: 'left', width: '5.71428571em' }, placeholder: 'Пароль', password: true });
+		var login = this.loginField = new Z8.form.field.Text({ label: { text: 'Логин', icon: 'fa-user', width: '6.42857143em', align: 'left' }, placeholder: 'Логин', value: 'Admin' });
+		var password = this.passwordField = new Z8.form.field.Text({ label: { text: 'Пароль',  icon: 'fa-key', align: 'left', width: '6.42857143em' }, placeholder: 'Пароль', password: true });
 		var loginButton = this.loginButton = new Z8.button.Button({ cls: 'btn-tool', icon: 'fa-check', handler: this.login, scope: this });
 
 		this.controls = [header, login, password, loginButton];
