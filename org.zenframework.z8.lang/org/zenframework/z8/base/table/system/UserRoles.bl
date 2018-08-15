@@ -1,0 +1,15 @@
+import org.zenframework.z8.base.table.Table;
+import org.zenframework.z8.base.table.value.Link;
+
+[name "SystemUserRoles"]
+[displayName "Роли пользователей"]
+[native "org.zenframework.z8.server.base.table.system.UserRoles"]
+public class UserRoles extends Table {
+	
+	public Users users;
+	public Roles roles;
+	
+	public Link user = users;
+	public Link role = roles;
+
+}
