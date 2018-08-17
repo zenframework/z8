@@ -3,6 +3,7 @@ package org.zenframework.z8.server.utils;
 import java.io.IOException;
 import java.io.StringReader;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Properties;
 
@@ -194,4 +195,15 @@ public class StringUtils {
 		}
 		return sb.toString();
 	}
+	
+	public static boolean containsIgnoreCase(Collection<String> c, String str) {
+		if (str == null)
+			return c.contains(str);
+		str = str.toLowerCase();
+		for (String e : c)
+			if (e != null && e.toLowerCase().equals(str))
+				return true;
+		return false;
+	}
+
 }

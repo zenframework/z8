@@ -31,6 +31,7 @@ import org.zenframework.z8.server.security.IAccount;
 import org.zenframework.z8.server.security.IUser;
 import org.zenframework.z8.server.types.datespan;
 import org.zenframework.z8.server.types.guid;
+import org.zenframework.z8.server.utils.StringUtils;
 
 public class AuthorityCenter extends HubServer implements IAuthorityCenter {
 	private static final String serversCache = "authority.center.cache";
@@ -159,7 +160,7 @@ public class AuthorityCenter extends HubServer implements IAuthorityCenter {
 			IAccount account = loginServer.account(login, password);
 			session = sessionManager.create(account);
 		} else {
-			if (!ldapUrl.isEmpty() && !ldapIgnoreUsers.contains(login)) {
+			if (!ldapUrl.isEmpty() && !StringUtils.containsIgnoreCase(ldapIgnoreUsers, login)) {
 				checkLdapLogin(login, password);
 				password = "";
 			}
