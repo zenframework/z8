@@ -39,6 +39,8 @@ public final class geometry extends primary {
 	public decimal width();
 	public decimal height();
 
+	public string toGeoJson();
+
 	public operator string();
 	public operator sql_geometry();
 

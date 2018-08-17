@@ -11,6 +11,7 @@ import org.zenframework.z8.server.db.FieldType;
 import org.zenframework.z8.server.geometry.parser.BinaryReader;
 import org.zenframework.z8.server.geometry.parser.BinaryWriter;
 import org.zenframework.z8.server.geometry.parser.GeoJsonReader;
+import org.zenframework.z8.server.geometry.parser.GeoJsonWriter;
 import org.zenframework.z8.server.runtime.RCollection;
 import org.zenframework.z8.server.types.sql.sql_geometry;
 
@@ -321,6 +322,10 @@ public final class geometry extends primary {
 		}
 	}
 
+	public String toGeoJson() {
+		return GeoJsonWriter.write(this);
+	}
+
 	static public double[][] unionExtents(double[][] extent1, double[][] extent2) {
 		return new double[][] {
 			new double[] { Math.min(extent1[0][0], extent2[0][0]), Math.min(extent1[0][1], extent2[0][1]) },
@@ -346,6 +351,10 @@ public final class geometry extends primary {
 
 	public geometry z8_center() {
 		return center();
+	}
+
+	public string z8_toGeoJson() {
+		return new string(toGeoJson());
 	}
 
 	@SuppressWarnings("rawtypes")
