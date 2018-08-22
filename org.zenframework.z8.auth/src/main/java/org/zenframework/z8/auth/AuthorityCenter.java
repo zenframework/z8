@@ -173,6 +173,8 @@ public class AuthorityCenter extends HubServer implements IAuthorityCenter {
 	}
 
 	private void checkLdapLogin(String login, String password) {
+		if (password.isEmpty())
+			throw new AccessDeniedException();
 		Hashtable<String, String> environment = new Hashtable<String, String>();
 		environment.put(Context.INITIAL_CONTEXT_FACTORY, "com.sun.jndi.ldap.LdapCtxFactory");
 		environment.put(Context.PROVIDER_URL, ldapUrl);
