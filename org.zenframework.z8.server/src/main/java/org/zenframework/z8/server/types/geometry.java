@@ -406,6 +406,11 @@ public final class geometry extends primary {
 	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
+	static public geometry z8_multiLine(RCollection lines) {
+		return new geometry(lines, multiLine);
+	}
+
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	static public geometry z8_collection(RCollection geometries) {
 		return new geometry(geometries, collection);
 	}

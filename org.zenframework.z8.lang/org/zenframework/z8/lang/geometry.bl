@@ -50,6 +50,7 @@ public final class geometry extends primary {
 	static public geometry none();
 	static public geometry point(decimal x, decimal y);
 	static public geometry line(geometry[] points);
+	static public geometry multiLine(geometry[] lines);
 	static public geometry collection(geometry[] geometries);
 
 	static public geometry pointOnLine(geometry line, decimal distance);
