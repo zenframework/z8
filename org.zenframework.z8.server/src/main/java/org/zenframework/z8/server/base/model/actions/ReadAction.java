@@ -194,8 +194,10 @@ public class ReadAction extends Action {
 
 				if(contextRoot != null)
 					addFilter(contextRoot.where());
-			} else
+			} else {
 				addFilter(query.where());
+				addFilter(query.having());
+			}
 
 			collectFilters();
 

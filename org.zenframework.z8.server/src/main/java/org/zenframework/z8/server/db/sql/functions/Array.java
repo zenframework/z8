@@ -30,7 +30,7 @@ public class Array extends SqlToken {
             str.append("collect");
             break;
         case Postgres:
-            str.append("array_agg");
+            str.append("json_agg");
             break;
         default:
             throw new UnknownDatabaseException();
