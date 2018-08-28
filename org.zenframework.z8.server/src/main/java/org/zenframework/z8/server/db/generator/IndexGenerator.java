@@ -33,7 +33,7 @@ class IndexGenerator {
 		Database database = connection.database();
 		DatabaseVendor vendor = database.vendor();
 
-		String sql = "create " + (unique ? "unique " : "") + "index " + vendor.quote((unique ? "Unq" : "Idx") + index + table.name()) + " " + "on " + database.tableName(table.name()) + " (" + formatIndexField(vendor) + ")";
+		String sql = "create " + (unique ? "unique " : "") + "index " + vendor.quote((unique ? "Unq" : "Idx") + index + table.name()) + " " + "on " + database.tableName(table.name()) + " " + formatIndexField(vendor);
 
 		Statement.executeUpdate(sql);
 	}
@@ -43,11 +43,11 @@ class IndexGenerator {
 
 		switch(field.type()) {
 		case String:
-			return new Lower(new SqlStringToken(name, FieldType.String)).format(vendor, new FormatOptions());
+			return "(" + new Lower(new SqlStringToken(name, FieldType.String)).format(vendor, new FormatOptions()) + ")";
 		case Geometry:
-			return "using gist " + name;
+			return "using gist (" + name + ")";
 		default:
-			return name;
+			return "(" + name  + ")";
 		}
 	}
 

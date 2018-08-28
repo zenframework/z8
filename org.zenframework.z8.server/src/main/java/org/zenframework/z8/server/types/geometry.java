@@ -312,8 +312,6 @@ public final class geometry extends primary {
 			for(geometry geometry : points())
 				length += geometry.length();
 			return length;
-		case ring:
-			// TODO
 		case polygon:
 		case multiPolygon:
 			throw new IllegalArgumentException("Can't get length for shape " + shape);
