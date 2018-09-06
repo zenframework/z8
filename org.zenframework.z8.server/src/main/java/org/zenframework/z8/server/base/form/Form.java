@@ -43,9 +43,6 @@ public class Form extends Section {
 
 	@Override
 	public void writeMeta(JsonWriter writer, Query query, Query context) {
-		if(link == null && this.query == null)
-			throw new RuntimeException("Both Form.link and Form.query are null : '" + displayName() + "'");
-
 		writer.writeProperty(Json.isForm, true);
 
 		Link link = this.link != null ? this.link.get() : null; 
@@ -57,7 +54,7 @@ public class Form extends Section {
 			writer.finishObject();
 		}
 
-		super.writeMeta(writer, link != null ? link.getQuery() : this.query.get(), context);
+		super.writeMeta(writer, link != null ? link.getQuery() : this.query != null ? this.query.get() : query, context);
 
 		writer.startObject(Json.query);
 		writer.writeProperty(Json.id, this.query != null ? this.query.id() : query.id());
