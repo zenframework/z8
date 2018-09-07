@@ -175,7 +175,6 @@ public class ReadAction extends RequestAction {
 		Query query = getQuery();
 
 		Field primaryKey = query.primaryKey();
-		addNullRecordFilter(primaryKey);
 
 		Collection<guid> recordIds = config().recordIds;
 		addFilter(primaryKey, recordIds, Operation.Eq);
@@ -184,9 +183,6 @@ public class ReadAction extends RequestAction {
 			addNullRecordFilter(field);
 
 		if(recordIds == null) {
-			addFilter(query.where());
-			addGroupFilter(query.having());
-
 			collectFilters();
 
 			Collection<String> lookupFields = getLookupFields();
@@ -204,7 +200,12 @@ public class ReadAction extends RequestAction {
 
 			Period period = new Period(query.periodKey(), getPeriodParameter());
 			addFilter(period.where());
+
+			addFilter(query.where());
+			addGroupFilter(query.having());
 		}
+
+		addNullRecordFilter(primaryKey);
 	}
 
 	private boolean hasPrimaryKey() {
