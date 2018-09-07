@@ -1,0 +1,12 @@
+/*
+ * CRON expressions utilities
+ */
+
+[native "org.zenframework.z8.server.utils.Cron"]
+public class Cron {
+	
+	public static date nextDate(date date, string cronExp);
+
+	public static bool checkExp(string cronExp);
+
+}
