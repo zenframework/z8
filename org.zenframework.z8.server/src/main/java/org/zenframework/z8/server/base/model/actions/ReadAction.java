@@ -179,6 +179,20 @@ public class ReadAction extends Action {
 
 		collectUsedQueries(parameters.keyField);
 
+		Collection<Filter> filters = Filter.parse(getFilterParameter(), query);
+		for(Filter filter : filters) {
+			// if (isGrouped()) {
+			// addGroupFilter(filter.where());
+			// } else {
+			addFilter(filter.where());
+			// }
+		}
+
+		if(isGrouped())
+			addGroupFilter(getFilter1());
+		else
+			addFilter(getFilter1());
+
 		Field primaryKey = query.primaryKey();
 		addNullRecordFilter(primaryKey);
 		addFilter(primaryKey, recordId, Operation.Eq);
@@ -220,19 +234,6 @@ public class ReadAction extends Action {
 			if(lookupFields.size() != 0)
 				addLikeFilter(lookupFields, getLookupParameter());
 
-			Collection<Filter> filters = Filter.parse(getFilterParameter(), query);
-			for(Filter filter : filters) {
-				// if (isGrouped()) {
-				// addGroupFilter(filter.where());
-				// } else {
-				addFilter(filter.where());
-				// }
-			}
-
-			if(isGrouped())
-				addGroupFilter(getFilter1());
-			else
-				addFilter(getFilter1());
 		}
 	}
 
