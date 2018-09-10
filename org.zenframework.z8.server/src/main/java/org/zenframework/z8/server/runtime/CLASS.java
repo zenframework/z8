@@ -46,12 +46,14 @@ public class CLASS<TYPE extends IObject> extends OBJECT implements IClass<TYPE> 
 		return stage;
 	}
 
+	private boolean hasIndex = false;
+
 	@Override
 	public void setIndex(String index) {
-		super.setIndex(index);
-
-		if(object != null)
-			object.setIndex(index);
+		if(!hasIndex) {
+			super.setIndex(index);
+			hasIndex = true;
+		}
 	}
 
 	@Override
