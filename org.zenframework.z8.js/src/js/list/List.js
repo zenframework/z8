@@ -807,7 +807,7 @@ Z8.define('Z8.list.List', {
 		var editors = this.editors;
 		for(var i = 0, length = editors.length; i < length; i++) {
 			var editor = editors[i];
-			if(editor != null && editor.field.name == name)
+			if(editor != null && (editor.name == name || editor.displayName == name))
 				return editor;
 		}
 		return null;
