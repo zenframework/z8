@@ -11,6 +11,8 @@ Z8.define('Z8.form.field.Geometry', {
 
 	tag: 'div',
 
+	gridStep: 20,
+
 	isValid: function() {
 		return true;
 	},
@@ -571,6 +573,7 @@ Z8.define('Z8.form.field.Geometry', {
 	},
 
 	onMove: function(event) {
+		this.updateGrid();
 		this.fireEvent('move', this);
 	},
 
@@ -625,6 +628,7 @@ Z8.define('Z8.form.field.Geometry', {
 			this.zoomInTool.setEnabled(zoom < this.getMaxZoom());
 		if(this.zoomOutTool != null)
 			this.zoomOutTool.setEnabled(zoom > this.getMinZoom());
+		this.updateGrid();
 	},
 
 	toggleTool: function(tool, toggled) {
@@ -752,7 +756,6 @@ Z8.define('Z8.form.field.Geometry', {
  *  Default styling, should be defined as function(feature, zoom, resolution) to use customized styles 
 */
 	getStyle: null,
-	getGridStyle: null,
 
 	lineToPolygon: function(line, width) {
 		var coordinates = line.getCoordinates();
@@ -853,5 +856,89 @@ Z8.define('Z8.form.field.Geometry', {
 			first[1][0] = second[0][0] = x;
 			first[1][1] = second[0][1] = y;
 		}
+	},
+	
+	getGridStep: function() {
+		return this.gridStep || null;
+	},
+
+	setGridStep: function(step) {
+		this.gridStep = step;
+		this.updateGrid();
+	},
+
+	updateGrid: function() {
+		this.clearGrid();
+
+		var source = this.getGridSource();
+		var step = this.getGridStep();
+
+		if(step == null)
+			return;
+
+		var extent = this.getExtent();
+		var width = ol.extent.getWidth(extent);
+		var height = ol.extent.getHeight(extent);
+
+		var count = (width / step).round();
+
+		var inc = Math.max(count > 20 ? (count / 20).round() : 1, 1);
+
+		var left = extent[0];
+		var bottom = extent[1];
+		var right = extent[2];
+		var top = extent[3];
+
+		var x = (left / step).round() * step;
+		while(x < right) {
+			if(x >= left) {
+				var feature = new ol.Feature({ geometry: new ol.geom.LineString([[x, bottom], [x, top]]) });
+				feature.vertical = true;
+				feature.position = x;
+				source.addFeature(feature);
+			}
+			x += inc * step;
+		}
+
+		var y = (bottom / step).round() * step;
+		while(y < top) {
+			if(y >= bottom) {
+				var feature = new ol.Feature({ geometry: new ol.geom.LineString([[left, y], [right, y]]) });
+				feature.vertical = false;
+				feature.position = y;
+				source.addFeature(feature);
+			}
+			y += inc * step;
+		}
+	},
+
+	getGridStyle: function(feature, zoom, resolution) {
+		if(this.font == null)
+			this.font = DOM.getComputedStyle(this.mapContainer).font;
+
+		var extent = feature.getGeometry().getExtent();
+		var width = ol.extent.getWidth(extent);
+		var height = ol.extent.getHeight(extent);
+		var x = extent[0];
+		var y = extent[1];
+		var vertical = feature.vertical;
+		var position = feature.position;
+
+		return new ol.style.Style({
+			stroke: new ol.style.Stroke({ color: [0, 0, 0, .1], width: 1 }),
+			text: new ol.style.Text({
+				text: Format.integer(position),
+				placement: 'point',
+				overflow: true,
+				font: 'normal ' + Ems.emsToPixels(.64285714 /* 9px */ /*.78571429*/ /* 11px */) + 'px Roboto ',
+				offsetX: vertical ? 0 : (-width / (2 * resolution) + 5),
+				offsetY: vertical ? (height / (2 * resolution) - 5) : 0,
+				textAlign: vertical ? 'center' : 'end',
+				textBaseline: 'middle',
+				fill: new ol.style.Fill({ color: [0, 0, 0] }),
+				backgroundFill: new ol.style.Fill({ color: [255, 255, 255] })
+			})
+		});
 	}
+
 });

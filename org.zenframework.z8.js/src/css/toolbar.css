@@ -62,3 +62,7 @@
 	/*right: .14285714em;*/
 	margin-top: 0;
 }
+
+.toolbar>.control-group>div[name=input].control {
+	padding-top: .57142857em;
+}
