@@ -13,7 +13,6 @@ import org.zenframework.z8.server.engine.ApplicationServer;
 import org.zenframework.z8.server.exceptions.AccessDeniedException;
 import org.zenframework.z8.server.json.Json;
 import org.zenframework.z8.server.json.JsonWriter;
-import org.zenframework.z8.server.logs.Trace;
 import org.zenframework.z8.server.request.Loader;
 import org.zenframework.z8.server.request.RequestTarget;
 import org.zenframework.z8.server.runtime.CLASS;
@@ -121,16 +120,11 @@ public class Dashboard extends RequestTarget {
 	}
 
 	@SuppressWarnings("unchecked")
-	private Collection<Desktop.CLASS<Desktop>> loadEntries(Collection<Entry> entries) {
-		List<Desktop.CLASS<Desktop>> result = new ArrayList<Desktop.CLASS<Desktop>>();
+	private Collection<OBJECT.CLASS<OBJECT>> loadEntries(Collection<Entry> entries) {
+		List<OBJECT.CLASS<OBJECT>> result = new ArrayList<OBJECT.CLASS<OBJECT>>();
 
-		for(Entry entry : entries) {
-			try {
-				result.add((Desktop.CLASS<Desktop>)Loader.loadClass(entry.className()));
-			} catch(RuntimeException e) {
-				Trace.logError("Error loading entry point '" + entry.className() + "'", e);
-			}
-		}
+		for(Entry entry : entries)
+			result.add((OBJECT.CLASS<OBJECT>)Loader.loadClass(entry.className()));
 
 		return result;
 	}
@@ -155,16 +149,23 @@ public class Dashboard extends RequestTarget {
 		writer.writeProperty(Json.phone, user.phone());
 		writer.writeProperty(Json.settings, user.settings());
 
-		Collection<Desktop.CLASS<Desktop>> desktops = loadEntries(user.entries());
+		Collection<OBJECT.CLASS<OBJECT>> entries = loadEntries(user.entries());
 		writer.startArray(Json.entries);
-		for(CLASS<?> cls : desktops)
+		for(CLASS<?> cls : entries)
 			writeData(writer, cls);
 		writer.finishArray();
 
 		if(getParameter(Json.experimental) != null) {
 			writer.startArray(Json.data);
-			for(Desktop.CLASS<Desktop> cls : desktops)
-				writeDesktopData(writer, cls.newInstance(), cls.displayName());
+			for(OBJECT.CLASS<OBJECT> cls : entries) {
+				if (cls.instanceOf(Desktop.class)) {
+					writeDesktopData(writer, (Desktop) cls.newInstance(), cls.displayName());
+				} else {
+					writer.startObject();
+					cls.write(writer);
+					writer.finishObject();
+				}
+			}
 			writer.finishArray();
 		}
 
