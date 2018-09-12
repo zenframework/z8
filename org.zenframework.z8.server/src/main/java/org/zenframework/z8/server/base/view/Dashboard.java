@@ -13,6 +13,7 @@ import org.zenframework.z8.server.engine.ApplicationServer;
 import org.zenframework.z8.server.exceptions.AccessDeniedException;
 import org.zenframework.z8.server.json.Json;
 import org.zenframework.z8.server.json.JsonWriter;
+import org.zenframework.z8.server.logs.Trace;
 import org.zenframework.z8.server.request.Loader;
 import org.zenframework.z8.server.request.RequestTarget;
 import org.zenframework.z8.server.runtime.CLASS;
@@ -123,8 +124,13 @@ public class Dashboard extends RequestTarget {
 	private Collection<OBJECT.CLASS<OBJECT>> loadEntries(Collection<Entry> entries) {
 		List<OBJECT.CLASS<OBJECT>> result = new ArrayList<OBJECT.CLASS<OBJECT>>();
 
-		for(Entry entry : entries)
-			result.add((OBJECT.CLASS<OBJECT>)Loader.loadClass(entry.className()));
+		for(Entry entry : entries) {
+			try {
+				result.add((OBJECT.CLASS<OBJECT>)Loader.loadClass(entry.className()));
+			} catch (Throwable e) {
+				Trace.logError(e);
+			}
+		}
 
 		return result;
 	}
