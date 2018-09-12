@@ -48,10 +48,10 @@ Z8.define('Z8.application.viewport.Viewport', {
 	},
 
 	createHeaderButtons: function() {
-		var settings = this.settingsButton = new Z8.button.Button({ tooltip: 'Настройки', cls: 'btn-tool', icon: 'fa-cog', enabled: false, handler: this.onSettings, scope: this });
+		//var settings = this.settingsButton = new Z8.button.Button({ tooltip: 'Настройки', cls: 'btn-tool', icon: 'fa-cog', enabled: false, handler: this.onSettings, scope: this });
 		var jobMonitor = this.jobMonitorButton = new Z8.button.Button({ tooltip: 'Монитор задач', cls: 'btn-tool', icon: 'fa-tv', handler: this.openJobMonitor, scope: this });
-		var logger = this.loggerButton = new Z8.button.Button({ tooltip: 'Сообщения', cls: 'btn-tool', icon: 'fa-comment-o', enabled: false, handler: this.openLogger, scope: this });
-		return [jobMonitor, logger, settings];
+		//var logger = this.loggerButton = new Z8.button.Button({ tooltip: 'Сообщения', cls: 'btn-tool', icon: 'fa-comment-o', enabled: false, handler: this.openLogger, scope: this });
+		return [jobMonitor]; //, logger, settings];
 	},
 
 	onLogin: function() {
