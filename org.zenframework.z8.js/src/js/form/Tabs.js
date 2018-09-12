@@ -54,6 +54,8 @@ Z8.define('Z8.form.Tabs', {
 	},
 
 	showTab: function(tab, show) {
+		if(tab == null)
+			return;
 		show ? tab.tag.show() : tab.tag.hide();
 		if(!show && tab == this.getActiveTab())
 			DOM.addCls(tab, 'inactive');
