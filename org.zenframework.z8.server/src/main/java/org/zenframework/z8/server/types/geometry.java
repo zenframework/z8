@@ -418,7 +418,15 @@ public final class geometry extends primary {
 	}
 
 	static public geometry pointOnLine(geometry line, double distance) {
-		if (line.shape() == geometry.line) {
+		if (line.shape() == geometry.multiLine) {
+			List<geometry> elements = line.points();
+			for (geometry el : elements) {
+				geometry point = pointOnLine(el, distance);
+				if (point.shape() == geometry.point)
+					return point;
+				distance -= el.length();
+			}
+		} else if (line.shape() == geometry.line) {
 			double l = 0.0;
 			List<geometry> points = line.points();
 			for (int i = 0; i < points.size() - 1; i++) {
