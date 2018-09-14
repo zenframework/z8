@@ -3,6 +3,7 @@ package org.zenframework.z8.server.utils;
 import java.io.File;
 import java.io.IOException;
 
+import org.apache.commons.io.FilenameUtils;
 import org.zenframework.z8.server.base.file.FileConverter;
 import org.zenframework.z8.server.base.file.Folders;
 import org.zenframework.z8.server.base.table.system.Files;
@@ -15,14 +16,16 @@ public class AttachmentUtils {
 		if (!FileConverter.isConvertableToPdf(file.path.get()))
 			return null;
 		
+		String systemPath = FilenameUtils.separatorsToSystem(file.path.get());
+
 		Files.get(file);
 		
-		File path = new File(ServerConfig.workingPath(), file.path.get());
+		File path = new File(ServerConfig.workingPath(), systemPath);
 
 		if (!path.exists())
 			return null;
 		
-		return new FileConverter(new File(Folders.Base, Folders.Cache)).getConvertedPdf(file.path.get(), path);
+		return new FileConverter(new File(Folders.Base, Folders.Cache)).getConvertedPdf(systemPath, path);
 	}
 
 	static public int getPageCount(file file) {

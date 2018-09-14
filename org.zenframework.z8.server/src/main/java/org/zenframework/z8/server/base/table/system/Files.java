@@ -7,6 +7,7 @@ import java.util.Arrays;
 import java.util.Collection;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
 import org.zenframework.z8.server.base.file.Folders;
 import org.zenframework.z8.server.base.file.InputOnlyFileItem;
 import org.zenframework.z8.server.base.table.Table;
@@ -167,7 +168,7 @@ public class Files extends Table {
 		File base = new File(rootPath.get());
 		
 		while(next()) {
-			file f = new file(recordId(), name.string().get(), null, path.string().get());
+			file f = new file(recordId(), name.string().get(), null, FilenameUtils.separatorsToSystem(path.string().get()));
 			try {
 				get(f, base);
 			} catch (IOException e) {
