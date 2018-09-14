@@ -96,7 +96,7 @@ public class Monitor extends RequestTarget implements IMonitor {
 
 	@Override
 	public void log(Throwable exception) {
-		String message = ErrorUtils.getMessage(exception) + "\r\n" + ErrorUtils.getStackTrace(exception);
+		String message = ErrorUtils.getMessage(exception) + file.EOL + ErrorUtils.getStackTrace(exception);
 		logError(message);
 	}
 

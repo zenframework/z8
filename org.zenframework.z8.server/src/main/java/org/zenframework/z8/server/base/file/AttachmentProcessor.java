@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 
-import org.apache.commons.io.FileUtils;
 import org.zenframework.z8.server.base.table.Table;
 import org.zenframework.z8.server.base.table.system.Files;
 import org.zenframework.z8.server.base.table.value.AttachmentField;
@@ -23,6 +22,7 @@ import org.zenframework.z8.server.types.integer;
 import org.zenframework.z8.server.types.string;
 import org.zenframework.z8.server.utils.AttachmentUtils;
 import org.zenframework.z8.server.utils.IOUtils;
+import org.zenframework.z8.server.utils.StringUtils;
 
 public class AttachmentProcessor extends OBJECT {
 
@@ -136,7 +136,7 @@ public class AttachmentProcessor extends OBJECT {
 
 		if(path.isEmpty() || !path.startsWith(Folders.Storage)) {
 			date time = new date();
-			path = FileUtils.getFile(Folders.Storage, time.format("yyyy.MM.dd"), getTable().name(), recordId.toString(), field.name(), time.format("HH-mm-ss"), file.name.get()).toString();
+			path = StringUtils.concat(org.zenframework.z8.server.types.file.separator, Folders.Storage, time.format("yyyy.MM.dd"), getTable().name(), recordId.toString(), field.name(), time.format("HH-mm-ss"), file.name.get());
 			file.path = new string(path);
 		}
 	}

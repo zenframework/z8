@@ -206,4 +206,13 @@ public class StringUtils {
 		return false;
 	}
 
+	public static String concat(String separator, String... elements) {
+		StringBuilder str = new StringBuilder();
+		for (String el : elements)
+			str.append(el).append(separator);
+		if (str.length() > 0)
+			str.setLength(str.length() - separator.length());
+		return str.toString();
+	}
+
 }
