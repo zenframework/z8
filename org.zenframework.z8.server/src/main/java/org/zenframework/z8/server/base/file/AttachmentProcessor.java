@@ -7,6 +7,7 @@ import java.util.Arrays;
 import java.util.Collection;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
 import org.zenframework.z8.server.base.table.Table;
 import org.zenframework.z8.server.base.table.system.Files;
 import org.zenframework.z8.server.base.table.value.AttachmentField;
@@ -98,7 +99,7 @@ public class AttachmentProcessor extends OBJECT {
 
 	private void putToCache(file file) {
 		try {
-			IOUtils.copy(file.getInputStream(), new File(Folders.Base, file.path.get()));
+			IOUtils.copy(file.getInputStream(), new File(Folders.Base, FilenameUtils.separatorsToSystem(file.path.get())));
 		} catch(IOException e) {
 			throw new RuntimeException(e);
 		}

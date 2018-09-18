@@ -6,6 +6,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
 import org.zenframework.z8.server.base.file.Folders;
 import org.zenframework.z8.server.base.file.InputOnlyFileItem;
 import org.zenframework.z8.server.base.table.system.Files;
@@ -55,6 +56,7 @@ public class FileMessage extends Message {
 		this.file = file;
 	}
 
+	@Override
 	public void setBytesTransferred(long bytesTransferred) {
 		file.setOffset(bytesTransferred);
 	}
@@ -85,7 +87,7 @@ public class FileMessage extends Message {
 
 	@Override
 	protected boolean apply() {
-		File target = FileUtils.getFile(Folders.Base, Folders.Temp, getAddress(), file.path.get());
+		File target = FileUtils.getFile(Folders.Base, Folders.Temp, getAddress(), FilenameUtils.separatorsToSystem(file.path.get()));
 
 		long offset = file.offset();
 

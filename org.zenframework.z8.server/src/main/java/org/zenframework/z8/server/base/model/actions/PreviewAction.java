@@ -6,6 +6,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
+import org.apache.commons.io.FilenameUtils;
 import org.zenframework.z8.server.base.file.Folders;
 import org.zenframework.z8.server.base.query.Query;
 import org.zenframework.z8.server.base.table.value.Field;
@@ -73,7 +74,7 @@ public class PreviewAction extends Action {
 
 	private static String getPreviewPath(file file, String requestId, guid recordId, Field field) {
 		try {
-			return new File(file.path.get()).getParentFile().getParent() + '/' + PREVIEW;
+			return new File(FilenameUtils.separatorsToSystem(file.path.get())).getParentFile().getParent() + '/' + PREVIEW;
 		} catch(Throwable e) {
 			return new StringBuilder().append(Folders.Storage).append('/').append(requestId).append('/').append(recordId).append('/').append(field.name()).append('/').append(PREVIEW).toString();
 		}

@@ -16,6 +16,7 @@ import org.zenframework.z8.server.base.table.value.Field;
 import org.zenframework.z8.server.base.table.value.StringField;
 import org.zenframework.z8.server.db.sql.SqlToken;
 import org.zenframework.z8.server.db.sql.expressions.Equ;
+import org.zenframework.z8.server.db.sql.expressions.Or;
 import org.zenframework.z8.server.resources.Resources;
 import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.types.file;
@@ -124,7 +125,9 @@ public class Files extends Table {
 	public static InputStream getInputStream(file file) throws IOException {
 		Files table = newInstance();
 
-		SqlToken where = new Equ(table.path.get(), file.path);
+		// For backward compatibility with windows
+		SqlToken where = new Or(new Equ(table.path.get(), file.path.get().replace('/', '\\')),
+				new Equ(table.path.get(), file.path.get().replace('\\', '/')));
 
 		guid recordId = file.id;
 
@@ -142,7 +145,7 @@ public class Files extends Table {
 	}
 	
 	public static file get(file file, File base) throws IOException {
-		File path = new File(base, file.path.get());
+		File path = new File(base, FilenameUtils.separatorsToSystem(file.path.get()));
 
 		if(!path.exists()) {
 			InputStream inputStream = getInputStream(file);
