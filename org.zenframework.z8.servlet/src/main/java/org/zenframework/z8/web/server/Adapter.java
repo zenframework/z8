@@ -70,6 +70,7 @@ public abstract class Adapter {
 			String sessionId = parameters.get(Json.session);
 			String serverId = parameters.get(Json.server);
 
+			// check sessionId first because login can be non-empty
 			if (sessionId != null) {
 				session = authorize(sessionId, serverId, parameters.get(Json.request));
 			} else if (login != null) {

@@ -48,6 +48,8 @@ Z8.define('Z8.application.Application', {
 			Viewport.render();
 		}
 
+		Application.session = null;
+		User = null;
 		Viewport.login({ fn: callback, scope: this });
 	},
 
