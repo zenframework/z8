@@ -36,6 +36,7 @@ public class ServerConfig extends Properties {
 
 	static final private String WebServerUploadMax = "web.server.upload.max";
 	static final private String WebClientDownloadMax = "web.client.download.max";
+	static final private String WebClientHashPassword = "web.client.hashPassword";
 
 	static final private String SchedulerEnabled = "scheduler.enabled";
 	static final private String MaintenenceJobRepeat = "maintenance.job.repeat";
@@ -51,8 +52,6 @@ public class ServerConfig extends Properties {
 	static final public String OfficeExtensions = "file.converter.office";
 
 	static final private String OfficeHome = "office.home";
-
-	static final private String ClientHashPassword = "client.hashPassword";
 
 	static final private String LdapUrl = "ldap.url";
 	static final private String LdapDefaultDomain = "ldap.default.domain";
@@ -74,6 +73,7 @@ public class ServerConfig extends Properties {
 
 	static private int webServerUploadMax;
 	static private int webClientDownloadMax;
+	static private boolean webClientHashPassword;
 
 	static private boolean schedulerEnabled;
 
@@ -86,8 +86,6 @@ public class ServerConfig extends Properties {
 	static private boolean traceSqlConnections;
 
 	static private String officeHome;
-
-	static private boolean clientHashPassword;
 
 	static private String ldapUrl;
 	static private String ldapDefaultDomain;
@@ -130,6 +128,7 @@ public class ServerConfig extends Properties {
 
 		webServerUploadMax = getProperty(WebServerUploadMax, 5);
 		webClientDownloadMax = getProperty(WebClientDownloadMax, 1);
+		webClientHashPassword = getProperty(WebClientHashPassword, true);
 
 		traceSql = getProperty(TraceSql, false);
 		traceSqlConnections = getProperty(TraceSqlConnections, false);
@@ -145,8 +144,6 @@ public class ServerConfig extends Properties {
 		officeExtensions = getProperty(OfficeExtensions, new String[] { "doc", "docx", "xls", "xlsx", "ppt", "pptx", "odt", "odp", "ods", "odf", "odg", "wpd", "sxw", "sxi", "sxc", "sxd", "stw", "vsd" });
 
 		officeHome = getProperty(OfficeHome, "C:/Program Files (x86)/LibreOffice 4.0");
-
-		clientHashPassword = getProperty(ClientHashPassword, true);
 
 		ldapUrl = getProperty(LdapUrl, "");
 		ldapDefaultDomain = getProperty(LdapDefaultDomain, "");
@@ -341,8 +338,8 @@ public class ServerConfig extends Properties {
 		return officeHome;
 	}
 
-	static public boolean clientHashPassword() {
-		return clientHashPassword;
+	static public boolean webClientHashPassword() {
+		return webClientHashPassword;
 	}
 
 	static public String ldapUrl() {
