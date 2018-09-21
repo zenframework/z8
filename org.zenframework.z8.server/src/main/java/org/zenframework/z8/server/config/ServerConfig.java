@@ -34,10 +34,6 @@ public class ServerConfig extends Properties {
 	static final private String InterconnectionCenterHost = "interconnection.center.host";
 	static final private String InterconnectionCenterPort = "interconnection.center.port";
 
-	static final private String WebServerStartApplicationServer = "web.server.start.application.server";
-	static final private String WebServerStartAuthorityCenter = "web.server.start.authority.center";
-	static final private String WebServerStartInterconnectionCenter = "web.server.start.interconnection.center";
-
 	static final private String WebServerUploadMax = "web.server.upload.max";
 	static final private String WebClientDownloadMax = "web.client.download.max";
 
@@ -75,10 +71,6 @@ public class ServerConfig extends Properties {
 
 	static private String interconnectionCenterHost;
 	static private int interconnectionCenterPort;
-
-	static private boolean webServerStartApplicationServer;
-	static private boolean webServerStartAuthorityCenter;
-	static private boolean webServerStartInterconnectionCenter;
 
 	static private int webServerUploadMax;
 	static private int webClientDownloadMax;
@@ -135,10 +127,6 @@ public class ServerConfig extends Properties {
 
 		interconnectionCenterHost = getHost(InterconnectionCenterHost, Rmi.localhost);
 		interconnectionCenterPort = getProperty(InterconnectionCenterPort, 20000);
-
-		webServerStartApplicationServer = getProperty(WebServerStartApplicationServer, true);
-		webServerStartAuthorityCenter = getProperty(WebServerStartAuthorityCenter, true);
-		webServerStartInterconnectionCenter = getProperty(WebServerStartInterconnectionCenter, false);
 
 		webServerUploadMax = getProperty(WebServerUploadMax, 5);
 		webClientDownloadMax = getProperty(WebClientDownloadMax, 1);
@@ -299,18 +287,6 @@ public class ServerConfig extends Properties {
 
 	static public boolean traceSqlConnections() {
 		return traceSqlConnections;
-	}
-
-	static public boolean webServerLaunchApplicationServer() {
-		return webServerStartApplicationServer;
-	}
-
-	static public boolean webServerLaunchAuthorityCenter() {
-		return webServerStartAuthorityCenter;
-	}
-
-	static public boolean webServerLaunchInterconnectionCenter() {
-		return webServerStartInterconnectionCenter;
 	}
 
 	static public int webServerUploadMax() {

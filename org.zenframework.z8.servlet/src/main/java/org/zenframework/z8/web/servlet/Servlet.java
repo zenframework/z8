@@ -28,6 +28,10 @@ import org.zenframework.z8.web.server.SystemAdapter;
 
 public class Servlet extends HttpServlet {
 
+	static final private String StartApplicationServer = "startApplicationServer";
+	static final private String StartAuthorityCenter = "startAuthorityCenter";
+	static final private String StartInterconnectionCenter = "startInterconnectionCenter";
+
 	static {
 		ObjectIO.initialize(new RmiIO());
 	}
@@ -51,11 +55,11 @@ public class Servlet extends HttpServlet {
 		try {
 			ServerConfig config = new ServerConfig(new File(workingPath, ServerConfig.DefaultConfigurationFileName).getPath());
 
-			if(ServerConfig.webServerLaunchInterconnectionCenter())
+			if(Boolean.parseBoolean(StartInterconnectionCenter))
 				interconnectionCenter = InterconnectionCenter.launch(config);
-			if(ServerConfig.webServerLaunchAuthorityCenter())
+			if(Boolean.parseBoolean(StartAuthorityCenter))
 				authorityCenter = AuthorityCenter.launch(config);
-			if(ServerConfig.webServerLaunchApplicationServer())
+			if(Boolean.parseBoolean(StartApplicationServer))
 				applicationServer = ApplicationServer.launch(config);
 		} catch(Throwable e) {
 			Trace.logError(e);
