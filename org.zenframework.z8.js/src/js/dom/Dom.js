@@ -67,6 +67,10 @@ Z8.define('Z8.dom.Dom', {
 			document.cookie = name + '=' + encodeURIComponent(value) + ';expires=' + new Date().addDay(days || 2).toUTCString() + ';path=/';
 		},
 
+		removeCookie: function(name) {
+			document.cookie = name + '=;Path=/;';
+		},
+
 		selectNode: function(dom, selector) {
 			if(arguments.length == 1) {
 				selector = dom;

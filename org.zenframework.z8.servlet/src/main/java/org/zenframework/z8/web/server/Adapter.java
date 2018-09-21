@@ -15,6 +15,7 @@ import java.util.Map;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.FileUploadException;
@@ -38,12 +39,16 @@ import org.zenframework.z8.server.utils.NumericUtils;
 import org.zenframework.z8.web.servlet.Servlet;
 
 public abstract class Adapter {
+	private static final String UseContainerSession = "useContainerSession";
+
 	private static final Collection<String> IgnoredExceptions = Arrays.asList("org.apache.catalina.connector.ClientAbortException");
 
 	protected Servlet servlet;
+	private boolean useContainerSession;
 
 	protected Adapter(Servlet servlet) {
 		this.servlet = servlet;
+		useContainerSession = Boolean.parseBoolean(servlet.getInitParameter(UseContainerSession));
 	}
 
 	protected Servlet getServlet() {
@@ -52,6 +57,7 @@ public abstract class Adapter {
 
 	public void service(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
 		try {
+			HttpSession httpSession = useContainerSession ? request.getSession() : null;
 			ISession session = null;
 
 			Map<String, String> parameters = new HashMap<String, String>();
@@ -59,17 +65,18 @@ public abstract class Adapter {
 
 			parseRequest(request, parameters, files);
 
-			String login = parameters.get(Json.login);
-			String password = parameters.get(Json.password);
+			String login = getParameter(Json.login.get(), parameters, httpSession);
+			String password = getParameter(Json.password.get(), parameters, httpSession);
 			String sessionId = parameters.get(Json.session);
 			String serverId = parameters.get(Json.server);
 
-			if(login != null) {
+			if (sessionId != null) {
+				session = authorize(sessionId, serverId, parameters.get(Json.request));
+			} else if (login != null) {
 				if(login.isEmpty() || login.length() > IAuthorityCenter.MaxLoginLength || password != null && password.length() > IAuthorityCenter.MaxPasswordLength)
 					throw new AccessDeniedException();
 				session = login(login, password);
-			} else
-				session = authorize(sessionId, serverId, parameters.get(Json.request));
+			}
 
 			if(session == null)
 				throw serverId == null ? new AccessDeniedException() : new ServerUnavailableException(serverId);
@@ -189,4 +196,18 @@ public abstract class Adapter {
 		out.flush();
 		out.close();
 	}
+
+	private static String getParameter(String key, Map<String, String> parameters, HttpSession httpSession) {
+		String value = parameters.get(key);
+		if (httpSession != null) {
+			if (value != null)
+				httpSession.setAttribute(key, value);
+			else {
+				value = (String) httpSession.getAttribute(key);
+				parameters.put(key, value);
+			}
+		}
+		return value;
+	}
+
 }
