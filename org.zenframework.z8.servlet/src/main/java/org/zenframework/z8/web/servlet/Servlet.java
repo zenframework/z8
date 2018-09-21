@@ -55,11 +55,11 @@ public class Servlet extends HttpServlet {
 		try {
 			ServerConfig config = new ServerConfig(new File(workingPath, ServerConfig.DefaultConfigurationFileName).getPath());
 
-			if(Boolean.parseBoolean(StartInterconnectionCenter))
+			if(Boolean.parseBoolean(servletConfig.getInitParameter(StartInterconnectionCenter)))
 				interconnectionCenter = InterconnectionCenter.launch(config);
-			if(Boolean.parseBoolean(StartAuthorityCenter))
+			if(Boolean.parseBoolean(servletConfig.getInitParameter(StartAuthorityCenter)))
 				authorityCenter = AuthorityCenter.launch(config);
-			if(Boolean.parseBoolean(StartApplicationServer))
+			if(Boolean.parseBoolean(servletConfig.getInitParameter(StartApplicationServer)))
 				applicationServer = ApplicationServer.launch(config);
 		} catch(Throwable e) {
 			Trace.logError(e);
