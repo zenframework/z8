@@ -13,7 +13,6 @@ import org.zenframework.z8.server.base.security.User;
 import org.zenframework.z8.server.engine.RmiSerializable;
 import org.zenframework.z8.server.json.Json;
 import org.zenframework.z8.server.json.JsonWriter;
-import org.zenframework.z8.server.request.INamedObject;
 import org.zenframework.z8.server.request.RequestTarget;
 import org.zenframework.z8.server.types.bool;
 import org.zenframework.z8.server.types.guid;
@@ -52,11 +51,6 @@ public class OBJECT extends RequestTarget implements IObject, RmiSerializable {
 	public OBJECT(IObject container) {
 		super(null);
 		this.container = container;
-	}
-
-	@Override
-	public int compareTo(INamedObject object) {
-		return id() == object.id() ? 0 : 1;
 	}
 
 	@Override

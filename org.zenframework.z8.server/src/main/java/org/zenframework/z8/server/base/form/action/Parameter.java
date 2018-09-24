@@ -7,7 +7,6 @@ import org.zenframework.z8.server.engine.ApplicationServer;
 import org.zenframework.z8.server.json.Json;
 import org.zenframework.z8.server.json.JsonWriter;
 import org.zenframework.z8.server.json.parser.JsonArray;
-import org.zenframework.z8.server.request.INamedObject;
 import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.runtime.OBJECT;
 import org.zenframework.z8.server.runtime.RCollection;
@@ -55,16 +54,6 @@ public class Parameter extends OBJECT implements IParameter {
 	@Override
 	public String displayName() {
 		return text.get();
-	}
-
-	@Override
-	public boolean equals(Object object) {
-		return object instanceof INamedObject ? id().equals(((INamedObject)object).id()) : false;
-	}
-
-	@Override
-	public int compareTo(INamedObject object) {
-		return id().hashCode() - object.id().hashCode();
 	}
 
 	@Override

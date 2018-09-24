@@ -6,7 +6,7 @@ import java.util.Map;
 import org.zenframework.z8.server.request.INamedObject;
 import org.zenframework.z8.server.types.guid;
 
-public interface IObject extends INamedObject {
+public interface IObject {
 	static final public String System = "system";
 	static final public String DisplayName = "displayName";
 	static final public String Description = "description";
@@ -41,7 +41,6 @@ public interface IObject extends INamedObject {
 	public String name();
 	public void setName(String name);
 
-	@Override
 	public String displayName();
 	public void setDisplayName(String name);
 

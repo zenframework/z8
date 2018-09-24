@@ -25,14 +25,4 @@ public class NamedObject implements INamedObject {
 	public String displayName() {
 		return name;
 	}
-
-	@Override
-	public boolean equals(Object object) {
-		return object instanceof INamedObject ? id().equals(((INamedObject)object).id()) : false;
-	}
-
-	@Override
-	public int compareTo(INamedObject object) {
-		return id().hashCode() - object.id().hashCode();
-	}
 }
