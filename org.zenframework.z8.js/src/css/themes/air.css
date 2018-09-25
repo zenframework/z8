@@ -164,7 +164,8 @@
 	padding-right: .21428571em;
 }
 
-.air .label.tools>.btn-group>.btn-group {
+.air .label.tools>.btn-group>.btn-group,
+.air .label.tools>.btn-group>.control-group {
 	margin-right: .35714286em;
 }
 

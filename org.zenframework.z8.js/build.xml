@@ -10,6 +10,7 @@
 					font-awesome-1.css,
 					font-roboto.css,
 					font-courgette.css,
+					font-z8.css,
 					themes/std.css,
 					themes/air.css,
 					breadcrumbs.css,
@@ -50,7 +51,8 @@
 					font-awesome-0.css,
 					font-awesome-1.css,
 					font-roboto.css,
-					font-courgette.css"/>
+					font-courgette.css,
+					font-z8.css"/>
 		</concat>
 
 		<exec dir="." executable="java">
@@ -58,12 +60,12 @@
 		</exec>
 
 		<copy todir="web/css">
-			<fileset dir="src/css" includes="fonts/**"/>
+			<fileset dir="src/css" includes="fonts/**" excludes="fonts/z8/svg/**"/>
 			<fileset dir="src/css" includes="img/**"/>
 		</copy>
 
 		<copy todir="web/debug/css">
-			<fileset dir="src/css" includes="fonts/**"/>
+			<fileset dir="src/css" includes="fonts/**" excludes="fonts/z8/svg/**"/>
 			<fileset dir="src/css" includes="img/**"/>
 		</copy>
 	</target>
