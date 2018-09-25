@@ -9,7 +9,6 @@ import org.zenframework.z8.server.db.DatabaseVendor;
 import org.zenframework.z8.server.db.FieldType;
 import org.zenframework.z8.server.json.Json;
 import org.zenframework.z8.server.json.parser.JsonObject;
-import org.zenframework.z8.server.request.INamedObject;
 import org.zenframework.z8.server.runtime.IClass;
 import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.security.IAccess;
@@ -260,11 +259,6 @@ public class OdaField implements IField {
 
 	@Override
 	public String toDebugString() {
-		throw new UnsupportedOperationException();
-	}
-
-	@Override
-	public int compareTo(INamedObject o) {
 		throw new UnsupportedOperationException();
 	}
 
