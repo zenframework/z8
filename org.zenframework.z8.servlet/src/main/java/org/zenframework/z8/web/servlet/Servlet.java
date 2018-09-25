@@ -55,11 +55,11 @@ public class Servlet extends HttpServlet {
 		try {
 			ServerConfig config = new ServerConfig(new File(workingPath, ServerConfig.DefaultConfigurationFileName).getPath());
 
-			if(Boolean.parseBoolean(servletConfig.getInitParameter(StartInterconnectionCenter)))
+			if(getInitParameter(servletConfig, StartInterconnectionCenter, false))
 				interconnectionCenter = InterconnectionCenter.launch(config);
-			if(Boolean.parseBoolean(servletConfig.getInitParameter(StartAuthorityCenter)))
+			if(getInitParameter(servletConfig, StartAuthorityCenter, true))
 				authorityCenter = AuthorityCenter.launch(config);
-			if(Boolean.parseBoolean(servletConfig.getInitParameter(StartApplicationServer)))
+			if(getInitParameter(servletConfig, StartApplicationServer, true))
 				applicationServer = ApplicationServer.launch(config);
 		} catch(Throwable e) {
 			Trace.logError(e);
@@ -118,4 +118,10 @@ public class Servlet extends HttpServlet {
 	public String getServletPath() {
 		return getServletContext().getRealPath("WEB-INF");
 	}
+	
+	private static boolean getInitParameter(ServletConfig servletConfig, String name, boolean defaultValue) {
+		String value = servletConfig.getInitParameter(name);
+		return value != null ? Boolean.parseBoolean(value) : defaultValue;
+	}
+	
 }

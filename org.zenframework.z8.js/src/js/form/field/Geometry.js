@@ -925,7 +925,7 @@ Z8.define('Z8.form.field.Geometry', {
 		var position = feature.position;
 
 		return new ol.style.Style({
-			stroke: new ol.style.Stroke({ color: [0, 0, 0, .1], width: 1 }),
+			stroke: this.gridStroke || new ol.style.Stroke({ color: [0, 0, 0, .1], width: 1 }),
 			text: new ol.style.Text({
 				text: Format.integer(position),
 				placement: 'point',
