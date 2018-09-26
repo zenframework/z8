@@ -132,7 +132,7 @@ public class UpdateAction extends RequestAction {
 
 		guid parentId = parentKey != null ? parentKey.guid() : null;
 
-		NewAction.run(query, recordId, parentId);
+		query.onNew(recordId, parentId);
 		query.onCreateAction(recordId);
 		query.insert(recordId, parentId);
 

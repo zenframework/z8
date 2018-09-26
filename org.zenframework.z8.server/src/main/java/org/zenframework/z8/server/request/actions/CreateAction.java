@@ -67,7 +67,7 @@ public class CreateAction extends RequestAction {
 			if(recordId == null || recordId.isNull())
 				recordId = guid.create();
 
-			NewAction.run(query, recordId, parentId);
+			query.onNew(recordId, parentId);
 
 			for(String fieldId : JsonObject.getNames(record)) {
 				Field field = fieldsMap.get(fieldId);

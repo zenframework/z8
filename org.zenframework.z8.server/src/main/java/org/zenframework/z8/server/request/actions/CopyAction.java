@@ -64,7 +64,7 @@ public class CopyAction extends RequestAction {
 
 		Collection<Field> changed = query.getChangedFields();
 
-		NewAction.run(query, newRecordId, parentId);
+		query.onNew(newRecordId, parentId);
 
 		Collection<Field> fields = query.getPrimaryFields();
 		Map<Field, primary> values = new HashMap<Field, primary>();

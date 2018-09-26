@@ -29,7 +29,6 @@ import org.zenframework.z8.server.json.JsonWriter;
 import org.zenframework.z8.server.request.actions.ActionConfig;
 import org.zenframework.z8.server.request.actions.CopyAction;
 import org.zenframework.z8.server.request.actions.DestroyAction;
-import org.zenframework.z8.server.request.actions.NewAction;
 import org.zenframework.z8.server.request.actions.ReadAction;
 import org.zenframework.z8.server.request.actions.UpdateAction;
 import org.zenframework.z8.server.runtime.IClass;
@@ -126,9 +125,31 @@ public class Query extends OBJECT {
 		return access != null ? access : (access = ApplicationServer.getUser().privileges().getTableAccess(this));
 	}
 
+	private void initFields(guid recordId, guid parentId) {
+		Field primaryKey = primaryKey();
+		Field parentKey = parentKey();
+
+		for(Field field : getPrimaryFields()) {
+			if(field.changed())
+				continue;
+
+			if(field == primaryKey) {
+				field.set(recordId);
+			} else if(field == parentKey && parentId != null) {
+				field.set(parentId);
+			} else {
+				primary value = field.getDefault();
+				if(!value.equals(field.getDefaultValue()))
+					field.set(value);
+			}
+		}
+	}
+
 	public void onNew(guid recordId, guid parentId) {
 		if(ApplicationServer.events())
 			z8_onNew(recordId, parentId);
+
+		initFields(recordId, parentId);
 	}
 
 	public void onCopyAction(guid recordId) {
@@ -356,7 +377,7 @@ public class Query extends OBJECT {
 	}
 
 	public guid create(guid recordId, guid parentId) {
-		NewAction.run(this, recordId, parentId);
+		onNew(recordId, parentId);
 		return insert(recordId, parentId);
 	}
 
