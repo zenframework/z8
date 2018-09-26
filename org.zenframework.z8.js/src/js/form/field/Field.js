@@ -123,6 +123,10 @@ Z8.define('Z8.form.field.Field', {
 		return true;
 	},
 
+	isFocused: function() {
+		return DOM.getCls(this).indexOf('focus') != -1;
+	},
+
 	isValid: function() {
 		return this.valid;
 	},

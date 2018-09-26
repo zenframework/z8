@@ -281,7 +281,7 @@ Z8.define('Z8.dom.Dom', {
 		},
 
 		getCls: function(dom) {
-			DOM.getProperty(dom, 'className');
+			return DOM.getProperty(dom, 'className') || '';
 		},
 
 		setCls: function(dom, cls, delay) {

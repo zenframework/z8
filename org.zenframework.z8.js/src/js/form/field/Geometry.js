@@ -56,6 +56,13 @@ Z8.define('Z8.form.field.Geometry', {
 		} else
 			this.selectTool = null;
 
+		if(this.rulerTool !== false) {
+			var ruler = new Z8.button.Tool({ icon: 'fa-ruler-combined', tooltip: 'Линейка', toggled: false });
+			this.setRulerTool(ruler);
+			interactions.add(ruler);
+		} else
+			this.selectTool = null;
+
 		if(this.moveTool !== false) {
 			var move = new Z8.button.Tool({ icon: 'fa-hand-paper-o', tooltip: 'Переместить объект', toggled: false, enabled: false });
 			this.setMoveTool(move);
@@ -96,6 +103,11 @@ Z8.define('Z8.form.field.Geometry', {
 	setSelectTool: function(tool) {
 		tool.on('toggle', this.onInteractionToggle, this);
 		this.selectTool = tool;
+	},
+
+	setRulerTool: function(tool) {
+		tool.on('toggle', this.onInteractionToggle, this);
+		this.rulerTool = tool;
 	},
 
 	setMoveTool: function(tool) {
@@ -152,12 +164,20 @@ Z8.define('Z8.form.field.Geometry', {
 		return this.gridLayer;
 	},
 
+	getRulerLayer: function() {
+		return this.rulerLayer;
+	},
+
 	getSource: function(layer) {
 		return layer != null ? layer.getSource() : null;
 	},
 
 	getVectorSource: function() {
 		return this.getSource(this.getVectorLayer());
+	},
+
+	getRulerSource: function() {
+		return this.getSource(this.getRulerLayer());
 	},
 
 	getGridSource: function() {
@@ -173,12 +193,17 @@ Z8.define('Z8.form.field.Geometry', {
 		this.clearLayer(this.getVectorLayer());
 	},
 
+	clearRuler: function() {
+		this.clearLayer(this.getRulerLayer());
+	},
+
 	clearGrid: function() {
 		this.clearLayer(this.getGridLayer());
 	},
 
 	clear: function() {
 		this.clearVector();
+		this.clearRuler();
 		this.clearGrid();
 		this.feature = null;
 	},
@@ -195,6 +220,11 @@ Z8.define('Z8.form.field.Geometry', {
 		}
 
 		var me = this;
+
+		var getRulerStyle = function(feature, resolution) {
+			return me.getRulerStyle(feature, me.getZoom(), resolution);
+		};
+
 		var getGridStyle = function(feature, resolution) {
 			return me.getGridStyle(feature, me.getZoom(), resolution);
 		};
@@ -210,6 +240,10 @@ Z8.define('Z8.form.field.Geometry', {
 
 		source = new ol.source.Vector({ wrapX: false });
 		layer = this.gridLayer = new ol.layer.Vector({ source: source, style: this.getGridStyle != null ? getGridStyle : undefined });
+		layers.add(layer);
+
+		source = new ol.source.Vector({ wrapX: false });
+		layer = this.rulerLayer = new ol.layer.Vector({ source: source, style: this.getRulerStyle != null ? getRulerStyle : undefined });
 		layers.add(layer);
 
 		var projection = new ol.proj.Projection({ code: geometry.code, units: 'm', axisOrientation: 'enu' });
@@ -237,6 +271,16 @@ Z8.define('Z8.form.field.Geometry', {
 		}, this);
 	},
 
+	createRuler: function() {
+		var me = this;
+
+		var getRulerStyle = function(feature, resolution) {
+			return me.getRulerStyle(feature, me.getZoom(), resolution, true);
+		};
+
+		return new ol.interaction.Draw({ source: this.getRulerSource(), type: 'LineString', style: this.getRulerStyle != null ? getRulerStyle : undefined });
+	},
+
 	createMove: function() {
 		return new ol.interaction.Translate({ hitTolerance: 5 });
 	},
@@ -253,6 +297,14 @@ Z8.define('Z8.form.field.Geometry', {
 		var map = this.map;
 		if(map == null)
 			return;
+
+		if(this.rulerTool != null) {
+			var ruler = this.ruler = this.createRuler();
+			ruler.setActive(false);
+			ruler.on('drawstart', this.onRulerStart, this);
+			ruler.on('drawend', this.onRulerEnd, this);
+			map.addInteraction(ruler);
+		}
 
 		if(this.moveTool != null) {
 			var move = this.move = this.createMove();
@@ -283,6 +335,14 @@ Z8.define('Z8.form.field.Geometry', {
 		var map = this.map;
 		if(map == null)
 			return;
+
+		var ruler = this.ruler;
+		if(ruler != null) {
+			ruler.un('drawstart', this.onRulerStart, this);
+			ruler.un('drawend', this.onRulerEnd, this);
+			map.removeInteraction(ruler);
+			this.ruler = null;
+		}
 
 		var move = this.move;
 		if(move != null) {
@@ -332,7 +392,7 @@ Z8.define('Z8.form.field.Geometry', {
 			this.uninstallEdit();
 		}
 
-		this.mapContainer = this.map = this.canvas = this.vectorLayer = this.gridLayer = this.view = null;
+		this.mapContainer = this.map = this.canvas = this.vectorLayer = this.gridLayer = this.rulerLayer = this.view = null;
 
 		this.callParent();
 	},
@@ -572,6 +632,17 @@ Z8.define('Z8.form.field.Geometry', {
 		this.draw.finishDrawing();
 	},
 
+	onRulerStart: function(event) {
+		if(this.rulerFeature != null)
+			this.getRulerSource().removeFeature(this.rulerFeature);
+
+		this.rulerFeature = event.feature;
+	},
+
+	onRulerEnd: function(event) {
+		this.rulerFeature.getGeometry().un('change', this.onRulerChange, this);
+	},
+
 	onMove: function(event) {
 		this.updateGrid();
 		this.fireEvent('move', this);
@@ -593,7 +664,7 @@ Z8.define('Z8.form.field.Geometry', {
 			}
 		}
 
-		if(key == Event.ENTER) {
+		if(this.isEditing && key == Event.ENTER) {
 			this.finishEdit();
 			event.stopEvent();
 		}
@@ -691,6 +762,7 @@ Z8.define('Z8.form.field.Geometry', {
 
 	onInteractionToggle: function(tool) {
 		this.cancelEdit(false);
+		this.activateInteraction(this.ruler, tool == this.rulerTool);
 		this.activateInteraction(this.move, tool == this.moveTool && this.canMove());
 		this.activateInteraction(this.edit, tool == this.editTool && this.canEdit());
 		this.activateInteraction(this.draw, tool == this.drawTool && this.canDraw());
@@ -857,7 +929,7 @@ Z8.define('Z8.form.field.Geometry', {
 			first[1][1] = second[0][1] = y;
 		}
 	},
-	
+
 	getGridStep: function() {
 		return this.gridStep || null;
 	},
@@ -910,6 +982,59 @@ Z8.define('Z8.form.field.Geometry', {
 			}
 			y += inc * step;
 		}
+	},
+
+	getRulerStyle: function(feature, zoom, resolution, drawing) {
+		var styles = [
+			new ol.style.Style({
+				stroke: new ol.style.Stroke({ 
+					color: drawing ? [128, 128, 0] : [128, 128, 128],
+					lineDash: [5, 2],
+					width: 1
+				}),
+				image: new ol.style.Circle({
+					stroke: new ol.style.Stroke({ color: drawing ? [128, 128, 0] : [0, 0, 0, .3], width: 1 }),
+					fill: new ol.style.Fill({ color: [255, 255, 255, .8] }),
+					radius: 3
+				})
+			})
+		];
+
+		var coordinates = feature.getGeometry().getCoordinates();
+
+		var distance = 0;
+		var point1 = null;
+
+		for(var i = 0, length = coordinates.length; i < length; i++) {
+			var point2 = coordinates[i];
+
+			if(point1 != null)
+				distance += Math.sqrt(Math.pow(point1[0] - point2[0], 2) + Math.pow(point1[1] - point2[1], 2));
+
+			point1 = point2;
+
+			styles.push(new ol.style.Style({
+				geometry: new ol.geom.Point(point2),
+				image: new ol.style.Circle({
+					stroke: new ol.style.Stroke({ color: drawing ? [128, 128, 0] : [0, 0, 0, .3], width: 1 }),
+					fill: new ol.style.Fill({ color: [255, 255, 255, .8] }),
+					radius: 3
+				}),
+				text: new ol.style.Text({
+					text: distance < 1000 ? Format.integer(distance.round()) + ' м' : (Format.float((distance / 1000).round(2)) + ' км'),
+					placement: 'point',
+					overflow: true,
+					font: 'normal ' + Ems.emsToPixels(.78571429) + 'px Roboto ',
+					offsetY: -10,
+					textAlign: 'center',
+					textBaseline: 'middle',
+					fill: new ol.style.Fill({ color: [0, 0, 0] }),
+					backgroundFill: new ol.style.Fill({ color: [255, 255, 255] })
+				})
+			}));
+		}
+
+		return styles;
 	},
 
 	getGridStyle: function(feature, zoom, resolution) {
