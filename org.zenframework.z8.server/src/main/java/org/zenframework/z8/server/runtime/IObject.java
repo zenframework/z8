@@ -3,7 +3,6 @@ package org.zenframework.z8.server.runtime;
 import java.util.Collection;
 import java.util.Map;
 
-import org.zenframework.z8.server.request.INamedObject;
 import org.zenframework.z8.server.types.guid;
 
 public interface IObject {
