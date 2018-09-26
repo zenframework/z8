@@ -2,6 +2,7 @@ package org.zenframework.z8.webserver;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -39,6 +40,8 @@ import org.zenframework.z8.web.servlet.Servlet;
 public class WebServer implements IServer {
 
 	private static final Log LOG = LogFactory.getLog(WebServer.class);
+
+	private static final String WELCOME_FILE = "index.html";
 
 	private static final String ID = guid.create().toString();
 
@@ -124,19 +127,23 @@ public class WebServer implements IServer {
 					if (path.endsWith(".json") || path.startsWith("/storage/") || path.startsWith("/files/")
 							|| path.startsWith("/table/") || path.startsWith("/reports/")) {
 						servlet.service(request, response);
+					} else if (path.contains("..") || path.startsWith("/WEB-INF")) {
+						response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Illegal path " + path);
 					} else {
-						if (path.contains("..") || path.startsWith("/WEB-INF"))
-							throw new ServletException("Illegal path " + path);
 						File file = new File(webapp, path);
 						if (file.isDirectory())
-							file = new File(file, "index.html");
-						InputStream in = new FileInputStream(file);
-						OutputStream out = response.getOutputStream();
+							file = new File(file, WELCOME_FILE);
 						try {
-							IOUtils.copy(in, out);
-						} finally {
-							IOUtils.closeQuietly(in);
-							IOUtils.closeQuietly(out);
+							InputStream in = new FileInputStream(file);
+							OutputStream out = response.getOutputStream();
+							try {
+								IOUtils.copy(in, out);
+							} finally {
+								IOUtils.closeQuietly(in);
+								IOUtils.closeQuietly(out);
+							}
+						} catch (FileNotFoundException e) {
+							response.sendError(HttpServletResponse.SC_NOT_FOUND, "File " + path + " not found");
 						}
 					}
 					baseRequest.setHandled(true);
