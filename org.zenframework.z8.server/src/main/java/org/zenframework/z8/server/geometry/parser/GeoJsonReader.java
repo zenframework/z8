@@ -104,7 +104,7 @@ public class GeoJsonReader {
 	}
 
 	private geometry readMultiPolygon(JsonArray coordinates) {
-		return new geometry(readCoordinates(coordinates, geometry.polygon), geometry.polygon);
+		return new geometry(readCoordinates(coordinates, geometry.polygon), geometry.multiPolygon);
 	}
 
 	private geometry readCollection(JsonArray geometries) {
