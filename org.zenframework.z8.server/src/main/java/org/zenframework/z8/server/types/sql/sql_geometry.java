@@ -7,12 +7,14 @@ import org.zenframework.z8.server.db.sql.expressions.Intersects;
 import org.zenframework.z8.server.db.sql.expressions.Operation;
 import org.zenframework.z8.server.db.sql.expressions.Rel;
 import org.zenframework.z8.server.db.sql.functions.conversion.ToString;
+import org.zenframework.z8.server.db.sql.functions.geometry.Buffer;
 import org.zenframework.z8.server.db.sql.functions.geometry.Centroid;
 import org.zenframework.z8.server.db.sql.functions.geometry.CollectionSize;
 import org.zenframework.z8.server.db.sql.functions.geometry.Element;
 import org.zenframework.z8.server.db.sql.functions.geometry.EndPoint;
 import org.zenframework.z8.server.db.sql.functions.geometry.Extract;
 import org.zenframework.z8.server.db.sql.functions.geometry.GeometryType;
+import org.zenframework.z8.server.db.sql.functions.geometry.Homogenize;
 import org.zenframework.z8.server.db.sql.functions.geometry.InterpolatePoint;
 import org.zenframework.z8.server.db.sql.functions.geometry.Intersection;
 import org.zenframework.z8.server.db.sql.functions.geometry.Length;
@@ -103,7 +105,15 @@ public class sql_geometry extends sql_primary {
 		return new sql_geometry(new Centroid(this));
 	}
 
+	public sql_geometry z8_homogenize() {
+		return new sql_geometry(new Homogenize(this));
+	}
+
 	public sql_geometry z8_interpolatePoint(sql_decimal fraction) {
 		return new sql_geometry(new InterpolatePoint(this, fraction));
+	}
+	
+	public sql_geometry z8_buffer(sql_decimal radius) {
+		return new sql_geometry(new Buffer(this, radius));
 	}
 }
