@@ -210,6 +210,7 @@ Z8.define('Z8.form.field.Geometry', {
 
 	createMap: function() {
 		var geometry = Application.geometry;
+		var geometry1 = Application.geometry1;
 
 		var layers = [];
 
@@ -217,6 +218,11 @@ Z8.define('Z8.form.field.Geometry', {
 			var imageParams = Z8.apply({ ratio: 1}, geometry.tiles);
 			var imageSource = new ol.source.ImageWMS(imageParams);
 			layers.add(new ol.layer.Image({ source: imageSource }));
+
+			if(geometry1 != null) {
+				var imageSource = new ol.source.XYZ(geometry1.tiles);
+				layers.add(new ol.layer.Tile({ source: imageSource }));
+			}
 		}
 
 		var me = this;
