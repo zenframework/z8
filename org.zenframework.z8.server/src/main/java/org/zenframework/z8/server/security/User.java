@@ -246,7 +246,7 @@ public class User implements IUser {
 			users.name.get().set(loginOrId);
 			users.password.get().set(new string(user.password));
 			user.id = users.create();
-		} else if (!createIfNotExist) {
+		} else if (!exists) {
 			throw new AccessDeniedException();
 		}
 
