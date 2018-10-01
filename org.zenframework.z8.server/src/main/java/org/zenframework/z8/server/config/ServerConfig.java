@@ -54,8 +54,11 @@ public class ServerConfig extends Properties {
 	static final private String OfficeHome = "office.home";
 
 	static final private String LdapUrl = "ldap.url";
+	static final private String LdapBindDn = "ldap.bind.dn";
+	static final private String LdapBindPassword = "ldap.bind.password";
 	static final private String LdapDefaultDomain = "ldap.default.domain";
-	static final private String LdapIgnoreUsers = "ldap.ignore.users";
+	static final private String LdapUsersIgnore = "ldap.users.ignore";
+	static final private String LdapUsersCreateOnSuccessfulLogin = "ldap.users.createOnSuccessfulLogin";
 
 	static private File workingPath;
 
@@ -88,8 +91,11 @@ public class ServerConfig extends Properties {
 	static private String officeHome;
 
 	static private String ldapUrl;
+	static private String ldapBindDn;
+	static private String ldapBindPassword;
 	static private String ldapDefaultDomain;
-	static private Collection<String> ldapIgnoreUsers;
+	static private Collection<String> ldapUsersIgnore;
+	static private boolean ldapUsersCreateOnSuccessfulLogin;
 
 	static private Database database;
 
@@ -146,8 +152,11 @@ public class ServerConfig extends Properties {
 		officeHome = getProperty(OfficeHome, "C:/Program Files (x86)/LibreOffice 4.0");
 
 		ldapUrl = getProperty(LdapUrl, "");
+		ldapBindDn = getProperty(LdapBindDn, "");
+		ldapBindPassword = getProperty(LdapBindPassword, "");
 		ldapDefaultDomain = getProperty(LdapDefaultDomain, "");
-		ldapIgnoreUsers = StringUtils.asList(getProperty(LdapIgnoreUsers, "Admin"), "\\,");
+		ldapUsersIgnore = StringUtils.asList(getProperty(LdapUsersIgnore, "Admin"), "\\,");
+		ldapUsersCreateOnSuccessfulLogin = Boolean.parseBoolean(getProperty(LdapUsersCreateOnSuccessfulLogin, "false"));
 
 		instance = this;
 	}
@@ -346,12 +355,24 @@ public class ServerConfig extends Properties {
 		return ldapUrl;
 	}
 	
+	static public String ldapBindDn() {
+		return ldapBindDn;
+	}
+	
+	static public String ldapBindPassword() {
+		return ldapBindPassword;
+	}
+	
 	static public String ldapDefaultDomain() {
 		return ldapDefaultDomain;
 	}
 
-	static public Collection<String> ldapIgnoreUsers() {
-		return ldapIgnoreUsers;
+	static public Collection<String> ldapUsersIgnore() {
+		return ldapUsersIgnore;
+	}
+
+	static public boolean ldapUsersCreateOnSuccessfulLogin() {
+		return ldapUsersCreateOnSuccessfulLogin;
 	}
 
 	static public Database database() {

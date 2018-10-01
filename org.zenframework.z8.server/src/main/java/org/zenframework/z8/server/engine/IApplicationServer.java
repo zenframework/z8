@@ -14,7 +14,7 @@ public interface IApplicationServer extends IServer {
 
 	public file download(file file) throws RemoteException, IOException;
 
-	public IUser user(String login, String password) throws RemoteException;
+	public IUser user(String login, String password, boolean createIfNotExists) throws RemoteException;
 	public IAccount account(String login, String password) throws RemoteException;
 
 	public String[] domains() throws RemoteException;

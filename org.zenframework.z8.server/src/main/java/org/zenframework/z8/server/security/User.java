@@ -21,6 +21,7 @@ import org.zenframework.z8.server.base.table.system.UserRoles;
 import org.zenframework.z8.server.base.table.system.Users;
 import org.zenframework.z8.server.base.table.value.Field;
 import org.zenframework.z8.server.config.ServerConfig;
+import org.zenframework.z8.server.crypto.MD5;
 import org.zenframework.z8.server.db.ConnectionManager;
 import org.zenframework.z8.server.db.sql.SqlToken;
 import org.zenframework.z8.server.db.sql.expressions.Equ;
@@ -225,22 +226,29 @@ public class User implements IUser {
 	}
 
 	static public IUser read(guid userId) {
-		return userId.isNull() ? null : read((primary)userId);
+		return userId.isNull() ? null : readOrCreate((primary)userId, false);
 	}
 
-	static private IUser read(String login) {
-		return read(new string(login));
+	static private IUser load(String login, boolean createIfNotExist) {
+		return readOrCreate(new string(login), createIfNotExist);
 	}
 
-	static private IUser read(primary loginOrId) {
+	static private IUser readOrCreate(primary loginOrId, boolean createIfNotExist) {
 		User user = new User();
 
 		boolean isLatestVersion = ServerConfig.isLatestVersion();
 
-		if(loginOrId instanceof string)
-			user.readInfo((string)loginOrId, !isLatestVersion);
-		else
-			user.readInfo((guid)loginOrId, !isLatestVersion);
+		boolean exists = user.readInfo((string)loginOrId, !isLatestVersion);
+		if (!exists && createIfNotExist) {
+			user.login = ((string) loginOrId).get();
+			user.password = MD5.hex("");
+			Users users = Users.newInstance();
+			users.name.get().set(loginOrId);
+			users.password.get().set(new string(user.password));
+			user.id = users.create();
+		} else if (!createIfNotExist) {
+			throw new AccessDeniedException();
+		}
 
 		if(isLatestVersion) {
 			user.loadRoles();
@@ -258,11 +266,11 @@ public class User implements IUser {
 		return user;
 	}
 
-	static public IUser load(String login, String password) {
+	static public IUser load(String login, String password, boolean createIfNotExist) {
 		if(!ServerConfig.isSystemInstalled())
 			return User.system();
 
-		IUser user = read(login);
+		IUser user = load(login, createIfNotExist);
 
 		if(password == null || !password.equals(user.password()) || user.banned() || user.id().equals(Users.Site))
 			throw new AccessDeniedException();
@@ -280,23 +288,16 @@ public class User implements IUser {
 		entries.add(new Entry(systemTools.key(), systemTools.classId(), Resources.get(SystemTools.strings.Title)));
 	}
 
-	private void readInfo(guid id, boolean shortInfo) {
+	private boolean readInfo(primary loginOrId, boolean shortInfo) {
 		Users users = Users.newInstance();
-		SqlToken where = new Equ(users.recordId.get(), id);
-		readInfo(users, where, shortInfo);
-	}
-
-	private void readInfo(string login, boolean shortInfo) {
-		Users users = Users.newInstance();
-		SqlToken where = new EqualsIgnoreCase(users.name.get(), login);
-		readInfo(users, where, shortInfo);
-	}
-
-	private void readInfo(Users users, SqlToken where, boolean shortInfo) {
 		Collection<Field> fields = new ArrayList<Field>();
 		fields.add(users.recordId.get());
 		fields.add(users.name.get());
 		fields.add(users.password.get());
+
+		SqlToken where = (loginOrId instanceof guid)
+				? new Equ(users.recordId.get(), loginOrId) : new EqualsIgnoreCase(users.name.get(), (string) loginOrId);
+
 
 		if(!shortInfo) {
 			fields.add(users.banned.get());
@@ -310,31 +311,28 @@ public class User implements IUser {
 
 		users.read(fields, where);
 
-		if(users.next()) {
-			this.id = users.recordId.get().guid();
-			this.login = users.name.get().string().get();
-			this.password = users.password.get().string().get();
-			this.banned = users.banned.get().bool().get();
-			this.firstName = users.firstName.get().string().get();
-			this.middleName = users.middleName.get().string().get();
-			this.lastName = users.lastName.get().string().get();
-			this.settings = users.settings.get().string().get();
-			this.phone = users.phone.get().string().get();
-			this.email = users.email.get().string().get();
-		} else {
-			throw new AccessDeniedException();
-		}
+		if(!users.next())
+			return false;
+
+		this.id = users.recordId.get().guid();
+		this.login = users.name.get().string().get();
+		this.password = users.password.get().string().get();
+		this.banned = users.banned.get().bool().get();
+		this.firstName = users.firstName.get().string().get();
+		this.middleName = users.middleName.get().string().get();
+		this.lastName = users.lastName.get().string().get();
+		this.settings = users.settings.get().string().get();
+		this.phone = users.phone.get().string().get();
+		this.email = users.email.get().string().get();
 
 		if(shortInfo)
-			return;
+			return true;
 
 		try {
-			if(!users.getExtraParameters(this, parameters))
-				throw new AccessDeniedException();
+			return users.getExtraParameters(this, parameters);
 		} catch(Throwable e) {
 			Trace.logError(e);
-			if(!BuiltinUsers.Administrator.guid().equals(id) && !BuiltinUsers.System.guid().equals(id))
-				throw new AccessDeniedException();
+			return BuiltinUsers.Administrator.guid().equals(id) || BuiltinUsers.System.guid().equals(id);
 		}
 	}
 
