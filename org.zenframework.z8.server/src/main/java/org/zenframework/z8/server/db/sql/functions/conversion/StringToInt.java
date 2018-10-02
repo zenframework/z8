@@ -34,6 +34,8 @@ public class StringToInt extends SqlToken {
 			return "TO_NUMBER(" + string.format(vendor, options) + ")";
 		case SqlServer:
 			return "CONVERT(int, " + string.format(vendor, options) + ")";
+		case Postgres:
+			return string.format(vendor, options) + "::bigint";
 		default:
 			throw new UnknownDatabaseException();
 		}
