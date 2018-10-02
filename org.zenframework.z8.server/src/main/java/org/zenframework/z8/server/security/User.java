@@ -238,7 +238,7 @@ public class User implements IUser {
 
 		boolean isLatestVersion = ServerConfig.isLatestVersion();
 
-		boolean exists = user.readInfo((string)loginOrId, !isLatestVersion);
+		boolean exists = user.readInfo(loginOrId, !isLatestVersion);
 		if (!exists && createIfNotExist) {
 			user.login = ((string) loginOrId).get();
 			user.password = MD5.hex("");
