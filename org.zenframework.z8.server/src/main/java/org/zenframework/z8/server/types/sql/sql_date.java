@@ -15,6 +15,9 @@ import org.zenframework.z8.server.db.sql.functions.date.AddDay;
 import org.zenframework.z8.server.db.sql.functions.date.AddHour;
 import org.zenframework.z8.server.db.sql.functions.date.AddMinute;
 import org.zenframework.z8.server.db.sql.functions.date.AddSecond;
+import org.zenframework.z8.server.db.sql.functions.date.ExtractDay;
+import org.zenframework.z8.server.db.sql.functions.date.ExtractMonth;
+import org.zenframework.z8.server.db.sql.functions.date.ExtractYear;
 import org.zenframework.z8.server.db.sql.functions.date.TruncDay;
 import org.zenframework.z8.server.db.sql.functions.date.TruncHour;
 import org.zenframework.z8.server.db.sql.functions.date.TruncMinute;
@@ -41,6 +44,18 @@ public class sql_date extends sql_primary {
 
 	public sql_integer z8_toInt() {
 		return new sql_integer(new DateToInt(this));
+	}
+
+	public sql_integer z8_day() {
+		return new sql_integer(new ExtractDay(this));
+	}
+
+	public sql_integer z8_month() {
+		return new sql_integer(new ExtractMonth(this));
+	}
+
+	public sql_integer z8_year() {
+		return new sql_integer(new ExtractYear(this));
 	}
 
 	public sql_date z8_truncDay() {
