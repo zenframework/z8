@@ -9,6 +9,7 @@ import org.zenframework.z8.server.db.sql.expressions.Rel;
 import org.zenframework.z8.server.db.sql.functions.Count;
 import org.zenframework.z8.server.db.sql.functions.Max;
 import org.zenframework.z8.server.db.sql.functions.Min;
+import org.zenframework.z8.server.db.sql.functions.conversion.DateToInt;
 import org.zenframework.z8.server.db.sql.functions.conversion.DateToString;
 import org.zenframework.z8.server.db.sql.functions.date.AddDay;
 import org.zenframework.z8.server.db.sql.functions.date.AddHour;
@@ -36,6 +37,10 @@ public class sql_date extends sql_primary {
 	@Override
 	public sql_string z8_toString() {
 		return new sql_string(new DateToString(this));
+	}
+
+	public sql_integer z8_toInt() {
+		return new sql_integer(new DateToInt(this));
 	}
 
 	public sql_date z8_truncDay() {

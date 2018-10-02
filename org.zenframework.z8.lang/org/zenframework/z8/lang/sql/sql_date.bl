@@ -2,6 +2,8 @@
 public final class sql_date extends sql_primary {
 	public operator ();
 
+	public sql_int toInt();
+
 	public sql_date operator + (sql_datespan value);
 	public sql_date operator - (sql_datespan value);
 	public sql_datespan operator - (sql_date value);
