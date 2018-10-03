@@ -205,7 +205,7 @@ public abstract class Adapter {
 				httpSession.setAttribute(key, value);
 			else {
 				value = (String) httpSession.getAttribute(key);
-				parameters.put(key, value);
+				//parameters.put(key, value);
 			}
 		}
 		return value;

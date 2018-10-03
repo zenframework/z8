@@ -124,7 +124,7 @@ Z8.define('Z8.data.HttpRequest', {
 				Z8.callback(this.callback, response, true);
 				this.processResponse(response);
 			} else
-				HttpRequest.send({ retry: response.retry, server: response.server }, this.callback);
+				HttpRequest.send({ retry: response.retry, session: response.session, server: response.server }, this.callback);
 		} else if(!this.relogin(response.status)) {
 			response.info = response.info || {};
 			Z8.callback(this.callback, response, false);
@@ -174,7 +174,7 @@ Z8.define('Z8.data.HttpRequest', {
 		if(isLogin)
 			data.request = 'login';
 		else
-			data.session = Application.session;
+			data.session = data.session || Application.session;
 
 		for(var name in data) {
 			var value = data[name];
