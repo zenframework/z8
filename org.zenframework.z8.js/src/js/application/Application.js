@@ -17,9 +17,17 @@ Z8.define('Z8.application.Application', {
 	},
 
 	geometry: {
-		tiles: { url: '', serverType: 'geoserver', params: {} },
-		code: '',
-		extent: [0, 0, 0, 0]
+		layers: [{
+			cls: 'Image',
+			sourceCls: 'ImageWMS',
+			name: '',
+			url: 'https://revoltsoft.ru/geoserver/wms',
+			serverType: 'geoserver',
+			params: { 'LAYERS': 'ar:egko', 'VERSION': '1.1.1', 'SRS': 'EPSG:96872', 'TRANSPARENT': 'true' },
+			projection: 'EPSG:96872'
+		}],
+		overlays: [],
+		projection: 'EPSG:96872'
 	},
 
 	subclasses: {

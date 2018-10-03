@@ -208,21 +208,25 @@ Z8.define('Z8.form.field.Geometry', {
 		this.feature = null;
 	},
 
+	createLayer: function(config) {
+		var source = new ol.source[config.sourceCls](config);
+		var layer = new ol.layer[config.cls]({ source: source });
+		layer.name = config.name;
+		return layer;
+	},
+
+	replaceLayer: function(index, config) {
+		this.map.getLayers().setAt(index, this.createLayer(config));
+	},
+
 	createMap: function() {
 		var geometry = Application.geometry;
-		var geometry1 = Application.geometry1;
 
 		var layers = [];
 
-		if(this.hasTiles !== false) {
-			var imageParams = Z8.apply({ ratio: 1}, geometry.tiles);
-			var imageSource = new ol.source.ImageWMS(imageParams);
-			layers.add(new ol.layer.Image({ source: imageSource }));
-
-			if(geometry1 != null) {
-				var imageSource = new ol.source.XYZ(geometry1.tiles);
-				layers.add(new ol.layer.Tile({ source: imageSource }));
-			}
+		if(this.hasTiles !== false && !Z8.isEmpty(geometry.layers)) {
+			var layer = this.createLayer(geometry.layers[0]);
+			layers.add(layer);
 		}
 
 		var me = this;
@@ -252,7 +256,7 @@ Z8.define('Z8.form.field.Geometry', {
 		layer = this.rulerLayer = new ol.layer.Vector({ source: source, style: this.getRulerStyle != null ? getRulerStyle : undefined });
 		layers.add(layer);
 
-		var projection = new ol.proj.Projection({ code: geometry.code, units: 'm', axisOrientation: 'enu' });
+		var projection = new ol.proj.Projection({ code: geometry.projection, units: 'm', axisOrientation: 'enu' });
 
 		var view = this.view = new ol.View({ center: [0, 0], zoom : this.zoom, minZoom: this.minZoom, maxZoom: this.maxZoom, projection: projection });
 		view.on('change:resolution', this.onResolutionChange, this);
