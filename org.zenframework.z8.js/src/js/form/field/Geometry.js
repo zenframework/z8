@@ -215,6 +215,26 @@ Z8.define('Z8.form.field.Geometry', {
 		return layer;
 	},
 
+	addLayer: function(config) {
+		this.map.getLayers().insertAt(1, this.createLayer(config));
+	},
+
+	getLayerByName: function(name) {
+		var layers = this.map.getLayers().getArray();
+		for(var i = 0, length = layers.length; i < length; i++) {
+			var layer = layers[i];
+			if(layer.name == name)
+				return layer;
+		}
+		return null;
+	},
+
+	removeLayer: function(config) {
+		var layer = this.getLayerByName(config.name);
+		if(layer != null)
+			this.map.getLayers().remove(layer);
+	},
+
 	replaceLayer: function(index, config) {
 		this.map.getLayers().setAt(index, this.createLayer(config));
 	},
@@ -225,7 +245,8 @@ Z8.define('Z8.form.field.Geometry', {
 		var layers = [];
 
 		if(this.hasTiles !== false && !Z8.isEmpty(geometry.layers)) {
-			var layer = this.createLayer(geometry.layers[0]);
+			var layer = this.layer = geometry.layers[0]
+			layer = this.createLayer(layer);
 			layers.add(layer);
 		}
 
