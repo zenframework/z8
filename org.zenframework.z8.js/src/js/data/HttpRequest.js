@@ -169,12 +169,10 @@ Z8.define('Z8.data.HttpRequest', {
 	encodeData: function(data) {
 		var result = [];
 
-		var isLogin = this.isLogin = data.login != null;
+		var isLogin = this.isLogin = data.request == 'login';
 
-		if(isLogin)
-			data.request = 'login';
-		else
-			data.session = data.session || Application.session;
+		if(!isLogin)
+			data.session = Application.session;
 
 		for(var name in data) {
 			var value = data[name];

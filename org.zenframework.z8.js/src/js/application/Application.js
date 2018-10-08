@@ -45,8 +45,7 @@ Z8.define('Z8.application.Application', {
 			var cls = this.userCls;
 			User = cls == null ? new Z8.application.User(loginData.user) : Z8.create(cls, loginData.user);
 
-			if(options != null)
-				Z8.callback(options, loginData);
+			Z8.callback(options, loginData);
 		};
 
 		if(Viewport == null) {
@@ -56,8 +55,6 @@ Z8.define('Z8.application.Application', {
 			Viewport.render();
 		}
 
-		Application.session = null;
-		User = null;
 		Viewport.login({ fn: callback, scope: this });
 	},
 

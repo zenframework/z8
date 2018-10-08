@@ -77,6 +77,7 @@ Z8.define('Z8.application.viewport.Login', {
 
 		var password = this.passwordField.getValue() || '';
 		var parameters = {
+			request: 'login',
 			login: this.loginField.getValue(), 
 			password: Application.hashPassword ? MD5.hex(password) : password,
 			experimental: true
