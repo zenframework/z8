@@ -12,6 +12,7 @@ import java.util.Map;
 import org.zenframework.z8.server.base.query.Period;
 import org.zenframework.z8.server.base.query.Query;
 import org.zenframework.z8.server.base.query.QueryUtils;
+import org.zenframework.z8.server.base.table.Table;
 import org.zenframework.z8.server.base.table.value.Aggregation;
 import org.zenframework.z8.server.base.table.value.Expression;
 import org.zenframework.z8.server.base.table.value.Field;
@@ -894,6 +895,9 @@ public class ReadAction extends RequestAction {
 	}
 
 	private void writeData(JsonWriter writer) throws Throwable {
+		if(!(getQuery() instanceof Table))
+			return;
+
 		if(getTotalsParameter()) {
 			writeTotals(writer);
 			return;
