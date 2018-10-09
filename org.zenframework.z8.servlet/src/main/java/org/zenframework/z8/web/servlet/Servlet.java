@@ -80,8 +80,12 @@ public class Servlet extends HttpServlet {
 	@Override
 	protected void service(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		Adapter adapter = getAdapter(request);
-		request.setCharacterEncoding(encoding.Default.toString());
-		adapter.service(request, response);
+		if (adapter != null) {
+			request.setCharacterEncoding(encoding.Default.toString());
+			adapter.service(request, response);
+		} else {
+			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+		}
 	}
 
 	private void stopServer(IServer server) {
