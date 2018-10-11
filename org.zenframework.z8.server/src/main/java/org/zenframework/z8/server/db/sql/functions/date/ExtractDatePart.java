@@ -35,7 +35,7 @@ public class ExtractDatePart extends SqlToken {
 	public String format(DatabaseVendor vendor, FormatOptions options, boolean logicalContext) {
 		switch(vendor) {
 		case Postgres:
-			return "extract(" + part + ", to_timezone(" + date.format(vendor, options) + " / 1000)";
+			return "extract(" + part + " from to_timestamp(" + date.format(vendor, options) + " / 1000))";
 		case Oracle:
 		case SqlServer:
 		default:
