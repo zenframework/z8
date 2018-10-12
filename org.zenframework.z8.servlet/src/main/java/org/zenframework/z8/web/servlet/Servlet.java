@@ -23,6 +23,7 @@ import org.zenframework.z8.server.logs.Trace;
 import org.zenframework.z8.server.types.encoding;
 import org.zenframework.z8.web.server.Adapter;
 import org.zenframework.z8.web.server.ConverterAdapter;
+import org.zenframework.z8.web.server.LogoutAdapter;
 import org.zenframework.z8.web.server.SiteAdapter;
 import org.zenframework.z8.web.server.SystemAdapter;
 
@@ -70,6 +71,7 @@ public class Servlet extends HttpServlet {
 		adapters.add(new SystemAdapter(this));
 		adapters.add(new SiteAdapter(this));
 		adapters.add(new ConverterAdapter(this));
+		adapters.add(new LogoutAdapter(this));
 
 		for(Adapter adapter : adapters)
 			adapter.start();
@@ -78,8 +80,12 @@ public class Servlet extends HttpServlet {
 	@Override
 	protected void service(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		Adapter adapter = getAdapter(request);
-		request.setCharacterEncoding(encoding.Default.toString());
-		adapter.service(request, response);
+		if (adapter != null) {
+			request.setCharacterEncoding(encoding.Default.toString());
+			adapter.service(request, response);
+		} else {
+			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+		}
 	}
 
 	private void stopServer(IServer server) {

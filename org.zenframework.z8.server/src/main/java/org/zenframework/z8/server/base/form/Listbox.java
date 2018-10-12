@@ -54,9 +54,6 @@ public class Listbox extends Control {
 		if(this.query == null)
 			throw new RuntimeException("Listbox.query is null : displayName: '"  + displayName() + "'");
 
-		if(link == null && dependency == null)
-			throw new RuntimeException("Both Listbox.link and Control.dependency are null: '"  + displayName() + "'");
-
 		String requestId = context.classId();
 		Query query = this.query.get();
 

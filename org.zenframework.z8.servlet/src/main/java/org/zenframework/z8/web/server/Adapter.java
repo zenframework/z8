@@ -65,19 +65,21 @@ public abstract class Adapter {
 
 			parseRequest(request, parameters, files);
 
-			String login = getParameter(Json.login.get(), parameters, httpSession);
-			String password = getParameter(Json.password.get(), parameters, httpSession);
+			boolean isLogin = Json.login.equals(parameters.get(Json.request));
+
 			String sessionId = parameters.get(Json.session);
 			String serverId = parameters.get(Json.server);
 
-			// check sessionId first because login can be non-empty
-			if (sessionId != null) {
-				session = authorize(sessionId, serverId, parameters.get(Json.request));
-			} else if (login != null) {
-				if(login.isEmpty() || login.length() > IAuthorityCenter.MaxLoginLength || password != null && password.length() > IAuthorityCenter.MaxPasswordLength)
+			if(isLogin) {
+				String login = getParameter(Json.login.get(), parameters, httpSession);
+				String password = getParameter(Json.password.get(), parameters, httpSession);
+
+				if(login == null || login.isEmpty() || login.length() > IAuthorityCenter.MaxLoginLength || password != null && password.length() > IAuthorityCenter.MaxPasswordLength)
 					throw new AccessDeniedException();
+
 				session = login(login, password);
-			}
+			} else
+				session = authorize(sessionId, serverId, parameters.get(Json.request));
 
 			if(session == null)
 				throw serverId == null ? new AccessDeniedException() : new ServerUnavailableException(serverId);
@@ -205,7 +207,7 @@ public abstract class Adapter {
 				httpSession.setAttribute(key, value);
 			else {
 				value = (String) httpSession.getAttribute(key);
-				parameters.put(key, value);
+				//parameters.put(key, value);
 			}
 		}
 		return value;

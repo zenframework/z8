@@ -288,6 +288,12 @@ Z8.define('Z8.dom.Dom', {
 			DOM.setProperty(dom, 'className', Array.isArray(cls) ? cls.join(' ') : cls, delay);
 		},
 
+		hasCls: function(dom, cls) {
+			if((dom = DOM.get(dom)) == null)
+				return false;
+			return DOM.parseCls(dom.className).indexOf(cls) != -1;
+		},
+
 		removeCls: function(dom, cls, delay) {
 			if((dom = DOM.get(dom)) == null)
 				return;

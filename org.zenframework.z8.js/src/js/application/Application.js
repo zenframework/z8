@@ -17,9 +17,17 @@ Z8.define('Z8.application.Application', {
 	},
 
 	geometry: {
-		tiles: { url: '', serverType: 'geoserver', params: {} },
-		code: '',
-		extent: [0, 0, 0, 0]
+		layers: [{
+			cls: 'Image',
+			sourceCls: 'ImageWMS',
+			name: '',
+			url: 'https://revoltsoft.ru/geoserver/wms',
+			serverType: 'geoserver',
+			params: { 'LAYERS': 'ar:egko', 'VERSION': '1.1.1', 'SRS': 'EPSG:96872', 'TRANSPARENT': 'true' },
+			projection: 'EPSG:96872'
+		}],
+		overlays: [],
+		projection: 'EPSG:96872'
 	},
 
 	subclasses: {
@@ -37,8 +45,7 @@ Z8.define('Z8.application.Application', {
 			var cls = this.userCls;
 			User = cls == null ? new Z8.application.User(loginData.user) : Z8.create(cls, loginData.user);
 
-			if(options != null)
-				Z8.callback(options, loginData);
+			Z8.callback(options, loginData);
 		};
 
 		if(Viewport == null) {
@@ -48,8 +55,6 @@ Z8.define('Z8.application.Application', {
 			Viewport.render();
 		}
 
-		Application.session = null;
-		User = null;
 		Viewport.login({ fn: callback, scope: this });
 	},
 

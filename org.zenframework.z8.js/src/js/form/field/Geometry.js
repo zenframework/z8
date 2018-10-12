@@ -105,6 +105,16 @@ Z8.define('Z8.form.field.Geometry', {
 		this.selectTool = tool;
 	},
 
+	setUndoTool: function(tool) {
+		tool.on('click', this.onUndo, this);
+		this.undoTool = tool;
+	},
+
+	setRedoTool: function(tool) {
+		tool.on('click', this.onRedo, this);
+		this.redoTool = tool;
+	},
+
 	setRulerTool: function(tool) {
 		tool.on('toggle', this.onInteractionToggle, this);
 		this.rulerTool = tool;
@@ -208,21 +218,46 @@ Z8.define('Z8.form.field.Geometry', {
 		this.feature = null;
 	},
 
+	createLayer: function(config) {
+		var source = new ol.source[config.sourceCls](config);
+		var layer = new ol.layer[config.cls]({ source: source });
+		layer.name = config.name;
+		return layer;
+	},
+
+	addLayer: function(config) {
+		this.map.getLayers().insertAt(1, this.createLayer(config));
+	},
+
+	getLayerByName: function(name) {
+		var layers = this.map.getLayers().getArray();
+		for(var i = 0, length = layers.length; i < length; i++) {
+			var layer = layers[i];
+			if(layer.name == name)
+				return layer;
+		}
+		return null;
+	},
+
+	removeLayer: function(config) {
+		var layer = this.getLayerByName(config.name);
+		if(layer != null)
+			this.map.getLayers().remove(layer);
+	},
+
+	replaceLayer: function(index, config) {
+		this.map.getLayers().setAt(index, this.createLayer(config));
+	},
+
 	createMap: function() {
 		var geometry = Application.geometry;
-		var geometry1 = Application.geometry1;
 
 		var layers = [];
 
-		if(this.hasTiles !== false) {
-			var imageParams = Z8.apply({ ratio: 1}, geometry.tiles);
-			var imageSource = new ol.source.ImageWMS(imageParams);
-			layers.add(new ol.layer.Image({ source: imageSource }));
-
-			if(geometry1 != null) {
-				var imageSource = new ol.source.XYZ(geometry1.tiles);
-				layers.add(new ol.layer.Tile({ source: imageSource }));
-			}
+		if(this.hasTiles !== false && !Z8.isEmpty(geometry.layers)) {
+			var layer = this.layer = geometry.layers[0]
+			layer = this.createLayer(layer);
+			layers.add(layer);
 		}
 
 		var me = this;
@@ -252,7 +287,7 @@ Z8.define('Z8.form.field.Geometry', {
 		layer = this.rulerLayer = new ol.layer.Vector({ source: source, style: this.getRulerStyle != null ? getRulerStyle : undefined });
 		layers.add(layer);
 
-		var projection = new ol.proj.Projection({ code: geometry.code, units: 'm', axisOrientation: 'enu' });
+		var projection = new ol.proj.Projection({ code: geometry.projection, units: 'm', axisOrientation: 'enu' });
 
 		var view = this.view = new ol.View({ center: [0, 0], zoom : this.zoom, minZoom: this.minZoom, maxZoom: this.maxZoom, projection: projection });
 		view.on('change:resolution', this.onResolutionChange, this);
@@ -550,6 +585,12 @@ Z8.define('Z8.form.field.Geometry', {
 		this.setZoom(this.getZoom() + 1);
 	},
 
+	onUndo: function(tool) {
+	},
+
+	onRedo: function(tool) {
+	},
+
 	onResolutionChange: function() {
 		this.updateZoomTools(this.getZoom());
 	},
@@ -788,7 +829,7 @@ Z8.define('Z8.form.field.Geometry', {
 			return false;
 
 		var view = this.getExtent();
-		var geometry = feature.getGeometry();
+		var geometry = (feature instanceof ol.geom.Geometry) ? feature : feature.getGeometry();
 		return geometry != null ? ol.extent.containsExtent(view, geometry.getExtent()) : true;
 	},
 
@@ -801,6 +842,10 @@ Z8.define('Z8.form.field.Geometry', {
 			if(geometry == null)
 				return;
 
+			var extent = geometry.getExtent();
+			newCenter = [(extent[0] + extent[2]) / 2, (extent[1] + extent[3]) / 2];
+		} else if(x instanceof ol.geom.Geometry) {
+			var geometry = x;
 			var extent = geometry.getExtent();
 			newCenter = [(extent[0] + extent[2]) / 2, (extent[1] + extent[3]) / 2];
 		} else if(Number.isNumber(x) && Number.isNumber(y))
@@ -828,6 +873,10 @@ Z8.define('Z8.form.field.Geometry', {
 
 	writeFeature: function(value) {
 		return value != null && value.getGeometry() != null ? new ol.format.GeoJSON().writeFeature(value) : null;
+	},
+
+	writeGeometry: function(value) {
+		return value != null ? new ol.format.GeoJSON().writeGeometry(value) : null;
 	},
 
 /*
