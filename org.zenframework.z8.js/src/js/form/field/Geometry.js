@@ -105,6 +105,16 @@ Z8.define('Z8.form.field.Geometry', {
 		this.selectTool = tool;
 	},
 
+	setUndoTool: function(tool) {
+		tool.on('click', this.onUndo, this);
+		this.undoTool = tool;
+	},
+
+	setRedoTool: function(tool) {
+		tool.on('click', this.onRedo, this);
+		this.redoTool = tool;
+	},
+
 	setRulerTool: function(tool) {
 		tool.on('toggle', this.onInteractionToggle, this);
 		this.rulerTool = tool;
@@ -575,6 +585,12 @@ Z8.define('Z8.form.field.Geometry', {
 		this.setZoom(this.getZoom() + 1);
 	},
 
+	onUndo: function(tool) {
+	},
+
+	onRedo: function(tool) {
+	},
+
 	onResolutionChange: function() {
 		this.updateZoomTools(this.getZoom());
 	},
@@ -813,7 +829,7 @@ Z8.define('Z8.form.field.Geometry', {
 			return false;
 
 		var view = this.getExtent();
-		var geometry = feature.getGeometry();
+		var geometry = (feature instanceof ol.geom.Geometry) ? feature : feature.getGeometry();
 		return geometry != null ? ol.extent.containsExtent(view, geometry.getExtent()) : true;
 	},
 
@@ -826,6 +842,10 @@ Z8.define('Z8.form.field.Geometry', {
 			if(geometry == null)
 				return;
 
+			var extent = geometry.getExtent();
+			newCenter = [(extent[0] + extent[2]) / 2, (extent[1] + extent[3]) / 2];
+		} else if(x instanceof ol.geom.Geometry) {
+			var geometry = x;
 			var extent = geometry.getExtent();
 			newCenter = [(extent[0] + extent[2]) / 2, (extent[1] + extent[3]) / 2];
 		} else if(Number.isNumber(x) && Number.isNumber(y))
@@ -853,6 +873,10 @@ Z8.define('Z8.form.field.Geometry', {
 
 	writeFeature: function(value) {
 		return value != null && value.getGeometry() != null ? new ol.format.GeoJSON().writeFeature(value) : null;
+	},
+
+	writeGeometry: function(value) {
+		return value != null ? new ol.format.GeoJSON().writeGeometry(value) : null;
 	},
 
 /*
