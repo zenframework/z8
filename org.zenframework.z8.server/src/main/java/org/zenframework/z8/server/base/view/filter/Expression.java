@@ -5,6 +5,8 @@ import java.util.Collection;
 
 import org.zenframework.z8.server.base.query.Query;
 import org.zenframework.z8.server.base.table.value.Field;
+import org.zenframework.z8.server.base.table.value.GeometryExpression;
+import org.zenframework.z8.server.base.table.value.GeometryField;
 import org.zenframework.z8.server.db.FieldType;
 import org.zenframework.z8.server.db.sql.SqlField;
 import org.zenframework.z8.server.db.sql.SqlToken;
@@ -256,9 +258,18 @@ public class Expression implements IFilter {
 				throw new UnsupportedOperationException();
 			}
 		case Geometry:
-			return new Intersects(this.field, new sql_geometry(geometry.fromGeoJson(value)));
+			return new Intersects(this.field, new sql_geometry(geometry.fromGeoJson(value, srs(this.field))));
 		default:
 			throw new UnsupportedOperationException();
 		}
 	}
+	
+	static private int srs(Field field) {
+		if (field instanceof GeometryField)
+			return ((GeometryField) field).srs.getInt();
+		if (field instanceof GeometryExpression)
+			return ((GeometryExpression) field).srs.getInt();
+		throw new UnsupportedOperationException();
+	}
+
 }

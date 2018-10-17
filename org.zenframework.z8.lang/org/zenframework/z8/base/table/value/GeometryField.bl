@@ -1,5 +1,7 @@
 [native "org.zenframework.z8.server.base.table.value.GeometryField"]
 public class GeometryField extends Field {
+	public int srs = geometry.DefaultSRS;
+
 	virtual public geometry getDefault();
 	public void setDefault(geometry defaultValue);
 

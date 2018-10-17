@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 import org.zenframework.z8.server.base.table.value.Field;
+import org.zenframework.z8.server.base.table.value.GeometryExpression;
+import org.zenframework.z8.server.base.table.value.GeometryField;
 import org.zenframework.z8.server.base.table.value.ILink;
 import org.zenframework.z8.server.db.FieldType;
 import org.zenframework.z8.server.geometry.parser.GeoJsonReader;
@@ -53,7 +55,7 @@ public class QueryUtils {
 		if(type == FieldType.String || type == FieldType.Text || type == FieldType.Attachments)
 			field.set(new string(value));
 		else if(type == FieldType.Geometry)
-			field.set(value == null || value.isEmpty() ? new geometry() : GeoJsonReader.read(value));
+			field.set(value == null || value.isEmpty() ? new geometry(srs(field)) : GeoJsonReader.read(value, srs(field)));
 		else if(type == FieldType.Integer)
 			field.set(value == null || value.isEmpty() ? integer.zero() : new integer(value));
 		else if(type == FieldType.Decimal)
@@ -124,4 +126,13 @@ public class QueryUtils {
 
 		return fields;
 	}
+	
+	static private int srs(Field field) {
+		if (field instanceof GeometryField)
+			return ((GeometryField) field).srs.getInt();
+		if (field instanceof GeometryExpression)
+			return ((GeometryExpression) field).srs.getInt();
+		throw new UnsupportedOperationException();
+	}
+
 }

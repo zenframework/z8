@@ -6,7 +6,7 @@ import java.util.List;
 import org.zenframework.z8.server.types.geometry;
 
 public class BinaryReader {
-	private String bytes;
+	private final String bytes;
 	private int position;
 
 	static public geometry read(String bytes) {

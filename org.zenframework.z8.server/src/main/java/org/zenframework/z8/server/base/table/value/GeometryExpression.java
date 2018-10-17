@@ -4,6 +4,7 @@ import org.zenframework.z8.server.db.FieldType;
 import org.zenframework.z8.server.db.sql.SqlField;
 import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.types.geometry;
+import org.zenframework.z8.server.types.integer;
 import org.zenframework.z8.server.types.primary;
 import org.zenframework.z8.server.types.sql.sql_geometry;
 
@@ -20,10 +21,12 @@ public class GeometryExpression extends Expression {
 		}
 	}
 
+	public integer srs = geometry.DefaultSRS;
+
 	public GeometryExpression(IObject container) {
 		super(container);
 
-		setDefault(new geometry());
+		setDefault(new geometry(srs.getInt()));
 		aggregation = Aggregation.Array;
 	}
 

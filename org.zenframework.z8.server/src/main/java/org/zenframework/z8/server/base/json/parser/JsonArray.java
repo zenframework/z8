@@ -43,6 +43,10 @@ public class JsonArray extends OBJECT {
 		this.array = array;
 	}
 
+	public org.zenframework.z8.server.json.parser.JsonArray getInternalArray() {
+		return array;
+	}
+
 	public string string() {
 		return new string(toString());
 	}
@@ -191,4 +195,11 @@ public class JsonArray extends OBJECT {
 		jsonArray.get().set(new org.zenframework.z8.server.json.parser.JsonArray(source.get()));
 		return jsonArray;
 	}
+
+	public static JsonArray.CLASS<JsonArray> getJsonArray(org.zenframework.z8.server.json.parser.JsonArray json) {
+		JsonArray.CLASS<JsonArray> jsonArray = new JsonArray.CLASS<JsonArray>(null);
+		jsonArray.get().set(json);
+		return jsonArray;
+	}
+
 }

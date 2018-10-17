@@ -60,29 +60,31 @@ public final class geometry extends primary {
 
 	static public double[][] EmptyExtent = { {0, 0}, {0, 0} };
 
-	static public int DefaultSRS = 96872;
+	static public integer DefaultSRS = new integer(3857);
 
-	private String bytes;
+	private String bytes = null;
 
 	private int shape = none;
-	private double x;
-	private double y;
-	private List<geometry> points;
+	private double x = 0.0;
+	private double y = 0.0;
+	private List<geometry> points = null;
 	private double[][] extent;                 // [[xMin, yMin], [xMax, yMax]]
 	private double length = -1.0;
 
-	private int srs = DefaultSRS;
+	private int srs = DefaultSRS.getInt();
 
-	public geometry() {
-		this((geometry)null);
+	public geometry() {}
+
+	public geometry(int srs) {
+		this.srs = srs;
 	}
 
 	public geometry(geometry geometry) {
 		set(geometry);
 	}
 
-	public geometry(double x, double y) {
-		this(x, y, DefaultSRS, null);
+	public geometry(double x, double y, int srs) {
+		this(x, y, srs, null);
 	}
 
 	public geometry(double x, double y, int srs, String bytes) {
@@ -93,8 +95,8 @@ public final class geometry extends primary {
 		this.y = y;
 	}
 
-	public geometry(List<geometry> points, int shape) {
-		this(points, shape, DefaultSRS, null);
+	public geometry(List<geometry> points, int shape, int srs) {
+		this(points, shape, srs, null);
 	}
 
 	public geometry(List<geometry> points, int shape, int srs, String bytes) {
@@ -162,7 +164,7 @@ public final class geometry extends primary {
 		x = geometry != null ? geometry.x : 0;
 		y = geometry != null ? geometry.y : 0;
 		points = geometry != null ? geometry.points : null;
-		srs = geometry != null ? geometry.srs : DefaultSRS;
+		srs = geometry != null ? geometry.srs : DefaultSRS.getInt();
 	}
 
 	@Override
@@ -255,7 +257,7 @@ public final class geometry extends primary {
 			return this;
 
 		double[][] extent = extent();
-		return new geometry((extent[0][0] + extent[1][0]) / 2, (extent[0][1] + extent[1][1]) / 2);
+		return new geometry((extent[0][0] + extent[1][0]) / 2, (extent[0][1] + extent[1][1]) / 2, srs);
 	}
 
 	private double[] point() {
@@ -390,27 +392,27 @@ public final class geometry extends primary {
 		return new decimal(height());
 	}
 
-	static public geometry z8_none() {
-		return new geometry();
+	static public geometry z8_none(integer srs) {
+		return new geometry(srs.getInt());
 	}
 
-	static public geometry z8_point(decimal x, decimal y) {
-		return new geometry(x.getDouble(), y.getDouble());
+	static public geometry z8_point(decimal x, decimal y, integer srs) {
+		return new geometry(x.getDouble(), y.getDouble(), srs.getInt());
 	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	static public geometry z8_line(RCollection points) {
-		return new geometry(points, line);
+		return new geometry(points, line, points == null || points.isEmpty() ? DefaultSRS.getInt() : ((geometry) points.get(0)).srs());
 	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	static public geometry z8_multiLine(RCollection lines) {
-		return new geometry(lines, multiLine);
+		return new geometry(lines, multiLine, lines == null || lines.isEmpty() ? DefaultSRS.getInt() : ((geometry) lines.get(0)).srs());
 	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	static public geometry z8_collection(RCollection geometries) {
-		return new geometry(geometries, collection);
+		return new geometry(geometries, collection, geometries == null || geometries.isEmpty() ? DefaultSRS.getInt() : ((geometry) geometries.get(0)).srs());
 	}
 
 	static public geometry z8_pointOnLine(geometry line, decimal distance) {
@@ -434,32 +436,32 @@ public final class geometry extends primary {
 				double d = distance(a, b);
 				if (distance >= l && distance <= l + d) {
 					double k = (distance - l) / d;
-					return new geometry((b.x() - a.x()) * k + a.x(), (b.y() - a.y()) * k + a.y());
+					return new geometry((b.x() - a.x()) * k + a.x(), (b.y() - a.y()) * k + a.y(), line.srs());
 				}
 				l += d;
 			}
 		}
-		return new geometry();
+		return new geometry(line.srs());
 	}
 
 	static public geometry fromHexString(String hexString) {
 		return new geometry(hexString);
 	}
 
-	static public geometry fromGeoJson(String json) {
-		return (json == null || json.isEmpty()) ? new geometry() : GeoJsonReader.read(json);
+	static public geometry fromGeoJson(String json, int srs) {
+		return (json == null || json.isEmpty()) ? new geometry(srs) : GeoJsonReader.read(json, srs);
 	}
 
 	static public geometry z8_fromHexString(string hexString) {
 		return fromHexString(hexString.get());
 	}
 
-	static public geometry z8_fromGeoJson(string json) {
-		return fromGeoJson(json.get());
+	static public geometry z8_fromGeoJson(string json, integer srs) {
+		return fromGeoJson(json.get(), srs.getInt());
 	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	static public geometry z8_fromArray(RCollection geometries) {
+	static public geometry z8_fromArray(RCollection geometries, integer srs) {
 		List<geometry> points = new ArrayList<geometry>();
 		for(geometry geometry : (Collection<geometry>)geometries) {
 			if(geometry.shape() == collection)
@@ -467,7 +469,7 @@ public final class geometry extends primary {
 			else if(geometry.shape() != none)
 				points.add(geometry);
 		}
-		return new geometry(points, collection);
+		return new geometry(points, collection, srs.getInt());
 	}
 	
 	static private double distance(geometry a, geometry b) {

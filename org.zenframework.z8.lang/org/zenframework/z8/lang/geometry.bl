@@ -1,6 +1,8 @@
 [primary "org.zenframework.z8.server.types.geometry"]
 public final class geometry extends primary {
-	
+
+	static public final int DefaultSRS = 3857;
+
 	static public final int None = -1;
 	static public final int Ring = 0;
 	static public final int Point = 1;
@@ -47,8 +49,8 @@ public final class geometry extends primary {
 	public bool operator == (guid value);
 	public bool operator != (guid value);
 
-	static public geometry none();
-	static public geometry point(decimal x, decimal y);
+	static public geometry none(int srs);
+	static public geometry point(decimal x, decimal y, int srs);
 	static public geometry line(geometry[] points);
 	static public geometry multiLine(geometry[] lines);
 	static public geometry collection(geometry[] geometries);
@@ -56,7 +58,7 @@ public final class geometry extends primary {
 	static public geometry pointOnLine(geometry line, decimal distance);
 
 	static public geometry fromHexString(string hexString);
-	static public geometry fromGeoJson(string geoJson);
+	static public geometry fromGeoJson(string geoJson, int srs);
 
 	static public geometry fromArray(geometry[] geometries);
 }

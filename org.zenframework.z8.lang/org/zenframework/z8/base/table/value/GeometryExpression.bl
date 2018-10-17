@@ -1,5 +1,6 @@
 [native "org.zenframework.z8.server.base.table.value.GeometryExpression"]
 public class GeometryExpression extends Expression {
+	int srs = geometry.DefaultSRS;
 	aggregation = Aggregation.Array;
 
 	public void setDefault(geometry defaultValue);

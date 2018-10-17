@@ -25,7 +25,7 @@ import org.zenframework.z8.server.types.geometry;
 
 public class sql_geometry extends sql_primary {
 	public sql_geometry() {
-		super(new SqlConst(new geometry()));
+		super(new SqlConst(new geometry(geometry.DefaultSRS.getInt())));
 	}
 
 	public sql_geometry(geometry value) {

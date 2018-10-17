@@ -8,6 +8,7 @@ import org.zenframework.z8.server.db.sql.SqlField;
 import org.zenframework.z8.server.engine.ApplicationServer;
 import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.types.geometry;
+import org.zenframework.z8.server.types.integer;
 import org.zenframework.z8.server.types.primary;
 import org.zenframework.z8.server.types.string;
 import org.zenframework.z8.server.types.sql.sql_geometry;
@@ -26,9 +27,11 @@ public class GeometryField extends Field {
 		}
 	}
 
+	public integer srs = geometry.DefaultSRS;
+
 	public GeometryField(IObject container) {
 		super(container);
-		setDefault(new geometry());
+		setDefault(new geometry(srs.getInt()));
 		aggregation = Aggregation.Array;
 	}
 
@@ -51,7 +54,7 @@ public class GeometryField extends Field {
 		String name = type().vendorType(vendor);
 
 		if(vendor == DatabaseVendor.Postgres)
-			return name + "(Geometry, " + geometry.DefaultSRS + ")";
+			return name + "(Geometry, " + srs + ")";
 
 		return name;
 	}
@@ -66,7 +69,7 @@ public class GeometryField extends Field {
 		primary value = super.read();
 
 		if(getCursor().isGrouped() && aggregation == Aggregation.Array)
-			return geometry.z8_fromArray(array((string)value));
+			return geometry.z8_fromArray(array((string)value), srs);
 
 		return value;
 	}
