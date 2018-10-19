@@ -38,16 +38,20 @@ public class SqlField extends SqlToken {
 
 	@Override
 	public String format(DatabaseVendor vendor, FormatOptions options, boolean logicalContext) throws UnknownDatabaseException {
-		Aggregation aggregation = options.isAggregationEnabled() ? field.getAggregation() : Aggregation.None;
+		Aggregation aggregation = field.getAggregation();
 
-		options.disableAggregation();
-		SqlToken token = getToken(vendor, options, logicalContext, aggregation);
-		options.enableAggregation();
+		if(aggregation != Aggregation.None)
+			options.disableAggregation();
 
-		return aggregate(token, aggregation).format(vendor, options, logicalContext);
+		SqlToken token = getToken(vendor, options, logicalContext);
+
+		if(aggregation != Aggregation.None)
+			options.enableAggregation();
+
+		return aggregate(token, options.isAggregationEnabled() ? aggregation : Aggregation.None).format(vendor, options, logicalContext);
 	}
 
-	private SqlToken getToken(DatabaseVendor vendor, FormatOptions options, boolean logicalContext, Aggregation aggregation) {
+	private SqlToken getToken(DatabaseVendor vendor, FormatOptions options, boolean logicalContext) {
 		FieldType type = field.type();
 
 		String alias = field.format(vendor, options);

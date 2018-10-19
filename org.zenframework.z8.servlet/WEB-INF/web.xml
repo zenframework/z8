@@ -17,10 +17,23 @@
 		<servlet-class>org.zenframework.z8.web.servlet.Servlet</servlet-class>
 		<init-param>
 			<param-name>site</param-name>
-			<param-value>
-				org.zenframework.z8.server.base.table.site.Comments,
-				org.zenframework.z8.server.base.table.site.Topics
-		</param-value>
+			<param-value>org.zenframework.z8.server.base.table.site.Comments, org.zenframework.z8.server.base.table.site.Topics</param-value>
+		</init-param>
+		<init-param>
+			<param-name>startApplicationServer</param-name>
+			<param-value>false</param-value>
+		</init-param>
+		<init-param>
+			<param-name>startAuthorityCenter</param-name>
+			<param-value>false</param-value>
+		</init-param>
+		<init-param>
+			<param-name>startInterconnectionCenter</param-name>
+			<param-value>false</param-value>
+		</init-param>
+		<init-param>
+			<param-name>useContainerSession</param-name>
+			<param-value>false</param-value>
 		</init-param>
 		<load-on-startup>1</load-on-startup>
 	</servlet>

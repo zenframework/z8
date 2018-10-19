@@ -24,6 +24,7 @@ public class BoolExpression extends Expression {
 	public BoolExpression(IObject container) {
 		super(container);
 		width = new integer(5);
+		aggregation = Aggregation.Max;
 		setDefault(bool.False);
 	}
 
