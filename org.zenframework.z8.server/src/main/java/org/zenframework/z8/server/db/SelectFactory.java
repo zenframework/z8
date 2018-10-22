@@ -174,10 +174,10 @@ public class SelectFactory {
 		for(Field field : action.getSelectFields()) {
 			if(checkField(field)) {
 				if(grouped) {
-					if(groupFields.contains(field) || field.isAggregated())
+					if(groupFields.contains(field) || field.isAggregated() || field instanceof Expression)
 						fields.add(field);
 				} else if(isAggregated) {
-					if(field.isAggregated())
+					if(field.isAggregated() || field instanceof Expression)
 						fields.add(field);
 				} else
 					fields.add(field);

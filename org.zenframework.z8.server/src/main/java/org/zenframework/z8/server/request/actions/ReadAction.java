@@ -363,13 +363,6 @@ public class ReadAction extends RequestAction {
 		return links;
 	}
 
-	private boolean checkAggregation(Field field) {
-		if(!groupBy.isEmpty())
-			return field.aggregation != Aggregation.None || groupBy.contains(field);
-
-		return true;
-	}
-
 	private void addGroupByField(Field field) {
 		if(field != null)
 			groupBy.add(field);
@@ -381,28 +374,28 @@ public class ReadAction extends RequestAction {
 	}
 
 	private Field addSelectField(Field field) {
-		if(field != null && checkAggregation(field)) {
-			selectFields.add(field);
+		if(field == null)
+			return null;
+		selectFields.add(field);
 
-			if(hasPrimaryKey()) {
-				Collection<ILink> links = getPath(field);
+		if(hasPrimaryKey()) {
+			Collection<ILink> links = getPath(field);
 
-				for(ILink link : links) {
-					if(!(link instanceof Join))
-						selectFields.add((Field)link);
+			for(ILink link : links) {
+				if(!(link instanceof Join))
+					selectFields.add((Field)link);
 
-					if(link.getJoin() == JoinType.Right) {
-						Field primaryKey = link.getQuery().primaryKey();
-						selectFields.add(primaryKey);
-						notNullFields.add(primaryKey);
-					}
+				if(link.getJoin() == JoinType.Right) {
+					Field primaryKey = link.getQuery().primaryKey();
+					selectFields.add(primaryKey);
+					notNullFields.add(primaryKey);
 				}
-
-				field.setPath(links);
 			}
 
-			collectUsedQueries(field);
+			field.setPath(links);
 		}
+
+		collectUsedQueries(field);
 		return field;
 	}
 
