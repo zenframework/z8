@@ -327,7 +327,11 @@ Z8.define('Z8.form.field.Geometry', {
 	},
 
 	createEdit: function() {
-		return new ol.interaction.Modify({ source: this.getVectorSource() });
+		var altOrCtrl = function(mapBrowserEvent) {
+			var e = mapBrowserEvent.originalEvent;
+			return (e.altKey || e.ctrlKey) && !(e.metaKey || e.shiftKey);
+		};
+		return new ol.interaction.Modify({ source: this.getVectorSource(), deleteCondition: altOrCtrl });
 	},
 
 	createDraw: function() {
@@ -477,11 +481,6 @@ Z8.define('Z8.form.field.Geometry', {
 		this.removeFeatures(this.feature);
 		this.feature = value;
 		this.addFeatures(value);
-	},
-
-	setValue: function(value, displayValue) {
-		this.cancelEdit(false);
-		this.callParent(value, displayValue);
 	},
 
 	setRecord: function(record) {
