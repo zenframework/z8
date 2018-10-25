@@ -78,19 +78,19 @@ public class AttachmentProcessor extends OBJECT {
 		}
 	}
 
-	private void save(Collection<file> files, guid recordId) {
+	public void save(guid recordId, Collection<file> files) {
 		getField().set(new string(file.toJson(files)));
 		getTable().update(recordId);
 	}
 
-	public Collection<file> create(guid attachTo, Collection<file> files) {
+	public Collection<file> create(guid recordId, Collection<file> files) {
 		Files filesTable = Files.newInstance();
 
 		for(file file : files) {
 			if(file.id.isNull()) {
 				file.id = guid.create();
 				setUser(file);
-				setPathIfEmpty(attachTo, file);
+				setPathIfEmpty(recordId, file);
 				putToCache(file);
 				filesTable.add(file);
 			}
@@ -107,37 +107,37 @@ public class AttachmentProcessor extends OBJECT {
 		}
 	}
 
-	public Collection<file> update(guid attachTo, Collection<file> files) {
-		Collection<file> result = read(attachTo);
+	public Collection<file> update(guid recordId, Collection<file> files) {
+		Collection<file> result = read(recordId);
 
-		files = create(attachTo, files);
+		files = create(recordId, files);
 
 		result.addAll(files);
-		save(result, attachTo);
+		save(recordId, result);
 
 		return result;
 	}
 
-	public Collection<file> remove(guid target, Collection<file> files) {
+	public Collection<file> remove(guid recordId, Collection<file> files) {
 		Files filesTable = Files.newInstance();
-		Collection<file> result = read(target);
+		Collection<file> result = read(recordId);
 
 		for(file file : files)
 			filesTable.destroy(file.id);
 
 		result.removeAll(files);
-		save(result, target);
+		save(recordId, result);
 
 		return result;
 	}
 
-	private void setPathIfEmpty(guid recordId, file file) {
-		String path = file.path.get();
+	private void setPathIfEmpty(guid recordId, file f) {
+		String path = f.path.get();
 
 		if(path.isEmpty() || !path.startsWith(Folders.Storage)) {
 			date time = new date();
-			path = StringUtils.concat(org.zenframework.z8.server.types.file.separator, Folders.Storage, time.format("yyyy.MM.dd"), getTable().name(), recordId.toString(), field.name(), time.format("HH-mm-ss"), file.name.get());
-			file.path = new string(path);
+			path = StringUtils.concat(file.separator, Folders.Storage, time.format("yyyy.MM.dd"), getTable().name(), recordId.toString(), field.name(), time.format("HH-mm-ss"), f.name.get());
+			f.path = new string(path);
 		}
 	}
 

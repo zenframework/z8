@@ -102,6 +102,14 @@ public class file extends primary implements RmiSerializable, Serializable {
 		set(file);
 	}
 
+	public file(String path) {
+		this(new string(path));
+	}
+
+	public file(string path) {
+		operatorAssign(path);
+	}
+
 	protected file(JsonObject json) {
 		super();
 		set(json);
@@ -312,10 +320,6 @@ public class file extends primary implements RmiSerializable, Serializable {
 		}
 	}
 
-	public void write(String content) {
-		write(content, encoding.Default);
-	}
-
 	static public file createTempFile(String extension) {
 		File folder = new File(Folders.Base, Folders.Files);
 		folder.mkdirs();
@@ -329,7 +333,15 @@ public class file extends primary implements RmiSerializable, Serializable {
 		return new file(new File(folder, name));
 	}
 
-	public void write(String content, encoding charset) {
+	public void write(String content) {
+		write(content, true);
+	}
+
+	public void write(String content, boolean append) {
+		write(content, encoding.Default, append);
+	}
+
+	public void write(String content, encoding charset, boolean append) {
 		try {
 			if(path.isEmpty()) {
 				set(createTempFile("txt"));
@@ -338,7 +350,7 @@ public class file extends primary implements RmiSerializable, Serializable {
 
 			File file = getAbsolutePath(path.get());
 
-			OutputStream output = new FileOutputStream(file, true);
+			OutputStream output = new FileOutputStream(file, append);
 			output.write(content.getBytes(charset.toString()));
 			IOUtils.closeQuietly(output);
 		} catch(IOException e) {
@@ -447,11 +459,15 @@ public class file extends primary implements RmiSerializable, Serializable {
 	}
 
 	public void z8_write(string content) {
-		write(content.get());
+		write(content.get(), true);
 	}
 
-	public void z8_write(string content, encoding charset) {
-		write(content.get(), charset);
+	public void z8_write(string content, bool append) {
+		write(content.get(), append.get());
+	}
+
+	public void z8_write(string content, encoding charset, bool append) {
+		write(content.get(), charset, append.get());
 	}
 
 	static public RCollection<file> z8_parse(string json) {

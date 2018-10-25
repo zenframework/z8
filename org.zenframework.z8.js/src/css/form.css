@@ -75,7 +75,8 @@
 
 	.fieldset:not(.tab).flexed,
 	.tabs.flexed,
-	.image.flexed,
+	.image-document.flexed,
+	.pdf-document.flexed,
 	.control-group.flexed {
 		position: absolute;
 		top: 0;

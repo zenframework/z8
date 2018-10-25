@@ -18,13 +18,17 @@ public class file extends primary {
 	public bool isDirectory();
 	public file[] listFiles();
 
+	public void write(string content);
+	public void write(string content, bool append);
+	public void write(string content, encoding charset, bool append);
+
 	/*
-	*    Gets the name minus the path from a full filename.
+	*    Gets the name (with no path)
 	*/
 	static public string name(string path);
 
 	/*
-	*     Gets the base name, minus the full path and extension, from a full filename.
+	*    Gets the base name (without path and extension)
 	*/
 	static public string baseName(string path);
 
