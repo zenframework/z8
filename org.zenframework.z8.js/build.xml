@@ -113,6 +113,7 @@
 				button/Button.js,
 				button/Trigger.js,
 				button/Tool.js,
+				button/GeometryTools.js,
 				button/File.js,
 				button/Group.js,
 				calendar/Markup.js,

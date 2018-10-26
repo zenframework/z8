@@ -16,7 +16,8 @@
 .fa-subset-of,
 .fa-superset-of,
 .fa-not-subset-of,
-.fa-not-superset-of {
+.fa-not-superset-of,
+.fa-yandex {
 	font: 700 1em Roboto, 'Segoe UI', helvetica, arial !important;
 }
 
@@ -62,6 +63,10 @@
 
 .fa-not-superset-of:before {
 	content: "\2285";
+}
+
+.fa-yandex:before {
+	content: "Я";
 }
 
 .fa-rotate--90 {

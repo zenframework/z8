@@ -43,51 +43,19 @@ Z8.define('Z8.form.field.Geometry', {
 
 		var zoom = new Z8.button.Group({ items: [zoomOut, zoomIn] });
 
-		return [zoom].add(this.createInteractionTools());
+		var tools = this.createGeometryTools();
+		this.setGeometryTools(tools);
+
+		return [zoom].add(tools || []);
 	},
 
-	createInteractionTools: function() {
-		var interactions = [];
+	createGeometryTools: function() {
+		return new Z8.button.GeometryTools();
+	},
 
-		if(this.selectTool !== false) {
-			var select = new Z8.button.Tool({ icon: 'fa-mouse-pointer', tooltip: 'Выбор объектов', toggled: true });
-			this.setSelectTool(select);
-			interactions.add(select);
-		} else
-			this.selectTool = null;
-
-		if(this.rulerTool !== false) {
-			var ruler = new Z8.button.Tool({ icon: 'fa-ruler-combined', tooltip: 'Линейка', toggled: false });
-			this.setRulerTool(ruler);
-			interactions.add(ruler);
-		} else
-			this.selectTool = null;
-
-		if(this.moveTool !== false) {
-			var move = new Z8.button.Tool({ icon: 'fa-hand-paper-o', tooltip: 'Переместить объект', toggled: false, enabled: false });
-			this.setMoveTool(move);
-			interactions.add(move);
-		} else
-			this.moveTool = null;
-
-		if(this.editTool !== false) {
-			var edit = new Z8.button.Tool({ icon: 'fa-pencil', tooltip: 'Изменить объект', toggled: false, enabled: false });
-			this.setEditTool(edit);
-			interactions.add(edit);
-		} else
-			this.editTool = null;
-
-		if(this.drawTool !== false) {
-			var draw = new Z8.button.Tool({ icon: 'fa-pencil-square-o', tooltip: 'Нарисовать объект', toggled: false, enabled: false });
-			this.setDrawTool(draw);
-			interactions.add(draw);
-		} else
-			this.drawTool = null;
-/*
-		var erase = this.eraseButton = new Z8.button.Tool({ icon: 'fa-eraser', tooltip: 'Удалить объект', toggled: false, enabled: false });
-		edit.on('toggle', this.onInteractionToggle, this);
-*/
-		return [new Z8.button.Group({ items: interactions, radio: true })];
+	setGeometryTools: function(tools) {
+		tools.on('select', this.onToolSelect, this);
+		this.geometryTools = tools;
 	},
 
 	setZoomOutTool: function(tool) {
@@ -100,11 +68,6 @@ Z8.define('Z8.form.field.Geometry', {
 		this.zoomInTool = tool;
 	},
 
-	setSelectTool: function(tool) {
-		tool.on('toggle', this.onInteractionToggle, this);
-		this.selectTool = tool;
-	},
-
 	setUndoTool: function(tool) {
 		tool.on('click', this.onUndo, this);
 		this.undoTool = tool;
@@ -113,30 +76,6 @@ Z8.define('Z8.form.field.Geometry', {
 	setRedoTool: function(tool) {
 		tool.on('click', this.onRedo, this);
 		this.redoTool = tool;
-	},
-
-	setRulerTool: function(tool) {
-		tool.on('toggle', this.onInteractionToggle, this);
-		this.rulerTool = tool;
-	},
-
-	setMoveTool: function(tool) {
-		tool.on('toggle', this.onInteractionToggle, this);
-		this.moveTool = tool;
-	},
-
-	setEditTool: function(tool) {
-		tool.on('toggle', this.onInteractionToggle, this);
-		this.editTool = tool;
-	},
-
-	setDrawTool: function(tool) {
-		tool.on('toggle', this.onInteractionToggle, this);
-		this.drawTool = tool;
-	},
-
-	isToolToggled: function(tool) {
-		return tool != null && tool.toggled;
 	},
 
 	enableTool: function(tool, enable) {
@@ -152,12 +91,17 @@ Z8.define('Z8.form.field.Geometry', {
 		var canEdit = this.canEdit();
 		var canDraw = this.canDraw();
 
-		if(!enabled || !canMove && this.isToolToggled(this.move) || !canEdit && this.isToolToggled(this.edit) || !canDraw && this.isToolToggled(this.draw))
-			this.toggleSelect();
+		var tools = this.geometryTools;
 
-		this.enableTool(this.moveTool, enabled && canMove);
-		this.enableTool(this.editTool, enabled && canEdit);
-		this.enableTool(this.drawTool, enabled && canDraw);
+		if(tools == null)
+			return;
+
+		if(!enabled || !canMove && tools.isMoveActive() || !canEdit && tools.isEditActive() || !canDraw && tools.isDrawActive())
+			tools.activateSelect();
+
+		tools.enableMove(enabled && canMove);
+		tools.enableEdit(enabled && canEdit);
+		tools.enableDraw(enabled && canDraw);
 	},
 
 	completeRender: function() {
@@ -340,10 +284,13 @@ Z8.define('Z8.form.field.Geometry', {
 
 	installEdit: function() {
 		var map = this.map;
-		if(map == null)
+		var tools = this.geometryTools;
+
+		if(map == null || tools == null)
 			return;
 
-		if(this.rulerTool != null) {
+
+		if(tools.ruler !== false) {
 			var ruler = this.ruler = this.createRuler();
 			ruler.setActive(false);
 			ruler.on('drawstart', this.onRulerStart, this);
@@ -351,7 +298,7 @@ Z8.define('Z8.form.field.Geometry', {
 			map.addInteraction(ruler);
 		}
 
-		if(this.moveTool != null) {
+		if(tools.move !== false) {
 			var move = this.move = this.createMove();
 			move.setActive(false);
 			move.on('translatestart', this.onEditStart, this);
@@ -359,7 +306,7 @@ Z8.define('Z8.form.field.Geometry', {
 			map.addInteraction(move);
 		}
 
-		if(this.editTool != null) {
+		if(tools.edit !== false) {
 			var edit = this.edit = this.createEdit();
 			edit.setActive(false);
 			edit.on('modifystart', this.onEditStart, this);
@@ -367,7 +314,7 @@ Z8.define('Z8.form.field.Geometry', {
 			map.addInteraction(edit);
 		}
 
-		if(this.drawTool != null) {
+		if(tools.draw !== false) {
 			var draw = this.draw = this.createDraw();
 			draw.setActive(false);
 			draw.on('drawstart', this.onEditStart, this);
@@ -378,7 +325,9 @@ Z8.define('Z8.form.field.Geometry', {
 
 	uninstallEdit: function() {
 		var map = this.map;
-		if(map == null)
+		var tools = this.geometryTools;
+
+		if(map == null || tools == null)
 			return;
 
 		var ruler = this.ruler;
@@ -607,11 +556,13 @@ Z8.define('Z8.form.field.Geometry', {
 	},
 
 	isModifying: function() {
-		return this.isEditing && (this.isActiveInteraction(this.move) || this.isActiveInteraction(this.edit));
+		var tools = this.geometryTools;
+		return this.isEditing && tools != null && (tools.isMoveActive() || tools.isEditActive());
 	},
 
 	isDrawing: function() {
-		return this.isEditing && this.isActiveInteraction(this.draw);
+		var tools = this.geometryTools;
+		return this.isEditing && tools != null && tools.isDrawActive();
 	},
 
 	onFeatureChange: function(event) {
@@ -714,6 +665,22 @@ Z8.define('Z8.form.field.Geometry', {
 			this.finishEdit();
 			event.stopEvent();
 		}
+
+		if(key == Event.Z) {
+			var undo = this.undoTool;
+			if(event.ctrlKey && undo != null && undo.isEnabled()) {
+				this.onUndo(undo);
+				event.stopEvent();
+			}
+		}
+
+		if(key == Event.Y) {
+			var redo = this.redoTool;
+			if(event.ctrlKey && redo != null && redo.isEnabled()) {
+				event.stopEvent();
+				this.onRedo(redo);
+			}
+		}
 	},
 
 	onKeyUp: function(event, target) {
@@ -748,25 +715,10 @@ Z8.define('Z8.form.field.Geometry', {
 		this.updateGrid();
 	},
 
-	toggleTool: function(tool, toggled) {
-		if(tool != null)
-			tool.setToggled(toggled);
-	},
-
 	toggleSelect: function() {
-		this.toggleTool(this.selectTool, true);
-	},
-
-	toggleMove: function() {
-		this.toggleTool(this.moveTool, true);
-	},
-
-	toggleEdit: function() {
-		this.toggleTool(this.editTool, true);
-	},
-
-	toggleDraw: function() {
-		this.toggleTool(this.drawTool, true);
+		var tools = this.geometryTools;
+		if(tools != null)
+			tools.activateSelect();
 	},
 
 	canSelect: function() {
@@ -797,21 +749,41 @@ Z8.define('Z8.form.field.Geometry', {
 		return geometry;
 	},
 
-	isActiveInteraction: function(interaction) {
-		return interaction != null ? interaction.getActive() : false;
-	},
-
 	activateInteraction: function(interaction, activate) {
 		if(interaction != null)
 			interaction.setActive(activate);
 	},
 
-	onInteractionToggle: function(tool) {
-		this.cancelEdit(false);
-		this.activateInteraction(this.ruler, tool == this.rulerTool);
-		this.activateInteraction(this.move, tool == this.moveTool && this.canMove());
-		this.activateInteraction(this.edit, tool == this.editTool && this.canEdit());
-		this.activateInteraction(this.draw, tool == this.drawTool && this.canDraw());
+	onToolSelect: function(tools, tool) {
+		if(tool.isTool) {
+			this.cancelEdit(false);
+			this.activateInteraction(this.ruler, tool.isRuler);
+			this.activateInteraction(this.move, tool.isMove && this.canMove());
+			this.activateInteraction(this.edit, tool.isEdit && this.canEdit());
+			this.activateInteraction(this.draw, tool.isDraw && this.canDraw());
+		} else if(tool.isLocation)
+			this.goToCurrentLocation();
+		else if(tool.isYandex)
+			this.openYandexMaps();
+	},
+
+	goToCurrentLocation: function() {
+		var me = this;
+
+		var callback = function(position) {
+			var lon = position.coords.longitude;
+			var lat = position.coords.latitude;
+			var projection = me.view.getProjection();
+			var coordinate = ol.proj.fromLonLat([lon, lat], projection);
+			me.setCenter(coordinate[0], coordinate[1]);
+		};
+
+		navigator.geolocation.getCurrentPosition(callback);
+	},
+
+	openYandexMaps: function() {
+		var center = ol.proj.toLonLat(this.getCenter(), this.view.getProjection());
+		window.open('https://yandex.ru/maps/213/moscow/?z=' + this.getZoom() + '&ll=' + center[0] + ',' + center[1]);
 	},
 
 	getCenter: function() {
