@@ -338,6 +338,10 @@ public final class geometry extends primary {
 		return new integer(shape());
 	}
 
+	public integer z8_srs() {
+		return new integer(srs());
+	}
+	
 	public decimal z8_x() {
 		return new decimal(x());
 	}

@@ -24,6 +24,7 @@ public final class geometry extends primary {
 	static public final string StrCollection = "COLLECTION";
 
 	public int shape();
+	public int srs();
 	public geometry[] points();
 
 	public decimal x();
