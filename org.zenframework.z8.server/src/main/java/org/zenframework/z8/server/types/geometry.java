@@ -3,6 +3,7 @@ package org.zenframework.z8.server.types;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
@@ -437,6 +438,44 @@ public final class geometry extends primary {
 				if (distance >= l && distance <= l + d) {
 					double k = (distance - l) / d;
 					return new geometry((b.x() - a.x()) * k + a.x(), (b.y() - a.y()) * k + a.y(), line.srs());
+				}
+				l += d;
+			}
+		}
+		return new geometry(line.srs());
+	}
+
+	static public geometry z8_perpendicularToLine(geometry line, decimal distance, decimal length) {
+		return perpendicularToLine(line, distance.getDouble(), length.getDouble());
+	}
+
+	static public geometry perpendicularToLine(geometry line, double distance, double length) {
+		if (line.shape() == geometry.multiLine) {
+			List<geometry> elements = line.points();
+			for (geometry el : elements) {
+				geometry point = perpendicularToLine(el, distance, length);
+				if (point.shape() == geometry.point)
+					return point;
+				distance -= el.length();
+			}
+		} else if (line.shape() == geometry.line) {
+			double l = 0.0;
+			List<geometry> points = line.points();
+			for (int i = 0; i < points.size() - 1; i++) {
+				geometry a = points.get(i), b = points.get(i + 1);
+				double d = distance(a, b);
+				if (distance >= l && distance <= l + d) {
+					double k = (distance - l) / d;
+					geometry c = new geometry((b.x() - a.x()) * k + a.x(), (b.y() - a.y()) * k + a.y(), line.srs());
+					if (distance - l <= l + d - distance) {
+						k = length / 2.0 / (l + d - distance);
+					} else {
+						b = a;
+						k = length / 2.0 / (distance - l);
+					}
+					geometry p1 = new geometry(c.x() - (b.y() - c.y()) * k, c.y() + (b.x() - c.x()) * k, line.srs());
+					geometry p2 = new geometry(c.x() + (b.y() - c.y()) * k, c.y() - (b.x() - c.x()) * k, line.srs());
+					return new geometry(Arrays.asList(p1, p2), geometry.line, line.srs());
 				}
 				l += d;
 			}

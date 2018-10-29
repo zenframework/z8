@@ -56,6 +56,7 @@ public final class geometry extends primary {
 	static public geometry collection(geometry[] geometries);
 
 	static public geometry pointOnLine(geometry line, decimal distance);
+	static public geometry perpendicularToLine(geometry line, decimal distance, decimal length);
 
 	static public geometry fromHexString(string hexString);
 	static public geometry fromGeoJson(string geoJson, int srs);
