@@ -37,7 +37,7 @@ public class Window extends SqlToken {
 		switch(vendor) {
 		case Postgres:
 		case Oracle:
-			if(type == FieldType.Guid || type == FieldType.Text || type == FieldType.Attachments)
+			if(type == FieldType.Guid || type == FieldType.Text || type == FieldType.Attachments || type == FieldType.File)
 				token = new ToString(token);
 			break;
 		default:

@@ -69,7 +69,7 @@ public class OBJECT extends RequestTarget implements IObject, RmiSerializable {
 			OBJECT.CLASS<? extends OBJECT> cls = getCLASS();
 			if(cls != null)
 				cls.get();
-			
+
 			id = "";
 
 			IObject container = getContainer();
@@ -148,6 +148,16 @@ public class OBJECT extends RequestTarget implements IObject, RmiSerializable {
 	@Override
 	public void setDisplayName(String name) {
 		setAttribute(DisplayName, name);
+	}
+
+	@Override
+	public String columnHeader() {
+		return getAttribute(ColumnHeader);
+	}
+
+	@Override
+	public void setColumnHeader(String name) {
+		setAttribute(ColumnHeader, name);
 	}
 
 	@Override

@@ -242,12 +242,7 @@ Z8.define('Z8.form.field.Geometry', {
 
 		this.installEdit();
 
-		var snap = this.snap = new ol.interaction.Snap({ source: this.getVectorSource() });
-		snap.setActive(false);
-		map.addInteraction(snap);
-
 		DOM.on(mapContainer, 'keyDown', this.onKeyDown, this);
-		DOM.on(mapContainer, 'keyUp', this.onKeyUp, this);
 		DOM.on(mapContainer, 'contextMenu', this.onContextMenu, this);
 		DOM.on(window, 'resize', this.onResize, this);
 
@@ -373,7 +368,6 @@ Z8.define('Z8.form.field.Geometry', {
 
 		var mapContainer = this.mapContainer;
 
-		DOM.un(mapContainer, 'keyUp', this.onKeyUp, this);
 		DOM.un(mapContainer, 'keyDown', this.onKeyDown, this);
 		DOM.un(mapContainer, 'contextMenu', this.onContextMenu, this);
 		DOM.un(window, 'resize', this.onResize, this);
@@ -648,22 +642,47 @@ Z8.define('Z8.form.field.Geometry', {
 	onKeyDown: function(event, target) {
 		var key = event.getKey();
 
-		if(this.isEditing && key == Event.ESC) {
-			this.cancelEdit();
+		if(key == Event.ESC) {
+			if(this.isEditing)
+				this.cancelEdit();
+			else
+				this.toggleSelect();
 			event.stopEvent();
 		}
 
-		if(key == Event.CTRL) {
-			var snap = this.snap;
-			if(!snap.getActive()) {
-				snap.setActive(true);
+		if(this.isDrawing() && key == Event.ENTER) {
+			this.finishEdit();
+			event.stopEvent();
+		}
+
+		var tools = this.geometryTools;
+
+		if(key == Event.L) {
+			if(event.ctrlKey && tools != null && tools.isRulerEnabled()) {
+				tools.activateRuler();
 				event.stopEvent();
 			}
 		}
 
-		if(this.isEditing && key == Event.ENTER) {
-			this.finishEdit();
-			event.stopEvent();
+		if(key == Event.M) {
+			if(event.ctrlKey && tools != null && tools.isMoveEnabled()) {
+				tools.activateMove();
+				event.stopEvent();
+			}
+		}
+
+		if(key == Event.E) {
+			if(event.ctrlKey && tools != null && tools.isEditEnabled()) {
+				tools.activateEdit();
+				event.stopEvent();
+			}
+		}
+
+		if(key == Event.D) {
+			if(event.ctrlKey && tools != null && tools.isDrawEnabled()) {
+				tools.activateDraw();
+				event.stopEvent();
+			}
 		}
 
 		if(key == Event.Z) {
@@ -679,16 +698,6 @@ Z8.define('Z8.form.field.Geometry', {
 			if(event.ctrlKey && redo != null && redo.isEnabled()) {
 				event.stopEvent();
 				this.onRedo(redo);
-			}
-		}
-	},
-
-	onKeyUp: function(event, target) {
-		if(event.getKey() == Event.CTRL) {
-			var snap = this.snap;
-			if(snap.getActive()) {
-				snap.setActive(false);
-				event.stopEvent();
 			}
 		}
 	},

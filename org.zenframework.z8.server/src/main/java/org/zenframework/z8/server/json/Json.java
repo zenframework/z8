@@ -222,6 +222,7 @@ public interface Json {
 	static public string label = new string("label");
 	static public string legend = new string("legend");
 	static public string header = new string("header");
+	static public string columnHeader = new string("columnHeader");
 	static public string colSpan = new string("colSpan");
 	static public string rowSpan = new string("rowSpan");
 	static public string flex = new string("flex");

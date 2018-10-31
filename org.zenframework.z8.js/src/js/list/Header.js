@@ -12,7 +12,7 @@ Z8.define('Z8.list.Header', {
 		this.callParent();
 
 		var field = this.field;
-		this.text = field.header;
+		this.text = field.columnHeader || field.header;
 		this.icon = field.icon;
 		this.width = field != null ? field.width : null;
 		this.sortDirection = field.sortDirection;

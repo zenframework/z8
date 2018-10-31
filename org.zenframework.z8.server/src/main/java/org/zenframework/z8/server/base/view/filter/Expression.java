@@ -84,7 +84,7 @@ public class Expression implements IFilter {
 				result.add(new integer(value));
 			else if(type == FieldType.Boolean)
 				result.add(new bool(value));
-			else if(type == FieldType.String || type == FieldType.Text || type == FieldType.Attachments)
+			else if(type == FieldType.String || type == FieldType.Text || type == FieldType.Attachments || type == FieldType.File)
 				result.add(new string(value));
 			else
 				throw new UnsupportedOperationException();
@@ -192,6 +192,7 @@ public class Expression implements IFilter {
 		case String:
 		case Text:
 		case Attachments:
+		case File:
 			SqlToken field = new SqlField(this.field);
 
 			if(type == FieldType.Guid) {

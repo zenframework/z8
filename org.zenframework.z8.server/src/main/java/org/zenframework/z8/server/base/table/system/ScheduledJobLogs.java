@@ -1,8 +1,8 @@
 package org.zenframework.z8.server.base.table.system;
 
 import org.zenframework.z8.server.base.table.Table;
-import org.zenframework.z8.server.base.table.value.AttachmentField;
 import org.zenframework.z8.server.base.table.value.DatetimeField;
+import org.zenframework.z8.server.base.table.value.FileField;
 import org.zenframework.z8.server.base.table.value.Link;
 import org.zenframework.z8.server.resources.Resources;
 import org.zenframework.z8.server.runtime.IClass;
@@ -59,7 +59,7 @@ public class ScheduledJobLogs extends Table {
 	public DatetimeField.CLASS<DatetimeField> start = new DatetimeField.CLASS<DatetimeField>(this);
 	public DatetimeField.CLASS<DatetimeField> finish = new DatetimeField.CLASS<DatetimeField>(this);
 
-	public AttachmentField.CLASS<AttachmentField> files = new AttachmentField.CLASS<AttachmentField>(this);
+	public FileField.CLASS<FileField> files = new FileField.CLASS<FileField>(this);
 
 	public ScheduledJobLogs(IObject container) {
 		super(container);

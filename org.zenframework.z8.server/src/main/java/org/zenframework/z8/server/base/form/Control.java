@@ -83,6 +83,7 @@ public class Control extends OBJECT {
 		writer.writeProperty(Json.name, id());
 		writer.writeProperty(Json.ui, ui());
 		writer.writeProperty(Json.header, displayName());
+		writer.writeProperty(Json.columnHeader, columnHeader());
 		writer.writeProperty(Json.description, description());
 		writer.writeProperty(Json.icon, icon());
 
@@ -94,7 +95,6 @@ public class Control extends OBJECT {
 		writer.writeProperty(Json.required, required());
 		writer.writeProperty(Json.editable, editable);
 		writer.writeProperty(Json.important, important);
-
 
 		if(source != null) {
 			writer.startObject(Json.source);

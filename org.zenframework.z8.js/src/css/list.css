@@ -61,11 +61,9 @@
 .list .scroller.headers {
 	background-color: #fcfcfc;
 	border-bottom: 1px solid #ccc;
-	height: 1.92857143em;
 }
 
 .list .scroller.headers.filters {
-	height: 3.85714286em;
 }
 
 .list .scroller.totals {
@@ -81,7 +79,6 @@
 	position: relative;
 	border-bottom: none;
 	padding: .42857143em .5em;
-	height: 1.92857143em;
 
 	-webkit-transition: background-color ease-in-out .15s, color ease-in-out .15s;
 	-o-transition: background-color ease-in-out .15s, color ease-in-out .15s;
@@ -97,8 +94,15 @@
 .list .total>.column>.text {
 	overflow-x: hidden;
 	overflow-y: hidden;
-	white-space: nowrap;
 	text-overflow: ellipsis;
+}
+
+.list .item>.column.tree>.text {
+	white-space: nowrap;
+}
+
+.list .total>.column>.text {
+	white-space: nowrap;
 }
 
 .list .header>.column>.text {
@@ -130,37 +134,27 @@
 }
 
 .list .item>.column {
-	height: 2.07142857em;
-}
-
-.list .item>.column>.text,
-.list .total>.column>.text {
-	top: 0;
-	left: 0;
-	right: 0;
-	bottom: 0;
-	position: absolute;
 	border-left: 1px solid #eee;
 }
 
-.list .item:not(:last-child)>.column>.text {
+.list .item>.column:first-child,
+.list .total>.column:first-child {
+	border-left: none;
+}
+
+
+.list .item>.column {
 	border-bottom: 1px solid #eee;
 }
 
 .list .item>.column>.text {
 	padding: .5em .5em;
-	border-bottom: 1px solid #eee;
 }
 
 .list .total>.column>.text {
 	padding: .42857143em .5em;
 	font-size: .85714286em;
 	font-weight: bold;
-}
-
-.list .item>.column:first-child>.text,
-.list .total>.column:first-child>.text {
-	border-left: none;
 }
 
 .list .item>.column:first-child:not(.check):not(.lock)>.text,
@@ -191,6 +185,7 @@
 .list .item>.column.datetime>.text,
 .list .total>.column.datetime>.text {
 	text-align: right;
+	white-space: nowrap;
 }
 
 .list .item>.column.check,
@@ -199,10 +194,6 @@
 	max-width: 2.14285714em;
 	min-width: 2.14285714em;
 	text-align: center;
-	padding-left: .14285714em !important;
-	padding-right: .14285714em !important;
-	padding-top: .42857143em;
-	padding-bottom: .21428571em;
 }
 
 .list .item>.column.check .fa-check-square {
@@ -502,13 +493,28 @@
 	margin-bottom: 1px;
 }
 
+.dropdown-menu.list .item>.column {
+	border-bottom: none;
+}
+
 .dropdown-menu.list .item>.column>.text {
 	position: relative;
 	border: none;
+	white-space: nowrap;
 }
 
 .dropdown-menu.list .item>.column:first-child>.text {
 	padding-left: 1.42857143em;
+}
+
+.dropdown-menu.list .item>.column>.text.shortcuts {
+	display: flex;
+}
+
+.dropdown-menu.list .item>.column>.text>.shortcut {
+	text-align: right;
+	margin-left: 1.07142857em;
+	flex: 1;
 }
 
 .dropdown-menu.list .item>.column:last-child>.text {

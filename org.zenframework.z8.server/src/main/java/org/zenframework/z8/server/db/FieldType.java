@@ -70,6 +70,7 @@ public enum FieldType {
 		switch(this) {
 		case Attachments:
 		case Binary:
+		case File:
 		case Text:
 			switch(vendor) {
 			case Oracle: return "BLOB";
@@ -99,11 +100,6 @@ public enum FieldType {
 			case Oracle: return "NUMBER";
 			case SqlServer: return "NUMERIC";
 			case Postgres: return "numeric";
-			default: throw new RuntimeException("Unknown data type: '" + toString() + "'");
-			}
-		case File:
-			switch(vendor) {
-			case Postgres: return "bytea";
 			default: throw new RuntimeException("Unknown data type: '" + toString() + "'");
 			}
 		case Geometry:

@@ -20,7 +20,7 @@ public class CodeScanner extends RuleBasedScanner {
 			"finally", "for", "if", "new", "private", "protected", "public", "records", "return", "static", "super", "this", "throw", "try", "while",
 			"virtual", "operator", "import", "final" };
 
-	private static String[] fgAttributes = { "name", "native", "displayName", "generatable", "entry", "request", "ui", "presentation", "system", 
+	private static String[] fgAttributes = { "name", "native", "displayName", "columnHeader", "generatable", "entry", "request", "ui", "presentation", "system", 
 			"description", "icon", "job", "exportable", "foreignKey" };
 
 	private static String[] fgTypes = { "void", "binary", "bool", "date", "datetime", "datespan", "decimal", "guid", "geometry", "file", "int", "string", "sql_binary", "sql_bool", "sql_date", "sql_datetime", "sql_datespan", "sql_decimal", "sql_guid", "sql_geometry", "sql_int", "sql_string" };

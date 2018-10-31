@@ -23,7 +23,7 @@ Z8.define('Z8.form.field.Control', {
 	},
 
 	subcomponents: function() {
-		return [this.labelTextControl, this.tools];
+		return [this.labelTextControl, this.labelTools];
 	},
 
 	htmlMarkup: function() {
@@ -56,7 +56,7 @@ Z8.define('Z8.form.field.Control', {
 			var cn = [{ cls: 'text' + (control != null ? ' has-control' : ''), cn: icon != null ? [icon, text] : [text] }];
 
 			if(label.tools != null) {
-				var tools = this.tools = label.tools;
+				var tools = this.labelTools = label.tools;
 				cn.push(tools.htmlMarkup());
 			}
 
@@ -119,7 +119,7 @@ Z8.define('Z8.form.field.Control', {
 	},
 
 	updateTools: function() {
-		DOM.swapCls(this.tools, this.isReadOnly() || !this.isEnabled(), 'display-none');
+		DOM.swapCls(this.labelTools, this.isReadOnly() || !this.isEnabled(), 'display-none');
 	},
 
 	getRawValue: function() {

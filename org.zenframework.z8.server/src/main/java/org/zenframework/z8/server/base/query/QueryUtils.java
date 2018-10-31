@@ -52,7 +52,7 @@ public class QueryUtils {
 	static public void setFieldValue(Field field, String value) {
 		FieldType type = field.type();
 
-		if(type == FieldType.String || type == FieldType.Text || type == FieldType.Attachments)
+		if(type == FieldType.String || type == FieldType.Text || type == FieldType.Attachments || type == FieldType.File)
 			field.set(new string(value));
 		else if(type == FieldType.Geometry)
 			field.set(value == null || value.isEmpty() ? new geometry(srs(field)) : GeoJsonReader.read(value, srs(field)));

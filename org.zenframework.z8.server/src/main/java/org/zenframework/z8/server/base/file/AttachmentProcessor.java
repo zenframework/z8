@@ -8,8 +8,9 @@ import java.util.Collection;
 
 import org.zenframework.z8.server.base.table.Table;
 import org.zenframework.z8.server.base.table.system.Files;
-import org.zenframework.z8.server.base.table.value.AttachmentField;
 import org.zenframework.z8.server.base.table.value.Field;
+import org.zenframework.z8.server.base.table.value.FileField;
+import org.zenframework.z8.server.db.FieldType;
 import org.zenframework.z8.server.engine.ApplicationServer;
 import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.runtime.OBJECT;
@@ -42,13 +43,13 @@ public class AttachmentProcessor extends OBJECT {
 		}
 	}
 
-	private AttachmentField field;
+	private FileField field;
 
 	public AttachmentProcessor(IObject container) {
 		super(container);
 	}
 
-	public AttachmentProcessor(AttachmentField field) {
+	public AttachmentProcessor(FileField field) {
 		set(field);
 	}
 
@@ -56,15 +57,18 @@ public class AttachmentProcessor extends OBJECT {
 		return (Table)field.owner();
 	}
 
-	public void set(AttachmentField field) {
+	public void set(FileField field) {
 		this.field = field;
 	}
 
-	public AttachmentField getField() {
+	public FileField getField() {
 		return field;
 	}
 
 	public Collection<file> read(guid recordId) {
+		if(getField().type() == FieldType.File)
+			return new ArrayList<file>();
+
 		Table table = getTable();
 
 		table.saveState();

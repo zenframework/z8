@@ -210,6 +210,7 @@ public abstract class BasicStatement implements IStatement {
 	public void set(int position, FieldType type, primary value) throws SQLException {
 		switch(type) {
 		case Attachments:
+		case File:
 		case Text:
 			string string = value != null ? (string)value : new string();
 			setBinary(position, new binary(string.getBytes(charset())));

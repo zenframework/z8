@@ -89,6 +89,9 @@ Z8.define('Z8.form.Helper', {
 				return cls != null ? Z8.create(cls, config) : new Z8.form.field.Files(config);
 			}
 
+			if(type == Type.File)
+				return cls != null ? Z8.create(cls, config) : new Z8.form.field.File(config);
+
 			if(type == Type.Guid)
 				return cls != null ? Z8.create(cls, config) : new Z8.form.field.Text(config);
 

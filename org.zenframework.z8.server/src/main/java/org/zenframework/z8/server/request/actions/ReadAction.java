@@ -537,7 +537,7 @@ public class ReadAction extends RequestAction {
 			Field field = query.findFieldById(id);
 			FieldType type = field.type();
 
-			if(type == FieldType.String || type == FieldType.Text || type == FieldType.Attachments) {
+			if(type == FieldType.String || type == FieldType.Text || type == FieldType.Attachments || type == FieldType.File) {
 				Lower left = new Lower(field);
 				sql_string right = new sql_string('%' + lookup.toLowerCase() + '%');
 				SqlToken like = new Like(left, right);

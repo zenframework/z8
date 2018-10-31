@@ -9,6 +9,7 @@ public interface IObject {
 	static final public String System = "system";
 	static final public String DisplayName = "displayName";
 	static final public String Description = "description";
+	static final public String ColumnHeader = "columnHeader";
 	static final public String UI = "ui";
 	static final public String Presentation = "presentation";
 	static final public String Name = "name";
@@ -42,6 +43,9 @@ public interface IObject {
 
 	public String displayName();
 	public void setDisplayName(String name);
+
+	public String columnHeader();
+	public void setColumnHeader(String name);
 
 	public String description();
 	public void setDescription(String name);

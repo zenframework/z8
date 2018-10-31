@@ -1,5 +1,4 @@
-.air .fieldset,
-.air.fieldset {
+.air .fieldset {
 	border-radius: 0;
 	border-color: #dfdfdf;
 	padding-top: 1.07142857em;
@@ -13,18 +12,16 @@
 	min-height: 4.71428571em;
 }
 
-.air .fieldset>.legend,
-.air.fieldset>.legend {
+.air .fieldset>.legend {
 	left: .42857143em;
 	top: -.57142857em;
 
 	font-size: .9em;
 	font-weight: 500;
-	color: #555;
+	color: #39c;
 }
 
-.air .fieldset>.legend>.fa,
-.air.fieldset>.legend>.fa {
+.air .fieldset>.legend>.fa {
 	font-size: 1em;
 }
 
@@ -79,6 +76,8 @@
 
 .air div[name=input].control {
 	padding-top: .35714286em;
+	white-space: nowrap;
+	text-overflow: ellipsis;
 }
 
 .air textarea.control,

@@ -18,27 +18,27 @@ Z8.define('Z8.button.GeometryTools', {
 		var tools = [];
 
 		if(this.select !== false) {
-			var select = this.select = this.active = new Z8.menu.Item({ text: 'Выбор объектов', icon: 'fa-mouse-pointer', isTool: true, isSelect: true });
+			var select = this.select = this.active = new Z8.menu.Item({ text: 'Выбор объектов', shortcut: 'Esc', icon: 'fa-mouse-pointer', isTool: true, isSelect: true });
 			tools.add(select);
 		}
 
 		if(this.ruler !== false) {
-			var ruler = this.ruler = new Z8.menu.Item({ text: 'Линейка', icon: 'fa-ruler-combined', isTool: true, isRuler: true });
+			var ruler = this.ruler = new Z8.menu.Item({ text: 'Линейка', shortcut: 'Ctrl+L', icon: 'fa-ruler-combined', isTool: true, isRuler: true });
 			tools.add(ruler);
 		}
 
 		if(this.move !== false) {
-			var move = this.move = new Z8.menu.Item({ text: 'Переместить объект', icon: 'fa-hand-paper-o', isTool: true, isMove: true });
+			var move = this.move = new Z8.menu.Item({ text: 'Переместить объект', shortcut: 'Ctrl+M', icon: 'fa-hand-paper-o', isTool: true, isMove: true });
 			tools.add(move);
 		}
 
 		if(this.edit !== false) {
-			var edit = this.edit = new Z8.menu.Item({ text: 'Изменить объект', icon: 'fa-pencil', isTool: true, isEdit: true });
+			var edit = this.edit = new Z8.menu.Item({ text: 'Изменить объект', shortcut: 'Ctrl+E', icon: 'fa-pencil', isTool: true, isEdit: true });
 			tools.add(edit);
 		}
 
 		if(this.draw !== false) {
-			var draw = this.draw = new Z8.menu.Item({ text: 'Нарисовать объект', icon: 'fa-pencil-square-o', isTool: true, isDraw: true });
+			var draw = this.draw = new Z8.menu.Item({ text: 'Нарисовать объект', shortcut: 'Ctrl+D', icon: 'fa-pencil-square-o', isTool: true, isDraw: true });
 			tools.add(draw);
 		}
 
@@ -67,6 +67,10 @@ Z8.define('Z8.button.GeometryTools', {
 
 	isToolActive: function(tool) {
 		return this.active && this.active == tool;
+	},
+
+	isToolEnabled: function(tool) {
+		return tool && tool.isEnabled();
 	},
 
 	enableTool: function(tool, enable) {
@@ -103,6 +107,26 @@ Z8.define('Z8.button.GeometryTools', {
 
 	isDrawActive: function() {
 		return this.isToolActive(this.draw);
+	},
+
+	isSelectEnabled: function() {
+		return this.isToolEnabled(this.select);
+	},
+
+	isRulerEnabled: function() {
+		return this.isToolEnabled(this.ruler);
+	},
+
+	isMoveEnabled: function() {
+		return this.isToolEnabled(this.move);
+	},
+
+	isEditEnabled: function() {
+		return this.isToolEnabled(this.edit);
+	},
+
+	isDrawEnabled: function() {
+		return this.isToolEnabled(this.draw);
 	},
 
 	activateSelect: function() {

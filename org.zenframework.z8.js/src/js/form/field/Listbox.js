@@ -286,7 +286,6 @@ Z8.define('Z8.form.field.Listbox', {
 				label = this.label = {};
 			if(label.tools == null)
 				label.tools = new Z8.button.Group({ items: this.createTools() });
-			this.hasTools = true;
 		}
 
 		return this.callParent();
@@ -1100,7 +1099,7 @@ Z8.define('Z8.form.field.Listbox', {
 	},
 
 	updateTools: function() {
-		if(!this.hasTools || this.getDom() == null)
+		if(!this.tools || this.getDom() == null)
 			return;
 
 		var enabledNotReadOnly = this.isEnabled() && !this.isReadOnly();

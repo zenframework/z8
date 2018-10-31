@@ -3,7 +3,6 @@ package org.zenframework.z8.server.base.form.action;
 import java.util.Collection;
 
 import org.zenframework.z8.server.db.FieldType;
-import org.zenframework.z8.server.engine.ApplicationServer;
 import org.zenframework.z8.server.json.Json;
 import org.zenframework.z8.server.json.JsonWriter;
 import org.zenframework.z8.server.json.parser.JsonArray;
@@ -71,8 +70,6 @@ public class Parameter extends OBJECT implements IParameter {
 			return type = FieldType.Integer;
 		else if(value instanceof guid)
 			return type = FieldType.Guid;
-		else if(value instanceof file)
-			return type = FieldType.File;
 		else
 			return type = FieldType.String;
 	}
@@ -123,8 +120,6 @@ public class Parameter extends OBJECT implements IParameter {
 			return value.isEmpty() ? new datespan() : new datespan(value);
 		case Guid:
 			return new guid(value);
-		case File:
-			return ApplicationServer.getRequest().getFiles().get(Integer.parseInt(value));
 		default:
 			throw new RuntimeException("Unsupported parameter type: '" + type + "'");
 		}

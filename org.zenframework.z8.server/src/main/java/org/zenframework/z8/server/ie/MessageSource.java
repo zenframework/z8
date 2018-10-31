@@ -13,8 +13,8 @@ import java.util.Map;
 import java.util.Set;
 
 import org.zenframework.z8.server.base.table.Table;
-import org.zenframework.z8.server.base.table.value.AttachmentField;
 import org.zenframework.z8.server.base.table.value.Field;
+import org.zenframework.z8.server.base.table.value.FileField;
 import org.zenframework.z8.server.base.table.value.Link;
 import org.zenframework.z8.server.db.sql.SqlToken;
 import org.zenframework.z8.server.engine.RmiIO;
@@ -159,7 +159,7 @@ public class MessageSource implements RmiSerializable, Serializable {
 				if(!processLink(field, recordId))
 					continue;
 
-				processAttachments(field);
+				processFiles(field);
 
 				record.add(new FieldInfo(field));
 			}
@@ -172,10 +172,10 @@ public class MessageSource implements RmiSerializable, Serializable {
 		table.restoreState();
 	}
 
-	private void processAttachments(Field field) {
-		boolean isAttachment = field instanceof AttachmentField;
+	private void processFiles(Field field) {
+		boolean isFile = field instanceof FileField;
 
-		if(!isAttachment)
+		if(!isFile)
 			return;
 
 		for(file f : file.parse(field.string().get())) {
@@ -291,7 +291,7 @@ public class MessageSource implements RmiSerializable, Serializable {
 			if(!exists || fieldPolicy == ImportPolicy.Override) {
 				primary value = fieldInfo.value();
 
-				if(exists && field instanceof AttachmentField)
+				if(exists && field instanceof FileField)
 					value = mergeAttachments(field.string(), (string)value);
 
 				field.set(value);

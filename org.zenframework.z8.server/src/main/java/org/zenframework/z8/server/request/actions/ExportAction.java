@@ -35,6 +35,13 @@ public class ExportAction extends ReadAction {
 		super.initialize();
 	}
 
+	private String columnHeader(Field field) {
+		String header = field.columnHeader();
+		if(header != null && !header.isEmpty())
+			return header;
+		return field.displayName();
+	}
+
 	private Collection<Column> getColumns() {
 		Collection<Column> result = new ArrayList<Column>();
 
@@ -46,7 +53,7 @@ public class ExportAction extends ReadAction {
 			Field field = getQuery().findFieldById(json.getString(Json.id));
 
 			if(field != null) {
-				Column c = new Column(field.displayName());
+				Column c = new Column(columnHeader(field));
 				c.setField(field);
 				c.setWidth(json.getInt(Json.width));
 				c.setMinWidth(json.getInt(Json.minWidth));

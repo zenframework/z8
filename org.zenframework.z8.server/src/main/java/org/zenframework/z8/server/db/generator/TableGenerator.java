@@ -295,7 +295,7 @@ public class TableGenerator {
 			expression = new DecimalExpression.CLASS<DecimalExpression>(null).get();
 		else if(type == FieldType.String || type == FieldType.Geometry)
 			expression = new StringExpression.CLASS<StringExpression>(null).get();
-		else if(type == FieldType.Text || type == FieldType.Attachments)
+		else if(type == FieldType.Text || type == FieldType.Attachments || type == FieldType.File)
 			expression = new TextExpression.CLASS<TextExpression>(null).get();
 		else
 			return true;
@@ -351,7 +351,7 @@ public class TableGenerator {
 		primary value = field.getDefaultValue();
 		FieldType type = field.type();
 
-		if(type == FieldType.Text || type == FieldType.Attachments)
+		if(type == FieldType.Text || type == FieldType.Attachments || type == FieldType.File)
 			value = new binary((string)value);
 
 		return value.toDbConstant(vendor);

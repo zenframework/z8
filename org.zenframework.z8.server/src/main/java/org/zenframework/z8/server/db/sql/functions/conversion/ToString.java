@@ -36,8 +36,9 @@ public class ToString extends SqlToken {
 			switch(type) {
 			case Guid:
 				return new GuidToString(value).format(vendor, options);
-			case Text:
 			case Attachments:
+			case File:
+			case Text:
 				return "UTL_RAW.CAST_TO_NVARCHAR2(" + value.format(vendor, options) + ")";
 			default:
 				return value.format(vendor, options);
@@ -50,8 +51,9 @@ public class ToString extends SqlToken {
 			case Date:
 			case Datetime:
 				return new DateToString(value).format(vendor, options);
-			case Text:
 			case Attachments:
+			case File:
+			case Text:
 				return "CONVERT_FROM(" + value.format(vendor, options) + ", 'UTF8')";
 			default:
 				return value.format(vendor, options);

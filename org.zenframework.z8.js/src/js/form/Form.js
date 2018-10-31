@@ -151,7 +151,7 @@ Z8.define('Z8.form.Form', {
 	},
 
 	initAutoSave: function(field) {
-		if(this.autoSave && !field.isListbox && !field.isForm && field.form == this) {
+		if(this.autoSave && !field.isListbox && !field.isFile && !field.isForm && field.form == this) {
 			field.setAutoSave(true);
 			field.on('change', this.autoSaveCallback, this);
 		}

@@ -1,11 +1,10 @@
 package org.zenframework.z8.server.base.table.value;
 
-import org.zenframework.z8.server.base.file.AttachmentProcessor;
 import org.zenframework.z8.server.db.FieldType;
 import org.zenframework.z8.server.runtime.IObject;
 
-public class AttachmentField extends TextField {
-	public static class CLASS<T extends AttachmentField> extends TextField.CLASS<T> {
+public class AttachmentField extends FileField {
+	public static class CLASS<T extends AttachmentField> extends FileField.CLASS<T> {
 		public CLASS(IObject container) {
 			super(container);
 			setJavaClass(AttachmentField.class);
@@ -26,15 +25,4 @@ public class AttachmentField extends TextField {
 	public FieldType type() {
 		return FieldType.Attachments;
 	}
-
-	public AttachmentProcessor getAttachmentProcessor() {
-		return new AttachmentProcessor(this);
-	}
-
-	public AttachmentProcessor.CLASS<? extends AttachmentProcessor> z8_getAttachmentProcessor() {
-		AttachmentProcessor.CLASS<AttachmentProcessor> processor = new AttachmentProcessor.CLASS<AttachmentProcessor>();
-		processor.get().set(this);
-		return processor;
-	}
-
 }

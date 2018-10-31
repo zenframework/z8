@@ -217,6 +217,7 @@ public class Cursor {
 
 		switch(type) {
 		case Attachments:
+		case File:
 		case Text:
 			return getText(position, field);
 		case Binary:

@@ -144,6 +144,9 @@ Z8.define('Z8.form.field.Text', {
 	},
 
 	onClick: function(event, target) {
+		if(target.type == 'file')
+			return;
+
 		event.stopEvent();
 
 		var triggers = this.triggers;

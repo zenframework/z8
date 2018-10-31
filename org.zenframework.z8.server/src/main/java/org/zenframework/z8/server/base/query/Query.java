@@ -11,9 +11,9 @@ import java.util.regex.Pattern;
 import org.zenframework.z8.server.base.form.Control;
 import org.zenframework.z8.server.base.form.action.Action;
 import org.zenframework.z8.server.base.form.report.Report;
-import org.zenframework.z8.server.base.table.value.AttachmentField;
 import org.zenframework.z8.server.base.table.value.Expression;
 import org.zenframework.z8.server.base.table.value.Field;
+import org.zenframework.z8.server.base.table.value.FileField;
 import org.zenframework.z8.server.base.table.value.IField;
 import org.zenframework.z8.server.base.table.value.ILink;
 import org.zenframework.z8.server.base.table.value.Link;
@@ -220,6 +220,7 @@ public class Query extends OBJECT {
 	public void writeReportMeta(JsonWriter writer, String name, Collection<Field> fields) {
 		writer.startObject();
 		writer.writeProperty(Json.displayName, displayName());
+		writer.writeProperty(Json.columnHeader, columnHeader());
 		writer.writeProperty(Json.name, name);
 		writer.writeProperty(Json.id, classId());
 		writer.startArray(Json.fields);
@@ -812,7 +813,7 @@ public class Query extends OBJECT {
 	public Collection<Field> attachments() {
 		Collection<Field> result = new ArrayList<Field>();
 		for(Field.CLASS<Field> field : dataFields()) {
-			if(field instanceof AttachmentField.CLASS)
+			if(field instanceof FileField.CLASS)
 				result.add(field.get());
 		}
 		return result;

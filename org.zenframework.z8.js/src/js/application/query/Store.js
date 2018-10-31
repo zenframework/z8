@@ -177,6 +177,8 @@ Z8.define('Z8.query.Store', {
 			return 'Z8.data.field.Datetime';
 		else if(type == Type.Guid)
 			return 'Z8.data.field.Guid';
+		else if(type == Type.File)
+			return 'Z8.data.field.File';
 		else if(type == Type.Files)
 			return 'Z8.data.field.Files';
 		else if(type == Type.Json)

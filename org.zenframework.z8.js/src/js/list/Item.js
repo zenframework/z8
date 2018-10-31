@@ -120,6 +120,8 @@ Z8.define('Z8.list.Item', {
 				icons.insert(collapser, 0);
 			}
 
+			var treeCls = record.parentId != null ? 'tree' : '';
+
 			for(var i = 0, length = fields.length; i < length; i++) {
 				var field = fields[i];
 				var title = null;
@@ -134,12 +136,20 @@ Z8.define('Z8.list.Item', {
 
 				text = { tag: 'div', cls: 'text', cn: i == 0 ? icons.concat([text]) : [text] };
 
-				columns.push({ tag: 'td', cls: cls + (type != null ? ' ' + type : ''), field: i, cn: [text], title: title });
+				columns.push({ tag: 'td', cls: cls + (type != null ? ' ' + type : '') + (i == 0 ? ' ' + treeCls : ''), field: i, cn: [text], title: title });
 			}
 		} else {
 			var text = String.htmlText(this.text);
-			text = { tag: 'div', cls: 'text', cn: icons.concat([text]) };
-			columns.push({ tag: 'td', cls: cls, cn: [text], title: this.text || '' });
+			var title = this.text || '';
+
+			var shortcut = this.shortcut;
+			if(shortcut != null) {
+				title = text + ' (' + shortcut + ')';
+				shortcut = { tag: 'span', cls: 'shortcut', html: [shortcut] };
+			}
+
+			text = { tag: 'div', cls: 'text' + (shortcut != null ? ' shortcuts' : ''), cn: icons.concat(shortcut != null ? [text, shortcut] : [text]) };
+			columns.push({ tag: 'td', cls: cls, cn: [text], title: title });
 		}
 
 		return columns;
@@ -160,6 +170,8 @@ Z8.define('Z8.list.Item', {
 			return Format.float(value, field.format);
 		case Type.Boolean:
 			return { tag: 'i', cls: value ? 'fa fa-check-square' : 'fa fa-square-o' };
+		case Type.File:
+			return Z8.isEmpty(value) ? '' : value[0].name;
 		default:
 			return value || '';
 		}
@@ -329,6 +341,9 @@ Z8.define('Z8.list.Item', {
 	},
 
 	onClick: function(event, target) {
+		if(target.type == 'file')
+			return;
+
 		event.stopEvent();
 
 		if(!this.isEnabled())

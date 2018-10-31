@@ -18,6 +18,7 @@ import org.zenframework.z8.server.types.primary;
 public class OdaField implements IField {
 	private String id;
 	private String displayName;
+	private String columnHeader;
 	private FieldType type;
 
 	public OdaField(String id, String displayName, FieldType type) {
@@ -27,9 +28,10 @@ public class OdaField implements IField {
 	}
 
 	public OdaField(JsonObject json) {
-		this.id = json.getString(Json.id);
-		this.type = FieldType.fromString(json.getString(Json.type));
-		this.displayName = json.getString(Json.displayName);
+		id = json.getString(Json.id);
+		type = FieldType.fromString(json.getString(Json.type));
+		displayName = json.getString(Json.displayName);
+		columnHeader = json.getString(Json.columnHeader);
 	}
 
 	@Override
@@ -50,6 +52,11 @@ public class OdaField implements IField {
 	@Override
 	public String displayName() {
 		return displayName;
+	}
+
+	@Override
+	public String columnHeader() {
+		return columnHeader;
 	}
 
 	@Override
@@ -109,6 +116,11 @@ public class OdaField implements IField {
 
 	@Override
 	public void setDisplayName(String name) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public void setColumnHeader(String name) {
 		throw new UnsupportedOperationException();
 	}
 
