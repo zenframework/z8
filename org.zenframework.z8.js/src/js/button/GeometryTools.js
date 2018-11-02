@@ -10,6 +10,8 @@ Z8.define('Z8.button.GeometryTools', {
 	move: true,
 	edit: true,
 	draw: true,
+	erase: true,
+	rotate: true,
 
 	location: true,
 	yandex: true,
@@ -40,6 +42,16 @@ Z8.define('Z8.button.GeometryTools', {
 		if(this.draw !== false) {
 			var draw = this.draw = new Z8.menu.Item({ text: 'Нарисовать объект', shortcut: 'Ctrl+D', icon: 'fa-pencil-square-o', isTool: true, isDraw: true });
 			tools.add(draw);
+		}
+
+		if(this.erase !== false) {
+			var erase = this.erase = new Z8.menu.Item({ text: 'Удалить геометрию объект', shortcut: 'Ctrl+Q', icon: 'fa-eraser', isTool: true, isErase: true });
+			tools.add(erase);
+		}
+
+		if(this.rotate !== false) {
+			var rotate = this.rotate = new Z8.menu.Item({ text: 'Повернуть объект', shortcut: 'Ctrl+G', icon: 'fa-repeat', isTool: true, isRotate: true });
+			tools.add(rotate);
 		}
 
 		var  dividerPos = tools.length;
@@ -109,6 +121,14 @@ Z8.define('Z8.button.GeometryTools', {
 		return this.isToolActive(this.draw);
 	},
 
+	isEraseActive: function() {
+		return this.isToolActive(this.erase);
+	},
+
+	isRotateActive: function() {
+		return this.isToolActive(this.rotate);
+	},
+
 	isSelectEnabled: function() {
 		return this.isToolEnabled(this.select);
 	},
@@ -127,6 +147,14 @@ Z8.define('Z8.button.GeometryTools', {
 
 	isDrawEnabled: function() {
 		return this.isToolEnabled(this.draw);
+	},
+
+	isEraseEnabled: function() {
+		return this.isToolEnabled(this.erase);
+	},
+
+	isRotateEnabled: function() {
+		return this.isToolEnabled(this.rotate);
 	},
 
 	activateSelect: function() {
@@ -149,6 +177,14 @@ Z8.define('Z8.button.GeometryTools', {
 		this.activateTool(this.draw);
 	},
 
+	activateErase: function() {
+		this.activateTool(this.erase);
+	},
+
+	activateRotate: function() {
+		this.activateTool(this.rotate);
+	},
+
 	enableSelect: function(enable) {
 		this.enableTool(this.select, enable);
 	},
@@ -167,6 +203,14 @@ Z8.define('Z8.button.GeometryTools', {
 
 	enableDraw: function(enable) {
 		this.enableTool(this.draw, enable);
+	},
+
+	enableErase: function(enable) {
+		this.enableTool(this.erase, enable);
+	},
+
+	enableRotate: function(enable) {
+		this.enableTool(this.rotate, enable);
 	},
 
 	onToolClick: function(menu, tool) {

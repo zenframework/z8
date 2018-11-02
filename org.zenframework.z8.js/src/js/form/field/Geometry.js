@@ -90,18 +90,23 @@ Z8.define('Z8.form.field.Geometry', {
 		var canMove = this.canMove();
 		var canEdit = this.canEdit();
 		var canDraw = this.canDraw();
+		var canErase = this.canErase();
+		var canRotate = this.canRotate();
 
 		var tools = this.geometryTools;
 
 		if(tools == null)
 			return;
 
-		if(!enabled || !canMove && tools.isMoveActive() || !canEdit && tools.isEditActive() || !canDraw && tools.isDrawActive())
+		if(!enabled || !canMove && tools.isMoveActive() || !canEdit && tools.isEditActive() || !canDraw && tools.isDrawActive()
+				 || !canErase && tools.isEraseActive() || !canRotate && tools.isRotateActive())
 			tools.activateSelect();
 
 		tools.enableMove(enabled && canMove);
 		tools.enableEdit(enabled && canEdit);
 		tools.enableDraw(enabled && canDraw);
+		tools.enableErase(enabled && canErase);
+		tools.enableRotate(enabled && canRotate);
 	},
 
 	completeRender: function() {
@@ -277,6 +282,14 @@ Z8.define('Z8.form.field.Geometry', {
 		return new ol.interaction.Draw({ source: this.getVectorSource(), snapTolerance: 0, freehandCondition: ol.events.condition.never, type: this.getDrawType() });
 	},
 
+	createErase: function() {
+		return new ol.interaction.Erase({ features: this.getVectorSource().getFeatures() });
+	},
+
+	createRotate: function() {
+		return new ol.interaction.Rotate({ features: this.getVectorSource().getFeatures() });
+	},
+
 	installEdit: function() {
 		var map = this.map;
 		var tools = this.geometryTools;
@@ -315,6 +328,22 @@ Z8.define('Z8.form.field.Geometry', {
 			draw.on('drawstart', this.onEditStart, this);
 			draw.on('drawend', this.onEditEnd, this);
 			map.addInteraction(draw);
+		}
+
+		if(tools.erase !== false) {
+			var erase = this.erase = this.createErase();
+			erase.setActive(false);
+			erase.on('erasestart', this.onEditStart, this);
+			erase.on('eraseend', this.onEditEnd, this);
+			map.addInteraction(erase);
+		}
+
+		if(tools.rotate !== false) {
+			var rotate = this.rotate = this.createRotate();
+			rotate.setActive(false);
+			rotate.on('rotatestart', this.onEditStart, this);
+			rotate.on('rotateend', this.onEditEnd, this);
+			map.addInteraction(rotate);
 		}
 	},
 
@@ -355,6 +384,22 @@ Z8.define('Z8.form.field.Geometry', {
 			draw.un('drawend', this.onEditEnd, this);
 			map.removeInteraction(draw);
 			this.draw = null;
+		}
+
+		var erase = this.erase;
+		if(erase != null) {
+			erase.un('erasestart', this.onEditStart, this);
+			erase.un('eraseend', this.onEditEnd, this);
+			map.removeInteraction(erase);
+			this.erase = null;
+		}
+
+		var rotate = this.rotate;
+		if(rotate != null) {
+			rotate.un('rotatestart', this.onEditStart, this);
+			rotate.un('rotateend', this.onEditEnd, this);
+			map.removeInteraction(rotate);
+			this.rotate = null;
 		}
 	},
 
@@ -561,12 +606,12 @@ Z8.define('Z8.form.field.Geometry', {
 
 	onFeatureChange: function(event) {
 		if(this.isModifying())
-			this.editingFeature = event.feature;
+			this.editingFeature = this.getEventFeature(event);
 	},
 
 	onEditStart: function(event) {
 		this.isEditing = true;
-		this.editingFeature = event.feature;
+		this.editingFeature = this.getEventFeature(event);
 	},
 
 	onEditEnd: function() {
@@ -601,6 +646,19 @@ Z8.define('Z8.form.field.Geometry', {
 		this.setValue(this.rawToValue(feature));
 	},
 
+	getEventFeature: function(event) {
+		var feature = event.feature;
+		if (feature != null)
+			return feature;
+
+		var features = event.features;
+		if (Array.isArray(features))
+			return features[0];
+		if (features instanceof ol.Collection)
+			return features.getArray()[0];
+		return null;
+	},
+
 	cancelEdit: function(toggleSelect) {
 		var wasModifying = this.isModifying();
 
@@ -627,7 +685,7 @@ Z8.define('Z8.form.field.Geometry', {
 		if(this.rulerFeature != null)
 			this.getRulerSource().removeFeature(this.rulerFeature);
 
-		this.rulerFeature = event.feature;
+		this.rulerFeature = this.getEventFeature(event);
 	},
 
 	onRulerEnd: function(event) {
@@ -750,6 +808,14 @@ Z8.define('Z8.form.field.Geometry', {
 		return this.record != null && this.feature == null;
 	},
 
+	canErase: function() {
+		return this.hasFeatures();
+	},
+
+	canRotate: function() {
+		return this.hasFeatures();
+	},
+
 	getDrawingFeature: function() {
 		return this.editingFeature;
 	},
@@ -770,6 +836,8 @@ Z8.define('Z8.form.field.Geometry', {
 			this.activateInteraction(this.move, tool.isMove && this.canMove());
 			this.activateInteraction(this.edit, tool.isEdit && this.canEdit());
 			this.activateInteraction(this.draw, tool.isDraw && this.canDraw());
+			this.activateInteraction(this.erase, tool.isErase && this.canErase());
+			this.activateInteraction(this.rotate, tool.isRotate && this.canRotate());
 		} else if(tool.isLocation)
 			this.goToCurrentLocation();
 		else if(tool.isYandex)
