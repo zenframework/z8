@@ -338,4 +338,9 @@ public class OdaField implements IField {
 	public boolean isParentKey() {
 		throw new UnsupportedOperationException();
 	}
+
+	@Override
+	public boolean isExpression() {
+		return false;
+	}
 }

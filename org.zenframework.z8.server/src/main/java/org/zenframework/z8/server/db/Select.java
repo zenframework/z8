@@ -297,8 +297,12 @@ public class Select {
 	private String formatOrderBy(FormatOptions options) {
 		String result = "";
 
+		options.setOrderBy(true);
+
 		for(Field field : orderBy)
 			result += (result.isEmpty() ? "" : ", ") + new SqlField(field).format(vendor(), options) + " " + field.sortDirection;
+
+		options.setOrderBy(false);
 
 		return result.isEmpty() ? "" : ("\norder by\n\t" + result);
 	}

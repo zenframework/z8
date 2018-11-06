@@ -23,18 +23,18 @@ public class Array extends SqlToken {
 
 	@Override
 	public String format(DatabaseVendor vendor, FormatOptions options, boolean logicalContext) throws UnknownDatabaseException {
-		StringBuilder str = new StringBuilder();
+		String result = "";
 		switch(vendor) {
 		case Oracle:
-			str.append("collect");
+			result = "collect";
 			break;
 		case Postgres:
-			str.append("json_agg");
+			result = options.isOrderBy() ? "array_agg" : "json_agg";
 			break;
 		default:
 			throw new UnknownDatabaseException();
 		}
-		return str.append('(').append(token.format(vendor, options)).append(')').toString();
+		return result + '('  + token.format(vendor, options) + ')';
 	}
 
 	@Override
