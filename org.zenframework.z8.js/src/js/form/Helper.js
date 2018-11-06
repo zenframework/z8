@@ -33,7 +33,7 @@ Z8.define('Z8.form.Helper', {
 				var link = field.link;
 				config.store = this.storeConfig(field);
 				config.displayName = link == null ? field.displayName || field.name : field.name;
-				config.fields = field;
+				config.fields = [field].add(field.columns || []);
 				config.name = link != null ? link.name : field.name;
 				config.checks = false;
 				config.pagerMode = 'visible';

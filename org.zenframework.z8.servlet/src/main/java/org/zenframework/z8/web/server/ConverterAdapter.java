@@ -57,7 +57,7 @@ public class ConverterAdapter extends Adapter {
 		File relativePath = new File(requestUrl);
 		File absolutePath = new File(super.getServlet().getServletPath(), requestUrl);
 
-		boolean preview = request.getParameter("preview") != null;
+		boolean preview = parameters.containsKey(Json.preview);
 
 		file file = null;
 
@@ -65,7 +65,7 @@ public class ConverterAdapter extends Adapter {
 			file = new file();
 			file.path = new string(relativePath.toString());
 			file.name = new string(relativePath.getName());
-			file.id = new guid(parameters.get(Json.recordId));
+			file.id = new guid(parameters.get(Json.id));
 			file = downloadFile(session.getServerInfo(), file, absolutePath);
 		}
 
@@ -73,10 +73,6 @@ public class ConverterAdapter extends Adapter {
 			if(FileConverter.isConvertableToPdf(absolutePath)) {
 				absolutePath = getConverter().getConvertedPdf(relativePath.getPath(), absolutePath);
 				response.addHeader("Content-Type", "application/pdf");
-				// } else if (FileConverter.isConvertableToTxt(absolutePath)) {
-				// absolutePath = getConvertedTxt(relativePath, absolutePath);
-				// response.addHeader("Content-Type",
-				// "text/plain; charset=UTF-8");
 			} else
 				response.addHeader("Content-Type", getContentType(absolutePath));
 		} else {

@@ -83,7 +83,8 @@ Z8.define('Z8.form.field.File', {
 
 		this.getDownloadTrigger().setBusy(true);
 
-		DOM.download(files[0].path, null, { fn: callback, scope: this });
+		var file = files[0];
+		DOM.download(file.path, file.id, null, { fn: callback, scope: this });
 	},
 
 	onFileInputChange: function() {

@@ -25,6 +25,8 @@ Z8.define('Z8.query.Store', {
 				fields = fields.concat([link]);
 			if(field.fields != null)
 				fields = fields.concat(field.fields);
+			if(field.columns != null)
+				fields = fields.concat(field.columns);
 
 			config.request = query.id;
 			config.fields = fields;

@@ -18,9 +18,11 @@ Z8.define('Z8.form.field.Field', {
 	initValue: function(value, displayValue) {
 		value = value !== undefined ?  value : this.value;
 
+		this.initializing = true;
 		this.suspendCheckChange++;
 		this.setValue(value, displayValue);
 		this.suspendCheckChange--;
+		this.initializing = false;
 
 		this.initialValue = this.originalValue = this.lastValue = this.getValue();
 		this.originalDisplayValue = displayValue;
@@ -185,12 +187,12 @@ Z8.define('Z8.form.field.Field', {
 		for(var i = 0, length = dependencies.length; i < length; i++) {
 			var dependency = dependencies[i];
 			if(dependency.updatingDependencies == 0)
-				dependency.onDependencyChange(record);
+				dependency.onDependencyChange(record, this);
 		}
 
 		this.updatingDependencies--;
 	},
 
-	onDependencyChange: function(value) {
+	onDependencyChange: function(value, control) {
 	}
 });

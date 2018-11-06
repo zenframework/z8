@@ -14,16 +14,10 @@ public class InputOnlyFileItem implements FileItem {
 	private static final long serialVersionUID = -2878883966271701862L;
 
 	private File file;
-	private InputStream stream;
 	private String name;
 
 	public InputOnlyFileItem(File file, String name) {
 		this.file = file;
-		this.name = name;
-	}
-
-	public InputOnlyFileItem(InputStream stream, String name) {
-		this.stream = stream;
 		this.name = name;
 	}
 
@@ -34,7 +28,7 @@ public class InputOnlyFileItem implements FileItem {
 
 	@Override
 	public InputStream getInputStream() throws IOException {
-		return stream != null ? stream : new FileInputStream(file);
+		return new FileInputStream(file);
 	}
 
 	@Override
@@ -59,7 +53,7 @@ public class InputOnlyFileItem implements FileItem {
 	@Override
 	public long getSize() {
 		try {
-			return stream != null ? stream.available() : file.length();
+			return file.length();
 		} catch(Throwable e) {
 			throw new RuntimeException(e);
 		}

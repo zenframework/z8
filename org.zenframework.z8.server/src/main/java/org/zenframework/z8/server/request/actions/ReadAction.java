@@ -202,6 +202,7 @@ public class ReadAction extends RequestAction {
 			Period period = new Period(query.periodKey(), getPeriodParameter());
 			addFilter(period.where());
 
+			addFilter(query.scope());
 			addFilter(query.where());
 			addGroupFilter(query.having());
 		}
@@ -457,6 +458,7 @@ public class ReadAction extends RequestAction {
 		for(Query query : queries) {
 			if(query != getQuery()) {
 				collectFilterQueries(query.where(), filters, filterFields);
+				collectFilterQueries(query.scope(), filters, filterFields);
 				collectFilterQueries(query.having(), groupFilters, groupFilterFields);
 			}
 		}
@@ -547,36 +549,6 @@ public class ReadAction extends RequestAction {
 
 		if(filter != null)
 			addFilter(new Group(filter));
-	}
-
-	protected Collection<String> parseValues(String jsonData) {
-		Collection<String> result = new ArrayList<String>();
-
-		if(jsonData.isEmpty()) {
-			result.add("");
-			return result;
-		}
-
-		char startChar = jsonData.charAt(0);
-
-		if(startChar == '[') { // array or guids
-			JsonArray values = new JsonArray(jsonData);
-
-			for(int index = 0; index < values.length(); index++) {
-				String value = values.getString(index);
-				result.add(value);
-			}
-		} else if(startChar == '{') { // Period
-			JsonObject values = new JsonObject(jsonData);
-			String start = values.getString(Json.start);
-			String finish = values.getString(Json.finish);
-
-			result.add(start);
-			result.add(finish);
-		} else
-			result.add(jsonData);
-
-		return result;
 	}
 
 	protected String parseJsonProperty(JsonObject json, string property) {

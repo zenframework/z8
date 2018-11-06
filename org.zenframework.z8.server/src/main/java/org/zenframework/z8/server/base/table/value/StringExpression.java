@@ -54,4 +54,9 @@ public class StringExpression extends Expression {
 		set(value);
 		return (StringExpression.CLASS<?>)this.getCLASS();
 	}
+
+	public StringExpression.CLASS<? extends StringExpression> operatorAssign(sql_string expression) {
+		setExpression(expression);
+		return (StringExpression.CLASS<?>)this.getCLASS();
+	}
 }

@@ -34,9 +34,9 @@ Z8.define('Z8.list.Header', {
 		case Type.Float:
 			return HeaderBase.Numeric;
 		case Type.Date:
-			return Format.measureDate(format || Format.Date) + 1;
+			return Math.max(Format.measureDate(format || Format.Date) + 1, HeaderBase.Date);
 		case Type.Datetime:
-			return Format.measureDate(format || Format.Datetime) + 1;
+			return Math.max(Format.measureDate(format || Format.Datetime) + 1, HeaderBase.Datetime);
 		default:
 			return HeaderBase.Min;
 		}

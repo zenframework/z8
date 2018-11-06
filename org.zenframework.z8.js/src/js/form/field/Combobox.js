@@ -82,6 +82,7 @@ Z8.define('Z8.form.field.Combobox', {
 	completeRender: function() {
 		this.callParent();
 
+		this.hidePager();
 		this.dropdown.setAlignment(this.input);
 
 		if(!this.editable)
@@ -167,7 +168,8 @@ Z8.define('Z8.form.field.Combobox', {
 
 		this.displayValue = displayValue = this.isEmptyValue(value) ? '' : this.formatValue(displayValue);
 
-		this.updateDependenciesByValue(value);
+		if(this.didValueChange(value, this.getValue()))
+			this.updateDependenciesByValue(value);
 
 		this.clearFilter();
 		this.callParent(value, displayValue);
@@ -176,6 +178,10 @@ Z8.define('Z8.form.field.Combobox', {
 	setRecord: function(record) {
 		this.callParent(record);
 		this.updateWhere(this.dependsOnValue);
+
+		var store = this.getStore();
+		if(store != null)
+			store.setValues(record);
 	},
 
 	isEqual: function(v1, v2) {
@@ -196,13 +202,15 @@ Z8.define('Z8.form.field.Combobox', {
 		this.updateDependencies(record);
 	},
 
-	onDependencyChange: function(record) {
+	onDependencyChange: function(record, control) {
 		var value = this.dependsOnValue = record != null ? (this.hasDependsOnField() ? record.get(this.getDependsOnField()) : record.id) : null;
 		this.updateWhere(value);
 
-		this.suspendCheckChange++;
-		this.setValue(guid.Null);
-		this.suspendCheckChange--;
+		if(!control.initializing) {
+			this.suspendCheckChange++;
+			this.setValue(guid.Null);
+			this.suspendCheckChange--;
+		}
 	},
 
 	updateWhere: function(value) {

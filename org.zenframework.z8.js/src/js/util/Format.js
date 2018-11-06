@@ -157,7 +157,7 @@ Z8.define('Z8.util.Format', {
 			var length = Format.measures[format];
 			if(length != null)
 				return length;
-			length = Format.date(new Date(2000, 8, 20, 22, 22, 22, 222), format).length * Format.getCharWidth();
+			length = (Format.date(new Date(2000, 8, 20, 22, 22, 22, 222), format).length + 3) * Format.getCharWidth();
 			Format.measures[format] = length;
 			return length;
 		},

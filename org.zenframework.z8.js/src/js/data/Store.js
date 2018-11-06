@@ -421,7 +421,8 @@ Z8.define('Z8.data.Store', {
 	},
 
 	getValues: function() {
-		return this.values;
+		var values = this.values;
+		return values != null ? (values.isModel ? values.data : values) : null;
 	},
 
 	setValues: function(values) {

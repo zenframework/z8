@@ -83,6 +83,9 @@ abstract public class Field extends Control implements IField {
 
 	private bool isPrimaryKey;
 	private bool isParentKey;
+	public RCollection<Field.CLASS<? extends Field>> columns = new RCollection<Field.CLASS<? extends Field>>();
+
+	private boolean isWritingMeta;
 
 	protected Field(IObject container) {
 		super(container);
@@ -166,18 +169,25 @@ abstract public class Field extends Control implements IField {
 		return (getContainer() != null ? "[" + getContainer().displayName() + "]" : "") + displayName();
 	}
 
+	@Override
 	public boolean isPrimaryKey() {
 		if(isPrimaryKey == null)
 			isPrimaryKey = new bool(hasAttribute(IObject.PrimaryKey));
 		return isPrimaryKey.get();
 	}
 
+	@Override
 	public boolean isParentKey() {
 		if(isParentKey == null) {
 			String value = getAttribute(IObject.ParentKey);
 			isParentKey = new bool(value != null && !value.equalsIgnoreCase("false"));
 		}
 		return isParentKey.get();
+	}
+
+	@Override
+	public boolean isExpression() {
+		return false;
 	}
 
 	public boolean isDataField() {
@@ -341,6 +351,11 @@ abstract public class Field extends Control implements IField {
 
 	@Override
 	public void writeMeta(JsonWriter writer, Query query, Query context) {
+		if(isWritingMeta)
+			return;
+
+		isWritingMeta = true;
+
 		writer.writeProperty(Json.type, metaType().toString());
 		writer.writeProperty(Json.format, format, new string());
 		writer.writeProperty(Json.length, length, new integer(0));
@@ -368,6 +383,7 @@ abstract public class Field extends Control implements IField {
 			Query linkQuery = link.getQuery();
 
 			writer.writeProperty(Json.isCombobox, true);
+			writer.writeControls(Json.columns, CLASS.asList(columns), query, context);
 
 			writer.startObject(Json.query);
 			writer.writeProperty(Json.id, context.classId());
@@ -375,17 +391,7 @@ abstract public class Field extends Control implements IField {
 			writer.writeProperty(Json.primaryKey, linkQuery.primaryKey().id());
 			writer.writeProperty(Json.parentKey, linkQuery.parentKey() != null ? linkQuery.parentKey().id() : null);
 			writer.writeProperty(Json.lockKey, linkQuery.lockKey().id());
-			Collection<Field> sortFields = linkQuery.sortFields();
-			if (!sortFields.isEmpty()) {
-				writer.startArray(Json.sort);
-				for (Field sortField : sortFields) {
-					writer.startObject();
-					writer.writeProperty(Json.property, sortField.id());
-					writer.writeProperty(Json.direction, sortField.sortDirection.toString());
-					writer.finishObject();
-				}
-				writer.finishArray();
-			}
+			writer.writeSort(linkQuery.sortFields());
 			writer.finishObject();
 
 			writer.startObject(Json.link);
@@ -403,13 +409,13 @@ abstract public class Field extends Control implements IField {
 
 			writer.writeSort(link.getQuery().sortFields());
 
-			readOnly = hasReadOnlyLinks(path) || !linkField.access().write();
+			readOnly = hasReadOnlyLinks(path) || !linkField.access().write() || readOnly();
 			required = !readOnly && (required() || linkField.required());
 
 			this.readOnly = new bool(readOnly);
 			this.required = new bool(required);
 		} else {
-			readOnly = readOnly() || !access().write();
+			readOnly = readOnly() || isExpression() || !access().write();
 			required = !readOnly && required();
 
 			this.readOnly = new bool(readOnly() || readOnly);
@@ -432,6 +438,8 @@ abstract public class Field extends Control implements IField {
 
 		this.readOnly = wasReadOnly;
 		this.required = wasRequired;
+
+		isWritingMeta = false;
 	}
 
 	public void setWriteNulls(boolean writeNulls) {

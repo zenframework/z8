@@ -93,6 +93,7 @@ public class Query extends OBJECT {
 	private String alias;
 	private SqlToken where;
 	private SqlToken having;
+	private SqlToken scope;
 
 	protected Select cursor;
 	public ReadLock readLock = ReadLock.None;
@@ -831,6 +832,10 @@ public class Query extends OBJECT {
 		controls.add(control);
 	}
 
+	final public SqlToken scope() {
+		return scope == null ? z8_scope() : scope;
+	}
+
 	final public SqlToken where() {
 		return where == null ? z8_where() : where;
 	}
@@ -1202,6 +1207,10 @@ public class Query extends OBJECT {
 	//////////////////////////////////////////////////////////////////////////////////////////////////
 
 	public sql_bool z8_having() {
+		return sql_bool.True;
+	}
+
+	public sql_bool z8_scope() {
 		return sql_bool.True;
 	}
 

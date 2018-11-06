@@ -8,6 +8,8 @@ import org.zenframework.z8.server.base.file.AttachmentProcessor;
 import org.zenframework.z8.server.base.query.Query;
 import org.zenframework.z8.server.base.table.value.Field;
 import org.zenframework.z8.server.base.table.value.FileField;
+import org.zenframework.z8.server.db.Connection;
+import org.zenframework.z8.server.db.ConnectionManager;
 import org.zenframework.z8.server.json.Json;
 import org.zenframework.z8.server.json.JsonWriter;
 import org.zenframework.z8.server.json.parser.JsonObject;
@@ -44,8 +46,19 @@ public class AttachAction extends RequestAction {
 
 		writer.startArray(Json.data);
 
-		for(file file : processor.update(target, files))
-			writer.write(file.toJsonObject());
+		Connection connection = ConnectionManager.get();
+
+		try {
+			connection.beginTransaction();
+
+			for(file file : processor.update(target, files))
+				writer.write(file.toJsonObject());
+
+			connection.commit();
+		} catch(Throwable e) {
+			connection.rollback();
+			throw new RuntimeException(e);
+		}
 
 		writer.finishArray();
 	}

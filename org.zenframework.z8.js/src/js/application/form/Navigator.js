@@ -747,7 +747,8 @@ Z8.define('Z8.application.form.Navigator', {
 
 		this.filesButton.setBusy(true);
 
-		DOM.download(item.record.get('path'), null, { fn: callback, scope: this });
+		var record = item.record;
+		DOM.download(record.get('path'), record.id, null, { fn: callback, scope: this });
 	},
 
 	uploadFiles: function(button, files) {

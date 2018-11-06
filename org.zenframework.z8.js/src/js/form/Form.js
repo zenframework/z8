@@ -310,7 +310,7 @@ Z8.define('Z8.form.Form', {
 		this.fireEvent('change', this, this.record, current);
 	},
 
-	onDependencyChange: function(record) {
+	onDependencyChange: function(record, control) {
 		this.loadRecord(record);
 	}
 });

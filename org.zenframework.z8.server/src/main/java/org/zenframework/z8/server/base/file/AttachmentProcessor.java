@@ -1,7 +1,5 @@
 package org.zenframework.z8.server.base.file;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -22,7 +20,6 @@ import org.zenframework.z8.server.types.guid;
 import org.zenframework.z8.server.types.integer;
 import org.zenframework.z8.server.types.string;
 import org.zenframework.z8.server.utils.AttachmentUtils;
-import org.zenframework.z8.server.utils.IOUtils;
 import org.zenframework.z8.server.utils.StringUtils;
 
 public class AttachmentProcessor extends OBJECT {
@@ -95,20 +92,11 @@ public class AttachmentProcessor extends OBJECT {
 				file.id = guid.create();
 				setUser(file);
 				setPathIfEmpty(recordId, file);
-				putToCache(file);
 				filesTable.add(file);
 			}
 		}
 
 		return files;
-	}
-
-	private void putToCache(file file) {
-		try {
-			IOUtils.copy(file.getInputStream(), new File(Folders.Base, file.path.get()));
-		} catch(IOException e) {
-			throw new RuntimeException(e);
-		}
 	}
 
 	public Collection<file> update(guid recordId, Collection<file> files) {

@@ -188,6 +188,13 @@
 	white-space: nowrap;
 }
 
+.list .item>.column.int:first-child>.text,
+.list .item>.column.float:first-child>.text,
+.list .item>.column.date:first-child>.text,
+.list .item>.column.datetime:first-child>.text {
+	text-align: left;
+}
+
 .list .item>.column.check,
 .list .item>.column.lock {
 	width: 2.14285714em;
@@ -469,7 +476,9 @@
 	overflow-x: hidden;
 	overflow-y: hidden;
 	text-overflow: ellipsis;
+/*
 	white-space: nowrap;
+*/
 }
 
 .dropdown-menu.list {

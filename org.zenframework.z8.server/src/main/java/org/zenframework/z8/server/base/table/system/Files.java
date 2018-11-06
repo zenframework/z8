@@ -13,8 +13,7 @@ import org.zenframework.z8.server.base.table.Table;
 import org.zenframework.z8.server.base.table.value.BinaryField;
 import org.zenframework.z8.server.base.table.value.Field;
 import org.zenframework.z8.server.base.table.value.StringField;
-import org.zenframework.z8.server.db.sql.SqlToken;
-import org.zenframework.z8.server.db.sql.expressions.Equ;
+import org.zenframework.z8.server.db.ConnectionManager;
 import org.zenframework.z8.server.resources.Resources;
 import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.types.file;
@@ -116,6 +115,8 @@ public class Files extends Table {
 				create(file.id);
 			else
 				update(file.id);
+
+			ConnectionManager.get().flush();
 		} finally {
 			IOUtils.closeQuietly(input);
 		}
@@ -124,14 +125,12 @@ public class Files extends Table {
 	public static InputStream getInputStream(file file) throws IOException {
 		Files table = newInstance();
 
-		SqlToken where = new Equ(table.path.get(), file.path);
-
 		guid recordId = file.id;
 
 		Field data = table.data.get();
 		Collection<Field> fields = Arrays.asList(data);
 
-		if(recordId != null && !recordId.isNull() && table.readRecord(recordId, fields) || table.readFirst(fields, where))
+		if(!recordId.isNull() && table.readRecord(recordId, fields))
 			return data.binary().get();
 
 		return null;

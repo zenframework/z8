@@ -222,7 +222,7 @@ Z8.define('Z8.form.field.Listbox', {
 		return [{ property: property, value: value }];
 	},
 
-	onDependencyChange: function(record) {
+	onDependencyChange: function(record, control) {
 		var recordId = this.getRecordId();
 
 		var dependsOnValue = null;

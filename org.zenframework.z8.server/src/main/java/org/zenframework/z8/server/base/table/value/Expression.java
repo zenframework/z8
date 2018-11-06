@@ -6,7 +6,6 @@ import org.zenframework.z8.server.db.sql.FormatOptions;
 import org.zenframework.z8.server.db.sql.SqlConst;
 import org.zenframework.z8.server.db.sql.SqlToken;
 import org.zenframework.z8.server.runtime.IObject;
-import org.zenframework.z8.server.types.bool;
 import org.zenframework.z8.server.types.primary;
 
 public class Expression extends Field {
@@ -27,7 +26,6 @@ public class Expression extends Field {
 
 	public Expression(IObject container) {
 		super(container);
-		readOnly = bool.True;
 	}
 
 	public Expression(SqlToken expression, FieldType expressionType) {
@@ -44,6 +42,11 @@ public class Expression extends Field {
 	@Override
 	public String sqlType(DatabaseVendor vendor) {
 		return null;
+	}
+
+	@Override
+	public boolean isExpression() {
+		return true;
 	}
 
 	final public SqlToken expression() {

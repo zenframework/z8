@@ -65,8 +65,8 @@ Z8.define('Z8.list.Dropdown', {
 		var wasVisible = this.visible;
 		this.visible = true;
 
-		this.align();
 		this.adjustAutoFit();
+		this.align();
 
 		if(!wasVisible)
 			this.fireEvent('show', this);
