@@ -349,6 +349,14 @@ abstract public class Field extends Control implements IField {
 		return false;
 	}
 
+	private boolean hasRequiredLinks(Collection<ILink> links) {
+		for(ILink link : links) {
+			if(((Field)link).required())
+				return true;
+		}
+		return false;
+	}
+
 	@Override
 	public void writeMeta(JsonWriter writer, Query query, Query context) {
 		if(isWritingMeta)
@@ -410,7 +418,7 @@ abstract public class Field extends Control implements IField {
 			writer.writeSort(link.getQuery().sortFields());
 
 			readOnly = hasReadOnlyLinks(path) || !linkField.access().write() || readOnly();
-			required = !readOnly && (required() || linkField.required());
+			required = !readOnly && (hasRequiredLinks(path) || required());
 
 			this.readOnly = new bool(readOnly);
 			this.required = new bool(required);
