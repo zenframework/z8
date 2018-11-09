@@ -44,7 +44,8 @@ Z8.define('Z8.form.field.Geometry', {
 		var zoom = new Z8.button.Group({ items: [zoomOut, zoomIn] });
 
 		var tools = this.createGeometryTools();
-		this.setGeometryTools(tools);
+		if (tools != null)
+			this.setGeometryTools(tools);
 
 		return [zoom].add(tools || []);
 	},
@@ -805,7 +806,7 @@ Z8.define('Z8.form.field.Geometry', {
 	},
 
 	canDraw: function() {
-		return this.record != null && this.feature == null;
+		return this.record != null && (this.feature == null || this.feature.getGeometry() == null);
 	},
 
 	canErase: function() {
