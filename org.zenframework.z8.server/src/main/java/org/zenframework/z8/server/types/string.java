@@ -489,6 +489,15 @@ public final class string extends primary {
 		return new string(s);
 	}
 
+	static public string z8_concat(RCollection<string> array, string delimeter) {
+		StringBuilder str = new StringBuilder();
+		for (string s : array)
+			str.append(s.get()).append(delimeter.get());
+		if (str.length() > 0)
+			str.setLength(str.length() - delimeter.get().length());
+		return new string(str.toString());
+	}
+
 	public static string[] wrap(String... strings) {
 		string[] result = new string[strings.length];
 

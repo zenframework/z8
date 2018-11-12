@@ -81,4 +81,5 @@ public final class string extends primary {
 	public string format(primary[] frm); // {n} <=> [n]
 
 	static public string replicate(string str, int count);
+	static public string concat(string[] array, string delimeter);
 }
