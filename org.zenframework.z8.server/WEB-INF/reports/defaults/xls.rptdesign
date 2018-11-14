@@ -8,6 +8,7 @@
     <styles>
         <style name="GroupFooterCell" id="6">
             <property name="backgroundColor">#F5F5F5</property>
+            <property name="fontFamily">"Roboto"</property>
             <property name="fontSize">small</property>
             <property name="borderBottomColor">#C0C0C0</property>
             <property name="borderBottomStyle">solid</property>
@@ -57,6 +58,7 @@
         </style>
         <style name="GroupHeaderCell" id="8">
             <property name="backgroundColor">#F7F7F7</property>
+            <property name="fontFamily">"Roboto"</property>
             <property name="fontSize">small</property>
             <property name="borderBottomColor">#C0C0C0</property>
             <property name="borderBottomStyle">solid</property>
@@ -77,6 +79,7 @@
         </style>
         <style name="GroupHeaderCell2" id="9">
             <property name="backgroundColor">#ECFFEC</property>
+            <property name="fontFamily">"Roboto"</property>
             <property name="fontSize">small</property>
             <property name="borderBottomColor">#C0C0C0</property>
             <property name="borderBottomStyle">none</property>
@@ -96,7 +99,7 @@
             <property name="paddingRight">1pt</property>
         </style>
         <style name="DetailCell" id="10">
-            <property name="fontFamily">"Play"</property>
+            <property name="fontFamily">"Roboto"</property>
             <property name="fontSize">small</property>
             <property name="borderBottomColor">#C0C0C0</property>
             <property name="borderBottomStyle">solid</property>
@@ -118,6 +121,7 @@
         </style>
         <style name="GroupFooterCell2" id="12">
             <property name="backgroundColor">#ECFFEC</property>
+            <property name="fontFamily">"Roboto"</property>
             <property name="fontSize">small</property>
             <property name="borderBottomColor">#C0C0C0</property>
             <property name="borderBottomStyle">none</property>
@@ -138,6 +142,7 @@
         </style>
         <style name="GrandTotalsCell" id="13">
             <property name="backgroundColor">#F0E8EF</property>
+            <property name="fontFamily">"Roboto"</property>
             <property name="fontSize">small</property>
             <property name="fontWeight">bold</property>
             <property name="borderBottomColor">#C0C0C0</property>
@@ -158,19 +163,21 @@
             <property name="paddingRight">1pt</property>
         </style>
         <style name="DateFormat" id="14">
+            <property name="fontFamily">"Roboto"</property>
             <structure name="dateTimeFormat">
                 <property name="category">Custom</property>
                 <property name="pattern">dd.MM.yyyy</property>
             </structure>
         </style>
         <style name="DateTimeFormat" id="15">
+            <property name="fontFamily">"Roboto"</property>
             <structure name="dateTimeFormat">
                 <property name="category">Custom</property>
                 <property name="pattern">dd.MM.yyyy hh:mm</property>
             </structure>
         </style>
         <style name="ReportBody" id="103">
-            <property name="fontFamily">"Play"</property>
+            <property name="fontFamily">"Roboto"</property>
             <property name="fontSize">12px</property>
         </style>
     </styles>
@@ -198,71 +205,25 @@
             <property name="showHeaderOnFirst">true</property>
             <property name="showFooterOnLast">true</property>
             <property name="headerHeight">0in</property>
-            <property name="footerHeight">0.3in</property>
-            <page-footer>
-                <grid id="79">
-                    <property name="height">0.5in</property>
-                    <property name="width">7.697916666666667in</property>
-                    <column id="80"/>
-                    <column id="81">
-                        <property name="width">4.791666666666667in</property>
-                    </column>
-                    <column id="82"/>
-                    <row id="83">
-                        <cell id="84"/>
-                        <cell id="85"/>
-                        <cell id="86">
-                            <grid name="PageNumber" id="87">
-                                <property name="width">100%</property>
-                                <column id="88"/>
-                                <column id="89">
-                                    <property name="width">0.20833333333333334in</property>
-                                </column>
-                                <column id="90"/>
-                                <row id="91">
-                                    <cell id="92">
-                                        <auto-text id="93">
-                                            <property name="textAlign">right</property>
-                                            <property name="whiteSpace">normal</property>
-                                            <property name="type">page-number</property>
-                                        </auto-text>
-                                    </cell>
-                                    <cell id="94">
-                                        <property name="width">0.1in</property>
-                                        <text id="95">
-                                            <property name="textAlign">center</property>
-                                            <property name="textTransform">none</property>
-                                            <property name="contentType">plain</property>
-                                            <text-property name="content"><![CDATA[/]]></text-property>
-                                        </text>
-                                    </cell>
-                                    <cell id="96">
-                                        <auto-text id="97">
-                                            <property name="type">total-page</property>
-                                        </auto-text>
-                                    </cell>
-                                </row>
-                            </grid>
-                        </cell>
-                    </row>
-                </grid>
-            </page-footer>
+            <property name="footerHeight">0in</property>
         </simple-master-page>
     </page-setup>
     <body>
         <grid id="35">
-            <property name="fontFamily">"Arial"</property>
+            <property name="fontFamily">"Roboto"</property>
             <property name="fontSize">16px</property>
             <property name="width">100%</property>
             <column id="37"/>
             <row id="39">
+                <property name="fontFamily">"Roboto"</property>
                 <cell id="41">
+                    <property name="fontFamily">"Roboto"</property>
                     <property name="paddingTop">0pt</property>
                     <property name="paddingLeft">0pt</property>
                     <property name="paddingBottom">0pt</property>
                     <property name="paddingRight">0pt</property>
                     <label name="CaptionCenter" id="34">
-                        <property name="fontFamily">"Play"</property>
+                        <property name="fontFamily">"Roboto"</property>
                         <property name="fontSize">18px</property>
                         <property name="fontWeight">bold</property>
                         <property name="fontVariant">normal</property>
@@ -276,9 +237,11 @@
             </row>
         </grid>
         <grid name="ReportBody" id="98">
+            <property name="fontFamily">"Roboto"</property>
             <property name="width">100%</property>
             <column id="99"/>
             <row id="100">
+                <property name="fontFamily">"Roboto"</property>
                 <cell id="101">
                     <property name="fontFamily">"Roboto"</property>
                     <property name="fontSize">10px</property>

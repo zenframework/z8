@@ -247,8 +247,9 @@ public class RCollection<TYPE> extends ArrayList<TYPE> {
 	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	public void z8_sort() {
+	public RCollection<TYPE> z8_sort() {
 		Collections.sort((List<Comparable>)this);
+		return this;
 	}
 
 	public string z8_join() {

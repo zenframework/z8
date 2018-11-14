@@ -346,6 +346,9 @@ public class BirtReport {
 	private Collection<Column> scaleColumns() {
 		Collection<Column> columns = getColumns();
 
+		if(Reports.Excel.equals(format()))
+			return columns;
+
 		float pageWidth = options.pagesWide * (options.pageWidth() - options.horizontalMargins());
 		float scaleFactor = pageWidth / getTotalWidth();
 
@@ -1008,8 +1011,9 @@ public class BirtReport {
 		options.setOutputFormat(format()); // pdf, doc, ppt, html, xls_spudsoft
 		options.setOutputFileName(outputFile.getAbsolutePath());
 
+
 		if(format().equalsIgnoreCase(Reports.Excel)) {
-			options.setOption(IExcelRenderOption.OFFICE_VERSION, "office2007"); 
+			options.setOption(IExcelRenderOption.OFFICE_VERSION, "office2007");
 			options.setOption(IRenderOption.EMITTER_ID, "uk.co.spudsoft.birt.emitters.excel.XlsEmitter");
 			options.setOutputFormat("xls_spudsoft"); // pdf, doc, ppt, html, xls_spudsoft
 		}

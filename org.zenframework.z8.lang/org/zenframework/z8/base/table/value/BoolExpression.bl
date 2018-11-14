@@ -7,7 +7,7 @@ public class BoolExpression extends Expression {
 	virtual public bool get();
 	virtual public bool[] array();
 
-	public BoolExpression operator = (bool value);
+	public BoolExpression operator = (sql_bool expression);
 
 	public operator sql_bool();
 

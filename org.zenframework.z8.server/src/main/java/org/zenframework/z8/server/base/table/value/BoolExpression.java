@@ -56,4 +56,8 @@ public class BoolExpression extends Expression {
 		return (BoolExpression.CLASS<?>)this.getCLASS();
 	}
 
+	public BoolExpression.CLASS<? extends BoolExpression> operatorAssign(sql_bool expression) {
+		setExpression(expression);
+		return (BoolExpression.CLASS<?>)this.getCLASS();
+	}
 }

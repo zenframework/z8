@@ -541,7 +541,7 @@ Z8.define('Z8.list.List', {
 	},
 
 	createHeader: function(field, cls) {
-		var type = this.headerType || (field.type != Type.Boolean ? 'Z8.list.Header' : 'Z8.list.HeaderIcon');
+		var type = this.headerType || (field.type != Type.Boolean || field.columnHeader ? 'Z8.list.Header' : 'Z8.list.HeaderIcon');
 		return Z8.create(type, { list: this, field: field, cls: cls });
 	},
 

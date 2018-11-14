@@ -96,8 +96,8 @@ public class ArrayMethods {
 			methods.add(new Operator(variableType, new OperatorToken(IToken.PLUS, null),
 					new Variable[] { new Variable(variableType, "elements") }));
 
-			// void sort()
-			methods.add(new Method(new VariableType(compilationUnit, voidType), "sort", null));
+			// TYPE[] sort()
+			methods.add(new Method(new VariableType(variableType), "sort", null));
 
 			// string join()
 			methods.add(new Method(new VariableType(compilationUnit, stringType), "join", null));
