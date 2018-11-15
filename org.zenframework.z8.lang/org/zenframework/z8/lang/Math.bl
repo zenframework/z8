@@ -1,5 +1,7 @@
 [native "org.zenframework.z8.server.math.Math"]
 public final class Math {
+	static public final decimal PI;
+	
 	static public int max(int a, int b);
 	static public decimal max(int a, decimal b);
 	static public decimal max(decimal a, int b);
@@ -13,6 +15,9 @@ public final class Math {
 
 	static public decimal hypot(decimal x, decimal y);
 
+	static public decimal sin(decimal a);
+	static public decimal cos(decimal a);
+	
 	/**
 	* Returns a decimal value with a positive sign, greater 
 	* than or equal to 0.0 and less than 1.0. 
