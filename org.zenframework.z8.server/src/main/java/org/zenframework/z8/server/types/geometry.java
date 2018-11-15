@@ -416,6 +416,11 @@ public final class geometry extends primary {
 	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
+	static public geometry z8_polygon(RCollection points) {
+		return new geometry(points, polygon, points == null || points.isEmpty() ? DefaultSRS.getInt() : ((geometry) points.get(0)).srs());
+	}
+
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	static public geometry z8_collection(RCollection geometries) {
 		return new geometry(geometries, collection, geometries == null || geometries.isEmpty() ? DefaultSRS.getInt() : ((geometry) geometries.get(0)).srs());
 	}
