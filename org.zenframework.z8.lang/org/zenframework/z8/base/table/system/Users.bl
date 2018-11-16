@@ -58,9 +58,5 @@ public class Users extends Table {
 		[name "Admin"]
 		[description "Администратор системы"]
 		Administrator = '00000000-0000-0000-0000-000000000002';
-
-		[name "Site"]
-		[description "Сайт"]
-		Site = '00000000-0000-0000-0000-000000000003';
 	}
 }

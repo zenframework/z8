@@ -29,13 +29,6 @@ public class Access implements IAccess {
 		return access;
 	}
 
-	static public IAccess site() {
-		Access access = new Access();
-		access.read = true;
-		access.write = access.create = access.copy = access.destroy = access.execute = false;
-		return access;
-	}
-
 	static public IAccess guest() {
 		Access access = new Access();
 		access.read = access.write = access.create = access.copy = access.destroy = access.execute = false;

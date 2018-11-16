@@ -135,8 +135,6 @@
 	<entry key="InterconnectionCenterView.title">Interconnection Center</entry>
 
 	<!-- BuiltinUsers -->
-	<entry key="BuiltinUsers.site.name">Site</entry>
-	<entry key="BuiltinUsers.site.description">Системный вход с сайта, ограниченная функциональность</entry>
 	<entry key="BuiltinUsers.system.name">System</entry>
 	<entry key="BuiltinUsers.system.description">Системный вход</entry>
 	<entry key="BuiltinUsers.administrator.name">Admin</entry>
@@ -197,28 +195,6 @@
 	<!-- Reports -->
 	<entry key="Report.groupTotal">Итого по </entry>
 	<entry key="Report.groupGrandTotal">Всего</entry>
-
-	<!-- Accounts -->
-	<entry key="SiteAccounts.title">Пользователи сайта</entry>
-	<entry key="SiteAccounts.email">Email</entry>
-	<entry key="SiteAccounts.login">Логин</entry>
-	<entry key="SiteAccounts.firstName">Имя</entry>
-	<entry key="SiteAccounts.lastName">Фамилия</entry>
-	<entry key="SiteAccounts.banned">Ban</entry>
-
-	<!-- Topics -->
-	<entry key="SiteTopics.title">Темы</entry>
-	<entry key="SiteTopics.headline">Заголовок</entry>
-	<entry key="SiteTopics.text">Текст</entry>
-	<entry key="SiteTopics.author">Автор</entry>
-	<entry key="Sitetopics.time">Время</entry>
-
-	<!-- Comments -->
-	<entry key="SiteComments.title">Комментарии</entry>
-	<entry key="SiteComments.headline">Тема</entry>
-	<entry key="SiteComments.text">Текст</entry>
-	<entry key="SiteComments.author">Автор</entry>
-	<entry key="SiteComments.time">Время</entry>
 
 	<!-- Exceptions -->
 	<entry key="Exception.invalidVersion">Версия схемы базы данных не соответствует версии сервера.</entry>

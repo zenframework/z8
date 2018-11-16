@@ -28,7 +28,6 @@ import org.zenframework.z8.server.types.string;
 public class Users extends Table {
 	final static public String TableName = "SystemUsers";
 
-	static public final guid Site = BuiltinUsers.Site.guid();
 	static public final guid System = BuiltinUsers.System.guid();
 	static public final guid Administrator = BuiltinUsers.Administrator.guid();
 
@@ -72,9 +71,6 @@ public class Users extends Table {
 		public final static String DefaultName = Resources.get(strings.DefaultName);
 		public final static String Title = Resources.get(strings.Title);
 		public final static String Description = Resources.get(strings.Description);
-
-		public final static String SiteName = BuiltinUsers.displayNames.SiteName;
-		public final static String SiteDescription = BuiltinUsers.displayNames.SiteDescription;
 
 		public final static String SystemName = BuiltinUsers.displayNames.SystemName;
 		public final static String SystemDescription = BuiltinUsers.displayNames.SystemDescription;
@@ -195,14 +191,6 @@ public class Users extends Table {
 	public void initStaticRecords() {
 		{
 			LinkedHashMap<IField, primary> record = new LinkedHashMap<IField, primary>();
-			record.put(name.get(), new string(displayNames.SiteName));
-			record.put(description.get(), new string(displayNames.SiteDescription));
-			record.put(lock.get(), RecordLock.Full);
-			record.put(banned.get(), bool.True);
-			addRecord(BuiltinUsers.Site.guid(), record);
-		}
-		{
-			LinkedHashMap<IField, primary> record = new LinkedHashMap<IField, primary>();
 			record.put(name.get(), new string(displayNames.AdministratorName));
 			record.put(description.get(), new string(displayNames.AdministratorDescription));
 			record.put(lock.get(), RecordLock.Destroy);
@@ -238,8 +226,7 @@ public class Users extends Table {
 
 		if(banned.get().changed() && isSystemUser(recordId)) {
 			boolean ban = banned.get().bool().get();
-			if(!ban && Site.equals(recordId) ||
-					ban  && (System.equals(recordId) || Administrator.equals(recordId)))
+			if(ban && (System.equals(recordId) || Administrator.equals(recordId)))
 				throw new exception("Builtin users ban state can not be changed");
 		}
 	}
@@ -271,7 +258,7 @@ public class Users extends Table {
 	}
 
 	private boolean isSystemUser(guid recordId) {
-		return Administrator.equals(recordId) || System.equals(recordId) || Site.equals(recordId);
+		return Administrator.equals(recordId) || System.equals(recordId);
 	}
 
 	static public void notifyUserChange(guid user) {

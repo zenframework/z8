@@ -68,7 +68,6 @@ public class User implements IUser {
 	private RLinkedHashMap<string, primary> parameters = new RLinkedHashMap<string, primary>();
 
 	static private User system = null;
-	static private User site = null;
 
 	static public IUser system() {
 		if(system != null)
@@ -98,24 +97,6 @@ public class User implements IUser {
 		system.addSystemTools();
 
 		return system;
-	}
-
-	static public IUser site() {
-		if(site != null)
-			return site;
-
-		guid id = BuiltinUsers.Site.guid();
-		String login = BuiltinUsers.displayNames.SiteName;
-
-		site = new User();
-
-		site.id = id;
-		site.login = login;
-		site.password = "";
-		site.banned = true;
-		site.roles = new HashSet<IRole>(Arrays.asList(Role.site()));
-		site.privileges = new Privileges(Access.site());
-		return site;
 	}
 
 	public User() {
@@ -272,7 +253,7 @@ public class User implements IUser {
 
 		IUser user = load(login, createIfNotExist);
 
-		if(password == null || !password.equals(user.password()) || user.banned() || user.id().equals(Users.Site))
+		if(password == null || !password.equals(user.password()) || user.banned())
 			throw new AccessDeniedException();
 
 		return user;
