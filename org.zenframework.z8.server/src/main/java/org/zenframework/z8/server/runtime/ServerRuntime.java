@@ -1,8 +1,5 @@
 package org.zenframework.z8.server.runtime;
 
-import org.zenframework.z8.server.base.table.site.Accounts;
-import org.zenframework.z8.server.base.table.site.Comments;
-import org.zenframework.z8.server.base.table.site.Topics;
 import org.zenframework.z8.server.base.table.system.Domains;
 import org.zenframework.z8.server.base.table.system.Entries;
 import org.zenframework.z8.server.base.table.system.Fields;
@@ -55,10 +52,6 @@ public class ServerRuntime extends AbstractRuntime {
 
 		addTable(new MessageQueue.CLASS<MessageQueue>(null));
 		addTable(new TransportQueue.CLASS<TransportQueue>(null));
-
-		addTable(new Accounts.CLASS<Accounts>(null));
-		addTable(new Topics.CLASS<Topics>(null));
-		addTable(new Comments.CLASS<Comments>(null));
 
 		addEntry(new SystemTools.CLASS<SystemTools>(null));
 	}

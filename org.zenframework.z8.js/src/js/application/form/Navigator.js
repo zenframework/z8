@@ -725,7 +725,7 @@ Z8.define('Z8.application.form.Navigator', {
 		var params = {
 			request: this.store.getModelName(),
 			action: 'report',
-			format: 'pdf',
+			format: report.format,
 			id: report.id,
 			recordId: record.id
 		};

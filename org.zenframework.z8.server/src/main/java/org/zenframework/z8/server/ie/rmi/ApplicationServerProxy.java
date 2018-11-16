@@ -8,7 +8,6 @@ import org.zenframework.z8.server.config.ServerConfig;
 import org.zenframework.z8.server.engine.IApplicationServer;
 import org.zenframework.z8.server.engine.ISession;
 import org.zenframework.z8.server.ie.Message;
-import org.zenframework.z8.server.security.IAccount;
 import org.zenframework.z8.server.security.IUser;
 import org.zenframework.z8.server.types.file;
 
@@ -61,11 +60,6 @@ public class ApplicationServerProxy implements IApplicationServer {
 
 	@Override
 	public IUser user(String login, String password, boolean createIfNotExists) throws RemoteException {
-		throw new UnsupportedOperationException();
-	}
-
-	@Override
-	public IAccount account(String login, String password) throws RemoteException {
 		throw new UnsupportedOperationException();
 	}
 

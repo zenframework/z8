@@ -27,7 +27,6 @@ import org.zenframework.z8.server.engine.ServerInfo;
 import org.zenframework.z8.server.exceptions.AccessDeniedException;
 import org.zenframework.z8.server.logs.Trace;
 import org.zenframework.z8.server.request.RequestDispatcher;
-import org.zenframework.z8.server.security.IAccount;
 import org.zenframework.z8.server.security.IUser;
 import org.zenframework.z8.server.types.datespan;
 import org.zenframework.z8.server.types.guid;
@@ -113,7 +112,28 @@ public class AuthorityCenter extends HubServer implements IAuthorityCenter {
 
 	@Override
 	public ISession login(String login, String password) throws RemoteException {
-		return login(login, password, false);
+		IServerInfo serverInfo = findServer((String)null);
+
+		if(serverInfo == null)
+			throw new AccessDeniedException();
+
+		IApplicationServer loginServer = serverInfo.getServer();
+
+		ISession session = null;
+
+		if(password == null)
+			password = "";
+
+		if (!ldapUrl.isEmpty() && !StringUtils.containsIgnoreCase(ldapUsersIgnore, login)) {
+			checkLdapLogin(login, password);
+			password = "";
+		}
+
+		IUser user = loginServer.user(login, clientHashPassword ? password : MD5.hex(password), !ldapUrl.isEmpty() && ldapUsersCreateOnSuccessfulLogin);
+		session = sessionManager.create(user);
+
+		session.setServerInfo(serverInfo);
+		return session;
 	}
 
 	@Override
@@ -125,52 +145,6 @@ public class AuthorityCenter extends HubServer implements IAuthorityCenter {
 			return null;
 
 		session.setServerInfo(server);
-		return session;
-	}
-
-	@Override
-	public ISession siteLogin(String login, String password) throws RemoteException {
-		return login(login, password, true);
-	}
-
-	@Override
-	public ISession siteServer(String sessionId, String serverId) throws RemoteException {
-		ISession session = sessionManager.siteSession(sessionId);
-		IServerInfo server = findServer(serverId);
-
-		if(server == null)
-			return null;
-
-		session.setServerInfo(server);
-		return session;
-	}
-
-	private ISession login(String login, String password, boolean site) throws RemoteException {
-		IServerInfo serverInfo = findServer((String)null);
-
-		if(serverInfo == null)
-			throw new AccessDeniedException();
-
-		IApplicationServer loginServer = serverInfo.getServer();
-
-		ISession session = null;
-		
-		if(password == null)
-			password = "";
-
-		if(site) {
-			IAccount account = loginServer.account(login, password);
-			session = sessionManager.create(account);
-		} else {
-			if (!ldapUrl.isEmpty() && !StringUtils.containsIgnoreCase(ldapUsersIgnore, login)) {
-				checkLdapLogin(login, password);
-				password = "";
-			}
-			IUser user = loginServer.user(login, clientHashPassword ? password : MD5.hex(password), !ldapUrl.isEmpty() && ldapUsersCreateOnSuccessfulLogin);
-			session = sessionManager.create(user);
-		}
-
-		session.setServerInfo(serverInfo);
 		return session;
 	}
 

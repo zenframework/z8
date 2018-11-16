@@ -50,6 +50,10 @@ public class Report extends OBJECT implements Runnable, IReport {
 		super(container);
 	}
 
+	private string format() {
+		return format != null ? format : Report.Pdf;
+	}
+
 	@Override
 	public Collection<Query> queries() {
 		Collection<Query> datasets = new ArrayList<Query>();
@@ -72,6 +76,7 @@ public class Report extends OBJECT implements Runnable, IReport {
 		writer.writeProperty(Json.text, displayName());
 		writer.writeProperty(Json.description, description());
 		writer.writeProperty(Json.icon, icon());
+		writer.writeProperty(Json.format, format());
 	}
 
 	public file execute(guid recordId) {
@@ -92,7 +97,7 @@ public class Report extends OBJECT implements Runnable, IReport {
 		report.template = template.get() + '.' + Reports.DesignExtension;
 		report.queries = queries();
 		report.header = name.get();
-		report.format = format != null ? format.get() : Reports.Pdf;
+		report.format = format().get();
 
 		File diskFile = new File(Folders.Base, new BirtReport(report).execute().getPath());
 		file file = new file(diskFile);

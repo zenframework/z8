@@ -24,7 +24,6 @@ import org.zenframework.z8.server.types.encoding;
 import org.zenframework.z8.web.server.Adapter;
 import org.zenframework.z8.web.server.ConverterAdapter;
 import org.zenframework.z8.web.server.LogoutAdapter;
-import org.zenframework.z8.web.server.SiteAdapter;
 import org.zenframework.z8.web.server.SystemAdapter;
 
 public class Servlet extends HttpServlet {
@@ -69,7 +68,6 @@ public class Servlet extends HttpServlet {
 		}
 
 		adapters.add(new SystemAdapter(this));
-		adapters.add(new SiteAdapter(this));
 		adapters.add(new ConverterAdapter(this));
 		adapters.add(new LogoutAdapter(this));
 
