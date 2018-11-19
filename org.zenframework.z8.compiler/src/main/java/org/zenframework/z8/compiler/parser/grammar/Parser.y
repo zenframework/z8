@@ -3,7 +3,7 @@
 	final int endStack = 100;
 	final int newState = 101;
 
-	final int YYMAXDEPTH = 1000;
+	final int YYMAXDEPTH = 200;
 	final int YYREDMAX  = 1000;
 	final int PCYYFLAG = -1000;
 	final int WAS0ERR = 0;
@@ -32,87 +32,59 @@
 
 	Parser parser;
 
-	Lexer getLexer()
-	{
+	Lexer getLexer() {
 		return parser.getLexer();
 	}
-	
-	void recover()
-	{
-		if(yylval.getId() != 0)
-		{
+
+	void recover() {
+		if(yylval.getId() != 0) {
 			pcyytoken = -1;
 			pcyyerrfl = WAS0ERR;
 		}
 	}
-		
-	void error(IPosition position, String message)
-	{
+
+	void error(IPosition position, String message) {
 		parser.getCompilationUnit().error(position, message);
 	}
 
-	void error()
-	{
+	void error() {
 		error(yylval);
 	}
 
-	void error(IToken token)
-	{
+	void error(IToken token) {
 		error(token, null);
 	}
 
-	void error(String message)
-	{
+	void error(String message) {
 		error(getLexer().previousToken(), message);
 	}
 
-	void error(IToken token, String message)
-	{
-		if(token != null && token.getPosition() != null) // empty or fully commented file
-		{
-			if(message == null)
-			{
-				message = "', delete this token";
-			}
-			else
-			{
-				message = "', " + message;
-			}
-		
-			parser.getCompilationUnit().error(token.getPosition(), "Syntax error on token '" + getLexer().getString(token.getPosition()) + message);
-		}
-		else if(token != null && token.getId() == 0)
-		{
+	void error(IToken token, String message) {
+		if(token != null && token.getPosition() != null) { // empty or fully commented file
+			message = message != null ? message : "delete this token";
+			parser.getCompilationUnit().error(token.getPosition(), "Syntax error on token '" + getLexer().getString(token.getPosition()) + "', " + message);
+		} else if(token != null && token.getId() == 0) {
 			token = getLexer().previousToken();
-			
 			if(token.getPosition() != null)
-			{
 				parser.getCompilationUnit().error(token.getPosition(), "Syntax error on token '" + getLexer().getString(token.getPosition()) + "', unexpected end of file");
-			}
 		}
 	}
 
-	int lex()
-	{
+	int lex() {
 		yylval = getLexer().nextToken();
 		return yylval.getId(); 
 	}
 
-	int parse(Parser parser)
-	{
+	int parse(Parser parser) {
 		this.parser = parser;
-		
+
 		int nResult = endStack;
 
-		while(true)
-		{
-		
-//	endStack:
-			if(nResult == endStack)
-			{
+		while(true) {
+			// endStack:
+			if(nResult == endStack) {
 				/* push stack */
-				if(++ssPos - YYMAXDEPTH > 0)
-				{
+				if(++ssPos - YYMAXDEPTH > 0) {
 					error(); //"pcyacc internal stack overflow"
 					return(1);
 				}
@@ -121,32 +93,29 @@
 				s[sp] = yyval;
 			}
 
-//	newState:
+			// newState:
 			n = yypact[tmpstate];
-			if (n <= PCYYFLAG)
-			{
+			if (n <= PCYYFLAG) {
 				nResult = doDefault();
 				if(nResult < endStack)
 					return nResult;
 				continue; // defaultact; /*  a simple state */
 			}
 
-			if(pcyytoken < 0)
-			{
+			if(pcyytoken < 0) {
 				if((pcyytoken = lex()) < 0)
 					pcyytoken = 0;
 			}
-		  
-			if((n += pcyytoken) < 0 || n >= YYLAST)
-			{
+
+			if((n += pcyytoken) < 0 || n >= YYLAST) {
 				nResult = doDefault();
 				if(nResult < endStack)
 					return nResult;
 				continue; // defaultact;
 			}
 
-			if(yychk[n=yyact[n]] == pcyytoken)
-			{ /* a shift */
+			if(yychk[n=yyact[n]] == pcyytoken) { 
+			/* a shift */
 				pcyytoken = -1;
 				yyval = yylval;
 				tmpstate = n;
@@ -162,43 +131,38 @@
 		}
 	}
 
-	int doDefault()
-	{
-		if ((n=yydef[tmpstate]) == -2) 
-		{
-			if (pcyytoken < 0)
-			{
+	int doDefault() {
+		if ((n=yydef[tmpstate]) == -2) {
+			if (pcyytoken < 0) {
 				if((pcyytoken = lex()) < 0)
 					pcyytoken = 0;
 			}
-			for(yyxi = 0; (yyexca[yyxi] != -1) || (yyexca[yyxi + 1] != tmpstate); yyxi += 2)
-			{
+
+			for(yyxi = 0; (yyexca[yyxi] != -1) || (yyexca[yyxi + 1] != tmpstate); yyxi += 2) {
 			}
-			while(yyexca[yyxi += 2] >= 0)
+
+			while(yyexca[yyxi += 2] >= 0) {
 				if(yyexca[yyxi] == pcyytoken)
 					break;
-			if((n = yyexca[yyxi + 1]) < 0)
-			{ /* an accept action */
-			return (0);
 			}
+
+			if((n = yyexca[yyxi + 1]) < 0) /* an accept action */
+				return (0);
 		}
 
-		if(n == 0)
-		{
+		if(n == 0) {
 			/* error situation */
 			switch (pcyyerrfl) {
 			case WAS0ERR:          /* an error just occurred */
 				error();
-	            ++pcyyerrct;
+				++pcyyerrct;
 			case WAS1ERR:
 			case WAS2ERR:           /* try again */
 				pcyyerrfl = WAS3ERR;
 				/* find a state for a legal shift action */
-				while (ssPos >= 0) 
-				{
+				while (ssPos >= 0) {
 					n = yypact[statestack[ssPos]] + YYERRCODE;
-					if(n >= 0 && n < YYLAST && yychk[yyact[n]] == YYERRCODE)
-					{
+					if(n >= 0 && n < YYLAST && yychk[yyact[n]] == YYERRCODE) {
 						tmpstate = yyact[n];  /* simulate a shift of "error" */
 						return endStack;//break enstack;
 					}
@@ -210,7 +174,7 @@
 				}
 				return(1);
 			case WAS3ERR:  /* clobber input char */
-				if (pcyytoken == 0) 
+				if (pcyytoken == 0)
 					return 1; /* quit */
 				pcyytoken = -1;
 				return newState;
@@ -229,8 +193,8 @@
 		j = yypgo[n] + statestack[ssPos] + 1;
 		if(j >= YYLAST || yychk[ tmpstate = yyact[j] ] != -n) 
 			tmpstate = yyact[yypgo[n]];
-	
-		switch (m) { 
+
+		switch (m) {
 			$A
 		}
 		return endStack;

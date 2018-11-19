@@ -670,8 +670,7 @@ public class Lexer {
 
 			boolean bHasSpace;
 			String day = "", month = "", year = "", hour = "", minute = "", second = "";
-			int nDay, nMonth, nYear, nHour, nMinute, nSecond;
-			nDay = nMonth = nYear = nHour = nMinute = nSecond = 0;
+			int nDay = 0, nMonth = 0, nYear = 0, nHour = 0, nMinute = 0, nSecond = 0;
 
 			boolean bHasDate = false;
 			boolean bHasTime = false;
@@ -760,7 +759,7 @@ public class Lexer {
 				nYear = Integer.parseInt(year);
 				nMonth = Integer.parseInt(month);
 				nDay = Integer.parseInt(day);
-				if(nYear < 1 || nYear > 9999 || nMonth < 1 || nMonth > 12 || nDay < 1 || nDay > Date.daysInMonth(nYear, nMonth))
+				if(nYear < 1 || nYear > 9999 || nMonth < 1 || nMonth > 12 || nDay < 1 || nDay > new Date(nYear, nMonth, 1).daysInMonth())
 					throw new TokenException(new Position(start, position));
 			}
 

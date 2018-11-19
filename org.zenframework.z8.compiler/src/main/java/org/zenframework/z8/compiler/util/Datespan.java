@@ -1,156 +1,111 @@
 package org.zenframework.z8.compiler.util;
 
-public class Datespan {
-	static long TicksPerMillisecond = 10000;
-	static long TicksPerSecond = TicksPerMillisecond * 1000;
-	static long TicksPerMinute = TicksPerSecond * 60;
-	static long TicksPerHour = TicksPerMinute * 60;
-	static long TicksPerDay = TicksPerHour * 24;
-
-	static int MillisPerSecond = 1000;
-	static int MillisPerMinute = MillisPerSecond * 60;
-	static int MillisPerHour = MillisPerMinute * 60;
-	static int MillisPerDay = MillisPerHour * 24;
-
-	static long MaxSeconds = Long.MAX_VALUE / TicksPerSecond;
-	static long MinSeconds = Long.MIN_VALUE / TicksPerSecond;
-	static long MaxMilliSeconds = Long.MAX_VALUE / TicksPerMillisecond;
-	static long MinMilliSeconds = Long.MIN_VALUE / TicksPerMillisecond;
-
-	public static Datespan Zero = new Datespan(0);
-	public static Datespan MaxValue = new Datespan(Long.MAX_VALUE);
-	public static Datespan MinValue = new Datespan(Long.MIN_VALUE);
+public final class Datespan{
 
 	private long ticks = 0;
 
+	static final public int TicksPerSecond = 1000;
+	static final public int TicksPerMinute = TicksPerSecond * 60;
+	static final public int TicksPerHour = TicksPerMinute * 60;
+	static final public int TicksPerDay = TicksPerHour * 24;
+
 	public Datespan() {
-		ticks = 0;
 	}
 
 	public Datespan(long ticks) {
-		this.ticks = ticks;
+		set(ticks);
 	}
 
-	public Datespan(int hours, int minutes, int seconds) {
-		ticks = timeToTicks(hours, minutes, seconds);
+	public Datespan(Datespan dateSpan) {
+		set(dateSpan.ticks);
 	}
 
-	public Datespan(int days, int hours, int minutes, int seconds, int milliseconds) {
-		long totalMilliSeconds = ((long)days * 3600 * 24 + hours * 3600 + minutes * 60 + seconds) * 1000 + milliseconds;
-		ticks = totalMilliSeconds * TicksPerMillisecond;
+	public Datespan(String datespan) {
+		// 01234567890
+		// d hh:mm:ss
+		// hh:mm:ss
+		// mm:ss
+		// ss
+		// s
+		// 01234567890
+
+		int length = datespan.length();
+
+		if(length < 3) {
+			set(0, 0, 0, Integer.parseInt(datespan));
+		} else if(length < 6) {
+			int minutes = Integer.parseInt(datespan.substring(0, 2));
+			int seconds = Integer.parseInt(datespan.substring(3, 5));
+			set(0, 0, minutes, seconds);
+		} else if(length < 9) {
+			int hours = Integer.parseInt(datespan.substring(0, 2));
+			int minutes = Integer.parseInt(datespan.substring(3, 5));
+			int seconds = Integer.parseInt(datespan.substring(6, 8));
+			set(0, hours, minutes, seconds);
+		} else {
+			int space = datespan.indexOf(" ");
+			int days = Integer.parseInt(datespan.substring(0, space));
+			int hours = Integer.parseInt(datespan.substring(space + 1, space + 3));
+			int minutes = Integer.parseInt(datespan.substring(space + 4, space + 6));
+			int seconds = Integer.parseInt(datespan.substring(space + 7, space + 9));
+			set(days, hours, minutes, seconds);
+		}
 	}
 
-	public long ticks() {
+	public Datespan(int days, int hours, int minutes, int seconds) {
+		this(days, hours, minutes, seconds, 0);
+	}
+
+	public Datespan(int days, int hours, int minutes, int seconds, long milliseconds) {
+		set(days, hours, minutes, seconds, milliseconds);
+	}
+
+	public long getTicks() {
 		return ticks;
 	}
 
-	public int days() {
-		return (int)(ticks / TicksPerDay);
+	public void set(Datespan span) {
+		set(span.ticks);
 	}
 
-	public int hours() {
-		return (int)(ticks / TicksPerHour % 24);
+	public void set(int days, int hours, int minutes, int seconds) {
+		set(days, hours, minutes, seconds, 0);
 	}
 
-	public int minutes() {
-		return (int)(ticks / TicksPerMinute % 60);
+	public void set(int days, int hours, int minutes, int seconds, long milliseconds) {
+		set(days * TicksPerDay + hours * TicksPerHour + minutes * TicksPerMinute + seconds * TicksPerSecond + milliseconds);
 	}
 
-	public int seconds() {
-		return (int)(ticks / TicksPerSecond % 60);
+	public void set(long ticks) {
+		this.ticks = ticks;
 	}
 
-	public int milliseconds() {
-		return (int)(ticks / TicksPerMillisecond) % 1000;
+	public long days() {
+		return ticks / TicksPerDay;
 	}
 
-	public double totalDays() {
-		return (double)ticks / (double)TicksPerDay;
+	public long hours() {
+		return ticks / TicksPerHour % 24;
 	}
 
-	public double totalHours() {
-		return (double)ticks / (double)TicksPerHour;
+	public long minutes() {
+		return ticks / TicksPerMinute % 60;
 	}
 
-	public double totalMinutes() {
-		return (double)ticks / (double)TicksPerMinute;
+	public long seconds() {
+		return ticks / TicksPerSecond % 60;
 	}
 
-	public double totalSeconds() {
-		return (double)ticks / (double)TicksPerSecond;
-	}
-
-	public double totalMilliseconds() {
-		double temp = (double)ticks / (double)TicksPerMillisecond;
-		if(temp > MaxMilliSeconds)
-			return MaxMilliSeconds;
-		if(temp < MinMilliSeconds)
-			return MinMilliSeconds;
-		return temp;
-	}
-
-	public Datespan duration() {
-		return new Datespan(ticks >= 0 ? ticks : -ticks);
+	public long milliseconds() {
+		return ticks;
 	}
 
 	@Override
 	public String toString() {
-		int hours = hours();
-		int minutes = minutes();
-		int seconds = seconds();
-		return "" + days() + " " + (hours < 10 ? "0" : "") + hours + ":" + (minutes < 10 ? "0" : "") + minutes + ":" + (seconds < 10 ? "0" : "") + seconds;
-	}
-
-	public Datespan add(Datespan d) {
-		ticks += d.ticks;
-		return this;
-	}
-
-	public Datespan sub(Datespan d) {
-		ticks -= d.ticks;
-		return this;
-	}
-
-	public boolean equal(Datespan t) {
-		return ticks == t.ticks;
-	}
-
-	public int compare(Datespan t) {
-		return ticks < t.ticks ? -1 : ticks == t.ticks ? 0 : 1;
-	}
-
-	public static long timeToTicks(int hour, int minute, int second) {
-		long totalSeconds = (long)hour * 3600 + (long)minute * 60 + second;
-		return totalSeconds * TicksPerSecond;
-	}
-
-	public static Datespan fromDays(double value) {
-		return interval(value, MillisPerDay);
-	}
-
-	public static Datespan fromHours(double value) {
-		return interval(value, MillisPerHour);
-	}
-
-	public static Datespan fromMinutes(double value) {
-		return interval(value, MillisPerMinute);
-	}
-
-	public static Datespan fromSeconds(double value) {
-		return interval(value, MillisPerSecond);
-	}
-
-	public static Datespan fromMilliseconds(double value) {
-		return interval(value, 1);
-	}
-
-	public static Datespan fromTicks(long value) {
-		return new Datespan(value);
-	}
-
-	public static Datespan interval(double value, int scale) {
-		double tmp = value * scale;
-		double millis = tmp + (value >= 0 ? 0.5 : -0.5);
-		return new Datespan((long)millis * TicksPerMillisecond);
+		long days = days();
+		long hours = hours();
+		long minutes = minutes();
+		long seconds = seconds();
+		return "" + days + " " + (hours < 10 ? "0" : "") + hours + ":" + (minutes < 10 ? "0" : "") + minutes + ":" + (seconds < 10 ? "0" : "") + seconds;
 	}
 }

@@ -1,287 +1,193 @@
 package org.zenframework.z8.compiler.util;
 
-import java.util.Calendar;
 import java.util.GregorianCalendar;
+import java.util.TimeZone;
 
 public class Date {
-	static long TicksPerMillisecond = 10000;
-	static long TicksPerSecond = TicksPerMillisecond * 1000;
-	static long TicksPerMinute = TicksPerSecond * 60;
-	static long TicksPerHour = TicksPerMinute * 60;
-	static long TicksPerDay = TicksPerHour * 24;
+	public static long UtcMin = -62135769600000l;
+	public static long UtcMax = 95617584000000l;
 
-	static int MillisPerSecond = 1000;
-	static int MillisPerMinute = MillisPerSecond * 60;
-	static int MillisPerHour = MillisPerMinute * 60;
-	static int MillisPerDay = MillisPerHour * 24;
+	final static public String DefaultTimeZoneId = "Europe/Moscow";
+	final static public Date Min = new Date(UtcMin);
+	final static public Date Max = new Date(UtcMax);
 
-	static int DaysPerYear = 365;
-	static int DaysPer4Years = DaysPerYear * 4 + 1;
-	static int DaysPer100Years = DaysPer4Years * 25 - 1;
-	static int DaysPer400Years = DaysPer100Years * 4 + 1;
-
-	static int DaysTo1601 = DaysPer400Years * 4;
-	static int DaysTo1899 = DaysPer400Years * 4 + DaysPer100Years * 3 - 367;
-	static int DaysTo10000 = DaysPer400Years * 25 - 366;
-
-	static long MinTicks = 0;
-	static long MaxTicks = DaysTo10000 * TicksPerDay - 1;
-	static long MaxMillis = (long)DaysTo10000 * MillisPerDay;
-
-	static long FileTimeOffset = DaysTo1601 * TicksPerDay;
-	static long DoubleDateOffset = DaysTo1899 * TicksPerDay;
-	static long OADateMinAsTicks = (DaysPer100Years - DaysPerYear) * TicksPerDay;
-	static double OADateMinAsDouble = -657435;
-	static double OADateMaxAsDouble = 2958466;
-
-	static int[] DaysToMonth365 = { 0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334, 365 };
-	static int[] DaysToMonth366 = { 0, 31, 60, 91, 121, 152, 182, 213, 244, 274, 305, 335, 366 };
-
-	private long ticks;
-
-	public static Date MinValue = new Date(Date.MinTicks);
-	public static Date MaxValue = new Date(Date.MaxTicks);
-	public static Date ReasonableMaxValue = new Date(4712, 12, 31, 23, 59, 59);
-
-	enum DatePart {
-		Year, DayOfYear, Month, Day
+	static {
+		TimeZone.setDefault(TimeZone.getTimeZone(DefaultTimeZoneId));
 	}
+
+	protected GregorianCalendar value = new GregorianCalendar();
 
 	public Date() {
-		this.ticks = dateToTicks(1899, 12, 30);
-	}
-
-	public Date(long ticks) {
-		this.ticks = ticks;
 	}
 
 	public Date(int year, int month, int day) {
-		ticks = dateToTicks(year, month, day);
+		set(year, month, day, 0, 0, 0);
 	}
 
 	public Date(int year, int month, int day, int hour, int minute, int second) {
-		ticks = dateToTicks(year, month, day) + timeToTicks(hour, minute, second);
+		set(year, month, day, hour, minute, second);
 	}
 
-	public Date(int year, int month, int day, int hour, int minute, int second, int millisecond) {
-		ticks = dateToTicks(year, month, day) + timeToTicks(hour, minute, second) + millisecond * TicksPerMillisecond;
+	public Date(long milliseconds) {
+		setTicks(milliseconds);
 	}
 
-	public Date addYears(int value) {
-		return addMonths(value * 12);
+	public Date(GregorianCalendar gc) {
+		set(gc);
 	}
 
-	public Date addMonths(int months) {
-		int y = getDatePart(DatePart.Year);
-		int m = getDatePart(DatePart.Month);
-		int d = getDatePart(DatePart.Day);
-		int i = m - 1 + months;
-		if(i >= 0) {
-			m = i % 12 + 1;
-			y += i / 12;
-		} else {
-			m = 12 + (i + 1) % 12;
-			y += (i - 11) / 12;
-		}
-		int days = daysInMonth(y, m);
-		if(d > days)
-			d = days;
-		return new Date(dateToTicks(y, m, d) + ticks % TicksPerDay);
+	public Date(Date d) {
+		set(d != null ? d.get() : Min.get());
 	}
 
-	public Date addDays(double value) {
-		return add(value, MillisPerDay);
+	public GregorianCalendar get() {
+		return value;
 	}
 
-	public Date addHours(double value) {
-		return add(value, MillisPerHour);
+	public long getTicks() {
+		return value.getTimeInMillis();
 	}
 
-	public Date addMinutes(double value) {
-		return add(value, MillisPerMinute);
+	private void setTicks(long milliseconds) {
+		value.setTimeInMillis(milliseconds);
 	}
 
-	public Date addSeconds(double value) {
-		return add(value, MillisPerSecond);
+	public void set(Date date) {
+		set(date.get());
 	}
 
-	public Date addMilliseconds(double value) {
-		return add(value, 1);
+	public void set(GregorianCalendar gc) {
+		value = (GregorianCalendar)gc.clone();
 	}
 
-	public Date addTicks(long value) {
-		return new Date(ticks + value);
+	public void set(int year, int month, int day, int hour, int minute, int second) {
+		set(year, month, day, hour, minute, second, 0);
 	}
 
-	public static int daysInMonth(int year, int month) {
-		if(isLeapYear(year))
-			return DaysToMonth366[month] - DaysToMonth366[month - 1];
-
-		return DaysToMonth365[month] - DaysToMonth365[month - 1];
+	public void set(int year, int month, int day, int hour, int minute, int second, int millisecond) {
+		value.set(GregorianCalendar.YEAR, year);
+		value.set(GregorianCalendar.MONTH, month - 1);
+		value.set(GregorianCalendar.DAY_OF_MONTH, day);
+		value.set(GregorianCalendar.HOUR_OF_DAY, hour);
+		value.set(GregorianCalendar.MINUTE, minute);
+		value.set(GregorianCalendar.SECOND, second);
+		value.set(GregorianCalendar.MILLISECOND, millisecond);
 	}
 
-	public Date dateNoTime() {
-		return new Date(ticks - ticks % TicksPerDay);
+	public void setDate(int year, int month, int day) {
+		set(year, month, day, hours(), minutes(), seconds());
 	}
 
-	public Datespan timeOfDay() {
-		return new Datespan(ticks % TicksPerDay);
+	public void setTime(int hours, int minutes, int seconds) {
+		setTime(hours, minutes, seconds, 0);
+	}
+
+	public void setZoneOffset(int zoneOffset) {
+		value.set(GregorianCalendar.ZONE_OFFSET, zoneOffset);
+	}
+
+	public void setTime(int hours, int minutes, int seconds, int milliseconds) {
+		value.set(GregorianCalendar.HOUR_OF_DAY, hours);
+		value.set(GregorianCalendar.MINUTE, minutes);
+		value.set(GregorianCalendar.SECOND, seconds);
+		value.set(GregorianCalendar.MILLISECOND, milliseconds);
+	}
+
+	public int daysInMonth() {
+		return value.getActualMaximum(GregorianCalendar.DAY_OF_MONTH);
 	}
 
 	public int year() {
-		return getDatePart(DatePart.Year);
+		return value.get(GregorianCalendar.YEAR);
 	}
 
-	public int dayOfYear() {
-		return getDatePart(DatePart.DayOfYear);
+	public int quarter() {
+		return value.get(GregorianCalendar.MONTH) / 3 + 1;
 	}
 
 	public int month() {
-		return getDatePart(DatePart.Month);
+		return value.get(GregorianCalendar.MONTH) + 1;
+	}
+
+	public int weekOfYear() {
+		value.setMinimalDaysInFirstWeek(7);
+		return value.get(GregorianCalendar.WEEK_OF_YEAR);
 	}
 
 	public int day() {
-		return getDatePart(DatePart.Day);
+		return value.get(GregorianCalendar.DAY_OF_MONTH);
+	}
+
+	public int firstDayOfWeek() {
+		return value.getFirstDayOfWeek();
 	}
 
 	public int dayOfWeek() {
-		return (int)((ticks / TicksPerDay + 1) % 7);
+		return value.get(GregorianCalendar.DAY_OF_WEEK);
 	}
 
-	public int hour() {
-		return (int)(ticks / TicksPerHour % 24);
+	public int dayOfYear() {
+		return value.get(GregorianCalendar.DAY_OF_YEAR);
 	}
 
-	public int minute() {
-		return (int)(ticks / TicksPerMinute % 60);
+	public int hours() {
+		return value.get(GregorianCalendar.HOUR_OF_DAY);
 	}
 
-	public int second() {
-		return (int)(ticks / TicksPerSecond % 60);
+	public int minutes() {
+		return value.get(GregorianCalendar.MINUTE);
 	}
 
-	public int millisecond() {
-		return (int)(ticks / TicksPerMillisecond % 1000);
+	public int seconds() {
+		return value.get(GregorianCalendar.SECOND);
 	}
 
-	public long ticks() {
-		return ticks;
+	public int milliseconds() {
+		return value.get(GregorianCalendar.MILLISECOND);
 	}
 
-	public static Date now() {
-		GregorianCalendar c = new GregorianCalendar();
-
-		int year = c.get(Calendar.YEAR);
-		int month = c.get(Calendar.MONTH) + 1;
-		int day = c.get(Calendar.DAY_OF_MONTH);
-		int hour = c.get(Calendar.HOUR);
-		int minute = c.get(Calendar.MINUTE);
-		int second = c.get(Calendar.SECOND);
-		int millis = c.get(Calendar.MILLISECOND);
-
-		return new Date(year, month, day, hour, minute, second, millis);
-	}
-
-	public static Date today() {
-		long ticks = now().ticks();
-		return new Date(ticks - ticks % TicksPerDay);
-	}
-
-	public static boolean isLeapYear(int year) {
-		return year % 4 == 0 && (year % 100 != 0 || year % 400 == 0);
+	public int zoneOffset() {
+		return value.get(GregorianCalendar.ZONE_OFFSET);
 	}
 
 	@Override
 	public String toString() {
-		int month = month();
+		return toString("T", "");
+	}
+
+	public String toString(String timeSeparator, String zoneSeparator) {
 		int day = day();
-		int hour = hour();
-		int minute = minute();
-		int second = second();
-		return year() + "-" + (month < 10 ? "0" : "") + month + '-' + (day < 10 ? "0" : "") + day + 'T' +
-				(hour < 10 ? "0" : "") + hour + ':' + (minute < 10 ? "0" : "") + minute + ':' + (second < 10 ? "0" : "") + second;
+		int month = month();
+		int year = year();
+
+		int hours = hours();
+		int minutes = minutes();
+		int seconds = seconds();
+		int milliseconds = milliseconds();
+
+		long offset = zoneOffset();
+
+		long offsetHours = Math.abs(offset / Datespan.TicksPerHour);
+		long offsetMinutes = Math.abs((offset % Datespan.TicksPerHour) / Datespan.TicksPerMinute);
+/*
+		long offsetSeconds = Math.abs((offset % datespan.TicksPerHour) % datespan.TicksPerMinute / datespan.TicksPerSecond);
+*/
+		String result = "" + (year < 10 ? "000" : (year < 100 ? "00" : (year < 1000 ? "0" : ""))) + year +
+				"-" + (month < 10 ? "0" + month : month) + 
+				"-" + (day < 10 ? "0" + day : day) + 
+				timeSeparator + (hours < 10 ? "0" + hours : hours) + ":" + (minutes < 10 ? "0" + minutes : minutes);
+
+		result += ":" + (seconds < 10 ? "0" + seconds : seconds);
+		if(milliseconds != 0)
+			result += "." + (milliseconds < 100 ? (milliseconds < 10 ? "00" : "0") : "") + milliseconds;
+
+		result += zoneSeparator + (offset < 0 ? "-" : "+") +
+			(offsetHours < 10 ? "0" + offsetHours : offsetHours) + ":" +
+			(offsetMinutes < 10 ? "0" + offsetMinutes : offsetMinutes);
+/*
+		if(offsetSeconds != 0)
+			result += ":" + (offsetSeconds < 10 ? "0" + offsetSeconds : offsetSeconds);
+*/
+		return result;
 	}
-
-	public static Date fromOADate(double d) {
-		return new Date(doubleDateToTicks(d));
-	}
-
-	public double toOADate() {
-		return ticksToOADate(ticks);
-	}
-
-	private Date add(double value, int scale) {
-		long millis = (long)(value * scale + (value >= 0 ? 0.5 : -0.5));
-		return new Date(ticks + millis * TicksPerMillisecond);
-	}
-
-	private static long dateToTicks(int year, int month, int day) {
-		int daysInMonth = isLeapYear(year) ? DaysToMonth366[month - 1] : DaysToMonth365[month - 1];
-
-		int y = year - 1;
-		int n = y * 365 + y / 4 - y / 100 + y / 400 + daysInMonth + day - 1;
-		return n * TicksPerDay;
-	}
-
-	private static long timeToTicks(int hour, int minute, int second) {
-		return Datespan.timeToTicks(hour, minute, second);
-	}
-
-	private static long doubleDateToTicks(double value) {
-		long millis = (long)(value * MillisPerDay + (value >= 0 ? 0.5 : -0.5));
-
-		if(millis < 0)
-			millis -= (millis % MillisPerDay) * 2;
-
-		millis += DoubleDateOffset / TicksPerMillisecond;
-		return millis * TicksPerMillisecond;
-	}
-
-	private int getDatePart(DatePart part) {
-		int n = (int)(ticks / TicksPerDay);
-		int y400 = n / DaysPer400Years;
-		n -= y400 * DaysPer400Years;
-		int y100 = n / DaysPer100Years;
-		if(y100 == 4)
-			y100 = 3;
-		n -= y100 * DaysPer100Years;
-		int y4 = n / DaysPer4Years;
-		n -= y4 * DaysPer4Years;
-		int y1 = n / DaysPerYear;
-		if(y1 == 4)
-			y1 = 3;
-		if(part == DatePart.Year)
-			return y400 * 400 + y100 * 100 + y4 * 4 + y1 + 1;
-
-		n -= y1 * DaysPerYear;
-		if(part == DatePart.DayOfYear)
-			return n + 1;
-
-		boolean leapYear = y1 == 3 && (y4 != 24 || y100 == 3);
-		int[] days = leapYear ? DaysToMonth366 : DaysToMonth365;
-		int m = (n >> 5) + 1;
-		while(n >= days[m])
-			++m;
-
-		if(part == DatePart.Month)
-			return m;
-
-		return n - days[m - 1] + 1;
-	}
-
-	private static double ticksToOADate(long value) {
-		if(value == 0)
-			return 0;
-		if(value < TicksPerDay)
-			value += DoubleDateOffset;
-
-		long millis = (value - DoubleDateOffset) / TicksPerMillisecond;
-		if(millis < 0) {
-			long frac = millis / MillisPerDay;
-			if(frac != 0)
-				millis -= (MillisPerDay + frac) * 2;
-		}
-		return (double)millis / MillisPerDay;
-	}
-
 }

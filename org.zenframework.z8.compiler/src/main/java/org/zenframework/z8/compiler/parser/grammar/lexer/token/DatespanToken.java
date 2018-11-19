@@ -21,7 +21,7 @@ public class DatespanToken extends ConstantToken {
 
 	@Override
 	public String format(boolean forCodeGeneration) {
-		return '"' + value.toString() + '"';
+		return Long.toString(value.getTicks()) + (forCodeGeneration ? "L" : "");
 	}
 
 	@Override

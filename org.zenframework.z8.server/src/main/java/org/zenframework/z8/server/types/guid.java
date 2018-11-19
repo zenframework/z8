@@ -52,6 +52,10 @@ public class guid extends primary {
 		set(ui.toString(16));
 	}
 
+	public guid(long mostSigBits, long leastSigBits) {
+		this(new UUID(mostSigBits, leastSigBits));
+	}
+
 	public boolean isNull() {
 		return equals(guid.Null);
 	}

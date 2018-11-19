@@ -20,7 +20,7 @@ public class IntegerToken extends ConstantToken {
 
 	@Override
 	public String format(boolean forCodeGeneration) {
-		return java.lang.Long.toString(value) + (forCodeGeneration ? "L" : "");
+		return Long.toString(value) + (forCodeGeneration ? "L" : "");
 	}
 
 	@Override

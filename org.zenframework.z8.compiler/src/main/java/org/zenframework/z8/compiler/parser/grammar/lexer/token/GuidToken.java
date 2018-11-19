@@ -22,7 +22,7 @@ public class GuidToken extends ConstantToken {
 
 	@Override
 	public String format(boolean forCodeGeneration) {
-		return forCodeGeneration ? '"' + value.toString() + '"' : value.toString();
+		return forCodeGeneration ? "/* " + value.toString() + " */"+ Long.toString(value.getMostSignificantBits()) + "L, " + Long.toString(value.getLeastSignificantBits()) + "L" : value.toString();
 	}
 
 	@Override

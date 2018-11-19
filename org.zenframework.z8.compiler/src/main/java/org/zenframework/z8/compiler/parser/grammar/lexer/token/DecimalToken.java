@@ -22,7 +22,7 @@ public class DecimalToken extends ConstantToken {
 
 	@Override
 	public String format(boolean forCodeGeneration) {
-		return forCodeGeneration ? '"' + value.toString() + '"' : value.toString();
+		return value.toString();
 	}
 
 	@Override
