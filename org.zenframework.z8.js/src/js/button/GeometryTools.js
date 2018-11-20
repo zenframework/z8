@@ -26,7 +26,7 @@ Z8.define('Z8.button.GeometryTools', {
 		}
 
 		if(this.box !== false) {
-			var box = this.box = new Z8.menu.Item({ text: 'Выбор объектов', icon: 'fa-arrows-alt', isTool: true, isBox: true });
+			var box = this.box = new Z8.menu.Item({ text: 'Лассо', icon: 'fa-arrows-alt', isTool: true, isBox: true });
 			tools.add(box);
 		}
 
@@ -51,7 +51,7 @@ Z8.define('Z8.button.GeometryTools', {
 		}
 
 		if(this.erase !== false) {
-			var erase = this.erase = new Z8.menu.Item({ text: 'Удалить геометрию объект', shortcut: 'Ctrl+Q', icon: 'fa-eraser', isTool: true, isErase: true });
+			var erase = this.erase = new Z8.menu.Item({ text: 'Стереть объект', shortcut: 'Ctrl+Q', icon: 'fa-eraser', isTool: true, isErase: true });
 			tools.add(erase);
 		}
 
