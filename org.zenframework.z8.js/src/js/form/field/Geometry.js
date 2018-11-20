@@ -257,6 +257,24 @@ Z8.define('Z8.form.field.Geometry', {
 		}, this);
 	},
 
+	createBox: function() {
+		var style = new ol.style.Style({
+			stroke: new ol.style.Stroke({ color: 'blue',  width: 2 })
+		});
+
+		var me = this;
+		var box = new ol.interaction.Extent({ boxStyle: style });
+
+		var handleEvent = box.handleEvent;
+		box.handleEvent = function(event) {
+			handleEvent.call(box, event);
+			if(event.type == 'pointerup')
+				me.fireEvent('boxSelect', me, box.getExtent());
+		};
+
+		return box;
+	},
+
 	createRuler: function() {
 		var me = this;
 
@@ -298,6 +316,12 @@ Z8.define('Z8.form.field.Geometry', {
 		if(map == null || tools == null)
 			return;
 
+
+		if(tools.box !== false) {
+			var box = this.box = this.createBox();
+			box.setActive(false);
+			map.addInteraction(box);
+		}
 
 		if(tools.ruler !== false) {
 			var ruler = this.ruler = this.createRuler();
@@ -354,6 +378,12 @@ Z8.define('Z8.form.field.Geometry', {
 
 		if(map == null || tools == null)
 			return;
+
+		var box = this.box;
+		if(box != null) {
+			map.removeInteraction(box);
+			this.box = null;
+		}
 
 		var ruler = this.ruler;
 		if(ruler != null) {
@@ -833,6 +863,7 @@ Z8.define('Z8.form.field.Geometry', {
 	onToolSelect: function(tools, tool) {
 		if(tool.isTool) {
 			this.cancelEdit(false);
+			this.activateInteraction(this.box, tool.isBox);
 			this.activateInteraction(this.ruler, tool.isRuler);
 			this.activateInteraction(this.move, tool.isMove && this.canMove());
 			this.activateInteraction(this.edit, tool.isEdit && this.canEdit());

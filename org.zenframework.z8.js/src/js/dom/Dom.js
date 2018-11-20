@@ -139,8 +139,10 @@ Z8.define('Z8.dom.Dom', {
 			if((container = DOM.get(container || document.body)) == null || child == null)
 				return null;
 
-			if(DOM.isDom(child))
-				return container.appendChild(child);
+			var childDom = DOM.isDom(child) ? child : DOM.get(child);
+
+			if(childDom != null)
+				return container.appendChild(childDom);
 
 			container.insertAdjacentHTML('beforeend', DOM.markup(child));
 			return container.lastChild;

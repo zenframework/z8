@@ -6,6 +6,7 @@ Z8.define('Z8.button.GeometryTools', {
 	tooltip: 'Инструменты',
 
 	select: true,
+	box: false,
 	ruler: true,
 	move: true,
 	edit: true,
@@ -20,8 +21,13 @@ Z8.define('Z8.button.GeometryTools', {
 		var tools = [];
 
 		if(this.select !== false) {
-			var select = this.select = this.active = new Z8.menu.Item({ text: 'Выбор объектов', shortcut: 'Esc', icon: 'fa-mouse-pointer', isTool: true, isSelect: true });
+			var select = this.select = this.active = new Z8.menu.Item({ text: 'Выбор объекта', icon: 'fa-mouse-pointer', isTool: true, isSelect: true });
 			tools.add(select);
+		}
+
+		if(this.box !== false) {
+			var box = this.box = new Z8.menu.Item({ text: 'Выбор объектов', icon: 'fa-arrows-alt', isTool: true, isBox: true });
+			tools.add(box);
 		}
 
 		if(this.ruler !== false) {
@@ -105,6 +111,10 @@ Z8.define('Z8.button.GeometryTools', {
 		return this.isToolActive(this.select);
 	},
 
+	isBoxActive: function() {
+		return this.isToolActive(this.box);
+	},
+
 	isRulerActive: function() {
 		return this.isToolActive(this.ruler);
 	},
@@ -131,6 +141,10 @@ Z8.define('Z8.button.GeometryTools', {
 
 	isSelectEnabled: function() {
 		return this.isToolEnabled(this.select);
+	},
+
+	isBoxEnabled: function() {
+		return this.isToolEnabled(this.box);
 	},
 
 	isRulerEnabled: function() {
@@ -161,6 +175,10 @@ Z8.define('Z8.button.GeometryTools', {
 		this.activateTool(this.select);
 	},
 
+	activateBox: function() {
+		this.activateTool(this.box);
+	},
+
 	activateRuler: function() {
 		this.activateTool(this.ruler);
 	},
@@ -187,6 +205,10 @@ Z8.define('Z8.button.GeometryTools', {
 
 	enableSelect: function(enable) {
 		this.enableTool(this.select, enable);
+	},
+
+	enableBox: function(enable) {
+		this.enableTool(this.box, enable);
 	},
 
 	enableRuler: function(enable) {

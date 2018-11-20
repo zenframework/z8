@@ -3,7 +3,7 @@ Z8.define('Z8.application.form.Navigator', {
 
 	presentation: 'form',
 	quickFilterWidth: 15,
-	
+
 	initComponent: function() {
 		var store = this.store;
 
@@ -375,7 +375,7 @@ Z8.define('Z8.application.form.Navigator', {
 		var store = this.store;
 
 		return {
-			cls: this.isFormPresentation() ? '' : 'display-none',
+			cls: 'navigator-list-box' + (this.isFormPresentation() ? '' : ' display-none'),
 			store: store,
 			fields: names,
 			names: names,
@@ -591,10 +591,12 @@ Z8.define('Z8.application.form.Navigator', {
 	},
 
 	select: function(listbox, newRecord, oldRecord) {
-		if(!this.disposed) {
-			this.form.loadRecord(newRecord);
-			this.updateToolbar();
-		}
+		if(this.disposed)
+			return false;
+
+		this.form.loadRecord(newRecord);
+		this.updateToolbar();
+		return true;
 	},
 
 	onSelect: function(listbox, newRecord, oldRecord) {
