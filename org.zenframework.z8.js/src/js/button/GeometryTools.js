@@ -56,7 +56,7 @@ Z8.define('Z8.button.GeometryTools', {
 		}
 
 		if(this.rotate !== false) {
-			var rotate = this.rotate = new Z8.menu.Item({ text: 'Повернуть объект', shortcut: 'Ctrl+G', icon: 'fa-repeat', isTool: true, isRotate: true });
+			var rotate = this.rotate = new Z8.menu.Item({ text: 'Повернуть объект', shortcut: 'Ctrl+G', icon: 'fa-reply', isTool: true, isRotate: true });
 			tools.add(rotate);
 		}
 
