@@ -753,6 +753,13 @@ Z8.define('Z8.form.field.Geometry', {
 			}
 		}
 
+		if(key == Event.G) {
+			if(event.ctrlKey && tools != null && tools.isRotateEnabled()) {
+				tools.activateRotate();
+				event.stopEvent();
+			}
+		}
+
 		if(key == Event.M) {
 			if(event.ctrlKey && tools != null && tools.isMoveEnabled()) {
 				tools.activateMove();
