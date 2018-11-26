@@ -213,6 +213,6 @@ Z8.define('Z8.data.HttpRequest', {
 			return;
 
 		for(var i = 0, length = files.length; i < length; i++)
-			DOM.download(files[i].path, null, info.serverId);
+			DOM.download(files[i].path, files[i].id, info.serverId);
 	}
 });

@@ -34,9 +34,6 @@ public class ResultSet implements IResultSet {
 	boolean eof = false;
 
 	public ResultSet(OdaQuery query) throws OdaException {
-		Connection connection = ConnectionManager.get();
-		connection.beginTransaction(); // for large cursors
-
 		this.query = query;
 		cursor = query.getCursor();
 	}
@@ -62,9 +59,6 @@ public class ResultSet implements IResultSet {
 	@Override
 	public void close() throws OdaException {
 		if(cursor != null) {
-			Connection connection = ConnectionManager.get();
-			connection.rollback();
-
 			cursor.close();
 			cursor = null;
 		}

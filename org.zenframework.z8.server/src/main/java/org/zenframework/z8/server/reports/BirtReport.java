@@ -52,6 +52,8 @@ import org.eclipse.birt.report.model.elements.interfaces.ITableColumnModel;
 import org.zenframework.z8.server.base.query.Query;
 import org.zenframework.z8.server.base.query.QueryUtils;
 import org.zenframework.z8.server.base.table.value.Field;
+import org.zenframework.z8.server.db.Connection;
+import org.zenframework.z8.server.db.ConnectionManager;
 import org.zenframework.z8.server.json.Json;
 import org.zenframework.z8.server.json.JsonWriter;
 import org.zenframework.z8.server.json.parser.JsonObject;
@@ -939,7 +941,14 @@ public class BirtReport {
 
 		outputFile = getUniqueFileName(folder, options.documentName(), format());
 
-		run(reportRunnable, outputFile);
+		Connection connection = ConnectionManager.get();
+		connection.beginTransaction(); // for large cursors
+
+		try {
+			run(reportRunnable, outputFile);
+		} finally {
+			connection.rollback();
+		}
 
 		if(isSplitNeeded()) {
 			splittedFile = getUniqueFileName(folder, options.documentName(), format());
