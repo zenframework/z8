@@ -13,8 +13,6 @@ import org.eclipse.datatools.connectivity.oda.IResultSet;
 import org.eclipse.datatools.connectivity.oda.IResultSetMetaData;
 import org.eclipse.datatools.connectivity.oda.OdaException;
 import org.zenframework.z8.server.base.table.value.IField;
-import org.zenframework.z8.server.db.Connection;
-import org.zenframework.z8.server.db.ConnectionManager;
 import org.zenframework.z8.server.db.Select;
 import org.zenframework.z8.server.resources.Resources;
 import org.zenframework.z8.server.types.binary;
