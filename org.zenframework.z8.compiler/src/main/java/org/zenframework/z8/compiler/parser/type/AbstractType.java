@@ -48,6 +48,8 @@ public abstract class AbstractType extends LanguageElement implements IType {
 	private boolean semanticsChecked;
 	private boolean nestedTypesResolved;
 
+	private boolean isQualified;
+
 	protected AbstractType() {
 	}
 
@@ -91,6 +93,16 @@ public abstract class AbstractType extends LanguageElement implements IType {
 	}
 
 	@Override
+	public boolean isQualified() {
+		return isQualified;
+	}
+
+	@Override
+	public void setQualified(boolean isQualified) {
+		this.isQualified = isQualified;
+	}
+
+	@Override
 	public IToken getNameToken() {
 		return null;
 	}
@@ -110,9 +122,8 @@ public abstract class AbstractType extends LanguageElement implements IType {
 
 	@Override
 	public String getJavaName() {
-		if(javaName == null) {
+		if(javaName == null)
 			javaName = userName;
-		}
 
 		return javaName;
 	}
@@ -241,13 +252,12 @@ public abstract class AbstractType extends LanguageElement implements IType {
 
 	@Override
 	public void setBaseType(IType baseType) {
-
 		this.baseType = baseType;
 
-		if(this.baseType != null) {
+		if(baseType != null) {
 			CompilationUnit compilationUnit = getCompilationUnit();
-			compilationUnit.importType(this.baseType.getCompilationUnit().getType());
-			compilationUnit.addContributor(this.baseType.getCompilationUnit());
+			compilationUnit.importType(baseType.getCompilationUnit().getType());
+			compilationUnit.addContributor(baseType.getCompilationUnit());
 		}
 	}
 
@@ -829,7 +839,7 @@ public abstract class AbstractType extends LanguageElement implements IType {
 	}
 
 	protected void generateClassCode(CodeGenerator codeGenerator) {
-		String base = baseType == null ? BuiltinNative.OBJECT : baseType.getNestedJavaName();
+		String base = baseType == null ? BuiltinNative.OBJECT : (baseType.isQualified() ? baseType.getQualifiedJavaName() : baseType.getNestedJavaName());
 		String type = getNestedJavaName();
 
 		codeGenerator.indent();

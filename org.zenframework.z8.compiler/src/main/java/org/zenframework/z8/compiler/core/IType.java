@@ -31,6 +31,9 @@ public interface IType extends ILanguageElement {
 
 	String getQualifiedUserName();
 
+	boolean isQualified();
+	void setQualified(boolean qualified);
+
 	@Override
 	IVariableType getVariableType();
 

@@ -452,9 +452,10 @@ public class Parser {
 		cls.setTypeNameToken(token);
 	}
 
-	void setClassBase(IToken token) {
+	void setClassBase() {
+		QualifiedName typeName = (QualifiedName)pop();
 		Type cls = (Type)peek();
-		cls.setBaseTypeToken(token);
+		cls.setBaseTypeName(typeName);
 	}
 
 	void finishClass() {
@@ -607,12 +608,7 @@ public class Parser {
 		}
 
 		public VariableType getVariableType() {
-			IToken[] tokens = qualifiedName.getTokens();
-
-			if(tokens.length > 1)
-				getCompilationUnit().error(qualifiedName.getPosition(), "Syntax error, identifier expected");
-
-			VariableType variableType = new VariableType(tokens[0]);
+			VariableType variableType = new VariableType(qualifiedName);
 
 			if(indices != null) {
 				for(Index index : indices) {
@@ -814,7 +810,7 @@ public class Parser {
 
 	void createCastOperator(IToken operatorKeyword, IToken typeNameToken) {
 		Parameters parameters = (Parameters)pop();
-		push(new CastOperator((KeywordToken)operatorKeyword, new VariableType(typeNameToken), parameters.toArray(new Variable[parameters.size()]), parameters.leftBrace, parameters.rightBrace));
+		push(new CastOperator((KeywordToken)operatorKeyword, new VariableType(new QualifiedName(typeNameToken)), parameters.toArray(new Variable[parameters.size()]), parameters.leftBrace, parameters.rightBrace));
 	}
 
 	void createOperator(IToken operatorKeyword, IToken operatorToken) {
@@ -1064,6 +1060,7 @@ public class Parser {
 
 	void onTypeCast() {
 		ILanguageElement postfix = (ILanguageElement)pop();
+
 		BracedExpression bracedExpression = (BracedExpression)pop();
 
 		TypeCastExpression typeCastExpression = bracedExpression.toTypeCastExpression();
@@ -1077,8 +1074,16 @@ public class Parser {
 		}
 	}
 
-	void onNewExpression(IToken newToken, IToken typeName) {
-		push(new OperatorNew(newToken, typeName));
+	void onArrayTypeCast() {
+		ArrayInitializer initializer = (ArrayInitializer)pop();
+		VariableTypeHelper helper = (VariableTypeHelper)pop();
+
+		VariableType variableType = helper.getVariableType();
+		push(new TypeCastExpression(variableType, initializer));
+	}
+
+	void onNewExpression(IToken newToken, IToken typeNameToken) {
+		push(new OperatorNew(newToken, new QualifiedName(typeNameToken)));
 	}
 
 	void onConstant(IToken token) {

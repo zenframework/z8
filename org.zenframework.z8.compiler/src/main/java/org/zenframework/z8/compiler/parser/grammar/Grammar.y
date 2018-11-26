@@ -251,7 +251,7 @@ extends_keyword
 	;
 
 base_name
-	: IDENTIFIER                                { parser.setClassBase($1); }
+	: qualified_name                            { parser.setClassBase(); }
 	;
 
 simple_class_header
@@ -320,7 +320,6 @@ class_member1
 	| variable_declarator_init1 variable_declarator_init1 SEMICOLON { parser.onMissingSemicolon();}
 	| qualified_name_init1 variable_declarator_init1 SEMICOLON      { parser.onMissingSemicolon();}
 	| qualified_name_init1 qualified_name_init1 SEMICOLON           { parser.onMissingSemicolon();}
-/*  | qualified_name_init1 method1                                  { parser.onMissingSemicolon();} */
 	| variable_declarator_init1 method1                             { parser.onMissingSemicolon();}
 	| method1
 	| records1
@@ -475,6 +474,7 @@ parameters
 
 initializer
 	: noname_class
+	| expression
 	| array_initializer
 	;
 
@@ -483,8 +483,7 @@ array_initializer_left
 	;
 
 array_initializer
-	: expression
-	| array_initializer_left RCBRACE
+	: array_initializer_left RCBRACE
 	| array_initializer_left array_initializers RCBRACE         { parser.finishArrayInitializer($3); }
 	| array_initializer_left array_initializers COMMA RCBRACE   { parser.finishArrayInitializer($4); }
 	;
@@ -496,11 +495,11 @@ array_initializers
 
 array_initializers_element
 	: map_element                               { parser.addArrayInitializer(); }
-	| array_initializer                         { parser.addArrayInitializer(); }
+	| expression                                { parser.addArrayInitializer(); }
 	;
 
 map_element
-	: LBRACE expression COMMA array_initializer RBRACE
+	: LBRACE expression COMMA expression RBRACE
 		{ parser.onMapElement($1, $5); }
 	;
 
@@ -615,12 +614,14 @@ iteration
 jump
 	: RETURN SEMICOLON                          { parser.onJumpStatement($1, false); }
 	| RETURN expression SEMICOLON               { parser.onJumpStatement($1, true); }	
+	| RETURN array_initializer SEMICOLON        { parser.onJumpStatement($1, true); }	
 	| BREAK SEMICOLON                           { parser.onJumpStatement($1, false); }
 	| CONTINUE SEMICOLON                        { parser.onJumpStatement($1, false); }
 	;
 
 assignment
 	: expression
+	| postfix ASSIGN expression                 { parser.onAssignment($2); }
 	| postfix ASSIGN array_initializer          { parser.onAssignment($2); }
 	| postfix ADD_ASSIGN expression             { parser.onOperator($2); }
 	| postfix SUB_ASSIGN expression             { parser.onOperator($2); }
@@ -693,6 +694,7 @@ unary
 type_cast
 	: postfix
 	| braced_expression postfix                 { parser.onTypeCast(); }
+	| array_type array_initializer              { parser.onArrayTypeCast(); }
 	;
 
 new
@@ -706,13 +708,13 @@ container
 
 braced_expression
 	: LBRACE expression RBRACE                  { parser.onBracedExpression($1, $3); }
+	| new
 	;
 
 prefix
 	: THIS                                      { parser.onThis($1); }
 	| SUPER                                     { parser.onSuper($1); }
 	| CONSTANT                                  { parser.onConstant($1); }
-	| new
 	| braced_expression
 	| simple_type                               { parser.onTypeToPostfix(); }
 	| array_type                                { parser.onTypeToPostfix(); }
@@ -756,5 +758,7 @@ expressions
 
 expressions_list
 	: expression                                { parser.addExpression(); }
+	| array_initializer                         { parser.addExpression(); }
 	| expressions_list COMMA expression         { parser.addExpression(); }
+	| expressions_list COMMA array_initializer  { parser.addExpression(); }
 	;

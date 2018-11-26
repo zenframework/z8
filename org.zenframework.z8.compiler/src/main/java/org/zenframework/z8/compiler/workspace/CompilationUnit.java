@@ -8,6 +8,7 @@ import java.util.Map;
 
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.Path;
 import org.zenframework.z8.compiler.content.Hyperlink;
 import org.zenframework.z8.compiler.content.HyperlinkKind;
 import org.zenframework.z8.compiler.content.TypeHyperlink;
@@ -179,16 +180,16 @@ public class CompilationUnit extends Resource {
 		type.resolveNestedTypes(this, type);
 	}
 
-	public IType resolveType(String simpleName) {
+	public IType resolveType(String typeName) {
 		Project thisProject = getProject();
 
-		CompilationUnit compilationUnit = resolveToCompilationUnit(thisProject, simpleName);
+		CompilationUnit compilationUnit = resolveToCompilationUnit(thisProject, typeName);
 
 		if(compilationUnit == null) {
 			Project[] projects = thisProject.getReferencedProjects();
 
 			for(Project project : projects) {
-				compilationUnit = resolveToCompilationUnit(project, simpleName);
+				compilationUnit = resolveToCompilationUnit(project, typeName);
 
 				if(compilationUnit != null)
 					break;
@@ -201,16 +202,29 @@ public class CompilationUnit extends Resource {
 		return null;
 	}
 
-	private CompilationUnit resolveToCompilationUnit(Project project, String simpleName) {
-		CompilationUnit compilationUnit = project.findCompilationUnit(simpleName);
+	private CompilationUnit resolvePrimaryType(Project project, String typeName) {
+		IPath path = Primary.nameToPath(typeName);
+		return path != null ? project.findCompilationUnit(path) : null;
+	}
+
+	private CompilationUnit resolveToCompilationUnit(Project project, String typeName) {
+		if(typeName.indexOf('.') != -1) {
+			IPath path = new Path(typeName.replace('.', Path.SEPARATOR) + ".bl");
+			return project.findCompilationUnit(path);
+		}
+
+		CompilationUnit compilationUnit = resolvePrimaryType(project, typeName);
+
+		if(compilationUnit != null)
+			return compilationUnit;
 
 		ImportBlock importBlock = type != null ? type.getImportBlock() : null;
 
-		if(compilationUnit == null && importBlock != null)
-			compilationUnit = importBlock.getImportedUnit(simpleName);
+		if(importBlock != null)
+			compilationUnit = importBlock.getImportedUnit(typeName);
 
 		if(compilationUnit == null)
-			compilationUnit = getFolder().getCompilationUnit(simpleName + ".bl");
+			compilationUnit = getFolder().getCompilationUnit(typeName + ".bl");
 
 		return compilationUnit;
 	}
@@ -244,7 +258,7 @@ public class CompilationUnit extends Resource {
 		if(importedTypes == null)
 			importedTypes = new Set<IType>();
 
-		if(type != this.type && !type.getUserName().equals(Primary.Void))
+		if(type != this.type && !type.isQualified() && !type.getUserName().equals(Primary.Void))
 			importedTypes.add(type);
 	}
 

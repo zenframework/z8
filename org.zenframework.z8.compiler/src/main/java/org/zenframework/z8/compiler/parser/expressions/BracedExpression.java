@@ -61,13 +61,8 @@ public class BracedExpression extends LanguageElement {
 
 			ILanguageElement prefix = postfix.getPrefix();
 
-			if(prefix instanceof QualifiedName) {
-				QualifiedName qualifiedName = (QualifiedName)prefix;
-				IToken[] tokens = qualifiedName.getTokens();
-
-				if(tokens.length == 1)
-					return new TypeCastExpression(leftBrace, tokens[0], rightBrace);
-			}
+			if(prefix instanceof QualifiedName)
+				return new TypeCastExpression(leftBrace, (QualifiedName)prefix, rightBrace);
 		}
 
 		return null;

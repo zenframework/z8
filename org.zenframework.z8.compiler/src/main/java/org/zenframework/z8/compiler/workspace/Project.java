@@ -10,11 +10,9 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
-
 import org.zenframework.z8.compiler.core.IType;
 import org.zenframework.z8.compiler.error.DefaultBuildMessageConsumer;
 import org.zenframework.z8.compiler.error.IBuildMessageConsumer;
-import org.zenframework.z8.compiler.parser.type.Primary;
 import org.zenframework.z8.compiler.util.Set;
 
 public class Project extends Folder {
@@ -456,12 +454,7 @@ public class Project extends Folder {
 		return false;
 	}
 
-	public CompilationUnit findCompilationUnit(String simpleName) {
-		IPath path = Primary.nameToPath(simpleName);
-		return path != null ? findCompilationUnit(path) : null;
-	}
-
-	private CompilationUnit findCompilationUnit(IPath path) {
+	public CompilationUnit findCompilationUnit(IPath path) {
 		CompilationUnit unit = getCompilationUnit(path);
 
 		if(unit != null)

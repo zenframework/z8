@@ -13,6 +13,7 @@ import org.zenframework.z8.compiler.core.IVariableType;
 import org.zenframework.z8.compiler.parser.LanguageElement;
 import org.zenframework.z8.compiler.parser.type.Primary;
 import org.zenframework.z8.compiler.parser.type.members.PriorityOperator;
+import org.zenframework.z8.compiler.parser.variable.Variable;
 import org.zenframework.z8.compiler.workspace.CompilationUnit;
 
 public class JumpStatement extends LanguageElement implements IStatement {
@@ -65,7 +66,7 @@ public class JumpStatement extends LanguageElement implements IStatement {
 				isVoidMethod = returnType.getCastTo(voidType) != null;
 
 			if(expression != null) {
-				if(!expression.checkSemantics(compilationUnit, declaringType, declaringMethod, null, null))
+				if(!expression.checkSemantics(compilationUnit, declaringType, declaringMethod, isVoidMethod ? null : new Variable(returnType), null))
 					return false;
 
 				if(!isVoidMethod) {

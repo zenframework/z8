@@ -15,13 +15,14 @@ import org.zenframework.z8.compiler.core.IVariable;
 import org.zenframework.z8.compiler.core.IVariableType;
 import org.zenframework.z8.compiler.parser.BuiltinNative;
 import org.zenframework.z8.compiler.parser.LanguageElement;
+import org.zenframework.z8.compiler.parser.expressions.QualifiedName;
 import org.zenframework.z8.compiler.parser.type.TypeCast;
 import org.zenframework.z8.compiler.parser.type.members.ArrayMethods;
 import org.zenframework.z8.compiler.workspace.CompilationUnit;
 
 public class VariableType extends LanguageElement implements IVariableType {
 	private IType type;
-	private IToken typeNameToken;
+	private QualifiedName typeName;
 
 	private IToken autoToken;
 
@@ -32,8 +33,8 @@ public class VariableType extends LanguageElement implements IVariableType {
 	private List<IToken> keyTokens = new ArrayList<IToken>();
 	private List<IPosition> keyBrackets = new ArrayList<IPosition>();
 
-	public VariableType(IToken token) {
-		this.typeNameToken = token;
+	public VariableType(QualifiedName typeName) {
+		this.typeName = typeName;
 	}
 
 	public VariableType(CompilationUnit compilationUnit, IType type) {
@@ -57,18 +58,18 @@ public class VariableType extends LanguageElement implements IVariableType {
 	@Override
 	public IPosition getSourceRange() {
 		if(keyBrackets.size() > 0)
-			return typeNameToken.getPosition().union(keyBrackets.get(keyBrackets.size() - 1));
-		return typeNameToken != null ? typeNameToken.getPosition() : null;
+			return typeName.getPosition().union(keyBrackets.get(keyBrackets.size() - 1));
+		return typeName != null ? typeName.getPosition() : null;
 	}
 
 	@Override
 	public IPosition getPosition() {
-		return typeNameToken.getPosition();
+		return typeName.getPosition();
 	}
 
 	@Override
 	public IToken getFirstToken() {
-		return typeNameToken;
+		return typeName.getFirstToken();
 	}
 
 	public void setAutoToken(IToken autoToken) {
@@ -138,8 +139,8 @@ public class VariableType extends LanguageElement implements IVariableType {
 	public String getSignature() {
 		String signature = "";
 
-		if(typeNameToken != null)
-			signature = typeNameToken.getRawText();
+		if(typeName != null)
+			signature = typeName.toString();
 		else if(type != null)
 			signature = type.getUserName();
 		else
@@ -155,10 +156,12 @@ public class VariableType extends LanguageElement implements IVariableType {
 		if(type.extendsPrimary() || type.isEnum())
 			return type.getJavaName();
 
-		if(declaring)
-			return type.getJavaName() + ".CLASS<? extends " + type.getJavaName() + ">";
+		String javaName = type.isQualified() ? type.getQualifiedJavaName() : type.getJavaName();
 
-		return type.getJavaName() + ".CLASS<" + type.getJavaName() + ">";
+		if(declaring)
+			return javaName + ".CLASS<? extends " + javaName + ">";
+
+		return javaName + ".CLASS<" + javaName + ">";
 	}
 
 	public String getJavaName(boolean declaring) {
@@ -354,27 +357,30 @@ public class VariableType extends LanguageElement implements IVariableType {
 		if(!super.resolveTypes(compilationUnit, declaringType))
 			return false;
 
-		if(typeNameToken == null && type != null)
+		if(typeName == null && type != null)
 			return true;
 
-		String name = typeNameToken.getRawText();
-
-		if(name.equals(declaringType.getUserName()))
+		if(typeName.equals(declaringType.getUserName()))
 			type = declaringType;
 		else
-			type = compilationUnit.resolveType(name);
+			type = compilationUnit.resolveType(typeName.toString());
+
+		boolean isQualified = typeName != null && typeName.getTokenCount() != 1;
 
 		if(type == null) {
-			setFatalError(typeNameToken.getPosition(), name + " cannot be resolved to a type");
-			compilationUnit.addUnresolvedType(name);
+			setFatalError(typeName.getPosition(), typeName + " cannot be resolved to a type");
+			if(!isQualified)
+				compilationUnit.addUnresolvedType(typeName.toString());
 			return false;
 		}
 
+		type.setQualified(isQualified);
+
 		compilationUnit.addContributor(type.getCompilationUnit());
-		compilationUnit.addContentProposal(typeNameToken.getPosition(), new VariableType(getCompilationUnit(), type));
+		compilationUnit.addContentProposal(typeName.getLastToken().getPosition(), new VariableType(getCompilationUnit(), type));
 
 		if(type.getPosition() != null)
-			compilationUnit.addHyperlink(typeNameToken.getPosition(), type);
+			compilationUnit.addHyperlink(typeName.getLastToken().getPosition(), type);
 
 		for(int i = 0; i < keyTokens.size(); i++) {
 			IToken key = keyTokens.get(i);
@@ -424,10 +430,12 @@ public class VariableType extends LanguageElement implements IVariableType {
 	@Override
 	public boolean checkSemantics(CompilationUnit compilationUnit, IType declaringType, IMethod declaringMethod, IVariable leftHandValue, IVariableType context) {
 		if(!super.checkSemantics(compilationUnit, declaringType, declaringMethod, null, null)) {
-			IVariableType variableType = resolveName(typeNameToken.getRawText());
+			IToken token = typeName.getLastToken();
+
+			IVariableType variableType = resolveName(token.getRawText());
 
 			if(variableType != null)
-				compilationUnit.addContentProposal(typeNameToken.getPosition(), variableType);
+				compilationUnit.addContentProposal(token.getPosition(), variableType);
 
 			for(int i = 0; i < keyTokens.size(); i++) {
 				IToken key = keyTokens.get(i);

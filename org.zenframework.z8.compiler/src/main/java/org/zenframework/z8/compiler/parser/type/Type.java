@@ -14,6 +14,7 @@ import org.zenframework.z8.compiler.core.IType;
 import org.zenframework.z8.compiler.core.IVariable;
 import org.zenframework.z8.compiler.core.IVariableType;
 import org.zenframework.z8.compiler.parser.BuiltinNative;
+import org.zenframework.z8.compiler.parser.expressions.QualifiedName;
 import org.zenframework.z8.compiler.parser.grammar.lexer.Lexer;
 import org.zenframework.z8.compiler.parser.type.members.TypeBody;
 import org.zenframework.z8.compiler.parser.variable.VariableType;
@@ -26,7 +27,7 @@ public class Type extends AbstractType {
 	private IToken classToken;
 	private IToken typeNameToken;
 	@SuppressWarnings("unused")
-	private IToken baseTypeNameToken;
+	private QualifiedName baseTypeName;
 
 	private VariableType baseVariableType;
 
@@ -94,9 +95,9 @@ public class Type extends AbstractType {
 		return finalToken != null;
 	}
 
-	public void setBaseTypeToken(IToken baseTypeNameToken) {
-		this.baseTypeNameToken = baseTypeNameToken;
-		baseVariableType = new VariableType(baseTypeNameToken);
+	public void setBaseTypeName(QualifiedName baseTypeName) {
+		this.baseTypeName = baseTypeName;
+		baseVariableType = new VariableType(baseTypeName);
 	}
 
 	public TypeBody getBody() {
@@ -404,7 +405,9 @@ public class Type extends AbstractType {
 
 		codeGenerator.breakLine();
 
-		String base = getBaseType() == null ? BuiltinNative.OBJECT : getBaseType().getJavaName();
+		IType baseType = getBaseType();
+
+		String base = baseType == null ? BuiltinNative.OBJECT : (baseType.isQualified() ? baseType.getQualifiedJavaName() : baseType.getJavaName());
 
 		codeGenerator.indent();
 		codeGenerator.append("@SuppressWarnings(\"all\")");

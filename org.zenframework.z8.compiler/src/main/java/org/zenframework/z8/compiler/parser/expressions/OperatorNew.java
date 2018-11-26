@@ -15,9 +15,9 @@ public class OperatorNew extends LanguageElement {
 	private IToken newToken;
 	private VariableType variableType;
 
-	public OperatorNew(IToken newToken, IToken typeNameToken) {
+	public OperatorNew(IToken newToken, QualifiedName typeName) {
 		this.newToken = newToken;
-		this.variableType = new VariableType(typeNameToken);
+		this.variableType = new VariableType(typeName);
 	}
 
 	@Override
