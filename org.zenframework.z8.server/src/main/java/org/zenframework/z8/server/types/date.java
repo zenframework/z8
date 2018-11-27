@@ -434,10 +434,6 @@ public class date extends primary {
 		return new sql_date(this);
 	}
 
-	public void operatorAssign(date value) {
-		set(value);
-	}
-
 	public date operatorAdd(datespan x) {
 		return new date(value.getTimeInMillis() + x.milliseconds());
 	}
@@ -448,16 +444,6 @@ public class date extends primary {
 
 	public datespan operatorSub(date x) {
 		return new datespan(value.getTimeInMillis() - x.get().getTimeInMillis());
-	}
-
-	public date operatorAddAssign(datespan x) {
-		set(operatorAdd(x));
-		return this;
-	}
-
-	public date operatorSubAssign(datespan x) {
-		set(operatorSub(x));
-		return this;
 	}
 
 	public int compare(date x) {

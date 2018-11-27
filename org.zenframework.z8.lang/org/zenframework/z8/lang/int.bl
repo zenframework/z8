@@ -21,12 +21,6 @@ public final class int extends primary {
 	public decimal operator / (decimal value);
 	public decimal operator % (decimal value);
 
-	public int operator += (int value);
-	public int operator -= (int value);
-	public int operator *= (int value);
-	public int operator /= (int value);
-	public int operator %= (int value);
-
 	public bool operator < (int value);
 	public bool operator > (int value);
 	public bool operator <= (int value);

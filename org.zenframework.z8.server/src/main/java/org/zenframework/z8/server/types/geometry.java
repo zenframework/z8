@@ -222,10 +222,6 @@ public final class geometry extends primary {
 		return new bool(!equals(x));
 	}
 
-	public void operatorAssign(geometry value) {
-		set(value);
-	}
-
 	public double x1() {
 		return extent()[0][0];
 	}

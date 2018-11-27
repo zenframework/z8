@@ -64,11 +64,7 @@ public final class bool extends primary {
 		this.value = value;
 	}
 
-	private void set(bool value) {
-		set(value.get());
-	}
-
-	@Override
+		@Override
 	public FieldType type() {
 		return FieldType.Boolean;
 	}
@@ -102,10 +98,6 @@ public final class bool extends primary {
 
 	public sql_bool sql_bool() {
 		return new sql_bool(this);
-	}
-
-	public void operatorAssign(bool x) {
-		set(x);
 	}
 
 	public bool operatorNot() {

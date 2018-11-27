@@ -145,10 +145,6 @@ public final class integer extends primary {
 		return new sql_integer(this);
 	}
 
-	public void operatorAssign(integer x) {
-		set(x);
-	}
-
 	public integer operatorAnd(integer x) {
 		return new integer(value & x.value);
 	}
@@ -201,10 +197,6 @@ public final class integer extends primary {
 		}
 	}
 
-	public void operatorModAssign(integer x) {
-		set(operatorMod(x));
-	}
-
 	public decimal operatorAdd(decimal x) {
 		return new decimal(this).operatorAdd(x);
 	}
@@ -223,30 +215,6 @@ public final class integer extends primary {
 
 	public decimal operatorMod(decimal x) {
 		return new decimal(this).operatorMod(x);
-	}
-
-	public integer operatorAddAssign(integer x) {
-		set(value + x.value);
-		return this;
-	}
-
-	public integer operatorSubAssign(integer x) {
-		set(value - x.value);
-		return this;
-	}
-
-	public integer operatorMulAssign(integer x) {
-		set(value * x.value);
-		return this;
-	}
-
-	public integer operatorDivAssign(integer x) {
-		try {
-			set(value / x.value);
-			return this;
-		} catch(ArithmeticException e) {
-			throw new exception(e);
-		}
 	}
 
 	public bool operatorEqu(integer x) {

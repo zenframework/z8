@@ -151,10 +151,6 @@ public class guid extends primary {
 		return new sql_guid(this);
 	}
 
-	public void operatorAssign(guid value) {
-		set(value);
-	}
-
 	public bool operatorEqu(guid x) {
 		return new bool(value.equals(x.value));
 	}

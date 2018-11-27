@@ -5,7 +5,6 @@ public final class string extends primary {
 	public operator exception();
 
 	public string operator + (string value);
-	public string operator += (string value);
 
 	public bool operator < (string value);
 	public bool operator > (string value);

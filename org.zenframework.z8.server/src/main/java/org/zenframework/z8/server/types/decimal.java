@@ -156,14 +156,6 @@ public final class decimal extends primary {
 		return new sql_decimal(this);
 	}
 
-	public void operatorAssign(integer value) {
-		set(value);
-	}
-
-	public void operatorAssign(decimal value) {
-		set(value);
-	}
-
 	public decimal operatorAdd() {
 		return this;
 	}
@@ -226,56 +218,6 @@ public final class decimal extends primary {
 		} catch(ArithmeticException e) {
 			throw new RuntimeException(e);
 		}
-	}
-
-	public decimal operatorAddAssign(integer x) {
-		set(operatorAdd(x));
-		return this;
-	}
-
-	public decimal operatorSubAssign(integer x) {
-		set(operatorSub(x));
-		return this;
-	}
-
-	public decimal operatorMulAssign(integer x) {
-		set(operatorMul(x));
-		return this;
-	}
-
-	public decimal operatorDivAssign(integer x) {
-		set(operatorDiv(x));
-		return this;
-	}
-
-	public decimal operatorModAssign(integer x) {
-		set(operatorMod(x));
-		return this;
-	}
-
-	public decimal operatorAddAssign(decimal x) {
-		set(operatorAdd(x));
-		return this;
-	}
-
-	public decimal operatorSubAssign(decimal x) {
-		set(operatorSub(x));
-		return this;
-	}
-
-	public decimal operatorMulAssign(decimal x) {
-		set(operatorMul(x));
-		return this;
-	}
-
-	public decimal operatorDivAssign(decimal x) {
-		set(operatorDiv(x));
-		return this;
-	}
-
-	public decimal operatorModAssign(decimal x) {
-		set(operatorMod(x));
-		return this;
 	}
 
 	public bool operatorEqu(integer x) {

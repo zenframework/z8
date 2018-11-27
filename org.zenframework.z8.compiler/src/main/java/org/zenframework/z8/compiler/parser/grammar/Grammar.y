@@ -28,10 +28,6 @@ public class Grammar
 %token <token> MOD
 %token <token> ADD
 %token <token> SUB
-%token <token> CARET
-%token <token> MUL_CARET
-%token <token> CARET_MUL
-%token <token> MUL_CARET_MUL
 
 %token <token> EQU
 %token <token> NOT_EQU
@@ -48,11 +44,6 @@ public class Grammar
 %token <token> MUL_ASSIGN
 %token <token> DIV_ASSIGN
 %token <token> MOD_ASSIGN
-
-%token <token> CARET_ASSIGN
-%token <token> MUL_CARET_ASSIGN
-%token <token> CARET_MUL_ASSIGN
-%token <token> MUL_CARET_MUL_ASSIGN
 
 %token <token> LBRACE
 %token <token> RBRACE
@@ -398,17 +389,13 @@ variable_declarator1
 
 variable_declarator_init
 	: variable_declarator
-	| variable_declarator ASSIGN initializer	{ parser.onVariableDeclaratorInit($2); }
+	| variable_declarator ASSIGN initializer    { parser.onVariableDeclaratorInit($2); }
 	;
 
 qualified_name_init
-	: qualified_name                                    { parser.onVariableInit(null); }
-	| qualified_name ASSIGN initializer                 { parser.onVariableInit($2); }
-	| qualified_name ADD_ASSIGN initializer             { parser.onVariableInit($2); }
-	| qualified_name CARET_ASSIGN initializer           { parser.onVariableInit($2); }
-	| qualified_name MUL_CARET_ASSIGN initializer       { parser.onVariableInit($2); }
-	| qualified_name CARET_MUL_ASSIGN initializer       { parser.onVariableInit($2); }
-	| qualified_name MUL_CARET_MUL_ASSIGN initializer   { parser.onVariableInit($2); }
+	: qualified_name                            { parser.onVariableInit(null); }
+	| qualified_name ASSIGN initializer         { parser.onVariableInit($2); }
+	| qualified_name ADD_ASSIGN initializer     { parser.onOperatorAssign($2); parser.onVariableInit($2); }
 	;
 
 method_header
@@ -422,11 +409,6 @@ method_header
 	| type OPERATOR ADD parameters              { parser.createOperator($2, $3); }
 	| type OPERATOR SUB parameters              { parser.createOperator($2, $3); }
 
-	| type OPERATOR CARET parameters            { parser.createOperator($2, $3); }
-	| type OPERATOR MUL_CARET parameters        { parser.createOperator($2, $3); }
-	| type OPERATOR CARET_MUL parameters        { parser.createOperator($2, $3); }
-	| type OPERATOR MUL_CARET_MUL parameters    { parser.createOperator($2, $3); }
-
 	| type OPERATOR EQU parameters              { parser.createOperator($2, $3); }
 	| type OPERATOR NOT_EQU parameters          { parser.createOperator($2, $3); }
 	| type OPERATOR LESS parameters             { parser.createOperator($2, $3); }
@@ -436,17 +418,6 @@ method_header
 	| type OPERATOR AND parameters              { parser.createOperator($2, $3); }
 	| type OPERATOR OR parameters               { parser.createOperator($2, $3); }
 	| type OPERATOR ASSIGN parameters           { parser.createOperator($2, $3); }
-
-	| type OPERATOR ADD_ASSIGN parameters       { parser.createOperator($2, $3); }
-	| type OPERATOR SUB_ASSIGN parameters       { parser.createOperator($2, $3); }
-	| type OPERATOR MUL_ASSIGN parameters       { parser.createOperator($2, $3); }
-	| type OPERATOR DIV_ASSIGN parameters       { parser.createOperator($2, $3); }
-	| type OPERATOR MOD_ASSIGN parameters       { parser.createOperator($2, $3); }
-
-	| type OPERATOR CARET_ASSIGN parameters             { parser.createOperator($2, $3); }
-	| type OPERATOR MUL_CARET_ASSIGN parameters         { parser.createOperator($2, $3); }
-	| type OPERATOR CARET_MUL_ASSIGN parameters         { parser.createOperator($2, $3); }
-	| type OPERATOR MUL_CARET_MUL_ASSIGN parameters     { parser.createOperator($2, $3); }
 	;
 
 method
@@ -623,15 +594,11 @@ assignment
 	: expression
 	| postfix ASSIGN expression                 { parser.onAssignment($2); }
 	| postfix ASSIGN array_initializer          { parser.onAssignment($2); }
-	| postfix ADD_ASSIGN expression             { parser.onOperator($2); }
-	| postfix SUB_ASSIGN expression             { parser.onOperator($2); }
-	| postfix MUL_ASSIGN expression             { parser.onOperator($2); }
-	| postfix DIV_ASSIGN expression             { parser.onOperator($2); }
-	| postfix MOD_ASSIGN expression             { parser.onOperator($2); }
-	| postfix CARET_ASSIGN expression           { parser.onOperator($2); }
-	| postfix MUL_CARET_ASSIGN expression       { parser.onOperator($2); }
-	| postfix CARET_MUL_ASSIGN expression       { parser.onOperator($2); }
-	| postfix MUL_CARET_MUL_ASSIGN expression   { parser.onOperator($2); }
+	| postfix ADD_ASSIGN expression             { parser.onOperatorAssign($2); parser.onAssignment($2); }
+	| postfix SUB_ASSIGN expression             { parser.onOperatorAssign($2); parser.onAssignment($2); }
+	| postfix MUL_ASSIGN expression             { parser.onOperatorAssign($2); parser.onAssignment($2); }
+	| postfix DIV_ASSIGN expression             { parser.onOperatorAssign($2); parser.onAssignment($2); }
+	| postfix MOD_ASSIGN expression             { parser.onOperatorAssign($2); parser.onAssignment($2); }
 	;
 
 expression
@@ -665,10 +632,6 @@ relational
 	| additive MORE additive                    { parser.onOperator($2); }
 	| additive LESS_EQU additive                { parser.onOperator($2); }
 	| additive MORE_EQU additive                { parser.onOperator($2); }
-	| relational CARET additive                 { parser.onOperator($2); }
-	| relational MUL_CARET additive             { parser.onOperator($2); }
-	| relational CARET_MUL additive             { parser.onOperator($2); }
-	| relational MUL_CARET_MUL additive         { parser.onOperator($2); }
 	;
 
 additive

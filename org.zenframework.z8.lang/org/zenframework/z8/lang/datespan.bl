@@ -6,8 +6,6 @@ public final class datespan extends primary {
 	public datespan operator + (datespan value);
 	public date operator + (date value);
 	public datespan operator - (datespan value);
-	public datespan operator += (datespan value);
-	public datespan operator -= (datespan value);
 
 	public bool operator < (datespan value);
 	public bool operator > (datespan value);

@@ -31,7 +31,7 @@ public abstract class Initialization extends LanguageElement {
 	protected Initialization(ILanguageElement left, OperatorToken operatorToken, ILanguageElement right) {
 		this.left = left;
 		this.right = right;
-		this.operatorToken = operatorToken;
+		this.operatorToken = operatorToken != null ? new OperatorToken(IToken.ASSIGN, operatorToken.getPosition()) : null;
 	}
 
 	public ILanguageElement getLeftElement() {

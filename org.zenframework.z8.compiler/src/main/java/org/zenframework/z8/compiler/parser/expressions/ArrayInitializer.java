@@ -94,6 +94,11 @@ public class ArrayInitializer extends LanguageElement {
 		if(!super.checkSemantics(compilationUnit, declaringType, declaringMethod, null, null))
 			return false;
 
+		if(leftHandValue == null) {
+			setError(getPosition(), "The operator ={} cannot be applied to unknown type");
+			return false;
+		}
+
 		IVariableType initType = new VariableType(leftHandValue.getVariableType());
 
 		if(!initType.isArray()) {

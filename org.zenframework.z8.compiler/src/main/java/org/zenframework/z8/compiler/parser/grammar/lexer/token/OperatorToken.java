@@ -34,23 +34,20 @@ public class OperatorToken extends Token {
 		case IToken.MORE_EQU:
 			return ">=";
 		case IToken.PLUS:
+		case IToken.ADD_ASSIGN:
 			return "+";
 		case IToken.MINUS:
+		case IToken.SUB_ASSIGN:
 			return "-";
 		case IToken.MUL:
+		case IToken.MUL_ASSIGN:
 			return "*";
 		case IToken.DIV:
+		case IToken.DIV_ASSIGN:
 			return "/";
 		case IToken.MOD:
+		case IToken.MOD_ASSIGN:
 			return "%";
-		case IToken.CARET:
-			return "^";
-		case IToken.MUL_CARET:
-			return "*^";
-		case IToken.CARET_MUL:
-			return "^*";
-		case IToken.MUL_CARET_MUL:
-			return "*^*";
 
 		case IToken.NOT:
 			return "!";
@@ -61,6 +58,7 @@ public class OperatorToken extends Token {
 
 		case IToken.ASSIGN:
 			return "=";
+/*
 		case IToken.ADD_ASSIGN:
 			return "+=";
 		case IToken.SUB_ASSIGN:
@@ -71,14 +69,7 @@ public class OperatorToken extends Token {
 			return "/=";
 		case IToken.MOD_ASSIGN:
 			return "%=";
-		case IToken.CARET_ASSIGN:
-			return "^=";
-		case IToken.MUL_CARET_ASSIGN:
-			return "*^=";
-		case IToken.CARET_MUL_ASSIGN:
-			return "^*=";
-		case IToken.MUL_CARET_MUL_ASSIGN:
-			return "*^*=";
+*/
 		}
 
 		throw new UnsupportedOperationException();
@@ -99,23 +90,20 @@ public class OperatorToken extends Token {
 		case IToken.MORE_EQU:
 			return "MoreEqu";
 		case IToken.PLUS:
+		case IToken.ADD_ASSIGN:
 			return "Add";
 		case IToken.MINUS:
+		case IToken.SUB_ASSIGN:
 			return "Sub";
 		case IToken.MUL:
+		case IToken.MUL_ASSIGN:
 			return "Mul";
 		case IToken.DIV:
+		case IToken.DIV_ASSIGN:
 			return "Div";
 		case IToken.MOD:
+		case IToken.MOD_ASSIGN:
 			return "Mod";
-		case IToken.CARET:
-			return "Caret";
-		case IToken.MUL_CARET:
-			return "MulCaret";
-		case IToken.CARET_MUL:
-			return "CaretMul";
-		case IToken.MUL_CARET_MUL:
-			return "MulCaretMul";
 
 		case IToken.NOT:
 			return "Not";
@@ -123,8 +111,10 @@ public class OperatorToken extends Token {
 			return "And";
 		case IToken.OR:
 			return "Or";
+
 		case IToken.ASSIGN:
 			return "Assign";
+/*
 		case IToken.ADD_ASSIGN:
 			return "AddAssign";
 		case IToken.SUB_ASSIGN:
@@ -135,15 +125,7 @@ public class OperatorToken extends Token {
 			return "DivAssign";
 		case IToken.MOD_ASSIGN:
 			return "ModAssign";
-
-		case IToken.CARET_ASSIGN:
-			return "CaretAssign";
-		case IToken.MUL_CARET_ASSIGN:
-			return "MulCaretAssign";
-		case IToken.CARET_MUL_ASSIGN:
-			return "CaretMulAssign";
-		case IToken.MUL_CARET_MUL_ASSIGN:
-			return "MulCaretMulAssign";
+*/
 		}
 
 		throw new UnsupportedOperationException();

@@ -182,18 +182,8 @@ public final class string extends primary {
 		return new sql_string(this);
 	}
 
-	public void operatorAssign(string value) {
-		set(value);
-	}
-
 	public string operatorAdd(string x) {
 		return x == null ? new string(get()) : new string(get() + x.get());
-	}
-
-	public string operatorAddAssign(string x) {
-		if(x != null)
-			set(get() + x.get());
-		return this;
 	}
 
 	public bool operatorEqu(string x) {

@@ -14,8 +14,6 @@ public final class date extends primary {
 	public date operator + (datespan value);
 	public date operator - (datespan value);
 	public datespan operator - (date value);
-	public date operator += (datespan value);
-	public date operator -= (datespan value);
 
 	public bool operator < (date value);
 	public bool operator > (date value);

@@ -225,10 +225,6 @@ public final class datespan extends primary {
 		return new sql_datespan(this);
 	}
 
-	public void operatorAssign(datespan value) {
-		set(value);
-	}
-
 	public date operatorAdd(date x) {
 		return new date(x.get().getTimeInMillis() + milliseconds());
 	}
@@ -239,16 +235,6 @@ public final class datespan extends primary {
 
 	public datespan operatorSub(datespan x) {
 		return new datespan(milliseconds() - x.milliseconds());
-	}
-
-	public datespan operatorAddAssign(datespan x) {
-		set(operatorAdd(x));
-		return this;
-	}
-
-	public datespan operatorSubAssign(datespan x) {
-		set(operatorSub(x));
-		return this;
 	}
 
 	public bool operatorEqu(datespan x) {

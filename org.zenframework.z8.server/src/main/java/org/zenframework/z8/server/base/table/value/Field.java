@@ -108,11 +108,6 @@ abstract public class Field extends Control implements IField {
 		return (owner != null ? owner.name() + "." : "") + name();
 	}
 
-	/*
-	 * public void operatorAssign(RField.CLASS<? extends RField> field) {
-	 * set(field.get().get()); }
-	 */
-
 	@SuppressWarnings("unchecked")
 	public Field.CLASS<Field> operatorAssign(primary value) {
 		set(value);

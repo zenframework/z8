@@ -59,7 +59,7 @@ public class BinaryExpression extends LanguageElement {
 
 		boolean ok = left.checkSemantics(compilationUnit, declaringType, declaringMethod, null, null);
 
-		if(!right.checkSemantics(compilationUnit, declaringType, declaringMethod, null, null) || !ok)
+		if(!right.checkSemantics(compilationUnit, declaringType, declaringMethod, left.getVariable(), null) || !ok)
 			return false;
 
 		IVariableType leftType = left.getVariableType();
@@ -124,16 +124,16 @@ public class BinaryExpression extends LanguageElement {
 
 			result = TypeCast.findBestCast(candidates.toArray(new ITypeCast[candidates.size()]));
 
-			if(result.length == 0) {
+			if(result.length == 0)
 				continue;
-			} else if(result.length == 1) {
+
+			if(result.length == 1) {
 				rightTypeCastCandidates.add(result[0]);
 				leftTypeCastCandidates.add(new TypeCast(leftType, typeCastOperator));
 			} else if(result.length != 0) {
 				setError(getPosition(), "The " + operatorToken.getName() + " is ambiguous for the type(s) " + leftType.getSignature() + ", " + rightType.getSignature());
 				return false;
 			}
-
 		}
 
 		if(rightTypeCastCandidates.size() == 0) {
@@ -206,9 +206,8 @@ public class BinaryExpression extends LanguageElement {
 
 				codeGenerator.append('.');
 
-				if(rightTypeCast.getTarget().isReference()) {
+				if(rightTypeCast.getTarget().isReference())
 					codeGenerator.append("get().");
-				}
 
 				rightTypeCast.getCode(codeGenerator, right);
 			}

@@ -142,13 +142,8 @@ public class RCollection<TYPE> extends ArrayList<TYPE> {
 		throw new UnsupportedOperationException();
 	}
 
-	public void operatorAssign(Object array) {
-		clear();
-		operatorAddAssign(array);
-	}
-
 	@SuppressWarnings("unchecked")
-	public void operatorAddAssign(Object array) {
+	private void doAddAll(Object array) {
 		if(array instanceof Collection)
 			addAll((Collection<TYPE>)array);
 		else
@@ -157,8 +152,8 @@ public class RCollection<TYPE> extends ArrayList<TYPE> {
 
 	public RCollection<TYPE> operatorAdd(Object array) {
 		RCollection<TYPE> result = new RCollection<TYPE>();
-		result.operatorAddAssign(this);
-		result.operatorAddAssign(array);
+		result.doAddAll(this);
+		result.doAddAll(array);
 		return result;
 	}
 

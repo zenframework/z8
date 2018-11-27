@@ -86,12 +86,11 @@ public class ArrayMethods {
 			// void operatorAssign(TYPE[])
 			methods.add(new Operator(new VariableType(compilationUnit, voidType), new OperatorToken(IToken.ASSIGN, null),
 					new Variable[] { new Variable(variableType, "elements") }));
-*/
 
 			// void operatorAddAssign(TYPE[])
 			methods.add(new Operator(new VariableType(compilationUnit, voidType), new OperatorToken(IToken.ADD_ASSIGN, null),
 					new Variable[] { new Variable(variableType, "elements") }));
-
+*/
 			// TYPE[] operatorAdd(TYPE[])
 			methods.add(new Operator(variableType, new OperatorToken(IToken.PLUS, null),
 					new Variable[] { new Variable(variableType, "elements") }));
@@ -153,11 +152,11 @@ public class ArrayMethods {
 				Variable[] parameters = new Variable[] { new Variable(variableType, "elements") };
 				methods.add(new Operator(new VariableType(compilationUnit, voidType), new OperatorToken(IToken.ASSIGN, null), parameters));
 			}
-*/
 
 			// void operatorAddAssign(TYPE[])
 			methods.add(new Operator(new VariableType(compilationUnit, voidType), new OperatorToken(IToken.ADD_ASSIGN, null),
 					new Variable[] { new Variable(variableType, "elements") }));
+*/
 
 			// TYPE[] operatorAdd(TYPE[])
 			methods.add(new Operator(variableType, new OperatorToken(IToken.PLUS, null),

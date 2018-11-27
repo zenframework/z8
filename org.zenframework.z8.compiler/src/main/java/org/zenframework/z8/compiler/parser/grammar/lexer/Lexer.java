@@ -351,7 +351,6 @@ public class Lexer {
 		charToId.put('/', IToken.DIV);
 		charToId.put('+', IToken.PLUS);
 		charToId.put('-', IToken.MINUS);
-		charToId.put('^', IToken.CARET);
 		charToId.put(',', IToken.COMMA);
 		charToId.put('.', IToken.DOT);
 		charToId.put(';', IToken.SEMICOLON);
@@ -373,8 +372,6 @@ public class Lexer {
 
 		char first = charAt(position);
 		char second = nextCharAt(position, 1);
-		char third = nextCharAt(position, 2);
-		char fourth = nextCharAt(position, 3);
 
 		if(first == '/' && (second == '*' || second == '/'))
 			return getComment(position);
@@ -421,34 +418,6 @@ public class Lexer {
 		} else if(first == '|' && second == '|') {
 			buffer.advance(position, 2);
 			return new OperatorToken(IToken.OR, new Position(start, 2));
-		} else if(first == '^' && second == '=') {
-			buffer.advance(position, 2);
-			return new OperatorToken(IToken.CARET_ASSIGN, new Position(start, 2));
-		} else if(first == '^' && second == '*') {
-			if(third == '=') {
-				buffer.advance(position, 3);
-				return new OperatorToken(IToken.CARET_MUL_ASSIGN, new Position(start, 3));
-			}
-
-			buffer.advance(position, 2);
-			return new OperatorToken(IToken.CARET_MUL, new Position(start, 2));
-		} else if(first == '*' && second == '^') {
-			if(third == '*') {
-				if(fourth == '=') {
-					buffer.advance(position, 4);
-					return new OperatorToken(IToken.MUL_CARET_MUL_ASSIGN, new Position(start, 4));
-				}
-				buffer.advance(position, 3);
-				return new OperatorToken(IToken.MUL_CARET_MUL, new Position(start, 3));
-			}
-
-			if(third == '=') {
-				buffer.advance(position, 3);
-				return new OperatorToken(IToken.MUL_CARET_ASSIGN, new Position(start, 3));
-			}
-
-			buffer.advance(position, 2);
-			return new OperatorToken(IToken.MUL_CARET, new Position(start, 2));
 		} else {
 			Integer id = charToId.get(first);
 

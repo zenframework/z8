@@ -16,90 +16,82 @@ public interface IToken {
 	public static final int MOD = 263;
 	public static final int PLUS = 264;
 	public static final int MINUS = 265;
-	public static final int CARET = 266;
-	public static final int MUL_CARET = 267;
-	public static final int CARET_MUL = 268;
-	public static final int MUL_CARET_MUL = 269;
 
-	public static final int EQU = 270;
-	public static final int NOT_EQU = 271;
-	public static final int LESS = 272;
-	public static final int MORE = 273;
-	public static final int LESS_EQU = 274;
-	public static final int MORE_EQU = 275;
-	public static final int AND = 276;
-	public static final int OR = 277;
-	public static final int GROUP = 278;
+	public static final int EQU = 266;
+	public static final int NOT_EQU = 267;
+	public static final int LESS = 268;
+	public static final int MORE = 269;
+	public static final int LESS_EQU = 270;
+	public static final int MORE_EQU = 271;
+	public static final int AND = 272;
+	public static final int OR = 273;
+	public static final int GROUP = 274;
 
-	public static final int ADD_ASSIGN = 279;
-	public static final int SUB_ASSIGN = 280;
-	public static final int MUL_ASSIGN = 281;
-	public static final int DIV_ASSIGN = 282;
-	public static final int MOD_ASSIGN = 283;
-	public static final int CARET_ASSIGN = 284;
-	public static final int MUL_CARET_ASSIGN = 285;
-	public static final int CARET_MUL_ASSIGN = 286;
-	public static final int MUL_CARET_MUL_ASSIGN = 287;
+	public static final int ADD_ASSIGN = 275;
+	public static final int SUB_ASSIGN = 276;
+	public static final int MUL_ASSIGN = 277;
+	public static final int DIV_ASSIGN = 278;
+	public static final int MOD_ASSIGN = 279;
 
-	public static final int LBRACE = 288;
-	public static final int RBRACE = 289;
-	public static final int LBRACKET = 290;
-	public static final int RBRACKET = 291;
-	public static final int LCBRACE = 292;
-	public static final int RCBRACE = 293;
-	public static final int BRACKETS = 294;
-	public static final int COLON = 295;
-	public static final int SEMICOLON = 296;
-	public static final int ASSIGN = 297;
-	public static final int QUESTION = 298;
-	public static final int COMMA = 299;
-	public static final int DOT = 300;
+	public static final int LBRACE = 280;
+	public static final int RBRACE = 281;
+	public static final int LBRACKET = 282;
+	public static final int RBRACKET = 283;
+	public static final int LCBRACE = 284;
+	public static final int RCBRACE = 285;
+	public static final int BRACKETS = 286;
+	public static final int COLON = 287;
+	public static final int SEMICOLON = 288;
+	public static final int ASSIGN = 289;
+	public static final int QUESTION = 290;
+	public static final int COMMA = 291;
+	public static final int DOT = 292;
 
-	public static final int CONSTANT = 301;
-	public static final int IDENTIFIER = 302;
+	public static final int CONSTANT = 293;
+	public static final int IDENTIFIER = 294;
 
 	// keywords
-	public static final int OPERATOR = 303;
+	public static final int OPERATOR = 295;
 
-	public static final int IF = 304;
-	public static final int ELSE = 305;
+	public static final int IF = 296;
+	public static final int ELSE = 297;
 
-	public static final int DO = 306;
-	public static final int FOR = 307;
-	public static final int WHILE = 308;
+	public static final int DO = 298;
+	public static final int FOR = 299;
+	public static final int WHILE = 300;
 
-	public static final int BREAK = 309;
-	public static final int RETURN = 310;
-	public static final int CONTINUE = 311;
+	public static final int BREAK = 301;
+	public static final int RETURN = 302;
+	public static final int CONTINUE = 303;
 
-	public static final int THIS = 312;
-	public static final int SUPER = 313;
-	public static final int CONTAINER = 314;
+	public static final int THIS = 304;
+	public static final int SUPER = 305;
+	public static final int CONTAINER = 306;
 
-	public static final int NULL = 315;
+	public static final int NULL = 307;
 
-	public static final int IMPORT = 316;
-	public static final int CLASS = 317;
-	public static final int PUBLIC = 318;
-	public static final int PROTECTED = 319;
-	public static final int PRIVATE = 320;
-	public static final int EXTENDS = 321;
+	public static final int IMPORT = 308;
+	public static final int CLASS = 309;
+	public static final int PUBLIC = 310;
+	public static final int PROTECTED = 311;
+	public static final int PRIVATE = 312;
+	public static final int EXTENDS = 313;
 
-	public static final int ENUM = 322;
-	public static final int RECORDS = 323;
+	public static final int ENUM = 314;
+	public static final int RECORDS = 315;
 
-	public static final int AUTO = 324;
+	public static final int AUTO = 316;
 
-	public static final int NEW = 325;
-	public static final int STATIC = 326;
+	public static final int NEW = 317;
+	public static final int STATIC = 318;
 
-	public static final int TRY = 327;
-	public static final int CATCH = 328;
-	public static final int FINALLY = 329;
-	public static final int THROW = 330;
+	public static final int TRY = 319;
+	public static final int CATCH = 320;
+	public static final int FINALLY = 321;
+	public static final int THROW = 322;
 
-	public static final int VIRTUAL = 331;
-	public static final int FINAL = 332;
+	public static final int VIRTUAL = 323;
+	public static final int FINAL = 324;
 
 	public int getId();
 

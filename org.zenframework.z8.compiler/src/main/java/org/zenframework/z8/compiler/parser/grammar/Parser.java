@@ -1042,6 +1042,12 @@ public class Parser {
 		push(new BinaryExpression(left, (OperatorToken)sign, right));
 	}
 
+	void onOperatorAssign(IToken sign) {
+		ILanguageElement right = (ILanguageElement)pop();
+		ILanguageElement left = (ILanguageElement)peek();
+		push(new BinaryExpression(left, (OperatorToken)sign, right));
+	}
+
 	void onCondition() {
 		ILanguageElement right = (ILanguageElement)pop();
 		ILanguageElement left = (ILanguageElement)pop();

@@ -14,41 +14,31 @@ public class RLinkedHashMap<Key, Value> extends HashMap<Key, Value> {
 	}
 
 	public RLinkedHashMap(Key[] keys, Value[] values) {
-		operatorAddAssign(keys, values);
-	}
-
-	public void operatorAssign(Object map) {
-		clear();
-		operatorAddAssign(map);
-	}
-
-	public void operatorAssign(Object[] keys, Object[] values) {
-		clear();
-		operatorAddAssign(keys, values);
+		addAll(keys, values);
 	}
 
 	@SuppressWarnings("unchecked")
-	public void operatorAddAssign(Object map) {
+	public void addAll(Object map) {
 		putAll((Map<Key, Value>)map);
 	}
 
 	@SuppressWarnings("unchecked")
-	public void operatorAddAssign(Object[] keys, Object[] values) {
+	public void addAll(Object[] keys, Object[] values) {
 		for(int i = 0; i < keys.length; i++)
 			put((Key)keys[i], (Value)values[i]);
 	}
 
 	public RLinkedHashMap<Key, Value> operatorAdd(Object map) {
 		RLinkedHashMap<Key, Value> result = new RLinkedHashMap<Key, Value>();
-		result.operatorAddAssign(this);
-		result.operatorAddAssign(map);
+		result.addAll(this);
+		result.addAll(map);
 		return result;
 	}
 
 	public RLinkedHashMap<Key, Value> operatorAdd(Object[] keys, Object[] values) {
 		RLinkedHashMap<Key, Value> result = new RLinkedHashMap<Key, Value>();
-		result.operatorAddAssign(this);
-		result.operatorAddAssign(keys, values);
+		result.addAll(this);
+		result.addAll(keys, values);
 		return result;
 	}
 
@@ -73,7 +63,7 @@ public class RLinkedHashMap<Key, Value> extends HashMap<Key, Value> {
 	}
 
 	public void z8_add(Object[] keys, Object[] values) {
-		operatorAddAssign(keys, values);
+		addAll(keys, values);
 	}
 
 	public bool z8_containsKey(Key key) {
