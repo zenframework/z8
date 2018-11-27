@@ -61,4 +61,9 @@ public class IntegerExpression extends Expression {
 		set(value);
 		return (IntegerExpression.CLASS<?>)this.getCLASS();
 	}
+
+	public IntegerExpression.CLASS<? extends IntegerExpression> operatorAssign(sql_integer expression) {
+		setExpression(expression);
+		return (IntegerExpression.CLASS<?>)this.getCLASS();
+	}
 }

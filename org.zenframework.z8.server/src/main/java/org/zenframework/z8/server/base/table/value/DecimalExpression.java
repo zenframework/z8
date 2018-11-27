@@ -57,4 +57,9 @@ public class DecimalExpression extends Expression {
 		set(value);
 		return (DecimalExpression.CLASS<?>)this.getCLASS();
 	}
+
+	public DecimalExpression.CLASS<? extends DecimalExpression> operatorAssign(sql_decimal value) {
+		setExpression(value);
+		return (DecimalExpression.CLASS<?>)this.getCLASS();
+	}
 }
