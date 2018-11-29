@@ -220,14 +220,14 @@ public class Member extends LanguageElement implements IMember {
 
 	@Override
 	public boolean checkSemantics(CompilationUnit compilationUnit, IType declaringType, IMethod declaringMethod, IVariable leftHandValue, IVariableType context) {
-		if(!super.checkSemantics(compilationUnit, declaringType, null, null, null))
+		if(!super.checkSemantics(compilationUnit, declaringType, declaringMethod, null, null))
 			return false;
 
-		if(!variableType.checkSemantics(compilationUnit, declaringType, null, null, null))
+		if(!variableType.checkSemantics(compilationUnit, declaringType, declaringMethod, null, null))
 			return false;
 
 		if(initializer != null)
-			initializer.checkSemantics(compilationUnit, declaringType, null, null, null);
+			initializer.checkSemantics(compilationUnit, declaringType, declaringMethod, null, null);
 
 		return true;
 	}

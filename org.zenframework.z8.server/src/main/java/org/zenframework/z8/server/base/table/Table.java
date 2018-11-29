@@ -46,7 +46,7 @@ public class Table extends TableBase {
 		}
 	}
 
-	public GuidField.CLASS<GuidField> recordId = new GuidField.CLASS<GuidField>(this);
+	public GuidField.CLASS<? extends GuidField> recordId = new GuidField.CLASS<GuidField>(this);
 
 	public DatetimeField.CLASS<? extends DatetimeField> createdAt = new DatetimeField.CLASS<DatetimeField>(this);
 	public DatetimeField.CLASS<? extends DatetimeField> modifiedAt = new DatetimeField.CLASS<DatetimeField>(this);

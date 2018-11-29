@@ -84,7 +84,7 @@ public class MemberInit extends Initialization implements IInitializer {
 
 	@Override
 	public boolean checkSemantics(CompilationUnit compilationUnit, IType declaringType, IMethod declaringMethod, IVariable leftHandValue, IVariableType context) {
-		if(!super.checkSemantics(compilationUnit, declaringType, null, null, null))
+		if(!super.checkSemantics(compilationUnit, declaringType, declaringMethod, null, null))
 			return false;
 
 		if(getAttributes().length != 0 && !getVariableType().isReference())

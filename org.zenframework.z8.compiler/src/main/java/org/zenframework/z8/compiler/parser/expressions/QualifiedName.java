@@ -137,7 +137,7 @@ public class QualifiedName extends LanguageElement {
 
 			IVariable variable = null;
 
-			if(declaringMethod != null) {
+			if(declaringMethod != null && declaringMethod.getDeclaringType() == declaringType) {
 				variable = declaringMethod.findLocalVariable(name);
 				declaringMethod = declaringMethod.getDeclaringMethod();
 			}
