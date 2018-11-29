@@ -110,6 +110,15 @@ public class Member extends LanguageElement implements IMember {
 	}
 
 	@Override
+	public int getClosure() {
+		return -1;
+	}
+
+	@Override
+	public void setClosure(int closure) {
+	}
+
+	@Override
 	public IVariableType getVariableType() {
 		return variableType;
 	}

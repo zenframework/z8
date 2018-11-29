@@ -9,8 +9,7 @@ public class IntExpression extends Expression {
 	virtual public int get();
 	virtual public int[] array();
 
-	public IntExpression operator = (int value);
-	public IntExpression operator = (sql_int expression);
+	public IntExpression operator = (sql_int value);
 
 	public operator sql_int();
 

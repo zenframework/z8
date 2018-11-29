@@ -52,6 +52,15 @@ public class Record extends LanguageElement implements IMember {
 	}
 
 	@Override
+	public int getClosure() {
+		return -1;
+	}
+
+	@Override
+	public void setClosure(int closure) {
+	}
+
+	@Override
 	public IInitializer getInitializer() {
 		return null;
 	}

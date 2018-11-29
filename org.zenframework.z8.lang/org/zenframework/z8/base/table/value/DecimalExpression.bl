@@ -9,12 +9,11 @@ public class DecimalExpression extends Expression {
 	virtual public decimal get();
 	virtual public decimal[] array();
 
+	public DecimalExpression operator = (sql_decimal value);
+
 	public operator sql_decimal();
 
 	virtual protected sql_decimal expression();
-
-	public DecimalExpression operator = (decimal value);
-	public DecimalExpression operator = (sql_decimal expression);
 
 	public void setExpression(sql_decimal expression);
 }

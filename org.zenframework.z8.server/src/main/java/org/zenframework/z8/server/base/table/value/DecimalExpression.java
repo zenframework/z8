@@ -58,8 +58,8 @@ public class DecimalExpression extends Expression {
 		return (DecimalExpression.CLASS<?>)this.getCLASS();
 	}
 
-	public DecimalExpression.CLASS<? extends DecimalExpression> operatorAssign(sql_decimal value) {
-		setExpression(value);
+	public DecimalExpression.CLASS<? extends DecimalExpression> operatorAssign(sql_decimal expression) {
+		setExpression(expression);
 		return (DecimalExpression.CLASS<?>)this.getCLASS();
 	}
 }

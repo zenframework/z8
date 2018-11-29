@@ -23,6 +23,7 @@ public class QualifiedName extends LanguageElement {
 
 	private IType staticType;
 	private IVariableType variableType;
+	private IVariable closure;
 
 	public QualifiedName(IToken identifier) {
 		this.tokens = new ArrayList<IToken>();
@@ -136,8 +137,14 @@ public class QualifiedName extends LanguageElement {
 
 			IVariable variable = null;
 
-			if(declaringMethod != null)
+			if(declaringMethod != null) {
 				variable = declaringMethod.findLocalVariable(name);
+
+				declaringMethod = declaringMethod.getDeclaringMethod();
+
+				if(variable == null && declaringMethod != null)
+					closure = variable = declaringMethod.findLocalVariable(name);
+			}
 
 			if(variable != null)
 				hyperlinkKind = HyperlinkKind.Local;
@@ -229,8 +236,27 @@ public class QualifiedName extends LanguageElement {
 		return true;
 	}
 
+	private boolean getClosureCode(CodeGenerator codeGenerator) {
+		if(closure == null)
+			return false;
+
+		IVariableType variableType = getVariableType();
+
+		if(!variableType.isArray())
+			codeGenerator.getCompilationUnit().importType(getVariableType().getType());
+
+		codeGenerator.append("(");
+		codeGenerator.append("(" + getVariableType().getDeclaringJavaName() + ")");
+		codeGenerator.append("getCLASS().getClosure()[" + closure.getClosure() + "]");
+		codeGenerator.append(")");
+		return true;
+	}
+
 	@Override
 	public void getCode(CodeGenerator codeGenerator) {
+		if(getClosureCode(codeGenerator))
+			return;
+
 		for(int i = 0; i < tokens.size(); i++) {
 			if(i == 0) {
 				if(staticType != null) {

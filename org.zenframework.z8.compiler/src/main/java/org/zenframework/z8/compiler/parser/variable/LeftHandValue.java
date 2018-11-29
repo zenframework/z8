@@ -53,6 +53,15 @@ public class LeftHandValue implements IVariable {
 	}
 
 	@Override
+	public int getClosure() {
+		return -1;
+	}
+
+	@Override
+	public void setClosure(int closure) {
+	}
+
+	@Override
 	public IVariableType getVariableType() {
 		return element.getVariableType();
 	}

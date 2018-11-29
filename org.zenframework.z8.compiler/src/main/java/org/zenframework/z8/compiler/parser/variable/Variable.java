@@ -16,6 +16,7 @@ public class Variable extends LanguageElement implements IVariable {
 	private IToken finalToken;
 	private IToken nameToken;
 	private String name;
+	private int closure = -1;
 
 	public Variable(IVariableType type) {
 		this.variableType = type;
@@ -71,6 +72,16 @@ public class Variable extends LanguageElement implements IVariable {
 	@Override
 	public boolean isFinal() {
 		return finalToken != null;
+	}
+
+	@Override
+	public int getClosure() {
+		return closure;
+	}
+
+	@Override
+	public void setClosure(int closure) {
+		this.closure = closure;
 	}
 
 	@Override

@@ -46,6 +46,15 @@ public class CastOperator extends AbstractMethod {
 	}
 
 	@Override
+	public int getClosure() {
+		return -1;
+	}
+
+	@Override
+	public void setClosure(int closure) {
+	}
+
+	@Override
 	public boolean resolveStructure(CompilationUnit compilationUnit, IType declaringType) {
 		if(!super.resolveStructure(compilationUnit, declaringType))
 			return false;

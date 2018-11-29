@@ -19,15 +19,6 @@ public interface IClass<TYPE extends IObject> extends IObject {
 	public TYPE get(int stage);
 
 
-//	public String getAttribute(String key);
-//	public void setAttribute(String key, String value);
-//	public boolean hasAttribute(String key);
-
-//	public String classId();
-
-//	public String displayName();
-
-//	public String description();
-
-//	public String index();
+	public Object[] getClosure();
+	public void setClosure(Object[] closure);
 }

@@ -134,7 +134,7 @@ public class MemberNestedType extends AbstractType implements IInitializer {
 		if(!name.resolveNestedTypes(compilationUnit, declaringType))
 			return false;
 
-		IType baseType = findBaseType(declaringType, 0);
+		IType baseType = name.getVariableType().getType();
 		setBaseType(baseType);
 
 		if(baseType != null) {
@@ -149,31 +149,6 @@ public class MemberNestedType extends AbstractType implements IInitializer {
 		}
 
 		return true;
-	}
-
-	private IType findBaseType(IType type, int index) {
-		if(type == null)
-			return null;
-
-		String nameStr = name.toString(index);
-
-		IType result = type.getNestedType(nameStr);
-
-		if(result != null && result != this)
-			return result;
-
-		if(type.getBaseType() != null)
-			return findBaseType(type.getBaseType(), index);
-
-		if(index == name.getTokenCount())
-			return name.getVariableType(index - 1).getType();
-
-		IVariableType variableType = name.getVariableType(index);
-
-		if(variableType != null)
-			return findBaseType(variableType.getType(), index + 1);
-
-		return null;
 	}
 
 	@Override

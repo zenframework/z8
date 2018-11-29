@@ -19,6 +19,7 @@ import org.zenframework.z8.compiler.workspace.CompilationUnit;
 public class Declarator extends Initialization implements IVariable, IStatement {
 	private IToken finalToken;
 	private VariableType variableType;
+	private int closure = -1;
 
 	public Declarator(IToken finalToken, VariableType variableType, IToken nameToken, OperatorToken operatorToken, ILanguageElement initializer) {
 		super(new QualifiedName(nameToken), operatorToken, initializer);
@@ -44,6 +45,16 @@ public class Declarator extends Initialization implements IVariable, IStatement 
 	@Override
 	public int hashCode() {
 		return getName().hashCode();
+	}
+
+	@Override
+	public int getClosure() {
+		return closure;
+	}
+
+	@Override
+	public void setClosure(int closure) {
+		this.closure = closure;
 	}
 
 	@Override

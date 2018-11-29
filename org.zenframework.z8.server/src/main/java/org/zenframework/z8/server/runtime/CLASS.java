@@ -15,6 +15,8 @@ public class CLASS<TYPE extends IObject> extends OBJECT implements IClass<TYPE> 
 
 	Constructor<?> constructor = null;
 
+	private Object[] closure;
+
 	static public <T extends IObject> List<T> asList(Collection<? extends org.zenframework.z8.server.runtime.CLASS<? extends T>> collection) {
 		List<T> result = new ArrayList<T>();
 
@@ -70,6 +72,15 @@ public class CLASS<TYPE extends IObject> extends OBJECT implements IClass<TYPE> 
 
 		if(object != null)
 			object.setOrdinal(ordinal);
+	}
+
+	@Override
+	public Object[] getClosure() {
+		return closure;
+	}
+
+	public void setClosure(Object[] closure) {
+		this.closure = closure;
 	}
 
 	public boolean instanceOf(Class<?> cls) {

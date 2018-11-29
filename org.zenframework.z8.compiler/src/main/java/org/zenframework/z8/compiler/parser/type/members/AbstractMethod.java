@@ -76,6 +76,15 @@ public abstract class AbstractMethod extends LanguageElement implements IMethod 
 	}
 
 	@Override
+	public int getClosure() {
+		return -1;
+	}
+
+	@Override
+	public void setClosure(int closure) {
+	}
+
+	@Override
 	public IInitializer getInitializer() {
 		return null;
 	}
@@ -241,6 +250,21 @@ public abstract class AbstractMethod extends LanguageElement implements IMethod 
 	}
 
 	@Override
+	public IVariable[] getLocalVariables() {
+		if(localScopes == null)
+			return new IVariable[0];
+
+		List<IVariable> result = new ArrayList<IVariable>();
+
+		for(Set<IVariable> scope : localScopes) {
+			for(IVariable variable : scope)
+				result.add(variable);
+		}
+
+		return result.toArray(new IVariable[0]);
+	}
+
+	@Override
 	public IVariable findLocalVariable(String name) {
 		if(localScopes != null) {
 			for(Set<IVariable> scope : localScopes) {
@@ -250,6 +274,7 @@ public abstract class AbstractMethod extends LanguageElement implements IMethod 
 					return variable;
 			}
 		}
+
 		return null;
 	}
 

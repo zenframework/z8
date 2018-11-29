@@ -286,9 +286,8 @@ public abstract class AbstractType extends LanguageElement implements IType {
 
 	@Override
 	public IType[] getNestedTypes() {
-		if(nestedTypes != null) {
+		if(nestedTypes != null)
 			return nestedTypes.toArray(new IType[nestedTypes.size()]);
-		}
 		return new IType[0];
 	}
 
@@ -309,25 +308,9 @@ public abstract class AbstractType extends LanguageElement implements IType {
 		if(qualifiedName == null)
 			return null;
 
-		List<String> names = new ArrayList<String>();
-
-		while(true) {
-			int index = qualifiedName.indexOf(".");
-
-			if(index == -1) {
-				names.add(qualifiedName);
-				break;
-			}
-
-			String name = qualifiedName.substring(0, index);
-			qualifiedName = qualifiedName.substring(index + 1);
-
-			names.add(name);
-		}
-
 		IType type = this;
 
-		for(String name : names) {
+		for(String name : qualifiedName.split("\\.")) {
 			IType[] nestedTypes = type.getNestedTypes();
 
 			type = null;

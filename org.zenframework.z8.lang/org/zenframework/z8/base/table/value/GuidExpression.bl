@@ -3,9 +3,9 @@ public class GuidExpression extends Expression {
 	virtual public guid get();
 	virtual public guid[] array();
 
-	public GuidExpression operator = (guid value);
-
 	public void setDefault(guid defaultValue);
+
+	public GuidExpression operator = (sql_guid value);
 
 	public operator sql_guid();
 

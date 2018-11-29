@@ -16,6 +16,7 @@ import org.zenframework.z8.compiler.workspace.CompilationUnit;
 public class DeclaratorNestedType extends AbstractType {
 	private TypeBody body;
 	private Declarator declarator;
+	private IVariable[] closure;
 
 	public DeclaratorNestedType(IToken finalToken, VariableType type, IToken name, TypeBody body) {
 		super();
@@ -68,10 +69,22 @@ public class DeclaratorNestedType extends AbstractType {
 		return true;
 	}
 
+	private void initClosure() {
+		int index = 0;
+		closure = getDeclaringMethod().getLocalVariables();
+
+		for(IVariable variable : closure) {
+			variable.setClosure(index);
+			index++;
+		}
+	}
+
 	@Override
 	public boolean checkSemantics(CompilationUnit compilationUnit, IType declaringType, IMethod declaringMethod, IVariable leftHandValue, IVariableType context) {
 		if(!super.checkSemantics(compilationUnit, declaringType, declaringMethod, null, null))
 			return false;
+
+		initClosure();
 
 		if(!declarator.checkSemantics(compilationUnit, declaringType, declaringMethod, null, null))
 			return false;
@@ -81,6 +94,11 @@ public class DeclaratorNestedType extends AbstractType {
 		setBaseType(variableType.getType());
 		setContainerType(declaringType);
 		declaringType.addNestedType(this);
+
+		if(body != null) {
+			body.resolveStructure(compilationUnit, this);
+			body.checkSemantics(compilationUnit, this, declaringMethod, null, null);
+		}
 
 		return true;
 	}
@@ -93,11 +111,8 @@ public class DeclaratorNestedType extends AbstractType {
 		if(!declarator.resolveNestedTypes(compilationUnit, declaringType))
 			return false;
 
-		if(body != null) {
-			body.resolveStructure(compilationUnit, this);
-			body.checkSemantics(compilationUnit, this, null, null, null);
+		if(body != null)
 			body.resolveNestedTypes(compilationUnit, this);
-		}
 
 		return true;
 	}
@@ -133,6 +148,15 @@ public class DeclaratorNestedType extends AbstractType {
 
 		codeGenerator.append(" = " + type.getJavaNew(getStaticContext()) + ";");
 		codeGenerator.breakLine();
+
+		if(closure.length != 0) {
+			codeGenerator.indent();
+			codeGenerator.append(declarator.getName() + ".setClosure(new Object[] {");
+			for(int i = 0; i < closure.length; i++)
+				codeGenerator.append(i != 0 ? ", " : "").append(closure[i].getName());
+			codeGenerator.append("});");
+			codeGenerator.breakLine();
+		}
 
 		IAttribute[] attributes = getAttributes();
 

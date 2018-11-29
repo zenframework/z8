@@ -54,4 +54,9 @@ public class GuidExpression extends Expression {
 		set(value);
 		return (GuidExpression.CLASS<?>)this.getCLASS();
 	}
+
+	public GuidExpression.CLASS<? extends GuidExpression> operatorAssign(sql_guid expression) {
+		setExpression(expression);
+		return (GuidExpression.CLASS<?>)this.getCLASS();
+	}
 }
