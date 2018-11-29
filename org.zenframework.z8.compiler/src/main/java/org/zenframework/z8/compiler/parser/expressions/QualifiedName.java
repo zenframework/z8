@@ -139,11 +139,7 @@ public class QualifiedName extends LanguageElement {
 
 			if(declaringMethod != null) {
 				variable = declaringMethod.findLocalVariable(name);
-
 				declaringMethod = declaringMethod.getDeclaringMethod();
-
-				if(variable == null && declaringMethod != null)
-					closure = variable = declaringMethod.findLocalVariable(name);
 			}
 
 			if(variable != null)
@@ -155,7 +151,12 @@ public class QualifiedName extends LanguageElement {
 				if(variable != null && getStaticContext() && !((IMember)variable).isStatic())
 					setError(nameToken.getPosition(), "Cannot make a static reference to the non-static member " + name);
 
-				if(variable != null)
+				if(variable == null) {
+					if(declaringMethod != null)
+						closure = variable = declaringMethod.findLocalVariable(name);
+					if(variable != null)
+						hyperlinkKind = HyperlinkKind.Local;
+				} else
 					hyperlinkKind = ((IMember)variable).isStatic() ? HyperlinkKind.StaticMember : HyperlinkKind.Member;
 			}
 
@@ -246,7 +247,7 @@ public class QualifiedName extends LanguageElement {
 			codeGenerator.getCompilationUnit().importType(getVariableType().getType());
 
 		codeGenerator.append("(");
-		codeGenerator.append("(" + getVariableType().getDeclaringJavaName() + ")");
+		codeGenerator.append("(" + variableTypes.get(0).getDeclaringJavaName() + ")");
 		codeGenerator.append("getCLASS().getClosure()[" + closure.getClosure() + "]");
 		codeGenerator.append(")");
 		return true;
@@ -254,11 +255,11 @@ public class QualifiedName extends LanguageElement {
 
 	@Override
 	public void getCode(CodeGenerator codeGenerator) {
-		if(getClosureCode(codeGenerator))
-			return;
-
 		for(int i = 0; i < tokens.size(); i++) {
 			if(i == 0) {
+				if(getClosureCode(codeGenerator))
+					continue;
+
 				if(staticType != null) {
 					codeGenerator.getCompilationUnit().importType(staticType);
 					codeGenerator.append(staticType.getJavaName());
