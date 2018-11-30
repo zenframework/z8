@@ -471,8 +471,8 @@ array_initializers_element
 	;
 
 map_element
-	: LBRACE expression COMMA array_initializers_element RBRACE
-		{ parser.onMapElement($1, $5); }
+	: LBRACE expression COMMA expression RBRACE         { parser.onMapElement($1, $5); }
+	| LBRACE expression COMMA array_initializer RBRACE  { parser.onMapElement($1, $5); }
 	;
 
 compound_left

@@ -119,8 +119,10 @@ public class DeclaratorNestedType extends AbstractType {
 
 	@Override
 	public void getClassCode(CodeGenerator codeGenerator) {
+		IType baseType = getBaseType();
+		String baseTypeName = baseType.isQualified() ? baseType.getQualifiedJavaName() : baseType.getJavaName();
 		codeGenerator.indent();
-		codeGenerator.append("public static class " + getJavaName() + " extends " + getBaseType().getJavaName());
+		codeGenerator.append("public static class " + getJavaName() + " extends " + baseTypeName);
 		codeGenerator.breakLine();
 		codeGenerator.indent();
 		codeGenerator.append("{");
