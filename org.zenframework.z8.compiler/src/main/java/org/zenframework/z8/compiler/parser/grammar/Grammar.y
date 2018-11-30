@@ -467,10 +467,11 @@ array_initializers
 array_initializers_element
 	: map_element                               { parser.addArrayInitializer(); }
 	| expression                                { parser.addArrayInitializer(); }
+	| array_initializer                         { parser.addArrayInitializer(); }
 	;
 
 map_element
-	: LBRACE expression COMMA expression RBRACE
+	: LBRACE expression COMMA array_initializers_element RBRACE
 		{ parser.onMapElement($1, $5); }
 	;
 
