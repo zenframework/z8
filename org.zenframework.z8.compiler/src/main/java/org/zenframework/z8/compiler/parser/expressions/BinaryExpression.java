@@ -59,7 +59,7 @@ public class BinaryExpression extends LanguageElement {
 
 		boolean ok = left.checkSemantics(compilationUnit, declaringType, declaringMethod, null, null);
 
-		if(!right.checkSemantics(compilationUnit, declaringType, declaringMethod, left.getVariable(), null) || !ok)
+		if(!right.checkSemantics(compilationUnit, declaringType, declaringMethod, ok ? left.getVariable() : null, null) || !ok)
 			return false;
 
 		IVariableType leftType = left.getVariableType();
