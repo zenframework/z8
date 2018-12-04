@@ -84,49 +84,57 @@ public class Rel extends Expression {
 					throw new UnsupportedOperationException();
 				}
 				return result.format(vendor, options);
-			}
-			else if(leftConst && !rightConst) {
-				date dt = left.date().truncDay();
-				date dt1 = dt.addDay(1);
+			} else if(leftConst && !rightConst) {
+				date leftDate = left.date();
 				String field = right.format(vendor, options);
+				if(!leftDate.equals(date.Min) && !leftDate.equals(date.Max)) {
+					date dt = leftDate.truncDay();
+					date dt1 = dt.addDay(1);
 
-				switch(operation) {
-				case Eq:
-					return "(" + dt.getTicks() + " <= " + field + " and " + field + " < " + dt1.getTicks() + ")";
-				case NotEq:
-					return "(" + field + " < " + dt.getTicks() + " or " + dt1.getTicks() + " <= " + field + ")";
-				case LT:
-					return "(" + dt1.getTicks() + " <= " + field + ")";
-				case LE:
-					return "(" + dt.getTicks() + " <= " + field + ")";
-				case GT:
-					return "(" + dt.getTicks() + " > " + field + ")";
-				case GE:
-					return "(" + dt1.getTicks() + " > " + field + ")";
-				default:
-					throw new UnsupportedOperationException();
-				}
+					switch(operation) {
+					case Eq:
+						return "(" + dt.getTicks() + " <= " + field + " and " + field + " < " + dt1.getTicks() + ")";
+					case NotEq:
+						return "(" + field + " < " + dt.getTicks() + " or " + dt1.getTicks() + " <= " + field + ")";
+					case LT:
+						return "(" + dt1.getTicks() + " <= " + field + ")";
+					case LE:
+						return "(" + dt.getTicks() + " <= " + field + ")";
+					case GT:
+						return "(" + dt.getTicks() + " > " + field + ")";
+					case GE:
+						return "(" + dt1.getTicks() + " > " + field + ")";
+					default:
+						throw new UnsupportedOperationException();
+					}
+				} else
+					return "(" + leftDate.getTicks() + " " + operations.get(operation) + " " + field + ")";
 			} else if(!leftConst && rightConst) {
-				date dt = right.date().truncDay();
-				date dt1 = dt.addDay(1);
+				date rightDate = right.date();
 				String field = left.format(vendor, options);
 
-				switch(operation) {
-				case Eq:
-					return "(" + dt.getTicks() + " <= " + field + " and " + field + " < " + dt1.getTicks() + ")";
-				case NotEq:
-					return "(" + field + " < " + dt.getTicks() + " or " + dt1.getTicks() + " <= " + field + ")";
-				case LT:
-					return "(" + field + " < " + dt.getTicks() + ")";
-				case LE:
-					return "(" + field + " < " + dt1.getTicks() + ")";
-				case GT:
-					return "(" + field + " >= " + dt1.getTicks() + ")";
-				case GE:
-					return "(" + field + " >= " + dt.getTicks() + ")";
-				default:
-					throw new UnsupportedOperationException();
-				}
+				if(!rightDate.equals(date.Min) && !rightDate.equals(date.Max)) {
+					date dt = rightDate.truncDay();
+					date dt1 = dt.addDay(1);
+
+					switch(operation) {
+					case Eq:
+						return "(" + dt.getTicks() + " <= " + field + " and " + field + " < " + dt1.getTicks() + ")";
+					case NotEq:
+						return "(" + field + " < " + dt.getTicks() + " or " + dt1.getTicks() + " <= " + field + ")";
+					case LT:
+						return "(" + field + " < " + dt.getTicks() + ")";
+					case LE:
+						return "(" + field + " < " + dt1.getTicks() + ")";
+					case GT:
+						return "(" + field + " >= " + dt1.getTicks() + ")";
+					case GE:
+						return "(" + field + " >= " + dt.getTicks() + ")";
+					default:
+						throw new UnsupportedOperationException();
+					}
+				} else
+					return "(" + field + " " + operations.get(operation) + " " + rightDate.getTicks() + ")";
 			} else {
 				left = new TruncDay(left);
 				right = new TruncDay(right);
