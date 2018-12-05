@@ -5,8 +5,41 @@
 [native "org.zenframework.z8.server.utils.Cron"]
 public class Cron {
 	
+	// CRON expression format:
+	// 
+	//    +---------- minute (0 - 59)
+	//    | +-------- hour (0 - 23)
+	//    | | +------ day of month (1 - 31)
+	//    | | | +---- month (1 - 12)
+	//    | | | | +-- day of week (0 - 6)
+	//    | | | | |
+	//    X X X X X - CRON expression contains 5 fields
+	//
+	// Value of a field can be:
+	//    - asterisk '*' means any value
+	//    - number, i.e. '1', '2', etc.
+	//    - period, i.e. '1-5', '2-23'
+	//    - asterisk or period with multiplicity, i.e. '*/2' (any even value), '2-9/3' (any value multiple of 3 between 2 and 9)
+	//    - comma-separated list of other values, i.e. '1,2-4,6-12/3,*/5'
+	//
+	// Examples:
+	//    * * * * * - every minute
+	//    */5 * * * * - every five minutes
+	//    5 0 * * * - every day at 00:05
+	//    15 14 1 * * - every 1st day of month at 14:15
+	//    0 22 * * 1-5 - Monday to Friday at 22:00
+	//    23 */2 * * * - at 23rd minute of every even hour
+	//    15 10,13 * * 1,4 - Monday and Thursday at 10:15 and 13:15
+	
+	/*
+	 * Returns MIN date that is greater than given date and satisfies given GRON expression
+	 */
 	public static date nextDate(date date, string cronExp);
 
+	/*
+	 * Checks given CRON expression
+	 * Returns true if CRON expression is valid
+	 */
 	public static bool checkExp(string cronExp);
 
 }

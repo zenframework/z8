@@ -152,6 +152,16 @@ public class Cron {
 			baseDate = actualDate;
 		}
 	}
+	
+	private static void checkIllegalExp(String base, String cronExp) {
+		date baseDate = new date(base);
+		try {
+			nextDate(baseDate, cronExp);
+			System.out.println(baseDate.format(FORMAT) + " - " + cronExp + " - check illegal ERROR: IllegalArgumentException expected");
+		} catch (IllegalArgumentException e) {
+			System.out.println(baseDate.format(FORMAT) + " - " + cronExp + " - check illegal OK");
+		}
+	}
 
 	// Tests
 	public static void main(String[] args) {
@@ -167,6 +177,9 @@ public class Cron {
 		check("2000-01-01 00:00", "0-59/2 * * * *", "2000-01-01 00:02", "2000-01-01 00:04");
 		check("2000-01-01 00:00", "1-59/2 * * * *", "2000-01-01 00:01", "2000-01-01 00:03");
 		check("2000-01-01 00:00", "*/5 * * * *", "2000-01-01 00:05", "2000-01-01 00:10");
+		check("2000-01-01 00:00", "* * 29 2 *");
+		checkIllegalExp("2000-01-01 00:00", "* * 31 2 *");
+		checkIllegalExp("2000-01-01 00:00", "3/2 * * * *");
 	}
 
 }
