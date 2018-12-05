@@ -3,6 +3,7 @@ package org.zenframework.z8.server.base.query;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
@@ -726,7 +727,7 @@ public class Query extends OBJECT {
 		if(dataFields != null)
 			return dataFields;
 
-		dataFields = new ArrayList<Field.CLASS<Field>>(20);
+		dataFields = new HashSet<Field.CLASS<Field>>(20);
 
 		for(IClass<? extends IObject> member : members()) {
 			if(member instanceof Field.CLASS) {
@@ -742,7 +743,7 @@ public class Query extends OBJECT {
 		if(primaryFields != null)
 			return primaryFields;
 
-		primaryFields = new ArrayList<Field.CLASS<Field>>(20);
+		primaryFields = new HashSet<Field.CLASS<Field>>(20);
 
 		for(Field.CLASS<Field> field : dataFields()) {
 			if(!(field instanceof Expression.CLASS))
