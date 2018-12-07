@@ -21,6 +21,7 @@ import org.zenframework.z8.compiler.parser.expressions.BinaryExpression;
 import org.zenframework.z8.compiler.parser.expressions.BracedExpression;
 import org.zenframework.z8.compiler.parser.expressions.Constant;
 import org.zenframework.z8.compiler.parser.expressions.Container;
+import org.zenframework.z8.compiler.parser.expressions.InstanceOf;
 import org.zenframework.z8.compiler.parser.expressions.MapElement;
 import org.zenframework.z8.compiler.parser.expressions.MethodCall;
 import org.zenframework.z8.compiler.parser.expressions.OperatorNew;
@@ -1048,7 +1049,14 @@ public class Parser {
 		push(new BinaryExpression(left, (OperatorToken)sign, right));
 	}
 
-	void onCondition() {
+	void onInstanceOf(IToken token) {
+		VariableTypeHelper variableTypeHelper = (VariableTypeHelper)pop();
+		VariableType variableType = variableTypeHelper.getVariableType();
+		ILanguageElement left = (ILanguageElement)pop();
+		push(new InstanceOf(left, token, variableType));
+	}
+
+	void onTernaryOperator() {
 		ILanguageElement right = (ILanguageElement)pop();
 		ILanguageElement left = (ILanguageElement)pop();
 		ILanguageElement condition = (ILanguageElement)pop();

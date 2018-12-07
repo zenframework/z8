@@ -20,7 +20,7 @@ public class Join extends Expression implements IJoin {
 		}
 	}
 
-	public JoinType join = JoinType.Left;
+	public JoinType join = JoinType.Inner;
 	private Query.CLASS<Query> query = null;
 
 	public Join(IObject container) {

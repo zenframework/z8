@@ -103,6 +103,7 @@ public class Grammar
 
 %token <token> VIRTUAL
 %token <token> FINAL
+%token <token> INSTANCE_OF
 
 
 %left COMMA SEMICOLON
@@ -604,11 +605,12 @@ assignment
 
 expression
 	: ternary_expression
+	| ternary_expression INSTANCE_OF simple_type         { parser.onInstanceOf($2); }
 	;
 
 ternary_expression
 	: logical_or
-	| logical_or QUESTION expression COLON expression    { parser.onCondition(); }
+	| logical_or QUESTION expression COLON expression    { parser.onTernaryOperator(); }
 	;
 
 logical_or

@@ -92,6 +92,7 @@ public interface IToken {
 
 	public static final int VIRTUAL = 323;
 	public static final int FINAL = 324;
+	public static final int INSTANCE_OF = 325;
 
 	public int getId();
 

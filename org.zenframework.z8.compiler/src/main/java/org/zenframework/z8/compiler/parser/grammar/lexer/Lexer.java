@@ -458,7 +458,6 @@ public class Lexer {
 		reserved.add("float");
 		reserved.add("goto");
 		reserved.add("implements");
-		reserved.add("instanceof");
 		reserved.add("interface");
 		reserved.add("long");
 		reserved.add("package");
@@ -509,6 +508,8 @@ public class Lexer {
 		keywords.put("throw", IToken.THROW);
 		keywords.put("virtual", IToken.VIRTUAL);
 		keywords.put("final", IToken.FINAL);
+		keywords.put("instanceof", IToken.INSTANCE_OF);
+
 	}
 
 	public static boolean checkIdentifier(String name) {
