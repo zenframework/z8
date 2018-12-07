@@ -57,6 +57,7 @@ public class Grammar
 %token <token> ASSIGN
 %token <token> QUESTION
 %token <token> COMMA
+%token <token> ELVIS
 %token <token> DOT
 
 %token <token> CONSTANT
@@ -610,7 +611,9 @@ expression
 
 ternary_expression
 	: logical_or
-	| logical_or QUESTION expression COLON expression    { parser.onTernaryOperator(); }
+	| logical_or QUESTION expression COLON expression    { parser.onTernaryOperator($2, $4); }
+	| logical_or ELVIS expression					     { parser.onElvisOperator($2); }
+	| logical_or ELVIS array_initializer				 { parser.onElvisOperator($2); }
 	;
 
 logical_or
@@ -631,6 +634,7 @@ equality
 
 relational
 	: additive
+	| NULL									    { parser.onNull($1); }
 	| additive LESS additive                    { parser.onOperator($2); }
 	| additive MORE additive                    { parser.onOperator($2); }
 	| additive LESS_EQU additive                { parser.onOperator($2); }

@@ -13,6 +13,8 @@ public interface IVariableType extends ILanguageElement {
 
 	String getJavaNew(boolean staticContext);
 
+	boolean isNull();
+
 	boolean isAuto();
 
 	boolean isEnum();

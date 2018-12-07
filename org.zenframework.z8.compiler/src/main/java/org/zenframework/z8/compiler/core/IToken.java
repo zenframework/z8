@@ -45,54 +45,55 @@ public interface IToken {
 	public static final int ASSIGN = 289;
 	public static final int QUESTION = 290;
 	public static final int COMMA = 291;
-	public static final int DOT = 292;
+	public static final int ELVIS = 292;
+	public static final int DOT = 293;
 
-	public static final int CONSTANT = 293;
-	public static final int IDENTIFIER = 294;
+	public static final int CONSTANT = 294;
+	public static final int IDENTIFIER = 295;
 
 	// keywords
-	public static final int OPERATOR = 295;
+	public static final int OPERATOR = 296;
 
-	public static final int IF = 296;
-	public static final int ELSE = 297;
+	public static final int IF = 297;
+	public static final int ELSE = 298;
 
-	public static final int DO = 298;
-	public static final int FOR = 299;
-	public static final int WHILE = 300;
+	public static final int DO = 299;
+	public static final int FOR = 300;
+	public static final int WHILE = 301;
 
-	public static final int BREAK = 301;
-	public static final int RETURN = 302;
-	public static final int CONTINUE = 303;
+	public static final int BREAK = 302;
+	public static final int RETURN = 303;
+	public static final int CONTINUE = 304;
 
-	public static final int THIS = 304;
-	public static final int SUPER = 305;
-	public static final int CONTAINER = 306;
+	public static final int THIS = 305;
+	public static final int SUPER = 306;
+	public static final int CONTAINER = 307;
 
-	public static final int NULL = 307;
+	public static final int NULL = 308;
 
-	public static final int IMPORT = 308;
-	public static final int CLASS = 309;
-	public static final int PUBLIC = 310;
-	public static final int PROTECTED = 311;
-	public static final int PRIVATE = 312;
-	public static final int EXTENDS = 313;
+	public static final int IMPORT = 309;
+	public static final int CLASS = 310;
+	public static final int PUBLIC = 311;
+	public static final int PROTECTED = 312;
+	public static final int PRIVATE = 313;
+	public static final int EXTENDS = 314;
 
-	public static final int ENUM = 314;
-	public static final int RECORDS = 315;
+	public static final int ENUM = 315;
+	public static final int RECORDS = 316;
 
-	public static final int AUTO = 316;
+	public static final int AUTO = 317;
 
-	public static final int NEW = 317;
-	public static final int STATIC = 318;
+	public static final int NEW = 318;
+	public static final int STATIC = 319;
 
-	public static final int TRY = 319;
-	public static final int CATCH = 320;
-	public static final int FINALLY = 321;
-	public static final int THROW = 322;
+	public static final int TRY = 320;
+	public static final int CATCH = 321;
+	public static final int FINALLY = 322;
+	public static final int THROW = 323;
 
-	public static final int VIRTUAL = 323;
-	public static final int FINAL = 324;
-	public static final int INSTANCE_OF = 325;
+	public static final int VIRTUAL = 324;
+	public static final int FINAL = 325;
+	public static final int INSTANCE_OF = 326;
 
 	public int getId();
 

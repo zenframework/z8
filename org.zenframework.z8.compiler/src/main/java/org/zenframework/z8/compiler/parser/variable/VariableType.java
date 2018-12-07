@@ -42,6 +42,10 @@ public class VariableType extends LanguageElement implements IVariableType {
 		this.type = type;
 	}
 
+	public VariableType(IType type) {
+		this(type, false);
+	}
+
 	public VariableType(IType type, boolean isStatic) {
 		this.type = type;
 		this.isStatic = isStatic;
@@ -212,6 +216,11 @@ public class VariableType extends LanguageElement implements IVariableType {
 	@Override
 	public boolean isStatic() {
 		return isStatic;
+	}
+
+	@Override
+	public boolean isNull() {
+		return false;
 	}
 
 	@Override

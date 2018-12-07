@@ -16,6 +16,7 @@ import org.zenframework.z8.compiler.parser.LanguageElement;
 import org.zenframework.z8.compiler.parser.grammar.lexer.token.OperatorToken;
 import org.zenframework.z8.compiler.parser.type.Primary;
 import org.zenframework.z8.compiler.parser.type.TypeCast;
+import org.zenframework.z8.compiler.parser.variable.VariableType;
 import org.zenframework.z8.compiler.workspace.CompilationUnit;
 
 public class BinaryExpression extends LanguageElement {
@@ -25,6 +26,8 @@ public class BinaryExpression extends LanguageElement {
 
 	private ITypeCast leftTypeCast;
 	private ITypeCast rightTypeCast;
+
+	private IType booleanType;
 
 	public BinaryExpression(ILanguageElement left, OperatorToken operatorToken, ILanguageElement right) {
 		this.left = left;
@@ -44,6 +47,8 @@ public class BinaryExpression extends LanguageElement {
 
 	@Override
 	public IVariableType getVariableType() {
+		if(left.getVariableType().isNull() || right.getVariableType().isNull())
+			return new VariableType(resolveBooleanType());
 		return rightTypeCast.getContext().getVariableType();
 	}
 
@@ -64,6 +69,9 @@ public class BinaryExpression extends LanguageElement {
 
 		IVariableType leftType = left.getVariableType();
 		IVariableType rightType = right.getVariableType();
+
+		if(leftType.isNull() || rightType.isNull())
+			return true;
 
 		IMethod[] operators = leftType.getMatchingMethods(operatorToken.getName());
 
@@ -152,7 +160,25 @@ public class BinaryExpression extends LanguageElement {
 
 	@Override
 	public void getCode(CodeGenerator codeGenerator) {
-		IType booleanType = Primary.resolveType(getCompilationUnit(), Primary.Boolean);
+		IType booleanType = resolveBooleanType();
+
+		if(left.getVariableType().isNull()) {
+			codeGenerator.getCompilationUnit().importType(booleanType);
+			codeGenerator.append("new " + booleanType.getJavaName() + "(");
+			codeGenerator.append("null " + operatorToken.getSign() + " ");
+			right.getCode(codeGenerator);
+			codeGenerator.append(")");
+			return;
+		} 
+
+		if(right.getVariableType().isNull()) {
+			codeGenerator.getCompilationUnit().importType(booleanType);
+			codeGenerator.append("new " + booleanType.getJavaName() + "(");
+			left.getCode(codeGenerator);
+			codeGenerator.append(" " + operatorToken.getSign() + " null");
+			codeGenerator.append(")");
+			return;
+		}
 
 		if(left.getVariableType().isEnum()) {
 			codeGenerator.getCompilationUnit().importType(booleanType);
@@ -161,57 +187,56 @@ public class BinaryExpression extends LanguageElement {
 			codeGenerator.append(operatorToken.getSign());
 			right.getCode(codeGenerator);
 			codeGenerator.append(")");
-		} else {
-			IVariableType leftType = leftTypeCast.getTarget();
-			IVariableType rightType = rightTypeCast.getTarget();
+			return;
+		}
 
-			boolean isBoolean = !leftType.isArray() && leftType.getType() == booleanType && !rightType.isArray() && rightType.getType() == booleanType;
+		IVariableType leftType = leftTypeCast.getTarget();
+		IVariableType rightType = rightTypeCast.getTarget();
 
-			if(isBoolean && (operatorToken.getId() == IToken.AND || operatorToken.getId() == IToken.OR)) {
-				codeGenerator.append("(");
+		boolean isBoolean = !leftType.isArray() && leftType.getType() == booleanType && !rightType.isArray() && rightType.getType() == booleanType;
 
-				leftTypeCast.getCode(codeGenerator, left);
-				codeGenerator.append(".get()");
-				codeGenerator.append(" ? ");
+		if(isBoolean && (operatorToken.getId() == IToken.AND || operatorToken.getId() == IToken.OR)) {
+			codeGenerator.append("(");
 
-				codeGenerator.getCompilationUnit().importType(booleanType);
+			leftTypeCast.getCode(codeGenerator, left);
+			codeGenerator.append(".get()");
+			codeGenerator.append(" ? ");
 
-				String trueValue = "new " + booleanType.getJavaName() + "(true)";
-				String falseValue = "new " + booleanType.getJavaName() + "(false)";
+			codeGenerator.getCompilationUnit().importType(booleanType);
 
-				if(operatorToken.getId() == IToken.AND) {
-					if(rightTypeCast.getContext() != null) {
-						codeGenerator.append(trueValue);
-						codeGenerator.append('.');
-					}
+			String trueValue = "new " + booleanType.getJavaName() + "(true)";
+			String falseValue = "new " + booleanType.getJavaName() + "(false)";
 
-					rightTypeCast.getCode(codeGenerator, right);
-					codeGenerator.append(" : ");
-					codeGenerator.append(falseValue);
-				} else {
+			if(operatorToken.getId() == IToken.AND) {
+				if(rightTypeCast.getContext() != null) {
 					codeGenerator.append(trueValue);
-					codeGenerator.append(" : ");
-
-					if(rightTypeCast.getContext() != null) {
-						codeGenerator.append(falseValue);
-						codeGenerator.append('.');
-					}
-
-					rightTypeCast.getCode(codeGenerator, right);
+					codeGenerator.append('.');
 				}
 
-				codeGenerator.append(')');
+				rightTypeCast.getCode(codeGenerator, right);
+				codeGenerator.append(" : ");
+				codeGenerator.append(falseValue);
 			} else {
-				leftTypeCast.getCode(codeGenerator, left);
+				codeGenerator.append(trueValue);
+				codeGenerator.append(" : ");
 
-				codeGenerator.append('.');
-
-				if(rightTypeCast.getTarget().isReference())
-					codeGenerator.append("get().");
+				if(rightTypeCast.getContext() != null) {
+					codeGenerator.append(falseValue);
+					codeGenerator.append('.');
+				}
 
 				rightTypeCast.getCode(codeGenerator, right);
 			}
+
+			codeGenerator.append(')');
+			return;
 		}
+
+		leftTypeCast.getCode(codeGenerator, left);
+		codeGenerator.append('.');
+		if(rightTypeCast.getTarget().isReference())
+			codeGenerator.append("get().");
+		rightTypeCast.getCode(codeGenerator, right);
 	}
 
 	public ILanguageElement getLeftElement() {
@@ -220,5 +245,11 @@ public class BinaryExpression extends LanguageElement {
 
 	public ILanguageElement getRightElement() {
 		return right;
+	}
+
+	private IType resolveBooleanType() {
+		if(booleanType == null)
+			booleanType = Primary.resolveType(getCompilationUnit(), Primary.Boolean);
+		return booleanType;
 	}
 }

@@ -418,6 +418,9 @@ public class Lexer {
 		} else if(first == '|' && second == '|') {
 			buffer.advance(position, 2);
 			return new OperatorToken(IToken.OR, new Position(start, 2));
+		} else if(first == '?' && second == ':') {
+			buffer.advance(position, 2);
+			return new OperatorToken(IToken.ELVIS, new Position(start, 2));
 		} else {
 			Integer id = charToId.get(first);
 

@@ -18,7 +18,7 @@ import org.zenframework.z8.pde.ColorProvider;
 public class CodeScanner extends RuleBasedScanner {
 	private static String[] fgKeywords = { "auto", "break", "catch", "class", "container", "continue", "do", "else", "enum", "extends", "exception",
 			"finally", "for", "if", "new", "private", "protected", "public", "records", "return", "static", "super", "this", "throw", "try", "while",
-			"virtual", "operator", "import", "final", "instanceof" };
+			"virtual", "operator", "import", "final", "instanceof", "null" };
 
 	private static String[] fgAttributes = { "name", "native", "displayName", "columnHeader", "generatable", "entry", "request", "ui", "presentation", "system", 
 			"description", "icon", "job", "exportable", "foreignKey" };

@@ -3,7 +3,6 @@ import org.zenframework.z8.base.security.User;
 
 [native "org.zenframework.z8.server.runtime.OBJECT"]
 public class Object {
-	static public bool isNull(Object object);
 	static public User user();
 
 	virtual protected void constructor();

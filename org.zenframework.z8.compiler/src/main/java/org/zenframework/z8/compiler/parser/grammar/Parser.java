@@ -21,9 +21,11 @@ import org.zenframework.z8.compiler.parser.expressions.BinaryExpression;
 import org.zenframework.z8.compiler.parser.expressions.BracedExpression;
 import org.zenframework.z8.compiler.parser.expressions.Constant;
 import org.zenframework.z8.compiler.parser.expressions.Container;
+import org.zenframework.z8.compiler.parser.expressions.ElvisExpression;
 import org.zenframework.z8.compiler.parser.expressions.InstanceOf;
 import org.zenframework.z8.compiler.parser.expressions.MapElement;
 import org.zenframework.z8.compiler.parser.expressions.MethodCall;
+import org.zenframework.z8.compiler.parser.expressions.Null;
 import org.zenframework.z8.compiler.parser.expressions.OperatorNew;
 import org.zenframework.z8.compiler.parser.expressions.Postfix;
 import org.zenframework.z8.compiler.parser.expressions.QualifiedName;
@@ -1056,11 +1058,17 @@ public class Parser {
 		push(new InstanceOf(left, token, variableType));
 	}
 
-	void onTernaryOperator() {
+	void onTernaryOperator(IToken question, IToken colon) {
 		ILanguageElement right = (ILanguageElement)pop();
 		ILanguageElement left = (ILanguageElement)pop();
 		ILanguageElement condition = (ILanguageElement)pop();
 		push(new TernaryExpression(condition, left, right));
+	}
+
+	void onElvisOperator(IToken elvis) {
+		ILanguageElement right = (ILanguageElement)pop();
+		ILanguageElement left = (ILanguageElement)pop();
+		push(new ElvisExpression(left, right));
 	}
 
 	void onEmptyUnary(IToken operatorToken) {
@@ -1102,6 +1110,10 @@ public class Parser {
 
 	void onConstant(IToken token) {
 		push(new Constant((ConstantToken)token));
+	}
+
+	void onNull(IToken token) {
+		push(new Null(token));
 	}
 
 	void onThis(IToken token) {

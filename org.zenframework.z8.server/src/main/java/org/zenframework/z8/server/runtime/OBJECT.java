@@ -374,10 +374,6 @@ public class OBJECT extends RequestTarget implements IObject, RmiSerializable {
 	public void deserialize(ObjectInputStream stream) throws IOException, ClassNotFoundException {
 	}
 
-	static public bool z8_isNull(IObject object) {
-		return new bool(object == null);
-	}
-
 	static public User.CLASS<? extends User> z8_user() {
 		return Application.z8_user();
 	}
@@ -427,5 +423,9 @@ public class OBJECT extends RequestTarget implements IObject, RmiSerializable {
 
 	public JsonArray.CLASS<? extends JsonArray> z8_getData(RLinkedHashMap<string, string> parameters) {
 		return null;
+	}
+
+	static public Object elvisOperator(Object left, Object right) {
+		return left != null ? left : right;
 	}
 }
