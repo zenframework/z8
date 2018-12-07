@@ -103,6 +103,8 @@ public interface IType extends ILanguageElement {
 
 	void addInitializer(IInitializer initializer);
 
+	public String createTempVariable();
+
 	boolean isSubtypeOf(IType candidate);
 
 	boolean isContainerOf(IType candidate);

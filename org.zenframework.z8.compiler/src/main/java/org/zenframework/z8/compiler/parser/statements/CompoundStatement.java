@@ -13,6 +13,7 @@ import org.zenframework.z8.compiler.core.IType;
 import org.zenframework.z8.compiler.core.IVariable;
 import org.zenframework.z8.compiler.core.IVariableType;
 import org.zenframework.z8.compiler.parser.LanguageElement;
+import org.zenframework.z8.compiler.parser.variable.TempVariables;
 import org.zenframework.z8.compiler.workspace.CompilationUnit;
 
 public class CompoundStatement extends LanguageElement implements IStatement {
@@ -21,6 +22,8 @@ public class CompoundStatement extends LanguageElement implements IStatement {
 
 	private List<ILanguageElement> elements;
 	private boolean autoOpenScope;
+
+	private TempVariables tempVariables;
 
 	public CompoundStatement(IToken leftBrace) {
 		this.leftBrace = leftBrace;
@@ -70,10 +73,16 @@ public class CompoundStatement extends LanguageElement implements IStatement {
 		this.autoOpenScope = autoOpenScope;
 	}
 
+	public String createTempVariable() {
+		return tempVariables.createVariable();
+	}
+
 	@Override
 	public boolean resolveTypes(CompilationUnit compilationUnit, IType declaringType) {
 		if(!super.resolveTypes(compilationUnit, declaringType))
 			return false;
+
+		tempVariables = new TempVariables(compilationUnit);
 
 		if(elements == null)
 			return true;
@@ -160,6 +169,10 @@ public class CompoundStatement extends LanguageElement implements IStatement {
 	public void getCode(CodeGenerator codeGenerator) {
 		codeGenerator.append("{");
 		codeGenerator.breakLine();
+
+		codeGenerator.incrementIndent();
+		tempVariables.getCode(codeGenerator);
+		codeGenerator.decrementIndent();
 
 		if(elements != null) {
 			codeGenerator.incrementIndent();

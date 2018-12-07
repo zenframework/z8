@@ -18,6 +18,7 @@ public class ElvisExpression extends LanguageElement {
 	private ILanguageElement right;
 
 	private ITypeCast rightToLeftTypeCast;
+	private String tempVariableName;
 
 	public ElvisExpression(ILanguageElement left, ILanguageElement right) {
 		this.left = left;
@@ -61,8 +62,10 @@ public class ElvisExpression extends LanguageElement {
 
 		rightToLeftTypeCast = right.getVariableType().getCastTo(left.getVariableType());
 
-		if(rightToLeftTypeCast != null)
+		if(rightToLeftTypeCast != null) {
+			tempVariableName = declaringMethod != null ? declaringMethod.createTempVariable() : declaringType.createTempVariable();
 			return true;
+		}
 
 		IPosition position = left.getPosition().union(right.getPosition());
 		setError(position, "Operator ?: : types " + left.getVariableType().getSignature() + " and " + right.getVariableType().getSignature() + " are not compatible");
@@ -76,18 +79,18 @@ public class ElvisExpression extends LanguageElement {
 
 		codeGenerator.getCompilationUnit().importType(variableType.getType());
 
-		codeGenerator.append("((" + variableType.getJavaName() + ")");
-		codeGenerator.append("OBJECT.elvisOperator(");
+		// ((type)(((temp = left) != null) ? temp : right))
 
+		codeGenerator.append("(");
+		codeGenerator.append("(" + variableType.getJavaName() + ")");
+		codeGenerator.append("(((");
+		codeGenerator.append(tempVariableName + " = ");
 		left.getCode(codeGenerator);
-
-		codeGenerator.append(", ");
-
+		codeGenerator.append(") != null) ? " + tempVariableName + " : ");
 		if(rightToLeftTypeCast != null)
 			rightToLeftTypeCast.getCode(codeGenerator, right);
 		else
 			right.getCode(codeGenerator);
-
 		codeGenerator.append("))");
-}
+	}
 }

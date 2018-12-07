@@ -18,6 +18,7 @@ import org.zenframework.z8.compiler.parser.BuiltinNative;
 import org.zenframework.z8.compiler.parser.LanguageElement;
 import org.zenframework.z8.compiler.parser.type.members.MemberInit;
 import org.zenframework.z8.compiler.parser.type.members.TypeBody;
+import org.zenframework.z8.compiler.parser.variable.TempVariables;
 import org.zenframework.z8.compiler.parser.variable.VariableType;
 import org.zenframework.z8.compiler.util.Set;
 import org.zenframework.z8.compiler.workspace.CompilationUnit;
@@ -49,6 +50,7 @@ public abstract class AbstractType extends LanguageElement implements IType {
 	private boolean nestedTypesResolved;
 
 	private boolean isQualified;
+	private TempVariables tempVariables;
 
 	protected AbstractType() {
 	}
@@ -485,6 +487,11 @@ public abstract class AbstractType extends LanguageElement implements IType {
 	}
 
 	@Override
+	public String createTempVariable() {
+		return tempVariables.createVariable();
+	}
+
+	@Override
 	public void addInitializer(IInitializer initializer) {
 		if(initializers == null)
 			initializers = new Set<IInitializer>();
@@ -705,6 +712,8 @@ public abstract class AbstractType extends LanguageElement implements IType {
 		if(!super.resolveTypes(compilationUnit, declaringType))
 			return false;
 
+		tempVariables = new TempVariables(compilationUnit);
+
 		if(importBlock != null)
 			return importBlock.resolveTypes(compilationUnit, declaringType);
 
@@ -874,5 +883,7 @@ public abstract class AbstractType extends LanguageElement implements IType {
 		codeGenerator.indent();
 		codeGenerator.append("}");
 		codeGenerator.breakLine();
+
+		tempVariables.getCode(codeGenerator);
 	}
 }

@@ -8,6 +8,7 @@ public interface IMethod extends IMember {
 	public void closeLocalScope();
 
 	public void addLocalVariable(IVariable variable);
+	public String createTempVariable();
 
 	public IVariable[] getLocalVariables();
 	public IVariable findLocalVariable(String name);

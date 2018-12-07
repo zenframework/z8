@@ -279,6 +279,11 @@ public abstract class AbstractMethod extends LanguageElement implements IMethod 
 	}
 
 	@Override
+	public String createTempVariable() {
+		return body != null ? body.createTempVariable() : null;
+	}
+
+	@Override
 	public boolean resolveTypes(CompilationUnit compilationUnit, IType declaringType) {
 
 		if(!super.resolveTypes(compilationUnit, declaringType))
