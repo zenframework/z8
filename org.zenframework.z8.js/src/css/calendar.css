@@ -336,3 +336,11 @@
 .period>.buttons>.btn {
 	margin-right: .71428571em;
 }
+
+.date>.calendar.dropdown {
+	min-height: 17.25em;
+}
+
+.date>.calendar.dropdown>.time {
+	display: none;
+}

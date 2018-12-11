@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project name="org.zenframework.z8.web" basedir="." default="all">
 	<target name="all" depends="css,js" />
+	<target name="distr" depends="all,zip" />
 
 	<target name="css">
 		<concat destfile="web/debug/css/revolt.css" encoding="UTF-8">
@@ -148,8 +149,8 @@
 				form/field/Combobox.js,
 				form/field/Listbox.js,
 				form/field/Files.js,
-				form/field/Date.js,
 				form/field/Datetime.js,
+				form/field/Date.js,
 				form/field/SearchText.js,
 				form/field/SearchCombobox.js,
 				form/field/Filter.js,
@@ -218,4 +219,9 @@
 			<arg line="-jar ../org.zenframework.z8.commons/minimizers/closure.jar --rewrite_polyfills false --js_output_file web/revolt.utils.js web/debug/revolt.utils.js"/>
 		</exec>
 	</target>
+	
+	<target name="zip">
+		<zip destfile="target/z8.js.zip" basedir="web"/>
+	</target>
+
 </project>
