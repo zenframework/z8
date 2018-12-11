@@ -460,8 +460,12 @@ Z8.define('Z8.form.field.Listbox', {
 		return new Z8.Container({ cls: 'actions',  items: buttons });
 	},
 
+	createList: function() {
+		return new Z8.list.List({ cls: 'control', store: this.store, items: this.items, totals: this.totals, locks: this.locks, name: this.name, fields: this.fields, editable: this.isEditable(), itemType: this.itemType, value: this.getValue(), icons: this.icons, checks: this.checks, filters: this.filters, useENTER: false, autoFit: this.autoFit });
+	},
+
 	controlMarkup: function() {
-		var list = this.list = new Z8.list.List({ cls: 'control', store: this.store, items: this.items, totals: this.totals, locks: this.locks, name: this.name, fields: this.fields, editable: this.isEditable(), itemType: this.itemType, value: this.getValue(), icons: this.icons, checks: this.checks, filters: this.filters, useENTER: false, autoFit: this.autoFit });
+		var list = this.list = this.createList();
 		list.on('select', this.onSelect, this);
 		list.on('contentChange', this.onContentChange, this);
 		list.on('itemEditorChange', this.onItemEditorChange, this);
