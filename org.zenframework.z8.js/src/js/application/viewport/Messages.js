@@ -28,6 +28,11 @@ Z8.define('Z8.viewport.PopupMessage', {
 
 	cls: 'message',
 
+	initComponent: function() {
+		this.callParent();
+		this.messageDelay = Application.popupMessageDelay || 4000;
+	},
+
 	htmlMarkup: function() {
 		var icon = { cls: 'icon fa fa-fw fa-' + this.type + ' ' + this.type, html: String.htmlText() };
 		var source = { tag: 'b', html: this.source || Application.title };
@@ -40,7 +45,7 @@ Z8.define('Z8.viewport.PopupMessage', {
 		this.callParent();
 
 		DOM.on(this, 'click', this.hide, this);
-		new Z8.util.DelayedTask().delay(4000, this.hide, this);
+		new Z8.util.DelayedTask().delay(this.messageDelay, this.hide, this);
 	},
 
 	onDestroy: function() {
