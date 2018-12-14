@@ -69,10 +69,8 @@
 	position: absolute;
 	overflow-x: hidden;
 	overflow-y: auto;
-	z-index: 1;
 }
 
 .tabs>.body>.tab.inactive {
 	visibility: hidden;
-	z-index: 0 !important;
 }

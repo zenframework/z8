@@ -348,8 +348,8 @@
 }
 
 .air .dropdown-list,
-.air .dropdown-combo>.pager,
-.air .calendar.dropdown {
+.air .combobox>.pager,
+.air .dropdown-calendar {
 	margin: 0;
 	border-radius: 0;
 }

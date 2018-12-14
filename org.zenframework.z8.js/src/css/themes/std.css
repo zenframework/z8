@@ -1795,7 +1795,9 @@ textarea.input-lg {
 
 .control-group .control {
 	position: relative;
+/*
 	z-index: 2;
+*/
 	margin-bottom: 0
 }
 

@@ -272,7 +272,7 @@
 	box-shadow: 0 6px 12px rgba(0, 0, 0, 0.175);
 }
 
-.calendar.dropdown {
+.dropdown-calendar {
 	padding: .57142857em 0;
 	min-height: 19.75em;
 	background-color: #fff;
@@ -280,10 +280,10 @@
 	border-radius: .28571429em;
 	-webkit-box-shadow: 0 6px 12px rgba(0, 0, 0, 0.175);
 	box-shadow: 0 6px 12px rgba(0, 0, 0, 0.175);
-	position: absolute;
+	position: fixed;
 	top: 100%;
 	left: 0;
-	z-index: 1000;
+	z-index: 1000000;
 	float: left;
 }
 

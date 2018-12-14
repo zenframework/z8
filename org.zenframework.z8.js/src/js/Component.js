@@ -283,10 +283,15 @@ Z8.define('Z8.Component', {
 	align: function() {
 		var alignment = this.alignment;
 
-		var clipping = this.getClipping();
+		var style = DOM.getComputedStyle(this);
+		var fixed = style.position == 'fixed';
+
+		var clipping = fixed ? document.body : this.getClipping();
 
 		var viewport = new Rect(clipping);
+
 		var align = new Rect(alignment || this);
+
 		if(alignment == null) {
 			align.height = align.width = 0;
 			align.bottom = align.top
@@ -331,9 +336,9 @@ Z8.define('Z8.Component', {
 			rect.top = rect.bottom - (Math.min(available, height) - offset.height) + (available < height ? offset.margin : 0);
 		}
 
-		rect.left = rect.left - parent.left;
-		rect.top = rect.top - parent.top;
-		rect.bottom = parent.bottom - rect.bottom;
+		rect.left = rect.left - (fixed ? 0 : parent.left);
+		rect.top = rect.top - (fixed ? 0 : parent.top);
+		rect.bottom = (fixed ? viewport.bottom : parent.bottom) - rect.bottom;
 
 		DOM.setLeft(this, rect.left);
 		DOM.setTop(this, rect.top);

@@ -25,7 +25,7 @@ Z8.define('Z8.form.field.Combobox', {
 
 		this.callParent();
 
-		this.cls = DOM.parseCls(this.cls).pushIf('dropdown-combo');
+		this.cls = DOM.parseCls(this.cls).pushIf('combobox');
 
 		if(this.editable)
 			this.queryTask = new Z8.util.DelayedTask();
@@ -481,8 +481,8 @@ Z8.define('Z8.form.field.Combobox', {
 
 		var pager = DOM.get(this.pager);
 		DOM.setLeft(pager, DOM.getLeft(dropdown));
-		DOM.setRight(pager, DOM.getRight(dropdown));
 		DOM.setTop(pager, DOM.getTop(dropdown) + rect.height);
+		DOM.setWidth(pager, rect.width);
 	},
 
 	getPagerSize: function() {
@@ -508,8 +508,10 @@ Z8.define('Z8.form.field.Combobox', {
 		var dropdown = this.dropdown;
 
 		var left = DOM.getOffsetLeft(this.input);
+		var width = DOM.getOffsetWidth(this.input);
 		DOM.setLeft(dropdown, left);
-		DOM.setRight(dropdown, -0.08333333 /* Ems.pixelsToEms(1) */);
+//		DOM.setRight(dropdown, -0.08333333 /* Ems.pixelsToEms(1) */);
+		DOM.setWidth(dropdown, width);
 
 		var item = this.currentItem();
 		var focusAt = keepFocus ? false : item;
