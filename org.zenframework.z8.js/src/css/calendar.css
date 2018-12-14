@@ -337,10 +337,10 @@
 	margin-right: .71428571em;
 }
 
-.date>.calendar.dropdown {
+.date>.dropdown-calendar {
 	min-height: 17.25em;
 }
 
-.date>.calendar.dropdown>.time {
+.date>.dropdown-calendar>.time {
 	display: none;
 }
