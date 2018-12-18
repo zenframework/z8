@@ -172,7 +172,6 @@
 .air .label.tools>.btn-group>.btn-group>.btn-danger {
 	margin-left: 1em;
 	margin-right: .71428571em;
-	z-index: 100;
 }
 
 .air .label.tools>.control-group>.control,
@@ -302,8 +301,6 @@
 	color: inherit;
 	background: none !important;
 	text-shadow: none;
-
-	z-index: 4;
 }
 
 .air .control-group>.trigger-1 {
