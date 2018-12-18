@@ -65,11 +65,6 @@ Z8.define('Z8.form.field.Datetime', {
 	},
 
 	showDropdown: function() {
-		var dropdown = this.dropdown;
-
-		var left = DOM.getOffsetLeft(this.input);
-		DOM.setLeft(dropdown, left);
-
 		this.dropdown.show();
 	},
 
