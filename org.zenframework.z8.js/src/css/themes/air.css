@@ -106,8 +106,28 @@
 
 .air .control-group.trigger-1.readonly>.control,
 .air .control-group.trigger-2.readonly>.control,
-.air .control-group.trigger-3.readonly>.control {
+.air .control-group.trigger-3.readonly>.control,
+.air .control-group.trigger-1.disabled>.control,
+.air .control-group.trigger-2.disabled>.control,
+.air .control-group.trigger-3.disabled>.control {
 	padding-right: 0 !important;
+}
+
+.air .control-group.readonly>.trigger-1,
+.air .control-group.readonly>.trigger-2,
+.air .control-group.readonly>.trigger-3,
+.air .control-group.disabled>.trigger-1,
+.air .control-group.disabled>.trigger-2,
+.air .control-group.disabled>.trigger-3 {
+	display: none;
+}
+
+.air .file.control-group.readonly:not(.disabled)>.control {
+	padding-right: 1.42857143em !important;
+}
+
+.air .file.control-group.readonly:not(.disabled)>.trigger-1 {
+	display: block;
 }
 
 .air .control[type=number] {

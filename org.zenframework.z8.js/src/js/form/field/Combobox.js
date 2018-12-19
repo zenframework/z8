@@ -515,7 +515,7 @@ Z8.define('Z8.form.field.Combobox', {
 
 		var pagerSize = this.getPagerSize();
 
-		dropdown.setAlignmentOffset(0, pagerSize.height, 1.41666667 /* Ems.pixelsToEms(17) */);
+		dropdown.setAlignmentOffset(0, pagerSize.height, 1.41666667 /* Ems.pixelsToEms(17) */, true);
 		dropdown.show(null, null, focusAt);
 	},
 

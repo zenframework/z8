@@ -3,6 +3,7 @@ Z8.define('Z8.calendar.Dropdown', {
 
 	cls: 'dropdown-calendar display-none',
 	visible: false,
+	autoAlign: true,
 
 	show: function(top, left) {
 		if(this.visible) {

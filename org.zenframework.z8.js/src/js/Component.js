@@ -10,6 +10,8 @@ Z8.define('Z8.Component', {
 
 	inactive: false,
 
+	autoAlign: false,
+
 	statics: {
 		idSeed: 0,
 
@@ -215,6 +217,9 @@ Z8.define('Z8.Component', {
 			if(component.isComponent)
 				component.completeRender();
 		}
+
+		if(this.autoAlign && !this.afterRenderCalled)
+			DOM.on(window, 'resize', this.onWindowResize, this);
 	},
 
 	afterRender: function() {
@@ -248,8 +253,12 @@ Z8.define('Z8.Component', {
 	},
 
 	onDestroy: function() {
+		if(this.autoAlign)
+			DOM.un(window, 'resize', this.onWindowResize, this);
+
 		Component.destroy(this.subcomponents());
 		DOM.remove(this);
+
 		this.alignment = this.dom = null;
 	},
 
@@ -270,8 +279,8 @@ Z8.define('Z8.Component', {
 		this.alignment = alignment;
 	},
 
-	setAlignmentOffset: function(horizontal, vertical, margin) {
-		this.alignmentOffset = { width: horizontal, height: vertical, margin: margin };
+	setAlignmentOffset: function(horizontal, vertical, margin, adjustHeight) {
+		this.alignmentOffset = { width: horizontal, height: vertical, margin: margin, adjustHeight: adjustHeight };
 	},
 
 	getClipping: function() {
@@ -300,7 +309,7 @@ Z8.define('Z8.Component', {
 
 		var parent = new Rect(DOM.getParent(this));
 
-		var offset = this.alignmentOffset || { width: 0, height: 0, margin: 5 };
+		var offset = this.alignmentOffset || { width: 0, height: 0, margin: 5, adjustHeight: false };
 		var style = DOM.getComputedStyle(this);
 
 		var height = parseFloat(style.height) + parseInt(style.marginTop) + parseInt(style.marginBottom);
@@ -342,10 +351,15 @@ Z8.define('Z8.Component', {
 
 		DOM.setLeft(this, rect.left);
 		DOM.setTop(this, rect.top);
-		if(alignment != null)
+		if(alignment != null && offset.adjustHeight)
 			DOM.setBottom(this, rect.bottom);
 		DOM.swapCls(this, above, 'pull-up', 'pull-down');
 
 		this.fireEvent('align', this);
+	},
+
+	onWindowResize: function() {
+		if(this.visible)
+			this.align();
 	}
 });

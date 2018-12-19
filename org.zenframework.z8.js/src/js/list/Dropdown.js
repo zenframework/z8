@@ -9,6 +9,8 @@ Z8.define('Z8.list.Dropdown', {
 	confirmSelection: true,
 	autoSelectFirst: false,
 
+	autoAlign: true,
+
 	render: function(container) {
 		if(!this.inRender) {
 			this.callParent(container);
@@ -28,7 +30,7 @@ Z8.define('Z8.list.Dropdown', {
 
 		return justRendered;
 	},
-	
+
 	setTabIndex: function(tabIndex) {
 		tabIndex = this.callParent(tabIndex);
 

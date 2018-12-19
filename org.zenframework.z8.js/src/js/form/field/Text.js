@@ -43,8 +43,6 @@ Z8.define('Z8.form.field.Text', {
 			for(var i = 0, length = triggers.length; i < length; i++) {
 				var trigger = triggers[i];
 				var cls = DOM.parseCls(trigger.cls).pushIf('trigger-' + (length - i));
-				if(!enabled || readOnly)
-					cls.pushIf('hidden');
 				trigger = new Z8.button.Trigger({ primary: true, tooltip: trigger.tooltip, icon: trigger.icon, handler: trigger.handler, scope: trigger.scope, cls: cls });
 				result.push(trigger.htmlMarkup());
 
@@ -81,24 +79,16 @@ Z8.define('Z8.form.field.Text', {
 		this.callParent();
 	},
 
-	swapTriggersCls: function(condition, trueCls, falseCls) {
-		var triggers = this.triggers;
-		for(var i = 0, length = triggers.length; i < length; i++)
-			DOM.swapCls(triggers[i], condition, trueCls, falseCls);
-	},
 
 	setEnabled: function(enabled) {
 		DOM.swapCls(this.input, !enabled, 'disabled');
 		DOM.setDisabled(this.input, !enabled);
-		this.swapTriggersCls(!enabled || this.isReadOnly(), 'hidden');
 		this.callParent(enabled);
 	},
 
 	setReadOnly: function(readOnly) {
-		if(this.isReadOnly() != readOnly) {
+		if(this.isReadOnly() != readOnly)
 			DOM.setReadOnly(this.input, readOnly);
-			this.swapTriggersCls(!this.isEnabled() || readOnly, 'hidden');
-		}
 		this.callParent(readOnly);
 	},
 

@@ -37,6 +37,7 @@ Z8.define('Z8.form.Helper', {
 				config.name = link != null ? link.name : field.name;
 				config.checks = false;
 				config.pagerMode = 'visible';
+				config.editable = true;
 				return cls != null ? Z8.create(cls, config) : (field.isSearch ? new Z8.form.field.SearchCombobox(config) : new Z8.form.field.Combobox(config));
 			}
 

@@ -18,6 +18,8 @@ Z8.define('Z8.calendar.Calendar', {
 	},
 
 	completeRender: function() {
+		this.callParent();
+
 		this.days = this.queryNodes('.calendar>.days>.day');
 		this.selectedDay = this.selectNode('.calendar>.days>.day.selected');
 
