@@ -56,4 +56,9 @@ public class DatetimeExpression extends Expression {
 		set(value);
 		return (DatetimeExpression.CLASS<?>)this.getCLASS();
 	}
+
+	public DatetimeExpression.CLASS<? extends DatetimeExpression> operatorAssign(sql_date expression) {
+		setExpression(expression);
+		return (DatetimeExpression.CLASS<?>)this.getCLASS();
+	}
 }

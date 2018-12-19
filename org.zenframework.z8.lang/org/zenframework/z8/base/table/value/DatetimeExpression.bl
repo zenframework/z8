@@ -10,6 +10,7 @@ public class DatetimeExpression extends Expression {
 	virtual public date[] array();
 
 	public DateExpression operator = (date value);
+	public DateExpression operator = (sql_date expression);
 
 	public operator sql_date();
 
