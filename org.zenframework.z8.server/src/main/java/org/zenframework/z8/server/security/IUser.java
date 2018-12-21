@@ -24,6 +24,7 @@ public interface IUser extends RmiSerializable, Serializable {
 	public String description();
 
 	public boolean banned();
+	public boolean changePassword();
 
 	public String phone();
 

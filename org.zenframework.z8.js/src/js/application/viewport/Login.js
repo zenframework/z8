@@ -1,4 +1,3 @@
-
 Z8.define('Z8.application.viewport.Login', {
 	extend: 'Z8.form.Fieldset',
 
@@ -69,17 +68,29 @@ Z8.define('Z8.application.viewport.Login', {
 			button.setBusy(false);
 
 			if(success) {
-				Z8.callback(this.handler, this.scope, response);
 				this.hide();
+				if(response.user.changePassword) {
+					var handler = function(window, success) {
+						if(success)
+							Z8.callback(this.handler, this.scope, response);
+						else
+							this.show();
+					};
+					new Z8.application.viewport.ChangePassword({ handler: handler, scope: this, login: login, password: password }).open();
+				} else
+					Z8.callback(this.handler, this.scope, response);
 			} else
 				this.loginField.focus();
 		}
 
+		var login = this.loginField.getValue();
 		var password = this.passwordField.getValue() || '';
+		password = Application.hashPassword ? MD5.hex(password) : password;
+
 		var parameters = {
 			request: 'login',
-			login: this.loginField.getValue(), 
-			password: Application.hashPassword ? MD5.hex(password) : password,
+			login: login,
+			password: password,
 			experimental: true
 		};
 
@@ -91,5 +102,78 @@ Z8.define('Z8.application.viewport.Login', {
 
 		if(key == Event.ENTER)
 			this.login(this.loginButton);
+	}
+});
+
+Z8.define('Z8.application.viewport.ChangePassword', {
+	extend: 'Z8.window.Window',
+
+	autoClose: false,
+	icon: 'fa-key',
+	cls: 'change-password',
+
+	initComponent: function() {
+		this.header = (this.login || User.login) + ' - установка пароля';
+
+		var validation = {
+			fn: function(control, valid) {
+				if(control == newPassword1)
+					newPassword2.validate();
+				if(this.okButton != null)
+					this.okButton.setEnabled(valid);
+			},
+			scope: this
+		};
+
+		var isEmptyValue = function(value) {
+			return (newPassword1.getValue() || '') != (value || '');
+		};
+
+		var controls = [];
+
+		if(this.password == null) {
+			var password = this.passwordField = new Z8.form.field.Text({ label: 'Пароль', placeholder: 'Пароль', password: true });
+			controls.add(password);
+		}
+
+		var newPassword1 = this.newPassword1 = new Z8.form.field.Text({ label: 'Новый пароль', placeholder: 'Новый пароль', password: true, validation: validation });
+		var newPassword2 = this.newPassword2 = new Z8.form.field.Text({ label: 'Новый пароль (повтор)', placeholder: 'Новый пароль', password: true, required: true, validation: validation, isEmptyValue: isEmptyValue });
+
+		this.body = [new Z8.form.Fieldset({ cls: 'air', plain: true, controls: controls.add([newPassword1, newPassword2]) })];
+
+		this.callParent();
+	},
+
+	ok: function() {
+		this.okButton.setBusy(true);
+
+		var callback = function(response, success) {
+			this.okButton.setBusy(false);
+			Z8.callback(this.handler, this.scope, window, true);
+			this.close();
+		}
+
+		var login = this.login || User.login;
+		var password = this.password;
+		if(password == null) {
+			password = this.passwordField.getValue() || '';
+			password = Application.hashPassword ? MD5.hex(password) : password;
+		}
+		var newPassword = this.newPassword1.getValue() || '';
+		newPassword = Application.hashPassword ? MD5.hex(newPassword) : newPassword;
+
+		var parameters = {
+			request: 'login',
+			login: login,
+			password: password,
+			newPassword: newPassword
+		};
+
+		HttpRequest.send(parameters, { fn: callback, scope: this });
+	},
+
+	cancel: function() {
+		Z8.callback(this.handler, this.scope, window, false);
+		this.close();
 	}
 });

@@ -35,11 +35,13 @@ body {
 }
 
 .viewport>.header>.btn-tool,
+.viewport>.header>.btn-group>.btn-tool,
 .viewport>.login .btn-tool {
 	padding: .57142857em .57142857em;
 }
 
 .viewport>.header>.btn-tool:not(:hover):not(:focus):not(:active):not(.focus):not(.active),
+.viewport>.header>.btn-group>.btn-tool:not(:hover):not(:focus):not(:active):not(.focus):not(.active),
 .viewport>.login .btn-tool:not(:hover):not(:focus):not(:active):not(.focus):not(.active) {
 	color: #eee;
 }

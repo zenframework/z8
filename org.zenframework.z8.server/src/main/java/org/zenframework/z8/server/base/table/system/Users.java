@@ -39,6 +39,7 @@ public class Users extends Table {
 		public final static String MiddleName = "Middle Name";
 		public final static String LastName = "Last Name";
 		public final static String Banned = "Banned";
+		public final static String ChangePassword = "Change Password";
 		public final static String Phone = "Phone";
 		public final static String Email = "Email";
 		public final static String Settings = "Settings";
@@ -52,6 +53,7 @@ public class Users extends Table {
 		public final static String LastName = "Users.lastName";
 		public final static String Description = "Users.description";
 		public final static String Banned = "Users.banned";
+		public final static String ChangePassword = "Users.changePassword";
 		public final static String Phone = "Users.phone";
 		public final static String Email = "Users.email";
 		public final static String Settings = "Users.settings";
@@ -65,6 +67,7 @@ public class Users extends Table {
 		public final static String MiddleName = Resources.get(strings.MiddleName);
 		public final static String LastName = Resources.get(strings.LastName);
 		public final static String Banned = Resources.get(strings.Banned);
+		public final static String ChangePassword = Resources.get(strings.ChangePassword);
 		public final static String Phone = Resources.get(strings.Phone);
 		public final static String Email = Resources.get(strings.Email);
 		public final static String Settings = Resources.get(strings.Settings);
@@ -109,6 +112,7 @@ public class Users extends Table {
 	public StringField.CLASS<StringField> phone = new StringField.CLASS<StringField>(this);
 	public StringField.CLASS<StringField> email = new StringField.CLASS<StringField>(this);
 	public BoolField.CLASS<BoolField> banned = new BoolField.CLASS<BoolField>(this);
+	public BoolField.CLASS<BoolField> changePassword = new BoolField.CLASS<BoolField>(this);
 	public TextField.CLASS<TextField> settings = new TextField.CLASS<TextField>(this);
 
 	private boolean notifyBlock = false;
@@ -133,6 +137,7 @@ public class Users extends Table {
 		objects.add(phone);
 		objects.add(email);
 		objects.add(banned);
+		objects.add(changePassword);
 		objects.add(settings);
 	}
 
@@ -182,6 +187,10 @@ public class Users extends Table {
 		banned.setIndex("banned");
 		banned.setDisplayName(displayNames.Banned);
 
+		changePassword.setName(fieldNames.ChangePassword);
+		changePassword.setIndex("changePassword");
+		changePassword.setDisplayName(displayNames.ChangePassword);
+
 		settings.setName(fieldNames.Settings);
 		settings.setIndex("settings");
 		settings.setDisplayName(displayNames.Settings);
@@ -208,6 +217,7 @@ public class Users extends Table {
 	@Override
 	public void onNew(guid recordId, guid parentId) {
 		password.get().set(defaultPassword);
+		changePassword.get().set(bool.True);
 		super.onNew(recordId, parentId);
 	}
 
@@ -234,7 +244,7 @@ public class Users extends Table {
 	@Override
 	public void afterUpdate(guid recordId) {
 		if(!notifyBlock)
-			notifyUserChange(recordId);
+			notifyUserChange(recordId, changePassword.get().changed() && changePassword.get().bool().get());
 	}
 
 	@Override
@@ -257,14 +267,25 @@ public class Users extends Table {
 		users.update(user);
 	}
 
+	static public void changePassword(guid user, String password) {
+		Users users = new Users.CLASS<Users>().get();
+		users.password.get().set(new string(password));
+		users.changePassword.get().set(bool.False);
+		users.update(user);
+	}
+
 	private boolean isSystemUser(guid recordId) {
 		return Administrator.equals(recordId) || System.equals(recordId);
 	}
 
 	static public void notifyUserChange(guid user) {
+		notifyUserChange(user, false);
+	}
+
+	static public void notifyUserChange(guid user, boolean force) {
 		try {
 			guid currentUser = ApplicationServer.getUser().id();
-			if(!currentUser.equals(user) && !System.equals(user) && !Administrator.equals(user))
+			if(force || !currentUser.equals(user) && !System.equals(user) && !Administrator.equals(user))
 				ServerConfig.authorityCenter().userChanged(user);
 		} catch(Throwable e) {
 			throw new RuntimeException(e);

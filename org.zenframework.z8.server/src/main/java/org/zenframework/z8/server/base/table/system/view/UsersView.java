@@ -89,6 +89,8 @@ public class UsersView extends Users {
 		email.get().colSpan = new integer(3);
 		banned.get().colSpan = new integer(3);
 		banned.get().setIcon("fa-ban");
+		changePassword.get().colSpan = new integer(3);
+		changePassword.get().setIcon("fa-key");
 
 		description.get().colSpan = new integer(12);
 		description.get().height = new integer(3);
@@ -103,6 +105,7 @@ public class UsersView extends Users {
 		registerControl(phone);
 		registerControl(email);
 		registerControl(banned);
+		registerControl(changePassword);
 		registerControl(description);
 		registerControl(rolesListbox);
 		registerControl(entriesListbox);

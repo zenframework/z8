@@ -38,13 +38,14 @@ public class Dashboard extends RequestTarget {
 		String password = getParameter(Json.password);
 		String email = getParameter(Json.email);
 
-		if(isLogin)
-			writeLoginInfo(writer);
-		else if(newPassword != null)
+		if(isLogin) {
+			if(newPassword != null)
 			changePassword(password, newPassword);
-		else if(email != null)
-			changeEmail(email);
-		else {
+			else if(email != null)
+				changeEmail(email);
+			else
+				writeLoginInfo(writer);
+		} else {
 			String id = getParameter(Json.menu);
 
 			if(id != null) {
@@ -60,14 +61,10 @@ public class Dashboard extends RequestTarget {
 	private void changePassword(String password, String newPassword) {
 		IUser user = ApplicationServer.getUser();
 
-		if(!user.password().equals(password)) {
+		if(!user.password().equals(password))
 			throw new AccessDeniedException();
-		}
 
-		Users users = Users.newInstance();
-
-		users.password.get().set(new string(newPassword));
-		users.update(user.id());
+		Users.changePassword(user.id(), newPassword);
 	}
 
 	private void changeEmail(String email) {
@@ -154,6 +151,7 @@ public class Dashboard extends RequestTarget {
 		writer.writeProperty(Json.description, user.description());
 		writer.writeProperty(Json.email, user.email());
 		writer.writeProperty(Json.phone, user.phone());
+		writer.writeProperty(Json.changePassword, user.changePassword());
 		writer.writeProperty(Json.settings, user.settings());
 
 		Collection<OBJECT.CLASS<OBJECT>> entries = loadEntries(user.entries());

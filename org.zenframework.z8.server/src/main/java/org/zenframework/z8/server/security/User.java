@@ -61,6 +61,7 @@ public class User implements IUser {
 	private String phone;
 	private String email;
 	private boolean banned;
+	private boolean changePassword;
 
 	private String settings;
 
@@ -87,6 +88,7 @@ public class User implements IUser {
 		system.lastName = "";
 		system.description = description;
 		system.banned = false;
+		system.changePassword = false;
 
 		system.settings = "";
 		system.phone = "";
@@ -192,6 +194,11 @@ public class User implements IUser {
 	}
 
 	@Override
+	public boolean changePassword() {
+		return changePassword;
+	}
+
+	@Override
 	public Collection<Entry> entries() {
 		return entries;
 	}
@@ -282,6 +289,7 @@ public class User implements IUser {
 
 		if(!shortInfo) {
 			fields.add(users.banned.get());
+			fields.add(users.changePassword.get());
 			fields.add(users.firstName.get());
 			fields.add(users.middleName.get());
 			fields.add(users.lastName.get());
@@ -299,6 +307,7 @@ public class User implements IUser {
 		this.login = users.name.get().string().get();
 		this.password = users.password.get().string().get();
 		this.banned = users.banned.get().bool().get();
+		this.changePassword = users.changePassword.get().bool().get();
 		this.firstName = users.firstName.get().string().get();
 		this.middleName = users.middleName.get().string().get();
 		this.lastName = users.lastName.get().string().get();
@@ -508,6 +517,7 @@ public class User implements IUser {
 		RmiIO.writeString(objects, email);
 
 		RmiIO.writeBoolean(objects, banned);
+		RmiIO.writeBoolean(objects, changePassword);
 
 		RmiIO.writeString(objects, settings);
 
@@ -544,6 +554,7 @@ public class User implements IUser {
 		email = RmiIO.readString(objects);
 
 		banned = RmiIO.readBoolean(objects);
+		changePassword = RmiIO.readBoolean(objects);
 
 		settings = RmiIO.readString(objects);
 
