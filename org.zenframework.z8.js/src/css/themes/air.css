@@ -299,7 +299,7 @@
 	margin-right: .5em;
 }
 
-.air .control-group.invalid:not(.readonly)>.label {
+.air .control-group.invalid:not(.readonly)>.label>.text {
 	color: #c9302c;
 }
 

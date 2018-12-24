@@ -1,6 +1,8 @@
 package org.zenframework.z8.server.base.table.system.view;
 
 import org.zenframework.z8.server.base.form.Listbox;
+import org.zenframework.z8.server.base.form.Section;
+import org.zenframework.z8.server.base.form.action.ActionType;
 import org.zenframework.z8.server.base.table.system.UserEntries;
 import org.zenframework.z8.server.base.table.system.UserRoles;
 import org.zenframework.z8.server.base.table.system.Users;
@@ -28,6 +30,11 @@ public class UsersView extends Users {
 	private UserEntries.CLASS<UserEntries> userEntries = new UserEntries.CLASS<UserEntries>(this);
 	private UserRoles.CLASS<UserRoles> userRoles = new UserRoles.CLASS<UserRoles>(this);
 
+	private Section.CLASS<Section> section1 = new Section.CLASS<Section>(this);
+	private Section.CLASS<Section> section2 = new Section.CLASS<Section>(this);
+
+	private ResetPasswordAction.CLASS<ResetPasswordAction> resetPassword = new ResetPasswordAction.CLASS<ResetPasswordAction>(this);
+
 	public UsersView(IObject container) {
 		super(container);
 	}
@@ -36,8 +43,13 @@ public class UsersView extends Users {
 	public void initMembers() {
 		super.initMembers();
 
-		objects.add(this.userEntries);
-		objects.add(this.userRoles);
+		objects.add(section1);
+		objects.add(resetPassword);
+
+		objects.add(section2);
+
+		objects.add(userEntries);
+		objects.add(userRoles);
 	}
 
 	@Override
@@ -46,6 +58,8 @@ public class UsersView extends Users {
 
 		userEntries.setIndex("userEntries");
 		userRoles.setIndex("userRoles");
+
+		resetPassword.setIndex("resetPassword");
 
 		colCount = new integer(12);
 
@@ -80,17 +94,21 @@ public class UsersView extends Users {
 
 		name.get().colSpan = new integer(3);
 		name.get().editable = bool.True;
-		firstName.get().colSpan = new integer(3);
-		lastName.get().colSpan = new integer(3);
-		lastName.get().editable = bool.True;
-		middleName.get().colSpan = new integer(3);
-
-		phone.get().colSpan = new integer(3);
-		email.get().colSpan = new integer(3);
 		banned.get().colSpan = new integer(3);
 		banned.get().setIcon("fa-ban");
 		changePassword.get().colSpan = new integer(3);
 		changePassword.get().setIcon("fa-key");
+		resetPassword.get().type = ActionType.Primary;
+		section1.get().actions.add(resetPassword);
+
+		firstName.get().colSpan = new integer(3);
+		lastName.get().colSpan = new integer(3);
+		lastName.get().editable = bool.True;
+		middleName.get().colSpan = new integer(3);
+		section2.get().colSpan = new integer(3);
+
+		phone.get().colSpan = new integer(3);
+		email.get().colSpan = new integer(3);
 
 		description.get().colSpan = new integer(12);
 		description.get().height = new integer(3);
@@ -99,13 +117,17 @@ public class UsersView extends Users {
 		rolesListbox.get().colSpan = new integer(6);
 
 		registerControl(name);
+		registerControl(banned);
+		registerControl(changePassword);
+		registerControl(section1);
+
 		registerControl(lastName);
 		registerControl(firstName);
 		registerControl(middleName);
+		registerControl(section2);
+
 		registerControl(phone);
 		registerControl(email);
-		registerControl(banned);
-		registerControl(changePassword);
 		registerControl(description);
 		registerControl(rolesListbox);
 		registerControl(entriesListbox);

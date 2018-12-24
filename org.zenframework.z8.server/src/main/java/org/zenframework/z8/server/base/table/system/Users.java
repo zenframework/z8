@@ -54,6 +54,7 @@ public class Users extends Table {
 		public final static String Description = "Users.description";
 		public final static String Banned = "Users.banned";
 		public final static String ChangePassword = "Users.changePassword";
+		public final static String ResetPassword = "Users.resetPassword";
 		public final static String Phone = "Users.phone";
 		public final static String Email = "Users.email";
 		public final static String Settings = "Users.settings";
@@ -68,6 +69,7 @@ public class Users extends Table {
 		public final static String LastName = Resources.get(strings.LastName);
 		public final static String Banned = Resources.get(strings.Banned);
 		public final static String ChangePassword = Resources.get(strings.ChangePassword);
+		public final static String ResetPassword = Resources.get(strings.ResetPassword);
 		public final static String Phone = Resources.get(strings.Phone);
 		public final static String Email = Resources.get(strings.Email);
 		public final static String Settings = Resources.get(strings.Settings);
@@ -271,6 +273,13 @@ public class Users extends Table {
 		Users users = new Users.CLASS<Users>().get();
 		users.password.get().set(new string(password));
 		users.changePassword.get().set(bool.False);
+		users.update(user);
+	}
+
+	static public void resetPassword(guid user) {
+		Users users = new Users.CLASS<Users>().get();
+		users.password.get().set(new string(defaultPassword));
+		users.changePassword.get().set(bool.True);
 		users.update(user);
 	}
 
