@@ -6,6 +6,7 @@ Z8.define('Z8.form.field.Text', {
 	placeholder: '',
 
 	tag: 'input',
+	autocomplete: 'on',
 
 	editable: true,
 
@@ -18,17 +19,21 @@ Z8.define('Z8.form.field.Text', {
 		var value = this.valueToRaw(this.getValue());
 		var enabled = this.isEnabled();
 		var readOnly = this.isReadOnly();
+		var length = this.length;
 
 		var tag = this.getInputTag();
 		var inputCls = this.getInputCls().join(' ');
 		value = Format.htmlEncode(value);
-		var input = { tag: tag, name: 'input', cls: inputCls, tabIndex: this.getTabIndex(), spellcheck: false, type: this.password ? 'password' : 'text', title: this.tooltip || '', placeholder: this.placeholder, value: tag == 'input' ? value : null, html: tag != 'input' ? value : null };
+		var input = { tag: tag, name: 'input', cls: inputCls, tabIndex: this.getTabIndex(), spellcheck: false, type: this.password ? 'password' : 'text', title: this.tooltip || '', placeholder: this.placeholder, autocomplete: this.autocomplete, value: tag == 'input' ? value : null, html: tag != 'input' ? value : null };
 
 		if(!enabled)
 			input.disabled = null;
 
 		if(readOnly)
 			input.readOnly = null;
+
+		if(length != 0)
+			input.maxlength = length;
 
 		var result = [input];
 

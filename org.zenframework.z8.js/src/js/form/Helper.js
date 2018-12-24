@@ -10,7 +10,7 @@ Z8.define('Z8.form.Helper', {
 
 			var readOnly = field.readOnly;
 			var label = field.label !== false ? { text: field.header, icon: field.icon, align: 'top' } : false;
-			var config = { label: label, placeholder: field.header, name: field.name, field: field, colSpan: field.colSpan, flex: field.flex, readOnly: readOnly, editable: field.editable, required: field.required, enterOnce: field.enterOnce, source: field.source };
+			var config = { label: label, placeholder: field.header, name: field.name, field: field, colSpan: field.colSpan, flex: field.flex, readOnly: readOnly, editable: field.editable, required: field.required, enterOnce: field.enterOnce, source: field.source, length: field.length };
 
 			if(field.cls != null)
 				config.cls = field.cls;

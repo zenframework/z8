@@ -4,6 +4,8 @@ Z8.define('Z8.form.field.Combobox', {
 	isCombobox: true,
 	instantAutoSave: true,
 
+	autocomplete: 'off',
+
 	displayName: 'name',
 	name: 'id',
 

@@ -1,6 +1,8 @@
 Z8.define('Z8.form.field.Datetime', {
 	extend: 'Z8.form.field.Text',
 
+	autocomplete: 'off',
+
 	format: 'd.m.Y H:i',
 
 	cls: 'datetime',
