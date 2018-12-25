@@ -6,7 +6,7 @@ Z8.define('Z8.form.field.Text', {
 	placeholder: '',
 
 	tag: 'input',
-	autocomplete: 'on',
+	autocomplete: 'off',
 
 	editable: true,
 
