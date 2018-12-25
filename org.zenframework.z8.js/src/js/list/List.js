@@ -1441,9 +1441,6 @@ Z8.define('Z8.list.List', {
 		var cell = editor.item.getCell(editor.index);
 		editor.appendTo(cell);
 
-//		DOM.addCls(cell, 'overflow-visible');
-//		DOM.addCls(cell.firstChild, 'display-none');
-
 		editor.show();
 
 		editor.on('focusOut', this.onEditorFocusOut, this);
@@ -1456,13 +1453,6 @@ Z8.define('Z8.list.List', {
 
 		editor.un('focusOut', this.onEditorFocusOut, this);
 		DOM.un(editor, 'keyDown', this.onEditorKeyDown, this);
-
-		var item = editor.item;
-		if(!item.disposed) {
-			var cell = editor.item.getCell(editor.index);
-//			DOM.removeCls(cell, 'overflow-visible');
-//			DOM.removeCls(cell.firstChild, 'display-none');
-		}
 
 		editor.hide();
 
