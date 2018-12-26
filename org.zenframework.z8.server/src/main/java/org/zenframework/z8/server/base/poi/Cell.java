@@ -3,6 +3,7 @@ package org.zenframework.z8.server.base.poi;
 import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.runtime.OBJECT;
 import org.zenframework.z8.server.types.bool;
+import org.zenframework.z8.server.types.date;
 import org.zenframework.z8.server.types.decimal;
 import org.zenframework.z8.server.types.integer;
 import org.zenframework.z8.server.types.string;
@@ -34,7 +35,7 @@ public class Cell extends OBJECT {
 
 	public string z8_getString() {
 		switch(cell.getCellType()) {
-		case String:
+		case String: case Formula:
 			return new string(cell.getStringCellValue());
 		case Numeric:
 			double value = cell.getNumericCellValue();
@@ -52,5 +53,9 @@ public class Cell extends OBJECT {
 
 	public integer z8_getInt() {
 		return new integer((long)cell.getNumericCellValue());
+	}
+	
+	public date z8_getDate() {
+		return new date(cell.getDateCellValue());
 	}
 }

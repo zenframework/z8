@@ -5,4 +5,5 @@ public class Cell extends Object {
 	public string getString();
 	public decimal getDecimal();
 	public int getInt();
+	public date getDate();
 }
