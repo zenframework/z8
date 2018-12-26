@@ -82,19 +82,6 @@ public class IfStatement extends LanguageElement implements IStatement {
 	}
 
 	@Override
-	public boolean resolveNestedTypes(CompilationUnit compilationUnit, IType declaringType) {
-		if(!super.resolveNestedTypes(compilationUnit, declaringType))
-			return false;
-
-		ifStatement.resolveNestedTypes(compilationUnit, declaringType);
-
-		if(elseStatement != null)
-			elseStatement.resolveNestedTypes(compilationUnit, declaringType);
-
-		return true;
-	}
-
-	@Override
 	public boolean returnsOnAllControlPaths() {
 		boolean result = ((IStatement)ifStatement).returnsOnAllControlPaths();
 

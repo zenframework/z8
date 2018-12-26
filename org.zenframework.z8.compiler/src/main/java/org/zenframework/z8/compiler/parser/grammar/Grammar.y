@@ -655,15 +655,14 @@ multiplicative
 	;
 
 unary
-	: type_cast
+	: postfix
 	| ADD unary
 	| SUB unary                                 { parser.onUnary($1); }
 	| NOT unary                                 { parser.onUnary($1); }
 	;
 
 type_cast
-	: postfix
-	| braced_expression postfix                 { parser.onTypeCast(); }
+	: braced_expression postfix                 { parser.onTypeCast(); }
 	| array_type array_initializer              { parser.onArrayTypeCast(); }
 	;
 
@@ -689,6 +688,7 @@ prefix
 	| simple_type                               { parser.onTypeToPostfix(); }
 	| array_type                                { parser.onTypeToPostfix(); }
 	| method_call                               { parser.onMethodCall(false); }
+	| type_cast
 	;
 
 index_expression

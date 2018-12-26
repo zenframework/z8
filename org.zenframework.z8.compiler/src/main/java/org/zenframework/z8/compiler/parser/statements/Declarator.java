@@ -131,11 +131,6 @@ public class Declarator extends Initialization implements IVariable, IStatement 
 	}
 
 	@Override
-	public boolean resolveNestedTypes(CompilationUnit compilationUnit, IType declaringType) {
-		return variableType.resolveNestedTypes(compilationUnit, declaringType) && super.resolveTypes(compilationUnit, declaringType) && super.resolveNestedTypes(compilationUnit, declaringType);
-	}
-
-	@Override
 	public boolean returnsOnAllControlPaths() {
 		return false;
 	}

@@ -47,7 +47,6 @@ public abstract class AbstractType extends LanguageElement implements IType {
 	private boolean typesResolved;
 	private boolean structureResolved;
 	private boolean semanticsChecked;
-	private boolean nestedTypesResolved;
 
 	private boolean isQualified;
 	private TempVariables tempVariables;
@@ -691,14 +690,6 @@ public abstract class AbstractType extends LanguageElement implements IType {
 
 	protected void setSemanticsChecked(boolean checked) {
 		semanticsChecked = checked;
-	}
-
-	protected boolean nestedTypesResolved() {
-		return nestedTypesResolved;
-	}
-
-	protected void setNestedTypesResolved(boolean resolved) {
-		nestedTypesResolved = resolved;
 	}
 
 	@Override

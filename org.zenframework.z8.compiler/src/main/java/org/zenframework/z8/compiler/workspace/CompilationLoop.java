@@ -33,9 +33,6 @@ public class CompilationLoop {
 		for(CompilationUnit unit : compilationUnits)
 			unit.checkSemantics();
 
-		for(CompilationUnit unit : compilationUnits)
-			unit.resolveNestedTypes();
-
 		for(CompilationUnit unit : compilationUnits) {
 			unit.fireResourceEvent(ResourceListener.RESOURCE_CHANGED, unit, null);
 			unit.checkImportUsage();

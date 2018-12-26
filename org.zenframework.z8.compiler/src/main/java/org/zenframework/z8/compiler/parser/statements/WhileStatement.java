@@ -66,11 +66,6 @@ public class WhileStatement extends LanguageElement implements IStatement {
 	}
 
 	@Override
-	public boolean resolveNestedTypes(CompilationUnit compilationUnit, IType declaringType) {
-		return super.resolveNestedTypes(compilationUnit, declaringType) && statement.resolveNestedTypes(compilationUnit, declaringType);
-	}
-
-	@Override
 	public boolean returnsOnAllControlPaths() {
 		((IStatement)statement).returnsOnAllControlPaths();
 		return false;

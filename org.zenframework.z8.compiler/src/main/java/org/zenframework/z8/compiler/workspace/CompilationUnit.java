@@ -176,10 +176,6 @@ public class CompilationUnit extends Resource {
 		type.checkSemantics(this, type, null, null, null);
 	}
 
-	protected void resolveNestedTypes() {
-		type.resolveNestedTypes(this, type);
-	}
-
 	public IType resolveType(String typeName) {
 		Project thisProject = getProject();
 

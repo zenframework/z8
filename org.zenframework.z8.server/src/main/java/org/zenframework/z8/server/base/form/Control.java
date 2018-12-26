@@ -5,6 +5,7 @@ import java.util.Collection;
 import org.zenframework.z8.server.base.query.Query;
 import org.zenframework.z8.server.base.table.value.Field;
 import org.zenframework.z8.server.base.table.value.GuidField;
+import org.zenframework.z8.server.engine.ApplicationServer;
 import org.zenframework.z8.server.json.Json;
 import org.zenframework.z8.server.json.JsonWriter;
 import org.zenframework.z8.server.runtime.IObject;
@@ -96,7 +97,7 @@ public class Control extends OBJECT {
 		writer.writeProperty(Json.editable, editable);
 		writer.writeProperty(Json.important, important);
 
-		if(source != null) {
+		if(source != null && ApplicationServer.getUser().privileges().getRequestAccess(source.classIdKey()).execute()) {
 			writer.startObject(Json.source);
 			writer.writeProperty(Json.id, source.classId());
 			writer.writeProperty(Json.text, source.displayName());

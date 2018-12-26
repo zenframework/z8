@@ -104,20 +104,6 @@ public class DeclaratorNestedType extends AbstractType {
 	}
 
 	@Override
-	public boolean resolveNestedTypes(CompilationUnit compilationUnit, IType declaringType) {
-		if(!super.resolveNestedTypes(compilationUnit, declaringType))
-			return false;
-
-		if(!declarator.resolveNestedTypes(compilationUnit, declaringType))
-			return false;
-
-		if(body != null)
-			body.resolveNestedTypes(compilationUnit, this);
-
-		return true;
-	}
-
-	@Override
 	public void getClassCode(CodeGenerator codeGenerator) {
 		IType baseType = getBaseType();
 		String baseTypeName = baseType.isQualified() ? baseType.getQualifiedJavaName() : baseType.getJavaName();

@@ -33,8 +33,6 @@ public interface ILanguageElement extends IAttributed, ISource {
 
 	boolean checkSemantics(CompilationUnit source, IType declaringType, IMethod declaringMethod, IVariable leftHandValue, IVariableType context);
 
-	boolean resolveNestedTypes(CompilationUnit source, IType declaringType);
-
 	boolean isQualifiedName();
 
 	boolean isOperatorNew();

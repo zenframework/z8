@@ -399,19 +399,6 @@ public abstract class AbstractMethod extends LanguageElement implements IMethod 
 	}
 
 	@Override
-	public boolean resolveNestedTypes(CompilationUnit compilationUnit, IType declaringType) {
-		if(!super.resolveNestedTypes(compilationUnit, declaringType))
-			return false;
-
-		VariableType variableType = (VariableType)getVariableType();
-
-		if(!variableType.resolveNestedTypes(compilationUnit, declaringType))
-			return false;
-
-		return body != null ? body.resolveNestedTypes(compilationUnit, declaringType) : true;
-	}
-
-	@Override
 	public void getCode(CodeGenerator codeGenerator) {
 		if(body == null)
 			throw new UnsupportedOperationException();

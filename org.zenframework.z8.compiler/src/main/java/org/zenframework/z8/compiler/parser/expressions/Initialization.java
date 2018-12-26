@@ -150,17 +150,6 @@ public abstract class Initialization extends LanguageElement {
 		return true;
 	}
 
-	@Override
-	public boolean resolveNestedTypes(CompilationUnit compilationUnit, IType declaringType) {
-		if(!super.resolveNestedTypes(compilationUnit, declaringType))
-			return false;
-
-		if(right != null)
-			return right.resolveNestedTypes(compilationUnit, declaringType);
-
-		return true;
-	}
-
 	public boolean requiresAllocation() {
 		return right == null || typeCast.getContext() != null;
 	}
