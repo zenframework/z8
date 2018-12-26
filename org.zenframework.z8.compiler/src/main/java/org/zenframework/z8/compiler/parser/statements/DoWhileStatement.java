@@ -64,6 +64,11 @@ public class DoWhileStatement extends LanguageElement implements IStatement {
 	}
 
 	@Override
+	public boolean resolveNestedTypes(CompilationUnit compilationUnit, IType declaringType) {
+		return statement.resolveNestedTypes(compilationUnit, declaringType);
+	}
+
+	@Override
 	public boolean returnsOnAllControlPaths() {
 		((IStatement)statement).returnsOnAllControlPaths();
 		return false;

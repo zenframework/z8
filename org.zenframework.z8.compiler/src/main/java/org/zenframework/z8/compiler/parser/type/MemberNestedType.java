@@ -86,13 +86,6 @@ public class MemberNestedType extends AbstractType implements IInitializer {
 	}
 
 	@Override
-	public boolean resolveStructure(CompilationUnit compilationUnit, IType declaringType) {
-		if(!super.resolveStructure(compilationUnit, declaringType))
-			return false;
-		return body != null ? body.resolveStructure(compilationUnit, this) : true;
-	}
-
-	@Override
 	public boolean checkSemantics(CompilationUnit compilationUnit, IType declaringType, IMethod declaringMethod, IVariable leftHandValue, IVariableType context) {
 		if(!super.checkSemantics(compilationUnit, declaringType, declaringMethod, null, null))
 			return false;
@@ -104,12 +97,6 @@ public class MemberNestedType extends AbstractType implements IInitializer {
 			setError(name.getPosition(), name.toString() + ": undeclared identifier");
 			return false;
 		}
-
-		IType baseType = name.getVariableType().getType();
-		setBaseType(baseType);
-
-		if(baseType != null)
-			compilationUnit.addHyperlink(classToken.getPosition(), baseType);
 
 		String userName = name.toString();
 
@@ -131,7 +118,39 @@ public class MemberNestedType extends AbstractType implements IInitializer {
 			result = false;
 		}
 
-		return (body != null ? body.checkSemantics(compilationUnit, this, null, null, null) : true) && result;
+		return result;
+	}
+
+	@Override
+	public boolean resolveNestedTypes(CompilationUnit compilationUnit, IType declaringType) {
+		if(nestedTypesResolved())
+			return true;
+
+		setNestedTypesResolved(true);
+
+		if(!super.resolveNestedTypes(compilationUnit, declaringType))
+			return false;
+
+		IVariableType variableType = name.getVariableType();
+
+		if(!name.resolveNestedTypes(compilationUnit, declaringType) || variableType == null)
+			return false;
+
+		IType baseType = variableType.getType();
+		setBaseType(baseType);
+
+		if(baseType != null) {
+			compilationUnit.addHyperlink(classToken.getPosition(), baseType);
+			baseType.resolveNestedTypes(baseType.getCompilationUnit(), baseType.getDeclaringType());
+		}
+
+		if(body != null) {
+			body.resolveStructure(compilationUnit, this);
+			body.checkSemantics(compilationUnit, this, null, null, null);
+			body.resolveNestedTypes(compilationUnit, this);
+		}
+
+		return true;
 	}
 
 	@Override

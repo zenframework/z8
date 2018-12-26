@@ -267,6 +267,18 @@ public abstract class LanguageElement implements ILanguageElement {
 	}
 
 	@Override
+	public boolean resolveNestedTypes(CompilationUnit compilationUnit, IType declaringType) {
+		initialize(compilationUnit, declaringType, null);
+
+		if(!hasFatalError()) {
+			for(IAttribute attribute : getAttributes())
+				attribute.resolveNestedTypes(compilationUnit, declaringType);
+		}
+
+		return !hasFatalError();
+	}
+
+	@Override
 	public void getCode(CodeGenerator codeGenerator) {
 	}
 

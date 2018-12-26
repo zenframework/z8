@@ -114,6 +114,18 @@ public class CompoundStatement extends LanguageElement implements IStatement {
 	}
 
 	@Override
+	public boolean resolveNestedTypes(CompilationUnit compilationUnit, IType declaringType) {
+		if(!super.resolveNestedTypes(compilationUnit, declaringType))
+			return false;
+
+		if(elements != null) {
+			for(ILanguageElement element : elements)
+				element.resolveNestedTypes(compilationUnit, declaringType);
+		}
+		return true;
+	}
+
+	@Override
 	public boolean returnsOnAllControlPaths() {
 		if(elements == null)
 			return false;

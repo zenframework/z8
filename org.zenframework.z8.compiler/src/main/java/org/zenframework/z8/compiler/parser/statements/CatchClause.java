@@ -81,6 +81,11 @@ public class CatchClause extends LanguageElement implements IStatement {
 		return true;
 	}
 
+	@Override
+	public boolean resolveNestedTypes(CompilationUnit compilationUnit, IType declaringType) {
+		return super.resolveNestedTypes(compilationUnit, declaringType) && statement.resolveNestedTypes(compilationUnit, declaringType);
+	}
+
 	public boolean catchesAll() {
 		return declarator.getVariableType().getType().isPrimary();
 	}

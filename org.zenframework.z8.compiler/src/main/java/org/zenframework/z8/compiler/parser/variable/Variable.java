@@ -124,6 +124,13 @@ public class Variable extends LanguageElement implements IVariable {
 	}
 
 	@Override
+	public boolean resolveNestedTypes(CompilationUnit compilationUnit, IType declaringType) {
+		VariableType variableType = (VariableType)getVariableType();
+
+		return super.resolveNestedTypes(compilationUnit, declaringType) && variableType.resolveNestedTypes(compilationUnit, declaringType);
+	}
+
+	@Override
 	public void getCode(CodeGenerator codeGenerator) {
 		VariableType type = (VariableType)getVariableType();
 		type.getCode(codeGenerator);

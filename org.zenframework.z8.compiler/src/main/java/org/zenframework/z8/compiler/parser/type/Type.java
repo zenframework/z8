@@ -244,6 +244,28 @@ public class Type extends AbstractType {
 		return true;
 	}
 
+	@Override
+	public boolean resolveNestedTypes(CompilationUnit compilationUnit, IType declaringType) {
+		if(nestedTypesResolved()) {
+			return true;
+		}
+		setNestedTypesResolved(true);
+
+		if(!super.resolveNestedTypes(compilationUnit, declaringType))
+			return false;
+
+		IType baseType = getBaseType();
+
+		if(baseType != null)
+			baseType.resolveNestedTypes(baseType.getCompilationUnit(), baseType);
+
+
+		if(body != null)
+			body.resolveNestedTypes(compilationUnit, declaringType);
+
+		return true;
+	}
+
 	class MemberInitializationInfo {
 		String name;
 		IMember member;

@@ -42,6 +42,11 @@ public class Statement extends LanguageElement implements IStatement {
 	}
 
 	@Override
+	public boolean resolveNestedTypes(CompilationUnit compilationUnit, IType declaringType) {
+		return super.resolveNestedTypes(compilationUnit, declaringType) && expression.resolveNestedTypes(compilationUnit, declaringType);
+	}
+
+	@Override
 	public boolean returnsOnAllControlPaths() {
 		return false;
 	}

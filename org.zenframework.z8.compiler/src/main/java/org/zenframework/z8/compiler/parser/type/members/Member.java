@@ -233,6 +233,17 @@ public class Member extends LanguageElement implements IMember {
 	}
 
 	@Override
+	public boolean resolveNestedTypes(CompilationUnit compilationUnit, IType declaringType) {
+		if(!super.resolveNestedTypes(compilationUnit, declaringType))
+			return false;
+
+		if(initializer != null)
+			initializer.resolveNestedTypes(compilationUnit, declaringType);
+
+		return true;
+	}
+
+	@Override
 	public void getCode(CodeGenerator codeGenerator) {
 		codeGenerator.indent();
 

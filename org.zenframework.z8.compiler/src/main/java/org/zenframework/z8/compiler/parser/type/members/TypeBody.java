@@ -145,6 +145,19 @@ public class TypeBody extends LanguageElement {
 			setError(getDeclaringType().getPosition(), "The type " + name + " extends a primary type and must implement operator=(" + name + ")");
 		}
 
+		return true;
+	}
+
+	@Override
+	public boolean resolveNestedTypes(CompilationUnit compilationUnit, IType declaringType) {
+		if(!super.resolveNestedTypes(compilationUnit, declaringType))
+			return false;
+
+		ILanguageElement[] members = getMembers();
+
+		for(ILanguageElement member : members)
+			member.resolveNestedTypes(compilationUnit, declaringType);
+
 		initializers = new ArrayList<IInitializer>();
 		getReferences(getDeclaringType(), initializers);
 		arrangeReferences(initializers);

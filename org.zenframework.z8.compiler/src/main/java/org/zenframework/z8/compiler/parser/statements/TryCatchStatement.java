@@ -109,6 +109,22 @@ public class TryCatchStatement extends LanguageElement implements IStatement {
 	}
 
 	@Override
+	public boolean resolveNestedTypes(CompilationUnit compilationUnit, IType declaringType) {
+		if(!super.resolveNestedTypes(compilationUnit, declaringType))
+			return false;
+
+		tryStatement.resolveNestedTypes(compilationUnit, declaringType);
+
+		for(CatchClause catchStatement : catchClauses)
+			catchStatement.resolveNestedTypes(compilationUnit, declaringType);
+
+		if(finallyStatement != null)
+			finallyStatement.resolveNestedTypes(compilationUnit, declaringType);
+
+		return true;
+	}
+
+	@Override
 	public boolean returnsOnAllControlPaths() {
 		boolean allCatchesReturn = true;
 
