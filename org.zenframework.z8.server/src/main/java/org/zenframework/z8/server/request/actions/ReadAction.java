@@ -321,6 +321,10 @@ public class ReadAction extends RequestAction {
 	}
 
 	private Collection<ILink> getPath(Query query) {
+		return getPath(query, new LinkedHashSet<Query>());
+	}
+
+	private Collection<ILink> getPath(Query query, Collection<Query> queries) {
 		Collection<ILink> links = queryToPath.get(query);
 
 		if(links != null)
@@ -339,8 +343,10 @@ public class ReadAction extends RequestAction {
 				Collection<Query> owners = getOwners(usedFields);
 
 				for(Query owner : owners) {
-					if(owner != query)
-						links.addAll(getPath(owner));
+					if(owner != query && !queries.contains(owner)) {
+						queries.add(owner);
+						links.addAll(getPath(owner, queries));
+					}
 				}
 			}
 

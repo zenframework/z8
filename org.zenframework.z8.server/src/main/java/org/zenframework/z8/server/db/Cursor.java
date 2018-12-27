@@ -106,15 +106,17 @@ public class Cursor {
 	}
 
 	private date getDate(int position, Field field) throws SQLException {
+		date value = null;
+
+		try {
+			value = new date(resultSet.getLong(position));
+		} catch (SQLException e) {
+			value = new date(resultSet.getString(position));
+		}
+
 		boolean wasNull = wasNull();
 		field.setWasNull(wasNull);
-		if (wasNull)
-			return date.Min;
-		try {
-			return new date(resultSet.getLong(position));
-		} catch (SQLException e) {
-			return new date(resultSet.getString(position));
-		}
+		return !wasNull ? value : date.Min;
 	}
 
 	public datespan getDatespan(int position) throws SQLException {
