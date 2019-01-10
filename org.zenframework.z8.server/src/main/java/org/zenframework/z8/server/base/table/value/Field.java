@@ -56,6 +56,7 @@ abstract public class Field extends Control implements IField {
 
 	public SortDirection sortDirection = SortDirection.Asc;
 	public Aggregation aggregation = Aggregation.None;
+	public bool totals = bool.True;
 
 	public bool indexed;
 	public bool unique;

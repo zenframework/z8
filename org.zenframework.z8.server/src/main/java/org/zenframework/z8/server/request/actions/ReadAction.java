@@ -751,7 +751,7 @@ public class ReadAction extends RequestAction {
 		for(Field field : fields) {
 			Aggregation aggregation = field.aggregation;
 
-			if(aggregation == Aggregation.None || aggregation == Aggregation.Min || aggregation == Aggregation.Max)
+			if(!field.totals.get() || aggregation == Aggregation.None || aggregation == Aggregation.Min || aggregation == Aggregation.Max)
 				continue;
 
 			if(aggregation == Aggregation.Count)

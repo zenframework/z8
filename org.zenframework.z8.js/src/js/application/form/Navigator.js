@@ -125,7 +125,9 @@ Z8.define('Z8.application.form.Navigator', {
 	},
 
 	createListbox: function() {
-		var listbox = this.listbox = new Z8.form.field.Listbox(this.getListboxConfig());
+		var type = this.listboxType;
+		var config = this.getListboxConfig();
+		var listbox = this.listbox = type != null ? Z8.create(type, config) : new Z8.form.field.Listbox(config);
 		listbox.on('select', this.onSelect, this);
 		listbox.on('contentChange', this.updateToolbar, this);
 		return listbox;

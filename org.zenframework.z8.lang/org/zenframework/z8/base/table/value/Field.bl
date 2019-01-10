@@ -13,6 +13,7 @@ public class Field extends Control {
 
 	public SortDirection sortDirection = SortDirection.Asc;
 	public Aggregation aggregation = Aggregation.None;
+	public bool totals = true;
 
 	public Field valueFrom;                   // Из какого поля брать значение при создании
 	public Field valueFor;                    // Для какого поля является значением

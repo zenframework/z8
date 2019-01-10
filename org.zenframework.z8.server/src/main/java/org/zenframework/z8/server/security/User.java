@@ -351,8 +351,8 @@ public class User implements IUser {
 		IAccess defaultAccess = defaultAccess();
 		privileges = new Privileges(defaultAccess);
 
-		loadTablesAccess(privileges, defaultAccess);
-		loadFieldsAccess(privileges, defaultAccess);
+		loadTableAccess(privileges, defaultAccess);
+		loadFieldAccess(privileges, defaultAccess);
 		loadRequestAccess(privileges, defaultAccess);
 
 /*
@@ -360,7 +360,7 @@ public class User implements IUser {
 */
 	}
 
-	private void loadTablesAccess(IPrivileges privileges, IAccess defaultAccess) {
+	private void loadTableAccess(IPrivileges privileges, IAccess defaultAccess) {
 		RoleTableAccess rta = new RoleTableAccess.CLASS<RoleTableAccess>().get();
 		Field tableId = rta.table.get();
 		Field read = rta.read.get();
@@ -393,7 +393,7 @@ public class User implements IUser {
 		}
 	}
 
-	private void loadFieldsAccess(IPrivileges privileges, IAccess defaultAccess) {
+	private void loadFieldAccess(IPrivileges privileges, IAccess defaultAccess) {
 		RoleFieldAccess rfa = new RoleFieldAccess.CLASS<RoleFieldAccess>().get();
 		Field tableId = rfa.fields.get().table.get();
 		Field fieldId = rfa.field.get();

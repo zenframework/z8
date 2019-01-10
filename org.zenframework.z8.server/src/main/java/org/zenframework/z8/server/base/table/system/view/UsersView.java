@@ -99,6 +99,7 @@ public class UsersView extends Users {
 		changePassword.get().colSpan = new integer(3);
 		changePassword.get().setIcon("fa-key");
 		resetPassword.get().type = ActionType.Primary;
+		section1.get().colSpan = new integer(3);
 		section1.get().actions.add(resetPassword);
 
 		firstName.get().colSpan = new integer(3);
