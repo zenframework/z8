@@ -665,6 +665,8 @@ Z8.define('Z8.form.field.Listbox', {
 				var record = records[0];
 				this.select(record);
 
+				this.fireEvent('recordCreated', this, records);
+
 				if(this.selector != null || !this.startEdit(record, 0))
 					this.focus();
 			}
@@ -829,6 +831,7 @@ Z8.define('Z8.form.field.Listbox', {
 			if(success) {
 				this.reloadRecord();
 				this.select(index);
+				this.fireEvent('recordDestroyed', this, records);
 				this.focus();
 			}
 		};

@@ -137,5 +137,8 @@ public class UsersView extends Users {
 
 		names.add(name);
 		names.add(lastName);
+
+		quickFilters.add(name);
+		quickFilters.add(lastName);
 	}
 }
