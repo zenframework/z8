@@ -1308,6 +1308,11 @@ public class Query extends OBJECT {
 		return (Field.CLASS)getFieldByName(name.get()).getCLASS();
 	}
 
+	@SuppressWarnings("unchecked")
+	public Field.CLASS<Field> z8_findFieldById(string id) {
+		return (Field.CLASS<Field>) findFieldById(id.get()).getCLASS();
+	}
+
 	public guid z8_create() {
 		return create();
 	}

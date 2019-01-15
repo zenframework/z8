@@ -67,6 +67,7 @@ public class Query extends Object {
 
 	public Field getFieldById(string id);
 	public Field getFieldByName(string name);
+	public Field findFieldById(string id);
 
 	public int count();
 	public int count(sql_bool where);
