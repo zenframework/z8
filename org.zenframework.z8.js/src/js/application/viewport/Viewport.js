@@ -6,7 +6,7 @@ Z8.define('Z8.application.viewport.Viewport', {
 	cls: 'viewport', //'air',
 
 	handlers: [],
-	forms: [null],
+	forms: [],
 
 	initComponent: function() {
 		this.callParent();
@@ -15,8 +15,11 @@ Z8.define('Z8.application.viewport.Viewport', {
 	},
 
 	htmlMarkup: function() {
-		var startButton = this.createBreadcrumb();
-		var breadcrumbs = this.breadcrumbs = new Z8.button.Group({ cls: 'breadcrumbs flex', items: [startButton] });
+		if (Application.startupForm == null) {
+			var items = [ this.createBreadcrumb() ];
+			this.forms = [ null ];
+		}
+		var breadcrumbs = this.breadcrumbs = new Z8.button.Group({ cls: 'breadcrumbs flex', items: items });
 
 		var logout = this.logout = new Z8.button.Button({ tooltip: 'Выход', cls: 'btn-tool', icon: 'fa-power-off', handler: this.logout, scope: this });
 
@@ -82,7 +85,7 @@ Z8.define('Z8.application.viewport.Viewport', {
 		if(Application.startupForm == null)
 			this.openMenu();
 		else
-			this.open(Application.startupForm, true);
+			this.open(Application.startupForm);
 
 		DOM.on(menuToggle, 'mouseDown', this.onMenuToggleMouseDown, this);
 		DOM.on(document.body, 'keyDown', this.onKeyDown, this);
@@ -97,8 +100,7 @@ Z8.define('Z8.application.viewport.Viewport', {
 		DOM.un(this.menuToggle, 'mouseDown', this.onMenuToggleMouseDown, this);
 		DOM.un(document.body, 'keyDown', this.onKeyDown, this);
 
-		// this will close all open forms and clear breadcrumbs
-		this.openForm(null);
+		this.closeAllForms();
 
 		var header = this.header;
 		header.remove(this.menuToggle);
@@ -224,6 +226,22 @@ Z8.define('Z8.application.viewport.Viewport', {
 		form = index != 0 ? forms[index] : null;
 
 		this.openForm(form);
+	},
+
+	closeAllForms: function() {
+		var forms = this.forms;
+		var breadcrumbs = this.breadcrumbs;
+		var body = this.body;
+		var buttons = breadcrumbs.items;
+		for(var i = buttons.length - 1; i >= 0; i--) {
+			var button = buttons[i];
+			var form = button.form;
+			if (form != null) {
+				body.remove(button.form);
+				breadcrumbs.remove(button);
+				forms.removeAt(i);
+			}
+		}
 	},
 
 	openForm: function(form, closeOthers, header) {
