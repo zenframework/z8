@@ -120,7 +120,7 @@ public class CatchClause extends LanguageElement implements IStatement {
 			codeGenerator.append("catch(java.lang.Throwable " + throwableName + ") {");
 			codeGenerator.breakLine().incrementIndent().indent();
 
-			codeGenerator.append(declaration + " = new " + typeName + "(" + throwableName + ");");
+			codeGenerator.append(declaration + " = new " + typeName + "(" + throwableName + ".getMessage(), " + throwableName + ");");
 			codeGenerator.breakLine().indent();
 
 			statement.getCode(codeGenerator);
