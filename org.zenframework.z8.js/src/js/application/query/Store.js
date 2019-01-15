@@ -38,6 +38,7 @@ Z8.define('Z8.query.Store', {
 			config.link = (isCombobox && link != null) ? link.name : null;
 			config.query = query.name;
 			config.totals = isListbox ? query.totals : false;
+			config.limit = query.limit || 200;
 			config.sort = (isListbox || isCombobox) ? query.sort : null;
 			config.values = field.values;
 			config.access = query.access;

@@ -31,9 +31,9 @@ public class MetaAction extends ReadAction {
 		writer.writeGroup(config.groupFields);
 
 		if(requestParameters.get(Json.start) == null)
-			requestParameters.put(Json.start, new string(DefaultStart));
+			requestParameters.put(Json.start, new string(query.start()));
 		if(requestParameters.get(Json.limit) == null)
-			requestParameters.put(Json.limit, new string(DefaultLimit));
+			requestParameters.put(Json.limit, new string(query.limit()));
 
 		super.writeResponse(writer);
 	}
