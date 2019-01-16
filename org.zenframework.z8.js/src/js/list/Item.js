@@ -62,7 +62,8 @@ Z8.define('Z8.list.Item', {
 			var field = fields[i];
 			var name = field.name;
 			if(modified.hasOwnProperty(name))
-				this.setText(i, this.formatText(field, record.get(name)));
+				this.setText(i, this.renderCellText(field, record.get(name)));
+				this.setCls(i, this.getCellCls(field, record));
 		}
 
 		if(this.list.locks)
@@ -125,7 +126,7 @@ Z8.define('Z8.list.Item', {
 			for(var i = 0, length = fields.length; i < length; i++) {
 				var field = fields[i];
 				var title = null;
-				var text = this.formatText(field, record.get(field.name));
+				var text = this.renderCellText(field, record.get(field.name));
 
 				var type = field.type;
 
@@ -134,7 +135,7 @@ Z8.define('Z8.list.Item', {
 					text = String.htmlText(text);
 				}
 
-				text = { tag: 'div', cls: 'text', cn: i == 0 ? icons.concat([text]) : [text] };
+				text = { tag: 'div', cls: this.getCellCls(field, record), cn: i == 0 ? icons.concat([text]) : [text] };
 
 				columns.push({ tag: 'td', cls: cls + (type != null ? ' ' + type : '') + (i == 0 ? ' ' + treeCls : ''), field: i, cn: [text], title: title });
 			}
@@ -155,7 +156,11 @@ Z8.define('Z8.list.Item', {
 		return columns;
 	},
 
-	formatText: function(field, value) {
+	getCellCls: function(field, record) {
+		return 'text';
+	},
+
+	renderCellText: function(field, value) {
 		if(field.renderer != null)
 			return field.renderer.call(field, value);
 
@@ -271,7 +276,7 @@ Z8.define('Z8.list.Item', {
 
 	getText: function(fieldName) {
 		var record = this.record;
-		return this.formatText(this.list.getField(fieldName), record != null ? record.get(fieldName) : '');
+		return this.renderCellText(this.list.getField(fieldName), record != null ? record.get(fieldName) : '');
 	},
 
 	hasChildren: function() {
@@ -313,6 +318,11 @@ Z8.define('Z8.list.Item', {
 			DOM.rotate(this.collapser, this.rotation == 90 ? (collapsed ? 0 : 90) : (collapsed ? -90 : 0));
 			this.list.onItemCollapse(this, collapsed);
 		}
+	},
+
+	setCls: function(index, cls) {
+		var cell = this.cells[index];
+		DOM.setCls(cell, cls);
 	},
 
 	setText: function(index, text) {
