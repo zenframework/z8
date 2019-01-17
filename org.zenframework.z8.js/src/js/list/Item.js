@@ -63,7 +63,6 @@ Z8.define('Z8.list.Item', {
 			var name = field.name;
 			if(modified.hasOwnProperty(name))
 				this.setText(i, this.renderCellText(field, record.get(name)));
-				this.setCls(i, this.getCellCls(field, record));
 		}
 
 		if(this.list.locks)
@@ -318,11 +317,6 @@ Z8.define('Z8.list.Item', {
 			DOM.rotate(this.collapser, this.rotation == 90 ? (collapsed ? 0 : 90) : (collapsed ? -90 : 0));
 			this.list.onItemCollapse(this, collapsed);
 		}
-	},
-
-	setCls: function(index, cls) {
-		var cell = this.cells[index];
-		DOM.setCls(cell, cls);
 	},
 
 	setText: function(index, text) {

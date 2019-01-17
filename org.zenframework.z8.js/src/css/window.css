@@ -103,3 +103,15 @@
 	margin-right: .71428571em;
 	min-width: 6.42857143em;
 }
+
+.window.change-password {
+	position: absolute;
+	left: calc(50% - 15em);
+	top: calc(50% - 12em);
+	width: 30em;
+	height: 24em;
+}
+
+.window.change-password>.body {
+	padding: 1em;
+}
