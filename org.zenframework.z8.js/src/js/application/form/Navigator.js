@@ -134,11 +134,9 @@ Z8.define('Z8.application.form.Navigator', {
 	},
 
 	createTable: function() {
-		var isTable = this.isTablePresentation();
-		var fields = this.getColumns();
-		var store = this.store;
-		var cls = 'table' + (isTable ? '' : ' display-none');
-		return this.table = new Z8.form.field.Listbox({ cls: cls, store: store, fields: fields, locks: !this.isReadOnly() && Application.listbox.locks, checks: Application.listbox.checks, editable: true, readOnly: this.isReadOnly(), totals: store.hasTotals(), pagingMode: 'always' });
+		var type = this.tableType;
+		var config = this.getTableConfig();
+		return this.table = type != null ? Z8.create(type, config) : new Z8.form.field.Listbox(config);
 	},
 
 	setTools: function(listbox, set) {
@@ -389,6 +387,23 @@ Z8.define('Z8.application.form.Navigator', {
 			checks: Application.listbox.checks,
 			totals: store.hasTotals()
 		};
+	},
+
+	getTableConfig: function() {
+		var store = this.store;
+		
+		return {
+			cls: 'table' + (this.isTablePresentation() ? '' : ' display-none'),
+			store: store,
+			fields: this.getColumns(),
+			locks: !this.isReadOnly() && Application.listbox.locks,
+			checks: Application.listbox.checks,
+			editable: true,
+			readOnly: this.isReadOnly(),
+			totals: store.hasTotals(),
+			pagingMode: 'always'
+		};
+		
 	},
 
 	getListboxLabel: function(fields) {
