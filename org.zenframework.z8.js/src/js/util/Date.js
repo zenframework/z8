@@ -236,7 +236,7 @@ Date.prototype.toISOString = function() {
 			(zoneMinutes < 10 ? '0' : '') + zoneMinutes;
 	}
 
-	return year + '-' +
+	return String.padLeft(year, 4, '0') + '-' +
 		(month < 10 ? '0' : '') + month + '-' +
 		(day < 10 ? '0' : '') + day + 'T' +
 		(hours < 10 ? '0' : '') + hours + ':' +
