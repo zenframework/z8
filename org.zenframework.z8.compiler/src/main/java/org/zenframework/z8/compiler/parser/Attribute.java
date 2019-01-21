@@ -169,7 +169,7 @@ public class Attribute extends LanguageElement implements IAttribute {
 
 		String name = getName();
 
-		if(name.equals(IAttribute.Primary) || name.equals(IAttribute.Native) || name.equals(IAttribute.Job)) {
+		if(name.equals(IAttribute.Primary) || name.equals(IAttribute.Native)) {
 			if(value == null) {
 				compilationUnit.error(getNameToken().getPosition(), "The attribute " + name + " must have a constant value");
 				return false;
@@ -184,7 +184,10 @@ public class Attribute extends LanguageElement implements IAttribute {
 				getCompilationUnit().error(valueToken.getPosition(), "The attribute " + name + " must be a string");
 				return false;
 			}
-			if (!DateToken.checkCron(valueToken.getValueString())) {
+
+			String cron = valueToken.getValueString();
+
+			if (!cron.isEmpty() && !DateToken.checkCron(valueToken.getValueString())) {
 				getCompilationUnit().error(valueToken.getPosition(), "The attribute " + name + " must be a valid CRON expression:"
 						+ "\n    +---------- minute (0 - 59)"
 						+ "\n    | +-------- hour (0 - 23)"

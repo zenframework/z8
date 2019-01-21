@@ -12,7 +12,6 @@ import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.types.bool;
 import org.zenframework.z8.server.types.exception;
 import org.zenframework.z8.server.types.guid;
-import org.zenframework.z8.server.types.integer;
 import org.zenframework.z8.server.types.string;
 import org.zenframework.z8.server.utils.Cron;
 
