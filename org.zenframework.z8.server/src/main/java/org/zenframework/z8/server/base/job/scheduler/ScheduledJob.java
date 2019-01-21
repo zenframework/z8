@@ -23,6 +23,7 @@ import org.zenframework.z8.server.types.date;
 import org.zenframework.z8.server.types.file;
 import org.zenframework.z8.server.types.guid;
 import org.zenframework.z8.server.types.string;
+import org.zenframework.z8.server.utils.Cron;
 
 public class ScheduledJob implements Runnable {
 	public guid id;
@@ -30,12 +31,11 @@ public class ScheduledJob implements Runnable {
 	public String classId;
 	public guid user;
 	public String name;
-	public date from = new date();
-	public date till = new date().addDay(30);
-	public int repeat = 1;
+	public String cron = "0 * * * *";
 	public boolean active = true;
 
-	public date lastStarted = new date();
+	public date lastStart = date.Min;
+	public date nextStart = date.Min;
 
 	public boolean isRunning = false;
 
@@ -47,11 +47,11 @@ public class ScheduledJob implements Runnable {
 		this.id = id;
 	}
 
-	public ScheduledJob(String className, int repeat) {
+	public ScheduledJob(String className, String cron) {
 		this.classId = className;
 		String[] names = className.split("\\.");
 		this.name = names[names.length - 1];
-		this.repeat = repeat;
+		this.cron = cron;
 	}
 
 	@Override
@@ -74,23 +74,25 @@ public class ScheduledJob implements Runnable {
 	}
 
 	public boolean readyToStart() {
-		long now = new date().getTicks();
-
-		return active && !isRunning && from.getTicks() < now && (till.equals(date.Min) || now < till.getTicks()) && (lastStarted.equals(date.Min) || lastStarted.addSecond(repeat).getTicks() < now);
+		return !isRunning && active && !cron.isEmpty()
+				&& Cron.nextDate(lastStart, cron).getTicks() < new date().getTicks();
 	}
 
 	private boolean beforeStart() {
 
-		date lastStarted = new date();
+		date lastStart = new date();
+		date nextStart = Cron.nextDate(lastStart, cron);
 
 		try {
 			if(id != null) {
 				ScheduledJobs tasks = new ScheduledJobs.CLASS<ScheduledJobs>(null).get();
-				tasks.lastStarted.get().set(lastStarted);
+				tasks.lastStart.get().set(lastStart);
+				tasks.nextStart.get().set(nextStart);
 				tasks.update(id);
 			}
 
-			this.lastStarted = lastStarted;
+			this.lastStart = lastStart;
+			this.nextStart = nextStart;
 
 			executionCount++;
 
@@ -117,7 +119,7 @@ public class ScheduledJob implements Runnable {
 		ScheduledJobLogs logs = ScheduledJobLogs.newInstance();
 		logs.scheduledJob.get().set(id);
 		logs.files.get().set(new string(writer.toString()));
-		logs.start.get().set(lastStarted);
+		logs.start.get().set(lastStart);
 		logs.finish.get().set(new date());
 		logs.create();
 	}

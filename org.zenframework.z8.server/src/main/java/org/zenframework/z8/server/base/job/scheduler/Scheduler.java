@@ -10,7 +10,6 @@ import org.zenframework.z8.server.base.table.value.BoolField;
 import org.zenframework.z8.server.base.table.value.DatetimeField;
 import org.zenframework.z8.server.base.table.value.Field;
 import org.zenframework.z8.server.base.table.value.GuidField;
-import org.zenframework.z8.server.base.table.value.IntegerField;
 import org.zenframework.z8.server.base.table.value.StringField;
 import org.zenframework.z8.server.config.ServerConfig;
 import org.zenframework.z8.server.db.ConnectionManager;
@@ -30,13 +29,13 @@ public class Scheduler implements Runnable {
 
 	static {
 		if(ServerConfig.maintenanceJobEnabled())
-			addSystemJob(MaintenanceJob.class.getCanonicalName(), ServerConfig.maintenanceJobRepeat());
+			addSystemJob(MaintenanceJob.class.getCanonicalName(), ServerConfig.maintenanceJobCron());
 		if(ServerConfig.transportJobEnabled())
-			addSystemJob(TransportJob.class.getCanonicalName(), ServerConfig.transportJobRepeat());
+			addSystemJob(TransportJob.class.getCanonicalName(), ServerConfig.transportJobCron());
 	}
 
-	static public void addSystemJob(String className, int repeat) {
-		ScheduledJob job = new ScheduledJob(className, repeat);
+	static public void addSystemJob(String className, String cron) {
+		ScheduledJob job = new ScheduledJob(className, cron);
 		systemJobs.add(job);
 	}
 
@@ -113,15 +112,14 @@ public class Scheduler implements Runnable {
 		ScheduledJobs scheduledJobs = new ScheduledJobs.CLASS<ScheduledJobs>(null).get();
 
 		GuidField user = scheduledJobs.user.get();
-		DatetimeField from = scheduledJobs.from.get();
-		DatetimeField till = scheduledJobs.till.get();
-		IntegerField repeat = scheduledJobs.repeat.get();
-		DatetimeField lastStarted = scheduledJobs.lastStarted.get();
+		StringField cron = scheduledJobs.cron.get();
+		DatetimeField lastStart = scheduledJobs.lastStart.get();
+		DatetimeField nextStart = scheduledJobs.nextStart.get();
 		BoolField active = scheduledJobs.active.get();
 		StringField classId = scheduledJobs.jobs.get().classId.get();
 		StringField name = scheduledJobs.jobs.get().name.get();
 
-		Collection<Field> fields = Arrays.asList(user, from, till, repeat, lastStarted, active, classId, name);
+		Collection<Field> fields = Arrays.asList(user, cron, lastStart, nextStart, active, classId, name);
 
 		scheduledJobs.read(fields);
 
@@ -138,10 +136,9 @@ public class Scheduler implements Runnable {
 			job.classId = classId.string().get();
 			job.name = name.string().get();
 			job.user = user.guid();
-			job.from = from.date();
-			job.till = till.date();
-			job.lastStarted = lastStarted.date();
-			job.repeat = repeat.integer().getInt();
+			job.lastStart = lastStart.date();
+			job.nextStart = nextStart.date();
+			job.cron = cron.string().get();
 			job.active = active.bool().get();
 
 			result.add(job);

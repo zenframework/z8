@@ -18,7 +18,8 @@ import org.zenframework.z8.compiler.parser.expressions.QualifiedName;
 import org.zenframework.z8.compiler.parser.grammar.lexer.ABC;
 import org.zenframework.z8.compiler.parser.grammar.lexer.token.BooleanToken;
 import org.zenframework.z8.compiler.parser.grammar.lexer.token.ConstantToken;
-import org.zenframework.z8.compiler.parser.grammar.lexer.token.IntegerToken;
+import org.zenframework.z8.compiler.parser.grammar.lexer.token.DateToken;
+import org.zenframework.z8.compiler.parser.grammar.lexer.token.StringToken;
 import org.zenframework.z8.compiler.parser.type.Enum;
 import org.zenframework.z8.compiler.parser.type.Type;
 import org.zenframework.z8.compiler.parser.type.members.Record;
@@ -178,9 +179,38 @@ public class Attribute extends LanguageElement implements IAttribute {
 			}
 		}
 
-		if(name.equals(IAttribute.Job) && valueToken != null && !(valueToken instanceof IntegerToken)) {
-			getCompilationUnit().error(valueToken.getPosition(), "The attribute " + name + " must be an integer");
-			return false;
+		if(name.equals(IAttribute.Job) && valueToken != null) {
+			if (!(valueToken instanceof StringToken)) {
+				getCompilationUnit().error(valueToken.getPosition(), "The attribute " + name + " must be a string");
+				return false;
+			}
+			if (!DateToken.checkCron(valueToken.getValueString())) {
+				getCompilationUnit().error(valueToken.getPosition(), "The attribute " + name + " must be a valid CRON expression:"
+						+ "\n    +---------- minute (0 - 59)"
+						+ "\n    | +-------- hour (0 - 23)"
+						+ "\n    | | +------ day of month (1 - 31)"
+						+ "\n    | | | +---- month (1 - 12)"
+						+ "\n    | | | | +-- day of week (0 - 6)"
+						+ "\n    | | | | |"
+						+ "\n    X X X X X - CRON expression contains 5 fields"
+						+ "\n"
+						+ "\n Value of a field can be:"
+						+ "\n    - asterisk '*' means any value"
+						+ "\n    - number, i.e. '1', '2', etc."
+						+ "\n    - period, i.e. '1-5', '2-23'"
+						+ "\n    - asterisk or period with multiplicity, i.e. '*/2' (any even value), '2-9/3' (any value multiple of 3 between 2 and 9)"
+						+ "\n    - comma-separated list of other values, i.e. '1,2-4,6-12/3,*/5'"
+						+ "\n"
+						+ "\n Examples:"
+						+ "\n    * * * * * - every minute"
+						+ "\n    */5 * * * * - every five minutes"
+						+ "\n    5 0 * * * - every day at 00:05"
+						+ "\n    15 14 1 * * - every 1st day of month at 14:15"
+						+ "\n   0 22 * * 1-5 - Monday to Friday at 22:00"
+						+ "\n    23 */2 * * * - at 23rd minute of every even hour"
+						+ "\n    15 10,13 * * 1,4 - Monday and Thursday at 10:15 and 13:15");
+				return false;
+			}
 		}
 
 		if(name.equals(IAttribute.Request) && valueToken != null && !(valueToken instanceof BooleanToken)) {

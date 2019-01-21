@@ -168,11 +168,10 @@
 	<!-- ScheduledJobs -->
 	<entry key="ScheduledJobs.title">Задания</entry>
 	<entry key="ScheduledJobs.settings">Настройки</entry>
-	<entry key="ScheduledJobs.from">С</entry>
-	<entry key="ScheduledJobs.till">По</entry>
-	<entry key="ScheduledJobs.repeat">Повтор (секунд)</entry>
+	<entry key="ScheduledJobs.cron">CRON-выражение</entry>
 	<entry key="ScheduledJobs.active">Активна</entry>
-	<entry key="ScheduledJobs.lastStarted">Последний запуск</entry>
+	<entry key="ScheduledJobs.lastStart">Последний запуск</entry>
+	<entry key="ScheduledJobs.nextStart">Следующий запуск</entry>
 
 	<!-- ScheduledJobLogs -->
 	<entry key="ScheduledJobLogs.title">Сообщения</entry>

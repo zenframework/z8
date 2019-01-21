@@ -4,50 +4,50 @@ import org.zenframework.z8.server.base.job.scheduler.Scheduler;
 import org.zenframework.z8.server.base.table.Table;
 import org.zenframework.z8.server.base.table.value.BoolField;
 import org.zenframework.z8.server.base.table.value.DatetimeField;
-import org.zenframework.z8.server.base.table.value.IntegerField;
 import org.zenframework.z8.server.base.table.value.Link;
+import org.zenframework.z8.server.base.table.value.StringField;
 import org.zenframework.z8.server.resources.Resources;
 import org.zenframework.z8.server.runtime.IClass;
 import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.types.bool;
+import org.zenframework.z8.server.types.exception;
 import org.zenframework.z8.server.types.guid;
 import org.zenframework.z8.server.types.integer;
+import org.zenframework.z8.server.types.string;
+import org.zenframework.z8.server.utils.Cron;
 
 public class ScheduledJobs extends Table {
 	static public String TableName = "SystemScheduledJobs";
+	static public String DefaultCron = "0 * * * *";
 	static public int MinRepeat = 10;
-	static public int DefaultRepeat = 3600;
 
 	static public class fieldNames {
 		public final static String Jobs = "Jobs";
 		public final static String Users = "Users";
 		public final static String Job = "Job";
 		public final static String User = "User";
-		public final static String From = "From";
-		public final static String Till = "Till";
-		public final static String Repeat = "Repeat";
+		public final static String Cron = "Cron";
 		public final static String Active = "Active";
-		public final static String LastStarted = "LastStarted";
+		public final static String LastStart = "LastStart";
+		public final static String NextStart = "NextStart";
 	}
 
 	static public class strings {
 		public final static String Title = "ScheduledJobs.title";
 		public final static String Settings = "ScheduledJobs.settings";
-		public final static String From = "ScheduledJobs.from";
-		public final static String Till = "ScheduledJobs.till";
-		public final static String Repeat = "ScheduledJobs.repeat";
+		public final static String Cron = "ScheduledJobs.cron";
 		public final static String Active = "ScheduledJobs.active";
-		public final static String LastStarted = "ScheduledJobs.lastStarted";
+		public final static String LastStart = "ScheduledJobs.lastStart";
+		public final static String NextStart = "ScheduledJobs.nextStart";
 	}
 
 	static public class displayNames {
 		public final static String Title = Resources.get(strings.Title);
 		public final static String Settings = Resources.get(strings.Settings);
-		public final static String From = Resources.get(strings.From);
-		public final static String Till = Resources.get(strings.Till);
-		public final static String Repeat = Resources.get(strings.Repeat);
+		public final static String Cron = Resources.get(strings.Cron);
 		public final static String Active = Resources.get(strings.Active);
-		public final static String LastStarted = Resources.get(strings.LastStarted);
+		public final static String LastStart = Resources.get(strings.LastStart);
+		public final static String NextStart = Resources.get(strings.NextStart);
 	}
 
 	public static class CLASS<T extends Table> extends Table.CLASS<T> {
@@ -74,10 +74,9 @@ public class ScheduledJobs extends Table {
 	public Link.CLASS<Link> job = new Link.CLASS<Link>(this);
 	public Link.CLASS<Link> user = new Link.CLASS<Link>(this);
 
-	public DatetimeField.CLASS<DatetimeField> from = new DatetimeField.CLASS<DatetimeField>(this);
-	public DatetimeField.CLASS<DatetimeField> till = new DatetimeField.CLASS<DatetimeField>(this);
-	public DatetimeField.CLASS<DatetimeField> lastStarted = new DatetimeField.CLASS<DatetimeField>(this);
-	public IntegerField.CLASS<IntegerField> repeat = new IntegerField.CLASS<IntegerField>(this);
+	public DatetimeField.CLASS<DatetimeField> lastStart = new DatetimeField.CLASS<DatetimeField>(this);
+	public DatetimeField.CLASS<DatetimeField> nextStart = new DatetimeField.CLASS<DatetimeField>(this);
+	public StringField.CLASS<StringField> cron = new StringField.CLASS<StringField>(this);
 	public BoolField.CLASS<BoolField> active = new BoolField.CLASS<BoolField>(this);
 
 	public ScheduledJobs(IObject container) {
@@ -96,10 +95,9 @@ public class ScheduledJobs extends Table {
 
 		objects.add(job);
 		objects.add(user);
-		objects.add(from);
-		objects.add(till);
-		objects.add(repeat);
-		objects.add(lastStarted);
+		objects.add(cron);
+		objects.add(lastStart);
+		objects.add(nextStart);
 		objects.add(active);
 
 		objects.add(jobs);
@@ -123,27 +121,23 @@ public class ScheduledJobs extends Table {
 		user.setIndex("user");
 		user.get().setDefault(Users.System);
 
-		from.setName(fieldNames.From);
-		from.setIndex("from");
-		from.setDisplayName(displayNames.From);
+		cron.setName(fieldNames.Cron);
+		cron.setIndex("cron");
+		cron.setDisplayName(displayNames.Cron);
 
-		till.setName(fieldNames.Till);
-		till.setIndex("till");
-		till.setDisplayName(displayNames.Till);
+		lastStart.setName(fieldNames.LastStart);
+		lastStart.setIndex("lastStart");
+		lastStart.setDisplayName(displayNames.LastStart);
 
-		repeat.setName(fieldNames.Repeat);
-		repeat.setIndex("repeat");
-		repeat.setDisplayName(displayNames.Repeat);
-
-		lastStarted.setName(fieldNames.LastStarted);
-		lastStarted.setIndex("lastStarted");
-		lastStarted.setDisplayName(displayNames.LastStarted);
+		nextStart.setName(fieldNames.NextStart);
+		nextStart.setIndex("nextStart");
+		nextStart.setDisplayName(displayNames.NextStart);
 
 		active.setName(fieldNames.Active);
 		active.setIndex("active");
 		active.setDisplayName(displayNames.Active);
 
-		repeat.get().setDefault(new integer(DefaultRepeat));
+		cron.get().setDefault(new string(DefaultCron));
 		active.get().setDefault(bool.True);
 	}
 
@@ -154,9 +148,44 @@ public class ScheduledJobs extends Table {
 	}
 
 	@Override
+	public void beforeUpdate(guid recordId) {
+		super.beforeUpdate(recordId);
+		if (cron.get().changed()) {
+			String cronExp = cron.get().string().get();
+			if (cronExp.isEmpty())
+				active.get().set(bool.False);
+			else if (!Cron.checkExp(cronExp))
+				throw new exception("CRON value must be a valid CRON expression:"
+						+ "\n    +---------- minute (0 - 59)"
+						+ "\n    | +-------- hour (0 - 23)"
+						+ "\n    | | +------ day of month (1 - 31)"
+						+ "\n    | | | +---- month (1 - 12)"
+						+ "\n    | | | | +-- day of week (0 - 6)"
+						+ "\n    | | | | |"
+						+ "\n    X X X X X - CRON expression contains 5 fields"
+						+ "\n"
+						+ "\n Value of a field can be:"
+						+ "\n    - asterisk '*' means any value"
+						+ "\n    - number, i.e. '1', '2', etc."
+						+ "\n    - period, i.e. '1-5', '2-23'"
+						+ "\n    - asterisk or period with multiplicity, i.e. '*/2' (any even value), '2-9/3' (any value multiple of 3 between 2 and 9)"
+						+ "\n    - comma-separated list of other values, i.e. '1,2-4,6-12/3,*/5'"
+						+ "\n"
+						+ "\n Examples:"
+						+ "\n    * * * * * - every minute"
+						+ "\n    */5 * * * * - every five minutes"
+						+ "\n    5 0 * * * - every day at 00:05"
+						+ "\n    15 14 1 * * - every 1st day of month at 14:15"
+						+ "\n   0 22 * * 1-5 - Monday to Friday at 22:00"
+						+ "\n    23 */2 * * * - at 23rd minute of every even hour"
+						+ "\n    15 10,13 * * 1,4 - Monday and Thursday at 10:15 and 13:15");
+		}
+	}
+
+	@Override
 	public void afterUpdate(guid recordId) {
 		super.afterUpdate(recordId);
-		if (!lastStarted.get().changed())
+		if (!lastStart.get().changed() && !nextStart.get().changed())
 			Scheduler.reset();
 	}
 

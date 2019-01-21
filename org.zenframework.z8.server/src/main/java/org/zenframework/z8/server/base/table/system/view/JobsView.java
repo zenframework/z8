@@ -63,16 +63,16 @@ public class JobsView extends ScheduledJobs {
 		logs.get().start.get().sortDirection = SortDirection.Desc;
 
 		jobs.get().name.get().colSpan = new integer(4);
-		from.get().colSpan = new integer(2);
-		till.get().colSpan = new integer(2);
-		repeat.get().colSpan = new integer(2);
+		cron.get().colSpan = new integer(2);
 		active.get().colSpan = new integer(2);
+		lastStart.get().colSpan = new integer(2);
+		nextStart.get().colSpan = new integer(2);
 
 		registerControl(jobs.get().name);
-		registerControl(from);
-		registerControl(till);
-		registerControl(repeat);
+		registerControl(cron);
 		registerControl(active);
+		registerControl(lastStart);
+		registerControl(nextStart);
 		registerControl(logsListbox);
 
 		sortFields.add(jobs.get().name);

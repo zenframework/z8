@@ -16,7 +16,6 @@ import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.runtime.OBJECT;
 import org.zenframework.z8.server.types.bool;
 import org.zenframework.z8.server.types.guid;
-import org.zenframework.z8.server.types.integer;
 import org.zenframework.z8.server.types.string;
 
 public class JobGenerator {
@@ -82,16 +81,15 @@ public class JobGenerator {
 		jobs.name.get().set(new string(job.displayName()));
 		jobs.lock.get().set(RecordLock.Destroy);
 
-		String jobRepeat = job.getAttribute(IObject.Job);
+		String jobCron = job.getAttribute(IObject.Job);
 
-		if(jobRepeat == null || jobRepeat.isEmpty())
+		if(jobCron == null)
 			return;
 
-		int repeat = new integer(jobRepeat).getInt();
 		if(!scheduledJobs.hasRecord(new Equ(scheduledJobs.job.get(), job.key()))) {
-			scheduledJobs.active.get().set(new bool(repeat > 0));
+			scheduledJobs.active.get().set(new bool(!jobCron.isEmpty()));
 			scheduledJobs.job.get().set(job.key());
-			scheduledJobs.repeat.get().set(new integer(repeat > ScheduledJobs.MinRepeat ? repeat : ScheduledJobs.DefaultRepeat));
+			scheduledJobs.cron.get().set(jobCron);
 			scheduledJobs.create();
 		}
 	}

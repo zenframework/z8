@@ -39,8 +39,8 @@ public class ServerConfig extends Properties {
 	static final private String WebClientHashPassword = "web.client.hashPassword";
 
 	static final private String SchedulerEnabled = "scheduler.enabled";
-	static final private String MaintenenceJobRepeat = "maintenance.job.repeat";
-	static final private String TransportJobRepeat = "transport.job.repeat";
+	static final private String MaintenenceJobCron = "maintenance.job.cron";
+	static final private String TransportJobCron = "transport.job.cron";
 	static final private String TransportJobTreads = "transport.job.treads";
 
 	static final private String TraceSql = "trace.sql";
@@ -80,9 +80,9 @@ public class ServerConfig extends Properties {
 
 	static private boolean schedulerEnabled;
 
-	static private int maintenanceJobRepeat;
+	static private String maintenanceJobCron;
 
-	static private int transportJobRepeat;
+	static private String transportJobCron;
 	static private int transportJobTreads;
 
 	static private boolean traceSql;
@@ -140,8 +140,8 @@ public class ServerConfig extends Properties {
 		traceSqlConnections = getProperty(TraceSqlConnections, false);
 
 		schedulerEnabled = getProperty(SchedulerEnabled, true);
-		maintenanceJobRepeat = getProperty(MaintenenceJobRepeat, 60 * 60);
-		transportJobRepeat = getProperty(TransportJobRepeat, 5 * 60);
+		maintenanceJobCron = getProperty(MaintenenceJobCron, "0 * * * *");
+		transportJobCron = getProperty(TransportJobCron, "*/5 * * * *");
 		transportJobTreads = getProperty(TransportJobTreads, 10);
 
 		textExtensions = getProperty(TextExtensions, new String[] { "txt", "xml" });
@@ -308,23 +308,23 @@ public class ServerConfig extends Properties {
 	}
 
 	static public boolean maintenanceJobEnabled() {
-		return maintenanceJobRepeat() != 0;
+		return !maintenanceJobCron().isEmpty();
 	}
 
-	static public int maintenanceJobRepeat() {
-		return maintenanceJobRepeat;
+	static public String maintenanceJobCron() {
+		return maintenanceJobCron;
 	}
 
 	static public boolean transportJobEnabled() {
-		return transportJobRepeat() != 0;
+		return !transportJobCron().isEmpty();
 	}
 
 	static public int transportJobThreads() {
 		return transportJobTreads;
 	}
 
-	static public int transportJobRepeat() {
-		return transportJobRepeat;
+	static public String transportJobCron() {
+		return transportJobCron;
 	}
 
 	static public String[] textExtensions() {
