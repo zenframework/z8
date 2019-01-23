@@ -65,6 +65,8 @@ Z8.define('Z8.list.Item', {
 				this.setText(i, this.renderCellText(field, record.get(name)));
 		}
 
+		DOM.setCls(this, this.getCls());
+
 		if(this.list.locks)
 			DOM.swapCls(this.lockIcon, this.isReadOnly(), 'fa-lock', '');
 
@@ -181,7 +183,7 @@ Z8.define('Z8.list.Item', {
 		}
 	},
 
-	htmlMarkup: function() {
+	getCls: function() {
 		var cls = ['item'];
 
 		if(!this.enabled)
@@ -193,7 +195,11 @@ Z8.define('Z8.list.Item', {
 		if(this.isHidden())
 			cls.pushIf('display-none');
 
-		return { tag: 'tr', id: this.getId(), cls: cls.join(' '), tabIndex: this.getTabIndex(), cn: this.columnsMarkup() };
+		return cls;
+	},
+
+	htmlMarkup: function() {
+		return { tag: 'tr', id: this.getId(), cls: this.getCls().join(' '), tabIndex: this.getTabIndex(), cn: this.columnsMarkup() };
 	},
 
 	completeRender: function() {
