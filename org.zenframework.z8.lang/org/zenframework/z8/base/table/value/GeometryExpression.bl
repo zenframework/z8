@@ -8,7 +8,7 @@ public class GeometryExpression extends Expression {
 	virtual public geometry get();
 	virtual public geometry[] array();
 
-	public GeometryExpression operator = (geometry value);
+	public GeometryExpression operator = (sql_geometry value);
 
 	public operator sql_geometry();
 

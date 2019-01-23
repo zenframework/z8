@@ -57,4 +57,9 @@ public class GeometryExpression extends Expression {
 		set(value);
 		return (GeometryExpression.CLASS<?>)this.getCLASS();
 	}
+	
+	public GeometryExpression.CLASS<? extends GeometryExpression> operatorAssign(sql_geometry expression) {
+		setExpression(expression);
+		return (GeometryExpression.CLASS<?>)this.getCLASS();
+	}
 }

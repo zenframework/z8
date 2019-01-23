@@ -7,6 +7,7 @@ import org.zenframework.z8.server.db.sql.expressions.Intersects;
 import org.zenframework.z8.server.db.sql.expressions.Operation;
 import org.zenframework.z8.server.db.sql.expressions.Rel;
 import org.zenframework.z8.server.db.sql.functions.conversion.ToString;
+import org.zenframework.z8.server.db.sql.functions.geometry.AsGeoJson;
 import org.zenframework.z8.server.db.sql.functions.geometry.Buffer;
 import org.zenframework.z8.server.db.sql.functions.geometry.Centroid;
 import org.zenframework.z8.server.db.sql.functions.geometry.CollectionSize;
@@ -115,5 +116,9 @@ public class sql_geometry extends sql_primary {
 	
 	public sql_geometry z8_buffer(sql_decimal radius) {
 		return new sql_geometry(new Buffer(this, radius));
+	}
+	
+	public sql_string z8_asGeoJSON() {
+		return new sql_string(new AsGeoJson(this));
 	}
 }
