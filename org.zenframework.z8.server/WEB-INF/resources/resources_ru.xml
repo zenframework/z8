@@ -167,6 +167,8 @@
 
 	<!-- ScheduledJobs -->
 	<entry key="ScheduledJobs.title">Задания</entry>
+	<entry key="ScheduledJobs.job">Задание</entry>
+	<entry key="ScheduledJobs.user">Пользователь</entry>
 	<entry key="ScheduledJobs.settings">Настройки</entry>
 	<entry key="ScheduledJobs.cron">CRON-выражение</entry>
 	<entry key="ScheduledJobs.active">Активна</entry>
@@ -174,9 +176,15 @@
 	<entry key="ScheduledJobs.nextStart">Следующий запуск</entry>
 
 	<!-- ScheduledJobLogs -->
+	<entry key="ScheduledJobLogs.description">Описание</entry>
 	<entry key="ScheduledJobLogs.title">Сообщения</entry>
 	<entry key="ScheduledJobLogs.start">Старт</entry>
 	<entry key="ScheduledJobLogs.finish">Финиш</entry>
+	<entry key="ScheduledJobLogs.file">Лог-файл</entry>
+
+	<!-- JobsView -->
+	<entry key="JobsView.job">Задание</entry>
+	<entry key="JobsView.user">Пользователь</entry>
 
 	<!-- SystemTools -->
 	<entry key="SystemTools.title">Администрирование</entry>

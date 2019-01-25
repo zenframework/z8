@@ -20,14 +20,18 @@ public class ScheduledJobLogs extends Table {
 
 	static public class strings {
 		public final static String Title = "ScheduledJobLogs.title";
+		public final static String Description = "ScheduledJobLogs.description";
 		public final static String Start = "ScheduledJobLogs.start";
 		public final static String Finish = "ScheduledJobLogs.finish";
+		public final static String File = "ScheduledJobLogs.file";
 	}
 
 	static public class displayNames {
 		public final static String Title = Resources.get(strings.Title);
+		public final static String Description = Resources.get(strings.Description);
 		public final static String Start = Resources.get(strings.Start);
 		public final static String Finish = Resources.get(strings.Finish);
+		public final static String File = Resources.get(strings.File);
 	}
 
 	public static class CLASS<T extends ScheduledJobLogs> extends Table.CLASS<T> {
@@ -59,7 +63,7 @@ public class ScheduledJobLogs extends Table {
 	public DatetimeField.CLASS<DatetimeField> start = new DatetimeField.CLASS<DatetimeField>(this);
 	public DatetimeField.CLASS<DatetimeField> finish = new DatetimeField.CLASS<DatetimeField>(this);
 
-	public FileField.CLASS<FileField> files = new FileField.CLASS<FileField>(this);
+	public FileField.CLASS<FileField> file = new FileField.CLASS<FileField>(this);
 
 	public ScheduledJobLogs(IObject container) {
 		super(container);
@@ -77,7 +81,7 @@ public class ScheduledJobLogs extends Table {
 		objects.add(scheduledJob);
 		objects.add(start);
 		objects.add(finish);
-		objects.add(files);
+		objects.add(file);
 
 		objects.add(scheduledJobs);
 	}
@@ -85,6 +89,8 @@ public class ScheduledJobLogs extends Table {
 	@Override
 	public void constructor2() {
 		super.constructor2();
+
+		description.setDisplayName(displayNames.Description);
 
 		scheduledJobs.setIndex("scheduledJobs");
 
@@ -99,7 +105,8 @@ public class ScheduledJobLogs extends Table {
 		finish.setIndex("finish");
 		finish.setDisplayName(displayNames.Finish);
 
-		files.setName(fieldNames.Files);
-		files.setIndex("files");
+		file.setName(fieldNames.Files);
+		file.setIndex("file");
+		file.setDisplayName(displayNames.File);
 	}
 }

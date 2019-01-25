@@ -8,7 +8,8 @@
     <styles>
         <style name="GroupFooterCell" id="6">
             <property name="backgroundColor">#F5F5F5</property>
-            <property name="fontSize">small</property>
+            <property name="fontFamily">"Roboto"</property>
+            <property name="fontSize">9px</property>
             <property name="borderBottomColor">#C0C0C0</property>
             <property name="borderBottomStyle">solid</property>
             <property name="borderBottomWidth">1px</property>
@@ -33,7 +34,7 @@
         <style name="HeaderCell" id="7">
             <property name="backgroundColor">#1F4E78</property>
             <property name="fontFamily">"Roboto"</property>
-            <property name="fontSize">small</property>
+            <property name="fontSize">9px</property>
             <property name="fontWeight">bold</property>
             <property name="color">#FFFFFF</property>
             <property name="borderBottomColor">#C0C0C0</property>
@@ -57,7 +58,8 @@
         </style>
         <style name="GroupHeaderCell" id="8">
             <property name="backgroundColor">#F7F7F7</property>
-            <property name="fontSize">small</property>
+            <property name="fontFamily">"Roboto"</property>
+            <property name="fontSize">9px</property>
             <property name="borderBottomColor">#C0C0C0</property>
             <property name="borderBottomStyle">solid</property>
             <property name="borderBottomWidth">1px</property>
@@ -75,29 +77,9 @@
             <property name="paddingBottom">0pt</property>
             <property name="paddingRight">1pt</property>
         </style>
-        <style name="GroupHeaderCell2" id="9">
-            <property name="backgroundColor">#ECFFEC</property>
-            <property name="fontSize">small</property>
-            <property name="borderBottomColor">#C0C0C0</property>
-            <property name="borderBottomStyle">none</property>
-            <property name="borderBottomWidth">0px</property>
-            <property name="borderLeftColor">#C0C0C0</property>
-            <property name="borderLeftStyle">solid</property>
-            <property name="borderLeftWidth">1px</property>
-            <property name="borderRightColor">#C0C0C0</property>
-            <property name="borderRightStyle">none</property>
-            <property name="borderRightWidth">0px</property>
-            <property name="borderTopColor">#C0C0C0</property>
-            <property name="borderTopStyle">solid</property>
-            <property name="borderTopWidth">1px</property>
-            <property name="paddingTop">0pt</property>
-            <property name="paddingLeft">1pt</property>
-            <property name="paddingBottom">0pt</property>
-            <property name="paddingRight">1pt</property>
-        </style>
         <style name="DetailCell" id="10">
-            <property name="fontFamily">"Play"</property>
-            <property name="fontSize">small</property>
+            <property name="fontFamily">"Roboto"</property>
+            <property name="fontSize">8px</property>
             <property name="borderBottomColor">#C0C0C0</property>
             <property name="borderBottomStyle">solid</property>
             <property name="borderBottomWidth">1px</property>
@@ -116,29 +98,10 @@
             <property name="paddingRight">5px</property>
             <property name="pageBreakInside">auto</property>
         </style>
-        <style name="GroupFooterCell2" id="12">
-            <property name="backgroundColor">#ECFFEC</property>
-            <property name="fontSize">small</property>
-            <property name="borderBottomColor">#C0C0C0</property>
-            <property name="borderBottomStyle">none</property>
-            <property name="borderBottomWidth">1px</property>
-            <property name="borderLeftColor">#C0C0C0</property>
-            <property name="borderLeftStyle">solid</property>
-            <property name="borderLeftWidth">1px</property>
-            <property name="borderRightColor">#C0C0C0</property>
-            <property name="borderRightStyle">none</property>
-            <property name="borderRightWidth">1px</property>
-            <property name="borderTopColor">#C0C0C0</property>
-            <property name="borderTopStyle">solid</property>
-            <property name="borderTopWidth">1px</property>
-            <property name="paddingTop">0pt</property>
-            <property name="paddingLeft">1pt</property>
-            <property name="paddingBottom">0pt</property>
-            <property name="paddingRight">1pt</property>
-        </style>
         <style name="GrandTotalsCell" id="13">
             <property name="backgroundColor">#F0E8EF</property>
-            <property name="fontSize">small</property>
+            <property name="fontFamily">"Roboto"</property>
+            <property name="fontSize">9px</property>
             <property name="fontWeight">bold</property>
             <property name="borderBottomColor">#C0C0C0</property>
             <property name="borderBottomStyle">solid</property>
@@ -170,8 +133,8 @@
             </structure>
         </style>
         <style name="ReportBody" id="103">
-            <property name="fontFamily">"Play"</property>
-            <property name="fontSize">12px</property>
+            <property name="fontFamily">"Roboto"</property>
+            <property name="fontSize">10px</property>
         </style>
     </styles>
     <page-setup>
@@ -251,8 +214,8 @@
     </page-setup>
     <body>
         <grid id="35">
-            <property name="fontFamily">"Arial"</property>
-            <property name="fontSize">16px</property>
+            <property name="fontFamily">"Roboto"</property>
+            <property name="fontSize">10px</property>
             <property name="width">100%</property>
             <column id="37"/>
             <row id="39">
@@ -262,9 +225,9 @@
                     <property name="paddingBottom">0pt</property>
                     <property name="paddingRight">0pt</property>
                     <label name="CaptionCenter" id="34">
-                        <property name="fontFamily">"Play"</property>
-                        <property name="fontSize">18px</property>
-                        <property name="fontWeight">bold</property>
+                        <property name="fontFamily">"Roboto"</property>
+                        <property name="fontSize">15px</property>
+                        <property name="fontWeight">normal</property>
                         <property name="fontVariant">normal</property>
                         <property name="textAlign">center</property>
                         <property name="lineHeight">normal</property>

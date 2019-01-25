@@ -225,7 +225,7 @@ public class Roles extends Table {
 
 		RoleRequestAccess rra = new RoleRequestAccess.CLASS<RoleRequestAccess>().get();
 		rra.destroy(new Equ(rra.role.get(), recordId));
-}
+	}
 
 	public Collection<IRole> get() {
 		Field read = this.read.get();

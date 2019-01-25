@@ -37,7 +37,7 @@
 	height: 1.78571429em;
 	min-height: 1.78571429em;
 	padding-left: .14285714em;
-	padding-bottom: 0;
+	padding-bottom: 1px;
 	padding-top: 0;
 	padding-right: .14285714em;
 	border: 0 solid #dfdfdf;
@@ -222,8 +222,15 @@
 
 .air .focus.control,
 .air .control-group.focus>.control {
-	border-bottom-width: 1px;
+	padding-bottom: 0;
+	border-bottom-width: 2px;
 	border-color: #39c;
+}
+
+.air .control-group.focus>textarea.control,
+.air .control-group.focus>.html-text.control {
+	border-bottom-width: 1px;
+	padding-bottom: 1px;
 }
 
 .air .invalid.focus.control:not(.readonly),

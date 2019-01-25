@@ -118,7 +118,7 @@ public class ScheduledJob implements Runnable {
 
 		ScheduledJobLogs logs = ScheduledJobLogs.newInstance();
 		logs.scheduledJob.get().set(id);
-		logs.files.get().set(new string(writer.toString()));
+		logs.file.get().set(new string(writer.toString()));
 		logs.start.get().set(lastStart);
 		logs.finish.get().set(new date());
 		logs.create();

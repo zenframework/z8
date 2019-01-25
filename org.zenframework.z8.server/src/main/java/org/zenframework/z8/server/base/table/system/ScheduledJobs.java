@@ -21,8 +21,6 @@ public class ScheduledJobs extends Table {
 	static public int MinRepeat = 10;
 
 	static public class fieldNames {
-		public final static String Jobs = "Jobs";
-		public final static String Users = "Users";
 		public final static String Job = "Job";
 		public final static String User = "User";
 		public final static String Cron = "Cron";
@@ -33,6 +31,8 @@ public class ScheduledJobs extends Table {
 
 	static public class strings {
 		public final static String Title = "ScheduledJobs.title";
+		public final static String Job = "ScheduledJobs.job";
+		public final static String User = "ScheduledJobs.user";
 		public final static String Settings = "ScheduledJobs.settings";
 		public final static String Cron = "ScheduledJobs.cron";
 		public final static String Active = "ScheduledJobs.active";
@@ -42,6 +42,8 @@ public class ScheduledJobs extends Table {
 
 	static public class displayNames {
 		public final static String Title = Resources.get(strings.Title);
+		public final static String Job = Resources.get(strings.Job);
+		public final static String User = Resources.get(strings.User);
 		public final static String Settings = Resources.get(strings.Settings);
 		public final static String Cron = Resources.get(strings.Cron);
 		public final static String Active = Resources.get(strings.Active);

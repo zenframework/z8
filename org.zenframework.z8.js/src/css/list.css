@@ -176,6 +176,14 @@
 	overflow-y: visible;
 }
 
+.list .item>.column.file>.text {
+	cursor: pointer;
+}
+
+.list .item>.column.file>.text:hover {
+	text-decoration: underline;
+}
+
 .list .item>.column.int>.text,
 .list .total>.column.int>.text,
 .list .item>.column.float>.text,
