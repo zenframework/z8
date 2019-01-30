@@ -22,6 +22,10 @@
 	width: 25%;
 }
 
+.navigator.one-record>.body>.list-box {
+	display: none;
+}
+
 .navigator>.body>.list-box .label .btn-text {
 	padding-top: 0;
 	padding-left: 0;

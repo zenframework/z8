@@ -379,12 +379,16 @@ abstract public class Field extends Control implements IField {
 			path = query.getPath(this);
 
 		if(path != null && !path.isEmpty()) {
-			ILink link = path.iterator().next();
-			Field linkField = (Field)link;
+			ILink[] links = path.toArray(new ILink[0]);
 
-			access = link.access();
+			ILink firstLink = links[0];
+			ILink lastLink = links[links.length - 1];
 
-			Query linkQuery = link.getQuery();
+			Field linkField = (Field)firstLink;
+
+			access = firstLink.access();
+
+			Query linkQuery = firstLink.getQuery();
 
 			writer.writeProperty(Json.isCombobox, true);
 			writer.writeControls(Json.columns, CLASS.asList(columns), query, context);
@@ -399,10 +403,11 @@ abstract public class Field extends Control implements IField {
 			writer.finishObject();
 
 			writer.startObject(Json.link);
-			writer.writeProperty(Json.name, link.id());
-			writer.writeProperty(Json.isBackward, link instanceof IJoin);
+			writer.writeProperty(Json.name, firstLink.id());
+			writer.writeProperty(Json.owner, lastLink.id());
+			writer.writeProperty(Json.isBackward, firstLink instanceof IJoin);
 			writer.writeProperty(Json.primaryKey, linkQuery.primaryKey().id());
-			if(link.isParentKey()) {
+			if(firstLink.isParentKey()) {
 				writer.writeProperty(Json.isParentKey, true);
 				writer.startArray(Json.parentKeys);
 				for(Field parentKey : linkQuery.parentKeys())
@@ -411,7 +416,7 @@ abstract public class Field extends Control implements IField {
 			}
 			writer.finishObject();
 
-			writer.writeSort(link.getQuery().sortFields());
+			writer.writeSort(firstLink.getQuery().sortFields());
 
 			readOnly = hasReadOnlyLinks(path) || !linkField.access().write() || readOnly();
 			required = !readOnly && (hasRequiredLinks(path) || required());

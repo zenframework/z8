@@ -52,3 +52,7 @@ String.prototype.endsWith = function(string) {
 String.prototype.firstCharToLower = function() {
 	return this.length ? this.charAt(0).toLowerCase() + this.substring(1) : this;
 };
+
+String.prototype.ellipsis = function(length) {
+	return this.length > length ? this.substring(0, length) + '...' : this;
+};

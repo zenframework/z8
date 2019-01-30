@@ -202,6 +202,12 @@
 	height: 2em;
 }
 
+.air .label.tools>.control-group.focus>.control,
+.air .label.tools>.btn-group>.control-group.focus>.control {
+	border-bottom-width: 1px;
+	padding-bottom: 1px;
+}
+
 .air .label.tools>.control-group>.btn-trigger,
 .air .label.tools>.btn-group>.control-group>.btn-trigger,
 .air .label.tools>.control-group.label-none>.btn-trigger,

@@ -2,8 +2,11 @@ var Z8 = {
 	classes: {},
 
 	apply: function(object, config) {
+		object = object || {};
+
 		for(var name in config)
 			object[name] = config[name];
+
 		return object;
 	},
 

@@ -467,6 +467,7 @@ Z8.define('Z8.form.field.Listbox', {
 	controlMarkup: function() {
 		var list = this.list = this.createList();
 		list.on('select', this.onSelect, this);
+		list.on('follow', this.onFollow, this);
 		list.on('contentChange', this.onContentChange, this);
 		list.on('itemEditorChange', this.onItemEditorChange, this);
 		list.on('itemEdit', this.onItemEdit, this);
@@ -528,6 +529,25 @@ Z8.define('Z8.form.field.Listbox', {
 			this.selectTask = new Z8.util.DelayedTask();
 
 		this.selectTask.delay(50, this.updateDependencies, this, record);
+	},
+
+	onFollow: function(record, field) {
+		var source = field.source;
+
+		if(source != null) {
+			var link = field.link;
+
+			var params = { 
+				request: source.id,
+				where: { property: 'recordId', value: record.get(link.owner) }
+			};
+
+			Viewport.open(params, false, { oneRecord: true, title: record.get(field.name) });
+		} else if(field.type == Type.File) {
+			var file = record.get(field.name);
+			if(!Z8.isEmpty(file))
+				DOM.download(file[0].path, file[0].id);
+		}
 	},
 
 	onContentChange: function() {

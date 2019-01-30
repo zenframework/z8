@@ -31,7 +31,7 @@
 					popup-messages.css,
 					sidebar.css,
 					source-code.css,
-					view.css,
+					navigator.css,
 					job-monitor.css"/>
 		</concat>
 
@@ -220,7 +220,7 @@
 			<arg line="-jar ../org.zenframework.z8.commons/minimizers/closure.jar --rewrite_polyfills false --js_output_file web/revolt.utils.js web/debug/revolt.utils.js"/>
 		</exec>
 	</target>
-	
+
 	<target name="zip">
 		<zip destfile="target/z8.js.zip" basedir="web"/>
 	</target>

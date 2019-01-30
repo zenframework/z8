@@ -111,6 +111,7 @@ public interface Json {
 	static public string type = new string("type");
 	static public string query = new string("query");
 	static public string table = new string("table");
+	static public string owner = new string("owner");
 
 	static public string recordId = new string("recordId");
 	static public string parentId = new string("parentId");

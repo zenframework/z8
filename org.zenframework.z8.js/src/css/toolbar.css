@@ -54,6 +54,12 @@
 	border-left-width: 1px;
 	border-right-width: 1px;
 	border-top-width: 1px;
+	border-bottom-width: 1px;
+}
+
+.toolbar>.control-group.focus>.control {
+	border-bottom-width: 1px;
+	padding-bottom: 1px;
 }
 
 .toolbar>.control-group>.btn-trigger,

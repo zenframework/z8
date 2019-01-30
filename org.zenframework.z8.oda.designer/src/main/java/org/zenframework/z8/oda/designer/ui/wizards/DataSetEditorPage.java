@@ -36,7 +36,6 @@ import org.eclipse.swt.widgets.TreeItem;
 import org.eclipse.ui.PlatformUI;
 import org.zenframework.z8.oda.designer.plugin.Plugin;
 import org.zenframework.z8.oda.driver.ResultSetMetaData;
-import org.zenframework.z8.server.base.query.Query;
 import org.zenframework.z8.server.base.table.Table;
 import org.zenframework.z8.server.base.table.value.Field;
 import org.zenframework.z8.server.base.table.value.ILink;
@@ -44,6 +43,8 @@ import org.zenframework.z8.server.json.Json;
 import org.zenframework.z8.server.json.JsonWriter;
 import org.zenframework.z8.server.json.parser.JsonArray;
 import org.zenframework.z8.server.json.parser.JsonObject;
+import org.zenframework.z8.server.runtime.CLASS;
+import org.zenframework.z8.server.runtime.IObject;
 
 public class DataSetEditorPage extends DataSetWizardPage {
 	private static String RootIcon = DataSetEditorPage.class.getName() + ".RootIcon";
@@ -204,16 +205,31 @@ public class DataSetEditorPage extends DataSetWizardPage {
 		return JFaceResources.getImageRegistry().get(name);
 	}
 
-	private Collection<Table> getTables() throws Throwable {
-		List<Table> tables = new ArrayList<Table>();
+	private String displayName(Table.CLASS<Table> table) {
+		String name = table.displayName();
+		return name == null ? table.name() : name;
+	}
+
+	private String index(Table.CLASS<Table> table) {
+		IObject container = table.getContainer();
+
+		if(container != null)
+			container.getCLASS().get();
+
+		return table.index();
+	}
+
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	private Collection<Table.CLASS<Table>> getTables() throws Throwable {
+		List<Table.CLASS<Table>> tables = new ArrayList<Table.CLASS<Table>>();
 
 		for(Table.CLASS<? extends Table> cls : RuntimeLoader.getRuntime().tables())
-			tables.add(cls.newInstance());
+			tables.add((Table.CLASS)cls);
 
-		Comparator<Table> comparator = new Comparator<Table>() {
+		Comparator<Table.CLASS<Table>> comparator = new Comparator<Table.CLASS<Table>>() {
 			@Override
-			public int compare(Table o1, Table o2) {
-				return o1.displayName().compareTo(o2.displayName());
+			public int compare(Table.CLASS<Table> o1, Table.CLASS<Table> o2) {
+				return displayName(o1).compareTo(displayName(o2));
 			}
 		};
 
@@ -226,9 +242,9 @@ public class DataSetEditorPage extends DataSetWizardPage {
 		Collection<String> currentFields = getCurrentFields();
 		try {
 			boolean selected = false;
-			for(Table table : getTables()) {
+			for(Table.CLASS<Table> table : getTables()) {
 				TableItem item = new TableItem(tables, SWT.NONE);
-				item.setText(table.displayName());
+				item.setText(displayName(table));
 				item.setImage(getImage(TableIcon));
 				item.setData(table);
 				if(table.classId().equals(currentTable)) {
@@ -247,42 +263,46 @@ public class DataSetEditorPage extends DataSetWizardPage {
 		}
 	}
 
-	private Collection<Table> getLinkedTables(Table table) {
-		Collection<Table> tables = new ArrayList<Table>();
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	private Collection<Table.CLASS<Table>> getLinkedTables(Table.CLASS<Table> table) {
+		Collection<Table.CLASS<Table>> tables = new ArrayList<Table.CLASS<Table>>();
 
-		for(Field.CLASS<Field> field : table.getLinks()) {
-			ILink link = (ILink)field.get();
-			Query.CLASS<Query> query = link.query();
-			if(query != null)
-				tables.add((Table)query.get());
+		for(Field.CLASS<Field> field : table.get(CLASS.Constructor1).getLinks()) {
+			ILink link = (ILink)field.get(CLASS.Constructor1);
+			Table.CLASS<Table> linkedTable = (Table.CLASS)link.query();
+			if(linkedTable != null)
+				tables.add(linkedTable);
 		}
 
 		return tables;
 	}
 
-	private void initializeTableTree(Table table, Collection<String> fields) {
+	private void initializeTableTree(Table.CLASS<Table> table, Collection<String> fields) {
 		this.tableTree.removeAll();
 		this.fields.removeAll();
 		initializeTableTreeItem(null, table, fields);
 	}
 
-	private boolean checkCicle(TreeItem item, Table table) {
+	@SuppressWarnings("unchecked")
+	private boolean checkCicle(TreeItem item, Table.CLASS<Table> table) {
 		TreeItem parent;
 
 		while((parent = item.getParentItem()) != null) {
-			Table t = (Table)parent.getData();
-			if(t != null && t.classId().equals(table.classId()))
-				return false;
+			Table.CLASS<Table> t = (Table.CLASS<Table>)parent.getData();
+			if(t != null) {
+				if(t.classId().equals(table.classId()) || t.instanceOf(table.getJavaClass()) || table.instanceOf(t.getJavaClass()))
+					return false;
+			}
 			item = parent;
 		}
 
 		return true;
 	}
 
-	private void initializeTableTreeItem(TreeItem parent, Table table, Collection<String> fields) {
-		for(Table linkedTable : getLinkedTables(table)) {
+	private void initializeTableTreeItem(TreeItem parent, Table.CLASS<Table> table, Collection<String> fields) {
+		for(Table.CLASS<Table> linkedTable : getLinkedTables(table)) {
 			TreeItem item = parent == null ? new TreeItem(tableTree, SWT.NONE) : new TreeItem(parent, SWT.NONE);
-			item.setText(linkedTable.displayName() + " (" + linkedTable.index() + ")");
+			item.setText(displayName(linkedTable) + " (" + index(linkedTable) + ")");
 			item.setImage(getImage(TableIcon));
 			item.setData(linkedTable);
 
@@ -290,7 +310,7 @@ public class DataSetEditorPage extends DataSetWizardPage {
 				initializeTableTreeItem(item, linkedTable, fields);
 		}
 
-		for(Field field : table.getDataFields()) {
+		for(Field field : table.get().getDataFields()) {
 			if(!field.system()) {
 				TreeItem fieldItem = parent == null ? new TreeItem(tableTree, SWT.NONE) : new TreeItem(parent, SWT.NONE);
 				fieldItem.setText(field.displayName() + " (" + field.index() + ")");
@@ -315,14 +335,15 @@ public class DataSetEditorPage extends DataSetWizardPage {
 		return result;
 	}
 
+	@SuppressWarnings("unchecked")
 	private String buildQueryString(String name) {
 		if(tables.getSelectionCount() == 0)
 			throw new RuntimeException("No table selected");
 
-		Table query = (Table)tables.getSelection()[0].getData();
+		Table.CLASS<Table> query = (Table.CLASS<Table>)tables.getSelection()[0].getData();
 
 		JsonWriter writer = new JsonWriter();
-		query.writeReportMeta(writer, name, getSelectedFields());
+		query.get().writeReportMeta(writer, name, getSelectedFields());
 
 		return writer.toString();
 	}
@@ -367,13 +388,10 @@ public class DataSetEditorPage extends DataSetWizardPage {
 			public void widgetSelected(final SelectionEvent event) {
 				PlatformUI.getWorkbench().getDisplay().asyncExec(new Runnable() {
 					@Override
+					@SuppressWarnings("unchecked")
 					public void run() {
-//						TableItem[] selection = tables.getSelection();
-//						if(selection.length == 1 && (Table)selection[0].getData().clas == event.item)
-//							return;
-
 						tableTree.removeAll();
-						initializeTableTree((Table)event.item.getData(), null);
+						initializeTableTree((Table.CLASS<Table>)event.item.getData(), null);
 						if(getSelectedFields().isEmpty())
 							setMessage(SelectFieldsMessage, IMessageProvider.ERROR);
 						if(getEditorContainer() != null)

@@ -1384,6 +1384,17 @@ Z8.define('Z8.list.List', {
 		return -1;
 	},
 
+	onItemFollowLink: function(item, index) {
+		var field = this.fields[index];
+		var link = field.link;
+		var source = field.source;
+
+		if(source != null || field.type == Type.File)
+			this.fireEvent('follow', item.record, field);
+
+		return false;
+	},
+
 	onItemStartEdit: function(item, index) {
 		var record = item.record;
 		if(record != null && !record.isEditable())

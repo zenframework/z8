@@ -212,7 +212,7 @@ Z8.define('Z8.application.viewport.Viewport', {
 	createBreadcrumb: function(form, depth) {
 		var text = form != null ? form.getTitle() : Application.name;
 		var icon = form != null ? form.getIcon() : null;
-		return new Z8.button.Button({ cls: 'n' + (depth || 1), text: text, tooltip: text, icon: icon, form: form, handler: this.onBreadcrumbClick, scope: this });
+		return new Z8.button.Button({ cls: 'n' + (depth || 1), text: text.ellipsis(27), tooltip: text, icon: icon, form: form, handler: this.onBreadcrumbClick, scope: this });
 	},
 
 	closeForm: function(form) {
@@ -244,7 +244,7 @@ Z8.define('Z8.application.viewport.Viewport', {
 		}
 	},
 
-	openForm: function(form, closeOthers, header) {
+	openForm: function(form, closeOthers) {
 		this.showSourceCode(false);
 		this.initSourceCode(form != null && form.store != null ? form.store.getSourceCodeLocation() : null);
 
@@ -267,10 +267,6 @@ Z8.define('Z8.application.viewport.Viewport', {
 			}
 
 			button = buttons[i];
-			if(button.originalText != null) {
-				button.setText(button.originalText);
-				button.originalText = null;
-			}
 
 			if(forms[i] != null) {
 				DOM.removeCls(forms[i], 'display-none');
@@ -279,11 +275,6 @@ Z8.define('Z8.application.viewport.Viewport', {
 		} 
 
 		if(form != null && forms.indexOf(form) == -1) {
-			if(header != null) {
-				var button = buttons[buttons.length - 1];
-				button.originalText = button.getText();
-				button.setText(header);
-			}
 			button = this.createBreadcrumb(form, forms.length + 1);
 			if(forms[forms.length - 1] != null) {
 				DOM.addCls(forms[forms.length - 1], 'display-none');
@@ -311,7 +302,7 @@ Z8.define('Z8.application.viewport.Viewport', {
 		jobMonitor.addJob(job);
 	},
 
-	open: function(params, closeOthers, header) {
+	open: function(params, closeOthers, config) {
 		if(this.isOpeningForm)
 			return;
 
@@ -329,10 +320,12 @@ Z8.define('Z8.application.viewport.Viewport', {
 				response.filter = params.filter;
 				response.period = params.period;
 
-				var config = { cls: 'air', store: response };
+				config = Z8.apply(config, { cls: 'air', store: response });
+
 				var form = Application.getSubclass(response.ui);
 				form = form != null ? Z8.create(form, config) : new Z8.application.form.Navigator(config);
-				this.openForm(form, closeOthers, header);
+
+				this.openForm(form, closeOthers);
 			} else {
 				var job = new Z8.application.job.Job(response);
 				this.startJob(job);

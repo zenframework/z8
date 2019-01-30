@@ -136,7 +136,7 @@ Z8.define('Z8.list.Item', {
 					text = String.htmlText(text);
 				}
 
-				text = { tag: 'div', cls: this.getCellCls(field, record), cn: i == 0 ? icons.concat([text]) : [text] };
+				text = { tag: 'span', cls: this.getCellCls(field, record), cn: i == 0 ? icons.concat([text]) : [text] };
 
 				columns.push({ tag: 'td', cls: cls + (type != null ? ' ' + type : '') + (i == 0 ? ' ' + treeCls : ''), field: i, cn: [text], title: title });
 			}
@@ -158,7 +158,7 @@ Z8.define('Z8.list.Item', {
 	},
 
 	getCellCls: function(field, record) {
-		return 'text';
+		return 'text' + (field.source != null ? ' ' + 'follow' : '');
 	},
 
 	renderCellText: function(field, value) {
@@ -325,13 +325,23 @@ Z8.define('Z8.list.Item', {
 		}
 	},
 
+	getTextElement: function(index) {
+		var cell = Number.isNumber(index) ? this.cells[index] : index;
+		return cell != null ? cell.firstChild : null;
+	},
+
 	setText: function(index, text) {
 		var cell = this.cells[index];
+		var textElement = this.getTextElement(cell);
+
+		if(textElement == null)
+			return;
+
 		if(String.isString(text)) {
-			DOM.setValue(cell.firstChild.lastChild || cell.firstChild, String.htmlText(text));
+			DOM.setValue(textElement.lastChild || textElement, String.htmlText(text));
 			DOM.setAttribute(cell, 'title', text);
 		} else {
-			DOM.setInnerHTML(cell.firstChild, DOM.markup(text));
+			DOM.setInnerHTML(textElement, DOM.markup(text));
 			DOM.setAttribute(cell, 'title', '');
 		}
 	},
@@ -339,14 +349,21 @@ Z8.define('Z8.list.Item', {
 	onMouseDown: function(event, target) {
 		var dom = DOM.get(this);
 
-		if(DOM.selectNode(dom.parentNode, 'tr:focus') != dom || !this.isEnabled())
-			return;
-
-		if(target == this.collapser || this.list.checks && DOM.isParentOf(this.checkElement, target))
+		if(!this.isEnabled() || target == this.collapser || this.list.checks && DOM.isParentOf(this.checkElement, target))
 			return;
 
 		var index = this.findCellIndex(target);
-		if(this.startEdit(index))
+
+		var textClick = DOM.isParentOf(this.getTextElement(index), target);
+
+		if(textClick && this.followLink(index)) {
+			event.stopEvent();
+			return;
+		}
+
+		var focused = DOM.selectNode(dom.parentNode, 'tr:focus') == dom;
+
+		if(focused && this.startEdit(index))
 			event.stopEvent();
 	},
 
@@ -403,6 +420,10 @@ Z8.define('Z8.list.Item', {
 				event.stopEvent();
 			}
 		}
+	},
+
+	followLink: function(index) {
+		return index != -1 ? this.list.onItemFollowLink(this, index) : false;
 	},
 
 	startEdit: function(index) {

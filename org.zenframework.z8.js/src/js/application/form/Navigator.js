@@ -1,6 +1,8 @@
 Z8.define('Z8.application.form.Navigator', {
 	extend: 'viewport.Form',
 
+	oneRecord: false,
+
 	presentation: 'form',
 	quickFilterWidth: 15,
 
@@ -10,7 +12,6 @@ Z8.define('Z8.application.form.Navigator', {
 		if(!store.isStore)
 			store = this.store = new Z8.query.Store(store);
 
-		this.title = store.form.text;
 		this.icon = store.form.icon;
 		this.presentation = store.form.presentation || 'form';
 
@@ -26,6 +27,11 @@ Z8.define('Z8.application.form.Navigator', {
 
 	registryEntry: function() {
 		return this.store.getModelName();
+	},
+
+	getTitle: function() {
+		var title = this.title;
+		return (this.store.form.text + (title != null ? ' - ' + title : ''));
 	},
 
 	initFilter: function(filter) {
@@ -64,6 +70,8 @@ Z8.define('Z8.application.form.Navigator', {
 
 	htmlMarkup: function() {
 		this.cls = DOM.parseCls(this.cls).pushIf('navigator');
+		if(this.oneRecord)
+			this.cls.add('one-record');
 
 		var items = this.createItems();
 		var body = this.body = new Z8.Container({ cls: 'body', items: items });
@@ -108,11 +116,11 @@ Z8.define('Z8.application.form.Navigator', {
 	},
 
 	isFormPresentation: function() {
-		return this.presentation == 'form';
+		return this.oneRecord || this.presentation == 'form';
 	},
 
 	isTablePresentation: function() {
-		return this.presentation == 'table';
+		return !this.oneRecord && this.presentation == 'table';
 	},
 
 	createForm: function() {
@@ -164,13 +172,14 @@ Z8.define('Z8.application.form.Navigator', {
 
 		var buttons = [];
 		var addCopyRefresh = [];
+		var oneRecord = this.oneRecord;
 
-		if(store.hasCreateAccess()) {
+		if(!oneRecord && store.hasCreateAccess()) {
 			var add = this.addButton = new Z8.button.Button({ cls: 'btn-sm', icon: 'fa-file-o', tooltip: 'Новая запись', handler: this.addRecord, scope:this });
 			addCopyRefresh.push(add);
 		}
 
-		if(store.hasCopyAccess()) {
+		if(!oneRecord && store.hasCopyAccess()) {
 			var copy = this.copyButton = new Z8.button.Button({ cls: 'btn-sm', icon: 'fa-copy', tooltip: 'Копировать запись', handler: this.copyRecord, scope:this });
 			addCopyRefresh.push(copy);
 		}
@@ -194,29 +203,31 @@ Z8.define('Z8.application.form.Navigator', {
 			buttons.push(remove);
 		}
 
-		var quickFilters = this.quickFilters = this.createQuickFilters();
-		buttons.add(quickFilters);
+		if(!oneRecord) {
+			var quickFilters = this.quickFilters = this.createQuickFilters();
+			buttons.add(quickFilters);
 
-		var period = this.periodButton = this.createPeriodButton();
-		if(period != null)
-			buttons.push(period);
+			var period = this.periodButton = this.createPeriodButton();
+			if(period != null)
+				buttons.push(period);
 
-		var filter = this.filterButton = this.createFilterButton();
-		if(filter != null)
-			buttons.push(filter);
+			var filter = this.filterButton = this.createFilterButton();
+			if(filter != null)
+				buttons.push(filter);
 
 /*
-		var sort = this.sortButton = new Z8.button.Button({ enabled: false, cls: 'btn-sm', icon: 'fa-sort', tooltip: 'Порядок сортировки', triggerTooltip: 'Настроить порядок сортировки', split: true, handler: this.toggleSortOrder, scope: this });
-		buttons.push(sort);
+			var sort = this.sortButton = new Z8.button.Button({ enabled: false, cls: 'btn-sm', icon: 'fa-sort', tooltip: 'Порядок сортировки', triggerTooltip: 'Настроить порядок сортировки', split: true, handler: this.toggleSortOrder, scope: this });
+			buttons.push(sort);
 */
 
-		var formTable = this.createFormTableGroup();
-		if(formTable != null)
-			buttons.push(formTable);
+			var formTable = this.createFormTableGroup();
+			if(formTable != null)
+				buttons.push(formTable);
 
-		var print = this.printButton = this.createPrintButton();
-		if(print != null)
-			buttons.push(print);
+			var print = this.printButton = this.createPrintButton();
+			if(print != null)
+				buttons.push(print);
+		}
 
 		var reports = this.reportsButton = this.createReportsButton();
 		if(reports != null)
@@ -391,7 +402,7 @@ Z8.define('Z8.application.form.Navigator', {
 
 	getTableConfig: function() {
 		var store = this.store;
-		
+
 		return {
 			cls: 'table' + (this.isTablePresentation() ? '' : ' display-none'),
 			store: store,
