@@ -1389,8 +1389,10 @@ Z8.define('Z8.list.List', {
 		var link = field.link;
 		var source = field.source;
 
-		if(source != null || field.type == Type.File)
+		if(source != null || field.type == Type.File) {
 			this.fireEvent('follow', item.record, field);
+			return true;
+		}
 
 		return false;
 	},
