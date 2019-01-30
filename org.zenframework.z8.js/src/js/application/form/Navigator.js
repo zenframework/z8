@@ -737,7 +737,7 @@ Z8.define('Z8.application.form.Navigator', {
 		};
 
 		var callback = function(response, success) {
-			this.onActionComplete(action, records, response, success);
+			this.onActionComplete(action, this.getChecked(), response, success);
 			this.actionsButton.setBusy(false);
 			this.refreshRecords(this.refreshButton);
 		};
