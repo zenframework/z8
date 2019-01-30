@@ -336,7 +336,7 @@ Z8.define('Z8.application.form.Navigator', {
 		}
 
 		var menu = new Z8.menu.Menu({ items: items });
-		menu.on('itemClick', this.onMenuAction, this);
+		menu.on('itemClick', this.onAction, this);
 
 		return new Z8.button.Button({ cls: 'btn-sm', icon: 'fa-play', text: 'Действия', tooltip: 'Действия', menu: menu, handler: this.onMenuButtonClick, scope: this });
 	},
@@ -723,7 +723,7 @@ Z8.define('Z8.application.form.Navigator', {
 		button.toggleMenu();
 	},
 
-	onMenuAction: function(menu, item) {
+	onAction: function(menu, item) {
 		this.actionsButton.setBusy(true);
 
 		var action = item.action;
@@ -737,7 +737,7 @@ Z8.define('Z8.application.form.Navigator', {
 		};
 
 		var callback = function(response, success) {
-			this.onAction(action, response, success, records);
+			this.onActionComplete(action, records, response, success);
 			this.actionsButton.setBusy(false);
 			this.refreshRecords(this.refreshButton);
 		};
@@ -745,7 +745,7 @@ Z8.define('Z8.application.form.Navigator', {
 		HttpRequest.send(params, { fn: callback, scope: this });
 	},
 
-	onAction: function(action, response, success, records) {
+	onActionComplete: function(action, records, response, success) {
 	},
 
 	onMenuReport: function(menu, item) {
