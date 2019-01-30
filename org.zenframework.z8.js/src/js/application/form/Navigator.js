@@ -737,7 +737,7 @@ Z8.define('Z8.application.form.Navigator', {
 		};
 
 		var callback = function(response, success) {
-			this.onAction(action, response, success);
+			this.onAction(action, response, success, records);
 			this.actionsButton.setBusy(false);
 			this.refreshRecords(this.refreshButton);
 		};
@@ -745,7 +745,7 @@ Z8.define('Z8.application.form.Navigator', {
 		HttpRequest.send(params, { fn: callback, scope: this });
 	},
 
-	onAction: function(action, response, success) {
+	onAction: function(action, response, success, records) {
 	},
 
 	onMenuReport: function(menu, item) {
