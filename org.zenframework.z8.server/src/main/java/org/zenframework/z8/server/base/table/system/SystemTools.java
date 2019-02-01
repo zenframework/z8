@@ -74,15 +74,14 @@ public class SystemTools extends Desktop {
 
 		if(ServerConfig.isLatestVersion()) {
 			objects.add(users);
-			objects.add(domains);
+			objects.add(roles);
 			objects.add(jobs);
+			objects.add(tables);
 			objects.add(sequences);
-
-			objects.add(exportMessages);
 			objects.add(files);
 
-			objects.add(tables);
-			objects.add(roles);
+			objects.add(domains);
+			objects.add(exportMessages);
 
 			if(ApplicationServer.getUser().isAdministrator()) {
 				objects.add(authorityCenter);

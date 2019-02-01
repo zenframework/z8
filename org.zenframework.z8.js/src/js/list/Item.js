@@ -82,13 +82,15 @@ Z8.define('Z8.list.Item', {
 		if(this.list.checks) {
 			var check = { tag: 'i', cls: 'fa ' + (this.checked ? 'fa-check-square' : 'fa-square-o')};
 			var text = { cls: 'text', cn: [check] };
-			columns.push({ tag: 'td', cls: 'check column', cn: [text] });
+			var cell = { cls: 'cell', cn: [text] };
+			columns.push({ tag: 'td', cls: 'check column', cn: [cell] });
 		}
 
 		if(this.list.locks) {
 			var lock = { tag: 'i', cls: 'fa ' + (this.isReadOnly() ? 'fa-lock' : '')};
 			var text = { cls: 'text', cn: [lock] };
-			columns.push({ tag: 'td', cls: 'lock column', cn: [text] });
+			var cell = { cls: 'cell', cn: [text] };
+			columns.push({ tag: 'td', cls: 'lock column', cn: [cell] });
 		}
 
 		var icons = [];
@@ -136,9 +138,9 @@ Z8.define('Z8.list.Item', {
 					text = String.htmlText(text);
 				}
 
-				text = { tag: 'span', cls: this.getCellCls(field, record), cn: i == 0 ? icons.concat([text]) : [text] };
-
-				columns.push({ tag: 'td', cls: cls + (type != null ? ' ' + type : '') + (i == 0 ? ' ' + treeCls : ''), field: i, cn: [text], title: title });
+				text = { tag: 'span', cls: this.getCellCls(field, record), cn: [text] };
+				var cell = { cls: 'cell', cn: i == 0 ? icons.concat([text]) : [text] };
+				columns.push({ tag: 'td', cls: cls + (type != null ? ' ' + type : '') + (i == 0 ? ' ' + treeCls : ''), field: i, cn: [cell], title: title });
 			}
 		} else {
 			var text = String.htmlText(this.text);
@@ -150,8 +152,9 @@ Z8.define('Z8.list.Item', {
 				shortcut = { tag: 'span', cls: 'shortcut', html: [shortcut] };
 			}
 
-			text = { tag: 'div', cls: 'text' + (shortcut != null ? ' shortcuts' : ''), cn: icons.concat(shortcut != null ? [text, shortcut] : [text]) };
-			columns.push({ tag: 'td', cls: cls, cn: [text], title: title });
+			text = { tag: 'div', cls: 'text' + (shortcut != null ? ' shortcuts' : ''), cn: shortcut != null ? [text, shortcut] : [text] };
+			var cell = { cls: 'cell', cn: icons.concat([text]) };
+			columns.push({ tag: 'td', cls: cls, cn: [cell], title: title });
 		}
 
 		return columns;
@@ -207,9 +210,9 @@ Z8.define('Z8.list.Item', {
 
 		this.collapser = this.selectNode('.item .collapser .icon');
 		this.iconElement = this.selectNode('.item .icon');
-		this.checkIcon = this.selectNode('.item>.column.check>.text>.fa');
+		this.checkIcon = this.selectNode('.item>.column.check>.cell>.text>.fa');
 		this.checkElement = this.selectNode('.item>.column.check');
-		this.lockIcon = this.selectNode('.item>.column.lock>.text>.fa');
+		this.lockIcon = this.selectNode('.item>.column.lock>.cell>.text>.fa');
 		this.cells = this.queryNodes('.item>.column:not(.check):not(.lock)');
 
 		DOM.on(this, 'mouseDown', this.onMouseDown, this);
@@ -327,7 +330,7 @@ Z8.define('Z8.list.Item', {
 
 	getTextElement: function(index) {
 		var cell = Number.isNumber(index) ? this.cells[index] : index;
-		return cell != null ? cell.firstChild : null;
+		return cell != null ? cell.firstChild.lastChild : null;
 	},
 
 	setText: function(index, text) {
@@ -338,7 +341,7 @@ Z8.define('Z8.list.Item', {
 			return;
 
 		if(String.isString(text)) {
-			DOM.setValue(textElement.lastChild || textElement, String.htmlText(text));
+			DOM.setValue(textElement, String.htmlText(text));
 			DOM.setAttribute(cell, 'title', text);
 		} else {
 			DOM.setInnerHTML(textElement, DOM.markup(text));

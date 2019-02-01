@@ -90,18 +90,14 @@
 }
 
 .list .header>.column>.text,
-.list .item>.column>.text,
-.list .total>.column>.text {
+.list .item>.column>.cell>.text,
+.list .total>.column>.cell>.text {
 	overflow-x: hidden;
 	overflow-y: hidden;
 	text-overflow: ellipsis;
 }
 
-.list .item>.column.tree>.text {
-	white-space: nowrap;
-}
-
-.list .total>.column>.text {
+.list .total>.column>.cell>.text {
 	white-space: nowrap;
 }
 
@@ -133,8 +129,26 @@
 	padding: 0;
 }
 
-.list .item>.column {
+.list .item>.column,
+.list .total>.column {
 	border-left: 1px solid #eee;
+	vertical-align: top;
+}
+
+.list .item>.column>.cell,
+.list .total>.column>.cell {
+	display: flex;
+	flex-direction: row;
+}
+
+.list .item>.column>.cell {
+	padding: .5em .5em;
+}
+
+.list .total>.column>.cell {
+	padding: .42857143em .5em;
+	font-size: .85714286em;
+	font-weight: bold;
 }
 
 .list .item>.column:first-child,
@@ -142,39 +156,32 @@
 	border-left: none;
 }
 
-
 .list .item>.column {
 	border-bottom: 1px solid #eee;
 }
 
-.list .item>.column>.text {
-	padding: .5em .5em;
+.list .item>.column>.cell>.text,
+.list .total>.column>.cell>.text {
 	display: inline-block;
 }
 
-.list .item>.column>.text.file,
-.list .item>.column>.text.follow {
+.list .item>.column>.cell>.text.file,
+.list .item>.column>.cell>.text.follow {
 	cursor: pointer;
 }
 
-.list .item>.column>.text.file:hover,
-.list .item>.column>.text.follow:hover {
+.list .item>.column>.cell>.text.file:hover,
+.list .item>.column>.cell>.text.follow:hover {
 	text-decoration: underline;
 }
 
-.list .total>.column>.text {
-	padding: .42857143em .5em;
-	font-size: .85714286em;
-	font-weight: bold;
-}
-
-.list .item>.column:first-child:not(.check):not(.lock)>.text,
-.list .total>.column:first-child:not(.check):not(.lock)>.text {
+.list .item>.column:first-child:not(.check):not(.lock)>.cell,
+.list .total>.column:first-child:not(.check):not(.lock)>.cell {
 	padding-left: 1em;
 }
 
 .list .header>.column>.text>.icon,
-.list .item>.column>.text>.icon {
+.list .item>.column>.cell>.icon {
 	margin-right: .5em;
 }
 
@@ -182,36 +189,36 @@
 	text-align: center;
 }
 
-.list .item>.column.boolean>.text {
+.list .item>.column.boolean>.cell>.text {
 	overflow-x: visible;
 	overflow-y: visible;
 }
 
-.list .item>.column.file>.text {
+.list .item>.column.file>.cell>.text {
 	cursor: pointer;
 }
 
-.list .item>.column.file>.text:hover {
+.list .item>.column.file>.cell>.text:hover {
 	text-decoration: underline;
 }
 
-.list .item>.column.int>.text,
-.list .total>.column.int>.text,
-.list .item>.column.float>.text,
-.list .total>.column.float>.text,
-.list .item>.column.date>.text,
-.list .total>.column.date>.text,
-.list .item>.column.datetime>.text,
-.list .total>.column.datetime>.text {
-	text-align: right;
+.list .item>.column.int>.cell,
+.list .total>.column.int>.cell,
+.list .item>.column.float>.cell,
+.list .total>.column.float>.cell,
+.list .item>.column.date>.cell,
+.list .total>.column.date>.cell,
+.list .item>.column.datetime>.cell,
+.list .total>.column.datetime>.cell {
+	flex-direction: row-reverse;
 	white-space: nowrap;
 }
 
-.list .item>.column.int:first-child>.text,
-.list .item>.column.float:first-child>.text,
-.list .item>.column.date:first-child>.text,
-.list .item>.column.datetime:first-child>.text {
-	text-align: left;
+.list .item>.column.int:first-child>.cell,
+.list .item>.column.float:first-child>.cell,
+.list .item>.column.date:first-child>.cell,
+.list .item>.column.datetime:first-child>.cell {
+	flex-direction: row;
 }
 
 .list .item>.column.check,
@@ -219,7 +226,18 @@
 	width: 2.14285714em;
 	max-width: 2.14285714em;
 	min-width: 2.14285714em;
-	text-align: center;
+}
+
+.list .item>.column.check>.cell,
+.list .item>.column.lock>.cell {
+	padding-left: .57142857em;
+	padding-right: 0;
+}
+
+.list .item>.column.check>.cell>.text,
+.list .item>.column.lock>.cell>.text {
+	overflow-x: visible;
+	overflow-y: visible;
 }
 
 .list .item>.column.check .fa-check-square {
@@ -236,7 +254,7 @@
 	padding-left: 1em;
 }
 
-.list .item.active>.column:first-child>.text:before {
+.list .item.active>.column:first-child:before {
 	content: ' ';
 	position: absolute;
 	top: 0;
@@ -330,6 +348,7 @@
 	text-align: center;
 	padding-top: .28571429em;
 	font-weight: bold;
+	border-right: none
 }
 
 .list .header>.column.icon:not(:first-child) {
@@ -345,16 +364,16 @@
 	padding-left: .5em;
 }
 
-.list .item>.column>.text>.collapser {
+.list .item>.column>.cell>.collapser {
 	cursor: pointer;
 	margin-right: .5em;
 }
 
-.list .item>.column>.text>.collapser:hover {
+.list .item>.column>.cell>.collapser:hover {
 	color: #39c;
 }
 
-.list .item:focus>.column>.text>.collapser:hover {
+.list .item:focus>.column>.cell>.collapser:hover {
 	color: #333;
 }
 
@@ -584,28 +603,28 @@
 	border-bottom: none;
 }
 
-.dropdown-menu.list .item>.column>.text {
+.dropdown-menu.list .item>.column>.cell>.text {
 	position: relative;
 	border: none;
 	white-space: nowrap;
 }
 
-.dropdown-menu.list .item>.column:first-child>.text {
+.dropdown-menu.list .item>.column:first-child>.cell {
 	padding-left: 1.42857143em;
 }
 
-.dropdown-menu.list .item>.column>.text.shortcuts {
+.dropdown-menu.list .item>.column:last-child>.cell {
+	padding-right: 1.42857143em;
+}
+
+.dropdown-menu.list .item>.column>.cell>.text.shortcuts {
 	display: flex;
 }
 
-.dropdown-menu.list .item>.column>.text>.shortcut {
+.dropdown-menu.list .item>.column>.cell>.text>.shortcut {
 	text-align: right;
 	margin-left: 1.07142857em;
 	flex: 1;
-}
-
-.dropdown-menu.list .item>.column:last-child>.text {
-	padding-right: 1.42857143em;
 }
 
 .dropdown-menu.list .item:focus>.column {

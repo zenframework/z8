@@ -3,9 +3,11 @@ Z8.define('Z8.list.Total', {
 
 	htmlMarkup: function() {
 		var text = this.formatText(this.getTotal());
-		text = { cls: 'text', html: text, title: text } ;
+		text = { tag: 'span', cls: 'text', html: text };
+		var cell = { cls: 'cell', cn: [text] };
+
 		var cls = this.cls = DOM.parseCls(this.cls).pushIf('column').pushIf(this.field.type);
-		return { tag: 'td', id: this.getId(), cls: cls.join(' '), cn: [text] };
+		return { tag: 'td', id: this.getId(), cls: cls.join(' '), cn: [cell], title: text };
 	},
 
 	completeRender: function() {
@@ -31,7 +33,7 @@ Z8.define('Z8.list.Total', {
 		this.text = text;
 		var text = String.htmlText(this.formatText(text));
 		DOM.setValue(this.textElement, text);
-		DOM.setTitle(this.textElement, text);
+		DOM.setTitle(this, text);
 	},
 
 	formatText: function(value) {
