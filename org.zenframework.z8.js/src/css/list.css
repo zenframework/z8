@@ -132,7 +132,6 @@
 .list .item>.column,
 .list .total>.column {
 	border-left: 1px solid #eee;
-	vertical-align: top;
 }
 
 .list .item>.column>.cell,
@@ -185,13 +184,9 @@
 	margin-right: .5em;
 }
 
-.list .item>.column.boolean {
-	text-align: center;
-}
-
-.list .item>.column.boolean>.cell>.text {
-	overflow-x: visible;
-	overflow-y: visible;
+.list .item>.column.boolean>.cell {
+	flex-flow: column;
+	align-items: center;
 }
 
 .list .item>.column.file>.cell>.text {
@@ -230,8 +225,9 @@
 
 .list .item>.column.check>.cell,
 .list .item>.column.lock>.cell {
-	padding-left: .57142857em;
-	padding-right: 0;
+	flex-flow: column;
+	align-items: center;
+	padding: 0;
 }
 
 .list .item>.column.check>.cell>.text,
@@ -573,9 +569,6 @@
 	overflow-x: hidden;
 	overflow-y: hidden;
 	text-overflow: ellipsis;
-/*
-	white-space: nowrap;
-*/
 }
 
 .dropdown-menu.list {
