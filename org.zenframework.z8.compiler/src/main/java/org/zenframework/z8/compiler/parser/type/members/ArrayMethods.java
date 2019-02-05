@@ -98,6 +98,9 @@ public class ArrayMethods {
 			// TYPE[] sort()
 			methods.add(new Method(new VariableType(variableType), "sort", null));
 
+			// TYPE[] unique()
+			methods.add(new Method(new VariableType(variableType), "unique", null));
+
 			// string join()
 			methods.add(new Method(new VariableType(compilationUnit, stringType), "join", null));
 

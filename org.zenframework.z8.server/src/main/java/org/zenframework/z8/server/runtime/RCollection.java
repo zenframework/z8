@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 
 import org.zenframework.z8.server.types.bool;
@@ -245,6 +246,15 @@ public class RCollection<TYPE> extends ArrayList<TYPE> {
 	public RCollection<TYPE> z8_sort() {
 		Collections.sort((List<Comparable>)this);
 		return this;
+	}
+
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	public RCollection<TYPE> z8_unique() {
+		LinkedHashSet<TYPE> set = new LinkedHashSet();
+		set.addAll(this);
+		RCollection<TYPE> result = new RCollection();
+		result.addAll(set);
+		return result;
 	}
 
 	public string z8_join() {

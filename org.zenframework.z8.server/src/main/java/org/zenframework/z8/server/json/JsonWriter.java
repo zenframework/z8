@@ -375,8 +375,8 @@ public class JsonWriter {
 
 	public void startResponse(String requestId, boolean success) {
 		startObject();
-		writeProperty(new string(Json.request), requestId);
-		writeProperty(new string(Json.success), success);
+		writeProperty(Json.request, requestId);
+		writeProperty(Json.success, success);
 	}
 
 	public void startResponse(String requestId, boolean success, int status) {

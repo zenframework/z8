@@ -49,12 +49,14 @@
             <property name="borderTopColor">#C0C0C0</property>
             <property name="borderTopStyle">solid</property>
             <property name="borderTopWidth">1px</property>
+            <property name="marginTop">0pt</property>
             <property name="paddingTop">5px</property>
             <property name="paddingLeft">5px</property>
             <property name="paddingBottom">5px</property>
             <property name="paddingRight">5px</property>
             <property name="textAlign">center</property>
             <property name="verticalAlign">middle</property>
+            <property name="whiteSpace">pre</property>
         </style>
         <style name="GroupHeaderCell" id="8">
             <property name="backgroundColor">#F7F7F7</property>
@@ -113,10 +115,12 @@
             <property name="borderTopColor">#C0C0C0</property>
             <property name="borderTopStyle">solid</property>
             <property name="borderTopWidth">1px</property>
-            <property name="paddingTop">5px</property>
+            <property name="paddingTop">15px</property>
             <property name="paddingLeft">5px</property>
-            <property name="paddingBottom">5px</property>
+            <property name="paddingBottom">15px</property>
             <property name="paddingRight">5px</property>
+            <property name="verticalAlign">middle</property>
+            <property name="whiteSpace">pre</property>
             <property name="pageBreakInside">auto</property>
         </style>
         <style name="GroupFooterCell2" id="12">

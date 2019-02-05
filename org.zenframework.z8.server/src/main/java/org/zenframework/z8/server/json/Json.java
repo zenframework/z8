@@ -10,6 +10,7 @@ public interface Json {
 	static public string sourceCode = new string("sourceCode");
 
 	static public string request = new string("request");
+	static public string response = new string("response");
 	static public string session = new string("session");
 	static public string server = new string("server");
 	static public string service = new string("service");

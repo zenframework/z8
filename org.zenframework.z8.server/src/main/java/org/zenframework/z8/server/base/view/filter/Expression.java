@@ -1,8 +1,5 @@
 package org.zenframework.z8.server.base.view.filter;
 
-import java.util.ArrayList;
-import java.util.Collection;
-
 import org.zenframework.z8.server.base.query.Query;
 import org.zenframework.z8.server.base.table.value.Field;
 import org.zenframework.z8.server.base.table.value.GeometryExpression;
@@ -21,7 +18,6 @@ import org.zenframework.z8.server.db.sql.functions.conversion.GuidToString;
 import org.zenframework.z8.server.db.sql.functions.string.Like;
 import org.zenframework.z8.server.db.sql.functions.string.Lower;
 import org.zenframework.z8.server.json.Json;
-import org.zenframework.z8.server.json.parser.JsonArray;
 import org.zenframework.z8.server.json.parser.JsonObject;
 import org.zenframework.z8.server.types.bool;
 import org.zenframework.z8.server.types.date;
@@ -29,8 +25,6 @@ import org.zenframework.z8.server.types.decimal;
 import org.zenframework.z8.server.types.geometry;
 import org.zenframework.z8.server.types.guid;
 import org.zenframework.z8.server.types.integer;
-import org.zenframework.z8.server.types.primary;
-import org.zenframework.z8.server.types.string;
 import org.zenframework.z8.server.types.sql.sql_bool;
 import org.zenframework.z8.server.types.sql.sql_date;
 import org.zenframework.z8.server.types.sql.sql_geometry;
@@ -39,58 +33,17 @@ import org.zenframework.z8.server.types.sql.sql_string;
 public class Expression implements IFilter {
 	private Field field;
 	private Operation operation;
-	private String[] values;
+	private String value;
 
 	public Expression(JsonObject expression, Query query) {
 		String field = expression.has(Json.property) ? expression.getString(Json.property) : null;
-		String values = expression.has(Json.value) ? expression.getString(Json.value) : null;
+		String value = expression.has(Json.value) ? expression.getString(Json.value) : null;
 		String operator = expression.has(Json.operator) ? expression.getString(Json.operator) : null;
 
 		this.operation = operator != null ? Operation.fromString(operator) : Operation.Eq;
 
 		this.field = field != null ? query.findFieldById(field) : null;
-		this.values = parseValues(values);
-	}
-
-	private String[] parseValues(String jsonData) {
-		Collection<String> result = new ArrayList<String>();
-
-		if(jsonData == null || jsonData.isEmpty())
-			return new String[0];
-
-		char startChar = jsonData.charAt(0);
-
-		if(startChar == '[') {
-			JsonArray values = new JsonArray(jsonData);
-			for(Object value : values)
-				result.add((String)value);
-		} else
-			result.add(jsonData);
-
-		return result.toArray(new String[0]);
-	}
-
-	private Collection<primary> getValues(FieldType type) {
-		Collection<primary> result = new ArrayList<primary>();
-
-		for(String value : values) {
-			if(type == FieldType.Date || type == FieldType.Datetime)
-				result.add(new date(value));
-			else if(type == FieldType.Guid)
-				result.add(new guid(value));
-			else if(type == FieldType.Decimal)
-				result.add(new decimal(value));
-			else if(type == FieldType.Integer)
-				result.add(new integer(value));
-			else if(type == FieldType.Boolean)
-				result.add(new bool(value));
-			else if(type == FieldType.String || type == FieldType.Text || type == FieldType.Attachments || type == FieldType.File)
-				result.add(new string(value));
-			else
-				throw new UnsupportedOperationException();
-		}
-
-		return result;
+		this.value = value;
 	}
 
 	public SqlToken where() {
@@ -98,20 +51,6 @@ public class Expression implements IFilter {
 			return null;
 
 		FieldType type = field.type();
-
-		if(values.length > 1) {
-			if(operation != Operation.Eq && operation != Operation.NotEq || type == FieldType.Date || type == FieldType.Datetime)
-				throw new UnsupportedOperationException();
-
-			SqlToken result = field.inVector(getValues(type));
-
-			if(operation == Operation.NotEq)
-				result = new Unary(Operation.Not, result);
-
-			return result;
-		}
-
-		String value = values.length != 0 ? values[0] : null;
 
 		switch(type) {
 		case Boolean:
@@ -192,7 +131,7 @@ public class Expression implements IFilter {
 		case String:
 		case Text:
 		case Attachments:
-		case File:
+		case File: {
 			SqlToken field = new SqlField(this.field);
 
 			if(type == FieldType.Guid) {
@@ -258,13 +197,14 @@ public class Expression implements IFilter {
 			default:
 				throw new UnsupportedOperationException();
 			}
+		}
 		case Geometry:
-			return new Intersects(this.field, new sql_geometry(geometry.fromGeoJson(value, srs(this.field))));
+			return new Intersects(field, new sql_geometry(geometry.fromGeoJson(value, srs(field))));
 		default:
 			throw new UnsupportedOperationException();
 		}
 	}
-	
+
 	static private int srs(Field field) {
 		if (field instanceof GeometryField)
 			return ((GeometryField) field).srs.getInt();
@@ -272,5 +212,4 @@ public class Expression implements IFilter {
 			return ((GeometryExpression) field).srs.getInt();
 		throw new UnsupportedOperationException();
 	}
-
 }

@@ -89,6 +89,7 @@ Z8.define('Z8.application.viewport.Viewport', {
 
 		DOM.on(menuToggle, 'mouseDown', this.onMenuToggleMouseDown, this);
 		DOM.on(document.body, 'keyDown', this.onKeyDown, this);
+		DOM.on(window, 'popState', this.onPopState, this);
 	},
 
 	onLogout: function() {
@@ -99,6 +100,7 @@ Z8.define('Z8.application.viewport.Viewport', {
 
 		DOM.un(this.menuToggle, 'mouseDown', this.onMenuToggleMouseDown, this);
 		DOM.un(document.body, 'keyDown', this.onKeyDown, this);
+		DOM.un(this, 'popState', this.onPopState, this);
 
 		this.closeAllForms();
 
@@ -228,6 +230,17 @@ Z8.define('Z8.application.viewport.Viewport', {
 		this.openForm(form);
 	},
 
+	getFormById: function(id) {
+		var forms = this.forms;
+
+		for(var i = 0, length = forms.length; i < length; i++) {
+			var form = forms[i];
+			if(form != null && form.formId == id)
+				return form;
+		}
+		return null;
+	},
+
 	closeAllForms: function() {
 		var forms = this.forms;
 		var breadcrumbs = this.breadcrumbs;
@@ -302,7 +315,7 @@ Z8.define('Z8.application.viewport.Viewport', {
 		jobMonitor.addJob(job);
 	},
 
-	open: function(params, closeOthers, config) {
+	open: function(params, closeOthers, config, skipHistory) {
 		if(this.isOpeningForm)
 			return;
 
@@ -320,10 +333,13 @@ Z8.define('Z8.application.viewport.Viewport', {
 				response.filter = params.filter;
 				response.period = params.period;
 
-				config = Z8.apply(config, { cls: 'air', store: response });
+				var formId = Component.nextId();
+				var formConfig = Z8.apply({ cls: 'air', store: response, formId: formId }, config);
+				var formCls = Application.getSubclass(response.ui);
+				var form = formCls != null ? Z8.create(formCls, formConfig) : new Z8.application.form.Navigator(formConfig);
 
-				var form = Application.getSubclass(response.ui);
-				form = form != null ? Z8.create(form, config) : new Z8.application.form.Navigator(config);
+				if(!skipHistory)
+					window.history.pushState({ z8: true, params : params, closeOthers: closeOthers, config: config, formId: formId }, "", "");
 
 				this.openForm(form, closeOthers);
 			} else {
@@ -369,5 +385,17 @@ Z8.define('Z8.application.viewport.Viewport', {
 			Ems.reset();
 			event.stopEvent();
 		}
+	},
+
+	onPopState: function(event, target) {
+		var state = event.state;
+		if(state != null && state.z8) {
+			var form = this.getFormById(state.formId);
+			if(form != null)
+				this.openForm(form, state.closeOthers);
+			else
+				this.open(state.params, state.closeOthers, state.config, true);
+		}
+		event.stopEvent();
 	}
 });

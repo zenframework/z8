@@ -303,7 +303,9 @@ Z8.define('Z8.application.form.Navigator', {
 		var items = [
 			new Z8.menu.Item({ text: 'Acrobat Reader (*.pdf)', icon: 'fa-file-pdf-o', format: 'pdf' }),
 			new Z8.menu.Item({ text: 'Microsoft Excel (*.xls)', icon: 'fa-file-excel-o', format: 'xls' }),
+/*
 			new Z8.menu.Item({ text: 'Microsoft Word (*.doc)', icon: 'fa-file-word-o', format: 'doc' }),
+*/
 			'-',
 			new Z8.menu.Item({ text: 'Настройки', icon: 'fa-print', enabled: false })
 		];
