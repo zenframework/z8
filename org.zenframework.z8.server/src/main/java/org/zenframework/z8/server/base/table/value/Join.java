@@ -21,7 +21,7 @@ public class Join extends Expression implements IJoin {
 	}
 
 	public JoinType join = JoinType.Inner;
-	private Query.CLASS<Query> query = null;
+	public Query.CLASS<? extends Query> query = null;
 
 	public Join(IObject container) {
 		super(container);
@@ -29,7 +29,7 @@ public class Join extends Expression implements IJoin {
 	}
 
 	@Override
-	public Query.CLASS<Query> query() {
+	public Query.CLASS<? extends Query> query() {
 		return query;
 	}
 
@@ -56,11 +56,7 @@ public class Join extends Expression implements IJoin {
 
 	@Override
 	public sql_bool on() {
-		return new sql_bool(z8_expression());
-	}
-
-	protected sql_bool z8_expression() {
-		return new sql_bool();
+		return new sql_bool(expression());
 	}
 
 	@Override
@@ -76,5 +72,9 @@ public class Join extends Expression implements IJoin {
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public void operatorAssign(Query.CLASS<? extends Query> data) {
 		query = (Query.CLASS)data;
+	}
+
+	public void operatorAssign(sql_bool expression) {
+		setExpression(expression);
 	}
 }

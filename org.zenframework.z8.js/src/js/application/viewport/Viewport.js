@@ -315,7 +315,7 @@ Z8.define('Z8.application.viewport.Viewport', {
 		jobMonitor.addJob(job);
 	},
 
-	open: function(params, closeOthers, config, skipHistory) {
+	open: function(params, closeOthers, config, fromHistory) {
 		if(this.isOpeningForm)
 			return;
 
@@ -338,8 +338,9 @@ Z8.define('Z8.application.viewport.Viewport', {
 				var formCls = Application.getSubclass(response.ui);
 				var form = formCls != null ? Z8.create(formCls, formConfig) : new Z8.application.form.Navigator(formConfig);
 
-				if(!skipHistory)
-					window.history.pushState({ z8: true, params : params, closeOthers: closeOthers, config: config, formId: formId }, "", "");
+				var state = { z8: true, params : params, closeOthers: closeOthers, config: config, formId: formId };
+				var history = window.history;
+				fromHistory ? history.replaceState(state, "", "") : history.pushState(state, "", "");
 
 				this.openForm(form, closeOthers);
 			} else {
@@ -395,7 +396,8 @@ Z8.define('Z8.application.viewport.Viewport', {
 				this.openForm(form, state.closeOthers);
 			else
 				this.open(state.params, state.closeOthers, state.config, true);
-		}
+		} else
+			this.openForm(null);
 		event.stopEvent();
 	}
 });

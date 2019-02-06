@@ -2,9 +2,11 @@ import org.zenframework.z8.base.query.Query;
 
 [native "org.zenframework.z8.server.base.table.value.Join"]
 public class Join extends Expression {
-	JoinType join = JoinType.Inner;
+	public Query query;
+	public JoinType join = JoinType.Inner;
 
 	public void operator = (Query data);
+	public void operator = (sql_bool expression);
 
 	virtual protected sql_bool expression();
 }
