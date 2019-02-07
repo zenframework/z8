@@ -189,6 +189,10 @@
 	align-items: center;
 }
 
+.list .item>.column.file>.cell {
+	padding-right: 1.5em;
+}
+
 .list .item>.column.file>.cell>.text {
 	cursor: pointer;
 }
@@ -600,6 +604,7 @@
 	position: relative;
 	border: none;
 	white-space: nowrap;
+	flex: 1;
 }
 
 .dropdown-menu.list .item>.column:first-child>.cell {
