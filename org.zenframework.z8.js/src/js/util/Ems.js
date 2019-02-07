@@ -20,11 +20,12 @@ Z8.define('Z8.util.Ems', {
 			return Math.ceil(ems * Ems.Base);
 		},
 
-		setBase: function(base) {
+		setBase: function(base, noResize) {
 			Ems.Base = base;
 			DOM.setStyle(document.body, 'font-size', base + 'px');
 			DOM.setStyle(document.body, 'line-height', base + 'px');
-			DOM.callWindowResize();
+			if (!noResize)
+				DOM.callWindowResize();
 		},
 
 		enlarge: function(value) {
