@@ -164,16 +164,6 @@
 	display: inline-block;
 }
 
-.list .item>.column>.cell>.text.file,
-.list .item>.column>.cell>.text.follow {
-	cursor: pointer;
-}
-
-.list .item>.column>.cell>.text.file:hover,
-.list .item>.column>.cell>.text.follow:hover {
-	text-decoration: underline;
-}
-
 .list .item>.column:first-child:not(.check):not(.lock)>.cell,
 .list .total>.column:first-child:not(.check):not(.lock)>.cell {
 	padding-left: 1em;
@@ -193,11 +183,13 @@
 	padding-right: 1.5em;
 }
 
-.list .item>.column.file>.cell>.text {
+.list .item>.column.file>.cell>.text,
+.list .item>.column>.cell>.text.follow {
 	cursor: pointer;
 }
 
-.list .item>.column.file>.cell>.text:hover {
+.list .item>.column.file>.cell>.text:hover,
+.list .item>.column>.cell>.text.follow:hover {
 	text-decoration: underline;
 }
 
