@@ -235,7 +235,8 @@
 }
 
 .list .item>.column.check>.cell>.text,
-.list .item>.column.lock>.cell>.text {
+.list .item>.column.lock>.cell>.text,
+.list .item>.column.boolean>.cell>.text {
 	overflow-x: visible;
 	overflow-y: visible;
 }
