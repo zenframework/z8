@@ -140,8 +140,8 @@ public class ServerConfig extends Properties {
 		traceSqlConnections = getProperty(TraceSqlConnections, false);
 
 		schedulerEnabled = getProperty(SchedulerEnabled, true);
-		maintenanceJobCron = getProperty(MaintenenceJobCron, "0 * * * *");
-		transportJobCron = getProperty(TransportJobCron, "*/5 * * * *");
+		maintenanceJobCron = getProperty(MaintenenceJobCron, "");
+		transportJobCron = getProperty(TransportJobCron, "");
 		transportJobTreads = getProperty(TransportJobTreads, 10);
 
 		textExtensions = getProperty(TextExtensions, new String[] { "txt", "xml" });
