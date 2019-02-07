@@ -20,7 +20,7 @@ public class Join extends Expression implements IJoin {
 		}
 	}
 
-	public JoinType join = JoinType.Inner;
+	public JoinType joinType = JoinType.Inner;
 	public Query.CLASS<? extends Query> query = null;
 
 	public Join(IObject container) {
@@ -50,8 +50,13 @@ public class Join extends Expression implements IJoin {
 	}
 
 	@Override
-	public JoinType getJoin() {
-		return join;
+	public JoinType getJoinType() {
+		return joinType;
+	}
+
+	@Override
+	public void setJoinType(JoinType joinType) {
+		this.joinType = joinType;
 	}
 
 	@Override

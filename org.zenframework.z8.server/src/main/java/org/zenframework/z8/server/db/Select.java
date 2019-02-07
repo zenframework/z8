@@ -276,7 +276,7 @@ public class Select {
 
 			if(name != null) {
 				options.disableAggregation();
-				join += "\n\t" + link.getJoin() + " join " + queryName(link.getQuery()) + " on " + link.on().format(vendor(), options, true);
+				join += "\n\t" + link.getJoinType() + " join " + queryName(link.getQuery()) + " on " + link.on().format(vendor(), options, true);
 				options.enableAggregation();
 			}
 		}

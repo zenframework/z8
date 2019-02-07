@@ -11,6 +11,8 @@ public interface ILink extends IField {
 	public ITable getReferencedTable();
 	public IField getReferer();
 
-	public JoinType getJoin();
+	public JoinType getJoinType();
+	public void setJoinType(JoinType joinType);
+
 	public sql_bool on();
 }

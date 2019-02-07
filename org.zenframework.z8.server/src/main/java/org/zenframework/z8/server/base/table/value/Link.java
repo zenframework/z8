@@ -29,7 +29,7 @@ public class Link extends GuidField implements ILink, IForeignKey {
 		}
 	}
 
-	public JoinType join = JoinType.Inner;
+	public JoinType joinType = JoinType.Inner;
 
 	private Query.CLASS<Query> query = null;
 
@@ -50,8 +50,13 @@ public class Link extends GuidField implements ILink, IForeignKey {
 	}
 
 	@Override
-	public JoinType getJoin() {
-		return join;
+	public JoinType getJoinType() {
+		return joinType;
+	}
+
+	@Override
+	public void setJoinType(JoinType joinType) {
+		this.joinType = joinType;
 	}
 
 	@Override

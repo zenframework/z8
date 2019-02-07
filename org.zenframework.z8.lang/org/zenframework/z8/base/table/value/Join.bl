@@ -3,7 +3,7 @@ import org.zenframework.z8.base.query.Query;
 [native "org.zenframework.z8.server.base.table.value.Join"]
 public class Join extends Expression {
 	public Query query;
-	public JoinType join = JoinType.Inner;
+	public JoinType joinType = JoinType.Inner;
 
 	public void operator = (Query data);
 	public void operator = (sql_bool expression);

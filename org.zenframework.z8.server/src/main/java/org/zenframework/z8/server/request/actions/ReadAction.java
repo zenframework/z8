@@ -334,6 +334,8 @@ public class ReadAction extends RequestAction {
 		if(path == null)
 			path = getContextQuery().getPath(query);
 
+		JoinType joinType = null;
+
 		for(ILink link : path) {
 			if(link instanceof Expression) {
 				Collection<Field> usedFields = getUsedFields((Field)link);
@@ -349,8 +351,13 @@ public class ReadAction extends RequestAction {
 
 			links.add(link);
 
-			if(link.getJoin() == JoinType.Right)
+			if(link.getJoinType() == JoinType.Right)
 				hasRightJoin = true;
+
+			if(joinType != JoinType.Left)
+				joinType = link.getJoinType();
+
+			link.setJoinType(joinType);
 		}
 
 		queryToPath.put(query, links);
@@ -389,7 +396,7 @@ public class ReadAction extends RequestAction {
 				if(!(link instanceof Join))
 					selectFields.add((Field)link);
 
-				if(link.getJoin() == JoinType.Right) {
+				if(link.getJoinType() == JoinType.Right) {
 					Field primaryKey = link.getQuery().primaryKey();
 					selectFields.add(primaryKey);
 					notNullFields.add(primaryKey);
