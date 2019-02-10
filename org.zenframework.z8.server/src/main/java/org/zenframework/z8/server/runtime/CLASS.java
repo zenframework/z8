@@ -3,17 +3,34 @@ package org.zenframework.z8.server.runtime;
 import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
-public class CLASS<TYPE extends IObject> extends OBJECT implements IClass<TYPE> {
+import org.zenframework.z8.server.json.Json;
+import org.zenframework.z8.server.json.JsonWriter;
+import org.zenframework.z8.server.types.guid;
+
+public class CLASS<TYPE extends IObject> implements IClass<TYPE> {
+	private Map<String, String> attributes = new HashMap<String, String>();
+
+	private IObject container = null;
+	private IObject owner = null;
+
+	private guid key = null;
+	private guid classIdKey = null;
+	private int ordinal = 0;
 
 	private Class<TYPE> javaClass;
+
+	private String id;
+	private String index;
 	private String classId;
 
 	private TYPE object = null;
 	private int stage = IClass.Constructor;
 
-	Constructor<?> constructor = null;
+	private Constructor<?> constructor = null;
 
 	private Object[] closure;
 
@@ -28,8 +45,44 @@ public class CLASS<TYPE extends IObject> extends OBJECT implements IClass<TYPE> 
 		return result;
 	}
 
+	
+	@Override
+	public Map<String, String> getAttributes() {
+		return attributes;
+	}
+
+	@Override
+	public void setAttributes(Map<String, String> attributes) {
+		this.attributes = attributes;
+	}
+
+	@Override
+	public boolean hasAttribute(String key) {
+		return attributes.containsKey(key);
+	}
+
+	@Override
+	public String getAttribute(String key) {
+		return attributes.get(key);
+	}
+
+	@Override
+	public void setAttribute(String key, String value) {
+		attributes.put(key, value);
+	}
+
+	@Override
+	public void removeAttribute(String key) {
+		attributes.remove(key);
+	}
+
 	public CLASS(IObject container) {
-		super(container);
+		this.container = container;
+	}
+
+	@Override
+	public IObject getContainer() {
+		return container;
 	}
 
 	@Override
@@ -48,30 +101,58 @@ public class CLASS<TYPE extends IObject> extends OBJECT implements IClass<TYPE> 
 		return stage;
 	}
 
-	private boolean hasIndex = false;
+	public String index() {
+		return container == null || index == null ? "" : index;
+	}
 
 	@Override
 	public void setIndex(String index) {
-		if(!hasIndex) {
-			super.setIndex(index);
-			hasIndex = true;
-		}
+		if(this.index == null)
+			this.index = index;
+	}
+
+	@Override
+	public IObject getOwner() {
+		return owner;
 	}
 
 	@Override
 	public void setOwner(IObject owner) {
-		super.setOwner(owner);
+		this.owner = owner;
+	}
 
-		if(object != null)
-			object.setOwner(owner);
+	@Override
+	public int ordinal() {
+		return ordinal;
 	}
 
 	@Override
 	public void setOrdinal(int ordinal) {
-		super.setOrdinal(ordinal);
+		this.ordinal = ordinal;
+	}
 
-		if(object != null)
-			object.setOrdinal(ordinal);
+	@Override
+	public String id() {
+		if(id == null) {
+			id = "";
+
+			IObject container = getContainer();
+
+			if(container != null) {
+				IClass<? extends IObject> cls = container.getCLASS();
+				cls.get();
+				id = cls.id();
+				id = id + (id.isEmpty() ? "" : ".") + index();
+			}
+		}
+
+		return id;
+	}
+
+	@Override
+	public void setId(String value) {
+		setIndex(value);
+		id = null;
 	}
 
 	@Override
@@ -143,8 +224,6 @@ public class CLASS<TYPE extends IObject> extends OBJECT implements IClass<TYPE> 
 		try {
 			object = constructObject(container);
 			object.setCLASS(this);
-			object.setOwner(getOwner());
-			object.setOrdinal(ordinal());
 		} catch(Throwable e) {
 			throw new RuntimeException(e);
 		}
@@ -155,7 +234,6 @@ public class CLASS<TYPE extends IObject> extends OBJECT implements IClass<TYPE> 
 			this.stage = Constructor1;
 			object.constructor1();
 			object.initMembers();
-			object.setAttributes(getAttributes());
 		}
 
 		callConstructor2(stage);
@@ -185,5 +263,137 @@ public class CLASS<TYPE extends IObject> extends OBJECT implements IClass<TYPE> 
 	@Override
 	public String classId() {
 		return classId == null ? classId = javaClass.getCanonicalName() : classId;
+	}
+
+	@Override
+	public guid classIdKey() {
+		if(classIdKey == null)
+			classIdKey = guid.create(classId());
+		return classIdKey;
+	}
+
+	@Override
+	public String keyString() {
+		IObject owner = getOwner();
+		if(owner == null)
+			return name();
+		String name = owner.name();
+		return (name != null ? name + "." : "") + name();
+	}
+
+	@Override
+	public guid key() {
+		return key == null ? key = guid.create(keyString()) : key;
+	}
+
+	@Override
+	public void setKey(guid key) {
+		this.key = key;
+	}
+
+	@Override
+	public String name() {
+		String name = getAttribute(Name);
+		return name != null ? name : classId();
+	}
+
+	@Override
+	public void setName(String name) {
+		setAttribute(Name, name);
+	}
+
+	@Override
+	public String displayName() {
+		return getAttribute(DisplayName);
+	}
+
+	@Override
+	public void setDisplayName(String name) {
+		setAttribute(DisplayName, name);
+	}
+
+	@Override
+	public String columnHeader() {
+		return getAttribute(ColumnHeader);
+	}
+
+	@Override
+	public void setColumnHeader(String name) {
+		setAttribute(ColumnHeader, name);
+	}
+
+	@Override
+	public boolean system() {
+		return getAttribute(System) != null;
+	}
+
+	@Override
+	public void setSystem(boolean system) {
+		setAttribute(System, system ? "" : null);
+	}
+
+	public boolean exportable() {
+		String exportable = getAttribute(Exportable);
+		return exportable == null || Boolean.parseBoolean(exportable);
+	}
+
+	@Override
+	public void setForeignKey(boolean foreignKey) {
+		setAttribute(ForeignKey, Boolean.toString(foreignKey));
+	}
+
+	@Override
+	public boolean foreignKey() {
+		String foreignKey = getAttribute(ForeignKey);
+		return foreignKey == null || Boolean.parseBoolean(foreignKey);
+	}
+
+	public void setExportable(boolean exportable) {
+		setAttribute(Exportable, Boolean.toString(exportable));
+	}
+
+	@Override
+	public String description() {
+		return getAttribute(Description);
+	}
+
+	@Override
+	public void setDescription(String description) {
+		setAttribute(Description, description);
+	}
+
+	@Override
+	public String ui() {
+		return getAttribute(UI);
+	}
+
+	@Override
+	public void setUi(String ui) {
+		setAttribute(UI, ui);
+	}
+
+	@Override
+	public String presentation() {
+		return getAttribute(Presentation);
+	}
+
+	@Override
+	public void setPresentation(String presentation) {
+		setAttribute(Presentation, presentation);
+	}
+
+	public String icon() {
+		return getAttribute(Icon);
+	}
+
+	public void setIcon(String icon) {
+		setAttribute(Icon, icon);
+	}
+
+	public void write(JsonWriter writer) {
+		writer.writeProperty(Json.text, displayName());
+		writer.writeProperty(Json.description, description());
+		writer.writeProperty(Json.icon, icon());
+		writer.writeProperty(Json.id, classId());
 	}
 }

@@ -41,7 +41,6 @@ abstract public class Field extends Control implements IField {
 	}
 
 	public static class CLASS<T extends Field> extends Control.CLASS<T> {
-
 		public CLASS(IObject container) {
 			super(container);
 			setJavaClass(Field.class);
@@ -101,12 +100,6 @@ abstract public class Field extends Control implements IField {
 
 		name = name();
 		return name == null || name.isEmpty() ? id() : name;
-	}
-
-	@Override
-	public String keyString() {
-		IObject owner = owner();
-		return (owner != null ? owner.name() + "." : "") + name();
 	}
 
 	@SuppressWarnings("unchecked")

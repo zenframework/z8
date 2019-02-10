@@ -28,16 +28,28 @@ public class TypeBody extends LanguageElement {
 	private IPosition bottomMemberSourceRange;
 
 	private List<ILanguageElement> members;
-	private List<IInitializer> initializers;
 
 	private Operator assignOperator;
 
 	public TypeBody(IToken leftBrace) {
+		this(leftBrace, null);
+	}
+
+	public TypeBody(IToken leftBrace, IToken rightBrace) {
 		this.leftBrace = leftBrace;
+		this.rightBrace = rightBrace;
+	}
+
+	public IToken getLeftBrace() {
+		return leftBrace;
 	}
 
 	public void setLeftBrace(IToken leftBrace) {
 		this.leftBrace = leftBrace;
+	}
+
+	public IToken getRightBrace() {
+		return rightBrace;
 	}
 
 	public void setRightBrace(IToken rightBrace) {
@@ -157,10 +169,6 @@ public class TypeBody extends LanguageElement {
 
 		for(ILanguageElement member : members)
 			member.resolveNestedTypes(compilationUnit, declaringType);
-
-		initializers = new ArrayList<IInitializer>();
-		getReferences(getDeclaringType(), initializers);
-		arrangeReferences(initializers);
 
 		return true;
 	}
@@ -412,6 +420,10 @@ public class TypeBody extends LanguageElement {
 
 	private void getConstructor1Body(CodeGenerator codeGenerator) {
 		getDeclaringType().setConstructionStage(BuiltinNative.Constructor1);
+
+		List<IInitializer> initializers = new ArrayList<IInitializer>();
+		getReferences(getDeclaringType(), initializers);
+		arrangeReferences(initializers);
 
 		for(IInitializer initializer : initializers) {
 			initializer.getDeclaringType().setConstructionStage(BuiltinNative.Constructor1);

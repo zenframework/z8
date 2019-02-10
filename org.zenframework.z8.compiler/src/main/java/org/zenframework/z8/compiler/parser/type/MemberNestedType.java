@@ -19,10 +19,10 @@ public class MemberNestedType extends AbstractType implements IInitializer {
 	private QualifiedName name;
 	private TypeBody body;
 
-	public MemberNestedType(QualifiedName name, IToken classToken, TypeBody body) {
+	public MemberNestedType(IToken name, IToken classToken, TypeBody body) {
 		super();
 
-		this.name = name;
+		this.name = new QualifiedName(name);
 		this.classToken = classToken;
 		this.body = body;
 	}
@@ -78,6 +78,9 @@ public class MemberNestedType extends AbstractType implements IInitializer {
 	public boolean resolveTypes(CompilationUnit compilationUnit, IType declaringType) {
 		if(!super.resolveTypes(compilationUnit, declaringType))
 			return false;
+
+		if(name.getTokenCount() != 1)
+			setError(name.getPosition(), name.toString() + ": MemberNestedType");
 
 		setUserName(name.toString());
 		setJavaName(compilationUnit.createUniqueName());
@@ -136,7 +139,7 @@ public class MemberNestedType extends AbstractType implements IInitializer {
 		if(!name.resolveNestedTypes(compilationUnit, declaringType) || variableType == null)
 			return false;
 
-		IType baseType = variableType.getType();
+		IType baseType = findBaseType(declaringType) /*variableType.getType()*/;
 		setBaseType(baseType);
 
 		if(baseType != null) {
@@ -151,6 +154,23 @@ public class MemberNestedType extends AbstractType implements IInitializer {
 		}
 
 		return true;
+	}
+
+	private IType findBaseType(IType type) {
+		if(type == null)
+			return null;
+
+		String nameStr = name.toString(0);
+
+		IType result = type.getNestedType(nameStr);
+
+		if(result != null && result != this)
+			return result;
+
+		if(type.getBaseType() != null)
+			return findBaseType(type.getBaseType());
+
+		return name.getVariableType().getType();
 	}
 
 	@Override

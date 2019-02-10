@@ -28,9 +28,14 @@ public class LinkExpression extends GuidExpression implements ILink {
 
 	public LinkExpression(IObject container) {
 		super(container);
-		setSystem(true);
 	}
 
+	@Override
+	public void constructor2() {
+		super.constructor2();
+		setSystem(true);
+	}
+	
 	@Override
 	public Query.CLASS<Query> query() {
 		return query;

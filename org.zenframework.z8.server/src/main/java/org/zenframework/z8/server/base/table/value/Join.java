@@ -25,6 +25,11 @@ public class Join extends Expression implements IJoin {
 
 	public Join(IObject container) {
 		super(container);
+	}
+
+	@Override
+	public void constructor2() {
+		super.constructor2();
 		setSystem(true);
 	}
 

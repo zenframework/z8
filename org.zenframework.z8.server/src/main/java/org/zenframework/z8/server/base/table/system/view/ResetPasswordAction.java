@@ -16,6 +16,7 @@ public class ResetPasswordAction extends Action {
 		public CLASS(IObject container) {
 			super(container);
 			setJavaClass(ResetPasswordAction.class);
+			setDisplayName(Users.displayNames.ResetPassword);
 		}
 
 		@Override
@@ -26,12 +27,6 @@ public class ResetPasswordAction extends Action {
 
 	public ResetPasswordAction(IObject container) {
 		super(container);
-	}
-
-	public void constructor2() {
-		super.constructor2();
-
-		setDisplayName(Users.displayNames.ResetPassword);
 	}
 
 	@SuppressWarnings("rawtypes")

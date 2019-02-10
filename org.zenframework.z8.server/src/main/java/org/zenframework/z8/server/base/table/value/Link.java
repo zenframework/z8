@@ -35,6 +35,12 @@ public class Link extends GuidField implements ILink, IForeignKey {
 
 	public Link(IObject container) {
 		super(container);
+	}
+
+	@Override
+	public void constructor2() {
+		super.constructor2();
+
 		setSystem(true);
 		indexed = bool.True;
 	}

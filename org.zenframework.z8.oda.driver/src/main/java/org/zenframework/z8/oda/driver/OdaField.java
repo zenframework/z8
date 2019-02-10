@@ -45,11 +45,6 @@ public class OdaField implements IField {
 	}
 
 	@Override
-	public void resetId() {
-		throw new UnsupportedOperationException();
-	}
-
-	@Override
 	public String displayName() {
 		return displayName;
 	}
@@ -342,5 +337,19 @@ public class OdaField implements IField {
 	@Override
 	public boolean isExpression() {
 		return false;
+	}
+
+	@Override
+	public String keyString() {
+		return null;
+	}
+
+	@Override
+	public boolean exportable() {
+		return false;
+	}
+
+	@Override
+	public void setExportable(boolean exportable) {
 	}
 }

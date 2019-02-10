@@ -711,7 +711,7 @@ public class Parser {
 				if(initializer != null) {
 					if(initializer instanceof Type) {
 						Type type = (Type)initializer;
-						ILanguageElement nestedType = new MemberNestedType(new QualifiedName(nameToken), type.getClassToken(), type.getBody());
+						ILanguageElement nestedType = new MemberNestedType(nameToken, type.getClassToken(), type.getBody());
 						ILanguageElement member = new Member(variableType, nameToken, nestedType);
 
 						if(modifiers != null)
@@ -739,10 +739,18 @@ public class Parser {
 
 			if(initializer instanceof Type) {
 				Type type = (Type)initializer;
-				ILanguageElement member = new MemberNestedType(qualifiedName, type.getClassToken(), type.getBody());
+
+				ILanguageElement member = new MemberNestedType(qualifiedName.getLastToken(), type.getClassToken(), type.getBody());
 
 				if(modifiers != null)
 					applyModifiers(modifiers, member);
+
+				IToken[] tokens = qualifiedName.getTokens();
+				for(int i = tokens.length - 2; i >= 0; i--) {
+					TypeBody body = new TypeBody(type.getBody().getLeftBrace(), type.getBody().getRightBrace());
+					body.addMember(member);
+					member = new MemberNestedType(tokens[i], type.getClassToken(), body);
+				}
 
 				return new ILanguageElement[] { member };
 			}

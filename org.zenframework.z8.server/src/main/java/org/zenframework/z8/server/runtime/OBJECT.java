@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.Map;
 
 import org.zenframework.z8.server.base.application.Application;
@@ -32,16 +31,7 @@ public class OBJECT extends RequestTarget implements IObject, RmiSerializable {
 		}
 	}
 
-	private guid key = null;
-	private guid classIdKey = null;
-	private int ordinal = 0;
-
-	private IObject container = null;
-	private IObject owner = null;
 	private CLASS<? extends OBJECT> cls = null;
-
-	private Map<String, String> attributes = new HashMap<String, String>();
-
 	public Members objects = new Members(this);
 
 	public OBJECT() {
@@ -50,12 +40,11 @@ public class OBJECT extends RequestTarget implements IObject, RmiSerializable {
 
 	public OBJECT(IObject container) {
 		super(null);
-		this.container = container;
 	}
 
 	@Override
 	public String classId() {
-		return cls.classId();
+		return getCLASS().classId();
 	}
 
 	@Override
@@ -65,172 +54,145 @@ public class OBJECT extends RequestTarget implements IObject, RmiSerializable {
 
 	@Override
 	public String id() {
-		if(id == null) {
-			OBJECT.CLASS<? extends OBJECT> cls = getCLASS();
-			if(cls != null)
-				cls.get();
-
-			id = "";
-
-			IObject container = getContainer();
-
-			if(container != null) {
-				id = container.id();
-				id = id + (id.isEmpty() ? "" : ".") + index();
-			}
-		}
-
-		return id;
+		return getCLASS().id();
 	}
 
 	@Override
-	public void setId(String value) {
-		setIndex(value.toString());
-		resetId();
-	}
-
-	@Override
-	public void resetId() {
-		id = null;
-		if(cls != null)
-			cls.resetId();
-	}
-
-	public String keyString() {
-		return name();
+	public void setId(String id) {
+		getCLASS().setId(id);
 	}
 
 	@Override
 	public guid classIdKey() {
-		if(classIdKey == null)
-			classIdKey = guid.create(classId());
-		return classIdKey;
+		return getCLASS().classIdKey();
+	}
+
+	@Override
+	public String keyString() {
+		return getCLASS().keyString();
 	}
 
 	@Override
 	public guid key() {
-		if(key == null)
-			key = guid.create(keyString());
-		return key;
+		return getCLASS().key();
 	}
 
 	@Override
 	public void setKey(guid key) {
-		this.key = key;
+		getCLASS().setKey(key);
 	}
 
 	@Override
 	public int ordinal() {
-		return ordinal;
+		return getCLASS().ordinal();
 	}
 
 	@Override
 	public void setOrdinal(int ordinal) {
-		this.ordinal = ordinal;
+		getCLASS().setOrdinal(ordinal);
 	}
 
 	@Override
 	public String name() {
-		String name = getAttribute(Name);
-		return name != null ? name : classId();
+		return getCLASS().name();
 	}
 
 	@Override
 	public void setName(String name) {
-		setAttribute(Name, name);
+		getCLASS().setName(name);
 	}
 
 	@Override
 	public String displayName() {
-		return getAttribute(DisplayName);
+		return getCLASS().displayName();
 	}
 
 	@Override
 	public void setDisplayName(String name) {
-		setAttribute(DisplayName, name);
+		getCLASS().setDisplayName(name);
 	}
 
 	@Override
 	public String columnHeader() {
-		return getAttribute(ColumnHeader);
+		return getCLASS().columnHeader();
 	}
 
 	@Override
 	public void setColumnHeader(String name) {
-		setAttribute(ColumnHeader, name);
-	}
-
-	@Override
-	public boolean system() {
-		return getAttribute(System) != null;
-	}
-
-	@Override
-	public void setSystem(boolean system) {
-		setAttribute(System, system ? "" : null);
-	}
-
-	public boolean exportable() {
-		String exportable = getAttribute(Exportable);
-		return exportable == null || Boolean.parseBoolean(exportable);
-	}
-
-	@Override
-	public void setForeignKey(boolean foreignKey) {
-		setAttribute(ForeignKey, Boolean.toString(foreignKey));
-	}
-
-	@Override
-	public boolean foreignKey() {
-		String foreignKey = getAttribute(ForeignKey);
-		return foreignKey == null || Boolean.parseBoolean(foreignKey);
-	}
-
-	public void setExportable(boolean exportable) {
-		setAttribute(Exportable, Boolean.toString(exportable));
+		getCLASS().setColumnHeader(name);
 	}
 
 	@Override
 	public String description() {
-		return getAttribute(Description);
+		return getCLASS().description();
 	}
 
 	@Override
 	public void setDescription(String description) {
-		setAttribute(Description, description);
+		getCLASS().setDescription(description);
 	}
 
 	@Override
 	public String ui() {
-		return getAttribute(UI);
+		return getCLASS().ui();
 	}
 
 	@Override
 	public void setUi(String ui) {
-		setAttribute(UI, ui);
+		getCLASS().setUi(ui);
 	}
 
 	@Override
 	public String presentation() {
-		return getAttribute(Presentation);
+		return getCLASS().presentation();
 	}
 
 	@Override
 	public void setPresentation(String presentation) {
-		setAttribute(Presentation, presentation);
+		getCLASS().setPresentation(presentation);
 	}
 
 	public String icon() {
-		return getAttribute(Icon);
+		return getCLASS().icon();
 	}
 
 	public void setIcon(String icon) {
-		setAttribute(Icon, icon);
+		getCLASS().setIcon(icon);;
+	}
+
+	@Override
+	public boolean system() {
+		return getCLASS().system();
+	}
+
+	@Override
+	public void setSystem(boolean system) {
+		getCLASS().setSystem(system);
+	}
+
+	@Override
+	public boolean foreignKey() {
+		return getCLASS().foreignKey();
+	}
+
+	@Override
+	public void setForeignKey(boolean foreignKey) {
+		getCLASS().setForeignKey(foreignKey);
+	}
+
+	@Override
+	public boolean exportable() {
+		return getCLASS().exportable();
+	}
+
+	@Override
+	public void setExportable(boolean exportable) {
+		getCLASS().setExportable(exportable);
 	}
 
 	@Override
 	public IObject getContainer() {
-		return container;
+		return getCLASS().getContainer();
 	}
 
 	@Override
@@ -253,12 +215,12 @@ public class OBJECT extends RequestTarget implements IObject, RmiSerializable {
 
 	@Override
 	public IObject getOwner() {
-		return owner;
+		return getCLASS().getOwner();
 	}
 
 	@Override
 	public void setOwner(IObject owner) {
-		this.owner = owner;
+		getCLASS().setOwner(owner);
 	}
 
 	@Override
@@ -274,45 +236,42 @@ public class OBJECT extends RequestTarget implements IObject, RmiSerializable {
 
 	@Override
 	public String index() {
-		if(container == null)
-			return "";
-		String index = getAttribute(Index);
-		return index != null ? index : "";
+		return getCLASS().index();
 	}
 
 	@Override
 	public void setIndex(String index) {
-		setAttribute(Index, index);
+		getCLASS().setIndex(index);
 	}
 
 	@Override
 	public Map<String, String> getAttributes() {
-		return attributes;
+		return getCLASS().getAttributes();
 	}
 
 	@Override
 	public void setAttributes(Map<String, String> attributes) {
-		this.attributes = attributes;
+		getCLASS().setAttributes(attributes);
 	}
 
 	@Override
 	public boolean hasAttribute(String key) {
-		return attributes.containsKey(key);
+		return getCLASS().hasAttribute(key);
 	}
 
 	@Override
 	public String getAttribute(String key) {
-		return attributes.get(key);
+		return getCLASS().getAttribute(key);
 	}
 
 	@Override
 	public void setAttribute(String key, String value) {
-		attributes.put(key, value);
+		getCLASS().setAttribute(key, value);
 	}
 
 	@Override
 	public void removeAttribute(String key) {
-		attributes.remove(key);
+		getCLASS().removeAttribute(key);
 	}
 
 	@Override
@@ -348,10 +307,7 @@ public class OBJECT extends RequestTarget implements IObject, RmiSerializable {
 	}
 
 	public void write(JsonWriter writer) {
-		writer.writeProperty(Json.text, displayName());
-		writer.writeProperty(Json.description, description());
-		writer.writeProperty(Json.icon, icon());
-		writer.writeProperty(Json.id, classId());
+		getCLASS().write(writer);
 	}
 
 	@Override
@@ -394,7 +350,7 @@ public class OBJECT extends RequestTarget implements IObject, RmiSerializable {
 	}
 
 	public void z8_setId(primary value) {
-		setId(value.toString());
+		getCLASS().setId(value.toString());
 	}
 
 	public string z8_index() {
@@ -410,7 +366,7 @@ public class OBJECT extends RequestTarget implements IObject, RmiSerializable {
 	}
 
 	public void z8_setDisplayName(primary value) {
-		setDisplayName(value.toString());
+		getCLASS().setDisplayName(value.toString());
 	}
 
 	public string z8_className() {

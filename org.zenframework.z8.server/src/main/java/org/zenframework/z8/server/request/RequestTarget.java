@@ -6,14 +6,23 @@ import org.zenframework.z8.server.engine.ApplicationServer;
 import org.zenframework.z8.server.json.JsonWriter;
 import org.zenframework.z8.server.types.string;
 
-public abstract class RequestTarget extends NamedObject implements IRequestTarget {
+public abstract class RequestTarget implements IRequestTarget {
 	private IRequest request;
+	private String id;
 
 	public RequestTarget() {
 	}
 
 	public RequestTarget(String id) {
-		super(id);
+		this.id = id;
+	}
+
+	public String id() {
+		return id;
+	}
+
+	public String displayName() {
+		return null;
 	}
 
 	public IRequest request() {
