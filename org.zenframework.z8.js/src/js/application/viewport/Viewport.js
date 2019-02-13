@@ -258,8 +258,10 @@ Z8.define('Z8.application.viewport.Viewport', {
 	},
 
 	openForm: function(form, closeOthers) {
+		var store = form != null ? form.store : null;
+
 		this.showSourceCode(false);
-		this.initSourceCode(form != null && form.store != null ? form.store.getSourceCodeLocation() : null);
+		this.initSourceCode(store != null ? (store.isStore ? store.getSourceCodeLocation() : store.sourceCode) : null);
 
 		var forms = this.forms;
 		var index = forms.indexOf(form || null);
