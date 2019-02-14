@@ -591,9 +591,8 @@ public class TableGenerator {
 		guid recordId = (guid)record.get(primaryKey);
 		guid parentId = (guid)record.get(parentKey);
 
-		if(parentKey != null && parentId == null) {
+		if(parentKey != null && parentId == null)
 			parentId = guid.Null;
-		}
 
 		Collection<Field> fields = (Collection)record.keySet();
 

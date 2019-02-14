@@ -125,6 +125,8 @@ public class ReadAction extends RequestAction {
 	}
 
 	protected void initialize() {
+		beforeRead();
+
 		ActionConfig parameters = config();
 
 		Query query = getQuery();
@@ -165,8 +167,6 @@ public class ReadAction extends RequestAction {
 				addSelectField(query.attachmentKey());
 			}
 		}
-
-		beforeRead();
 	}
 
 	private void initFilters() {

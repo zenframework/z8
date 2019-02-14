@@ -102,7 +102,7 @@ public class CLASS<TYPE extends IObject> implements IClass<TYPE> {
 	}
 
 	public String index() {
-		return container == null || index == null ? "" : index;
+		return container == null ? "" : index;
 	}
 
 	@Override
@@ -142,7 +142,7 @@ public class CLASS<TYPE extends IObject> implements IClass<TYPE> {
 				IClass<? extends IObject> cls = container.getCLASS();
 				cls.get();
 				id = cls.id();
-				id = id + (id.isEmpty() ? "" : ".") + index();
+				id += (id.isEmpty() ? "" : ".") + index();
 			}
 		}
 
@@ -262,7 +262,7 @@ public class CLASS<TYPE extends IObject> implements IClass<TYPE> {
 
 	@Override
 	public String classId() {
-		return classId == null ? classId = javaClass.getCanonicalName() : classId;
+		return classId == null ? (classId = javaClass.getCanonicalName()) : classId;
 	}
 
 	@Override

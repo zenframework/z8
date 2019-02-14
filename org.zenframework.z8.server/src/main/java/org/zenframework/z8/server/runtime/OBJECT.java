@@ -157,7 +157,7 @@ public class OBJECT extends RequestTarget implements IObject, RmiSerializable {
 	}
 
 	public void setIcon(String icon) {
-		getCLASS().setIcon(icon);;
+		getCLASS().setIcon(icon);
 	}
 
 	@Override
