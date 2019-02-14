@@ -7,7 +7,7 @@ public class TextExpression extends Expression {
 	virtual public string get();
 	virtual public string[] array();
 
-	public TextExpression operator = (string value);
+	public TextExpression operator = (sql_string expression);
 
 	public operator sql_string();
 
