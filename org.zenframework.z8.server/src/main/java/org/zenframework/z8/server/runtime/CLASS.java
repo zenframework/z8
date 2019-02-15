@@ -274,11 +274,7 @@ public class CLASS<TYPE extends IObject> implements IClass<TYPE> {
 
 	@Override
 	public String keyString() {
-		IObject owner = getOwner();
-		if(owner == null)
-			return name();
-		String name = owner.name();
-		return (name != null ? name + "." : "") + name();
+		return name();
 	}
 
 	@Override

@@ -45,6 +45,15 @@ abstract public class Field extends Control implements IField {
 			super(container);
 			setJavaClass(Field.class);
 		}
+		
+		@Override
+		public String keyString() {
+			IObject owner = getOwner();
+			if(owner == null)
+				return name();
+			String name = owner.name();
+			return (name != null ? name + "." : "") + name();
+		}
 	}
 
 	public integer length;
