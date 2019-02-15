@@ -59,6 +59,8 @@ public class UsersView extends Users {
 		userEntries.setIndex("userEntries");
 		userRoles.setIndex("userRoles");
 
+		section1.setIndex("section1");
+		section2.setIndex("section2");
 		resetPassword.setIndex("resetPassword");
 
 		colCount = new integer(12);
