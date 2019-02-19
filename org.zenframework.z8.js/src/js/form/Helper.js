@@ -50,7 +50,7 @@ Z8.define('Z8.form.Helper', {
 				config.checks = Application.listbox.checks !== false;
 				config.locks = Application.listbox.locks !== false && query.lockKey != null;
 				config.totals = query.totals;
-				config.minHeight = config.height = Ems.unitsToEms(field.height || 5);
+				config.minHeight = Ems.unitsToEms(field.height || 5);
 				return cls != null ? Z8.create(cls, config) : new Z8.form.field.Listbox(config);
 			}
 
@@ -85,7 +85,7 @@ Z8.define('Z8.form.Helper', {
 			}
 
 			if(type == Type.Files) {
-				config.height = Ems.unitsToEms(field.height || 3);
+				config.minHeight = Ems.unitsToEms(field.height || 3);
 				return cls != null ? Z8.create(cls, config) : new Z8.form.field.Files(config);
 			}
 
@@ -111,7 +111,6 @@ Z8.define('Z8.form.Helper', {
 				legend: fieldset.legend,
 				icon: fieldset.icon,
 				plain: !fieldset.isFieldset,
-				height: Ems.unitsToEms(fieldset.height),
 				flex: fieldset.flex
 			};
 			var cls = Application.getSubclass(fieldset.ui);
@@ -127,7 +126,6 @@ Z8.define('Z8.form.Helper', {
 				colSpan: tab.colSpan,
 				readOnly: tab.readOnly,
 				icon: tab.icon,
-				height: Ems.unitsToEms(tab.height),
 				flex: tab.flex
 			};
 			var cls = Application.getSubclass(tab.ui);

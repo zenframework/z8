@@ -1,8 +1,6 @@
 .tabs {
 	display: flex;
 	flex-direction: column;
-
-	width: 100%;
 	border: 1px solid #dfdfdf;
 }
 
@@ -18,6 +16,9 @@
 .tabs>.body {
 	position: relative;
 	flex: 1;
+	display: flex;
+	flex-direction: row;
+	min-height: fit-content;
 }
 
 .tabs>.header>.tag {
@@ -65,12 +66,10 @@
 
 .tabs>.body>.tab {
 	width: 100%;
-	height: 100%;
-	position: absolute;
 	overflow-x: hidden;
-	overflow-y: auto;
+	overflow-y: hidden;
 }
 
 .tabs>.body>.tab.inactive {
-	visibility: hidden;
+	display: none;
 }

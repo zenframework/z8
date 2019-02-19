@@ -33,6 +33,10 @@ body {
 .viewport>.header>.text {
 }
 
+.viewport>.login>.row:last-child>.cell {
+	flex-flow: row-reverse;
+}
+
 .viewport>.header>.btn-tool,
 .viewport>.header>.btn-group>.btn-tool,
 .viewport>.login .btn-tool {

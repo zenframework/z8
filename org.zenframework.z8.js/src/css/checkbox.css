@@ -1,8 +1,8 @@
 .checkbox {
 	margin: 0;
 	align-items: center;
-	flex-direction: row !important;
 	cursor: pointer;
+	height: 100%;
 }
 
 .checkbox.focus>.control,

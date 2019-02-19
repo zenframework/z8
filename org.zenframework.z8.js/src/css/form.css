@@ -29,10 +29,14 @@
 .fieldset>.legend {
 	position: absolute;
 	top: -.57142857em;
+	max-width: 85%;
 	padding-left: .71428571em;
 	padding-right: .71428571em;
 	color: #555;
 	background-color: #fff;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+	overflow: hidden;
 }
 
 .fieldset>.legend>.fa {
@@ -56,9 +60,18 @@
 }
 
 .fieldset>.row>.cell>.tabs,
-.fieldset>.row>.cell>.control-group,
+.fieldset>.row>.cell>.fieldset,
+.fieldset>.row>.cell>.control-group:not(.scrollable),
 .fieldset>.row>.cell>.control {
 	width: 100%;
+}
+
+.fieldset>.row>.cell>.control-group.scrollable {
+	position: absolute;
+	top: 0;
+	left: 1.07142857em;
+	right: 1.07142857em;
+	bottom: 0;
 }
 
 @media screen and (min-width: 768px) {
@@ -71,20 +84,11 @@
 		display: flex;
 		flex-direction: row;
 		align-items: stretch;
+		min-height: fit-content;
 	}
 
-	.fieldset:not(.tab).flexed,
-	.tabs.flexed,
-	.image-document.flexed,
-	.pdf-document.flexed,
-	.control-group.flexed {
-		position: absolute;
-		top: 0;
-		left: 1.07142857em;
-		right: 1.07142857em;
-		bottom: 0;
-		height: auto !important;
-		width: auto !important;
+	.fieldset>.row>.cell.stretch {
+		align-items: stretch;
 	}
 }
 

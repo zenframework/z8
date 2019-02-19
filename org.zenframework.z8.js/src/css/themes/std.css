@@ -82,7 +82,9 @@ html {
 	position: relative;
 	min-height: .07142857em;
 	padding-left: 1.07142857em;
-	padding-right: 1.07142857em
+	padding-right: 1.07142857em;
+	display: flex;
+	flex-direction: row;
 }
 
 .col-xs-1, .col-xs-2, .col-xs-3, .col-xs-4, .col-xs-5, .col-xs-6,

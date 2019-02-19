@@ -7,8 +7,6 @@ Z8.define('Z8.Container', {
 		config = config || {};
 		var items = config.items = config.items || [];
 
-		config.minHeight = false;
-
 		for(var i = 0, length = items.length; i < length; i++)
 			items[i].container = this;
 

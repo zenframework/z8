@@ -17,11 +17,6 @@ Z8.define('Z8.form.field.Control', {
 		this.enabledLock = !this.isEnabled();
 	},
 
-	getBoxMinHeight: function() {
-		var minHeight = this.getMinHeight();
-		return minHeight != 0 ? minHeight + Ems.UnitSpacing : 0;
-	},
-
 	subcomponents: function() {
 		return [this.labelTextControl, this.labelTools];
 	},
@@ -39,8 +34,6 @@ Z8.define('Z8.form.field.Control', {
 			cls.pushIf('readonly');
 		if(!label)
 			cls.pushIf('label-none');
-		if(this.flex)
-			cls.pushIf('flexed');
 		if(!this.isValid())
 			cls.pushIf('invalid');
 

@@ -82,7 +82,6 @@ Z8.define('Z8.form.Form', {
 		if(form.isForm) {
 			form.autoSave = true;
 			form.plain = true;
-			form.height = Ems.unitsToEms(form.height);
 			var cls = Application.getSubclass(form.ui);
 			form = cls != null ? Z8.create(cls, form) : new Z8.form.Form(form);
 		}

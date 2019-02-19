@@ -4,14 +4,6 @@
 	padding-top: 1.07142857em;
 }
 
-.air .fieldset {
-	min-height: 5.57142857em;
-}
-
-.air .fieldset.section {
-	min-height: 4.71428571em;
-}
-
 .air .fieldset>.legend {
 	left: .42857143em;
 	top: -.57142857em;
@@ -23,10 +15,6 @@
 
 .air .fieldset>.legend>.fa {
 	font-size: 1em;
-}
-
-.air .fieldset>.row {
-	min-height: 4.71428571em;
 }
 
 .air .control-group {
@@ -234,7 +222,9 @@
 }
 
 .air .control-group.focus>textarea.control,
-.air .control-group.focus>.html-text.control {
+.air .control-group.focus>.html-text.control,
+.air .control-group.focus>.control.list,
+.air .filter-control.focus>.expression {
 	border-bottom-width: 1px;
 	padding-bottom: 1px;
 }
@@ -382,10 +372,6 @@
 .air .dropdown-calendar {
 	margin: 0;
 	border-radius: 0;
-}
-
-.air .checkbox {
-	height: 1.78571429em;
 }
 
 .air .checkbox>.control,

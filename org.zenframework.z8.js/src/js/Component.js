@@ -8,7 +8,7 @@ Z8.define('Z8.Component', {
 	visible: true,
 	tabIndex: -1,
 
-	inactive: false,
+	inactive: true,
 
 	autoAlign: false,
 
@@ -115,14 +115,20 @@ Z8.define('Z8.Component', {
 		return this.visible;
 	},
 
-	show: function() {
-		this.visible = true;
-		DOM.removeCls(this, 'display-none');
+	show: function(show) {
+		if(show === undefined || show === true) {
+			this.visible = true;
+			DOM.removeCls(this, 'display-none');
+		} else
+			this.hide();
 	},
 
-	hide: function() {
-		this.visible = false;
-		DOM.addCls(this, 'display-none');
+	hide: function(hide) {
+		if(hide === undefined || hide === true) {
+			this.visible = false;
+			DOM.addCls(this, 'display-none');
+		} else
+			this.show();
 	},
 
 	focus: function() {
@@ -165,19 +171,11 @@ Z8.define('Z8.Component', {
 	},
 
 	getMinWidth: function() {
-		return this.minWidth || this.width || 0;
+		return this.minWidth || 0;
 	},
 
 	getMinHeight: function() {
-		return this.minHeight || this.height || 0;
-	},
-
-	getBoxMinWidth: function() {
-		return this.getMinWidth();
-	},
-
-	getBoxMinHeight: function() {
-		return this.getMinHeight();
+		return this.minHeight || 0;
 	},
 
 	getSize: function() {
@@ -186,14 +184,6 @@ Z8.define('Z8.Component', {
 	},
 
 	updateSize: function() {
-		var width = this.width;
-		if(width > 0 || String.isString(width))
-			DOM.setPoint(this, 'width', width);
-
-		var height = this.height;
-		if(height > 0 || String.isString(height))
-			DOM.setPoint(this, 'height', height);
-
 		var minWidth = this.getMinWidth();
 		if(minWidth > 0 || String.isString(minWidth))
 			DOM.setPoint(this, 'minWidth', minWidth);

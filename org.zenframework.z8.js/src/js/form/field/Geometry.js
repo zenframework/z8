@@ -5,6 +5,7 @@ Z8.define('Z8.form.field.Geometry', {
 	instantAutoSave: true,
 
 	minHeight: Ems.unitsToEms(4),
+
 	zoom: 17,
 	minZoom: 11,
 	maxZoom: 21,
@@ -13,6 +14,7 @@ Z8.define('Z8.form.field.Geometry', {
 	tag: 'div',
 
 	gridStep: 20,
+	updateSizePending: true,
 
 	isValid: function() {
 		return true;

@@ -4,6 +4,7 @@ Z8.define('Z8.form.field.Listbox', {
 	tabIndex: -1,
 
 	isListbox: true,
+	scrollable: true,
 
 	tools: false,
 	locks: false,
@@ -278,7 +279,13 @@ Z8.define('Z8.form.field.Listbox', {
 	},
 
 	htmlMarkup: function() {
-		this.cls = DOM.parseCls(this.cls).pushIf('list-box').pushIf(this.needsPager() ? 'pager-on' : '');
+		var cls = this.cls = DOM.parseCls(this.cls).pushIf('list-box');
+
+		if(this.scrollable)
+			cls.pushIf('scrollable');
+
+		if(this.needsPager())
+			cls.pushIf('pager-on');
 
 		var label = this.label;
 		if(this.tools) {

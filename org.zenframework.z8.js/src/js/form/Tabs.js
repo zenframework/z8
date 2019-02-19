@@ -2,17 +2,12 @@ Z8.define('Z8.form.Tabs', {
 	extend: 'Z8.Container',
 	shortClassName: 'Tabs',
 
-	initComponent: function() {
-		this.minHeight = this.height = this.height || Ems.unitsToEms(6);
-		this.callParent();
-	},
-
 	htmlMarkup: function() {
 		this.setReadOnly(this.isReadOnly());
 
 		var controls = this.controls || [];
 
-		this.cls = DOM.parseCls(this.cls).pushIf('tabs', this.flex ? 'flexed' : '');
+		this.cls = DOM.parseCls(this.cls).pushIf('tabs', this.flex ? 'flex' : '');
 		this.headerCls = DOM.parseCls(this.headerCls).pushIf('header');
 		this.bodyCls = DOM.parseCls(this.bodyCls).pushIf('body');
 
@@ -25,7 +20,7 @@ Z8.define('Z8.form.Tabs', {
 
 		for(var i = 0, length = controls.length; i < length; i++) {
 			var tab = controls[i];
-			tab.cls = DOM.parseCls(tab.cls).pushIf('tab', i != 0 ? 'inactive' : '').join(' ');
+			tab.cls = DOM.parseCls(tab.cls).pushIf('tab', 'inactive').join(' ');
 
 			var tag = tab.tag = new Z8.button.Button({ cls: 'tag', toggle: true, text: tab.title, icon: tab.icon, tab: tab });
 			tab.icon = null;
@@ -42,13 +37,6 @@ Z8.define('Z8.form.Tabs', {
 		return this.callParent();
 	},
 
-	completeRender: function() {
-		this.callParent();
-
-		if(!Z8.isEmpty(this.controls))
-			this.activateTab(this.controls[0]);
-	},
-
 	getActiveTab: function() {
 		return this.activeTab;
 	},
@@ -62,7 +50,9 @@ Z8.define('Z8.form.Tabs', {
 	},
 
 	activateTab: function(activeTab) {
-		if(this.activateLock || this.activeTab == activeTab)
+		activeTab = activeTab || null;
+
+		if(this.activateLock || this.activeTab === activeTab)
 			return;
 
 		if(this.activeTab != null)
@@ -117,6 +107,11 @@ Z8.define('Z8.form.Tabs', {
 			return;
 
 		this.inactive = !active;
+
+		var activeTab = this.activeTab;
+
+		if(active && activeTab === undefined)
+			this.activateTab(this.controls[0]);
 
 		var activeTab = this.activeTab;
 		var controls = this.controls;

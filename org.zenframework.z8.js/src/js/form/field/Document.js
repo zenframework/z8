@@ -5,7 +5,7 @@ Z8.define('Z8.form.field.Document', {
 	label: '',
 
 	tag: 'div',
-	height: Ems.unitsToEms(3),
+	minHeight: Ems.unitsToEms(3),
 
 	isValid: function() {
 		return true;

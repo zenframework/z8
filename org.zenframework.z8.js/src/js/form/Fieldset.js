@@ -5,17 +5,7 @@ Z8.define('Z8.form.Fieldset', {
 	mixins: ['Z8.form.field.Field'],
 
 	statics: {
-		MarginTop: .71428571,
-		MarginBottom: .71428571,
-
-		PaddingTop: 1.07142857,
-		PaddingBottom: 0,
-
-		Border: .07142857,
-
-		extraHeight: function() {
-			return Fieldset.MarginTop + Fieldset.MarginBottom + Fieldset.PaddingTop + Fieldset.PaddingBottom + 2 * Fieldset.Border;
-		}
+		MarginBottom: .71428571
 	},
 
 	isFieldset: true,
@@ -51,11 +41,6 @@ Z8.define('Z8.form.Fieldset', {
 		return null;
 	},
 
-	getBoxMinHeight: function() {
-		var minHeight = this.getMinHeight();
-		return minHeight != 0 ? minHeight + (this.plain ? 0 : Fieldset.extraHeight()) : 0;
-	},
-
 	subcomponents: function() {
 		return this.controls;
 	},
@@ -69,7 +54,7 @@ Z8.define('Z8.form.Fieldset', {
 		}
 
 		var text = this.legend || '';
-		var legend = { cls: 'legend', cn: icon != null ? [icon, text] : [text] };
+		var legend = { cls: 'legend', title: text, cn: icon != null ? [icon, text] : [text] };
 
 		var rows = (this.plain ? [] : [legend]).concat(this.rowsMarkup());
 
@@ -83,9 +68,6 @@ Z8.define('Z8.form.Fieldset', {
 
 		if(this.isReadOnly())
 			cls.pushIf('readonly');
-
-		if(this.flex)
-			cls.pushIf('flexed');
 
 		if(this.name != null)
 			cls.pushIf(this.name.replace(/\./g, '-').toLowerCase());
@@ -102,11 +84,6 @@ Z8.define('Z8.form.Fieldset', {
 		var rowsCount = rows.length;
 		var columnWidth = Math.floor(12 / Math.max(1, this.colCount));
 
-		var minHeight = 0;
-		var unitHeight = Ems.UnitHeight;
-		var unitSpacing = Ems.UnitSpacing;
-		var defaultRowHeight = unitHeight + unitSpacing;
-
 		var controlIndex = 0;
 
 		for(var rowIndex = 0; rowIndex < rowsCount; rowIndex++) {
@@ -118,21 +95,21 @@ Z8.define('Z8.form.Fieldset', {
 			for(var columnIndex = 0, columnsCount = columns.length; columnIndex < columnsCount; columnIndex++)
 				flex = Math.max(flex, controls[controlIndex].flex || 0);
 
-			var colFlexCls = flex != 0 ? ' flexed' : '';
-
 			var totalWidth = 0;
-			var rowMinHeight = 0;
 
 			for(var columnIndex = 0, columnsCount = columns.length; columnIndex < columnsCount; columnIndex++) {
 				var cn = [];
 				var control = controls[controlIndex];
+				var isComponent = control.isComponent;
 
-				cn.push(control.htmlMarkup != null ? control.htmlMarkup() : control);
+				var stretchCls = control.flex ? ' stretch' : '';
+				if(control.scrollable)
+					var style = 'min-height:' + (control.getMinHeight() + Fieldset.MarginBottom) + 'em';
 
-				rowMinHeight = Math.max(rowMinHeight, control.isComponent ? control.getBoxMinHeight() : 0);
+				cn.push(isComponent ? control.htmlMarkup() : control);
 
 				var width = Math.min(12, columns[columnIndex] * columnWidth);
-				cells.push({ cls: 'col-lg-' + width + ' col-md-' + width + ' col-sm-' + width + ' cell' + colFlexCls, cn: cn });
+				cells.push({ cls: 'col-lg-' + width + ' col-md-' + width + ' col-sm-' + width + ' cell' + stretchCls, cn: cn, style: style });
 				totalWidth += width;
 
 				controlIndex++;
@@ -140,28 +117,19 @@ Z8.define('Z8.form.Fieldset', {
 
 			if(totalWidth < 12) {
 				var padding = 12 - totalWidth;
-				cells.push({ cls: 'col-lg-' + padding + ' col-md-' + padding + ' col-sm-' + padding + ' cell' + colFlexCls });
+				cells.push({ cls: 'col-lg-' + padding + ' col-md-' + padding + ' col-sm-' + padding + ' cell' });
 			}
-
-			minHeight += rowMinHeight || defaultRowHeight;
 
 			var cls = 'row' + (flex != 0 ? ' flex-' + flex : '');
 			var row = { cls: cls, cn: cells };
-			if(rowMinHeight != 0)
-				row.style = 'min-height: ' + rowMinHeight + 'em';
 
 			markup.push(row);
 		}
 
 		var actions = this.actions;
 
-		if(actions != null) {
+		if(actions != null)
 			markup.push(this.actionsMarkup());
-			minHeight += defaultRowHeight;
-		}
-
-		if(this.minHeight !== false)
-			this.minHeight = minHeight;
 
 		return markup;
 	},
