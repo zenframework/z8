@@ -50,4 +50,7 @@ public final class sql_string extends sql_primary {
 	public sql_string substring(sql_int position, sql_int count);
 
 	public sql_string reverse();
+	
+	public sql_string json(sql_string name);
+	public sql_string json(sql_int num);
 }

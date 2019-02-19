@@ -14,6 +14,7 @@ import org.zenframework.z8.server.db.sql.functions.conversion.IsNumericString;
 import org.zenframework.z8.server.db.sql.functions.conversion.StringToInt;
 import org.zenframework.z8.server.db.sql.functions.conversion.ToDate;
 import org.zenframework.z8.server.db.sql.functions.conversion.ToDecimal;
+import org.zenframework.z8.server.db.sql.functions.string.GetJson;
 import org.zenframework.z8.server.db.sql.functions.string.IndexOf;
 import org.zenframework.z8.server.db.sql.functions.string.IsEmpty;
 import org.zenframework.z8.server.db.sql.functions.string.LPad;
@@ -154,6 +155,14 @@ public class sql_string extends sql_primary {
 
 	public sql_string z8_reverse() {
 		return new sql_string(new Reverse(this));
+	}
+
+	public sql_string z8_json(sql_string name) {
+		return new sql_string(new GetJson(this, name));
+	}
+
+	public sql_string z8_json(sql_integer num) {
+		return new sql_string(new GetJson(this, num));
 	}
 
 	public sql_string z8_max() {
