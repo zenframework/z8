@@ -1,0 +1,15 @@
+[native "org.zenframework.z8.server.base.table.value.FileExpression"]
+public class FileExpression extends Expression {
+	public void setDefault(string defaultValue);
+
+	virtual public string get();
+	virtual public string[] array();
+
+	public FileExpression operator = (sql_string expression);
+
+	public operator sql_string();
+
+	virtual protected sql_string expression();
+
+	public void setExpression(sql_string expression);
+}
