@@ -55,8 +55,10 @@ Z8.define('Z8.form.Tabs', {
 		if(this.activateLock || this.activeTab === activeTab)
 			return;
 
-		if(this.activeTab != null)
+		if(this.activeTab != null) {
 			this.fireEvent('deactivateTab', this, this.activeTab);
+			this.activeTab.setActive(false);
+		}
 
 		DOM.addCls(this.activeTab, 'inactive');
 		this.activeTab = activeTab;
