@@ -15,6 +15,9 @@ Z8.define('Z8.form.field.Listbox', {
 
 	pagerMode: 'visible', // 'visible' || 'hidden'
 
+	loadPolicy: 'active', // 'active' || 'always'
+	loadPending: false,
+
 	initComponent: function() {
 		var store = this.store;
 
@@ -205,18 +208,23 @@ Z8.define('Z8.form.field.Listbox', {
 
 			this.store.setFilter(this.getFilter(record));
 			this.store.setValues(this.getValues());
-			var loadCallback = function(store, records, success) {
-				this.validate();
-			};
-
-			var active = this.isActive();
-			this.refreshOnActivate = !active;
-			if(active)
-				this.store.load({ fn: loadCallback, scope: this });
+			this.reloadStore();
 		} else {
 			this.clear();
 			this.validate();
 		}
+	},
+
+	reloadStore: function() {
+		var loadCallback = function(store, records, success) {
+			this.validate();
+			this.updateTools();
+		};
+
+		var active = this.isActive() || this.loadPolicy == 'always';
+		this.loadPending = !active;
+		if(active)
+			this.store.load({ fn: loadCallback, scope: this });
 	},
 
 	getDependencyWhere: function(property, value) {
@@ -240,13 +248,7 @@ Z8.define('Z8.form.field.Listbox', {
 				where.push({ property: this.getLink(), value: recordId });
 			this.store.setWhere(where);
 			this.setDependsOnValue(dependsOnValue);
-
-			var active = this.isActive();
-			this.refreshOnActivate = !active;
-			if(active)
-				this.store.load({ fn: loadCallback, scope: this });
-
-
+			this.reloadStore();
 		} else {
 			this.store.removeAll();
 			loadCallback.call(this, this.store, [], true);
@@ -263,9 +265,9 @@ Z8.define('Z8.form.field.Listbox', {
 		if(this.list != null)
 			this.list.setActive(active);
 
-		if(active && this.refreshOnActivate) {
+		if(active && this.loadPending) {
 			this.onRefresh(this.refreshTool, true);
-			this.refreshOnActivate = false;
+			this.loadPending = false;
 		}
 	},
 
