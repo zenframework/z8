@@ -3,6 +3,7 @@ Z8.define('Z8.list.List', {
 
 	checks: true,
 	autoFit: true,
+	autoFitPending: true,
 
 	headers: null,
 	items: null,
@@ -1107,9 +1108,9 @@ Z8.define('Z8.list.List', {
 
 		this.callParent(active);
 
-		if(active && this.adjustAutoFitPending) {
+		if(active && this.autoFitPending) {
 			this.adjustAutoFit();
-			this.adjustAutoFitPending = false;
+			this.autoFitPending = false;
 		}
 	},
 
@@ -1117,7 +1118,7 @@ Z8.define('Z8.list.List', {
 		if(this.isActive())
 			this.adjustAutoFit();
 		else
-			this.adjustAutoFitPending = true;
+			this.autoFitPending = true;
 	},
 
 	onHeaderSort: function(header) {
