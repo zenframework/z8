@@ -380,7 +380,9 @@ abstract public class Field extends Control implements IField {
 		if(path == null || !path.isEmpty() && path.iterator().next().owner() != query)
 			path = query.getPath(this);
 
-		if(path != null && !path.isEmpty()) {
+		boolean hasJoin = pathHasJoin();
+
+		if(path != null && !path.isEmpty() && !hasJoin) {
 			ILink[] links = path.toArray(new ILink[0]);
 
 			ILink firstLink = links[0];
@@ -426,7 +428,7 @@ abstract public class Field extends Control implements IField {
 			this.readOnly = new bool(readOnly);
 			this.required = new bool(required);
 		} else {
-			readOnly = readOnly() || isExpression() || !access().write();
+			readOnly = readOnly() || isExpression() || hasJoin || !access().write();
 			required = !readOnly && required();
 
 			this.readOnly = new bool(readOnly() || readOnly);
@@ -600,5 +602,14 @@ abstract public class Field extends Control implements IField {
 	public int controlSum() {
 		String name = name() + " " + sqlType(DatabaseVendor.Postgres);
 		return Math.abs(name.hashCode());
+	}
+	
+	private boolean pathHasJoin() {
+		if (path == null || path.isEmpty())
+			return false;
+		for (ILink link : path)
+			if (link instanceof IJoin)
+				return true;
+		return false;
 	}
 }
