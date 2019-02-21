@@ -37,7 +37,7 @@ public final class geometry extends primary {
 	static public final String strMultiPoint = "MULTIPOINT";
 	static public final String strMultiLine = "MULTILINE";
 	static public final String strMultiPolygon = "MULTIPOLYGON";
-	static public final String strCollection = "COLLECTION";
+	static public final String strCollection = "GEOMETRYCOLLECTION";
 
 	static public final integer None = new integer(none);
 	static public final integer Ring = new integer(ring);

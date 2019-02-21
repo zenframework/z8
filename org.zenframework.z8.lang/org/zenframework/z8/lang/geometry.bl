@@ -21,7 +21,7 @@ public final class geometry extends primary {
 	static public final string StrMultiPoint = "MULTIPOINT";
 	static public final string StrMultiLine = "MULTILINE";
 	static public final string StrMultiPolygon = "MULTIPOLYGON";
-	static public final string StrCollection = "COLLECTION";
+	static public final string StrCollection = "GEOMETRYCOLLECTION";
 
 	public int shape();
 	public int srs();
