@@ -92,9 +92,6 @@ Z8.define('Z8.form.Fieldset', {
 			var columns = rows[rowIndex];
 
 			var flex = 0;
-			for(var columnIndex = 0, columnsCount = columns.length; columnIndex < columnsCount; columnIndex++)
-				flex = Math.max(flex, controls[controlIndex].flex || 0);
-
 			var totalWidth = 0;
 
 			for(var columnIndex = 0, columnsCount = columns.length; columnIndex < columnsCount; columnIndex++) {
@@ -102,14 +99,14 @@ Z8.define('Z8.form.Fieldset', {
 				var control = controls[controlIndex];
 				var isComponent = control.isComponent;
 
-				var stretchCls = control.flex ? ' stretch' : '';
-				if(control.scrollable)
-					var style = 'min-height:' + (control.getMinHeight() + Fieldset.MarginBottom) + 'em';
+				var style = control.scrollable ? 'min-height:' + (control.getMinHeight() + Fieldset.MarginBottom) + 'em' : null;
 
 				cn.push(isComponent ? control.htmlMarkup() : control);
 
+				flex = Math.max(flex, controls[controlIndex].flex || 0);
+
 				var width = Math.min(12, columns[columnIndex] * columnWidth);
-				cells.push({ cls: 'col-lg-' + width + ' col-md-' + width + ' col-sm-' + width + ' cell' + stretchCls, cn: cn, style: style });
+				cells.push({ cls: 'col-lg-' + width + ' col-md-' + width + ' col-sm-' + width + ' cell', cn: cn, style: style });
 				totalWidth += width;
 
 				controlIndex++;

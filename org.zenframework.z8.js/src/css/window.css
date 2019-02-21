@@ -80,6 +80,8 @@
 	border: 1px solid #adadad;
 	border-top-width: 0;
 	border-bottom-width: 0;
+	display: flex;
+	flex-direction: column;
 }
 
 .window>.footer {

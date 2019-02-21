@@ -81,6 +81,9 @@ public class ConverterAdapter extends Adapter {
 			response.addHeader("Content-Disposition", getContentDisposition(request, name));
 		}
 
+		response.addHeader("Content-Length", Long.toString(absolutePath.length()));
+		response.addHeader("Accept-ranges", "bytes");
+
 		IOUtils.copy(new FileInputStream(absolutePath), response.getOutputStream());
 	}
 

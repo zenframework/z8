@@ -30,6 +30,11 @@
 	display: none !important;
 }
 
+.center {
+	margin-left: auto;
+	margin-right: auto;
+}
+
 .hidden {
 	visibility: hidden;
 	height: 0 !important;
@@ -133,7 +138,7 @@
 }
 
 .padding-15 {
-	padding: 1.07142857em;
+	padding: 1.07142857em !important;
 }
 
 .z-index-10 {

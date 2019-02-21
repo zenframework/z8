@@ -670,7 +670,7 @@ Z8.define('Z8.form.field.Listbox', {
 			return null;
 
 		var store = Z8.form.Helper.storeConfig({ isListbox: true, query: { id: query.id, name: query.name, fields: query.fields, primaryKey: null }, values: this.getValues() });
-		return new Z8.form.field.Listbox({ primaryKey: query.primaryKey, name: query.link, fields: query.fields, label: query.label, store: store, tools: false, pagerMode: 'visible', checks: true, height: '100%' });
+		return new Z8.form.field.Listbox({ primaryKey: query.primaryKey, name: query.link, fields: query.fields, label: query.label, store: store, tools: false, pagerMode: 'visible', checks: true, cls: 'flex' });
 	},
 
 	newRecord: function() {
@@ -786,7 +786,7 @@ Z8.define('Z8.form.field.Listbox', {
 				this.createRecords(records);
 			};
 
-			var form = new Z8.Container({ cls: 'padding-15', items: [selector], height: '100%' });
+			var form = new Z8.Container({ plain: true, flex: 1, cls: 'padding-15 flex-column', items: [selector], minHeight: '100%' });
 			var cls = DOM.parseCls(this.selectorCls).pushIf('air');
 			this.selector = new Z8.window.Window({ cls: cls, header: this.query.text, icon: 'fa-plus-circle', autoClose: false, body: [form], selector: selector, handler: addRecordCallback, scope: this });
 			this.selector.open();

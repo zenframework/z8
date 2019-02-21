@@ -374,11 +374,16 @@
 	border-radius: 0;
 }
 
+.air .checkbox {
+	min-height: 4em;
+}
+
 .air .checkbox>.control,
 .air .checkbox.focus>.control,
 .air .checkbox:focus>.control {
 	border-bottom-width: 0;
 	padding-bottom: 0;
+	flex: none;
 }
 
 .air .checkbox:focus>.control,

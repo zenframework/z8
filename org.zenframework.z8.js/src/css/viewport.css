@@ -61,11 +61,12 @@ body {
 	position: absolute;
 	top: -7.85714286em;
 	right: 0;
-	width: 19.28571428em;
 	height: 11.42857142em;
 	min-height: 11.42857142em !important;
 	padding: 1.07142857em;
 	margin: 0;
+	border-top-left-radius: 0;
+	border-top-right-radius: 0;
 	color: #ccc;
 	background-color: #222;
 	opacity: .97;

@@ -45,7 +45,9 @@
 
 .fieldset>.row {
 	position: relative;
+	overflow: hidden;
 }
+
 .fieldset>.row>.cell>.tabs,
 .fieldset>.row>.cell>.control-group,
 .fieldset>.row>.cell>.control,
@@ -63,7 +65,7 @@
 .fieldset>.row>.cell>.fieldset,
 .fieldset>.row>.cell>.control-group:not(.scrollable),
 .fieldset>.row>.cell>.control {
-	width: 100%;
+	flex: 1;
 }
 
 .fieldset>.row>.cell>.control-group.scrollable {
