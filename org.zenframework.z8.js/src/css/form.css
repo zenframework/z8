@@ -45,7 +45,6 @@
 
 .fieldset>.row {
 	position: relative;
-	overflow: hidden;
 }
 
 .fieldset>.row>.cell>.tabs,
@@ -87,6 +86,7 @@
 		flex-direction: row;
 		align-items: stretch;
 		min-height: fit-content;
+		min-height: -moz-fit-content;
 	}
 
 	.fieldset>.row>.cell.stretch {

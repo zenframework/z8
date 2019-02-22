@@ -21,7 +21,7 @@ Z8.define('Z8.window.Window', {
 
 		var header = this.header = new Z8.Container({ cls: 'header', items: cn });
 
-		var body = this.body = new Z8.Container({ cls: 'body', items: this.body });
+		var body = this.body = new Z8.form.Fieldset({ plain: true, flex: 1, cls: 'body padding-15 flex', controls: this.controls, colCount: this.colCount || 1 });
 
 		var buttons = [];
 		if(this.closable) {

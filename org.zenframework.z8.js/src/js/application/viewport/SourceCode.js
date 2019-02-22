@@ -3,7 +3,7 @@ Z8.define('Z8.application.viewport.SourceCode', {
 
 	tabIndex: 0,
 
-	cls: 'air source-code display-none',
+	cls: 'source-code display-none',
 
 	history: null,
 

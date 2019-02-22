@@ -11,9 +11,10 @@ Z8.define('Z8.filter.Model', {
 });
 
 Z8.define('Z8.filter.Editor', {
-	extend: 'Z8.Container',
+	extend: 'Z8.form.Fieldset',
 
 	cls: 'filter-editor',
+	plain: true,
 
 	htmlMarkup: function() {
 		var store = this.store = new Z8.data.Store({ model: 'Z8.filter.Model', data: this.filter.toStoreData() });
@@ -26,7 +27,7 @@ Z8.define('Z8.filter.Editor', {
 
 		var label = { text: 'Фильтры', icon: 'fa-filter', tools: tools};
 
-		var filters = this.filters = new Z8.form.field.Listbox({ store: store, cls: 'filters', fields: [store.getField('name')], label: label, editable: true });
+		var filters = this.filters = new Z8.form.field.Listbox({ store: store, cls: 'filters', fields: [store.getField('name')], label: label, editable: true, flex: 1, colSpan: 1 });
 		filters.on('select', this.onFiltersSelect, this);
 		filters.on('itemEditorChange', this.onItemEditorChange, this);
 
@@ -34,13 +35,14 @@ Z8.define('Z8.filter.Editor', {
 		filters.setRemoveTool(removeTool);
 		filters.setCopyTool(copyTool);
 
-		var expression = this.expression = new Z8.form.field.Filter({ fields: this.fields, enabled: false, label: { text: 'Выражение', icon: 'fa-list-ul' } });
+		var expression = this.expression = new Z8.form.field.Filter({ fields: this.fields, flex: 1, enabled: false, label: { text: 'Выражение', icon: 'fa-list-ul' } });
 		expression.on('change', this.expressionChanged, this);
-		var expressionText = this.expressionText = new Z8.form.field.Html({ cls: 'text', label: { text: 'Текст', icon: 'fa-code' } });
+		var expressionText = this.expressionText = new Z8.form.field.Html({ cls: 'text', label: { text: 'Текст', icon: 'fa-code' }, height: 3 });
 
-		var container = new Z8.Container({ cls: 'filter', items: [expression, expressionText] });
+		var container = new Z8.form.Fieldset({ cls: 'filter', plain: true, controls: [expression, expressionText], flex: 1, colSpan: 3, colCount: 1 });
 	
-		this.items = [filters, container];
+		this.colCount = 4;
+		this.controls = [filters, container];
 
 		return this.callParent();
 	},

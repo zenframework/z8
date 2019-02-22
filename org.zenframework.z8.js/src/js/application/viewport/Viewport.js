@@ -3,7 +3,7 @@ var Viewport = null;
 Z8.define('Z8.application.viewport.Viewport', {
 	extend: 'Z8.Container',
 
-	cls: 'viewport', //'air',
+	cls: 'viewport air',
 
 	handlers: [],
 	forms: [],
@@ -338,7 +338,7 @@ Z8.define('Z8.application.viewport.Viewport', {
 				response.period = params.period;
 
 				var formId = Component.nextId();
-				var formConfig = Z8.apply({ cls: 'air', store: response, formId: formId }, config);
+				var formConfig = Z8.apply({ store: response, formId: formId }, config);
 				var formCls = Application.getSubclass(response.ui);
 				var form = formCls != null ? Z8.create(formCls, formConfig) : new Z8.application.form.Navigator(formConfig);
 

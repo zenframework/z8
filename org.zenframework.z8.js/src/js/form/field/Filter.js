@@ -2,6 +2,7 @@ Z8.define('Z8.form.field.Filter', {
 	extend: 'Z8.form.field.Control',
 
 	tabIndex: -1,
+	scrollable: true,
 
 	setValue: function(value) {
 		if(value == this.getValue())
@@ -59,6 +60,9 @@ Z8.define('Z8.form.field.Filter', {
 	},
 
 	updateTools: function(selection) {
+		if(this.expression == null)
+			return;
+
 		var selection = selection || this.getSelection();
 		this.newLineButton.setEnabled(this.isEnabled());
 		this.removeLineButton.setEnabled(selection.length != 0);

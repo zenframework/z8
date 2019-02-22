@@ -36,6 +36,8 @@ Z8.define('Z8.form.field.Control', {
 			cls.pushIf('label-none');
 		if(!this.isValid())
 			cls.pushIf('invalid');
+		if(this.isScrollable())
+			cls.pushIf('scrollable');
 
 		if(label) {
 			var align = label.align;
@@ -109,6 +111,10 @@ Z8.define('Z8.form.field.Control', {
 		DOM.swapCls(this.label, readOnly, 'readonly');
 
 		this.updateTools();
+	},
+
+	isScrollable: function() {
+		return this.scrollable;
 	},
 
 	updateTools: function() {

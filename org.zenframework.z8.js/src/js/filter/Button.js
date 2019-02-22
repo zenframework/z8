@@ -89,7 +89,7 @@ Z8.define('Z8.filter.Button', {
 				this.fireEvent('filter', this, this.filter, Filter.NoAction);
 		};
 
-		new Z8.filter.Dialog({ cls: 'air', header: 'Настройка фильтрации', icon: 'fa-filter', fields: this.fields, filter: this.filter, handler: callback, scope: this }).open();
+		new Z8.filter.Dialog({ header: 'Настройка фильтрации', icon: 'fa-filter', fields: this.fields, filter: this.filter, handler: callback, scope: this }).open();
 	},
 
 	onToggle: function(button, toggled) {

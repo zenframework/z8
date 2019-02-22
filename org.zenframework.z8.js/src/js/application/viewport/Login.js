@@ -5,7 +5,7 @@ Z8.define('Z8.application.viewport.Login', {
 	visible: false,
 
 	initComponent: function() {
-		this.cls = DOM.parseCls(this.cls).pushIf('login', 'air', 'display-none');
+		this.cls = DOM.parseCls(this.cls).pushIf('login', 'display-none');
 
 		var header = { cls: 'header', html: 'Авторизация' };
 		var login = this.loginField = new Z8.form.field.Text({ label: { text: 'Логин', icon: 'fa-user', width: '6.42857143em', align: 'left' }, placeholder: 'Логин', value: 'Admin' });
@@ -139,7 +139,7 @@ Z8.define('Z8.application.viewport.ChangePassword', {
 		var newPassword1 = this.newPassword1 = new Z8.form.field.Text({ label: 'Новый пароль', placeholder: 'Новый пароль', password: true, validation: validation });
 		var newPassword2 = this.newPassword2 = new Z8.form.field.Text({ label: 'Новый пароль (повтор)', placeholder: 'Новый пароль', password: true, required: true, validation: validation, isEmptyValue: isEmptyValue });
 
-		this.body = [new Z8.form.Fieldset({ cls: 'air', plain: true, controls: controls.add([newPassword1, newPassword2]) })];
+		this.controls = controls.add([newPassword1, newPassword2]);
 
 		this.callParent();
 	},

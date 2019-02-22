@@ -283,9 +283,6 @@ Z8.define('Z8.form.field.Listbox', {
 	htmlMarkup: function() {
 		var cls = this.cls = DOM.parseCls(this.cls).pushIf('list-box');
 
-		if(this.scrollable)
-			cls.pushIf('scrollable');
-
 		if(this.needsPager())
 			cls.pushIf('pager-on');
 
@@ -670,7 +667,7 @@ Z8.define('Z8.form.field.Listbox', {
 			return null;
 
 		var store = Z8.form.Helper.storeConfig({ isListbox: true, query: { id: query.id, name: query.name, fields: query.fields, primaryKey: null }, values: this.getValues() });
-		return new Z8.form.field.Listbox({ primaryKey: query.primaryKey, name: query.link, fields: query.fields, label: query.label, store: store, tools: false, pagerMode: 'visible', checks: true, cls: 'flex' });
+		return new Z8.form.field.Listbox({ primaryKey: query.primaryKey, name: query.link, fields: query.fields, label: query.label, store: store, tools: false, pagerMode: 'visible', checks: true, flex: 1 });
 	},
 
 	newRecord: function() {
@@ -786,9 +783,7 @@ Z8.define('Z8.form.field.Listbox', {
 				this.createRecords(records);
 			};
 
-			var form = new Z8.Container({ plain: true, flex: 1, cls: 'padding-15 flex-column', items: [selector], minHeight: '100%' });
-			var cls = DOM.parseCls(this.selectorCls).pushIf('air');
-			this.selector = new Z8.window.Window({ cls: cls, header: this.query.text, icon: 'fa-plus-circle', autoClose: false, body: [form], selector: selector, handler: addRecordCallback, scope: this });
+			this.selector = new Z8.window.Window({ header: this.query.text, icon: 'fa-plus-circle', autoClose: false, controls: [selector], selector: selector, handler: addRecordCallback, scope: this });
 			this.selector.open();
 		};
 

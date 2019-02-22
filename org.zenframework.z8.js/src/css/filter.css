@@ -1,36 +1,4 @@
-.builder {
-	padding: 2.14285714em;
-}
-
-.filter-editor {
-	height: 100%;
-	padding: .71428571em;
-}
-
-.filter-editor>.filters.list-box {
-	float: left;
-	width: 25%;
-	height: 100%;
-}
-
-.filter-editor>.filter {
-	float: left;
-	width: calc(75% - .71428571em);
-	margin-left: .71428571em;
-	height: 100%;
-}
-
-.filter-editor>.filter>.filter-control {
-	height: calc(100% - 11.42857142em);
-	margin-bottom: .71428571em;
-}
-
-.filter-editor>.filter>.text {
-	height: 10.71428571em;
-}
-
-.filter-control>.expression {
-	height: 100%;
+.filter-control .expression {
 	overflow-y: auto;
 	border: 1px solid #eee;
 }
@@ -157,6 +125,7 @@
 	margin-right: 0 !important;
 	text-align: center;
 	margin-top: 0;
+	min-height: auto;
 }
 
 .filter-control .line>.property,
