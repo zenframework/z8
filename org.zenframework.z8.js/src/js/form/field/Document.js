@@ -14,7 +14,7 @@ Z8.define('Z8.form.field.Document', {
 	validate: function() {},
 
 	controlMarkup: function() {
-		return [{ tag: this.tag, cls: 'control' }];
+		return [{ tag: this.tag, tabIndex: this.getTabIndex(), cls: 'control' }];
 	},
 
 	completeRender: function() {

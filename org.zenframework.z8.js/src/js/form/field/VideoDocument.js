@@ -2,6 +2,7 @@ Z8.define('Z8.form.field.VideoDocument', {
 	extend: 'Z8.form.field.Document',
 
 	tag: 'video',
+	tabIndex: 1,
 
 	initComponent: function() {
 		this.callParent();
@@ -13,6 +14,10 @@ Z8.define('Z8.form.field.VideoDocument', {
 		markup[0].controls = true;
 		markup[0].src = this.getSource();
 		return markup;
+	},
+
+	focus: function(select) {
+		return this.isEnabled() ? DOM.focus(this.document, select) : false;
 	},
 
 	setSource: function(source) {

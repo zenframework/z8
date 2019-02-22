@@ -114,22 +114,6 @@ body {
 	padding: 0;
 }
 
-.gecko .viewport>.login {
-	text-shadow: 0 0 0 #ccc;
-}
-
-.gecko .viewport>.login .control {
-	text-shadow: 0 0 0 #ccc;
-}
-
-.gecko .viewport>.header {
-	text-shadow: 0 0 0 #eee;
-}
-
-.gecko .breadcrumbs>.btn {
-	text-shadow: 0 0 0 #ccc;
-}
-
 .breadcrumbs>.btn.n1:first-child {
 	font-family: Courgette;
 }

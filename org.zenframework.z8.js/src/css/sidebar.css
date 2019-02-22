@@ -64,10 +64,6 @@
 	align-items: center;
 }
 
-.gecko .viewport>.menu .item {
-	text-shadow: 0 0 0 #eee;
-}
-
 .viewport>.menu .item:after {
 	position: absolute;
 	top: 0;

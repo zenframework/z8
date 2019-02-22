@@ -629,10 +629,6 @@ Z8.define('Z8.dom.Dom', {
 
 			if(DOM.onContextMenu != null)
 				DOM.on(window, 'contextmenu', DOM.onContextMenu);
-
-			var agent = window.navigator.userAgent;
-			if(agent.toLowerCase().indexOf('gecko/') != -1)
-				DOM.addCls(document.body, 'gecko');
 		},
 
 		callWindowResize: function() {
