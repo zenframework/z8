@@ -65,6 +65,7 @@ Z8.define('Z8.window.Window', {
 		DOM.on(Viewport, 'mouseDown', this.monitorOuterClick, this);
 		DOM.on(this, 'keyDown', this.onKeyDown, this);
 
+		this.setActive(true);
 		this.focus();
 	},
 
@@ -73,6 +74,7 @@ Z8.define('Z8.window.Window', {
 			return;
 
 		this.isOpen = false;
+		this.setActive(false);
 
 		DOM.un(Viewport, 'mouseDown', this.monitorOuterClick, this);
 		DOM.un(this, 'keyDown', this.onKeyDown, this);
