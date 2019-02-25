@@ -48,6 +48,10 @@ Z8.define('Z8.form.field.Listbox', {
 			this.mixins.field.setValue.call(this, value);
 	},
 
+	isActive: function() {
+		return this.callParent() || this.loadPolicy == 'always';
+	},
+
 	isEditable: function() {
 		return this.editable && !this.isReadOnly();
 	},
@@ -221,7 +225,7 @@ Z8.define('Z8.form.field.Listbox', {
 			this.updateTools();
 		};
 
-		var active = this.isActive() || this.loadPolicy == 'always';
+		var active = this.isActive();
 		this.loadPending = !active;
 		if(active)
 			this.store.load({ fn: loadCallback, scope: this });
