@@ -53,4 +53,9 @@ public class DatespanExpression extends Expression {
 		set(value);
 		return (DatespanExpression.CLASS<?>)this.getCLASS();
 	}
+
+	public DatespanExpression.CLASS<? extends DatespanExpression> operatorAssign(sql_datespan expression) {
+		setExpression(expression);
+		return (DatespanExpression.CLASS<?>)this.getCLASS();
+	}
 }

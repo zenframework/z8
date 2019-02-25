@@ -5,6 +5,7 @@ public class DatespanExpression extends Expression {
 	virtual public datespan get();
 
 	public DatespanExpression operator = (datespan value);
+	public DatespanExpression operator = (sql_datespan expression);
 
 	public operator sql_datespan();
 
