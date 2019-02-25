@@ -358,16 +358,28 @@
 }
 
 .list .item>.column>.cell>.collapser {
-	cursor: pointer;
 	margin-right: .5em;
 }
 
-.list .item>.column>.cell>.collapser:hover {
+.list .item>.column>.cell>.collapser.no-children {
+	color: transparent;
+}
+
+.list .item>.column>.cell>.collapser:not(.no-children) {
+	cursor: pointer;
+}
+
+.list .item>.column>.cell>.collapser:not(.no-children):hover {
 	color: #39c;
 }
 
-.list .item:focus>.column>.cell>.collapser:hover {
+.list .item:focus>.column>.cell>.collapser:not(.no-children):hover {
 	color: #333;
+}
+
+.list .item>.column>.cell>.collapser>.icon {
+	width: 1em;
+	text-align: center;
 }
 
 .list .filter .control-group>.btn-trigger {

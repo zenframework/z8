@@ -484,11 +484,16 @@ Z8.define('Z8.list.List', {
 
 		for(var i = 0, length = fragments.length; i < length; i++) {
 			var fragment = fragments[i];
+			var items = fragment.items;
+			var parents = this.getParents(items);
+
 			var before = DOM.get(this.itemsTableBody).childNodes[fragment.index];
 			if(before != null)
-				DOM.insertBefore(before, this.itemsMarkup(fragment.items));
+				DOM.insertBefore(before, this.itemsMarkup(items));
 			else
-				DOM.append(this.itemsTableBody, this.itemsMarkup(fragment.items));
+				DOM.append(this.itemsTableBody, this.itemsMarkup(items));
+
+			this.updateCollapser(parents);
 		}
 
 		this.fragments = [];
@@ -860,11 +865,13 @@ Z8.define('Z8.list.List', {
 	},
 
 	removeItems: function(items) {
+		var parents = this.getParents(items);
+
 		this.resetOrdinals();
-
 		Component.destroy(items);
-
 		this.items.removeAll(items);
+
+		this.updateCollapser(parents);
 
 		this.adjustAutoFit();
 
@@ -1339,6 +1346,11 @@ Z8.define('Z8.list.List', {
 	onHeaderResized: function(header) {
 	},
 
+	isTree: function() {
+		var store = this.getStore();
+		return store != null && store.isTree();
+	},
+
 	getParent: function(item) {
 		if(item.isRoot())
 			return null;
@@ -1354,6 +1366,43 @@ Z8.define('Z8.list.List', {
 		}
 
 		return null;
+	},
+
+	getFirstChild: function(parent) {
+		var index = this.getIndex(parent) + 1;
+		var items = this.items;
+
+		if(index >= items.length)
+			return null;
+
+		var item = items[index];
+		return item.getLevel() == parent.getLevel() + 1 ? item : null;
+	},
+
+	getParents: function(items) {
+		if(!this.isTree())
+			return null;
+
+		var parents = {};
+
+		for(var i = 0, length = items.length; i < length; i++) {
+			var parent = this.getParent(items[i]);
+			if(parent != null)
+				parents[parent.getValue()] = parent;
+		}
+
+		return Object.values(parents);
+	},
+
+	updateCollapser: function(parents) {
+		if(!this.isTree())
+			return;
+
+		for(var i = 0, length = parents.length; i < length; i++) {
+			var parent = parents[i];
+			if(!parent.disposed)
+				parent.setHasChildren(this.getFirstChild(parent) != null);
+		}
 	},
 
 	onItemCollapse: function(item, collapsed) {

@@ -31,7 +31,7 @@ Z8.define('Z8.list.Item', {
 			this.level = record.get('level');
 			this.children = record.get('hasChildren');
 
-			if(record.parentId != null)
+			if(this.isTree())
 				this.list.on('contentChange', this.updateCollapsedState, this);
 
 			var icon = record.get(record.getIconProperty());
@@ -112,19 +112,20 @@ Z8.define('Z8.list.Item', {
 		if(record != null) {
 			var fields = this.list.getFields();
 
+			var isTree = this.isTree();
 			var hasChildren = this.hasChildren();
 			var collapsed = this.isCollapsed();
 
-			if(hasChildren != null) {
-				this.rotation = hasChildren && collapsed ? 90 : -90;
+			if(isTree) {
+				this.rotation = collapsed ? 90 : -90;
 
 				var level = this.getLevel();
-				var collapserIcon = { tag: 'i', cls: (hasChildren ? 'fa fa-chevron-' + (collapsed ? 'right' : 'down') + ' ' : '') + 'icon', html: String.htmlText() };
-				var collapser = { tag: 'span', cls: 'collapser tree-level-' + (hasChildren ? level : level + 1), cn: [collapserIcon] };
+				var collapserIcon = { tag: 'i', cls: 'fa fa-chevron-' + (collapsed ? 'right' : 'down') + ' icon', html: String.htmlText() };
+				var collapser = { tag: 'span', cls: 'collapser tree-level-' + level + (hasChildren ? '' : ' no-children'), cn: [collapserIcon] };
 				icons.insert(collapser, 0);
 			}
 
-			var treeCls = record.parentId != null ? 'tree' : '';
+			var treeCls = this.isTree() ? 'tree' : '';
 
 			for(var i = 0, length = fields.length; i < length; i++) {
 				var field = fields[i];
@@ -160,6 +161,10 @@ Z8.define('Z8.list.Item', {
 		return columns;
 	},
 
+/*	getCollapserIconCls: function() {
+		this.hasChildren() ? 'fa fa-chevron-' + (this.isCollapsed() ? 'right' : 'down') + ' ' : '') + 'icon', html: String.htmlText() };
+				var collapser = { tag: 'span', cls: 'collapser tree-level-' + (hasChildren ? level : level + 1), cn: [collapserIcon] };
+*/
 	getCellCls: function(field, record) {
 		return 'text' + (field.source != null ? ' ' + 'follow' : '');
 	},
@@ -208,7 +213,8 @@ Z8.define('Z8.list.Item', {
 	completeRender: function() {
 		this.callParent();
 
-		this.collapser = this.selectNode('.item .collapser .icon');
+		this.collapser = this.selectNode('.item .collapser');
+		this.collapserIcon = this.selectNode('.item .collapser .icon');
 		this.iconElement = this.selectNode('.item .icon');
 		this.checkIcon = this.selectNode('.item>.column.check>.cell>.text>.fa');
 		this.checkElement = this.selectNode('.item>.column.check');
@@ -287,8 +293,20 @@ Z8.define('Z8.list.Item', {
 		return this.renderCellText(this.list.getField(fieldName), record != null ? record.get(fieldName) : '');
 	},
 
+	isTree: function() {
+		var record = this.record;
+		return record != null && record.parentId != null;
+	},
+
 	hasChildren: function() {
 		return this.children;
+	},
+
+	setHasChildren: function(hasChildren) {
+		if(this.isTree()) {
+			this.children = hasChildren;
+			this.updateCollapser();
+		}
 	},
 
 	isRoot: function() {
@@ -320,10 +338,15 @@ Z8.define('Z8.list.Item', {
 		this.hidden = Math.max(this.hidden + (hide ? 1 : -1), 0);
 	},
 
+	updateCollapser: function() {
+		var hasChildren = this.hasChildren();
+		DOM.swapCls(this.collapser, !hasChildren, 'no-children');
+	},
+
 	collapse: function(collapsed) {
 		if(this.collapsed != collapsed) {
 			this.collapsed = collapsed;
-			DOM.rotate(this.collapser, this.rotation == 90 ? (collapsed ? 0 : 90) : (collapsed ? -90 : 0));
+			DOM.rotate(this.collapserIcon, this.rotation == 90 ? (collapsed ? 0 : 90) : (collapsed ? -90 : 0));
 			this.list.onItemCollapse(this, collapsed);
 		}
 	},
@@ -352,7 +375,7 @@ Z8.define('Z8.list.Item', {
 	onMouseDown: function(event, target) {
 		var dom = DOM.get(this);
 
-		if(!this.isEnabled() || target == this.collapser || this.list.checks && DOM.isParentOf(this.checkElement, target))
+		if(!this.isEnabled() || target == this.collapserIcon || target == this.collapser || this.list.checks && DOM.isParentOf(this.checkElement, target))
 			return;
 
 		var index = this.findCellIndex(target);
@@ -379,7 +402,7 @@ Z8.define('Z8.list.Item', {
 		if(!this.isEnabled())
 			return;
 
-		if(target == this.collapser)
+		if(target == this.collapser || target == this.collapserIcon)
 			this.collapse(!this.collapsed);
 		else if(this.list.checks && DOM.isParentOf(this.checkElement, target)) {
 			this.toggleCheck();
