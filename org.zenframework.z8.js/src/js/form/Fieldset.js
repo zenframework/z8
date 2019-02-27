@@ -17,6 +17,10 @@ Z8.define('Z8.form.Fieldset', {
 		this.callParent(config);
 	},
 
+	getRecord: function() {
+		return this.record;
+	},
+
 	getControls: function() {
 		return this.controls;
 	},
@@ -231,7 +235,7 @@ Z8.define('Z8.form.Fieldset', {
 	runAction: function(button) {
 		var action = button.action;
 
-		var record = this.record;
+		var record = this.getRecord();
 
 		var params = {
 			request: action.request,
@@ -250,7 +254,7 @@ Z8.define('Z8.form.Fieldset', {
 	},
 
 	onActionComplete: function(button, record, response, success) {
-		if(success && this.record == record) {
+		if(success && this.getRecord() == record) {
 			var reloadCallback = function(record, success) {
 				button.setBusy(false);
 				this.form.loadRecord(record);

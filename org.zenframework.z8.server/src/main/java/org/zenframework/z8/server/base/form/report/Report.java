@@ -88,6 +88,10 @@ public class Report extends OBJECT implements Runnable, IReport {
 		z8_prepare(recordId);
 	}
 
+	public file z8_run(guid recordId) {
+		return execute(recordId);
+	}
+
 	public void z8_prepare(guid recordId) {
 	}
 

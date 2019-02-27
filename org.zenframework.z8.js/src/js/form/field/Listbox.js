@@ -261,9 +261,6 @@ Z8.define('Z8.form.field.Listbox', {
 	},
 
 	setActive: function(active) {
-		if(this.isActive() == active)
-			return;
-
 		this.callParent(active);
 
 		if(this.list != null)

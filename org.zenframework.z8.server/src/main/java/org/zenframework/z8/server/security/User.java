@@ -227,16 +227,15 @@ public class User implements IUser {
 		boolean isLatestVersion = ServerConfig.isLatestVersion();
 
 		boolean exists = user.readInfo(loginOrId, !isLatestVersion);
-		if (!exists && createIfNotExist) {
-			user.login = ((string) loginOrId).get();
+		if(!exists && createIfNotExist) {
+			user.login = ((string)loginOrId).get();
 			user.password = MD5.hex("");
 			Users users = Users.newInstance();
 			users.name.get().set(loginOrId);
 			users.password.get().set(new string(user.password));
 			user.id = users.create();
-		} else if (!exists) {
+		} else if(!exists)
 			throw new AccessDeniedException();
-		}
 
 		if(isLatestVersion) {
 			user.loadRoles();
@@ -283,9 +282,7 @@ public class User implements IUser {
 		fields.add(users.name.get());
 		fields.add(users.password.get());
 
-		SqlToken where = (loginOrId instanceof guid)
-				? new Equ(users.recordId.get(), loginOrId) : new EqualsIgnoreCase(users.name.get(), (string) loginOrId);
-
+		SqlToken where = (loginOrId instanceof guid) ? new Equ(users.recordId.get(), loginOrId) : new EqualsIgnoreCase(users.name.get(), (string)loginOrId);
 
 		if(!shortInfo) {
 			fields.add(users.banned.get());
@@ -355,9 +352,9 @@ public class User implements IUser {
 		loadFieldAccess(privileges, defaultAccess);
 		loadRequestAccess(privileges, defaultAccess);
 
-/*
-		Trace.logEvent(privileges);
-*/
+		/*
+		 * Trace.logEvent(privileges);
+		 */
 	}
 
 	private void loadTableAccess(IPrivileges privileges, IAccess defaultAccess) {

@@ -12,6 +12,8 @@ public class Report extends Object {
 	public string template;
 	public string format;
 
+	public file run(guid recordId);
+
 	virtual protected void prepare(guid recordId);
-	virtual public file execute(guid recordId);
+	virtual protected file execute(guid recordId);
 }

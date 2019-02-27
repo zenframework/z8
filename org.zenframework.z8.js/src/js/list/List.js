@@ -369,7 +369,7 @@ Z8.define('Z8.list.List', {
 			return;
 
 		if(!this.autoFit) {
-			this.adjustScrollers()
+			this.adjustScrollers();
 			return;
 		}
 
@@ -409,7 +409,7 @@ Z8.define('Z8.list.List', {
 				var width = header.getWidth();
 				var minWidth = header.getMinWidth();
 
-				if(width == minWidth && header.adjusted)
+				if(header.hidden || width == minWidth && header.adjusted)
 					continue;
 
 				width = Math.max(minWidth, (i != flexible.length - 1) ? header.getWidth() * ratio : (clientWidth - fixedWidth - flexibleWidth));
@@ -594,6 +594,7 @@ Z8.define('Z8.list.List', {
 			var isSortHeader = sorter != null && field.name == sorter.property && field.sortable !== false;
 			field.sortDirection = isSortHeader ? sorter.direction : null;
 			var header = this.createHeader(fields[i], cls);
+//			header.hidden = i == 1;
 			if(isSortHeader)
 				this.sortHeader = header;
 			headers.push(header);

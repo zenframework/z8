@@ -61,14 +61,12 @@ Z8.define('Z8.list.Dropdown', {
 
 		this.setPosition(left, top);
 
-		DOM.setBottom(this, 'auto');
-		DOM.removeCls(this, 'display-none');
-
 		var wasVisible = this.visible;
 		this.visible = true;
 
-		this.align();
-		this.adjustAutoFit();
+		DOM.removeCls(this, 'display-none');
+
+		this.alignAdjust();
 
 		if(!wasVisible)
 			this.fireEvent('show', this);
@@ -77,6 +75,24 @@ Z8.define('Z8.list.Dropdown', {
 			this.focus(focusAt);
 
 		delete this.inShow;
+	},
+
+	align: function() {
+		DOM.setBottom(this, 'auto');
+		this.callParent();
+	},
+
+	alignAdjust: function() {
+		this.align();
+		this.adjustAutoFit();
+
+		if(this.aligned)
+			return;
+
+		this.aligned = true;
+
+		this.align();
+		this.adjustAutoFit();
 	},
 
 	hide: function() {

@@ -21,7 +21,7 @@ Z8.define('Z8.list.Header', {
 	getWidth: function() {
 		var defaultWidth = this.getDefaultWidth();
 		var width = this.width;
-		return width != null && width != 0 ? Math.max(width, this.getMinWidth()) : defaultWidth;
+		return this.hidden ? 0 : (width != null && width != 0 ? Math.max(width, this.getMinWidth()) : defaultWidth);
 	},
 
 	getMinWidth: function() {
