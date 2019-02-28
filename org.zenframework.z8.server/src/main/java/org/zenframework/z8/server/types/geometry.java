@@ -186,7 +186,7 @@ public final class geometry extends primary {
 	@Override
 	public int hashCode() {
 		String bytes = get();
-		return bytes != null ? bytes.hashCode() : super.hashCode();
+		return bytes != null ? bytes.hashCode() : 0;
 	}
 
 	@Override
