@@ -18,11 +18,6 @@
 			<artifactId>org.eclipse.core.resources</artifactId>
 			<version>${eclipse.core.version}</version>
 		</dependency>
-		<dependency>
-			<groupId>org.eclipse.text</groupId>
-			<artifactId>org.eclipse.text</artifactId>
-			<version>${eclipse.text.version}</version>
-		</dependency>
 	</dependencies>
 
 	<build>
