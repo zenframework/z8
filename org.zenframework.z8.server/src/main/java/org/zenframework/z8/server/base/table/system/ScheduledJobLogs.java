@@ -1,6 +1,7 @@
 package org.zenframework.z8.server.base.table.system;
 
 import org.zenframework.z8.server.base.table.Table;
+import org.zenframework.z8.server.base.table.value.BoolField;
 import org.zenframework.z8.server.base.table.value.DatetimeField;
 import org.zenframework.z8.server.base.table.value.FileField;
 import org.zenframework.z8.server.base.table.value.Link;
@@ -15,6 +16,7 @@ public class ScheduledJobLogs extends Table {
 		public final static String Start = "Start";
 		public final static String Finished = "Finish";
 		public final static String ScheduledJob = "ScheduledJob";
+		public final static String Errors = "Errors";
 		public final static String Files = "Files";
 	}
 
@@ -23,6 +25,7 @@ public class ScheduledJobLogs extends Table {
 		public final static String Description = "ScheduledJobLogs.description";
 		public final static String Start = "ScheduledJobLogs.start";
 		public final static String Finish = "ScheduledJobLogs.finish";
+		public final static String Errors = "ScheduledJobLogs.errors";
 		public final static String File = "ScheduledJobLogs.file";
 	}
 
@@ -31,6 +34,7 @@ public class ScheduledJobLogs extends Table {
 		public final static String Description = Resources.get(strings.Description);
 		public final static String Start = Resources.get(strings.Start);
 		public final static String Finish = Resources.get(strings.Finish);
+		public final static String Errors = Resources.get(strings.Errors);
 		public final static String File = Resources.get(strings.File);
 	}
 
@@ -63,6 +67,7 @@ public class ScheduledJobLogs extends Table {
 	public DatetimeField.CLASS<DatetimeField> start = new DatetimeField.CLASS<DatetimeField>(this);
 	public DatetimeField.CLASS<DatetimeField> finish = new DatetimeField.CLASS<DatetimeField>(this);
 
+	public BoolField.CLASS<BoolField> errors = new BoolField.CLASS<BoolField>(this);
 	public FileField.CLASS<FileField> file = new FileField.CLASS<FileField>(this);
 
 	public ScheduledJobLogs(IObject container) {
@@ -81,6 +86,7 @@ public class ScheduledJobLogs extends Table {
 		objects.add(scheduledJob);
 		objects.add(start);
 		objects.add(finish);
+		objects.add(errors);
 		objects.add(file);
 
 		objects.add(scheduledJobs);
@@ -104,6 +110,11 @@ public class ScheduledJobLogs extends Table {
 		finish.setName(fieldNames.Finished);
 		finish.setIndex("finish");
 		finish.setDisplayName(displayNames.Finish);
+
+		errors.setName(fieldNames.Errors);
+		errors.setIndex("errors");
+		errors.setDisplayName(displayNames.Errors);
+		errors.setIcon("fa-error");
 
 		file.setName(fieldNames.Files);
 		file.setIndex("file");

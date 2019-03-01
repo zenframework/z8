@@ -8,15 +8,11 @@ import org.zenframework.z8.server.db.ConnectionManager;
 import org.zenframework.z8.server.engine.ApplicationServer;
 import org.zenframework.z8.server.json.Json;
 import org.zenframework.z8.server.json.JsonWriter;
-import org.zenframework.z8.server.logs.Trace;
 import org.zenframework.z8.server.request.IRequest;
-import org.zenframework.z8.server.resources.Resources;
 import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.runtime.RCollection;
-import org.zenframework.z8.server.types.exception;
 import org.zenframework.z8.server.types.integer;
 import org.zenframework.z8.server.types.string;
-import org.zenframework.z8.server.utils.ErrorUtils;
 
 public class Procedure extends Action {
 	public static class CLASS<T extends Procedure> extends Action.CLASS<T> {
@@ -85,9 +81,11 @@ public class Procedure extends Action {
 	public void run() {
 		ApplicationServer.setRequest(request);
 
-		Connection connection = useTransaction.get() ? ConnectionManager.get() : null;
+		Connection connection = null;
 
 		try {
+			connection = useTransaction.get() ? ConnectionManager.get() : null;
+
 			if(connection != null)
 				connection.beginTransaction();
 
@@ -98,30 +96,12 @@ public class Procedure extends Action {
 		} catch(Throwable e) {
 			if(connection != null)
 				connection.rollback();
-			getMonitor().error(ErrorUtils.getMessage(e));
-		} finally {
-			getMonitor().logMessages();
+			getMonitor().error(e);
 		}
 	}
 
-	protected void log(String message, Throwable e) {
-		log(new exception(message, e));
-	}
-
-	protected void log(Throwable e) {
-		Trace.logError(e);
-
-		JobMonitor monitor = getMonitor();
-		monitor.setWorked(monitor.getTotal());
-		monitor.log(e);
-		monitor.error(Resources.format("Procedure.jobError", ErrorUtils.getMessage(e)));
-
-		if(useTransaction.get())
-			monitor.info(Resources.get("Procedure.rollback"));
-	}
-
 	public JobMonitor getMonitor() {
-		return (JobMonitor) ApplicationServer.getMonitor();
+		return (JobMonitor)ApplicationServer.getMonitor();
 	}
 
 	@Override

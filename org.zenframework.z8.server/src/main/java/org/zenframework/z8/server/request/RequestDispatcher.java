@@ -20,7 +20,6 @@ import org.zenframework.z8.server.request.actions.RequestAction;
 import org.zenframework.z8.server.runtime.OBJECT;
 import org.zenframework.z8.server.security.IUser;
 import org.zenframework.z8.server.security.Privileges;
-import org.zenframework.z8.server.types.exception;
 import org.zenframework.z8.server.types.guid;
 import org.zenframework.z8.server.utils.ErrorUtils;
 
@@ -50,10 +49,7 @@ public class RequestDispatcher implements Runnable {
 			writer.finishArray();
 
 			IMonitor monitor = request.getMonitor();
-			if(exception instanceof exception)
-				monitor.error(ErrorUtils.getMessage(exception));
-			else
-				monitor.fatalError(ErrorUtils.getMessage(exception));
+			monitor.error(exception);
 
 			try {
 				monitor.writeResponse(writer);

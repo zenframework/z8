@@ -7,6 +7,7 @@ import org.zenframework.z8.server.json.Json;
 import org.zenframework.z8.server.json.JsonWriter;
 import org.zenframework.z8.server.request.Monitor;
 import org.zenframework.z8.server.types.date;
+import org.zenframework.z8.server.types.exception;
 import org.zenframework.z8.server.types.string;
 
 public class JobMonitor extends Monitor {
@@ -15,8 +16,6 @@ public class JobMonitor extends Monitor {
 	private int total = 100;
 	private int worked = 0;
 	private date start = new date();
-
-	private Object mutex = new Object();
 
 	public JobMonitor(Job job, String id) {
 		super(id);
@@ -50,38 +49,26 @@ public class JobMonitor extends Monitor {
 
 	@Override
 	public void info(String text) {
-		synchronized (mutex) {
-			super.info(text);
+		super.info(text);
 
-			if (job != null && job.scheduled())
-				logInfo(text);
-		}
+		if(job != null && job.scheduled())
+			logInfo(text);
 	}
 
 	@Override
 	public void warning(String text) {
-		synchronized (mutex) {
-			super.warning(text);
+		super.warning(text);
 
-			if (job != null && job.scheduled())
-				logWarning(text);
-		}
+		if(job != null && job.scheduled())
+			logWarning(text);
 	}
 
 	@Override
-	public void error(String text) {
-		synchronized (mutex) {
-			super.warning(text);
+	public void error(Throwable exception) {
+		super.error(exception);
 
-			if (job != null && job.scheduled())
-				logError(text);
-		}
-	}
-
-	public void logMessages() {
-		synchronized (mutex) {
-			collectLogMessages();
-		}
+		if(job != null && (job.scheduled() || !(exception instanceof exception)))
+			logError(exception);
 	}
 
 	public boolean isDone() {
@@ -91,7 +78,7 @@ public class JobMonitor extends Monitor {
 	@SuppressWarnings("unchecked")
 	@Override
 	public void writeResponse(JsonWriter writer) {
-		synchronized (mutex) {
+		synchronized(this) {
 			boolean isDone = isDone();
 
 			writer.writeProperty(Json.isJob, true);
@@ -106,10 +93,9 @@ public class JobMonitor extends Monitor {
 			writer.writeProperty(new string(Json.server), ApplicationServer.id);
 			writer.writeInfo(getMessages(), isDone ? getFiles() : Collections.EMPTY_LIST, ApplicationServer.id);
 
-			collectLogMessages();
 			clearMessages();
 
-			if (isDone)
+			if(isDone)
 				Job.removeMonitor(this);
 		}
 	}

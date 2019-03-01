@@ -62,13 +62,13 @@ public class JobsView extends ScheduledJobs {
 
 		logsListbox.get().query = logs;
 		logsListbox.get().link = logs.get().scheduledJob;
-		logsListbox.get().readOnly = bool.True;
 		logsListbox.get().colSpan = new integer(12);
 		logsListbox.get().flex = new integer(1);
 
 		logsListbox.get().columns.add(logs.get().start);
 		logsListbox.get().columns.add(logs.get().finish);
 		logsListbox.get().columns.add(logs.get().description);
+		logsListbox.get().columns.add(logs.get().errors);
 		logsListbox.get().columns.add(logs.get().file);
 		logsListbox.get().sortFields.add(logs.get().start);
 

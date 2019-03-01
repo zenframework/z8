@@ -182,22 +182,4 @@ public class ApplicationServer extends RmiServer implements IApplicationServer {
 		String version = Runtime.version();
 		Trace.logEvent("Runtime schema version: " + version);
 	}
-
-	static public void info(String text) {
-		IMonitor monitor = ApplicationServer.getMonitor();
-		if(monitor != null)
-			monitor.info(text);
-	}
-
-	static public void warning(String text) {
-		IMonitor monitor = ApplicationServer.getMonitor();
-		if(monitor != null)
-			monitor.warning(text);
-	}
-
-	static public void error(String text) {
-		IMonitor monitor = ApplicationServer.getMonitor();
-		if(monitor != null)
-			monitor.error(text);
-	}
 }

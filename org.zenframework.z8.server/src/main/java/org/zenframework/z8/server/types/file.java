@@ -16,6 +16,7 @@ import java.util.List;
 
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.disk.DiskFileItem;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.zenframework.z8.server.base.file.Folders;
 import org.zenframework.z8.server.base.table.system.Files;
@@ -321,7 +322,14 @@ public class file extends primary implements RmiSerializable, Serializable {
 	}
 
 	static public file createTempFile(String extension) {
-		File folder = new File(Folders.Base, Folders.Files);
+		return createTempFile(new File(Folders.Base, Folders.Temp), extension);
+	}
+
+	static public file createLogFile(String folder, String extension) {
+		return createTempFile(FileUtils.getFile(Folders.Base, Folders.Logs, folder), extension);
+	}
+
+	static public file createTempFile(File folder, String extension) {
 		folder.mkdirs();
 
 		if(extension != null && !extension.isEmpty())

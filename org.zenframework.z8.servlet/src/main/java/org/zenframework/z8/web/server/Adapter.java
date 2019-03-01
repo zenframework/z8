@@ -179,7 +179,7 @@ public abstract class Adapter {
 			errorText = "Internal server error.";
 
 		writer.startResponse(null, false, status);
-		writer.writeInfo(Arrays.asList(Message.error(errorText, null)), Collections.EMPTY_LIST, null);
+		writer.writeInfo(Arrays.asList(Message.error(new RuntimeException(errorText), null)), Collections.EMPTY_LIST, null);
 		writer.startArray(Json.data);
 		writer.finishArray();
 		writer.finishResponse();

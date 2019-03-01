@@ -1,5 +1,7 @@
 package org.zenframework.z8.server.utils;
 
+import org.zenframework.z8.server.types.file;
+
 public class ErrorUtils {
 
 	static public Throwable unwrapRuntimeException(Throwable exception) {
@@ -34,7 +36,7 @@ public class ErrorUtils {
 		String result = "";
 
 		for(StackTraceElement element : throwable.getStackTrace())
-			result += (result.isEmpty() ? "" : "\t") + element.toString() + "\r\n";
+			result += (result.isEmpty() ? "" : "\t") + element.toString() + file.EOL;
 
 		return result;
 	}

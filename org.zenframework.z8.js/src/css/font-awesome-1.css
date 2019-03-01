@@ -2,10 +2,6 @@
 	content: "\f071";
 }
 
-.fa-fatal:before { /* fa-exclamation-triangle */
-	content: "\f071";
-}
-
 .fa-math-divide,
 .fa-math-lt,
 .fa-math-gt,

@@ -1,7 +1,6 @@
 package org.zenframework.z8.server.base.job.scheduler;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -12,6 +11,7 @@ import org.zenframework.z8.server.engine.Session;
 import org.zenframework.z8.server.json.Json;
 import org.zenframework.z8.server.json.JsonWriter;
 import org.zenframework.z8.server.logs.Trace;
+import org.zenframework.z8.server.request.IMonitor;
 import org.zenframework.z8.server.request.IRequest;
 import org.zenframework.z8.server.request.IResponse;
 import org.zenframework.z8.server.request.Request;
@@ -19,6 +19,7 @@ import org.zenframework.z8.server.request.RequestDispatcher;
 import org.zenframework.z8.server.request.Response;
 import org.zenframework.z8.server.security.IUser;
 import org.zenframework.z8.server.security.User;
+import org.zenframework.z8.server.types.bool;
 import org.zenframework.z8.server.types.date;
 import org.zenframework.z8.server.types.file;
 import org.zenframework.z8.server.types.guid;
@@ -103,24 +104,27 @@ public class ScheduledJob implements Runnable {
 		}
 	}
 
-	private void afterFinish(Collection<file> files) {
-		if(id == null || files.isEmpty())
+	private void afterFinish(IMonitor monitor) {
+		if(id == null)
 			return;
-
-		JsonWriter writer = new JsonWriter();
-		writer.startArray();
-		for(file file : files) {
-			writer.startObject();
-			file.write(writer);
-			writer.finishObject();
-		}
-		writer.finishArray();
 
 		ScheduledJobLogs logs = ScheduledJobLogs.newInstance();
 		logs.scheduledJob.get().set(id);
-		logs.file.get().set(new string(writer.toString()));
 		logs.start.get().set(lastStart);
 		logs.finish.get().set(new date());
+		logs.errors.get().set(new bool(monitor.hasErrors()));
+
+		file logFile = monitor.getLog();
+		if(logFile != null) {
+			JsonWriter writer = new JsonWriter();
+			writer.startArray();
+			writer.startObject();
+			logFile.write(writer);
+			writer.finishObject();
+			writer.finishArray();
+			logs.file.get().set(new string(writer.toString()));
+		}
+
 		logs.create();
 	}
 
@@ -144,7 +148,7 @@ public class ScheduledJob implements Runnable {
 
 			new RequestDispatcher(request, response).run();
 
-			afterFinish(request.getMonitor().getFiles());
+			afterFinish(request.getMonitor());
 		} finally {
 			isRunning = false;
 			thread = null;

@@ -8,17 +8,16 @@ import org.zenframework.z8.server.engine.ApplicationServer;
 import org.zenframework.z8.server.json.Json;
 import org.zenframework.z8.server.json.JsonWriter;
 import org.zenframework.z8.server.logs.Trace;
+import org.zenframework.z8.server.types.exception;
 import org.zenframework.z8.server.types.file;
 import org.zenframework.z8.server.types.guid;
 import org.zenframework.z8.server.types.string;
-import org.zenframework.z8.server.utils.ErrorUtils;
 
 public class Monitor extends RequestTarget implements IMonitor {
 
 	private Collection<file> files = new ArrayList<file>();
 	private file log;
-
-	private List<Message> logMessages = new ArrayList<Message>();
+	private boolean hasErrors = false;
 
 	private List<Message> messages = new ArrayList<Message>();
 
@@ -28,10 +27,6 @@ public class Monitor extends RequestTarget implements IMonitor {
 
 	public Monitor(String id) {
 		super(id);
-	}
-
-	protected void collectLogMessages() {
-		logMessages.addAll(messages);
 	}
 
 	@Override
@@ -48,14 +43,13 @@ public class Monitor extends RequestTarget implements IMonitor {
 
 	@Override
 	public void error(String text) {
-		Trace.logEvent(text);
-		messages.add(Message.error(text, request().displayName()));
+		error(new exception(text));
 	}
 
 	@Override
-	public void fatalError(String text) {
-		Trace.logEvent(text);
-		messages.add(Message.fatalError(text, request().displayName()));
+	public void error(Throwable exception) {
+		Trace.logError(exception);
+		messages.add(Message.error(exception, request().displayName()));
 	}
 
 	@Override
@@ -75,33 +69,37 @@ public class Monitor extends RequestTarget implements IMonitor {
 
 	@Override
 	public void logError(String text) {
-		log(Message.error(text, request().displayName()));
+		logError(new exception(text));
 	}
 
 	@Override
-	public void logFatalError(String text) {
-		log(Message.fatalError(text, request().displayName()));
+	public void logError(Throwable exception) {
+		hasErrors = true;
+		log(Message.error(exception, request().displayName()));
 	}
 
 	protected void log(Message message) {
 		Trace.logEvent(message);
 
-		if(log == null) {
-			log = file.createTempFile("log");
-			files.add(log);
-		}
+		if(log == null)
+			log = file.createLogFile(request().displayName(), "log");
 
-		log.write(message + file.EOL);
+		log.write(message.toLogString() + file.EOL);
 	}
 
 	@Override
-	public void log(Throwable exception) {
-		String message = ErrorUtils.getMessage(exception) + file.EOL + ErrorUtils.getStackTrace(exception);
-		logError(message);
-	}
-
 	public Collection<file> getFiles() {
 		return files;
+	}
+
+	@Override
+	public boolean hasErrors() {
+		return hasErrors;
+	}
+
+	@Override
+	public file getLog() {
+		return log;
 	}
 
 	public Collection<Message> getMessages() {

@@ -180,6 +180,7 @@
 	<entry key="ScheduledJobLogs.title">Сообщения</entry>
 	<entry key="ScheduledJobLogs.start">Старт</entry>
 	<entry key="ScheduledJobLogs.finish">Финиш</entry>
+	<entry key="ScheduledJobLogs.errors">Ошибки</entry>
 	<entry key="ScheduledJobLogs.file">Лог-файл</entry>
 
 	<!-- JobsView -->

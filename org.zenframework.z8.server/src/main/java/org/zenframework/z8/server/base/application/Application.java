@@ -5,6 +5,7 @@ import org.zenframework.z8.server.base.json.JsonWriter;
 import org.zenframework.z8.server.base.security.User;
 import org.zenframework.z8.server.config.ServerConfig;
 import org.zenframework.z8.server.engine.ApplicationServer;
+import org.zenframework.z8.server.request.IMonitor;
 import org.zenframework.z8.server.runtime.RCollection;
 import org.zenframework.z8.server.runtime.RLinkedHashMap;
 import org.zenframework.z8.server.types.bool;
@@ -42,15 +43,21 @@ public class Application {
 	}
 
 	static public void z8_info(string text) {
-		ApplicationServer.info(text.get());
+		IMonitor monitor = ApplicationServer.getMonitor();
+		if(monitor != null)
+			monitor.info(text.get());
 	}
 
 	static public void z8_warning(string text) {
-		ApplicationServer.warning(text.get());
+		IMonitor monitor = ApplicationServer.getMonitor();
+		if(monitor != null)
+			monitor.warning(text.get());
 	}
 
 	static public void z8_error(string text) {
-		ApplicationServer.error(text.get());
+		IMonitor monitor = ApplicationServer.getMonitor();
+		if(monitor != null)
+			monitor.error(text.get());
 	}
 
 	static public void z8_print(file file) {
