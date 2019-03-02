@@ -12,6 +12,9 @@ import java.io.Reader;
 import java.net.URLDecoder;
 import java.rmi.RemoteException;
 import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 import java.util.Properties;
 
 import javax.servlet.ServletConfig;
@@ -45,9 +48,11 @@ public class WebServer implements IServer {
 
 	private static final String ID = guid.create().toString();
 
-	private static final String PROP_WEB_SERVER_PORT = "web.server.port";
-	private static final String PROP_WEB_SERVER_WEBAPP = "web.server.webapp";
-	private static final String PROP_WEB_SERVER_MAPPINGS = "web.server.content.map";
+	private static final String PREFIX_SERVLET_CONFIG = "z8.servlet.";
+	
+	private static final String PROP_WEB_SERVER_PORT = "z8.webserver.port";
+	private static final String PROP_WEB_SERVER_WEBAPP = "z8.webserver.webapp";
+	private static final String PROP_WEB_SERVER_MAPPINGS = "z8.webserver.content.map";
 
 	private static final int DEFAULT_WEB_SERVER_PORT = 80;
 	private static final String DEFAULT_WEB_SERVER_WEBAPP = "..";
@@ -61,6 +66,11 @@ public class WebServer implements IServer {
 	@Override
 	public void start() {
 		try {
+
+			final Map<String, String> initParameters = new HashMap<String, String>();
+			for (String name : System.getProperties().stringPropertyNames())
+				if (name.startsWith(PREFIX_SERVLET_CONFIG))
+					initParameters.put(name.substring(PREFIX_SERVLET_CONFIG.length()), System.getProperty(name));
 
 			webapp = new File(System.getProperty(PROP_WEB_SERVER_WEBAPP, DEFAULT_WEB_SERVER_WEBAPP));
 			mappings = getMappings(System.getProperty(PROP_WEB_SERVER_MAPPINGS));
@@ -83,22 +93,23 @@ public class WebServer implements IServer {
 
 				@Override
 				public Enumeration<String> getInitParameterNames() {
+					final Iterator<String> names = initParameters.keySet().iterator();
 					return new Enumeration<String>() {
 						@Override
 						public boolean hasMoreElements() {
-							return false;
+							return names.hasNext();
 						}
 
 						@Override
 						public String nextElement() {
-							return null;
+							return names.next();
 						}
 					};
 				}
 
 				@Override
 				public String getInitParameter(String name) {
-					return null;
+					return initParameters.get(name);
 				}
 			});
 
