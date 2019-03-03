@@ -98,11 +98,6 @@ public class SelectFactory {
 			subselect.setLinks(links);
 			subselect.setWhere(filter);
 			subselect.setGroupBy((Collection)aggregateBy);
-
-			// if(isCounter && !isGrouped())
-			// {
-			// return new CountingSelect(subselect);
-			// }
 		}
 
 		selectFields = getSelectFields();

@@ -7,6 +7,7 @@ import java.util.Map;
 
 import org.zenframework.z8.server.base.table.system.ScheduledJobLogs;
 import org.zenframework.z8.server.base.table.system.ScheduledJobs;
+import org.zenframework.z8.server.db.ConnectionManager;
 import org.zenframework.z8.server.engine.Session;
 import org.zenframework.z8.server.json.Json;
 import org.zenframework.z8.server.json.JsonWriter;
@@ -75,16 +76,15 @@ public class ScheduledJob implements Runnable {
 	}
 
 	public boolean readyToStart() {
-		return !isRunning && active && !cron.isEmpty()
-				&& Cron.nextDate(lastStart, cron).getTicks() < new date().getTicks();
+		return !isRunning && active && !cron.isEmpty() &&
+				Cron.nextDate(lastStart, cron).getTicks() < new date().getTicks();
 	}
 
 	private boolean beforeStart() {
-
-		date lastStart = new date();
-		date nextStart = Cron.nextDate(lastStart, cron);
-
 		try {
+			date lastStart = new date();
+			date nextStart = Cron.nextDate(lastStart, cron);
+
 			if(id != null) {
 				ScheduledJobs tasks = new ScheduledJobs.CLASS<ScheduledJobs>(null).get();
 				tasks.lastStart.get().set(lastStart);
@@ -116,6 +116,8 @@ public class ScheduledJob implements Runnable {
 
 		file logFile = monitor.getLog();
 		if(logFile != null) {
+			monitor.logInfo("Memory usage: " + RequestDispatcher.getMemoryUsage());
+
 			JsonWriter writer = new JsonWriter();
 			writer.startArray();
 			writer.startObject();
@@ -152,6 +154,8 @@ public class ScheduledJob implements Runnable {
 		} finally {
 			isRunning = false;
 			thread = null;
+
+			ConnectionManager.release();
 		}
 	}
 

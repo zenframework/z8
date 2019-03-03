@@ -25,21 +25,19 @@ public enum DatabaseVendor {
 	}
 
 	public static DatabaseVendor fromString(String string) {
-		if(string == null) {
+		if(string == null)
 			return DatabaseVendor.SqlServer;
-		}
 
 		string = string.toUpperCase();
 
-		if(string.contains(names.Oracle.toUpperCase())) {
+		if(string.contains(names.Oracle.toUpperCase()))
 			return DatabaseVendor.Oracle;
-		} else if(string.contains(names.SqlServer.toUpperCase())) {
+		else if(string.contains(names.SqlServer.toUpperCase()))
 			return DatabaseVendor.SqlServer;
-		} else if(string.contains(names.Postgres.toUpperCase())) {
+		else if(string.contains(names.Postgres.toUpperCase()))
 			return DatabaseVendor.Postgres;
-		} else {
+		else
 			return DatabaseVendor.SqlServer;
-		}
 	}
 
 	public String sqlName(String name) {

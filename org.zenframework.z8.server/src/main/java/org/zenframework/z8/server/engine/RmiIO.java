@@ -600,7 +600,7 @@ public class RmiIO extends ObjectIO {
 
 	private Object readOBJECT(ObjectInputStream in) throws IOException, ClassNotFoundException {
 		CLASS<?> cls = (CLASS<?>)newObject(readString(in) + "$CLASS", new Class<?>[] { IObject.class }, new Object[] { null });
-		RmiSerializable serializable = (RmiSerializable)cls.newObject(null);
+		RmiSerializable serializable = (RmiSerializable)cls.get();
 		serializable.deserialize(in);
 		return serializable;
 	}

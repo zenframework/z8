@@ -63,25 +63,19 @@ public class ConnectionManager {
 	}
 
 	public static synchronized void release(Database database) {
-		if(database == null)
-			database = ServerConfig.database();
+		for(List<Connection> connections : schemas.values()) {
+			Iterator<Connection> iterator = connections.iterator();
 
-		List<Connection> connections = schemas.get(database.schema());
+			while(iterator.hasNext()) {
+				Connection connection = iterator.next();
 
-		if(connections == null)
-			return;
+				if(connection.isCurrent())
+					connection.release();
 
-		Iterator<Connection> iterator = connections.iterator();
-
-		while(iterator.hasNext()) {
-			Connection connection = iterator.next();
-
-			if(connection.isCurrent())
-				connection.release();
-
-			if(connection.isUnused()) {
-				connection.close();
-				iterator.remove();
+				if(connection.isUnused()) {
+					connection.close();
+					iterator.remove();
+				}
 			}
 		}
 	}

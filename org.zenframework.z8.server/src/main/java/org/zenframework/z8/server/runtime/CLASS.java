@@ -203,26 +203,9 @@ public class CLASS<TYPE extends IObject> implements IClass<TYPE> {
 	}
 
 	@SuppressWarnings("unchecked")
-	private TYPE constructObject(IObject container) throws Exception {
-		TYPE object = (TYPE)newObject(container);
-
-		if(object != null)
-			return object;
-
-		try {
-			Constructor<TYPE> constructor = javaClass.getDeclaredConstructor(IObject.class);
-			return (TYPE)constructor.newInstance(container);
-		} catch(NoSuchMethodException e) {
-			Class<?> enclosingClass = javaClass.getEnclosingClass();
-			Constructor<TYPE> constructor = javaClass.getDeclaredConstructor(enclosingClass, IObject.class);
-			constructor.setAccessible(true);
-			return (TYPE)constructor.newInstance(container, container);
-		}
-	}
-
 	private void create(IObject container) {
 		try {
-			object = constructObject(container);
+			object = (TYPE)newObject(container);
 			object.setCLASS(this);
 		} catch(Throwable e) {
 			throw new RuntimeException(e);

@@ -15,6 +15,7 @@ import org.zenframework.z8.server.config.ServerConfig;
 import org.zenframework.z8.server.db.ConnectionManager;
 import org.zenframework.z8.server.db.MaintenanceJob;
 import org.zenframework.z8.server.ie.rmi.TransportJob;
+import org.zenframework.z8.server.logs.Trace;
 import org.zenframework.z8.server.types.guid;
 
 public class Scheduler implements Runnable {
@@ -77,8 +78,13 @@ public class Scheduler implements Runnable {
 			if(Thread.interrupted())
 				return;
 
-			for(ScheduledJob job : jobs)
-				job.start();
+			for(ScheduledJob job : jobs) {
+				try {
+					job.start();
+				} catch(Throwable e) {
+					Trace.logError(e);
+				}
+			}
 
 			try {
 				Thread.sleep(1 * 1000);
