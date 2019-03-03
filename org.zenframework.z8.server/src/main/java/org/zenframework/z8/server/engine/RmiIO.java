@@ -29,6 +29,7 @@ import org.zenframework.z8.server.types.date;
 import org.zenframework.z8.server.types.datespan;
 import org.zenframework.z8.server.types.decimal;
 import org.zenframework.z8.server.types.file;
+import org.zenframework.z8.server.types.geometry;
 import org.zenframework.z8.server.types.guid;
 import org.zenframework.z8.server.types.integer;
 import org.zenframework.z8.server.types.primary;
@@ -123,6 +124,10 @@ public class RmiIO extends ObjectIO {
 		writeString(out, value.get());
 	}
 
+	static public void writeGeometry(ObjectOutputStream out, geometry value) throws IOException {
+		writeString(out, value.get());
+	}
+
 	static public void writeFile(ObjectOutputStream out, file value) throws IOException {
 		writeSerializable(out, (RmiSerializable)value);
 	}
@@ -191,6 +196,9 @@ public class RmiIO extends ObjectIO {
 		} else if(value instanceof string) {
 			writeByte(out, RmiIOType.String);
 			writeString(out, (string)value);
+		} else if(value instanceof geometry) {
+			writeByte(out, RmiIOType.Geometry);
+			writeGeometry(out, (geometry)value);
 		} else if(value instanceof file) {
 			writeByte(out, RmiIOType.File);
 			writeFile(out, (file)value);
@@ -476,6 +484,8 @@ public class RmiIO extends ObjectIO {
 			return readInteger(in);
 		else if(type == RmiIOType.String)
 			return new string(readString(in));
+		else if(type == RmiIOType.Geometry)
+			return new geometry(readString(in));
 		else
 			throw new RuntimeException("Unknown primary type");
 	}
