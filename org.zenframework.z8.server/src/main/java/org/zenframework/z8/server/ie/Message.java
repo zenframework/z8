@@ -34,6 +34,9 @@ abstract public class Message extends OBJECT implements RmiSerializable, Seriali
 
 	static private final long serialVersionUID = 3103056587172568573L;
 
+	static private final int MB = 1024 * 1024;
+	static private final int MessageSizeThreshold = 10 * MB; // 10MB
+
 	static public class CLASS<T extends Message> extends OBJECT.CLASS<T> {
 		public CLASS() {
 			this(null);
@@ -129,6 +132,9 @@ abstract public class Message extends OBJECT implements RmiSerializable, Seriali
 
 			IOUtils.closeQuietly(out);
 			IOUtils.closeQuietly(bytes);
+
+			if (bytes.size() > MessageSizeThreshold)
+				Trace.logEvent("Warning: huge message " + (bytes.size() / MB) + "MB serialized");
 
 			return new binary(bytes.toByteArray());
 		} catch(IOException e) {
