@@ -567,7 +567,7 @@ public class ReadAction extends RequestAction {
 
 	public Select getCursor() {
 		try {
-			Select cursor = cursor();
+			Select cursor = this.limit > 0 ? frame() : cursor();
 			cursor.open();
 
 			return cursor;
