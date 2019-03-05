@@ -68,8 +68,7 @@ public class Transport implements Runnable {
 	@Override
 	public void run() {
 		try {
-			while (prepareMessages())
-				sendMessages();
+			while (prepareMessages() || sendMessages());
 		} catch(Throwable e) {
 			Trace.logError(e);
 		} finally {
@@ -101,14 +100,16 @@ public class Transport implements Runnable {
 		}
 	}
 
-	private void sendMessages() throws Throwable {
+	private boolean sendMessages() throws Throwable {
 		Collection<guid> ids = transportQueue.getMessages(domain);
 
 		for(guid id : ids) {
 			Message message = transportQueue.getMessage(id);
 			if(!send(message))
-				return;
+				return false;
 		}
+		
+		return !ids.isEmpty();
 	}
 
 	private IApplicationServer connect(Message message) throws Throwable {
