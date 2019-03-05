@@ -16,7 +16,7 @@ public class Insert extends Statement {
 	private Collection<Field> fields;
 
 	public Insert(Query query, Collection<Field> fields) {
-		super(ConnectionManager.get());
+		super(query.getConnection());
 
 		this.query = query;
 

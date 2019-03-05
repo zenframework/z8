@@ -9,7 +9,6 @@ import org.zenframework.z8.server.base.table.value.Field;
 import org.zenframework.z8.server.base.table.value.ILink;
 import org.zenframework.z8.server.db.Connection;
 import org.zenframework.z8.server.db.ConnectionManager;
-import org.zenframework.z8.server.db.Update;
 import org.zenframework.z8.server.exceptions.AccessRightsViolationException;
 import org.zenframework.z8.server.json.JsonWriter;
 import org.zenframework.z8.server.json.parser.JsonArray;
@@ -153,7 +152,7 @@ public class UpdateAction extends RequestAction {
 
 			Collection<Field> changedFields = query.getChangedFields();
 
-			result = changedFields.isEmpty() ? 0 : new Update(query, query.getChangedFields(), recordId).execute();
+			result = changedFields.isEmpty() ? 0 : query.executeUpdate(recordId);
 
 			if(recordId != null)
 				query.afterUpdate(recordId);

@@ -28,7 +28,7 @@ public class Update extends Statement {
 	}
 
 	public Update(Query query, Collection<Field> fields, guid recordId, sql_bool where) {
-		super(ConnectionManager.get());
+		super(query.getConnection());
 
 		this.query = query;
 		this.fields = new ArrayList<Field>();

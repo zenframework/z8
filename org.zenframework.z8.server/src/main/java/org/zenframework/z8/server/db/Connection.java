@@ -5,6 +5,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLClientInfoException;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -35,6 +37,7 @@ public class Connection {
 	private long lastUsed = System.currentTimeMillis();
 
 	private Set<BasicStatement> statements = new HashSet<BasicStatement>();
+	private Collection<Listener> listeners;
 
 	static private java.sql.Connection newConnection(Database database) {
 		ConnectionSavePoint savePoint = ConnectionSavePoint.create(database);
@@ -59,6 +62,19 @@ public class Connection {
 	private Connection(Database database, java.sql.Connection connection) {
 		this.database = database;
 		this.connection = connection;
+	}
+
+	public interface Listener {
+		void on(Connection connection, ConnectionEvent event);
+	}
+
+	public void addListener(Listener listener) {
+		if(!inBatchMode())
+			throw new RuntimeException("Connection.addListener() - not in batch mode");
+
+		if(listeners == null)
+			listeners = new ArrayList<Listener>();
+		listeners.add(listener);
 	}
 
 	public void close() {
@@ -209,6 +225,7 @@ public class Connection {
 			if(!inTransaction())
 				throw new RuntimeException("Connection.commit() - not in transaction");
 			if(transactionCount == 1) {
+				onCommit();
 				batch.commit();
 				batch = null;
 				connection.commit();
@@ -220,11 +237,17 @@ public class Connection {
 		}
 	}
 
+	private void onCommit() {
+		onEvent(ConnectionEvent.Commit);
+		listeners = null;
+	}
+
 	public void rollback() {
 		try {
 			if(!inTransaction())
 				throw new RuntimeException("Connection.rollback() - not in transaction");
 			if(transactionCount == 1) {
+				onRollback();
 				batch.rollback();
 				batch = null;
 				connection.rollback();
@@ -236,15 +259,33 @@ public class Connection {
 		}
 	}
 
+	private void onRollback() {
+		onEvent(ConnectionEvent.Rollback);
+		listeners = null;
+	}
+
 	public void flush() {
 		if(!inTransaction())
 			return;
 
 		try {
+			onFlush();
 			batch.flush();
 		} catch(SQLException e) {
 			throw new RuntimeException(e);
 		}
+	}
+
+	private void onFlush() {
+		onEvent(ConnectionEvent.Flush);
+	}
+
+	private void onEvent(ConnectionEvent event) {
+		if(listeners == null)
+			return;
+
+		for(Listener listener : listeners)
+			listener.on(this, event);
 	}
 
 	public boolean isOpen() {

@@ -32,7 +32,7 @@ public abstract class BasicStatement implements IStatement {
 	public abstract void prepare(String sql, int priority) throws SQLException;
 
 	protected BasicStatement(Connection connection) {
-		this.connection = connection;
+		this.connection = connection != null ? connection : ConnectionManager.get();
 	}
 
 	@Override

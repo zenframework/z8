@@ -18,9 +18,11 @@ import org.zenframework.z8.server.base.table.value.IField;
 import org.zenframework.z8.server.base.table.value.ILink;
 import org.zenframework.z8.server.base.table.value.Link;
 import org.zenframework.z8.server.base.view.filter.Filter;
+import org.zenframework.z8.server.db.Connection;
 import org.zenframework.z8.server.db.ConnectionManager;
 import org.zenframework.z8.server.db.Insert;
 import org.zenframework.z8.server.db.Select;
+import org.zenframework.z8.server.db.Update;
 import org.zenframework.z8.server.db.sql.SqlToken;
 import org.zenframework.z8.server.db.sql.expressions.And;
 import org.zenframework.z8.server.engine.ApplicationServer;
@@ -104,6 +106,7 @@ public class Query extends OBJECT {
 	private boolean transactive = true;
 
 	private IAccess access;
+	private Connection connection;
 
 	private Field parentKey = null;
 	private boolean parentKeyFound = false;
@@ -262,6 +265,14 @@ public class Query extends OBJECT {
 		this.transactive = transactive;
 	}
 
+	public Connection getConnection() {
+		return connection;
+	}
+
+	public void setConnection(Connection connection) {
+		this.connection = connection;
+	}
+
 	public boolean hasRecord(guid recordId) {
 		try {
 			saveState();
@@ -351,6 +362,10 @@ public class Query extends OBJECT {
 		}
 
 		return myFields;
+	}
+
+	public int executeUpdate(guid recordId) {
+		return new Update(this, getChangedFields(), recordId).execute();
 	}
 
 	private void executeInsert(Collection<Field> fields) {

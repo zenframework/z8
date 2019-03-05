@@ -26,7 +26,6 @@ import org.zenframework.z8.server.types.file;
 import org.zenframework.z8.server.types.guid;
 
 public class ApplicationServer extends RmiServer implements IApplicationServer {
-
 	static private final ThreadLocal<IRequest> currentRequest = new ThreadLocal<IRequest>();
 
 	static public String id = guid.create().toString();
