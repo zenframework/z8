@@ -30,7 +30,7 @@ public class DecimalField extends Field {
 
 	public DecimalField(IObject container) {
 		super(container);
-		setDefault(decimal.zero());
+		setDefault(decimal.Zero);
 		format = new string(Format.decimal);
 		aggregation = Aggregation.Sum;
 	}
@@ -67,6 +67,11 @@ public class DecimalField extends Field {
 
 	public sql_decimal sql_decimal() {
 		return new sql_decimal(new SqlField(this));
+	}
+
+	@Override
+	protected primary getNullValue() {
+		return decimal.Zero;
 	}
 
 	@Override

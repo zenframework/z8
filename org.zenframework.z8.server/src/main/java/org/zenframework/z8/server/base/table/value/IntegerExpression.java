@@ -27,7 +27,7 @@ public class IntegerExpression extends Expression {
 
 		format = new string(Format.integer);
 		aggregation = Aggregation.Sum;
-		setDefault(integer.zero());
+		setDefault(integer.Zero);
 	}
 
 	public IntegerExpression() {

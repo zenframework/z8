@@ -4,6 +4,7 @@ import org.zenframework.z8.server.base.table.Table;
 import org.zenframework.z8.server.base.table.value.BoolField;
 import org.zenframework.z8.server.base.table.value.DatetimeField;
 import org.zenframework.z8.server.base.table.value.FileField;
+import org.zenframework.z8.server.base.table.value.IntegerField;
 import org.zenframework.z8.server.base.table.value.Link;
 import org.zenframework.z8.server.resources.Resources;
 import org.zenframework.z8.server.runtime.IClass;
@@ -17,7 +18,8 @@ public class ScheduledJobLogs extends Table {
 		public final static String Finished = "Finish";
 		public final static String ScheduledJob = "ScheduledJob";
 		public final static String Errors = "Errors";
-		public final static String Files = "Files";
+		public final static String File = "Files";
+		public final static String FileSize = "File size";
 	}
 
 	static public class strings {
@@ -27,6 +29,7 @@ public class ScheduledJobLogs extends Table {
 		public final static String Finish = "ScheduledJobLogs.finish";
 		public final static String Errors = "ScheduledJobLogs.errors";
 		public final static String File = "ScheduledJobLogs.file";
+		public final static String FileSize = "ScheduledJobLogs.fileSize";
 	}
 
 	static public class displayNames {
@@ -36,6 +39,7 @@ public class ScheduledJobLogs extends Table {
 		public final static String Finish = Resources.get(strings.Finish);
 		public final static String Errors = Resources.get(strings.Errors);
 		public final static String File = Resources.get(strings.File);
+		public final static String FileSize = Resources.get(strings.FileSize);
 	}
 
 	public static class CLASS<T extends ScheduledJobLogs> extends Table.CLASS<T> {
@@ -69,6 +73,7 @@ public class ScheduledJobLogs extends Table {
 
 	public BoolField.CLASS<BoolField> errors = new BoolField.CLASS<BoolField>(this);
 	public FileField.CLASS<FileField> file = new FileField.CLASS<FileField>(this);
+	public IntegerField.CLASS<IntegerField> fileSize = new IntegerField.CLASS<IntegerField>(this);
 
 	public ScheduledJobLogs(IObject container) {
 		super(container);
@@ -88,6 +93,7 @@ public class ScheduledJobLogs extends Table {
 		objects.add(finish);
 		objects.add(errors);
 		objects.add(file);
+		objects.add(fileSize);
 
 		objects.add(scheduledJobs);
 	}
@@ -116,8 +122,12 @@ public class ScheduledJobLogs extends Table {
 		errors.setDisplayName(displayNames.Errors);
 		errors.setIcon("fa-error");
 
-		file.setName(fieldNames.Files);
+		file.setName(fieldNames.File);
 		file.setIndex("file");
 		file.setDisplayName(displayNames.File);
-	}
+
+		fileSize.setName(fieldNames.FileSize);
+		fileSize.setIndex("fileSize");
+		fileSize.setDisplayName(displayNames.FileSize);
+}
 }

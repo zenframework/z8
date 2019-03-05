@@ -78,8 +78,12 @@ public class ArrayMethods {
 			methods.add(new Method(new VariableType(compilationUnit, booleanType), "remove",
 					new Variable[] { new Variable(value, "element") }));
 
-			// void remove(TYPE[] elements)
-			methods.add(new Method(new VariableType(compilationUnit, voidType), "remove",
+			// TYPE[] removeAll(TYPE element)
+			methods.add(new Method(variableType, "removeAll",
+					new Variable[] { new Variable(value, "element") }));
+
+			// TYPE[] removeAll(TYPE[] elements)
+			methods.add(new Method(variableType, "removeAll",
 					new Variable[] { new Variable(variableType, "elements") }));
 
 /*

@@ -149,7 +149,7 @@ public abstract class BasicStatement implements IStatement {
 	}
 
 	public void setDecimal(int position, decimal value) throws SQLException {
-		value = value != null ? value : decimal.zero();
+		value = value != null ? value : decimal.Zero;
 
 		double d = value.getDouble();
 

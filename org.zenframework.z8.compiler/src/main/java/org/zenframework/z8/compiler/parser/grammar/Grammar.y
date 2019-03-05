@@ -572,11 +572,17 @@ for_init
 	| assignment
 	;
 
+for_each_init
+	: variable_declarator	                  { parser.onDeclarator(); }
+	;
+
 for_statement
 	: FOR LBRACE SEMICOLON expression SEMICOLON assignment RBRACE statement
 		{ parser.onForStatement($1, false); }
 	| FOR LBRACE for_init SEMICOLON expression SEMICOLON assignment RBRACE statement
 		{ parser.onForStatement($1, true); }
+	| FOR LBRACE for_each_init COLON expression RBRACE statement
+		{ parser.onForEachStatement($1); }
 	;
 
 iteration

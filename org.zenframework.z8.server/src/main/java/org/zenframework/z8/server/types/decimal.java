@@ -20,13 +20,11 @@ public final class decimal extends primary {
 	static public integer RoundHalfEven = new integer(BigDecimal.ROUND_HALF_EVEN);
 	static public integer RoundUnnecessary = new integer(BigDecimal.ROUND_UNNECESSARY);
 
+	static public decimal Zero = new decimal();
+
 	private BigDecimal value = new BigDecimal(0);
 
 	private static int maxPrecision = 38;
-
-	static public decimal zero() {
-		return new decimal(0);
-	}
 
 	public decimal() {
 	}
@@ -78,23 +76,15 @@ public final class decimal extends primary {
 			value = value.setScale(number.scale() - (number.precision() - maxPrecision), RoundingMode.CEILING);
 	}
 
-	public void set(int value) {
-		set(new BigDecimal(value));
-	}
-
-	public void set(double value) {
-		set(new BigDecimal(value));
-	}
-
-	public void set(integer value) {
+	private void set(integer value) {
 		set(new BigDecimal(value.get()));
 	}
 
-	public void set(decimal value) {
+	private void set(decimal value) {
 		set(value.get());
 	}
 
-	public void set(String strConst) {
+	private void set(String strConst) {
 		set(z8_parse(new string(strConst)));
 	}
 
@@ -456,7 +446,7 @@ public final class decimal extends primary {
 		try {
 			String string = value.get();
 			if(string.isEmpty())
-				return decimal.zero();
+				return decimal.Zero;
 			return new decimal(new BigDecimal(string));
 		} catch(NumberFormatException e) {
 			throw new RuntimeException("Invalid value for decimal: '" + value.get() + "'");

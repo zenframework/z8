@@ -64,7 +64,7 @@ public class Query extends OBJECT {
 		}
 	}
 
-	public integer priority = integer.zero();
+	public integer priority = integer.Zero;
 	public bool readOnly = bool.False;
 	public integer colCount = new integer(4);
 

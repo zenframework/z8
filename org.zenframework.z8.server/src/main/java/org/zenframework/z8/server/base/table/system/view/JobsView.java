@@ -70,6 +70,7 @@ public class JobsView extends ScheduledJobs {
 		logsListbox.get().columns.add(logs.get().description);
 		logsListbox.get().columns.add(logs.get().errors);
 		logsListbox.get().columns.add(logs.get().file);
+		logsListbox.get().columns.add(logs.get().fileSize);
 		logsListbox.get().sortFields.add(logs.get().start);
 
 		logs.get().start.get().sortDirection = SortDirection.Desc;

@@ -43,7 +43,7 @@ public class file extends primary implements RmiSerializable, Serializable {
 	public string name = new string();
 	public string path = new string();
 	public date time = new date();
-	public integer size = integer.zero();
+	public integer size = integer.Zero;
 	public guid user = guid.Null;
 	public string author = new string();
 
@@ -361,6 +361,7 @@ public class file extends primary implements RmiSerializable, Serializable {
 			OutputStream output = new FileOutputStream(file, append);
 			output.write(content.getBytes(charset.toString()));
 			IOUtils.closeQuietly(output);
+			size = new integer(file.length());
 		} catch(IOException e) {
 			throw new RuntimeException(e);
 		}

@@ -2,7 +2,6 @@ package org.zenframework.z8.server.base.job.scheduler;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.zenframework.z8.server.base.table.system.ScheduledJobLogs;
@@ -125,6 +124,7 @@ public class ScheduledJob implements Runnable {
 			writer.finishObject();
 			writer.finishArray();
 			logs.file.get().set(new string(writer.toString()));
+			logs.fileSize.get().set(logFile.size);
 		}
 
 		logs.create();
@@ -142,10 +142,8 @@ public class ScheduledJob implements Runnable {
 			parameters.put(Json.request.get(), classId);
 			parameters.put(Json.scheduled.get(), "true");
 
-			List<file> files = new ArrayList<file>();
-
 			IUser user = this.user != null ? User.read(this.user) : User.system();
-			IRequest request = new Request(parameters, files, new Session("", user));
+			IRequest request = new Request(parameters, new ArrayList<file>(), new Session("", user));
 			IResponse response = new Response();
 
 			new RequestDispatcher(request, response).run();

@@ -45,6 +45,7 @@ import org.zenframework.z8.compiler.parser.statements.CatchClause;
 import org.zenframework.z8.compiler.parser.statements.CompoundStatement;
 import org.zenframework.z8.compiler.parser.statements.Declarator;
 import org.zenframework.z8.compiler.parser.statements.DoWhileStatement;
+import org.zenframework.z8.compiler.parser.statements.ForEachStatement;
 import org.zenframework.z8.compiler.parser.statements.ForStatement;
 import org.zenframework.z8.compiler.parser.statements.IfStatement;
 import org.zenframework.z8.compiler.parser.statements.JumpStatement;
@@ -1034,6 +1035,13 @@ public class Parser {
 		ILanguageElement condition = (ILanguageElement)pop();
 		ILanguageElement init = hasInit ? (ILanguageElement)pop() : null;
 		push(new ForStatement(forToken, init, condition, expression, statement));
+	}
+
+	void onForEachStatement(IToken forToken) {
+		ILanguageElement statement = (ILanguageElement)pop();
+		ILanguageElement expression = (ILanguageElement)pop();
+		Declarator declarator = (Declarator)pop();
+		push(new ForEachStatement(forToken, declarator, expression, statement));
 	}
 
 	void onJumpStatement(IToken jumpToken, boolean hasExpression) {

@@ -135,7 +135,7 @@ public class Cursor {
 		BigDecimal value = resultSet.getBigDecimal(position);
 		boolean wasNull = value == null || wasNull();
 		field.setWasNull(wasNull);
-		return !wasNull ? new decimal(value) : decimal.zero();
+		return !wasNull ? new decimal(value) : decimal.Zero;
 	}
 
 	public geometry getGeometry(int position) throws SQLException {
@@ -172,7 +172,7 @@ public class Cursor {
 		long value = resultSet.getLong(position);
 		boolean wasNull = wasNull();
 		field.setWasNull(wasNull);
-		return !wasNull ? new integer(value) : integer.zero();
+		return !wasNull ? new integer(value) : integer.Zero;
 	}
 
 	public string getString(int position) throws SQLException {

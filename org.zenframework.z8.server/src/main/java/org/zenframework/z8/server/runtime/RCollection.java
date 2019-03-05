@@ -242,6 +242,16 @@ public class RCollection<TYPE> extends ArrayList<TYPE> {
 		remove(elements);
 	}
 
+	public RCollection<TYPE> z8_removeAll(TYPE element) {
+		remove(element);
+		return this;
+	}
+
+	public RCollection<TYPE> z8_removeAll(RCollection<? extends TYPE> elements) {
+		remove(elements);
+		return this;
+	}
+
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public RCollection<TYPE> z8_sort() {
 		Collections.sort((List<Comparable>)this);

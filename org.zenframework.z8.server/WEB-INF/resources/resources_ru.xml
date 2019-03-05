@@ -182,6 +182,7 @@
 	<entry key="ScheduledJobLogs.finish">Финиш</entry>
 	<entry key="ScheduledJobLogs.errors">Ошибки</entry>
 	<entry key="ScheduledJobLogs.file">Лог-файл</entry>
+	<entry key="ScheduledJobLogs.fileSize">Лог-файл, байт</entry>
 
 	<!-- JobsView -->
 	<entry key="JobsView.job">Задание</entry>
