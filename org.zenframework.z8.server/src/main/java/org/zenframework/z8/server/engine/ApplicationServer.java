@@ -67,16 +67,28 @@ public class ApplicationServer extends RmiServer implements IApplicationServer {
 			currentRequest.remove();
 	}
 
-	public static void disableEvents() {
-		getRequest().disableEvents();
+	public static void setEventsLevel(EventsLevel level) {
+		getRequest().setEventsLevel(level);
 	}
 
-	public static void enableEvents() {
-		getRequest().enableEvents();
+	public static void restoreEventsLevel() {
+		getRequest().restoreEventsLevel();
+	}
+	
+	public static EventsLevel eventsLevel() {
+		return getRequest().eventsLevel();
 	}
 
-	public static boolean events() {
-		return getRequest().events();
+	public static boolean eventsEnabled(EventsLevel level) {
+		return getRequest().eventsEnabled(level);
+	}
+
+	public static boolean systemEventsEnabled() {
+		return eventsEnabled(EventsLevel.SYSTEM);
+	}
+
+	public static boolean userEventsEnabled() {
+		return eventsEnabled(EventsLevel.USER);
 	}
 
 	private ApplicationServer() throws RemoteException {

@@ -51,7 +51,7 @@ public class BoolField extends Field {
 
 	@Override
 	public primary getDefault() {
-		return (ApplicationServer.events() && !changed()) ? z8_getDefault() : super.getDefault();
+		return (ApplicationServer.userEventsEnabled() && !changed()) ? z8_getDefault() : super.getDefault();
 	}
 
 	public sql_bool sql_bool() {

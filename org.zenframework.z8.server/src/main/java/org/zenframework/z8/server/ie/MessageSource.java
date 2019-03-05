@@ -16,7 +16,10 @@ import org.zenframework.z8.server.base.table.Table;
 import org.zenframework.z8.server.base.table.value.Field;
 import org.zenframework.z8.server.base.table.value.FileField;
 import org.zenframework.z8.server.base.table.value.Link;
+import org.zenframework.z8.server.db.ConnectionManager;
 import org.zenframework.z8.server.db.sql.SqlToken;
+import org.zenframework.z8.server.engine.ApplicationServer;
+import org.zenframework.z8.server.engine.EventsLevel;
 import org.zenframework.z8.server.engine.RmiIO;
 import org.zenframework.z8.server.engine.RmiSerializable;
 import org.zenframework.z8.server.engine.Runtime;
@@ -86,8 +89,12 @@ public class MessageSource implements RmiSerializable, Serializable {
 	}
 
 	public void exportData() {
+		ApplicationServer.setEventsLevel(EventsLevel.NONE);
+		
 		for(ExportSource source : sources)
 			processExportSource(source);
+		
+		ApplicationServer.restoreEventsLevel();
 	}
 
 	private void writeObject(ObjectOutputStream out) throws IOException {
@@ -233,14 +240,20 @@ public class MessageSource implements RmiSerializable, Serializable {
 	}
 
 	public void importData() {
+		ApplicationServer.setEventsLevel(EventsLevel.NONE);
+
 		for(RecordInfo record : inserts)
 			insert(record);
+
+		ConnectionManager.get().flush();
 
 		for(RecordInfo record : updates)
 			update(record);
 
 		fieldCache.clear();
 		tableCache.clear();
+
+		ApplicationServer.restoreEventsLevel();
 	}
 
 	private Map<String, Table> tableCache = new HashMap<String, Table>();

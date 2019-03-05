@@ -19,6 +19,11 @@ public class Batch {
 			this.statement = statement;
 			this.priority = priority;
 		}
+
+		@Override
+		public String toString() {
+			return statement.toString() + ", priority: " + priority;
+		}
 	}
 
 	private int totalCount = 0;

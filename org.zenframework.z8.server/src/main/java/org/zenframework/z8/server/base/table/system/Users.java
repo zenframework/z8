@@ -226,6 +226,8 @@ public class Users extends Table {
 	@Override
 	public void beforeCreate(guid recordId, guid parentId) {
 		super.beforeCreate(recordId, parentId);
+		if (!ApplicationServer.userEventsEnabled())
+			return;
 
 		StringField name = this.name.get();
 		if((!name.changed() || name.string().isEmpty()) && !recordId.equals(guid.Null))
@@ -235,6 +237,8 @@ public class Users extends Table {
 	@Override
 	public void beforeUpdate(guid recordId) {
 		super.beforeUpdate(recordId);
+		if (!ApplicationServer.userEventsEnabled())
+			return;
 
 		if(banned.get().changed() && isSystemUser(recordId)) {
 			boolean ban = banned.get().bool().get();

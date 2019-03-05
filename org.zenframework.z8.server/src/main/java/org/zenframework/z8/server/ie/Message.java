@@ -262,13 +262,8 @@ abstract public class Message extends OBJECT implements RmiSerializable, Seriali
 		beforeImport();
 
 		if(!localSend) {
-			try {
-				ApplicationServer.disableEvents();
-				if(!apply())
-					return false;
-			} finally {
-				ApplicationServer.enableEvents();
-			}
+			if(!apply())
+				return false;
 		}
 
 		afterImport();

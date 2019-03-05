@@ -151,16 +151,20 @@ public class Table extends TableBase {
 
 	@Override
 	public void beforeCreate(guid recordId, guid parentId) {
-		createdAt.get().set(new date());
-		createdBy.get().set(ApplicationServer.getUser().id());
+		if (ApplicationServer.systemEventsEnabled()) {
+			createdAt.get().set(new date());
+			createdBy.get().set(ApplicationServer.getUser().id());
+		}
 
 		super.beforeCreate(recordId, parentId);
 	}
 
 	@Override
 	public void beforeUpdate(guid recordId) {
-		modifiedAt.get().set(new date());
-		modifiedBy.get().set(ApplicationServer.getUser().id());
+		if (ApplicationServer.systemEventsEnabled()) {
+			modifiedAt.get().set(new date());
+			modifiedBy.get().set(ApplicationServer.getUser().id());
+		}
 
 		super.beforeUpdate(recordId);
 	}

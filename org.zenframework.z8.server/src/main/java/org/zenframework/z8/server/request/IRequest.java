@@ -2,9 +2,11 @@ package org.zenframework.z8.server.request;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import org.zenframework.z8.server.engine.EventsLevel;
 import org.zenframework.z8.server.engine.ISession;
 import org.zenframework.z8.server.json.Json;
 import org.zenframework.z8.server.types.encoding;
@@ -16,7 +18,7 @@ public abstract class IRequest {
 
 	abstract public List<file> getFiles();
 
-	private int events = 0;
+	private List<EventsLevel> levels = new ArrayList<EventsLevel>();
 	private RequestTarget target;
 
 	public String getParameter(string key) {
@@ -39,16 +41,21 @@ public abstract class IRequest {
 		}
 	}
 
-	public void disableEvents() {
-		events++;
+	public void setEventsLevel(EventsLevel level) {
+		levels.add(level);
 	}
 
-	public void enableEvents() {
-		events--;
+	public void restoreEventsLevel() {
+		if (!levels.isEmpty())
+			levels.remove(levels.size() - 1);
 	}
 
-	public boolean events() {
-		return events == 0;
+	public EventsLevel eventsLevel() {
+		return levels.isEmpty() ? EventsLevel.ALL : levels.get(levels.size() - 1);
+	}
+
+	public boolean eventsEnabled(EventsLevel level) {
+		return eventsLevel().ordinal() <= level.ordinal();
 	}
 
 	public RequestTarget getTarget() {

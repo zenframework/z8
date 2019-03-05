@@ -14,6 +14,7 @@ import org.zenframework.z8.server.db.Connection;
 import org.zenframework.z8.server.db.ConnectionManager;
 import org.zenframework.z8.server.db.sql.SqlToken;
 import org.zenframework.z8.server.db.sql.functions.string.Like;
+import org.zenframework.z8.server.engine.ApplicationServer;
 import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.runtime.RCollection;
 import org.zenframework.z8.server.types.bool;
@@ -154,6 +155,8 @@ public class TreeTable extends Table {
 	@Override
 	public void beforeCreate(guid recordId, guid parentId) {
 		super.beforeCreate(recordId, parentId);
+		if (!ApplicationServer.systemEventsEnabled())
+			return;
 
 		Field parentKey = this.parentId.get();
 
@@ -182,6 +185,8 @@ public class TreeTable extends Table {
 			return;
 
 		super.beforeUpdate(recordId);
+		if (!ApplicationServer.systemEventsEnabled())
+			return;
 
 		Field parentKey = this.parentId.get();
 		if(!parentKey.changed())

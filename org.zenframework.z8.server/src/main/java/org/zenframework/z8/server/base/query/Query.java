@@ -151,74 +151,74 @@ public class Query extends OBJECT {
 	}
 
 	public void onNew(guid recordId, guid parentId) {
-		if(ApplicationServer.events())
+		if(ApplicationServer.userEventsEnabled())
 			z8_onNew(recordId, parentId);
 
 		initFields(recordId, parentId);
 	}
 
 	public void onCopyAction(guid recordId) {
-		if(ApplicationServer.events())
+		if(ApplicationServer.userEventsEnabled())
 			z8_onCopyAction(recordId);
 	}
 
 	public void onCopy() {
-		if(ApplicationServer.events())
+		if(ApplicationServer.userEventsEnabled())
 			z8_onCopy();
 	}
 
 	public void beforeRead(guid parentId) {
-		if(ApplicationServer.events())
+		if(ApplicationServer.userEventsEnabled())
 			z8_beforeRead(parentId);
 	}
 
 	public void afterRead(guid parentId) {
-		if(ApplicationServer.events())
+		if(ApplicationServer.userEventsEnabled())
 			z8_afterRead(parentId);
 	}
 
 	public void onCreateAction(guid recordId) {
-		if(ApplicationServer.events())
+		if(ApplicationServer.userEventsEnabled())
 			z8_onCreateAction(recordId);
 	}
 
 	public void beforeCreate(guid recordId, guid parentId) {
-		if(ApplicationServer.events())
+		if(ApplicationServer.userEventsEnabled())
 			z8_beforeCreate(recordId, parentId);
 	}
 
 	public void afterCreate(guid recordId, guid parentId) {
-		if(ApplicationServer.events())
+		if(ApplicationServer.userEventsEnabled())
 			z8_afterCreate(recordId, parentId);
 	}
 
 	public void onUpdateAction(guid recordId) {
-		if(ApplicationServer.events())
+		if(ApplicationServer.userEventsEnabled())
 			z8_onUpdateAction(recordId);
 	}
 
 	public void beforeUpdate(guid recordId) {
-		if(ApplicationServer.events())
+		if(ApplicationServer.userEventsEnabled())
 			z8_beforeUpdate(recordId);
 	}
 
 	public void afterUpdate(guid recordId) {
-		if(ApplicationServer.events())
+		if(ApplicationServer.userEventsEnabled())
 			z8_afterUpdate(recordId);
 	}
 
 	public void onDestroyAction(guid recordId) {
-		if(ApplicationServer.events())
+		if(ApplicationServer.userEventsEnabled())
 			z8_onDestroyAction(recordId);
 	}
 
 	public void beforeDestroy(guid recordId) {
-		if(ApplicationServer.events())
+		if(ApplicationServer.userEventsEnabled())
 			z8_beforeDestroy(recordId);
 	}
 
 	public void afterDestroy(guid recordId) {
-		if(ApplicationServer.events())
+		if(ApplicationServer.userEventsEnabled())
 			z8_afterDestroy(recordId);
 	}
 

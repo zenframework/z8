@@ -12,6 +12,7 @@ import org.zenframework.z8.server.base.table.system.Settings;
 import org.zenframework.z8.server.db.ConnectionManager;
 import org.zenframework.z8.server.db.DatabaseVendor;
 import org.zenframework.z8.server.engine.ApplicationServer;
+import org.zenframework.z8.server.engine.EventsLevel;
 import org.zenframework.z8.server.engine.Runtime;
 import org.zenframework.z8.server.resources.Resources;
 import org.zenframework.z8.server.utils.ErrorUtils;
@@ -33,13 +34,13 @@ public class DBGenerator {
 			Scheduler.stop();
 			logger.info(Resources.get("Generator.schedulerStopped"));
 
-			ApplicationServer.disableEvents();
+			ApplicationServer.setEventsLevel(EventsLevel.SYSTEM);
 
 			run(DataSchema.getTables("%"));
 		} catch(Throwable e) {
 			logger.error(e);
 		} finally {
-			ApplicationServer.enableEvents();
+			ApplicationServer.restoreEventsLevel();
 
 			Scheduler.start();
 			logger.info(Resources.get("Generator.schedulerStarted"));
