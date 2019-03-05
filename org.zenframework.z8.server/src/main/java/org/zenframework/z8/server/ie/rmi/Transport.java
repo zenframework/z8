@@ -68,8 +68,8 @@ public class Transport implements Runnable {
 	@Override
 	public void run() {
 		try {
-			prepareMessages();
-			sendMessages();
+			while (prepareMessages())
+				sendMessages();
 		} catch(Throwable e) {
 			Trace.logError(e);
 		} finally {
@@ -78,11 +78,13 @@ public class Transport implements Runnable {
 		}
 	}
 
-	private void prepareMessages() throws Throwable {
+	private boolean prepareMessages() throws Throwable {
 		Collection<Message> messages = messageQueue.getMessages(domain);
 
 		for(Message message : messages)
 			prepare(message);
+
+		return !messages.isEmpty();
 	}
 
 	private void prepare(Message message) throws Throwable {
