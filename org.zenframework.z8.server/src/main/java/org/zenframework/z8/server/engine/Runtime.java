@@ -17,12 +17,19 @@ import org.zenframework.z8.server.utils.StringUtils;
 public class Runtime extends AbstractRuntime {
 
 	static private IRuntime runtime;
+	static private ModelGraph modelGraph;
 	static private String version;
 
 	static public IRuntime instance() {
 		if(runtime == null)
 			runtime = new Runtime();
 		return runtime;
+	}
+
+	static public ModelGraph modelGraph() {
+		if(modelGraph == null)
+			modelGraph = ModelGraph.newModelGraph(instance().tables());
+		return modelGraph;
 	}
 
 	private static final String Z8RuntimePath = "META-INF/z8.runtime";

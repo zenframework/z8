@@ -12,6 +12,7 @@ import org.zenframework.z8.server.base.table.value.IntegerField;
 import org.zenframework.z8.server.base.table.value.StringField;
 import org.zenframework.z8.server.base.table.value.TextField;
 import org.zenframework.z8.server.engine.ApplicationServer;
+import org.zenframework.z8.server.engine.Runtime;
 import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.types.date;
 import org.zenframework.z8.server.types.guid;
@@ -137,6 +138,8 @@ public class Table extends TableBase {
 		String displayName = name.displayName();
 		if(displayName == null || displayName.isEmpty())
 			name.setDisplayName(displayName());
+		
+		priority = new integer(Runtime.modelGraph().getTablePriority(this));
 	}
 
 	@Override
