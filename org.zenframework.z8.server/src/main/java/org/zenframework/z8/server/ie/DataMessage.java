@@ -156,12 +156,12 @@ public class DataMessage extends Message {
 	}
 
 	public void z8_add(Table.CLASS<? extends Table> table) {
-		source.add(table.get(), null, null);
+		source.add(table.get(), null, (sql_bool) null);
 	}
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public void z8_add(Table.CLASS<? extends Table> table, RCollection fields) {
-		source.add(table.get(), CLASS.asList(fields), null);
+		source.add(table.get(), CLASS.asList(fields), (sql_bool) null);
 	}
 
 	public void z8_add(Table.CLASS<? extends Table> table, sql_bool where) {
@@ -171,6 +171,16 @@ public class DataMessage extends Message {
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public void z8_add(Table.CLASS<? extends Table> table, RCollection fields, sql_bool where) {
 		source.add(table.get(), CLASS.asList(fields), where);
+	}
+
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	public void z8_addRecords(Table.CLASS<? extends Table> table, RCollection ids) {
+		source.add(table.get(), null, ids);
+	}
+
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	public void z8_addRecords(Table.CLASS<? extends Table> table, RCollection fields, RCollection ids) {
+		source.add(table.get(), CLASS.asList(fields), ids);
 	}
 
 	public void z8_addRule(ImportPolicy policy) {

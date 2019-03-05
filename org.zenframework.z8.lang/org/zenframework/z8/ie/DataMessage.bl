@@ -17,6 +17,9 @@ public class DataMessage extends Message {
 	public void add(Table table, sql_bool where);
 	public void add(Table table, Field[] fields, sql_bool where);
 
+	public void addRecords(Table table, guid[] ids);
+	public void addRecords(Table table, Field[] fields, guid[] ids);
+
 	public void addRule(ImportPolicy policy);
 
 	public void addRule(Table table, ImportPolicy policy);

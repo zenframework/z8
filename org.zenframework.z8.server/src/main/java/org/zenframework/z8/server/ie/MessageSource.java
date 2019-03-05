@@ -52,6 +52,11 @@ public class MessageSource implements RmiSerializable, Serializable {
 			sources.add(new ExportSource(table, fields, where));
 	}
 
+	public void add(Table table, Collection<Field> fields, Collection<guid> ids) {
+		if(table.exportable())
+			sources.add(new ExportSource(table, fields, ids));
+	}
+
 	public void addRule(ImportPolicy importPolicy) {
 		exportRules.add(importPolicy);
 	}
