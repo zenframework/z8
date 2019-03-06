@@ -62,9 +62,9 @@ Z8.define('Z8.list.Dropdown', {
 		this.setPosition(left, top);
 
 		var wasVisible = this.visible;
-		this.visible = true;
 
-		DOM.removeCls(this, 'display-none');
+		this.callParent();
+		this.setActive(true);
 
 		this.alignAdjust();
 
@@ -96,12 +96,11 @@ Z8.define('Z8.list.Dropdown', {
 	},
 
 	hide: function() {
-		if(!this.visible)
+		if(!this.isVisible())
 			return;
 
-		this.visible = false;
-
-		DOM.addCls(this, 'display-none');
+		this.callParent();
+		this.setActive(false);
 
 		this.selectItem(null);
 

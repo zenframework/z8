@@ -1,6 +1,8 @@
 Z8.define('Z8.form.field.Html', {
 	extend: 'Z8.form.field.Control',
 
+	scrollable: true,
+
 	initComponent: function() {
 		this.callParent();
 	},

@@ -225,10 +225,12 @@ Z8.define('Z8.form.field.Listbox', {
 			this.updateTools();
 		};
 
-		var active = this.isActive();
-		this.loadPending = !active;
-		if(active)
-			this.store.load({ fn: loadCallback, scope: this });
+		if(this.loadPending = !this.isActive()) {
+			this.clear();
+			return;
+		}
+
+		this.store.load({ fn: loadCallback, scope: this });
 	},
 
 	getDependencyWhere: function(property, value) {
@@ -266,10 +268,8 @@ Z8.define('Z8.form.field.Listbox', {
 		if(this.list != null)
 			this.list.setActive(active);
 
-		if(active && this.loadPending) {
-			this.onRefresh(this.refreshTool, true);
-			this.loadPending = false;
-		}
+		if(active && this.loadPending)
+			this.reloadStore();
 	},
 
 	clear: function() {
