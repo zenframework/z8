@@ -45,7 +45,7 @@ abstract public class Field extends Control implements IField {
 			super(container);
 			setJavaClass(Field.class);
 		}
-		
+
 		@Override
 		public String keyString() {
 			IObject owner = getOwner();
@@ -311,14 +311,12 @@ abstract public class Field extends Control implements IField {
 
 	public Sequencer getSequencer() {
 		if(sequencer == null) {
-			Sequencer.CLASS<Sequencer> cls = new Sequencer.CLASS<Sequencer>(this);
-			sequencer = cls.get();
+			sequencer = new Sequencer.CLASS<Sequencer>(this).get();
 
 			String containerName = getContainer().getAttribute(Name);
 
-			if(containerName == null) {
+			if(containerName == null)
 				containerName = getContainer().classId();
-			}
 
 			sequencer.setKey(containerName + '.' + name());
 		}

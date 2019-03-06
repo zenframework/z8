@@ -1,6 +1,8 @@
 package org.zenframework.z8.server.base.table.value;
 
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.zenframework.z8.server.base.query.ReadLock;
 import org.zenframework.z8.server.base.table.system.Sequences;
@@ -14,7 +16,7 @@ import org.zenframework.z8.server.types.guid;
 import org.zenframework.z8.server.types.integer;
 import org.zenframework.z8.server.types.string;
 
-public class Sequencer extends OBJECT {
+public class Sequencer extends OBJECT implements Connection.Listener {
 	public static class CLASS<T extends Sequencer> extends OBJECT.CLASS<T> {
 		public CLASS(IObject container) {
 			super(container);
@@ -27,142 +29,160 @@ public class Sequencer extends OBJECT {
 		}
 	}
 
-	static private final ThreadLocal<Listener> currentListener = new ThreadLocal<Listener>();
+	static private final ThreadLocal<Map<String, Sequencer>> sequencers = new ThreadLocal<Map<String, Sequencer>>();
 
-	private String key = null;
-	private integer defaultValue = new integer(1);
-	private integer increment = new integer(1);
+	private String key;
+	private long defaultValue = 1;
+	private long increment = 1;
+
+	private guid id = null;
+	private Sequences sequences = new Sequences.CLASS<Sequences>().get();
+
+	private long nextValue;
 
 	public Sequencer(IObject container) {
 		super(container);
 	}
 
-	static class Listener implements Connection.Listener {
-		private Sequences sequences;
-		private String key;
-		private long value;
-		private long increment;
-		private guid id = null;
+	private void initialize() {
+		if(read())
+			return;
 
-		public Listener(String key, long defaultValue, long increment) {
-			this.sequences = new Sequences.CLASS<Sequences>().get();
+		createSequencerRecord();
+		read();
+	}
 
-			this.key = key;
-			this.value = defaultValue;
-			this.increment = Math.max(increment, 1);
-			initialize();
+	private boolean read() {
+		StringField keyField = sequences.key.get();
+		IntegerField valueField = sequences.value.get();
+
+		sequences.setReadLock(ReadLock.Update);
+		if(!sequences.readFirst(Arrays.<Field>asList(valueField), new Equ(keyField, key)))
+			return false;
+
+		id = sequences.recordId();
+		nextValue = valueField.integer().get();
+		return true;
+	}
+
+	private void createSequencerRecord() {
+		Connection connection = null;
+
+		try {
+			connection = ConnectionManager.get().inTransaction() ? Connection.connect(ConnectionManager.database()) : null;
+
+			Sequences sequences = new Sequences.CLASS<Sequences>().get();
+			sequences.setConnection(connection);
+			sequences.key.get().set(key);
+			sequences.value.get().set(defaultValue);
+			sequences.create(guid.create(key));
+		} finally {
+			if(connection != null)
+				connection.close();
 		}
+	}
 
-		private void initialize() {
-			sequences.setReadLock(ReadLock.Update);
+	private long getNextValue() {
+		long result = nextValue;
+		nextValue += increment;
+		return result;
+	}
 
-			StringField keyField = sequences.key.get();
-			IntegerField valueField = sequences.value.get();
+	private void flush() {
+		sequences.value.get().set(nextValue);
+		sequences.update(id);
+	}
 
-			if(sequences.readFirst(Arrays.<Field>asList(valueField), new Equ(keyField, key))) {
-				id = sequences.recordId();
-				value = valueField.integer().get();
-			} else
-				createSequencerRecord();
-		}
+	public long next() {
+		Connection connection = ConnectionManager.get();
 
-		private void createSequencerRecord() {
-			Connection connection = null;
+		long nextValue;
+		Sequencer sequencer = this;
 
-			try {
-				connection = ConnectionManager.get().inTransaction() ? Connection.connect(ConnectionManager.database()) : null;
+		if(connection.inTransaction()) {
+			Map<String, Sequencer> map = sequencers.get();
 
-				Sequences sequences = new Sequences.CLASS<Sequences>().get();
-				sequences.setConnection(connection);
-				sequences.key.get().set(key);
-				sequences.value.get().set(value - increment);
-				sequences.create();
-			} finally {
-				if(connection != null)
-					connection.close();
+			if(map == null) {
+				map = new HashMap<String, Sequencer>();
+				sequencers.set(map);
 			}
 
+			sequencer = map.get(key);
+
+			if(sequencer == null) {
+				sequencer = this;
+				map.put(key, sequencer);
+				connection.addListener(sequencer);
+				sequencer.initialize();
+			} else
+				sequencer.increment = this.increment;
+
+			nextValue = sequencer.getNextValue();
+		} else {
 			initialize();
+			nextValue = getNextValue();
+			flush();
 		}
 
-		public long next() {
-			value += increment;
-			return value;
-		}
+		return nextValue;
+	}
 
-		public long flush() {
-			sequences.value.get().set(value);
-			sequences.update(id);
-			return value;
-		}
+	public void on(Connection connection, ConnectionEvent event) {
+		if(event == ConnectionEvent.Flush || event == ConnectionEvent.Commit)
+			flush();
 
-		public void on(Connection connection, ConnectionEvent event) {
-			if(event == ConnectionEvent.Flush || event == ConnectionEvent.Commit)
-				flush();
-
-			if(event == ConnectionEvent.Commit || event == ConnectionEvent.Rollback)
-				currentListener.remove();
+		if(event == ConnectionEvent.Commit || event == ConnectionEvent.Rollback) {
+			Map<String, Sequencer> map = sequencers.get();
+			map.remove(key);
+			if(map.isEmpty())
+				sequencers.remove();
 		}
 	}
 
 	static public long next(String key) {
-		return next(key, 1L);
+		return next(key, 1L, 1L);
 	}
 
-	static public long next(String key, long defaultValue) {
-		return next(key, defaultValue, 1L);
+	static public long next(String key, long increment) {
+		return next(key, increment, 1L);
 	}
 
-	static public long next(String key, long defaultValue, long increment) {
-		Connection connection = ConnectionManager.get();
-
-		boolean inTransaction = connection.inTransaction();
-		Listener listener = inTransaction ? currentListener.get() : new Listener(key, defaultValue, increment);
-
-		if(inTransaction) {
-			listener = currentListener.get();
-			if(listener == null) {
-				listener = new Listener(key, defaultValue, increment);
-				currentListener.set(listener);
-				connection.addListener(listener);
-			}
-			return listener.next();
-		} else {
-			listener = new Listener(key, defaultValue, increment);
-			listener.next();
-			return listener.flush();
-		}
+	static public long next(String key, long increment, long defaultValue) {
+		Sequencer sequencer = new Sequencer.CLASS<Sequencer>(null).get();
+		sequencer.key = key;
+		sequencer.increment = increment;
+		sequencer.defaultValue = defaultValue;
+		return sequencer.next();
 	}
 
 	public void setKey(String key) {
 		this.key = key;
 	}
 
-	public long next() {
-		return next(key, defaultValue.get(), increment.get());
-	}
-
 	public integer z8_next() {
-		return z8_next(new string(key), new integer(1), new integer(1));
+		return new integer(next());
 	}
 
-	public integer z8_next(integer defaultValue) {
-		return z8_next(new string(key), defaultValue, new integer(1));
+	public integer z8_next(integer increment) {
+		this.increment = increment.get();
+		return z8_next();
 	}
 
-	public integer z8_next(integer defaultValue, integer increment) {
-		return z8_next(new string(key), defaultValue, increment);
+	public integer z8_next(integer increment, integer defaultValue) {
+		this.increment = increment.get();
+		this.defaultValue = defaultValue.get();
+		return z8_next();
 	}
 
 	static public integer z8_next(string key) {
 		return z8_next(key, new integer(1));
 	}
 
-	static public integer z8_next(string key, integer defaultValue) {
-		return z8_next(key, new integer(defaultValue.getInt()), new integer(1));
+	static public integer z8_next(string key, integer increment) {
+		return z8_next(key, increment, new integer(1));
 	}
 
-	static public integer z8_next(string key, integer defaultValue, integer increment) {
-		return new integer(next(key.get(), defaultValue.get(), increment.get()));
+	static public integer z8_next(string key, integer increment, integer defaultValue) {
+		return new integer(next(key.get(), increment.get(), defaultValue.get()));
 	}
 }

@@ -2,7 +2,6 @@ package org.zenframework.z8.server.base.table;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.List;
 
 import org.zenframework.z8.server.base.query.Query;
@@ -155,7 +154,8 @@ public class TreeTable extends Table {
 	@Override
 	public void beforeCreate(guid recordId, guid parentId) {
 		super.beforeCreate(recordId, parentId);
-		if (!ApplicationServer.systemEventsEnabled())
+
+		if(!ApplicationServer.systemEventsEnabled())
 			return;
 
 		Field parentKey = this.parentId.get();
@@ -185,7 +185,8 @@ public class TreeTable extends Table {
 			return;
 
 		super.beforeUpdate(recordId);
-		if (!ApplicationServer.systemEventsEnabled())
+
+		if(!ApplicationServer.systemEventsEnabled())
 			return;
 
 		Field parentKey = this.parentId.get();
@@ -232,11 +233,6 @@ public class TreeTable extends Table {
 		}
 	}
 
-	private void readExistingRecord(guid parentId, Collection<Field> fields) {
-		if(!readRecord(parentId, fields))
-			throw new RuntimeException(Query.strings.ReadError);
-	}
-
 	public String getPath(guid id) {
 		if(id.isNull())
 			return "";
@@ -245,7 +241,9 @@ public class TreeTable extends Table {
 			saveState();
 
 			Field pathField = this.path.get();
-			readExistingRecord(id, Arrays.asList(pathField));
+
+			if(!readRecord(id, Arrays.asList(pathField)))
+				throw new RuntimeException(Query.strings.ReadError);
 
 			return pathField.string().get();
 		} finally {
