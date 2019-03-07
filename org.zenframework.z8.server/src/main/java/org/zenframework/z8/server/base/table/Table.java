@@ -138,8 +138,6 @@ public class Table extends TableBase {
 		String displayName = name.displayName();
 		if(displayName == null || displayName.isEmpty())
 			name.setDisplayName(displayName());
-		
-		priority = new integer(Runtime.modelGraph().getTablePriority(this));
 	}
 
 	@Override
@@ -194,6 +192,11 @@ public class Table extends TableBase {
 		}
 
 		return Math.abs(Integer.toString(result).hashCode());
+	}
+
+	@Override
+	public int priority() {
+		return priority != null ? priority.getInt() : Runtime.modelGraph().getTablePriority(this);
 	}
 
 }

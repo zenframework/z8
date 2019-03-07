@@ -66,7 +66,7 @@ public class Query extends OBJECT {
 		}
 	}
 
-	public integer priority = integer.Zero;
+	public integer priority = null;
 	public bool readOnly = bool.False;
 	public integer colCount = new integer(4);
 
@@ -1173,7 +1173,7 @@ public class Query extends OBJECT {
 	}
 
 	public int priority() {
-		return priority.getInt();
+		return priority != null ? priority.getInt() : 0;
 	}
 
 	public boolean readOnly() {
