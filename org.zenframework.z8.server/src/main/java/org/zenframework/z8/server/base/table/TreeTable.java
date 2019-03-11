@@ -2,7 +2,9 @@ package org.zenframework.z8.server.base.table;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.zenframework.z8.server.base.query.Query;
 import org.zenframework.z8.server.base.table.value.Field;
@@ -10,6 +12,7 @@ import org.zenframework.z8.server.base.table.value.GuidField;
 import org.zenframework.z8.server.base.table.value.Link;
 import org.zenframework.z8.server.base.table.value.StringField;
 import org.zenframework.z8.server.db.Connection;
+import org.zenframework.z8.server.db.ConnectionEvent;
 import org.zenframework.z8.server.db.ConnectionManager;
 import org.zenframework.z8.server.db.sql.SqlToken;
 import org.zenframework.z8.server.db.sql.functions.string.Like;
@@ -22,7 +25,7 @@ import org.zenframework.z8.server.types.integer;
 import org.zenframework.z8.server.types.string;
 import org.zenframework.z8.server.types.sql.sql_string;
 
-public class TreeTable extends Table {
+public class TreeTable extends Table implements Connection.Listener {
 	static public class fieldNames {
 		public final static String ParentId = "ParentId";
 		public final static String Path = "Path";
@@ -61,6 +64,8 @@ public class TreeTable extends Table {
 
 	@SuppressWarnings("rawtypes")
 	private GuidField.CLASS[] parentLinks = { parent1, parent2, parent3, parent4, parent5, parent6 };
+
+	static private final ThreadLocal<Map<String, Map<guid, String>>> idToPathMap = new ThreadLocal<Map<String, Map<guid, String>>>();
 
 	public TreeTable(IObject container) {
 		super(container);
@@ -151,6 +156,10 @@ public class TreeTable extends Table {
 		}
 	}
 
+	public void on(Connection connection, ConnectionEvent event) {
+		idToPathMap.remove();
+	}
+
 	@Override
 	public void beforeCreate(guid recordId, guid parentId) {
 		super.beforeCreate(recordId, parentId);
@@ -163,19 +172,44 @@ public class TreeTable extends Table {
 		parentId = parentKey.guid();
 		recordId = primaryKey().guid();
 
-		guid[] parents = {};
-		String path = "";
+		if(recordId.isNull())
+			return;
 
-		if(!recordId.isNull()) {
-			Connection connection = ConnectionManager.get();
-			connection.flush();
+		Connection connection = ConnectionManager.get();
 
+		String path = null;
+
+		if(connection.inTransaction()) {
+			Map<String, Map<guid, String>> map = idToPathMap.get();
+			if(map == null) {
+				map = new HashMap<String, Map<guid, String>>();
+				idToPathMap.set(map);
+				connection.addListener(this);
+			}
+
+			String tableName = name();
+			Map<guid, String> pathMap = map.get(tableName);
+
+			if(pathMap == null) {
+				pathMap = new HashMap<guid, String>();
+				map.put(tableName, pathMap);
+			}
+
+			path = pathMap.get(parentId);
+
+			if(path == null) {
+				path = getPath(parentId);
+				pathMap.put(parentId, path);
+			}
+
+			path = path + (path.isEmpty() ? "" : ".") + recordId;
+			pathMap.put(recordId, path);
+		} else {
 			path = getPath(parentId);
 			path = path + (path.isEmpty() ? "" : ".") + recordId;
-			parents = parsePath(path);
 		}
 
-		setParents(parents);
+		setParents(parsePath(path));
 		this.path.get().set(path);
 	}
 
