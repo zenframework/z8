@@ -40,7 +40,7 @@ public class ModelGraph {
 		for (Table.CLASS<? extends Table> table : tables) {
 			String tableName = table.name();
 			Set<String> links = new HashSet<String>();
-			for (Field.CLASS<? extends Field> field : table.get().getLinks()) {
+			for (Field.CLASS<? extends Field> field : table.newInstance().getLinks()) {
 				if (field instanceof Link.CLASS && field.foreignKey()) {
 					String referencedTable = ((Link.CLASS<Link>) field).get().getReferencedTable().name();
 					if (!tableName.equals(referencedTable))
@@ -83,7 +83,7 @@ public class ModelGraph {
 			priorities.put(it.next(), priority);
 	}
 
-	public static synchronized ModelGraph newModelGraph(Collection<Table.CLASS<? extends Table>> tables) {
+	public static ModelGraph newModelGraph(Collection<Table.CLASS<? extends Table>> tables) {
 		ModelGraph modelGraph = new ModelGraph();
 		modelGraph.buildGraph(tables);
 		modelGraph.fillPriorities();
