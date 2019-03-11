@@ -2,13 +2,13 @@ package org.zenframework.z8.webserver;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.Reader;
+import java.net.URL;
 import java.net.URLDecoder;
 import java.rmi.RemoteException;
 import java.util.Enumeration;
@@ -44,6 +44,7 @@ public class WebServer implements IServer {
 
 	private static final Log LOG = LogFactory.getLog(WebServer.class);
 
+	private static final String CLASSPATH_WEBAPP = "web";
 	private static final String WELCOME_FILE = "index.html";
 
 	private static final String ID = guid.create().toString();
@@ -130,22 +131,55 @@ public class WebServer implements IServer {
 				@Override
 				public void handle(String target, Request baseRequest, HttpServletRequest request,
 						HttpServletResponse response) throws IOException, ServletException {
+					
 					String path = URLDecoder.decode(baseRequest.getRequestURI(), "UTF-8");
 					baseRequest.setServletPath(path);
 					LOG.debug("REQUEST: " + path);
 					response.setCharacterEncoding("UTF-8");
 					response.setContentType(getContentType(path));
+					
 					if (path.endsWith(".json") || path.startsWith("/storage/") || path.startsWith("/files/")
 							|| path.startsWith("/table/") || path.startsWith("/reports/")) {
+						// Z8 request
 						servlet.service(request, response);
+						
 					} else if (path.contains("..") || path.startsWith("/WEB-INF")) {
+						// Access denied
 						response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Illegal path " + path);
+						
 					} else {
+						InputStream in = null;
+						
+						// 1. Find source
 						File file = new File(webapp, path);
-						if (file.isDirectory())
-							file = new File(file, WELCOME_FILE);
-						try {
-							InputStream in = new FileInputStream(file);
+						// Try file
+						if (file.exists()) {
+							if (file.isDirectory())
+								file = new File(file, WELCOME_FILE);
+							if (file.exists())
+								in = new FileInputStream(file);
+						}
+						
+						if (in == null) {
+							// Try classpath resource
+							ClassLoader classLoader = WebServer.class.getClassLoader();
+							path = FilenameUtils.concat(CLASSPATH_WEBAPP, path.isEmpty() ? path : path.substring(1));
+							URL resource = classLoader.getResource(path);
+							if (resource != null) {
+								in = resource.openStream();
+								if (in.available() == 0) {
+									// Is directory
+									IOUtils.closeQuietly(in);
+									resource = classLoader.getResource(FilenameUtils.concat(path, WELCOME_FILE));
+									in = resource == null ? null : resource.openStream();
+								}
+							}
+						}
+						
+						if (in == null) {
+							response.sendError(HttpServletResponse.SC_NOT_FOUND, "File " + path + " not found");
+						} else {
+							// 2. Send source
 							OutputStream out = response.getOutputStream();
 							try {
 								IOUtils.copy(in, out);
@@ -153,10 +187,9 @@ public class WebServer implements IServer {
 								IOUtils.closeQuietly(in);
 								IOUtils.closeQuietly(out);
 							}
-						} catch (FileNotFoundException e) {
-							response.sendError(HttpServletResponse.SC_NOT_FOUND, "File " + path + " not found");
 						}
 					}
+					
 					baseRequest.setHandled(true);
 				}
 
