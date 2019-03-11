@@ -68,7 +68,9 @@ public class Transport implements Runnable {
 	@Override
 	public void run() {
 		try {
-			while (prepareMessages() || sendMessages());
+			do {
+				prepareMessages();
+			} while (sendMessages());
 		} catch(Throwable e) {
 			Trace.logError(e);
 		} finally {
