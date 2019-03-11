@@ -83,7 +83,7 @@ public class ModelGraph {
 			priorities.put(it.next(), priority);
 	}
 
-	public static ModelGraph newModelGraph(Collection<Table.CLASS<? extends Table>> tables) {
+	public static synchronized ModelGraph newModelGraph(Collection<Table.CLASS<? extends Table>> tables) {
 		ModelGraph modelGraph = new ModelGraph();
 		modelGraph.buildGraph(tables);
 		modelGraph.fillPriorities();
