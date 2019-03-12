@@ -77,10 +77,12 @@ public class JobsView extends ScheduledJobs {
 
 		nextStart.get().readOnly = bool.True;
 
-		jobs.get().name.get().colSpan = new integer(2);
+		jobs.get().name.get().colSpan = new integer(4);
 		users.get().name.get().colSpan = new integer(2);
 		cron.get().colSpan = new integer(2);
 		active.get().colSpan = new integer(2);
+		logErrorsOnly.get().colSpan = new integer(2);
+
 		lastStart.get().colSpan = new integer(2);
 		nextStart.get().colSpan = new integer(2);
 
@@ -91,6 +93,7 @@ public class JobsView extends ScheduledJobs {
 		registerControl(users.get().name);
 		registerControl(cron);
 		registerControl(active);
+		registerControl(logErrorsOnly);
 		registerControl(lastStart);
 		registerControl(nextStart);
 		registerControl(logsListbox);

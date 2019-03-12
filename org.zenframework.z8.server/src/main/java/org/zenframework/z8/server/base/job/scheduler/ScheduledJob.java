@@ -34,6 +34,7 @@ public class ScheduledJob implements Runnable {
 	public String name;
 	public String cron = "0 * * * *";
 	public boolean active = true;
+	public boolean logErrorsOnly = true;
 
 	public date lastStart = date.Min;
 	public date nextStart = date.Min;
@@ -107,14 +108,15 @@ public class ScheduledJob implements Runnable {
 		if(id == null)
 			return;
 
+		boolean hasErrors = monitor.hasErrors();
 		ScheduledJobLogs logs = ScheduledJobLogs.newInstance();
 		logs.scheduledJob.get().set(id);
 		logs.start.get().set(lastStart);
 		logs.finish.get().set(new date());
-		logs.errors.get().set(new bool(monitor.hasErrors()));
+		logs.errors.get().set(new bool(hasErrors));
 
 		file logFile = monitor.getLog();
-		if(logFile != null) {
+		if(logFile != null && (!logErrorsOnly || hasErrors)) {
 			monitor.logInfo("Memory usage: " + RequestDispatcher.getMemoryUsage());
 
 			JsonWriter writer = new JsonWriter();

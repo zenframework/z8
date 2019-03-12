@@ -25,6 +25,7 @@ public class ScheduledJobs extends Table {
 		public final static String User = "User";
 		public final static String Cron = "Cron";
 		public final static String Active = "Active";
+		public final static String LogErrorsOnly = "Log errors only";
 		public final static String LastStart = "LastStart";
 		public final static String NextStart = "NextStart";
 	}
@@ -36,6 +37,7 @@ public class ScheduledJobs extends Table {
 		public final static String Settings = "ScheduledJobs.settings";
 		public final static String Cron = "ScheduledJobs.cron";
 		public final static String Active = "ScheduledJobs.active";
+		public final static String LogErrorsOnly = "ScheduledJobs.logErrorsOnly";
 		public final static String LastStart = "ScheduledJobs.lastStart";
 		public final static String NextStart = "ScheduledJobs.nextStart";
 	}
@@ -47,6 +49,7 @@ public class ScheduledJobs extends Table {
 		public final static String Settings = Resources.get(strings.Settings);
 		public final static String Cron = Resources.get(strings.Cron);
 		public final static String Active = Resources.get(strings.Active);
+		public final static String LogErrorsOnly = Resources.get(strings.LogErrorsOnly);
 		public final static String LastStart = Resources.get(strings.LastStart);
 		public final static String NextStart = Resources.get(strings.NextStart);
 	}
@@ -79,6 +82,7 @@ public class ScheduledJobs extends Table {
 	public DatetimeField.CLASS<DatetimeField> nextStart = new DatetimeField.CLASS<DatetimeField>(this);
 	public StringField.CLASS<StringField> cron = new StringField.CLASS<StringField>(this);
 	public BoolField.CLASS<BoolField> active = new BoolField.CLASS<BoolField>(this);
+	public BoolField.CLASS<BoolField> logErrorsOnly = new BoolField.CLASS<BoolField>(this);
 
 	public ScheduledJobs(IObject container) {
 		super(container);
@@ -100,6 +104,7 @@ public class ScheduledJobs extends Table {
 		objects.add(lastStart);
 		objects.add(nextStart);
 		objects.add(active);
+		objects.add(logErrorsOnly);
 
 		objects.add(jobs);
 		objects.add(users);
@@ -138,8 +143,13 @@ public class ScheduledJobs extends Table {
 		active.setIndex("active");
 		active.setDisplayName(displayNames.Active);
 
+		logErrorsOnly.setName(fieldNames.LogErrorsOnly);
+		logErrorsOnly.setIndex("logErrorsOnly");
+		logErrorsOnly.setDisplayName(displayNames.LogErrorsOnly);
+
 		cron.get().setDefault(new string(DefaultCron));
 		active.get().setDefault(bool.True);
+		logErrorsOnly.get().setDefault(bool.True);
 	}
 
 	@Override

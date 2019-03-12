@@ -122,10 +122,11 @@ public class Scheduler implements Runnable {
 		DatetimeField lastStart = scheduledJobs.lastStart.get();
 		DatetimeField nextStart = scheduledJobs.nextStart.get();
 		BoolField active = scheduledJobs.active.get();
+		BoolField logErrorsOnly = scheduledJobs.active.get();
 		StringField classId = scheduledJobs.jobs.get().classId.get();
 		StringField name = scheduledJobs.jobs.get().name.get();
 
-		Collection<Field> fields = Arrays.asList(user, cron, lastStart, nextStart, active, classId, name);
+		Collection<Field> fields = Arrays.asList(user, cron, lastStart, nextStart, active, logErrorsOnly, classId, name);
 
 		scheduledJobs.read(fields);
 
@@ -146,6 +147,7 @@ public class Scheduler implements Runnable {
 			job.nextStart = nextStart.date();
 			job.cron = cron.string().get();
 			job.active = active.bool().get();
+			job.logErrorsOnly = logErrorsOnly.bool().get();
 
 			result.add(job);
 		}
