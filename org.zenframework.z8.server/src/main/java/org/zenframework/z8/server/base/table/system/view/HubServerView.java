@@ -117,6 +117,9 @@ abstract public class HubServerView extends Query {
 /*
 		actions.add(unregister);
 */
+		names.add(host);
+		names.add(port);
+		names.add(active);
 	}
 
 	@Override

@@ -628,6 +628,11 @@ Z8.define('Z8.form.field.Geometry', {
 		feature.setGeometry(feature.cachedGeometry != null ? feature.cachedGeometry.clone() : null);
 	},
 
+	isMeasuring: function() {
+		var tools = this.geometryTools;
+		return tools != null && tools.isRulerActive();
+	},
+
 	isModifying: function() {
 		var tools = this.geometryTools;
 		return this.isEditing && tools != null && (tools.isMoveActive() || tools.isEditActive());
@@ -716,14 +721,17 @@ Z8.define('Z8.form.field.Geometry', {
 	},
 
 	onRulerStart: function(event) {
-		if(this.rulerFeature != null)
-			this.getRulerSource().removeFeature(this.rulerFeature);
+		if(this.rulerFeature != null) {
+			try {
+				this.getRulerSource().removeFeature(this.rulerFeature);
+			} catch(e) {
+			}
+		}
 
 		this.rulerFeature = this.getEventFeature(event);
 	},
 
 	onRulerEnd: function(event) {
-		this.rulerFeature.getGeometry().un('change', this.onRulerChange, this);
 	},
 
 	onMove: function(event) {

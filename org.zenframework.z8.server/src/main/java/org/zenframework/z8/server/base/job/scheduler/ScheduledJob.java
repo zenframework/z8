@@ -105,10 +105,11 @@ public class ScheduledJob implements Runnable {
 	}
 
 	private void afterFinish(IMonitor monitor) {
-		if(id == null)
+		boolean hasErrors = monitor.hasErrors();
+
+		if(id == null || logErrorsOnly && !hasErrors)
 			return;
 
-		boolean hasErrors = monitor.hasErrors();
 		ScheduledJobLogs logs = ScheduledJobLogs.newInstance();
 		logs.scheduledJob.get().set(id);
 		logs.start.get().set(lastStart);
@@ -116,7 +117,7 @@ public class ScheduledJob implements Runnable {
 		logs.errors.get().set(new bool(hasErrors));
 
 		file logFile = monitor.getLog();
-		if(logFile != null && (!logErrorsOnly || hasErrors)) {
+		if(logFile != null) {
 			monitor.logInfo("Memory usage: " + RequestDispatcher.getMemoryUsage());
 
 			JsonWriter writer = new JsonWriter();
