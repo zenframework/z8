@@ -36,7 +36,7 @@ public class Delete extends Statement {
 
 	public int execute() {
 		try {
-			prepare(sql, query.priority());
+			prepare(sql, Integer.MAX_VALUE - query.priority());
 			return executeUpdate();
 		} catch(Throwable e) {
 			Trace.logEvent(sql());
