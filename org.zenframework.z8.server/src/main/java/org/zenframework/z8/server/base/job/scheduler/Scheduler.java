@@ -122,7 +122,7 @@ public class Scheduler implements Runnable {
 		DatetimeField lastStart = scheduledJobs.lastStart.get();
 		DatetimeField nextStart = scheduledJobs.nextStart.get();
 		BoolField active = scheduledJobs.active.get();
-		BoolField logErrorsOnly = scheduledJobs.active.get();
+		BoolField logErrorsOnly = scheduledJobs.logErrorsOnly.get();
 		StringField classId = scheduledJobs.jobs.get().classId.get();
 		StringField name = scheduledJobs.jobs.get().name.get();
 

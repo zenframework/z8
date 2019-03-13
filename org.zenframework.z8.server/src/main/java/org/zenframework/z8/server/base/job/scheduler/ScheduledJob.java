@@ -107,7 +107,7 @@ public class ScheduledJob implements Runnable {
 	private void afterFinish(IMonitor monitor) {
 		boolean hasErrors = monitor.hasErrors();
 
-		if(id == null || logErrorsOnly && !hasErrors)
+		if(id == null || !hasErrors && logErrorsOnly)
 			return;
 
 		ScheduledJobLogs logs = ScheduledJobLogs.newInstance();
