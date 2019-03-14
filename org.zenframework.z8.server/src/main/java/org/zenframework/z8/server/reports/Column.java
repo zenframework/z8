@@ -8,7 +8,6 @@ import java.util.List;
 import org.eclipse.birt.report.model.api.elements.DesignChoiceConstants;
 import org.zenframework.z8.server.base.table.value.Aggregation;
 import org.zenframework.z8.server.base.table.value.Field;
-import org.zenframework.z8.server.db.FieldType;
 
 public class Column {
 	public static final int DefaultColumnWidth = 100;
@@ -227,11 +226,7 @@ public class Column {
 	}
 
 	public Aggregation getAggregation() {
-		if(field == null)
-			return Aggregation.None;
-
-		FieldType type = field.type();
-		return type == FieldType.Integer || type == FieldType.Decimal ? field.aggregation : Aggregation.None;
+		return field != null && field.totals.get() && field.type().isNumeric() ? field.aggregation : Aggregation.None;
 	}
 
 	public boolean hasAggregation() {
