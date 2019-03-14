@@ -453,9 +453,9 @@ Z8.define('Z8.form.field.Combobox', {
 		this.hideDropdown();
 	},
 
-	show: function() {
+	show: function(show) {
 		this.entered = false;
-		this.callParent();
+		this.callParent(show);
 	},
 
 	openDropdown: function() {

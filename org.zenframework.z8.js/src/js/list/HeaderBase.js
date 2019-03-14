@@ -3,7 +3,7 @@ Z8.define('Z8.list.HeaderBase', {
 	shortClassName: 'HeaderBase',
 
 	statics: {
-		Numeric: 5.83333333,     // 70px
+		Numeric: 6.42857143,     // 90px
 		Date: 5.83333333,        // 70px
 		Datetime: 10.83333333,   // 130px
 

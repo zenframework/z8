@@ -1122,8 +1122,8 @@ Z8.define('Z8.form.field.Listbox', {
 		this.focus();
 	},
 
-	show: function() {
-		this.callParent();
+	show: function(show) {
+		this.callParent(show);
 		this.list.adjustAutoFit();
 	},
 

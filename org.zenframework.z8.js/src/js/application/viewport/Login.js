@@ -31,15 +31,15 @@ Z8.define('Z8.application.viewport.Login', {
 		this.loginField.focus();
 	},
 
-	show: function() {
-		if(this.isVisible()) {
+	show: function(show) {
+		if(show !== false && this.isVisible()) {
 			this.focus();
 			return;
 		}
 
 		this.mask = DOM.append(Viewport.getBody(), { cls: 'window-mask login' }); 
 
-		this.callParent();
+		this.callParent(show);
 		DOM.addCls(this, 'open', 100);
 
 		this.focus();
@@ -47,15 +47,15 @@ Z8.define('Z8.application.viewport.Login', {
 		this.fireEvent('show', this);
 	},
 
-	hide: function() {
-		if(!this.isVisible())
+	hide: function(hide) {
+		if(hide !== false && !this.isVisible())
 			return;
 
 		DOM.remove(this.mask);
 		this.mask = null;
 
 		DOM.removeCls(this, 'open');
-		this.callParent();
+		this.callParent(hide);
 
 		this.passwordField.setValue('');
 		this.fireEvent('hide', this);

@@ -620,11 +620,20 @@ Z8.define('Z8.application.form.Navigator', {
 		return this.getActiveListbox().focus();
 	},
 
+	getRecord: function() {
+		return this.record;
+	},
+
+	setRecord: function(record) {
+		this.record = record;
+		this.form.loadRecord(record);
+	},
+
 	select: function(listbox, newRecord, oldRecord) {
 		if(this.disposed)
 			return false;
 
-		this.form.loadRecord(newRecord);
+		this.setRecord(newRecord);
 		this.updateToolbar();
 		return true;
 	},

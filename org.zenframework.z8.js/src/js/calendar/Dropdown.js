@@ -6,30 +6,27 @@ Z8.define('Z8.calendar.Dropdown', {
 	autoAlign: true,
 
 	show: function(top, left) {
-		if(this.visible) {
+		if(this.isVisible()) {
 			DOM.focus(this.selectedDay);
 			return;
 		}
 
 		this.setPosition(top, left);
 
-		DOM.removeCls(this, 'display-none');
+		this.callParent();
 		this.align();
 
 		this.fireEvent('show', this);
-
-		this.visible = true;
 
 		DOM.focus(this.selectedDay);
 	},
 
 	hide: function() {
-		if(!this.visible)
+		if(!this.isVisible())
 			return;
 
-		this.visible = false;
+		this.callParent();
 
-		DOM.addCls(this, 'display-none');
 		this.fireEvent('hide', this);
 	},
 

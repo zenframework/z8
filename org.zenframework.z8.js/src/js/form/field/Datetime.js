@@ -61,9 +61,9 @@ Z8.define('Z8.form.field.Datetime', {
 	select: function(direction) {
 	},
 
-	show: function() {
+	show: function(show) {
 		this.entered = false;
-		this.callParent();
+		this.callParent(show);
 	},
 
 	showDropdown: function() {
