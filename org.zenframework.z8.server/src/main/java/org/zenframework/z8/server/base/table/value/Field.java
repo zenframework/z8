@@ -378,9 +378,7 @@ abstract public class Field extends Control implements IField {
 		if(path == null || !path.isEmpty() && path.iterator().next().owner() != query)
 			path = query.getPath(this);
 
-		boolean hasJoin = pathHasJoin();
-
-		if(path != null && !path.isEmpty() && !hasJoin) {
+		if(path != null && !path.isEmpty()) {
 			ILink[] links = path.toArray(new ILink[0]);
 
 			ILink firstLink = links[0];
@@ -420,13 +418,13 @@ abstract public class Field extends Control implements IField {
 
 			writer.writeSort(firstLink.getQuery().sortFields());
 
-			readOnly = hasReadOnlyLinks(path) || !linkField.access().write() || readOnly();
+			readOnly = hasReadOnlyLinks(path) || !linkField.access().write() || readOnly() || pathHasJoin();
 			required = !readOnly && (hasRequiredLinks(path) || required());
 
 			this.readOnly = new bool(readOnly);
 			this.required = new bool(required);
 		} else {
-			readOnly = readOnly() || isExpression() || hasJoin || !access().write();
+			readOnly = readOnly() || isExpression() || !access().write();
 			required = !readOnly && required();
 
 			this.readOnly = new bool(readOnly() || readOnly);

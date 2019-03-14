@@ -25,8 +25,7 @@ public class ReportAction extends RequestAction {
 		report.format = format != null ? new string(format) : report.format;
 		report.name = name != null ? new string(name) : report.name;
 
-		file file = report.execute(getRecordIdParameter());
-
+		file file = report.run(getRecordIdParameter());
 		ApplicationServer.getMonitor().print(file);
 	}
 }

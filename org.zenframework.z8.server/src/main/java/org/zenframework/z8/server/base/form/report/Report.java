@@ -79,23 +79,23 @@ public class Report extends OBJECT implements Runnable, IReport {
 		writer.writeProperty(Json.format, format());
 	}
 
-	public file execute(guid recordId) {
+	public file run(guid recordId) {
 		prepare(recordId);
-		return z8_execute(recordId);
-	}
-
-	public void prepare(guid recordId) {
-		z8_prepare(recordId);
-	}
-
-	public file z8_run(guid recordId) {
 		return execute(recordId);
 	}
 
-	public void z8_prepare(guid recordId) {
+	protected void prepare(guid recordId) {
+		z8_prepare(recordId);
 	}
 
-	public file z8_execute(guid recordId) {
+	protected file execute(guid recordId) {
+		return z8_execute(recordId);
+	}
+
+	protected void z8_prepare(guid recordId) {
+	}
+
+	protected file z8_execute(guid recordId) {
 		ReportOptions report = new ReportOptions();
 		report.templateFolder = Folders.Reports;
 		report.template = template.get() + '.' + Reports.DesignExtension;
@@ -108,5 +108,9 @@ public class Report extends OBJECT implements Runnable, IReport {
 		file.set(new InputOnlyFileItem(diskFile, diskFile.getName()));
 
 		return file;
+	}
+
+	public file z8_run(guid recordId) {
+		return run(recordId);
 	}
 }
