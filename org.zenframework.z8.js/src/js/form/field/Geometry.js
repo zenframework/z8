@@ -15,7 +15,7 @@ Z8.define('Z8.form.field.Geometry', {
 
 	gridStep: 20,
 	updateSizePending: true,
-
+	
 	isValid: function() {
 		return true;
 	},
@@ -93,6 +93,7 @@ Z8.define('Z8.form.field.Geometry', {
 		var enabled = !this.isReadOnly() && this.isEnabled();
 		var canMove = this.canMove();
 		var canEdit = this.canEdit();
+		var canGrab = this.canGrab();
 		var canDraw = this.canDraw();
 		var canErase = this.canErase();
 		var canRotate = this.canRotate();
@@ -102,12 +103,13 @@ Z8.define('Z8.form.field.Geometry', {
 		if(tools == null)
 			return;
 
-		if(!enabled || !canMove && tools.isMoveActive() || !canEdit && tools.isEditActive() || !canDraw && tools.isDrawActive()
-				 || !canErase && tools.isEraseActive() || !canRotate && tools.isRotateActive())
+		if(!enabled || !canMove && tools.isMoveActive() || !canEdit && tools.isEditActive() || !canGrab && tools.isGrabActive()
+				|| !canDraw && tools.isDrawActive() || !canErase && tools.isEraseActive() || !canRotate && tools.isRotateActive())
 			tools.activateSelect();
 
 		tools.enableMove(enabled && canMove);
 		tools.enableEdit(enabled && canEdit);
+		tools.enableGrab(enabled && canGrab);
 		tools.enableDraw(enabled && canDraw);
 		tools.enableErase(enabled && canErase);
 		tools.enableRotate(enabled && canRotate);
@@ -300,6 +302,10 @@ Z8.define('Z8.form.field.Geometry', {
 		return new ol.interaction.Modify({ source: this.getVectorSource(), deleteCondition: altOrCtrl });
 	},
 
+	createGrab: function() {
+		return new ol.interaction.Grab({ source: this.getVectorSource(), grabber: this.grabFeature, scope: this });
+	},
+	
 	createDraw: function() {
 		return new ol.interaction.Draw({ source: this.getVectorSource(), snapTolerance: 0, freehandCondition: ol.events.condition.never, type: this.getDrawType() });
 	},
@@ -348,6 +354,14 @@ Z8.define('Z8.form.field.Geometry', {
 			edit.on('modifystart', this.onEditStart, this);
 			edit.on('modifyend', this.onEditEnd, this);
 			map.addInteraction(edit);
+		}
+
+		if(tools.grab !== false) {
+			var grab = this.grab = this.createGrab();
+			grab.setActive(false);
+			grab.on('grabstart', this.onEditStart, this);
+			grab.on('grabend', this.onEditEnd, this);
+			map.addInteraction(grab);
 		}
 
 		if(tools.draw !== false) {
@@ -410,6 +424,14 @@ Z8.define('Z8.form.field.Geometry', {
 			edit.un('modifyend', this.onEditEnd, this);
 			map.removeInteraction(edit);
 			this.edit = null;
+		}
+
+		var grab = this.grab;
+		if(grab != null) {
+			grab.un('grabstart', this.onEditStart, this);
+			grab.un('grabend', this.onEditEnd, this);
+			map.removeInteraction(grab);
+			this.grab = null;
 		}
 
 		var draw = this.draw;
@@ -853,6 +875,10 @@ Z8.define('Z8.form.field.Geometry', {
 		return 'LineString';
 	},
 
+	canGrab: function() {
+		return this.record != null && (this.feature == null || this.feature.getGeometry() == null);
+	},
+
 	canDraw: function() {
 		return this.record != null && (this.feature == null || this.feature.getGeometry() == null);
 	},
@@ -885,6 +911,7 @@ Z8.define('Z8.form.field.Geometry', {
 			this.activateInteraction(this.ruler, tool.isRuler);
 			this.activateInteraction(this.move, tool.isMove && this.canMove());
 			this.activateInteraction(this.edit, tool.isEdit && this.canEdit());
+			this.activateInteraction(this.grab, tool.isGrab && this.canGrab());
 			this.activateInteraction(this.draw, tool.isDraw && this.canDraw());
 			this.activateInteraction(this.erase, tool.isErase && this.canErase());
 			this.activateInteraction(this.rotate, tool.isRotate && this.canRotate());
@@ -913,6 +940,11 @@ Z8.define('Z8.form.field.Geometry', {
 		window.open('https://yandex.ru/maps/213/moscow/?z=' + this.getZoom() + '&ll=' + center[0] + ',' + center[1]);
 	},
 
+	grabFeature: function(coordinate, callback) {
+		// Must be overriden
+		callback(new ol.geom.Point(coordinate));
+	},
+	
 	getCenter: function() {
 		return this.view.getCenter();
 	},

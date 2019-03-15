@@ -10,6 +10,7 @@ Z8.define('Z8.button.GeometryTools', {
 	ruler: true,
 	move: true,
 	edit: true,
+	grab: false,
 	draw: true,
 	erase: true,
 	rotate: true,
@@ -43,6 +44,11 @@ Z8.define('Z8.button.GeometryTools', {
 		if(this.edit !== false) {
 			var edit = this.edit = new Z8.menu.Item({ text: 'Изменить объект', shortcut: 'Ctrl+E', icon: 'fa-pencil', isTool: true, isEdit: true });
 			tools.add(edit);
+		}
+
+		if(this.grab !== false) {
+			var grab = this.grab = new Z8.menu.Item({ text: 'Взять с подложки', /*shortcut: 'Ctrl+E',*/ icon: 'fa-hand-lizard-o', isTool: true, isGrab: true });
+			tools.add(grab);
 		}
 
 		if(this.draw !== false) {
@@ -127,6 +133,10 @@ Z8.define('Z8.button.GeometryTools', {
 		return this.isToolActive(this.edit);
 	},
 
+	isGrabActive: function() {
+		return this.isToolActive(this.grab);
+	},
+	
 	isDrawActive: function() {
 		return this.isToolActive(this.draw);
 	},
@@ -191,6 +201,10 @@ Z8.define('Z8.button.GeometryTools', {
 		this.activateTool(this.edit);
 	},
 
+	activateGrab: function() {
+		this.activateTool(this.grab);
+	},
+
 	activateDraw: function() {
 		this.activateTool(this.draw);
 	},
@@ -221,6 +235,10 @@ Z8.define('Z8.button.GeometryTools', {
 
 	enableEdit: function(enable) {
 		this.enableTool(this.edit, enable);
+	},
+
+	enableGrab: function(enable) {
+		this.enableTool(this.grab, enable);
 	},
 
 	enableDraw: function(enable) {
