@@ -11,11 +11,12 @@ import org.zenframework.z8.server.exceptions.db.UnknownDatabaseException;
 
 public class Point extends SqlToken {
 
-	private final SqlToken x, y;
+	private final SqlToken x, y, srs;
 
-	public Point(SqlToken x, SqlToken y) {
+	public Point(SqlToken x, SqlToken y, SqlToken srs) {
 		this.x = x;
 		this.y = y;
+		this.srs = srs;
 	}
 
 	@Override
@@ -28,8 +29,8 @@ public class Point extends SqlToken {
 	public String format(DatabaseVendor vendor, FormatOptions options, boolean logicalContext) {
 		switch (vendor) {
 		case Postgres:
-			return new StringBuilder(1024).append("ST_Point(").append(x.format(vendor, options)).append(", ")
-					.append(y.format(vendor, options)).append(')').toString();
+			return new StringBuilder(1024).append("ST_SetSRID(ST_Point(").append(x.format(vendor, options)).append(", ")
+					.append(y.format(vendor, options)).append("), ").append(srs.format(vendor, options)).append(')').toString();
 		default:
 			throw new UnknownDatabaseException();
 		}

@@ -123,7 +123,7 @@ public class sql_geometry extends sql_primary {
 		return new sql_string(new AsGeoJson(this));
 	}
 	
-	public static sql_geometry z8_point(sql_decimal x, sql_decimal y) {
-		return new sql_geometry(new Point(x, y));
+	public static sql_geometry z8_point(sql_decimal x, sql_decimal y, sql_integer srs) {
+		return new sql_geometry(new Point(x, y, srs));
 	}
 }
