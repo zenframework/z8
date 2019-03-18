@@ -334,58 +334,58 @@ Z8.define('Z8.form.field.Geometry', {
 
 		if(tools.ruler !== false) {
 			var ruler = this.ruler = this.createRuler();
+			map.addInteraction(ruler);
 			ruler.setActive(false);
 			ruler.on('drawstart', this.onRulerStart, this);
 			ruler.on('drawend', this.onRulerEnd, this);
-			map.addInteraction(ruler);
 		}
 
 		if(tools.move !== false) {
 			var move = this.move = this.createMove();
+			map.addInteraction(move);
 			move.setActive(false);
 			move.on('translatestart', this.onEditStart, this);
 			move.on('translateend', this.onEditEnd, this);
-			map.addInteraction(move);
 		}
 
 		if(tools.edit !== false) {
 			var edit = this.edit = this.createEdit();
+			map.addInteraction(edit);
 			edit.setActive(false);
 			edit.on('modifystart', this.onEditStart, this);
 			edit.on('modifyend', this.onEditEnd, this);
-			map.addInteraction(edit);
 		}
 
 		if(tools.pick !== false) {
 			var pick = this.pick = this.createPick();
+			map.addInteraction(pick);
 			pick.setActive(false);
 			pick.on('pickstart', this.onEditStart, this);
 			pick.on('pickend', this.onEditEnd, this);
-			map.addInteraction(pick);
 		}
 
 		if(tools.draw !== false) {
 			var draw = this.draw = this.createDraw();
+			map.addInteraction(draw);
 			draw.setActive(false);
 			draw.on('drawstart', this.onEditStart, this);
 			draw.on('drawend', this.onEditEnd, this);
-			map.addInteraction(draw);
 		}
 
 		if(tools.erase !== false) {
 			var erase = this.erase = this.createErase();
+			map.addInteraction(erase);
 			erase.setActive(false);
 			erase.on('erasestart', this.onEditStart, this);
 			erase.on('eraseend', this.onEditEnd, this);
-			map.addInteraction(erase);
 		}
 
 		if(tools.rotate !== false) {
 			var rotate = this.rotate = this.createRotate();
+			map.addInteraction(rotate);
 			rotate.setActive(false);
 			rotate.on('rotatestart', this.onEditStart, this);
 			rotate.on('rotateend', this.onEditEnd, this);
-			map.addInteraction(rotate);
 		}
 	},
 
