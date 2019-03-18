@@ -705,6 +705,7 @@ Z8.define('Z8.form.field.Geometry', {
 		this.editingFeature = null;
 
 		this.setValue(this.rawToValue(feature));
+		this.updateTools();
 	},
 
 	getEventFeature: function(event) {
