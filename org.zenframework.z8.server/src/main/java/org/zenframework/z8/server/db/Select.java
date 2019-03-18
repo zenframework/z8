@@ -88,11 +88,6 @@ public class Select {
 		}
 	}
 
-	public void addField(Field field) {
-		field.position = fields.size();
-		fields.add(field);
-	}
-
 	public void setRootQuery(Query query) {
 		this.rootQuery = query;
 	}

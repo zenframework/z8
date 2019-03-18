@@ -16,8 +16,8 @@ import org.zenframework.z8.server.base.table.Table;
 import org.zenframework.z8.server.base.table.value.Aggregation;
 import org.zenframework.z8.server.base.table.value.Expression;
 import org.zenframework.z8.server.base.table.value.Field;
+import org.zenframework.z8.server.base.table.value.IJoin;
 import org.zenframework.z8.server.base.table.value.ILink;
-import org.zenframework.z8.server.base.table.value.Join;
 import org.zenframework.z8.server.base.table.value.JoinType;
 import org.zenframework.z8.server.base.table.value.Link;
 import org.zenframework.z8.server.base.view.filter.Filter;
@@ -27,7 +27,6 @@ import org.zenframework.z8.server.db.FieldType;
 import org.zenframework.z8.server.db.FramedSelect;
 import org.zenframework.z8.server.db.Select;
 import org.zenframework.z8.server.db.SelectFactory;
-import org.zenframework.z8.server.db.sql.SqlConst;
 import org.zenframework.z8.server.db.sql.SqlField;
 import org.zenframework.z8.server.db.sql.SqlToken;
 import org.zenframework.z8.server.db.sql.expressions.And;
@@ -46,17 +45,17 @@ import org.zenframework.z8.server.json.parser.JsonArray;
 import org.zenframework.z8.server.json.parser.JsonObject;
 import org.zenframework.z8.server.security.Privileges;
 import org.zenframework.z8.server.types.guid;
-import org.zenframework.z8.server.types.primary;
 import org.zenframework.z8.server.types.string;
 import org.zenframework.z8.server.types.sql.sql_bool;
 import org.zenframework.z8.server.types.sql.sql_string;
-import org.zenframework.z8.server.utils.ArrayUtils;
 
 public class ReadAction extends RequestAction {
 	static private final Collection<Field> emptyFieldList = new ArrayList<Field>();
 
 	private Map<Field, Collection<Query>> fieldToQueries = new LinkedHashMap<Field, Collection<Query>>();
 	private Map<Query, Collection<ILink>> queryToPath = new LinkedHashMap<Query, Collection<ILink>>();
+
+	protected Collection<Query> joinedQueries = new LinkedHashSet<Query>();
 
 	protected Collection<Field> selectFields = new LinkedHashSet<Field>();
 	protected Collection<Field> groupFields = new LinkedHashSet<Field>();
@@ -337,7 +336,7 @@ public class ReadAction extends RequestAction {
 		JoinType joinType = null;
 
 		for(ILink link : path) {
-			if(link instanceof Expression) {
+			if(link.isExpression()) {
 				Collection<Field> usedFields = getUsedFields((Field)link);
 				Collection<Query> owners = getOwners(usedFields);
 
@@ -346,6 +345,12 @@ public class ReadAction extends RequestAction {
 						queries.add(owner);
 						links.addAll(getPath(owner, queries));
 					}
+				}
+
+				if(link instanceof IJoin) {
+					Query joinedQuery = link.getQuery();
+					joinedQueries.add(joinedQuery);
+					selectFields.add(joinedQuery.primaryKey());
 				}
 			}
 
@@ -393,7 +398,7 @@ public class ReadAction extends RequestAction {
 			Collection<ILink> links = getPath(field);
 
 			for(ILink link : links) {
-				if(!(link instanceof Join))
+				if(!(link instanceof IJoin))
 					selectFields.add((Field)link);
 
 				if(link.getJoinType() == JoinType.Right) {
@@ -432,7 +437,7 @@ public class ReadAction extends RequestAction {
 			for(Query query : queries.toArray(new Query[0])) {
 				for(ILink link : getPath(query)) {
 					Field linkField = (Field)link;
-					if(linkField instanceof Expression) {
+					if(linkField.isExpression()) {
 						for(Field usedField : getUsedFields(linkField))
 							queries.add(usedField.owner());
 					} else
@@ -487,7 +492,7 @@ public class ReadAction extends RequestAction {
 	}
 
 	private Collection<Field> getUsedFields(Field field) {
-		if(field instanceof Expression) {
+		if(field.isExpression()) {
 			Expression expression = (Expression)field;
 			return getUsedFields(expression.expression());
 		}
@@ -620,22 +625,6 @@ public class ReadAction extends RequestAction {
 		return count;
 	}
 
-	class Groupping {
-		Groupping(Collection<Field> fields) {
-			this.fields = fields.toArray(new Field[0]);
-			firstGroup = new primary[this.fields.length];
-			lastGroup = new primary[this.fields.length];
-		}
-
-		boolean isEmpty() {
-			return this.fields.length == 0;
-		}
-
-		Field[] fields;
-		primary[] firstGroup;
-		primary[] lastGroup;
-	}
-
 	/*
 	* группировка для chart'ов
 	*/
@@ -678,54 +667,41 @@ public class ReadAction extends RequestAction {
 		writer.finishArray();
 	}
 
-	private Groupping writeFrame(JsonWriter writer) throws SQLException {
+	private void writeFrame(JsonWriter writer) throws SQLException {
 		FramedSelect frame = frame();
 
 		try {
 			frame.saveState();
 			frame.open();
-			return writeData(frame, writer);
+			writeData(frame, writer);
 		} finally {
 			frame.restoreState();
 			frame.close();
 		}
 	}
 
-	private Groupping writeData(Select cursor, JsonWriter writer) {
-		Groupping groups = new Groupping(this.groupFields);
+	public void readAndWriteData(JsonWriter writer) {
+		Select cursor = getCursor();
+		writeData(getCursor(), writer);
+		cursor.close();
+	}
 
+	private void writeData(Select cursor, JsonWriter writer) {
 		if(primaryKey != null)
 			primaryKey.setWriteNulls(false);
 
 		writer.startArray(Json.data);
 
-		int records = 0;
-		boolean hasLimit = hasRequestParameter(Json.limit);
-
 		while(cursor.next()) {
-			if(records > 500 && !hasLimit)
-				throw new RuntimeException("Too many records fetched for a json client. Use limit parameter.");
-
 			writer.startObject();
 
-			primary[] group = records == 0 ? groups.firstGroup : groups.lastGroup;
-
-			for(Field field : getSelectFields()) {
-				int index = ArrayUtils.indexOf(groups.fields, field);
-
-				if(index != -1)
-					group[index] = field.get();
-
+			for(Field field : cursor.getFields())
 				field.writeData(writer);
-			}
-			records++;
 
 			writer.finishObject();
 		}
 
 		writer.finishArray();
-
-		return records != 0 && groups.fields.length != 0 ? groups : null;
 	}
 
 	private void writeTotals(JsonWriter writer) throws SQLException {
@@ -767,71 +743,6 @@ public class ReadAction extends RequestAction {
 		return result;
 	}
 
-	@SuppressWarnings("unused")
-	private void writeSummary(JsonWriter writer, Groupping groups) throws SQLException {
-		sortFields.clear();
-
-		Field groupField = groups.fields[0];
-
-		SqlToken where = new Rel(groupField, Operation.Eq, new SqlConst(groups.firstGroup[0]));
-
-		if(groups.lastGroup[0] != null && !groups.firstGroup[0].equals(groups.lastGroup[0])) {
-			SqlToken last = new Rel(new SqlField(groupField), Operation.Eq, new SqlConst(groups.lastGroup[0]));
-			where = new Group(new Or(where, last));
-		}
-
-		Select select = cursor();
-
-		select.addWhere(where);
-
-		Collection<Field> fields = getTotalsFields(select.getFields());
-
-		Field expression = createAggregatedExpression(groupField, groupField.aggregation, groupField.type());
-		Field count = createAggregatedExpression(groupField, Aggregation.Count, FieldType.Integer);
-
-		fields.add(groupField);
-
-		if(expression != null && expression != groupField)
-			fields.add(expression);
-
-		if(count != groupField)
-			fields.add(count);
-
-		select.setFields(fields);
-
-		Select summary = new Select();
-		summary.setSubselect(select);
-		summary.setFields(select.getFields());
-		summary.setGroupBy(Arrays.asList(groupField));
-
-		try {
-			summary.aggregate();
-
-			writer.startObject(Json.summaryData);
-
-			while(summary.next()) {
-				writer.startObject(JsonObject.quote(groupField.get().toString()));
-
-				for(Field field : summary.getFields()) {
-					if(field == groupField)
-						writer.writeProperty(Json.group, groupField.get());
-					else if(field == expression)
-						writer.writeProperty(JsonObject.quote(groupField.id()), expression.get());
-					else if(field == count)
-						writer.writeProperty(Json.total, count.get());
-					else
-						field.writeData(writer);
-				}
-
-				writer.finishObject();
-			}
-
-			writer.finishObject();
-		} finally {
-			summary.close();
-		}
-	}
-
 	private void beforeRead() {
 		Query query = getQuery();
 		Field parentKey = query.parentKey();
@@ -871,7 +782,7 @@ public class ReadAction extends RequestAction {
 
 	private void writeData(JsonWriter writer) throws Throwable {
 		Query query = getQuery();
-		
+
 		if(!(query instanceof Table))
 			return;
 
@@ -894,18 +805,6 @@ public class ReadAction extends RequestAction {
 		}
 
 		writeFrame(writer);
-	}
-
-	private Field createAggregatedExpression(final Field field, Aggregation aggregation, FieldType type) {
-		if(aggregation == Aggregation.None)
-			return null;
-
-		if(field.aggregation == aggregation)
-			return field;
-
-		Expression expression = new Expression(new SqlField(field), type);
-		expression.aggregation = aggregation;
-		return expression;
 	}
 
 	public int getTotalCount() {

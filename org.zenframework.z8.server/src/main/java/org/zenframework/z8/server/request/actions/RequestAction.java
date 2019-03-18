@@ -8,7 +8,6 @@ import org.zenframework.z8.server.base.query.Query;
 import org.zenframework.z8.server.base.query.QueryUtils;
 import org.zenframework.z8.server.base.table.value.Field;
 import org.zenframework.z8.server.base.table.value.ILink;
-import org.zenframework.z8.server.db.Select;
 import org.zenframework.z8.server.json.Json;
 import org.zenframework.z8.server.json.JsonWriter;
 import org.zenframework.z8.server.json.parser.JsonArray;
@@ -226,21 +225,6 @@ public abstract class RequestAction extends RequestTarget {
 
 		ReadAction action = new ReadAction(query, fields, recordIds);
 		action.addFilter(query.scope());
-
-		Select cursor = action.getCursor();
-		fields = cursor.getFields();
-
-		writer.startArray(Json.data);
-
-		while(cursor.next()) {
-			writer.startObject();
-			for(Field field : fields)
-				field.writeData(writer);
-			writer.finishObject();
-		}
-
-		writer.finishArray();
-
-		cursor.close();
+		action.readAndWriteData(writer);
 	}
 }

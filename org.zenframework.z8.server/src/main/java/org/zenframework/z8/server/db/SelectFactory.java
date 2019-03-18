@@ -8,7 +8,6 @@ import java.util.List;
 
 import org.zenframework.z8.server.base.query.Query;
 import org.zenframework.z8.server.base.table.value.Aggregation;
-import org.zenframework.z8.server.base.table.value.Expression;
 import org.zenframework.z8.server.base.table.value.Field;
 import org.zenframework.z8.server.base.table.value.ILink;
 import org.zenframework.z8.server.base.table.value.Link;
@@ -149,7 +148,7 @@ public class SelectFactory {
 	}
 
 	private boolean checkField(Field field) {
-		if(aggregateBy.isEmpty() || groupedSelectFields.contains(field) || field instanceof Expression)
+		if(aggregateBy.isEmpty() || groupedSelectFields.contains(field) || field.isExpression())
 			return true;
 
 		for(Link link : aggregateBy) {
@@ -169,10 +168,10 @@ public class SelectFactory {
 		for(Field field : action.getSelectFields()) {
 			if(checkField(field)) {
 				if(grouped) {
-					if(groupFields.contains(field) || field.isAggregated() || field instanceof Expression)
+					if(groupFields.contains(field) || field.isAggregated() || field.isExpression())
 						fields.add(field);
 				} else if(isAggregated) {
-					if(field.isAggregated() || field instanceof Expression)
+					if(field.isAggregated() || field.isExpression())
 						fields.add(field);
 				} else
 					fields.add(field);

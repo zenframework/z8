@@ -26,7 +26,7 @@ public class SqlField extends SqlToken {
 
 	@Override
 	public void collectFields(Collection<IField> fields) {
-		if(field instanceof Expression) {
+		if(field.isExpression()) {
 			Expression expression = (Expression)field;
 			SqlToken token = expression.expression();
 

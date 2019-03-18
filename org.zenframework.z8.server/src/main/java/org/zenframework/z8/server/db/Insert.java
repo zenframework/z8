@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 import org.zenframework.z8.server.base.query.Query;
-import org.zenframework.z8.server.base.table.value.Expression;
 import org.zenframework.z8.server.base.table.value.Field;
 import org.zenframework.z8.server.engine.Database;
 import org.zenframework.z8.server.logs.Trace;
@@ -23,7 +22,7 @@ public class Insert extends Statement {
 		this.fields = new ArrayList<Field>();
 
 		for(Field field : fields) {
-			if(!(field instanceof Expression))
+			if(!field.isExpression())
 				this.fields.add(field);
 		}
 

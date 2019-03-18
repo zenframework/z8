@@ -14,7 +14,6 @@ import org.zenframework.z8.server.base.form.report.Report;
 import org.zenframework.z8.server.base.table.value.Expression;
 import org.zenframework.z8.server.base.table.value.Field;
 import org.zenframework.z8.server.base.table.value.FileField;
-import org.zenframework.z8.server.base.table.value.IField;
 import org.zenframework.z8.server.base.table.value.ILink;
 import org.zenframework.z8.server.base.table.value.Link;
 import org.zenframework.z8.server.base.view.filter.Filter;
@@ -1105,47 +1104,6 @@ public class Query extends OBJECT {
 				return field.get();
 		}
 		return null;
-	}
-
-	private boolean isReachableVia(Query query, Field field) {
-		if(field instanceof Expression) {
-			Expression expression = (Expression)field;
-			SqlToken token = expression.expression();
-
-			Collection<IField> values = token.getUsedFields();
-
-			for(IField value : values) {
-				if(query.findFieldById(value.id()) == null)
-					return false;
-			}
-		}
-
-		return query.findFieldById(field.id()) != null;
-	}
-
-	public Collection<Field> getFieldsVia(Query query) {
-		if(this == query)
-			return fields();
-
-		Collection<Field> result = new ArrayList<Field>(50);
-
-		for(Field field : fields()) {
-			if(isReachableVia(query, field))
-				result.add(field);
-		}
-
-		return result;
-	}
-
-	public Collection<Field> getReachableFields(Collection<Field> fields) {
-		Collection<Field> result = new ArrayList<Field>(50);
-
-		for(Field field : fields) {
-			if(findFieldById(field.id()) != null)
-				result.add(field);
-		}
-
-		return result;
 	}
 
 	public Collection<Action> actions() {
