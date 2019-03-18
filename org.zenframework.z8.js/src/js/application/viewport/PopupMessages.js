@@ -44,9 +44,10 @@ Z8.define('Z8.viewport.PopupMessage', {
 
 	htmlMarkup: function() {
 		var icon = { cls: 'icon fa fa-fw fa-' + this.type + ' ' + this.type, html: String.htmlText() };
+		var close = { cls: 'close fa fa-fw fa-times', html: String.htmlText() };
 		var source = { tag: 'b', html: this.source || Application.title };
 		var text = { cls: 'text', cn: [source, { tag: 'br' }, Format.nl2br(this.text)] };
-		var body = { cls: 'body', cn: [icon, text] };
+		var body = { cls: 'body', cn: [icon, text, close] };
 		return { cls: 'message ' + this.type, id: this.getId(), cn: [body] };
 	},
 

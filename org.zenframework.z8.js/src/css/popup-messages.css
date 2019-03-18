@@ -17,6 +17,7 @@
 .popup.messages>.message>.body {
 	display: flex;
 	flex-direction: row;
+	position: relative;
 
 	box-shadow: 0 2px 4px rgba(0,0,0,0.2);
 	padding: 1.14285714em .64285714em 1.14285714em 1.07142857em;
@@ -38,17 +39,38 @@
 	border: none;
 }
 
-.popup.messages>.message.fatal>.body {
+.popup.messages>.message.error>.body {
 	background-color: #d9534f;
 	color: #fff;
 }
 
-.popup.messages>.message.fatal>.body>.icon {
+.popup.messages>.message.error>.body>.icon {
 	color: #fff;
 }
 
 .popup.messages>.message>.body>.icon {
 	margin-right: .71428571em;
+}
+
+
+.popup.messages>.message.error>.body>.close {
+	color: #fff;
+}
+
+.popup.messages>.message.error>.body>.close:hover {
+	color: #ccc;
+}
+
+.popup.messages>.message>.body>.close {
+	position: absolute;
+	top: .5em;
+	right: .5em;
+	color: #444;
+}
+
+.popup.messages>.message>.body>.close:hover {
+	color: #222;
+	cursor: pointer;
 }
 
 .popup.messages>.message>.body>.text {
