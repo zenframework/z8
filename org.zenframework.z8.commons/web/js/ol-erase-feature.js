@@ -1,10 +1,5 @@
 (function() {
 
-	//var EraseFeatureEvent = function(type, features) {
-	//	this.type = type;
-	//	this.features = features;
-	//};
-	
 	var EraseFeatureEvent = class {
 		constructor (type, feature) {
 			this.propagationStopped_ = false;
@@ -29,6 +24,13 @@
 		this.overFeature = false;
 	};
 	ol.inherits(Erase, ol.interaction.Interaction);
+	
+	Erase.prototype.defaultSetActive = Erase.prototype.setActive;
+	Erase.prototype.setActive = function(active) {
+		Erase.prototype.defaultSetActive.call(this, active);
+		if (!active)
+			this.getMap().getTargetElement().style.cursor = 'default';
+	};
 
 	// load fa-eraser as image
 	setTimeout(function() {
@@ -75,27 +77,4 @@
 		return false;
 	};
 
-	/*
-	 * Erase.prototype.handleDragEvent = function(evt) { var deltaX =
-	 * evt.coordinate[0] - this.coordinate_[0]; var deltaY = evt.coordinate[1] -
-	 * this.coordinate_[1];
-	 * 
-	 * var geometry = this.feature_.getGeometry(); geometry.translate(deltaX,
-	 * deltaY);
-	 * 
-	 * this.coordinate_[0] = evt.coordinate[0]; this.coordinate_[1] =
-	 * evt.coordinate[1]; };
-	 * 
-	 * Erase.prototype.handleMoveEvent = function(evt) { if (this.cursor_) { var
-	 * map = evt.map; var feature = map.forEachFeatureAtPixel(evt.pixel,
-	 * function(feature) { return feature; }); var element =
-	 * evt.map.getTargetElement(); if (feature) { if (element.style.cursor !=
-	 * this.cursor_) { this.previousCursor_ = element.style.cursor;
-	 * element.style.cursor = this.cursor_; } } else if (this.previousCursor_
-	 * !== undefined) { element.style.cursor = this.previousCursor_;
-	 * this.previousCursor_ = undefined; } } };
-	 * 
-	 * Erase.prototype.handleUpEvent = function() { this.coordinate_ = null;
-	 * this.feature_ = null; return false; };
-	 */
 }).call();

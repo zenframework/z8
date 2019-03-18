@@ -28,7 +28,13 @@
 		this.scope = config.scope;
 	};
 	ol.inherits(Pick, ol.interaction.Interaction);
-
+	
+	Pick.prototype.defaultSetActive = Pick.prototype.setActive;
+	Pick.prototype.setActive = function(active) {
+		Pick.prototype.defaultSetActive.call(this, active);
+		this.getMap().getTargetElement().style.cursor = active ? this.pickerUrl + ', auto' : 'default';
+	};
+	
 	// load fa-hand-lizard-o as image
 	setTimeout(function() {
 		var canvas = document.createElement('canvas');
@@ -48,15 +54,7 @@
 		var map = evt.map;
 		var coordinate = evt.coordinate;
 
-		if (type == 'pointermove') {
-			// switch cursor
-			/*if (!this.cursorEnabled) {
-				var element = evt.map.getTargetElement();
-				element.style.cursor = this.pickerUrl + ', auto';
-				this.cursorEnabled = true;
-			}*/
-			return false;
-		} else if (type == 'pointerdown') {
+		if (type == 'pointerdown') {
 			var feature = this.feature = new ol.Feature();
 			this.dispatchEvent(new PickFeatureEvent('pickstart', coordinate, feature));
 			return false;
