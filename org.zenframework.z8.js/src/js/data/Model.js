@@ -181,6 +181,10 @@ Z8.define('Z8.data.Model', {
 		return this.query;
 	},
 
+	getPath: function() {
+		return Z8.isEmpty(this.query) ? '' : (this.query + '.');
+	},
+
 	getId: function() {
 		return this.id;
 	},

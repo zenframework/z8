@@ -182,6 +182,10 @@ Z8.define('Z8.data.Store', {
 		return this.getModel().prototype.getQuery();
 	},
 
+	getPath: function() {
+		return this.getModel().prototype.getPath();
+	},
+
 	getField: function(name) {
 		return this.getModel().prototype.getField(name);
 	},
