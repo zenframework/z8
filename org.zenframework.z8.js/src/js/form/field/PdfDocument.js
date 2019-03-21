@@ -9,6 +9,6 @@ Z8.define('Z8.form.field.PdfDocument', {
 	},
 
 	setSource: function(source) {
-		DOM.setProperty(this.document, 'src', source != null ? source + '&preview=true' : '');
+		DOM.setProperty(this.document, 'src', source != null ? (window._DEBUG_ ? '/' : '') + source + '&preview=true' : '');
 	}
 });
