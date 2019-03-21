@@ -7,6 +7,7 @@ import org.zenframework.z8.server.db.DatabaseVendor;
 import org.zenframework.z8.server.db.FieldType;
 import org.zenframework.z8.server.db.sql.FormatOptions;
 import org.zenframework.z8.server.db.sql.SqlToken;
+import org.zenframework.z8.server.db.sql.functions.conversion.ToString;
 import org.zenframework.z8.server.exceptions.db.UnknownDatabaseException;
 
 public class Array extends SqlToken {
@@ -30,6 +31,8 @@ public class Array extends SqlToken {
 			break;
 		case Postgres:
 			result = options.isOrderBy() ? "array_agg" : "json_agg";
+			if(token.type() == FieldType.Text)
+				token = new ToString(token);
 			break;
 		default:
 			throw new UnknownDatabaseException();
