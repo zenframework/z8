@@ -22,7 +22,7 @@
 }
 
 .air .control {
-	height: 1.78571429em;
+	height: auto;
 	min-height: 1.78571429em;
 	padding-left: .14285714em;
 	padding-bottom: 1px;
@@ -139,8 +139,13 @@
 	padding-right: 1.14285714em !important;
 }
 
-.air .label.tools {
-	margin-bootom: .14285714em;
+.air .control-group>.label.tools {
+	margin-bottom: .14285714em;
+}
+
+.air .control-group>.label.tools .label {
+	height: auto;
+	padding-top: 0;
 }
 
 .air .label.tools>.text {
@@ -191,7 +196,6 @@
 	border-left-width: 1px;
 	border-right-width: 1px;
 	border-top-width: 1px;
-	height: 2em;
 }
 
 .air .label.tools>.control-group.focus>.control,

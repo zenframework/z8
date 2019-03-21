@@ -1450,7 +1450,7 @@ textarea.input-lg {
 .btn-group,
 .btn-group-vertical {
 	display: flex;
-	align-items: center;
+	align-items: stretch;
 	position: relative;
 	vertical-align: middle
 }
