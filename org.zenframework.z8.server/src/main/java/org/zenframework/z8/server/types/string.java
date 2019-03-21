@@ -18,6 +18,8 @@ import org.zenframework.z8.server.types.sql.sql_string;
 public final class string extends primary {
 	private static final long serialVersionUID = 8678133849134310611L;
 
+	static public string Empty = new string();
+
 	private String value;
 
 	private Pattern pattern;
@@ -72,20 +74,12 @@ public final class string extends primary {
 		return getBytes(encoding.UTF8);
 	}
 
-	public void set(string str) {
+	private void set(string str) {
 		set(str != null ? str.value : null);
 	}
 
-	public void set(String str) {
+	private void set(String str) {
 		value = (str != null ? fromResources(str) : null);
-	}
-
-	public void concat(string s) {
-		concat(s.get());
-	}
-
-	public void concat(String s) {
-		value = get() + fromResources(s);
 	}
 
 	@Override

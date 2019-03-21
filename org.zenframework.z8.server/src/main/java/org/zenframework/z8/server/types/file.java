@@ -353,7 +353,7 @@ public class file extends primary implements RmiSerializable, Serializable {
 		try {
 			if(path.isEmpty()) {
 				set(createTempFile("txt"));
-				path.set(getRelativePath(path.get()));
+				path = new string(getRelativePath(path.get()));
 			}
 
 			File file = getAbsolutePath(path.get());
@@ -439,7 +439,7 @@ public class file extends primary implements RmiSerializable, Serializable {
 	public void operatorAssign(string path) {
 		File file = new File(path.get());
 
-		this.path.set(path.get());
+		this.path = path;
 
 		if(!file.isAbsolute())
 			file = getAbsolutePath(file);

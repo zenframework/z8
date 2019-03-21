@@ -1,7 +1,6 @@
 package org.zenframework.z8.server.base.table.value;
 
 import org.zenframework.z8.server.base.query.Query;
-import org.zenframework.z8.server.base.table.ITable;
 import org.zenframework.z8.server.db.sql.expressions.Equ;
 import org.zenframework.z8.server.json.Json;
 import org.zenframework.z8.server.json.JsonWriter;
@@ -44,17 +43,6 @@ public class LinkExpression extends GuidExpression implements ILink {
 	@Override
 	public Query getQuery() {
 		return query != null ? query.get() : null;
-	}
-
-	@Override
-	public ITable getReferencedTable() {
-		Query query = getQuery();
-		return query instanceof ITable ? (ITable)query : null;
-	}
-
-	@Override
-	public IField getReferer() {
-		return getQuery().primaryKey();
 	}
 
 	@Override

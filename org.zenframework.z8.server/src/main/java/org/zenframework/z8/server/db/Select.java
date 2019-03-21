@@ -267,11 +267,12 @@ public class Select {
 		String root = select != null ? "(" + select.sql(options) + ") " + select.getAlias() : null;
 
 		for(ILink link : links) {
-			String name = link.getQuery().name();
+			Query query = link.getQuery();
+			String name = query.name();
 
 			if(name != null) {
 				options.disableAggregation();
-				join += "\n\t" + link.getJoinType() + " join " + queryName(link.getQuery()) + " on " + link.on().format(vendor(), options, true);
+				join += "\n\t" + link.getJoinType() + " join " + queryName(query) + " on " + link.on().format(vendor(), options, true);
 				options.enableAggregation();
 			}
 		}

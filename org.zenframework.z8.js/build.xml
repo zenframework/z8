@@ -119,6 +119,7 @@
 				button/Tool.js,
 				button/GeometryTools.js,
 				button/File.js,
+				button/Report.js,
 				button/Group.js,
 				calendar/Markup.js,
 				calendar/Calendar.js,

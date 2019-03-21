@@ -57,7 +57,7 @@ public class Form extends Section {
 		super.writeMeta(writer, link != null ? link.getQuery() : this.query != null ? this.query.get() : query, context);
 
 		writer.startObject(Json.query);
-		writer.writeProperty(Json.id, this.query != null ? this.query.id() : query.id());
+		writer.writeProperty(Json.name, this.query != null ? this.query.id() : query.id());
 		writer.finishObject();
 	}
 }

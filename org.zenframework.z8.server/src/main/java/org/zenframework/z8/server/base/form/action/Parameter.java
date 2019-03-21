@@ -206,14 +206,14 @@ public class Parameter extends OBJECT implements IParameter {
 
 	static public Parameter.CLASS<? extends Parameter> z8_create(string name, primary value) {
 		Parameter.CLASS<Parameter> parameter = new Parameter.CLASS<Parameter>();
-		parameter.get().text.set(name);
+		parameter.get().text = name;
 		parameter.get().value = value;
 		return parameter;
 	}
 
 	static public Parameter.CLASS<? extends Parameter> z8_create(string name, FieldType type) {
 		Parameter.CLASS<Parameter> parameter = new Parameter.CLASS<Parameter>();
-		parameter.get().text.set(name);
+		parameter.get().text = name;
 		parameter.get().type = type;
 		return parameter;
 	}

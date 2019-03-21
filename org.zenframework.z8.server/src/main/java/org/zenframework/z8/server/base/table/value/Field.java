@@ -405,7 +405,7 @@ abstract public class Field extends Control implements IField {
 			writer.startObject(Json.link);
 			writer.writeProperty(Json.name, firstLink.id());
 			writer.writeProperty(Json.owner, lastLink.id());
-			writer.writeProperty(Json.isBackward, firstLink instanceof IJoin);
+			writer.writeProperty(Json.isJoined, firstLink instanceof IJoin);
 			writer.writeProperty(Json.primaryKey, linkQuery.primaryKey().id());
 			if(firstLink.isParentKey()) {
 				writer.writeProperty(Json.isParentKey, true);

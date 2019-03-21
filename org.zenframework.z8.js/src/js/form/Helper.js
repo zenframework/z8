@@ -27,6 +27,9 @@ Z8.define('Z8.form.Helper', {
 			if(field.format != null)
 				config.format = field.format;
 
+			if(field.selector != null)
+				config.selector = field.selector;
+
 			var cls = Application.getSubclass(field.ui);
 
 			if(field.isCombobox) {
@@ -36,7 +39,7 @@ Z8.define('Z8.form.Helper', {
 				config.fields = [field].add(field.columns || []);
 				config.name = link != null ? link.name : field.name;
 				config.checks = false;
-				config.pagerMode = 'visible';
+				config.pagerMode = field.pagerMode !== undefined ? field.pagerMode : 'visible';
 				return cls != null ? Z8.create(cls, config) : (field.isSearch ? new Z8.form.field.SearchCombobox(config) : new Z8.form.field.Combobox(config));
 			}
 
@@ -45,9 +48,9 @@ Z8.define('Z8.form.Helper', {
 				config.store = this.storeConfig(field);
 				config.query = query;
 				config.fields = query.columns;
-				config.tools = true;
-				config.pagerMode = 'visible';
-				config.checks = Application.listbox.checks !== false;
+				config.tools = field.tools !== undefined ? field.tools : true;
+				config.pagerMode = field.pagerMode !== undefined ? field.pagerMode : 'visible';
+				config.checks = field.checks !== undefined ? field.checks : Application.listbox.checks !== false;
 				config.locks = Application.listbox.locks !== false && query.lockKey != null;
 				config.totals = query.totals;
 				config.minHeight = Ems.unitsToEms(field.height || 5);

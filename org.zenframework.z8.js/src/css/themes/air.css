@@ -139,6 +139,10 @@
 	padding-right: 1.14285714em !important;
 }
 
+.air .label.tools {
+	margin-bootom: .14285714em;
+}
+
 .air .label.tools>.text {
 	float: left;
 	max-width: calc(100% - 5.71428571em);

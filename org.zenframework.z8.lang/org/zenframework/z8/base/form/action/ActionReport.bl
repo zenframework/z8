@@ -1,0 +1,6 @@
+import org.zenframework.z8.base.form.report.Report;
+
+[native "org.zenframework.z8.server.base.form.action.ActionReport"]
+public class ActionReport extends Action {
+	public Report report;
+}

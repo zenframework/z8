@@ -4,6 +4,7 @@ import org.zenframework.z8.server.types.string;
 
 public interface Json {
 	static public string id = new string("id");
+	static public string hash = new string("#");
 	static public string name = new string("name");
 	static public string displayName = new string("displayName");
 	static public string index = new string("index");
@@ -45,6 +46,7 @@ public interface Json {
 	static public string isSection = new string("isSection");
 	static public string isFieldset = new string("isFieldset");
 	static public string isListbox = new string("isListbox");
+	static public string isSelector = new string("isSelector");
 	static public string isCombobox = new string("isCombobox");
 	static public string isText = new string("isText");
 	static public string isTab = new string("isTab");
@@ -103,7 +105,7 @@ public interface Json {
 
 	static public string link = new string("link");
 	static public string isLink = new string("isLink");
-	static public string isBackward = new string("isBackward");
+	static public string isJoined = new string("isJoined");
 
 	static public string key = new string("key");
 	static public string field = new string("field");
@@ -204,6 +206,7 @@ public interface Json {
 	static public string commands = new string("commands");
 	static public string parameters = new string("parameters");
 	static public string reports = new string("reports");
+	static public string selector = new string("selector");
 
 	static public string access = new string("access");
 	static public string read = new string("read");

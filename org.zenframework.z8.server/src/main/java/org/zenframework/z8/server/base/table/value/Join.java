@@ -1,7 +1,6 @@
 package org.zenframework.z8.server.base.table.value;
 
 import org.zenframework.z8.server.base.query.Query;
-import org.zenframework.z8.server.base.table.ITable;
 import org.zenframework.z8.server.json.JsonWriter;
 import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.types.sql.sql_bool;
@@ -41,17 +40,6 @@ public class Join extends Expression implements IJoin {
 	@Override
 	public Query getQuery() {
 		return query != null ? query.get() : null;
-	}
-
-	@Override
-	public ITable getReferencedTable() {
-		Query query = getQuery();
-		return query instanceof ITable ? (ITable)query : null;
-	}
-
-	@Override
-	public IField getReferer() {
-		return getQuery().primaryKey();
 	}
 
 	@Override

@@ -34,6 +34,8 @@ public class Listbox extends Control {
 	public RCollection<Field.CLASS<? extends Field>> sortFields = new RCollection<Field.CLASS<? extends Field>>();
 	public RCollection<Action.CLASS<? extends Action>> actions = new RCollection<Action.CLASS<? extends Action>>();
 
+	public Selector.CLASS<? extends Selector> selector = new Selector.CLASS<Selector>(this);
+
 	public Listbox(IObject container) {
 		super(container);
 		this.editable = bool.True;
@@ -113,5 +115,12 @@ public class Listbox extends Control {
 		}
 
 		writer.finishObject();
+
+		Selector selector = this.selector.get();
+		if(selector.link != null && !selector.columns.isEmpty()) {
+			writer.startObject(Json.selector);
+			selector.writeMeta(writer, requestQuery, context);
+			writer.finishObject();
+		}
 	}
 }

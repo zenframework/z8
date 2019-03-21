@@ -48,7 +48,7 @@ Z8.define('Z8.form.Form', {
 	},
 
 	getQuery: function() {
-		return this.query != null ? this.query.id : null;
+		return this.query != null ? this.query.name : null;
 	},
 
 	initControl: function(control, container) {

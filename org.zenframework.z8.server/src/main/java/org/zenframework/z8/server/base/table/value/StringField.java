@@ -69,6 +69,11 @@ public class StringField extends Field {
 	}
 
 	@Override
+	protected primary getNullValue() {
+		return string.Empty;
+	}
+
+	@Override
 	public primary get() {
 		return z8_get();
 	}

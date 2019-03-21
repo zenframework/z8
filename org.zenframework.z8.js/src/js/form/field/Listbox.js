@@ -278,7 +278,7 @@ Z8.define('Z8.form.field.Listbox', {
 	},
 
 	subcomponents: function() {
-		return this.callParent().add([this.list, this.pager, this.selector, this.actions]);
+		return this.callParent().add([this.list, this.pager, this.selectorDlg, this.actions]);
 	},
 
 	htmlMarkup: function() {
@@ -460,7 +460,8 @@ Z8.define('Z8.form.field.Listbox', {
 		for(var i = 0, length = actions.length; i < length; i++) {
 			var action = actions[i];
 			var type = action.type;
-			var button = new Z8.button.Button({ name: action.id, text: action.text, tooltip: action.description, icon: action.icon, action: action, primary: type == 'primary', success: type == 'success', danger: type == 'danger', handler: this.onAction, scope: this });
+			var config = { name: action.id, text: action.text, tooltip: action.description, icon: action.icon, action: action, primary: type == 'primary', success: type == 'success', danger: type == 'danger', handler: this.onAction, scope: this };
+			var button = action.report ? new Z8.button.Report(config) : new Z8.button.Button(config);
 			buttons.push(button);
 		}
 
@@ -632,43 +633,50 @@ Z8.define('Z8.form.field.Listbox', {
 		return false;
 	},
 
-	getSelectorQuery: function(fields) {
+	getSelectorConfig: function() {
 		var linkedField = null;
-		var displayFields = [];
+		var columns = [];
 		var myLink = this.getLink();
+		var fields = this.query.columns;
 
 		for(var i = 0, length = fields.length; i < length; i++) {
 			var field = fields[i];
 			if(field.isCombobox) {
-				if(!field.link.isBackward && field.link.name != myLink) {
-					if(linkedField != null && field.link.name != linkedField.link.name)
+				if(!field.link.isJoined && field.link.name != myLink) {
+					if(linkedField != null && field.link.name != linkedField.name)
 						return null;
 					linkedField = field;
 				}
 				if(field.link.name != myLink)
-					displayFields.push(field);
+					columns.push(field);
 			}
 		}
 
 		if(linkedField == null)
 			return null;
 
-		return { id: this.query.id, name: linkedField.query.name, link: linkedField.link.name, primaryKey: linkedField.link.primaryKey, fields: displayFields, label: { text: linkedField.header, icon: linkedField.icon } };
+		return { link: { name: linkedField.link.name, query: { name: linkedField.query.name, primaryKey: linkedField.link.primaryKey }}, columns: columns };
 	},
 
 	createRecordsSelector: function() {
-		var query = this.query;
+		var selector = this.selector;
 
-		if(this.query == null)
+		if(selector == null) {
+			if(this.query == null)
+				return null;
+			selector = this.selector = this.getSelectorConfig();
+		}
+
+		if(selector == null)
 			return null;
 
-		query = this.getSelectorQuery(this.query.columns);
+		var link = selector.link;
+		var query = link.query;
+		var columns = selector.columns;
 
-		if(query == null)
-			return null;
-
-		var store = Z8.form.Helper.storeConfig({ isListbox: true, query: { id: query.id, name: query.name, fields: query.fields, primaryKey: null }, values: this.getValues() });
-		return new Z8.form.field.Listbox({ primaryKey: query.primaryKey, name: query.link, fields: query.fields, label: query.label, store: store, tools: false, pagerMode: 'visible', checks: true, flex: 1 });
+		var config = { isListbox: true, label: false, tools: false, pagerMode: 'visible', checks: true, flex: 1, values: this.getValues() };
+		Z8.apply(config, { name: link.name, query: { id: this.query.id, name: query.name, fields: columns, sort: selector.sort, columns: columns, primaryKey: null } });
+		return Z8.form.Helper.createControl(config);
 	},
 
 	newRecord: function() {
@@ -696,15 +704,15 @@ Z8.define('Z8.form.field.Listbox', {
 
 				this.fireEvent('recordCreated', this, records);
 
-				if(this.selector != null || !this.startEdit(record, 0))
+				if(this.selectorDlg != null || !this.startEdit(record, 0))
 					this.focus();
 			}
 
-			if(this.selector != null) {
+			if(this.selectorDlg != null) {
 				if(success)
 					this.closeSelector();
 				else
-					this.selector.setBusy(false);
+					this.selectorDlg.setBusy(false);
 			}
 
 			Z8.callback(callback, records, success);
@@ -715,8 +723,8 @@ Z8.define('Z8.form.field.Listbox', {
 	},
 
 	closeSelector: function() {
-		this.selector.close();
-		this.selector = null;
+		this.selectorDlg.close();
+		this.selectorDlg = null;
 	},
 
 	onAddRecord: function(button) {
@@ -766,7 +774,7 @@ Z8.define('Z8.form.field.Listbox', {
 				var checked = listbox.getChecked();
 				var name = listbox.name;
 				var valueFromFields = this.getValueFromFields();
-				var primaryKey = listbox.primaryKey;
+				var primaryKey = this.selector.link.query.primaryKey;
 
 				for(var i = 0, length = checked.length; i < length; i++) {
 					var record = this.newRecord();
@@ -784,8 +792,8 @@ Z8.define('Z8.form.field.Listbox', {
 				this.createRecords(records);
 			};
 
-			this.selector = new Z8.window.Window({ header: this.query.text, icon: 'fa-plus-circle', autoClose: false, controls: [selector], selector: selector, handler: addRecordCallback, scope: this });
-			this.selector.open();
+			this.selectorDlg = new Z8.window.Window({ header: this.query.text, icon: 'fa-plus-circle', autoClose: false, controls: [selector], selector: selector, handler: addRecordCallback, scope: this });
+			this.selectorDlg.open();
 		};
 
 		selector.store.load({ fn: loadCallback, scope: this });

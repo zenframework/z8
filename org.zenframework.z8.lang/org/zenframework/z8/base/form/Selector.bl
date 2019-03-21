@@ -1,0 +1,12 @@
+import org.zenframework.z8.base.table.value.Field;
+import org.zenframework.z8.base.table.value.Link;
+import org.zenframework.z8.lang.Object;
+
+public class Selector extends Object {
+	public Link link;
+	public Field[] columns;
+	public Field[] sortFields;
+
+	public Field[][Field] inFields;
+	public Field[][Field] outFields;
+}

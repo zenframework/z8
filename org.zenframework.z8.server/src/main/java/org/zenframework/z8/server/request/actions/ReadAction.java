@@ -55,8 +55,6 @@ public class ReadAction extends RequestAction {
 	private Map<Field, Collection<Query>> fieldToQueries = new LinkedHashMap<Field, Collection<Query>>();
 	private Map<Query, Collection<ILink>> queryToPath = new LinkedHashMap<Query, Collection<ILink>>();
 
-	protected Collection<Query> joinedQueries = new LinkedHashSet<Query>();
-
 	protected Collection<Field> selectFields = new LinkedHashSet<Field>();
 	protected Collection<Field> groupFields = new LinkedHashSet<Field>();
 	protected Collection<Field> sortFields = new LinkedHashSet<Field>();
@@ -308,12 +306,7 @@ public class ReadAction extends RequestAction {
 
 	private Collection<ILink> getPath(Field field) {
 		Query owner = field.owner();
-		if(owner != null) {
-			Collection<ILink> path = getQuery().getPath(owner);
-			if(path != null && !path.isEmpty())
-				return getPath(owner);
-		}
-		return new ArrayList<ILink>();
+		return owner != null ? getPath(owner) : new ArrayList<ILink>();
 	}
 
 	private Collection<ILink> getPath(Query query) {
@@ -345,12 +338,6 @@ public class ReadAction extends RequestAction {
 						queries.add(owner);
 						links.addAll(getPath(owner, queries));
 					}
-				}
-
-				if(link instanceof IJoin) {
-					Query joinedQuery = link.getQuery();
-					joinedQueries.add(joinedQuery);
-					selectFields.add(joinedQuery.primaryKey());
 				}
 			}
 
@@ -392,6 +379,7 @@ public class ReadAction extends RequestAction {
 	private Field addSelectField(Field field) {
 		if(field == null)
 			return null;
+		
 		selectFields.add(field);
 
 		if(hasPrimaryKey()) {
@@ -680,13 +668,8 @@ public class ReadAction extends RequestAction {
 		}
 	}
 
-	public void readAndWriteData(JsonWriter writer) {
-		Select cursor = getCursor();
-		writeData(getCursor(), writer);
-		cursor.close();
-	}
 
-	private void writeData(Select cursor, JsonWriter writer) {
+	public void writeData(Select cursor, JsonWriter writer) {
 		if(primaryKey != null)
 			primaryKey.setWriteNulls(false);
 

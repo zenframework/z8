@@ -29,4 +29,6 @@ public class Listbox extends Control {
 	public Field[] columns;
 	public Field[] sortFields;
 	public Action[] actions;
+
+	public Selector selector;
 }
