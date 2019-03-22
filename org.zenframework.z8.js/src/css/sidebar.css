@@ -16,9 +16,9 @@
 .viewport>.menu>.handle {
 width: .71428571em;
 	position: absolute;
-	height: 11em;
-	top: calc(50% - 5em);
-	padding-top: 5em;
+	height: 25%;
+	top: 37.5%;
+	padding-top: 70%;
 	right: 0;
 	color: #aaa;
 	text-align: center;

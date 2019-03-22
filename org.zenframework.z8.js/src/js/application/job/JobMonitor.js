@@ -56,6 +56,9 @@ Z8.define('Z8.application.job.JobMonitor', {
 		this.store.add(record);
 
 		var callback = function(job, data, success) {
+			if(this.disposed)
+				return;
+
 			if(success) {
 				record.beginEdit();
 				record.set('percent', data.worked);
