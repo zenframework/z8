@@ -103,6 +103,8 @@ public class DataMessage extends Message {
 
 		for(file file : getSource().files()) {
 			FileMessage fileMessage = FileMessage.newInstance();
+			fileMessage.setName(file.name.get());
+			fileMessage.setDescription(file.json.toString());
 			fileMessage.setSourceId(getId());
 			fileMessage.setAddress(getAddress());
 			fileMessage.setSender(getSender());
@@ -111,6 +113,8 @@ public class DataMessage extends Message {
 		}
 
 		DataMessage dataMessage = (DataMessage)getCLASS().newInstance();
+		dataMessage.setName(getName());
+		dataMessage.setDescription(getDescription());
 		dataMessage.setSourceId(getId());
 		dataMessage.setAddress(getAddress());
 		dataMessage.setSender(getSender());

@@ -12,6 +12,7 @@ import org.zenframework.z8.server.base.table.value.Field;
 import org.zenframework.z8.server.base.table.value.IntegerField;
 import org.zenframework.z8.server.base.table.value.Sequencer;
 import org.zenframework.z8.server.base.table.value.StringField;
+import org.zenframework.z8.server.base.table.value.TextField;
 import org.zenframework.z8.server.db.sql.SqlToken;
 import org.zenframework.z8.server.db.sql.expressions.And;
 import org.zenframework.z8.server.db.sql.expressions.Equ;
@@ -37,10 +38,13 @@ public class TransportQueue extends Table {
 		static public String Data = "Data";
 		static public String BytesTransferred = "BytesTransferred";
 		static public String Processed = "Processed";
+		static public String Result = "Result";
 	}
 
 	static public class strings {
 		public static String Title = "TransportQueue.title";
+		public static String Name = "TransportQueue.name";
+		public static String Description = "TransportQueue.description";
 		public static String Sender = "TransportQueue.sender";
 		public static String Address = "TransportQueue.address";
 		public static String Info = "TransportQueue.info";
@@ -52,6 +56,8 @@ public class TransportQueue extends Table {
 
 	static public class displayNames {
 		public static String Title = Resources.get(strings.Title);
+		public static String Name = Resources.get(strings.Name);
+		public static String Description = Resources.get(strings.Description);
 		public static String Sender = Resources.get(strings.Sender);
 		public static String Address = Resources.get(strings.Address);
 		public static String Info = Resources.get(strings.Info);
@@ -87,6 +93,7 @@ public class TransportQueue extends Table {
 	public BinaryField.CLASS<BinaryField> data = new BinaryField.CLASS<BinaryField>(this);
 	public IntegerField.CLASS<IntegerField> bytesTransferred = new IntegerField.CLASS<IntegerField>(this);
 	public BoolField.CLASS<BoolField> processed = new BoolField.CLASS<BoolField>(this);
+	public TextField.CLASS<TextField> result = new TextField.CLASS<TextField>(this);
 
 	static public TransportQueue newInstance() {
 		return new TransportQueue.CLASS<TransportQueue>().get();
@@ -107,13 +114,17 @@ public class TransportQueue extends Table {
 		objects.add(data);
 		objects.add(bytesTransferred);
 		objects.add(processed);
+		objects.add(result);
 	}
 
 	@Override
 	public void constructor2() {
 		super.constructor2();
 
+		name.get().setDisplayName(displayNames.Name);
 		name.get().length = new integer(100);
+
+		description.get().setDisplayName(displayNames.Description);
 
 		sender.setName(fieldNames.Sender);
 		sender.setIndex("sender");
@@ -125,7 +136,9 @@ public class TransportQueue extends Table {
 		address.setDisplayName(displayNames.Address);
 		address.get().length = new integer(50);
 
-		description.setDisplayName(displayNames.Result);
+		result.setName(fieldNames.Result);
+		result.setIndex("result");
+		result.setDisplayName(displayNames.Result);
 
 		ordinal.setName(fieldNames.Ordinal);
 		ordinal.setIndex("ordinal");
@@ -164,12 +177,12 @@ public class TransportQueue extends Table {
 
 	public void setBytesTrasferred(guid id, long bytes) {
 		bytesTransferred.get().set(new integer(bytes));
-		description.get().set(new string());
+		result.get().set(new string());
 		update(id);
 	}
 
 	public void setInfo(guid id, String info) {
-		description.get().set(new string(info));
+		result.get().set(new string(info));
 		update(id);
 	}
 

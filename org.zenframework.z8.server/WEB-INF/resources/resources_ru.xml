@@ -50,6 +50,8 @@
 
 	<!-- MessageQueue -->
 	<entry key="MessagesQueue.title">Очередь сообщений</entry>
+	<entry key="MessagesQueue.name">Сообщение</entry>
+	<entry key="MessagesQueue.description">Описание</entry>
 	<entry key="MessagesQueue.sender">Отправитель</entry>
 	<entry key="MessagesQueue.address">Получатель</entry>
 	<entry key="MessagesQueue.ordinal">Номер</entry>
@@ -57,12 +59,14 @@
 
 	<!-- TransportQueue -->
 	<entry key="TransportQueue.title">Очередь отправки</entry>
+	<entry key="TransportQueue.name">Сообщение</entry>
+	<entry key="TransportQueue.description">Описание</entry>
 	<entry key="TransportQueue.sender">Отправитель</entry>
 	<entry key="TransportQueue.address">Получатель</entry>
 	<entry key="TransportQueue.result">Результат</entry>
 	<entry key="TransportQueue.ordinal">Номер</entry>
 	<entry key="TransportQueue.processed">Обработано</entry>
-	<entry key="TransportQueue.bytesTransferred">Bytes sent</entry>
+	<entry key="TransportQueue.bytesTransferred">Отправлено, Б</entry>
 
 	<!-- Tables -->
 	<entry key="Tables.title">Таблицы</entry>

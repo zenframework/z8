@@ -40,6 +40,8 @@ public class MessageQueue extends Table {
 
 	static public class strings {
 		static public String Title = "MessagesQueue.title";
+		public static String Name = "MessagesQueue.name";
+		public static String Description = "MessagesQueue.description";
 		static public String Sender = "MessagesQueue.sender";
 		static public String Address = "MessagesQueue.address";
 		static public String Ordinal = "MessagesQueue.ordinal";
@@ -48,6 +50,8 @@ public class MessageQueue extends Table {
 
 	static public class displayNames {
 		static public String Title = Resources.get(strings.Title);
+		public static String Name = Resources.get(strings.Name);
+		public static String Description = Resources.get(strings.Description);
 		static public String Sender = Resources.get(strings.Sender);
 		static public String Address = Resources.get(strings.Address);
 		static public String Ordinal = Resources.get(strings.Ordinal);
@@ -104,7 +108,10 @@ public class MessageQueue extends Table {
 	public void constructor2() {
 		super.constructor2();
 
+		name.get().setDisplayName(displayNames.Name);
 		name.get().length = new integer(100);
+
+		description.get().setDisplayName(displayNames.Description);
 
 		sender.setName(fieldNames.Sender);
 		sender.setIndex("sender");

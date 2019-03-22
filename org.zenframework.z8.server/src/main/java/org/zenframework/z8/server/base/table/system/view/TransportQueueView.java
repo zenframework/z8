@@ -45,8 +45,12 @@ public class TransportQueueView extends TransportQueue {
 		processed.get().colSpan = new integer(2);
 		registerControl(processed);
 
+		name.get().colSpan = new integer(12);
+		registerControl(name);
 		description.get().colSpan = new integer(12);
 		registerControl(description);
+		result.get().colSpan = new integer(12);
+		registerControl(result);
 
 		sortFields.add(address);
 		sortFields.add(ordinal);
