@@ -5,6 +5,8 @@ import org.zenframework.z8.base.table.value.Field;
 public class DataMessage extends Message {
 	public static final string RecordId = "message.recordId";
 
+	public void setName(string name);
+	
 	public string getType();
 	public void setType(string type);
 

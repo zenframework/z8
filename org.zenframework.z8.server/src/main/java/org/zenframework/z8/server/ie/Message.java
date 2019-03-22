@@ -55,6 +55,8 @@ abstract public class Message extends OBJECT implements RmiSerializable, Seriali
 
 	private guid id = guid.Null;
 	private guid sourceId = guid.Null;
+	private String name;
+	private String description;
 	private String sender;
 	private String address;
 
@@ -70,6 +72,8 @@ abstract public class Message extends OBJECT implements RmiSerializable, Seriali
 
 	abstract protected boolean apply();
 
+	abstract protected void initDescription();
+	
 	public Message(IObject container) {
 		super(container);
 	}
@@ -82,6 +86,22 @@ abstract public class Message extends OBJECT implements RmiSerializable, Seriali
 		this.id = id;
 	}
 
+	public String getName() {
+		return name;
+	}
+	
+	public void setName(String name) {
+		this.name = name;
+	}
+	
+	public String getDescription() {
+		return description;
+	}
+	
+	public void setDescription(String description) {
+		this.description = description;
+	}
+	
 	public guid getSourceId() {
 		return sourceId;
 	}
@@ -207,6 +227,7 @@ abstract public class Message extends OBJECT implements RmiSerializable, Seriali
 
 		if(sender == null || sender.isEmpty())
 			setSender(Domains.DefaultDomain.get());
+		initDescription();
 
 		ConnectionManager.get().flush();
 

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 
+import org.apache.commons.lang.StringUtils;
 import org.zenframework.z8.server.base.table.Table;
 import org.zenframework.z8.server.base.table.value.BinaryField;
 import org.zenframework.z8.server.base.table.value.BoolField;
@@ -112,6 +113,8 @@ public class TransportQueue extends Table {
 	public void constructor2() {
 		super.constructor2();
 
+		name.get().length = new integer(100);
+
 		sender.setName(fieldNames.Sender);
 		sender.setIndex("sender");
 		sender.setDisplayName(displayNames.Sender);
@@ -145,6 +148,8 @@ public class TransportQueue extends Table {
 	}
 
 	public void add(Message message) {
+		name.get().set(StringUtils.left(message.getName(), name.get().length.getInt()));
+		description.get().set(message.getDescription());
 		sender.get().set(new string(message.getSender()));
 		address.get().set(new string(message.getAddress()));
 		ordinal.get().set(new integer(Sequencer.next(message.getAddress() + ".transport")));

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 
+import org.apache.commons.lang.StringUtils;
 import org.zenframework.z8.server.base.table.Table;
 import org.zenframework.z8.server.base.table.value.BinaryField;
 import org.zenframework.z8.server.base.table.value.BoolField;
@@ -103,6 +104,8 @@ public class MessageQueue extends Table {
 	public void constructor2() {
 		super.constructor2();
 
+		name.get().length = new integer(100);
+
 		sender.setName(fieldNames.Sender);
 		sender.setIndex("sender");
 		sender.setDisplayName(displayNames.Sender);
@@ -130,6 +133,8 @@ public class MessageQueue extends Table {
 	}
 
 	public void add(Message message) {
+		name.get().set(StringUtils.left(message.getName(), name.get().length.getInt()));
+		description.get().set(message.getDescription());
 		sender.get().set(new string(message.getSender()));
 		address.get().set(new string(message.getAddress()));
 		ordinal.get().set(new integer(Sequencer.next(message.getAddress() + ".message")));
@@ -156,12 +161,14 @@ public class MessageQueue extends Table {
 	public Collection<Message> getMessages(String domain) {
 		Collection<Message> result = new ArrayList<Message>();
 
+		Field name = this.name.get();
+		Field description = this.description.get();
 		Field address = this.address.get();
 		Field processing = this.processing.get();
 		Field data = this.data.get();
 		Field classId = this.classId.get();
 
-		Collection<Field> fields = Arrays.<Field>asList(data, classId);
+		Collection<Field> fields = Arrays.<Field>asList(name, description, data, classId);
 		Collection<Field> orderBy = Arrays.<Field>asList(ordinal.get());
 
 		SqlToken where = new And(new IsNot(processing), new Equ(address, domain));
@@ -170,6 +177,8 @@ public class MessageQueue extends Table {
 
 		while(next()) {
 			Message message = (Message)Loader.getInstance(classId.string().get());
+			message.setName(name.get().toString());
+			message.setDescription(description.get().toString());
 			message.fromBinary(data.binary());
 			message.setId(recordId());
 			result.add(message);
