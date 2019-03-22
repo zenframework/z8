@@ -56,8 +56,8 @@ public abstract class Adapter {
 	}
 
 	public void service(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
+		HttpSession httpSession = useContainerSession ? request.getSession() : null;
 		try {
-			HttpSession httpSession = useContainerSession ? request.getSession() : null;
 			ISession session = null;
 
 			Map<String, String> parameters = new HashMap<String, String>();
@@ -86,6 +86,8 @@ public abstract class Adapter {
 
 			service(session, parameters, files, request, response);
 		} catch(AccessDeniedException e) {
+			if (httpSession != null)
+				httpSession.invalidate();
 			processAccessDenied(response);
 		} catch(NoSuchObjectException e) {
 			processAccessDenied(response);
