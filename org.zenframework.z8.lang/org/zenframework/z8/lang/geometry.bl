@@ -54,7 +54,8 @@ public final class geometry extends primary {
 	static public geometry point(decimal x, decimal y, int srs);
 	static public geometry line(geometry[] points);
 	static public geometry multiLine(geometry[] lines);
-	static public geometry polygon(geometry[] points);
+	static public geometry ring(geometry[] points);
+	static public geometry polygon(geometry[] rings);
 	static public geometry collection(geometry[] geometries);
 
 	static public geometry pointOnLine(geometry line, decimal distance);

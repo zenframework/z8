@@ -412,8 +412,13 @@ public final class geometry extends primary {
 	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	static public geometry z8_polygon(RCollection points) {
-		return new geometry(points, polygon, points == null || points.isEmpty() ? DefaultSRS.getInt() : ((geometry) points.get(0)).srs());
+	static public geometry z8_ring(RCollection points) {
+		return new geometry(points, ring, points == null || points.isEmpty() ? DefaultSRS.getInt() : ((geometry) points.get(0)).srs());
+	}
+
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	static public geometry z8_polygon(RCollection rings) {
+		return new geometry(rings, polygon, rings == null || rings.isEmpty() ? DefaultSRS.getInt() : ((geometry) rings.get(0)).srs());
 	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
