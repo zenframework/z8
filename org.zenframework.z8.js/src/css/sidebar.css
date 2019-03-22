@@ -14,9 +14,11 @@
 }
 
 .viewport>.menu>.handle {
-	width: .71428571em;
+width: .71428571em;
 	position: absolute;
-	top: 50%;
+	height: 11em;
+	top: calc(50% - 5em);
+	padding-top: 5em;
 	right: 0;
 	color: #aaa;
 	text-align: center;
@@ -34,7 +36,7 @@
 	left: -13.57142857em;
 }
 
-.viewport>.menu:hover>.handle,
+/*.viewport>.menu:hover>.handle,*/
 .viewport>.menu.open>.handle {
 	display: none;
 }

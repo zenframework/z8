@@ -329,7 +329,7 @@ Z8.define('Z8.form.field.Combobox', {
 			this.lastQuery = text;
 
 			var callback = function(store, records, success) {
-				if(success) {
+				if(success && !this.disposed) {
 					var item = this.findItem(text);
 					this.dropdown.selectItem(item);
 					this.showDropdown(true);
@@ -460,7 +460,7 @@ Z8.define('Z8.form.field.Combobox', {
 
 	openDropdown: function() {
 		var callback = function(store, records, success) {
-			if(success)
+			if(success && !this.disposed)
 				this.showDropdown();
 		};
 

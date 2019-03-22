@@ -20,6 +20,9 @@ Z8.define('Z8.application.sidebar.Sidebar', {
 
 	completeRender: function() {
 		this.callParent();
+
+		this.handle = DOM.selectNode('.handle');
+
 		DOM.on(this, 'focus', this.onFocus, this, true);
 		DOM.on(this, 'blur', this.onBlur, this, true);
 		DOM.on(this, 'mouseOver', this.onMouseOver, this);
@@ -100,7 +103,7 @@ Z8.define('Z8.application.sidebar.Sidebar', {
 	},
 
 	onMouseOver: function(event, target) {
-		if(!this.isOpen)
+		if(!this.isOpen && target == this.handle)
 			this.open();
 	},
 

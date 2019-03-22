@@ -226,9 +226,7 @@ Z8.define('Z8.application.viewport.Viewport', {
 		if(index == -1)
 			return;
 
-		index--;
-		form = index != 0 ? forms[index] : null;
-
+		form = forms[Math.max(index - 1, 0)];
 		this.openForm(form);
 	},
 
