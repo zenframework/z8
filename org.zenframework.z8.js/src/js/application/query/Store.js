@@ -42,8 +42,6 @@ Z8.define('Z8.query.Store', {
 			config.sort = (isListbox || isCombobox) ? query.sort : null;
 			config.values = field.values;
 			config.access = query.access;
-			config.remoteFilter = field.remoteFilter !== false;
-			config.remoteSort = field.remoteSort !== false;
 
 			return config;
 		}
@@ -105,9 +103,6 @@ Z8.define('Z8.query.Store', {
 			period: config.period,
 			sorter: config.sort,
 			values: config.values,
-
-			remoteSort: config.remoteSort,
-			remoteFilter: config.remoteFilter,
 
 			params: config.params,
 			form: form
