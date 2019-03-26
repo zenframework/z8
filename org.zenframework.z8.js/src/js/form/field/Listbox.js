@@ -189,7 +189,8 @@ Z8.define('Z8.form.field.Listbox', {
 		if(!this.hasLink())
 			return null;
 
-		var filter = this.getDependencyWhere(this.getLink(), record.id);
+		var dependsOnValue = this.hasDependsOnField() ? record.get(this.getDependsOnField()) : record.id;
+		var filter = this.getDependencyWhere(this.getLink(), dependsOnValue);
 
 		filter = Array.isArray(filter) ? filter : (filter != null ? [filter] : []);
 
