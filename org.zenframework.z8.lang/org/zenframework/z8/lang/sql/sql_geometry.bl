@@ -22,6 +22,8 @@ public final class sql_geometry extends sql_primary {
 	public sql_geometry homogenize();
 	public sql_geometry interpolatePoint(sql_decimal fraction);
 	public sql_geometry buffer(sql_decimal radius);
+	public sql_bool isValid();
+	public sql_geometry makeValid();
 	public sql_string asGeoJSON();
 	
 	public static sql_geometry point(sql_decimal x, sql_decimal y, sql_int srs);

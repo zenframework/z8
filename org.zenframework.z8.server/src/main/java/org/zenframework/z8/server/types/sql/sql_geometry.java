@@ -18,7 +18,9 @@ import org.zenframework.z8.server.db.sql.functions.geometry.GeometryType;
 import org.zenframework.z8.server.db.sql.functions.geometry.Homogenize;
 import org.zenframework.z8.server.db.sql.functions.geometry.InterpolatePoint;
 import org.zenframework.z8.server.db.sql.functions.geometry.Intersection;
+import org.zenframework.z8.server.db.sql.functions.geometry.IsValid;
 import org.zenframework.z8.server.db.sql.functions.geometry.Length;
+import org.zenframework.z8.server.db.sql.functions.geometry.MakeValid;
 import org.zenframework.z8.server.db.sql.functions.geometry.Point;
 import org.zenframework.z8.server.db.sql.functions.geometry.Split;
 import org.zenframework.z8.server.db.sql.functions.geometry.StartPoint;
@@ -117,6 +119,14 @@ public class sql_geometry extends sql_primary {
 	
 	public sql_geometry z8_buffer(sql_decimal radius) {
 		return new sql_geometry(new Buffer(this, radius));
+	}
+	
+	public sql_bool z8_isValid() {
+		return new sql_bool(new IsValid(this));
+	}
+	
+	public sql_geometry z8_makeValid() {
+		return new sql_geometry(new MakeValid(this));
 	}
 	
 	public sql_string z8_asGeoJSON() {
