@@ -44,6 +44,7 @@ public class AuthorityCenter extends HubServer implements IAuthorityCenter {
 	private final String ldapDefaultDomain;
 	private Collection<String> ldapUsersIgnore;
 	private boolean ldapUsersCreateOnSuccessfulLogin;
+	private boolean cacheEnabled;
 
 	private SessionManager sessionManager;
 
@@ -62,6 +63,7 @@ public class AuthorityCenter extends HubServer implements IAuthorityCenter {
 		ldapDefaultDomain = ServerConfig.ldapDefaultDomain();
 		ldapUsersIgnore = ServerConfig.ldapUsersIgnore();
 		ldapUsersCreateOnSuccessfulLogin = ServerConfig.ldapUsersCreateOnSuccessfulLogin();
+		cacheEnabled = ServerConfig.authorityCenterCache();
 	}
 
 	@Override
@@ -206,7 +208,7 @@ public class AuthorityCenter extends HubServer implements IAuthorityCenter {
 
 	@Override
 	protected File cacheFile() {
-		return new File(Folders.Base, serversCache);
+		return cacheEnabled ? new File(Folders.Base, serversCache) : null;
 	}
 
 	@Override

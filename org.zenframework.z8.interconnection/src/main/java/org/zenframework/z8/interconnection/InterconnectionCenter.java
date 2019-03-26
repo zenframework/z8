@@ -26,6 +26,8 @@ public class InterconnectionCenter extends HubServer implements IInterconnection
 
 	static private InterconnectionCenter instance = null;
 
+	private boolean cacheEnabled;
+	
 	public static IInterconnectionCenter launch(ServerConfig config) throws RemoteException {
 		if(instance == null) {
 			instance = new InterconnectionCenter();
@@ -36,6 +38,7 @@ public class InterconnectionCenter extends HubServer implements IInterconnection
 
 	private InterconnectionCenter() throws RemoteException {
 		super(ServerConfig.interconnectionCenterPort());
+		cacheEnabled = ServerConfig.interconnectionCenterCache();
 	}
 
 	@Override
@@ -83,7 +86,7 @@ public class InterconnectionCenter extends HubServer implements IInterconnection
 
 	@Override
 	protected File cacheFile() {
-		return new File(Folders.Base, cache);
+		return cacheEnabled ? new File(Folders.Base, cache) : null;
 	}
 
 	private IServerInfo findServer(String domain) throws RemoteException {

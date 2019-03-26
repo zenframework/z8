@@ -98,10 +98,14 @@ abstract public class HubServer extends RmiServer implements IHubServer {
 	}
 
 	abstract protected File cacheFile();
-
+	
 	private void saveServers() {
+		File cacheFile = cacheFile();
+		if (cacheFile == null)
+			return;
+		
 		try {
-			OutputStream file = new FileOutputStream(cacheFile());
+			OutputStream file = new FileOutputStream(cacheFile);
 			ObjectOutputStream out = new ObjectOutputStream(file);
 
 			out.writeLong(serialVersionUID);
@@ -123,7 +127,7 @@ abstract public class HubServer extends RmiServer implements IHubServer {
 		try {
 			File file = cacheFile();
 
-			if(!file.exists())
+			if(file == null || !file.exists())
 				return;
 
 			InputStream fileIn = new FileInputStream(file);

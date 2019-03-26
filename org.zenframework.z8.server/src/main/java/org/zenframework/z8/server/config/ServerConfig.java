@@ -29,10 +29,12 @@ public class ServerConfig extends Properties {
 
 	static final private String AuthorityCenterHost = "authority.center.host";
 	static final private String AuthorityCenterPort = "authority.center.port";
+	static final private String AuthorityCenterCache = "authority.center.cache";
 	static final private String AuthorityCenterSessionTimeout = "authority.center.session.timeout";
 
 	static final private String InterconnectionCenterHost = "interconnection.center.host";
 	static final private String InterconnectionCenterPort = "interconnection.center.port";
+	static final private String InterconnectionCenterCache = "interconnection.center.cache";
 
 	static final private String WebServerUploadMax = "web.server.upload.max";
 	static final private String WebClientDownloadMax = "web.client.download.max";
@@ -69,10 +71,12 @@ public class ServerConfig extends Properties {
 
 	static private String authorityCenterHost;
 	static private int authorityCenterPort;
+	static private boolean authorityCenterCache;
 	static private int authorityCenterSessionTimeout;
 
 	static private String interconnectionCenterHost;
 	static private int interconnectionCenterPort;
+	static private boolean interconnectionCenterCache;
 
 	static private int webServerUploadMax;
 	static private int webClientDownloadMax;
@@ -127,10 +131,12 @@ public class ServerConfig extends Properties {
 
 		authorityCenterHost = getHost(AuthorityCenterHost, Rmi.localhost);
 		authorityCenterPort = getProperty(AuthorityCenterPort, 10000);
+		authorityCenterCache = getProperty(AuthorityCenterCache, true);
 		authorityCenterSessionTimeout = getProperty(AuthorityCenterSessionTimeout, 24 * 60);
 
 		interconnectionCenterHost = getHost(InterconnectionCenterHost, Rmi.localhost);
 		interconnectionCenterPort = getProperty(InterconnectionCenterPort, 20000);
+		interconnectionCenterCache = getProperty(InterconnectionCenterCache, true);
 
 		webServerUploadMax = getProperty(WebServerUploadMax, 5);
 		webClientDownloadMax = getProperty(WebClientDownloadMax, 1);
@@ -275,6 +281,10 @@ public class ServerConfig extends Properties {
 		return authorityCenterPort;
 	}
 
+	static public boolean authorityCenterCache() {
+		return authorityCenterCache;
+	}
+
 	static public int sessionTimeout() {
 		return authorityCenterSessionTimeout;
 	}
@@ -285,6 +295,10 @@ public class ServerConfig extends Properties {
 
 	static public int interconnectionCenterPort() {
 		return interconnectionCenterPort;
+	}
+
+	static public boolean interconnectionCenterCache() {
+		return interconnectionCenterCache;
 	}
 
 	static public boolean traceSql() {
