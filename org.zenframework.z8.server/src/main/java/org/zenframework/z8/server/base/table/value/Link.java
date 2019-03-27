@@ -109,6 +109,7 @@ public class Link extends GuidField implements ILink, IForeignKey {
 			throw new RuntimeException("Link.query is null : displayName: '"  + displayName() + "'; name: '" + name() + "'");
 
 		writer.writeProperty(Json.isLink, true);
+		writer.writeProperty(Json.owner, owner().id());
 
 		super.writeMeta(writer, query, context);
 

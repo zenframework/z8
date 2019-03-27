@@ -675,7 +675,7 @@ Z8.define('Z8.form.field.Listbox', {
 		var query = link.query;
 		var columns = selector.columns;
 
-		var config = { isListbox: true, label: false, tools: false, pagerMode: 'visible', checks: true, flex: 1, values: this.getValues() };
+		var config = { isListbox: true, readOnly: true, label: false, tools: false, pagerMode: 'visible', checks: true, flex: 1, values: this.getValues() };
 		Z8.apply(config, { name: link.name, query: { id: this.query.id, name: query.name, fields: columns, sort: selector.sort, columns: columns, primaryKey: null } });
 		return Z8.form.Helper.createControl(config);
 	},
