@@ -47,10 +47,6 @@ Z8.define('Z8.form.Form', {
 		return this.fieldsMap[name];
 	},
 
-	getQuery: function() {
-		return this.query != null ? this.query.name : null;
-	},
-
 	initControl: function(control, container) {
 		if(control.isForm || control instanceof Z8.form.Form) {
 			control = this.initForm(control);
@@ -242,14 +238,12 @@ Z8.define('Z8.form.Form', {
 	},
 
 	isMyRecord: function(record) {
-		var query = this.getQuery() || '';
 		var link = this.link;
 
-		if(record == null || query == null)
+		if(record == null || link == null)
 			return true;
 
-		var recordQuery = record.getQuery() || '';
-		return query == recordQuery || link != null && link.owner == recordQuery;
+		return link.owner == (record.getQuery() || '');
 	},
 
 	setRecord: function(record) {

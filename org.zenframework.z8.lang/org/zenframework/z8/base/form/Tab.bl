@@ -1,3 +1,4 @@
 [native "org.zenframework.z8.server.base.form.Tab"]
 public class Tab extends Section {
+	colCount = 1;
 }

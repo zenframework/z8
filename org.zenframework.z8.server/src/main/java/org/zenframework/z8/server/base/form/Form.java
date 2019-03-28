@@ -24,40 +24,67 @@ public class Form extends Section {
 	}
 
 	public Link.CLASS<? extends Link> link = null;
-	public Query.CLASS<? extends Query> query = null;
+
+	private Query query = null;
 
 	public Form(IObject container) {
 		super(container);
 	}
 
+	private Collection<Field> allFields() {
+		Collection<Field> fields = super.fields();
+		if(link != null)
+			fields.add(link.get().owner().primaryKey());
+		return fields;
+	}
+
 	@Override
 	@SuppressWarnings("unchecked")
 	public Collection<Field> fields() {
-		if(link == null)
-			return Collections.EMPTY_LIST;
+		return link == null ? Collections.EMPTY_LIST : allFields();
+	}
 
-		Collection<Field> fields = super.fields();
-		fields.add(link.get().owner().primaryKey());
-		return fields;
+	@SuppressWarnings("unchecked")
+	public void setQuery(Query query) {
+		if(query == null)
+			return;
+
+		if(dependency == null && link == null)
+			this.query = query;
+
+		for(Field field : allFields())
+			query.extraFields.add((Field.CLASS<? extends Field>)field.getCLASS());
+	}
+
+	private Link getLink() {
+		return dependency != null ? (Link)dependency.get() : (this.link != null ? this.link.get() : null);
+	}
+
+	private Query getQuery() {
+		Link link = getLink();
+		return link != null ? link.getQuery() : (query != null ? query : null);
 	}
 
 	@Override
 	public void writeMeta(JsonWriter writer, Query query, Query context) {
 		writer.writeProperty(Json.isForm, true);
 
-		Link link = this.link != null ? this.link.get() : null; 
+		Link link = getLink();
+		Query formQuery = getQuery();
 
-		if(link != null) {
+		if(formQuery != null) {
 			writer.startObject(Json.link);
-			writer.writeProperty(Json.primaryKey, link.owner().primaryKey().id());
-			link.writeMeta(writer, query, context);
+			if(link != null) {
+				writer.writeProperty(Json.primaryKey, link.owner().primaryKey().id());
+				link.writeMeta(writer, query, context);
+			} else {
+				writer.writeProperty(Json.owner, formQuery.id());
+				writer.startObject(Json.query);
+				writer.finishObject();
+			}
 			writer.finishObject();
 		}
 
-		super.writeMeta(writer, link != null ? link.getQuery() : this.query != null ? this.query.get() : query, context);
-
-		writer.startObject(Json.query);
-		writer.writeProperty(Json.name, this.query != null ? this.query.id() : query.id());
-		writer.finishObject();
+		super.writeMeta(writer, formQuery != null ? formQuery : query, context);
 	}
 }

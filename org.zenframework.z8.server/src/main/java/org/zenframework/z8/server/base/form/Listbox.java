@@ -48,6 +48,12 @@ public class Listbox extends Control {
 	@Override
 	@SuppressWarnings("unchecked")
 	public Collection<Field> fields() {
+		for(Control.CLASS<? extends Control> cls : dependencies) {
+			if(cls.instanceOf(Form.class)) {
+				Form form = (Form)cls.get();
+				form.setQuery(query.get());
+			}
+		}
 		return Collections.EMPTY_LIST;
 	}
 
