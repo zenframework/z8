@@ -23,8 +23,6 @@ public class Form extends Section {
 		}
 	}
 
-//	public Link.CLASS<? extends Link> link = null;
-
 	private Query query = null;
 	private boolean isDependent = false;
 

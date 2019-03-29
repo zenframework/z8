@@ -10,8 +10,11 @@ Z8.define('Z8.form.Helper', {
 
 			var cls = Application.getSubclass(field.ui);
 
-			if(field.isAction)
-				return cls != null ? Z8.create(cls, field) : new Z8.form.field.Action(field);
+			if(field.isAction) {
+				var type = field.type;
+				var config = { name: field.name, text: field.header, tooltip: field.description, icon: field.icon, primary: type == 'primary', success: type == 'success', danger: type == 'danger', action: field };
+				return cls != null ? Z8.create(cls, config) : new Z8.form.field.Action(config);
+			}
 
 			var label = field.label !== false ? { text: field.header, icon: field.icon, align: 'top' } : false;
 			var config = { label: label, placeholder: field.header, name: field.name, field: field, colSpan: field.colSpan, flex: field.flex, readOnly: field.readOnly, editable: true, required: field.required, enterOnce: field.enterOnce, source: field.source, length: field.length };

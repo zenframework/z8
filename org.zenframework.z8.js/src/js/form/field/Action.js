@@ -6,10 +6,12 @@ Z8.define('Z8.form.field.Action', {
 	isAction: true,
 
 	constructor: function(config) {
-		var action = config;
-		var type = action.type;
-		config = { name: action.name, text: action.header, tooltip: action.description, icon: action.icon, primary: type == 'primary', success: type == 'success', danger: type == 'danger', action: action, handler: this.onAction, scope: this };
 		this.callParent(config);
+
+		if(this.action != null) {
+			this.handler = this.onAction;
+			this.scope = this;
+		}
 	},
 
 	initComponent: function() {
@@ -70,7 +72,8 @@ Z8.define('Z8.form.field.Action', {
 		if(success && this.getRecord() == record) {
 			var reloadCallback = function(record, success) {
 				this.setBusy(false);
-				this.form.loadRecord(record);
+				if(this.form != null)
+					this.form.loadRecord(record);
 			};
 			record.reload({ fn: reloadCallback, scope: this });
 		}
