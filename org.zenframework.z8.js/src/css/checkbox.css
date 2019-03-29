@@ -37,6 +37,8 @@
 
 .checkbox>.label>.text {
 	font-size: inherit;
+	text-transform: inherit;
+	font-weight: 500;
 }
 
 .checkbox.label-left>.label {
