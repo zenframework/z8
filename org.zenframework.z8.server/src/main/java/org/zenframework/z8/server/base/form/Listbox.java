@@ -102,7 +102,7 @@ public class Listbox extends Control {
 		writer.writeControls(Json.fields, fields, query, context);
 		writer.writeControls(Json.columns, columns.isEmpty() ? query.columns() : columns, query, context);
 		writer.writeSort(sortFields.isEmpty() ? query.sortFields() : CLASS.asList(sortFields));
-		writer.writeActions(CLASS.asList(actions), context.classId());
+		writer.writeActions(CLASS.asList(actions), query, context);
 
 		if(link != null) {
 			writer.startObject(Json.link);

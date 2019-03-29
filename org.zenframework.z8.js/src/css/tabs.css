@@ -45,7 +45,7 @@
 	transition: border-color ease-in-out .15s, color ease-in-out .15s, padding-top ease-in-out .15s;
 }
 
-.tabs>.header>.text {
+.tabs>.header>.tag>.text {
 	font-weight: 600;
 	font-size: 0.8em;
 	text-transform: uppercase;

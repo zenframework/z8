@@ -186,11 +186,15 @@ Z8.define('Z8.form.field.Field', {
 		var dependencies = this.dependencies;
 		for(var i = 0, length = dependencies.length; i < length; i++) {
 			var dependency = dependencies[i];
-			if(dependency.updatingDependencies == 0)
+			if(dependency.updatingDependencies == 0 && this.needsDependencyChange(dependency, record))
 				dependency.onDependencyChange(record, this);
 		}
 
 		this.updatingDependencies--;
+	},
+
+	needsDependencyChange: function(dependency, record) {
+		return true;
 	},
 
 	onDependencyChange: function(value, control) {

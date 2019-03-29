@@ -47,6 +47,11 @@
 	position: relative;
 }
 
+.fieldset>.row>.cell.action {
+	justify-content: flex-end;
+	align-items: flex-start;
+}
+
 .fieldset>.row>.cell>.tabs,
 .fieldset>.row>.cell>.control-group,
 .fieldset>.row>.cell>.control,
@@ -92,14 +97,6 @@
 	.fieldset>.row>.cell.stretch {
 		align-items: stretch;
 	}
-}
-
-.fieldset>.row>.cell.actions {
-	height: 4em;
-	display: flex;
-	flex-direction: row;
-	justify-content: flex-end;
-	align-items: flex-end;
 }
 
 .form .control.checkbox {

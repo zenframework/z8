@@ -743,7 +743,7 @@ Z8.define('Z8.application.form.Navigator', {
 		var params = {
 			request: action.request,
 			action: 'action',
-			id: action.id,
+			name: action.name,
 			records: records
 		};
 

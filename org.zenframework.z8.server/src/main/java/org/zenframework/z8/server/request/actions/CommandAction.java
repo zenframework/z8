@@ -23,11 +23,11 @@ public class CommandAction extends RequestAction {
 		Query context = getContextQuery();
 		Query query = getQuery();
 
-		String actionId = getRequestParameter(Json.id);
-		Action action = context.findActionById(actionId);
+		String name = getRequestParameter(Json.name);
+		Action action = context.findActionById(name);
 
 		if(action == null)
-			throw new RuntimeException("Action '" + actionId + "' is not found in " + context.displayName());
+			throw new RuntimeException("Action '" + name + "' is not found in " + context.displayName());
 
 		parseParameters(action);
 

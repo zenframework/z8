@@ -102,6 +102,7 @@ Z8.define('Z8.form.Fieldset', {
 				var cn = [];
 				var control = controls[controlIndex];
 				var isComponent = control.isComponent;
+				var isAction = control.isAction;
 
 				var style = control.scrollable ? 'min-height:' + (control.getMinHeight() + Fieldset.MarginBottom) + 'em' : null;
 
@@ -110,7 +111,7 @@ Z8.define('Z8.form.Fieldset', {
 				flex = Math.max(flex, controls[controlIndex].flex || 0);
 
 				var width = Math.min(12, columns[columnIndex] * columnWidth);
-				cells.push({ cls: 'col-lg-' + width + ' col-md-' + width + ' col-sm-' + width + ' cell', cn: cn, style: style });
+				cells.push({ cls: 'col-lg-' + width + ' col-md-' + width + ' col-sm-' + width + ' cell' + (isAction ? ' action' : ''), cn: cn, style: style });
 				totalWidth += width;
 
 				controlIndex++;
@@ -126,11 +127,6 @@ Z8.define('Z8.form.Fieldset', {
 
 			markup.push(row);
 		}
-
-		var actions = this.actions;
-
-		if(actions != null)
-			markup.push(this.actionsMarkup());
 
 		return markup;
 	},
@@ -157,23 +153,6 @@ Z8.define('Z8.form.Fieldset', {
 		}
 
 		return rows[0].length != 0 ? rows : [];
-	},
-
-	actionsMarkup: function() {
-		var actions = this.actions;
-		var controls = this.controls;
-
-		var markup = [];
-		for(var i = 0, length = actions.length; i < length; i++) {
-			var action = actions[i];
-			var type = action.type;
-			var button = new Z8.button.Button({ name: action.id, text: action.text, tooltip: action.description, icon: action.icon, action: action, primary: type == 'primary', success: type == 'success', danger: type == 'danger', handler: this.onAction, scope: this });
-			controls.push(button);
-			markup.insert(button.htmlMarkup());
-		}
-
-		var cell = { cls: 'col-lg-12 col-md-12 col-sm-12 cell actions', cn: markup };
-		return { cls: 'row', cn: [cell] };
 	},
 
 	setEnabled: function(enabled) {
@@ -215,51 +194,5 @@ Z8.define('Z8.form.Fieldset', {
 				return true;
 		}
 		return false;
-	},
-
-	onAction: function(button) {
-		button.setBusy(true);
-
-		var action = button.action;
-
-		if(!Z8.isEmpty(action.parameters))
-			this.requestActionParameters(button);
-		else
-			this.runAction(button);
-	},
-
-	requestActionParameters: function(button) {
-		this.runAction(button);
-	},
-
-	runAction: function(button) {
-		var action = button.action;
-
-		var record = this.getRecord();
-
-		var params = {
-			request: action.request,
-			action: 'action',
-			id: action.id,
-			records: (record != null && !record.phantom) ? [record.id] : null,
-			parameters: action.parameters
-		};
-
-		var callback = function(response, success) {
-			button.setBusy(false);
-			this.onActionComplete(button, record, response, success);
-		};
-
-		HttpRequest.send(params, { fn: callback, scope: this });
-	},
-
-	onActionComplete: function(button, record, response, success) {
-		if(success && this.getRecord() == record) {
-			var reloadCallback = function(record, success) {
-				button.setBusy(false);
-				this.form.loadRecord(record);
-			};
-			record.reload({ fn: reloadCallback, scope: this });
-		}
 	}
 });

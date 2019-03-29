@@ -30,7 +30,6 @@ public class UsersView extends Users {
 	private UserEntries.CLASS<UserEntries> userEntries = new UserEntries.CLASS<UserEntries>(this);
 	private UserRoles.CLASS<UserRoles> userRoles = new UserRoles.CLASS<UserRoles>(this);
 
-	private Section.CLASS<Section> section1 = new Section.CLASS<Section>(this);
 	private Section.CLASS<Section> section2 = new Section.CLASS<Section>(this);
 
 	private ResetPasswordAction.CLASS<ResetPasswordAction> resetPassword = new ResetPasswordAction.CLASS<ResetPasswordAction>(this);
@@ -43,7 +42,6 @@ public class UsersView extends Users {
 	public void initMembers() {
 		super.initMembers();
 
-		objects.add(section1);
 		objects.add(resetPassword);
 
 		objects.add(section2);
@@ -59,7 +57,6 @@ public class UsersView extends Users {
 		userEntries.setIndex("userEntries");
 		userRoles.setIndex("userRoles");
 
-		section1.setIndex("section1");
 		section2.setIndex("section2");
 		resetPassword.setIndex("resetPassword");
 
@@ -101,8 +98,6 @@ public class UsersView extends Users {
 		changePassword.get().colSpan = new integer(3);
 		changePassword.get().setIcon("fa-key");
 		resetPassword.get().type = ActionType.Primary;
-		section1.get().colSpan = new integer(3);
-		section1.get().actions.add(resetPassword);
 
 		firstName.get().colSpan = new integer(3);
 		lastName.get().colSpan = new integer(3);
@@ -122,7 +117,7 @@ public class UsersView extends Users {
 		registerControl(name);
 		registerControl(banned);
 		registerControl(changePassword);
-		registerControl(section1);
+		registerControl(resetPassword);
 
 		registerControl(lastName);
 		registerControl(firstName);

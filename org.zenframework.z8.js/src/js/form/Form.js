@@ -66,6 +66,9 @@ Z8.define('Z8.form.Form', {
 		} else if(control.isText) {
 			control = Z8.form.Helper.createControl(control);
 			this.addField(control);
+		} else if(control.isAction) {
+			control = Z8.form.Helper.createControl(control);
+			this.addField(control);
 		} else if(control.isCombobox) {
 			control = Z8.form.Helper.createControl(control);
 			this.addField(control);
@@ -179,7 +182,7 @@ Z8.define('Z8.form.Form', {
 
 	getUpdateParams: function(record) {
 		var link = this.link;
-		if(link == null)
+		if(link == null || link.primaryKey == null)
 			return null;
 
 		var owner = link.primaryKey;
@@ -307,6 +310,10 @@ Z8.define('Z8.form.Form', {
 			this.setReadOnly(record == null || !record.isEditable());
 
 		this.fireEvent('change', this, this.record, current);
+	},
+
+	needsDependencyChange: function(dependency, record) {
+		return !dependency.isForm || dependency.dependencies != null || !dependency.isMyRecord(record);
 	},
 
 	onDependencyChange: function(record, control) {

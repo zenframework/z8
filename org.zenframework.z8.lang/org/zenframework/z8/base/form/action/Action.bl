@@ -1,8 +1,8 @@
+import org.zenframework.z8.base.form.Control;
 import org.zenframework.z8.base.query.Query;
-import org.zenframework.z8.lang.Object;
 
 [native "org.zenframework.z8.server.base.form.action.Action"]
-public class Action extends Object {
+public class Action extends Control {
 	public Parameter[] parameters;
 	public ActionType type = ActionType.Default;
 	public bool useTransaction = true;

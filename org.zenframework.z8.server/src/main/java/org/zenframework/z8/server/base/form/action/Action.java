@@ -1,18 +1,20 @@
 package org.zenframework.z8.server.base.form.action;
 
 import java.util.Collection;
+import java.util.Collections;
 
+import org.zenframework.z8.server.base.form.Control;
 import org.zenframework.z8.server.base.query.Query;
+import org.zenframework.z8.server.base.table.value.Field;
 import org.zenframework.z8.server.json.Json;
 import org.zenframework.z8.server.json.JsonWriter;
 import org.zenframework.z8.server.runtime.IObject;
-import org.zenframework.z8.server.runtime.OBJECT;
 import org.zenframework.z8.server.runtime.RCollection;
 import org.zenframework.z8.server.types.bool;
 import org.zenframework.z8.server.types.guid;
 
-public class Action extends OBJECT implements Runnable, IAction {
-	static public class CLASS<T extends Action> extends OBJECT.CLASS<T> {
+public class Action extends Control implements Runnable, IAction {
+	static public class CLASS<T extends Action> extends Control.CLASS<T> {
 		public CLASS() {
 			this(null);
 		}
@@ -38,6 +40,11 @@ public class Action extends OBJECT implements Runnable, IAction {
 		super(container);
 	}
 
+	@SuppressWarnings("unchecked")
+	public Collection<Field> fields() {
+		return Collections.EMPTY_LIST;
+	}
+
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public Collection<Parameter.CLASS<Parameter>> parameters() {
 		return (Collection)parameters;
@@ -55,12 +62,12 @@ public class Action extends OBJECT implements Runnable, IAction {
 	}
 
 	@Override
-	public void write(JsonWriter writer, String requestId) {
-		writer.writeProperty(Json.request, requestId);
-		writer.writeProperty(Json.id, id());
-		writer.writeProperty(Json.text, displayName());
-		writer.writeProperty(Json.description, description());
-		writer.writeProperty(Json.icon, icon());
+	public void writeMeta(JsonWriter writer, Query query, Query context) {
+		super.writeMeta(writer, query, context);
+
+		writer.writeProperty(Json.isAction, true);
+
+		writer.writeProperty(Json.request, context.classId());
 		writer.writeProperty(Json.type, type.toString());
 
 		writer.startArray(Json.parameters);

@@ -8,6 +8,11 @@ Z8.define('Z8.form.Helper', {
 			if(field == null)
 				return null;
 
+			var cls = Application.getSubclass(field.ui);
+
+			if(field.isAction)
+				return cls != null ? Z8.create(cls, field) : new Z8.form.field.Action(field);
+
 			var label = field.label !== false ? { text: field.header, icon: field.icon, align: 'top' } : false;
 			var config = { label: label, placeholder: field.header, name: field.name, field: field, colSpan: field.colSpan, flex: field.flex, readOnly: field.readOnly, editable: true, required: field.required, enterOnce: field.enterOnce, source: field.source, length: field.length };
 
@@ -29,7 +34,6 @@ Z8.define('Z8.form.Helper', {
 			if(field.selector != null)
 				config.selector = field.selector;
 
-			var cls = Application.getSubclass(field.ui);
 
 			if(field.isCombobox) {
 				var link = field.link;

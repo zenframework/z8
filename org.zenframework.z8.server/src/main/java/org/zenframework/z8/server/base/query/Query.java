@@ -1155,7 +1155,7 @@ public class Query extends OBJECT {
 
 		writer.writeControls(Json.fields, selectFields(), this, context);
 
-		writer.writeActions(actions(), classId());
+		writer.writeActions(actions(), this, context);
 		writer.writeReports(reports());
 		writer.writeAccess(access());
 

@@ -41,8 +41,8 @@ public class ActionReport extends Action {
 	}
 
 	@Override
-	public void write(JsonWriter writer, String requestId) {
-		super.write(writer, requestId);
+	public void writeMeta(JsonWriter writer, Query query, Query context) {
+		super.writeMeta(writer, query, context);
 		writer.writeProperty(Json.report, true);
 	}
 

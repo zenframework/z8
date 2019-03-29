@@ -461,7 +461,7 @@ Z8.define('Z8.form.field.Listbox', {
 		for(var i = 0, length = actions.length; i < length; i++) {
 			var action = actions[i];
 			var type = action.type;
-			var config = { name: action.id, text: action.text, tooltip: action.description, icon: action.icon, action: action, primary: type == 'primary', success: type == 'success', danger: type == 'danger', handler: this.onAction, scope: this };
+			var config = { name: action.name, text: action.header, tooltip: action.description, icon: action.icon, action: action, primary: type == 'primary', success: type == 'success', danger: type == 'danger', handler: this.onAction, scope: this };
 			var button = action.report ? new Z8.button.Report(config) : new Z8.button.Button(config);
 			buttons.push(button);
 		}
@@ -996,7 +996,7 @@ Z8.define('Z8.form.field.Listbox', {
 		var params = {
 			request: action.request,
 			action: 'action',
-			id: action.id,
+			name: action.name,
 			query: query.name,
 			records: (record != null && !record.phantom) ? [record.id] : null,
 			selection: this.getSelectedIds(),
