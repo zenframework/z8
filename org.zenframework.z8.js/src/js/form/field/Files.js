@@ -94,13 +94,14 @@ Z8.define('Z8.form.field.Files', {
 		if(this.getDom() == null)
 			return;
 
-		var enabled = !this.isReadOnly() && this.isEnabled();
+		var enabled = this.isEnabled();
+		var readOnly = this.isReadOnly();
 
-		this.uploadTool.setEnabled(enabled);
+		this.uploadTool.setEnabled(!readOnly && enabled);
 
 		enabled = enabled && this.getChecked().length != 0;
 		this.downloadTool.setEnabled(enabled);
-		this.removeTool.setEnabled(enabled);
+		this.removeTool.setEnabled(!readOnly && enabled);
 	},
 
 	onUploadFile: function(button) {
