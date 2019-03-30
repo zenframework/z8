@@ -334,7 +334,7 @@ Z8.define('Z8.application.form.Navigator', {
 		var items = [];
 		for(var i = 0, length = actions.length; i < length; i++) {
 			var action = actions[i];
-			items.push(new Z8.menu.Item({ text: action.text, icon: action.icon, action: action }));
+			items.push(new Z8.menu.Item({ text: action.header, icon: action.icon, action: action }));
 		}
 
 		var menu = new Z8.menu.Menu({ items: items });
