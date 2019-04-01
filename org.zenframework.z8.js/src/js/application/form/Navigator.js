@@ -19,6 +19,20 @@ Z8.define('Z8.application.form.Navigator', {
 
 		this.initFilter(User.getFilter(this.registryEntry()));
 		this.initPeriod(User.getPeriod(this.registryEntry()));
+
+		this.cls = DOM.parseCls(this.cls).pushIf('navigator');
+		if(this.oneRecord)
+			this.cls.add('one-record');
+
+		var items = this.createItems();
+		var body = this.body = new Z8.Container({ cls: 'body', items: items });
+		var toolbar = this.createToolbar();
+
+		var isForm = this.isFormPresentation();
+		this.setTools(this.listbox, isForm);
+		this.setTools(this.table, !isForm);
+
+		this.items = [toolbar, body];
 	},
 
 	getStore: function() {
@@ -66,26 +80,6 @@ Z8.define('Z8.application.form.Navigator', {
 
 	isReadOnly: function() {
 		return this.store.form.readOnly;
-	},
-
-	htmlMarkup: function() {
-		this.cls = DOM.parseCls(this.cls).pushIf('navigator');
-		if(this.oneRecord)
-			this.cls.add('one-record');
-
-		var items = this.createItems();
-		var body = this.body = new Z8.Container({ cls: 'body', items: items });
-		var toolbar = this.createToolbar();
-
-		var isForm = this.isFormPresentation();
-		this.setTools(this.listbox, isForm);
-		this.setTools(this.table, !isForm);
-
-		this.items = [toolbar, body];
-
-		this.updateSortState();
-
-		return this.callParent();
 	},
 
 	createItems: function() {

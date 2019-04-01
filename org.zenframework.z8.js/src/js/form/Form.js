@@ -121,6 +121,7 @@ Z8.define('Z8.form.Form', {
 		for(var i = 0, length = controls.length; i < length; i++)
 			this.initControl(controls[i], tab);
 
+		this.addField(tab);
 		return tab;
 	},
 
@@ -133,7 +134,11 @@ Z8.define('Z8.form.Form', {
 			controls.push(tab);
 		}
 
-		return new Z8.form.Tabs({ name: tabControl.name, controls: controls, actions: tabControl.actions, colSpan: tabControl.colSpan, readOnly: tabControl.readOnly, flex: tabControl.flex, height: tabControl.height });
+		var tabControl = new Z8.form.Tabs({ name: tabControl.name, controls: controls, actions: tabControl.actions, colSpan: tabControl.colSpan, readOnly: tabControl.readOnly, flex: tabControl.flex, height: tabControl.height })
+
+		this.addField(tabControl);
+
+		return tabControl;
 	},
 
 	addField: function(field) {
@@ -149,7 +154,7 @@ Z8.define('Z8.form.Form', {
 	},
 
 	initAutoSave: function(field) {
-		if(this.autoSave && !field.isListbox && !field.isFile && !field.isForm && field.form == this) {
+		if(this.autoSave && !field.isListbox && !field.isFile && !field.isForm && !field.isTabControl && field.form == this) {
 			field.setAutoSave(true);
 			field.on('change', this.autoSaveCallback, this);
 		}

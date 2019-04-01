@@ -2,6 +2,10 @@ Z8.define('Z8.form.Tabs', {
 	extend: 'Z8.Container',
 	shortClassName: 'Tabs',
 
+	isTabControl: true,
+
+	mixins: ['Z8.form.field.Field'],
+
 	htmlMarkup: function() {
 		this.setReadOnly(this.isReadOnly());
 
