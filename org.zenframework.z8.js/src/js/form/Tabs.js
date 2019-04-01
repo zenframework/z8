@@ -17,6 +17,8 @@ Z8.define('Z8.form.Tabs', {
 
 		var callback = function(tag, toggled) {
 			this.activateTab(tag.tab);
+			if(!this.activateLock)
+				this.lastClickedTab = tag.tab;
 		};
 
 		var tags = [];
