@@ -74,6 +74,7 @@ Z8.define('Z8.form.field.Action', {
 				this.setBusy(false);
 				if(this.form != null)
 					this.form.loadRecord(record);
+				this.fireEvent('complete', this, record);
 			};
 			record.reload({ fn: reloadCallback, scope: this });
 		}
