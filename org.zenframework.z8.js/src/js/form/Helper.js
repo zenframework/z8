@@ -12,7 +12,7 @@ Z8.define('Z8.form.Helper', {
 
 			if(field.isAction) {
 				var type = field.type;
-				var config = { name: field.name, text: field.header, tooltip: field.description, icon: field.icon, primary: type == 'primary', success: type == 'success', danger: type == 'danger', action: field };
+				var config = { name: field.name, text: field.header, tooltip: field.description, icon: field.icon, primary: type == 'primary', success: type == 'success', danger: type == 'danger', action: field, colSpan: field.colSpan };
 				return cls != null ? Z8.create(cls, config) : new Z8.form.field.Action(config);
 			}
 
