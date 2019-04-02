@@ -1717,7 +1717,7 @@ textarea.input-lg {
 
 .control-group.label-top>.btn-trigger {
 	position: absolute;
-	top: 2.42857143em;
+	bottom: 0;
 	right: 0;
 	border-top-right-radius: 0;
 	border-bottom-right-radius: .28571429em;
