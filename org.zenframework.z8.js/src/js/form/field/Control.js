@@ -25,6 +25,7 @@ Z8.define('Z8.form.field.Control', {
 		var label = this.label = String.isString(this.label) ? { text: this.label } : this.label;
 
 		var controlMarkup = this.controlMarkup();
+		controlMarkup = Array.isArray(controlMarkup) ? controlMarkup : [controlMarkup];
 
 		var cls = this.cls = DOM.parseCls(this.cls).pushIf('control-group');
 

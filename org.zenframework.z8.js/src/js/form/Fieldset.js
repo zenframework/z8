@@ -57,7 +57,7 @@ Z8.define('Z8.form.Fieldset', {
 			var icon = { tag: 'i', cls: icon };
 		}
 
-		var text = this.legend || '';
+		var text = this.header || '';
 		var legend = { cls: 'legend', title: text, cn: icon != null ? [icon, text] : [text] };
 
 		var rows = (this.plain ? [] : [legend]).concat(this.rowsMarkup());
@@ -194,5 +194,15 @@ Z8.define('Z8.form.Fieldset', {
 				return true;
 		}
 		return false;
-	}
+	},
+
+	isRequired: function() {
+		var controls = this.controls;
+		for(var i = 0, length = controls.length; i < length; i++) {
+			if(controls[i].required)
+				return true;
+		}
+		return false;
+	},
+
 });

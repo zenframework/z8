@@ -117,13 +117,25 @@ Z8.define('Z8.form.Helper', {
 				colCount: fieldset.colCount,
 				colSpan: fieldset.colSpan,
 				readOnly: fieldset.readOnly,
-				legend: fieldset.legend,
+				header: fieldset.header,
 				icon: fieldset.icon,
 				plain: !fieldset.isFieldset,
 				flex: fieldset.flex
 			};
 			var cls = Application.getSubclass(fieldset.ui);
 			return cls != null ? Z8.create(cls, config) : new Z8.form.Fieldset(config);
+		},
+
+		createControlGroup: function(controlGroup) {
+			var config = {
+				name: controlGroup.name,
+				colCount: controlGroup.colCount,
+				colSpan: controlGroup.colSpan,
+				readOnly: controlGroup.readOnly,
+				label: controlGroup.label !== false ? { text: controlGroup.header, icon: controlGroup.icon, align: 'top' } : false
+			};
+			var cls = Application.getSubclass(controlGroup.ui);
+			return cls != null ? Z8.create(cls, config) : new Z8.form.field.ControlGroup(config);
 		},
 
 		createTab: function(tab) {

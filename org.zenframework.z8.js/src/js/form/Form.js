@@ -50,6 +50,8 @@ Z8.define('Z8.form.Form', {
 	initControl: function(control, container) {
 		if(control.isForm || control instanceof Z8.form.Form) {
 			control = this.initForm(control);
+		} else if(control.isControlGroup || control instanceof Z8.form.field.ControlGroup) {
+			control = this.initControlGroup(control);
 		} else if(control.isSection || control instanceof Z8.form.Fieldset) {
 			control = this.initFieldset(control);
 		} else if(control.isTabControl || control instanceof Z8.form.Tabs) {
@@ -92,6 +94,22 @@ Z8.define('Z8.form.Form', {
 			this.addField(fields[i]);
 
 		return form;
+	},
+
+	initControlGroup: function(controlGroup) {
+		var controls = controlGroup.controls || [];
+
+		if(controlGroup.isControlGroup)
+			controlGroup = Z8.form.Helper.createControlGroup(controlGroup);
+		else
+			controlGroup.controls = [];
+
+		for(var i = 0, length = controls.length; i < length; i++)
+			this.initControl(controls[i], controlGroup);
+
+		this.addField(controlGroup);
+
+		return controlGroup;
 	},
 
 	initFieldset: function(fieldset) {

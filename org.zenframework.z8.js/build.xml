@@ -137,6 +137,7 @@
 				list/Dropdown.js,
 				form/field/Field.js,
 				form/field/Control.js,
+				form/field/ControlGroup.js,
 				form/field/Action.js,
 				form/field/Html.js,
 				form/field/Document.js,

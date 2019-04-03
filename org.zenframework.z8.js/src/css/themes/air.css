@@ -239,7 +239,7 @@
 }
 
 .air .invalid.focus.control:not(.readonly),
-.air .control-group.focus.invalid:not(.readonly)>.control {
+.air .control-group.invalid.focus:not(.readonly)>.control {
 	border-color: #c9302c;
 }
 
@@ -312,7 +312,7 @@
 	margin-right: .5em;
 }
 
-.air .control-group.invalid:not(.readonly)>.label>.text {
+.air .invalid:not(.readonly)>.label>.text {
 	color: #c9302c;
 }
 

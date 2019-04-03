@@ -5,27 +5,26 @@ import org.zenframework.z8.server.json.Json;
 import org.zenframework.z8.server.json.JsonWriter;
 import org.zenframework.z8.server.runtime.IObject;
 
-public class Fieldset extends Section {
-	public static class CLASS<T extends Fieldset> extends Section.CLASS<T> {
+public class ControlGroup extends Section {
+	public static class CLASS<T extends ControlGroup> extends Section.CLASS<T> {
 		public CLASS(IObject container) {
 			super(container);
-			setJavaClass(Fieldset.class);
+			setJavaClass(ControlGroup.class);
 		}
 
 		@Override
 		public Object newObject(IObject container) {
-			return new Fieldset(container);
+			return new ControlGroup(container);
 		}
 	}
 
-	public Fieldset(IObject container) {
+	public ControlGroup(IObject container) {
 		super(container);
 	}
 
 	@Override
 	public void writeMeta(JsonWriter writer, Query query, Query context) {
 		super.writeMeta(writer, query, context);
-
-		writer.writeProperty(Json.isFieldset, true);
+		writer.writeProperty(Json.isControlGroup, true);
 	}
 }

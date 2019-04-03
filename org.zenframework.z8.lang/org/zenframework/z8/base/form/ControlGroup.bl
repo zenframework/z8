@@ -1,0 +1,6 @@
+[native "org.zenframework.z8.server.base.form.ControlGroup"]
+
+[icon]
+[displayName]
+public class ControlGroup extends Section {
+}
