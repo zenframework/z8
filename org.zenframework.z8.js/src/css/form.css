@@ -60,6 +60,14 @@
 	margin-bottom: .71428571em;
 }
 
+.group>.fieldset>.row>.cell>.tabs,
+.group>.fieldset>.row>.cell>.control-group,
+.group>.fieldset>.row>.cell>.control,
+.group>.fieldset>.row>.cell>.btn-group,
+.group>.fieldset>.row>.cell>.btn {
+	margin-bottom: 0;
+}
+
 .fieldset>.row>.cell>.btn-group:not(:first-child),
 .fieldset>.row>.cell>.btn:not(:first-child) {
 	margin-left: .71428571em;

@@ -153,7 +153,7 @@ public class ServerConfig extends Properties {
 		textExtensions = getProperty(TextExtensions, new String[] { "txt", "xml" });
 		imageExtensions = getProperty(ImageExtensions, new String[] { "tif", "tiff", "jpg", "jpeg", "gif", "png", "bmp" });
 		emailExtensions = getProperty(EmailExtensions, new String[] { "eml", "mime" });
-		officeExtensions = getProperty(OfficeExtensions, new String[] { "doc", "docx", "xls", "xlsx", "ppt", "pptx", "odt", "odp", "ods", "odf", "odg", "wpd", "sxw", "sxi", "sxc", "sxd", "stw", "vsd" });
+		officeExtensions = getProperty(OfficeExtensions, new String[] { "doc", "docx", "rtf", "xls", "xlsx", "ppt", "pptx", "odt", "odp", "ods", "odf", "odg", "wpd", "sxw", "sxi", "sxc", "sxd", "stw", "vsd" });
 
 		officeHome = getProperty(OfficeHome, "C:/Program Files (x86)/LibreOffice 4.0");
 
