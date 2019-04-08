@@ -38,6 +38,14 @@ Z8.define('Z8.form.field.ControlGroup', {
 			this.section.setEnabled(enabled);
 	},
 
+	setActive: function(active) {
+		this.callParent(active);
+
+		var controls = this.controls;
+		for(var i = 0, length = controls.length; i < length; i++)
+			controls[i].setActive(active);
+	},
+
 	focus: function(select) {
 		return this.isEnabled() ? this.section.focus() : false;
 	},
