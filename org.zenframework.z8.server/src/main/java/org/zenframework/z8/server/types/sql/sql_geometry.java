@@ -13,6 +13,7 @@ import org.zenframework.z8.server.db.sql.functions.geometry.Centroid;
 import org.zenframework.z8.server.db.sql.functions.geometry.CollectionSize;
 import org.zenframework.z8.server.db.sql.functions.geometry.Element;
 import org.zenframework.z8.server.db.sql.functions.geometry.EndPoint;
+import org.zenframework.z8.server.db.sql.functions.geometry.Envelope;
 import org.zenframework.z8.server.db.sql.functions.geometry.Extract;
 import org.zenframework.z8.server.db.sql.functions.geometry.GeometryType;
 import org.zenframework.z8.server.db.sql.functions.geometry.Homogenize;
@@ -25,6 +26,12 @@ import org.zenframework.z8.server.db.sql.functions.geometry.Point;
 import org.zenframework.z8.server.db.sql.functions.geometry.Split;
 import org.zenframework.z8.server.db.sql.functions.geometry.StartPoint;
 import org.zenframework.z8.server.db.sql.functions.geometry.Union;
+import org.zenframework.z8.server.db.sql.functions.geometry.X;
+import org.zenframework.z8.server.db.sql.functions.geometry.XMax;
+import org.zenframework.z8.server.db.sql.functions.geometry.XMin;
+import org.zenframework.z8.server.db.sql.functions.geometry.Y;
+import org.zenframework.z8.server.db.sql.functions.geometry.YMax;
+import org.zenframework.z8.server.db.sql.functions.geometry.YMin;
 import org.zenframework.z8.server.types.geometry;
 
 public class sql_geometry extends sql_primary {
@@ -63,6 +70,30 @@ public class sql_geometry extends sql_primary {
 
 	public sql_integer z8_collectionSize() {
 		return new sql_integer(new CollectionSize(this));
+	}
+
+	public sql_decimal z8_x() {
+		return new sql_decimal(new X(this));
+	}
+
+	public sql_decimal z8_xMax() {
+		return new sql_decimal(new XMax(this));
+	}
+
+	public sql_decimal z8_xMin() {
+		return new sql_decimal(new XMin(this));
+	}
+
+	public sql_decimal z8_y() {
+		return new sql_decimal(new Y(this));
+	}
+
+	public sql_decimal z8_yMax() {
+		return new sql_decimal(new YMax(this));
+	}
+
+	public sql_decimal z8_yMin() {
+		return new sql_decimal(new YMin(this));
 	}
 
 	public sql_decimal z8_length() {
@@ -107,6 +138,10 @@ public class sql_geometry extends sql_primary {
 	
 	public sql_geometry z8_centroid() {
 		return new sql_geometry(new Centroid(this));
+	}
+
+	public sql_geometry z8_envelope() {
+		return new sql_geometry(new Envelope(this));
 	}
 
 	public sql_geometry z8_homogenize() {
