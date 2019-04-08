@@ -29,7 +29,7 @@ public class Round extends SqlToken {
 		switch(vendor) {
 		case Oracle:
 		case Postgres:
-			return "ROUND(" + number.format(vendor, options) + ", " + (digits != null ? digits.format(vendor, options) : "0") + ")";
+			return "ROUND(CAST(" + number.format(vendor, options) + " AS numeric), " + (digits != null ? digits.format(vendor, options) : "0") + ")";
 		case SqlServer:
 			return "ROUND(" + number.format(vendor, options) + ", " + (digits != null ? digits.format(vendor, options) : "0") + ", 0)";
 		default:
