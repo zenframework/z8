@@ -317,6 +317,9 @@ Z8.define('Z8.form.Form', {
 		for(var i = 0, length = fields.length; i < length; i++) {
 			var field = fields[i];
 
+			if(field.isForm && !field.isMyRecord(record))
+				continue;
+
 			var form = field.form;
 			if(form != this && !form.isMyRecord(record))
 				continue;
