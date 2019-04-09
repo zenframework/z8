@@ -16,6 +16,8 @@ Z8.define('Z8.form.field.Geometry', {
 	gridStep: 20,
 	updateSizePending: true,
 	
+	geometryToolsCompact: true,
+	
 	isValid: function() {
 		return true;
 	},
@@ -54,7 +56,7 @@ Z8.define('Z8.form.field.Geometry', {
 	},
 
 	createGeometryTools: function() {
-		return new Z8.button.GeometryTools();
+		return new Z8.button.GeometryTools({ compact: this.geometryToolsCompact });
 	},
 
 	setGeometryTools: function(tools) {

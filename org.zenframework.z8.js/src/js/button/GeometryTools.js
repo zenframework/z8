@@ -1,9 +1,7 @@
 Z8.define('Z8.button.GeometryTools', {
-	extend: 'Z8.button.Button',
+	extend: 'Z8.button.Group',
 
-	icon: 'fa-mouse-pointer', 
-
-	tooltip: 'Инструменты',
+	compact: true,
 
 	select: true,
 	box: false,
@@ -18,75 +16,105 @@ Z8.define('Z8.button.GeometryTools', {
 	location: true,
 	yandex: true,
 
-	htmlMarkup: function() {
-		var tools = [];
+	constructor: function(config) {
+		config = config || {};
+		this.callParent(config);
 
-		if(this.select !== false) {
-			var select = this.select = this.active = new Z8.menu.Item({ text: 'Выбор объекта', icon: 'fa-mouse-pointer', isTool: true, isSelect: true });
-			tools.add(select);
+		this.createTools();
+
+		if (this.compact)
+			this.createMenuButton();
+		else {
+			this.radio = true;
+			this.createToolButtons();
 		}
 
-		if(this.box !== false) {
-			var box = this.box = new Z8.menu.Item({ text: 'Лассо', icon: 'fa-arrows-alt', isTool: true, isBox: true });
-			tools.add(box);
+		var tools = this.tools;
+		if(tools.length > 0)
+			this.active = tools[0];
+	},
+
+	completeRender: function() {
+		this.callParent();
+	},
+
+	createTools: function() {
+		var tools = this.tools = [];
+
+		if(this.select !== false)
+			tools.add({ tool: 'select', config: { text: 'Выбор объекта', icon: 'fa-mouse-pointer', isTool: true, isSelect: true } });
+
+		if(this.box !== false)
+			tools.add({ tool: 'box', config: { text: 'Лассо', icon: 'fa-arrows-alt', isTool: true, isBox: true } });
+
+		if(this.ruler !== false)
+			tools.add({ tool: 'ruler', config: { text: 'Линейка', shortcut: 'Ctrl+L', icon: 'fa-ruler-combined', isTool: true, isRuler: true } });
+
+		if(this.move !== false)
+			tools.add({ tool: 'move', config: { text: 'Переместить объект', shortcut: 'Ctrl+M', icon: 'fa-hand-paper-o', isTool: true, isMove: true } });
+
+		if(this.edit !== false)
+			tools.add({ tool: 'edit', config: { text: 'Изменить объект', shortcut: 'Ctrl+E', icon: 'fa-pencil', isTool: true, isEdit: true } });
+
+		if(this.pick !== false)
+			tools.add({ tool: 'pick', config: { text: 'Взять с подложки', /*shortcut: 'Ctrl+E',*/ icon: 'fa-hand-lizard-o', isTool: true, isPick: true } });
+
+		if(this.draw !== false)
+			tools.add({ tool: 'draw', config: { text: 'Нарисовать объект', shortcut: 'Ctrl+D', icon: 'fa-pencil-square-o', isTool: true, isDraw: true } });
+
+		if(this.erase !== false)
+			tools.add({ tool: 'erase', config: { text: 'Стереть объект', shortcut: 'Ctrl+Q', icon: 'fa-eraser', isTool: true, isErase: true } });
+
+		if(this.rotate !== false)
+			tools.add({ tool: 'rotate', config: { text: 'Повернуть объект', shortcut: 'Ctrl+G', icon: 'fa-repeat', isTool: true, isRotate: true } });
+
+		this.dividerPos = tools.length;
+
+		if(this.location !== false)
+			tools.add({ tool: 'location', config: { text: 'Мое местоположение', icon: 'fa-crosshairs', isTool: false, isLocation: true } });
+
+		if(this.yandex !== false)
+			tools.add({ tool: 'yandex', config: { text: 'Открыть в Яндекс', icon: 'fa-yandex', isTool: false, isYandex: true } });
+	},
+	
+	createMenuButton: function() {
+		var tools = this.tools;
+		var dividerPos = this.dividerPos;
+		
+		for(var i = 0, n = tools.length; i < n; i++) {
+			var tool = tools[i];
+			this[tool.tool] = tools[i] = new Z8.menu.Item(tool.config);
 		}
-
-		if(this.ruler !== false) {
-			var ruler = this.ruler = new Z8.menu.Item({ text: 'Линейка', shortcut: 'Ctrl+L', icon: 'fa-ruler-combined', isTool: true, isRuler: true });
-			tools.add(ruler);
-		}
-
-		if(this.move !== false) {
-			var move = this.move = new Z8.menu.Item({ text: 'Переместить объект', shortcut: 'Ctrl+M', icon: 'fa-hand-paper-o', isTool: true, isMove: true });
-			tools.add(move);
-		}
-
-		if(this.edit !== false) {
-			var edit = this.edit = new Z8.menu.Item({ text: 'Изменить объект', shortcut: 'Ctrl+E', icon: 'fa-pencil', isTool: true, isEdit: true });
-			tools.add(edit);
-		}
-
-		if(this.pick !== false) {
-			var pick = this.pick = new Z8.menu.Item({ text: 'Взять с подложки', /*shortcut: 'Ctrl+E',*/ icon: 'fa-hand-lizard-o', isTool: true, isPick: true });
-			tools.add(pick);
-		}
-
-		if(this.draw !== false) {
-			var draw = this.draw = new Z8.menu.Item({ text: 'Нарисовать объект', shortcut: 'Ctrl+D', icon: 'fa-pencil-square-o', isTool: true, isDraw: true });
-			tools.add(draw);
-		}
-
-		if(this.erase !== false) {
-			var erase = this.erase = new Z8.menu.Item({ text: 'Стереть объект', shortcut: 'Ctrl+Q', icon: 'fa-eraser', isTool: true, isErase: true });
-			tools.add(erase);
-		}
-
-		if(this.rotate !== false) {
-			var rotate = this.rotate = new Z8.menu.Item({ text: 'Повернуть объект', shortcut: 'Ctrl+G', icon: 'fa-reply', isTool: true, isRotate: true });
-			tools.add(rotate);
-		}
-
-		var  dividerPos = tools.length;
-
-		if(this.location !== false) {
-			var location = this.location = new Z8.menu.Item({ text: 'Мое местоположение', icon: 'fa-crosshairs', isTool: false, isLocation: true });
-			tools.add(location);
-		}
-
-		if(this.yandex !== false) {
-			var yandex = this.yandex = new Z8.menu.Item({ text: 'Открыть в Яндекс', icon: 'fa-yandex', isTool: false, isYandex: true });
-			tools.add(yandex);
-		}
-
+		
 		if(dividerPos != 0 && dividerPos != tools.length)
 			tools.insert(new Z8.list.Divider(), dividerPos);
 
-		var menu = this.menu = new Z8.menu.Menu({ items: tools });
-		menu.on('itemClick', this.onToolClick, this);
+		var menuButton = this.menuButton = new Z8.button.Tool({ icon: 'fa-mouse-pointer', tooltip: 'Инструменты' });
+		menuButton.on('click', this.toggleMenu, this);
 
-		this.on('click', this.toggleMenu, this);
+		var menu = menuButton.menu = new Z8.menu.Menu({ items: tools });
+		menu.on('itemClick', this.onMenuItemClick, this);
 
-		return this.callParent();
+		this.add(menuButton);
+	},
+	
+	createToolButtons: function() {
+		var tools = this.tools;
+		var dividerPos = this.dividerPos;
+		
+		for(var i = 0, n = tools.length; i < n; i++) {
+			var tool = tools[i];
+			var config = tool.config;
+			config.tooltip = config.text;
+			config.text = undefined;
+			config.toggle = config.isTool;
+			tool = this[tool.tool] = tools[i] = new Z8.button.Tool(config);
+			tool.on(tool.toggle ? 'toggle' : 'click', this.onToolButtonClick, this);
+			this.add(tool);
+		}
+		
+		if(tools.length > 0)
+			tools[0].setToggled(true, true);
 	},
 
 	isToolActive: function(tool) {
@@ -107,7 +135,8 @@ Z8.define('Z8.button.GeometryTools', {
 			return;
 
 		if(tool.isTool) {
-			this.setIcon(tool.icon);
+			if (this.menuButton != null)
+				this.menuButton.setIcon(tool.icon);
 			this.active = tool;
 		}
 		this.fireEvent('select', this, tool);
@@ -253,7 +282,11 @@ Z8.define('Z8.button.GeometryTools', {
 		this.enableTool(this.rotate, enable);
 	},
 
-	onToolClick: function(menu, tool) {
+	onMenuItemClick: function(menu, tool) {
+		this.activateTool(tool);
+	},
+	
+	onToolButtonClick: function(tool) {
 		this.activateTool(tool);
 	}
 });
