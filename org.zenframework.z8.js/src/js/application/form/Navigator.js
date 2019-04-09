@@ -26,7 +26,7 @@ Z8.define('Z8.application.form.Navigator', {
 
 		var items = this.createItems();
 		var body = this.body = new Z8.Container({ cls: 'body', items: items });
-		var toolbar = this.createToolbar();
+		var toolbar = this.toolbar = this.createToolbar();
 
 		var isForm = this.isFormPresentation();
 		this.setTools(this.listbox, isForm);
