@@ -220,6 +220,8 @@ Z8.define('Z8.form.Form', {
 			return;
 
 		var record = this.record;
+		if(record == null)
+			return;
 
 		record.beginEdit();
 

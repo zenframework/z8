@@ -60,10 +60,13 @@ public class ForEachStatement extends LanguageElement implements IStatement {
 		declaringMethod.openLocalScope();
 
 		declarator.checkSemantics(compilationUnit, declaringType, declaringMethod, null, null);
-		array.checkSemantics(compilationUnit, declaringType, declaringMethod, null, null);
+		boolean success = array.checkSemantics(compilationUnit, declaringType, declaringMethod, null, null);
 		statement.checkSemantics(compilationUnit, declaringType, declaringMethod, null, null);
 
 		declaringMethod.closeLocalScope();
+
+		if(!success)
+			return false;
 
 		IVariableType arrayType = array.getVariableType();
 
