@@ -474,7 +474,7 @@ public final class geometry extends primary {
 			for (int i = 0; i < points.size() - 1; i++) {
 				geometry a = points.get(i), b = points.get(i + 1);
 				double d = distance(a, b);
-				if (distance >= l && distance <= l + d) {
+				if (d > 0 && distance >= l && distance <= l + d) {
 					double k = (distance - l) / d;
 					geometry c = new geometry((b.x() - a.x()) * k + a.x(), (b.y() - a.y()) * k + a.y(), line.srs());
 					if (distance - l <= l + d - distance) {
