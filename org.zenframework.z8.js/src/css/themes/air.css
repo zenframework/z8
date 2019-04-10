@@ -167,7 +167,7 @@
 }
 
 .air .label.tools>.btn-group>.btn,
-.air .label.tools>.btn-group>.btn-group>.btn {
+.air .label.tools>.btn-group .btn-group>.btn {
 	border-radius: 0;
 	padding-top: .42857143em;
 	padding-bottom: .42857143em;
@@ -176,7 +176,7 @@
 }
 
 .air .label.tools>.btn-group>.btn-trigger,
-.air .label.tools>.btn-group>.btn-group>.btn-trigger {
+.air .label.tools>.btn-group .btn-group>.btn-trigger {
 	padding-left: .21428571em;
 	padding-right: .21428571em;
 }
@@ -187,7 +187,7 @@
 }
 
 .air .label.tools>.btn-group>.btn-danger,
-.air .label.tools>.btn-group>.btn-group>.btn-danger {
+.air .label.tools>.btn-group .btn-group>.btn-danger {
 	margin-left: 1em;
 	margin-right: .71428571em;
 }
