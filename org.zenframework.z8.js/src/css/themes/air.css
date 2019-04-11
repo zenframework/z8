@@ -240,7 +240,10 @@
 
 .air .invalid.focus.control:not(.readonly),
 .air .control-group.invalid.focus:not(.readonly)>.control {
-	border-color: #c9302c;
+	border-top-color: #c9302c;
+	border-left-color: #c9302c;
+	border-right-color: #c9302c;
+	border-bottom-color: #c9302c;
 }
 
 .air .label {

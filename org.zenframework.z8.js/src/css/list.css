@@ -655,7 +655,9 @@
 	box-shadow: none; 
 }
 
-.control-group.pager-on>.control.list {
+.control-group.pager-on>.control.list,
+.control-group.focus.pager-on>.control.list,
+.control-group.focus.invalid.pager-on>.control.list {
 	border-bottom-color: #eee;
 }
 
@@ -663,6 +665,12 @@
 	border-left-color: #39c;
 	border-right-color: #39c;
 	border-bottom-color: #39c;
+}
+
+.control-group.invalid:not(.readonly).focus.pager-on>.pager {
+	border-left-color: #c9302c;
+	border-right-color: #c9302c;
+	border-bottom-color: #c9302c;
 }
 
 .list-box>.btn-group {

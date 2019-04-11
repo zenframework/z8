@@ -116,8 +116,8 @@ Z8.define('Z8.form.field.Combobox', {
 		this.callParent(readOnly);
 	},
 
-	getFilterOperation: function() {
-		switch(this.getType()) {
+	getFilterOperation: function(type) {
+		switch(type) {
 		case Type.Integer:
 		case Type.Float:
 			return Operation.Eq;
@@ -338,11 +338,24 @@ Z8.define('Z8.form.field.Combobox', {
 				}
 			};
 
-			var filter = !Z8.isEmpty(text) ? [{ property: this.displayName, operator: this.getFilterOperation(), value: text, anyMatch: true }] : [];
-			this.load({ fn: callback, scope: this }, filter);
+			this.load({ fn: callback, scope: this }, this.getFilter(text));
 		};
 
 		this.queryTask.delay(delay, query, this, text);
+	},
+
+	getFilter: function(text) {
+		if(Z8.isEmpty(text))
+			return [];
+
+		var fields = this.fields;
+		var expressions = [];
+
+		for(var i = 0, length = fields.length; i < length; i++) {
+			var field = fields[i];
+			expressions.add({ property: field.name, operator: this.getFilterOperation(field.type), value: text, anyMatch: true });
+		}
+		return { logical: 'or', expressions: expressions };
 	},
 
 	clearFilter: function() {

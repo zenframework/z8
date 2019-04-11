@@ -1,7 +1,5 @@
 package org.zenframework.z8.server.base.table.value;
 
-import java.util.Collection;
-
 import org.zenframework.z8.server.base.query.Query;
 import org.zenframework.z8.server.base.table.ITable;
 import org.zenframework.z8.server.base.table.Table;
@@ -112,11 +110,6 @@ public class Link extends GuidField implements ILink, IForeignKey {
 		writer.writeProperty(Json.owner, owner().id());
 
 		super.writeMeta(writer, query, context);
-
-		Collection<ILink> path = query.getPath(this);
-
-		if(path == null || !path.isEmpty())
-			return;
 
 		writer.startObject(Json.query);
 
