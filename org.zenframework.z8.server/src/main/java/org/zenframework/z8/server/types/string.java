@@ -1,6 +1,7 @@
 package org.zenframework.z8.server.types;
 
 import java.io.UnsupportedEncodingException;
+import java.math.BigInteger;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -37,7 +38,19 @@ public final class string extends primary {
 	}
 
 	public string(int number) {
-		set(Integer.toString(number));
+		set(Integer.toString(number, 10));
+	}
+
+	public string(int number, int radix) {
+		set(Integer.toString(number, radix));
+	}
+
+	public string(BigInteger number) {
+		set(number.toString(10));
+	}
+
+	public string(BigInteger number, int radix) {
+		set(number.toString(radix));
 	}
 
 	public string(byte[] str) {

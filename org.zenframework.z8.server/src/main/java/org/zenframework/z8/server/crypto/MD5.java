@@ -15,7 +15,7 @@ public class MD5 {
 			messageDigest.reset();
 			messageDigest.update(value.getBytes());
 			byte[] digest = messageDigest.digest();
-			return new BigInteger(1, digest).toString(16);
+			return new string(new BigInteger(1, digest), 16).padLeft(32, "0").get();
 		} catch(NoSuchAlgorithmException e) {
 			throw new RuntimeException(e);
 		}
