@@ -17,6 +17,10 @@ Z8.define('Z8.form.Fieldset', {
 		this.callParent(config);
 	},
 
+	add: function(control) {
+		this.controls.push(control);
+	},
+
 	getRecord: function() {
 		return this.record;
 	},
@@ -203,6 +207,5 @@ Z8.define('Z8.form.Fieldset', {
 				return true;
 		}
 		return false;
-	},
-
+	}
 });

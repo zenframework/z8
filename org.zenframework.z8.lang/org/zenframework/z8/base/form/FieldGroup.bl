@@ -1,0 +1,3 @@
+[native "org.zenframework.z8.server.base.form.FieldGroup"]
+public class FieldGroup extends Section {
+}

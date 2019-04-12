@@ -55,7 +55,7 @@
 .navigator>.body>.form {
 	flex: 1;
 	min-height: 0 !important;
-	padding-top: .35714286em;
+	padding-top: .64285714em;
 }
 
 .navigator>.body>.table {

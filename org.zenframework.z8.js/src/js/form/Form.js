@@ -50,8 +50,10 @@ Z8.define('Z8.form.Form', {
 	initControl: function(control, container) {
 		if(control.isForm || control instanceof Z8.form.Form) {
 			control = this.initForm(control);
-		} else if(control.isControlGroup || control instanceof Z8.form.field.ControlGroup) {
-			control = this.initControlGroup(control);
+		} else if(control.isFieldGroup || control instanceof Z8.form.field.Group) {
+			control = this.initFieldGroup(control);
+		} else if(control.isActionGroup || control instanceof Z8.form.field.ActionGroup) {
+			control = this.initActionGroup(control);
 		} else if(control.isSection || control instanceof Z8.form.Fieldset) {
 			control = this.initFieldset(control);
 		} else if(control.isTabControl || control instanceof Z8.form.Tabs) {
@@ -76,7 +78,7 @@ Z8.define('Z8.form.Form', {
 			this.addField(control);
 		} // else control is a button or some other config - add it as is
 
-		container.controls.push(control);
+		container.add(control);
 	},
 
 	initForm: function(form) {
@@ -96,20 +98,36 @@ Z8.define('Z8.form.Form', {
 		return form;
 	},
 
-	initControlGroup: function(controlGroup) {
-		var controls = controlGroup.controls || [];
+	initFieldGroup: function(group) {
+		var controls = group.controls || [];
 
-		if(controlGroup.isControlGroup)
-			controlGroup = Z8.form.Helper.createControlGroup(controlGroup);
+		if(group.isFieldGroup)
+			group = Z8.form.Helper.createFieldGroup(group);
 		else
-			controlGroup.controls = [];
+			group.controls = [];
 
 		for(var i = 0, length = controls.length; i < length; i++)
-			this.initControl(controls[i], controlGroup);
+			this.initControl(controls[i], group);
 
-		this.addField(controlGroup);
+		this.addField(group);
 
-		return controlGroup;
+		return group;
+	},
+
+	initActionGroup: function(group) {
+		var actions = group.actions || [];
+
+		if(group.isActionGroup)
+			group = Z8.form.Helper.createActionGroup(group);
+		else
+			group.actions = [];
+
+		for(var i = 0, length = actions.length; i < length; i++)
+			this.initControl(actions[i], group);
+
+		this.addField(group);
+
+		return group;
 	},
 
 	initFieldset: function(fieldset) {

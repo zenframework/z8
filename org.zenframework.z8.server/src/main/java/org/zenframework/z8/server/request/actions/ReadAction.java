@@ -164,6 +164,8 @@ public class ReadAction extends RequestAction {
 				addSelectField(query.attachmentKey());
 			}
 		}
+
+		collectQueryFilters();
 	}
 
 	private void initFilters() {
@@ -178,7 +180,7 @@ public class ReadAction extends RequestAction {
 			addNullRecordFilter(field);
 
 		if(recordIds == null) {
-			collectFilters();
+//			collectFilters();
 
 			Collection<String> lookupFields = getLookupFields();
 			if(lookupFields.size() != 0)
@@ -202,6 +204,11 @@ public class ReadAction extends RequestAction {
 		}
 
 		addNullRecordFilter(primaryKey);
+	}
+
+	private void collectQueryFilters() {
+		if(config().recordIds == null)
+			collectFilters();
 	}
 
 	private boolean hasPrimaryKey() {
@@ -455,7 +462,7 @@ public class ReadAction extends RequestAction {
 		return queries;
 	}
 
-	private void collectFilters() {
+	private void collectFilters() { 
 		Collection<Query> queries = getAllQueries();
 
 		for(Query query : queries) {

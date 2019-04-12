@@ -1,11 +1,9 @@
-Z8.define('Z8.form.field.ControlGroup', {
+Z8.define('Z8.form.field.Group', {
 	extend: 'Z8.form.field.Control',
 
 	constructor: function(config) {
 		config = config || {};
 		config.controls = [];
-		config.cls = DOM.parseCls(this.cls).pushIf('group');
-
 		this.callParent(config);
 	},
 
@@ -23,7 +21,7 @@ Z8.define('Z8.form.field.ControlGroup', {
 			control.on('change', this.onChange, this);
 		}
 
-		var section = this.section = new Z8.form.Fieldset({ controls: controls, colCount: this.colCount, plain: true, readOnly: this.isReadOnly(), enabled: this.isEnabled() });
+		var section = this.section = new Z8.form.Fieldset({ cls: 'field-group', controls: controls, colCount: this.colCount, plain: true, readOnly: this.isReadOnly(), enabled: this.isEnabled() });
 		return section.htmlMarkup();
 	},
 

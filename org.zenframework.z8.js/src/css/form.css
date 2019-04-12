@@ -60,12 +60,24 @@
 	margin-bottom: .71428571em;
 }
 
-.group>.fieldset>.row>.cell>.tabs,
-.group>.fieldset>.row>.cell>.control-group,
-.group>.fieldset>.row>.cell>.control,
-.group>.fieldset>.row>.cell>.btn-group,
-.group>.fieldset>.row>.cell>.btn {
+.field-group>.row>.cell>.tabs,
+.field-group>.row>.cell>.control-group,
+.field-group>.row>.cell>.control,
+.field-group>.row>.cell>.btn-group,
+.field-group>.row>.cell>.btn {
 	margin-bottom: 0;
+}
+
+.action-group {
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	justify-content: flex-start;
+	flex: 1;
+}
+
+.action-group>.action.btn {
+	margin-right: 1em;
 }
 
 .fieldset>.row>.cell>.btn-group:not(:first-child),

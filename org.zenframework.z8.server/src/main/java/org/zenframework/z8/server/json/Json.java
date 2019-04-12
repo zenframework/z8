@@ -45,7 +45,8 @@ public interface Json {
 	static public string isForm = new string("isForm");
 	static public string isSection = new string("isSection");
 	static public string isFieldset = new string("isFieldset");
-	static public string isControlGroup = new string("isControlGroup");
+	static public string isFieldGroup = new string("isFieldGroup");
+	static public string isActionGroup = new string("isActionGroup");
 	static public string isListbox = new string("isListbox");
 	static public string isSelector = new string("isSelector");
 	static public string isCombobox = new string("isCombobox");

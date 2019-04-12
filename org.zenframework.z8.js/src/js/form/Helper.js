@@ -126,16 +126,25 @@ Z8.define('Z8.form.Helper', {
 			return cls != null ? Z8.create(cls, config) : new Z8.form.Fieldset(config);
 		},
 
-		createControlGroup: function(controlGroup) {
+		createFieldGroup: function(group) {
 			var config = {
-				name: controlGroup.name,
-				colCount: controlGroup.colCount,
-				colSpan: controlGroup.colSpan,
-				readOnly: controlGroup.readOnly,
-				label: controlGroup.label !== false ? { text: controlGroup.header, icon: controlGroup.icon, align: 'top' } : false
+				name: group.name,
+				colCount: group.colCount,
+				colSpan: group.colSpan,
+				readOnly: group.readOnly,
+				label: group.label !== false ? { text: group.header, icon: group.icon, align: 'top' } : false
 			};
-			var cls = Application.getSubclass(controlGroup.ui);
-			return cls != null ? Z8.create(cls, config) : new Z8.form.field.ControlGroup(config);
+			var cls = Application.getSubclass(group.ui);
+			return cls != null ? Z8.create(cls, config) : new Z8.form.field.Group(config);
+		},
+
+		createActionGroup: function(actionGroup) {
+			var config = {
+				name: actionGroup.name,
+				colSpan: actionGroup.colSpan
+			};
+			var cls = Application.getSubclass(actionGroup.ui);
+			return cls != null ? Z8.create(cls, config) : new Z8.form.field.ActionGroup(config);
 		},
 
 		createTab: function(tab) {

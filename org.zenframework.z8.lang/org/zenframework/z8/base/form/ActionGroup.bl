@@ -1,0 +1,6 @@
+import org.zenframework.z8.base.form.action.Action;
+
+[native "org.zenframework.z8.server.base.form.ActionGroup"]
+public class ActionGroup extends Control {
+	public Action[] actions;
+}
