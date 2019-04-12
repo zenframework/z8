@@ -22,7 +22,6 @@ import org.zenframework.z8.server.json.Json;
 import org.zenframework.z8.server.json.parser.JsonArray;
 import org.zenframework.z8.server.json.parser.JsonObject;
 import org.zenframework.z8.server.resources.Resources;
-import org.zenframework.z8.server.search.SearchEngine;
 import org.zenframework.z8.server.types.bool;
 import org.zenframework.z8.server.types.date;
 import org.zenframework.z8.server.types.decimal;
@@ -31,7 +30,6 @@ import org.zenframework.z8.server.types.integer;
 import org.zenframework.z8.server.types.string;
 import org.zenframework.z8.server.types.sql.sql_date;
 import org.zenframework.z8.server.types.sql.sql_string;
-import org.zenframework.z8.server.utils.StringUtils;
 
 public class Filter {
 	private Field field;
@@ -190,17 +188,8 @@ public class Filter {
 	static protected Filter getFieldFilter(Query query, String name, String values, String comparison) {
 		Operation operation = comparison != null ? Operation.fromString(comparison) : null;
 
-		if(Json.__search_text__.equals(name)) {
-			if(values.isEmpty())
-				return null;
-
-			Collection<String> foundIds = SearchEngine.INSTANCE.searchRecords(query, StringUtils.unescapeJava(values));
-
-			return new Filter(query.getSearchId(), operation, foundIds);
-		} else {
-			Field field = query.findFieldById(name);
-			return field != null ? new Filter(field, operation, parseValues(values)) : null;
-		}
+		Field field = query.findFieldById(name);
+		return field != null ? new Filter(field, operation, parseValues(values)) : null;
 	}
 
 	static public Collection<Filter> parse(Collection<String> json, Query query) {

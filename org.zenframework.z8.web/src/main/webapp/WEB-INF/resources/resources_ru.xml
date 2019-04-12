@@ -20,7 +20,7 @@
 	<entry key="Table.createdBy">Создал</entry>
 	<entry key="Table.modifiedBy">Изменил</entry>
 	<entry key="Table.archive">Архив</entry>
-	<entry key="Table.scope">Область видимости</entry>
+	<entry key="Table.fullText">Полнотекстовый поиск</entry>
 
 	<entry key="Table.id">Код</entry>
 	<entry key="Table.name">Наименование</entry>

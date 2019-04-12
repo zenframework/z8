@@ -30,6 +30,7 @@ public class Table extends TableBase {
 		public final static String Description = "Description";
 		public final static String Locked = "Locked";
 		public final static String Archive = "Archive";
+		public final static String FullText = "Full text";
 	}
 
 	static public class strings {
@@ -44,6 +45,7 @@ public class Table extends TableBase {
 		public final static String Description = "Table.description";
 		public final static String Locked = "Table.locked";
 		public final static String Archive = "Table.archive";
+		public final static String FullText = "Table.fullText";
 	}
 
 	static public class displayNames {
@@ -58,6 +60,7 @@ public class Table extends TableBase {
 		public final static String Description = Resources.get(strings.Description);
 		public final static String Locked = Resources.get(strings.Locked);
 		public final static String Archive = Resources.get(strings.Archive);
+		public final static String FullText = Resources.get(strings.FullText);
 	}
 
 	public static class CLASS<T extends Table> extends TableBase.CLASS<T> {
@@ -87,6 +90,7 @@ public class Table extends TableBase {
 
 	public BoolField.CLASS<? extends BoolField> locked = new BoolField.CLASS<BoolField>(this);
 	public BoolField.CLASS<? extends BoolField> archive = new BoolField.CLASS<BoolField>(this);
+	public TextField.CLASS<? extends TextField> fullText = new TextField.CLASS<TextField>(this);
 
 	final static public int IdLength = 15;
 	final static public int NameLength = 50;
@@ -152,6 +156,12 @@ public class Table extends TableBase {
 		archive.setIndex("archive");
 		archive.setDisplayName(displayNames.Archive);
 		archive.setSystem(true);
+		
+		fullText.setName(names.FullText);
+		fullText.setIndex("fullText");
+		fullText.setDisplayName(displayNames.FullText);
+		fullText.setExportable(false);
+		fullText.setSystem(true);
 
 		registerDataField(recordId);
 		registerDataField(createdAt);
@@ -159,6 +169,7 @@ public class Table extends TableBase {
 		registerDataField(createdBy);
 		registerDataField(modifiedBy);
 		registerDataField(archive);
+		registerDataField(fullText);
 
 		registerDataField(id);
 		registerDataField(name);
@@ -169,6 +180,11 @@ public class Table extends TableBase {
 	@Override
 	public Field primaryKey() {
 		return recordId.get();
+	}
+	
+	@Override
+	public Field fullTextField() {
+		return fullText.get();
 	}
 
 	@Override
@@ -188,7 +204,7 @@ public class Table extends TableBase {
 
 		super.beforeUpdate(data, recordId, fields, model, modelRecordId);
 	}
-
+	
 	public int controlSum() {
 		int result = 0;
 

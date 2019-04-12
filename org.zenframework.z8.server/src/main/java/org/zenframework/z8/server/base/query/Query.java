@@ -46,6 +46,8 @@ import org.zenframework.z8.server.db.sql.functions.InVector;
 import org.zenframework.z8.server.engine.ApplicationServer;
 import org.zenframework.z8.server.json.Json;
 import org.zenframework.z8.server.json.JsonWriter;
+import org.zenframework.z8.server.json.parser.JsonArray;
+import org.zenframework.z8.server.json.parser.JsonObject;
 import org.zenframework.z8.server.logs.Trace;
 import org.zenframework.z8.server.reports.BirtFileReader;
 import org.zenframework.z8.server.reports.ReportBindingFileReader;
@@ -55,7 +57,6 @@ import org.zenframework.z8.server.request.Loader;
 import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.runtime.OBJECT;
 import org.zenframework.z8.server.runtime.RCollection;
-import org.zenframework.z8.server.search.SearchEngine;
 import org.zenframework.z8.server.types.bool;
 import org.zenframework.z8.server.types.decimal;
 import org.zenframework.z8.server.types.exception;
@@ -275,10 +276,6 @@ public class Query extends Runnable {
 	protected void afterCreate(Query data, guid recordId, guid parentId, Query model, guid modelRecordId) {
 		if(ApplicationServer.events())
 			z8_afterCreate(data.myClass(), recordId, parentId, model.myClass(), modelRecordId);
-
-		if(hasAttribute(IObject.SearchIndex) && !searchFields.isEmpty()) {
-			SearchEngine.INSTANCE.updateRecord(this, recordId.toString());
-		}
 	}
 
 	public void beforeUpdate(guid recordId, Collection<Field> fields, Query model, guid modelId) {
@@ -303,6 +300,8 @@ public class Query extends Runnable {
 
 		if(ApplicationServer.events())
 			z8_beforeUpdate(data.myClass(), recordId, changedFields, model.myClass(), modelRecordId);
+
+		updateFullText(recordId);
 	}
 
 	public void afterUpdate(guid recordId, Collection<Field> fields, Query model, guid modelId) {
@@ -324,15 +323,6 @@ public class Query extends Runnable {
 
 		for(Field field : fields)
 			changedFields.add((Field.CLASS<? extends Field>)field.getCLASS());
-
-		if(hasAttribute(IObject.SearchIndex) && !searchFields.isEmpty()) {
-			for(Field.CLASS<? extends Field> field : changedFields) {
-				if(searchFields.contains(field)) {
-					SearchEngine.INSTANCE.updateRecord(this, recordId.toString());
-					break;
-				}
-			}
-		}
 
 		if(ApplicationServer.events())
 			z8_afterUpdate(data.myClass(), recordId, changedFields, model.myClass(), modelRecordId);
@@ -372,9 +362,6 @@ public class Query extends Runnable {
 	protected void afterDestroy(Query data, guid recordId, Query model, guid modelRecordId) {
 		if(ApplicationServer.events())
 			z8_afterDestroy(data.myClass(), recordId, model.myClass(), modelRecordId);
-
-		if(hasAttribute(IObject.SearchIndex) && !searchFields.isEmpty())
-			SearchEngine.INSTANCE.deleteRecord(this, recordId.toString());
 	}
 
 	public void onRender() {
@@ -1896,6 +1883,60 @@ public class Query extends Runnable {
 		return field.get().toString();
 	}
 
+	private void updateFullText(guid recordId) {
+		Field fullText = fullTextField();
+		
+		if(fullText == null || searchFields.isEmpty())
+			return;
+
+		Collection<Field> searchFields = CLASS.asList(this.searchFields);
+		
+		Map<Field, String> changedValues = new HashMap<Field, String>();
+		for(Field f : searchFields) {
+			if(f.changed())
+				changedValues.put(f, f.get().toString());
+		}
+		
+		try {
+			saveState();
+			
+			if(!readRecord(recordId, searchFields))
+				return;
+			
+			String result = "";
+			
+			for(Field f : searchFields) {
+				String value = parseFullTextValue(changedValues.containsKey(f) ? changedValues.get(f) : f.get().toString(), f);
+				if(!value.isEmpty())
+					result += (result.isEmpty() ? "" : " ") + value;
+			}
+			
+			fullText.set(new string(result));
+			
+		} finally {
+			restoreState();
+		}
+	}
+	
+	protected Field fullTextField() {
+		return null;
+	}
+	
+	private String parseFullTextValue(String value, Field f) {
+		if(f instanceof AttachmentField) {
+			String result = "";
+			JsonArray array = new JsonArray(value);
+			for(int i = 0; i < array.length(); i++){
+				JsonObject o = array.getJsonObject(i);
+				result += (result.isEmpty() ? "" : " ") + o.getString("name");
+			}
+			return result.trim();
+		} else if(f.type() == FieldType.String || f.type() == FieldType.Text)
+			return value.trim();
+		
+		return "";
+	}
+
 	public String getRecordFullText() {
 		List<Field> searchFields = getSearchFields();
 
@@ -1978,7 +2019,7 @@ public class Query extends Runnable {
 
 		writeSections(writer);
 	}
-
+	
 	private void writeRecordActions(JsonWriter writer) {
 		writer.startArray(Json.actions);
 
@@ -2580,8 +2621,27 @@ public class Query extends Runnable {
 	public void z8_refreshRecord(guid id) {
 		refreshRecord(id);
 	}
-
-	public string z8_getRecordFullText() {
-		return new string(getRecordFullText());
+	
+	public void z8_buildFullText() {
+		Field fullText = fullTextField();
+		if(fullText == null || searchFields.isEmpty())
+			return;
+		
+		Collection<Field> searchFields = CLASS.asList(this.searchFields);
+		read(searchFields);
+		
+		while(next()) {
+			guid recordId = recordId(); 
+			String result = "";
+			
+			for(Field f : searchFields) {
+				String value = parseFullTextValue(f.get().toString(), f);
+				if(!value.isEmpty())
+				result +=  (result.isEmpty() ? "" : " ") + value;
+			}
+			
+			fullText.set(new string(result));
+			update(recordId);
+		}
 	}
 }
