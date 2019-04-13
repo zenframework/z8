@@ -498,7 +498,7 @@ public class Query extends OBJECT {
 	}
 
 	public void group(Collection<Field> fields, Collection<Field> groupFields, SqlToken where) {
-		read(fields, groupFields, where, -1);
+		group(fields, groupFields, where, -1);
 	}
 
 	public void group(Collection<Field> fields, Collection<Field> groupFields, SqlToken where, SqlToken having) {
@@ -506,7 +506,7 @@ public class Query extends OBJECT {
 	}
 
 	public void group(Collection<Field> fields, Collection<Field> groupFields, SqlToken where, int limit) {
-		read(fields, groupFields, where, 0, limit);
+		group(fields, groupFields, where, 0, limit);
 	}
 
 	public void group(Collection<Field> fields, Collection<Field> groupFields, SqlToken where, int start, int limit) {

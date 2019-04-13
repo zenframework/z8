@@ -353,8 +353,8 @@ public class User implements IUser {
 		loadRequestAccess(privileges, defaultAccess);
 
 		/*
-		 * Trace.logEvent(privileges);
-		 */
+		* Trace.logEvent(privileges);
+		*/
 	}
 
 	private void loadTableAccess(IPrivileges privileges, IAccess defaultAccess) {
@@ -402,11 +402,8 @@ public class User implements IUser {
 
 		SqlToken where = rfa.role.get().inVector(getRoles());
 
-		SqlToken notRead = new NotEqu(read, new sql_bool(defaultAccess.read()));
-		SqlToken notWrite = new NotEqu(write, new sql_bool(defaultAccess.write()));
-		SqlToken having = new Group(Or.fromList(Arrays.asList(notRead, notWrite)));
+		rfa.group(fields, groups, where);
 
-		rfa.group(fields, groups, where, having);
 		while(rfa.next()) {
 			guid table = tableId.guid();
 

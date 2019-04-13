@@ -108,12 +108,10 @@ public class RoleFieldAccess extends Table {
 		read.setName(fieldNames.Read);
 		read.setIndex("read");
 		read.setDisplayName(displayNames.Read);
-		read.get().setDefault(bool.True);
 
 		write.setName(fieldNames.Write);
 		write.setIndex("write");
 		write.setDisplayName(displayNames.Write);
-		write.get().setDefault(bool.True);
 	}
 
 	@Override

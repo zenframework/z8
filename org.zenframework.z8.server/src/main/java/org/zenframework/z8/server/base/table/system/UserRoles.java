@@ -142,8 +142,10 @@ public class UserRoles extends Table {
 			throw new exception("Builtin user's roles can not be removed.");
 
 		Field user = this.user.get();
+		saveState();
 		if(readRecord(recordId, Arrays.asList(user)))
 			Users.notifyUserChange(user.guid());
+		restoreState();
 	}
 
 	public Collection<IRole> get(guid userId) {
