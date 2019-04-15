@@ -11,6 +11,10 @@ Z8.define('Z8.form.field.Group', {
 		return [this.section];
 	},
 
+	add: function(action) {
+		this.controls.push(action);
+	},
+
 	controlMarkup: function() {
 		var controls = this.controls;
 
