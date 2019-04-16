@@ -93,8 +93,9 @@ public class Files extends Table {
 
 		registerDataField(data);
 		registerDataField(path);
-
+		
 		unregisterDataField(archive);
+		unregisterDataField(fullText);
 	}
 
 	public void add(file file) {
