@@ -54,7 +54,6 @@ public class CreateAction extends RequestAction {
 
 		Query query = getQuery();
 		Field primaryKey = query.primaryKey();
-		Field parentKey = query.parentKey();
 
 		Map<String, Field> fieldsMap = new HashMap<String, Field>();
 
@@ -62,12 +61,11 @@ public class CreateAction extends RequestAction {
 			JsonObject record = (JsonObject)records.get(index);
 
 			guid recordId = QueryUtils.extractKey(record, primaryKey);
-			guid parentId = QueryUtils.extractKey(record, parentKey);
 
 			if(recordId == null || recordId.isNull())
 				recordId = guid.create();
 
-			query.onNew(recordId, parentId);
+			query.onNew();
 
 			for(String fieldId : JsonObject.getNames(record)) {
 				Field field = fieldsMap.get(fieldId);
@@ -86,7 +84,7 @@ public class CreateAction extends RequestAction {
 			primaryKey.set(recordId);
 
 			query.onCreateAction(recordId);
-			query.insert(recordId, parentId);
+			query.insert(recordId);
 
 			result.add(recordId);
 		}

@@ -217,15 +217,16 @@ public class Users extends Table {
 	}
 
 	@Override
-	public void onNew(guid recordId, guid parentId) {
+	public void onNew() {
+		super.onNew();
 		password.get().set(defaultPassword);
 		changePassword.get().set(bool.True);
-		super.onNew(recordId, parentId);
 	}
 
 	@Override
-	public void beforeCreate(guid recordId, guid parentId) {
-		super.beforeCreate(recordId, parentId);
+	public void beforeCreate(guid recordId) {
+		super.beforeCreate(recordId);
+
 		if (!ApplicationServer.userEventsEnabled())
 			return;
 
@@ -237,6 +238,7 @@ public class Users extends Table {
 	@Override
 	public void beforeUpdate(guid recordId) {
 		super.beforeUpdate(recordId);
+
 		if (!ApplicationServer.userEventsEnabled())
 			return;
 

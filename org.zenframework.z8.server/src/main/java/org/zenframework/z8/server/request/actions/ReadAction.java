@@ -68,8 +68,6 @@ public class ReadAction extends RequestAction {
 	private Collection<SqlToken> groupFilters = new LinkedHashSet<SqlToken>();
 	private Collection<Field> groupFilterFields = new LinkedHashSet<Field>();
 
-	guid parentId = null;
-
 	private int start = Query.DefaultStart;
 	private int limit = -1;
 
@@ -735,19 +733,16 @@ public class ReadAction extends RequestAction {
 
 	private void beforeRead() {
 		Query query = getQuery();
-		Field parentKey = query.parentKey();
-
-		parentId = parentKey != null ? getParentIdParameter() : null;
 
 		QueryUtils.setFieldValues(getContextQuery(), getRequestParameter(Json.values));
 
-		query.beforeRead(parentId);
+		query.beforeRead();
 
 		initFilters();
 	}
 
 	private void afterRead() {
-		getQuery().afterRead(parentId);
+		getQuery().afterRead();
 	}
 
 	@Override

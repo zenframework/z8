@@ -124,16 +124,13 @@ public class UpdateAction extends RequestAction {
 
 	private void createLink(Query owner, ILink link, guid ownerId, Query query) {
 		Field primaryKey = query.primaryKey();
-		Field parentKey = query.parentKey();
 
 		guid recordId = ownerId;
 		primaryKey.set(recordId);
 
-		guid parentId = parentKey != null ? parentKey.guid() : null;
-
-		query.onNew(recordId, parentId);
+		query.onNew();
 		query.onCreateAction(recordId);
-		query.insert(recordId, parentId);
+		query.insert(recordId);
 
 		link.set(recordId);
 		owner.update(ownerId);

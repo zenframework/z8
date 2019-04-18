@@ -161,15 +161,15 @@ public class TreeTable extends Table implements Connection.Listener {
 	}
 
 	@Override
-	public void beforeCreate(guid recordId, guid parentId) {
-		super.beforeCreate(recordId, parentId);
+	public void beforeCreate(guid recordId) {
+		super.beforeCreate(recordId);
 
 		if(!ApplicationServer.systemEventsEnabled())
 			return;
 
 		Field parentKey = this.parentId.get();
 
-		parentId = parentKey.guid();
+		guid parentId = parentKey.guid();
 		recordId = primaryKey().guid();
 
 		if(recordId.isNull())

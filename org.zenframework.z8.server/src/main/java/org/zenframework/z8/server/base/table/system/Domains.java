@@ -19,7 +19,6 @@ import org.zenframework.z8.server.runtime.IClass;
 import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.security.Domain;
 import org.zenframework.z8.server.types.bool;
-import org.zenframework.z8.server.types.guid;
 import org.zenframework.z8.server.types.integer;
 import org.zenframework.z8.server.types.string;
 
@@ -132,8 +131,8 @@ public class Domains extends Table {
 	}
 
 	@Override
-	public void onNew(guid recordId, guid parentId) {
-		super.onNew(recordId, parentId);
+	public void onNew() {
+		super.onNew();
 
 		Field address = this.address.get();
 		address.set(new string(displayNames.DefaultAddress + address.getSequencer().next()));

@@ -132,31 +132,22 @@ public class Query extends OBJECT {
 		return access != null ? access : (access = ApplicationServer.getUser().privileges().getTableAccess(this));
 	}
 
-	private void initFields(guid recordId, guid parentId) {
-		Field primaryKey = primaryKey();
-		Field parentKey = parentKey();
-
+	private void initFields() {
 		for(Field field : getPrimaryFields()) {
 			if(field.changed())
 				continue;
 
-			if(field == primaryKey) {
-				field.set(recordId);
-			} else if(field == parentKey && parentId != null) {
-				field.set(parentId);
-			} else {
-				primary value = field.getDefault();
-				if(!value.equals(field.getDefaultValue()))
-					field.set(value);
-			}
+			primary value = field.getDefault();
+			if(!value.equals(field.getDefaultValue()))
+				field.set(value);
 		}
 	}
 
-	public void onNew(guid recordId, guid parentId) {
+	public void onNew() {
 		if(ApplicationServer.userEventsEnabled())
-			z8_onNew(recordId, parentId);
+			z8_onNew();
 
-		initFields(recordId, parentId);
+		initFields();
 	}
 
 	public void onCopyAction(guid recordId) {
@@ -164,19 +155,19 @@ public class Query extends OBJECT {
 			z8_onCopyAction(recordId);
 	}
 
-	public void onCopy() {
+	public void onCopy(guid recordId) {
 		if(ApplicationServer.userEventsEnabled())
-			z8_onCopy();
+			z8_onCopy(recordId);
 	}
 
-	public void beforeRead(guid parentId) {
+	public void beforeRead() {
 		if(ApplicationServer.userEventsEnabled())
-			z8_beforeRead(parentId);
+			z8_beforeRead();
 	}
 
-	public void afterRead(guid parentId) {
+	public void afterRead() {
 		if(ApplicationServer.userEventsEnabled())
-			z8_afterRead(parentId);
+			z8_afterRead();
 	}
 
 	public void onCreateAction(guid recordId) {
@@ -184,14 +175,14 @@ public class Query extends OBJECT {
 			z8_onCreateAction(recordId);
 	}
 
-	public void beforeCreate(guid recordId, guid parentId) {
+	public void beforeCreate(guid recordId) {
 		if(ApplicationServer.userEventsEnabled())
-			z8_beforeCreate(recordId, parentId);
+			z8_beforeCreate(recordId);
 	}
 
-	public void afterCreate(guid recordId, guid parentId) {
+	public void afterCreate(guid recordId) {
 		if(ApplicationServer.userEventsEnabled())
-			z8_afterCreate(recordId, parentId);
+			z8_afterCreate(recordId);
 	}
 
 	public void onUpdateAction(guid recordId) {
@@ -334,16 +325,7 @@ public class Query extends OBJECT {
 		return cursor.next();
 	}
 
-	private guid getParentId() {
-		Field parentKey = parentKey();
-
-		if(parentKey != null)
-			return parentKey.changed() ? parentKey.guid() : guid.Null;
-
-		return null;
-	}
-
-	private Collection<Field> getInsertFields(guid recordId, guid parentId) {
+	private Collection<Field> getInsertFields(guid recordId) {
 		Collection<Field> myFields = new ArrayList<Field>();
 		Collection<Field> fields = getPrimaryFields();
 
@@ -353,9 +335,6 @@ public class Query extends OBJECT {
 
 			if(field.isPrimaryKey() && !field.changed())
 				field.set(recordId);
-
-			if(field.isParentKey() && parentId != null && !field.changed())
-				field.set(parentId);
 
 			myFields.add(field);
 		}
@@ -372,12 +351,12 @@ public class Query extends OBJECT {
 		insert.execute();
 	}
 
-	public guid insert(guid recordId, guid parentId) {
-		Collection<Field> fields = getInsertFields(recordId, parentId);
+	public guid insert(guid recordId) {
+		Collection<Field> fields = getInsertFields(recordId);
 
-		beforeCreate(recordId, parentId);
+		beforeCreate(recordId);
 		executeInsert(fields);
-		afterCreate(recordId, parentId);
+		afterCreate(recordId);
 
 		recordId = primaryKey().guid();
 
@@ -389,21 +368,16 @@ public class Query extends OBJECT {
 
 	public guid create() {
 		guid id = guid.create();
-		return create(id, getParentId());
+		return create(id);
 	}
 
 	public guid create(guid recordId) {
-		return create(recordId, guid.Null);
-	}
-
-	public guid create(guid recordId, guid parentId) {
-		onNew(recordId, parentId);
-		return insert(recordId, parentId);
+		onNew();
+		return insert(recordId);
 	}
 
 	public guid copy(guid recordId) {
-		guid parentId = getParentId();
-		return CopyAction.run(this, recordId, parentId);
+		return CopyAction.run(this, recordId);
 	}
 
 	public Collection<Field> read(Collection<Field> fields) {
@@ -1427,28 +1401,28 @@ public class Query extends OBJECT {
 		return new bool(next());
 	}
 
-	public void z8_onNew(guid recordId, guid parentId) {
+	public void z8_onNew() {
 	}
 
 	public void z8_onCopyAction(guid recordId) {
 	}
 
-	public void z8_onCopy() {
+	public void z8_onCopy(guid recordId) {
 	}
 
-	public void z8_beforeRead(guid parentId) {
+	public void z8_beforeRead() {
 	}
 
-	public void z8_afterRead(guid parentId) {
+	public void z8_afterRead() {
 	}
 
 	public void z8_onCreateAction(guid recordId) {
 	}
 
-	public void z8_beforeCreate(guid recordId, guid parentId) {
+	public void z8_beforeCreate(guid recordId) {
 	}
 
-	public void z8_afterCreate(guid recordId, guid parentId) {
+	public void z8_afterCreate(guid recordId) {
 	}
 
 	public void z8_onUpdateAction(guid recordId) {

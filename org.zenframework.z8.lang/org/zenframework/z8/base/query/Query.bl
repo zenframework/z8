@@ -42,14 +42,14 @@ public class Query extends Object {
 	virtual protected void onUpdateAction(guid recordId);
 	virtual protected void onDestroyAction(guid recordId);
 
-	virtual protected void onNew(guid recordId, guid parentId);
-	virtual protected void onCopy();
+	virtual protected void onNew();
+	virtual protected void onCopy(guid recordId);
 
-	virtual protected void beforeRead(guid parentId);
-	virtual protected void afterRead(guid parentId);
+	virtual protected void beforeRead();
+	virtual protected void afterRead();
 
-	virtual protected void beforeCreate(guid recordId, guid parentId);
-	virtual protected void afterCreate(guid recordId, guid parentId);
+	virtual protected void beforeCreate(guid recordId);
+	virtual protected void afterCreate(guid recordId);
 
 	virtual protected void beforeUpdate(guid recordId);
 	virtual protected void afterUpdate(guid recordId);

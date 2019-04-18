@@ -169,14 +169,14 @@ public class Roles extends Table {
 	}
 
 	@Override
-	public void z8_onCopy() {
-		super.z8_onCopy();
+	public void z8_onCopy(guid recordId) {
+		super.z8_onCopy(recordId);
 		lock.get().set(RecordLock.None);
 	}
 
 	@Override
-	public void z8_afterCreate(guid recordId, guid parentId) {
-		super.z8_afterCreate(recordId, parentId);
+	public void z8_afterCreate(guid recordId) {
+		super.z8_afterCreate(recordId);
 
 		RoleTableAccess rta = new RoleTableAccess.CLASS<RoleTableAccess>().get();
 

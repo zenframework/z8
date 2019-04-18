@@ -586,13 +586,8 @@ public class TableGenerator {
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	private void createStaticRecord(Map<IField, primary> record) {
 		Field primaryKey = table().primaryKey();
-		Field parentKey = table().parentKey();
 
 		guid recordId = (guid)record.get(primaryKey);
-		guid parentId = (guid)record.get(parentKey);
-
-		if(parentKey != null && parentId == null)
-			parentId = guid.Null;
 
 		Collection<Field> fields = (Collection)record.keySet();
 
@@ -604,7 +599,7 @@ public class TableGenerator {
 					primary value = record.get(field);
 					field.set(value);
 				}
-				table.create(recordId, parentId);
+				table.create(recordId);
 			} else {
 				boolean isUsers = table instanceof Users && (BuiltinUsers.System.guid().equals(recordId) || 
 						BuiltinUsers.Administrator.guid().equals(recordId));

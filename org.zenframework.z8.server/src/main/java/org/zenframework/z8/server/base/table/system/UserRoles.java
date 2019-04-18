@@ -129,8 +129,8 @@ public class UserRoles extends Table {
 	}
 
 	@Override
-	public void afterCreate(guid recordId, guid parentId) {
-		super.afterCreate(recordId, parentId);
+	public void afterCreate(guid recordId) {
+		super.afterCreate(recordId);
 		Users.notifyUserChange(user.get().guid());
 	}
 

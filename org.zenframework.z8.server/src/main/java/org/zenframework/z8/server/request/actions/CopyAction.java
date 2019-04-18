@@ -38,14 +38,13 @@ public class CopyAction extends RequestAction {
 		checkAccess(query);
 
 		guid recordId = getRecordIdParameter();
-		guid parentId = getParentIdParameter();
 
 		Connection connection = ConnectionManager.get();
 
 		try {
 			connection.beginTransaction();
 			query.onCopyAction(recordId);
-			recordId = run(query, recordId, parentId);
+			recordId = run(query, recordId);
 			connection.commit();
 		} catch(Throwable e) {
 			connection.rollback();
@@ -56,15 +55,13 @@ public class CopyAction extends RequestAction {
 	}
 
 	static private boolean canCopy(Field field) {
-		return !field.isPrimaryKey() && !field.unique();
+		return !field.unique();
 	}
 
-	static public guid run(Query query, guid recordId, guid parentId) {
-		guid newRecordId = guid.create();
-
+	static public guid run(Query query, guid recordId) {
 		Collection<Field> changed = query.getChangedFields();
 
-		query.onNew(newRecordId, parentId);
+		query.onNew();
 
 		Collection<Field> fields = query.getPrimaryFields();
 		Map<Field, primary> values = new HashMap<Field, primary>();
@@ -86,8 +83,17 @@ public class CopyAction extends RequestAction {
 				field.set(entry.getValue());
 		}
 
-		query.onCopy();
+		Field primaryKey = query.primaryKey();
 
-		return query.insert(newRecordId, parentId);
+		guid newRecordId = primaryKey.guid();
+
+		if(newRecordId.equals(recordId)) {
+			newRecordId = guid.create();
+			primaryKey.set(newRecordId);
+		}
+
+		query.onCopy(recordId);
+
+		return query.insert(newRecordId);
 	}
 }
