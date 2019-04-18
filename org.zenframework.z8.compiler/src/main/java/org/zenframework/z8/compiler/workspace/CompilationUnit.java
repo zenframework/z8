@@ -258,8 +258,13 @@ public class CompilationUnit extends Resource {
 		if(importedTypes == null)
 			importedTypes = new Set<IType>();
 
-		if(type != this.type && !type.isQualified() && !type.getUserName().equals(Primary.Void))
+		if(type != this.type && !type.getUserName().equals(Primary.Void))
 			importedTypes.add(type);
+	}
+
+	public void importType(IVariableType variableType) {
+		if(variableType != null && !variableType.isQualified())
+			importType(variableType.getType());
 	}
 
 	public IType[] getImportedTypes() {

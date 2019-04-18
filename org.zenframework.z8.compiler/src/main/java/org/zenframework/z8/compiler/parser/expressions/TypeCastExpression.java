@@ -83,7 +83,7 @@ public class TypeCastExpression extends LanguageElement {
 	@Override
 	public void getCode(CodeGenerator codeGenerator) {
 		if(typeDowncast != null) {
-			codeGenerator.getCompilationUnit().importType(variableType.getType());
+			codeGenerator.getCompilationUnit().importType(variableType);
 
 			codeGenerator.append('(');
 			codeGenerator.append('(' + variableType.getJavaName() + ')');

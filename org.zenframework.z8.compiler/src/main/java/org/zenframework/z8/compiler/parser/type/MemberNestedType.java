@@ -11,6 +11,7 @@ import org.zenframework.z8.compiler.core.IVariable;
 import org.zenframework.z8.compiler.core.IVariableType;
 import org.zenframework.z8.compiler.parser.expressions.QualifiedName;
 import org.zenframework.z8.compiler.parser.type.members.TypeBody;
+import org.zenframework.z8.compiler.parser.variable.VariableType;
 import org.zenframework.z8.compiler.workspace.CompilationUnit;
 
 public class MemberNestedType extends AbstractType implements IInitializer {
@@ -140,7 +141,7 @@ public class MemberNestedType extends AbstractType implements IInitializer {
 			return false;
 
 		IType baseType = findBaseType(declaringType) /*variableType.getType()*/;
-		setBaseType(baseType);
+		setBaseVariableType(new VariableType(baseType));
 
 		if(baseType != null) {
 			compilationUnit.addHyperlink(classToken.getPosition(), baseType);

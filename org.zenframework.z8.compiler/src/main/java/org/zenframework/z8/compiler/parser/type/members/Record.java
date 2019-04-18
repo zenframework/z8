@@ -285,7 +285,7 @@ public class Record extends LanguageElement implements IMember {
 		for(IAttribute attribute : attributes) {
 			IVariableType variableType = attribute.getVariableType();
 
-			codeGenerator.getCompilationUnit().importType(variableType.getType());
+			codeGenerator.getCompilationUnit().importType(variableType);
 
 			codeGenerator.indent();
 			codeGenerator.append("map.put(" + attribute.getName() + ".get(), ");

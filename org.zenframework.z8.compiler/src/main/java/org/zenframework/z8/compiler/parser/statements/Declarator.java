@@ -155,8 +155,8 @@ public class Declarator extends Initialization implements IVariable, IStatement 
 
 		IVariableType variableType = getVariableType();
 
-		codeGenerator.getCompilationUnit().importType(variableType.getType());
-		codeGenerator.append(variableType.getDeclaringJavaName() + " ");
+		variableType.getCode(codeGenerator);
+		codeGenerator.append(" ");
 
 		if(declareOnly) {
 			codeGenerator.append(getJavaName());

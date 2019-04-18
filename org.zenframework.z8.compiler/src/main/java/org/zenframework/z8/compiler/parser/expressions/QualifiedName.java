@@ -244,7 +244,7 @@ public class QualifiedName extends LanguageElement {
 		IVariableType variableType = getVariableType();
 
 		if(!variableType.isArray())
-			codeGenerator.getCompilationUnit().importType(getVariableType().getType());
+			codeGenerator.getCompilationUnit().importType(getVariableType());
 
 		codeGenerator.append("(");
 		codeGenerator.append("(" + variableTypes.get(0).getDeclaringJavaName() + ")");

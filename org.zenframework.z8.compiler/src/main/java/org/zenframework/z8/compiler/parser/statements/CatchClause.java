@@ -107,12 +107,14 @@ public class CatchClause extends LanguageElement implements IStatement {
 
 	@Override
 	public void getCode(CodeGenerator codeGenerator) {
-		IType type = getVariableType().getType();
+		IVariableType variableType = getVariableType();
+		IType type = variableType.getType();
+
+		String typeName = variableType.isQualified() ? type.getQualifiedJavaName() : type.getJavaName();
 
 		CompilationUnit compilationUnit = codeGenerator.getCompilationUnit();
-		compilationUnit.importType(type);
+		compilationUnit.importType(variableType);
 
-		String typeName = type.getJavaName();
 		String declaration = typeName + " " + declarator.getName();
 
 		if(type.isPrimary()) {

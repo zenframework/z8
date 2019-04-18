@@ -210,7 +210,7 @@ public class MethodCall extends LanguageElement implements IJavaTypeCast {
 			boolean needCast = javaCastPending && context.getVariableType().isArray() && !variableType.isArray() && !variableType.getType().getUserName().equals(Primary.Void);
 
 			if(needCast) {
-				codeGenerator.getCompilationUnit().importType(variableType.getType());
+				codeGenerator.getCompilationUnit().importType(variableType);
 				codeGenerator.append("((" + variableType.getDeclaringJavaName() + ")");
 			}
 

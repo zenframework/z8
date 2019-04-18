@@ -30,7 +30,8 @@ public abstract class AbstractType extends LanguageElement implements IType {
 
 	private ImportBlock importBlock;
 
-	protected IType baseType;
+	protected IVariableType baseVariableType;
+
 	protected IType containerType;
 	protected List<IType> nestedTypes;
 
@@ -49,7 +50,6 @@ public abstract class AbstractType extends LanguageElement implements IType {
 	private boolean semanticsChecked;
 	private boolean nestedTypesResolved;
 
-	private boolean isQualified;
 	private TempVariables tempVariables;
 
 	protected AbstractType() {
@@ -92,16 +92,6 @@ public abstract class AbstractType extends LanguageElement implements IType {
 		}
 
 		return false;
-	}
-
-	@Override
-	public boolean isQualified() {
-		return isQualified;
-	}
-
-	@Override
-	public void setQualified(boolean isQualified) {
-		this.isQualified = isQualified;
 	}
 
 	@Override
@@ -248,20 +238,26 @@ public abstract class AbstractType extends LanguageElement implements IType {
 	}
 
 	@Override
-	public IType getBaseType() {
-		return baseType;
+	public IVariableType getBaseVariableType() {
+		return baseVariableType;
 	}
 
 	@Override
-	public void setBaseType(IType baseType) {
-		this.baseType = baseType;
+	public void setBaseVariableType(IVariableType baseVariableType) {
+		this.baseVariableType = baseVariableType;
 
-		if(baseType != null) {
+		if(baseVariableType != null) {
 			CompilationUnit compilationUnit = getCompilationUnit();
-			compilationUnit.importType(baseType.getCompilationUnit().getType());
-			compilationUnit.addContributor(baseType.getCompilationUnit());
+			compilationUnit.importType(baseVariableType);
+			compilationUnit.addContributor(baseVariableType.getType().getCompilationUnit());
 		}
 	}
+
+	@Override
+	public IType getBaseType() {
+		return baseVariableType != null ? baseVariableType.getType() : null;
+	}
+
 
 	@Override
 	public boolean canBeBaseTypeOf(IType type) {
@@ -586,6 +582,8 @@ public abstract class AbstractType extends LanguageElement implements IType {
 
 	@Override
 	public boolean isSubtypeOf(IType candidate) {
+		IType baseType = getBaseType();
+
 		if(candidate != null && candidate.equals(baseType))
 			return true;
 
@@ -826,12 +824,14 @@ public abstract class AbstractType extends LanguageElement implements IType {
 		if(typeName.equals(userName))
 			return true;
 
+		IType baseType = getBaseType();
 		return baseType != null ? baseType.isSubtypeOf(typeName) : false;
-
 	}
 
 	protected void generateClassCode(CodeGenerator codeGenerator) {
-		String base = baseType == null ? BuiltinNative.OBJECT : (baseType.isQualified() ? baseType.getQualifiedJavaName() : baseType.getNestedJavaName());
+		IType baseType = getBaseType();
+		IVariableType baseVariableType = getBaseVariableType();
+		String base = baseType == null ? BuiltinNative.OBJECT : (baseVariableType.isQualified() ? baseType.getQualifiedJavaName() : baseType.getNestedJavaName());
 		String type = getNestedJavaName();
 
 		codeGenerator.indent();

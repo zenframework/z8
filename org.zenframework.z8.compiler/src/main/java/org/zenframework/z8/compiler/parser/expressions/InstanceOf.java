@@ -65,11 +65,12 @@ public class InstanceOf extends LanguageElement {
 
 	@Override
 	public void getCode(CodeGenerator codeGenerator) {
-		IType type = right.getType();
-		String javaName = type.isQualified() ? type.getQualifiedJavaName() : type.getJavaName();
+		IVariableType variableType = right.getVariableType();
+		IType type = variableType.getType();
+		String javaName = variableType.isQualified() ? type.getQualifiedJavaName() : type.getJavaName();
 
 		codeGenerator.getCompilationUnit().importType(booleanType);
-		codeGenerator.getCompilationUnit().importType(right.getType());
+		codeGenerator.getCompilationUnit().importType(variableType);
 
 		codeGenerator.append("new bool(");
 		left.getCode(codeGenerator);

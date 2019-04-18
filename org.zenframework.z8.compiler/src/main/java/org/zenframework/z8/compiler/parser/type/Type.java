@@ -178,7 +178,7 @@ public class Type extends AbstractType {
 					baseType = null;
 				}
 
-				setBaseType(baseType);
+				setBaseVariableType(baseVariableType);
 
 			}
 		}
@@ -205,7 +205,7 @@ public class Type extends AbstractType {
 
 		if(baseType != null && !canBeSubtypeOf(baseType)) {
 			setError(typeNameToken.getPosition(), "The hierarchy of the type " + getUserName() + " is inconsistent");
-			setBaseType(null);
+			setBaseVariableType(null);
 		}
 
 		if(baseType != null)
@@ -405,9 +405,10 @@ public class Type extends AbstractType {
 
 		codeGenerator.breakLine();
 
+		IVariableType baseVariableType = getBaseVariableType();
 		IType baseType = getBaseType();
 
-		String base = baseType == null ? BuiltinNative.OBJECT : (baseType.isQualified() ? baseType.getQualifiedJavaName() : baseType.getJavaName());
+		String base = baseVariableType == null ? BuiltinNative.OBJECT : (baseVariableType.isQualified() ? baseType.getQualifiedJavaName() : baseType.getJavaName());
 
 		codeGenerator.indent();
 		codeGenerator.append("@SuppressWarnings(\"all\")");

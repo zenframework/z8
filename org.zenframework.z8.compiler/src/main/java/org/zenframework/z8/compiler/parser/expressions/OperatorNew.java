@@ -61,7 +61,7 @@ public class OperatorNew extends LanguageElement {
 
 	@Override
 	public void getCode(CodeGenerator codeGenerator) {
-		codeGenerator.getCompilationUnit().importType(variableType.getType());
+		codeGenerator.getCompilationUnit().importType(variableType);
 		codeGenerator.append(variableType.getJavaNew(getStaticContext()));
 	}
 }

@@ -108,7 +108,7 @@ public class ArrayAccess extends LanguageElement implements IJavaTypeCast {
 		IVariableType variableType = getVariableType();
 
 		if(javaCastPending && !variableType.isArray()) {
-			codeGenerator.getCompilationUnit().importType(getVariableType().getType());
+			codeGenerator.getCompilationUnit().importType(variableType);
 			codeGenerator.append("((" + getVariableType().getDeclaringJavaName() + ")");
 		}
 

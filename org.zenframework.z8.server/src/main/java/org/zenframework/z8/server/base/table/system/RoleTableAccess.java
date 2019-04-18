@@ -155,7 +155,9 @@ public class RoleTableAccess extends Table {
 				create.set(bool.False);
 				copy.set(bool.False);
 				destroy.set(bool.False);
-			}
+				updateFieldsAccess(recordId, bool.False, bool.False);
+			} else
+				updateFieldsAccess(recordId, bool.True, bool.False);
 		} else if(write.changed()) {
 			if(!write.bool().get()) {
 				create.set(bool.False);
@@ -163,22 +165,27 @@ public class RoleTableAccess extends Table {
 				destroy.set(bool.False);
 			} else
 				read.set(bool.True);
+			updateFieldsAccess(recordId, bool.True, write.bool());
 		} else if(create.changed()) {
 			if(!create.bool().get())
 				copy.set(bool.False);
 			else {
 				read.set(bool.True);
 				write.set(bool.True);
+				updateFieldsAccess(recordId, bool.True, bool.True);
 			}
 		} else if(copy.changed()) {
 			if(copy.bool().get()) {
 				read.set(bool.True);
 				write.set(bool.True);
 				create.set(bool.True);
+				updateFieldsAccess(recordId, bool.True, bool.True);
 			}
 		} else if(destroy.changed()) {
-			if(destroy.bool().get())
+			if(destroy.bool().get()) {
 				read.set(bool.True);
+				updateFieldsAccess(recordId, bool.True, null);
+			}
 		}
 
 		super.z8_beforeUpdate(recordId);
@@ -191,5 +198,21 @@ public class RoleTableAccess extends Table {
 		Field role = this.role.get();
 		if(readRecord(recordId, Arrays.asList(role)))
 			Roles.notifyRoleChange(role.guid());
+	}
+
+	private void updateFieldsAccess(guid recordId, bool read, bool write) {
+		try {
+			saveState();
+
+			Field role = this.role.get();
+			Field table = this.table.get();
+			if(!readRecord(recordId, Arrays.asList(role, table)))
+				return;
+
+			RoleFieldAccess rfa = new RoleFieldAccess.CLASS<RoleFieldAccess>().get();
+			rfa.updateAccess(role.guid(), table.guid(), read, write);
+		} finally {
+			restoreState();
+		}
 	}
 }

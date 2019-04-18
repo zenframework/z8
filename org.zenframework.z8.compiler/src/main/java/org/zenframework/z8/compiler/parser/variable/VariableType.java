@@ -28,6 +28,7 @@ public class VariableType extends LanguageElement implements IVariableType {
 
 	private boolean isAuto;
 	private boolean isStatic;
+	private boolean isQualified;
 
 	private List<IType> keys = new ArrayList<IType>();
 	private List<IToken> keyTokens = new ArrayList<IToken>();
@@ -160,7 +161,7 @@ public class VariableType extends LanguageElement implements IVariableType {
 		if(type.extendsPrimary() || type.isEnum())
 			return type.getJavaName();
 
-		String javaName = type.isQualified() ? type.getQualifiedJavaName() : type.getJavaName();
+		String javaName = isQualified() ? type.getQualifiedJavaName() : type.getJavaName();
 
 		if(declaring)
 			return javaName + ".CLASS<? extends " + javaName + ">";
@@ -362,6 +363,11 @@ public class VariableType extends LanguageElement implements IVariableType {
 	}
 
 	@Override
+	public boolean isQualified() {
+		return isQualified;
+	}
+
+	@Override
 	public boolean resolveTypes(CompilationUnit compilationUnit, IType declaringType) {
 		if(!super.resolveTypes(compilationUnit, declaringType))
 			return false;
@@ -374,7 +380,7 @@ public class VariableType extends LanguageElement implements IVariableType {
 		else
 			type = compilationUnit.resolveType(typeName.toString());
 
-		boolean isQualified = typeName != null && typeName.getTokenCount() != 1;
+		isQualified = typeName != null && typeName.getTokenCount() != 1;
 
 		if(type == null) {
 			setFatalError(typeName.getPosition(), typeName + " cannot be resolved to a type");
@@ -382,8 +388,6 @@ public class VariableType extends LanguageElement implements IVariableType {
 				compilationUnit.addUnresolvedType(typeName.toString());
 			return false;
 		}
-
-		type.setQualified(isQualified);
 
 		compilationUnit.addContributor(type.getCompilationUnit());
 		compilationUnit.addContentProposal(typeName.getLastToken().getPosition(), new VariableType(getCompilationUnit(), type));
@@ -472,7 +476,7 @@ public class VariableType extends LanguageElement implements IVariableType {
 
 	@Override
 	public void getCode(CodeGenerator codeGenerator) {
-		codeGenerator.getCompilationUnit().importType(type);
+		codeGenerator.getCompilationUnit().importType(this);
 		codeGenerator.append(getDeclaringJavaName());
 	}
 }

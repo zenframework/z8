@@ -91,7 +91,7 @@ public class DeclaratorNestedType extends AbstractType {
 
 		IVariableType variableType = declarator.getVariableType();
 
-		setBaseType(variableType.getType());
+		setBaseVariableType(variableType);
 		setContainerType(declaringType);
 		declaringType.addNestedType(this);
 
@@ -119,8 +119,10 @@ public class DeclaratorNestedType extends AbstractType {
 
 	@Override
 	public void getClassCode(CodeGenerator codeGenerator) {
+		IVariableType variableType = getVariableType();
 		IType baseType = getBaseType();
-		String baseTypeName = baseType.isQualified() ? baseType.getQualifiedJavaName() : baseType.getJavaName();
+		String baseTypeName = variableType.isQualified() ? baseType.getQualifiedJavaName() : baseType.getJavaName();
+		
 		codeGenerator.indent();
 		codeGenerator.append("public static class " + getJavaName() + " extends " + baseTypeName);
 		codeGenerator.breakLine();

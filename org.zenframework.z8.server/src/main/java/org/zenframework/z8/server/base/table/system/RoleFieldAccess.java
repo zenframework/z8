@@ -7,6 +7,8 @@ import org.zenframework.z8.server.base.table.Table;
 import org.zenframework.z8.server.base.table.value.BoolField;
 import org.zenframework.z8.server.base.table.value.Field;
 import org.zenframework.z8.server.base.table.value.Link;
+import org.zenframework.z8.server.db.sql.expressions.And;
+import org.zenframework.z8.server.db.sql.expressions.Equ;
 import org.zenframework.z8.server.resources.Resources;
 import org.zenframework.z8.server.runtime.IClass;
 import org.zenframework.z8.server.runtime.IObject;
@@ -130,13 +132,29 @@ public class RoleFieldAccess extends Table {
 		super.z8_beforeUpdate(recordId);
 	}
 
+	private boolean notificationsDisabled = false;
+
 	@Override
 	public void z8_afterUpdate(guid recordId) {
 		super.z8_afterUpdate(recordId);
+
+		if(notificationsDisabled)
+			return;
 
 		Field role = this.role.get();
 		if(readRecord(recordId, Arrays.asList(role)))
 			Roles.notifyRoleChange(role.guid());
 	}
 
+	public void updateAccess(guid roleId, guid tableId, bool read, bool write) {
+		if(read != null)
+			this.read.get().set(read);
+
+		if(write != null)
+			this.write.get().set(write);
+
+		notificationsDisabled = true;
+		update(new And(new Equ(role.get(), roleId), new Equ(fields.get().table.get(), tableId)));
+		notificationsDisabled = false;
+	}
 }

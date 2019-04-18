@@ -28,18 +28,15 @@ public interface IType extends ILanguageElement {
 	String getJavaPackage();
 
 	String getQualifiedJavaName();
-
 	String getQualifiedUserName();
-
-	boolean isQualified();
-	void setQualified(boolean qualified);
 
 	@Override
 	IVariableType getVariableType();
 
-	IType getBaseType();
+	IVariableType getBaseVariableType();
+	void setBaseVariableType(IVariableType baseType);
 
-	void setBaseType(IType baseType);
+	IType getBaseType();
 
 	boolean canBeBaseTypeOf(IType type);
 

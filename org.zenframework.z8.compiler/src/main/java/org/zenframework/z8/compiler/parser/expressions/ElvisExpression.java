@@ -77,7 +77,7 @@ public class ElvisExpression extends LanguageElement {
 	public void getCode(CodeGenerator codeGenerator) {
 		IVariableType variableType = getVariableType();
 
-		codeGenerator.getCompilationUnit().importType(variableType.getType());
+		codeGenerator.getCompilationUnit().importType(variableType);
 
 		// ((type)(((temp = left) != null) ? temp : right))
 

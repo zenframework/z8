@@ -288,7 +288,7 @@ public class Member extends LanguageElement implements IMember {
 		if(getVariableType().isEnum() || initializer instanceof IType)
 			return;
 
-		codeGenerator.getCompilationUnit().importType(variableType.getType());
+		codeGenerator.getCompilationUnit().importType(variableType);
 
 		Initialization initialization = (Initialization)initializer;
 
