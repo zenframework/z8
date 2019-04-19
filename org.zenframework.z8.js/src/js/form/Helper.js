@@ -12,8 +12,8 @@ Z8.define('Z8.form.Helper', {
 
 			if(field.isAction) {
 				var type = field.type;
-				var config = { name: field.name, text: field.header, tooltip: field.description, icon: field.icon, primary: type == 'primary', success: type == 'success', danger: type == 'danger', action: field, colSpan: field.colSpan };
-				return cls != null ? Z8.create(cls, config) : new Z8.form.field.Action(config);
+				var config = { action: field, name: field.name, text: field.header, tooltip: field.description, icon: field.icon, primary: type == 'primary', success: type == 'success', danger: type == 'danger', colSpan: field.colSpan };
+				return cls != null ? Z8.create(cls, config) : (field.isReport ? new Z8.form.action.Report(config) : new Z8.form.action.Action(config));
 			}
 
 			var label = field.label !== false ? { text: field.header, icon: field.icon, align: 'top' } : false;
@@ -138,13 +138,13 @@ Z8.define('Z8.form.Helper', {
 			return cls != null ? Z8.create(cls, config) : new Z8.form.field.Group(config);
 		},
 
-		createActionGroup: function(actionGroup) {
+		createActionGroup: function(group) {
 			var config = {
-				name: actionGroup.name,
-				colSpan: actionGroup.colSpan
+				name: group.name,
+				colSpan: group.colSpan
 			};
-			var cls = Application.getSubclass(actionGroup.ui);
-			return cls != null ? Z8.create(cls, config) : new Z8.form.field.ActionGroup(config);
+			var cls = Application.getSubclass(group.ui);
+			return cls != null ? Z8.create(cls, config) : new Z8.form.action.Group(config);
 		},
 
 		createTab: function(tab) {

@@ -72,11 +72,12 @@
 	display: flex;
 	flex-direction: row;
 	align-items: center;
-	justify-content: flex-start;
+	justify-content: flex-end;
 	flex: 1;
 }
 
-.action-group>.action.btn {
+.action-group>.btn,
+.action-group>.btn-group {
 	margin-right: 1em;
 }
 

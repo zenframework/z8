@@ -51,6 +51,7 @@ public interface Json {
 	static public string isSelector = new string("isSelector");
 	static public string isCombobox = new string("isCombobox");
 	static public string isAction = new string("isAction");
+	static public string isReport = new string("isReport");
 	static public string isText = new string("isText");
 	static public string isTab = new string("isTab");
 	static public string isTabControl = new string("isTabControl");

@@ -1,4 +1,4 @@
-Z8.define('Z8.form.field.ActionGroup', {
+Z8.define('Z8.form.action.Group', {
 	extend: 'Z8.form.field.Control',
 
 	constructor: function(config) {
@@ -14,12 +14,12 @@ Z8.define('Z8.form.field.ActionGroup', {
 	},
 
 	subcomponents: function() {
-		return [this.actionGroup];
+		return [this.group];
 	},
 
 	controlMarkup: function() {
-		var actionGroup = this.actionGroup = new Z8.Container({ cls: 'action-group', items: this.actions });
-		return actionGroup.htmlMarkup();
+		var group = this.group = new Z8.Container({ cls: 'action-group', items: this.actions });
+		return group.htmlMarkup();
 	},
 
 	setReadOnly: function(readOnly) {
@@ -28,12 +28,12 @@ Z8.define('Z8.form.field.ActionGroup', {
 
 	setEnabled: function(enabled) {
 		this.callParent(enabled);
-		if(this.actionGroup != null)
-			this.actionGroup.setEnabled(enabled);
+		if(this.group != null)
+			this.group.setEnabled(enabled);
 	},
 
 	setActive: function(active) {
 		this.callParent(active);
-		this.actionGroup.setActive(active);
+		this.group.setActive(active);
 	}
 });

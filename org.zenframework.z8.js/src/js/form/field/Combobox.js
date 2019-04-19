@@ -185,7 +185,8 @@ Z8.define('Z8.form.field.Combobox', {
 		if(store != null)
 			store.setValues(record);
 
-		this.updateDependencies(record);
+		var value = record != null ? record.get(this.name) : null;
+		this.updateDependenciesByValue(value);
 	},
 
 	isEqual: function(v1, v2) {

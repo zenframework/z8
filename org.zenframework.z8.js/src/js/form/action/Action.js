@@ -1,4 +1,4 @@
-Z8.define('Z8.form.field.Action', {
+Z8.define('Z8.form.action.Action', {
 	extend: 'Z8.button.Button',
 
 	mixins: ['Z8.form.field.Field'],
@@ -8,9 +8,11 @@ Z8.define('Z8.form.field.Action', {
 	constructor: function(config) {
 		this.callParent(config);
 
-		if(this.action != null) {
-			this.handler = this.onAction;
-			this.scope = this;
+		var action = this.action;
+
+		if(action != null) {
+			this.handler = action.handler || this.onAction;
+			this.scope = action.scope || this;
 		}
 	},
 
@@ -33,8 +35,6 @@ Z8.define('Z8.form.field.Action', {
 	},
 
 	onAction: function(button) {
-		this.setBusy(true);
-
 		var action = this.action;
 
 		if(!Z8.isEmpty(action.parameters))
@@ -48,6 +48,9 @@ Z8.define('Z8.form.field.Action', {
 	},
 
 	runAction: function() {
+		if(!this.isBusy())
+			this.setBusy(true);
+
 		var action = this.action;
 
 		var record = this.getRecord();
@@ -77,6 +80,7 @@ Z8.define('Z8.form.field.Action', {
 				this.fireEvent('complete', this, record);
 			};
 			record.reload({ fn: reloadCallback, scope: this });
-		}
+		} else
+			this.setBusy(false);
 	}
 });

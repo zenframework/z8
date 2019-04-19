@@ -52,7 +52,7 @@ Z8.define('Z8.form.Form', {
 			control = this.initForm(control);
 		} else if(control.isFieldGroup || control instanceof Z8.form.field.Group) {
 			control = this.initFieldGroup(control);
-		} else if(control.isActionGroup || control instanceof Z8.form.field.ActionGroup) {
+		} else if(control.isActionGroup || control instanceof Z8.form.action.Group) {
 			control = this.initActionGroup(control);
 		} else if(control.isSection || control instanceof Z8.form.Fieldset) {
 			control = this.initFieldset(control);

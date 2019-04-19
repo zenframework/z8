@@ -1,10 +1,9 @@
-Z8.define('Z8.button.Report', {
-	extend: 'Z8.button.Button',
+Z8.define('Z8.form.action.Report', {
+	extend: 'Z8.form.action.Action',
 
 	constructor: function(config) {
 		this.callParent(config);
-
-		var action = this.action || { parameters: [{ id: 'format', value: 'pdf' }] };
+		this.action.parameters = this.action.parameters || [{ id: 'format', value: 'pdf' }];
 	},
 
 	htmlMarkup: function() {

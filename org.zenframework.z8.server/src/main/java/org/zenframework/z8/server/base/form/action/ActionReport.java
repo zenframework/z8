@@ -7,6 +7,7 @@ import org.zenframework.z8.server.json.Json;
 import org.zenframework.z8.server.json.JsonWriter;
 import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.runtime.RCollection;
+import org.zenframework.z8.server.types.bool;
 import org.zenframework.z8.server.types.guid;
 import org.zenframework.z8.server.types.string;
 
@@ -31,6 +32,8 @@ public class ActionReport extends Action {
 
 	public ActionReport(IObject container) {
 		super(container);
+
+		useTransaction = bool.False;
 	}
 
 	@Override
@@ -43,7 +46,7 @@ public class ActionReport extends Action {
 	@Override
 	public void writeMeta(JsonWriter writer, Query query, Query context) {
 		super.writeMeta(writer, query, context);
-		writer.writeProperty(Json.report, true);
+		writer.writeProperty(Json.isReport, true);
 	}
 
 	@SuppressWarnings("rawtypes")
