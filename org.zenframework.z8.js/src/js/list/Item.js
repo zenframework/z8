@@ -161,10 +161,6 @@ Z8.define('Z8.list.Item', {
 		return columns;
 	},
 
-/*	getCollapserIconCls: function() {
-		this.hasChildren() ? 'fa fa-chevron-' + (this.isCollapsed() ? 'right' : 'down') + ' ' : '') + 'icon', html: String.htmlText() };
-				var collapser = { tag: 'span', cls: 'collapser tree-level-' + (hasChildren ? level : level + 1), cn: [collapserIcon] };
-*/
 	getCellCls: function(field, record) {
 		return 'text' + (field.source != null ? ' ' + 'follow' : '');
 	},

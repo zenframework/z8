@@ -793,7 +793,7 @@ Z8.define('Z8.form.field.Listbox', {
 				this.createRecords(records);
 			};
 
-			this.selectorDlg = new Z8.window.Window({ header: this.query.text, icon: 'fa-plus-circle', autoClose: false, controls: [selector], selector: selector, handler: addRecordCallback, scope: this });
+			this.selectorDlg = new Z8.window.Window({ header: this.query.text, icon: 'fa-plus-circle', autoClose: false, controls: [selector], selector: selector, cls: this.selectorCls, handler: addRecordCallback, scope: this });
 			this.selectorDlg.open();
 		};
 

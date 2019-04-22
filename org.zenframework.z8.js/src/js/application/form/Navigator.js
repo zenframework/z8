@@ -384,6 +384,7 @@ Z8.define('Z8.application.form.Navigator', {
 		return {
 			cls: 'navigator-list-box' + (this.isFormPresentation() ? '' : ' display-none'),
 			store: store,
+			query: { id: store.getModelName(), text: store.form.text },
 			fields: names,
 			names: names,
 			label: label,

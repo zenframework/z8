@@ -10,13 +10,13 @@
 
 .fieldset {
 	position: relative;
+	margin-top: .71428572em;
 	padding-top: 1.42857143em;
 	padding-left: .71428571em;
 	padding-right: .71428571em;
+	padding-bottom: .71428571em;
 	border: 1px solid #ccc;
 	border-radius: .28571429em;
-	margin-top: .71428571em;
-	margin-bottom: .71428571em;
 }
 
 .fieldset.section {
@@ -52,20 +52,13 @@
 	align-items: flex-start;
 }
 
-.fieldset>.row>.cell>.tabs,
-.fieldset>.row>.cell>.control-group,
-.fieldset>.row>.cell>.control,
-.fieldset>.row>.cell>.btn-group,
-.fieldset>.row>.cell>.btn {
-	margin-bottom: .71428571em;
-}
-
-.field-group>.row>.cell>.tabs,
-.field-group>.row>.cell>.control-group,
-.field-group>.row>.cell>.control,
-.field-group>.row>.cell>.btn-group,
-.field-group>.row>.cell>.btn {
-	margin-bottom: 0;
+.fieldset>.row:not(:last-child)>.cell>.tabs,
+.fieldset>.row:not(:last-child)>.cell>.fieldset,
+.fieldset>.row:not(:last-child)>.cell>.control-group,
+.fieldset>.row:not(:last-child)>.cell>.control,
+.fieldset>.row:not(:last-child)>.cell>.btn-group,
+.fieldset>.row:not(:last-child)>.cell>.btn {
+	margin-bottom: 1.71428572em;
 }
 
 .action-group {
@@ -135,4 +128,5 @@
 	padding-top: .71428571em;
 	padding-left: .71428571em;
 	padding-right: .71428571em;
+	padding-bottom: .71428571em;
 }

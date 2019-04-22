@@ -5,7 +5,7 @@ Z8.define('Z8.form.Fieldset', {
 	mixins: ['Z8.form.field.Field'],
 
 	statics: {
-		MarginBottom: .71428571
+		MarginBottom: 1.71428572
 	},
 
 	isFieldset: true,
