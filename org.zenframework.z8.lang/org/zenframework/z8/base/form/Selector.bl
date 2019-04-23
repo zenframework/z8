@@ -4,6 +4,9 @@ import org.zenframework.z8.lang.Object;
 
 [native "org.zenframework.z8.server.base.form.Selector"]
 public class Selector extends Object {
+	public bool copy = false;
+	public bool multiselect = true;
+
 	public Link link;
 	public Field[] columns;
 	public Field[] sortFields;

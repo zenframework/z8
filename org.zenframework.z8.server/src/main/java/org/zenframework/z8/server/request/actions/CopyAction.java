@@ -6,10 +6,12 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.zenframework.z8.server.base.query.Query;
+import org.zenframework.z8.server.base.query.QueryUtils;
 import org.zenframework.z8.server.base.table.value.Field;
 import org.zenframework.z8.server.db.Connection;
 import org.zenframework.z8.server.db.ConnectionManager;
 import org.zenframework.z8.server.exceptions.AccessRightsViolationException;
+import org.zenframework.z8.server.json.Json;
 import org.zenframework.z8.server.json.JsonWriter;
 import org.zenframework.z8.server.types.guid;
 import org.zenframework.z8.server.types.primary;
@@ -36,6 +38,9 @@ public class CopyAction extends RequestAction {
 		Query query = getQuery();
 
 		checkAccess(query);
+
+		QueryUtils.setFieldValues(getContextQuery(), getRequestParameter(Json.values));
+		QueryUtils.setFieldValues(getContextQuery(), getRequestParameter(Json.data));
 
 		guid recordId = getRecordIdParameter();
 
@@ -87,7 +92,7 @@ public class CopyAction extends RequestAction {
 
 		guid newRecordId = primaryKey.guid();
 
-		if(newRecordId.equals(recordId)) {
+		if(newRecordId.equals(recordId) || newRecordId.equals(guid.Null)) {
 			newRecordId = guid.create();
 			primaryKey.set(newRecordId);
 		}

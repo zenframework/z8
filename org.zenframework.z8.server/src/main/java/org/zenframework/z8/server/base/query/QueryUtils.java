@@ -80,11 +80,22 @@ public class QueryUtils {
 		return record.has(key) ? record.getGuid(key) : null;
 	}
 
-	static public void setFieldValues(Query query, String json) {
+	static private JsonObject parse(String json) {
 		if(json == null || json.isEmpty())
-			return;
+			return null;
 
-		JsonObject record = new JsonObject(json);
+		if(!json.startsWith("["))
+			return new JsonObject(json);
+
+		JsonArray array = new JsonArray(json);
+		return array.isEmpty() ? null : array.getJsonObject(0);
+	}
+
+	static public void setFieldValues(Query query, String json) {
+		JsonObject record = parse(json);
+
+		if(record == null)
+			return;
 
 		for(String fieldId : JsonObject.getNames(record)) {
 			Field field = query.findFieldById(fieldId);

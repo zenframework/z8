@@ -158,6 +158,12 @@ Z8.define('Z8.form.field.Listbox', {
 		return values;
 	},
 
+	getValueFromFields: function() {
+		if(this.valueFromFields == null)
+			this.valueFromFields = this.store.getValueFromFields();
+		return this.valueFromFields;
+	},
+
 	attachRecordChange: function(record) {
 		if(record != null)
 			record.on('change', this.onRecordChange, this);
@@ -656,10 +662,10 @@ Z8.define('Z8.form.field.Listbox', {
 		if(linkedField == null)
 			return null;
 
-		return { link: { name: linkedField.link.name, query: { name: linkedField.query.name, primaryKey: linkedField.link.primaryKey }}, columns: columns };
+		return { link: { name: linkedField.link.name, query: { name: linkedField.query.name, primaryKey: linkedField.link.primaryKey }}, columns: columns, multiselect: true };
 	},
 
-	createRecordsSelector: function() {
+	createRecordsSelector: function(action) {
 		var selector = this.selector;
 
 		if(selector == null) {
@@ -668,88 +674,23 @@ Z8.define('Z8.form.field.Listbox', {
 			selector = this.selector = this.getSelectorConfig();
 		}
 
-		if(selector == null)
+		if(selector == null || action == 'copy' && !selector.copy)
 			return null;
 
 		var link = selector.link;
 		var query = link.query;
 		var columns = selector.columns;
 
-		var config = { isListbox: true, readOnly: true, label: false, tools: false, pagerMode: 'visible', checks: true, flex: 1, values: this.getValues() };
+		var config = { isListbox: true, readOnly: true, label: false, tools: false, pagerMode: 'visible', checks: selector.multiselect, flex: 1, values: this.getValues() };
 		Z8.apply(config, { name: link.name, query: { id: this.query.id, name: query.name, fields: columns, sort: selector.sort, columns: columns, primaryKey: null } });
 		return Z8.form.Helper.createControl(config);
 	},
 
-	newRecord: function() {
-		var record = Z8.create(this.getModel());
-
-		if(this.hasLink())
-			record.set(this.getLink(), this.getRecordId());
-
-		if(this.isDependent())
-			record.set(this.getDependencyField(), this.getDependsOnValue());
-
-		return record;
-	},
-
-	createRecords: function(records, callback) {
-		var batchCallback = function(records, success) {
-			if(success) {
-				this.reloadRecord();
-
-				var store = this.store;
-				store.setValues(this.getValues());
-				store.insert(records, 0);
-				var record = records[0];
-				this.select(record);
-
-				this.fireEvent('recordCreated', this, records);
-
-				if(this.selectorDlg != null || !this.startEdit(record, 0))
-					this.focus();
-			}
-
-			if(this.selectorDlg != null) {
-				if(success)
-					this.closeSelector();
-				else
-					this.selectorDlg.setBusy(false);
-			}
-
-			Z8.callback(callback, records, success);
-		};
-
-		var batch = new Z8.data.Batch({ model: this.getModel() });
-		batch.create( records, { fn: batchCallback, scope: this }, { values: this.getValues() });
-	},
-
-	closeSelector: function() {
-		this.selectorDlg.close();
-		this.selectorDlg = null;
-	},
-
-	onAddRecord: function(button) {
-		this.addRecord(button);
-	},
-
-	getValueFromFields: function() {
-		if(this.valueFromFields == null)
-			this.valueFromFields = this.store.getValueFromFields();
-		return this.valueFromFields;
-	},
-
-	reloadRecord: function(callback) {
-		var record = this.record;
-		if(record != null)
-			record.reload(callback);
-	},
-
-	addRecord: function(button) {
-		var selector = this.createRecordsSelector();
+	openSelector: function(action, button, callback) {
+		var selector = this.createRecordsSelector(action);
 
 		if(selector == null) {
-			var records = this.newRecord();
-			this.createRecords(records);
+			Z8.callback(callback, [this.newRecord()]);
 			return;
 		}
 
@@ -763,7 +704,7 @@ Z8.define('Z8.form.field.Listbox', {
 			if(!success)
 				return;
 
-			var addRecordCallback = function(dialog, success) {
+			var okCallback = function(dialog, success) {
 				if(!success) {
 					this.closeSelector();
 					this.focus();
@@ -790,14 +731,81 @@ Z8.define('Z8.form.field.Listbox', {
 					records.push(record);
 				}
 
-				this.createRecords(records);
+				Z8.callback(callback, records);
 			};
 
-			this.selectorDlg = new Z8.window.Window({ header: this.query.text, icon: 'fa-plus-circle', autoClose: false, controls: [selector], selector: selector, cls: this.selectorCls, handler: addRecordCallback, scope: this });
+			this.selectorDlg = new Z8.window.Window({ header: this.query.text, icon: 'fa-plus-circle', autoClose: false, controls: [selector], selector: selector, cls: this.selectorCls, handler: okCallback, scope: this });
 			this.selectorDlg.open();
 		};
 
 		selector.store.load({ fn: loadCallback, scope: this });
+	},
+
+	closeSelector: function() {
+		this.selectorDlg.close();
+		this.selectorDlg = null;
+	},
+
+	newRecord: function() {
+		var record = Z8.create(this.getModel());
+
+		if(this.hasLink())
+			record.set(this.getLink(), this.getRecordId());
+
+		if(this.isDependent())
+			record.set(this.getDependencyField(), this.getDependsOnValue());
+
+		return record;
+	},
+
+
+	onAddRecord: function(button) {
+		this.addRecord(button);
+	},
+
+	addRecord: function(button) {
+		var callback = function(records) {
+			this.createRecords(records);
+		};
+
+		this.openSelector('create', button, { fn: callback, scope: this });
+	},
+
+	createRecords: function(records, callback) {
+		var addTool = this.addTool;
+
+		var batchCallback = function(records, success) {
+			if(success) {
+				this.reloadRecord();
+
+				var store = this.store;
+				store.setValues(this.getValues());
+				store.insert(records, 0);
+				var record = records[0];
+				this.select(record);
+
+				this.fireEvent('recordCreated', this, records);
+
+				if(this.selectorDlg != null || !this.startEdit(record, 0))
+					this.focus();
+			}
+
+			var selectorDlg = this.selectorDlg;
+
+			if(selectorDlg != null)
+				success ? this.closeSelector() : selectorDlg.setBusy(false);
+
+			if(addTool != null)
+				addTool.setBusy(false);
+
+			Z8.callback(callback, records, success);
+		};
+
+		if(addTool != null)
+			addTool.setBusy(true);
+
+		var batch = new Z8.data.Batch({ model: this.getModel() });
+		batch.create( records, { fn: batchCallback, scope: this }, { values: this.getValues() });
 	},
 
 	onCopyRecord: function(button) {
@@ -805,9 +813,17 @@ Z8.define('Z8.form.field.Listbox', {
 	},
 
 	copyRecord: function(record, button) {
+		var callback = function(records) {
+			this.copyRecords(record, records[0]);
+		};
+
+		this.openSelector('create', button, { fn: callback, scope: this });
+	},
+
+	copyRecords: function(record, newRecord) {
+		var copyTool = this.copyTool;
+
 		var callback = function(record, success) {
-			if(button != null)
-				button.setBusy(false);
 			if(success) {
 				this.reloadRecord();
 				this.store.insert(record, 0);
@@ -815,13 +831,26 @@ Z8.define('Z8.form.field.Listbox', {
 				if(!this.startEdit(record, 0))
 					this.focus();
 			}
+
+			var selectorDlg = this.selectorDlg;
+
+			if(selectorDlg != null)
+				success ? this.closeSelector() : selectorDlg.setBusy(false);
+
+			if(copyTool != null)
+				copyTool.setBusy(false);
 		};
 
-		if(button != null)
-			button.setBusy(true);
+		if(copyTool != null)
+			copyTool.setBusy(true);
 
-		var newRecord = Z8.create(this.getModel());
 		newRecord.copy(record, { fn: callback, scope: this }, { values: this.getValues() });
+	},
+
+	reloadRecord: function(callback) {
+		var record = this.record;
+		if(record != null)
+			record.reload(callback);
 	},
 
 	onBeforeLoad: function(store) {
@@ -884,7 +913,7 @@ Z8.define('Z8.form.field.Listbox', {
 			this.store.setPeriod(period);
 		this.onRefresh(this.periodTool);
 	},
-	
+
 	getSelectedIds: function() {
 		var records = [];
 		var selected = this.getChecked();
