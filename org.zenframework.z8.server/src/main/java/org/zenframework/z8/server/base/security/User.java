@@ -40,6 +40,7 @@ public class User extends OBJECT {
 	public RLinkedHashMap<string, primary> parameters;
 
 	private boolean isSystem;
+	private boolean isAdministrator;
 
 	public User(IObject container) {
 		super(container);
@@ -70,10 +71,15 @@ public class User extends OBJECT {
 		parameters = (RLinkedHashMap<string, primary>)user.parameters();
 
 		isSystem = user.isBuiltinAdministrator();
+		isAdministrator = user.isAdministrator();
 	}
 
 	public bool z8_isSystem() {
 		return new bool(isSystem);
+	}
+
+	public bool z8_isAdministrator() {
+		return new bool(isAdministrator);
 	}
 
 	public string z8_getParameter(string key, string defaultValue) {

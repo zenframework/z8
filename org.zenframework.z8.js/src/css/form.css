@@ -48,7 +48,7 @@
 }
 
 .fieldset>.row>.cell.action {
-	justify-content: flex-end;
+	justify-content: center;
 	align-items: flex-start;
 }
 

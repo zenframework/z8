@@ -90,6 +90,10 @@ public class DocsGenerator {
 				String url = hyperlink.getCompilationUnit().getQualifiedName();
 
 				int offset = from.getOffset();
+
+				if(offset <= start)
+					continue;
+
 				int length = from.getLength();
 
 				result += decorate(content.substring(start, offset));
