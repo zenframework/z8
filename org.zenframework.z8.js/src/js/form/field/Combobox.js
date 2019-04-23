@@ -170,9 +170,6 @@ Z8.define('Z8.form.field.Combobox', {
 
 		this.displayValue = displayValue = this.isEmptyValue(value) ? '' : this.formatValue(displayValue);
 
-//		if(this.didValueChange(value, this.getValue()))
-//			this.updateDependenciesByValue(value);
-
 		this.clearFilter();
 		this.callParent(value, displayValue);
 	},
@@ -185,33 +182,37 @@ Z8.define('Z8.form.field.Combobox', {
 		if(store != null)
 			store.setValues(record);
 
-		var value = record != null ? record.get(this.name) : null;
-
-		this.initializing = true;
-		this.updateDependenciesByValue(value);
-		this.initializing = false;
+		this.innerUpdateDependencies(record);
 	},
 
 	isEqual: function(v1, v2) {
 		return (Z8.isEmpty(v1) || v1 == guid.Null) && (Z8.isEmpty(v2) || v2 == guid.Null) || this.callParent(v1, v2);
 	},
 
-	updateDependenciesByValue: function(value) {
+	innerUpdateDependencies: function(record) {
 		var store = this.getStore();
 		if(store == null || this.dependencies == null)
 			return;
 
-		var record = null;
+		var value = record != null ? record.get(this.name) : null;
+
+		var tempRecord = null;
 
 		if(value != null) {
-			record = store.getById(value);
-			if(record == null) {
-				var record = Z8.create(store.getModel());
-				record.setId(value);
-			}
+			var selectedRecord = store.getById(value);
+
+			var tempRecord = Z8.create(store.getModel());
+			tempRecord.setId(value);
+
+			if(selectedRecord != null)
+				Z8.apply(tempRecord.data, selectedRecord.data);
+			if(record != null)
+				Z8.apply(tempRecord.data, record.data);
 		}
 
-		this.updateDependencies(record);
+		this.initializing = true;
+		this.updateDependencies(tempRecord);
+		this.initializing = false;
 	},
 
 	onDependencyChange: function(record, control) {
