@@ -169,7 +169,7 @@ public class TreeTable extends Table implements Connection.Listener {
 
 		Field parentKey = this.parentId.get();
 
-		guid parentId = parentKey.guid();
+		guid parentId = parentKey.changed() ? parentKey.guid() : guid.Null;
 		recordId = primaryKey().guid();
 
 		if(recordId.isNull())
