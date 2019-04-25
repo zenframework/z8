@@ -23,6 +23,8 @@ public class Database extends Object {
 
 	public JsonObject toJson();
 
+	public Connection connection();
+
 	static public Database fromJson(string json);
 	static public Database fromJson(JsonObject json);
 	static public Database currentDatabase();

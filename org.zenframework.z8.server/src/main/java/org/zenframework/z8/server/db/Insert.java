@@ -8,7 +8,6 @@ import org.zenframework.z8.server.base.query.Query;
 import org.zenframework.z8.server.base.table.value.Field;
 import org.zenframework.z8.server.engine.Database;
 import org.zenframework.z8.server.logs.Trace;
-import org.zenframework.z8.server.types.primary;
 
 public class Insert extends Statement {
 	private Query query;
@@ -67,8 +66,7 @@ public class Insert extends Statement {
 		int position = 1;
 
 		for(Field field : fields) {
-			primary value = field.getDefault();
-			set(position, field.type(), value);
+			set(position, field,  field.getDefault());
 			position++;
 		}
 	}

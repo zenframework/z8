@@ -3,11 +3,14 @@ package org.zenframework.z8.server.db;
 import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigInteger;
+import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
 
+import org.zenframework.z8.server.base.table.value.Field;
+import org.zenframework.z8.server.base.table.value.TimestampField;
 import org.zenframework.z8.server.engine.Database;
 import org.zenframework.z8.server.logs.Trace;
 import org.zenframework.z8.server.types.binary;
@@ -111,11 +114,11 @@ public abstract class BasicStatement implements IStatement {
 		}
 	}
 
-	public void setNull(int position) throws SQLException {
+	private void setNull(int position) throws SQLException {
 		statement.setNull(position, Types.NULL);
 	}
 
-	public void setBinary(int position, binary value) throws SQLException {
+	private void setBinary(int position, binary value) throws SQLException {
 		try {
 			value = value != null ? value : new binary();
 			InputStream stream = value.get();
@@ -128,7 +131,7 @@ public abstract class BasicStatement implements IStatement {
 		}
 	}
 
-	public void setBoolean(int position, bool value) throws SQLException {
+	private void setBoolean(int position, bool value) throws SQLException {
 		value = value != null ? value : bool.False;
 
 		switch(vendor()) {
@@ -140,15 +143,20 @@ public abstract class BasicStatement implements IStatement {
 		}
 	}
 
-	public void setDate(int position, date value) throws SQLException {
+	private void setDate(int position, date value) throws SQLException {
 		statement.setLong(position, value != null ? value.getTicks() : date.UtcMin);
 	}
 
-	public void setDatespan(int position, datespan value) throws SQLException {
-		setInteger(position, new integer(value.get()));
+	private void setTimestamp(int position, date value) throws SQLException {
+		value = value != null ? value : date.Min;
+		statement.setDate(position, new Date(value != null ?value.getTicks() : date.UtcMin));
 	}
 
-	public void setDecimal(int position, decimal value) throws SQLException {
+	private void setDatespan(int position, datespan value) throws SQLException {
+		statement.setLong(position, value.get());
+	}
+
+	private void setDecimal(int position, decimal value) throws SQLException {
 		value = value != null ? value : decimal.Zero;
 
 		double d = value.getDouble();
@@ -159,7 +167,7 @@ public abstract class BasicStatement implements IStatement {
 			statement.setBigDecimal(position, value.get());
 	}
 
-	public void setGeometry(int position, geometry value) throws SQLException {
+	private void setGeometry(int position, geometry value) throws SQLException {
 		InputStream stream = value != null ? value.stream() : null;
 		if(stream != null)
 			statement.setBinaryStream(position,  stream);
@@ -167,7 +175,7 @@ public abstract class BasicStatement implements IStatement {
 			setNull(position);
 	}
 
-	public void setGuid(int position, guid value) throws SQLException {
+	private void setGuid(int position, guid value) throws SQLException {
 		value = value != null ? value : new guid();
 
 		switch(vendor()) {
@@ -199,12 +207,28 @@ public abstract class BasicStatement implements IStatement {
 		}
 	}
 
-	public void setInteger(int position, integer value) throws SQLException {
+	private void setInteger(int position, integer value) throws SQLException {
 		statement.setLong(position, value != null ? value.get() : 0);
 	}
 
-	public void setString(int position, string value) throws SQLException {
+	private void setString(int position, string value) throws SQLException {
 		statement.setString(position, value != null ? value.get() : null);
+	}
+
+	public void set(int position, Field field, primary value) throws SQLException {
+		FieldType type = field.type();
+
+		switch(type) {
+		case Date:
+		case Datetime:
+			if(field instanceof TimestampField)
+				setTimestamp(position, (date)value);
+			else
+				setDate(position, (date)value);
+			break;
+		default:
+			set(position, type, value);
+		};
 	}
 
 	public void set(int position, FieldType type, primary value) throws SQLException {

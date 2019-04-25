@@ -33,11 +33,15 @@ public class BasicSelect extends BasicStatement {
 	}
 
 	public static Cursor cursor(String sql) throws SQLException {
-		return cursor(null, sql);
+		return cursor((Database)null, sql);
 	}
 
 	public static Cursor cursor(Database database, String sql) throws SQLException {
-		BasicSelect select = new BasicSelect(ConnectionManager.get(database));
+		return cursor(ConnectionManager.get(database), sql);
+	}
+
+	public static Cursor cursor(Connection connection, String sql) throws SQLException {
+		BasicSelect select = new BasicSelect(connection);
 		select.prepare(sql);
 		return select.execute();
 	}

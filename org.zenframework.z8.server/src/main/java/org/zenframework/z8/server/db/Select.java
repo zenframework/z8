@@ -66,8 +66,14 @@ public class Select {
 		}
 	}
 
+	private Connection getConnection() {
+		Query query = rootQuery == null ? select.rootQuery : rootQuery;
+		Connection connection = query.getConnection();
+		return connection != null ? connection : ConnectionManager.get();
+	}
+
 	public Database database() {
-		return ServerConfig.database();
+		return getConnection().database();
 	}
 
 	public DatabaseVendor vendor() {
@@ -334,7 +340,7 @@ public class Select {
 		long startAt = traceSql ? System.currentTimeMillis() : 0;
 
 		try {
-			cursor = BasicSelect.cursor(sql);
+			cursor = BasicSelect.cursor(getConnection(), sql);
 		} catch(Throwable e) {
 			close();
 			Trace.logError(sql, e);

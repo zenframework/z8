@@ -358,7 +358,8 @@ public class Query extends OBJECT {
 		executeInsert(fields);
 		afterCreate(recordId);
 
-		recordId = primaryKey().guid();
+		Field primaryKey = primaryKey();
+		recordId = primaryKey != null ? primaryKey.guid() : recordId;
 
 		for(Field field : fields)
 			field.reset();
@@ -1445,5 +1446,9 @@ public class Query extends OBJECT {
 
 	@SuppressWarnings("rawtypes")
 	public void z8_onReport(string report, RCollection recordIds) {
+	}
+
+	public void z8_setConnection(org.zenframework.z8.server.base.sql.Connection.CLASS<? extends org.zenframework.z8.server.base.sql.Connection> connectionCls) {
+		setConnection(connectionCls.get().connection);
 	}
 }

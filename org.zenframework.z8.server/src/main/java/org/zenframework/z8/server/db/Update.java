@@ -9,7 +9,6 @@ import org.zenframework.z8.server.base.table.value.Field;
 import org.zenframework.z8.server.db.sql.FormatOptions;
 import org.zenframework.z8.server.logs.Trace;
 import org.zenframework.z8.server.types.guid;
-import org.zenframework.z8.server.types.primary;
 import org.zenframework.z8.server.types.sql.sql_bool;
 
 public class Update extends Statement {
@@ -80,8 +79,7 @@ public class Update extends Statement {
 
 		for(Field field : fields) {
 			if(!field.isPrimaryKey()) {
-				primary value = field.getDefaultValue();
-				set(position, field.type(), value);
+				set(position, field, field.getDefaultValue());
 				position++;
 			}
 		}
