@@ -28,8 +28,8 @@ Z8.define('Z8.form.field.Listbox', {
 		this.setValue(this.value);
 	},
 
-	isEmptyValue: function(value) {
-		return this.store.getCount() == 0;
+	isValid: function() {
+		return this.list.getCount() == 0;
 	},
 
 	getValue: function() {
