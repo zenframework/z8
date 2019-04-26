@@ -5,5 +5,9 @@ public class Connection extends Object {
 	public void beginTransaction();
 	public void commit();
 	public void rollback();
+
+	public void execute(string sql);
+	public void call(string name, primary[] parameters);
+
 	public void flush();
 }

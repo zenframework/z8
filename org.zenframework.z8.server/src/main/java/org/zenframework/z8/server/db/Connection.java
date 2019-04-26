@@ -267,6 +267,16 @@ public class Connection {
 		listeners = null;
 	}
 
+	public void execute(String sql) {
+		try {
+			BasicStatement statement = new Statement(this);
+			statement.prepare(sql);
+			statement.executeUpdate();
+		} catch(SQLException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
 	public void flush() {
 		if(!inTransaction())
 			return;
@@ -302,6 +312,15 @@ public class Connection {
 
 	public PreparedStatement prepareStatement(String sql) throws SQLException {
 		return prepareStatement(sql, 0);
+	}
+
+	public PreparedStatement prepareCall(String sql) throws SQLException {
+		try {
+			return connection.prepareCall(sql);
+		} catch(SQLException e) {
+			checkAndReconnect(e);
+			return connection.prepareCall(sql);
+		}
 	}
 
 	public PreparedStatement prepareStatement(String sql, int priority) throws SQLException {
@@ -366,6 +385,17 @@ public class Connection {
 			statement.safeClose();
 			statement.prepare();
 			return statement.statement().executeUpdate();
+		}
+	}
+
+	public void executeCall(BasicStatement statement) throws SQLException {
+		try {
+			statement.statement().execute();
+		} catch(SQLException e) {
+			checkAndReconnect(e);
+			statement.safeClose();
+			statement.prepare();
+			statement.statement().execute();
 		}
 	}
 }

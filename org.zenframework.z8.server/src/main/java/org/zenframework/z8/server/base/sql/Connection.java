@@ -1,7 +1,10 @@
 package org.zenframework.z8.server.base.sql;
 
+import org.zenframework.z8.server.db.Call;
 import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.runtime.OBJECT;
+import org.zenframework.z8.server.runtime.RCollection;
+import org.zenframework.z8.server.types.string;
 
 public class Connection extends OBJECT {
 	public static class CLASS<T extends Connection> extends OBJECT.CLASS<T> {
@@ -40,5 +43,14 @@ public class Connection extends OBJECT {
 
 	public void z8_flush() {
 		connection.flush();
+	}
+
+	public void z8_execute(string sql) {
+		connection.execute(sql.get());
+	}
+
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	public void z8_call(string name, RCollection parameters) {
+		new Call(name.get(), parameters, connection).execute();
 	}
 }

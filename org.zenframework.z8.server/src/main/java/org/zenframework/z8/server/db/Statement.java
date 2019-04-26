@@ -17,7 +17,7 @@ public class Statement extends BasicStatement {
 	public static int executeUpdate(String sql) throws SQLException {
 		return executeUpdate(sql, 0);
 	}
-	
+
 	public static int executeUpdate(String sql, int priority) throws SQLException {
 		Connection connection = ConnectionManager.get();
 

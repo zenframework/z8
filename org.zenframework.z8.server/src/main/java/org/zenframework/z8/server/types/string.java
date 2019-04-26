@@ -181,6 +181,10 @@ public final class string extends primary {
 		return length < value.length() ? value.substring(0, length) : value;
 	}
 
+	public binary binary() {
+		return new binary(this);
+	}
+
 	public exception exception() {
 		return new exception(this);
 	}

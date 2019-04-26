@@ -138,7 +138,7 @@ public class Query extends OBJECT {
 				continue;
 
 			primary value = field.getDefault();
-			if(!value.equals(field.getDefaultValue()))
+			if(value != null && !value.equals(field.getDefaultValue()))
 				field.set(value);
 		}
 	}

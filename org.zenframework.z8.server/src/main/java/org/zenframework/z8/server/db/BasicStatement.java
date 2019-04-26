@@ -86,6 +86,11 @@ public abstract class BasicStatement implements IStatement {
 	}
 
 	@Override
+	public void executeCall() throws SQLException {
+		connection.executeCall(this);
+	}
+
+	@Override
 	protected void finalize() throws Throwable {
 		close();
 	}
@@ -120,11 +125,8 @@ public abstract class BasicStatement implements IStatement {
 
 	private void setBinary(int position, binary value) throws SQLException {
 		try {
-			value = value != null ? value : new binary();
 			InputStream stream = value.get();
-
 			long size = stream.available();
-
 			statement.setBinaryStream(position, stream, size);
 		} catch(IOException e) {
 			throw new RuntimeException(e);
@@ -132,8 +134,6 @@ public abstract class BasicStatement implements IStatement {
 	}
 
 	private void setBoolean(int position, bool value) throws SQLException {
-		value = value != null ? value : bool.False;
-
 		switch(vendor()) {
 		case Postgres:
 			statement.setInt(position, value.get() ? 1 : 0);
@@ -144,12 +144,11 @@ public abstract class BasicStatement implements IStatement {
 	}
 
 	private void setDate(int position, date value) throws SQLException {
-		statement.setLong(position, value != null ? value.getTicks() : date.UtcMin);
+		statement.setLong(position, value.getTicks());
 	}
 
 	private void setTimestamp(int position, date value) throws SQLException {
-		value = value != null ? value : date.Min;
-		statement.setDate(position, new Date(value != null ?value.getTicks() : date.UtcMin));
+		statement.setDate(position, new Date(value.getTicks()));
 	}
 
 	private void setDatespan(int position, datespan value) throws SQLException {
@@ -157,8 +156,6 @@ public abstract class BasicStatement implements IStatement {
 	}
 
 	private void setDecimal(int position, decimal value) throws SQLException {
-		value = value != null ? value : decimal.Zero;
-
 		double d = value.getDouble();
 
 		if(Math.abs(d) < 0.1)
@@ -168,16 +165,10 @@ public abstract class BasicStatement implements IStatement {
 	}
 
 	private void setGeometry(int position, geometry value) throws SQLException {
-		InputStream stream = value != null ? value.stream() : null;
-		if(stream != null)
-			statement.setBinaryStream(position,  stream);
-		else
-			setNull(position);
+		statement.setBinaryStream(position,  value.stream());
 	}
 
 	private void setGuid(int position, guid value) throws SQLException {
-		value = value != null ? value : new guid();
-
 		switch(vendor()) {
 		case Oracle: {
 			byte[] b = new BigInteger(value.toString(false), 16).toByteArray();
@@ -208,14 +199,30 @@ public abstract class BasicStatement implements IStatement {
 	}
 
 	private void setInteger(int position, integer value) throws SQLException {
-		statement.setLong(position, value != null ? value.get() : 0);
+		statement.setLong(position, value.get());
 	}
 
 	private void setString(int position, string value) throws SQLException {
-		statement.setString(position, value != null ? value.get() : null);
+		statement.setString(position, value.get());
+	}
+
+	private void setText(int position, string value) throws SQLException {
+		setBinary(position, new binary(value.getBytes(charset())));
+	}
+
+	private boolean processNull(int position, primary value) throws SQLException {
+		if(value != null)
+			return false;
+
+		Trace.logEvent("BasicStatement: null at position " + position);
+		setNull(position);
+		return true;
 	}
 
 	public void set(int position, Field field, primary value) throws SQLException {
+		if(processNull(position, value))
+			return;
+
 		FieldType type = field.type();
 
 		switch(type) {
@@ -232,12 +239,14 @@ public abstract class BasicStatement implements IStatement {
 	}
 
 	public void set(int position, FieldType type, primary value) throws SQLException {
+		if(processNull(position, value))
+			return;
+
 		switch(type) {
 		case Attachments:
 		case File:
 		case Text:
-			string string = value != null ? (string)value : new string();
-			setBinary(position, new binary(string.getBytes(charset())));
+			setText(position, (string)value);
 			break;
 		case Binary:
 			setBinary(position, (binary)value);

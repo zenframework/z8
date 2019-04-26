@@ -3,7 +3,6 @@ package org.zenframework.z8.server.db;
 import java.sql.SQLException;
 
 import org.zenframework.z8.server.base.query.Query;
-import org.zenframework.z8.server.engine.Database;
 import org.zenframework.z8.server.logs.Trace;
 import org.zenframework.z8.server.types.guid;
 
@@ -12,7 +11,7 @@ public class Delete extends Statement {
 	private Query query;
 
 	public Delete(Query query, guid recordId) {
-		super(ConnectionManager.get());
+		super(query.getConnection());
 
 		if(recordId == null)
 			throw new RuntimeException("Delete: recordId == null");
@@ -20,12 +19,8 @@ public class Delete extends Statement {
 		this.query = query; 
 		this.recordId = recordId;
 
-		Connection connection = ConnectionManager.get();
-		Database database = connection.database();
-		DatabaseVendor vendor = connection.vendor();
-
-		sql = "delete from " + database.tableName(query.name()) + 
-				" where " + vendor.quote(query.primaryKey().name()) + "=?";
+		sql = "delete from " + database().tableName(query.name()) + 
+				" where " + vendor().quote(query.primaryKey().name()) + "=?";
 	}
 
 	@Override

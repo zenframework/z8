@@ -21,5 +21,7 @@ public interface IStatement {
 
 	public int executeUpdate() throws SQLException;
 
+	public void executeCall() throws SQLException;
+
 	public void close();
 }
