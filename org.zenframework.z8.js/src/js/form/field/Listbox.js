@@ -29,7 +29,7 @@ Z8.define('Z8.form.field.Listbox', {
 	},
 
 	isValid: function() {
-		return this.list.getCount() == 0;
+		return this.list.getCount() != 0;
 	},
 
 	getValue: function() {
