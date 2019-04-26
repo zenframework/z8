@@ -163,6 +163,14 @@ public class guid extends primary {
 		return new RCollection<integer>(Arrays.asList(new integer(value.getMostSignificantBits()), new integer(value.getLeastSignificantBits())));
 	}
 
+	public integer z8_minor() {
+		return new integer(value.getLeastSignificantBits());
+	}
+
+	public integer z8_major() {
+		return new integer(value.getMostSignificantBits());
+	}
+
 	static public guid z8_create() {
 		return create();
 	}

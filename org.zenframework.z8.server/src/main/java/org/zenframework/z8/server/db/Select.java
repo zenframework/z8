@@ -67,8 +67,8 @@ public class Select {
 	}
 
 	private Connection getConnection() {
-		Query query = rootQuery == null ? select.rootQuery : rootQuery;
-		Connection connection = query.getConnection();
+		Query query = rootQuery != null ? rootQuery : (select != null ? select.rootQuery : null);
+		Connection connection = query != null ? query.getConnection() : null;
 		return connection != null ? connection : ConnectionManager.get();
 	}
 

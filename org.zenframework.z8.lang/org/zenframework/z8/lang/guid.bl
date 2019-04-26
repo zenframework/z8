@@ -4,15 +4,17 @@ public final class guid extends primary {
 
 	static public guid create();
 	static public guid create(string value);
-	static public guid create(int n);
-	static public guid create(int n1, int n2);
+	static public guid create(int minor);
+	static public guid create(int major, int minor);
 
 	public operator string();
 	public operator sql_guid();
 
 	public bool operator == (guid value);
 	public bool operator != (guid value);
-	
+
+	public int minor();
+	public int major();
 	public int[] components();
 
 	static public guid parse(string value);
