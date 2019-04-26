@@ -143,7 +143,7 @@ public class Connection {
 		for(BasicStatement statement : statements)
 			statement.safeClose();
 		statements.clear();
-		
+
 		if (transactionCount != 0)
 			throw new RuntimeException("Connection.release() - in transaction");
 	}

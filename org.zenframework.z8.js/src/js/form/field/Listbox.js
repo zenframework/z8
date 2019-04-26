@@ -28,8 +28,8 @@ Z8.define('Z8.form.field.Listbox', {
 		this.setValue(this.value);
 	},
 
-	isValid: function() {
-		return this.list.getCount() != 0;
+	isEmptyValue: function(value) {
+		return this.list.getCount() == 0;
 	},
 
 	getValue: function() {
@@ -571,6 +571,7 @@ Z8.define('Z8.form.field.Listbox', {
 		this.fireEvent('contentChange', this);
 		this.updateTools();
 		this.updatePager();
+		this.validate();
 	},
 
 	onItemEditorChange: function(list, editor, newValue, oldValue) {

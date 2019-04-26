@@ -263,8 +263,11 @@ public class CompilationUnit extends Resource {
 	}
 
 	public void importType(IVariableType variableType) {
-		if(variableType != null && !variableType.isQualified())
-			importType(variableType.getType());
+		if(variableType != null && !variableType.isQualified()) {
+			IType type = variableType.getType();
+			IType containerType = type.getContainerType();
+			importType(containerType != null ? containerType : type);
+		}
 	}
 
 	public IType[] getImportedTypes() {
