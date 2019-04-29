@@ -647,6 +647,9 @@ Z8.define('Z8.form.field.Listbox', {
 		var myLink = this.getLink();
 		var fields = this.query.columns;
 
+		if(fields == null)
+			return null;
+
 		for(var i = 0, length = fields.length; i < length; i++) {
 			var field = fields[i];
 			if(field.isCombobox) {
