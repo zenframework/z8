@@ -17,7 +17,8 @@
 }
 
 .toolbar>.btn,
-.toolbar>.btn-group>.btn {
+.toolbar>.btn-group>.btn,
+.toolbar>.btn-group>.btn-group>.btn {
 	border-radius: 0;
 	padding: .57142857em .57142857em;
 }
@@ -45,7 +46,8 @@
 	height: 2.28571429em;
 }
 
-.toolbar>.btn-group>.btn-trigger {
+.toolbar>.btn-group>.btn-trigger,
+.toolbar>.btn-group>.btn-group>.btn-trigger {
 	padding-left: .21428571em;
 	padding-right: .21428571em;
 }
