@@ -165,7 +165,11 @@ public abstract class BasicStatement implements IStatement {
 	}
 
 	private void setGeometry(int position, geometry value) throws SQLException {
-		statement.setBinaryStream(position,  value.stream());
+		InputStream stream = value.stream();
+		if(stream != null)
+			statement.setBinaryStream(position,  stream);
+		else
+			setNull(position);
 	}
 
 	private void setGuid(int position, guid value) throws SQLException {
