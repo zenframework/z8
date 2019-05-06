@@ -751,15 +751,18 @@ Z8.define('Z8.form.field.Listbox', {
 	},
 
 	newRecord: function() {
-		var record = Z8.create(this.getModel());
+		var newRecord = Z8.create(this.getModel());
 
-		if(this.hasLink())
-			record.set(this.getLink(), this.getRecordId());
+		if(this.hasLink()) {
+			var record = this.getRecord();
+			var value = record != null ? (this.hasDependsOnField() ? record.get(this.getDependsOnField()) : record.id) : null;
+			newRecord.set(this.getLink(), value);
+		}
 
 		if(this.isDependent())
-			record.set(this.getDependencyField(), this.getDependsOnValue());
+			newRecord.set(this.getDependencyField(), this.getDependsOnValue());
 
-		return record;
+		return newRecord;
 	},
 
 

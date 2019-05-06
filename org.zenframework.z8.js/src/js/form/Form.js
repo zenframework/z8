@@ -197,11 +197,15 @@ Z8.define('Z8.form.Form', {
 	},
 
 	initDependencies: function(field) {
+		if(field.dependenciesInitialized)
+			return;
+
 		var dependencies = field.field != null ? field.field.dependencies : field.dependencies;
 
 		if(dependencies == null || (!field.isCombobox && !field.isListbox && !field.isForm))
 			return;
 
+		field.dependenciesInitialized = true;
 		field.dependencies = null;
 
 		var fieldsMap = this.fieldsMap;
@@ -255,6 +259,7 @@ Z8.define('Z8.form.Form', {
 				if(control.isCombobox)
 					control.updateDependencies(control.getSelectedRecord());
 				record.endEdit();
+				this.updateDependencies(this.record);
 			} else {
 				control.initValue(control.originalValue, control.originalDisplayValue);
 				record.cancelEdit();

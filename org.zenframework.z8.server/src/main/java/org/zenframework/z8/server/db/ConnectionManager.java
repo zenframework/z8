@@ -59,24 +59,23 @@ public class ConnectionManager {
 	}
 
 	public static void release() {
-		release(null);
-	}
+		try {
+			for(List<Connection> connections : schemas.values()) {
+				Iterator<Connection> iterator = connections.iterator();
 
-	public static synchronized void release(Database database) {
-		for(List<Connection> connections : schemas.values()) {
-			Iterator<Connection> iterator = connections.iterator();
+				while(iterator.hasNext()) {
+					Connection connection = iterator.next();
 
-			while(iterator.hasNext()) {
-				Connection connection = iterator.next();
+					if(connection.isCurrent())
+						connection.release();
 
-				if(connection.isCurrent())
-					connection.release();
-
-				if(connection.isUnused()) {
-					connection.close();
-					iterator.remove();
+					if(connection.isUnused()) {
+						connection.close();
+						iterator.remove();
+					}
 				}
 			}
+		} catch(Throwable e) {
 		}
 	}
 }

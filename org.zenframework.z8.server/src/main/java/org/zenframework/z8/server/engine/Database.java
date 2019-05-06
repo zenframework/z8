@@ -144,7 +144,7 @@ public class Database {
 		} catch(Throwable e) {
 			Trace.logEvent(e);
 		} finally {
-			ConnectionManager.release(this);
+			ConnectionManager.release();
 		}
 
 		return isSystemInstalled;
