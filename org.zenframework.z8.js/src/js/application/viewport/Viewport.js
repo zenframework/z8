@@ -216,7 +216,7 @@ Z8.define('Z8.application.viewport.Viewport', {
 	createBreadcrumb: function(form, depth) {
 		var text = form != null ? form.getTitle() : Application.name;
 		var icon = form != null ? form.getIcon() : null;
-		return new Z8.button.Button({ cls: 'n' + (depth || 1), text: text.ellipsis(27), tooltip: text, icon: icon, form: form, handler: this.onBreadcrumbClick, scope: this });
+		return new Z8.button.Button({ cls: 'n' + (depth || 1), text: text.ellipsis(27), tooltip: Format.htmlEncode(text), icon: icon, form: form, handler: this.onBreadcrumbClick, scope: this });
 	},
 
 	closeForm: function(form) {
