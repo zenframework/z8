@@ -411,7 +411,6 @@ Z8.define('Z8.application.form.Navigator', {
 			totals: store.hasTotals(),
 			pagingMode: 'always'
 		};
-		
 	},
 
 	getListboxLabel: function(fields) {

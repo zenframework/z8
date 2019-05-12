@@ -581,6 +581,7 @@ Z8.define('Z8.form.field.Listbox', {
 	onItemEdit: function(list, editor, record, field) {
 		if(field != null && field.important)
 			this.reloadRecord();
+		this.fireEvent('itemEdit', this, editor, record, field);
 	},
 
 	focus: function() {

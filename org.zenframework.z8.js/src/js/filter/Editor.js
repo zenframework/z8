@@ -37,7 +37,7 @@ Z8.define('Z8.filter.Editor', {
 
 		var expression = this.expression = new Z8.form.field.Filter({ fields: this.fields, flex: 1, enabled: false, label: { text: 'Выражение', icon: 'fa-list-ul' } });
 		expression.on('change', this.expressionChanged, this);
-		var expressionText = this.expressionText = new Z8.form.field.Html({ cls: 'text', label: { text: 'Текст', icon: 'fa-code' }, height: 3 });
+		var expressionText = this.expressionText = new Z8.form.field.Html({ cls: 'text', label: { text: 'Текст', icon: 'fa-code' }, minHeight: 3 });
 
 		var container = new Z8.form.Fieldset({ cls: 'filter', plain: true, controls: [expression, expressionText], flex: 1, colSpan: 3, colCount: 1 });
 	

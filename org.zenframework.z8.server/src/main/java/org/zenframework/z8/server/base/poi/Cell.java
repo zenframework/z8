@@ -35,7 +35,7 @@ public class Cell extends OBJECT {
 
 	public string z8_getString() {
 		switch(cell.getCellType()) {
-		case String: case Formula:
+		case String: 
 			return new string(cell.getStringCellValue());
 		case Numeric:
 			double value = cell.getNumericCellValue();

@@ -32,11 +32,10 @@
             <property name="paddingRight">1px</property>
         </style>
         <style name="HeaderCell" id="7">
-            <property name="backgroundColor">#1F4E78</property>
             <property name="fontFamily">"Roboto"</property>
-            <property name="fontSize">small</property>
-            <property name="fontWeight">bold</property>
-            <property name="color">#FFFFFF</property>
+            <property name="fontSize">9px</property>
+            <property name="fontWeight">bolder</property>
+            <property name="color">#444444</property>
             <property name="borderBottomColor">#C0C0C0</property>
             <property name="borderBottomStyle">solid</property>
             <property name="borderBottomWidth">1px</property>

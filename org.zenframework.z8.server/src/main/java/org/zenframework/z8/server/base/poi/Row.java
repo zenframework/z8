@@ -29,8 +29,13 @@ public class Row extends OBJECT {
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public Cell.CLASS<? extends Cell> z8_getCell(integer index) {
+		org.apache.poi.ss.usermodel.Cell cell = row.getCell(index.getInt());
+
+		if(cell == null)
+			return null;
+
 		Cell.CLASS<Cell> cls = new Cell.CLASS(this);
-		cls.get().cell = this.row.getCell(index.getInt());
+		cls.get().cell = cell;
 		return cls;
 	}
 }

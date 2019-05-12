@@ -15,9 +15,9 @@ public class Add extends Operator {
 	public String format(DatabaseVendor vendor, FormatOptions options, boolean logicalContext) {
 		switch(operation) {
 		case Add:
-			return left.type() == FieldType.String ? new Concat(left, right).format(vendor, options) : left.format(vendor, options) + "+" + right.format(vendor, options);
+			return left.type() == FieldType.String ? new Concat(left, right).format(vendor, options) : left.format(vendor, options) + " + " + right.format(vendor, options);
 		case Sub:
-			return left.format(vendor, options) + "-" + right.format(vendor, options);
+			return left.format(vendor, options) + " - (" + right.format(vendor, options) + ")";
 		default:
 			throw new UnsupportedOperationException();
 		}

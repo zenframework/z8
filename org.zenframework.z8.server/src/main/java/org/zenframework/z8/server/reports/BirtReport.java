@@ -526,7 +526,7 @@ public class BirtReport {
 		switch(field.type()) {
 		case Date:
 		case Datetime:
-			return format.get().replace("d", "dd").replace("m", "MM").replace("Y", "yyyy").replace("H", "HH").replace("i", "mm").replace("s", "ss").replace("S", "SSS");
+			return format.get().replace("d", "dd").replace("m", "MM").replace("F", "MMM").replace("Y", "yyyy").replace("H", "HH").replace("i", "mm").replace("s", "ss").replace("S", "SSS");
 		case Integer:
 		case Decimal:
 			return format.get().replaceAll("0", "#").replace("#.##", "0.00");
