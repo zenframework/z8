@@ -5,6 +5,7 @@ Z8.define('Z8.list.List', {
 	autoFit: true,
 
 	headers: null,
+	numbers: false,
 	items: null,
 	totals: false,
 
@@ -46,6 +47,7 @@ Z8.define('Z8.list.List', {
 
 		this.fields = this.createFields(this.fields || 'name');
 		this.headers = this.createHeaders();
+		this.numbers = this.createNumbers();
 		this.filters = this.createQuickFilters();
 		this.totals = this.createTotals();
 
@@ -166,14 +168,21 @@ Z8.define('Z8.list.List', {
 
 	headersMarkup: function() {
 		var headerCells = [];
+		var numberCells = [];
 		var filterCells = [];
 
 		var headers = this.headers;
+
+		var numbers = this.numbers;
+		var hasNumbers = this.hasNumbers();
+
 		var filters = this.filters;
 		var hasFilters = this.hasQuickFilters();
 
 		for(var i = 0, length = headers.length; i < length; i++) {
 			headerCells.push(headers[i].htmlMarkup());
+			if(hasNumbers)
+				numberCells.push(numbers[i].htmlMarkup());
 			if(hasFilters)
 				filterCells.push(filters[i].htmlMarkup());
 		}
@@ -181,6 +190,9 @@ Z8.define('Z8.list.List', {
 		headerCells.push({ tag: 'td', cls: 'extra', style: 'width: 0;' });
 
 		var result = [{ tag: 'tr', cls: 'header', cn: headerCells }];
+
+		if(hasNumbers)
+			result.push({ tag: 'tr', cls: 'number', cn: numberCells });
 
 		if(hasFilters)
 			result.push({ tag: 'tr', cls: 'filter display-none', cn: filterCells });
@@ -553,9 +565,18 @@ Z8.define('Z8.list.List', {
 		return Z8.create(type, { list: this, field: field, cls: cls });
 	},
 
+	createNumber: function(number, cls) {
+		var type = this.numberType || 'Z8.list.Number';
+		return Z8.create(type, { list: this, number: number, cls: cls });
+	},
+
 	createTotal: function(field, cls) {
 		var type = this.totalType || 'Z8.list.Total';
 		return Z8.create(type, { list: this, field: field, cls: cls });
+	},
+
+	hasNumbers: function() {
+		return this.numbers.length != 0;
 	},
 
 	hasQuickFilters: function() {
@@ -573,7 +594,7 @@ Z8.define('Z8.list.List', {
 		var headers = [];
 		var fields = this.fields;
 
-		if(fields.length == 0 || this.headers == false)
+		if(fields.length == 0 || this.headers === false)
 			return headers;
 
 		if(this.checks) {
@@ -603,6 +624,33 @@ Z8.define('Z8.list.List', {
 		}
 
 		return headers;
+	},
+
+	createNumbers: function() {
+		var numbers = [];
+		var fields = this.fields;
+
+		if(fields.length == 0 || this.numbers === false)
+			return numbers;
+
+		if(this.checks) {
+			var number = this.checkHeader = new Z8.list.HeaderIcon({ list: this });
+			numbers.push(number);
+		}
+
+		if(this.locks) {
+			number = new Z8.list.HeaderIcon({ list: this });
+			numbers.push(number);
+		}
+
+		for(var i = 0, length = fields.length; i < length; i++) {
+			var field = fields[i];
+			var cls = i != 0 ? (i == length - 1 ? 'last': null) : 'first';
+			var number = this.createNumber(i + 1, cls);
+			numbers.push(number);
+		}
+
+		return numbers;
 	},
 
 	createTotals: function() {

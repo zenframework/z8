@@ -14,17 +14,7 @@ public class StringToken extends ConstantToken {
 		this.value = value;
 	}
 
-	public String getValue() {
-		return value;
-	}
-
-	@Override
-	public String getValueString() {
-		return getValue();
-	}
-
-	@Override
-	public String format(boolean forCodeGeneration) {
+	static public String encode(String value) {
 		StringBuffer result = new StringBuffer();
 
 		for(int i = 0; i < value.length(); i++) {
@@ -81,7 +71,21 @@ public class StringToken extends ConstantToken {
 				}
 		}
 
-		return '"' + result.toString() + '"';
+		return result.toString();
+	}
+
+	public String getValue() {
+		return value;
+	}
+
+	@Override
+	public String getValueString() {
+		return getValue();
+	}
+
+	@Override
+	public String format(boolean forCodeGeneration) {
+		return '"' + encode(value) + '"';
 	}
 
 	@Override

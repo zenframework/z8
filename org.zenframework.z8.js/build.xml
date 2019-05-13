@@ -132,6 +132,7 @@
 				list/HeaderIcon.js,
 				list/HeaderFilter.js,
 				list/HeaderCheck.js,
+				list/Number.js,
 				list/List.js,
 				list/Dropdown.js,
 				form/field/Field.js,

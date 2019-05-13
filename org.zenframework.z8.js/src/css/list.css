@@ -85,6 +85,7 @@
 	transition: background-color ease-in-out .15s, color ease-in-out .15s;
 }
 
+.list .number>.column,
 .list .total>.column {
 	height: 1.57142857em;
 }
@@ -123,12 +124,14 @@
 	padding: 0 .14285714em;
 }
 
+.list .number>.column,
 .list .item>.column,
 .list .total>.column {
 	position: relative;
 	padding: 0;
 }
 
+.list .number>.column,
 .list .item>.column,
 .list .total>.column {
 	border-left: 1px solid #eee;
@@ -144,12 +147,19 @@
 	padding: .5em .5em;
 }
 
+.list .number>.column>.cell,
 .list .total>.column>.cell {
 	padding: .42857143em .5em;
 	font-size: .85714286em;
 	font-weight: bold;
 }
 
+.list .number>.column>.cell {
+	border-top: 1px solid #eee;
+	text-align: center;
+}
+
+.list .number>.column:first-child,
 .list .item>.column:first-child,
 .list .total>.column:first-child {
 	border-left: none;
@@ -410,6 +420,7 @@
 }
 
 .list:not(.auto-fit) .header>.column.last,
+.list:not(.auto-fit) .number>.column.last,
 .list:not(.auto-fit) .total>.column.last,
 .list:not(.auto-fit) .filter>.column:last-child,
 .list:not(.auto-fit) .item>.column:last-child {

@@ -12,7 +12,8 @@ Z8.define('Z8.list.Header', {
 		this.callParent();
 
 		var field = this.field;
-		this.text = field.columnHeader || field.header;
+		this.text = Format.nl2br(field.columnHeader || field.header);
+		this.title = field.description || this.text;
 		this.icon = field.icon;
 		this.width = field != null ? field.width : null;
 		this.sortDirection = field.sortDirection;
@@ -71,13 +72,13 @@ Z8.define('Z8.list.Header', {
 		var filter = { tag: 'i', cls: cls.join(' '), html: String.htmlText() };
 
 		var text = String.htmlText(this.text);
-		text = { cls: 'text', title: text, cn: icon != null ? [icon, text] : [text] } ;
+		text = { cls: 'text', cn: icon != null ? [icon, text] : [text] } ;
 
 		var cls = this.getCls().join(' ');
 
 		var leftHandle = { cls: 'resize-handle-left' };
 		var rightHandle = { cls: 'resize-handle-right' };
-		return { tag: 'td', id: this.getId(), cls: cls, tabIndex: this.getTabIndex(), cn: [leftHandle, text, sort, filter, rightHandle], title: this.text };
+		return { tag: 'td', id: this.getId(), cls: cls, tabIndex: this.getTabIndex(), cn: [leftHandle, text, sort, filter, rightHandle], title: this.title };
 	},
 
 	completeRender: function() {
@@ -173,11 +174,11 @@ Z8.define('Z8.list.Header', {
 		return this.text;
 	},
 
-	setText: function(index, text) {
+	setText: function(index, text, title) {
 		this.text = text;
 		text = String.htmlText(text);
-		DOM.setValue(this.textElement, text);
-		DOM.setTitle(this.textElement, text);
+		DOM.setValue(this.textElement, Format.nl2br(text));
+		DOM.setTitle(this.textElement, title || text);
 	},
 
 	onMouseDown: function(event, target) {

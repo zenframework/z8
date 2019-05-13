@@ -332,7 +332,7 @@ public class Attribute extends LanguageElement implements IAttribute {
 					codeGenerator.append(')');
 				} else if(valueToken != null) {
 					codeGenerator.append('"');
-					codeGenerator.append(getValueString());
+					codeGenerator.append(StringToken.encode(getValueString()));
 					codeGenerator.append('"');
 				} else {
 					value.getCode(codeGenerator);
@@ -342,9 +342,7 @@ public class Attribute extends LanguageElement implements IAttribute {
 						codeGenerator.append(".get()");
 				}
 			}
-		} else {
-			codeGenerator.append('"');
-			codeGenerator.append('"');
-		}
+		} else
+			codeGenerator.append('"').append('"');
 	}
 }
