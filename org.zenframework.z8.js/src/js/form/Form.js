@@ -369,6 +369,5 @@ Z8.define('Z8.form.Form', {
 
 	onDependencyChange: function(record, control) {
 		this.loadRecord(record);
-		this.updateDependencies(record);
 	}
 });

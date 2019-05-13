@@ -14,4 +14,6 @@ public class TextField extends Field {
 	public TextField operator = (string value);
 
 	public operator sql_string();
+
+	public sql_bool isEmpty();
 }

@@ -10,7 +10,7 @@ import org.zenframework.z8.server.config.ServerConfig;
 import org.zenframework.z8.server.engine.Database;
 
 public class ConnectionManager {
-	static private Map<String, List<Connection>> schemas = new HashMap<String, List<Connection>>();
+	static private Map<Database, List<Connection>> databaseConnections = new HashMap<Database, List<Connection>>();
 
 	public static Connection get() {
 		return get(ServerConfig.database());
@@ -28,14 +28,13 @@ public class ConnectionManager {
 		if(database == null)
 			database = ServerConfig.database();
 
-		List<Connection> connections =  null;
-
-		synchronized(ConnectionManager.class) {
-			connections = schemas.get(database.schema());
+		synchronized(database.getLock()) {
+			List<Connection> connections =  null;
+			connections = databaseConnections.get(database);
 
 			if(connections == null) {
 				connections = new ArrayList<Connection>();
-				schemas.put(database.schema(), connections);
+				databaseConnections.put(database, connections);
 			}
 
 			for(Connection connection : connections) {
@@ -49,18 +48,19 @@ public class ConnectionManager {
 					return connection;
 				}
 			}
+
+			Connection connection = Connection.connect(database);
+			connection.use();
+
+			connections.add(connection);
+			return connection;
 		}
-
-		Connection connection = Connection.connect(database);
-		connection.use();
-
-		connections.add(connection);
-		return connection;
 	}
 
 	public static void release() {
-		try {
-			for(List<Connection> connections : schemas.values()) {
+		for(Map.Entry<Database, List<Connection>> entry : databaseConnections.entrySet()) {
+			synchronized(entry.getKey().getLock()) {
+				List<Connection> connections = entry.getValue();
 				Iterator<Connection> iterator = connections.iterator();
 
 				while(iterator.hasNext()) {
@@ -75,7 +75,6 @@ public class ConnectionManager {
 					}
 				}
 			}
-		} catch(Throwable e) {
 		}
 	}
 }

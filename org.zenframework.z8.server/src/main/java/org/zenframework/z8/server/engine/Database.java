@@ -1,6 +1,8 @@
 package org.zenframework.z8.server.engine;
 
 import java.sql.SQLException;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Properties;
 
 import org.zenframework.z8.server.base.table.system.Settings;
@@ -26,6 +28,8 @@ public class Database {
 
 	private DatabaseVendor vendor = DatabaseVendor.SqlServer;
 
+	static private Map<Database, Object> locks = new HashMap<Database, Object>();
+
 	public Database() {
 	}
 
@@ -49,6 +53,19 @@ public class Database {
 		setConnection(json.getString("connection"));
 		setDriver(json.getString("driver"));
 		setCharset(encoding.fromString(json.getString("charset")));
+	}
+
+	public int hashCode() {
+		return (driver() + connection() + schema()).hashCode();
+	}
+
+	public Object getLock() {
+		Object lock = locks.get(this);
+		if(lock == null) {
+			lock = new Object();
+			locks.put(this, lock);
+		}
+		return lock;
 	}
 
 	public DatabaseVendor vendor() {

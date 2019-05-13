@@ -57,17 +57,17 @@ public class QueryUtils {
 		else if(type == FieldType.Geometry)
 			field.set(value == null || value.isEmpty() ? new geometry(srs(field)) : GeoJsonReader.read(value, srs(field)));
 		else if(type == FieldType.Integer)
-			field.set(value == null || value.isEmpty() ? integer.Zero : new integer(value));
+			field.set(value == null || value.isEmpty() ? field.getDefaultValue() : new integer(value));
 		else if(type == FieldType.Decimal)
-			field.set(value == null || value.isEmpty() ? decimal.Zero : new decimal(value));
+			field.set(value == null || value.isEmpty() ? field.getDefaultValue() : new decimal(value));
 		else if(type == FieldType.Boolean)
-			field.set(value == null || value.isEmpty() ? bool.False : new bool(value));
+			field.set(value == null || value.isEmpty() ? field.getDefaultValue() : new bool(value));
 		else if(type == FieldType.Date || type == FieldType.Datetime)
-			field.set(value == null || value.isEmpty() ? date.Min : new date(value));
+			field.set(value == null || value.isEmpty() ? field.getDefaultValue() : new date(value));
 		else if(type == FieldType.Datespan)
-			field.set(value == null || value.isEmpty() ? new datespan() : new datespan(value));
+			field.set(value == null || value.isEmpty() ? field.getDefaultValue() : new datespan(value));
 		else if(type == FieldType.Guid)
-			field.set(value == null || value.isEmpty() ? new guid() : new guid(value));
+			field.set(value == null || value.isEmpty() ? field.getDefaultValue() : new guid(value));
 		else
 			throw new UnsupportedOperationException();
 	}

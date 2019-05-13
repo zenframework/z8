@@ -15,4 +15,6 @@ public class StringField extends Field {
 	virtual public string[] array();
 
 	public StringField operator = (string value);
+
+	public sql_bool isEmpty();
 }

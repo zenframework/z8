@@ -11,6 +11,7 @@ import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.types.integer;
 import org.zenframework.z8.server.types.primary;
 import org.zenframework.z8.server.types.string;
+import org.zenframework.z8.server.types.sql.sql_bool;
 import org.zenframework.z8.server.types.sql.sql_string;
 
 public class StringField extends Field {
@@ -97,5 +98,9 @@ public class StringField extends Field {
 		super.writeMeta(writer, query, context);
 
 		writer.writeProperty(Json.length, length);
+	}
+
+	public sql_bool z8_isEmpty() {
+		return sql_string().z8_isEmpty();
 	}
 }
