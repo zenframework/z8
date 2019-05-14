@@ -257,8 +257,8 @@ Z8.define('Z8.form.Form', {
 			if(success) {
 				this.applyRecordChange(record, control);
 				record.endEdit();
-				if(control.isCombobox)
-					control.updateDependencies(control.getSelectedRecord());
+//				if(control.isCombobox)
+//					control.updateDependencies(control.getSelectedRecord());
 				this.updateDependencies(this.record);
 			} else {
 				control.initValue(control.originalValue, control.originalDisplayValue);
@@ -301,9 +301,17 @@ Z8.define('Z8.form.Form', {
 		if(!this.isMyRecord(record))
 			return;
 
+		var current = this.record;
+
+		if(current != null)
+			current.un('change', this.onRecordChange, this);
+
 		this.record = record;
 
 		this.updateDependencies(record);
+
+		if(record != null)
+			record.on('change', this.onRecordChange, this);
 	},
 
 	onDestroy: function() {
@@ -311,6 +319,16 @@ Z8.define('Z8.form.Form', {
 		if(record != null)
 			record.un('change', this.onRecordChange, this);
 		this.callParent();
+	},
+
+	onRecordChange: function(record, modified) {
+		this.applyRecordChange(record, null);
+
+		for(var name in modified) {
+			var control = this.getField(name);
+			if(control != null && control.isCombobox)
+				control.updateDependencies(control.getSelectedRecord());
+		}
 	},
 
 	loadRecord: function(record) {
