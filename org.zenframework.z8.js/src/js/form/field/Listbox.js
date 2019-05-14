@@ -192,10 +192,14 @@ Z8.define('Z8.form.field.Listbox', {
 	},
 
 	getFilter: function(record) {
-		if(!this.hasLink())
+		if(record == null || !this.hasLink())
 			return null;
 
 		var dependsOnValue = this.hasDependsOnField() ? record.get(this.getDependsOnField()) : record.id;
+
+		if(dependsOnValue == null || dependsOnValue == guid.Null)
+			return null;
+
 		var filter = this.getDependencyWhere(this.getLink(), dependsOnValue);
 
 		filter = Array.isArray(filter) ? filter : (filter != null ? [filter] : []);
@@ -213,11 +217,13 @@ Z8.define('Z8.form.field.Listbox', {
 	},
 
 	afterRecordSet: function(record) {
-		if(record != null) {
-			if(this.isDependent())
-				return;
+		if(record != null && this.isDependent())
+			return;
 
-			this.store.setFilter(this.getFilter(record));
+		var filter = this.getFilter(record);
+
+		if(filter != null) {
+			this.store.setFilter(filter);
 			this.store.setValues(this.getValues());
 			this.reloadStore();
 		} else {
@@ -247,15 +253,14 @@ Z8.define('Z8.form.field.Listbox', {
 	onDependencyChange: function(record, control) {
 		var recordId = this.getRecordId();
 
-		var dependsOnValue = null;
-
 		var loadCallback = function(store, records, success) {
 			this.validate();
 			this.updateTools();
 		};
 
-		if(record != null) {
-			dependsOnValue = this.hasDependsOnField() ? record.get(this.getDependsOnField()) : record.id;
+		var dependsOnValue = recordId != null ? (this.hasDependsOnField() ? record.get(this.getDependsOnField()) : record.id) : null;
+
+		if(dependsOnValue != null && dependsOnValue != guid.Null) {
 			var where = this.getDependencyWhere(this.getDependencyField(), dependsOnValue);
 			if(this.hasLink())
 				where.push({ property: this.getLink(), value: recordId });

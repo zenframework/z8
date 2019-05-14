@@ -257,8 +257,6 @@ Z8.define('Z8.form.Form', {
 			if(success) {
 				this.applyRecordChange(record, control);
 				record.endEdit();
-//				if(control.isCombobox)
-//					control.updateDependencies(control.getSelectedRecord());
 				this.updateDependencies(this.record);
 			} else {
 				control.initValue(control.originalValue, control.originalDisplayValue);
@@ -324,10 +322,19 @@ Z8.define('Z8.form.Form', {
 	onRecordChange: function(record, modified) {
 		this.applyRecordChange(record, null);
 
+		var updated = {};
+
 		for(var name in modified) {
 			var control = this.getField(name);
-			if(control != null && control.isCombobox)
+
+			if(control == null || !control.isCombobox)
+				continue;
+
+			var id = control.getId();
+			if(updated[id] == null) {
 				control.updateDependencies(control.getSelectedRecord());
+				updated[id] = true;
+			}
 		}
 	},
 
