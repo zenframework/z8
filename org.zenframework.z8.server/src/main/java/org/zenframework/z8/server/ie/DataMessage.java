@@ -41,6 +41,7 @@ public class DataMessage extends Message {
 		}
 	}
 
+	public boolean sendFiles = true;
 	private String type;
 	private MessageSource source = new MessageSource();
 
@@ -58,6 +59,14 @@ public class DataMessage extends Message {
 
 	public void setType(String type) {
 		this.type = type;
+	}
+
+	public boolean isSendFiles() {
+		return sendFiles;
+	}
+
+	public void setSendFiles(boolean sendFiles) {
+		this.sendFiles = sendFiles;
 	}
 
 	public MessageSource getSource() {
@@ -99,13 +108,15 @@ public class DataMessage extends Message {
 
 		source.exportData();
 
-		for(file file : getSource().files()) {
-			FileMessage fileMessage = FileMessage.newInstance();
-			fileMessage.setSourceId(getId());
-			fileMessage.setAddress(getAddress());
-			fileMessage.setSender(getSender());
-			fileMessage.setFile(file);
-			fileMessage.prepare();
+		if(sendFiles) {
+			for(file file : getSource().files()) {
+				FileMessage fileMessage = FileMessage.newInstance();
+				fileMessage.setSourceId(getId());
+				fileMessage.setAddress(getAddress());
+				fileMessage.setSender(getSender());
+				fileMessage.setFile(file);
+				fileMessage.prepare();
+			}
 		}
 
 		DataMessage dataMessage = (DataMessage)getCLASS().newInstance();
@@ -146,6 +157,14 @@ public class DataMessage extends Message {
 
 	public void z8_setType(string type) {
 		setType(type.get());
+	}
+	
+	public bool z8_isSendFiles() {
+		return new bool(sendFiles);
+	}
+
+	public void z8_setSendFiles(bool sendFiles) {
+		setSendFiles(sendFiles.get());
 	}
 
 	public RLinkedHashMap<string, primary> z8_getProperties() {

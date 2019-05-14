@@ -7,6 +7,9 @@ class DataMessage extends Message {
 
 	public string getType();
 	public void setType(string type);
+	
+	public string isSendFiles();
+	public void setSendFiles(bool sendFiles);
 
 	public primary[string] getProperties();
 	public primary getProperty(string key);
