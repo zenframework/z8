@@ -47,7 +47,7 @@ public class GuidExpression extends Expression {
 	}
 
 	public guid z8_get() {
-		return (guid)internalGet();
+		return isArray() ? null : (guid)internalGet();
 	}
 
 	public GuidExpression.CLASS<? extends GuidExpression> operatorAssign(guid value) {

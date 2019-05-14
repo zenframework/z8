@@ -18,6 +18,7 @@ public class Field extends Control {
 	public Field valueFrom;                   // Из какого поля брать значение при создании
 	public Field valueFor;                    // Для какого поля является значением
 
+	public Field[] usedFields;
 	public Field[] columns;                   // Дополнительные колонки в выпадающем списке
 
 	public FieldType getType();

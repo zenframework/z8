@@ -49,6 +49,10 @@ public class Expression extends Field {
 		return true;
 	}
 
+	public boolean wasNull() {
+		return false;
+	}
+
 	final public SqlToken expression() {
 		if(expression == null) {
 			expression = z8_expression();

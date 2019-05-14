@@ -41,7 +41,7 @@ public class DatespanExpression extends Expression {
 	}
 
 	public datespan z8_get() {
-		return (datespan)internalGet();
+		return isArray() ? null : (datespan)internalGet();
 	}
 
 	@Override

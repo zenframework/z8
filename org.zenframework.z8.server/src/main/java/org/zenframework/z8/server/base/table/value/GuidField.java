@@ -63,7 +63,7 @@ public class GuidField extends Field {
 	}
 
 	public guid z8_get() {
-		return (guid)internalGet();
+		return isArray() ? null : (guid)internalGet();
 	}
 
 	@Override

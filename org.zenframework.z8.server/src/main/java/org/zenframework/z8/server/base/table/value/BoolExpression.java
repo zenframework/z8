@@ -43,7 +43,7 @@ public class BoolExpression extends Expression {
 	}
 
 	public bool z8_get() {
-		return (bool)internalGet();
+		return isArray() ? null : (bool)internalGet();
 	}
 
 	@Override

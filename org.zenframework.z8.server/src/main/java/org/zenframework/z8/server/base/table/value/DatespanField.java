@@ -66,7 +66,7 @@ public class DatespanField extends Field {
 	}
 
 	public datespan z8_get() {
-		return (datespan)internalGet();
+		return isArray() ? null : (datespan)internalGet();
 	}
 
 	public DatespanField.CLASS<? extends DatespanField> operatorAssign(datespan value) {

@@ -50,7 +50,7 @@ public class GeometryExpression extends Expression {
 	}
 
 	public geometry z8_get() {
-		return (geometry)internalGet();
+		return isArray() ? null : (geometry)internalGet();
 	}
 
 	public GeometryExpression.CLASS<? extends GeometryExpression> operatorAssign(geometry value) {

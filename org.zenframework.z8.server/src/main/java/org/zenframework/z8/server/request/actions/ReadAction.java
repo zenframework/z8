@@ -138,8 +138,11 @@ public class ReadAction extends RequestAction {
 		for(Field field : groupBy)
 			addGroupByField(field);
 
-		for(Field field : fields)
+		for(Field field : fields) {
 			addSelectField(field);
+			for(Field usedField : field.getUsedFields())
+				addSelectField(usedField);
+		}
 
 		for(Link field : aggregateBy)
 			addSelectField(field);
@@ -384,7 +387,10 @@ public class ReadAction extends RequestAction {
 	private Field addSelectField(Field field) {
 		if(field == null)
 			return null;
-		
+
+		if(selectFields.contains(field))
+			return field;
+
 		selectFields.add(field);
 
 		if(hasPrimaryKey()) {

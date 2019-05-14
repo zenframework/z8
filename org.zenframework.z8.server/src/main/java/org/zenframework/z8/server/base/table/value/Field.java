@@ -74,6 +74,9 @@ abstract public class Field extends Control implements IField {
 	public Field.CLASS<? extends Field> valueFrom;
 	public Field.CLASS<? extends Field> valueFor;
 
+	public RCollection<Field.CLASS<? extends Field>> columns = new RCollection<Field.CLASS<? extends Field>>();
+	public RCollection<Field.CLASS<? extends Field>> usedFields = new RCollection<Field.CLASS<? extends Field>>();
+
 	private primary originalValue;
 	private boolean changed = false;
 
@@ -92,7 +95,6 @@ abstract public class Field extends Control implements IField {
 
 	private bool isPrimaryKey;
 	private bool isParentKey;
-	public RCollection<Field.CLASS<? extends Field>> columns = new RCollection<Field.CLASS<? extends Field>>();
 
 	private boolean isWritingMeta;
 
@@ -230,6 +232,9 @@ abstract public class Field extends Control implements IField {
 		return cursor;
 	}
 
+	protected boolean isArray() {
+		return cursor != null && cursor.isGrouped() && aggregation == Aggregation.Array;
+	}
 	protected primary read() throws SQLException {
 		if(cursor.isGrouped() && aggregation == Aggregation.Array)
 			return cursor.get(this, FieldType.String);
@@ -321,6 +326,10 @@ abstract public class Field extends Control implements IField {
 			sequencer.setKey(containerName + '.' + name());
 		}
 		return sequencer;
+	}
+
+	public Collection<Field> getUsedFields() {
+		return CLASS.asList(usedFields);
 	}
 
 	@Override

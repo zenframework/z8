@@ -80,7 +80,7 @@ public class GeometryField extends Field {
 	}
 
 	public geometry z8_get() {
-		return (geometry)internalGet();
+		return isArray() ? null : (geometry)internalGet();
 	}
 
 	@Override

@@ -69,7 +69,7 @@ public class BoolField extends Field {
 	}
 
 	public bool z8_get() {
-		return (bool)internalGet();
+		return isArray() ? null : (bool)internalGet();
 	}
 
 	public BoolField.CLASS<? extends BoolField> operatorAssign(bool value) {

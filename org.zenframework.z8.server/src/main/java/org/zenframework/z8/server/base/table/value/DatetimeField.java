@@ -65,7 +65,7 @@ public class DatetimeField extends Field {
 	}
 
 	public date z8_get() {
-		return (date)internalGet();
+		return isArray() ? null : (date)internalGet();
 	}
 
 	public DatetimeField.CLASS<? extends DatetimeField> operatorAssign(date value) {

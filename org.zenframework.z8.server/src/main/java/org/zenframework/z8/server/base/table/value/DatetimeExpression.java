@@ -49,7 +49,7 @@ public class DatetimeExpression extends Expression {
 	}
 
 	public date z8_get() {
-		return (date)internalGet();
+		return isArray() ? null : (date)internalGet();
 	}
 
 	public DatetimeExpression.CLASS<? extends DatetimeExpression> operatorAssign(date value) {

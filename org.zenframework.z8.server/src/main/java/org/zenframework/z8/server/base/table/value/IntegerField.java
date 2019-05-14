@@ -74,7 +74,7 @@ public class IntegerField extends Field {
 	}
 
 	public integer z8_get() {
-		return (integer)internalGet();
+		return isArray() ? null : (integer)internalGet();
 	}
 
 	@Override
