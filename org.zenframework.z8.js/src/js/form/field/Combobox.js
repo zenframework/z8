@@ -219,12 +219,12 @@ Z8.define('Z8.form.field.Combobox', {
 		var value = this.dependsOnValue = record != null ? (this.hasDependsOnField() ? record.get(this.getDependsOnField()) : record.id) : null;
 		this.updateWhere(value);
 
-		if(control.initializing)
+		if(control.initializing || control.isListbox)
 			this.suspendCheckChange++;
 
 		this.setValue(guid.Null);
 
-		if(control.initializing)
+		if(control.initializing || control.isListbox)
 			this.suspendCheckChange--;
 	},
 
