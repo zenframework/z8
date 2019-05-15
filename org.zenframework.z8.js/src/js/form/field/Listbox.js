@@ -258,7 +258,7 @@ Z8.define('Z8.form.field.Listbox', {
 			this.updateTools();
 		};
 
-		var dependsOnValue = recordId != null ? (this.hasDependsOnField() ? record.get(this.getDependsOnField()) : record.id) : null;
+		var dependsOnValue = record != null ? (this.hasDependsOnField() ? record.get(this.getDependsOnField()) : record.id) : null;
 
 		if(dependsOnValue != null && dependsOnValue != guid.Null) {
 			var where = this.getDependencyWhere(this.getDependencyField(), dependsOnValue);
