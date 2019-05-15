@@ -80,6 +80,6 @@ public class LinkExpression extends GuidExpression implements ILink, IForeignKey
 
 	@Override
 	public Join getJoin() {
-		return Join.Left;
+		return Join.Inner;
 	}
 }

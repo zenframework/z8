@@ -22,7 +22,7 @@ public class Link extends GuidField implements ILink, IForeignKey {
 		}
 	}
 
-	public Join join = Join.Left;
+	public Join join = Join.Inner;
 
 	private Query.CLASS<Query> query = null;
 
