@@ -196,6 +196,7 @@ Z8.define('Z8.form.field.Listbox', {
 			return null;
 
 		var dependsOnValue = this.hasDependsOnField() ? record.get(this.getDependsOnField()) : record.id;
+		this.setDependsOnValue(dependsOnValue);
 
 		if(dependsOnValue == null || dependsOnValue == guid.Null)
 			return null;
@@ -259,13 +260,13 @@ Z8.define('Z8.form.field.Listbox', {
 		};
 
 		var dependsOnValue = record != null ? (this.hasDependsOnField() ? record.get(this.getDependsOnField()) : record.id) : null;
+		this.setDependsOnValue(dependsOnValue);
 
 		if(dependsOnValue != null && dependsOnValue != guid.Null) {
 			var where = this.getDependencyWhere(this.getDependencyField(), dependsOnValue);
 			if(this.hasLink())
 				where.push({ property: this.getLink(), value: recordId });
 			this.store.setWhere(where);
-			this.setDependsOnValue(dependsOnValue);
 			this.reloadStore();
 		} else {
 			this.store.removeAll();
