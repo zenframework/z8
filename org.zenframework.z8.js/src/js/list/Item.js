@@ -182,6 +182,8 @@ Z8.define('Z8.list.Item', {
 			return { tag: 'i', cls: value ? 'fa fa-check-square' : 'fa fa-square-o' };
 		case Type.File:
 			return Z8.isEmpty(value) ? '' : value[0].name;
+		case Type.Text:
+			return Format.nl2br(value) || '';
 		default:
 			return value || '';
 		}
