@@ -6,7 +6,7 @@ String.isString = function(value) {
 };
 
 String.htmlText = function(text) {
-	return text == null || text.length == 0 ? String.ZeroWidthChar : text;
+	return (text == null || text.length == 0) ? String.ZeroWidthChar : text;
 };
 
 

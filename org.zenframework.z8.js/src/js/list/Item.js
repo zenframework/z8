@@ -134,10 +134,8 @@ Z8.define('Z8.list.Item', {
 
 				var type = field.type;
 
-				if(String.isString(text)) {
+				if(String.isString(text))
 					title = type != Type.Text ? Format.htmlEncode(text) : '';
-					text = String.htmlText(text);
-				}
 
 				text = { tag: 'span', cls: this.getCellCls(field, record), cn: [text] };
 				var cell = { cls: 'cell', cn: i == 0 ? icons.concat([text]) : [text] };
@@ -166,27 +164,29 @@ Z8.define('Z8.list.Item', {
 	},
 
 	renderCellText: function(field, value) {
-		if(field.renderer != null)
-			return field.renderer.call(field, value);
-
-		switch(field.type) {
-		case Type.Date:
-			return Format.date(value, field.format);
-		case Type.Datetime:
-			return Format.datetime(value, field.format);
-		case Type.Integer:
-			return Format.integer(value, field.format);
-		case Type.Float:
-			return Format.float(value, field.format);
-		case Type.Boolean:
-			return { tag: 'i', cls: value ? 'fa fa-check-square' : 'fa fa-square-o' };
-		case Type.File:
-			return Z8.isEmpty(value) ? '' : value[0].name;
-		case Type.Text:
-			return Format.nl2br(value) || '';
-		default:
-			return value || '';
+		if(field.renderer != null) {
+			value = String.htmlText(field.renderer.call(field, value));
+			return String.htmlText(value);
 		}
+
+		var type = field.type;
+
+		if(type == Type.Date)
+			value = Format.date(value, field.format);
+		else if(type == Type.Datetime)
+			value = Format.datetime(value, field.format);
+		else if(type == Type.Integer)
+			value = Format.integer(value, field.format);
+		else if(type == Type.Float)
+			value = Format.float(value, field.format);
+		else if(type == Type.Boolean)
+			return { tag: 'i', cls: value ? 'fa fa-check-square' : 'fa fa-square-o' };
+		else if(type == Type.File)
+			value = value != null ? value[0].name : null;
+		else if(type == Type.Text)
+			value = Format.nl2br(value);
+
+		return String.htmlText(value);
 	},
 
 	getCls: function() {

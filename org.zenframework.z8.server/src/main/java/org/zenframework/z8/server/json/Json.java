@@ -211,6 +211,7 @@ public interface Json {
 	static public string parameters = new string("parameters");
 	static public string reports = new string("reports");
 	static public string selector = new string("selector");
+	static public string multiselect = new string("multiselect");
 
 	static public string access = new string("access");
 	static public string read = new string("read");

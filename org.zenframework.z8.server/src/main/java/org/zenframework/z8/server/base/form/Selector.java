@@ -44,7 +44,7 @@ public class Selector extends OBJECT {
 		writer.writeProperty(Json.icon, icon());
 
 		writer.writeProperty(Json.copy, copy);
-		writer.writeProperty(Json.copy, multiselect);
+		writer.writeProperty(Json.multiselect, multiselect);
 
 		if(link != null) {
 			writer.startObject(Json.link);

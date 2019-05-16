@@ -152,5 +152,10 @@ Z8.define('Z8.form.field.Datetime', {
 			return false;
 
 		return true;
+	},
+
+	onInput: function(event, target) {
+		this.callParent(event, target);
+		this.entered = true;
 	}
 });
