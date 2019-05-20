@@ -831,7 +831,7 @@ Z8.define('Z8.form.field.Listbox', {
 			this.copyRecords(record, records[0]);
 		};
 
-		this.openSelector('create', button, { fn: callback, scope: this });
+		this.openSelector('copy', button, { fn: callback, scope: this });
 	},
 
 	copyRecords: function(record, newRecord) {
