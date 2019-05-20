@@ -144,7 +144,7 @@ class Query extends Runnable {
 	public void refresh();
 	public void refreshRecord(guid id);
 	
-	public void buildFullText();
+	public void buildFullText(int limit, bool resetFullText);
 
 	auto protected Query[] queries;
 	auto protected Field[] dataFields;

@@ -37,12 +37,16 @@ import org.zenframework.z8.server.base.table.value.Link;
 import org.zenframework.z8.server.base.table.value.LinkExpression;
 import org.zenframework.z8.server.base.view.command.Command;
 import org.zenframework.z8.server.base.view.filter.Filter;
+import org.zenframework.z8.server.db.Connection;
+import org.zenframework.z8.server.db.ConnectionManager;
 import org.zenframework.z8.server.db.FieldType;
 import org.zenframework.z8.server.db.sql.SqlToken;
 import org.zenframework.z8.server.db.sql.expressions.And;
 import org.zenframework.z8.server.db.sql.expressions.Group;
+import org.zenframework.z8.server.db.sql.expressions.IsNot;
 import org.zenframework.z8.server.db.sql.expressions.True;
 import org.zenframework.z8.server.db.sql.functions.InVector;
+import org.zenframework.z8.server.db.sql.functions.string.IsEmpty;
 import org.zenframework.z8.server.engine.ApplicationServer;
 import org.zenframework.z8.server.json.Json;
 import org.zenframework.z8.server.json.JsonWriter;
@@ -2622,26 +2626,60 @@ public class Query extends Runnable {
 		refreshRecord(id);
 	}
 	
-	public void z8_buildFullText() {
+	public void z8_buildFullText(integer limit, bool resetFullText) {
 		Field fullText = fullTextField();
 		if(fullText == null || searchFields.isEmpty())
 			return;
 		
-		Collection<Field> searchFields = CLASS.asList(this.searchFields);
-		read(searchFields);
+		ApplicationServer.disableEvents();
+		Connection conn = ConnectionManager.get();
 		
-		while(next()) {
-			guid recordId = recordId(); 
-			String result = "";
-			
-			for(Field f : searchFields) {
-				String value = parseFullTextValue(f.get().toString(), f);
-				if(!value.isEmpty())
-				result +=  (result.isEmpty() ? "" : " ") + value;
+		if(resetFullText.get()) {
+			try {
+				conn.beginTransaction();
+				fullText.set(new string());
+				update(new IsNot(new IsEmpty(fullText)));
+				conn.commit();
+			} catch(Throwable e) {
+				conn.rollback();
+				throw new RuntimeException(e);
 			}
-			
-			fullText.set(new string(result));
-			update(recordId);
 		}
+		
+		
+		
+		Collection<Field> searchFields = CLASS.asList(this.searchFields);
+		read(searchFields, new IsEmpty(fullText));
+		
+		int count = 0;
+		int lim = limit.getInt();
+		try {
+			conn.beginTransaction();
+			while(next()) {
+				count++;
+				if(count%lim == 0) {
+					conn.commit();
+					conn.beginTransaction();
+				}
+				
+				guid recordId = recordId(); 
+				String result = "";
+				
+				for(Field f : searchFields) {
+					String value = parseFullTextValue(f.get().toString(), f);
+					if(!value.isEmpty())
+					result +=  (result.isEmpty() ? "" : " ") + value;
+				}
+				
+				fullText.set(new string(result));
+				update(recordId);
+				
+			}
+			conn.commit();
+		} catch(Throwable e) {
+			conn.rollback();
+			throw new RuntimeException(e);
+		}
+		ApplicationServer.enableEvents();
 	}
 }
