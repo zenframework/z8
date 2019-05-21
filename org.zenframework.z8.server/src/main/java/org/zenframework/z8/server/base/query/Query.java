@@ -2646,36 +2646,33 @@ public class Query extends Runnable {
 			}
 		}
 		
-		
-		
 		Collection<Field> searchFields = CLASS.asList(this.searchFields);
-		read(searchFields, new IsEmpty(fullText));
 		
-		int count = 0;
 		int lim = limit.getInt();
+		int count = lim;
 		try {
-			conn.beginTransaction();
-			while(next()) {
-				count++;
-				if(count%lim == 0) {
-					conn.commit();
-					conn.beginTransaction();
+			while(count != 0) {
+				count = 0;
+				
+				conn.beginTransaction();
+				read(searchFields, new IsEmpty(fullText), lim);
+				while(next()) {
+					count++;
+					guid recordId = recordId(); 
+					String result = "";
+					
+					for(Field f : searchFields) {
+						String value = parseFullTextValue(f.get().toString(), f);
+						if(!value.isEmpty())
+						result +=  (result.isEmpty() ? "" : " ") + value;
+					}
+					
+					fullText.set(new string(result.isEmpty() ? " " : result));
+					update(recordId);
+					
 				}
-				
-				guid recordId = recordId(); 
-				String result = "";
-				
-				for(Field f : searchFields) {
-					String value = parseFullTextValue(f.get().toString(), f);
-					if(!value.isEmpty())
-					result +=  (result.isEmpty() ? "" : " ") + value;
-				}
-				
-				fullText.set(new string(result));
-				update(recordId);
-				
+				conn.commit();
 			}
-			conn.commit();
 		} catch(Throwable e) {
 			conn.rollback();
 			throw new RuntimeException(e);
