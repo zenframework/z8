@@ -36,11 +36,10 @@ import org.eclipse.jetty.server.session.HashSessionIdManager;
 import org.eclipse.jetty.server.session.HashSessionManager;
 import org.eclipse.jetty.server.session.SessionHandler;
 import org.zenframework.z8.server.config.ServerConfig;
-import org.zenframework.z8.server.engine.IServer;
 import org.zenframework.z8.server.types.guid;
 import org.zenframework.z8.web.servlet.Servlet;
 
-public class WebServer implements IServer {
+public class WebServer implements IWebServer {
 
 	private static final Log LOG = LogFactory.getLog(WebServer.class);
 
