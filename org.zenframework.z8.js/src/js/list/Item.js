@@ -182,7 +182,7 @@ Z8.define('Z8.list.Item', {
 		else if(type == Type.Boolean)
 			return { tag: 'i', cls: value ? 'fa fa-check-square' : 'fa fa-square-o' };
 		else if(type == Type.File)
-			value = value != Array.isArray(value) && value.length > 0 ? value[0].name : null;
+			value = value != null && Array.isArray(value) && value.length > 0 ? value[0].name : null;
 		else if(type == Type.Text)
 			value = Format.nl2br(value);
 
