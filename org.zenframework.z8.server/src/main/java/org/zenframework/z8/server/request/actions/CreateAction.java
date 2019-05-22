@@ -71,7 +71,7 @@ public class CreateAction extends RequestAction {
 				Field field = fieldsMap.get(fieldId);
 
 				if(field == null) {
-					field = query.getFieldById(fieldId);
+					field = query.findFieldById(fieldId);
 					if(field == null)
 						continue;
 					fieldsMap.put(fieldId, field);
