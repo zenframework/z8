@@ -23,13 +23,17 @@ Z8.define('Z8.window.Window', {
 
 		var body = this.body = new Z8.form.Fieldset({ plain: true, flex: 1, cls: 'body padding-15 flex', controls: this.controls, colCount: this.colCount || 1 });
 
-		var buttons = [];
+		var buttons = this.buttons || [];
+
+		if(Z8.isEmpty(this.buttons)) {
+			var ok = this.okButton = new Z8.button.Button({ text: 'Готово', primary: true, handler: this.ok, scope: this });
+			buttons.push(ok);
+		}
+
 		if(this.closable) {
 			var cancel = this.cancelButton = new Z8.button.Button({ text: 'Отмена', handler: this.cancel, scope: this });
-			buttons.push(cancel);
+			buttons.insert(cancel, 0);
 		}
-		var ok = this.okButton = new Z8.button.Button({ text: 'Готово', primary: true, handler: this.ok, scope: this });
-		buttons.push(ok);
 
 		var footer = this.footer = new Z8.Container({ cls: 'footer', items: buttons });
 

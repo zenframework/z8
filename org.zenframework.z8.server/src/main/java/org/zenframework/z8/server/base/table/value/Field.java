@@ -462,6 +462,16 @@ abstract public class Field extends Control implements IField {
 		isWritingMeta = false;
 	}
 
+	protected void writeSourceMeta(JsonWriter writer) {
+		super.writeSourceMeta(writer);
+
+		if(path != null && !path.isEmpty()) {
+			ILink[] links = path.toArray(new ILink[0]);
+			ILink lastLink = links[links.length - 1];
+			writer.writeProperty(Json.link, lastLink.id());
+		}
+	}
+
 	public void setWriteNulls(boolean writeNulls) {
 		this.writeNulls = writeNulls;
 	}

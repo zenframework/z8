@@ -558,11 +558,11 @@ Z8.define('Z8.form.field.Listbox', {
 		var source = field.source;
 
 		if(source != null) {
-			var link = field.link;
+			var link = source.link || (field.link ? field.link.owner : null);
 
 			var params = { 
 				request: source.id,
-				where: { property: 'recordId', value: link != null ? record.get(link.owner) : record.id }
+				where: { property: 'recordId', value: link != null ? record.get(link) : record.id }
 			};
 
 			Viewport.open(params, false, { oneRecord: true, title: record.get(field.name) });

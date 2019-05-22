@@ -99,12 +99,16 @@ public class Control extends OBJECT {
 
 		if(source != null && ApplicationServer.getUser().privileges().getRequestAccess(source.classIdKey()).execute()) {
 			writer.startObject(Json.source);
-			writer.writeProperty(Json.id, source.classId());
-			writer.writeProperty(Json.text, source.displayName());
+			writeSourceMeta(writer);
 			writer.finishObject();
 		}
 
 		writeDependencies(writer);
+	}
+
+	protected void writeSourceMeta(JsonWriter writer) {
+		writer.writeProperty(Json.id, source.classId());
+		writer.writeProperty(Json.text, source.displayName());
 	}
 
 	protected void writeDependencies(JsonWriter writer) {

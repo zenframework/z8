@@ -186,8 +186,11 @@ Z8.define('Z8.form.Fieldset', {
 		this.callParent(active);
 
 		var controls = this.controls;
-		for(var i = 0, length = controls.length; i < length; i++)
-			controls[i].setActive(active);
+		for(var i = 0, length = controls.length; i < length; i++) {
+			var control = controls[i];
+			if(control.isComponent)
+				controls[i].setActive(active);
+		}
 	},
 
 	focus: function() {
