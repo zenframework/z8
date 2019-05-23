@@ -79,6 +79,10 @@ Z8.define('Z8.data.Model', {
 		this.callParent();
 	},
 
+	getStore: function() {
+		return this.store;
+	},
+
 	getName: function() {
 		return this.name || this.$className;
 	},

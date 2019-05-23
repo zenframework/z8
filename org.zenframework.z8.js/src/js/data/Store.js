@@ -239,7 +239,10 @@ Z8.define('Z8.data.Store', {
 	},
 
 	indexOf: function(record) {
-		return record != null ? this.getOrdinals()[record.id] : null;
+		if(record == null)
+			return -1;
+		var index = this.getOrdinals()[record.id];
+		return index !== null ? index : -1;
 	},
 
 	getById: function(id) {
