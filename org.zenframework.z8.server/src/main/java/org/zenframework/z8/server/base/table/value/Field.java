@@ -106,7 +106,7 @@ abstract public class Field extends Control implements IField {
 	public String displayName() {
 		String name = super.displayName();
 
-		if(name != null && !name.isEmpty())
+		if(name != null)
 			return name;
 
 		name = name();
