@@ -55,6 +55,9 @@ public class ToString extends SqlToken {
 			case File:
 			case Text:
 				return "CONVERT_FROM(" + value.format(vendor, options) + ", 'UTF8')";
+			case Integer:
+			case Decimal:
+				return "(" + value.format(vendor, options) + ")::text";
 			default:
 				return value.format(vendor, options);
 			}
