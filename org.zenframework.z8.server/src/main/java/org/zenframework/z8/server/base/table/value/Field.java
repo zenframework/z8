@@ -336,6 +336,7 @@ abstract public class Field extends Control implements IField {
 	public Collection<Field> fields() {
 		Collection<Field> result = new LinkedHashSet<Field>();
 		result.add(this);
+		result.addAll(getUsedFields());
 		if(valueFrom != null)
 			result.add(valueFrom.get());
 		return result;

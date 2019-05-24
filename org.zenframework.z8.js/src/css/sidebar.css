@@ -96,11 +96,11 @@
 
 .viewport>.menu .item>.text {
 	float: left;
-	width: 9.28571428em;
 	overflow-x: hidden;
 	overflow-y: hidden;
 	text-overflow: ellipsis;
 	white-space: nowrap;
+	flex: 1;
 }
 
 .viewport>.menu .item>.chevron {

@@ -36,12 +36,8 @@ public class Section extends Control {
 	public Collection<Field> fields() {
 		Collection<Field> result = new LinkedHashSet<Field>();
 
-		for(Control control : CLASS.asList(controls)) {
-			if(control instanceof Field)
-				result.add((Field)control);
-			else
-				result.addAll(control.fields());
-		}
+		for(Control control : CLASS.asList(controls))
+			result.addAll(control.fields());
 
 		return result;
 	}
