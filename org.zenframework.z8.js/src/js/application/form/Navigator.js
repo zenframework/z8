@@ -611,7 +611,7 @@ Z8.define('Z8.application.form.Navigator', {
 	},
 
 	focus: function() {
-		return this.getActiveListbox().focus();
+		return this.oneRecord ? this.form.focus() : this.getActiveListbox().focus();
 	},
 
 	getRecord: function() {

@@ -11,6 +11,12 @@ Z8.define('Z8.list.Dropdown', {
 
 	autoAlign: true,
 
+	createItem: function(record) {
+		var item = this.callParent(record);
+		item.follow = false;
+		return item;
+	},
+
 	render: function(container) {
 		if(!this.inRender) {
 			this.callParent(container);

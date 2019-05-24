@@ -19,6 +19,7 @@ Z8.define('Z8.list.Item', {
 		config = config || {};
 		config.collapsed = config.collapsed !== false;
 		config.hidden = 0;
+		config.follow = true;
 		this.callParent(config);
 	},
 
@@ -160,7 +161,7 @@ Z8.define('Z8.list.Item', {
 	},
 
 	getCellCls: function(field, record) {
-		return 'text' + (field.source != null ? ' ' + 'follow' : '');
+		return 'text' + (field.source != null && this.follow ? ' follow' : '');
 	},
 
 	renderCellText: function(field, value) {
@@ -380,7 +381,7 @@ Z8.define('Z8.list.Item', {
 
 		var textClick = DOM.isParentOf(this.getTextElement(index), target);
 
-		if(textClick && this.followLink(index)) {
+		if(textClick && this.follow && this.followLink(index)) {
 			event.stopEvent();
 			return;
 		}

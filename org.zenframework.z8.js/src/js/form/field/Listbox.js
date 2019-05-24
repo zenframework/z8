@@ -661,7 +661,7 @@ Z8.define('Z8.form.field.Listbox', {
 			var field = fields[i];
 			if(field.isCombobox) {
 				if(!field.link.isJoined && field.link.name != myLink) {
-					if(linkedField != null && field.link.name != linkedField.name)
+					if(linkedField != null && field.link.name != linkedField.link.name)
 						return null;
 					linkedField = field;
 				}

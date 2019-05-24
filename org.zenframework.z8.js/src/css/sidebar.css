@@ -1,10 +1,10 @@
 .viewport>.menu {
 	position: absolute;
 	top: 2.85714286em;
-	left: -13.57142857em;
+	left: -17.14285714em;
 	bottom: 0;
 	background-color: #222;
-	width: 14.28571428em;
+	width: 17.85714285em;
 	z-index: 10000;
 	padding-right: .71428571em;
 	opacity: .97;
@@ -14,7 +14,7 @@
 }
 
 .viewport>.menu>.handle {
-width: .71428571em;
+	width: .71428571em;
 	position: absolute;
 	height: 25%;
 	top: 37.5%;
@@ -33,7 +33,7 @@ width: .71428571em;
 
 .viewport>.menu.disabled {
 	opacity: 0.7;
-	left: -13.57142857em;
+	left: -17.14285714em;
 }
 
 /*.viewport>.menu:hover>.handle,*/
@@ -120,7 +120,7 @@ width: .71428571em;
 	position: absolute;
 	display: none;
 	top: 0;
-	left: calc(14.14285714em - 1px);
+	left: calc(17.71428571em - 1px);
 	background-color: #222;
 	width: 21.42857142em;
 	min-height: 8.35714285em;
