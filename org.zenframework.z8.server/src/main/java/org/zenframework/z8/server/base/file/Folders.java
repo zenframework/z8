@@ -16,6 +16,6 @@ public class Folders {
 	public static final String DefaultReports = Reports + file.separator + "defaults";
 	public static final String ReportsOutput = Reports + file.separator + "generated";
 
-	public static File Base = ServerConfig.workingPath();
+	public static final File Base = ServerConfig.workingPath();
 
 }

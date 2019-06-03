@@ -10,6 +10,7 @@ import org.artofsolving.jodconverter.office.DefaultOfficeManagerConfiguration;
 import org.artofsolving.jodconverter.office.ExternalOfficeManagerConfiguration;
 import org.artofsolving.jodconverter.office.OfficeException;
 import org.artofsolving.jodconverter.office.OfficeManager;
+import org.zenframework.z8.server.base.file.Folders;
 import org.zenframework.z8.server.config.ServerConfig;
 import org.zenframework.z8.server.logs.Trace;
 import org.zenframework.z8.server.utils.ArrayUtils;
@@ -58,7 +59,7 @@ public class FileConverter {
 		String background = parameters.get(PARAM_BACKGROUND);
 		if (background != null) {
 			try {
-				PdfUtils.insertBackground(convertedFile, new File(background));
+				PdfUtils.insertBackground(convertedFile, new File(Folders.Base, background));
 			} catch (IOException e) {
 				throw new RuntimeException(e);
 			}
