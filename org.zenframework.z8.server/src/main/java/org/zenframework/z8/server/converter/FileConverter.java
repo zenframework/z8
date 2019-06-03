@@ -1,7 +1,8 @@
-package org.zenframework.z8.server.base.file;
+package org.zenframework.z8.server.converter;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Map;
 
 import org.apache.commons.io.FilenameUtils;
 import org.artofsolving.jodconverter.OfficeDocumentConverter;
@@ -21,6 +22,8 @@ public class FileConverter {
 	
 	public static final String PDF_EXTENSION = "pdf";
 
+	public static final String PARAM_BACKGROUND = "background";
+
 	private static OfficeManager officeManager;
 
 	private final File storage;
@@ -29,7 +32,7 @@ public class FileConverter {
 		this.storage = storage;
 	}
 
-	public File getConvertedPdf(String relativePath, File srcFile) {
+	public File getConvertedPdf(String relativePath, File srcFile, Map<String, String> parameters) {
 		if (srcFile.getName().toLowerCase().endsWith('.' + PDF_EXTENSION))
 			return srcFile;
 
@@ -52,6 +55,15 @@ public class FileConverter {
 			}
 		}
 
+		String background = parameters.get(PARAM_BACKGROUND);
+		if (background != null) {
+			try {
+				PdfUtils.insertBackground(convertedFile, new File(background));
+			} catch (IOException e) {
+				throw new RuntimeException(e);
+			}
+		}
+		
 		return convertedFile;
 	}
 

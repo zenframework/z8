@@ -17,6 +17,7 @@ import org.zenframework.z8.server.types.file;
 import org.zenframework.z8.server.types.guid;
 import org.zenframework.z8.server.utils.AttachmentUtils;
 import org.zenframework.z8.server.utils.PdfUtils;
+import org.zenframework.z8.server.utils.PrimaryUtils;
 
 public class PreviewAction extends RequestAction {
 
@@ -54,7 +55,7 @@ public class PreviewAction extends RequestAction {
 			if(previewRelativePath == null)
 				previewRelativePath = getPreviewPath(file, requestId, recordId, field);
 
-			File preview = AttachmentUtils.getPreview(file);
+			File preview = AttachmentUtils.getPreview(file, PrimaryUtils.unwrapStringMap(getParameters()));
 
 			if (preview != null)
 				converted.add(preview);

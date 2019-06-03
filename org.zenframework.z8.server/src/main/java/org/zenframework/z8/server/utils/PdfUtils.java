@@ -7,6 +7,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.Charset;
+import java.nio.file.Files;
 import java.util.Arrays;
 import java.util.List;
 
@@ -130,6 +131,44 @@ public class PdfUtils {
 			if (comment != null && !comment.isEmpty()) {
 				document.newPage();
 				document.add(new Paragraph(comment, getFont()));
+			}
+		} catch (DocumentException e) {
+			throw new IOException(e);
+		} finally {
+			document.close();
+		}
+	}
+
+	public static void insertBackground(File pdfFile, File image) throws IOException {
+		File tmp = new File(pdfFile.getParentFile(), pdfFile.getName() + ".tmp");
+		Files.move(pdfFile.toPath(), tmp.toPath());
+		try {
+			insertBackground(tmp, pdfFile, image);
+			tmp.delete();
+		} catch (Throwable e) {
+			Files.move(tmp.toPath(), pdfFile.toPath());
+		}
+	}
+
+	public static void insertBackground(File sourcePdfFile, File targetPdfFile, File imageFile) throws IOException {
+		Document document = new Document();
+		try {
+			Image background = Image.getInstance(imageFile.getAbsolutePath());
+			float width = document.getPageSize().getWidth();
+			float height = document.getPageSize().getHeight();
+			PdfWriter writer = PdfWriter.getInstance(document, new FileOutputStream(targetPdfFile));
+			document.open();
+			PdfContentByte cb = writer.getDirectContent();
+			InputStream in = new FileInputStream(sourcePdfFile);
+			try {
+				PdfReader reader = new PdfReader(in);
+				for (int i = 1; i <= reader.getNumberOfPages(); i++) {
+					document.newPage();
+					cb.addTemplate(writer.getImportedPage(reader, i), 0, 0);
+					writer.getDirectContentUnder().addImage(background, width, 0, 0, height, 0, 0);
+				}
+			} finally {
+				in.close();
 			}
 		} catch (DocumentException e) {
 			throw new IOException(e);

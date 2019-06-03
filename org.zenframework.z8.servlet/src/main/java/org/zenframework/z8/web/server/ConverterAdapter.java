@@ -14,8 +14,8 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.zenframework.z8.server.base.file.FileConverter;
 import org.zenframework.z8.server.base.file.Folders;
+import org.zenframework.z8.server.converter.FileConverter;
 import org.zenframework.z8.server.engine.IServerInfo;
 import org.zenframework.z8.server.engine.ISession;
 import org.zenframework.z8.server.json.Json;
@@ -71,7 +71,7 @@ public class ConverterAdapter extends Adapter {
 
 		if(preview) {
 			if(FileConverter.isConvertableToPdf(absolutePath)) {
-				absolutePath = getConverter().getConvertedPdf(relativePath.getPath(), absolutePath);
+				absolutePath = getConverter().getConvertedPdf(relativePath.getPath(), absolutePath, parameters);
 				response.addHeader("Content-Type", "application/pdf");
 			} else
 				response.addHeader("Content-Type", getContentType(absolutePath));
