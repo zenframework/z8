@@ -160,10 +160,8 @@ public class ReadAction extends RequestAction {
 			primaryKey = addSelectField(query.primaryKey());
 			parentKey = addSelectField(query.parentKey());
 
-			if(parameters.requestId != null) {
+			if(parameters.requestId != null)
 				addSelectField(query.lockKey());
-				addSelectField(query.attachmentKey());
-			}
 		}
 
 		collectQueryFilters();

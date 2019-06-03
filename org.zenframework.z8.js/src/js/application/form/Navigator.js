@@ -12,6 +12,8 @@ Z8.define('Z8.application.form.Navigator', {
 		if(!store.isStore)
 			store = this.store = new Z8.query.Store(store);
 
+		store.on('recordChange', this.onStoreRecordChange, this);
+
 		this.icon = store.form.icon;
 		this.presentation = store.form.presentation || 'form';
 
@@ -133,6 +135,42 @@ Z8.define('Z8.application.form.Navigator', {
 		listbox.on('select', this.onSelect, this);
 		listbox.on('contentChange', this.updateToolbar, this);
 		return listbox;
+	},
+
+	onStoreRecordChange: function(store, record, modified) {
+		this.onRecordChange(record, modified);
+
+		if(!this.oneRecord)
+			return;
+
+		var forms = Viewport.forms;
+		var index = forms.indexOf(this);
+
+		var form = forms[index - 1];
+		if(!(form instanceof Z8.application.form.Navigator))
+			return;
+
+		var field = this.sourceLink;
+		var id = record.id;
+
+		var store = form.getStore();
+		var records = store.getRecords();
+		var toReload = [];
+
+		for(var i = 0, length = records.length; i < length; i++) {
+			var record = records[i];
+			if(field != null && record.get(field) == id || record.id == id)
+				toReload.add(record);
+		}
+
+		if(toReload.length < 10) {
+			for(var i = 0, length = toReload.length; i < length; i++)
+				toReload[i].reload();
+		} else
+			store.load();
+	},
+
+	onRecordChange: function(record, modified) {
 	},
 
 	createTable: function() {

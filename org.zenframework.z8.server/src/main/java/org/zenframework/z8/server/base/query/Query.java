@@ -69,7 +69,6 @@ public class Query extends OBJECT {
 	public bool readOnly = bool.False;
 	public integer colCount = new integer(4);
 
-	public Field.CLASS<? extends Field> attachments;
 	public Field.CLASS<? extends Field> period;
 
 	public integer limit = null;
@@ -813,10 +812,6 @@ public class Query extends OBJECT {
 		return result;
 	}
 
-	public Field attachmentKey() {
-		return attachments != null ? attachments.get() : null;
-	}
-
 	public Field periodKey() {
 		return period != null ? period.get() : null;
 	}
@@ -1151,10 +1146,6 @@ public class Query extends OBJECT {
 		Field lockKey = lockKey();
 		if(lockKey != null && fields.contains(lockKey))
 			writer.writeProperty(Json.lockKey, lockKey.id());
-
-		Field attachments = attachmentKey();
-		if(attachments != null && fields.contains(attachments))
-			writer.writeProperty(Json.attachmentsKey, attachments.id());
 
 		Field period = periodKey();
 		if(period != null)

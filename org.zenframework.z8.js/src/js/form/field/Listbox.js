@@ -184,11 +184,15 @@ Z8.define('Z8.form.field.Listbox', {
 		this.attachRecordChange(record);
 
 		this.afterRecordSet(record);
-		this.onRecordChange(record, {});
+		this.updateEnabledState();
+	},
+
+	updateEnabledState: function() {
+		this.setEnabled(!this.needsValues());
 	},
 
 	onRecordChange: function(record, modified) {
-		this.setEnabled(!this.needsValues());
+		this.updateEnabledState();
 	},
 
 	getFilter: function(record) {
@@ -565,7 +569,7 @@ Z8.define('Z8.form.field.Listbox', {
 				where: { property: 'recordId', value: link != null ? record.get(link) : record.id }
 			};
 
-			Viewport.open(params, false, { oneRecord: true, title: record.get(field.name) });
+			Viewport.open(params, false, { oneRecord: true, sourceLink: link, title: record.get(field.name) });
 		} else if(field.type == Type.File) {
 			var file = record.get(field.name);
 			if(!Z8.isEmpty(file))
