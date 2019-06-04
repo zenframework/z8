@@ -118,13 +118,14 @@ public class PdfUtils {
 			PdfContentByte cb = writer.getDirectContent();
 			for (File file : sourceFiles) {
 				InputStream in = new FileInputStream(file);
+				PdfReader reader = new PdfReader(in);
 				try {
-					PdfReader reader = new PdfReader(in);
 					for (int i = 1; i <= reader.getNumberOfPages(); i++) {
 						document.newPage();
 						cb.addTemplate(writer.getImportedPage(reader, i), 0, 0);
 					}
 				} finally {
+					reader.close();
 					in.close();
 				}
 			}
@@ -139,40 +140,77 @@ public class PdfUtils {
 		}
 	}
 
-	public static void insertBackground(File pdfFile, File image) throws IOException {
+	public static void insertBackgroundImg(File pdfFile, File backFile) throws IOException {
 		File tmp = new File(pdfFile.getParentFile(), pdfFile.getName() + ".tmp");
 		Files.move(pdfFile.toPath(), tmp.toPath());
 		try {
-			insertBackground(tmp, pdfFile, image);
+			insertBackgroundImg(tmp, pdfFile, backFile);
 			tmp.delete();
 		} catch (Throwable e) {
 			Files.move(tmp.toPath(), pdfFile.toPath());
 		}
 	}
 
-	public static void insertBackground(File sourcePdfFile, File targetPdfFile, File imageFile) throws IOException {
+	public static void insertBackgroundImg(File sourcePdfFile, File targetPdfFile, File backFile) throws IOException {
 		Document document = new Document();
+		InputStream sourceIn = new FileInputStream(sourcePdfFile);
+		PdfReader sourceReader = new PdfReader(sourceIn);
 		try {
-			Image background = Image.getInstance(imageFile.getAbsolutePath());
+			Image background = Image.getInstance(backFile.getAbsolutePath());
 			float width = document.getPageSize().getWidth();
 			float height = document.getPageSize().getHeight();
 			PdfWriter writer = PdfWriter.getInstance(document, new FileOutputStream(targetPdfFile));
 			document.open();
 			PdfContentByte cb = writer.getDirectContent();
-			InputStream in = new FileInputStream(sourcePdfFile);
-			try {
-				PdfReader reader = new PdfReader(in);
-				for (int i = 1; i <= reader.getNumberOfPages(); i++) {
-					document.newPage();
-					cb.addTemplate(writer.getImportedPage(reader, i), 0, 0);
-					writer.getDirectContentUnder().addImage(background, width, 0, 0, height, 0, 0);
-				}
-			} finally {
-				in.close();
+			for (int i = 1; i <= sourceReader.getNumberOfPages(); i++) {
+				document.newPage();
+				cb.addTemplate(writer.getImportedPage(sourceReader, i), 0, 0);
+				writer.getDirectContentUnder().addImage(background, width, 0, 0, height, 0, 0);
 			}
 		} catch (DocumentException e) {
 			throw new IOException(e);
 		} finally {
+			sourceReader.close();
+			sourceIn.close();
+			document.close();
+		}
+	}
+
+	public static void insertBackgroundPdf(File pdfFile, File backFile) throws IOException {
+		File tmp = new File(pdfFile.getParentFile(), pdfFile.getName() + ".tmp");
+		Files.move(pdfFile.toPath(), tmp.toPath());
+		try {
+			insertBackgroundPdf(tmp, pdfFile, backFile, false);
+			tmp.delete();
+		} catch (Throwable e) {
+			Files.move(tmp.toPath(), pdfFile.toPath());
+		}
+	}
+
+	public static void insertBackgroundPdf(File sourcePdfFile, File targetPdfFile, File backFile, boolean repeate) throws IOException {
+		Document document = new Document();
+		InputStream sourceIn = new FileInputStream(sourcePdfFile);
+		PdfReader sourceReader = new PdfReader(sourceIn);
+		InputStream backIn = new FileInputStream(backFile);
+		PdfReader backReader = new PdfReader(backIn);
+		int sourcePages = sourceReader.getNumberOfPages();
+		int backPages = backReader.getNumberOfPages();
+		try {
+			PdfWriter writer = PdfWriter.getInstance(document, new FileOutputStream(targetPdfFile));
+			document.open();
+			for (int i = 1; i <= sourcePages; i++) {
+				document.newPage();
+				writer.getDirectContent().addTemplate(writer.getImportedPage(sourceReader, i), 0, 0);
+				if (i <= backPages || repeate)
+					writer.getDirectContentUnder().addTemplate(writer.getImportedPage(backReader, ((i - 1) % backPages) + 1), 0, 0);
+			}
+		} catch (DocumentException e) {
+			throw new IOException(e);
+		} finally {
+			backReader.close();
+			backIn.close();
+			sourceReader.close();
+			sourceIn.close();
 			document.close();
 		}
 	}

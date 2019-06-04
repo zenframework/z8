@@ -34,14 +34,14 @@ public class FileConverter {
 	}
 
 	public File getConvertedPdf(String relativePath, File srcFile, Map<String, String> parameters) {
-		if (srcFile.getName().toLowerCase().endsWith('.' + PDF_EXTENSION))
+		String extension = FilenameUtils.getExtension(srcFile.getName()).toLowerCase();
+		if (isPdfExtension(extension))
 			return srcFile;
 
 		File convertedFile = new File(storage, relativePath + '.' + PDF_EXTENSION);
 
 		if (!convertedFile.exists()) {
 			convertedFile.getParentFile().mkdirs();
-			String extension = FilenameUtils.getExtension(srcFile.getName()).toLowerCase();
 			try {
 				if (isTextExtension(extension))
 					PdfUtils.textToPdf(srcFile, convertedFile);
@@ -58,10 +58,19 @@ public class FileConverter {
 
 		String background = parameters.get(PARAM_BACKGROUND);
 		if (background != null) {
-			try {
-				PdfUtils.insertBackground(convertedFile, new File(Folders.Base, background));
-			} catch (IOException e) {
-				throw new RuntimeException(e);
+			srcFile = convertedFile;
+			convertedFile = new File(srcFile.getParentFile(), addSuffix(srcFile.getName(), "-background"));
+			if (!convertedFile.exists()) {
+				File backgroundFile = new File(Folders.Base, background);
+				extension = FilenameUtils.getExtension(background).toLowerCase();
+				try {
+					if (isPdfExtension(extension))
+						PdfUtils.insertBackgroundPdf(srcFile, convertedFile, backgroundFile, false);
+					else
+						PdfUtils.insertBackgroundImg(srcFile, convertedFile, backgroundFile);
+				} catch (IOException e) {
+					throw new RuntimeException(e);
+				}
 			}
 		}
 		
@@ -129,6 +138,10 @@ public class FileConverter {
 		return new OfficeDocumentConverter(officeManager);
 	}
 
+	private static boolean isPdfExtension(String extension) {
+		return PDF_EXTENSION.equals(extension);
+	}
+
 	private static boolean isTextExtension(String extension) {
 		return ArrayUtils.contains(ServerConfig.textExtensions(), extension.toLowerCase());
 	}
@@ -143,5 +156,14 @@ public class FileConverter {
 
 	private static boolean isOfficeExtension(String extension) {
 		return ArrayUtils.contains(ServerConfig.officeExtensions(), extension.toLowerCase());
+	}
+	
+	private static String addSuffix(String filename, String suffix) {
+		if (filename == null)
+			return null;
+		int extIndex = FilenameUtils.indexOfExtension(filename);
+		if (extIndex < 0)
+			return filename + suffix;
+		return filename.substring(0, extIndex) + suffix + filename.substring(extIndex);
 	}
 }
