@@ -65,7 +65,8 @@ public class Privileges implements IPrivileges {
 	}
 
 	public IAccess getFieldAccess(Field field) {
-		return getFieldAccess(field.owner().key(), field.key());
+		Query owner = field.owner();
+		return getFieldAccess(owner != null ? owner.key() : null, field.key());
 	}
 
 	public IAccess getFieldAccess(guid table, guid field) {
