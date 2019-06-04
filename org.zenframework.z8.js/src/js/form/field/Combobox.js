@@ -44,7 +44,7 @@ Z8.define('Z8.form.field.Combobox', {
 	},
 
 	createDropdown: function() {
-		var dropdown = this.dropdown = new Z8.list.Dropdown({ store: this.getStore(), value: this.getValue(), name: this.name, fields: this.fields || this.displayName, icons: this.icons, checks: this.checks });
+		var dropdown = this.dropdown = new Z8.list.Dropdown({ store: this.getStore(), value: this.getValue(), name: this.name, fields: this.fields || this.displayName, hideHeaders: this.hideHeaders, icons: this.icons, checks: this.checks });
 		dropdown.on('select', this.selectItem, this);
 		dropdown.on('cancel', this.cancelDropdown, this);
 

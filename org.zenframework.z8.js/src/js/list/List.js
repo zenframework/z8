@@ -5,6 +5,7 @@ Z8.define('Z8.list.List', {
 	autoFit: true,
 
 	headers: null,
+	hideHeaders: false,
 	numbers: false,
 	items: null,
 	totals: false,
@@ -279,7 +280,7 @@ Z8.define('Z8.list.List', {
 
 		if(hasHeaders) {
 			var headers = this.tableMarkup('headers');
-			var headersScroller = { cls: 'scroller headers', cn: [headers] };
+			var headersScroller = { cls: 'scroller headers' + (this.hideHeaders ? ' display-none' : ''), cn: [headers] };
 			cn.push(headersScroller);
 		}
 
