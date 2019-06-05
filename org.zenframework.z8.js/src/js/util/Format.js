@@ -45,10 +45,6 @@ Z8.define('Z8.util.Format', {
 			return value != null ? value.replace(/<br>/g, '\n') : '';
 		},
 
-		toHtmlString: function(value) {
-			return Format.nl2br(value.text || value).replace(/ /g, string.Empty);
-		},
-
 		htmlEncode: function(value) {
 			if(value == null || !String.isString(value))
 				return null;
