@@ -3,6 +3,8 @@ var User = null;
 Z8.define('Z8.application.User', {
 	extend: 'Z8.Object',
 
+	administrator: false,
+
 	constructor: function(config) {
 		this.callParent(config);
 
@@ -56,5 +58,9 @@ Z8.define('Z8.application.User', {
 	saveSettings: function() {
 		var params = { request: 'settings', data: this.settings };
 		HttpRequest.send(params);
+	},
+
+	isAdministrator: function() {
+		return this.administrator;
 	}
 });

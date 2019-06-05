@@ -136,7 +136,7 @@ Z8.define('Z8.list.Item', {
 				var type = field.type;
 
 				if(String.isString(text))
-					title = type != Type.Text ? Format.htmlEncode(text) : '';
+					title = Format.htmlEncode(Format.br2nl(text));
 
 				text = { tag: 'span', cls: this.getCellCls(field, record), cn: [text] };
 				var cell = { cls: 'cell', cn: i == 0 ? icons.concat([text]) : [text] };
@@ -362,13 +362,9 @@ Z8.define('Z8.list.Item', {
 		if(textElement == null)
 			return;
 
-		if(String.isString(text)) {
-			DOM.setValue(textElement, String.htmlText(text));
-			DOM.setAttribute(cell, 'title', text);
-		} else {
-			DOM.setInnerHTML(textElement, DOM.markup(text));
-			DOM.setAttribute(cell, 'title', '');
-		}
+		var isString = String.isString(text);
+		DOM.setInnerHTML(textElement, isString ? String.htmlText(text) : DOM.markup(text));
+		DOM.setAttribute(cell, 'title', isString ? Format.htmlEncode(Format.br2nl(text)) : '');
 	},
 
 	onMouseDown: function(event, target) {

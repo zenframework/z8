@@ -38,19 +38,11 @@ Z8.define('Z8.util.Format', {
 		},
 
 		nl2br: function(value) {
-			var result = null;
+			return value != null ? value.replace(/\n/g, '<br>') : '';
+		},
 
-			if(Array.isArray(value)) {
-				var result = [];
-				for(var i = 0; i < value.length; i++) {
-					var text = value[i];
-					result.push((text.text || text).replace(/\n/g, '<br>'));
-				}
-				result = result.join('<br>');
-			} else if(value != null)
-				result = (value.text || value).replace(/\n/g, '<br>');
-
-			return result;
+		br2nl: function(value) {
+			return value != null ? value.replace(/<br>/g, '\n') : '';
 		},
 
 		toHtmlString: function(value) {
