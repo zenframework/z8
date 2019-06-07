@@ -213,7 +213,7 @@ public class SelectFactory {
 		if(innerSelect || aggregateBy.isEmpty())
 			return action.getLinks(queries);
 
-		Collection<ILink> links = new HashSet<ILink>();
+		Collection<ILink> links = new LinkedHashSet<ILink>();
 
 		for(ILink link : aggregateBy) {
 			Query linkQuery = link.getQuery();
