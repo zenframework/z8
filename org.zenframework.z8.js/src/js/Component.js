@@ -108,7 +108,7 @@ Z8.define('Z8.Component', {
 	},
 
 	setText: function(text) {
-		DOM.setInnerHTML(this, text);
+		DOM.setInnerHtml(this, text);
 	},
 
 	isVisible: function() {

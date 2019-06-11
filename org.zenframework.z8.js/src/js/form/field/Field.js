@@ -99,19 +99,19 @@ Z8.define('Z8.form.field.Field', {
 		DOM.un(this, 'blur', this.onFocusOut, this, true);
 	},
 
-	onFocusIn: function(event) {
+	onFocusIn: function(event, target) {
 		DOM.addCls(this, 'focus');
 		this.fireEvent('focusIn', this);
 	},
 
-	onFocusOut: function(event) {
+	onFocusOut: function(event, target) {
 		var dom = DOM.get(this);
-		var target = event.relatedTarget;
+		target = event.relatedTarget;
 
 		if(dom == target || DOM.isParentOf(dom, target))
 			return false;
 
-		if(this.autoSave) {
+		if(this.autoSave && !this.instantAutoSave) {
 			if(this.isValid()) {
 				this.suspendCheckChange--;
 				this.setValue(this.getValue(), this.getDisplayValue());

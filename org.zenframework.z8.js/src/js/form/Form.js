@@ -320,7 +320,7 @@ Z8.define('Z8.form.Form', {
 	},
 
 	onRecordChange: function(record, modified) {
-		this.applyRecordChange(record, null);
+//		this.applyRecordChange(record, null);
 
 		var updated = {};
 

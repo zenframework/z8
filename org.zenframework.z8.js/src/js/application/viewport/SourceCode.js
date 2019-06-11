@@ -60,7 +60,7 @@ Z8.define('Z8.application.viewport.SourceCode', {
 		}
 
 		var loadCallback = function(response, success) {
-			DOM.setInnerHTML(frame, success ? response.text : '');
+			DOM.setInnerHtml(frame, success ? response.text : '');
 	
 			index = currentUrl.lastIndexOf('.');
 			var title = index != -1 ? (currentUrl.substring(index + 1) + ' - ' + currentUrl.substring(0, index)) : currentUrl;

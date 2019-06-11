@@ -363,7 +363,7 @@ Z8.define('Z8.list.Item', {
 			return;
 
 		var isString = String.isString(text);
-		DOM.setInnerHTML(textElement, isString ? String.htmlText(text) : DOM.markup(text));
+		DOM.setInnerHtml(textElement, isString ? String.htmlText(text) : DOM.markup(text));
 		DOM.setAttribute(cell, 'title', isString ? Format.htmlEncode(Format.br2nl(text)) : '');
 	},
 

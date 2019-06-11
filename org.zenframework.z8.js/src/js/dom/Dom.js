@@ -46,7 +46,7 @@ Z8.define('Z8.dom.Dom', {
 
 			var topmost = document.body;
 
-			while(child != null && child.nodeType == 1 && child !== topmost) {
+			while(child != null && child !== topmost) {
 				for(var i = 0, length = parents.length; i < length; i++) {
 					if(child == parents[i])
 						return true;
@@ -157,6 +157,17 @@ Z8.define('Z8.dom.Dom', {
 
 			before.insertAdjacentHTML('beforebegin', DOM.markup(dom));
 			return before.previousSibling;
+		},
+
+		insertAfter: function(after, dom) {
+			if((after = DOM.get(after)) == null || dom == null)
+				return null;
+
+			if(DOM.isDom(dom))
+				return after.insertAdjacentElement('afterend', dom);
+
+			after.insertAdjacentHTML('afterend', DOM.markup(dom));
+			return after.nextSibling;
 		},
 
 		remove: function(dom, delay) {
@@ -381,7 +392,24 @@ Z8.define('Z8.dom.Dom', {
 			DOM.setProperty(dom, 'title', title, delay);
 		},
 
-		setInnerHTML: function(dom, innerHTML, delay) {
+		leftTag: function(node) {
+			var html = DOM.getOuterHtml(node);
+			return html.substring(0, html.indexOf('>') + 1);
+		},
+	
+		rightTag: function(node) {
+			return '</' + node.localName || node.tagName + '>';
+		},
+
+		getOuterHtml: function(dom) {
+			return DOM.getProperty(dom, 'outerHTML');
+		},
+
+		getInnerHtml: function(dom) {
+			return DOM.getProperty(dom, 'innerHTML');
+		},
+
+		setInnerHtml: function(dom, innerHTML, delay) {
 			DOM.setProperty(dom, 'innerHTML', innerHTML, delay);
 		},
 

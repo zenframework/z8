@@ -24,7 +24,7 @@ Z8.define('Z8.form.field.Html', {
 
 	setValue: function(value, displayValue) {
 		this.callParent(value, displayValue);
-		DOM.setInnerHTML(this.div, value);
+		DOM.setInnerHtml(this.div, value);
 	},
 
 	setEnabled: function(enabled) {

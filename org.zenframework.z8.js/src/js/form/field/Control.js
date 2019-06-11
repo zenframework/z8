@@ -125,7 +125,7 @@ Z8.define('Z8.form.field.Control', {
 	getRawValue: function() {
 	},
 
-	setRawValue: function() {
+	setRawValue: function(value) {
 	},
 
 	setValue: function(value, displayValue) {

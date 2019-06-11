@@ -206,7 +206,7 @@ Z8.define('Z8.application.viewport.Viewport', {
 
 	setTitle: function(title) {
 		this.callParent(title);
-		DOM.setInnerHTML(this.text, title);
+		DOM.setInnerHtml(this.text, title);
 	},
 
 	onBreadcrumbClick: function(button) {
