@@ -296,9 +296,11 @@
 
 .list .item>.column>.control-group>textarea.control {
 	padding-top: .42857143em;
+	padding-left: .42857143em;
 	overflow-y: hidden;
-	white-space: nowrap;
+	white-space: normal;
 	resize: none;
+	min-height: 0;
 }
 
 .list .item>.column>.control-group>.label {

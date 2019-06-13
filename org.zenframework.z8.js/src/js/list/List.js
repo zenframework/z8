@@ -54,7 +54,7 @@ Z8.define('Z8.list.List', {
 
 		this.initItems();
 		this.initStore();
-		this.editors = this.initEditors();
+		this.editors = this.createEditors();
 	},
 
 	initItems: function() {
@@ -127,7 +127,7 @@ Z8.define('Z8.list.List', {
 		this.resetOrdinals();
 	},
 
-	initEditors: function() {
+	createEditors: function() {
 		var editors = [];
 
 		if(this.store == null)
@@ -149,7 +149,7 @@ Z8.define('Z8.list.List', {
 			if(editor == null) {
 				var config = Z8.apply({}, field);
 				config.label = false;
-				config.type = type != Type.Text ? type : Type.String;
+				config.type = type != Type.String ? type : Type.Text;
 				config.enterOnce = true;
 				config.height = null;
 				editor = Z8.form.Helper.createControl(config);
