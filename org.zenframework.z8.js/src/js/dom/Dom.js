@@ -148,6 +148,19 @@ Z8.define('Z8.dom.Dom', {
 			return container.lastChild;
 		},
 
+		prepend: function(container, child) {
+			if((container = DOM.get(container || document.body)) == null || child == null)
+				return null;
+
+			var childDom = DOM.isDom(child) ? child : DOM.get(child);
+
+			if(childDom != null)
+				return container.insertAdjacentElement('afterbegin', childDom);
+
+			container.insertAdjacentHTML('afterbegin', DOM.markup(child));
+			return container.lastChild;
+		},
+
 		insertBefore: function(before, dom) {
 			if((before = DOM.get(before)) == null || dom == null)
 				return null;
