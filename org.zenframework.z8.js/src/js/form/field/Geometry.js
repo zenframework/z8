@@ -177,7 +177,9 @@ Z8.define('Z8.form.field.Geometry', {
 
 	createLayer: function(config) {
 		var source = new ol.source[config.sourceCls](config);
-		var layer = new ol.layer[config.cls]({ source: source });
+		var layer = new ol.layer[config.cls]({ source: source, style: config.style });
+		if (typeof config.title === 'function')
+			layer.title = config.title.bind(layer);
 		layer.name = config.name;
 		return layer;
 	},
