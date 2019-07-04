@@ -8,7 +8,7 @@ Z8.define('Z8.form.field.Text', {
 	tag: 'input',
 	autocomplete: 'off',
 
-	editable: true,
+	editor: true,
 
 	initComponent: function() {
 		this.triggers = this.triggers || [];
@@ -68,7 +68,7 @@ Z8.define('Z8.form.field.Text', {
 
 		var input = this.input = this.selectNode(this.getInputTag() + '[name=input]');
 
-		if(this.editable)
+		if(this.editor)
 			DOM.on(input, 'input', this.onInput, this);
 
 		this.callParent();
@@ -119,7 +119,7 @@ Z8.define('Z8.form.field.Text', {
 	},
 
 	getInputTag: function() {
-		return this.editable ? this.tag : 'div';
+		return this.editor ? this.tag : 'div';
 	},
 
 	getInputCls: function() {

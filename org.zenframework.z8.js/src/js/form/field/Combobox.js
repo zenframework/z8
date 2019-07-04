@@ -29,7 +29,7 @@ Z8.define('Z8.form.field.Combobox', {
 
 		this.cls = DOM.parseCls(this.cls).pushIf('combobox');
 
-		if(this.editable)
+		if(this.editor)
 			this.queryTask = new Z8.util.DelayedTask();
 
 		this.initStore();
@@ -87,7 +87,7 @@ Z8.define('Z8.form.field.Combobox', {
 		this.hidePager();
 		this.dropdown.setAlignment(this.input);
 
-		if(!this.editable)
+		if(!this.editor)
 			DOM.on(this, 'keyPress', this.onKeyPress, this);
 
 		DOM.on(this.input, 'dblClick', this.onDblClick, this);
@@ -610,7 +610,7 @@ Z8.define('Z8.form.field.Combobox', {
 	onKeyEvent: function(event, target) {
 		var key = event.getKey();
 
-		var editable = this.editable;
+		var editor = this.editor;
 		var dropdown = this.dropdown;
 		var dropdownOpen = dropdown.isVisible();
 		var currentItem = this.dropdown.currentItem();
@@ -628,14 +628,14 @@ Z8.define('Z8.form.field.Combobox', {
 			dropdownOpen ? dropdown.focus(currentItem) : this.select('next');
 		else if(key == Event.UP)
 			dropdownOpen ? dropdown.focus(currentItem) : this.select('previous');
-		else if(key == Event.HOME && (!editable || !isInput()))
+		else if(key == Event.HOME && (!editor || !isInput()))
 			dropdownOpen ? dropdown.focus(currentItem) : this.select('first');
-		else if(key == Event.END && (!editable || !isInput()))
+		else if(key == Event.END && (!editor || !isInput()))
 			dropdownOpen ? dropdown.focus(currentItem) : this.select('last');
 		else if(key == Event.TAB && isTrigger()) {
 			dropdownOpen ? dropdown.focus(currentItem) : this.cancelDropdown();
 			return false;
-		} else if(key == Event.ENTER || key == Event.SPACE && (!this.editable || isTrigger())) {
+		} else if(key == Event.ENTER || key == Event.SPACE && (!editor || isTrigger())) {
 			if(dropdownOpen)
 				currentItem || !this.isRequired() ? this.selectItem(currentItem) : this.cancelDropdown();
 			else if(this.enterToOpen && (!this.enterOnce || !this.entered)) {

@@ -1,6 +1,7 @@
 package org.zenframework.z8.server.request.actions;
 
 import org.zenframework.z8.server.base.form.report.Report;
+import org.zenframework.z8.server.base.query.Query;
 import org.zenframework.z8.server.engine.ApplicationServer;
 import org.zenframework.z8.server.json.Json;
 import org.zenframework.z8.server.json.JsonWriter;
@@ -14,10 +15,12 @@ public class ReportAction extends RequestAction {
 
 	@Override
 	public void writeResponse(JsonWriter writer) {
+		Query query = getContextQuery();
+
 		String id = getRequestParameter(Json.id);
 		String format = getRequestParameter(Json.format);
 		String name = getRequestParameter(Json.name);
-		Report report = getContextQuery().findReportById(id);
+		Report report = query.findReportById(id);
 
 		if(report == null)
 			throw new RuntimeException("No report with id: '" + id + "'");

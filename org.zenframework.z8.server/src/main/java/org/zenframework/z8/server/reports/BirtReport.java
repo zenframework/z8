@@ -335,11 +335,13 @@ public class BirtReport {
 		if(element == null)
 			return;
 
+		String header = options.header();
+
 		try {
-			element.setProperty("content", options.header);
+			element.setProperty("content", header);
 		} catch(SemanticException e) {
 			try {
-				element.setProperty("text", options.header);
+				element.setProperty("text", header);
 			} catch(SemanticException e1) {
 			}
 		}
@@ -939,7 +941,9 @@ public class BirtReport {
 
 		File folder = ReportOptions.getReportOutputFolder();
 
-		outputFile = getUniqueFileName(folder, options.documentName(), format());
+		String documentName = options.name();
+
+		outputFile = getUniqueFileName(folder, documentName, format());
 
 		Connection connection = ConnectionManager.get();
 		connection.beginTransaction(); // for large cursors
@@ -951,7 +955,7 @@ public class BirtReport {
 		}
 
 		if(isSplitNeeded()) {
-			splittedFile = getUniqueFileName(folder, options.documentName(), format());
+			splittedFile = getUniqueFileName(folder, documentName, format());
 
 			FileOutputStream output = null;
 			FileInputStream input = null;

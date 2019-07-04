@@ -47,7 +47,8 @@ public class ReportOptions {
 	public ReadAction action = null;
 	public Collection<Query> queries = null;
 
-	public String header = "document";
+	private String name = "document";
+	private String header = "";
 
 	public PrintOptions printOptions;
 
@@ -161,7 +162,19 @@ public class ReportOptions {
 		return topMargin() + bottomMargin();
 	}
 
-	public String documentName() {
-		return header;
+	public String name() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public String header() {
+		return header == null || header.isEmpty() ? name() : header;
+	}
+
+	public void setHeader(String header) {
+		this.header = header;
 	}
 }

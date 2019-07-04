@@ -115,7 +115,6 @@ Z8.define('Z8.form.field.Datetime', {
 	onKeyEvent: function(event, target) {
 		var key = event.getKey();
 
-		var editable = this.editable;
 		var dropdown = this.dropdown;
 		var dropdownOpen = dropdown.isVisible();
 

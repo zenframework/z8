@@ -3,6 +3,7 @@ package org.zenframework.z8.server.request.actions;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import org.zenframework.z8.server.base.query.Period;
 import org.zenframework.z8.server.base.table.value.Field;
 import org.zenframework.z8.server.engine.ApplicationServer;
 import org.zenframework.z8.server.json.Json;
@@ -13,6 +14,7 @@ import org.zenframework.z8.server.reports.BirtReport;
 import org.zenframework.z8.server.reports.Column;
 import org.zenframework.z8.server.reports.PrintOptions;
 import org.zenframework.z8.server.reports.ReportOptions;
+import org.zenframework.z8.server.types.date;
 import org.zenframework.z8.server.types.file;
 
 public class ExportAction extends ReadAction {
@@ -78,8 +80,19 @@ public class ExportAction extends ReadAction {
 		return result;
 	}
 
-	private String getReportHeader() {
+	private String getReportName() {
 		return getQuery().displayName();
+	}
+
+	private String getReportHeader() {
+		String name = getReportName();
+
+		Period period = new Period(getQuery().periodKey(), getPeriodParameter());
+		if(period.start.equals(date.Min))
+			return name;
+
+		String format = "dd MMMM yyyy";
+		return name + (name.isEmpty() ? "" : "\n") + period.start.format(format) + " - " + period.finish.format(format);
 	}
 
 	@Override
@@ -87,7 +100,8 @@ public class ExportAction extends ReadAction {
 		PrintOptions printOptions = new PrintOptions(getOptionsParameter());
 
 		ReportOptions report = new ReportOptions(printOptions);
-		report.header = getReportHeader();
+		report.setName(getReportName());
+		report.setHeader(getReportHeader());
 		report.format = getFormatParameter();
 		report.action = this;
 

@@ -2,7 +2,7 @@ Z8.define('Z8.form.field.File', {
 	extend: 'Z8.form.field.Text',
 
 	isFile: true,
-	editable: false,
+	editor: false,
 
 	setValue: function(value, displayValue) {
 		this.callParent(value, displayValue);

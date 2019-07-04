@@ -100,8 +100,8 @@ public class Report extends OBJECT implements Runnable, IReport {
 		report.templateFolder = Folders.Reports;
 		report.template = template.get() + '.' + Reports.DesignExtension;
 		report.queries = queries();
-		report.header = name != null ? name.get() : template.get();
 		report.format = format().get();
+		report.setName(name != null ? name.get() : template.get());
 
 		File diskFile = new File(Folders.Base, new BirtReport(report).execute().getPath());
 		file file = new file(diskFile);
