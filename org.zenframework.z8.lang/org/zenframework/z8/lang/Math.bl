@@ -13,6 +13,8 @@ public final class Math {
 	static public date max(date a, date b);
 	static public date min(date a, date b);
 
+	static public decimal pow(decimal a, decimal b);
+
 	static public decimal hypot(decimal x, decimal y);
 
 	static public decimal sin(decimal a);
