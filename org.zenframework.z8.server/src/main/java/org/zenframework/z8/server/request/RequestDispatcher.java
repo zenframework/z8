@@ -118,7 +118,7 @@ public class RequestDispatcher implements Runnable {
 			if(!ApplicationServer.getUser().privileges().getRequestAccess(guid.create(requestId)).execute())
 				throw new AccessRightsViolationException(Privileges.displayNames.NoExecuteAccess);
 
-			OBJECT object = requestId != null ? Loader.getInstance(requestId) : null;
+			OBJECT object = Loader.getInstance(requestId);
 
 			request.setTarget(object);
 

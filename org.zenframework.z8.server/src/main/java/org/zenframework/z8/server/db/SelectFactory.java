@@ -138,10 +138,8 @@ public class SelectFactory {
 		result.addAll(aggregateBy);
 
 		for(Field field : action.getSelectFields()) {
-			if(field.owner() == action.getQuery() || field.owner() == action.getQuery()) {
-				if(field.getAggregation() != Aggregation.None)
-					result.add(field);
-			}
+			if(field.owner() == action.getQuery() && field.getAggregation() != Aggregation.None)
+				result.add(field);
 		}
 
 		return result;

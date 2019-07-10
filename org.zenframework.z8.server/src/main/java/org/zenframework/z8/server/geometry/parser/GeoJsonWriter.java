@@ -148,7 +148,7 @@ public class GeoJsonWriter {
 	private void writeFeature(geometry geometry) {
 		writer.startObject();
 		writer.writeProperty(GeoJson.Type, GeoJson.Feature);
-		writer.writeJsonProperty(GeoJson.Geometry, new GeoJsonWriter(source).write());
+		writer.writeJsonProperty(GeoJson.Geometry, new GeoJsonWriter(geometry).write());
 		writer.finishObject();
 	}
 

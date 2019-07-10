@@ -135,7 +135,7 @@ public final class string extends primary {
 			if(value == null || value.isEmpty())
 				return string.value == null || string.value.isEmpty();
 
-			return value != null ? value.equals(string.value) : false;
+			return value.equals(string.value);
 		}
 
 		return false;
