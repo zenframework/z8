@@ -177,7 +177,7 @@ Z8.define('Z8.form.field.Combobox', {
 
 	setRecord: function(record) {
 		this.callParent(record);
-		this.updateWhere(this.dependsOnValue);
+		this.updateWhere(this.dependsOnValue, record);
 
 		var store = this.getStore();
 		if(store != null)
@@ -218,7 +218,7 @@ Z8.define('Z8.form.field.Combobox', {
 
 	onDependencyChange: function(record, control) {
 		var value = this.dependsOnValue = record != null ? (this.hasDependsOnField() ? record.get(this.getDependsOnField()) : record.id) : null;
-		this.updateWhere(value);
+		this.updateWhere(value, record);
 
 		if(control.initializing || control.isListbox)
 			this.suspendCheckChange++;
@@ -229,21 +229,21 @@ Z8.define('Z8.form.field.Combobox', {
 			this.suspendCheckChange--;
 	},
 
-	updateWhere: function(value) {
-		var where = this.getWhere(value);
+	updateWhere: function(value, record) {
+		var where = this.getWhere(value, record);
 
 		var store = this.getStore();
 		store.setWhere(where);
 		store.unload();
 	},
 
-	getWhere: function(dependencyValue) {
+	getWhere: function(dependencyValue, record) {
 		var where = [];
 
 		if(dependencyValue != null)
 			where.push({ property: this.getDependencyField(), value: dependencyValue });
 
-		var record = this.getRecord();
+	//	var record = this.getRecord();
 		var link = this.field.link;
 
 		if(record == null || !link.isParentKey)

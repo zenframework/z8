@@ -34,7 +34,7 @@ Z8.define('Z8.application.Application', {
 	},
 
 	getSubclass: function(id) {
-		return this.subclasses[id];
+		return this.subclasses[id] || id;
 	},
 
 	login: function(options) {
