@@ -16,7 +16,7 @@ Z8.define('Z8.filter.Line', {
 		property.on('change', this.propertyChanged, this);
 
 		var type = record != null ? record.get('type') : null;
-		store = type != null ? Operator.getOperators(type) : null;
+		store = type != null ? Z8.filter.Operator.getOperators(type) : null;
 		record = store != null ? store.getById(expression.operator) : null;
 
 		var operator = this.operator = new Z8.form.field.Combobox({ store: store, value: expression.operator, emptyValue: '', cls: 'operator', required: true, filters: false, placeholder: 'Операция' });
@@ -81,7 +81,7 @@ Z8.define('Z8.filter.Line', {
 	propertyChanged: function(combobox, newValue, oldValue) {
 		var record = combobox.store.getById(newValue);
 		var type = record != null ? record.get('type') : null;
-		var store = type != null ? Operator.getOperators(type) : null;
+		var store = type != null ? Z8.filter.Operator.getOperators(type) : null;
 		this.operator.setStore(store);
 		this.operator.setValue(this.emptyValue, '');
 		this.onChildChange(this);

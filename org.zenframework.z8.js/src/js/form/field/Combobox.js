@@ -116,17 +116,18 @@ Z8.define('Z8.form.field.Combobox', {
 		this.callParent(readOnly);
 	},
 
-	getFilterOperation: function(type) {
+	getFilterOperator: function(type) {
 		switch(type) {
 		case Type.Integer:
 		case Type.Float:
-			return Operation.Eq;
+			return Operator.Eq;
 		case Type.Date:
 		case Type.Datetime:
 		case Type.Boolean:
+			return null;
 		case Type.String:
 		default:
-			return Operation.Contains;
+			return Operator.Contains;
 		}
 	},
 
@@ -250,7 +251,7 @@ Z8.define('Z8.form.field.Combobox', {
 
 		var parentKeys = link.parentKeys;
 		for(var i = 0, length = parentKeys.length; i < length; i++)
-			where.push({ property: parentKeys[i], operator: Operation.NotEq, value: record.id });
+			where.push({ property: parentKeys[i], operator: Operator.NotEq, value: record.id });
 
 		return where;
 	},
@@ -364,7 +365,9 @@ Z8.define('Z8.form.field.Combobox', {
 
 		for(var i = 0, length = fields.length; i < length; i++) {
 			var field = fields[i];
-			expressions.add({ property: field.name, operator: this.getFilterOperation(field.type), value: text, anyMatch: true });
+			var operator = this.getFilterOperator(field.type);
+			if(operator != null)
+				expressions.add({ property: field.name, operator: operator, value: text, anyMatch: true });
 		}
 		return { logical: 'or', expressions: expressions };
 	},

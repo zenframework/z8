@@ -610,7 +610,7 @@ Z8.define('Z8.application.form.Navigator', {
 				filter.push(quickFilter.expression);
 		}
 
-		search.expression = value != '' ? { property: search.field.name, operator: Operation.Contains, value: value } : null;
+		search.expression = value != '' ? { property: search.field.name, operator: Operator.Contains, value: value } : null;
 		if(search.expression != null)
 			filter.push(search.expression);
 

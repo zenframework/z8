@@ -44,9 +44,9 @@ Z8.define('Z8.data.Period', {
 	get: function(property) {
 		var filter = [];
 		if(this.start != null)
-			filter.push({ property: property, operator: Operation.GE, value: this.start });
+			filter.push({ property: property, operator: Operator.GE, value: this.start });
 		if(this.finish != null)
-			filter.push({ property: property, operator: Operation.LE, value: this.finish });
+			filter.push({ property: property, operator: Operator.LE, value: this.finish });
 		return filter;
 	},
 

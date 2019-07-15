@@ -760,7 +760,7 @@ Z8.define('Z8.data.Store', {
 		for(var i = 0, recordCount = cache.length; i < recordCount; i++) {
 			var record = cache[i];
 			for(var j = 0, filterCount = filters.length; j < filterCount; j++) {
-				if(!Operator.applyFilter(record, filters[j]))
+				if(!Z8.filter.Operator.applyFilter(record, filters[j]))
 					break;
 			}
 

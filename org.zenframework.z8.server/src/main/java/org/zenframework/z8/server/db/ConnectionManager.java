@@ -28,8 +28,12 @@ public class ConnectionManager {
 		if(database == null)
 			database = ServerConfig.database();
 
-		synchronized(database.getLock()) {
-			List<Connection> connections =  null;
+		List<Connection> connections =  null;
+		Connection[] array = null;
+
+		Object lock = database.getLock();
+
+		synchronized(lock) {
 			connections = databaseConnections.get(database);
 
 			if(connections == null) {
@@ -37,24 +41,29 @@ public class ConnectionManager {
 				databaseConnections.put(database, connections);
 			}
 
-			for(Connection connection : connections) {
-				if(connection.isCurrent())
-					return connection;
-			}
-
-			for(Connection connection : connections) {
-				if(!connection.isInUse()) {
-					connection.use();
-					return connection;
-				}
-			}
-
-			Connection connection = Connection.connect(database);
-			connection.use();
-
-			connections.add(connection);
-			return connection;
+			array = connections.toArray(new Connection[connections.size()]);
 		}
+
+		for(Connection connection : array) {
+			if(connection.isCurrent())
+				return connection;
+		}
+
+		for(Connection connection : array) {
+			if(!connection.isInUse()) {
+				connection.use();
+				return connection;
+			}
+		}
+
+		Connection connection = Connection.connect(database);
+		connection.use();
+
+		synchronized(lock) {
+			connections.add(connection);
+		}
+
+		return connection;
 	}
 
 	public static void release() {

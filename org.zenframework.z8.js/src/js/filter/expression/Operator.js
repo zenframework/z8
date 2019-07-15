@@ -101,115 +101,113 @@ Z8.define('Z8.filter.Number', {
 });
 
 Z8.define('Z8.filter.Operator', {
-	shortClassName: 'Operator',
-
 	statics: {
 		data: {
 			boolean: [
-				{ id: Operation.isTrue, name: 'да', icon: 'fa-dot-circle-o' },
-				{ id: Operation.isFalse, name: 'нет', icon: 'fa-circle-o' }
+				{ id: Operator.isTrue, name: 'да', icon: 'fa-dot-circle-o' },
+				{ id: Operator.isFalse, name: 'нет', icon: 'fa-circle-o' }
 			],
 
 			datetime: [
-				{ id: Operation.GT, name: 'после', icon: 'fa-math-gt', type: Type.Datetime },
-				{ id: Operation.GE, name: 'не ранее', icon: 'fa-math-ge', type: Type.Datetime },
-				{ id: Operation.LT, name: 'до', icon: 'fa-math-lt', type: Type.Datetime },
-				{ id: Operation.LE, name: 'не позже', icon: 'fa-math-le', type: Type.Datetime },
+				{ id: Operator.GT, name: 'после', icon: 'fa-math-gt', type: Type.Datetime },
+				{ id: Operator.GE, name: 'не ранее', icon: 'fa-math-ge', type: Type.Datetime },
+				{ id: Operator.LT, name: 'до', icon: 'fa-math-lt', type: Type.Datetime },
+				{ id: Operator.LE, name: 'не позже', icon: 'fa-math-le', type: Type.Datetime },
 
-				{ id: Operation.Yesterday, name: 'вчера' },
-				{ id: Operation.Today, name: 'сегодня' },
-				{ id: Operation.Tomorrow, name: 'завтра' },
+				{ id: Operator.Yesterday, name: 'вчера' },
+				{ id: Operator.Today, name: 'сегодня' },
+				{ id: Operator.Tomorrow, name: 'завтра' },
 
-				{ id: Operation.LastWeek, name: 'прошлая неделя' },
-				{ id: Operation.ThisWeek, name: 'текущая неделя' },
-				{ id: Operation.NextWeek, name: 'следующая неделя' },
+				{ id: Operator.LastWeek, name: 'прошлая неделя' },
+				{ id: Operator.ThisWeek, name: 'текущая неделя' },
+				{ id: Operator.NextWeek, name: 'следующая неделя' },
 
-				{ id: Operation.LastMonth, name: 'прошлый месяц' },
-				{ id: Operation.ThisMonth, name: 'текущий месяц' },
-				{ id: Operation.NextMonth, name: 'следующий месяц' },
+				{ id: Operator.LastMonth, name: 'прошлый месяц' },
+				{ id: Operator.ThisMonth, name: 'текущий месяц' },
+				{ id: Operator.NextMonth, name: 'следующий месяц' },
 
-				{ id: Operation.LastYear, name: 'прошлый год' },
-				{ id: Operation.ThisYear, name: 'текущий год' },
-				{ id: Operation.NextYear, name: 'следующий год' },
+				{ id: Operator.LastYear, name: 'прошлый год' },
+				{ id: Operator.ThisYear, name: 'текущий год' },
+				{ id: Operator.NextYear, name: 'следующий год' },
 
-				{ id: Operation.LastDays, name: 'последние X дней', type: Type.Integer },
-				{ id: Operation.NextDays, name: 'следующие X дней', type: Type.Integer },
+				{ id: Operator.LastDays, name: 'последние X дней', type: Type.Integer },
+				{ id: Operator.NextDays, name: 'следующие X дней', type: Type.Integer },
 
-				{ id: Operation.LastHours, name: 'последние X часов', type: Type.Integer },
-				{ id: Operation.NextHours, name: 'следующие X часов', type: Type.Integer }
+				{ id: Operator.LastHours, name: 'последние X часов', type: Type.Integer },
+				{ id: Operator.NextHours, name: 'следующие X часов', type: Type.Integer }
 			],
 
 			date: [
-				{ id: Operation.Eq, name: 'равно', icon: 'fa-math-eq', type: Type.Date },
-				{ id: Operation.NotEq, name: 'не равно', icon: 'fa-math-not-eq', type: Type.Date },
+				{ id: Operator.Eq, name: 'равно', icon: 'fa-math-eq', type: Type.Date },
+				{ id: Operator.NotEq, name: 'не равно', icon: 'fa-math-not-eq', type: Type.Date },
 
-				{ id: Operation.GT, name: 'после', icon: 'fa-math-gt', type: Type.Date },
-				{ id: Operation.GE, name: 'не ранее', icon: 'fa-math-ge', type: Type.Date },
-				{ id: Operation.LT, name: 'до', icon: 'fa-math-lt', type: Type.Date },
-				{ id: Operation.LE, name: 'не позже', icon: 'fa-math-le', type: Type.Date },
+				{ id: Operator.GT, name: 'после', icon: 'fa-math-gt', type: Type.Date },
+				{ id: Operator.GE, name: 'не ранее', icon: 'fa-math-ge', type: Type.Date },
+				{ id: Operator.LT, name: 'до', icon: 'fa-math-lt', type: Type.Date },
+				{ id: Operator.LE, name: 'не позже', icon: 'fa-math-le', type: Type.Date },
 
-				{ id: Operation.Yesterday, name: 'вчера' },
-				{ id: Operation.Today, name: 'сегодня' },
-				{ id: Operation.Tomorrow, name: 'завтра' },
+				{ id: Operator.Yesterday, name: 'вчера' },
+				{ id: Operator.Today, name: 'сегодня' },
+				{ id: Operator.Tomorrow, name: 'завтра' },
 
-				{ id: Operation.LastWeek, name: 'прошлая неделя' },
-				{ id: Operation.ThisWeek, name: 'текущая неделя' },
-				{ id: Operation.NextWeek, name: 'следующая неделя' },
+				{ id: Operator.LastWeek, name: 'прошлая неделя' },
+				{ id: Operator.ThisWeek, name: 'текущая неделя' },
+				{ id: Operator.NextWeek, name: 'следующая неделя' },
 
-				{ id: Operation.LastMonth, name: 'прошлый месяц' },
-				{ id: Operation.ThisMonth, name: 'текущий месяц' },
-				{ id: Operation.NextMonth, name: 'следующий месяц' },
+				{ id: Operator.LastMonth, name: 'прошлый месяц' },
+				{ id: Operator.ThisMonth, name: 'текущий месяц' },
+				{ id: Operator.NextMonth, name: 'следующий месяц' },
 
-				{ id: Operation.LastYear, name: 'прошлый год' },
-				{ id: Operation.ThisYear, name: 'текущий год' },
-				{ id: Operation.NextYear, name: 'следующий год' },
+				{ id: Operator.LastYear, name: 'прошлый год' },
+				{ id: Operator.ThisYear, name: 'текущий год' },
+				{ id: Operator.NextYear, name: 'следующий год' },
 
-				{ id: Operation.LastDays, name: 'последние X дней', type: Type.Integer },
-				{ id: Operation.NextDays, name: 'следующие X дней', type: Type.Integer },
+				{ id: Operator.LastDays, name: 'последние X дней', type: Type.Integer },
+				{ id: Operator.NextDays, name: 'следующие X дней', type: Type.Integer },
 
-				{ id: Operation.LastHours, name: 'последние X часов', type: Type.Integer },
-				{ id: Operation.NextHours, name: 'следующие X часов', type: Type.Integer }
+				{ id: Operator.LastHours, name: 'последние X часов', type: Type.Integer },
+				{ id: Operator.NextHours, name: 'следующие X часов', type: Type.Integer }
 			],
 
 			integer: [
-				{ id: Operation.Eq, name: 'равно', icon: 'fa-math-eq', type: Type.Integer },
-				{ id: Operation.NotEq, name: 'не равно', icon: 'fa-math-not-eq', type: Type.Integer },
+				{ id: Operator.Eq, name: 'равно', icon: 'fa-math-eq', type: Type.Integer },
+				{ id: Operator.NotEq, name: 'не равно', icon: 'fa-math-not-eq', type: Type.Integer },
 
-				{ id: Operation.GT, name: 'больше', icon: 'fa-math-gt', type: Type.Integer },
-				{ id: Operation.GE, name: 'не меньше', icon: 'fa-math-ge', type: Type.Integer },
-				{ id: Operation.LT, name: 'меньше', icon: 'fa-math-lt', type: Type.Integer },
-				{ id: Operation.LE, name: 'не больше', icon: 'fa-math-le', type: Type.Integer }
+				{ id: Operator.GT, name: 'больше', icon: 'fa-math-gt', type: Type.Integer },
+				{ id: Operator.GE, name: 'не меньше', icon: 'fa-math-ge', type: Type.Integer },
+				{ id: Operator.LT, name: 'меньше', icon: 'fa-math-lt', type: Type.Integer },
+				{ id: Operator.LE, name: 'не больше', icon: 'fa-math-le', type: Type.Integer }
 			],
 
 			float: [
-				{ id: Operation.Eq, name: 'равно', icon: 'fa-math-eq', type: Type.Float },
-				{ id: Operation.NotEq, name: 'не равно', icon: 'fa-math-not-eq', type: Type.Float },
+				{ id: Operator.Eq, name: 'равно', icon: 'fa-math-eq', type: Type.Float },
+				{ id: Operator.NotEq, name: 'не равно', icon: 'fa-math-not-eq', type: Type.Float },
 
-				{ id: Operation.GT, name: 'больше', icon: 'fa-math-gt', type: Type.Float },
-				{ id: Operation.GE, name: 'не меньше', icon: 'fa-math-ge', type: Type.Float },
-				{ id: Operation.LT, name: 'меньше', icon: 'fa-math-lt', type: Type.Float },
-				{ id: Operation.LE, name: 'не больше', icon: 'fa-math-le', type: Type.Float }
+				{ id: Operator.GT, name: 'больше', icon: 'fa-math-gt', type: Type.Float },
+				{ id: Operator.GE, name: 'не меньше', icon: 'fa-math-ge', type: Type.Float },
+				{ id: Operator.LT, name: 'меньше', icon: 'fa-math-lt', type: Type.Float },
+				{ id: Operator.LE, name: 'не больше', icon: 'fa-math-le', type: Type.Float }
 			],
 
 			string: [
-				{ id: Operation.Contains, name: 'содержит', icon: 'fa-superset-of', type: Type.String, filter: Z8.filter.String.contains },
-				{ id: Operation.NotContains, name: 'не содержит', icon: 'fa-not-superset-of', type: Type.String, filter: Z8.filter.String.notContains },
+				{ id: Operator.Contains, name: 'содержит', icon: 'fa-superset-of', type: Type.String, filter: Z8.filter.String.contains },
+				{ id: Operator.NotContains, name: 'не содержит', icon: 'fa-not-superset-of', type: Type.String, filter: Z8.filter.String.notContains },
 
-				{ id: Operation.Eq, name: 'равно', icon: 'fa-math-eq', type: Type.String, filter: Z8.filter.String.eq },
-				{ id: Operation.NotEq, name: 'не равно', icon: 'fa-math-not-eq', type: Type.String, filter: Z8.filter.String.notEq },
+				{ id: Operator.Eq, name: 'равно', icon: 'fa-math-eq', type: Type.String, filter: Z8.filter.String.eq },
+				{ id: Operator.NotEq, name: 'не равно', icon: 'fa-math-not-eq', type: Type.String, filter: Z8.filter.String.notEq },
 
-				{ id: Operation.GT, name: 'больше', icon: 'fa-math-gt', type: Type.String },
-				{ id: Operation.GE, name: 'больше или равно', icon: 'fa-math-ge', type: Type.String },
-				{ id: Operation.LT, name: 'меньше', icon: 'fa-math-lt', type: Type.String },
-				{ id: Operation.LE, name: 'меньше или равно', icon: 'fa-math-le', type: Type.String },
+				{ id: Operator.GT, name: 'больше', icon: 'fa-math-gt', type: Type.String },
+				{ id: Operator.GE, name: 'больше или равно', icon: 'fa-math-ge', type: Type.String },
+				{ id: Operator.LT, name: 'меньше', icon: 'fa-math-lt', type: Type.String },
+				{ id: Operator.LE, name: 'меньше или равно', icon: 'fa-math-le', type: Type.String },
 
-				{ id: Operation.BeginsWith, name: 'начинается с', type: Type.String },
-				{ id: Operation.NotBeginsWith, name: 'не начинается с', type: Type.String },
-				{ id: Operation.EndsWith, name: 'оканчивается на', type: Type.String },
-				{ id: Operation.NotEndsWith, name: 'не оканчивается на', type: Type.String },
+				{ id: Operator.BeginsWith, name: 'начинается с', type: Type.String },
+				{ id: Operator.NotBeginsWith, name: 'не начинается с', type: Type.String },
+				{ id: Operator.EndsWith, name: 'оканчивается на', type: Type.String },
+				{ id: Operator.NotEndsWith, name: 'не оканчивается на', type: Type.String },
 
-				{ id: Operation.IsEmpty, name: 'пустая строка' },
-				{ id: Operation.IsNotEmpty, name: 'непустая строка' }
+				{ id: Operator.IsEmpty, name: 'пустая строка' },
+				{ id: Operator.IsNotEmpty, name: 'непустая строка' }
 			]
 		},
 
@@ -278,25 +276,25 @@ Z8.define('Z8.filter.Operator', {
 		getStringFilters: function() {
 			var filters = {};
 
-			filters[Operation.Contains] = Z8.filter.String.contains;
-			filters[Operation.NotContains] = Z8.filter.String.notContains;
+			filters[Operator.Contains] = Z8.filter.String.contains;
+			filters[Operator.NotContains] = Z8.filter.String.notContains;
 
-			filters[Operation.Eq] = Z8.filter.String.eq;
-			filters[Operation.NotEq] = Z8.filter.String.notEq;
+			filters[Operator.Eq] = Z8.filter.String.eq;
+			filters[Operator.NotEq] = Z8.filter.String.notEq;
 
-			filters[Operation.GT] = Z8.filter.String.gt;
-			filters[Operation.GE] = Z8.filter.String.ge;
-			filters[Operation.LT] = Z8.filter.String.lt;
-			filters[Operation.LE] = Z8.filter.String.le;
-			filters[Operation.Eq] = Z8.filter.String.eq;
+			filters[Operator.GT] = Z8.filter.String.gt;
+			filters[Operator.GE] = Z8.filter.String.ge;
+			filters[Operator.LT] = Z8.filter.String.lt;
+			filters[Operator.LE] = Z8.filter.String.le;
+			filters[Operator.Eq] = Z8.filter.String.eq;
 
-			filters[Operation.BeginsWith] = Z8.filter.String.beginsWidth;
-			filters[Operation.NotBeginsWith] = Z8.filter.String.notBeginsWidth;
-			filters[Operation.EndsWith] = Z8.filter.String.endsWidth;
-			filters[Operation.NotEndsWith] = Z8.filter.String.notEndsWidth;
+			filters[Operator.BeginsWith] = Z8.filter.String.beginsWidth;
+			filters[Operator.NotBeginsWith] = Z8.filter.String.notBeginsWidth;
+			filters[Operator.EndsWith] = Z8.filter.String.endsWidth;
+			filters[Operator.NotEndsWith] = Z8.filter.String.notEndsWidth;
 
-			filters[Operation.IsEmpty] = Z8.filter.String.isEmpty;
-			filters[Operation.IsNotEmpty] = Z8.filter.String.isNotEmpty;
+			filters[Operator.IsEmpty] = Z8.filter.String.isEmpty;
+			filters[Operator.IsNotEmpty] = Z8.filter.String.isNotEmpty;
 
 			return filters;
 		},
@@ -304,14 +302,14 @@ Z8.define('Z8.filter.Operator', {
 		getNumberFilters: function() {
 			var filters = {};
 
-			filters[Operation.Eq] = Z8.filter.Number.eq;
-			filters[Operation.NotEq] = Z8.filter.Number.notEq;
+			filters[Operator.Eq] = Z8.filter.Number.eq;
+			filters[Operator.NotEq] = Z8.filter.Number.notEq;
 
-			filters[Operation.GT] = Z8.filter.Number.gt;
-			filters[Operation.GE] = Z8.filter.Number.ge;
-			filters[Operation.LT] = Z8.filter.Number.lt;
-			filters[Operation.LE] = Z8.filter.Number.le;
-			filters[Operation.Eq] = Z8.filter.Number.eq;
+			filters[Operator.GT] = Z8.filter.Number.gt;
+			filters[Operator.GE] = Z8.filter.Number.ge;
+			filters[Operator.LT] = Z8.filter.Number.lt;
+			filters[Operator.LE] = Z8.filter.Number.le;
+			filters[Operator.Eq] = Z8.filter.Number.eq;
 
 			return filters;
 		},

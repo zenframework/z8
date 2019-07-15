@@ -36,8 +36,8 @@ Z8.define('Z8.RecordLock', {
 	}
 });
 
-Z8.define('Z8.Operation', {
-	shortClassName: 'Operation',
+Z8.define('Z8.Operator', {
+	shortClassName: 'Operator',
 
 	statics: {
 		Eq: 'eq',

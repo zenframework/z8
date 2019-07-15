@@ -16,7 +16,7 @@ Date.DayNames = ['Понедельник', 'Вторник', 'Среда', 'Че
 Date.DayShortNames = ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс'];
 
 Date.isDate = function(value) {
-	return toString.call(value) === '[object Date]';
+	return value instanceof Date;
 };
 
 Date.isEqual = function(date1, date2) {

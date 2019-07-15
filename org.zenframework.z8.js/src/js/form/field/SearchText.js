@@ -105,6 +105,6 @@ Z8.define('Z8.form.field.SearchText', {
 			return null;
 
 		var value = this.getValue();
-		return !Z8.isEmpty(value) ? { property: this.field.name, operator: Operation.Contains, value: value } : null;
+		return !Z8.isEmpty(value) ? { property: this.field.name, operator: Operator.Contains, value: value } : null;
 	}
 });
