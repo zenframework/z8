@@ -65,10 +65,6 @@ public class Math {
 		return new string(a.operatorLessEqu(b).get() ? a : b);
 	}
 
-	static public decimal z8_pow(decimal a, decimal b) {
-		return new decimal(java.lang.Math.pow(a.get().doubleValue(), b.get().doubleValue()));
-	}
-
 	static public decimal z8_hypot(decimal x, decimal y) {
 		return new decimal(java.lang.Math.hypot(x.get().doubleValue(), y.get().doubleValue()));
 	}
