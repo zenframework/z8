@@ -2,6 +2,9 @@ Z8.define('Z8.dom.Dom', {
 	shortClassName: 'DOM',
 
 	statics: {
+		Element: 1,
+		Text: 3,
+
 		emptyTags: {
 			br: true,
 			frame: true,
