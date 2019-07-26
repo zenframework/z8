@@ -111,6 +111,7 @@
 				data/field/Json.js,
 				data/field/File.js,
 				data/field/Files.js,
+				data/IdNameModel.js,
 				Component.js,
 				Container.js,
 				button/Button.js,
