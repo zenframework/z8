@@ -138,6 +138,17 @@ Z8.define('Z8.dom.Dom', {
 			return buffer;
 		},
 
+		create: function(tag, cls, style, content) {
+			var dom = document.createElement(tag);
+			if(cls != null)
+				dom.setAttribute('class', cls);
+			if(style != null)
+				dom.setAttribute('style', style);
+			if(content != null)
+				dom.textContent = content;
+			return dom;
+		},
+
 		append: function(container, child) {
 			if((container = DOM.get(container || document.body)) == null || child == null)
 				return null;
@@ -245,6 +256,26 @@ Z8.define('Z8.dom.Dom', {
 		getComputedStyle: function(dom) {
 			dom = DOM.get(dom);
 			return dom != null ? window.getComputedStyle(dom) : null;
+		},
+
+		screenToClientX: function(dom, screenX) {
+			dom = DOM.get(dom);
+
+			while(dom != null) {
+				screenX -= dom.offsetLeft;
+				dom = dom.offsetParent;
+			}
+			return screenX;
+		},
+
+		clientToScreenX: function(dom, clientX) {
+			dom = DOM.get(dom);
+
+			while(dom != null) {
+				clientX += dom.offsetLeft;
+				dom = dom.offsetParent;
+			}
+			return clientX;
 		},
 
 		getClipping: function(dom) {
