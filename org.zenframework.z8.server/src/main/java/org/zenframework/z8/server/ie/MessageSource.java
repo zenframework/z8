@@ -295,6 +295,8 @@ public class MessageSource implements RmiSerializable, Serializable {
 		guid recordId = record.id();
 
 		Collection<Field> attachments = table.getAttachments();
+		if(attachments.isEmpty())
+			attachments.add(table.primaryKey());
 		boolean exists = table.readRecord(recordId, attachments);
 
 		for (FieldInfo fieldInfo : record.fields()) {
