@@ -225,7 +225,7 @@ abstract public class Field extends Control implements IField {
 	}
 
 	public void setWasNull(boolean wasNull) {
-		this.wasNull= wasNull;
+		this.wasNull = wasNull;
 	}
 
 	protected Select getCursor() {

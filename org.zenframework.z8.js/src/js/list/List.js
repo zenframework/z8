@@ -324,7 +324,8 @@ Z8.define('Z8.list.List', {
 
 			if(headersScroller != null) {
 				DOM.on(window, 'resize', this.onResize, this);
-				DOM.on(totalsScroller || itemsScroller, 'scroll', this.onScroll, this);
+				DOM.on(totalsScroller, 'scroll', this.onScroll, this);
+				DOM.on(itemsScroller, 'scroll', this.onScroll, this);
 			}
 		}
 	},
@@ -520,7 +521,8 @@ Z8.define('Z8.list.List', {
 
 	onDestroy: function() {
 		DOM.un(this, 'keyDown', this.onKeyDown, this);
-		DOM.un(this.totalsScroller || this.itemsScroller, 'scroll', this.onScroll, this);
+		DOM.un(this.totalsScroller, 'scroll', this.onScroll, this);
+		DOM.un(this.itemsScroller, 'scroll', this.onScroll, this);
 		DOM.un(window, 'resize', this.onResize, this);
 
 		this.setStore(null);
@@ -1156,9 +1158,15 @@ Z8.define('Z8.list.List', {
 	},
 
 	onScroll: function(event, target) {
-		var scroller = this.totalsScroller || this.itemsScroller;
-		this.headersScroller.scrollLeft = scroller.scrollLeft;
+		var scroller = target || this.totalsScroller || this.itemsScroller;
+
+		if(this.headersScroller != null)
+			this.headersScroller.scrollLeft = scroller.scrollLeft;
+
 		this.itemsScroller.scrollLeft = scroller.scrollLeft;
+
+		if(this.totalsScroller != null)
+			this.totalsScroller.scrollLeft = scroller.scrollLeft;
 	},
 
 	setActive: function(active) {

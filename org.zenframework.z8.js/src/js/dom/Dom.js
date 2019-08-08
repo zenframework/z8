@@ -29,6 +29,9 @@ Z8.define('Z8.dom.Dom', {
 			if(dom.isComponent || dom.dom != null)
 				return dom.dom;
 
+			if(dom.getDom != null)
+				return dom.getDom();
+
 			return DOM.isDom(dom) ? dom : null;
 		},
 
@@ -153,7 +156,7 @@ Z8.define('Z8.dom.Dom', {
 			if((container = DOM.get(container || document.body)) == null || child == null)
 				return null;
 
-			var childDom = DOM.isDom(child) ? child : DOM.get(child);
+			var childDom = DOM.get(child);
 
 			if(childDom != null)
 				return container.appendChild(childDom);
@@ -166,7 +169,7 @@ Z8.define('Z8.dom.Dom', {
 			if((container = DOM.get(container || document.body)) == null || child == null)
 				return null;
 
-			var childDom = DOM.isDom(child) ? child : DOM.get(child);
+			var childDom = DOM.get(child);
 
 			if(childDom != null)
 				return container.insertAdjacentElement('afterbegin', childDom);
@@ -175,25 +178,29 @@ Z8.define('Z8.dom.Dom', {
 			return container.lastChild;
 		},
 
-		insertBefore: function(before, dom) {
-			if((before = DOM.get(before)) == null || dom == null)
+		insertBefore: function(before, element) {
+			if((before = DOM.get(before)) == null || element == null)
 				return null;
 
-			if(DOM.isDom(dom))
-				return before.insertAdjacentElement('beforebegin', dom);
+			var elementDom = DOM.get(element);
 
-			before.insertAdjacentHTML('beforebegin', DOM.markup(dom));
+			if(elementDom != null)
+				return before.insertAdjacentElement('beforebegin', elementDom);
+
+			before.insertAdjacentHTML('beforebegin', DOM.markup(element));
 			return before.previousSibling;
 		},
 
-		insertAfter: function(after, dom) {
-			if((after = DOM.get(after)) == null || dom == null)
+		insertAfter: function(after, element) {
+			if((after = DOM.get(after)) == null || element == null)
 				return null;
 
-			if(DOM.isDom(dom))
-				return after.insertAdjacentElement('afterend', dom);
+			var elementDom = DOM.get(element);
 
-			after.insertAdjacentHTML('afterend', DOM.markup(dom));
+			if(elementDom != null)
+				return after.insertAdjacentElement('afterend', elementDom);
+
+			after.insertAdjacentHTML('afterend', DOM.markup(element));
 			return after.nextSibling;
 		},
 
@@ -211,6 +218,15 @@ Z8.define('Z8.dom.Dom', {
 				new Z8.util.DelayedTask().delay(delay, remove, this, dom);
 			} else
 				dom.parentElement.removeChild(dom);
+		},
+
+		removeChildren: function(dom, delay) {
+			if((dom = DOM.get(dom)) == null)
+				return;
+
+			var childNodes = dom.childNodes;
+			for(var i = childNodes.length - 1;  i >= 0; i--)
+				dom.removeChild(childNodes[i]);
 		},
 
 		getProperty: function(dom, property) {
@@ -258,24 +274,48 @@ Z8.define('Z8.dom.Dom', {
 			return dom != null ? window.getComputedStyle(dom) : null;
 		},
 
-		screenToClientX: function(dom, screenX) {
+		screenToClientX: function(dom, screenX, screen) {
 			dom = DOM.get(dom);
+			screen = DOM.get(screen);
 
-			while(dom != null) {
+			while(dom != screen) {
 				screenX -= dom.offsetLeft;
 				dom = dom.offsetParent;
 			}
 			return screenX;
 		},
 
-		clientToScreenX: function(dom, clientX) {
+		screenToClientY: function(dom, screenY, screen) {
 			dom = DOM.get(dom);
+			screen = DOM.get(screen);
 
-			while(dom != null) {
+			while(dom != screen) {
+				screenY -= dom.offsetTop;
+				dom = dom.offsetParent;
+			}
+			return screenY;
+		},
+
+		clientToScreenX: function(dom, clientX, screen) {
+			dom = DOM.get(dom);
+			screen = DOM.get(screen);
+
+			while(dom != screen) {
 				clientX += dom.offsetLeft;
 				dom = dom.offsetParent;
 			}
 			return clientX;
+		},
+
+		clientToScreenY: function(dom, clientY, screen) {
+			dom = DOM.get(dom);
+			screen = DOM.get(screen);
+
+			while(dom != screen) {
+				clientY += dom.offsetTop;
+				dom = dom.offsetParent;
+			}
+			return clientY;
 		},
 
 		getClipping: function(dom) {
