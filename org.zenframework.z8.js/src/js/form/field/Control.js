@@ -101,6 +101,10 @@ Z8.define('Z8.form.field.Control', {
 		this.updateTools();
 	},
 
+	isLocked: function() {
+		return this.readOnlyLock;
+	},
+
 	isReadOnly: function() {
 		return this.readOnly;
 	},

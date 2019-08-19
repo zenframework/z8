@@ -360,13 +360,13 @@ Z8.define('Z8.form.field.Listbox', {
 
 		var addCopyRemove = [];
 
-		if(store.hasCreateAccess()) {
+		if(store.hasCreateAccess() && !this.isLocked()) {
 			var add = new Z8.button.Tool({ icon: 'fa-file-o', tooltip: 'Новая запись (Insert)', handler: this.onAddRecord, scope: this });
 			this.setAddTool(add);
 			addCopyRemove.push(add);
 		}
 
-		if(store.hasCopyAccess()) {
+		if(store.hasCopyAccess() && !this.isLocked()) {
 			var copy = new Z8.button.Tool({ icon: 'fa-copy', tooltip: 'Копировать запись (Shift+Insert)', handler: this.onCopyRecord, scope: this });
 			this.setCopyTool(copy);
 			addCopyRemove.push(copy);
@@ -384,7 +384,7 @@ Z8.define('Z8.form.field.Listbox', {
 			this.setRefreshTool(refresh);
 		}
 
-		if(store.hasDestroyAccess()) {
+		if(store.hasDestroyAccess() && !this.isLocked()) {
 			var remove = new Z8.button.Tool({ cls: 'remove', danger: true, icon: 'fa-trash', tooltip: 'Удалить запись (Delete)', handler: this.onRemoveRecord, scope: this });
 			addCopyRemove.push(remove);
 			this.setRemoveTool(remove);
@@ -411,10 +411,11 @@ Z8.define('Z8.form.field.Listbox', {
 			filter.on('toggle', this.onQuickFilter, this);
 			filterSort.push(filter);
 		}
-
+/*
 		var sort = new Z8.button.Tool({ enabled: false, cls: 'btn-sm', icon: 'fa-sort', tooltip: 'Порядок сортировки' });
 		this.setSortTool(sort);
 		filterSort.push(sort);
+*/
 
 		var filterSort = new Z8.button.Group({ cls: 'filter-sort', items: filterSort });
 
@@ -705,7 +706,8 @@ Z8.define('Z8.form.field.Listbox', {
 		var selector = this.createRecordsSelector(action);
 
 		if(selector == null) {
-			Z8.callback(callback, [this.newRecord()]);
+			var record = this.newRecord();
+			Z8.callback(callback, Array.isArray(record) ? record : [record]);
 			return;
 		}
 
@@ -726,7 +728,7 @@ Z8.define('Z8.form.field.Listbox', {
 					return;
 				}
 
-				var records = [];
+				var result = [];
 				var listbox = dialog.selector;
 				var checked = listbox.getChecked();
 				var name = listbox.name;
@@ -735,18 +737,23 @@ Z8.define('Z8.form.field.Listbox', {
 
 				for(var i = 0, length = checked.length; i < length; i++) {
 					var record = this.newRecord();
+					var records = Array.isArray(record) ? record : [record];
 					var checkedRecord = checked[i];
-					record.set(name, checkedRecord.get(primaryKey));
 
-					for(var j = 0, length1 = valueFromFields.length; j < length1; j++) {
-						var valueFromField = valueFromFields[j];
-						record.set(valueFromField.name, checkedRecord.get(valueFromField.valueFrom));
+					for(var j = 0; j < records.length; j++) {
+						record = records[j];
+						record.set(name, checkedRecord.get(primaryKey));
+
+						for(var k = 0; k < valueFromFields.length; k++) {
+							var valueFromField = valueFromFields[k];
+							record.set(valueFromField.name, checkedRecord.get(valueFromField.valueFrom));
+						}
 					}
 
-					records.push(record);
+					result.add(records);
 				}
 
-				Z8.callback(callback, records);
+				Z8.callback(callback, result);
 			};
 
 			this.selectorDlg = new Z8.window.Window({ header: this.query.text, icon: 'fa-plus-circle', autoClose: false, controls: [selector], selector: selector, cls: this.selectorCls, handler: okCallback, scope: this });
@@ -776,7 +783,6 @@ Z8.define('Z8.form.field.Listbox', {
 		return newRecord;
 	},
 
-
 	onAddRecord: function(button) {
 		this.addRecord(button);
 	},
@@ -789,12 +795,18 @@ Z8.define('Z8.form.field.Listbox', {
 		this.openSelector('create', button, { fn: callback, scope: this });
 	},
 
+	filterCreatedRecords: function(records) {
+		return records;
+	},
+
 	createRecords: function(records, callback) {
 		var addTool = this.addTool;
 
 		var batchCallback = function(records, success) {
 			if(success) {
 				this.reloadRecord();
+
+				records = this.filterCreatedRecords(records);
 
 				var store = this.store;
 				store.setValues(this.getValues());

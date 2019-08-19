@@ -356,11 +356,11 @@ Z8.define('Z8.dom.Dom', {
 				dom.setAttribute(attribute, value);
 		},
 
-		focus: function(dom, select) {
+		focus: function(dom, select, preventScroll) {
 			if((dom = DOM.get(dom)) == null || dom.focus == null)
 				return false;
 
-			dom.focus();
+			dom.focus({ preventScroll: preventScroll });
 	
 			if(select && dom.select != null)
 				dom.select();
@@ -748,6 +748,17 @@ Z8.define('Z8.dom.Dom', {
 
 		callWindowResize: function() {
 			window.dispatchEvent(new Event('resize'));
+		},
+
+		requestAnimationFrame: function(callback) {
+			var callbackFn = function() {
+				Z8.callback(callback);
+			};
+			return window.requestAnimationFrame(callbackFn);
+		},
+
+		cancelAnimationFrame: function(requestId) {
+			window.cancelAnimationFrame(requestId);
 		}
 	}
 });
