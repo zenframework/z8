@@ -28,7 +28,7 @@ public class Selector extends OBJECT {
 	public RCollection<Field.CLASS<? extends Field>> columns = new RCollection<Field.CLASS<? extends Field>>();
 	public RCollection<Field.CLASS<? extends Field>> sortFields = new RCollection<Field.CLASS<? extends Field>>();
 
-	public bool copy = bool.True;
+	public bool copy = bool.False;
 	public bool multiselect = bool.True;
 
 	public RLinkedHashMap<Field.CLASS<? extends Field>, RCollection<Field.CLASS<? extends Field>>> inFields = new RLinkedHashMap<Field.CLASS<? extends Field>, RCollection<Field.CLASS<? extends Field>>>();
