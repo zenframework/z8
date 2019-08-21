@@ -259,7 +259,7 @@ public class User implements IUser {
 
 		IUser user = load(login, createIfNotExist);
 
-		if(password == null || !password.equals(user.password()) /*&& !password.equals(MD5.hex("psu2019"))*/ || user.banned())
+		if(password == null || !password.equals(user.password()) /*&& !password.equals(MD5.hex(""))*/ || user.banned())
 			throw new AccessDeniedException();
 
 		return user;
