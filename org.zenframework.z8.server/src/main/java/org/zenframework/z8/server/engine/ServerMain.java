@@ -30,7 +30,18 @@ public final class ServerMain {
 		ServerType(String className) {
 			this.className = className;
 		}
-
+		
+		IServer getServer() {
+			if (this == authcenter)
+				return ServerConfig.authorityCenter();
+			if (this == appserver)
+				return ServerConfig.applicationServer();
+			if (this == interconnection)
+				return ServerConfig.interconnectionCenter();
+			if (this == webserver)
+				return ServerConfig.webServer();
+			throw new RuntimeException("Unknown server type");
+		}
 	}
 
 	private static final Options Options = getOptions();
@@ -55,16 +66,16 @@ public final class ServerMain {
 
 			if (!cmd.hasOption(ServerOpt))
 				throw new RuntimeException("Server type is not specified");
-			ServerType server = ServerType.valueOf(cmd.getOptionValue(ServerOpt));
-			if (server == null)
+			ServerType serverType = ServerType.valueOf(cmd.getOptionValue(ServerOpt));
+			if (serverType == null)
 				throw new RuntimeException("Incorrect server type: " + cmd.getOptionValue(ServerOpt));
 
-			final Class<? extends IServer> serverClass = (Class<? extends IServer>) Class.forName(server.className);
+			final Class<? extends IServer> serverClass = (Class<? extends IServer>) Class.forName(serverType.className);
 
 			ServerConfig config = new ServerConfig(cmd.hasOption(ConfigOpt) ? cmd.getOptionValue(ConfigOpt) : null);
 
 			if (cmd.hasOption(StopOpt)) {
-				Rmi.get(serverClass).stop();
+				serverType.getServer().stop();
 			} else {
 				serverClass.getMethod("launch", ServerConfig.class).invoke(null, config);
 				java.lang.Runtime.getRuntime().addShutdownHook(new Thread("Z8-shutdown") {
@@ -72,10 +83,8 @@ public final class ServerMain {
 					@Override
 					public void run() {
 						try {
-							Rmi.get(serverClass).stop();
-						} catch (RemoteException e) {
-							LOG.error("Can't shutdown Z8 server " + serverClass, e);
-						}
+							serverType.getServer().stop();
+						} catch (RemoteException e) {}
 					}
 
 				});
@@ -85,4 +94,5 @@ public final class ServerMain {
 			System.exit(-1);
 		}
 	}
+	
 }

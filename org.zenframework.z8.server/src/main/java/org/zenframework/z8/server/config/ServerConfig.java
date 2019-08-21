@@ -7,8 +7,10 @@ import java.util.Collection;
 import java.util.Properties;
 
 import org.zenframework.z8.server.engine.Database;
+import org.zenframework.z8.server.engine.IApplicationServer;
 import org.zenframework.z8.server.engine.IAuthorityCenter;
 import org.zenframework.z8.server.engine.IInterconnectionCenter;
+import org.zenframework.z8.server.engine.IWebServer;
 import org.zenframework.z8.server.engine.Rmi;
 import org.zenframework.z8.server.utils.StringUtils;
 
@@ -35,6 +37,8 @@ public class ServerConfig extends Properties {
 	static final private String InterconnectionCenterHost = "interconnection.center.host";
 	static final private String InterconnectionCenterPort = "interconnection.center.port";
 	static final private String InterconnectionCenterCache = "interconnection.center.cache";
+
+	static final private String WebServerPort = "web.server.port";
 
 	static final private String WebServerUploadMax = "web.server.upload.max";
 	static final private String WebClientDownloadMax = "web.client.download.max";
@@ -78,6 +82,8 @@ public class ServerConfig extends Properties {
 	static private int interconnectionCenterPort;
 	static private boolean interconnectionCenterCache;
 
+	static private int webServerPort;
+
 	static private int webServerUploadMax;
 	static private int webClientDownloadMax;
 	static private boolean webClientHashPassword;
@@ -108,8 +114,10 @@ public class ServerConfig extends Properties {
 	static public String[] emailExtensions; // "eml, mime"
 	static public String[] officeExtensions; // "doc, docx, xls, xlsx, ppt, pptx, odt, odp, ods, odf, odg, wpd, sxw, sxi, sxc, sxd, stw, vsd"
 
+	static private IApplicationServer applicationServer;
 	static private IAuthorityCenter authorityCenter;
 	static private IInterconnectionCenter interconnectionCenter;
+	static private IWebServer webServer;
 
 	public ServerConfig(String configFilePath) throws IOException {
 		if(instance != null)
@@ -137,6 +145,8 @@ public class ServerConfig extends Properties {
 		interconnectionCenterHost = getHost(InterconnectionCenterHost, Rmi.localhost);
 		interconnectionCenterPort = getProperty(InterconnectionCenterPort, 20000);
 		interconnectionCenterCache = getProperty(InterconnectionCenterCache, true);
+
+		webServerPort = getProperty(WebServerPort, 30000);
 
 		webServerUploadMax = getProperty(WebServerUploadMax, 5);
 		webClientDownloadMax = getProperty(WebClientDownloadMax, 1);
@@ -309,6 +319,10 @@ public class ServerConfig extends Properties {
 		return traceSqlConnections;
 	}
 
+	static public int webServerPort() {
+		return webServerPort;
+	}
+
 	static public int webServerUploadMax() {
 		return webServerUploadMax;
 	}
@@ -403,6 +417,12 @@ public class ServerConfig extends Properties {
 		return database().isLatestVersion();
 	}
 
+	static public IApplicationServer applicationServer() {
+		if(applicationServer == null)
+			applicationServer = Rmi.get(IApplicationServer.class, applicationServerHost(), applicationServerPort());
+		return applicationServer;
+	}
+
 	static public IAuthorityCenter authorityCenter() {
 		if(authorityCenter == null)
 			authorityCenter = Rmi.get(IAuthorityCenter.class, authorityCenterHost(), authorityCenterPort());
@@ -413,5 +433,11 @@ public class ServerConfig extends Properties {
 		if(interconnectionCenter == null)
 			interconnectionCenter = Rmi.get(IInterconnectionCenter.class, interconnectionCenterHost(), interconnectionCenterPort());
 		return interconnectionCenter;
+	}
+
+	static public IWebServer webServer() {
+		if(webServer == null)
+			webServer = Rmi.get(IWebServer.class, Rmi.localhost, webServerPort());
+		return webServer;
 	}
 }

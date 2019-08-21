@@ -36,10 +36,12 @@ import org.eclipse.jetty.server.session.HashSessionIdManager;
 import org.eclipse.jetty.server.session.HashSessionManager;
 import org.eclipse.jetty.server.session.SessionHandler;
 import org.zenframework.z8.server.config.ServerConfig;
+import org.zenframework.z8.server.engine.IWebServer;
+import org.zenframework.z8.server.engine.RmiServer;
 import org.zenframework.z8.server.types.guid;
 import org.zenframework.z8.web.servlet.Servlet;
 
-public class WebServer implements IWebServer {
+public class WebServer extends RmiServer implements IWebServer {
 
 	private static final Log LOG = LogFactory.getLog(WebServer.class);
 
@@ -62,6 +64,10 @@ public class WebServer implements IWebServer {
 	private Servlet servlet;
 	private File webapp;
 	private Properties mappings;
+
+	public WebServer() throws RemoteException {
+		super(ServerConfig.webServerPort());
+	}
 
 	@Override
 	public void start() {
@@ -202,13 +208,17 @@ public class WebServer implements IWebServer {
 	}
 
 	@Override
-	public void stop() {
+	public void stop() throws RemoteException {
+		super.stop();
 		if (server != null) {
 			try {
 				server.stop();
 			} catch (Exception e) {
 				LOG.error("Couldn't stop web server", e);
 			}
+		}
+		if (servlet != null) {
+			servlet.destroy();
 		}
 	}
 

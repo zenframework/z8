@@ -25,7 +25,11 @@ public class Rmi {
 	}
 
 	static public <TYPE> TYPE get(Class<TYPE> cls) {
-		return get(cls, Rmi.localhost, 0);
+		return get(cls, 0);
+	}
+
+	static public <TYPE> TYPE get(Class<TYPE> cls, int port) {
+		return get(cls, Rmi.localhost, port);
 	}
 
 	@SuppressWarnings({ "unchecked" })

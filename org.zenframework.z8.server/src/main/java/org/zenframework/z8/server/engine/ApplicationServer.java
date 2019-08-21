@@ -119,6 +119,8 @@ public class ApplicationServer extends RmiServer implements IApplicationServer {
 		unregister();
 
 		super.stop();
+
+		Trace.logEvent("Application Server stopped");
 	}
 
 	@Override
