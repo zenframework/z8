@@ -1,5 +1,7 @@
 package org.zenframework.z8.server.types;
 
+import java.nio.charset.Charset;
+
 public enum encoding {
 
 	Default(""), Cp866(Names.Cp866), KOI8R(Names.KOI8R), USASCII(Names.USASCII), UTF8(Names.UTF8), UTF16(Names.UTF16), UTF16BE(
@@ -26,8 +28,12 @@ public enum encoding {
 
 	private String fName = null;
 
-	encoding(String name) {
+	private encoding(String name) {
 		fName = name;
+	}
+
+	public Charset charset() {
+		return Charset.forName(fName);
 	}
 
 	@Override
