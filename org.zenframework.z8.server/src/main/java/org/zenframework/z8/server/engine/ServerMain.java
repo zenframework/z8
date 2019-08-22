@@ -66,7 +66,7 @@ public final class ServerMain {
 
 			if (!cmd.hasOption(ServerOpt))
 				throw new RuntimeException("Server type is not specified");
-			ServerType serverType = ServerType.valueOf(cmd.getOptionValue(ServerOpt));
+			final ServerType serverType = ServerType.valueOf(cmd.getOptionValue(ServerOpt));
 			if (serverType == null)
 				throw new RuntimeException("Incorrect server type: " + cmd.getOptionValue(ServerOpt));
 
