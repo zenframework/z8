@@ -1,0 +1,17 @@
+import org.zenframework.z8.base.table.Table;
+import org.zenframework.z8.base.table.value.StringField;
+
+[name "SystemTables"]
+[displayName "Таблицы"]
+[native "org.zenframework.z8.server.base.table.system.Tables"]
+public class Tables extends Table {
+	[displayName "DB name"] name;
+
+	[displayName "Системное имя"]
+	public StringField classId;
+	classId.length = 256;
+	
+	[displayName "Заголовок"]
+	public StringField displayName;
+	displayName.length = 256;
+}
