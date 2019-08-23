@@ -9,6 +9,7 @@ import java.util.Map;
 import org.zenframework.z8.server.engine.EventsLevel;
 import org.zenframework.z8.server.engine.ISession;
 import org.zenframework.z8.server.json.Json;
+import org.zenframework.z8.server.request.actions.RequestAction;
 import org.zenframework.z8.server.types.encoding;
 import org.zenframework.z8.server.types.file;
 import org.zenframework.z8.server.types.string;
@@ -20,6 +21,7 @@ public abstract class IRequest {
 
 	private List<EventsLevel> levels = new ArrayList<EventsLevel>();
 	private RequestTarget target;
+	private RequestAction action;
 
 	public String getParameter(string key) {
 		Map<string, string> parameters = getParameters();
@@ -64,6 +66,14 @@ public abstract class IRequest {
 
 	public void setTarget(RequestTarget target) {
 		this.target = target;
+	}
+
+	public RequestAction getAction() {
+		return action;
+	}
+
+	public void setAction(RequestAction action) {
+		this.action = action;
 	}
 
 	public String displayName() {

@@ -125,6 +125,7 @@ public class RequestDispatcher implements Runnable {
 			if(object instanceof Query) {
 				Query query = (Query)object;
 				RequestAction action = ActionFactory.create(query);
+				request.setAction(action);
 				action.processRequest(response);
 			} else if(object instanceof Procedure) {
 				Procedure procedure = (Procedure)object;

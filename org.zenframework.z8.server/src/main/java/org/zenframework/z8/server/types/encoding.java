@@ -1,13 +1,21 @@
 package org.zenframework.z8.server.types;
 
-import java.nio.charset.Charset;
-
 public enum encoding {
 
-	Default(""), Cp866(Names.Cp866), KOI8R(Names.KOI8R), USASCII(Names.USASCII), UTF8(Names.UTF8), UTF16(Names.UTF16), UTF16BE(
-			Names.UTF16BE), UTF16LE(Names.UTF16LE), Windows1250(Names.Windows1250), Windows1251(Names.Windows1251), Windows1252(
-			Names.Windows1252), Windows1253(Names.Windows1253), Windows1254(Names.Windows1254), Windows1257(
-			Names.Windows1257);
+	Default(""),
+	Cp866(Names.Cp866),
+	KOI8R(Names.KOI8R),
+	USASCII(Names.USASCII),
+	UTF8(Names.UTF8),
+	UTF16(Names.UTF16),
+	UTF16BE(Names.UTF16BE),
+	UTF16LE(Names.UTF16LE),
+	Windows1250(Names.Windows1250),
+	Windows1251(Names.Windows1251),
+	Windows1252(Names.Windows1252),
+	Windows1253(Names.Windows1253),
+	Windows1254(Names.Windows1254),
+	Windows1257(Names.Windows1257);
 
 	class Names {
 		static protected final String Cp866 = "CP866";
@@ -32,10 +40,6 @@ public enum encoding {
 		fName = name;
 	}
 
-	public Charset charset() {
-		return Charset.forName(fName);
-	}
-
 	@Override
 	public String toString() {
 		return fName.isEmpty() ? UTF8.toString() : fName;
@@ -44,34 +48,33 @@ public enum encoding {
 	static public encoding fromString(String string) {
 		string = string.toLowerCase();
 
-		if (Names.Cp866.toLowerCase().equals(string)) {
+		if(Names.Cp866.toLowerCase().equals(string))
 			return encoding.Cp866;
-		} else if (Names.KOI8R.toLowerCase().equals(string)) {
+		else if(Names.KOI8R.toLowerCase().equals(string))
 			return encoding.KOI8R;
-		} else if (Names.USASCII.toLowerCase().equals(string)) {
+		else if(Names.USASCII.toLowerCase().equals(string))
 			return encoding.USASCII;
-		} else if (Names.UTF8.toLowerCase().equals(string)) {
+		else if(Names.UTF8.toLowerCase().equals(string))
 			return encoding.UTF8;
-		} else if (Names.UTF16.toLowerCase().equals(string)) {
+		else if(Names.UTF16.toLowerCase().equals(string))
 			return encoding.UTF16;
-		} else if (Names.UTF16LE.toLowerCase().equals(string)) {
+		else if(Names.UTF16LE.toLowerCase().equals(string))
 			return encoding.UTF16LE;
-		} else if (Names.UTF16BE.toLowerCase().equals(string)) {
+		else if(Names.UTF16BE.toLowerCase().equals(string))
 			return encoding.UTF16BE;
-		} else if (Names.Windows1250.toLowerCase().equals(string)) {
+		else if(Names.Windows1250.toLowerCase().equals(string))
 			return encoding.Windows1250;
-		} else if (Names.Windows1251.toLowerCase().equals(string)) {
+		else if(Names.Windows1251.toLowerCase().equals(string))
 			return encoding.Windows1251;
-		} else if (Names.Windows1252.toLowerCase().equals(string)) {
+		else if(Names.Windows1252.toLowerCase().equals(string))
 			return encoding.Windows1252;
-		} else if (Names.Windows1253.toLowerCase().equals(string)) {
+		else if(Names.Windows1253.toLowerCase().equals(string))
 			return encoding.Windows1253;
-		} else if (Names.Windows1254.toLowerCase().equals(string)) {
+		else if(Names.Windows1254.toLowerCase().equals(string))
 			return encoding.Windows1254;
-		} else if (Names.Windows1257.toLowerCase().equals(string)) {
+		else if(Names.Windows1257.toLowerCase().equals(string))
 			return encoding.Windows1257;
-		} else {
+		else
 			throw new RuntimeException("Unknown encoding: '" + string + "'");
-		}
 	}
 }

@@ -32,6 +32,10 @@ public class JsonWriter extends OBJECT {
 		super(container);
 	}
 
+	public org.zenframework.z8.server.json.JsonWriter get() {
+		return this.writer;
+	}
+
 	public void set(org.zenframework.z8.server.json.JsonWriter writer) {
 		this.writer = writer;
 	}

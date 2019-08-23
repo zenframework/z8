@@ -81,11 +81,13 @@ public class RLinkedHashMap<Key, Value> extends HashMap<Key, Value> {
 		return get(key);
 	}
 
-	public RCollection<Key> z8_keys() {
+	@SuppressWarnings("rawtypes")
+	public RCollection z8_keys() {
 		return new RCollection<Key>(keySet());
 	}
 
-	public RCollection<Value> z8_values() {
+	@SuppressWarnings("rawtypes")
+	public RCollection z8_values() {
 		return new RCollection<Value>(values());
 	}
 
