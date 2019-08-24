@@ -629,10 +629,6 @@ abstract public class Field extends Control implements IField {
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public Link.CLASS<? extends Link> z8_getLink() {
-		Query query = ApplicationServer.getRequest().getAction().getQuery();
-
-		path = getPath(query);
-
 		if(path == null || path.isEmpty())
 			return null;
 
