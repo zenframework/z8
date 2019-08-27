@@ -10,26 +10,36 @@
 .fa-ruler-h,
 .fa-ruler-v,
 .fa-curved-line,
-.fa-layers {
+.fa-layers,
+.fa-select-box,
+.fa-line-lasso {
 	font-family: Z8Icons !important;
 }
 
 .fa-ruler-combined:before {
-	content:"\0041";
+	content:'\0041';
 }
 
 .fa-ruler-h:before {
-	content:"\0042";
+	content:'\0042';
 }
 
 .fa-ruler-v:before {
-	content:"\0043";
+	content:'\0043';
 }
 
 .fa-curved-line:before {
-	content:"\0044";
+	content:'\0044';
 }
 
 .fa-layers:before {
-	content:"\0045";
+	content:'\0045';
+}
+
+.fa-select-box:before {
+	content:'\0046';
+}
+
+.fa-line-lasso:before {
+	content:'\0047';
 }

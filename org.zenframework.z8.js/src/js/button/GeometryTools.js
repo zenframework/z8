@@ -5,6 +5,7 @@ Z8.define('Z8.button.GeometryTools', {
 
 	select: true,
 	box: false,
+	lasso: false,
 	ruler: true,
 	move: true,
 	edit: true,
@@ -45,7 +46,10 @@ Z8.define('Z8.button.GeometryTools', {
 			tools.add({ tool: 'select', config: { text: 'Выбор объекта', icon: 'fa-mouse-pointer', isTool: true, isSelect: true } });
 
 		if(this.box !== false)
-			tools.add({ tool: 'box', config: { text: 'Лассо', icon: 'fa-arrows-alt', isTool: true, isBox: true } });
+			tools.add({ tool: 'box', config: { text: 'Прямоугольное выделение', icon: 'fa-select-box', isTool: true, isBox: true } });
+		
+		if(this.lasso !== false)
+			tools.add({ tool: 'lasso', config: { text: 'Лассо', icon: 'fa-line-lasso', isTool: true, isLasso: true } });
 
 		if(this.ruler !== false)
 			tools.add({ tool: 'ruler', config: { text: 'Линейка', shortcut: 'Ctrl+L', icon: 'fa-ruler-combined', isTool: true, isRuler: true } });
@@ -149,6 +153,10 @@ Z8.define('Z8.button.GeometryTools', {
 	isBoxActive: function() {
 		return this.isToolActive(this.box);
 	},
+	
+	isLassoActive: function() {
+		return this.isToolActive(this.lasso);
+	},
 
 	isRulerActive: function() {
 		return this.isToolActive(this.ruler);
@@ -185,6 +193,10 @@ Z8.define('Z8.button.GeometryTools', {
 	isBoxEnabled: function() {
 		return this.isToolEnabled(this.box);
 	},
+	
+	isLassoEnabled: function() {
+		return this.isToolEnabled(this.lasso);
+	},
 
 	isRulerEnabled: function() {
 		return this.isToolEnabled(this.ruler);
@@ -216,6 +228,10 @@ Z8.define('Z8.button.GeometryTools', {
 
 	activateBox: function() {
 		this.activateTool(this.box);
+	},
+	
+	activateLasso: function() {
+		this.activateTool(this.lasso);
 	},
 
 	activateRuler: function() {
@@ -252,6 +268,10 @@ Z8.define('Z8.button.GeometryTools', {
 
 	enableBox: function(enable) {
 		this.enableTool(this.box, enable);
+	},
+	
+	enableLasso: function(enable) {
+		this.enableTool(this.lasso, enable);
 	},
 
 	enableRuler: function(enable) {
