@@ -62,8 +62,8 @@ public class UserRoles extends Table {
 		}
 	}
 
-	public Users.CLASS<Users> users = new Users.CLASS<Users>(this);
-	public Roles.CLASS<Roles> roles = new Roles.CLASS<Roles>(this);
+	public Users.CLASS<? extends Users> users = new Users.CLASS<Users>(this);
+	public Roles.CLASS<? extends Roles> roles = new Roles.CLASS<Roles>(this);
 
 	public Link.CLASS<Link> user = new Link.CLASS<Link>(this);
 	public Link.CLASS<Link> role = new Link.CLASS<Link>(this);
