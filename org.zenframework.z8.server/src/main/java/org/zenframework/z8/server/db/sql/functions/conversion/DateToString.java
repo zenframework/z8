@@ -24,6 +24,8 @@ public class DateToString extends SqlToken {
 	@Override
 	public String format(DatabaseVendor vendor, FormatOptions options, boolean logicalContext) {
 		switch(vendor) {
+		case Postgres:
+			return "TO_CHAR(TO_TIMESTAMP(" + date.format(vendor, options) + " / 1000), 'DD.MM.YYYY HH24:MI:SS')";
 		case Oracle:
 			throw new UnsupportedOperationException();
 //			return "TO_NCHAR(" + date.format(vendor, options) + ", 'DD/MM/YYYY HH24:MI:SS')";
