@@ -66,7 +66,7 @@ public class Control extends OBJECT {
 	public GuidField.CLASS<? extends GuidField> dependsOn;
 	public RCollection<Control.CLASS<? extends Control>> dependencies = new RCollection<Control.CLASS<? extends Control>>();
 
-	public Query.CLASS<? extends Query> source;
+	public Source.CLASS<? extends Source> source = new Source.CLASS<Source>(this);
 
 	public boolean readOnly() {
 		return readOnly != null ? readOnly.get() : false;
@@ -97,18 +97,13 @@ public class Control extends OBJECT {
 		writer.writeProperty(Json.editable, editable);
 		writer.writeProperty(Json.important, important);
 
-		if(source != null && ApplicationServer.getUser().privileges().getRequestAccess(source.classIdKey()).execute()) {
+		if(source.get().query != null && ApplicationServer.getUser().privileges().getRequestAccess(source.get().query.classIdKey()).execute()) {
 			writer.startObject(Json.source);
-			writeSourceMeta(writer);
+			source.get().writeMeta(writer, query, context);
 			writer.finishObject();
 		}
 
 		writeDependencies(writer);
-	}
-
-	protected void writeSourceMeta(JsonWriter writer) {
-		writer.writeProperty(Json.id, source.classId());
-		writer.writeProperty(Json.text, source.displayName());
 	}
 
 	protected void writeDependencies(JsonWriter writer) {

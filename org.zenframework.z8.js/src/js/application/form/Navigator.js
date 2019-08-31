@@ -9,6 +9,9 @@ Z8.define('Z8.application.form.Navigator', {
 	initComponent: function() {
 		var store = this.store;
 
+		if (store.sourceFilter != null)
+			this.sourceFilter = store.sourceFilter;
+
 		if(!store.isStore)
 			store = this.store = new Z8.query.Store(store);
 
@@ -96,6 +99,15 @@ Z8.define('Z8.application.form.Navigator', {
 			Viewport.sourceCode.owner = this.sourceCodeButton;
 			Viewport.sourceCode.on('show', this.onSourceCodeShow, this);
 			Viewport.sourceCode.on('hide', this.onSourceCodeHide, this);
+		}
+
+		if (this.sourceFilter != null) {
+			var quickFilter = this.findQuickFilter(this.sourceFilter.property);
+			if (quickFilter != null) {
+				quickFilter.setValue(this.sourceFilter.value);
+				quickFilter.lastSearchValue = ' ';
+				quickFilter.updateTrigger();
+			}
 		}
 	},
 
@@ -308,6 +320,18 @@ Z8.define('Z8.application.form.Navigator', {
 			tooltip: field.header
 		};
 		return new Z8.form.field.SearchText(config);
+	},
+
+	findQuickFilter: function(field) {
+		var quickFilters = this.quickFilters;
+		if (quickFilters == null)
+			return null;
+		for (var i = 0; i < quickFilters.length; i++) {
+			var quickFilter = quickFilters[i];
+			if (quickFilter.field.name == field)
+				return quickFilter;
+		}
+		return null;
 	},
 
 	createFilterButton: function() {

@@ -665,7 +665,17 @@ Z8.define('Z8.form.field.Combobox', {
 	},
 
 	editSource: function() {
-		Viewport.open(this.source.id);
+		var value = this.value;
+		var source = this.source;
+		var filter, sourceFilter;
+		if (value != null && value != guid.Null) {
+			filter = [{ property: 'recordId', value: value }];
+			sourceFilter = {
+				property: !Z8.isEmpty(source.field) ? source.field : this.displayName.lastAfter('.'),
+				value: this.displayValue
+			};
+		}
+		Viewport.open({ filter: filter, sourceFilter: sourceFilter, request: source.id });
 		this.getStore().unload();
 	},
 

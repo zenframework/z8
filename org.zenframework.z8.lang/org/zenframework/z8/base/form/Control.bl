@@ -39,5 +39,5 @@ public class Control extends Object {
 	public GuidField dependsOn;
 	public Control[] dependencies;
 
-	public Query source;
+	public Source source;
 }

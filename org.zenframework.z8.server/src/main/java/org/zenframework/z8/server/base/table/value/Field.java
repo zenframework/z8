@@ -199,6 +199,10 @@ abstract public class Field extends Control implements IField {
 		this.path = path;
 	}
 
+	public Collection<ILink> getPath() {
+		return path;
+	}
+
 	public boolean isRightJoined() {
 		return rightJoined;
 	}
@@ -397,7 +401,7 @@ abstract public class Field extends Control implements IField {
 		boolean hasJoin = pathHasJoin();
 
 		if(path != null && !path.isEmpty() && !hasJoin) {
-			ILink[] links = path.toArray(new ILink[0]);
+			ILink[] links = path.toArray(new ILink[path.size()]);
 
 			ILink firstLink = links[0];
 			ILink lastLink = links[links.length - 1];
@@ -467,16 +471,6 @@ abstract public class Field extends Control implements IField {
 		this.required = wasRequired;
 
 		isWritingMeta = false;
-	}
-
-	protected void writeSourceMeta(JsonWriter writer) {
-		super.writeSourceMeta(writer);
-
-		if(path != null && !path.isEmpty()) {
-			ILink[] links = path.toArray(new ILink[0]);
-			ILink lastLink = links[links.length - 1];
-			writer.writeProperty(Json.link, lastLink.id());
-		}
 	}
 
 	public void setWriteNulls(boolean writeNulls) {
@@ -632,7 +626,7 @@ abstract public class Field extends Control implements IField {
 		if(path == null || path.isEmpty())
 			return null;
 
-		ILink[] links = path.toArray(new ILink[0]);
+		ILink[] links = path.toArray(new ILink[path.size()]);
 		return (Link.CLASS)links[links.length - 1].getCLASS();
 	}
 
