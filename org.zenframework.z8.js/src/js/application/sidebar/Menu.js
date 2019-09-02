@@ -77,7 +77,7 @@ Z8.define('Z8.application.sidebar.Menu', {
 	onClick: function(event, target) {
 		var active = this.active;
 		var dom = DOM.get(active);
-		if((dom == target || DOM.isParentOf(dom, target)) && active.data.id != null)
+		if((dom == target || DOM.isParentOf(dom, target)) && active.data.request != null)
 			this.getTopLevelParent().onSelectItem(active);
 	},
 
@@ -104,7 +104,7 @@ Z8.define('Z8.application.sidebar.Menu', {
 			active.showMenu();
 			active.menu.activate();
 			event.stopEvent();
-		} else if(key == Event.ENTER && active != null && active.data.id != null)
+		} else if(key == Event.ENTER && active != null && active.data.request != null)
 			this.getTopLevelParent().onSelectItem(active);
 	},
 

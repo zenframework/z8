@@ -72,10 +72,7 @@ public class Report extends OBJECT implements Runnable, IReport {
 
 	@Override
 	public void write(JsonWriter writer) {
-		writer.writeProperty(Json.id, id());
-		writer.writeProperty(Json.text, displayName());
-		writer.writeProperty(Json.description, description());
-		writer.writeProperty(Json.icon, icon());
+		super.write(writer);
 		writer.writeProperty(Json.format, format());
 	}
 

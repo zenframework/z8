@@ -112,8 +112,6 @@ public class Procedure extends Action {
 	@Override
 	public void write(JsonWriter writer) {
 		super.write(writer);
-
 		writer.writeProperty(Json.isJob, true);
-		writer.writeProperty(Json.id, classId());
 	}
 }

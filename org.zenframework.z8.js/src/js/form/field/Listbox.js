@@ -566,7 +566,7 @@ Z8.define('Z8.form.field.Listbox', {
 			var link = source.link || (field.link ? field.link.owner : null);
 
 			var params = { 
-				request: source.id,
+				request: source.request,
 				where: { property: 'recordId', value: link != null ? record.get(link) : record.id }
 			};
 
@@ -698,7 +698,7 @@ Z8.define('Z8.form.field.Listbox', {
 		var columns = selector.columns;
 
 		var config = { isListbox: true, readOnly: true, label: false, tools: false, pagerMode: 'visible', checks: selector.multiselect, flex: 1, height: 3, values: this.getValues() };
-		Z8.apply(config, { name: link.name, query: { id: this.query.id, name: query.name, fields: columns, sort: selector.sort, columns: columns, primaryKey: null } });
+		Z8.apply(config, { name: link.name, query: { request: this.query.request, name: query.name, fields: columns, sort: selector.sort, columns: columns, primaryKey: null } });
 		return Z8.form.Helper.createControl(config);
 	},
 
@@ -1168,7 +1168,7 @@ Z8.define('Z8.form.field.Listbox', {
 	},
 
 	onEdit: function(button) {
-		Viewport.open(this.source.id);
+		Viewport.open(this.source.request);
 	},
 
 	onQuickFilter: function(button, toggled) {

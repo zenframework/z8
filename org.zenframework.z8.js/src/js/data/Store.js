@@ -573,9 +573,9 @@ Z8.define('Z8.data.Store', {
 	},
 
 	load: function(options) {
-		this.fireEvent('beforeLoad', this);
-
 		var params = this.getLoadParams();
+
+		this.fireEvent('beforeLoad', this, params);
 
 		var callback = function(response, success) {
 			var records = success ? this.initRecords(response.data || []) : [];

@@ -675,7 +675,7 @@ Z8.define('Z8.form.field.Combobox', {
 				value: this.displayValue
 			};
 		}
-		Viewport.open({ filter: filter, sourceFilter: sourceFilter, request: source.id });
+		Viewport.open({ filter: filter, sourceFilter: sourceFilter, request: source.request });
 		this.getStore().unload();
 	},
 

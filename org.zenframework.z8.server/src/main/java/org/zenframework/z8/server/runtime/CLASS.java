@@ -370,9 +370,9 @@ public class CLASS<TYPE extends IObject> implements IClass<TYPE> {
 	}
 
 	public void write(JsonWriter writer) {
+		writer.writeProperty(Json.request, classId());
 		writer.writeProperty(Json.text, displayName());
 		writer.writeProperty(Json.description, description());
 		writer.writeProperty(Json.icon, icon());
-		writer.writeProperty(Json.id, classId());
 	}
 }

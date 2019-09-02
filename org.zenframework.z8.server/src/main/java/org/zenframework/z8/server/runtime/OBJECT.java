@@ -308,6 +308,7 @@ public class OBJECT extends RequestTarget implements IObject, RmiSerializable {
 
 	public void write(JsonWriter writer) {
 		getCLASS().write(writer);
+		writer.writeProperty(Json.id, id());
 	}
 
 	@Override

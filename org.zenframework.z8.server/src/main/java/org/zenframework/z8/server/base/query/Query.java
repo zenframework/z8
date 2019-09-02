@@ -219,7 +219,7 @@ public class Query extends OBJECT {
 		writer.writeProperty(Json.displayName, displayName());
 		writer.writeProperty(Json.columnHeader, columnHeader());
 		writer.writeProperty(Json.name, name);
-		writer.writeProperty(Json.id, classId());
+		writer.writeProperty(Json.request, classId());
 		writer.startArray(Json.fields);
 
 		for(Field field : fields) {

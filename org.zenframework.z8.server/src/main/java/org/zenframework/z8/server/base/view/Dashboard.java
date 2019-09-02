@@ -5,7 +5,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
-import org.zenframework.z8.server.base.Procedure;
 import org.zenframework.z8.server.base.form.Desktop;
 import org.zenframework.z8.server.base.table.system.Users;
 import org.zenframework.z8.server.config.ServerConfig;
@@ -185,13 +184,7 @@ public class Dashboard extends RequestTarget {
 
 	private void writeData(JsonWriter writer, CLASS<?> cls) {
 		writer.startObject();
-
-		if(cls.instanceOf(Procedure.class)) {
-			Procedure procedure = (Procedure)cls.get();
-			procedure.write(writer);
-		} else
-			cls.write(writer);
-
+		((OBJECT)cls.get()).write(writer);
 		writer.finishObject();
 	}
 }

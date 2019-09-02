@@ -30,7 +30,7 @@ public class Source extends OBJECT {
 
 	public void writeMeta(JsonWriter writer, Query requestQuery, Query context) {
 		if (query != null) {
-			writer.writeProperty(Json.id, query.classId());
+			writer.writeProperty(Json.request, query.classId());
 			writer.writeProperty(Json.text, query.displayName());
 			if (filterField != null)
 				writer.writeProperty(Json.field, filterField.id().substring(query.id().length() + 1));

@@ -201,7 +201,7 @@ Z8.define('Z8.application.viewport.Viewport', {
 	},
 
 	onMenuItem: function(item) {
-		this.open(item.id, true);
+		this.open({ request: item.request, id: item.id }, true);
 	},
 
 	setTitle: function(title) {
@@ -331,6 +331,7 @@ Z8.define('Z8.application.viewport.Viewport', {
 				return;
 
 			if(!response.isJob) {
+				response.id = params.id;
 				response.where = params.where;
 				response.filter = params.filter;
 				response.period = params.period;
@@ -352,11 +353,12 @@ Z8.define('Z8.application.viewport.Viewport', {
 			}
 		};
 
-		if(String.isString(params)) {
-			var filter = User.getFilter(params);
-			var period = User.getPeriod(params);
-			params = { request: params, filter: filter.getActive(), period: period };
-		}
+		if(String.isString(params))
+			params = { request: params };
+		if(params.filter == null)
+			params.filter = User.getFilter(params).getActive();
+		if(params.period == null)
+			params.period = User.getPeriod(params);
 
 		this.menuToggle.setBusy(true);
 		HttpRequest.send(params, { fn: callback, scope: this });

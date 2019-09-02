@@ -416,7 +416,7 @@ abstract public class Field extends Control implements IField {
 			writer.writeControls(Json.columns, CLASS.asList(columns), query, context);
 
 			writer.startObject(Json.query);
-			writer.writeProperty(Json.id, context.classId());
+			writer.writeProperty(Json.request, context.classId());
 			writer.writeProperty(Json.name, linkQuery.id());
 			writer.writeProperty(Json.primaryKey, linkQuery.primaryKey().id());
 			writer.writeProperty(Json.parentKey, linkQuery.parentKey() != null ? linkQuery.parentKey().id() : null);
