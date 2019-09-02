@@ -19,6 +19,10 @@ public class Application {
 		return new bool(ServerConfig.database().isSystemInstalled());
 	}
 	
+	static public bool z8_isRequest() {
+		return new bool(ApplicationServer.isRequest());
+	}
+	
 	static public User.CLASS<? extends User> z8_user() {
 		User.CLASS<User> cls = new User.CLASS<User>(null);
 		User user = cls.get();

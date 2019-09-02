@@ -73,6 +73,16 @@ public class SystemTools extends Desktop {
 		super.initMembers();
 
 		if(ServerConfig.isLatestVersion()) {
+			users.setIndex("users");
+			roles.setIndex("roles");
+			jobs.setIndex("jobs");
+			tables.setIndex("tables");
+			sequences.setIndex("sequences");
+			files.setIndex("files");
+
+			domains.setIndex("domains");
+			exportMessages.setIndex("exportMessages");
+
 			objects.add(users);
 			objects.add(roles);
 			objects.add(jobs);
@@ -84,10 +94,15 @@ public class SystemTools extends Desktop {
 			objects.add(exportMessages);
 
 			if(ApplicationServer.getUser().isAdministrator()) {
+				authorityCenter.setIndex("authorityCenter");
+				interconnectionCenter.setIndex("interconnectionCenter");
+
 				objects.add(authorityCenter);
 				objects.add(interconnectionCenter);
 			}
 		}
+
+		generator.setIndex("generator");
 
 		objects.add(generator);
 	}

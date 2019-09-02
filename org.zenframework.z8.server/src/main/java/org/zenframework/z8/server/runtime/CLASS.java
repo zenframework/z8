@@ -138,11 +138,15 @@ public class CLASS<TYPE extends IObject> implements IClass<TYPE> {
 
 			IObject container = getContainer();
 
+			// index is null in local objects
 			if(container != null) {
-				IClass<? extends IObject> cls = container.getCLASS();
-				cls.get();
-				id = cls.id();
-				id += (id.isEmpty() ? "" : ".") + index();
+				String index = index();
+				if (index != null) {
+					IClass<? extends IObject> cls = container.getCLASS();
+					cls.get();
+					id = cls.id();
+					id += (id.isEmpty() ? "" : ".") + index;
+				}
 			}
 		}
 

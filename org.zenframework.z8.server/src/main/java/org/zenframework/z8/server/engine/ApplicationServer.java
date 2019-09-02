@@ -40,6 +40,10 @@ public class ApplicationServer extends RmiServer implements IApplicationServer {
 		return instance;	
 	}
 
+	static public boolean isRequest() {
+		return currentRequest.get() != null;
+	}
+
 	static public IRequest getRequest() {
 		IRequest request = currentRequest.get();
 		if(request == null)
