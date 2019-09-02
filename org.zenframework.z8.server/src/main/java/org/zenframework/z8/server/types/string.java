@@ -482,12 +482,7 @@ public final class string extends primary {
 	}
 
 	static public string z8_replicate(string str, integer count) {
-		String s = "";
-		String replica = str.get();
-		for(int i = 0; i < count.getInt(); i++)
-			s += replica;
-
-		return new string(s);
+		return new string(replicate(str.get(), count.getInt()));
 	}
 
 	static public string z8_concat(RCollection<string> array, string delimeter) {
@@ -533,6 +528,13 @@ public final class string extends primary {
 			result.add(str.get());
 
 		return result;
+	}
+
+	static public String replicate(String str, int count) {
+		StringBuilder s = new StringBuilder(str.length() * count);
+		for (int i = 0; i < count; i++)
+			s.append(str);
+		return s.toString();
 	}
 
 	private String fromResources(String str) {
