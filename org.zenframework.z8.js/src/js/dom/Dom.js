@@ -269,6 +269,14 @@ Z8.define('Z8.dom.Dom', {
 			return DOM.getProperty(dom, 'parentNode');
 		},
 
+		getChildren: function(dom) {
+			return DOM.getProperty(dom, 'childNodes') || [];
+		},
+
+		getChildAt: function(dom, index) {
+			return DOM.getChildren(dom)[index];
+		},
+
 		getComputedStyle: function(dom) {
 			dom = DOM.get(dom);
 			return dom != null ? window.getComputedStyle(dom) : null;
