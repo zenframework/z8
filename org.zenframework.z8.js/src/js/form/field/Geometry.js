@@ -130,6 +130,10 @@ Z8.define('Z8.form.field.Geometry', {
 	getGridLayer: function() {
 		return this.gridLayer;
 	},
+	
+	getLassoLayer: function() {
+		return this.lassoLayer;
+	},
 
 	getRulerLayer: function() {
 		return this.rulerLayer;
@@ -141,6 +145,10 @@ Z8.define('Z8.form.field.Geometry', {
 
 	getVectorSource: function() {
 		return this.getSource(this.getVectorLayer());
+	},
+	
+	getLassoSource: function() {
+		return this.getSource(this.getLassoLayer());
 	},
 
 	getRulerSource: function() {
@@ -159,6 +167,10 @@ Z8.define('Z8.form.field.Geometry', {
 	clearVector: function() {
 		this.clearLayer(this.getVectorLayer());
 	},
+	
+	clearLasso: function() {
+		this.clearLayer(this.getLassoLayer());
+	},
 
 	clearRuler: function() {
 		this.clearLayer(this.getRulerLayer());
@@ -170,6 +182,7 @@ Z8.define('Z8.form.field.Geometry', {
 
 	clear: function() {
 		this.clearVector();
+		this.clearLasso();
 		this.clearRuler();
 		this.clearGrid();
 		this.feature = null;
@@ -241,6 +254,10 @@ Z8.define('Z8.form.field.Geometry', {
 		source = new ol.source.Vector({ wrapX: false });
 		layer = this.gridLayer = new ol.layer.Vector({ source: source, style: this.getGridStyle != null ? getGridStyle : undefined });
 		layers.add(layer);
+		
+		source = new ol.source.Vector({ wrapX: false });
+		layer = this.lassoLayer = new ol.layer.Vector({ source: source, style: this.getLassoStyle != null ? getLassoStyle : undefined });
+		layers.add(layer);
 
 		source = new ol.source.Vector({ wrapX: false });
 		layer = this.rulerLayer = new ol.layer.Vector({ source: source, style: this.getRulerStyle != null ? getRulerStyle : undefined });
@@ -282,6 +299,14 @@ Z8.define('Z8.form.field.Geometry', {
 		};
 
 		return box;
+	},
+	
+	createLasso: function() {
+		var style = new ol.style.Style({
+			stroke: new ol.style.Stroke({ color: 'blue',  width: 2 })
+		});
+
+		return new ol.interaction.Draw({ source: this.getLassoSource(), style: style, type: 'Polygon' });
 	},
 
 	createRuler: function() {
@@ -334,6 +359,14 @@ Z8.define('Z8.form.field.Geometry', {
 			var box = this.box = this.createBox();
 			box.setActive(false);
 			map.addInteraction(box);
+		}
+		
+		if(tools.lasso !== false) {
+			var lasso = this.lasso = this.createLasso();
+			lasso.setActive(false);
+			map.addInteraction(lasso);
+			lasso.on('drawstart', this.onLassoStart, this);
+			lasso.on('drawend', this.onLassoEnd, this);
 		}
 
 		if(tools.ruler !== false) {
@@ -404,6 +437,12 @@ Z8.define('Z8.form.field.Geometry', {
 		if(box != null) {
 			map.removeInteraction(box);
 			this.box = null;
+		}
+		
+		var lasso = this.lasso;
+		if(lasso != null) {
+			map.removeInteraction(lasso);
+			this.lasso = null;
 		}
 
 		var ruler = this.ruler;
@@ -760,6 +799,21 @@ Z8.define('Z8.form.field.Geometry', {
 
 	onRulerEnd: function(event) {
 	},
+	
+	onLassoStart: function(event) {
+		if(this.lassoFeature != null) {
+			try {
+				this.getLassoSource().removeFeature(this.lassoFeature);
+			} catch(e) {
+			}
+		}
+
+		this.lassoFeature = this.getEventFeature(event);
+	},
+
+	onLassoEnd: function(event) {
+		this.fireEvent('boxSelect', this, this.getEventFeature(event).getGeometry().getExtent());
+	},
 
 	onMove: function(event) {
 		this.updateGrid();
@@ -913,6 +967,7 @@ Z8.define('Z8.form.field.Geometry', {
 		if(tool.isTool) {
 			this.cancelEdit(false);
 			this.activateInteraction(this.box, tool.isBox);
+			this.activateInteraction(this.lasso, tool.isLasso);
 			this.activateInteraction(this.ruler, tool.isRuler);
 			this.activateInteraction(this.move, tool.isMove && this.canMove());
 			this.activateInteraction(this.edit, tool.isEdit && this.canEdit());
