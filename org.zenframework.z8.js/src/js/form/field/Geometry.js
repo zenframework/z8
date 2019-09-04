@@ -524,7 +524,7 @@ Z8.define('Z8.form.field.Geometry', {
 			this.uninstallEdit();
 		}
 
-		this.mapContainer = this.map = this.canvas = this.vectorLayer = this.gridLayer = this.rulerLayer = this.view = null;
+		this.mapContainer = this.map = this.canvas = this.vectorLayer = this.gridLayer = this.rulerLayer = this.lassoLayer = this.view = null;
 
 		this.callParent();
 	},
@@ -812,7 +812,7 @@ Z8.define('Z8.form.field.Geometry', {
 	},
 
 	onLassoEnd: function(event) {
-		this.fireEvent('boxSelect', this, this.getEventFeature(event).getGeometry().getExtent());
+		this.fireEvent('lassoSelect', this, this.getEventFeature(event).getGeometry());
 	},
 
 	onMove: function(event) {
