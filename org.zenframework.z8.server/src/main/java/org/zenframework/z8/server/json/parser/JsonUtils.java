@@ -55,7 +55,7 @@ public class JsonUtils {
 		else if(o instanceof UUID)
 			return new guid((UUID)o);
 		else if(o instanceof Byte || o instanceof Short || o instanceof Integer || o instanceof Long)
-			return new integer((Long)o);
+			return new integer(((Number) o).longValue());
 		else if(o instanceof String)
 			return new string((String)o);
 		else
