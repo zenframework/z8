@@ -356,9 +356,9 @@ Z8.define('Z8.application.viewport.Viewport', {
 		if(String.isString(params))
 			params = { request: params };
 		if(params.filter == null)
-			params.filter = User.getFilter(params).getActive();
+			params.filter = User.getFilter(params.request).getActive();
 		if(params.period == null)
-			params.period = User.getPeriod(params);
+			params.period = User.getPeriod(params.request);
 
 		this.menuToggle.setBusy(true);
 		HttpRequest.send(params, { fn: callback, scope: this });

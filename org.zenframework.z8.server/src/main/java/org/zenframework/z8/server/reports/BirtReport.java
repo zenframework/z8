@@ -980,7 +980,7 @@ public class BirtReport {
 		JsonObject meta = new JsonObject(json);
 
 		String name = meta.getString(Json.name);
-		String id = meta.getString(Json.id);
+		String id = meta.has(Json.id) ? meta.getString(Json.id) : meta.getString(Json.request);
 
 		Query query = QueryUtils.findByIndex(queries, name);
 

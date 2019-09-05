@@ -101,10 +101,10 @@
 	<entry key="RoleRequestAccess.execute">Исполнение</entry>
 
 	<!-- Privileges -->
-	<entry key="Privileges.noReadAccess">У вас отсутстуют права на просмотр этих данных</entry>
-	<entry key="Privileges.noWriteAccess">У вас отсутстуют права на изменение этих данных</entry>
-	<entry key="Privileges.noDestroyAccess">У вас отсутстуют права на удаление этих данных</entry>
-	<entry key="Privileges.noExecuteAccess">У вас отсутстуют права на исполнение запроса</entry>
+	<entry key="Privileges.noReadAccess">У вас отсутствуют права на просмотр этих данных</entry>
+	<entry key="Privileges.noWriteAccess">У вас отсутствуют права на изменение этих данных</entry>
+	<entry key="Privileges.noDestroyAccess">У вас отсутствуют права на удаление этих данных</entry>
+	<entry key="Privileges.noExecuteAccess">У вас отсутствуют права на исполнение запроса</entry>
 
 	<!-- Files -->
 	<entry key="Files.title">Файлы</entry>

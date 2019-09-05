@@ -52,7 +52,7 @@ public class OdaQuery implements IQuery {
 		JsonObject json = new JsonObject(queryText);
 
 		String name = json.getString(Json.name);
-		String classId = json.getString(Json.id);
+		String classId = json.has(Json.id) ? json.getString(Json.id) : json.getString(Json.request);
 
 		readAction = (ReadAction)context.get(name);
 
