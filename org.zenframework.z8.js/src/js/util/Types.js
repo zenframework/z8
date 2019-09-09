@@ -79,6 +79,8 @@ Z8.define('Z8.Operator', {
 		NextHours: 'nextHours',
 
 		isTrue: 'isTrue',
-		isFalse: 'isFalse'
+		isFalse: 'isFalse',
+		
+		Intersects: 'intersects'
 	}
 });
