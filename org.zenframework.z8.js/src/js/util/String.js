@@ -59,5 +59,6 @@ String.prototype.ellipsis = function(length) {
 
 String.prototype.lastAfter = function(searchValue) {
 	var index = this.lastIndexOf(searchValue);
-	return index >= 0 ? this.substring(searchValue.length()) : this;
+	return index >= 0 ? this.substring(searchValue.length) : this;
 };
+
