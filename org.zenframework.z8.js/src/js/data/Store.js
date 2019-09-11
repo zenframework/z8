@@ -303,7 +303,10 @@ Z8.define('Z8.data.Store', {
 			this.attach(added);
 			this.totalCount += added.length;
 
+/*
+			Закомментировано, чтобы записи добавлялись в начало
 			this.sortRecords();
+*/
 			this.treefyRecords();
 
 			var ranges = this.getIndexRanges(added);
