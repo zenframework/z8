@@ -18,6 +18,11 @@ Z8.define('Z8.button.Group', {
 	},
 
 	onRadioToggle:function(button, toggled) {
+		if(this.updatingRadioState)
+			return;
+
+		this.updatingRadioState = true;
+
 		var items = this.items;
 
 		for(var i = 0, length = items.length; i < length; i++) {
@@ -27,6 +32,8 @@ Z8.define('Z8.button.Group', {
 		}
 
 		this.toggled = button;
+
+		this.updatingRadioState = false;
 	},
 
 	setTabIndex: function(tabIndex) {

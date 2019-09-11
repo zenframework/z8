@@ -360,8 +360,13 @@ Z8.define('Z8.dom.Dom', {
 		},
 
 		setAttribute: function(dom, attribute, value) {
-			if((dom = DOM.get(dom)) != null )
+			if((dom = DOM.get(dom)) != null)
 				dom.setAttribute(attribute, value);
+		},
+
+		removeAttribute: function(dom, attribute) {
+			if((dom = DOM.get(dom)) != null)
+				dom.removeAttribute(attribute);
 		},
 
 		focus: function(dom, select, preventScroll) {
