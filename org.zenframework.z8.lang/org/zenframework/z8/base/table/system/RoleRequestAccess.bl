@@ -1,0 +1,16 @@
+import org.zenframework.z8.base.table.Table;
+import org.zenframework.z8.base.table.value.BoolField;
+import org.zenframework.z8.base.table.value.Link;
+
+[name "SystemRoleRequestAccess"]
+[displayName "Права доступа к запросам"]
+[native "org.zenframework.z8.server.base.table.system.RoleRequestAccess"]
+public class RoleRequestAccess extends Table {
+	public Roles roles;
+	public Requests requests;
+
+	public Link role = roles;
+	public Link request = requests;
+
+	[displayName "Исполнение"] public BoolField execute;
+}

@@ -1,0 +1,30 @@
+import org.zenframework.z8.base.table.Table;
+import org.zenframework.z8.base.table.value.IntField;
+import org.zenframework.z8.base.table.value.Link;
+import org.zenframework.z8.base.table.value.StringField;
+
+[name "SystemFields"]
+[displayName "Поля"]
+[native "org.zenframework.z8.server.base.table.system.Fields"]
+public class Fields extends Table {
+	public Tables tables;
+
+	public Link table = tables;
+
+	name.length = 256;
+
+	[displayName "Системное имя"]
+	public StringField classId;
+	classId.length = 256;
+	
+	[displayName "Заголовок"]
+	public StringField displayName;
+	displayName.length = 256;
+	
+	[displayName "Тип"]
+	public StringField type;
+	type.length = 50;
+	
+	[displayName "Позиция"]
+	public IntField position;
+}

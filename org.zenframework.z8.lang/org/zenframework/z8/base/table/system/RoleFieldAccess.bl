@@ -1,0 +1,17 @@
+import org.zenframework.z8.base.table.Table;
+import org.zenframework.z8.base.table.value.BoolField;
+import org.zenframework.z8.base.table.value.Link;
+
+[name "SystemRoleFieldAccess"]
+[displayName "Права доступа к полям"]
+[native "org.zenframework.z8.server.base.table.system.RoleFieldAccess"]
+public class RoleFieldAccess extends Table {
+	public Roles roles;
+	public Fields fields;
+
+	public Link role = roles;
+	public Link field = fields;
+
+	[displayName "Чтение"] public BoolField read;
+	[displayName "Изменение"] public BoolField write;
+}
