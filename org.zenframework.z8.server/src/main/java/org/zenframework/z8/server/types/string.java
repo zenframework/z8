@@ -420,11 +420,8 @@ public final class string extends primary {
 		try {
 			if(matcher == null)
 				throw new exception("Matcher is null");
-
-			if(matcher.group(groupNumber.getInt()) != null)
-				return new string(matcher.group(groupNumber.getInt()));
-
-			throw new exception("No such group");
+			String group = matcher.group(groupNumber.getInt());
+			return group != null ? new string(group) : null;
 		} catch(PatternSyntaxException e) {
 			throw new exception(e);
 		}
