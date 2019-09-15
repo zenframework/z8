@@ -27,7 +27,10 @@ Z8.define('Z8.data.HttpRequest', {
 			FormMultipart: 'multipart/form-data'
 		},
 
-		url: function() {
+		url: function(url) {
+			if(url[0] == '/')
+				return url;
+
 			var location = window.location;
 			var path = location.pathname;
 			var length = path.length;
@@ -37,7 +40,7 @@ Z8.define('Z8.data.HttpRequest', {
 				if(index != -1)
 					path = path.substr(0, index);
 			}
-			return location.origin + path;
+			return location.origin + path + '/' + url;
 		},
 
 		send: function(params, callback) {
@@ -70,7 +73,7 @@ Z8.define('Z8.data.HttpRequest', {
 		this.callback = callback;
 
 		var xhr = this.xhr;
-		xhr.open('POST', HttpRequest.url() + '/' + this.defaultUrl, true);
+		xhr.open('POST', HttpRequest.url(this.defaultUrl), true);
 		xhr.setRequestHeader('Content-Type', HttpRequest.contentType.FormUrlEncoded);
 		xhr.send(this.encodeData(data));
 	},
@@ -80,7 +83,7 @@ Z8.define('Z8.data.HttpRequest', {
 		this.isGet = true;
 
 		var xhr = this.xhr;
-		xhr.open('GET', HttpRequest.url() + '/' + url, true);
+		xhr.open('GET', HttpRequest.url(url), true);
 		xhr.setRequestHeader('Content-Type', HttpRequest.contentType.FormUrlEncoded);
 		xhr.send();
 	},
@@ -92,7 +95,7 @@ Z8.define('Z8.data.HttpRequest', {
 		this.isUpload = true;
 
 		var xhr = this.xhr;
-		xhr.open('POST', HttpRequest.url() + '/request.json', true);
+		xhr.open('POST', HttpRequest.url('request.json'), true);
 		xhr.send(this.encodeFormData(data, files));
 	},
 

@@ -18,6 +18,9 @@ public class file extends primary {
 	public bool isDirectory();
 	public file[] listFiles();
 
+	public string read();
+	public string read(encoding charset);
+
 	public void write(string content);
 	public void write(string content, bool append);
 	public void write(string content, encoding charset, bool append);

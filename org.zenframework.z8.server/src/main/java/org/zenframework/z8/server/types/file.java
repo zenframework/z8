@@ -2,6 +2,7 @@ package org.zenframework.z8.server.types;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -10,6 +11,8 @@ import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.io.RandomAccessFile;
 import java.io.Serializable;
+import java.io.UnsupportedEncodingException;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -341,15 +344,44 @@ public class file extends primary implements RmiSerializable, Serializable {
 		return new file(new File(folder, name));
 	}
 
+	public String read() {
+		return read(encoding.Default);
+	}
+
+	public String read(encoding encoding) {
+		InputStream input = null;
+
+		try {
+			input = getInputStream();
+			if(input == null) {
+				File file = getAbsolutePath(path.get());
+				input = new FileInputStream(file);
+			}
+			return IOUtils.readText(input, Charset.forName(encoding.toString()));
+		} catch(IOException e) {
+			throw new RuntimeException(e);
+		} finally {
+			IOUtils.closeQuietly(input);
+		}
+	}
+
 	public void write(String content) {
 		write(content, true);
 	}
 
 	public void write(String content, boolean append) {
-		write(content, encoding.Default, append);
+		write(content, encoding.Default, true);
 	}
 
 	public void write(String content, encoding charset, boolean append) {
+		try {
+			write(content.getBytes(charset.toString()), append);
+		} catch(UnsupportedEncodingException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	public void write(byte[] bytes, boolean append) {
 		try {
 			if(path.isEmpty()) {
 				set(createTempFile("txt"));
@@ -359,7 +391,7 @@ public class file extends primary implements RmiSerializable, Serializable {
 			File file = getAbsolutePath(path.get());
 
 			OutputStream output = new FileOutputStream(file, append);
-			output.write(content.getBytes(charset.toString()));
+			output.write(bytes);
 			IOUtils.closeQuietly(output);
 			size = new integer(file.length());
 		} catch(IOException e) {
@@ -406,7 +438,7 @@ public class file extends primary implements RmiSerializable, Serializable {
 			return null;
 
 		byte[] bytes = new byte[512 * NumericUtils.Kilobyte];
-		partLength = read(offset, bytes);
+		partLength = readPart(offset, bytes);
 
 		InputStream input = new ByteArrayInputStream(bytes, 0, partLength);
 
@@ -417,7 +449,7 @@ public class file extends primary implements RmiSerializable, Serializable {
 		return this;
 	}
 
-	private int read(long offset, byte[] bytes) throws IOException {
+	private int readPart(long offset, byte[] bytes) throws IOException {
 		InputStream input = null;
 		try {
 			input = getInputStream();
@@ -467,16 +499,24 @@ public class file extends primary implements RmiSerializable, Serializable {
 		return result;
 	}
 
+	public string z8_read() {
+		return new string(read());
+	}
+
+	public string z8_read(encoding encoding) {
+		return new string(read(encoding));
+	}
+
 	public void z8_write(string content) {
 		write(content.get(), true);
 	}
 
 	public void z8_write(string content, bool append) {
-		write(content.get(), append.get());
+		write(content.get(), encoding.Default, true);
 	}
 
-	public void z8_write(string content, encoding charset, bool append) {
-		write(content.get(), charset, append.get());
+	public void z8_write(string content, encoding encoding, bool append) {
+		write(content.get(), encoding, append.get());
 	}
 
 	static public RCollection<file> z8_parse(string json) {
