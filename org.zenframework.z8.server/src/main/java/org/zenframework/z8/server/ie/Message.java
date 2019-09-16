@@ -2,14 +2,18 @@ package org.zenframework.z8.server.ie;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
 
+import org.zenframework.z8.rmi.ObjectIO;
 import org.zenframework.z8.server.base.table.system.Domains;
 import org.zenframework.z8.server.base.table.system.MessageQueue;
+import org.zenframework.z8.server.config.ServerConfig;
 import org.zenframework.z8.server.db.Connection;
 import org.zenframework.z8.server.db.ConnectionManager;
 import org.zenframework.z8.server.engine.ApplicationServer;
@@ -36,6 +40,8 @@ abstract public class Message extends OBJECT implements RmiSerializable, Seriali
 
 	static private final int MB = 1024 * 1024;
 	static private final int MessageSizeThreshold = 10 * MB; // 10MB
+
+	static protected final String FileUrlPrefix = "file:";
 
 	static public class CLASS<T extends Message> extends OBJECT.CLASS<T> {
 		public CLASS() {
@@ -124,6 +130,10 @@ abstract public class Message extends OBJECT implements RmiSerializable, Seriali
 
 	public void setSender(String sender) {
 		this.sender = sender;
+	}
+
+	public boolean isExportToFile() {
+		return address.startsWith(FileUrlPrefix);
 	}
 
 	protected void beforeImport() {
@@ -241,6 +251,30 @@ abstract public class Message extends OBJECT implements RmiSerializable, Seriali
 		return accept(false);
 	}
 
+	protected void exportToFile(Object o) {
+		File file = getExportFile();
+		file.getParentFile().mkdirs();
+		ObjectOutputStream out = null;
+		try {
+			out = new ObjectOutputStream(new FileOutputStream(file));
+			ObjectIO.write(out, o, o);
+			MessageQueue messageQueue = MessageQueue.newInstance();
+			messageQueue.endProcessing(getSourceId());
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		} finally {
+			IOUtils.closeQuietly(out);
+		}
+	}
+
+	protected File getExportFile() {
+		String fileName = Long.toString(java.lang.System.currentTimeMillis(), Character.MAX_RADIX) + '-' + getId() + '.' + getClass().getSimpleName().toLowerCase();
+		File file = new File(getAddress().substring(Message.FileUrlPrefix.length()) + File.separator + fileName);
+		if (!file.isAbsolute())
+			file = new File(ServerConfig.exchangeFolderOut(), file.getPath());
+		return file;
+	}
+
 	private boolean accept(boolean localSend) {
 		Domains domains = Domains.newInstance();
 		Domain acceptorDomain = domains.getDomain(address);
@@ -322,4 +356,5 @@ abstract public class Message extends OBJECT implements RmiSerializable, Seriali
 
 	public void z8_afterExport() {
 	}
+
 }

@@ -49,6 +49,11 @@ public class ServerConfig extends Properties {
 	static final private String TransportJobCron = "transport.job.cron";
 	static final private String TransportJobTreads = "transport.job.treads";
 
+	static final private String ExchangeJobCron = "exchange.job.cron";
+	static final private String ExchangeFolderIn = "exchange.folder.in";
+	static final private String ExchangeFolderOut = "exchange.folder.out";
+	static final private String ExchangeFolderErr = "exchange.folder.err";
+
 	static final private String TraceSql = "trace.sql";
 	static final private String TraceSqlConnections = "trace.sql.connections";
 
@@ -94,6 +99,11 @@ public class ServerConfig extends Properties {
 
 	static private String transportJobCron;
 	static private int transportJobTreads;
+
+	static private String exchangeJobCron;
+	static private File exchangeFolderIn;
+	static private File exchangeFolderOut;
+	static private File exchangeFolderErr;
 
 	static private boolean traceSql;
 	static private boolean traceSqlConnections;
@@ -159,6 +169,11 @@ public class ServerConfig extends Properties {
 		maintenanceJobCron = getProperty(MaintenenceJobCron, "");
 		transportJobCron = getProperty(TransportJobCron, "");
 		transportJobTreads = getProperty(TransportJobTreads, 10);
+
+		exchangeJobCron = getProperty(ExchangeJobCron, "");
+		exchangeFolderIn = new File(workingPath, getProperty(ExchangeFolderIn, "exchange/in"));
+		exchangeFolderOut = new File(workingPath, getProperty(ExchangeFolderOut, "exchange/out"));
+		exchangeFolderErr = new File(workingPath, getProperty(ExchangeFolderErr, "exchange/err"));
 
 		textExtensions = getProperty(TextExtensions, new String[] { "txt", "xml" });
 		imageExtensions = getProperty(ImageExtensions, new String[] { "tif", "tiff", "jpg", "jpeg", "gif", "png", "bmp" });
@@ -353,6 +368,26 @@ public class ServerConfig extends Properties {
 
 	static public String transportJobCron() {
 		return transportJobCron;
+	}
+
+	static public boolean exchangeJobEnabled() {
+		return !exchangeJobCron().isEmpty();
+	}
+
+	static public String exchangeJobCron() {
+		return exchangeJobCron;
+	}
+
+	static public File exchangeFolderIn() {
+		return exchangeFolderIn;
+	}
+
+	static public File exchangeFolderOut() {
+		return exchangeFolderOut;
+	}
+
+	static public File exchangeFolderErr() {
+		return exchangeFolderErr;
 	}
 
 	static public String[] textExtensions() {

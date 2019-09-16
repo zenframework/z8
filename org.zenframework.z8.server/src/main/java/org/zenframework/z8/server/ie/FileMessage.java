@@ -75,7 +75,15 @@ public class FileMessage extends Message {
 
 	@Override
 	public void prepare() {
-		TransportQueue.newInstance().add(this);
+		if (isExportToFile()) {
+			try {
+				exportToFile(Files.get(file));
+			} catch (IOException e) {
+				throw new RuntimeException(e);
+			}
+		} else {
+			TransportQueue.newInstance().add(this);
+		}
 	}
 
 	@Override

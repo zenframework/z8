@@ -121,7 +121,10 @@ public class DataMessage extends Message {
 		dataMessage.setSource(getSource());
 		dataMessage.setType(getType());
 
-		TransportQueue.newInstance().add(dataMessage);
+		if (dataMessage.isExportToFile())
+			exportToFile(this);
+		else
+			TransportQueue.newInstance().add(dataMessage);
 
 		afterExport();
 	}

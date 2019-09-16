@@ -14,6 +14,7 @@ import org.zenframework.z8.server.base.table.value.StringField;
 import org.zenframework.z8.server.config.ServerConfig;
 import org.zenframework.z8.server.db.ConnectionManager;
 import org.zenframework.z8.server.db.MaintenanceJob;
+import org.zenframework.z8.server.ie.ExchangeJob;
 import org.zenframework.z8.server.ie.rmi.TransportJob;
 import org.zenframework.z8.server.logs.Trace;
 import org.zenframework.z8.server.types.guid;
@@ -33,6 +34,8 @@ public class Scheduler implements Runnable {
 			addSystemJob(MaintenanceJob.class.getCanonicalName(), ServerConfig.maintenanceJobCron());
 		if(ServerConfig.transportJobEnabled())
 			addSystemJob(TransportJob.class.getCanonicalName(), ServerConfig.transportJobCron());
+		if(ServerConfig.exchangeJobEnabled())
+			addSystemJob(ExchangeJob.class.getCanonicalName(), ServerConfig.exchangeJobCron());
 	}
 
 	static public void addSystemJob(String className, String cron) {
