@@ -1,6 +1,7 @@
 package org.zenframework.z8.server.request.actions;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.zenframework.z8.server.base.file.AttachmentProcessor;
@@ -9,7 +10,6 @@ import org.zenframework.z8.server.base.table.value.Field;
 import org.zenframework.z8.server.base.table.value.FileField;
 import org.zenframework.z8.server.db.Connection;
 import org.zenframework.z8.server.db.ConnectionManager;
-import org.zenframework.z8.server.json.Json;
 import org.zenframework.z8.server.json.JsonWriter;
 import org.zenframework.z8.server.json.parser.JsonArray;
 import org.zenframework.z8.server.types.file;
@@ -38,23 +38,18 @@ public class DetachAction extends RequestAction {
 
 		AttachmentProcessor processor = new AttachmentProcessor((FileField)field);
 
-		writer.startArray(Json.data);
-
 		Connection connection = ConnectionManager.get();
 
 		try {
 			connection.beginTransaction();
-
-			for(file file : processor.remove(target, files))
-				writer.write(file.toJsonObject());
-
+			processor.remove(target, files);
 			connection.commit();
+
+			writeFormFields(writer, query, Arrays.asList(target));
 		} catch(Throwable e) {
 			connection.rollback();
 			throw new RuntimeException(e);
 		}
-
-		writer.finishArray();
 	}
 
 }

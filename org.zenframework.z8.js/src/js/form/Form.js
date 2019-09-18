@@ -254,6 +254,8 @@ Z8.define('Z8.form.Form', {
 		var params = this.getUpdateParams(record);
 
 		var callback = function(record, success) {
+			this.autoSaving = true;
+
 			if(success) {
 				this.applyRecordChange(record, control);
 				record.endEdit();
@@ -262,6 +264,8 @@ Z8.define('Z8.form.Form', {
 				control.initValue(control.originalValue, control.originalDisplayValue);
 				record.cancelEdit();
 			}
+
+			this.autoSaving = false;
 		};
 
 		record.update({ fn: callback, scope: this}, params);
@@ -320,7 +324,8 @@ Z8.define('Z8.form.Form', {
 	},
 
 	onRecordChange: function(record, modified) {
-//		this.applyRecordChange(record, null);
+		if(!this.autoSaving)
+			this.applyRecordChange(record, null);
 
 		var updated = {};
 
