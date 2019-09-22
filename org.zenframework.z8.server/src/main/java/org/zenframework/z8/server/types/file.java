@@ -240,6 +240,14 @@ public class file extends primary implements RmiSerializable, Serializable {
 		return toJsonObject().toString();
 	}
 
+	public String baseName() {
+		return FilenameUtils.getBaseName(name.get());
+	}
+
+	public String extension() {
+		return FilenameUtils.getExtension(name.get());
+	}
+
 	public InputStream getInputStream() {
 		try {
 			return value == null ? null : value.getInputStream();
@@ -483,6 +491,14 @@ public class file extends primary implements RmiSerializable, Serializable {
 	public bool z8_isDirectory() {
 		File file = getAbsolutePath(path.get());
 		return new bool(file.isDirectory());
+	}
+
+	public string z8_baseName() {
+		return new string(baseName());
+	}
+
+	public string z8_extension() {
+		return new string(extension());
 	}
 
 	public RCollection<file> z8_listFiles() {
