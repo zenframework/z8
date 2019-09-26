@@ -131,7 +131,7 @@ public class ConverterAdapter extends Adapter {
 			return "attachment; filename=\"" + toHexString(fileName) + "\"";
 
 		if(agent.contains("webkit"))
-			return "attachment; filename*=" + fileName;
+			return "attachment; filename*=\"" + fileName + "\"";
 
 		if(agent.contains("opera")) {
 			int version = -1;
