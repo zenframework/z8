@@ -123,14 +123,16 @@ public class Files extends Table {
 	}
 
 	public static InputStream getInputStream(file file) throws IOException {
-		Files table = newInstance();
+		return getInputStream(file.id);
+	}
 
-		guid recordId = file.id;
+	public static InputStream getInputStream(guid fileId) throws IOException {
+		Files table = newInstance();
 
 		Field data = table.data.get();
 		Collection<Field> fields = Arrays.asList(data);
 
-		if(!recordId.isNull() && table.readRecord(recordId, fields))
+		if(!fileId.isNull() && table.readRecord(fileId, fields))
 			return data.binary().get();
 
 		return null;

@@ -11,9 +11,13 @@ import java.io.Reader;
 import java.net.URL;
 import java.net.URLDecoder;
 import java.rmi.RemoteException;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.Map;
 import java.util.Properties;
 
@@ -55,9 +59,12 @@ public class WebServer extends RmiServer implements IWebServer {
 	private static final String PROP_WEB_SERVER_PORT = "z8.webserver.port";
 	private static final String PROP_WEB_SERVER_WEBAPP = "z8.webserver.webapp";
 	private static final String PROP_WEB_SERVER_MAPPINGS = "z8.webserver.content.map";
+	private static final String PROP_WEB_SERVER_URL_PATTERNS = "z8.webserver.urlPatterns";
 
 	private static final int DEFAULT_WEB_SERVER_PORT = 80;
 	private static final String DEFAULT_WEB_SERVER_WEBAPP = "..";
+
+	private static final Collection<UrlPattern> urlPatterns = new LinkedList<UrlPattern>(Arrays.asList(new UrlPattern("*.json"), new UrlPattern("/storage/*"), new UrlPattern("/files/*"), new UrlPattern("/reports/*")));
 
 	private Server server;
 	private ContextHandler context;
@@ -80,6 +87,8 @@ public class WebServer extends RmiServer implements IWebServer {
 
 			webapp = new File(System.getProperty(PROP_WEB_SERVER_WEBAPP, DEFAULT_WEB_SERVER_WEBAPP));
 			mappings = getMappings(System.getProperty(PROP_WEB_SERVER_MAPPINGS));
+
+			urlPatterns.addAll(getUrlPatterns(System.getProperty(PROP_WEB_SERVER_URL_PATTERNS)));
 
 			context = new ContextHandler("/");
 			context.setResourceBase(webapp.getAbsolutePath());
@@ -143,8 +152,7 @@ public class WebServer extends RmiServer implements IWebServer {
 					response.setCharacterEncoding("UTF-8");
 					response.setContentType(getContentType(path));
 					
-					if (path.endsWith(".json") || path.startsWith("/storage/") || path.startsWith("/files/")
-							|| path.startsWith("/table/") || path.startsWith("/reports/")) {
+					if (isSystemRequest(path)) {
 						// Z8 request
 						servlet.service(request, response);
 						
@@ -264,4 +272,20 @@ public class WebServer extends RmiServer implements IWebServer {
 		return mappings;
 	}
 
+	private Collection<UrlPattern> getUrlPatterns(String str) {
+		if (str == null || str.isEmpty())
+			return Collections.emptyList();
+		Collection<UrlPattern> patterns = new LinkedList<UrlPattern>();
+		String[] parts = str.split("\\,");
+		for (String part : parts)
+			patterns.add(new UrlPattern(part.trim()));
+		return patterns;
+	}
+
+	private static boolean isSystemRequest(String path) {
+		for (UrlPattern pattern : urlPatterns)
+			if (pattern.matches(path))
+				return true;
+		return false;
+	}
 }

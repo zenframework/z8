@@ -407,8 +407,8 @@ public class file extends primary implements RmiSerializable, Serializable {
 		}
 	}
 
-	public String getAbsolutePath() {
-		return getAbsolutePath(new File(path.get())).getPath();
+	public File getAbsolutePath() {
+		return getAbsolutePath(path.get());
 	}
 
 	static public File getAbsolutePath(String path) {
@@ -480,12 +480,10 @@ public class file extends primary implements RmiSerializable, Serializable {
 		File file = new File(path.get());
 
 		this.path = path;
+		this.name = new string(file.getName());
 
 		if(!file.isAbsolute())
 			file = getAbsolutePath(file);
-
-		if(!file.isDirectory())
-			file.getParentFile().mkdirs();
 	}
 
 	public bool z8_isDirectory() {

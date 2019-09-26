@@ -1,9 +1,7 @@
 package org.zenframework.z8.server.base.poi;
 
-import java.io.File;
 import org.apache.poi.openxml4j.opc.OPCPackage;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import org.zenframework.z8.server.base.poi.Sheet;
 import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.runtime.OBJECT;
 import org.zenframework.z8.server.types.file;
@@ -30,8 +28,7 @@ public class Workbook extends OBJECT {
 
 	public void operatorAssign(file file) {
 		try {
-			String e = file.getAbsolutePath();
-			this.opcPackage = OPCPackage.open(new File(e));
+			this.opcPackage = OPCPackage.open(file.getAbsolutePath());
 			this.workbook = new XSSFWorkbook(this.opcPackage);
 		} catch(Throwable var3) {
 			this.safeClose();
