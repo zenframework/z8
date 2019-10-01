@@ -42,7 +42,9 @@ public class JsonUtils {
 	}
 
 	public static primary wrap(Object o) {
-		if(o instanceof primary)
+		if (o == null)
+			return null;
+		else if(o instanceof primary)
 			return (primary)o;
 		else if(o instanceof Boolean)
 			return new bool((Boolean)o);

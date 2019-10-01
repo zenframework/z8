@@ -22,6 +22,7 @@ import org.apache.commons.fileupload.disk.DiskFileItem;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.zenframework.z8.server.base.file.Folders;
+import org.zenframework.z8.server.base.file.InputOnlyFileItem;
 import org.zenframework.z8.server.base.table.system.Files;
 import org.zenframework.z8.server.engine.RmiIO;
 import org.zenframework.z8.server.engine.RmiSerializable;
@@ -138,6 +139,10 @@ public class file extends primary implements RmiSerializable, Serializable {
 
 	public void set(FileItem value) {
 		this.value = value;
+	}
+
+	public void set(File value) {
+		this.value = new InputOnlyFileItem(value, value.getName());
 	}
 
 	protected void set(JsonObject json) {
