@@ -23,7 +23,6 @@ Z8.define('Z8.util.Ems', {
 		setBase: function(base, noResize) {
 			Ems.Base = base;
 			DOM.setStyle(document.body, 'font-size', base + 'px');
-			DOM.setStyle(document.body, 'line-height', base + 1 + 'px');
 			if (!noResize)
 				DOM.callWindowResize();
 		},

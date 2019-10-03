@@ -192,7 +192,7 @@ Z8.define('Z8.button.Button', {
 
 		DOM.swapCls(this.button, toggled, 'active');
 
-		if(this.isRadio())
+		if(this.isRadio() && toggled)
 			this.container.onRadioToggle(this, toggled);
 
 		if(silent)

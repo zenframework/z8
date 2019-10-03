@@ -174,7 +174,7 @@ var Z8 = {
 			args = Array.prototype.slice.call(arguments, 2);
 		}
 
-		if(callback == null)
+		if(callback == null || scope != null && scope.disposed)
 			return;
 
 		callback.apply(scope, args);
