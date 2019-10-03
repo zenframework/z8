@@ -12,3 +12,12 @@ Number.prototype.round = function(digits) {
 	var power = Math.pow(10, digits);
 	return Math.round(this * power) / power;
 };
+
+Number.prototype.ceil = function() {
+	return Math.ceil(this);
+};
+
+Number.prototype.floor = function() {
+	return Math.floor(this);
+}
+
