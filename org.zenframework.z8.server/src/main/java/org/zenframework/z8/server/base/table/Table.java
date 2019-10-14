@@ -90,11 +90,13 @@ public class Table extends TableBase {
 
 	public BoolField.CLASS<? extends BoolField> locked = new BoolField.CLASS<BoolField>(this);
 	public BoolField.CLASS<? extends BoolField> archive = new BoolField.CLASS<BoolField>(this);
-	public TextField.CLASS<? extends TextField> fullText = new TextField.CLASS<TextField>(this);
+	public StringField.CLASS<? extends StringField> fullText = new StringField.CLASS<StringField>(this);
 
 	final static public int IdLength = 15;
 	final static public int NameLength = 50;
 	final static public int NameWidth = 20;
+	final static public int FullTextLength = 8192;
+	final static public int FullTextWidth = 128;
 
 	public Table(IObject container) {
 		super(container);
@@ -160,6 +162,8 @@ public class Table extends TableBase {
 		fullText.setName(names.FullText);
 		fullText.setIndex("fullText");
 		fullText.setDisplayName(displayNames.FullText);
+		fullText.get().length = new integer(FullTextLength);
+		fullText.get().width = new integer(FullTextWidth);
 		fullText.setExportable(false);
 		fullText.setSystem(true);
 
@@ -187,6 +191,11 @@ public class Table extends TableBase {
 		return fullText.get();
 	}
 
+	@Override
+	public int fullTextLength() {
+		return FullTextLength;
+	}
+	
 	@Override
 	protected void beforeCreate(Query data, guid recordId, guid parentId, Query model, guid modelRecordId) {
 		createdAt.get().set(new date());

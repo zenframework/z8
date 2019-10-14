@@ -1889,6 +1889,7 @@ public class Query extends Runnable {
 
 	private void updateFullText(guid recordId) {
 		Field fullText = fullTextField();
+		int length = fullTextLength();
 		
 		if(fullText == null || searchFields.isEmpty())
 			return;
@@ -1915,6 +1916,8 @@ public class Query extends Runnable {
 					result += (result.isEmpty() ? "" : " ") + value;
 			}
 			
+			if(length > 0 && result.length() > length)
+				result = result.substring(0, length);
 			fullText.set(new string(result));
 			
 		} finally {
@@ -1924,6 +1927,10 @@ public class Query extends Runnable {
 	
 	protected Field fullTextField() {
 		return null;
+	}
+	
+	protected int fullTextLength() {
+		return -1;
 	}
 	
 	private String parseFullTextValue(String value, Field f) {
@@ -2626,25 +2633,41 @@ public class Query extends Runnable {
 		refreshRecord(id);
 	}
 	
+	public void z8_resetFullText() {
+		resetFullText(ConnectionManager.get(), true);
+	}
+		
+	private void resetFullText(Connection conn, boolean standAlone) {
+		Field fullText = fullTextField();
+		if(fullText == null)
+			return;
+		if(standAlone)
+			ApplicationServer.disableEvents();
+		
+		try {
+			conn.beginTransaction();
+			fullText.set(new string());
+			update(new IsNot(new IsEmpty(fullText)));
+			conn.commit();
+		} catch(Throwable e) {
+			conn.rollback();
+			throw new RuntimeException(e);
+		}
+		
+		if(standAlone)
+			ApplicationServer.enableEvents();
+	}
+	
 	public void z8_buildFullText(integer limit, bool resetFullText) {
 		Field fullText = fullTextField();
+		int length = fullTextLength();
 		if(fullText == null || searchFields.isEmpty())
 			return;
 		
 		ApplicationServer.disableEvents();
 		Connection conn = ConnectionManager.get();
-		
-		if(resetFullText.get()) {
-			try {
-				conn.beginTransaction();
-				fullText.set(new string());
-				update(new IsNot(new IsEmpty(fullText)));
-				conn.commit();
-			} catch(Throwable e) {
-				conn.rollback();
-				throw new RuntimeException(e);
-			}
-		}
+		if(resetFullText.get())
+			resetFullText(conn, false);
 		
 		Collection<Field> searchFields = CLASS.asList(this.searchFields);
 		
@@ -2667,6 +2690,8 @@ public class Query extends Runnable {
 						result +=  (result.isEmpty() ? "" : " ") + value;
 					}
 					
+					if(length > 0 && result.length() > length)
+						result = result.substring(0, length);
 					fullText.set(new string(result.isEmpty() ? " " : result));
 					update(recordId);
 					

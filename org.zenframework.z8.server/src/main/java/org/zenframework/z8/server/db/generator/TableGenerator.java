@@ -621,14 +621,16 @@ public class TableGenerator {
 			if(dbField != null) {
 				targetFields += (targetFields.isEmpty() ? "" : ", ") + vendor.quote(name);
 
+				FormatOptions options = new FormatOptions();
+				options.disableAggregation();
 				if(field.type() == FieldType.Guid) {
 					SqlToken isNull = new IsNull(new SqlField(field));
 					SqlToken iif = new If(isNull, guid.NULL.sql_guid(), new SqlField(field));
-					name = iif.format(vendor, new FormatOptions());
+					name = iif.format(vendor, options);
 				} else if(dbField.type.startsWith("character") && field.type() == FieldType.Text) {
-					name = new ToBytes(field).format(vendor, new FormatOptions());
+					name = new ToBytes(field).format(vendor, options);
 				} else if(dbField.type.startsWith("bytea") && field.type() == FieldType.String) {
-					name = new ToChar(field).format(vendor, new FormatOptions());
+					name = new ToChar(field).format(vendor, options);
 				} else {
 					name = vendor.quote(name);
 				}
