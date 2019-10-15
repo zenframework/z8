@@ -43,6 +43,9 @@ Z8.define('Z8.list.List', {
 	initComponent: function() {
 		this.callParent();
 
+		if(this.startCollapsed == null)
+			this.startCollapsed = Application.listbox.collapsed;
+
 		var items = this.items = this.items || [];
 		this.fragments = [];
 
@@ -702,7 +705,7 @@ Z8.define('Z8.list.List', {
 	},
 
 	createItem: function(record) {
-		var config = { list: this, record: record, name: this.name || 'id', icon: this.icons ? '' : null, collapsed: Application.listbox.collapsed, useENTER: this.useENTER };
+		var config = { list: this, record: record, name: this.name || 'id', icon: this.icons ? '' : null, collapsed: this.startCollapsed, useENTER: this.useENTER };
 		return this.itemType != null ? Z8.create(this.itemType, config) : new  Z8.list.Item(config);
 	},
 
@@ -797,7 +800,7 @@ Z8.define('Z8.list.List', {
 	},
 
 	getItem: function(value) {
-		var index = this.getIndex(value); 
+		var index = this.getIndex(value);
 		return index != -1 ? this.getAt(index) : null;
 	},
 
@@ -809,7 +812,7 @@ Z8.define('Z8.list.List', {
 			return index != null ? index : -1;
 		}
 
-		index = Number.isNumber(value) ? value : ordinals[value];
+		index = ordinals[value];
 		return index != null ? index : -1;
 	},
 
@@ -957,7 +960,7 @@ Z8.define('Z8.list.List', {
 
 	findItem: function(node) {
 		var index = this.findItemIndex(node);
-		return index != -1 ? this.getItem(index) : null;
+		return index != -1 ? this.getAt(index) : null;
 	},
 
 	findItemIndex: function(node) {
