@@ -110,7 +110,7 @@ Z8.define('Z8.form.field.Combobox', {
 	},
 
 	setReadOnly: function(readOnly) {
-		if(!readOnly && this.dropdown != null)
+		if(readOnly && this.dropdown != null)
 			this.dropdown.hide();
 
 		this.callParent(readOnly);
