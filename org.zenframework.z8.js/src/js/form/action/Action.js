@@ -72,7 +72,7 @@ Z8.define('Z8.form.action.Action', {
 	},
 
 	onActionComplete: function(record, response, success) {
-		if(success && this.getRecord() == record) {
+		if(success && record != null && this.getRecord() == record) {
 			var reloadCallback = function(record, success) {
 				this.setBusy(false);
 				if(this.form != null)
