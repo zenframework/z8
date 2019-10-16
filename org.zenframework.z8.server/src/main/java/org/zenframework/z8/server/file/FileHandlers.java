@@ -18,6 +18,7 @@ public class FileHandlers {
 	static private final String FILE_HANDLER = "META-INF/z8.filehandler";
 
 	static private final Collection<IFileHandler> fileHandlers = new LinkedList<IFileHandler>();
+	static private final IFileHandler DefaultFileHandler = new DefaultFileHandler();
 
 	static {
 		try {
@@ -36,8 +37,6 @@ public class FileHandlers {
 			}
 		} catch (IOException e) {
 			Trace.log().error("Couldn't read resources '" + FILE_HANDLER + "'", e);
-		} finally {
-			fileHandlers.add(new DefaultFileHandler());
 		}
 	}
 
@@ -45,7 +44,7 @@ public class FileHandlers {
 		for (IFileHandler handler : fileHandlers)
 			if (handler.canHandleRequest(file))
 				return handler;
-		throw new RuntimeException("Can't handler file " + file);
+		return DefaultFileHandler;
 	}
 
 	static private IFileHandler loadFileHandler(String className) {
