@@ -706,6 +706,8 @@ Z8.define('Z8.list.List', {
 
 	createItem: function(record) {
 		var config = { list: this, record: record, name: this.name || 'id', icon: this.icons ? '' : null, collapsed: this.startCollapsed, useENTER: this.useENTER };
+		if (this.itemConfig != null)
+			config = Z8.apply(config, this.itemConfig);
 		return this.itemType != null ? Z8.create(this.itemType, config) : new  Z8.list.Item(config);
 	},
 
