@@ -28,6 +28,7 @@ import org.zenframework.z8.server.db.sql.functions.string.RegIndexOf;
 import org.zenframework.z8.server.db.sql.functions.string.RegLike;
 import org.zenframework.z8.server.db.sql.functions.string.Replace;
 import org.zenframework.z8.server.db.sql.functions.string.Reverse;
+import org.zenframework.z8.server.db.sql.functions.string.Split;
 import org.zenframework.z8.server.db.sql.functions.string.Substr;
 import org.zenframework.z8.server.db.sql.functions.string.Upper;
 import org.zenframework.z8.server.types.string;
@@ -181,6 +182,10 @@ public class sql_string extends sql_primary {
 	public sql_integer z8_count() {
 		return new sql_integer(new Count(this));
 	}
+
+	public sql_array z8_split(sql_string regexp) {
+		return new sql_array(new Split(this, regexp));
+	};
 
 	public sql_string operatorPriority() {
 		return new sql_string(new Group(this));

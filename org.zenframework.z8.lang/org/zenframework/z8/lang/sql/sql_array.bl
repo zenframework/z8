@@ -1,0 +1,13 @@
+[primary "org.zenframework.z8.server.types.sql.sql_array"]
+public final class sql_array {
+
+	public sql_bool contains(sql_primary value);
+
+	public sql_bool getBool(sql_int index);
+	public sql_guid getGuid(sql_int index);
+	public sql_int getInt(sql_int index);
+	public sql_decimal getDecimal(sql_int index);
+	public sql_date getDate(sql_int index);
+	public sql_string getString(sql_int index);
+
+}
