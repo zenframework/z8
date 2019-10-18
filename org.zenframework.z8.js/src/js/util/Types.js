@@ -44,6 +44,8 @@ Z8.define('Z8.Operator', {
 		NotEq: 'notEq',
 		Contains: 'contains',
 		NotContains: 'notContains',
+		ContainsWord: 'containsWord',
+		NotContainsWord: 'notContainsWord',
 		BeginsWith: 'beginsWith',
 		NotBeginsWith: 'notBeginsWith',
 		EndsWith: 'endsWith',

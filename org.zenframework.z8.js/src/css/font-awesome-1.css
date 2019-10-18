@@ -61,6 +61,14 @@
 	content: "\2285";
 }
 
+.fa-superset-of-or-eq:before {
+	content: "\2287";
+}
+
+.fa-not-superset-of-or-eq:before {
+	content: "\2289";
+}
+
 .fa-yandex:before {
 	content: "Я";
 }

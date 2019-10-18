@@ -22,6 +22,14 @@ Z8.define('Z8.filter.String', {
 			return string != null ? string.indexOf(what || '') == -1 : false;
 		},
 
+		containsWord: function(string, what) {
+			return string != null && what != null ? new RegExp('(^|.*\\W+)' + what + '($|\\W+.*)').test(string) : false;
+		},
+
+		notContainsWord: function(string, what) {
+			return string != null && what != null ? !(new RegExp('(^|.*\\W+)' + what + '($|\\W+.*)').test(string)) : false;
+		},
+
 		eq: function(string, what) {
 			return string != null ? string.toLowerCase() == (what || '').toLowerCase() : false;
 		},
@@ -193,6 +201,9 @@ Z8.define('Z8.filter.Operator', {
 				{ id: Operator.Contains, name: 'содержит', icon: 'fa-superset-of', type: Type.String, filter: Z8.filter.String.contains },
 				{ id: Operator.NotContains, name: 'не содержит', icon: 'fa-not-superset-of', type: Type.String, filter: Z8.filter.String.notContains },
 
+				{ id: Operator.ContainsWord, name: 'содержит слово', icon: 'fa-superset-of-or-eq', type: Type.String, filter: Z8.filter.String.contains },
+				{ id: Operator.NotContainsWord, name: 'не содержит слово', icon: 'fa-not-superset-of-or-eq', type: Type.String, filter: Z8.filter.String.notContains },
+
 				{ id: Operator.Eq, name: 'равно', icon: 'fa-math-eq', type: Type.String, filter: Z8.filter.String.eq },
 				{ id: Operator.NotEq, name: 'не равно', icon: 'fa-math-not-eq', type: Type.String, filter: Z8.filter.String.notEq },
 
@@ -278,6 +289,9 @@ Z8.define('Z8.filter.Operator', {
 
 			filters[Operator.Contains] = Z8.filter.String.contains;
 			filters[Operator.NotContains] = Z8.filter.String.notContains;
+
+			filters[Operator.ContainsWord] = Z8.filter.String.containsWord;
+			filters[Operator.NotContainsWord] = Z8.filter.String.notContainsWord;
 
 			filters[Operator.Eq] = Z8.filter.String.eq;
 			filters[Operator.NotEq] = Z8.filter.String.notEq;

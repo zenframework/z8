@@ -24,6 +24,8 @@ public enum Operation {
 	NotEndsWith(Names.NotEndsWith),
 	Contains(Names.Contains),
 	NotContains(Names.NotContains),
+	ContainsWord(Names.ContainsWord),
+	NotContainsWord(Names.NotContainsWord),
 	IsEmpty(Names.IsEmpty),
 	IsNotEmpty(Names.IsNotEmpty),
 
@@ -76,6 +78,8 @@ public enum Operation {
 		static protected final String NotEndsWith = "notEndsWith";
 		static protected final String Contains = "contains";
 		static protected final String NotContains = "notContains";
+		static protected final String ContainsWord = "containsWord";
+		static protected final String NotContainsWord = "notContainsWord";
 		static protected final String IsEmpty = "isEmpty";
 		static protected final String IsNotEmpty = "isNotEmpty";
 
@@ -117,107 +121,9 @@ public enum Operation {
 	}
 
 	static public Operation fromString(String string) {
-		string = string.toLowerCase();
-
-		if(Names.Not.toLowerCase().equals(string))
-			return Operation.Not;
-		else if(Names.Minus.toLowerCase().equals(string))
-			return Operation.Minus;
-		else if(Names.Add.toLowerCase().equals(string))
-			return Operation.Add;
-		else if(Names.Sub.toLowerCase().equals(string))
-			return Operation.Sub;
-		else if(Names.Mul.toLowerCase().equals(string))
-			return Operation.Mul;
-		else if(Names.Div.toLowerCase().equals(string))
-			return Operation.Div;
-		else if(Names.Mod.toLowerCase().equals(string))
-			return Operation.Mod;
-		else if(Names.And.toLowerCase().equals(string))
-			return Operation.And;
-		else if(Names.Or.toLowerCase().equals(string))
-			return Operation.Or;
-		else if(Names.Eq.toLowerCase().equals(string))
-			return Operation.Eq;
-		else if(Names.NotEq.toLowerCase().equals(string))
-			return Operation.NotEq;
-		else if(Names.LT.toLowerCase().equals(string))
-			return Operation.LT;
-		else if(Names.GT.toLowerCase().equals(string))
-			return Operation.GT;
-		else if(Names.LE.toLowerCase().equals(string))
-			return Operation.LE;
-		else if(Names.GE.toLowerCase().equals(string))
-			return Operation.GE;
-
-		else if(Names.Yesterday.toLowerCase().equals(string))
-			return Operation.Yesterday;
-		else if(Names.Today.toLowerCase().equals(string))
-			return Operation.Today;
-		else if(Names.Tomorrow.toLowerCase().equals(string))
-			return Operation.Tomorrow;
-
-		else if(Names.BeginsWith.toLowerCase().equals(string))
-			return Operation.BeginsWith;
-		else if(Names.NotBeginsWith.toLowerCase().equals(string))
-			return Operation.NotBeginsWith;
-		else if(Names.EndsWith.toLowerCase().equals(string))
-			return Operation.EndsWith;
-		else if(Names.NotEndsWith.toLowerCase().equals(string))
-			return Operation.NotEndsWith;
-		else if(Names.Contains.toLowerCase().equals(string))
-			return Operation.Contains;
-		else if(Names.NotContains.toLowerCase().equals(string))
-			return Operation.NotContains;
-		else if(Names.IsEmpty.toLowerCase().equals(string))
-			return Operation.IsEmpty;
-		else if(Names.IsNotEmpty.toLowerCase().equals(string))
-			return Operation.IsNotEmpty;
-
-		else if(Names.LastWeek.toLowerCase().equals(string))
-			return Operation.LastWeek;
-		else if(Names.ThisWeek.toLowerCase().equals(string))
-			return Operation.ThisWeek;
-		else if(Names.NextWeek.toLowerCase().equals(string))
-			return Operation.NextWeek;
-
-		else if(Names.LastWeek.toLowerCase().equals(string))
-			return Operation.LastWeek;
-		else if(Names.ThisWeek.toLowerCase().equals(string))
-			return Operation.ThisWeek;
-		else if(Names.NextWeek.toLowerCase().equals(string))
-			return Operation.NextWeek;
-
-		else if(Names.LastMonth.toLowerCase().equals(string))
-			return Operation.LastMonth;
-		else if(Names.ThisMonth.toLowerCase().equals(string))
-			return Operation.ThisMonth;
-		else if(Names.NextMonth.toLowerCase().equals(string))
-			return Operation.NextMonth;
-
-		else if(Names.LastYear.toLowerCase().equals(string))
-			return Operation.LastYear;
-		else if(Names.ThisYear.toLowerCase().equals(string))
-			return Operation.ThisYear;
-		else if(Names.NextYear.toLowerCase().equals(string))
-			return Operation.NextYear;
-
-		else if(Names.LastDays.toLowerCase().equals(string))
-			return Operation.LastDays;
-		else if(Names.NextDays.toLowerCase().equals(string))
-			return Operation.NextDays;
-
-		else if(Names.LastHours.toLowerCase().equals(string))
-			return Operation.LastHours;
-		else if(Names.NextHours.toLowerCase().equals(string))
-			return Operation.NextHours;
-
-		else if(Names.IsTrue.toLowerCase().equals(string))
-			return Operation.IsTrue;
-		else if(Names.IsFalse.toLowerCase().equals(string))
-			return Operation.IsFalse;
-
-		else
-			throw new RuntimeException("Unknown operation: '" + string + "'");
+		for (Operation value : values())
+			if (value.name().equalsIgnoreCase(string))
+				return value;
+		throw new RuntimeException("Unknown operation: '" + string + "'");
 	}
 }

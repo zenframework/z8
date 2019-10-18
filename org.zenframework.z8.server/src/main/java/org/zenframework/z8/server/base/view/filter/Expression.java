@@ -20,6 +20,7 @@ import org.zenframework.z8.server.db.sql.functions.IsNull;
 import org.zenframework.z8.server.db.sql.functions.conversion.GuidToString;
 import org.zenframework.z8.server.db.sql.functions.string.Like;
 import org.zenframework.z8.server.db.sql.functions.string.Lower;
+import org.zenframework.z8.server.db.sql.functions.string.RegLike;
 import org.zenframework.z8.server.json.Json;
 import org.zenframework.z8.server.json.parser.JsonArray;
 import org.zenframework.z8.server.json.parser.JsonException;
@@ -117,6 +118,8 @@ public class Expression implements IFilter {
 		}
 
 		String value = values.length != 0 ? values[0] : null;
+		String values[] = {};
+		SqlToken token;
 
 		switch(type) {
 		case Boolean:
@@ -218,7 +221,6 @@ public class Expression implements IFilter {
 				if(value == null || value.trim().isEmpty())
 					return null;
 
-				String values[] = {};
 				if(operation == Operation.BeginsWith || operation == Operation.NotBeginsWith)
 					values = new String[] { value + '%' };
 				else if(operation == Operation.EndsWith || operation == Operation.NotEndsWith)
@@ -234,13 +236,37 @@ public class Expression implements IFilter {
 					}
 				}
 
-				SqlToken token = new Like(new Lower(field), new sql_string(values[0].toLowerCase()));
+				token = new Like(new Lower(field), new sql_string(values[0].toLowerCase()));
 				for (int i = 1; i < values.length; i++) {
 					SqlToken t = new Like(new Lower(field), new sql_string(values[i].toLowerCase()));
 					token = new And(token, t);
 				}
 
 				if(operation == Operation.NotBeginsWith || operation == Operation.NotEndsWith || operation == Operation.NotContains)
+					token = new Unary(Operation.Not, token);
+
+				return token;
+			case ContainsWord:
+			case NotContainsWord:
+				if(value == null || value.trim().isEmpty())
+					return null;
+
+				value = value.trim();
+				if (value.charAt(0) == '"' && value.charAt(value.length() - 1) == '"') {
+					values = new String[] { "\\y" + value.substring(1, value.length() - 1) + "\\y" };
+				} else {
+					values = value.split("\\s+");
+					for (int i = 0; i < values.length; i++)
+						values[i] = "\\y" + values[i] + "\\y";
+				}
+
+				token = new RegLike(new Lower(field), new sql_string(values[0].toLowerCase()));
+				for (int i = 1; i < values.length; i++) {
+					SqlToken t = new RegLike(new Lower(field), new sql_string(values[i].toLowerCase()));
+					token = new And(token, t);
+				}
+
+				if(operation == Operation.NotContainsWord)
 					token = new Unary(Operation.Not, token);
 
 				return token;

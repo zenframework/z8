@@ -33,6 +33,8 @@ public final class sql_string extends sql_primary {
 	public sql_bool like(sql_string pattern);
 	public sql_bool like(sql_string pattern, sql_string escape);
 
+	public sql_bool regLike(sql_string pattern);
+
 	public sql_string toLower();
 	public sql_string toUpper();
 
