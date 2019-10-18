@@ -8,6 +8,7 @@ public enum Aggregation {
 	Average(Names.Average),
 	Count(Names.Count),
 	Array(Names.Array),
+	Distinct(Names.Distinct),
 	Concat(Names.Concat);
 
 	class Names {
@@ -18,6 +19,7 @@ public enum Aggregation {
 		static protected final String Average = "average";
 		static protected final String Count = "count";
 		static protected final String Array = "array";
+		static protected final String Distinct = "distinct";
 		static protected final String Concat = "concat";
 	}
 

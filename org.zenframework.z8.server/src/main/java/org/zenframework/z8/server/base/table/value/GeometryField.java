@@ -68,7 +68,7 @@ public class GeometryField extends Field {
 	protected primary read() throws SQLException {
 		primary value = super.read();
 
-		if(getCursor().isGrouped() && aggregation == Aggregation.Array)
+		if(getCursor().isGrouped() && (aggregation == Aggregation.Array || aggregation == Aggregation.Distinct))
 			return geometry.z8_fromArray(array((string)value), srs);
 
 		return value;

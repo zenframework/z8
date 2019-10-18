@@ -12,9 +12,11 @@ import org.zenframework.z8.server.exceptions.db.UnknownDatabaseException;
 
 public class Array extends SqlToken {
 	private SqlToken token;
+	private boolean distinct;
 
-	public Array(SqlToken token) {
+	public Array(SqlToken token, boolean distinct) {
 		this.token = token;
+		this.distinct = distinct;
 	}
 
 	@Override
@@ -31,8 +33,10 @@ public class Array extends SqlToken {
 			break;
 		case Postgres:
 			result = options.isOrderBy() ? "array_agg" : "json_agg";
-			if(token.type() == FieldType.Text)
+			if (token.type() == FieldType.Text)
 				token = new ToString(token);
+			if (distinct)
+				token = new Distinct(token);
 			break;
 		default:
 			throw new UnknownDatabaseException();

@@ -74,7 +74,9 @@ public class SqlField extends SqlToken {
 		case Count:
 			return new Count(token);
 		case Array:
-			return new Array(token);
+			return new Array(token, false);
+		case Distinct:
+			return new Array(token, true);
 		case Concat:
 			return new Concat(token);
 		default:

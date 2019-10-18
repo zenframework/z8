@@ -7,5 +7,6 @@ public enum Aggregation {
 	Average,
 	Count,
 	Array,
+	Distinct,
 	Concat
 }
