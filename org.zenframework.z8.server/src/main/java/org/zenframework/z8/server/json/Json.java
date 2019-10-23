@@ -131,6 +131,7 @@ public interface Json {
 	static public string lookupFields = new string("lookupFields");
 	static public string lookup = new string("lookup");
 
+	static public string having = new string("having");
 	static public string filter = new string("filter");
 	static public string quickFilter = new string("quickFilter");
 	static public string where = new string("where");

@@ -197,6 +197,9 @@ public class ReadAction extends RequestAction {
 			Period period = new Period(query.periodKey(), getPeriodParameter());
 			addFilter(period.where());
 
+			Filter having = new Filter(getHavingParameter(), query);
+			addGroupFilter(having.where());
+
 			addFilter(query.scope());
 			addFilter(query.where());
 			addGroupFilter(query.having());

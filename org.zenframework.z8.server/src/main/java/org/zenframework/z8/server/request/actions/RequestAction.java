@@ -166,6 +166,10 @@ public abstract class RequestAction extends RequestTarget {
 		return getRequestParameter(Json.parameters);
 	}
 
+	public String getHavingParameter() {
+		return getRequestParameter(Json.having);
+	}
+
 	public String getFilterParameter() {
 		return getRequestParameter(Json.filter);
 	}

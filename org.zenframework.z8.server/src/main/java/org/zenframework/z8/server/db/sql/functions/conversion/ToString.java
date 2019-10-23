@@ -2,6 +2,7 @@ package org.zenframework.z8.server.db.sql.functions.conversion;
 
 import java.util.Collection;
 
+import org.zenframework.z8.server.base.table.value.Aggregation;
 import org.zenframework.z8.server.base.table.value.Field;
 import org.zenframework.z8.server.base.table.value.IField;
 import org.zenframework.z8.server.db.DatabaseVendor;
@@ -45,22 +46,17 @@ public class ToString extends SqlToken {
 			}
 
 		case Postgres:
-			switch(type) {
-			case Guid:
+			if (type == FieldType.Guid)
 				return new GuidToString(value).format(vendor, options);
-			case Date:
-			case Datetime:
+			if (type == FieldType.Date || type == FieldType.Datetime)
 				return new DateToString(value).format(vendor, options);
-			case Attachments:
-			case File:
-			case Text:
+			if (type == FieldType.Attachments || type == FieldType.File || type == FieldType.Text)
 				return "CONVERT_FROM(" + value.format(vendor, options) + ", 'UTF8')";
-			case Integer:
-			case Decimal:
+			if (type == FieldType.Integer || type == FieldType.Decimal
+					|| value instanceof SqlField && (((SqlField) value).aggregation() == Aggregation.Array
+							|| ((SqlField) value).aggregation() == Aggregation.Distinct))
 				return "(" + value.format(vendor, options) + ")::text";
-			default:
-				return value.format(vendor, options);
-			}
+			return value.format(vendor, options);
 
 		case SqlServer:
 			return "Cast(" + value.format(vendor, options) + " as nvarchar(max))";
