@@ -199,7 +199,7 @@ Z8.define('Z8.list.List', {
 			result.push({ tag: 'tr', cls: 'number', cn: numberCells });
 
 		if(hasFilters)
-			result.push({ tag: 'tr', cls: 'filter display-none', cn: filterCells });
+			result.push({ tag: 'tr', cls: 'filter' + (this.filterVisible ? '' : ' display-none'), cn: filterCells });
 
 		return result;
 	},
