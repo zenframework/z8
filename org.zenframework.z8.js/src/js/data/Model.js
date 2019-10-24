@@ -490,7 +490,15 @@ Z8.define('Z8.data.Model', {
 			return;
 		}
 
-		var data = { request: this.getName(), action: 'attach', recordId: this.id, field: name, fields: Model.getFieldNames(this.getFields()) };
+		var data = {
+			request: this.getName(),
+			action: 'attach',
+			recordId: this.id,
+			field: name,
+			fields: Model.getFieldNames(this.getFields()),
+			link: this.getLink(),
+			query: this.getQuery()
+		};
 
 		var requestCallback = function(response, success) {
 			if(success) {
@@ -507,7 +515,16 @@ Z8.define('Z8.data.Model', {
 		if(this.getAccess().update === false)
 			throw 'Model ' + this.getName() + ' does not have update record privilege';
 
-		var data = { request: this.getName(), action: 'detach', recordId: this.id, field: name, data: files, fields: Model.getFieldNames(this.getFields()) };
+		var data = {
+			request: this.getName(),
+			action: 'detach',
+			recordId: this.id,
+			field: name,
+			data: files,
+			fields: Model.getFieldNames(this.getFields()),
+			link: this.getLink(),
+			query: this.getQuery()
+		};
 
 		var requestCallback = function(response, success) {
 			if(success) {
