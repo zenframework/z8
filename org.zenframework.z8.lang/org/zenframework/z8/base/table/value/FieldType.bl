@@ -2,6 +2,7 @@
 public enum FieldType {
 	None,
 	Guid,
+	Geometry,
 	Boolean,
 	Integer,
 	String,
