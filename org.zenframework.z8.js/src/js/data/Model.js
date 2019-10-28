@@ -267,6 +267,8 @@ Z8.define('Z8.data.Model', {
 				store.onRecordChanged(this, modified);
 			this.fireEvent('change', this, modified);
 		}
+
+		this.modified = this.original = null;
 	},
 
 	getModifiedFields: function() {
