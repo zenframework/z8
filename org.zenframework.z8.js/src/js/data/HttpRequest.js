@@ -60,7 +60,6 @@ Z8.define('Z8.data.HttpRequest', {
 		this.callParent(config);
 
 		var xhr = this.xhr = new XMLHttpRequest();
-		xhr.timeout = 0;
 
 		DOM.on(xhr, 'load', this.onLoad, this);
 		DOM.on(xhr, 'error', this.onError, this);
@@ -73,7 +72,9 @@ Z8.define('Z8.data.HttpRequest', {
 		this.callback = callback;
 
 		var xhr = this.xhr;
+
 		xhr.open('POST', HttpRequest.url(this.defaultUrl), true);
+		xhr.timeout = 0;
 		xhr.setRequestHeader('Content-Type', HttpRequest.contentType.FormUrlEncoded);
 		xhr.send(this.encodeData(data));
 	},
@@ -84,6 +85,7 @@ Z8.define('Z8.data.HttpRequest', {
 
 		var xhr = this.xhr;
 		xhr.open('GET', HttpRequest.url(url), true);
+		xhr.timeout = 0;
 		xhr.setRequestHeader('Content-Type', HttpRequest.contentType.FormUrlEncoded);
 		xhr.send();
 	},
@@ -96,6 +98,7 @@ Z8.define('Z8.data.HttpRequest', {
 
 		var xhr = this.xhr;
 		xhr.open('POST', HttpRequest.url('request.json'), true);
+		xhr.timeout = 0;
 		xhr.send(this.encodeFormData(data, files));
 	},
 
