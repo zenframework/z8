@@ -665,8 +665,11 @@ Z8.define('Z8.form.field.Combobox', {
 	},
 
 	editSource: function() {
-		var value = this.value;
 		var source = this.source;
+		if (source == null)
+			return;
+		var link = source.link;
+		var value = link != null ? this.record.get(link) : this.value;
 		var filter, sourceFilter;
 		if (value != null && value != guid.Null) {
 			filter = [{ property: 'recordId', value: value }];

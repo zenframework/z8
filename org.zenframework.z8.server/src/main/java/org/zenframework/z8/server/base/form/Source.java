@@ -3,6 +3,7 @@ package org.zenframework.z8.server.base.form;
 import org.zenframework.z8.server.base.query.Query;
 import org.zenframework.z8.server.base.table.value.Field;
 import org.zenframework.z8.server.base.table.value.ILink;
+import org.zenframework.z8.server.base.table.value.Link;
 import org.zenframework.z8.server.json.Json;
 import org.zenframework.z8.server.json.JsonWriter;
 import org.zenframework.z8.server.runtime.IObject;
@@ -22,6 +23,7 @@ public class Source extends OBJECT {
 	}
 
 	public Query.CLASS<? extends Query> query = null;
+	public Link.CLASS<? extends Link> link = null;
 	public Field.CLASS<? extends Field> filterField = null;
 
 	public Source(IObject container) {
@@ -36,13 +38,17 @@ public class Source extends OBJECT {
 			if (filterField != null)
 				writer.writeProperty(Json.field, filterField.id().substring(query.id().length() + 1));
 		}
-		IObject container = getContainer();
-		if (container instanceof Field) {
-			Field field = (Field) container;
-			if (field.getPath() != null && !field.getPath().isEmpty()) {
-				ILink[] links = field.getPath().toArray(new ILink[field.getPath().size()]);
-				ILink lastLink = links[links.length - 1];
-				writer.writeProperty(Json.link, lastLink.id());
+		if (link != null) {
+			writer.writeProperty(Json.link, link.id());
+		} else {
+			IObject container = getContainer();
+			if (container instanceof Field) {
+				Field field = (Field) container;
+				if (field.getPath() != null && !field.getPath().isEmpty()) {
+					ILink[] links = field.getPath().toArray(new ILink[field.getPath().size()]);
+					ILink lastLink = links[links.length - 1];
+					writer.writeProperty(Json.link, lastLink.id());
+				}
 			}
 		}
 	}
