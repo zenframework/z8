@@ -91,7 +91,7 @@ public class DataSetEditorPage extends DataSetWizardPage {
 			return null;
 
 		JsonObject query = new JsonObject(json);
-		return query.getString(Json.id);
+		return query.getString(query.has(Json.id) ? Json.id : Json.request);
 	}
 
 	private Collection<String> getCurrentFields() {

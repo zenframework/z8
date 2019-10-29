@@ -13,13 +13,6 @@ public class Parameter extends Object {
 	public operator string();
 	public operator file();
 
-	public bool[] boolArray();
-	public guid[] guidArray();
-	public date[] dateArray();
-	public decimal[] decimalArray();
-	public int[] intArray();
-	public string[] stringArray();
-
 	static public Parameter create(string text, FieldType type);
 
 	static public Parameter create(string text, bool value);

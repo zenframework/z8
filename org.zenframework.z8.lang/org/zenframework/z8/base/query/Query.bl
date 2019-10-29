@@ -129,5 +129,9 @@ public class Query extends Object {
 	public void setWhere(string where);
 	public void setWhere(string[] where);
 
+	public void addHaving(sql_bool having);
+	public void addHaving(string having);
+	public void addHaving(string[] having);
+
 	public void setConnection(Connection connection);
 }

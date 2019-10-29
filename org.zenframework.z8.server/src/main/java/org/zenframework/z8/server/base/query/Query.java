@@ -860,6 +860,18 @@ public class Query extends OBJECT {
 		this.having = having;
 	}
 
+	final public void addHaving(String json) {
+		addHaving(new Filter(json, this).where());
+	}
+
+	final public void addHaving(Collection<String> json) {
+		addHaving(new Filter(json, this).where());
+	}
+
+	final public void addHaving(SqlToken having) {
+		this.having = new And(having(), having);
+	}
+
 	private boolean isGroupingEnabled() {
 		return groupingDisabled == 0;
 	}
@@ -1192,6 +1204,18 @@ public class Query extends OBJECT {
 
 	public void z8_setWhere(RCollection<string> json) {
 		setWhere(string.unwrap(json));
+	}
+
+	public void z8_addHaving(sql_bool having) {
+		addHaving(having);
+	}
+
+	public void z8_addHaving(string json) {
+		addHaving(json.get());
+	}
+
+	public void z8_addHaving(RCollection<String> json) {
+		addHaving(json);
 	}
 
 	public bool z8_hasRecord(guid recordId) {

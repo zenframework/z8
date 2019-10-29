@@ -5,7 +5,6 @@ import java.util.Collection;
 import org.zenframework.z8.server.db.FieldType;
 import org.zenframework.z8.server.json.Json;
 import org.zenframework.z8.server.json.JsonWriter;
-import org.zenframework.z8.server.json.parser.JsonArray;
 import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.runtime.OBJECT;
 import org.zenframework.z8.server.runtime.RCollection;
@@ -86,21 +85,7 @@ public class Parameter extends OBJECT implements IParameter {
 
 	@Override
 	public void parse(String json) {
-		FieldType type = getType();
-
-		if(json != null && json.startsWith("[")) {
-			JsonArray array = new JsonArray(json);
-
-			RCollection<primary> value = new RCollection<primary>();
-
-			for(int index = 0; index < array.length(); index++) {
-				String item = array.getString(index);
-				value.add(parse(item, type));
-			}
-
-			set(value);
-		} else
-			set(parse(json, type));
+		set(parse(json, getType()));
 	}
 
 	public primary parse(String value, FieldType type) {
@@ -141,54 +126,24 @@ public class Parameter extends OBJECT implements IParameter {
 			writer.writeProperty(Json.value, (primary)value);
 	}
 
-	@SuppressWarnings("rawtypes")
-	public RCollection toArray() {
-		return (RCollection)value;
-	}
-
 	public bool bool() {
 		return (bool)value;
-	}
-
-	@SuppressWarnings("rawtypes")
-	public RCollection z8_boolArray() {
-		return toArray();
 	}
 
 	public guid guid() {
 		return (guid)value;
 	}
 
-	@SuppressWarnings("rawtypes")
-	public RCollection z8_guidArray() {
-		return toArray();
-	}
-
 	public integer integer() {
 		return (integer)value;
-	}
-
-	@SuppressWarnings("rawtypes")
-	public RCollection z8_intArray() {
-		return toArray();
 	}
 
 	public date date() {
 		return (date)value;
 	}
 
-	@SuppressWarnings("rawtypes")
-	public RCollection z8_dateArray() {
-		return toArray();
-	}
-
 	public decimal decimal() {
 		return (decimal)value;
-	}
-
-	@SuppressWarnings("rawtypes")
-	public RCollection z8_decimalArray() {
-		return toArray();
 	}
 
 	public file file() {
@@ -197,11 +152,6 @@ public class Parameter extends OBJECT implements IParameter {
 
 	public string string() {
 		return (string)value;
-	}
-
-	@SuppressWarnings("rawtypes")
-	public RCollection z8_stringArray() {
-		return toArray();
 	}
 
 	static public Parameter.CLASS<? extends Parameter> z8_create(string name, primary value) {
