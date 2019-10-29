@@ -849,7 +849,8 @@ public class Query extends OBJECT {
 	}
 
 	final public void addWhere(SqlToken where) {
-		this.where = new And(where(), where);
+		if(where != null)
+			this.where = new And(where(), where);
 	}
 
 	final public SqlToken having() {
@@ -869,7 +870,8 @@ public class Query extends OBJECT {
 	}
 
 	final public void addHaving(SqlToken having) {
-		this.having = new And(having(), having);
+		if(having != null)
+			this.having = new And(having(), having);
 	}
 
 	private boolean isGroupingEnabled() {
@@ -1199,7 +1201,8 @@ public class Query extends OBJECT {
 	}
 
 	public void z8_setWhere(string json) {
-		setWhere(json.get());
+		if(json != null)
+			setWhere(json.get());
 	}
 
 	public void z8_setWhere(RCollection<string> json) {
@@ -1211,7 +1214,8 @@ public class Query extends OBJECT {
 	}
 
 	public void z8_addHaving(string json) {
-		addHaving(json.get());
+		if(json != null)
+			addHaving(json.get());
 	}
 
 	public void z8_addHaving(RCollection<String> json) {

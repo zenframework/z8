@@ -75,9 +75,6 @@ public class RLinkedHashMap<Key, Value> extends HashMap<Key, Value> {
 	}
 
 	public Value z8_get(Key key) {
-		if(!containsKey(key)) {
-			throw new RuntimeException("Key '" + key + "' was not found");
-		}
 		return get(key);
 	}
 
@@ -92,8 +89,6 @@ public class RLinkedHashMap<Key, Value> extends HashMap<Key, Value> {
 	}
 
 	public Value z8_remove(Key key) {
-		if(!containsKey(key))
-			throw new RuntimeException("Key '" + key + "' was not found");
 		return remove(key);
 	}
 }
