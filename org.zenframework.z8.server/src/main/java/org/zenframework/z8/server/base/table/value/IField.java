@@ -31,5 +31,6 @@ public interface IField extends IObject {
 
 	public boolean isPrimaryKey();
 	public boolean isParentKey();
+	public boolean isLockKey();
 	public boolean isExpression();
 }

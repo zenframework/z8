@@ -17,6 +17,7 @@ public interface IAttributed {
 	static final public String Help = "help";
 	static final public String PrimaryKey = "primaryKey";
 	static final public String ParentKey = "parentKey";
+	static final public String LockKey = "lockKey";
 	static final public String Job = "job";
 	static final public String Exportable = "exportable";
 	static final public String ForeignKey = "foreignKey";

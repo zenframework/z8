@@ -109,6 +109,9 @@ public class Query extends OBJECT {
 	private Field parentKey = null;
 	private boolean parentKeyFound = false;
 
+	private Field lockKey = null;
+	private boolean lockKeyFound = false;
+
 	protected Query() {
 		this(null);
 	}
@@ -924,7 +927,16 @@ public class Query extends OBJECT {
 	}
 
 	public Field lockKey() {
-		return null;
+		if (!lockKeyFound) {
+			for (Field.CLASS<Field> field : dataFields()) {
+				if (field.get().isLockKey()) {
+					lockKey = field.get();
+					break;
+				}
+			}
+			lockKeyFound = true;
+		}
+		return lockKey;
 	}
 
 	public String getAlias() {

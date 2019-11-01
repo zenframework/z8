@@ -335,6 +335,11 @@ public class OdaField implements IField {
 	}
 
 	@Override
+	public boolean isLockKey() {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
 	public boolean isExpression() {
 		return false;
 	}

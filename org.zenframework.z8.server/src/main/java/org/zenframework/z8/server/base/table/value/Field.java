@@ -96,6 +96,7 @@ abstract public class Field extends Control implements IField {
 
 	private bool isPrimaryKey;
 	private bool isParentKey;
+	private bool isLockKey;
 
 	private boolean isWritingMeta;
 
@@ -184,6 +185,15 @@ abstract public class Field extends Control implements IField {
 			isParentKey = new bool(value != null && !value.equalsIgnoreCase("false"));
 		}
 		return isParentKey.get();
+	}
+
+	@Override
+	public boolean isLockKey() {
+		if(isLockKey == null) {
+			String value = getAttribute(IObject.LockKey);
+			isLockKey = new bool(value != null && !value.equalsIgnoreCase("false"));
+		}
+		return isLockKey.get();
 	}
 
 	@Override

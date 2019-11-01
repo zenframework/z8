@@ -102,6 +102,7 @@ public class Table extends TableBase {
 		description.setIndex("description");
 
 		lock.setName(fieldNames.Lock);
+		lock.setAttribute(LockKey, "");
 		lock.setIndex("lock");
 		lock.setSystem(true);
 
@@ -143,11 +144,6 @@ public class Table extends TableBase {
 	@Override
 	public Field primaryKey() {
 		return recordId.get();
-	}
-
-	@Override
-	public Field lockKey() {
-		return lock.get();
 	}
 
 	@Override
