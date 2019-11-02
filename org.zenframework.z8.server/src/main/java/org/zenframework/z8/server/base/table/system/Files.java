@@ -138,6 +138,18 @@ public class Files extends Table {
 		return null;
 	}
 
+	public static file get(guid fileId) {
+		Files table = newInstance();
+
+		Field path = table.path.get();
+		Collection<Field> fields = Arrays.asList(path);
+
+		if(!fileId.isNull() && table.readRecord(fileId, fields))
+			return new file(fileId, path.string().get());
+
+		return null;
+	}
+
 	public static file get(file file) throws IOException {
 		File path = new File(Folders.Base, file.path.get());
 

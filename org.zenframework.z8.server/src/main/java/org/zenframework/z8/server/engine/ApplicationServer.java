@@ -3,6 +3,7 @@ package org.zenframework.z8.server.engine;
 import java.io.IOException;
 import java.lang.management.ManagementFactory;
 import java.rmi.RemoteException;
+import java.util.Map;
 
 import org.zenframework.z8.server.base.job.scheduler.Scheduler;
 import org.zenframework.z8.server.base.table.system.Domains;
@@ -142,9 +143,9 @@ public class ApplicationServer extends RmiServer implements IApplicationServer {
 	}
 
 	@Override
-	public file download(file file) throws IOException {
+	public file download(file file, Map<String, String> parameters) throws IOException {
 		try {
-			return FileHandlers.getFileHandler(file).getFile(file);
+			return FileHandlers.getFileHandler(file).getFile(file, parameters);
 		} finally {
 			ConnectionManager.release();
 		}

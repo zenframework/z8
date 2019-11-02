@@ -2,6 +2,6 @@
 public class FileHandler {
 	
 	virtual public bool canHandleRequest(file file);
-	virtual public file getFile(file file);
+	virtual public file getFile(file file, string[string] parameters);
 
 }

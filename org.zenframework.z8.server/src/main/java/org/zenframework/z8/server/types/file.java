@@ -115,6 +115,15 @@ public class file extends primary implements RmiSerializable, Serializable {
 		operatorAssign(path);
 	}
 
+	public file(guid id, String path) {
+		this(id, new string(path));
+	}
+
+	public file(guid id, string path) {
+		this.id = id;
+		operatorAssign(path);
+	}
+
 	protected file(JsonObject json) {
 		super();
 		set(json);

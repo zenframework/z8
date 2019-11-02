@@ -57,16 +57,19 @@ public class ConverterAdapter extends Adapter {
 		File relativePath = new File(requestUrl);
 		File absolutePath = new File(super.getServlet().getServletPath(), requestUrl);
 
-		boolean preview = parameters.containsKey(Json.preview);
+		boolean preview = parameters.containsKey(Json.preview.get());
+		boolean reset = parameters.containsKey(Json.reset.get());
 
 		file file = null;
 
+		if (reset && absolutePath.exists())
+			absolutePath.delete();
 		if(!absolutePath.exists()) {
 			file = new file();
 			file.path = new string(relativePath.toString());
 			file.name = new string(relativePath.getName());
-			file.id = new guid(parameters.get(Json.id));
-			file = downloadFile(session.getServerInfo(), file, absolutePath);
+			file.id = new guid(parameters.get(Json.id.get()));
+			file = downloadFile(session.getServerInfo(), file, absolutePath, parameters);
 		}
 
 		if(preview) {
@@ -101,8 +104,8 @@ public class ConverterAdapter extends Adapter {
 		return contentType;
 	}
 
-	private file downloadFile(IServerInfo serverInfo, file file, File path) throws IOException {
-		file downloadedFile = serverInfo.getServer().download(file);
+	private file downloadFile(IServerInfo serverInfo, file file, File path, Map<String, String> parameters) throws IOException {
+		file = serverInfo.getServer().download(file, parameters);
 
 		/*
 		 * The storage folder may be shared between servlet and application
@@ -111,14 +114,14 @@ public class ConverterAdapter extends Adapter {
 		 */
 
 		if(!path.exists()) {
-			InputStream in = downloadedFile == null ? null : downloadedFile.getInputStream();
+			InputStream in = file == null ? null : file.getInputStream();
 			if(in != null)
 				IOUtils.copy(in, path);
 			else
 				throw new IOException("File '" + file.name.get() + "' does not exist");
 		}
 
-		return downloadedFile;
+		return file;
 	}
 
 	private String getContentDisposition(HttpServletRequest request, String fileName) throws UnsupportedEncodingException {

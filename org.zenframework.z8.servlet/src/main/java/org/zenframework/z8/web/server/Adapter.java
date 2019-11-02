@@ -65,10 +65,10 @@ public abstract class Adapter {
 
 			parseRequest(request, parameters, files);
 
-			boolean isLogin = Json.login.equals(parameters.get(Json.request));
+			boolean isLogin = Json.login.equals(parameters.get(Json.request.get()));
 
-			String sessionId = parameters.get(Json.session);
-			String serverId = parameters.get(Json.server);
+			String sessionId = parameters.get(Json.session.get());
+			String serverId = parameters.get(Json.server.get());
 
 			if(isLogin) {
 				String login = getParameter(Json.login.get(), parameters, httpSession);
@@ -79,7 +79,7 @@ public abstract class Adapter {
 
 				session = login(login, password);
 			} else
-				session = authorize(sessionId, serverId, parameters.get(Json.request));
+				session = authorize(sessionId, serverId, parameters.get(Json.request.get()));
 
 			if(session == null)
 				throw serverId == null ? new AccessDeniedException() : new ServerUnavailableException(serverId);
@@ -126,6 +126,7 @@ public abstract class Adapter {
 					parameters.put(fileItem.getFieldName(), fileItem.getString(encoding.Default.toString()));
 			}
 		} else {
+			@SuppressWarnings("unchecked")
 			Map<String, String[]> requestParameters = request.getParameterMap();
 
 			for(String name : requestParameters.keySet()) {
