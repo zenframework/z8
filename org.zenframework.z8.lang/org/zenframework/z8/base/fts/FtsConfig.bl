@@ -1,4 +1,4 @@
-[native "org.zenframework.z8.server.db.sql.functions.fts.FtsConfig"]
+[native "org.zenframework.z8.server.db.sql.fts.FtsConfig"]
 public class FtsConfig {
 
 	public string config;
@@ -6,7 +6,5 @@ public class FtsConfig {
 	public decimal[] weight;
 	public int normalization = 0;
 	public bool coatingDensity = false;
-
-	public static FtsConfig newConfig(string config, FtsQueryType queryType, decimal[] weight, int normalization, bool coatingDensity);
 
 }

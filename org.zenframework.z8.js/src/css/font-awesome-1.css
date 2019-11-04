@@ -21,6 +21,14 @@
 	content: "\2236";
 }
 
+.fa-math-tilde:before {
+	content: "\223C";
+}
+
+.fa-math-not-tilde:before {
+	content: "\2241";
+}
+
 .fa-math-lt:before {
 	content: "<";
 }

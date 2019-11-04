@@ -1,4 +1,4 @@
-package org.zenframework.z8.server.db.sql.functions.fts;
+package org.zenframework.z8.server.db.sql.fts;
 
 import java.util.Collection;
 
@@ -28,7 +28,7 @@ public class TsLike extends SqlToken {
 	public String format(DatabaseVendor vendor, FormatOptions options, boolean logicalContext) {
 		StringBuilder str = new StringBuilder(1024);
 
-		if (vendor == DatabaseVendor.SqlServer) {
+		if (vendor == DatabaseVendor.Postgres) {
 			str.append(tsquery.format(vendor, options, logicalContext)).append(" @@ ");
 			str.append(tsvector.format(vendor, options, logicalContext));
 		} else

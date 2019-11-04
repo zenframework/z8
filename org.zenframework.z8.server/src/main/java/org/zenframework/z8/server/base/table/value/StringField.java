@@ -4,6 +4,7 @@ import org.zenframework.z8.server.base.query.Query;
 import org.zenframework.z8.server.db.DatabaseVendor;
 import org.zenframework.z8.server.db.FieldType;
 import org.zenframework.z8.server.db.sql.SqlField;
+import org.zenframework.z8.server.db.sql.fts.FtsConfig;
 import org.zenframework.z8.server.engine.ApplicationServer;
 import org.zenframework.z8.server.json.Json;
 import org.zenframework.z8.server.json.JsonWriter;
@@ -35,6 +36,8 @@ public class StringField extends Field {
 		length = new integer(DefaultLength);
 		aggregation = Aggregation.Max;
 	}
+
+	public FtsConfig.CLASS<? extends FtsConfig> ftsConfig = FtsConfig.Default;
 
 	public string z8_getDefault() {
 		return (string)super.getDefault();

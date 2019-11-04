@@ -6,6 +6,11 @@ import org.zenframework.z8.server.db.sql.expressions.Add;
 import org.zenframework.z8.server.db.sql.expressions.Group;
 import org.zenframework.z8.server.db.sql.expressions.Operation;
 import org.zenframework.z8.server.db.sql.expressions.Rel;
+import org.zenframework.z8.server.db.sql.fts.FtsConfig;
+import org.zenframework.z8.server.db.sql.fts.TsLike;
+import org.zenframework.z8.server.db.sql.fts.TsQuery;
+import org.zenframework.z8.server.db.sql.fts.TsRank;
+import org.zenframework.z8.server.db.sql.fts.TsVector;
 import org.zenframework.z8.server.db.sql.functions.Count;
 import org.zenframework.z8.server.db.sql.functions.Max;
 import org.zenframework.z8.server.db.sql.functions.Min;
@@ -14,11 +19,6 @@ import org.zenframework.z8.server.db.sql.functions.conversion.IsNumericString;
 import org.zenframework.z8.server.db.sql.functions.conversion.StringToInt;
 import org.zenframework.z8.server.db.sql.functions.conversion.ToDate;
 import org.zenframework.z8.server.db.sql.functions.conversion.ToDecimal;
-import org.zenframework.z8.server.db.sql.functions.fts.FtsConfig;
-import org.zenframework.z8.server.db.sql.functions.fts.ToTsQuery;
-import org.zenframework.z8.server.db.sql.functions.fts.ToTsVector;
-import org.zenframework.z8.server.db.sql.functions.fts.TsLike;
-import org.zenframework.z8.server.db.sql.functions.fts.TsRank;
 import org.zenframework.z8.server.db.sql.functions.string.GetJson;
 import org.zenframework.z8.server.db.sql.functions.string.IndexOf;
 import org.zenframework.z8.server.db.sql.functions.string.IsEmpty;
@@ -194,7 +194,7 @@ public class sql_string extends sql_primary {
 	}
 
 	public sql_bool z8_tsLike(sql_string query, FtsConfig.CLASS<? extends FtsConfig> config) {
-		return new sql_bool(new TsLike(new ToTsVector(this, config.get()), new ToTsQuery(query, config.get())));
+		return new sql_bool(new TsLike(new TsVector(this, config.get()), new TsQuery(query, config.get())));
 	}
 
 	public sql_decimal z8_tsRank(sql_string query) {
@@ -202,7 +202,7 @@ public class sql_string extends sql_primary {
 	}
 
 	public sql_decimal z8_tsRank(sql_string query, FtsConfig.CLASS<? extends FtsConfig> config) {
-		return new sql_decimal(new TsRank(new ToTsVector(this, config.get()), new ToTsQuery(query, config.get()), config.get()));
+		return new sql_decimal(new TsRank(new TsVector(this, config.get()), new TsQuery(query, config.get()), config.get()));
 	}
 
 	/* *** Operators *** */

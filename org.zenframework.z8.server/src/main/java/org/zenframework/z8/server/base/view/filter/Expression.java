@@ -7,6 +7,8 @@ import org.zenframework.z8.server.base.query.Query;
 import org.zenframework.z8.server.base.table.value.Field;
 import org.zenframework.z8.server.base.table.value.GeometryExpression;
 import org.zenframework.z8.server.base.table.value.GeometryField;
+import org.zenframework.z8.server.base.table.value.StringExpression;
+import org.zenframework.z8.server.base.table.value.StringField;
 import org.zenframework.z8.server.db.FieldType;
 import org.zenframework.z8.server.db.sql.SqlField;
 import org.zenframework.z8.server.db.sql.SqlToken;
@@ -16,6 +18,10 @@ import org.zenframework.z8.server.db.sql.expressions.Operation;
 import org.zenframework.z8.server.db.sql.expressions.Or;
 import org.zenframework.z8.server.db.sql.expressions.Rel;
 import org.zenframework.z8.server.db.sql.expressions.Unary;
+import org.zenframework.z8.server.db.sql.fts.FtsConfig;
+import org.zenframework.z8.server.db.sql.fts.TsLike;
+import org.zenframework.z8.server.db.sql.fts.TsQuery;
+import org.zenframework.z8.server.db.sql.fts.TsVector;
 import org.zenframework.z8.server.db.sql.functions.IsNull;
 import org.zenframework.z8.server.db.sql.functions.conversion.GuidToString;
 import org.zenframework.z8.server.db.sql.functions.string.Like;
@@ -282,6 +288,19 @@ public class Expression implements IFilter {
 				field = operation == Operation.Eq || operation == Operation.NotEq ? new Lower(this.field) : new SqlField(this.field);
 				sql_string string = new sql_string(operation == Operation.Eq || operation == Operation.NotEq ? value.toLowerCase() : value);
 				return new Rel(field, operation, string);
+			case IsSimilarTo:
+			case IsNotSimilarTo:
+				FtsConfig ftsConfig;
+				if (this.field instanceof StringField)
+					ftsConfig = ((StringField) this.field).ftsConfig.get();
+				else if (this.field instanceof StringExpression)
+					ftsConfig = ((StringExpression) this.field).ftsConfig.get();
+				else
+					throw new IllegalArgumentException("Full text search: unsupported field type " + this.field.type());
+				token = new TsLike(new TsVector(field, ftsConfig), new TsQuery(new sql_string(value), ftsConfig));
+				if (operation == Operation.IsNotSimilarTo)
+					token = new Unary(Operation.Not, token);
+				return token;
 			case IsEmpty:
 				return new Rel(field, Operation.Eq, new sql_string());
 			case IsNotEmpty:

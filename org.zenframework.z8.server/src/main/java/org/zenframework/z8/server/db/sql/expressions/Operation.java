@@ -26,6 +26,8 @@ public enum Operation {
 	NotContains(Names.NotContains),
 	ContainsWord(Names.ContainsWord),
 	NotContainsWord(Names.NotContainsWord),
+	IsSimilarTo(Names.IsSimilarTo),
+	IsNotSimilarTo(Names.IsNotSimilarTo),
 	IsEmpty(Names.IsEmpty),
 	IsNotEmpty(Names.IsNotEmpty),
 
@@ -80,6 +82,8 @@ public enum Operation {
 		static protected final String NotContains = "notContains";
 		static protected final String ContainsWord = "containsWord";
 		static protected final String NotContainsWord = "notContainsWord";
+		static protected final String IsSimilarTo = "isSimilarTo";
+		static protected final String IsNotSimilarTo = "isNotSimilarTo";
 		static protected final String IsEmpty = "isEmpty";
 		static protected final String IsNotEmpty = "isNotEmpty";
 
