@@ -14,6 +14,11 @@ import org.zenframework.z8.server.db.sql.functions.conversion.IsNumericString;
 import org.zenframework.z8.server.db.sql.functions.conversion.StringToInt;
 import org.zenframework.z8.server.db.sql.functions.conversion.ToDate;
 import org.zenframework.z8.server.db.sql.functions.conversion.ToDecimal;
+import org.zenframework.z8.server.db.sql.functions.fts.FtsConfig;
+import org.zenframework.z8.server.db.sql.functions.fts.ToTsQuery;
+import org.zenframework.z8.server.db.sql.functions.fts.ToTsVector;
+import org.zenframework.z8.server.db.sql.functions.fts.TsLike;
+import org.zenframework.z8.server.db.sql.functions.fts.TsRank;
 import org.zenframework.z8.server.db.sql.functions.string.GetJson;
 import org.zenframework.z8.server.db.sql.functions.string.IndexOf;
 import org.zenframework.z8.server.db.sql.functions.string.IsEmpty;
@@ -181,6 +186,26 @@ public class sql_string extends sql_primary {
 	public sql_integer z8_count() {
 		return new sql_integer(new Count(this));
 	}
+
+	/* *** FTS *** */
+
+	public sql_bool z8_tsLike(sql_string query) {
+		return z8_tsLike(query, FtsConfig.Default);
+	}
+
+	public sql_bool z8_tsLike(sql_string query, FtsConfig.CLASS<? extends FtsConfig> config) {
+		return new sql_bool(new TsLike(new ToTsVector(this, config.get()), new ToTsQuery(query, config.get())));
+	}
+
+	public sql_decimal z8_tsRank(sql_string query) {
+		return z8_tsRank(query, FtsConfig.Default);
+	}
+
+	public sql_decimal z8_tsRank(sql_string query, FtsConfig.CLASS<? extends FtsConfig> config) {
+		return new sql_decimal(new TsRank(new ToTsVector(this, config.get()), new ToTsQuery(query, config.get()), config.get()));
+	}
+
+	/* *** Operators *** */
 
 	public sql_string operatorPriority() {
 		return new sql_string(new Group(this));
