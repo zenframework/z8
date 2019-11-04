@@ -31,7 +31,7 @@ public class Dashboard extends RequestTarget {
 
 	@Override
 	public void writeResponse(JsonWriter writer) {
-		boolean isLogin = Json.login.equals(ApplicationServer.getRequest().id());
+		boolean isLogin = Json.login.get().equals(ApplicationServer.getRequest().id());
 
 		String newPassword = getParameter(Json.newPassword);
 		String password = getParameter(Json.password);

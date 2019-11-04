@@ -88,7 +88,7 @@ public class RequestDispatcher implements Runnable {
 
 			processRequest(request, response, requestId);
 
-			if(!Json.login.equals(requestId) && !Json.settings.equals(requestId))
+			if(!Json.login.get().equals(requestId) && !Json.settings.get().equals(requestId))
 				Trace.logEvent(request.toString() + "\n\t " + (System.currentTimeMillis() - t) + "ms; " + getMemoryUsage());
 		}
 	}
@@ -101,10 +101,10 @@ public class RequestDispatcher implements Runnable {
 	}
 
 	private void processRequest(IRequest request, IResponse response, String requestId) throws Throwable {
-		if(Json.login.equals(requestId)) {
+		if(Json.login.get().equals(requestId)) {
 			Dashboard dashboard = new Dashboard();
 			dashboard.processRequest(response);
-		} else if(Json.settings.equals(requestId)) {
+		} else if(Json.settings.get().equals(requestId)) {
 			IUser user = ApplicationServer.getUser();
 			user.setSettings(request.getParameter(Json.data));
 

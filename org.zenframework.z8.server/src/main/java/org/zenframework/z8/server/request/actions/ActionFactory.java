@@ -164,7 +164,7 @@ public class ActionFactory {
 			JsonObject object = array.getJsonObject(index);
 
 			Field field = query.findFieldById(object.getString(Json.property));
-			String dir = object.containsKey(Json.direction) ? object.getString(Json.direction) : null;
+			String dir = object.containsKey(Json.direction.get()) ? object.getString(Json.direction) : null;
 
 			if(field != null) {
 				field.sortDirection = dir != null ? SortDirection.fromString(dir) : SortDirection.Asc;

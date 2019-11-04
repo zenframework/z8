@@ -88,6 +88,7 @@ abstract public class HubServer extends RmiServer implements IHubServer {
 		saveServers();
 	}
 
+	@SuppressWarnings("unlikely-arg-type")
 	protected IServerInfo findServer(IApplicationServer server) {
 		for(IServerInfo existing : getServers()) {
 			if(existing.equals(server))

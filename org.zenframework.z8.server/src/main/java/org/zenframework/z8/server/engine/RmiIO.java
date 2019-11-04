@@ -40,6 +40,7 @@ import org.zenframework.z8.server.utils.StringUtils;
 
 import sun.rmi.transport.LiveRef;
 
+@SuppressWarnings("restriction")
 public class RmiIO extends ObjectIO {
 	static private Map<String, Constructor<?>> constructors = Collections.synchronizedMap(new HashMap<String, Constructor<?>>());
 	static private Map<String, Class<?>> classes = Collections.synchronizedMap(new HashMap<String, Class<?>>());

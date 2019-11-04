@@ -10,6 +10,7 @@ import org.zenframework.z8.server.utils.ProxyUtils;
 import sun.rmi.transport.LiveRef;
 import sun.rmi.transport.tcp.TCPEndpoint;
 
+@SuppressWarnings("restriction")
 public class Rmi {
 
 	static public String localhost = TCPEndpoint.getLocalEndpoint(0).getHost();

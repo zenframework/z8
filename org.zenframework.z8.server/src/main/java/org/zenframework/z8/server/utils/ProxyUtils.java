@@ -11,6 +11,7 @@ import sun.rmi.server.UnicastRef;
 import sun.rmi.transport.LiveRef;
 import sun.rmi.transport.tcp.TCPEndpoint;
 
+@SuppressWarnings("restriction")
 public class ProxyUtils {
 	static public Proxy getProxy(IServer server) {
 		return server instanceof Proxy ? (Proxy)server : ((RmiServer)server).proxy();
