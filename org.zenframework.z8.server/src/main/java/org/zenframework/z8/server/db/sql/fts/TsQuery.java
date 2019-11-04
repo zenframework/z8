@@ -7,6 +7,7 @@ import org.zenframework.z8.server.db.DatabaseVendor;
 import org.zenframework.z8.server.db.FieldType;
 import org.zenframework.z8.server.db.sql.FormatOptions;
 import org.zenframework.z8.server.db.sql.SqlToken;
+import org.zenframework.z8.server.db.sql.functions.conversion.ToString;
 import org.zenframework.z8.server.exceptions.db.UnknownDatabaseException;
 
 public class TsQuery extends SqlToken {
@@ -42,7 +43,7 @@ public class TsQuery extends SqlToken {
 			str.append("to_tsquery(");
 			if (config.config != null)
 				str.append('\'').append(config.config.get()).append("', ");
-			str.append(string.format(vendor, options, logicalContext)).append(')');
+			str.append(new ToString(string).format(vendor, options, logicalContext)).append(')');
 		} else
 			throw new UnknownDatabaseException();
 

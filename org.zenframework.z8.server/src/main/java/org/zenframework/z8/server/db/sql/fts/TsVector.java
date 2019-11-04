@@ -7,6 +7,7 @@ import org.zenframework.z8.server.db.DatabaseVendor;
 import org.zenframework.z8.server.db.FieldType;
 import org.zenframework.z8.server.db.sql.FormatOptions;
 import org.zenframework.z8.server.db.sql.SqlToken;
+import org.zenframework.z8.server.db.sql.functions.conversion.ToString;
 import org.zenframework.z8.server.exceptions.db.UnknownDatabaseException;
 
 public class TsVector extends SqlToken {
@@ -31,7 +32,7 @@ public class TsVector extends SqlToken {
 			str.append("to_tsvector(");
 			if (config.config != null)
 				str.append('\'').append(config).append("', ");
-			str.append(string.format(vendor, options, logicalContext)).append(')');
+			str.append(new ToString(string).format(vendor, options, logicalContext)).append(')');
 		} else
 			throw new UnknownDatabaseException();
 

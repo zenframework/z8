@@ -1,10 +1,27 @@
 [native "org.zenframework.z8.server.db.sql.fts.FtsConfig"]
 public class FtsConfig {
 
+	// Нормализация: допустимо складывать значения флагов
+
+	// (по умолчанию): длина документа не учитывается
+	public static final int NormDefault = 0;
+	// ранг документа делится на 1 + логарифм длины документа
+	public static final int NormLenLog = 1;
+	// ранг документа делится на его длину
+	public static final int NormLen = 2;
+	// ранг документа делится на среднее гармоническое расстояние между блоками (это реализовано только в ts_rank_cd)
+	public static final int NormHarmonic = 4;
+	// ранг документа делится на число уникальных слов в документе
+	public static final int NormUniqueWords = 8;
+	// ранг документа делится на 1 + логарифм числа уникальных слов в документе
+	public static final int NormUniqueWordsLog = 16;
+	// ранг делится своё же значение + 1
+	public static final integer NormDivSelf = 32;
+
 	public string config;
 	public FtsQueryType queryType = FtsQueryType.Default;
 	public decimal[] weight;
-	public int normalization = 0;
+	public int normalization = 10;
 	public bool coatingDensity = false;
 
 }
