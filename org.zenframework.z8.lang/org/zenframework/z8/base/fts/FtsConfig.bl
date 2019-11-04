@@ -16,12 +16,12 @@ public class FtsConfig {
 	// ранг документа делится на 1 + логарифм числа уникальных слов в документе
 	public static final int NormUniqueWordsLog = 16;
 	// ранг делится своё же значение + 1
-	public static final integer NormDivSelf = 32;
+	public static final int NormDivSelf = 32;
 
 	public string config;
 	public FtsQueryType queryType = FtsQueryType.Default;
 	public decimal[] weight;
-	public int normalization = 10;
+	public int normalization = NormDefault;
 	public bool coatingDensity = false;
 
 }

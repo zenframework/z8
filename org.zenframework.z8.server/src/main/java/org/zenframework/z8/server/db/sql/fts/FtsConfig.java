@@ -46,7 +46,7 @@ public class FtsConfig extends OBJECT {
 	public FtsQueryType queryType = FtsQueryType.Plain;
 	@SuppressWarnings("rawtypes")
 	public RCollection weight = null;
-	public integer normalization = new integer(10);
+	public integer normalization = new integer(0);
 	public bool coatingDensity = bool.False;
 
 }
