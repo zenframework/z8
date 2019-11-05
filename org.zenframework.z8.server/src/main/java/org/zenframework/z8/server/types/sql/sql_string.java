@@ -6,7 +6,7 @@ import org.zenframework.z8.server.db.sql.expressions.Add;
 import org.zenframework.z8.server.db.sql.expressions.Group;
 import org.zenframework.z8.server.db.sql.expressions.Operation;
 import org.zenframework.z8.server.db.sql.expressions.Rel;
-import org.zenframework.z8.server.db.sql.fts.FtsConfig;
+import org.zenframework.z8.server.db.sql.fts.Fts;
 import org.zenframework.z8.server.db.sql.fts.TsLike;
 import org.zenframework.z8.server.db.sql.fts.TsQuery;
 import org.zenframework.z8.server.db.sql.fts.TsRank;
@@ -189,19 +189,19 @@ public class sql_string extends sql_primary {
 
 	/* *** FTS *** */
 
-	public sql_bool z8_tsLike(sql_string query) {
-		return z8_tsLike(query, FtsConfig.Default);
+	public sql_bool z8_ftsLike(sql_string query) {
+		return z8_ftsLike(query, new Fts.CLASS<Fts>(null));
 	}
 
-	public sql_bool z8_tsLike(sql_string query, FtsConfig.CLASS<? extends FtsConfig> config) {
+	public sql_bool z8_ftsLike(sql_string query, Fts.CLASS<? extends Fts> config) {
 		return new sql_bool(new TsLike(new TsVector(this, config.get()), new TsQuery(query, config.get())));
 	}
 
-	public sql_decimal z8_tsRank(sql_string query) {
-		return z8_tsRank(query, FtsConfig.Default);
+	public sql_decimal z8_ftsRank(sql_string query) {
+		return z8_ftsRank(query, new Fts.CLASS<Fts>(null));
 	}
 
-	public sql_decimal z8_tsRank(sql_string query, FtsConfig.CLASS<? extends FtsConfig> config) {
+	public sql_decimal z8_ftsRank(sql_string query, Fts.CLASS<? extends Fts> config) {
 		return new sql_decimal(new TsRank(new TsVector(this, config.get()), new TsQuery(query, config.get()), config.get()));
 	}
 

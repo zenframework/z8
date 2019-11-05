@@ -1,4 +1,4 @@
-import org.zenframework.z8.base.fts.FtsConfig;
+import org.zenframework.z8.base.fts.Fts;
 
 [native "org.zenframework.z8.server.base.table.value.StringField"]
 public class StringField extends Field {
@@ -8,7 +8,7 @@ public class StringField extends Field {
 
 	public string defaultValue = "";
 
-	public FtsConfig ftsConfig;
+	public Fts fts;
 
 	virtual public string getDefault();
 	public void setDefault(string defaultValue);

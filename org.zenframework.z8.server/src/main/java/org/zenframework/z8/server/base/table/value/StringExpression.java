@@ -2,7 +2,7 @@ package org.zenframework.z8.server.base.table.value;
 
 import org.zenframework.z8.server.db.FieldType;
 import org.zenframework.z8.server.db.sql.SqlField;
-import org.zenframework.z8.server.db.sql.fts.FtsConfig;
+import org.zenframework.z8.server.db.sql.fts.Fts;
 import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.types.primary;
 import org.zenframework.z8.server.types.string;
@@ -28,7 +28,7 @@ public class StringExpression extends Expression {
 		aggregation = Aggregation.Max;
 	}
 
-	public FtsConfig.CLASS<? extends FtsConfig> ftsConfig = FtsConfig.Default;
+	public Fts.CLASS<? extends Fts> fts = new Fts.CLASS<Fts>(this);
 
 	@Override
 	public FieldType type() {

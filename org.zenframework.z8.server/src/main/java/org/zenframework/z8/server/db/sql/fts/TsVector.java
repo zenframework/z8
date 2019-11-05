@@ -12,9 +12,13 @@ import org.zenframework.z8.server.exceptions.db.UnknownDatabaseException;
 
 public class TsVector extends SqlToken {
 	private SqlToken string;
-	private FtsConfig config;
+	private Fts config;
 
-	public TsVector(SqlToken string, FtsConfig config) {
+	public TsVector(SqlToken string) {
+		this(string, null);
+	}
+
+	public TsVector(SqlToken string, Fts config) {
 		this.string = string;
 		this.config = config;
 	}
@@ -30,7 +34,7 @@ public class TsVector extends SqlToken {
 
 		if (vendor == DatabaseVendor.Postgres) {
 			str.append("to_tsvector(");
-			if (config.config != null)
+			if (config != null && config.configuration != null)
 				str.append('\'').append(config).append("', ");
 			str.append(new ToString(string).format(vendor, options, logicalContext)).append(')');
 		} else

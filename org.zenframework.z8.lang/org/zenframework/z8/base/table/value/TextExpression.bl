@@ -1,6 +1,10 @@
+import org.zenframework.z8.base.fts.Fts;
+
 [native "org.zenframework.z8.server.base.table.value.TextExpression"]
 public class TextExpression extends Expression {
 	public bool html = false;
+
+	public Fts fts;
 
 	public void setDefault(string defaultValue);
 

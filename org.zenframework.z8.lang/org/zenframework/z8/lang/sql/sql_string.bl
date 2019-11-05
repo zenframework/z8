@@ -1,4 +1,5 @@
-import org.zenframework.z8.base.fts.FtsConfig;
+import org.zenframework.z8.base.fts.Fts;
+
 [primary "org.zenframework.z8.server.types.sql.sql_string"]
 public final class sql_string extends sql_primary {
 	public operator ();
@@ -57,9 +58,9 @@ public final class sql_string extends sql_primary {
 	public sql_string json(sql_string name);
 	public sql_string json(sql_int num);
 
-	public sql_bool tsLike(sql_string query);
-	public sql_bool tsLike(sql_string query, FtsConfig config);
-	public sql_decimal tsRank(sql_string query);
-	public sql_decimal tsRank(sql_string query, FtsConfig config);
+	public sql_bool ftsLike(sql_string query);
+	public sql_bool ftsLike(sql_string query, Fts fts);
+	public sql_decimal ftsRank(sql_string query);
+	public sql_decimal ftsRank(sql_string query, Fts fts);
 
 }

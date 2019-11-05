@@ -12,9 +12,13 @@ import org.zenframework.z8.server.exceptions.db.UnknownDatabaseException;
 public class TsRank extends SqlToken {
 	private SqlToken tsvector;
 	private SqlToken tsquery;
-	private FtsConfig config;
+	private Fts config;
 
-	public TsRank(SqlToken tsvector, SqlToken tsquery, FtsConfig config) {
+	public TsRank(SqlToken tsvector, SqlToken tsquery) {
+		this(tsvector, tsquery, null);
+	}
+
+	public TsRank(SqlToken tsvector, SqlToken tsquery, Fts config) {
 		this.tsvector = tsvector;
 		this.tsquery = tsquery;
 		this.config = config;
@@ -32,10 +36,10 @@ public class TsRank extends SqlToken {
 
 		if (vendor == DatabaseVendor.Postgres) {
 			str.append("ts_rank");
-			if (config.coatingDensity.get())
+			if (config != null && config.coatingDensity.get())
 				str.append("_cd");
 			str.append('(');
-			if (config.weight != null && !config.weight.isEmpty()) {
+			if (config != null && config.weight != null && !config.weight.isEmpty()) {
 				str.append('{').append(config.weight.get(0));
 				for (int i = 1; i < config.weight.size(); i++)
 					str.append(", ").append(config.weight.get(i));
@@ -43,7 +47,7 @@ public class TsRank extends SqlToken {
 			}
 			str.append(tsvector.format(vendor, options, logicalContext)).append(", ");
 			str.append(tsquery.format(vendor, options, logicalContext)).append(", ");
-			str.append(config.normalization.getInt()).append(')');
+			str.append(config != null ? config.normalization.getInt() : Fts.NormDefault).append(')');
 		} else
 			throw new UnknownDatabaseException();
 

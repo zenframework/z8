@@ -13,9 +13,13 @@ import org.zenframework.z8.server.exceptions.db.UnknownDatabaseException;
 public class TsQuery extends SqlToken {
 
 	private SqlToken string;
-	private FtsConfig config;
+	private Fts config;
 
-	public TsQuery(SqlToken string, FtsConfig config) {
+	public TsQuery(SqlToken string) {
+		this(string, null);
+	}
+
+	public TsQuery(SqlToken string, Fts config) {
 		this.string = string;
 		this.config = config;
 	}
@@ -30,19 +34,21 @@ public class TsQuery extends SqlToken {
 		StringBuilder str = new StringBuilder(1024);
 
 		if (vendor == DatabaseVendor.Postgres) {
-			switch(config.queryType) {
-			case Phrase:
-				str.append("phrase");
-				break;
-			case Plain:
-				str.append("plain");
-				break;
-			case Default:
-				break;
+			if (config != null) {
+				switch(config.queryType) {
+				case Phrase:
+					str.append("phrase");
+					break;
+				case Plain:
+					str.append("plain");
+					break;
+				case Default:
+					break;
+				}
 			}
 			str.append("to_tsquery(");
-			if (config.config != null)
-				str.append('\'').append(config.config.get()).append("', ");
+			if (config != null && config.configuration != null)
+				str.append('\'').append(config.configuration.get()).append("', ");
 			str.append(new ToString(string).format(vendor, options, logicalContext)).append(')');
 		} else
 			throw new UnknownDatabaseException();

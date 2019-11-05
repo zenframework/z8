@@ -7,17 +7,17 @@ import org.zenframework.z8.server.types.bool;
 import org.zenframework.z8.server.types.integer;
 import org.zenframework.z8.server.types.string;
 
-public class FtsConfig extends OBJECT {
+public class Fts extends OBJECT {
 
-	public static class CLASS<T extends FtsConfig> extends OBJECT.CLASS<T> {
+	public static class CLASS<T extends Fts> extends OBJECT.CLASS<T> {
 		public CLASS(IObject container) {
 			super(container);
-			setJavaClass(FtsConfig.class);
+			setJavaClass(Fts.class);
 		}
 
 		@Override
 		public Object newObject(IObject container) {
-			return new FtsConfig(container);
+			return new Fts(container);
 		}
 	}
 
@@ -36,13 +36,11 @@ public class FtsConfig extends OBJECT {
 	// ранг делится своё же значение + 1
 	public static final integer NormDivSelf = new integer(32);
 
-	public static final FtsConfig.CLASS<FtsConfig> Default = new FtsConfig.CLASS<FtsConfig>(null);
-
-	public FtsConfig(IObject container) {
+	public Fts(IObject container) {
 		super(container);
 	}
 
-	public string config = null;
+	public string configuration = null;
 	public FtsQueryType queryType = FtsQueryType.Plain;
 	@SuppressWarnings("rawtypes")
 	public RCollection weight = null;

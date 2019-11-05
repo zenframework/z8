@@ -1,5 +1,5 @@
-[native "org.zenframework.z8.server.db.sql.fts.FtsConfig"]
-public class FtsConfig {
+[native "org.zenframework.z8.server.db.sql.fts.Fts"]
+public class Fts {
 
 	// Нормализация: допустимо складывать значения флагов
 
@@ -18,7 +18,7 @@ public class FtsConfig {
 	// ранг делится своё же значение + 1
 	public static final int NormDivSelf = 32;
 
-	public string config;
+	public string configuration;
 	public FtsQueryType queryType = FtsQueryType.Default;
 	public decimal[] weight;
 	public int normalization = NormDefault;
