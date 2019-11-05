@@ -54,7 +54,7 @@ public class ApplicationServerProxy implements IApplicationServer {
 	}
 
 	@Override
-	public file download(file file) throws RemoteException, IOException {
+	public file download(ISession session, GNode request, file file) throws RemoteException, IOException {
 		throw new UnsupportedOperationException();
 	}
 

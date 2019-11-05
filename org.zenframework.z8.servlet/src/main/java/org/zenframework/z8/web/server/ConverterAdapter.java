@@ -15,8 +15,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.zenframework.z8.server.base.file.Folders;
+import org.zenframework.z8.server.base.xml.GNode;
 import org.zenframework.z8.server.converter.FileConverter;
-import org.zenframework.z8.server.engine.IServerInfo;
 import org.zenframework.z8.server.engine.ISession;
 import org.zenframework.z8.server.json.Json;
 import org.zenframework.z8.server.types.encoding;
@@ -58,18 +58,30 @@ public class ConverterAdapter extends Adapter {
 		File absolutePath = new File(super.getServlet().getServletPath(), requestUrl);
 
 		boolean preview = parameters.containsKey(Json.preview.get());
-		boolean reset = parameters.containsKey(Json.reset.get());
+		boolean noCache = parameters.containsKey(Json.noCache.get());
 
 		file file = null;
 
-		if (reset && absolutePath.exists())
-			absolutePath.delete();
-		if(!absolutePath.exists()) {
+		if(noCache || !absolutePath.exists()) {
 			file = new file();
 			file.path = new string(relativePath.toString());
 			file.name = new string(relativePath.getName());
 			file.id = new guid(parameters.get(Json.id.get()));
-			file = downloadFile(session.getServerInfo(), file, absolutePath);
+
+			file = session.getServerInfo().getServer().download(session, new GNode(parameters, files), file);
+
+			/*
+			 * The storage folder may be shared between servlet and application
+			 * server, so the previuos call could already put a copy of the file
+			 * there
+			 */
+
+			if(!absolutePath.exists()) {
+				InputStream in = file == null ? null : file.getInputStream();
+				if(in == null)
+					throw new IOException("File '" + file.name.get() + "' does not exist");
+				IOUtils.copy(in, absolutePath);
+			}
 		}
 
 		if(preview) {
@@ -102,26 +114,6 @@ public class ConverterAdapter extends Adapter {
 		}
 
 		return contentType;
-	}
-
-	private file downloadFile(IServerInfo serverInfo, file file, File path) throws IOException {
-		file = serverInfo.getServer().download(file);
-
-		/*
-		 * The storage folder may be shared between servlet and application
-		 * server, so the previuos call could already put a copy of the file
-		 * there
-		 */
-
-		if(!path.exists()) {
-			InputStream in = file == null ? null : file.getInputStream();
-			if(in != null)
-				IOUtils.copy(in, path);
-			else
-				throw new IOException("File '" + file.name.get() + "' does not exist");
-		}
-
-		return file;
 	}
 
 	private String getContentDisposition(HttpServletRequest request, String fileName) throws UnsupportedEncodingException {

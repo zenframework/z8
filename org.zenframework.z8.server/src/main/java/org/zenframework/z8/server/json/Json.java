@@ -164,7 +164,7 @@ public interface Json {
 	static public string report = new string("report");
 	static public string options = new string("options");
 	static public string preview = new string("preview");
-	static public string reset = new string("reset");
+	static public string noCache = new string("noCache");
 
 	static public string pageFormat = new string("pageFormat");
 	static public string pageOrientation = new string("pageOrientation");

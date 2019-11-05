@@ -142,10 +142,12 @@ public class ApplicationServer extends RmiServer implements IApplicationServer {
 	}
 
 	@Override
-	public file download(file file) throws IOException {
+	public file download(ISession session, GNode node, file file) throws IOException {
+		setRequest(new Request(node.getAttributes(), node.getFiles(), session));
 		try {
 			return FileHandlers.getFileHandler(file).getFile(file);
 		} finally {
+			setRequest(null);
 			ConnectionManager.release();
 		}
 	}
