@@ -1,15 +1,12 @@
 package org.zenframework.z8.server.base.file;
 
 import java.io.IOException;
-import java.util.Map;
 
 import org.zenframework.z8.server.file.IFileHandler;
 import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.runtime.OBJECT;
-import org.zenframework.z8.server.runtime.RLinkedHashMap;
 import org.zenframework.z8.server.types.bool;
 import org.zenframework.z8.server.types.file;
-import org.zenframework.z8.server.types.string;
 
 public class FileHandler extends OBJECT implements IFileHandler {
 
@@ -41,23 +38,15 @@ public class FileHandler extends OBJECT implements IFileHandler {
 	}
 
 	@Override
-	public file getFile(file file, Map<String, String> parameters) throws IOException {
-		return z8_getFile(file, toRLinkedHashMap(parameters));
+	public file getFile(file file) throws IOException {
+		return z8_getFile(file);
 	}
 
 	public bool z8_canHandleRequest(file file) {
 		return bool.False;
 	}
 
-	@SuppressWarnings("rawtypes")
-	public file z8_getFile(file file, RLinkedHashMap parameters) {
+	public file z8_getFile(file file) {
 		return file;
-	}
-
-	private static RLinkedHashMap<string, string> toRLinkedHashMap(Map<String, String> parameters) {
-		RLinkedHashMap<string, string> result = new RLinkedHashMap<string, string>();
-		for (Map.Entry<String, String> entry : parameters.entrySet())
-			result.put(new string(entry.getKey()), new string(entry.getValue()));
-		return result;
 	}
 }

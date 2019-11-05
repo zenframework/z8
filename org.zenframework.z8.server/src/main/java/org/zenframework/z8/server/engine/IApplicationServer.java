@@ -2,7 +2,6 @@ package org.zenframework.z8.server.engine;
 
 import java.io.IOException;
 import java.rmi.RemoteException;
-import java.util.Map;
 
 import org.zenframework.z8.server.base.xml.GNode;
 import org.zenframework.z8.server.ie.Message;
@@ -12,7 +11,7 @@ import org.zenframework.z8.server.types.file;
 public interface IApplicationServer extends IServer {
 	public GNode processRequest(ISession session, GNode request) throws RemoteException;
 
-	public file download(file file, Map<String, String> parameters) throws RemoteException, IOException;
+	public file download(file file) throws RemoteException, IOException;
 
 	public IUser user(String login, String password, boolean createIfNotExists) throws RemoteException;
 

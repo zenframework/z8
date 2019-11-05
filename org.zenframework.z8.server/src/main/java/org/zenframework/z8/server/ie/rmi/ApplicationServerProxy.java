@@ -2,7 +2,6 @@ package org.zenframework.z8.server.ie.rmi;
 
 import java.io.IOException;
 import java.rmi.RemoteException;
-import java.util.Map;
 
 import org.zenframework.z8.server.base.xml.GNode;
 import org.zenframework.z8.server.config.ServerConfig;
@@ -55,7 +54,7 @@ public class ApplicationServerProxy implements IApplicationServer {
 	}
 
 	@Override
-	public file download(file file, Map<String, String> parameters) throws RemoteException, IOException {
+	public file download(file file) throws RemoteException, IOException {
 		throw new UnsupportedOperationException();
 	}
 

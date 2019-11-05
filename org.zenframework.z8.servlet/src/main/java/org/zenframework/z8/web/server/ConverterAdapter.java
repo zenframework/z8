@@ -69,7 +69,7 @@ public class ConverterAdapter extends Adapter {
 			file.path = new string(relativePath.toString());
 			file.name = new string(relativePath.getName());
 			file.id = new guid(parameters.get(Json.id.get()));
-			file = downloadFile(session.getServerInfo(), file, absolutePath, parameters);
+			file = downloadFile(session.getServerInfo(), file, absolutePath);
 		}
 
 		if(preview) {
@@ -104,8 +104,8 @@ public class ConverterAdapter extends Adapter {
 		return contentType;
 	}
 
-	private file downloadFile(IServerInfo serverInfo, file file, File path, Map<String, String> parameters) throws IOException {
-		file = serverInfo.getServer().download(file, parameters);
+	private file downloadFile(IServerInfo serverInfo, file file, File path) throws IOException {
+		file = serverInfo.getServer().download(file);
 
 		/*
 		 * The storage folder may be shared between servlet and application
