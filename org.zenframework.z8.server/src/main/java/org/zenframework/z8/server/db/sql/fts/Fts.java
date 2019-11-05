@@ -1,5 +1,6 @@
 package org.zenframework.z8.server.db.sql.fts;
 
+import org.zenframework.z8.server.config.ServerConfig;
 import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.runtime.OBJECT;
 import org.zenframework.z8.server.runtime.RCollection;
@@ -40,11 +41,15 @@ public class Fts extends OBJECT {
 		super(container);
 	}
 
-	public string configuration = null;
+	public string configuration = defaultFtsConfiguration();
 	public FtsQueryType queryType = FtsQueryType.Plain;
 	@SuppressWarnings("rawtypes")
 	public RCollection weight = null;
 	public integer normalization = new integer(0);
 	public bool coatingDensity = bool.False;
 
+	private static string defaultFtsConfiguration() {
+		String ftsConfiguration = ServerConfig.ftsConfiguration();
+		return ftsConfiguration != null ? new string(ftsConfiguration) : null;
+	}
 }

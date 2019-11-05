@@ -35,7 +35,7 @@ public class TsVector extends SqlToken {
 		if (vendor == DatabaseVendor.Postgres) {
 			str.append("to_tsvector(");
 			if (config != null && config.configuration != null)
-				str.append('\'').append(config).append("', ");
+				str.append('\'').append(config.configuration.get()).append("', ");
 			str.append(new ToString(string).format(vendor, options, logicalContext)).append(')');
 		} else
 			throw new UnknownDatabaseException();

@@ -71,6 +71,8 @@ public class ServerConfig extends Properties {
 	static final private String LdapUsersIgnore = "ldap.users.ignore";
 	static final private String LdapUsersCreateOnSuccessfulLogin = "ldap.users.createOnSuccessfulLogin";
 
+	static final private String FtsConfiguration = "fts.configuration";
+
 	static private File workingPath;
 
 	static private String instanceId;
@@ -116,6 +118,8 @@ public class ServerConfig extends Properties {
 	static private String ldapDefaultDomain;
 	static private Collection<String> ldapUsersIgnore;
 	static private boolean ldapUsersCreateOnSuccessfulLogin;
+
+	static private String ftsConfiguration;
 
 	static private Database database;
 
@@ -188,6 +192,8 @@ public class ServerConfig extends Properties {
 		ldapDefaultDomain = getProperty(LdapDefaultDomain, "");
 		ldapUsersIgnore = StringUtils.asList(getProperty(LdapUsersIgnore, "Admin"), "\\,");
 		ldapUsersCreateOnSuccessfulLogin = Boolean.parseBoolean(getProperty(LdapUsersCreateOnSuccessfulLogin, "false"));
+
+		ftsConfiguration = getProperty(FtsConfiguration, (String) null);
 
 		instance = this;
 	}
@@ -438,6 +444,10 @@ public class ServerConfig extends Properties {
 		return ldapUsersCreateOnSuccessfulLogin;
 	}
 
+	static public String ftsConfiguration() {
+		return ftsConfiguration;
+	}
+	
 	static public Database database() {
 		if(database == null)
 			database = new Database(instance);
