@@ -77,6 +77,8 @@ public final class string extends primary {
 
 	public string toLowerCase();
 	public string toUpperCase();
+	public string firstToLowerCase();
+	public string firstToUpperCase();
 
 	public string format(primary[] frm); // {n} <=> [n]
 

@@ -470,6 +470,16 @@ public final class string extends primary {
 		return new string(get().toUpperCase());
 	}
 
+	public string z8_firstToLowerCase() {
+		String value = get();
+		return !value.isEmpty() ? new string(value.substring(0, 1).toLowerCase() + value.substring(1)) : this;
+	}
+
+	public string z8_firstToUpperCase() {
+		String value = get();
+		return !value.isEmpty() ? new string(value.substring(0, 1).toUpperCase() + value.substring(1)) : this;
+	}
+
 	public string z8_format(RCollection<primary> format) {
 		Object[] args = new Object[format.size()];
 		for (int i = 0; i < args.length; i++)
