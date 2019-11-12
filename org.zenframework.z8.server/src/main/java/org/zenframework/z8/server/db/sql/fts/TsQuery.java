@@ -42,7 +42,7 @@ public class TsQuery extends SqlToken {
 				case Plain:
 					str.append("plain");
 					break;
-				case Default:
+				case Query:
 					break;
 				}
 			}

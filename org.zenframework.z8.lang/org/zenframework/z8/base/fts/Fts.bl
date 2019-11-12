@@ -19,7 +19,7 @@ public class Fts {
 	public static final int NormDivSelf = 32;
 
 	public string configuration;
-	public FtsQueryType queryType = FtsQueryType.Default;
+	public FtsQueryType queryType = FtsQueryType.Plain;
 	public decimal[] weight;
 	public int normalization = NormDefault;
 	public bool coatingDensity = false;
