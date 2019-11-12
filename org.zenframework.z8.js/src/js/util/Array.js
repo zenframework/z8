@@ -1,3 +1,7 @@
+Array.appendCount = function(array, value, count) {
+	return count != 0 ?  array.concat(Array(count).fill(value)) : array;
+};
+
 Array.prototype.pushIf = function() {
 	for(var i = 0, length = arguments.length; i < length; i++) {
 		var element = arguments[i];

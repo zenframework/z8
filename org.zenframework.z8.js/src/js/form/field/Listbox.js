@@ -497,13 +497,13 @@ Z8.define('Z8.form.field.Listbox', {
 	controlMarkup: function() {
 		var list = this.list = this.createList();
 		list.on('select', this.onSelect, this);
+		list.on('check', this.onCheck, this);
 		list.on('follow', this.onFollow, this);
 		list.on('contentChange', this.onContentChange, this);
 		list.on('itemEditorChange', this.onItemEditorChange, this);
 		list.on('itemEdit', this.onItemEdit, this);
 		list.on('itemClick', this.onItemClick, this);
 		list.on('itemDblClick', this.onItemDblClick, this);
-		list.on('check', this.onItemCheck, this);
 		list.on('quickFilterShow', this.onQuickFilterShow, this);
 		list.on('quickFilterHide', this.onQuickFilterHide, this);
 		list.on('autoFit', this.onListAutoFit, this);
@@ -1165,8 +1165,14 @@ Z8.define('Z8.form.field.Listbox', {
 
 	},
 
-	onItemCheck: function(list, items) {
+	onCheck: function(list, items, checked) {
 		this.updateTools();
+
+		var records = [];
+		for(var i = 0, length = items.length; i < length; i++)
+			records.push(items[i].record);
+
+		this.fireEvent('check', this, records, checked);
 	},
 
 	onEdit: function(button) {

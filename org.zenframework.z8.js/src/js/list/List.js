@@ -1340,21 +1340,21 @@ Z8.define('Z8.list.List', {
 		header.setChecked(true);
 		this.setItemsChecked(true);
 
-		this.fireEvent('check', this, this.items);
+		this.fireEvent('check', this, this.items, true);
 		return true;
 	},
 
 	onCheckHeaderClick: function(header) {
 		var checked = header.toggleCheck();
 		this.setItemsChecked(checked);
-		this.fireEvent('check', this, checked ? this.items : []);
+		this.fireEvent('check', this, checked ? this.items : [], checked);
 	},
 
 	onItemCheck: function(item, checked) {
 		var header = this.checkHeader;
 		if(header.isChecked() && !checked)
 			header.setChecked(false);
-		this.fireEvent('check', this, [item]);
+		this.fireEvent('check', this, [item], checked);
 	},
 
 	updateChecks: function() {

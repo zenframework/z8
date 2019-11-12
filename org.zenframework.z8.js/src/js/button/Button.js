@@ -186,6 +186,10 @@ Z8.define('Z8.button.Button', {
 		return container != null && container.radio;
 	},
 
+	isToggled: function() {
+		return this.toggled;
+	},
+
 	setToggled: function(toggled, silent) {
 		this.toggle = true;
 		this.toggled = toggled;
