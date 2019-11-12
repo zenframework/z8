@@ -74,7 +74,7 @@ public class Request extends IRequest {
 		for(Map.Entry<string, string> entry : parameters.entrySet()) {
 			string key = entry.getKey();
 			if(!Json.data.equals(key) && !Json.request.equals(key)) {
-				String value = entry.getValue().get();
+				String value = left(entry.getValue().get(), 1000);
 				result += (result.isEmpty() ? "" : ", ") + key + "=" + (value != null ? value : "");
 			}
 		}
@@ -88,6 +88,10 @@ public class Request extends IRequest {
 			request = Json.retry + "(" + getParameter(Json.retry) + ")";
 
 		return request + "(" + hashCode() + ") = {" + result + "}";
+	}
+
+	private static String left(String value, int max) {
+		return value == null || value.length() <= max ? value : value.substring(0, max) + "...";
 	}
 
 	@Override
