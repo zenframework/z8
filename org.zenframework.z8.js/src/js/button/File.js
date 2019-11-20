@@ -10,7 +10,7 @@ Z8.define('Z8.button.File', {
 	completeRender: function() {
 		this.callParent();
 
-		var fileInput = this.fileInput = DOM.append(this, { tag: 'input', type: 'file', multiple: true });
+		var fileInput = this.fileInput = DOM.append(this, { tag: 'input', type: 'file', multiple: this.multiple !== false });
 		DOM.on(fileInput, 'change', this.onFileInputChange, this);
 	},
 

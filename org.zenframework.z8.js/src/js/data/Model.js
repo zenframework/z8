@@ -495,7 +495,7 @@ Z8.define('Z8.data.Model', {
 		var data = {
 			request: this.getName(),
 			action: 'attach',
-			recordId: this.id,
+			recordId: this.phantom ? guid.Null : this.id,
 			field: name,
 			fields: Model.getFieldNames(this.getFields()),
 			link: this.getLink(),

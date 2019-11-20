@@ -48,6 +48,8 @@ public class AttachAction extends RequestAction {
 
 		try {
 			connection.beginTransaction();
+			if(target.isNull())
+				target = processor.getTable().create();
 			processor.update(target, files);
 			connection.commit();
 

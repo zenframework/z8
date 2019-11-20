@@ -219,17 +219,17 @@ Z8.define('Z8.application.form.Navigator', {
 		var oneRecord = this.oneRecord;
 
 		if(!oneRecord && store.hasCreateAccess()) {
-			var add = this.addButton = new Z8.button.Button({ cls: 'btn-sm', icon: 'fa-file-o', tooltip: 'Новая запись', handler: this.addRecord, scope:this });
+			var add = this.addButton = new Z8.button.Button({ cls: 'btn-sm', icon: 'fa-file-o', tooltip: 'Новая запись', handler: this.addRecord, scope: this });
 			addCopyRefresh.push(add);
 		}
 
 		if(!oneRecord && store.hasCopyAccess()) {
-			var copy = this.copyButton = new Z8.button.Button({ cls: 'btn-sm', icon: 'fa-copy', tooltip: 'Копировать запись', handler: this.copyRecord, scope:this });
+			var copy = this.copyButton = new Z8.button.Button({ cls: 'btn-sm', icon: 'fa-copy', tooltip: 'Копировать запись', handler: this.copyRecord, scope: this });
 			addCopyRefresh.push(copy);
 		}
 
 		if(store.hasReadAccess()) {
-			var refresh = this.refreshButton =  new Z8.button.Button({ cls: 'btn-sm', icon: 'fa-refresh', tooltip: 'Обновить', handler: this.refreshRecords, scope:this });
+			var refresh = this.refreshButton =  new Z8.button.Button({ cls: 'btn-sm', icon: 'fa-refresh', tooltip: 'Обновить', handler: this.refreshRecords, scope: this });
 			addCopyRefresh.push(refresh);
 		}
 
@@ -243,7 +243,7 @@ Z8.define('Z8.application.form.Navigator', {
 			buttons.push(files);
 
 		if(store.hasDestroyAccess()) {
-			var remove = this.removeButton = new Z8.button.Button({ cls: 'btn-sm', danger: true, icon: 'fa-trash', tooltip: 'Удалить запись', handler: this.removeRecord, scope:this });
+			var remove = this.removeButton = new Z8.button.Button({ cls: 'btn-sm', danger: true, icon: 'fa-trash', tooltip: 'Удалить запись', handler: this.removeRecord, scope: this });
 			buttons.push(remove);
 		}
 
