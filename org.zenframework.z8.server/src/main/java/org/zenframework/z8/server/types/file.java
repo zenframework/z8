@@ -497,6 +497,11 @@ public class file extends primary implements RmiSerializable, Serializable {
 		this.name = new string(file.getName());
 	}
 
+	public bool z8_exists() {
+		File file = getAbsolutePath(path.get());
+		return new bool(file.exists());
+	}
+
 	public bool z8_isDirectory() {
 		File file = getAbsolutePath(path.get());
 		return new bool(file.isDirectory());

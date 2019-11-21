@@ -15,6 +15,7 @@ public class file extends primary {
 	*/
 	public void operator = (string path);
 
+	public bool exists();
 	public bool isDirectory();
 	public file[] listFiles();
 
