@@ -389,6 +389,12 @@ Z8.define('Z8.dom.Dom', {
 			dom.scrollTop = top;
 		},
 
+		scrollIntoView: function(dom) {
+			if((dom = DOM.get(dom)) == null || dom.focus == null)
+				return;
+			dom.scrollIntoView();
+		},
+
 		parseCls: function(cls) {
 			return (String.isString(cls) ? cls.toLowerCase().split(' ') : cls) || [];
 		},
