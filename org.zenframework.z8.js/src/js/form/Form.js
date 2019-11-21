@@ -25,7 +25,7 @@ Z8.define('Z8.form.Form', {
 	},
 
 	setReadOnly: function(readOnly) {
-		this.callParent(readOnly || this.record == null || !this.record.isEditable());
+		this.callParent(readOnly || (!this.topLevel && (this.record == null || !this.record.isEditable())));
 	},
 
 	initControls: function() {

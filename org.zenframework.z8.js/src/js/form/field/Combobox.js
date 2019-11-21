@@ -18,6 +18,7 @@ Z8.define('Z8.form.field.Combobox', {
 	lastQuery: '',
 
 	pagerMode: 'visible', // 'visible' || 'hidden'
+	clearTrigger: true,
 
 	initComponent: function() {
 		var store = this.store;
@@ -62,7 +63,7 @@ Z8.define('Z8.form.field.Combobox', {
 		if(this.source != null)
 			triggers.push({ icon: 'fa-pencil', tooltip: 'Редактировать \'' + this.source.text + '\'', handler: this.editSource, scope: this });
 
-		if(!this.isRequired())
+		if(!this.isRequired() && this.clearTrigger !== false)
 			triggers.push({ icon: 'fa-times', tooltip: 'Очистить', handler: this.clearValue, scope: this });
 
 		triggers.push({});
