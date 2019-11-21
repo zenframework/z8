@@ -11,7 +11,8 @@ Z8.define('Z8.data.HttpRequest', {
 		Timeout: 0,
 
 		status: {
-			AccessDenied: 401
+			AccessDenied: 401,
+			Success: 200
 		},
 
 		state: {
@@ -79,12 +80,16 @@ Z8.define('Z8.data.HttpRequest', {
 		xhr.send(this.encodeData(data));
 	},
 
-	get:function(url, callback) {
+	get: function(url, callback) {
 		this.callback = callback;
+		this.url = url;
 		this.isGet = true;
 
+		var url = HttpRequest.url(url);
+		url += (url.indexOf('?') == -1 ? '?' : '') + '&session=' + Application.session;
+
 		var xhr = this.xhr;
-		xhr.open('GET', HttpRequest.url(url), true);
+		xhr.open('GET', url, true);
 		xhr.timeout = 0;
 		xhr.setRequestHeader('Content-Type', HttpRequest.contentType.FormUrlEncoded);
 		xhr.send();
@@ -107,15 +112,15 @@ Z8.define('Z8.data.HttpRequest', {
 
 		var xhr = this.xhr;
 
-		if(this.isGet) {
-			Z8.callback(this.callback, { text: xhr.responseText }, xhr.status == 200);
+		if(this.isGet && xhr.status != HttpRequest.status.AccessDenied) {
+			Z8.callback(this.callback, { text: xhr.responseText }, xhr.status == HttpRequest.status.Success);
 			return;
 		}
 
 		var response = {};
 
 		try {
-			response =  JSON.decode(xhr.responseText);
+			response = JSON.decode(xhr.responseText);
 		} catch(exception) {
 			var messages = [{ time: new Date(), type: 'error', text: exception.message }];
 			response.info = { messages: messages };
@@ -147,7 +152,12 @@ Z8.define('Z8.data.HttpRequest', {
 	},
 
 	onRelogin: function() {
-		this.isUpload ? HttpRequest.upload(this.data, this.files, this.callback) : HttpRequest.send(this.data, this.callback);
+		if(this.isUpload)
+			HttpRequest.upload(this.data, this.files, this.callback);
+		else if(this.isGet)
+			HttpRequest.get(this.url, this.callback);
+		else
+			HttpRequest.send(this.data, this.callback);
 	},
 
 	onError: function(event) {

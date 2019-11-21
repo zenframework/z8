@@ -831,12 +831,14 @@ Z8.define('Z8.list.List', {
 
 		for(var i = 0, length = items.length; i < length; i++) {
 			var item = items[i];
-			if(item.isComponent) {
-				var value = item.getValue != null ? item.getValue() : null;
-				if(value != null)
-					ordinals[value] = i;
-				ordinals[item.getId()] = i;
-			}
+			if(!item.isComponent)
+				continue;
+
+			var value = item.getValue != null ? item.getValue() : null;
+			if(value != null)
+				ordinals[value] = i;
+
+			ordinals[item.getId()] = i;
 		}
 
 		return ordinals;
@@ -846,6 +848,31 @@ Z8.define('Z8.list.List', {
 		this.ordinals = null;
 	},
 
+	getTreeState: function() {
+		if(this.items == null || !this.isTree())
+			return null;
+
+		var state = {};
+		for(var i = 0, items = this.items, length = items.length; i < length; i++) {
+			var item = items[i];
+			state[item.record.id] = item.isCollapsed();
+		}
+
+		return state;
+	},
+
+	applyTreeState: function(state) {
+		if(state == null || this.items == null)
+			return;
+
+		for(var i = 0, items = this.items, length = items.length; i < length; i++) {
+			var item = items[i];
+			var collapsed = state[item.record.id];
+			if(collapsed != null)
+				item.collapsed = collapsed;
+		}
+	},
+	
 	getFields: function() {
 		return this.fields;
 	},
@@ -941,9 +968,12 @@ Z8.define('Z8.list.List', {
 		if(this.items == items)
 			return;
 
+		var treeState = this.getTreeState();
+
 		this.clear();
 		this.items = items;
 
+		this.applyTreeState(treeState);
 		this.resetOrdinals();
 
 		this.onContentChange();
@@ -1083,6 +1113,7 @@ Z8.define('Z8.list.List', {
 	activateItem: function(item, active) {
 		item.setActive(active);
 		item.setTabIndex(active ? 0 : -1);
+		this.expandParents(item);
 	},
 
 	selectItem: function(item, forceEvent) {
@@ -1462,6 +1493,18 @@ Z8.define('Z8.list.List', {
 			if(!parent.disposed)
 				parent.setHasChildren(this.getFirstChild(parent) != null);
 		}
+	},
+
+	expandParents: function(item) {
+		if(!this.isTree())
+			return;
+
+		var parent = this.getParent(item);
+		if(parent == null)
+			return;
+
+		parent.collapse(false);
+		this.expandParents(parent);
 	},
 
 	onItemCollapse: function(item, collapsed) {

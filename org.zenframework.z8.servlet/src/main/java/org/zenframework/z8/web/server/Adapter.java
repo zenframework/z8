@@ -175,6 +175,8 @@ public abstract class Adapter {
 
 	@SuppressWarnings("unchecked")
 	private void writeError(HttpServletResponse response, String errorText, int status) throws IOException {
+		response.setStatus(status);
+
 		JsonWriter writer = new JsonWriter();
 
 		if(errorText == null || errorText.isEmpty())

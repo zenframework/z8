@@ -724,10 +724,10 @@ Z8.define('Z8.dom.Dom', {
 			frame.src = encodeURI((window._DEBUG_ ? '/' : '') + url.replace(/\\/g, '/')) + '?&session=' + Application.session +
 				(id != null ? '&id=' + id : '') + (serverId != null ? '&serverId=' + serverId : '');
 
-			new Z8.util.DelayedTask().delay(500, DOM.downloadCallback, this, url, frame, callback);
+			new Z8.util.DelayedTask().delay(500, DOM.downloadCallback, this, url, id, serverId, frame, callback);
 		},
 
-		downloadCallback: function(url, frame, callback) {
+		downloadCallback: function(url, id, serverId, frame, callback) {
 			var document = frame.contentDocument;
 			var readyState = document.readyState;
 
@@ -736,6 +736,17 @@ Z8.define('Z8.dom.Dom', {
 				var success = Z8.isEmpty(response);
 				if(!success) {
 					response = response.charAt(0) == '{' ? JSON.decode(response) : { info: { messages: [{ text: '\'' + url + '\' - файл не найден', type: 'error' }] }};
+
+					if(response.status == HttpRequest.status.AccessDenied) {
+						var loginCallback = function() {
+							DOM.download(url, id, serverId, callback);
+						};
+	
+						Application.login({ fn: loginCallback, scope: this });
+						DOM.remove(frame);
+						return;
+					}
+	
 					Application.message(response.info.messages);
 				}
 				Z8.callback(callback, success);
