@@ -51,6 +51,9 @@ public final class sql_string extends sql_primary {
 
 	public sql_string replace(sql_string pattern, sql_string replacement);
 
+	public sql_string replaceAll(sql_string pattern, sql_string replacement);
+	public sql_string replaceAll(sql_string pattern, sql_string replacement, sql_string flags);
+
 	public sql_string substring(sql_int position, sql_int count);
 
 	public sql_string reverse();

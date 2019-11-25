@@ -31,6 +31,7 @@ import org.zenframework.z8.server.db.sql.functions.string.RPad;
 import org.zenframework.z8.server.db.sql.functions.string.RTrim;
 import org.zenframework.z8.server.db.sql.functions.string.RegIndexOf;
 import org.zenframework.z8.server.db.sql.functions.string.RegLike;
+import org.zenframework.z8.server.db.sql.functions.string.RegReplace;
 import org.zenframework.z8.server.db.sql.functions.string.Replace;
 import org.zenframework.z8.server.db.sql.functions.string.Reverse;
 import org.zenframework.z8.server.db.sql.functions.string.Substr;
@@ -115,7 +116,7 @@ public class sql_string extends sql_primary {
 		return new sql_bool(new Like(this, pattern, escape));
 	}
 
-	public sql_bool regLike(sql_string pattern) {
+	public sql_bool z8_regLike(sql_string pattern) {
 		return new sql_bool(new RegLike(this, pattern));
 	}
 
@@ -157,6 +158,14 @@ public class sql_string extends sql_primary {
 
 	public sql_string z8_replace(sql_string pattern, sql_string replacement) {
 		return new sql_string(new Replace(this, pattern, replacement));
+	}
+
+	public sql_string z8_replaceAll(sql_string pattern, sql_string replacement) {
+		return z8_replaceAll(pattern, replacement, null);
+	}
+
+	public sql_string z8_replaceAll(sql_string pattern, sql_string replacement, sql_string flags) {
+		return new sql_string(new RegReplace(this, pattern, replacement, flags));
 	}
 
 	public sql_string z8_substring(sql_integer position, sql_integer count) {
