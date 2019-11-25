@@ -205,17 +205,15 @@ public class file extends primary implements RmiSerializable, Serializable {
 	}
 
 	public JsonObject toJsonObject() {
-		if(json == null) {
-			json = new JsonObject();
-			json.put(Json.name, name);
-			json.put(Json.time, time);
-			json.put(Json.size, size);
-			json.put(Json.path, path);
-			json.put(Json.id, id);
-			json.put(Json.user, user);
-			json.put(Json.author, author);
-			json.put(Json.details, details);
-		}
+		json = new JsonObject();
+		json.put(Json.name, name);
+		json.put(Json.time, time);
+		json.put(Json.size, size);
+		json.put(Json.path, path);
+		json.put(Json.id, id);
+		json.put(Json.user, user);
+		json.put(Json.author, author);
+		json.put(Json.details, details);
 		return json;
 	}
 
