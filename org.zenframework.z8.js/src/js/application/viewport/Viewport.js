@@ -86,7 +86,10 @@ Z8.define('Z8.application.viewport.Viewport', {
 			this.openMenu();
 		} else {
 			var startupForm = Application.startupForm;
-			this.open(typeof startupForm === 'function' ? startupForm() : startupForm);
+			if (typeof startupForm === 'function')
+				startupForm = startupForm();
+			if (startupForm != null)
+				this.open(startupForm);
 		}
 
 		DOM.on(menuToggle, 'mouseDown', this.onMenuToggleMouseDown, this);
