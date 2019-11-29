@@ -1193,6 +1193,15 @@ Z8.define('Z8.list.List', {
 		}
 	},
 
+	ensureVisible: function(item) {
+		var top = item.dom.offsetTop;
+		var scrollTop = this.itemsScroller.scrollTop;
+		var scrollBottom = scrollTop + this.itemsScroller.clientHeight;
+
+		if(top < scrollTop || scrollBottom < top)
+			DOM.scrollIntoView(item);
+	},
+
 	onScroll: function(event, target) {
 		var scroller = target || this.totalsScroller || this.itemsScroller;
 

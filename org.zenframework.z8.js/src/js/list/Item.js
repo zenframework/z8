@@ -367,6 +367,11 @@ Z8.define('Z8.list.Item', {
 		DOM.setAttribute(cell, 'title', isString ? Format.htmlEncode(Format.br2nl(text)) : '');
 	},
 
+	ensureVisible: function() {
+		if(this.list != null)
+			this.list.ensureVisible(this);
+	},
+
 	onMouseDown: function(event, target) {
 		var dom = DOM.get(this);
 
