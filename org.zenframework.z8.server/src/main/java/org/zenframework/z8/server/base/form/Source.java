@@ -23,7 +23,7 @@ public class Source extends OBJECT {
 	}
 
 	public Query.CLASS<? extends Query> query = null;
-	public Link.CLASS<? extends Link> link = null;
+	public Field.CLASS<? extends Field> link = null;
 	public Field.CLASS<? extends Field> filterField = null;
 
 	public Source(IObject container) {

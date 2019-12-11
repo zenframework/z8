@@ -6,7 +6,7 @@ import org.zenframework.z8.lang.Object;
 [native "org.zenframework.z8.server.base.form.Source"]
 public class Source extends Object {
 	public Query query;
-	public Link link;
+	public Field link;
 	public Field filterField;
 
 	public void operator = (Query query);
