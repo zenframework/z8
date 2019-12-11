@@ -198,7 +198,8 @@ Z8.define('Z8.form.field.Geometry', {
 	},
 
 	addLayer: function(config) {
-		this.map.getLayers().insertAt(1, this.createLayer(config));
+		var zIndex = config.zIndex || 1;
+		this.map.getLayers().insertAt(zIndex, this.createLayer(config));
 	},
 
 	getLayerByName: function(name) {
