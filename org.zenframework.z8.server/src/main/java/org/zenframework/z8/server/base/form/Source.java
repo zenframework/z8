@@ -3,7 +3,6 @@ package org.zenframework.z8.server.base.form;
 import org.zenframework.z8.server.base.query.Query;
 import org.zenframework.z8.server.base.table.value.Field;
 import org.zenframework.z8.server.base.table.value.ILink;
-import org.zenframework.z8.server.base.table.value.Link;
 import org.zenframework.z8.server.json.Json;
 import org.zenframework.z8.server.json.JsonWriter;
 import org.zenframework.z8.server.runtime.IObject;
@@ -23,7 +22,7 @@ public class Source extends OBJECT {
 	}
 
 	public Query.CLASS<? extends Query> query = null;
-	public Field.CLASS<? extends Field> link = null;
+	public Field.CLASS<? extends Field> valueFrom = null;
 	public Field.CLASS<? extends Field> filterField = null;
 
 	public Source(IObject container) {
@@ -38,8 +37,8 @@ public class Source extends OBJECT {
 			if (filterField != null)
 				writer.writeProperty(Json.field, filterField.id().substring(query.id().length() + 1));
 		}
-		if (link != null) {
-			writer.writeProperty(Json.link, link.id());
+		if (valueFrom != null) {
+			writer.writeProperty(Json.link, valueFrom.id());
 		} else {
 			IObject container = getContainer();
 			if (container instanceof Field) {
