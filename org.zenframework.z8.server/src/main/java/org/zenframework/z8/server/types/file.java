@@ -260,6 +260,10 @@ public class file extends primary implements RmiSerializable, Serializable {
 		return FilenameUtils.getExtension(name.get());
 	}
 
+	public File toFile() {
+		return getAbsolutePath(path.get());
+	}
+
 	public InputStream getInputStream() {
 		try {
 			return value == null ? null : value.getInputStream();
@@ -496,8 +500,7 @@ public class file extends primary implements RmiSerializable, Serializable {
 	}
 
 	public bool z8_exists() {
-		File file = getAbsolutePath(path.get());
-		return new bool(file.exists());
+		return new bool(toFile().exists());
 	}
 
 	public bool z8_isDirectory() {
