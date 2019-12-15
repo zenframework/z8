@@ -184,6 +184,10 @@
 	margin-right: .5em;
 }
 
+.list .item>.column>.cell>.icon {
+	margin-top: .14285714em;
+}
+
 .list .item>.column.boolean>.cell {
 	flex-flow: column;
 	align-items: center;
@@ -247,8 +251,8 @@
 	color: #39c;
 }
 
-.list .item:focus>.column.check,
-.list .item:focus>.column.lock {
+.focus .list .item.active>.column.check,
+.focus .list .item.active>.column.lock {
 	color: inherit;
 	background-color: inherit;
 }
@@ -385,13 +389,14 @@
 	color: #39c;
 }
 
-.list .item:focus>.column>.cell>.collapser:not(.no-children):hover {
+.focus .list .item.active>.column>.cell>.collapser:not(.no-children):hover {
 	color: #333;
 }
 
 .list .item>.column>.cell>.collapser>.icon {
 	width: 1em;
 	text-align: center;
+	margin-top: .14285714em;
 }
 
 .list .filter .control-group>.btn-trigger {
@@ -442,19 +447,19 @@
 	background-color: #f5f5f5;
 }
 
-.list .item:focus>.column {
+.focus .list .item.active>.column {
 	color: #fff;
 	background-color: #39c;
 }
 
 .list .item.disabled>.column,
 .list .item.disabled:hover>.column,
-.list .item.disabled:focus>.column {
+.list .item.disabled>.column {
 	color: #999
 }
 
 .list .item.disabled:hover>.column,
-.list .item.disabled:focus>.column {
+.list .item.disabled>.column {
 	background-color: transparent;
 	cursor: not-allowed
 }
@@ -643,7 +648,7 @@
 	flex: 1;
 }
 
-.dropdown-menu.list .item:focus>.column {
+.dropdown-menu.list .item.active>.column {
 	color: #fff;
 	background-color: #39c;
 }

@@ -623,7 +623,6 @@ Z8.define('Z8.list.List', {
 			var isSortHeader = sorter != null && field.name == sorter.property && field.sortable !== false;
 			field.sortDirection = isSortHeader ? sorter.direction : null;
 			var header = this.createHeader(fields[i], cls);
-//			header.hidden = i == 1;
 			if(isSortHeader)
 				this.sortHeader = header;
 			headers.push(header);
@@ -705,7 +704,7 @@ Z8.define('Z8.list.List', {
 	},
 
 	createItem: function(record) {
-		var config = { list: this, record: record, name: this.name || 'id', icon: this.icons ? '' : null, collapsed: this.startCollapsed, useENTER: this.useENTER };
+		var config = { list: this, record: record, name: this.name || 'id', icon: this.icons ? '' : null, collapsed: this.startCollapsed };
 		if (this.itemConfig != null)
 			config = Z8.apply(config, this.itemConfig);
 		return this.itemType != null ? Z8.create(this.itemType, config) : new  Z8.list.Item(config);
@@ -981,7 +980,6 @@ Z8.define('Z8.list.List', {
 
 	onContentChange: function() {
 		this.fireEvent('contentChange', this);
-		this.setTabIndex(this.getTabIndex());
 	},
 	
 	clear: function() {
@@ -1022,6 +1020,14 @@ Z8.define('Z8.list.List', {
 			DOM.setTabIndex(this, this.getCount() == 0 ? tabIndex : -1);
 
 		return tabIndex;
+	},
+
+	getFocused: function() {
+		return this.isFocused;
+	},
+
+	setFocused: function(isFocused) {
+		this.isFocused = isFocused;
 	},
 
 	/*
@@ -1073,22 +1079,17 @@ Z8.define('Z8.list.List', {
 			index = Math.min(Math.max(index, 0), count - 1);
 
 			if(index == -1)
-				return false;
+				break;
 
 			var item = items[index];
-			if(!String.isString(item) && !item.hidden && this.focusItem(item))
-				return true;
+
+			if(!String.isString(item) && !item.hidden && item.isEnabled()) {
+				this.selectItem(item);
+				break;
+			}
 		} while(++step < count);
 
 		return DOM.focus(this);
-	},
-
-	focusItem: function(item) {
-		if(item.focus != null && item.focus()) {
-			this.selectItem(item);
-			return true;
-		}
-		return false;
 	},
 
 	currentItem: function() {
@@ -1112,27 +1113,23 @@ Z8.define('Z8.list.List', {
 
 	activateItem: function(item, active) {
 		item.setActive(active);
-		item.setTabIndex(active ? 0 : -1);
-		this.expandParents(item);
+		if(active) {
+			this.expandParents(item);
+			this.ensureVisible(item);
+		}
 	},
 
 	selectItem: function(item, forceEvent) {
 		var currentItem = this.currentItem();
 
-		var wasFocused = false;
-		if(currentItem != item && currentItem != null) {
-			wasFocused = this.selectNode(':focus') == DOM.get(currentItem);
+		if(currentItem != item && currentItem != null)
 			this.activateItem(currentItem, false);
-		}
 
 		if(Number.isNumber(item))
 			item = this.getAt(item);
 
-		if(item != null) {
+		if(item != null)
 			this.activateItem(item, true);
-			if(wasFocused)
-				item.focus();
-		}
 
 		this.setValue(item != null && item.getValue != null ? item.getValue() : null);
 
@@ -1150,11 +1147,13 @@ Z8.define('Z8.list.List', {
 		if(this.isEditing() || this.isFiltering() && key != Event.ESC)
 			return;
 
+		var item = this.currentItem();
+
 		if(key == Event.DOWN || key == Event.TAB && !event.shiftKey && this.useTAB) {
-			if(this.focus(this.findItemIndex(target), 'next', true))
+			if(this.focus(item, 'next', true))
 				event.stopEvent();
 		} else if(key == Event.UP || key == Event.TAB && event.shiftKey && this.useTAB) {
-			if(this.focus(this.findItemIndex(target), 'previous', true))
+			if(this.focus(item, 'previous', true))
 				event.stopEvent();
 		} else if(key == Event.HOME) {
 			if(this.focus('first'))
@@ -1167,38 +1166,35 @@ Z8.define('Z8.list.List', {
 			event.stopEvent();
 		} else if(key == Event.ESC && this.filterVisible) {
 			this.showQuickFilter(false);
-			this.focus(this.currentItem());
+			this.focus(item);
 			event.stopEvent();
-		} else if(key == Event.LEFT) {
-			var item = this.findItem(target);
-			if(item == null)
-				return;
-
+		} else if(key == Event.LEFT && item != null) {
 			if(item.isExpanded()) {
 				if(item.hasChildren()) {
 					item.collapse(true);
 					event.stopEvent();
 				}
-			} else if(!item.isRoot()) {
-				item = this.getParent(item);
-				if(item != null)
-					this.focus(item);
-			}
-		} else if(key == Event.RIGHT) {
-			var item = this.findItem(target);
-			if(item != null && item.hasChildren() && item.isCollapsed()) {
-				item.collapse(false);
-				event.stopEvent();
-			}
+			} else if((item = this.getParent(item)) != null)
+				this.focus(item);
+		} else if(key == Event.RIGHT && item != null && item.hasChildren() && item.isCollapsed()) {
+			item.collapse(false);
+			event.stopEvent();
+		} else if(key == Event.ENTER && this.useENTER && item != null) {
+			this.onItemClick(item, -1);
+			event.stopEvent();
+		} else if(key == Event.SPACE && item != null) {
+			event.stopEvent();
+			this.checks ? item.toggleCheck() : this.onItemClick(item, -1);
 		}
 	},
 
 	ensureVisible: function(item) {
 		var top = item.dom.offsetTop;
+		var bottom = top + item.dom.offsetHeight;
 		var scrollTop = this.itemsScroller.scrollTop;
 		var scrollBottom = scrollTop + this.itemsScroller.clientHeight;
 
-		if(top < scrollTop || scrollBottom < top)
+		if(top < scrollTop || scrollBottom < bottom)
 			DOM.scrollIntoView(item);
 	},
 
@@ -1404,11 +1400,46 @@ Z8.define('Z8.list.List', {
 
 	onItemClick: function(item, index) {
 		this.setSelection(item);
+		this.processCheckboxEdit(item, index);
 		this.fireEvent('itemClick', this, item, index);
+	},
+
+	onIconClick: function(item) {
+		this.fireEvent('iconClick', this, item);
 	},
 
 	onItemDblClick: function(item, index) {
 		this.fireEvent('itemDblClick', this, item, index);
+	},
+
+	processCheckboxEdit: function(item, index) {
+		if(index == -1 || !this.editable)
+			return;
+
+		var field = this.fields[index];
+
+		if(field.type != Type.Boolean || !field.isText || !field.editable)
+			return;
+
+		var record = item.record;
+
+		if(record.isBusy())
+			return;
+
+		record.beginEdit();
+
+		var name = field.name;
+		record.set(name, !record.get(name));
+
+		var callback = function(record, success) {
+			if(success) {
+				this.fireEvent('itemEdit', this, null, record, field);
+				record.endEdit();
+			} else
+				record.cancelEdit();
+		};
+
+		record.update({ fn: callback, scope: this }, { values: this.store.getValues() });
 	},
 
 	onHeaderResize: function(header, change, handleType) {
@@ -1656,10 +1687,11 @@ Z8.define('Z8.list.List', {
 		record.set(editor.name, editor.getValue());
 
 		var callback = function(record, success) {
-			success ? record.endEdit() : record.cancelEdit();
-
-			if(success)
+			if(success) {
 				this.fireEvent('itemEdit', this, editor, record, this.fields[editor.index]);
+				record.endEdit();
+			} else
+				record.cancelEdit();
 
 			this.closeEditor(editor, !success || this.editingQueue == null);
 			this.currentEditor = null;

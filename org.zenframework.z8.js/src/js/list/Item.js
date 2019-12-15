@@ -121,7 +121,7 @@ Z8.define('Z8.list.Item', {
 				this.rotation = collapsed ? 90 : -90;
 
 				var level = this.getLevel();
-				var collapserIcon = { tag: 'i', cls: 'fa fa-chevron-' + (collapsed ? 'right' : 'down') + ' icon', html: String.htmlText() };
+				var collapserIcon = { tag: 'i', cls: 'fa fa-caret-' + (collapsed ? 'right' : 'down') + ' icon', html: String.htmlText() };
 				var collapser = { tag: 'span', cls: 'collapser tree-level-' + level + (hasChildren ? '' : ' no-children'), cn: [collapserIcon] };
 				icons.insert(collapser, 0);
 			}
@@ -206,15 +206,15 @@ Z8.define('Z8.list.Item', {
 	},
 
 	htmlMarkup: function() {
-		return { tag: 'tr', id: this.getId(), cls: this.getCls().join(' '), tabIndex: this.getTabIndex(), cn: this.columnsMarkup() };
+		return { tag: 'tr', id: this.getId(), cls: this.getCls().join(' '), /*tabIndex: this.getTabIndex(),*/ cn: this.columnsMarkup() };
 	},
 
 	completeRender: function() {
 		this.callParent();
 
-		this.collapser = this.selectNode('.item .collapser');
-		this.collapserIcon = this.selectNode('.item .collapser .icon');
-		this.iconElement = this.selectNode('.item .icon');
+		this.collapser = this.selectNode('.item>.column>.cell>.collapser');
+		this.collapserIcon = this.selectNode('.item>.column>.cell>.collapser>.icon');
+		this.iconElement = this.selectNode('.item>.column>.cell>.icon');
 		this.checkIcon = this.selectNode('.item>.column.check>.cell>.text>.fa');
 		this.checkElement = this.selectNode('.item>.column.check');
 		this.lockIcon = this.selectNode('.item>.column.lock>.cell>.text>.fa');
@@ -223,14 +223,12 @@ Z8.define('Z8.list.Item', {
 		DOM.on(this, 'mouseDown', this.onMouseDown, this);
 		DOM.on(this, 'click', this.onClick, this);
 		DOM.on(this, 'dblClick', this.onDblClick, this);
-		DOM.on(this, 'keyDown', this.onKeyDown, this);
 	},
 
 	onDestroy: function() {
 		DOM.un(this, 'mouseDown', this.onMouseDown, this);
 		DOM.un(this, 'click', this.onClick, this);
 		DOM.un(this, 'dblClick', this.onDblClick, this);
-		DOM.un(this, 'keyDown', this.onKeyDown, this);
 
 		if(this.record != null && this.record.un != null)
 			this.record.un('change', this.onRecordChange, this);
@@ -240,20 +238,20 @@ Z8.define('Z8.list.Item', {
 		this.callParent();
 	},
 
-	setTabIndex: function(tabIndex) {
+/*	setTabIndex: function(tabIndex) {
 		tabIndex = this.callParent(tabIndex);
 		DOM.setTabIndex(this, tabIndex);
 		return tabIndex;
-	},
+	},*/
 
 	setActive: function(active) {
 		this.active = active;
 		DOM.swapCls(this, active, 'active');
 	},
 
-	focus: function() {
+/*	focus: function() {
 		return this.enabled ? DOM.focus(this) : false;
-	},
+	},*/
 
 	toggleCheck: function() {
 		var checked = !this.checked;
@@ -375,7 +373,7 @@ Z8.define('Z8.list.Item', {
 	onMouseDown: function(event, target) {
 		var dom = DOM.get(this);
 
-		if(!this.isEnabled() || target == this.collapserIcon || target == this.collapser || this.list.checks && DOM.isParentOf(this.checkElement, target))
+		if(!this.isEnabled() || target == this.collapserIcon || target == this.collapser || target == this.iconElement || this.list.checks && DOM.isParentOf(this.checkElement, target))
 			return;
 
 		var index = this.findCellIndex(target);
@@ -387,9 +385,7 @@ Z8.define('Z8.list.Item', {
 			return;
 		}
 
-		var focused = DOM.selectNode(dom.parentNode, 'tr:focus') == dom;
-
-		if(focused && this.startEdit(index))
+		if(this.list.getFocused() && !this.list.isEditing() && this.startEdit(index))
 			event.stopEvent();
 	},
 
@@ -402,15 +398,25 @@ Z8.define('Z8.list.Item', {
 		if(!this.isEnabled())
 			return;
 
-		if(target == this.collapser || target == this.collapserIcon)
+
+		if(target == this.collapser || target == this.collapserIcon) {
 			this.collapse(!this.collapsed);
-		else if(this.list.checks && DOM.isParentOf(this.checkElement, target)) {
-			this.toggleCheck();
-			this.list.onItemClick(this, -1);
-		} else {
-			var index = this.findCellIndex(target);
-			this.list.onItemClick(this, index);
+			return;
 		}
+
+		if(target == this.iconElement) {
+			this.list.onIconClick(this);
+			return;
+		}
+
+		var index = -1;
+
+		if(this.list.checks && DOM.isParentOf(this.checkElement, target))
+			this.toggleCheck();
+		else
+			index = this.findCellIndex(target);
+
+		this.list.onItemClick(this, index);
 	},
 
 	onDblClick: function(event, target) {
@@ -425,28 +431,6 @@ Z8.define('Z8.list.Item', {
 			this.list.onItemDblClick(this, index);
 	},
 
-	onKeyDown: function(event, target) {
-		var list = this.list;
-		if(list.isEditing())
-			return;
-
-		var key = event.getKey();
-
-		if(key == Event.ENTER) {
-			if(this.useENTER) {
-				list.onItemClick(this, -1);
-				event.stopEvent();
-			}
-		} else if(key == Event.SPACE) {
-			if(list.checks) {
-				event.stopEvent();
-				this.toggleCheck();
-			} else {
-				list.onItemClick(this, -1);
-				event.stopEvent();
-			}
-		}
-	},
 
 	followLink: function(index) {
 		return index != -1 ? this.list.onItemFollowLink(this, index) : false;

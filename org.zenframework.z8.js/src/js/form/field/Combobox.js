@@ -244,10 +244,14 @@ Z8.define('Z8.form.field.Combobox', {
 		if(dependencyValue != null)
 			where.push({ property: this.getDependencyField(), value: dependencyValue });
 
-	//	var record = this.getRecord();
-		var link = this.field.link;
+		var field = this.field;
 
-		if(record == null || !link.isParentKey)
+		if(field == null)
+			return where;
+
+		var link = field.link;
+
+		if(record == null || link == null || !link.isParentKey)
 			return where;
 
 		var parentKeys = link.parentKeys;
@@ -361,7 +365,7 @@ Z8.define('Z8.form.field.Combobox', {
 		if(Z8.isEmpty(text))
 			return [];
 
-		var fields = this.fields;
+		var fields = this.fields || [{ name: this.displayName, type: Type.String }];
 		var expressions = [];
 
 		for(var i = 0, length = fields.length; i < length; i++) {

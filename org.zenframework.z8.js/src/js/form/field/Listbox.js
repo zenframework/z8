@@ -1,7 +1,6 @@
+
 Z8.define('Z8.form.field.Listbox', {
 	extend: 'Z8.form.field.Control',
-
-	tabIndex: -1,
 
 	isListbox: true,
 	scrollable: true,
@@ -491,7 +490,7 @@ Z8.define('Z8.form.field.Listbox', {
 	},
 
 	createList: function() {
-		return new Z8.list.List({ cls: 'control', store: this.store, items: this.items, totals: this.totals, numbers: this.numbers, startCollapsed: this.startCollapsed, locks: this.locks, name: this.name, fields: this.fields, editable: this.isEditable(), itemType: this.itemType, itemConfig: this.itemConfig, value: this.getValue(), icons: this.icons, checks: this.checks, filters: this.filters, useENTER: false, autoFit: this.autoFit, filterVisible: this.filterVisible, autoSelectFirst: this.autoSelectFirst });
+		return new Z8.list.List({ cls: 'control', tabIndex: this.getTabIndex(), store: this.store, items: this.items, totals: this.totals, numbers: this.numbers, startCollapsed: this.startCollapsed, locks: this.locks, name: this.name, fields: this.fields, editable: this.isEditable(), itemType: this.itemType, itemConfig: this.itemConfig, value: this.getValue(), icons: this.icons, checks: this.checks, filters: this.filters, useENTER: false, autoFit: this.autoFit, filterVisible: this.filterVisible, autoSelectFirst: this.autoSelectFirst });
 	},
 
 	controlMarkup: function() {
@@ -502,6 +501,7 @@ Z8.define('Z8.form.field.Listbox', {
 		list.on('contentChange', this.onContentChange, this);
 		list.on('itemEditorChange', this.onItemEditorChange, this);
 		list.on('itemEdit', this.onItemEdit, this);
+		list.on('iconClick', this.onIconClick, this);
 		list.on('itemClick', this.onItemClick, this);
 		list.on('itemDblClick', this.onItemDblClick, this);
 		list.on('quickFilterShow', this.onQuickFilterShow, this);
@@ -599,6 +599,16 @@ Z8.define('Z8.form.field.Listbox', {
 
 	focus: function() {
 		return this.isEnabled() ? this.list.focus() : false;
+	},
+
+	onFocusIn: function(event, target) {
+		this.callParent(event, target);
+		this.list.setFocused(true);
+	},
+
+	onFocusOut: function(event, target) {
+		this.callParent(event, target);
+		this.list.setFocused(false);
 	},
 
 	getSelection: function() {
@@ -1085,37 +1095,11 @@ Z8.define('Z8.form.field.Listbox', {
 		}
 	},
 
+	onIconClick: function(list, item) {
+		this.fireEvent('iconClick', this, item);
+	},
+
 	onItemClick: function(list, item, index) {
-		if(index != -1 && this.editable) {
-			var field = this.fields[index];
-
-			if(field.type != Type.Boolean || !field.isText || !field.editable)
-				return;
-
-			var record = item.record;
-
-			if(record.isBusy())
-				return;
-
-			var name = field.name;
-
-			record.beginEdit();
-
-			record.set(name, !record.get(name));
-
-			if(this.hasLink())
-				record.set(this.getLink(), this.getRecordId());
-
-			if(this.isDependent())
-				record.set(this.getDependencyField(), this.getDependsOnValue());
-
-			var callback = function(record, success) {
-				success ? record.endEdit() : record.cancelEdit();
-			}
-
-			record.update({ fn: callback, scope: this }, { values: this.getValues() });
-		}
-
 		this.fireEvent('itemClick', this, item, index);
 	},
 

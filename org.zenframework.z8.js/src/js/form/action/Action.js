@@ -11,8 +11,8 @@ Z8.define('Z8.form.action.Action', {
 		var action = this.action;
 
 		if(action != null) {
-			this.handler = action.handler || this.onAction;
-			this.scope = action.scope || this;
+			this.handler = action.handler || this.handler || this.onAction;
+			this.scope = action.scope || this.scope || this;
 		}
 	},
 
@@ -66,6 +66,10 @@ Z8.define('Z8.form.action.Action', {
 		var callback = function(response, success) {
 			this.setBusy(false);
 			this.onActionComplete(record, response, success);
+
+			var parameters = action.parameters;
+			for(var i = 0, length = parameters.length; i < length; i++)
+				parameters[i].value = null;
 		};
 
 		HttpRequest.send(params, { fn: callback, scope: this });

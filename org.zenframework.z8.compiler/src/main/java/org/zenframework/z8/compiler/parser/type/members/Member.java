@@ -47,7 +47,7 @@ public class Member extends LanguageElement implements IMember {
 		else
 			super.setAttributes(attributes);
 	}
-	
+
 	@Override
 	public IPosition getSourceRange() {
 		if(initializer != null)

@@ -19,7 +19,7 @@
 .toolbar>.btn-group>.btn,
 .toolbar>.btn-group>.btn-group>.btn {
 	border-radius: 0;
-	padding: .57142857em .57142857em;
+	padding: .5em .57142857em;
 }
 
 .toolbar>.btn-group {

@@ -267,7 +267,7 @@ Z8.define('Z8.button.Button', {
 		var key = event.getKey();
 
 		if(key == Event.ENTER || key == Event.SPACE)
-			this.onClick(event, DOM.isParentOf(this.menu, target) ? this.trigger.button.getDom() : target);
+			this.onClick(event, DOM.isParentOf(this.menu, target) ? this.trigger.button : target);
 		else if((key == Event.DOWN || key == Event.UP || key == Event.HOME || key == Event.END) && this.menu != null)
 			this.onClick(event, this.trigger.button);
 	},

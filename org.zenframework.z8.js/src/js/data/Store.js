@@ -503,6 +503,7 @@ Z8.define('Z8.data.Store', {
 
 		if(!this.getRemoteFilter()) {
 			this.filterRecords();
+			this.treefyRecords();
 			var records = this.records;
 			this.fireEvent('load', this, records, true);
 			Z8.callback(options, this, records, true);
@@ -515,6 +516,7 @@ Z8.define('Z8.data.Store', {
 
 		if(!this.getRemoteSort()) {
 			this.sortRecords();
+			this.treefyRecords();
 			var records = this.getRecords();
 			this.fireEvent('load', this, records, true);
 			Z8.callback(options, this, records, true);
@@ -738,7 +740,7 @@ Z8.define('Z8.data.Store', {
 				if(result != 0)
 					return sorter.direction == 'asc' ? result : -result;
 			}
-			return -1;
+			return 0;
 		};
 
 		this.records.sort(sortFn);

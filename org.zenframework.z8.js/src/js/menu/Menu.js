@@ -7,8 +7,7 @@ Z8.define('Z8.menu.Menu', {
 	useTAB: true,
 	headers: false,
 	checks: false,
-
-	activateItem: function() {},
+	autoSelectFirst: true,
 
 	completeRender: function() {
 		this.callParent();

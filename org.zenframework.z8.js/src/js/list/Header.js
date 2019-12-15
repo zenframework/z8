@@ -16,12 +16,17 @@ Z8.define('Z8.list.Header', {
 		this.title = field.description || this.text;
 		this.icon = field.icon;
 		this.width = field != null ? field.width : null;
+		this.fixed = field != null ? field.fixed : false;
 		this.sortDirection = field.sortDirection;
 	},
 
 	getWidth: function() {
 		var defaultWidth = this.getDefaultWidth();
 		var width = this.width;
+
+		if(this.fixed)
+			return this.width || defaultWidth;
+
 		return this.hidden ? 0 : (width != null && width != 0 ? Math.max(width, this.getMinWidth()) : defaultWidth);
 	},
 

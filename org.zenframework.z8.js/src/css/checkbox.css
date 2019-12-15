@@ -58,7 +58,3 @@
 .checkbox.label-right>.label.readonly {
 	max-width: calc(100% - 1em);
 }
-
-.checkbox>.label.readonly:after {
-	top: .5em;
-}

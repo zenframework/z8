@@ -14,7 +14,16 @@ Z8.define('Z8.data.field.Field', {
 		if((left == null || left === '') && (right == null || right === ''))
 			return 0;
 
-		return (left == right) ? 0 : ((left < right) ? -1 : 1);
+		if(left == right)
+			return 0;
+
+		if(left == null)
+			return -1;
+
+		if(right == null)
+			return 1;
+
+		return left < right ? -1 : 1;
 	},
 
 	isEqual: function(left, right) {

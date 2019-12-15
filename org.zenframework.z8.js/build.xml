@@ -160,6 +160,7 @@
 				form/field/SearchCombobox.js,
 				form/field/Filter.js,
 				form/field/Geometry.js,
+				form/field/Variant.js,
 				form/action/Action.js,
 				form/action/Report.js,
 				form/action/Group.js,

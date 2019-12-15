@@ -130,9 +130,7 @@ Z8.define('Z8.list.Dropdown', {
 	onKeyDown: function(event, target) {
 		var key = event.getKey();
 
-		var ul = this.getDom();
-
-		if(key == Event.ESC || key == Event.TAB && target == ul) {
+		if(key == Event.ESC || key == Event.TAB && target == this.getDom()) {
 			this.onCancel();
 			event.stopEvent();
 			return;

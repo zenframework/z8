@@ -287,11 +287,6 @@
 	padding-left: .71428571em;
 }
 
-.air .control-group.label-left>.btn-trigger,
-.air .control-group.label-none>.btn-trigger {
-	top: 0;
-}
-
 .air .label>.text {
 	font-size: .8em;
 	font-weight: 600;
@@ -324,6 +319,7 @@
 
 .air .control-group>.btn-trigger {
 	position: absolute;
+	bottom: 0;
 	width: 1.42857143em;
 	height: 1.78571429em;
 	padding-top: .35714286em;
@@ -332,7 +328,7 @@
 	padding-right: 0;
 
 	border: none;
-	color: inherit;
+	color: #222;
 	background: none !important;
 	text-shadow: none;
 }
@@ -347,10 +343,6 @@
 
 .air .control-group>.trigger-3 {
 	right: 2.85714286em;
-}
-
-.air.control-group.label-left>.btn-trigger {
-	top: 0;
 }
 
 .air .control-group>.btn-trigger.active,
