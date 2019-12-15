@@ -37,7 +37,7 @@ Z8.define('Z8.form.field.Variant', {
 	},
 
 	setAutoSave: function(autoSave) {
-		var controls = this.controls;
+		var controls = this.getControls();
 		for(var i = 0, length = controls.length; i < length; i++)
 			controls[i].setAutoSave(autoSave);
 	},
@@ -45,7 +45,7 @@ Z8.define('Z8.form.field.Variant', {
 	setReadOnly: function(readOnly) {
 		this.callParent(readOnly);
 
-		var controls = this.controls;
+		var controls = this.getControls();
 		for(var i = 0, length = controls.length; i < length; i++)
 			controls[i].setReadOnly(readOnly);
 	},
@@ -53,9 +53,9 @@ Z8.define('Z8.form.field.Variant', {
 	setEnabled: function(enabled) {
 		this.callParent(enabled);
 
-		var controls = this.controls;
+		var controls = this.getControls();
 		for(var i = 0, length = controls.length; i < length; i++)
-			controls[i].setEnabled(readOnly);
+			controls[i].setEnabled(enabled);
 	},
 
 	setType: function(type) {
