@@ -123,10 +123,3 @@
 	overflow-x: hidden;
 	overflow-y: hidden;
 }
-
-.form .tab.fieldset {
-	padding-top: .71428571em;
-	padding-left: .71428571em;
-	padding-right: .71428571em;
-	padding-bottom: .71428571em;
-}

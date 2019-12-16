@@ -938,7 +938,7 @@ Z8.define('Z8.form.field.Listbox', {
 			if(success) {
 				this.reloadRecord();
 				this.select(index);
-				this.fireEvent('recordDestroyed', this, records);
+				this.onRecordDestroyed(records);
 				this.focus();
 			}
 		};
@@ -948,6 +948,10 @@ Z8.define('Z8.form.field.Listbox', {
 
 		var batch = new Z8.data.Batch({ store: this.store });
 		batch.destroy(records, { fn: callback, scope: this });
+	},
+
+	onRecordDestroyed: function(records) {
+		this.fireEvent('recordDestroyed', this, records);
 	},
 
 	onPeriod: function(button, period, action) {

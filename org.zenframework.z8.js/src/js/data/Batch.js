@@ -82,7 +82,10 @@ Z8.define('Z8.data.Batch', {
 			}
 		};
 
-		HttpRequest.send(params, { fn: requestCallback, scope: this });
+		if(model.isLocal())
+			Z8.callback(requestCallback, this, {}, true);
+		else
+			HttpRequest.send(params, { fn: requestCallback, scope: this });
 	},
 
 	beginTransaction: function() {
