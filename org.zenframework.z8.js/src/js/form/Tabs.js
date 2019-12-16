@@ -118,8 +118,8 @@ Z8.define('Z8.form.Tabs', {
 
 		var activeTab = this.activeTab;
 
-		if(active && activeTab === undefined)
-			this.activateTab(this.controls[0]);
+		if(active && this.activeTab === undefined)
+			this.activateTab(this.controls[this.defaultTabIndex || 0]);
 
 		var activeTab = this.activeTab;
 		var controls = this.controls;
