@@ -2,7 +2,7 @@
 <project name="org.zenframework.z8.web" basedir="." default="all">
 	<target name="all" depends="css,js" />
 	<target name="distr" depends="all,zip" />
-
+	
 	<target name="css">
 		<concat destfile="web/debug/css/revolt.css" encoding="UTF-8">
 			<filelist dir="src/css"
