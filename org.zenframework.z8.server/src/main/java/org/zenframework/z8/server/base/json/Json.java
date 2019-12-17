@@ -89,6 +89,7 @@ public class Json extends OBJECT {
 
 	final static public string having = org.zenframework.z8.server.json.Json.having;
 	final static public string filter = org.zenframework.z8.server.json.Json.filter;
+	final static public string quickFilter = org.zenframework.z8.server.json.Json.quickFilter;
 	final static public string operator = org.zenframework.z8.server.json.Json.operator;
 	final static public string logical = org.zenframework.z8.server.json.Json.logical;
 	final static public string where = org.zenframework.z8.server.json.Json.where;

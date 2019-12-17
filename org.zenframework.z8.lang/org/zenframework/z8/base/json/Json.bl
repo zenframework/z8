@@ -116,6 +116,7 @@ public class Json extends Object {
 	static public string filterBy;
 
 	static public string filter;
+	static public string quickFilter;
 	static public string logical;
 	static public string where;
 	static public string and;
