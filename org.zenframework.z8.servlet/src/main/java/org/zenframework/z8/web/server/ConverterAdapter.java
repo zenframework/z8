@@ -55,7 +55,7 @@ public class ConverterAdapter extends Adapter {
 			requestUrl = requestUrl.substring(contextPath.length());
 
 		File relativePath = new File(requestUrl);
-		File absolutePath = new File(super.getServlet().getServletPath(), requestUrl);
+		File absolutePath = new File(Folders.Base, requestUrl);
 
 		boolean preview = parameters.containsKey(Json.preview.get());
 		boolean noCache = parameters.containsKey(Json.noCache.get());
