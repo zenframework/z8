@@ -182,7 +182,7 @@ public class ConverterAdapter extends Adapter {
 
 	private FileConverter getConverter() {
 		if(converter == null)
-			converter = new FileConverter(new File(super.getServlet().getServletPath(), Folders.Cache));
+			converter = new FileConverter(new File(Folders.Base, Folders.Cache));
 
 		return converter;
 	}
