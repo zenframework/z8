@@ -1,10 +1,10 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+		 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
 	<modelVersion>4.0.0</modelVersion>
 	<artifactId>org.zenframework.z8.js</artifactId>
 	<name>Z8 JS Support</name>
-	<packaging>pom</packaging>
+	<packaging>jar</packaging>
 
 	<parent>
 		<groupId>org.zenframework.z8</groupId>
@@ -13,7 +13,23 @@
 	</parent>
 
 	<build>
-
+		<resources>
+			<resource>
+				<directory>${basedir}/web</directory>
+				<includes>
+					<include>revolt.js</include>
+					<include>revolt.utils.js</include>
+				</includes>
+			</resource>
+			<resource>
+				<directory>${basedir}/web/css</directory>
+				<targetPath>css</targetPath>
+			</resource>
+			<resource>
+				<directory>${basedir}/web/debug</directory>
+				<targetPath>debug</targetPath>
+			</resource>
+		</resources>
 		<directory>web</directory>
 
 		<plugins>

@@ -1,5 +1,5 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+		 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
 	<modelVersion>4.0.0</modelVersion>
 	<artifactId>org.zenframework.z8.server</artifactId>
@@ -19,12 +19,12 @@
 
 		<!-- TODO: Проверить, нужны ли эти зависимости -->
 		<!-- <dependency> <groupId>com.sun.mail</groupId> <artifactId>pop3</artifactId> 
-			<version>1.5.2</version> <scope>compile</scope> </dependency> <dependency> 
-			<groupId>com.sun.mail</groupId> <artifactId>smtp</artifactId> <version>1.5.2</version> 
-			<scope>compile</scope> </dependency> -->
+		<version>1.5.2</version> <scope>compile</scope> </dependency> <dependency> 
+		<groupId>com.sun.mail</groupId> <artifactId>smtp</artifactId> <version>1.5.2</version> 
+		<scope>compile</scope> </dependency> -->
 
 		<!-- Зависимости сделаны provided, т.к. они нужны только для web-приложения, 
-			а от server'а зависят другие компоненты -->
+		а от server'а зависят другие компоненты -->
 		<!-- TODO: Разделить server -->
 		<dependency>
 			<groupId>org.zenframework.z8</groupId>
@@ -115,7 +115,7 @@
 		<!-- PDF -->
 		<!-- Now iText (from BIRT runtime) is used -->
 		<!-- <dependency> <groupId>org.apache.pdfbox</groupId> <artifactId>pdfbox</artifactId> 
-			<version>2.0.1</version> </dependency> -->
+		<version>2.0.1</version> </dependency> -->
 
 		<!-- Java Advanced Imaging API -->
 		<dependency>
