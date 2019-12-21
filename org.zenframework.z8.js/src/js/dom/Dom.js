@@ -717,12 +717,12 @@ Z8.define('Z8.dom.Dom', {
 				delete dom.eventsData;
 		},
 
-		download: function(url, id, serverId, callback) {
+		download: function(url, id, serverId, callback, noCache) {
 			var config = { tag: 'iframe', html: '<head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"></head>', src: '', hidden: true };
 			var frame = DOM.append(document.body, config);
 
 			frame.src = encodeURI((window._DEBUG_ ? '/' : '') + url.replace(/\\/g, '/')) + '?&session=' + Application.session +
-				(id != null ? '&id=' + id : '') + (serverId != null ? '&serverId=' + serverId : '');
+				(id != null ? '&id=' + id : '') + (serverId != null ? '&serverId=' + serverId : '') + (noCache ? '&noCache' : '');
 
 			new Z8.util.DelayedTask().delay(500, DOM.downloadCallback, this, url, id, serverId, frame, callback);
 		},
