@@ -1189,8 +1189,12 @@ Z8.define('Z8.list.List', {
 	},
 
 	ensureVisible: function(item) {
-		var top = item.dom.offsetTop;
-		var bottom = top + item.dom.offsetHeight;
+		var dom = DOM.get(item);
+		if(dom == null)
+			return;
+
+		var top = dom.offsetTop;
+		var bottom = top + dom.offsetHeight;
 		var scrollTop = this.itemsScroller.scrollTop;
 		var scrollBottom = scrollTop + this.itemsScroller.clientHeight;
 
