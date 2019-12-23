@@ -165,21 +165,21 @@ Z8.define('Z8.list.Item', {
 	},
 
 	renderCellText: function(field, value) {
-		if(field.renderer != null) {
-			value = String.htmlText(field.renderer.call(field, value));
-			return String.htmlText(value);
-		}
+		if(field.renderer != null)
+			return String.htmlText(field.renderer.call(field, value));
 
-		var type = field.type;
+		return this.format(field.type, value, field.format);
+	},
 
+	format: function(type, value, format) {
 		if(type == Type.Date)
-			value = Format.date(value, field.format);
+			value = Format.date(value, format);
 		else if(type == Type.Datetime)
-			value = Format.datetime(value, field.format);
+			value = Format.datetime(value, format);
 		else if(type == Type.Integer)
-			value = Format.integer(value, field.format);
+			value = Format.integer(value, format);
 		else if(type == Type.Float)
-			value = Format.float(value, field.format);
+			value = Format.float(value, format);
 		else if(type == Type.Boolean)
 			return { tag: 'i', cls: value ? 'fa fa-check-square' : 'fa fa-square-o' };
 		else if(type == Type.File)

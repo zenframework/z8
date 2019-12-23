@@ -271,7 +271,8 @@
 	bottom: 0;
 }
 
-.list .item>.column>.control-group {
+.list .item>.column>.control-group,
+.list .item>.column>.variant>.control-group {
 	top: 0;
 	left: 0;
 	right: 0;
@@ -281,7 +282,7 @@
 	z-index: 1;
 }
 
-.list .item>.column>.control-group>.control {
+.list .item>.column .control {
 	padding-left: .5em;
 	padding-right: .42857143em;
 	padding-top: .57142857em;
@@ -290,15 +291,15 @@
 	border-color: #39c;
 }
 
-.list .item>.column>.control-group.invalid>.control {
+.list .item>.column .control-group.invalid>.control {
 	border-color: #c9302c;
 }
 
-.list .item>.column:first-child>.control-group>.control {
+.list .item>.column:first-child .control-group>.control {
 	padding-left: .57142857em;
 }
 
-.list .item>.column>.control-group>textarea.control {
+.list .item>.column .control-group>textarea.control {
 	padding-top: .42857143em;
 	padding-left: .42857143em;
 	overflow-y: hidden;
@@ -307,11 +308,11 @@
 	min-height: 0;
 }
 
-.list .item>.column>.control-group>.label {
+.list .item>.column .control-group>.label {
 	display: none;
 }
 
-.list .item>.column>.control-group>.btn-trigger {
+.list .item>.column .control-group>.btn-trigger {
 	height: 100%;
 	display: flex;
 	flex-direction: row;
@@ -319,23 +320,23 @@
 	margin-top: 0;
 }
 
-.list .item>.column>.control-group.trigger-1>.control {
+.list .item>.column .control-group.trigger-1>.control {
 	padding-right: 1.57142857em;
 }
 
-.list .item>.column>.control-group.trigger-2>.control {
+.list .item>.column .control-group.trigger-2>.control {
 	padding-right: 3em;
 }
 
-.list .item>.column>.control-group>.trigger-1 {
+.list .item>.column .control-group>.trigger-1 {
 	right: .14285714em;
 }
 
-.list .item>.column>.control-group>.trigger-2 {
+.list .item>.column .control-group>.trigger-2 {
 	right: 1.57142857em;
 }
 
-.list .item>.column>.control-group>.trigger-3 {
+.list .item>.column .control-group>.trigger-3 {
 	right: 3em;
 }
 

@@ -110,6 +110,9 @@ Z8.define('Z8.form.Helper', {
 			if(type == Type.Datespan)
 				return cls != null ? Z8.create(cls, config) : new Z8.form.field.Text(config);
 
+			if(type == Type.Variant)
+				return cls != null ? Z8.create(cls, config) : new Z8.form.field.Variant(config);
+
 			throw 'Unknown server type "' + type + '"';
 		},
 

@@ -109,6 +109,7 @@
 				data/field/Float.js,
 				data/field/Integer.js,
 				data/field/Json.js,
+				data/field/Variant.js,
 				data/field/File.js,
 				data/field/Files.js,
 				data/IdNameModel.js,

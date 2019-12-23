@@ -1619,10 +1619,12 @@ Z8.define('Z8.list.List', {
 		return this.currentEditor != null;
 	},
 
-	startEdit: function(item, editor) {
-		var record = item.record;
+	canStartEdit: function(item, editor) {
+		return item.record.isEditable();
+	},
 
-		if(!record.isEditable())
+	startEdit: function(item, editor) {
+		if(!this.canStartEdit(item, editor))
 			return false;
 
 		if(this.finishing) {
@@ -1630,6 +1632,7 @@ Z8.define('Z8.list.List', {
 			return true;
 		}
 
+		var record = item.record;
 		var value = record.get(editor.name);
 		var displayValue = record.get(editor.displayName);
 
@@ -1746,7 +1749,7 @@ Z8.define('Z8.list.List', {
 
 		for(var i = index, length = editors.length; i < length; i++) {
 			var editor = editors[i];
-			if(editor != null)
+			if(editor != null && this.canStartEdit(item, editor))
 				return { item: item, editor: editor };
 		}
 
@@ -1755,7 +1758,7 @@ Z8.define('Z8.list.List', {
 
 		for(var i = 0, length = editors.length; i < length; i++) {
 			var editor = editors[i];
-			if(editor != null)
+			if(editor != null && this.canStartEdit(item, editor))
 				return { item: item, editor: editor };
 		}
 
@@ -1768,7 +1771,7 @@ Z8.define('Z8.list.List', {
 
 		for(var i = index; i >= 0; i--) {
 			var editor = editors[i];
-			if(editor != null)
+			if(editor != null && this.canStartEdit(item, editor))
 				return { item: item, editor: editor };
 		}
 
@@ -1777,7 +1780,7 @@ Z8.define('Z8.list.List', {
 
 		for(var i = editors.length - 1; i >= 0; i--) {
 			var editor = editors[i];
-			if(editor != null)
+			if(editor != null && this.canStartEdit(item, editor))
 				return { item: item, editor: editor };
 		}
 

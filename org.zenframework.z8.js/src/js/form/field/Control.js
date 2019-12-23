@@ -29,6 +29,8 @@ Z8.define('Z8.form.field.Control', {
 
 		var cls = this.cls = DOM.parseCls(this.cls).pushIf('control-group');
 
+		if(!this.isVisible())
+			cls.pushIf('display-none');
 		if(!this.isEnabled())
 			cls.pushIf('disabled');
 		if(this.isReadOnly())

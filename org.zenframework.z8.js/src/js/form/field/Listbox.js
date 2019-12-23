@@ -1,4 +1,3 @@
-
 Z8.define('Z8.form.field.Listbox', {
 	extend: 'Z8.form.field.Control',
 
@@ -490,7 +489,8 @@ Z8.define('Z8.form.field.Listbox', {
 	},
 
 	createList: function() {
-		return new Z8.list.List({ cls: 'control', tabIndex: this.getTabIndex(), store: this.store, items: this.items, totals: this.totals, numbers: this.numbers, startCollapsed: this.startCollapsed, locks: this.locks, name: this.name, fields: this.fields, editable: this.isEditable(), itemType: this.itemType, itemConfig: this.itemConfig, value: this.getValue(), icons: this.icons, checks: this.checks, filters: this.filters, useENTER: false, autoFit: this.autoFit, filterVisible: this.filterVisible, autoSelectFirst: this.autoSelectFirst });
+		var config = { cls: 'control', tabIndex: this.getTabIndex(), store: this.store, items: this.items, totals: this.totals, numbers: this.numbers, startCollapsed: this.startCollapsed, locks: this.locks, name: this.name, fields: this.fields, editable: this.isEditable(), itemType: this.itemType, itemConfig: this.itemConfig, value: this.getValue(), icons: this.icons, checks: this.checks, filters: this.filters, useENTER: false, autoFit: this.autoFit, filterVisible: this.filterVisible, autoSelectFirst: this.autoSelectFirst };
+		return this.listCls != null ? Z8.create(this.listCls, config) : new Z8.list.List(config);
 	},
 
 	controlMarkup: function() {

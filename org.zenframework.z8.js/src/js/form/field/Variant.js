@@ -2,11 +2,18 @@ Z8.define('Z8.form.field.Variant', {
 	extend: 'Z8.form.field.Control',
 
 	tabIndex: -1,
+	cls: 'variant',
 
 	constructor: function(config) {
 		var config = config || {};
 		config.controls = {};
 		this.callParent(config);
+
+		this.createControl(Type.String, 'Z8.form.field.Text');
+		this.createControl(Type.Date, 'Z8.form.field.Date');
+		this.createControl(Type.Datetime, 'Z8.form.field.Datetime');
+		this.createControl(Type.Integer, 'Z8.form.field.Integer');
+		this.createControl(Type.Float, 'Z8.form.field.Float');
 	},
 
 	getControls: function() {
@@ -18,19 +25,17 @@ Z8.define('Z8.form.field.Variant', {
 	},
 
 	createControl: function(type, cls) {
-		var control = this.controls[type] = Z8.create(cls, { cls: 'display-none', label: this.label });
+		var control = this.controls[type] = Z8.create(cls, { visible: false, label: this.label, enterOnce: this.enterOnce });
 		control.on('change', this.onControlChange, this);
 		return control;
 	},
 
 	controlMarkup: function() {
-		var markup = [
-			this.createControl(Type.String, 'Z8.form.field.Text').htmlMarkup(),
-			this.createControl(Type.Date, 'Z8.form.field.Date').htmlMarkup(),
-			this.createControl(Type.Datetime, 'Z8.form.field.Datetime').htmlMarkup(),
-			this.createControl(Type.Integer, 'Z8.form.field.Integer').htmlMarkup(),
-			this.createControl(Type.Float, 'Z8.form.field.Float').htmlMarkup()
-		];
+		var markup = [];
+
+		var controls = this.getControls();
+		for(var i = 0, length = controls.length; i < length; i++)
+			markup.push(controls[i].htmlMarkup());
 
 		this.label = false;
 		return markup;
@@ -78,13 +83,19 @@ Z8.define('Z8.form.field.Variant', {
 	setValue: function(value, displayValue) {
 		this.callParent(value, displayValue);
 
-		if(!this.isControlChange && this.variant != null)
+		if(!this.isControlChange && this.variant != null) {
 			this.variant.initValue(value, displayValue);
+			this.variant.entered = false;
+		}
 	},
 
 	onControlChange: function(control, newValue, oldValue) {
 		this.isControlChange = true;
 		this.setValue(newValue, control.getDisplayValue());
 		this.isControlChange = false;
+	},
+
+	focus: function() {
+		return this.variant != null ? this.variant.focus() : this.callParent();
 	}
 });

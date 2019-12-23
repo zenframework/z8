@@ -21,7 +21,8 @@ Z8.define('Z8.server.type', {
 		Integer: 'int',
 		Json: 'json',
 		String: 'string',
-		Text: 'text'
+		Text: 'text',
+		Variant: 'variant'
 	}
 });
 
