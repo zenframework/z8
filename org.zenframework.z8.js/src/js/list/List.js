@@ -1184,8 +1184,12 @@ Z8.define('Z8.list.List', {
 			event.stopEvent();
 		} else if(key == Event.SPACE && item != null) {
 			event.stopEvent();
-			this.checks ? item.toggleCheck() : this.onItemClick(item, -1);
+			this.onItemToggle(item);
 		}
+	},
+
+	onItemToggle: function(item) {
+		this.checks ? item.toggleCheck() : this.onItemClick(item, -1);
 	},
 
 	ensureVisible: function(item) {
