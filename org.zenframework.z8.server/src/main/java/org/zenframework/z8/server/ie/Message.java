@@ -262,6 +262,7 @@ abstract public class Message extends OBJECT implements RmiSerializable, Seriali
 			}
 		}
 
+		Trace.logEvent("Message " + id + " from " + sender +" imported to " + address);
 		afterImport();
 		return true;
 	}
