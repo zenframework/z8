@@ -41,6 +41,13 @@ public class RecordInfo implements RmiSerializable, Serializable {
 	public void add(FieldInfo field) {
 		fields.add(field);
 	}
+	
+	public int size() {
+		int size = 8 + 40 + 40 + table.length()*2;
+		for(FieldInfo field : fields)
+			size += field.size();
+		return size;
+	}
 
 	private void writeObject(ObjectOutputStream out) throws IOException {
 		serialize(out);

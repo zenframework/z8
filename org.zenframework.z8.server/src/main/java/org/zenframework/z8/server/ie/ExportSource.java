@@ -14,7 +14,6 @@ import org.zenframework.z8.server.db.sql.SqlToken;
 import org.zenframework.z8.server.engine.RmiIO;
 import org.zenframework.z8.server.engine.RmiSerializable;
 import org.zenframework.z8.server.engine.Runtime;
-import org.zenframework.z8.server.logs.Trace;
 import org.zenframework.z8.server.types.guid;
 
 public class ExportSource implements RmiSerializable, Serializable {
@@ -74,7 +73,6 @@ public class ExportSource implements RmiSerializable, Serializable {
 		table.read(Arrays.asList((Field)table.recordId.get()), where);
 		while(table.next())
 			records.add(table.recordId());
-		Trace.logEvent("Added " + records.size() + " records from " + table.name());
 
 		table.restoreState();
 	}

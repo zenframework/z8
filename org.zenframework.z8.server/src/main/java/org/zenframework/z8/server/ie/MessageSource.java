@@ -22,6 +22,7 @@ import org.zenframework.z8.server.engine.RmiIO;
 import org.zenframework.z8.server.engine.RmiSerializable;
 import org.zenframework.z8.server.engine.Runtime;
 import org.zenframework.z8.server.json.parser.JsonArray;
+import org.zenframework.z8.server.logs.Trace;
 import org.zenframework.z8.server.security.BuiltinUsers;
 import org.zenframework.z8.server.types.file;
 import org.zenframework.z8.server.types.guid;
@@ -163,6 +164,8 @@ public class MessageSource implements RmiSerializable, Serializable {
 		SqlToken where = records != null ? new InVector(table.primaryKey(), records) : null;
 		table.setWhere(where); // to replace existing where
 		table.read(fields);
+		int size = 0;
+		int recNum = 0;
 
 		while (table.next()) {
 			guid recordId = table.recordId();
@@ -188,7 +191,10 @@ public class MessageSource implements RmiSerializable, Serializable {
 			inserts.add(record);
 
 			recordStates.put(id, true);
+			size += record.size();
+			recNum += 1;
 		}
+		Trace.logEvent("Table: '" + tableName + "'; Records: " + recNum + "; Size: " + size);
 
 		table.restoreState();
 	}
