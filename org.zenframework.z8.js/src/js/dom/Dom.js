@@ -143,11 +143,11 @@ Z8.define('Z8.dom.Dom', {
 
 		create: function(tag, cls, style, content) {
 			var dom = document.createElement(tag);
-			if(cls != null)
+			if(cls)
 				dom.setAttribute('class', cls);
-			if(style != null)
+			if(style)
 				dom.setAttribute('style', style);
-			if(content != null)
+			if(content)
 				dom.textContent = content;
 			return dom;
 		},

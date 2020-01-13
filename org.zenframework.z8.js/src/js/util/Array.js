@@ -1,3 +1,12 @@
+if(Array.prototype.fill == null) {
+	Array.prototype.fill = function(value) {
+		var values = [];
+		for(var i = 0, length = this.length; i < length; i++)
+			this[i] = value;
+		return this;
+	};
+}
+
 Array.appendCount = function(array, value, count) {
 	return count != 0 ?  array.concat(Array(count).fill(value)) : array;
 };
