@@ -86,6 +86,7 @@ public class DataMessage extends Message {
 		RmiIO.writeLong(out, serialVersionUID);
 
 		RmiIO.writeString(out, type);
+		RmiIO.writeBoolean(out, sendFiles);
 		out.writeObject(source);
 	}
 
@@ -95,6 +96,7 @@ public class DataMessage extends Message {
 		long version = RmiIO.readLong(in);
 
 		type = RmiIO.readString(in);
+		sendFiles = RmiIO.readBoolean(in);
 		source = (MessageSource)in.readObject();
 	}
 
