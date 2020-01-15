@@ -37,6 +37,7 @@ public class SelectFactory {
 	}
 
 	public Select cursor() {
+		isFramed = action.getLimit() != -1;
 		return create();
 	}
 
