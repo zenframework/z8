@@ -134,7 +134,7 @@ public class DataMessage extends Message {
 	}
 
 	@SuppressWarnings("unchecked")
-	public void onMerge(Table source, Table target, String tableName) {
+	public void onMerge(Table source, Table target) {
 		z8_onMerge((Table.CLASS<? extends Table>) source.getCLASS(), (Table.CLASS<? extends Table>) target.getCLASS());
 	}
 

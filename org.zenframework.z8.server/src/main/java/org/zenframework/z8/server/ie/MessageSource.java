@@ -22,7 +22,6 @@ import org.zenframework.z8.server.engine.RmiIO;
 import org.zenframework.z8.server.engine.RmiSerializable;
 import org.zenframework.z8.server.engine.Runtime;
 import org.zenframework.z8.server.json.parser.JsonArray;
-import org.zenframework.z8.server.logs.Trace;
 import org.zenframework.z8.server.security.BuiltinUsers;
 import org.zenframework.z8.server.types.file;
 import org.zenframework.z8.server.types.guid;
@@ -164,8 +163,6 @@ public class MessageSource implements RmiSerializable, Serializable {
 		SqlToken where = records != null ? new InVector(table.primaryKey(), records) : null;
 		table.setWhere(where); // to replace existing where
 		table.read(fields);
-		int size = 0;
-		int recNum = 0;
 
 		while (table.next()) {
 			guid recordId = table.recordId();
@@ -191,10 +188,7 @@ public class MessageSource implements RmiSerializable, Serializable {
 			inserts.add(record);
 
 			recordStates.put(id, true);
-			size += record.size();
-			recNum += 1;
 		}
-		Trace.logEvent("Table: '" + tableName + "'; Records: " + recNum + "; Size: " + size);
 
 		table.restoreState();
 	}
@@ -258,10 +252,10 @@ public class MessageSource implements RmiSerializable, Serializable {
 
 	public void importData(DataMessage dataMessage) {
 		for (RecordInfo record : inserts)
-			insert(record);
+			insert(record, dataMessage);
 
 		for (RecordInfo record : updates)
-			update(record, dataMessage);
+			update(record);
 
 		fieldCache.clear();
 		tableCache.clear();
@@ -295,7 +289,7 @@ public class MessageSource implements RmiSerializable, Serializable {
 		return field;
 	}
 
-	private void insert(RecordInfo record) {
+	private void insert(RecordInfo record, DataMessage dataMessage) {
 		String tableName = record.table();
 		Table table = getTable(tableName);
 		guid recordId = record.id();
@@ -304,6 +298,16 @@ public class MessageSource implements RmiSerializable, Serializable {
 		if(attachments.isEmpty())
 			attachments.add(table.primaryKey());
 		boolean exists = table.readRecord(recordId, attachments);
+		
+		if(exists)
+			//если запись существует и хоть одно поле имеет политику MERGE
+			//то стандартный протокол не работает
+			for (FieldInfo fieldInfo : record.fields()) {
+				if (exportRules.getPolicy(tableName, fieldInfo.name(), recordId) == ImportPolicy.MERGE) {
+					onMerge(record, dataMessage);
+					return;
+				}
+			}
 
 		for (FieldInfo fieldInfo : record.fields()) {
 			String fieldName = fieldInfo.name();
@@ -332,44 +336,27 @@ public class MessageSource implements RmiSerializable, Serializable {
 			table.update(recordId);
 	}
 
-	private void update(RecordInfo record, DataMessage dataMessage) {
+	private void update(RecordInfo record) {
 		String tableName = record.table();
 		Table target = getTable(tableName);
 		guid recordId = record.id();
 
-		boolean useMerge = false;
 		for (FieldInfo fieldInfo : record.fields()) {
-			if (exportRules.getPolicy(tableName, fieldInfo.name(), recordId) == ImportPolicy.MERGE) {
-				useMerge = true;
-				break;
+			String fieldName = fieldInfo.name();
+
+			if (!insertedRecords.contains(recordId)) {
+				ImportPolicy fieldPolicy = exportRules.getPolicy(tableName, fieldName, recordId);
+				if (fieldPolicy != ImportPolicy.OVERRIDE)
+					continue;
 			}
-		}
 
-		if (useMerge) {
+			Field field = getField(tableName, fieldName);
 
-			Table source = (Table) Runtime.instance().getTableByName(tableName).newInstance();
-			for (FieldInfo fieldInfo : record.fields())
-				source.getFieldByName(fieldInfo.name()).set(fieldInfo.value());
-			dataMessage.onMerge(source, target, tableName);
+			if (field == null)
+				throw new RuntimeException(
+						"Incorrect record format. Table '" + tableName + "' has no field '" + fieldName + "'");
 
-		} else {
-			for (FieldInfo fieldInfo : record.fields()) {
-				String fieldName = fieldInfo.name();
-
-				if (!insertedRecords.contains(recordId)) {
-					ImportPolicy fieldPolicy = exportRules.getPolicy(tableName, fieldName, recordId);
-					if (fieldPolicy != ImportPolicy.OVERRIDE)
-						continue;
-				}
-
-				Field field = getField(tableName, fieldName);
-
-				if (field == null)
-					throw new RuntimeException(
-							"Incorrect record format. Table '" + tableName + "' has no field '" + fieldName + "'");
-
-				field.set(fieldInfo.value());
-			}
+			field.set(fieldInfo.value());
 		}
 
 		target.update(record.id());
@@ -398,5 +385,20 @@ public class MessageSource implements RmiSerializable, Serializable {
 		}
 
 		return new string(new JsonArray(files).toString());
+	}
+	
+	private void onMerge(RecordInfo record, DataMessage dataMessage) {
+		String tableName = record.table();
+		guid recordId = record.id();
+		
+		Table source = (Table) Runtime.instance().getTableByName(tableName).newInstance();
+		for (FieldInfo fieldInfo : record.fields())
+			source.getFieldByName(fieldInfo.name()).set(fieldInfo.value());
+		
+		Table target = getTable(tableName);
+		Collection<Field> fields = target.getPrimaryFields();
+		target.readRecord(recordId, fields);
+		
+		dataMessage.onMerge(source, target);
 	}
 }
