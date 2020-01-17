@@ -816,15 +816,20 @@ Z8.define('Z8.application.form.Navigator', {
 	},
 
 	onMenuReport: function(menu, item) {
+		var store = this.store;
 		var report = item.report;
 		var record = this.getSelection();
 
 		var params = {
-			request: this.store.getModelName(),
+			request: store.getModelName(),
 			action: 'report',
 			format: report.format,
 			id: report.id,
-			recordId: record.id
+			recordId: record.id,
+			quickFilter: store.getQuickFilter(),
+			where: store.getWhere(),
+			sort: store.getSorter(),
+			period: store.getPeriod()
 		};
 
 		var callback = function(response, success) {
