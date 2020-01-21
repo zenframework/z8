@@ -83,6 +83,7 @@
 				util/Array.js,
 				util/Date.js,
 				util/JSON.js,
+				util/Canvas.js,
 				Z8.js,
 				dom/Event.js,
 				dom/Dom.js,
