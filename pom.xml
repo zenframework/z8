@@ -14,8 +14,8 @@
 	<properties>
 
 		<!-- Sources version -->
-		<compiler.source.version>1.6</compiler.source.version>
-		<compiler.target.version>1.6</compiler.target.version>
+		<compiler.source.version>1.8</compiler.source.version>
+		<compiler.target.version>1.8</compiler.target.version>
 
 		<!-- z8 build configuration -->
 		<z8.oda.driver.packaging>jar</z8.oda.driver.packaging>
@@ -224,6 +224,13 @@
 		</repository>
 	</repositories>
 
+	<pluginRepositories>
+		<pluginRepository>
+			<id>pvsstudio-maven-repo</id>
+			<url>http://files.viva64.com/java/pvsstudio-maven-repository/</url>
+		</pluginRepository>
+	</pluginRepositories>
+
 	<dependencies>
 
 		<!-- Testing -->
@@ -287,6 +294,18 @@
 					<configuration>
 						<compilerArgument>-warn:none</compilerArgument>
 						<compilerArgument>-err:none</compilerArgument>
+					</configuration>
+				</plugin>
+				<plugin>
+					<groupId>com.pvsstudio</groupId>
+					<artifactId>pvsstudio-maven-plugin</artifactId>
+					<version>7.03.32667</version>
+					<configuration>
+						<analyzer>
+							<outputType>text</outputType>
+							<outputFile>path/to/output.txt</outputFile>
+							<javaPath>/usr/lib/jvm/java-8-openjdk-amd64/bin/java</javaPath>
+						</analyzer>
 					</configuration>
 				</plugin>
 			</plugins>

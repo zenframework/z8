@@ -154,4 +154,18 @@
 
 	</build>
 
+	<profiles>
+		<profile>
+			<id>pvs</id>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>com.pvsstudio</groupId>
+						<artifactId>pvsstudio-maven-plugin</artifactId>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
+
 </project>
