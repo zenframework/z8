@@ -251,7 +251,7 @@ public class TreeTable extends Table implements Connection.Listener {
 			read(Arrays.asList(path), where);
 
 			while(next()) {
-				String child = path.string().get().replace(oldPath, newPath);
+				String child = oldPath.isEmpty() ? newPath : path.string().get().replace(oldPath, newPath);
 				setParents(parsePath(child));
 				path.set(new string(child));
 				update(recordId());
