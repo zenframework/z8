@@ -170,7 +170,11 @@ public class StringUtils {
 
 		for(int i = 0; i < bytes.length; i += 2) {
 			int byte1 = bytes[i];
+			if (byte1 < 0)
+				byte1 += 256;
 			int byte2 = bytes[i + 1];
+			if (byte2 < 0)
+				byte2 += 256;
 			chars[i / 2] = (char)((byte1 << 8) + byte2);
 		}
 
