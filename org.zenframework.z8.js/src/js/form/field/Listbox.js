@@ -10,6 +10,7 @@ Z8.define('Z8.form.field.Listbox', {
 	autoFit: true,
 
 	editable: false,
+	enterToEdit: true,
 
 	pagerMode: 'visible', // 'visible' || 'hidden'
 
@@ -1117,7 +1118,7 @@ Z8.define('Z8.form.field.Listbox', {
 		if(this.list.isEditing() || this.list.isFiltering())
 			return;
 
-		if(key == Event.ENTER || key == Event.F2) {
+		if(key == Event.ENTER && this.enterToEdit|| key == Event.F2) {
 			if(this.startEdit(this.getSelection()))
 				event.stopEvent();
 		} else if(key == Event.INSERT) {

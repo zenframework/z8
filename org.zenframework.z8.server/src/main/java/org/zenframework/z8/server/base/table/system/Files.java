@@ -6,7 +6,6 @@ import java.io.InputStream;
 import java.util.Arrays;
 import java.util.Collection;
 
-import org.apache.commons.io.FileUtils;
 import org.zenframework.z8.server.base.file.Folders;
 import org.zenframework.z8.server.base.file.InputOnlyFileItem;
 import org.zenframework.z8.server.base.table.Table;
@@ -159,7 +158,7 @@ public class Files extends Table {
 			if(inputStream == null)
 				return null;
 
-			FileUtils.copyInputStreamToFile(inputStream, path);
+			IOUtils.copy(inputStream, path);
 		}
 
 		file.set(new InputOnlyFileItem(path, file.name.get()));
