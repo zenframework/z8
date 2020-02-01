@@ -9,7 +9,6 @@ String.htmlText = function(text) {
 	return (text == null || text.length == 0) ? String.ZeroWidthChar : text;
 };
 
-
 String.padLeft = function(string, size, ch) {
 	var result = String(string);
 	ch = ch || ' ';
@@ -31,7 +30,14 @@ String.repeat = function(pattern, count, separator) {
 	for(var i = 0; i < count; i++)
 		result += pattern;
 	return result;
-},
+};
+
+String.prototype.hash = function() {
+	var hash = 5381, i = this.length;
+	while(i)
+		hash = (hash * 33) ^ this.charCodeAt(--i);
+	return hash >>> 0;
+};
 
 String.prototype.startsWith = function(string) {
 	var length = this.length;
