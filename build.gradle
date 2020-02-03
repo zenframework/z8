@@ -1,0 +1,9 @@
+project.version = '1.3.0'
+
+//rootProject.sourceCompatibility = 1.8
+//rootProject.targetCompatibility = 1.8
+
+repositories {
+    mavenCentral()
+}
+
