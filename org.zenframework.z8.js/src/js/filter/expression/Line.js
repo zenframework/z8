@@ -132,5 +132,5 @@ Z8.define('Z8.filter.Line', {
 		var value = needsValue ? this.value.getRawValue() || '' : null;
 
 		return '\'' + property + '\' ' + operator + (needsValue ? ' \'' + value + '\'' : '');
-	},
+	}
 });

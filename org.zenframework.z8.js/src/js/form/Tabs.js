@@ -128,5 +128,5 @@ Z8.define('Z8.form.Tabs', {
 			var tab = controls[i];
 			tab.setActive(active && tab == activeTab);
 		}
-	},
+	}
 });

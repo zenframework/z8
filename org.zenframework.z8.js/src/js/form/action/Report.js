@@ -9,7 +9,7 @@ Z8.define('Z8.form.action.Report', {
 	htmlMarkup: function() {
 		var items = [
 			new Z8.menu.Item({ text: 'Acrobat Reader (*.pdf)', icon: this.getFormatIcon('pdf'), format: 'pdf' }),
-			new Z8.menu.Item({ text: 'Microsoft Excel (*.xls)', icon: this.getFormatIcon('xls'), format: 'xls' }),
+			new Z8.menu.Item({ text: 'Microsoft Excel (*.xls)', icon: this.getFormatIcon('xls'), format: 'xls' })
 		];
 
 		var menu = this.menu = new Z8.menu.Menu({ items: items });

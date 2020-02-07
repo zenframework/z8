@@ -9,11 +9,51 @@ buildscript {
 }
 
 combineCss {
-	source = file("$projectDir/src/css/.buildorder").readLines().collect { "$projectDir/src/css/$it" }
-	dest = file("${buildDir}/debug/css/revolt.css")
+	source = file("$projectDir/src/css/css.buildorder").readLines().collect { "$projectDir/src/css/$it" }
+	dest = file("${buildDir}/web/debug/css/revolt.css")
+}
+
+minifyCss {
+	source = combineCss
+	dest = "${buildDir}/web/css/revolt.css"
+}
+
+task combineFontsCss(type: com.eriwen.gradle.css.tasks.CombineCssTask) {
+	source = file("$projectDir/src/css/fonts.buildorder").readLines().collect { "$projectDir/src/css/$it" }
+	dest = file("${buildDir}/web/debug/css/fonts.css")
+}
+
+task minifyFontsCss(type: com.eriwen.gradle.css.tasks.MinifyCssTask) {
+	source = combineFontsCss
+	dest = "${buildDir}/web/css/fonts.css"
 }
 
 combineJs {
-	source = file("$projectDir/src/js/.buildorder").readLines().collect { "$projectDir/src/js/$it" }
-	dest = file("${buildDir}/debug/revolt.js")
+	source = file("$projectDir/src/js/js.buildorder").readLines().collect { "$projectDir/src/js/$it" }
+	dest = file("${buildDir}/web/debug/revolt.js")
 }
+
+minifyJs {
+	source = combineJs
+	dest = file("${buildDir}/web/revolt.js")
+//	sourceMap = file("${buildDir}/all.sourcemap.json")
+//	closure {
+//		warningLevel = 'QUIET'
+//	}
+}
+
+task combineUtilJs(type: com.eriwen.gradle.js.tasks.CombineJsTask) {
+	source = file("$projectDir/src/js/util.buildorder").readLines().collect { "$projectDir/src/js/$it" }
+	dest = file("${buildDir}/web/debug/revolt.utils.js")
+}
+
+task minifyUtilJs(type: com.eriwen.gradle.js.tasks.MinifyJsTask) {
+	source = combineUtilJs
+	dest = file("${buildDir}/web/revolt.utils.js")
+//	sourceMap = file("${buildDir}/all.sourcemap.json")
+//	closure {
+//		warningLevel = 'QUIET'
+//	}
+}
+
+task build(dependsOn: [minifyCss, minifyFontsCss, minifyJs, minifyUtilJs])

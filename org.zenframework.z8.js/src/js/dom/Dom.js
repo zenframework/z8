@@ -643,7 +643,7 @@ Z8.define('Z8.dom.Dom', {
 
 		substitutes: {
 			'click': 'touchend',
-			'mousedown': 'touchstart',
+			'mousedown': 'touchstart'
 		},
 
 		on: function(dom, event, fn, scope, capture) {
