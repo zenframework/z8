@@ -4,6 +4,14 @@ configurations {
 	boot
 }
 
+eclipse.classpath.file.whenMerged {
+	entries.findAll { entry ->
+		entry instanceof org.gradle.plugins.ide.eclipse.model.Container
+	}.each { entry ->
+		entry.accessRules.add new org.gradle.plugins.ide.eclipse.model.AccessRule('0', 'sun/rmi/**')
+	}
+}
+
 tasks.withType(JavaCompile) {
 	doFirst {
 		String compilerPath = configurations.boot.singleFile.toPath()
