@@ -1,0 +1,19 @@
+apply plugin: 'js'
+apply plugin: 'css'
+
+buildscript {
+	dependencies {
+		classpath 'com.eriwen:gradle-css-plugin:2.14.0'
+		classpath 'com.eriwen:gradle-js-plugin:2.14.1'
+	}
+}
+
+combineCss {
+	source = file("$projectDir/src/css/.buildorder").readLines().collect { "$projectDir/src/css/$it" }
+	dest = file("${buildDir}/debug/css/revolt.css")
+}
+
+combineJs {
+	source = file("$projectDir/src/js/.buildorder").readLines().collect { "$projectDir/src/js/$it" }
+	dest = file("${buildDir}/debug/revolt.js")
+}

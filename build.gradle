@@ -24,8 +24,15 @@ subprojects {
 	}
 
 	repositories {
-		maven {
-			url "http://mvn.revoltsoft.ru/"
+		mavenLocal()
+		maven { url "http://mvn.revoltsoft.ru/" }
+	}
+
+	buildscript {
+		repositories {
+			mavenLocal()
+			maven { url "http://mvn.revoltsoft.ru/" }
+			mavenCentral()
 		}
 	}
 }
