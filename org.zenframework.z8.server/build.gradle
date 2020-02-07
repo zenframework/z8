@@ -1,34 +1,23 @@
 apply plugin: 'java'
-apply plugin: 'war'
 
-repositories {
-    mavenCentral()
+configurations {
+	boot
 }
 
-sourceCompatibility = 1.8
-targetCompatibility = 1.8
-
-version = '1.3.0-SNAPSHOT'
-ext.birtVersion = '4.7.0'
+tasks.withType(JavaCompile) {
+	doFirst {
+		String compilerPath = configurations.boot.singleFile.toPath()
+		println 'QQQ ' + compilerPath
+		options.compilerArgs.add '-Xbootclasspath/p:' + compilerPath
+	}
+}
 
 dependencies {
-	providedCompile "org.zenframework.z8:org.zenframework.z8.boot:${version}"
-	providedCompile "javax.mail:mail:1.4.7"
-	providedCompile "commons-cli:commons-cli:1.0"
-	providedCompile "com.lowagie:itext:2.1.7"
+	boot project(':org.zenframework.z8.boot')
 
-	compile "commons-logging:commons-logging:1.2"
-	compile "commons-fileupload:commons-fileupload:1.3.1"
+	compile project(':org.zenframework.z8.boot')
 
-	providedCompile "org.eclipse.birt.runtime:org.eclipse.birt.runtime:${birtVersion}"
-
-	compile "org.apache.lucene:lucene-core:4.8.1"
-	compile "org.apache.lucene:lucene-analyzers-common:4.8.1"
-	compile "org.apache.lucene:lucene-queryparser:4.8.1"
-
-	compile "org.artofsolving.jodconverter:jodconverter-core:3.0-beta-4-jahia2"
-	
-    compile "com.googlecode.juniversalchardet:juniversalchardet:1.0.3"
-	compile "com.google.guava:guava:r05"
-	compile "com.github.jai-imageio:jai-imageio-core:1.3.1"
+	compile ('org.zenframework.z8.dependencies:z8-dependencies-commons:3.0@pom') { transitive=true }
+	compile ('org.zenframework.z8.dependencies:z8-dependencies-libreoffice:3.0@pom') { transitive=true }
+	compile ('org.zenframework.z8.dependencies:z8-dependencies-birt:3.0@pom') { transitive=true }
 }

@@ -1,0 +1,16 @@
+apply plugin: 'groovy'
+apply plugin: 'eclipse'
+
+group = 'org.zenframework.z8'
+version = '1.3.0'
+
+buildDir = 'target'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation gradleApi()
+    implementation localGroovy()
+}

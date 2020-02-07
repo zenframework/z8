@@ -1,0 +1,35 @@
+apply plugin: 'java'
+
+eclipse {
+	project {
+		natures 'org.zenframework.z8.pde.ProjectNature'
+		buildCommand 'org.zenframework.z8.pde.ProjectBuilder', JavaSource: "$buildFolder/.java"
+	}
+}
+
+configurations {
+	compiler
+}
+
+task compileBl(type: JavaExec) {
+	group = 'Z8'
+	description = 'Compile BL sources'
+
+	classpath = configurations.compiler
+	main = 'org.zenframework.z8.compiler.cmd.Main'
+	args = [ projectDir, "-projectName:${project.name}", "-output:${buildDir}/.java" ]
+}
+
+dependencies {
+	implementation project(':org.zenframework.z8.server')
+
+	compiler project(':org.zenframework.z8.compiler')
+}
+
+sourceSets {
+	main.java.srcDirs "${buildDir}/.java"
+}
+
+tasks.withType(JavaCompile) {
+	dependsOn compileBl
+}

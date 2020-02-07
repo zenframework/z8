@@ -1,0 +1,8 @@
+apply plugin: 'java'
+
+dependencies {
+	implementation project(':org.zenframework.z8.boot')
+	implementation project(':org.zenframework.z8.server')
+	implementation project(':org.zenframework.z8.auth')
+	implementation project(':org.zenframework.z8.interconnection')
+}

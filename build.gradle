@@ -1,9 +1,36 @@
-project.version = '1.3.0'
+apply plugin: 'eclipse'
 
-//rootProject.sourceCompatibility = 1.8
-//rootProject.targetCompatibility = 1.8
+subprojects {
+	apply plugin: 'eclipse'
 
-repositories {
-    mavenCentral()
+	ext.buildFolder = './target'
+
+	buildDir = buildFolder
+
+	plugins.withType(JavaPlugin) {
+		eclipse.classpath.defaultOutputDir = new File(buildDir, 'classes/default')
+		eclipse.classpath.file.whenMerged {
+			entries.findAll { entry ->
+				entry instanceof org.gradle.plugins.ide.eclipse.model.SourceFolder
+			}.each { entry ->
+				entry.output = entry.output.replace('bin/', "$buildFolder/classes/")
+			}
+			entries.findAll { entry ->
+				entry instanceof org.gradle.plugins.ide.eclipse.model.Container
+			}.each { entry ->
+				entry.accessRules.add new org.gradle.plugins.ide.eclipse.model.AccessRule('0', 'sun/rmi/**')
+			}
+		}
+	}
+
+	tasks.withType(JavaCompile) {
+		sourceCompatibility = JavaVersion.VERSION_1_8
+		targetCompatibility = JavaVersion.VERSION_1_8
+	}
+
+	repositories {
+		maven {
+			url "http://mvn.revoltsoft.ru/"
+		}
+	}
 }
-
