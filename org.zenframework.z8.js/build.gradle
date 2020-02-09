@@ -1,3 +1,4 @@
+apply plugin: 'base'
 apply plugin: 'js'
 apply plugin: 'css'
 
@@ -36,10 +37,6 @@ combineJs {
 minifyJs {
 	source = combineJs
 	dest = file("${buildDir}/web/revolt.js")
-//	sourceMap = file("${buildDir}/all.sourcemap.json")
-//	closure {
-//		warningLevel = 'QUIET'
-//	}
 }
 
 task combineUtilJs(type: com.eriwen.gradle.js.tasks.CombineJsTask) {
@@ -50,10 +47,26 @@ task combineUtilJs(type: com.eriwen.gradle.js.tasks.CombineJsTask) {
 task minifyUtilJs(type: com.eriwen.gradle.js.tasks.MinifyJsTask) {
 	source = combineUtilJs
 	dest = file("${buildDir}/web/revolt.utils.js")
-//	sourceMap = file("${buildDir}/all.sourcemap.json")
-//	closure {
-//		warningLevel = 'QUIET'
-//	}
 }
 
-task build(dependsOn: [minifyCss, minifyFontsCss, minifyJs, minifyUtilJs])
+task assembleArtifact(type: Zip, group: 'Web', dependsOn: [minifyCss, minifyFontsCss, minifyJs, minifyUtilJs]) {
+	archiveName "${project.name}.zip"
+	destinationDir file("$buildDir/libs/")
+	from "${buildDir}/web"
+	description "Assemble archive $archiveName into ${relativePath(destinationDir)}"
+}
+
+publishing {
+	publications {
+		mavenJava(MavenPublication) {
+			artifact source: assembleArtifact, extension: 'zip'
+		}
+	}
+	repositories {
+		mavenLocal()
+	}
+}
+
+assemble.dependsOn assembleArtifact
+build.dependsOn assemble
+publish.dependsOn build
