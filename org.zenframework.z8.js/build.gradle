@@ -49,11 +49,23 @@ task minifyUtilJs(type: com.eriwen.gradle.js.tasks.MinifyJsTask) {
 	dest = file("${buildDir}/web/revolt.utils.js")
 }
 
-task assembleArtifact(type: Zip, group: 'Web', dependsOn: [minifyCss, minifyFontsCss, minifyJs, minifyUtilJs]) {
+task assembleArtifact(type: Zip, group: 'web', dependsOn: [minifyCss, minifyFontsCss, minifyJs, minifyUtilJs]) {
 	archiveName "${project.name}.zip"
 	destinationDir file("$buildDir/libs/")
 	from "${buildDir}/web"
 	description "Assemble archive $archiveName into ${relativePath(destinationDir)}"
+}
+
+assemble.dependsOn assembleArtifact
+build.dependsOn assemble
+publish.dependsOn build
+
+configurations {
+	archive
+}
+
+artifacts {
+	archive assembleArtifact
 }
 
 publishing {
@@ -62,11 +74,4 @@ publishing {
 			artifact source: assembleArtifact, extension: 'zip'
 		}
 	}
-	repositories {
-		mavenLocal()
-	}
 }
-
-assemble.dependsOn assembleArtifact
-build.dependsOn assemble
-publish.dependsOn build

@@ -12,7 +12,7 @@ configurations {
 }
 
 task compileBl(type: JavaExec) {
-	group = 'Z8'
+	group = 'Build'
 	description = 'Compile BL sources'
 
 	classpath = configurations.compiler

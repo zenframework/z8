@@ -1,0 +1,245 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<report xmlns="http://www.eclipse.org/birt/2005/design" version="3.2.23" id="1">
+    <property name="createdBy">Eclipse BIRT Designer Version 4.6.0.v201606072122</property>
+    <property name="units">in</property>
+    <property name="iconFile">/templates/blank_report.gif</property>
+    <property name="layoutPreference">fixed layout</property>
+    <property name="bidiLayoutOrientation">ltr</property>
+    <styles>
+        <style name="GroupFooterCell" id="6">
+            <property name="backgroundColor">#F5F5F5</property>
+            <property name="fontFamily">"Roboto"</property>
+            <property name="fontSize">small</property>
+            <property name="borderBottomColor">#C0C0C0</property>
+            <property name="borderBottomStyle">solid</property>
+            <property name="borderBottomWidth">1px</property>
+            <property name="borderLeftColor">#C0C0C0</property>
+            <property name="borderLeftStyle">solid</property>
+            <property name="borderLeftWidth">1px</property>
+            <property name="borderRightColor">#C0C0C0</property>
+            <property name="borderRightStyle">solid</property>
+            <property name="borderRightWidth">1px</property>
+            <property name="borderTopColor">#C0C0C0</property>
+            <property name="borderTopStyle">solid</property>
+            <property name="borderTopWidth">1px</property>
+            <property name="marginTop">0px</property>
+            <property name="marginLeft">0px</property>
+            <property name="marginBottom">0px</property>
+            <property name="marginRight">0px</property>
+            <property name="paddingTop">0px</property>
+            <property name="paddingLeft">1px</property>
+            <property name="paddingBottom">0px</property>
+            <property name="paddingRight">1px</property>
+        </style>
+        <style name="HeaderCell" id="7">
+            <property name="fontFamily">"Roboto"</property>
+            <property name="fontSize">9px</property>
+            <property name="fontWeight">bolder</property>
+            <property name="color">#444444</property>
+            <property name="borderBottomColor">#C0C0C0</property>
+            <property name="borderBottomStyle">solid</property>
+            <property name="borderBottomWidth">1px</property>
+            <property name="borderLeftColor">#C0C0C0</property>
+            <property name="borderLeftStyle">solid</property>
+            <property name="borderLeftWidth">1px</property>
+            <property name="borderRightColor">#C0C0C0</property>
+            <property name="borderRightStyle">solid</property>
+            <property name="borderRightWidth">1px</property>
+            <property name="borderTopColor">#C0C0C0</property>
+            <property name="borderTopStyle">solid</property>
+            <property name="borderTopWidth">1px</property>
+            <property name="marginTop">0pt</property>
+            <property name="paddingTop">5px</property>
+            <property name="paddingLeft">5px</property>
+            <property name="paddingBottom">5px</property>
+            <property name="paddingRight">5px</property>
+            <property name="textAlign">center</property>
+            <property name="verticalAlign">middle</property>
+            <property name="whiteSpace">pre</property>
+        </style>
+        <style name="GroupHeaderCell" id="8">
+            <property name="backgroundColor">#F7F7F7</property>
+            <property name="fontFamily">"Roboto"</property>
+            <property name="fontSize">small</property>
+            <property name="borderBottomColor">#C0C0C0</property>
+            <property name="borderBottomStyle">solid</property>
+            <property name="borderBottomWidth">1px</property>
+            <property name="borderLeftColor">#C0C0C0</property>
+            <property name="borderLeftStyle">solid</property>
+            <property name="borderLeftWidth">1px</property>
+            <property name="borderRightColor">#C0C0C0</property>
+            <property name="borderRightStyle">solid</property>
+            <property name="borderRightWidth">1px</property>
+            <property name="borderTopColor">#C0C0C0</property>
+            <property name="borderTopStyle">solid</property>
+            <property name="borderTopWidth">1px</property>
+            <property name="paddingTop">0pt</property>
+            <property name="paddingLeft">1pt</property>
+            <property name="paddingBottom">0pt</property>
+            <property name="paddingRight">1pt</property>
+        </style>
+        <style name="GroupHeaderCell2" id="9">
+            <property name="backgroundColor">#ECFFEC</property>
+            <property name="fontFamily">"Roboto"</property>
+            <property name="fontSize">small</property>
+            <property name="borderBottomColor">#C0C0C0</property>
+            <property name="borderBottomStyle">none</property>
+            <property name="borderBottomWidth">0px</property>
+            <property name="borderLeftColor">#C0C0C0</property>
+            <property name="borderLeftStyle">solid</property>
+            <property name="borderLeftWidth">1px</property>
+            <property name="borderRightColor">#C0C0C0</property>
+            <property name="borderRightStyle">none</property>
+            <property name="borderRightWidth">0px</property>
+            <property name="borderTopColor">#C0C0C0</property>
+            <property name="borderTopStyle">solid</property>
+            <property name="borderTopWidth">1px</property>
+            <property name="paddingTop">0pt</property>
+            <property name="paddingLeft">1pt</property>
+            <property name="paddingBottom">0pt</property>
+            <property name="paddingRight">1pt</property>
+        </style>
+        <style name="DetailCell" id="10">
+            <property name="fontFamily">"Roboto"</property>
+            <property name="fontSize">small</property>
+            <property name="borderBottomColor">#C0C0C0</property>
+            <property name="borderBottomStyle">solid</property>
+            <property name="borderBottomWidth">1px</property>
+            <property name="borderLeftColor">#C0C0C0</property>
+            <property name="borderLeftStyle">solid</property>
+            <property name="borderLeftWidth">1px</property>
+            <property name="borderRightColor">#C0C0C0</property>
+            <property name="borderRightStyle">solid</property>
+            <property name="borderRightWidth">1px</property>
+            <property name="borderTopColor">#C0C0C0</property>
+            <property name="borderTopStyle">solid</property>
+            <property name="borderTopWidth">1px</property>
+            <property name="paddingTop">15px</property>
+            <property name="paddingLeft">5px</property>
+            <property name="paddingBottom">15px</property>
+            <property name="paddingRight">5px</property>
+            <property name="verticalAlign">middle</property>
+            <property name="whiteSpace">pre</property>
+            <property name="pageBreakInside">auto</property>
+        </style>
+        <style name="GroupFooterCell2" id="12">
+            <property name="backgroundColor">#ECFFEC</property>
+            <property name="fontFamily">"Roboto"</property>
+            <property name="fontSize">small</property>
+            <property name="borderBottomColor">#C0C0C0</property>
+            <property name="borderBottomStyle">none</property>
+            <property name="borderBottomWidth">1px</property>
+            <property name="borderLeftColor">#C0C0C0</property>
+            <property name="borderLeftStyle">solid</property>
+            <property name="borderLeftWidth">1px</property>
+            <property name="borderRightColor">#C0C0C0</property>
+            <property name="borderRightStyle">none</property>
+            <property name="borderRightWidth">1px</property>
+            <property name="borderTopColor">#C0C0C0</property>
+            <property name="borderTopStyle">solid</property>
+            <property name="borderTopWidth">1px</property>
+            <property name="paddingTop">0pt</property>
+            <property name="paddingLeft">1pt</property>
+            <property name="paddingBottom">0pt</property>
+            <property name="paddingRight">1pt</property>
+        </style>
+        <style name="GrandTotalsCell" id="13">
+            <property name="backgroundColor">#F0E8EF</property>
+            <property name="fontFamily">"Roboto"</property>
+            <property name="fontSize">small</property>
+            <property name="fontWeight">bold</property>
+            <property name="borderBottomColor">#C0C0C0</property>
+            <property name="borderBottomStyle">solid</property>
+            <property name="borderBottomWidth">1px</property>
+            <property name="borderLeftColor">#C0C0C0</property>
+            <property name="borderLeftStyle">solid</property>
+            <property name="borderLeftWidth">1px</property>
+            <property name="borderRightColor">#C0C0C0</property>
+            <property name="borderRightStyle">solid</property>
+            <property name="borderRightWidth">1px</property>
+            <property name="borderTopColor">#C0C0C0</property>
+            <property name="borderTopStyle">solid</property>
+            <property name="borderTopWidth">1px</property>
+            <property name="paddingTop">0pt</property>
+            <property name="paddingLeft">1pt</property>
+            <property name="paddingBottom">0pt</property>
+            <property name="paddingRight">1pt</property>
+        </style>
+        <style name="DateFormat" id="14">
+            <property name="fontFamily">"Roboto"</property>
+            <structure name="dateTimeFormat">
+                <property name="category">Custom</property>
+                <property name="pattern">dd.MM.yyyy</property>
+            </structure>
+        </style>
+        <style name="DateTimeFormat" id="15">
+            <property name="fontFamily">"Roboto"</property>
+            <structure name="dateTimeFormat">
+                <property name="category">Custom</property>
+                <property name="pattern">dd.MM.yyyy hh:mm</property>
+            </structure>
+        </style>
+        <style name="ReportBody" id="103">
+            <property name="fontFamily">"Roboto"</property>
+            <property name="fontSize">12px</property>
+        </style>
+    </styles>
+    <page-setup>
+        <simple-master-page name="Simple MasterPage" id="2">
+            <property name="type">a4</property>
+            <property name="orientation">portrait</property>
+            <property name="topMargin">0.22916666666666666in</property>
+            <property name="leftMargin">0.23in</property>
+            <property name="bottomMargin">0.22916666666666666in</property>
+            <property name="rightMargin">0.25in</property>
+            <property name="borderBottomStyle">none</property>
+            <property name="borderLeftStyle">none</property>
+            <property name="borderRightStyle">none</property>
+            <property name="borderTopStyle">none</property>
+            <property name="paddingBottom">5pt</property>
+            <property name="lineHeight">normal</property>
+            <property name="display">block</property>
+            <property name="masterPage">Simple MasterPage</property>
+            <property name="pageBreakAfter">auto</property>
+            <property name="pageBreakBefore">auto</property>
+            <property name="pageBreakInside">auto</property>
+            <property name="showIfBlank">false</property>
+            <property name="canShrink">true</property>
+            <property name="showHeaderOnFirst">true</property>
+            <property name="showFooterOnLast">true</property>
+            <property name="headerHeight">0in</property>
+            <property name="footerHeight">0in</property>
+        </simple-master-page>
+    </page-setup>
+    <body>
+        <label name="CaptionCenter" id="104">
+            <property name="fontFamily">"Roboto"</property>
+            <property name="fontSize">15px</property>
+            <property name="fontWeight">normal</property>
+            <property name="fontVariant">normal</property>
+            <property name="marginBottom">5pt</property>
+            <property name="textAlign">center</property>
+            <property name="lineHeight">normal</property>
+            <property name="whiteSpace">pre</property>
+            <property name="display">block</property>
+            <property name="pageBreakAfter">auto</property>
+            <property name="canShrink">true</property>
+        </label>
+        <grid name="ReportBody" id="98">
+            <property name="fontFamily">"Roboto"</property>
+            <property name="width">100%</property>
+            <column id="99"/>
+            <row id="100">
+                <property name="fontFamily">"Roboto"</property>
+                <cell id="101">
+                    <property name="fontFamily">"Roboto"</property>
+                    <property name="fontSize">10px</property>
+                    <property name="paddingTop">0pt</property>
+                    <property name="paddingLeft">0pt</property>
+                    <property name="paddingBottom">0pt</property>
+                    <property name="paddingRight">0pt</property>
+                </cell>
+            </row>
+        </grid>
+    </body>
+</report>

@@ -1,14 +1,40 @@
-apply plugin: 'eclipse'
+allprojects {
+	group = 'org.zenframework.z8'
+	version = '1.3.0'
 
-subprojects {
+	buildscript {
+		repositories {
+			mavenLocal()
+			maven { url 'http://mvn.revoltsoft.ru/' }
+			mavenCentral()
+		}
+	}
+
+	repositories {
+		mavenLocal()
+		maven { url 'http://mvn.revoltsoft.ru/' }
+	}
+
 	apply plugin: 'eclipse'
-
+	apply plugin: 'maven'
+	apply plugin: 'maven-publish'
+	
 	ext.buildFolder = './target'
 
 	buildDir = buildFolder
 
+	publishing {
+		repositories {
+			mavenLocal()
+		}
+	}
+}
+
+subprojects {
 	plugins.withType(JavaPlugin) {
+		// Eclipse: default java output -> $buildDir/classes/default
 		eclipse.classpath.defaultOutputDir = new File(buildDir, 'classes/default')
+		// Eclipse: java source folders output -> $buildFolder/classes/...
 		eclipse.classpath.file.whenMerged {
 			entries.findAll { entry ->
 				entry instanceof org.gradle.plugins.ide.eclipse.model.SourceFolder
@@ -16,23 +42,35 @@ subprojects {
 				entry.output = entry.output.replace('bin/', "$buildFolder/classes/")
 			}
 		}
+
+		// Default java projects publishing
+		publishing {
+			publications {
+				maven(MavenPublication) {
+					from components.java
+				}
+			}
+		}
 	}
 
+	// Java version 1.8
 	tasks.withType(JavaCompile) {
 		sourceCompatibility = JavaVersion.VERSION_1_8
 		targetCompatibility = JavaVersion.VERSION_1_8
 	}
+}
 
-	repositories {
-		mavenLocal()
-		maven { url "http://mvn.revoltsoft.ru/" }
-	}
-
+// Helper plugin for printing task tree (can be removed)
+// Usage: gradle <task1> ... <taskN> taskTree
+/*allprojects {
 	buildscript {
 		repositories {
-			mavenLocal()
-			maven { url "http://mvn.revoltsoft.ru/" }
-			mavenCentral()
+			maven { url 'https://plugins.gradle.org/m2/' }
+		}
+		dependencies {
+			classpath 'gradle.plugin.com.dorongold.plugins:task-tree:1.5'
 		}
 	}
-}
+
+	apply plugin: 'com.dorongold.task-tree'
+}*/
