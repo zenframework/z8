@@ -378,19 +378,19 @@
 	margin-right: .5em;
 }
 
-.list .item>.column>.cell>.collapser.no-children {
+.list .item.no-children>.column>.cell>.collapser {
 	color: transparent;
 }
 
-.list .item>.column>.cell>.collapser:not(.no-children) {
+.list .item:not(.no-children)>.column>.cell>.collapser {
 	cursor: pointer;
 }
 
-.list .item>.column>.cell>.collapser:not(.no-children):hover {
+.list .item:not(.no-children)>.column>.cell>.collapser:hover {
 	color: #39c;
 }
 
-.focus .list .item.active>.column>.cell>.collapser:not(.no-children):hover {
+.focus .list .item:not(.no-children).active>.column>.cell>.collapser:hover {
 	color: #333;
 }
 
@@ -465,46 +465,46 @@
 	cursor: not-allowed
 }
 
-.tree-level-0 {
+.item.level-0>.column>.cell>.collapser {
 }
 
-.tree-level-1 {
+.item.level-1>.column>.cell>.collapser {
 	padding-left: 1.07142857em;
 }
 
-.tree-level-2 {
+.item.level-2>.column>.cell>.collapser {
 	padding-left: 2.14285714em;
 }
 
-.tree-level-3 {
+.item.level-3>.column>.cell>.collapser {
 	padding-left: 3.21428571em;
 }
 
-.tree-level-4 {
+.item.level-4>.column>.cell>.collapser {
 	padding-left: 4.28571429em;
 }
 
-.tree-level-5 {
+.item.level-5>.column>.cell>.collapser {
 	padding-left: 5.35714286em;
 }
 
-.tree-level-6 {
+.item.level-6>.column>.cell>.collapser {
 	padding-left: 6.42857143em;
 }
 
-.tree-level-7 {
+.item.level-7>.column>.cell>.collapser {
 	padding-left: 7.5em;
 }
 
-.tree-level-8 {
+.item.level-8>.column>.cell>.collapser {
 	padding-left: 8.57142857em;
 }
 
-.tree-level-9 {
+.item.level-9>.column>.cell>.collapser {
 	padding-left: 9.64285714em;
 }
 
-.tree-level-10 {
+.item.level-10>.column>.cell>.collapser {
 	padding-left: 10.71428571em;
 }
 
