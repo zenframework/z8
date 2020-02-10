@@ -11,8 +11,7 @@ Require-Bundle: org.eclipse.ui,
  org.eclipse.jface.text,
  org.eclipse.datatools.connectivity.oda,
  org.eclipse.datatools.connectivity.oda.design.ui,
- org.eclipse.datatools.connectivity.oda.profile,
- org.zenframework.z8.pde;bundle-version="1.3.0.qualifier"
-Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+ org.eclipse.datatools.connectivity.oda.profile
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ActivationPolicy: lazy
 Export-Package: org.zenframework.z8.oda.driver

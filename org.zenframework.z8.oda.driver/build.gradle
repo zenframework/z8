@@ -1,0 +1,21 @@
+apply plugin: 'java'
+
+dependencies {
+	implementation project(':org.zenframework.z8.server')
+}
+
+eclipse {
+	project {
+		natures 'org.eclipse.pde.PluginNature'
+	}
+	classpath {
+		containers 'org.eclipse.pde.core.requiredPlugins'
+	}
+}
+
+sourceSets.main.resources {
+	srcDirs projectDir
+	include 'plugin.xml'
+}
+
+jar.manifest.from "$projectDir/META-INF/MANIFEST.MF"

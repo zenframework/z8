@@ -19,14 +19,11 @@ configurations {
 }
 
 dependencies {
-	implementation project(':org.zenframework.z8.auth')
-	//implementation project(':org.zenframework.z8.boot')
-	implementation project(':org.zenframework.z8.interconnection')
-	implementation project(':org.zenframework.z8.lang')
 	implementation project(':org.zenframework.z8.server')
-	implementation project(':org.zenframework.z8.servlet')
-	implementation project(':org.zenframework.z8.webserver')
-
+	implementation project(':org.zenframework.z8.lang')
+	runtime project(':org.zenframework.z8.webserver')
+	runtime project(':org.zenframework.z8.oda.driver')
+	
 	boot project(':org.zenframework.z8.boot')
 	
 	runtime ('org.zenframework.z8.dependencies.jdbc:postgresql-42.0.0:3.0')
