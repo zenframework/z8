@@ -1,0 +1,10 @@
+import org.zenframework.z8.lang.Object;
+
+[native "org.zenframework.z8.app.runtime.RuntimeListener"]
+public class RuntimeListener extends Object {
+	
+	virtual public void beforeDBGenerate();
+
+	virtual public void afterDBGenerate();
+
+}

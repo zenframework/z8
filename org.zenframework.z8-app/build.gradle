@@ -1,0 +1,221 @@
+buildscript {
+	dependencies {
+		classpath 'com.eriwen:gradle-css-plugin:2.14.0'
+		classpath 'com.eriwen:gradle-js-plugin:2.14.1'
+	}
+}
+
+apply plugin: 'eclipse'
+apply plugin: 'application'
+apply plugin: 'war'
+apply plugin: 'js'
+apply plugin: 'css'
+
+configurations {
+	compiler
+	webzip
+	blzip
+	boot
+}
+
+dependencies {
+	implementation project(':org.zenframework.z8.auth')
+	//implementation project(':org.zenframework.z8.boot')
+	implementation project(':org.zenframework.z8.interconnection')
+	implementation project(':org.zenframework.z8.lang')
+	implementation project(':org.zenframework.z8.server')
+	implementation project(':org.zenframework.z8.servlet')
+	implementation project(':org.zenframework.z8.webserver')
+
+	boot project(':org.zenframework.z8.boot')
+	
+	runtime ('org.zenframework.z8.dependencies.jdbc:postgresql-42.0.0:3.0')
+
+	blzip project(path: ':org.zenframework.z8.lang', configuration: 'blzip')
+
+	webzip project(path: ':org.zenframework.z8.js', configuration: 'webzip')
+
+	compiler project(':org.zenframework.z8.compiler')
+}
+
+eclipse {
+	// Z8 nature
+	project {
+		natures 'org.zenframework.z8.pde.ProjectNature'
+		buildCommand 'org.zenframework.z8.pde.ProjectBuilder', JavaSource: "$buildFolder/.java"
+	}
+	// Eclipse: default java output -> $buildDir/classes/default
+	classpath.defaultOutputDir = new File(buildDir, 'classes/default')
+	// Eclipse: java source folders output -> $buildFolder/classes/...
+	classpath.file.whenMerged {
+		entries.findAll { entry ->
+			entry instanceof org.gradle.plugins.ide.eclipse.model.SourceFolder
+		}.each { entry ->
+			entry.output = entry.output.replace('bin/', "$buildFolder/classes/")
+		}
+	}
+}
+
+// Bl & Java config
+
+ext.blzipPath = "${System.properties['java.io.tmpdir'] ?: '/tmp'}/${project.name}/dependencies/bl"
+
+task unpackBlzip(type: Copy) {
+	configurations.blzip.asFileTree.each {
+		from(zipTree(it))
+	}
+	into blzipPath
+}
+
+task compileBl(type: JavaExec) {
+	dependsOn unpackBlzip
+
+	group = 'Build'
+	description = 'Compile BL sources'
+
+	classpath = configurations.compiler
+	main = 'org.zenframework.z8.compiler.cmd.Main'
+	args = [
+		projectDir,
+		"-projectName:${project.name}",
+		"-output:${buildDir}/.java",
+		"-requires:${blzipPath}"
+	]
+}
+
+tasks.withType(JavaCompile) {
+	dependsOn compileBl
+	sourceCompatibility = JavaVersion.VERSION_1_8
+	targetCompatibility = JavaVersion.VERSION_1_8
+}
+
+sourceSets {
+	main.java.srcDirs "${buildDir}/.java"
+}
+
+// Web config
+
+ext.webzipPath = "${System.properties['java.io.tmpdir'] ?: '/tmp'}/${project.name}/dependencies/web"
+
+// Unzip webzip dependencies
+task unpackWebzip(type: Copy) {
+	configurations.webzip.asFileTree.each {
+		from(zipTree(it))
+	}
+	into webzipPath
+}
+
+combineCss {
+	dependsOn unpackWebzip
+	source = [ "$webzipPath/debug/css/revolt.css" ].plus(
+			file("$projectDir/src/main/css/css.buildorder").readLines().collect { "$projectDir/src/main/css/$it" })
+	dest = file("${buildDir}/web/debug/css/${project.name}.css")
+}
+
+minifyCss {
+	source = combineCss
+	dest = "${buildDir}/web/css/${project.name}.css"
+	closure {
+		warningLevel = 'QUIET'
+	}
+}
+
+combineJs {
+	dependsOn unpackWebzip
+	source = [ "$webzipPath/debug/revolt.js" ].plus(
+			file("$projectDir/src/main/js/js.buildorder").readLines().collect { "$projectDir/src/main/js/$it" })
+	dest = file("${buildDir}/web/debug/${project.name}.js")
+}
+
+minifyJs {
+	source = combineJs
+	dest = file("${buildDir}/web/${project.name}.js")
+	closure {
+		warningLevel = 'QUIET'
+	}
+}
+
+task prepareWeb(type: Copy) {
+	from('src/main/webapp') {
+		filesMatching('**/*.html') {
+			expand project: project
+		}
+	}
+	into "${buildDir}/web"
+}
+
+task prepareDebug(type: Copy) {
+	from('src/main/webapp') {
+		exclude 'WEB-INF/**'
+		exclude 'debug.html'
+		filesMatching('**/*.html') {
+			expand project: project
+		}
+	}
+	into "${buildDir}/web/debug"
+}
+
+task assembleWeb(dependsOn: [minifyCss, minifyJs, prepareWeb, prepareDebug])
+
+// Application config
+
+application {
+	mainClassName = 'org.zenframework.z8.server.engine.ServerMain'
+}
+
+ext.appJavaXmx = '2048M'
+ext.appHost = java.net.InetAddress.getLocalHost().getHostAddress()
+ext.appPort = 9080
+ext.appMaxFormContentSize = 15000000
+
+run {
+	dependsOn assembleWeb
+	jvmArgs = [
+		"-Xmx${appJavaXmx}",
+		"-Xbootclasspath/p:${configurations.boot.singleFile.toPath()}",
+		"-Dorg.eclipse.jetty.server.Request.maxFormContentSize=${appMaxFormContentSize}",
+		"-Dorg.mortbay.http.HttpRequest.maxFormContentSize=${appMaxFormContentSize}",
+		"-Djava.rmi.server.hostname=${appHost}",
+		"-Dz8.webserver.port=${appPort}",
+		"-Dz8.webserver.webapp=${buildDir}/web"
+	]
+	args = ['-server', 'webserver']
+	workingDir = "${buildDir}/web/WEB-INF"
+}
+
+// WAR config
+
+war {
+	dependsOn assembleWeb
+	exclude('debug.html')
+	from("${buildDir}/web") {
+		include '**/*.css'
+		include '**/*.js'
+	}
+	filesMatching('**/*.html') {
+		expand project: project
+	}
+
+	// TODO Exclude WEB-INF/lib/*.pom files
+	//exclude('**/*.pom')
+}
+
+// Distribution config
+
+distributions {
+	main {
+		contents {
+			from(buildDir) {
+				include 'web/**'
+				//exclude 'web/debug/**'
+			}
+			from("$projectDir/src/main") {
+				include 'bin/**'
+				expand project: project
+			}
+		}
+	}
+}
+
+distZip.dependsOn assembleWeb
+distTar.dependsOn assembleWeb

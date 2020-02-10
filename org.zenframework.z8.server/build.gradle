@@ -14,9 +14,7 @@ eclipse.classpath.file.whenMerged {
 
 tasks.withType(JavaCompile) {
 	doFirst {
-		String compilerPath = configurations.boot.singleFile.toPath()
-		println 'QQQ ' + compilerPath
-		options.compilerArgs.add '-Xbootclasspath/p:' + compilerPath
+		options.compilerArgs.add '-Xbootclasspath/p:' + configurations.boot.singleFile.toPath()
 	}
 }
 

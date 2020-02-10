@@ -1,0 +1,107 @@
+import org.zenframework.z8.base.application.Application;
+import org.zenframework.z8.base.table.Sql;
+import org.zenframework.z8.base.table.Table;
+import org.zenframework.z8.base.table.system.Entries;
+import org.zenframework.z8.base.table.system.RoleFieldAccess;
+import org.zenframework.z8.base.table.system.RoleRequestAccess;
+import org.zenframework.z8.base.table.system.RoleTableAccess;
+import org.zenframework.z8.base.table.system.UserEntries;
+import org.zenframework.z8.base.table.system.UserRoles;
+import org.zenframework.z8.base.table.value.Field;
+import org.zenframework.z8.lang.Object;
+
+public class Setup {
+
+	private RoleTableAccess tableAccess;
+	private RoleFieldAccess fieldAccess;
+	private RoleRequestAccess requestAccess;
+	private UserRoles userRoles;
+	private UserEntries userEntries;
+	private Entries entries;
+
+	public final Table[] privateTables;
+	public final Table[] publicTables;
+	public final Object[] privateRequests;
+	public final Object[] publicRequests;
+	public final int[Object] publicEntries;
+
+	public void setTableAccess(Table[] tables, guid[] roles, bool read, bool write, bool create, bool copy, bool destroy) {
+		tableAccess.read = read;
+		tableAccess.write = write;
+		tableAccess.create = create;
+		tableAccess.copy = copy;
+		tableAccess.destroy = destroy;
+		tableAccess.update(Sql.inVector(tableAccess.tables.classId, classNames(tables)) && Sql.inVector(tableAccess.role, roles));
+
+		fieldAccess.read = read;
+		fieldAccess.write = write;
+		fieldAccess.update(Sql.inVector(fieldAccess.fields.tables.classId, classNames(tables)) && Sql.inVector(fieldAccess.role, roles));
+	}
+
+	public void setRequestAccess(Object[] requests, guid[] roles, bool execute) {
+		requestAccess.execute = execute;
+		requestAccess.update(Sql.inVector(requestAccess.requests.classId, classNames(requests)) && Sql.inVector(requestAccess.role, roles));
+	}
+
+	public void addRoles(guid[] roles, guid user) {
+		guid[guid] existingRoles;
+
+		userRoles.read(Field[] { userRoles.role }, userRoles.user == user);
+		while (userRoles.next())
+			existingRoles.add(userRoles.role.get(), userRoles.recordId());
+
+		for (guid role : roles) {
+			if (!existingRoles.containsKey(role)) {
+				userRoles.user = user;
+				userRoles.role = role;
+				userRoles.create();
+			}
+		}
+	}
+
+	public void addEntries(int[Object] entriesCls, guid user) {
+		guid[string] entriesByClass = idsByValue(entries, entries.classId);
+		guid[guid] existingEntries;
+
+		userEntries.read(Field[] { userEntries.entry }, userEntries.user == user);
+		while (userEntries.next())
+			existingEntries.add(userEntries.entry.get(), userEntries.recordId());
+
+		for (Object entry : entriesCls.keys()) {
+			guid entryId = entriesByClass[entry.className()];
+			guid existingEntry = existingEntries[entryId] ?: guid.Null;
+			userEntries.position = entriesCls[entry];
+			if (existingEntry == guid.Null) {
+				userEntries.user = user;
+				userEntries.entry = entryId;
+				userEntries.create();
+			} else {
+				userEntries.update(existingEntry);
+			}
+		}
+	}
+
+	public void removeEntries(Object[] entries, guid user) {
+		userEntries.destroy(Sql.inVector(userEntries.entries.classId, classNames(entries)) && userEntries.user == user);
+	}
+
+	private static guid[string] idsByValue(Table table, Field field) {
+		guid[string] idByValues;
+		table.read(Field[] { field });
+		while (table.next()) {
+			string value = field.primary().toString();
+			if (idByValues.containsKey(value))
+				Application.warning(table.name() + ": Duplicate value (" + field.name() + "): " + value);
+			idByValues.add(value, table.recordId());
+		}
+		return idByValues;
+	}
+
+	private static string[] classNames(Object[] objects) {
+		string[] objectsCls;
+		for (Object o : objects)
+			objectsCls.add(o.className());
+		return objectsCls;
+	}
+
+}

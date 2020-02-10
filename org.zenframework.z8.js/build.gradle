@@ -1,12 +1,16 @@
-apply plugin: 'base'
-apply plugin: 'js'
-apply plugin: 'css'
-
 buildscript {
 	dependencies {
 		classpath 'com.eriwen:gradle-css-plugin:2.14.0'
 		classpath 'com.eriwen:gradle-js-plugin:2.14.1'
 	}
+}
+
+apply plugin: 'base'
+apply plugin: 'js'
+apply plugin: 'css'
+
+configurations {
+	webzip
 }
 
 combineCss {
@@ -49,29 +53,25 @@ task minifyUtilJs(type: com.eriwen.gradle.js.tasks.MinifyJsTask) {
 	dest = file("${buildDir}/web/revolt.utils.js")
 }
 
-task assembleArtifact(type: Zip, group: 'web', dependsOn: [minifyCss, minifyFontsCss, minifyJs, minifyUtilJs]) {
+task assembleWebzip(type: Zip, group: 'web', dependsOn: [minifyCss, minifyFontsCss, minifyJs, minifyUtilJs]) {
 	archiveName "${project.name}.zip"
 	destinationDir file("$buildDir/libs/")
-	from "${buildDir}/web"
+	from("${buildDir}/web") {
+		includeEmptyDirs = false
+	}
 	description "Assemble archive $archiveName into ${relativePath(destinationDir)}"
 }
 
-assemble.dependsOn assembleArtifact
-build.dependsOn assemble
-publish.dependsOn build
-
-configurations {
-	archive
-}
+assemble.dependsOn assembleWebzip
 
 artifacts {
-	archive assembleArtifact
+	webzip assembleWebzip
 }
 
 publishing {
 	publications {
 		mavenJava(MavenPublication) {
-			artifact source: assembleArtifact, extension: 'zip'
+			artifact source: assembleWebzip, extension: 'zip', classifier: 'web'
 		}
 	}
 }

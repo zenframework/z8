@@ -9,6 +9,13 @@ eclipse {
 
 configurations {
 	compiler
+	blzip
+}
+
+dependencies {
+	implementation project(':org.zenframework.z8.server')
+
+	compiler project(':org.zenframework.z8.compiler')
 }
 
 task compileBl(type: JavaExec) {
@@ -20,16 +27,34 @@ task compileBl(type: JavaExec) {
 	args = [ projectDir, "-projectName:${project.name}", "-output:${buildDir}/.java" ]
 }
 
-dependencies {
-	implementation project(':org.zenframework.z8.server')
-
-	compiler project(':org.zenframework.z8.compiler')
-}
-
 sourceSets {
 	main.java.srcDirs "${buildDir}/.java"
 }
 
 tasks.withType(JavaCompile) {
 	dependsOn compileBl
+}
+
+task assembleBlzip(type: Zip, group: 'bl', dependsOn: [compileBl]) {
+	archiveName "${project.name}.zip"
+	destinationDir file("$buildDir/libs/")
+	from(projectDir) {
+		include '**/*.bl'
+		includeEmptyDirs = false
+	}
+	description "Assemble archive $archiveName into ${relativePath(destinationDir)}"
+}
+
+assemble.dependsOn assembleBlzip
+
+artifacts {
+	blzip assembleBlzip
+}
+
+publishing {
+	publications {
+		mavenJava(MavenPublication) {
+			artifact source: assembleBlzip, extension: 'zip', classifier: 'bl'
+		}
+	}
 }
