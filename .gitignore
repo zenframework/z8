@@ -6,5 +6,4 @@ target
 .project
 .settings
 .gradle
-pom.xml.versionsBackup
 *.log
