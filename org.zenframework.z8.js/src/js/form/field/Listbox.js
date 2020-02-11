@@ -613,8 +613,7 @@ Z8.define('Z8.form.field.Listbox', {
 	},
 
 	getSelection: function() {
-		var item = this.list != null ? this.list.currentItem() : null;
-		return item != null ? item.record : null;
+		return this.list != null ? this.list.getCurrentRecord() : null;
 	},
 
 	getChecked: function() {
@@ -645,14 +644,6 @@ Z8.define('Z8.form.field.Listbox', {
 	},
 
 	select: function(item) {
-		var list = this.list;
-		if(String.isString(item))
-			item = list.getItem(item);
-		else if(Number.isNumber(item))
-			item = list.getAt(Math.min(item, list.getCount() - 1));
-		else if(item != null && item.isModel)
-			item = list.getItem(item.id);
-
 		this.list.setSelection(item);
 		return item;
 	},

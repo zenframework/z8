@@ -337,7 +337,7 @@ Z8.define('Z8.list.List', {
 		this.callParent();
 
 		if(!this.manualItemsRendering) {
-			var item = this.currentItem() || (this.autoSelectFirst ? 0 : null);
+			var item = this.getCurrentItem() || (this.autoSelectFirst ? 0 : null);
 			this.selectItem(item, this.autoSelectFirst);
 		}
 
@@ -1006,10 +1006,20 @@ Z8.define('Z8.list.List', {
 		return -1;
 	},
 
+	getItemByTarget: function(target) {
+		while(target != null) {
+			var item = target.listItem;
+			if(item != null)
+				return item.getList() == this ? item : null;
+			target = target.parentNode;
+		}
+		return null;
+	},
+
 	setTabIndex: function(tabIndex) {
 		tabIndex = this.callParent(tabIndex);
 
-		var item = this.currentItem();
+		var item = this.getCurrentItem();
 
 		if(item != null)
 			item.setTabIndex(tabIndex);
@@ -1044,7 +1054,7 @@ Z8.define('Z8.list.List', {
 
 		var items = this.getItems();
 
-		index = index == null ? this.currentItem() : index;
+		index = index == null ? this.getCurrentItem() : index;
 
 		if(index instanceof Z8.list.Item)
 			index = this.getIndex(index);
@@ -1092,8 +1102,13 @@ Z8.define('Z8.list.List', {
 		return DOM.focus(this);
 	},
 
-	currentItem: function() {
+	getCurrentItem: function() {
 		return this.getItem(this.getValue());
+	},
+
+	getCurrentRecord: function() {
+		var item = this.getCurrentItem();
+		return item != null ? item.record : null;
 	},
 
 	getChecked: function(records) {
@@ -1120,7 +1135,7 @@ Z8.define('Z8.list.List', {
 	},
 
 	selectItem: function(item, forceEvent) {
-		var currentItem = this.currentItem();
+		var currentItem = this.getCurrentItem();
 
 		if(currentItem != item && currentItem != null)
 			this.activateItem(currentItem, false);
@@ -1138,6 +1153,13 @@ Z8.define('Z8.list.List', {
 	},
 
 	setSelection: function(item) {
+		if(String.isString(item))
+			item = this.getItem(item);
+		else if(Number.isNumber(item))
+			item = this.getAt(Math.min(item, this.getCount() - 1));
+		else if(item != null && item.isModel)
+			item = this.getItem(item.id);
+
 		this.selectItem(item, true);
 	},
 
@@ -1147,7 +1169,7 @@ Z8.define('Z8.list.List', {
 		if(this.isEditing() || this.isFiltering() && key != Event.ESC)
 			return;
 
-		var item = this.currentItem();
+		var item = this.getCurrentItem();
 
 		if(key == Event.DOWN || key == Event.TAB && !event.shiftKey && this.useTAB) {
 			if(this.focus(item, 'next', true))
@@ -1647,7 +1669,7 @@ Z8.define('Z8.list.List', {
 		this.openEditor(editor);
 		this.currentEditor = editor;
 
-		if(item != this.currentItem())
+		if(item != this.getCurrentItem())
 			this.selectItem(item);
 
 		return true;
@@ -1735,7 +1757,7 @@ Z8.define('Z8.list.List', {
 
 		if(key == Event.ESC) {
 			this.cancelEdit(this.currentEditor);
-			this.focus(this.currentItem());
+			this.focus(this.getCurrentItem());
 			event.stopEvent();
 		} else if(key == Event.ENTER) {
 			this.finishEdit(this.currentEditor);

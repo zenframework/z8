@@ -27,6 +27,10 @@ Z8.define('Z8.list.Item', {
 		return this.record;
 	},
 
+	getList: function() {
+		return this.list;
+	},
+
 	initComponent: function() {
 		this.callParent();
 
@@ -115,15 +119,11 @@ Z8.define('Z8.list.Item', {
 
 			for(var i = 0, length = fields.length; i < length; i++) {
 				var field = fields[i];
-				var title = null;
 				var text = this.renderText(field, record.get(field.name));
 
-				if(String.isString(text))
-					title = Format.htmlEncode(Format.br2nl(text));
 
-				var cls = this.getTextCls(field, record);
-				text = this.textMarkup(text, cls + (cls ? ' ' : '') + 'text' + (field.source != null && this.follow ? ' follow' : ''));
-				var cell = { cls: 'cell', cn: i == 0 ? icons.add(text) : text };
+				text = this.textMarkup(text, this.getTextCls(field, record) + ' text');
+				var cell = { cls: this.getCellCls(field, record) + ' cell', cn: i == 0 ? icons.add(text) : text };
 
 				var type = field.type;
 				columns.push({ tag: 'td', cls: 'column' + (type != null ? ' ' + type : ''), field: i, cn: [cell], title: title });
@@ -147,11 +147,18 @@ Z8.define('Z8.list.Item', {
 	},
 
 	getTextCls: function(field, record) {
-		return '';
+		return field.source != null && this.follow ? ' follow' : '';
 	},
 
 	textMarkup: function(text, cls) {
-		return { tag: 'span', cls: cls, cn: [text] };
+		var markup = { tag: 'span', cls: cls, cn: [text] };
+		if(String.isString(text))
+			markup.title = Format.htmlEncode(Format.br2nl(text));
+		return markup;
+	},
+
+	getCellCls: function(field, record) {
+		return '';
 	},
 
 	renderText: function(field, value) {
@@ -206,7 +213,7 @@ Z8.define('Z8.list.Item', {
 	},
 
 	completeRender: function() {
-		this.callParent();
+		Z8.Component.prototype.completeRender.call(this);
 
 		this.collapser = this.selectNode('.item>.column>.cell>.collapser');
 		this.collapserIcon = this.selectNode('.item>.column>.cell>.collapser>.icon');
@@ -219,9 +226,13 @@ Z8.define('Z8.list.Item', {
 		DOM.on(this, 'mouseDown', this.onMouseDown, this);
 		DOM.on(this, 'click', this.onClick, this);
 		DOM.on(this, 'dblClick', this.onDblClick, this);
+
+		this.dom.listItem = this;
 	},
 
 	onDestroy: function() {
+		this.dom.listItem = null;
+
 		DOM.un(this, 'mouseDown', this.onMouseDown, this);
 		DOM.un(this, 'click', this.onClick, this);
 		DOM.un(this, 'dblClick', this.onDblClick, this);
@@ -405,7 +416,6 @@ Z8.define('Z8.list.Item', {
 
 		if(!this.isEnabled())
 			return;
-
 
 		if(target == this.collapser || target == this.collapserIcon) {
 			this.collapse(!this.collapsed);

@@ -269,11 +269,11 @@ Z8.define('Z8.form.field.Combobox', {
 		return this.isEmptyValue(value) ? '' : this.formatValue(this.displayValue);
 	},
 
-	currentItem: function() {
+	getCurrentItem: function() {
 		return this.dropdown.getItem(this.getValue());
 	},
 
-	currentIndex: function() {
+	getCurrentIndex: function() {
 		return this.dropdown.getIndex(this.getValue());
 	},
 
@@ -422,9 +422,9 @@ Z8.define('Z8.form.field.Combobox', {
 
 			if(String.isString(item)) {
 				direction = item;
-				item = this.currentItem();
+				item = this.getCurrentItem();
 			} else
-				item = item || this.currentItem();
+				item = item || this.getCurrentItem();
 
 			var index = item != null ? this.dropdown.getIndex(item.getValue()) : -1;
 
@@ -465,7 +465,7 @@ Z8.define('Z8.form.field.Combobox', {
 			if(!success)
 				return;
 
-			var index = this.currentIndex();
+			var index = this.getCurrentIndex();
 			var item = this.findItem(key, index + 1);
 
 			item = this.findItem(key, index + 1);
@@ -546,7 +546,7 @@ Z8.define('Z8.form.field.Combobox', {
 		var width = DOM.getOffsetWidth(this.input);
 		DOM.setWidth(dropdown, width);
 
-		var item = this.currentItem();
+		var item = this.getCurrentItem();
 		var focusAt = keepFocus ? false : item;
 
 		var pagerSize = this.getPagerSize();
@@ -621,7 +621,7 @@ Z8.define('Z8.form.field.Combobox', {
 		var editor = this.editor;
 		var dropdown = this.dropdown;
 		var dropdownOpen = dropdown.isVisible();
-		var currentItem = this.dropdown.currentItem();
+		var currentItem = this.dropdown.getCurrentItem();
 
 		var me = this;
 		var isTrigger = function() {
