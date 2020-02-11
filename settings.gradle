@@ -14,8 +14,8 @@ include 'org.zenframework.z8.webserver'
 include 'org.zenframework.z8.js'
 
 include 'org.zenframework.z8.oda.driver'
-//include 'org.zenframework.z8.pde'
-//include 'org.zenframework.z8.oda.designer'
+include 'org.zenframework.z8.pde'
+include 'org.zenframework.z8.oda.designer'
 
 include 'org.zenframework.z8-app'
 project(":org.zenframework.z8-app").name = 'z8-app'
