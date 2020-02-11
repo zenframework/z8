@@ -5,9 +5,9 @@ configurations {
 }
 
 dependencies {
-	compile files("lib/org.zenframework.z8.compiler.jar")
-	compile files("lib/org.zenframework.z8.server.jar")
-	compile files("lib/tools.jar")
+	compile files("${projectDir}/lib/org.zenframework.z8.compiler.jar")
+	compile files("${projectDir}/lib/org.zenframework.z8.server.jar")
+	compile files("${projectDir}/lib/tools.jar")
 	
 	lib project(':org.zenframework.z8.compiler')
 	lib project(':org.zenframework.z8.server')
@@ -26,6 +26,7 @@ eclipse {
 sourceSets.main.resources {
 	srcDirs projectDir
 	include 'plugin.xml'
+	include 'lib/**'
 }
 
 jar.manifest.from "${projectDir}/META-INF/MANIFEST.MF"
@@ -39,3 +40,8 @@ task copyLibs(type: Copy) {
 }
 
 tasks.eclipseClasspath.dependsOn copyLibs
+
+// Temporarily disabled
+// TODO P2 dependencies
+compileJava.enabled = false
+jar.enabled = false

@@ -5,8 +5,9 @@ allprojects {
 	buildscript {
 		repositories {
 			mavenLocal()
-			maven { url 'http://mvn.revoltsoft.ru/' }
 			mavenCentral()
+			maven { url 'http://mvn.revoltsoft.ru/' }
+			maven { url 'https://plugins.gradle.org/m2/' }
 		}
 	}
 
@@ -64,9 +65,6 @@ subprojects {
 // Usage: gradle <task1> ... <taskN> taskTree
 /*allprojects {
 	buildscript {
-		repositories {
-			maven { url 'https://plugins.gradle.org/m2/' }
-		}
 		dependencies {
 			classpath 'gradle.plugin.com.dorongold.plugins:task-tree:1.5'
 		}
