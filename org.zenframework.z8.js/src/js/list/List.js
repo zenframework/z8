@@ -26,6 +26,7 @@ Z8.define('Z8.list.List', {
 
 	confirmSelection: false,
 	autoSelectFirst: true,
+	selectOnOver: false,
 
 	itemsRendered: false,
 	manualItemsRendering: false,
@@ -325,6 +326,9 @@ Z8.define('Z8.list.List', {
 
 			DOM.on(this, 'keyDown', this.onKeyDown, this);
 
+			if(this.selectOnOver)
+				DOM.on(this, 'mouseMove', this.onMouseMove, this);
+
 			if(headersScroller != null) {
 				DOM.on(window, 'resize', this.onResize, this);
 				DOM.on(totalsScroller, 'scroll', this.onScroll, this);
@@ -524,6 +528,8 @@ Z8.define('Z8.list.List', {
 
 	onDestroy: function() {
 		DOM.un(this, 'keyDown', this.onKeyDown, this);
+		DOM.un(this, 'mouseMove', this.onMouseMove, this);
+
 		DOM.un(this.totalsScroller, 'scroll', this.onScroll, this);
 		DOM.un(this.itemsScroller, 'scroll', this.onScroll, this);
 		DOM.un(window, 'resize', this.onResize, this);
@@ -1161,6 +1167,15 @@ Z8.define('Z8.list.List', {
 			item = this.getItem(item.id);
 
 		this.selectItem(item, true);
+	},
+
+	onMouseMove: function(event, target) {
+		if(!this.selectOnOver)
+			return;
+
+		var item = this.getItemByTarget(target);
+		if(item != null)
+			this.selectItem(item, true);
 	},
 
 	onKeyDown: function(event, target) {

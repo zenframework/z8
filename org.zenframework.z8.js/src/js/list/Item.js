@@ -1,20 +1,6 @@
 Z8.define('Z8.list.Item', {
 	extend: 'Z8.Component',
 
-	/*
-	* config:
-	*     active: false, 
-	*     icon: '',
-	*     fields: [] | '',
-	*     checked: false,
-	*
-	* private:
-	*     list: false,
-	*     icon: null,
-	*     item: null,
-	*     handlers: null
-	*/
-
 	constructor: function(config) {
 		config = config || {};
 		config.collapsed = config.collapsed !== false;
