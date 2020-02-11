@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<project name="org.zenframework.z8.oda.designer" default="makejar" basedir=".">
-	<copy file="plugin.xml" tofile="bin/main/java/plugin.xml" overwrite="true"/>
-	<target name ="makejar" description="org.zenframework.z8.oda.designer.jar">
-		<jar jarfile="bin/org.zenframework.z8.oda.designer.jar" includes="**" basedir="bin/main/java" manifest="META-INF/MANIFEST.MF"/>
-	</target>
-</project>

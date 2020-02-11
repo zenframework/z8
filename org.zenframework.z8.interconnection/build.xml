@@ -1,6 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<project name="org.zenframework.z8.interconnection" default="makejar" basedir=".">
-  <target name ="makejar" description="org.zenframework.z8.interconnection.jar">
-    <jar jarfile="bin/org.zenframework.z8.interconnection.jar" includes="**/*.class" basedir="bin/main/java"/>
-  </target>
-</project>
