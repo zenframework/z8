@@ -3,3 +3,9 @@ apply plugin: 'java'
 dependencies {
 	compile ('org.zenframework.z8.dependencies:z8-dependencies-eclipse:3.0@pom') { transitive=true }
 }
+
+publishing.publications {
+	maven(MavenPublication) {
+		from components.java
+	}
+}

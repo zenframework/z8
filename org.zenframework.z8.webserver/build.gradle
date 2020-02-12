@@ -6,3 +6,9 @@ dependencies {
 
 	compile ('org.zenframework.z8.dependencies:z8-dependencies-jetty:3.0@pom') { transitive=true }
 }
+
+publishing.publications {
+	maven(MavenPublication) {
+		from components.java
+	}
+}

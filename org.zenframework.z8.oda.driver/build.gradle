@@ -19,3 +19,9 @@ sourceSets.main.resources {
 }
 
 jar.manifest.from "$projectDir/META-INF/MANIFEST.MF"
+
+publishing.publications {
+	maven(MavenPublication) {
+		from components.java
+	}
+}

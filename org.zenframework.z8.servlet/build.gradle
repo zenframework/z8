@@ -5,3 +5,9 @@ dependencies {
 	implementation project(':org.zenframework.z8.auth')
 	implementation project(':org.zenframework.z8.interconnection')
 }
+
+publishing.publications {
+	maven(MavenPublication) {
+		from components.java
+	}
+}

@@ -27,3 +27,9 @@ tasks.withType(JavaCompile) {
 		options.compilerArgs.add '-Xbootclasspath/p:' + configurations.boot.singleFile.toPath()
 	}
 }
+
+publishing.publications {
+	maven(MavenPublication) {
+		from components.java
+	}
+}

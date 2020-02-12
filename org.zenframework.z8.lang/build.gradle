@@ -48,10 +48,11 @@ artifacts {
 	blzip assembleBlzip
 }
 
-publishing {
-	publications {
-		mavenJava(MavenPublication) {
-			artifact source: assembleBlzip, extension: 'zip', classifier: 'bl'
-		}
+publishing.publications {
+	maven(MavenPublication) {
+		from components.java
+	}
+	mavenBl(MavenPublication) {
+		artifact source: assembleBlzip, extension: 'zip', classifier: 'bl'
 	}
 }

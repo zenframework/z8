@@ -17,9 +17,9 @@ allprojects {
 	}
 
 	apply plugin: 'eclipse'
-	apply plugin: 'maven'
+	//apply plugin: 'maven'
 	apply plugin: 'maven-publish'
-	
+
 	ext.buildFolder = './target'
 
 	buildDir = buildFolder
@@ -45,15 +45,6 @@ subprojects {
 		}
 
 		sourceSets.main.java.outputDir = file("${buildDir}/classes/main")
-
-		// Default java projects publishing
-		publishing {
-			publications {
-				maven(MavenPublication) {
-					from components.java
-				}
-			}
-		}
 	}
 
 	// Java version 1.8
@@ -65,12 +56,10 @@ subprojects {
 
 // Helper plugin for printing task tree (can be removed)
 // Usage: gradle <task1> ... <taskN> taskTree
-/*allprojects {
-	buildscript {
-		dependencies {
-			classpath 'gradle.plugin.com.dorongold.plugins:task-tree:1.5'
-		}
-	}
-
-	apply plugin: 'com.dorongold.task-tree'
-}*/
+//buildscript {
+//	dependencies {
+//		classpath 'gradle.plugin.com.dorongold.plugins:task-tree:1.5'
+//	}
+//}
+//
+//apply plugin: 'com.dorongold.task-tree'

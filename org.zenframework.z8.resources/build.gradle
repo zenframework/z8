@@ -1,0 +1,27 @@
+apply plugin: 'eclipse'
+apply plugin: 'base'
+
+configurations {
+	reszip
+}
+
+task assembleReszip(type: Zip, group: 'res') {
+	archiveName "${project.name}.zip"
+	destinationDir file("${buildDir}/libs/")
+	from("${projectDir}/src") {
+		includeEmptyDirs = false
+	}
+	description "Assemble archive ${archiveName} into ${relativePath(destinationDir)}"
+}
+
+assemble.dependsOn assembleReszip
+
+artifacts {
+	reszip assembleReszip
+}
+
+publishing.publications {
+	mavenRes(MavenPublication) {
+		artifact source: assembleReszip, extension: 'zip', classifier: 'res'
+	}
+}

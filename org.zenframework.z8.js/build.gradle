@@ -5,9 +5,10 @@ buildscript {
 	}
 }
 
-apply plugin: 'base'
+//apply plugin: 'base'
 apply plugin: 'js'
 apply plugin: 'css'
+apply plugin: 'maven'
 
 configurations {
 	webzip
@@ -55,11 +56,11 @@ task minifyUtilJs(type: com.eriwen.gradle.js.tasks.MinifyJsTask) {
 
 task assembleWebzip(type: Zip, group: 'web', dependsOn: [minifyCss, minifyFontsCss, minifyJs, minifyUtilJs]) {
 	archiveName "${project.name}.zip"
-	destinationDir file("$buildDir/libs/")
+	destinationDir file("${buildDir}/libs/")
 	from("${buildDir}/web") {
 		includeEmptyDirs = false
 	}
-	description "Assemble archive $archiveName into ${relativePath(destinationDir)}"
+	description "Assemble archive ${archiveName} into ${relativePath(destinationDir)}"
 }
 
 assemble.dependsOn assembleWebzip
@@ -68,10 +69,8 @@ artifacts {
 	webzip assembleWebzip
 }
 
-publishing {
-	publications {
-		mavenJava(MavenPublication) {
-			artifact source: assembleWebzip, extension: 'zip', classifier: 'web'
-		}
+publishing.publications {
+	mavenWeb(MavenPublication) {
+		artifact source: assembleWebzip, extension: 'zip', classifier: 'web'
 	}
 }

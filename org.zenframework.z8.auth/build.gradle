@@ -3,3 +3,9 @@ apply plugin: 'java'
 dependencies {
 	implementation project(':org.zenframework.z8.server')
 }
+
+publishing.publications {
+	maven(MavenPublication) {
+		from components.java
+	}
+}
