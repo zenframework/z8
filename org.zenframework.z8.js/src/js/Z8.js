@@ -18,7 +18,7 @@ var Z8 = {
 	},
 
 	addMember: function(prototype, member, name) {
-		if(member == undefined)
+		if(member === undefined)
 			return;
 
 		if(typeof member == 'function' && member.$owner == null) {

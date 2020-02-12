@@ -1,26 +1,20 @@
 Z8.define('Z8.list.Item', {
 	extend: 'Z8.Component',
 
-	/*
-	* config:
-	*     active: false, 
-	*     icon: '',
-	*     fields: [] | '',
-	*     checked: false,
-	*
-	* private:
-	*     list: false,
-	*     icon: null,
-	*     item: null,
-	*     handlers: null
-	*/
-
 	constructor: function(config) {
 		config = config || {};
 		config.collapsed = config.collapsed !== false;
 		config.hidden = 0;
 		config.follow = true;
 		this.callParent(config);
+	},
+
+	getRecord: function() {
+		return this.record;
+	},
+
+	getList: function() {
+		return this.list;
 	},
 
 	initComponent: function() {
@@ -34,9 +28,6 @@ Z8.define('Z8.list.Item', {
 
 			if(this.isTree())
 				this.list.on('contentChange', this.updateCollapsedState, this);
-
-			var icon = record.get(record.getIconProperty());
-			this.icon = icon != null ? icon : this.icon;
 
 			if(record.on != null)
 				record.on('change', this.onRecordChange, this);
@@ -63,7 +54,7 @@ Z8.define('Z8.list.Item', {
 			var field = fields[i];
 			var name = field.name;
 			if(modified.hasOwnProperty(name))
-				this.setText(i, this.renderCellText(field, record.get(name)));
+				this.setText(i, this.renderText(field, record.get(name)));
 		}
 
 		DOM.setCls(this, this.getCls());
@@ -73,74 +64,55 @@ Z8.define('Z8.list.Item', {
 
 		var icon = record.getIconProperty();
 		if(icon != null && modified.hasOwnProperty(icon))
-			this.setIcon(record.get(icon));
+			this.updateIcon();
 	},
 
 	columnsMarkup: function() {
-		var record = this.record;
+		var columns = [], icons = [];
+		var list = this.list;
 
-		var columns = [];
-		if(this.list.checks) {
+		if(list.checks) {
 			var check = { tag: 'i', cls: 'fa ' + (this.checked ? 'fa-check-square' : 'fa-square-o')};
 			var text = { cls: 'text', cn: [check] };
 			var cell = { cls: 'cell', cn: [text] };
 			columns.push({ tag: 'td', cls: 'check column', cn: [cell] });
 		}
 
-		if(this.list.locks) {
+		if(list.locks) {
 			var lock = { tag: 'i', cls: 'fa ' + (this.isReadOnly() ? 'fa-lock' : '')};
 			var text = { cls: 'text', cn: [lock] };
 			var cell = { cls: 'cell', cn: [text] };
 			columns.push({ tag: 'td', cls: 'lock column', cn: [cell] });
 		}
 
-		var icons = [];
+		if(this.isTree()) {
+			var collapsed = this.isCollapsed();
+			this.rotation = collapsed ? 90 : -90;
 
-		if(this.icon != null) {
-			var iconCls = this.setIcon(this.icon);
-			var icon = { tag: 'i', cls: iconCls.join(' '), html: String.htmlText() };
-			icons.push(icon);
+			var collapserIcon = { tag: 'i', cls: 'fa fa-caret-' + (collapsed ? 'right' : 'down') + ' icon', html: String.htmlText() };
+			var collapser = { tag: 'span', cls: 'collapser', cn: [collapserIcon] };
+			icons.push(collapser);
 		}
 
-		return columns.concat(this.fieldsMarkup(icons, record));
-	},
+		var record = this.record;
 
-	fieldsMarkup: function(icons, record) {
-		var columns = [];
-
-		var cls = 'column';
+		var iconCls = this.getIconCls();
+		if(iconCls != null)
+			icons.push({ tag: 'i', cls: iconCls.join(' '), html: String.htmlText() });
 
 		if(record != null) {
-			var fields = this.list.getFields();
-
-			var isTree = this.isTree();
-			var hasChildren = this.hasChildren();
-			var collapsed = this.isCollapsed();
-
-			if(isTree) {
-				this.rotation = collapsed ? 90 : -90;
-
-				var level = this.getLevel();
-				var collapserIcon = { tag: 'i', cls: 'fa fa-caret-' + (collapsed ? 'right' : 'down') + ' icon', html: String.htmlText() };
-				var collapser = { tag: 'span', cls: 'collapser tree-level-' + level + (hasChildren ? '' : ' no-children'), cn: [collapserIcon] };
-				icons.insert(collapser, 0);
-			}
-
-			var treeCls = this.isTree() ? 'tree' : '';
+			var fields = list.getFields();
 
 			for(var i = 0, length = fields.length; i < length; i++) {
 				var field = fields[i];
-				var title = null;
-				var text = this.renderCellText(field, record.get(field.name));
+				var text = this.renderText(field, record.get(field.name));
+
+
+				text = this.textMarkup(text, this.getTextCls(field, record) + ' text');
+				var cell = { cls: this.getCellCls(field, record) + ' cell', cn: i == 0 ? icons.add(text) : text };
 
 				var type = field.type;
-
-				if(String.isString(text))
-					title = Format.htmlEncode(Format.br2nl(text));
-
-				text = { tag: 'span', cls: this.getCellCls(field, record), cn: [text] };
-				var cell = { cls: 'cell', cn: i == 0 ? icons.concat([text]) : [text] };
-				columns.push({ tag: 'td', cls: cls + (type != null ? ' ' + type : '') + (i == 0 ? ' ' + treeCls : ''), field: i, cn: [cell], title: title });
+				columns.push({ tag: 'td', cls: 'column' + (type != null ? ' ' + type : ''), field: i, cn: [cell], title: title });
 			}
 		} else {
 			var text = String.htmlText(this.text);
@@ -154,17 +126,28 @@ Z8.define('Z8.list.Item', {
 
 			text = { tag: 'div', cls: 'text' + (shortcut != null ? ' shortcuts' : ''), cn: shortcut != null ? [text, shortcut] : [text] };
 			var cell = { cls: 'cell', cn: icons.concat([text]) };
-			columns.push({ tag: 'td', cls: cls, cn: [cell], title: title });
+			columns.push({ tag: 'td', cls: 'column', cn: [cell], title: title });
 		}
 
 		return columns;
 	},
 
-	getCellCls: function(field, record) {
-		return 'text' + (field.source != null && this.follow ? ' follow' : '');
+	getTextCls: function(field, record) {
+		return field.source != null && this.follow ? ' follow' : '';
 	},
 
-	renderCellText: function(field, value) {
+	textMarkup: function(text, cls) {
+		var markup = { tag: 'span', cls: cls, cn: [text] };
+		if(String.isString(text))
+			markup.title = Format.htmlEncode(Format.br2nl(text));
+		return markup;
+	},
+
+	getCellCls: function(field, record) {
+		return '';
+	},
+
+	renderText: function(field, value) {
 		if(field.renderer != null)
 			return String.htmlText(field.renderer.call(field, value));
 
@@ -202,6 +185,12 @@ Z8.define('Z8.list.Item', {
 		if(this.isHidden())
 			cls.pushIf('display-none');
 
+		if(this.isTree()) {
+			cls.pushIf('level-' + this.getLevel());
+			if(!this.hasChildren())
+				cls.pushIf('no-children');
+		}
+
 		return cls;
 	},
 
@@ -210,7 +199,7 @@ Z8.define('Z8.list.Item', {
 	},
 
 	completeRender: function() {
-		this.callParent();
+		Z8.Component.prototype.completeRender.call(this);
 
 		this.collapser = this.selectNode('.item>.column>.cell>.collapser');
 		this.collapserIcon = this.selectNode('.item>.column>.cell>.collapser>.icon');
@@ -223,9 +212,13 @@ Z8.define('Z8.list.Item', {
 		DOM.on(this, 'mouseDown', this.onMouseDown, this);
 		DOM.on(this, 'click', this.onClick, this);
 		DOM.on(this, 'dblClick', this.onDblClick, this);
+
+		this.dom.listItem = this;
 	},
 
 	onDestroy: function() {
+		this.dom.listItem = null;
+
 		DOM.un(this, 'mouseDown', this.onMouseDown, this);
 		DOM.un(this, 'click', this.onClick, this);
 		DOM.un(this, 'dblClick', this.onDblClick, this);
@@ -268,11 +261,23 @@ Z8.define('Z8.list.Item', {
 		DOM.swapCls(this.checkIcon, checked, 'fa-check-square', 'fa-square-o');
 	},
 
+	getIcon: function() {
+		var record = this.record;
+		return (record != null ? record.get(record.getIconProperty()) : null) || this.icon;
+	},
+
 	setIcon: function(icon) {
 		this.icon = icon;
-		var cls = this.iconCls = DOM.parseCls(icon).pushIf('fa', 'fa-fw', 'icon');
-		DOM.setCls(this.iconElement, this.iconCls);
-		return cls;
+		this.updateIcon();
+	},
+
+	updateIcon: function() {
+		DOM.setCls(this.iconElement, this.getIconCls());
+	},
+
+	getIconCls: function() {
+		var icon = this.getIcon();
+		return icon != null ? DOM.parseCls(icon).add(['fa', 'fa-fw', 'icon']) : null;
 	},
 
 	setEnabled: function(enabled) {
@@ -287,7 +292,7 @@ Z8.define('Z8.list.Item', {
 
 	getText: function(fieldName) {
 		var record = this.record;
-		return this.renderCellText(this.list.getField(fieldName), record != null ? record.get(fieldName) : '');
+		return this.renderText(this.list.getField(fieldName), record != null ? record.get(fieldName) : '');
 	},
 
 	isTree: function() {
@@ -337,7 +342,7 @@ Z8.define('Z8.list.Item', {
 
 	updateCollapser: function() {
 		var hasChildren = this.hasChildren();
-		DOM.swapCls(this.collapser, !hasChildren, 'no-children');
+		DOM.swapCls(this, !hasChildren, 'no-children');
 	},
 
 	collapse: function(collapsed) {
@@ -397,7 +402,6 @@ Z8.define('Z8.list.Item', {
 
 		if(!this.isEnabled())
 			return;
-
 
 		if(target == this.collapser || target == this.collapserIcon) {
 			this.collapse(!this.collapsed);
