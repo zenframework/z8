@@ -33,7 +33,7 @@ tasks.withType(JavaCompile) {
 }
 
 task assembleBlzip(type: Zip, group: 'bl', dependsOn: [compileBl]) {
-	archiveName "${project.name}.zip"
+	archiveName "${project.name}-bl.jar"
 	destinationDir file("$buildDir/libs/")
 	from(projectDir) {
 		include '**/*.bl'
@@ -53,6 +53,6 @@ publishing.publications {
 		from components.java
 	}
 	mavenBl(MavenPublication) {
-		artifact source: assembleBlzip, extension: 'zip', classifier: 'bl'
+		artifact source: assembleBlzip, extension: 'jar', classifier: 'bl'
 	}
 }

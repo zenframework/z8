@@ -55,7 +55,7 @@ task minifyUtilJs(type: com.eriwen.gradle.js.tasks.MinifyJsTask) {
 }
 
 task assembleWebzip(type: Zip, group: 'web', dependsOn: [minifyCss, minifyFontsCss, minifyJs, minifyUtilJs]) {
-	archiveName "${project.name}.zip"
+	archiveName "${project.name}-web.jar"
 	destinationDir file("${buildDir}/libs/")
 	from("${buildDir}/web") {
 		includeEmptyDirs = false
@@ -71,6 +71,6 @@ artifacts {
 
 publishing.publications {
 	mavenWeb(MavenPublication) {
-		artifact source: assembleWebzip, extension: 'zip', classifier: 'web'
+		artifact source: assembleWebzip, extension: 'jar', classifier: 'web'
 	}
 }

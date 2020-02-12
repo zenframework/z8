@@ -6,7 +6,7 @@ configurations {
 }
 
 task assembleReszip(type: Zip, group: 'res') {
-	archiveName "${project.name}.zip"
+	archiveName "${project.name}-res.jar"
 	destinationDir file("${buildDir}/libs/")
 	from("${projectDir}/src") {
 		includeEmptyDirs = false
@@ -22,6 +22,6 @@ artifacts {
 
 publishing.publications {
 	mavenRes(MavenPublication) {
-		artifact source: assembleReszip, extension: 'zip', classifier: 'res'
+		artifact source: assembleReszip, extension: 'jar', classifier: 'res'
 	}
 }
