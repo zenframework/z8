@@ -37,10 +37,7 @@ dependencies {
 
 eclipse {
 	// Z8 nature
-	project {
-		natures 'org.zenframework.z8.pde.ProjectNature'
-		buildCommand 'org.zenframework.z8.pde.ProjectBuilder', JavaSource: "$buildFolder/.java"
-	}
+	project.natures 'org.zenframework.z8.pde.ProjectNature'
 	// Eclipse: default java output -> $buildDir/classes/default
 	classpath.defaultOutputDir = new File(buildDir, 'classes/default')
 	// Eclipse: java source folders output -> $buildFolder/classes/...
@@ -75,7 +72,7 @@ task compileBl(type: JavaExec) {
 	args = [
 		projectDir,
 		"-projectName:${project.name}",
-		"-output:${buildDir}/.java",
+		"-output:${projectDir}/.java",
 		"-requires:${blzipPath}"
 	]
 }
@@ -87,7 +84,7 @@ tasks.withType(JavaCompile) {
 }
 
 sourceSets {
-	main.java.srcDirs "${buildDir}/.java"
+	main.java.srcDirs "${projectDir}/.java"
 }
 
 // Web config

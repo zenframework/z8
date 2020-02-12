@@ -1,10 +1,7 @@
 apply plugin: 'java'
 
 eclipse {
-	project {
-		natures 'org.zenframework.z8.pde.ProjectNature'
-		buildCommand 'org.zenframework.z8.pde.ProjectBuilder', JavaSource: "$buildFolder/.java"
-	}
+	project.natures 'org.zenframework.z8.pde.ProjectNature'
 }
 
 configurations {
@@ -24,11 +21,11 @@ task compileBl(type: JavaExec) {
 
 	classpath = configurations.compiler
 	main = 'org.zenframework.z8.compiler.cmd.Main'
-	args = [ projectDir, "-projectName:${project.name}", "-output:${buildDir}/.java" ]
+	args = [ projectDir, "-projectName:${project.name}", "-output:${projectDir}/.java" ]
 }
 
 sourceSets {
-	main.java.srcDirs "${buildDir}/.java"
+	main.java.srcDirs "${projectDir}/.java"
 }
 
 tasks.withType(JavaCompile) {
