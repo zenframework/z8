@@ -15,11 +15,11 @@ Z8.define('Z8.filter.operator.Model', {
 Z8.define('Z8.filter.String', {
 	statics: {
 		contains: function(string, what) {
-			return string != null ? string.indexOf(what || '') != -1 : false;
+			return string != null && what != null ? string.toLowerCase().indexOf(what.toLowerCase()) != -1 : false;
 		},
 
 		notContains: function(string, what) {
-			return string != null ? string.indexOf(what || '') == -1 : false;
+			return string != null && what != null ? string.toLowerCase().indexOf(what.toLowerCase()) == -1 : false;
 		},
 
 		containsWord: function(string, what) {

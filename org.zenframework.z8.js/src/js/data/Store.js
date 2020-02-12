@@ -503,7 +503,6 @@ Z8.define('Z8.data.Store', {
 
 		if(!this.getRemoteFilter()) {
 			this.filterRecords();
-			this.treefyRecords();
 			var records = this.records;
 			this.fireEvent('load', this, records, true);
 			Z8.callback(options, this, records, true);
@@ -774,6 +773,8 @@ Z8.define('Z8.data.Store', {
 		}
 
 		this.ordinals = null;
+
+		this.treefyRecords();
 	},
 
 	treefyRecords: function() {
