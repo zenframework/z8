@@ -210,10 +210,11 @@ public class Main {
 
 	}
 
-	static private void validateDirectory(IPath path, String pathValue) throws CompilerException, FileException {
+	static private boolean validateDirectory(IPath path) throws CompilerException, FileException {
 		File file = File.fromPath(path);
 		if(!file.exists() || !file.isDirectory())
-			throw new CompilerException("Directory " + '"' + pathValue + '"' + " does not exist");
+			return false;
+		return true;
 	}
 
 	static public void main(String[] arguments) {
@@ -303,9 +304,11 @@ public class Main {
 			requiredPathValues = new String[0];
 
 		try {
-			validateDirectory(projectPath, projectPathValue);
+			if(!validateDirectory(projectPath))
+				throw new CompilerException("Project directory " + '"' + projectPathValue + '"' + " does not exist");
 			for(int i = 0; i < requiredPaths.length; i++)
-				validateDirectory(requiredPaths[i], requiredPathValues[i]);
+				if(!validateDirectory(requiredPaths[i]))
+					System.out.println("Warning: required path " + requiredPathValues[i] + " does not exist");
 		} catch(FileException e) {
 			throw new CompilerException(e.getMessage());
 		}
