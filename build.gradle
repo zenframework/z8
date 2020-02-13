@@ -17,7 +17,6 @@ allprojects {
 	}
 
 	apply plugin: 'eclipse'
-	//apply plugin: 'maven'
 	apply plugin: 'maven-publish'
 
 	ext.buildFolder = './target'

@@ -11,7 +11,7 @@ LOG="\$HOME/log"
 WEB="\$HOME/web"
 WORK="\$HOME/web/WEB-INF"
 
-BOOT_CP="\$HOME/lib/org.zenframework.z8.boot-${project.version}.jar"
+BOOT_CP="\$HOME/lib/org.zenframework.z8.boot-${project.z8Version}.jar"
 
 JAVA_OPTS="-Xmx2048M"
 JAVA_OPTS="\$JAVA_OPTS -Xbootclasspath/p:\$BOOT_CP"
@@ -26,4 +26,4 @@ JAVA_OPTS="\$JAVA_OPTS -Dz8.webserver.webapp=\$WEB"
 
 export JAVA_OPTS
 
-(cd "\$WORK" && "\$HOME/bin/z8-app" -server webserver) &
+(cd "\$WORK" && "\$HOME/bin/${project.name}" -server webserver) &

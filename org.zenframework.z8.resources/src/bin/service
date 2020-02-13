@@ -1,0 +1,18 @@
+[Unit]
+Description=${project.description}
+After=syslog.target
+After=network.target
+After=postgresql.service
+
+[Service]
+Type=simple
+User=z8
+Group=z8
+WorkingDirectory=/opt/${project.name}
+ExecStart=/opt/${project.name}/bin/start.sh
+ExecStop=/opt/${project.name}/bin/stop.sh
+Restart=always
+Environment=USER=z8 HOME=/home/z8
+
+[Install]
+WantedBy=multi-user.target

@@ -32,7 +32,7 @@ tasks.withType(JavaCompile) {
 	dependsOn compileBl
 }
 
-task assembleBlzip(type: Zip, group: 'bl', dependsOn: [compileBl]) {
+task assembleBlzip(type: Zip, group: 'build', dependsOn: [compileBl]) {
 	archiveName "${project.name}-bl.jar"
 	destinationDir file("$buildDir/libs/")
 	from(projectDir) {

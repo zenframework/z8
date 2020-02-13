@@ -5,13 +5,15 @@ buildscript {
 	}
 }
 
-//apply plugin: 'base'
 apply plugin: 'js'
 apply plugin: 'css'
 apply plugin: 'maven'
 
 configurations {
-	webzip
+	webzipOut {
+		canBeConsumed = true
+		canBeResolved = false
+	}
 }
 
 combineCss {
@@ -35,13 +37,22 @@ task minifyFontsCss(type: com.eriwen.gradle.css.tasks.MinifyCssTask) {
 }
 
 combineJs {
-	source = file("$projectDir/src/js/js.buildorder").readLines().collect { "$projectDir/src/js/$it" }
+	source = file("$projectDir/src/js/js.buildorder").readLines().findAll { !it.trim().isEmpty() }
+			.collect { "$projectDir/src/js/$it" }
 	dest = file("${buildDir}/web/debug/revolt.js")
 }
 
 minifyJs {
 	source = combineJs
 	dest = file("${buildDir}/web/revolt.js")
+	closure {
+		warningLevel = 'QUIET'
+		compilerOptions = [
+			languageIn: 'ECMASCRIPT6',
+			languageOut: 'ECMASCRIPT5',
+			rewritePolyfills: false
+		]
+	}
 }
 
 task combineUtilJs(type: com.eriwen.gradle.js.tasks.CombineJsTask) {
@@ -66,7 +77,7 @@ task assembleWebzip(type: Zip, group: 'web', dependsOn: [minifyCss, minifyFontsC
 assemble.dependsOn assembleWebzip
 
 artifacts {
-	webzip assembleWebzip
+	webzipOut assembleWebzip
 }
 
 publishing.publications {
