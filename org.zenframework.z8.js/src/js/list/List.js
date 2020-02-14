@@ -309,20 +309,21 @@ Z8.define('Z8.list.List', {
 		this.callParent();
 
 		if(this.itemsTable == null) {
-			var itemsScroller = this.itemsScroller = this.selectNode('.scroller.items');
-			var headersScroller = this.headersScroller = this.selectNode('.scroller.headers');
-			var totalsScroller = this.totalsScroller = this.selectNode('.scroller.totals');
+			var id = '#' + this.getId() + '>';
+			var itemsScroller = this.itemsScroller = this.selectNode(id + '.scroller.items');
+			var headersScroller = this.headersScroller = this.selectNode(id + '.scroller.headers');
+			var totalsScroller = this.totalsScroller = this.selectNode(id + '.scroller.totals');
 
-			this.headersTable = this.selectNode('.scroller.headers>table');
-			this.headerCols = this.queryNodes('.scroller.headers>table>colgroup>col') || [];
-			this.filter = this.selectNode('.scroller.headers tr.filter');
+			this.headersTable = this.selectNode(id + '.scroller.headers>table');
+			this.headerCols = this.queryNodes(id + '.scroller.headers>table>colgroup>col') || [];
+			this.filter = this.selectNode(id + '.scroller.headers tr.filter');
 
-			this.totalsTable = this.selectNode('.scroller.totals>table');
-			this.totalCols = this.queryNodes('.scroller.totals>table>colgroup>col') || [];
+			this.totalsTable = this.selectNode(id + '.scroller.totals>table');
+			this.totalCols = this.queryNodes(id + '.scroller.totals>table>colgroup>col') || [];
 
-			this.itemsTable = this.selectNode('.scroller.items>table');
-			this.itemsTableBody = this.selectNode('.scroller.items>table>tbody');
-			this.itemCols = this.queryNodes('.scroller.items>table>colgroup>col');
+			this.itemsTable = this.selectNode(id + '.scroller.items>table');
+			this.itemsTableBody = this.selectNode(id + '.scroller.items>table>tbody');
+			this.itemCols = this.queryNodes(id + '.scroller.items>table>colgroup>col');
 
 			DOM.on(this, 'keyDown', this.onKeyDown, this);
 
@@ -1100,7 +1101,7 @@ Z8.define('Z8.list.List', {
 			var item = items[index];
 
 			if(!String.isString(item) && !item.hidden && item.isEnabled()) {
-				this.selectItem(item);
+				this.selectItemNoScroll(item);
 				break;
 			}
 		} while(++step < count);
@@ -1138,6 +1139,12 @@ Z8.define('Z8.list.List', {
 			this.expandParents(item);
 			this.ensureVisible(item);
 		}
+	},
+
+	selectItemNoScroll: function(item, forceEvent) {
+		this.scrollLock = true;
+		this.selectItem(item, forceEvent);
+		this.scrollLock = false;
 	},
 
 	selectItem: function(item, forceEvent) {
@@ -1231,7 +1238,7 @@ Z8.define('Z8.list.List', {
 
 	ensureVisible: function(item) {
 		var dom = DOM.get(item);
-		if(dom == null)
+		if(dom == null || this.scrollLock)
 			return;
 
 		var top = dom.offsetTop;
@@ -1240,7 +1247,10 @@ Z8.define('Z8.list.List', {
 		var scrollBottom = scrollTop + this.itemsScroller.clientHeight;
 
 		if(top < scrollTop || scrollBottom < bottom)
-			DOM.scrollIntoView(item);
+			DOM.scrollIntoView(item, true);
+
+		if(scrollBottom < bottom)
+			DOM.scrollIntoView(item, false);
 	},
 
 	onScroll: function(event, target) {

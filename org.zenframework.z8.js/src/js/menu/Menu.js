@@ -9,6 +9,14 @@ Z8.define('Z8.menu.Menu', {
 	checks: false,
 	autoSelectFirst: true,
 
+	getOwner: function() {
+		return this.owner;
+	},
+
+	setOwner: function(owner) {
+		this.owner = owner;
+	},
+
 	completeRender: function() {
 		this.callParent();
 		DOM.on(this, 'blur', this.onFocusOut, this, true);

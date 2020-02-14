@@ -265,6 +265,10 @@ Z8.define('Z8.Component', {
 		DOM.setPoint(this, 'top', top);
 	},
 
+	getAlignment: function() {
+		return this.alignment;
+	},
+
 	setAlignment: function(alignment) {
 		this.alignment = alignment;
 	},
@@ -327,12 +331,12 @@ Z8.define('Z8.Component', {
 		width += offset.margin;
 		rect.left = align.left - (spaceRight < width ? width - spaceRight : 0);
 
-		if(!above) {
-			rect.top = align.top + align.height;
-			rect.bottom = rect.top + (Math.min(available, height) - offset.height) - (available < height ? offset.margin : 0);
-		} else {
+		if(above) {
 			rect.bottom = align.top - offset.height;
 			rect.top = rect.bottom - (Math.min(available, height) - offset.height) + (available < height ? offset.margin : 0);
+		} else {
+			rect.top = align.top + align.height;
+			rect.bottom = rect.top + (Math.min(available, height) - offset.height) - (available < height ? offset.margin : 0);
 		}
 
 		rect.left = rect.left - (fixed ? 0 : parent.left);

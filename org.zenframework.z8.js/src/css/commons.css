@@ -51,6 +51,10 @@
 	color: transparent !important;
 }
 
+.opacity-1 {
+	opacity: 1 !important;
+}
+
 .overflow-visible {
 	overflow: visible !important;
 }

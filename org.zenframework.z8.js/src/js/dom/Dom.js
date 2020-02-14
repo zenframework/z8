@@ -389,10 +389,10 @@ Z8.define('Z8.dom.Dom', {
 			dom.scrollTop = top;
 		},
 
-		scrollIntoView: function(dom) {
+		scrollIntoView: function(dom, alignToTop) {
 			if((dom = DOM.get(dom)) == null || dom.focus == null)
 				return;
-			dom.scrollIntoView();
+			dom.scrollIntoView(alignToTop);
 		},
 
 		parseCls: function(cls) {
