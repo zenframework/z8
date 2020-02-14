@@ -17,7 +17,8 @@ configurations {
 }
 
 combineCss {
-	source = file("$projectDir/src/css/css.buildorder").readLines().collect { "$projectDir/src/css/$it" }
+	source = file("${projectDir}/src/css/css.buildorder").readLines().findAll { !it.trim().isEmpty() }
+			.collect { "${projectDir}/src/css/${it}" }
 	dest = file("${buildDir}/web/debug/css/revolt.css")
 }
 
@@ -27,7 +28,8 @@ minifyCss {
 }
 
 task combineFontsCss(type: com.eriwen.gradle.css.tasks.CombineCssTask) {
-	source = file("$projectDir/src/css/fonts.buildorder").readLines().collect { "$projectDir/src/css/$it" }
+	source = file("${projectDir}/src/css/fonts.buildorder").readLines().findAll { !it.trim().isEmpty() }
+			.collect { "${projectDir}/src/css/${it}" }
 	dest = file("${buildDir}/web/debug/css/fonts.css")
 }
 
@@ -37,8 +39,8 @@ task minifyFontsCss(type: com.eriwen.gradle.css.tasks.MinifyCssTask) {
 }
 
 combineJs {
-	source = file("$projectDir/src/js/js.buildorder").readLines().findAll { !it.trim().isEmpty() }
-			.collect { "$projectDir/src/js/$it" }
+	source = file("${projectDir}/src/js/js.buildorder").readLines().findAll { !it.trim().isEmpty() }
+			.collect { "${projectDir}/src/js/${it}" }
 	dest = file("${buildDir}/web/debug/revolt.js")
 }
 
@@ -56,7 +58,8 @@ minifyJs {
 }
 
 task combineUtilJs(type: com.eriwen.gradle.js.tasks.CombineJsTask) {
-	source = file("$projectDir/src/js/util.buildorder").readLines().collect { "$projectDir/src/js/$it" }
+	source = file("${projectDir}/src/js/util.buildorder").readLines().findAll { !it.trim().isEmpty() }
+			.collect { "${projectDir}/src/js/${it}" }
 	dest = file("${buildDir}/web/debug/revolt.utils.js")
 }
 
