@@ -1056,6 +1056,8 @@ Z8.define('Z8.list.List', {
 		if(!this.enabled)
 			return false;
 
+		var scrollLock = index == null;
+
 		if(this.getCount() == 0)
 			return DOM.focus(this);
 
@@ -1101,7 +1103,7 @@ Z8.define('Z8.list.List', {
 			var item = items[index];
 
 			if(!String.isString(item) && !item.hidden && item.isEnabled()) {
-				this.selectItemNoScroll(item);
+				scrollLock ? this.selectItemNoScroll(item) : this.selectItem(item);
 				break;
 			}
 		} while(++step < count);
