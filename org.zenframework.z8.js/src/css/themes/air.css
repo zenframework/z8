@@ -1,5 +1,4 @@
 .air .fieldset {
-	border-radius: 0;
 	border-color: #dfdfdf;
 	padding-top: 1.07142857em;
 }
@@ -30,8 +29,6 @@
 	padding-right: .14285714em;
 	border: 0 solid #dfdfdf;
 	border-bottom-width: 1px;
-	box-shadow: none;
-	border-radius: 0;
 }
 
 .air .control::-webkit-input-placeholder {
@@ -347,13 +344,7 @@
 
 .air .control-group>.btn-trigger.active,
 .air .control-group>.btn-trigger:active  {
-	-webkit-box-shadow: none;
-	box-shadow: none;
 	text-shadow: 0 3px 5px rgba(0, 0, 0, 0.125);
-}
-
-.air .btn {
-	outline: none !important;
 }
 
 .air .control-group>.btn-trigger:hover:not(.disabled),
@@ -374,7 +365,6 @@
 .air .combobox>.pager,
 .air .dropdown-calendar {
 	margin: 0;
-	border-radius: 0;
 }
 
 .air .checkbox>.control,

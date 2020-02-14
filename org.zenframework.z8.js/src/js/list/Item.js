@@ -217,7 +217,8 @@ Z8.define('Z8.list.Item', {
 	},
 
 	onDestroy: function() {
-		this.dom.listItem = null;
+		if(this.dom != null)
+			this.dom.listItem = null;
 
 		DOM.un(this, 'mouseDown', this.onMouseDown, this);
 		DOM.un(this, 'click', this.onClick, this);
@@ -231,20 +232,10 @@ Z8.define('Z8.list.Item', {
 		this.callParent();
 	},
 
-/*	setTabIndex: function(tabIndex) {
-		tabIndex = this.callParent(tabIndex);
-		DOM.setTabIndex(this, tabIndex);
-		return tabIndex;
-	},*/
-
 	setActive: function(active) {
 		this.active = active;
 		DOM.swapCls(this, active, 'active');
 	},
-
-/*	focus: function() {
-		return this.enabled ? DOM.focus(this) : false;
-	},*/
 
 	toggleCheck: function() {
 		var checked = !this.checked;
@@ -264,6 +255,10 @@ Z8.define('Z8.list.Item', {
 	getIcon: function() {
 		var record = this.record;
 		return (record != null ? record.get(record.getIconProperty()) : null) || this.icon;
+	},
+
+	getIconElement: function(index) {
+		return this.iconElement;
 	},
 
 	setIcon: function(icon) {

@@ -49,14 +49,20 @@ Z8.define('Z8.button.Button', {
 			return button;
 		}
 
-		var trigger = this.trigger = new Z8.button.Trigger({ cls: this.cls, primary: this.primary, danger: this.danger, success: this.success, info: this.info, tooltip: this.triggerTooltip, icon: this.triggerIcon, tabIndex: this.getTabIndex(), enabled: this.enabled });
+		var cn = [button];
 
-		var cn = [button, trigger.htmlMarkup()];
+		var trigger = this.trigger;
+
+		if(trigger !== false) {
+			trigger = this.trigger = new Z8.button.Trigger({ cls: this.cls, primary: this.primary, danger: this.danger, success: this.success, info: this.info, tooltip: this.triggerTooltip, icon: this.triggerIcon, tabIndex: this.getTabIndex(), enabled: this.enabled });
+			cn.push(trigger.htmlMarkup());
+		} else
+			this.trigger = null;
 
 		var menu = this.menu;
 
 		if(menu != null) {
-			menu.owner = trigger;
+			menu.setOwner(trigger || this);
 			cn.push(menu.htmlMarkup());
 		}
 
@@ -64,7 +70,7 @@ Z8.define('Z8.button.Button', {
 	},
 
 	subcomponents: function() {
-		return this.split ? (this.menu != null ? [this.trigger, this.menu] : [this.trigger]) : [];
+		return [this.trigger, this.menu];
 	},
 
 	completeRender: function() {
@@ -246,7 +252,7 @@ Z8.define('Z8.button.Button', {
 			return;
 		}
 
-		if(trigger && this.menu != null) {
+		if((trigger || this.trigger == null) && this.menu != null) {
 			this.toggleMenu();
 			return;
 		}
@@ -267,9 +273,9 @@ Z8.define('Z8.button.Button', {
 		var key = event.getKey();
 
 		if(key == Event.ENTER || key == Event.SPACE)
-			this.onClick(event, DOM.isParentOf(this.menu, target) ? this.trigger.button : target);
+			this.onClick(event, DOM.isParentOf(this.menu, target) ? (this.trigger != null ? this.trigger.button : this.button) : target);
 		else if((key == Event.DOWN || key == Event.UP || key == Event.HOME || key == Event.END) && this.menu != null)
-			this.onClick(event, this.trigger.button);
+			this.onClick(event, (this.trigger != null ? this.trigger.button : this.button));
 	},
 
 	toggleMenu: function() {
@@ -278,14 +284,18 @@ Z8.define('Z8.button.Button', {
 
 	onMenuShow: function() {
 		DOM.addCls(this, 'open');
-		this.trigger.rotateIcon(180);
+		if(this.trigger != null)
+			this.trigger.rotateIcon(180);
 	},
 
 	onMenuHide: function() {
 		DOM.removeCls(this, 'open');
-		this.trigger.rotateIcon(0);
 
-		DOM.focus(this.trigger);
+		if(this.trigger != null) {
+			this.trigger.rotateIcon(0);
+			DOM.focus(this.trigger);
+		} else
+			DOM.focus(this);
 	},
 
 	rotateIcon: function(degree) {

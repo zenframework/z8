@@ -110,7 +110,7 @@ Z8.define('Z8.form.Fieldset', {
 
 				var style = control.scrollable ? 'min-height:' + (control.getMinHeight() + Fieldset.MarginBottom) + 'em' : null;
 
-				cn.push(isComponent ? control.htmlMarkup() : control);
+				cn.add(isComponent ? control.htmlMarkup() : control);
 
 				flex = Math.max(flex, controls[controlIndex].flex || 0);
 

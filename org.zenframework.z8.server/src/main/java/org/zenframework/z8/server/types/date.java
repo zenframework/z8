@@ -91,7 +91,7 @@ public class date extends primary {
 		boolean hasMillis = length > index && date.charAt(index) == '.';
 
 		if(hasMillis) {
-			int offsetStart = StringUtils.indexOfAny(date, index, "-+");
+			int offsetStart = StringUtils.indexOfAny(date, index, "-+Z");
 			int millisStart = index + 1;
 			int millisEnd = offsetStart != -1 ? offsetStart : length;
 			millis = Integer.parseInt(date.substring(millisStart, millisEnd));
@@ -101,18 +101,26 @@ public class date extends primary {
 		boolean hasZone = index < length;
 
 		if(hasZone) {
-			int zoneSign = date.charAt(index) == '+' ? 1 : -1;
+			char zoneChar = date.charAt(index);
+			int zoneOffset = 0;
+			
+			if (zoneChar == 'Z') {
+				zoneOffset = TimeZone.getDefault().getOffset(new GregorianCalendar(year, month, day, hours, minutes, seconds).getTimeInMillis());
+			} else {
+				int zoneSign = zoneChar == '+' ? 1 : -1;
 
-			index += 3;
-			int zoneHours = Integer.parseInt(date.substring(index - 2, index));
+				index += 3;
+				int zoneHours = Integer.parseInt(date.substring(index - 2, index));
 
-			index += 3;
-			int zoneMinutes = Integer.parseInt(date.substring(index - 2, index));
+				index += 3;
+				int zoneMinutes = Integer.parseInt(date.substring(index - 2, index));
 
-			index += 3;
-			int zoneSeconds = index <= length ? Integer.parseInt(date.substring(index - 2, index)) : 0;
+				index += 3;
+				int zoneSeconds = index <= length ? Integer.parseInt(date.substring(index - 2, index)) : 0;
 
-			int zoneOffset = zoneSign * zoneHours * datespan.TicksPerHour + zoneMinutes * datespan.TicksPerMinute + zoneSeconds * datespan.TicksPerSecond;
+				zoneOffset = zoneSign * zoneHours * datespan.TicksPerHour + zoneMinutes * datespan.TicksPerMinute + zoneSeconds * datespan.TicksPerSecond;
+			}
+			
 			setZoneOffset(zoneOffset);
 		}
 
