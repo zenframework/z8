@@ -339,7 +339,6 @@ textarea.control,
 	padding: .64285714em .85714286em;
 	border: 1px solid transparent;
 	border-radius: .28571429em;
-	color: #222;
 	text-align: center;
 	vertical-align: middle;
 	white-space: nowrap;
@@ -690,7 +689,6 @@ textarea.control,
 .btn-group-lg>.btn {
 	padding: .92857143em 1.14285714em;
 	font-size: 1.28571429em;
-	line-height: 1.28571429em;
 	border-radius: .42857143em
 }
 
@@ -709,7 +707,6 @@ textarea.control,
 .btn-group-xs>.btn {
 	padding: .28571429em .35714286em;
 	font-size: .85714286em;
-	line-height: .85714286em;
 	border-radius: .21428571em
 }
 

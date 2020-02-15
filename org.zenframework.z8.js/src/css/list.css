@@ -55,7 +55,6 @@
 
 .list .item {
 	font-weight: normal;
-	color: #222;
 }
 
 .list .scroller.headers {
@@ -606,6 +605,7 @@
 	z-index: 1000;
 	float: left;
 	padding: .35714286em 0;
+	background-color: #fff;
 }
 
 .dropdown-menu.list>.scroller.items {
