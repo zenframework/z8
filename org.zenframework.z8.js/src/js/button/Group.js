@@ -11,6 +11,8 @@ Z8.define('Z8.button.Group', {
 		this.callParent(config);
 
 		this.cls = DOM.parseCls(this.cls).pushIf('btn-group' + (this.vertical ? '-vertical' : ''));
+		if(this.radio)
+			this.cls.pushIf('radio');
 	},
 
 	getToggled: function() {
