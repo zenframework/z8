@@ -31,18 +31,26 @@ Z8.define('Z8.button.Button', {
 	},
 
 	htmlMarkup: function() {
-		this.setIcon(this.icon).join(' ');
+		this.setIcon(this.icon);
 
 		this.toggle = this.toggle || this.toggled != null;
-		this.split = this.split || this.menu != null;
+		this.split = this.split || this.menu && this.trigger !== false;
 
-		var iconCls = DOM.parseCls(this.iconCls).join(' ');
+		var iconCls = this.getIconCls().join(' ');
 
 		var icon = { tag: this.iconTag, icon: this.getId(), cls: iconCls, html: String.htmlText() };
 		var text = { tag: 'span', cls: 'text', html: String.htmlText(this.text) };
 		var title = this.tooltip || '';
 
-		var button = { tag: 'a', anchor: this.getId(), cls: this.getButtonCls().join(' '), tabIndex: this.getTabIndex(), title: title, cn: [icon, text] };
+		var cn = [icon, text];
+
+		var menu = this.menu;
+		if(menu != null) {
+			menu.setOwner(this);
+			cn.push(menu.htmlMarkup());
+		}
+
+		var button = { tag: 'a', anchor: this.getId(), cls: this.getButtonCls().join(' '), tabIndex: this.getTabIndex(), title: title, cn: cn };
 
 		if(!this.split) {
 			button.id = this.getId(); 
@@ -51,26 +59,22 @@ Z8.define('Z8.button.Button', {
 
 		var cn = [button];
 
-		var trigger = this.trigger;
+		trigger = this.trigger = new Z8.button.Trigger({ cls: this.cls, primary: this.primary, danger: this.danger, success: this.success, info: this.info, tooltip: this.triggerTooltip, icon: this.triggerIcon, tabIndex: this.getTabIndex(), enabled: this.enabled });
+		cn.push(trigger.htmlMarkup());
 
-		if(trigger !== false) {
-			trigger = this.trigger = new Z8.button.Trigger({ cls: this.cls, primary: this.primary, danger: this.danger, success: this.success, info: this.info, tooltip: this.triggerTooltip, icon: this.triggerIcon, tabIndex: this.getTabIndex(), enabled: this.enabled });
-			cn.push(trigger.htmlMarkup());
-		} else
-			this.trigger = null;
-
-		var menu = this.menu;
-
-		if(menu != null) {
-			menu.setOwner(trigger || this);
-			cn.push(menu.htmlMarkup());
-		}
+		if(menu != null)
+			menu.setOwner(trigger);
 
 		return { tag: 'div', id: this.getId(), cls: 'btn-group' + (this.vertical ? '-vertical' : ''), cn: cn };
 	},
 
 	subcomponents: function() {
-		return [this.trigger, this.menu];
+		var components = [];
+		if(this.trigger)
+			components.add(this.trigger);
+		if(this.menu)
+			components.add(this.menu);
+		return components;
 	},
 
 	completeRender: function() {
@@ -108,7 +112,7 @@ Z8.define('Z8.button.Button', {
 
 		DOM.swapCls(this.button, !enabled, 'disabled');
 
-		if(this.trigger != null)
+		if(this.trigger)
 			this.trigger.setEnabled(enabled);
 
 		this.callParent(enabled);
@@ -138,26 +142,25 @@ Z8.define('Z8.button.Button', {
 		return cls;
 	},
 
-	getIconCls: function(cls) {
-		var iconCls = DOM.parseCls(cls).pushIf('fa');
-		if(Z8.isEmpty(cls))
-			iconCls.pushIf('no-icon');
+	getIconCls: function() {
+		var cls = DOM.parseCls(this.iconCls).pushIf('fa').pushIf('icon');
+		if(Z8.isEmpty(this.iconCls))
+			cls.pushIf('no-icon');
 		if(Z8.isEmpty(this.text))
-			iconCls.pushIf('no-text');
-		return iconCls;
+			cls.pushIf('no-text');
+		return cls;
 	},
 
 	setIcon: function(cls) {
-		cls = this.iconCls = this.getIconCls(cls);
-		DOM.setCls(this.icon, this.iconCls);
-		return cls;
+		this.iconCls = cls;
+		DOM.setCls(this.icon, this.getIconCls());
 	},
 
 	setPrimary: function(primary) {
 		this.primary = primary;
 		DOM.swapCls(this.button, primary, 'btn-primary', 'btn-default');
 
-		if(this.trigger != null)
+		if(this.trigger)
 			this.trigger.setPrimary(primary);
 	},
 
@@ -166,7 +169,7 @@ Z8.define('Z8.button.Button', {
 
 		DOM.setTabIndex(this.button, tabIndex);
 
-		if(this.trigger != null)
+		if(this.trigger)
 			this.trigger.setTabIndex(tabIndex);
 	},
 
@@ -252,7 +255,7 @@ Z8.define('Z8.button.Button', {
 			return;
 		}
 
-		if((trigger || this.trigger == null) && this.menu != null) {
+		if((trigger || !this.trigger) && this.menu) {
 			this.toggleMenu();
 			return;
 		}
@@ -273,9 +276,9 @@ Z8.define('Z8.button.Button', {
 		var key = event.getKey();
 
 		if(key == Event.ENTER || key == Event.SPACE)
-			this.onClick(event, DOM.isParentOf(this.menu, target) ? (this.trigger != null ? this.trigger.button : this.button) : target);
-		else if((key == Event.DOWN || key == Event.UP || key == Event.HOME || key == Event.END) && this.menu != null)
-			this.onClick(event, (this.trigger != null ? this.trigger.button : this.button));
+			this.onClick(event, DOM.isParentOf(this.menu, target) ? (this.trigger ? this.trigger.button : this.button) : target);
+		else if((key == Event.DOWN || key == Event.UP || key == Event.HOME || key == Event.END) && this.menu)
+			this.onClick(event, (this.trigger ? this.trigger.button : this.button));
 	},
 
 	toggleMenu: function() {
@@ -284,14 +287,14 @@ Z8.define('Z8.button.Button', {
 
 	onMenuShow: function() {
 		DOM.addCls(this, 'open');
-		if(this.trigger != null)
+		if(this.trigger)
 			this.trigger.rotateIcon(180);
 	},
 
 	onMenuHide: function() {
 		DOM.removeCls(this, 'open');
 
-		if(this.trigger != null) {
+		if(this.trigger) {
 			this.trigger.rotateIcon(0);
 			DOM.focus(this.trigger);
 		} else
