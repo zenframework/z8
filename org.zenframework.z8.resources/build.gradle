@@ -5,8 +5,8 @@ configurations {
 	reszip
 }
 
-task assembleReszip(type: Zip, group: 'res') {
-	archiveName "${project.name}-res.jar"
+task assembleRz(type: Zip, group: 'Build') {
+	archiveName "${project.name}-rz.jar"
 	destinationDir file("${buildDir}/libs/")
 	from("${projectDir}/src") {
 		includeEmptyDirs = false
@@ -14,14 +14,14 @@ task assembleReszip(type: Zip, group: 'res') {
 	description "Assemble archive ${archiveName} into ${relativePath(destinationDir)}"
 }
 
-assemble.dependsOn assembleReszip
+assemble.dependsOn assembleRz
 
 artifacts {
-	reszip assembleReszip
+	reszip assembleRz
 }
 
 publishing.publications {
-	mavenRes(MavenPublication) {
-		artifact source: assembleReszip, extension: 'jar', classifier: 'res'
+	mavenRz(MavenPublication) {
+		artifact source: assembleRz, extension: 'jar', classifier: 'rz'
 	}
 }

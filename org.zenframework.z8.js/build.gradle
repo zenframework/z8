@@ -10,7 +10,7 @@ apply plugin: 'css'
 apply plugin: 'maven'
 
 configurations {
-	webzipOut {
+	reszip {
 		canBeConsumed = true
 		canBeResolved = false
 	}
@@ -78,23 +78,24 @@ task minifyUtilJs(type: com.eriwen.gradle.js.tasks.MinifyJsTask) {
 	dest = file("${buildDir}/web/revolt.utils.js")
 }
 
-task assembleWebzip(type: Zip, group: 'web', dependsOn: [minifyCss, minifyFontsCss, minifyJs, minifyUtilJs]) {
-	archiveName "${project.name}-web.jar"
+task assembleRz(type: Zip, group: 'Build', dependsOn: [minifyCss, minifyFontsCss, minifyJs, minifyUtilJs]) {
+	archiveName "${project.name}-rz.jar"
 	destinationDir file("${buildDir}/libs/")
-	from("${buildDir}/web") {
+	from("${buildDir}") {
+		include 'web/**'
 		includeEmptyDirs = false
 	}
 	description "Assemble archive ${archiveName} into ${relativePath(destinationDir)}"
 }
 
-assemble.dependsOn assembleWebzip
+assemble.dependsOn assembleRz
 
 artifacts {
-	webzipOut assembleWebzip
+	reszip assembleRz
 }
 
 publishing.publications {
-	mavenWeb(MavenPublication) {
-		artifact source: assembleWebzip, extension: 'jar', classifier: 'web'
+	mavenRz(MavenPublication) {
+		artifact source: assembleRz, extension: 'jar', classifier: 'rz'
 	}
 }

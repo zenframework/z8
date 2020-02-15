@@ -34,12 +34,12 @@ tasks.withType(JavaCompile) {
 
 task assembleBlzip(type: Zip, group: 'build', dependsOn: [compileBl]) {
 	archiveName "${project.name}-bl.jar"
-	destinationDir file("$buildDir/libs/")
+	destinationDir file("${buildDir}/libs/")
 	from(projectDir) {
 		include '**/*.bl'
 		includeEmptyDirs = false
 	}
-	description "Assemble archive $archiveName into ${relativePath(destinationDir)}"
+	description "Assemble archive ${archiveName} into ${relativePath(destinationDir)}"
 }
 
 assemble.dependsOn assembleBlzip

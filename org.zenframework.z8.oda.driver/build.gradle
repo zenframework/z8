@@ -18,7 +18,7 @@ sourceSets.main.resources {
 	include 'plugin.xml'
 }
 
-jar.manifest.from "$projectDir/META-INF/MANIFEST.MF"
+jar.manifest.from "${projectDir}/META-INF/MANIFEST.MF"
 
 publishing.publications {
 	maven(MavenPublication) {
