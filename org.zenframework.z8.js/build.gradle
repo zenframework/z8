@@ -25,6 +25,11 @@ combineCss {
 minifyCss {
 	source = combineCss
 	dest = "${buildDir}/web/css/revolt.css"
+	doLast {
+		ant.replaceregexp(match: '(calc\\([\\d|\\.]+[^+]*)(\\+)', replace:'\1 \2 ', flags:'g') {
+			file "${buildDir}/web/css/${rootProject.name}.css"
+		}
+	}
 }
 
 task combineFontsCss(type: com.eriwen.gradle.css.tasks.CombineCssTask) {
@@ -36,6 +41,11 @@ task combineFontsCss(type: com.eriwen.gradle.css.tasks.CombineCssTask) {
 task minifyFontsCss(type: com.eriwen.gradle.css.tasks.MinifyCssTask) {
 	source = combineFontsCss
 	dest = "${buildDir}/web/css/fonts.css"
+	doLast {
+		ant.replaceregexp(match: '(calc\\([\\d|\\.]+[^+]*)(\\+)', replace:'\1 \2 ', flags:'g') {
+			file "${buildDir}/web/css/${rootProject.name}.css"
+		}
+	}
 }
 
 combineJs {
