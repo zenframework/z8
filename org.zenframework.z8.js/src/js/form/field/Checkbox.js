@@ -23,7 +23,7 @@ Z8.define('Z8.form.field.Checkbox', {
 			label.icon = null;
 		}
 
-		return [{ tag: 'div', name: 'icon', cls: this.iconCls.join(' '), html: String.htmlText('') }];
+		return [{ tag: 'div', name: 'icon', cls: this.getIconCls().join(' '), html: String.htmlText('') }];
 	},
 
 	htmlMarkup: function() {
@@ -54,11 +54,18 @@ Z8.define('Z8.form.field.Checkbox', {
 		return value1 && value2 || !(value1 || value2);
 	},
 
+	getIconCls: function() {
+		if(!Array.isArray(this.onCls)) {
+			this.onCls = DOM.parseCls(this.onCls) || ['fa-check-square', 'fa', 'control'];
+			this.offCls = DOM.parseCls(this.offCls) || ['fa-square-o', 'fa', 'control'];
+		}
+		return this.getValue() ? this.onCls : this.offCls;
+	},
+
 	setValue: function(value) {
 		this.callParent(value);
 
-		this.iconCls = [value ? 'fa-check-square' : 'fa-square-o', 'fa', 'control'];
-		DOM.swapCls(this.icon, value, 'fa-check-square', 'fa-square-o');
+		DOM.setCls(this.icon, this.getIconCls());
 	},
 
 	setTabIndex: function(tabIndex) {
