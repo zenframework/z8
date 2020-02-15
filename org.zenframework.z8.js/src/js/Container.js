@@ -27,8 +27,7 @@ Z8.define('Z8.Container', {
 			markup.push(item.htmlMarkup != null ? item.htmlMarkup() : item);
 		}
 
-		var cls = this.cls = DOM.parseCls(this.cls);
-		return { id: this.getId(), cls: cls.join(' '), tabIndex: this.getTabIndex(), cn: markup };
+		return { id: this.getId(), cls: this.getCls().join(' '), tabIndex: this.getTabIndex(), cn: markup };
 	},
 
 	onDestroy: function() {

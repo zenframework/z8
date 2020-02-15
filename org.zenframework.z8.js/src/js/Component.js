@@ -62,6 +62,11 @@ Z8.define('Z8.Component', {
 		return this.dom;
 	},
 
+	getCls: function() {
+		var cls = DOM.parseCls(this.cls);
+		return this.visible ? cls : cls.pushIf('display-none');
+	},
+
 	getCell: function() {
 		var dom = this.dom;
 		return dom != null ? dom.parentNode : null;
@@ -257,7 +262,7 @@ Z8.define('Z8.Component', {
 	},
 
 	htmlMarkup: function() {
-		return { id: this.getId(), cls: DOM.parseCls(this.cls).join(' '), tabIndex: this.getTabIndex(), html: this.html || '' };
+		return { id: this.getId(), cls: this.getCls().join(' '), tabIndex: this.getTabIndex(), html: this.html || '' };
 	},
 
 	setPosition: function(left, top) {

@@ -2,8 +2,8 @@
 	outline: none;
 }
 
-input {
-	font-size: inherit;
+input, textarea {
+	font: inherit;
 }
 
 input:-moz-focus-inner {
