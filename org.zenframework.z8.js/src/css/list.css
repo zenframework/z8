@@ -5,7 +5,6 @@
 	text-align: left;
 	border: 1px solid #ccc;
 	border-radius: .28571429em;
-	background-clip: padding-box;
 	overflow-x: hidden;
 	overflow-y: hidden;
 
@@ -588,6 +587,7 @@
 .dropdown-menu.list {
 	-webkit-box-shadow: 1px 1px 12px rgba(0, 0, 0, 0.100);
 	box-shadow: 1px 1px 12px rgba(0, 0, 0, 0.100);
+	background-color: #fff;
 }
 
 .dropdown-list.list.pull-up {
@@ -608,7 +608,6 @@
 	z-index: 1000;
 	float: left;
 	padding: .35714286em 0;
-	background-color: #fff;
 }
 
 .dropdown-menu.list>.scroller.items {
