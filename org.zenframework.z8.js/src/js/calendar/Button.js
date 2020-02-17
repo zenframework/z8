@@ -19,7 +19,7 @@ Z8.define('Z8.calendar.Button', {
 		periodControl.on('apply', this.onPeriodApply, this);
 		periodControl.on('cancel', this.onPeriodCancel, this);
 
-		var menu = this.menu = new Z8.menu.Menu({ items: [periodControl], useTAB: false });
+		var menu = this.menu = new Z8.menu.Menu({ items: [periodControl], useTab: false });
 		menu.on('itemClick', this.onMenuItemClick, this);
 
 		this.init();

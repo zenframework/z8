@@ -21,8 +21,9 @@ Z8.define('Z8.list.List', {
 
 	editable: false,
 
-	useTAB: false,
-	useENTER: true,
+	useTab: false,
+	enterToSelect: true,
+	enterToEdit: false,
 
 	confirmSelection: false,
 	autoSelectFirst: true,
@@ -1195,10 +1196,10 @@ Z8.define('Z8.list.List', {
 
 		var item = this.getCurrentItem();
 
-		if(key == Event.DOWN || key == Event.TAB && !event.shiftKey && this.useTAB) {
+		if(key == Event.DOWN || key == Event.TAB && !event.shiftKey && this.useTab) {
 			if(this.focus(item, 'next', true))
 				event.stopEvent();
-		} else if(key == Event.UP || key == Event.TAB && event.shiftKey && this.useTAB) {
+		} else if(key == Event.UP || key == Event.TAB && event.shiftKey && this.useTab) {
 			if(this.focus(item, 'previous', true))
 				event.stopEvent();
 		} else if(key == Event.HOME) {
@@ -1225,8 +1226,11 @@ Z8.define('Z8.list.List', {
 		} else if(key == Event.RIGHT && item != null && item.hasChildren() && item.isCollapsed()) {
 			item.collapse(false);
 			event.stopEvent();
-		} else if(key == Event.ENTER && this.useENTER && item != null) {
+		} else if(key == Event.ENTER && this.enterToSelect && item != null) {
 			this.onItemClick(item, -1);
+			event.stopEvent();
+		} else if((key == Event.ENTER && this.enterToEdit || key == Event.F2) && item != null) {
+			this.onItemStartEdit(item);
 			event.stopEvent();
 		} else if(key == Event.SPACE && item != null) {
 			event.stopEvent();
@@ -1490,7 +1494,7 @@ Z8.define('Z8.list.List', {
 
 		var callback = function(record, success) {
 			if(success) {
-				this.fireEvent('itemEdit', this, null, record, field);
+				this.onItemEdit(item, null, record, field);
 				record.endEdit();
 			} else
 				record.cancelEdit();
@@ -1748,7 +1752,7 @@ Z8.define('Z8.list.List', {
 
 		var callback = function(record, success) {
 			if(success) {
-				this.fireEvent('itemEdit', this, editor, record, this.fields[editor.index]);
+				this.onItemEdit(editor.item, editor, record, this.fields[editor.index]);
 				record.endEdit();
 			} else
 				record.cancelEdit();
@@ -1773,6 +1777,10 @@ Z8.define('Z8.list.List', {
 
 	onEditorFocusOut: function(editor) {
 		this.finishEdit(editor);
+	},
+
+	onItemEdit: function(item, editor, record, field) {
+		this.fireEvent('itemEdit', this, editor, record, field);
 	},
 
 	onItemEditorChange: function(editor, newValue, oldValue) {

@@ -4,10 +4,10 @@ Z8.define('Z8.menu.Menu', {
 	cls: 'dropdown-menu display-none',
 	itemType: 'Z8.menu.Item',
 	manualItemsRendering: true,
-	useTAB: true,
+	useTab: true,
 	headers: false,
 	checks: false,
-	autoSelectFirst: true,
+	autoSelectFirst: false,
 
 	getOwner: function() {
 		return this.owner;
@@ -36,7 +36,6 @@ Z8.define('Z8.menu.Menu', {
 	},
 
 	toggle: function() {
-		if(this.getCount() != 0)
-			this.callParent();
+		this.callParent();
 	}
 });

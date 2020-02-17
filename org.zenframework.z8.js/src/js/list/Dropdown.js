@@ -31,7 +31,7 @@ Z8.define('Z8.list.Dropdown', {
 		if(this.visible && this.needAlign && !this.inShow) {
 			this.inRender = true;
 			this.show(null, null, false);
-			delete this.inRender;
+			this.inRender = false;
 		}
 
 		return justRendered;
@@ -54,12 +54,15 @@ Z8.define('Z8.list.Dropdown', {
 	show: function(left, top, focusAt) {
 		this.inShow = true;
 
+		if(!this.visible)
+			this.fireEvent('beforeShow', this);
+
 		this.render();
 
 		if(this.visible && !this.needAlign) {
 			if(focusAt !== false)
 				this.focus(focusAt);
-			delete this.inShow;
+			this.inShow = false;
 			return;
 		}
 
@@ -72,15 +75,15 @@ Z8.define('Z8.list.Dropdown', {
 		this.callParent();
 		this.setActive(true);
 
-		this.alignAdjust();
-
 		if(!wasVisible)
 			this.fireEvent('show', this);
+
+		this.alignAdjust();
 
 		if(focusAt !== false)
 			this.focus(focusAt);
 
-		delete this.inShow;
+		this.inShow = false;
 	},
 
 	align: function() {
