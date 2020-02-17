@@ -10,7 +10,7 @@
 
 .window-mask {
 	background-color: #fff;
-	opacity: .5;
+	opacity: 0/*.5*/;
 }
 
 .window-aligner {
