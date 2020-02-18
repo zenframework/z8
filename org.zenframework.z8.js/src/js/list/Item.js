@@ -54,7 +54,7 @@ Z8.define('Z8.list.Item', {
 			var field = fields[i];
 			var name = field.name;
 			if(modified.hasOwnProperty(name))
-				this.setText(i, this.renderText(field, record.get(name)));
+				this.updateText(i, field);
 		}
 
 		DOM.setCls(this, this.getCls());
@@ -363,6 +363,11 @@ Z8.define('Z8.list.Item', {
 		var isString = String.isString(text);
 		DOM.setInnerHtml(textElement, isString ? String.htmlText(text) : DOM.markup(text));
 		DOM.setAttribute(cell, 'title', isString ? Format.htmlEncode(Format.br2nl(text)) : '');
+	},
+
+	updateText: function(index, field) {
+		var field = field || this.list.getFields()[index];
+		this.setText(index, this.renderText(field, this.record.get(field.name)));
 	},
 
 	ensureVisible: function() {
