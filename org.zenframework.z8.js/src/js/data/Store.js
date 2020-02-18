@@ -241,7 +241,7 @@ Z8.define('Z8.data.Store', {
 	indexOf: function(record) {
 		if(record == null)
 			return -1;
-		var index = this.getOrdinals()[record.id];
+		var index = this.getOrdinals()[record.isModel ? record.id : record];
 		return index !== null ? index : -1;
 	},
 

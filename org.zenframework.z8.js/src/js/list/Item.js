@@ -370,10 +370,17 @@ Z8.define('Z8.list.Item', {
 			this.list.ensureVisible(this);
 	},
 
+	isItemClick: function(target) {
+		return target != this.collapserIcon && target != this.collapser && target != this.iconElement && (!this.list.checks || !DOM.isParentOf(this.checkElement, target));
+	},
+
 	onMouseDown: function(event, target) {
 		var dom = DOM.get(this);
 
-		if(!this.isEnabled() || target == this.collapserIcon || target == this.collapser || target == this.iconElement || this.list.checks && DOM.isParentOf(this.checkElement, target))
+		if(!this.isEnabled())
+			return;
+
+		if(!this.isItemClick(target))
 			return;
 
 		var index = this.findCellIndex(target);
@@ -385,7 +392,7 @@ Z8.define('Z8.list.Item', {
 			return;
 		}
 
-		if(this.list.getFocused() && !this.list.isEditing() && this.startEdit(index))
+		if(this.list.getFocused() && !this.list.isEditing() && this.canStartEdit(target) && this.startEdit(index))
 			event.stopEvent();
 	},
 
@@ -433,6 +440,10 @@ Z8.define('Z8.list.Item', {
 
 	followLink: function(index) {
 		return index != -1 ? this.list.onItemFollowLink(this, index) : false;
+	},
+
+	canStartEdit: function(target) {
+		return true;
 	},
 
 	startEdit: function(index) {

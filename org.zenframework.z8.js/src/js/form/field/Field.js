@@ -13,6 +13,7 @@ Z8.define('Z8.form.field.Field', {
 
 	initField: function() {
 		this.initValue();
+		this.setAutoSave(this.autoSave);
 	},
 
 	initValue: function(value, displayValue) {
