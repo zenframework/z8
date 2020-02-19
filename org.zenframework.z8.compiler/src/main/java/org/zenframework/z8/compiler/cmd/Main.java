@@ -178,30 +178,28 @@ public class Main {
 		}
 	}
 
-	static protected boolean isCompilationUnit(IPath path) {
-		return "bl".equals(path.getFileExtension());
+	static protected boolean isCompilationUnit(File file) {
+		return "bl".equals(file.getPath().getFileExtension());
 	}
 
-	static protected boolean isNLSUnit(IPath path) {
-		return "nls".equals(path.getFileExtension());
+	static protected boolean isNLSUnit(File file) {
+		return "nls".equals(file.getPath().getFileExtension());
 	}
 
 	static protected void addResources(Folder folder) {
 		try {
 			IPath folderPath = folder.getAbsolutePath();
-			IPath[] members = File.fromPath(folderPath).getFiles();
+			File[] members = File.fromPath(folderPath).getFiles();
 
-			for(IPath member : members) {
-				File file = File.fromPath(member);
-
-				if(file.isDirectory()) {
-					Folder newFolder = folder.createFolder(new DummyResource(folder.getResource(), member));
+			for (File member : members) {
+				if (member.isContainer()) {
+					Folder newFolder = folder.createFolder(new DummyResource(folder.getResource(), member.getPath()));
 					addResources(newFolder);
 				} else {
-					if(isCompilationUnit(member))
-						folder.createCompilationUnit(new DummyResource(folder.getResource(), member));
-					if(isNLSUnit(member))
-						folder.createNLSUnit(new DummyResource(folder.getResource(), member));
+					if (isCompilationUnit(member))
+						folder.createCompilationUnit(new DummyResource(folder.getResource(), member.getPath()));
+					if (isNLSUnit(member))
+						folder.createNLSUnit(new DummyResource(folder.getResource(), member.getPath()));
 				}
 			}
 		} catch(FileException e) {
@@ -212,12 +210,12 @@ public class Main {
 
 	static private boolean validateDirectory(IPath path) throws CompilerException, FileException {
 		File file = File.fromPath(path);
-		if(!file.exists() || !file.isDirectory())
+		if(!file.exists() || !file.isContainer())
 			return false;
 		return true;
 	}
 
-	static public void main(String[] arguments) {
+	static public void main(String[] arguments) throws Exception {
 		outputHello();
 
 		String projectName = null;

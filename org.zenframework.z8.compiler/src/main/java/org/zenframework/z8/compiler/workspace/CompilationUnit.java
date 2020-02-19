@@ -577,7 +577,7 @@ public class CompilationUnit extends Resource {
 		try {
 			IPosition position = getType().getSourceRange();
 
-			File file = new File(getAbsolutePath());
+			File file = File.fromPath(getAbsolutePath());
 			char[] content = file.read();
 
 			file.write(imports + (imports.length() == 0 ? "" : "\n"));
