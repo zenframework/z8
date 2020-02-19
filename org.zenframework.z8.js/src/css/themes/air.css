@@ -32,7 +32,7 @@
 }
 
 .air .control::-webkit-input-placeholder {
-	opacity: .85714286em;
+	font-size: .85714286em;
 	font-style: italic;
 }
 
