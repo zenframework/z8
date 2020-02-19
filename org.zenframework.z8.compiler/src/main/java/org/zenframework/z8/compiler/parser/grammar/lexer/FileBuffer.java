@@ -15,7 +15,7 @@ public class FileBuffer {
 	}
 
 	public FileBuffer(CompilationUnit compilationUnit, char[] content) throws FileException, UnsupportedEncodingException {
-		this.content = content == null ? new File(compilationUnit.getAbsolutePath()).read() : content;
+		this.content = content == null ? File.fromPath(compilationUnit.getAbsolutePath()).read() : content;
 	}
 
 	public char[] getContent() {
