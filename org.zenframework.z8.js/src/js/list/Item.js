@@ -454,7 +454,7 @@ Z8.define('Z8.list.Item', {
 	startEdit: function(index) {
 		if(!this.active || index == -1)
 			return false;
-		return this.list.onItemStartEdit(this, index);
+		return this.list.onItemStartEdit(this, index || 0);
 	},
 
 	getCell: function(index) {
