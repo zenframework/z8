@@ -31,7 +31,7 @@ sourceSets.main.resources {
 
 jar.manifest.from "${projectDir}/META-INF/MANIFEST.MF"
 
-task copyLibs(type: Copy) {
+task copyLibs(type: Copy, group: 'Build Setup') {
 	configurations.lib.each {
 		from it
 		rename '-[\\d\\.]*[\\d]+', ''
