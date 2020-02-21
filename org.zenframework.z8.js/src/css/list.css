@@ -266,8 +266,7 @@
 	bottom: 0;
 }
 
-.list .item>.column>.control-group,
-.list .item>.column>.variant>.control-group {
+.list .item>.column>.control-group {
 	top: 0;
 	left: 0;
 	right: 0;
