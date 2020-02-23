@@ -43,7 +43,7 @@ Z8.define('Z8.form.field.Text', {
 			triggers = Array.isArray(triggers) ? triggers : [triggers];
 			this.triggers = [];
 
-			this.cls = DOM.parseCls(this.cls).pushIf('trigger-' + triggers.length);
+			this.cls = DOM.parseCls(this.cls).pushIf('trigger').pushIf('trigger-' + triggers.length);
 
 			for(var i = 0, length = triggers.length; i < length; i++) {
 				var trigger = triggers[i];

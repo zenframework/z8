@@ -25,8 +25,9 @@ Z8.define('Z8.list.HeaderFilter', {
 		switch(field.type) {
 		case Type.String:
 		case Type.Text:
-			searchBox = new Z8.form.field.SearchText({ field: field, placeholder: field.header });
+			searchBox = new Z8.form.field.SearchText({ field: field, placeholder: field.header, confirmSearch: this.confirmSearch, searchIcon: this.searchIcon, clearIcon: this.clearIcon  });
 			searchBox.on('search', this.onSearch, this);
+			searchBox.on('cancel', this.onCancel, this);
 			searchBox.on('focusIn', this.onFocusIn, this);
 			searchBox.on('focusOut', this.onFocusOut, this);
 			searchBox.on('keyDown', this.onKeyDown, this);
@@ -51,6 +52,10 @@ Z8.define('Z8.list.HeaderFilter', {
 
 	onSearch: function(control, value) {
 		this.list.onHeaderFilter(this, value);
+	},
+
+	onCancel: function(control) {
+		this.list.onHeaderFilterCancel(this);
 	},
 
 	getFilter: function() {
