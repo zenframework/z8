@@ -33,7 +33,7 @@ Z8.define('Z8.button.Button', {
 	htmlMarkup: function() {
 		this.setIcon(this.icon);
 
-		this.toggle = this.toggle || this.toggled != null;
+		this.toggle = this.toggle || this.toggled != null || this.toggleHandler != null;
 		this.split = this.split || this.menu && this.trigger !== false;
 
 		var iconCls = this.getIconCls().join(' ');
@@ -210,6 +210,8 @@ Z8.define('Z8.button.Button', {
 
 		if(silent)
 			return;
+
+		Z8.callback(this.toggleHandler, this.scope, this, toggled);
 
 		this.fireEvent('toggle', this, toggled);
 	},

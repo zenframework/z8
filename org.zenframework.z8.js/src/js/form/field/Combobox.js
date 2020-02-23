@@ -33,6 +33,7 @@ Z8.define('Z8.form.field.Combobox', {
 		if(this.editor)
 			this.queryTask = new Z8.util.DelayedTask();
 
+		this.initTriggers();
 		this.initStore();
 	},
 
@@ -57,17 +58,20 @@ Z8.define('Z8.form.field.Combobox', {
 		dropdown.on('hide', this.onDropdownHide, this);
 	},
 
-	htmlMarkup: function() {
-		var triggers = this.triggers;
+	initTriggers: function() {
+		this.triggers = this.triggers || {};
 
+		var triggers = [];
 		if(this.source != null)
 			triggers.push({ icon: 'fa-pencil', tooltip: 'Редактировать \'' + this.source.text + '\'', handler: this.editSource, scope: this });
 
 		if(!this.isRequired() && this.clearTrigger !== false)
 			triggers.push({ icon: 'fa-times', tooltip: 'Очистить', handler: this.clearValue, scope: this });
 
-		triggers.push({});
+		this.triggers = triggers.add(this.triggers)
+	},
 
+	htmlMarkup: function() {
 		var markup = this.callParent();
 
 		this.createDropdown();

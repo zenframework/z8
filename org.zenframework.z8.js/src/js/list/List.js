@@ -195,7 +195,7 @@ Z8.define('Z8.list.List', {
 
 		headerCells.push({ tag: 'td', cls: 'extra', style: 'width: 0;' });
 
-		var result = [{ tag: 'tr', cls: 'header', cn: headerCells }];
+		var result = [{ tag: 'tr', cls: 'header' + (this.hideHeaders ? ' display-none' : ''), cn: headerCells }];
 
 		if(hasNumbers)
 			result.push({ tag: 'tr', cls: 'number', cn: numberCells });
@@ -285,7 +285,7 @@ Z8.define('Z8.list.List', {
 
 		if(hasHeaders) {
 			var headers = this.tableMarkup('headers');
-			var headersScroller = { cls: 'scroller headers' + (this.hideHeaders ? ' display-none' : ''), cn: [headers] };
+			var headersScroller = { cls: 'scroller headers', cn: [headers] };
 			cn.push(headersScroller);
 		}
 
@@ -1188,10 +1188,14 @@ Z8.define('Z8.list.List', {
 			this.selectItem(item, true);
 	},
 
+	onEscape: function() {
+		return false;
+	},
+
 	onKeyDown: function(event, target) {
 		var key = event.getKey();
 
-		if(this.isEditing() || this.isFiltering() && key != Event.ESC)
+		if(this.isEditing() || this.isFiltering() && key != Event.DOWN && key != Event.ESC)
 			return;
 
 		var item = this.getCurrentItem();
@@ -1208,13 +1212,16 @@ Z8.define('Z8.list.List', {
 		} else if(key == Event.END) {
 			if(this.focus('last'))
 				event.stopEvent();
-		} else if(key == Event.F && event.ctrlKey && this.filter != null) {
-			this.showQuickFilter(true);
+		} else if(key == Event.F && event.ctrlKey && (this.filter || this.filterable)) {
+			this.showFilter();
 			event.stopEvent();
-		} else if(key == Event.ESC && this.filterVisible) {
-			this.showQuickFilter(false);
-			this.focus(item);
-			event.stopEvent();
+		} else if(key == Event.ESC) {
+			if(this.filterOpen) {
+				this.hideFilter();
+				this.focus(item);
+				event.stopEvent();
+			} else if(this.onEscape())
+				event.stopEvent();
 		} else if(key == Event.LEFT && item != null) {
 			if(item.isExpanded()) {
 				if(item.hasChildren()) {
@@ -1368,6 +1375,16 @@ Z8.define('Z8.list.List', {
 
 		search.setBusy(true);
 		this.store.quickFilter(qiuckFilter, { fn: callback, scope: this });
+	},
+
+	showFilter: function() {
+		this.filterOpen = true;
+		this.showQuickFilter(true);
+	},
+
+	hideFilter: function() {
+		this.filterOpen = false;
+		this.showQuickFilter(false);
 	},
 
 	showQuickFilter: function(show, silent) {
@@ -1697,7 +1714,7 @@ Z8.define('Z8.list.List', {
 		editor.setRecord(record);
 		editor.item = item;
 
-		this.openEditor(editor);
+		this.openEditor(editor, true);
 		this.currentEditor = editor;
 
 		if(item != this.getCurrentItem())
@@ -1706,7 +1723,7 @@ Z8.define('Z8.list.List', {
 		return true;
 	},
 
-	openEditor: function(editor) {
+	openEditor: function(editor, selectContent) {
 		var cell = editor.item.getCell(editor.index);
 		editor.appendTo(cell);
 
@@ -1714,7 +1731,7 @@ Z8.define('Z8.list.List', {
 
 		editor.on('focusOut', this.onEditorFocusOut, this);
 		DOM.on(editor, 'keyDown', this.onEditorKeyDown, this);
-		editor.focus(true);
+		editor.focus(selectContent);
 	},
 
 	closeEditor: function(editor, focus) {

@@ -3,12 +3,14 @@ var Viewport = null;
 Z8.define('Z8.application.viewport.Viewport', {
 	extend: 'Z8.Container',
 
-	cls: 'viewport air',
+	cls: 'air',
 
 	handlers: [],
 	forms: [],
 
 	initComponent: function() {
+		this.cls = DOM.parseCls(this.cls).pushIf('viewport');
+
 		this.callParent();
 
 		this.setTitle(Application.name);
