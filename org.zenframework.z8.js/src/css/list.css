@@ -38,6 +38,7 @@
 	table-layout: fixed;
 	cursor: default;
 	border-spacing: 0;
+	width: 100%;
 }
 
 .list .divider {
@@ -168,8 +169,8 @@
 	display: inline-block;
 }
 
-.list .item>.column:first-child:not(.check):not(.lock)>.cell,
-.list .total>.column:first-child:not(.check):not(.lock)>.cell {
+.list .item>.column.first>.cell,
+.list .total>.column.first>.cell {
 	padding-left: 1em;
 }
 
@@ -275,7 +276,7 @@
 	z-index: 1;
 }
 
-.list .item>.column .control {
+.list .item>.column>.control-group>.control {
 	padding-left: .5em;
 	padding-right: .42857143em;
 	padding-top: .57142857em;

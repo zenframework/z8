@@ -112,7 +112,7 @@ Z8.define('Z8.list.Item', {
 				var cell = { cls: this.getCellCls(field, record) + ' cell', cn: i == 0 ? icons.add(text) : text };
 
 				var type = field.type;
-				columns.push({ tag: 'td', cls: 'column' + (type != null ? ' ' + type : ''), field: i, cn: [cell], title: title });
+				columns.push({ tag: 'td', cls: 'column' + (type != null ? ' ' + type : '') + (i == 0 && !this.checks && !this.locks ? ' first' : ''), field: i, cn: [cell], title: title });
 			}
 		} else {
 			var text = String.htmlText(this.text);
