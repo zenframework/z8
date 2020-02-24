@@ -1747,7 +1747,8 @@ Z8.define('Z8.list.List', {
 	},
 
 	cancelEdit: function(editor) {
-		this.finishEdit(editor, null, true);
+		if(editor = editor || this.currentEditor)
+			this.finishEdit(editor, null, true);
 	},
 
 	finishEdit: function(editor, next, cancel) {
