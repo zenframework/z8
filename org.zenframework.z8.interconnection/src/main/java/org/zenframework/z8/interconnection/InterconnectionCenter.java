@@ -16,6 +16,7 @@ import org.zenframework.z8.server.logs.Trace;
 import org.zenframework.z8.server.request.RequestDispatcher;
 import org.zenframework.z8.server.types.guid;
 import org.zenframework.z8.server.utils.ArrayUtils;
+import org.zenframework.z8.server.utils.ProxyUtils;
 
 public class InterconnectionCenter extends HubServer implements IInterconnectionCenter {
 
@@ -51,8 +52,12 @@ public class InterconnectionCenter extends HubServer implements IInterconnection
 
 	@Override
 	public void register(IApplicationServer server) throws RemoteException {
-		String[] domains = server.domains();
-		addServer(new ServerInfo(server, domains));
+		String host = ProxyUtils.getHost(server);
+
+		if(!host.equals("127.0.0.1")) {
+			String[] domains = server.domains();
+			addServer(new ServerInfo(server, domains));
+		}
 	}
 
 	@Override
