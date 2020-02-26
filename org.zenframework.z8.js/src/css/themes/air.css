@@ -482,6 +482,10 @@
 	border-radius: 4px;
 }
 
+.action.btn.disabled {
+	opacity: .7;
+}
+
 .action.btn>.icon,
 .action.btn>.text {
 	opacity: 1;
