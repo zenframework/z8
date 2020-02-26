@@ -443,8 +443,11 @@
 }
 
 .focus .list .item.active>.column {
-	color: #fff;
 	background-color: #39c;
+}
+
+.focus .list .item.active>.column>.cell {
+	color: #fff;
 }
 
 .list .item.disabled>.column,
