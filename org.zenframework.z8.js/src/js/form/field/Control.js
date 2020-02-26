@@ -190,7 +190,7 @@ Z8.define('Z8.form.field.Control', {
 		if(label.textAlign != null)
 			cls.push('text-' + label.textAlign);
 		if(label.tools != null)
-			cls.push('tools');
+			cls.push('toolbar');
 		if(Z8.isEmpty(label.text))
 			cls.pushIf('empty');
 

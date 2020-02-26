@@ -584,6 +584,7 @@
 
 .dropdown-list.list,
 .dropdown-menu.list {
+	position: fixed;
 	-webkit-box-shadow: 1px 1px 12px rgba(0, 0, 0, 0.100);
 	box-shadow: 1px 1px 12px rgba(0, 0, 0, 0.100);
 	background-color: #fff;
@@ -601,7 +602,6 @@
 }
 
 .dropdown-menu.list {
-	position: absolute;
 	top: 100%;
 	left: 0;
 	z-index: 1000;

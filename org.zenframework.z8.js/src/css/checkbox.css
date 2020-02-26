@@ -5,14 +5,13 @@
 }
 
 .checkbox.focus>.control,
-.checkbox:focus>.control,
-.checkbox:active>.control {
+.checkbox:focus>.control {
 	color: #337ab7;
 }
 
 .checkbox.disabled>.control,
 .checkbox.disabled>.label {
-	color: #a6a6a6 !important;
+	color: #a6a6a6;
 }
 
 .checkbox>.control {

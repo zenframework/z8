@@ -40,10 +40,10 @@ Z8.define('Z8.form.field.Geometry', {
 	},
 
 	createTools: function() {
-		var zoomOut = new Z8.button.Tool({ icon: 'fa-minus-circle', tooltip: 'Уменьшить' });
+		var zoomOut = new Z8.button.Button({ icon: 'fa-minus-circle', tooltip: 'Уменьшить' });
 		this.setZoomOutTool(zoomOut);
 
-		var zoomIn = new Z8.button.Tool({ icon: 'fa-plus-circle', tooltip: 'Увеличить' });
+		var zoomIn = new Z8.button.Button({ icon: 'fa-plus-circle', tooltip: 'Увеличить' });
 		this.setZoomInTool(zoomIn);
 
 		var zoom = new Z8.button.Group({ items: [zoomOut, zoomIn] });

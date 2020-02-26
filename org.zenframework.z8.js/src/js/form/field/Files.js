@@ -48,9 +48,9 @@ Z8.define('Z8.form.field.Files', {
 	},
 
 	createTools: function() {
-		var upload = this.uploadTool = new Z8.button.Tool({ cls: 'btn-sm', icon: 'fa-upload', tooltip: 'Загрузить файл(ы)', handler: this.onUploadFile, scope: this });
-		var download = this.downloadTool = new Z8.button.Tool({ cls: 'btn-sm', icon: 'fa-download', tooltip: 'Скачать файл(ы)', handler: this.onDownloadFile, scope: this });
-		var remove = this.removeTool = new Z8.button.Tool({ cls: 'btn-sm remove', danger: true, icon: 'fa-trash', tooltip: 'Удалить файл(ы)', handler: this.onRemoveFile, scope: this });
+		var upload = this.uploadTool = new Z8.button.Button({ icon: 'fa-upload', tooltip: 'Загрузить файл(ы)', handler: this.onUploadFile, scope: this });
+		var download = this.downloadTool = new Z8.button.Button({ icon: 'fa-download', tooltip: 'Скачать файл(ы)', handler: this.onDownloadFile, scope: this });
+		var remove = this.removeTool = new Z8.button.Button({ cls: 'remove', danger: true, icon: 'fa-trash', tooltip: 'Удалить файл(ы)', handler: this.onRemoveFile, scope: this });
 		return [upload, download, remove];
 	},
 
