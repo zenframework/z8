@@ -12,7 +12,7 @@
 	text-decoration:none;
 	color: #fff;
 	text-decoration: none; 
-	padding: .5em 0 .5em 3.21428571em;
+	padding: .5em 0 .5em 3.21428571em !important;
 	background: #222;
 
 	position: relative; 
@@ -40,8 +40,7 @@
 
 .breadcrumbs>.btn,
 .breadcrumbs>.btn:focus,
-.breadcrumbs>.btn:hover,
-.breadcrumbs>.btn:active {
+.breadcrumbs>.btn:hover {
 	z-index: auto;
 }
 
@@ -64,7 +63,7 @@
 }
 
 .breadcrumbs>.btn:first-child {
-	padding-left: .85714286em;
+	padding-left: .85714286em !important;
 	font-weight: 500;
 }
 

@@ -55,7 +55,7 @@ Z8.define('Z8.form.field.Control', {
 
 			if(label.tools != null) {
 				var tools = this.labelTools = label.tools;
-				cn.push(tools.htmlMarkup());
+				cn.add(tools.htmlMarkup());
 			}
 
 			var style = label.width != null ? 'min-width:' + label.width + ';width:' + label.width + ';' : '';

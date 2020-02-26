@@ -59,7 +59,7 @@ Z8.define('Z8.form.field.Combobox', {
 	},
 
 	initTriggers: function() {
-		this.triggers = this.triggers || {};
+		this.triggers = !Z8.isEmpty(this.triggers) ? this.triggers : {};
 
 		var triggers = [];
 		if(this.source != null)

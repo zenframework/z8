@@ -108,14 +108,16 @@
 	text-overflow: ellipsis;
 }
 
-.air .toolbar>.control-group {
+.air .toolbar>.control-group,
+.air .toolbar>.btn-group>.control-group {
 	background: #fff;
 	border-radius: 4px;
 	border: 1px solid #eee;
 	margin: 0 4px;
 }
 
-.air .toolbar>.control-group>.control {
+.air .toolbar>.control-group>.control,
+.air .toolbar>.btn-group>.control-group>.control {
 	border: none;
 }
 
