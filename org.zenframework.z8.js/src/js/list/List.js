@@ -60,6 +60,8 @@ Z8.define('Z8.list.List', {
 		this.initItems();
 		this.initStore();
 		this.editors = this.createEditors();
+
+		this.startEditTask = new Z8.util.DelayedTask();
 	},
 
 	initItems: function() {
@@ -529,6 +531,8 @@ Z8.define('Z8.list.List', {
 	},
 
 	onDestroy: function() {
+		this.startEditTask.cancel();
+
 		DOM.un(this, 'keyDown', this.onKeyDown, this);
 		DOM.un(this, 'mouseMove', this.onMouseMove, this);
 
@@ -1237,7 +1241,7 @@ Z8.define('Z8.list.List', {
 			this.onItemClick(item, -1);
 			event.stopEvent();
 		} else if((key == Event.ENTER && this.enterToEdit || key == Event.F2) && item != null) {
-			this.onItemStartEdit(item);
+			this.startEdit(item);
 			event.stopEvent();
 		} else if(key == Event.SPACE && item != null) {
 			event.stopEvent();
@@ -1487,6 +1491,7 @@ Z8.define('Z8.list.List', {
 	},
 
 	onItemDblClick: function(item, index) {
+		this.startEditTask.cancel();
 		this.fireEvent('itemDblClick', this, item, index);
 	},
 
@@ -1654,6 +1659,15 @@ Z8.define('Z8.list.List', {
 		return -1;
 	},
 
+	getDefaultEditor: function(editor) {
+		if(editor != null && editor.isComponent)
+			return editor;
+
+		var index = editor;
+		index = index == null || index == -1 ? this.lastEditedColumn || this.getFirstEditorIndex() : index;
+		return index != -1 ? this.editors[index] : null;
+	},
+
 	onItemFollowLink: function(item, index) {
 		var field = this.fields[index];
 		var link = field.link;
@@ -1667,60 +1681,46 @@ Z8.define('Z8.list.List', {
 		return false;
 	},
 
-	onItemStartEdit: function(item, index) {
-		var record = item.record;
-		if(record != null && !record.isEditable())
-			return false;
-
-		if(index == null)
-			index = this.lastEditedColumn;
-
-		if(index == null)
-			index = this.getFirstEditorIndex();
-
-		if(index == -1)
-			return false;
-
-		var editor = this.editors[index];
-
-		if(editor == null)
-			return false;
-
-		return this.editable ? this.startEdit(item, editor) : false;
-	},
-
 	isEditing: function() {
 		return this.currentEditor != null;
 	},
 
 	canStartEdit: function(item, editor) {
-		return item.record.isEditable();
+		if(!this.editable || item.record == null || !item.record.isEditable())
+			return false;
+		return this.getDefaultEditor(editor) != null;
 	},
 
 	startEdit: function(item, editor) {
 		if(!this.canStartEdit(item, editor))
 			return false;
 
+		this.startEditTask.cancel();
+
 		if(this.finishing) {
 			this.editingQueue = { item: item, editor: editor };
-			return true;
+			return;
 		}
 
-		var record = item.record;
-		var value = record.get(editor.name);
-		var displayValue = record.get(editor.displayName);
+		var startEditCallback = function(item, editor) {
+			editor = this.getDefaultEditor(editor);
 
-		editor.initValue(value, displayValue);
-		editor.setRecord(record);
-		editor.item = item;
+			var record = item.record;
+			var value = record.get(editor.name);
+			var displayValue = record.get(editor.displayName);
 
-		this.openEditor(editor, true);
-		this.currentEditor = editor;
+			editor.initValue(value, displayValue);
+			editor.setRecord(record);
+			editor.item = item;
 
-		if(item != this.getCurrentItem())
-			this.selectItem(item);
+			this.openEditor(editor, true);
+			this.currentEditor = editor;
 
-		return true;
+			if(item != this.getCurrentItem())
+				this.selectItem(item);
+		};
+
+		this.startEditTask.delay(300, startEditCallback, this, item, editor);
 	},
 
 	openEditor: function(editor, selectContent) {

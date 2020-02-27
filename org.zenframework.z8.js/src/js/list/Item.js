@@ -452,9 +452,11 @@ Z8.define('Z8.list.Item', {
 	},
 
 	startEdit: function(index) {
-		if(!this.active || index == -1)
+		if(!this.active || index == -1 || !this.list.canStartEdit(this, index || 0))
 			return false;
-		return this.list.onItemStartEdit(this, index || 0);
+
+		this.list.startEdit(this, index || 0);
+		return true;
 	},
 
 	getCell: function(index) {

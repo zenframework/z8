@@ -636,7 +636,10 @@ Z8.define('Z8.form.field.Listbox', {
 		if(record != null) {
 			var list = this.list;
 			var item = list.getItem(record.id);
-			return list.onItemStartEdit(item, index);
+			if(!list.canStartEdit(item, index))
+				return false;
+			list.startEdit(item, index);
+			return true;
 		}
 		return false;
 	},
