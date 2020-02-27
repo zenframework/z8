@@ -65,7 +65,7 @@ Z8.define('Z8.button.Button', {
 		if(menu != null)
 			menu.setOwner(trigger);
 
-		return { tag: 'div', id: this.getId(), cls: 'btn-group' + (this.vertical ? '-vertical' : ''), cn: cn };
+		return { tag: 'div', id: this.getId(), cls: 'btn ' + (this.vertical ? 'vertical' : ''), cn: cn };
 	},
 
 	subcomponents: function() {

@@ -108,7 +108,7 @@ Z8.define('Z8.list.Item', {
 				var text = this.renderText(field, record.get(field.name));
 
 
-				text = this.textMarkup(text, this.getTextCls(field, record) + ' text');
+				text = this.textMarkup(text, this.getTextCls(field, record) + ' text', field);
 				var cell = { cls: this.getCellCls(field, record) + ' cell', cn: i == 0 ? icons.add(text) : text };
 
 				var type = field.type;
@@ -136,7 +136,7 @@ Z8.define('Z8.list.Item', {
 		return field.source != null && this.follow ? ' follow' : '';
 	},
 
-	textMarkup: function(text, cls) {
+	textMarkup: function(text, cls, field) {
 		var markup = { tag: 'span', cls: cls, cn: [text] };
 		if(String.isString(text))
 			markup.title = Format.htmlEncode(Format.br2nl(text));

@@ -93,7 +93,7 @@ Z8.define('Z8.button.GeometryTools', {
 		if(dividerPos != 0 && dividerPos != tools.length)
 			tools.insert(new Z8.list.Divider(), dividerPos);
 
-		var menuButton = this.menuButton = new Z8.button.Tool({ icon: 'fa-mouse-pointer', tooltip: 'Инструменты' });
+		var menuButton = this.menuButton = new Z8.button.Button({ icon: 'fa-mouse-pointer', tooltip: 'Инструменты' });
 		menuButton.on('click', this.toggleMenu, this);
 
 		var menu = menuButton.menu = new Z8.menu.Menu({ items: tools });
@@ -112,7 +112,7 @@ Z8.define('Z8.button.GeometryTools', {
 			config.tooltip = config.text;
 			config.text = undefined;
 			config.toggle = config.isTool;
-			tool = this[tool.tool] = tools[i] = new Z8.button.Tool(config);
+			tool = this[tool.tool] = tools[i] = new Z8.button.Button(config);
 			tool.on(tool.toggle ? 'toggle' : 'click', this.onToolButtonClick, this);
 			this.add(tool);
 		}

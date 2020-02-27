@@ -206,7 +206,7 @@ Z8.define('Z8.application.form.Navigator', {
 
 		var sourceCode = this.sourceCodeButton = this.createSourceCodeButton();
 		if(sourceCode != null)
-			buttons.push(sourceCode);
+			buttons.add({ cls: 'flex-1' }).add(sourceCode);
 
 		return new Z8.toolbar.Toolbar({ items: buttons });
 	},
@@ -215,27 +215,21 @@ Z8.define('Z8.application.form.Navigator', {
 		var store = this.store;
 
 		var buttons = [];
-		var addCopyRefresh = [];
 		var oneRecord = this.oneRecord;
 
 		if(!oneRecord && store.hasCreateAccess()) {
-			var add = this.addButton = new Z8.button.Button({ cls: 'btn-sm', icon: 'fa-file-o', tooltip: 'Новая запись', handler: this.addRecord, scope: this });
-			addCopyRefresh.push(add);
+			var add = this.addButton = new Z8.button.Button({ icon: 'fa-file-o', tooltip: 'Новая запись', handler: this.addRecord, scope: this });
+			buttons.push(add);
 		}
 
 		if(!oneRecord && store.hasCopyAccess()) {
-			var copy = this.copyButton = new Z8.button.Button({ cls: 'btn-sm', icon: 'fa-copy', tooltip: 'Копировать запись', handler: this.copyRecord, scope: this });
-			addCopyRefresh.push(copy);
+			var copy = this.copyButton = new Z8.button.Button({ icon: 'fa-copy', tooltip: 'Копировать запись', handler: this.copyRecord, scope: this });
+			buttons.push(copy);
 		}
 
 		if(store.hasReadAccess()) {
-			var refresh = this.refreshButton =  new Z8.button.Button({ cls: 'btn-sm', icon: 'fa-refresh', tooltip: 'Обновить', handler: this.refreshRecords, scope: this });
-			addCopyRefresh.push(refresh);
-		}
-
-		if(addCopyRefresh.length != 0) {
-			addCopyRefresh = new Z8.button.Group({ items: addCopyRefresh });
-			buttons.push(addCopyRefresh);
+			var refresh = this.refreshButton =  new Z8.button.Button({ icon: 'fa-refresh', tooltip: 'Обновить', handler: this.refreshRecords, scope: this });
+			buttons.push(refresh);
 		}
 
 		var files = this.filesButton = this.createFilesButton();
@@ -243,7 +237,7 @@ Z8.define('Z8.application.form.Navigator', {
 			buttons.push(files);
 
 		if(store.hasDestroyAccess()) {
-			var remove = this.removeButton = new Z8.button.Button({ cls: 'btn-sm', danger: true, icon: 'fa-trash', tooltip: 'Удалить запись', handler: this.removeRecord, scope: this });
+			var remove = this.removeButton = new Z8.button.Button({ danger: true, icon: 'fa-trash', tooltip: 'Удалить запись', handler: this.removeRecord, scope: this });
 			buttons.push(remove);
 		}
 
@@ -260,7 +254,7 @@ Z8.define('Z8.application.form.Navigator', {
 				buttons.push(filter);
 
 /*
-			var sort = this.sortButton = new Z8.button.Button({ enabled: false, cls: 'btn-sm', icon: 'fa-sort', tooltip: 'Порядок сортировки', triggerTooltip: 'Настроить порядок сортировки', split: true, handler: this.toggleSortOrder, scope: this });
+			var sort = this.sortButton = new Z8.button.Button({ enabled: false, icon: 'fa-sort', tooltip: 'Порядок сортировки', triggerTooltip: 'Настроить порядок сортировки', split: true, handler: this.toggleSortOrder, scope: this });
 			buttons.push(sort);
 */
 
@@ -295,7 +289,7 @@ Z8.define('Z8.application.form.Navigator', {
 		var store = control == null ? new Z8.data.Store({ model: 'Z8.data.file.Model' }) : control.store;
 		var menu = new Z8.menu.Menu({ store: store });
 		menu.on('itemClick', this.downloadFiles, this);
-		var file = new Z8.button.File({ store: store, control: control, cls: 'btn-sm', icon: 'fa-paperclip', tooltip: 'Файлы', menu: menu });
+		var file = new Z8.button.File({ store: store, control: control, icon: 'fa-paperclip', tooltip: 'Файлы', menu: menu });
 		file.on('select', this.uploadFiles, this);
 		return file;
 	},
@@ -335,7 +329,7 @@ Z8.define('Z8.application.form.Navigator', {
 	},
 
 	createFilterButton: function() {
-		var filter = new Z8.filter.Button({ cls: 'btn-sm', filter: this.filter, fields: this.store.getFields() });
+		var filter = new Z8.filter.Button({ filter: this.filter, fields: this.store.getFields() });
 		filter.on('filter', this.onFilter, this);
 		return filter;
 	},
@@ -346,10 +340,10 @@ Z8.define('Z8.application.form.Navigator', {
 
 		var isForm = this.isFormPresentation();
 
-		var formButton = this.formButton = new Z8.button.Button({ cls: 'btn-sm', icon: 'fa-wpforms', tooltip: 'В виде формы', toggled: isForm });
+		var formButton = this.formButton = new Z8.button.Button({ icon: 'fa-wpforms', tooltip: 'В виде формы', toggled: isForm });
 		formButton.on('toggle', this.toggleView, this);
 
-		var tableButton = this.tableButton = new Z8.button.Button({ cls: 'btn-sm', icon: 'fa-table', tooltip: 'В виде таблицы', toggled: !isForm });
+		var tableButton = this.tableButton = new Z8.button.Button({ icon: 'fa-table', tooltip: 'В виде таблицы', toggled: !isForm });
 		tableButton.on('toggle', this.toggleView, this);
 
 		return new Z8.button.Group({ items: [formButton, tableButton], radio: true });
@@ -369,14 +363,14 @@ Z8.define('Z8.application.form.Navigator', {
 		var menu = new Z8.menu.Menu({ items: items });
 		menu.on('itemClick', this.onMenuPrint, this);
 
-		return new Z8.button.Button({ cls: 'btn-sm', icon: 'fa-file-pdf-o', tooltip: 'Сохранить как PDF', menu: menu, handler: this.print, scope: this, format: 'pdf' });
+		return new Z8.button.Button({ icon: 'fa-file-pdf-o', tooltip: 'Сохранить как PDF', menu: menu, handler: this.print, scope: this, format: 'pdf' });
 	},
 
 	createPeriodButton: function() {
 		if(this.period == null)
 			return null;
 
-		var period = new Z8.calendar.Button({ cls: 'btn-sm', icon: 'fa-calendar', period: this.period });
+		var period = new Z8.calendar.Button({ icon: 'fa-calendar', period: this.period });
 		period.on('period', this.onPeriod, this);
 		return period;
 	},
@@ -396,7 +390,7 @@ Z8.define('Z8.application.form.Navigator', {
 		var menu = new Z8.menu.Menu({ items: items });
 		menu.on('itemClick', this.onAction, this);
 
-		return new Z8.button.Button({ cls: 'btn-sm', icon: 'fa-play', text: 'Действия', tooltip: 'Действия', menu: menu, handler: this.onMenuButtonClick, scope: this });
+		return new Z8.button.Button({ icon: 'fa-play', text: 'Действия', tooltip: 'Действия', menu: menu, handler: this.onMenuButtonClick, scope: this });
 	},
 
 	createReportsButton: function() {
@@ -413,16 +407,14 @@ Z8.define('Z8.application.form.Navigator', {
 
 		var menu = new Z8.menu.Menu({ items: items });
 		menu.on('itemClick', this.onMenuReport, this);
-		return new Z8.button.Button({ cls: 'btn-sm', icon: 'fa-print', tooltip: 'Печать документов', menu: menu, handler: this.onMenuButtonClick, scope: this });
+		return new Z8.button.Button({ icon: 'fa-print', tooltip: 'Печать документов', menu: menu, handler: this.onMenuButtonClick, scope: this });
 	},
 
 	createSourceCodeButton: function() {
 		if(Viewport.sourceCode == null)
 			return null;
 
-		var sourceCode = new Z8.button.Button({ cls: 'btn-sm float-right', text: 'Исходный код', success: true, icon: 'fa-code', tooltip: 'Как это сделано', toggled: false });
-		sourceCode.on('toggle', this.toggleSourceCode, this);
-		return sourceCode;
+		return new Z8.button.Button({ success: true, icon: 'fa-code', toggled: false, toggleHandler: this.toggleSourceCode, scope: this });
 	},
 
 	onSourceCodeShow: function() {

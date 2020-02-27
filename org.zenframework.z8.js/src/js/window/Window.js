@@ -26,12 +26,12 @@ Z8.define('Z8.window.Window', {
 		var buttons = this.buttons || [];
 
 		if(Z8.isEmpty(this.buttons)) {
-			var ok = this.okButton = new Z8.button.Button({ text: 'Готово', primary: true, handler: this.ok, scope: this });
+			var ok = this.okButton = new Z8.button.Button({ cls: 'action', text: 'Готово', primary: true, handler: this.ok, scope: this });
 			buttons.push(ok);
 		}
 
 		if(this.closable) {
-			var cancel = this.cancelButton = new Z8.button.Button({ text: 'Отмена', handler: this.cancel, scope: this });
+			var cancel = this.cancelButton = new Z8.button.Button({ cls: 'action', text: 'Отмена', handler: this.cancel, scope: this });
 			buttons.insert(cancel, 0);
 		}
 

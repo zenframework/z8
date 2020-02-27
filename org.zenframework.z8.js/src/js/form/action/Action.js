@@ -47,7 +47,7 @@ Z8.define('Z8.form.action.Action', {
 		this.runAction();
 	},
 
-	runAction: function() {
+	runAction: function(callback) {
 		if(!this.isBusy())
 			this.setBusy(true);
 
@@ -63,12 +63,13 @@ Z8.define('Z8.form.action.Action', {
 			parameters: action.parameters
 		};
 
-		var callback = function(response, success) {
+		var sendCallback = function(response, success) {
 			this.setBusy(false);
 			this.onActionComplete(record, response, success);
+			Z8.callback(callback, response, success);
 		};
 
-		HttpRequest.send(params, { fn: callback, scope: this });
+		HttpRequest.send(params, { fn: sendCallback, scope: this });
 	},
 
 	onActionComplete: function(record, response, success) {

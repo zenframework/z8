@@ -20,9 +20,9 @@ Z8.define('Z8.filter.Editor', {
 		var store = this.store = new Z8.data.Store({ model: 'Z8.filter.Model', data: this.filter.toStoreData() });
 		store.use();
 
-		var addTool = this.addTool = new Z8.button.Button({ cls: 'btn-sm', icon: 'fa-file-o', tooltip: 'Новый фильтр', handler: this.onAddFilter, scope: this });
-		var copyTool = this.copyTool = new Z8.button.Tool({ icon: 'fa-copy', tooltip: 'Копировать запись (Shift+Insert)', handler: this.onCopyFilter, scope: this });
-		var removeTool = this.removeTool = new Z8.button.Button({ cls: 'btn-sm remove', danger: true, icon: 'fa-trash', tooltip: 'Удалить фильтр(ы)', handler: this.onRemoveFilter, scope: this });
+		var addTool = this.addTool = new Z8.button.Button({ icon: 'fa-file-o', tooltip: 'Новый фильтр', handler: this.onAddFilter, scope: this });
+		var copyTool = this.copyTool = new Z8.button.Button({ icon: 'fa-copy', tooltip: 'Копировать запись (Shift+Insert)', handler: this.onCopyFilter, scope: this });
+		var removeTool = this.removeTool = new Z8.button.Button({ cls: 'remove', danger: true, icon: 'fa-trash', tooltip: 'Удалить фильтр(ы)', handler: this.onRemoveFilter, scope: this });
 		var tools = new Z8.button.Group({ items: [addTool, copyTool, removeTool] });
 
 		var label = { text: 'Фильтры', icon: 'fa-filter', tools: tools};

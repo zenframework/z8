@@ -29,9 +29,6 @@
 	padding-top: .71428571em;
 	padding-right: 1.42857143em;
 	border-radius: 0;
-	outline: none;
-	background: none;
-	box-shadow: none;
 	font-weight: 500;
 	color: #555;
 
@@ -52,7 +49,7 @@
 	text-transform: uppercase;
 }
 
-.tabs>.header>.tag>.fa {
+.tabs>.header>.tag>.icon {
 	width: auto;
 }
 

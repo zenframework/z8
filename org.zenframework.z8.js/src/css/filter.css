@@ -10,47 +10,44 @@
 	clear: both;
 }
 
-.filter-control .group>.btn-group-vertical {
+.filter-control .group>.btn.vertical {
 	position: absolute;
-	top: -1px;
+	top: 0;
 	bottom: 0;
 	width: 2.14285714em;
 }
 
-.filter-control .group>.btn-group-vertical.open {
+.filter-control .group>.btn.vertical.open {
 	z-index: 5;
 }
 
-.filter-control .group>.btn-group-vertical>.btn {
+.filter-control .group>.btn.vertical>.btn {
 	position: absolute;
 	width: 100%;
-	border-radius: 0;
 	padding: 0;
-	border-radius: 0 !important;
-	box-shadow: none;
 	text-align: center;
 	font-weight: 500;
 	z-index: 1;
 }
 
-.filter-control .group>.btn-group-vertical>.btn:focus {
+.filter-control .group>.btn.vertical>.btn:focus {
 	z-index: 2;
 }
 
-.filter-control .group>.btn-group-vertical>.btn:not(:hover):not(:active):not(:focus):not(.active):not(.focus) {
+.filter-control .group>.btn.vertical:not(:hover):not(:active):not(:focus):not(.active):not(.focus) {
 	background-color: #fff;
 }
 
-.filter-control .group>.btn-group-vertical>.btn:first-child {
+.filter-control .group>.btn.vertical>.btn:first-child {
 	top: 0;
 	bottom: 1.07142857em;
 }
 
-.filter-control .group>.btn-group-vertical>.btn>.fa {
+.filter-control .group>.btn.vertical>.btn>.icon {
 	font-weight: 400;
 }
 
-.filter-control .group>.btn-group-vertical>.btn:first-child>.text {
+.filter-control .group>.btn.vertical>.btn:first-child>.text {
 	position: absolute;
 	width: 100%;
 	left: 0;
@@ -58,14 +55,15 @@
 	font-size: .85714286em;
 }
 
-.filter-control .group>.btn-group-vertical>.btn:first-child>.fa {
+.filter-control .group>.btn.vertical>.btn:first-child>.icon {
 	position: absolute;
 	left: .5em;
 	top: .71428571em;
 }
 
-.filter-control .group>.btn-group-vertical>.btn-trigger {
+.filter-control .group>.btn.vertical>.btn-trigger {
 	bottom: 0;
+	top: calc(100% - 1.07142857em);
 }
 
 .filter-control .group:not(.expression)>.group .btn:first-child>.fa {
@@ -92,7 +90,7 @@
 	padding-left: 0;
 }
 
-.filter-control>.expression>.group>.btn-group-vertical {
+.filter-control>.expression>.group>.btn.vertical {
 	left: 0;
 }
 
