@@ -5,31 +5,14 @@ configurations {
 }
 
 dependencies {
-	compile files("${projectDir}/lib/org.zenframework.z8.compiler.jar")
-	compile files("${projectDir}/lib/org.zenframework.z8.server.jar")
-	compile files("${projectDir}/lib/tools.jar")
+	implementation project(':org.zenframework.z8.compiler')
+	implementation project(':org.zenframework.z8.server')
+	implementation files(org.gradle.internal.jvm.Jvm.current().toolsJar)
 	
 	lib project(':org.zenframework.z8.compiler')
 	lib project(':org.zenframework.z8.server')
 	lib files(org.gradle.internal.jvm.Jvm.current().toolsJar)
 }
-
-eclipse {
-	project {
-		natures 'org.eclipse.pde.PluginNature'
-	}
-	classpath {
-		containers 'org.eclipse.pde.core.requiredPlugins'
-	}
-}
-
-sourceSets.main.resources {
-	srcDirs projectDir
-	include 'plugin.xml'
-	include 'lib/**'
-}
-
-jar.manifest.from "${projectDir}/META-INF/MANIFEST.MF"
 
 task copyLibs(type: Copy, group: 'Build Setup') {
 	configurations.lib.each {
@@ -39,7 +22,23 @@ task copyLibs(type: Copy, group: 'Build Setup') {
 	into "${projectDir}/lib"
 }
 
-tasks.eclipseClasspath.dependsOn copyLibs
+eclipse {
+	project {
+		natures 'org.eclipse.pde.PluginNature'
+	}
+	classpath {
+		containers 'org.eclipse.pde.core.requiredPlugins'
+	}
+	synchronizationTasks copyLibs
+}
+
+sourceSets.main.resources {
+	srcDirs projectDir
+	include 'plugin.xml'
+	include 'lib/**'
+}
+
+jar.manifest.from "${projectDir}/META-INF/MANIFEST.MF"
 
 // Temporarily disabled
 // TODO P2 dependencies
