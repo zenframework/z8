@@ -157,10 +157,10 @@ public class Transport implements Runnable {
 			if (ServerConfig.transportJobLogStackTrace()) {
 				StringWriter buf = new StringWriter();
 				PrintWriter out = new PrintWriter(buf);
-				out.print(e.getMessage());
+				out.println(e.getMessage());
 				e.printStackTrace(out);
 				out.flush();
-				str += '\n' + buf.toString();
+				str = buf.toString();
 			}
 			transportQueue.setInfo(message.getId(), str);
 			throw e;
