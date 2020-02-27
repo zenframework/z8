@@ -1,5 +1,7 @@
 package org.zenframework.z8.server.ie.rmi;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.rmi.RemoteException;
 import java.util.Collection;
 import java.util.HashMap;
@@ -151,7 +153,16 @@ public class Transport implements Runnable {
 		try {
 			return message instanceof FileMessage ? sendFile((FileMessage)message) : sendMessage((DataMessage)message);
 		} catch(Throwable e) {
-			transportQueue.setInfo(message.getId(), e.getMessage());
+			String str = e.getMessage();
+			if (ServerConfig.transportJobLogStackTrace()) {
+				StringWriter buf = new StringWriter();
+				PrintWriter out = new PrintWriter(buf);
+				out.print(e.getMessage());
+				e.printStackTrace(out);
+				out.flush();
+				str += '\n' + buf.toString();
+			}
+			transportQueue.setInfo(message.getId(), str);
 			throw e;
 		}
 	}

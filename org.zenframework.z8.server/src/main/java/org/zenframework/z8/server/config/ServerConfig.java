@@ -48,6 +48,7 @@ public class ServerConfig extends Properties {
 	static final private String MaintenenceJobCron = "maintenance.job.cron";
 	static final private String TransportJobCron = "transport.job.cron";
 	static final private String TransportJobTreads = "transport.job.treads";
+	static final private String TransportJobLogStackTrace = "transport.job.logStackTrace";
 
 	static final private String ExchangeJobCron = "exchange.job.cron";
 	static final private String ExchangeFolderIn = "exchange.folder.in";
@@ -101,6 +102,7 @@ public class ServerConfig extends Properties {
 
 	static private String transportJobCron;
 	static private int transportJobTreads;
+	static private boolean transportJobLogStackTrace;
 
 	static private String exchangeJobCron;
 	static private File exchangeFolderIn;
@@ -173,6 +175,7 @@ public class ServerConfig extends Properties {
 		maintenanceJobCron = getProperty(MaintenenceJobCron, "");
 		transportJobCron = getProperty(TransportJobCron, "");
 		transportJobTreads = getProperty(TransportJobTreads, 10);
+		transportJobLogStackTrace = getProperty(TransportJobLogStackTrace, false);
 
 		exchangeJobCron = getProperty(ExchangeJobCron, "");
 		exchangeFolderIn = new File(workingPath, getProperty(ExchangeFolderIn, "exchange/in"));
@@ -374,6 +377,10 @@ public class ServerConfig extends Properties {
 
 	static public String transportJobCron() {
 		return transportJobCron;
+	}
+
+	static public boolean transportJobLogStackTrace() {
+		return transportJobLogStackTrace;
 	}
 
 	static public boolean exchangeJobEnabled() {
