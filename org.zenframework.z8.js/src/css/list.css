@@ -264,6 +264,7 @@
 	background-color: #39c;
 	left: 0;
 	bottom: 0;
+	z-index: 2;
 }
 
 .list .item>.column>.control-group {

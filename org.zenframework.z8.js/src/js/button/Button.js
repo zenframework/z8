@@ -131,7 +131,7 @@ Z8.define('Z8.button.Button', {
 	},
 
 	getButtonCls: function() {
-		var cls = DOM.parseCls(this.cls).pushIf('btn', this.getButtonTypeCls());
+		var cls = this.getCls().pushIf('btn', this.getButtonTypeCls());
 
 		if(!this.isEnabled())
 			cls.pushIf('disabled');

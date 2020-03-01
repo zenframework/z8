@@ -11,6 +11,23 @@ Array.appendCount = function(array, value, count) {
 	return count != 0 ?  array.concat(Array(count).fill(value)) : array;
 };
 
+Array.prototype.equals = function(array, comparator) {
+	if(array == null || array.length != this.length)
+		return false;
+
+	for(var i = 0, length = this.length; i < length; i++) {
+		var left = this[i];
+		var right = array[i];
+
+		if(comparator != null) {
+			if(!comparator(left, right))
+				return false;
+		} else if(left != right)
+			return false;
+	}
+	return true;
+};
+
 Array.prototype.pushIf = function() {
 	for(var i = 0, length = arguments.length; i < length; i++) {
 		var element = arguments[i];

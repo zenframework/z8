@@ -531,7 +531,7 @@ Z8.define('Z8.list.List', {
 	},
 
 	onDestroy: function() {
-		this.startEditTask.cancel();
+		this.startEditTask.destroy();
 
 		DOM.un(this, 'keyDown', this.onKeyDown, this);
 		DOM.un(this, 'mouseMove', this.onMouseMove, this);

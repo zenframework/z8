@@ -5,7 +5,7 @@ html {
 * {
 	-webkit-box-sizing: border-box;
 	-moz-box-sizing: border-box;
-	box-sizing: border-box
+	box-sizing: border-box;
 }
 
 *:focus {
@@ -29,9 +29,15 @@ input[type="file"] {
 	display: none;
 }
 
-input::-ms-clear {
-	width : 0;
-	height: 0;
+input::-ms-clear,
+input::ms-reveal {
+	display: none;
+/*	width : 0;
+	height: 0;*/
+}
+
+input::-webkit-textfield-decoration-container {
+	display: none;
 }
 
 textarea {
