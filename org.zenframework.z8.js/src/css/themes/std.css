@@ -32,12 +32,12 @@ input[type="file"] {
 input::-ms-clear,
 input::ms-reveal {
 	display: none;
-/*	width : 0;
-	height: 0;*/
 }
 
-input::-webkit-textfield-decoration-container {
-	display: none;
+input::-webkit-contacts-auto-fill-button,
+input::-webkit-credentials-auto-fill-button {
+	-webkit-appearance: none !important;
+	display: none !important;
 }
 
 textarea {
