@@ -25,10 +25,6 @@ Z8.define('Z8.application.form.Navigator', {
 		this.initFilter(User.getFilter(this.registryEntry()));
 		this.initPeriod(User.getPeriod(this.registryEntry()));
 
-		this.cls = DOM.parseCls(this.cls).pushIf('navigator');
-		if(this.oneRecord)
-			this.cls.add('one-record');
-
 		var items = this.createItems();
 		var body = this.body = new Z8.Container({ cls: 'body', items: items });
 		var toolbar = this.toolbar = this.createToolbar();
@@ -38,6 +34,15 @@ Z8.define('Z8.application.form.Navigator', {
 		this.setTools(this.table, !isForm);
 
 		this.items = [toolbar, body];
+	},
+
+	getCls: function() {
+		var cls = viewport.Form.prototype.getCls.call(this);
+
+		if(this.oneRecord)
+			cls.pushIf('one-record');
+
+		return cls.pushIf('navigator');
 	},
 
 	getStore: function() {

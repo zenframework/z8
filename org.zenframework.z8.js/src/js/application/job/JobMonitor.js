@@ -31,9 +31,11 @@ Z8.define('Z8.application.job.JobMonitor', {
 		this.store = new Z8.data.Store({ model: 'Z8.application.job.Model' });
 	},
 
-	htmlMarkup: function() {
-		this.cls = DOM.parseCls(this.cls).pushIf('job-monitor');
+	getCls: function() {
+		return Z8.window.Window.prototype.getCls.call(this).pushIf('job-monitor');
+	},
 
+	htmlMarkup: function() {
 		var store = this.store;
 		var taskList = this.taskList = new Z8.form.field.Listbox({ cls: 'tasks', flex: 1, colSpan: 7, store: store, fields: this.fields, icons: true, checks: false, editable: false, minHeight: Ems.unitsToEms(5) });
 		taskList.on('select', this.onSelect, this);

@@ -4,6 +4,10 @@ Z8.define('Z8.form.field.Filter', {
 	tabIndex: -1,
 	scrollable: true,
 
+	getCls: function() {
+		return Z8.form.field.Text.prototype.getCls.call(this).pushIf('filter-control');
+	},
+
 	setValue: function(value) {
 		if(value == this.getValue())
 			return;
@@ -25,8 +29,6 @@ Z8.define('Z8.form.field.Filter', {
 	},
 
 	htmlMarkup: function() {
-		this.cls = DOM.parseCls(this.cls).pushIf('filter-control');
-
 		var label = this.label = this.label || {};
 
 		var newLine = this.newLineButton = new Z8.button.Button({ tooltip: 'Новая строка', icon: 'fa-file-o', handler: this.newLine, scope: this });

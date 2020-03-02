@@ -9,11 +9,12 @@ Z8.define('Z8.application.viewport.Viewport', {
 	forms: [],
 
 	initComponent: function() {
-		this.cls = DOM.parseCls(this.cls).pushIf('viewport');
-
 		this.callParent();
-
 		this.setTitle(Application.name);
+	},
+
+	getCls: function() {
+		return Z8.Container.prototype.getCls.call(this).pushIf('viewport');
 	},
 
 	htmlMarkup: function() {

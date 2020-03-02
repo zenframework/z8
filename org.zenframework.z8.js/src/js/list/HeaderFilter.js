@@ -9,8 +9,8 @@ Z8.define('Z8.list.HeaderFilter', {
 	*
 	*/
 
-	initComponent: function() {
-		this.callParent();
+	getCls: function() {
+		return Z8.Component.prototype.getCls.call(this).pushIf('column');
 	},
 
 	subcomponents: function() {
@@ -36,8 +36,7 @@ Z8.define('Z8.list.HeaderFilter', {
 
 		this.searchBox = searchBox;
 
-		var cls = DOM.parseCls(this.cls).pushIf('column').join(' ');
-		return { tag: 'td', id: this.getId(), cls: cls, tabIndex: this.getTabIndex(), cn: searchBox != null ? [searchBox.htmlMarkup()] : [] };
+		return { tag: 'td', id: this.getId(), cls: this.getCls().join(' '), tabIndex: this.getTabIndex(), cn: searchBox != null ? [searchBox.htmlMarkup()] : [] };
 	},
 
 	focus: function() {

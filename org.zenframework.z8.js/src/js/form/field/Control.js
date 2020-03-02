@@ -15,6 +15,7 @@ Z8.define('Z8.form.field.Control', {
 		this.initField();
 		this.readOnlyLock = this.isReadOnly();
 		this.enabledLock = !this.isEnabled();
+		this.label = String.isString(this.label) ? { text: this.label } : this.label;
 	},
 
 	subcomponents: function() {
@@ -22,25 +23,10 @@ Z8.define('Z8.form.field.Control', {
 	},
 
 	htmlMarkup: function() {
-		var label = this.label = String.isString(this.label) ? { text: this.label } : this.label;
-
 		var controlMarkup = this.controlMarkup();
 		controlMarkup = Array.isArray(controlMarkup) ? controlMarkup : [controlMarkup];
 
-		var cls = this.cls = DOM.parseCls(this.cls).pushIf('control-group');
-
-		if(!this.isVisible())
-			cls.pushIf('display-none');
-		if(!this.isEnabled())
-			cls.pushIf('disabled');
-		if(this.isReadOnly())
-			cls.pushIf('readonly');
-		if(!label)
-			cls.pushIf('label-none');
-		if(!this.isValid())
-			cls.pushIf('invalid');
-		if(this.isScrollable())
-			cls.pushIf('scrollable');
+		var label = this.label;
 
 		if(label) {
 			var align = label.align;
@@ -62,12 +48,9 @@ Z8.define('Z8.form.field.Control', {
 			label = { tag: 'span', name: 'label', cls: this.getLabelCls().join(' '), title: title || '', style: style, cn: cn };
 
 			align == 'right' ? controlMarkup.add(label) : controlMarkup.insert(label, 0);
-
-			if(align != null)
-				cls.pushIf('label-' + align);
 		}
 
-		return { id: this.getId(), cls: cls.join(' '), cn: controlMarkup };
+		return { id: this.getId(), cls: this.getCls().join(' '), cn: controlMarkup };
 	},
 
 	completeRender: function() {
@@ -169,6 +152,29 @@ Z8.define('Z8.form.field.Control', {
 	validate: function() {
 		var value = this.getValue();
 		this.setValid(!this.isEmptyValue(value) || !this.isRequired());
+	},
+
+	getCls: function() {
+		var cls = Z8.Component.prototype.getCls.call(this);
+
+		if(!this.isVisible())
+			cls.pushIf('display-none');
+		if(!this.isEnabled())
+			cls.pushIf('disabled');
+		if(this.isReadOnly())
+			cls.pushIf('readonly');
+		if(!this.isValid())
+			cls.pushIf('invalid');
+		if(this.isScrollable())
+			cls.pushIf('scrollable');
+
+		var label = this.label;
+		if(!label)
+			cls.pushIf('label-none');
+		else if(label && label.align != null)
+			cls.pushIf('label-' + label.align);
+
+		return cls.pushIf('control-group');
 	},
 
 	getIconCls: function(cls) {

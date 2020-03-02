@@ -9,10 +9,15 @@ Z8.define('Z8.button.Group', {
 		config.items = config.items || [];
 
 		this.callParent(config);
+	},
 
-		this.cls = DOM.parseCls(this.cls).pushIf('btn-group' + (this.vertical ? '-vertical' : ''));
+	getCls: function() {
+		var cls = Z8.Container.prototype.getCls.call(this);
+
 		if(this.radio)
-			this.cls.pushIf('radio');
+			cls.pushIf('radio');
+
+		return cls.pushIf('btn-group' + (this.vertical ? '-vertical' : ''));
 	},
 
 	getToggled: function() {

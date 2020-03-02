@@ -21,9 +21,12 @@ Z8.define('Z8.filter.Expression', {
 	logical: 'and',
 
 	htmlMarkup: function() {
-		this.cls = DOM.parseCls(this.cls).pushIf('expression');
 		this.expression = this.expression || { logical: 'and', expressions: [] };
 		return this.callParent();
+	},
+
+	getCls: function() {
+		return Z8.filter.Group.prototype.getCls.call(this).pushIf('expression');
 	},
 
 	onDestroy: function() {

@@ -269,23 +269,23 @@ Z8.define('Z8.list.List', {
 		return markup;
 	},
 
-	htmlMarkup: function() {
-		var hasHeaders = this.headers.length != 0;
-		var hasTotals = this.totals.length != 0;
+	getCls: function() {
+		var cls = Z8.Component.prototype.getCls.call(this);
 
-		var cls = DOM.parseCls(this.cls).pushIf('list');
-		if(hasHeaders)
+		if(this.headers.length != 0)
 			cls.pushIf('columns');
-
-		if(hasTotals)
+		if(this.totals.length != 0)
 			cls.pushIf('totals');
-
 		if(this.autoFit)
 			cls.pushIf('auto-fit');
 
+		return cls.pushIf('list');
+	},
+
+	htmlMarkup: function() {
 		var cn = [];
 
-		if(hasHeaders) {
+		if(this.headers.length != 0) {
 			var headers = this.tableMarkup('headers');
 			var headersScroller = { cls: 'scroller headers', cn: [headers] };
 			cn.push(headersScroller);
@@ -295,13 +295,13 @@ Z8.define('Z8.list.List', {
 		var itemsScroller = { cls: 'scroller items', cn: [items] };
 		cn.push(itemsScroller);
 
-		if(hasTotals) {
+		if(this.totals.length != 0) {
 			var totals = this.tableMarkup('totals');
 			var totalsScroller = { cls: 'scroller totals', cn: [totals] };
 			cn.push(totalsScroller);
 		}
 
-		return { id: this.getId(), tabIndex: this.getTabIndex(), cls: cls.join(' '), cn: cn };
+		return { id: this.getId(), tabIndex: this.getTabIndex(), cls: this.getCls().join(' '), cn: cn };
 	},
 
 	subcomponents: function() {
@@ -1260,14 +1260,12 @@ Z8.define('Z8.list.List', {
 
 		var top = dom.offsetTop;
 		var bottom = top + dom.offsetHeight;
+		var pageHeight = this.itemsScroller.clientHeight;
 		var scrollTop = this.itemsScroller.scrollTop;
-		var scrollBottom = scrollTop + this.itemsScroller.clientHeight;
+		var scrollBottom = scrollTop + pageHeight;
 
 		if(top < scrollTop || scrollBottom < bottom)
-			DOM.scrollIntoView(item, true);
-
-		if(scrollBottom < bottom)
-			DOM.scrollIntoView(item, false);
+			this.itemsScroller.scrollTop = Math.max((top  + bottom) / 2 - pageHeight / 2, 0);
 	},
 
 	onScroll: function(event, target) {
