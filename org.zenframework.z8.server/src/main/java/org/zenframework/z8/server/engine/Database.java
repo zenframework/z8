@@ -136,6 +136,8 @@ public class Database {
 			sql = "SELECT COUNT(table_name) FROM information_schema.tables " + "WHERE table_name = '" + name + "' AND " + "table_schema = '" + schema() + "'";
 		} else if(vendor == DatabaseVendor.Oracle) {
 			sql = "SELECT COUNT(TABLE_NAME) FROM ALL_TAB_COLUMNS " + "WHERE TABLE_NAME = '" + name + "' AND " + "OWNER = '" + schema() + "'";
+		} else if(vendor == DatabaseVendor.H2) {
+			sql = "SELECT COUNT(TABLE_NAME) FROM INFORMATION_SCHEMA.TABLES " + "WHERE TABLE_NAME = '" + name + "' AND " + "	TABLE_SCHEMA = '" + schema() + "'";
 		}
 
 		Cursor cursor = null;
