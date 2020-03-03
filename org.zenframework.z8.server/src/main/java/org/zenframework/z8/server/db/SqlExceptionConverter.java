@@ -29,7 +29,7 @@ public class SqlExceptionConverter {
 			postgres(e);
 			break;
 		default:
-			throw new UnknownDatabaseException();
+			throw new UnknownDatabaseException(e);
 		}
 
 		if(rethrowUnknown)
