@@ -3,6 +3,7 @@ package org.zenframework.z8.server.db;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 import org.zenframework.z8.server.base.query.Query;
 import org.zenframework.z8.server.base.query.ReadLock;
@@ -186,15 +187,16 @@ public class Select {
 		return result;
 	}
 
-	private String formatReadLock(FormatOptions options) {
+	protected String formatReadLock(FormatOptions options) {
 		String readLock = "";
 
-		if(rootQuery == null || rootQuery.getReadLock() == ReadLock.None)
+		if(!options.isReadLockEnabled() || rootQuery == null || rootQuery.getReadLock() == ReadLock.None)
 			return readLock;
 
 		readLock = '\n' + rootQuery.getReadLock().toString();
 
-		if(vendor() == DatabaseVendor.Postgres)
+		DatabaseVendor vendor = vendor();
+		if(vendor == DatabaseVendor.Postgres || vendor == DatabaseVendor.H2)
 			readLock += " of " + rootQuery.getAlias();
 
 		return readLock;
@@ -212,11 +214,9 @@ public class Select {
 	}
 
 	private void updateAliases(FormatOptions options) {
-		int index = 0;
-		for(Field field : fields) {
-			options.setFieldAlias(field, getAlias() + "." + getFieldAlias(index));
-			index++;
-		}
+		List<Field> fields = (List<Field>) this.fields;
+		for(int i = 0; i < fields.size(); i++)
+			options.setFieldAlias(fields.get(i), getAlias() + "." + getFieldAlias(i));
 	}
 
 	private String getAlias() {

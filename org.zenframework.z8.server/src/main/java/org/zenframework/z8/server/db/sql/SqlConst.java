@@ -89,6 +89,7 @@ public class SqlConst extends SqlToken {
 			case Oracle:
 			case Postgres:
 			case SqlServer:
+			case H2:
 				return new SqlStringToken(result, FieldType.String).format(vendor, options, logicalContext);
 			}
 		}
