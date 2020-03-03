@@ -53,10 +53,10 @@ public enum DatabaseVendor {
 	}
 
 	private char quoteOpen() {
-		return this == Oracle || this == Postgres ? '"' : '[';
+		return this == Oracle || this == Postgres || this == H2 ? '"' : '[';
 	}
 
 	private char quoteClose() {
-		return this == Oracle || this == Postgres ? '"' : ']';
+		return this == Oracle || this == Postgres || this == H2 ? '"' : ']';
 	}
 }

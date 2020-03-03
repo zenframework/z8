@@ -7,6 +7,7 @@ import org.zenframework.z8.server.base.table.value.IField;
 
 public class FormatOptions {
 	private int aggregationEnabled = 0;
+	private int readLockEnabled = 0;
 	private boolean orderBy = false;
 
 	private Map<IField, String> aliases = new HashMap<IField, String>();
@@ -30,6 +31,19 @@ public class FormatOptions {
 
 	public void disableAggregation() {
 		aggregationEnabled++;
+	}
+
+	public boolean isReadLockEnabled() {
+		return readLockEnabled == 0;
+	}
+
+	public void enableReadLock() {
+		if(readLockEnabled > 0)
+			readLockEnabled--;
+	}
+
+	public void disableReadLock() {
+		readLockEnabled++;
 	}
 
 	public void setOrderBy(boolean orderBy) {

@@ -11,6 +11,7 @@ import org.zenframework.z8.server.db.FieldType;
 import org.zenframework.z8.server.db.Statement;
 import org.zenframework.z8.server.db.sql.FormatOptions;
 import org.zenframework.z8.server.db.sql.SqlStringToken;
+import org.zenframework.z8.server.db.sql.SqlToken;
 import org.zenframework.z8.server.db.sql.functions.string.Lower;
 import org.zenframework.z8.server.engine.Database;
 
@@ -43,7 +44,11 @@ class IndexGenerator {
 
 		switch(field.type()) {
 		case String:
-			return "(" + new Lower(new SqlStringToken(name, FieldType.String)).format(vendor, new FormatOptions()) + ")";
+			SqlToken token = new SqlStringToken(name, FieldType.String);
+			// Index on expression is not supported in H2
+			if (vendor != DatabaseVendor.H2)
+				token = new Lower(token);
+			return "(" + token.format(vendor, new FormatOptions()) + ")";
 		case Geometry:
 			return "using gist (" + name + ")";
 		default:
@@ -57,6 +62,7 @@ class IndexGenerator {
 		switch(connection.vendor()) {
 		case Postgres:
 		case Oracle:
+		case H2:
 			dropIndexOracle(connection, tableName, indexName);
 			break;
 		case SqlServer:

@@ -59,6 +59,13 @@ public class FramedSelect extends Select {
 
 			sql += "\nlimit " + (limit != -1 ? limit : "all") + " offset " + start;
 			return sql;
+		} else if(vendor == DatabaseVendor.H2) {
+			options.disableReadLock();
+			String sql = super.sql(options);
+			sql += "\nlimit " + (limit != -1 ? limit : "all") + " offset " + start;
+			options.enableReadLock();
+			sql += formatReadLock(options);
+			return sql;
 		} else
 			throw new UnknownDatabaseException();
 	}

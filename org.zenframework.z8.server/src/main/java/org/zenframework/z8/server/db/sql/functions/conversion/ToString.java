@@ -61,6 +61,9 @@ public class ToString extends SqlToken {
 		case SqlServer:
 			return "Cast(" + value.format(vendor, options) + " as nvarchar(max))";
 
+		case H2:
+			return value.format(vendor, options);
+
 		default:
 			throw new UnknownDatabaseException();
 		}
