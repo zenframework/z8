@@ -79,11 +79,9 @@ Z8.define('Z8.list.Header', {
 		var text = String.htmlText(this.text);
 		text = { cls: 'text', cn: icon != null ? [icon, text] : [text] } ;
 
-		var cls = this.getCls().join(' ');
-
 		var leftHandle = { cls: 'resize-handle-left' };
 		var rightHandle = { cls: 'resize-handle-right' };
-		return { tag: 'td', id: this.getId(), cls: cls, tabIndex: this.getTabIndex(), cn: [leftHandle, text, sort, filter, rightHandle], title: this.title };
+		return { tag: 'td', id: this.getId(), cls: this.getCls().join(' '), tabIndex: this.getTabIndex(), cn: [leftHandle, text, sort, filter, rightHandle], title: this.title };
 	},
 
 	completeRender: function() {
@@ -112,12 +110,14 @@ Z8.define('Z8.list.Header', {
 	},
 
 	getCls: function() {
-		var cls = this.cls = DOM.parseCls(this.cls).pushIf('column');
+		var cls = Z8.list.HeaderBase.prototype.getCls.call(this);
+
 		if(this.sortDirection != null)
 			cls.pushIf('sort');
 		if(this.filtered)
 			cls.pushIf('filter');
-		return cls;
+
+		return cls.pushIf('column');
 	},
 
 	setBusy: function(busy) {

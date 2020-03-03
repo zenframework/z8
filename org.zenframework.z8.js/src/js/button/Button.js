@@ -59,7 +59,7 @@ Z8.define('Z8.button.Button', {
 
 		var cn = [button];
 
-		trigger = this.trigger = new Z8.button.Trigger({ cls: this.cls, primary: this.primary, danger: this.danger, success: this.success, info: this.info, tooltip: this.triggerTooltip, icon: this.triggerIcon, tabIndex: this.getTabIndex(), enabled: this.enabled });
+		trigger = this.trigger = new Z8.button.Trigger({ cls: this.getCls(), primary: this.primary, danger: this.danger, success: this.success, info: this.info, tooltip: this.triggerTooltip, icon: this.triggerIcon, tabIndex: this.getTabIndex(), enabled: this.enabled });
 		cn.push(trigger.htmlMarkup());
 
 		if(menu != null)
@@ -131,7 +131,7 @@ Z8.define('Z8.button.Button', {
 	},
 
 	getButtonCls: function() {
-		var cls = DOM.parseCls(this.cls).pushIf('btn', this.getButtonTypeCls());
+		var cls = this.getCls().pushIf('btn', this.getButtonTypeCls());
 
 		if(!this.isEnabled())
 			cls.pushIf('disabled');

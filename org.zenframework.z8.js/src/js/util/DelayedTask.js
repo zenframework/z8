@@ -26,5 +26,10 @@ Z8.define('Z8.util.DelayedTask', {
 
 		me.cancel();
 		me.fn.apply(me.scope, me.params);
+	},
+
+	destroy: function() {
+		this.cancel();
+		this.fn = this.scope = null;
 	}
 });

@@ -7,6 +7,10 @@ Z8.define('Z8.window.Window', {
 	autoDestroy: true,
 	isOpen: false,
 
+	getCls: function() {
+		return Z8.Container.prototype.getCls.call(this).pushIf('window');
+	},
+
 	htmlMarkup: function() {
 		var icon = { tag: 'i', cls: DOM.parseCls(this.icon).pushIf('icon', 'fa', 'fw-fa').join(' ') };
 		var text = this.text = { cls: 'text', html: this.header };
@@ -37,7 +41,6 @@ Z8.define('Z8.window.Window', {
 
 		var footer = this.footer = new Z8.Container({ cls: 'footer', items: buttons });
 
-		this.cls = DOM.parseCls(this.cls).pushIf('window');
 		this.items = [header, body, footer];
 
 		return this.callParent();

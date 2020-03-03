@@ -28,13 +28,15 @@ Z8.define('Z8.form.field.Combobox', {
 
 		this.callParent();
 
-		this.cls = DOM.parseCls(this.cls).pushIf('combobox');
-
 		if(this.editor)
 			this.queryTask = new Z8.util.DelayedTask();
 
 		this.initTriggers();
 		this.initStore();
+	},
+
+	getCls: function() {
+		return Z8.form.field.Text.prototype.getCls.call(this).pushIf('combobox');
 	},
 
 	isEmptyValue: function(value) {

@@ -16,9 +16,8 @@ Z8.define('Z8.form.action.Action', {
 		}
 	},
 
-	initComponent: function() {
-		this.callParent();
-		this.cls = DOM.parseCls(this.cls).pushIf('action');
+	getCls: function() {
+		return Z8.button.Button.prototype.getCls.call(this).pushIf('action');
 	},
 
 	isValid: function() {

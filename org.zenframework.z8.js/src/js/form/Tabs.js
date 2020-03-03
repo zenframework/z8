@@ -6,12 +6,15 @@ Z8.define('Z8.form.Tabs', {
 
 	mixins: ['Z8.form.field.Field'],
 
+	getCls: function() {
+		return Z8.Container.prototype.getCls.call(this).pushIf('tabs', this.flex ? 'flex' : '');
+	},
+
 	htmlMarkup: function() {
 		this.setReadOnly(this.isReadOnly());
 
 		var controls = this.controls || [];
 
-		this.cls = DOM.parseCls(this.cls).pushIf('tabs', this.flex ? 'flex' : '');
 		this.headerCls = DOM.parseCls(this.headerCls).pushIf('header');
 		this.bodyCls = DOM.parseCls(this.bodyCls).pushIf('body');
 

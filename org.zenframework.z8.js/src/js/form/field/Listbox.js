@@ -295,16 +295,20 @@ Z8.define('Z8.form.field.Listbox', {
 			this.list.setRecords([]);
 	},
 
+	getCls: function() {
+		var cls = Z8.form.field.Control.prototype.getCls.call(this);
+
+		if(this.needsPager())
+			cls.pushIf('pager-on');
+
+		return cls.pushIf('list-box');
+	},
+
 	subcomponents: function() {
 		return this.callParent().add([this.list, this.pager, this.selectorDlg, this.actions]);
 	},
 
 	htmlMarkup: function() {
-		var cls = this.cls = DOM.parseCls(this.cls).pushIf('list-box');
-
-		if(this.needsPager())
-			cls.pushIf('pager-on');
-
 		var label = this.label;
 		if(this.tools) {
 			if(label == null)
@@ -636,7 +640,10 @@ Z8.define('Z8.form.field.Listbox', {
 		if(record != null) {
 			var list = this.list;
 			var item = list.getItem(record.id);
-			return list.onItemStartEdit(item, index);
+			if(!list.canStartEdit(item, index))
+				return false;
+			list.startEdit(item, index);
+			return true;
 		}
 		return false;
 	},

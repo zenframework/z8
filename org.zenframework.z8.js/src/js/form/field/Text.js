@@ -15,6 +15,11 @@ Z8.define('Z8.form.field.Text', {
 		this.callParent();
 	},
 
+	getCls: function() {
+		var cls = Z8.form.field.Control.prototype.getCls.call(this);
+		return Z8.isEmpty(this.triggers) ? cls : cls.pushIf('trigger').pushIf('trigger-' + this.triggers.length);
+	},
+
 	controlMarkup: function() {
 		var value = this.valueToRaw(this.getValue());
 		var enabled = this.isEnabled();
@@ -42,8 +47,6 @@ Z8.define('Z8.form.field.Text', {
 		if(!Z8.isEmpty(triggers)) {
 			triggers = Array.isArray(triggers) ? triggers : [triggers];
 			this.triggers = [];
-
-			this.cls = DOM.parseCls(this.cls).pushIf('trigger').pushIf('trigger-' + triggers.length);
 
 			for(var i = 0, length = triggers.length; i < length; i++) {
 				var trigger = triggers[i];

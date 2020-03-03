@@ -5,8 +5,6 @@ Z8.define('Z8.application.viewport.Login', {
 	visible: false,
 
 	initComponent: function() {
-		this.cls = DOM.parseCls(this.cls).pushIf('login', 'display-none');
-
 		var header = { cls: 'header', html: 'Авторизация' };
 		var login = this.loginField = new Z8.form.field.Text({ label: { text: 'Логин', icon: 'fa-user', width: '6.42857143em', align: 'left' }, placeholder: 'Логин', value: 'Admin' });
 		var password = this.passwordField = new Z8.form.field.Text({ label: { text: 'Пароль',  icon: 'fa-key', align: 'left', width: '6.42857143em' }, placeholder: 'Пароль', password: true });
@@ -15,6 +13,10 @@ Z8.define('Z8.application.viewport.Login', {
 		this.controls = [header, login, password, loginButton];
 
 		this.callParent();
+	},
+
+	getCls: function() {
+		return Z8.form.Fieldset.prototype.getCls.call(this).pushIf('login');
 	},
 
 	completeRender: function() {

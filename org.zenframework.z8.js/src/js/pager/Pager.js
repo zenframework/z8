@@ -1,6 +1,10 @@
 Z8.define('Z8.pager.Pager', {
 	extend: 'Z8.Container',
 
+	getCls: function() {
+		return Z8.Container.prototype.getCls.call(this).pushIf('pager');
+	},
+
 	initComponent: function() {
 		this.callParent();
 
@@ -51,8 +55,6 @@ Z8.define('Z8.pager.Pager', {
 		var totals = this.totals = new Z8.Component({ cls: 'totals', html: this.totalsText() });
 
 		this.items = [paging, { cls: 'flex-1 float-right' }, totals];
-
-		this.cls = DOM.parseCls(this.cls).pushIf('pager');
 
 		return this.callParent();
 	},

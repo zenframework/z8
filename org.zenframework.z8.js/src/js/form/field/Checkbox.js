@@ -7,10 +7,12 @@ Z8.define('Z8.form.field.Checkbox', {
 	initComponent: function() {
 		this.callParent();
 
-		this.cls = DOM.parseCls(this.cls).pushIf('checkbox');
-
 		this.onCls = DOM.parseCls(this.onCls || 'fa-check-square fa control');
 		this.offCls = DOM.parseCls(this.offCls || 'fa-square-o fa control');
+	},
+
+	getCls: function() {
+		return Z8.form.field.Control.prototype.getCls.call(this).pushIf('checkbox');
 	},
 
 	isValid: function() {

@@ -10,6 +10,10 @@ Z8.define('Z8.list.HeaderIcon', {
 		this.title = (field != null ? field.header : this.title) || '';
 	},
 
+	getCls: function() {
+		return Z8.list.HeaderBase.prototype.getCls.call(this).pushIf('column', 'icon');
+	},
+
 	getWidth: function() {
 		return this.width || HeaderBase.Icon;
 	},
@@ -25,8 +29,7 @@ Z8.define('Z8.list.HeaderIcon', {
 		} else
 			var icon = { tag: 'span', html: this.title.substr(0, 2) };
 
-		cls = DOM.parseCls(this.cls).pushIf('column', 'icon').join(' ');
-		return { tag: 'td', id: this.getId(), cls: cls, tabIndex: this.getTabIndex(), cn: [icon], title: this.title };
+		return { tag: 'td', id: this.getId(), cls: this.getCls().join(' '), tabIndex: this.getTabIndex(), cn: [icon], title: this.title };
 	},
 
 	completeRender: function() {

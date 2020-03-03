@@ -49,6 +49,19 @@ Z8.define('Z8.form.Fieldset', {
 		return null;
 	},
 
+	getCls: function() {
+		var cls = Z8.Component.prototype.getCls.call(this);
+
+		if(this.plain)
+			cls.pushIf('section');
+		if(!this.isEnabled())
+			cls.pushIf('disabled');
+		if(this.isReadOnly())
+			cls.pushIf('readonly');
+
+		return cls.pushIf('fieldset');
+	},
+
 	subcomponents: function() {
 		return this.controls;
 	},
@@ -66,21 +79,10 @@ Z8.define('Z8.form.Fieldset', {
 
 		var rows = (this.plain ? [] : [legend]).concat(this.rowsMarkup());
 
-		var cls = DOM.parseCls(this.cls).pushIf('fieldset');
-
-		if(this.plain)
-			cls.pushIf('section');
-
-		if(!this.isEnabled())
-			cls.pushIf('disabled');
-
-		if(this.isReadOnly())
-			cls.pushIf('readonly');
-
 		if(this.name != null)
 			cls.pushIf(this.name.replace(/\./g, '-').toLowerCase());
 
-		return { id: this.getId(), cls: cls.join(' '), cn: rows };
+		return { id: this.getId(), cls: this.getCls().join(' '), cn: rows };
 	},
 
 	rowsMarkup: function() {

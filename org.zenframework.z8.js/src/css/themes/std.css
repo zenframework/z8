@@ -5,7 +5,7 @@ html {
 * {
 	-webkit-box-sizing: border-box;
 	-moz-box-sizing: border-box;
-	box-sizing: border-box
+	box-sizing: border-box;
 }
 
 *:focus {
@@ -29,9 +29,15 @@ input[type="file"] {
 	display: none;
 }
 
-input::-ms-clear {
-	width : 0;
-	height: 0;
+input::-ms-clear,
+input::ms-reveal {
+	display: none;
+}
+
+input::-webkit-contacts-auto-fill-button,
+input::-webkit-credentials-auto-fill-button {
+	-webkit-appearance: none !important;
+	display: none !important;
 }
 
 textarea {
