@@ -109,7 +109,7 @@ Z8.define('Z8.list.Item', {
 
 
 				text = this.textMarkup(text, this.getTextCls(field, record) + ' text', field);
-				var cell = { cls: this.getCellCls(field, record) + ' cell', cn: i == 0 ? icons.add(text) : text };
+				var cell = { cls: this.getCellCls(field, record).join(' '), cn: i == 0 ? icons.add(text) : text };
 
 				var type = field.type;
 				columns.push({ tag: 'td', cls: 'column' + (type != null ? ' ' + type : '') + (i == 0 && !this.checks && !this.locks ? ' first' : ''), field: i, cn: [cell], title: title });
@@ -125,7 +125,7 @@ Z8.define('Z8.list.Item', {
 			}
 
 			text = { tag: 'div', cls: 'text' + (shortcut != null ? ' shortcuts' : ''), cn: shortcut != null ? [text, shortcut] : [text] };
-			var cell = { cls: 'cell', cn: icons.concat([text]) };
+			var cell = { cls: this.getCellCls().join(' '), cn: icons.concat([text]) };
 			columns.push({ tag: 'td', cls: 'column', cn: [cell], title: title });
 		}
 
@@ -144,7 +144,7 @@ Z8.define('Z8.list.Item', {
 	},
 
 	getCellCls: function(field, record) {
-		return '';
+		return DOM.parseCls(this.cellCls).pushIf('cell');
 	},
 
 	renderText: function(field, value) {

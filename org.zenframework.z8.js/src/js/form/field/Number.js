@@ -7,6 +7,14 @@ Z8.define('Z8.form.field.Number', {
 		return this.callParent().pushIf('number');
 	},
 
+	rawToValue: function(value) {
+		return Parser.float(value);
+	},
+
+	valueToRaw: function(value) {
+		return Format.number(value, this.format || Format.Float);
+	},
+
 	onKeyEvent: function(event, target) {
 		var key = event.getKey();
 

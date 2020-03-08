@@ -73,6 +73,7 @@ Z8.define('Z8.form.field.Field', {
 			var oldValue = this.lastValue;
 			if(!this.disposed && this.didValueChange(newValue, oldValue)) {
 				this.lastValue = newValue;
+				Z8.callback(this.changeHandler, this.scope, this, newValue, oldValue);
 				this.fireEvent('change', this, newValue, oldValue);
 			}
 		}

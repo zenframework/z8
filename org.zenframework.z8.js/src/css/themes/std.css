@@ -339,6 +339,9 @@ textarea.control,
 
 .btn>.text {
 	flex: 1;
+	overflow: hidden;
+	white-space: nowrap;
+	text-overflow: ellipsis;
 }
 
 .btn.disabled>.icon,
@@ -360,7 +363,7 @@ textarea.control,
 .btn-group.vertical {
 	display: flex;
 	flex-direction: row;
-	align-items: stretch;
+	align-items: center;
 	position: relative;
 	vertical-align: middle
 }
@@ -376,4 +379,38 @@ textarea.control,
 
 .control-group.label-top {
 	flex-direction: column !important;
+}
+
+.tabs {
+	display: flex !important;
+	flex-direction: column;
+}
+
+.tabs>.header {
+	display: flex !important;
+	align-items: stretch;
+	width: 100%;
+}
+
+.tabs>.header>.tag {
+	overflow-x: hidden;
+	overflow-y: hidden;
+	text-overflow: ellipsis;
+}
+
+.tabs>.body {
+	position: relative;
+	flex: 1;
+	display: flex;
+	flex-direction: row;
+}
+
+.tabs>.body>.tab {
+	width: 100%;
+	overflow-x: hidden;
+	overflow-y: hidden;
+}
+
+.tabs>.body>.tab.inactive {
+	display: none !important;
 }
