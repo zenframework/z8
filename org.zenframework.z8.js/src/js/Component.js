@@ -265,6 +265,14 @@ Z8.define('Z8.Component', {
 		return { id: this.getId(), cls: this.getCls().join(' '), tabIndex: this.getTabIndex(), html: this.html || '' };
 	},
 
+	getText: function(value) {
+		DOM.getValue(this);
+	},
+
+	setText: function(value) {
+		DOM.setValue(this, value);
+	},
+
 	setPosition: function(left, top) {
 		DOM.setPoint(this, 'left', left);
 		DOM.setPoint(this, 'top', top);
