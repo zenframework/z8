@@ -168,11 +168,7 @@ Z8.define('Z8.form.field.Control', {
 		if(this.isScrollable())
 			cls.pushIf('scrollable');
 
-		var label = this.label;
-		if(!label)
-			cls.pushIf('label-none');
-		else if(label && label.align != null)
-			cls.pushIf('label-' + label.align);
+		cls.pushIf('label-' + (this.label ? this.label.align || 'top' : 'none'));
 
 		return cls.pushIf('control-group');
 	},

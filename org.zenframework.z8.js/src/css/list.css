@@ -625,7 +625,7 @@
 	margin-bottom: 1px;
 }
 
-.dropdown-menu.list .item>.column {
+.dropdown-menu.list .menu.item>.column {
 	border-bottom: none;
 }
 

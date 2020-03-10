@@ -58,6 +58,8 @@ Z8.define('Z8.form.Fieldset', {
 			cls.pushIf('disabled');
 		if(this.isReadOnly())
 			cls.pushIf('readonly');
+		if(this.name != null)
+			cls.pushIf(this.name.replace(/\./g, '-').toLowerCase());
 
 		return cls.pushIf('fieldset');
 	},
@@ -78,9 +80,6 @@ Z8.define('Z8.form.Fieldset', {
 		var legend = { cls: 'legend', title: text, cn: icon != null ? [icon, text] : [text] };
 
 		var rows = (this.plain ? [] : [legend]).concat(this.rowsMarkup());
-
-		if(this.name != null)
-			cls.pushIf(this.name.replace(/\./g, '-').toLowerCase());
 
 		return { id: this.getId(), cls: this.getCls().join(' '), cn: rows };
 	},

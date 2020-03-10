@@ -1713,12 +1713,12 @@ Z8.define('Z8.list.List', {
 
 			this.openEditor(editor, true);
 			this.currentEditor = editor;
-
-			if(item != this.getCurrentItem())
-				this.selectItem(item);
 		};
 
 		this.startEditTask.delay(300, startEditCallback, this, item, editor);
+
+		if(item != this.getCurrentItem())
+			this.selectItem(item);
 	},
 
 	openEditor: function(editor, selectContent) {
