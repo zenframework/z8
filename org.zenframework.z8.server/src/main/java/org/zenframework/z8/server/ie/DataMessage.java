@@ -1,10 +1,13 @@
 package org.zenframework.z8.server.ie;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.Map;
 
+import org.apache.commons.io.IOUtils;
 import org.zenframework.z8.server.base.table.Table;
 import org.zenframework.z8.server.base.table.system.TransportQueue;
 import org.zenframework.z8.server.base.table.value.Field;
@@ -21,7 +24,10 @@ import org.zenframework.z8.server.types.sql.sql_bool;
 
 public class DataMessage extends Message {
 
-	static private final long serialVersionUID = 3103056587172568570L;
+	static private final long VERSION1 = 3103056587172568570L;
+	static private final long VERSION2 = 3103056587172568571L;
+
+	static private final long serialVersionUID = VERSION2;
 
 	static public final string RecordId = new string("message.recordId");
 
@@ -85,9 +91,11 @@ public class DataMessage extends Message {
 	protected void write(ObjectOutputStream out) throws IOException {
 		RmiIO.writeLong(out, serialVersionUID);
 
+		// VERSION1
 		RmiIO.writeString(out, type);
-		RmiIO.writeBoolean(out, sendFiles);
 		out.writeObject(source);
+		// VERSION2
+		RmiIO.writeBoolean(out, sendFiles);
 	}
 
 	@Override
@@ -96,8 +104,9 @@ public class DataMessage extends Message {
 		long version = RmiIO.readLong(in);
 
 		type = RmiIO.readString(in);
-		sendFiles = RmiIO.readBoolean(in);
-		source = (MessageSource)in.readObject();
+		source = (MessageSource) in.readObject();
+		if (version >= VERSION2)
+			sendFiles = RmiIO.readBoolean(in);
 	}
 
 	public ExportRules getExportRules() {
