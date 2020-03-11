@@ -19,8 +19,8 @@ dependencies {
 }
 
 task copyLibs(type: Copy, group: 'Build Setup') {
-	dependsOn project(':org.zenframework.z8.compiler').tasks.jar
-	dependsOn project(':org.zenframework.z8.server').tasks.jar
+	//dependsOn project(':org.zenframework.z8.compiler').tasks.jar
+	//dependsOn project(':org.zenframework.z8.server').tasks.jar
 	configurations.lib.each {
 		from it
 		rename '-[\\d\\.]*[\\d]+', ''
