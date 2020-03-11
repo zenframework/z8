@@ -559,11 +559,15 @@ Z8.define('Z8.form.field.Combobox', {
 
 		dropdown.setAlignmentOffset(0, pagerSize.height, 1.41666667 /* Ems.pixelsToEms(17) */, true);
 		dropdown.show(null, null, focusAt);
+
+		DOM.addCls(this, 'open');
 	},
 
 	hideDropdown: function() {
 		this.dropdown.hide();
 		this.clearFilter();
+
+		DOM.removeCls(this, 'open');
 	},
 
 	cancelDropdown: function() {

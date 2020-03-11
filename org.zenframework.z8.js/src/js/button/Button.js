@@ -5,6 +5,7 @@ Z8.define('Z8.button.Button', {
 
 	text: '',
 	icon: null,
+	activeIcon: null,
 
 	primary: false,
 	danger: false,
@@ -17,6 +18,8 @@ Z8.define('Z8.button.Button', {
 
 	toggle: false,
 	toggled: null,
+	toggledIcon: null,
+
 	vertical: false,
 
 	busy: false,
@@ -32,6 +35,7 @@ Z8.define('Z8.button.Button', {
 
 	htmlMarkup: function() {
 		this.setIcon(this.icon);
+		this.setActiveIcon(this.activeIcon);
 
 		this.toggle = this.toggle || this.toggled != null || this.toggleHandler != null;
 		this.split = this.split || this.menu && this.trigger !== false;
@@ -143,7 +147,7 @@ Z8.define('Z8.button.Button', {
 	},
 
 	getIconCls: function() {
-		var cls = DOM.parseCls(this.iconCls).pushIf('fa').pushIf('icon');
+		var cls = DOM.parseCls((this.toggled ? this.activeIconCls : null) || this.iconCls).pushIf('fa').pushIf('icon');
 		if(Z8.isEmpty(this.iconCls))
 			cls.pushIf('no-icon');
 		if(Z8.isEmpty(this.text))
@@ -153,6 +157,11 @@ Z8.define('Z8.button.Button', {
 
 	setIcon: function(cls) {
 		this.iconCls = cls;
+		DOM.setCls(this.icon, this.getIconCls());
+	},
+
+	setActiveIcon: function(cls) {
+		this.activeIconCls = cls;
 		DOM.setCls(this.icon, this.getIconCls());
 	},
 
@@ -204,6 +213,7 @@ Z8.define('Z8.button.Button', {
 		this.toggled = toggled;
 
 		DOM.swapCls(this.button, toggled, 'active');
+		DOM.setCls(this.icon, this.getIconCls());
 
 		if(this.isRadio() && toggled)
 			this.container.onRadioToggle(this, toggled);
