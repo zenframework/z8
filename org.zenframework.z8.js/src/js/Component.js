@@ -265,12 +265,12 @@ Z8.define('Z8.Component', {
 		return { id: this.getId(), cls: this.getCls().join(' '), tabIndex: this.getTabIndex(), html: this.html || '' };
 	},
 
-	getText: function(value) {
-		DOM.getValue(this);
+	getInnerHtml: function(html) {
+		return DOM.setInnerHtml(this);
 	},
 
-	setText: function(value) {
-		DOM.setValue(this, value);
+	setInnerHtml: function(html) {
+		DOM.setInnerHtml(this, html);
 	},
 
 	setPosition: function(left, top) {

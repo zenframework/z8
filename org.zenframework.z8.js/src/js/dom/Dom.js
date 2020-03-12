@@ -381,6 +381,16 @@ Z8.define('Z8.dom.Dom', {
 			return true;
 		},
 
+		select: function(dom) {
+			if((dom = DOM.get(dom)) != null && dom.select != null)
+				dom.select();
+		},
+
+		deselect: function(dom) {
+			if((dom = DOM.get(dom)) != null && dom.setSelectionRange != null)
+				dom.setSelectionRange(1000, 1000);
+		},
+
 		scroll: function(dom, left, top) {
 			if((dom = DOM.get(dom)) == null || dom.focus == null)
 				return;
