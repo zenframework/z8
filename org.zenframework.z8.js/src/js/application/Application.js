@@ -9,6 +9,7 @@ Z8.define('Z8.application.Application', {
 
 	viewportCls: null,
 	userCls: null,
+	sourceCode: true,
 
 	listbox: {
 		locks: true,
