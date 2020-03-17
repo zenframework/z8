@@ -556,7 +556,7 @@ public class TableGenerator {
 		for(IField field : table().getIndices()) {
 			try {
 				index++;
-				new IndexGenerator(table(), (Field)field, index, false).run();
+				new IndexGenerator(table(), (Field)field, index).run();
 			} catch(SQLException e) {
 				logger.error(e, Resources.format("Generator.createIndexError", field.displayName(), table().displayName(), table().name(), ErrorUtils.getMessage(e)));
 			}
@@ -568,7 +568,7 @@ public class TableGenerator {
 		for(IField field : table().getUniqueIndices()) {
 			try {
 				index++;
-				new IndexGenerator(table(), (Field)field, index, true).run();
+				new IndexGenerator(table(), (Field)field, index).run();
 			} catch(SQLException e) {
 				logger.error(e, Resources.format("Generator.createUniqueIndexError", field.displayName(), table().displayName(), table().name()));
 			}

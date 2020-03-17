@@ -7,25 +7,18 @@ import org.zenframework.z8.server.base.table.value.Field;
 import org.zenframework.z8.server.db.Connection;
 import org.zenframework.z8.server.db.ConnectionManager;
 import org.zenframework.z8.server.db.DatabaseVendor;
-import org.zenframework.z8.server.db.FieldType;
 import org.zenframework.z8.server.db.Statement;
-import org.zenframework.z8.server.db.sql.FormatOptions;
-import org.zenframework.z8.server.db.sql.SqlStringToken;
-import org.zenframework.z8.server.db.sql.SqlToken;
-import org.zenframework.z8.server.db.sql.functions.string.Lower;
 import org.zenframework.z8.server.engine.Database;
 
 class IndexGenerator {
 	private Table table;
 	private Field field;
 	private int index;
-	private boolean unique;
 
-	IndexGenerator(Table table, Field field, int index, boolean unique) {
+	IndexGenerator(Table table, Field field, int index) {
 		this.table = table;
 		this.field = field;
 		this.index = index;
-		this.unique = unique;
 	}
 
 	void run() throws SQLException {
@@ -34,6 +27,7 @@ class IndexGenerator {
 		Database database = connection.database();
 		DatabaseVendor vendor = database.vendor();
 
+		boolean unique = field.unique();
 		String sql = "create " + (unique ? "unique " : "") + "index " + vendor.quote((unique ? "Unq" : "Idx") + index + table.name()) + " " + "on " + database.tableName(table.name()) + " " + formatIndexField(vendor);
 
 		Statement.executeUpdate(sql);
@@ -44,11 +38,10 @@ class IndexGenerator {
 
 		switch(field.type()) {
 		case String:
-			SqlToken token = new SqlStringToken(name, FieldType.String);
-			// Index on expression is not supported in H2
-			if (vendor != DatabaseVendor.H2)
-				token = new Lower(token);
-			return "(" + token.format(vendor, new FormatOptions()) + ")";
+//			if(vendor != DatabaseVendor.H2)
+//				name = name.toLowerCase();
+			boolean trigram = field.trigram();
+			return (trigram ? "using gist " : "") + "(" + name + (trigram ? " gist_trgm_ops" : "") + ")";
 		case Geometry:
 			return "using gist (" + name + ")";
 		default:
