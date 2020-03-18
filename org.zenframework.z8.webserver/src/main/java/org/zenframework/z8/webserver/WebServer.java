@@ -167,8 +167,14 @@ public class WebServer extends RmiServer implements IWebServer {
 						File file = new File(webapp, path);
 						// Try file
 						if (file.exists()) {
-							if (file.isDirectory())
-								file = new File(file, WELCOME_FILE);
+							if (file.isDirectory()) {
+								if (!path.endsWith("/")) {
+									response.sendRedirect(path + '/');
+									return;
+								} else {
+									file = new File(file, WELCOME_FILE);
+								}
+							}
 							if (file.exists())
 								in = new FileInputStream(file);
 						}
