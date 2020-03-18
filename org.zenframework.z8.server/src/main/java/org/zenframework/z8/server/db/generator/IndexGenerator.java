@@ -38,8 +38,6 @@ class IndexGenerator {
 
 		switch(field.type()) {
 		case String:
-//			if(vendor != DatabaseVendor.H2)
-//				name = name.toLowerCase();
 			boolean trigram = field.trigram();
 			return (trigram ? "using gist " : "") + "(" + name + (trigram ? " gist_trgm_ops" : "") + ")";
 		case Geometry:
