@@ -30,6 +30,7 @@ public abstract class RequestAction extends RequestTarget {
 	static public final String Action = "action";
 	static public final String Attach = "attach";
 	static public final String Detach = "detach";
+	static public final String Content = "content";
 
 	private ActionConfig config;
 

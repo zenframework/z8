@@ -3,16 +3,17 @@ package org.zenframework.z8.server.base.xml;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.OutputStream;
 import java.io.Serializable;
-import java.io.UnsupportedEncodingException;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.fileupload.FileItem;
 import org.zenframework.z8.server.engine.RmiIO;
 import org.zenframework.z8.server.engine.RmiSerializable;
-import org.zenframework.z8.server.types.encoding;
 import org.zenframework.z8.server.types.file;
 import org.zenframework.z8.server.utils.IOUtils;
 import org.zenframework.z8.server.utils.NumericUtils;
@@ -20,21 +21,15 @@ import org.zenframework.z8.server.utils.NumericUtils;
 public class GNode implements RmiSerializable, Serializable {
 	private static final long serialVersionUID = 6229467644994428114L;
 
-	static private byte[] EmptyContent = {};
-
 	private Map<String, String> attributes;
 	private List<file> files;
-	private byte[] content = null;
+	private InputStream in;
 
 	public GNode() {
 	}
 
-	public GNode(String content) {
-		try {
-			this.content = content != null ? content.getBytes(encoding.Default.toString()) : EmptyContent;
-		} catch(UnsupportedEncodingException e) {
-			throw new RuntimeException(e);
-		}
+	public GNode(InputStream in) {
+		this.in = in;
 	}
 
 	public GNode(Map<String, String> attributes, List<file> files) {
@@ -46,8 +41,8 @@ public class GNode implements RmiSerializable, Serializable {
 		return attributes;
 	}
 
-	public byte[] getContent() {
-		return content;
+	public InputStream getInputStream() {
+		return in;
 	}
 
 	public List<file> getFiles() {
@@ -69,14 +64,23 @@ public class GNode implements RmiSerializable, Serializable {
 		ByteArrayOutputStream bytes = new ByteArrayOutputStream(32 * NumericUtils.Kilobyte);
 		ObjectOutputStream objects = new ObjectOutputStream(bytes);
 
-		RmiIO.writeBytes(objects, content);
+		RmiIO.writeBoolean(out, in != null);
+		
+		if(in != null) {
+			long size = in.available();
+			RmiIO.writeLong(out, size);
+	
+			try {
+				IOUtils.copyLarge(in, out, size, false);
+			} finally {
+				IOUtils.closeQuietly(in);
+			}
+		}
 
 		objects.writeObject(attributes);
-
 		objects.close();
 
 		RmiIO.writeBytes(out, IOUtils.zip(bytes.toByteArray()));
-
 		out.writeObject(files);
 	}
 
@@ -89,7 +93,20 @@ public class GNode implements RmiSerializable, Serializable {
 		ByteArrayInputStream bytes = new ByteArrayInputStream(IOUtils.unzip(RmiIO.readBytes(in)));
 		ObjectInputStream objects = new ObjectInputStream(bytes);
 
-		content = RmiIO.readBytes(objects);
+		if(RmiIO.readBoolean(in)) {
+			long size = RmiIO.readLong(in);
+
+			FileItem fileItem = file.createFileItem();
+			OutputStream out = fileItem.getOutputStream();
+
+			try {
+				IOUtils.copyLarge(in, out, size, false);
+			} finally {
+				IOUtils.closeQuietly(out);
+			}
+			
+			this.in = fileItem.getInputStream();
+		}
 
 		attributes = (Map<String, String>)objects.readObject();
 

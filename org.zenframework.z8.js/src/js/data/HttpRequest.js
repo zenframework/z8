@@ -2,7 +2,6 @@ Z8.define('Z8.data.HttpRequest', {
 	extend: 'Z8.Object',
 	shortClassName: 'HttpRequest',
 
-	isUpload: false,
 	isGet: false,
 
 	defaultUrl: 'request.json',
@@ -48,12 +47,13 @@ Z8.define('Z8.data.HttpRequest', {
 			new HttpRequest().send(params, callback);
 		},
 
-		get: function(url, callback) {
-			new HttpRequest().get(url, callback);
+		upload: function(params, files, callback) {
+			params.files = files;
+			new HttpRequest().send(params, callback);
 		},
 
-		upload: function(params, files, callback) {
-			new HttpRequest().upload(params, files, callback);
+		get: function(url, callback) {
+			new HttpRequest().get(url, callback);
 		}
 	},
 
@@ -66,18 +66,6 @@ Z8.define('Z8.data.HttpRequest', {
 		DOM.on(xhr, 'error', this.onError, this);
 		DOM.on(xhr, 'abort', this.onError, this);
 		DOM.on(xhr, 'loadEnd', this.onLoadEnd, this);
-	},
-
-	send: function(data, callback) {
-		this.data = data;
-		this.callback = callback;
-
-		var xhr = this.xhr;
-
-		xhr.open('POST', HttpRequest.url(this.defaultUrl), true);
-		xhr.timeout = 0;
-		xhr.setRequestHeader('Content-Type', HttpRequest.contentType.FormUrlEncoded);
-		xhr.send(this.encodeData(data));
 	},
 
 	get: function(url, callback) {
@@ -95,16 +83,15 @@ Z8.define('Z8.data.HttpRequest', {
 		xhr.send();
 	},
 
-	upload: function(data, files, callback) {
+	send: function(data, callback) {
 		this.data = data;
-		this.files = files;
 		this.callback = callback;
-		this.isUpload = true;
 
 		var xhr = this.xhr;
-		xhr.open('POST', HttpRequest.url('request.json'), true);
+
+		xhr.open('POST', HttpRequest.url(this.defaultUrl), true);
 		xhr.timeout = 0;
-		xhr.send(this.encodeFormData(data, files));
+		xhr.send(this.encodeData(data));
 	},
 
 	onLoad: function() {
@@ -112,7 +99,10 @@ Z8.define('Z8.data.HttpRequest', {
 
 		var xhr = this.xhr;
 
-		if(this.isGet && xhr.status != HttpRequest.status.AccessDenied) {
+		var contentType = xhr.getResponseHeader('content-type');
+		var json = contentType != null && contentType.indexOf('application/json') != -1;
+
+		if((this.isGet || !json) && xhr.status != HttpRequest.status.AccessDenied) {
 			Z8.callback(this.callback, { text: xhr.responseText }, xhr.status == HttpRequest.status.Success);
 			return;
 		}
@@ -152,9 +142,7 @@ Z8.define('Z8.data.HttpRequest', {
 	},
 
 	onRelogin: function() {
-		if(this.isUpload)
-			HttpRequest.upload(this.data, this.files, this.callback);
-		else if(this.isGet)
+		if(this.isGet)
 			HttpRequest.get(this.url, this.callback);
 		else
 			HttpRequest.send(this.data, this.callback);
@@ -190,23 +178,14 @@ Z8.define('Z8.data.HttpRequest', {
 		if(!isLogin)
 			data.session = Application.session;
 
-		for(var name in data) {
-			var value = data[name];
-			if(Z8.isEmpty(value))
-				continue;
-			if(!String.isString(value))
-				value = JSON.encode(value);
-			result.push(encodeURIComponent(name) + '=' + encodeURIComponent(value));
-		}
-
-		return result.join('&');
-	},
-
-	encodeFormData: function(data, files) {
-		data.session = Application.session;
-
+		var files = data.files || [];
+		
 		var formData = new FormData();
+		
 		for(var name in data) {
+			if(name == 'files')
+				continue;
+
 			var value = data[name];
 			if(!Z8.isEmpty(value))
 				formData.append(name, String.isString(value) ? value : JSON.encode(value));
@@ -216,7 +195,7 @@ Z8.define('Z8.data.HttpRequest', {
 			var file = files[i];
 			formData.append(file.name, file);
 		}
-
+		
 		return formData;
 	},
 

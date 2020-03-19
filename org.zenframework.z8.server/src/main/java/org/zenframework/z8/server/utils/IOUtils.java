@@ -141,6 +141,7 @@ public class IOUtils {
 
 			if(autoClose) {
 				input.close();
+				output.flush();
 				output.close();
 				autoClose = false;
 			}

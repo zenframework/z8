@@ -251,6 +251,7 @@ public interface Json {
 	static public string update = new string("update");
 	static public string create = new string("create");
 	static public string destroy = new string("destroy");
+	static public string content = new string("content");
 
 	static public string experimental = new string("experimental");
 }

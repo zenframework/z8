@@ -358,12 +358,8 @@ Z8.define('Z8.data.Model', {
 
 		var data = {};
 
-		if(!this.destroyed) {
-			if(!phantom)
-				Z8.apply(data, this.getModifiedFields());
-			else
-				Z8.apply(data, this.data);
-		}
+		if(!this.destroyed)
+			Z8.apply(data, phantom ? this.data: this.getModifiedFields());
 
 		data[this.idProperty] = phantom ? guid.Null : this.id;
 		return data;

@@ -163,7 +163,7 @@ public class ApplicationServer extends RmiServer implements IApplicationServer {
 
 		setRequest(null);
 
-		return new GNode(response.getContent());
+		return new GNode(response.getInputStream());
 	}
 
 	@Override

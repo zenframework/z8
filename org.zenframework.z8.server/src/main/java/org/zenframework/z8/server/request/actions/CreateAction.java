@@ -3,6 +3,7 @@ package org.zenframework.z8.server.request.actions;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.zenframework.z8.server.base.query.Query;
@@ -14,6 +15,7 @@ import org.zenframework.z8.server.exceptions.AccessRightsViolationException;
 import org.zenframework.z8.server.json.JsonWriter;
 import org.zenframework.z8.server.json.parser.JsonArray;
 import org.zenframework.z8.server.json.parser.JsonObject;
+import org.zenframework.z8.server.types.file;
 import org.zenframework.z8.server.types.guid;
 
 public class CreateAction extends RequestAction {
@@ -57,6 +59,8 @@ public class CreateAction extends RequestAction {
 
 		Map<String, Field> fieldsMap = new HashMap<String, Field>();
 
+		List<file> files = request().getFiles();
+
 		for(int index = 0; index < records.length(); index++) {
 			JsonObject record = (JsonObject)records.get(index);
 
@@ -77,8 +81,7 @@ public class CreateAction extends RequestAction {
 					fieldsMap.put(fieldId, field);
 				}
 
-				String value = record.getString(fieldId);
-				QueryUtils.setFieldValue(field, value);
+				QueryUtils.setFieldValue(field, record.getString(fieldId), files);
 			}
 
 			primaryKey.set(recordId);

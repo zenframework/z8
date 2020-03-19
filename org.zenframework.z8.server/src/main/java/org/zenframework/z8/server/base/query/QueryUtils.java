@@ -2,6 +2,7 @@ package org.zenframework.z8.server.base.query;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 import org.zenframework.z8.server.base.table.value.Field;
 import org.zenframework.z8.server.base.table.value.GeometryExpression;
@@ -12,10 +13,12 @@ import org.zenframework.z8.server.geometry.parser.GeoJsonReader;
 import org.zenframework.z8.server.json.Json;
 import org.zenframework.z8.server.json.parser.JsonArray;
 import org.zenframework.z8.server.json.parser.JsonObject;
+import org.zenframework.z8.server.types.binary;
 import org.zenframework.z8.server.types.bool;
 import org.zenframework.z8.server.types.date;
 import org.zenframework.z8.server.types.datespan;
 import org.zenframework.z8.server.types.decimal;
+import org.zenframework.z8.server.types.file;
 import org.zenframework.z8.server.types.geometry;
 import org.zenframework.z8.server.types.guid;
 import org.zenframework.z8.server.types.integer;
@@ -49,7 +52,7 @@ public class QueryUtils {
 		return queries;
 	}
 
-	static public void setFieldValue(Field field, String value) {
+	static public void setFieldValue(Field field, String value, List<file> files) {
 		FieldType type = field.type();
 
 		if(type == FieldType.String || type == FieldType.Text || type == FieldType.Attachments || type == FieldType.File)
@@ -68,6 +71,8 @@ public class QueryUtils {
 			field.set(value == null || value.isEmpty() ? field.getDefaultValue() : new datespan(value));
 		else if(type == FieldType.Guid)
 			field.set(value == null || value.isEmpty() ? field.getDefaultValue() : new guid(value));
+		else if(type == FieldType.Binary)
+			field.set(new binary(files.get(Integer.parseInt(value)).getInputStream()));
 		else
 			throw new UnsupportedOperationException();
 	}
@@ -99,8 +104,8 @@ public class QueryUtils {
 
 		for(String fieldId : JsonObject.getNames(record)) {
 			Field field = query.findFieldById(fieldId);
-			if(field != null)
-				QueryUtils.setFieldValue(field, record.getString(fieldId));
+			if(field != null && field.type() != FieldType.Binary)
+				QueryUtils.setFieldValue(field, record.getString(fieldId), null);
 		}
 	}
 
@@ -131,7 +136,7 @@ public class QueryUtils {
 			String name = (context != null && !context.isEmpty() ? context + '.' : "") +
 					(object instanceof JsonObject ? ((JsonObject)object).getString(Json.id) : (String)object);
 			Field field = query.findFieldById(name);
-			if(field != null)
+			if(field != null && field.type() != FieldType.Binary)
 				fields.add(field);
 		}
 

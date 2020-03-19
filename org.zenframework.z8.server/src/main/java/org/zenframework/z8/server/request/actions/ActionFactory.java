@@ -54,6 +54,8 @@ public class ActionFactory {
 			return new AttachAction(config);
 		else if(RequestAction.Detach.equals(actionName))
 			return new DetachAction(config);
+		else if(RequestAction.Content.equals(actionName))
+			return new ContentAction(config);
 		else
 			throw new RuntimeException("Unknown action: '" + actionName + "'");
 	}

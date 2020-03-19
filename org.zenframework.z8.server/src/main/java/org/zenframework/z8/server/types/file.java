@@ -60,6 +60,10 @@ public class file extends primary implements RmiSerializable, Serializable {
 
 	public JsonObject json;
 
+	public static FileItem createFileItem() {
+		return createFileItem("");
+	}	
+
 	public static FileItem createFileItem(string name) {
 		return createFileItem(name.get());
 	}
@@ -373,14 +377,9 @@ public class file extends primary implements RmiSerializable, Serializable {
 	}
 
 	public String read(encoding encoding) {
-		InputStream input = null;
+		InputStream input = binary().get();
 
 		try {
-			input = getInputStream();
-			if(input == null) {
-				File file = getAbsolutePath(path.get());
-				input = new FileInputStream(file);
-			}
 			return IOUtils.readText(input, Charset.forName(encoding.toString()));
 		} catch(IOException e) {
 			throw new RuntimeException(e);
@@ -490,6 +489,20 @@ public class file extends primary implements RmiSerializable, Serializable {
 
 		IOUtils.unzip(getInputStream(), output);
 		return target.length() == size.get();
+	}
+
+	public binary binary() {
+		try {
+			InputStream input = getInputStream();
+			if(input == null) {
+				File file = getAbsolutePath(path.get());
+				input = new FileInputStream(file);
+			}
+
+			return new binary(input);
+		} catch(IOException e) {
+			throw new RuntimeException(e);
+		}
 	}
 
 	public void operatorAssign(string path) {

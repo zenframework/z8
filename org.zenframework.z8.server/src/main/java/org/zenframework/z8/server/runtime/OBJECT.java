@@ -13,6 +13,7 @@ import org.zenframework.z8.server.engine.RmiSerializable;
 import org.zenframework.z8.server.json.Json;
 import org.zenframework.z8.server.json.JsonWriter;
 import org.zenframework.z8.server.request.RequestTarget;
+import org.zenframework.z8.server.types.binary;
 import org.zenframework.z8.server.types.bool;
 import org.zenframework.z8.server.types.guid;
 import org.zenframework.z8.server.types.primary;
@@ -317,6 +318,11 @@ public class OBJECT extends RequestTarget implements IObject, RmiSerializable {
 		writer.writeProperty(Json.ui, ui());
 	}
 
+	public binary getContent() {
+		RLinkedHashMap<string, string> parameters = (RLinkedHashMap<string, string>)getParameters();
+		return z8_getContent(parameters);
+	}
+	
 	public org.zenframework.z8.server.json.parser.JsonArray getData() {
 		RLinkedHashMap<string, string> parameters = (RLinkedHashMap<string, string>)getParameters();
 		JsonArray.CLASS<? extends JsonArray> cls = z8_getData(parameters);
@@ -376,6 +382,10 @@ public class OBJECT extends RequestTarget implements IObject, RmiSerializable {
 
 	public string z8_toString() {
 		return new string("");
+	}
+
+	public binary z8_getContent(RLinkedHashMap<string, string> parameters) {
+		return getContent();
 	}
 
 	public JsonArray.CLASS<? extends JsonArray> z8_getData(RLinkedHashMap<string, string> parameters) {

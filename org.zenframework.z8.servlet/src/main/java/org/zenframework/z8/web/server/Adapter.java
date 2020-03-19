@@ -1,6 +1,8 @@
 package org.zenframework.z8.web.server;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.rmi.ConnectException;
 import java.rmi.NoSuchObjectException;
@@ -35,11 +37,14 @@ import org.zenframework.z8.server.request.Message;
 import org.zenframework.z8.server.resources.Resources;
 import org.zenframework.z8.server.types.encoding;
 import org.zenframework.z8.server.types.file;
+import org.zenframework.z8.server.utils.IOUtils;
 import org.zenframework.z8.server.utils.NumericUtils;
 import org.zenframework.z8.web.servlet.Servlet;
 
 public abstract class Adapter {
 	private static final String UseContainerSession = "useContainerSession";
+	static final String ApplicationJson = "application/json";
+	static final String TextHtml = "text/html";
 
 	private static final Collection<String> IgnoredExceptions = Arrays.asList("org.apache.catalina.connector.ClientAbortException");
 
@@ -162,7 +167,12 @@ public abstract class Adapter {
 		node = server.processRequest(session, node);
 
 		if(response != null)
-			writeResponse(response, node.getContent());
+			writeResponse(response, node.getInputStream(), getContentType(parameters));
+	}
+
+	private String getContentType(Map<String, String> parameters) {
+		boolean content = Json.content.get().equals(parameters.get(Json.action.get()));
+		return content ?  TextHtml : ApplicationJson; 
 	}
 
 	protected void processError(HttpServletResponse response, Throwable e) throws IOException, ServletException {
@@ -188,33 +198,31 @@ public abstract class Adapter {
 		writer.finishArray();
 		writer.finishResponse();
 
-		writeResponse(response, writer.toString().getBytes(encoding.Default.toString()));
+		writeResponse(response, writer.toString());
 	}
 
 	protected void writeResponse(HttpServletResponse response, String content) throws IOException {
-		writeResponse(response, content.getBytes(encoding.Default.toString()));
+		InputStream in = new ByteArrayInputStream(content.getBytes());
+		writeResponse(response, in, ApplicationJson);
 	}
 
-	protected void writeResponse(HttpServletResponse response, byte[] content) throws IOException {
-		response.setContentType("text/html;charset=" + encoding.Default.toString());
+	protected void writeResponse(HttpServletResponse response, InputStream in, String contentType) throws IOException {
+		response.setContentType(contentType + ";charset=" + encoding.Default.toString());
 
 		OutputStream out = response.getOutputStream();
-		out.write(content);
-		out.flush();
-		out.close();
+		IOUtils.copyLarge(in, out);
 	}
 
 	private static String getParameter(String key, Map<String, String> parameters, HttpSession httpSession) {
 		String value = parameters.get(key);
-		if (httpSession != null) {
-			if (value != null)
+
+		if(httpSession != null) {
+			if(value != null)
 				httpSession.setAttribute(key, value);
-			else {
-				value = (String) httpSession.getAttribute(key);
-				//parameters.put(key, value);
-			}
+			else
+				value = (String)httpSession.getAttribute(key);
 		}
+
 		return value;
 	}
-
 }
