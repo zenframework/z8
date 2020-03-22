@@ -2,7 +2,6 @@ package org.zenframework.z8.server.request.actions;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 
 import org.zenframework.z8.server.base.query.Query;
 import org.zenframework.z8.server.base.query.QueryUtils;
@@ -62,7 +61,7 @@ public class UpdateAction extends RequestAction {
 
 		Query contextQuery = getContextQuery();
 
-		List<file> files = request().getFiles();
+		Collection<file> files = request().getFiles();
 
 		for(int index = 0; index < records.length(); index++) {
 			JsonObject record = (JsonObject)records.get(index);

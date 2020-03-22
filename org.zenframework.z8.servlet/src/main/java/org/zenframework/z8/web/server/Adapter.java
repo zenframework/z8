@@ -33,6 +33,7 @@ import org.zenframework.z8.server.exceptions.ServerUnavailableException;
 import org.zenframework.z8.server.json.Json;
 import org.zenframework.z8.server.json.JsonWriter;
 import org.zenframework.z8.server.logs.Trace;
+import org.zenframework.z8.server.request.ContentType;
 import org.zenframework.z8.server.request.Message;
 import org.zenframework.z8.server.resources.Resources;
 import org.zenframework.z8.server.types.encoding;
@@ -43,8 +44,6 @@ import org.zenframework.z8.web.servlet.Servlet;
 
 public abstract class Adapter {
 	private static final String UseContainerSession = "useContainerSession";
-	static final String ApplicationJson = "application/json";
-	static final String TextHtml = "text/html";
 
 	private static final Collection<String> IgnoredExceptions = Arrays.asList("org.apache.catalina.connector.ClientAbortException");
 
@@ -167,12 +166,7 @@ public abstract class Adapter {
 		node = server.processRequest(session, node);
 
 		if(response != null)
-			writeResponse(response, node.getInputStream(), getContentType(parameters));
-	}
-
-	private String getContentType(Map<String, String> parameters) {
-		boolean content = Json.content.get().equals(parameters.get(Json.action.get()));
-		return content ?  TextHtml : ApplicationJson; 
+			writeResponse(response, node.getInputStream(), node.getContentType());
 	}
 
 	protected void processError(HttpServletResponse response, Throwable e) throws IOException, ServletException {
@@ -203,14 +197,16 @@ public abstract class Adapter {
 
 	protected void writeResponse(HttpServletResponse response, String content) throws IOException {
 		InputStream in = new ByteArrayInputStream(content.getBytes());
-		writeResponse(response, in, ApplicationJson);
+		writeResponse(response, in, ContentType.Json);
 	}
 
-	protected void writeResponse(HttpServletResponse response, InputStream in, String contentType) throws IOException {
+	protected void writeResponse(HttpServletResponse response, InputStream in, ContentType contentType) throws IOException {
 		response.setContentType(contentType + ";charset=" + encoding.Default.toString());
 
-		OutputStream out = response.getOutputStream();
-		IOUtils.copyLarge(in, out);
+		if(in != null) {
+			OutputStream out = response.getOutputStream();
+			IOUtils.copyLarge(in, out);
+		}
 	}
 
 	private static String getParameter(String key, Map<String, String> parameters, HttpSession httpSession) {

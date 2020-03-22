@@ -16,6 +16,9 @@ import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
+import java.util.zip.ZipOutputStream;
 
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.disk.DiskFileItem;
@@ -260,8 +263,16 @@ public class file extends primary implements RmiSerializable, Serializable {
 		return FilenameUtils.getBaseName(name.get());
 	}
 
+	public String fileName() {
+		return FilenameUtils.getName(name.get());
+	}
+
 	public String extension() {
-		return FilenameUtils.getExtension(name.get());
+		return FilenameUtils.getExtension(path.isEmpty() ? name.get() : path.get());
+	}
+
+	public String folder() {
+		return FilenameUtils.getFullPath(path.get());
 	}
 
 	public File toFile() {
@@ -398,13 +409,13 @@ public class file extends primary implements RmiSerializable, Serializable {
 
 	public void write(String content, encoding charset, boolean append) {
 		try {
-			write(content.getBytes(charset.toString()), append);
+			write(new ByteArrayInputStream(content.getBytes(charset.toString())), append);
 		} catch(UnsupportedEncodingException e) {
 			throw new RuntimeException(e);
 		}
 	}
 
-	public void write(byte[] bytes, boolean append) {
+	public void write(InputStream input, boolean append) {
 		try {
 			if(path.isEmpty()) {
 				set(createTempFile("txt"));
@@ -412,10 +423,9 @@ public class file extends primary implements RmiSerializable, Serializable {
 			}
 
 			File file = getAbsolutePath(path.get());
+			file.getParentFile().mkdirs();
 
-			OutputStream output = new FileOutputStream(file, append);
-			output.write(bytes);
-			IOUtils.closeQuietly(output);
+			IOUtils.copyLarge(input, new FileOutputStream(file, append));
 			size = new integer(file.length());
 		} catch(IOException e) {
 			throw new RuntimeException(e);
@@ -491,15 +501,107 @@ public class file extends primary implements RmiSerializable, Serializable {
 		return target.length() == size.get();
 	}
 
+	public void unzip(File directory) {
+		try {
+			unzip(getBinaryInputStream(), directory);
+		} catch(IOException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	static public void unzip(InputStream input, File directory) {
+		OutputStream output = null;
+
+		ZipInputStream zipInput = null;
+		ZipEntry entry = null;
+
+		try {
+			zipInput = new ZipInputStream(input);
+
+			while((entry = zipInput.getNextEntry()) != null) {
+				File file = new File(directory, entry.getName().replace('\\', '/'));
+
+				if(entry.isDirectory()) {
+					file.mkdirs();
+					continue;
+				}
+
+				file.getParentFile().mkdirs();
+				IOUtils.copyLarge(zipInput, output = new FileOutputStream(file), false);
+				IOUtils.closeQuietly(output);
+			}
+		} catch(IOException e) {
+			throw new RuntimeException(e);
+		} finally {
+			IOUtils.closeQuietly(output);
+			IOUtils.closeQuietly(zipInput);
+			IOUtils.closeQuietly(input);
+		}
+	}
+
+	public void zip(File fileOrDirectory) {
+		OutputStream output = null;
+		ZipOutputStream zipOutput = null;
+
+		try {
+			output = getBinaryOutputStream();
+			zipOutput = new ZipOutputStream(output);
+
+			if(fileOrDirectory.isDirectory()) {
+				for(File file : fileOrDirectory.listFiles())
+					zipFile(zipOutput, file, "");
+			} else
+				zipFile(zipOutput, fileOrDirectory, "");
+
+		} catch(IOException e) {
+			throw new RuntimeException(e);
+		} finally {
+			IOUtils.closeQuietly(zipOutput);
+			IOUtils.closeQuietly(output);
+		}
+	}
+
+	private void zipFile(ZipOutputStream zipOutput, File file, String path) throws IOException {
+		path = FilenameUtils.concat(path, file.getName());
+
+		if(file.isDirectory()) {
+			for(File f : file.listFiles())
+				zipFile(zipOutput, f, path);
+			return;
+		}
+
+		InputStream input = null;
+
+		try {
+			zipOutput.putNextEntry(new ZipEntry(path));
+			IOUtils.copyLarge(input = new FileInputStream(file), zipOutput, false);
+		} finally {
+			IOUtils.closeQuietly(input);
+		}
+	}
+
+	public InputStream getBinaryInputStream() throws IOException {
+		InputStream input = getInputStream();
+		if(input == null) {
+			File file = getAbsolutePath(path.get());
+			input = new FileInputStream(file);
+		}
+		return input;
+	}
+
+	public OutputStream getBinaryOutputStream() throws IOException {
+		OutputStream output = getOutputStream();
+		if(output == null) {
+			File file = getAbsolutePath(path.get());
+			file.getParentFile().mkdirs();
+			output = new FileOutputStream(file);
+		}
+		return output;
+	}
+
 	public binary binary() {
 		try {
-			InputStream input = getInputStream();
-			if(input == null) {
-				File file = getAbsolutePath(path.get());
-				input = new FileInputStream(file);
-			}
-
-			return new binary(input);
+			return new binary(getBinaryInputStream());
 		} catch(IOException e) {
 			throw new RuntimeException(e);
 		}
@@ -510,6 +612,15 @@ public class file extends primary implements RmiSerializable, Serializable {
 
 		this.path = path;
 		this.name = new string(file.getName());
+	}
+
+	public bool z8_isEmpty() {
+		File file = toFile();
+		if(!file.exists())
+			return bool.True;
+
+		long length = file.isDirectory() ? file.list().length : file.length();
+		return new bool(length == 0);
 	}
 
 	public bool z8_exists() {
@@ -525,8 +636,21 @@ public class file extends primary implements RmiSerializable, Serializable {
 		return new string(baseName());
 	}
 
+	public string z8_fileName() {
+		return new string(fileName());
+	}
+
 	public string z8_extension() {
 		return new string(extension());
+	}
+
+	public string z8_folder() {
+		return new string(folder());
+	}
+
+	public file z8_parent() {
+		File file = getAbsolutePath(path.get());
+		return new file(file.getParentFile());
 	}
 
 	public RCollection<file> z8_listFiles() {
@@ -551,16 +675,36 @@ public class file extends primary implements RmiSerializable, Serializable {
 		return new string(read(encoding));
 	}
 
+	public void z8_write(binary content) {
+		write(content.get(), true);
+	}
+
+	public void z8_write(binary content, bool append) {
+		write(content.get(), append.get());
+	}
+
 	public void z8_write(string content) {
 		write(content.get(), true);
 	}
 
 	public void z8_write(string content, bool append) {
-		write(content.get(), encoding.Default, true);
+		write(content.get(), encoding.Default, append.get());
 	}
 
 	public void z8_write(string content, encoding encoding, bool append) {
 		write(content.get(), encoding, append.get());
+	}
+
+	public void z8_delete() {
+		toFile().delete();
+	}
+
+	public void z8_zip(file fileOrDirectory) {
+		zip(fileOrDirectory.getAbsolutePath());
+	}
+
+	public void z8_unzip(file directory) {
+		unzip(directory.getAbsolutePath());
 	}
 
 	static public RCollection<file> z8_parse(string json) {

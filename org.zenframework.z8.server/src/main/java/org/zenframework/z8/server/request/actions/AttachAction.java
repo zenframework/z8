@@ -1,8 +1,8 @@
 package org.zenframework.z8.server.request.actions;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.zenframework.z8.server.base.file.AttachmentProcessor;
@@ -25,7 +25,7 @@ public class AttachAction extends RequestAction {
 
 	@Override
 	public void writeResponse(JsonWriter writer) throws Throwable {
-		List<file> files = request().getFiles();
+		Collection<file> files = request().getFiles();
 
 		Query query = getQuery();
 		guid target = getRecordIdParameter();

@@ -25,7 +25,7 @@ public class Object {
 
 	virtual public string toString();
 
-	virtual protected binary getContent(string[string] parameters);
+	virtual protected binary getContent(string[string] parameters, file[] files);
 	virtual protected JsonArray getData(string[string] parameters);
 
 	auto public Object[] objects;

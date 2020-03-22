@@ -52,7 +52,7 @@ public class QueryUtils {
 		return queries;
 	}
 
-	static public void setFieldValue(Field field, String value, List<file> files) {
+	static public void setFieldValue(Field field, String value, Collection<file> files) {
 		FieldType type = field.type();
 
 		if(type == FieldType.String || type == FieldType.Text || type == FieldType.Attachments || type == FieldType.File)
@@ -72,7 +72,7 @@ public class QueryUtils {
 		else if(type == FieldType.Guid)
 			field.set(value == null || value.isEmpty() ? field.getDefaultValue() : new guid(value));
 		else if(type == FieldType.Binary)
-			field.set(new binary(files.get(Integer.parseInt(value)).getInputStream()));
+			field.set(new binary(((List<file>)files).get(Integer.parseInt(value)).getInputStream()));
 		else
 			throw new UnsupportedOperationException();
 	}

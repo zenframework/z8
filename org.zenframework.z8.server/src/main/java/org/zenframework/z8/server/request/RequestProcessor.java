@@ -72,8 +72,10 @@ public class RequestProcessor {
 			response.setContent(writer.toString());
 		} else {
 			requests.remove(id);
-			if(response != info.response)
-				response.setContent(info.response.getContent());
+			if(response != info.response) {
+				response.setInputStream(info.response.getInputStream());
+				response.setContentType(info.response.getContentType());
+			}
 		}
 	}
 }

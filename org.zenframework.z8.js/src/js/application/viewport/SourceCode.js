@@ -84,8 +84,9 @@ Z8.define('Z8.application.viewport.SourceCode', {
 		this.backward.setEnabled(false);
 		this.forward.setEnabled(false);
 		this.loadLock = true;
-
+/*
 		HttpRequest.get('src/' + url, { fn: loadCallback, scope: this });
+*/
 	},
 
 	focus: function() {

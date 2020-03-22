@@ -14,6 +14,7 @@ import java.util.Map;
 import org.apache.commons.fileupload.FileItem;
 import org.zenframework.z8.server.engine.RmiIO;
 import org.zenframework.z8.server.engine.RmiSerializable;
+import org.zenframework.z8.server.request.ContentType;
 import org.zenframework.z8.server.types.file;
 import org.zenframework.z8.server.utils.IOUtils;
 import org.zenframework.z8.server.utils.NumericUtils;
@@ -24,12 +25,15 @@ public class GNode implements RmiSerializable, Serializable {
 	private Map<String, String> attributes;
 	private List<file> files;
 	private InputStream in;
+	private ContentType contentType;
 
 	public GNode() {
+		this.contentType = ContentType.Text;
 	}
 
-	public GNode(InputStream in) {
+	public GNode(InputStream in, ContentType contentType) {
 		this.in = in;
+		this.contentType = contentType;
 	}
 
 	public GNode(Map<String, String> attributes, List<file> files) {
@@ -49,6 +53,10 @@ public class GNode implements RmiSerializable, Serializable {
 		return files;
 	}
 
+	public ContentType getContentType() {
+		return contentType;
+	}
+
 	private void writeObject(ObjectOutputStream out) throws IOException {
 		serialize(out);
 	}
@@ -64,12 +72,13 @@ public class GNode implements RmiSerializable, Serializable {
 		ByteArrayOutputStream bytes = new ByteArrayOutputStream(32 * NumericUtils.Kilobyte);
 		ObjectOutputStream objects = new ObjectOutputStream(bytes);
 
+		RmiIO.writeString(out, contentType.toString());
 		RmiIO.writeBoolean(out, in != null);
-		
+
 		if(in != null) {
 			long size = in.available();
 			RmiIO.writeLong(out, size);
-	
+
 			try {
 				IOUtils.copyLarge(in, out, size, false);
 			} finally {
@@ -92,6 +101,8 @@ public class GNode implements RmiSerializable, Serializable {
 
 		ByteArrayInputStream bytes = new ByteArrayInputStream(IOUtils.unzip(RmiIO.readBytes(in)));
 		ObjectInputStream objects = new ObjectInputStream(bytes);
+
+		contentType = ContentType.fromString(RmiIO.readString(in));
 
 		if(RmiIO.readBoolean(in)) {
 			long size = RmiIO.readLong(in);

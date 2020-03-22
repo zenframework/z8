@@ -9,12 +9,13 @@ public class ContentAction extends RequestAction {
 		super(config);
 	}
 
+	@Override
 	public void processRequest(IResponse response) throws Throwable {
 		binary binary = getQuery().getContent();
 		if(binary != null)
 			response.setInputStream(binary.get());
 	}
-	
+
 	@Override
 	public void writeResponse(JsonWriter writer) throws Throwable {
 		throw new UnsupportedOperationException();

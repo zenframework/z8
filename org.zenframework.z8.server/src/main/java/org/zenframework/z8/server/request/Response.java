@@ -7,8 +7,20 @@ import org.zenframework.z8.server.json.JsonWriter;
 
 public class Response implements IResponse {
 	private String content = null;
+	private ContentType contentType = ContentType.Json;
+
 	private InputStream inputStream = null;
 	private JsonWriter writer = null;
+
+	@Override
+	public ContentType getContentType() {
+		return contentType;
+	}
+
+	@Override
+	public void setContentType(ContentType contentType) {
+		this.contentType = contentType;
+	}
 
 	@Override
 	public String getContent() {
@@ -18,6 +30,7 @@ public class Response implements IResponse {
 	@Override
 	public void setContent(String content) {
 		this.content = content;
+		this.contentType = ContentType.Json;
 	}
 
 	@Override
@@ -30,6 +43,7 @@ public class Response implements IResponse {
 	@Override
 	public void setInputStream(InputStream inputStream) {
 		this.inputStream = inputStream;
+		this.contentType = ContentType.Binary;
 	}
 
 	@Override
@@ -40,5 +54,6 @@ public class Response implements IResponse {
 	@Override
 	public void setWriter(JsonWriter writer) {
 		this.writer = writer;
+		this.contentType = ContentType.Json;
 	}
 }

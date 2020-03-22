@@ -17,18 +17,31 @@ public class file extends primary {
 	public void operator = (string path);
 
 	public bool exists();
+	public bool isEmpty();
 	public bool isDirectory();
 	public file[] listFiles();
 
+	public file parent();
+
+	public string folder();
 	public string baseName();
+	public string fileName();
 	public string extension();
 
 	public string read();
 	public string read(encoding charset);
 
+	public void write(binary content);
+	public void write(binary content, bool append);
+
 	public void write(string content);
 	public void write(string content, bool append);
 	public void write(string content, encoding charset, bool append);
+
+	public void delete(); 
+
+	public void zip(file fileOrDirectory); 
+	public void unzip(file directory); 
 
 	/*
 	*    Gets the name (with no path)

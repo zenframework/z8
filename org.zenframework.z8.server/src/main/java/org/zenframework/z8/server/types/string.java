@@ -185,6 +185,10 @@ public final class string extends primary {
 		return new binary(this);
 	}
 
+	public file file() {
+		return new file(this);
+	}
+
 	public exception exception() {
 		return new exception(this);
 	}

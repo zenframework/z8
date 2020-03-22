@@ -49,8 +49,8 @@ public enum FieldType {
 	}
 
 	static public FieldType fromString(String string) {
-		for (FieldType type : values())
-			if (type.fName.equals(string))
+		for(FieldType type : values())
+			if(type.fName.equals(string))
 				return type;
 		throw new RuntimeException("Unknown data type: '" + string + "'");
 	}

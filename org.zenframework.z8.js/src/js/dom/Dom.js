@@ -727,6 +727,15 @@ Z8.define('Z8.dom.Dom', {
 				delete dom.eventsData;
 		},
 
+		saveFile: function(file) {
+			var url = URL.createObjectURL(file);
+			var anchor = DOM.append(document.body, { tag: 'a', cls: 'display-none', href: url, download: file.name });
+			anchor.click();
+			URL.revokeObjectURL(url);
+
+			new Z8.util.DelayedTask().delay(5000, DOM.remove, DOM, anchor);
+		},
+
 		download: function(url, id, serverId, callback, noCache) {
 			var config = { tag: 'iframe', html: '<head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"></head>', src: '', hidden: true };
 			var frame = DOM.append(document.body, config);

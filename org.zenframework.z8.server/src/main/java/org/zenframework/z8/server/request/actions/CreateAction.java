@@ -3,7 +3,6 @@ package org.zenframework.z8.server.request.actions;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.zenframework.z8.server.base.query.Query;
@@ -59,7 +58,7 @@ public class CreateAction extends RequestAction {
 
 		Map<String, Field> fieldsMap = new HashMap<String, Field>();
 
-		List<file> files = request().getFiles();
+		Collection<file> files = request().getFiles();
 
 		for(int index = 0; index < records.length(); index++) {
 			JsonObject record = (JsonObject)records.get(index);
