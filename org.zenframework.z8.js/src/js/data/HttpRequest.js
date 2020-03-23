@@ -81,24 +81,37 @@ Z8.define('Z8.data.HttpRequest', {
 		var xhr = this.xhr;
 
 		var contentType = xhr.getResponseHeader('content-type');
-		var json = contentType != null && contentType.indexOf('application/json') != -1;
-
-		if(!json && xhr.status != HttpRequest.status.AccessDenied) {
+		if(contentType == null || contentType.indexOf('application/json') == -1) {
 			Z8.callback(this.callback, { text: xhr.response, data: xhr.response }, xhr.status == HttpRequest.status.Success);
 			return;
 		}
 
-		var response = { success: true, info: {} };
+		this.resolveResponse();
+	},
+
+	resolveResponse: function() {
+		var xhr = this.xhr;
+
+		switch(xhr.responseType) {
+		case 'blob':
+			var me = this;
+			xhr.response.text().then(
+				json => { me.processJsonResponse(json) },
+				exception => { me.processException(exception) });
+			break;
+		default:
+			this.processJsonResponse(xhr.response);
+			break;
+		}
+	},
+
+	processJsonResponse: function(json) {
+		var response = {};
 
 		try {
-			if(xhr.response != '')
-				response = JSON.decode(xhr.response);
+			response = JSON.decode(json);
 		} catch(exception) {
-			var messages = [{ time: new Date(), type: 'error', text: exception.message }];
-			response.info = { messages: messages };
-
-			Z8.callback(this.callback, response, false);
-			this.processResponse(response);
+			this.processException(exception);
 			return;
 		}
 
@@ -115,28 +128,6 @@ Z8.define('Z8.data.HttpRequest', {
 		}
 	},
 
-	relogin: function(status) {
-		if(!this.isLogin && status == HttpRequest.status.AccessDenied) {
-			Application.login({ fn: this.onRelogin, scope: this });
-			return true;
-		}
-		return false;
-	},
-
-	onRelogin: function() {
-		HttpRequest.send(this.data, this.callback, this.type);
-	},
-
-	onError: function(event) {
-		if(this.isLoaded)
-			throw 'HttpRequest.onError: this.isLoaded == true;';
-
-		var messages = [{ time: new Date(), type: 'error', text: 'Communication failure' }];
-		var response = { info: { messages: messages } };
-		Z8.callback(this.callback, response, false);
-		this.processResponse(response);
-	},
-
 	onLoadEnd: function() {
 		var xhr = this.xhr;
 
@@ -147,6 +138,22 @@ Z8.define('Z8.data.HttpRequest', {
 		DOM.un(xhr, 'loadEnd', this.onLoadEnd, this);
 
 		this.xhr = null;
+	},
+
+	onError: function(event) {
+		this.processException(new Error('Communication failure'));
+	},
+
+	relogin: function(status) {
+		if(!this.isLogin && status == HttpRequest.status.AccessDenied) {
+			Application.login({ fn: this.onRelogin, scope: this });
+			return true;
+		}
+		return false;
+	},
+
+	onRelogin: function() {
+		HttpRequest.send(this.data, this.callback, this.type);
 	},
 
 	encodeData: function(data) {
@@ -185,5 +192,13 @@ Z8.define('Z8.data.HttpRequest', {
 		var files = info.files || [];
 		for(var i = 0, length = files.length; i < length; i++)
 			DOM.download(files[i].path, files[i].id, info.serverId);
+	},
+
+	processException: function(exception) {
+		var messages = [{ time: new Date(), type: 'error', text: exception.message }];
+		response.info = { messages: messages };
+
+		Z8.callback(this.callback, response, false);
+		this.processResponse(response);
 	}
 });

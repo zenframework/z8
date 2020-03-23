@@ -108,7 +108,7 @@ Z8.define('Z8.data.Model', {
 	},
 
 	getAccess: function() {
-		return this.access;
+		return this.access || {};
 	},
 
 	getIdProperty: function() {

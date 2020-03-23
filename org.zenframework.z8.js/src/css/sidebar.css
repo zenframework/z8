@@ -32,8 +32,7 @@
 }
 
 .viewport>.menu.disabled {
-	opacity: 0.7;
-	left: -17.14285714em;
+	left: -17.85714285em;
 }
 
 /*.viewport>.menu:hover>.handle,*/

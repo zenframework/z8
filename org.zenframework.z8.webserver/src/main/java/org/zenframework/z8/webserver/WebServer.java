@@ -145,24 +145,26 @@ public class WebServer extends RmiServer implements IWebServer {
 				@Override
 				public void handle(String target, Request baseRequest, HttpServletRequest request,
 						HttpServletResponse response) throws IOException, ServletException {
-					
+
 					String path = URLDecoder.decode(baseRequest.getRequestURI(), "UTF-8");
 					baseRequest.setServletPath(path);
+/*
 					LOG.debug("REQUEST: " + path);
+*/
 					response.setCharacterEncoding("UTF-8");
 					response.setContentType(getContentType(path));
-					
+
 					if (isSystemRequest(path)) {
 						// Z8 request
 						servlet.service(request, response);
-						
+
 					} else if (path.contains("..") || path.startsWith("/WEB-INF")) {
 						// Access denied
 						response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Illegal path " + path);
-						
+
 					} else {
 						InputStream in = null;
-						
+
 						// 1. Find source
 						File file = new File(webapp, path);
 						// Try file
@@ -178,7 +180,7 @@ public class WebServer extends RmiServer implements IWebServer {
 							if (file.exists())
 								in = new FileInputStream(file);
 						}
-						
+
 						if (in == null) {
 							// Try classpath resource
 							ClassLoader classLoader = WebServer.class.getClassLoader();
@@ -194,7 +196,7 @@ public class WebServer extends RmiServer implements IWebServer {
 								}
 							}
 						}
-						
+
 						if (in == null) {
 							response.sendError(HttpServletResponse.SC_NOT_FOUND, "File " + path + " not found");
 						} else {
@@ -208,7 +210,7 @@ public class WebServer extends RmiServer implements IWebServer {
 							}
 						}
 					}
-					
+
 					baseRequest.setHandled(true);
 				}
 
