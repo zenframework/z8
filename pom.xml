@@ -138,6 +138,10 @@
 			<id>maven-us.nuxeo.org</id>
 			<url>https://maven-us.nuxeo.org/nexus/content/repositories/public/</url>
 		</repository>
+		<repository>
+			<id>maven.jahia.org</id>
+			<url>http://maven.jahia.org/maven2/</url>
+		</repository>
 	</repositories>
 
 	<dependencies>
