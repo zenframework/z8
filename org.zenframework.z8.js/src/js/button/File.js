@@ -34,7 +34,9 @@ Z8.define('Z8.button.File', {
 
 	onFileInputChange: function() {
 		var files = this.fileInput.files;
-		if(files.length != null)
+		if(files.length != null) {
+			Z8.callback(this.selectHandler, this.scope, this);
 			this.fireEvent('select', this, files);
+		}
 	}
 });

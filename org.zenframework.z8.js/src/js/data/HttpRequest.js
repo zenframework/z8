@@ -196,7 +196,7 @@ Z8.define('Z8.data.HttpRequest', {
 
 	processException: function(exception) {
 		var messages = [{ time: new Date(), type: 'error', text: exception.message }];
-		response.info = { messages: messages };
+		var response = { info: { messages: messages } };
 
 		Z8.callback(this.callback, response, false);
 		this.processResponse(response);
