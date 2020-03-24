@@ -62,7 +62,8 @@ public class FramedSelect extends Select {
 		} else if(vendor == DatabaseVendor.H2) {
 			options.disableReadLock();
 			String sql = super.sql(options);
-			sql += "\nlimit " + (limit != -1 ? limit : "all") + " offset " + start;
+			if (limit > 0)
+				sql += "\nlimit " + (limit != -1 ? limit : "all") + " offset " + start;
 			options.enableReadLock();
 			sql += formatReadLock(options);
 			return sql;
