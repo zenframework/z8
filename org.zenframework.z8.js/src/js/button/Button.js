@@ -31,8 +31,8 @@ Z8.define('Z8.button.Button', {
 	iconTag: 'i',
 
 	statics: {
-		BusyIconCls: ['fa-circle-o-notch', 'fa-spin'],
-		TriggerIconCls: ['fa-caret-down']
+		BusyIconCls: 'fa-circle-o-notch fa-spin',
+		TriggerIconCls: 'fa-caret-down'
 	},
 
 	initComponent: function() {

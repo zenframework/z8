@@ -1,5 +1,11 @@
 Z8.define('Z8.form.field.Checkbox', {
 	extend: 'Z8.form.field.Control',
+	shortClassName: 'Checkbox',
+
+	statics: {
+		OnIconCls: 'fa fa-check-square',
+		OffIconCls: 'fa fa-square-o'
+	},
 
 	isCheckbox: true,
 	instantAutoSave: true,
@@ -7,8 +13,8 @@ Z8.define('Z8.form.field.Checkbox', {
 	initComponent: function() {
 		this.callParent();
 
-		this.onCls = DOM.parseCls(this.onCls || 'fa-check-square fa control');
-		this.offCls = DOM.parseCls(this.offCls || 'fa-square-o fa control');
+		this.onCls = DOM.parseCls(this.onCls || Checkbox.OnIconCls).pushIf('control');
+		this.offCls = DOM.parseCls(this.offCls || Checkbox.OffIconCls).pushIf('control');
 	},
 
 	getCls: function() {
@@ -66,7 +72,6 @@ Z8.define('Z8.form.field.Checkbox', {
 
 	setValue: function(value) {
 		this.callParent(value);
-
 		DOM.setCls(this.icon, this.getIconCls());
 	},
 

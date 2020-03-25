@@ -72,7 +72,7 @@ Z8.define('Z8.list.Item', {
 		var list = this.list;
 
 		if(list.checks) {
-			var check = { tag: 'i', cls: 'fa ' + (this.checked ? 'fa-check-square' : 'fa-square-o')};
+			var check = { tag: 'i', cls: this.getCheckboxCls(this.checked).join(' ') };
 			var text = { cls: 'text', cn: [check] };
 			var cell = { cls: 'cell', cn: [text] };
 			columns.push({ tag: 'td', cls: 'check column', cn: [cell] });
@@ -136,6 +136,10 @@ Z8.define('Z8.list.Item', {
 		return field.source != null && this.follow ? ' follow' : '';
 	},
 
+	getCheckboxCls: function(value) {
+		return DOM.parseCls(value ? Checkbox.OnIconCls : Checkbox.OffIconCls).pushIf(value ? 'on' : 'off').pushIf('icon');
+	},
+
 	textMarkup: function(text, cls, field) {
 		var markup = { tag: 'span', cls: cls, cn: [text] };
 		if(String.isString(text))
@@ -164,7 +168,7 @@ Z8.define('Z8.list.Item', {
 		else if(type == Type.Float)
 			value = Format.float(value, format);
 		else if(type == Type.Boolean)
-			return { tag: 'i', cls: value ? 'fa fa-check-square' : 'fa fa-square-o' };
+			return { tag: 'i', cls: this.getCheckboxCls(value).join(' ') };
 		else if(type == Type.File)
 			value = value != null && Array.isArray(value) && value.length > 0 ? value[0].name : null;
 		else if(type == Type.Text)
@@ -195,7 +199,7 @@ Z8.define('Z8.list.Item', {
 	},
 
 	htmlMarkup: function() {
-		return { tag: 'tr', id: this.getId(), cls: this.getCls().join(' '), /*tabIndex: this.getTabIndex(),*/ cn: this.columnsMarkup() };
+		return { tag: 'tr', id: this.getId(), cls: this.getCls().join(' '), cn: this.columnsMarkup() };
 	},
 
 	completeRender: function() {
@@ -204,9 +208,9 @@ Z8.define('Z8.list.Item', {
 		this.collapser = this.selectNode('.item>.column>.cell>.collapser');
 		this.collapserIcon = this.selectNode('.item>.column>.cell>.collapser>.icon');
 		this.iconElement = this.selectNode('.item>.column>.cell>.icon');
-		this.checkIcon = this.selectNode('.item>.column.check>.cell>.text>.fa');
+		this.checkIcon = this.selectNode('.item>.column.check>.cell>.text>.icon');
 		this.checkElement = this.selectNode('.item>.column.check');
-		this.lockIcon = this.selectNode('.item>.column.lock>.cell>.text>.fa');
+		this.lockIcon = this.selectNode('.item>.column.lock>.cell>.text>.icon');
 		this.cells = this.queryNodes('.item>.column:not(.check):not(.lock)');
 
 		DOM.on(this, 'mouseDown', this.onMouseDown, this);
@@ -249,7 +253,7 @@ Z8.define('Z8.list.Item', {
 
 	setChecked: function(checked) {
 		this.checked = checked;
-		DOM.swapCls(this.checkIcon, checked, 'fa-check-square', 'fa-square-o');
+		DOM.setCls(this.checkIcon, this.getCheckboxCls(checked));
 	},
 
 	getIcon: function() {

@@ -1,5 +1,6 @@
 Z8.define('Z8.list.Header', {
 	extend: 'Z8.list.HeaderBase',
+	shortClassName: 'ListHeader',
 
 	/*
 	* config:
@@ -7,6 +8,14 @@ Z8.define('Z8.list.Header', {
 	* field: {},
 	*
 	*/
+
+	statics: {
+		NumericSort09IconCls: 'fa fa-fw fa-sort-numeric-asc',
+		NumericSort90IconCls: 'fa fa-fw fa-sort-numeric-desc',
+		AlphaSortAZIconCls: 'fa fa-fw fa-sort-alpha-asc',
+		AlphaSortZAIconCls: 'fa fa-fw fa-sort-alpha-desc',
+		FilterIconCls: 'fa fa-fw fa-filter'
+	},
 
 	initComponent: function() {
 		this.callParent();
@@ -136,19 +145,15 @@ Z8.define('Z8.list.Header', {
 		if(direction == null)
 			return 'display-none';
 
-		var icon = 'fa-sort-';
-
 		switch(this.field.type) {
 		case Type.Date:
 		case Type.Datetime:
 		case Type.Integer:
 		case Type.Float:
-			icon += 'numeric-';
-			break;
+			return direction == 'asc' ? ListHeader.NumericSort09IconCls : ListHeader.NumericSort90IconCls;
 		default:
-			icon += 'alpha-';
+			return direction == 'asc' ? ListHeader.AlphaSortAZIconCls : ListHeader.AlphaSortZAIconCls;
 		}
-		return icon + direction;
 	},
 
 	getSort: function() {
@@ -157,21 +162,23 @@ Z8.define('Z8.list.Header', {
 
 	setSort: function(direction) {
 		this.sortDirection = direction;
-		var cls = this.sortCls = DOM.parseCls(this.getSortIcon()).pushIf('fa', 'fa-fw', 'sort');
+		var cls = DOM.parseCls(this.getSortIcon());
+		if(direction != null)
+			cls.pushIf('sort', 'icon');
 		DOM.setCls(this.sortElement, cls);
-		DOM.swapCls(this, direction != null, 'sort');
 		return cls;
 	},
 
 	getFilterIcon: function() {
-		return this.filtered ? 'fa-filter' : 'display-none';
+		return this.filtered ? ListHeader.FilterIconCls : 'display-none';
 	},
 
 	setFilter: function(filtered) {
 		this.filtered = filtered;
-		var cls = this.filterCls = DOM.parseCls(this.getFilterIcon()).pushIf('fa', 'fa-fw', 'filter');
+		var cls = DOM.parseCls(this.getFilterIcon());
+		if(filtered)
+			cls.pushIf('filter', 'icon');
 		DOM.setCls(this.filterElement, cls);
-		DOM.swapCls(this, filtered, 'filter');
 		return cls; 
 	},
 
