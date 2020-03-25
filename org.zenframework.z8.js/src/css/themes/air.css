@@ -684,6 +684,10 @@
 	padding-left: 10.71428571em;
 }
 
+.air .list .item>.column>.control-group {
+	background-color: white;
+}
+
 .air .list .item>.column>.control-group>.control {
 	padding-left: .5em;
 	padding-right: .42857143em;

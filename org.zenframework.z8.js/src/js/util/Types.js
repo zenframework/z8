@@ -84,7 +84,7 @@ Z8.define('Z8.Operator', {
 
 		isTrue: 'isTrue',
 		isFalse: 'isFalse',
-		
+
 		Intersects: 'intersects'
 	}
 });

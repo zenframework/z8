@@ -1,5 +1,6 @@
 Z8.define('Z8.button.Button', {
 	extend: 'Z8.Component',
+	shortClassName: 'Button',
 
 	tabIndex: 0,
 
@@ -28,6 +29,11 @@ Z8.define('Z8.button.Button', {
 	triggerTooltip: '',
 
 	iconTag: 'i',
+
+	statics: {
+		BusyIconCls: ['fa-circle-o-notch', 'fa-spin'],
+		TriggerIconCls: ['fa-caret-down']
+	},
 
 	initComponent: function() {
 		this.callParent();
@@ -69,7 +75,11 @@ Z8.define('Z8.button.Button', {
 		if(menu != null)
 			menu.setOwner(trigger);
 
-		return { tag: 'div', id: this.getId(), cls: 'btn ' + (this.vertical ? 'vertical' : ''), cn: cn };
+		var cls = this.getCls().pushIf('btn');
+		if(this.vertical)
+			cls.pushIf('vertical');
+
+		return { tag: 'div', id: this.getId(), cls: cls.join(' '), cn: cn };
 	},
 
 	subcomponents: function() {
@@ -239,7 +249,7 @@ Z8.define('Z8.button.Button', {
 				var wasEnabled = this.isEnabled()
 				this.setEnabled(false);
 				this.wasEnabled = wasEnabled;
-				this.setIcon(['fa-circle-o-notch', 'fa-spin']);
+				this.setIcon(Button.BusyIconCls);
 			} else {
 				this.setEnabled(this.wasEnabled);
 				this.setIcon(this.cachedIconCls);

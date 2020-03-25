@@ -45,6 +45,15 @@ textarea {
 	overflow-y: auto;
 }
 
+table {
+	table-layout: fixed;
+	border-spacing: 0;
+}
+
+td {
+	padding: 0;
+}
+
 .row {
 	margin-left: -1.07142857em;
 	margin-right: -1.07142857em

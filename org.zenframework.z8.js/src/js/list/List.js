@@ -820,10 +820,10 @@ Z8.define('Z8.list.List', {
 	getIndex: function(value) {
 		var ordinals = this.getOrdinals();
 
-		if(value instanceof Z8.list.Item) {
-			var index = ordinals[value.getValue()];
-			return index != null ? index : -1;
-		}
+		if(value instanceof Z8.list.Item)
+			value = value.getValue();
+		else if(value != null && value.isModel)
+			value = value.id;
 
 		index = ordinals[value];
 		return index != null ? index : -1;
@@ -1181,6 +1181,7 @@ Z8.define('Z8.list.List', {
 			item = this.getItem(item.id);
 
 		this.selectItem(item, true);
+		return item;
 	},
 
 	onMouseMove: function(event, target) {

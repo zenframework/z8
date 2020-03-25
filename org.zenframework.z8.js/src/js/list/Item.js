@@ -422,11 +422,12 @@ Z8.define('Z8.list.Item', {
 
 		var index = -1;
 
-		if(this.list.checks && DOM.isParentOf(this.checkElement, target))
+		if(this.list.checks && DOM.isParentOf(this.checkElement, target)) {
 			this.toggleCheck();
-		else
-			index = this.findCellIndex(target);
+			return;
+		}
 
+		index = this.findCellIndex(target);
 		this.list.onItemClick(this, index);
 	},
 
@@ -438,8 +439,11 @@ Z8.define('Z8.list.Item', {
 
 		var index = this.findCellIndex(target);
 
-		if(index != -1 || !DOM.isParentOf(this.list.getEditors()[index], target))
-			this.list.onItemDblClick(this, index);
+		if(index != -1 && DOM.isParentOf(this.list.getEditors()[index], target) ||
+				this.list.checks && DOM.isParentOf(this.checkElement, target))
+			return;;
+
+		this.list.onItemDblClick(this, index);
 	},
 
 
