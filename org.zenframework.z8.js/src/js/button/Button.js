@@ -116,7 +116,10 @@ Z8.define('Z8.button.Button', {
 		DOM.un(this, 'click', this.onClick, this);
 		DOM.un(this, 'keyDown', this.onKeyDown, this);
 
-		this.button = this.icon = this.textElement = null;
+		if(this.setBusyTask != null)
+			this.setBusyTask.cancel();
+
+		this.button = this.icon = this.textElement = this.setBusyTask = null;
 
 		this.callParent();
 	},
@@ -157,7 +160,7 @@ Z8.define('Z8.button.Button', {
 	},
 
 	getIconCls: function() {
-		var cls = DOM.parseCls((this.toggled ? this.activeIconCls : null) || this.iconCls).pushIf('fa').pushIf('icon');
+		var cls = DOM.parseCls(this.busy ? Button.BusyIconCls : ((this.toggled ? this.activeIconCls : null) || this.iconCls)).pushIf('fa').pushIf('icon');
 		if(Z8.isEmpty(this.iconCls))
 			cls.pushIf('no-icon');
 		if(Z8.isEmpty(this.text))
@@ -198,10 +201,9 @@ Z8.define('Z8.button.Button', {
 
 	setText: function(text) {
 		text = this.text = text || '';
-		var noText = Z8.isEmpty(text);
 		DOM.setValue(this.textElement, String.htmlText(text));
 		DOM.setTitle(this.textElement, text);
-		this.iconCls = DOM.swapCls(this.icon, noText, 'no-text') || this.iconCls;
+		DOM.swapCls(this.icon, Z8.isEmpty(text), 'no-text');
 	},
 
 	setTooltip: function(tooltip) {
@@ -241,21 +243,28 @@ Z8.define('Z8.button.Button', {
 	},
 
 	setBusy: function(busy) {
-		if(this.busy != busy) {
-			this.busy = busy;
+		if(this.busy && busy || !this.busy && !busy)
+			return;
 
-			if(busy) {
-				this.cachedIconCls = this.iconCls;
-				var wasEnabled = this.isEnabled()
-				this.setEnabled(false);
-				this.wasEnabled = wasEnabled;
-				this.setIcon(Button.BusyIconCls);
-			} else {
-				this.setEnabled(this.wasEnabled);
-				this.setIcon(this.cachedIconCls);
-			}
+		this.busy = busy;
 
-			DOM.swapCls(this, busy, 'z-index-10');
+		if(busy) {
+			var wasEnabled = this.isEnabled()
+			this.setEnabled(false);
+			this.wasEnabled = wasEnabled;
+
+			var callback = function() {
+				DOM.setCls(this.icon, this.getIconCls());
+			};
+
+			this.setBusyTask = this.setBusyTask || new Z8.util.DelayedTask();
+			this.setBusyTask.delay(1000, callback, this);
+		} else {
+			if(this.setBusyTask != null)
+				this.setBusyTask.cancel();
+
+			this.setEnabled(this.wasEnabled);
+			DOM.setCls(this.icon, this.getIconCls());
 		}
 	},
 
