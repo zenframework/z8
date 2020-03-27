@@ -209,8 +209,9 @@ Z8.define('Z8.form.field.Combobox', {
 		if(value != null) {
 			var selectedRecord = store.getById(value);
 
-			var tempRecord = Z8.create(store.getModel());
-			tempRecord.setId(value);
+			var data = {};
+			data[store.getIdProperty()] = value;
+			var tempRecord = Z8.create(store.getModel(), data);
 
 			if(selectedRecord != null)
 				Z8.apply(tempRecord.data, selectedRecord.data);
