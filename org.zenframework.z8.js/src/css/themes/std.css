@@ -259,10 +259,14 @@ td {
 .control {
 	display: block;
 	position: relative;
-	flex: 1;
 	border: none;
 	overflow-x: hidden;
 	overflow-y: hidden;
+}
+
+textarea.control,
+.list.control {
+	flex: 1;
 }
 
 .control-group {

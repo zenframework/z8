@@ -13,6 +13,10 @@ Z8.define('Z8.Container', {
 		this.callParent(config);
 	},
 
+	getItem: function(index) {
+		return this.items[index];
+	},
+
 	getItems: function() {
 		return this.items;
 	},

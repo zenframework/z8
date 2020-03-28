@@ -108,7 +108,7 @@ Z8.define('Z8.list.Item', {
 				var text = this.renderText(field, record.get(field.name));
 
 
-				text = this.textMarkup(text, this.getTextCls(field, record) + ' text', field);
+				text = this.textMarkup(text, DOM.parseCls(this.getTextCls(field, record)).pushIf('text').join(' '), field);
 				var cell = { cls: this.getCellCls(field, record).join(' '), cn: i == 0 ? icons.add(text) : text };
 
 				var type = field.type;

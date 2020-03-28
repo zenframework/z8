@@ -12,8 +12,7 @@ public class ContentAction extends RequestAction {
 	@Override
 	public void processRequest(IResponse response) throws Throwable {
 		binary binary = getQuery().getContent();
-		if(binary != null)
-			response.setInputStream(binary.get());
+		response.setInputStream(binary != null ? binary.get() : null);
 	}
 
 	@Override

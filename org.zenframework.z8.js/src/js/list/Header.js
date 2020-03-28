@@ -162,9 +162,7 @@ Z8.define('Z8.list.Header', {
 
 	setSort: function(direction) {
 		this.sortDirection = direction;
-		var cls = DOM.parseCls(this.getSortIcon());
-		if(direction != null)
-			cls.pushIf('sort', 'icon');
+		var cls = DOM.parseCls(this.getSortIcon()).pushIf('sort', 'icon');
 		DOM.setCls(this.sortElement, cls);
 		return cls;
 	},
@@ -175,9 +173,7 @@ Z8.define('Z8.list.Header', {
 
 	setFilter: function(filtered) {
 		this.filtered = filtered;
-		var cls = DOM.parseCls(this.getFilterIcon());
-		if(filtered)
-			cls.pushIf('filter', 'icon');
+		var cls = DOM.parseCls(this.getFilterIcon()).pushIf('filter', 'icon');
 		DOM.setCls(this.filterElement, cls);
 		return cls; 
 	},

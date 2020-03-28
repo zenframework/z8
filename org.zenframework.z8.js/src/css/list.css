@@ -132,9 +132,12 @@
 	top: 0;
 	left: 0;
 	right: 0;
-	bottom: 0;
 	position: absolute;
 	z-index: 1;
+}
+
+.list .item>.column.string>.control-group {
+	bottom: 0;
 }
 
 .list .item>.column .control-group>textarea.control {
@@ -149,7 +152,6 @@
 }
 
 .list .item>.column .control-group>.btn-trigger {
-	height: 100%;
 	display: flex;
 	flex-direction: row;
 	align-items: center;
