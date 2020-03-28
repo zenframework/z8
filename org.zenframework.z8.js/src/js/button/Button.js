@@ -161,7 +161,7 @@ Z8.define('Z8.button.Button', {
 
 	getIconCls: function() {
 		var cls = DOM.parseCls(this.busy ? Button.BusyIconCls : ((this.toggled ? this.activeIconCls : null) || this.iconCls)).pushIf('fa').pushIf('icon');
-		if(Z8.isEmpty(this.iconCls))
+		if(Z8.isEmpty(this.busy ? Button.BusyIconCls : this.iconCls))
 			cls.pushIf('no-icon');
 		if(Z8.isEmpty(this.text))
 			cls.pushIf('no-text');
