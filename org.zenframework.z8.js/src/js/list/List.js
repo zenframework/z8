@@ -311,33 +311,34 @@ Z8.define('Z8.list.List', {
 	completeRender: function() {
 		this.callParent();
 
-		if(this.itemsTable == null) {
-			var id = '#' + this.getId() + '>';
-			var itemsScroller = this.itemsScroller = this.selectNode(id + '.scroller.items');
-			var headersScroller = this.headersScroller = this.selectNode(id + '.scroller.headers');
-			var totalsScroller = this.totalsScroller = this.selectNode(id + '.scroller.totals');
+		if(this.itemsTable != null)
+			return;
 
-			this.headersTable = this.selectNode(id + '.scroller.headers>table');
-			this.headerCols = this.queryNodes(id + '.scroller.headers>table>colgroup>col') || [];
-			this.filter = this.selectNode(id + '.scroller.headers tr.filter');
+		var id = '#' + this.getId() + '>';
+		var itemsScroller = this.itemsScroller = this.selectNode(id + '.scroller.items');
+		var headersScroller = this.headersScroller = this.selectNode(id + '.scroller.headers');
+		var totalsScroller = this.totalsScroller = this.selectNode(id + '.scroller.totals');
 
-			this.totalsTable = this.selectNode(id + '.scroller.totals>table');
-			this.totalCols = this.queryNodes(id + '.scroller.totals>table>colgroup>col') || [];
+		this.headersTable = this.selectNode(id + '.scroller.headers>table');
+		this.headerCols = this.queryNodes(id + '.scroller.headers>table>colgroup>col') || [];
+		this.filter = this.selectNode(id + '.scroller.headers tr.filter');
 
-			this.itemsTable = this.selectNode(id + '.scroller.items>table');
-			this.itemsTableBody = this.selectNode(id + '.scroller.items>table>tbody');
-			this.itemCols = this.queryNodes(id + '.scroller.items>table>colgroup>col');
+		this.totalsTable = this.selectNode(id + '.scroller.totals>table');
+		this.totalCols = this.queryNodes(id + '.scroller.totals>table>colgroup>col') || [];
 
-			DOM.on(this, 'keyDown', this.onKeyDown, this);
+		this.itemsTable = this.selectNode(id + '.scroller.items>table');
+		this.itemsTableBody = this.selectNode(id + '.scroller.items>table>tbody');
+		this.itemCols = this.queryNodes(id + '.scroller.items>table>colgroup>col');
 
-			if(this.selectOnOver)
-				DOM.on(this, 'mouseMove', this.onMouseMove, this);
+		DOM.on(this, 'keyDown', this.onKeyDown, this);
 
-			if(headersScroller != null) {
-				DOM.on(window, 'resize', this.onResize, this);
-				DOM.on(totalsScroller, 'scroll', this.onScroll, this);
-				DOM.on(itemsScroller, 'scroll', this.onScroll, this);
-			}
+		if(this.selectOnOver)
+			DOM.on(this, 'mouseMove', this.onMouseMove, this);
+
+		if(headersScroller != null) {
+			DOM.on(window, 'resize', this.onResize, this);
+			DOM.on(totalsScroller, 'scroll', this.onScroll, this);
+			DOM.on(itemsScroller, 'scroll', this.onScroll, this);
 		}
 	},
 
@@ -1727,6 +1728,7 @@ Z8.define('Z8.list.List', {
 		editor.appendTo(cell);
 
 		editor.show();
+		DOM.addCls(cell, 'edit');
 
 		editor.on('focusOut', this.onEditorFocusOut, this);
 		DOM.on(editor, 'keyDown', this.onEditorKeyDown, this);
@@ -1740,6 +1742,7 @@ Z8.define('Z8.list.List', {
 		DOM.un(editor, 'keyDown', this.onEditorKeyDown, this);
 
 		editor.hide();
+		DOM.removeCls(editor.item.getCell(editor.index), 'edit');
 
 		if(focus)
 			this.focus();

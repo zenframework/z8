@@ -260,11 +260,11 @@ public class file extends primary implements RmiSerializable, Serializable {
 	}
 
 	public String baseName() {
-		return FilenameUtils.getBaseName(name.get());
+		return FilenameUtils.getBaseName(path.isEmpty() ? name.get() : path.get());
 	}
 
 	public String fileName() {
-		return FilenameUtils.getName(name.get());
+		return FilenameUtils.getName(path.isEmpty() ? name.get() : path.get());
 	}
 
 	public String extension() {

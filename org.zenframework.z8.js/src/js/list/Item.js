@@ -178,7 +178,7 @@ Z8.define('Z8.list.Item', {
 	},
 
 	getCls: function() {
-		var cls = ['item'];
+		var cls = DOM.parseCls(this.cls).pushIf('item');
 
 		if(!this.enabled)
 			cls.push(['disabled']);
