@@ -35,9 +35,9 @@ public class Response implements IResponse {
 
 	@Override
 	public InputStream getInputStream() {
-		if(inputStream == null && content != null)
-			inputStream = new ByteArrayInputStream(content.getBytes());
-		return inputStream;
+		if(inputStream != null)
+			return inputStream;
+		return new ByteArrayInputStream(content.getBytes());
 	}
 
 	@Override
