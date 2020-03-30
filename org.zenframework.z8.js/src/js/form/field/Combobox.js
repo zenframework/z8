@@ -92,7 +92,7 @@ Z8.define('Z8.form.field.Combobox', {
 		this.callParent();
 
 		this.hidePager();
-		this.dropdown.setAlignment(this.input);
+		this.dropdown.setAlignment(this);
 
 		if(!this.editor)
 			DOM.on(this, 'keyPress', this.onKeyPress, this);
