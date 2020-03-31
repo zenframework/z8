@@ -31,7 +31,7 @@ Z8.define('Z8.Component', {
 				if(component == null || component.disposed)
 					continue;
 				if(component.isComponent)
-					components[i].destroy();
+					component.destroy();
 				else if(DOM.isDom(component))
 					DOM.remove(component);
 				else if(component.dom != null) {
@@ -43,7 +43,7 @@ Z8.define('Z8.Component', {
 	},
 
 	constructor: function(config) {
-		this.callParent(config);
+		Z8.Object.prototype.constructor.call(this, config);
 		this.initComponent();
 	},
 

@@ -12,7 +12,7 @@ Z8.define('Z8.form.field.Text', {
 
 	initComponent: function() {
 		this.triggers = this.triggers || [];
-		this.callParent();
+		Z8.form.field.Control.prototype.initComponent.call(this);
 	},
 
 	getCls: function() {
@@ -62,10 +62,12 @@ Z8.define('Z8.form.field.Text', {
 	},
 
 	subcomponents: function() {
-		return this.callParent().concat(this.triggers);
+		return Z8.form.field.Control.prototype.subcomponents.call(this).concat(this.triggers);
 	},
 
 	completeRender: function() {
+		Z8.form.field.Control.prototype.completeRender.call(this);
+
 		DOM.on(this, 'click', this.onClick, this);
 		DOM.on(this, 'keyDown', this.onKeyDown, this);
 
@@ -73,8 +75,6 @@ Z8.define('Z8.form.field.Text', {
 
 		if(this.editor)
 			DOM.on(input, 'input', this.onInput, this);
-
-		this.callParent();
 	},
 
 	onDestroy: function() {
@@ -84,20 +84,20 @@ Z8.define('Z8.form.field.Text', {
 
 		this.input = null;
 
-		this.callParent();
+		Z8.form.field.Control.prototype.onDestroy.call(this);
 	},
 
 
 	setEnabled: function(enabled) {
 		DOM.swapCls(this.input, !enabled, 'disabled');
 		DOM.setDisabled(this.input, !enabled);
-		this.callParent(enabled);
+		Z8.form.field.Control.prototype.setEnabled.call(this, enabled);
 	},
 
 	setReadOnly: function(readOnly) {
 		if(this.isReadOnly() != readOnly)
 			DOM.setReadOnly(this.input, readOnly);
-		this.callParent(readOnly);
+		Z8.form.field.Control.prototype.setReadOnly.call(this, readOnly);
 	},
 
 	getRawValue: function(value) {
@@ -111,14 +111,19 @@ Z8.define('Z8.form.field.Text', {
 	},
 
 	setTabIndex: function(tabIndex) {
-		tabIndex = this.callParent(tabIndex);
+		tabIndex = Z8.form.field.Control.prototype.setTabIndex.call(this, tabIndex);
 		DOM.setTabIndex(this.input, tabIndex);
 		return tabIndex;
 	},
 
 	setLabel: function(label) {
-		this.callParent(label);
-		DOM.setAttribute(this.input, 'placeholder', label);
+		Z8.form.field.Control.prototype.setLabel.call(this, label);
+		this.setPlaceholder(label);
+	},
+
+	setPlaceholder: function(placeholder) {
+		this.placeholder = placeholder;
+		DOM.setAttribute(this.input, 'placeholder', placeholder);
 	},
 
 	getInputTag: function() {

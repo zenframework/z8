@@ -11,7 +11,8 @@ Z8.define('Z8.form.field.Control', {
 	readOnlyLock: false,
 
 	initComponent: function() {
-		this.callParent();
+		Z8.Component.prototype.initComponent.call(this);
+
 		this.initField();
 		this.readOnlyLock = this.isReadOnly();
 		this.enabledLock = !this.isEnabled();
@@ -54,7 +55,7 @@ Z8.define('Z8.form.field.Control', {
 	},
 
 	completeRender: function() {
-		this.callParent();
+		Z8.Component.prototype.completeRender.call(this);
 
 		var label = this.label = this.selectNode('span[name=label]');
 		if(label != null) {
@@ -74,11 +75,11 @@ Z8.define('Z8.form.field.Control', {
 
 		this.label = this.labelText = this.labelIcon = null;
 
-		this.callParent();
+		Z8.Component.prototype.onDestroy.call(this);
 	},
 
 	setEnabled: function(enabled) {
-		this.callParent(enabled);
+		Z8.Component.prototype.setEnabled.call(this, enabled);
 
 		DOM.swapCls(this, !enabled, 'disabled');
 		DOM.swapCls(this.label, !enabled, 'disabled');
