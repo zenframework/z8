@@ -276,8 +276,12 @@ textarea.control,
 	align-items: stretch;
 }
 
-.control-group>.btn-trigger {
-	position: absolute;
+.control-group.trigger {
+	flex-direction: row;
+}
+
+.control-group.trigger>.control {
+	flex: 1;
 }
 
 div[name=input].control {

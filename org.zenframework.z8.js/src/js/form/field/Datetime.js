@@ -55,7 +55,7 @@ Z8.define('Z8.form.field.Datetime', {
 
 	completeRender: function() {
 		this.callParent();
-		this.dropdown.setAlignment(this.input);
+		this.dropdown.setAlignment(this);
 	},
 
 	select: function(direction) {

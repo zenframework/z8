@@ -908,13 +908,22 @@
 }
 
 .air .checkbox>.control {
+	border: none;
+	padding-top: 0;
 	padding-bottom: 0;
+	max-width: 100%;
 }
 
 .air .checkbox>.label {
-	height: auto !important;
-	padding-top: 0 !important;
-	padding-bottom: 0 !important;
+	height: auto;
+	padding-top: 0;
+	padding-bottom: 0;
+}
+
+.air .checkbox>.label>.text {
+	font-size: inherit;
+	text-transform: inherit;
+	font-weight: 500;
 }
 
 .air .control-group.label-left>.label {
@@ -925,6 +934,14 @@
 .air .control-group.label-right>.label {
 	padding-left: .42857143em;
 	padding-right: 0;
+}
+
+.air .checkbox.label-left>.label.readonly {
+	max-width: calc(100% - 2.2em);
+}
+
+.air .checkbox.label-right>.label.readonly {
+	max-width: calc(100% - 1em);
 }
 
 .air .list-box>.toolbar>.btn>.fa-external-link {
