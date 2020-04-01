@@ -37,6 +37,7 @@ public interface Json {
 
 	static public string menu = new string("menu");
 	static public string entries = new string("entries");
+	static public string roles = new string("roles");
 	static public string settings = new string("settings");
 
 	static public string isQuery = new string("isQuery");

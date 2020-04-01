@@ -1201,8 +1201,10 @@ Z8.define('Z8.list.List', {
 	onKeyDown: function(event, target) {
 		var key = event.getKey();
 
-		if(this.isEditing() || this.isFiltering() && key != Event.DOWN && key != Event.ESC)
+		if(this.isEditing() || this.isFiltering() && key != Event.DOWN && key != Event.ESC) {
+			console.log(event);
 			return;
+		}
 
 		var item = this.getCurrentItem();
 

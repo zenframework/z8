@@ -20,6 +20,7 @@ import org.zenframework.z8.server.runtime.OBJECT;
 import org.zenframework.z8.server.security.BuiltinUsers;
 import org.zenframework.z8.server.security.Entry;
 import org.zenframework.z8.server.security.IPrivileges;
+import org.zenframework.z8.server.security.IRole;
 import org.zenframework.z8.server.security.IUser;
 import org.zenframework.z8.server.types.primary;
 import org.zenframework.z8.server.types.string;
@@ -157,6 +158,11 @@ public class Dashboard extends RequestTarget {
 		writer.startArray(Json.entries);
 		for(CLASS<?> cls : entries)
 			writeData(writer, cls);
+		writer.finishArray();
+
+		writer.startArray(Json.roles);
+		for(IRole role : user.roles())
+			writer.write(role.id());
 		writer.finishArray();
 
 		if(getParameter(Json.experimental) != null) {

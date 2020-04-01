@@ -242,7 +242,7 @@ Z8.define('Z8.button.Button', {
 		return this.busy;
 	},
 
-	setBusy: function(busy) {
+	setBusy: function(busy, delay) {
 		if(this.busy && busy || !this.busy && !busy)
 			return;
 
@@ -257,8 +257,11 @@ Z8.define('Z8.button.Button', {
 				DOM.setCls(this.icon, this.getIconCls());
 			};
 
-			this.setBusyTask = this.setBusyTask || new Z8.util.DelayedTask();
-			this.setBusyTask.delay(1000, callback, this);
+			if(delay != 0) {
+				this.setBusyTask = this.setBusyTask || new Z8.util.DelayedTask();
+				this.setBusyTask.delay(delay || 1000, callback, this);
+			} else
+				callback.call(this);
 		} else {
 			if(this.setBusyTask != null)
 				this.setBusyTask.cancel();

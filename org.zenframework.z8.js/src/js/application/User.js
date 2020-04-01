@@ -3,6 +3,12 @@ var User = null;
 Z8.define('Z8.application.User', {
 	extend: 'Z8.Object',
 
+	statics: {
+		User: '421A8413-A8EC-4DAB-9235-9A5FF83341C5',
+		Guest: 'BE41CEB5-02DF-44EE-885F-B82DDEDCAA08',
+		Administrator: 'DC08CA72-C668-412F-91B7-022F1C82AC09'
+	},
+
 	administrator: false,
 
 	constructor: function(config) {
@@ -61,6 +67,6 @@ Z8.define('Z8.application.User', {
 	},
 
 	isAdministrator: function() {
-		return this.administrator;
+		return this.administrator || this.roles.contains(Z8.application.User.Administrator);
 	}
 });
