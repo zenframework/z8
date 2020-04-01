@@ -240,9 +240,10 @@ public class User implements IUser {
 		if(isLatestVersion) {
 			user.loadRoles();
 			user.loadEntries();
-		} else if(user.isAdministrator())
+		} else if(user.isAdministrator()) {
+			user.roles = new HashSet<IRole>(Arrays.asList(Role.administrator()));
 			user.privileges = new Privileges(Access.administrator());
-		else
+		} else
 			throw new InvalidVersionException();
 
 		if(user.isBuiltinAdministrator())
