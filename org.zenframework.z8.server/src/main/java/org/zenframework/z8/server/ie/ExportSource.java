@@ -29,26 +29,26 @@ public class ExportSource implements RmiSerializable, Serializable {
 	public ExportSource() {
 	}
 
-	public ExportSource(Table table, Collection<Field> fields, Collection<guid> records) {
-		this(table, fields);
+	public ExportSource(Table table, Collection<Field> fields, boolean exportAll, Collection<guid> records) {
+		this(table, fields, exportAll);
 		this.records = records;
 	}
 
-	public ExportSource(Table table, Collection<Field> fields, SqlToken where) {
-		this(table, fields);
+	public ExportSource(Table table, Collection<Field> fields, boolean exportAll, SqlToken where) {
+		this(table, fields, exportAll);
 
 		if(where != null)
 			initRecords(where);
 	}
 
-	private ExportSource(Table table, Collection<Field> fields) {
+	private ExportSource(Table table, Collection<Field> fields, boolean exportAll) {
 		this.table = table;
 		this.tableName = table.name();
 
-		initFields(fields);
+		initFields(fields, exportAll);
 	}
 
-	private void initFields(Collection<Field> fields) {
+	private void initFields(Collection<Field> fields, boolean exportAll) {
 		if(fields == null)
 			fields =  table.getPrimaryFields();
 
@@ -56,7 +56,7 @@ public class ExportSource implements RmiSerializable, Serializable {
 		this.fieldNames = new ArrayList<String>();
 
 		for(Field field : fields) {
-			if(field.exportable()) {
+			if(field.exportable() || exportAll) {
 				this.fields.add(field);
 				this.fieldNames.add(field.name());
 			}

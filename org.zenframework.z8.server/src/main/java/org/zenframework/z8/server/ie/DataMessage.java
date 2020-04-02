@@ -128,6 +128,11 @@ public class DataMessage extends Message {
 
 		afterExport();
 	}
+	
+	@SuppressWarnings("unchecked")
+	public void onMerge(Table source, Table target) {
+		z8_onMerge((Table.CLASS<? extends Table>) source.getCLASS(), (Table.CLASS<? extends Table>) target.getCLASS());
+	}
 
 	@Override
 	protected boolean transactive() {
@@ -143,6 +148,10 @@ public class DataMessage extends Message {
 	@Override
 	protected void initDescription() {
 		setDescription(description.toString());
+	}
+	
+	public void z8_onMerge(Table.CLASS<? extends Table> source, Table.CLASS<? extends Table> target) {
+		throw new UnsupportedOperationException();
 	}
 
 	public void z8_setName(string name) {
@@ -236,6 +245,14 @@ public class DataMessage extends Message {
 	public void z8_addRule(guid recordId, RCollection<Field.CLASS<? extends Field>> fields, ImportPolicy policy) {
 		for(Field.CLASS<? extends Field> field : fields)
 			z8_addRule(recordId, field, policy);
+	}
+	
+	public void z8_setExportAll(bool exportAll) {
+		source.setExportAll(exportAll.get());
+	}
+	
+	public bool z8_isExportAll() {
+		return new bool(source.isExportAll());
 	}
 	
 	private void addDescription(Table.CLASS<? extends Table> table, sql_bool where) {
