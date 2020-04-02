@@ -204,6 +204,11 @@ public class DataMessage extends Message {
 		source.add(table.get(), CLASS.asList(fields), where);
 		addDescription(table, where);
 	}
+	
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	public RCollection z8_getRecords(Table.CLASS<? extends Table> table) {
+		return new RCollection(source.getRecords(table.get().name()));
+	}
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public void z8_addRecords(Table.CLASS<? extends Table> table, RCollection ids) {

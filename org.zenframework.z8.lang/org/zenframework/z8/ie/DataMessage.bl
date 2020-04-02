@@ -36,5 +36,7 @@ public class DataMessage extends Message {
 	public void setExportAll(bool exportAll);
 	public bool isExportAll();
 	
+	public guid[] getRecords(Table table);
+	
 	virtual protected void onMerge(Table source, Table target);
 }
