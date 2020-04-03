@@ -150,6 +150,10 @@ public class Files extends Table {
 	}
 
 	public static file get(file file) throws IOException {
+		return get(file, Folders.Base);
+	}
+	
+	public static file get(file file, File base) throws IOException {
 		File path = new File(Folders.Base, file.path.get());
 
 		if(!path.exists()) {
