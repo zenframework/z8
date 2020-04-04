@@ -19,6 +19,9 @@ public class Files extends Table {
 	[name "Time"]
 	public DatetimeField time;
 
+	[name "Last modified"]
+	public DatetimeField lastModified;
+
 	[name "Size"]
 	public IntField size;
 

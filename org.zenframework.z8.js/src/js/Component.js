@@ -356,10 +356,10 @@ Z8.define('Z8.Component', {
 		rect.top = rect.top - (fixed ? 0 : parent.top);
 		rect.bottom = (fixed ? viewport.bottom : parent.bottom) - rect.bottom;
 
-		DOM.setLeft(this, rect.left);
-		DOM.setTop(this, rect.top);
+		DOM.setLeft(this, Ems.emsToPixels(rect.left) + 'px');
+		DOM.setTop(this, Ems.emsToPixels(rect.top) + 'px');
 		if(alignment != null && offset.adjustHeight)
-			DOM.setBottom(this, rect.bottom);
+			DOM.setBottom(this, Ems.emsToPixels(rect.bottom) + 'px');
 		DOM.swapCls(this, above, 'pull-up', 'pull-down');
 
 		this.fireEvent('align', this);

@@ -103,7 +103,7 @@ public class date extends primary {
 		if(hasZone) {
 			char zoneChar = date.charAt(index);
 			int zoneOffset = 0;
-			
+
 			if (zoneChar == 'Z') {
 				zoneOffset = TimeZone.getDefault().getOffset(new GregorianCalendar(year, month, day, hours, minutes, seconds).getTimeInMillis());
 			} else {
@@ -120,7 +120,7 @@ public class date extends primary {
 
 				zoneOffset = zoneSign * zoneHours * datespan.TicksPerHour + zoneMinutes * datespan.TicksPerMinute + zoneSeconds * datespan.TicksPerSecond;
 			}
-			
+
 			setZoneOffset(zoneOffset);
 		}
 
@@ -433,11 +433,12 @@ public class date extends primary {
 	public int compareTo(primary primary) {
 		if(primary instanceof date) {
 			date date = (date)primary;
-			return (int)Math.signum(getTicks() - date.getTicks());
+			long ticks = getTicks() - date.getTicks();
+			return ticks < 0 ? -1 : (ticks == 0 ? 0 : 1);
 		}
 		return -1;
 	}
-	
+
 	public sql_date sql_date() {
 		return new sql_date(this);
 	}

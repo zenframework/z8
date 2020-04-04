@@ -174,7 +174,7 @@ Z8.define('Z8.data.HttpRequest', {
 
 			var value = data[name];
 			if(!Z8.isEmpty(value))
-				formData.append(name, String.isString(value) ? value : JSON.encode(value));
+				formData.append(name, String.isString(value) ? value : (Date.isDate(value) ? value.toISOString() : JSON.encode(value)));
 		}
 
 		for(var i = 0, length = files.length; i < length; i++) {

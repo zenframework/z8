@@ -18,7 +18,6 @@ import org.zenframework.z8.server.types.guid;
 import org.zenframework.z8.server.types.string;
 
 public class AttachAction extends RequestAction {
-
 	public AttachAction(ActionConfig config) {
 		super(config);
 	}

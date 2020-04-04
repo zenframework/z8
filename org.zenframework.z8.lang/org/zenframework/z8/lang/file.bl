@@ -14,11 +14,12 @@ public class file extends primary {
 	*    file someFile = 'storage/folder/file.name';
 	*/
 	public operator binary();
+	public operator string();
 	public void operator = (string path);
 
 	public bool exists();
 	public bool isEmpty();
-	public bool isDirectory();
+	public bool isFolder();
 	public file[] listFiles();
 
 	public file parent();

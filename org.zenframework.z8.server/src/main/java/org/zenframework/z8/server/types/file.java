@@ -100,7 +100,7 @@ public class file extends primary implements RmiSerializable, Serializable {
 		this(id, name, instanceId, path, 0, null);
 	}
 
-	public file(guid id, String name, String instanceId, String path, long size, date time) {
+	private file(guid id, String name, String instanceId, String path, long size, date time) {
 		super();
 		this.id = new guid(id);
 		this.path = new string(getRelativePath(path));
@@ -599,6 +599,10 @@ public class file extends primary implements RmiSerializable, Serializable {
 		return output;
 	}
 
+	public string string() {
+		return path;
+	}
+
 	public binary binary() {
 		try {
 			return new binary(getBinaryInputStream());
@@ -627,7 +631,7 @@ public class file extends primary implements RmiSerializable, Serializable {
 		return new bool(toFile().exists());
 	}
 
-	public bool z8_isDirectory() {
+	public bool z8_isFolder() {
 		File file = getAbsolutePath(path.get());
 		return new bool(file.isDirectory());
 	}
