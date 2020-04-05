@@ -30,7 +30,6 @@ public class Response implements IResponse {
 	@Override
 	public void setContent(String content) {
 		this.content = content;
-		this.contentType = ContentType.Json;
 	}
 
 	@Override

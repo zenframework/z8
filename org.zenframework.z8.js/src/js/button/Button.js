@@ -323,6 +323,9 @@ Z8.define('Z8.button.Button', {
 		DOM.addCls(this, 'open');
 		if(this.trigger)
 			this.trigger.rotateIcon(180);
+
+		Z8.callback(this.showMenuHandler, this.scope);
+		this.fireEvent('menuShow', this);
 	},
 
 	onMenuHide: function() {
@@ -333,6 +336,9 @@ Z8.define('Z8.button.Button', {
 			DOM.focus(this.trigger);
 		} else
 			DOM.focus(this);
+
+		Z8.callback(this.hideMenuHandler, this.scope);
+		this.fireEvent('menuHide', this);
 	},
 
 	rotateIcon: function(degree) {
