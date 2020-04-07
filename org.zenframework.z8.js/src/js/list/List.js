@@ -39,11 +39,11 @@ Z8.define('Z8.list.List', {
 	tabIndex: 0,
 
 	constructor: function(config) {
-		this.callParent(config);
+		Z8.Component.prototype.constructor.call(this, config);
 	},
 
 	initComponent: function() {
-		this.callParent();
+		Z8.Component.prototype.initComponent.call(this);
 
 		if(this.startCollapsed == null)
 			this.startCollapsed = Application.listbox.collapsed;
@@ -309,7 +309,7 @@ Z8.define('Z8.list.List', {
 	},
 
 	completeRender: function() {
-		this.callParent();
+		Z8.Component.prototype.completeRender.call(this);
 
 		if(this.itemsTable != null)
 			return;
@@ -343,7 +343,7 @@ Z8.define('Z8.list.List', {
 	},
 
 	afterRender: function() {
-		this.callParent();
+		Z8.Component.prototype.afterRender.call(this);
 
 		if(!this.manualItemsRendering) {
 			var item = this.getCurrentItem() || (this.autoSelectFirst ? 0 : null);
@@ -545,7 +545,7 @@ Z8.define('Z8.list.List', {
 
 		Component.destroy(this.editors);
 
-		this.callParent();
+		Z8.Component.prototype.onDestroy.call(this);
 
 		this.itemsScroller = this.headersScroller = this.totalsScroller = null;
 		this.headersTable = this.headerCols = this.filter = this.totalsTable = null;
@@ -1030,7 +1030,7 @@ Z8.define('Z8.list.List', {
 	},
 
 	setTabIndex: function(tabIndex) {
-		tabIndex = this.callParent(tabIndex);
+		tabIndex = Z8.Component.prototype.setTabIndex.call(this, tabIndex);
 
 		var item = this.getCurrentItem();
 
@@ -1288,7 +1288,7 @@ Z8.define('Z8.list.List', {
 		if(this.isActive() == active)
 			return;
 
-		this.callParent(active);
+		Z8.Component.prototype.setActive.call(this, active);
 
 		this.adjustAutoFit();
 	},
