@@ -80,7 +80,7 @@ Z8.define('Z8.application.job.JobMonitor', {
 
 		this.open();
 		this.taskList.select(record);
-		this.setIcon(job, ['fa-circle-o-notch', 'fa-spin']);
+		this.setIcon(job, Z8.button.Button.BusyIconCls);
 	},
 
 	setIcon: function(job, icon) {

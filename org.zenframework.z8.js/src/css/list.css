@@ -176,7 +176,7 @@
 	top: 0;
 	bottom: 0;
 	width: 4px;
-	cursor: w-resize;
+	cursor: col-resize;
 }
 
 .list .header>.column>.resize-handle-left {
