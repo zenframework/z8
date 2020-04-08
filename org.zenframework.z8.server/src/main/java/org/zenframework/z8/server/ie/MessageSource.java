@@ -34,6 +34,7 @@ import org.zenframework.z8.server.types.sql.sql_bool;
 public class MessageSource implements RmiSerializable, Serializable {
 	private static final long serialVersionUID = -145929531248527279L;
 
+	private boolean exportAll;
 	private ExportRules exportRules = new ExportRules();
 	private Collection<ExportSource> sources = new ArrayList<ExportSource>();
 	private Map<String, primary> properties = new HashMap<String, primary>();
@@ -46,15 +47,26 @@ public class MessageSource implements RmiSerializable, Serializable {
 	public ExportRules exportRules() {
 		return exportRules;
 	}
+	
+	public Collection<guid> getRecords(String tableName) {
+		Collection<guid> result = new ArrayList<guid>();
+		
+		for(ExportSource src : sources) {
+			if(src.name().equals(tableName))
+				result.addAll(src.records());
+		}
+		
+		return result;
+	}
 
 	public void add(Table table, Collection<Field> fields, sql_bool where) {
-		if(table.exportable())
-			sources.add(new ExportSource(table, fields, where));
+		if(table.exportable() || exportAll)
+			sources.add(new ExportSource(table, fields, exportAll, where));
 	}
 
 	public void add(Table table, Collection<Field> fields, Collection<guid> ids) {
-		if(table.exportable())
-			sources.add(new ExportSource(table, fields, ids));
+		if(table.exportable() || exportAll)
+			sources.add(new ExportSource(table, fields, exportAll, ids));
 	}
 
 	public void addRule(ImportPolicy importPolicy) {
@@ -113,6 +125,8 @@ public class MessageSource implements RmiSerializable, Serializable {
 	@Override
 	public void serialize(ObjectOutputStream out) throws IOException {
 		RmiIO.writeLong(out, serialVersionUID);
+		
+		RmiIO.writeBoolean(out, exportAll);
 
 		out.writeObject(exportRules);
 		out.writeObject(sources);
@@ -129,6 +143,9 @@ public class MessageSource implements RmiSerializable, Serializable {
 	public void deserialize(ObjectInputStream in) throws IOException, ClassNotFoundException {
 		@SuppressWarnings("unused")
 		long version = RmiIO.readLong(in);
+		
+		if(version == serialVersionUID)
+			exportAll = RmiIO.readBoolean(in);
 
 		exportRules = (ExportRules)in.readObject();
 		sources = (Collection<ExportSource>)in.readObject();
@@ -222,7 +239,7 @@ public class MessageSource implements RmiSerializable, Serializable {
 		boolean inserting = state != null && !state;
 
 		if(notInserted) {
-			ExportSource source = new ExportSource(table, null, Arrays.asList(value));
+			ExportSource source = new ExportSource(table, null, exportAll, Arrays.asList(value));
 			processExportSource(source);
 			return true;
 		} else if(inserting) {
@@ -363,5 +380,13 @@ public class MessageSource implements RmiSerializable, Serializable {
 		}
 
 		return new string(new JsonArray(files).toString());
+	}
+	
+	public boolean isExportAll() {
+		return exportAll;
+	}
+
+	public void setExportAll(boolean exportAll) {
+		this.exportAll = exportAll;
 	}
 }
