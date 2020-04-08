@@ -24,6 +24,7 @@
 	text-shadow: none;
 	outline: none !important;
 	margin-left: 0 !important;
+	overflow: visible;
 }
 
 .viewport>.header>.breadcrumbs>.btn {

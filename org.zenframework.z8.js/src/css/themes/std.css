@@ -341,6 +341,7 @@ textarea.control,
 	position: relative;
 	text-align: center;
 	white-space: nowrap;
+	overflow: hidden;
 	touch-action: manipulation;
 	cursor: pointer;
 }
@@ -382,7 +383,8 @@ textarea.control,
 	flex-direction: row;
 	align-items: center;
 	position: relative;
-	vertical-align: middle
+	vertical-align: middle;
+	overflow: hidden;
 }
 
 .btn-group.vertical {
