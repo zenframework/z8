@@ -8,6 +8,7 @@ Z8.define('Z8.button.Button', {
 	icon: null,
 	activeIcon: null,
 
+	push: false,
 	primary: false,
 	danger: false,
 	success: false,
@@ -137,18 +138,21 @@ Z8.define('Z8.button.Button', {
 
 	getButtonTypeCls: function() {
 		if(this.primary)
-			return 'btn-primary';
+			return 'primary';
 		else if(this.danger)
-			return 'btn-danger';
+			return 'danger';
 		else if(this.success)
-			return 'btn-success';
+			return 'success';
 		else if(this.info)
-			return 'btn-info';
-		return 'btn-default';
+			return 'info';
+		return 'default';
 	},
 
 	getButtonCls: function() {
 		var cls = this.getCls().pushIf('btn', this.getButtonTypeCls());
+
+		if(this.push)
+			cls.pushIf('push');
 
 		if(!this.isEnabled())
 			cls.pushIf('disabled');

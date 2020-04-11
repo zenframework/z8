@@ -4,6 +4,7 @@ Z8.define('Z8.form.action.Action', {
 	mixins: ['Z8.form.field.Field'],
 
 	isAction: true,
+	push: true,
 
 	constructor: function(config) {
 		this.callParent(config);
@@ -14,10 +15,6 @@ Z8.define('Z8.form.action.Action', {
 			this.handler = action.handler || this.handler || this.onAction;
 			this.scope = action.scope || this.scope || this;
 		}
-	},
-
-	getCls: function() {
-		return Z8.button.Button.prototype.getCls.call(this).pushIf('action');
 	},
 
 	isValid: function() {

@@ -341,7 +341,6 @@ textarea.control,
 	position: relative;
 	text-align: center;
 	white-space: nowrap;
-	overflow: hidden;
 	touch-action: manipulation;
 	cursor: pointer;
 }
@@ -362,11 +361,6 @@ textarea.control,
 	text-overflow: ellipsis;
 }
 
-.btn.disabled>.icon,
-.btn.disabled>.text {
-	opacity: .35;
-}
-
 .btn-tool {
 }
 
@@ -384,7 +378,6 @@ textarea.control,
 	align-items: center;
 	position: relative;
 	vertical-align: middle;
-	overflow: hidden;
 }
 
 .btn-group.vertical {

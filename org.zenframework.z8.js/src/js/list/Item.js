@@ -112,7 +112,7 @@ Z8.define('Z8.list.Item', {
 				var cell = { cls: this.getCellCls(field, record).join(' '), cn: i == 0 ? icons.add(text) : text };
 
 				var type = field.type;
-				columns.push({ tag: 'td', cls: 'column' + (type != null ? ' ' + type : '') + (i == 0 && !this.checks && !this.locks ? ' first' : ''), field: i, cn: [cell], title: title });
+				columns.push({ tag: 'td', cls: 'column' + (type != null ? ' ' + type : '') + (i == 0 && !this.checks && !this.locks ? ' first' : (i == length - 1 ? ' last' : '')), field: i, cn: [cell], title: title });
 			}
 		} else {
 			var text = String.htmlText(this.text);
@@ -469,6 +469,15 @@ Z8.define('Z8.list.Item', {
 
 	getCell: function(index) {
 		return this.cells[index];
+	},
+
+	getFirstCell: function() {
+		return this.cells[0];
+	},
+
+	getLastCell: function() {
+		var cells = this.cells;
+		return cells[cells.length - 1];
 	},
 
 	findCell: function(target) {
