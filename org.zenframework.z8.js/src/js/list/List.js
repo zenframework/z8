@@ -1260,10 +1260,12 @@ Z8.define('Z8.list.List', {
 
 	onFocusIn: function(event, target) {
 		DOM.addCls(this, 'focus');
+		this.setFocused(true);
 	},
 
 	onFocusOut: function(event, target) {
 		DOM.removeCls(this, 'focus');
+		this.setFocused(false);
 	},
 
 	onItemToggle: function(item) {

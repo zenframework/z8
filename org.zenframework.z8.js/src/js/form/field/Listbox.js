@@ -590,16 +590,6 @@ Z8.define('Z8.form.field.Listbox', {
 		return this.isEnabled() ? this.list.focus() : false;
 	},
 
-	onFocusIn: function(event, target) {
-		this.callParent(event, target);
-		this.list.setFocused(true);
-	},
-
-	onFocusOut: function(event, target) {
-		this.callParent(event, target);
-		this.list.setFocused(false);
-	},
-
 	getSelection: function() {
 		return this.list != null ? this.list.getCurrentRecord() : null;
 	},

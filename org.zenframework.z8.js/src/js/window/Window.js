@@ -29,7 +29,7 @@ Z8.define('Z8.window.Window', {
 		var buttons = this.buttons || [];
 
 		if(Z8.isEmpty(this.buttons)) {
-			var ok = this.okButton = new Z8.button.Button({ push: true, primary: true, text: 'Готово', handler: this.ok, scope: this });
+			var ok = this.okButton = new Z8.button.Button({ push: true, primary: true, text: this.okText || 'Готово', handler: this.ok, scope: this });
 			buttons.push(ok);
 		}
 
