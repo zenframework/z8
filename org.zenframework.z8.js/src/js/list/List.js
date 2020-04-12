@@ -331,6 +331,8 @@ Z8.define('Z8.list.List', {
 		this.itemCols = this.queryNodes(id + '.scroller.items>table>colgroup>col');
 
 		DOM.on(this, 'keyDown', this.onKeyDown, this);
+		DOM.on(this, 'focus', this.onFocusIn, this, true);
+		DOM.on(this, 'blur', this.onFocusOut, this, true);
 
 		if(this.selectOnOver)
 			DOM.on(this, 'mouseMove', this.onMouseMove, this);
@@ -533,6 +535,9 @@ Z8.define('Z8.list.List', {
 
 	onDestroy: function() {
 		this.startEditTask.destroy();
+
+		DOM.un(this, 'focus', this.onFocusIn, this, true);
+		DOM.un(this, 'blur', this.onFocusOut, this, true);
 
 		DOM.un(this, 'keyDown', this.onKeyDown, this);
 		DOM.un(this, 'mouseMove', this.onMouseMove, this);
@@ -1251,6 +1256,14 @@ Z8.define('Z8.list.List', {
 			event.stopEvent();
 			this.onItemToggle(item);
 		}
+	},
+
+	onFocusIn: function(event, target) {
+		DOM.addCls(this, 'focus');
+	},
+
+	onFocusOut: function(event, target) {
+		DOM.removeCls(this, 'focus');
 	},
 
 	onItemToggle: function(item) {
