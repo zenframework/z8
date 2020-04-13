@@ -15,7 +15,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Enumeration;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Map;
@@ -54,16 +53,6 @@ public class WebServer extends RmiServer implements IWebServer {
 
 	private static final String ID = guid.create().toString();
 
-	private static final String PREFIX_SERVLET_CONFIG = "z8.servlet.";
-	
-	private static final String PROP_WEB_SERVER_PORT = "z8.webserver.port";
-	private static final String PROP_WEB_SERVER_WEBAPP = "z8.webserver.webapp";
-	private static final String PROP_WEB_SERVER_MAPPINGS = "z8.webserver.content.map";
-	private static final String PROP_WEB_SERVER_URL_PATTERNS = "z8.webserver.urlPatterns";
-
-	private static final int DEFAULT_WEB_SERVER_PORT = 80;
-	private static final String DEFAULT_WEB_SERVER_WEBAPP = "..";
-
 	private static final Collection<UrlPattern> urlPatterns = new LinkedList<UrlPattern>(Arrays.asList(new UrlPattern("*.json"), new UrlPattern("/storage/*"), new UrlPattern("/files/*"), new UrlPattern("/reports/*")));
 
 	private Server server;
@@ -80,15 +69,12 @@ public class WebServer extends RmiServer implements IWebServer {
 	public void start() {
 		try {
 
-			final Map<String, String> initParameters = new HashMap<String, String>();
-			for (String name : System.getProperties().stringPropertyNames())
-				if (name.startsWith(PREFIX_SERVLET_CONFIG))
-					initParameters.put(name.substring(PREFIX_SERVLET_CONFIG.length()), System.getProperty(name));
+			final Map<String, String> initParameters = ServerConfig.webServerServletParams();
 
-			webapp = new File(System.getProperty(PROP_WEB_SERVER_WEBAPP, DEFAULT_WEB_SERVER_WEBAPP));
-			mappings = getMappings(System.getProperty(PROP_WEB_SERVER_MAPPINGS));
+			webapp = ServerConfig.webServerWebapp();
+			mappings = getMappings(ServerConfig.webServerMappings());
 
-			urlPatterns.addAll(getUrlPatterns(System.getProperty(PROP_WEB_SERVER_URL_PATTERNS)));
+			urlPatterns.addAll(getUrlPatterns(ServerConfig.webServerUrlPatterns()));
 
 			context = new ContextHandler("/");
 			context.setResourceBase(webapp.getAbsolutePath());
@@ -128,7 +114,7 @@ public class WebServer extends RmiServer implements IWebServer {
 				}
 			});
 
-			server = new Server(Integer.getInteger(PROP_WEB_SERVER_PORT, DEFAULT_WEB_SERVER_PORT));
+			server = new Server(ServerConfig.webServerHttpPort());
 			server.setHandler(context);
 
 			// Specify the Session ID Manager

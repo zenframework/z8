@@ -4,7 +4,11 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
 import java.util.Properties;
+import java.util.Set;
 
 import org.zenframework.z8.server.engine.Database;
 import org.zenframework.z8.server.engine.IApplicationServer;
@@ -17,6 +21,9 @@ import org.zenframework.z8.server.utils.StringUtils;
 public class ServerConfig extends Properties {
 
 	static private final long serialVersionUID = 3564936578688816088L;
+
+	static private final String Z8SystemPrefix = "z8.";
+
 	static private final String localhost = "localhost";
 
 	static private ServerConfig instance;
@@ -39,7 +46,13 @@ public class ServerConfig extends Properties {
 	static final private String InterconnectionCenterCache = "interconnection.center.cache";
 
 	static final private String WebServerPort = "web.server.port";
+	static final private String WebServerHttpPort = "web.server.http.port";
+	static final private String WebServerWebapp = "web.server.webapp";
+	static final private String WebServerMappings = "web.server.content.map";
+	static final private String WebServerUrlPatterns = "web.server.urlPatterns";
 
+	static final private String WebServerServletConfigPrefix = "web.server.servlet.";
+	
 	static final private String WebServerUploadMax = "web.server.upload.max";
 	static final private String WebClientDownloadMax = "web.client.download.max";
 	static final private String WebClientHashPassword = "web.client.hashPassword";
@@ -91,6 +104,12 @@ public class ServerConfig extends Properties {
 	static private boolean interconnectionCenterCache;
 
 	static private int webServerPort;
+	static private int webServerHttpPort;
+	static private File webServerWebapp;
+	static private String webServerMappings;
+	static private String webServerUrlPatterns;
+
+	static private Map<String, String> webServerServletParams;
 
 	static private int webServerUploadMax;
 	static private int webClientDownloadMax;
@@ -163,6 +182,15 @@ public class ServerConfig extends Properties {
 		interconnectionCenterCache = getProperty(InterconnectionCenterCache, true);
 
 		webServerPort = getProperty(WebServerPort, 30000);
+		webServerHttpPort = getProperty(WebServerHttpPort, 9080);
+		webServerWebapp = new File(workingPath, getProperty(WebServerWebapp, ".."));
+		webServerMappings = getProperty(WebServerMappings);
+		webServerUrlPatterns = getProperty(WebServerUrlPatterns);
+
+		webServerServletParams = new HashMap<String, String>();
+		for (String name : stringPropertyNames())
+			if (name.startsWith(WebServerServletConfigPrefix))
+				webServerServletParams.put(name.substring(WebServerServletConfigPrefix.length()), getProperty(name));
 
 		webServerUploadMax = getProperty(WebServerUploadMax, 5);
 		webClientDownloadMax = getProperty(WebClientDownloadMax, 1);
@@ -212,13 +240,22 @@ public class ServerConfig extends Properties {
 
 	@Override
 	public String getProperty(String key) {
-		return super.getProperty(key.toUpperCase());
+		return System.getProperty(Z8SystemPrefix + key, super.getProperty(key.toUpperCase()));
 	}
 
 	@Override
 	public String getProperty(String key, String defaultValue) {
 		String value = getProperty(key);
 		return value != null && !value.isEmpty() ? value : defaultValue;
+	}
+
+	@Override
+	public Set<String> stringPropertyNames() {
+		Set<String> result = new HashSet<String>(super.stringPropertyNames());
+		for (String name : System.getProperties().stringPropertyNames())
+			if (name.startsWith(Z8SystemPrefix))
+				result.add(name.substring(Z8SystemPrefix.length()));
+		return result;
 	}
 
 	public boolean getProperty(String key, boolean defaultValue) {
@@ -345,6 +382,26 @@ public class ServerConfig extends Properties {
 
 	static public int webServerPort() {
 		return webServerPort;
+	}
+
+	static public int webServerHttpPort() {
+		return webServerHttpPort;
+	}
+
+	static public File webServerWebapp() {
+		return webServerWebapp;
+	}
+
+	static public String webServerMappings() {
+		return webServerMappings;
+	}
+
+	static public String webServerUrlPatterns() {
+		return webServerUrlPatterns;
+	}
+
+	static public Map<String, String> webServerServletParams() {
+		return webServerServletParams;
 	}
 
 	static public int webServerUploadMax() {
