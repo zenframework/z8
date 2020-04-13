@@ -999,7 +999,7 @@ Z8.define('Z8.list.List', {
 	onContentChange: function() {
 		this.fireEvent('contentChange', this);
 	},
-	
+
 	clear: function() {
 		Component.destroy(this.items);
 		this.items = this.fragments = [];

@@ -274,8 +274,8 @@ Z8.define('Z8.Component', {
 	},
 
 	setPosition: function(left, top) {
-		DOM.setPoint(this, 'left', left);
-		DOM.setPoint(this, 'top', top);
+		DOM.setPoint(this, 'left', left != null ? left : 'auto');
+		DOM.setPoint(this, 'top', top != null ? top : 'auto');
 	},
 
 	getAlignment: function() {

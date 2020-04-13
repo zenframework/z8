@@ -109,7 +109,6 @@ Z8.define('Z8.button.Button', {
 		var menu = this.menu;
 
 		if(menu != null) {
-			menu.setAlignment(this);
 			menu.on('show', this.onMenuShow, this);
 			menu.on('hide', this.onMenuHide, this);
 		}
@@ -323,6 +322,8 @@ Z8.define('Z8.button.Button', {
 	},
 
 	toggleMenu: function() {
+		this.menu.setAlignment(this);
+		DOM.append(this, this.menu);
 		this.menu.toggle();
 	},
 

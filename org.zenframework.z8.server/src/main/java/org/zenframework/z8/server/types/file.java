@@ -137,16 +137,16 @@ public class file extends primary implements RmiSerializable, Serializable {
 	}
 
 	public void set(file file) {
-		this.id = file.id;
-		this.name = file.name;
-		this.path = file.path;
-		this.time = file.time;
-		this.size = file.size;
-		this.user = file.user;
-		this.author = file.author;
-		this.value = file.value;
-		this.details = file.details;
-		this.json = file.json;
+		id = file.id;
+		name = file.name;
+		path = file.path;
+		time = file.time;
+		size = file.size;
+		user = file.user;
+		author = file.author;
+		value = file.value;
+		details = file.details;
+		json = file.json;
 	}
 
 	public FileItem get() {
@@ -609,6 +609,10 @@ public class file extends primary implements RmiSerializable, Serializable {
 		} catch(IOException e) {
 			throw new RuntimeException(e);
 		}
+	}
+
+	public void operatorAssign(file file) {
+		set(file);
 	}
 
 	public void operatorAssign(string path) {

@@ -11,10 +11,12 @@ public class file extends primary {
 
 	/*
 	*    Assignment operator. Allows to write code like this:
-	*    file someFile = 'storage/folder/file.name';
+	*    file someFile = "storage/folder/file.name";
 	*/
 	public operator binary();
 	public operator string();
+
+	public void operator = (file file);
 	public void operator = (string path);
 
 	public bool exists();

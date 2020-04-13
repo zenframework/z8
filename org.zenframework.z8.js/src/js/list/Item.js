@@ -215,6 +215,7 @@ Z8.define('Z8.list.Item', {
 
 		DOM.on(this, 'mouseDown', this.onMouseDown, this);
 		DOM.on(this, 'click', this.onClick, this);
+		DOM.on(this, 'contextMenu', this.onClick, this);
 		DOM.on(this, 'dblClick', this.onDblClick, this);
 
 		this.dom.listItem = this;
@@ -226,6 +227,7 @@ Z8.define('Z8.list.Item', {
 
 		DOM.un(this, 'mouseDown', this.onMouseDown, this);
 		DOM.un(this, 'click', this.onClick, this);
+		DOM.un(this, 'contextMenu', this.onClick, this);
 		DOM.un(this, 'dblClick', this.onDblClick, this);
 
 		if(this.record != null && this.record.un != null)
@@ -409,26 +411,29 @@ Z8.define('Z8.list.Item', {
 		if(target.type == 'file')
 			return;
 
-		event.stopEvent();
+		if(event.buttons == 1 /* primary */)
+			event.stopEvent();
 
 		if(!this.isEnabled())
 			return;
 
-		if(target == this.collapser || target == this.collapserIcon) {
-			this.collapse(!this.collapsed);
-			return;
-		}
+		if(event.buttons == 1 /* primary */) {
+			if(target == this.collapser || target == this.collapserIcon) {
+				this.collapse(!this.collapsed);
+				return;
+			}
 
-		if(target == this.iconElement) {
-			this.list.onIconClick(this);
-			return;
-		}
+			if(target == this.iconElement) {
+				this.list.onIconClick(this);
+				return;
+			}
 
-		var index = -1;
+			var index = -1;
 
-		if(this.list.checks && DOM.isParentOf(this.checkElement, target)) {
-			this.toggleCheck();
-			return;
+			if(this.list.checks && DOM.isParentOf(this.checkElement, target)) {
+				this.toggleCheck();
+				return;
+			}
 		}
 
 		index = this.findCellIndex(target);
