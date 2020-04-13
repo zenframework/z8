@@ -120,21 +120,22 @@ Z8.define('Z8.window.Window', {
 	},
 
 	setBusy: function(busy) {
-		if(this.busyButton != null)
-			this.busyButton.setBusy(busy);
+		if(this.okButton != null)
+			this.okButton.setBusy(busy);
 	},
 
 	notifyAndClose: function(success) {
-		var busyButton = this.busyButton = success ? this.okButton : this.cancelButton;
+		if(!this.autoClose)
+			this.setBusy(true);
 
-		if(!this.autoClose && busyButton != null)
-			busyButton.setBusy(true);
-
-		if(this.handler != null)
-			this.handler.call(this.scope, this, success);
+		this.notify(success);
 
 		if(this.autoClose)
 			this.close();
+	},
+
+	notify: function(success) {
+		Z8.callback(this.handler, this.scope, this, success);
 	},
 
 	focus: function() {

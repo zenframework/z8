@@ -22,6 +22,8 @@ Z8.define('Z8.button.Button', {
 	toggled: null,
 	toggledIcon: null,
 
+	bubbleClick: false,
+
 	vertical: false,
 
 	busy: false,
@@ -280,7 +282,8 @@ Z8.define('Z8.button.Button', {
 	},
 
 	onClick: function(event, target) {
-		event.stopEvent();
+		if(!this.bubbleClick)
+			event.stopEvent();
 
 		if(!this.isEnabled())
 			return;
