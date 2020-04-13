@@ -183,7 +183,11 @@ public class ServerConfig extends Properties {
 
 		webServerPort = getProperty(WebServerPort, 30000);
 		webServerHttpPort = getProperty(WebServerHttpPort, 9080);
-		webServerWebapp = new File(workingPath, getProperty(WebServerWebapp, ".."));
+
+		webServerWebapp = new File(getProperty(WebServerWebapp, ".."));
+		if (!webServerWebapp.isAbsolute())
+			webServerWebapp = new File(workingPath, getProperty(WebServerWebapp, ".."));
+
 		webServerMappings = getProperty(WebServerMappings);
 		webServerUrlPatterns = getProperty(WebServerUrlPatterns);
 
