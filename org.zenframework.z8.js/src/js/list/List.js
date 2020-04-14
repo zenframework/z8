@@ -28,6 +28,7 @@ Z8.define('Z8.list.List', {
 	confirmSelection: false,
 	autoSelectFirst: true,
 	selectOnOver: false,
+	selectOnRightClick: false, 
 
 	itemsRendered: false,
 	manualItemsRendering: false,
@@ -1501,6 +1502,12 @@ Z8.define('Z8.list.List', {
 		this.setSelection(item);
 		this.processCheckboxEdit(item, index);
 		this.fireEvent('itemClick', this, item, index);
+	},
+
+	onItemContextMenu: function(item, index) {
+		if(this.selectOnRightClick)
+			this.setSelection(item);
+		this.fireEvent('itemContextMenu', this, item, index);
 	},
 
 	onIconClick: function(item) {
