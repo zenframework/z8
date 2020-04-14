@@ -148,9 +148,13 @@ public class Files extends Table {
 
 		return null;
 	}
-
+	
 	public static file get(file file) throws IOException {
-		File path = new File(Folders.Base, file.path.get());
+		return get(file, Folders.Base);
+	}
+
+	public static file get(file file, File dst) throws IOException {
+		File path = new File(dst, file.path.get());
 
 		if(!path.exists()) {
 			InputStream inputStream = getInputStream(file);
