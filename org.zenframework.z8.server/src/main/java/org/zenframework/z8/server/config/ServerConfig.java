@@ -237,14 +237,8 @@ public class ServerConfig extends Properties {
 	// Properties overrides
 
 	@Override
-	public synchronized Object put(Object key, Object value) {
-		String stringKey = (String)key;
-		return super.put(stringKey.toUpperCase(), value);
-	}
-
-	@Override
 	public String getProperty(String key) {
-		return System.getProperty(Z8SystemPrefix + key, super.getProperty(key.toUpperCase()));
+		return System.getProperty(Z8SystemPrefix + key, super.getProperty(key));
 	}
 
 	@Override
