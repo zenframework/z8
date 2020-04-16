@@ -95,6 +95,10 @@ Z8.define('Z8.form.field.Control', {
 		return this.readOnly;
 	},
 
+	getReadOnly: function() {
+		return this.isReadOnly();
+	},
+
 	setReadOnly: function(readOnly) {
 		this.readOnly = readOnly;
 

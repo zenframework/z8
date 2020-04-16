@@ -26,17 +26,17 @@ Z8.define('Z8.menu.Menu', {
 
 	completeRender: function() {
 		Z8.list.Dropdown.prototype.completeRender.call(this);
-		DOM.on(this, 'blur', this.onFocusOut, this, true);
+		DOM.on(this, 'blur', this.onFocusOut, this);
 	},
 
 	onDestroy: function() {
-		DOM.un(this, 'blur', this.onFocusOut, this, true);
+		DOM.un(this, 'blur', this.onFocusOut, this);
 		Z8.list.Dropdown.prototype.onDestroy.call(this);
 	},
 
-	onFocusOut: function(event) {
+	onFocusOut: function(event, target) {
 		var dom = DOM.get(this);
-		var target = event.relatedTarget;
+		target = event.relatedTarget;
 
 		if(dom != target && !DOM.isParentOf(dom, target) && !DOM.isParentOf(this.owner, target))
 			this.onCancel();
