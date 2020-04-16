@@ -316,7 +316,7 @@ Z8.define('Z8.Component', {
 
 		var parent = new Rect(DOM.getParent(this));
 
-		var offset = this.alignmentOffset || { width: 0, height: 0, margin: 1, adjustHeight: false };
+		var offset = this.alignmentOffset || { width: 0, height: 0, margin: 1, adjustHeight: true };
 		var style = DOM.getComputedStyle(this);
 
 		var height = parseFloat(style.height) + parseInt(style.marginTop) + parseInt(style.marginBottom);

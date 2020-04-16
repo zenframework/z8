@@ -339,7 +339,6 @@ textarea.control,
 	flex-direction: row;
 	align-items: center;
 	position: relative;
-	text-align: center;
 	white-space: nowrap;
 	touch-action: manipulation;
 	cursor: pointer;

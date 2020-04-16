@@ -233,6 +233,7 @@
 }
 
 .dropdown-menu.list>.scroller.items {
+	overflow-x: hidden;
 	overflow-y: auto;
 	position: relative;
 }
