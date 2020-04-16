@@ -699,15 +699,14 @@ Z8.define('Z8.application.form.Navigator', {
 	},
 
 	onKeyDown: function(event, target) {
-		var key = event.getKey();
+		viewport.Form.prototype.onKeyDown.call(this, event, target);
 
-		if(key == Event.F && event.ctrlKey && this.quickFilters.length != 0) {
-			this.quickFilters[0].focus();
-			event.stopEvent();
-		} else if(key == Event.ESC) {
-			this.focus();
-			Viewport.closeForm(this);
-			event.stopEvent();
+		switch(event.getKey()) {
+		case Event.F:
+			if(event.ctrlKey && this.quickFilters.length != 0) {
+				this.quickFilters[0].focus();
+				return event.stopEvent();
+			}
 		}
 	},
 
