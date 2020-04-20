@@ -198,6 +198,7 @@
 
 .air textarea.control,
 .air .html>.control {
+	flex: 1;
 	min-height: 6.54545454em;
 	padding-top: .28571429em;
 	padding-left: .28571429em;
