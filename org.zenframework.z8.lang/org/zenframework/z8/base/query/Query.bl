@@ -2,7 +2,6 @@ import org.zenframework.z8.base.form.Control;
 import org.zenframework.z8.base.form.action.Action;
 import org.zenframework.z8.base.form.report.Report;
 import org.zenframework.z8.base.sql.Connection;
-import org.zenframework.z8.base.table.value.DatetimeField;
 import org.zenframework.z8.base.table.value.Field;
 import org.zenframework.z8.base.table.value.Link;
 import org.zenframework.z8.lang.Object;
@@ -28,7 +27,7 @@ public class Query extends Object {
 	public Field[] groupFields;         // Соответствует пункту 'Группировать по полю' в меню колонки таблицы.
 										// Не путать с groupBy - выбираемые данные не группируются.
 
-	public DatetimeField period;
+	public Field period;
 
 	public Action[] actions;
 	public Report[] reports;
