@@ -39,6 +39,7 @@ public class GNode implements RmiSerializable, Serializable {
 	public GNode(Map<String, String> attributes, List<file> files) {
 		this.attributes = attributes;
 		this.files = files;
+		this.contentType = ContentType.Text;
 	}
 
 	public Map<String, String> getAttributes() {
@@ -72,15 +73,15 @@ public class GNode implements RmiSerializable, Serializable {
 		ByteArrayOutputStream bytes = new ByteArrayOutputStream(32 * NumericUtils.Kilobyte);
 		ObjectOutputStream objects = new ObjectOutputStream(bytes);
 
-		RmiIO.writeString(out, contentType.toString());
-		RmiIO.writeBoolean(out, in != null);
+		RmiIO.writeString(objects, contentType.toString());
+		RmiIO.writeBoolean(objects, in != null);
 
 		if(in != null) {
 			long size = in.available();
-			RmiIO.writeLong(out, size);
+			RmiIO.writeLong(objects, size);
 
 			try {
-				IOUtils.copyLarge(in, out, size, false);
+				IOUtils.copyLarge(in, objects, size, false);
 			} finally {
 				IOUtils.closeQuietly(in);
 			}
@@ -102,20 +103,20 @@ public class GNode implements RmiSerializable, Serializable {
 		ByteArrayInputStream bytes = new ByteArrayInputStream(IOUtils.unzip(RmiIO.readBytes(in)));
 		ObjectInputStream objects = new ObjectInputStream(bytes);
 
-		contentType = ContentType.fromString(RmiIO.readString(in));
+		contentType = ContentType.fromString(RmiIO.readString(objects));
 
-		if(RmiIO.readBoolean(in)) {
-			long size = RmiIO.readLong(in);
+		if(RmiIO.readBoolean(objects)) {
+			long size = RmiIO.readLong(objects);
 
 			FileItem fileItem = file.createFileItem();
 			OutputStream out = fileItem.getOutputStream();
 
 			try {
-				IOUtils.copyLarge(in, out, size, false);
+				IOUtils.copyLarge(objects, out, size, false);
 			} finally {
-				IOUtils.closeQuietly(out);
+				IOUtils.closeQuietly(objects);
 			}
-			
+
 			this.in = fileItem.getInputStream();
 		}
 

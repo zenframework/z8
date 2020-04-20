@@ -6,6 +6,7 @@
 	border-width: 1px !important;
 	padding-left: 0;
 	padding-right: 0;
+	flex: 1;
 }
 
 .control.geometry>.ol-viewport {

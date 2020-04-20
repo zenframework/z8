@@ -197,7 +197,7 @@
 }
 
 .air textarea.control,
-.air .html-text.control {
+.air .html>.control {
 	min-height: 6.54545454em;
 	padding-top: .28571429em;
 	padding-left: .28571429em;
@@ -319,7 +319,7 @@
 }
 
 .air .control-group.focus>textarea.control,
-.air .control-group.focus>.html-text.control,
+.air .control-group.html.focus>.control,
 .air .control-group.focus>.control.list,
 .air .filter-control.focus>.expression {
 	border-bottom-width: 1px;
@@ -345,7 +345,7 @@
 
 .air .control-group.label-top>.list.control,
 .air .control-group.label-top>textarea.control,
-.air .control-group.label-top>.html-text.control {
+.air .html.control-group.label-top>.control {
 	border-right-width: 1px;
 }
 
@@ -825,6 +825,7 @@
 
 .air .dropdown-menu.list {
 	padding: .35714286em 0;
+	display: block;
 }
 
 .air .dropdown-menu.list>.scroller.items {
@@ -1137,8 +1138,6 @@
 }
 
 .air .window>.body {
-	top: 2.85714286em;
-	bottom: 3.57142857em;
 	background-color: #fff;
 	border: 1px solid #adadad;
 	border-top-width: 0;
@@ -1147,12 +1146,13 @@
 }
 
 .air .window>.footer {
-	height: 3.57142857em;
-	min-height: 3.57142857em;
+	height: 5.35714286em;
+	min-height: 5.35714286em;
 	border: 1px solid #adadad;
 	border-bottom-left-radius: .28571429em;
 	border-bottom-right-radius: .28571429em;
 	background-color: #fff;
+	padding: 0 1.07142857em;
 }
 
 .air .window>.footer>.btn {

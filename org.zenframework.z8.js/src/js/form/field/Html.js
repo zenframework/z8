@@ -4,16 +4,16 @@ Z8.define('Z8.form.field.Html', {
 	scrollable: true,
 
 	getCls: function() {
-		return Z8.form.field.Control.prototype.getCls.call(this).pushIf('control', 'html-text');
+		return Z8.form.field.Control.prototype.getCls.call(this).pushIf('html');
 	},
 
 	controlMarkup: function() {
-		return [{ tag: 'div', cls: this.getCls().join(' '), tabIndex: this.getTabIndex(), html: this.getValue() }];
+		return [{ tag: 'div', cls: 'control', tabIndex: this.getTabIndex(), html: this.getValue() }];
 	},
 
 	completeRender: function() {
 		this.callParent();
-		this.div = this.selectNode('.html-text');
+		this.div = this.selectNode('.html');
 	},
 
 	onDestroy: function() {
