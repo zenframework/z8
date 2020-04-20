@@ -632,6 +632,10 @@
 	color: #fff;
 }
 
+.air .focus .list .item.active>.column.check>.cell {
+	color: inherit;
+}
+
 .air .list .item.disabled>.column,
 .air .list .item.disabled:hover>.column,
 .air .list .item.disabled>.column {
