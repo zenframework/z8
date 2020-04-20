@@ -13,7 +13,7 @@ Z8.define('Z8.form.field.Html', {
 
 	completeRender: function() {
 		this.callParent();
-		this.div = this.selectNode('.html');
+		this.div = this.selectNode('.control');
 	},
 
 	onDestroy: function() {
