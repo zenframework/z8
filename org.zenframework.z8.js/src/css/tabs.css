@@ -11,7 +11,7 @@
 
 .air .tabs>.body {
 	min-height: fit-content;
-	padding: .35714286em;
+	padding: 1em .35714286em .35714286em .35714286em;
 }
 
 .air .tabs>.header>.tag {
@@ -46,6 +46,7 @@
 	padding-top: 1.07142857em;
 	border-bottom-color: #888;
 	color: inherit;
+	background-color: inherit;
 }
 
 .air .tabs>.header>.tag:hover,
