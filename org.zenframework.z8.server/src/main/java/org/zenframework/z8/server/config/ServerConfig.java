@@ -181,7 +181,7 @@ public class ServerConfig extends Properties {
 		interconnectionCenterPort = getProperty(InterconnectionCenterPort, 20000);
 		interconnectionCenterCache = getProperty(InterconnectionCenterCache, true);
 
-		webServerPort = getProperty(WebServerPort, 30000);
+		webServerPort = getProperty(WebServerPort, 25000);
 		webServerHttpPort = getProperty(WebServerHttpPort, 9080);
 
 		webServerWebapp = new File(getProperty(WebServerWebapp, ".."));
