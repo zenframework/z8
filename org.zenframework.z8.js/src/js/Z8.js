@@ -77,6 +77,8 @@ var Z8 = {
 		var prototype = cls.prototype = Object.create(basePrototype);
 		prototype.self = prototype;
 		prototype.$className = className;
+		if(shortName != null)
+			prototype.$shortClassName = shortName;
 		cls.superclass = prototype.superclass = basePrototype;
 
 		Z8.addMembers(prototype, config);
@@ -105,13 +107,13 @@ var Z8 = {
 				throw 'Mixin not found: "' + mixins[i] + '"';
 
 			mixin = mixin.prototype;
-			var mixinId = mixin.mixinId;
+			var mixinId = mixin.mixinId || mixin.$shortClassName;
 
 			if(mixinId == null)
 				throw 'Mixed in class must have mixinId: "' + mixin.$className + '"';
 
 			for(var name in mixin) {
-				if(name != 'mixinId' && prototype[name] === undefined)
+				if(name != 'mixinId' && name != '$shortClassName' && prototype[name] === undefined)
 					prototype[name] = mixin[name];
 			}
 

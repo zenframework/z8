@@ -143,7 +143,7 @@ public class MessageSource implements RmiSerializable, Serializable {
 	public void deserialize(ObjectInputStream in) throws IOException, ClassNotFoundException {
 		@SuppressWarnings("unused")
 		long version = RmiIO.readLong(in);
-		
+
 		if(version == serialVersionUID)
 			exportAll = RmiIO.readBoolean(in);
 
