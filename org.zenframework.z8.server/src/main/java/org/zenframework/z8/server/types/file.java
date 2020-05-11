@@ -683,24 +683,29 @@ public class file extends primary implements RmiSerializable, Serializable {
 		return new string(read(encoding));
 	}
 
-	public void z8_write(binary content) {
+	public file z8_write(binary content) {
 		write(content.get(), true);
+		return this;
 	}
 
-	public void z8_write(binary content, bool append) {
+	public file z8_write(binary content, bool append) {
 		write(content.get(), append.get());
+		return this;
 	}
 
-	public void z8_write(string content) {
+	public file z8_write(string content) {
 		write(content.get(), true);
+		return this;
 	}
 
-	public void z8_write(string content, bool append) {
+	public file z8_write(string content, bool append) {
 		write(content.get(), encoding.Default, append.get());
+		return this;
 	}
 
-	public void z8_write(string content, encoding encoding, bool append) {
+	public file z8_write(string content, encoding encoding, bool append) {
 		write(content.get(), encoding, append.get());
+		return this;
 	}
 
 	public void z8_delete() {
