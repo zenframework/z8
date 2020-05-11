@@ -35,11 +35,12 @@ public class file extends primary {
 	public string read(encoding charset);
 
 	public file write(binary content);
-	public file write(binary content, bool append);
-
 	public file write(string content);
-	public file write(string content, bool append);
-	public file write(string content, encoding charset, bool append);
+	public file write(string content, encoding charset);
+
+	public file append(binary content);
+	public file append(string content);
+	public file append(string content, encoding charset);
 
 	public void delete(); 
 

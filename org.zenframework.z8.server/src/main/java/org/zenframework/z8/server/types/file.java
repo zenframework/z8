@@ -400,11 +400,11 @@ public class file extends primary implements RmiSerializable, Serializable {
 	}
 
 	public void write(String content) {
-		write(content, true);
+		write(content, false);
 	}
 
 	public void write(String content, boolean append) {
-		write(content, encoding.Default, true);
+		write(content, encoding.Default, append);
 	}
 
 	public void write(String content, encoding charset, boolean append) {
@@ -684,27 +684,32 @@ public class file extends primary implements RmiSerializable, Serializable {
 	}
 
 	public file z8_write(binary content) {
-		write(content.get(), true);
-		return this;
-	}
-
-	public file z8_write(binary content, bool append) {
-		write(content.get(), append.get());
+		write(content.get(), false);
 		return this;
 	}
 
 	public file z8_write(string content) {
+		write(content.get(), false);
+		return this;
+	}
+
+	public file z8_write(string content, encoding encoding) {
+		write(content.get(), encoding, false);
+		return this;
+	}
+
+	public file z8_append(binary content) {
 		write(content.get(), true);
 		return this;
 	}
 
-	public file z8_write(string content, bool append) {
-		write(content.get(), encoding.Default, append.get());
+	public file z8_append(string content) {
+		write(content.get(), true);
 		return this;
 	}
 
-	public file z8_write(string content, encoding encoding, bool append) {
-		write(content.get(), encoding, append.get());
+	public file z8_append(string content, encoding encoding) {
+		write(content.get(), encoding, true);
 		return this;
 	}
 
