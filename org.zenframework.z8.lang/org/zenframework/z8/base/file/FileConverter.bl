@@ -1,0 +1,18 @@
+[native "org.zenframework.z8.server.base.file.FileConverter"]
+public class FileConverter {
+
+	public static string getExtension(file file);
+	public static string getExtension(string fileName);
+
+	public static bool isPdfExtension(string extension);
+	public static bool isTextExtension(string extension);
+	public static bool isImageExtension(string extension);
+	public static bool isEmailExtension(string extension);
+	public static bool isOfficeExtension(string extension);
+
+	public static bool isConvertableToPdf(string extension);
+
+	public static file convertToPdf(file source, file target);
+	public static file convertToPdf(file source, file target, string[string] parameters);
+
+}

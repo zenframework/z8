@@ -13,8 +13,10 @@ import org.zenframework.z8.server.logs.Trace;
 import org.zenframework.z8.server.types.file;
 
 public class AttachmentUtils {
+
 	static public File getPreview(file file, Map<String, String> parameters) throws IOException {
-		if (!FileConverter.isConvertableToPdf(file.path.get()))
+		String ext = FileConverter.getExtension(file.baseName());
+		if (!FileConverter.isConvertableToPdf(ext))
 			return null;
 		
 		Files.get(file);
@@ -23,8 +25,12 @@ public class AttachmentUtils {
 
 		if (!path.exists())
 			return null;
-		
-		return new FileConverter(new File(Folders.Base, Folders.Cache)).getConvertedPdf(file.path.get(), path, parameters);
+
+		if (FileConverter.isPdfExtension(ext))
+			return path;
+
+		File convertedFile = new File(Folders.Base, Folders.Cache + '/' + file.path.get());
+		return FileConverter.convertToPdf(path, convertedFile, parameters);
 	}
 
 	static public int getPageCount(file file) {
@@ -38,4 +44,5 @@ public class AttachmentUtils {
 			return 0;
 		}
 	}
+
 }
