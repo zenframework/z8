@@ -1,6 +1,8 @@
 [native "org.zenframework.z8.server.base.file.FileConverter"]
 public class FileConverter {
 
+	public static final string Background;
+
 	public static string getExtension(file file);
 	public static string getExtension(string fileName);
 

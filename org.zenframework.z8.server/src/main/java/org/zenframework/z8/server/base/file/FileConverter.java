@@ -29,7 +29,7 @@ public class FileConverter {
 	
 	public static final String PDF_EXTENSION = "pdf";
 
-	public static final String PARAM_BACKGROUND = "background";
+	public static final string Background = new string("background");
 
 	private static OfficeManager officeManager;
 
@@ -67,12 +67,12 @@ public class FileConverter {
 			}
 		}
 
-		String background = parameters.get(PARAM_BACKGROUND);
-		if (background != null) {
+		String background = parameters.get(Background.get());
+		File backgroundFile;
+		if (background != null && (backgroundFile = new File(Folders.Base, background)).exists()) {
 			source = target;
 			target = new File(source.getParentFile(), addSuffix(source.getName(), "-background"));
 			if (!target.exists()) {
-				File backgroundFile = new File(Folders.Base, background);
 				extension = FilenameUtils.getExtension(background).toLowerCase();
 				try {
 					if (isPdfExtension(extension))
