@@ -110,6 +110,10 @@
 	<entry key="Files.title">Файлы</entry>
 	<entry key="Files.name">Имя файла</entry>
 	<entry key="Files.path">Путь к файлу в кэше</entry>
+	<entry key="Files.size">Размер файла</entry>
+	<entry key="Files.time">Дата создания</entry>
+	<entry key="Files.lastModified">Дата изменения</entry>
+	<entry key="Files.extension">Тип</entry>
 
 	<entry key="Preview.unsupportedFileFormat">Невозможно отобразить содержимое файла {0}: формат не поддерживается.</entry>
 

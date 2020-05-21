@@ -21,8 +21,7 @@ Z8.define('Z8.server.type', {
 		Integer: 'int',
 		Json: 'json',
 		String: 'string',
-		Text: 'text',
-		Variant: 'variant'
+		Text: 'text'
 	}
 });
 
@@ -85,7 +84,7 @@ Z8.define('Z8.Operator', {
 
 		isTrue: 'isTrue',
 		isFalse: 'isFalse',
-		
+
 		Intersects: 'intersects'
 	}
 });

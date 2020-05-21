@@ -1,13 +1,16 @@
 Z8.define('Z8.list.Total', {
 	extend: 'Z8.Component',
 
+	getCls: function() {
+		return Z8.Component.prototype.getCls.call(this).pushIf('column', this.field.type);
+	},
+
 	htmlMarkup: function() {
 		var text = this.formatText(this.getTotal());
 		text = { tag: 'span', cls: 'text', html: text };
 		var cell = { cls: 'cell', cn: [text] };
 
-		var cls = this.cls = DOM.parseCls(this.cls).pushIf('column').pushIf(this.field.type);
-		return { tag: 'td', id: this.getId(), cls: cls.join(' '), cn: [cell], title: text };
+		return { tag: 'td', id: this.getId(), cls: this.getCls().join(' '), cn: [cell], title: text };
 	},
 
 	completeRender: function() {

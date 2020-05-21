@@ -49,8 +49,8 @@ public enum FieldType {
 	}
 
 	static public FieldType fromString(String string) {
-		for (FieldType type : values())
-			if (type.fName.equals(string))
+		for(FieldType type : values())
+			if(type.fName.equals(string))
 				return type;
 		throw new RuntimeException("Unknown data type: '" + string + "'");
 	}
@@ -75,14 +75,14 @@ public enum FieldType {
 			switch(vendor) {
 			case Oracle: return "BLOB";
 			case SqlServer: return "VARBINARY";
-			case Postgres: return "bytea";
+			case Postgres: case H2: return "bytea";
 			default: throw new RuntimeException("Unknown data type: '" + toString() + "'");
 			}
 		case Boolean:
 			switch(vendor) {
 			case Oracle: return "NUMBER";
 			case SqlServer: return "TINYINT";
-			case Postgres: return "smallint";
+			case Postgres: case H2: return "smallint";
 			default: throw new RuntimeException("Unknown data type: '" + toString() + "'");
 			}
 		case Date:
@@ -92,36 +92,37 @@ public enum FieldType {
 			switch(vendor) {
 			case Oracle: return "NUMBER";
 			case SqlServer: return "BIGINT";
-			case Postgres: return "bigint";
+			case Postgres: case H2: return "bigint";
 			default: throw new RuntimeException("Unknown data type: '" + toString() + "'");
 			}
 		case Decimal:
 			switch(vendor) {
 			case Oracle: return "NUMBER";
 			case SqlServer: return "NUMERIC";
-			case Postgres: return "numeric";
+			case Postgres: case H2: return "numeric";
 			default: throw new RuntimeException("Unknown data type: '" + toString() + "'");
 			}
 		case Geometry:
 			switch(vendor) {
-			case Postgres: return "geometry";
+			case Postgres: case H2: return "geometry";
 			case Oracle:
 			case SqlServer:
 				throw new RuntimeException("Unsupported data type: '" + toString() + "'");
-			default: throw new RuntimeException("Unknown data type: '" + toString() + "'");
+			default:
+				throw new RuntimeException("Unknown data type: '" + toString() + "'");
 			}
 		case Guid:
 			switch(vendor) {
 			case Oracle: return "RAW";
 			case SqlServer: return "UNIQUEIDENTIFIER";
-			case Postgres: return "uuid";
+			case Postgres: case H2: return "uuid";
 			default: throw new RuntimeException("Unknown data type: '" + toString() + "'");
 			}
 		case String:
 			switch(vendor) {
 			case Oracle: return "NVARCHAR2";
 			case SqlServer: return "NVARCHAR";
-			case Postgres: return "character varying";
+			case Postgres: case H2: return "character varying";
 			default: throw new RuntimeException("Unknown data type: '" + toString() + "'");
 			}
 		default: 

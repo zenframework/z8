@@ -68,6 +68,7 @@ abstract public class Field extends Control implements IField {
 	public bool totals = bool.True;
 
 	public bool indexed;
+	public bool trigram;
 	public bool unique;
 
 	public primary defaultValue;
@@ -323,6 +324,10 @@ abstract public class Field extends Control implements IField {
 
 	public boolean indexed() {
 		return indexed != null ? indexed.get() : false;
+	}
+
+	public boolean trigram() {
+		return trigram != null ? trigram.get() : false;
 	}
 
 	public boolean unique() {

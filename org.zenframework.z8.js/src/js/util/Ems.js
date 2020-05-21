@@ -17,7 +17,7 @@ Z8.define('Z8.util.Ems', {
 		},
 
 		emsToPixels: function(ems) {
-			return Math.ceil(ems * Ems.Base);
+			return (ems * Ems.Base).round(8);
 		},
 
 		setBase: function(base, noResize) {

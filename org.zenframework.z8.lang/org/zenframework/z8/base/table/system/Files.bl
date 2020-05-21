@@ -1,5 +1,7 @@
 import org.zenframework.z8.base.table.Table;
 import org.zenframework.z8.base.table.value.BinaryField;
+import org.zenframework.z8.base.table.value.DatetimeField;
+import org.zenframework.z8.base.table.value.IntField;
 import org.zenframework.z8.base.table.value.StringField;
 
 [name "SystemFiles"]
@@ -13,6 +15,15 @@ public class Files extends Table {
 	[displayName "Путь к файлу в кэше"]
 	public StringField path;
 	path.length = 512;
+
+	[name "Time"]
+	public DatetimeField time;
+
+	[name "Last modified"]
+	public DatetimeField lastModified;
+
+	[name "Size"]
+	public IntField size;
 
 	[name "File"]
 	public BinaryField data;

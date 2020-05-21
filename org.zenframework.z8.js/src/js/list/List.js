@@ -28,6 +28,7 @@ Z8.define('Z8.list.List', {
 	confirmSelection: false,
 	autoSelectFirst: true,
 	selectOnOver: false,
+	selectOnRightClick: false, 
 
 	itemsRendered: false,
 	manualItemsRendering: false,
@@ -39,11 +40,11 @@ Z8.define('Z8.list.List', {
 	tabIndex: 0,
 
 	constructor: function(config) {
-		this.callParent(config);
+		Z8.Component.prototype.constructor.call(this, config);
 	},
 
 	initComponent: function() {
-		this.callParent();
+		Z8.Component.prototype.initComponent.call(this);
 
 		if(this.startCollapsed == null)
 			this.startCollapsed = Application.listbox.collapsed;
@@ -60,6 +61,8 @@ Z8.define('Z8.list.List', {
 		this.initItems();
 		this.initStore();
 		this.editors = this.createEditors();
+
+		this.startEditTask = new Z8.util.DelayedTask();
 	},
 
 	initItems: function() {
@@ -195,7 +198,7 @@ Z8.define('Z8.list.List', {
 
 		headerCells.push({ tag: 'td', cls: 'extra', style: 'width: 0;' });
 
-		var result = [{ tag: 'tr', cls: 'header', cn: headerCells }];
+		var result = [{ tag: 'tr', cls: 'header' + (this.hideHeaders ? ' display-none' : ''), cn: headerCells }];
 
 		if(hasNumbers)
 			result.push({ tag: 'tr', cls: 'number', cn: numberCells });
@@ -267,25 +270,25 @@ Z8.define('Z8.list.List', {
 		return markup;
 	},
 
-	htmlMarkup: function() {
-		var hasHeaders = this.headers.length != 0;
-		var hasTotals = this.totals.length != 0;
+	getCls: function() {
+		var cls = Z8.Component.prototype.getCls.call(this);
 
-		var cls = DOM.parseCls(this.cls).pushIf('list');
-		if(hasHeaders)
+		if(this.headers.length != 0)
 			cls.pushIf('columns');
-
-		if(hasTotals)
+		if(this.totals.length != 0)
 			cls.pushIf('totals');
-
 		if(this.autoFit)
 			cls.pushIf('auto-fit');
 
+		return cls.pushIf('list');
+	},
+
+	htmlMarkup: function() {
 		var cn = [];
 
-		if(hasHeaders) {
+		if(this.headers.length != 0) {
 			var headers = this.tableMarkup('headers');
-			var headersScroller = { cls: 'scroller headers' + (this.hideHeaders ? ' display-none' : ''), cn: [headers] };
+			var headersScroller = { cls: 'scroller headers', cn: [headers] };
 			cn.push(headersScroller);
 		}
 
@@ -293,13 +296,13 @@ Z8.define('Z8.list.List', {
 		var itemsScroller = { cls: 'scroller items', cn: [items] };
 		cn.push(itemsScroller);
 
-		if(hasTotals) {
+		if(this.totals.length != 0) {
 			var totals = this.tableMarkup('totals');
 			var totalsScroller = { cls: 'scroller totals', cn: [totals] };
 			cn.push(totalsScroller);
 		}
 
-		return { id: this.getId(), tabIndex: this.getTabIndex(), cls: cls.join(' '), cn: cn };
+		return { id: this.getId(), tabIndex: this.getTabIndex(), cls: this.getCls().join(' '), cn: cn };
 	},
 
 	subcomponents: function() {
@@ -307,40 +310,43 @@ Z8.define('Z8.list.List', {
 	},
 
 	completeRender: function() {
-		this.callParent();
+		Z8.Component.prototype.completeRender.call(this);
 
-		if(this.itemsTable == null) {
-			var id = '#' + this.getId() + '>';
-			var itemsScroller = this.itemsScroller = this.selectNode(id + '.scroller.items');
-			var headersScroller = this.headersScroller = this.selectNode(id + '.scroller.headers');
-			var totalsScroller = this.totalsScroller = this.selectNode(id + '.scroller.totals');
+		if(this.itemsTable != null)
+			return;
 
-			this.headersTable = this.selectNode(id + '.scroller.headers>table');
-			this.headerCols = this.queryNodes(id + '.scroller.headers>table>colgroup>col') || [];
-			this.filter = this.selectNode(id + '.scroller.headers tr.filter');
+		var id = '#' + this.getId() + '>';
+		var itemsScroller = this.itemsScroller = this.selectNode(id + '.scroller.items');
+		var headersScroller = this.headersScroller = this.selectNode(id + '.scroller.headers');
+		var totalsScroller = this.totalsScroller = this.selectNode(id + '.scroller.totals');
 
-			this.totalsTable = this.selectNode(id + '.scroller.totals>table');
-			this.totalCols = this.queryNodes(id + '.scroller.totals>table>colgroup>col') || [];
+		this.headersTable = this.selectNode(id + '.scroller.headers>table');
+		this.headerCols = this.queryNodes(id + '.scroller.headers>table>colgroup>col') || [];
+		this.filter = this.selectNode(id + '.scroller.headers tr.filter');
 
-			this.itemsTable = this.selectNode(id + '.scroller.items>table');
-			this.itemsTableBody = this.selectNode(id + '.scroller.items>table>tbody');
-			this.itemCols = this.queryNodes(id + '.scroller.items>table>colgroup>col');
+		this.totalsTable = this.selectNode(id + '.scroller.totals>table');
+		this.totalCols = this.queryNodes(id + '.scroller.totals>table>colgroup>col') || [];
 
-			DOM.on(this, 'keyDown', this.onKeyDown, this);
+		this.itemsTable = this.selectNode(id + '.scroller.items>table');
+		this.itemsTableBody = this.selectNode(id + '.scroller.items>table>tbody');
+		this.itemCols = this.queryNodes(id + '.scroller.items>table>colgroup>col');
 
-			if(this.selectOnOver)
-				DOM.on(this, 'mouseMove', this.onMouseMove, this);
+		DOM.on(this, 'keyDown', this.onKeyDown, this);
+		DOM.on(this, 'focus', this.onFocusIn, this, true);
+		DOM.on(this, 'blur', this.onFocusOut, this, true);
 
-			if(headersScroller != null) {
-				DOM.on(window, 'resize', this.onResize, this);
-				DOM.on(totalsScroller, 'scroll', this.onScroll, this);
-				DOM.on(itemsScroller, 'scroll', this.onScroll, this);
-			}
+		if(this.selectOnOver)
+			DOM.on(this, 'mouseMove', this.onMouseMove, this);
+
+		if(headersScroller != null) {
+			DOM.on(window, 'resize', this.onResize, this);
+			DOM.on(totalsScroller, 'scroll', this.onScroll, this);
+			DOM.on(itemsScroller, 'scroll', this.onScroll, this);
 		}
 	},
 
 	afterRender: function() {
-		this.callParent();
+		Z8.Component.prototype.afterRender.call(this);
 
 		if(!this.manualItemsRendering) {
 			var item = this.getCurrentItem() || (this.autoSelectFirst ? 0 : null);
@@ -529,6 +535,11 @@ Z8.define('Z8.list.List', {
 	},
 
 	onDestroy: function() {
+		this.startEditTask.destroy();
+
+		DOM.un(this, 'focus', this.onFocusIn, this, true);
+		DOM.un(this, 'blur', this.onFocusOut, this, true);
+
 		DOM.un(this, 'keyDown', this.onKeyDown, this);
 		DOM.un(this, 'mouseMove', this.onMouseMove, this);
 
@@ -540,7 +551,7 @@ Z8.define('Z8.list.List', {
 
 		Component.destroy(this.editors);
 
-		this.callParent();
+		Z8.Component.prototype.onDestroy.call(this);
 
 		this.itemsScroller = this.headersScroller = this.totalsScroller = null;
 		this.headersTable = this.headerCols = this.filter = this.totalsTable = null;
@@ -816,10 +827,10 @@ Z8.define('Z8.list.List', {
 	getIndex: function(value) {
 		var ordinals = this.getOrdinals();
 
-		if(value instanceof Z8.list.Item) {
-			var index = ordinals[value.getValue()];
-			return index != null ? index : -1;
-		}
+		if(value instanceof Z8.list.Item)
+			value = value.getValue();
+		else if(value != null && value.isModel)
+			value = value.id;
 
 		index = ordinals[value];
 		return index != null ? index : -1;
@@ -989,7 +1000,7 @@ Z8.define('Z8.list.List', {
 	onContentChange: function() {
 		this.fireEvent('contentChange', this);
 	},
-	
+
 	clear: function() {
 		Component.destroy(this.items);
 		this.items = this.fragments = [];
@@ -1025,7 +1036,7 @@ Z8.define('Z8.list.List', {
 	},
 
 	setTabIndex: function(tabIndex) {
-		tabIndex = this.callParent(tabIndex);
+		tabIndex = Z8.Component.prototype.setTabIndex.call(this, tabIndex);
 
 		var item = this.getCurrentItem();
 
@@ -1177,6 +1188,7 @@ Z8.define('Z8.list.List', {
 			item = this.getItem(item.id);
 
 		this.selectItem(item, true);
+		return item;
 	},
 
 	onMouseMove: function(event, target) {
@@ -1188,11 +1200,17 @@ Z8.define('Z8.list.List', {
 			this.selectItem(item, true);
 	},
 
+	onEscape: function() {
+		return false;
+	},
+
 	onKeyDown: function(event, target) {
 		var key = event.getKey();
 
-		if(this.isEditing() || this.isFiltering() && key != Event.ESC)
+		if(this.isEditing() || this.isFiltering() && key != Event.DOWN && key != Event.ESC) {
+			console.log(event);
 			return;
+		}
 
 		var item = this.getCurrentItem();
 
@@ -1208,13 +1226,16 @@ Z8.define('Z8.list.List', {
 		} else if(key == Event.END) {
 			if(this.focus('last'))
 				event.stopEvent();
-		} else if(key == Event.F && event.ctrlKey && this.filter != null) {
-			this.showQuickFilter(true);
+		} else if(key == Event.F && event.ctrlKey && (this.filter || this.filterable)) {
+			this.showFilter();
 			event.stopEvent();
-		} else if(key == Event.ESC && this.filterVisible) {
-			this.showQuickFilter(false);
-			this.focus(item);
-			event.stopEvent();
+		} else if(key == Event.ESC) {
+			if(this.filterOpen) {
+				this.hideFilter();
+				this.focus(item);
+				event.stopEvent();
+			} else if(this.onEscape())
+				event.stopEvent();
 		} else if(key == Event.LEFT && item != null) {
 			if(item.isExpanded()) {
 				if(item.hasChildren()) {
@@ -1230,12 +1251,22 @@ Z8.define('Z8.list.List', {
 			this.onItemClick(item, -1);
 			event.stopEvent();
 		} else if((key == Event.ENTER && this.enterToEdit || key == Event.F2) && item != null) {
-			this.onItemStartEdit(item);
+			this.startEdit(item);
 			event.stopEvent();
 		} else if(key == Event.SPACE && item != null) {
 			event.stopEvent();
 			this.onItemToggle(item);
 		}
+	},
+
+	onFocusIn: function(event, target) {
+		DOM.addCls(this, 'focus');
+		this.setFocused(true);
+	},
+
+	onFocusOut: function(event, target) {
+		DOM.removeCls(this, 'focus');
+		this.setFocused(false);
 	},
 
 	onItemToggle: function(item) {
@@ -1249,14 +1280,12 @@ Z8.define('Z8.list.List', {
 
 		var top = dom.offsetTop;
 		var bottom = top + dom.offsetHeight;
+		var pageHeight = this.itemsScroller.clientHeight;
 		var scrollTop = this.itemsScroller.scrollTop;
-		var scrollBottom = scrollTop + this.itemsScroller.clientHeight;
+		var scrollBottom = scrollTop + pageHeight;
 
 		if(top < scrollTop || scrollBottom < bottom)
-			DOM.scrollIntoView(item, true);
-
-		if(scrollBottom < bottom)
-			DOM.scrollIntoView(item, false);
+			this.itemsScroller.scrollTop = Math.max((top  + bottom) / 2 - pageHeight / 2, 0);
 	},
 
 	onScroll: function(event, target) {
@@ -1275,7 +1304,7 @@ Z8.define('Z8.list.List', {
 		if(this.isActive() == active)
 			return;
 
-		this.callParent(active);
+		Z8.Component.prototype.setActive.call(this, active);
 
 		this.adjustAutoFit();
 	},
@@ -1368,6 +1397,16 @@ Z8.define('Z8.list.List', {
 
 		search.setBusy(true);
 		this.store.quickFilter(qiuckFilter, { fn: callback, scope: this });
+	},
+
+	showFilter: function() {
+		this.filterOpen = true;
+		this.showQuickFilter(true);
+	},
+
+	hideFilter: function() {
+		this.filterOpen = false;
+		this.showQuickFilter(false);
 	},
 
 	showQuickFilter: function(show, silent) {
@@ -1465,11 +1504,18 @@ Z8.define('Z8.list.List', {
 		this.fireEvent('itemClick', this, item, index);
 	},
 
+	onItemContextMenu: function(item, index) {
+		if(this.selectOnRightClick)
+			this.setSelection(item);
+		this.fireEvent('itemContextMenu', this, item, index);
+	},
+
 	onIconClick: function(item) {
 		this.fireEvent('iconClick', this, item);
 	},
 
 	onItemDblClick: function(item, index) {
+		this.startEditTask.cancel();
 		this.fireEvent('itemDblClick', this, item, index);
 	},
 
@@ -1637,6 +1683,15 @@ Z8.define('Z8.list.List', {
 		return -1;
 	},
 
+	getDefaultEditor: function(editor) {
+		if(editor != null && editor.isComponent)
+			return editor;
+
+		var index = editor;
+		index = index == null || index == -1 ? this.lastEditedColumn || this.getFirstEditorIndex() : index;
+		return index != -1 ? this.editors[index] : null;
+	},
+
 	onItemFollowLink: function(item, index) {
 		var field = this.fields[index];
 		var link = field.link;
@@ -1650,71 +1705,58 @@ Z8.define('Z8.list.List', {
 		return false;
 	},
 
-	onItemStartEdit: function(item, index) {
-		var record = item.record;
-		if(record != null && !record.isEditable())
-			return false;
-
-		if(index == null)
-			index = this.lastEditedColumn;
-
-		if(index == null)
-			index = this.getFirstEditorIndex();
-
-		if(index == -1)
-			return false;
-
-		var editor = this.editors[index];
-
-		if(editor == null)
-			return false;
-
-		return this.editable ? this.startEdit(item, editor) : false;
-	},
-
 	isEditing: function() {
 		return this.currentEditor != null;
 	},
 
 	canStartEdit: function(item, editor) {
-		return item.record.isEditable();
+		if(!this.editable || item.record == null || !item.record.isEditable())
+			return false;
+		return this.getDefaultEditor(editor) != null;
 	},
 
 	startEdit: function(item, editor) {
 		if(!this.canStartEdit(item, editor))
 			return false;
 
+		this.startEditTask.cancel();
+
 		if(this.finishing) {
 			this.editingQueue = { item: item, editor: editor };
-			return true;
+			return;
 		}
 
-		var record = item.record;
-		var value = record.get(editor.name);
-		var displayValue = record.get(editor.displayName);
+		var startEditCallback = function(item, editor) {
+			editor = this.getDefaultEditor(editor);
 
-		editor.initValue(value, displayValue);
-		editor.setRecord(record);
-		editor.item = item;
+			var record = item.record;
+			var value = record.get(editor.name);
+			var displayValue = record.get(editor.displayName);
 
-		this.openEditor(editor);
-		this.currentEditor = editor;
+			editor.initValue(value, displayValue);
+			editor.setRecord(record);
+			editor.item = item;
+
+			this.openEditor(editor, true);
+			this.currentEditor = editor;
+		};
+
+		this.startEditTask.delay(300, startEditCallback, this, item, editor);
 
 		if(item != this.getCurrentItem())
 			this.selectItem(item);
-
-		return true;
 	},
 
-	openEditor: function(editor) {
+	openEditor: function(editor, selectContent) {
 		var cell = editor.item.getCell(editor.index);
 		editor.appendTo(cell);
 
 		editor.show();
+		DOM.addCls(cell, 'edit');
 
 		editor.on('focusOut', this.onEditorFocusOut, this);
 		DOM.on(editor, 'keyDown', this.onEditorKeyDown, this);
-		editor.focus(true);
+		editor.focus(selectContent);
 	},
 
 	closeEditor: function(editor, focus) {
@@ -1724,13 +1766,15 @@ Z8.define('Z8.list.List', {
 		DOM.un(editor, 'keyDown', this.onEditorKeyDown, this);
 
 		editor.hide();
+		DOM.removeCls(editor.item.getCell(editor.index), 'edit');
 
 		if(focus)
 			this.focus();
 	},
 
 	cancelEdit: function(editor) {
-		this.finishEdit(editor, null, true);
+		if(editor = editor || this.currentEditor)
+			this.finishEdit(editor, null, true);
 	},
 
 	finishEdit: function(editor, next, cancel) {

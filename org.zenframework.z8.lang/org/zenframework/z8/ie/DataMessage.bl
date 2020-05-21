@@ -32,4 +32,11 @@ public class DataMessage extends Message {
 
 	public void addRule(guid recordId, Field field, ImportPolicy policy);
 	public void addRule(guid recordId, Field[] fields, ImportPolicy policy);
+	
+	public void setExportAll(bool exportAll);
+	public bool isExportAll();
+	
+	public guid[] getRecords(Table table);
+	
+	virtual protected void onMerge(Table source, Table target);
 }

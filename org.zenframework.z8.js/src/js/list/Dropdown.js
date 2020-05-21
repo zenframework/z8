@@ -12,20 +12,20 @@ Z8.define('Z8.list.Dropdown', {
 	autoAlign: true,
 
 	createItem: function(record) {
-		var item = this.callParent(record);
+		var item = Z8.list.List.prototype.createItem.call(this, record);
 		item.follow = false;
 		return item;
 	},
 
 	render: function(container) {
 		if(!this.inRender) {
-			this.callParent(container);
+			Z8.list.List.prototype.render.call(this, container);
 			this.renderItems();
 		}
 	},
 
 	renderItems: function() {
-		var justRendered = this.callParent();
+		var justRendered = Z8.list.List.prototype.renderItems.call(this);
 		this.needAlign = this.needAlign || justRendered;
 
 		if(this.visible && this.needAlign && !this.inShow) {
@@ -38,7 +38,7 @@ Z8.define('Z8.list.Dropdown', {
 	},
 
 	setTabIndex: function(tabIndex) {
-		tabIndex = this.callParent(tabIndex);
+		tabIndex = this.Z8.list.List.prototype.setTabIndex.call(this, tabIndex);
 
 		var items = this.getItems();
 
@@ -72,7 +72,7 @@ Z8.define('Z8.list.Dropdown', {
 
 		var wasVisible = this.visible;
 
-		this.callParent();
+		Z8.list.List.prototype.show.call(this);
 		this.setActive(true);
 
 		if(!wasVisible)
@@ -88,7 +88,7 @@ Z8.define('Z8.list.Dropdown', {
 
 	align: function() {
 		DOM.setBottom(this, 'auto');
-		this.callParent();
+		Z8.list.List.prototype.align.call(this);
 	},
 
 	alignAdjust: function() {
@@ -108,12 +108,12 @@ Z8.define('Z8.list.Dropdown', {
 		if(!this.isVisible())
 			return;
 
-		this.callParent();
-		this.setActive(false);
+		this.fireEvent('hide', this);
 
+		this.setActive(false);
 		this.selectItem(null);
 
-		this.fireEvent('hide', this);
+		Z8.list.List.prototype.hide.call(this);
 	},
 
 	toggle: function() {
@@ -122,7 +122,7 @@ Z8.define('Z8.list.Dropdown', {
 
 	setSelection: function(item) {
 		this.hide();
-		this.callParent(item);
+		Z8.list.List.prototype.setSelection.call(this, item);
 	},
 
 	onCancel: function() {
@@ -139,6 +139,6 @@ Z8.define('Z8.list.Dropdown', {
 			return;
 		}
 
-		this.callParent(event, target);
+		Z8.list.List.prototype.onKeyDown.call(this, event, target);
 	}
 });

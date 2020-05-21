@@ -1,13 +1,20 @@
 Z8.define('Z8.form.field.SearchText', {
 	extend: 'Z8.form.field.Text',
 
-	triggers: [{ icon: 'fa-search' }],
+	triggers: { icon: '' },
+
+	confirm: true,
 
 	searchPending: false,
 	lastSearchValue: '',
 
-	initComponent: function() {
-		this.callParent();
+	constructor: function(config) {
+		config = config || {};
+		config.confirm = config.confirm !== false;
+		config.searchIcon =  config.searchIcon || 'fa-search';
+		config.clearIcon = config.clearIcon || 'fa-times';
+
+		Z8.form.field.Text.prototype.constructor.call(this, config);
 	},
 
 	isValid: function() {
@@ -15,11 +22,11 @@ Z8.define('Z8.form.field.SearchText', {
 	},
 
 	getValue: function() {
-		return this.callParent() || '';
+		return Z8.form.field.Text.prototype.getValue.call(this) || '';
 	},
 
 	completeRender: function() {
-		this.callParent();
+		Z8.form.field.Text.prototype.completeRender.call(this);
 		this.updateTrigger();
 	},
 
@@ -33,29 +40,44 @@ Z8.define('Z8.form.field.SearchText', {
 		if(trigger.isBusy())
 			return;
 
-		trigger.setIcon(this.searchPending || this.lastSearchValue == '' ? 'fa-search' : 'fa-times');
-		trigger.setEnabled(this.searchPending || this.lastSearchValue != '');
+		if(this.confirm) {
+			trigger.setIcon(this.searchPending || this.lastSearchValue == '' ? this.searchIcon : this.clearIcon);
+			trigger.setEnabled(this.searchPending || this.lastSearchValue != '');
+		} else
+			trigger.setIcon(this.clearIcon);
 	},
 
 	onInput: function(event, target) {
-		this.callParent(event, target);
+		Z8.form.field.Text.prototype.onInput.call(this, event, target);
 
 		var value = this.getValue();
 
-		this.searchPending = value != this.lastSearchValue;
-		this.updateTrigger();
+		if(this.confirm) {
+			this.searchPending = value != this.lastSearchValue;
+			this.updateTrigger();
+		} else
+			this.search();
+	},
+
+	show: function(show) {
+		Z8.form.field.Text.prototype.show.call(this, show);
+		this.reset('');
 	},
 
 	search: function() {
 		if(!this.getTrigger().isEnabled())
 			return;
 
-		if(!this.searchPending)
+		if(this.confirm && !this.searchPending)
 			this.setValue('');
 
 		var value = this.lastSearchValue = this.getValue();
 		this.searchPending = false;
 		this.updateTrigger();
+
+		if(this.searchHandler != null)
+			Z8.callback(this.searchHandler, this.scope, this, value);
+
 		this.fireEvent('search', this, value);
 	},
 
@@ -74,27 +96,38 @@ Z8.define('Z8.form.field.SearchText', {
 		return true;
 	},
 
+	cancel: function() {
+		this.setValue('');
+
+		if(this.cancelHandler != null)
+			Z8.callback(this.cancelHandler, this.scope, this);
+
+		this.fireEvent('cancel', this);
+
+		return true;
+	},
+
 	onTriggerClick: function(trigger) {
-		this.search();
+		this.confirm ? this.search() : this.cancel();
 	},
 
 	onKeyEvent: function(event, target) {
 		var key = event.getKey();
 
-		if(key == Event.ENTER)
-			this.search();
-		else if(key == Event.ESC)
-			return this.clear();
-		else {
-			this.fireEvent('keyDown', this, event, target);
-			return false;
+		switch(key) {
+		case Event.ENTER:
+			if(this.confirm)
+				this.search();
+			return true;
+		case Event.ESC:
+			return this.confirm || this.getValue() != '' ? this.clear() : this.cancel();
 		}
 
-		return true;
+		return false;
 	},
 
 	reset: function() {
-		this.callParent();
+		Z8.form.field.Text.prototype.reset.call(this);
 		this.searchPending = false;
 		this.lastSearchValue = '';
 		this.updateTrigger();

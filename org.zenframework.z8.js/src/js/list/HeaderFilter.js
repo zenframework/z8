@@ -9,8 +9,8 @@ Z8.define('Z8.list.HeaderFilter', {
 	*
 	*/
 
-	initComponent: function() {
-		this.callParent();
+	getCls: function() {
+		return Z8.Component.prototype.getCls.call(this).pushIf('column');
 	},
 
 	subcomponents: function() {
@@ -25,8 +25,9 @@ Z8.define('Z8.list.HeaderFilter', {
 		switch(field.type) {
 		case Type.String:
 		case Type.Text:
-			searchBox = new Z8.form.field.SearchText({ field: field, placeholder: field.header });
+			searchBox = new Z8.form.field.SearchText({ field: field, placeholder: field.header, confirmSearch: this.confirmSearch, searchIcon: this.searchIcon, clearIcon: this.clearIcon  });
 			searchBox.on('search', this.onSearch, this);
+			searchBox.on('cancel', this.onCancel, this);
 			searchBox.on('focusIn', this.onFocusIn, this);
 			searchBox.on('focusOut', this.onFocusOut, this);
 			searchBox.on('keyDown', this.onKeyDown, this);
@@ -35,8 +36,7 @@ Z8.define('Z8.list.HeaderFilter', {
 
 		this.searchBox = searchBox;
 
-		var cls = DOM.parseCls(this.cls).pushIf('column').join(' ');
-		return { tag: 'td', id: this.getId(), cls: cls, tabIndex: this.getTabIndex(), cn: searchBox != null ? [searchBox.htmlMarkup()] : [] };
+		return { tag: 'td', id: this.getId(), cls: this.getCls().join(' '), tabIndex: this.getTabIndex(), cn: searchBox != null ? [searchBox.htmlMarkup()] : [] };
 	},
 
 	focus: function() {
@@ -51,6 +51,10 @@ Z8.define('Z8.list.HeaderFilter', {
 
 	onSearch: function(control, value) {
 		this.list.onHeaderFilter(this, value);
+	},
+
+	onCancel: function(control) {
+		this.list.onHeaderFilterCancel(this);
 	},
 
 	getFilter: function() {

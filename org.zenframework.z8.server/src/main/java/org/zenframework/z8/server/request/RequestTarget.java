@@ -1,9 +1,11 @@
 package org.zenframework.z8.server.request;
 
+import java.util.Collection;
 import java.util.Map;
 
 import org.zenframework.z8.server.engine.ApplicationServer;
 import org.zenframework.z8.server.json.JsonWriter;
+import org.zenframework.z8.server.types.file;
 import org.zenframework.z8.server.types.string;
 
 public abstract class RequestTarget implements IRequestTarget {
@@ -37,6 +39,10 @@ public abstract class RequestTarget implements IRequestTarget {
 
 	public String getParameter(string key) {
 		return request().getParameter(key);
+	}
+
+	public Collection<file> getFiles() {
+		return request().getFiles();
 	}
 
 	@Override

@@ -3,18 +3,17 @@ Z8.define('Z8.form.field.Html', {
 
 	scrollable: true,
 
-	initComponent: function() {
-		this.callParent();
+	getCls: function() {
+		return Z8.form.field.Control.prototype.getCls.call(this).pushIf('html');
 	},
 
 	controlMarkup: function() {
-		var cls = DOM.parseCls(this.cls).pushIf('control', 'html-text');
-		return [{ tag: 'div', cls: cls.join(' '), tabIndex: this.getTabIndex(), html: this.getValue() }];
+		return [{ tag: 'div', cls: 'control', tabIndex: this.getTabIndex(), html: this.getValue() }];
 	},
 
 	completeRender: function() {
 		this.callParent();
-		this.div = this.selectNode('.html-text');
+		this.div = this.selectNode('.control');
 	},
 
 	onDestroy: function() {

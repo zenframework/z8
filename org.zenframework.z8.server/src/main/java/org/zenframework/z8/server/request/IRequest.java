@@ -3,6 +3,7 @@ package org.zenframework.z8.server.request;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -17,7 +18,7 @@ import org.zenframework.z8.server.types.string;
 public abstract class IRequest {
 	abstract public Map<string, string> getParameters();
 
-	abstract public List<file> getFiles();
+	abstract public Collection<file> getFiles();
 
 	private List<EventsLevel> levels = new ArrayList<EventsLevel>();
 	private RequestTarget target;

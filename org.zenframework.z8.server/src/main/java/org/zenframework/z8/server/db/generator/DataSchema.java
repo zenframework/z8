@@ -26,6 +26,7 @@ public class DataSchema {
 			collectSqlServerColumns(tables, tablePattern);
 			break;
 		case Postgres:
+		case H2:
 			collectPostgresColumns(tables);
 			break;
 		default:
@@ -91,6 +92,7 @@ public class DataSchema {
 	}
 
 	static private void collectPostgresColumns(Map<String, TableDescription> tables) throws SQLException {
+		DatabaseVendor vendor = ConnectionManager.vendor();
 		String sql = 
 			"SELECT " + 
 				"table_name, " +
@@ -119,10 +121,10 @@ public class DataSchema {
 			boolean nullable = cursor.getBoolean(6).get();
 			String defaultValue = cursor.getString(7).get().replace("::" + typeName, "");
 
-			if(FieldType.Date.vendorType(DatabaseVendor.Postgres).equals(typeName))
+			if(FieldType.Date.vendorType(vendor).equals(typeName))
 				defaultValue = defaultValue.replace("::text", "").replace(", ", ",");
 
-			if(FieldType.Text.vendorType(DatabaseVendor.Postgres).equals(typeName) && defaultValue.isEmpty())
+			if(FieldType.Text.vendorType(vendor).equals(typeName) && defaultValue.isEmpty())
 				defaultValue = "null";
 
 			tables.get(tableName).addField(new Column(fieldName, typeName, length, scale, nullable, defaultValue));
@@ -168,21 +170,19 @@ public class DataSchema {
 		String sql;
 
 		switch(ConnectionManager.vendor()) {
-		case Oracle: {
+		case Oracle:
 			sql = "SELECT TO_NCHAR(pkCols.CONSTRAINT_NAME)," + "  TO_NCHAR(pkCols.TABLE_NAME)," + "  TO_NCHAR(pkCols.COLUMN_NAME)" + " FROM user_constraints pk," + "  user_cons_columns pkCols" + " WHERE pk.constraint_type = 'P'"
 					+ "  AND pk.CONSTRAINT_NAME     =pkCols.CONSTRAINT_NAME" + "  AND lower(pkCols.TABLE_NAME) LIKE lower('" + tableLike + "')" + " ORDER BY pkCols.TABLE_NAME," + "  pkCols.POSITION";
 			break;
-		}
-		case SqlServer: {
+		case SqlServer:
 			sql = "select " + "CAST(pk.CONSTRAINT_NAME as nvarchar(255)), " + "CAST(pk.TABLE_NAME as nvarchar(255)), " + "CAST(pkCols.COLUMN_NAME as nvarchar(255)) " + "from " + "INFORMATION_SCHEMA.TABLE_CONSTRAINTS pk, " + "INFORMATION_SCHEMA.KEY_COLUMN_USAGE pkCols " + "where "
 					+ "pk.CONSTRAINT_NAME = pkCols.CONSTRAINT_NAME and " + "pk.CONSTRAINT_TYPE = 'PRIMARY KEY' and " + "lower(pk.TABLE_NAME) like lower('" + tableLike + "')" + "order by " + "pk.TABLE_NAME, pkcols.ORDINAL_POSITION";
 			break;
-		}
-		case Postgres: {
+		case Postgres:
+		case H2:
 			sql = "select " + "keys.constraint_name, " + "keys.table_name, " + "cols.column_name " + "from " + "information_schema.table_constraints keys, " + "information_schema.key_column_usage cols " + "where " + "keys.constraint_name = cols.constraint_name and "
 					+ "keys.constraint_type = 'PRIMARY KEY' and " + "keys.constraint_schema = '" + ConnectionManager.database().schema() + "'" + "order by " + "keys.table_name, cols.ordinal_position";
 			break;
-		}
 		default:
 			throw new UnknownDatabaseException();
 		}
@@ -212,21 +212,19 @@ public class DataSchema {
 		String sql;
 
 		switch(ConnectionManager.vendor()) {
-		case Oracle: {
+		case Oracle:
 			sql = "SELECT TO_NCHAR(a.INDEX_NAME) INDEX_NAME, TO_NCHAR(a.TABLE_NAME) TABLE_NAME, TO_NCHAR(a.COLUMN_NAME) COLUMN_NAME" + "  FROM user_ind_columns a ," + " (SELECT a.INDEX_NAME" + "    FROM user_indexes a" + "   WHERE UNIQUENESS = '"
 					+ (unique ? "UNIQUE" : "NONUNIQUE") + "'" + " AND lower(a.table_name) LIKE lower('" + tableLike + "')" + " ) b" + " WHERE a.INDEX_NAME = b.INDEX_NAME" + " AND NOT EXISTS" + "  (SELECT 0" + "     FROM user_constraints pk" + "    WHERE pk.constraint_type = 'P'"
 					+ "  AND pk.CONSTRAINT_NAME    =a.INDEX_NAME" + "  )" + " ORDER BY a.INDEX_NAME," + "  a.COLUMN_POSITION";
 			break;
-		}
 
-		case SqlServer: {
+		case SqlServer:
 			sql = "SELECT " + "CAST(idx.name as nvarchar(255)) IndexName, " + "CAST(object_name(idx_cols.object_id) as nvarchar(255)) TableName, " + "CAST(cols.name as nvarchar(255)) ColName " + "FROM " + "sys.indexes idx, " + "sys.index_columns idx_cols, " + "sys.columns cols "
 					+ "WHERE " + "idx.index_id = idx_cols.index_id and " + "idx.object_id = idx_cols.object_id and " + "idx_cols.object_id = cols.object_id and " + "idx_cols.column_id = cols.column_id and " + "idx.is_primary_key = 0" + "idx.is_unique = " + (unique ? 1 : 0)
 					+ " and " + "lower(object_name(idx_cols.object_id)) LIKE lower('" + tableLike + "') " + "ORDER BY " + "TableName, IndexName, idx_cols.index_column_id";
 			break;
-		}
 
-		case Postgres: {
+		case Postgres:
 			sql =
 				"select " + "indexes.relname as index, " + "max(tables.relname) as table, " + "max(columns.attname) as column " + 
 					"from " +
@@ -236,9 +234,12 @@ public class DataSchema {
 						"columns.attnum > 0 and (columns.attnum = ANY(root.indkey) or root.indkey = '0' and root.indexprs is not null) and  tables.relkind = 'r' and " +
 						"root.indisunique = '" + (unique ? "t" : "f") + "' and not root.indisprimary and owners.nspname = '" + ConnectionManager.database().schema() + "' " +
 					"group by index";
-
 			break;
-		}
+
+		case H2:
+			sql = "SELECT INDEX_NAME, TABLE_NAME, COLUMN_NAME FROM INFORMATION_SCHEMA.INDEXES"
+					+ " WHERE " + (unique ? "NOT" : "") + " NON_UNIQUE AND CONSTRAINT_NAME IS NULL";
+			break;
 
 		default:
 			throw new UnknownDatabaseException();
@@ -286,6 +287,12 @@ public class DataSchema {
 			sql = "select " + "pk.table_name, " + "pk.column_name, " + "fk.table_name, " + "fk.column_name, " + "fk.constraint_name " + "from " + "information_schema.key_column_usage fk, " + "information_schema.referential_constraints refc, "
 					+ "information_schema.key_column_usage pk " + "where " + "fk.constraint_name = refc.constraint_name and " + "refc.unique_constraint_name = pk.constraint_name and " + "fk.constraint_schema = '" + ConnectionManager.database().schema() + "'";
 			break;
+
+		case H2:
+			sql = "select pktable_name, pkcolumn_name, fktable_name, fkcolumn_name, fk_name from information_schema.cross_references"
+					+ " where fktable_schema = '" + ConnectionManager.database().schema() + "'";
+			break;
+
 		default:
 			throw new UnknownDatabaseException();
 		}

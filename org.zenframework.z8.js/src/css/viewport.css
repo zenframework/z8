@@ -38,9 +38,6 @@ body {
 	box-shadow: 0 3px 6px rgba(0, 0, 0, 0.100);
 }
 
-.viewport>.header>.text {
-}
-
 .viewport>.login>.row:last-child>.cell {
 	flex-flow: row-reverse;
 }
@@ -51,16 +48,16 @@ body {
 	padding: .57142857em .57142857em;
 }
 
-.viewport>.header>.btn-tool:not(:hover):not(:focus):not(:active):not(.focus):not(.active),
-.viewport>.header>.btn-group>.btn-tool:not(:hover):not(:focus):not(:active):not(.focus):not(.active),
-.viewport>.login .btn-tool:not(:hover):not(:focus):not(:active):not(.focus):not(.active) {
+.viewport>.header>.btn-tool:not(:hover):not(:focus):not(.active),
+.viewport>.header>.btn-group>.btn-tool:not(:hover):not(:focus):not(.active),
+.viewport>.login .btn-tool:not(:hover):not(:focus):not(.active) {
 	color: #eee;
 }
 
 .viewport>.body {
 	position: absolute;
 	top: 2.85714286em;
-	left: .71428571em;
+	left: 0;
 	right: 0;
 	bottom: 0;
 }

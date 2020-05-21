@@ -13,6 +13,7 @@ import org.zenframework.z8.server.exceptions.AccessRightsViolationException;
 import org.zenframework.z8.server.json.JsonWriter;
 import org.zenframework.z8.server.json.parser.JsonArray;
 import org.zenframework.z8.server.json.parser.JsonObject;
+import org.zenframework.z8.server.types.file;
 import org.zenframework.z8.server.types.guid;
 
 public class UpdateAction extends RequestAction {
@@ -59,6 +60,9 @@ public class UpdateAction extends RequestAction {
 		Collection<guid> result = new ArrayList<guid>();
 
 		Query contextQuery = getContextQuery();
+
+		Collection<file> files = request().getFiles();
+
 		for(int index = 0; index < records.length(); index++) {
 			JsonObject record = (JsonObject)records.get(index);
 
@@ -69,7 +73,7 @@ public class UpdateAction extends RequestAction {
 				Field field = contextQuery.findFieldById(fieldId);
 
 				if(field != null) {
-					QueryUtils.setFieldValue(field, record.getString(fieldId));
+					QueryUtils.setFieldValue(field, record.getString(fieldId), files);
 
 					Query fieldOwner = field.owner();
 					if(fieldOwner == owner)

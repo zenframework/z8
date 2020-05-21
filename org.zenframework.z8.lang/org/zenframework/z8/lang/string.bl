@@ -4,6 +4,7 @@ public final class string extends primary {
 
 	public operator exception();
 	public operator binary();
+	public operator file();
 
 	public string operator + (string value);
 

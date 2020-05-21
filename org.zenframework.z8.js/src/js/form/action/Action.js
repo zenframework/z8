@@ -4,6 +4,7 @@ Z8.define('Z8.form.action.Action', {
 	mixins: ['Z8.form.field.Field'],
 
 	isAction: true,
+	push: true,
 
 	constructor: function(config) {
 		this.callParent(config);
@@ -14,11 +15,6 @@ Z8.define('Z8.form.action.Action', {
 			this.handler = action.handler || this.handler || this.onAction;
 			this.scope = action.scope || this.scope || this;
 		}
-	},
-
-	initComponent: function() {
-		this.callParent();
-		this.cls = DOM.parseCls(this.cls).pushIf('action');
 	},
 
 	isValid: function() {
@@ -47,7 +43,7 @@ Z8.define('Z8.form.action.Action', {
 		this.runAction();
 	},
 
-	runAction: function() {
+	runAction: function(callback) {
 		if(!this.isBusy())
 			this.setBusy(true);
 
@@ -63,12 +59,13 @@ Z8.define('Z8.form.action.Action', {
 			parameters: action.parameters
 		};
 
-		var callback = function(response, success) {
+		var sendCallback = function(response, success) {
 			this.setBusy(false);
 			this.onActionComplete(record, response, success);
+			Z8.callback(callback, response, success);
 		};
 
-		HttpRequest.send(params, { fn: callback, scope: this });
+		HttpRequest.send(params, { fn: sendCallback, scope: this });
 	},
 
 	onActionComplete: function(record, response, success) {

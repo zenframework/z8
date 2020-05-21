@@ -1,5 +1,6 @@
 Z8.define('Z8.list.Header', {
 	extend: 'Z8.list.HeaderBase',
+	shortClassName: 'ListHeader',
 
 	/*
 	* config:
@@ -7,6 +8,14 @@ Z8.define('Z8.list.Header', {
 	* field: {},
 	*
 	*/
+
+	statics: {
+		NumericSort09IconCls: 'fa fa-fw fa-sort-numeric-asc',
+		NumericSort90IconCls: 'fa fa-fw fa-sort-numeric-desc',
+		AlphaSortAZIconCls: 'fa fa-fw fa-sort-alpha-asc',
+		AlphaSortZAIconCls: 'fa fa-fw fa-sort-alpha-desc',
+		FilterIconCls: 'fa fa-fw fa-filter'
+	},
 
 	initComponent: function() {
 		this.callParent();
@@ -79,11 +88,9 @@ Z8.define('Z8.list.Header', {
 		var text = String.htmlText(this.text);
 		text = { cls: 'text', cn: icon != null ? [icon, text] : [text] } ;
 
-		var cls = this.getCls().join(' ');
-
 		var leftHandle = { cls: 'resize-handle-left' };
 		var rightHandle = { cls: 'resize-handle-right' };
-		return { tag: 'td', id: this.getId(), cls: cls, tabIndex: this.getTabIndex(), cn: [leftHandle, text, sort, filter, rightHandle], title: this.title };
+		return { tag: 'td', id: this.getId(), cls: this.getCls().join(' '), tabIndex: this.getTabIndex(), cn: [leftHandle, text, sort, filter, rightHandle], title: this.title };
 	},
 
 	completeRender: function() {
@@ -112,12 +119,14 @@ Z8.define('Z8.list.Header', {
 	},
 
 	getCls: function() {
-		var cls = this.cls = DOM.parseCls(this.cls).pushIf('column');
+		var cls = Z8.list.HeaderBase.prototype.getCls.call(this);
+
 		if(this.sortDirection != null)
 			cls.pushIf('sort');
 		if(this.filtered)
 			cls.pushIf('filter');
-		return cls;
+
+		return cls.pushIf('column');
 	},
 
 	setBusy: function(busy) {
@@ -136,19 +145,15 @@ Z8.define('Z8.list.Header', {
 		if(direction == null)
 			return 'display-none';
 
-		var icon = 'fa-sort-';
-
 		switch(this.field.type) {
 		case Type.Date:
 		case Type.Datetime:
 		case Type.Integer:
 		case Type.Float:
-			icon += 'numeric-';
-			break;
+			return direction == 'asc' ? ListHeader.NumericSort09IconCls : ListHeader.NumericSort90IconCls;
 		default:
-			icon += 'alpha-';
+			return direction == 'asc' ? ListHeader.AlphaSortAZIconCls : ListHeader.AlphaSortZAIconCls;
 		}
-		return icon + direction;
 	},
 
 	getSort: function() {
@@ -157,21 +162,19 @@ Z8.define('Z8.list.Header', {
 
 	setSort: function(direction) {
 		this.sortDirection = direction;
-		var cls = this.sortCls = DOM.parseCls(this.getSortIcon()).pushIf('fa', 'fa-fw', 'sort');
+		var cls = DOM.parseCls(this.getSortIcon()).pushIf('sort', 'icon');
 		DOM.setCls(this.sortElement, cls);
-		DOM.swapCls(this, direction != null, 'sort');
 		return cls;
 	},
 
 	getFilterIcon: function() {
-		return this.filtered ? 'fa-filter' : 'display-none';
+		return this.filtered ? ListHeader.FilterIconCls : 'display-none';
 	},
 
 	setFilter: function(filtered) {
 		this.filtered = filtered;
-		var cls = this.filterCls = DOM.parseCls(this.getFilterIcon()).pushIf('fa', 'fa-fw', 'filter');
+		var cls = DOM.parseCls(this.getFilterIcon()).pushIf('filter', 'icon');
 		DOM.setCls(this.filterElement, cls);
-		DOM.swapCls(this, filtered, 'filter');
 		return cls; 
 	},
 

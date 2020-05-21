@@ -88,6 +88,7 @@ abstract public class HubServer extends RmiServer implements IHubServer {
 		saveServers();
 	}
 
+	@SuppressWarnings("unlikely-arg-type")
 	protected IServerInfo findServer(IApplicationServer server) {
 		for(IServerInfo existing : getServers()) {
 			if(existing.equals(server))
@@ -98,12 +99,12 @@ abstract public class HubServer extends RmiServer implements IHubServer {
 	}
 
 	abstract protected File cacheFile();
-	
+
 	private void saveServers() {
 		File cacheFile = cacheFile();
 		if (cacheFile == null)
 			return;
-		
+
 		try {
 			OutputStream file = new FileOutputStream(cacheFile);
 			ObjectOutputStream out = new ObjectOutputStream(file);

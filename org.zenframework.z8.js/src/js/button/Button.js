@@ -1,11 +1,14 @@
 Z8.define('Z8.button.Button', {
 	extend: 'Z8.Component',
+	shortClassName: 'Button',
 
 	tabIndex: 0,
 
 	text: '',
 	icon: null,
+	activeIcon: null,
 
+	push: false,
 	primary: false,
 	danger: false,
 	success: false,
@@ -17,6 +20,10 @@ Z8.define('Z8.button.Button', {
 
 	toggle: false,
 	toggled: null,
+	toggledIcon: null,
+
+	bubbleClick: false,
+
 	vertical: false,
 
 	busy: false,
@@ -26,14 +33,20 @@ Z8.define('Z8.button.Button', {
 
 	iconTag: 'i',
 
+	statics: {
+		BusyIconCls: 'fa-circle-o-notch fa-spin',
+		TriggerIconCls: 'fa-caret-down'
+	},
+
 	initComponent: function() {
 		this.callParent();
 	},
 
 	htmlMarkup: function() {
 		this.setIcon(this.icon);
+		this.setActiveIcon(this.activeIcon);
 
-		this.toggle = this.toggle || this.toggled != null;
+		this.toggle = this.toggle || this.toggled != null || this.toggleHandler != null;
 		this.split = this.split || this.menu && this.trigger !== false;
 
 		var iconCls = this.getIconCls().join(' ');
@@ -59,13 +72,17 @@ Z8.define('Z8.button.Button', {
 
 		var cn = [button];
 
-		trigger = this.trigger = new Z8.button.Trigger({ cls: this.cls, primary: this.primary, danger: this.danger, success: this.success, info: this.info, tooltip: this.triggerTooltip, icon: this.triggerIcon, tabIndex: this.getTabIndex(), enabled: this.enabled });
+		trigger = this.trigger = new Z8.button.Trigger({ cls: this.getCls(), primary: this.primary, danger: this.danger, success: this.success, info: this.info, tooltip: this.triggerTooltip, icon: this.triggerIcon, tabIndex: this.getTabIndex(), enabled: this.enabled });
 		cn.push(trigger.htmlMarkup());
 
 		if(menu != null)
 			menu.setOwner(trigger);
 
-		return { tag: 'div', id: this.getId(), cls: 'btn-group' + (this.vertical ? '-vertical' : ''), cn: cn };
+		var cls = this.getCls().pushIf('btn');
+		if(this.vertical)
+			cls.pushIf('vertical');
+
+		return { tag: 'div', id: this.getId(), cls: cls.join(' '), cn: cn };
 	},
 
 	subcomponents: function() {
@@ -92,7 +109,6 @@ Z8.define('Z8.button.Button', {
 		var menu = this.menu;
 
 		if(menu != null) {
-			menu.setAlignment(this);
 			menu.on('show', this.onMenuShow, this);
 			menu.on('hide', this.onMenuHide, this);
 		}
@@ -102,7 +118,10 @@ Z8.define('Z8.button.Button', {
 		DOM.un(this, 'click', this.onClick, this);
 		DOM.un(this, 'keyDown', this.onKeyDown, this);
 
-		this.button = this.icon = this.textElement = null;
+		if(this.setBusyTask != null)
+			this.setBusyTask.cancel();
+
+		this.button = this.icon = this.textElement = this.setBusyTask = null;
 
 		this.callParent();
 	},
@@ -120,18 +139,21 @@ Z8.define('Z8.button.Button', {
 
 	getButtonTypeCls: function() {
 		if(this.primary)
-			return 'btn-primary';
+			return 'primary';
 		else if(this.danger)
-			return 'btn-danger';
+			return 'danger';
 		else if(this.success)
-			return 'btn-success';
+			return 'success';
 		else if(this.info)
-			return 'btn-info';
-		return 'btn-default';
+			return 'info';
+		return 'default';
 	},
 
 	getButtonCls: function() {
-		var cls = DOM.parseCls(this.cls).pushIf('btn', this.getButtonTypeCls());
+		var cls = this.getCls().pushIf('btn', this.getButtonTypeCls());
+
+		if(this.push)
+			cls.pushIf('push');
 
 		if(!this.isEnabled())
 			cls.pushIf('disabled');
@@ -143,8 +165,8 @@ Z8.define('Z8.button.Button', {
 	},
 
 	getIconCls: function() {
-		var cls = DOM.parseCls(this.iconCls).pushIf('fa').pushIf('icon');
-		if(Z8.isEmpty(this.iconCls))
+		var cls = DOM.parseCls(this.busy ? Button.BusyIconCls : ((this.toggled ? this.activeIconCls : null) || this.iconCls)).pushIf('fa').pushIf('icon');
+		if(Z8.isEmpty(this.busy ? Button.BusyIconCls : this.iconCls))
 			cls.pushIf('no-icon');
 		if(Z8.isEmpty(this.text))
 			cls.pushIf('no-text');
@@ -153,6 +175,11 @@ Z8.define('Z8.button.Button', {
 
 	setIcon: function(cls) {
 		this.iconCls = cls;
+		DOM.setCls(this.icon, this.getIconCls());
+	},
+
+	setActiveIcon: function(cls) {
+		this.activeIconCls = cls;
 		DOM.setCls(this.icon, this.getIconCls());
 	},
 
@@ -179,10 +206,9 @@ Z8.define('Z8.button.Button', {
 
 	setText: function(text) {
 		text = this.text = text || '';
-		var noText = Z8.isEmpty(text);
 		DOM.setValue(this.textElement, String.htmlText(text));
 		DOM.setTitle(this.textElement, text);
-		this.iconCls = DOM.swapCls(this.icon, noText, 'no-text') || this.iconCls;
+		DOM.swapCls(this.icon, Z8.isEmpty(text), 'no-text');
 	},
 
 	setTooltip: function(tooltip) {
@@ -204,12 +230,15 @@ Z8.define('Z8.button.Button', {
 		this.toggled = toggled;
 
 		DOM.swapCls(this.button, toggled, 'active');
+		DOM.setCls(this.icon, this.getIconCls());
 
 		if(this.isRadio() && toggled)
 			this.container.onRadioToggle(this, toggled);
 
 		if(silent)
 			return;
+
+		Z8.callback(this.toggleHandler, this.scope, this, toggled);
 
 		this.fireEvent('toggle', this, toggled);
 	},
@@ -218,22 +247,32 @@ Z8.define('Z8.button.Button', {
 		return this.busy;
 	},
 
-	setBusy: function(busy) {
-		if(this.busy != busy) {
-			this.busy = busy;
+	setBusy: function(busy, delay) {
+		if(this.busy && busy || !this.busy && !busy)
+			return;
 
-			if(busy) {
-				this.cachedIconCls = this.iconCls;
-				var wasEnabled = this.isEnabled()
-				this.setEnabled(false);
-				this.wasEnabled = wasEnabled;
-				this.setIcon(['fa-circle-o-notch', 'fa-spin']);
-			} else {
-				this.setEnabled(this.wasEnabled);
-				this.setIcon(this.cachedIconCls);
-			}
+		this.busy = busy;
 
-			DOM.swapCls(this, busy, 'z-index-10');
+		if(busy) {
+			var wasEnabled = this.isEnabled()
+			this.setEnabled(false);
+			this.wasEnabled = wasEnabled;
+
+			var callback = function() {
+				DOM.setCls(this.icon, this.getIconCls());
+			};
+
+			if(delay != 0) {
+				this.setBusyTask = this.setBusyTask || new Z8.util.DelayedTask();
+				this.setBusyTask.delay(delay || 1000, callback, this);
+			} else
+				callback.call(this);
+		} else {
+			if(this.setBusyTask != null)
+				this.setBusyTask.cancel();
+
+			this.setEnabled(this.wasEnabled);
+			DOM.setCls(this.icon, this.getIconCls());
 		}
 	},
 
@@ -242,7 +281,8 @@ Z8.define('Z8.button.Button', {
 	},
 
 	onClick: function(event, target) {
-		event.stopEvent();
+		if(!this.bubbleClick)
+			event.stopEvent();
 
 		if(!this.isEnabled())
 			return;
@@ -282,6 +322,8 @@ Z8.define('Z8.button.Button', {
 	},
 
 	toggleMenu: function() {
+		this.menu.setAlignment(this);
+		DOM.append(this, this.menu);
 		this.menu.toggle();
 	},
 
@@ -289,6 +331,9 @@ Z8.define('Z8.button.Button', {
 		DOM.addCls(this, 'open');
 		if(this.trigger)
 			this.trigger.rotateIcon(180);
+
+		Z8.callback(this.showMenuHandler, this.scope);
+		this.fireEvent('menuShow', this);
 	},
 
 	onMenuHide: function() {
@@ -299,6 +344,9 @@ Z8.define('Z8.button.Button', {
 			DOM.focus(this.trigger);
 		} else
 			DOM.focus(this);
+
+		Z8.callback(this.hideMenuHandler, this.scope);
+		this.fireEvent('menuHide', this);
 	},
 
 	rotateIcon: function(degree) {

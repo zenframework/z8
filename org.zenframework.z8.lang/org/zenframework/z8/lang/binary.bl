@@ -1,3 +1,4 @@
 [primary "org.zenframework.z8.server.types.binary"]
 public final class binary extends primary {
+	public void unzip(file directory); 
 }

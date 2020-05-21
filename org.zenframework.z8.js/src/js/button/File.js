@@ -10,7 +10,7 @@ Z8.define('Z8.button.File', {
 	completeRender: function() {
 		this.callParent();
 
-		var fileInput = this.fileInput = DOM.append(this, { tag: 'input', type: 'file', multiple: this.multiple !== false });
+		var fileInput = this.fileInput = DOM.append(this, { tag: 'input', type: 'file', accept: this.accept, multiple: this.multiple !== false });
 		DOM.on(fileInput, 'change', this.onFileInputChange, this);
 	},
 
@@ -34,7 +34,9 @@ Z8.define('Z8.button.File', {
 
 	onFileInputChange: function() {
 		var files = this.fileInput.files;
-		if(files.length != null)
+		if(files.length != null) {
+			Z8.callback(this.selectHandler, this.scope, this, files);
 			this.fireEvent('select', this, files);
+		}
 	}
 });

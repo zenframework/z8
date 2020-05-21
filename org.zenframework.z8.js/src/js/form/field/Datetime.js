@@ -55,7 +55,7 @@ Z8.define('Z8.form.field.Datetime', {
 
 	completeRender: function() {
 		this.callParent();
-		this.dropdown.setAlignment(this.input);
+		this.dropdown.setAlignment(this);
 	},
 
 	select: function(direction) {
@@ -68,10 +68,12 @@ Z8.define('Z8.form.field.Datetime', {
 
 	showDropdown: function() {
 		this.dropdown.show();
+		DOM.addCls(this, 'open');
 	},
 
 	hideDropdown: function() {
 		this.dropdown.hide();
+		DOM.removeCls(this, 'open');
 	},
 
 	openDropdown: function() {
@@ -92,11 +94,9 @@ Z8.define('Z8.form.field.Datetime', {
 	},
 
 	onDropdownShow: function() {
-		this.getTrigger().rotateIcon(360);
 	},
 
 	onDropdownHide: function() {
-		this.getTrigger().rotateIcon(0);
 		DOM.focus(this.input);
 	},
 

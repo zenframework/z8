@@ -21,10 +21,24 @@ Z8.define('Z8.data.Batch', {
 	},
 
 	getServerData: function(records, action) {
-		var data = [];
-		for(var i = 0, length = records.length; i < length; i++)
-			data.push(records[i].getServerData(action));
-		return data;
+		var values = [];
+		var files = [];
+
+		for(var i = 0, length = records.length; i < length; i++) {
+			var data = records[i].getServerData(action);
+			
+			for(var name in data) {
+				var value = data[name];
+				if(value instanceof File) {
+					data[name] = files.length;
+					files.push(value);
+				}
+			}
+			
+			values.push(data);
+		}
+
+		return { values: values, files: files };
 	},
 
 	create: function(records, callback, options) {
@@ -53,7 +67,8 @@ Z8.define('Z8.data.Batch', {
 		var params = {
 			request: model.getName(),
 			action: action,
-			data: data,
+			data: data.values,
+			files: data.files,
 			fields: Model.getFieldNames(model.getRequestFields()),
 			link: model.getLink(),
 			query: model.getQuery()

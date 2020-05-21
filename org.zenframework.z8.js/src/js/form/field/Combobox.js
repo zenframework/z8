@@ -28,12 +28,15 @@ Z8.define('Z8.form.field.Combobox', {
 
 		this.callParent();
 
-		this.cls = DOM.parseCls(this.cls).pushIf('combobox');
-
 		if(this.editor)
 			this.queryTask = new Z8.util.DelayedTask();
 
+		this.initTriggers();
 		this.initStore();
+	},
+
+	getCls: function() {
+		return Z8.form.field.Text.prototype.getCls.call(this).pushIf('combobox');
 	},
 
 	isEmptyValue: function(value) {
@@ -57,17 +60,20 @@ Z8.define('Z8.form.field.Combobox', {
 		dropdown.on('hide', this.onDropdownHide, this);
 	},
 
-	htmlMarkup: function() {
-		var triggers = this.triggers;
+	initTriggers: function() {
+		this.triggers = !Z8.isEmpty(this.triggers) ? this.triggers : {};
 
+		var triggers = [];
 		if(this.source != null)
 			triggers.push({ icon: 'fa-pencil', tooltip: 'Редактировать \'' + this.source.text + '\'', handler: this.editSource, scope: this });
 
 		if(!this.isRequired() && this.clearTrigger !== false)
 			triggers.push({ icon: 'fa-times', tooltip: 'Очистить', handler: this.clearValue, scope: this });
 
-		triggers.push({});
+		this.triggers = triggers.add(this.triggers)
+	},
 
+	htmlMarkup: function() {
 		var markup = this.callParent();
 
 		this.createDropdown();
@@ -86,7 +92,7 @@ Z8.define('Z8.form.field.Combobox', {
 		this.callParent();
 
 		this.hidePager();
-		this.dropdown.setAlignment(this.input);
+		this.dropdown.setAlignment(this);
 
 		if(!this.editor)
 			DOM.on(this, 'keyPress', this.onKeyPress, this);
@@ -203,8 +209,9 @@ Z8.define('Z8.form.field.Combobox', {
 		if(value != null) {
 			var selectedRecord = store.getById(value);
 
-			var tempRecord = Z8.create(store.getModel());
-			tempRecord.setId(value);
+			var data = {};
+			data[store.getIdProperty()] = value;
+			var tempRecord = Z8.create(store.getModel(), data);
 
 			if(selectedRecord != null)
 				Z8.apply(tempRecord.data, selectedRecord.data);
@@ -553,11 +560,15 @@ Z8.define('Z8.form.field.Combobox', {
 
 		dropdown.setAlignmentOffset(0, pagerSize.height, 1.41666667 /* Ems.pixelsToEms(17) */, true);
 		dropdown.show(null, null, focusAt);
+
+		DOM.addCls(this, 'open');
 	},
 
 	hideDropdown: function() {
 		this.dropdown.hide();
 		this.clearFilter();
+
+		DOM.removeCls(this, 'open');
 	},
 
 	cancelDropdown: function() {

@@ -28,8 +28,11 @@ public class SqlExceptionConverter {
 		case Postgres:
 			postgres(e);
 			break;
+		case H2:
+			h2(e);
+			break;
 		default:
-			throw new UnknownDatabaseException();
+			throw new UnknownDatabaseException(e);
 		}
 
 		if(rethrowUnknown)
@@ -79,6 +82,13 @@ public class SqlExceptionConverter {
 		case 3701:
 		case 3728:
 			throw new ObjectNotFoundException(ErrorUtils.getMessage(e), e.getSQLState(), e.getErrorCode());
+		}
+	}
+
+	static private void h2(SQLException e) {
+		int error = e.getErrorCode();
+		switch(error) {
+			// TODO
 		}
 	}
 }

@@ -14,9 +14,9 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.zenframework.z8.server.base.file.FileConverter;
 import org.zenframework.z8.server.base.file.Folders;
 import org.zenframework.z8.server.base.xml.GNode;
-import org.zenframework.z8.server.converter.FileConverter;
 import org.zenframework.z8.server.engine.ISession;
 import org.zenframework.z8.server.json.Json;
 import org.zenframework.z8.server.types.encoding;
@@ -27,8 +27,6 @@ import org.zenframework.z8.server.utils.IOUtils;
 import org.zenframework.z8.web.servlet.Servlet;
 
 public class ConverterAdapter extends Adapter {
-
-	private FileConverter converter = null;
 
 	public ConverterAdapter(Servlet servlet) {
 		super(servlet);
@@ -84,12 +82,17 @@ public class ConverterAdapter extends Adapter {
 			}
 		}
 
-		if(preview) {
-			if(FileConverter.isConvertableToPdf(absolutePath)) {
-				absolutePath = getConverter().getConvertedPdf(relativePath.getPath(), absolutePath, parameters);
+		if (preview) {
+			String ext = FileConverter.getExtension(absolutePath);
+			if (FileConverter.isConvertableToPdf(ext)) {
 				response.addHeader("Content-Type", "application/pdf");
-			} else
+				if (!FileConverter.isPdfExtension(ext)) {
+					File convertedFile = new File(Folders.Base, Folders.Cache + '/' + relativePath + '.' + FileConverter.PDF_EXTENSION);
+					absolutePath = FileConverter.convertToPdf(absolutePath, convertedFile, parameters);
+				}
+			} else {
 				response.addHeader("Content-Type", getContentType(absolutePath));
+			}
 		} else {
 			response.addHeader("Content-Type", "application/*");
 			String name = file != null ? file.name.get() : absolutePath.getName();
@@ -178,13 +181,6 @@ public class ConverterAdapter extends Adapter {
 			}
 		}
 		return sb.toString();
-	}
-
-	private FileConverter getConverter() {
-		if(converter == null)
-			converter = new FileConverter(new File(Folders.Base, Folders.Cache));
-
-		return converter;
 	}
 
 }

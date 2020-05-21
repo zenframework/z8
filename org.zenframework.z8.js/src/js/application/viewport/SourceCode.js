@@ -11,8 +11,8 @@ Z8.define('Z8.application.viewport.SourceCode', {
 		this.history = [];
 		this.historyPosition = -1;
 
-		var backward = this.backward = new Z8.button.Button({ cls: 'btn-sm', icon: 'fa-play fa-flip-horizontal', enabled: false, handler: this.onBackward, scope: this });
-		var forward = this.forward = new Z8.button.Button({ cls: 'btn-sm', icon: 'fa-play', enabled: false, handler: this.onForward, scope: this });
+		var backward = this.backward = new Z8.button.Button({ icon: 'fa-play fa-flip-horizontal', enabled: false, handler: this.onBackward, scope: this });
+		var forward = this.forward = new Z8.button.Button({ icon: 'fa-play', enabled: false, handler: this.onForward, scope: this });
 		var buttons = new Z8.button.Group({ items: [backward, forward] });
 		var title = this.title = new Z8.Component({ cls: 'text' });
 
@@ -84,8 +84,9 @@ Z8.define('Z8.application.viewport.SourceCode', {
 		this.backward.setEnabled(false);
 		this.forward.setEnabled(false);
 		this.loadLock = true;
-
+/*
 		HttpRequest.get('src/' + url, { fn: loadCallback, scope: this });
+*/
 	},
 
 	focus: function() {

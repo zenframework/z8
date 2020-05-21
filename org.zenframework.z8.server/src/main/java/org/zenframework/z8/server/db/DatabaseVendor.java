@@ -5,12 +5,14 @@ import org.zenframework.z8.server.utils.StringUtils;
 public enum DatabaseVendor {
 	Oracle(names.Oracle),
 	SqlServer(names.SqlServer),
-	Postgres(names.Postgres);
+	Postgres(names.Postgres),
+	H2(names.H2);
 
 	class names {
 		static protected final String Oracle = "Oracle";
 		static protected final String SqlServer = "SqlServer";
 		static protected final String Postgres = "Postgres";
+		static protected final String H2 = "H2";
 	}
 
 	private String fName = null;
@@ -26,7 +28,7 @@ public enum DatabaseVendor {
 
 	public static DatabaseVendor fromString(String string) {
 		if(string == null)
-			return DatabaseVendor.SqlServer;
+			return DatabaseVendor.Postgres;
 
 		string = string.toUpperCase();
 
@@ -36,8 +38,10 @@ public enum DatabaseVendor {
 			return DatabaseVendor.SqlServer;
 		else if(string.contains(names.Postgres.toUpperCase()))
 			return DatabaseVendor.Postgres;
+		else if(string.contains(names.H2.toUpperCase()))
+			return DatabaseVendor.H2;
 		else
-			return DatabaseVendor.SqlServer;
+			return DatabaseVendor.Postgres;
 	}
 
 	public String sqlName(String name) {
@@ -49,10 +53,10 @@ public enum DatabaseVendor {
 	}
 
 	private char quoteOpen() {
-		return this == Oracle || this == Postgres ? '"' : '[';
+		return this == Oracle || this == Postgres || this == H2 ? '"' : '[';
 	}
 
 	private char quoteClose() {
-		return this == Oracle || this == Postgres ? '"' : ']';
+		return this == Oracle || this == Postgres || this == H2 ? '"' : ']';
 	}
 }

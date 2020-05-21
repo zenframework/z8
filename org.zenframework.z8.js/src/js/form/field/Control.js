@@ -11,10 +11,12 @@ Z8.define('Z8.form.field.Control', {
 	readOnlyLock: false,
 
 	initComponent: function() {
-		this.callParent();
+		Z8.Component.prototype.initComponent.call(this);
+
 		this.initField();
 		this.readOnlyLock = this.isReadOnly();
 		this.enabledLock = !this.isEnabled();
+		this.label = String.isString(this.label) ? { text: this.label } : this.label;
 	},
 
 	subcomponents: function() {
@@ -22,25 +24,10 @@ Z8.define('Z8.form.field.Control', {
 	},
 
 	htmlMarkup: function() {
-		var label = this.label = String.isString(this.label) ? { text: this.label } : this.label;
-
 		var controlMarkup = this.controlMarkup();
 		controlMarkup = Array.isArray(controlMarkup) ? controlMarkup : [controlMarkup];
 
-		var cls = this.cls = DOM.parseCls(this.cls).pushIf('control-group');
-
-		if(!this.isVisible())
-			cls.pushIf('display-none');
-		if(!this.isEnabled())
-			cls.pushIf('disabled');
-		if(this.isReadOnly())
-			cls.pushIf('readonly');
-		if(!label)
-			cls.pushIf('label-none');
-		if(!this.isValid())
-			cls.pushIf('invalid');
-		if(this.isScrollable())
-			cls.pushIf('scrollable');
+		var label = this.label;
 
 		if(label) {
 			var align = label.align;
@@ -55,23 +42,20 @@ Z8.define('Z8.form.field.Control', {
 
 			if(label.tools != null) {
 				var tools = this.labelTools = label.tools;
-				cn.push(tools.htmlMarkup());
+				cn.add(tools.htmlMarkup());
 			}
 
 			var style = label.width != null ? 'min-width:' + label.width + ';width:' + label.width + ';' : '';
 			label = { tag: 'span', name: 'label', cls: this.getLabelCls().join(' '), title: title || '', style: style, cn: cn };
 
 			align == 'right' ? controlMarkup.add(label) : controlMarkup.insert(label, 0);
-
-			if(align != null)
-				cls.pushIf('label-' + align);
 		}
 
-		return { id: this.getId(), cls: cls.join(' '), cn: controlMarkup };
+		return { id: this.getId(), cls: this.getCls().join(' '), cn: controlMarkup };
 	},
 
 	completeRender: function() {
-		this.callParent();
+		Z8.Component.prototype.completeRender.call(this);
 
 		var label = this.label = this.selectNode('span[name=label]');
 		if(label != null) {
@@ -91,11 +75,11 @@ Z8.define('Z8.form.field.Control', {
 
 		this.label = this.labelText = this.labelIcon = null;
 
-		this.callParent();
+		Z8.Component.prototype.onDestroy.call(this);
 	},
 
 	setEnabled: function(enabled) {
-		this.callParent(enabled);
+		Z8.Component.prototype.setEnabled.call(this, enabled);
 
 		DOM.swapCls(this, !enabled, 'disabled');
 		DOM.swapCls(this.label, !enabled, 'disabled');
@@ -109,6 +93,10 @@ Z8.define('Z8.form.field.Control', {
 
 	isReadOnly: function() {
 		return this.readOnly;
+	},
+
+	getReadOnly: function() {
+		return this.isReadOnly();
 	},
 
 	setReadOnly: function(readOnly) {
@@ -171,6 +159,25 @@ Z8.define('Z8.form.field.Control', {
 		this.setValid(!this.isEmptyValue(value) || !this.isRequired());
 	},
 
+	getCls: function() {
+		var cls = Z8.Component.prototype.getCls.call(this);
+
+		if(!this.isVisible())
+			cls.pushIf('display-none');
+		if(!this.isEnabled())
+			cls.pushIf('disabled');
+		if(this.isReadOnly())
+			cls.pushIf('readonly');
+		if(!this.isValid())
+			cls.pushIf('invalid');
+		if(this.isScrollable())
+			cls.pushIf('scrollable');
+
+		cls.pushIf('label-' + (this.label ? this.label.align || 'top' : 'none'));
+
+		return cls.pushIf('control-group');
+	},
+
 	getIconCls: function(cls) {
 		return cls != null ? DOM.parseCls(cls).pushIf('fa', 'fa-fw', 'icon') : null;
 	},
@@ -190,7 +197,7 @@ Z8.define('Z8.form.field.Control', {
 		if(label.textAlign != null)
 			cls.push('text-' + label.textAlign);
 		if(label.tools != null)
-			cls.push('tools');
+			cls.push('toolbar');
 		if(Z8.isEmpty(label.text))
 			cls.pushIf('empty');
 

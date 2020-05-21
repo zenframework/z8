@@ -11,6 +11,7 @@ public class Field extends Control {
 
 	public bool indexed = false;
 	public bool unique = false;
+	public bool trigram = false;
 
 	public SortDirection sortDirection = SortDirection.Asc;
 	public Aggregation aggregation = Aggregation.None;

@@ -295,16 +295,20 @@ Z8.define('Z8.form.field.Listbox', {
 			this.list.setRecords([]);
 	},
 
+	getCls: function() {
+		var cls = Z8.form.field.Control.prototype.getCls.call(this);
+
+		if(this.needsPager())
+			cls.pushIf('pager-on');
+
+		return cls.pushIf('list-box');
+	},
+
 	subcomponents: function() {
 		return this.callParent().add([this.list, this.pager, this.selectorDlg, this.actions]);
 	},
 
 	htmlMarkup: function() {
-		var cls = this.cls = DOM.parseCls(this.cls).pushIf('list-box');
-
-		if(this.needsPager())
-			cls.pushIf('pager-on');
-
 		var label = this.label;
 		if(this.tools) {
 			if(label == null)
@@ -359,46 +363,38 @@ Z8.define('Z8.form.field.Listbox', {
 	createTools: function() {
 		var store = this.store;
 
-		var addCopyRemove = [];
+		var tools = [];
 
 		if(store.hasCreateAccess() && !this.isLocked()) {
-			var add = new Z8.button.Tool({ icon: 'fa-file-o', tooltip: 'Новая запись (Insert)', handler: this.onAddRecord, scope: this });
+			var add = new Z8.button.Button({ icon: 'fa-file-o', tooltip: 'Новая запись (Insert)', handler: this.onAddRecord, scope: this });
 			this.setAddTool(add);
-			addCopyRemove.push(add);
+			tools.push(add);
 		}
 
 		if(store.hasCopyAccess() && !this.isLocked()) {
-			var copy = new Z8.button.Tool({ icon: 'fa-copy', tooltip: 'Копировать запись (Shift+Insert)', handler: this.onCopyRecord, scope: this });
+			var copy = new Z8.button.Button({ icon: 'fa-copy', tooltip: 'Копировать запись (Shift+Insert)', handler: this.onCopyRecord, scope: this });
 			this.setCopyTool(copy);
-			addCopyRemove.push(copy);
+			tools.push(copy);
 		}
 
 		if(store.hasReadAccess()) {
 			if(this.source != null) {
-				var edit = new Z8.button.Tool({ icon: 'fa-pencil', tooltip: 'Редактировать \'' + this.source.text + '\'', handler: this.onEdit, scope: this });
+				var edit = new Z8.button.Button({ icon: 'fa-pencil', tooltip: 'Редактировать \'' + this.source.text + '\'', handler: this.onEdit, scope: this });
 				this.setEditTool(edit);
-				addCopyRemove.push(edit);
+				tools.push(edit);
 			};
 
-			var refresh = new Z8.button.Tool({ icon: 'fa-refresh', tooltip: 'Обновить (Ctrl+R)', handler: this.onRefresh, scope: this });
-			addCopyRemove.push(refresh);
+			var refresh = new Z8.button.Button({ icon: 'fa-refresh', tooltip: 'Обновить (Ctrl+R)', handler: this.onRefresh, scope: this });
+			tools.push(refresh);
 			this.setRefreshTool(refresh);
 		}
 
 		if(store.hasDestroyAccess() && !this.isLocked()) {
-			var remove = new Z8.button.Tool({ cls: 'remove', danger: true, icon: 'fa-trash', tooltip: 'Удалить запись (Delete)', handler: this.onRemoveRecord, scope: this });
-			addCopyRemove.push(remove);
+			var remove = new Z8.button.Button({ cls: 'remove', danger: true, icon: 'fa-trash', tooltip: 'Удалить запись (Delete)', handler: this.onRemoveRecord, scope: this });
 			this.setRemoveTool(remove);
+			tools.push(remove);
 		}
 
-		var tools = [];
-
-		if(addCopyRemove.length != 0) {
-			addCopyRemove = new Z8.button.Group({ cls: 'add-copy-remove', items: addCopyRemove });
-			tools.push(addCopyRemove);
-		}
-
-		var filterSort = [];
 
 		var period = this.createPeriodTool();
 		this.setPeriodTool(period);
@@ -406,28 +402,21 @@ Z8.define('Z8.form.field.Listbox', {
 			tools.push(period);
 
 		if(this.filter !== false) {
-			var filter = new Z8.button.Tool({ icon: 'fa-filter', tooltip: 'Фильтрация (Ctrl+F)', toggled: false });
+			var filter = new Z8.button.Button({ icon: 'fa-filter', tooltip: 'Фильтрация (Ctrl+F)', toggled: false, toggleHandler: this.onQuickFilter, scope: this });
 			this.setFilterTool(filter);
-
-			filter.on('toggle', this.onQuickFilter, this);
-			filterSort.push(filter);
+			tools.push(filter);
 		}
 /*
-		var sort = new Z8.button.Tool({ enabled: false, cls: 'btn-sm', icon: 'fa-sort', tooltip: 'Порядок сортировки' });
+		var sort = new Z8.button.Button({ enabled: false, icon: 'fa-sort', tooltip: 'Порядок сортировки' });
 		this.setSortTool(sort);
 		filterSort.push(sort);
 */
-
-		var filterSort = new Z8.button.Group({ cls: 'filter-sort', items: filterSort });
-
-		tools.push(filterSort);
 
 		var exportAs = this.createExportTool();
 		this.setExportTool(exportAs);
 		tools.push(exportAs);
 
-		var autoFit = new Z8.button.Tool({ cls: 'auto-fit', icon: 'fa-arrows-h', tooltip: 'Auto fit columns', toggled: this.autoFit });
-		autoFit.on('toggle', this.onAutoFit, this);
+		var autoFit = new Z8.button.Button({ cls: 'auto-fit', icon: 'fa-arrows-h', tooltip: 'Auto fit columns', toggled: this.autoFit, toggleHandler: this.onAutoFit, scope: this });
 		this.setAutoFitTool(autoFit);
 		tools.push(autoFit);
 
@@ -440,7 +429,7 @@ Z8.define('Z8.form.field.Listbox', {
 
 		var period = new Z8.data.Period();
 
-		period = new Z8.calendar.Button({ cls: 'btn-sm', icon: 'fa-calendar', period: period });
+		period = new Z8.calendar.Button({ icon: 'fa-calendar', period: period });
 		period.on('period', this.onPeriod, this);
 		return period;
 	},
@@ -459,8 +448,7 @@ Z8.define('Z8.form.field.Listbox', {
 		var menu = new Z8.menu.Menu({ items: items });
 		menu.on('itemClick', this.onMenuExportAs, this);
 
-		var button = new Z8.button.Tool({ cls: 'btn-sm', icon: 'fa-file-pdf-o', tooltip: 'Сохранить как PDF', menu: menu, handler: this.exportAs, scope: this, format: 'pdf' });
-		return new Z8.button.Group({ cls: 'export-as', items: button });
+		return new Z8.button.Button({ icon: 'fa-file-pdf-o', tooltip: 'Сохранить как PDF', menu: menu, handler: this.exportAs, scope: this, format: 'pdf' });
 	},
 
 	createActions: function() {
@@ -602,16 +590,6 @@ Z8.define('Z8.form.field.Listbox', {
 		return this.isEnabled() ? this.list.focus() : false;
 	},
 
-	onFocusIn: function(event, target) {
-		this.callParent(event, target);
-		this.list.setFocused(true);
-	},
-
-	onFocusOut: function(event, target) {
-		this.callParent(event, target);
-		this.list.setFocused(false);
-	},
-
 	getSelection: function() {
 		return this.list != null ? this.list.getCurrentRecord() : null;
 	},
@@ -652,7 +630,10 @@ Z8.define('Z8.form.field.Listbox', {
 		if(record != null) {
 			var list = this.list;
 			var item = list.getItem(record.id);
-			return list.onItemStartEdit(item, index);
+			if(!list.canStartEdit(item, index))
+				return false;
+			list.startEdit(item, index);
+			return true;
 		}
 		return false;
 	},

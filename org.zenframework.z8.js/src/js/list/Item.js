@@ -54,7 +54,7 @@ Z8.define('Z8.list.Item', {
 			var field = fields[i];
 			var name = field.name;
 			if(modified.hasOwnProperty(name))
-				this.setText(i, this.renderText(field, record.get(name)));
+				this.updateText(i, field);
 		}
 
 		DOM.setCls(this, this.getCls());
@@ -72,7 +72,7 @@ Z8.define('Z8.list.Item', {
 		var list = this.list;
 
 		if(list.checks) {
-			var check = { tag: 'i', cls: 'fa ' + (this.checked ? 'fa-check-square' : 'fa-square-o')};
+			var check = { tag: 'i', cls: this.getCheckboxCls(this.checked).join(' ') };
 			var text = { cls: 'text', cn: [check] };
 			var cell = { cls: 'cell', cn: [text] };
 			columns.push({ tag: 'td', cls: 'check column', cn: [cell] });
@@ -108,11 +108,11 @@ Z8.define('Z8.list.Item', {
 				var text = this.renderText(field, record.get(field.name));
 
 
-				text = this.textMarkup(text, this.getTextCls(field, record) + ' text');
-				var cell = { cls: this.getCellCls(field, record) + ' cell', cn: i == 0 ? icons.add(text) : text };
+				text = this.textMarkup(text, DOM.parseCls(this.getTextCls(field, record)).pushIf('text').join(' '), field);
+				var cell = { cls: this.getCellCls(field, record).join(' '), cn: i == 0 ? icons.add(text) : text };
 
 				var type = field.type;
-				columns.push({ tag: 'td', cls: 'column' + (type != null ? ' ' + type : ''), field: i, cn: [cell], title: title });
+				columns.push({ tag: 'td', cls: 'column' + (type != null ? ' ' + type : '') + (i == 0 && !this.checks && !this.locks ? ' first' : (i == length - 1 ? ' last' : '')), field: i, cn: [cell], title: title });
 			}
 		} else {
 			var text = String.htmlText(this.text);
@@ -125,7 +125,7 @@ Z8.define('Z8.list.Item', {
 			}
 
 			text = { tag: 'div', cls: 'text' + (shortcut != null ? ' shortcuts' : ''), cn: shortcut != null ? [text, shortcut] : [text] };
-			var cell = { cls: 'cell', cn: icons.concat([text]) };
+			var cell = { cls: this.getCellCls().join(' '), cn: icons.concat([text]) };
 			columns.push({ tag: 'td', cls: 'column', cn: [cell], title: title });
 		}
 
@@ -136,7 +136,11 @@ Z8.define('Z8.list.Item', {
 		return field.source != null && this.follow ? ' follow' : '';
 	},
 
-	textMarkup: function(text, cls) {
+	getCheckboxCls: function(value) {
+		return DOM.parseCls(value ? Checkbox.OnIconCls : Checkbox.OffIconCls).pushIf(value ? 'on' : 'off').pushIf('icon');
+	},
+
+	textMarkup: function(text, cls, field) {
 		var markup = { tag: 'span', cls: cls, cn: [text] };
 		if(String.isString(text))
 			markup.title = Format.htmlEncode(Format.br2nl(text));
@@ -144,7 +148,7 @@ Z8.define('Z8.list.Item', {
 	},
 
 	getCellCls: function(field, record) {
-		return '';
+		return DOM.parseCls(this.cellCls).pushIf('cell');
 	},
 
 	renderText: function(field, value) {
@@ -164,7 +168,7 @@ Z8.define('Z8.list.Item', {
 		else if(type == Type.Float)
 			value = Format.float(value, format);
 		else if(type == Type.Boolean)
-			return { tag: 'i', cls: value ? 'fa fa-check-square' : 'fa fa-square-o' };
+			return { tag: 'i', cls: this.getCheckboxCls(value).join(' ') };
 		else if(type == Type.File)
 			value = value != null && Array.isArray(value) && value.length > 0 ? value[0].name : null;
 		else if(type == Type.Text)
@@ -174,7 +178,7 @@ Z8.define('Z8.list.Item', {
 	},
 
 	getCls: function() {
-		var cls = ['item'];
+		var cls = DOM.parseCls(this.cls).pushIf('item');
 
 		if(!this.enabled)
 			cls.push(['disabled']);
@@ -195,7 +199,7 @@ Z8.define('Z8.list.Item', {
 	},
 
 	htmlMarkup: function() {
-		return { tag: 'tr', id: this.getId(), cls: this.getCls().join(' '), /*tabIndex: this.getTabIndex(),*/ cn: this.columnsMarkup() };
+		return { tag: 'tr', id: this.getId(), cls: this.getCls().join(' '), cn: this.columnsMarkup() };
 	},
 
 	completeRender: function() {
@@ -204,13 +208,14 @@ Z8.define('Z8.list.Item', {
 		this.collapser = this.selectNode('.item>.column>.cell>.collapser');
 		this.collapserIcon = this.selectNode('.item>.column>.cell>.collapser>.icon');
 		this.iconElement = this.selectNode('.item>.column>.cell>.icon');
-		this.checkIcon = this.selectNode('.item>.column.check>.cell>.text>.fa');
+		this.checkIcon = this.selectNode('.item>.column.check>.cell>.text>.icon');
 		this.checkElement = this.selectNode('.item>.column.check');
-		this.lockIcon = this.selectNode('.item>.column.lock>.cell>.text>.fa');
+		this.lockIcon = this.selectNode('.item>.column.lock>.cell>.text>.icon');
 		this.cells = this.queryNodes('.item>.column:not(.check):not(.lock)');
 
 		DOM.on(this, 'mouseDown', this.onMouseDown, this);
 		DOM.on(this, 'click', this.onClick, this);
+		DOM.on(this, 'contextMenu', this.onContextMenu, this);
 		DOM.on(this, 'dblClick', this.onDblClick, this);
 
 		this.dom.listItem = this;
@@ -222,6 +227,7 @@ Z8.define('Z8.list.Item', {
 
 		DOM.un(this, 'mouseDown', this.onMouseDown, this);
 		DOM.un(this, 'click', this.onClick, this);
+		DOM.un(this, 'contextMenu', this.onContextMenu, this);
 		DOM.un(this, 'dblClick', this.onDblClick, this);
 
 		if(this.record != null && this.record.un != null)
@@ -249,7 +255,7 @@ Z8.define('Z8.list.Item', {
 
 	setChecked: function(checked) {
 		this.checked = checked;
-		DOM.swapCls(this.checkIcon, checked, 'fa-check-square', 'fa-square-o');
+		DOM.setCls(this.checkIcon, this.getCheckboxCls(checked));
 	},
 
 	getIcon: function() {
@@ -365,6 +371,11 @@ Z8.define('Z8.list.Item', {
 		DOM.setAttribute(cell, 'title', isString ? Format.htmlEncode(Format.br2nl(text)) : '');
 	},
 
+	updateText: function(index, field) {
+		var field = field || this.list.getFields()[index];
+		this.setText(index, this.renderText(field, this.record.get(field.name)));
+	},
+
 	ensureVisible: function() {
 		if(this.list != null)
 			this.list.ensureVisible(this);
@@ -417,12 +428,21 @@ Z8.define('Z8.list.Item', {
 
 		var index = -1;
 
-		if(this.list.checks && DOM.isParentOf(this.checkElement, target))
+		if(this.list.checks && DOM.isParentOf(this.checkElement, target)) {
 			this.toggleCheck();
-		else
-			index = this.findCellIndex(target);
+			return;
+		}
 
+		index = this.findCellIndex(target);
 		this.list.onItemClick(this, index);
+	},
+
+	onContextMenu: function(event, target) {
+		if(!this.isEnabled())
+			return;
+
+		var index = this.findCellIndex(target);
+		this.list.onItemContextMenu(this, index);
 	},
 
 	onDblClick: function(event, target) {
@@ -433,8 +453,11 @@ Z8.define('Z8.list.Item', {
 
 		var index = this.findCellIndex(target);
 
-		if(index != -1 || !DOM.isParentOf(this.list.getEditors()[index], target))
-			this.list.onItemDblClick(this, index);
+		if(index != -1 && DOM.isParentOf(this.list.getEditors()[index], target) ||
+				this.list.checks && DOM.isParentOf(this.checkElement, target))
+			return;;
+
+		this.list.onItemDblClick(this, index);
 	},
 
 
@@ -447,13 +470,24 @@ Z8.define('Z8.list.Item', {
 	},
 
 	startEdit: function(index) {
-		if(!this.active || index == -1)
+		if(!this.active || index == -1 || !this.list.canStartEdit(this, index || 0))
 			return false;
-		return this.list.onItemStartEdit(this, index);
+
+		this.list.startEdit(this, index || 0);
+		return true;
 	},
 
 	getCell: function(index) {
 		return this.cells[index];
+	},
+
+	getFirstCell: function() {
+		return this.cells[0];
+	},
+
+	getLastCell: function() {
+		var cells = this.cells;
+		return cells[cells.length - 1];
 	},
 
 	findCell: function(target) {

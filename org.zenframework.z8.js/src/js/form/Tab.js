@@ -11,6 +11,7 @@ Z8.define('Z8.form.Tab', {
 	},
 	
 	isVisible: function() {
-		return this.tag.isVisible();
+		var tag = this.tag;
+		return tag != null && tag.isVisible();
 	}
 });

@@ -381,6 +381,16 @@ Z8.define('Z8.dom.Dom', {
 			return true;
 		},
 
+		select: function(dom) {
+			if((dom = DOM.get(dom)) != null && dom.select != null)
+				dom.select();
+		},
+
+		deselect: function(dom) {
+			if((dom = DOM.get(dom)) != null && dom.setSelectionRange != null)
+				dom.setSelectionRange(1000, 1000);
+		},
+
 		scroll: function(dom, left, top) {
 			if((dom = DOM.get(dom)) == null || dom.focus == null)
 				return;
@@ -715,6 +725,15 @@ Z8.define('Z8.dom.Dom', {
 
 			if(Object.keys(eventsData).length == 0)
 				delete dom.eventsData;
+		},
+
+		saveFile: function(file) {
+			var url = URL.createObjectURL(file);
+			var anchor = DOM.append(document.body, { tag: 'a', cls: 'display-none', href: url, download: file.name });
+			anchor.click();
+			URL.revokeObjectURL(url);
+
+			new Z8.util.DelayedTask().delay(5000, DOM.remove, DOM, anchor);
 		},
 
 		download: function(url, id, serverId, callback, noCache) {

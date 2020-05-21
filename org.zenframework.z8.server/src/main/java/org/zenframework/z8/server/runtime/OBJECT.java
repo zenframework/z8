@@ -12,8 +12,11 @@ import org.zenframework.z8.server.base.security.User;
 import org.zenframework.z8.server.engine.RmiSerializable;
 import org.zenframework.z8.server.json.Json;
 import org.zenframework.z8.server.json.JsonWriter;
+import org.zenframework.z8.server.request.IResponse;
 import org.zenframework.z8.server.request.RequestTarget;
+import org.zenframework.z8.server.types.binary;
 import org.zenframework.z8.server.types.bool;
+import org.zenframework.z8.server.types.file;
 import org.zenframework.z8.server.types.guid;
 import org.zenframework.z8.server.types.primary;
 import org.zenframework.z8.server.types.string;
@@ -311,12 +314,26 @@ public class OBJECT extends RequestTarget implements IObject, RmiSerializable {
 		writer.writeProperty(Json.id, id());
 	}
 
+	public void processRequest(IResponse response) throws Throwable {
+		if(Json.content.equals(getParameters().get(Json.action))) {
+			binary binary = getContent();
+			response.setInputStream(binary != null ? binary.get() : null);
+		} else
+			super.processRequest(response);
+	}
+
 	@Override
 	public void writeResponse(JsonWriter writer) throws Throwable {
 		writer.writeProperty(Json.data, getData());
 		writer.writeProperty(Json.ui, ui());
 	}
 
+	public binary getContent() {
+		RLinkedHashMap<string, string> parameters = (RLinkedHashMap<string, string>)getParameters();
+		RCollection<file> files = (RCollection<file>)getFiles();
+		return z8_getContent(parameters, files);
+	}
+	
 	public org.zenframework.z8.server.json.parser.JsonArray getData() {
 		RLinkedHashMap<string, string> parameters = (RLinkedHashMap<string, string>)getParameters();
 		JsonArray.CLASS<? extends JsonArray> cls = z8_getData(parameters);
@@ -376,6 +393,10 @@ public class OBJECT extends RequestTarget implements IObject, RmiSerializable {
 
 	public string z8_toString() {
 		return new string("");
+	}
+
+	public binary z8_getContent(RLinkedHashMap<string, string> parameters, RCollection<file> files) {
+		return null;
 	}
 
 	public JsonArray.CLASS<? extends JsonArray> z8_getData(RLinkedHashMap<string, string> parameters) {

@@ -333,6 +333,7 @@ public class TableGenerator {
 			sql = "sp_rename " + database.tableName(oldTableName) + ", " + vendor.quote(newTableName);
 			break;
 		case Postgres:
+		case H2:
 			sql = "alter table " + database.tableName(oldTableName) + " rename to " + vendor.quote(newTableName);
 			break;
 		default:
@@ -361,12 +362,10 @@ public class TableGenerator {
 		DatabaseVendor vendor = vendor();
 		String result = vendor.quote(field.name()) + ' ' + field.sqlType(vendor);
 
-		if(vendor == DatabaseVendor.SqlServer || vendor == DatabaseVendor.Oracle || vendor == DatabaseVendor.Postgres) {
-			result += " default " + formatDefaultValue(vendor, field);
+		result += " default " + formatDefaultValue(vendor, field);
 
-			if(field.isPrimaryKey() || field instanceof GuidField) {
-				result += " not null";
-			}
+		if(field.isPrimaryKey() || field instanceof GuidField) {
+			result += " not null";
 		}
 
 		return result;
@@ -389,6 +388,7 @@ public class TableGenerator {
 		switch(vendor) {
 		case Postgres:
 		case Oracle:
+		case H2:
 			addColumnSql += " add(";
 			modifyColumnSql += " modify(";
 			break;
@@ -440,6 +440,7 @@ public class TableGenerator {
 		switch(vendor) {
 		case Postgres:
 		case Oracle:
+		case H2:
 			addColumnSql += ")";
 			modifyColumnSql += ")";
 			break;
@@ -486,6 +487,8 @@ public class TableGenerator {
 		try {
 			connection.beginTransaction();
 			createTable(name);
+			if (connection.vendor() == DatabaseVendor.H2)
+				connection.flush();
 			moveData(name);
 			dropTable(table().name());
 			renameTable(name, table().name());
@@ -553,7 +556,7 @@ public class TableGenerator {
 		for(IField field : table().getIndices()) {
 			try {
 				index++;
-				new IndexGenerator(table(), (Field)field, index, false).run();
+				new IndexGenerator(table(), (Field)field, index).run();
 			} catch(SQLException e) {
 				logger.error(e, Resources.format("Generator.createIndexError", field.displayName(), table().displayName(), table().name(), ErrorUtils.getMessage(e)));
 			}
@@ -565,7 +568,7 @@ public class TableGenerator {
 		for(IField field : table().getUniqueIndices()) {
 			try {
 				index++;
-				new IndexGenerator(table(), (Field)field, index, true).run();
+				new IndexGenerator(table(), (Field)field, index).run();
 			} catch(SQLException e) {
 				logger.error(e, Resources.format("Generator.createUniqueIndexError", field.displayName(), table().displayName(), table().name()));
 			}
@@ -650,7 +653,7 @@ public class TableGenerator {
 
 		Database database = database();
 		DatabaseVendor vendor = vendor();
-		boolean postgres = vendor == DatabaseVendor.Postgres;
+		boolean postgres = vendor == DatabaseVendor.Postgres || vendor == DatabaseVendor.H2;
 		boolean oracle = vendor == DatabaseVendor.Oracle;
 
 		FormatOptions options = new FormatOptions();

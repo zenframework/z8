@@ -31,7 +31,7 @@ Z8.define('Z8.Component', {
 				if(component == null || component.disposed)
 					continue;
 				if(component.isComponent)
-					components[i].destroy();
+					component.destroy();
 				else if(DOM.isDom(component))
 					DOM.remove(component);
 				else if(component.dom != null) {
@@ -43,7 +43,7 @@ Z8.define('Z8.Component', {
 	},
 
 	constructor: function(config) {
-		this.callParent(config);
+		Z8.Object.prototype.constructor.call(this, config);
 		this.initComponent();
 	},
 
@@ -265,9 +265,17 @@ Z8.define('Z8.Component', {
 		return { id: this.getId(), cls: this.getCls().join(' '), tabIndex: this.getTabIndex(), html: this.html || '' };
 	},
 
+	getInnerHtml: function(html) {
+		return DOM.setInnerHtml(this);
+	},
+
+	setInnerHtml: function(html) {
+		DOM.setInnerHtml(this, html);
+	},
+
 	setPosition: function(left, top) {
-		DOM.setPoint(this, 'left', left);
-		DOM.setPoint(this, 'top', top);
+		DOM.setPoint(this, 'left', left != null ? left : 'auto');
+		DOM.setPoint(this, 'top', top != null ? top : 'auto');
 	},
 
 	getAlignment: function() {
@@ -308,7 +316,7 @@ Z8.define('Z8.Component', {
 
 		var parent = new Rect(DOM.getParent(this));
 
-		var offset = this.alignmentOffset || { width: 0, height: 0, margin: 1, adjustHeight: false };
+		var offset = this.alignmentOffset || { width: 0, height: 0, margin: 1, adjustHeight: true };
 		var style = DOM.getComputedStyle(this);
 
 		var height = parseFloat(style.height) + parseInt(style.marginTop) + parseInt(style.marginBottom);
@@ -348,10 +356,10 @@ Z8.define('Z8.Component', {
 		rect.top = rect.top - (fixed ? 0 : parent.top);
 		rect.bottom = (fixed ? viewport.bottom : parent.bottom) - rect.bottom;
 
-		DOM.setLeft(this, rect.left);
-		DOM.setTop(this, rect.top);
+		DOM.setLeft(this, Ems.emsToPixels(rect.left) + 'px');
+		DOM.setTop(this, Ems.emsToPixels(rect.top) + 'px');
 		if(alignment != null && offset.adjustHeight)
-			DOM.setBottom(this, rect.bottom);
+			DOM.setBottom(this, Ems.emsToPixels(rect.bottom) + 'px');
 		DOM.swapCls(this, above, 'pull-up', 'pull-down');
 
 		this.fireEvent('align', this);

@@ -10,6 +10,18 @@
 	color: #d9534f;
 }
 
+.clear-left {
+	clear: left;
+}
+
+.clear-right {
+	clear: right;
+}
+
+.clear-both {
+	clear: both;
+}
+
 .float-left {
 	float: left !important;
 }
@@ -65,6 +77,14 @@
 
 .overflow-y-visible {
 	overflow-y: visible !important;
+}
+
+.line-height-100 {
+	line-height: 100%;
+}
+
+.nowrap {
+	white-space: nowrap;
 }
 
 .text-left {

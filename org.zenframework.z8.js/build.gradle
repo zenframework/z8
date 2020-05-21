@@ -52,6 +52,7 @@ combineJs {
 	source = file("${projectDir}/src/js/js.buildorder").readLines().findAll { !it.trim().isEmpty() }
 			.collect { "${projectDir}/src/js/${it}" }
 	dest = file("${buildDir}/web/debug/revolt.js")
+	encoding = 'UTF-8'
 }
 
 minifyJs {
@@ -71,6 +72,7 @@ task combineUtilJs(type: com.eriwen.gradle.js.tasks.CombineJsTask) {
 	source = file("${projectDir}/src/js/util.buildorder").readLines().findAll { !it.trim().isEmpty() }
 			.collect { "${projectDir}/src/js/${it}" }
 	dest = file("${buildDir}/web/debug/revolt.utils.js")
+	encoding = 'UTF-8'
 }
 
 task minifyUtilJs(type: com.eriwen.gradle.js.tasks.MinifyJsTask) {

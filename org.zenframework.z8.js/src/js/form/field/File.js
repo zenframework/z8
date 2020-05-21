@@ -13,13 +13,15 @@ Z8.define('Z8.form.field.File', {
 	},
 
 	htmlMarkup: function() {
-		this.cls = DOM.parseCls(this.cls).pushIf('file');
-
 		var triggers = this.triggers;
 		triggers.push({ icon: 'fa-upload', tooltip: 'Загрузить файл', handler: this.onUploadFile, scope: this });
 		triggers.push({ icon: 'fa-download', tooltip: 'Скачать файл', handler: this.onDownloadFile, scope: this });
 
 		return this.callParent();
+	},
+
+	getCls: function() {
+		return Z8.form.field.Text.prototype.getCls.call(this).pushIf('file');
 	},
 
 	completeRender: function() {

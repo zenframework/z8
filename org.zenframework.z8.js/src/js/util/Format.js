@@ -234,7 +234,7 @@ Z8.define('Z8.util.Format', {
 			y: '("" + this.getFullYear()).substring(2, 4)',
 
 			F: 'this.getMonthName()',
-			M: 'this.getShortMonthName()',
+			M: 'this.getMonthShortName()',
 			m: 'String.padLeft(this.getMonth() + 1, 2, "0")',
 			n: '(this.getMonth() + 1)',
 			t: 'this.getDaysInMonth()',
@@ -245,7 +245,7 @@ Z8.define('Z8.util.Format', {
 			z: 'this.getDayOfYear()',
 			N: 'this.getDayOfWeek() + 1',
 			l: 'this.getDayName()',
-			D: 'this.getShortDayName()',
+			D: 'this.getDayShortName()',
 			d: 'String.padLeft(this.getDate(), 2, "0")',
 			j: 'this.getDate()',
 

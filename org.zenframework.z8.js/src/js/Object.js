@@ -1,6 +1,10 @@
 Z8.define('Z8.Object', {
 	mixinId: 'z8-object',
 
+	isDisposed: function() {
+		return this.disposed;
+	},
+
 	dispose: function() {
 		this.listeners = null;
 		this.disposed = true;

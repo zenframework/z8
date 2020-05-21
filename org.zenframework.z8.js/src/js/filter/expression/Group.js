@@ -7,9 +7,12 @@ Z8.define('Z8.filter.Group', {
 	logical: 'or',
 
 	initComponent: function() {
-		this.cls = DOM.parseCls(this.cls).pushIf('group');
 		this.initExpression(this.expression);
 		this.callParent();
+	},
+
+	getCls: function() {
+		return Z8.filter.Element.prototype.getCls.call(this).pushIf('group');
 	},
 
 	initExpression: function(expression) {

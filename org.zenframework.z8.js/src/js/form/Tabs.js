@@ -6,38 +6,41 @@ Z8.define('Z8.form.Tabs', {
 
 	mixins: ['Z8.form.field.Field'],
 
+	getCls: function() {
+		return Z8.Container.prototype.getCls.call(this).pushIf('tabs', this.flex ? 'flex' : '');
+	},
+
 	htmlMarkup: function() {
 		this.setReadOnly(this.isReadOnly());
 
 		var controls = this.controls || [];
 
-		this.cls = DOM.parseCls(this.cls).pushIf('tabs', this.flex ? 'flex' : '');
 		this.headerCls = DOM.parseCls(this.headerCls).pushIf('header');
 		this.bodyCls = DOM.parseCls(this.bodyCls).pushIf('body');
 
-		var callback = function(tag, toggled) {
-			this.activateTab(tag.tab);
+		var callback = function(tagButton, toggled) {
+			this.activateTab(tagButton.tab);
 			if(!this.activateLock) {
-				this.lastClickedTab = tag.tab;
-				tag.tab.focus();
+				this.lastClickedTab = tagButton.tab;
+				tagButton.tab.focus();
 			}
 		};
 
-		var tags = [];
+		var tagButtons = [];
 		var items = [];
 
 		for(var i = 0, length = controls.length; i < length; i++) {
 			var tab = controls[i];
 			tab.cls = DOM.parseCls(tab.cls).pushIf('tab', 'inactive').join(' ');
 
-			var tag = tab.tag = new Z8.button.Button({ cls: 'tag', toggle: true, text: tab.title, icon: tab.icon, tab: tab });
+			var tagButton = tab.tagButton = new Z8.button.Button({ cls: 'tag', toggle: true, text: tab.title, icon: tab.icon, tab: tab });
 			tab.icon = null;
 
-			tag.on('toggle', callback, this);
-			tags.push(tag);
+			tagButton.on('toggle', callback, this);
+			tagButtons.push(tagButton);
 		}
 
-		var header = this.header = new Z8.button.Group({ radio: true, cls: this.headerCls.join(' '), items: tags });
+		var header = this.header = new Z8.button.Group({ radio: true, cls: this.headerCls.join(' '), items: tagButtons });
 		var body = new Z8.Container({ cls: this.bodyCls.join(' '), items: controls });
 
 		this.items = [header, body];
@@ -52,7 +55,7 @@ Z8.define('Z8.form.Tabs', {
 	showTab: function(tab, show) {
 		if(tab == null)
 			return;
-		show ? tab.tag.show() : tab.tag.hide();
+		tab.tagButton.show(show);
 		if(!show && tab == this.getActiveTab())
 			DOM.addCls(tab, 'inactive');
 	},
@@ -77,7 +80,7 @@ Z8.define('Z8.form.Tabs', {
 		DOM.removeCls(activeTab, 'inactive');
 
 		this.activateLock = true;
-		activeTab.tag.setToggled(true);
+		activeTab.tagButton.setToggled(true);
 		this.activateLock = false;
 
 		this.onActivateTab(activeTab);

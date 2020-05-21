@@ -1,11 +1,12 @@
 package org.zenframework.z8.server.request;
 
-import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
 import org.zenframework.z8.server.engine.ISession;
 import org.zenframework.z8.server.json.Json;
+import org.zenframework.z8.server.runtime.RCollection;
 import org.zenframework.z8.server.runtime.RLinkedHashMap;
 import org.zenframework.z8.server.types.file;
 import org.zenframework.z8.server.types.string;
@@ -13,7 +14,7 @@ import org.zenframework.z8.server.types.string;
 public class Request extends IRequest {
 
 	private Map<string, string> parameters = new RLinkedHashMap<string, string>();
-	private List<file> files = new ArrayList<file>();
+	private List<file> files = new RCollection<file>();
 
 	private ISession session;
 	private IResponse response;
@@ -24,14 +25,15 @@ public class Request extends IRequest {
 		this.monitor = new Monitor();
 	}
 
-	public Request(Map<String, String> parameters, List<file> files, ISession session) {
-		this.files = files;
+	public Request(Map<String, String> parameters, Collection<file> files, ISession session) {
 		this.session = session;
 		this.monitor = new Monitor();
 		this.response = new Response();
 
 		for(Map.Entry<String, String> entry : parameters.entrySet())
 			this.parameters.put(new string(entry.getKey()), new string(entry.getValue()));
+
+		this.files.addAll(files);
 	}
 
 	@Override

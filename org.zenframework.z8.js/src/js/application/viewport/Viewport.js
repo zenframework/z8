@@ -3,15 +3,18 @@ var Viewport = null;
 Z8.define('Z8.application.viewport.Viewport', {
 	extend: 'Z8.Container',
 
-	cls: 'viewport air',
+	cls: 'air',
 
 	handlers: [],
 	forms: [],
 
 	initComponent: function() {
 		this.callParent();
-
 		this.setTitle(Application.name);
+	},
+
+	getCls: function() {
+		return Z8.Container.prototype.getCls.call(this).pushIf('viewport');
 	},
 
 	htmlMarkup: function() {
@@ -77,7 +80,7 @@ Z8.define('Z8.application.viewport.Viewport', {
 		menu.on('close', this.onMenuClose, this);
 		this.add(menu);
 
-		if(User.administrator) {
+		if(User.administrator && Application.sourceCode) {
 			var sourceCode = this.sourceCode = new Z8.application.viewport.SourceCode();
 			this.add(sourceCode);
 		}

@@ -10,7 +10,9 @@ import org.zenframework.z8.server.base.file.Folders;
 import org.zenframework.z8.server.base.file.InputOnlyFileItem;
 import org.zenframework.z8.server.base.table.Table;
 import org.zenframework.z8.server.base.table.value.BinaryField;
+import org.zenframework.z8.server.base.table.value.DatetimeField;
 import org.zenframework.z8.server.base.table.value.Field;
+import org.zenframework.z8.server.base.table.value.IntegerField;
 import org.zenframework.z8.server.base.table.value.StringField;
 import org.zenframework.z8.server.db.ConnectionManager;
 import org.zenframework.z8.server.resources.Resources;
@@ -26,19 +28,27 @@ public class Files extends Table {
 	static public class fieldNames {
 		public final static String File = "File";
 		public final static String Path = "Path";
-	}
+		public final static String Size = "Size";
+		public final static String Time = "Time";
+		public final static String LastModified = "Last modified";
+}
 
 	static public class strings {
 		public final static String Title = "Files.title";
 		public final static String Name = "Files.name";
 		public final static String Path = "Files.path";
-
+		public final static String Size = "Files.size";
+		public final static String Time = "Files.time";
+		public final static String LastModified = "Files.lastModified";
 	}
 
 	static public class displayNames {
 		public final static String Title = Resources.get(strings.Title);
 		public final static String Name = Resources.get(strings.Name);
 		public final static String Path = Resources.get(strings.Path);
+		public final static String Size = Resources.get(strings.Size);
+		public final static String Time = Resources.get(strings.Time);
+		public final static String LastModified = Resources.get(strings.LastModified);
 	}
 
 	public static class CLASS<T extends Files> extends Table.CLASS<T> {
@@ -61,6 +71,9 @@ public class Files extends Table {
 
 	public final StringField.CLASS<StringField> path = new StringField.CLASS<StringField>(this);
 	public final BinaryField.CLASS<BinaryField> data = new BinaryField.CLASS<BinaryField>(this);
+	public final IntegerField.CLASS<IntegerField> size = new IntegerField.CLASS<IntegerField>(this);
+	public final DatetimeField.CLASS<DatetimeField> time = new DatetimeField.CLASS<DatetimeField>(this);
+	public final DatetimeField.CLASS<DatetimeField> lastModified = new DatetimeField.CLASS<DatetimeField>(this);
 
 	static public Files newInstance() {
 		return new Files.CLASS<Files>().get();
@@ -76,6 +89,9 @@ public class Files extends Table {
 
 		objects.add(data);
 		objects.add(path);
+		objects.add(size);
+		objects.add(time);
+		objects.add(lastModified);
 	}
 
 	@Override
@@ -92,6 +108,15 @@ public class Files extends Table {
 		path.setIndex("path");
 		path.setDisplayName(displayNames.Path);
 		path.get().length = new integer(512);
+
+		size.setName(fieldNames.Size);
+		size.setIndex("size");
+
+		time.setName(fieldNames.Time);
+		time.setIndex("time");
+
+		lastModified.setName(fieldNames.LastModified);
+		lastModified.setIndex("lastModified");
 	}
 
 	public void add(file file) {
@@ -109,6 +134,9 @@ public class Files extends Table {
 			name.get().set(file.name);
 			data.get().set(input);
 			path.get().set(file.path);
+			size.get().set(file.size);
+			time.get().set(file.time);
+			lastModified.get().set(file.time);
 
 			if(create)
 				create(file.id);
@@ -163,8 +191,6 @@ public class Files extends Table {
 
 		file.set(new InputOnlyFileItem(path, file.name.get()));
 		file.size = new integer(path.length());
-		file.time = file.time;
-
 		return file;
 	}
 }

@@ -7,37 +7,39 @@ Z8.define('Z8.window.Window', {
 	autoDestroy: true,
 	isOpen: false,
 
+	getCls: function() {
+		return Z8.Container.prototype.getCls.call(this).pushIf('window');
+	},
+
 	htmlMarkup: function() {
 		var icon = { tag: 'i', cls: DOM.parseCls(this.icon).pushIf('icon', 'fa', 'fw-fa').join(' ') };
 		var text = this.text = { cls: 'text', html: this.header };
-		var dragger = { cls: 'dragger', cn: [icon, text] };
 
-		var cn = [dragger];
+		var items = [icon, text, { cls: 'flex-1' }];
 
-		if(this.closable) {
-			var close = this.closeButton = new Z8.button.Button({ cls: 'btn-tool', icon: 'fa-close', handler: this.cancel, scope: this });
-			cn.push(close);
+		if(this.closable && this.closeButton !== false) {
+			this.closeButton = new Z8.button.Button({ cls: 'btn-tool', icon: 'fa-close', handler: this.cancel, scope: this });
+			items.push(this.closeButton);
 		}
 
-		var header = this.header = new Z8.Container({ cls: 'header', items: cn });
+		var header = this.header = new Z8.Container({ cls: 'header', items: items });
 
-		var body = this.body = new Z8.form.Fieldset({ plain: true, flex: 1, cls: 'body padding-15 flex', controls: this.controls, colCount: this.colCount || 1 });
+		var body = this.body = new Z8.form.Fieldset({ plain: true, flex: 1, cls: 'body', controls: this.controls, colCount: this.colCount || 1 });
 
 		var buttons = this.buttons || [];
 
 		if(Z8.isEmpty(this.buttons)) {
-			var ok = this.okButton = new Z8.button.Button({ text: 'Готово', primary: true, handler: this.ok, scope: this });
+			var ok = this.okButton = new Z8.button.Button({ push: true, primary: true, text: this.okText || 'Готово', handler: this.ok, scope: this });
 			buttons.push(ok);
 		}
 
-		if(this.closable) {
-			var cancel = this.cancelButton = new Z8.button.Button({ text: 'Отмена', handler: this.cancel, scope: this });
-			buttons.insert(cancel, 0);
+		if(this.closable && this.closeButton !== false) {
+			this.cancelButton = new Z8.button.Button({ push: true, text: 'Отмена', handler: this.cancel, scope: this });
+			buttons.insert(this.cancelButton, 0);
 		}
 
 		var footer = this.footer = new Z8.Container({ cls: 'footer', items: buttons });
 
-		this.cls = DOM.parseCls(this.cls).pushIf('window');
 		this.items = [header, body, footer];
 
 		return this.callParent();
@@ -118,21 +120,22 @@ Z8.define('Z8.window.Window', {
 	},
 
 	setBusy: function(busy) {
-		if(this.busyButton != null)
-			this.busyButton.setBusy(busy);
+		if(this.okButton != null)
+			this.okButton.setBusy(busy);
 	},
 
 	notifyAndClose: function(success) {
-		var busyButton = this.busyButton = success ? this.okButton : this.cancelButton;
+		if(!this.autoClose)
+			this.setBusy(true);
 
-		if(!this.autoClose && busyButton != null)
-			busyButton.setBusy(true);
-
-		if(this.handler != null)
-			this.handler.call(this.scope, this, success);
+		this.notify(success);
 
 		if(this.autoClose)
 			this.close();
+	},
+
+	notify: function(success) {
+		Z8.callback(this.handler, this.scope, this, success);
 	},
 
 	focus: function() {

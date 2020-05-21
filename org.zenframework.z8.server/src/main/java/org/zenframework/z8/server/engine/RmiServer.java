@@ -28,11 +28,13 @@ public abstract class RmiServer implements IServer, Remote {
 
 	@Override
 	public void stop() throws RemoteException {
+		Trace.logEvent("Stop server " + this + " ...");
 		if(timeoutChecker != null)
 			timeoutChecker.destroy();
 
 		unexport();
 		Rmi.unregister(this);
+		Trace.logEvent("Server " + this + " stopped");
 	}
 
 	public Proxy proxy() {

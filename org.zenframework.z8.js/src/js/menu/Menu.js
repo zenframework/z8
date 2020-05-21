@@ -17,25 +17,32 @@ Z8.define('Z8.menu.Menu', {
 		this.owner = owner;
 	},
 
+	setItems: function(items) {
+		for(var i = 0, length = items.length; i < length; i++)
+			items[i].list = this;
+
+		Z8.list.Dropdown.prototype.setItems.call(this, items);
+	},
+
 	completeRender: function() {
-		this.callParent();
-		DOM.on(this, 'blur', this.onFocusOut, this, true);
+		Z8.list.Dropdown.prototype.completeRender.call(this);
+		DOM.on(this, 'blur', this.onFocusOut, this);
 	},
 
 	onDestroy: function() {
-		DOM.un(this, 'blur', this.onFocusOut, this, true);
-		this.callParent();
+		DOM.un(this, 'blur', this.onFocusOut, this);
+		Z8.list.Dropdown.prototype.onDestroy.call(this);
 	},
 
-	onFocusOut: function(event) {
+	onFocusOut: function(event, target) {
 		var dom = DOM.get(this);
-		var target = event.relatedTarget;
+		target = event.relatedTarget;
 
 		if(dom != target && !DOM.isParentOf(dom, target) && !DOM.isParentOf(this.owner, target))
 			this.onCancel();
 	},
 
-	toggle: function() {
-		this.callParent();
+	onIconClick: function(item) {
+		this.onItemClick(item, -1);
 	}
 });
