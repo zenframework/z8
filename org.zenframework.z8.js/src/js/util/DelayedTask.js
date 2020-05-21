@@ -13,6 +13,10 @@ Z8.define('Z8.util.DelayedTask', {
 			this.interval = setInterval(this.timerFn, interval, this);
 	},
 
+	isActive: function() {
+		return this.interval != null;
+	},
+
 	cancel: function() {
 		if(this.interval != null) {
 			clearInterval(this.interval);
