@@ -30,6 +30,7 @@ public class FileConverter {
 	public static final String PDF_EXTENSION = "pdf";
 
 	public static final string Background = new string("background");
+	public static final string Reset = new string("reset");
 
 	private static OfficeManager officeManager;
 
@@ -50,7 +51,10 @@ public class FileConverter {
 
 	public static File convertToPdf(File source, File target, Map<String, String> parameters) {
 		String extension = getExtension(source);
+		boolean reset = Boolean.parseBoolean(parameters.get(Reset.get()));
 
+		if (reset && target.exists())
+			target.delete();
 		if (!target.exists()) {
 			target.getParentFile().mkdirs();
 			try {
@@ -72,6 +76,8 @@ public class FileConverter {
 		if (background != null && (backgroundFile = new File(Folders.Base, background)).exists()) {
 			source = target;
 			target = new File(source.getParentFile(), addSuffix(source.getName(), "-background"));
+			if (reset && target.exists())
+				target.delete();
 			if (!target.exists()) {
 				extension = FilenameUtils.getExtension(background).toLowerCase();
 				try {

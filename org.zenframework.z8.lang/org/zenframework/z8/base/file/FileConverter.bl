@@ -1,7 +1,11 @@
 [native "org.zenframework.z8.server.base.file.FileConverter"]
 public class FileConverter {
 
+	// Parameter - path to background file (PDF, image)
 	public static final string Background;
+
+	// Parameter - true/false - force target file clean
+	public static final string Reset;
 
 	public static string getExtension(file file);
 	public static string getExtension(string fileName);
@@ -15,6 +19,8 @@ public class FileConverter {
 	public static bool isConvertableToPdf(string extension);
 
 	public static file convertToPdf(file source, file target);
+
+	// Parameters: Background, Reset
 	public static file convertToPdf(file source, file target, string[string] parameters);
 
 }
