@@ -14,7 +14,6 @@ import java.util.zip.ZipFile;
 import java.util.zip.ZipInputStream;
 
 import org.eclipse.core.runtime.IPath;
-import org.eclipse.core.runtime.Path;
 
 public class File {
 
@@ -41,12 +40,26 @@ public class File {
 				return new File(path, file, file.isDirectory() ? Type.ARCHIVED_FOLDER : Type.ARCHIVED_FILE);
 			}
 		}
-		java.io.File file = path.toFile();
-		return new File(path, path.toFile(), file.isDirectory() ? Type.FOLDER : Type.FILE);
-	}
 
-	private File(IPath path, java.io.File file) {
-		this(path, file, null);
+		if (absolute.toFile().isDirectory())
+			return new File(path, path.toFile(), Type.FOLDER);
+
+		ZipFile zipfile = null;
+		try {
+			zipfile = new ZipFile(absolute.toString());
+			File file = new File(path, new java.io.File(TEMP_DIR, path.lastSegment() + '@' + Integer.toString(absolute.hashCode(), 16)), Type.ARCHIVE);
+			ARCHIVE_CACHE.put(absolute, file);
+			return file;
+		} catch (IOException e) {
+			return new File(path, path.toFile(), Type.FILE);
+		} finally {
+			try {
+				if (zipfile != null) {
+					zipfile.close();
+					zipfile = null;
+				}
+			} catch (IOException e) {}
+		}
 	}
 
 	private File(IPath path, java.io.File file, Type type) {
@@ -61,7 +74,7 @@ public class File {
 
 	public long getTimeStamp() throws FileException {
 		try {
-			return path.toFile().lastModified();
+			return file.lastModified();
 		} catch(SecurityException e) {
 			throw new FileException(path, e.getMessage());
 		}
@@ -79,7 +92,7 @@ public class File {
 		FileInputStream stream;
 
 		try {
-			stream = new FileInputStream(path.toString());
+			stream = new FileInputStream(file);
 		} catch(FileNotFoundException e) {
 			throw new FileException(path, e.getMessage());
 		}
@@ -105,7 +118,7 @@ public class File {
 			if(file.exists() && !file.canWrite() && !append)
 				file.delete();
 
-			stream = new FileOutputStream(getPath().toString(), append);
+			stream = new FileOutputStream(file, append);
 			stream.write(string.getBytes(Charset));
 			stream.close();
 		} catch(Exception e) {
@@ -131,19 +144,21 @@ public class File {
 	}
 
 	public File[] getFiles() throws FileException {
-		java.io.File file = this.file;
+		boolean archived = false;
+		java.io.File pathFile = this.path.toFile();
 		try {
 			if (type == Type.ARCHIVE) {
-				java.io.File out = new java.io.File(TEMP_DIR, file.getName() + '@' + Integer.toString(file.getAbsolutePath().hashCode(), 16));
-				unzip(new FileInputStream(file), out, file.lastModified() > out.lastModified());
-				file = out;
+				unzip(new FileInputStream(pathFile), file, pathFile.lastModified() > file.lastModified());
+				archived = true;
 			}
 
 			java.io.File[] files = file.listFiles();
 			File[] result = new File[files.length];
 
-			for (int i = 0; i < files.length; i++)
-				result[i] = new File(path.append(files[i].getName()), new java.io.File(file, files[i].getName()));
+			for (int i = 0; i < files.length; i++) {
+				java.io.File child = new java.io.File(file, files[i].getName());
+				result[i] = new File(path.append(files[i].getName()), child, getType(child.isDirectory(), archived));
+			}
 
 			return result;
 		} catch(Exception e) {
@@ -153,30 +168,9 @@ public class File {
 
 	public boolean makeDirectories() throws FileException {
 		try {
-			return path.toFile().mkdirs();
+			return file.mkdirs();
 		} catch(SecurityException e) {
 			throw new FileException(path, e.getMessage());
-		}
-	}
-
-	private static boolean isArchive(File file) {
-		IPath absolutePath = file.path.makeAbsolute();
-		if (ARCHIVE_CACHE.containsKey(absolutePath))
-			return true;
-		ZipFile zipfile = null;
-		try {
-			zipfile = new ZipFile(file.path.toString());
-			ARCHIVE_CACHE.put(absolutePath, file);
-			return true;
-		} catch (IOException e) {
-			return false;
-		} finally {
-			try {
-				if (zipfile != null) {
-					zipfile.close();
-					zipfile = null;
-				}
-			} catch (IOException e) {}
 		}
 	}
 
@@ -239,4 +233,11 @@ public class File {
 				closeable.close();
 		} catch (IOException e) {}
 	}
+
+	private static Type getType(boolean folder, boolean archived) {
+		if (folder)
+			return archived ? Type.ARCHIVED_FOLDER : Type.FOLDER;
+		return archived ? Type.ARCHIVED_FILE : Type.FILE;
+	}
+
 }
