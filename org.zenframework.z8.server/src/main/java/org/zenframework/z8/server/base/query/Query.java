@@ -1085,6 +1085,14 @@ public class Query extends OBJECT {
 	public Collection<ILink> getPath(Field field) {
 		return getPath(field.owner());
 	}
+	
+	public Field getFieldByIndex(String index) {
+		for(Field.CLASS<? extends Field> field : dataFields()) {
+			if(index.equals(field.index()))
+				return field.get();
+		}
+		return null;
+	}
 
 	public Field getFieldById(String id) {
 		for(Field.CLASS<? extends Field> field : dataFields()) {
@@ -1275,6 +1283,11 @@ public class Query extends OBJECT {
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public RCollection z8_primaryFields() {
 		return new RCollection(primaryFields());
+	}
+	
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	public Field.CLASS<? extends Field> z8_getFieldByIndex(string index) {
+		return (Field.CLASS)getFieldByIndex(index.get()).getCLASS();
 	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
