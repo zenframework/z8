@@ -60,7 +60,7 @@ public class DocsGenerator {
 		CompilationUnit[] compilationUnits = project.getCompilationUnits();
 
 		for(CompilationUnit compilationUnit : compilationUnits) {
-			File file = new File(compilationUnit.getAbsolutePath());
+			File file = File.fromPath(compilationUnit.getAbsolutePath());
 			String content = new String(file.read());
 
 			Map<IPosition, Hyperlink> hyperlinks = compilationUnit.getHyperlinks();
@@ -109,7 +109,7 @@ public class DocsGenerator {
 			String name = compilationUnit.getQualifiedName();
 			result = template.replace("{0}", name).replace("{1}", result);
 
-			new File(outputPath.append(name)).write(result);
+			File.fromPath(outputPath.append(name)).write(result);
 		}
 
 		return compilationUnits.length;
