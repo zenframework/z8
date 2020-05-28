@@ -4,7 +4,7 @@
 
 HOME="\$( cd "\$(dirname "\$0")/.." ; pwd -P )"
 WEB="\$HOME/web"
-WORK="\$HOME/web/WEB-INF"
+WORK="\$HOME/work"
 
 BOOT_CP="\$HOME/lib/org.zenframework.z8.boot-${project.z8Version}.jar"
 
