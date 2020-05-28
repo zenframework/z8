@@ -30,7 +30,7 @@ public abstract class RmiServer implements IServer, Remote {
 	public void stop() throws RemoteException {
 		Trace.logEvent("Stop server " + this + " ...");
 		if(timeoutChecker != null)
-			timeoutChecker.destroy();
+			timeoutChecker.interrupt();
 
 		unexport();
 		Rmi.unregister(this);
@@ -104,11 +104,6 @@ class TimeoutChecker extends Thread {
 				return;
 			}
 		}
-	}
-
-	@Override
-	public void destroy() {
-		interrupt();
 	}
 
 }
