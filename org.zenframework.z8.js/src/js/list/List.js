@@ -1207,10 +1207,8 @@ Z8.define('Z8.list.List', {
 	onKeyDown: function(event, target) {
 		var key = event.getKey();
 
-		if(this.isEditing() || this.isFiltering() && key != Event.DOWN && key != Event.ESC) {
-			console.log(event);
+		if(this.isEditing() || this.isFiltering() && key != Event.DOWN && key != Event.ESC)
 			return;
-		}
 
 		var item = this.getCurrentItem();
 
