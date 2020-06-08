@@ -552,7 +552,6 @@ public class file extends primary implements RmiSerializable, Serializable {
 					zipFile(zipOutput, file, "");
 			} else
 				zipFile(zipOutput, fileOrDirectory, "");
-
 		} catch(IOException e) {
 			throw new RuntimeException(e);
 		} finally {

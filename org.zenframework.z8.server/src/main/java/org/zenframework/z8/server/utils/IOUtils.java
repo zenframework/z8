@@ -112,6 +112,8 @@ public class IOUtils {
 					output.write(buffer, 0, count);
 			}
 
+			output.flush();
+
 			if(autoClose) {
 				input.close();
 				output.close();
@@ -139,9 +141,10 @@ public class IOUtils {
 				count += read;
 			}
 
+			output.flush();
+
 			if(autoClose) {
 				input.close();
-				output.flush();
 				output.close();
 				autoClose = false;
 			}

@@ -114,7 +114,7 @@ public class GNode implements RmiSerializable, Serializable {
 			try {
 				IOUtils.copyLarge(objects, out, size, false);
 			} finally {
-				IOUtils.closeQuietly(objects);
+				IOUtils.closeQuietly(out);
 			}
 
 			this.in = fileItem.getInputStream();
