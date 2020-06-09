@@ -1,12 +1,7 @@
-apply plugin: 'eclipse'
 apply plugin: 'base'
 
-configurations {
-	reszip
-}
-
-task assembleRz(type: Zip, group: 'Build') {
-	archiveName "${project.name}-rz.jar"
+task assembleZip(type: Zip, group: 'Build') {
+	archiveName "${project.name}-${project.version}.zip"
 	destinationDir file("${buildDir}/libs/")
 	from("${projectDir}/src") {
 		includeEmptyDirs = false
@@ -14,14 +9,14 @@ task assembleRz(type: Zip, group: 'Build') {
 	description "Assemble archive ${archiveName} into ${relativePath(destinationDir)}"
 }
 
-assemble.dependsOn assembleRz
+assemble.dependsOn assembleZip
 
-artifacts {
-	reszip assembleRz
+artifacts.add('default', assembleZip) {
+	builtBy assembleZip
 }
 
 publishing.publications {
-	mavenRz(MavenPublication) {
-		artifact source: assembleRz, extension: 'jar', classifier: 'rz'
+	maven(MavenPublication) {
+		artifact source: assembleZip, extension: 'zip'
 	}
 }
