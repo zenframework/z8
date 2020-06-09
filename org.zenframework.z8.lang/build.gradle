@@ -1,4 +1,28 @@
+import javax.inject.Inject
+
+import org.gradle.api.Plugin
+import org.gradle.api.Project
+
+class BlPlugin implements Plugin<Project> {
+	void apply(Project project) {
+		project.configurations {
+			bl {
+				canBeResolved = false
+				canBeConsumed = true
+				attributes {
+					attribute(LibraryElements.LIBRARY_ELEMENTS_ATTRIBUTE,
+							project.objects.named(LibraryElements, 'bl'))
+				}
+			}
+		}
+		project.components.findByName('java').addVariantsFromConfiguration(project.configurations.bl) {
+			it.mapToMavenScope('compile')
+		}
+	}
+}
+
 apply plugin: 'java'
+apply plugin: BlPlugin
 
 eclipse {
 	project.natures 'org.zenframework.z8.pde.ProjectNature'
@@ -6,7 +30,6 @@ eclipse {
 
 configurations {
 	compiler
-	blzip
 }
 
 dependencies {
@@ -32,8 +55,8 @@ tasks.withType(JavaCompile) {
 	dependsOn compileBl
 }
 
-task assembleBlzip(type: Zip, group: 'build', dependsOn: [compileBl]) {
-	archiveName "${project.name}-bl.jar"
+task assembleBl(type: Zip, group: 'build', dependsOn: [compileBl]) {
+	archiveName "${project.name}-${project.version}.zip"
 	destinationDir file("${buildDir}/libs/")
 	from(projectDir) {
 		include '**/*.bl'
@@ -42,10 +65,11 @@ task assembleBlzip(type: Zip, group: 'build', dependsOn: [compileBl]) {
 	description "Assemble archive ${archiveName} into ${relativePath(destinationDir)}"
 }
 
-assemble.dependsOn assembleBlzip
+assemble.dependsOn assembleBl
 
-artifacts {
-	blzip assembleBlzip
+artifacts.add('bl', assembleBl.archivePath) {
+	type 'zip'
+	builtBy assembleBl
 }
 
 publishing.publications {
@@ -53,6 +77,6 @@ publishing.publications {
 		from components.java
 	}
 	mavenBl(MavenPublication) {
-		artifact source: assembleBlzip, extension: 'jar', classifier: 'bl'
+		artifact source: assembleBl, extension: 'zip'
 	}
 }

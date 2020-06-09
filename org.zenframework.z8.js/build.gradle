@@ -9,13 +9,6 @@ apply plugin: 'js'
 apply plugin: 'css'
 apply plugin: 'maven'
 
-configurations {
-	reszip {
-		canBeConsumed = true
-		canBeResolved = false
-	}
-}
-
 combineCss {
 	source = file("${projectDir}/src/css/css.buildorder").readLines().findAll { !it.trim().isEmpty() }
 			.collect { "${projectDir}/src/css/${it}" }
@@ -80,8 +73,8 @@ task minifyUtilJs(type: com.eriwen.gradle.js.tasks.MinifyJsTask) {
 	dest = file("${buildDir}/web/revolt.utils.js")
 }
 
-task assembleRz(type: Zip, group: 'Build', dependsOn: [minifyCss, minifyFontsCss, minifyJs, minifyUtilJs]) {
-	archiveName "${project.name}-rz.jar"
+task assembleZip(type: Zip, group: 'Build', dependsOn: [minifyCss, minifyFontsCss, minifyJs, minifyUtilJs]) {
+	archiveName "${project.name}-${project.version}.zip"
 	destinationDir file("${buildDir}/libs/")
 	from("${buildDir}") {
 		include 'web/**'
@@ -90,14 +83,14 @@ task assembleRz(type: Zip, group: 'Build', dependsOn: [minifyCss, minifyFontsCss
 	description "Assemble archive ${archiveName} into ${relativePath(destinationDir)}"
 }
 
-assemble.dependsOn assembleRz
+assemble.dependsOn assembleZip
 
-artifacts {
-	reszip assembleRz
+artifacts.add('default', assembleZip) {
+	builtBy assembleZip
 }
 
 publishing.publications {
-	mavenRz(MavenPublication) {
-		artifact source: assembleRz, extension: 'jar', classifier: 'rz'
+	maven(MavenPublication) {
+		artifact source: assembleZip, extension: 'zip'
 	}
 }
