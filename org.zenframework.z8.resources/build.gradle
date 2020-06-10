@@ -1,5 +1,9 @@
 apply plugin: 'base'
 
+configurations.default.attributes {
+	attribute(LibraryElements.LIBRARY_ELEMENTS_ATTRIBUTE, project.objects.named(LibraryElements, 'web'))
+}
+
 task assembleZip(type: Zip, group: 'Build') {
 	archiveName "${project.name}-${project.version}.zip"
 	destinationDir file("${buildDir}/libs/")
