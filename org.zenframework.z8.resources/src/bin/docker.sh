@@ -22,17 +22,17 @@ JAVA_OPTS="\$JAVA_OPTS -Dz8.web.server.webapp=\$WEB"
 # Debug mode
 #JAVA_OPTS="\$JAVA_OPTS -Xdebug -Xrunjdwp:transport=dt_socket,address=9999,server=y,suspend=n"
 
-if [[ ! -z "\$${project.name.toUpperCase()}_DB_SCHEMA" ]]; then
- JAVA_OPTS="\$JAVA_OPTS -Dz8.application.database.schema=\$${project.name.toUpperCase()}_DB_SCHEMA"
+if [[ ! -z "\$${project.name.toUpperCase().replaceAll('\\W', '_')}_DB_SCHEMA" ]]; then
+ JAVA_OPTS="\$JAVA_OPTS -Dz8.application.database.schema=\$${project.name.toUpperCase().replaceAll('\\W', '_')}_DB_SCHEMA"
 fi
-if [[ ! -z "\$${project.name.toUpperCase()}_DB_USER" ]]; then
- JAVA_OPTS="\$JAVA_OPTS -Dz8.application.database.user=\$${project.name.toUpperCase()}_DB_USER"
+if [[ ! -z "\$${project.name.toUpperCase().replaceAll('\\W', '_')}_DB_USER" ]]; then
+ JAVA_OPTS="\$JAVA_OPTS -Dz8.application.database.user=\$${project.name.toUpperCase().replaceAll('\\W', '_')}_DB_USER"
 fi
-if [[ ! -z "\$${project.name.toUpperCase()}_DB_PASSWORD" ]]; then
- JAVA_OPTS="\$JAVA_OPTS -Dz8.application.database.password=\$${project.name.toUpperCase()}_DB_PASSWORD"
+if [[ ! -z "\$${project.name.toUpperCase().replaceAll('\\W', '_')}_DB_PASSWORD" ]]; then
+ JAVA_OPTS="\$JAVA_OPTS -Dz8.application.database.password=\$${project.name.toUpperCase().replaceAll('\\W', '_')}_DB_PASSWORD"
 fi
-if [[ ! -z "\$${project.name.toUpperCase()}_DB_CONNECTION" ]]; then
- JAVA_OPTS="\$JAVA_OPTS -Dz8.application.database.connection=\$${project.name.toUpperCase()}_DB_CONNECTION"
+if [[ ! -z "\$${project.name.toUpperCase().replaceAll('\\W', '_')}_DB_CONNECTION" ]]; then
+ JAVA_OPTS="\$JAVA_OPTS -Dz8.application.database.connection=\$${project.name.toUpperCase().replaceAll('\\W', '_')}_DB_CONNECTION"
 fi
 
 export JAVA_OPTS
