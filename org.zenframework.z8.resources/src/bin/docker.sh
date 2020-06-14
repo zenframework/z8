@@ -12,7 +12,7 @@ WORK="\$HOME/work"
 
 BOOT_CP="\$HOME/lib/org.zenframework.z8.boot-${project.z8Version}.jar"
 
-JAVA_OPTS="-Xmx2048M"
+JAVA_OPTS="\$JAVA_OPTS -Xmx2048M"
 JAVA_OPTS="\$JAVA_OPTS -Xbootclasspath/p:\$BOOT_CP"
 JAVA_OPTS="\$JAVA_OPTS -Dorg.eclipse.jetty.server.Request.maxFormContentSize=\$FORM_CONTENT_SIZE"
 JAVA_OPTS="\$JAVA_OPTS -Dorg.mortbay.http.HttpRequest.maxFormContentSize=\$FORM_CONTENT_SIZE"
@@ -22,6 +22,7 @@ JAVA_OPTS="\$JAVA_OPTS -Dz8.web.server.webapp=\$WEB"
 # Debug mode
 #JAVA_OPTS="\$JAVA_OPTS -Xdebug -Xrunjdwp:transport=dt_socket,address=9999,server=y,suspend=n"
 
+# Env variables, format <<PROJECT_NAME>_<VAR>>
 if [[ ! -z "\$${project.name.toUpperCase().replaceAll('\\W', '_')}_DB_SCHEMA" ]]; then
  JAVA_OPTS="\$JAVA_OPTS -Dz8.application.database.schema=\$${project.name.toUpperCase().replaceAll('\\W', '_')}_DB_SCHEMA"
 fi
@@ -35,6 +36,7 @@ if [[ ! -z "\$${project.name.toUpperCase().replaceAll('\\W', '_')}_DB_CONNECTION
  JAVA_OPTS="\$JAVA_OPTS -Dz8.application.database.connection=\$${project.name.toUpperCase().replaceAll('\\W', '_')}_DB_CONNECTION"
 fi
 
+# Alternate env variables, format <Z8_<VAR>>
 if [[ ! -z "\$Z8_DB_SCHEMA" ]]; then
  JAVA_OPTS="\$JAVA_OPTS -Dz8.application.database.schema=\$Z8_DB_SCHEMA"
 fi
