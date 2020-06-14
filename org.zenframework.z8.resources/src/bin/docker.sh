@@ -35,6 +35,19 @@ if [[ ! -z "\$${project.name.toUpperCase().replaceAll('\\W', '_')}_DB_CONNECTION
  JAVA_OPTS="\$JAVA_OPTS -Dz8.application.database.connection=\$${project.name.toUpperCase().replaceAll('\\W', '_')}_DB_CONNECTION"
 fi
 
+if [[ ! -z "\$Z8_DB_SCHEMA" ]]; then
+ JAVA_OPTS="\$JAVA_OPTS -Dz8.application.database.schema=\$Z8_DB_SCHEMA"
+fi
+if [[ ! -z "\$Z8_DB_USER" ]]; then
+ JAVA_OPTS="\$JAVA_OPTS -Dz8.application.database.user=\$Z8_DB_USER"
+fi
+if [[ ! -z "\$Z8_DB_PASSWORD" ]]; then
+ JAVA_OPTS="\$JAVA_OPTS -Dz8.application.database.password=\$Z8_DB_PASSWORD"
+fi
+if [[ ! -z "\$Z8_DB_CONNECTION" ]]; then
+ JAVA_OPTS="\$JAVA_OPTS -Dz8.application.database.connection=\$Z8_DB_CONNECTION"
+fi
+
 export JAVA_OPTS
 
 (cd "\$WORK" && "\$HOME/bin/${project.name}" -server webserver)
