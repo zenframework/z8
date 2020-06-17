@@ -14,6 +14,7 @@ public interface IAttributed {
 	static final public String Name = "name";
 	static final public String Native = "native";
 	static final public String Icon = "icon";
+	static final public String Url = "url";
 	static final public String Help = "help";
 	static final public String PrimaryKey = "primaryKey";
 	static final public String ParentKey = "parentKey";

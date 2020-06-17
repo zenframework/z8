@@ -199,8 +199,8 @@ Z8.define('Z8.calendar.Period', {
 
 		var body = new Z8.Container({ cls: 'body', items: [start, finish, selector1, selector2] });
 
-		var cancel = new Z8.button.Button({ text: 'Закрыть', handler: this.onCancel, scope: this });
-		var ok = new Z8.button.Button({ text: 'Применить', primary: true, handler: this.onApply, scope: this });
+		var cancel = new Z8.button.Button({ text: 'Закрыть', push: true, handler: this.onCancel, scope: this });
+		var ok = new Z8.button.Button({ text: 'Применить', push: true, primary: true, handler: this.onApply, scope: this });
 		var buttons = new Z8.Container({ cls: 'buttons', items: [cancel, ok] });
 
 		this.items = [body, buttons];

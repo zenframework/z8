@@ -353,6 +353,10 @@ textarea.control,
 	flex-direction: column;
 }
 
+.btn>.no-icon {
+	display: none;
+}
+
 .btn>.text {
 	flex: 1;
 	overflow: hidden;
