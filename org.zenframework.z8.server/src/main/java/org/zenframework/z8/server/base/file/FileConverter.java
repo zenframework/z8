@@ -41,7 +41,7 @@ public class FileConverter {
 	}
 
 	public static File convertToPdf(File source, File target) {
-		return convertToPdf(source, target, Collections.emptyMap());
+		return convertToPdf(source, target, Collections.<String, String>emptyMap());
 	}
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })

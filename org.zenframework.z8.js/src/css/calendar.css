@@ -335,6 +335,8 @@
 
 .period>.buttons>.btn {
 	margin-right: .71428571em;
+	height: 32px;
+	padding: 0 16px;
 }
 
 .date>.dropdown-calendar {

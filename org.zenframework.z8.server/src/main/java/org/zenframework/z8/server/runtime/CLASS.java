@@ -364,6 +364,10 @@ public class CLASS<TYPE extends IObject> implements IClass<TYPE> {
 		return getAttribute(Icon);
 	}
 
+	public String url() {
+		return getAttribute(Url);
+	}
+
 	public void setIcon(String icon) {
 		setAttribute(Icon, icon);
 	}
@@ -373,5 +377,6 @@ public class CLASS<TYPE extends IObject> implements IClass<TYPE> {
 		writer.writeProperty(Json.text, displayName());
 		writer.writeProperty(Json.description, description());
 		writer.writeProperty(Json.icon, icon());
+		writer.writeProperty(Json.url, url());
 	}
 }
