@@ -67,7 +67,7 @@ task assembleBl(type: Zip, group: 'build', dependsOn: [compileBl]) {
 
 assemble.dependsOn assembleBl
 
-artifacts.add('bl', assembleBl.archivePath) {
+artifacts.add('bl', assembleBl) {
 	type 'zip'
 	builtBy assembleBl
 }

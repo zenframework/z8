@@ -9,6 +9,10 @@ apply plugin: 'js'
 apply plugin: 'css'
 apply plugin: 'maven'
 
+configurations.default.attributes {
+	attribute(LibraryElements.LIBRARY_ELEMENTS_ATTRIBUTE, project.objects.named(LibraryElements, 'web'))
+}
+
 combineCss {
 	source = file("${projectDir}/src/css/css.buildorder").readLines().findAll { !it.trim().isEmpty() }
 			.collect { "${projectDir}/src/css/${it}" }

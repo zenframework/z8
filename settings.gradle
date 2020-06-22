@@ -1,9 +1,6 @@
 rootProject.name = 'org.zenframework.z8'
 
 include 'org.zenframework.z8.compiler'
-//includeBuild('org.zenframework.z8-gradle-plugin')
-//includeBuild('org.zenframework.z8-maven-plugin')
-
 include 'org.zenframework.z8.boot'
 include 'org.zenframework.z8.server'
 include 'org.zenframework.z8.lang'
