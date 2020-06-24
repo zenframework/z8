@@ -1,6 +1,7 @@
 package org.zenframework.z8.server.base.table.value;
 
 import org.zenframework.z8.server.base.query.Query;
+import org.zenframework.z8.server.db.sql.SqlToken;
 import org.zenframework.z8.server.json.JsonWriter;
 import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.types.sql.sql_bool;
@@ -74,5 +75,10 @@ public class Join extends Expression implements IJoin {
 
 	public void operatorAssign(sql_bool expression) {
 		setExpression(expression);
+	}
+
+	@Override
+	protected SqlToken z8_expression() {
+		return sql_bool.True;
 	}
 }
