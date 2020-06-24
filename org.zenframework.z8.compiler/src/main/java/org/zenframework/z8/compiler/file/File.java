@@ -36,7 +36,7 @@ public class File {
 			if (absolute.equals(entry.getKey()))
 				return entry.getValue();
 			else if (entry.getKey().isPrefixOf(absolute)) {
-				java.io.File file = new java.io.File(entry.getValue().file, absolute.removeFirstSegments(entry.getKey().segmentCount()).toString());
+				java.io.File file = new java.io.File(entry.getValue().file, absolute.makeRelativeTo(entry.getKey()).toString());
 				return new File(path, file, file.isDirectory() ? Type.ARCHIVED_FOLDER : Type.ARCHIVED_FILE);
 			}
 		}
