@@ -101,6 +101,7 @@ public class ImportElement extends LanguageElement {
 		return false;
 	}
 
+	@Override
 	public boolean checkSemantics(CompilationUnit compilationUnit, IType declaringType, IMethod declaringMethod, IVariable leftHandValue, IVariableType context) {
 		if(importedUnit == null)
 			return true;

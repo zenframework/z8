@@ -33,6 +33,7 @@ public class DocsGenerator {
 			this.hyperlink = hyperlink;
 		}
 
+		@Override
 		public int compareTo(Link link) {
 			return position.getOffset() - link.position.getOffset();
 		}

@@ -17,6 +17,7 @@ public class NullVariableType extends VariableType {
 		return true;
 	}
 
+	@Override
 	public ITypeCast getCastTo(IType context, IVariableType candidate) {
 		return new TypeCast(this, candidate, 0);
 	}

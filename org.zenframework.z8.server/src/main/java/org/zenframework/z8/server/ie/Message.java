@@ -96,6 +96,7 @@ abstract public class Message extends OBJECT implements RmiSerializable, Seriali
 		return name;
 	}
 	
+	@Override
 	public void setName(String name) {
 		this.name = name;
 	}
@@ -104,6 +105,7 @@ abstract public class Message extends OBJECT implements RmiSerializable, Seriali
 		return description;
 	}
 	
+	@Override
 	public void setDescription(String description) {
 		this.description = description;
 	}

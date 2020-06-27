@@ -30,10 +30,12 @@ public final class ObjID implements Serializable {
 		return new ObjID(in.readLong());
 	}
 
+	@Override
 	public int hashCode() {
 		return (int)objNum;
 	}
 
+	@Override
 	public boolean equals(Object obj) {
 		if (obj instanceof ObjID) {
 			ObjID id = (ObjID) obj;
@@ -43,6 +45,7 @@ public final class ObjID implements Serializable {
 		return false;
 	}
 
+	@Override
 	public String toString() {
 		return "[" + objNum + "]";
 	}

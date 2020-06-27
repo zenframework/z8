@@ -101,6 +101,7 @@ public class CLASS<TYPE extends IObject> implements IClass<TYPE> {
 		return stage;
 	}
 
+	@Override
 	public String index() {
 		return container == null ? "" : index;
 	}
@@ -159,10 +160,12 @@ public class CLASS<TYPE extends IObject> implements IClass<TYPE> {
 		return closure;
 	}
 
+	@Override
 	public void setClosure(Object[] closure) {
 		this.closure = closure;
 	}
 
+	@Override
 	public boolean instanceOf(Class<?> cls) {
 		return cls.isAssignableFrom(getJavaClass());
 	}
@@ -177,6 +180,7 @@ public class CLASS<TYPE extends IObject> implements IClass<TYPE> {
 		return get(Constructor2);
 	}
 
+	@Override
 	public TYPE get(int stage) {
 		IObject container = getContainer();
 
@@ -310,6 +314,7 @@ public class CLASS<TYPE extends IObject> implements IClass<TYPE> {
 		setAttribute(System, system ? "" : null);
 	}
 
+	@Override
 	public boolean exportable() {
 		String exportable = getAttribute(Exportable);
 		return exportable == null || Boolean.parseBoolean(exportable);
@@ -326,6 +331,7 @@ public class CLASS<TYPE extends IObject> implements IClass<TYPE> {
 		return foreignKey == null || Boolean.parseBoolean(foreignKey);
 	}
 
+	@Override
 	public void setExportable(boolean exportable) {
 		setAttribute(Exportable, Boolean.toString(exportable));
 	}

@@ -75,6 +75,7 @@ public class ImportBlock extends LanguageElement {
 		return true;
 	}
 
+	@Override
 	public boolean checkSemantics(CompilationUnit compilationUnit, IType declaringType, IMethod declaringMethod, IVariable leftHandValue, IVariableType context) {
 		for(ImportElement element : elements)
 			element.checkSemantics(compilationUnit, declaringType, declaringMethod, leftHandValue, context);

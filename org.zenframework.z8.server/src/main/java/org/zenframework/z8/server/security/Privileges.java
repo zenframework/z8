@@ -42,14 +42,17 @@ public class Privileges implements IPrivileges {
 		setDefaultAccess(defaultAccess);
 	}
 
+	@Override
 	public void setDefaultAccess(IAccess defaultAccess) {
 		this.defaultAccess = defaultAccess;
 	}
 
+	@Override
 	public IAccess getTableAccess(Query table) {
 		return getTableAccess(table.key());
 	}
 
+	@Override
 	public IAccess getTableAccess(guid table) {
 		if(tableAccess == null)
 			return defaultAccess;
@@ -58,17 +61,20 @@ public class Privileges implements IPrivileges {
 		return access != null ? access : defaultAccess;
 	}
 
+	@Override
 	public void setTableAccess(guid table, IAccess access) {
 		if(tableAccess == null)
 			tableAccess = new HashMap<guid, IAccess>();
 		tableAccess.put(table, access);
 	}
 
+	@Override
 	public IAccess getFieldAccess(Field field) {
 		Query owner = field.owner();
 		return getFieldAccess(owner != null ? owner.key() : null, field.key());
 	}
 
+	@Override
 	public IAccess getFieldAccess(guid table, guid field) {
 		IAccess tableAccess = getTableAccess(table);
 
@@ -79,12 +85,14 @@ public class Privileges implements IPrivileges {
 		return access != null ? tableAccess.and(access) : tableAccess;
 	}
 
+	@Override
 	public void setFieldAccess(guid field, IAccess access) {
 		if(fieldAccess == null)
 			fieldAccess = new HashMap<guid, IAccess>();
 		fieldAccess.put(field, access);
 	}
 
+	@Override
 	public IAccess getRequestAccess(guid request) {
 		if(requestAccess == null)
 			return defaultAccess;
@@ -93,6 +101,7 @@ public class Privileges implements IPrivileges {
 		return access != null ? access : defaultAccess;
 	}
 
+	@Override
 	public void setRequestAccess(guid request, IAccess access) {
 		if(requestAccess == null)
 			requestAccess = new HashMap<guid, IAccess>();

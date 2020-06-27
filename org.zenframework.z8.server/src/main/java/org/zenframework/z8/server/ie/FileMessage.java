@@ -55,6 +55,7 @@ public class FileMessage extends Message {
 		this.file = file;
 	}
 
+	@Override
 	public void setBytesTransferred(long bytesTransferred) {
 		file.setOffset(bytesTransferred);
 	}

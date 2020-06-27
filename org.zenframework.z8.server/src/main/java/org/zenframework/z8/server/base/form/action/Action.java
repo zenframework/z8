@@ -40,6 +40,7 @@ public class Action extends Control implements Runnable, IAction {
 		super(container);
 	}
 
+	@Override
 	@SuppressWarnings("unchecked")
 	public Collection<Field> fields() {
 		return Collections.EMPTY_LIST;

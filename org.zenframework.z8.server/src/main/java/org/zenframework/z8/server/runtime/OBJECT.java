@@ -314,6 +314,7 @@ public class OBJECT extends RequestTarget implements IObject, RmiSerializable {
 		writer.writeProperty(Json.id, id());
 	}
 
+	@Override
 	public void processRequest(IResponse response) throws Throwable {
 		if(Json.content.equals(getParameters().get(Json.action))) {
 			binary binary = getContent();

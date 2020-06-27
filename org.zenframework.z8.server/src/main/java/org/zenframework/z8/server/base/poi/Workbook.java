@@ -14,6 +14,7 @@ public class Workbook extends OBJECT {
 			this.setJavaClass(Workbook.class);
 		}
 
+		@Override
 		public Object newObject(IObject container) {
 			return new Workbook(container);
 		}

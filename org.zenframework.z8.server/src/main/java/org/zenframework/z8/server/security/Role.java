@@ -50,10 +50,12 @@ public class Role implements IRole {
 		this.access = access;
 	}
 
+	@Override
 	public guid id() {
 		return id;
 	}
 
+	@Override
 	public IAccess access() {
 		return access;
 	}

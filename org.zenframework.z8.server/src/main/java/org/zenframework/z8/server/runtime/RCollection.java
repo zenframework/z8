@@ -51,6 +51,7 @@ public class RCollection<TYPE> extends ArrayList<TYPE> {
 		addAll(collection);
 	}
 
+	@Override
 	public boolean contains(Object o) {
 		return set != null ? set.contains(o) : super.contains(o);
 	}
@@ -129,6 +130,7 @@ public class RCollection<TYPE> extends ArrayList<TYPE> {
 		return super.remove(o);
 	}
 
+	@Override
 	public int indexOf(Object object) {
 		for(int i = 0; i < size(); i++) {
 			Object element = get(i);

@@ -12,6 +12,7 @@ public class Row extends OBJECT {
 			this.setJavaClass(Row.class);
 		}
 
+		@Override
 		public Object newObject(IObject container) {
 			return new Row(container);
 		}

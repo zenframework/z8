@@ -718,6 +718,7 @@ public abstract class AbstractType extends LanguageElement implements IType {
 		return true;
 	}
 
+	@Override
 	public boolean checkSemantics(CompilationUnit compilationUnit, IType declaringType, IMethod declaringMethod, IVariable leftHandValue, IVariableType context) {
 		if(!super.checkSemantics(compilationUnit, declaringType, declaringMethod, leftHandValue, context))
 			return false;

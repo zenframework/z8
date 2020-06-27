@@ -44,6 +44,7 @@ public class Filter implements IFilter {
 		expressions.add(isGroup ? new Filter(expression, query) : new Expression(expression, query));
 	}
 
+	@Override
 	public SqlToken where() {
 		SqlToken result = null;
 

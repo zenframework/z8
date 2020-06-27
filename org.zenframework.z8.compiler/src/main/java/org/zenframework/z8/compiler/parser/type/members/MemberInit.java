@@ -124,6 +124,7 @@ public class MemberInit extends Initialization implements IInitializer {
 		}
 	}
 
+	@Override
 	protected void getLeftSideCode(CodeGenerator codeGenerator) {
 		String stage = getDeclaringType().getConstructionStage();
 
@@ -135,6 +136,7 @@ public class MemberInit extends Initialization implements IInitializer {
 		getDeclaringType().setConstructionStage(stage);
 	}
 
+	@Override
 	protected void getRightSideCode(CodeGenerator codeGenerator) {
 		String stage = getDeclaringType().getConstructionStage();
 

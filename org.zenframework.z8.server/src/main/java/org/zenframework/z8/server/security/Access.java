@@ -38,54 +38,67 @@ public class Access implements IAccess {
 	public Access() {
 	}
 
+	@Override
 	public boolean read() {
 		return read;
 	}
 
+	@Override
 	public void setRead(boolean read) {
 		this.read = read;
 	}
 
+	@Override
 	public boolean write() {
 		return write;
 	}
 
+	@Override
 	public void setWrite(boolean write) {
 		this.write = write;
 	}
 
+	@Override
 	public boolean create() {
 		return create;
 	}
 
+	@Override
 	public void setCreate(boolean create) {
 		this.create = create;
 	}
 
+	@Override
 	public boolean copy() {
 		return copy;
 	}
 
+	@Override
 	public void setCopy(boolean copy) {
 		this.copy = copy;
 	}
 
+	@Override
 	public boolean destroy() {
 		return destroy;
 	}
 
+	@Override
 	public void setDestroy(boolean destroy) {
 		this.destroy = destroy;
 	}
 
+	@Override
 	public boolean execute() {
 		return execute;
 	}
 
+	@Override
 	public void setExecute(boolean execute) {
 		this.execute = execute;
 	}
 
+	@Override
 	public IAccess or(IAccess access) {
 		Access result = new Access();
 		result.read = read || access.read();
@@ -97,6 +110,7 @@ public class Access implements IAccess {
 		return result;
 	}
 
+	@Override
 	public IAccess and(IAccess access) {
 		Access result = new Access();
 		result.read = read && access.read();

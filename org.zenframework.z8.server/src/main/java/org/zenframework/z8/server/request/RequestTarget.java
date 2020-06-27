@@ -19,10 +19,12 @@ public abstract class RequestTarget implements IRequestTarget {
 		this.id = id;
 	}
 
+	@Override
 	public String id() {
 		return id;
 	}
 
+	@Override
 	public String displayName() {
 		return null;
 	}

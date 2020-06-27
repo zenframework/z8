@@ -127,6 +127,7 @@ public class Sequencer extends OBJECT implements Connection.Listener {
 		return nextValue;
 	}
 
+	@Override
 	public void on(Connection connection, ConnectionEvent event) {
 		if(event == ConnectionEvent.Flush || event == ConnectionEvent.Commit)
 			flush();

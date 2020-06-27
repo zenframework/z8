@@ -105,6 +105,7 @@ public class Expression implements IFilter {
 		return result;
 	}
 
+	@Override
 	public SqlToken where() {
 		if(field == null)
 			return null;

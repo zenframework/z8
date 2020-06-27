@@ -24,6 +24,7 @@ public class BasicSelect extends BasicStatement {
 		return cursor = new Cursor(this);
 	}
 
+	@Override
 	protected void cleanup() throws SQLException {
 		if(cursor != null && !cursor.isClosed()) {
 			cursor.close();

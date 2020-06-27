@@ -49,6 +49,7 @@ public class ActionReport extends Action {
 		writer.writeProperty(Json.isReport, true);
 	}
 
+	@Override
 	@SuppressWarnings("rawtypes")
 	public void z8_execute(guid record, Query.CLASS<? extends Query> context, RCollection selected, Query.CLASS<? extends Query> query) {
 		Report report = this.report.get();

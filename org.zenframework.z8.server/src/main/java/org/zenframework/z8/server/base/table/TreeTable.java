@@ -156,6 +156,7 @@ public class TreeTable extends Table implements Connection.Listener {
 		}
 	}
 
+	@Override
 	public void on(Connection connection, ConnectionEvent event) {
 		idToPathMap.remove();
 	}

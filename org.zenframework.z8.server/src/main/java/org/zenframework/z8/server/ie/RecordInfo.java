@@ -67,6 +67,12 @@ public class RecordInfo implements RmiSerializable, Serializable {
 
 		id = RmiIO.readGuid(in);
 		table = RmiIO.readString(in);
-		fields = (Collection<FieldInfo>)in.readObject();
+		fields = (Collection<FieldInfo>) in.readObject();
 	}
+
+	@Override
+	public String toString() {
+		return String.format("RecordInfo[%s/%s]", table, id);
+	}
+
 }

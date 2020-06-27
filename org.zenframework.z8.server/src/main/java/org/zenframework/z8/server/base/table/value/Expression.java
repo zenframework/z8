@@ -49,6 +49,7 @@ public class Expression extends Field {
 		return true;
 	}
 
+	@Override
 	public boolean wasNull() {
 		return false;
 	}

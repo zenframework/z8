@@ -598,6 +598,7 @@ public class file extends primary implements RmiSerializable, Serializable {
 		return output;
 	}
 
+	@Override
 	public string string() {
 		return path;
 	}

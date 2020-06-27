@@ -15,6 +15,7 @@ public class Cell extends OBJECT {
 			this.setJavaClass(Cell.class);
 		}
 
+		@Override
 		public Object newObject(IObject container) {
 			return new Cell(container);
 		}

@@ -112,19 +112,20 @@ public class DataMessage extends Message {
 			fileMessage.prepare();
 		}
 
-		DataMessage dataMessage = (DataMessage)getCLASS().newInstance();
-		dataMessage.setName(getName());
-		dataMessage.setDescription(getDescription());
-		dataMessage.setSourceId(getId());
-		dataMessage.setAddress(getAddress());
-		dataMessage.setSender(getSender());
-		dataMessage.setSource(getSource());
-		dataMessage.setType(getType());
-
-		if (dataMessage.isExportToFile())
+		if (isExportToFile()) {
 			exportToFile(this);
-		else
+		} else {
+			DataMessage dataMessage = (DataMessage)getCLASS().newInstance();
+			dataMessage.setName(getName());
+			dataMessage.setDescription(getDescription());
+			dataMessage.setSourceId(getId());
+			dataMessage.setAddress(getAddress());
+			dataMessage.setSender(getSender());
+			dataMessage.setSource(getSource());
+			dataMessage.setType(getType());
+
 			TransportQueue.newInstance().add(dataMessage);
+		}
 
 		afterExport();
 	}

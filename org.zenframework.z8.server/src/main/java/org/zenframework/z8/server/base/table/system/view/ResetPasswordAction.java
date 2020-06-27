@@ -29,6 +29,7 @@ public class ResetPasswordAction extends Action {
 		super(container);
 	}
 
+	@Override
 	@SuppressWarnings("rawtypes")
 	public void z8_execute(guid recordId, Query.CLASS<? extends Query> context, RCollection selected, Query.CLASS<? extends Query> query) {
 		Users.resetPassword(recordId);

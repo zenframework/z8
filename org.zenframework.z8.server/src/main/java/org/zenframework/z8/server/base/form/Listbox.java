@@ -41,6 +41,7 @@ public class Listbox extends Control {
 		this.editable = bool.True;
 	}
 
+	@Override
 	public boolean readOnly() {
 		return super.readOnly() || query.get().readOnly();
 	}

@@ -55,6 +55,7 @@ public class Database {
 		setCharset(encoding.fromString(json.getString("charset")));
 	}
 
+	@Override
 	public int hashCode() {
 		return (driver() + connection() + schema()).hashCode();
 	}
