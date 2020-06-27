@@ -106,11 +106,12 @@ public class MessageSource implements RmiSerializable, Serializable {
 	}
 
 	public void exportData() {
+		Map<String, Boolean> recordStates = new HashMap<String, Boolean>();
 		ApplicationServer.setEventsLevel(EventsLevel.NONE);
-		
+
 		for(ExportSource source : sources)
-			processExportSource(source);
-		
+			processExportSource(source, recordStates);
+
 		ApplicationServer.restoreEventsLevel();
 	}
 
@@ -141,7 +142,6 @@ public class MessageSource implements RmiSerializable, Serializable {
 	@Override
 	@SuppressWarnings("unchecked")
 	public void deserialize(ObjectInputStream in) throws IOException, ClassNotFoundException {
-		@SuppressWarnings("unused")
 		long version = RmiIO.readLong(in);
 
 		if(version == serialVersionUID)
@@ -157,9 +157,7 @@ public class MessageSource implements RmiSerializable, Serializable {
 		files = (Collection<file>)in.readObject();
 	}
 
-	private Map<String, Boolean> recordStates = new HashMap<String, Boolean>();
-
-	private void processExportSource(ExportSource source) {
+	private void processExportSource(ExportSource source, Map<String, Boolean> recordStates) {
 		Table table = source.table();
 		String tableName = source.name();
 
@@ -185,7 +183,7 @@ public class MessageSource implements RmiSerializable, Serializable {
 			RecordInfo record = new RecordInfo(recordId, tableName);
 
 			for(Field field : fields) {
-				if(!processLink(field, recordId))
+				if(!processLink(field, recordId, recordStates))
 					continue;
 
 				processFiles(field);
@@ -194,6 +192,7 @@ public class MessageSource implements RmiSerializable, Serializable {
 			}
 
 			inserts.add(record);
+			System.out.println(record);
 
 			recordStates.put(id, true);
 		}
@@ -213,7 +212,7 @@ public class MessageSource implements RmiSerializable, Serializable {
 		}
 	}
 
-	private boolean processLink(Field field, guid recordId) {
+	private boolean processLink(Field field, guid recordId, Map<String, Boolean> recordStates) {
 		boolean isLink = field instanceof Link;
 		boolean isParentKey = field.isParentKey();
 
@@ -240,7 +239,7 @@ public class MessageSource implements RmiSerializable, Serializable {
 
 		if(notInserted) {
 			ExportSource source = new ExportSource(table, null, exportAll, Arrays.asList(value));
-			processExportSource(source);
+			processExportSource(source, recordStates);
 			return true;
 		} else if(inserting) {
 			processUpdate(recordId, field);
