@@ -1123,10 +1123,6 @@
 	border: none;
 }
 
-.air .control-group>.btn-trigger {
-	bottom: auto;
-}
-
 .air .toolbar .btn.default {
 	background-color: #fff;
 }

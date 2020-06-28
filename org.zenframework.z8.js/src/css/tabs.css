@@ -24,6 +24,7 @@
 	font-weight: 500;
 	color: #555;
 	text-transform: uppercase;
+	background-color: inherit;
 
 	float: left;
 	max-width: 14.28571428em;
@@ -46,7 +47,6 @@
 	padding-top: 1.07142857em;
 	border-bottom-color: #888;
 	color: inherit;
-	background-color: inherit;
 }
 
 .air .tabs>.header>.tag:hover,

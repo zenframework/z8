@@ -51,7 +51,7 @@ Z8.define('Z8.form.field.Text', {
 			for(var i = 0, length = triggers.length; i < length; i++) {
 				var trigger = triggers[i];
 				var cls = DOM.parseCls(trigger.cls).pushIf('trigger-' + (length - i));
-				trigger = new Z8.button.Trigger({ primary: true, tooltip: trigger.tooltip, icon: trigger.icon, handler: trigger.handler, scope: trigger.scope, cls: cls });
+				trigger = new Z8.button.Trigger({ tooltip: trigger.tooltip, icon: trigger.icon, handler: trigger.handler, scope: trigger.scope, cls: cls });
 				result.push(trigger.htmlMarkup());
 
 				this.triggers.push(trigger);

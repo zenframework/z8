@@ -727,6 +727,12 @@ Z8.define('Z8.dom.Dom', {
 				delete dom.eventsData;
 		},
 
+		goToUrl: function(url) {
+			var anchor = DOM.append(document.body, { tag: 'a', cls: 'display-none', href: url, target: '_blank' });
+			anchor.click();
+			new Z8.util.DelayedTask().delay(5000, DOM.remove, DOM, anchor);
+		},
+
 		saveFile: function(file) {
 			var url = URL.createObjectURL(file);
 			var anchor = DOM.append(document.body, { tag: 'a', cls: 'display-none', href: url, download: file.name });
@@ -808,6 +814,22 @@ Z8.define('Z8.dom.Dom', {
 
 		cancelAnimationFrame: function(requestId) {
 			window.cancelAnimationFrame(requestId);
+		},
+
+		getImageSizeFromBlob: function(blob, callback) {
+			var image = DOM.create('img');
+
+			var onImageLoad = function() {
+				DOM.un(image, 'load', onImageLoad, this);
+				DOM.un(image, 'error', onImageLoad, this);
+				URL.revokeObjectURL(image.src);
+				Z8.callback(callback, image.naturalWidth, image.naturalHeight);
+			};
+
+			DOM.on(image, 'load', onImageLoad, this);
+			DOM.on(image, 'error', onImageLoad, this);
+
+			image.src = URL.createObjectURL(blob);
 		}
 	}
 });
