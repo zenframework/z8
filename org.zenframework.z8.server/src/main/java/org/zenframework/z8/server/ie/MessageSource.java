@@ -192,7 +192,6 @@ public class MessageSource implements RmiSerializable, Serializable {
 			}
 
 			inserts.add(record);
-			System.out.println(record);
 
 			recordStates.put(id, true);
 		}
