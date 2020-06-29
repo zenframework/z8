@@ -76,7 +76,7 @@ public class ExchangeJob extends Procedure {
 				if (!files.hasRecord(file.id))
 					files.add(file);
 			} else
-				throw new IOException("Unsupported message type " + o.getClass().getName());
+				throw new IOException("Unsupported message type " + (o != null ? o.getClass().getName() : "null"));
 			return true;
 		} catch (Exception e) {
 			Trace.logError("Could not import file '" + f.getAbsolutePath() + "'", e);

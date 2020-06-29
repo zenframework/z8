@@ -77,7 +77,7 @@ public class ConverterAdapter extends Adapter {
 			if(!absolutePath.exists()) {
 				InputStream in = file == null ? null : file.getInputStream();
 				if(in == null)
-					throw new IOException("File '" + file.name.get() + "' does not exist");
+					throw new IOException("File '" + relativePath + "' does not exist");
 				IOUtils.copy(in, absolutePath);
 			}
 		}

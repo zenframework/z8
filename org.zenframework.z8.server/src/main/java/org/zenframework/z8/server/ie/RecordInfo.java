@@ -72,7 +72,7 @@ public class RecordInfo implements RmiSerializable, Serializable {
 
 	@Override
 	public String toString() {
-		return String.format("RecordInfo[%s/%s]", table, id);
+		return String.format("%s[%s]", table, id);
 	}
 
 }
