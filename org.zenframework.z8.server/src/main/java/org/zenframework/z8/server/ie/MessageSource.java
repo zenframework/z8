@@ -34,6 +34,18 @@ import org.zenframework.z8.server.types.sql.sql_bool;
 public class MessageSource implements RmiSerializable, Serializable {
 	private static final long serialVersionUID = -145929531248527279L;
 
+	private static class Cache {
+		final Map<String, Table> tables = new HashMap<String, Table>();
+		final Map<String, Field> fields = new HashMap<String, Field>();
+		final Set<guid> records = new HashSet<guid>();
+
+		void clear() {
+			tables.clear();
+			fields.clear();
+			records.clear();
+		}
+	}
+
 	private boolean exportAll;
 	private ExportRules exportRules = new ExportRules();
 	private Collection<ExportSource> sources = new ArrayList<ExportSource>();
@@ -260,53 +272,49 @@ public class MessageSource implements RmiSerializable, Serializable {
 	}
 
 	public void importData() {
+		Cache cache = new Cache();
 		ApplicationServer.setEventsLevel(EventsLevel.NONE);
 
 		for(RecordInfo record : inserts)
-			insert(record);
+			insert(record, cache);
 
 		ConnectionManager.get().flush();
 
 		for(RecordInfo record : updates)
-			update(record);
+			update(record, cache);
 
-		fieldCache.clear();
-		tableCache.clear();
+		cache.clear();
 
 		ApplicationServer.restoreEventsLevel();
 	}
 
-	private Map<String, Table> tableCache = new HashMap<String, Table>();
-	private Map<String, Field> fieldCache = new HashMap<String, Field>();
-	private Set<guid> insertedRecords = new HashSet<guid>();
-
-	private Table getTable(String name) {
-		Table table = tableCache.get(name);
+	private Table getTable(String name, Cache cache) {
+		Table table = cache.tables.get(name);
 
 		if(table == null) {
 			table = (Table)Runtime.instance().getTableByName(name).newInstance();
-			tableCache.put(name, table);
+			cache.tables.put(name, table);
 		}
 
 		return table;
 	}
 
-	private Field getField(String tableName, String fieldName) {
+	private Field getField(String tableName, String fieldName, Cache cache) {
 		String key = tableName + "." + fieldName;
 
-		Field field = fieldCache.get(key);
+		Field field = cache.fields.get(key);
 
 		if(field == null) {
-			field = getTable(tableName).getFieldByName(fieldName);
-			fieldCache.put(key, field);
+			field = getTable(tableName, cache).getFieldByName(fieldName);
+			cache.fields.put(key, field);
 		}
 
 		return field;
 	}
 
-	private void insert(RecordInfo record) {
+	private void insert(RecordInfo record, Cache cache) {
 		String tableName = record.table();
-		Table table = getTable(tableName);
+		Table table = getTable(tableName, cache);
 		guid recordId = record.id();
 
 		Collection<Field> attachments = table.attachments();
@@ -314,7 +322,7 @@ public class MessageSource implements RmiSerializable, Serializable {
 
 		for(FieldInfo fieldInfo : record.fields()) {
 			String fieldName = fieldInfo.name();
-			Field field = getField(tableName, fieldName);
+			Field field = getField(tableName, fieldName, cache);
 
 			if(field == null)
 				throw new RuntimeException("Incorrect record format. Table '" + tableName + "' has no field '" + fieldName + "'");
@@ -333,26 +341,26 @@ public class MessageSource implements RmiSerializable, Serializable {
 
 		if(!exists) {
 			table.create(recordId);
-			insertedRecords.add(recordId);
+			cache.records.add(recordId);
 		} else
 			table.update(recordId);
 	}
 
-	private void update(RecordInfo record) {
+	private void update(RecordInfo record, Cache cache) {
 		String tableName = record.table();
-		Table table = getTable(tableName);
+		Table table = getTable(tableName, cache);
 		guid recordId = record.id();
 
 		for(FieldInfo fieldInfo : record.fields()) {
 			String fieldName = fieldInfo.name();
 
-			if(!insertedRecords.contains(recordId)) {
+			if(!cache.records.contains(recordId)) {
 				ImportPolicy fieldPolicy = exportRules.getPolicy(tableName, fieldName, recordId);
 				if(fieldPolicy != ImportPolicy.Override)
 					continue;
 			}
 
-			Field field = getField(tableName, fieldName);
+			Field field = getField(tableName, fieldName, cache);
 
 			if(field == null)
 				throw new RuntimeException("Incorrect record format. Table '" + tableName + "' has no field '" + fieldName + "'");
