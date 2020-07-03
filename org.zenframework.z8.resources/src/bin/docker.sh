@@ -52,6 +52,6 @@ fi
 
 export JAVA_OPTS
 
-rm "\$WORK/*.cache"
+rm -f "\$WORK/*.cache"
 
 (cd "\$WORK" && "\$HOME/bin/${project.name}" -server webserver)
