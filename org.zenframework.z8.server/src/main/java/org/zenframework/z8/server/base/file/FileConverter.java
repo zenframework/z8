@@ -95,7 +95,7 @@ public class FileConverter {
 	}
 
 	public static string z8_getExtension(file file) {
-		return new string(getExtension(file.baseName()));
+		return new string(file.extension());
 	}
 
 	public static String getExtension(File file) {
