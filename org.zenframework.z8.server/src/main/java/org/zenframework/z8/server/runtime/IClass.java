@@ -19,6 +19,7 @@ public interface IClass<TYPE extends IObject> extends IAttributed {
 	public boolean instanceOf(Class<?> cls);
 
 	public TYPE newInstance();
+	public TYPE newInstance(IObject container);
 
 	public TYPE get();
 	public TYPE get(int stage);

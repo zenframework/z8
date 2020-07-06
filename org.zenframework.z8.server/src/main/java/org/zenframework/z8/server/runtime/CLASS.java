@@ -234,12 +234,17 @@ public class CLASS<TYPE extends IObject> implements IClass<TYPE> {
 	}
 
 	@Override
-	@SuppressWarnings("unchecked")
 	public TYPE newInstance() {
+		return newInstance(getContainer());
+	}
+
+	@Override
+	@SuppressWarnings("unchecked")
+	public TYPE newInstance(IObject container) {
 		try {
 			if(constructor == null)
 				constructor = getClass().getDeclaredConstructor(IObject.class);
-			org.zenframework.z8.server.runtime.CLASS<TYPE> cls = (org.zenframework.z8.server.runtime.CLASS<TYPE>)constructor.newInstance(getContainer());
+			org.zenframework.z8.server.runtime.CLASS<TYPE> cls = (org.zenframework.z8.server.runtime.CLASS<TYPE>)constructor.newInstance(container);
 			return cls.get();
 		} catch(Throwable e) {
 			throw new RuntimeException(e);
@@ -385,4 +390,5 @@ public class CLASS<TYPE extends IObject> implements IClass<TYPE> {
 		writer.writeProperty(Json.icon, icon());
 		writer.writeProperty(Json.url, url());
 	}
+
 }
