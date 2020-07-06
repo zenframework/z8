@@ -470,17 +470,6 @@
 	text-decoration: underline;
 }
 
-.air .list .item>.column.int>.cell,
-.air .list .total>.column.int>.cell,
-.air .list .item>.column.float>.cell,
-.air .list .total>.column.float>.cell,
-.air .list .item>.column.date>.cell,
-.air .list .total>.column.date>.cell,
-.air .list .item>.column.datetime>.cell,
-.air .list .total>.column.datetime>.cell {
-	flex-direction: row-reverse;
-}
-
 .air .list .number>.column:first-child,
 .air .list .item>.column:first-child,
 .air .list .total>.column:first-child {
