@@ -49,11 +49,9 @@ Z8.define('Z8.list.Item', {
 	},
 
 	onRecordChange: function(record, modified) {
-		var fields = this.list.getFields();
-		for(var i = 0, length = fields.length; i < length; i++) {
+		for(var i = 0, fields = this.getFields(), length = fields.length; i < length; i++) {
 			var field = fields[i];
-			var name = field.name;
-			if(modified.hasOwnProperty(name))
+			if(modified.hasOwnProperty(field.name))
 				this.updateText(i, field);
 		}
 
@@ -112,7 +110,7 @@ Z8.define('Z8.list.Item', {
 				var cell = { cls: this.getCellCls(field, record).join(' '), cn: i == 0 ? icons.add(text) : text };
 
 				var type = field.type;
-				columns.push({ tag: 'td', cls: 'column' + (type != null ? ' ' + type : '') + (i == 0 && !this.checks && !this.locks ? ' first' : (i == length - 1 ? ' last' : '')), field: i, cn: [cell], title: title });
+				columns.push({ tag: 'td', cls: 'column' + (type != null ? ' ' + type : '') + (i == 0 && !this.checks && !this.locks ? ' first' : (i == length - 1 ? ' last' : '')), field: i, cn: [cell] });
 			}
 		} else {
 			var text = String.htmlText(this.text);
@@ -152,8 +150,9 @@ Z8.define('Z8.list.Item', {
 	},
 
 	renderText: function(field, value) {
-		if(field.renderer != null)
-			return String.htmlText(field.renderer.call(field, value));
+		var renderer = field.renderer;
+		if(renderer != null)
+			return String.htmlText(renderer.call(field, value));
 
 		return this.format(field.type, value, field.format);
 	},
@@ -175,6 +174,11 @@ Z8.define('Z8.list.Item', {
 			value = Format.nl2br(value);
 
 		return String.htmlText(value);
+	},
+
+	formatField: function(field) {
+		field = this.getField(field);
+		return this.format(field.type, this.record.get(field.name), field.format);
 	},
 
 	getCls: function() {
@@ -286,19 +290,26 @@ Z8.define('Z8.list.Item', {
 		this.callParent(enabled);
 	},
 
-	getValue: function() {
-		var record = this.record;
-		return record != null ? record.id : this.getId();
+	getFields: function() {
+		return this.list.getFields();
 	},
 
-	getText: function(fieldName) {
-		var record = this.record;
-		return this.renderText(this.list.getField(fieldName), record != null ? record.get(fieldName) : '');
+	getFieldByIndex: function(index) {
+		return this.list.getFields()[index];
+	},
+
+	getField: function(name) {
+		if(name != null && (name.isField || typeof name == 'Object'))
+			return name;
+		return String.isString(name) ? this.list.getField(name) || this.record.getField(name) : this.getFieldByIndex(name);
+	},
+
+	getValue: function() {
+		return this.record != null ? this.record.id : this.getId();
 	},
 
 	isTree: function() {
-		var record = this.record;
-		return record != null && record.parentId != null;
+		return this.record != null && this.record.parentId != null;
 	},
 
 	hasChildren: function() {
@@ -372,7 +383,7 @@ Z8.define('Z8.list.Item', {
 	},
 
 	updateText: function(index, field) {
-		var field = field || this.list.getFields()[index];
+		var field = field || this.getFieldByIndex(index);
 		this.setText(index, this.renderText(field, this.record.get(field.name)));
 	},
 

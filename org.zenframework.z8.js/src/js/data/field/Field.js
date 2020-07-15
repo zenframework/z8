@@ -34,6 +34,18 @@ Z8.define('Z8.data.field.Field', {
 		return this.type;
 	},
 
+	getName: function() {
+		return this.name;
+	},
+
+	getFormat: function() {
+		return this.format;
+	},
+
+	getRenderer: function() {
+		return this.renderer;
+	},
+
 	serialize: function(value, record) {
 		return value;
 	},
