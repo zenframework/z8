@@ -494,12 +494,12 @@ Z8.define('Z8.dom.Dom', {
 			if((dom = DOM.get(dom)) == null)
 				return null;
 			var tag = dom.tagName;
-			return DOM.isInput(dom) ? (dom.type == 'checkbox' ? dom.checked : dom.value) : dom.textContent;
+			return DOM.isInput(dom) ? dom.value : dom.textContent;
 		},
 
 		setValue: function(dom, value, delay) {
 			if((dom = DOM.get(dom)) != null) {
-				var property = DOM.isInput(dom) ? (dom.type == 'checkbox' ? 'checked' : 'value') : 'textContent';
+				var property = DOM.isInput(dom) ? 'value' : 'textContent';
 				DOM.setProperty(dom, property, value || '', delay);
 			}
 		},
