@@ -308,6 +308,14 @@ Z8.define('Z8.list.Item', {
 		return this.record != null ? this.record.id : this.getId();
 	},
 
+	getText: function(fieldName) {
+		if(this.record != null) {
+			var field = this.getField(fieldName);
+			return field != null ? this.renderText(field, this.record.get(fieldName)) : '';
+		} else
+			return this.text;
+	},
+
 	isTree: function() {
 		return this.record != null && this.record.parentId != null;
 	},
