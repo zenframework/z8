@@ -18,6 +18,10 @@ input, textarea {
 	padding: 0;
 	margin: 0;
 	border: 0;
+	font-kerning: none;
+	font-feature-settings: 'kern' 0;
+	font-variant-ligatures: none;
+	font-feature-settings: 'liga' 0;
 }
 
 input[type="number"]:-webkit-inner-spin-button,
