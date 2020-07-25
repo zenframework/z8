@@ -1,80 +1,139 @@
-buildscript {
-	dependencies {
-		classpath 'com.eriwen:gradle-css-plugin:2.14.0'
-		classpath 'com.eriwen:gradle-js-plugin:2.14.1'
-	}
-}
+import org.gradle.api.Task
+import org.gradle.api.file.RegularFileProperty
+import org.gradle.api.tasks.InputFile
+import org.gradle.api.tasks.JavaExec
+import org.gradle.api.tasks.OutputFile
 
-apply plugin: 'js'
-apply plugin: 'css'
+apply plugin: 'base'
 apply plugin: 'maven'
 
 configurations.default.attributes {
 	attribute(LibraryElements.LIBRARY_ELEMENTS_ATTRIBUTE, project.objects.named(LibraryElements, 'web'))
 }
 
-combineCss {
-	source = file("${projectDir}/src/css/css.buildorder").readLines().findAll { !it.trim().isEmpty() }
-			.collect { "${projectDir}/src/css/${it}" }
-	dest = file("${buildDir}/web/debug/css/revolt.css")
+configurations {
+	jstools
 }
 
-minifyCss {
-	source = combineCss
-	dest = "${buildDir}/web/css/revolt.css"
-	doLast {
-		ant.replaceregexp(match: '(calc\\([\\d|\\.]+[^+]*)(\\+)', replace:'\1 \2 ', flags:'g') {
-			file "${buildDir}/web/css/${rootProject.name}.css"
+dependencies {
+	jstools 'org.zenframework.z8.dependencies.minimizers:closure:3.0'
+	jstools 'org.zenframework.z8.dependencies.minimizers:yuicompressor:3.0'
+}
+
+class ConcatTask extends DefaultTask {
+
+	private static final String ENCODING = 'UTF-8'
+
+	@InputFile final RegularFileProperty source = project.objects.fileProperty()
+	@OutputFile final RegularFileProperty output = project.objects.fileProperty()
+
+	@TaskAction
+	def run() {
+		File buildorder = this.source.asFile.get()
+		File source = buildorder.parentFile
+		project.logger.info "Concat from ${source.path}..."
+
+		def src = buildorder.readLines().findAll {
+			def path = it.trim()
+			!path.isEmpty() && !path.startsWith('#')
+		}.collect {
+			project.file("${source.path}/${it}")
+		}
+		src.each { project.logger.info "Concat: ${it}" }
+		def dest = output.asFile.get()
+		dest.parentFile.mkdirs()
+		dest.newWriter(ENCODING).withWriter { w ->
+			src.each { f -> w << f.getText(ConcatTask.ENCODING) << '\n' }
 		}
 	}
+
 }
 
-task combineFontsCss(type: com.eriwen.gradle.css.tasks.CombineCssTask) {
-	source = file("${projectDir}/src/css/fonts.buildorder").readLines().findAll { !it.trim().isEmpty() }
-			.collect { "${projectDir}/src/css/${it}" }
-	dest = file("${buildDir}/web/debug/css/fonts.css")
+class MinifyCssTask extends JavaExec {
+
+	@InputFile final RegularFileProperty source = project.objects.fileProperty()
+	@OutputFile final RegularFileProperty output = project.objects.fileProperty()
+
+	@Override
+	public Task configure(Closure closure) {
+		classpath = project.configurations.jstools
+		main = 'com.yahoo.platform.yui.compressor.Bootstrap'
+		super.configure(closure);
+	}
+
+	@Override
+	public void exec() {
+		jvmArgs = [ '-Xss4M' ]
+		args = [ '-v', '--type', 'css', '-o', output.asFile.get().path, source.asFile.get().path ]
+		super.exec();
+	}
+
 }
 
-task minifyFontsCss(type: com.eriwen.gradle.css.tasks.MinifyCssTask) {
-	source = combineFontsCss
-	dest = "${buildDir}/web/css/fonts.css"
+class MinifyJsTask extends JavaExec {
+
+	@InputFile final RegularFileProperty source = project.objects.fileProperty()
+	@OutputFile final RegularFileProperty output = project.objects.fileProperty()
+
+	@Override
+	public Task configure(Closure closure) {
+		classpath = project.configurations.jstools
+		main = 'com.google.javascript.jscomp.CommandLineRunner'
+		super.configure(closure);
+	}
+
+	@Override
+	public void exec() {
+		args = [ '--rewrite_polyfills', 'false', '--js_output_file', output.asFile.get().path, source.asFile.get().path ]
+		super.exec();
+	}
+
+}
+
+task concatCss(type: ConcatTask) {
+	source = file("${projectDir}/src/css/.css.buildorder")
+	output = file("${buildDir}/web/debug/css/revolt.css")
+}
+
+task minifyCss(type: MinifyCssTask) {
+	source = concatCss.output
+	output = file("${buildDir}/web/css/revolt.css")
 	doLast {
-		ant.replaceregexp(match: '(calc\\([\\d|\\.]+[^+]*)(\\+)', replace:'\1 \2 ', flags:'g') {
-			file "${buildDir}/web/css/${rootProject.name}.css"
-		}
+		ant.replaceregexp(file: output.get(), match: '(calc\\([\\d|\\.]+[^+]*)(\\+)', replace: '\\1 \\2 ', flags: 'g')
 	}
 }
 
-combineJs {
-	source = file("${projectDir}/src/js/js.buildorder").readLines().findAll { !it.trim().isEmpty() }
-			.collect { "${projectDir}/src/js/${it}" }
-	dest = file("${buildDir}/web/debug/revolt.js")
-	encoding = 'UTF-8'
+task concatFontsCss(type: ConcatTask) {
+	source = file("${projectDir}/src/css/.fonts.buildorder")
+	output = file("${buildDir}/web/debug/css/fonts.css")
 }
 
-minifyJs {
-	source = combineJs
-	dest = file("${buildDir}/web/revolt.js")
-	closure {
-		warningLevel = 'QUIET'
-		compilerOptions = [
-			languageIn: 'ECMASCRIPT6',
-			languageOut: 'ECMASCRIPT5',
-			rewritePolyfills: false
-		]
+task minifyFontsCss(type: MinifyCssTask) {
+	source = concatFontsCss.output
+	output = file("${buildDir}/web/css/fonts.css")
+	doLast {
+		ant.replaceregexp(file: output.get(), match: '(calc\\([\\d|\\.]+[^+]*)(\\+)', replace: '\\1 \\2 ', flags: 'g')
 	}
 }
 
-task combineUtilJs(type: com.eriwen.gradle.js.tasks.CombineJsTask) {
-	source = file("${projectDir}/src/js/util.buildorder").readLines().findAll { !it.trim().isEmpty() }
-			.collect { "${projectDir}/src/js/${it}" }
-	dest = file("${buildDir}/web/debug/revolt.utils.js")
-	encoding = 'UTF-8'
+task concatJs(type: ConcatTask) {
+	source = file("${projectDir}/src/js/.js.buildorder")
+	output = file("${buildDir}/web/debug/revolt.js")
 }
 
-task minifyUtilJs(type: com.eriwen.gradle.js.tasks.MinifyJsTask) {
-	source = combineUtilJs
-	dest = file("${buildDir}/web/revolt.utils.js")
+task minifyJs(type: MinifyJsTask) {
+	source = concatJs.output
+	output = file("${buildDir}/web/revolt.js")
+}
+
+task concatUtilJs(type: ConcatTask) {
+	source = file("${projectDir}/src/js/.util.buildorder")
+	output = file("${buildDir}/web/debug/revolt.util.js")
+}
+
+task minifyUtilJs(type: MinifyJsTask) {
+	source = concatUtilJs.output
+	output = file("${buildDir}/web/revolt.util.js")
 }
 
 task assembleZip(type: Zip, group: 'Build', dependsOn: [minifyCss, minifyFontsCss, minifyJs, minifyUtilJs]) {
