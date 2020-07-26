@@ -49,94 +49,34 @@ class ConcatTask extends DefaultTask {
 
 }
 
-class MinifyCssTask extends JavaExec {
-
-	@InputFile final RegularFileProperty source = project.objects.fileProperty()
-	@OutputFile final RegularFileProperty output = project.objects.fileProperty()
-
-	@Override
-	public Task configure(Closure closure) {
-		classpath = project.configurations.jstools
-		main = 'com.yahoo.platform.yui.compressor.Bootstrap'
-		super.configure(closure);
-	}
-
-	@Override
-	public void exec() {
-		jvmArgs = [ '-Xss4M' ]
-		args = [ '-v', '--type', 'css', '-o', output.asFile.get().path, source.asFile.get().path ]
-		super.exec();
-	}
-
-}
-
-class MinifyJsTask extends JavaExec {
-
-	@InputFile final RegularFileProperty source = project.objects.fileProperty()
-	@OutputFile final RegularFileProperty output = project.objects.fileProperty()
-
-	@Override
-	public Task configure(Closure closure) {
-		classpath = project.configurations.jstools
-		main = 'com.google.javascript.jscomp.CommandLineRunner'
-		super.configure(closure);
-	}
-
-	@Override
-	public void exec() {
-		args = [ '--rewrite_polyfills', 'false', '--js_output_file', output.asFile.get().path, source.asFile.get().path ]
-		super.exec();
-	}
-
-}
-
 task concatCss(type: ConcatTask) {
 	source = file("${projectDir}/src/css/.css.buildorder")
-	output = file("${buildDir}/web/debug/css/revolt.css")
-}
-
-task minifyCss(type: MinifyCssTask) {
-	source = concatCss.output
 	output = file("${buildDir}/web/css/revolt.css")
-	doLast {
-		ant.replaceregexp(file: output.get(), match: '(calc\\([\\d|\\.]+[^+]*)(\\+)', replace: '\\1 \\2 ', flags: 'g')
-	}
 }
 
 task concatFontsCss(type: ConcatTask) {
 	source = file("${projectDir}/src/css/.fonts.buildorder")
-	output = file("${buildDir}/web/debug/css/fonts.css")
-}
-
-task minifyFontsCss(type: MinifyCssTask) {
-	source = concatFontsCss.output
 	output = file("${buildDir}/web/css/fonts.css")
-	doLast {
-		ant.replaceregexp(file: output.get(), match: '(calc\\([\\d|\\.]+[^+]*)(\\+)', replace: '\\1 \\2 ', flags: 'g')
-	}
 }
 
 task concatJs(type: ConcatTask) {
 	source = file("${projectDir}/src/js/.js.buildorder")
-	output = file("${buildDir}/web/debug/revolt.js")
-}
-
-task minifyJs(type: MinifyJsTask) {
-	source = concatJs.output
 	output = file("${buildDir}/web/revolt.js")
 }
 
 task concatUtilJs(type: ConcatTask) {
 	source = file("${projectDir}/src/js/.util.buildorder")
-	output = file("${buildDir}/web/debug/revolt.util.js")
-}
-
-task minifyUtilJs(type: MinifyJsTask) {
-	source = concatUtilJs.output
 	output = file("${buildDir}/web/revolt.util.js")
 }
 
-task assembleZip(type: Zip, group: 'Build', dependsOn: [minifyCss, minifyFontsCss, minifyJs, minifyUtilJs]) {
+task prepareResources(type: Copy) {
+	from('src') {
+		include 'css/fonts/**', 'css/img/**'
+	}
+	into "${buildDir}/web"
+}
+
+task assembleZip(type: Zip, group: 'Build', dependsOn: [concatCss, concatFontsCss, concatJs, concatUtilJs, prepareResources]) {
 	archiveName "${project.name}-${project.version}.zip"
 	destinationDir file("${buildDir}/libs/")
 	from("${buildDir}") {
