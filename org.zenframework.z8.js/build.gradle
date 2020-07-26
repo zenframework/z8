@@ -1,8 +1,4 @@
-import org.gradle.api.Task
-import org.gradle.api.file.RegularFileProperty
-import org.gradle.api.tasks.InputFile
-import org.gradle.api.tasks.JavaExec
-import org.gradle.api.tasks.OutputFile
+import org.gradle.api.tasks.InputDirectory
 
 apply plugin: 'base'
 apply plugin: 'maven'
@@ -24,16 +20,16 @@ class ConcatTask extends DefaultTask {
 
 	private static final String ENCODING = 'UTF-8'
 
-	@InputFile final RegularFileProperty source = project.objects.fileProperty()
+	@InputDirectory final DirectoryProperty source = project.objects.directoryProperty()
 	@OutputFile final RegularFileProperty output = project.objects.fileProperty()
+	@Input def buildorder = '.buildorder'
 
 	@TaskAction
 	def run() {
-		File buildorder = this.source.asFile.get()
-		File source = buildorder.parentFile
+		File source = this.source.asFile.get()
 		project.logger.info "Concat from ${source.path}..."
 
-		def src = buildorder.readLines().findAll {
+		def src = project.file("${source.path}/${buildorder}").readLines().findAll {
 			def path = it.trim()
 			!path.isEmpty() && !path.startsWith('#')
 		}.collect {
@@ -50,23 +46,25 @@ class ConcatTask extends DefaultTask {
 }
 
 task concatCss(type: ConcatTask) {
-	source = file("${projectDir}/src/css/.css.buildorder")
+	source = file("${projectDir}/src/css")
 	output = file("${buildDir}/web/css/revolt.css")
 }
 
 task concatFontsCss(type: ConcatTask) {
-	source = file("${projectDir}/src/css/.fonts.buildorder")
+	source = file("${projectDir}/src/css")
 	output = file("${buildDir}/web/css/fonts.css")
+	buildorder = '.fonts.buildorder'
 }
 
 task concatJs(type: ConcatTask) {
-	source = file("${projectDir}/src/js/.js.buildorder")
+	source = file("${projectDir}/src/js")
 	output = file("${buildDir}/web/revolt.js")
 }
 
 task concatUtilJs(type: ConcatTask) {
-	source = file("${projectDir}/src/js/.util.buildorder")
+	source = file("${projectDir}/src/js")
 	output = file("${buildDir}/web/revolt.util.js")
+	buildorder = '.util.buildorder'
 }
 
 task prepareResources(type: Copy) {
