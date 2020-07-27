@@ -43,6 +43,7 @@ public final class date extends primary {
 	public void setDate(int year, int month, int day);
 	public void setTime(int hour, int minute, int second);
 	public void setTime(int hour, int minute, int second, int millisecond);
+	public void setZoneOffset(int zoneOffset);
 
 	public void set(int year, int month, int day, int hour, int minute, int second);
 	public void set(int year, int month, int day, int hour, int minute, int second, int millisecond);

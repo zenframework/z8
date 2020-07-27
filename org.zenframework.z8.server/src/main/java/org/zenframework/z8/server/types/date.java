@@ -571,6 +571,10 @@ public class date extends primary {
 		setTime(hour.getInt(), minute.getInt(), second.getInt(), millisecond.getInt());
 	}
 
+	public void z8_setZoneOffset(integer zoneOffset) {
+		setZoneOffset(zoneOffset.getInt());
+	}
+
 	public date z8_addYear(integer years) {
 		return addYear(years.getInt());
 	}
