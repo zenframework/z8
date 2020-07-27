@@ -551,6 +551,10 @@ public class date extends primary {
 		return new integer(milliseconds());
 	}
 
+	public integer z8_zoneOffset() {
+		return new integer(zoneOffset());
+	}
+
 	public void z8_set(integer year, integer month, integer day, integer hour, integer minute, integer second) {
 		set(year.getInt(), month.getInt(), day.getInt(), hour.getInt(), minute.getInt(), second.getInt());
 	}
