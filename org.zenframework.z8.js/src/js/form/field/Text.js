@@ -121,6 +121,10 @@ Z8.define('Z8.form.field.Text', {
 		this.setPlaceholder(label);
 	},
 
+	getPlaceholder: function() {
+		return this.placeholder;
+	},
+
 	setPlaceholder: function(placeholder) {
 		this.placeholder = placeholder;
 		DOM.setAttribute(this.input, 'placeholder', placeholder);
