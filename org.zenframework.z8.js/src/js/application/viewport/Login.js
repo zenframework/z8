@@ -15,6 +15,12 @@ Z8.define('Z8.application.viewport.Login', {
 		this.callParent();
 	},
 
+	htmlMarkup: function() {
+		var markup = Z8.form.Fieldset.prototype.htmlMarkup.call(this);
+		markup.tag = 'form';
+		return markup;
+	},
+
 	getCls: function() {
 		return Z8.form.Fieldset.prototype.getCls.call(this).pushIf('login');
 	},
