@@ -15,7 +15,7 @@ eclipse {
 
 sourceSets.main.resources {
 	srcDirs projectDir
-	include 'plugin.xml'
+	include 'plugin.xml', 'META-INF/**'
 }
 
 jar.manifest.from "${projectDir}/META-INF/MANIFEST.MF"

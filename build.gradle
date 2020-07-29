@@ -45,6 +45,9 @@ subprojects {
 
 		sourceSets.main.java.outputDir = file("${buildDir}/classes/main")
 		sourceSets.main.output.resourcesDir = file("${buildDir}/classes/main")
+
+		jar.duplicatesStrategy = 'exclude'
+		jar.includeEmptyDirs = false
 	}
 
 	// Java version 1.8
