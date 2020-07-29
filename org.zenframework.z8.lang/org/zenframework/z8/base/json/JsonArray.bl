@@ -8,6 +8,8 @@ public class JsonArray extends Object {
 	public void operator = (string source);
 	public void operator = (primary[] source);
 
+	public JsonArray operator + (JsonArray value);
+
 	public bool isEmpty();
 	public int length();
 

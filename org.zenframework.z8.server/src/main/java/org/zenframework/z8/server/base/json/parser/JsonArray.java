@@ -60,6 +60,13 @@ public class JsonArray extends OBJECT {
 		array = new org.zenframework.z8.server.json.parser.JsonArray(values);
 	}
 
+	public JsonArray.CLASS<JsonArray> operatorAdd(JsonArray.CLASS<? extends JsonArray> x) {
+		JsonArray.CLASS<JsonArray> y = new JsonArray.CLASS<JsonArray>();
+		y.get().get().addAll(array);
+		y.get().get().addAll(x.get().get());
+		return y;
+	}
+
 	public bool z8_isEmpty() {
 		return new bool(array.length() == 0);
 	}
