@@ -459,6 +459,10 @@ public class date extends primary {
 		return value.compareTo(x.get());
 	}
 
+	public void operatorAssign(integer ticks) {
+		setTicks(ticks.get());
+	}
+
 	public bool operatorEqu(date x) {
 		return new bool(value.compareTo(x.get()) == 0);
 	}
