@@ -34,8 +34,8 @@ public class If extends SqlToken {
 
 		String result = CaseToken.format(vendor, options);
 
-		if(logicalContext)
-			result = "(" + result + ")=1"; // Where
+//		if(logicalContext)
+//			result = "(" + result + ")=1"; // Where
 
 		return result;
 	}
