@@ -55,7 +55,9 @@ public class SqlField extends SqlToken {
 		FieldType type = field.type();
 
 		String alias = field.format(vendor, options);
-		if(logicalContext && type == FieldType.Boolean && !(field instanceof Expression))
+		// and field like '' /*setExpression(field.like(''))*/
+		// and field like '' /*setExpression(field.like('').IIF(1, 0) == 1)*/
+		if(logicalContext && type == FieldType.Boolean/* && !(field instanceof Expression)*/)
 			alias += "=1";
 
 		return new SqlStringToken(alias, type);
