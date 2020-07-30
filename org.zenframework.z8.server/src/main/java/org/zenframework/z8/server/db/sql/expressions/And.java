@@ -40,13 +40,13 @@ public class And extends Expression {
 			String leftText = left == null ? null : left.format(vendor, options, true);
 			String rightText = right == null ? null : right.format(vendor, options, true);
 
-			if(leftText != null && rightText != null) {
+			if(leftText != null && rightText != null)
 				return leftText + " AND " + rightText;
-			} else if(leftText != null) {
+			else if(leftText != null)
 				return leftText;
-			} else if(rightText != null) {
+			else if(rightText != null)
 				return rightText;
-			}
+
 			return null;
 		} else {
 			SqlToken token = new If(this, sql_integer.One, sql_integer.Zero);
