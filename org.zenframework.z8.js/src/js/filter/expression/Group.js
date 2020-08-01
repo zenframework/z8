@@ -52,7 +52,7 @@ Z8.define('Z8.filter.Group', {
 				'-'
 			];
 
-			var deleteItem = this.deleteItem = new Z8.menu.Item({ text: 'Delete', icon: 'fa-trash', handler: this.onDeleteLine })
+			var deleteItem = this.deleteItem = new Z8.menu.Item({ text: 'Delete', icon: 'fa-trash', handler: this.onDeleteLine });
 			menuItems.push(deleteItem);
 
 			var menu = new Z8.menu.Menu({ items: menuItems });

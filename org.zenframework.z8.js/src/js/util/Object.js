@@ -4,5 +4,5 @@ if(Object.values == null) {
 		for(var key in object)
 			values.push(object[key]);
 		return values;
-	}
+	};
 }

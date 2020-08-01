@@ -170,7 +170,7 @@ Z8.define('Z8.form.Form', {
 			controls.push(tab);
 		}
 
-		var tabControl = new Z8.form.Tabs({ name: tabControl.name, controls: controls, actions: tabControl.actions, colSpan: tabControl.colSpan, readOnly: tabControl.readOnly, flex: tabControl.flex, height: tabControl.height, defaultTabIndex: tabControl.defaultTabIndex })
+		var tabControl = new Z8.form.Tabs({ name: tabControl.name, controls: controls, actions: tabControl.actions, colSpan: tabControl.colSpan, readOnly: tabControl.readOnly, flex: tabControl.flex, height: tabControl.height, defaultTabIndex: tabControl.defaultTabIndex });
 
 		this.addField(tabControl);
 

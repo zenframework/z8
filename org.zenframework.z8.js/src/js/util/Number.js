@@ -19,5 +19,5 @@ Number.prototype.ceil = function() {
 
 Number.prototype.floor = function() {
 	return Math.floor(this);
-}
+};
 

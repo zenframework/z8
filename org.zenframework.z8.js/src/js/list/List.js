@@ -1316,7 +1316,7 @@ Z8.define('Z8.list.List', {
 			return;
 
 		var direction = header.getSort() == 'asc' ?  'desc' : 'asc';
-		var sorter = { property: header.field.name, direction: direction }
+		var sorter = { property: header.field.name, direction: direction };
 
 		var callback = function(store, records, success) {
 			header.setBusy(false);

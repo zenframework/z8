@@ -178,7 +178,7 @@ Z8.define('Z8.calendar.Period', {
 		var lastMonth = new Z8.button.Button({ text: 'Прошлый месяц', name: 'lastMonth', toggled: false });
 		var nextMonth = new Z8.button.Button({ text: 'Следующий месяц', name: 'nextMonth', toggled: false });
 
-		var selector1 = new Z8.button.Group({ cls: 'selector', items: [today, yesterday, dayBeforeYesterday, last7Days, tomorrow, separator, thisWeek, lastWeek, nextWeek, separator, thisMonth, lastMonth, nextMonth], radio: true, vertical: true })
+		var selector1 = new Z8.button.Group({ cls: 'selector', items: [today, yesterday, dayBeforeYesterday, last7Days, tomorrow, separator, thisWeek, lastWeek, nextWeek, separator, thisMonth, lastMonth, nextMonth], radio: true, vertical: true });
 
 		var thisQuarter = new Z8.button.Button({ text: 'Текущий квартал', name: 'thisQuarter', toggled: false });
 		var lastQuarter = new Z8.button.Button({ text: 'Прошлый квартал', name: 'lastQuarter', toggled: false });
@@ -192,7 +192,7 @@ Z8.define('Z8.calendar.Period', {
 		var lastYear = new Z8.button.Button({ text: 'Прошлый год', name: 'lastYear', toggled: false });
 		var nextYear = new Z8.button.Button({ text: 'Следующий год', name: 'nextYear', toggled: false });
 
-		var selector2 = new Z8.button.Group({ cls: 'selector', items: [thisQuarter, lastQuarter, nextQuarter, separator, thisHalfYear, lastHalfYear, nextHalfYear, separator, thisYear, lastYear, nextYear], radio: true, vertical: true })
+		var selector2 = new Z8.button.Group({ cls: 'selector', items: [thisQuarter, lastQuarter, nextQuarter, separator, thisHalfYear, lastHalfYear, nextHalfYear, separator, thisYear, lastYear, nextYear], radio: true, vertical: true });
 
 		this.attachListeners(selector1.items);
 		this.attachListeners(selector2.items);

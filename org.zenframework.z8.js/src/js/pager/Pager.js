@@ -131,11 +131,11 @@ Z8.define('Z8.pager.Pager', {
 	},
 
 	onNext: function() {
-		this.load(Math.min(this.getPage() + 1, this.pageCount() - 1), this.next)
+		this.load(Math.min(this.getPage() + 1, this.pageCount() - 1), this.next);
 	},
 
 	onLast: function() {
-		this.load(Math.min(this.pageCount() - 1), this.last)
+		this.load(Math.min(this.pageCount() - 1), this.last);
 	},
 
 	onBeforeCount: function(store) {

@@ -70,7 +70,7 @@ Z8.define('Z8.form.field.Combobox', {
 		if(!this.isRequired() && this.clearTrigger !== false)
 			triggers.push({ icon: 'fa-times', tooltip: 'Очистить', handler: this.clearValue, scope: this });
 
-		this.triggers = triggers.add(this.triggers)
+		this.triggers = triggers.add(this.triggers);
 	},
 
 	htmlMarkup: function() {
@@ -479,7 +479,7 @@ Z8.define('Z8.form.field.Combobox', {
 
 			if(item != null)
 				this.setValue(item.getValue(), item.getText(this.displayName));
-		}
+		};
 
 		if(!this.isLoaded())
 			this.load({ fn: callback, scope: this });
