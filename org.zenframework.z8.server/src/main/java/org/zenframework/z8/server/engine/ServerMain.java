@@ -30,7 +30,7 @@ public final class ServerMain {
 		ServerType(String className) {
 			this.className = className;
 		}
-		
+
 		IServer getServer() {
 			if (this == authcenter)
 				return ServerConfig.authorityCenter();
