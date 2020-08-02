@@ -5,57 +5,55 @@
 
 	<target name="minimize css+js">
 		<loadfile property="css.buildorder" srcFile="src/css/.buildorder"/>
-		<concat destfile="target/debug/css/z8.css" encoding="UTF-8" fixlastline="yes">
+		<concat destfile="target/debug/css/org.zenframework.z8.css" encoding="UTF-8" fixlastline="yes">
 			<filelist dir="src/css" files="${css.buildorder}"/>
 		</concat>
 
 		<mkdir dir="target/css"/>
 
 		<exec dir="." executable="java">
-			<arg line="-jar ${yuicompressor} target/css/z8.css target/debug/css/z8.css"/>
+			<arg line="-jar ${yuicompressor} target/css/org.zenframework.z8.css target/debug/css/org.zenframework.z8.css"/>
 		</exec>
 
 		<!--
 			yuicompressor breaks css 'calc(point + point)' rule by removing spaces around '+' (while '-' stays intact). 
 			The next line fixes it.
 		 -->
-		<replaceregexp file="target/css/z8.css" match="(calc\([\d|\.]+[^+]*)(\+)" replace="\1 \2 " flags="g"/>
+		<replaceregexp file="target/css/org.zenframework.z8.css" match="(calc\([\d|\.]+[^+]*)(\+)" replace="\1 \2 " flags="g"/>
 
 		<loadfile property="css.fonts.buildorder" srcFile="src/css/.fonts.buildorder"/>
-		<concat destfile="target/debug/css/fonts.css" encoding="UTF-8" fixlastline="yes">
+		<concat destfile="target/debug/css/org.zenframework.z8.fonts.css" encoding="UTF-8" fixlastline="yes">
 			<filelist dir="src/css" files="${css.fonts.buildorder}"/>
 		</concat>
 
 		<exec dir="." executable="java">
-			<arg line="-jar ${yuicompressor} target/css/fonts.css target/debug/css/fonts.css"/>
+			<arg line="-jar ${yuicompressor} target/css/org.zenframework.z8.fonts.css target/debug/css/org.zenframework.z8.fonts.css"/>
 		</exec>
 
-		<copy todir="target/css">
-			<fileset dir="target/css" includes="fonts/**" excludes="fonts/z8/svg/**"/>
-			<fileset dir="target/css" includes="img/**"/>
+		<copy todir="target/debug/css">
+			<fileset dir="src/css" includes="img/**, fonts/**"/>
 		</copy>
 
-		<copy todir="target/debug/css">
-			<fileset dir="target/css" includes="fonts/**" excludes="fonts/z8/svg/**"/>
-			<fileset dir="target/css" includes="img/**"/>
+		<copy todir="target/css">
+			<fileset dir="src/css" includes="img/**, fonts/**"/>
 		</copy>
 
 		<loadfile property="js.buildorder" srcFile="src/js/.buildorder"/>
-		<concat destfile="target/debug/z8.js" encoding="UTF-8" fixlastline="yes">
+		<concat destfile="target/debug/org.zenframework.z8.js" encoding="UTF-8" fixlastline="yes">
 			<filelist dir="src/js" files="${js.buildorder}"/>
 		</concat>
 
 		<exec dir="." executable="java">
-			<arg line="-jar ${closure} target/z8.js target/debug/z8.js"/>
+			<arg line="-jar ${closure} target/org.zenframework.z8.js target/debug/org.zenframework.z8.js"/>
 		</exec>
 
 		<loadfile property="js.util.buildorder" srcFile="src/js/.util.buildorder"/>
-		<concat destfile="target/debug/z8.utils.js" encoding="UTF-8" fixlastline="yes">
+		<concat destfile="target/debug/org.zenframework.z8.utils.js" encoding="UTF-8" fixlastline="yes">
 			<filelist dir="src/js" files="${js.util.buildorder}"/>
 		</concat>
 
 		<exec dir="." executable="java">
-			<arg line="-jar ${closure} target/z8.utils.js target/debug/z8.utils.js"/>
+			<arg line="-jar ${closure} target/org.zenframework.z8.utils.js target/debug/org.zenframework.z8.utils.js"/>
 		</exec>
 	</target>
 </project>
