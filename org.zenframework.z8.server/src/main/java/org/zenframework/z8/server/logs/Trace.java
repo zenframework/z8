@@ -9,10 +9,6 @@ import org.zenframework.z8.server.utils.ErrorUtils;
 public class Trace {
 	private static final Log log = LogFactory.getLog("Z8");
 
-	static public Log log() {
-		return log;
-	}
-
 	static public void logEvent(Object message) {
 		log.info("\n\t" + message);
 	}

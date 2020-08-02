@@ -59,7 +59,6 @@ public abstract class Adapter {
 		return servlet;
 	}
 
-	@SuppressWarnings("unlikely-arg-type")
 	public void service(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
 		HttpSession httpSession = useContainerSession ? request.getSession() : null;
 		try {

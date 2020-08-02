@@ -1,29 +1,28 @@
 Manifest-Version: 1.0
 Created-By: 1.7.0_06 (Oracle Corporation)
-Class-Path:
- classes/
- commons/commons-cli-1.0.jar
- commons/commons-fileupload-1.3.1.jar
- commons/commons-io-2.2.jar
+Class-Path: .,
+ commons/commons-cli-1.0.jar,
+ commons/commons-fileupload-1.3.1.jar,
+ commons/commons-io-2.2.jar,
  commons/commons-lang-2.1.jar
- commons/log4j-1.2.17.jar
- commons/dom4j-1.6.1.jar
- commons/juniversalchardet-1.0.3.jar
- commons/mail-1.4.7.jar
- commons/postgresql-9.3-1104-jdbc41.jar
- jodconverter-core-3.0-beta-4-jahia2.jar
- birt/com.ibm.icu_56.1.0.v201601250100.jar
- birt/org.apache.commons.logging_1.1.1.v201101211721.jar
- birt/org.apache.commons.codec_1.6.0.v201305230611.jar
- birt/com.lowagie.text_2.1.7.v201004222200.jar
- birt/org.eclipse.birt.runtime_4.6.0-20160607.jar
- birt/org.eclipse.core.runtime_3.12.0.v20160606-1342.jar
- birt/org.eclipse.datatools.connectivity.oda_3.5.0.201603142002.jar
- birt/org.eclipse.datatools.connectivity.oda.consumer_3.3.0.201603142002.jar
- birt/org.eclipse.equinox.common_3.8.0.v20160509-1230.jar
- birt/org.eclipse.equinox.registry_3.6.100.v20160223-2218.jar
- birt/org.eclipse.osgi_3.11.0.v20160603-1336.jar
- birt/org.mozilla.javascript_1.7.5.v201504281450.jar
- birt/org.w3c.css.sac_1.3.1.v200903091627.jar
- birt/org.apache.batik.css_1.6.0.v201011041432.jar
+ commons/log4j-1.2.17.jar,
+ commons/dom4j-1.6.1.jar,
+ commons/juniversalchardet-1.0.3.jar,
+ commons/mail-1.4.7.jar,
+ commons/postgresql-9.3-1104-jdbc41.jar,
+ jodconverter-core-3.0-beta-4-jahia2.jar,
+ birt/com.ibm.icu_56.1.0.v201601250100.jar,
+ birt/org.apache.commons.logging_1.1.1.v201101211721.jar,
+ birt/org.apache.commons.codec_1.6.0.v201305230611.jar,
+ birt/com.lowagie.text_2.1.7.v201004222200.jar,
+ birt/org.eclipse.birt.runtime_4.6.0-20160607.jar,
+ birt/org.eclipse.core.runtime_3.12.0.v20160606-1342.jar,
+ birt/org.eclipse.datatools.connectivity.oda_3.5.0.201603142002.jar,
+ birt/org.eclipse.datatools.connectivity.oda.consumer_3.3.0.201603142002.jar,
+ birt/org.eclipse.equinox.common_3.8.0.v20160509-1230.jar,
+ birt/org.eclipse.equinox.registry_3.6.100.v20160223-2218.jar,
+ birt/org.eclipse.osgi_3.11.0.v20160603-1336.jar,
+ birt/org.mozilla.javascript_1.7.5.v201504281450.jar,
+ birt/org.w3c.css.sac_1.3.1.v200903091627.jar,
+ birt/org.apache.batik.css_1.6.0.v201011041432.jar,
  birt/org.apache.batik.util_1.6.0.v201011041432.jar
