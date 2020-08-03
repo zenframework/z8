@@ -54,7 +54,6 @@
 .fieldset>.row:not(:last-child)>.cell>.tabs,
 .fieldset>.row:not(:last-child)>.cell>.fieldset,
 .fieldset>.row:not(:last-child)>.cell>.control-group,
-.fieldset>.row:not(:last-child)>.cell>.control,
 .fieldset>.row:not(:last-child)>.cell>.btn-group,
 .fieldset>.row:not(:last-child)>.cell>.btn {
 	margin-bottom: 1.71428572em;
@@ -80,8 +79,7 @@
 
 .fieldset>.row>.cell>.tabs,
 .fieldset>.row>.cell>.fieldset,
-.fieldset>.row>.cell>.control-group:not(.scrollable),
-.fieldset>.row>.cell>.control {
+.fieldset>.row>.cell>.control-group:not(.scrollable) {
 	flex: 1;
 }
 
@@ -117,7 +115,7 @@
 	box-shadow: none;
 }
 
-.form textarea {
+.form .textarea.control {
 	resize: vertical;
 	overflow-x: hidden;
 	overflow-y: hidden;

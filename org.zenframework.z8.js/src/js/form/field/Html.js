@@ -3,12 +3,8 @@ Z8.define('Z8.form.field.Html', {
 
 	scrollable: true,
 
-	getCls: function() {
-		return Z8.form.field.Control.prototype.getCls.call(this).pushIf('html');
-	},
-
 	controlMarkup: function() {
-		return [{ tag: 'div', cls: 'control', tabIndex: this.getTabIndex(), html: this.getValue() }];
+		return [{ tag: 'div', cls: 'html control', tabIndex: this.getTabIndex(), html: this.getValue() }];
 	},
 
 	completeRender: function() {

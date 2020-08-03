@@ -95,6 +95,7 @@
 }
 
 .filter-control>.expression {
+	flex: 1;
 	padding-left: .28571429em;
 	padding-right: .28571429em;
 	padding-top: .28571429em;

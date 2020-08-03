@@ -268,7 +268,8 @@ td {
 	overflow-y: hidden;
 }
 
-textarea.control,
+.textarea.control,
+.html.control,
 .list.control {
 	flex: 1;
 }
@@ -298,8 +299,8 @@ div[name=input].control {
 	background-color: transparent
 }
 
-textarea.control,
-.html-text.control {
+.textarea.control,
+.html.control {
 	height: auto;
 	user-select: text;
 	-webkit-user-select: text;

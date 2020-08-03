@@ -140,7 +140,7 @@
 	bottom: 0;
 }
 
-.list .item>.column .control-group>textarea.control {
+.list .item>.column .control-group>.textarea.control {
 	overflow-y: hidden;
 	white-space: normal;
 	resize: none;
@@ -257,7 +257,7 @@
 	flex: 1;
 }
 
-.control.list {
+.list.control {
 	height: auto;
 }
 
