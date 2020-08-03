@@ -27,4 +27,8 @@ public class Files extends Table {
 
 	[name "File"]
 	public BinaryField data;
+
+	public static file get(guid fileId);
+	public static file get(file file);
+
 }
