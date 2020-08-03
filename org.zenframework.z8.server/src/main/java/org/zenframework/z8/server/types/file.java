@@ -275,6 +275,11 @@ public class file extends primary implements RmiSerializable, Serializable {
 		return FilenameUtils.getFullPath(path.get());
 	}
 
+	public boolean isFolder() {
+		File file = getAbsolutePath(path.get());
+		return file.isDirectory();
+	}
+
 	public File toFile() {
 		return getAbsolutePath(path.get());
 	}
@@ -453,8 +458,9 @@ public class file extends primary implements RmiSerializable, Serializable {
 	}
 
 	static public String getRelativePath(String path) {
-		if(path != null && path.startsWith(Folders.Base.getPath()))
-			path = path.substring(Folders.Base.getPath().length() + 1);
+		String base = Folders.Base != null ? Folders.Base.getPath() : null;
+		if(path != null && base != null && path.startsWith(base))
+			path = path.substring(base.length() + 1);
 
 		return path;
 	}
@@ -636,8 +642,7 @@ public class file extends primary implements RmiSerializable, Serializable {
 	}
 
 	public bool z8_isFolder() {
-		File file = getAbsolutePath(path.get());
-		return new bool(file.isDirectory());
+		return new bool(isFolder());
 	}
 
 	public string z8_baseName() {
