@@ -282,8 +282,6 @@ td {
 .control {
 	flex: 1;
 	position: relative;
-/*	overflow-x: hidden; */
-/*	overflow-y: hidden; */
 	resize: none;
 }
 
