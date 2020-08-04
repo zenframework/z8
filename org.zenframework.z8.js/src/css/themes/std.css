@@ -271,6 +271,8 @@ td {
 	flex: 1;
 	display: flex;
 	flex-direction: row;
+	overflow-x: hidden;
+	overflow-y: hidden;
 }
 
 .control-group.scrollable>.box {
@@ -280,8 +282,8 @@ td {
 .control {
 	flex: 1;
 	position: relative;
-	overflow-x: hidden;
-	overflow-y: hidden;
+/*	overflow-x: hidden; */
+/*	overflow-y: hidden; */
 	resize: none;
 }
 
