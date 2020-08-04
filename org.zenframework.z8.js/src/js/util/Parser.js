@@ -17,11 +17,11 @@ Z8.define('Z8.util.Parser', {
 			return Z8.util.Parser.datetime(value, format);
 		},
 
-		integer: function(value, radix) {
+		integer: function(value, radix, only_positive) {
 			if(Number.isNumber(value))
 				return value.round();
 
-			var value = parseInt(value.replace(/\s/g, ''), radix);
+			value = only_positive ? Math.abs(parseInt(value.replace(/\s/g, ''), radix)) : parseInt(value.replace(/\s/g, ''), radix);
 			return isNaN(value) ? null : value;
 		},
 
