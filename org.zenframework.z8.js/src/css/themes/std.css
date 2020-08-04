@@ -260,20 +260,6 @@ td {
 	}
 }
 
-.control {
-	display: block;
-	position: relative;
-	border: none;
-	overflow-x: hidden;
-	overflow-y: hidden;
-}
-
-.textarea.control,
-.html.control,
-.list.control {
-	flex: 1;
-}
-
 .control-group {
 	position: relative;
 	display: flex;
@@ -281,12 +267,22 @@ td {
 	align-items: stretch;
 }
 
-.control-group.trigger {
+.control-group>.box {
+	flex: 1;
+	display: flex;
 	flex-direction: row;
 }
 
-.control-group.trigger>.control {
+.control-group.scrollable>.box {
+	flex-direction: column;
+}
+
+.control {
 	flex: 1;
+	position: relative;
+	overflow-x: hidden;
+	overflow-y: hidden;
+	resize: none;
 }
 
 div[name=input].control {
@@ -315,10 +311,6 @@ div[name=input].control {
 .control.disabled,
 .control-group.disabled {
 	cursor: not-allowed;
-}
-
-.control.disabled {
-	resize: none;
 }
 
 .label {

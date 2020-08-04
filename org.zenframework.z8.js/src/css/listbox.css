@@ -37,7 +37,7 @@
 	padding-top: .14285714em;
 }
 
-.pager>.paging>.control-group>input {
+.pager>.paging>.control-group>.box>input {
 	width: 3.57142857em;
 	height: 1.21428571em;
 	min-height: 0;
@@ -57,27 +57,25 @@
 	float: right;
 }
 
-.list-box>.actions {
-	height: 4em;
+.listbox.control-group>.actions {
 	display: flex;
 	flex-direction: row;
 	justify-content: flex-end;
 	align-items: center;
 }
 
-.list-box>.actions>.btn-group,
-.list-box>.actions>.btn {
-	margin-left: .71428571em;
-}
-
-.list-box>.pager {
-	border-top-width: 0;
+.listbox>.box>.pager {
+	border-top: 1px solid #dfdfdf;
+	border-left: none;
+	border-right: none;
+	border-bottom: none;
 	min-width: 0;
 }
 
-.list-box>.pager>.paging {
+.listbox>.box>.pager>.paging {
 	min-width: 0;
 }
+
 .combobox .pager {
 	position: fixed;
 	min-width: 17.85714285em;

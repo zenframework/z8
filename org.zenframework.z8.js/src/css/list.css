@@ -28,6 +28,7 @@
 
 .list.columns>.scroller.totals {
 	overflow-x: auto;
+	overflow-y: hidden;
 }
 
 .list table {
@@ -140,22 +141,14 @@
 	bottom: 0;
 }
 
-.list .item>.column .control-group>.textarea.control {
+.list .item>.column .control-group>.box>.textarea.control {
 	overflow-y: hidden;
 	white-space: normal;
-	resize: none;
 	min-height: 0;
 }
 
 .list .item>.column .control-group>.label {
 	display: none;
-}
-
-.list .item>.column .control-group>.btn-trigger {
-	display: flex;
-	flex-direction: row;
-	align-items: center;
-	margin-top: 0;
 }
 
 .list .header>.column {

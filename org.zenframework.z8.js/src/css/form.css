@@ -110,13 +110,9 @@
 	}
 }
 
-.form .control.checkbox {
-	border: none;
-	box-shadow: none;
-}
-
-.form .textarea.control {
-	resize: vertical;
+.fieldset>.row>.cell>.control-group>.box>.textarea.control,
+.fieldset>.row>.cell>.control-group>.box>.html.control {
+	padding: .14285714em;
 	overflow-x: hidden;
 	overflow-y: hidden;
 }
