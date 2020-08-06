@@ -7,7 +7,7 @@
 		<mkdir dir="target/css"/>
 
 		<!-- base css -->
-		<loadfile property="css.base.buildorder" srcFile="src/css/base.buildorder"/>
+		<loadfile property="css.base.buildorder" srcFile="src/css/.base.buildorder"/>
 		<concat destfile="target/debug/css/org.zenframework.z8.base.css" encoding="UTF-8" fixlastline="yes">
 			<filelist dir="src/css" files="${css.base.buildorder}"/>
 		</concat>
