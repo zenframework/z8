@@ -18,6 +18,8 @@ input, textarea {
 	padding: 0;
 	margin: 0;
 	border: 0;
+	min-width: 0;
+	min-height: 0;
 	font-kerning: none;
 	font-feature-settings: 'kern' 0;
 	font-variant-ligatures: none;
