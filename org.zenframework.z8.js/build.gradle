@@ -52,8 +52,14 @@ task concatCss(type: ConcatTask) {
 
 task concatFontsCss(type: ConcatTask) {
 	source = file("${projectDir}/src/css")
-	output = file("${buildDir}/web/css/fonts.css")
+	output = file("${buildDir}/web/css/revolt.fonts.css")
 	buildorder = '.fonts.buildorder'
+}
+
+task concatBaseCss(type: ConcatTask) {
+	source = file("${projectDir}/src/css")
+	output = file("${buildDir}/web/css/revolt.base.css")
+	buildorder = '.base.buildorder'
 }
 
 task concatJs(type: ConcatTask) {
@@ -74,7 +80,8 @@ task prepareResources(type: Copy) {
 	into "${buildDir}/web"
 }
 
-task assembleZip(type: Zip, group: 'Build', dependsOn: [concatCss, concatFontsCss, concatJs, concatUtilJs, prepareResources]) {
+task assembleZip(type: Zip, group: 'Build') {
+	dependsOn concatCss, concatFontsCss, concatBaseCss, concatJs, concatUtilJs, prepareResources
 	archiveName "${project.name}-${project.version}.zip"
 	destinationDir file("${buildDir}/libs/")
 	from("${buildDir}") {
