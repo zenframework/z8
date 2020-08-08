@@ -78,11 +78,6 @@
 	display: inline-block;
 }
 
-.list .item>.column.boolean>.cell {
-	flex-flow: column;
-	align-items: center;
-}
-
 .list .item>.column.file>.cell>.text,
 .list .item>.column>.cell>.text.follow {
 	cursor: pointer;
@@ -106,15 +101,17 @@
 	flex-direction: row;
 }
 
+.list .item>.column.boolean>.cell,
 .list .item>.column.check>.cell,
 .list .item>.column.lock>.cell {
-	flex-flow: column;
+	flex-direction: column;
 	align-items: center;
 }
 
 .list .item>.column.check>.cell>.text,
 .list .item>.column.lock>.cell>.text,
 .list .item>.column.boolean>.cell>.text {
+	cursor: pointer;
 	overflow-x: visible;
 	overflow-y: visible;
 }
@@ -133,12 +130,9 @@
 	top: 0;
 	left: 0;
 	right: 0;
+	bottom: 0;
 	position: absolute;
 	z-index: 1;
-}
-
-.list .item>.column.string>.control-group {
-	bottom: 0;
 }
 
 .list .item>.column .control-group>.box>.textarea.control {
@@ -255,7 +249,7 @@
 }
 
 .column-resizer-mask {
-	cursor: w-resize;
+	cursor: col-resize;
 	position: fixed;
 	top: 0;
 	left: 0;
