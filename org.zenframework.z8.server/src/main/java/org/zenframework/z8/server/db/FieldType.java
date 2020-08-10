@@ -26,7 +26,7 @@ public enum FieldType {
 		static protected final String Binary = "binary";
 		static protected final String Boolean = "boolean";
 		static protected final String Date = "date";
-		static protected final String Datetime= "datetime";
+		static protected final String Datetime = "datetime";
 		static protected final String Datespan = "datespan";
 		static protected final String Decimal = "float";
 		static protected final String File = "file";
@@ -73,38 +73,60 @@ public enum FieldType {
 		case File:
 		case Text:
 			switch(vendor) {
-			case Oracle: return "BLOB";
-			case SqlServer: return "VARBINARY";
-			case Postgres: case H2: return "bytea";
-			default: throw new RuntimeException("Unknown data type: '" + toString() + "'");
+			case Oracle:
+				return "BLOB";
+			case SqlServer:
+				return "VARBINARY";
+			case Postgres:
+			case H2:
+				return "bytea";
+			default:
+				throw new RuntimeException("Unknown data type: '" + toString() + "'");
 			}
 		case Boolean:
 			switch(vendor) {
-			case Oracle: return "NUMBER";
-			case SqlServer: return "TINYINT";
-			case Postgres: case H2: return "smallint";
-			default: throw new RuntimeException("Unknown data type: '" + toString() + "'");
+			case Oracle:
+				return "NUMBER";
+			case SqlServer:
+				return "TINYINT";
+			case Postgres:
+			case H2:
+				return "smallint";
+			default:
+				throw new RuntimeException("Unknown data type: '" + toString() + "'");
 			}
 		case Date:
 		case Datetime:
 		case Datespan:
 		case Integer:
 			switch(vendor) {
-			case Oracle: return "NUMBER";
-			case SqlServer: return "BIGINT";
-			case Postgres: case H2: return "bigint";
-			default: throw new RuntimeException("Unknown data type: '" + toString() + "'");
+			case Oracle:
+				return "NUMBER";
+			case SqlServer:
+				return "BIGINT";
+			case Postgres:
+			case H2:
+				return "bigint";
+			default:
+				throw new RuntimeException("Unknown data type: '" + toString() + "'");
 			}
 		case Decimal:
 			switch(vendor) {
-			case Oracle: return "NUMBER";
-			case SqlServer: return "NUMERIC";
-			case Postgres: case H2: return "numeric";
-			default: throw new RuntimeException("Unknown data type: '" + toString() + "'");
+			case Oracle:
+				return "NUMBER";
+			case SqlServer:
+				return "NUMERIC";
+			case Postgres:
+			case H2:
+				return "numeric";
+			default:
+				throw new RuntimeException("Unknown data type: '" + toString() + "'");
 			}
 		case Geometry:
 			switch(vendor) {
-			case Postgres: case H2: return "geometry";
+			case Postgres:
+			case H2:
+				return "geometry";
 			case Oracle:
 			case SqlServer:
 				throw new RuntimeException("Unsupported data type: '" + toString() + "'");
@@ -113,19 +135,29 @@ public enum FieldType {
 			}
 		case Guid:
 			switch(vendor) {
-			case Oracle: return "RAW";
-			case SqlServer: return "UNIQUEIDENTIFIER";
-			case Postgres: case H2: return "uuid";
-			default: throw new RuntimeException("Unknown data type: '" + toString() + "'");
+			case Oracle:
+				return "RAW";
+			case SqlServer:
+				return "UNIQUEIDENTIFIER";
+			case Postgres:
+			case H2:
+				return "uuid";
+			default:
+				throw new RuntimeException("Unknown data type: '" + toString() + "'");
 			}
 		case String:
 			switch(vendor) {
-			case Oracle: return "NVARCHAR2";
-			case SqlServer: return "NVARCHAR";
-			case Postgres: case H2: return "character varying";
-			default: throw new RuntimeException("Unknown data type: '" + toString() + "'");
+			case Oracle:
+				return "NVARCHAR2";
+			case SqlServer:
+				return "NVARCHAR";
+			case Postgres:
+			case H2:
+				return "character varying";
+			default:
+				throw new RuntimeException("Unknown data type: '" + toString() + "'");
 			}
-		default: 
+		default:
 			throw new RuntimeException("Unknown data type: '" + toString() + "'");
 		}
 	}

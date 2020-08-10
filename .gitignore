@@ -7,3 +7,4 @@ target
 .settings
 .gradle
 *.log
+/org.zenframework.z8.pde/

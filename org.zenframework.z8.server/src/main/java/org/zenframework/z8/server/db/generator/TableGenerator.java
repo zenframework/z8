@@ -671,8 +671,8 @@ public class TableGenerator {
 
 				if(type == FieldType.Guid)
 					name = new If(new IsNull(field), guid.Null.sql_guid(), new SqlField(field)).format(vendor, options);
-				else if(postgres && dbField.type.startsWith("character") && type == FieldType.Integer)
-					name = new sql_integer().format(vendor, options);
+				else if(postgres && dbField.type.equals("uuid") && type == FieldType.Integer)
+					name = "null";
 				else if(postgres && dbField.type.startsWith("character") && type == FieldType.Text)
 					name = new ToBytes(field).format(vendor, options);
 				else if(postgres && dbField.type.startsWith("bytea") && type == FieldType.String)
