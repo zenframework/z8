@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+        .typeAttribute {
+            font-size: 12px;
+            color:blue;
+        }
+    </style>
+</head>
+<body>
+    <p>Содержание:</p>
+    <#list entities as entity>
+        <p><a href="#${entity.entityId}">${entity.name}</a></p>
+    </#list>
+
+    <br>
+
+    <#list entities as entity>
+        <h2 id="${entity.entityId}">Представление: ${entity.name}</h2>
+
+        <p>Перечень полей представления:</p>
+        <table border="1" cellpadding="5px">
+            <#list entity.entityFields as field>
+                <tr>
+                    <td>
+                        ${field.name}
+                        <br>
+                        <span class="typeAttribute" style=color:blue>${field.type}</span>
+
+                        <#if field.length??>
+                            <br>
+                            <span>length: ${field.length}</span>
+                        </#if>
+                        <#if field.format??>
+                            <br>
+                            <span>format: ${field.format}</span>
+                        </#if>
+                    </td>
+                    <td>${field.description}</td>
+                </tr>
+            </#list>
+        </table>
+
+        <br>
+
+        <table border="1" cellpadding="5px">
+            <tr>
+                <td colspan="3"><h4>Параметры запроса</h4></td>
+            </tr>
+            <tr>
+                <td>Наименование параметра</td>
+                <td>Пример значения</td>
+                <td>Описание</td>
+            </tr>
+            <#list entity.input as attr>
+                <tr>
+                    <td>${attr.name}
+                        <#if attr.required>
+                            <span style=color:red>*<span style="font-size: 10px">required</span></span>
+                        </#if>
+                        <br>
+                        <span class="typeAttribute">${attr.type}</span>
+                    </td>
+                    <td><pre>${attr.value}</pre></td>
+                    <td><pre>${attr.description}</pre></td>
+                </tr>
+            </#list>
+
+            <tr>
+                <td colspan="3"><h4>Ответ запроса</h4></td>
+            </tr>
+
+            <tr>
+                <td>Наименование параметра</td>
+                <td>Пример значения</td>
+                <td>Описание</td>
+            </tr>
+
+            <#list entity.output as attr>
+                <tr>
+                    <td>${attr.name}<br><span class="typeAttribute">${attr.type}</span></td>
+                    <td><pre>${attr.value}</pre></td>
+                    <td><pre>${attr.description}</pre></td>
+                </tr>
+            </#list>
+        </table>
+    <br>
+    </#list>
+</body>
+</html>
