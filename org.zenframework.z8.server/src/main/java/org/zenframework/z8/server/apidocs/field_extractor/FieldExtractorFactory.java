@@ -3,6 +3,7 @@ package org.zenframework.z8.server.apidocs.field_extractor;
 import org.zenframework.z8.server.apidocs.dto.FieldDescription;
 import org.zenframework.z8.server.base.table.value.DatetimeField;
 import org.zenframework.z8.server.base.table.value.Field;
+import org.zenframework.z8.server.base.table.value.Link;
 import org.zenframework.z8.server.base.table.value.StringField;
 
 public class FieldExtractorFactory {
@@ -12,19 +13,25 @@ public class FieldExtractorFactory {
             return field1 -> new FieldDescription(
                     field1.index(),
                     field1.type().name(),
-                    field1.getAttribute("APIDescription"),
-                    field1.length.getInt());
+                    field1.getAttribute("APIDescription"))
+                    .setLength(field1.length.getInt());
         } else if (field instanceof DatetimeField) {
             return field12 -> new FieldDescription(
                     field12.index(),
                     field12.type().name(),
-                    field12.getAttribute("APIDescription"),
-                    field12.format.get());
-        } else {
+                    field12.getAttribute("APIDescription"))
+                    .setFormat(field12.format.get());
+        } else if (field instanceof Link) {
             return field13 -> new FieldDescription(
                     field13.index(),
                     field13.type().name(),
-                    field13.getAttribute("APIDescription"));
+                    field13.getAttribute("APIDescription"))
+                    .setReference(((Link) field13).getQuery().classId());
+        } else {
+            return field14 -> new FieldDescription(
+                    field14.index(),
+                    field14.type().name(),
+                    field14.getAttribute("APIDescription"));
         }
     }
 }

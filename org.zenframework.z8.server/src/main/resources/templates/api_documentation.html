@@ -26,7 +26,11 @@
             <#list entity.entityFields as field>
                 <tr>
                     <td>
-                        ${field.name}
+                        <#if field.reference??>
+                            <a href="#${field.reference}">${field.name}</a>
+                        <#else>
+                            ${field.name}
+                        </#if>
                         <br>
                         <span class="typeAttribute" style=color:blue>${field.type}</span>
 

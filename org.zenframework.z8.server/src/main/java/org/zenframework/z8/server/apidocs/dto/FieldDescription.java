@@ -6,6 +6,7 @@ public class FieldDescription {
     private Integer length;
     private String format;
     private String description;
+    private String reference;
 
     public FieldDescription(String name, String type, String description) {
         this.name = name;
@@ -13,15 +14,6 @@ public class FieldDescription {
         this.description = description;
     }
 
-    public FieldDescription(String name, String type, String description, Integer length) {
-        this(name, type,description);
-        this.length = length;
-    }
-
-    public FieldDescription(String name, String type, String description, String format) {
-        this(name, type,description);
-        this.format = format;
-    }
 
     public String getName() {
         return name;
@@ -41,5 +33,24 @@ public class FieldDescription {
 
     public String getDescription() {
         return description;
+    }
+
+    public String getReference() {
+        return reference;
+    }
+
+    public FieldDescription setFormat(String format) {
+        this.format = format;
+        return this;
+    }
+
+    public FieldDescription setLength(Integer length) {
+        this.length = length;
+        return this;
+    }
+
+    public FieldDescription setReference(String reference) {
+        this.reference = reference;
+        return this;
     }
 }
