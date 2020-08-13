@@ -719,7 +719,7 @@ public class file extends primary implements RmiSerializable, Serializable {
 	}
 
 	public void z8_delete() {
-		toFile().delete();
+		FileUtils.deleteQuietly(toFile());
 	}
 
 	public void z8_zip(file fileOrDirectory) {
