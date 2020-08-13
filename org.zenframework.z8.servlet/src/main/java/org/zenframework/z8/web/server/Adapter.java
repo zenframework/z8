@@ -50,7 +50,7 @@ public abstract class Adapter {
 	protected Servlet servlet;
 	private boolean useContainerSession;
 
-	public Adapter(Servlet servlet) {
+	protected Adapter(Servlet servlet) {
 		this.servlet = servlet;
 		useContainerSession = Boolean.parseBoolean(servlet.getInitParameter(UseContainerSession));
 	}
