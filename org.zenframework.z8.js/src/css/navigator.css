@@ -17,17 +17,17 @@
 }
 
 .navigator>.body>.list,
-.navigator>.body>.list-box {
+.navigator>.body>.listbox {
 	margin-top: .35714286em;
 	margin-bottom: .64285714em;
 	width: 25%;
 }
 
-.navigator.one-record>.body>.list-box {
+.navigator.one-record>.body>.listbox {
 	display: none;
 }
 
-.navigator>.body>.list-box .label .btn-text {
+.navigator>.body>.listbox .label .btn-text {
 	padding-top: 0;
 	padding-left: 0;
 	padding-bottom: 0;
@@ -39,16 +39,16 @@
 	background: none;
 }
 
-.navigator>.body>.list-box.focus .label .btn-text {
+.navigator>.body>.listbox.focus .label .btn-text {
 	color: #39c;
 }
 
-.navigator>.body>.list-box .label .btn-text:not(.btn-trigger)>.fa {
+.navigator>.body>.listbox .label .btn-text:not(.btn-trigger)>.fa {
 	width: auto;
 	padding-right: .5em;
 }
 
-.navigator>.body>.list-box .label .btn-text:not(.btn-trigger)>.fa.no-icon {
+.navigator>.body>.listbox .label .btn-text:not(.btn-trigger)>.fa.no-icon {
 	padding-right: 0;
 }
 

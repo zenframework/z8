@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="org.zenframework.z8.lang" default="makejar" basedir=".">
+  <target name ="makejar" description="org.zenframework.z8.lang.jar">
+    <jar jarfile="target/org.zenframework.z8.lang.jar" includes="**/*.class" basedir="target/classes/main"/>
+  </target>
+</project>

@@ -214,7 +214,7 @@ Z8.define('Z8.dom.Dom', {
 			if(delay != null) {
 				var remove = function(dom) {
 					dom.parentElement.removeChild(dom);
-				}
+				};
 				new Z8.util.DelayedTask().delay(delay, remove, this, dom);
 			} else
 				dom.parentElement.removeChild(dom);

@@ -4,31 +4,31 @@ Z8.define('Z8.form.field.Html', {
 	scrollable: true,
 
 	getCls: function() {
-		return Z8.form.field.Control.prototype.getCls.call(this).pushIf('html');
+		return Z8.form.field.Text.prototype.getCls.call(this).pushIf('html');
 	},
 
 	controlMarkup: function() {
-		return [{ tag: 'div', cls: 'control', tabIndex: this.getTabIndex(), html: this.getValue() }];
+		return [{ tag: 'div', cls: 'html control', tabIndex: this.getTabIndex(), html: this.getValue() }];
 	},
 
 	completeRender: function() {
-		this.callParent();
+		Z8.form.field.Control.prototype.completeRender.call(this);
 		this.div = this.selectNode('.control');
 	},
 
 	onDestroy: function() {
 		this.div = null;
-		this.callParent();
+		Z8.form.field.Control.prototype.onDestroy.call(this);
 	},
 
 	setValue: function(value, displayValue) {
-		this.callParent(value, displayValue);
+		Z8.form.field.Control.prototype.setValue.call(this, value, displayValue);
 		DOM.setInnerHtml(this.div, value);
 	},
 
 	setEnabled: function(enabled) {
 		DOM.swapCls(this.div, !enabled, 'disabled');
-		this.callParent(enabled);
+		Z8.form.field.Control.prototype.setEnabled.call(this, enabled);
 	},
 
 	setScrollTop: function(scrollTop) {

@@ -310,7 +310,7 @@ Z8.define('Z8.Component', {
 
 		if(alignment == null) {
 			align.height = align.width = 0;
-			align.bottom = align.top
+			align.bottom = align.top;
 			align.right = align.left;
 		}
 

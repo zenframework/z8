@@ -148,7 +148,7 @@ public class Table extends TableBase {
 
 	@Override
 	public void beforeCreate(guid recordId) {
-		if (ApplicationServer.systemEventsEnabled()) {
+		if(ApplicationServer.systemEventsEnabled()) {
 			createdAt.get().set(new date());
 			createdBy.get().set(ApplicationServer.getUser().id());
 		}
@@ -158,7 +158,7 @@ public class Table extends TableBase {
 
 	@Override
 	public void beforeUpdate(guid recordId) {
-		if (ApplicationServer.systemEventsEnabled()) {
+		if(ApplicationServer.systemEventsEnabled()) {
 			modifiedAt.get().set(new date());
 			modifiedBy.get().set(ApplicationServer.getUser().id());
 		}

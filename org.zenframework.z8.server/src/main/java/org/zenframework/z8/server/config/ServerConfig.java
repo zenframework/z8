@@ -29,7 +29,7 @@ public class ServerConfig extends Properties {
 	static private ServerConfig instance;
 
 	static final public String DefaultInstanceId = "Z8 Server";
-	static final public String DefaultConfigurationFileName = "project.xml";
+	static final public String DefaultConfigurationFileName = "server.properties";
 
 	static final private String InstanceId = "z8.instance.id";
 
@@ -162,9 +162,20 @@ public class ServerConfig extends Properties {
 		workingPath = configFile.getCanonicalFile().getParentFile();
 
 		try {
-			loadFromXML(new FileInputStream(configFile));
+			load(new FileInputStream(configFile));
 		} catch(Throwable e) {
+/*
 			throw new RuntimeException(e);
+*/
+/* >>>>>>>>>>>>>>>>> to remove */
+			if(configFilePath == null)
+				configFile = new File("project.xml");
+			try {
+				this.loadFromXML(new FileInputStream(configFile));
+			} catch(Throwable e1) {
+				throw new RuntimeException(e);
+			}
+/* <<<<<<<<<<<<<<<<< to remove */
 		}
 
 		instanceId = getProperty(InstanceId, DefaultInstanceId);

@@ -8,6 +8,10 @@ html {
 	box-sizing: border-box;
 }
 
+body * {
+	line-height: inherit;
+}
+
 *:focus {
 	outline: none;
 }
@@ -18,10 +22,8 @@ input, textarea {
 	padding: 0;
 	margin: 0;
 	border: 0;
-	font-kerning: none;
-	font-feature-settings: 'kern' 0;
-	font-variant-ligatures: none;
-	font-feature-settings: 'liga' 0;
+	min-width: 0;
+	min-height: 0;
 }
 
 input[type="number"]:-webkit-inner-spin-button,
@@ -260,32 +262,37 @@ td {
 	}
 }
 
-.control {
-	display: block;
-	position: relative;
-	border: none;
-	overflow-x: hidden;
-	overflow-y: hidden;
-}
-
-textarea.control,
-.list.control {
-	flex: 1;
-}
-
 .control-group {
 	position: relative;
 	display: flex;
 	flex-direction: column;
 	align-items: stretch;
+	overflow: hidden;
 }
 
-.control-group.trigger {
-	flex-direction: row;
-}
-
-.control-group.trigger>.control {
+.control-group>.box {
 	flex: 1;
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	position: relative;
+	overflow-x: hidden;
+	overflow-y: hidden;
+}
+
+.control-group.scrollable>.box {
+	flex-direction: column;
+	align-items: stretch;
+}
+
+.control-group.checkbox>.box {
+	flex: none;
+}
+
+.control {
+	flex: 1;
+	position: relative;
+	resize: none;
 }
 
 div[name=input].control {
@@ -298,8 +305,8 @@ div[name=input].control {
 	background-color: transparent
 }
 
-textarea.control,
-.html-text.control {
+.textarea.control,
+.html.control {
 	height: auto;
 	user-select: text;
 	-webkit-user-select: text;
@@ -316,19 +323,13 @@ textarea.control,
 	cursor: not-allowed;
 }
 
-.control.disabled {
-	resize: none;
-}
-
 .label {
 	display: flex;
 	flex-direction: row;
 	align-items: center;
-
+	position: relative;
 	text-align: left;
-
-	overflow-x: visible;
-	overflow-y: visible;
+	overflow: hidden;
 	text-overflow: ellipsis;
 	white-space: nowrap;
 }
@@ -393,20 +394,16 @@ textarea.control,
 
 .control-group.label-left,
 .control-group.label-right {
-	flex-direction: row !important;
-}
-
-.control-group.label-top {
-	flex-direction: column !important;
+	flex-direction: row;
 }
 
 .tabs {
-	display: flex !important;
+	display: flex;
 	flex-direction: column;
 }
 
 .tabs>.header {
-	display: flex !important;
+	display: flex;
 	align-items: stretch;
 	width: 100%;
 }

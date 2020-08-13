@@ -301,7 +301,7 @@ Z8.define('Z8.form.field.Listbox', {
 		if(this.needsPager())
 			cls.pushIf('pager-on');
 
-		return cls.pushIf('list-box');
+		return cls.pushIf('listbox');
 	},
 
 	subcomponents: function() {
@@ -317,7 +317,13 @@ Z8.define('Z8.form.field.Listbox', {
 				label.tools = new Z8.button.Group({ items: this.createTools() });
 		}
 
-		return this.callParent();
+		var markup = this.callParent();
+
+		var actions = this.actions = this.createActions();
+		if(actions != null)
+			markup.cn.push(actions.htmlMarkup());
+
+		return markup;
 	},
 
 	setAddTool: function(button) {
@@ -500,13 +506,7 @@ Z8.define('Z8.form.field.Listbox', {
 		var cls = this.needsPager() ? '' : 'display-none';
 		var pager = this.pager = new Z8.pager.Pager({ cls: cls, store: this.store });
 
-		var markup = [list.htmlMarkup(), pager.htmlMarkup()];
-
-		var actions = this.actions = this.createActions();
-		if(actions != null)
-			markup.push(actions.htmlMarkup());
-
-		return markup;
+		return [list.htmlMarkup(), pager.htmlMarkup()];
 	},
 
 	completeRender: function() {

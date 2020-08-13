@@ -6,10 +6,10 @@ import java.rmi.RemoteException;
 
 import org.zenframework.z8.server.base.job.scheduler.Scheduler;
 import org.zenframework.z8.server.base.table.system.Domains;
+import org.zenframework.z8.server.base.table.system.Files;
 import org.zenframework.z8.server.base.xml.GNode;
 import org.zenframework.z8.server.config.ServerConfig;
 import org.zenframework.z8.server.db.ConnectionManager;
-import org.zenframework.z8.server.file.FileHandlers;
 import org.zenframework.z8.server.ie.Message;
 import org.zenframework.z8.server.ie.MessageAcceptor;
 import org.zenframework.z8.server.logs.Trace;
@@ -145,7 +145,7 @@ public class ApplicationServer extends RmiServer implements IApplicationServer {
 	public file download(ISession session, GNode node, file file) throws IOException {
 		setRequest(new Request(node.getAttributes(), node.getFiles(), session));
 		try {
-			return FileHandlers.getFileHandler(file).getFile(file);
+			return Files.get(file);
 		} finally {
 			setRequest(null);
 			ConnectionManager.release();

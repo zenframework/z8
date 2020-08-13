@@ -25,8 +25,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.SessionIdManager;
@@ -39,13 +37,11 @@ import org.zenframework.z8.server.base.file.Folders;
 import org.zenframework.z8.server.config.ServerConfig;
 import org.zenframework.z8.server.engine.IWebServer;
 import org.zenframework.z8.server.engine.RmiServer;
+import org.zenframework.z8.server.logs.Trace;
 import org.zenframework.z8.server.types.guid;
 import org.zenframework.z8.web.servlet.Servlet;
 
 public class WebServer extends RmiServer implements IWebServer {
-
-	private static final Log LOG = LogFactory.getLog(WebServer.class);
-
 	private static final String ID = guid.create().toString();
 
 	private static final Collection<UrlPattern> urlPatterns = new LinkedList<UrlPattern>(Arrays.asList(new UrlPattern("/apidoc"), new UrlPattern("*.json"), new UrlPattern("/storage/*"), new UrlPattern("/files/*"), new UrlPattern("/reports/*")));
@@ -138,7 +134,7 @@ public class WebServer extends RmiServer implements IWebServer {
 			try {
 				server.stop();
 			} catch (Exception e) {
-				LOG.error("Couldn't stop web server", e);
+				Trace.logError("Couldn't stop web server", e);
 			}
 		}
 		if (requestServlet != null)
@@ -169,7 +165,7 @@ public class WebServer extends RmiServer implements IWebServer {
 					WebServer.class.getClassLoader().getResourceAsStream("webserver/mappings.properties"));
 			mappings.load(reader);
 		} catch (IOException e) {
-			LOG.warn("Couldn't load mappings from classpath webserver/mappings.properties" + path, e);
+			Trace.logError("Couldn't load mappings from classpath webserver/mappings.properties" + path, e);
 		} finally {
 			IOUtils.closeQuietly(reader);
 			reader = null;
@@ -179,7 +175,7 @@ public class WebServer extends RmiServer implements IWebServer {
 				reader = new FileReader(path);
 				mappings.load(reader);
 			} catch (IOException e) {
-				LOG.warn("Couldn't load mappings from " + path, e);
+				Trace.logError("Couldn't load mappings from " + path, e);
 			} finally {
 				IOUtils.closeQuietly(reader);
 			}

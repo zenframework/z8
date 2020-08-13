@@ -193,4 +193,17 @@ public class Files extends Table {
 		file.size = new integer(path.length());
 		return file;
 	}
+
+	public static file z8_get(guid fileId) {
+		return get(fileId);
+	}
+
+	public static file z8_get(file file) {
+		try {
+			return get(file);
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
 }

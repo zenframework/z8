@@ -24,8 +24,7 @@ Z8.define('Z8.form.field.Control', {
 	},
 
 	htmlMarkup: function() {
-		var controlMarkup = this.controlMarkup();
-		controlMarkup = Array.isArray(controlMarkup) ? controlMarkup : [controlMarkup];
+		var box = [{ cls: 'box', cn: this.controlMarkup() }];
 
 		var label = this.label;
 
@@ -48,10 +47,10 @@ Z8.define('Z8.form.field.Control', {
 			var style = label.width != null ? 'min-width:' + label.width + ';width:' + label.width + ';' : '';
 			label = { tag: 'span', name: 'label', cls: this.getLabelCls().join(' '), title: title || '', style: style, cn: cn };
 
-			align == 'right' ? controlMarkup.add(label) : controlMarkup.insert(label, 0);
+			align == 'right' ? box.add(label) : box.insert(label, 0);
 		}
 
-		return { id: this.getId(), cls: this.getCls().join(' '), cn: controlMarkup };
+		return { id: this.getId(), cls: this.getCls().join(' '), cn: box };
 	},
 
 	completeRender: function() {

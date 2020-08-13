@@ -1,6 +1,9 @@
-.filter-control .expression {
-	overflow-y: auto;
+.filter-control>.box {
 	border: 1px solid #eee;
+}
+
+.filter-control>.box>.expression {
+	overflow-y: auto;
 }
 
 .filter-control .group {
@@ -85,16 +88,16 @@
 	margin-left: -1px;
 }
 
-.filter-control>.expression>.group,
-.filter-control>.expression>.line {
+.filter-control>.box>.expression>.group,
+.filter-control>.box>.expression>.line {
 	padding-left: 0;
 }
 
-.filter-control>.expression>.group>.btn.vertical {
+.filter-control>.box>.expression>.group>.btn.vertical {
 	left: 0;
 }
 
-.filter-control>.expression {
+.filter-control>.box>.expression {
 	padding-left: .28571429em;
 	padding-right: .28571429em;
 	padding-top: .28571429em;

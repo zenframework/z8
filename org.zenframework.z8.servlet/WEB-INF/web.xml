@@ -1,31 +1,30 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xmlns="http://java.sun.com/xml/ns/javaee"
-	xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd"
-	metadata-complete="true" version="3.0">
+<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://java.sun.com/xml/ns/javaee" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd" metadata-complete="true" version="3.0">
 	<welcome-file-list>
 		<welcome-file>index.html</welcome-file>
-		<welcome-file>index.jsp</welcome-file>
 	</welcome-file-list>
+
 	<absolute-ordering />
-	<display-name>Revolt Web Server</display-name>
-	<description>Revolt Web Server</description>
+
+	<display-name>Z8 Application</display-name>
+	<description>Z8 Application</description>
+
 	<servlet>
-		<description>Revolt Web Server</description>
-		<display-name>Revolt Web Server</display-name>
-		<servlet-name>Revolt Web Server</servlet-name>
+		<description>Z8 Servlet</description>
+		<display-name>Z8 Servlet</display-name>
+		<servlet-name>Z8 Servlet</servlet-name>
 		<servlet-class>org.zenframework.z8.web.servlet.Servlet</servlet-class>
 		<init-param>
 			<param-name>startApplicationServer</param-name>
-			<param-value>false</param-value>
+			<param-value></param-value>
 		</init-param>
 		<init-param>
 			<param-name>startAuthorityCenter</param-name>
-			<param-value>false</param-value>
+			<param-value></param-value>
 		</init-param>
 		<init-param>
 			<param-name>startInterconnectionCenter</param-name>
-			<param-value>false</param-value>
+			<param-value></param-value>
 		</init-param>
 		<init-param>
 			<param-name>useContainerSession</param-name>
@@ -33,8 +32,9 @@
 		</init-param>
 		<load-on-startup>1</load-on-startup>
 	</servlet>
+
 	<servlet-mapping>
-		<servlet-name>Revolt Web Server</servlet-name>
+		<servlet-name>Z8 Servlet</servlet-name>
 		<url-pattern>*.json</url-pattern>
 		<url-pattern>/storage/*</url-pattern>
 		<url-pattern>/files/*</url-pattern>

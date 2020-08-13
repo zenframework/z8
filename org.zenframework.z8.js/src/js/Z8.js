@@ -13,7 +13,7 @@ var Z8 = {
 	addMembers: function(prototype, config) {
 		for(var name in config) {
 			var member = config[name];
-			Z8.addMember(prototype, member, name)
+			Z8.addMember(prototype, member, name);
 		}
 	},
 
@@ -35,7 +35,7 @@ var Z8 = {
 	addCallParent: function(prototype) {
 		var callParent = function() {
 			return this.callParent.caller.$previous.apply(this, arguments);
-		}
+		};
 
 		Z8.addMember(prototype, callParent, 'callParent');
 	},
@@ -43,7 +43,7 @@ var Z8 = {
 	newConstructor: function() {
 		return function constructor() {
 			return this.constructor.apply(this, arguments);
-		}
+		};
 	},
 
 	define: function(className, config) {

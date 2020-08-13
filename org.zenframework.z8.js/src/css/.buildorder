@@ -1,5 +1,6 @@
 font-awesome-0.css
 font-awesome-1.css
+font-inter.css
 font-roboto.css
 font-courgette.css
 font-z8.css
@@ -15,7 +16,7 @@ pdf-document.css
 video-document.css
 geometry.css
 list.css
-list-box.css
+listbox.css
 tabs.css
 toolbar.css
 filter.css

@@ -89,7 +89,7 @@ Z8.define('Z8.application.viewport.Login', {
 					Z8.callback(this.handler, this.scope, response);
 			} else
 				this.loginField.focus();
-		}
+		};
 
 		var login = this.loginField.getValue();
 		var password = this.passwordField.getValue() || '';
@@ -159,7 +159,7 @@ Z8.define('Z8.application.viewport.ChangePassword', {
 			this.okButton.setBusy(false);
 			Z8.callback(this.handler, this.scope, window, true);
 			this.close();
-		}
+		};
 
 		var login = this.login || User.login;
 		var password = this.password;

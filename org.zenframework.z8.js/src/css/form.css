@@ -54,7 +54,6 @@
 .fieldset>.row:not(:last-child)>.cell>.tabs,
 .fieldset>.row:not(:last-child)>.cell>.fieldset,
 .fieldset>.row:not(:last-child)>.cell>.control-group,
-.fieldset>.row:not(:last-child)>.cell>.control,
 .fieldset>.row:not(:last-child)>.cell>.btn-group,
 .fieldset>.row:not(:last-child)>.cell>.btn {
 	margin-bottom: 1.71428572em;
@@ -80,8 +79,7 @@
 
 .fieldset>.row>.cell>.tabs,
 .fieldset>.row>.cell>.fieldset,
-.fieldset>.row>.cell>.control-group:not(.scrollable),
-.fieldset>.row>.cell>.control {
+.fieldset>.row>.cell>.control-group:not(.scrollable) {
 	flex: 1;
 }
 
@@ -112,13 +110,9 @@
 	}
 }
 
-.form .control.checkbox {
-	border: none;
-	box-shadow: none;
-}
-
-.form textarea {
-	resize: vertical;
+.fieldset>.row>.cell>.control-group>.box>.textarea.control,
+.fieldset>.row>.cell>.control-group>.box>.html.control {
+	padding: .14285714em;
 	overflow-x: hidden;
 	overflow-y: hidden;
 }

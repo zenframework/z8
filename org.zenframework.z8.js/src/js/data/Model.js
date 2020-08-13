@@ -239,6 +239,7 @@ Z8.define('Z8.data.Model', {
 
 	beginEdit: function() {
 		this.editing++;
+		return this;
 	},
 
 	cancelEdit: function() {
@@ -251,13 +252,14 @@ Z8.define('Z8.data.Model', {
 			data[name] = modified[name];
 
 		this.modified = this.original = null;
+		return this;
 	},
 
 	endEdit: function() {
 		var editing = this.editing = Math.max(0, this.editing - 1);
 
 		if(editing != 0)
-			return;
+			return this;
 
 		var modified = this.modified;
 
@@ -269,6 +271,7 @@ Z8.define('Z8.data.Model', {
 		}
 
 		this.modified = this.original = null;
+		return this;
 	},
 
 	getModifiedFields: function() {
@@ -303,11 +306,11 @@ Z8.define('Z8.data.Model', {
 		}
 
 		if(!reset && comparator.isEqual(currentValue, value))
-			return;
+			return this;
 
 		if(silent) {
 			data[name] = value;
-			return;
+			return this;
 		}
 
 		if(original == null || !original.hasOwnProperty(name)) {
@@ -347,6 +350,8 @@ Z8.define('Z8.data.Model', {
 
 			this.fireEvent('change', this, changes);
 		}
+
+		return this;
 	},
 
 	setStore: function(store) {

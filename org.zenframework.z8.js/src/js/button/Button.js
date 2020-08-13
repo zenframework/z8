@@ -254,7 +254,7 @@ Z8.define('Z8.button.Button', {
 		this.busy = busy;
 
 		if(busy) {
-			var wasEnabled = this.isEnabled()
+			var wasEnabled = this.isEnabled();
 			this.setEnabled(false);
 			this.wasEnabled = wasEnabled;
 

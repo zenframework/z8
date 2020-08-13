@@ -228,7 +228,7 @@ Z8.define('Z8.form.field.Geometry', {
 		var layers = [];
 
 		if(this.hasTiles !== false && !Z8.isEmpty(geometry.layers)) {
-			var layer = this.layer = geometry.layers[0]
+			var layer = this.layer = geometry.layers[0];
 			layer = this.createLayer(layer);
 			layers.add(layer);
 		}
@@ -633,7 +633,7 @@ Z8.define('Z8.form.field.Geometry', {
 			var features = !Array.isArray(feature) ? [feature] : feature;
 			for(var i = 0, length = features.length; i < length; i++)
 				source.removeFeature(features[i]);
-		}
+		};
 
 		delay != null ? new Z8.util.DelayedTask().delay(delay, callback) : callback();
 	},
