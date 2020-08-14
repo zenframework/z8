@@ -34,7 +34,7 @@ Z8.define('Z8.window.Window', {
 		}
 
 		if(this.closable && this.closeButton !== false) {
-			this.cancelButton = new Z8.button.Button({ push: true, text: 'Отмена', handler: this.cancel, scope: this });
+			this.cancelButton = new Z8.button.Button({ push: true, text: this.cancelText || 'Отменить', handler: this.cancel, scope: this });
 			buttons.insert(this.cancelButton, 0);
 		}
 
