@@ -5,7 +5,6 @@ configurations {
 }
 repositories {
 	mavenCentral()
-	maven { url 'https://mvnrepository.com/repos/central' }
 }
 
 dependencies {

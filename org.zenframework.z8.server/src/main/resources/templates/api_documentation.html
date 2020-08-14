@@ -2,8 +2,15 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>api doc</title>
     <style>
+        pre code {
+          background-color: #eee;
+          border: 1px solid #999;
+          display: block;
+          padding: 20px;
+        }
+
         .typeAttribute {
             font-size: 12px;
             color:blue;
@@ -13,13 +20,23 @@
 <body>
     <p>Содержание:</p>
     <#list entities as entity>
-        <p><a href="#${entity.entityId}">${entity.name}</a></p>
+        <p><a href="#${entity.entityId}">${entity.entityName}</a></p>
     </#list>
 
     <br>
 
+    <h2>Запрос авторизации</h2>
+
+    <pre><code>curl -X POST \
+      http://127.0.0.1:9080/request.json \
+      -H 'content-type: application/x-www-form-urlencoded' \
+      -d 'request=login&password=d41d8cd98f00b204e9800998ecf8427e&login=Admin'</code></pre>
+
     <#list entities as entity>
-        <h2 id="${entity.entityId}">Представление: ${entity.name}</h2>
+        <h2 id="${entity.entityId}">Представление: ${entity.entityName}</h2>
+        <#if entity.entityDescription??>
+            <p>${entity.entityDescription}</p>
+        </#if>
 
         <p>Перечень полей представления:</p>
         <table border="1" cellpadding="5px">
@@ -47,6 +64,18 @@
                 </tr>
             </#list>
         </table>
+
+        <#if entity.actions?has_content>
+            <p>Перечень команд представления:</p>
+            <table border="1" cellpadding="5px">
+                <#list entity.actions as action>
+                <tr>
+                    <td>${action.name}</td>
+                    <td>${action.description}</td>
+                </tr>
+                </#list>
+            </table>
+        </#if>
 
         <br>
 
@@ -90,6 +119,14 @@
                     <td><pre>${attr.description}</pre></td>
                 </tr>
             </#list>
+            <tr>
+                <td colspan="3"><h4>Пример запроса</h4></td>
+            </tr>
+            <tr>
+                <td colspan="3">
+                    <pre><code>${entity.codeSnippet}</code></pre>
+                </td>
+            </tr>
         </table>
     <br>
     </#list>

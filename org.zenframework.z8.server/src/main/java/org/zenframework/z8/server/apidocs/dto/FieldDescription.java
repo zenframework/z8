@@ -1,24 +1,16 @@
 package org.zenframework.z8.server.apidocs.dto;
 
-public class FieldDescription {
-    private String name;
+public class FieldDescription extends BaseInfo{
     private String type;
     private Integer length;
     private String format;
-    private String description;
     private String reference;
 
     public FieldDescription(String name, String type, String description) {
-        this.name = name;
+        super(name, description);
         this.type = type;
-        this.description = description;
     }
-
-
-    public String getName() {
-        return name;
-    }
-
+    
     public String getType() {
         return type;
     }
@@ -29,10 +21,6 @@ public class FieldDescription {
 
     public String getFormat() {
         return format;
-    }
-
-    public String getDescription() {
-        return description;
     }
 
     public String getReference() {

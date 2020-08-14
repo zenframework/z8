@@ -1,31 +1,20 @@
 package org.zenframework.z8.server.apidocs.dto;
 
 
-public class AttributeInformation {
-    private String name;
+public class AttributeInformation extends BaseInfo {
     private String type;
     private String value;
-    private String description;
     private Boolean required;
 
     public AttributeInformation(String name, String type, String value, String description, Boolean required) {
-        this.name = name;
+        super(name, description);
         this.type = type;
         this.value = value;
-        this.description = description;
-        this.description = description;
         this.required = required;
     }
+    
     public AttributeInformation(String name, String type, String value, String description) {
         this(name, type, value, description, false);
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
     }
 
     public String getType() {
@@ -43,15 +32,7 @@ public class AttributeInformation {
     public void setValue(String value) {
         this.value = value;
     }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
+    
     public Boolean getRequired() {
         return required;
     }
