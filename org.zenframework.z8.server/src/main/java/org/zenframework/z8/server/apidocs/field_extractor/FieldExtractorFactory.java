@@ -1,10 +1,7 @@
 package org.zenframework.z8.server.apidocs.field_extractor;
 
 import org.zenframework.z8.server.apidocs.dto.FieldDescription;
-import org.zenframework.z8.server.base.table.value.DatetimeField;
-import org.zenframework.z8.server.base.table.value.Field;
-import org.zenframework.z8.server.base.table.value.Link;
-import org.zenframework.z8.server.base.table.value.StringField;
+import org.zenframework.z8.server.base.table.value.*;
 
 public class FieldExtractorFactory {
 
@@ -21,6 +18,12 @@ public class FieldExtractorFactory {
                     field12.type().name(),
                     field12.getAttribute("APIDescription"))
                     .setFormat(field12.format.get());
+        } else if (field instanceof DecimalExpression) {
+            return field15 -> new FieldDescription(
+                    field15.index(),
+                    field15.type().name(),
+                    field15.getAttribute("APIDescription"))
+                    .setFormat(field15.format.get());
         } else if (field instanceof Link) {
             return field13 -> new FieldDescription(
                     field13.index(),

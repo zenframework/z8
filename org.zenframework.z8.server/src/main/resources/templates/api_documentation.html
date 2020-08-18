@@ -15,120 +15,400 @@
             font-size: 12px;
             color:blue;
         }
+
     </style>
 </head>
 <body>
-    <p>Содержание:</p>
-    <#list entities as entity>
-        <p><a href="#${entity.entityId}">${entity.entityName}</a></p>
-    </#list>
+<p>Содержание:</p>
 
-    <br>
+<#list entities as entity>
+    <p><a href="#${entity.entityId}">Представление данных: ${entity.entityName}</a></p>
+</#list>
+<p><a href="#parameters_description">Описание всех атрибутов запросов</a></p>
+<p><a href="#actions">Примеры запросов в разрезе по типам действия</a></p>
 
-    <h2>Запрос авторизации</h2>
+<br>
 
-    <pre><code>curl -X POST \
+<#list entities as entity>
+    <h2 id="${entity.entityId}">Представление: ${entity.entityName}</h2>
+    <#if entity.entityDescription??>
+        <p>${entity.entityDescription}</p>
+    </#if>
+
+    <p>Перечень полей представления:</p>
+    <table border="1" cellpadding="5px">
+        <#list entity.entityFields as field>
+            <tr>
+                <td>
+                    <#if field.reference??>
+                        <a href="#${field.reference}">${field.name}</a>
+                    <#else>
+                        ${field.name}
+                    </#if>
+                    <br>
+                    <span class="typeAttribute" style=color:blue>${field.type}</span>
+
+                    <#if field.length??>
+                        <br>
+                        <span>length: ${field.length}</span>
+                    </#if>
+                    <#if field.format??>
+                        <br>
+                        <span>format: ${field.format}</span>
+                    </#if>
+                </td>
+                <td>${field.description}</td>
+            </tr>
+        </#list>
+    </table>
+
+    <#if entity.actionsNames?has_content>
+        <p>Перечень команд представления:</p>
+        <table border="1" cellpadding="5px">
+            <#list entity.actionsNames as action>
+            <tr>
+                <td>${action.name}</td>
+                <td>${action.description}</td>
+            </tr>
+            </#list>
+        </table>
+    </#if>
+</#list>
+
+<h2 id="parameters_description">Описание всех атрибутов запросов</h2>
+<table border="1" cellpadding="5px">
+    <tbody>
+    <tr>
+        <td colspan="3"><h4>Параметры запроса</h4></td>
+    </tr>
+    <tr>
+        <td>Наименование параметра</td>
+        <td>Описание</td>
+    </tr>
+    <tr>
+        <td>request
+            <span style="color:red">*<span style="font-size: 10px">required</span></span>
+            <br>
+            <span class="typeAttribute">string</span>
+        </td>
+        <td>
+            <pre>уникальная строка, идентифицирующая представление данных, к которому формируется запрос;</pre>
+        </td>
+    </tr>
+    <tr>
+        <td>query
+            <br>
+            <span class="typeAttribute">string</span>
+        </td>
+        <td>
+            <pre>Обязательно в отдельных случаях, уникальная строка, идентифицирующая запрос в рамках представления данных;</pre>
+        </td>
+    </tr>
+    <tr>
+        <td>session
+            <span style="color:red">*<span style="font-size: 10px">required</span></span>
+            <br>
+            <span class="typeAttribute">guid</span>
+        </td>
+        <td><pre>Обязательно, идентификатор сессии, полученный в ответе на запрос авторизации</pre>
+        </td>
+    </tr>
+    <tr>
+        <td>action
+            <span style="color:red">*<span style="font-size: 10px">required</span></span>
+            <br>
+            <span class="typeAttribute">string</span>
+        </td>
+        <td><pre>Действие запроса, один из вариантов:
+login - Авторизация в системе
+create - создать запись в базе данных
+copy - скопировать запись(создать новую и скопировать все значения полей из исходной записи)
+read - прочитать записи из базе данных
+update - изменить поля записи в базе данных
+destroy - удалить записи из базе данных
+export -
+report - запустить создание отчета, результатом является файл
+preview - загрузить указанный файл в режиме preview (файл на лету конвертируется в PDF)
+action - выполнить команду
+attach - прикрепить файл к записи
+detach - открепить файл от записи
+content - получить или записать бинарные данные</pre>
+        </td>
+    </tr>
+    <tr>
+        <td>start
+            <br>
+            <span class="typeAttribute">integer</span>
+        </td>
+        <td>
+            <pre>Опционально, номер первой записи в запрашиваемой выборке (странице) данных</pre>
+        </td>
+    </tr>
+    <tr>
+        <td>limit
+            <br>
+            <span class="typeAttribute">integer</span>
+        </td>
+        <td>
+            <pre>Опционально, количество записей в выборке (странице)</pre>
+        </td>
+    </tr>
+    <tr>
+        <td>fields
+            <br>
+            <span class="typeAttribute">object</span>
+        </td>
+        <td>
+            <pre>Обязательно, если указан query, JSON-массив названий полей запроса в представлении.
+Допустимо указание полей из связанных таблиц. Пример: ["recordId", "status.name"]</pre>
+        </td>
+    </tr>
+    <tr>
+        <td>count
+            <br>
+            <span class="typeAttribute">boolean</span>
+        </td>
+        <td>
+            <pre>Опционально, если указано, ответ содержит общее количество записей в выборке</pre>
+        </td>
+    </tr>
+    <tr>
+        <td>sort
+            <br>
+            <span class="typeAttribute">object</span>
+        </td>
+        <td><pre>Опционально, JSON-массив параметров сортировки выборки, каждый параметр описывается объектом со следующей структурой:
+◦ property: &lt;имя поля&gt; — имя поля сортировки (перечень полей определяется представлением);
+◦ direction: &lt;направление&gt; — направление сортировки: по возрастанию «asc», либо по убыванию «desc»</pre>
+        </td>
+    </tr>
+    <tr>
+        <td>filter
+            <br>
+            <span class="typeAttribute">object</span>
+        </td>
+        <td><pre>Опционально, JSON-массив объектов-фильтров, каждый объект-фильтр имеет следующую структуру:
+◦ property: &lt;имя поля&gt; — имя поля сортировки (перечень полей определяется представлением);
+◦ operator: &lt;операция&gt; — операция сравнения, одна из:
+
+    -not
+    -minus
+    -add
+    -sub
+    -mul
+    -div
+    -mod
+    -and
+    -or
+    -eq
+    -notEq
+    -lt
+    -gt
+    -le
+    -ge
+    -beginsWith
+    -notBeginsWith
+    -endsWith
+    -notEndsWith
+    -contains
+    -notContains
+    -containsWord
+    -notContainsWord
+    -isSimilarTo
+    -isNotSimilarTo
+    -isEmpty
+    -isNotEmpty
+    -yesterday
+    -today
+    -tomorrow
+    -lastWeek
+    -thisWeek
+    -nextWeek
+    -lastMonth
+    -thisMonth
+    -nextMonth
+    -lastYear
+    -thisYear
+    -nextYear
+    -lastDays
+    -nextDays
+    -lastHours
+    -nextHours
+    -isTrue
+    -isFalse
+◦ value: &lt;значение&gt; — значение, с которым сравнивается поле.</pre>
+        </td>
+    </tr>
+    <tr>
+        <td>name
+            <br>
+            <span class="typeAttribute">string</span>
+        </td>
+        <td>
+            Обязательно в случаях, при вызове метода [action="action"]. Наименование команды представления.
+            Перчень команд определяется представлением
+        </td>
+    </tr>
+    <tr>
+        <td>data
+            <br>
+            <span class="typeAttribute">object</span>
+        </td>
+        <td>
+            <pre>Массив объектов-записей представления</pre>
+        </td>
+    </tr>
+    <tr>
+        <td>values
+            <br>
+            <span class="typeAttribute">object</span>
+        </td>
+        <td>
+            <pre>Массив значений по умолчанию объекта. Используется при вызове метода [action="copy"]</pre>
+        </td>
+    </tr>
+
+    <tr>
+        <td>data
+            <br>
+            <span class="typeAttribute">object</span>
+        </td>
+        <td>
+            <pre>Массив объектов-записей</pre>
+        </td>
+    </tr>
+    <tr>
+        <td>field
+            <br>
+            <span class="typeAttribute">string</span>
+        </td>
+        <td>
+            <pre>Наименование поля. При вызове методов [action="attach|detach"] указывает на поле хранящее файл</pre>
+        </td>
+    </tr>
+    <tr>
+        <td>columns
+            <br>
+            <span class="typeAttribute">object</span>
+        </td>
+        <td>
+            <pre>Массив объектов.
+Атрибуты объекта:
+"id" - содержит наименование поля представления,
+"width" - ширина колонки.
+Используется при вызове метода [action="export"]</pre>
+        </td>
+    </tr>
+    <tr>
+        <td>recordId
+            <br>
+            <span class="typeAttribute">string</span>
+        </td>
+        <td>
+            <pre>Идентификатор записи. Используется при вызове методов [action="attach|detach|copy"]</pre>
+        </td>
+    </tr>
+    <tr>
+        <td>records
+            <br>
+            <span class="typeAttribute">object</span>
+        </td>
+        <td>
+            <pre>Массив идентификаторов записей. При вызове метода [action="action"], указывает к каким записям выполнить команду</pre>
+        </td>
+    </tr>
+    <tr>
+        <td>login
+            <br>
+            <span class="typeAttribute">string</span>
+        </td>
+        <td>
+            <pre>Логин пользователя</pre>
+        </td>
+    </tr>
+    <tr>
+        <td>password
+            <br>
+            <span class="typeAttribute">string</span>
+        </td>
+        <td>
+            <pre>MD5 хеш пароля</pre>
+        </td>
+    </tr>
+
+    <tr>
+        <td colspan="3"><h4>Ответ запроса</h4></td>
+    </tr>
+
+    <tr>
+        <td>Наименование параметра</td>
+        <td>Описание</td>
+    </tr>
+
+    <tr>
+        <td>success<br><span class="typeAttribute">boolean</span></td>
+        <td>
+            <pre>Результат обработки запроса — успешно / неуспешно</pre>
+        </td>
+    </tr>
+    <tr>
+        <td>status<br><span class="typeAttribute">integer</span></td>
+        <td>
+            <pre>Целочисленный код ошибки (возвращается в случае неуспешной обработки запроса)</pre>
+        </td>
+    </tr>
+    <tr>
+        <td>server<br><span class="typeAttribute">guid</span></td>
+        <td>
+            <pre>Идентификатор сервера в формате UUID, сформировавшего ответ (возвращается в случае успешной обработки запроса)</pre>
+        </td>
+    </tr>
+    <tr>
+        <td>request<br><span class="typeAttribute">string</span></td>
+        <td>
+            <pre>уникальная строка, идентифицирующая представление данных, к которому формируется запрос;</pre>
+        </td>
+    </tr>
+    <tr>
+        <td>data<br><span class="typeAttribute">object</span></td>
+        <td>
+            <pre>Массив объектов-записей представления</pre>
+        </td>
+    </tr>
+    <tr>
+        <td>info<br><span class="typeAttribute">object</span></td>
+        <td>
+            <pre> Объект вида: {messages: [], files: []}.</pre>
+        </td>
+    </tr>
+    <tr>
+        <td>total<br><span class="typeAttribute">integer</span></td>
+        <td>
+            <pre>Количество записей в выборке (только для параметра count: true)</pre>
+        </td>
+    </tr>
+    </tbody>
+</table>
+
+
+<h2 id="actions">Примеры запросов в разрезе по типам действия</h2>
+<p>Запросы выполняются методом <b>POST</b>, в  заголовках указывается <b>"content-type: application/x-www-form-urlencoded"</b>, или "multipart/form-data".</p>
+<h2>Запрос авторизации</h2>
+<pre><code>curl -X POST \
       http://127.0.0.1:9080/request.json \
       -H 'content-type: application/x-www-form-urlencoded' \
       -d 'request=login&password=d41d8cd98f00b204e9800998ecf8427e&login=Admin'</code></pre>
 
-    <#list entities as entity>
-        <h2 id="${entity.entityId}">Представление: ${entity.entityName}</h2>
-        <#if entity.entityDescription??>
-            <p>${entity.entityDescription}</p>
-        </#if>
+<#list actions as action>
+    <h3 id="${action.name}">Метод: ${action.name}</h3>
+    <#if action.description??>
+        <p>${action.description}</p>
+    </#if>
+    <p>Параметры запроса</p>
+    <pre><code>${action.request}</code></pre>
+    <p>Параметры ответа</p>
+    <pre><code>${action.response}</code></pre>
+</#list>
 
-        <p>Перечень полей представления:</p>
-        <table border="1" cellpadding="5px">
-            <#list entity.entityFields as field>
-                <tr>
-                    <td>
-                        <#if field.reference??>
-                            <a href="#${field.reference}">${field.name}</a>
-                        <#else>
-                            ${field.name}
-                        </#if>
-                        <br>
-                        <span class="typeAttribute" style=color:blue>${field.type}</span>
-
-                        <#if field.length??>
-                            <br>
-                            <span>length: ${field.length}</span>
-                        </#if>
-                        <#if field.format??>
-                            <br>
-                            <span>format: ${field.format}</span>
-                        </#if>
-                    </td>
-                    <td>${field.description}</td>
-                </tr>
-            </#list>
-        </table>
-
-        <#if entity.actions?has_content>
-            <p>Перечень команд представления:</p>
-            <table border="1" cellpadding="5px">
-                <#list entity.actions as action>
-                <tr>
-                    <td>${action.name}</td>
-                    <td>${action.description}</td>
-                </tr>
-                </#list>
-            </table>
-        </#if>
-
-        <br>
-
-        <table border="1" cellpadding="5px">
-            <tr>
-                <td colspan="3"><h4>Параметры запроса</h4></td>
-            </tr>
-            <tr>
-                <td>Наименование параметра</td>
-                <td>Пример значения</td>
-                <td>Описание</td>
-            </tr>
-            <#list entity.input as attr>
-                <tr>
-                    <td>${attr.name}
-                        <#if attr.required>
-                            <span style=color:red>*<span style="font-size: 10px">required</span></span>
-                        </#if>
-                        <br>
-                        <span class="typeAttribute">${attr.type}</span>
-                    </td>
-                    <td><pre>${attr.value}</pre></td>
-                    <td><pre>${attr.description}</pre></td>
-                </tr>
-            </#list>
-
-            <tr>
-                <td colspan="3"><h4>Ответ запроса</h4></td>
-            </tr>
-
-            <tr>
-                <td>Наименование параметра</td>
-                <td>Пример значения</td>
-                <td>Описание</td>
-            </tr>
-
-            <#list entity.output as attr>
-                <tr>
-                    <td>${attr.name}<br><span class="typeAttribute">${attr.type}</span></td>
-                    <td><pre>${attr.value}</pre></td>
-                    <td><pre>${attr.description}</pre></td>
-                </tr>
-            </#list>
-            <tr>
-                <td colspan="3"><h4>Пример запроса</h4></td>
-            </tr>
-            <tr>
-                <td colspan="3">
-                    <pre><code>${entity.codeSnippet}</code></pre>
-                </td>
-            </tr>
-        </table>
-    <br>
-    </#list>
 </body>
 </html>

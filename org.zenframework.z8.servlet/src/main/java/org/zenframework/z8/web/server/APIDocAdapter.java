@@ -3,8 +3,8 @@ package org.zenframework.z8.web.server;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
-import org.zenframework.z8.server.apidocs.APIDocumentationBuilder;
-import org.zenframework.z8.server.apidocs.dto.EntityDocumentation;
+import org.zenframework.z8.server.apidocs.DocBuilder;
+import org.zenframework.z8.server.apidocs.dto.Documentation;
 import org.zenframework.z8.server.config.FreeMarkerConfiguration;
 import org.zenframework.z8.server.request.ContentType;
 import org.zenframework.z8.server.request.Loader;
@@ -50,14 +50,14 @@ public class APIDocAdapter extends Adapter {
 		}
 		Arrays.stream(rawText.split("\\n"))
 				.forEach(className -> entities.add((OBJECT.CLASS<? extends OBJECT>) Loader.loadClass(className)));
-		Map<String, List<EntityDocumentation>> data = new APIDocumentationBuilder().build(entities);
+		Documentation documentation = new DocBuilder().build(entities);
 
 		Configuration freeMarkerCfg = FreeMarkerConfiguration.getFreeMarkerCfg();
 		Template temp = freeMarkerCfg.getTemplate(templateName);
 
 		StringWriter stringWriter = new StringWriter();
 		try {
-			temp.process(data, stringWriter);
+			temp.process(documentation, stringWriter);
 		} catch (TemplateException exc) {
 			throw new RuntimeException(exc);
 		}
