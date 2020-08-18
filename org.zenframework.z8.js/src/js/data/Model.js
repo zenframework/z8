@@ -195,6 +195,16 @@ Z8.define('Z8.data.Model', {
 
 	setId: function(id) {
 		this.set(this.idProperty, id);
+		return this;
+	},
+
+	getParentId: function() {
+		return this.get(this.parentIdProperty);
+	},
+
+	setParentId: function(parentId) {
+		this.set(this.parentIdProperty, parentId);
+		return this;
 	},
 
 	getLock: function() {
