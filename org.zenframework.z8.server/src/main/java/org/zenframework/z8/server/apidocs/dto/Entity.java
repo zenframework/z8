@@ -12,11 +12,13 @@ public class Entity {
     private List<IActionRequest> actions;
     private List<FieldDescription> entityFields;
     private List<BaseInfo> actionsNames;
+    private List<BaseInfo> queries;
 
     public Entity() {
         actions = new ArrayList<>();
         entityFields = new ArrayList<>();
         actionsNames = new ArrayList<>();
+        queries = new ArrayList<>();
     }
 
     public String getEntityName() {
@@ -65,5 +67,9 @@ public class Entity {
 
     public void setActionsNames(List<BaseInfo> actionsNames) {
         this.actionsNames = actionsNames;
+    }
+
+    public List<BaseInfo> getQueries() {
+        return queries;
     }
 }

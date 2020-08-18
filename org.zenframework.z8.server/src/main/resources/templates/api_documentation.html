@@ -73,6 +73,23 @@
             </#list>
         </table>
     </#if>
+
+    <#if entity.queries?has_content>
+        <p>Перечень связанных таблиц. Значения используются в параметре запроса "query":</p>
+        <table border="1" cellpadding="5px">
+            <tr>
+                <td>Значение параметра</td>
+                <td>Наименование таблицы</td>
+            </tr>
+            <#list entity.queries as query>
+            <tr>
+                <td>${query.name}</td>
+                <td>${query.description}</td>
+            </tr>
+            </#list>
+        </table>
+    </#if>
+
 </#list>
 
 <h2 id="parameters_description">Описание всех атрибутов запросов</h2>

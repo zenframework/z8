@@ -33,6 +33,12 @@ public class DocBuilder {
             query.actions().forEach(action -> entityResult.getActionsNames().add(
                     new BaseInfo(action.id(), action.displayName())
             ));
+            query.objects.forEach(member -> {
+              if (member instanceof Query.CLASS) {
+                  entityResult.getQueries().add(
+                      new BaseInfo(member.index(), member.getAttribute("name")));
+              }
+            });
 
             // set a list of available fields of the entity
             for(Field field : query.getDataFields()) {
