@@ -268,7 +268,7 @@ public class file extends primary implements RmiSerializable, Serializable {
 	}
 
 	public String extension() {
-		return FilenameUtils.getExtension(path.isEmpty() ? name.get() : path.get());
+		return FilenameUtils.getExtension(path.isEmpty() ? name.get() : path.get()).toLowerCase();
 	}
 
 	public String folder() {

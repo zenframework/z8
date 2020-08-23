@@ -34,7 +34,7 @@ public final class bool extends primary {
 	}
 
 	public bool(String x) {
-		if(x == null || x.equalsIgnoreCase("0") || x.equalsIgnoreCase("false") || x.equalsIgnoreCase("no") || x.equalsIgnoreCase("n") || x.equalsIgnoreCase(falseString)) {
+		if(x == null || x.isEmpty() || x.equalsIgnoreCase("0") || x.equalsIgnoreCase("false") || x.equalsIgnoreCase("no") || x.equalsIgnoreCase("n") || x.equalsIgnoreCase(falseString)) {
 			set(false);
 		} else if(x.equalsIgnoreCase("1") || x.equalsIgnoreCase("true") || x.equalsIgnoreCase("yes") || x.equalsIgnoreCase("y") || x.equalsIgnoreCase(trueString)) {
 			set(true);

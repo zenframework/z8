@@ -32,7 +32,6 @@ body {
 
 body * {
 	line-height: inherit;
-	background-color: inherit;
 }
 
 *:focus {
@@ -46,6 +45,7 @@ input, textarea {
 	border: 0;
 	min-width: 0;
 	min-height: 0;
+	background: none;
 }
 
 input[type="number"]:-webkit-inner-spin-button,
@@ -311,45 +311,50 @@ canvas {
 	align-items: stretch;
 }
 
+.control-group.checkbox {
+	align-items: center;
+	cursor: pointer;
+}
+
 .control-group.checkbox>.box {
 	flex: none;
 }
 
-.control {
+.control-group>.box>.control {
 	flex: 1;
 	position: relative;
 	resize: none;
 }
 
-div[name=input].control {
+.control-group>.box>div[name=input].control {
 	user-select: text;
 	-webkit-user-select: text;
 }
 
-.control:-ms-expand {
+.control-group>.box>.control:-ms-expand {
 	border: 0;
-	background-color: transparent
+	background: none;
 }
 
-.textarea.control,
-.html.control {
+.control-group>.box>.textarea.control,
+.control-group>.box>.html.control {
 	height: auto;
 	user-select: text;
 	-webkit-user-select: text;
 	cursor: text;
 }
 
-.control[readonly],
-.control.readonly {
+.control-group>.box>.control[readonly],
+.control-group>.box>.control.readonly {
 	cursor: text;
 }
 
-.control.disabled,
-.control-group.disabled {
+.control-group>.box>.control.disabled,
+.control-group>.box>.control-group.disabled {
 	cursor: not-allowed;
 }
 
-.label {
+.control-group>.label {
 	display: flex;
 	flex-direction: row;
 	align-items: center;
@@ -360,7 +365,7 @@ div[name=input].control {
 	white-space: nowrap;
 }
 
-.label>.text {
+.control-group>.label>.text {
 	text-overflow: ellipsis;
 	overflow: hidden;
 }
@@ -395,11 +400,6 @@ div[name=input].control {
 	text-overflow: ellipsis;
 }
 
-.btn>.text,
-.btn>.icon {
-	background-color: transparent;
-	
-}
 .btn-tool {
 }
 
