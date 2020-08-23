@@ -185,12 +185,12 @@ public class ServerConfig extends Properties {
 
 		authorityCenterHost = getHost(AuthorityCenterHost, Rmi.localhost);
 		authorityCenterPort = getProperty(AuthorityCenterPort, 10000);
-		authorityCenterCache = getProperty(AuthorityCenterCache, true);
+		authorityCenterCache = getProperty(AuthorityCenterCache, false);
 		authorityCenterSessionTimeout = getProperty(AuthorityCenterSessionTimeout, 24 * 60);
 
 		interconnectionCenterHost = getHost(InterconnectionCenterHost, Rmi.localhost);
 		interconnectionCenterPort = getProperty(InterconnectionCenterPort, 20000);
-		interconnectionCenterCache = getProperty(InterconnectionCenterCache, true);
+		interconnectionCenterCache = getProperty(InterconnectionCenterCache, false);
 
 		webServerPort = getProperty(WebServerPort, 25000);
 		webServerHttpPort = getProperty(WebServerHttpPort, 9080);
