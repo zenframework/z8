@@ -127,6 +127,10 @@ public abstract class Initialization extends LanguageElement {
 		}
 
 		if(candidates.size() != 0) {
+			ITypeCast directCast = operatorToken.getId() == IToken.ASSIGN ? right.getVariableType().getCastTo(leftHandValue.getVariableType()) : null;
+			if(directCast != null)
+					candidates.add(directCast);
+
 			ITypeCast[] result = TypeCast.findBestCast(candidates.toArray(new ITypeCast[candidates.size()]));
 
 			if(result.length == 1) {
