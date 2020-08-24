@@ -358,10 +358,10 @@ public final class integer extends primary {
 	}
 
 	static public integer z8_parse(string string) {
-		return parse(string.get(), 10);
+		return parse(string != null ? string.get() : "", 10);
 	}
 
 	static public integer z8_parse(string string, integer radix) {
-		return parse(string.get(), radix.getInt());
+		return parse(string != null ? string.get() : "", radix.getInt());
 	}
 }
