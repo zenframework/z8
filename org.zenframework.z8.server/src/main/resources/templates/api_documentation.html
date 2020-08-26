@@ -34,7 +34,7 @@
     <#if entity.entityDescription??>
         <p>${entity.entityDescription}</p>
     </#if>
-<p>Идентификатор представления: <b>${entity.entityId}</b>. Указывается в параметре "request" запроса</p>
+<p>Идентификатор представления: <b>${entity.entityId}</b>. Указывается в параметре запроса "request"</p>
     <p>Перечень полей представления:</p>
     <table border="1" cellpadding="5px">
         <#list entity.entityFields as field>
@@ -92,7 +92,7 @@
 
 </#list>
 
-<h2 id="parameters_description">Описание всех атрибутов запросов</h2>
+<h2 id="parameters_description">Описание всех возможных комбинаций атрибутов при выполнении запросов</h2>
 <table border="1" cellpadding="5px">
     <tbody>
     <tr>
