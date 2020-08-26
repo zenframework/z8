@@ -6,6 +6,8 @@ import org.zenframework.z8.server.resources.Resources;
 import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.types.integer;
 
+import java.util.Optional;
+
 public class Requests extends Table {
 	final static public String TableName = "SystemRequests";
 
@@ -16,11 +18,16 @@ public class Requests extends Table {
 	static public class strings {
 		public final static String Title = "Requests.title";
 		public final static String ClassId = "Requests.classId";
+		public final static String Name = "Requests.name";
 	}
 
 	static public class displayNames {
 		public final static String Title = Resources.get(strings.Title);
 		public final static String ClassId = Resources.get(strings.ClassId);
+	}
+	static public class apiAttrs {
+		public final static String Title = Resources.get(strings.Title);
+		public final static String Name = Resources.get(strings.Name);
 	}
 	
 	public static class CLASS<T extends Requests> extends Table.CLASS<T> {
@@ -33,6 +40,8 @@ public class Requests extends Table {
 			setJavaClass(Requests.class);
 			setName(TableName);
 			setDisplayName(displayNames.Title);
+			Optional.ofNullable(apiAttrs.Title)
+					.ifPresent(attrVal -> setAttribute("APIDescription", attrVal));
 		}
 
 		@Override
@@ -64,5 +73,7 @@ public class Requests extends Table {
 		classId.get().length = new integer(1024);
 
 		name.get().length = new integer(256);
+		Optional.ofNullable(apiAttrs.Name)
+				.ifPresent(attrVal -> name.setAttribute("APIDescription", attrVal));
 	}
 }

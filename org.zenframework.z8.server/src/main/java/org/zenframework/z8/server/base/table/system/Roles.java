@@ -1,9 +1,6 @@
 package org.zenframework.z8.server.base.table.system;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.LinkedHashMap;
+import java.util.*;
 
 import org.zenframework.z8.server.base.query.RecordLock;
 import org.zenframework.z8.server.base.table.Table;
@@ -62,6 +59,17 @@ public class Roles extends Table {
 		public final static String Execute = Resources.get(strings.Execute);
 	}
 
+	static public class apiAttrs {
+		public final static String Title = Resources.getOrNull(strings.Title + ".APIDescription");
+		public final static String Name = Resources.getOrNull(strings.Name + ".APIDescription");
+		public final static String Read = Resources.getOrNull(strings.Read + ".APIDescription");
+		public final static String Write = Resources.getOrNull(strings.Write + ".APIDescription");
+		public final static String Create = Resources.getOrNull(strings.Create + ".APIDescription");
+		public final static String Copy = Resources.getOrNull(strings.Copy + ".APIDescription");
+		public final static String Destroy = Resources.getOrNull(strings.Destroy + ".APIDescription");
+		public final static String Execute = Resources.getOrNull(strings.Execute + ".APIDescription");
+	}
+
 	static public guid User = Role.User;
 	static public guid Guest = Role.Guest;
 	static public guid Administrator = Role.Administrator;
@@ -79,6 +87,8 @@ public class Roles extends Table {
 			setJavaClass(Roles.class);
 			setName(Roles.TableName);
 			setDisplayName(displayNames.Title);
+			Optional.ofNullable(apiAttrs.Title)
+					.ifPresent(attrVal -> setAttribute("APIDescription", attrVal));
 		}
 
 		@Override
@@ -109,6 +119,8 @@ public class Roles extends Table {
 
 		name.setDisplayName(displayNames.Name);
 		name.get().length = new integer(50);
+		Optional.ofNullable(apiAttrs.Name)
+				.ifPresent(attrVal -> name.setAttribute("APIDescription", attrVal));
 
 		IAccess access = Access.guest();
 
@@ -116,31 +128,43 @@ public class Roles extends Table {
 		read.setIndex("read");
 		read.setDisplayName(displayNames.Read);
 		read.get().setDefault(new bool(access.read()));
+		Optional.ofNullable(apiAttrs.Read)
+				.ifPresent(attrVal -> read.setAttribute("APIDescription", attrVal));
 
 		write.setName(fieldNames.Write);
 		write.setIndex("write");
 		write.setDisplayName(displayNames.Write);
 		write.get().setDefault(new bool(access.write()));
+		Optional.ofNullable(apiAttrs.Write)
+				.ifPresent(attrVal -> write.setAttribute("APIDescription", attrVal));
 
 		create.setName(fieldNames.Create);
 		create.setIndex("create");
 		create.setDisplayName(displayNames.Create);
 		create.get().setDefault(new bool(access.create()));
+		Optional.ofNullable(apiAttrs.Create)
+				.ifPresent(attrVal -> create.setAttribute("APIDescription", attrVal));
 
 		copy.setName(fieldNames.Copy);
 		copy.setIndex("copy");
 		copy.setDisplayName(displayNames.Copy);
 		copy.get().setDefault(new bool(access.copy()));
+		Optional.ofNullable(apiAttrs.Copy)
+				.ifPresent(attrVal -> copy.setAttribute("APIDescription", attrVal));
 
 		destroy.setName(fieldNames.Destroy);
 		destroy.setIndex("destroy");
 		destroy.setDisplayName(displayNames.Destroy);
 		destroy.get().setDefault(new bool(access.destroy()));
+		Optional.ofNullable(apiAttrs.Destroy)
+				.ifPresent(attrVal -> destroy.setAttribute("APIDescription", attrVal));
 
 		execute.setName(fieldNames.Execute);
 		execute.setIndex("execute");
 		execute.setDisplayName(displayNames.Execute);
 		execute.get().setDefault(new bool(access.execute()));
+		Optional.ofNullable(apiAttrs.Execute)
+				.ifPresent(attrVal -> execute.setAttribute("APIDescription", attrVal));
 
 		this.setTransactive(true);
 	}

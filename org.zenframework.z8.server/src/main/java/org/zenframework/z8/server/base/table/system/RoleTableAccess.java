@@ -1,6 +1,7 @@
 package org.zenframework.z8.server.base.table.system;
 
 import java.util.Arrays;
+import java.util.Optional;
 
 import org.zenframework.z8.server.base.query.RecordLock;
 import org.zenframework.z8.server.base.table.Table;
@@ -28,6 +29,8 @@ public class RoleTableAccess extends Table {
 
 	static public class strings {
 		public final static String Title = "RoleTableAccess.title";
+		public final static String Role = "RoleTableAccess.role";
+		public final static String Table = "RoleTableAccess.table";
 		public final static String Read = "RoleTableAccess.read";
 		public final static String Write = "RoleTableAccess.write";
 		public final static String Create = "RoleTableAccess.create";
@@ -44,6 +47,17 @@ public class RoleTableAccess extends Table {
 		public final static String Destroy = Resources.get(strings.Destroy);
 	}
 
+	static public class apiAttrs {
+		public final static String Title = Resources.getOrNull(strings.Title + ".APIDescription");
+		public final static String Role = Resources.getOrNull(strings.Role + ".APIDescription");
+		public final static String Table = Resources.getOrNull(strings.Table + ".APIDescription");
+		public final static String Read = Resources.getOrNull(strings.Read + ".APIDescription");
+		public final static String Write = Resources.getOrNull(strings.Write + ".APIDescription");
+		public final static String Create = Resources.getOrNull(strings.Create + ".APIDescription");
+		public final static String Copy = Resources.getOrNull(strings.Copy + ".APIDescription");
+		public final static String Destroy = Resources.getOrNull(strings.Destroy + ".APIDescription");
+	}
+
 	public static class CLASS<T extends RoleTableAccess> extends Table.CLASS<T> {
 		public CLASS() {
 			this(null);
@@ -54,6 +68,8 @@ public class RoleTableAccess extends Table {
 			setJavaClass(RoleTableAccess.class);
 			setName(TableName);
 			setDisplayName(displayNames.Title);
+			Optional.ofNullable(apiAttrs.Title)
+					.ifPresent(attrVal -> setAttribute("APIDescription", attrVal));
 		}
 
 		@Override
@@ -116,29 +132,49 @@ public class RoleTableAccess extends Table {
 
 		role.setName(fieldNames.Role);
 		role.setIndex("role");
+		Optional.ofNullable(apiAttrs.Role)
+				.ifPresent(attrVal -> role.setAttribute("APIDescription", attrVal));
 
 		table.setName(fieldNames.Table);
 		table.setIndex("table");
+		Optional.ofNullable(apiAttrs.Table)
+				.ifPresent(attrVal -> table.setAttribute("APIDescription", attrVal));
+
 
 		read.setName(fieldNames.Read);
 		read.setIndex("read");
 		read.setDisplayName(displayNames.Read);
+		Optional.ofNullable(apiAttrs.Read)
+				.ifPresent(attrVal -> read.setAttribute("APIDescription", attrVal));
+
 
 		write.setName(fieldNames.Write);
 		write.setIndex("write");
 		write.setDisplayName(displayNames.Write);
+		Optional.ofNullable(apiAttrs.Write)
+				.ifPresent(attrVal -> write.setAttribute("APIDescription", attrVal));
+
 
 		create.setName(fieldNames.Create);
 		create.setIndex("create");
 		create.setDisplayName(displayNames.Create);
+		Optional.ofNullable(apiAttrs.Create)
+				.ifPresent(attrVal -> create.setAttribute("APIDescription", attrVal));
+
 
 		copy.setName(fieldNames.Copy);
 		copy.setIndex("copy");
 		copy.setDisplayName(displayNames.Copy);
+		Optional.ofNullable(apiAttrs.Copy)
+				.ifPresent(attrVal -> copy.setAttribute("APIDescription", attrVal));
+
 
 		destroy.setName(fieldNames.Destroy);
 		destroy.setIndex("destroy");
 		destroy.setDisplayName(displayNames.Destroy);
+		Optional.ofNullable(apiAttrs.Destroy)
+				.ifPresent(attrVal -> destroy.setAttribute("APIDescription", attrVal));
+
 	}
 
 	@Override

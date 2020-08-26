@@ -1,6 +1,7 @@
 package org.zenframework.z8.server.base.table.system;
 
 import java.util.Arrays;
+import java.util.Optional;
 
 import org.zenframework.z8.server.base.query.RecordLock;
 import org.zenframework.z8.server.base.table.Table;
@@ -27,6 +28,8 @@ public class RoleFieldAccess extends Table {
 
 	static public class strings {
 		public final static String Title = "RoleFieldAccess.title";
+		public final static String Role = "RoleFieldAccess.role";
+		public final static String Field = "RoleFieldAccess.field";
 		public final static String Read = "RoleFieldAccess.read";
 		public final static String Write = "RoleFieldAccess.write";
 	}
@@ -35,6 +38,14 @@ public class RoleFieldAccess extends Table {
 		public final static String Title = Resources.get(strings.Title);
 		public final static String Read = Resources.get(strings.Read);
 		public final static String Write = Resources.get(strings.Write);
+	}
+
+	static public class apiAttrs {
+		public final static String Title = Resources.getOrNull(strings.Title + ".APIDescription");
+		public final static String Role = Resources.getOrNull(strings.Role + ".APIDescription");
+		public final static String Field = Resources.getOrNull(strings.Field + ".APIDescription");
+		public final static String Read = Resources.getOrNull(strings.Read + ".APIDescription");
+		public final static String Write = Resources.getOrNull(strings.Write + ".APIDescription");
 	}
 
 	public static class CLASS<T extends RoleFieldAccess> extends Table.CLASS<T> {
@@ -47,6 +58,8 @@ public class RoleFieldAccess extends Table {
 			setJavaClass(RoleFieldAccess.class);
 			setName(TableName);
 			setDisplayName(displayNames.Title);
+			Optional.ofNullable(apiAttrs.Title)
+					.ifPresent(attrVal -> setAttribute("APIDescription", attrVal));
 		}
 
 		@Override
@@ -103,17 +116,25 @@ public class RoleFieldAccess extends Table {
 
 		role.setName(fieldNames.Role);
 		role.setIndex("role");
+		Optional.ofNullable(apiAttrs.Role)
+				.ifPresent(attrVal -> role.setAttribute("APIDescription", attrVal));
 
 		field.setName(fieldNames.Field);
 		field.setIndex("field");
+		Optional.ofNullable(apiAttrs.Field)
+				.ifPresent(attrVal -> field.setAttribute("APIDescription", attrVal));
 
 		read.setName(fieldNames.Read);
 		read.setIndex("read");
 		read.setDisplayName(displayNames.Read);
+		Optional.ofNullable(apiAttrs.Read)
+				.ifPresent(attrVal -> read.setAttribute("APIDescription", attrVal));
 
 		write.setName(fieldNames.Write);
 		write.setIndex("write");
 		write.setDisplayName(displayNames.Write);
+		Optional.ofNullable(apiAttrs.Write)
+				.ifPresent(attrVal -> write.setAttribute("APIDescription", attrVal));
 	}
 
 	@Override

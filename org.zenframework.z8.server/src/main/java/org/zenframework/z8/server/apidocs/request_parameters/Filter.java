@@ -22,11 +22,11 @@ public class Filter implements IRequestParametr {
         List<Map<String, String>> filterParamExample = Collections.singletonList(new LinkedTreeMap<>());
         filterParamExample.get(0).put("property", query.primaryKey().index());
         filterParamExample.get(0).put("operator", Operation.Eq.toString());
-        filterParamExample.get(0).put("value", "3468CA6A-853F-42A1-9DF7-F92FC951AB20");
+        filterParamExample.get(0).put("value", "00000000-0000-0000-0000-000000000000");
 
         List<Map<String, Object>> filterExample = Collections.singletonList(new LinkedTreeMap<>());
         filterExample.get(0).put("logical", "and");
-        filterExample.get(0).put("expression", filterParamExample);
+        filterExample.get(0).put("expressions", filterParamExample);
         return filterExample;
     }
 }
