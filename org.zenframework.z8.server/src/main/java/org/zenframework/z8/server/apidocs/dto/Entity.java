@@ -9,16 +9,17 @@ public class Entity {
     private String entityName;
     private String entityDescription;
     private String entityId;
+    private String contentParams;
     private List<IActionRequest> actions;
     private List<FieldDescription> entityFields;
     private List<BaseInfo> actionsNames;
-    private List<BaseInfo> queries;
+    private List<BaseInfo> relatedEntities;
 
     public Entity() {
         actions = new ArrayList<>();
         entityFields = new ArrayList<>();
         actionsNames = new ArrayList<>();
-        queries = new ArrayList<>();
+        relatedEntities = new ArrayList<>();
     }
 
     public String getEntityName() {
@@ -69,7 +70,15 @@ public class Entity {
         this.actionsNames = actionsNames;
     }
 
-    public List<BaseInfo> getQueries() {
-        return queries;
+    public List<BaseInfo> getRelatedEntities() {
+        return relatedEntities;
+    }
+
+    public String getContentParams() {
+        return contentParams;
+    }
+
+    public void setContentParams(String contentParams) {
+        this.contentParams = contentParams;
     }
 }

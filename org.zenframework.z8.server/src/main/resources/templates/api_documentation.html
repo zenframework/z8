@@ -34,8 +34,8 @@
     <#if entity.entityDescription??>
         <p>${entity.entityDescription}</p>
     </#if>
-<p>Идентификатор представления: <b>${entity.entityId}</b>. Указывается в параметре запроса "request"</p>
-    <p>Перечень полей представления:</p>
+    <p>Идентификатор представления: <b>${entity.entityId}</b>. Указывается в параметре запроса "request"</p>
+    <h3>Перечень полей представления.</h3>
     <table border="1" cellpadding="5px">
         <#list entity.entityFields as field>
             <tr>
@@ -63,7 +63,7 @@
     </table>
 
     <#if entity.actionsNames?has_content>
-        <p>Перечень команд представления:</p>
+        <h3>Перечень команд представления.</h3>
         <table border="1" cellpadding="5px">
             <#list entity.actionsNames as action>
             <tr>
@@ -74,20 +74,25 @@
         </table>
     </#if>
 
-    <#if entity.queries?has_content>
-        <p>Перечень связанных таблиц. Значения используются в параметре запроса "query":</p>
+    <#if entity.relatedEntities?has_content>
+        <h3>Перечень связанных таблиц.</h3>
+        <p>Значения используются в параметре запроса "query":</p>
         <table border="1" cellpadding="5px">
             <tr>
                 <td>Значение параметра</td>
                 <td>Наименование таблицы</td>
             </tr>
-            <#list entity.queries as query>
+            <#list entity.relatedEntities as query>
             <tr>
                 <td>${query.name}</td>
                 <td>${query.description}</td>
             </tr>
             </#list>
         </table>
+    </#if>
+    <#if entity.contentParams??>
+        <h3>Описание входных параметров действия "content".</h3>
+        <p><pre>${entity.contentParams}</pre></p>
     </#if>
 
 </#list>
@@ -149,7 +154,8 @@ preview - загрузить указанный файл в режиме preview
 action - выполнить команду
 attach - прикрепить файл к записи
 detach - открепить файл от записи
-content - получить или записать бинарные данные</pre>
+content - опциональное действие для работы с бинарными данными(получить/записать).
+            Для каждого представления перечень входных параметров описывается отдельно</pre>
         </td>
     </tr>
     <tr>
@@ -421,10 +427,14 @@ content - получить или записать бинарные данные
     <#if action.description??>
         <p>${action.description}</p>
     </#if>
-    <p>Параметры запроса</p>
-    <pre><code>${action.request}</code></pre>
-    <p>Параметры ответа</p>
-    <pre><code>${action.response}</code></pre>
+    <#if action.request??>
+        <p>Параметры запроса</p>
+        <pre><code>${action.request}</code></pre>
+    </#if>
+    <#if action.response??>
+        <p>Параметры ответа</p>
+        <pre><code>${action.response}</code></pre>
+    </#if>
 </#list>
 
 </body>

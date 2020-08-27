@@ -30,12 +30,13 @@ public class DocBuilder {
             entityResult.setEntityName(query.getAttribute("name"));
             entityResult.setEntityDescription(query.getAttribute("APIDescription"));
             entityResult.setEntityId(entity.classId());
+            entityResult.setContentParams(entity.getAttribute("contentParams"));
             query.actions().forEach(action -> entityResult.getActionsNames().add(
                     new BaseInfo(action.id(), action.displayName())
             ));
             query.objects.forEach(member -> {
               if (member instanceof Query.CLASS) {
-                  entityResult.getQueries().add(
+                  entityResult.getRelatedEntities().add(
                       new BaseInfo(member.index(), member.getAttribute("name")));
               }
             });
