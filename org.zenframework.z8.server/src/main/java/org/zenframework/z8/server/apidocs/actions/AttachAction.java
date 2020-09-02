@@ -23,6 +23,6 @@ public class AttachAction extends BaseAction {
     @Override
     public String getDescription() {
         return "При выполнении запроса в заголовках указывается: \"Content-Type: multipart/form-data\". " +
-                "В теле запрос так же прикрепляется загружаемый файл";
+                "В теле запроса так же прикрепляется загружаемый файл";
     }
 }
