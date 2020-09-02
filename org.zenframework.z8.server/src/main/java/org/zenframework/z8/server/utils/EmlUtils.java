@@ -28,7 +28,11 @@ public class EmlUtils {
 
 	private EmlUtils() {}
 
-	public static String emailToString(File sourceFile) throws IOException {
+	public static String emailToString(File source) throws IOException {
+		return emailToString(new FileInputStream(source));
+	}
+
+	public static String emailToString(InputStream in) throws IOException {
 		Properties props = new Properties();
 		props.put("mail.host", "smtp.dummydomain.com");
 		props.put("mail.transport.protocol", "smtp");
@@ -36,17 +40,15 @@ public class EmlUtils {
 		Session mailSession = Session.getDefaultInstance(props, null);
 
 		StringBuilder str = new StringBuilder();
-		InputStream in = null;
 
 		try {
-			in = new FileInputStream(sourceFile);
 			MimeMessage message = new MimeMessage(mailSession, in);
 			str.append("Тема : ").append(message.getSubject()).append('\n');
 			str.append("Отправитель : ").append(message.getFrom()[0]).append('\n');
 			str.append("----------------------------").append('\n');
 			str.append("Сообщение :").append('\n');
 			str.append(EmlUtils.parsePartDocText(message)).append('\n');
-		} catch (MessagingException e) {
+		} catch(MessagingException e) {
 			throw new IOException(e);
 		} finally {
 			IOUtils.closeQuietly(in);

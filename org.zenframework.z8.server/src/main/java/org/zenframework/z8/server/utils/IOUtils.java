@@ -359,31 +359,23 @@ public class IOUtils {
 		}
 	}
 
-	static public String determineEncoding(File file, String defaultCharset) {
+	static public String determineEncoding(File file, String defaultCharset) throws IOException {
+		return determineEncoding(new FileInputStream(file), defaultCharset);
+	}
+
+	static public String determineEncoding(InputStream in, String defaultCharset) throws IOException {
 		UniversalDetector detector = new UniversalDetector(null);
-		// Reset detector before using
+
 		detector.reset();
-		// Buffer
-		InputStream in = null;
+
 		try {
-			in = new FileInputStream(file);
 			byte[] buf = new byte[1024];
-			for(int n = in.read(buf); n >= 0 && !detector.isDone(); n = in.read(buf)) {
+			for(int n = in.read(buf); n >= 0 && !detector.isDone(); n = in.read(buf))
 				detector.handleData(buf, 0, n);
-			}
 			detector.dataEnd();
 			return detector.getDetectedCharset() != null ? detector.getDetectedCharset() : defaultCharset;
-		} catch(Exception e) {
-			Trace.logError("Can't detect encoding of '" + file.getAbsolutePath() + "'", e);
-			return defaultCharset;
 		} finally {
-			detector.reset();
-			if(in != null) {
-				try {
-					in.close();
-				} catch(IOException e) {
-				}
-			}
+			IOUtils.closeQuietly(in);
 		}
 	}
 }
