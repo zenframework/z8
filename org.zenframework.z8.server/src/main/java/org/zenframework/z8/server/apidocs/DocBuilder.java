@@ -6,9 +6,12 @@ import org.zenframework.z8.server.apidocs.field_extractor.FieldExtractor;
 import org.zenframework.z8.server.apidocs.field_extractor.FieldExtractorFactory;
 import org.zenframework.z8.server.apidocs.actions.*;
 import org.zenframework.z8.server.apidocs.dto.Entity;
+import org.zenframework.z8.server.base.form.action.Action;
 import org.zenframework.z8.server.base.query.Query;
 import org.zenframework.z8.server.base.table.value.Field;
 import org.zenframework.z8.server.json.Json;
+import org.zenframework.z8.server.runtime.IClass;
+import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.runtime.OBJECT;
 
 import java.util.*;
@@ -32,15 +35,15 @@ public class DocBuilder {
             entityResult.setEntityDescription(query.getAttribute(Json.apiDescription.toString()));
             entityResult.setEntityId(entity.classId());
             entityResult.setContentParams(entity.getAttribute("contentParams"));
-            query.actions().forEach(action -> entityResult.getActionsNames().add(
-                    new BaseInfo(action.id(), action.displayName())
-            ));
-            query.objects.forEach(member -> {
-              if (member instanceof Query.CLASS) {
-                  entityResult.getRelatedEntities().add(
-                      new BaseInfo(member.index(), member.getAttribute("name")));
-              }
-            });
+            for(Action action : query.actions()) {
+                entityResult.getActionsNames().add(new BaseInfo(action.id(), action.displayName()));
+            }
+
+            for(IClass<? extends IObject> member : query.objects) {
+                if (member instanceof Query.CLASS) {
+                    entityResult.getRelatedEntities().add(new BaseInfo(member.index(), member.getAttribute("name")));
+                }
+            }
 
             // set a list of available fields of the entity
             for(Field field : query.getDataFields()) {
