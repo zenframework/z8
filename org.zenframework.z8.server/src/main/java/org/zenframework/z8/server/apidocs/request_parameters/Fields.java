@@ -1,12 +1,15 @@
 package org.zenframework.z8.server.apidocs.request_parameters;
 
 import org.zenframework.z8.server.apidocs.IActionRequest;
-import org.zenframework.z8.server.apidocs.IRequestParametr;
+import org.zenframework.z8.server.apidocs.IRequestParameter;
 import org.zenframework.z8.server.base.query.Query;
 import org.zenframework.z8.server.base.table.value.Field;
-import java.util.stream.Collectors;
+import org.zenframework.z8.server.json.Json;
 
-public class Fields implements IRequestParametr {
+import java.util.ArrayList;
+import java.util.List;
+
+public class Fields implements IRequestParameter {
 
     @Override
     public String getKey() {
@@ -15,10 +18,12 @@ public class Fields implements IRequestParametr {
 
     @Override
     public Object getValue(Query query, IActionRequest action) {
-        return query.getDataFields()
-                .stream()
-                .filter(field -> field.hasAttribute("APIDescription"))
-                .map(Field::index)
-                .collect(Collectors.toList());
+        List<String> fields = new ArrayList<>();
+        for (Field field : query.getDataFields()) {
+            if (field.hasAttribute(Json.apiDescription.toString())) {
+                fields.add(field.index());
+            }
+        }
+        return fields;
     }
 }

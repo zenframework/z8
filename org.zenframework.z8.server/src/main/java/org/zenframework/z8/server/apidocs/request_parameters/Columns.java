@@ -1,14 +1,15 @@
 package org.zenframework.z8.server.apidocs.request_parameters;
 
-import com.google.gson.internal.LinkedTreeMap;
 import org.zenframework.z8.server.apidocs.IActionRequest;
-import org.zenframework.z8.server.apidocs.IRequestParametr;
+import org.zenframework.z8.server.apidocs.IRequestParameter;
 import org.zenframework.z8.server.base.query.Query;
+import org.zenframework.z8.server.base.table.value.Field;
+import org.zenframework.z8.server.json.Json;
+import org.zenframework.z8.server.json.parser.JsonObject;
 
 import java.util.Collections;
-import java.util.Map;
 
-public class Columns implements IRequestParametr {
+public class Columns implements IRequestParameter {
 
     @Override
     public String getKey() {
@@ -17,14 +18,13 @@ public class Columns implements IRequestParametr {
 
     @Override
     public Object getValue(Query query, IActionRequest action) {
-        Map<String, Object> params = new LinkedTreeMap<>();
-        query.getDataFields()
-                .stream()
-                .filter(field -> field.hasAttribute("APIDescription"))
-                .forEach(field -> {
-                    params.put("id", field.index());
-                    params.put("width", "");});
-
-        return Collections.singletonList(params);
+        JsonObject jsonObject = new JsonObject();
+        for (Field field : query.getDataFields()) {
+            if (field.hasAttribute(Json.apiDescription.toString())){
+                jsonObject.put("id", field.index());
+                jsonObject.put("width", "");
+            }
+        }
+        return Collections.singletonList(jsonObject);
     }
 }

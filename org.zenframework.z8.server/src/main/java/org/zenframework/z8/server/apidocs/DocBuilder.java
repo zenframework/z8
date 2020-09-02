@@ -8,6 +8,7 @@ import org.zenframework.z8.server.apidocs.actions.*;
 import org.zenframework.z8.server.apidocs.dto.Entity;
 import org.zenframework.z8.server.base.query.Query;
 import org.zenframework.z8.server.base.table.value.Field;
+import org.zenframework.z8.server.json.Json;
 import org.zenframework.z8.server.runtime.OBJECT;
 
 import java.util.*;
@@ -28,7 +29,7 @@ public class DocBuilder {
 
             Entity entityResult = new Entity();
             entityResult.setEntityName(query.getAttribute("name"));
-            entityResult.setEntityDescription(query.getAttribute("APIDescription"));
+            entityResult.setEntityDescription(query.getAttribute(Json.apiDescription.toString()));
             entityResult.setEntityId(entity.classId());
             entityResult.setContentParams(entity.getAttribute("contentParams"));
             query.actions().forEach(action -> entityResult.getActionsNames().add(
@@ -43,7 +44,7 @@ public class DocBuilder {
 
             // set a list of available fields of the entity
             for(Field field : query.getDataFields()) {
-                if (field.hasAttribute("APIDescription")) {
+                if (field.hasAttribute(Json.apiDescription.toString())) {
                     FieldExtractor fieldExtractor = FieldExtractorFactory.getExtractor(field);
                     entityResult.getEntityFields().add(fieldExtractor.extract(field));
                 }

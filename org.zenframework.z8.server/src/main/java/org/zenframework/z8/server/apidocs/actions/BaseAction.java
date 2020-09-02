@@ -1,21 +1,19 @@
 package org.zenframework.z8.server.apidocs.actions;
 
-import com.google.gson.internal.LinkedTreeMap;
 import org.zenframework.z8.server.apidocs.IActionRequest;
-import org.zenframework.z8.server.apidocs.IRequestParametr;
+import org.zenframework.z8.server.apidocs.IRequestParameter;
 import org.zenframework.z8.server.apidocs.request_parameters.Data;
 import org.zenframework.z8.server.apidocs.request_parameters.Info;
 import org.zenframework.z8.server.apidocs.request_parameters.SimpleParameters;
-import org.zenframework.z8.server.apidocs.utils.GsonIntegrator;
 import org.zenframework.z8.server.base.query.Query;
+import org.zenframework.z8.server.json.parser.JsonObject;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 public abstract class BaseAction implements IActionRequest {
-    protected List<IRequestParametr> inputParameters;
-    protected List<IRequestParametr> outputParameters;
+    protected List<IRequestParameter> inputParameters;
+    protected List<IRequestParameter> outputParameters;
     private String request;
     private String response;
 
@@ -31,26 +29,28 @@ public abstract class BaseAction implements IActionRequest {
 
     }
 
-    public Map<String, Object> createRequestParameters(Query query) {
-        return makeMap(inputParameters, query);
-    }
-
-    public Map<String, Object> createResponseParameters(Query query) {
-        return makeMap(outputParameters, query);
-    }
-
-    protected Map<String, Object> makeMap(List<IRequestParametr> parametrs, Query query) {
-        Map<String, Object> data = new LinkedTreeMap<>();
-        for (IRequestParametr param : parametrs) {
-            data.put(param.getKey(), param.getValue(query, this));
+    public JsonObject createRequestParameters(Query query) {
+        JsonObject requestJson = new JsonObject();
+        for (IRequestParameter param : inputParameters) {
+            requestJson.put(param.getKey(), param.getValue(query, this));
         }
-        return data;
+        return requestJson;
+    }
+
+    public JsonObject createResponseParameters(Query query) {
+        JsonObject requestJson = new JsonObject();
+        for (IRequestParameter param : outputParameters) {
+            requestJson.put(param.getKey(), param.getValue(query, this));
+        }
+        return requestJson;
     }
 
     @Override
     public void makeExample(Query query) {
-        request = GsonIntegrator.toJson(createRequestParameters(query));
-        response = GsonIntegrator.toJson(createResponseParameters(query));
+        JsonObject requestJson = createRequestParameters(query);
+        request = requestJson.toString(4);
+        JsonObject resposneJson = createResponseParameters(query);
+        response = resposneJson.toString(4);
     }
 
     @Override

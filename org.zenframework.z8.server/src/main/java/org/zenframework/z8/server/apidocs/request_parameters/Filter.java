@@ -1,16 +1,14 @@
 package org.zenframework.z8.server.apidocs.request_parameters;
 
-import com.google.gson.internal.LinkedTreeMap;
 import org.zenframework.z8.server.apidocs.IActionRequest;
-import org.zenframework.z8.server.apidocs.IRequestParametr;
+import org.zenframework.z8.server.apidocs.IRequestParameter;
 import org.zenframework.z8.server.base.query.Query;
 import org.zenframework.z8.server.db.sql.expressions.Operation;
+import org.zenframework.z8.server.json.parser.JsonObject;
 
 import java.util.Collections;
-import java.util.List;
-import java.util.Map;
 
-public class Filter implements IRequestParametr {
+public class Filter implements IRequestParameter {
 
     @Override
     public String getKey() {
@@ -19,14 +17,14 @@ public class Filter implements IRequestParametr {
 
     @Override
     public Object getValue(Query query, IActionRequest action) {
-        List<Map<String, String>> filterParamExample = Collections.singletonList(new LinkedTreeMap<>());
-        filterParamExample.get(0).put("property", query.primaryKey().index());
-        filterParamExample.get(0).put("operator", Operation.Eq.toString());
-        filterParamExample.get(0).put("value", "00000000-0000-0000-0000-000000000000");
+        JsonObject expressionJsonObject = new JsonObject();
+        expressionJsonObject.put("property", query.primaryKey().index());
+        expressionJsonObject.put("operator", Operation.Eq.toString());
+        expressionJsonObject.put("value", "00000000-0000-0000-0000-000000000000");
 
-        List<Map<String, Object>> filterExample = Collections.singletonList(new LinkedTreeMap<>());
-        filterExample.get(0).put("logical", "and");
-        filterExample.get(0).put("expressions", filterParamExample);
-        return filterExample;
+        JsonObject filterJsonObject = new JsonObject();
+        filterJsonObject.put("logical", "and");
+        filterJsonObject.put("expressions", Collections.singletonList(expressionJsonObject));
+        return Collections.singletonList(filterJsonObject);
     }
 }

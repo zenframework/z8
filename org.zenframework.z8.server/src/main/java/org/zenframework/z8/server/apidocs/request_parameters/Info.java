@@ -1,10 +1,10 @@
 package org.zenframework.z8.server.apidocs.request_parameters;
 
 import org.zenframework.z8.server.apidocs.IActionRequest;
-import org.zenframework.z8.server.apidocs.IRequestParametr;
+import org.zenframework.z8.server.apidocs.IRequestParameter;
 import org.zenframework.z8.server.base.query.Query;
 
-public class Info implements IRequestParametr {
+public class Info implements IRequestParameter {
 
     @Override
     public String getKey() {

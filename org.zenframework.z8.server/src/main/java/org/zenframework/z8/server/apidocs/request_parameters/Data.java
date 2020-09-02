@@ -1,12 +1,13 @@
 package org.zenframework.z8.server.apidocs.request_parameters;
 
 import org.zenframework.z8.server.apidocs.IActionRequest;
-import org.zenframework.z8.server.apidocs.IRequestParametr;
-import org.zenframework.z8.server.apidocs.utils.GsonIntegrator;
+import org.zenframework.z8.server.apidocs.IRequestParameter;
 import org.zenframework.z8.server.base.query.Query;
-import org.zenframework.z8.server.json.JsonWriter;
+import org.zenframework.z8.server.base.table.value.Field;
+import org.zenframework.z8.server.json.Json;
+import org.zenframework.z8.server.json.parser.JsonObject;
 
-public class Data implements IRequestParametr {
+public class Data implements IRequestParameter {
 
     @Override
     public String getKey() {
@@ -15,17 +16,12 @@ public class Data implements IRequestParametr {
 
     @Override
     public Object getValue(Query query, IActionRequest action) {
-        JsonWriter writer = new JsonWriter();
-        writer.startArray();
-        writer.startObject();
-
-        query.getDataFields()
-                .stream()
-                .filter(field -> field.hasAttribute("APIDescription"))
-                .forEach(field -> field.writeData(writer));
-
-        writer.finishObject();
-        writer.finishArray();
-        return GsonIntegrator.fromJson(writer.toString());
+        JsonObject jsonObject = new JsonObject();
+        for (Field field : query.getDataFields()) {
+            if (field.hasAttribute(Json.apiDescription.toString())) {
+                jsonObject.put(field.id(), field.getDefault());
+            }
+        }
+        return jsonObject;
     }
 }
