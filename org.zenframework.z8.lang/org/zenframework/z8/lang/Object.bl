@@ -1,4 +1,5 @@
 import org.zenframework.z8.base.json.JsonArray;
+import org.zenframework.z8.base.json.JsonWriter;
 import org.zenframework.z8.base.security.User;
 
 [native "org.zenframework.z8.server.runtime.OBJECT"]
@@ -24,6 +25,8 @@ public class Object {
 	public bool operator != (Object object);
 
 	virtual public string toString();
+
+	virtual public void write(JsonWriter writer);
 
 	virtual protected binary getContent(string[string] parameters, file[] files);
 	virtual protected JsonArray getData(string[string] parameters);

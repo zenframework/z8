@@ -396,6 +396,8 @@ public class OBJECT extends RequestTarget implements IObject, RmiSerializable {
 		return new string("");
 	}
 
+	public void z8_write(org.zenframework.z8.server.base.json.JsonWriter.CLASS<? extends org.zenframework.z8.server.base.json.JsonWriter> writer) {}
+
 	public binary z8_getContent(RLinkedHashMap<string, string> parameters, RCollection<file> files) {
 		return null;
 	}

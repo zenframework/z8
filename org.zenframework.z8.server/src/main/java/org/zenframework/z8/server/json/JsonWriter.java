@@ -65,7 +65,8 @@ public class JsonWriter {
 		startSeparate();
 	}
 
-	private void startSeparate() {
+	// TODO This must be private
+	public void startSeparate() {
 		if(scopes.size() != 0)
 			scopes.set(scopes.size() - 1, true);
 	}
@@ -112,6 +113,11 @@ public class JsonWriter {
 	public void finishArray() {
 		stream.append(']');
 		closeScope();
+	}
+
+	public void startProperty(String name) {
+		if(name != null)
+			appendComma().append(quoteName(name)).append(":");
 	}
 
 	public void write(String value) {
