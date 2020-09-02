@@ -1,6 +1,9 @@
 package org.zenframework.z8.server.base.table.system;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
 
 import org.zenframework.z8.server.base.query.RecordLock;
 import org.zenframework.z8.server.base.table.Table;
@@ -35,18 +38,10 @@ public class UserRoles extends Table {
 
 	static public class strings {
 		public final static String Title = "UserRoles.title";
-		public final static String User = "UserRoles.user";
-		public final static String Role = "UserRoles.role";
 	}
 
 	static public class displayNames {
 		public final static String Title = Resources.get(strings.Title);
-	}
-
-	static public class apiAttrs {
-		public final static String Title = Resources.getOrNull(strings.Title + ".APIDescription");
-		public final static String User = Resources.getOrNull(strings.User + ".APIDescription");
-		public final static String Role = Resources.getOrNull(strings.Role + ".APIDescription");
 	}
 
 	public static class CLASS<T extends UserRoles> extends Table.CLASS<T> {
@@ -59,8 +54,6 @@ public class UserRoles extends Table {
 			setJavaClass(UserRoles.class);
 			setName(TableName);
 			setDisplayName(displayNames.Title);
-			Optional.ofNullable(apiAttrs.Title)
-					.ifPresent(attrVal -> setAttribute("APIDescription", attrVal));
 		}
 
 		@Override
@@ -112,11 +105,6 @@ public class UserRoles extends Table {
 
 		role.setName(fieldNames.Role);
 		role.setIndex("role");
-
-		Optional.ofNullable(apiAttrs.User)
-				.ifPresent(attrVal -> user.setAttribute("APIDescription", attrVal));
-		Optional.ofNullable(apiAttrs.Role)
-				.ifPresent(attrVal -> role.setAttribute("APIDescription", attrVal));
 
 		readOnly = new bool(!ApplicationServer.getUser().isAdministrator());
 	}

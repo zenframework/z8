@@ -24,12 +24,7 @@ public class Resources {
 	}
 
 	public static String get(String id) {
-		String value = getResources().getString(id);
-		return value == null ? id : value;
-	}
-
-	public static String getOrNull(String id) {
-		 return getResources().getString(id);
+		return getResources().getString(id);
 	}
 
 	public static Resources getResources() {
@@ -44,10 +39,10 @@ public class Resources {
 		Properties properties = boundles.get(DefaultLanguage);
 
 		if(properties == null)
-			return null;
+			return key;
 
 		String value = properties.getProperty(key);
-		return value;
+		return value != null ? value : key;
 	}
 
 	static public String format(String key, Object... format) {

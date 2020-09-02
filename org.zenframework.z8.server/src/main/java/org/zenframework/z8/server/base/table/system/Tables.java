@@ -6,8 +6,6 @@ import org.zenframework.z8.server.resources.Resources;
 import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.types.integer;
 
-import java.util.Optional;
-
 public class Tables extends Table {
 	final static public String TableName = "SystemTables";
 
@@ -30,13 +28,6 @@ public class Tables extends Table {
 		public final static String DisplayName = Resources.get(strings.DisplayName);
 	}
 
-	static public class apiAttrs {
-		public final static String Title = Resources.getOrNull(strings.Title + ".APIDescription");
-		public final static String Name = Resources.getOrNull(strings.Name + ".APIDescription");
-		public final static String ClassId = Resources.getOrNull(strings.ClassId + ".APIDescription");
-		public final static String DisplayName = Resources.getOrNull(strings.DisplayName + ".APIDescription");
-	}
-
 	public StringField.CLASS<? extends StringField> classId = new StringField.CLASS<StringField>(this);
 	public StringField.CLASS<? extends StringField> displayName = new StringField.CLASS<StringField>(this);
 
@@ -50,9 +41,6 @@ public class Tables extends Table {
 			setJavaClass(Tables.class);
 			setName(TableName);
 			setDisplayName(displayNames.Title);
-			Optional.ofNullable(apiAttrs.Title)
-					.ifPresent(attrVal -> setAttribute("APIDescription", attrVal));
-
 		}
 
 		@Override
@@ -79,21 +67,15 @@ public class Tables extends Table {
 
 		name.get().length = new integer(256);
 		name.setDisplayName(displayNames.Name);
-		Optional.ofNullable(apiAttrs.Name)
-				.ifPresent(attrVal -> name.setAttribute("APIDescription", attrVal));
 
 		classId.setIndex("classId");
 		classId.setName(fieldNames.ClassId);
 		classId.setDisplayName(displayNames.ClassId);
 		classId.get().length = new integer(256);
-		Optional.ofNullable(apiAttrs.ClassId)
-				.ifPresent(attrVal -> classId.setAttribute("APIDescription", attrVal));
 
 		displayName.setIndex("displayName");
 		displayName.setName(fieldNames.DisplayName);
 		displayName.setDisplayName(displayNames.DisplayName);
 		displayName.get().length = new integer(256);
-		Optional.ofNullable(apiAttrs.DisplayName).
-				ifPresent(attrVal -> displayName.setAttribute("APIDescription", attrVal));
 	}
 }
