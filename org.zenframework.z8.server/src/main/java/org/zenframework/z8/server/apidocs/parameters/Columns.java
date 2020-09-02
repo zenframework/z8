@@ -1,4 +1,4 @@
-package org.zenframework.z8.server.apidocs.request_parameters;
+package org.zenframework.z8.server.apidocs.parameters;
 
 import org.zenframework.z8.server.apidocs.IActionRequest;
 import org.zenframework.z8.server.apidocs.IRequestParameter;

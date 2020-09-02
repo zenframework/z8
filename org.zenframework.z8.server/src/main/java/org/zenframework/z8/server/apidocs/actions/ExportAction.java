@@ -1,6 +1,6 @@
 package org.zenframework.z8.server.apidocs.actions;
 
-import org.zenframework.z8.server.apidocs.request_parameters.*;
+import org.zenframework.z8.server.apidocs.parameters.*;
 
 import java.util.ArrayList;
 

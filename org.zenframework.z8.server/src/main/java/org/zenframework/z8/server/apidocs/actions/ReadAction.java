@@ -1,9 +1,9 @@
 package org.zenframework.z8.server.apidocs.actions;
 
-import org.zenframework.z8.server.apidocs.request_parameters.Fields;
-import org.zenframework.z8.server.apidocs.request_parameters.Filter;
-import org.zenframework.z8.server.apidocs.request_parameters.SimpleParameters;
-import org.zenframework.z8.server.apidocs.request_parameters.Sort;
+import org.zenframework.z8.server.apidocs.parameters.Fields;
+import org.zenframework.z8.server.apidocs.parameters.Filter;
+import org.zenframework.z8.server.apidocs.parameters.SimpleParameters;
+import org.zenframework.z8.server.apidocs.parameters.Sort;
 
 public class ReadAction extends BaseAction {
 

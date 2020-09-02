@@ -1,7 +1,7 @@
 package org.zenframework.z8.server.apidocs.actions;
 
-import org.zenframework.z8.server.apidocs.request_parameters.Fields;
-import org.zenframework.z8.server.apidocs.request_parameters.SimpleParameters;
+import org.zenframework.z8.server.apidocs.parameters.Fields;
+import org.zenframework.z8.server.apidocs.parameters.SimpleParameters;
 
 public class DetachAction extends BaseAction {
 

@@ -2,9 +2,9 @@ package org.zenframework.z8.server.apidocs.actions;
 
 import org.zenframework.z8.server.apidocs.IActionRequest;
 import org.zenframework.z8.server.apidocs.IRequestParameter;
-import org.zenframework.z8.server.apidocs.request_parameters.Data;
-import org.zenframework.z8.server.apidocs.request_parameters.Info;
-import org.zenframework.z8.server.apidocs.request_parameters.SimpleParameters;
+import org.zenframework.z8.server.apidocs.parameters.Data;
+import org.zenframework.z8.server.apidocs.parameters.Info;
+import org.zenframework.z8.server.apidocs.parameters.SimpleParameters;
 import org.zenframework.z8.server.base.query.Query;
 import org.zenframework.z8.server.json.parser.JsonObject;
 
