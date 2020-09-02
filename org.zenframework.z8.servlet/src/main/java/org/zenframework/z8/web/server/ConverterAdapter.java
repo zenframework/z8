@@ -105,7 +105,7 @@ public class ConverterAdapter extends Adapter {
 		IOUtils.copy(new FileInputStream(absolutePath), response.getOutputStream());
 	}
 
-	private String getContentType(File file) {
+	private String getContentType(File file) throws IOException {
 		String contentType = getServlet().getServletContext().getMimeType(file.getName().toLowerCase());
 
 		if(contentType == null)
