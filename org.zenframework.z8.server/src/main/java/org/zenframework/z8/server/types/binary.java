@@ -119,4 +119,15 @@ public class binary extends primary {
 	public void z8_unzip(file directory) {
 		file.unzip(get(), directory.getAbsolutePath());
 	}
+
+	public static binary zip(File fileOrDirectory) {
+		file temp = file.createTempFile(".zip");
+		temp.zip(fileOrDirectory);
+		return temp.binary();
+	}
+
+	public static binary z8_zip(file fileOrDirectory) {
+		return zip(fileOrDirectory.toFile());
+	}
+
 }
