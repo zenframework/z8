@@ -389,7 +389,7 @@ canvas {
 	flex-direction: column;
 }
 
-.btn>.no-icon {
+.btn>.icon.empty {
 	display: none;
 }
 

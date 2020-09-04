@@ -24,7 +24,7 @@ body {
 	opacity: .8;
 }
 
-.air .btn>.icon.no-text {
+.air .btn.no-text>.icon {
 	margin-right: 0;
 }
 
@@ -133,7 +133,7 @@ body {
 	border-color: #c9302c;
 }
 .air .control-group.scrollable>.box>.control {
-	overflow-y: scroll;
+	overflow-y: auto;
 }
 
 .air .control::-webkit-input-placeholder {
@@ -233,8 +233,8 @@ body {
 	white-space: nowrap;
 }
 
-.air .label.empty:not(.toolbar),
-.air .label.empty.toolbar>.text {
+.air .label.no-text:not(.toolbar),
+.air .label.no-text.toolbar>.text {
 	display: none;
 }
 

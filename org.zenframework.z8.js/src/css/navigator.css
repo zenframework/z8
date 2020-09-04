@@ -48,7 +48,7 @@
 	padding-right: .5em;
 }
 
-.navigator>.body>.listbox .label .btn-text:not(.btn-trigger)>.fa.no-icon {
+.navigator>.body>.listbox .label .btn-text:not(.btn-trigger)>.fa.empty {
 	padding-right: 0;
 }
 

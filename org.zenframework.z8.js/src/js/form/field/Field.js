@@ -29,6 +29,18 @@ Z8.define('Z8.form.field.Field', {
 		this.originalDisplayValue = displayValue;
 	},
 
+	isEmpty: function() {
+		return this.isEmptyValue(this.getValue());
+	},
+
+	isEmptyValue: function(value) {
+		return Z8.isEmpty(value);
+	},
+
+	isEqualValues: function(value1, value2) {
+		return String(value1) == String(value2);
+	},
+
 	getName: function() {
 		return this.name;
 	},

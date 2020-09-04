@@ -129,7 +129,7 @@ Z8.define('Z8.button.Button', {
 	setEnabled: function(enabled) {
 		this.wasEnabled = enabled;
 
-		DOM.swapCls(this.button, !enabled, 'disabled');
+		DOM.setCls(this.button, this.getButtonCls());
 
 		if(this.trigger)
 			this.trigger.setEnabled(enabled);
@@ -161,15 +161,16 @@ Z8.define('Z8.button.Button', {
 		if(this.toggle && this.toggled)
 			cls.pushIf('active');
 
+		if(Z8.isEmpty(this.text))
+			cls.pushIf('no-text');
+
 		return cls;
 	},
 
 	getIconCls: function() {
 		var cls = DOM.parseCls(this.busy ? Button.BusyIconCls : ((this.toggled ? this.activeIconCls : null) || this.iconCls)).pushIf('fa').pushIf('icon');
 		if(Z8.isEmpty(this.busy ? Button.BusyIconCls : this.iconCls))
-			cls.pushIf('no-icon');
-		if(Z8.isEmpty(this.text))
-			cls.pushIf('no-text');
+			cls.pushIf('empty');
 		return cls;
 	},
 
@@ -185,7 +186,7 @@ Z8.define('Z8.button.Button', {
 
 	setPrimary: function(primary) {
 		this.primary = primary;
-		DOM.swapCls(this.button, primary, 'btn-primary', 'btn-default');
+		DOM.setCls(this.button, this.getButtonCls());
 
 		if(this.trigger)
 			this.trigger.setPrimary(primary);
@@ -208,7 +209,7 @@ Z8.define('Z8.button.Button', {
 		text = this.text = text || '';
 		DOM.setValue(this.textElement, String.htmlText(text));
 		DOM.setTitle(this.textElement, text);
-		DOM.swapCls(this.icon, Z8.isEmpty(text), 'no-text');
+		DOM.setCls(this.button, this.getButtonCls());
 	},
 
 	setTooltip: function(tooltip) {
@@ -229,7 +230,7 @@ Z8.define('Z8.button.Button', {
 		this.toggle = true;
 		this.toggled = toggled;
 
-		DOM.swapCls(this.button, toggled, 'active');
+		DOM.setCls(this.button, this.getButtonCls());
 		DOM.setCls(this.icon, this.getIconCls());
 
 		if(this.isRadio() && toggled)
