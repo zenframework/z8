@@ -41,7 +41,7 @@ Z8.define('Z8.form.Helper', {
 				config.selector = field.selector;
 
 
-			if(field.isCombobox) {
+			if(field.isComboBox || field.isCombobox) {
 				var link = field.link;
 				config.store = this.storeConfig(field);
 				config.displayName = link == null ? field.displayName || field.name : field.name;
@@ -49,10 +49,10 @@ Z8.define('Z8.form.Helper', {
 				config.name = link != null ? link.name : field.name;
 				config.checks = false;
 				config.pagerMode = field.pagerMode !== undefined ? field.pagerMode : 'visible';
-				return cls != null ? Z8.create(cls, config) : (field.isSearch ? new Z8.form.field.SearchCombobox(config) : new Z8.form.field.Combobox(config));
+				return cls != null ? Z8.create(cls, config) : (field.isSearch ? new SearchComboBox(config) : new ComboBox(config));
 			}
 
-			if(field.isListbox) {
+			if(field.isListBox || field.isListbox) {
 				var query = field.query;
 				config.store = this.storeConfig(field);
 				config.query = query;
@@ -63,52 +63,52 @@ Z8.define('Z8.form.Helper', {
 				config.locks = Application.listbox.locks !== false && query.lockKey != null;
 				config.totals = query.totals;
 				config.minHeight = Ems.unitsToEms(field.height || 5);
-				return cls != null ? Z8.create(cls, config) : new Z8.form.field.Listbox(config);
+				return cls != null ? Z8.create(cls, config) : new ListBox(config);
 			}
 
 			var type = field.type;
 
 			if(type == Type.Boolean) {
 				label.align = 'right';
-				return cls != null ? Z8.create(cls, config) : new Z8.form.field.Checkbox(config);
+				return cls != null ? Z8.create(cls, config) : new CheckBox(config);
 			}
 
 			if(type == Type.Integer)
-				return cls != null ? Z8.create(cls, config) : new Z8.form.field.Integer(config);
+				return cls != null ? Z8.create(cls, config) : new IntegerBox(config);
 
 			if(type == Type.Float)
-				return cls != null ? Z8.create(cls, config) : new Z8.form.field.Float(config);
+				return cls != null ? Z8.create(cls, config) : new FloatBox(config);
 
 			if(type == Type.Date)
-				return cls != null ? Z8.create(cls, config) : new Z8.form.field.Date(config);
+				return cls != null ? Z8.create(cls, config) : new DateBox(config);
 
 			if(type == Type.Datetime)
-				return cls != null ? Z8.create(cls, config) : new Z8.form.field.Datetime(config);
+				return cls != null ? Z8.create(cls, config) : new DatetimeBox(config);
 
 			if(type == Type.String)
-				return cls != null ? Z8.create(cls, config) : new Z8.form.field.Text(config);
+				return cls != null ? Z8.create(cls, config) : new TextBox(config);
 
 			if(type == Type.Geometry)
 				return cls != null ? Z8.create(cls, config) : new Z8.form.field.Geometry(config);
 
 			if(type == Type.Text) {
 				config.minHeight = Ems.unitsToEms(field.height);
-				return cls != null ? Z8.create(cls, config) : (field.html ? new Z8.form.field.Html(config) : new Z8.form.field.TextArea(config));
+				return cls != null ? Z8.create(cls, config) : (field.html ? new HtmlBox(config) : new TextArea(config));
 			}
 
 			if(type == Type.Files) {
 				config.minHeight = Ems.unitsToEms(field.height || 3);
-				return cls != null ? Z8.create(cls, config) : new Z8.form.field.Files(config);
+				return cls != null ? Z8.create(cls, config) : new FilesBox(config);
 			}
 
 			if(type == Type.File)
-				return cls != null ? Z8.create(cls, config) : new Z8.form.field.File(config);
+				return cls != null ? Z8.create(cls, config) : new FileBox(config);
 
 			if(type == Type.Guid)
-				return cls != null ? Z8.create(cls, config) : new Z8.form.field.Text(config);
+				return cls != null ? Z8.create(cls, config) : new TextBox(config);
 
 			if(type == Type.Datespan)
-				return cls != null ? Z8.create(cls, config) : new Z8.form.field.Text(config);
+				return cls != null ? Z8.create(cls, config) : new TextBox(config);
 
 			throw 'Unknown server type "' + type + '"';
 		},

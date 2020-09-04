@@ -1,5 +1,6 @@
 Z8.define('Z8.form.field.Integer', {
-	extend: 'Z8.form.field.Number',
+	extend: 'NumberBox',
+	shortClassName: 'IntegerBox',
 
 	radix: 10,
 

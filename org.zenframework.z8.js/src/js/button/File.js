@@ -1,14 +1,14 @@
 Z8.define('Z8.button.File', {
-	extend: 'Z8.button.Button',
+	extend: 'Button',
+	shortClassName: 'FileButton',
 
 	initComponent: function() {
-		this.callParent();
-
+		Button.prototype.initComponent.call(this);
 		this.on('click', this.processClick, this);
 	},
 
 	completeRender: function() {
-		this.callParent();
+		Button.prototype.completeRender.call(this);
 
 		var fileInput = this.fileInput = DOM.append(this, { tag: 'input', type: 'file', accept: this.accept, multiple: this.multiple !== false });
 		DOM.on(fileInput, 'change', this.onFileInputChange, this);
@@ -19,7 +19,7 @@ Z8.define('Z8.button.File', {
 
 		delete this.fileInput;
 
-		this.callParent();
+		Button.prototype.onDestroy.call(this);
 	},
 
 	processClick: function() {
@@ -29,7 +29,7 @@ Z8.define('Z8.button.File', {
 
 	onClick: function(event, target) {
 		if(target != this.fileInput)
-			this.callParent(event, target);
+			Button.prototype.onClick.call(this, event, target);
 	},
 
 	onFileInputChange: function() {

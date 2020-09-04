@@ -1,4 +1,4 @@
-.video-document>.control {
+.control-group.video>.box>.control {
 	border-width: 1px;
 	padding: 0;
 	flex: 1;

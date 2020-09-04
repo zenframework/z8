@@ -15,7 +15,8 @@ Z8.define('Z8.data.file.Model', {
 });
 
 Z8.define('Z8.form.field.Files', {
-	extend: 'Z8.form.field.Listbox',
+	extend: 'ListBox',
+	shortClassName: 'FilesBox',
 
 	tools: true,
 	checks: true,

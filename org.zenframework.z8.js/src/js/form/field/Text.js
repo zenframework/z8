@@ -1,5 +1,6 @@
 Z8.define('Z8.form.field.Text', {
-	extend: 'Z8.form.field.Control',
+	extend: 'Control',
+	shortClassName: 'TextBox',
 
 	triggers: null,
 
@@ -12,11 +13,11 @@ Z8.define('Z8.form.field.Text', {
 
 	initComponent: function() {
 		this.triggers = this.triggers || [];
-		Z8.form.field.Control.prototype.initComponent.call(this);
+		Control.prototype.initComponent.call(this);
 	},
 
 	getCls: function() {
-		var cls = Z8.form.field.Control.prototype.getCls.call(this);
+		var cls = Control.prototype.getCls.call(this);
 		return Z8.isEmpty(this.triggers) ? cls : cls.pushIf('trigger').pushIf('trigger-' + this.triggers.length);
 	},
 
@@ -51,7 +52,7 @@ Z8.define('Z8.form.field.Text', {
 			for(var i = 0, length = triggers.length; i < length; i++) {
 				var trigger = triggers[i];
 				var cls = DOM.parseCls(trigger.cls).pushIf('trigger-' + (length - i));
-				trigger = new Z8.button.Trigger({ tooltip: trigger.tooltip, icon: trigger.icon, handler: trigger.handler, scope: trigger.scope, cls: cls });
+				trigger = new Z8.button.Trigger({ cls: cls.join(' '), tooltip: trigger.tooltip, icon: trigger.icon, handler: trigger.handler, scope: trigger.scope });
 				result.push(trigger.htmlMarkup());
 
 				this.triggers.push(trigger);
@@ -62,11 +63,11 @@ Z8.define('Z8.form.field.Text', {
 	},
 
 	subcomponents: function() {
-		return Z8.form.field.Control.prototype.subcomponents.call(this).concat(this.triggers);
+		return Control.prototype.subcomponents.call(this).concat(this.triggers);
 	},
 
 	completeRender: function() {
-		Z8.form.field.Control.prototype.completeRender.call(this);
+		Control.prototype.completeRender.call(this);
 
 		DOM.on(this, 'click', this.onClick, this);
 		DOM.on(this, 'keyDown', this.onKeyDown, this);
@@ -84,20 +85,23 @@ Z8.define('Z8.form.field.Text', {
 
 		this.input = null;
 
-		Z8.form.field.Control.prototype.onDestroy.call(this);
+		Control.prototype.onDestroy.call(this);
 	},
-
 
 	setEnabled: function(enabled) {
 		DOM.swapCls(this.input, !enabled, 'disabled');
 		DOM.setDisabled(this.input, !enabled);
-		Z8.form.field.Control.prototype.setEnabled.call(this, enabled);
+
+		for(var i = 0, triggers = this.triggers, length = triggers.length; i < length; i++)
+			triggers[i].setEnabled(enabled);
+
+		Control.prototype.setEnabled.call(this, enabled);
 	},
 
 	setReadOnly: function(readOnly) {
 		if(this.isReadOnly() != readOnly)
 			DOM.setReadOnly(this.input, readOnly);
-		Z8.form.field.Control.prototype.setReadOnly.call(this, readOnly);
+		Control.prototype.setReadOnly.call(this, readOnly);
 	},
 
 	getRawValue: function(value) {
@@ -111,13 +115,13 @@ Z8.define('Z8.form.field.Text', {
 	},
 
 	setTabIndex: function(tabIndex) {
-		tabIndex = Z8.form.field.Control.prototype.setTabIndex.call(this, tabIndex);
+		tabIndex = Control.prototype.setTabIndex.call(this, tabIndex);
 		DOM.setTabIndex(this.input, tabIndex);
 		return tabIndex;
 	},
 
 	setLabel: function(label) {
-		Z8.form.field.Control.prototype.setLabel.call(this, label);
+		Control.prototype.setLabel.call(this, label);
 		this.setPlaceholder(label);
 	},
 

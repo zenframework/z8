@@ -1,7 +1,8 @@
 Z8.define('Z8.form.field.Listbox', {
 	extend: 'Z8.form.field.Control',
+	shortClassName: 'ListBox',
 
-	isListbox: true,
+	isListBox: true,
 	scrollable: true,
 
 	tools: false,
@@ -649,7 +650,7 @@ Z8.define('Z8.form.field.Listbox', {
 
 		for(var i = 0, length = fields.length; i < length; i++) {
 			var field = fields[i];
-			if(field.isCombobox) {
+			if(field.isCombobox || field.isComboBox) {
 				if(!field.link.isJoined && field.link.name != myLink) {
 					if(linkedField != null && field.link.name != linkedField.link.name)
 						return null;
@@ -682,7 +683,7 @@ Z8.define('Z8.form.field.Listbox', {
 		var query = link.query;
 		var columns = selector.columns;
 
-		var config = { isListbox: true, readOnly: true, label: false, tools: false, pagerMode: 'visible', checks: selector.multiselect, flex: 1, height: 3, values: this.getValues() };
+		var config = { isListBox: true, readOnly: true, label: false, tools: false, pagerMode: 'visible', checks: selector.multiselect, flex: 1, height: 3, values: this.getValues() };
 		Z8.apply(config, { name: link.name, query: { request: this.query.request, name: query.name, fields: columns, sort: selector.sort, columns: columns, primaryKey: null } });
 		return Z8.form.Helper.createControl(config);
 	},
@@ -714,9 +715,9 @@ Z8.define('Z8.form.field.Listbox', {
 				}
 
 				var result = [];
-				var listbox = dialog.selector;
-				var checked = listbox.getChecked();
-				var name = listbox.name;
+				var listBox = dialog.selector;
+				var checked = listBox.getChecked();
+				var name = listBox.name;
 				var valueFromFields = this.getValueFromFields();
 				var primaryKey = this.selector.link.query.primaryKey;
 
@@ -901,7 +902,7 @@ Z8.define('Z8.form.field.Listbox', {
 
 	removeRecord: function(records, button) {
 		if(records.length == 0)
-			throw 'Listbox.removeRecord: records.length == 0';
+			throw 'ListBox.removeRecord: records.length == 0';
 
 		var index = this.store.indexOf(records[0]);
 

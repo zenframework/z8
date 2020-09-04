@@ -1,12 +1,13 @@
 Z8.define('Z8.list.Item', {
-	extend: 'Z8.Component',
+	extend: 'Component',
+	shortClassName: 'ListItem',
 
 	constructor: function(config) {
 		config = config || {};
 		config.collapsed = config.collapsed !== false;
 		config.hidden = 0;
 		config.follow = true;
-		this.callParent(config);
+		Component.prototype.constructor.call(this, config);
 	},
 
 	getRecord: function() {
@@ -18,7 +19,7 @@ Z8.define('Z8.list.Item', {
 	},
 
 	initComponent: function() {
-		this.callParent();
+		Component.prototype.initComponent.call(this);
 
 		var record = this.record; 
 
@@ -70,7 +71,7 @@ Z8.define('Z8.list.Item', {
 		var list = this.list;
 
 		if(list.checks) {
-			var check = { tag: 'i', cls: this.getCheckboxCls(this.checked).join(' ') };
+			var check = { tag: 'i', cls: this.getCheckBoxCls(this.checked).join(' ') };
 			var text = { cls: 'text', cn: [check] };
 			var cell = { cls: 'cell', cn: [text] };
 			columns.push({ tag: 'td', cls: 'check column', cn: [cell] });
@@ -134,8 +135,8 @@ Z8.define('Z8.list.Item', {
 		return field.source != null && this.follow ? ' follow' : '';
 	},
 
-	getCheckboxCls: function(value) {
-		return DOM.parseCls(value ? Checkbox.OnIconCls : Checkbox.OffIconCls).pushIf(value ? 'on' : 'off').pushIf('icon');
+	getCheckBoxCls: function(value) {
+		return DOM.parseCls(value ? CheckBox.OnIconCls : CheckBox.OffIconCls).pushIf(value ? 'on' : 'off').pushIf('icon');
 	},
 
 	textMarkup: function(text, cls, field) {
@@ -167,7 +168,7 @@ Z8.define('Z8.list.Item', {
 		else if(type == Type.Float)
 			value = Format.float(value, format);
 		else if(type == Type.Boolean)
-			return { tag: 'i', cls: this.getCheckboxCls(value).join(' ') };
+			return { tag: 'i', cls: this.getCheckBoxCls(value).join(' ') };
 		else if(type == Type.File)
 			value = value != null && Array.isArray(value) && value.length > 0 ? value[0].name : null;
 		else if(type == Type.Text)
@@ -239,7 +240,7 @@ Z8.define('Z8.list.Item', {
 
 		this.collapser = this.iconElement = this.checkIcon = this.checkElement = this.lockIcon = this.cells = null;
 
-		this.callParent();
+		Component.prototype.onDestroy.call(this);
 	},
 
 	setActive: function(active) {
@@ -259,7 +260,7 @@ Z8.define('Z8.list.Item', {
 
 	setChecked: function(checked) {
 		this.checked = checked;
-		DOM.setCls(this.checkIcon, this.getCheckboxCls(checked));
+		DOM.setCls(this.checkIcon, this.getCheckBoxCls(checked));
 	},
 
 	getIcon: function() {
@@ -287,7 +288,7 @@ Z8.define('Z8.list.Item', {
 
 	setEnabled: function(enabled) {
 		DOM.swapCls(this, !enabled, 'disabled');
-		this.callParent(enabled);
+		Component.prototype.setEnabled.call(this, enabled);
 	},
 
 	getFields: function() {

@@ -1,5 +1,6 @@
 Z8.define('Z8.form.field.Control', {
-	extend: 'Z8.Component',
+	extend: 'Component',
+	shortClassName: 'Control',
 
 	mixins: ['Z8.form.field.Field'],
 
@@ -11,7 +12,7 @@ Z8.define('Z8.form.field.Control', {
 	readOnlyLock: false,
 
 	initComponent: function() {
-		Z8.Component.prototype.initComponent.call(this);
+		Component.prototype.initComponent.call(this);
 
 		this.initField();
 		this.readOnlyLock = this.isReadOnly();
@@ -51,7 +52,7 @@ Z8.define('Z8.form.field.Control', {
 	},
 
 	completeRender: function() {
-		Z8.Component.prototype.completeRender.call(this);
+		Component.prototype.completeRender.call(this);
 
 		var label = this.label = this.selectNode('span[name=label]');
 		if(label != null) {
@@ -71,11 +72,11 @@ Z8.define('Z8.form.field.Control', {
 
 		this.label = this.labelText = this.labelIcon = null;
 
-		Z8.Component.prototype.onDestroy.call(this);
+		Component.prototype.onDestroy.call(this);
 	},
 
 	setEnabled: function(enabled) {
-		Z8.Component.prototype.setEnabled.call(this, enabled);
+		Component.prototype.setEnabled.call(this, enabled);
 
 		DOM.swapCls(this, !enabled, 'disabled');
 		DOM.swapCls(this.label, !enabled, 'disabled');
@@ -148,7 +149,7 @@ Z8.define('Z8.form.field.Control', {
 	},
 
 	getCls: function() {
-		var cls = Z8.Component.prototype.getCls.call(this);
+		var cls = Component.prototype.getCls.call(this);
 
 		if(!this.isVisible())
 			cls.pushIf('display-none');

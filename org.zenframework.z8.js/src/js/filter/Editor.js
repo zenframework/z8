@@ -27,7 +27,7 @@ Z8.define('Z8.filter.Editor', {
 
 		var label = { text: 'Фильтры', icon: 'fa-filter', tools: tools};
 
-		var filters = this.filters = new Z8.form.field.Listbox({ store: store, cls: 'filters', fields: [store.getField('name')], label: label, editable: true, flex: 1, colSpan: 1 });
+		var filters = this.filters = new ListBox({ store: store, cls: 'filters', fields: [store.getField('name')], label: label, editable: true, flex: 1, colSpan: 1 });
 		filters.on('select', this.onFiltersSelect, this);
 		filters.on('itemEditorChange', this.onItemEditorChange, this);
 
@@ -93,7 +93,7 @@ Z8.define('Z8.filter.Editor', {
 		return filter;
 	},
 
-	onFiltersSelect: function(listbox, record) {
+	onFiltersSelect: function(listBox, record) {
 		var expression = this.expression;
 		var expressionText = this.expressionText;
 
@@ -110,7 +110,7 @@ Z8.define('Z8.filter.Editor', {
 		this.updateTools();
 	},
 
-	onItemEditorChange: function(listbox, editor, newValue, oldValue) {
+	onItemEditorChange: function(listBox, editor, newValue, oldValue) {
 		var editedRecord = editor.record;
 
 		var records = this.store.getRecords();

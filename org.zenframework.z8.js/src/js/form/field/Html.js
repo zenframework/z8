@@ -1,5 +1,6 @@
 Z8.define('Z8.form.field.Html', {
 	extend: 'Z8.form.field.Control',
+	shortClassName: 'HtmlBox',
 
 	scrollable: true,
 

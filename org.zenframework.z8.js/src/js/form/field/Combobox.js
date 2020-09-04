@@ -1,7 +1,13 @@
 Z8.define('Z8.form.field.Combobox', {
-	extend: 'Z8.form.field.Text',
+	extend: 'TextBox',
+	shortClassName: 'ComboBox',
 
-	isCombobox: true,
+	statics: {
+		ExpandIconCls: 'fa-caret-down',
+		ClearIconCls: 'fa-times'
+	},
+
+	isComboBox: true,
 	instantAutoSave: true,
 
 	autocomplete: 'off',
@@ -26,7 +32,7 @@ Z8.define('Z8.form.field.Combobox', {
 		if(store != null && !store.isStore)
 			store = this.store = new Z8.query.Store(store);
 
-		this.callParent();
+		TextBox.prototype.initComponent.call(this);
 
 		if(this.editor)
 			this.queryTask = new Z8.util.DelayedTask();
@@ -36,11 +42,11 @@ Z8.define('Z8.form.field.Combobox', {
 	},
 
 	getCls: function() {
-		return Z8.form.field.Text.prototype.getCls.call(this).pushIf('combobox');
+		return TextBox.prototype.getCls.call(this).pushIf('combobox');
 	},
 
 	isEmptyValue: function(value) {
-		return value == this.emptyValue || this.callParent(value);
+		return value == this.emptyValue || TextBox.prototype.isEmptyValue.call(this, value);
 	},
 
 	getStore: function() {
@@ -61,20 +67,20 @@ Z8.define('Z8.form.field.Combobox', {
 	},
 
 	initTriggers: function() {
-		this.triggers = !Z8.isEmpty(this.triggers) ? this.triggers : {};
+		this.triggers = !Z8.isEmpty(this.triggers) ? this.triggers : { icon: ComboBox.ExpandIconCls };
 
 		var triggers = [];
 		if(this.source != null)
 			triggers.push({ icon: 'fa-pencil', tooltip: 'Редактировать \'' + this.source.text + '\'', handler: this.editSource, scope: this });
 
 		if(!this.isRequired() && this.clearTrigger !== false)
-			triggers.push({ icon: 'fa-times', tooltip: 'Очистить', handler: this.clearValue, scope: this });
+			triggers.push({ icon: ComboBox.ClearIconCls, tooltip: 'Очистить', handler: this.clearValue, scope: this });
 
 		this.triggers = triggers.add(this.triggers);
 	},
 
 	htmlMarkup: function() {
-		var markup = this.callParent();
+		var markup = TextBox.prototype.htmlMarkup.call(this);
 
 		this.createDropdown();
 
@@ -85,11 +91,11 @@ Z8.define('Z8.form.field.Combobox', {
 	},
 
 	subcomponents: function() {
-		return this.callParent().add([this.dropdown, this.pager]);
+		return TextBox.prototype.subcomponents.call(this).add([this.dropdown, this.pager]);
 	},
 
 	completeRender: function() {
-		this.callParent();
+		TextBox.prototype.completeRender.call(this);
 
 		this.hidePager();
 		this.dropdown.setAlignment(this);
@@ -106,21 +112,21 @@ Z8.define('Z8.form.field.Combobox', {
 
 		this.setStore(null);
 
-		this.callParent();
+		TextBox.prototype.onDestroy.call(this);
 	},
 
 	setEnabled: function(enabled) {
 		if(!enabled && this.dropdown != null)
 			this.dropdown.hide();
 
-		this.callParent(enabled);
+		TextBox.prototype.setEnabled.call(this, enabled);
 	},
 
 	setReadOnly: function(readOnly) {
 		if(readOnly && this.dropdown != null)
 			this.dropdown.hide();
 
-		this.callParent(readOnly);
+		TextBox.prototype.setReadOnly.call(this, readOnly);
 	},
 
 	getFilterOperator: function(type) {
@@ -179,11 +185,12 @@ Z8.define('Z8.form.field.Combobox', {
 		this.displayValue = displayValue = this.isEmptyValue(value) ? '' : this.formatValue(displayValue);
 
 		this.clearFilter();
-		this.callParent(value, displayValue);
+		TextBox.prototype.setValue.call(this, value, displayValue);
 	},
 
 	setRecord: function(record) {
-		this.callParent(record);
+		TextBox.prototype.setRecord.call(this, record);
+
 		this.updateWhere(this.dependsOnValue, record);
 
 		var store = this.getStore();
@@ -194,7 +201,7 @@ Z8.define('Z8.form.field.Combobox', {
 	},
 
 	isEqual: function(v1, v2) {
-		return (Z8.isEmpty(v1) || v1 == guid.Null) && (Z8.isEmpty(v2) || v2 == guid.Null) || this.callParent(v1, v2);
+		return (Z8.isEmpty(v1) || v1 == guid.Null) && (Z8.isEmpty(v2) || v2 == guid.Null) || TextBox.prototype.isEqual.call(this, v1, v2);
 	},
 
 	innerUpdateDependencies: function(record) {
@@ -228,12 +235,12 @@ Z8.define('Z8.form.field.Combobox', {
 		var value = this.dependsOnValue = record != null ? (this.hasDependsOnField() ? record.get(this.getDependsOnField()) : record.id) : null;
 		this.updateWhere(value, record);
 
-		if(control.initializing || control.isListbox)
+		if(control.initializing || control.isListBox)
 			this.suspendCheckChange++;
 
 		this.setValue(guid.Null);
 
-		if(control.initializing || control.isListbox)
+		if(control.initializing || control.isListBox)
 			this.suspendCheckChange--;
 	},
 
@@ -496,7 +503,7 @@ Z8.define('Z8.form.field.Combobox', {
 
 	show: function(show) {
 		this.entered = false;
-		this.callParent(show);
+		TextBox.prototype.show.call(this, show);
 	},
 
 	openDropdown: function() {
@@ -610,7 +617,7 @@ Z8.define('Z8.form.field.Combobox', {
 	},
 
 	onFocusOut: function(event) {
-		if(!this.callParent(event))
+		if(!TextBox.prototype.onFocusOut.call(this, event))
 			return false;
 
 		this.cancelDropdown();

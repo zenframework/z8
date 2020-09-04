@@ -20,7 +20,7 @@ Z8.define('Z8.form.field.Group', {
 
 		for(var i = 0, length = controls.length; i < length; i++) {
 			var control = controls[i];
-			if(!control.isListbox)
+			if(!control.isListBox)
 				control.label = false;
 			control.on('change', this.onChange, this);
 		}

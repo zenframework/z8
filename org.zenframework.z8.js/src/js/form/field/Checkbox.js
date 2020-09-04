@@ -1,24 +1,24 @@
 Z8.define('Z8.form.field.Checkbox', {
-	extend: 'Z8.form.field.Control',
-	shortClassName: 'Checkbox',
+	extend: 'Control',
+	shortClassName: 'CheckBox',
 
 	statics: {
 		OnIconCls: 'fa fa-check-square',
 		OffIconCls: 'fa fa-square-o'
 	},
 
-	isCheckbox: true,
+	isCheckBox: true,
 	instantAutoSave: true,
 
 	initComponent: function() {
-		this.callParent();
+		Control.prototype.initComponent.call(this);
 
-		this.onCls = DOM.parseCls(this.onCls || Checkbox.OnIconCls).pushIf('control');
-		this.offCls = DOM.parseCls(this.offCls || Checkbox.OffIconCls).pushIf('control');
+		this.onCls = DOM.parseCls(this.onCls || CheckBox.OnIconCls).pushIf('control');
+		this.offCls = DOM.parseCls(this.offCls || CheckBox.OffIconCls).pushIf('control');
 	},
 
 	getCls: function() {
-		return Z8.form.field.Control.prototype.getCls.call(this).pushIf('checkbox');
+		return Control.prototype.getCls.call(this).pushIf('checkbox');
 	},
 
 	isValid: function() {
@@ -39,7 +39,7 @@ Z8.define('Z8.form.field.Checkbox', {
 	},
 
 	htmlMarkup: function() {
-		var markup = this.callParent();
+		var markup = Control.prototype.htmlMarkup.call(this);
 		markup.tabIndex = this.getTabIndex();
 		return markup;
 	},
@@ -50,7 +50,7 @@ Z8.define('Z8.form.field.Checkbox', {
 		DOM.on(this, 'click', this.onClick, this);
 		DOM.on(this, 'keyDown', this.onKeyDown, this);
 
-		this.callParent();
+		Control.prototype.completeRender.call(this);
 	},
 
 	onDestroy: function() {
@@ -59,7 +59,7 @@ Z8.define('Z8.form.field.Checkbox', {
 
 		this.icon = null;
 
-		this.callParent();
+		Control.prototype.onDestroy.call(this);
 	},
 
 	isEqualValues: function(value1, value2) {
@@ -71,12 +71,12 @@ Z8.define('Z8.form.field.Checkbox', {
 	},
 
 	setValue: function(value) {
-		this.callParent(value);
+		Control.prototype.setValue.call(this, value);
 		DOM.setCls(this.icon, this.getIconCls());
 	},
 
 	setTabIndex: function(tabIndex) {
-		tabIndex = this.callParent(tabIndex);
+		tabIndex = Control.prototype.setTabIndex.call(this, tabIndex);
 		DOM.setTabIndex(this, tabIndex);
 		return tabIndex;
 	},

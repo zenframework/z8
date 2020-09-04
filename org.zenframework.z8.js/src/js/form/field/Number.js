@@ -1,5 +1,6 @@
 Z8.define('Z8.form.field.Number', {
-	extend: 'Z8.form.field.Text',
+	extend: 'TextBox',
+	shortClassName: 'NumberBox',
 
 	increment: 1,
 

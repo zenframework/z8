@@ -1,5 +1,5 @@
 Z8.define('Z8.button.Button', {
-	extend: 'Z8.Component',
+	extend: 'Component',
 	shortClassName: 'Button',
 
 	tabIndex: 0,
@@ -36,10 +36,6 @@ Z8.define('Z8.button.Button', {
 	statics: {
 		BusyIconCls: 'fa-circle-o-notch fa-spin',
 		TriggerIconCls: 'fa-caret-down'
-	},
-
-	initComponent: function() {
-		this.callParent();
 	},
 
 	htmlMarkup: function() {
@@ -95,7 +91,7 @@ Z8.define('Z8.button.Button', {
 	},
 
 	completeRender: function() {
-		this.callParent();
+		Component.prototype.completeRender.call(this);
 
 		this.button = this.selectNode('a[anchor=' + this.getId() + ']') || this.getDom();
 		this.icon = this.selectNode(this.iconTag + '[icon=' + this.getId() + ']');
@@ -123,18 +119,18 @@ Z8.define('Z8.button.Button', {
 
 		this.button = this.icon = this.textElement = this.setBusyTask = null;
 
-		this.callParent();
+		Component.prototype.onDestroy.call(this);
 	},
 
 	setEnabled: function(enabled) {
 		this.wasEnabled = enabled;
 
+		Component.prototype.setEnabled.call(this, enabled);
+
 		DOM.setCls(this.button, this.getButtonCls());
 
 		if(this.trigger)
 			this.trigger.setEnabled(enabled);
-
-		this.callParent(enabled);
 	},
 
 	getButtonTypeCls: function() {
@@ -193,7 +189,7 @@ Z8.define('Z8.button.Button', {
 	},
 
 	setTabIndex: function(tabIndex) {
-		tabIndex = this.callParent(tabIndex);
+		tabIndex = Component.prototype.setTabIndex.call(this, tabIndex);
 
 		DOM.setTabIndex(this.button, tabIndex);
 

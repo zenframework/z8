@@ -1,5 +1,6 @@
 Z8.define('Z8.form.field.Date', {
-	extend: 'Z8.form.field.Datetime',
+	extend: 'DatetimeBox',
+	shortClassName: 'DateBox',
 
 	format: 'd.m.Y',
 

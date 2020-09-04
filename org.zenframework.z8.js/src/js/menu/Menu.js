@@ -1,8 +1,10 @@
 Z8.define('Z8.menu.Menu', {
 	extend: 'Z8.list.Dropdown',
+	shortClassName: 'Menu',
 
 	cls: 'dropdown-menu display-none',
 	itemType: 'Z8.menu.Item',
+
 	manualItemsRendering: true,
 	useTab: true,
 	headers: false,

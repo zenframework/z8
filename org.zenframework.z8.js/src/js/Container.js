@@ -1,5 +1,6 @@
 Z8.define('Z8.Container', {
-	extend: 'Z8.Component',
+	extend: 'Component',
+	shortClassName: 'Container',
 
 	isContainer: true,
 

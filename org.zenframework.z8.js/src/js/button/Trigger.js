@@ -1,5 +1,5 @@
 Z8.define('Z8.button.Trigger', {
-	extend: 'Z8.button.Button',
+	extend: 'Button',
 	shortClassName: 'TriggerButton',
 
 	tabIndex: -1,
@@ -12,6 +12,6 @@ Z8.define('Z8.button.Trigger', {
 		config.text = '';
 		config.disableEvents = true;
 
-		this.callParent(config);
+		Button.prototype.constructor.call(this, config);
 	}
 });

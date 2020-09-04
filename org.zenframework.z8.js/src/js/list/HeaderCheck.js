@@ -7,13 +7,13 @@ Z8.define('Z8.list.HeaderCheck', {
 		return this.checked;
 	},
 
-	getCheckboxCls: function(value) {
-		return DOM.parseCls(value ? Checkbox.OnIconCls : Checkbox.OffIconCls).pushIf(value ? 'on' : 'off').pushIf('icon');
+	getCheckBoxCls: function(value) {
+		return DOM.parseCls(value ? CheckBox.OnIconCls : CheckBox.OffIconCls).pushIf(value ? 'on' : 'off').pushIf('icon');
 	},
 
 	setChecked: function(checked) {
 		this.checked = checked;
-		DOM.setCls(this.icon, this.getCheckboxCls(checked));
+		DOM.setCls(this.icon, this.getCheckBoxCls(checked));
 		return checked;
 	},
 
@@ -22,7 +22,7 @@ Z8.define('Z8.list.HeaderCheck', {
 	},
 
 	htmlMarkup: function() {
-		this.icon = this.getCheckboxCls(this.checked);
+		this.icon = this.getCheckBoxCls(this.checked);
 		return this.callParent();
 	},
 
