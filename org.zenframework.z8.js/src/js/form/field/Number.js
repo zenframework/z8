@@ -39,6 +39,6 @@ Z8.define('Z8.form.field.Number', {
 			return true;
 		}
 
-		return Event.A <= key && key <= Event.Z && !event.ctrlKey && !event.altKey;
+		return Event.A <= key && key <= Event.Z && !event.ctrlKey && !event.altKey && !event.metaKey;
 	}
 });
