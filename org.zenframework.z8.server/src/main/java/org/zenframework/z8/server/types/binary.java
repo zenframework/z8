@@ -116,6 +116,10 @@ public class binary extends primary {
 		return new sql_binary(this);
 	}
 
+	public void unzip(File directory) {
+		file.unzip(get(), directory.getAbsoluteFile());
+	}
+
 	public void z8_unzip(file directory) {
 		file.unzip(get(), directory.getAbsolutePath());
 	}
