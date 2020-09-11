@@ -89,7 +89,9 @@ public class JsonWriter extends OBJECT {
 	}
 
 	public CLASS<JsonWriter> z8_write(OBJECT.CLASS<? extends OBJECT> value) {
+		writer.startObject();
 		value.get().z8_write((CLASS<JsonWriter>) getCLASS());
+		writer.finishObject();
 		return (CLASS<JsonWriter>) getCLASS();
 	}
 
