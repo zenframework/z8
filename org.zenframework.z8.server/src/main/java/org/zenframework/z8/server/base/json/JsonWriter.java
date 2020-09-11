@@ -70,11 +70,6 @@ public class JsonWriter extends OBJECT {
 		return (CLASS<JsonWriter>) getCLASS();
 	}
 
-	public CLASS<JsonWriter> z8_startProperty(string name) {
-		writer.startProperty(name.get());
-		return (CLASS<JsonWriter>) getCLASS();
-	}
-
 	public CLASS<JsonWriter> z8_write(primary value) {
 		writer.write(value);
 		return (CLASS<JsonWriter>) getCLASS();
@@ -95,7 +90,6 @@ public class JsonWriter extends OBJECT {
 
 	public CLASS<JsonWriter> z8_write(OBJECT.CLASS<? extends OBJECT> value) {
 		value.get().z8_write((CLASS<JsonWriter>) getCLASS());
-		writer.startSeparate();
 		return (CLASS<JsonWriter>) getCLASS();
 	}
 
@@ -110,8 +104,10 @@ public class JsonWriter extends OBJECT {
 	}
 
 	public CLASS<JsonWriter> z8_writeProperty(string name, OBJECT.CLASS<? extends OBJECT> value) {
-		writer.startProperty(name.get());
-		return z8_write(value);
+		writer.startObject(name.get());
+		z8_write(value);
+		writer.finishObject();
+		return (CLASS<JsonWriter>) getCLASS();
 	}
 
 	public CLASS<JsonWriter> z8_writeProperty(Field.CLASS<? extends Field> field) {

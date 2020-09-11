@@ -11,8 +11,6 @@ public class JsonWriter extends Object {
 	public JsonWriter startArray(string name);
 	public JsonWriter finishArray();
 
-	public JsonWriter startProperty(string name);
-
 	public JsonWriter write(primary value);
 	public JsonWriter write(primary[] value);
 

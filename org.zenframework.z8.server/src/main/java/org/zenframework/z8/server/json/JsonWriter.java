@@ -115,11 +115,6 @@ public class JsonWriter {
 		closeScope();
 	}
 
-	public void startProperty(String name) {
-		if(name != null)
-			appendComma().append(quoteName(name)).append(":");
-	}
-
 	public void write(String value) {
 		write(value, true);
 	}
@@ -430,4 +425,5 @@ public class JsonWriter {
 	public String toString() {
 		return stream.toString();
 	}
+
 }
