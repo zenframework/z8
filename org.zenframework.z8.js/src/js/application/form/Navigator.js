@@ -591,8 +591,12 @@ Z8.define('Z8.application.form.Navigator', {
 
 	toggleForm: function(button) {
 		this.table.hide();
+		this.table.setActive(false);
+
 		this.listbox.show();
+		this.listbox.setActive(true);
 		this.form.show();
+		this.form.setActive(true);
 
 		this.setTools(this.listbox, true);
 		this.setTools(this.table, false);
@@ -603,8 +607,13 @@ Z8.define('Z8.application.form.Navigator', {
 
 	toggleTable: function(button) {
 		this.listbox.hide();
+		this.listbox.setActive(false);
+
 		this.form.hide();
+		this.form.setActive(false);
+
 		this.table.show();
+		this.table.setActive(true);
 
 		this.setTools(this.table, true);
 		this.setTools(this.listbox, false);
