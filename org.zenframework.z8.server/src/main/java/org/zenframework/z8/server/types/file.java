@@ -385,7 +385,9 @@ public class file extends primary implements RmiSerializable, Serializable {
 			extension = "";
 
 		String name = new date().format("Y-MM-dd HH-mm-ss") + extension;
-		return new file(new File(folder, name));
+		File temp = new File(folder, name);
+		temp.deleteOnExit();
+		return new file(temp);
 	}
 
 	public String read() {
