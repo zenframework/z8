@@ -19,6 +19,7 @@ public class JsonWriter extends Object {
 
 	public JsonWriter writeProperty(string name, primary value);
 	public JsonWriter writeProperty(string name, Object value);
+	public JsonWriter writeProperty(string name, Object[] value);
 	public JsonWriter writeProperty(Field field);
 
 	public string toString();

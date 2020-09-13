@@ -33,7 +33,7 @@ public class JsonWriter extends OBJECT {
 	}
 
 	public org.zenframework.z8.server.json.JsonWriter get() {
-		return this.writer;
+		return writer;
 	}
 
 	public void set(org.zenframework.z8.server.json.JsonWriter writer) {
@@ -89,9 +89,7 @@ public class JsonWriter extends OBJECT {
 	}
 
 	public CLASS<JsonWriter> z8_write(OBJECT.CLASS<? extends OBJECT> value) {
-		writer.startObject();
-		value.get().z8_write((CLASS<JsonWriter>) getCLASS());
-		writer.finishObject();
+		writer.write(value);
 		return (CLASS<JsonWriter>) getCLASS();
 	}
 
@@ -106,9 +104,13 @@ public class JsonWriter extends OBJECT {
 	}
 
 	public CLASS<JsonWriter> z8_writeProperty(string name, OBJECT.CLASS<? extends OBJECT> value) {
-		writer.startObject(name.get());
-		z8_write(value);
-		writer.finishObject();
+		writer.writeProperty(name.get(), value);
+		return (CLASS<JsonWriter>) getCLASS();
+	}
+
+	@SuppressWarnings("rawtypes")
+	public CLASS<JsonWriter> z8_writeProperty(string name, RCollection value) {
+		writer.writeProperty(name.get(), value);
 		return (CLASS<JsonWriter>) getCLASS();
 	}
 

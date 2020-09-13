@@ -16,6 +16,7 @@ import org.zenframework.z8.server.geometry.parser.GeoJsonWriter;
 import org.zenframework.z8.server.json.parser.JsonArray;
 import org.zenframework.z8.server.json.parser.JsonObject;
 import org.zenframework.z8.server.request.Message;
+import org.zenframework.z8.server.runtime.OBJECT;
 import org.zenframework.z8.server.runtime.RCollection;
 import org.zenframework.z8.server.security.IAccess;
 import org.zenframework.z8.server.types.bool;
@@ -28,9 +29,9 @@ import org.zenframework.z8.server.types.primary;
 import org.zenframework.z8.server.types.string;
 
 public class JsonWriter {
-	StringBuilder stream;
-	List<Boolean> scopes;
-	boolean quoteName = false;
+	private StringBuilder stream;
+	private List<Boolean> scopes;
+	private boolean quoteName = false;
 
 	public JsonWriter() {
 		reset();
@@ -172,9 +173,16 @@ public class JsonWriter {
 			write(value.toString());
 	}
 
-	public void write(RCollection<primary> value) {
+	public void write(OBJECT value) {
+		startObject();
+		value.z8_write(getWrapper());
+		finishObject();
+	}
+
+	@SuppressWarnings("rawtypes")
+	public void write(RCollection value) {
 		startArray();
-		for(primary v : value)
+		for(Object v : value)
 			write(v);
 		finishArray();
 	}
@@ -185,6 +193,30 @@ public class JsonWriter {
 
 	public void write(JsonArray value) {
 		write(value.toString(), false);
+	}
+
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	public void write(Object value) {
+		if (value instanceof OBJECT) {
+			write((OBJECT) value);
+		} else if (value instanceof OBJECT.CLASS) {
+			write(((OBJECT.CLASS<? extends OBJECT>) value).get());
+		} else if (value instanceof primary) {
+			write((primary) value);
+		} else if (value instanceof RCollection) {
+			write((RCollection) value);
+		} else if (value instanceof String) {
+			write((String) value);
+		} else if (value instanceof BigDecimal) {
+			write((BigDecimal) value);
+		} else if (value instanceof JsonWriter) {
+			write((JsonWriter) value);
+		} else if (value instanceof JsonObject) {
+			write((JsonObject) value);
+		} else if (value instanceof JsonArray) {
+			write((JsonArray) value);
+		} else
+			throw new IllegalArgumentException(value.getClass().getName());
 	}
 
 	public void writeProperty(string name, String value) {
@@ -231,6 +263,20 @@ public class JsonWriter {
 			writeProperty(name, value.toString(), true);
 	}
 
+	public void writeProperty(String name, OBJECT value) {
+		startObject(name);
+		value.z8_write(getWrapper());
+		finishObject();
+	}
+
+	@SuppressWarnings("rawtypes")
+	public void writeProperty(String name, RCollection value) {
+		startArray(name);
+		for(Object v : value)
+			write(v);
+		finishArray();
+	}
+
 	public void writeProperty(string name, double value) {
 		writeProperty(name.get(), value);
 	}
@@ -270,6 +316,30 @@ public class JsonWriter {
 
 	public void writeProperty(String name, boolean value) {
 		writeProperty(name, Boolean.toString(value), false);
+	}
+
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	public void writeProperty(String name, Object value) {
+		if (value instanceof OBJECT) {
+			writeProperty(name, (OBJECT) value);
+		} else if (value instanceof OBJECT.CLASS) {
+			writeProperty(name, ((OBJECT.CLASS<? extends OBJECT>) value).get());
+		} else if (value instanceof primary) {
+			writeProperty(name, (primary) value);
+		} else if (value instanceof RCollection) {
+			writeProperty(name, (RCollection) value);
+		} else if (value instanceof String) {
+			writeProperty(name, (String) value);
+		} else if (value instanceof BigDecimal) {
+			writeProperty(name, (BigDecimal) value);
+		} else if (value instanceof JsonWriter) {
+			writeProperty(name, (JsonWriter) value);
+		} else if (value instanceof JsonObject) {
+			writeProperty(name, (JsonObject) value);
+		} else if (value instanceof JsonArray) {
+			writeProperty(name, (JsonArray) value);
+		} else
+			throw new IllegalArgumentException(value.getClass().getName());
 	}
 
 	public void writeNull(String name) {
@@ -426,4 +496,10 @@ public class JsonWriter {
 		return stream.toString();
 	}
 
+	private org.zenframework.z8.server.base.json.JsonWriter.CLASS<? extends org.zenframework.z8.server.base.json.JsonWriter> getWrapper() {
+		org.zenframework.z8.server.base.json.JsonWriter.CLASS<? extends org.zenframework.z8.server.base.json.JsonWriter> wrapper =
+				new org.zenframework.z8.server.base.json.JsonWriter.CLASS<org.zenframework.z8.server.base.json.JsonWriter>(null);
+		wrapper.get().set(this);
+		return wrapper;
+	}
 }
