@@ -32,6 +32,7 @@ public class JsonWriter {
 	private StringBuilder stream;
 	private List<Boolean> scopes;
 	private boolean quoteName = false;
+	private org.zenframework.z8.server.base.json.JsonWriter.CLASS<? extends org.zenframework.z8.server.base.json.JsonWriter> wrapper = null;
 
 	public JsonWriter() {
 		reset();
@@ -497,9 +498,11 @@ public class JsonWriter {
 	}
 
 	private org.zenframework.z8.server.base.json.JsonWriter.CLASS<? extends org.zenframework.z8.server.base.json.JsonWriter> getWrapper() {
-		org.zenframework.z8.server.base.json.JsonWriter.CLASS<? extends org.zenframework.z8.server.base.json.JsonWriter> wrapper =
-				new org.zenframework.z8.server.base.json.JsonWriter.CLASS<org.zenframework.z8.server.base.json.JsonWriter>(null);
-		wrapper.get().set(this);
+		if (wrapper == null) {
+			wrapper = new org.zenframework.z8.server.base.json.JsonWriter.CLASS<org.zenframework.z8.server.base.json.JsonWriter>(null);
+			wrapper.get().set(this);
+		}
 		return wrapper;
 	}
+
 }
