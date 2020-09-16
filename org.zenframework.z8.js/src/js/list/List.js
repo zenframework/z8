@@ -1714,7 +1714,7 @@ Z8.define('Z8.list.List', {
 		return this.getDefaultEditor(editor) != null;
 	},
 
-	startEdit: function(item, editor) {
+	startEdit: function(item, editor, delay) {
 		if(!this.canStartEdit(item, editor))
 			return false;
 
@@ -1740,7 +1740,7 @@ Z8.define('Z8.list.List', {
 			this.currentEditor = editor;
 		};
 
-		this.startEditTask.delay(300, startEditCallback, this, item, editor);
+		delay ? this.startEditTask.delay(delay, startEditCallback, this, item, editor) : startEditCallback.call(this, item, editor);
 
 		if(item != this.getCurrentItem())
 			this.selectItem(item);

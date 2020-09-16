@@ -28,7 +28,7 @@ Z8.define('Z8.list.Item', {
 			this.children = record.get('hasChildren');
 
 			if(this.isTree())
-				this.list.on('contentChange', this.updateCollapsedState, this);
+				this.getList().on('contentChange', this.updateCollapsedState, this);
 
 			if(record.on != null)
 				record.on('change', this.onRecordChange, this);
@@ -58,7 +58,7 @@ Z8.define('Z8.list.Item', {
 
 		DOM.setCls(this, this.getCls());
 
-		if(this.list.locks)
+		if(this.getList().locks)
 			DOM.swapCls(this.lockIcon, this.isReadOnly(), 'fa-lock', '');
 
 		var icon = record.getIconProperty();
@@ -68,7 +68,7 @@ Z8.define('Z8.list.Item', {
 
 	columnsMarkup: function() {
 		var columns = [], icons = [];
-		var list = this.list;
+		var list = this.getList();
 
 		if(list.checks) {
 			var check = { tag: 'i', cls: this.getCheckBoxCls(this.checked).join(' ') };
@@ -251,7 +251,7 @@ Z8.define('Z8.list.Item', {
 	toggleCheck: function() {
 		var checked = !this.checked;
 		this.setChecked(checked);
-		this.list.onItemCheck(this, checked);
+		this.getList().onItemCheck(this, checked);
 	},
 
 	isChecked: function() {
@@ -292,17 +292,17 @@ Z8.define('Z8.list.Item', {
 	},
 
 	getFields: function() {
-		return this.list.getFields();
+		return this.getList().getFields();
 	},
 
 	getFieldByIndex: function(index) {
-		return this.list.getFields()[index];
+		return this.getList().getFields()[index];
 	},
 
 	getField: function(name) {
 		if(name != null && (name.isField || typeof name == 'Object'))
 			return name;
-		return String.isString(name) ? this.list.getField(name) || this.record.getField(name) : this.getFieldByIndex(name);
+		return String.isString(name) ? this.getList().getField(name) || this.record.getField(name) : this.getFieldByIndex(name);
 	},
 
 	getValue: function() {
@@ -370,7 +370,7 @@ Z8.define('Z8.list.Item', {
 		if(this.collapsed != collapsed) {
 			this.collapsed = collapsed;
 			DOM.rotate(this.collapserIcon, this.rotation == 90 ? (collapsed ? 0 : 90) : (collapsed ? -90 : 0));
-			this.list.onItemCollapse(this, collapsed);
+			this.getList().onItemCollapse(this, collapsed);
 		}
 	},
 
@@ -397,12 +397,13 @@ Z8.define('Z8.list.Item', {
 	},
 
 	ensureVisible: function() {
-		if(this.list != null)
-			this.list.ensureVisible(this);
+		var list = this.getList()
+		if(list != null)
+			list.ensureVisible(this);
 	},
 
 	isItemClick: function(target) {
-		return target != this.collapserIcon && target != this.collapser && target != this.iconElement && (!this.list.checks || !DOM.isParentOf(this.checkElement, target));
+		return target != this.collapserIcon && target != this.collapser && target != this.iconElement && (!this.getList().checks || !DOM.isParentOf(this.checkElement, target));
 	},
 
 	onMouseDown: function(event, target) {
@@ -423,7 +424,8 @@ Z8.define('Z8.list.Item', {
 			return;
 		}
 
-		if(this.list.getFocused() && !this.list.isEditing() && this.canStartEdit(target) && this.startEdit(index))
+		var list = this.getList();
+		if(list.getFocused() && !list.isEditing() && this.canStartEdit(target) && this.startEdit(index, 300))
 			event.stopEvent();
 	},
 
@@ -441,20 +443,21 @@ Z8.define('Z8.list.Item', {
 			return;
 		}
 
+		var list = this.getList();
 		if(target == this.iconElement) {
-			this.list.onIconClick(this);
+			list.onIconClick(this);
 			return;
 		}
 
 		var index = -1;
 
-		if(this.list.checks && DOM.isParentOf(this.checkElement, target)) {
+		if(list.checks && DOM.isParentOf(this.checkElement, target)) {
 			this.toggleCheck();
 			return;
 		}
 
 		index = this.findCellIndex(target);
-		this.list.onItemClick(this, index);
+		list.onItemClick(this, index);
 	},
 
 	onContextMenu: function(event, target) {
@@ -462,7 +465,7 @@ Z8.define('Z8.list.Item', {
 			return;
 
 		var index = this.findCellIndex(target);
-		this.list.onItemContextMenu(this, index);
+		this.getList().onItemContextMenu(this, index);
 	},
 
 	onDblClick: function(event, target) {
@@ -472,28 +475,31 @@ Z8.define('Z8.list.Item', {
 			return;
 
 		var index = this.findCellIndex(target);
+		var list = this.getList();
 
-		if(index != -1 && DOM.isParentOf(this.list.getEditors()[index], target) ||
-				this.list.checks && DOM.isParentOf(this.checkElement, target))
+		if(index != -1 && DOM.isParentOf(list.getEditors()[index], target) ||
+				list.checks && DOM.isParentOf(this.checkElement, target))
 			return;;
 
-		this.list.onItemDblClick(this, index);
+		list.onItemDblClick(this, index);
 	},
 
 
 	followLink: function(index) {
-		return index != -1 ? this.list.onItemFollowLink(this, index) : false;
+		return index != -1 ? this.getList().onItemFollowLink(this, index) : false;
 	},
 
 	canStartEdit: function(target) {
 		return true;
 	},
 
-	startEdit: function(index) {
-		if(!this.active || index == -1 || !this.list.canStartEdit(this, index || 0))
+	startEdit: function(index, delay) {
+		var list = this.getList();
+
+		if(!this.active || index == -1 || !list.canStartEdit(this, index || 0))
 			return false;
 
-		this.list.startEdit(this, index || 0);
+		list.startEdit(this, index || 0, delay);
 		return true;
 	},
 
