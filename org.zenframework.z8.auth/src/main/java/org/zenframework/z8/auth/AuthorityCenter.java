@@ -24,6 +24,8 @@ import org.zenframework.z8.server.engine.IServerInfo;
 import org.zenframework.z8.server.engine.ISession;
 import org.zenframework.z8.server.engine.ServerInfo;
 import org.zenframework.z8.server.exceptions.AccessDeniedException;
+import org.zenframework.z8.server.ldap.ActiveDirectory;
+import org.zenframework.z8.server.ldap.LdapUser;
 import org.zenframework.z8.server.logs.Trace;
 import org.zenframework.z8.server.request.RequestDispatcher;
 import org.zenframework.z8.server.security.IUser;
@@ -135,6 +137,58 @@ public class AuthorityCenter extends HubServer implements IAuthorityCenter {
 
 		session.setServerInfo(serverInfo);
 		return session;
+	}
+
+	/**
+	 * @param principalName The string constructs from user name and his/her realm, like: userLogin@companyDomain.com
+	 *                      https://tools.ietf.org/html/rfc6806
+	 */
+	@Override
+	public ISession ssoAuth(String principalName) throws RemoteException {
+		IServerInfo serverInfo = findServer((String)null);
+
+		if(serverInfo == null || principalName == null)
+			throw new AccessDeniedException();
+
+		IApplicationServer loginServer = serverInfo.getServer();
+
+		IUser user;
+		String login = principalName.contains("@") ? principalName.split("@")[0] : principalName;
+		try {
+			user = loginServer.userLoad(login, false);
+		} catch (AccessDeniedException e) {
+			user = createUser(loginServer, principalName);
+		}
+		if (user == null) {
+			throw new AccessDeniedException();
+		}
+		ISession session = sessionManager.create(user);
+		session.setServerInfo(serverInfo);
+		return session;
+	}
+
+	/**
+	 * Getting user information from active directory and creating a new user
+	 */
+	private IUser createUser(IApplicationServer loginServer, String principalName) throws RemoteException{
+		LdapUser ldapUser;
+		try {
+			ActiveDirectory activeDirectory = new ActiveDirectory();
+			ldapUser = activeDirectory.searchUser(
+					ServerConfig.searchBase(), String.format(ServerConfig.searchFilter(), principalName));
+			activeDirectory.close();
+		} catch (NamingException e) {
+			Trace.logError("Failed to get user attributes from active directory service", e);
+			return null;
+		}
+		// TODO need the way to pass user groups ldapUser.getMemberOf(), as I understood BL does not have primitive array type
+		IUser user = loginServer.createUser(
+				ldapUser.getLogin(),
+				ldapUser.getEmail(),
+				ldapUser.getFullName(),
+				ldapUser.getParameters()
+		);
+		return user;
 	}
 
 	@Override

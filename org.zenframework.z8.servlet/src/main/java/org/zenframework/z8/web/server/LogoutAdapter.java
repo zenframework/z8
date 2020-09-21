@@ -27,6 +27,8 @@ public class LogoutAdapter extends Adapter {
 		HttpSession session = request.getSession();
 		if (session != null)
 			session.invalidate();
+
+		response.sendRedirect("/");
 	}
 
 }

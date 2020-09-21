@@ -21,10 +21,7 @@ import org.zenframework.z8.server.engine.IServer;
 import org.zenframework.z8.server.engine.RmiIO;
 import org.zenframework.z8.server.logs.Trace;
 import org.zenframework.z8.server.types.encoding;
-import org.zenframework.z8.web.server.Adapter;
-import org.zenframework.z8.web.server.ConverterAdapter;
-import org.zenframework.z8.web.server.LogoutAdapter;
-import org.zenframework.z8.web.server.SystemAdapter;
+import org.zenframework.z8.web.server.*;
 
 public class Servlet extends HttpServlet {
 
@@ -67,9 +64,11 @@ public class Servlet extends HttpServlet {
 			throw new ServletException(e);
 		}
 
-		adapters.add(new SystemAdapter(this));
-		adapters.add(new ConverterAdapter(this));
+		adapters.add(new SingleSignOnAdapter(this));
 		adapters.add(new LogoutAdapter(this));
+		adapters.add(new SystemAdapter(this));
+		// ConverterAdapter grabs all GET requests, it should be at the end of the list
+		adapters.add(new ConverterAdapter(this));
 
 		for(Adapter adapter : adapters)
 			adapter.start();
