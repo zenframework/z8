@@ -202,6 +202,7 @@ public abstract class Adapter {
 
 	protected void writeResponse(HttpServletResponse response, InputStream in, ContentType contentType) throws IOException {
 		response.setContentType(contentType + ";charset=" + encoding.Default.toString());
+		response.setContentLength(in.available());
 
 		if(in != null) {
 			OutputStream out = response.getOutputStream();

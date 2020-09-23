@@ -12,7 +12,7 @@ public enum ContentType {
 		static protected final String Html = "text/html";
 		static protected final String Xml = "application/xml";
 		static protected final String Json = "application/json";
-		static protected final String Binary = "application/octet-stream";
+		static protected final String Binary = "application/xml"; // octet-stream can't be compressed with GZIP, xml - Ok
 	}
 
 	private String fName = null;
