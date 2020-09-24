@@ -25,7 +25,7 @@ Z8.define('Z8.form.field.Control', {
 	},
 
 	htmlMarkup: function() {
-		var box = [{ cls: 'box', cn: this.controlMarkup() }];
+		var box = [{ cls: 'box', name: this.getId(), cn: this.controlMarkup() }];
 
 		var label = this.label;
 
@@ -53,6 +53,8 @@ Z8.define('Z8.form.field.Control', {
 
 	completeRender: function() {
 		Component.prototype.completeRender.call(this);
+
+		this.box = this.selectNode('.box[name=' + this.getId() + ']');
 
 		var label = this.label = this.selectNode('span[name=label]');
 		if(label != null) {
@@ -205,7 +207,7 @@ Z8.define('Z8.form.field.Control', {
 	},
 
 	onMouseDown: function(event, target) {
-		if(target == DOM.get(this) || DOM.isParentOf(this.label, target)) {
+		if(target == DOM.get(this) || target == this.box || DOM.isParentOf(this.label, target)) {
 			event.stopEvent();
 			this.focus();
 		}

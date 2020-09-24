@@ -25,6 +25,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
+import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.security.ConstraintMapping;
 import org.eclipse.jetty.security.ConstraintSecurityHandler;
 import org.eclipse.jetty.security.SpnegoLoginService;
@@ -37,6 +38,7 @@ import org.eclipse.jetty.server.handler.ContextHandler;
 import org.eclipse.jetty.server.session.HashSessionIdManager;
 import org.eclipse.jetty.server.session.HashSessionManager;
 import org.eclipse.jetty.server.session.SessionHandler;
+import org.eclipse.jetty.servlets.gzip.GzipHandler;
 import org.eclipse.jetty.util.security.Constraint;
 import org.zenframework.z8.server.base.file.Folders;
 import org.zenframework.z8.server.config.ServerConfig;
@@ -65,7 +67,7 @@ public class WebServer extends RmiServer implements IWebServer {
 	private org.eclipse.jetty.server.handler.ContextHandler context;
 	private HttpServlet requestServlet;
 	private WebResourceHandler resourceHandler;
-	private Map<String, String> initParameters;
+	private Map<String, String> servletParameters;
 	private File webapp;
 	private Properties mappings;
 
@@ -75,7 +77,8 @@ public class WebServer extends RmiServer implements IWebServer {
 
 	@Override
 	public void start() {
-		initParameters = ServerConfig.webServerServletParams();
+		servletParameters = ServerConfig.webServerServletParams();
+
 		webapp = ServerConfig.webServerWebapp();
 		mappings = getMappings(ServerConfig.webServerMappings());
 
@@ -86,7 +89,7 @@ public class WebServer extends RmiServer implements IWebServer {
 
 		requestServlet = new Servlet();
 		try {
-			requestServlet.init(getZ8ServletConfig(context.getServletContext(), initParameters));
+			requestServlet.init(getZ8ServletConfig(context.getServletContext(), servletParameters));
 		} catch (ServletException e) {
 			throw new RuntimeException("Z8 Servlet init failed", e);
 		}
@@ -138,8 +141,7 @@ public class WebServer extends RmiServer implements IWebServer {
 
 		sessions.setHandler(securityHandler);
 
-		// Put handler inside of SessionHandler
-		securityHandler.setHandler(new AbstractHandler() {
+		Handler z8Handler = new AbstractHandler()  {
 
 			@Override
 			public void handle(String target, Request baseRequest, HttpServletRequest request,
@@ -166,7 +168,16 @@ public class WebServer extends RmiServer implements IWebServer {
 				baseRequest.setHandled(true);
 			}
 
-		});
+		};
+
+		GzipHandler gzipHandler = new GzipHandler();
+		gzipHandler.setHandler(z8Handler);
+		gzipHandler.addIncludedMimeTypes(ServerConfig.webServerGzipMimeTypes());
+		gzipHandler.addIncludedMethods(ServerConfig.webServerGzipMethods());
+		gzipHandler.addIncludedPaths(ServerConfig.webServerGzipPaths());
+
+		// Put handler inside of SessionHandler
+		securityHandler.setHandler(gzipHandler);
 
 		try {
 			server.start();
