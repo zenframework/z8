@@ -20,8 +20,8 @@ import org.zenframework.z8.server.types.guid;
  */
 public class WebServer extends RmiServer implements IWebServer {
 	private static final String ID = guid.create().toString();
-	private Server server;
-	private ContextHandler context;
+	protected Server server;
+	protected ContextHandler context;
 
 	public WebServer() throws RemoteException {
 		super(ServerConfig.webServerPort());
