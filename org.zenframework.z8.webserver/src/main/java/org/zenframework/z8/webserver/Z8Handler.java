@@ -159,24 +159,9 @@ public class Z8Handler extends AbstractHandler {
     }
 
     public class LifeCycleListener extends AbstractLifeCycleListener {
-        public LifeCycleListener() {
-        }
-
-        public void lifeCycleFailure(LifeCycle event, Throwable cause) {
-        }
-
-        public void lifeCycleStarted(LifeCycle event) {
-        }
-
-        public void lifeCycleStarting(LifeCycle event) {
-        }
-
         public void lifeCycleStopped(LifeCycle event) {
             if (requestServlet != null)
                 requestServlet.destroy();
-        }
-
-        public void lifeCycleStopping(LifeCycle event) {
         }
     }
 }

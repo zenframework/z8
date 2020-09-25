@@ -15,8 +15,8 @@ import org.zenframework.z8.server.logs.Trace;
 import org.zenframework.z8.server.types.guid;
 
 /**
- * {@link WebServer#launch(org.zenframework.z8.server.config.ServerConfig) method is the entrypoint,
- * do not forget to override it in descendants }
+ * {@link WebServer#launch(org.zenframework.z8.server.config.ServerConfig)} method is the entrypoint,
+ * do not forget to override it in descendants
  */
 public class WebServer extends RmiServer implements IWebServer {
 	private static final String ID = guid.create().toString();
