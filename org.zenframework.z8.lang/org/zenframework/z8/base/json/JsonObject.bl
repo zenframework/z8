@@ -17,15 +17,24 @@ public class JsonObject extends Object {
 	public bool has(string name);
 
 	public string getString(string name);
+	public string getString(JsonPath path);
 	public int getInt(string name);
+	public int getInt(JsonPath path);
 	public decimal getDecimal(string name);
+	public decimal getDecimal(JsonPath path);
 	public bool getBool(string name);
+	public bool getBool(JsonPath path);
 	public guid getGuid(string name);
+	public guid getGuid(JsonPath path);
 	public date getDate(string name);
+	public date getDate(JsonPath path);
 	public binary getBinary(string name);
+	public binary getBinary(JsonPath path);
 
 	public JsonArray getJsonArray(string name);
+	public JsonArray getJsonArray(JsonPath path);
 	public JsonObject getJsonObject(string name);
+	public JsonObject getJsonObject(JsonPath path);
 
 	public JsonObject put(string name, primary value);
 	public JsonObject put(string name, JsonArray value);
