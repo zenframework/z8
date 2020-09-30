@@ -13,6 +13,7 @@ public class JsonPath {
 
 	private final String path;
 	private final Object[] parts;
+	private final boolean strict = false;
 
 	public JsonPath(Object... parts) {
 		this.parts = parts != null ? parts : new Object[0];
@@ -51,12 +52,20 @@ public class JsonPath {
 				return null;
 			Object part = parts[i];
 			if (part instanceof Integer) {
-				if (!(json instanceof List))
-					throw new RuntimeException("Can't evaluate '" + path + "': '" + new JsonPath(Arrays.copyOf(parts, i + 1)) + "' is not JSON array");
+				if (!(json instanceof List)) {
+					if (strict)
+						throw new RuntimeException("Can't evaluate '" + path + "': '" + new JsonPath(Arrays.copyOf(parts, i + 1)) + "' is not JSON array");
+					else
+						return null;
+				}
 				json = ((List<Object>) json).get((Integer) part);
 			} else {
-				if (!(json instanceof Map))
-					throw new RuntimeException("Can't evaluate '" + path + "': '" + new JsonPath(Arrays.copyOf(parts, i + 1)) + "' is not JSON object");
+				if (!(json instanceof Map)) {
+					if (strict)
+						throw new RuntimeException("Can't evaluate '" + path + "': '" + new JsonPath(Arrays.copyOf(parts, i + 1)) + "' is not JSON object");
+					else
+						return null;
+				}
 				json = ((Map<String, Object>) json).get((String) part);
 			}
 		}
