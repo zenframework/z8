@@ -66,7 +66,19 @@ Z8.define('Z8.application.User', {
 		HttpRequest.send(params);
 	},
 
+	getLogin: function() {
+		return this.login;
+	},
+
 	isAdministrator: function() {
 		return this.administrator || this.roles.contains(Z8.application.User.Administrator);
+	},
+
+	getFirstName: function() {
+		return this.firstName || '';
+	},
+
+	getLastName: function() {
+		return this.lastName || '';
 	}
 });
