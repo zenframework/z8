@@ -12,7 +12,8 @@ Z8.define('Z8.form.field.Text', {
 	editor: true,
 
 	initComponent: function() {
-		this.triggers = this.triggers || [];
+		var triggers = this.triggers;
+		this.triggers = this.triggers != null ? (Array.isArray(this.triggers) ? this.triggers : [this.triggers]) : [];
 		Control.prototype.initComponent.call(this);
 	},
 
@@ -52,9 +53,8 @@ Z8.define('Z8.form.field.Text', {
 			for(var i = 0, length = triggers.length; i < length; i++) {
 				var trigger = triggers[i];
 				var cls = DOM.parseCls(trigger.cls).pushIf('trigger-' + (length - i));
-				trigger = new Z8.button.Trigger({ cls: cls.join(' '), tooltip: trigger.tooltip, icon: trigger.icon, handler: trigger.handler, scope: trigger.scope });
+				trigger = new Z8.button.Trigger({ cls: cls.join(' '), enabled: this.isEnabled(), tooltip: trigger.tooltip, icon: trigger.icon, handler: trigger.handler, scope: trigger.scope });
 				result.push(trigger.htmlMarkup());
-
 				this.triggers.push(trigger);
 			}
 		}
@@ -92,8 +92,10 @@ Z8.define('Z8.form.field.Text', {
 		DOM.swapCls(this.input, !enabled, 'disabled');
 		DOM.setDisabled(this.input, !enabled);
 
-		for(var i = 0, triggers = this.triggers, length = triggers.length; i < length; i++)
-			triggers[i].setEnabled(enabled);
+		for(var trigger of this.triggers) {
+			if(trigger.isComponent)
+				trigger.setEnabled(enabled);
+		}
 
 		Control.prototype.setEnabled.call(this, enabled);
 	},
@@ -160,17 +162,10 @@ Z8.define('Z8.form.field.Text', {
 
 		event.stopEvent();
 
-		var triggers = this.triggers;
-
-		for(var i = 0, length = triggers.length; i < length; i++) {
-			var trigger = triggers[i];
+		for(var trigger of this.triggers) {
 			if(DOM.isParentOf(trigger, target) && trigger.isEnabled()) {
 				var handler = trigger.handler;
-				if(handler != null)
-					handler.call(trigger.scope, trigger);
-				else
-					this.onTriggerClick(trigger);
-				return;
+				return handler != null ? handler.call(trigger.scope, trigger) : this.onTriggerClick(trigger);
 			}
 		}
 	},
