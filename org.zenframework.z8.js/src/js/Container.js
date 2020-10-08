@@ -113,6 +113,11 @@ Z8.define('Z8.Container', {
 		this.items = [];
 	},
 
+	setItems: function(items) {
+		this.removeAll();
+		this.add(items);
+	},
+
 	focus: function() {
 		var items = this.items;
 		for(var i = 0, length = items.length; i < length; i++) {

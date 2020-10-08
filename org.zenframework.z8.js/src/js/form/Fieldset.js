@@ -29,6 +29,10 @@ Z8.define('Z8.form.Fieldset', {
 		return this.controls;
 	},
 
+	setControls: function(controls) {
+		this.controls = controls;
+	},
+
 	getControl: function(name) {
 		return this.traverseControls(this.controls, name);
 	},
