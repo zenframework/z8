@@ -26,25 +26,20 @@ Z8.define('Z8.application.job.JobMonitor', {
 	],
 
 	initComponent: function(){
-		this.callParent();
-
 		this.store = new Z8.data.Store({ model: 'Z8.application.job.Model' });
+
+		this.taskList = new ListBox({ cls: 'tasks', flex: 1, colSpan: 7, store: this.store, fields: this.fields, icons: true, checks: false, editable: false, minHeight: Ems.unitsToEms(5) });
+		this.taskList.on('select', this.onSelect, this);
+		this.textArea = new Z8.form.field.Html({ cls: 'messages', flex: 1, colSpan: 5, readOnly: true, minHeight: Ems.unitsToEms(5) });
+
+		this.colCount = 12;
+		this.controls = [this.taskList, this.textArea];
+
+		this.callParent();
 	},
 
 	getCls: function() {
 		return Z8.window.Window.prototype.getCls.call(this).pushIf('job-monitor');
-	},
-
-	htmlMarkup: function() {
-		var store = this.store;
-		var taskList = this.taskList = new ListBox({ cls: 'tasks', flex: 1, colSpan: 7, store: store, fields: this.fields, icons: true, checks: false, editable: false, minHeight: Ems.unitsToEms(5) });
-		taskList.on('select', this.onSelect, this);
-		var textArea = this.textArea = new Z8.form.field.Html({ cls: 'messages', flex: 1, colSpan: 5, readOnly: true, minHeight: Ems.unitsToEms(5) });
-
-		this.colCount = 12;
-		this.controls = [taskList, textArea];
-
-		return this.callParent();
 	},
 
 	focus: function() {
