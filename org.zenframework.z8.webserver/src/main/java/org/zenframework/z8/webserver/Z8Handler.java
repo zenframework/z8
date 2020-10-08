@@ -30,10 +30,13 @@ public class Z8Handler extends AbstractHandler {
     private WebResourceHandler resourceHandler;
     private static final Collection<UrlPattern> urlPatterns = new LinkedList<UrlPattern>(
             Arrays.asList(
+                    new UrlPattern("/logout"),
+                    new UrlPattern("/sso_auth"),
                     new UrlPattern("*.json"),
                     new UrlPattern("/storage/*"),
                     new UrlPattern("/files/*"),
-                    new UrlPattern("/reports/*")));
+                    new UrlPattern("/reports/*")
+            ));
 
     public Z8Handler(ContextHandler context) {
         mappings = Z8Handler.getMappings(ServerConfig.webServerMappings());

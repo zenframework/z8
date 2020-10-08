@@ -2,6 +2,7 @@ package org.zenframework.z8.server.engine;
 
 import java.io.IOException;
 import java.rmi.RemoteException;
+import java.util.Map;
 
 import org.zenframework.z8.server.base.xml.GNode;
 import org.zenframework.z8.server.ie.Message;
@@ -14,6 +15,8 @@ public interface IApplicationServer extends IServer {
 	public file download(ISession session, GNode request, file file) throws RemoteException, IOException;
 
 	public IUser user(String login, String password, boolean createIfNotExists) throws RemoteException;
+	public IUser userLoad(String login, boolean createIfNotExists) throws RemoteException;
+	public IUser createUser(String login, String email, String fullName, Map<String, String> parameters) throws RemoteException;
 
 	public String[] domains() throws RemoteException;
 

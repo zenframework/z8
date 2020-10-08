@@ -3,6 +3,7 @@ package org.zenframework.z8.server.engine;
 import java.io.IOException;
 import java.lang.management.ManagementFactory;
 import java.rmi.RemoteException;
+import java.util.Map;
 
 import org.zenframework.z8.server.base.job.scheduler.Scheduler;
 import org.zenframework.z8.server.base.table.system.Domains;
@@ -139,6 +140,16 @@ public class ApplicationServer extends RmiServer implements IApplicationServer {
 	@Override
 	public IUser user(String login, String password, boolean createIfNotExist) {
 		return User.load(login, password, createIfNotExist);
+	}
+
+	@Override
+	public IUser userLoad(String login, boolean createIfNotExist) {
+		return User.load(login, createIfNotExist);
+	}
+
+	@Override
+	public IUser createUser(String login, String email, String fullName, Map<String, String> parameters) {
+		return User.create(login, email, fullName, parameters);
 	}
 
 	@Override
