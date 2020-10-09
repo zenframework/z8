@@ -42,6 +42,7 @@ public class AuthorityCenter extends HubServer implements IAuthorityCenter {
 
 	private final boolean clientHashPassword;
 	private final String ldapUrl;
+	private final boolean checkLdapLogin;
 	private final String ldapDefaultDomain;
 	private Collection<String> ldapUsersIgnore;
 	private boolean ldapUsersCreateOnSuccessfulLogin;
@@ -60,6 +61,7 @@ public class AuthorityCenter extends HubServer implements IAuthorityCenter {
 	private AuthorityCenter() throws RemoteException {
 		super(ServerConfig.authorityCenterPort());
 		clientHashPassword = ServerConfig.webClientHashPassword();
+		checkLdapLogin = ServerConfig.checkLdapLogin();
 		ldapUrl = ServerConfig.ldapUrl();
 		ldapDefaultDomain = ServerConfig.ldapDefaultDomain();
 		ldapUsersIgnore = ServerConfig.ldapUsersIgnore();
@@ -127,12 +129,21 @@ public class AuthorityCenter extends HubServer implements IAuthorityCenter {
 		if(password == null)
 			password = "";
 
-		if (!ldapUrl.isEmpty() && !StringUtils.containsIgnoreCase(ldapUsersIgnore, login)) {
-			checkLdapLogin(login, password);
-			password = "";
+		IUser user;
+		if (checkLdapLogin && !StringUtils.containsIgnoreCase(ldapUsersIgnore, login)) {
+			try {
+				ActiveDirectory activeDirectory = new ActiveDirectory();
+				activeDirectory.searchUser(
+						ServerConfig.searchBase(), String.format(ServerConfig.searchFilter(), login));
+				activeDirectory.close();
+			} catch (NamingException e) {
+				Trace.logError("Failed to get user attributes from active directory service", e);
+				throw new AccessDeniedException();
+			}
+			user = loginServer.userLoad(login, ldapUsersCreateOnSuccessfulLogin);
+		} else {
+			user = loginServer.user(login, clientHashPassword ? password : MD5.hex(password), false);
 		}
-
-		IUser user = loginServer.user(login, clientHashPassword ? password : MD5.hex(password), !ldapUrl.isEmpty() && ldapUsersCreateOnSuccessfulLogin);
 		session = sessionManager.create(user);
 
 		session.setServerInfo(serverInfo);
@@ -201,30 +212,6 @@ public class AuthorityCenter extends HubServer implements IAuthorityCenter {
 
 		session.setServerInfo(server);
 		return session;
-	}
-
-	private void checkLdapLogin(String login, String password) {
-		if (password.isEmpty())
-			throw new AccessDeniedException();
-		Hashtable<String, String> environment = new Hashtable<String, String>();
-		environment.put(Context.INITIAL_CONTEXT_FACTORY, "com.sun.jndi.ldap.LdapCtxFactory");
-		environment.put(Context.PROVIDER_URL, ldapUrl);
-		environment.put(Context.SECURITY_AUTHENTICATION, "simple");
-		environment.put(Context.SECURITY_PRINCIPAL, (!login.contains("\\") && !ldapDefaultDomain.isEmpty()
-				? ldapDefaultDomain + '\\' : "") + login);
-		environment.put(Context.SECURITY_CREDENTIALS, password);
-		try {
-			DirContext context = new InitialDirContext(environment);
-			context.close();
-		} catch (AuthenticationNotSupportedException e) {
-			Trace.logError("The authentication method is not supported by the server", e);
-			throw new AccessDeniedException();
-		} catch (AuthenticationException e) {
-			throw new AccessDeniedException();
-		} catch (NamingException e) {
-			Trace.logError("Error when trying to create the context", e);
-			throw new AccessDeniedException();
-		}
 	}
 
 	@Override

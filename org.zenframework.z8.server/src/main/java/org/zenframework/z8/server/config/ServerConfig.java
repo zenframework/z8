@@ -84,6 +84,7 @@ public class ServerConfig extends Properties {
 
 	static final private String DomainRealm = "domainRealm";
 	static final private String SpnegoPropertiesPath = "spnegoPropertiesPath";
+	static final private String CheckLdapLogin = "checkLdapLogin";
 	static final private String LdapUrl = "ldap.url";
 	static final private String PrincipalName = "ldap.principalName";
 	static final private String Credentials = "ldap.credentials";
@@ -150,6 +151,7 @@ public class ServerConfig extends Properties {
 
 	static private String domainRealm;
 	static private String spnegoPropertiesPath;
+	static private boolean checkLdapLogin;
 	static private String ldapUrl;
 	static private String principalName;
 	static private String credentials;
@@ -260,6 +262,7 @@ public class ServerConfig extends Properties {
 
 		domainRealm = getProperty(DomainRealm, "");
 		spnegoPropertiesPath = getProperty(SpnegoPropertiesPath, "");
+		checkLdapLogin = getProperty(CheckLdapLogin, false);
 		ldapUrl = getProperty(LdapUrl, "");
 		principalName = getProperty(PrincipalName, "");
 		credentials = getProperty(Credentials, "");
@@ -551,6 +554,10 @@ public class ServerConfig extends Properties {
 
 	static public String spnegoPropertiesPath() {
 		return spnegoPropertiesPath;
+	}
+
+	static public boolean checkLdapLogin() {
+		return checkLdapLogin;
 	}
 
 	static public String ldapUrl() {
