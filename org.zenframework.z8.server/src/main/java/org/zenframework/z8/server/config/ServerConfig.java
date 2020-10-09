@@ -168,10 +168,8 @@ public class ServerConfig extends Properties {
 			throw new RuntimeException(e);
 */
 /* >>>>>>>>>>>>>>>>> to remove */
-			if(configFilePath == null)
-				configFile = new File("project.xml");
 			try {
-				this.loadFromXML(new FileInputStream(configFile));
+				this.loadFromXML(new FileInputStream(new File(workingPath, "project.xml")));
 			} catch(Throwable e1) {
 				throw new RuntimeException(e);
 			}
