@@ -342,6 +342,16 @@ public class ServerConfig extends Properties {
 		return filtered;
 	}
 
+	static public Properties getEffectiveProperties() {
+		Properties effective = new Properties(instance);
+		for (Object keyObj : System.getProperties().keySet()) {
+			String key = (String) keyObj;
+			if (key.startsWith(Z8SystemPrefix))
+				effective.setProperty(key, System.getProperty(key));
+		}
+		return effective;
+	}
+
 	static public String get(String key) {
 		return instance.getProperty(key);
 	}
