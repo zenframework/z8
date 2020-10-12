@@ -64,6 +64,11 @@ public class StringField extends Field {
 		return name + "(" + length.get() + ")";
 	}
 
+	@Override
+	public boolean indexed() {
+		return super.indexed() || (trigram != null ? trigram.get() : false);
+	}
+
 	public sql_string sql_string() {
 		return new sql_string(new SqlField(this));
 	}

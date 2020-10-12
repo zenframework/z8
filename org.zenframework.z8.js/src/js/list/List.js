@@ -1208,7 +1208,7 @@ Z8.define('Z8.list.List', {
 	onKeyDown: function(event, target) {
 		var key = event.getKey();
 
-		if(this.isEditing() || this.isFiltering() && key != Event.DOWN && key != Event.ESC)
+		if(!this.getFocused() || this.isFiltering() && key != Event.DOWN && key != Event.ESC)
 			return;
 
 		var item = this.getCurrentItem();
@@ -1259,6 +1259,9 @@ Z8.define('Z8.list.List', {
 	},
 
 	onFocusIn: function(event, target) {
+		if(DOM.isInput(target))
+			return;
+
 		DOM.addCls(this, 'focus');
 		this.setFocused(true);
 	},

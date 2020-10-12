@@ -36,13 +36,15 @@ Z8.define('Z8.application.User', {
 		if(application == null)
 			settings[applicationId] = application = {};
 
-		if(value != undefined) {
+		if(value !== undefined) {
 			var section = application[key];
 			if(section == null)
 				application[key] = section = {};
 			section[subkey] = value;
 		} else
 			application[key] = subkey;
+
+		return this;
 	},
 
 	getFilter: function(key) {
