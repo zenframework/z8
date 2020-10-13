@@ -48,6 +48,11 @@ Z8.define('Z8.window.Window', {
 		this.items = [header, body, footer];
 	},
 
+	htmlMarkup: function() {
+		this.body.setControls(this.controls);
+		return Container.prototype.htmlMarkup.call(this);
+	},
+
 	onDestroy: function() {
 		this.close();
 		Container.prototype.onDestroy.call(this);
