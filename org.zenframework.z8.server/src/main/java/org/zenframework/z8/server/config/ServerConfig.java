@@ -33,6 +33,8 @@ public class ServerConfig extends Properties {
 
 	static final private String InstanceId = "z8.instance.id";
 
+	static final private String Multitenancy = "z8.instance.multitenancy";
+
 	static final private String ApplicationServerHost = "application.server.host";
 	static final private String ApplicationServerPort = "application.server.port";
 
@@ -94,6 +96,7 @@ public class ServerConfig extends Properties {
 	static private File workingPath;
 
 	static private String instanceId;
+	static private boolean multitenancy;
 
 	static private String applicationServerHost;
 	static private int applicationServerPort;
@@ -185,6 +188,7 @@ public class ServerConfig extends Properties {
 		}
 
 		instanceId = getProperty(InstanceId, DefaultInstanceId);
+		multitenancy = getProperty(Multitenancy, false);
 
 		applicationServerHost = getHost(ApplicationServerHost, Rmi.localhost);
 		applicationServerPort = getProperty(ApplicationServerPort, 15000);
@@ -368,6 +372,10 @@ public class ServerConfig extends Properties {
 
 	static public String instanceId() {
 		return instanceId;
+	}
+
+	static public boolean isMultitenant() {
+		return multitenancy;
 	}
 
 	static public File workingPath() {
