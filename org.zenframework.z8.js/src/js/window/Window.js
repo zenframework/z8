@@ -49,7 +49,8 @@ Z8.define('Z8.window.Window', {
 	},
 
 	htmlMarkup: function() {
-		this.body.setControls(this.controls);
+		if(!Z8.isEmpty(this.controls))
+			this.body.setControls(this.controls);
 		return Container.prototype.htmlMarkup.call(this);
 	},
 

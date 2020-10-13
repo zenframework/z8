@@ -41,8 +41,7 @@ Z8.define('Z8.form.Fieldset', {
 		if(controls == null)
 			return null;
 
-		for(var i = 0, length = controls.length; i < length; i++) {
-			var control = controls[i];
+		for(var control of controls) {
 			if(control.name == name || control.displayName == name)
 				return control;
 			var control = this.traverseControls(control.controls, name);
@@ -174,11 +173,7 @@ Z8.define('Z8.form.Fieldset', {
 	},
 
 	setReadOnly: function(readOnly) {
-		var controls = this.controls;
-
-		for(var i = 0, length = controls.length; i < length; i++) {
-			var control = controls[i];
-
+		for(var control of this.controls) {
 			if(!control.readOnlyLock && control.setReadOnly != null)
 				control.setReadOnly(readOnly);
 		}
@@ -190,18 +185,14 @@ Z8.define('Z8.form.Fieldset', {
 	setActive: function(active) {
 		this.callParent(active);
 
-		var controls = this.controls;
-		for(var i = 0, length = controls.length; i < length; i++) {
-			var control = controls[i];
+		for(var control of this.controls) {
 			if(control.isComponent)
-				controls[i].setActive(active);
+				control.setActive(active);
 		}
 	},
 
 	focus: function() {
-		var controls = this.controls;
-		for(var i = 0, length = controls.length; i < length; i++) {
-			var control = controls[i];
+		for(var control of this.controls) {
 			if(control.focus != null && control.focus())
 				return true;
 		}
@@ -209,9 +200,8 @@ Z8.define('Z8.form.Fieldset', {
 	},
 
 	isRequired: function() {
-		var controls = this.controls;
-		for(var i = 0, length = controls.length; i < length; i++) {
-			if(controls[i].required)
+		for(var control of this.controls) {
+			if(control.required)
 				return true;
 		}
 		return false;
