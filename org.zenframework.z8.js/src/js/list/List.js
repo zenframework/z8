@@ -761,28 +761,17 @@ Z8.define('Z8.list.List', {
 		return [fields];
 	},
 
-	setFields: function(fields) {
-/*
-		this.fields = this.createFields(fields);
-		this.setRecords();
-*/
-	},
-
 	setRecords: function(records) {
 		var items = this.createItems(records || this.store.getRecords());
 
 		this.setItems(items);
-
-		if(this.isVisible())
-			this.renderItems();
+		this.renderItems();
 	},
 
 	addRecords: function(records, index) {
 		var items = this.createItems(records || this.store.geRecords());
 		this.addItems(items, index, true);
-
-		if(this.isVisible())
-			this.renderItems();
+		this.renderItems();
 	},
 
 	removeRecords: function(records) {

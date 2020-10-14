@@ -33,7 +33,7 @@ Z8.define('Z8.form.Tabs', {
 			var tab = controls[i];
 			tab.cls = DOM.parseCls(tab.cls).pushIf('tab', 'inactive').join(' ');
 
-			var tagButton = tab.tagButton = new Z8.button.Button({ cls: 'tag', toggle: true, text: tab.title, icon: tab.icon, tab: tab });
+			var tagButton = tab.tagButton = new Z8.button.Button({ cls: 'tag', visible: tab.visible, toggle: true, text: tab.title, icon: tab.icon, tab: tab });
 			tab.icon = null;
 
 			tagButton.on('toggle', callback, this);
@@ -56,6 +56,7 @@ Z8.define('Z8.form.Tabs', {
 		if(tab == null)
 			return;
 		tab.tagButton.show(show);
+		tab.show(show);
 		if(!show && tab == this.getActiveTab())
 			DOM.addCls(tab, 'inactive');
 	},
@@ -124,7 +125,7 @@ Z8.define('Z8.form.Tabs', {
 		var activeTab = this.activeTab;
 
 		if(active && this.activeTab === undefined)
-			this.activateTab(this.controls[this.defaultTabIndex || 0]);
+			this.activateTab(this.getFirstVisible(this.defaultTabIndex));
 
 		var activeTab = this.activeTab;
 		var controls = this.controls;
@@ -132,6 +133,14 @@ Z8.define('Z8.form.Tabs', {
 		for(var i = 0, length = controls.length; i < length; i++) {
 			var tab = controls[i];
 			tab.setActive(active && tab == activeTab);
+		}
+	},
+
+	getFirstVisible: function(index) {
+		for(var i = index || 0, tabs = this.controls, length = tabs.length; i < length; i++) {
+			var tab = tabs[i];
+			if(tab.isVisible())
+				return tab;
 		}
 	}
 });
