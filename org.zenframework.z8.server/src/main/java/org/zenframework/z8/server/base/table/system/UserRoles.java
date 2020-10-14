@@ -151,6 +151,7 @@ public class UserRoles extends Table {
 	public Collection<IRole> get(guid userId) {
 		Field user = this.user.get();
 		Field role = this.role.get();
+		Field name = this.roles.get().name.get();
 		Field read = this.roles.get().read.get();
 		Field write = this.roles.get().write.get();
 		Field create = this.roles.get().create.get();
@@ -158,7 +159,7 @@ public class UserRoles extends Table {
 		Field destroy = this.roles.get().destroy.get();
 		Field execute = this.roles.get().execute.get();
 
-		Collection<Field> fields = Arrays.asList(role, read, write, create, copy, destroy, execute);
+		Collection<Field> fields = Arrays.asList(name, role, read, write, create, copy, destroy, execute);
 		read(fields, new Equ(user, userId));
 
 		Collection<IRole> roles = new HashSet<IRole>();
@@ -172,7 +173,7 @@ public class UserRoles extends Table {
 			access.setDestroy(destroy.bool().get());
 			access.setExecute(execute.bool().get());
 
-			roles.add(new Role(role.guid(), access));
+			roles.add(new Role(role.guid(), name.string().get(), access));
 		}
 
 		return roles;

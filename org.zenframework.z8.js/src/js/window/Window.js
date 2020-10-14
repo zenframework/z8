@@ -61,7 +61,7 @@ Z8.define('Z8.window.Window', {
 
 	open: function() {
 		if(this.isOpen)
-			return;
+			return this;
 
 		this.isOpen = true;
 
@@ -82,6 +82,8 @@ Z8.define('Z8.window.Window', {
 
 		this.setActive(true);
 		this.focus();
+
+		return this;
 	},
 
 	close: function() {
@@ -115,7 +117,7 @@ Z8.define('Z8.window.Window', {
 		var dom = DOM.get(this);
 		var target = event.target;
 
-		if(dom != target && !DOM.isParentOf(dom, target))
+		if(!this.isBusy() && dom != target && !DOM.isParentOf(dom, target))
 			this.cancel();
 	},
 
@@ -126,6 +128,10 @@ Z8.define('Z8.window.Window', {
 	cancel: function() {
 		if(this.closable)
 			this.notifyAndClose(false);
+	},
+
+	isBusy: function() {
+		return this.okButton != null ? this.okButton.isBusy() : false;
 	},
 
 	setBusy: function(busy) {
