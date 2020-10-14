@@ -73,7 +73,15 @@ Z8.define('Z8.application.User', {
 	},
 
 	isAdministrator: function() {
-		return this.administrator || this.roles.contains(Z8.application.User.Administrator);
+		if(this.administrator)
+			return true;
+
+		for(var role of this.roles) {
+			if(role.id == Z8.application.User.Administrator)
+				return true;
+		}
+
+		return false;
 	},
 
 	getFirstName: function() {
