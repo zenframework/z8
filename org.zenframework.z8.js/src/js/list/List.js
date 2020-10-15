@@ -1656,7 +1656,7 @@ Z8.define('Z8.list.List', {
 		for(var i = index + 1, length = items.length; i < length; i++) {
 			item = items[i];
 			if(level < item.getLevel())
-				item.hide(collapsed);
+				item.setHidden(collapsed);
 			else
 				break;
 		}
