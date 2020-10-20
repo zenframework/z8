@@ -5,6 +5,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.net.URL;
 import java.net.URLDecoder;
 import java.rmi.RemoteException;
 import java.util.Arrays;
@@ -171,16 +172,21 @@ public class WebServer extends RmiServer implements IWebServer {
 	private static Properties getMappings(String path) {
 		Properties mappings = new Properties();
 		Reader reader = null;
+
 		try {
-			reader = new InputStreamReader(
-					WebServer.class.getClassLoader().getResourceAsStream("webserver/mappings.properties"));
-			mappings.load(reader);
+			Enumeration<URL> resources = WebServer.class.getClassLoader().getResources("webserver/mappings.properties");
+			while (resources.hasMoreElements()) {
+				try {
+					reader = new InputStreamReader(resources.nextElement().openStream());
+					mappings.load(reader);
+				} catch (IOException e1) {} finally {
+					IOUtils.closeQuietly(reader);
+				}
+			}
 		} catch (IOException e) {
 			Trace.logError("Couldn't load mappings from classpath webserver/mappings.properties" + path, e);
-		} finally {
-			IOUtils.closeQuietly(reader);
-			reader = null;
 		}
+
 		if (path != null) {
 			try {
 				reader = new FileReader(path);
@@ -191,6 +197,7 @@ public class WebServer extends RmiServer implements IWebServer {
 				IOUtils.closeQuietly(reader);
 			}
 		}
+
 		return mappings;
 	}
 
