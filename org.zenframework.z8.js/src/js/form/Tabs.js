@@ -79,6 +79,7 @@ Z8.define('Z8.form.Tabs', {
 			return;
 
 		DOM.removeCls(activeTab, 'inactive');
+		activeTab.show(true);
 
 		this.activateLock = true;
 		activeTab.tagButton.setToggled(true);

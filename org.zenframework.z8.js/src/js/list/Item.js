@@ -20,6 +20,10 @@ Z8.define('Z8.list.Item', {
 		return this.list;
 	},
 
+	getIndex: function() {
+		return this.list.getIndex(this);
+	},
+
 	initComponent: function() {
 		Component.prototype.initComponent.call(this);
 
