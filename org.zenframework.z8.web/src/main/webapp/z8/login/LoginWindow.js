@@ -104,11 +104,16 @@ Z8.LoginWindow = Ext.extend(Ext.Window,
 	
 	onSubmit: function()
 	{
-		var parameters = 
-		{
+		var login = this.login.getValue();
+		var password = this.password.getValue() || '';
+		//password = Application.hashPassword ? MD5.hex(password) : password;
+		
+		var parameters = {
+			request: 'login',
 			requestId: Z8.request.desktopId,
-			login: this.login.getValue(),
-			password: this.password.getValue()
+			login: login,
+			password: password,
+			experimental: true
 		};
 
 		Z8.Ajax.login(this.onLogin, parameters, this);

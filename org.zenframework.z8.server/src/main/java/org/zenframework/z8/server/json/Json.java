@@ -3,28 +3,31 @@ package org.zenframework.z8.server.json;
 import org.zenframework.z8.server.types.string;
 
 public interface Json {
-	string eventId = new string("eventId");
+	static public string eventId = new string("eventId");
 
-	string id = new string("id");
-	string index = new string("index");
-	string instanceId = new string("instanceId");
+	static public string id = new string("id");
+	static public string index = new string("index");
+	static public string instanceId = new string("instanceId");
 
-	string sessionId = new string("sessionId");
-	string serverId = new string("serverId");
-	string service = new string("service");
-	string retry = new string("retry");
-	string ip = new string("ip");
+	static public string request = new string("request");
+	static public string response = new string("response");
+	static public string session = new string("session");
+	static public string sessionId = new string("sessionId");
+	static public string serverId = new string("serverId");
+	static public string service = new string("service");
+	static public string retry = new string("retry");
+	static public string ip = new string("ip");
 
-	string upload = new string("upload");
+	static public string upload = new string("upload");
 
-	string user = new string("user");
-	string name = new string("name");
-	string displayName = new string("displayName");
-	string login = new string("login");
-	string password = new string("password");
-	string newPassword = new string("newPassword");
-	string email = new string("email");
-	string phone = new string("phone");
+	static public string user = new string("user");
+	static public string name = new string("name");
+	static public string displayName = new string("displayName");
+	static public string login = new string("login");
+	static public string password = new string("password");
+	static public string newPassword = new string("newPassword");
+	static public string email = new string("email");
+	static public string phone = new string("phone");
 
 	string menu = new string("menu");
 	string components = new string("components");

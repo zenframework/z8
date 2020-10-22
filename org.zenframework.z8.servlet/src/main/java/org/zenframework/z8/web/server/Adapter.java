@@ -14,6 +14,7 @@ import java.util.Map;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.FileUploadException;
@@ -35,19 +36,23 @@ import org.zenframework.z8.server.utils.NumericUtils;
 import org.zenframework.z8.web.servlet.Servlet;
 
 public abstract class Adapter {
+	private static final String UseContainerSession = "useContainerSession";
+	
 	private static final Collection<String> IgnoredExceptions = Arrays.asList("org.apache.catalina.connector.ClientAbortException");
 
 	protected Servlet servlet;
+	private boolean useContainerSession;
 
 	protected Adapter(Servlet servlet) {
 		this.servlet = servlet;
+		useContainerSession = Boolean.parseBoolean(servlet.getInitParameter(UseContainerSession));
 	}
 
 	protected Servlet getServlet() {
 		return servlet;
 	}
 
-	public void service(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
+	/*public void service(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
 		try {
 			ISession session = null;
 
@@ -88,6 +93,62 @@ public abstract class Adapter {
 				processError(response, e);
 			}
 		}
+	}*/
+	
+	public void service(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
+		HttpSession httpSession = useContainerSession ? request.getSession() : null;
+		
+		try {
+			ISession session = null;
+
+			Map<String, String> parameters = new HashMap<String, String>();
+			List<file> files = new ArrayList<file>();
+
+			parseRequest(request, parameters, files);
+
+			boolean isLogin = Json.login.equals(parameters.get(Json.request.get()));
+			
+			String sessionId = parameters.get(Json.sessionId.get());
+			String serverId = parameters.get(Json.serverId.get());
+
+			if(isLogin) {
+				String login = getParameter(Json.login.get(), parameters, httpSession);
+				String password = getParameter(Json.password.get(), parameters, httpSession);
+
+				if(login == null || login.isEmpty() || login.length() > IAuthorityCenter.MaxLoginLength || password != null && password.length() > IAuthorityCenter.MaxPasswordLength)
+					throw new AccessDeniedException();
+
+				session = login(login, password);
+			} else
+				session = authorize(sessionId, serverId, parameters.get(Json.request.get()));
+
+			if(session == null)
+				throw serverId == null ? new AccessDeniedException() : new ServerUnavailableException(serverId);
+
+			service(session, parameters, files, request, response);
+		} catch(AccessDeniedException e) {
+			if (httpSession != null)
+				httpSession.invalidate();
+			processAccessDenied(response);
+		} catch(NoSuchObjectException e) {
+			processAccessDenied(response);
+		} catch(ConnectException e) {
+			processAccessDenied(response);
+		} catch(Throwable e) {
+			String className = e.getClass().getCanonicalName();
+			if(!IgnoredExceptions.contains(className)) {
+				Trace.logError(e);
+				processError(response, e);
+			}
+		}
+	}
+	
+	protected ISession login(String login, String password) throws IOException, ServletException {
+		return ServerConfig.authorityCenter().login(login, password);
+	}
+	
+	protected ISession authorize(String sessionId, String serverId, String request) throws IOException, ServletException {
+		return sessionId != null ? ServerConfig.authorityCenter().server(sessionId, serverId) : null;
 	}
 
 	private void parseRequest(HttpServletRequest request, Map<String, String> parameters, List<file> files) throws IOException {
@@ -161,5 +222,18 @@ public abstract class Adapter {
 
 		if(response != null)
 			writeResponse(response, node.getContent());
+	}
+	
+	private static String getParameter(String key, Map<String, String> parameters, HttpSession httpSession) {
+		String value = parameters.get(key);
+
+		if(httpSession != null) {
+			if(value != null)
+				httpSession.setAttribute(key, value);
+			else
+				value = (String)httpSession.getAttribute(key);
+		}
+
+		return value;
 	}
 }
