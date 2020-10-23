@@ -16,7 +16,6 @@ public interface IApplicationServer extends IServer {
 
 	public IUser user(String login, String password, boolean createIfNotExists) throws RemoteException;
 	public IUser userLoad(String login, boolean createIfNotExists) throws RemoteException;
-	public IUser createUser(String login, String email, String fullName, Map<String, String> parameters) throws RemoteException;
 
 	public String[] domains() throws RemoteException;
 

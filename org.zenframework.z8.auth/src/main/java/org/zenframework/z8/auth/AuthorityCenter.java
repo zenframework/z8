@@ -4,33 +4,26 @@ import java.io.File;
 import java.lang.management.ManagementFactory;
 import java.rmi.RemoteException;
 import java.util.Collection;
-import java.util.Hashtable;
+import java.util.Map;
 
-import javax.naming.AuthenticationException;
-import javax.naming.AuthenticationNotSupportedException;
-import javax.naming.Context;
 import javax.naming.NamingException;
-import javax.naming.directory.DirContext;
-import javax.naming.directory.InitialDirContext;
 
 import org.zenframework.z8.server.base.file.Folders;
 import org.zenframework.z8.server.config.ServerConfig;
 import org.zenframework.z8.server.crypto.MD5;
-import org.zenframework.z8.server.engine.HubServer;
-import org.zenframework.z8.server.engine.IApplicationServer;
-import org.zenframework.z8.server.engine.IAuthorityCenter;
-import org.zenframework.z8.server.engine.IInterconnectionCenter;
-import org.zenframework.z8.server.engine.IServerInfo;
-import org.zenframework.z8.server.engine.ISession;
-import org.zenframework.z8.server.engine.ServerInfo;
+import org.zenframework.z8.server.engine.*;
 import org.zenframework.z8.server.exceptions.AccessDeniedException;
+import org.zenframework.z8.server.json.parser.JsonArray;
 import org.zenframework.z8.server.ldap.ActiveDirectory;
 import org.zenframework.z8.server.ldap.LdapUser;
 import org.zenframework.z8.server.logs.Trace;
+import org.zenframework.z8.server.request.IRequest;
 import org.zenframework.z8.server.request.RequestDispatcher;
 import org.zenframework.z8.server.security.IUser;
+import org.zenframework.z8.server.security.User;
 import org.zenframework.z8.server.types.datespan;
 import org.zenframework.z8.server.types.guid;
+import org.zenframework.z8.server.types.string;
 import org.zenframework.z8.server.utils.StringUtils;
 
 public class AuthorityCenter extends HubServer implements IAuthorityCenter {
@@ -134,7 +127,7 @@ public class AuthorityCenter extends HubServer implements IAuthorityCenter {
 			try {
 				ActiveDirectory activeDirectory = new ActiveDirectory();
 				activeDirectory.searchUser(
-						ServerConfig.searchBase(), String.format(ServerConfig.searchFilter(), login));
+						ServerConfig.searchBase(), String.format(ServerConfig.searchUserFilter(), login));
 				activeDirectory.close();
 			} catch (NamingException e) {
 				Trace.logError("Failed to get user attributes from active directory service", e);
@@ -186,20 +179,26 @@ public class AuthorityCenter extends HubServer implements IAuthorityCenter {
 		try {
 			ActiveDirectory activeDirectory = new ActiveDirectory();
 			ldapUser = activeDirectory.searchUser(
-					ServerConfig.searchBase(), String.format(ServerConfig.searchFilter(), principalName));
+					ServerConfig.searchBase(), String.format(ServerConfig.searchUserFilter(), principalName));
 			activeDirectory.close();
 		} catch (NamingException e) {
 			Trace.logError("Failed to get user attributes from active directory service", e);
 			return null;
 		}
-		// TODO need the way to pass user groups ldapUser.getMemberOf(), as I understood BL does not have primitive array type
-		IUser user = loginServer.createUser(
-				ldapUser.getLogin(),
-				ldapUser.getEmail(),
-				ldapUser.getFullName(),
-				ldapUser.getParameters()
-		);
-		return user;
+
+		IRequest request = ApplicationServer.getRequest();
+		// user attributes from ActiveDirectory
+		for(Map.Entry<String,String> entry : ldapUser.getParameters().entrySet()) {
+			request.getParameters().put(
+					new string(entry.getKey()),
+					new string(entry.getValue())
+			);
+		}
+		request.getParameters().put(
+				new string(ActiveDirectory.ldapParametersPrefix + "memberOf"),
+				new string(new JsonArray(ldapUser.getMemberOf()).toString()));
+
+		return loginServer.userLoad(ldapUser.getLogin(), true);
 	}
 
 	@Override

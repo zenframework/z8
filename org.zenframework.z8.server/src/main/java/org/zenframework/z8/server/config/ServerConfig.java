@@ -89,7 +89,8 @@ public class ServerConfig extends Properties {
 	static final private String PrincipalName = "ldap.principalName";
 	static final private String Credentials = "ldap.credentials";
 	static final private String SearchBase = "ldap.searchBase";
-	static final private String SearchFilter = "ldap.searchFilter";
+	static final private String SearchUserFilter = "ldap.searchUserFilter";
+	static final private String SearchGroupFilter = "ldap.searchGroupFilter";
 
 	static final private String LdapBindDn = "ldap.bind.dn";
 	static final private String LdapBindPassword = "ldap.bind.password";
@@ -156,7 +157,8 @@ public class ServerConfig extends Properties {
 	static private String principalName;
 	static private String credentials;
 	static private String searchBase;
-	static private String searchFilter;
+	static private String searchUserFilter;
+	static private String searchGroupFilter;
 	static private String ldapBindDn;
 	static private String ldapBindPassword;
 	static private String ldapDefaultDomain;
@@ -267,7 +269,8 @@ public class ServerConfig extends Properties {
 		principalName = getProperty(PrincipalName, "");
 		credentials = getProperty(Credentials, "");
 		searchBase = getProperty(SearchBase, "");
-		searchFilter = getProperty(SearchFilter, "");
+		searchUserFilter = getProperty(SearchUserFilter, "");
+		searchGroupFilter = getProperty(SearchGroupFilter, "");
 		ldapBindDn = getProperty(LdapBindDn, "");
 		ldapBindPassword = getProperty(LdapBindPassword, "");
 		ldapDefaultDomain = getProperty(LdapDefaultDomain, "");
@@ -575,8 +578,11 @@ public class ServerConfig extends Properties {
 	static public String searchBase() {
 		return searchBase;
 	}
-	static public String searchFilter() {
-		return searchFilter;
+	static public String searchUserFilter() {
+		return searchUserFilter;
+	}
+	static public String searchGroupFilter() {
+		return searchGroupFilter;
 	}
 	static public String ldapBindDn() {
 		return ldapBindDn;

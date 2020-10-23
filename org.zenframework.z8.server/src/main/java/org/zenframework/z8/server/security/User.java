@@ -24,6 +24,7 @@ import org.zenframework.z8.server.db.sql.expressions.Group;
 import org.zenframework.z8.server.db.sql.expressions.NotEqu;
 import org.zenframework.z8.server.db.sql.expressions.Or;
 import org.zenframework.z8.server.db.sql.functions.string.EqualsIgnoreCase;
+import org.zenframework.z8.server.engine.ApplicationServer;
 import org.zenframework.z8.server.engine.RmiIO;
 import org.zenframework.z8.server.exceptions.AccessDeniedException;
 import org.zenframework.z8.server.exceptions.InvalidVersionException;
@@ -39,7 +40,6 @@ import org.zenframework.z8.server.utils.NumericUtils;
 
 public class User implements IUser {
 	static private final long serialVersionUID = -4955893424674255525L;
-	static public final String ldapParametersPrefix = "ldap_";
 
 	private guid id;
 
@@ -224,8 +224,11 @@ public class User implements IUser {
 
 		boolean exists = user.readInfo(loginOrId, !isLatestVersion);
 		if(!exists && createIfNotExist) {
+			String plainPassword = User.generateOneTimePassword();
+			ApplicationServer.getRequest().getParameters().put(new string("plainPassword"), new string(plainPassword));
 			user.login = ((string)loginOrId).get();
-			user.password = MD5.hex("");
+			user.password = MD5.hex(plainPassword);
+			
 			Users users = Users.newInstance();
 			users.name.get().set(loginOrId);
 			users.password.get().set(new string(user.password));
@@ -245,46 +248,6 @@ public class User implements IUser {
 		if(user.isBuiltinAdministrator())
 			user.addSystemTools();
 
-		ConnectionManager.release();
-
-		return user;
-	}
-
-	static public IUser create(String login, String email, String fullName, Map<String, String> parameters) {
-		String plainPassword = User.generateOneTimePassword();
-		User user = new User();
-		user.login = login;
-		user.email = email;
-		user.firstName = fullName;
-		user.password = MD5.hex(plainPassword);
-
-		Users users = Users.newInstance();
-		users.name.get().set(login);
-		users.email.get().set(email);
-		users.firstName.get().set(fullName);
-		users.password.get().set(new string(user.password));
-
-		user.id = users.create();
-
-		// user attributes from ActiveDirectory
-		for(Map.Entry<String,String> entry : parameters.entrySet()) {
-			user.parameters().put(
-					new string(User.ldapParametersPrefix + entry.getKey()),
-					new string(entry.getValue())
-			);
-		}
-		// pass one-time password to parameters to give an opportunity to handle it on a higher level
-		// (like notice user or send to email)
-		user.parameters().put(new string("plainPassword"), new string(plainPassword));
-
-		users.getExtraParameters(user, (RLinkedHashMap<string, primary>) user.parameters());
-
-		if(ServerConfig.isLatestVersion()) {
-			user.loadRoles();
-			user.loadEntries();
-		} else {
-			throw new InvalidVersionException();
-		}
 		ConnectionManager.release();
 
 		return user;

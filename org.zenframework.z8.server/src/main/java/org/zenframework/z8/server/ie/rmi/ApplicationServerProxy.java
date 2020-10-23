@@ -70,11 +70,6 @@ public class ApplicationServerProxy implements IApplicationServer {
 	}
 
 	@Override
-	public IUser createUser(String login, String email, String fullName, Map<String, String> parameters) {
-		throw new UnsupportedOperationException();
-	}
-
-	@Override
 	public String[] domains() throws RemoteException {
 		throw new UnsupportedOperationException();
 	}

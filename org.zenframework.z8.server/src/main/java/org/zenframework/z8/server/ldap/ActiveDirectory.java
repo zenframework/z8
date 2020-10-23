@@ -8,10 +8,10 @@ import javax.naming.Context;
 import javax.naming.NamingEnumeration;
 import javax.naming.NamingException;
 import javax.naming.directory.*;
-import java.util.Date;
-import java.util.Hashtable;
+import java.util.*;
 
 public class ActiveDirectory {
+    static public final String ldapParametersPrefix = "ldap_";
     private final DirContext context;
 
     public ActiveDirectory() throws NamingException {
@@ -28,6 +28,7 @@ public class ActiveDirectory {
         environment.put(Context.SECURITY_AUTHENTICATION, "simple");
         environment.put(Context.SECURITY_PRINCIPAL, principalName);
         environment.put(Context.SECURITY_CREDENTIALS, credentials);
+        environment.put(Context.REFERRAL, "follow");
         return new InitialDirContext(environment);
     }
 
@@ -40,42 +41,97 @@ public class ActiveDirectory {
 
         if (namingEnumeration.hasMore()) {
             Attributes attributes = namingEnumeration.next().getAttributes();
-            return extractUser(attributes);
+            LdapUser ldapUser = extractUser(attributes);
+            ldapUser.getParameters().putAll(extractLdapParameters(attributes));
+            if (ldapUser.isLocked()) {
+                throw new AccessDeniedException();
+            }
+            return ldapUser;
         } else {
             Trace.logEvent(String.format("Active directory returned empty result. Query details: %s", searchFilter));
             throw new AccessDeniedException();
         }
     }
 
+    public List<LdapUser> getUsers(String searchBase, String searchFilter) throws NamingException {
+        SearchControls controls = new SearchControls();
+        controls.setSearchScope(SearchControls.SUBTREE_SCOPE);
+
+        NamingEnumeration<SearchResult> namingEnumeration = context.search(searchBase, searchFilter, controls);
+
+        List<LdapUser> result = new ArrayList<>();
+        while (namingEnumeration.hasMore()) {
+            Attributes attributes = namingEnumeration.next().getAttributes();
+            LdapUser ldapUser = extractUser(attributes);
+            ldapUser.getParameters().putAll(extractLdapParameters(attributes));
+            result.add(ldapUser);
+        }
+        return result;
+    }
+
+    public List<Map<String, String>> getGroups(String searchBase, String searchFilter) throws NamingException {
+        SearchControls controls = new SearchControls();
+        controls.setSearchScope(SearchControls.SUBTREE_SCOPE);
+
+        NamingEnumeration<SearchResult> namingEnumeration = context.search(searchBase, searchFilter, controls);
+
+        List<Map<String, String>> result = new ArrayList<>();
+        while (namingEnumeration.hasMore()) {
+            Attributes attributes = namingEnumeration.next().getAttributes();
+            result.add(extractLdapParameters(attributes));
+        }
+        return result;
+    }
+
     private LdapUser extractUser(Attributes attributes) throws NamingException {
+        LdapUser ldapUser = new LdapUser();
         long ldapTimeStamp = Long.parseLong((String) attributes.get("accountExpires").get());
+        Boolean locked = Boolean.FALSE;
         if (ldapTimeStamp > 0) {
             Date accountExpiredDate = ActiveDirectory.ldap2Date(ldapTimeStamp);
             if (accountExpiredDate.before(new Date())) {
-                throw new AccessDeniedException();
+                locked = Boolean.TRUE;
             }
         }
-        LdapUser ldapUser = new LdapUser();
-        ldapUser.setEmail((String) attributes.get("mail").get());
-        ldapUser.setLogin((String) attributes.get("sAMAccountname").get());
-        ldapUser.setFullName((String) attributes.get("cn").get());
+        ldapUser.setLocked(locked);
+        ldapUser.getParameters().put(ActiveDirectory.ldapParametersPrefix + "parameters", Boolean.TRUE.toString());
+        ldapUser.getParameters().put(ActiveDirectory.ldapParametersPrefix + "locked", locked.toString());
+        ldapUser.setLogin(ActiveDirectory.getAttributeValue(attributes.get("sAMAccountname")));
         Attribute groups = attributes.get("memberof");
-        String[] groupNames = new String[groups.size()];
-        for (int i = 0; i < groups.size(); i++) {
-            groupNames[i] = (String) groups.get(i);
+        if (groups != null) {
+            String[] groupNames = new String[groups.size()];
+            for (int i = 0; i < groups.size(); i++) {
+                groupNames[i] = (String) groups.get(i);
+            }
+            ldapUser.setMemberOf(groupNames);
         }
-        ldapUser.setMemberOf(groupNames);
-
+        return ldapUser;
+    }
+        
+    private Map<String, String>  extractLdapParameters(Attributes attributes) throws NamingException {
+        Map<String, String> parameters = new HashMap<>();
         NamingEnumeration<String> keyNamesEnum = attributes.getIDs();
         while (keyNamesEnum.hasMore()) {
             String keyName = keyNamesEnum.next();
             Attribute attribute = attributes.get(keyName);
             // grab only single attrs
             if (attribute.size() == 1){
-                ldapUser.getParameters().put(keyName, (String) attribute.get());
+                parameters.put(ActiveDirectory.ldapParametersPrefix + keyName, ActiveDirectory.getAttributeValue(attribute));
             }
         }
-        return ldapUser;
+        return parameters;
+    }
+
+    private static String getAttributeValue(Attribute attribute) {
+        if (attribute == null) {
+            return null;
+        } else {
+            try {
+                return (String) attribute.get();
+            } catch (NamingException ignored) {
+                return null;
+            }
+        }
     }
 
     private static Date ldap2Date(long ldapTimeStamp) { ;

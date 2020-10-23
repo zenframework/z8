@@ -47,8 +47,10 @@ public class ApplicationServer extends RmiServer implements IApplicationServer {
 
 	static public IRequest getRequest() {
 		IRequest request = currentRequest.get();
-		if(request == null)
+		if(request == null) {
 			request = new Request(new Session());
+			setRequest(request);
+		}
 		return request;
 	}
 
@@ -145,11 +147,6 @@ public class ApplicationServer extends RmiServer implements IApplicationServer {
 	@Override
 	public IUser userLoad(String login, boolean createIfNotExist) {
 		return User.load(login, createIfNotExist);
-	}
-
-	@Override
-	public IUser createUser(String login, String email, String fullName, Map<String, String> parameters) {
-		return User.create(login, email, fullName, parameters);
 	}
 
 	@Override
