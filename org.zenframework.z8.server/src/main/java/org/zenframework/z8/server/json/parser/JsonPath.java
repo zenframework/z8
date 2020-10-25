@@ -40,6 +40,7 @@ public class JsonPath {
 				parts.add(part);
 		}
 		this.parts = parts.toArray();
+		scanner.close();
 	}
 
 	@SuppressWarnings("unchecked")

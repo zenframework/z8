@@ -25,7 +25,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.io.IOUtils;
 import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.Server;
@@ -42,6 +41,7 @@ import org.zenframework.z8.server.engine.IWebServer;
 import org.zenframework.z8.server.engine.RmiServer;
 import org.zenframework.z8.server.logs.Trace;
 import org.zenframework.z8.server.types.guid;
+import org.zenframework.z8.server.utils.IOUtils;
 import org.zenframework.z8.web.servlet.Servlet;
 
 public class WebServer extends RmiServer implements IWebServer {
