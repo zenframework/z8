@@ -36,23 +36,25 @@ import org.zenframework.z8.server.utils.NumericUtils;
 import org.zenframework.z8.web.servlet.Servlet;
 
 public abstract class Adapter {
-	private static final String UseContainerSession = "useContainerSession";
+	//private static final String UseContainerSession = "useContainerSession";
 	
 	private static final Collection<String> IgnoredExceptions = Arrays.asList("org.apache.catalina.connector.ClientAbortException");
 
 	protected Servlet servlet;
-	private boolean useContainerSession;
+	//private boolean useContainerSession;
 
 	protected Adapter(Servlet servlet) {
 		this.servlet = servlet;
-		useContainerSession = Boolean.parseBoolean(servlet.getInitParameter(UseContainerSession));
+		//useContainerSession = Boolean.parseBoolean(servlet.getInitParameter(UseContainerSession));
 	}
 
 	protected Servlet getServlet() {
 		return servlet;
 	}
 
-	/*public void service(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
+	public void service(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
+		HttpSession httpSession = request.getSession();
+		
 		try {
 			ISession session = null;
 
@@ -61,10 +63,11 @@ public abstract class Adapter {
 
 			parseRequest(request, parameters, files);
 
-			String login = parameters.get(Json.login);
-			String password = parameters.get(Json.password);
-			String sessionId = parameters.get(Json.sessionId);
-			String serverId = parameters.get(Json.serverId);
+			String login = parameters.get(Json.login.get());
+			String password = parameters.get(Json.password.get());
+			boolean rememberMe = new Boolean(parameters.get(Json.rememberMe.get())).booleanValue();
+			String sessionId = parameters.get(Json.sessionId.get());
+			String serverId = parameters.get(Json.serverId.get());
 
 			if(login != null && password != null) {
 
@@ -78,7 +81,13 @@ public abstract class Adapter {
 
 			if(session == null)
 				throw serverId == null ? new AccessDeniedException() : new ServerUnavailableException(serverId);
-
+			else if(httpSession != null && rememberMe) {
+				httpSession.setAttribute(Json.sessionId.get(), session.id());
+				if(login != null)
+					httpSession.setAttribute(Json.login.get(), login);
+			}
+				
+				
 			service(session, parameters, files, request, response);
 		} catch(AccessDeniedException e) {
 			processAccessDenied(response);
@@ -93,9 +102,9 @@ public abstract class Adapter {
 				processError(response, e);
 			}
 		}
-	}*/
+	}
 	
-	public void service(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
+	/*public void service(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
 		HttpSession httpSession = useContainerSession ? request.getSession() : null;
 		
 		try {
@@ -106,7 +115,7 @@ public abstract class Adapter {
 
 			parseRequest(request, parameters, files);
 
-			boolean isLogin = Json.login.equals(parameters.get(Json.request.get()));
+			boolean isLogin = Json.login.equals(parameters.get(Json.requestId.get()));
 			
 			String sessionId = parameters.get(Json.sessionId.get());
 			String serverId = parameters.get(Json.serverId.get());
@@ -149,7 +158,7 @@ public abstract class Adapter {
 	
 	protected ISession authorize(String sessionId, String serverId, String request) throws IOException, ServletException {
 		return sessionId != null ? ServerConfig.authorityCenter().server(sessionId, serverId) : null;
-	}
+	}*/
 
 	private void parseRequest(HttpServletRequest request, Map<String, String> parameters, List<file> files) throws IOException {
 		if(ServletFileUpload.isMultipartContent(request)) {
@@ -224,7 +233,7 @@ public abstract class Adapter {
 			writeResponse(response, node.getContent());
 	}
 	
-	private static String getParameter(String key, Map<String, String> parameters, HttpSession httpSession) {
+	/*private static String getParameter(String key, Map<String, String> parameters, HttpSession httpSession) {
 		String value = parameters.get(key);
 
 		if(httpSession != null) {
@@ -235,5 +244,5 @@ public abstract class Adapter {
 		}
 
 		return value;
-	}
+	}*/
 }

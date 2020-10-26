@@ -26,6 +26,7 @@ public interface Json {
 	static public string login = new string("login");
 	static public string password = new string("password");
 	static public string newPassword = new string("newPassword");
+	static public string rememberMe = new string("rememberMe");
 	static public string email = new string("email");
 	static public string phone = new string("phone");
 
