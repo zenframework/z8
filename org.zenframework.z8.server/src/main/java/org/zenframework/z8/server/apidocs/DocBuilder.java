@@ -2,8 +2,8 @@ package org.zenframework.z8.server.apidocs;
 
 import org.zenframework.z8.server.apidocs.dto.BaseInfo;
 import org.zenframework.z8.server.apidocs.dto.Documentation;
-import org.zenframework.z8.server.apidocs.field_extractor.FieldExtractor;
-import org.zenframework.z8.server.apidocs.field_extractor.FieldExtractorFactory;
+import org.zenframework.z8.server.apidocs.field.extractor.FieldExtractor;
+import org.zenframework.z8.server.apidocs.field.extractor.FieldExtractorFactory;
 import org.zenframework.z8.server.apidocs.actions.*;
 import org.zenframework.z8.server.apidocs.dto.Entity;
 import org.zenframework.z8.server.base.form.action.Action;
@@ -34,7 +34,7 @@ public class DocBuilder {
             entityResult.setEntityName(query.getAttribute("name"));
             entityResult.setEntityDescription(query.getAttribute(Json.apiDescription.toString()));
             entityResult.setEntityId(entity.classId());
-            entityResult.setContentParams(entity.getAttribute("contentParams"));
+            entityResult.setContentParams(entity.getAttribute("apiActions"));
             for(Action action : query.actions()) {
                 entityResult.getActionsNames().add(new BaseInfo(action.id(), action.displayName()));
             }

@@ -3,9 +3,9 @@ package org.zenframework.z8.web.server;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
+import freemarker.template.TemplateExceptionHandler;
 import org.zenframework.z8.server.apidocs.DocBuilder;
 import org.zenframework.z8.server.apidocs.dto.Documentation;
-import org.zenframework.z8.server.config.FreeMarkerConfiguration;
 import org.zenframework.z8.server.request.ContentType;
 import org.zenframework.z8.server.request.Loader;
 import org.zenframework.z8.server.runtime.OBJECT;
@@ -52,8 +52,7 @@ public class APIDocAdapter extends Adapter {
 				.forEach(className -> entities.add((OBJECT.CLASS<? extends OBJECT>) Loader.loadClass(className)));
 		Documentation documentation = new DocBuilder().build(entities);
 
-		Configuration freeMarkerCfg = FreeMarkerConfiguration.getFreeMarkerCfg();
-		Template temp = freeMarkerCfg.getTemplate(templateName);
+		Template temp = APIDocAdapter.getFreeMakerCfg().getTemplate(templateName);
 
 		StringWriter stringWriter = new StringWriter();
 		try {
@@ -63,5 +62,16 @@ public class APIDocAdapter extends Adapter {
 		}
 		InputStream inputStream = new ByteArrayInputStream(stringWriter.toString().getBytes());
 		writeResponse(response, inputStream, ContentType.Html);
+	}
+	
+	private static Configuration getFreeMakerCfg() {
+		Configuration freeMarkerCfg = new Configuration(Configuration.VERSION_2_3_30);
+		freeMarkerCfg.setClassForTemplateLoading(APIDocAdapter.class, "/templates/");
+		freeMarkerCfg.setDefaultEncoding("UTF-8");
+		freeMarkerCfg.setTemplateExceptionHandler(TemplateExceptionHandler.RETHROW_HANDLER);
+		freeMarkerCfg.setLogTemplateExceptions(false);
+		freeMarkerCfg.setWrapUncheckedExceptions(true);
+		freeMarkerCfg.setFallbackOnNullLoopVariable(false);
+		return freeMarkerCfg;
 	}
 }

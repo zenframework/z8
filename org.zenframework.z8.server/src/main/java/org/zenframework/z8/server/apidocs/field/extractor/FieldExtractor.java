@@ -1,4 +1,4 @@
-package org.zenframework.z8.server.apidocs.field_extractor;
+package org.zenframework.z8.server.apidocs.field.extractor;
 
 import org.zenframework.z8.server.apidocs.dto.FieldDescription;
 import org.zenframework.z8.server.base.table.value.Field;
