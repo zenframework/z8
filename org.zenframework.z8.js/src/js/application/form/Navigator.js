@@ -148,7 +148,7 @@ Z8.define('Z8.application.form.Navigator', {
 	createListbox: function() {
 		var type = this.listboxType;
 		var config = this.getListboxConfig();
-		var listbox = this.listbox = type != null ? Z8.create(type, config) : new Z8.form.field.Listbox(config);
+		var listbox = this.listbox = type != null ? Z8.create(type, config) : new ListBox(config);
 		listbox.on('select', this.onSelect, this);
 		listbox.on('contentChange', this.updateToolbar, this);
 		return listbox;
@@ -193,17 +193,17 @@ Z8.define('Z8.application.form.Navigator', {
 	createTable: function() {
 		var type = this.tableType;
 		var config = this.getTableConfig();
-		return this.table = type != null ? Z8.create(type, config) : new Z8.form.field.Listbox(config);
+		return this.table = type != null ? Z8.create(type, config) : new ListBox(config);
 	},
 
-	setTools: function(listbox, set) {
-		if(listbox == null)
+	setTools: function(listBox, set) {
+		if(listBox == null)
 			return;
 
-		listbox.setAddTool(set ? this.addButton : null);
-		listbox.setCopyTool(set ? this.copyButton : null);
-		listbox.setRefreshTool(set ? this.refreshButton : null);
-		listbox.setRemoveTool(set ? this.removeButton : null);
+		listBox.setAddTool(set ? this.addButton : null);
+		listBox.setCopyTool(set ? this.copyButton : null);
+		listBox.setRefreshTool(set ? this.refreshButton : null);
+		listBox.setRemoveTool(set ? this.removeButton : null);
 	},
 
 	createToolbar: function() {
@@ -591,8 +591,12 @@ Z8.define('Z8.application.form.Navigator', {
 
 	toggleForm: function(button) {
 		this.table.hide();
+		this.table.setActive(false);
+
 		this.listbox.show();
+		this.listbox.setActive(true);
 		this.form.show();
+		this.form.setActive(true);
 
 		this.setTools(this.listbox, true);
 		this.setTools(this.table, false);
@@ -603,8 +607,13 @@ Z8.define('Z8.application.form.Navigator', {
 
 	toggleTable: function(button) {
 		this.listbox.hide();
+		this.listbox.setActive(false);
+
 		this.form.hide();
+		this.form.setActive(false);
+
 		this.table.show();
+		this.table.setActive(true);
 
 		this.setTools(this.table, true);
 		this.setTools(this.listbox, false);

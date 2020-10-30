@@ -4,7 +4,7 @@ Z8.define('Z8.form.field.PdfDocument', {
 	tag: 'iframe',
 
 	getCls: function() {
-		return Z8.form.field.Document.prototype.getCls.call(this).pushIf('pdf-document');
+		return Z8.form.field.Document.prototype.getCls.call(this).pushIf('pdf');
 	},
 
 	setSource: function(source) {

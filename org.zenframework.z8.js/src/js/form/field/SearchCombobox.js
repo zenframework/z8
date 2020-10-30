@@ -1,8 +1,9 @@
 Z8.define('Z8.form.field.SearchCombobox', {
-	extend: 'Z8.form.field.Combobox',
+	extend: 'ComboBox',
+	shortClassName: 'SearchComboBox',
 
 	setValue: function(value) {
-		this.callParent(value);
+		ComboBox.prototype.setValue.call(this, value);
 		var record = this.getSelectedRecord();
 		this.fireEvent('search', this, record ? record.get(this.name) : '');
 	},

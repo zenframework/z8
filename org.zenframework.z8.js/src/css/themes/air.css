@@ -1,3 +1,9 @@
+body {
+	color: #222;
+	background-color: #fff !important;
+	font: 400 11px Roboto, 'Segoe UI', helvetica, arial;
+}
+
 .air .btn {
 	padding: 0 8px;
 	border-radius: 4px;
@@ -18,7 +24,7 @@
 	opacity: .8;
 }
 
-.air .btn>.icon.no-text {
+.air .btn.no-text>.icon {
 	margin-right: 0;
 }
 
@@ -127,7 +133,7 @@
 	border-color: #c9302c;
 }
 .air .control-group.scrollable>.box>.control {
-	overflow-y: scroll;
+	overflow-y: auto;
 }
 
 .air .control::-webkit-input-placeholder {
@@ -227,8 +233,8 @@
 	white-space: nowrap;
 }
 
-.air .label.empty:not(.toolbar),
-.air .label.empty.toolbar>.text {
+.air .label.no-text:not(.toolbar),
+.air .label.no-text.toolbar>.text {
 	display: none;
 }
 

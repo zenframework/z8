@@ -100,24 +100,48 @@ public class JsonObject extends OBJECT {
 		return new string(object.getString(name));
 	}
 
+	public string z8_getString(JsonPath.CLASS<? extends JsonPath> path) {
+		return (string) JsonUtils.wrap(path.get().get().evaluate(object));
+	}
+
 	public integer z8_getInt(string name) {
 		return new integer(object.getInt(name));
+	}
+
+	public integer z8_getInt(JsonPath.CLASS<? extends JsonPath> path) {
+		return (integer) JsonUtils.wrap(path.get().get().evaluate(object));
 	}
 
 	public decimal z8_getDecimal(string name) {
 		return new decimal(object.getDouble(name));
 	}
 
+	public decimal z8_getDecimal(JsonPath.CLASS<? extends JsonPath> path) {
+		return (decimal) JsonUtils.wrap(path.get().get().evaluate(object));
+	}
+
 	public bool z8_getBool(string name) {
 		return new bool(object.getBoolean(name));
+	}
+
+	public bool z8_getBool(JsonPath.CLASS<? extends JsonPath> path) {
+		return (bool) JsonUtils.wrap(path.get().get().evaluate(object));
 	}
 
 	public guid z8_getGuid(string name) {
 		return object.getGuid(name);
 	}
 
+	public guid z8_getGuid(JsonPath.CLASS<? extends JsonPath> path) {
+		return (guid) JsonUtils.wrap(path.get().get().evaluate(object));
+	}
+
 	public date z8_getDate(string name) {
 		return date.z8_parse(z8_getString(name));
+	}
+
+	public date z8_getDate(JsonPath.CLASS<? extends JsonPath> path) {
+		return (date) JsonUtils.wrap(path.get().get().evaluate(object));
 	}
 
 	public JsonArray.CLASS<? extends JsonArray> z8_getJsonArray(string name) {
@@ -127,11 +151,21 @@ public class JsonObject extends OBJECT {
 		return cls;
 	}
 
+	@SuppressWarnings("unchecked")
+	public JsonArray.CLASS<? extends JsonArray> z8_getJsonArray(JsonPath.CLASS<? extends JsonPath> path) {
+		return (JsonArray.CLASS<? extends JsonArray>) JsonUtils.wrap(path.get().get().evaluate(object));
+	}
+
 	public JsonObject.CLASS<? extends JsonObject> z8_getJsonObject(string name) {
 		org.zenframework.z8.server.json.parser.JsonObject object = this.object.getJsonObject(name);
 		JsonObject.CLASS<? extends JsonObject> cls = new JsonObject.CLASS<JsonObject>(null);
 		cls.get().set(object);
 		return cls;
+	}
+
+	@SuppressWarnings("unchecked")
+	public JsonObject.CLASS<? extends JsonObject> z8_getJsonObject(JsonPath.CLASS<? extends JsonPath> path) {
+		return (JsonObject.CLASS<? extends JsonObject>) JsonUtils.wrap(path.get().get().evaluate(object));
 	}
 
 	@SuppressWarnings("unchecked")

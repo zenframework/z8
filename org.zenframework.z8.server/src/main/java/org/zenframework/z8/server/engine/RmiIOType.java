@@ -13,6 +13,7 @@ public class RmiIOType {
 	public static final byte Short = 16;
 	public static final byte Float = 17;
 	public static final byte Double = 18;
+	public static final byte Bytes = 19;
 
 	public static final byte Primary = 30;
 	public static final byte Geometry = 31;

@@ -1,5 +1,6 @@
 Z8.define('Z8.form.field.Datetime', {
-	extend: 'Z8.form.field.Text',
+	extend: 'TextBox',
+	shortClassName: 'DatetimeBox',
 
 	autocomplete: 'off',
 

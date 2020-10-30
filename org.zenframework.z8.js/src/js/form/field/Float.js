@@ -1,5 +1,6 @@
 Z8.define('Z8.form.field.Float', {
-	extend: 'Z8.form.field.Number',
+	extend: 'NumberBox',
+	shortClassName: 'FloatBox',
 
 	rawToValue: function(value) {
 		return Parser.float(value);

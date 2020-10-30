@@ -36,13 +36,15 @@ Z8.define('Z8.application.User', {
 		if(application == null)
 			settings[applicationId] = application = {};
 
-		if(value != undefined) {
+		if(value !== undefined) {
 			var section = application[key];
 			if(section == null)
 				application[key] = section = {};
 			section[subkey] = value;
 		} else
 			application[key] = subkey;
+
+		return this;
 	},
 
 	getFilter: function(key) {
@@ -66,7 +68,27 @@ Z8.define('Z8.application.User', {
 		HttpRequest.send(params);
 	},
 
+	getLogin: function() {
+		return this.login;
+	},
+
 	isAdministrator: function() {
-		return this.administrator || this.roles.contains(Z8.application.User.Administrator);
+		if(this.administrator)
+			return true;
+
+		for(var role of this.roles) {
+			if(role.id == Z8.application.User.Administrator)
+				return true;
+		}
+
+		return false;
+	},
+
+	getFirstName: function() {
+		return this.firstName || '';
+	},
+
+	getLastName: function() {
+		return this.lastName || '';
 	}
 });

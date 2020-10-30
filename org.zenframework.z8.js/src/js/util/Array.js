@@ -48,6 +48,14 @@ Array.prototype.add = function(element) {
 	return this.insert(element, null);
 };
 
+Array.prototype.append = function(element) {
+	return this.insert(element, null);
+};
+
+Array.prototype.prepend = function(element) {
+	return this.insert(element, 0);
+};
+
 Array.prototype.remove = function() {
 	var removed = [];
 	for(var i = 0, length = arguments.length; i < length; i++) {

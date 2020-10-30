@@ -11,13 +11,7 @@ Z8.define('Z8.application.viewport.Viewport', {
 	initComponent: function() {
 		this.callParent();
 		this.setTitle(Application.name);
-	},
 
-	getCls: function() {
-		return Z8.Container.prototype.getCls.call(this).pushIf('viewport');
-	},
-
-	htmlMarkup: function() {
 		if (Application.startupForm == null) {
 			var items = [ this.createBreadcrumb() ];
 			this.forms = [ null ];
@@ -35,8 +29,10 @@ Z8.define('Z8.application.viewport.Viewport', {
 		loginForm.on('hide', this.onLoginFormHide, this);
 
 		this.items = [header, body, loginForm, popupMessages];
+	},
 
-		return this.callParent();
+	getCls: function() {
+		return Z8.Container.prototype.getCls.call(this).pushIf('viewport');
 	},
 
 	login: function(options) {

@@ -1,5 +1,5 @@
 Z8.define('Z8.button.Button', {
-	extend: 'Z8.Component',
+	extend: 'Component',
 	shortClassName: 'Button',
 
 	tabIndex: 0,
@@ -36,10 +36,6 @@ Z8.define('Z8.button.Button', {
 	statics: {
 		BusyIconCls: 'fa-circle-o-notch fa-spin',
 		TriggerIconCls: 'fa-caret-down'
-	},
-
-	initComponent: function() {
-		this.callParent();
 	},
 
 	htmlMarkup: function() {
@@ -95,7 +91,7 @@ Z8.define('Z8.button.Button', {
 	},
 
 	completeRender: function() {
-		this.callParent();
+		Component.prototype.completeRender.call(this);
 
 		this.button = this.selectNode('a[anchor=' + this.getId() + ']') || this.getDom();
 		this.icon = this.selectNode(this.iconTag + '[icon=' + this.getId() + ']');
@@ -123,18 +119,18 @@ Z8.define('Z8.button.Button', {
 
 		this.button = this.icon = this.textElement = this.setBusyTask = null;
 
-		this.callParent();
+		Component.prototype.onDestroy.call(this);
 	},
 
 	setEnabled: function(enabled) {
 		this.wasEnabled = enabled;
 
-		DOM.swapCls(this.button, !enabled, 'disabled');
+		Component.prototype.setEnabled.call(this, enabled);
+
+		DOM.setCls(this.button, this.getButtonCls());
 
 		if(this.trigger)
 			this.trigger.setEnabled(enabled);
-
-		this.callParent(enabled);
 	},
 
 	getButtonTypeCls: function() {
@@ -161,15 +157,16 @@ Z8.define('Z8.button.Button', {
 		if(this.toggle && this.toggled)
 			cls.pushIf('active');
 
+		if(Z8.isEmpty(this.text))
+			cls.pushIf('no-text');
+
 		return cls;
 	},
 
 	getIconCls: function() {
 		var cls = DOM.parseCls(this.busy ? Button.BusyIconCls : ((this.toggled ? this.activeIconCls : null) || this.iconCls)).pushIf('fa').pushIf('icon');
 		if(Z8.isEmpty(this.busy ? Button.BusyIconCls : this.iconCls))
-			cls.pushIf('no-icon');
-		if(Z8.isEmpty(this.text))
-			cls.pushIf('no-text');
+			cls.pushIf('empty');
 		return cls;
 	},
 
@@ -185,14 +182,14 @@ Z8.define('Z8.button.Button', {
 
 	setPrimary: function(primary) {
 		this.primary = primary;
-		DOM.swapCls(this.button, primary, 'btn-primary', 'btn-default');
+		DOM.setCls(this.button, this.getButtonCls());
 
 		if(this.trigger)
 			this.trigger.setPrimary(primary);
 	},
 
 	setTabIndex: function(tabIndex) {
-		tabIndex = this.callParent(tabIndex);
+		tabIndex = Component.prototype.setTabIndex.call(this, tabIndex);
 
 		DOM.setTabIndex(this.button, tabIndex);
 
@@ -208,7 +205,7 @@ Z8.define('Z8.button.Button', {
 		text = this.text = text || '';
 		DOM.setValue(this.textElement, String.htmlText(text));
 		DOM.setTitle(this.textElement, text);
-		DOM.swapCls(this.icon, Z8.isEmpty(text), 'no-text');
+		DOM.setCls(this.button, this.getButtonCls());
 	},
 
 	setTooltip: function(tooltip) {
@@ -229,7 +226,7 @@ Z8.define('Z8.button.Button', {
 		this.toggle = true;
 		this.toggled = toggled;
 
-		DOM.swapCls(this.button, toggled, 'active');
+		DOM.setCls(this.button, this.getButtonCls());
 		DOM.setCls(this.icon, this.getIconCls());
 
 		if(this.isRadio() && toggled)

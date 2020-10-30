@@ -45,7 +45,7 @@
 	z-index: auto;
 }
 
-.viewport>.header>.breadcrumbs>.btn>.fa.no-icon {
+.viewport>.header>.breadcrumbs>.btn>.fa.empty {
 	width: auto;
 }
 

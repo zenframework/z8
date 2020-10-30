@@ -1,5 +1,6 @@
 Z8.define('Z8.form.field.TextArea', {
-	extend: 'Z8.form.field.Text',
+	extend: 'TextBox',
+	shortClassName: 'TextArea',
 
 	scrollable: true,
 

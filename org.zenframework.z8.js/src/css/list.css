@@ -135,13 +135,13 @@
 	z-index: 1;
 }
 
-.list .item>.column .control-group>.box>.textarea.control {
+.list .item>.column>.control-group>.box>.textarea.control {
 	overflow-y: hidden;
 	white-space: normal;
 	min-height: 0;
 }
 
-.list .item>.column .control-group>.label {
+.list .item>.column>.control-group>.label {
 	display: none;
 }
 

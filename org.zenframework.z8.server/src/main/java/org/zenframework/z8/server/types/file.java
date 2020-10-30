@@ -268,7 +268,7 @@ public class file extends primary implements RmiSerializable, Serializable {
 	}
 
 	public String extension() {
-		return FilenameUtils.getExtension(path.isEmpty() ? name.get() : path.get());
+		return FilenameUtils.getExtension(path.isEmpty() ? name.get() : path.get()).toLowerCase();
 	}
 
 	public String folder() {
@@ -385,7 +385,9 @@ public class file extends primary implements RmiSerializable, Serializable {
 			extension = "";
 
 		String name = new date().format("Y-MM-dd HH-mm-ss") + extension;
-		return new file(new File(folder, name));
+		File temp = new File(folder, name);
+		temp.deleteOnExit();
+		return new file(temp);
 	}
 
 	public String read() {
@@ -617,10 +619,6 @@ public class file extends primary implements RmiSerializable, Serializable {
 		}
 	}
 
-	public void operatorAssign(file file) {
-		set(file);
-	}
-
 	public void operatorAssign(string path) {
 		File file = new File(path.get());
 
@@ -719,7 +717,7 @@ public class file extends primary implements RmiSerializable, Serializable {
 	}
 
 	public void z8_delete() {
-		toFile().delete();
+		FileUtils.deleteQuietly(toFile());
 	}
 
 	public void z8_zip(file fileOrDirectory) {

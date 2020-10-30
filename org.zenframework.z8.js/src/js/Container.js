@@ -1,5 +1,6 @@
 Z8.define('Z8.Container', {
-	extend: 'Z8.Component',
+	extend: 'Component',
+	shortClassName: 'Container',
 
 	isContainer: true,
 
@@ -110,6 +111,11 @@ Z8.define('Z8.Container', {
 	removeAll: function() {
 		Component.destroy(this.items);
 		this.items = [];
+	},
+
+	setItems: function(items) {
+		this.removeAll();
+		this.add(items);
 	},
 
 	focus: function() {

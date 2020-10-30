@@ -1,5 +1,5 @@
 Z8.define('Z8.button.GeometryTools', {
-	extend: 'Z8.button.Group',
+	extend: 'ButtonGroup',
 
 	compact: true,
 
@@ -19,7 +19,8 @@ Z8.define('Z8.button.GeometryTools', {
 
 	constructor: function(config) {
 		config = config || {};
-		this.callParent(config);
+
+		ButtonGroup.prototype.constructor.call(this, config);
 
 		this.createTools();
 
@@ -35,10 +36,6 @@ Z8.define('Z8.button.GeometryTools', {
 			this.active = tools[0];
 	},
 
-	completeRender: function() {
-		this.callParent();
-	},
-
 	createTools: function() {
 		var tools = this.tools = [];
 
@@ -47,7 +44,7 @@ Z8.define('Z8.button.GeometryTools', {
 
 		if(this.box !== false)
 			tools.add({ tool: 'box', config: { text: 'Прямоугольное выделение', icon: 'fa-select-box', isTool: true, isBox: true } });
-		
+
 		if(this.lasso !== false)
 			tools.add({ tool: 'lasso', config: { text: 'Лассо', icon: 'fa-line-lasso', isTool: true, isLasso: true } });
 
@@ -80,16 +77,16 @@ Z8.define('Z8.button.GeometryTools', {
 		if(this.yandex !== false)
 			tools.add({ tool: 'yandex', config: { text: 'Открыть в Яндекс', icon: 'fa-yandex', isTool: false, isYandex: true } });
 	},
-	
+
 	createMenuButton: function() {
 		var tools = this.tools;
 		var dividerPos = this.dividerPos;
-		
+
 		for(var i = 0, n = tools.length; i < n; i++) {
 			var tool = tools[i];
 			this[tool.tool] = tools[i] = new Z8.menu.Item(tool.config);
 		}
-		
+
 		if(dividerPos != 0 && dividerPos != tools.length)
 			tools.insert(new Z8.list.Divider(), dividerPos);
 
@@ -101,11 +98,11 @@ Z8.define('Z8.button.GeometryTools', {
 
 		this.add(menuButton);
 	},
-	
+
 	createToolButtons: function() {
 		var tools = this.tools;
 		var dividerPos = this.dividerPos;
-		
+
 		for(var i = 0, n = tools.length; i < n; i++) {
 			var tool = tools[i];
 			var config = tool.config;
@@ -116,7 +113,7 @@ Z8.define('Z8.button.GeometryTools', {
 			tool.on(tool.toggle ? 'toggle' : 'click', this.onToolButtonClick, this);
 			this.add(tool);
 		}
-		
+
 		if(tools.length > 0)
 			tools[0].setToggled(true, true);
 	},

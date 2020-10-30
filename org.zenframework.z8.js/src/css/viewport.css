@@ -1,28 +1,8 @@
-html,
-body,
 .viewport {
 	width: 100%;
 	height: 100%;
-	margin: 0;
 	overflow-x: hidden;
 	overflow-y: hidden;
-}
-
-body {
-	color: #222;
-	background-color: #fff !important;
-	font: 400 11px Roboto, 'Segoe UI', helvetica, arial;
-	cursor: default;
-
-	user-select: none;
-	-moz-user-select: none;
-	-webkit-user-select: none;
-	-ms-user-select: none;
-
-	text-size-adjust: 100%;
-	-moz-text-size-adjust: 100%;
-	-webkit-text-size-adjust: 100%;
-	-ms-text-size-adjust: 100%;
 }
 
 .viewport>.header {

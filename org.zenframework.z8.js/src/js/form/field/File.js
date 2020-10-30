@@ -1,5 +1,6 @@
 Z8.define('Z8.form.field.File', {
-	extend: 'Z8.form.field.Text',
+	extend: 'TextBox',
+	shortClassName: 'FileBox',
 
 	isFile: true,
 	editor: false,

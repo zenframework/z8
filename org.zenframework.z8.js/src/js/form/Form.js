@@ -58,9 +58,9 @@ Z8.define('Z8.form.Form', {
 			control = this.initFieldset(control);
 		} else if(control.isTabControl || control instanceof Z8.form.Tabs) {
 			control = this.initTabControl(control);
-		} else if(control instanceof Z8.form.field.Listbox) {
+		} else if(control instanceof ListBox) {
 			this.addField(control);
-		} else if(control.isListbox) {
+		} else if(control.isListBox || control.isListbox) {
 			control = Z8.form.Helper.createControl(control);
 			this.addField(control);
 		} else if(control instanceof Z8.form.field.Control) {
@@ -73,7 +73,7 @@ Z8.define('Z8.form.Form', {
 		} else if(control.isAction) {
 			control = Z8.form.Helper.createControl(control);
 			this.addField(control);
-		} else if(control.isCombobox) {
+		} else if(control.isComboBox || control.isCombobox) {
 			control = Z8.form.Helper.createControl(control);
 			this.addField(control);
 		} // else control is a button or some other config - add it as is
@@ -190,7 +190,7 @@ Z8.define('Z8.form.Form', {
 	},
 
 	initAutoSave: function(field) {
-		if(this.autoSave && !field.isListbox && !field.isFile && !field.isForm && !field.isTabControl && field.form == this) {
+		if(this.autoSave && !field.isListBox && !field.isFile && !field.isForm && !field.isTabControl && field.form == this) {
 			field.setAutoSave(true);
 			field.on('change', this.autoSaveCallback, this);
 		}
@@ -202,7 +202,7 @@ Z8.define('Z8.form.Form', {
 
 		var dependencies = field.field != null ? field.field.dependencies : field.dependencies;
 
-		if(dependencies == null || (!field.isCombobox && !field.isListbox && !field.isForm))
+		if(dependencies == null || (!field.isComboBox && !field.isListBox && !field.isForm))
 			return;
 
 		field.dependenciesInitialized = true;
@@ -332,7 +332,7 @@ Z8.define('Z8.form.Form', {
 		for(var name in modified) {
 			var control = this.getField(name);
 
-			if(control == null || !control.isCombobox)
+			if(control == null || !control.isComboBox)
 				continue;
 
 			var id = control.getId();

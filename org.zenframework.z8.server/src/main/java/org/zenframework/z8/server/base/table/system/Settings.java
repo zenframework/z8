@@ -105,32 +105,32 @@ public class Settings extends Table {
 		return settings.readRecord(property, Arrays.asList(value)) ? value.string().get() : null;
 	}
 
-	static public String string(guid property, String defaultValue) {
+	static public String get(guid property, String defaultValue) {
 		String value = get(property);
 		return value != null ? value : defaultValue;
 	}
 
-	static public string string(guid property, string defaultValue) {
+	static public string get(guid property, string defaultValue) {
 		String value = get(property);
 		return value != null ? new string(value) : defaultValue;
 	}
 
-	static public guid guid(guid property, guid defaultValue) {
+	static public guid get(guid property, guid defaultValue) {
 		String value = get(property);
 		return value != null ? new guid(value) : defaultValue;
 	}
 
-	static public date guid(guid property, date defaultValue) {
+	static public date get(guid property, date defaultValue) {
 		String value = get(property);
 		return value != null ? new date(value) : defaultValue;
 	}
 
-	static public integer integer(guid property, integer defaultValue) {
+	static public integer get(guid property, integer defaultValue) {
 		String value = get(property);
 		return value != null ? new integer(value) : defaultValue;
 	}
 
-	static public decimal decimal(guid property, decimal defaultValue) {
+	static public decimal get(guid property, decimal defaultValue) {
 		String value = get(property);
 		return value != null ? new decimal(value) : defaultValue;
 	}
@@ -147,5 +147,33 @@ public class Settings extends Table {
 
 	static public String version() {
 		return get(Version);
+	}
+
+	static public string z8_get(guid property) {
+		return new string(get(property));
+	}
+
+	static public string z8_get(guid property, string defaultValue) {
+		return get(property, defaultValue);
+	}
+
+	static public guid z8_get(guid property, guid defaultValue) {
+		return get(property, defaultValue);
+	}
+
+	static public date z8_get(guid property, date defaultValue) {
+		return get(property, defaultValue);
+	}
+
+	static public integer z8_get(guid property, integer defaultValue) {
+		return get(property, defaultValue);
+	}
+
+	static public decimal z8_get(guid property, decimal defaultValue) {
+		return get(property, defaultValue);
+	}
+
+	static public void z8_set(guid property, primary value) {
+		set(property, value);
 	}
 }

@@ -5,6 +5,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.net.URL;
 import java.net.URLDecoder;
 import java.rmi.RemoteException;
 import java.util.Arrays;
@@ -24,7 +25,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.io.IOUtils;
+import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.SessionIdManager;
@@ -33,12 +34,14 @@ import org.eclipse.jetty.server.handler.ContextHandler;
 import org.eclipse.jetty.server.session.HashSessionIdManager;
 import org.eclipse.jetty.server.session.HashSessionManager;
 import org.eclipse.jetty.server.session.SessionHandler;
+import org.eclipse.jetty.servlets.gzip.GzipHandler;
 import org.zenframework.z8.server.base.file.Folders;
 import org.zenframework.z8.server.config.ServerConfig;
 import org.zenframework.z8.server.engine.IWebServer;
 import org.zenframework.z8.server.engine.RmiServer;
 import org.zenframework.z8.server.logs.Trace;
 import org.zenframework.z8.server.types.guid;
+import org.zenframework.z8.server.utils.IOUtils;
 import org.zenframework.z8.web.servlet.Servlet;
 
 public class WebServer extends RmiServer implements IWebServer {
@@ -50,7 +53,7 @@ public class WebServer extends RmiServer implements IWebServer {
 	private ContextHandler context;
 	private HttpServlet requestServlet;
 	private WebResourceHandler resourceHandler;
-	private Map<String, String> initParameters;
+	private Map<String, String> servletParameters;
 	private File webapp;
 	private Properties mappings;
 
@@ -60,7 +63,8 @@ public class WebServer extends RmiServer implements IWebServer {
 
 	@Override
 	public void start() {
-		initParameters = ServerConfig.webServerServletParams();
+		servletParameters = ServerConfig.webServerServletParams();
+
 		webapp = ServerConfig.webServerWebapp();
 		mappings = getMappings(ServerConfig.webServerMappings());
 
@@ -71,7 +75,7 @@ public class WebServer extends RmiServer implements IWebServer {
 
 		requestServlet = new Servlet();
 		try {
-			requestServlet.init(getZ8ServletConfig(context.getServletContext(), initParameters));
+			requestServlet.init(getZ8ServletConfig(context.getServletContext(), servletParameters));
 		} catch (ServletException e) {
 			throw new RuntimeException("Z8 Servlet init failed", e);
 		}
@@ -90,8 +94,7 @@ public class WebServer extends RmiServer implements IWebServer {
 		SessionHandler sessions = new SessionHandler(new HashSessionManager());
 		context.setHandler(sessions);
 
-		// Put handler inside of SessionHandler
-		sessions.setHandler(new AbstractHandler() {
+		Handler z8Handler = new AbstractHandler() {
 
 			@Override
 			public void handle(String target, Request baseRequest, HttpServletRequest request,
@@ -118,7 +121,16 @@ public class WebServer extends RmiServer implements IWebServer {
 				baseRequest.setHandled(true);
 			}
 
-		});
+		};
+
+		GzipHandler gzipHandler = new GzipHandler();
+		gzipHandler.setHandler(z8Handler);
+		gzipHandler.addIncludedMimeTypes(ServerConfig.webServerGzipMimeTypes());
+		gzipHandler.addIncludedMethods(ServerConfig.webServerGzipMethods());
+		gzipHandler.addIncludedPaths(ServerConfig.webServerGzipPaths());
+
+		// Put handler inside of SessionHandler
+		sessions.setHandler(gzipHandler);
 
 		try {
 			server.start();
@@ -160,16 +172,21 @@ public class WebServer extends RmiServer implements IWebServer {
 	private static Properties getMappings(String path) {
 		Properties mappings = new Properties();
 		Reader reader = null;
+
 		try {
-			reader = new InputStreamReader(
-					WebServer.class.getClassLoader().getResourceAsStream("webserver/mappings.properties"));
-			mappings.load(reader);
+			Enumeration<URL> resources = WebServer.class.getClassLoader().getResources("webserver/mappings.properties");
+			while (resources.hasMoreElements()) {
+				try {
+					reader = new InputStreamReader(resources.nextElement().openStream());
+					mappings.load(reader);
+				} catch (IOException e1) {} finally {
+					IOUtils.closeQuietly(reader);
+				}
+			}
 		} catch (IOException e) {
 			Trace.logError("Couldn't load mappings from classpath webserver/mappings.properties" + path, e);
-		} finally {
-			IOUtils.closeQuietly(reader);
-			reader = null;
 		}
+
 		if (path != null) {
 			try {
 				reader = new FileReader(path);
@@ -180,6 +197,7 @@ public class WebServer extends RmiServer implements IWebServer {
 				IOUtils.closeQuietly(reader);
 			}
 		}
+
 		return mappings;
 	}
 

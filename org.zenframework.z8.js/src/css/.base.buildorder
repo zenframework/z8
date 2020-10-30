@@ -6,7 +6,6 @@ breadcrumbs.css
 commons.css
 calendar.css
 form.css
-checkbox.css
 image-document.css
 pdf-document.css
 video-document.css
@@ -14,7 +13,6 @@ geometry.css
 list.css
 listbox.css
 tabs.css
-toolbar.css
 filter.css
 window.css
 viewport.css

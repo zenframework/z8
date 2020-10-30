@@ -1,5 +1,6 @@
 Z8.define('Z8.form.field.Control', {
-	extend: 'Z8.Component',
+	extend: 'Component',
+	shortClassName: 'Control',
 
 	mixins: ['Z8.form.field.Field'],
 
@@ -11,7 +12,7 @@ Z8.define('Z8.form.field.Control', {
 	readOnlyLock: false,
 
 	initComponent: function() {
-		Z8.Component.prototype.initComponent.call(this);
+		Component.prototype.initComponent.call(this);
 
 		this.initField();
 		this.readOnlyLock = this.isReadOnly();
@@ -20,24 +21,21 @@ Z8.define('Z8.form.field.Control', {
 	},
 
 	subcomponents: function() {
-		return [this.labelTextControl, this.labelTools];
+		return [this.labelTools];
 	},
 
 	htmlMarkup: function() {
-		var box = [{ cls: 'box', cn: this.controlMarkup() }];
+		var box = [{ cls: 'box', name: this.getId(), cn: this.controlMarkup() }];
 
 		var label = this.label;
 
 		if(label) {
 			var align = label.align;
 			var icon = label.icon != null ? { tag: 'i', cls: this.getIconCls(label.icon).join(' ') } : null;
-			var labelText = label.text;
-			var isControl = labelText != null && typeof labelText == 'object';
-			var control = this.labelTextControl = isControl ? labelText : null;
-			var title = label.title || (isControl ? '' : labelText);
-			var text = isControl ? (control.htmlMarkup != null ? control.htmlMarkup() : control) : String.htmlText(labelText);
+			var title = label.title || label.text;
+			var text = String.htmlText(label.text);
 
-			var cn = [{ cls: 'text' + (control != null ? ' has-control' : ''), cn: icon != null ? [icon, text] : [text] }];
+			var cn = [{ cls: 'text', cn: icon != null ? [icon, text] : [text] }];
 
 			if(label.tools != null) {
 				var tools = this.labelTools = label.tools;
@@ -54,7 +52,9 @@ Z8.define('Z8.form.field.Control', {
 	},
 
 	completeRender: function() {
-		Z8.Component.prototype.completeRender.call(this);
+		Component.prototype.completeRender.call(this);
+
+		this.box = this.selectNode('.box[name=' + this.getId() + ']');
 
 		var label = this.label = this.selectNode('span[name=label]');
 		if(label != null) {
@@ -62,7 +62,7 @@ Z8.define('Z8.form.field.Control', {
 			this.labelIcon = DOM.selectNode(label, '.text>.icon');
 		}
 
-		DOM.on(label, 'mouseDown', this.onLabelMouseDown, this);
+		DOM.on(this, 'mouseDown', this.onMouseDown, this);
 
 		this.mixins.field.initEvents.call(this);
 	},
@@ -70,15 +70,15 @@ Z8.define('Z8.form.field.Control', {
 	onDestroy: function() {
 		this.mixins.field.clearEvents.call(this);
 
-		DOM.un(this.label, 'mousedown',this.onLabelMouseDown, this);
+		DOM.un(this, 'mousedown', this.onMouseDown, this);
 
 		this.label = this.labelText = this.labelIcon = null;
 
-		Z8.Component.prototype.onDestroy.call(this);
+		Component.prototype.onDestroy.call(this);
 	},
 
 	setEnabled: function(enabled) {
-		Z8.Component.prototype.setEnabled.call(this, enabled);
+		Component.prototype.setEnabled.call(this, enabled);
 
 		DOM.swapCls(this, !enabled, 'disabled');
 		DOM.swapCls(this.label, !enabled, 'disabled');
@@ -123,12 +123,7 @@ Z8.define('Z8.form.field.Control', {
 
 	setValue: function(value, displayValue) {
 		this.mixins.field.setValue.call(this, value, displayValue);
-		value = this.valueToRaw(value);
-		this.setRawValue(value);
-	},
-
-	isEqualValues: function(value1, value2) {
-		return String(value1) == String(value2);
+		this.setRawValue(this.valueToRaw(value));
 	},
 
 	valueToRaw: function(value) {
@@ -143,10 +138,6 @@ Z8.define('Z8.form.field.Control', {
 		return this.required;
 	},
 
-	isEmptyValue: function(value) {
-		return Z8.isEmpty(value);
-	},
-
 	setValid: function(valid) {
 		this.mixins.field.setValid.call(this, valid);
 		DOM.swapCls(this, !valid, 'invalid');
@@ -154,12 +145,13 @@ Z8.define('Z8.form.field.Control', {
 	},
 
 	validate: function() {
-		var value = this.getValue();
-		this.setValid(!this.isEmptyValue(value) || !this.isRequired());
+		var isEmpty = this.isEmpty();
+		DOM.swapCls(this, isEmpty, 'empty');
+		this.setValid(!isEmpty || !this.isRequired());
 	},
 
 	getCls: function() {
-		var cls = Z8.Component.prototype.getCls.call(this);
+		var cls = Component.prototype.getCls.call(this);
 
 		if(!this.isVisible())
 			cls.pushIf('display-none');
@@ -167,6 +159,8 @@ Z8.define('Z8.form.field.Control', {
 			cls.pushIf('disabled');
 		if(this.isReadOnly())
 			cls.pushIf('readonly');
+		if(this.isEmpty())
+			cls.pushIf('empty');
 		if(!this.isValid())
 			cls.pushIf('invalid');
 		if(this.isScrollable())
@@ -198,7 +192,7 @@ Z8.define('Z8.form.field.Control', {
 		if(label.tools != null)
 			cls.push('toolbar');
 		if(Z8.isEmpty(label.text))
-			cls.pushIf('empty');
+			cls.pushIf('no-text');
 
 		return cls;
 	},
@@ -212,10 +206,9 @@ Z8.define('Z8.form.field.Control', {
 		DOM.setValue(this.labelText, label);
 	},
 
-	onLabelMouseDown: function(event, target) {
-		if(target == DOM.get(this.label) || target == this.labelText) {
-			if(this.labelTextControl == null)
-				event.stopEvent();
+	onMouseDown: function(event, target) {
+		if(target == DOM.get(this) || target == this.box || DOM.isParentOf(this.label, target)) {
+			event.stopEvent();
 			this.focus();
 		}
 	}

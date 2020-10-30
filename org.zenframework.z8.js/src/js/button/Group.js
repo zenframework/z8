@@ -1,5 +1,6 @@
 Z8.define('Z8.button.Group', {
-	extend: 'Z8.Container',
+	extend: 'Container',
+	shortClassName: 'ButtonGroup',
 
 	vertical: false,
 	radio: false,
@@ -8,11 +9,11 @@ Z8.define('Z8.button.Group', {
 		config = config || {};
 		config.items = config.items || [];
 
-		this.callParent(config);
+		Container.prototype.constructor.call(this, config);
 	},
 
 	getCls: function() {
-		var cls = Z8.Container.prototype.getCls.call(this);
+		var cls = Container.prototype.getCls.call(this);
 
 		if(this.radio)
 			cls.pushIf('radio');
@@ -44,7 +45,7 @@ Z8.define('Z8.button.Group', {
 	},
 
 	setTabIndex: function(tabIndex) {
-		tabIndex = this.callParent(tabIndex);
+		tabIndex = Container.prototype.setTabIndex.call(this, tabIndex);
 
 		var items = this.items;
 
@@ -58,7 +59,7 @@ Z8.define('Z8.button.Group', {
 	focus: function() {
 		if(this.enabled) {
 			var toggled = this.getToggled();
-			return toggled != null && toggled.focus() ? true : this.callParent();
+			return toggled != null && toggled.focus() ? true : Container.prototype.focus.call(this);
 		}
 		return false;
 	}

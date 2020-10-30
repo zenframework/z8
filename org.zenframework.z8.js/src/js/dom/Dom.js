@@ -406,7 +406,7 @@ Z8.define('Z8.dom.Dom', {
 		},
 
 		parseCls: function(cls) {
-			return (String.isString(cls) ? cls.toLowerCase().split(' ') : cls) || [];
+			return String.isString(cls) ? cls.toLowerCase().split(' ') : (cls != null ? cls.slice(0) : []);
 		},
 
 		getCls: function(dom) {

@@ -41,8 +41,8 @@ Z8.define('Z8.data.HttpRequest', {
 			return location.origin + path + '/' + url;
 		},
 
-		send: function(params, callback, type) {
-			new HttpRequest().send(params, callback, type);
+		send: function(params, callback, type, info) {
+			new HttpRequest().send(params, callback, type, info);
 		},
 
 		upload: function(params, files, callback) {
@@ -62,10 +62,11 @@ Z8.define('Z8.data.HttpRequest', {
 		DOM.on(xhr, 'loadEnd', this.onLoadEnd, this);
 	},
 
-	send: function(data, callback, type) {
+	send: function(data, callback, type, info) {
 		this.data = data;
 		this.callback = callback;
 		this.type = type || '';
+		this.info = info;
 
 		var xhr = this.xhr;
 
@@ -82,7 +83,7 @@ Z8.define('Z8.data.HttpRequest', {
 
 		var contentType = xhr.getResponseHeader('content-type');
 		if(contentType == null || contentType.indexOf('application/json') == -1) {
-			Z8.callback(this.callback, { text: xhr.response, data: xhr.response }, xhr.status == HttpRequest.status.Success);
+			Z8.callback(this.callback, { text: xhr.response, data: xhr.response }, xhr.status == HttpRequest.status.Success, this.info);
 			return;
 		}
 
@@ -117,13 +118,13 @@ Z8.define('Z8.data.HttpRequest', {
 
 		if(response.success) {
 			if(response.retry == null) {
-				Z8.callback(this.callback, response, true);
+				Z8.callback(this.callback, response, true, this.info);
 				this.processResponse(response);
 			} else
-				HttpRequest.send({ retry: response.retry, session: response.session, server: response.server }, this.callback, this.type);
+				HttpRequest.send({ retry: response.retry, session: response.session, server: response.server }, this.callback, this.type, this.info);
 		} else if(!this.relogin(response.status)) {
 			response.info = response.info || {};
-			Z8.callback(this.callback, response, false);
+			Z8.callback(this.callback, response, false, this.info);
 			this.processResponse(response);
 		}
 	},
@@ -153,7 +154,7 @@ Z8.define('Z8.data.HttpRequest', {
 	},
 
 	onRelogin: function() {
-		HttpRequest.send(this.data, this.callback, this.type);
+		HttpRequest.send(this.data, this.callback, this.type, this.info);
 	},
 
 	encodeData: function(data) {
@@ -198,7 +199,7 @@ Z8.define('Z8.data.HttpRequest', {
 		var messages = [{ time: new Date(), type: 'error', text: exception.message }];
 		var response = { info: { messages: messages } };
 
-		Z8.callback(this.callback, response, false);
+		Z8.callback(this.callback, response, false, this.info);
 		this.processResponse(response);
 	}
 });

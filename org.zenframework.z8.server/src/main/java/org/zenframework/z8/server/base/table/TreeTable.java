@@ -17,6 +17,7 @@ import org.zenframework.z8.server.db.ConnectionManager;
 import org.zenframework.z8.server.db.sql.SqlToken;
 import org.zenframework.z8.server.db.sql.functions.string.Like;
 import org.zenframework.z8.server.engine.ApplicationServer;
+import org.zenframework.z8.server.engine.EventsLevel;
 import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.runtime.RCollection;
 import org.zenframework.z8.server.types.bool;
@@ -274,6 +275,7 @@ public class TreeTable extends Table implements Connection.Listener {
 
 		try {
 			saveState();
+			ApplicationServer.setEventsLevel(EventsLevel.SYSTEM);
 
 			Field pathField = this.path.get();
 
@@ -283,6 +285,7 @@ public class TreeTable extends Table implements Connection.Listener {
 			return pathField.string().get();
 		} finally {
 			restoreState();
+			ApplicationServer.restoreEventsLevel();
 		}
 	}
 

@@ -317,7 +317,7 @@ public class OBJECT extends RequestTarget implements IObject, RmiSerializable {
 	@Override
 	public void processRequest(IResponse response) throws Throwable {
 		if(Json.content.equals(getParameters().get(Json.action))) {
-			binary binary = getContent();
+			binary binary = processContentRequest();
 			response.setInputStream(binary != null ? binary.get() : null);
 		} else
 			super.processRequest(response);
@@ -329,10 +329,10 @@ public class OBJECT extends RequestTarget implements IObject, RmiSerializable {
 		writer.writeProperty(Json.ui, ui());
 	}
 
-	public binary getContent() {
+	public binary processContentRequest() {
 		RLinkedHashMap<string, string> parameters = (RLinkedHashMap<string, string>)getParameters();
 		RCollection<file> files = (RCollection<file>)getFiles();
-		return z8_getContent(parameters, files);
+		return z8_processContentRequest(parameters, files);
 	}
 	
 	public org.zenframework.z8.server.json.parser.JsonArray getData() {
@@ -396,7 +396,9 @@ public class OBJECT extends RequestTarget implements IObject, RmiSerializable {
 		return new string("");
 	}
 
-	public binary z8_getContent(RLinkedHashMap<string, string> parameters, RCollection<file> files) {
+	public void z8_write(org.zenframework.z8.server.base.json.JsonWriter.CLASS<? extends org.zenframework.z8.server.base.json.JsonWriter> writer) {}
+
+	public binary z8_processContentRequest(RLinkedHashMap<string, string> parameters, RCollection<file> files) {
 		return null;
 	}
 

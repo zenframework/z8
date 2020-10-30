@@ -4,6 +4,6 @@ public class TodayField extends DateField {
 	public int yearsPlus = 0;
 
 	public date getDefault() {
-		return date.today().addDay(daysPlus).addMonth(monthsPlus).addMonth(yearsPlus);
+		return date.today().addDay(daysPlus).addMonth(monthsPlus).addYear(yearsPlus);
 	}
 }

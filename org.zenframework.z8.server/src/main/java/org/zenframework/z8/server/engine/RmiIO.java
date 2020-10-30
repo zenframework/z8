@@ -242,6 +242,9 @@ public class RmiIO extends ObjectIO {
 		} else if(object instanceof String) {
 			writeByte(out, RmiIOType.String);
 			writeString(out, (String)object);
+		} else if(object instanceof byte[]) {
+			writeByte(out, RmiIOType.Bytes);
+			writeBytes(out, (byte[])object);
 
 			// primary
 		} else if(object instanceof primary) {
@@ -516,6 +519,8 @@ public class RmiIO extends ObjectIO {
 			return readDouble(in);
 		else if(id == RmiIOType.String)
 			return readString(in);
+		else if(id == RmiIOType.Bytes)
+			return readBytes(in);
 
 		// primary
 		else if(id == RmiIOType.Primary)

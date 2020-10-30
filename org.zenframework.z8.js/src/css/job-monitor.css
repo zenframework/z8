@@ -1,18 +1,18 @@
-.job-monitor .messages>.control {
+.job-monitor .control-group.messages>.box>.control {
 	padding: .71428571em;
 }
 
-.job-monitor .messages>.control>.header {
+.job-monitor .control-group.messages>.box>.control>.header {
 	margin-top: .71428571em;
 	margin-bottom: 0;
 	font-weight: bold;
 }
 
-.job-monitor .messages>.control>.header>i {
+.job-monitor .control-group.messages>.box>.control>.header>i {
 	padding-right: .71428571em;
 }
 
-.job-monitor .messages>.control>.text {
+.job-monitor .control-group.messages>.box>.control>.text {
 	margin-top: .35714286em;
 	margin-bottom: .35714286em;
 	padding-left: 1.78571429em;

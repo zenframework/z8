@@ -1,5 +1,6 @@
 Z8.define('Z8.list.List', {
-	extend: 'Z8.Component',
+	extend: 'Component',
+	shortClassName: 'List',
 
 	checks: true,
 	autoFit: true,
@@ -10,8 +11,8 @@ Z8.define('Z8.list.List', {
 	items: null,
 	totals: false,
 
-	headerType: null, // default 'Z8.list.Header',
-	itemType: null,   // default 'Z8.list.Item',
+	headerType: null, // default ListHeader,
+	itemType: null,   // default ListItem,
 
 	store: null,
 	name: 'id',
@@ -40,11 +41,11 @@ Z8.define('Z8.list.List', {
 	tabIndex: 0,
 
 	constructor: function(config) {
-		Z8.Component.prototype.constructor.call(this, config);
+		Component.prototype.constructor.call(this, config);
 	},
 
 	initComponent: function() {
-		Z8.Component.prototype.initComponent.call(this);
+		Component.prototype.initComponent.call(this);
 
 		if(this.startCollapsed == null)
 			this.startCollapsed = Application.listbox.collapsed;
@@ -271,7 +272,7 @@ Z8.define('Z8.list.List', {
 	},
 
 	getCls: function() {
-		var cls = Z8.Component.prototype.getCls.call(this);
+		var cls = Component.prototype.getCls.call(this);
 
 		if(this.headers.length != 0)
 			cls.pushIf('columns');
@@ -310,7 +311,7 @@ Z8.define('Z8.list.List', {
 	},
 
 	completeRender: function() {
-		Z8.Component.prototype.completeRender.call(this);
+		Component.prototype.completeRender.call(this);
 
 		if(this.itemsTable != null)
 			return;
@@ -346,7 +347,7 @@ Z8.define('Z8.list.List', {
 	},
 
 	afterRender: function() {
-		Z8.Component.prototype.afterRender.call(this);
+		Component.prototype.afterRender.call(this);
 
 		if(!this.manualItemsRendering) {
 			var item = this.getCurrentItem() || (this.autoSelectFirst ? 0 : null);
@@ -551,7 +552,7 @@ Z8.define('Z8.list.List', {
 
 		Component.destroy(this.editors);
 
-		Z8.Component.prototype.onDestroy.call(this);
+		Component.prototype.onDestroy.call(this);
 
 		this.itemsScroller = this.headersScroller = this.totalsScroller = null;
 		this.headersTable = this.headerCols = this.filter = this.totalsTable = null;
@@ -586,7 +587,7 @@ Z8.define('Z8.list.List', {
 	},
 
 	createHeader: function(field, cls) {
-		var type = this.headerType || (field.type != Type.Boolean || field.columnHeader ? 'Z8.list.Header' : 'Z8.list.HeaderIcon');
+		var type = this.headerType || (field.type != Type.Boolean || field.columnHeader ? 'ListHeader' : 'Z8.list.HeaderIcon');
 		return Z8.create(type, { list: this, field: field, cls: cls });
 	},
 
@@ -726,7 +727,7 @@ Z8.define('Z8.list.List', {
 		var config = { list: this, record: record, name: this.name || 'id', icon: this.icons ? '' : null, collapsed: this.startCollapsed };
 		if (this.itemConfig != null)
 			config = Z8.apply(config, this.itemConfig);
-		return this.itemType != null ? Z8.create(this.itemType, config) : new  Z8.list.Item(config);
+		return this.itemType != null ? Z8.create(this.itemType, config) : new  ListItem(config);
 	},
 
 	createItems: function(records) {
@@ -760,28 +761,17 @@ Z8.define('Z8.list.List', {
 		return [fields];
 	},
 
-	setFields: function(fields) {
-/*
-		this.fields = this.createFields(fields);
-		this.setRecords();
-*/
-	},
-
 	setRecords: function(records) {
 		var items = this.createItems(records || this.store.getRecords());
 
 		this.setItems(items);
-
-		if(this.isVisible())
-			this.renderItems();
+		this.renderItems();
 	},
 
 	addRecords: function(records, index) {
 		var items = this.createItems(records || this.store.geRecords());
 		this.addItems(items, index, true);
-
-		if(this.isVisible())
-			this.renderItems();
+		this.renderItems();
 	},
 
 	removeRecords: function(records) {
@@ -827,7 +817,7 @@ Z8.define('Z8.list.List', {
 	getIndex: function(value) {
 		var ordinals = this.getOrdinals();
 
-		if(value instanceof Z8.list.Item)
+		if(value instanceof ListItem)
 			value = value.getValue();
 		else if(value != null && value.isModel)
 			value = value.id;
@@ -1036,7 +1026,7 @@ Z8.define('Z8.list.List', {
 	},
 
 	setTabIndex: function(tabIndex) {
-		tabIndex = Z8.Component.prototype.setTabIndex.call(this, tabIndex);
+		tabIndex = Component.prototype.setTabIndex.call(this, tabIndex);
 
 		var item = this.getCurrentItem();
 
@@ -1077,7 +1067,7 @@ Z8.define('Z8.list.List', {
 
 		index = index == null ? this.getCurrentItem() : index;
 
-		if(index instanceof Z8.list.Item)
+		if(index instanceof ListItem)
 			index = this.getIndex(index);
 
 		if(String.isString(index)) {
@@ -1207,7 +1197,7 @@ Z8.define('Z8.list.List', {
 	onKeyDown: function(event, target) {
 		var key = event.getKey();
 
-		if(this.isEditing() || this.isFiltering() && key != Event.DOWN && key != Event.ESC)
+		if(!this.getFocused() || this.isFiltering() && key != Event.DOWN && key != Event.ESC)
 			return;
 
 		var item = this.getCurrentItem();
@@ -1258,6 +1248,9 @@ Z8.define('Z8.list.List', {
 	},
 
 	onFocusIn: function(event, target) {
+		if(DOM.isInput(target))
+			return;
+
 		DOM.addCls(this, 'focus');
 		this.setFocused(true);
 	},
@@ -1302,7 +1295,7 @@ Z8.define('Z8.list.List', {
 		if(this.isActive() == active)
 			return;
 
-		Z8.Component.prototype.setActive.call(this, active);
+		Component.prototype.setActive.call(this, active);
 
 		this.adjustAutoFit();
 	},
@@ -1498,7 +1491,7 @@ Z8.define('Z8.list.List', {
 
 	onItemClick: function(item, index) {
 		this.setSelection(item);
-		this.processCheckboxEdit(item, index);
+		this.processCheckBoxEdit(item, index);
 		this.fireEvent('itemClick', this, item, index);
 	},
 
@@ -1517,7 +1510,7 @@ Z8.define('Z8.list.List', {
 		this.fireEvent('itemDblClick', this, item, index);
 	},
 
-	processCheckboxEdit: function(item, index) {
+	processCheckBoxEdit: function(item, index) {
 		if(index == -1 || !this.editable)
 			return;
 
@@ -1663,7 +1656,7 @@ Z8.define('Z8.list.List', {
 		for(var i = index + 1, length = items.length; i < length; i++) {
 			item = items[i];
 			if(level < item.getLevel())
-				item.hide(collapsed);
+				item.setHidden(collapsed);
 			else
 				break;
 		}
@@ -1713,7 +1706,7 @@ Z8.define('Z8.list.List', {
 		return this.getDefaultEditor(editor) != null;
 	},
 
-	startEdit: function(item, editor) {
+	startEdit: function(item, editor, delay) {
 		if(!this.canStartEdit(item, editor))
 			return false;
 
@@ -1739,7 +1732,7 @@ Z8.define('Z8.list.List', {
 			this.currentEditor = editor;
 		};
 
-		this.startEditTask.delay(300, startEditCallback, this, item, editor);
+		delay ? this.startEditTask.delay(delay, startEditCallback, this, item, editor) : startEditCallback.call(this, item, editor);
 
 		if(item != this.getCurrentItem())
 			this.selectItem(item);

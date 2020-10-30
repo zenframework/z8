@@ -4,28 +4,28 @@ Z8.define('Z8.filter.Line', {
 	cls: 'line',
 
 	htmlMarkup: function() {
-		var checkbox = this.checkbox = new Z8.form.field.Checkbox();
-		checkbox.on('change', this.onChecked, this);
+		var checkBox = this.checkBox = new CheckBox();
+		checkBox.on('change', this.onChecked, this);
 
 		var expression = this.expression || {};
 
 		var store = this.getFields();
 		var record = store.getById(expression.property);
 		var fields = [{ name: 'name', header: 'Поле', icon: 'fa-tag', sortable: false, width: 200 }, { name: 'type', header: 'Тип', icon: 'fa-code', sortable: false, width: 100 }, { name: 'description', header: 'Описание', icon: 'fa-file-text-o', sortable: false, width: 400 }];
-		var property = this.property = new Z8.form.field.Combobox({ store: store, value: expression.property, emptyValue: '', fields: fields, required: true, filters: false, cls: 'property', placeholder: 'Поле', icons: true });
+		var property = this.property = new ComboBox({ store: store, value: expression.property, emptyValue: '', fields: fields, required: true, filters: false, cls: 'property', placeholder: 'Поле', icons: true });
 		property.on('change', this.propertyChanged, this);
 
 		var type = record != null ? record.get('type') : null;
 		store = type != null ? Z8.filter.Operator.getOperators(type) : null;
 		record = store != null ? store.getById(expression.operator) : null;
 
-		var operator = this.operator = new Z8.form.field.Combobox({ store: store, value: expression.operator, emptyValue: '', cls: 'operator', required: true, filters: false, placeholder: 'Операция' });
+		var operator = this.operator = new ComboBox({ store: store, value: expression.operator, emptyValue: '', cls: 'operator', required: true, filters: false, placeholder: 'Операция' });
 		operator.on('change', this.operatorChanged, this);
 
 		type = record != null ? record.get('type') : null;
 		var value = this.value = this.getValueEditor(type, expression.value);
 
-		this.items = [checkbox, property, operator, value];
+		this.items = [checkBox, property, operator, value];
 		return this.callParent();
 	},
 
@@ -34,15 +34,15 @@ Z8.define('Z8.filter.Line', {
 	},
 
 	isSelected: function() {
-		return this.checkbox.getValue();
+		return this.checkBox.getValue();
 	},
 
-	onChecked: function(checkbox, newValue, oldValue) {
+	onChecked: function(checkBox, newValue, oldValue) {
 		this.toggle(newValue);
 	},
 
 	toggle: function(toggle) {
-		this.checkbox.initValue(toggle);
+		this.checkBox.initValue(toggle);
 		this.callParent(toggle);
 	},
 
@@ -78,8 +78,8 @@ Z8.define('Z8.filter.Line', {
 		}
 	},
 
-	propertyChanged: function(combobox, newValue, oldValue) {
-		var record = combobox.store.getById(newValue);
+	propertyChanged: function(comboBox, newValue, oldValue) {
+		var record = comboBox.store.getById(newValue);
 		var type = record != null ? record.get('type') : null;
 		var store = type != null ? Z8.filter.Operator.getOperators(type) : null;
 		this.operator.setStore(store);
@@ -87,8 +87,8 @@ Z8.define('Z8.filter.Line', {
 		this.onChildChange(this);
 	},
 
-	operatorChanged: function(combobox, newValue, oldValue) {
-		var store = combobox.store;
+	operatorChanged: function(comboBox, newValue, oldValue) {
+		var store = comboBox.store;
 		var record = store != null? store.getById(newValue) : null;
 		var type = record != null ? record.get('type') : null;
 		var editor = this.getValueEditor(type);
@@ -101,7 +101,7 @@ Z8.define('Z8.filter.Line', {
 		this.onChildChange(this);
 	},
 
-	valueChanged: function(combobox, newValue, oldValue) {
+	valueChanged: function(comboBox, newValue, oldValue) {
 		this.onChildChange(this);
 	},
 

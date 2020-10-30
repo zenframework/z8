@@ -33,6 +33,8 @@ public class ServerConfig extends Properties {
 
 	static final private String InstanceId = "z8.instance.id";
 
+	static final private String Multitenancy = "z8.instance.multitenancy";
+
 	static final private String ApplicationServerHost = "application.server.host";
 	static final private String ApplicationServerPort = "application.server.port";
 
@@ -52,10 +54,14 @@ public class ServerConfig extends Properties {
 	static final private String WebServerUrlPatterns = "web.server.urlPatterns";
 
 	static final private String WebServerServletConfigPrefix = "web.server.servlet.";
-	
+
 	static final private String WebServerUploadMax = "web.server.upload.max";
 	static final private String WebClientDownloadMax = "web.client.download.max";
 	static final private String WebClientHashPassword = "web.client.hashPassword";
+
+	static final private String WebServerGzipPaths = "web.server.gzip.paths";
+	static final private String WebServerGzipMethods = "web.server.gzip.methods";
+	static final private String WebServerGzipMimeTypes = "web.server.gzip.mimeTypes";
 
 	static final private String SchedulerEnabled = "scheduler.enabled";
 	static final private String MaintenenceJobCron = "maintenance.job.cron";
@@ -90,6 +96,7 @@ public class ServerConfig extends Properties {
 	static private File workingPath;
 
 	static private String instanceId;
+	static private boolean multitenancy;
 
 	static private String applicationServerHost;
 	static private int applicationServerPort;
@@ -114,6 +121,10 @@ public class ServerConfig extends Properties {
 	static private int webServerUploadMax;
 	static private int webClientDownloadMax;
 	static private boolean webClientHashPassword;
+
+	static private String[] webServerGzipPaths;
+	static private String[] webServerGzipMethods;
+	static private String[] webServerGzipMimeTypes;
 
 	static private boolean schedulerEnabled;
 
@@ -168,10 +179,8 @@ public class ServerConfig extends Properties {
 			throw new RuntimeException(e);
 */
 /* >>>>>>>>>>>>>>>>> to remove */
-			if(configFilePath == null)
-				configFile = new File("project.xml");
 			try {
-				this.loadFromXML(new FileInputStream(configFile));
+				this.loadFromXML(new FileInputStream(new File(workingPath, "project.xml")));
 			} catch(Throwable e1) {
 				throw new RuntimeException(e);
 			}
@@ -179,18 +188,19 @@ public class ServerConfig extends Properties {
 		}
 
 		instanceId = getProperty(InstanceId, DefaultInstanceId);
+		multitenancy = getProperty(Multitenancy, false);
 
 		applicationServerHost = getHost(ApplicationServerHost, Rmi.localhost);
 		applicationServerPort = getProperty(ApplicationServerPort, 15000);
 
 		authorityCenterHost = getHost(AuthorityCenterHost, Rmi.localhost);
 		authorityCenterPort = getProperty(AuthorityCenterPort, 10000);
-		authorityCenterCache = getProperty(AuthorityCenterCache, true);
+		authorityCenterCache = getProperty(AuthorityCenterCache, false);
 		authorityCenterSessionTimeout = getProperty(AuthorityCenterSessionTimeout, 24 * 60);
 
 		interconnectionCenterHost = getHost(InterconnectionCenterHost, Rmi.localhost);
 		interconnectionCenterPort = getProperty(InterconnectionCenterPort, 20000);
-		interconnectionCenterCache = getProperty(InterconnectionCenterCache, true);
+		interconnectionCenterCache = getProperty(InterconnectionCenterCache, false);
 
 		webServerPort = getProperty(WebServerPort, 25000);
 		webServerHttpPort = getProperty(WebServerHttpPort, 9080);
@@ -202,14 +212,19 @@ public class ServerConfig extends Properties {
 		webServerMappings = getProperty(WebServerMappings);
 		webServerUrlPatterns = getProperty(WebServerUrlPatterns);
 
-		webServerServletParams = new HashMap<String, String>();
-		for (String name : stringPropertyNames())
-			if (name.startsWith(WebServerServletConfigPrefix))
-				webServerServletParams.put(name.substring(WebServerServletConfigPrefix.length()), getProperty(name));
+		webServerServletParams = filterParameters(WebServerServletConfigPrefix);
 
 		webServerUploadMax = getProperty(WebServerUploadMax, 5);
 		webClientDownloadMax = getProperty(WebClientDownloadMax, 1);
 		webClientHashPassword = getProperty(WebClientHashPassword, true);
+
+		webServerGzipPaths = getProperty(WebServerGzipPaths, new String[] { "/*" });
+		webServerGzipMethods = getProperty(WebServerGzipMethods, new String[] { "GET", "POST" });
+		webServerGzipMimeTypes = getProperty(WebServerGzipMimeTypes, new String[] {
+				"text/html", "text/plain", "text/xml", "text/css", "text/javascript", "text/json",
+				"application/javascript", "application/json", "application/octet-stream",
+				"application/x-javascript", "application/xml", "application/xml+xhtml", "image/svg+xml"
+		});
 
 		traceSql = getProperty(TraceSql, false);
 		traceSqlConnections = getProperty(TraceSqlConnections, false);
@@ -290,8 +305,8 @@ public class ServerConfig extends Properties {
 
 		String[] result = new String[values.length];
 
-		for(int i = 0; i < values.length; i++)
-			result[i] = values[i].trim().toLowerCase();
+		for (int i = 0; i < values.length; i++)
+			result[i] = values[i].trim();
 
 		return result;
 	}
@@ -321,6 +336,24 @@ public class ServerConfig extends Properties {
 		return localhost.equals(host) ? Rmi.localhost : host;
 	}
 
+	private Map<String, String> filterParameters(String prefix) {
+		Map<String, String> filtered = new HashMap<String, String>();
+		for (String name : stringPropertyNames())
+			if (name.startsWith(prefix))
+				filtered.put(name.substring(prefix.length()), getProperty(name));
+		return filtered;
+	}
+
+	static public Properties getEffectiveProperties() {
+		Properties effective = new Properties(instance);
+		for (Object keyObj : System.getProperties().keySet()) {
+			String key = (String) keyObj;
+			if (key.startsWith(Z8SystemPrefix))
+				effective.setProperty(key, System.getProperty(key));
+		}
+		return effective;
+	}
+
 	static public String get(String key) {
 		return instance.getProperty(key);
 	}
@@ -339,6 +372,10 @@ public class ServerConfig extends Properties {
 
 	static public String instanceId() {
 		return instanceId;
+	}
+
+	static public boolean isMultitenant() {
+		return multitenancy;
 	}
 
 	static public File workingPath() {
@@ -419,6 +456,18 @@ public class ServerConfig extends Properties {
 
 	static public int webClientDownloadMax() {
 		return webClientDownloadMax;
+	}
+
+	static public String[] webServerGzipPaths() {
+		return webServerGzipPaths;
+	}
+
+	static public String[] webServerGzipMethods() {
+		return webServerGzipMethods;
+	}
+
+	static public String[] webServerGzipMimeTypes() {
+		return webServerGzipMimeTypes;
 	}
 
 	static public boolean isSchedulerEnabled() {
@@ -558,4 +607,5 @@ public class ServerConfig extends Properties {
 			webServer = Rmi.get(IWebServer.class, Rmi.localhost, webServerPort());
 		return webServer;
 	}
+
 }

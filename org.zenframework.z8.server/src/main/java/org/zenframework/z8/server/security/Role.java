@@ -28,31 +28,38 @@ public class Role implements IRole {
 	}
 
 	private guid id = null;
+	private String name = null;
 	private IAccess access = null;
 
 	static public Role administrator() {
-		return new Role(Administrator, Access.administrator());
+		return new Role(Administrator, displayNames.Administrator, Access.administrator());
 	}
 
 	static public Role user() {
-		return new Role(User, Access.user());
+		return new Role(User, displayNames.User, Access.user());
 	}
 
 	static public Role guest() {
-		return new Role(Guest, Access.guest());
+		return new Role(Guest, displayNames.Guest, Access.guest());
 	}
 
 	public Role() {
 	}
 
-	public Role(guid id, IAccess access) {
+	public Role(guid id, String name, IAccess access) {
 		this.id = id;
+		this.name = name;
 		this.access = access;
 	}
 
 	@Override
 	public guid id() {
 		return id;
+	}
+
+	@Override
+	public String name() {
+		return name;
 	}
 
 	@Override

@@ -5,7 +5,7 @@ Z8.define('Z8.form.field.VideoDocument', {
 	tabIndex: 1,
 
 	getCls: function() {
-		return Z8.form.field.Document.prototype.getCls.call(this).pushIf('video-document');
+		return Z8.form.field.Document.prototype.getCls.call(this).pushIf('video');
 	},
 
 	controlMarkup: function() {

@@ -1,12 +1,15 @@
 Z8.define('Z8.list.Item', {
-	extend: 'Z8.Component',
+	extend: 'Component',
+	shortClassName: 'ListItem',
 
 	constructor: function(config) {
 		config = config || {};
 		config.collapsed = config.collapsed !== false;
-		config.hidden = 0;
-		config.follow = true;
-		this.callParent(config);
+		Component.prototype.constructor.call(this, config);
+
+		this.hidden = 0;
+		this.valid = true;
+		this.follow = true;
 	},
 
 	getRecord: function() {
@@ -17,8 +20,12 @@ Z8.define('Z8.list.Item', {
 		return this.list;
 	},
 
+	getIndex: function() {
+		return this.list.getIndex(this);
+	},
+
 	initComponent: function() {
-		this.callParent();
+		Component.prototype.initComponent.call(this);
 
 		var record = this.record; 
 
@@ -27,7 +34,7 @@ Z8.define('Z8.list.Item', {
 			this.children = record.get('hasChildren');
 
 			if(this.isTree())
-				this.list.on('contentChange', this.updateCollapsedState, this);
+				this.getList().on('contentChange', this.updateCollapsedState, this);
 
 			if(record.on != null)
 				record.on('change', this.onRecordChange, this);
@@ -57,7 +64,7 @@ Z8.define('Z8.list.Item', {
 
 		DOM.setCls(this, this.getCls());
 
-		if(this.list.locks)
+		if(this.getList().locks)
 			DOM.swapCls(this.lockIcon, this.isReadOnly(), 'fa-lock', '');
 
 		var icon = record.getIconProperty();
@@ -67,10 +74,10 @@ Z8.define('Z8.list.Item', {
 
 	columnsMarkup: function() {
 		var columns = [], icons = [];
-		var list = this.list;
+		var list = this.getList();
 
 		if(list.checks) {
-			var check = { tag: 'i', cls: this.getCheckboxCls(this.checked).join(' ') };
+			var check = { tag: 'i', cls: this.getCheckBoxCls(this.checked).join(' ') };
 			var text = { cls: 'text', cn: [check] };
 			var cell = { cls: 'cell', cn: [text] };
 			columns.push({ tag: 'td', cls: 'check column', cn: [cell] });
@@ -134,8 +141,8 @@ Z8.define('Z8.list.Item', {
 		return field.source != null && this.follow ? ' follow' : '';
 	},
 
-	getCheckboxCls: function(value) {
-		return DOM.parseCls(value ? Checkbox.OnIconCls : Checkbox.OffIconCls).pushIf(value ? 'on' : 'off').pushIf('icon');
+	getCheckBoxCls: function(value) {
+		return DOM.parseCls(value ? CheckBox.OnIconCls : CheckBox.OffIconCls).pushIf(value ? 'on' : 'off').pushIf('icon');
 	},
 
 	textMarkup: function(text, cls, field) {
@@ -167,7 +174,7 @@ Z8.define('Z8.list.Item', {
 		else if(type == Type.Float)
 			value = Format.float(value, format);
 		else if(type == Type.Boolean)
-			return { tag: 'i', cls: this.getCheckboxCls(value).join(' ') };
+			return { tag: 'i', cls: this.getCheckBoxCls(value).join(' ') };
 		else if(type == Type.File)
 			value = value != null && Array.isArray(value) && value.length > 0 ? value[0].name : null;
 		else if(type == Type.Text)
@@ -182,16 +189,21 @@ Z8.define('Z8.list.Item', {
 	},
 
 	getCls: function() {
-		var cls = DOM.parseCls(this.cls).pushIf('item');
+		var cls = Component.prototype.getCls.call(this);
+
+		cls.pushIf('item');
 
 		if(!this.enabled)
-			cls.push(['disabled']);
+			cls.pushIf('disabled');
 
 		if(this.active)
 			cls.pushIf('active');
 
 		if(this.isHidden())
 			cls.pushIf('display-none');
+
+		if(!this.valid)
+			cls.push('invalid');
 
 		if(this.isTree()) {
 			cls.pushIf('level-' + this.getLevel());
@@ -239,7 +251,16 @@ Z8.define('Z8.list.Item', {
 
 		this.collapser = this.iconElement = this.checkIcon = this.checkElement = this.lockIcon = this.cells = null;
 
-		this.callParent();
+		Component.prototype.onDestroy.call(this);
+	},
+
+	getValid: function(valid) {
+		return this.valid;
+	},
+
+	setValid: function(valid) {
+		this.valid = valid;
+		DOM.swapCls(this, !valid, 'invalid');
 	},
 
 	setActive: function(active) {
@@ -250,7 +271,7 @@ Z8.define('Z8.list.Item', {
 	toggleCheck: function() {
 		var checked = !this.checked;
 		this.setChecked(checked);
-		this.list.onItemCheck(this, checked);
+		this.getList().onItemCheck(this, checked);
 	},
 
 	isChecked: function() {
@@ -259,7 +280,7 @@ Z8.define('Z8.list.Item', {
 
 	setChecked: function(checked) {
 		this.checked = checked;
-		DOM.setCls(this.checkIcon, this.getCheckboxCls(checked));
+		DOM.setCls(this.checkIcon, this.getCheckBoxCls(checked));
 	},
 
 	getIcon: function() {
@@ -287,21 +308,21 @@ Z8.define('Z8.list.Item', {
 
 	setEnabled: function(enabled) {
 		DOM.swapCls(this, !enabled, 'disabled');
-		this.callParent(enabled);
+		Component.prototype.setEnabled.call(this, enabled);
 	},
 
 	getFields: function() {
-		return this.list.getFields();
+		return this.getList().getFields();
 	},
 
 	getFieldByIndex: function(index) {
-		return this.list.getFields()[index];
+		return this.getList().getFields()[index];
 	},
 
 	getField: function(name) {
 		if(name != null && (name.isField || typeof name == 'Object'))
 			return name;
-		return String.isString(name) ? this.list.getField(name) || this.record.getField(name) : this.getFieldByIndex(name);
+		return String.isString(name) ? this.getList().getField(name) || this.record.getField(name) : this.getFieldByIndex(name);
 	},
 
 	getValue: function() {
@@ -351,11 +372,11 @@ Z8.define('Z8.list.Item', {
 		return this.level;
 	},
 
-	hide: function(hide) {
+	setHidden: function(hide) {
 		if(this.hidden == 0 && hide)
-			DOM.addCls(this, 'display-none');
+			Component.prototype.hide.call(this);
 		else if(this.hidden == 1 && !hide)
-			DOM.removeCls(this, 'display-none');
+			Component.prototype.show.call(this);
 
 		this.hidden = Math.max(this.hidden + (hide ? 1 : -1), 0);
 	},
@@ -369,7 +390,7 @@ Z8.define('Z8.list.Item', {
 		if(this.collapsed != collapsed) {
 			this.collapsed = collapsed;
 			DOM.rotate(this.collapserIcon, this.rotation == 90 ? (collapsed ? 0 : 90) : (collapsed ? -90 : 0));
-			this.list.onItemCollapse(this, collapsed);
+			this.getList().onItemCollapse(this, collapsed);
 		}
 	},
 
@@ -396,12 +417,13 @@ Z8.define('Z8.list.Item', {
 	},
 
 	ensureVisible: function() {
-		if(this.list != null)
-			this.list.ensureVisible(this);
+		var list = this.getList()
+		if(list != null)
+			list.ensureVisible(this);
 	},
 
 	isItemClick: function(target) {
-		return target != this.collapserIcon && target != this.collapser && target != this.iconElement && (!this.list.checks || !DOM.isParentOf(this.checkElement, target));
+		return target != this.collapserIcon && target != this.collapser && target != this.iconElement && (!this.getList().checks || !DOM.isParentOf(this.checkElement, target));
 	},
 
 	onMouseDown: function(event, target) {
@@ -422,7 +444,8 @@ Z8.define('Z8.list.Item', {
 			return;
 		}
 
-		if(this.list.getFocused() && !this.list.isEditing() && this.canStartEdit(target) && this.startEdit(index))
+		var list = this.getList();
+		if(list.getFocused() && !list.isEditing() && this.canStartEdit(target) && this.startEdit(index, 300))
 			event.stopEvent();
 	},
 
@@ -440,20 +463,21 @@ Z8.define('Z8.list.Item', {
 			return;
 		}
 
+		var list = this.getList();
 		if(target == this.iconElement) {
-			this.list.onIconClick(this);
+			list.onIconClick(this);
 			return;
 		}
 
 		var index = -1;
 
-		if(this.list.checks && DOM.isParentOf(this.checkElement, target)) {
+		if(list.checks && DOM.isParentOf(this.checkElement, target)) {
 			this.toggleCheck();
 			return;
 		}
 
 		index = this.findCellIndex(target);
-		this.list.onItemClick(this, index);
+		list.onItemClick(this, index);
 	},
 
 	onContextMenu: function(event, target) {
@@ -461,7 +485,7 @@ Z8.define('Z8.list.Item', {
 			return;
 
 		var index = this.findCellIndex(target);
-		this.list.onItemContextMenu(this, index);
+		this.getList().onItemContextMenu(this, index);
 	},
 
 	onDblClick: function(event, target) {
@@ -471,28 +495,31 @@ Z8.define('Z8.list.Item', {
 			return;
 
 		var index = this.findCellIndex(target);
+		var list = this.getList();
 
-		if(index != -1 && DOM.isParentOf(this.list.getEditors()[index], target) ||
-				this.list.checks && DOM.isParentOf(this.checkElement, target))
+		if(index != -1 && DOM.isParentOf(list.getEditors()[index], target) ||
+				list.checks && DOM.isParentOf(this.checkElement, target))
 			return;;
 
-		this.list.onItemDblClick(this, index);
+		list.onItemDblClick(this, index);
 	},
 
 
 	followLink: function(index) {
-		return index != -1 ? this.list.onItemFollowLink(this, index) : false;
+		return index != -1 ? this.getList().onItemFollowLink(this, index) : false;
 	},
 
 	canStartEdit: function(target) {
 		return true;
 	},
 
-	startEdit: function(index) {
-		if(!this.active || index == -1 || !this.list.canStartEdit(this, index || 0))
+	startEdit: function(index, delay) {
+		var list = this.getList();
+
+		if(!this.active || index == -1 || !list.canStartEdit(this, index || 0))
 			return false;
 
-		this.list.startEdit(this, index || 0);
+		list.startEdit(this, index || 0, delay);
 		return true;
 	},
 

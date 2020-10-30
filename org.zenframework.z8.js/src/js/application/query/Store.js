@@ -7,21 +7,21 @@ Z8.define('Z8.query.Store', {
 		config: function(field) {
 			var config = {};
 
-			var isCombobox = field.isCombobox;
-			var isListbox = field.isListbox;
+			var isComboBox = field.isCombobox || field.isComboBox;
+			var isListBox = field.isListbox || field.isListBox;
 
-			if(!isCombobox && !isListbox)
+			if(!isComboBox && !isListBox)
 				throw 'Z8.query.Store.config() accepts only listbox or combobox config';
 
 			var query = field.query;
 			var primaryKey = query.primaryKey;
 			var parentKey = field.query.parentKey;
-			var periodKey = isListbox ? field.query.periodKey : null;
+			var periodKey = isListBox ? field.query.periodKey : null;
 			var lockKey = field.query.lockKey;
 
-			var link = isListbox ? query.link : field.link;
+			var link = isListBox ? query.link : field.link;
 			var fields = query.fields || query.columns || [field];
-			if(isListbox && link != null)
+			if(isListBox && link != null)
 				fields = fields.concat([link]);
 			if(field.fields != null)
 				fields = fields.concat(field.fields);
@@ -35,11 +35,11 @@ Z8.define('Z8.query.Store', {
 			config.parentKey = parentKey;
 			config.lockKey = lockKey;
 			config.periodKey = periodKey;
-			config.link = (isCombobox && link != null) ? link.name : null;
+			config.link = (isComboBox && link != null) ? link.name : null;
 			config.query = query.name;
-			config.totals = isListbox ? query.totals : false;
+			config.totals = isListBox ? query.totals : false;
 			config.limit = query.limit || 200;
-			config.sort = (isListbox || isCombobox) ? query.sort : null;
+			config.sort = (isListBox || isComboBox) ? query.sort : null;
 			config.values = field.values;
 			config.access = query.access;
 

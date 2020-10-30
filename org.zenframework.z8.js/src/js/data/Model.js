@@ -195,6 +195,16 @@ Z8.define('Z8.data.Model', {
 
 	setId: function(id) {
 		this.set(this.idProperty, id);
+		return this;
+	},
+
+	getParentId: function() {
+		return this.get(this.parentIdProperty);
+	},
+
+	setParentId: function(parentId) {
+		this.set(this.parentIdProperty, parentId);
+		return this;
 	},
 
 	getLock: function() {
@@ -433,7 +443,7 @@ Z8.define('Z8.data.Model', {
 		if(!this.isPhantom())
 			throw 'copy of the record ' + this.id + ' must be a phantom';
 
-		this.executeAction('copy', callback, Z8.apply(options || {}, { recordId: record.id }));
+		this.executeAction('copy', callback, Z8.apply(options || {}, { recordId: record.isModel ? record.id : record }));
 	},
 
 	destroy: function(callback, options) {
