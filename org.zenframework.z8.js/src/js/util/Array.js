@@ -38,9 +38,20 @@ Array.prototype.pushIf = function() {
 };
 
 Array.prototype.insert = function(element, index) {
-	element = Array.isArray(element) ? element : [element];
-	var args = [index != null ? index : this.length, 0].concat(element);
-	this.splice.apply(this, args);
+	index = index != null ? index : this.length;
+
+	if(!Array.isArray(element)) {
+		this.splice(index, 0, element);
+		return this;
+	}
+
+	if(element.length == 0)
+		return this;
+
+	element.splice(0, 0, index, 0);
+	this.splice.apply(this, element);
+	element.splice(0, 2);
+
 	return this;
 };
 
