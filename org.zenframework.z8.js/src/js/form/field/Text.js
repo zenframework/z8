@@ -12,7 +12,6 @@ Z8.define('Z8.form.field.Text', {
 	editor: true,
 
 	initComponent: function() {
-		var triggers = this.triggers;
 		this.triggers = this.triggers != null ? (Array.isArray(this.triggers) ? this.triggers : [this.triggers]) : [];
 		Control.prototype.initComponent.call(this);
 
@@ -52,9 +51,9 @@ Z8.define('Z8.form.field.Text', {
 			triggers = Array.isArray(triggers) ? triggers : [triggers];
 
 			for(var i = 0, length = triggers.length; i < length; i++) {
-				var trigger = triggers[i];
+				var trigger = this.initTrigger(triggers[i]);
 				var cls = DOM.parseCls(trigger.cls).pushIf('trigger-' + (length - i));
-				trigger.cls = cls;
+				trigger.cls = cls.join(' ');
 				trigger.enabled = this.isEnabled();
 
 				result.push(trigger.htmlMarkup());
@@ -90,15 +89,25 @@ Z8.define('Z8.form.field.Text', {
 		Control.prototype.onDestroy.call(this);
 	},
 
-	initTriggers: function() {
+	initTriggers: function () {
 		var triggers = this.triggers;
 		this.triggers = [];
-		for(var i = 0, length = triggers.length; i < length; i++) {
-			var trigger = triggers[i];
-			var cls = DOM.parseCls(trigger.cls).pushIf('trigger-' + (length - i));
-			trigger = new Z8.button.Trigger({ cls: cls.join(' '), tooltip: trigger.tooltip, icon: trigger.icon, handler: trigger.handler, scope: trigger.scope });
-			this.triggers.push(trigger);
+		for (var i = 0, length = triggers.length; i < length; i++) {
+			this.triggers.push(this.initTrigger(triggers[i]));
 		}
+	},
+
+	initTrigger: function (trigger) {
+		if (trigger != null && !trigger.isComponent) {
+			trigger = new Z8.button.Trigger({
+				cls: trigger.cls,
+				tooltip: trigger.tooltip,
+				icon: trigger.icon,
+				handler: trigger.handler,
+				scope: trigger.scope
+			});
+		}
+		return trigger;
 	},
 
 	setEnabled: function(enabled) {
