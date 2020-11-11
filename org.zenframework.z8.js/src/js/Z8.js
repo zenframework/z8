@@ -1,6 +1,14 @@
 var Z8 = {
 	classes: {},
 
+	locales: {},
+
+	$: function(key) {
+		var locale = window._LOCALE_ || 'ru';
+		var strings = Z8.locales[window._LOCALE_ || 'ru'];
+		return strings != null ? strings[key] || key : key;
+	},
+
 	apply: function(object, config) {
 		object = object || {};
 
