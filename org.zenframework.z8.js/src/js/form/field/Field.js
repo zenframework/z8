@@ -76,7 +76,7 @@ Z8.define('Z8.form.field.Field', {
 	},
 
 	isEqual: function(value1, value2) {
-		return String(value1 || null) === String(value2 || null);
+		return this.isEmptyValue(value1) && this.isEmptyValue(value2) || String(value1) === String(value2);
 	},
 
 	checkChange: function() {
