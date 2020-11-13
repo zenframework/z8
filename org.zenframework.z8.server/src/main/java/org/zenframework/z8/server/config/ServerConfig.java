@@ -87,6 +87,8 @@ public class ServerConfig extends Properties {
 
 	static final private String FtsConfiguration = "fts.configuration";
 
+	static final private String GeneratorStaticRecordsRestore = "generator.staticRecords.restore";
+
 	static private File workingPath;
 
 	static private String instanceId;
@@ -141,6 +143,8 @@ public class ServerConfig extends Properties {
 	static private boolean ldapUsersCreateOnSuccessfulLogin;
 
 	static private String ftsConfiguration;
+
+	static private boolean generatorStaticRecordsRestore;
 
 	static private Database database;
 
@@ -238,6 +242,8 @@ public class ServerConfig extends Properties {
 		ldapUsersCreateOnSuccessfulLogin = Boolean.parseBoolean(getProperty(LdapUsersCreateOnSuccessfulLogin, "false"));
 
 		ftsConfiguration = getProperty(FtsConfiguration, (String) null);
+
+		generatorStaticRecordsRestore = getProperty(GeneratorStaticRecordsRestore, false);
 
 		instance = this;
 	}
@@ -518,7 +524,11 @@ public class ServerConfig extends Properties {
 	static public String ftsConfiguration() {
 		return ftsConfiguration;
 	}
-	
+
+	static public boolean generatorStaticRescordsRestore() {
+		return generatorStaticRecordsRestore;
+	}
+
 	static public Database database() {
 		if(database == null)
 			database = new Database(instance);

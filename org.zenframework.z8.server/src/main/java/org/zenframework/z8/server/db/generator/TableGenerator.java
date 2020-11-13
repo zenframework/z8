@@ -25,6 +25,7 @@ import org.zenframework.z8.server.base.table.value.IField;
 import org.zenframework.z8.server.base.table.value.IntegerExpression;
 import org.zenframework.z8.server.base.table.value.StringExpression;
 import org.zenframework.z8.server.base.table.value.TextExpression;
+import org.zenframework.z8.server.config.ServerConfig;
 import org.zenframework.z8.server.db.BasicSelect;
 import org.zenframework.z8.server.db.Connection;
 import org.zenframework.z8.server.db.ConnectionManager;
@@ -153,8 +154,9 @@ public class TableGenerator {
 	public void createRecords() {
 		createNullRecord();
 
+		boolean restore = ServerConfig.generatorStaticRescordsRestore();
 		for(Map<IField, primary> record : table().getStaticRecords())
-			createStaticRecord(record);
+			createStaticRecord(record, restore);
 
 //		repairTable();
 	}
@@ -587,7 +589,7 @@ public class TableGenerator {
 	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	private void createStaticRecord(Map<IField, primary> record) {
+	private void createStaticRecord(Map<IField, primary> record, boolean restore) {
 		Field primaryKey = table().primaryKey();
 
 		guid recordId = (guid)record.get(primaryKey);
@@ -603,7 +605,7 @@ public class TableGenerator {
 					field.set(value);
 				}
 				table.create(recordId);
-			} else {
+			} else if (restore) {
 				boolean isUsers = table instanceof Users && (BuiltinUsers.System.guid().equals(recordId) || 
 						BuiltinUsers.Administrator.guid().equals(recordId));
 
