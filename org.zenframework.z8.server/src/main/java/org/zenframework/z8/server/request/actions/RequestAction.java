@@ -19,6 +19,7 @@ import org.zenframework.z8.server.types.string;
 
 public abstract class RequestAction extends RequestTarget {
 	static public final String New = "new";
+	static public final String Meta = "meta";
 	static public final String Create = "create";
 	static public final String Copy = "copy";
 	static public final String Read = "read";

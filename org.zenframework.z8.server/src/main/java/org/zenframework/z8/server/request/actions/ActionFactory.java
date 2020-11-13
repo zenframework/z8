@@ -32,7 +32,9 @@ public class ActionFactory {
 		if(actionName == null)
 			return new MetaAction(config);
 
-		if(RequestAction.Create.equals(actionName))
+		if(RequestAction.Meta.equals(actionName))
+			return new MetaAction(config, false);
+		else if(RequestAction.Create.equals(actionName))
 			return new CreateAction(config);
 		else if(RequestAction.Copy.equals(actionName))
 			return new CopyAction(config);
