@@ -32,7 +32,19 @@ Z8.define('Z8.form.field.Text', {
 		var tag = this.getInputTag();
 		var inputCls = this.getInputCls().join(' ');
 		value = Format.htmlEncode(value);
-		var input = { tag: tag, name: this.getId(), cls: inputCls, tabIndex: this.getTabIndex(), spellcheck: false, type: this.password ? 'password' : 'text', title: this.tooltip || '', placeholder: this.placeholder, autocomplete: this.autocomplete, value: tag == 'input' ? value : null, html: tag != 'input' ? value : null };
+		var input = {
+			tag: tag,
+			name: this.getInputName(),
+			cls: inputCls,
+			tabIndex: this.getTabIndex(),
+			spellcheck: false,
+			type: this.password ? 'password' : 'text',
+			title: this.tooltip || '',
+			placeholder: this.placeholder,
+			autocomplete: this.autocomplete,
+			value: tag == 'input' ? value : null,
+			html: tag != 'input' ? value : null
+		};
 
 		if(!enabled)
 			input.disabled = null;
@@ -73,7 +85,7 @@ Z8.define('Z8.form.field.Text', {
 		DOM.on(this, 'click', this.onClick, this);
 		DOM.on(this, 'keyDown', this.onKeyDown, this);
 
-		var input = this.input = this.selectNode(this.getInputTag() + '[name=' + this.getId() + ']');
+		var input = this.input = this.selectNode(this.getInputTag() + '[name=' + this.getInputName() + ']');
 
 		if(this.editor)
 			DOM.on(input, 'input', this.onInput, this);
@@ -156,6 +168,10 @@ Z8.define('Z8.form.field.Text', {
 	setPlaceholder: function(placeholder) {
 		this.placeholder = placeholder;
 		DOM.setAttribute(this.input, 'placeholder', placeholder);
+	},
+
+	getInputName: function () {
+		return this.getId() + '-input';
 	},
 
 	getInputTag: function() {

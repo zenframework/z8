@@ -7,22 +7,26 @@ Z8.define('Z8.form.field.File', {
 
 	setValue: function(value, displayValue) {
 		this.callParent(value, displayValue);
+		this.updateTriggers();
 	},
 
 	valueToRaw: function(value) {
 		return Z8.isEmpty(value) ? '' : value[0].name;
 	},
 
-	htmlMarkup: function() {
+	getCls: function() {
+		return Z8.form.field.Text.prototype.getCls.call(this).pushIf('file');
+	},
+
+	initTriggers: function (){
 		var triggers = this.triggers;
 		triggers.push({ icon: 'fa-upload', tooltip: 'Загрузить файл', handler: this.onUploadFile, scope: this });
 		triggers.push({ icon: 'fa-download', tooltip: 'Скачать файл', handler: this.onDownloadFile, scope: this });
 
-		return this.callParent();
-	},
+		TextBox.prototype.initTriggers.call(this);
 
-	getCls: function() {
-		return Z8.form.field.Text.prototype.getCls.call(this).pushIf('file');
+		this.uploadTrigger = this.getTrigger(0);
+		this.downloadTrigger = this.getTrigger(1);
 	},
 
 	completeRender: function() {
@@ -62,11 +66,17 @@ Z8.define('Z8.form.field.File', {
 	},
 
 	getUploadTrigger: function() {
-		return this.getTrigger(0);
+		return this.uploadTrigger;
 	},
 
 	getDownloadTrigger: function() {
-		return this.getTrigger(1);
+		return this.downloadTrigger;
+	},
+
+	updateTriggers: function () {
+		if (this.downloadTrigger != null) {
+			this.downloadTrigger.show(!Z8.isEmpty(this.getValue()));
+		}
 	},
 
 	onUploadFile: function(button) {
