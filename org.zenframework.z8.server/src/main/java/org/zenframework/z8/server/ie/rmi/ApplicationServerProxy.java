@@ -2,6 +2,7 @@ package org.zenframework.z8.server.ie.rmi;
 
 import java.io.IOException;
 import java.rmi.RemoteException;
+import java.util.Map;
 
 import org.zenframework.z8.server.base.xml.GNode;
 import org.zenframework.z8.server.config.ServerConfig;
@@ -60,6 +61,11 @@ public class ApplicationServerProxy implements IApplicationServer {
 
 	@Override
 	public IUser user(String login, String password, boolean createIfNotExists) throws RemoteException {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public IUser userLoad(String login, boolean createIfNotExist) {
 		throw new UnsupportedOperationException();
 	}
 

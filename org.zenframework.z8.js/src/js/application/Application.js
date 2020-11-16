@@ -56,7 +56,16 @@ Z8.define('Z8.application.Application', {
 			Viewport.render();
 		}
 
-		Viewport.login({ fn: callback, scope: this });
+        var checkServerSessionCallback = function(response, success) {
+            if(success) {
+                Z8.callback(callback, this.scope, response);
+                Viewport.onLogin();
+            } else {
+                delete response.info.messages
+		        Viewport.login({ fn: callback, scope: this });
+            }
+        };
+        HttpRequest.send({request: 'login', experimental: true}, { fn: checkServerSessionCallback, scope: this });
 	},
 
 	setTitle: function(title) {

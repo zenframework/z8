@@ -5,12 +5,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import org.zenframework.z8.server.base.table.system.RoleFieldAccess;
 import org.zenframework.z8.server.base.table.system.RoleRequestAccess;
@@ -29,6 +24,7 @@ import org.zenframework.z8.server.db.sql.expressions.Group;
 import org.zenframework.z8.server.db.sql.expressions.NotEqu;
 import org.zenframework.z8.server.db.sql.expressions.Or;
 import org.zenframework.z8.server.db.sql.functions.string.EqualsIgnoreCase;
+import org.zenframework.z8.server.engine.ApplicationServer;
 import org.zenframework.z8.server.engine.RmiIO;
 import org.zenframework.z8.server.exceptions.AccessDeniedException;
 import org.zenframework.z8.server.exceptions.InvalidVersionException;
@@ -217,7 +213,7 @@ public class User implements IUser {
 		return userId.isNull() ? null : readOrCreate((primary)userId, false);
 	}
 
-	static private IUser load(String login, boolean createIfNotExist) {
+	static public IUser load(String login, boolean createIfNotExist) {
 		return readOrCreate(new string(login), createIfNotExist);
 	}
 
@@ -228,8 +224,11 @@ public class User implements IUser {
 
 		boolean exists = user.readInfo(loginOrId, !isLatestVersion);
 		if(!exists && createIfNotExist) {
+			String plainPassword = User.generateOneTimePassword();
+			ApplicationServer.getRequest().getParameters().put(new string("plainPassword"), new string(plainPassword));
 			user.login = ((string)loginOrId).get();
-			user.password = MD5.hex("");
+			user.password = MD5.hex(plainPassword);
+			
 			Users users = Users.newInstance();
 			users.name.get().set(loginOrId);
 			users.password.get().set(new string(user.password));
@@ -489,6 +488,21 @@ public class User implements IUser {
 
 	private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
 		deserialize(in);
+	}
+
+	public static String generateOneTimePassword()
+	{
+		String saltChars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+
+		StringBuilder plainPassword = new StringBuilder();
+
+		Random rnd = new Random();
+		while (plainPassword.length() <= 6) {
+			int index = (int) (rnd.nextFloat() * saltChars.length());
+			plainPassword.append(saltChars.charAt(index));
+		}
+
+		return plainPassword.toString();
 	}
 
 	@Override

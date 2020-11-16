@@ -125,6 +125,8 @@ Z8.define('Z8.application.viewport.Viewport', {
 		this.body.removeAll();
 
 		this.menuToggle = this.buttons = this.menu = this.jobMonitor = this.sourceCode = null;
+		// destroy session on the server
+		window.location.href = window.location.origin + '/logout'
 	},
 
 	loginCallback: function(loginData) {

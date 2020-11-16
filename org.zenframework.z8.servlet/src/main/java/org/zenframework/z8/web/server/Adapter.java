@@ -44,11 +44,12 @@ import org.zenframework.z8.web.servlet.Servlet;
 
 public abstract class Adapter {
 	private static final String UseContainerSession = "useContainerSession";
+	public static final String sessionKeyName = "innerSessionId";
 
 	private static final Collection<String> IgnoredExceptions = Arrays.asList("org.apache.catalina.connector.ClientAbortException");
 
 	protected Servlet servlet;
-	private boolean useContainerSession;
+	protected boolean useContainerSession;
 
 	protected Adapter(Servlet servlet) {
 		this.servlet = servlet;
@@ -73,16 +74,23 @@ public abstract class Adapter {
 			boolean isLogin = Json.login.equals(parameters.get(Json.request.get()));
 
 			String sessionId = parameters.get(Json.session.get());
+			// An attempt to extract sessionId from httpSession
+			if(sessionId == null && useContainerSession && httpSession != null) {
+				sessionId = (String) httpSession.getAttribute(Adapter.sessionKeyName);
+			}
 			String serverId = parameters.get(Json.server.get());
 
-			if(isLogin) {
+			if(isLogin && sessionId == null) {
 				String login = getParameter(Json.login.get(), parameters, httpSession);
 				String password = getParameter(Json.password.get(), parameters, httpSession);
 
 				if(login == null || login.isEmpty() || login.length() > IAuthorityCenter.MaxLoginLength || password != null && password.length() > IAuthorityCenter.MaxPasswordLength)
 					throw new AccessDeniedException();
 
-				session = login(login, password/*, this.getScheme(request)*/);
+				session = login(login, password);
+				if(useContainerSession && httpSession != null){
+					httpSession.setAttribute(Adapter.sessionKeyName, session.id());
+				}
 			} else
 				session = authorize(sessionId, serverId, parameters.get(Json.request.get()));
 

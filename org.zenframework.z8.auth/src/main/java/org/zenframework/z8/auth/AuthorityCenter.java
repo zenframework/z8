@@ -4,31 +4,26 @@ import java.io.File;
 import java.lang.management.ManagementFactory;
 import java.rmi.RemoteException;
 import java.util.Collection;
-import java.util.Hashtable;
+import java.util.Map;
 
-import javax.naming.AuthenticationException;
-import javax.naming.AuthenticationNotSupportedException;
-import javax.naming.Context;
 import javax.naming.NamingException;
-import javax.naming.directory.DirContext;
-import javax.naming.directory.InitialDirContext;
 
 import org.zenframework.z8.server.base.file.Folders;
 import org.zenframework.z8.server.config.ServerConfig;
 import org.zenframework.z8.server.crypto.MD5;
-import org.zenframework.z8.server.engine.HubServer;
-import org.zenframework.z8.server.engine.IApplicationServer;
-import org.zenframework.z8.server.engine.IAuthorityCenter;
-import org.zenframework.z8.server.engine.IInterconnectionCenter;
-import org.zenframework.z8.server.engine.IServerInfo;
-import org.zenframework.z8.server.engine.ISession;
-import org.zenframework.z8.server.engine.ServerInfo;
+import org.zenframework.z8.server.engine.*;
 import org.zenframework.z8.server.exceptions.AccessDeniedException;
+import org.zenframework.z8.server.json.parser.JsonArray;
+import org.zenframework.z8.server.ldap.ActiveDirectory;
+import org.zenframework.z8.server.ldap.LdapUser;
 import org.zenframework.z8.server.logs.Trace;
+import org.zenframework.z8.server.request.IRequest;
 import org.zenframework.z8.server.request.RequestDispatcher;
 import org.zenframework.z8.server.security.IUser;
+import org.zenframework.z8.server.security.User;
 import org.zenframework.z8.server.types.datespan;
 import org.zenframework.z8.server.types.guid;
+import org.zenframework.z8.server.types.string;
 import org.zenframework.z8.server.utils.StringUtils;
 
 public class AuthorityCenter extends HubServer implements IAuthorityCenter {
@@ -40,6 +35,7 @@ public class AuthorityCenter extends HubServer implements IAuthorityCenter {
 
 	private final boolean clientHashPassword;
 	private final String ldapUrl;
+	private final boolean checkLdapLogin;
 	private final String ldapDefaultDomain;
 	private Collection<String> ldapUsersIgnore;
 	private boolean ldapUsersCreateOnSuccessfulLogin;
@@ -58,6 +54,7 @@ public class AuthorityCenter extends HubServer implements IAuthorityCenter {
 	private AuthorityCenter() throws RemoteException {
 		super(ServerConfig.authorityCenterPort());
 		clientHashPassword = ServerConfig.webClientHashPassword();
+		checkLdapLogin = ServerConfig.checkLdapLogin();
 		ldapUrl = ServerConfig.ldapUrl();
 		ldapDefaultDomain = ServerConfig.ldapDefaultDomain();
 		ldapUsersIgnore = ServerConfig.ldapUsersIgnore();
@@ -125,16 +122,83 @@ public class AuthorityCenter extends HubServer implements IAuthorityCenter {
 		if(password == null)
 			password = "";
 
-		if (!ldapUrl.isEmpty() && !StringUtils.containsIgnoreCase(ldapUsersIgnore, login)) {
-			checkLdapLogin(login, password);
-			password = "";
+		IUser user;
+		if (checkLdapLogin && !StringUtils.containsIgnoreCase(ldapUsersIgnore, login)) {
+			try {
+				ActiveDirectory activeDirectory = new ActiveDirectory();
+				activeDirectory.searchUser(
+						ServerConfig.searchBase(), String.format(ServerConfig.searchUserFilter(), login));
+				activeDirectory.close();
+			} catch (NamingException e) {
+				Trace.logError("Failed to get user attributes from active directory service", e);
+				throw new AccessDeniedException();
+			}
+			user = loginServer.userLoad(login, ldapUsersCreateOnSuccessfulLogin);
+		} else {
+			user = loginServer.user(login, clientHashPassword ? password : MD5.hex(password), false);
 		}
-
-		IUser user = loginServer.user(login, clientHashPassword ? password : MD5.hex(password), !ldapUrl.isEmpty() && ldapUsersCreateOnSuccessfulLogin);
 		session = sessionManager.create(user);
 
 		session.setServerInfo(serverInfo);
 		return session;
+	}
+
+	/**
+	 * @param principalName The string constructs from user name and his/her realm, like: userLogin@companyDomain.com
+	 *                      https://tools.ietf.org/html/rfc6806
+	 */
+	@Override
+	public ISession ssoAuth(String principalName) throws RemoteException {
+		IServerInfo serverInfo = findServer((String)null);
+
+		if(serverInfo == null || principalName == null)
+			throw new AccessDeniedException();
+
+		IApplicationServer loginServer = serverInfo.getServer();
+
+		IUser user;
+		String login = principalName.contains("@") ? principalName.split("@")[0] : principalName;
+		try {
+			user = loginServer.userLoad(login, false);
+		} catch (AccessDeniedException e) {
+			user = createUser(loginServer, principalName);
+		}
+		if (user == null) {
+			throw new AccessDeniedException();
+		}
+		ISession session = sessionManager.create(user);
+		session.setServerInfo(serverInfo);
+		return session;
+	}
+
+	/**
+	 * Getting user information from active directory and creating a new user
+	 */
+	private IUser createUser(IApplicationServer loginServer, String principalName) throws RemoteException{
+		LdapUser ldapUser;
+		try {
+			ActiveDirectory activeDirectory = new ActiveDirectory();
+			ldapUser = activeDirectory.searchUser(
+					ServerConfig.searchBase(), String.format(ServerConfig.searchUserFilter(), principalName));
+			activeDirectory.close();
+		} catch (NamingException e) {
+			Trace.logError("Failed to get user attributes from active directory service", e);
+			return null;
+		}
+
+		IRequest request = ApplicationServer.getRequest();
+		// user attributes from ActiveDirectory
+		for(Map.Entry<String,String> entry : ldapUser.getParameters().entrySet()) {
+			request.getParameters().put(
+					new string(entry.getKey()),
+					new string(entry.getValue())
+			);
+		}
+		request.getParameters().put(
+				new string(ActiveDirectory.ldapParametersPrefix + "memberOf"),
+				new string(new JsonArray(ldapUser.getMemberOf()).toString()));
+
+		return loginServer.userLoad(ldapUser.getLogin(), true);
 	}
 
 	@Override
@@ -147,30 +211,6 @@ public class AuthorityCenter extends HubServer implements IAuthorityCenter {
 
 		session.setServerInfo(server);
 		return session;
-	}
-
-	private void checkLdapLogin(String login, String password) {
-		if (password.isEmpty())
-			throw new AccessDeniedException();
-		Hashtable<String, String> environment = new Hashtable<String, String>();
-		environment.put(Context.INITIAL_CONTEXT_FACTORY, "com.sun.jndi.ldap.LdapCtxFactory");
-		environment.put(Context.PROVIDER_URL, ldapUrl);
-		environment.put(Context.SECURITY_AUTHENTICATION, "simple");
-		environment.put(Context.SECURITY_PRINCIPAL, (!login.contains("\\") && !ldapDefaultDomain.isEmpty()
-				? ldapDefaultDomain + '\\' : "") + login);
-		environment.put(Context.SECURITY_CREDENTIALS, password);
-		try {
-			DirContext context = new InitialDirContext(environment);
-			context.close();
-		} catch (AuthenticationNotSupportedException e) {
-			Trace.logError("The authentication method is not supported by the server", e);
-			throw new AccessDeniedException();
-		} catch (AuthenticationException e) {
-			throw new AccessDeniedException();
-		} catch (NamingException e) {
-			Trace.logError("Error when trying to create the context", e);
-			throw new AccessDeniedException();
-		}
 	}
 
 	@Override
