@@ -37,7 +37,6 @@ Z8.define('Z8.form.field.Combobox', {
 		if(this.editor)
 			this.queryTask = new Z8.util.DelayedTask();
 
-		this.initTriggers();
 		this.initStore();
 	},
 
@@ -77,6 +76,8 @@ Z8.define('Z8.form.field.Combobox', {
 			triggers.push({ icon: ComboBox.ClearIconCls, tooltip: 'Очистить', handler: this.clearValue, scope: this });
 
 		this.triggers = triggers.add(this.triggers);
+
+		TextBox.prototype.initTriggers.call(this);
 	},
 
 	htmlMarkup: function() {

@@ -20,7 +20,6 @@ import org.zenframework.z8.server.engine.ApplicationServer;
 import org.zenframework.z8.server.json.Json;
 import org.zenframework.z8.server.json.JsonWriter;
 import org.zenframework.z8.server.json.parser.JsonArray;
-import org.zenframework.z8.server.request.actions.RequestAction;
 import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.runtime.RCollection;
 import org.zenframework.z8.server.security.IAccess;
@@ -629,20 +628,6 @@ abstract public class Field extends Control implements IField {
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public sql_bool z8_notInVector(RCollection values) {
 		return notInVector((Collection<primary>)values);
-	}
-
-	public void z8_write(org.zenframework.z8.server.base.json.JsonWriter.CLASS<? extends org.zenframework.z8.server.base.json.JsonWriter> writer) {
-		RequestAction action = ApplicationServer.getRequest().getAction();
-		writeMeta(writer.get().get(), action.getQuery(), action.getContextQuery());
-	}
-
-	@SuppressWarnings({ "rawtypes", "unchecked" })
-	public Link.CLASS<? extends Link> z8_getLink() {
-		if(path == null || path.isEmpty())
-			return null;
-
-		ILink[] links = path.toArray(new ILink[path.size()]);
-		return (Link.CLASS)links[links.length - 1].getCLASS();
 	}
 
 	@Override

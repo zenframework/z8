@@ -16,6 +16,7 @@ import org.zenframework.z8.server.types.primary;
 import org.zenframework.z8.server.types.string;
 
 public class JsonUtils {
+	@SuppressWarnings("unchecked")
 	public static Object unwrap(Object o) {
 		if(o instanceof bool) {
 			return ((bool)o).get();
@@ -37,11 +38,15 @@ public class JsonUtils {
 			return ((file)o).toJsonObject();
 		else if(o instanceof binary)
 			throw new UnsupportedOperationException();
+		else if(o instanceof org.zenframework.z8.server.base.json.parser.JsonObject.CLASS)
+			return ((org.zenframework.z8.server.base.json.parser.JsonObject.CLASS<? extends org.zenframework.z8.server.base.json.parser.JsonObject>) o).get().get();
+		else if(o instanceof org.zenframework.z8.server.base.json.parser.JsonArray.CLASS)
+			return ((org.zenframework.z8.server.base.json.parser.JsonArray.CLASS<? extends org.zenframework.z8.server.base.json.parser.JsonArray>) o).get().get();
 		else
 			return o;
 	}
 
-	public static primary wrap(Object o) {
+	public static Object wrap(Object o) {
 		if (o == null)
 			return null;
 		else if(o instanceof primary)
@@ -60,6 +65,10 @@ public class JsonUtils {
 			return new integer(((Number) o).longValue());
 		else if(o instanceof String)
 			return new string((String)o);
+		else if(o instanceof JsonObject)
+			return org.zenframework.z8.server.base.json.parser.JsonObject.getJsonObject((JsonObject) o);
+		else if(o instanceof JsonArray)
+			return org.zenframework.z8.server.base.json.parser.JsonArray.getJsonArray((JsonArray) o);
 		else
 			throw new UnsupportedOperationException();
 	}

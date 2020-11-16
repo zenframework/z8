@@ -12,8 +12,10 @@ Z8.define('Z8.form.field.Text', {
 	editor: true,
 
 	initComponent: function() {
-		this.triggers = this.triggers || [];
+		this.triggers = this.triggers != null ? (Array.isArray(this.triggers) ? this.triggers : [this.triggers]) : [];
 		Control.prototype.initComponent.call(this);
+
+		this.initTriggers();
 	},
 
 	getCls: function() {
@@ -30,7 +32,19 @@ Z8.define('Z8.form.field.Text', {
 		var tag = this.getInputTag();
 		var inputCls = this.getInputCls().join(' ');
 		value = Format.htmlEncode(value);
-		var input = { tag: tag, name: this.getId(), cls: inputCls, tabIndex: this.getTabIndex(), spellcheck: false, type: this.password ? 'password' : 'text', title: this.tooltip || '', placeholder: this.placeholder, autocomplete: this.autocomplete, value: tag == 'input' ? value : null, html: tag != 'input' ? value : null };
+		var input = {
+			tag: tag,
+			name: this.getInputName(),
+			cls: inputCls,
+			tabIndex: this.getTabIndex(),
+			spellcheck: false,
+			type: this.password ? 'password' : 'text',
+			title: this.tooltip || '',
+			placeholder: this.placeholder,
+			autocomplete: this.autocomplete,
+			value: tag == 'input' ? value : null,
+			html: tag != 'input' ? value : null
+		};
 
 		if(!enabled)
 			input.disabled = null;
@@ -47,15 +61,14 @@ Z8.define('Z8.form.field.Text', {
 
 		if(!Z8.isEmpty(triggers)) {
 			triggers = Array.isArray(triggers) ? triggers : [triggers];
-			this.triggers = [];
 
 			for(var i = 0, length = triggers.length; i < length; i++) {
-				var trigger = triggers[i];
+				var trigger = this.initTrigger(triggers[i]);
 				var cls = DOM.parseCls(trigger.cls).pushIf('trigger-' + (length - i));
-				trigger = new Z8.button.Trigger({ cls: cls.join(' '), tooltip: trigger.tooltip, icon: trigger.icon, handler: trigger.handler, scope: trigger.scope });
-				result.push(trigger.htmlMarkup());
+				trigger.cls = cls.join(' ');
+				trigger.enabled = this.isEnabled();
 
-				this.triggers.push(trigger);
+				result.push(trigger.htmlMarkup());
 			}
 		}
 
@@ -72,7 +85,7 @@ Z8.define('Z8.form.field.Text', {
 		DOM.on(this, 'click', this.onClick, this);
 		DOM.on(this, 'keyDown', this.onKeyDown, this);
 
-		var input = this.input = this.selectNode(this.getInputTag() + '[name=' + this.getId() + ']');
+		var input = this.input = this.selectNode(this.getInputTag() + '[name=' + this.getInputName() + ']');
 
 		if(this.editor)
 			DOM.on(input, 'input', this.onInput, this);
@@ -88,12 +101,35 @@ Z8.define('Z8.form.field.Text', {
 		Control.prototype.onDestroy.call(this);
 	},
 
+	initTriggers: function () {
+		var triggers = this.triggers;
+		this.triggers = [];
+		for (var i = 0, length = triggers.length; i < length; i++) {
+			this.triggers.push(this.initTrigger(triggers[i]));
+		}
+	},
+
+	initTrigger: function (trigger) {
+		if (trigger != null && !trigger.isComponent) {
+			trigger = new Z8.button.Trigger({
+				cls: trigger.cls,
+				tooltip: trigger.tooltip,
+				icon: trigger.icon,
+				handler: trigger.handler,
+				scope: trigger.scope
+			});
+		}
+		return trigger;
+	},
+
 	setEnabled: function(enabled) {
 		DOM.swapCls(this.input, !enabled, 'disabled');
 		DOM.setDisabled(this.input, !enabled);
 
-		for(var i = 0, triggers = this.triggers, length = triggers.length; i < length; i++)
-			triggers[i].setEnabled(enabled);
+		for(var trigger of this.triggers) {
+			if(trigger.isComponent)
+				trigger.setEnabled(enabled);
+		}
 
 		Control.prototype.setEnabled.call(this, enabled);
 	},
@@ -134,6 +170,10 @@ Z8.define('Z8.form.field.Text', {
 		DOM.setAttribute(this.input, 'placeholder', placeholder);
 	},
 
+	getInputName: function () {
+		return this.getId() + '-input';
+	},
+
 	getInputTag: function() {
 		return this.editor ? this.tag : 'div';
 	},
@@ -160,17 +200,10 @@ Z8.define('Z8.form.field.Text', {
 
 		event.stopEvent();
 
-		var triggers = this.triggers;
-
-		for(var i = 0, length = triggers.length; i < length; i++) {
-			var trigger = triggers[i];
+		for(var trigger of this.triggers) {
 			if(DOM.isParentOf(trigger, target) && trigger.isEnabled()) {
 				var handler = trigger.handler;
-				if(handler != null)
-					handler.call(trigger.scope, trigger);
-				else
-					this.onTriggerClick(trigger);
-				return;
+				return handler != null ? handler.call(trigger.scope, trigger) : this.onTriggerClick(trigger);
 			}
 		}
 	},
