@@ -293,4 +293,13 @@ public class RCollection<TYPE> extends ArrayList<TYPE> {
 
 		return new string(result);
 	}
+
+	public RCollection<TYPE> z8_slice(integer fromIndex) {
+		return new RCollection<>(this.subList((int)fromIndex.get(), this.size()));
+	}
+
+	public RCollection<TYPE> z8_slice(integer fromIndex, integer toIndex) {
+		return new RCollection<>(this.subList((int) fromIndex.get(), (int) toIndex.get()));
+	}
+
 }
