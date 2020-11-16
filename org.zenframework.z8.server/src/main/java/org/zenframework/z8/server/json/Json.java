@@ -255,4 +255,6 @@ public interface Json {
 	static public string content = new string("content");
 
 	static public string experimental = new string("experimental");
+
+	static public string apiDescription = new string("apiDescription");
 }
