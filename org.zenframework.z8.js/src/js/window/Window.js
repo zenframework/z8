@@ -1,5 +1,5 @@
 Z8.define('Z8.window.Window', {
-	extend: 'Z8.Container',
+	extend: 'Container',
 	shortClassName: 'Window',
 
 	closable: true,
@@ -7,11 +7,16 @@ Z8.define('Z8.window.Window', {
 	autoDestroy: true,
 	isOpen: false,
 
+	okText: 'Готово',
+	cancelText: 'Отменить',
+
 	getCls: function() {
-		return Z8.Container.prototype.getCls.call(this).pushIf('window');
+		return Container.prototype.getCls.call(this).pushIf('window');
 	},
 
-	htmlMarkup: function() {
+	initComponent: function() {
+		Container.prototype.initComponent.call(this);
+
 		var icon = { tag: 'i', cls: DOM.parseCls(this.icon).pushIf('icon', 'fa', 'fw-fa').join(' ') };
 		var text = this.text = { cls: 'text', html: this.header };
 
@@ -22,37 +27,41 @@ Z8.define('Z8.window.Window', {
 			items.push(this.closeButton);
 		}
 
-		var header = this.header = new Z8.Container({ cls: 'header', items: items });
+		var header = this.header = new Container({ cls: 'header', items: items });
 
-		var body = this.body = new Z8.form.Fieldset({ plain: true, flex: 1, cls: 'body', controls: this.controls, colCount: this.colCount || 1 });
+		var body = this.body = new Fieldset({ plain: true, flex: 1, cls: 'body', controls: this.controls, colCount: this.colCount || 1 });
 
 		var buttons = this.buttons || [];
 
 		if(Z8.isEmpty(this.buttons)) {
-			var ok = this.okButton = new Z8.button.Button({ push: true, primary: true, text: this.okText || 'Готово', handler: this.ok, scope: this });
+			var ok = this.okButton = new Button({ push: true, primary: true, text: this.okText, handler: this.ok, scope: this });
 			buttons.push(ok);
 		}
 
 		if(this.closable && this.closeButton !== false) {
-			this.cancelButton = new Z8.button.Button({ push: true, text: this.cancelText || 'Отменить', handler: this.cancel, scope: this });
+			this.cancelButton = new Button({ push: true, text: this.cancelText, handler: this.cancel, scope: this });
 			buttons.insert(this.cancelButton, 0);
 		}
 
 		var footer = this.footer = new Z8.Container({ cls: 'footer', items: buttons });
 
 		this.items = [header, body, footer];
+	},
 
-		return this.callParent();
+	htmlMarkup: function() {
+		if(!Z8.isEmpty(this.controls))
+			this.body.setControls(this.controls);
+		return Container.prototype.htmlMarkup.call(this);
 	},
 
 	onDestroy: function() {
 		this.close();
-		this.callParent();
+		Container.prototype.onDestroy.call(this);
 	},
 
 	open: function() {
 		if(this.isOpen)
-			return;
+			return this;
 
 		this.isOpen = true;
 
@@ -73,6 +82,8 @@ Z8.define('Z8.window.Window', {
 
 		this.setActive(true);
 		this.focus();
+
+		return this;
 	},
 
 	close: function() {
@@ -106,7 +117,7 @@ Z8.define('Z8.window.Window', {
 		var dom = DOM.get(this);
 		var target = event.target;
 
-		if(dom != target && !DOM.isParentOf(dom, target))
+		if(!this.isBusy() && dom != target && !DOM.isParentOf(dom, target))
 			this.cancel();
 	},
 
@@ -117,6 +128,10 @@ Z8.define('Z8.window.Window', {
 	cancel: function() {
 		if(this.closable)
 			this.notifyAndClose(false);
+	},
+
+	isBusy: function() {
+		return this.okButton != null ? this.okButton.isBusy() : false;
 	},
 
 	setBusy: function(busy) {

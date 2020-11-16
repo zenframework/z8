@@ -21,6 +21,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.net.URL;
 import java.net.URLDecoder;
 import java.util.*;
 
@@ -30,6 +31,7 @@ public class Z8Handler extends AbstractHandler {
     private WebResourceHandler resourceHandler;
     private static final Collection<UrlPattern> urlPatterns = new LinkedList<UrlPattern>(
             Arrays.asList(
+                    new UrlPattern("/apidoc"),
                     new UrlPattern("/logout"),
                     new UrlPattern("/sso_auth"),
                     new UrlPattern("*.json"),
@@ -82,16 +84,22 @@ public class Z8Handler extends AbstractHandler {
     private static Properties getMappings(String path) {
         Properties mappings = new Properties();
         Reader reader = null;
+
         try {
-            reader = new InputStreamReader(
-                    Objects.requireNonNull(Z8Handler.class.getClassLoader().getResourceAsStream("webserver/mappings.properties")));
-            mappings.load(reader);
+            Enumeration<URL> resources = WebServer.class.getClassLoader().getResources("webserver/mappings.properties");
+            while (resources.hasMoreElements()) {
+                try {
+                    reader = new InputStreamReader(resources.nextElement().openStream());
+                    mappings.load(reader);
+                } catch (IOException e1) {
+                } finally {
+                    IOUtils.closeQuietly(reader);
+                }
+            }
         } catch (IOException e) {
             Trace.logError("Couldn't load mappings from classpath webserver/mappings.properties" + path, e);
-        } finally {
-            IOUtils.closeQuietly(reader);
-            reader = null;
         }
+
         if (path != null) {
             try {
                 reader = new FileReader(path);
@@ -104,6 +112,7 @@ public class Z8Handler extends AbstractHandler {
         }
         return mappings;
     }
+
     private String getContentType(String path) {
         return mappings.getProperty(FilenameUtils.getExtension(path), "text/html;charset=UTF-8");
     }

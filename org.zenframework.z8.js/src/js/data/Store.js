@@ -22,13 +22,11 @@ Z8.define('Z8.data.Store', {
 	loadIndex: 0,
 	transaction: 0,
 
-	autoDispose: true,
-
 	constructor: function(config) {
 		var data = config.data;
 		delete config.data;
 
-		this.callParent(config);
+		Z8.Object.prototype.constructor.call(this, config);
 
 		this.useCount = 0;
 
@@ -55,21 +53,15 @@ Z8.define('Z8.data.Store', {
 	},
 
 	dispose: function() {
-		if(this.useCount == 0)
+		if(this.useCount == 0 || --this.useCount != 0)
 			return;
 
-		this.useCount--;
+		for(var record of this.records)
+			record.dispose();
 
-		if(this.useCount != 0)
-			return;
+		this.records = [];
 
-		var records = this.records;
-		for(var i = 0, length = records.length; i < length; i++)
-			records[i].dispose();
-
-		delete this.records;
-
-		this.callParent();
+		Z8.Object.prototype.dispose.call(this);
 	},
 
 	getModel: function() {

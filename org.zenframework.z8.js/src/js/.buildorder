@@ -114,6 +114,7 @@ application/viewport/SourceCode.js
 application/viewport/Viewport.js
 application/User.js
 application/Application.js
+application/Locales.js
 application/job/Job.js
 application/job/JobMonitor.js
 application/query/Store.js

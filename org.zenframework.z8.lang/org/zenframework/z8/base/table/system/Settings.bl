@@ -1,0 +1,23 @@
+import org.zenframework.z8.base.table.Table;
+import org.zenframework.z8.base.table.value.TextField;
+
+[name "SystemSettings"]
+[displayName "Системные свойства"]
+[native "org.zenframework.z8.server.base.table.system.Settings"]
+public class Settings extends Table {
+	[displayName "Свойство"] name;
+	name.length = 256;
+
+	[name "Value"]
+	[displayName "Значение"]
+	public TextField value;
+
+	static public string get(guid property);
+	static public string get(guid property, string defaultValue);
+	static public guid get(guid property, guid defaultValue);
+	static public date get(guid property, date defaultValue);
+	static public int get(guid property, int defaultValue);
+	static public decimal get(guid property, decimal defaultValue);
+
+	static public void set(guid property, primary value);
+}

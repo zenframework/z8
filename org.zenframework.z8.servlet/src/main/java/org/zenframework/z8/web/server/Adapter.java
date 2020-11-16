@@ -62,6 +62,7 @@ public abstract class Adapter {
 
 	public void service(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
 		HttpSession httpSession = useContainerSession ? request.getSession() : null;
+
 		try {
 			ISession session = null;
 
@@ -122,6 +123,18 @@ public abstract class Adapter {
 		return sessionId != null ? ServerConfig.authorityCenter().server(sessionId, serverId) : null;
 	}
 
+/*	private String getScheme(HttpServletRequest request) {
+		if(!ServerConfig.isMultitenant())
+			return null;
+
+		String serverName = request.getServerName();
+		int index = serverName.indexOf('.');
+		if(index == -1 || index == serverName.lastIndexOf('.'))
+			throw new AccessDeniedException();
+
+		return serverName.substring(0, index);
+	}
+*/
 	private void parseRequest(HttpServletRequest request, Map<String, String> parameters, List<file> files) throws IOException {
 		if(ServletFileUpload.isMultipartContent(request)) {
 			List<FileItem> fileItems = parseMultipartRequest(request);

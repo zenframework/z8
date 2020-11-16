@@ -11,9 +11,9 @@ import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import org.apache.commons.io.IOUtils;
 import org.zenframework.z8.server.logs.Trace;
 import org.zenframework.z8.server.utils.ErrorUtils;
+import org.zenframework.z8.server.utils.IOUtils;
 
 abstract public class HubServer extends RmiServer implements IHubServer {
 	private static final long serialVersionUID = -3444119932500940159L;

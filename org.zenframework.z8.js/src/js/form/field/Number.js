@@ -16,6 +16,10 @@ Z8.define('Z8.form.field.Number', {
 		return Format.number(value, this.format || Format.Float);
 	},
 
+	isEmptyValue: function(value) {
+		return value == null;
+	},
+
 	onKeyEvent: function(event, target) {
 		var key = event.getKey();
 

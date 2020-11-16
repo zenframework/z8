@@ -28,7 +28,7 @@ public class Object {
 
 	virtual public void write(JsonWriter writer);
 
-	virtual protected binary getContent(string[string] parameters, file[] files);
+	virtual protected binary processContentRequest(string[string] parameters, file[] files);
 	virtual protected JsonArray getData(string[string] parameters);
 
 	auto public Object[] objects;

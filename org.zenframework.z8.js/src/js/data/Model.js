@@ -443,7 +443,7 @@ Z8.define('Z8.data.Model', {
 		if(!this.isPhantom())
 			throw 'copy of the record ' + this.id + ' must be a phantom';
 
-		this.executeAction('copy', callback, Z8.apply(options || {}, { recordId: record.id }));
+		this.executeAction('copy', callback, Z8.apply(options || {}, { recordId: record.isModel ? record.id : record }));
 	},
 
 	destroy: function(callback, options) {

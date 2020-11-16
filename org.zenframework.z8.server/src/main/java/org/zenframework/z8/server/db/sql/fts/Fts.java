@@ -22,6 +22,8 @@ public class Fts extends OBJECT {
 		}
 	}
 
+	private static final string DefaultFtsConfiguration = defaultFtsConfiguration();
+
 	// (по умолчанию): длина документа не учитывается
 	public static final integer NormDefault = new integer(0);
 	// ранг документа делится на 1 + логарифм длины документа
@@ -41,7 +43,7 @@ public class Fts extends OBJECT {
 		super(container);
 	}
 
-	public string configuration = defaultFtsConfiguration();
+	public string configuration = DefaultFtsConfiguration;
 	public FtsQueryType queryType = FtsQueryType.Plain;
 	@SuppressWarnings("rawtypes")
 	public RCollection weight = null;

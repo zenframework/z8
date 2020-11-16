@@ -761,28 +761,17 @@ Z8.define('Z8.list.List', {
 		return [fields];
 	},
 
-	setFields: function(fields) {
-/*
-		this.fields = this.createFields(fields);
-		this.setRecords();
-*/
-	},
-
 	setRecords: function(records) {
 		var items = this.createItems(records || this.store.getRecords());
 
 		this.setItems(items);
-
-		if(this.isVisible())
-			this.renderItems();
+		this.renderItems();
 	},
 
 	addRecords: function(records, index) {
 		var items = this.createItems(records || this.store.geRecords());
 		this.addItems(items, index, true);
-
-		if(this.isVisible())
-			this.renderItems();
+		this.renderItems();
 	},
 
 	removeRecords: function(records) {
@@ -1208,7 +1197,7 @@ Z8.define('Z8.list.List', {
 	onKeyDown: function(event, target) {
 		var key = event.getKey();
 
-		if(this.isEditing() || this.isFiltering() && key != Event.DOWN && key != Event.ESC)
+		if(!this.getFocused() || this.isFiltering() && key != Event.DOWN && key != Event.ESC)
 			return;
 
 		var item = this.getCurrentItem();
@@ -1259,6 +1248,9 @@ Z8.define('Z8.list.List', {
 	},
 
 	onFocusIn: function(event, target) {
+		if(DOM.isInput(target))
+			return;
+
 		DOM.addCls(this, 'focus');
 		this.setFocused(true);
 	},
@@ -1664,7 +1656,7 @@ Z8.define('Z8.list.List', {
 		for(var i = index + 1, length = items.length; i < length; i++) {
 			item = items[i];
 			if(level < item.getLevel())
-				item.hide(collapsed);
+				item.setHidden(collapsed);
 			else
 				break;
 		}

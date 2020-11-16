@@ -25,7 +25,7 @@ public class ContentAction extends RequestAction {
 
 		try {
 			connection.beginTransaction();
-			binary binary = getQuery().getContent();
+			binary binary = getQuery().processContentRequest();
 			if(binary != null)
 				response.setInputStream(binary.get());
 			connection.commit();

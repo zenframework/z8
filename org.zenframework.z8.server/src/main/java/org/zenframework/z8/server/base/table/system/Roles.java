@@ -228,6 +228,7 @@ public class Roles extends Table {
 	}
 
 	public Collection<IRole> get() {
+		Field name = this.name.get();
 		Field read = this.read.get();
 		Field write = this.write.get();
 		Field create = this.create.get();
@@ -235,7 +236,7 @@ public class Roles extends Table {
 		Field destroy = this.destroy.get();
 		Field execute = this.execute.get();
 
-		read(Arrays.asList(read, write, create, copy, destroy, execute));
+		read(Arrays.asList(name, read, write, create, copy, destroy, execute));
 
 		Collection<IRole> roles = new ArrayList<IRole>();
 
@@ -248,7 +249,7 @@ public class Roles extends Table {
 			access.setDestroy(destroy.bool().get());
 			access.setExecute(execute.bool().get());
 
-			roles.add(new Role(recordId(), access));
+			roles.add(new Role(recordId(), name.string().get(), access));
 		}
 
 		return roles;

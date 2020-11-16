@@ -5,9 +5,11 @@ Z8.define('Z8.list.Item', {
 	constructor: function(config) {
 		config = config || {};
 		config.collapsed = config.collapsed !== false;
-		config.hidden = 0;
-		config.follow = true;
 		Component.prototype.constructor.call(this, config);
+
+		this.hidden = 0;
+		this.valid = true;
+		this.follow = true;
 	},
 
 	getRecord: function() {
@@ -16,6 +18,10 @@ Z8.define('Z8.list.Item', {
 
 	getList: function() {
 		return this.list;
+	},
+
+	getIndex: function() {
+		return this.list.getIndex(this);
 	},
 
 	initComponent: function() {
@@ -183,16 +189,21 @@ Z8.define('Z8.list.Item', {
 	},
 
 	getCls: function() {
-		var cls = DOM.parseCls(this.cls).pushIf('item');
+		var cls = Component.prototype.getCls.call(this);
+
+		cls.pushIf('item');
 
 		if(!this.enabled)
-			cls.push(['disabled']);
+			cls.pushIf('disabled');
 
 		if(this.active)
 			cls.pushIf('active');
 
 		if(this.isHidden())
 			cls.pushIf('display-none');
+
+		if(!this.valid)
+			cls.push('invalid');
 
 		if(this.isTree()) {
 			cls.pushIf('level-' + this.getLevel());
@@ -241,6 +252,15 @@ Z8.define('Z8.list.Item', {
 		this.collapser = this.iconElement = this.checkIcon = this.checkElement = this.lockIcon = this.cells = null;
 
 		Component.prototype.onDestroy.call(this);
+	},
+
+	getValid: function(valid) {
+		return this.valid;
+	},
+
+	setValid: function(valid) {
+		this.valid = valid;
+		DOM.swapCls(this, !valid, 'invalid');
 	},
 
 	setActive: function(active) {
@@ -352,11 +372,11 @@ Z8.define('Z8.list.Item', {
 		return this.level;
 	},
 
-	hide: function(hide) {
+	setHidden: function(hide) {
 		if(this.hidden == 0 && hide)
-			DOM.addCls(this, 'display-none');
+			Component.prototype.hide.call(this);
 		else if(this.hidden == 1 && !hide)
-			DOM.removeCls(this, 'display-none');
+			Component.prototype.show.call(this);
 
 		this.hidden = Math.max(this.hidden + (hide ? 1 : -1), 0);
 	},

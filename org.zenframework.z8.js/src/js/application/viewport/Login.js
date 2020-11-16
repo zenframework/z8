@@ -6,10 +6,10 @@ Z8.define('Z8.application.viewport.Login', {
 
 	initComponent: function() {
 		var header = { cls: 'header', html: 'Авторизация' };
-		var login = this.loginField = new Z8.form.field.Text({ label: { text: 'Логин', icon: 'fa-user', width: '6.42857143em', align: 'left' }, placeholder: 'Логин', value: 'Admin' });
-		var password = this.passwordField = new Z8.form.field.Text({ label: { text: 'Пароль',  icon: 'fa-key', align: 'left', width: '6.42857143em' }, placeholder: 'Пароль', password: true });
-		var loginButton = this.loginButton = new Z8.button.Button({ text: 'Войти', cls: 'btn-tool', icon: 'fa-check', handler: this.login, scope: this });
-        var ssoLoginButton = this.ssoLoginButton = new Z8.button.Button({ text: 'Войти через SSO',  cls: 'btn-tool', icon: 'fa-check', handler: this.ssoLogin, scope: this });
+		var login = this.loginField = new Z8.form.field.Text({ label: { text: Z8.$('Login.login.text'), icon: 'fa-user', width: '6.42857143em', align: 'left' }, placeholder: Z8.$('Login.login.placeholder'), value: 'Admin' });
+		var password = this.passwordField = new Z8.form.field.Text({ label: { text: Z8.$('Login.password.text'),  icon: 'fa-key', align: 'left', width: '6.42857143em' }, placeholder: Z8.$('Login.password.placeholder'), password: true });
+		var loginButton = this.loginButton = new Z8.button.Button({ text: Z8.$('Login.btn.text'), cls: 'btn-tool', icon: 'fa-check', handler: this.login, scope: this });
+        var ssoLoginButton = this.ssoLoginButton = new Z8.button.Button({ text: Z8.$('Login.ssoBtn.text'),  cls: 'btn-tool', icon: 'fa-check', handler: this.ssoLogin, scope: this });
 
 		this.controls = [header, login, password, loginButton, ssoLoginButton];
 

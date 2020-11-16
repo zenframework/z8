@@ -1,0 +1,6 @@
+[native "org.zenframework.z8.server.base.json.parser.JsonPath"]
+public class JsonPath {
+
+	public static JsonPath path(string path);
+
+}
