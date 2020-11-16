@@ -47,7 +47,7 @@ import org.zenframework.z8.web.servlet.Servlet;
 public class WebServer extends RmiServer implements IWebServer {
 	private static final String ID = guid.create().toString();
 
-	private static final Collection<UrlPattern> urlPatterns = new LinkedList<UrlPattern>(Arrays.asList(new UrlPattern("*.json"), new UrlPattern("/storage/*"), new UrlPattern("/files/*"), new UrlPattern("/reports/*")));
+	private static final Collection<UrlPattern> urlPatterns = new LinkedList<UrlPattern>(Arrays.asList(new UrlPattern("/apidoc"), new UrlPattern("*.json"), new UrlPattern("/storage/*"), new UrlPattern("/files/*"), new UrlPattern("/reports/*")));
 
 	private Server server;
 	private ContextHandler context;
