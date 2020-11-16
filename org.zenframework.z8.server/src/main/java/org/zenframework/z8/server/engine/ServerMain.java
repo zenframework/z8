@@ -47,12 +47,14 @@ public final class ServerMain {
 	private static final Options Options = getOptions();
 
 	private static final String ServerOpt = "server";
+	private static final String ServerClassOpt = "server-class";
 	private static final String ConfigOpt = "config";
 	private static final String StopOpt = "stop";
 
 	private static Options getOptions() {
 		Options options = new Options();
 		options.addOption(ServerOpt, true, "server type: authcenter, appserver, interconnection");
+		options.addOption(ServerClassOpt, true, "server class");
 		options.addOption(ConfigOpt, true, "path to config file");
 		options.addOption(StopOpt, false, "to stop running server");
 		return options;
@@ -70,7 +72,12 @@ public final class ServerMain {
 			if (serverType == null)
 				throw new RuntimeException("Incorrect server type: " + cmd.getOptionValue(ServerOpt));
 
-			final Class<? extends IServer> serverClass = (Class<? extends IServer>) Class.forName(serverType.className);
+			final Class<? extends IServer> serverClass;
+			if (cmd.getOptionValue(ServerClassOpt) != null) {
+				serverClass = (Class<? extends IServer>) Class.forName(cmd.getOptionValue(ServerClassOpt));
+			} else {
+				serverClass = (Class<? extends IServer>) Class.forName(serverType.className);
+			}
 
 			ServerConfig config = new ServerConfig(cmd.hasOption(ConfigOpt) ? cmd.getOptionValue(ConfigOpt) : null);
 
