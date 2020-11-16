@@ -59,7 +59,7 @@ public class APIDocAdapter extends Adapter {
 
 		Collection<OBJECT.CLASS<? extends OBJECT>> apiClasses = new ArrayList<>();
 		for (OBJECT.CLASS<? extends OBJECT> request : Runtime.instance().requests())
-			if (request.hasAttribute(Json.apiDescription.get()))
+			if (request.hasAttribute(Json.apiDescription.get()) && !request.getAttribute(Json.apiDescription.get()).isEmpty())
 				apiClasses.add(request);
 		documentation = new DocBuilder().build(apiClasses);
 		try {
