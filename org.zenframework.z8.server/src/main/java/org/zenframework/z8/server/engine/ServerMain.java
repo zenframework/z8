@@ -47,7 +47,7 @@ public final class ServerMain {
 	private static final Options Options = getOptions();
 
 	private static final String ServerOpt = "server";
-	private static final String ServerClassOpt = "server_class";
+	private static final String ServerClassOpt = "server-class";
 	private static final String ConfigOpt = "config";
 	private static final String StopOpt = "stop";
 
