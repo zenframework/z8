@@ -5,7 +5,6 @@ allprojects {
 	buildscript {
 		repositories {
 			mavenLocal()
-			mavenCentral()
 			maven { url 'http://mvn.revoltsoft.ru/' }
 			maven { url 'https://plugins.gradle.org/m2/' }
 		}
