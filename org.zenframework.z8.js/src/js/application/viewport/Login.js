@@ -7,11 +7,10 @@ Z8.define('Z8.application.viewport.Login', {
 	initComponent: function() {
 		var header = { cls: 'header', html: 'Авторизация' };
 		var login = this.loginField = new Z8.form.field.Text({ label: { text: Z8.$('Login.login.text'), icon: 'fa-user', width: '6.42857143em', align: 'left' }, placeholder: Z8.$('Login.login.placeholder'), value: 'Admin' });
-		var password = this.passwordField = new Z8.form.field.Text({ label: { text: Z8.$('Login.password.text'),  icon: 'fa-key', align: 'left', width: '6.42857143em' }, placeholder: Z8.$('Login.password.placeholder'), password: true });
-		var loginButton = this.loginButton = new Z8.button.Button({ text: Z8.$('Login.btn.text'), cls: 'btn-tool', icon: 'fa-check', handler: this.login, scope: this });
-        var ssoLoginButton = this.ssoLoginButton = new Z8.button.Button({ text: Z8.$('Login.ssoBtn.text'),  cls: 'btn-tool', icon: 'fa-check', handler: this.ssoLogin, scope: this });
+        var password = this.passwordField = new Z8.form.field.Text({ label: { text: Z8.$('Login.password.text'),  icon: 'fa-key', align: 'left', width: '6.42857143em' }, placeholder: Z8.$('Login.password.placeholder'), password: true });
+        var loginButton = this.loginButton = new Z8.button.Button({ cls: 'btn-tool', icon: 'fa-check', handler: this.login, scope: this });
 
-		this.controls = [header, login, password, loginButton, ssoLoginButton];
+		this.controls = [header, login, password, loginButton];
 
 		this.callParent();
 	},
@@ -116,6 +115,21 @@ Z8.define('Z8.application.viewport.Login', {
 		if(key == Event.ENTER)
 			this.login(this.loginButton);
 	}
+});
+
+Z8.define('Z8.application.viewport.SSOLogin', {
+	extend: 'Z8.application.viewport.Login',
+
+	initComponent: function() {
+		this.callParent();
+        this.loginButton.text = Z8.$('Login.btn.text');
+        var ssoLoginButton = this.ssoLoginButton = new Z8.button.Button({ text: Z8.$('Login.ssoBtn.text'),  cls: 'btn-tool', icon: 'fa-check', handler: this.ssoLogin, scope: this });
+		this.controls.add(ssoLoginButton);
+	},
+
+	ssoLogin: function(button) {
+	    window.location = window.location.origin + '/sso_auth'
+	},
 });
 
 Z8.define('Z8.application.viewport.ChangePassword', {
