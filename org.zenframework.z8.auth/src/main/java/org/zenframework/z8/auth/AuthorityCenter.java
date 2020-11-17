@@ -35,7 +35,6 @@ public class AuthorityCenter extends HubServer implements IAuthorityCenter {
 	private final boolean clientHashPassword;
 	private final String ldapUrl;
 	private final boolean checkLdapLogin;
-	private final String ldapDefaultDomain;
 	private Collection<String> ldapUsersIgnore;
 	private boolean ldapUsersCreateOnSuccessfulLogin;
 	private boolean cacheEnabled;
@@ -55,7 +54,6 @@ public class AuthorityCenter extends HubServer implements IAuthorityCenter {
 		clientHashPassword = ServerConfig.webClientHashPassword();
 		checkLdapLogin = ServerConfig.checkLdapLogin();
 		ldapUrl = ServerConfig.ldapUrl();
-		ldapDefaultDomain = ServerConfig.ldapDefaultDomain();
 		ldapUsersIgnore = ServerConfig.ldapUsersIgnore();
 		ldapUsersCreateOnSuccessfulLogin = ServerConfig.ldapUsersCreateOnSuccessfulLogin();
 		cacheEnabled = ServerConfig.authorityCenterCache();
