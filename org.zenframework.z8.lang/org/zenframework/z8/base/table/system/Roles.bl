@@ -1,6 +1,8 @@
 import org.zenframework.z8.base.table.Table;
+import org.zenframework.z8.base.table.value.BoolField;
 
 [name "SystemRoles"]
+[displayName "Группы безопасности"]
 [native "org.zenframework.z8.server.base.table.system.Roles"]
 public class Roles extends Table {
 	records {
@@ -16,4 +18,28 @@ public class Roles extends Table {
 		[description "Гости"]
 		Guest = 'BE41CEB5-02DF-44EE-885F-B82DDEDCAA08';
 	}
+
+	[name "Read"]
+	[displayName "Чтение"]
+	public BoolField read;
+
+	[name "Write"]
+	[displayName "Изменение"]
+	public BoolField write;
+
+	[name "Create"]
+	[displayName "Создание"]
+	public BoolField create;
+
+	[name "Copy"]
+	[displayName "Копирование"]
+	public BoolField copy;
+
+	[name "Destroy"]
+	[displayName "Удаление"]
+	public BoolField destroy;
+
+	[name "Execute"]
+	[displayName "Запуск заданий"]
+	public BoolField execute;
 }
