@@ -35,7 +35,7 @@ public class SingleSignOnAdapter extends Adapter {
         }
         String principalName = (String) httpSession.getAttribute("userPrincipalName");
         try {
-            ISession session = ServerConfig.authorityCenter().ssoAuth(principalName);
+            ISession session = ServerConfig.authorityCenter().ssoLogin(principalName);
             if(useContainerSession){
                 httpSession.setAttribute(Adapter.sessionKeyName, session.id());
             }

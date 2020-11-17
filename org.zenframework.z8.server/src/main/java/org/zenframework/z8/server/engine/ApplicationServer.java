@@ -13,6 +13,9 @@ import org.zenframework.z8.server.config.ServerConfig;
 import org.zenframework.z8.server.db.ConnectionManager;
 import org.zenframework.z8.server.ie.Message;
 import org.zenframework.z8.server.ie.MessageAcceptor;
+import org.zenframework.z8.server.json.parser.JsonArray;
+import org.zenframework.z8.server.ldap.ActiveDirectory;
+import org.zenframework.z8.server.ldap.LdapUser;
 import org.zenframework.z8.server.logs.Trace;
 import org.zenframework.z8.server.request.IMonitor;
 import org.zenframework.z8.server.request.IRequest;
@@ -25,6 +28,9 @@ import org.zenframework.z8.server.security.User;
 import org.zenframework.z8.server.types.datespan;
 import org.zenframework.z8.server.types.file;
 import org.zenframework.z8.server.types.guid;
+import org.zenframework.z8.server.types.string;
+
+import javax.naming.NamingException;
 
 public class ApplicationServer extends RmiServer implements IApplicationServer {
 	static private final ThreadLocal<IRequest> currentRequest = new ThreadLocal<IRequest>();
@@ -141,12 +147,53 @@ public class ApplicationServer extends RmiServer implements IApplicationServer {
 
 	@Override
 	public IUser user(String login, String password, boolean createIfNotExist) {
-		return User.load(login, password, createIfNotExist);
+		if (password == null) {
+			return User.load(login, createIfNotExist);
+		} else {
+			return User.load(login, password, createIfNotExist);
+		}
 	}
 
+	/**
+	 * Returns user by principal name.
+	 * If user does not exist the user will be created and returned
+	 * @param principalName user principal name from AD
+	 */
 	@Override
-	public IUser userLoad(String login, boolean createIfNotExist) {
-		return User.load(login, createIfNotExist);
+	public IUser user(String principalName) {
+		String login = principalName.contains("@") ? principalName.split("@")[0] : principalName;
+		return User.isExists(login) ? user(login, null, false) : createUser(principalName);
+	}
+
+
+	/**
+	 * Getting user information from active directory and creating a new user
+	 */
+	private IUser createUser(String principalName) {
+		LdapUser ldapUser;
+		try {
+			ActiveDirectory activeDirectory = new ActiveDirectory();
+			ldapUser = activeDirectory.searchUser(
+					ServerConfig.searchBase(), String.format(ServerConfig.searchUserFilter(), principalName));
+			activeDirectory.close();
+		} catch (NamingException e) {
+			Trace.logError("Failed to get user attributes from active directory service", e);
+			return null;
+		}
+
+		IRequest request = getRequest();
+		// user attributes from ActiveDirectory
+		for(Map.Entry<String,String> entry : ldapUser.getParameters().entrySet()) {
+			request.getParameters().put(
+					new string(entry.getKey()),
+					new string(entry.getValue())
+			);
+		}
+		request.getParameters().put(
+				new string(ActiveDirectory.ldapParametersPrefix + "memberOf"),
+				new string(new JsonArray(ldapUser.getMemberOf()).toString()));
+
+		return user(ldapUser.getLogin(), null,true);
 	}
 
 	@Override

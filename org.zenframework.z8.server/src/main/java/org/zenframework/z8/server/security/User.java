@@ -253,6 +253,11 @@ public class User implements IUser {
 		return user;
 	}
 
+	public static boolean isExists(String login) {
+		User user = new User();
+		return user.readInfo(new string(login), true);
+	}
+
 	static public IUser load(String login, String password, boolean createIfNotExist) {
 		if(!ServerConfig.isSystemInstalled())
 			return User.system();
