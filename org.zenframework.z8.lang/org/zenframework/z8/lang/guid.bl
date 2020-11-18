@@ -5,6 +5,7 @@ final class guid extends primary {
 
 	static public guid create();
 	static public guid create(int n1, int n2);
+	static public guid create(string value);
 
 	public operator string();
 	public operator sql_guid();
