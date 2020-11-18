@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <web-app xmlns="http://java.sun.com/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd" version="3.0">
+	xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd" version="3.0">
 
-    <welcome-file-list>
-        <welcome-file>login.html</welcome-file>
-    </welcome-file-list>
+	<welcome-file-list>
+		<welcome-file>login.html</welcome-file>
+	</welcome-file-list>
 
 	<display-name>Z8 Web Server</display-name>
 	<description>Z8 Web Server</description>
@@ -37,5 +37,18 @@
 		<servlet-name>Z8 Web Server</servlet-name>
 		<url-pattern>/reports/*</url-pattern>
 	</servlet-mapping>
+
+<!-- Disable client cache -->
+<!--
+	<filter>
+		<filter-name>NoCacheFilter</filter-name>
+		<filter-class>org.zenframework.z8.web.servlet.NoCacheFilter</filter-class>
+	</filter>
+
+	<filter-mapping>
+		<filter-name>NoCacheFilter</filter-name>
+		<url-pattern>/*</url-pattern>
+	</filter-mapping>
+-->
 
 </web-app>
