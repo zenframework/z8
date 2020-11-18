@@ -78,10 +78,7 @@ public class Users extends Table {
 		public final static String Description = Resources.get(strings.Description);
 
 		public final static String SystemName = BuiltinUsers.displayNames.SystemName;
-		public final static String SystemDescription = BuiltinUsers.displayNames.SystemDescription;
-
 		public final static String AdministratorName = BuiltinUsers.displayNames.AdministratorName;
-		public final static String AdministratorDescription = BuiltinUsers.displayNames.AdministratorDescription;
 	}
 
 	public static class CLASS<T extends Users> extends Table.CLASS<T> {
@@ -203,14 +200,12 @@ public class Users extends Table {
 		{
 			LinkedHashMap<IField, primary> record = new LinkedHashMap<IField, primary>();
 			record.put(name.get(), new string(displayNames.AdministratorName));
-			record.put(description.get(), new string(displayNames.AdministratorDescription));
 			record.put(lock.get(), RecordLock.Destroy);
 			addRecord(BuiltinUsers.Administrator.guid(), record);
 		}
 		{
 			LinkedHashMap<IField, primary> record = new LinkedHashMap<IField, primary>();
 			record.put(name.get(), new string(displayNames.SystemName));
-			record.put(description.get(), new string(displayNames.SystemDescription));
 			record.put(lock.get(), RecordLock.Destroy);
 			addRecord(BuiltinUsers.System.guid(), record);
 		}
