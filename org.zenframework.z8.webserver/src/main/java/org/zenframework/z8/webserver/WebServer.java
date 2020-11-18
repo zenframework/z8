@@ -1,6 +1,8 @@
 package org.zenframework.z8.webserver;
 
 import java.rmi.RemoteException;
+
+import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.SessionIdManager;
 import org.eclipse.jetty.server.handler.ContextHandler;
@@ -48,7 +50,7 @@ public class WebServer extends RmiServer implements IWebServer {
 		context.setHandler(sessions);
 
 		GzipHandler gzipHandler = new GzipHandler();
-		gzipHandler.setHandler(new Z8Handler(context));
+		gzipHandler.setHandler(getZ8Handler());
 		gzipHandler.addIncludedMimeTypes(ServerConfig.webServerGzipMimeTypes());
 		gzipHandler.addIncludedMethods(ServerConfig.webServerGzipMethods());
 		gzipHandler.addIncludedPaths(ServerConfig.webServerGzipPaths());
@@ -85,6 +87,10 @@ public class WebServer extends RmiServer implements IWebServer {
 
 	@Override
 	public void probe() throws RemoteException {}
+
+	protected Handler getZ8Handler() {
+		return new Z8Handler(context);
+	}
 
 	public static void launch(ServerConfig config) throws Exception {
 		new WebServer().start();

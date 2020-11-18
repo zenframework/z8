@@ -36,6 +36,7 @@ public class Z8Handler extends AbstractHandler {
 					new UrlPattern("/reports/*")));
 
 	private class LifeCycleListener extends AbstractLifeCycleListener {
+		@Override
 		public void lifeCycleStopped(LifeCycle event) {
 			if (requestServlet != null)
 				requestServlet.destroy();
@@ -56,8 +57,8 @@ public class Z8Handler extends AbstractHandler {
 		} catch (ServletException e) {
 			throw new RuntimeException("Z8 Servlet init failed", e);
 		}
-		resourceHandler = new WebResourceHandler();
-		resourceHandler.init(Folders.Base, ServerConfig.webServerWebapp());
+		resourceHandler = getWebResourceHandler();
+		resourceHandler.init(Folders.Base, ServerConfig.webServerWebapp(), ServerConfig.language());
 
 		addLifeCycleListener(new LifeCycleListener());
 	}
@@ -85,6 +86,10 @@ public class Z8Handler extends AbstractHandler {
 			resourceHandler.handle(path, response);
 
 		baseRequest.setHandled(true);
+	}
+
+	protected WebResourceHandler getWebResourceHandler() {
+		return new WebResourceHandler();
 	}
 
 	private String getContentType(String path) {
