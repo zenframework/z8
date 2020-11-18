@@ -27,6 +27,7 @@ public class WebResourceHandler {
 		this.webapp = webapp;
 	}
 
+	@SuppressWarnings("resource")
 	public void handle(String path, HttpServletResponse response) throws IOException {
 		File file = getFile(path);
 
