@@ -9,6 +9,7 @@ import java.util.Map;
 
 import org.zenframework.z8.server.json.Json;
 import org.zenframework.z8.server.json.JsonWriter;
+import org.zenframework.z8.server.resources.Resources;
 import org.zenframework.z8.server.types.guid;
 
 public class CLASS<TYPE extends IObject> implements IClass<TYPE> {
@@ -68,7 +69,7 @@ public class CLASS<TYPE extends IObject> implements IClass<TYPE> {
 
 	@Override
 	public void setAttribute(String key, String value) {
-		attributes.put(key, value);
+		attributes.put(key, Resources.getByKey(value));
 	}
 
 	@Override
