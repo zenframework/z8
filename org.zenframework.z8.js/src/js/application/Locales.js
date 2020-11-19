@@ -10,4 +10,5 @@ Z8.loadMessages('en', {
     'Login.login.placeholder': 'Login',
     'Login.password.text': 'Password',
     'Login.password.placeholder': 'Password'
+    asdasda
 });
