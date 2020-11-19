@@ -35,6 +35,9 @@ fi
 if [[ ! -z "\$${project.name.toUpperCase().replaceAll('\\W', '_')}_DB_CONNECTION" ]]; then
  JAVA_OPTS="\$JAVA_OPTS -Dz8.application.database.connection=\$${project.name.toUpperCase().replaceAll('\\W', '_')}_DB_CONNECTION"
 fi
+if [[ ! -z "\$${project.name.toUpperCase().replaceAll('\\W', '_')}_LANGUAGE" ]]; then
+ JAVA_OPTS="\$JAVA_OPTS -Dz8.application.language=\$${project.name.toUpperCase().replaceAll('\\W', '_')}_LANGUAGE"
+fi
 
 # Alternate env variables, format <Z8_<VAR>>
 if [[ ! -z "\$Z8_DB_SCHEMA" ]]; then
@@ -48,6 +51,9 @@ if [[ ! -z "\$Z8_DB_PASSWORD" ]]; then
 fi
 if [[ ! -z "\$Z8_DB_CONNECTION" ]]; then
  JAVA_OPTS="\$JAVA_OPTS -Dz8.application.database.connection=\$Z8_DB_CONNECTION"
+fi
+if [[ ! -z "\$Z8_LANGUAGE" ]]; then
+ JAVA_OPTS="\$JAVA_OPTS -Dz8.application.language=\$Z8_LANGUAGE"
 fi
 
 export JAVA_OPTS

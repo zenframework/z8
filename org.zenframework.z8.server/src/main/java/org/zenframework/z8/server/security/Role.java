@@ -5,7 +5,6 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
 import org.zenframework.z8.server.engine.RmiIO;
-import org.zenframework.z8.server.resources.Resources;
 import org.zenframework.z8.server.types.guid;
 
 public class Role implements IRole {
@@ -15,16 +14,10 @@ public class Role implements IRole {
 	static public guid Guest = new guid("BE41CEB5-02DF-44EE-885F-B82DDEDCAA08");
 	static public guid Administrator = new guid("DC08CA72-C668-412F-91B7-022F1C82AC09");
 
-	static public class strings {
-		static public final String User = "Role.user";
-		static public final String Guest = "Role.guest";
-		static public final String Administrator = "Role.administrator";
-	}
-
 	static public class displayNames {
-		public final static String User = Resources.get(strings.User);
-		public final static String Guest = Resources.get(strings.Guest);
-		public final static String Administrator = Resources.get(strings.Administrator);
+		public final static String User = "User";
+		public final static String Guest = "Guest";
+		public final static String Administrator = "Administrator";
 	}
 
 	private guid id = null;

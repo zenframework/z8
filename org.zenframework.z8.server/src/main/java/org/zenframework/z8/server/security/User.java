@@ -72,7 +72,6 @@ public class User implements IUser {
 
 		guid id = BuiltinUsers.System.guid();
 		String login = BuiltinUsers.displayNames.SystemName;
-		String description = BuiltinUsers.displayNames.SystemDescription;
 
 		system = new User();
 
@@ -82,7 +81,6 @@ public class User implements IUser {
 		system.firstName = "";
 		system.middleName = "";
 		system.lastName = "";
-		system.description = description;
 		system.banned = false;
 		system.changePassword = false;
 

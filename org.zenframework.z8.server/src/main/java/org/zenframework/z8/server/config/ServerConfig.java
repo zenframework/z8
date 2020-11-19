@@ -35,6 +35,9 @@ public class ServerConfig extends Properties {
 
 	static final private String Multitenancy = "z8.instance.multitenancy";
 
+	static final private String Language = "application.language";
+	static final private String DefaultLanguage = "ru";
+
 	static final private String ApplicationServerHost = "application.server.host";
 	static final private String ApplicationServerPort = "application.server.port";
 
@@ -106,6 +109,8 @@ public class ServerConfig extends Properties {
 	static final private String FtsConfiguration = "fts.configuration";
 
 	static private File workingPath;
+
+	static private String language;
 
 	static private String instanceId;
 	static private boolean multitenancy;
@@ -209,6 +214,8 @@ public class ServerConfig extends Properties {
 			}
 /* <<<<<<<<<<<<<<<<< to remove */
 		}
+
+		language = getProperty(Language, DefaultLanguage);
 
 		instanceId = getProperty(InstanceId, DefaultInstanceId);
 		multitenancy = getProperty(Multitenancy, false);
@@ -399,6 +406,10 @@ public class ServerConfig extends Properties {
 
 	static public int get(String key, int defaultValue) {
 		return instance.getProperty(key, defaultValue);
+	}
+
+	static public String language() {
+		return language;
 	}
 
 	static public String instanceId() {

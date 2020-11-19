@@ -43,6 +43,7 @@ public class APIDocAdapter extends Adapter {
 	@Override
 	public void service(HttpServletRequest request, HttpServletResponse response) throws IOException {
 		initTemplate();
+		// TODO Cache API documentation in file
 		StringWriter stringWriter = new StringWriter();
 		try {
 			temp.process(documentation, stringWriter);
