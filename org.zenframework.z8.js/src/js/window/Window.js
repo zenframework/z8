@@ -7,8 +7,8 @@ Z8.define('Z8.window.Window', {
 	autoDestroy: true,
 	isOpen: false,
 
-	okText: 'Готово',
-	cancelText: 'Отменить',
+	okText: Z8.$('Window.done'),
+	cancelText: Z8.$('Window.cancel'),
 
 	getCls: function() {
 		return Container.prototype.getCls.call(this).pushIf('window');
@@ -69,7 +69,7 @@ Z8.define('Z8.window.Window', {
 			var body = Viewport.getBody();
 			body.items.push(this);
 
-			this.mask = DOM.append(body, { cls: 'window-mask' }); 
+			this.mask = DOM.append(body, { cls: 'window-mask' });
 			this.aligner = DOM.append(body, { cls: 'window-aligner' });
 			this.render(this.aligner);
 		} else {

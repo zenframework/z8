@@ -12,8 +12,8 @@ Z8.define('Z8.util.Format', {
 		LongDatetime: 'j F Y H:i',
 		Integer: '0,000',
 		Float: '0,000.00',
-		TrueText: 'да',
-		FalseText: 'нет',
+		TrueText: Z8.$('Format.true'),
+		FalseText: Z8.$('Format.false'),
 
 		ThousandSeparator: ' ',
 		DecimalSeparator: ',',
@@ -104,10 +104,10 @@ Z8.define('Z8.util.Format', {
 			var isYesterday = Date.isEqualDate(value, yesterday);
 
 			if(isToday)
-				return 'сегодня ' + Format.date(value, timeFormat);
+				return Z8.$('Format.today') + Format.date(value, timeFormat);
 
 			if(isYesterday)
-				return 'вчера ' + Format.date(value, timeFormat);
+				return Z8.$('Format.yesterday') + Format.date(value, timeFormat);
 
 			return Format.date(value, dateFormat);
 		},

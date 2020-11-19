@@ -4,8 +4,8 @@ Z8.define('Z8.calendar.Button', {
 	icon: 'fa-calendar',
 	toggle: true,
 
-	tooltip: 'Период',
-	triggerTooltip: 'Выбрать период',
+	tooltip: Z8.$('Button.period'),
+	triggerTooltip: Z8.$('Button.selectAPeriod'),
 
 	period: null,
 	property: null,

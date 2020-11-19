@@ -10,10 +10,55 @@ Date.DaysInMonth = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
 Date.MillisPerDay = 864e5;
 Date.MillisPerWeek = 7 * Date.MillisPerDay;
 
-Date.MonthNames = ['Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь', 'Июль', 'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь'];
-Date.MonthShortNames = ['Янв', 'Фев', 'Мар', 'Апр', 'Май', 'Июн', 'Июл', 'Авг', 'Сен', 'Окт', 'Ноя', 'Дек'];
-Date.DayNames = ['Понедельник', 'Вторник', 'Среда', 'Четверг', 'Пятница', 'Суббота', 'Воскресенье'];
-Date.DayShortNames = ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс'];
+Date.MonthNames = [
+	Z8.$('Date.January'),
+	Z8.$('Date.February'),
+	Z8.$('Date.March'),
+	Z8.$('Date.April'),
+	Z8.$('Date.May'),
+	Z8.$('Date.June'),
+	Z8.$('Date.July'),
+	Z8.$('Date.August'),
+	Z8.$('Date.September'),
+	Z8.$('Date.October'),
+	Z8.$('Date.November'),
+	Z8.$('Date.December')
+];
+
+Date.MonthShortNames = [
+	Z8.$('Date.Jan'),
+	Z8.$('Date.Feb'),
+	Z8.$('Date.Mar'),
+	Z8.$('Date.Apr'),
+	Z8.$('Date.May'),
+	Z8.$('Date.Jun'),
+	Z8.$('Date.Jul'),
+	Z8.$('Date.Aug'),
+	Z8.$('Date.Sep'),
+	Z8.$('Date.Oct'),
+	Z8.$('Date.Nov'),
+	Z8.$('Date.Dec')
+];
+
+Date.DayNames = [
+	Z8.$('Date.Monday'),
+	Z8.$('Date.Tuesday'),
+	Z8.$('Date.Wednesday'),
+	Z8.$('Date.Thursday'),
+	Z8.$('Date.Friday'),
+	Z8.$('Date.Saturday'),
+	Z8.$('Date.Sunday')
+];
+
+Date.DayShortNames = [
+	Z8.$('Date.Mo'),
+	Z8.$('Date.Tu'),
+	Z8.$('Date.We'),
+	Z8.$('Date.Th'),
+	Z8.$('Date.Fr'),
+	Z8.$('Date.Sa'),
+	Z8.$('Date.Su')
+];
 
 Date.isDate = function(value) {
 	return value instanceof Date;
@@ -64,8 +109,8 @@ Date.prototype.getFirstDateOfWeek = function() {
 };
 
 Date.prototype.getWeekOfYear = function() {
-	var DC3 = Date.UTC(this.getFullYear(), this.getMonth(), this.getDate() + 3) / Date.MillisPerDay; // an Absolute Day Number 
-	var absoluteWeekNumber = Math.floor(DC3 / 7); // an Absolute Week Number 
+	var DC3 = Date.UTC(this.getFullYear(), this.getMonth(), this.getDate() + 3) / Date.MillisPerDay; // an Absolute Day Number
+	var absoluteWeekNumber = Math.floor(DC3 / 7); // an Absolute Week Number
 	var wyr = new nativeDate(absoluteWeekNumber * Date.MillisPerWeek).getUTCFullYear();
 	return absoluteWeekNumber - Math.floor(Date.UTC(wyr, 0, 7) / Date.MillisPerWeek) + 1;
 };
@@ -240,7 +285,7 @@ Date.prototype.toISOString = function() {
 		(month < 10 ? '0' : '') + month + '-' +
 		(day < 10 ? '0' : '') + day + 'T' +
 		(hours < 10 ? '0' : '') + hours + ':' +
-		(minutes < 10 ? '0' : '') + minutes + ':' + 
+		(minutes < 10 ? '0' : '') + minutes + ':' +
 		(seconds < 10 ? '0' : '') + seconds +
 		(milliseconds != 0 ? '.' + (milliseconds < 100 ? (milliseconds < 10 ? '00' : '0') : '') + milliseconds : '') + offset;
 };

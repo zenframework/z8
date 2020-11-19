@@ -1,14 +1,531 @@
 Z8.loadMessages('ru', {
+
+    // Login
     'Login.login.text': 'Логин',
     'Login.login.placeholder': 'Логин',
     'Login.password.text': 'Пароль',
-    'Login.password.placeholder': 'Пароль'
+    'Login.password.placeholder': 'Пароль',
+    'Login.authorization': 'Авторизация',
+
+    // ChangePassword
+    'ChangePassword.passwordSetting': ' - установка пароля',
+    'ChangePassword.password': 'Пароль',
+    'ChangePassword.newPassword': 'Новый пароль',
+    'ChangePassword.repeat': '(повтор)',
+
+    // Application
+    'Application.fileSize': 'Размер файла \'',
+    'Application.exceedsAllowedFileSize': ' превышает максимально допустимые ',
+
+    // Navigator
+    'Navigator.newRecord': 'Новая запись',
+    'Navigator.copyRecord': 'Копировать запись',
+    'Navigator.refresh': 'Обновить',
+    'Navigator.deleteRecord': 'Удалить запись',
+    'Navigator.files': 'Файлы',
+    'Navigator.formView': 'В виде формы',
+    'Navigator.tableView': 'В виде таблицы',
+    'Navigator.settings': 'Настройки',
+    'Navigator.saveAsPDF': 'Сохранить как PDF',
+    'Navigator.saveAsXLS': 'Сохранить как XLS',
+    'Navigator.saveAsDOC': 'Сохранить как DOC',
+    'Navigator.actions': 'Действия',
+    'Navigator.printDocuments': 'Печать документов',
+
+    // JobMonitor
+    'JobMonitor.taskMonitor': 'Монитор задач',
+    'JobMonitor.task': 'Задача',
+    'JobMonitor.start': 'Начало',
+    'JobMonitor.duration': 'Длительность',
+
+    // Z8.Viewport
+    'Z8.Viewport.logout': 'Выход',
+    'Z8.Viewport.taskMonitor': 'Монитор задач',
+    'Z8.Viewport.menuToggle': 'Развернуть/скрыть меню',
+
+    // GeometryTools
+    'GeometryTools.selectAnObject': 'Выбор объекта',
+    'GeometryTools.moveAnObject': 'Переместить объект',
+    'GeometryTools.editAnObject': 'Изменить объект',
+    'GeometryTools.drawAnObject': 'Нарисовать объект',
+    'GeometryTools.eraseAnObject': 'Стереть объект',
+    'GeometryTools.rotateAnObject': 'Повернуть объект',
+    'GeometryTools.rectangularSelection': 'Прямоугольное выделение',
+    'GeometryTools.lasso': 'Лассо',
+    'GeometryTools.ruler': 'Линейка',
+    'GeometryTools.pickFromTheSubstrate': 'Взять с подложки',
+    'GeometryTools.myLocation': 'Моё местоположение',
+    'GeometryTools.openInYandex': 'Открыть в Яндекс',
+    'GeometryTools.tools': 'Инструменты',
+
+    // Button
+    'Button.period': 'Период',
+    'Button.selectAPeriod': 'Выбрать период',
+    'Button.filter': 'Фильтрация',
+    'Button.configureFilter': 'Настроить фильтрацию',
+    'Button.configure': 'Настроить',
+    'Button.filterConfiguration': 'Настройка фильтрации',
+
+    // Period
+    'Period.today': 'Сегодня',
+    'Period.yesterday': 'Вчера',
+    'Period.dayBeforeYesterday': 'Позавчера',
+    'Period.sevenDays': '7 дней',
+    'Period.tomorrow': 'Завтра',
+    'Period.thisWeek': 'Текущая неделя',
+    'Period.lastWeek': 'Прошлая неделя',
+    'Period.nextWeek': 'Следующая неделя',
+    'Period.thisMonth': 'Текущий месяц',
+    'Period.lastMonth': 'Прошлый месяц',
+    'Period.nextMonth': 'Следующий месяц',
+    'Period.thisQuarter': 'Текущий квартал',
+    'Period.lastQuarter': 'Прошлый квартал',
+    'Period.nextQuarter': 'Следующий квартал',
+    'Period.thisHalfAYear': 'Текущее полугодие',
+    'Period.lastHalfAYear': 'Прошлое полугодие',
+    'Period.nextHalfAYear': 'Следующее полугодие',
+    'Period.thisYear': 'Текущий год',
+    'Period.lastYear': 'Прошлый год',
+    'Period.nextYear': 'Следующий год',
+    'Period.close': 'Закрыть',
+    'Period.apply': 'Применить',
+    'Period.after': 'после',
+    'Period.before': 'до',
+
+    // DOM
+    'DOM.fileNotFound': '\' - файл не найден',
+
+    // Model
+    'Model.filter': 'Фильтр',
+    'Model.filters': 'Фильтры',
+    'Model.newFilter': 'Новый фильтр',
+    'Model.copyARecord': 'Копировать запись (Shift+Insert)',
+    'Model.deleteFilters': 'Удалить фильтр(ы)',
+    'Model.expression': 'Выражение',
+    'Model.text': 'Текст',
+
+    // Group
+    'Group.newLine': 'Новая строка',
+    'Group.ungroup': 'Разгруппировать',
+    'Group.toggleAndOr': 'Изменить и/или',
+    'Group.or': 'или',
+    'Group.and': 'и',
+
+    // Line
+    'Line.field': 'Поле',
+    'Line.type': 'Тип',
+    'Line.description': 'Описание',
+    'Line.operation': 'Операция',
+    'Line.text': 'текст',
+    'Line.date': 'дата',
+    'Line.time': 'время',
+
+    // Operator
+    'Operator.true': 'да',
+    'Operator.false': 'нет',
+    'Operator.after': 'после',
+    'Operator.notEarlierThan': 'не ранее',
+    'Operator.before': 'до',
+    'Operator.notLaterThan': 'не позже',
+    'Operator.today': 'сегодня',
+    'Operator.yesterday': 'вчера',
+    'Operator.tomorrow': 'завтра',
+    'Operator.thisWeek': 'текущая неделя',
+    'Operator.lastWeek': 'прошлая неделя',
+    'Operator.nextWeek': 'следующая неделя',
+    'Operator.thisMonth': 'текущий месяц',
+    'Operator.lastMonth': 'прошлый месяц',
+    'Operator.nextMonth': 'следующий месяц',
+    'Operator.thisYear': 'текущий год',
+    'Operator.lastYear': 'прошлый год',
+    'Operator.nextYear': 'следующий год',
+    'Operator.lastDays': 'последние X дней',
+    'Operator.nextDays': 'следующие X дней',
+    'Operator.lastHours': 'последние X часов',
+    'Operator.nextHours': 'следующие X часов',
+    'Operator.equalTo': 'равно',
+    'Operator.notEqualTo': 'не равно',
+    'Operator.greaterThan': 'больше',
+    'Operator.numberGreaterThanOrEqualTo': 'не меньше',
+    'Operator.stringGreaterThanOrEqualTo': 'больше или равно',
+    'Operator.lessThan': 'меньше',
+    'Operator.numberLessThanOrEqualTo': 'не больше',
+    'Operator.stringLessThanOrEqualTo': 'меньше или равно',
+    'Operator.contains': 'содержит',
+    'Operator.doesNotContain': 'не содержит',
+    'Operator.containsAWord': 'содержит слово',
+    'Operator.doesNotContainAWord': 'не содержит слово',
+    'Operator.isSimilarTo': 'похоже',
+    'Operator.isNotSimilarTo': 'не похоже',
+    'Operator.beginsWith': 'начинается с',
+    'Operator.doesNotBeginWith': 'не начинается с',
+    'Operator.endsWith': 'оканчивается на',
+    'Operator.doesNotEndWith': 'не оканчивается на',
+    'Operator.isEmptyString': 'пустая строка',
+    'Operator.isNotEmptyString': 'непустая строка',
+
+    // ComboBox
+    'ComboBox.edit': 'Редактировать \'',
+    'ComboBox.clear': 'Очистить',
+    'ComboBox.true': 'да',
+    'ComboBox.false': 'нет',
+
+    // FileBox
+    'FileBox.uploadAFile': 'Загрузить файл',
+    'FileBox.downloadAFile': 'Скачать файл',
+
+    // FilesBox
+    'FilesBox.file': 'Файл',
+    'FilesBox.fileSize': 'Размер',
+    'FilesBox.date': 'Дата',
+    'FilesBox.author': 'Автор',
+    'FilesBox.uploadFiles': 'Загрузить файл(ы)',
+    'FilesBox.downloadFiles': 'Скачать файл(ы)',
+    'FilesBox.deleteFiles': 'Удалить файл(ы)',
+
+    // Filter
+    'Filter.newLine': 'Новая строка',
+    'Filter.group': 'Группировать',
+    'Filter.ungroup': 'Разгруппировать',
+    'Filter.deleteLines': 'Удалить строки',
+
+    // Geometry
+    'Geometry.zoomOut': 'Уменьшить',
+    'Geometry.zoomIn': 'Увеличить',
+    'Geometry.meter': ' м',
+    'Geometry.kilometer': ' км',
+
+    // Listbox
+    'Listbox.newRecord': 'Новая запись (Insert)',
+    'Listbox.deleteARecord': 'Удалить запись (Delete)',
+    'Listbox.copyARecord': 'Копировать запись (Shift+Insert)',
+    'Listbox.edit': 'Редактировать \'',
+    'Listbox.refresh': 'Обновить (Ctrl+R)',
+    'Listbox.filter': 'Фильтрация (Ctrl+F)',
+    'Listbox.settings': 'Настройки',
+    'Listbox.saveAsPDF': 'Сохранить как PDF',
+    'Listbox.saveAsXLS': 'Сохранить как XLS',
+    'Listbox.saveAsDOC': 'Сохранить как DOC',
+
+    // Pager
+    'Pager.outOf': 'из',
+    'Pager.noRecords': 'Нет записей',
+
+    // Date
+    'Date.January': 'Январь',
+    'Date.February': 'Февраль',
+    'Date.March': 'Март',
+    'Date.April': 'Апрель',
+    'Date.May': 'Май',
+    'Date.June': 'Июнь',
+    'Date.July': 'Июль',
+    'Date.August': 'Август',
+    'Date.September': 'Сентябрь',
+    'Date.October': 'Октябрь',
+    'Date.November': 'Ноябрь',
+    'Date.December': 'Декабрь',
+    'Date.Jan': 'Янв',
+    'Date.Feb': 'Фев',
+    'Date.Mar': 'Мар',
+    'Date.Apr': 'Апр',
+    'Date.May': 'Май',
+    'Date.Jun': 'Июн',
+    'Date.Jul': 'Июл',
+    'Date.Aug': 'Авг',
+    'Date.Sep': 'Сен',
+    'Date.Oct': 'Окт',
+    'Date.Nov': 'Ноя',
+    'Date.Dec': 'Дек',
+    'Date.Monday': 'Понедельник',
+    'Date.Tuesday': 'Вторник',
+    'Date.Wednesday': 'Среда',
+    'Date.Thursday': 'Четверг',
+    'Date.Friday': 'Пятница',
+    'Date.Saturday': 'Суббота',
+    'Date.Sunday': 'Воскресенье',
+    'Date.Mo': 'Пн',
+    'Date.Tu': 'Вт',
+    'Date.We': 'Ср',
+    'Date.Th': 'Чт',
+    'Date.Fr': 'Пт',
+    'Date.Sa': 'Сб',
+    'Date.Su': 'Вс',
+
+    // Format
+    'Format.true': 'да',
+    'Format.false': 'нет',
+    'Format.today': 'сегодня ',
+    'Format.yesterday': 'вчера ',
+
+    // Window
+    'Window.done': 'Готово',
+    'Window.cancel': 'Отменить',
+
 });
 
 Z8.loadMessages('en', {
+
+    // Login
     'Login.login.text': 'Login',
     'Login.login.placeholder': 'Login',
     'Login.password.text': 'Password',
-    'Login.password.placeholder': 'Password'
-    asdasda
+    'Login.password.placeholder': 'Password',
+    'Login.authorization': 'Authorization',
+
+    // ChangePassword
+    'ChangePassword.passwordSetting': ' - password setting',
+    'ChangePassword.password': 'Password',
+    'ChangePassword.newPassword': 'New password',
+    'ChangePassword.repeat': '(repeat)',
+
+    // Application
+    'Application.fileSize': 'File size \'',
+    'Application.exceedsAllowedFileSize': ' exceeds the maximum allowed file size of ',
+
+    // Navigator
+    'Navigator.newRecord': 'New record',
+    'Navigator.copyRecord': 'Copy record',
+    'Navigator.refresh': 'Refresh',
+    'Navigator.deleteRecord': 'Delete record',
+    'Navigator.files': 'Files',
+    'Navigator.formView': 'Form view',
+    'Navigator.tableView': 'Table view',
+    'Navigator.settings': 'Settings',
+    'Navigator.saveAsPDF': 'Save as PDF',
+    'Navigator.saveAsXLS': 'Save as XLS',
+    'Navigator.saveAsDOC': 'Save as DOC',
+    'Navigator.actions': 'Actions',
+    'Navigator.printDocuments': 'Print documents',
+
+    // JobMonitor
+    'JobMonitor.taskMonitor': 'Task monitor',
+    'JobMonitor.task': 'Task',
+    'JobMonitor.start': 'Start',
+    'JobMonitor.duration': 'Duration',
+
+    // Z8.Viewport
+    'Z8.Viewport.logout': 'Logout',
+    'Z8.Viewport.taskMonitor': 'Task monitor',
+    'Z8.Viewport.menuToggle': 'Expand/hide menu',
+
+    // GeometryTools
+    'GeometryTools.selectAnObject': 'Select an object',
+    'GeometryTools.moveAnObject': 'Move an object',
+    'GeometryTools.editAnObject': 'Edit an object',
+    'GeometryTools.drawAnObject': 'Draw an object',
+    'GeometryTools.eraseAnObject': 'Erase an object',
+    'GeometryTools.rotateAnObject': 'Rotate an object',
+    'GeometryTools.rectangularSelection': 'Rectangular selection',
+    'GeometryTools.lasso': 'Lasso',
+    'GeometryTools.ruler': 'Ruler',
+    'GeometryTools.pickFromTheSubstrate': 'Pick from the substrate',
+    'GeometryTools.myLocation': 'My location',
+    'GeometryTools.openInYandex': 'Open in Yandex',
+    'GeometryTools.tools': 'Tools',
+
+    // Button
+    'Button.period': 'Period',
+    'Button.selectAPeriod': 'Select a period',
+    'Button.filter': 'Filter',
+    'Button.configureFilter': 'Configure filter',
+    'Button.configure': 'Configure',
+    'Button.filterConfiguration': 'FIlter configuration',
+
+    // Period
+    'Period.today': 'Today',
+    'Period.yesterday': 'Yesterday',
+    'Period.dayBeforeYesterday': 'Day before yesterday',
+    'Period.sevenDays': '7 days',
+    'Period.tomorrow': 'Tomorrow',
+    'Period.thisWeek': 'This week',
+    'Period.lastWeek': 'Last week',
+    'Period.nextWeek': 'Next week',
+    'Period.thisMonth': 'This month',
+    'Period.lastMonth': 'Last month',
+    'Period.nextMonth': 'Next month',
+    'Period.thisQuarter': 'This quarter',
+    'Period.lastQuarter': 'Last quarter',
+    'Period.nextQuarter': 'Next quarter',
+    'Period.thisHalfAYear': 'This half a year',
+    'Period.lastHalfAYear': 'Last half a year',
+    'Period.nextHalfAYear': 'Next half a year',
+    'Period.thisYear': 'This year',
+    'Period.lastYear': 'Last year',
+    'Period.nextYear': 'Next year',
+    'Period.close': 'Close',
+    'Period.apply': 'Apply',
+    'Period.after': 'after',
+    'Period.before': 'before',
+
+    // DOM
+    'DOM.fileNotFound': '\' - file not found',
+
+    // Model
+    'Model.filter': 'Filter',
+    'Model.filters': 'Filters',
+    'Model.newFilter': 'New filter',
+    'Model.copyARecord': 'Copy a record (Shift+Insert)',
+    'Model.deleteFilters': 'Delete filter(s)',
+    'Model.expression': 'Expression',
+    'Model.text': 'Text',
+
+    // Group
+    'Group.newLine': 'New line',
+    'Group.ungroup': 'Ungroup',
+    'Group.toggleAndOr': 'Toggle and/or',
+    'Group.or': 'or',
+    'Group.and': 'and',
+
+    // Line
+    'Line.field': 'Field',
+    'Line.type': 'Type',
+    'Line.description': 'Description',
+    'Line.operation': 'Operation',
+    'Line.text': 'text',
+    'Line.date': 'date',
+    'Line.time': 'time',
+
+    // Operator
+    'Operator.true': 'yes',
+    'Operator.false': 'no',
+    'Operator.after': 'after',
+    'Operator.notEarlierThan': 'not earlier than',
+    'Operator.before': 'before',
+    'Operator.notLaterThan': 'not later than',
+    'Operator.today': 'today',
+    'Operator.yesterday': 'yesterday',
+    'Operator.tomorrow': 'tomorrow',
+    'Operator.thisWeek': 'this week',
+    'Operator.lastWeek': 'last week',
+    'Operator.nextWeek': 'next week',
+    'Operator.thisMonth': 'this month',
+    'Operator.lastMonth': 'last month',
+    'Operator.nextMonth': 'next month',
+    'Operator.thisYear': 'this year',
+    'Operator.lastYear': 'last year',
+    'Operator.nextYear': 'next year',
+    'Operator.lastDays': 'last X days',
+    'Operator.nextDays': 'next X days',
+    'Operator.lastHours': 'last X hours',
+    'Operator.nextHours': 'next X hours',
+    'Operator.equalTo': 'equal to',
+    'Operator.notEqualTo': 'not equal to',
+    'Operator.greaterThan': 'greater than',
+    'Operator.numberGreaterThanOrEqualTo': 'greater than or equal to',
+    'Operator.stringGreaterThanOrEqualTo': 'greater than or equal to',
+    'Operator.lessThan': 'less than',
+    'Operator.numberLessThanOrEqualTo': 'less than or equal to',
+    'Operator.stringLessThanOrEqualTo': 'less than or equal to',
+    'Operator.contains': 'contains',
+    'Operator.doesNotContain': 'does not contain',
+    'Operator.containsAWord': 'includes a word',
+    'Operator.doesNotContainAWord': 'does not contain a word',
+    'Operator.isSimilarTo': 'is similar to',
+    'Operator.isNotSimilarTo': 'is not similar to',
+    'Operator.beginsWith': 'begins with',
+    'Operator.doesNotBeginWith': 'does not begin with',
+    'Operator.endsWith': 'ends with',
+    'Operator.doesNotEndWith': 'does not end with',
+    'Operator.isEmptyString': 'is empty string',
+    'Operator.isNotEmptyString': 'is not empty string',
+
+    // ComboBox
+    'ComboBox.edit': 'Edit \'',
+    'ComboBox.clear': 'Clear',
+    'ComboBox.true': 'yes',
+    'ComboBox.false': 'no',
+
+    // FileBox
+    'FileBox.uploadAFile': 'Upload a file',
+    'FileBox.downloadAFile': 'Download a file',
+
+    // FilesBox
+    'FilesBox.file': 'File',
+    'FilesBox.fileSize': 'File size',
+    'FilesBox.date': 'Date',
+    'FilesBox.author': 'Author',
+    'FilesBox.uploadFiles': 'Upload file(s)',
+    'FilesBox.downloadFiles': 'Download file(s)',
+    'FilesBox.deleteFiles': 'Delete file(s)',
+
+    // Filter
+    'Filter.newLine': 'New line',
+    'Filter.group': 'Group',
+    'Filter.ungroup': 'Ungroup',
+    'Filter.deleteLines': 'Delete lines',
+
+    // Geometry
+    'Geometry.zoomOut': 'Zoom out',
+    'Geometry.zoomIn': 'Zoom in',
+    'Geometry.meter': ' m',
+    'Geometry.kilometer': ' km',
+
+    // Listbox
+    'Listbox.newRecord': 'New record (Insert)',
+    'Listbox.deleteARecord': 'Delete a record (Delete)',
+    'Listbox.copyARecord': 'Copy a record (Shift+Insert)',
+    'Listbox.edit': 'Edit \'',
+    'Listbox.refresh': 'Refresh (Ctrl+R)',
+    'Listbox.filter': 'Filter (Ctrl+F)',
+    'Listbox.settings': 'Settings',
+    'Listbox.saveAsPDF': 'Save as PDF',
+    'Listbox.saveAsXLS': 'Save as XLS',
+    'Listbox.saveAsDOC': 'Save as DOC',
+
+    // Pager
+    'Pager.outOf': 'out of',
+    'Pager.noRecords': 'No records',
+
+    // Date
+    'Date.January': 'January',
+    'Date.February': 'February',
+    'Date.March': 'March',
+    'Date.April': 'April',
+    'Date.May': 'May',
+    'Date.June': 'June',
+    'Date.July': 'July',
+    'Date.August': 'August',
+    'Date.September': 'September',
+    'Date.October': 'October',
+    'Date.November': 'November',
+    'Date.December': 'December',
+    'Date.Jan': 'Jan',
+    'Date.Feb': 'Feb',
+    'Date.Mar': 'Mar',
+    'Date.Apr': 'Apr',
+    'Date.May': 'May',
+    'Date.Jun': 'Jun',
+    'Date.Jul': 'Jul',
+    'Date.Aug': 'Aug',
+    'Date.Sep': 'Sep',
+    'Date.Oct': 'Oct',
+    'Date.Nov': 'Nov',
+    'Date.Dec': 'Dec',
+    'Date.Monday': 'Monday',
+    'Date.Tuesday': 'Tuesday',
+    'Date.Wednesday': 'Wednesday',
+    'Date.Thursday': 'Thursday',
+    'Date.Friday': 'Friday',
+    'Date.Saturday': 'Saturday',
+    'Date.Sunday': 'Sunday',
+    'Date.Mo': 'Mo',
+    'Date.Tu': 'Tu',
+    'Date.We': 'We',
+    'Date.Th': 'Th',
+    'Date.Fr': 'Fr',
+    'Date.Sa': 'Sa',
+    'Date.Su': 'Su',
+
+    // Format
+    'Format.true': 'yes',
+    'Format.false': 'no',
+    'Format.today': 'today ',
+    'Format.yesterday': 'yesterday ',
+
+    // Window
+    'Window.done': 'Done',
+    'Window.cancel': 'Cancel',
+
+    // Z8.$('')
+
 });

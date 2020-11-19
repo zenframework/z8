@@ -62,14 +62,14 @@ Z8.define('Z8.data.Period', {
 				return Format.date(start, Format.Date);
 
 			var startFormat = Format.Date;
-	
+
 			if(start.getYear() == finish.getYear())
 				startFormat = start.getMonth() == finish.getMonth() ? 'd' : 'd.m';
 
 			return Format.date(start, startFormat) + ' - ' + Format.date(finish, Format.Date);
 		}
 
-		return (start != null ? 'после' : 'до') + ' ' + Format.date(start || finish, Format.Date);
+		return (start != null ? Z8.$('Period.after') : Z8.$('Period.before')) + ' ' + Format.date(start || finish, Format.Date);
 	},
 
 	toJson: function() {

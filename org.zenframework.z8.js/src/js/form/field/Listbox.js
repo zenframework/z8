@@ -373,31 +373,31 @@ Z8.define('Z8.form.field.Listbox', {
 		var tools = [];
 
 		if(store.hasCreateAccess() && !this.isLocked()) {
-			var add = new Z8.button.Button({ icon: 'fa-file-o', tooltip: 'Новая запись (Insert)', handler: this.onAddRecord, scope: this });
+			var add = new Z8.button.Button({ icon: 'fa-file-o', tooltip: Z8.$('Listbox.newRecord'), handler: this.onAddRecord, scope: this });
 			this.setAddTool(add);
 			tools.push(add);
 		}
 
 		if(store.hasCopyAccess() && !this.isLocked()) {
-			var copy = new Z8.button.Button({ icon: 'fa-copy', tooltip: 'Копировать запись (Shift+Insert)', handler: this.onCopyRecord, scope: this });
+			var copy = new Z8.button.Button({ icon: 'fa-copy', tooltip: Z8.$('Listbox.copyARecord'), handler: this.onCopyRecord, scope: this });
 			this.setCopyTool(copy);
 			tools.push(copy);
 		}
 
 		if(store.hasReadAccess()) {
 			if(this.source != null) {
-				var edit = new Z8.button.Button({ icon: 'fa-pencil', tooltip: 'Редактировать \'' + this.source.text + '\'', handler: this.onEdit, scope: this });
+				var edit = new Z8.button.Button({ icon: 'fa-pencil', tooltip: Z8.$('Listbox.edit') + this.source.text + '\'', handler: this.onEdit, scope: this });
 				this.setEditTool(edit);
 				tools.push(edit);
 			};
 
-			var refresh = new Z8.button.Button({ icon: 'fa-refresh', tooltip: 'Обновить (Ctrl+R)', handler: this.onRefresh, scope: this });
+			var refresh = new Z8.button.Button({ icon: 'fa-refresh', tooltip: Z8.$('Listbox.refresh'), handler: this.onRefresh, scope: this });
 			tools.push(refresh);
 			this.setRefreshTool(refresh);
 		}
 
 		if(store.hasDestroyAccess() && !this.isLocked()) {
-			var remove = new Z8.button.Button({ cls: 'remove', danger: true, icon: 'fa-trash', tooltip: 'Удалить запись (Delete)', handler: this.onRemoveRecord, scope: this });
+			var remove = new Z8.button.Button({ cls: 'remove', danger: true, icon: 'fa-trash', tooltip:  Z8.$('Listbox.deleteARecord'), handler: this.onRemoveRecord, scope: this });
 			this.setRemoveTool(remove);
 			tools.push(remove);
 		}
@@ -409,7 +409,7 @@ Z8.define('Z8.form.field.Listbox', {
 			tools.push(period);
 
 		if(this.filter !== false) {
-			var filter = new Z8.button.Button({ icon: 'fa-filter', tooltip: 'Фильтрация (Ctrl+F)', toggled: false, toggleHandler: this.onQuickFilter, scope: this });
+			var filter = new Z8.button.Button({ icon: 'fa-filter', tooltip: Z8.$('Listbox.filter'), toggled: false, toggleHandler: this.onQuickFilter, scope: this });
 			this.setFilterTool(filter);
 			tools.push(filter);
 		}
@@ -449,13 +449,13 @@ Z8.define('Z8.form.field.Listbox', {
 			new Z8.menu.Item({ text: 'Microsoft Word (*.doc)', icon: 'fa-file-word-o', format: 'doc' }),
 */
 			'-',
-			new Z8.menu.Item({ text: 'Настройки', icon: 'fa-print', enabled: false })
+			new Z8.menu.Item({ text: Z8.$('Listbox.settings'), icon: 'fa-print', enabled: false })
 		];
 
 		var menu = new Z8.menu.Menu({ items: items });
 		menu.on('itemClick', this.onMenuExportAs, this);
 
-		return new Z8.button.Button({ icon: 'fa-file-pdf-o', tooltip: 'Сохранить как PDF', menu: menu, handler: this.exportAs, scope: this, format: 'pdf' });
+		return new Z8.button.Button({ icon: 'fa-file-pdf-o', tooltip: Z8.$('Listbox.saveAsPDF'), menu: menu, handler: this.exportAs, scope: this, format: 'pdf' });
 	},
 
 	createActions: function() {
@@ -557,7 +557,7 @@ Z8.define('Z8.form.field.Listbox', {
 		if(source != null) {
 			var link = source.link || (field.link ? field.link.owner : null);
 
-			var params = { 
+			var params = {
 				request: source.request,
 				where: { property: 'recordId', value: link != null ? record.get(link) : record.id }
 			};
@@ -960,7 +960,7 @@ Z8.define('Z8.form.field.Listbox', {
 	exportAsPdf: function() {
 		var tool = this.exportTool;
 		tool.setIcon('fa-file-pdf-o');
-		tool.setTooltip('Сохранить как PDF');
+		tool.setTooltip(Z8.$('Listbox.saveAsPDF'));
 		tool.format = 'pdf';
 		this.exportAs();
 	},
@@ -968,7 +968,7 @@ Z8.define('Z8.form.field.Listbox', {
 	exportAsXls: function() {
 		var tool = this.exportTool;
 		tool.setIcon('fa-file-excel-o');
-		tool.setTooltip('Сохранить как XLS');
+		tool.setTooltip(Z8.$('Listbox.saveAsXLS'));
 		tool.format = 'xls';
 		this.exportAs();
 	},
@@ -976,7 +976,7 @@ Z8.define('Z8.form.field.Listbox', {
 	exportAsDoc: function() {
 		var tool = this.exportTool;
 		tool.setIcon('fa-file-word-o');
-		tool.setTooltip('Сохранить как DOC');
+		tool.setTooltip(Z8.$('Listbox.saveAsDOC'));
 		tool.format = 'doc';
 		this.exportAs();
 	},
