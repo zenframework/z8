@@ -15,7 +15,7 @@ Date.MonthNames = [
 	Z8.$('Date.February'),
 	Z8.$('Date.March'),
 	Z8.$('Date.April'),
-	Z8.$('Date.May'),
+	Z8.$('Date.fullMay'),
 	Z8.$('Date.June'),
 	Z8.$('Date.July'),
 	Z8.$('Date.August'),
