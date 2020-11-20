@@ -4,7 +4,7 @@ Z8.define('Z8.filter.Button', {
 	toggle: true,
 	icon: 'fa-filter',
 
-	tooltip: Z8.$('Button.filtration'),
+	tooltip: Z8.$('Button.filter'),
 	triggerTooltip: Z8.$('Button.configureFiltration'),
 
 	filter: null,
