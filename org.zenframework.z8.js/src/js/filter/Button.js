@@ -2,10 +2,10 @@ Z8.define('Z8.filter.Button', {
 	extend: 'Z8.button.Button',
 
 	toggle: true,
-	icon: 'fa-filter', 
+	icon: 'fa-filter',
 
-	tooltip: 'Фильтрация',
-	triggerTooltip: 'Настроить фильтрацию',
+	tooltip: Z8.$('Button.filtration'),
+	triggerTooltip: Z8.$('Button.configureFiltration'),
 
 	filter: null,
 	fields: null,
@@ -15,7 +15,7 @@ Z8.define('Z8.filter.Button', {
 
 		this.on('toggle', this.onToggle, this);
 
-		var items = [ new Z8.menu.Item({ text: 'Настроить', icon: 'fa-filter' }) ];
+		var items = [ new Z8.menu.Item({ text: Z8.$('Button.configure'), icon: 'fa-filter' }) ];
 		var menu = this.menu = new Z8.menu.Menu({ items: items });
 		menu.on('itemClick', this.onMenuItemClick, this);
 
@@ -89,7 +89,7 @@ Z8.define('Z8.filter.Button', {
 				this.fireEvent('filter', this, this.filter, Filter.NoAction);
 		};
 
-		new Z8.filter.Dialog({ header: 'Настройка фильтрации', icon: 'fa-filter', fields: this.fields, filter: this.filter, handler: callback, scope: this }).open();
+		new Z8.filter.Dialog({ header: Z8.$('Button.filterConfiguration'), icon: 'fa-filter', fields: this.fields, filter: this.filter, handler: callback, scope: this }).open();
 	},
 
 	onToggle: function(button, toggled) {

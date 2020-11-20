@@ -31,10 +31,10 @@ Z8.define('Z8.form.field.Filter', {
 	htmlMarkup: function() {
 		var label = this.label = this.label || {};
 
-		var newLine = this.newLineButton = new Z8.button.Button({ tooltip: 'Новая строка', icon: 'fa-file-o', handler: this.newLine, scope: this });
-		var group = this.groupButton = new Z8.button.Button({ tooltip: 'Группировать', icon: 'fa-link', handler: this.group, scope: this });
-		var ungroup = this.ungroupButton = new Z8.button.Button({ tooltip: 'Разгруппировать', icon: 'fa-unlink', handler: this.ungroup, scope: this });
-		var removeLine = this.removeLineButton = new Z8.button.Button({ tooltip: 'Удалить строки', cls: 'remove', icon: 'fa-trash', danger: true, handler: this.removeLine, scope: this });
+		var newLine = this.newLineButton = new Z8.button.Button({ tooltip: Z8.$('Filter.newLine'), icon: 'fa-file-o', handler: this.newLine, scope: this });
+		var group = this.groupButton = new Z8.button.Button({ tooltip: Z8.$('Filter.group'), icon: 'fa-link', handler: this.group, scope: this });
+		var ungroup = this.ungroupButton = new Z8.button.Button({ tooltip: Z8.$('Filter.ungroup'), icon: 'fa-unlink', handler: this.ungroup, scope: this });
+		var removeLine = this.removeLineButton = new Z8.button.Button({ tooltip: Z8.$('Filter.deleteLines'), cls: 'remove', icon: 'fa-trash', danger: true, handler: this.removeLine, scope: this });
 
 		label.tools = new Z8.button.Group({ items: [newLine, group, ungroup, removeLine] });
 

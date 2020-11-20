@@ -15,13 +15,13 @@ Z8.define('Z8.application.job.Model', {
 Z8.define('Z8.application.job.JobMonitor', {
 	extend: 'Z8.window.Window',
 
-	header: 'Монитор задач',
+	header: Z8.$('JobMonitor.taskMonitor'),
 	icon: 'fa-tv',
 
 	fields: [
-		{ name: 'name', header: 'Задача', width: 250 },
-		{ name: 'start', header: 'Начало', width: 150, type: Type.Datetime },
-		{ name: 'duration', header: 'Длительность', width: 100 },
+		{ name: 'name', header: Z8.$('JobMonitor.task'), width: 250 },
+		{ name: 'start', header: Z8.$('JobMonitor.start'), width: 150, type: Type.Datetime },
+		{ name: 'duration', header: Z8.$('JobMonitor.duration'), width: 100 },
 		{ name: 'percent', header: '%', width: 70, renderer: Format.percent }
 	],
 
