@@ -1,5 +1,6 @@
 Z8.js
-application/Locales.js
+i18n/messages/messages_en.js
+i18n/messages/messages_ru.js
 util/Object.js
 util/Number.js
 util/String.js
