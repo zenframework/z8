@@ -24,6 +24,8 @@ import org.zenframework.z8.server.types.encoding;
 import org.zenframework.z8.web.server.Adapter;
 import org.zenframework.z8.web.server.ConverterAdapter;
 import org.zenframework.z8.web.server.JsonAdapter;
+import org.zenframework.z8.web.server.LoginAdapter;
+import org.zenframework.z8.web.server.LogoutAdapter;
 import org.zenframework.z8.web.server.TrustedAuthAdapter;
 
 public class Servlet extends HttpServlet {
@@ -68,6 +70,8 @@ public class Servlet extends HttpServlet {
 		}
 
 		adapters.add(new JsonAdapter(this));
+		adapters.add(new LoginAdapter(this));
+		adapters.add(new LogoutAdapter(this));
 		adapters.add(new TrustedAuthAdapter(this));
 		adapters.add(new ConverterAdapter(this));
 
