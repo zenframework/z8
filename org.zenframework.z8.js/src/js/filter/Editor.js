@@ -4,8 +4,8 @@ Z8.define('Z8.filter.Model', {
 	local: true,
 	idProperty: 'name',
 
-	fields: [ 
-		new Z8.data.field.String({ name: 'name', header: 'Фильтр', editable: true }),
+	fields: [
+		new Z8.data.field.String({ name: 'name', header: Z8.$('Model.filter'), editable: true }),
 		new Z8.data.field.Json({ name: 'filter' })
 	]
 });
@@ -20,12 +20,12 @@ Z8.define('Z8.filter.Editor', {
 		var store = this.store = new Z8.data.Store({ model: 'Z8.filter.Model', data: this.filter.toStoreData() });
 		store.use();
 
-		var addTool = this.addTool = new Z8.button.Button({ icon: 'fa-file-o', tooltip: 'Новый фильтр', handler: this.onAddFilter, scope: this });
-		var copyTool = this.copyTool = new Z8.button.Button({ icon: 'fa-copy', tooltip: 'Копировать запись (Shift+Insert)', handler: this.onCopyFilter, scope: this });
-		var removeTool = this.removeTool = new Z8.button.Button({ cls: 'remove', danger: true, icon: 'fa-trash', tooltip: 'Удалить фильтр(ы)', handler: this.onRemoveFilter, scope: this });
+		var addTool = this.addTool = new Z8.button.Button({ icon: 'fa-file-o', tooltip: Z8.$('Model.newFilter'), handler: this.onAddFilter, scope: this });
+		var copyTool = this.copyTool = new Z8.button.Button({ icon: 'fa-copy', tooltip: Z8.$('Model.copyARecord'), handler: this.onCopyFilter, scope: this });
+		var removeTool = this.removeTool = new Z8.button.Button({ cls: 'remove', danger: true, icon: 'fa-trash', tooltip: Z8.$('Model.deleteFilters'), handler: this.onRemoveFilter, scope: this });
 		var tools = new Z8.button.Group({ items: [addTool, copyTool, removeTool] });
 
-		var label = { text: 'Фильтры', icon: 'fa-filter', tools: tools};
+		var label = { text: Z8.$('Model.filters'), icon: 'fa-filter', tools: tools};
 
 		var filters = this.filters = new ListBox({ store: store, cls: 'filters', fields: [store.getField('name')], label: label, editable: true, flex: 1, colSpan: 1 });
 		filters.on('select', this.onFiltersSelect, this);
@@ -35,12 +35,12 @@ Z8.define('Z8.filter.Editor', {
 		filters.setRemoveTool(removeTool);
 		filters.setCopyTool(copyTool);
 
-		var expression = this.expression = new Z8.form.field.Filter({ fields: this.fields, flex: 1, enabled: false, label: { text: 'Выражение', icon: 'fa-list-ul' } });
+		var expression = this.expression = new Z8.form.field.Filter({ fields: this.fields, flex: 1, enabled: false, label: { text: Z8.$('Model.expression'), icon: 'fa-list-ul' } });
 		expression.on('change', this.expressionChanged, this);
-		var expressionText = this.expressionText = new Z8.form.field.Html({ cls: 'text', label: { text: 'Текст', icon: 'fa-code' }, minHeight: 7.5 });
+		var expressionText = this.expressionText = new Z8.form.field.Html({ cls: 'text', label: { text: Z8.$('Model.text'), icon: 'fa-code' }, minHeight: 7.5 });
 
 		var container = new Z8.form.Fieldset({ cls: 'filter', plain: true, controls: [expression, expressionText], flex: 1, colSpan: 3, colCount: 1 });
-	
+
 		this.colCount = 4;
 		this.controls = [filters, container];
 
@@ -176,7 +176,7 @@ Z8.define('Z8.filter.Editor', {
 	},
 
 	newFilterName: function(template) {
-		template = (template || 'Фильтр') + ' ';
+		template = (template || Z8.$('Model.filter')) + ' ';
 
 		var store = this.store;
 		var names = store.getOrdinals();

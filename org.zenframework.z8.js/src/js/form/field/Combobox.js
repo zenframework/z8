@@ -70,10 +70,10 @@ Z8.define('Z8.form.field.Combobox', {
 
 		var triggers = [];
 		if(this.source != null)
-			triggers.push({ icon: 'fa-pencil', tooltip: 'Редактировать \'' + this.source.text + '\'', handler: this.editSource, scope: this });
+			triggers.push({ icon: 'fa-pencil', tooltip: Z8.$('ComboBox.edit') + this.source.text + '\'', handler: this.editSource, scope: this });
 
 		if(!this.isRequired() && this.clearTrigger !== false)
-			triggers.push({ icon: ComboBox.ClearIconCls, tooltip: 'Очистить', handler: this.clearValue, scope: this });
+			triggers.push({ icon: ComboBox.ClearIconCls, tooltip: Z8.$('ComboBox.clear'), handler: this.clearValue, scope: this });
 
 		this.triggers = triggers.add(this.triggers);
 
@@ -160,7 +160,7 @@ Z8.define('Z8.form.field.Combobox', {
 		case Type.Datetime:
 			return value != null ? Format.date(value, field.format) : '';
 		case Type.Boolean:
-			return value ? 'да' : 'нет';
+			return value ? Z8.$('ComboBox.true') : Z8.$('ComboBox.false');
 		case Type.Integer:
 			return value !== null ? Format.integer(value, field.format) : '';
 		case Type.Float:
@@ -457,9 +457,9 @@ Z8.define('Z8.form.field.Combobox', {
 					index = 0;
 				else if(direction == 'last')
 					index = count - 1;
-	
+
 				index = Math.min(Math.max(index, 0), count - 1);
-	
+
 				if(index == -1 || index == startIndex)
 					return;
 
