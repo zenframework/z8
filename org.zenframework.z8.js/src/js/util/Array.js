@@ -7,6 +7,10 @@ if(Array.prototype.fill == null) {
 	};
 }
 
+Array.asArray = function(value) {
+	return Array.isArray(value) ? value : [value];
+};
+
 Array.appendCount = function(array, value, count) {
 	return count != 0 ?  array.concat(Array(count).fill(value)) : array;
 };

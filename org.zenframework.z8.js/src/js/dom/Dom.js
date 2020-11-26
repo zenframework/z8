@@ -286,7 +286,7 @@ Z8.define('Z8.dom.Dom', {
 			dom = DOM.get(dom);
 			screen = DOM.get(screen);
 
-			while(dom != screen) {
+			while(dom != null && dom != screen) {
 				screenX -= (dom.offsetLeft + dom.clientLeft - dom.scrollLeft);
 				dom = dom.offsetParent;
 			}
@@ -297,7 +297,7 @@ Z8.define('Z8.dom.Dom', {
 			dom = DOM.get(dom);
 			screen = DOM.get(screen);
 
-			while(dom != screen) {
+			while(dom != null && dom != screen) {
 				screenY -= (dom.offsetTop + dom.clientTop - dom.scrollTop);
 				dom = dom.offsetParent;
 			}
@@ -308,7 +308,7 @@ Z8.define('Z8.dom.Dom', {
 			dom = DOM.get(dom);
 			screen = DOM.get(screen);
 
-			while(dom != screen) {
+			while(dom != null && dom != screen) {
 				clientX += dom.offsetLeft + dom.clientLeft - dom.scrollLeft;
 				dom = dom.offsetParent;
 			}
@@ -319,7 +319,7 @@ Z8.define('Z8.dom.Dom', {
 			dom = DOM.get(dom);
 			screen = DOM.get(screen);
 
-			while(dom != screen) {
+			while(dom != null && dom != screen) {
 				clientY += dom.offsetTop + dom.clientTop - dom.scrollTop;
 				dom = dom.offsetParent;
 			}
