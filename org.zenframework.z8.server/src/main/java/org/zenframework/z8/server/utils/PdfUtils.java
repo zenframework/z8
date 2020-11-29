@@ -1,11 +1,14 @@
 package org.zenframework.z8.server.utils;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.util.Arrays;
@@ -73,18 +76,29 @@ public class PdfUtils {
 	}
 
 	public static void imageToPdf(File sourceFile, File convertedFile) throws IOException {
+		imageToPdf(new FileInputStream(sourceFile), FilenameUtils.getExtension(sourceFile.getName()), convertedFile);
+	}
+
+	public static void imageToPdf(InputStream in, String extension, File convertedFile) throws IOException {
+		ByteArrayOutputStream buf = new ByteArrayOutputStream();
+		IOUtils.copy(in, buf);
+		imageToPdf(buf.toByteArray(), extension, convertedFile);
+	}
+
+	public static void imageToPdf(byte[] data, String extension, File convertedFile) throws IOException {
 		Document document = new Document();
+		OutputStream out = new FileOutputStream(convertedFile);
 		try {
-			PdfWriter.getInstance(document, new FileOutputStream(convertedFile));
+			PdfWriter.getInstance(document, out);
 			document.open();
-			if (isTiff(sourceFile)) {
-				RandomAccessFileOrArray raf = new RandomAccessFileOrArray(sourceFile.getCanonicalPath());
+			if (isTiff(data, extension)) {
+				RandomAccessFileOrArray raf = new RandomAccessFileOrArray(data);
 				int numberOfPages = TiffImage.getNumberOfPages(raf);
 				for (int i = 1; i <= numberOfPages; i++) {
 					addImage(document, TiffImage.getTiffImage(raf, i));
 				}
 			} else {
-				addImage(document, Image.getInstance(sourceFile.getCanonicalPath()));
+				addImage(document, Image.getInstance(data));
 			}
 		} catch (DocumentException e) {
 			throw new IOException(e);
@@ -101,15 +115,10 @@ public class PdfUtils {
 		document.add(image);
 	}
 
-	public static boolean isTiff(File file) throws IOException {
-		if (TIFF_EXTENSIONS.contains(FilenameUtils.getExtension(file.getName()).toLowerCase()))
+	public static boolean isTiff(byte[] data, String extension) throws IOException {
+		if (TIFF_EXTENSIONS.contains(extension.toLowerCase()))
 			return true;
-		DataInputStream in = new DataInputStream(new FileInputStream(file));
-		try {
-			return TIFF_MAGIC_NUMBERS.contains(in.readInt());
-		} finally {
-			in.close();
-		}
+		return TIFF_MAGIC_NUMBERS.contains(new DataInputStream(new ByteArrayInputStream(data)).readInt());
 	}
 
 	public static void merge(List<File> sourceFiles, File mergedFile, String comment) throws IOException {
