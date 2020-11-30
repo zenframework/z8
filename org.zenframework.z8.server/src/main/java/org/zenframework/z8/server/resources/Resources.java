@@ -16,7 +16,7 @@ import org.zenframework.z8.server.logs.Trace;
 public class Resources {
 	private static Resources instance;
 
-	private Map<String, Properties> boundles = new ConcurrentHashMap<String, Properties>();
+	private Map<String, Properties> bundles = new ConcurrentHashMap<String, Properties>();
 
 	static {
 		instance = new Resources();
@@ -42,7 +42,7 @@ public class Resources {
 	}
 
 	private String getString(String key) {
-		Properties properties = boundles.get(ServerConfig.language());
+		Properties properties = bundles.get(ServerConfig.language());
 
 		if(properties == null)
 			return key;
@@ -56,7 +56,7 @@ public class Resources {
 	}
 
 	public boolean load(final String language) {
-		if(boundles.containsKey(language))
+		if(bundles.containsKey(language))
 			return true;
 
 		File resourcesFolder = new File(Folders.Base, "resources");
@@ -85,7 +85,7 @@ public class Resources {
 		boolean result = true;
 
 		Properties boundle = new Properties();
-		boundles.put(language, boundle);
+		bundles.put(language, boundle);
 
 		for(File file : files) {
 			try {
