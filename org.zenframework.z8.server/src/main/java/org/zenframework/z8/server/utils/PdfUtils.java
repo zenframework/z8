@@ -48,10 +48,12 @@ public class PdfUtils {
 	}
 
 	public static void textToPdf(File sourceFile, File convertedFile) throws IOException {
-		InputStream in = null;
+		textToPdf(new FileInputStream(sourceFile), convertedFile);
+	}
+
+	public static void textToPdf(InputStream in, File convertedFile) throws IOException {
 		try {
-			in = new FileInputStream(sourceFile);
-			textToPdf(IOUtils.readText(in, Charset.forName(IOUtils.determineEncoding(sourceFile, "UTF-8"))), convertedFile);
+			textToPdf(IOUtils.readText(in, Charset.forName(IOUtils.determineEncoding(in, "UTF-8"))), convertedFile);
 		} finally {
 			IOUtils.closeQuietly(in);
 		}
