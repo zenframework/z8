@@ -4,7 +4,7 @@ dependencies {
 	implementation project(':org.zenframework.z8.server')
 	implementation project(':org.zenframework.z8.servlet')
 
-	compile ('org.zenframework.z8.dependencies:z8-dependencies-jetty:3.0@pom') { transitive=true }
+	compile ("org.zenframework.z8.dependencies:z8-dependencies-jetty:${dependenciesVersion}@pom") { transitive = true }
 }
 
 publishing.publications {
