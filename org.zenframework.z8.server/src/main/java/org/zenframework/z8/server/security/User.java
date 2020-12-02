@@ -303,7 +303,7 @@ public class User implements IUser {
 		this.login = users.name.get().string().get();
 		this.password = users.password.get().string().get();
 		this.banned = users.banned.get().bool().get();
-		this.changePassword = users.changePassword.get().bool().get();
+		this.changePassword = !trusted && users.changePassword.get().bool().get();
 		this.firstName = users.firstName.get().string().get();
 		this.middleName = users.middleName.get().string().get();
 		this.lastName = users.lastName.get().string().get();
