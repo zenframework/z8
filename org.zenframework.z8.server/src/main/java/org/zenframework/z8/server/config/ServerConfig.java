@@ -92,7 +92,6 @@ public class ServerConfig extends Properties {
 	static final private String LdapBindPassword = "ldap.bind.password";
 	static final private String LdapDefaultDomain = "ldap.default.domain";
 	static final private String LdapUsersIgnore = "ldap.users.ignore";
-	static final private String LdapUsersCreateOnSuccessfulLogin = "ldap.users.createOnSuccessfulLogin";
 
 	static final private String FtsConfiguration = "fts.configuration";
 
@@ -154,7 +153,6 @@ public class ServerConfig extends Properties {
 	static private String ldapBindPassword;
 	static private String ldapDefaultDomain;
 	static private Collection<String> ldapUsersIgnore;
-	static private boolean ldapUsersCreateOnSuccessfulLogin;
 
 	static private String ftsConfiguration;
 
@@ -259,7 +257,6 @@ public class ServerConfig extends Properties {
 		ldapBindPassword = getProperty(LdapBindPassword, "");
 		ldapDefaultDomain = getProperty(LdapDefaultDomain, "");
 		ldapUsersIgnore = StringUtils.asList(getProperty(LdapUsersIgnore, "Admin"), "\\,");
-		ldapUsersCreateOnSuccessfulLogin = Boolean.parseBoolean(getProperty(LdapUsersCreateOnSuccessfulLogin, "false"));
 
 		ftsConfiguration = getProperty(FtsConfiguration, (String) null);
 
@@ -571,10 +568,6 @@ public class ServerConfig extends Properties {
 
 	static public Collection<String> ldapUsersIgnore() {
 		return ldapUsersIgnore;
-	}
-
-	static public boolean ldapUsersCreateOnSuccessfulLogin() {
-		return ldapUsersCreateOnSuccessfulLogin;
 	}
 
 	static public String ftsConfiguration() {

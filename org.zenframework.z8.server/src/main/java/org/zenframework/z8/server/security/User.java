@@ -215,17 +215,29 @@ public class User implements IUser {
 		return userId.isNull() ? null : readOrCreate((primary)userId, false);
 	}
 
-	static private IUser load(String login, boolean createIfNotExist) {
-		return readOrCreate(new string(login), createIfNotExist);
+	static public IUser load(String login, String password) {
+		if(!ServerConfig.isSystemInstalled())
+			return User.system();
+
+		IUser user = readOrCreate(new string(login), false);
+
+		if(password == null || !password.equals(user.password()) /*&& !password.equals(MD5.hex(""))*/ || user.banned())
+			throw new AccessDeniedException();
+
+		return user;
 	}
 
-	static private IUser readOrCreate(primary loginOrId, boolean createIfNotExist) {
+	static public IUser trustedLoad(String login) {
+		return readOrCreate(new string(login), true);
+	}
+
+	static private IUser readOrCreate(primary loginOrId, boolean trusted) {
 		User user = new User();
 
 		boolean isLatestVersion = ServerConfig.isLatestVersion();
 
-		boolean exists = user.readInfo(loginOrId, !isLatestVersion);
-		if(!exists && createIfNotExist) {
+		boolean exists = user.readInfo(loginOrId, !isLatestVersion, trusted);
+		if(!exists && trusted) {
 			user.login = ((string)loginOrId).get();
 			user.password = MD5.hex("");
 			Users users = Users.newInstance();
@@ -252,18 +264,6 @@ public class User implements IUser {
 		return user;
 	}
 
-	static public IUser load(String login, String password, boolean createIfNotExist) {
-		if(!ServerConfig.isSystemInstalled())
-			return User.system();
-
-		IUser user = load(login, createIfNotExist);
-
-		if(password == null || !password.equals(user.password()) /*&& !password.equals(MD5.hex(""))*/ || user.banned())
-			throw new AccessDeniedException();
-
-		return user;
-	}
-
 	private void addSystemTools() {
 		for(Entry entry : entries) {
 			if(entry.id().equals(SystemTools.Id))
@@ -274,7 +274,7 @@ public class User implements IUser {
 		entries.add(new Entry(systemTools.key(), systemTools.classId(), Resources.get(SystemTools.strings.Title)));
 	}
 
-	private boolean readInfo(primary loginOrId, boolean shortInfo) {
+	private boolean readInfo(primary loginOrId, boolean shortInfo, boolean trusted) {
 		Users users = Users.newInstance();
 		Collection<Field> fields = new ArrayList<Field>();
 		fields.add(users.recordId.get());

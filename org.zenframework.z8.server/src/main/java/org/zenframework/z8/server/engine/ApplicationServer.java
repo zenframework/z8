@@ -137,8 +137,13 @@ public class ApplicationServer extends RmiServer implements IApplicationServer {
 	}
 
 	@Override
-	public IUser user(String login, String password, boolean createIfNotExist) {
-		return User.load(login, password, createIfNotExist);
+	public IUser user(String login, String password) {
+		return User.load(login, password);
+	}
+
+	@Override
+	public IUser trustedUser(String login) throws RemoteException {
+		return User.trustedLoad(login);
 	}
 
 	@Override

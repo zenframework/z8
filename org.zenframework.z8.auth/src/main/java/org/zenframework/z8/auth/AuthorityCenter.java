@@ -42,7 +42,6 @@ public class AuthorityCenter extends HubServer implements IAuthorityCenter {
 	private final String ldapUrl;
 	private final String ldapDefaultDomain;
 	private Collection<String> ldapUsersIgnore;
-	private boolean ldapUsersCreateOnSuccessfulLogin;
 	private boolean cacheEnabled;
 
 	private SessionManager sessionManager;
@@ -61,7 +60,6 @@ public class AuthorityCenter extends HubServer implements IAuthorityCenter {
 		ldapUrl = ServerConfig.ldapUrl();
 		ldapDefaultDomain = ServerConfig.ldapDefaultDomain();
 		ldapUsersIgnore = ServerConfig.ldapUsersIgnore();
-		ldapUsersCreateOnSuccessfulLogin = ServerConfig.ldapUsersCreateOnSuccessfulLogin();
 		cacheEnabled = ServerConfig.authorityCenterCache();
 	}
 
@@ -125,12 +123,14 @@ public class AuthorityCenter extends HubServer implements IAuthorityCenter {
 		if(password == null)
 			password = "";
 
+		IUser user;
 		if (!ldapUrl.isEmpty() && !StringUtils.containsIgnoreCase(ldapUsersIgnore, login)) {
 			checkLdapLogin(login, password);
-			password = "";
+			user = loginServer.trustedUser(login);
+		} else {
+			user = loginServer.user(login, clientHashPassword ? password : MD5.hex(password));
 		}
 
-		IUser user = loginServer.user(login, clientHashPassword ? password : MD5.hex(password), !ldapUrl.isEmpty() && ldapUsersCreateOnSuccessfulLogin);
 		session = sessionManager.create(user);
 
 		session.setServerInfo(serverInfo);

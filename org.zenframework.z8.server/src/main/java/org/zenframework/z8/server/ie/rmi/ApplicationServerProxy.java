@@ -59,7 +59,12 @@ public class ApplicationServerProxy implements IApplicationServer {
 	}
 
 	@Override
-	public IUser user(String login, String password, boolean createIfNotExists) throws RemoteException {
+	public IUser user(String login, String password) throws RemoteException {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public IUser trustedUser(String login) throws RemoteException {
 		throw new UnsupportedOperationException();
 	}
 
