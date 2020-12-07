@@ -99,7 +99,7 @@ Z8.define('Z8.form.field.Combobox', {
 		TextBox.prototype.completeRender.call(this);
 
 		this.hidePager();
-		this.dropdown.setAlignment(this);
+		this.dropdown.setAlignment(this.getBox());
 
 		if(!this.editor)
 			DOM.on(this, 'keyPress', this.onKeyPress, this);
@@ -558,7 +558,7 @@ Z8.define('Z8.form.field.Combobox', {
 	showDropdown: function(keepFocus) {
 		var dropdown = this.dropdown;
 
-		var width = DOM.getOffsetWidth(this.input);
+		var width = DOM.getOffsetWidth(this/*.input*/);
 		DOM.setWidth(dropdown, width);
 
 		var item = this.getCurrentItem();
@@ -626,7 +626,13 @@ Z8.define('Z8.form.field.Combobox', {
 	},
 
 	onTriggerClick: function(trigger) {
-		this.toggleDropdown();
+		if(this.isEnabled() && !this.isReadOnly())
+			this.toggleDropdown();
+	},
+
+	onInputClick: function() {
+		if(this.isEnabled() && !this.isReadOnly())
+			this.toggleDropdown();
 	},
 
 	onDblClick: function(event, target) {

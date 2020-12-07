@@ -206,6 +206,11 @@ Z8.define('Z8.form.field.Text', {
 				return handler != null ? handler.call(trigger.scope, trigger) : this.onTriggerClick(trigger);
 			}
 		}
+
+		this.onInputClick();
+	},
+
+	onInputClick: function(trigger) {
 	},
 
 	onTriggerClick: function(trigger) {

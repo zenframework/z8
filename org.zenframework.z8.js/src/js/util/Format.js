@@ -183,7 +183,7 @@ Z8.define('Z8.util.Format', {
 				var code = [
 					'var neg,absVal,fnum,parts' + (hasComma ? ',thousandSeparator,thousands=[],j,n,i' : '') + (extraChars ? ',format="' + format + '"' : '') + ',trailingZeroes;' + 'return function(v){' + 'if(typeof v!=="number"&&isNaN(v=parseFloat(v)))return"";' + 'neg=v<0;',
 					'absVal=Math.abs(v);',
-					'fnum=absVal.toFixed(' + precision + ');',
+					'fnum=String(absVal);',
 					trimPart,
 					';'
 				];
@@ -195,9 +195,9 @@ Z8.define('Z8.util.Format', {
 					code[code.length] = 'if(absVal>=1000) {';
 					code[code.length] = 'thousandSeparator=Format.ThousandSeparator;' + 'thousands.length=0;' + 'j=fnum.length;' + 'n=fnum.length%3||3;' + 'for(i=0;i<j;i+=n){' + 'if(i!==0){' + 'n=3;' + '}' + 'thousands[thousands.length]=fnum.substr(i,n);' + '}' + 'fnum=thousands.join(thousandSeparator);' + '}';
 					if (precision)
-						code[code.length] = 'fnum += Format.DecimalSeparator+parts[1];';
+						code[code.length] = 'fnum += parts[1] ? Format.DecimalSeparator+parts[1] : "";';
 				} else if(precision)
-					code[code.length] = 'if(Format.DecimalSeparator!=="."){' + 'parts=fnum.split(".");' + 'fnum=parts[0]+Format.DecimalSeparator+parts[1];' + '}';
+					code[code.length] = 'if(Format.DecimalSeparator!=="."){' + 'parts=fnum.split(".");' + 'fnum=parts[0]+(parts[1] ? Format.DecimalSeparator+parts[1] : "");' + '}';
 
 				code[code.length] = 'if(neg&&fnum!=="' + (precision ? '0.' + String.repeat('0', precision) : '0') + '") { fnum="-"+fnum; }';
 

@@ -206,6 +206,10 @@ Z8.define('Z8.form.field.Control', {
 		DOM.setValue(this.labelText, label);
 	},
 
+	getBox: function() {
+		return this.box;
+	},
+
 	onMouseDown: function(event, target) {
 		if(target == DOM.get(this) || target == this.box || DOM.isParentOf(this.label, target)) {
 			event.stopEvent();
