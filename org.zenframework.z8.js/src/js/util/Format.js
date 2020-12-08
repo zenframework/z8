@@ -176,16 +176,15 @@ Z8.define('Z8.util.Format', {
 					var trimTrailingZeroes = splitFormat[1].match(/#+$/);
 					if (trimTrailingZeroes) {
 						var length = trimTrailingZeroes[0].length;
-						trimPart = 'trailingZeroes=new RegExp(Format.DecimalSeparator.replace(/([-.*+?\\^${}()|\\[\\]\\/\\\\])/g, "\\\\$1") + "*0{0,' + length + '}$")';
+						trimPart = 'trailingZeroes=new RegExp(Format.DecimalSeparator.replace(/([-.*+?\\^${}()|\\[\\]\\/\\\\])/g, "\\\\$1") + "*0{0,' + length + '}$");';
 					}
 				}
 
 				var code = [
 					'var neg,absVal,fnum,parts' + (hasComma ? ',thousandSeparator,thousands=[],j,n,i' : '') + (extraChars ? ',format="' + format + '"' : '') + ',trailingZeroes;' + 'return function(v){' + 'if(typeof v!=="number"&&isNaN(v=parseFloat(v)))return"";' + 'neg=v<0;',
-					'absVal=Math.abs(v);',
+					'absVal=Math.abs(v.round(' + precision + '));',
 					'fnum=String(absVal);',
-					trimPart,
-					';'
+					trimPart
 				];
 				if(hasComma) {
 					if(precision) {

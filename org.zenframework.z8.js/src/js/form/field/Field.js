@@ -12,13 +12,11 @@ Z8.define('Z8.form.field.Field', {
 	valid: true,
 
 	initField: function() {
-		this.initValue();
+		this.initValue(this.value);
 		this.setAutoSave(this.autoSave);
 	},
 
 	initValue: function(value, displayValue) {
-		value = value !== undefined ?  value : this.value;
-
 		this.initializing = true;
 		this.suspendCheckChange++;
 		this.setValue(value, displayValue);
