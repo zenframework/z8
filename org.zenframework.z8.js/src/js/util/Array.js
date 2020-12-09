@@ -88,8 +88,7 @@ Array.prototype.removeAll = function(array) {
 	if(array == null)
 		return [];
 
-	var array = Array.isArray(array) ? array : [array];
-	return this.remove.apply(this, array);
+	return this.remove.apply(this, Array.asArray(array));
 };
 
 Array.prototype.removeAt = function(index) {

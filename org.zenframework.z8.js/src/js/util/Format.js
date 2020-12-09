@@ -201,7 +201,7 @@ Z8.define('Z8.util.Format', {
 				code[code.length] = 'if(neg&&fnum!=="' + (precision ? '0.' + String.repeat('0', precision) : '0') + '") { fnum="-"+fnum; }';
 
 				if(trimTrailingZeroes)
-					code[code.length] = 'fnum=fnum.replace(trailingZeroes,"");';
+					code[code.length] = 'if(parts[1]) { fnum=fnum.replace(trailingZeroes,""); }';
 
 				code[code.length] = 'return ';
 
