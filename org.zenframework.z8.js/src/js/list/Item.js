@@ -233,6 +233,7 @@ Z8.define('Z8.list.Item', {
 		DOM.on(this, 'click', this.onClick, this);
 		DOM.on(this, 'contextMenu', this.onContextMenu, this);
 		DOM.on(this, 'dblClick', this.onDblClick, this);
+		DOM.on(this, 'focus', this.onFocusIn, this, true);
 
 		this.dom.listItem = this;
 	},
@@ -245,6 +246,7 @@ Z8.define('Z8.list.Item', {
 		DOM.un(this, 'click', this.onClick, this);
 		DOM.un(this, 'contextMenu', this.onContextMenu, this);
 		DOM.un(this, 'dblClick', this.onDblClick, this);
+		DOM.un(this, 'focus', this.onFocusIn, this, true);
 
 		if(this.record != null && this.record.un != null)
 			this.record.un('change', this.onRecordChange, this);
@@ -497,6 +499,10 @@ Z8.define('Z8.list.Item', {
 		list.onItemDblClick(this, index);
 	},
 
+	onFocusIn: function(event, target) {
+		var index = this.findCellIndex(target);
+		this.getList().onItemClick(this, index);
+	},
 
 	followLink: function(index) {
 		return index != -1 ? this.getList().onItemFollowLink(this, index) : false;
