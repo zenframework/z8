@@ -56,7 +56,7 @@ public class Resources {
 	}
 
 	public boolean load(final String language) {
-		if(language == null || bundles.containsKey(language))
+		if(bundles.containsKey(language))
 			return true;
 
 		File resourcesFolder = new File(Folders.Base, "resources");

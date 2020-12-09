@@ -32,17 +32,15 @@ public class JsonWriter {
 	private StringBuilder stream;
 	private List<Boolean> scopes;
 	private boolean quoteName = false;
-	private boolean ignoreNull = true;
 	private org.zenframework.z8.server.base.json.JsonWriter.CLASS<? extends org.zenframework.z8.server.base.json.JsonWriter> wrapper = null;
 
 	public JsonWriter() {
 		reset();
 	}
 
-	public JsonWriter(boolean quoteName, boolean ignoreNull) {
+	public JsonWriter(boolean quoteName) {
 		this();
 		this.quoteName = quoteName;
-		this.ignoreNull = ignoreNull;
 	}
 
 	public void reset() {
@@ -124,7 +122,7 @@ public class JsonWriter {
 	}
 
 	public void write(String value, boolean quote) {
-		if(value != null || !ignoreNull) {
+		if(value != null) {
 			appendComma().append(quote ? JsonObject.quote(value) : value);
 			startSeparate();
 		}
@@ -157,7 +155,7 @@ public class JsonWriter {
 
 	public void write(primary value) {
 		if(value == null)
-			write((String) null, false);
+			write("null", false);
 		else if(value instanceof bool)
 			write(((bool)value).get());
 		else if(value instanceof geometry) {
@@ -177,14 +175,9 @@ public class JsonWriter {
 	}
 
 	public void write(OBJECT value) {
-		if (value == null) {
-			if (!ignoreNull)
-				write((String) null);
-		} else {
-			startObject();
-			value.z8_write(getWrapper());
-			finishObject();
-		}
+		startObject();
+		value.z8_write(getWrapper());
+		finishObject();
 	}
 
 	@SuppressWarnings("rawtypes")
@@ -236,7 +229,7 @@ public class JsonWriter {
 	}
 
 	public void writeProperty(String name, String value, boolean quoteValue) {
-		if(value != null || !ignoreNull) {
+		if(value != null) {
 			appendComma().append(quoteName(name)).append(":").append(quoteValue ? JsonObject.quote(value) : value);
 			startSeparate();
 		}
@@ -272,14 +265,9 @@ public class JsonWriter {
 	}
 
 	public void writeProperty(String name, OBJECT value) {
-		if (value == null) {
-			if (!ignoreNull)
-				writeProperty(name, (String) null);
-		} else {
-			startObject(name);
-			value.z8_write(getWrapper());
-			finishObject();
-		}
+		startObject(name);
+		value.z8_write(getWrapper());
+		finishObject();
 	}
 
 	@SuppressWarnings("rawtypes")

@@ -24,6 +24,4 @@ public class JsonWriter extends Object {
 	public JsonWriter writeProperty(Field field);
 
 	public string toString();
-
-	public static JsonWriter jsonWriter(bool quoteName, bool ignoreNull);
 }
