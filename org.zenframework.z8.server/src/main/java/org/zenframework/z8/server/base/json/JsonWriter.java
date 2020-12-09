@@ -4,6 +4,7 @@ import org.zenframework.z8.server.base.table.value.Field;
 import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.runtime.OBJECT;
 import org.zenframework.z8.server.runtime.RCollection;
+import org.zenframework.z8.server.types.bool;
 import org.zenframework.z8.server.types.primary;
 import org.zenframework.z8.server.types.string;
 
@@ -22,7 +23,7 @@ public class JsonWriter extends OBJECT {
 		}
 	}
 
-	private org.zenframework.z8.server.json.JsonWriter writer = new org.zenframework.z8.server.json.JsonWriter(true);
+	private org.zenframework.z8.server.json.JsonWriter writer = new org.zenframework.z8.server.json.JsonWriter(true, true);
 
 	public JsonWriter() {
 		super(null);
@@ -122,6 +123,12 @@ public class JsonWriter extends OBJECT {
 	@Override
 	public string z8_toString() {
 		return new string(writer.toString());
+	}
+
+	public static JsonWriter.CLASS<JsonWriter> z8_jsonWriter(bool quoteName, bool ignoreNull) {
+		JsonWriter.CLASS<JsonWriter> json = new JsonWriter.CLASS<JsonWriter>(null);
+		json.get().set(new org.zenframework.z8.server.json.JsonWriter(quoteName.get(), ignoreNull.get()));
+		return json;
 	}
 
 }

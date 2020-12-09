@@ -1110,7 +1110,9 @@ public class JsonObject extends HashMap<String, Object> {
 	 * @return A String correctly formatted for insertion in a JSON text.
 	 */
 	public static String quote(String string) {
-		if(string == null || string.length() == 0)
+		if(string == null)
+			return null;
+		if(string.length() == 0)
 			return "\"\"";
 
 		char b;
