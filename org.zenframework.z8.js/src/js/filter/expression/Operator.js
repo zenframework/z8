@@ -116,6 +116,28 @@ Z8.define('Z8.filter.Number', {
 	}
 });
 
+Z8.define('Z8.filter.Json', {
+	statics: {
+		eq: function(json, what) {
+			return json == what;
+		},
+
+		notEq: function(json, what) {
+			return json != what;
+		},
+
+		contains: function(json, what) {
+			for(var key in what) {
+				if (json[key] != what[key]) {
+					return false;
+				}
+			}
+			return true;
+		},
+
+	}
+});
+
 Z8.define('Z8.filter.Operator', {
 	statics: {
 		data: {
@@ -291,6 +313,7 @@ Z8.define('Z8.filter.Operator', {
 			filters.string = this.getStringFilters();
 			filters.integer = this.getNumberFilters();
 			filters.float = this.getNumberFilters();
+			filters.json = this.getJsonFilters();
 
 			return filters;
 		},
@@ -338,6 +361,16 @@ Z8.define('Z8.filter.Operator', {
 			filters[Operator.LT] = Z8.filter.Number.lt;
 			filters[Operator.LE] = Z8.filter.Number.le;
 			filters[Operator.Eq] = Z8.filter.Number.eq;
+
+			return filters;
+		},
+
+		getJsonFilters: function() {
+			var filters = {};
+
+			filters[Operator.Eq] = Z8.filter.Json.eq;
+			filters[Operator.NotEq] = Z8.filter.Json.notEq;
+			filters[Operator.Contains] = Z8.filter.Json.contains;
 
 			return filters;
 		},
