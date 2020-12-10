@@ -1,9 +1,14 @@
 package org.zenframework.z8.server.json.parser;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.GregorianCalendar;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
+import org.zenframework.z8.server.runtime.OBJECT;
 import org.zenframework.z8.server.types.binary;
 import org.zenframework.z8.server.types.bool;
 import org.zenframework.z8.server.types.datespan;
@@ -42,8 +47,19 @@ public class JsonUtils {
 			return ((org.zenframework.z8.server.base.json.parser.JsonObject.CLASS<? extends org.zenframework.z8.server.base.json.parser.JsonObject>) o).get().get();
 		else if(o instanceof org.zenframework.z8.server.base.json.parser.JsonArray.CLASS)
 			return ((org.zenframework.z8.server.base.json.parser.JsonArray.CLASS<? extends org.zenframework.z8.server.base.json.parser.JsonArray>) o).get().get();
-		else
-			return o;
+		else if(o instanceof Map) {
+			Map<Object, Object> map = new HashMap<Object, Object>();
+			for (Map.Entry<?, ?> entry : ((Map<?, ?>) o).entrySet())
+				map.put(unwrap(entry.getKey()), unwrap(entry.getValue()));
+			return map;
+		} else if(o instanceof Collection) {
+			Collection<Object> list = new ArrayList<Object>(((Collection<?>) o).size());
+			for (Object e : (Collection<?>) o)
+				list.add(unwrap(e));
+			return list;
+		} else if(o instanceof OBJECT.CLASS)
+			return ((OBJECT.CLASS<? extends OBJECT>) o).get();
+		return o;
 	}
 
 	public static Object wrap(Object o) {
