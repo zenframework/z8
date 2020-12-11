@@ -9,7 +9,6 @@ Z8.define('Z8.list.Item', {
 		this.collapsed = false;
 
 		Component.prototype.constructor.call(this, config);
-
 	},
 
 	getRecord: function() {
