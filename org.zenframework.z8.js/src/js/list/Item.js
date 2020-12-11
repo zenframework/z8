@@ -3,13 +3,13 @@ Z8.define('Z8.list.Item', {
 	shortClassName: 'ListItem',
 
 	constructor: function(config) {
-		config = config || {};
-		config.collapsed = config.collapsed !== false;
-		Component.prototype.constructor.call(this, config);
-
 		this.hidden = 0;
 		this.valid = true;
 		this.follow = true;
+		this.collapsed = false;
+
+		Component.prototype.constructor.call(this, config);
+
 	},
 
 	getRecord: function() {
