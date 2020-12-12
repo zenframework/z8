@@ -261,4 +261,8 @@ Z8.loadMessages('ru', {
     'Window.done': 'Готово',
     'Window.cancel': 'Отменить',
 
+    //Routing
+    'Routing.InvalidUrl': 'Некорректный url адрес',
+    'Routing.NotFoundMessage': 'Запись не найдена',
+
 });

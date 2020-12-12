@@ -261,4 +261,7 @@ Z8.loadMessages('en', {
     'Window.done': 'Done',
     'Window.cancel': 'Cancel',
 
+    //Routing
+    'Routing.InvalidUrl': 'Invalid url',
+    'Routing.NotFoundMessage': 'Record not found',
 });
