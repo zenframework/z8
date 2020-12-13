@@ -1167,6 +1167,8 @@ Z8.define('Z8.list.List', {
 
 		if(forceEvent || !this.confirmSelection && item != currentItem)
 			this.fireEvent('select', item, currentItem, this);
+
+		return item;
 	},
 
 	setSelection: function(item) {
