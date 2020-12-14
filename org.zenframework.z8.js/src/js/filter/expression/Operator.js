@@ -298,14 +298,14 @@ Z8.define('Z8.filter.Operator', {
 		getStringFilters: function() {
 			var filters = {};
 
+			filters[Operator.IsSimilarTo] = Z8.filter.String.isSimilarTo;
+			filters[Operator.IsNotSimilarTo] = Z8.filter.String.isNotSimilarTo;
+
 			filters[Operator.Contains] = Z8.filter.String.contains;
 			filters[Operator.NotContains] = Z8.filter.String.notContains;
 
 			filters[Operator.ContainsWord] = Z8.filter.String.containsWord;
 			filters[Operator.NotContainsWord] = Z8.filter.String.notContainsWord;
-
-			filters[Operator.IsSimilarTo] = Z8.filter.String.isSimilarTo;
-			filters[Operator.IsNotSimilarTo] = Z8.filter.String.isNotSimilarTo;
 
 			filters[Operator.Eq] = Z8.filter.String.eq;
 			filters[Operator.NotEq] = Z8.filter.String.notEq;
