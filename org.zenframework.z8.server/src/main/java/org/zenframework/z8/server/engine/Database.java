@@ -1,5 +1,9 @@
 package org.zenframework.z8.server.engine;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
@@ -15,7 +19,9 @@ import org.zenframework.z8.server.json.parser.JsonObject;
 import org.zenframework.z8.server.logs.Trace;
 import org.zenframework.z8.server.types.encoding;
 
-public class Database {
+public class Database implements RmiSerializable, Serializable {
+	private static final long serialVersionUID = -3409230943645338455L;
+
 	private String schema = null;
 	private String user = null;
 	private String password = null;
@@ -33,13 +39,13 @@ public class Database {
 	public Database() {
 	}
 
-	public Database(Properties prop) {
-		setSchema(prop.getProperty("application.database.schema"));
-		setUser(prop.getProperty("application.database.user"));
-		setPassword(prop.getProperty("application.database.password"));
-		setConnection(prop.getProperty("application.database.connection"));
-		setDriver(prop.getProperty("application.database.driver"));
-		setCharset(encoding.fromString(prop.getProperty("application.database.charset")));
+	public Database(Properties properties) {
+		setSchema(properties.getProperty("application.database.schema"));
+		setUser(properties.getProperty("application.database.user"));
+		setPassword(properties.getProperty("application.database.password"));
+		setConnection(properties.getProperty("application.database.connection"));
+		setDriver(properties.getProperty("application.database.driver"));
+		setCharset(encoding.fromString(properties.getProperty("application.database.charset")));
 	}
 
 	public Database(String json) {
@@ -181,5 +187,48 @@ public class Database {
 		String currentVersion = Settings.version();
 
 		return (isLatestVersion = version.equals(currentVersion));
+	}
+
+	private void writeObject(ObjectOutputStream out) throws IOException {
+		serialize(out);
+	}
+
+	private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
+		deserialize(in);
+	}
+
+	@Override
+	public void serialize(ObjectOutputStream out) throws IOException {
+		RmiIO.writeString(out, schema);
+		RmiIO.writeString(out, user);
+		RmiIO.writeString(out, password);
+		RmiIO.writeString(out, connection);
+		RmiIO.writeString(out, driver);
+		RmiIO.writeString(out, charset.toString());
+
+		RmiIO.writeBoolean(out, isSystemInstalled);
+		RmiIO.writeBoolean(out, isLatestVersion);
+
+		RmiIO.writeString(out, vendor.toString());
+	}
+
+	@Override
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	public void deserialize(ObjectInputStream in) throws IOException, ClassNotFoundException {
+		@SuppressWarnings("unused")
+		long version = RmiIO.readLong(in);
+
+		schema = RmiIO.readString(in);
+		user = RmiIO.readString(in);
+		password = RmiIO.readString(in);
+		connection = RmiIO.readString(in);
+		driver = RmiIO.readString(in);
+		charset = encoding.fromString(RmiIO.readString(in));
+
+		isSystemInstalled = RmiIO.readBoolean(in);
+		isLatestVersion = RmiIO.readBoolean(in);
+
+		charset = encoding.fromString(RmiIO.readString(in));
+		vendor = DatabaseVendor.fromString(RmiIO.readString(in));
 	}
 }

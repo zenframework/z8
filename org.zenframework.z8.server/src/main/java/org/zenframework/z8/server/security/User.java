@@ -29,6 +29,7 @@ import org.zenframework.z8.server.db.sql.expressions.Group;
 import org.zenframework.z8.server.db.sql.expressions.NotEqu;
 import org.zenframework.z8.server.db.sql.expressions.Or;
 import org.zenframework.z8.server.db.sql.functions.string.EqualsIgnoreCase;
+import org.zenframework.z8.server.engine.Database;
 import org.zenframework.z8.server.engine.RmiIO;
 import org.zenframework.z8.server.exceptions.AccessDeniedException;
 import org.zenframework.z8.server.exceptions.InvalidVersionException;
@@ -64,6 +65,7 @@ public class User implements IUser {
 	private boolean changePassword;
 
 	private String settings;
+	private Database database;
 
 	private Collection<Entry> entries = new ArrayList<Entry>();
 	private RLinkedHashMap<string, primary> parameters = new RLinkedHashMap<string, primary>();
@@ -481,6 +483,14 @@ public class User implements IUser {
 		Users.saveSettings(id, settings);
 	}
 
+	public Database database() {
+		return this.database;
+	}
+
+	public void setDatabase(Database database) {
+		this.database = database;
+	}
+
 	private void writeObject(ObjectOutputStream out) throws IOException {
 		serialize(out);
 	}
@@ -513,6 +523,8 @@ public class User implements IUser {
 		RmiIO.writeBoolean(objects, changePassword);
 
 		RmiIO.writeString(objects, settings);
+
+		objects.writeObject(database);
 
 		objects.writeObject(roles);
 		objects.writeObject(privileges);
@@ -550,6 +562,8 @@ public class User implements IUser {
 		changePassword = RmiIO.readBoolean(objects);
 
 		settings = RmiIO.readString(objects);
+
+		database = (Database)objects.readObject();
 
 		roles = (Collection)objects.readObject();
 		privileges = (IPrivileges)objects.readObject();

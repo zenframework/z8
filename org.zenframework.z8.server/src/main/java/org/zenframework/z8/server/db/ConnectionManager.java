@@ -12,16 +12,16 @@ import org.zenframework.z8.server.engine.Database;
 public class ConnectionManager {
 	static private Map<Database, List<Connection>> databaseConnections = new HashMap<Database, List<Connection>>();
 
-	public static Connection get() {
-		return get(ServerConfig.database());
-	}
-
 	public static Database database() {
 		return get().database();
 	}
 
 	public static DatabaseVendor vendor() {
 		return database().vendor();
+	}
+
+	public static Connection get() {
+		return get(null);
 	}
 
 	public static Connection get(Database database) {

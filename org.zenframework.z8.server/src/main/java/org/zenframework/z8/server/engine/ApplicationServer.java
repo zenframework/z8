@@ -129,16 +129,28 @@ public class ApplicationServer extends RmiServer implements IApplicationServer {
 
 	@Override
 	public String[] domains() {
+		if(ServerConfig.isMultitenant())
+			throw new RuntimeException("Multidomain is incompatible with multitenacy ");
+
 		try {
 			return Domains.newInstance().getAddresses().toArray(new String[0]);
 		} finally {
-			ConnectionManager.release();
+			releaseConnections();
 		}
 	}
 
 	@Override
-	public IUser user(String login, String password, boolean createIfNotExist) {
-		return User.load(login, password, createIfNotExist);
+	public IUser user(String login, String password, String scheme, boolean createIfNotExist) {
+		setRequest(new Request(new Session(scheme)));
+
+		try {
+			IUser user = User.load(login, password, createIfNotExist);
+			user.setDatabase(ConnectionManager.database());
+			return user;
+		} finally {
+			releaseConnections();
+			setRequest(null);
+		}
 	}
 
 	@Override
@@ -147,8 +159,8 @@ public class ApplicationServer extends RmiServer implements IApplicationServer {
 		try {
 			return Files.get(file);
 		} finally {
+			releaseConnections();
 			setRequest(null);
-			ConnectionManager.release();
 		}
 	}
 
@@ -179,7 +191,7 @@ public class ApplicationServer extends RmiServer implements IApplicationServer {
 	@Override
 	protected void timeoutCheck() {
 		register();
-		ConnectionManager.release();
+		releaseConnections();
 	}
 
 	private void register() {
@@ -197,6 +209,14 @@ public class ApplicationServer extends RmiServer implements IApplicationServer {
 		}
 	}
 
+	private void releaseConnections() {
+		try {
+			ConnectionManager.release();
+		} catch(Throwable e) {
+			Trace.logError(e);
+		}
+	}
+	
 	private void checkSchemaVersion() {
 		String version = Runtime.version();
 		Trace.logEvent("Runtime schema version: " + version);
