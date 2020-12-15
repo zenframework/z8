@@ -42,7 +42,8 @@ public class DBGenerator {
 		} finally {
 			ApplicationServer.restoreEventsLevel();
 
-			Scheduler.start();
+/*			Scheduler.start();
+*/
 			logger.info(Resources.get("Generator.schedulerStarted"));
 		}
 	}

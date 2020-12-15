@@ -6,13 +6,14 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import org.zenframework.z8.server.config.ServerConfig;
+import org.zenframework.z8.server.engine.ApplicationServer;
 import org.zenframework.z8.server.engine.Database;
+import org.zenframework.z8.server.engine.IDatabase;
 
 public class ConnectionManager {
-	static private Map<Database, List<Connection>> databaseConnections = new HashMap<Database, List<Connection>>();
+	static private Map<IDatabase, List<Connection>> databaseConnections = new HashMap<IDatabase, List<Connection>>();
 
-	public static Database database() {
+	public static IDatabase database() {
 		return get().database();
 	}
 
@@ -21,12 +22,12 @@ public class ConnectionManager {
 	}
 
 	public static Connection get() {
-		return get(null);
+		return get(ApplicationServer.getDatabase());
 	}
-
-	public static Connection get(Database database) {
+	
+	public static Connection get(IDatabase database) {
 		if(database == null)
-			database = ServerConfig.database();
+			database = Database.getDefault();
 
 		List<Connection> connections =  null;
 		Connection[] array = null;
@@ -67,7 +68,7 @@ public class ConnectionManager {
 	}
 
 	public static void release() {
-		for(Map.Entry<Database, List<Connection>> entry : databaseConnections.entrySet()) {
+		for(Map.Entry<IDatabase, List<Connection>> entry : databaseConnections.entrySet()) {
 			synchronized(entry.getKey().getLock()) {
 				List<Connection> connections = entry.getValue();
 				Iterator<Connection> iterator = connections.iterator();

@@ -14,6 +14,7 @@ import org.zenframework.z8.server.base.table.value.StringField;
 import org.zenframework.z8.server.config.ServerConfig;
 import org.zenframework.z8.server.db.ConnectionManager;
 import org.zenframework.z8.server.db.MaintenanceJob;
+import org.zenframework.z8.server.engine.IDatabase;
 import org.zenframework.z8.server.ie.ExchangeJob;
 import org.zenframework.z8.server.ie.rmi.TransportJob;
 import org.zenframework.z8.server.logs.Trace;
@@ -22,6 +23,7 @@ import org.zenframework.z8.server.types.guid;
 public class Scheduler implements Runnable {
 	private static Scheduler scheduler = null;
 
+	private IDatabase database;
 	private Thread thread = null;
 	private boolean resetPending = true;
 	private List<ScheduledJob> jobs = new ArrayList<ScheduledJob>();
@@ -51,9 +53,9 @@ public class Scheduler implements Runnable {
 		threads.remove(thread);
 	}
 
-	static public void start() {
-		if(scheduler == null && ServerConfig.isSchedulerEnabled() && ServerConfig.database().isSystemInstalled())
-			scheduler = new Scheduler();
+	static public void start(IDatabase database) {
+		if(scheduler == null && ServerConfig.isSchedulerEnabled() && database.isSystemInstalled())
+			scheduler = new Scheduler(database);
 	}
 
 	static public void stop() {
@@ -68,9 +70,11 @@ public class Scheduler implements Runnable {
 			scheduler.resetPending = true;
 	}
 
-	private Scheduler() {
-		thread = new Thread(this, "Z8 scheduler");
-		thread.start();
+	private Scheduler(IDatabase database) {
+		this.database = database;
+
+		this.thread = new Thread(this, database.schema() + " scheduler");
+		this.thread.start();
 	}
 
 	@Override
@@ -115,7 +119,7 @@ public class Scheduler implements Runnable {
 	}
 
 	private synchronized void initializeJobs() {
-		if(!resetPending || !ServerConfig.isLatestVersion())
+		if(!resetPending || !database.isLatestVersion())
 			return;
 
 		ScheduledJobs scheduledJobs = new ScheduledJobs.CLASS<ScheduledJobs>(null).get();
@@ -137,7 +141,7 @@ public class Scheduler implements Runnable {
 
 		while(scheduledJobs.next()) {
 			guid id = scheduledJobs.recordId();
-			ScheduledJob job = new ScheduledJob(id);
+			ScheduledJob job = new ScheduledJob(id, database);
 
 			int index = jobs.indexOf(job);
 			if(index != -1)

@@ -6,7 +6,7 @@ import org.zenframework.z8.server.db.Connection;
 import org.zenframework.z8.server.db.ConnectionManager;
 import org.zenframework.z8.server.db.DatabaseVendor;
 import org.zenframework.z8.server.db.Statement;
-import org.zenframework.z8.server.engine.Database;
+import org.zenframework.z8.server.engine.IDatabase;
 
 class ForeignKeyGenerator {
 	private ForeignKey foreignKey;
@@ -17,7 +17,7 @@ class ForeignKeyGenerator {
 
 	void run() throws SQLException {
 		Connection connection = ConnectionManager.get();
-		Database database = connection.database();
+		IDatabase database = connection.database();
 		DatabaseVendor vendor = database.vendor();
 
 		String sql = "ALTER TABLE " + database.tableName(foreignKey.table) + " " + "ADD CONSTRAINT " + vendor.quote(foreignKey.name) + " " + "FOREIGN KEY" + "(" + vendor.quote(foreignKey.field) + ")" + " " + "REFERENCES " + database.tableName(foreignKey.referenceTable) + " "

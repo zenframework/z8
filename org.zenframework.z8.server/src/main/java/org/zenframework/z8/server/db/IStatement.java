@@ -3,13 +3,13 @@ package org.zenframework.z8.server.db;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-import org.zenframework.z8.server.engine.Database;
+import org.zenframework.z8.server.engine.IDatabase;
 import org.zenframework.z8.server.types.encoding;
 
 public interface IStatement {
 	public Connection connection();
 
-	public Database database();
+	public IDatabase database();
 
 	public DatabaseVendor vendor();
 

@@ -7,10 +7,10 @@ import java.io.Serializable;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Properties;
 
 import org.zenframework.z8.server.base.table.system.Settings;
 import org.zenframework.z8.server.base.table.system.Users;
+import org.zenframework.z8.server.config.ServerConfig;
 import org.zenframework.z8.server.db.BasicSelect;
 import org.zenframework.z8.server.db.ConnectionManager;
 import org.zenframework.z8.server.db.Cursor;
@@ -19,7 +19,7 @@ import org.zenframework.z8.server.json.parser.JsonObject;
 import org.zenframework.z8.server.logs.Trace;
 import org.zenframework.z8.server.types.encoding;
 
-public class Database implements RmiSerializable, Serializable {
+public class Database implements IDatabase, RmiSerializable, Serializable {
 	private static final long serialVersionUID = -3409230943645338455L;
 
 	private String schema = null;
@@ -31,21 +31,34 @@ public class Database implements RmiSerializable, Serializable {
 
 	private boolean isSystemInstalled = false;
 	private boolean isLatestVersion = false;
+	private boolean external = false;
 
 	private DatabaseVendor vendor = DatabaseVendor.SqlServer;
 
-	static private Map<Database, Object> locks = new HashMap<Database, Object>();
+	static private Map<IDatabase, Object> locks = new HashMap<IDatabase, Object>();
 
-	public Database() {
+	static public Database getDefault() {
+		return new Database(ServerConfig.databaseSchema(), ServerConfig.databaseUser(), ServerConfig.databasePassword(),
+			ServerConfig.databaseConnection(), ServerConfig.databaseDriver(), ServerConfig.databaseCharset());
 	}
 
-	public Database(Properties properties) {
-		setSchema(properties.getProperty("application.database.schema"));
-		setUser(properties.getProperty("application.database.user"));
-		setPassword(properties.getProperty("application.database.password"));
-		setConnection(properties.getProperty("application.database.connection"));
-		setDriver(properties.getProperty("application.database.driver"));
-		setCharset(encoding.fromString(properties.getProperty("application.database.charset")));
+	static public Database get(String scheme) {
+		Database database = getDefault();
+
+		if(ServerConfig.isMultitenant())
+			database.setSchema(scheme);
+
+		return database;
+	}
+
+	private Database(String schema, String user, String password, String connection, String driver, encoding charset) {
+		this.schema = schema;
+		this.user = user;
+		this.password = password;
+		this.connection = connection;
+		this.driver = driver;
+		this.charset = charset;
+		this.vendor = DatabaseVendor.fromString(driver);
 	}
 
 	public Database(String json) {
@@ -59,11 +72,17 @@ public class Database implements RmiSerializable, Serializable {
 		setConnection(json.getString("connection"));
 		setDriver(json.getString("driver"));
 		setCharset(encoding.fromString(json.getString("charset")));
+
+		external = true;
+	}
+
+	public String key() {
+		return driver() + connection() + schema();
 	}
 
 	@Override
 	public int hashCode() {
-		return (driver() + connection() + schema()).hashCode();
+		return key().hashCode();
 	}
 
 	public Object getLock() {
@@ -73,6 +92,10 @@ public class Database implements RmiSerializable, Serializable {
 			locks.put(this, lock);
 		}
 		return lock;
+	}
+
+	public boolean isExternal() {
+		return external;
 	}
 
 	public DatabaseVendor vendor() {
@@ -117,7 +140,6 @@ public class Database implements RmiSerializable, Serializable {
 
 	public void setDriver(String driver) {
 		this.driver = driver;
-		this.vendor = DatabaseVendor.fromString(driver);
 	}
 
 	public encoding charset() {
@@ -213,7 +235,6 @@ public class Database implements RmiSerializable, Serializable {
 	}
 
 	@Override
-	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public void deserialize(ObjectInputStream in) throws IOException, ClassNotFoundException {
 		@SuppressWarnings("unused")
 		long version = RmiIO.readLong(in);

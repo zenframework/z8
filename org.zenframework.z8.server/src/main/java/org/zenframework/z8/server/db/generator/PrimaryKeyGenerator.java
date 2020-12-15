@@ -8,7 +8,7 @@ import org.zenframework.z8.server.db.Connection;
 import org.zenframework.z8.server.db.ConnectionManager;
 import org.zenframework.z8.server.db.DatabaseVendor;
 import org.zenframework.z8.server.db.Statement;
-import org.zenframework.z8.server.engine.Database;
+import org.zenframework.z8.server.engine.IDatabase;
 
 class PrimaryKeyGenerator {
 	private Table table = null;
@@ -24,7 +24,7 @@ class PrimaryKeyGenerator {
 			return;
 
 		Connection connection = ConnectionManager.get();
-		Database database = connection.database();
+		IDatabase database = connection.database();
 		DatabaseVendor vendor = database.vendor();
 
 		String sql = "ALTER TABLE " + database.tableName(table.name()) + " ADD PRIMARY KEY(" + vendor.quote(primaryKey.name()) + ")";

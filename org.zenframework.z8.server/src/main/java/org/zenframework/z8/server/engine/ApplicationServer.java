@@ -40,15 +40,8 @@ public class ApplicationServer extends RmiServer implements IApplicationServer {
 		return instance;	
 	}
 
-	static public boolean isRequest() {
-		return currentRequest.get() != null;
-	}
-
 	static public IRequest getRequest() {
-		IRequest request = currentRequest.get();
-		if(request == null)
-			request = new Request(new Session());
-		return request;
+		return currentRequest.get();
 	}
 
 	static public ISession getSession() {
@@ -61,6 +54,10 @@ public class ApplicationServer extends RmiServer implements IApplicationServer {
 
 	public static IUser getUser() {
 		return getSession().user();
+	}
+
+	public static IDatabase getDatabase() {
+		return getUser().database();
 	}
 
 	public static void setRequest(IRequest request) {
@@ -107,12 +104,10 @@ public class ApplicationServer extends RmiServer implements IApplicationServer {
 	public void start() throws RemoteException {
 		super.start();
 
-		checkSchemaVersion();
-
 		enableTimeoutChecking(1 * datespan.TicksPerMinute);
-
+/*
 		Scheduler.start();
-
+*/
 		Trace.logEvent("Application Server JVM startup options: " + ManagementFactory.getRuntimeMXBean().getInputArguments().toString() + "\n\t" + RequestDispatcher.getMemoryUsage());
 	}
 
@@ -144,9 +139,7 @@ public class ApplicationServer extends RmiServer implements IApplicationServer {
 		setRequest(new Request(new Session(scheme)));
 
 		try {
-			IUser user = User.load(login, password, createIfNotExist);
-			user.setDatabase(ConnectionManager.database());
-			return user;
+			return User.load(login, password, getDatabase(), createIfNotExist);
 		} finally {
 			releaseConnections();
 			setRequest(null);
@@ -215,10 +208,5 @@ public class ApplicationServer extends RmiServer implements IApplicationServer {
 		} catch(Throwable e) {
 			Trace.logError(e);
 		}
-	}
-	
-	private void checkSchemaVersion() {
-		String version = Runtime.version();
-		Trace.logEvent("Runtime schema version: " + version);
 	}
 }

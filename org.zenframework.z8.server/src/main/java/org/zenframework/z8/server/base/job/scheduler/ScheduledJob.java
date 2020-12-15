@@ -7,6 +7,7 @@ import java.util.Map;
 import org.zenframework.z8.server.base.table.system.ScheduledJobLogs;
 import org.zenframework.z8.server.base.table.system.ScheduledJobs;
 import org.zenframework.z8.server.db.ConnectionManager;
+import org.zenframework.z8.server.engine.IDatabase;
 import org.zenframework.z8.server.engine.Session;
 import org.zenframework.z8.server.json.Json;
 import org.zenframework.z8.server.json.JsonWriter;
@@ -43,10 +44,12 @@ public class ScheduledJob implements Runnable {
 
 	private int executionCount = 0;
 
+	private IDatabase database;
 	private Thread thread;
 
-	public ScheduledJob(guid id) {
+	public ScheduledJob(guid id, IDatabase database) {
 		this.id = id;
+		this.database = database;
 	}
 
 	public ScheduledJob(String className, String cron) {
@@ -145,7 +148,7 @@ public class ScheduledJob implements Runnable {
 			parameters.put(Json.request.get(), classId);
 			parameters.put(Json.scheduled.get(), "true");
 
-			IUser user = this.user != null ? User.read(this.user) : User.system();
+			IUser user = this.user != null ? User.read(this.user, database) : User.system(database);
 			IRequest request = new Request(parameters, new ArrayList<file>(), new Session("", user));
 			IResponse response = new Response();
 

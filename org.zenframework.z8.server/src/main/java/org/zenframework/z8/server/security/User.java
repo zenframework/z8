@@ -20,7 +20,6 @@ import org.zenframework.z8.server.base.table.system.UserEntries;
 import org.zenframework.z8.server.base.table.system.UserRoles;
 import org.zenframework.z8.server.base.table.system.Users;
 import org.zenframework.z8.server.base.table.value.Field;
-import org.zenframework.z8.server.config.ServerConfig;
 import org.zenframework.z8.server.crypto.MD5;
 import org.zenframework.z8.server.db.ConnectionManager;
 import org.zenframework.z8.server.db.sql.SqlToken;
@@ -30,6 +29,7 @@ import org.zenframework.z8.server.db.sql.expressions.NotEqu;
 import org.zenframework.z8.server.db.sql.expressions.Or;
 import org.zenframework.z8.server.db.sql.functions.string.EqualsIgnoreCase;
 import org.zenframework.z8.server.engine.Database;
+import org.zenframework.z8.server.engine.IDatabase;
 import org.zenframework.z8.server.engine.RmiIO;
 import org.zenframework.z8.server.exceptions.AccessDeniedException;
 import org.zenframework.z8.server.exceptions.InvalidVersionException;
@@ -65,21 +65,20 @@ public class User implements IUser {
 	private boolean changePassword;
 
 	private String settings;
-	private Database database;
+	private IDatabase database;
 
 	private Collection<Entry> entries = new ArrayList<Entry>();
 	private RLinkedHashMap<string, primary> parameters = new RLinkedHashMap<string, primary>();
 
-	static private User system = null;
+	static public IUser system(String scheme) {
+		return system(Database.get(scheme));
+	}
 
-	static public IUser system() {
-		if(system != null)
-			return system;
-
+	static public IUser system(IDatabase database) {
 		guid id = BuiltinUsers.System.guid();
 		String login = BuiltinUsers.displayNames.SystemName;
 
-		system = new User();
+		User system = new User(database);
 
 		system.id = id;
 		system.login = login;
@@ -101,7 +100,8 @@ public class User implements IUser {
 		return system;
 	}
 
-	public User() {
+	public User(IDatabase database) {
+		this.database = database;
 	}
 
 	@Override
@@ -213,18 +213,18 @@ public class User implements IUser {
 		return parameters;
 	}
 
-	static public IUser read(guid userId) {
-		return userId.isNull() ? null : readOrCreate((primary)userId, false);
+	static public IUser read(guid userId, IDatabase database) {
+		return userId.isNull() ? null : readOrCreate((primary)userId, database, false);
 	}
 
-	static private IUser load(String login, boolean createIfNotExist) {
-		return readOrCreate(new string(login), createIfNotExist);
+	static private IUser load(String login, IDatabase database, boolean createIfNotExist) {
+		return readOrCreate(new string(login), database, createIfNotExist);
 	}
 
-	static private IUser readOrCreate(primary loginOrId, boolean createIfNotExist) {
-		User user = new User();
+	static private IUser readOrCreate(primary loginOrId, IDatabase database, boolean createIfNotExist) {
+		User user = new User(database);
 
-		boolean isLatestVersion = ServerConfig.isLatestVersion();
+		boolean isLatestVersion = database.isLatestVersion();
 
 		boolean exists = user.readInfo(loginOrId, !isLatestVersion);
 		if(!exists && createIfNotExist) {
@@ -254,11 +254,11 @@ public class User implements IUser {
 		return user;
 	}
 
-	static public IUser load(String login, String password, boolean createIfNotExist) {
-		if(!ServerConfig.isSystemInstalled())
-			return User.system();
+	static public IUser load(String login, String password, IDatabase database, boolean createIfNotExist) {
+		if(!database.isSystemInstalled())
+			return User.system(database);
 
-		IUser user = load(login, createIfNotExist);
+		IUser user = load(login, database, createIfNotExist);
 
 		if(password == null || !password.equals(user.password()) /*&& !password.equals(MD5.hex(""))*/ || user.banned())
 			throw new AccessDeniedException();
@@ -483,11 +483,11 @@ public class User implements IUser {
 		Users.saveSettings(id, settings);
 	}
 
-	public Database database() {
+	public IDatabase database() {
 		return this.database;
 	}
 
-	public void setDatabase(Database database) {
+	public void setDatabase(IDatabase database) {
 		this.database = database;
 	}
 
@@ -563,7 +563,7 @@ public class User implements IUser {
 
 		settings = RmiIO.readString(objects);
 
-		database = (Database)objects.readObject();
+		database = (IDatabase)objects.readObject();
 
 		roles = (Collection)objects.readObject();
 		privileges = (IPrivileges)objects.readObject();

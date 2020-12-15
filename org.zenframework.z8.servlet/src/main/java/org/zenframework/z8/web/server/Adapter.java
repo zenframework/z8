@@ -121,7 +121,7 @@ public abstract class Adapter {
 
 		String serverName = request.getServerName();
 		int index = serverName.indexOf('.');
-		if(index == -1 || index == serverName.lastIndexOf('.'))
+		if(index == -1 || index == serverName.lastIndexOf('.') && !serverName.endsWith("localhost"))
 			throw new AccessDeniedException();
 
 		return serverName.substring(0, index);
