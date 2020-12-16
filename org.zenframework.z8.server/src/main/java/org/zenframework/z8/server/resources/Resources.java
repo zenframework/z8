@@ -10,11 +10,10 @@ import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.zenframework.z8.server.base.file.Folders;
+import org.zenframework.z8.server.config.ServerConfig;
 import org.zenframework.z8.server.logs.Trace;
 
 public class Resources {
-	public static String DefaultLanguage = "ru";
-
 	private static Resources instance;
 
 	private Map<String, Properties> boundles = new ConcurrentHashMap<String, Properties>();
@@ -27,16 +26,23 @@ public class Resources {
 		return getResources().getString(id);
 	}
 
+	public static String getByKey(String id) {
+		if(id.length() < 2 || id.charAt(0) != '$' || id.charAt(id.length() - 1) != '$')
+			return id;
+
+		return get(id.substring(1, id.length() - 1));
+	}
+
 	public static Resources getResources() {
 		return instance;
 	}
 
 	private Resources() {
-		load(DefaultLanguage);
+		load(ServerConfig.language());
 	}
 
 	private String getString(String key) {
-		Properties properties = boundles.get(DefaultLanguage);
+		Properties properties = boundles.get(ServerConfig.language());
 
 		if(properties == null)
 			return key;

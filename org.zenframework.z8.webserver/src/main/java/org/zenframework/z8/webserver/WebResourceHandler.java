@@ -1,5 +1,6 @@
 package org.zenframework.z8.webserver;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -20,15 +21,20 @@ public class WebResourceHandler {
 	protected static final String RESOURCE_CACHE = "webcache";
 
 	private File resourceCache;
+	private File localizedCache;
 	private File webapp;
+	private String language;
 
-	public void init(File work, File webapp) {
+	public void init(File work, File webapp, String language) {
 		this.resourceCache = new File(work, RESOURCE_CACHE);
+		this.localizedCache = new File(resourceCache, "__" + language + "__");
 		this.webapp = webapp;
+		this.language = language;
 	}
 
+	@SuppressWarnings("resource")
 	public void handle(String path, HttpServletResponse response) throws IOException {
-		File file = getFile(path);
+		File file = path.endsWith(".html") ? getLocalizedFile(path) : getFile(path);
 
 		if (file != null && file.exists()) {
 			if (file.isDirectory()) {
@@ -36,7 +42,7 @@ public class WebResourceHandler {
 					response.sendRedirect(path + '/');
 					return;
 				} else {
-					file = getFile(path + WELCOME_FILE);
+					file = getLocalizedFile(path + WELCOME_FILE);
 				}
 			}
 			if (file.exists()) {
@@ -46,6 +52,23 @@ public class WebResourceHandler {
 		}
 
 		response.sendError(HttpServletResponse.SC_NOT_FOUND, "File " + path + " not found");
+	}
+
+	// TODO Refactor using freemarker
+	protected File getLocalizedFile(String path) throws IOException {
+		File localized = new File(localizedCache, path);
+		if (localized.exists())
+			return localized;
+
+		File file = getFile(path);
+		if (file == null || language == null)
+			return file;
+
+		// TODO !!!!!!
+		String text = IOUtils.readText(new FileInputStream(file)).replaceAll("window[.]_LOCALE_='\\w+'", "window._LOCALE_='" + language + "'");
+		localized.getParentFile().mkdirs();
+		IOUtils.copy(new ByteArrayInputStream(text.getBytes("UTF-8")), new FileOutputStream(localized));
+		return localized;
 	}
 
 	protected File getFile(String path) throws IOException {

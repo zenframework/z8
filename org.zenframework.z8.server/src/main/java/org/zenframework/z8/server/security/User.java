@@ -72,7 +72,6 @@ public class User implements IUser {
 
 		guid id = BuiltinUsers.System.guid();
 		String login = BuiltinUsers.displayNames.SystemName;
-		String description = BuiltinUsers.displayNames.SystemDescription;
 
 		system = new User();
 
@@ -82,7 +81,6 @@ public class User implements IUser {
 		system.firstName = "";
 		system.middleName = "";
 		system.lastName = "";
-		system.description = description;
 		system.banned = false;
 		system.changePassword = false;
 
@@ -251,6 +249,11 @@ public class User implements IUser {
 		ConnectionManager.release();
 
 		return user;
+	}
+
+	public static boolean isExists(String login) {
+		User user = new User();
+		return user.readInfo(new string(login), true);
 	}
 
 	static public IUser load(String login, String password, boolean createIfNotExist) {

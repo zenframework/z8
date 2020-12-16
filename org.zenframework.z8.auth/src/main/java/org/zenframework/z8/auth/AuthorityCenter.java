@@ -20,7 +20,6 @@ import org.zenframework.z8.server.logs.Trace;
 import org.zenframework.z8.server.request.IRequest;
 import org.zenframework.z8.server.request.RequestDispatcher;
 import org.zenframework.z8.server.security.IUser;
-import org.zenframework.z8.server.security.User;
 import org.zenframework.z8.server.types.datespan;
 import org.zenframework.z8.server.types.guid;
 import org.zenframework.z8.server.types.string;
@@ -36,7 +35,6 @@ public class AuthorityCenter extends HubServer implements IAuthorityCenter {
 	private final boolean clientHashPassword;
 	private final String ldapUrl;
 	private final boolean checkLdapLogin;
-	private final String ldapDefaultDomain;
 	private Collection<String> ldapUsersIgnore;
 	private boolean ldapUsersCreateOnSuccessfulLogin;
 	private boolean cacheEnabled;
@@ -56,7 +54,6 @@ public class AuthorityCenter extends HubServer implements IAuthorityCenter {
 		clientHashPassword = ServerConfig.webClientHashPassword();
 		checkLdapLogin = ServerConfig.checkLdapLogin();
 		ldapUrl = ServerConfig.ldapUrl();
-		ldapDefaultDomain = ServerConfig.ldapDefaultDomain();
 		ldapUsersIgnore = ServerConfig.ldapUsersIgnore();
 		ldapUsersCreateOnSuccessfulLogin = ServerConfig.ldapUsersCreateOnSuccessfulLogin();
 		cacheEnabled = ServerConfig.authorityCenterCache();
@@ -133,7 +130,7 @@ public class AuthorityCenter extends HubServer implements IAuthorityCenter {
 				Trace.logError("Failed to get user attributes from active directory service", e);
 				throw new AccessDeniedException();
 			}
-			user = loginServer.userLoad(login, ldapUsersCreateOnSuccessfulLogin);
+			user = loginServer.user(login, null, ldapUsersCreateOnSuccessfulLogin);
 		} else {
 			user = loginServer.user(login, clientHashPassword ? password : MD5.hex(password), false);
 		}
@@ -148,57 +145,19 @@ public class AuthorityCenter extends HubServer implements IAuthorityCenter {
 	 *                      https://tools.ietf.org/html/rfc6806
 	 */
 	@Override
-	public ISession ssoAuth(String principalName) throws RemoteException {
+	public ISession ssoLogin(String principalName) throws RemoteException {
 		IServerInfo serverInfo = findServer((String)null);
 
 		if(serverInfo == null || principalName == null)
 			throw new AccessDeniedException();
 
-		IApplicationServer loginServer = serverInfo.getServer();
-
-		IUser user;
-		String login = principalName.contains("@") ? principalName.split("@")[0] : principalName;
-		try {
-			user = loginServer.userLoad(login, false);
-		} catch (AccessDeniedException e) {
-			user = createUser(loginServer, principalName);
-		}
+		IUser user = serverInfo.getServer().user(principalName);
 		if (user == null) {
 			throw new AccessDeniedException();
 		}
 		ISession session = sessionManager.create(user);
 		session.setServerInfo(serverInfo);
 		return session;
-	}
-
-	/**
-	 * Getting user information from active directory and creating a new user
-	 */
-	private IUser createUser(IApplicationServer loginServer, String principalName) throws RemoteException{
-		LdapUser ldapUser;
-		try {
-			ActiveDirectory activeDirectory = new ActiveDirectory();
-			ldapUser = activeDirectory.searchUser(
-					ServerConfig.searchBase(), String.format(ServerConfig.searchUserFilter(), principalName));
-			activeDirectory.close();
-		} catch (NamingException e) {
-			Trace.logError("Failed to get user attributes from active directory service", e);
-			return null;
-		}
-
-		IRequest request = ApplicationServer.getRequest();
-		// user attributes from ActiveDirectory
-		for(Map.Entry<String,String> entry : ldapUser.getParameters().entrySet()) {
-			request.getParameters().put(
-					new string(entry.getKey()),
-					new string(entry.getValue())
-			);
-		}
-		request.getParameters().put(
-				new string(ActiveDirectory.ldapParametersPrefix + "memberOf"),
-				new string(new JsonArray(ldapUser.getMemberOf()).toString()));
-
-		return loginServer.userLoad(ldapUser.getLogin(), true);
 	}
 
 	@Override

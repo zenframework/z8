@@ -10,7 +10,7 @@ public class Tables extends Table {
 	[displayName "Системное имя"]
 	public StringField classId;
 	classId.length = 256;
-	
+
 	[displayName "Заголовок"]
 	public StringField displayName;
 	displayName.length = 256;
