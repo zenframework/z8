@@ -16,6 +16,7 @@ public interface IAttribute extends ILanguageElement {
 	final static String Job = "job";
 	final static String ApiDescription = "apiDescription";
 	final static String ApiActions = "apiActions";
+	final static String UriPath = "uriPath";
 
 	String getName();
 
