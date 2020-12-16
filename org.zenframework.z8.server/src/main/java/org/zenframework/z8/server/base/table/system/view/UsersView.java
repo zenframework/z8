@@ -87,7 +87,7 @@ public class UsersView extends Users {
 
 		Source.CLASS<Source> rolesSource = new Source.CLASS<Source>(rolesListbox.get());
 		rolesSource.get().query = new RoleTableAccessView.CLASS<RoleTableAccessView>(this);
-		
+
 		rolesListbox.get().query = this.userRoles;
 		rolesListbox.get().link = userRoles.user;
 		rolesListbox.get().source = rolesSource;

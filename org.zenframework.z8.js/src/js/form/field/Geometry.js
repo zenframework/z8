@@ -15,9 +15,9 @@ Z8.define('Z8.form.field.Geometry', {
 
 	gridStep: 20,
 	updateSizePending: true,
-	
+
 	geometryToolsCompact: true,
-	
+
 	isValid: function() {
 		return true;
 	},
@@ -40,10 +40,10 @@ Z8.define('Z8.form.field.Geometry', {
 	},
 
 	createTools: function() {
-		var zoomOut = new Z8.button.Button({ icon: 'fa-minus-circle', tooltip: 'Уменьшить' });
+		var zoomOut = new Z8.button.Button({ icon: 'fa-minus-circle', tooltip: Z8.$('Geometry.zoomOut') });
 		this.setZoomOutTool(zoomOut);
 
-		var zoomIn = new Z8.button.Button({ icon: 'fa-plus-circle', tooltip: 'Увеличить' });
+		var zoomIn = new Z8.button.Button({ icon: 'fa-plus-circle', tooltip: Z8.$('Geometry.zoomIn') });
 		this.setZoomInTool(zoomIn);
 
 		var zoom = new Z8.button.Group({ items: [zoomOut, zoomIn] });
@@ -130,7 +130,7 @@ Z8.define('Z8.form.field.Geometry', {
 	getGridLayer: function() {
 		return this.gridLayer;
 	},
-	
+
 	getLassoLayer: function() {
 		return this.lassoLayer;
 	},
@@ -146,7 +146,7 @@ Z8.define('Z8.form.field.Geometry', {
 	getVectorSource: function() {
 		return this.getSource(this.getVectorLayer());
 	},
-	
+
 	getLassoSource: function() {
 		return this.getSource(this.getLassoLayer());
 	},
@@ -167,7 +167,7 @@ Z8.define('Z8.form.field.Geometry', {
 	clearVector: function() {
 		this.clearLayer(this.getVectorLayer());
 	},
-	
+
 	clearLasso: function() {
 		this.clearLayer(this.getLassoLayer());
 	},
@@ -255,7 +255,7 @@ Z8.define('Z8.form.field.Geometry', {
 		source = new ol.source.Vector({ wrapX: false });
 		layer = this.gridLayer = new ol.layer.Vector({ source: source, style: this.getGridStyle != null ? getGridStyle : undefined });
 		layers.add(layer);
-		
+
 		source = new ol.source.Vector({ wrapX: false });
 		layer = this.lassoLayer = new ol.layer.Vector({ source: source, style: this.getLassoStyle != null ? getLassoStyle : undefined });
 		layers.add(layer);
@@ -301,7 +301,7 @@ Z8.define('Z8.form.field.Geometry', {
 
 		return box;
 	},
-	
+
 	createLasso: function() {
 		var style = new ol.style.Style({
 			stroke: new ol.style.Stroke({ color: 'blue',  width: 2 })
@@ -335,7 +335,7 @@ Z8.define('Z8.form.field.Geometry', {
 	createPick: function() {
 		return new ol.interaction.Pick({ source: this.getVectorSource(), picker: this.pickFeature, scope: this });
 	},
-	
+
 	createDraw: function() {
 		return new ol.interaction.Draw({ source: this.getVectorSource(), snapTolerance: 0, freehandCondition: ol.events.condition.never, type: this.getDrawType() });
 	},
@@ -361,7 +361,7 @@ Z8.define('Z8.form.field.Geometry', {
 			box.setActive(false);
 			map.addInteraction(box);
 		}
-		
+
 		if(tools.lasso !== false) {
 			var lasso = this.lasso = this.createLasso();
 			lasso.setActive(false);
@@ -439,7 +439,7 @@ Z8.define('Z8.form.field.Geometry', {
 			map.removeInteraction(box);
 			this.box = null;
 		}
-		
+
 		var lasso = this.lasso;
 		if(lasso != null) {
 			map.removeInteraction(lasso);
@@ -800,7 +800,7 @@ Z8.define('Z8.form.field.Geometry', {
 
 	onRulerEnd: function(event) {
 	},
-	
+
 	onLassoStart: function(event) {
 		if(this.lassoFeature != null) {
 			try {
@@ -1005,7 +1005,7 @@ Z8.define('Z8.form.field.Geometry', {
 		// Must be overriden
 		callback(new ol.geom.Point(coordinate));
 	},
-	
+
 	getCenter: function() {
 		return this.view.getCenter();
 	},
@@ -1025,7 +1025,7 @@ Z8.define('Z8.form.field.Geometry', {
 	},
 
 	setCenter: function(x, y) {
-		var newCenter = null; 
+		var newCenter = null;
 
 		if(x instanceof ol.Feature) {
 			var feature = x;
@@ -1071,7 +1071,7 @@ Z8.define('Z8.form.field.Geometry', {
 	},
 
 /*
- *  Default styling, should be defined as function(feature, zoom, resolution) to use customized styles 
+ *  Default styling, should be defined as function(feature, zoom, resolution) to use customized styles
 */
 	getStyle: null,
 
@@ -1233,7 +1233,7 @@ Z8.define('Z8.form.field.Geometry', {
 	getRulerStyle: function(feature, zoom, resolution, drawing) {
 		var styles = [
 			new ol.style.Style({
-				stroke: new ol.style.Stroke({ 
+				stroke: new ol.style.Stroke({
 					color: drawing ? [128, 128, 0] : [128, 128, 128],
 					lineDash: [5, 2],
 					width: 1
@@ -1267,7 +1267,7 @@ Z8.define('Z8.form.field.Geometry', {
 					radius: 3
 				}),
 				text: new ol.style.Text({
-					text: distance < 1000 ? Format.integer(distance.round()) + ' м' : (Format.float((distance / 1000).round(2)) + ' км'),
+					text: distance < 1000 ? Format.integer(distance.round()) + Z8.$('Geometry.meter') : (Format.float((distance / 1000).round(2)) + Z8.$('Geometry.kilometer')),
 					placement: 'point',
 					overflow: true,
 					font: 'normal ' + Ems.emsToPixels(.78571429) + 'px Roboto ',

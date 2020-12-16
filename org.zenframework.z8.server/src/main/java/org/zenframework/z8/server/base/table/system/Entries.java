@@ -5,6 +5,7 @@ import java.util.LinkedHashMap;
 import org.zenframework.z8.server.base.table.Table;
 import org.zenframework.z8.server.base.table.value.IField;
 import org.zenframework.z8.server.base.table.value.StringField;
+import org.zenframework.z8.server.engine.Runtime;
 import org.zenframework.z8.server.resources.Resources;
 import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.types.exception;
@@ -50,10 +51,44 @@ public class Entries extends Table {
 		}
 	}
 
+	// I18N support
+	public static class NameField extends StringField {
+		public static class CLASS<T extends NameField> extends StringField.CLASS<T> {
+			public CLASS(IObject container) {
+				super(container);
+				setJavaClass(NameField.class);
+			}
+
+			@Override
+			public Object newObject(IObject container) {
+				return new NameField(container);
+			}
+		}
+
+		public NameField(IObject container) {
+			super(container);
+		}
+
+		@Override
+		@SuppressWarnings("unchecked")
+		public void constructor2() {
+			super.constructor2();
+			usedFields.add(((Entries.CLASS<Entries>)getContainer().getCLASS()).get().classId);
+		}
+
+		@SuppressWarnings("unchecked")
+		public string z8_get() {
+			super.z8_get();
+			return Runtime.instance().getEntry(((Entries.CLASS<Entries>)getContainer().getCLASS()).get().classId.get().z8_get().get())
+					.get().z8_displayName();
+		}
+	}
+
 	public StringField.CLASS<StringField> classId = new StringField.CLASS<StringField>(this);
 
 	public Entries(IObject container) {
 		super(container);
+		name = new NameField.CLASS<NameField>(this);
 	}
 
 	@Override

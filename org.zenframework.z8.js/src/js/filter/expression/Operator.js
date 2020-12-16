@@ -78,11 +78,11 @@ Z8.define('Z8.filter.String', {
 			return string != null ? !string.endsWith(what || '') : false;
 		},
 
-		isEmpty: function(string) { 
+		isEmpty: function(string) {
 			return Z8.isEmpty(string);
 		},
 
-		isNotEmpty: function(string) { 
+		isNotEmpty: function(string) {
 			return !Z8.isEmpty(string);
 		}
 	}
@@ -120,116 +120,116 @@ Z8.define('Z8.filter.Operator', {
 	statics: {
 		data: {
 			boolean: [
-				{ id: Operator.isTrue, name: 'да', icon: 'fa-dot-circle-o' },
-				{ id: Operator.isFalse, name: 'нет', icon: 'fa-circle-o' }
+				{ id: Operator.isTrue, name: Z8.$('Operator.true'), icon: 'fa-dot-circle-o' },
+				{ id: Operator.isFalse, name: Z8.$('Operator.false'), icon: 'fa-circle-o' }
 			],
 
 			datetime: [
-				{ id: Operator.GT, name: 'после', icon: 'fa-math-gt', type: Type.Datetime },
-				{ id: Operator.GE, name: 'не ранее', icon: 'fa-math-ge', type: Type.Datetime },
-				{ id: Operator.LT, name: 'до', icon: 'fa-math-lt', type: Type.Datetime },
-				{ id: Operator.LE, name: 'не позже', icon: 'fa-math-le', type: Type.Datetime },
+				{ id: Operator.GT, name: Z8.$('Operator.after'), icon: 'fa-math-gt', type: Type.Datetime },
+				{ id: Operator.GE, name: Z8.$('Operator.notEarlierThan'), icon: 'fa-math-ge', type: Type.Datetime },
+				{ id: Operator.LT, name: Z8.$('Operator.before'), icon: 'fa-math-lt', type: Type.Datetime },
+				{ id: Operator.LE, name: Z8.$('Operator.notLaterThan'), icon: 'fa-math-le', type: Type.Datetime },
 
-				{ id: Operator.Yesterday, name: 'вчера' },
-				{ id: Operator.Today, name: 'сегодня' },
-				{ id: Operator.Tomorrow, name: 'завтра' },
+				{ id: Operator.Yesterday, name: Z8.$('Operator.yesterday') },
+				{ id: Operator.Today, name: Z8.$('Operator.today') },
+				{ id: Operator.Tomorrow, name: Z8.$('Operator.tomorrow') },
 
-				{ id: Operator.LastWeek, name: 'прошлая неделя' },
-				{ id: Operator.ThisWeek, name: 'текущая неделя' },
-				{ id: Operator.NextWeek, name: 'следующая неделя' },
+				{ id: Operator.LastWeek, name: Z8.$('Operator.lastWeek') },
+				{ id: Operator.ThisWeek, name: Z8.$('Operator.thisWeek') },
+				{ id: Operator.NextWeek, name: Z8.$('Operator.nextWeek') },
 
-				{ id: Operator.LastMonth, name: 'прошлый месяц' },
-				{ id: Operator.ThisMonth, name: 'текущий месяц' },
-				{ id: Operator.NextMonth, name: 'следующий месяц' },
+				{ id: Operator.LastMonth, name: Z8.$('Operator.lastMonth') },
+				{ id: Operator.ThisMonth, name: Z8.$('Operator.thisMonth') },
+				{ id: Operator.NextMonth, name: Z8.$('Operator.nextMonth') },
 
-				{ id: Operator.LastYear, name: 'прошлый год' },
-				{ id: Operator.ThisYear, name: 'текущий год' },
-				{ id: Operator.NextYear, name: 'следующий год' },
+				{ id: Operator.LastYear, name: Z8.$('Operator.lastYear') },
+				{ id: Operator.ThisYear, name: Z8.$('Operator.thisYear') },
+				{ id: Operator.NextYear, name: Z8.$('Operator.nextYear') },
 
-				{ id: Operator.LastDays, name: 'последние X дней', type: Type.Integer },
-				{ id: Operator.NextDays, name: 'следующие X дней', type: Type.Integer },
+				{ id: Operator.LastDays, name: Z8.$('Operator.lastDays'), type: Type.Integer },
+				{ id: Operator.NextDays, name: Z8.$('Operator.nextDays'), type: Type.Integer },
 
-				{ id: Operator.LastHours, name: 'последние X часов', type: Type.Integer },
-				{ id: Operator.NextHours, name: 'следующие X часов', type: Type.Integer }
+				{ id: Operator.LastHours, name: Z8.$('Operator.lastHours'), type: Type.Integer },
+				{ id: Operator.NextHours, name: Z8.$('Operator.nextHours'), type: Type.Integer }
 			],
 
 			date: [
-				{ id: Operator.Eq, name: 'равно', icon: 'fa-math-eq', type: Type.Date },
-				{ id: Operator.NotEq, name: 'не равно', icon: 'fa-math-not-eq', type: Type.Date },
+				{ id: Operator.Eq, name: Z8.$('Operator.equalTo'), icon: 'fa-math-eq', type: Type.Date },
+				{ id: Operator.NotEq, name: Z8.$('Operator.notEqualTo'), icon: 'fa-math-not-eq', type: Type.Date },
 
-				{ id: Operator.GT, name: 'после', icon: 'fa-math-gt', type: Type.Date },
-				{ id: Operator.GE, name: 'не ранее', icon: 'fa-math-ge', type: Type.Date },
-				{ id: Operator.LT, name: 'до', icon: 'fa-math-lt', type: Type.Date },
-				{ id: Operator.LE, name: 'не позже', icon: 'fa-math-le', type: Type.Date },
+				{ id: Operator.GT, name: Z8.$('Operator.after'), icon: 'fa-math-gt', type: Type.Date },
+				{ id: Operator.GE, name: Z8.$('Operator.notEarlierThan'), icon: 'fa-math-ge', type: Type.Date },
+				{ id: Operator.LT, name: Z8.$('Operator.before'), icon: 'fa-math-lt', type: Type.Date },
+				{ id: Operator.LE, name: Z8.$('Operator.notLaterThan'), icon: 'fa-math-le', type: Type.Date },
 
-				{ id: Operator.Yesterday, name: 'вчера' },
-				{ id: Operator.Today, name: 'сегодня' },
-				{ id: Operator.Tomorrow, name: 'завтра' },
+				{ id: Operator.Yesterday, name: Z8.$('Operator.yesterday') },
+				{ id: Operator.Today, name: Z8.$('Operator.today') },
+				{ id: Operator.Tomorrow, name: Z8.$('Operator.tomorrow') },
 
-				{ id: Operator.LastWeek, name: 'прошлая неделя' },
-				{ id: Operator.ThisWeek, name: 'текущая неделя' },
-				{ id: Operator.NextWeek, name: 'следующая неделя' },
+				{ id: Operator.LastWeek, name: Z8.$('Operator.lastWeek') },
+				{ id: Operator.ThisWeek, name: Z8.$('Operator.thisWeek') },
+				{ id: Operator.NextWeek, name: Z8.$('Operator.nextWeek') },
 
-				{ id: Operator.LastMonth, name: 'прошлый месяц' },
-				{ id: Operator.ThisMonth, name: 'текущий месяц' },
-				{ id: Operator.NextMonth, name: 'следующий месяц' },
+				{ id: Operator.LastMonth, name: Z8.$('Operator.lastMonth') },
+				{ id: Operator.ThisMonth, name: Z8.$('Operator.thisMonth') },
+				{ id: Operator.NextMonth, name: Z8.$('Operator.nextMonth') },
 
-				{ id: Operator.LastYear, name: 'прошлый год' },
-				{ id: Operator.ThisYear, name: 'текущий год' },
-				{ id: Operator.NextYear, name: 'следующий год' },
+				{ id: Operator.LastYear, name: Z8.$('Operator.lastYear') },
+				{ id: Operator.ThisYear, name: Z8.$('Operator.thisYear') },
+				{ id: Operator.NextYear, name: Z8.$('Operator.nextYear') },
 
-				{ id: Operator.LastDays, name: 'последние X дней', type: Type.Integer },
-				{ id: Operator.NextDays, name: 'следующие X дней', type: Type.Integer },
+				{ id: Operator.LastDays, name: Z8.$('Operator.lastDays'), type: Type.Integer },
+				{ id: Operator.NextDays, name: Z8.$('Operator.nextDays'), type: Type.Integer },
 
-				{ id: Operator.LastHours, name: 'последние X часов', type: Type.Integer },
-				{ id: Operator.NextHours, name: 'следующие X часов', type: Type.Integer }
+				{ id: Operator.LastHours, name: Z8.$('Operator.lastHours'), type: Type.Integer },
+				{ id: Operator.NextHours, name: Z8.$('Operator.nextHours'), type: Type.Integer }
 			],
 
 			integer: [
-				{ id: Operator.Eq, name: 'равно', icon: 'fa-math-eq', type: Type.Integer },
-				{ id: Operator.NotEq, name: 'не равно', icon: 'fa-math-not-eq', type: Type.Integer },
+				{ id: Operator.Eq, name: Z8.$('Operator.equalTo'), icon: 'fa-math-eq', type: Type.Integer },
+				{ id: Operator.NotEq, name:  Z8.$('Operator.notEqualTo'), icon: 'fa-math-not-eq', type: Type.Integer },
 
-				{ id: Operator.GT, name: 'больше', icon: 'fa-math-gt', type: Type.Integer },
-				{ id: Operator.GE, name: 'не меньше', icon: 'fa-math-ge', type: Type.Integer },
-				{ id: Operator.LT, name: 'меньше', icon: 'fa-math-lt', type: Type.Integer },
-				{ id: Operator.LE, name: 'не больше', icon: 'fa-math-le', type: Type.Integer }
+				{ id: Operator.GT, name: Z8.$('Operator.greaterThan'), icon: 'fa-math-gt', type: Type.Integer },
+				{ id: Operator.GE, name: Z8.$('Operator.numberGreaterThanOrEqualTo'), icon: 'fa-math-ge', type: Type.Integer },
+				{ id: Operator.LT, name: Z8.$('Operator.lessThan'), icon: 'fa-math-lt', type: Type.Integer },
+				{ id: Operator.LE, name: Z8.$('Operator.numberLessThanOrEqualTo'), icon: 'fa-math-le', type: Type.Integer }
 			],
 
 			float: [
-				{ id: Operator.Eq, name: 'равно', icon: 'fa-math-eq', type: Type.Float },
-				{ id: Operator.NotEq, name: 'не равно', icon: 'fa-math-not-eq', type: Type.Float },
+				{ id: Operator.Eq, name: Z8.$('Operator.equalTo'), icon: 'fa-math-eq', type: Type.Float },
+				{ id: Operator.NotEq, name: Z8.$('Operator.notEqualTo'), icon: 'fa-math-not-eq', type: Type.Float },
 
-				{ id: Operator.GT, name: 'больше', icon: 'fa-math-gt', type: Type.Float },
-				{ id: Operator.GE, name: 'не меньше', icon: 'fa-math-ge', type: Type.Float },
-				{ id: Operator.LT, name: 'меньше', icon: 'fa-math-lt', type: Type.Float },
-				{ id: Operator.LE, name: 'не больше', icon: 'fa-math-le', type: Type.Float }
+				{ id: Operator.GT, name: Z8.$('Operator.greaterThan'), icon: 'fa-math-gt', type: Type.Float },
+				{ id: Operator.GE, name: Z8.$('Operator.numberGreaterThanOrEqualTo'), icon: 'fa-math-ge', type: Type.Float },
+				{ id: Operator.LT, name: Z8.$('Operator.lessThan'), icon: 'fa-math-lt', type: Type.Float },
+				{ id: Operator.LE, name: Z8.$('Operator.numberLessThanOrEqualTo'), icon: 'fa-math-le', type: Type.Float }
 			],
 
 			string: [
-				{ id: Operator.Contains, name: 'содержит', icon: 'fa-superset-of', type: Type.String, filter: Z8.filter.String.contains },
-				{ id: Operator.NotContains, name: 'не содержит', icon: 'fa-not-superset-of', type: Type.String, filter: Z8.filter.String.notContains },
+				{ id: Operator.Contains, name: Z8.$('Operator.contains'), icon: 'fa-superset-of', type: Type.String, filter: Z8.filter.String.contains },
+				{ id: Operator.NotContains, name: Z8.$('Operator.doesNotContain'), icon: 'fa-not-superset-of', type: Type.String, filter: Z8.filter.String.notContains },
 
-				{ id: Operator.ContainsWord, name: 'содержит слово', icon: 'fa-superset-of-or-eq', type: Type.String, filter: Z8.filter.String.contains },
-				{ id: Operator.NotContainsWord, name: 'не содержит слово', icon: 'fa-not-superset-of-or-eq', type: Type.String, filter: Z8.filter.String.notContains },
+				{ id: Operator.ContainsWord, name: Z8.$('Operator.containsAWord'), icon: 'fa-superset-of-or-eq', type: Type.String, filter: Z8.filter.String.contains },
+				{ id: Operator.NotContainsWord, name: Z8.$('Operator.doesNotContainAWord'), icon: 'fa-not-superset-of-or-eq', type: Type.String, filter: Z8.filter.String.notContains },
 
-				{ id: Operator.IsSimilarTo, name: 'похоже', icon: 'fa-math-tilde', type: Type.String, filter: Z8.filter.String.isSimilarTo },
-				{ id: Operator.IsNotSimilarTo, name: 'не похоже', icon: 'fa-math-not-tilde', type: Type.String, filter: Z8.filter.String.isNotSimilarTo },
+				{ id: Operator.IsSimilarTo, name: Z8.$('Operator.isSimilarTo'), icon: 'fa-math-tilde', type: Type.String, filter: Z8.filter.String.isSimilarTo },
+				{ id: Operator.IsNotSimilarTo, name: Z8.$('Operator.isNotSimilarTo'), icon: 'fa-math-not-tilde', type: Type.String, filter: Z8.filter.String.isNotSimilarTo },
 
-				{ id: Operator.Eq, name: 'равно', icon: 'fa-math-eq', type: Type.String, filter: Z8.filter.String.eq },
-				{ id: Operator.NotEq, name: 'не равно', icon: 'fa-math-not-eq', type: Type.String, filter: Z8.filter.String.notEq },
+				{ id: Operator.Eq, name: Z8.$('Operator.equalTo'), icon: 'fa-math-eq', type: Type.String, filter: Z8.filter.String.eq },
+				{ id: Operator.NotEq, name: Z8.$('Operator.notEqualTo'), icon: 'fa-math-not-eq', type: Type.String, filter: Z8.filter.String.notEq },
 
-				{ id: Operator.GT, name: 'больше', icon: 'fa-math-gt', type: Type.String },
-				{ id: Operator.GE, name: 'больше или равно', icon: 'fa-math-ge', type: Type.String },
-				{ id: Operator.LT, name: 'меньше', icon: 'fa-math-lt', type: Type.String },
-				{ id: Operator.LE, name: 'меньше или равно', icon: 'fa-math-le', type: Type.String },
+				{ id: Operator.GT, name: Z8.$('Operator.greaterThan'), icon: 'fa-math-gt', type: Type.String },
+				{ id: Operator.GE, name: Z8.$('Operator.stringGreaterThanOrEqualTo'), icon: 'fa-math-ge', type: Type.String },
+				{ id: Operator.LT, name: Z8.$('Operator.lessThan'), icon: 'fa-math-lt', type: Type.String },
+				{ id: Operator.LE, name: Z8.$('Operator.stringLessThanOrEqualTo'), icon: 'fa-math-le', type: Type.String },
 
-				{ id: Operator.BeginsWith, name: 'начинается с', type: Type.String },
-				{ id: Operator.NotBeginsWith, name: 'не начинается с', type: Type.String },
-				{ id: Operator.EndsWith, name: 'оканчивается на', type: Type.String },
-				{ id: Operator.NotEndsWith, name: 'не оканчивается на', type: Type.String },
+				{ id: Operator.BeginsWith, name: Z8.$('Operator.beginsWith'), type: Type.String },
+				{ id: Operator.NotBeginsWith, name: Z8.$('Operator.doesNotBeginWith'), type: Type.String },
+				{ id: Operator.EndsWith, name: Z8.$('Operator.endsWith'), type: Type.String },
+				{ id: Operator.NotEndsWith, name: Z8.$('Operator.doesNotEndWith'), type: Type.String },
 
-				{ id: Operator.IsEmpty, name: 'пустая строка' },
-				{ id: Operator.IsNotEmpty, name: 'непустая строка' }
+				{ id: Operator.IsEmpty, name: Z8.$('Operator.isEmptyString') },
+				{ id: Operator.IsNotEmpty, name: Z8.$('Operator.isNotEmptyString') }
 			]
 		},
 
@@ -298,14 +298,14 @@ Z8.define('Z8.filter.Operator', {
 		getStringFilters: function() {
 			var filters = {};
 
+			filters[Operator.IsSimilarTo] = Z8.filter.String.isSimilarTo;
+			filters[Operator.IsNotSimilarTo] = Z8.filter.String.isNotSimilarTo;
+
 			filters[Operator.Contains] = Z8.filter.String.contains;
 			filters[Operator.NotContains] = Z8.filter.String.notContains;
 
 			filters[Operator.ContainsWord] = Z8.filter.String.containsWord;
 			filters[Operator.NotContainsWord] = Z8.filter.String.notContainsWord;
-
-			filters[Operator.IsSimilarTo] = Z8.filter.String.isSimilarTo;
-			filters[Operator.IsNotSimilarTo] = Z8.filter.String.isNotSimilarTo;
 
 			filters[Operator.Eq] = Z8.filter.String.eq;
 			filters[Operator.NotEq] = Z8.filter.String.notEq;

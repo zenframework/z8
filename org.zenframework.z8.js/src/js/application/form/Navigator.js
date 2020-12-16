@@ -223,17 +223,17 @@ Z8.define('Z8.application.form.Navigator', {
 		var oneRecord = this.oneRecord;
 
 		if(!oneRecord && store.hasCreateAccess()) {
-			var add = this.addButton = new Z8.button.Button({ icon: 'fa-file-o', tooltip: 'Новая запись', handler: this.addRecord, scope: this });
+			var add = this.addButton = new Z8.button.Button({ icon: 'fa-file-o', tooltip: Z8.$('Navigator.newRecord'), handler: this.addRecord, scope: this });
 			buttons.push(add);
 		}
 
 		if(!oneRecord && store.hasCopyAccess()) {
-			var copy = this.copyButton = new Z8.button.Button({ icon: 'fa-copy', tooltip: 'Копировать запись', handler: this.copyRecord, scope: this });
+			var copy = this.copyButton = new Z8.button.Button({ icon: 'fa-copy', tooltip: Z8.$('Navigator.copyRecord'), handler: this.copyRecord, scope: this });
 			buttons.push(copy);
 		}
 
 		if(store.hasReadAccess()) {
-			var refresh = this.refreshButton =  new Z8.button.Button({ icon: 'fa-refresh', tooltip: 'Обновить', handler: this.refreshRecords, scope: this });
+			var refresh = this.refreshButton =  new Z8.button.Button({ icon: 'fa-refresh', tooltip: Z8.$('Navigator.refresh'), handler: this.refreshRecords, scope: this });
 			buttons.push(refresh);
 		}
 
@@ -242,7 +242,7 @@ Z8.define('Z8.application.form.Navigator', {
 			buttons.push(files);
 
 		if(store.hasDestroyAccess()) {
-			var remove = this.removeButton = new Z8.button.Button({ danger: true, icon: 'fa-trash', tooltip: 'Удалить запись', handler: this.removeRecord, scope: this });
+			var remove = this.removeButton = new Z8.button.Button({ danger: true, icon: 'fa-trash', tooltip: Z8.$('Navigator.deleteRecord'), handler: this.removeRecord, scope: this });
 			buttons.push(remove);
 		}
 
@@ -294,7 +294,7 @@ Z8.define('Z8.application.form.Navigator', {
 		var store = control == null ? new Z8.data.Store({ model: 'Z8.data.file.Model' }) : control.store;
 		var menu = new Z8.menu.Menu({ store: store });
 		menu.on('itemClick', this.downloadFiles, this);
-		var file = new Z8.button.File({ store: store, control: control, icon: 'fa-paperclip', tooltip: 'Файлы', menu: menu });
+		var file = new Z8.button.File({ store: store, control: control, icon: 'fa-paperclip', tooltip: Z8.$('Navigator.files'), menu: menu });
 		file.on('select', this.uploadFiles, this);
 		return file;
 	},
@@ -345,10 +345,10 @@ Z8.define('Z8.application.form.Navigator', {
 
 		var isForm = this.isFormPresentation();
 
-		var formButton = this.formButton = new Z8.button.Button({ icon: 'fa-wpforms', tooltip: 'В виде формы', toggled: isForm });
+		var formButton = this.formButton = new Z8.button.Button({ icon: 'fa-wpforms', tooltip: Z8.$('Navigator.formView'), toggled: isForm });
 		formButton.on('toggle', this.toggleView, this);
 
-		var tableButton = this.tableButton = new Z8.button.Button({ icon: 'fa-table', tooltip: 'В виде таблицы', toggled: !isForm });
+		var tableButton = this.tableButton = new Z8.button.Button({ icon: 'fa-table', tooltip: Z8.$('Navigator.tableView'), toggled: !isForm });
 		tableButton.on('toggle', this.toggleView, this);
 
 		return new Z8.button.Group({ items: [formButton, tableButton], radio: true });
@@ -362,13 +362,13 @@ Z8.define('Z8.application.form.Navigator', {
 			new Z8.menu.Item({ text: 'Microsoft Word (*.doc)', icon: 'fa-file-word-o', format: 'doc' }),
 */
 			'-',
-			new Z8.menu.Item({ text: 'Настройки', icon: 'fa-print', enabled: false })
+			new Z8.menu.Item({ text: Z8.$('Navigator.settings'), icon: 'fa-print', enabled: false })
 		];
 
 		var menu = new Z8.menu.Menu({ items: items });
 		menu.on('itemClick', this.onMenuPrint, this);
 
-		return new Z8.button.Button({ icon: 'fa-file-pdf-o', tooltip: 'Сохранить как PDF', menu: menu, handler: this.print, scope: this, format: 'pdf' });
+		return new Z8.button.Button({ icon: 'fa-file-pdf-o', tooltip: Z8.$('Navigator.saveAsPDF'), menu: menu, handler: this.print, scope: this, format: 'pdf' });
 	},
 
 	createPeriodButton: function() {
@@ -395,7 +395,7 @@ Z8.define('Z8.application.form.Navigator', {
 		var menu = new Z8.menu.Menu({ items: items });
 		menu.on('itemClick', this.onAction, this);
 
-		return new Z8.button.Button({ icon: 'fa-play', text: 'Действия', tooltip: 'Действия', menu: menu, handler: this.onMenuButtonClick, scope: this });
+		return new Z8.button.Button({ icon: 'fa-play', text: Z8.$('Navigator.actions'), tooltip: Z8.$('Navigator.actions'), menu: menu, handler: this.onMenuButtonClick, scope: this });
 	},
 
 	createReportsButton: function() {
@@ -412,7 +412,7 @@ Z8.define('Z8.application.form.Navigator', {
 
 		var menu = new Z8.menu.Menu({ items: items });
 		menu.on('itemClick', this.onMenuReport, this);
-		return new Z8.button.Button({ icon: 'fa-print', tooltip: 'Печать документов', menu: menu, handler: this.onMenuButtonClick, scope: this });
+		return new Z8.button.Button({ icon: 'fa-print', tooltip: Z8.$('Navigator.printDocuments'), menu: menu, handler: this.onMenuButtonClick, scope: this });
 	},
 
 	createSourceCodeButton: function() {
@@ -732,7 +732,7 @@ Z8.define('Z8.application.form.Navigator', {
 	printPDF: function() {
 		var button = this.printButton;
 		button.setIcon('fa-file-pdf-o');
-		button.setTooltip('Сохранить как PDF');
+		button.setTooltip(Z8.$('Navigator.saveAsPDF'));
 		button.format = 'pdf';
 		this.print();
 	},
@@ -740,7 +740,7 @@ Z8.define('Z8.application.form.Navigator', {
 	printXLS: function() {
 		var button = this.printButton;
 		button.setIcon('fa-file-excel-o');
-		button.setTooltip('Сохранить как XLS');
+		button.setTooltip(Z8.$('Navigator.saveAsXLS'));
 		button.format = 'xls';
 		this.print();
 	},
@@ -748,7 +748,7 @@ Z8.define('Z8.application.form.Navigator', {
 	printDOC: function() {
 		var button = this.printButton;
 		button.setIcon('fa-file-word-o');
-		button.setTooltip('Сохранить как DOC');
+		button.setTooltip(Z8.$('Navigator.saveAsDOC'));
 		button.format = 'doc';
 		this.print();
 	},

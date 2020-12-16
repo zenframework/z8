@@ -22,10 +22,10 @@ Z8.define('Z8.form.field.Files', {
 	checks: true,
 
 	fields: [
-		{ name: 'name', header: 'Файл', type: Type.String, icon: 'fa-file-o' },
-		{ name: 'size', header: 'Размер', type: Type.Integer, renderer: Format.fileSize },
-		{ name: 'time', header: 'Дата', type: Type.Datetime, renderer: Format.dateOrTime, icon: 'fa-clock-o' },
-		{ name: 'author', header: 'Автор', type: Type.String, icon: 'fa-user-o' }
+		{ name: 'name', header: Z8.$('FilesBox.file'), type: Type.String, icon: 'fa-file-o' },
+		{ name: 'size', header: Z8.$('FilesBox.fileSize'), type: Type.Integer, renderer: Format.fileSize },
+		{ name: 'time', header: Z8.$('FilesBox.date'), type: Type.Datetime, renderer: Format.dateOrTime, icon: 'fa-clock-o' },
+		{ name: 'author', header: Z8.$('FilesBox.author'), type: Type.String, icon: 'fa-user-o' }
 	],
 
 	initComponent: function() {
@@ -49,9 +49,9 @@ Z8.define('Z8.form.field.Files', {
 	},
 
 	createTools: function() {
-		var upload = this.uploadTool = new Z8.button.Button({ icon: 'fa-upload', tooltip: 'Загрузить файл(ы)', handler: this.onUploadFile, scope: this });
-		var download = this.downloadTool = new Z8.button.Button({ icon: 'fa-download', tooltip: 'Скачать файл(ы)', handler: this.onDownloadFile, scope: this });
-		var remove = this.removeTool = new Z8.button.Button({ cls: 'remove', danger: true, icon: 'fa-trash', tooltip: 'Удалить файл(ы)', handler: this.onRemoveFile, scope: this });
+		var upload = this.uploadTool = new Z8.button.Button({ icon: 'fa-upload', tooltip: Z8.$('FilesBox.uploadFiles'), handler: this.onUploadFile, scope: this });
+		var download = this.downloadTool = new Z8.button.Button({ icon: 'fa-download', tooltip: Z8.$('FilesBox.downloadFiles'), handler: this.onDownloadFile, scope: this });
+		var remove = this.removeTool = new Z8.button.Button({ cls: 'remove', danger: true, icon: 'fa-trash', tooltip: Z8.$('FilesBox.deleteFiles'), handler: this.onRemoveFile, scope: this });
 		return [upload, download, remove];
 	},
 

@@ -20,8 +20,8 @@ Z8.define('Z8.form.field.File', {
 
 	initTriggers: function (){
 		var triggers = this.triggers;
-		triggers.push({ icon: 'fa-upload', tooltip: 'Загрузить файл', handler: this.onUploadFile, scope: this });
-		triggers.push({ icon: 'fa-download', tooltip: 'Скачать файл', handler: this.onDownloadFile, scope: this });
+		triggers.push({ icon: 'fa-upload', tooltip: Z8.$('FileBox.uploadAFile'), handler: this.onUploadFile, scope: this });
+		triggers.push({ icon: 'fa-download', tooltip: Z8.$('FileBox.downloadAFile'), handler: this.onDownloadFile, scope: this });
 
 		TextBox.prototype.initTriggers.call(this);
 

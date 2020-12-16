@@ -2,9 +2,12 @@ package org.zenframework.z8.server.base.table.system;
 
 import org.zenframework.z8.server.base.table.Table;
 import org.zenframework.z8.server.base.table.value.StringField;
+import org.zenframework.z8.server.engine.Runtime;
 import org.zenframework.z8.server.resources.Resources;
 import org.zenframework.z8.server.runtime.IObject;
+import org.zenframework.z8.server.runtime.OBJECT;
 import org.zenframework.z8.server.types.integer;
+import org.zenframework.z8.server.types.string;
 
 public class Jobs extends Table {
 	final static public String TableName = "SystemJobs";
@@ -41,10 +44,47 @@ public class Jobs extends Table {
 		}
 	}
 
+	// I18N support
+	public static class NameField extends StringField {
+		public static class CLASS<T extends NameField> extends StringField.CLASS<T> {
+			public CLASS(IObject container) {
+				super(container);
+				setJavaClass(NameField.class);
+			}
+
+			@Override
+			public Object newObject(IObject container) {
+				return new NameField(container);
+			}
+		}
+
+		public NameField(IObject container) {
+			super(container);
+		}
+
+		@Override
+		@SuppressWarnings("unchecked")
+		public void constructor2() {
+			super.constructor2();
+			//usedFields.add(((Jobs.CLASS<Jobs>)getContainer().getCLASS()).get().classId);
+			usedFields.add(((Jobs.CLASS<Jobs>)getContainer().getCLASS()).get().recordId);
+		}
+
+		@SuppressWarnings("unchecked")
+		public string z8_get() {
+			super.z8_get();
+			//OBJECT.CLASS<? extends OBJECT> job = Runtime.instance().getJob(((Jobs.CLASS<Jobs>)getContainer().getCLASS()).get().classId.get().z8_get().get());
+			OBJECT.CLASS<? extends OBJECT> job = Runtime.instance().getJobByKey(((Jobs.CLASS<Jobs>)getContainer().getCLASS()).get().recordId());
+			return job.get().z8_displayName();
+		}
+	}
+
 	public StringField.CLASS<StringField> classId = new StringField.CLASS<StringField>(this);
 
 	public Jobs(IObject container) {
 		super(container);
+		// TODO Fix NullPointerException
+		//name = new NameField.CLASS<NameField>(this);
 	}
 
 	@Override

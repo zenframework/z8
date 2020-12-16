@@ -7,6 +7,10 @@ if(Array.prototype.fill == null) {
 	};
 }
 
+Array.asArray = function(value) {
+	return Array.isArray(value) ? value : [value];
+};
+
 Array.appendCount = function(array, value, count) {
 	return count != 0 ?  array.concat(Array(count).fill(value)) : array;
 };
@@ -84,8 +88,7 @@ Array.prototype.removeAll = function(array) {
 	if(array == null)
 		return [];
 
-	var array = Array.isArray(array) ? array : [array];
-	return this.remove.apply(this, array);
+	return this.remove.apply(this, Array.asArray(array));
 };
 
 Array.prototype.removeAt = function(index) {

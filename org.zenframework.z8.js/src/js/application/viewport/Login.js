@@ -5,10 +5,10 @@ Z8.define('Z8.application.viewport.Login', {
 	visible: false,
 
 	initComponent: function() {
-		var header = { cls: 'header', html: 'Авторизация' };
+		var header = { cls: 'header', html: Z8.$('Login.authorization') };
 		var login = this.loginField = new Z8.form.field.Text({ label: { text: Z8.$('Login.login.text'), icon: 'fa-user', width: '6.42857143em', align: 'left' }, placeholder: Z8.$('Login.login.placeholder'), value: 'Admin' });
-        var password = this.passwordField = new Z8.form.field.Text({ label: { text: Z8.$('Login.password.text'),  icon: 'fa-key', align: 'left', width: '6.42857143em' }, placeholder: Z8.$('Login.password.placeholder'), password: true });
-        var loginButton = this.loginButton = new Z8.button.Button({ cls: 'btn-tool', icon: 'fa-check', handler: this.login, scope: this });
+		var password = this.passwordField = new Z8.form.field.Text({ label: { text: Z8.$('Login.password.text'),  icon: 'fa-key', align: 'left', width: '6.42857143em' }, placeholder: Z8.$('Login.password.placeholder'), password: true });
+		var loginButton = this.loginButton = new Z8.button.Button({ cls: 'btn-tool', icon: 'fa-check', handler: this.login, scope: this });
 
 		this.controls = [header, login, password, loginButton];
 
@@ -45,7 +45,7 @@ Z8.define('Z8.application.viewport.Login', {
 			return;
 		}
 
-		this.mask = DOM.append(Viewport.getBody(), { cls: 'window-mask login' }); 
+		this.mask = DOM.append(Viewport.getBody(), { cls: 'window-mask login' });
 
 		this.callParent(show);
 		DOM.addCls(this, 'open', 100);
@@ -105,10 +105,6 @@ Z8.define('Z8.application.viewport.Login', {
 		HttpRequest.send(parameters, { fn: callback, scope: this });
 	},
 
-	ssoLogin: function(button) {
-	    window.location = window.location.origin + '/sso_auth'
-	},
-
 	onKeyDown: function(event, target) {
 		var key = event.getKey();
 
@@ -140,7 +136,7 @@ Z8.define('Z8.application.viewport.ChangePassword', {
 	cls: 'change-password',
 
 	initComponent: function() {
-		this.header = (this.login || User.login) + ' - установка пароля';
+		this.header = (this.login || User.login) + Z8.$('ChangePassword.passwordSetting');
 
 		var validation = {
 			fn: function(control, valid) {
@@ -159,12 +155,12 @@ Z8.define('Z8.application.viewport.ChangePassword', {
 		var controls = [];
 
 		if(this.password == null) {
-			var password = this.passwordField = new Z8.form.field.Text({ label: 'Пароль', placeholder: 'Пароль', password: true });
+			var password = this.passwordField = new Z8.form.field.Text({ label: Z8.$('ChangePassword.password'), placeholder: Z8.$('ChangePassword.password'), password: true });
 			controls.add(password);
 		}
 
-		var newPassword1 = this.newPassword1 = new Z8.form.field.Text({ label: 'Новый пароль', placeholder: 'Новый пароль', password: true, validation: validation });
-		var newPassword2 = this.newPassword2 = new Z8.form.field.Text({ label: 'Новый пароль (повтор)', placeholder: 'Новый пароль', password: true, required: true, validation: validation, isEmptyValue: isEmptyValue });
+		var newPassword1 = this.newPassword1 = new Z8.form.field.Text({ label: Z8.$('ChangePassword.newPassword'), placeholder: Z8.$('ChangePassword.newPassword'), password: true, validation: validation });
+		var newPassword2 = this.newPassword2 = new Z8.form.field.Text({ label: Z8.$('ChangePassword.newPassword') + ' ' + Z8.$('ChangePassword.repeat'), placeholder: Z8.$('ChangePassword.newPassword'), password: true, required: true, validation: validation, isEmptyValue: isEmptyValue });
 
 		this.controls = controls.add([newPassword1, newPassword2]);
 

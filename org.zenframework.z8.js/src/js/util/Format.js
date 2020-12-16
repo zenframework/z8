@@ -12,8 +12,8 @@ Z8.define('Z8.util.Format', {
 		LongDatetime: 'j F Y H:i',
 		Integer: '0,000',
 		Float: '0,000.00',
-		TrueText: 'да',
-		FalseText: 'нет',
+		TrueText: Z8.$('Format.true'),
+		FalseText: Z8.$('Format.false'),
 
 		ThousandSeparator: ' ',
 		DecimalSeparator: ',',
@@ -104,10 +104,10 @@ Z8.define('Z8.util.Format', {
 			var isYesterday = Date.isEqualDate(value, yesterday);
 
 			if(isToday)
-				return 'сегодня ' + Format.date(value, timeFormat);
+				return Z8.$('Format.today') + Format.date(value, timeFormat);
 
 			if(isYesterday)
-				return 'вчера ' + Format.date(value, timeFormat);
+				return Z8.$('Format.yesterday') + Format.date(value, timeFormat);
 
 			return Format.date(value, dateFormat);
 		},
@@ -176,16 +176,15 @@ Z8.define('Z8.util.Format', {
 					var trimTrailingZeroes = splitFormat[1].match(/#+$/);
 					if (trimTrailingZeroes) {
 						var length = trimTrailingZeroes[0].length;
-						trimPart = 'trailingZeroes=new RegExp(Format.DecimalSeparator.replace(/([-.*+?\\^${}()|\\[\\]\\/\\\\])/g, "\\\\$1") + "*0{0,' + length + '}$")';
+						trimPart = 'trailingZeroes=new RegExp(Format.DecimalSeparator.replace(/([-.*+?\\^${}()|\\[\\]\\/\\\\])/g, "\\\\$1") + "*0{0,' + length + '}$");';
 					}
 				}
 
 				var code = [
 					'var neg,absVal,fnum,parts' + (hasComma ? ',thousandSeparator,thousands=[],j,n,i' : '') + (extraChars ? ',format="' + format + '"' : '') + ',trailingZeroes;' + 'return function(v){' + 'if(typeof v!=="number"&&isNaN(v=parseFloat(v)))return"";' + 'neg=v<0;',
-					'absVal=Math.abs(v);',
-					'fnum=absVal.toFixed(' + precision + ');',
-					trimPart,
-					';'
+					'absVal=Math.abs(v.round(' + precision + '));',
+					'fnum=String(absVal);',
+					trimPart
 				];
 				if(hasComma) {
 					if(precision) {
@@ -195,14 +194,14 @@ Z8.define('Z8.util.Format', {
 					code[code.length] = 'if(absVal>=1000) {';
 					code[code.length] = 'thousandSeparator=Format.ThousandSeparator;' + 'thousands.length=0;' + 'j=fnum.length;' + 'n=fnum.length%3||3;' + 'for(i=0;i<j;i+=n){' + 'if(i!==0){' + 'n=3;' + '}' + 'thousands[thousands.length]=fnum.substr(i,n);' + '}' + 'fnum=thousands.join(thousandSeparator);' + '}';
 					if (precision)
-						code[code.length] = 'fnum += Format.DecimalSeparator+parts[1];';
+						code[code.length] = 'fnum += parts[1] ? Format.DecimalSeparator+parts[1] : "";';
 				} else if(precision)
-					code[code.length] = 'if(Format.DecimalSeparator!=="."){' + 'parts=fnum.split(".");' + 'fnum=parts[0]+Format.DecimalSeparator+parts[1];' + '}';
+					code[code.length] = 'if(Format.DecimalSeparator!=="."){' + 'parts=fnum.split(".");' + 'fnum=parts[0]+(parts[1] ? Format.DecimalSeparator+parts[1] : "");' + '}';
 
 				code[code.length] = 'if(neg&&fnum!=="' + (precision ? '0.' + String.repeat('0', precision) : '0') + '") { fnum="-"+fnum; }';
 
 				if(trimTrailingZeroes)
-					code[code.length] = 'fnum=fnum.replace(trailingZeroes,"");';
+					code[code.length] = 'if(parts[1]) { fnum=fnum.replace(trailingZeroes,""); }';
 
 				code[code.length] = 'return ';
 

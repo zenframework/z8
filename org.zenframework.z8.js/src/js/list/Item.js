@@ -3,13 +3,12 @@ Z8.define('Z8.list.Item', {
 	shortClassName: 'ListItem',
 
 	constructor: function(config) {
-		config = config || {};
-		config.collapsed = config.collapsed !== false;
-		Component.prototype.constructor.call(this, config);
-
 		this.hidden = 0;
 		this.valid = true;
 		this.follow = true;
+		this.collapsed = false;
+
+		Component.prototype.constructor.call(this, config);
 	},
 
 	getRecord: function() {
@@ -439,12 +438,11 @@ Z8.define('Z8.list.Item', {
 
 		var textClick = DOM.isParentOf(this.getTextElement(index), target);
 
-		if(textClick && this.follow && this.followLink(index)) {
-			event.stopEvent();
-			return;
-		}
+		if(textClick && this.follow && this.followLink(index))
+			return event.stopEvent();
 
 		var list = this.getList();
+
 		if(list.getFocused() && !list.isEditing() && this.canStartEdit(target) && this.startEdit(index, 300))
 			event.stopEvent();
 	},
@@ -458,23 +456,18 @@ Z8.define('Z8.list.Item', {
 		if(!this.isEnabled())
 			return;
 
-		if(target == this.collapser || target == this.collapserIcon) {
-			this.collapse(!this.collapsed);
-			return;
-		}
+		if(target == this.collapser || target == this.collapserIcon)
+			return this.collapse(!this.collapsed);
 
 		var list = this.getList();
-		if(target == this.iconElement) {
-			list.onIconClick(this);
-			return;
-		}
+	
+		if(target == this.iconElement)
+			return list.onIconClick(this);
 
 		var index = -1;
 
-		if(list.checks && DOM.isParentOf(this.checkElement, target)) {
-			this.toggleCheck();
-			return;
-		}
+		if(list.checks && DOM.isParentOf(this.checkElement, target))
+			return this.toggleCheck();
 
 		index = this.findCellIndex(target);
 		list.onItemClick(this, index);
@@ -497,13 +490,11 @@ Z8.define('Z8.list.Item', {
 		var index = this.findCellIndex(target);
 		var list = this.getList();
 
-		if(index != -1 && DOM.isParentOf(list.getEditors()[index], target) ||
-				list.checks && DOM.isParentOf(this.checkElement, target))
+		if(index != -1 && DOM.isParentOf(list.getEditors()[index], target) || list.checks && DOM.isParentOf(this.checkElement, target))
 			return;;
 
 		list.onItemDblClick(this, index);
 	},
-
 
 	followLink: function(index) {
 		return index != -1 ? this.getList().onItemFollowLink(this, index) : false;

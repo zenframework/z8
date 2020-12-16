@@ -566,7 +566,7 @@ Z8.define('Z8.list.List', {
 	},
 
 	isLoaded: function() {
-		return this.store != null ? this.store.isLoaded() : (this.getCount() != 0);
+		return this.store != null && this.store.isLoaded() || this.getCount() != 0;
 	},
 
 	load: function(callback, filter) {
@@ -1167,6 +1167,8 @@ Z8.define('Z8.list.List', {
 
 		if(forceEvent || !this.confirmSelection && item != currentItem)
 			this.fireEvent('select', item, currentItem, this);
+
+		return item;
 	},
 
 	setSelection: function(item) {
