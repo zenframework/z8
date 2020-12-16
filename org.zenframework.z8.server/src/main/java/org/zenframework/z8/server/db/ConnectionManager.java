@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.zenframework.z8.server.engine.ApplicationServer;
-import org.zenframework.z8.server.engine.Database;
 import org.zenframework.z8.server.engine.IDatabase;
 
 public class ConnectionManager {
@@ -24,11 +23,8 @@ public class ConnectionManager {
 	public static Connection get() {
 		return get(ApplicationServer.getDatabase());
 	}
-	
-	public static Connection get(IDatabase database) {
-		if(database == null)
-			database = Database.getDefault();
 
+	public static Connection get(IDatabase database) {
 		List<Connection> connections =  null;
 		Connection[] array = null;
 

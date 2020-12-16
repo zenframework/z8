@@ -282,7 +282,7 @@ abstract public class Message extends OBJECT implements RmiSerializable, Seriali
 		Domains domains = Domains.newInstance();
 		Domain acceptorDomain = domains.getDomain(address);
 
-		IUser user = acceptorDomain != null ? acceptorDomain.getSystemUser() : User.system(Database.getDefault());
+		IUser user = acceptorDomain != null ? acceptorDomain.getSystemUser() : User.system(Database.get(null));
 
 		IRequest currentRequest = ApplicationServer.getRequest();
 		ApplicationServer.setRequest(new Request(new Session("", user)));

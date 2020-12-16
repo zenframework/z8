@@ -57,7 +57,8 @@ public class ApplicationServer extends RmiServer implements IApplicationServer {
 	}
 
 	public static IDatabase getDatabase() {
-		return getUser().database();
+		IRequest request = getRequest();
+		return request == null && !ServerConfig.isMultitenant() ? Database.get(null) : request.getSession().user().database();
 	}
 
 	public static void setRequest(IRequest request) {

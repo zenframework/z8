@@ -15,6 +15,7 @@ import org.zenframework.z8.server.db.BasicSelect;
 import org.zenframework.z8.server.db.ConnectionManager;
 import org.zenframework.z8.server.db.Cursor;
 import org.zenframework.z8.server.db.DatabaseVendor;
+import org.zenframework.z8.server.json.Json;
 import org.zenframework.z8.server.json.parser.JsonObject;
 import org.zenframework.z8.server.logs.Trace;
 import org.zenframework.z8.server.types.encoding;
@@ -36,17 +37,22 @@ public class Database implements IDatabase, RmiSerializable, Serializable {
 	private DatabaseVendor vendor = DatabaseVendor.SqlServer;
 
 	static private Map<IDatabase, Object> locks = new HashMap<IDatabase, Object>();
+	static private Map<String, IDatabase> databases = new HashMap<String, IDatabase>();
 
-	static public Database getDefault() {
-		return new Database(ServerConfig.databaseSchema(), ServerConfig.databaseUser(), ServerConfig.databasePassword(),
-			ServerConfig.databaseConnection(), ServerConfig.databaseDriver(), ServerConfig.databaseCharset());
-	}
-
-	static public Database get(String scheme) {
-		Database database = getDefault();
+	static public IDatabase get(String scheme) {
+		Database defaultDatabase = new Database(ServerConfig.databaseSchema(), ServerConfig.databaseUser(), ServerConfig.databasePassword(),
+				ServerConfig.databaseConnection(), ServerConfig.databaseDriver(), ServerConfig.databaseCharset());
 
 		if(ServerConfig.isMultitenant())
-			database.setSchema(scheme);
+			defaultDatabase.setSchema(scheme);
+
+		String key = defaultDatabase.key();
+		IDatabase database = databases.get(key);
+
+		if(database == null) {
+			databases.put(key, defaultDatabase);
+			return defaultDatabase;
+		}
 
 		return database;
 	}
@@ -66,18 +72,14 @@ public class Database implements IDatabase, RmiSerializable, Serializable {
 	}
 
 	public Database(JsonObject json) {
-		setSchema(json.getString("schema"));
-		setUser(json.getString("user"));
-		setPassword(json.getString("password"));
-		setConnection(json.getString("connection"));
-		setDriver(json.getString("driver"));
-		setCharset(encoding.fromString(json.getString("charset")));
+		this(json.getString(Json.schema), json.getString(Json.user), json.getString(Json.password), 
+				json.getString(Json.connection), json.getString(Json.driver), encoding.fromString(json.getString(Json.charset)));
 
 		external = true;
 	}
 
 	public String key() {
-		return driver() + connection() + schema();
+		return driver + connection + schema;
 	}
 
 	@Override
