@@ -19,5 +19,10 @@ Z8.define('Z8.data.field.Json', {
 		left = String.isString(left) ? left : JSON.encode(left);
 		right = String.isString(right) ? right : JSON.encode(right);
 		return left == right ? 0 : -1;
+	},
+
+	getType: function () {
+		return 'json';
 	}
+
 });
