@@ -86,7 +86,19 @@ public class ScheduledJob implements Runnable {
 				Cron.nextDate(lastStart, cron).getTicks() < new date().getTicks();
 	}
 
+	private IUser getUser() {
+		ApplicationServer.setRequest(new Request(new Session(database.schema())));
+
+		try {
+			return this.user != null ? User.read(this.user) : User.system(database);
+		} finally {
+			ApplicationServer.setRequest(null);
+		}
+	}
+
 	private boolean beforeStart() {
+		ApplicationServer.setRequest(new Request(new Session(database.schema())));
+
 		try {
 			date lastStart = new date();
 			date nextStart = Cron.nextDate(lastStart, cron);
@@ -107,6 +119,8 @@ public class ScheduledJob implements Runnable {
 		} catch(Throwable e) {
 			Trace.logError(e);
 			return false;
+		} finally {
+			ApplicationServer.setRequest(null);
 		}
 	}
 
@@ -116,27 +130,33 @@ public class ScheduledJob implements Runnable {
 		if(id == null || !hasErrors && logErrorsOnly)
 			return;
 
-		ScheduledJobLogs logs = ScheduledJobLogs.newInstance();
-		logs.scheduledJob.get().set(id);
-		logs.start.get().set(lastStart);
-		logs.finish.get().set(new date());
-		logs.errors.get().set(new bool(hasErrors));
+		ApplicationServer.setRequest(new Request(new Session(database.schema())));
 
-		file logFile = monitor.getLog();
-		if(logFile != null) {
-			monitor.logInfo("Memory usage: " + RequestDispatcher.getMemoryUsage());
+		try {
+			ScheduledJobLogs logs = ScheduledJobLogs.newInstance();
+			logs.scheduledJob.get().set(id);
+			logs.start.get().set(lastStart);
+			logs.finish.get().set(new date());
+			logs.errors.get().set(new bool(hasErrors));
+	
+			file logFile = monitor.getLog();
+			if(logFile != null) {
+				monitor.logInfo("Memory usage: " + RequestDispatcher.getMemoryUsage());
+	
+				JsonWriter writer = new JsonWriter();
+				writer.startArray();
+				writer.startObject();
+				logFile.write(writer);
+				writer.finishObject();
+				writer.finishArray();
+				logs.file.get().set(new string(writer.toString()));
+				logs.fileSize.get().set(logFile.size);
+			}
 
-			JsonWriter writer = new JsonWriter();
-			writer.startArray();
-			writer.startObject();
-			logFile.write(writer);
-			writer.finishObject();
-			writer.finishArray();
-			logs.file.get().set(new string(writer.toString()));
-			logs.fileSize.get().set(logFile.size);
+			logs.create();
+		} finally {
+			ApplicationServer.setRequest(null);
 		}
-
-		logs.create();
 	}
 
 	@Override
@@ -144,20 +164,15 @@ public class ScheduledJob implements Runnable {
 		try {
 			isRunning = true;
 
-			ApplicationServer.setRequest(new Request(new Session(database.schema())));
+			if(!beforeStart())
+				return;
 
 			Map<String, String> parameters = new HashMap<String, String>();
 			parameters.put(Json.request.get(), classId);
 			parameters.put(Json.scheduled.get(), "true");
 
-			IUser user = this.user != null ? User.read(this.user) : User.system(database);
-			IRequest request = new Request(parameters, new ArrayList<file>(), new Session("", user));
+			IRequest request = new Request(parameters, new ArrayList<file>(), new Session("", getUser()));
 			IResponse response = new Response();
-
-			ApplicationServer.setRequest(request);
-
-			if(!beforeStart())
-				return;
 
 			new RequestDispatcher(request, response).run();
 

@@ -61,7 +61,7 @@ public class Database extends OBJECT {
 		return cls;
 	}
 
-	static public Database.CLASS<? extends Database> z8_currentDatabase() {
+	static public Database.CLASS<? extends Database> z8_get() {
 		Database.CLASS<Database> cls = new Database.CLASS<Database>(null);
 		cls.get().database = ApplicationServer.getUser().database();
 		return cls;
@@ -71,5 +71,9 @@ public class Database extends OBJECT {
 		Connection.CLASS<Connection> cls = new Connection.CLASS<Connection>(null);
 		cls.get().connection = ConnectionManager.get(database);
 		return cls;
+	}
+
+	public string z8_schema() {
+		return new string(database.schema());
 	}
 }

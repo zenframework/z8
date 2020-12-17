@@ -1,3 +1,4 @@
+import org.zenframework.z8.base.sql.Database;
 import org.zenframework.z8.lang.Object;
 
 [native "org.zenframework.z8.server.base.security.User"]
@@ -12,6 +13,8 @@ public class User extends Object {
 	public string description;
 	public string phone;
 	public string email;
+
+	public Database database;
 
 	public primary[string] parameters;
 
