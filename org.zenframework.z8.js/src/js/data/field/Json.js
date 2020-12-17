@@ -22,7 +22,6 @@ Z8.define('Z8.data.field.Json', {
 	},
 
 	getType: function () {
-		return 'json';
+		return Type.Json;
 	}
-
 });
