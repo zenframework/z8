@@ -26,7 +26,6 @@ public class ConnectionManager {
 
 	public static Connection get(IDatabase database) {
 		List<Connection> connections =  null;
-		Connection[] array = null;
 
 		Object lock = database.getLock();
 
@@ -38,18 +37,16 @@ public class ConnectionManager {
 				databaseConnections.put(database, connections);
 			}
 
-			array = connections.toArray(new Connection[connections.size()]);
-		}
+			for(Connection connection : connections) {
+				if(connection.isCurrent())
+					return connection;
+			}
 
-		for(Connection connection : array) {
-			if(connection.isCurrent())
-				return connection;
-		}
-
-		for(Connection connection : array) {
-			if(!connection.isInUse()) {
-				connection.use();
-				return connection;
+			for(Connection connection : connections) {
+				if(!connection.isInUse()) {
+					connection.use();
+					return connection;
+				}
 			}
 		}
 

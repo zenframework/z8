@@ -44,10 +44,7 @@ public class Connection {
 
 		try {
 			Class.forName(database.driver());
-
-			java.sql.Connection connection = DriverManager.getConnection(database.connection(), database.user(), database.password());
-
-			return connection;
+			return DriverManager.getConnection(database.connection(), database.user(), database.password());
 		} catch(Throwable e) {
 			throw new RuntimeException(e);
 		} finally {
@@ -142,15 +139,17 @@ public class Connection {
 
 		for(BasicStatement statement : statements)
 			statement.safeClose();
+
 		statements.clear();
 	}
 
 	private void initClientInfo() {
-		if(ServerConfig.traceSqlConnections()) {
-			try {
-				connection.setClientInfo("ApplicationName", owner.getName());
-			} catch(SQLClientInfoException e) {
-			}
+		if(!ServerConfig.traceSqlConnections())
+			return;
+
+		try {
+			connection.setClientInfo("ApplicationName", owner.getName());
+		} catch(SQLClientInfoException e) {
 		}
 	}
 
