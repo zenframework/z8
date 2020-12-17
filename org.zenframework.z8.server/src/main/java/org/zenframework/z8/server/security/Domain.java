@@ -2,7 +2,6 @@ package org.zenframework.z8.server.security;
 
 import org.zenframework.z8.server.base.table.system.Domains;
 import org.zenframework.z8.server.base.table.system.Users;
-import org.zenframework.z8.server.engine.Database;
 import org.zenframework.z8.server.types.bool;
 import org.zenframework.z8.server.types.guid;
 import org.zenframework.z8.server.types.string;
@@ -35,7 +34,7 @@ public class Domain {
 	}
 
 	public IUser getSystemUser() {
-		return user.isNull() ? system().getSystemUser() : User.read(user, Database.get(null));
+		return user.isNull() ? system().getSystemUser() : User.read(user);
 	}
 
 	public boolean isOwner() {

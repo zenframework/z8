@@ -12,7 +12,6 @@ import org.zenframework.z8.server.base.table.system.Settings;
 import org.zenframework.z8.server.base.table.system.Users;
 import org.zenframework.z8.server.config.ServerConfig;
 import org.zenframework.z8.server.db.BasicSelect;
-import org.zenframework.z8.server.db.ConnectionManager;
 import org.zenframework.z8.server.db.Cursor;
 import org.zenframework.z8.server.db.DatabaseVendor;
 import org.zenframework.z8.server.json.Json;
@@ -30,8 +29,9 @@ public class Database implements IDatabase, RmiSerializable, Serializable {
 	private String driver = null;
 	private encoding charset = encoding.UTF8;
 
-	private boolean isSystemInstalled = false;
-	private boolean isLatestVersion = false;
+	private boolean isSystemInstalled;
+	private boolean isLatestVersion;
+
 	private boolean external = false;
 
 	private DatabaseVendor vendor = DatabaseVendor.SqlServer;
@@ -189,15 +189,7 @@ public class Database implements IDatabase, RmiSerializable, Serializable {
 		if(isSystemInstalled)
 			return isSystemInstalled;
 
-		try {
-			isSystemInstalled = tableExists(Users.TableName);
-		} catch(Throwable e) {
-			Trace.logEvent(e);
-		} finally {
-			ConnectionManager.release();
-		}
-
-		return isSystemInstalled;
+		return isSystemInstalled = tableExists(Users.TableName);
 	}
 
 	public boolean isLatestVersion() {

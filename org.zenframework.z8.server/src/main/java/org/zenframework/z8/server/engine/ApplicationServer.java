@@ -106,15 +106,13 @@ public class ApplicationServer extends RmiServer implements IApplicationServer {
 		super.start();
 
 		enableTimeoutChecking(1 * datespan.TicksPerMinute);
-/*
-		Scheduler.start();
-*/
+
 		Trace.logEvent("Application Server JVM startup options: " + ManagementFactory.getRuntimeMXBean().getInputArguments().toString() + "\n\t" + RequestDispatcher.getMemoryUsage());
 	}
 
 	@Override
 	public void stop() throws RemoteException {
-		Scheduler.stop();
+		Scheduler.destroy();
 
 		unregister();
 
@@ -140,8 +138,10 @@ public class ApplicationServer extends RmiServer implements IApplicationServer {
 		setRequest(new Request(new Session(scheme)));
 
 		try {
-			return User.load(login, password, getDatabase(), createIfNotExist);
+			return User.load(login, password, createIfNotExist);
 		} finally {
+			Scheduler.start(getDatabase());
+
 			releaseConnections();
 			setRequest(null);
 		}

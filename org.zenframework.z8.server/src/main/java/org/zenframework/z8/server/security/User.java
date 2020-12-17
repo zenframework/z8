@@ -28,6 +28,7 @@ import org.zenframework.z8.server.db.sql.expressions.Group;
 import org.zenframework.z8.server.db.sql.expressions.NotEqu;
 import org.zenframework.z8.server.db.sql.expressions.Or;
 import org.zenframework.z8.server.db.sql.functions.string.EqualsIgnoreCase;
+import org.zenframework.z8.server.engine.ApplicationServer;
 import org.zenframework.z8.server.engine.Database;
 import org.zenframework.z8.server.engine.IDatabase;
 import org.zenframework.z8.server.engine.RmiIO;
@@ -213,15 +214,16 @@ public class User implements IUser {
 		return parameters;
 	}
 
-	static public IUser read(guid userId, IDatabase database) {
-		return userId.isNull() ? null : readOrCreate((primary)userId, database, false);
+	static public IUser read(guid userId) {
+		return userId.isNull() ? null : readOrCreate((primary)userId, false);
 	}
 
-	static private IUser load(String login, IDatabase database, boolean createIfNotExist) {
-		return readOrCreate(new string(login), database, createIfNotExist);
+	static private IUser load(String login, boolean createIfNotExist) {
+		return readOrCreate(new string(login), createIfNotExist);
 	}
 
-	static private IUser readOrCreate(primary loginOrId, IDatabase database, boolean createIfNotExist) {
+	static private IUser readOrCreate(primary loginOrId, boolean createIfNotExist) {
+		IDatabase database = ApplicationServer.getDatabase();
 		User user = new User(database);
 
 		boolean isLatestVersion = database.isLatestVersion();
@@ -254,11 +256,13 @@ public class User implements IUser {
 		return user;
 	}
 
-	static public IUser load(String login, String password, IDatabase database, boolean createIfNotExist) {
+	static public IUser load(String login, String password, boolean createIfNotExist) {
+		IDatabase database = ApplicationServer.getDatabase();
+
 		if(!database.isSystemInstalled())
 			return User.system(database);
 
-		IUser user = load(login, database, createIfNotExist);
+		IUser user = load(login, createIfNotExist);
 
 		if(password == null || !password.equals(user.password()) /*&& !password.equals(MD5.hex(""))*/ || user.banned())
 			throw new AccessDeniedException();

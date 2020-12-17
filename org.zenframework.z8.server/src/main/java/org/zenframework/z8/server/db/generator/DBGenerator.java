@@ -1,4 +1,3 @@
-
 package org.zenframework.z8.server.db.generator;
 
 import java.util.ArrayList;
@@ -13,6 +12,7 @@ import org.zenframework.z8.server.db.ConnectionManager;
 import org.zenframework.z8.server.db.DatabaseVendor;
 import org.zenframework.z8.server.engine.ApplicationServer;
 import org.zenframework.z8.server.engine.EventsLevel;
+import org.zenframework.z8.server.engine.IDatabase;
 import org.zenframework.z8.server.engine.Runtime;
 import org.zenframework.z8.server.resources.Resources;
 import org.zenframework.z8.server.utils.ErrorUtils;
@@ -30,8 +30,10 @@ public class DBGenerator {
 	}
 
 	public void run() {
+		IDatabase database = ApplicationServer.getDatabase();
+		Scheduler.suspend(database);
+
 		try {
-			Scheduler.stop();
 			logger.info(Resources.get("Generator.schedulerStopped"));
 
 			ApplicationServer.setEventsLevel(EventsLevel.SYSTEM);
@@ -42,8 +44,8 @@ public class DBGenerator {
 		} finally {
 			ApplicationServer.restoreEventsLevel();
 
-/*			Scheduler.start();
-*/
+			Scheduler.resume(database);
+
 			logger.info(Resources.get("Generator.schedulerStarted"));
 		}
 	}

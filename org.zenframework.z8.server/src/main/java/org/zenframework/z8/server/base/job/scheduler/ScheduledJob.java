@@ -7,6 +7,7 @@ import java.util.Map;
 import org.zenframework.z8.server.base.table.system.ScheduledJobLogs;
 import org.zenframework.z8.server.base.table.system.ScheduledJobs;
 import org.zenframework.z8.server.db.ConnectionManager;
+import org.zenframework.z8.server.engine.ApplicationServer;
 import org.zenframework.z8.server.engine.IDatabase;
 import org.zenframework.z8.server.engine.Session;
 import org.zenframework.z8.server.json.Json;
@@ -52,9 +53,11 @@ public class ScheduledJob implements Runnable {
 		this.database = database;
 	}
 
-	public ScheduledJob(String className, String cron) {
-		this.classId = className;
-		String[] names = className.split("\\.");
+	public ScheduledJob(String classId, String cron, IDatabase database) {
+		this.classId = classId;
+		this.database = database;
+
+		String[] names = classId.split("\\.");
 		this.name = names[names.length - 1];
 		this.cron = cron;
 	}
@@ -66,7 +69,7 @@ public class ScheduledJob implements Runnable {
 
 	@Override
 	public String toString() {
-		return name + "-" + (executionCount + 1);
+		return database.schema() + ": " + name + "-" + (executionCount + 1);
 	}
 
 	@Override
@@ -141,16 +144,20 @@ public class ScheduledJob implements Runnable {
 		try {
 			isRunning = true;
 
-			if(!beforeStart())
-				return;
+			ApplicationServer.setRequest(new Request(new Session(database.schema())));
 
 			Map<String, String> parameters = new HashMap<String, String>();
 			parameters.put(Json.request.get(), classId);
 			parameters.put(Json.scheduled.get(), "true");
 
-			IUser user = this.user != null ? User.read(this.user, database) : User.system(database);
+			IUser user = this.user != null ? User.read(this.user) : User.system(database);
 			IRequest request = new Request(parameters, new ArrayList<file>(), new Session("", user));
 			IResponse response = new Response();
+
+			ApplicationServer.setRequest(request);
+
+			if(!beforeStart())
+				return;
 
 			new RequestDispatcher(request, response).run();
 
@@ -159,6 +166,7 @@ public class ScheduledJob implements Runnable {
 			isRunning = false;
 			thread = null;
 
+			ApplicationServer.setRequest(null);
 			ConnectionManager.release();
 		}
 	}
