@@ -174,13 +174,13 @@ public class AuthorityCenter extends HubServer implements IAuthorityCenter {
 	}
 
 	@Override
-	public void userChanged(guid user) {
-		sessionManager.dropUserSessions(user);
+	public void userChanged(guid user, String schema) {
+		sessionManager.dropUserSessions(user, schema);
 	}
 
 	@Override
-	public void roleChanged(guid role) {
-		sessionManager.dropRoleSessions(role);
+	public void roleChanged(guid role, String schema) {
+		sessionManager.dropRoleSessions(role, schema);
 	}
 
 	private IServerInfo findServer(String serverId) throws RemoteException {

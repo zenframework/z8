@@ -30,8 +30,8 @@ public class Session implements ISession {
 	}
 
 	public Session(ISession session) {
-		this.id = session.id();
-		this.user = session.user();
+		id = session.id();
+		user = session.user();
 	}
 
 	@Override

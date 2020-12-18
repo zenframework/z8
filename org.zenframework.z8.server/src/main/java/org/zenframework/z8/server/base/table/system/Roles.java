@@ -12,6 +12,7 @@ import org.zenframework.z8.server.base.table.value.Field;
 import org.zenframework.z8.server.base.table.value.IField;
 import org.zenframework.z8.server.config.ServerConfig;
 import org.zenframework.z8.server.db.sql.expressions.Equ;
+import org.zenframework.z8.server.engine.ApplicationServer;
 import org.zenframework.z8.server.engine.Runtime;
 import org.zenframework.z8.server.resources.Resources;
 import org.zenframework.z8.server.runtime.IObject;
@@ -257,7 +258,7 @@ public class Roles extends Table {
 
 	static public void notifyRoleChange(guid role) {
 		try {
-			ServerConfig.authorityCenter().roleChanged(role);
+			ServerConfig.authorityCenter().roleChanged(role, ApplicationServer.getDatabase().schema());
 		} catch(Throwable e) {
 			throw new RuntimeException(e);
 		}
