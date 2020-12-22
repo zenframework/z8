@@ -1,13 +1,12 @@
 package org.zenframework.z8.web.server;
 
-import java.io.IOException;
+import org.zenframework.z8.web.servlet.Servlet;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-
-import org.zenframework.z8.web.servlet.Servlet;
+import java.io.IOException;
 
 public class LogoutAdapter extends Adapter {
 
@@ -19,7 +18,7 @@ public class LogoutAdapter extends Adapter {
 
 	@Override
 	public boolean canHandleRequest(HttpServletRequest request) {
-		return request.getServletPath().endsWith(AdapterPath);
+		return request.getPathInfo().endsWith(AdapterPath);
 	}
 	
 	@Override

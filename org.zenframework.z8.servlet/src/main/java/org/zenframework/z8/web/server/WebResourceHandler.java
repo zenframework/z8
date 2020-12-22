@@ -1,18 +1,11 @@
-package org.zenframework.z8.webserver;
-
-import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.net.URL;
-
-import javax.servlet.http.HttpServletResponse;
+package org.zenframework.z8.web.server;
 
 import org.apache.commons.io.FilenameUtils;
 import org.zenframework.z8.server.utils.IOUtils;
+
+import javax.servlet.http.HttpServletResponse;
+import java.io.*;
+import java.net.URL;
 
 public class WebResourceHandler {
 
@@ -99,7 +92,7 @@ public class WebResourceHandler {
 	}
 
 	protected URL getAlternateResource(String path) throws IOException {
-		ClassLoader classLoader = WebServer.class.getClassLoader();
+		ClassLoader classLoader = WebResourceHandler.class.getClassLoader();
 		path = FilenameUtils.concat(CLASSPATH_WEBAPP, path.isEmpty() ? path : path.substring(1));
 		return classLoader.getResource(path);
 	}
