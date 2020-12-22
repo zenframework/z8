@@ -1,20 +1,18 @@
 package org.zenframework.z8.webserver;
 
-import java.rmi.RemoteException;
-
-import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.SessionIdManager;
-import org.eclipse.jetty.server.handler.ContextHandler;
 import org.eclipse.jetty.server.session.HashSessionIdManager;
-import org.eclipse.jetty.server.session.HashSessionManager;
-import org.eclipse.jetty.server.session.SessionHandler;
+import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlets.gzip.GzipHandler;
 import org.zenframework.z8.server.config.ServerConfig;
 import org.zenframework.z8.server.engine.IWebServer;
 import org.zenframework.z8.server.engine.RmiServer;
 import org.zenframework.z8.server.logs.Trace;
 import org.zenframework.z8.server.types.guid;
+import org.zenframework.z8.web.servlet.Servlet;
+
+import java.rmi.RemoteException;
 
 /**
  * {@link WebServer#launch(org.zenframework.z8.server.config.ServerConfig)} method is the entrypoint,
@@ -23,7 +21,7 @@ import org.zenframework.z8.server.types.guid;
 public class WebServer extends RmiServer implements IWebServer {
 	private static final String ID = guid.create().toString();
 	protected Server server;
-	protected ContextHandler context;
+	protected ServletContextHandler context;
 
 	public WebServer() throws RemoteException {
 		super(ServerConfig.webServerPort());
@@ -34,9 +32,10 @@ public class WebServer extends RmiServer implements IWebServer {
 	 * The method is an extension point to configure jetty server
 	 */
 	protected void configureServer() {
-		context = new ContextHandler("/");
+		context = new ServletContextHandler(ServletContextHandler.SESSIONS);
+		context.setContextPath("/");
 		context.setResourceBase(ServerConfig.webServerWebapp().getAbsolutePath());
-		context.getServletContext();
+		context.addServlet(Servlet.class, "/*");
 
 		server = new Server(ServerConfig.webServerHttpPort());
 		server.setHandler(context);
@@ -45,18 +44,14 @@ public class WebServer extends RmiServer implements IWebServer {
 		SessionIdManager idmanager = new HashSessionIdManager();
 		server.setSessionIdManager(idmanager);
 
-		// Create the SessionHandler (wrapper) to handle the sessions
-		SessionHandler sessions = new SessionHandler(new HashSessionManager());
-		context.setHandler(sessions);
-
 		GzipHandler gzipHandler = new GzipHandler();
-		gzipHandler.setHandler(getZ8Handler());
 		gzipHandler.addIncludedMimeTypes(ServerConfig.webServerGzipMimeTypes());
 		gzipHandler.addIncludedMethods(ServerConfig.webServerGzipMethods());
 		gzipHandler.addIncludedPaths(ServerConfig.webServerGzipPaths());
+		gzipHandler.setHandler(context.getServletHandler());
 
 		// Put handler inside of SessionHandler
-		sessions.setHandler(gzipHandler);
+		context.getSessionHandler().setHandler(gzipHandler);
 	}
 
 	@Override
@@ -87,10 +82,6 @@ public class WebServer extends RmiServer implements IWebServer {
 
 	@Override
 	public void probe() throws RemoteException {}
-
-	protected Handler getZ8Handler() {
-		return new Z8Handler(context);
-	}
 
 	public static void launch(ServerConfig config) throws Exception {
 		new WebServer().start();

@@ -1,4 +1,4 @@
-package org.zenframework.z8.webserver;
+package org.zenframework.z8.web.server;
 
 public class UrlPattern {
 
