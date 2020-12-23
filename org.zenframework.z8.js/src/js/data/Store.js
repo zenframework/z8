@@ -675,6 +675,7 @@ Z8.define('Z8.data.Store', {
 
 	loadData: function(data) {
 		var records = this.initRecords(data);
+		this.cache = null;
 		this.fireEvent('load', this, records, true);
 	},
 
