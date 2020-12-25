@@ -1,24 +1,6 @@
 package org.zenframework.z8.server.security;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-
-import org.zenframework.z8.server.base.table.system.RoleFieldAccess;
-import org.zenframework.z8.server.base.table.system.RoleRequestAccess;
-import org.zenframework.z8.server.base.table.system.RoleTableAccess;
-import org.zenframework.z8.server.base.table.system.SystemTools;
-import org.zenframework.z8.server.base.table.system.UserEntries;
-import org.zenframework.z8.server.base.table.system.UserRoles;
-import org.zenframework.z8.server.base.table.system.Users;
+import org.zenframework.z8.server.base.table.system.*;
 import org.zenframework.z8.server.base.table.value.Field;
 import org.zenframework.z8.server.config.ServerConfig;
 import org.zenframework.z8.server.crypto.MD5;
@@ -37,10 +19,13 @@ import org.zenframework.z8.server.resources.Resources;
 import org.zenframework.z8.server.runtime.RLinkedHashMap;
 import org.zenframework.z8.server.types.guid;
 import org.zenframework.z8.server.types.primary;
-import org.zenframework.z8.server.types.string;
 import org.zenframework.z8.server.types.sql.sql_bool;
+import org.zenframework.z8.server.types.string;
 import org.zenframework.z8.server.utils.IOUtils;
 import org.zenframework.z8.server.utils.NumericUtils;
+
+import java.io.*;
+import java.util.*;
 
 public class User implements IUser {
 	static private final long serialVersionUID = -4955893424674255525L;
@@ -258,7 +243,7 @@ public class User implements IUser {
 
 		IUser user = load(login, createIfNotExist);
 
-		if(password == null || !password.equals(user.password()) /*&& !password.equals(MD5.hex(""))*/ || user.banned())
+		if(password != null && !password.equals(user.password()) /*&& !password.equals(MD5.hex(""))*/ || user.banned())
 			throw new AccessDeniedException();
 
 		return user;
@@ -487,6 +472,21 @@ public class User implements IUser {
 
 	private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
 		deserialize(in);
+	}
+
+	public static String generateOneTimePassword()
+	{
+		String saltChars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+
+		StringBuilder plainPassword = new StringBuilder();
+
+		Random rnd = new Random();
+		while (plainPassword.length() <= 6) {
+			int index = (int) (rnd.nextFloat() * saltChars.length());
+			plainPassword.append(saltChars.charAt(index));
+		}
+
+		return plainPassword.toString();
 	}
 
 	@Override
