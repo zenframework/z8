@@ -1,26 +1,9 @@
 package org.zenframework.z8.server.runtime;
 
-import org.zenframework.z8.server.base.table.system.Domains;
-import org.zenframework.z8.server.base.table.system.Entries;
-import org.zenframework.z8.server.base.table.system.Fields;
-import org.zenframework.z8.server.base.table.system.Files;
-import org.zenframework.z8.server.base.table.system.Jobs;
-import org.zenframework.z8.server.base.table.system.MessageQueue;
-import org.zenframework.z8.server.base.table.system.Requests;
-import org.zenframework.z8.server.base.table.system.RoleFieldAccess;
-import org.zenframework.z8.server.base.table.system.RoleRequestAccess;
-import org.zenframework.z8.server.base.table.system.RoleTableAccess;
-import org.zenframework.z8.server.base.table.system.Roles;
-import org.zenframework.z8.server.base.table.system.ScheduledJobLogs;
-import org.zenframework.z8.server.base.table.system.ScheduledJobs;
-import org.zenframework.z8.server.base.table.system.Sequences;
-import org.zenframework.z8.server.base.table.system.Settings;
-import org.zenframework.z8.server.base.table.system.SystemTools;
-import org.zenframework.z8.server.base.table.system.Tables;
-import org.zenframework.z8.server.base.table.system.TransportQueue;
-import org.zenframework.z8.server.base.table.system.UserEntries;
-import org.zenframework.z8.server.base.table.system.UserRoles;
-import org.zenframework.z8.server.base.table.system.Users;
+import org.zenframework.z8.server.base.table.system.*;
+import org.zenframework.z8.server.db.generator.DBGenerator;
+import org.zenframework.z8.server.routing.AliasTable;
+import org.zenframework.z8.server.routing.DBListener;
 
 public class ServerRuntime extends AbstractRuntime {
 	public ServerRuntime() {
@@ -54,5 +37,7 @@ public class ServerRuntime extends AbstractRuntime {
 		addTable(new TransportQueue.CLASS<TransportQueue>(null));
 
 		addEntry(new SystemTools.CLASS<SystemTools>(null));
+		addRequest(new AliasTable.CLASS<>(null));
+		DBGenerator.addListener(new DBListener());
 	}
 }
