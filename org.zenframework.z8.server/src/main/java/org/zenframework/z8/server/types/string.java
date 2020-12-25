@@ -505,6 +505,14 @@ public final class string extends primary {
 		return new string(str.toString());
 	}
 
+	static public string z8_fromBinary(binary data) {
+		return z8_fromBinary(data, encoding.UTF8);
+	}
+
+	static public string z8_fromBinary(binary data, encoding encoding) {
+		return new string(data.toByteArray(), encoding);
+	}
+
 	public static string[] wrap(String... strings) {
 		string[] result = new string[strings.length];
 

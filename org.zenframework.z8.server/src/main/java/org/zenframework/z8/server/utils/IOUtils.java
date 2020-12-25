@@ -31,7 +31,12 @@ public class IOUtils {
 	final static public int DefaultBufferSize = 1024 * 1024;
 	final static public String DefaultCharset = encoding.UTF8.toString();
 
-	private IOUtils() {/* hide constructor */
+	private IOUtils() {/* hide constructor */ }
+
+	public static byte[] read(InputStream in) throws IOException {
+		ByteArrayOutputStream out = new ByteArrayOutputStream();
+		copy(in, out);
+		return out.toByteArray();
 	}
 
 	public static int read(InputStream input, byte[] buffer) throws IOException {

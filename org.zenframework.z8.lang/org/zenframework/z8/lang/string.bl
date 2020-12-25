@@ -85,4 +85,7 @@ public final class string extends primary {
 
 	static public string replicate(string str, int count);
 	static public string concat(string[] array, string delimeter);
+
+	static public string fromBinary(binary data);
+	static public string fromBinary(binary data, encoding encoding);
 }
