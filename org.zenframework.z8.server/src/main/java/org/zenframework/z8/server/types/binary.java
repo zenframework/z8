@@ -7,9 +7,11 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 
+import org.apache.commons.io.FilenameUtils;
 import org.zenframework.z8.server.db.DatabaseVendor;
 import org.zenframework.z8.server.db.FieldType;
 import org.zenframework.z8.server.types.sql.sql_binary;
+import org.zenframework.z8.server.utils.IOUtils;
 
 public class binary extends primary {
 
@@ -75,6 +77,14 @@ public class binary extends primary {
 		return stream;
 	}
 
+	public byte[] toByteArray() {
+		try {
+			return IOUtils.read(get());
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
 	private void close() {
 		try {
 			if (stream != null) {
@@ -125,7 +135,7 @@ public class binary extends primary {
 	}
 
 	public static binary zip(File fileOrDirectory) {
-		file temp = file.createTempFile(".zip");
+		file temp = file.createTempFile(FilenameUtils.getBaseName(fileOrDirectory.getName()), ".zip");
 		temp.zip(fileOrDirectory);
 		return temp.binary();
 	}

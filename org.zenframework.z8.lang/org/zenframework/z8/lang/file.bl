@@ -81,4 +81,7 @@ public class file extends primary {
 	*    Convers array of files to JSON array, see file.parse()
 	*/
 	static public string toJson(file[] files);
+
+	static public file createTempFile(string prefix, string ext);
+
 }
