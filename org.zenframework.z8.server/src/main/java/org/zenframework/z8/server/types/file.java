@@ -27,6 +27,7 @@ import org.apache.commons.io.FilenameUtils;
 import org.zenframework.z8.server.base.file.Folders;
 import org.zenframework.z8.server.base.file.InputOnlyFileItem;
 import org.zenframework.z8.server.base.table.system.Files;
+import org.zenframework.z8.server.engine.ApplicationServer;
 import org.zenframework.z8.server.engine.RmiIO;
 import org.zenframework.z8.server.engine.RmiSerializable;
 import org.zenframework.z8.server.exceptions.ThreadInterruptedException;
@@ -373,7 +374,7 @@ public class file extends primary implements RmiSerializable, Serializable {
 	}
 
 	static public file createLogFile(String folder, String extension) {
-		return createTempFile(FileUtils.getFile(Folders.Base, Folders.Logs, folder), extension);
+		return createTempFile(FileUtils.getFile(Folders.Base, ApplicationServer.getSchema(), Folders.Logs, folder), extension);
 	}
 
 	static public file createTempFile(File folder, String extension) {

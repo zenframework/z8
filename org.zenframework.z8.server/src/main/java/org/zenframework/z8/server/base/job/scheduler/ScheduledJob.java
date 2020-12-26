@@ -138,11 +138,11 @@ public class ScheduledJob implements Runnable {
 			logs.start.get().set(lastStart);
 			logs.finish.get().set(new date());
 			logs.errors.get().set(new bool(hasErrors));
-	
+
 			file logFile = monitor.getLog();
 			if(logFile != null) {
 				monitor.logInfo("Memory usage: " + RequestDispatcher.getMemoryUsage());
-	
+
 				JsonWriter writer = new JsonWriter();
 				writer.startArray();
 				writer.startObject();

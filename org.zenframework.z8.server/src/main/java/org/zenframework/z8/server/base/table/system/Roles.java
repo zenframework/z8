@@ -258,7 +258,7 @@ public class Roles extends Table {
 
 	static public void notifyRoleChange(guid role) {
 		try {
-			ServerConfig.authorityCenter().roleChanged(role, ApplicationServer.getDatabase().schema());
+			ServerConfig.authorityCenter().roleChanged(role, ApplicationServer.getSchema());
 		} catch(Throwable e) {
 			throw new RuntimeException(e);
 		}
