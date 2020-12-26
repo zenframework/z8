@@ -279,10 +279,8 @@ Z8.define('Z8.data.Store', {
 
 		if(hasRemoved) {
 			records.removeAll(removed);
-			if(cache != null) {
+			if(cache != null)
 				cache.removeAll(removed);
-				this.cacheChanged = true;
-			}
 
 			this.detach(removed);
 			this.totalCount -= removed.length;
@@ -297,10 +295,8 @@ Z8.define('Z8.data.Store', {
 				records.insert(insert, positions[i]);
 				added = added.concat(insert);
 
-				if(cache != null) {
+				if(cache != null)
 					cache.add(insert);
-					this.cacheChanged = true;
-				}
 			}
 
 			this.attach(added);
@@ -345,8 +341,8 @@ Z8.define('Z8.data.Store', {
 
 	setStore: function(records, store) {
 		records = Array.isArray(records) ? records : [records];
-		for(var i = 0, length = records.length; i < length; i++)
-			records[i].setStore(store);
+		for(var record of records)
+			record.setStore(store);
 	},
 
 	insert: function(records, index) {
@@ -533,6 +529,7 @@ Z8.define('Z8.data.Store', {
 
 		var records = this.records = [];
 		this.ordinals = null;
+		this.cache = null;
 
 		if(hasData) {
 			var model = this.getModel();
@@ -725,8 +722,8 @@ Z8.define('Z8.data.Store', {
 			return;
 
 		var fields = [];
-		for(var i = 0, length = sorters.length; i < length; i++)
-			fields.push(this.getField(sorters[i].property));
+		for(var sorter of sorters)
+			fields.push(this.getField(sorter.property));
 
 		var sortFn = function(left, right) {
 			for(var i = 0, length = sorters.length; i < length; i++) {
@@ -753,32 +750,29 @@ Z8.define('Z8.data.Store', {
 		var filters = this.filters.concat(this.where).concat(this.quickFilters).concat(this.period);
 
 		var hasCache = this.cache != null;
-		var cacheChanged = this.cacheChanged;
 
 		if(hasCache) {
 			this.records = this.cache;
 			this.cache = null;
-			this.cacheChanged = false;
 			this.ordinals = null;
 		}
 
-		if(filters.length == 0) {
-			if(cacheChanged)
-				this.treefyRecords();
-			return;
-		}
+		if(filters.length == 0)
+			return this.treefyRecords();
 
 		var cache = this.cache = this.records;
 		var records = this.records = [];
 
-		for(var i = 0, recordCount = cache.length; i < recordCount; i++) {
-			var record = cache[i];
-			for(var j = 0, filterCount = filters.length; j < filterCount; j++) {
-				if(!Z8.filter.Operator.applyFilter(record, filters[j]))
+		for(var record of cache) {
+			var filtered = false;
+			for(var filter of filters) {
+				if(!Z8.filter.Operator.applyFilter(record, filter)) {
+					filtered = true;
 					break;
+				}
 			}
 
-			if(j == filterCount)
+			if(!filtered)
 				records.push(record);
 		}
 
@@ -821,8 +815,7 @@ Z8.define('Z8.data.Store', {
 		}
 
 		var populate = function(records, level) {
-			for(var i = 0, length = records.length; i < length; i++) {
-				var record = records[i];
+			for(var record of records) {
 				var children = map[record.id];
 				var data = record.data;
 				var hasChildren = data.hasChildren = children != null && children.length != 0;
