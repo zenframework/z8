@@ -368,15 +368,15 @@ public class file extends primary implements RmiSerializable, Serializable {
 		}
 	}
 
-	static public file createTempFile(String extension) {
-		return createTempFile(new File(Folders.Base, Folders.Temp), extension);
+	static public file createTempFile(String prefix, String extension) {
+		return createTempFile(new File(Folders.Base, Folders.Temp), prefix, extension);
 	}
 
 	static public file createLogFile(String folder, String extension) {
-		return createTempFile(FileUtils.getFile(Folders.Base, Folders.Logs, folder), extension);
+		return createTempFile(FileUtils.getFile(Folders.Base, Folders.Logs, folder), null, extension);
 	}
 
-	static public file createTempFile(File folder, String extension) {
+	static public file createTempFile(File folder, String prefix, String extension) {
 		folder.mkdirs();
 
 		if(extension != null && !extension.isEmpty())
@@ -384,7 +384,7 @@ public class file extends primary implements RmiSerializable, Serializable {
 		else
 			extension = "";
 
-		String name = new date().format("Y-MM-dd HH-mm-ss") + extension;
+		String name = (prefix != null ? prefix : "") + new date().format("Y-MM-dd HH-mm-ss") + extension;
 		File temp = new File(folder, name);
 		temp.deleteOnExit();
 		return new file(temp);
@@ -425,7 +425,7 @@ public class file extends primary implements RmiSerializable, Serializable {
 	public void write(InputStream input, boolean append) {
 		try {
 			if(path.isEmpty()) {
-				set(createTempFile("txt"));
+				set(createTempFile(null, "txt"));
 				path = new string(getRelativePath(path.get()));
 			}
 
@@ -747,4 +747,9 @@ public class file extends primary implements RmiSerializable, Serializable {
 	static public string z8_extension(string name) {
 		return new string(FilenameUtils.getExtension(name.get()));
 	}
+
+	static public file z8_createTempFile(string prefix, string ext) {
+		return createTempFile(prefix.get(), ext.get());
+	}
+
 }

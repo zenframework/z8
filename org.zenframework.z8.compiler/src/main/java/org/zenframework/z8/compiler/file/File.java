@@ -89,26 +89,24 @@ public class File {
 	}
 
 	public char[] read() throws FileException, UnsupportedEncodingException {
-		FileInputStream stream;
-
+		InputStream stream = inputStream();
 		try {
-			stream = new FileInputStream(file);
-		} catch(FileNotFoundException e) {
-			throw new FileException(path, e.getMessage());
-		}
-
-		byte[] rawBytes;
-
-		try {
-			rawBytes = new byte[stream.available()];
+			byte[] rawBytes = new byte[stream.available()];
 			stream.read(rawBytes);
+			return new String(rawBytes, Charset).toCharArray();
 		} catch(IOException e) {
 			throw new FileException(path, e.getMessage());
 		} finally {
 			closeQuietly(stream);
 		}
+	}
 
-		return new String(rawBytes, Charset).toCharArray();
+	public InputStream inputStream() throws FileException {
+		try {
+			return new FileInputStream(file);
+		} catch(FileNotFoundException e) {
+			throw new FileException(path, e.getMessage());
+		}
 	}
 
 	private void write(String string, boolean append) throws FileException {

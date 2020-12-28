@@ -76,6 +76,7 @@
 .list .item>.column>.cell>.text,
 .list .total>.column>.cell>.text {
 	display: inline-block;
+	flex: 1;
 }
 
 .list .item>.column.file>.cell>.text,
