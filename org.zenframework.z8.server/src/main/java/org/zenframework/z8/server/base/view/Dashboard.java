@@ -138,7 +138,6 @@ public class Dashboard extends RequestTarget {
 
 		writer.writeProperty(Json.session, ApplicationServer.getSession().id());
 		writer.writeProperty(Json.maxUploadSize, ServerConfig.webServerUploadMax());
-		writer.writeProperty(Json.session, ApplicationServer.getSession().id());
 
 		writer.startObject(Json.user);
 
