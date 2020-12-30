@@ -15,6 +15,10 @@ Array.appendCount = function(array, value, count) {
 	return count != 0 ?  array.concat(Array(count).fill(value)) : array;
 };
 
+Array.prototype.isEmpty = function() {
+	return this.length == 0;
+};
+
 Array.prototype.equals = function(array, comparator) {
 	if(array == null || array.length != this.length)
 		return false;
