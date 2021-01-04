@@ -14,7 +14,7 @@ import org.zenframework.z8.server.db.sql.FormatOptions;
 import org.zenframework.z8.server.db.sql.SqlField;
 import org.zenframework.z8.server.db.sql.SqlToken;
 import org.zenframework.z8.server.db.sql.expressions.And;
-import org.zenframework.z8.server.engine.Database;
+import org.zenframework.z8.server.engine.IDatabase;
 import org.zenframework.z8.server.logs.Trace;
 import org.zenframework.z8.server.types.primary;
 
@@ -37,7 +37,6 @@ public class Select {
 
 	private boolean isAggregated = false;
 
-	private Database database;
 	private Cursor cursor;
 
 	private Collection<FieldState> fieldStates = new ArrayList<FieldState>();
@@ -48,8 +47,6 @@ public class Select {
 
 	public Select(Select select) {
 		if(select != null) {
-			database = select.database;
-
 			fields.addAll(select.fields);
 
 			rootQuery = select.rootQuery;
@@ -73,7 +70,7 @@ public class Select {
 		return connection != null ? connection : ConnectionManager.get();
 	}
 
-	public Database database() {
+	public IDatabase database() {
 		return getConnection().database();
 	}
 
@@ -251,7 +248,7 @@ public class Select {
 	}
 
 	private String queryName(Query query) {
-		Database database = database();
+		IDatabase database = database();
 		DatabaseVendor vendor = vendor();
 		return query != null ? database.tableName(query.name()) + (vendor == DatabaseVendor.SqlServer ? " as " : " ") + query.getAlias() : "";
 	}

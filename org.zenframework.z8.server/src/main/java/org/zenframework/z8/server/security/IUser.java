@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.Collection;
 import java.util.Map;
 
+import org.zenframework.z8.server.engine.IDatabase;
 import org.zenframework.z8.server.engine.RmiSerializable;
 import org.zenframework.z8.server.types.guid;
 import org.zenframework.z8.server.types.primary;
@@ -29,6 +30,9 @@ public interface IUser extends RmiSerializable, Serializable {
 	public String phone();
 
 	public String email();
+
+	public IDatabase database();
+	public void setDatabase(IDatabase database);
 
 	public String settings();
 	public void setSettings(String settings);

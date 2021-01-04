@@ -16,13 +16,13 @@ import org.zenframework.z8.server.utils.NumericUtils;
 
 public class Application {
 	static public bool z8_isSystemInstalled() {
-		return new bool(ServerConfig.database().isSystemInstalled());
+		return new bool(ApplicationServer.getUser().database().isSystemInstalled());
 	}
-	
+
 	static public bool z8_isRequest() {
-		return new bool(ApplicationServer.isRequest());
+		return new bool(ApplicationServer.getRequest() != null);
 	}
-	
+
 	static public User.CLASS<? extends User> z8_user() {
 		User.CLASS<User> cls = new User.CLASS<User>(null);
 		User user = cls.get();

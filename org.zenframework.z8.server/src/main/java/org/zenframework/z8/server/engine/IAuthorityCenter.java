@@ -8,9 +8,9 @@ public interface IAuthorityCenter extends IHubServer {
 	int MaxLoginLength = 32;
 	int MaxPasswordLength = 32;
 
-	public ISession login(String login, String password) throws RemoteException;
+	public ISession login(String login, String password, String schema) throws RemoteException;
 	public ISession server(String session, String server) throws RemoteException;
 
-	public void userChanged(guid user) throws RemoteException;
-	public void roleChanged(guid role) throws RemoteException;
+	public void userChanged(guid user, String schema) throws RemoteException;
+	public void roleChanged(guid role, String schema) throws RemoteException;
 }

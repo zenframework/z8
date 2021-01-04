@@ -112,7 +112,7 @@ public class AuthorityCenter extends HubServer implements IAuthorityCenter {
 	}
 
 	@Override
-	public ISession login(String login, String password) throws RemoteException {
+	public ISession login(String login, String password, String scheme) throws RemoteException {
 		IServerInfo serverInfo = findServer((String)null);
 
 		if(serverInfo == null)
@@ -130,7 +130,7 @@ public class AuthorityCenter extends HubServer implements IAuthorityCenter {
 			password = "";
 		}
 
-		IUser user = loginServer.user(login, clientHashPassword ? password : MD5.hex(password), !ldapUrl.isEmpty() && ldapUsersCreateOnSuccessfulLogin);
+		IUser user = loginServer.user(login, clientHashPassword ? password : MD5.hex(password), scheme, !ldapUrl.isEmpty() && ldapUsersCreateOnSuccessfulLogin);
 		session = sessionManager.create(user);
 
 		session.setServerInfo(serverInfo);
@@ -174,13 +174,13 @@ public class AuthorityCenter extends HubServer implements IAuthorityCenter {
 	}
 
 	@Override
-	public void userChanged(guid user) {
-		sessionManager.dropUserSessions(user);
+	public void userChanged(guid user, String schema) {
+		sessionManager.dropUserSessions(user, schema);
 	}
 
 	@Override
-	public void roleChanged(guid role) {
-		sessionManager.dropRoleSessions(role);
+	public void roleChanged(guid role, String schema) {
+		sessionManager.dropRoleSessions(role, schema);
 	}
 
 	private IServerInfo findServer(String serverId) throws RemoteException {

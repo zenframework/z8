@@ -1,8 +1,9 @@
 package org.zenframework.z8.server.base.sql;
 
 import org.zenframework.z8.server.base.json.parser.JsonObject;
-import org.zenframework.z8.server.config.ServerConfig;
 import org.zenframework.z8.server.db.ConnectionManager;
+import org.zenframework.z8.server.engine.ApplicationServer;
+import org.zenframework.z8.server.engine.IDatabase;
 import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.runtime.OBJECT;
 import org.zenframework.z8.server.types.string;
@@ -31,7 +32,7 @@ public class Database extends OBJECT {
 		}
 	}
 
-	public org.zenframework.z8.server.engine.Database database;
+	public IDatabase database;
 
 	public Database(IObject container) {
 		super(container);
@@ -60,9 +61,9 @@ public class Database extends OBJECT {
 		return cls;
 	}
 
-	static public Database.CLASS<? extends Database> z8_currentDatabase() {
+	static public Database.CLASS<? extends Database> z8_get() {
 		Database.CLASS<Database> cls = new Database.CLASS<Database>(null);
-		cls.get().database = ServerConfig.database();
+		cls.get().database = ApplicationServer.getUser().database();
 		return cls;
 	}
 
@@ -70,5 +71,9 @@ public class Database extends OBJECT {
 		Connection.CLASS<Connection> cls = new Connection.CLASS<Connection>(null);
 		cls.get().connection = ConnectionManager.get(database);
 		return cls;
+	}
+
+	public string z8_schema() {
+		return new string(database.schema());
 	}
 }

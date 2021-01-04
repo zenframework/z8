@@ -26,7 +26,7 @@ Z8.define('Z8.data.Batch', {
 
 		for(var i = 0, length = records.length; i < length; i++) {
 			var data = records[i].getServerData(action);
-			
+
 			for(var name in data) {
 				var value = data[name];
 				if(value instanceof File) {
@@ -34,7 +34,7 @@ Z8.define('Z8.data.Batch', {
 					files.push(value);
 				}
 			}
-			
+
 			values.push(data);
 		}
 

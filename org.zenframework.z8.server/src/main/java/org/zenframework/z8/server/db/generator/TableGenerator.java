@@ -45,7 +45,7 @@ import org.zenframework.z8.server.db.sql.functions.If;
 import org.zenframework.z8.server.db.sql.functions.IsNull;
 import org.zenframework.z8.server.db.sql.functions.conversion.ToBytes;
 import org.zenframework.z8.server.db.sql.functions.conversion.ToString;
-import org.zenframework.z8.server.engine.Database;
+import org.zenframework.z8.server.engine.IDatabase;
 import org.zenframework.z8.server.exceptions.db.ObjectAlreadyExistException;
 import org.zenframework.z8.server.exceptions.db.ObjectNotFoundException;
 import org.zenframework.z8.server.resources.Resources;
@@ -101,7 +101,7 @@ public class TableGenerator {
 		return ConnectionManager.get();
 	}
 
-	private Database database() {
+	private IDatabase database() {
 		return connection().database();
 	}
 
@@ -322,7 +322,7 @@ public class TableGenerator {
 		String sql = null;
 
 		Connection connection = ConnectionManager.get();
-		Database database = connection.database();
+		IDatabase database = connection.database();
 		DatabaseVendor vendor = connection.vendor();
 
 		switch(vendor) {
@@ -379,7 +379,7 @@ public class TableGenerator {
 	private void alterTable() throws SQLException {
 		boolean bAdd = false, bModify = false;
 
-		Database database = database();
+		IDatabase database = database();
 		DatabaseVendor vendor = vendor();
 
 		String addColumnSql = "alter table " + database.tableName(table().name());
@@ -651,7 +651,7 @@ public class TableGenerator {
 		String targetFields = "";
 		String sourceFields = "";
 
-		Database database = database();
+		IDatabase database = database();
 		DatabaseVendor vendor = vendor();
 		boolean postgres = vendor == DatabaseVendor.Postgres || vendor == DatabaseVendor.H2;
 		boolean oracle = vendor == DatabaseVendor.Oracle;
@@ -734,7 +734,7 @@ public class TableGenerator {
 
 	static void dropTable(String tableName) throws SQLException {
 		Connection connection = ConnectionManager.get();
-		Database database = connection.database();
+		IDatabase database = connection.database();
 
 		String sql = "drop table " + database.tableName(tableName);
 		Statement.executeUpdate(sql);

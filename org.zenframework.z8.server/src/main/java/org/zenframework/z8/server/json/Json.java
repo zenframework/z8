@@ -17,7 +17,7 @@ public interface Json {
 	static public string service = new string("service");
 	static public string retry = new string("retry");
 	static public string ip = new string("ip");
-
+	
 	static public string upload = new string("upload");
 	static public string download = new string("download");
 	static public string maxUploadSize = new string("maxUploadSize");
@@ -34,6 +34,11 @@ public interface Json {
 	static public string changePassword = new string("changePassword");
 	static public string email = new string("email");
 	static public string phone = new string("phone");
+
+	static public string schema = new string("schema");
+	static public string connection = new string("connection");
+	static public string driver = new string("driver");
+	static public string charset = new string("charset");
 
 	static public string menu = new string("menu");
 	static public string entries = new string("entries");

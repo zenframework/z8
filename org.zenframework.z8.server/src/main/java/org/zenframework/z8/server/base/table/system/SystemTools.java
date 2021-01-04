@@ -11,7 +11,6 @@ import org.zenframework.z8.server.base.table.system.view.SequencesView;
 import org.zenframework.z8.server.base.table.system.view.TablesView;
 import org.zenframework.z8.server.base.table.system.view.TransportQueueView;
 import org.zenframework.z8.server.base.table.system.view.UsersView;
-import org.zenframework.z8.server.config.ServerConfig;
 import org.zenframework.z8.server.db.generator.DBGenerateProcedure;
 import org.zenframework.z8.server.engine.ApplicationServer;
 import org.zenframework.z8.server.resources.Resources;
@@ -72,7 +71,7 @@ public class SystemTools extends Desktop {
 	public void initMembers() {
 		super.initMembers();
 
-		if(ServerConfig.isLatestVersion()) {
+		if(ApplicationServer.getDatabase().isLatestVersion()) {
 			users.setIndex("users");
 			roles.setIndex("roles");
 			jobs.setIndex("jobs");

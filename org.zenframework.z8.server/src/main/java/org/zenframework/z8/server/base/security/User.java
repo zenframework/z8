@@ -47,16 +47,6 @@ public class User extends OBJECT {
 	}
 
 	public void initialize(IUser user) {
-		if(user == null)
-			user = org.zenframework.z8.server.security.User.system();
-
-		setValues(user);
-	}
-
-	private void setValues(IUser user) {
-		if(user == null)
-			user = org.zenframework.z8.server.security.User.system();
-
 		id = user.id();
 		login = new string(user.login());
 

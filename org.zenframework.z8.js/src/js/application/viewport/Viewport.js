@@ -18,7 +18,7 @@ Z8.define('Z8.application.viewport.Viewport', {
 		}
 		var breadcrumbs = this.breadcrumbs = new Z8.button.Group({ cls: 'breadcrumbs flex', items: items });
 
-		var logout = this.logout = new Z8.button.Button({ tooltip: Z8.$('Z8.Viewport.logout'), cls: 'btn-tool', icon: 'fa-power-off', handler: this.logout, scope: this });
+		var logout = new Z8.button.Button({ tooltip: Z8.$('Z8.Viewport.logout'), cls: 'btn-tool', icon: 'fa-power-off', handler: this.logout, scope: this });
 
 		var header = this.header = new Z8.Container({ cls: 'header flex-row flex-center', items: [breadcrumbs, logout] });
 		var body = this.body = new Z8.Container({ cls: 'body' });
