@@ -32,6 +32,10 @@ String.repeat = function(pattern, count) {
 	return result;
 };
 
+String.prototype.isEmpty = function() {
+	return this == '';
+};
+
 String.prototype.hash = function() {
 	var hash = 5381, i = this.length;
 	while(i)
