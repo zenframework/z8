@@ -2,15 +2,15 @@ package org.zenframework.z8.server.db;
 
 import java.sql.SQLException;
 
-import org.zenframework.z8.server.base.Procedure;
+import org.zenframework.z8.server.base.Executable;
 import org.zenframework.z8.server.base.form.action.Parameter;
 import org.zenframework.z8.server.logs.Trace;
 import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.runtime.RCollection;
 import org.zenframework.z8.server.types.bool;
 
-public class MaintenanceJob extends Procedure {
-	public static class CLASS<T extends MaintenanceJob> extends Procedure.CLASS<T> {
+public class MaintenanceJob extends Executable {
+	public static class CLASS<T extends MaintenanceJob> extends Executable.CLASS<T> {
 		public CLASS(IObject container) {
 			super(container);
 			setJavaClass(MaintenanceJob.class);

@@ -4,7 +4,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.zenframework.z8.server.base.Procedure;
+import org.zenframework.z8.server.base.Executable;
 import org.zenframework.z8.server.base.form.action.IParameter;
 import org.zenframework.z8.server.engine.ApplicationServer;
 import org.zenframework.z8.server.json.Json;
@@ -17,21 +17,21 @@ public class Job extends RequestTarget {
 
 	private static Map<String, JobMonitor> monitors = Collections.synchronizedMap(new HashMap<String, JobMonitor>());
 
-	private final Procedure procedure;
+	private final Executable executable;
 
 	private Thread thread;
 	private JobMonitor monitor;
 	private boolean isDone = false;
 
-	public Job(Procedure procedure) {
-		super(procedure.classId());
-		this.procedure = procedure;
+	public Job(Executable executable) {
+		super(executable.classId());
+		this.executable = executable;
 		monitor = createMonitor(this);
 	}
 
 	@Override
 	public String displayName() {
-		return procedure.displayName();
+		return executable.displayName();
 	}
 
 	public Thread getThread() {
@@ -47,14 +47,14 @@ public class Job extends RequestTarget {
 		setParameters();
 
 		if (!scheduled()) {
-			thread = new Thread(procedure, procedure.displayName());
+			thread = new Thread(executable, executable.displayName());
 			thread.start();
 
 			writer.writeProperty(Json.id, monitor.id());
 			writer.writeProperty(Json.server, ApplicationServer.id);
-			writer.writeProperty(Json.text, procedure.displayName());
+			writer.writeProperty(Json.text, executable.displayName());
 		} else {
-			procedure.run();
+			executable.run();
 			isDone = true;
 			removeMonitor(monitor);
 		}
@@ -76,7 +76,7 @@ public class Job extends RequestTarget {
 			String[] names = JsonObject.getNames(object);
 
 			for (String parameterId : names) {
-				IParameter parameter = procedure.getParameter(parameterId);
+				IParameter parameter = executable.getParameter(parameterId);
 				String value = object.getString(parameterId);
 				parameter.parse(value);
 			}

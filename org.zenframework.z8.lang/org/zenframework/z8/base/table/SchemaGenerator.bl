@@ -1,0 +1,8 @@
+import org.zenframework.z8.base.Executable;
+
+[name "Schema generator"]
+[native "org.zenframework.z8.server.db.generator.SchemaGenerator"]
+public class SchemaGenerator extends Executable {
+	virtual public void beforeStart();
+	virtual public void afterFinish();
+}

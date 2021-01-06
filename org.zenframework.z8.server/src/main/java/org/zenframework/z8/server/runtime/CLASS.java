@@ -327,8 +327,8 @@ public class CLASS<TYPE extends IObject> implements IClass<TYPE> {
 	}
 
 	@Override
-	public void setForeignKey(boolean foreignKey) {
-		setAttribute(ForeignKey, Boolean.toString(foreignKey));
+	public void setExportable(boolean exportable) {
+		setAttribute(Exportable, Boolean.toString(exportable));
 	}
 
 	@Override
@@ -338,8 +338,18 @@ public class CLASS<TYPE extends IObject> implements IClass<TYPE> {
 	}
 
 	@Override
-	public void setExportable(boolean exportable) {
-		setAttribute(Exportable, Boolean.toString(exportable));
+	public void setForeignKey(boolean foreignKey) {
+		setAttribute(ForeignKey, Boolean.toString(foreignKey));
+	}
+
+	@Override
+	public boolean executable() {
+		return getAttribute(Executable) != null;
+	}
+
+	@Override
+	public void setExecutable(boolean executable) {
+		setAttribute(Executable, executable ? "" : null);
 	}
 
 	@Override

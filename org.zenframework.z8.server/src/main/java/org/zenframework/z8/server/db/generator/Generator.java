@@ -1,53 +1,32 @@
 package org.zenframework.z8.server.db.generator;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
-import org.zenframework.z8.server.base.job.scheduler.Scheduler;
 import org.zenframework.z8.server.base.table.Table;
 import org.zenframework.z8.server.base.table.system.Settings;
 import org.zenframework.z8.server.db.ConnectionManager;
 import org.zenframework.z8.server.db.DatabaseVendor;
-import org.zenframework.z8.server.engine.ApplicationServer;
-import org.zenframework.z8.server.engine.EventsLevel;
-import org.zenframework.z8.server.engine.IDatabase;
 import org.zenframework.z8.server.engine.Runtime;
-import org.zenframework.z8.server.resources.Resources;
 import org.zenframework.z8.server.utils.ErrorUtils;
 
-public class DBGenerator {
+public class Generator {
 	public static final String SchemaGenerateLock = "SchemaGenerate";
 
 	private ILogger logger;
 	private Collection<Table.CLASS<Table>> tables;
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	public DBGenerator(ILogger logger) {
+	public Generator(ILogger logger) {
 		this.logger = logger;
 		tables = (Collection)Runtime.instance().tables();
 	}
 
-	public void run() {
-		IDatabase database = ApplicationServer.getDatabase();
-		Scheduler.suspend(database);
-
-		try {
-			logger.info(Resources.get("Generator.schedulerStopped"));
-
-			ApplicationServer.setEventsLevel(EventsLevel.SYSTEM);
-
-			run(DataSchema.getTables("%"));
-		} catch(Throwable e) {
-			logger.error(e);
-		} finally {
-			ApplicationServer.restoreEventsLevel();
-
-			Scheduler.resume(database);
-
-			logger.info(Resources.get("Generator.schedulerStarted"));
-		}
+	public void run() throws SQLException {
+		run(DataSchema.getTables("%"));
 	}
 
 	private void run(Map<String, TableDescription> existingTables) {
@@ -57,8 +36,6 @@ public class DBGenerator {
 
 		int total = 5 * generators.size();
 		float progress = 0.0f;
-
-		fireBeforeDbGenerated();
 
 		for(TableGenerator generator : generators) {
 			generator.dropAllKeys();
@@ -109,8 +86,6 @@ public class DBGenerator {
 			logger.progress(Math.round(++progress / total * 100));
 		}
 
-		fireAfterDbGenerated();
-
 		String version = Runtime.version();
 		Settings.set(Settings.Version, version);
 
@@ -140,30 +115,5 @@ public class DBGenerator {
 		}
 
 		return generators;
-	}
-
-	private static void fireBeforeDbGenerated() {
-		for(Listener listener : listeners)
-			listener.beforeStart();
-	}
-
-	private static void fireAfterDbGenerated() {
-		for(Listener listener : listeners)
-			listener.afterFinish();
-	}
-
-	static private Collection<Listener> listeners = new ArrayList<Listener>();
-
-	static public interface Listener {
-		public void beforeStart();
-		public void afterFinish();
-	}
-
-	static public void addListener(Listener listener) {
-		listeners.add(listener);
-	}
-
-	static public void removeListener(Listener listener) {
-		listeners.remove(listener);
 	}
 }

@@ -21,6 +21,7 @@ import org.zenframework.z8.server.base.table.system.TransportQueue;
 import org.zenframework.z8.server.base.table.system.UserEntries;
 import org.zenframework.z8.server.base.table.system.UserRoles;
 import org.zenframework.z8.server.base.table.system.Users;
+import org.zenframework.z8.server.db.generator.SchemaGenerator;
 
 public class ServerRuntime extends AbstractRuntime {
 	public ServerRuntime() {
@@ -52,6 +53,8 @@ public class ServerRuntime extends AbstractRuntime {
 
 		addTable(new MessageQueue.CLASS<MessageQueue>(null));
 		addTable(new TransportQueue.CLASS<TransportQueue>(null));
+
+		addExecutable(new SchemaGenerator.CLASS<SchemaGenerator>(null));
 
 		addEntry(new SystemTools.CLASS<SystemTools>(null));
 	}
