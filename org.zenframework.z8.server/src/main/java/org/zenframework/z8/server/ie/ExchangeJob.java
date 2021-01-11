@@ -8,7 +8,7 @@ import java.nio.file.StandardCopyOption;
 import java.util.Arrays;
 
 import org.zenframework.z8.rmi.ObjectIO;
-import org.zenframework.z8.server.base.Procedure;
+import org.zenframework.z8.server.base.Executable;
 import org.zenframework.z8.server.base.form.action.Parameter;
 import org.zenframework.z8.server.base.table.system.Files;
 import org.zenframework.z8.server.config.ServerConfig;
@@ -21,8 +21,8 @@ import org.zenframework.z8.server.types.bool;
 import org.zenframework.z8.server.types.file;
 import org.zenframework.z8.server.utils.IOUtils;
 
-public class ExchangeJob extends Procedure {
-	public static class CLASS<T extends ExchangeJob> extends Procedure.CLASS<T> {
+public class ExchangeJob extends Executable {
+	public static class CLASS<T extends ExchangeJob> extends Executable.CLASS<T> {
 		public CLASS(IObject container) {
 			super(container);
 			setJavaClass(ExchangeJob.class);

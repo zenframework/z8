@@ -11,7 +11,7 @@ import java.sql.Types;
 
 import org.zenframework.z8.server.base.table.value.Field;
 import org.zenframework.z8.server.base.table.value.TimestampField;
-import org.zenframework.z8.server.engine.Database;
+import org.zenframework.z8.server.engine.IDatabase;
 import org.zenframework.z8.server.logs.Trace;
 import org.zenframework.z8.server.types.binary;
 import org.zenframework.z8.server.types.bool;
@@ -44,7 +44,7 @@ public abstract class BasicStatement implements IStatement {
 	}
 
 	@Override
-	public Database database() {
+	public IDatabase database() {
 		return connection().database();
 	}
 

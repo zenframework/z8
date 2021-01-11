@@ -7,8 +7,8 @@ public class StartupCodeLines {
 	public String addTable = null;
 	public String addEntry = null;
 	public String addJob = null;
-	public String addActivator = null;
 	public String addRequest = null;
+	public String addExecutable = null;
 
 	public StartupCodeLines() {
 	}
@@ -17,8 +17,8 @@ public class StartupCodeLines {
 		addTable = null;
 		addEntry = null;
 		addJob = null;
-		addActivator = null;
 		addRequest = null;
+		addExecutable = null;
 	}
 
 	private String getJavaNew(IType type) {
@@ -33,8 +33,12 @@ public class StartupCodeLines {
 
 		IAttribute attribute = type.findAttribute(IAttribute.Name);
 
-		if(attribute != null && attribute.getValueString().length() != 0 && type.getAttribute(IAttribute.Generatable) != null)
-			addTable = "addTable(" + getJavaNew(type) + ");";
+		if(attribute != null && attribute.getValueString().length() != 0) {
+			if(type.getAttribute(IAttribute.Generatable) != null)
+				addTable = "addTable(" + getJavaNew(type) + ");";
+			else if(type.findAttribute(IAttribute.Executable) != null)
+				addExecutable = "addExecutable(" + getJavaNew(type) + ");";
+		}
 
 		attribute = type.getAttribute(IAttribute.Job);
 
@@ -45,11 +49,6 @@ public class StartupCodeLines {
 
 		if(attribute != null)
 			addEntry = "addEntry(" + getJavaNew(type) + ");";
-
-		attribute = type.getAttribute(IAttribute.Activator);
-
-		if(attribute != null)
-			addActivator = "addActivator(" + getJavaNew(type) + ");";
 
 		attribute = type.findAttribute(IAttribute.Request);
 

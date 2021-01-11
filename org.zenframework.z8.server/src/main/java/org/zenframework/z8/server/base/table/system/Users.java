@@ -292,11 +292,11 @@ public class Users extends Table {
 		notifyUserChange(user, false);
 	}
 
-	static public void notifyUserChange(guid user, boolean force) {
+	static public void notifyUserChange(guid userId, boolean force) {
 		try {
-			guid currentUser = ApplicationServer.getUser().id();
-			if(force || !currentUser.equals(user) && !System.equals(user) && !Administrator.equals(user))
-				ServerConfig.authorityCenter().userChanged(user);
+			IUser user = ApplicationServer.getUser();
+			if(force || !user.id().equals(userId) && !System.equals(userId) && !Administrator.equals(userId))
+				ServerConfig.authorityCenter().userChanged(userId, user.database().schema());
 		} catch(Throwable e) {
 			throw new RuntimeException(e);
 		}

@@ -2,7 +2,7 @@ package org.zenframework.z8.server.base.form;
 
 import java.util.Collection;
 
-import org.zenframework.z8.server.base.Procedure;
+import org.zenframework.z8.server.base.Executable;
 import org.zenframework.z8.server.base.query.Query;
 import org.zenframework.z8.server.runtime.IClass;
 import org.zenframework.z8.server.runtime.IObject;
@@ -35,7 +35,7 @@ public class Desktop extends OBJECT {
 		RCollection<OBJECT.CLASS<OBJECT>> result = new RCollection<OBJECT.CLASS<OBJECT>>();
 
 		for(IClass<? extends IObject> cls : members()) {
-			if(cls instanceof Procedure.CLASS || cls instanceof Query.CLASS)
+			if(cls instanceof Executable.CLASS || cls instanceof Query.CLASS)
 				result.add((OBJECT.CLASS<OBJECT>)cls);
 		}
 		return result;

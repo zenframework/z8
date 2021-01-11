@@ -4,19 +4,22 @@ import java.lang.management.ManagementFactory;
 import java.lang.management.MemoryMXBean;
 import java.lang.management.MemoryUsage;
 
-import org.zenframework.z8.server.base.Procedure;
+import org.zenframework.z8.server.base.Executable;
 import org.zenframework.z8.server.base.job.Job;
 import org.zenframework.z8.server.base.job.JobMonitor;
 import org.zenframework.z8.server.base.query.Query;
+import org.zenframework.z8.server.base.table.system.Users;
 import org.zenframework.z8.server.base.view.Dashboard;
 import org.zenframework.z8.server.db.ConnectionManager;
 import org.zenframework.z8.server.engine.ApplicationServer;
+import org.zenframework.z8.server.engine.Runtime;
 import org.zenframework.z8.server.exceptions.AccessRightsViolationException;
 import org.zenframework.z8.server.json.Json;
 import org.zenframework.z8.server.json.JsonWriter;
 import org.zenframework.z8.server.logs.Trace;
 import org.zenframework.z8.server.request.actions.ActionFactory;
 import org.zenframework.z8.server.request.actions.RequestAction;
+import org.zenframework.z8.server.runtime.IAttributed;
 import org.zenframework.z8.server.runtime.OBJECT;
 import org.zenframework.z8.server.security.IUser;
 import org.zenframework.z8.server.security.Privileges;
@@ -127,9 +130,10 @@ public class RequestDispatcher implements Runnable {
 				RequestAction action = ActionFactory.create(query);
 				request.setAction(action);
 				action.processRequest(response);
-			} else if(object instanceof Procedure) {
-				Procedure procedure = (Procedure)object;
-				Job job = new Job(procedure);
+			} else if(object instanceof Executable) {
+				String name = object.getCLASS().getAttribute(IAttributed.Name);
+				Executable executable = (Executable)(name != null ? Runtime.instance().getExecutableByName(name).newInstance() : object);
+				Job job = new Job(executable);
 				job.processRequest(response);
 			} else
 				object.processRequest(response);

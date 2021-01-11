@@ -14,22 +14,23 @@ import org.zenframework.z8.server.runtime.RCollection;
 import org.zenframework.z8.server.types.integer;
 import org.zenframework.z8.server.types.string;
 
-public class Procedure extends Action {
-	public static class CLASS<T extends Procedure> extends Action.CLASS<T> {
+public class Executable extends Action {
+	public static class CLASS<T extends Executable> extends Action.CLASS<T> {
 		public CLASS(IObject container) {
 			super(container);
-			setJavaClass(Procedure.class);
+			setJavaClass(Executable.class);
+			setExecutable(true);
 		}
 
 		@Override
 		public Object newObject(IObject container) {
-			return new Procedure(container);
+			return new Executable(container);
 		}
 	}
 
 	private IRequest request;
 
-	public Procedure(IObject container) {
+	public Executable(IObject container) {
 		super(container);
 		request = ApplicationServer.getRequest();
 	}
@@ -70,6 +71,10 @@ public class Procedure extends Action {
 		error(message.get());
 	}
 
+	protected void execute() {
+		z8_execute();
+	}
+
 	protected void z8_execute() {
 		z8_execute(parameters);
 	}
@@ -89,7 +94,7 @@ public class Procedure extends Action {
 			if(connection != null)
 				connection.beginTransaction();
 
-			z8_execute();
+			execute();
 
 			if(connection != null)
 				connection.commit();
@@ -102,11 +107,6 @@ public class Procedure extends Action {
 
 	public JobMonitor getMonitor() {
 		return (JobMonitor)ApplicationServer.getMonitor();
-	}
-
-	@Override
-	public String displayName() {
-		return getCLASS().displayName();
 	}
 
 	@Override

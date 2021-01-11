@@ -6,6 +6,7 @@ import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.zenframework.z8.server.base.xml.GNode;
 import org.zenframework.z8.server.config.ServerConfig;
+import org.zenframework.z8.server.engine.ApplicationServer;
 import org.zenframework.z8.server.engine.IApplicationServer;
 import org.zenframework.z8.server.engine.IAuthorityCenter;
 import org.zenframework.z8.server.engine.ISession;
@@ -75,7 +76,7 @@ public abstract class Adapter {
 				if(login == null || login.isEmpty() || login.length() > IAuthorityCenter.MaxLoginLength || password != null && password.length() > IAuthorityCenter.MaxPasswordLength)
 					throw new AccessDeniedException();
 
-				session = login(login, password/*, this.getScheme(request)*/);
+				session = login(login, password, ApplicationServer.getScheme(request));
 				if (httpSession != null)
 					httpSession.setAttribute(Json.session.get(), session.id());
 			} else
@@ -102,26 +103,14 @@ public abstract class Adapter {
 		}
 	}
 
-	protected ISession login(String login, String password) throws IOException, ServletException {
-		return ServerConfig.authorityCenter().login(login, password);
+	protected ISession login(String login, String password, String scheme) throws IOException, ServletException {
+		return ServerConfig.authorityCenter().login(login, password, scheme);
 	}
 
 	protected ISession authorize(String sessionId, String serverId, String request) throws IOException, ServletException {
 		return sessionId != null ? ServerConfig.authorityCenter().server(sessionId, serverId) : null;
 	}
 
-/*	private String getScheme(HttpServletRequest request) {
-		if(!ServerConfig.isMultitenant())
-			return null;
-
-		String serverName = request.getServerName();
-		int index = serverName.indexOf('.');
-		if(index == -1 || index == serverName.lastIndexOf('.'))
-			throw new AccessDeniedException();
-
-		return serverName.substring(0, index);
-	}
-*/
 	private void parseRequest(HttpServletRequest request, Map<String, String> parameters, List<file> files) throws IOException {
 		if(ServletFileUpload.isMultipartContent(request)) {
 			List<FileItem> fileItems = parseMultipartRequest(request);

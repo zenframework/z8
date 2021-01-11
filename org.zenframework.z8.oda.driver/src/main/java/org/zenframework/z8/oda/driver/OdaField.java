@@ -357,4 +357,13 @@ public class OdaField implements IField {
 	@Override
 	public void setExportable(boolean exportable) {
 	}
+
+	@Override
+	public boolean executable() {
+		return false;
+	}
+
+	@Override
+	public void setExecutable(boolean executable) {
+	}
 }

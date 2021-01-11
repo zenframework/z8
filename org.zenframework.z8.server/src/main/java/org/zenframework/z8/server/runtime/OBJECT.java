@@ -194,6 +194,16 @@ public class OBJECT extends RequestTarget implements IObject, RmiSerializable {
 	}
 
 	@Override
+	public boolean executable() {
+		return getCLASS().executable();
+	}
+
+	@Override
+	public void setExecutable(boolean executable) {
+		getCLASS().setExecutable(executable);
+	}
+
+	@Override
 	public IObject getContainer() {
 		return getCLASS().getContainer();
 	}

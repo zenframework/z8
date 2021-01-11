@@ -6,7 +6,7 @@ import java.util.Collection;
 
 import org.zenframework.z8.server.base.query.Query;
 import org.zenframework.z8.server.base.table.value.Field;
-import org.zenframework.z8.server.engine.Database;
+import org.zenframework.z8.server.engine.IDatabase;
 import org.zenframework.z8.server.logs.Trace;
 
 public class Insert extends Statement {
@@ -29,7 +29,7 @@ public class Insert extends Statement {
 	}
 
 	private String buildSql() {
-		Database database = database();
+		IDatabase database = database();
 		DatabaseVendor vendor = vendor();
 
 		String insertFields = "";

@@ -1,21 +1,27 @@
 package org.zenframework.z8.server.engine;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Properties;
 
 import org.zenframework.z8.server.base.table.system.Settings;
 import org.zenframework.z8.server.base.table.system.Users;
+import org.zenframework.z8.server.config.ServerConfig;
 import org.zenframework.z8.server.db.BasicSelect;
-import org.zenframework.z8.server.db.ConnectionManager;
 import org.zenframework.z8.server.db.Cursor;
 import org.zenframework.z8.server.db.DatabaseVendor;
+import org.zenframework.z8.server.json.Json;
 import org.zenframework.z8.server.json.parser.JsonObject;
 import org.zenframework.z8.server.logs.Trace;
 import org.zenframework.z8.server.types.encoding;
 
-public class Database {
+public class Database implements IDatabase, RmiSerializable, Serializable {
+	private static final long serialVersionUID = -3409230943645338455L;
+
 	private String schema = null;
 	private String user = null;
 	private String password = null;
@@ -23,23 +29,42 @@ public class Database {
 	private String driver = null;
 	private encoding charset = encoding.UTF8;
 
-	private boolean isSystemInstalled = false;
-	private boolean isLatestVersion = false;
+	private boolean isSystemInstalled;
+	private boolean isLatestVersion;
+
+	private boolean external = false;
 
 	private DatabaseVendor vendor = DatabaseVendor.SqlServer;
 
-	static private Map<Database, Object> locks = new HashMap<Database, Object>();
+	static private Map<IDatabase, Object> locks = new HashMap<IDatabase, Object>();
+	static private Map<String, IDatabase> databases = new HashMap<String, IDatabase>();
 
-	public Database() {
+	static public IDatabase get(String scheme) {
+		Database defaultDatabase = new Database(ServerConfig.databaseSchema(), ServerConfig.databaseUser(), ServerConfig.databasePassword(),
+				ServerConfig.databaseConnection(), ServerConfig.databaseDriver(), ServerConfig.databaseCharset());
+
+		if(ServerConfig.isMultitenant())
+			defaultDatabase.setSchema(scheme);
+
+		String key = defaultDatabase.key();
+		IDatabase database = databases.get(key);
+
+		if(database == null) {
+			databases.put(key, defaultDatabase);
+			return defaultDatabase;
+		}
+
+		return database;
 	}
 
-	public Database(Properties prop) {
-		setSchema(prop.getProperty("application.database.schema"));
-		setUser(prop.getProperty("application.database.user"));
-		setPassword(prop.getProperty("application.database.password"));
-		setConnection(prop.getProperty("application.database.connection"));
-		setDriver(prop.getProperty("application.database.driver"));
-		setCharset(encoding.fromString(prop.getProperty("application.database.charset")));
+	private Database(String schema, String user, String password, String connection, String driver, encoding charset) {
+		this.schema = schema;
+		this.user = user;
+		this.password = password;
+		this.connection = connection;
+		this.driver = driver;
+		this.charset = charset;
+		this.vendor = DatabaseVendor.fromString(driver);
 	}
 
 	public Database(String json) {
@@ -47,17 +72,19 @@ public class Database {
 	}
 
 	public Database(JsonObject json) {
-		setSchema(json.getString("schema"));
-		setUser(json.getString("user"));
-		setPassword(json.getString("password"));
-		setConnection(json.getString("connection"));
-		setDriver(json.getString("driver"));
-		setCharset(encoding.fromString(json.getString("charset")));
+		this(json.getString(Json.schema), json.getString(Json.user), json.getString(Json.password), 
+				json.getString(Json.connection), json.getString(Json.driver), encoding.fromString(json.getString(Json.charset)));
+
+		external = true;
+	}
+
+	public String key() {
+		return driver + connection + schema;
 	}
 
 	@Override
 	public int hashCode() {
-		return (driver() + connection() + schema()).hashCode();
+		return key().hashCode();
 	}
 
 	public Object getLock() {
@@ -67,6 +94,10 @@ public class Database {
 			locks.put(this, lock);
 		}
 		return lock;
+	}
+
+	public boolean isExternal() {
+		return external;
 	}
 
 	public DatabaseVendor vendor() {
@@ -111,7 +142,6 @@ public class Database {
 
 	public void setDriver(String driver) {
 		this.driver = driver;
-		this.vendor = DatabaseVendor.fromString(driver);
 	}
 
 	public encoding charset() {
@@ -159,15 +189,7 @@ public class Database {
 		if(isSystemInstalled)
 			return isSystemInstalled;
 
-		try {
-			isSystemInstalled = tableExists(Users.TableName);
-		} catch(Throwable e) {
-			Trace.logEvent(e);
-		} finally {
-			ConnectionManager.release();
-		}
-
-		return isSystemInstalled;
+		return isSystemInstalled = tableExists(Users.TableName);
 	}
 
 	public boolean isLatestVersion() {
@@ -181,5 +203,47 @@ public class Database {
 		String currentVersion = Settings.version();
 
 		return (isLatestVersion = version.equals(currentVersion));
+	}
+
+	private void writeObject(ObjectOutputStream out) throws IOException {
+		serialize(out);
+	}
+
+	private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
+		deserialize(in);
+	}
+
+	@Override
+	public void serialize(ObjectOutputStream out) throws IOException {
+		RmiIO.writeString(out, schema);
+		RmiIO.writeString(out, user);
+		RmiIO.writeString(out, password);
+		RmiIO.writeString(out, connection);
+		RmiIO.writeString(out, driver);
+		RmiIO.writeString(out, charset.toString());
+
+		RmiIO.writeBoolean(out, isSystemInstalled);
+		RmiIO.writeBoolean(out, isLatestVersion);
+
+		RmiIO.writeString(out, vendor.toString());
+	}
+
+	@Override
+	public void deserialize(ObjectInputStream in) throws IOException, ClassNotFoundException {
+		@SuppressWarnings("unused")
+		long version = RmiIO.readLong(in);
+
+		schema = RmiIO.readString(in);
+		user = RmiIO.readString(in);
+		password = RmiIO.readString(in);
+		connection = RmiIO.readString(in);
+		driver = RmiIO.readString(in);
+		charset = encoding.fromString(RmiIO.readString(in));
+
+		isSystemInstalled = RmiIO.readBoolean(in);
+		isLatestVersion = RmiIO.readBoolean(in);
+
+		charset = encoding.fromString(RmiIO.readString(in));
+		vendor = DatabaseVendor.fromString(RmiIO.readString(in));
 	}
 }
