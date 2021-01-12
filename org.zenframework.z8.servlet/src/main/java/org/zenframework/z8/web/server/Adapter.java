@@ -23,6 +23,7 @@ import org.zenframework.z8.server.types.file;
 import org.zenframework.z8.server.utils.IOUtils;
 import org.zenframework.z8.server.utils.NumericUtils;
 import org.zenframework.z8.web.servlet.Servlet;
+import org.zenframework.z8.web.utils.ServletUtil;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -76,7 +77,7 @@ public abstract class Adapter {
 				if(login == null || login.isEmpty() || login.length() > IAuthorityCenter.MaxLoginLength || password != null && password.length() > IAuthorityCenter.MaxPasswordLength)
 					throw new AccessDeniedException();
 
-				session = login(login, password, ApplicationServer.getScheme(request));
+				session = login(login, password, ServletUtil.getSchema(request));
 				if (httpSession != null)
 					httpSession.setAttribute(Json.session.get(), session.id());
 			} else

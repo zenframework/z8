@@ -10,7 +10,6 @@ import org.zenframework.z8.server.base.table.system.Files;
 import org.zenframework.z8.server.base.xml.GNode;
 import org.zenframework.z8.server.config.ServerConfig;
 import org.zenframework.z8.server.db.ConnectionManager;
-import org.zenframework.z8.server.exceptions.AccessDeniedException;
 import org.zenframework.z8.server.ie.Message;
 import org.zenframework.z8.server.ie.MessageAcceptor;
 import org.zenframework.z8.server.logs.Trace;
@@ -25,8 +24,6 @@ import org.zenframework.z8.server.security.User;
 import org.zenframework.z8.server.types.datespan;
 import org.zenframework.z8.server.types.file;
 import org.zenframework.z8.server.types.guid;
-
-import javax.servlet.http.HttpServletRequest;
 
 public class ApplicationServer extends RmiServer implements IApplicationServer {
 	static private final ThreadLocal<IRequest> currentRequest = new ThreadLocal<IRequest>();
@@ -67,20 +64,7 @@ public class ApplicationServer extends RmiServer implements IApplicationServer {
 	public static String getSchema() {
 		return getDatabase().schema();
 	}
-
-	public static String getScheme(HttpServletRequest request) {
-		if(!ServerConfig.isMultitenant())
-			return null;
-
-		String serverName = request.getServerName();
-		int index = serverName.indexOf('.');
-		if(index == -1 || index == serverName.lastIndexOf('.') && !serverName.endsWith("localhost"))
-			throw new AccessDeniedException();
-
-		return serverName.substring(0, index);
-	}
-
-
+	
 	public static void setRequest(IRequest request) {
 		if(request != null)
 			currentRequest.set(request);
