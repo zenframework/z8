@@ -64,7 +64,7 @@ public class ApplicationServer extends RmiServer implements IApplicationServer {
 	public static String getSchema() {
 		return getDatabase().schema();
 	}
-
+	
 	public static void setRequest(IRequest request) {
 		if(request != null)
 			currentRequest.set(request);

@@ -1,30 +1,12 @@
 package org.zenframework.z8.web.server;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.rmi.ConnectException;
-import java.rmi.NoSuchObjectException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
-
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.FileUploadException;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.zenframework.z8.server.base.xml.GNode;
 import org.zenframework.z8.server.config.ServerConfig;
+import org.zenframework.z8.server.engine.ApplicationServer;
 import org.zenframework.z8.server.engine.IApplicationServer;
 import org.zenframework.z8.server.engine.IAuthorityCenter;
 import org.zenframework.z8.server.engine.ISession;
@@ -41,6 +23,19 @@ import org.zenframework.z8.server.types.file;
 import org.zenframework.z8.server.utils.IOUtils;
 import org.zenframework.z8.server.utils.NumericUtils;
 import org.zenframework.z8.web.servlet.Servlet;
+import org.zenframework.z8.web.utils.ServletUtil;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.rmi.ConnectException;
+import java.rmi.NoSuchObjectException;
+import java.util.*;
 
 public abstract class Adapter {
 	private static final String UseContainerSession = "useContainerSession";
@@ -72,17 +67,19 @@ public abstract class Adapter {
 
 			boolean isLogin = Json.login.equals(parameters.get(Json.request.get()));
 
-			String sessionId = parameters.get(Json.session.get());
+			String sessionId = getParameter(Json.session.get(), parameters, httpSession);
 			String serverId = parameters.get(Json.server.get());
 
-			if(isLogin) {
-				String login = getParameter(Json.login.get(), parameters, httpSession);
-				String password = getParameter(Json.password.get(), parameters, httpSession);
+			if(isLogin && sessionId == null) {
+				String login = parameters.get(Json.login.get());
+				String password = parameters.get(Json.password.get());
 
 				if(login == null || login.isEmpty() || login.length() > IAuthorityCenter.MaxLoginLength || password != null && password.length() > IAuthorityCenter.MaxPasswordLength)
 					throw new AccessDeniedException();
 
-				session = login(login, password, this.getScheme(request));
+				session = login(login, password, ServletUtil.getSchema(request));
+				if (httpSession != null)
+					httpSession.setAttribute(Json.session.get(), session.id());
 			} else
 				session = authorize(sessionId, serverId, parameters.get(Json.request.get()));
 
@@ -113,18 +110,6 @@ public abstract class Adapter {
 
 	protected ISession authorize(String sessionId, String serverId, String request) throws IOException, ServletException {
 		return sessionId != null ? ServerConfig.authorityCenter().server(sessionId, serverId) : null;
-	}
-
-	private String getScheme(HttpServletRequest request) {
-		if(!ServerConfig.isMultitenant())
-			return null;
-
-		String serverName = request.getServerName();
-		int index = serverName.indexOf('.');
-		if(index == -1 || index == serverName.lastIndexOf('.') && !serverName.endsWith("localhost"))
-			throw new AccessDeniedException();
-
-		return serverName.substring(0, index);
 	}
 
 	private void parseRequest(HttpServletRequest request, Map<String, String> parameters, List<file> files) throws IOException {
@@ -226,11 +211,8 @@ public abstract class Adapter {
 	private static String getParameter(String key, Map<String, String> parameters, HttpSession httpSession) {
 		String value = parameters.get(key);
 
-		if(httpSession != null) {
-			if(value != null)
-				httpSession.setAttribute(key, value);
-			else
-				value = (String)httpSession.getAttribute(key);
+		if(httpSession != null && value == null) {
+			value = (String)httpSession.getAttribute(key);
 		}
 
 		return value;
