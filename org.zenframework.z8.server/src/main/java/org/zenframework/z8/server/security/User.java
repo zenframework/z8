@@ -488,21 +488,6 @@ public class User implements IUser {
 		deserialize(in);
 	}
 
-	public static String generateOneTimePassword()
-	{
-		String saltChars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-
-		StringBuilder plainPassword = new StringBuilder();
-
-		Random rnd = new Random();
-		while (plainPassword.length() <= 6) {
-			int index = (int) (rnd.nextFloat() * saltChars.length());
-			plainPassword.append(saltChars.charAt(index));
-		}
-
-		return plainPassword.toString();
-	}
-
 	@Override
 	public void serialize(ObjectOutputStream out) throws IOException {
 		RmiIO.writeLong(out, serialVersionUID);
