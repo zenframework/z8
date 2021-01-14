@@ -12,9 +12,13 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.zenframework.z8.server.apidocs.DocBuilder;
 import org.zenframework.z8.server.apidocs.dto.Documentation;
+import org.zenframework.z8.server.config.ServerConfig;
+import org.zenframework.z8.server.engine.ApplicationServer;
 import org.zenframework.z8.server.engine.Runtime;
+import org.zenframework.z8.server.engine.Session;
 import org.zenframework.z8.server.json.Json;
 import org.zenframework.z8.server.request.ContentType;
+import org.zenframework.z8.server.request.Request;
 import org.zenframework.z8.server.runtime.OBJECT;
 import org.zenframework.z8.web.servlet.Servlet;
 
@@ -62,7 +66,13 @@ public class APIDocAdapter extends Adapter {
 		for (OBJECT.CLASS<? extends OBJECT> request : Runtime.instance().requests())
 			if (request.hasAttribute(Json.apiDescription.get()) && !request.getAttribute(Json.apiDescription.get()).isEmpty())
 				apiClasses.add(request);
-		documentation = new DocBuilder().build(apiClasses);
+
+		ApplicationServer.setRequest(new Request(new Session(ServerConfig.databaseSchema())));
+		try {
+			documentation = new DocBuilder().build(apiClasses);
+		} finally {
+			ApplicationServer.setRequest(null);	
+		}
 		try {
 			temp = APIDocAdapter.getFreeMakerCfg().getTemplate(templateName);
 		} catch (IOException e) {

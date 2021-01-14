@@ -57,9 +57,9 @@ public class WebResourceHandler {
 	// TODO Refactor using freemarker
 	protected File getLocalizedFile(String path) throws IOException {
 		File localized = new File(localizedCache, path);
-		if (localized.exists())
+/*		if (localized.exists())
 			return localized;
-
+*/
 		File file = getFile(path);
 		if (file == null || language == null)
 			return file;

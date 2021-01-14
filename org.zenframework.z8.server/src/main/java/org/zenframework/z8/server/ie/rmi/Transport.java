@@ -13,6 +13,7 @@ import org.zenframework.z8.server.base.table.system.TransportQueue;
 import org.zenframework.z8.server.config.ServerConfig;
 import org.zenframework.z8.server.db.Connection;
 import org.zenframework.z8.server.db.ConnectionManager;
+import org.zenframework.z8.server.engine.ApplicationServer;
 import org.zenframework.z8.server.engine.IApplicationServer;
 import org.zenframework.z8.server.engine.IInterconnectionCenter;
 import org.zenframework.z8.server.ie.Message;
@@ -62,9 +63,8 @@ public class Transport implements Runnable {
 
 	public void start() {
 		thread = new Thread(this, domain);
-		Scheduler.register(thread);
-		Transport.register(this);
-		thread.start();
+		if(Scheduler.register(ApplicationServer.getDatabase(), thread))
+			Transport.register(this);
 	}
 
 	@Override
@@ -76,7 +76,7 @@ public class Transport implements Runnable {
 		} catch(Throwable e) {
 			Trace.logError(e);
 		} finally {
-			Scheduler.unregister(thread);
+			Scheduler.unregister(ApplicationServer.getDatabase(), thread);
 			Transport.unregister(this);
 		}
 	}

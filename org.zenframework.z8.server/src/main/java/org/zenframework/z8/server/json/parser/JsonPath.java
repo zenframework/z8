@@ -43,6 +43,33 @@ public class JsonPath {
 		scanner.close();
 	}
 
+	public JsonPath parent() {
+		if (parts.length == 0)
+			return null;
+		Object[] parentParts = new Object[parts.length - 1];
+		System.arraycopy(parts, 0, parentParts, 0, parentParts.length);
+		return new JsonPath(parentParts);
+	}
+
+	public JsonPath child(Object child) {
+		Object[] childParts = new Object[parts.length + 1];
+		System.arraycopy(parts, 0, childParts, 0, parts.length);
+		childParts[childParts.length - 1] = child;
+		return new JsonPath(childParts);
+	}
+
+	public int ordinal(int part) {
+		return (Integer) parts[part];
+	}
+
+	public String name(int part) {
+		return (String) parts[part];
+	}
+
+	public int length() {
+		return parts.length;
+	}
+
 	@SuppressWarnings("unchecked")
 	public Object evaluate(Object json) {
 		if (path.isEmpty())

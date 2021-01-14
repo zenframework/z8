@@ -6,6 +6,7 @@ import org.zenframework.z8.server.base.table.value.BoolField;
 import org.zenframework.z8.server.base.table.value.DatetimeField;
 import org.zenframework.z8.server.base.table.value.Link;
 import org.zenframework.z8.server.base.table.value.StringField;
+import org.zenframework.z8.server.engine.ApplicationServer;
 import org.zenframework.z8.server.resources.Resources;
 import org.zenframework.z8.server.runtime.IClass;
 import org.zenframework.z8.server.runtime.IObject;
@@ -155,7 +156,7 @@ public class ScheduledJobs extends Table {
 	@Override
 	public void afterCreate(guid recordId) {
 		super.afterCreate(recordId);
-		Scheduler.reset();
+		Scheduler.reset(ApplicationServer.getDatabase());
 	}
 
 	@Override
@@ -197,12 +198,12 @@ public class ScheduledJobs extends Table {
 	public void afterUpdate(guid recordId) {
 		super.afterUpdate(recordId);
 		if (!lastStart.get().changed() && !nextStart.get().changed())
-			Scheduler.reset();
+			Scheduler.reset(ApplicationServer.getDatabase());
 	}
 
 	@Override
 	public void afterDestroy(guid recordId) {
 		super.afterDestroy(recordId);
-		Scheduler.reset();
+		Scheduler.reset(ApplicationServer.getDatabase());
 	}
 }

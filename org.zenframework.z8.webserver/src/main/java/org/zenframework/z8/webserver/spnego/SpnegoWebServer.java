@@ -67,7 +67,7 @@ public class SpnegoWebServer extends org.zenframework.z8.webserver.WebServer imp
 		context.setHandler(sessions);
 
 		GzipHandler gzipHandler = new GzipHandler();
-		gzipHandler.setHandler(new Z8Handler(context));
+		gzipHandler.setHandler(getZ8Handler());
 		gzipHandler.addIncludedMimeTypes(ServerConfig.webServerGzipMimeTypes());
 		gzipHandler.addIncludedMethods(ServerConfig.webServerGzipMethods());
 		gzipHandler.addIncludedPaths(ServerConfig.webServerGzipPaths());

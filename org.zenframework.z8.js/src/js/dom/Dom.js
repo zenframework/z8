@@ -210,7 +210,7 @@ Z8.define('Z8.dom.Dom', {
 
 			if(dom.parentElement == null)
 				return;
-	
+
 			if(delay != null) {
 				var remove = function(dom) {
 					dom.parentElement.removeChild(dom);
@@ -286,7 +286,7 @@ Z8.define('Z8.dom.Dom', {
 			dom = DOM.get(dom);
 			screen = DOM.get(screen);
 
-			while(dom != screen) {
+			while(dom != null && dom != screen) {
 				screenX -= (dom.offsetLeft + dom.clientLeft - dom.scrollLeft);
 				dom = dom.offsetParent;
 			}
@@ -297,7 +297,7 @@ Z8.define('Z8.dom.Dom', {
 			dom = DOM.get(dom);
 			screen = DOM.get(screen);
 
-			while(dom != screen) {
+			while(dom != null && dom != screen) {
 				screenY -= (dom.offsetTop + dom.clientTop - dom.scrollTop);
 				dom = dom.offsetParent;
 			}
@@ -308,7 +308,7 @@ Z8.define('Z8.dom.Dom', {
 			dom = DOM.get(dom);
 			screen = DOM.get(screen);
 
-			while(dom != screen) {
+			while(dom != null && dom != screen) {
 				clientX += dom.offsetLeft + dom.clientLeft - dom.scrollLeft;
 				dom = dom.offsetParent;
 			}
@@ -319,7 +319,7 @@ Z8.define('Z8.dom.Dom', {
 			dom = DOM.get(dom);
 			screen = DOM.get(screen);
 
-			while(dom != screen) {
+			while(dom != null && dom != screen) {
 				clientY += dom.offsetTop + dom.clientTop - dom.scrollTop;
 				dom = dom.offsetParent;
 			}
@@ -374,7 +374,7 @@ Z8.define('Z8.dom.Dom', {
 				return false;
 
 			dom.focus({ preventScroll: preventScroll });
-	
+
 			if(select && dom.select != null)
 				dom.select();
 
@@ -512,7 +512,7 @@ Z8.define('Z8.dom.Dom', {
 			var html = DOM.getOuterHtml(node);
 			return html.substring(0, html.indexOf('>') + 1);
 		},
-	
+
 		rightTag: function(node) {
 			return '</' + node.localName || node.tagName + '>';
 		},
@@ -760,18 +760,18 @@ Z8.define('Z8.dom.Dom', {
 				var response = document.body.innerHTML;
 				var success = Z8.isEmpty(response);
 				if(!success) {
-					response = response.charAt(0) == '{' ? JSON.decode(response) : { info: { messages: [{ text: '\'' + url + '\' - файл не найден', type: 'error' }] }};
+					response = response.charAt(0) == '{' ? JSON.decode(response) : { info: { messages: [{ text: '\'' + url + Z8.$('DOM.fileNotFound'), type: 'error' }] }};
 
 					if(response.status == HttpRequest.status.AccessDenied) {
 						var loginCallback = function() {
 							DOM.download(url, id, serverId, callback);
 						};
-	
+
 						Application.login({ fn: loginCallback, scope: this });
 						DOM.remove(frame);
 						return;
 					}
-	
+
 					Application.message(response.info.messages);
 				}
 				Z8.callback(callback, success);

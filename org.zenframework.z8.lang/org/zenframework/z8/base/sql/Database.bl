@@ -21,11 +21,12 @@ public class Database extends Object {
 	static public string Driver = "driver";
 	static public string Charset = "charset";
 
-	public JsonObject toJson();
-
-	public Connection connection();
-
+	static public Database get();
 	static public Database fromJson(string json);
 	static public Database fromJson(JsonObject json);
-	static public Database currentDatabase();
+
+	public JsonObject toJson();
+
+	public string schema();
+	public Connection connection();
 }

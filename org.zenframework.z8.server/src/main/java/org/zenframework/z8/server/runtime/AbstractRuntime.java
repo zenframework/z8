@@ -4,7 +4,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.zenframework.z8.server.base.Procedure;
+import org.zenframework.z8.server.base.Executable;
 import org.zenframework.z8.server.base.table.Table;
 import org.zenframework.z8.server.types.guid;
 
@@ -13,9 +13,13 @@ public abstract class AbstractRuntime implements IRuntime {
 	private Map<String, Table.CLASS<? extends Table>> tableNames = new HashMap<String, Table.CLASS<? extends Table>>();
 	private Map<guid, Table.CLASS<? extends Table>> tableKeys = new HashMap<guid, Table.CLASS<? extends Table>>();
 
+	private Map<String, Executable.CLASS<? extends Executable>> executableClasses = new HashMap<String, Executable.CLASS<? extends Executable>>();
+	private Map<String, Executable.CLASS<? extends Executable>> executableNames = new HashMap<String, Executable.CLASS<? extends Executable>>();
+	private Map<guid, Executable.CLASS<? extends Executable>> executableKeys = new HashMap<guid, Executable.CLASS<? extends Executable>>();
+
 	private Map<guid, OBJECT.CLASS<? extends OBJECT>> entryKeys = new HashMap<guid, OBJECT.CLASS<? extends OBJECT>>();
 	private Map<guid, OBJECT.CLASS<? extends OBJECT>> requestKeys = new HashMap<guid, OBJECT.CLASS<? extends OBJECT>>();
-	private Map<guid, Procedure.CLASS<? extends Procedure>> jobKeys = new HashMap<guid, Procedure.CLASS<? extends Procedure>>();
+	private Map<guid, Executable.CLASS<? extends Executable>> jobKeys = new HashMap<guid, Executable.CLASS<? extends Executable>>();
 
 	@Override
 	public Collection<Table.CLASS<? extends Table>> tables() {
@@ -25,6 +29,16 @@ public abstract class AbstractRuntime implements IRuntime {
 	@Override
 	public Collection<guid> tableKeys() {
 		return tableKeys.keySet();
+	}
+
+	@Override
+	public Collection<Executable.CLASS<? extends Executable>> executables() {
+		return executableKeys.values();
+	}
+
+	@Override
+	public Collection<guid> executableKeys() {
+		return executableKeys.keySet();
 	}
 
 	@Override
@@ -48,7 +62,7 @@ public abstract class AbstractRuntime implements IRuntime {
 	}
 
 	@Override
-	public Collection<Procedure.CLASS<? extends Procedure>> jobs() {
+	public Collection<Executable.CLASS<? extends Executable>> jobs() {
 		return jobKeys.values();
 	}
 
@@ -93,15 +107,30 @@ public abstract class AbstractRuntime implements IRuntime {
 	}
 
 	@Override
-	public Procedure.CLASS<? extends Procedure> getJob(String name) {
-		return AbstractRuntime.<Procedure.CLASS<? extends Procedure>> get(name, jobs());
+	public Executable.CLASS<? extends Executable> getJob(String name) {
+		return AbstractRuntime.<Executable.CLASS<? extends Executable>> get(name, jobs());
 	}
 
 	@Override
-	public Procedure.CLASS<? extends Procedure> getJobByKey(guid key) {
+	public Executable.CLASS<? extends Executable> getJobByKey(guid key) {
 		return jobKeys.get(key);
 	}
 
+	@Override
+	public Executable.CLASS<? extends Executable> getExecutable(String className) {
+		return executableClasses.get(className);
+	}
+
+	@Override
+	public Executable.CLASS<? extends Executable> getExecutableByName(String name) {
+		return executableNames.get(name);
+	}
+
+	@Override
+	public Executable.CLASS<? extends Executable> getExecutableByKey(guid key) {
+		return executableKeys.get(key);
+	}
+	
 	private static <T extends OBJECT.CLASS<? extends OBJECT>> T get(String name, Collection<T> list) {
 		for(T cls : list) {
 			if(name.equals(cls.classId()))
@@ -126,6 +155,22 @@ public abstract class AbstractRuntime implements IRuntime {
 		tableKeys.put(cls.key(), cls);
 	}
 
+	@SuppressWarnings("unchecked")
+	protected void addExecutable(Executable.CLASS<? extends Executable> cls) {
+		for(Map.Entry<String, Executable.CLASS<? extends Executable>> entry : executableClasses.entrySet().toArray(new Map.Entry[0])) {
+			Executable.CLASS<? extends Executable> executable = entry.getValue();
+			if(executable.getClass().isAssignableFrom(cls.getClass()) && executable.name().equals(cls.name())) {
+				executableClasses.remove(executable.classId());
+				executableNames.remove(executable.name());
+				executableKeys.remove(executable.key());
+			} else if(cls.getClass().isAssignableFrom(executable.getClass()))
+				return;
+		}
+		executableClasses.put(cls.classId(), cls);
+		executableNames.put(cls.name(), cls);
+		executableKeys.put(cls.key(), cls);
+	}
+
 	protected void addRequest(OBJECT.CLASS<? extends OBJECT> cls) {
 		if(!requestKeys.containsKey(cls.classIdKey()))
 			requestKeys.put(cls.classIdKey(), cls);
@@ -136,7 +181,7 @@ public abstract class AbstractRuntime implements IRuntime {
 			entryKeys.put(cls.classIdKey(), cls);
 	}
 
-	protected void addJob(Procedure.CLASS<? extends Procedure> cls) {
+	protected void addJob(Executable.CLASS<? extends Executable> cls) {
 		if(!jobKeys.containsKey(cls.classIdKey()))
 			jobKeys.put(cls.classIdKey(), cls);
 	}
@@ -145,8 +190,11 @@ public abstract class AbstractRuntime implements IRuntime {
 		for(Table.CLASS<? extends Table> table : runtime.tables())
 			addTable(table);
 
-		for(Procedure.CLASS<? extends Procedure> job : runtime.jobs())
+		for(Executable.CLASS<? extends Executable> job : runtime.jobs())
 			addJob(job);
+
+		for(Executable.CLASS<? extends Executable> executable : runtime.executables())
+			addExecutable(executable);
 
 		for(OBJECT.CLASS<? extends OBJECT> entry : runtime.entries())
 			addEntry(entry);

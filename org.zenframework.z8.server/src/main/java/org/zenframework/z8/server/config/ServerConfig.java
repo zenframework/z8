@@ -10,12 +10,12 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 
-import org.zenframework.z8.server.engine.Database;
 import org.zenframework.z8.server.engine.IApplicationServer;
 import org.zenframework.z8.server.engine.IAuthorityCenter;
 import org.zenframework.z8.server.engine.IInterconnectionCenter;
 import org.zenframework.z8.server.engine.IWebServer;
 import org.zenframework.z8.server.engine.Rmi;
+import org.zenframework.z8.server.types.encoding;
 import org.zenframework.z8.server.utils.StringUtils;
 
 public class ServerConfig extends Properties {
@@ -31,12 +31,19 @@ public class ServerConfig extends Properties {
 	static final public String DefaultInstanceId = "Z8 Server";
 	static final public String DefaultConfigurationFileName = "server.properties";
 
-	static final private String InstanceId = "z8.instance.id";
+	static final private String InstanceId = "instance.id";
 
-	static final private String Multitenancy = "z8.instance.multitenancy";
+	static final private String Multitenancy = "application.multitenancy";
 
 	static final private String Language = "application.language";
 	static final private String DefaultLanguage = "ru";
+
+	static final private String DatabaseSchema = "application.database.schema";
+	static final private String DatabaseUser = "application.database.user";
+	static final private String DatabasePassword = "application.database.password";
+	static final private String DatabaseConnection = "application.database.connection";
+	static final private String DatabaseDriver = "application.database.driver";
+	static final private String DatabaseCharset = "application.database.charset";
 
 	static final private String ApplicationServerHost = "application.server.host";
 	static final private String ApplicationServerPort = "application.server.port";
@@ -115,6 +122,13 @@ public class ServerConfig extends Properties {
 	static private String instanceId;
 	static private boolean multitenancy;
 
+	static private String databaseSchema;
+	static private String databaseUser;
+	static private String databasePassword;
+	static private String databaseConnection;
+	static private String databaseDriver;
+	static private encoding databaseCharset;
+
 	static private String applicationServerHost;
 	static private int applicationServerPort;
 
@@ -181,8 +195,6 @@ public class ServerConfig extends Properties {
 
 	static private String ftsConfiguration;
 
-	static private Database database;
-
 	static public String[] textExtensions; // "txt, xml"
 	static public String[] imageExtensions; // "tif, tiff, jpg, jpeg, gif, png, bmp"
 	static public String[] emailExtensions; // "eml, mime"
@@ -219,6 +231,13 @@ public class ServerConfig extends Properties {
 
 		instanceId = getProperty(InstanceId, DefaultInstanceId);
 		multitenancy = getProperty(Multitenancy, false);
+
+		databaseSchema = getProperty(DatabaseSchema);
+		databaseUser = getProperty(DatabaseUser);
+		databasePassword = getProperty(DatabasePassword);
+		databaseConnection = getProperty(DatabaseConnection);
+		databaseDriver = getProperty(DatabaseDriver);
+		databaseCharset = encoding.fromString(getProperty(DatabaseCharset));
 
 		applicationServerHost = getHost(ApplicationServerHost, Rmi.localhost);
 		applicationServerPort = getProperty(ApplicationServerPort, 15000);
@@ -314,9 +333,10 @@ public class ServerConfig extends Properties {
 	@Override
 	public Set<String> stringPropertyNames() {
 		Set<String> result = new HashSet<String>(super.stringPropertyNames());
-		for (String name : System.getProperties().stringPropertyNames())
-			if (name.startsWith(Z8SystemPrefix))
+		for (String name : System.getProperties().stringPropertyNames()) {
+			if(name.startsWith(Z8SystemPrefix))
 				result.add(name.substring(Z8SystemPrefix.length()));
+		}
 		return result;
 	}
 
@@ -418,6 +438,30 @@ public class ServerConfig extends Properties {
 
 	static public boolean isMultitenant() {
 		return multitenancy;
+	}
+
+	static public String databaseSchema() {
+		return databaseSchema;
+	}
+
+	static public String databaseUser() {
+		return databaseUser;
+	}
+
+	static public String databasePassword() {
+		return databasePassword;
+	}
+
+	static public String databaseConnection() {
+		return databaseConnection;
+	}
+
+	static public String databaseDriver() {
+		return databaseDriver;
+	}
+
+	static public encoding databaseCharset() {
+		return databaseCharset;
 	}
 
 	static public File workingPath() {
@@ -640,20 +684,6 @@ public class ServerConfig extends Properties {
 
 	static public String ftsConfiguration() {
 		return ftsConfiguration;
-	}
-	
-	static public Database database() {
-		if(database == null)
-			database = new Database(instance);
-		return database;
-	}
-
-	static public boolean isSystemInstalled() {
-		return database().isSystemInstalled();
-	}
-
-	static public boolean isLatestVersion() {
-		return database().isLatestVersion();
 	}
 
 	static public IApplicationServer applicationServer() {

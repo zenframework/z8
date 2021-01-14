@@ -23,7 +23,7 @@ Z8.define('Z8.form.field.Combobox', {
 	queryDelay: 250,
 	lastQuery: '',
 
-	pagerMode: 'visible', // 'visible' || 'hidden'
+	pagerMode: 'hidden', // 'visible' || 'hidden'
 	clearTrigger: true,
 
 	initComponent: function() {
@@ -58,7 +58,7 @@ Z8.define('Z8.form.field.Combobox', {
 		dropdown.on('cancel', this.cancelDropdown, this);
 
 		var cls = this.needsPager() ? '' : 'display-none';
-		var pager = this.pager = new Z8.pager.Pager({ cls: 'display-none', store: this.getStore() });
+		var pager = this.pager = new Z8.pager.Pager({ visible: false, store: this.getStore() });
 
 		dropdown.on('align', this.onDropdownAlign, this);
 		dropdown.on('show', this.onDropdownShow, this);
@@ -70,10 +70,10 @@ Z8.define('Z8.form.field.Combobox', {
 
 		var triggers = [];
 		if(this.source != null)
-			triggers.push({ icon: 'fa-pencil', tooltip: 'Редактировать \'' + this.source.text + '\'', handler: this.editSource, scope: this });
+			triggers.push({ icon: 'fa-pencil', tooltip: Z8.$('ComboBox.edit') + this.source.text + '\'', handler: this.editSource, scope: this });
 
 		if(!this.isRequired() && this.clearTrigger !== false)
-			triggers.push({ icon: ComboBox.ClearIconCls, tooltip: 'Очистить', handler: this.clearValue, scope: this });
+			triggers.push({ icon: ComboBox.ClearIconCls, tooltip: Z8.$('ComboBox.clear'), handler: this.clearValue, scope: this });
 
 		this.triggers = triggers.add(this.triggers);
 
@@ -99,7 +99,7 @@ Z8.define('Z8.form.field.Combobox', {
 		TextBox.prototype.completeRender.call(this);
 
 		this.hidePager();
-		this.dropdown.setAlignment(this);
+		this.dropdown.setAlignment(this.getBox());
 
 		if(!this.editor)
 			DOM.on(this, 'keyPress', this.onKeyPress, this);
@@ -160,7 +160,7 @@ Z8.define('Z8.form.field.Combobox', {
 		case Type.Datetime:
 			return value != null ? Format.date(value, field.format) : '';
 		case Type.Boolean:
-			return value ? 'да' : 'нет';
+			return value ? Z8.$('ComboBox.true') : Z8.$('ComboBox.false');
 		case Type.Integer:
 			return value !== null ? Format.integer(value, field.format) : '';
 		case Type.Float:
@@ -457,9 +457,9 @@ Z8.define('Z8.form.field.Combobox', {
 					index = 0;
 				else if(direction == 'last')
 					index = count - 1;
-	
+
 				index = Math.min(Math.max(index, 0), count - 1);
-	
+
 				if(index == -1 || index == startIndex)
 					return;
 
@@ -558,7 +558,7 @@ Z8.define('Z8.form.field.Combobox', {
 	showDropdown: function(keepFocus) {
 		var dropdown = this.dropdown;
 
-		var width = DOM.getOffsetWidth(this.input);
+		var width = DOM.getOffsetWidth(this/*.input*/);
 		DOM.setWidth(dropdown, width);
 
 		var item = this.getCurrentItem();
@@ -626,7 +626,13 @@ Z8.define('Z8.form.field.Combobox', {
 	},
 
 	onTriggerClick: function(trigger) {
-		this.toggleDropdown();
+		if(this.isEnabled() && !this.isReadOnly())
+			this.toggleDropdown();
+	},
+
+	onInputClick: function() {
+		if(this.isEnabled() && !this.isReadOnly())
+			this.toggleDropdown();
 	},
 
 	onDblClick: function(event, target) {

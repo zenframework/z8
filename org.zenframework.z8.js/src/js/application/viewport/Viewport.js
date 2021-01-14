@@ -19,7 +19,7 @@ Z8.define('Z8.application.viewport.Viewport', {
 		}
 		var breadcrumbs = this.breadcrumbs = new Z8.button.Group({ cls: 'breadcrumbs flex', items: items });
 
-		var logout = this.logout = new Z8.button.Button({ tooltip: 'Выход', cls: 'btn-tool', icon: 'fa-power-off', handler: this.logout, scope: this });
+		var logout = new Z8.button.Button({ tooltip: Z8.$('Z8.Viewport.logout'), cls: 'btn-tool', icon: 'fa-power-off', handler: this.logout, scope: this });
 
 		var header = this.header = new Z8.Container({ cls: 'header flex-row flex-center', items: [breadcrumbs, logout] });
 		var body = this.body = new Z8.Container({ cls: 'body' });
@@ -52,7 +52,7 @@ Z8.define('Z8.application.viewport.Viewport', {
 
 	createHeaderButtons: function() {
 		//var settings = this.settingsButton = new Z8.button.Button({ tooltip: 'Настройки', cls: 'btn-tool', icon: 'fa-cog', enabled: false, handler: this.onSettings, scope: this });
-		var jobMonitor = this.jobMonitorButton = new Z8.button.Button({ tooltip: 'Монитор задач', cls: 'btn-tool', icon: 'fa-tv', handler: this.openJobMonitor, scope: this });
+		var jobMonitor = this.jobMonitorButton = new Z8.button.Button({ tooltip: Z8.$('Z8.Viewport.taskMonitor'), cls: 'btn-tool', icon: 'fa-tv', handler: this.openJobMonitor, scope: this });
 		//var logger = this.loggerButton = new Z8.button.Button({ tooltip: 'Сообщения', cls: 'btn-tool', icon: 'fa-comment-o', enabled: false, handler: this.openLogger, scope: this });
 		return [jobMonitor]; //, logger, settings];
 	},
@@ -65,8 +65,8 @@ Z8.define('Z8.application.viewport.Viewport', {
 
 		this.isLoggedIn = true;
 
-		var header = this.header; 
-		var menuToggle = this.menuToggle = new Z8.button.Button({ tooltip: 'Развернуть/скрыть меню', cls: 'btn-tool', icon: 'fa-bars', handler: this.toggleMenu, scope: this });
+		var header = this.header;
+		var menuToggle = this.menuToggle = new Z8.button.Button({ tooltip: Z8.$('Z8.Viewport.menuToggle'), cls: 'btn-tool', icon: 'fa-bars', handler: this.toggleMenu, scope: this });
 		header.add(menuToggle, 0);
 
 		var buttons = this.buttons = this.createHeaderButtons();
@@ -292,7 +292,7 @@ Z8.define('Z8.application.viewport.Viewport', {
 				DOM.removeCls(forms[i], 'display-none');
 				forms[i].setActive(true);
 			}
-		} 
+		}
 
 		if(form != null && forms.indexOf(form) == -1) {
 			button = this.createBreadcrumb(form, forms.length + 1);

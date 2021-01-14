@@ -11,8 +11,7 @@ import org.zenframework.z8.server.base.table.system.view.SequencesView;
 import org.zenframework.z8.server.base.table.system.view.TablesView;
 import org.zenframework.z8.server.base.table.system.view.TransportQueueView;
 import org.zenframework.z8.server.base.table.system.view.UsersView;
-import org.zenframework.z8.server.config.ServerConfig;
-import org.zenframework.z8.server.db.generator.DBGenerateProcedure;
+import org.zenframework.z8.server.db.generator.SchemaGenerator;
 import org.zenframework.z8.server.engine.ApplicationServer;
 import org.zenframework.z8.server.resources.Resources;
 import org.zenframework.z8.server.runtime.IObject;
@@ -62,7 +61,7 @@ public class SystemTools extends Desktop {
 	public OBJECT.CLASS<? extends OBJECT> authorityCenter = new AuthorityCenterView.CLASS<AuthorityCenterView>(this);
 	public OBJECT.CLASS<? extends OBJECT> interconnectionCenter = new InterconnectionCenterView.CLASS<InterconnectionCenterView>(this);
 
-	public OBJECT.CLASS<? extends OBJECT> generator = new DBGenerateProcedure.CLASS<DBGenerateProcedure>(this);
+	public OBJECT.CLASS<? extends OBJECT> generator = new SchemaGenerator.CLASS<SchemaGenerator>(this);
 
 	public SystemTools(IObject container) {
 		super(container);
@@ -72,7 +71,7 @@ public class SystemTools extends Desktop {
 	public void initMembers() {
 		super.initMembers();
 
-		if(ServerConfig.isLatestVersion()) {
+		if(ApplicationServer.getDatabase().isLatestVersion()) {
 			users.setIndex("users");
 			roles.setIndex("roles");
 			jobs.setIndex("jobs");

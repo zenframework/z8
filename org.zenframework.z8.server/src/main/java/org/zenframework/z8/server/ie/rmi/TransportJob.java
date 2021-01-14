@@ -2,7 +2,7 @@ package org.zenframework.z8.server.ie.rmi;
 
 import java.util.Collection;
 
-import org.zenframework.z8.server.base.Procedure;
+import org.zenframework.z8.server.base.Executable;
 import org.zenframework.z8.server.base.form.action.Parameter;
 import org.zenframework.z8.server.base.table.system.MessageQueue;
 import org.zenframework.z8.server.base.table.system.TransportQueue;
@@ -12,8 +12,8 @@ import org.zenframework.z8.server.runtime.RCollection;
 import org.zenframework.z8.server.types.bool;
 import org.zenframework.z8.server.utils.ArrayUtils;
 
-public class TransportJob extends Procedure {
-	public static class CLASS<T extends TransportJob> extends Procedure.CLASS<T> {
+public class TransportJob extends Executable {
+	public static class CLASS<T extends TransportJob> extends Executable.CLASS<T> {
 		public CLASS(IObject container) {
 			super(container);
 			setJavaClass(TransportJob.class);

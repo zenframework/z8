@@ -11,7 +11,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.zenframework.z8.server.config.ServerConfig;
-import org.zenframework.z8.server.engine.Database;
+import org.zenframework.z8.server.engine.IDatabase;
 import org.zenframework.z8.server.logs.Trace;
 import org.zenframework.z8.server.types.datespan;
 import org.zenframework.z8.server.types.encoding;
@@ -27,7 +27,7 @@ public class Connection {
 
 	static private long FiveMinutes = 5 * datespan.TicksPerMinute;
 
-	private Database database = null;
+	private IDatabase database = null;
 	private java.sql.Connection connection = null;
 	private Thread owner = null;
 
@@ -39,15 +39,12 @@ public class Connection {
 	private Set<BasicStatement> statements = new HashSet<BasicStatement>();
 	private Collection<Listener> listeners;
 
-	static private java.sql.Connection newConnection(Database database) {
+	static private java.sql.Connection newConnection(IDatabase database) {
 		ConnectionSavePoint savePoint = ConnectionSavePoint.create(database);
 
 		try {
 			Class.forName(database.driver());
-
-			java.sql.Connection connection = DriverManager.getConnection(database.connection(), database.user(), database.password());
-
-			return connection;
+			return DriverManager.getConnection(database.connection(), database.user(), database.password());
 		} catch(Throwable e) {
 			throw new RuntimeException(e);
 		} finally {
@@ -55,11 +52,11 @@ public class Connection {
 		}
 	}
 
-	static public Connection connect(Database database) {
+	static public Connection connect(IDatabase database) {
 		return new Connection(database, newConnection(database));
 	}
 
-	private Connection(Database database, java.sql.Connection connection) {
+	private Connection(IDatabase database, java.sql.Connection connection) {
 		this.database = database;
 		this.connection = connection;
 	}
@@ -142,15 +139,17 @@ public class Connection {
 
 		for(BasicStatement statement : statements)
 			statement.safeClose();
+
 		statements.clear();
 	}
 
 	private void initClientInfo() {
-		if(ServerConfig.traceSqlConnections()) {
-			try {
-				connection.setClientInfo("ApplicationName", owner.getName());
-			} catch(SQLClientInfoException e) {
-			}
+		if(!ServerConfig.traceSqlConnections())
+			return;
+
+		try {
+			connection.setClientInfo("ApplicationName", owner.getName());
+		} catch(SQLClientInfoException e) {
 		}
 	}
 
@@ -158,7 +157,7 @@ public class Connection {
 		return connection;
 	}
 
-	public Database database() {
+	public IDatabase database() {
 		return database;
 	}
 

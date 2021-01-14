@@ -3,6 +3,7 @@ import org.zenframework.z8.server.config.ServerConfig;
 
 import org.zenframework.z8.server.engine.ISession;
 import org.zenframework.z8.server.exceptions.AccessDeniedException;
+import org.zenframework.z8.server.json.Json;
 import org.zenframework.z8.server.logs.Trace;
 import org.zenframework.z8.web.servlet.Servlet;
 
@@ -35,10 +36,10 @@ public class SingleSignOnAdapter extends Adapter {
         }
         String principalName = (String) httpSession.getAttribute("userPrincipalName");
         try {
-            ISession session = ServerConfig.authorityCenter().ssoLogin(principalName);
-            if(useContainerSession){
-                httpSession.setAttribute(Adapter.sessionKeyName, session.id());
-            }
+            // TODO set schema
+            ISession session = ServerConfig.authorityCenter().login(principalName, null);
+            if(useContainerSession)
+                httpSession.setAttribute(Json.session.get(), session.id());
             response.sendRedirect("/");
         } catch(AccessDeniedException e) {
             httpSession.invalidate();

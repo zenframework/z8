@@ -46,9 +46,9 @@ Z8.define('Z8.filter.Group', {
 
 		if(this.button) {
 			var menuItems = [
-				new Z8.menu.Item({ text: 'Новая строка', icon: 'fa-plus', handler: this.onNewLine }),
-				new Z8.menu.Item({ text: 'Разгруппировать', icon: 'fa-unlink', handler: this.onUngroup }),
-				new Z8.menu.Item({ text: 'Изменить и/или', icon: 'fa-exchange', handler: this.onChangeAndOr }),
+				new Z8.menu.Item({ text: Z8.$('Group.newLine'), icon: 'fa-plus', handler: this.onNewLine }),
+				new Z8.menu.Item({ text: Z8.$('Group.ungroup'), icon: 'fa-unlink', handler: this.onUngroup }),
+				new Z8.menu.Item({ text: Z8.$('Group.toggleAndOr'), icon: 'fa-exchange', handler: this.onChangeAndOr }),
 				'-'
 			];
 
@@ -208,7 +208,7 @@ Z8.define('Z8.filter.Group', {
 	},
 
 	getOperatorText: function() {
-		return this.logical == 'or' ? 'или' : 'и';
+		return this.logical == 'or' ? Z8.$('Group.or') : Z8.$('Group.and');
 	},
 
 	getExpressionText: function() {

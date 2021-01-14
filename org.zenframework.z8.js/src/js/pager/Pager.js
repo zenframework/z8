@@ -96,20 +96,20 @@ Z8.define('Z8.pager.Pager', {
 
 	pageTotalsText: function() {
 		var count = this.pageCount();
-		return count != 0 ? 'из ' + Format.integer(count) : '';
+		return count != 0 ? Z8.$('Pager.outOf') + ' ' + Format.integer(count) : '';
 	},
 
 	totalsText: function() {
 		var total = this.totalCount();
 
 		if(total == 0)
-			return 'Нет записей';
+			return Z8.$('Pager.noRecords');
 
 		var page = this.getPage();
 		var pageSize = this.pageSize();
 		var first = page * pageSize + 1;
 		var last = Math.min(first + this.count() - 1, total);
-		return Format.integer(first) + ' - ' + Format.integer(last) + ' из ' + Format.integer(total);
+		return Format.integer(first) + ' - ' + Format.integer(last) + ' ' + Z8.$('Pager.outOf') + ' ' + Format.integer(total);
 	},
 
 	load: function(page, button) {

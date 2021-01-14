@@ -11,15 +11,15 @@ Z8.define('Z8.filter.Line', {
 
 		var store = this.getFields();
 		var record = store.getById(expression.property);
-		var fields = [{ name: 'name', header: 'Поле', icon: 'fa-tag', sortable: false, width: 200 }, { name: 'type', header: 'Тип', icon: 'fa-code', sortable: false, width: 100 }, { name: 'description', header: 'Описание', icon: 'fa-file-text-o', sortable: false, width: 400 }];
-		var property = this.property = new ComboBox({ store: store, value: expression.property, emptyValue: '', fields: fields, required: true, filters: false, cls: 'property', placeholder: 'Поле', icons: true });
+		var fields = [{ name: 'name', header: Z8.$('Line.field'), icon: 'fa-tag', sortable: false, width: 200 }, { name: 'type', header: Z8.$('Line.type'), icon: 'fa-code', sortable: false, width: 100 }, { name: 'description', header: Z8.$('Line.description'), icon: 'fa-file-text-o', sortable: false, width: 400 }];
+		var property = this.property = new ComboBox({ store: store, value: expression.property, emptyValue: '', fields: fields, required: true, filters: false, cls: 'property', placeholder: Z8.$('Line.field'), icons: true });
 		property.on('change', this.propertyChanged, this);
 
 		var type = record != null ? record.get('type') : null;
 		store = type != null ? Z8.filter.Operator.getOperators(type) : null;
 		record = store != null ? store.getById(expression.operator) : null;
 
-		var operator = this.operator = new ComboBox({ store: store, value: expression.operator, emptyValue: '', cls: 'operator', required: true, filters: false, placeholder: 'Операция' });
+		var operator = this.operator = new ComboBox({ store: store, value: expression.operator, emptyValue: '', cls: 'operator', required: true, filters: false, placeholder: Z8.$('Line.operation') });
 		operator.on('change', this.operatorChanged, this);
 
 		type = record != null ? record.get('type') : null;
@@ -64,11 +64,11 @@ Z8.define('Z8.filter.Line', {
 			return new Z8.Component({ cls: 'value hidden' });
 		case Type.String:
 		case Type.Text:
-			return new Z8.form.field.Text({ value: value, cls: 'value', placeholder: 'текст', required: true });
+			return new Z8.form.field.Text({ value: value, cls: 'value', placeholder: Z8.$('Line.text'), required: true });
 		case Type.Date:
-			return new Z8.form.field.Date({ value: value, cls: 'value', placeholder: 'дата', required: true});
+			return new Z8.form.field.Date({ value: value, cls: 'value', placeholder: Z8.$('Line.date'), required: true});
 		case Type.Datetime:
-			return new Z8.form.field.Datetime({ value: value, cls: 'value', placeholder: 'время', required: true});
+			return new Z8.form.field.Datetime({ value: value, cls: 'value', placeholder: Z8.$('Line.time'), required: true});
 		case Type.Integer:
 			return new Z8.form.field.Integer({ value: value, cls: 'value', placeholder: '0 000', required: true});
 		case Type.Float:

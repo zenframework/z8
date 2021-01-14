@@ -1,0 +1,267 @@
+Z8.loadMessages('en', {
+
+    // Login
+    'Login.login.text': 'Login',
+    'Login.login.placeholder': 'Login',
+    'Login.password.text': 'Password',
+    'Login.password.placeholder': 'Password',
+    'Login.authorization': 'Authorization',
+
+    // ChangePassword
+    'ChangePassword.passwordSetting': ' - password setting',
+    'ChangePassword.password': 'Password',
+    'ChangePassword.newPassword': 'New password',
+    'ChangePassword.repeat': '(repeat)',
+
+    // Application
+    'Application.fileSize': 'File size \'',
+    'Application.exceedsAllowedFileSize': ' exceeds the maximum allowed file size of ',
+
+    // Navigator
+    'Navigator.newRecord': 'New record',
+    'Navigator.copyRecord': 'Copy record',
+    'Navigator.refresh': 'Refresh',
+    'Navigator.deleteRecord': 'Delete record',
+    'Navigator.files': 'Files',
+    'Navigator.formView': 'Form view',
+    'Navigator.tableView': 'Table view',
+    'Navigator.settings': 'Settings',
+    'Navigator.saveAsPDF': 'Save as PDF',
+    'Navigator.saveAsXLS': 'Save as XLS',
+    'Navigator.saveAsDOC': 'Save as DOC',
+    'Navigator.actions': 'Actions',
+    'Navigator.printDocuments': 'Print documents',
+
+    // JobMonitor
+    'JobMonitor.taskMonitor': 'Task monitor',
+    'JobMonitor.task': 'Task',
+    'JobMonitor.start': 'Start',
+    'JobMonitor.duration': 'Duration',
+
+    // Z8.Viewport
+    'Z8.Viewport.logout': 'Logout',
+    'Z8.Viewport.taskMonitor': 'Task monitor',
+    'Z8.Viewport.menuToggle': 'Expand/hide menu',
+
+    // GeometryTools
+    'GeometryTools.selectAnObject': 'Select an object',
+    'GeometryTools.moveAnObject': 'Move an object',
+    'GeometryTools.editAnObject': 'Edit an object',
+    'GeometryTools.drawAnObject': 'Draw an object',
+    'GeometryTools.eraseAnObject': 'Erase an object',
+    'GeometryTools.rotateAnObject': 'Rotate an object',
+    'GeometryTools.rectangularSelection': 'Rectangular selection',
+    'GeometryTools.lasso': 'Lasso',
+    'GeometryTools.ruler': 'Ruler',
+    'GeometryTools.pickFromTheSubstrate': 'Pick from the substrate',
+    'GeometryTools.myLocation': 'My location',
+    'GeometryTools.openInYandex': 'Open in Yandex',
+    'GeometryTools.tools': 'Tools',
+
+    // Button
+    'Button.period': 'Period',
+    'Button.selectAPeriod': 'Select a period',
+    'Button.filter': 'Filter',
+    'Button.configureFilter': 'Configure filter',
+    'Button.configure': 'Configure',
+    'Button.filterConfiguration': 'FIlter configuration',
+
+    // Period
+    'Period.today': 'Today',
+    'Period.yesterday': 'Yesterday',
+    'Period.dayBeforeYesterday': 'Day before yesterday',
+    'Period.sevenDays': '7 days',
+    'Period.tomorrow': 'Tomorrow',
+    'Period.thisWeek': 'This week',
+    'Period.lastWeek': 'Last week',
+    'Period.nextWeek': 'Next week',
+    'Period.thisMonth': 'This month',
+    'Period.lastMonth': 'Last month',
+    'Period.nextMonth': 'Next month',
+    'Period.thisQuarter': 'This quarter',
+    'Period.lastQuarter': 'Last quarter',
+    'Period.nextQuarter': 'Next quarter',
+    'Period.thisHalfAYear': 'This half a year',
+    'Period.lastHalfAYear': 'Last half a year',
+    'Period.nextHalfAYear': 'Next half a year',
+    'Period.thisYear': 'This year',
+    'Period.lastYear': 'Last year',
+    'Period.nextYear': 'Next year',
+    'Period.close': 'Close',
+    'Period.apply': 'Apply',
+    'Period.after': 'after',
+    'Period.before': 'before',
+
+    // DOM
+    'DOM.fileNotFound': '\' - file not found',
+
+    // Model
+    'Model.filter': 'Filter',
+    'Model.filters': 'Filters',
+    'Model.newFilter': 'New filter',
+    'Model.copyARecord': 'Copy a record (Shift+Insert)',
+    'Model.deleteFilters': 'Delete filter(s)',
+    'Model.expression': 'Expression',
+    'Model.text': 'Text',
+
+    // Group
+    'Group.newLine': 'New line',
+    'Group.ungroup': 'Ungroup',
+    'Group.toggleAndOr': 'Toggle and/or',
+    'Group.or': 'or',
+    'Group.and': 'and',
+
+    // Line
+    'Line.field': 'Field',
+    'Line.type': 'Type',
+    'Line.description': 'Description',
+    'Line.operation': 'Operation',
+    'Line.text': 'text',
+    'Line.date': 'date',
+    'Line.time': 'time',
+
+    // Operator
+    'Operator.true': 'yes',
+    'Operator.false': 'no',
+    'Operator.after': 'after',
+    'Operator.notEarlierThan': 'not earlier than',
+    'Operator.before': 'before',
+    'Operator.notLaterThan': 'not later than',
+    'Operator.today': 'today',
+    'Operator.yesterday': 'yesterday',
+    'Operator.tomorrow': 'tomorrow',
+    'Operator.thisWeek': 'this week',
+    'Operator.lastWeek': 'last week',
+    'Operator.nextWeek': 'next week',
+    'Operator.thisMonth': 'this month',
+    'Operator.lastMonth': 'last month',
+    'Operator.nextMonth': 'next month',
+    'Operator.thisYear': 'this year',
+    'Operator.lastYear': 'last year',
+    'Operator.nextYear': 'next year',
+    'Operator.lastDays': 'last X days',
+    'Operator.nextDays': 'next X days',
+    'Operator.lastHours': 'last X hours',
+    'Operator.nextHours': 'next X hours',
+    'Operator.equalTo': 'equal to',
+    'Operator.notEqualTo': 'not equal to',
+    'Operator.greaterThan': 'greater than',
+    'Operator.numberGreaterThanOrEqualTo': 'greater than or equal to',
+    'Operator.stringGreaterThanOrEqualTo': 'greater than or equal to',
+    'Operator.lessThan': 'less than',
+    'Operator.numberLessThanOrEqualTo': 'less than or equal to',
+    'Operator.stringLessThanOrEqualTo': 'less than or equal to',
+    'Operator.contains': 'contains',
+    'Operator.doesNotContain': 'does not contain',
+    'Operator.containsAWord': 'includes a word',
+    'Operator.doesNotContainAWord': 'does not contain a word',
+    'Operator.isSimilarTo': 'is similar to',
+    'Operator.isNotSimilarTo': 'is not similar to',
+    'Operator.beginsWith': 'begins with',
+    'Operator.doesNotBeginWith': 'does not begin with',
+    'Operator.endsWith': 'ends with',
+    'Operator.doesNotEndWith': 'does not end with',
+    'Operator.isEmptyString': 'is empty string',
+    'Operator.isNotEmptyString': 'is not empty string',
+
+    // ComboBox
+    'ComboBox.edit': 'Edit \'',
+    'ComboBox.clear': 'Clear',
+    'ComboBox.true': 'yes',
+    'ComboBox.false': 'no',
+
+    // FileBox
+    'FileBox.uploadAFile': 'Upload a file',
+    'FileBox.downloadAFile': 'Download a file',
+
+    // FilesBox
+    'FilesBox.file': 'File',
+    'FilesBox.fileSize': 'File size',
+    'FilesBox.date': 'Date',
+    'FilesBox.author': 'Author',
+    'FilesBox.uploadFiles': 'Upload file(s)',
+    'FilesBox.downloadFiles': 'Download file(s)',
+    'FilesBox.deleteFiles': 'Delete file(s)',
+
+    // Filter
+    'Filter.newLine': 'New line',
+    'Filter.group': 'Group',
+    'Filter.ungroup': 'Ungroup',
+    'Filter.deleteLines': 'Delete lines',
+
+    // Geometry
+    'Geometry.zoomOut': 'Zoom out',
+    'Geometry.zoomIn': 'Zoom in',
+    'Geometry.meter': ' m',
+    'Geometry.kilometer': ' km',
+
+    // Listbox
+    'Listbox.newRecord': 'New record (Insert)',
+    'Listbox.deleteARecord': 'Delete a record (Delete)',
+    'Listbox.copyARecord': 'Copy a record (Shift+Insert)',
+    'Listbox.edit': 'Edit \'',
+    'Listbox.refresh': 'Refresh (Ctrl+R)',
+    'Listbox.filter': 'Filter (Ctrl+F)',
+    'Listbox.settings': 'Settings',
+    'Listbox.saveAsPDF': 'Save as PDF',
+    'Listbox.saveAsXLS': 'Save as XLS',
+    'Listbox.saveAsDOC': 'Save as DOC',
+
+    // Pager
+    'Pager.outOf': 'out of',
+    'Pager.noRecords': 'No records',
+
+    // Date
+    'Date.January': 'January',
+    'Date.February': 'February',
+    'Date.March': 'March',
+    'Date.April': 'April',
+    'Date.fullMay': 'May',
+    'Date.June': 'June',
+    'Date.July': 'July',
+    'Date.August': 'August',
+    'Date.September': 'September',
+    'Date.October': 'October',
+    'Date.November': 'November',
+    'Date.December': 'December',
+    'Date.Jan': 'Jan',
+    'Date.Feb': 'Feb',
+    'Date.Mar': 'Mar',
+    'Date.Apr': 'Apr',
+    'Date.May': 'May',
+    'Date.Jun': 'Jun',
+    'Date.Jul': 'Jul',
+    'Date.Aug': 'Aug',
+    'Date.Sep': 'Sep',
+    'Date.Oct': 'Oct',
+    'Date.Nov': 'Nov',
+    'Date.Dec': 'Dec',
+    'Date.Monday': 'Monday',
+    'Date.Tuesday': 'Tuesday',
+    'Date.Wednesday': 'Wednesday',
+    'Date.Thursday': 'Thursday',
+    'Date.Friday': 'Friday',
+    'Date.Saturday': 'Saturday',
+    'Date.Sunday': 'Sunday',
+    'Date.Mo': 'Mo',
+    'Date.Tu': 'Tu',
+    'Date.We': 'We',
+    'Date.Th': 'Th',
+    'Date.Fr': 'Fr',
+    'Date.Sa': 'Sa',
+    'Date.Su': 'Su',
+
+    // Format
+    'Format.true': 'yes',
+    'Format.false': 'no',
+    'Format.today': 'today ',
+    'Format.yesterday': 'yesterday ',
+
+    // Window
+    'Window.done': 'Done',
+    'Window.cancel': 'Cancel',
+
+    //Routing
+    'Routing.InvalidUrl': 'Invalid url',
+    'Routing.NotFoundMessage': 'Record not found',
+});

@@ -2,7 +2,7 @@ package org.zenframework.z8.server.runtime;
 
 import java.util.Collection;
 
-import org.zenframework.z8.server.base.Procedure;
+import org.zenframework.z8.server.base.Executable;
 import org.zenframework.z8.server.base.table.Table;
 import org.zenframework.z8.server.types.guid;
 
@@ -16,12 +16,19 @@ public interface IRuntime {
 	public Collection<OBJECT.CLASS<? extends OBJECT>> entries();
 	public Collection<guid> entryKeys();
 
-	public Collection<Procedure.CLASS<? extends Procedure>> jobs();
+	public Collection<Executable.CLASS<? extends Executable>> jobs();
 	public Collection<guid> jobKeys();
+
+	public Collection<Executable.CLASS<? extends Executable>> executables();
+	public Collection<guid> executableKeys();
 
 	public Table.CLASS<? extends Table> getTable(String className);
 	public Table.CLASS<? extends Table> getTableByName(String name);
 	public Table.CLASS<? extends Table> getTableByKey(guid key);
+
+	public Executable.CLASS<? extends Executable> getExecutable(String className);
+	public Executable.CLASS<? extends Executable> getExecutableByName(String name);
+	public Executable.CLASS<? extends Executable> getExecutableByKey(guid key);
 
 	public OBJECT.CLASS<? extends OBJECT> getRequest(String className);
 	public OBJECT.CLASS<? extends OBJECT> getRequestByKey(guid key);
@@ -29,6 +36,6 @@ public interface IRuntime {
 	public OBJECT.CLASS<? extends OBJECT> getEntry(String className);
 	public OBJECT.CLASS<? extends OBJECT> getEntryByKey(guid key);
 
-	public Procedure.CLASS<? extends Procedure> getJob(String className);
-	public Procedure.CLASS<? extends Procedure> getJobByKey(guid key);
+	public Executable.CLASS<? extends Executable> getJob(String className);
+	public Executable.CLASS<? extends Executable> getJobByKey(guid key);
 }

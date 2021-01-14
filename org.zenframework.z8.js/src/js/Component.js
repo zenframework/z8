@@ -121,19 +121,21 @@ Z8.define('Z8.Component', {
 	},
 
 	show: function(show) {
-		if(show === undefined || show === true) {
-			this.visible = true;
-			DOM.removeCls(this, 'display-none');
-		} else
-			this.hide();
+		if(show === false)
+			return this.hide();
+
+		this.visible = true;
+		DOM.removeCls(this, 'display-none');
+		return this;
 	},
 
 	hide: function(hide) {
-		if(hide === undefined || hide === true) {
-			this.visible = false;
-			DOM.addCls(this, 'display-none');
-		} else
-			this.show();
+		if(hide === false)
+			return this.show();
+
+		this.visible = false;
+		DOM.addCls(this, 'display-none');
+		return this;
 	},
 
 	focus: function() {

@@ -161,6 +161,14 @@
 	flex: 4;
 }
 
+.flex-wrap {
+	flex-wrap: wrap;
+}
+
+.flex-nowrap {
+	flex-wrap: nowrap;
+}
+
 .padding-15 {
 	padding: 1.07142857em !important;
 }

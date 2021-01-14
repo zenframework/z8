@@ -9,9 +9,9 @@ dependencies {
 
 	compile project(':org.zenframework.z8.boot')
 
-	compile ('org.zenframework.z8.dependencies:z8-dependencies-commons:3.0@pom') { transitive = true }
-	compile ('org.zenframework.z8.dependencies:z8-dependencies-libreoffice:3.0@pom') { transitive = true }
-	compile ('org.zenframework.z8.dependencies:z8-dependencies-birt:3.0@pom') { transitive = true }
+	compile ("org.zenframework.z8.dependencies:z8-dependencies-commons:${dependenciesVersion}@pom") { transitive = true }
+	compile ("org.zenframework.z8.dependencies:z8-dependencies-libreoffice:${dependenciesVersion}@pom") { transitive = true }
+	compile ("org.zenframework.z8.dependencies:z8-dependencies-birt:${dependenciesVersion}@pom") { transitive = true }
 }
 
 eclipse.classpath.file.whenMerged {

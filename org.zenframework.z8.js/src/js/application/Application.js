@@ -56,6 +56,7 @@ Z8.define('Z8.application.Application', {
 			Viewport.render();
 		}
 
+        // todo
         var checkServerSessionCallback = function(response, success) {
             if(success) {
                 Z8.callback(callback, this.scope, response);
@@ -80,8 +81,8 @@ Z8.define('Z8.application.Application', {
 		var size = file.size;
 		var maxSize = Application.maxUploadSize * 1024 * 1024;
 		if(maxSize != 0 && size > maxSize) {
-			Application.message({ text: 'Размер файла \'' + file.name + '\' ' + 
-				Z8.util.Format.fileSize(size) + ' превышает максимально допустимые ' + Format.fileSize(maxSize), type: 'error', time: new Date() });
+			Application.message({ text: Z8.$('Application.fileSize') + file.name + '\' ' +
+				Z8.util.Format.fileSize(size) + Z8.$('Application.exceedsAllowedFileSize') + Format.fileSize(maxSize), type: 'error', time: new Date() });
 			return false;
 		}
 		return true;
@@ -91,4 +92,3 @@ Z8.define('Z8.application.Application', {
 var Application = new Z8.application.Application();
 
 DOM.onReady(Application.login, Application);
-

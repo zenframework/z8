@@ -7,7 +7,7 @@ Number.compare = function(value1, value2) {
 };
 
 Number.prototype.round = function(digits) {
-	if(digits == null)
+	if(digits == null || digits == 0)
 		return Math.round(this);
 	var power = Math.pow(10, digits);
 	return Math.round(this * power) / power;

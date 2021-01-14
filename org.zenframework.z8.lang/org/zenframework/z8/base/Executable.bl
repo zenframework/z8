@@ -1,8 +1,9 @@
 import org.zenframework.z8.base.form.action.Action;
 import org.zenframework.z8.base.form.action.Parameter;
 
-[native "org.zenframework.z8.server.base.Procedure"]
-public class Procedure extends Action {
+[native "org.zenframework.z8.server.base.Executable"]
+[executable]
+public class Executable extends Action {
 	virtual protected void execute(Parameter[] parameters);
 
 	protected void progress(int workPercent);

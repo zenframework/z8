@@ -15,7 +15,7 @@ public class SessionManager {
 	private long sessionTimeout = 0;
 
 	private Map<String, ISession> sessions = new HashMap<String, ISession>();
-	private Map<guid, ISession> users = new HashMap<guid, ISession>();
+	private Map<String, ISession> userSessions = new HashMap<String, ISession>();
 
 	SessionManager() {
 	}
@@ -27,8 +27,8 @@ public class SessionManager {
 	public void stop() {
 	}
 
-	public ISession systemSession(String id) {
-		ISession session = sessions.get(id);
+	public ISession systemSession(String sessionId) {
+		ISession session = sessions.get(sessionId);
 
 		if(session != null) {
 			session.access();
@@ -38,39 +38,44 @@ public class SessionManager {
 		throw new AccessDeniedException();
 	}
 
+	private String userKey(guid id, String schema) {
+		return schema + '/' + id;
+	}
+
 	synchronized public ISession create(IUser user) {
-		guid userId = user.id();
-		ISession session = users.get(userId);
+		String userId = userKey(user.id(), user.database().schema());
+		ISession session = userSessions.get(userId);
 
 		if(session == null) {
 			String sessionId = guid.create().toString();
 			session = new Session(sessionId, user);
 			sessions.put(sessionId, session);
-			users.put(userId, session);
+			userSessions.put(userId, session);
 		} else
 			session.setUser(user);
 
 		return session;
 	}
 
-	synchronized public void dropUserSessions(guid user) {
-		ISession session = users.get(user);
+	synchronized public void dropUserSessions(guid userId, String schema) {
+		String userKey = userKey(userId, schema);
+		ISession session = userSessions.get(userKey);
 
 		if(session != null) {
-			users.remove(user);
+			userSessions.remove(userKey);
 			sessions.remove(session.id());
 		}
 	}
 
-	synchronized public void dropRoleSessions(guid roleId) {
-		for(ISession session : users.values().toArray(new ISession[0])) {
+	synchronized public void dropRoleSessions(guid roleId, String schema) {
+		for(ISession session : userSessions.values().toArray(new ISession[0])) {
 			IUser user = session.user();
-			if(user.isAdministrator())
+			if(user.isAdministrator() || !user.database().schema().equals(schema))
 				continue;
 
 			for(IRole role : user.roles()) {
 				if(role.id().equals(roleId)) {
-					users.remove(user.id());
+					userSessions.remove(userKey(user.id(), schema));
 					sessions.remove(session.id());
 					break;
 				}
@@ -87,7 +92,8 @@ public class SessionManager {
 		for(ISession session : sessions.values().toArray(new ISession[0])) {
 			if(session.getLastAccessTime() < timeLimit) {
 				synchronized(this) {
-					users.remove(session.user().id());
+					IUser user = session.user();
+					userSessions.remove(userKey(user.id(), user.database().schema()));
 					sessions.remove(session.id());
 				}
 			}

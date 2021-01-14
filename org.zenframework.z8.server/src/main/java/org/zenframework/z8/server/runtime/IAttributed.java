@@ -22,6 +22,7 @@ public interface IAttributed {
 	static final public String Job = "job";
 	static final public String Exportable = "exportable";
 	static final public String ForeignKey = "foreignKey";
+	static final public String Executable = "executable";
 
 	public String classId();
 	public guid classIdKey();
@@ -74,4 +75,7 @@ public interface IAttributed {
 
 	public boolean exportable();
 	public void setExportable(boolean exportable);
+
+	public boolean executable();
+	public void setExecutable(boolean executable);
 }

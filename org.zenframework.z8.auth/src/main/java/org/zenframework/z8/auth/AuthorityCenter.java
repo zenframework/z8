@@ -4,7 +4,6 @@ import java.io.File;
 import java.lang.management.ManagementFactory;
 import java.rmi.RemoteException;
 import java.util.Collection;
-import java.util.Map;
 
 import javax.naming.NamingException;
 
@@ -13,16 +12,12 @@ import org.zenframework.z8.server.config.ServerConfig;
 import org.zenframework.z8.server.crypto.MD5;
 import org.zenframework.z8.server.engine.*;
 import org.zenframework.z8.server.exceptions.AccessDeniedException;
-import org.zenframework.z8.server.json.parser.JsonArray;
 import org.zenframework.z8.server.ldap.ActiveDirectory;
-import org.zenframework.z8.server.ldap.LdapUser;
 import org.zenframework.z8.server.logs.Trace;
-import org.zenframework.z8.server.request.IRequest;
 import org.zenframework.z8.server.request.RequestDispatcher;
 import org.zenframework.z8.server.security.IUser;
 import org.zenframework.z8.server.types.datespan;
 import org.zenframework.z8.server.types.guid;
-import org.zenframework.z8.server.types.string;
 import org.zenframework.z8.server.utils.StringUtils;
 
 public class AuthorityCenter extends HubServer implements IAuthorityCenter {
@@ -106,7 +101,7 @@ public class AuthorityCenter extends HubServer implements IAuthorityCenter {
 	}
 
 	@Override
-	public ISession login(String login, String password) throws RemoteException {
+	public ISession login(String login, String password, String scheme) throws RemoteException {
 		IServerInfo serverInfo = findServer((String)null);
 
 		if(serverInfo == null)
@@ -130,9 +125,9 @@ public class AuthorityCenter extends HubServer implements IAuthorityCenter {
 				Trace.logError("Failed to get user attributes from active directory service", e);
 				throw new AccessDeniedException();
 			}
-			user = loginServer.user(login, null, ldapUsersCreateOnSuccessfulLogin);
+			user = loginServer.user(login, null, scheme);//, ldapUsersCreateOnSuccessfulLogin);
 		} else {
-			user = loginServer.user(login, clientHashPassword ? password : MD5.hex(password), false);
+			user = loginServer.user(login, clientHashPassword ? password : MD5.hex(password), scheme);//, false);
 		}
 		session = sessionManager.create(user);
 
@@ -140,21 +135,17 @@ public class AuthorityCenter extends HubServer implements IAuthorityCenter {
 		return session;
 	}
 
-	/**
-	 * @param principalName The string constructs from user name and his/her realm, like: userLogin@companyDomain.com
-	 *                      https://tools.ietf.org/html/rfc6806
-	 */
 	@Override
-	public ISession ssoLogin(String principalName) throws RemoteException {
+	public ISession login(String login, String scheme) throws RemoteException {
 		IServerInfo serverInfo = findServer((String)null);
 
-		if(serverInfo == null || principalName == null)
+		if(serverInfo == null)
 			throw new AccessDeniedException();
 
-		IUser user = serverInfo.getServer().user(principalName);
-		if (user == null) {
-			throw new AccessDeniedException();
-		}
+		IApplicationServer loginServer = serverInfo.getServer();
+
+
+		IUser user = loginServer.user(login, null, scheme);
 		ISession session = sessionManager.create(user);
 		session.setServerInfo(serverInfo);
 		return session;
@@ -173,13 +164,13 @@ public class AuthorityCenter extends HubServer implements IAuthorityCenter {
 	}
 
 	@Override
-	public void userChanged(guid user) {
-		sessionManager.dropUserSessions(user);
+	public void userChanged(guid user, String schema) {
+		sessionManager.dropUserSessions(user, schema);
 	}
 
 	@Override
-	public void roleChanged(guid role) {
-		sessionManager.dropRoleSessions(role);
+	public void roleChanged(guid role, String schema) {
+		sessionManager.dropRoleSessions(role, schema);
 	}
 
 	private IServerInfo findServer(String serverId) throws RemoteException {
