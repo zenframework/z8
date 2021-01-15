@@ -11,6 +11,7 @@ import org.zenframework.z8.server.crypto.MD5;
 import org.zenframework.z8.server.engine.*;
 import org.zenframework.z8.server.exceptions.AccessDeniedException;
 import org.zenframework.z8.server.exceptions.UserNotFoundException;
+import org.zenframework.z8.server.ldap.ActiveDirectory;
 import org.zenframework.z8.server.logs.Trace;
 import org.zenframework.z8.server.request.RequestDispatcher;
 import org.zenframework.z8.server.security.IUser;
@@ -109,7 +110,7 @@ public class AuthorityCenter extends HubServer implements IAuthorityCenter {
 		IUser user;
 		// backward compatibility
 		// if ldap flag is true and login is not in the ignore list and login is checked
-		if (checkLdapLogin && !StringUtils.containsIgnoreCase(ldapUsersIgnore, login) ){//&& ActiveDirectory.isUserExist(login)) {
+		if (checkLdapLogin && !StringUtils.containsIgnoreCase(ldapUsersIgnore, login) && ActiveDirectory.isUserExist(login)) {
 			try {
 				user = loginServer.user(login, null, scheme);
 			} catch (UserNotFoundException e) {
