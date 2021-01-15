@@ -151,46 +151,19 @@ public class ApplicationServer extends RmiServer implements IApplicationServer {
 		}
 	}
 
-//	/**
-//	 * Returns user by principal name.
-//	 * If user does not exist the user will be created and returned
-//	 * @param principalName user principal name from AD
-//	 */
-//	public IUser user(String principalName) {
-//		String login = principalName.contains("@") ? principalName.split("@")[0] : principalName;
-//		return User.exists(login) ? user(login, null, false) : createUser(principalName);
-//	}
+	@Override
+	public IUser create(String login, String scheme) {
+		setRequest(new Request(new Session(scheme)));
 
+		try {
+			return User.create(login);
+		} finally {
+			Scheduler.start(getDatabase());
 
-//	/**
-//	 * Getting user information from active directory and creating a new user
-//	 */
-//	private IUser createUser(String principalName) {
-//		LdapUser ldapUser;
-//		try {
-//			ActiveDirectory activeDirectory = new ActiveDirectory();
-//			ldapUser = activeDirectory.searchUser(
-//					ServerConfig.searchBase(), String.format(ServerConfig.searchUserFilter(), principalName));
-//			activeDirectory.close();
-//		} catch (NamingException e) {
-//			Trace.logError("Failed to get user attributes from active directory service", e);
-//			return null;
-//		}
-//
-//		IRequest request = getRequest();
-//		// user attributes from ActiveDirectory
-//		for(Map.Entry<String, String> entry : ldapUser.getParameters().entrySet()) {
-//			request.getParameters().put(
-//					new string(entry.getKey()),
-//					new string(entry.getValue())
-//			);
-//		}
-//		request.getParameters().put(
-//				new string(ActiveDirectory.ldapParametersPrefix + "memberOf"),
-//				new string(new JsonArray(ldapUser.getMemberOf()).toString()));
-//
-//		return user(ldapUser.getLogin(), null,true);
-//	}
+			releaseConnections();
+			setRequest(null);
+		}
+	}
 
 	@Override
 	public file download(ISession session, GNode node, file file) throws IOException {

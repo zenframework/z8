@@ -20,6 +20,22 @@ public class ActiveDirectory {
                 ServerConfig.principalName(),
                 ServerConfig.credentials());
     }
+    
+    public static LdapUser getUser(String login) {
+        try {
+            ActiveDirectory activeDirectory = new ActiveDirectory();
+            LdapUser ldapUser = activeDirectory.searchUser(
+                    ServerConfig.searchBase(), String.format(ServerConfig.searchUserFilter(), login));
+            activeDirectory.close();
+            return ldapUser;
+        } catch (NamingException e) {
+            Trace.logError("Failed to get user attributes from active directory service", e);
+            return null;
+        }
+    }
+    public static boolean isUserExist(String login) {
+        return ActiveDirectory.getUser(login) != null;
+    }
 
     public InitialDirContext createConnection(String ldapUrl, String principalName, String credentials) throws NamingException {
         Hashtable<String, String> environment = new Hashtable<>();

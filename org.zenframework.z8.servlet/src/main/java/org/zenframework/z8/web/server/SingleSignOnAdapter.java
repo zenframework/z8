@@ -6,6 +6,7 @@ import org.zenframework.z8.server.exceptions.AccessDeniedException;
 import org.zenframework.z8.server.json.Json;
 import org.zenframework.z8.server.logs.Trace;
 import org.zenframework.z8.web.servlet.Servlet;
+import org.zenframework.z8.web.utils.ServletUtil;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -35,19 +36,23 @@ public class SingleSignOnAdapter extends Adapter {
             response.sendRedirect("/");
         }
         String principalName = (String) httpSession.getAttribute("userPrincipalName");
+        String login = principalName.contains("@") ? principalName.split("@")[0] : principalName;
+        ISession session;
         try {
-            // TODO set schema
-            ISession session = ServerConfig.authorityCenter().login(principalName, null);
-            if(useContainerSession)
-                httpSession.setAttribute(Json.session.get(), session.id());
-            response.sendRedirect("/");
+            session = ServerConfig.authorityCenter().createIfNotExistAndLogin(login, ServletUtil.getSchema(request));
         } catch(AccessDeniedException e) {
             httpSession.invalidate();
             response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
+            return;
         } catch(Throwable e) {
             httpSession.invalidate();
             Trace.logError(e.getMessage(), e);
             response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            return;
         }
+
+        if(useContainerSession)
+            httpSession.setAttribute(Json.session.get(), session.id());
+        response.sendRedirect("/");
     }
 }

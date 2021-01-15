@@ -214,10 +214,6 @@ public class User implements IUser {
 		return userId.isNull() ? null : read((primary)userId);
 	}
 
-	static private IUser load(String login) {
-		return read(new string(login));
-	}
-
 	static private IUser read(primary loginOrId) {
 		IDatabase database = ApplicationServer.getDatabase();
 		User user = new User(database);
@@ -225,17 +221,6 @@ public class User implements IUser {
 		boolean isLatestVersion = database.isLatestVersion();
 
 		boolean exists = user.readInfo(loginOrId, !isLatestVersion);
-		// todo delete
-//		if(!exists && createIfNotExist) {
-//			String plainPassword = User.generateOneTimePassword();
-//			ApplicationServer.getRequest().getParameters().put(new string("plainPassword"), new string(plainPassword));
-//			user.login = ((string)loginOrId).get();
-//			user.password = MD5.hex(plainPassword);
-//			
-//			Users users = Users.newInstance();
-//			users.name.get().set(loginOrId);
-//			users.password.get().set(new string(user.password));
-//			user.id = users.create();
 		if(!exists)
 			throw new UserNotFoundException();
 
@@ -268,7 +253,7 @@ public class User implements IUser {
 		users.name.get().set(loginOrId);
 		users.password.get().set(new string(user.password));
 		user.id = users.create();
-		return load(loginOrId);
+		return read(new string(loginOrId));
 	}
 
 	static public IUser load(String login, String password) {
@@ -277,7 +262,7 @@ public class User implements IUser {
 		if(!database.isSystemInstalled())
 			return User.system(database);
 
-		IUser user = load(login);
+		IUser user = read(new string(login));
 
 		if(password != null && !password.equals(user.password()) /*&& !password.equals(MD5.hex(""))*/ || user.banned())
 			throw new AccessDeniedException();

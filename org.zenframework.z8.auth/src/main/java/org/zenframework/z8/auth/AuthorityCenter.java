@@ -5,14 +5,12 @@ import java.lang.management.ManagementFactory;
 import java.rmi.RemoteException;
 import java.util.Collection;
 
-import javax.naming.NamingException;
-
 import org.zenframework.z8.server.base.file.Folders;
 import org.zenframework.z8.server.config.ServerConfig;
 import org.zenframework.z8.server.crypto.MD5;
 import org.zenframework.z8.server.engine.*;
 import org.zenframework.z8.server.exceptions.AccessDeniedException;
-import org.zenframework.z8.server.ldap.ActiveDirectory;
+import org.zenframework.z8.server.exceptions.UserNotFoundException;
 import org.zenframework.z8.server.logs.Trace;
 import org.zenframework.z8.server.request.RequestDispatcher;
 import org.zenframework.z8.server.security.IUser;
@@ -30,9 +28,9 @@ public class AuthorityCenter extends HubServer implements IAuthorityCenter {
 	private final boolean clientHashPassword;
 	private final String ldapUrl;
 	private final boolean checkLdapLogin;
-	private Collection<String> ldapUsersIgnore;
-	private boolean ldapUsersCreateOnSuccessfulLogin;
-	private boolean cacheEnabled;
+	private final Collection<String> ldapUsersIgnore;
+	private final boolean ldapUsersCreateOnSuccessfulLogin;
+	private final boolean cacheEnabled;
 
 	private SessionManager sessionManager;
 
@@ -102,53 +100,60 @@ public class AuthorityCenter extends HubServer implements IAuthorityCenter {
 
 	@Override
 	public ISession login(String login, String password, String scheme) throws RemoteException {
-		IServerInfo serverInfo = findServer((String)null);
-
-		if(serverInfo == null)
-			throw new AccessDeniedException();
-
+		IServerInfo serverInfo = getServerInfo();
 		IApplicationServer loginServer = serverInfo.getServer();
-
-		ISession session = null;
 
 		if(password == null)
 			password = "";
 
 		IUser user;
-		if (checkLdapLogin && !StringUtils.containsIgnoreCase(ldapUsersIgnore, login)) {
+		// backward compatibility
+		// if ldap flag is true and login is not in the ignore list and login is checked
+		if (checkLdapLogin && !StringUtils.containsIgnoreCase(ldapUsersIgnore, login) ){//&& ActiveDirectory.isUserExist(login)) {
 			try {
-				ActiveDirectory activeDirectory = new ActiveDirectory();
-				activeDirectory.searchUser(
-						ServerConfig.searchBase(), String.format(ServerConfig.searchUserFilter(), login));
-				activeDirectory.close();
-			} catch (NamingException e) {
-				Trace.logError("Failed to get user attributes from active directory service", e);
-				throw new AccessDeniedException();
+				user = loginServer.user(login, null, scheme);
+			} catch (UserNotFoundException e) {
+				if (ldapUsersCreateOnSuccessfulLogin)
+					user = loginServer.create(login, scheme);
+				else
+					throw new AccessDeniedException();
 			}
-			user = loginServer.user(login, null, scheme);//, ldapUsersCreateOnSuccessfulLogin);
 		} else {
-			user = loginServer.user(login, clientHashPassword ? password : MD5.hex(password), scheme);//, false);
+			user = loginServer.user(login, clientHashPassword ? password : MD5.hex(password), scheme);
 		}
-		session = sessionManager.create(user);
 
+		ISession session = sessionManager.create(user);
 		session.setServerInfo(serverInfo);
 		return session;
 	}
 
 	@Override
 	public ISession login(String login, String scheme) throws RemoteException {
+		IServerInfo serverInfo = getServerInfo();
+		IUser user = serverInfo.getServer().user(login, null, scheme);
+		ISession session = sessionManager.create(user);
+		session.setServerInfo(serverInfo);
+		return session;
+	}
+
+	@Override
+	public ISession createIfNotExistAndLogin(String login, String scheme) throws RemoteException {
+		ISession session;
+		try {
+			 session = login(login, scheme);
+		} catch (UserNotFoundException e) {
+			getServerInfo().getServer().create(login, scheme);
+			session = login(login, scheme);
+		}
+		return session;
+	}
+
+	private IServerInfo getServerInfo() throws RemoteException {
 		IServerInfo serverInfo = findServer((String)null);
 
 		if(serverInfo == null)
 			throw new AccessDeniedException();
-
-		IApplicationServer loginServer = serverInfo.getServer();
-
-
-		IUser user = loginServer.user(login, null, scheme);
-		ISession session = sessionManager.create(user);
-		session.setServerInfo(serverInfo);
-		return session;
+		return serverInfo;
 	}
 
 	@Override
