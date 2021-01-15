@@ -105,11 +105,6 @@ public class ServerConfig extends Properties {
 	static final private String LdapSearchUserFilter = "ldap.searchUserFilter";
 	static final private String LdapSearchGroupFilter = "ldap.searchGroupFilter";
 
-	//	region deprecated
-	static final private String LdapBindDn = "ldap.bind.dn";
-	static final private String LdapBindPassword = "ldap.bind.password";
-	static final private String LdapDefaultDomain = "ldap.default.domain";
-	// endregion
 	static final private String LdapUsersIgnore = "ldap.users.ignore";
 	static final private String LdapUsersCreateOnSuccessfulLogin = "ldap.users.createOnSuccessfulLogin";
 
@@ -184,12 +179,7 @@ public class ServerConfig extends Properties {
 	static private String ldapSearchBase;
 	static private String ldapSearchUserFilter;
 	static private String ldapSearchGroupFilter;
-	//	region deprecated
-	static private String ldapBindDn;
-	static private String ldapBindPassword;
-	static private String ldapDefaultDomain;
-	//	endregion
-	
+
 	static private Collection<String> ldapUsersIgnore;
 	static private boolean ldapUsersCreateOnSuccessfulLogin;
 
@@ -305,9 +295,6 @@ public class ServerConfig extends Properties {
 		ldapSearchBase = getProperty(LdapSearchBase, "");
 		ldapSearchUserFilter = getProperty(LdapSearchUserFilter, "");
 		ldapSearchGroupFilter = getProperty(LdapSearchGroupFilter, "");
-		ldapBindDn = getProperty(LdapBindDn, "");
-		ldapBindPassword = getProperty(LdapBindPassword, "");
-		ldapDefaultDomain = getProperty(LdapDefaultDomain, "");
 		ldapUsersIgnore = StringUtils.asList(getProperty(LdapUsersIgnore, "Admin"), "\\,");
 		ldapUsersCreateOnSuccessfulLogin = Boolean.parseBoolean(getProperty(LdapUsersCreateOnSuccessfulLogin, "false"));
 
@@ -660,18 +647,6 @@ public class ServerConfig extends Properties {
 	}
 	static public String searchGroupFilter() {
 		return ldapSearchGroupFilter;
-	}
-	
-	static public String ldapBindDn() {
-		return ldapBindDn;
-	}
-	
-	static public String ldapBindPassword() {
-		return ldapBindPassword;
-	}
-	
-	static public String ldapDefaultDomain() {
-		return ldapDefaultDomain;
 	}
 
 	static public Collection<String> ldapUsersIgnore() {
