@@ -32,28 +32,30 @@ public class DocBuilder {
     protected List<Entity> collectEntities(Collection<OBJECT.CLASS<? extends OBJECT>> entities) {
         List<Entity> entitiesDescription = new ArrayList<>();
         for(OBJECT.CLASS<? extends OBJECT> entity : entities) {
-            Query query = (Query) entity.newInstance();
-
+            OBJECT z8Object = entity.newInstance();
             Entity entityResult = new Entity();
-            entityResult.setEntityName(query.getAttribute("name"));
-            entityResult.setEntityDescription(query.getAttribute(Json.apiDescription.toString()));
-            entityResult.setEntityId(entity.classId());
-            entityResult.setContentParams(entity.getAttribute("apiActions"));
-            for(Action action : query.actions()) {
-                entityResult.getActionsNames().add(new BaseInfo(action.id(), action.displayName()));
-            }
-
-            for(IClass<? extends IObject> member : query.objects) {
+            entityResult.setEntityName(z8Object.name());
+            entityResult.setEntityDescription(z8Object.getAttribute(Json.apiDescription.toString()));
+            entityResult.setEntityId(z8Object.classId());
+            entityResult.setContentParams(z8Object.getAttribute("apiActions"));
+            entityResult.setRequestAttributes(z8Object.getAttribute("requestAttributesDescription"));
+            for(IClass<? extends IObject> member : z8Object.objects) {
                 if (member instanceof Query.CLASS) {
                     entityResult.getRelatedEntities().add(new BaseInfo(member.index(), member.getAttribute("name")));
                 }
             }
+            if (z8Object instanceof Query) {
+                Query query = (Query) z8Object;
+                for (Action action : query.actions()) {
+                    entityResult.getActionsNames().add(new BaseInfo(action.id(), action.displayName()));
+                }
 
-            // set a list of available fields of the entity
-            for(Field field : query.getDataFields()) {
-                if (field.hasAttribute(Json.apiDescription.toString())) {
-                    FieldExtractor fieldExtractor = FieldExtractorFactory.getExtractor(field);
-                    entityResult.getEntityFields().add(fieldExtractor.extract(field));
+                // set a list of available fields of the entity
+                for (Field field : query.getDataFields()) {
+                    if (field.hasAttribute(Json.apiDescription.toString())) {
+                        FieldExtractor fieldExtractor = FieldExtractorFactory.getExtractor(field);
+                        entityResult.getEntityFields().add(fieldExtractor.extract(field));
+                    }
                 }
             }
             entitiesDescription.add(entityResult);
