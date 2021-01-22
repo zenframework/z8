@@ -31,6 +31,10 @@ public class Resource extends LanguageElement {
 
 	private List<BuildMessage> messages;
 
+	public static boolean isProject(Resource resource) {
+		return resource == resource.getProject();
+	}
+
 	static public boolean isBLResource(IResource resource) {
 		return FileExtension.equals(resource.getProjectRelativePath().getFileExtension());
 	}
@@ -59,6 +63,15 @@ public class Resource extends LanguageElement {
 
 	public IPath getAbsolutePath() {
 		return resource.getLocation();
+	}
+
+	public IPath getSourceRelativePath() {
+		IPath path = getPath();
+		for (IPath sourcePath : getProject().getSourcePaths()) {
+			if (sourcePath.isPrefixOf(path))
+				return path.removeFirstSegments(sourcePath.segmentCount());
+		}
+		return path;
 	}
 
 	public Resource getContainer() {
@@ -262,7 +275,7 @@ public class Resource extends LanguageElement {
 
 	public void error(IPosition position, String message, Throwable throwable) {
 		hasError = true;
-		message(new BuildError(getResource(), position, message, throwable));
+		message(new BuildError(resource, position, message, throwable));
 	}
 
 	public void warning(String message) {
@@ -271,6 +284,12 @@ public class Resource extends LanguageElement {
 
 	public void warning(IPosition position, String message) {
 		hasWarning = true;
-		message(new BuildWarning(getResource(), position, message));
+		message(new BuildWarning(resource, position, message));
 	}
+
+	@Override
+	public String toString() {
+		return resource.toString();
+	}
+
 }

@@ -16,7 +16,7 @@ import org.zenframework.z8.compiler.error.IBuildMessageConsumer;
 import org.zenframework.z8.compiler.util.Set;
 
 public class Project extends Folder {
-	static Object lockObject = new Object();
+	static final private Object lockObject = new Object();
 
 	static final public int BUILD = 0;
 	static final public int RECONCILE = 1;
@@ -25,8 +25,9 @@ public class Project extends Folder {
 	static private int state = IDLE;
 	static private IBuildMessageConsumer messageConsumer;
 
+	private ProjectProperties properties;
+	private IPath[] sourcePaths;
 	private IPath outputPath;
-	private IPath rootPath;
 
 	public static int filesWritten = 0;
 	public static int filesSkipped = 0;
@@ -62,16 +63,30 @@ public class Project extends Folder {
 		getWorkspace().installResourceListener(resourceListener);
 	}
 
+	public void setProperties(ProjectProperties properties) {
+		this.properties = properties;
+		this.sourcePaths = properties.getSourcePaths();
+		this.outputPath = properties.getOutputPath();
+	}
+
+	public ProjectProperties getProperties() {
+		return properties;
+	}
+
+	public IPath[] getSourcePaths() {
+		return sourcePaths;
+	}
+
+	public void setSourcePaths(IPath[] sourcePaths) {
+		this.sourcePaths = sourcePaths;
+	}
+
 	public IPath getOutputPath() {
 		return outputPath;
 	}
 
 	public void setOutputPath(IPath outputPath) {
 		this.outputPath = outputPath;
-	}
-
-	public IPath getRootPath() {
-		return rootPath;
 	}
 
 	@Override
@@ -496,4 +511,5 @@ public class Project extends Folder {
 
 		iterate(visitor);
 	}
+
 }

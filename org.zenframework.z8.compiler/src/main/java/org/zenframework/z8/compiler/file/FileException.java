@@ -7,6 +7,11 @@ public class FileException extends Exception {
 
 	private IPath path;
 
+	public FileException(IPath path, Throwable cause) {
+		super(cause);
+		this.path = path;
+	}
+
 	public FileException(IPath path, String message) {
 		super(message);
 		this.path = path;
