@@ -10,7 +10,6 @@ import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
-import org.zenframework.z8.compiler.cmd.CompilerException;
 import org.zenframework.z8.compiler.core.IType;
 import org.zenframework.z8.compiler.file.FileException;
 
@@ -73,11 +72,11 @@ public class Workspace extends Folder {
 		return (Folder)getResource(resource);
 	}
 
-	public Project createProject(IResource resource) throws FileException, CompilerException {
+	public Project createProject(IResource resource) {
 		return createProject(resource, loadProjectProperties(resource));
 	}
 
-	public Project createProject(IResource resource, ProjectProperties properties) throws FileException, CompilerException {
+	public Project createProject(IResource resource, ProjectProperties properties) {
 		Resource projectResource = getResource(resource);
 		Project project = projectResource instanceof Project ? (Project) projectResource : new Project(this, resource);
 		project.setProperties(properties);
@@ -186,10 +185,14 @@ public class Workspace extends Folder {
 		}
 	}
 
-	static private ProjectProperties loadProjectProperties(IResource project) throws FileException, CompilerException {
+	static private ProjectProperties loadProjectProperties(IResource project) {
 		ProjectProperties properties = new ProjectProperties();
 		properties.setProjectPath(project.getLocation());
-		properties.load();
+		try {
+			properties.load();
+		} catch (FileException e) {
+			System.out.println("Warning: Can't load project properties from '" + properties.getProjectPath() + "': " + e.getMessage());
+		}
 		return properties;
 	}
 
