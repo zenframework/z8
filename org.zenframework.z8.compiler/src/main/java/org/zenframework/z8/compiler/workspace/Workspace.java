@@ -165,16 +165,17 @@ public class Workspace extends Folder {
 		addResources(folder, new Path(""), folder.getProject().getSourcePaths());
 	}
 
-	static private void addResources(Folder folder, IPath relativePath, IPath[] sourcePaths) throws CoreException {
+	static private void addResources(Folder folder, IPath folderRelativePath, IPath[] sourcePaths) throws CoreException {
 		IContainer iContainer = (IContainer) folder.getResource();
 		for (IResource resource : iContainer.members()) {
+			IPath relativePath = folderRelativePath.append(resource.getName());
 			boolean isContainer = resource instanceof IContainer;
 			for (IPath sourcePath : sourcePaths) {
 				boolean sourceInResource = relativePath.isPrefixOf(sourcePath);
 				boolean resourceInSource = sourcePath.isPrefixOf(relativePath);
 				if (isContainer && (sourceInResource || resourceInSource)) {
 					Folder newFolder = folder.createFolder(resource);
-					addResources(newFolder, relativePath.append(resource.getName()), sourcePaths);
+					addResources(newFolder, relativePath, sourcePaths);
 				} else if (!isContainer && resourceInSource) {
 					if (Resource.isBLResource(resource))
 						folder.createCompilationUnit(resource);

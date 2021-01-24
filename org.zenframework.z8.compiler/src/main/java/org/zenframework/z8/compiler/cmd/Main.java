@@ -150,6 +150,11 @@ public class Main {
 				outputErrorAndExit("Missing <project path> argument");
 			}
 
+			if(properties.getOutputPath() == null) {
+				outputUsage();
+				outputErrorAndExit("Missing <output path> argument");
+			}
+
 			if(properties.getDocsPath() != null && properties.getDocTemplatePath() == null) {
 				outputUsage();
 				outputErrorAndExit("Missing <<doc template file path> argument");
@@ -183,7 +188,7 @@ public class Main {
 		}
 
 		if (!initializeWorkspaceAndBuild(properties))
-			outputErrorAndExit("COMPILATION FAILED");
+			throw new CompilerException("COMPILATION FAILED");
 	}
 
 }
