@@ -5,10 +5,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IResource;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
-
+import org.eclipse.core.runtime.Path;
 import org.zenframework.z8.compiler.core.IType;
+import org.zenframework.z8.compiler.file.FileException;
 
 public class Workspace extends Folder {
 	static private Workspace instance;
@@ -40,7 +43,10 @@ public class Workspace extends Folder {
 	}
 
 	protected void addResource(Resource resource) {
-		resources.put(getResourceId(resource), resource);
+		int resourceId = getResourceId(resource);
+		Resource current = resources.get(resourceId);
+		if (current == null || !Resource.isProject(current))
+			resources.put(resourceId, resource);
 	}
 
 	protected void removeResource(Resource resource) {
@@ -67,11 +73,13 @@ public class Workspace extends Folder {
 	}
 
 	public Project createProject(IResource resource) {
-		Project project = getProject(resource);
+		return createProject(resource, loadProjectProperties(resource));
+	}
 
-		if(project == null)
-			project = new Project(this, resource);
-
+	public Project createProject(IResource resource, ProjectProperties properties) {
+		Resource projectResource = getResource(resource);
+		Project project = projectResource instanceof Project ? (Project) projectResource : new Project(this, resource);
+		project.setProperties(properties);
 		return project;
 	}
 
@@ -152,4 +160,40 @@ public class Workspace extends Folder {
 
 		return finished;
 	}
+
+	static public void addResources(Folder folder) throws CoreException {
+		addResources(folder, new Path(""), folder.getProject().getSourcePaths());
+	}
+
+	static private void addResources(Folder folder, IPath relativePath, IPath[] sourcePaths) throws CoreException {
+		IContainer iContainer = (IContainer) folder.getResource();
+		for (IResource resource : iContainer.members()) {
+			boolean isContainer = resource instanceof IContainer;
+			for (IPath sourcePath : sourcePaths) {
+				boolean sourceInResource = relativePath.isPrefixOf(sourcePath);
+				boolean resourceInSource = sourcePath.isPrefixOf(relativePath);
+				if (isContainer && (sourceInResource || resourceInSource)) {
+					Folder newFolder = folder.createFolder(resource);
+					addResources(newFolder, relativePath.append(resource.getName()), sourcePaths);
+				} else if (!isContainer && resourceInSource) {
+					if (Resource.isBLResource(resource))
+						folder.createCompilationUnit(resource);
+					else if (Resource.isNLSResource(resource))
+						folder.createNLSUnit(resource);
+				}
+			}
+		}
+	}
+
+	static private ProjectProperties loadProjectProperties(IResource project) {
+		ProjectProperties properties = new ProjectProperties();
+		properties.setProjectPath(project.getLocation());
+		try {
+			properties.load();
+		} catch (FileException e) {
+			System.out.println("Warning: Can't load project properties from '" + properties.getProjectPath() + "': " + e.getMessage());
+		}
+		return properties;
+	}
+
 }

@@ -12,9 +12,7 @@ import org.jodconverter.core.office.OfficeException;
 import org.jodconverter.core.office.OfficeManager;
 import org.jodconverter.core.office.OfficeUtils;
 import org.jodconverter.local.JodConverter;
-import org.jodconverter.local.office.ExternalOfficeManager;
 import org.jodconverter.local.office.LocalOfficeManager;
-
 import org.zenframework.z8.server.config.ServerConfig;
 import org.zenframework.z8.server.logs.Trace;
 import org.zenframework.z8.server.runtime.RLinkedHashMap;
@@ -22,7 +20,11 @@ import org.zenframework.z8.server.types.binary;
 import org.zenframework.z8.server.types.bool;
 import org.zenframework.z8.server.types.file;
 import org.zenframework.z8.server.types.string;
-import org.zenframework.z8.server.utils.*;
+import org.zenframework.z8.server.utils.ArrayUtils;
+import org.zenframework.z8.server.utils.EmlUtils;
+import org.zenframework.z8.server.utils.IOUtils;
+import org.zenframework.z8.server.utils.PdfUtils;
+import org.zenframework.z8.server.utils.PrimaryUtils;
 
 public class FileConverter {
 
@@ -191,20 +193,17 @@ public class FileConverter {
 		if(officeManager != null)
 			return;
 
-		try {
-			officeManager = ExternalOfficeManager.builder().install().connectOnStart(true).portNumber(OFFICE_PORT).build();
-			officeManager.start();
-		} catch(OfficeException e) {
-			try {
-				Trace.logEvent("Can't connect to an existing OpenOffice process: " + e.getMessage());
-				officeManager = LocalOfficeManager.builder().install().officeHome(ServerConfig.officeHome()).portNumbers(OFFICE_PORT).build();
-				officeManager.start();
-				Trace.logEvent("New OpenOffice '" + ServerConfig.officeHome() + "' process created, port " + OFFICE_PORT);
-			} catch(OfficeException e1) {
-				Trace.logError("Could not start OpenOffice '" + ServerConfig.officeHome() + "'", e1);
-			}
-		}
+		// TODO Define setting for local/external manager
+//		officeManager = ExternalOfficeManager.builder().install().connectOnStart(true).portNumber(OFFICE_PORT).build();
+//		officeManager.start();
 
+		try {
+			officeManager = LocalOfficeManager.builder().install().officeHome(ServerConfig.officeHome()).portNumbers(OFFICE_PORT).build();
+			officeManager.start();
+			Trace.logEvent("New OpenOffice '" + ServerConfig.officeHome() + "' process created, port " + OFFICE_PORT);
+		} catch(OfficeException e1) {
+			Trace.logError("Could not start OpenOffice '" + ServerConfig.officeHome() + "'", e1);
+		}
 	}
 
 	public static void stopOfficeManager() {

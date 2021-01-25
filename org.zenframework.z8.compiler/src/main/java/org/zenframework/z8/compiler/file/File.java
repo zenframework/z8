@@ -30,7 +30,7 @@ public class File {
 	private final java.io.File file;
 	private final Type type;
 
-	static public File fromPath(IPath path) throws FileException {
+	static public File fromPath(IPath path) {
 		IPath absolute = path.makeAbsolute();
 		for (Map.Entry<IPath, File> entry : ARCHIVE_CACHE.entrySet()) {
 			if (absolute.equals(entry.getKey()))
@@ -70,6 +70,10 @@ public class File {
 
 	public IPath getPath() {
 		return path;
+	}
+
+	public String getName() {
+		return path.lastSegment();
 	}
 
 	public long getTimeStamp() throws FileException {
@@ -137,31 +141,27 @@ public class File {
 		return file.exists();
 	}
 
-	public boolean isContainer() throws FileException {
+	public boolean isContainer() {
 		return type == Type.FOLDER || type == Type.ARCHIVE || type == Type.ARCHIVED_FOLDER;
 	}
 
-	public File[] getFiles() throws FileException {
+	public File[] getFiles() {
 		boolean archived = false;
 		java.io.File pathFile = this.path.toFile();
-		try {
-			if (type == Type.ARCHIVE) {
-				unzip(new FileInputStream(pathFile), file, pathFile.lastModified() > file.lastModified());
-				archived = true;
-			}
-
-			java.io.File[] files = file.listFiles();
-			File[] result = new File[files.length];
-
-			for (int i = 0; i < files.length; i++) {
-				java.io.File child = new java.io.File(file, files[i].getName());
-				result[i] = new File(path.append(files[i].getName()), child, getType(child.isDirectory(), archived));
-			}
-
-			return result;
-		} catch(Exception e) {
-			throw new FileException(path, e.getMessage());
+		if (type == Type.ARCHIVE) {
+			unzip(pathFile, file, pathFile.lastModified() > file.lastModified());
+			archived = true;
 		}
+
+		java.io.File[] files = file.listFiles();
+		File[] result = new File[files.length];
+
+		for (int i = 0; i < files.length; i++) {
+			java.io.File child = new java.io.File(file, files[i].getName());
+			result[i] = new File(path.append(files[i].getName()), child, getType(child.isDirectory(), archived));
+		}
+
+		return result;
 	}
 
 	public boolean makeDirectories() throws FileException {
@@ -181,7 +181,7 @@ public class File {
 		return path.delete();
 	}
 
-	private static void unzip(InputStream in, java.io.File destDir, boolean overwrite) {
+	private static void unzip(java.io.File file, java.io.File destDir, boolean overwrite) {
 		if (destDir.exists()) {
 			if (overwrite) {
 				delete(destDir);
@@ -194,7 +194,7 @@ public class File {
 		byte[] buffer = new byte[8192];
 		ZipInputStream zip = null;
 		try {
-			zip = new ZipInputStream(in);
+			zip = new ZipInputStream(new FileInputStream(file));
 			for (ZipEntry ze = zip.getNextEntry(); ze != null; ze = zip.getNextEntry()) {
 				java.io.File newFile = new java.io.File(destDir, ze.getName().replace('\\', '/'));
 

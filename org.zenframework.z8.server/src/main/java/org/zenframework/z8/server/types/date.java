@@ -184,12 +184,12 @@ public class date extends primary {
 		value.set(GregorianCalendar.MILLISECOND, millisecond);
 	}
 
-	public void set(String s, String format) {
+	public void set(String string, String format) {
 		try {
-			if(s == null || s.isEmpty()) {
+			if(string == null || string.isEmpty()) {
 				set(date.Min);
 			} else {
-				Date date = new SimpleDateFormat(format).parse(s);
+				Date date = new SimpleDateFormat(format).parse(string);
 				setTicks(date.getTime());
 			}
 		} catch(ParseException e) {
@@ -652,10 +652,10 @@ public class date extends primary {
 	}
 
 	static public date z8_parse(string string) {
-		return new date(string.get());
+		return string != null ? new date(string.get()) : null;
 	}
 
 	static public date z8_parse(string string, string format) {
-		return new date(string.get(), format.get());
+		return string != null ? new date(string.get(), format.get()) : null;
 	}
 }

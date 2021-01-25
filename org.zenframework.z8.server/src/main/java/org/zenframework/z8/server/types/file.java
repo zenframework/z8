@@ -272,6 +272,10 @@ public class file extends primary implements RmiSerializable, Serializable {
 		return FilenameUtils.getExtension(path.isEmpty() ? name.get() : path.get()).toLowerCase();
 	}
 
+	public date lastModified() {
+		return new date(toFile().lastModified());
+	}
+
 	public String folder() {
 		return FilenameUtils.getFullPath(path.get());
 	}
@@ -650,6 +654,10 @@ public class file extends primary implements RmiSerializable, Serializable {
 
 	public string z8_fileName() {
 		return new string(fileName());
+	}
+
+	public date z8_lastModified() {
+		return lastModified();
 	}
 
 	public string z8_extension() {
