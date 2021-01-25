@@ -256,7 +256,7 @@ public class ProjectProperties {
 
 	static private IPath relativePath(IPath path, IPath absolutePrefix) {
 		return path == null || !path.isAbsolute() ? path : absolutePrefix.isPrefixOf(path)
-				? path.removeFirstSegments(absolutePrefix.segmentCount()) : null;
+				? path.removeFirstSegments(absolutePrefix.segmentCount()).setDevice(null) : null;
 	}
 
 	static private IPath[] relativePath(IPath[] paths, IPath absolutePrefix) {
