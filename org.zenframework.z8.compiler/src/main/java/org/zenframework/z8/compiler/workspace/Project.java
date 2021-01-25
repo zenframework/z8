@@ -77,16 +77,8 @@ public class Project extends Folder {
 		return sourcePaths;
 	}
 
-	public void setSourcePaths(IPath[] sourcePaths) {
-		this.sourcePaths = sourcePaths;
-	}
-
 	public IPath getOutputPath() {
 		return outputPath;
-	}
-
-	public void setOutputPath(IPath outputPath) {
-		this.outputPath = outputPath;
 	}
 
 	@Override
@@ -144,7 +136,7 @@ public class Project extends Folder {
 			Project project = Workspace.getInstance().getProject(resource);
 
 			if(project != null && project != this) {
-				project.setOutputPath(null);
+				project.outputPath = null;
 				projects.add(project);
 			}
 		}
@@ -470,15 +462,16 @@ public class Project extends Folder {
 	}
 
 	public CompilationUnit findCompilationUnit(IPath path) {
-		CompilationUnit unit = getCompilationUnit(path);
-
-		if(unit != null)
-			return unit;
+		for (IPath sourcePath : sourcePaths) {
+			CompilationUnit unit = getCompilationUnit(sourcePath.append(path));
+			if(unit != null)
+				return unit;
+		}
 
 		Project[] referencedProjects = getReferencedProjects();
 
 		for(Project project : referencedProjects) {
-			unit = project.getCompilationUnit(path);
+			CompilationUnit unit = project.findCompilationUnit(path);
 			if(unit != null)
 				return unit;
 		}
