@@ -183,6 +183,16 @@ public class Project extends Folder {
 		return collectedReferencedProjects;
 	}
 
+	public boolean inSourcePaths(IResource resource) {
+		IPath fullPath = resource.getFullPath();
+		for (IPath sourcePath : getSourcePaths()) {
+			sourcePath = getResource().getFullPath().append(sourcePath);
+			if (sourcePath.isPrefixOf(fullPath) || fullPath.isPrefixOf(sourcePath))
+				return true;
+		}
+		return false;
+	}
+
 	private void collectReferencedProjects(Set<Project> result) {
 		if(collectingReferencedProjects)
 			return;
