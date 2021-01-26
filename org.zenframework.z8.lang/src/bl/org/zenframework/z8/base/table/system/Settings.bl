@@ -21,4 +21,5 @@ public class Settings extends Table {
 
 	static public void set(guid property, primary value);
 	static public void set(guid property, guid parent, string name, string description, primary value);
+	static public void set(guid property, guid parent, string name, string description, primary value, int lock);
 }

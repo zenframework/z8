@@ -3,6 +3,7 @@ package org.zenframework.z8.server.base.table.system;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
 
+import org.zenframework.z8.server.base.query.RecordLock;
 import org.zenframework.z8.server.base.table.TreeTable;
 import org.zenframework.z8.server.base.table.value.Field;
 import org.zenframework.z8.server.base.table.value.IField;
@@ -96,6 +97,7 @@ public class Settings extends TreeTable {
 		{
 			LinkedHashMap<IField, primary> record = new LinkedHashMap<IField, primary>();
 			record.put(name.get(), new string(strings.Version));
+			record.put(lock.get(), RecordLock.Full);
 			addRecord(Version, record);
 		}
 	}
@@ -154,6 +156,10 @@ public class Settings extends TreeTable {
 	}
 
 	static public void set(guid property, guid parent, String name, String description, primary value) {
+		set(property, parent, name, description, value, -1);
+	}
+
+	static public void set(guid property, guid parent, String name, String description, primary value, int lock) {
 		Settings settings = new Settings.CLASS<Settings>().get();
 		if (parent != null)
 			settings.parentId.get().set(parent);
@@ -162,6 +168,8 @@ public class Settings extends TreeTable {
 		if (description != null)
 			settings.description.get().set(description);
 		settings.value.get().set(new string(value.toString()));
+		if (lock >= 0)
+			settings.lock.get().set(lock);
 		if (settings.hasRecord(property))
 			settings.update(property);
 		else
