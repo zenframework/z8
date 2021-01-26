@@ -79,8 +79,9 @@ public class Project extends Folder {
 				super.initialize();
 			} else if (container.exists(sourcePath)) {
 				Folder folder = this;
+				IContainer resource = container;
 				for (String name : sourcePath.segments())
-					folder = folder.createFolder(container = (IContainer) container.findMember(name));
+					folder = folder.createFolder(resource = (IContainer) resource.findMember(name));
 				folder.initialize();
 			}
 		}
