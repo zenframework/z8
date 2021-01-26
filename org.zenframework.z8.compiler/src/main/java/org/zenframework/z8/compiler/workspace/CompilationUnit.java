@@ -64,8 +64,6 @@ public class CompilationUnit extends Resource {
 
 	public CompilationUnit(Resource parent, IResource resource) {
 		super(parent, resource);
-		parent.addMember(this);
-
 		startupCodeLines = new StartupCodeLines();
 	}
 

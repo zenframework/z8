@@ -1,7 +1,7 @@
 package org.zenframework.z8.compiler.cmd;
 
-import java.util.LinkedList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.eclipse.core.resources.FileInfoMatcherDescription;
 import org.eclipse.core.resources.IContainer;
@@ -16,7 +16,7 @@ import org.zenframework.z8.compiler.file.File;
 
 public class DummyContainer extends DummyResource implements IContainer {
 
-	private final List<DummyResource> members = new LinkedList<DummyResource>();
+	private final Map<String, DummyResource> members = new HashMap<String, DummyResource>();
 	private final boolean isProject;
 
 	public DummyContainer() {
@@ -38,12 +38,12 @@ public class DummyContainer extends DummyResource implements IContainer {
 
 	@Override
 	public boolean exists(IPath path) {
-		throw new UnsupportedOperationException();
+		return File.fromPath(this.path.append(path)).exists();
 	}
 
 	@Override
 	public IResource findMember(String name) {
-		throw new UnsupportedOperationException();
+		return getMembers().get(name);
 	}
 
 	@Override
@@ -83,16 +83,7 @@ public class DummyContainer extends DummyResource implements IContainer {
 
 	@Override
 	public IResource[] members() {
-		if (members.isEmpty()) {
-			File[] files = File.fromPath(path).getFiles();
-			for (File file : files) {
-				if (file.isContainer())
-					new DummyContainer(this, file.getPath());
-				else
-					new DummyResource(this, file.getPath());
-			}
-		}
-		return members.toArray(new IResource[members.size()]);
+		return getMembers().values().toArray(new IResource[members.size()]);
 	}
 
 	@Override
@@ -130,8 +121,21 @@ public class DummyContainer extends DummyResource implements IContainer {
 		throw new UnsupportedOperationException();
 	}
 
-	public void addMember(DummyResource member) {
-		members.add(member);
+	protected void addMember(DummyResource member) {
+		members.put(member.getName(), member);
+	}
+
+	protected Map<String, DummyResource> getMembers() {
+		if (members.isEmpty()) {
+			File[] files = File.fromPath(path).getFiles();
+			for (File file : files) {
+				if (file.isContainer())
+					new DummyContainer(this, file.getPath());
+				else
+					new DummyResource(this, file.getPath());
+			}
+		}
+		return members;
 	}
 
 }

@@ -2,16 +2,29 @@ package org.zenframework.z8.compiler.workspace;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IResource;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 
 public class Folder extends Resource {
 	public Folder(Resource parent, IResource resource) {
 		super(parent, resource);
+	}
 
-		if(parent != null) {
-			parent.addMember(this);
+	public void initialize() throws CoreException {
+		IContainer iContainer = (IContainer) getResource();
+		for (IResource resource : iContainer.members()) {
+			if (resource instanceof IContainer) {
+				createFolder(resource).initialize();
+			} else {
+				if (Resource.isBLResource(resource))
+					createCompilationUnit(resource);
+				else if (Resource.isNLSResource(resource))
+					createNLSUnit(resource);
+			}
 		}
 	}
 

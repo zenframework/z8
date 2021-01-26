@@ -5,11 +5,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IResource;
-import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
-import org.eclipse.core.runtime.Path;
 import org.zenframework.z8.compiler.core.IType;
 import org.zenframework.z8.compiler.file.FileException;
 
@@ -159,31 +156,6 @@ public class Workspace extends Folder {
 			compilationLoops.remove(compilationLoop);
 
 		return finished;
-	}
-
-	static public void addResources(Folder folder) throws CoreException {
-		addResources(folder, new Path(""), folder.getProject().getSourcePaths());
-	}
-
-	static private void addResources(Folder folder, IPath folderRelativePath, IPath[] sourcePaths) throws CoreException {
-		IContainer iContainer = (IContainer) folder.getResource();
-		for (IResource resource : iContainer.members()) {
-			IPath relativePath = folderRelativePath.append(resource.getName());
-			boolean isContainer = resource instanceof IContainer;
-			for (IPath sourcePath : sourcePaths) {
-				boolean sourceInResource = relativePath.isPrefixOf(sourcePath);
-				boolean resourceInSource = sourcePath.isPrefixOf(relativePath);
-				if (isContainer && (sourceInResource || resourceInSource)) {
-					Folder newFolder = folder.createFolder(resource);
-					addResources(newFolder, relativePath, sourcePaths);
-				} else if (!isContainer && resourceInSource) {
-					if (Resource.isBLResource(resource))
-						folder.createCompilationUnit(resource);
-					else if (Resource.isNLSResource(resource))
-						folder.createNLSUnit(resource);
-				}
-			}
-		}
 	}
 
 	static private ProjectProperties loadProjectProperties(IResource project) {

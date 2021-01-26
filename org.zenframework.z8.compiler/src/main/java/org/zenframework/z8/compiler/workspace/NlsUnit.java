@@ -20,7 +20,6 @@ public class NlsUnit extends Resource {
 
 	public NlsUnit(Resource parent, IResource resource) {
 		super(parent, resource);
-		parent.addMember(this);
 	}
 
 	public void contentChanged() {

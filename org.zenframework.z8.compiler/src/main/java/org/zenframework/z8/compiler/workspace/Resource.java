@@ -47,6 +47,8 @@ public class Resource extends LanguageElement {
 		this.container = container;
 		this.resource = resource;
 		setParent(container);
+		if (container != null)
+			container.addMember(this);
 	}
 
 	public IResource getResource() {
