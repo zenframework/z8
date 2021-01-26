@@ -73,6 +73,12 @@ task concatUtilJs(type: ConcatTask) {
 	buildorder = '.util.buildorder'
 }
 
+task concatServerJs(type: ConcatTask) {
+	source = file("${projectDir}/src/js")
+	output = file("${buildDir}/web/revolt.server.js")
+	buildorder = '.server.buildorder'
+}
+
 task prepareResources(type: Copy) {
 	from('src') {
 		include 'css/fonts/**', 'css/img/**'
@@ -81,7 +87,7 @@ task prepareResources(type: Copy) {
 }
 
 task assembleZip(type: Zip, group: 'Build') {
-	dependsOn concatCss, concatFontsCss, concatBaseCss, concatJs, concatUtilJs, prepareResources
+	dependsOn concatCss, concatFontsCss, concatBaseCss, concatJs, concatUtilJs, concatServerJs, prepareResources
 	archiveName "${project.name}-${project.version}.zip"
 	destinationDir file("${buildDir}/libs/")
 	from("${buildDir}") {
