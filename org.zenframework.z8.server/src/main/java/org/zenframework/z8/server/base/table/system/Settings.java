@@ -8,6 +8,7 @@ import org.zenframework.z8.server.base.table.value.Field;
 import org.zenframework.z8.server.base.table.value.IField;
 import org.zenframework.z8.server.base.table.value.TextField;
 import org.zenframework.z8.server.engine.Runtime;
+import org.zenframework.z8.server.logs.Trace;
 import org.zenframework.z8.server.resources.Resources;
 import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.types.date;
@@ -99,10 +100,15 @@ public class Settings extends TreeTable {
 		}
 	}
 
-	static public String get(guid property) {
-		Settings settings = new Settings.CLASS<Settings>().get();
-		Field value = settings.value.get();
-		return settings.readRecord(property, Arrays.asList(value)) ? value.string().get() : null;
+	static private String get(guid property) {
+		try {
+			Settings settings = new Settings.CLASS<Settings>().get();
+			Field value = settings.value.get();
+			return settings.readRecord(property, Arrays.asList(value)) ? value.string().get() : null;
+		} catch (Throwable e) {
+			Trace.logError(e);
+			return null;
+		}
 	}
 
 	static public String get(guid property, String defaultValue) {
@@ -156,7 +162,10 @@ public class Settings extends TreeTable {
 		if (description != null)
 			settings.description.get().set(description);
 		settings.value.get().set(new string(value.toString()));
-		settings.updateOrCreate(property);
+		if (settings.hasRecord(property))
+			settings.update(property);
+		else
+			settings.create(property);
 	}
 
 	static public String version() {
