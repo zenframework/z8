@@ -74,7 +74,7 @@ public class DummyResource implements IResource {
 
 	@Override
 	public IPath getProjectRelativePath() {
-		return getFullPath().removeFirstSegments(1);
+		return getFullPath().removeFirstSegments(1).setDevice(null);
 	}
 
 	@Override

@@ -28,7 +28,6 @@ public class ProjectProperties {
 	private static final String DOCS_PATH = "docsPath";
 	private static final String DOC_TEMPLATE_PATH = "docTemplatePath";
 
-	private static final IPath OUTPUT_PATH_DEFAULT = new Path(".java");
 	private static final IPath[] REQUIRED_PATHS_DEFAULT = new IPath[0];
 	private static final IPath[] SOURCE_PATHS_DEFAULT = new IPath[] { new Path("") };
 
@@ -90,12 +89,16 @@ public class ProjectProperties {
 		setRequiredPaths(getValidPath(parsePathList(requiredPaths)));
 	}
 
-	public void setRequiredPaths(String[] requiredPaths) {
+	public void setRequiredPaths(List<String> requiredPaths) {
 		if (requiredPaths == null)
 			return;
-		this.requiredPaths = new IPath[requiredPaths.length];
-		for (int i = 0; i < requiredPaths.length; i++)
-			this.requiredPaths[i] = getValidPath(requiredPaths[i]);
+		this.requiredPaths = new IPath[requiredPaths.size()];
+		for (int i = 0; i < this.requiredPaths.length; i++)
+			this.requiredPaths[i] = getValidPath(requiredPaths.get(i));
+	}
+
+	public void setRequiredPaths(String[] requiredPaths) {
+		setRequiredPaths(Arrays.asList(requiredPaths));
 	}
 
 	public IPath[] getSourcePaths() {
@@ -127,7 +130,7 @@ public class ProjectProperties {
 	}
 
 	public IPath getOutputPath() {
-		return absolutePath(outputPath != null ? outputPath : OUTPUT_PATH_DEFAULT, getProjectPath());
+		return absolutePath(outputPath, getProjectPath());
 	}
 
 	public void setOutputPath(IPath outputPath) {
@@ -253,7 +256,7 @@ public class ProjectProperties {
 
 	static private IPath relativePath(IPath path, IPath absolutePrefix) {
 		return path == null || !path.isAbsolute() ? path : absolutePrefix.isPrefixOf(path)
-				? path.removeFirstSegments(absolutePrefix.segmentCount()) : null;
+				? path.removeFirstSegments(absolutePrefix.segmentCount()).setDevice(null) : null;
 	}
 
 	static private IPath[] relativePath(IPath[] paths, IPath absolutePrefix) {

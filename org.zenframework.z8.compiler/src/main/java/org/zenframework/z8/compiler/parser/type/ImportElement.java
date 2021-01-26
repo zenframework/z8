@@ -117,6 +117,8 @@ public class ImportElement extends LanguageElement {
 	private CompilationUnit resolveToCompilationUnit(Project project) {
 		for (IPath sourcePath : project.getSourcePaths()) {
 			Folder folder = project.getFolder(sourcePath);
+			if (folder == null)
+				continue;
 
 			IToken[] tokens = qualifiedName.getTokens();
 

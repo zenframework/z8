@@ -69,7 +69,7 @@ public class Resource extends LanguageElement {
 		IPath path = getPath();
 		for (IPath sourcePath : getProject().getSourcePaths()) {
 			if (sourcePath.isPrefixOf(path))
-				return path.removeFirstSegments(sourcePath.segmentCount());
+				return path.removeFirstSegments(sourcePath.segmentCount()).setDevice(null);
 		}
 		return path;
 	}
