@@ -21,9 +21,7 @@ public class Workspace extends Folder {
 	}
 
 	static public Workspace initialize(IResource resource) {
-		if(instance == null)
-			instance = new Workspace(resource);
-		return instance;
+		return instance = new Workspace(resource);
 	}
 
 	static public Workspace getInstance() {
