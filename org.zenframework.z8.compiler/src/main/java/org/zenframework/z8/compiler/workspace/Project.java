@@ -5,7 +5,9 @@ import java.lang.management.MemoryMXBean;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IResource;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
@@ -61,6 +63,28 @@ public class Project extends Folder {
 	public Project(Workspace workspace, IResource resource) {
 		super(workspace, resource);
 		getWorkspace().installResourceListener(resourceListener);
+	}
+
+	public void initialize() throws CoreException {
+		IPath[] sourcePaths = getSourcePaths();
+
+		if (sourcePaths == null || sourcePaths.length == 0) {
+			super.initialize();
+			return;
+		}
+
+		IContainer container = (IContainer) getResource();
+		for (IPath sourcePath : sourcePaths) {
+			if (sourcePath.isEmpty()) {
+				super.initialize();
+			} else if (container.exists(sourcePath)) {
+				Folder folder = this;
+				IContainer resource = container;
+				for (String name : sourcePath.segments())
+					folder = folder.createFolder(resource = (IContainer) resource.findMember(name));
+				folder.initialize();
+			}
+		}
 	}
 
 	public void setProperties(ProjectProperties properties) {
@@ -134,11 +158,8 @@ public class Project extends Folder {
 
 		for(IResource resource : resources) {
 			Project project = Workspace.getInstance().getProject(resource);
-
-			if(project != null && project != this) {
-				project.outputPath = null;
+			if(project != null && project != this)
 				projects.add(project);
-			}
 		}
 
 		if(!projects.equals(referencedProjects)) {
@@ -160,6 +181,16 @@ public class Project extends Folder {
 		}
 
 		return collectedReferencedProjects;
+	}
+
+	public boolean inSourcePaths(IResource resource) {
+		IPath fullPath = resource.getFullPath();
+		for (IPath sourcePath : getSourcePaths()) {
+			sourcePath = getResource().getFullPath().append(sourcePath);
+			if (sourcePath.isPrefixOf(fullPath) || fullPath.isPrefixOf(sourcePath))
+				return true;
+		}
+		return false;
 	}
 
 	private void collectReferencedProjects(Set<Project> result) {

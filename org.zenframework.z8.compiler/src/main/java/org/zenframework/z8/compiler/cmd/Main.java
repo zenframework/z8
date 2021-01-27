@@ -58,10 +58,9 @@ public class Main {
 		Workspace workspace = Workspace.initialize(new DummyContainer());
 
 		Project project = workspace.createProject(new DummyProject(properties.getProjectName(), (DummyContainer) workspace.getResource(), properties.getProjectPath()), properties);
-
-		Workspace.addResources(project);
+		project.initialize();
 		for(IPath requiredPath : properties.getRequiredPaths())
-			Workspace.addResources(workspace.createProject(new DummyContainer((DummyContainer) workspace.getResource(), requiredPath, true)));
+			workspace.createProject(new DummyContainer((DummyContainer) workspace.getResource(), requiredPath, true)).initialize();
 
 		Project[] projects = workspace.getProjects();
 		List<IResource> resources = new ArrayList<IResource>();
