@@ -56,7 +56,7 @@ Z8.define('Z8.application.Application', {
 			Viewport.render();
 		}
 
-		Viewport.login({ fn: callback, scope: this });
+        Viewport.login({ fn: callback, scope: this });
 	},
 
 	setTitle: function(title) {
