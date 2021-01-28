@@ -96,7 +96,7 @@ Array.prototype.removeAll = function(array) {
 };
 
 Array.prototype.removeAt = function(index) {
-	return this.splice(index, 1);
+	return index >= 0 ? this.splice(index, 1) : [];
 };
 
 Array.prototype.first = function() {

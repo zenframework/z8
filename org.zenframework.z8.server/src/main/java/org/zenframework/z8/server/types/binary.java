@@ -130,14 +130,26 @@ public class binary extends primary {
 		file.unzip(get(), directory.getAbsoluteFile());
 	}
 
-	public void z8_unzip(file directory) {
-		file.unzip(get(), directory.getAbsolutePath());
-	}
-
 	public static binary zip(File fileOrDirectory) {
 		file temp = file.createTempFile(FilenameUtils.getBaseName(fileOrDirectory.getName()), ".zip");
 		temp.zip(fileOrDirectory);
 		return temp.binary();
+	}
+
+	public int length() {
+		try {
+			return stream.available();
+		} catch(IOException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	public integer z8_length() {
+		return new integer(length());
+	}
+
+	public void z8_unzip(file directory) {
+		file.unzip(get(), directory.getAbsolutePath());
 	}
 
 	public static binary z8_zip(file fileOrDirectory) {

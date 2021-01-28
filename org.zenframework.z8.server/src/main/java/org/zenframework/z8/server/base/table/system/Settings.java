@@ -3,11 +3,13 @@ package org.zenframework.z8.server.base.table.system;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
 
-import org.zenframework.z8.server.base.table.Table;
+import org.zenframework.z8.server.base.query.RecordLock;
+import org.zenframework.z8.server.base.table.TreeTable;
 import org.zenframework.z8.server.base.table.value.Field;
 import org.zenframework.z8.server.base.table.value.IField;
 import org.zenframework.z8.server.base.table.value.TextField;
 import org.zenframework.z8.server.engine.Runtime;
+import org.zenframework.z8.server.logs.Trace;
 import org.zenframework.z8.server.resources.Resources;
 import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.types.date;
@@ -17,7 +19,7 @@ import org.zenframework.z8.server.types.integer;
 import org.zenframework.z8.server.types.primary;
 import org.zenframework.z8.server.types.string;
 
-public class Settings extends Table {
+public class Settings extends TreeTable {
 	final static public String TableName = "SystemSettings";
 
 	final static public guid Version = guid.create(strings.Version);
@@ -40,7 +42,7 @@ public class Settings extends Table {
 		public final static String Value = Resources.get(strings.Value);
 	}
 
-	public static class CLASS<T extends Settings> extends Table.CLASS<T> {
+	public static class CLASS<T extends Settings> extends TreeTable.CLASS<T> {
 		public CLASS() {
 			this(null);
 		}
@@ -95,14 +97,20 @@ public class Settings extends Table {
 		{
 			LinkedHashMap<IField, primary> record = new LinkedHashMap<IField, primary>();
 			record.put(name.get(), new string(strings.Version));
+			record.put(lock.get(), RecordLock.Full);
 			addRecord(Version, record);
 		}
 	}
 
-	static public String get(guid property) {
-		Settings settings = new Settings.CLASS<Settings>().get();
-		Field value = settings.value.get();
-		return settings.readRecord(property, Arrays.asList(value)) ? value.string().get() : null;
+	static private String get(guid property) {
+		try {
+			Settings settings = new Settings.CLASS<Settings>().get();
+			Field value = settings.value.get();
+			return settings.readRecord(property, Arrays.asList(value)) ? value.string().get() : null;
+		} catch (Throwable e) {
+			Trace.logError(e);
+			return null;
+		}
 	}
 
 	static public String get(guid property, String defaultValue) {
@@ -135,14 +143,37 @@ public class Settings extends Table {
 		return value != null ? new decimal(value) : defaultValue;
 	}
 
-	static public void set(guid property, primary value) {
-		Settings settings = new Settings.CLASS<Settings>().get();
-		settings.value.get().set(new string(value.toString()));
-		settings.updateOrCreate(property);
+	static public void set(guid property, String value) {
+		set(property, null, null, null, value);
 	}
 
-	static public void set(guid property, String value) {
-		Settings.set(property, new string(value));
+	static public void set(guid property, primary value) {
+		set(property, null, null, null, value);
+	}
+
+	static public void set(guid property, guid parent, String name, String description, String value) {
+		set(property, parent, name, description, new string(value));
+	}
+
+	static public void set(guid property, guid parent, String name, String description, primary value) {
+		set(property, parent, name, description, value, -1);
+	}
+
+	static public void set(guid property, guid parent, String name, String description, primary value, int lock) {
+		Settings settings = new Settings.CLASS<Settings>().get();
+		if (parent != null)
+			settings.parentId.get().set(parent);
+		if (name != null)
+			settings.name.get().set(name);
+		if (description != null)
+			settings.description.get().set(description);
+		settings.value.get().set(new string(value.toString()));
+		if (lock >= 0)
+			settings.lock.get().set(lock);
+		if (settings.hasRecord(property))
+			settings.update(property);
+		else
+			settings.create(property);
 	}
 
 	static public String version() {
@@ -176,4 +207,9 @@ public class Settings extends Table {
 	static public void z8_set(guid property, primary value) {
 		set(property, value);
 	}
+
+	static public void z8_set(guid property, guid parent, string name, string description, primary value) {
+		set(property, parent, name.get(), description.get(), value);
+	}
+
 }

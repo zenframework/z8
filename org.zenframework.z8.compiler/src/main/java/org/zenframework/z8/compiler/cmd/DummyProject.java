@@ -1,12 +1,11 @@
 package org.zenframework.z8.compiler.cmd;
 
-import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.IPath;
 
-public class DummyProject extends DummyResource {
+public class DummyProject extends DummyContainer {
 	private final String name;
 
-	public DummyProject(String name, IResource parent, IPath path) {
+	public DummyProject(String name, DummyContainer parent, IPath path) {
 		super(parent, path, true);
 		this.name = name;
 	}

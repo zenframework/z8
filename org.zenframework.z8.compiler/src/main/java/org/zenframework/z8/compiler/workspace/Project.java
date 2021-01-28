@@ -5,7 +5,9 @@ import java.lang.management.MemoryMXBean;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IResource;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
@@ -16,7 +18,7 @@ import org.zenframework.z8.compiler.error.IBuildMessageConsumer;
 import org.zenframework.z8.compiler.util.Set;
 
 public class Project extends Folder {
-	static Object lockObject = new Object();
+	static final private Object lockObject = new Object();
 
 	static final public int BUILD = 0;
 	static final public int RECONCILE = 1;
@@ -25,8 +27,9 @@ public class Project extends Folder {
 	static private int state = IDLE;
 	static private IBuildMessageConsumer messageConsumer;
 
+	private ProjectProperties properties;
+	private IPath[] sourcePaths;
 	private IPath outputPath;
-	private IPath rootPath;
 
 	public static int filesWritten = 0;
 	public static int filesSkipped = 0;
@@ -62,16 +65,44 @@ public class Project extends Folder {
 		getWorkspace().installResourceListener(resourceListener);
 	}
 
+	public void initialize() throws CoreException {
+		IPath[] sourcePaths = getSourcePaths();
+
+		if (sourcePaths == null || sourcePaths.length == 0) {
+			super.initialize();
+			return;
+		}
+
+		IContainer container = (IContainer) getResource();
+		for (IPath sourcePath : sourcePaths) {
+			if (sourcePath.isEmpty()) {
+				super.initialize();
+			} else if (container.exists(sourcePath)) {
+				Folder folder = this;
+				IContainer resource = container;
+				for (String name : sourcePath.segments())
+					folder = folder.createFolder(resource = (IContainer) resource.findMember(name));
+				folder.initialize();
+			}
+		}
+	}
+
+	public void setProperties(ProjectProperties properties) {
+		this.properties = properties;
+		this.sourcePaths = properties.getSourcePaths();
+		this.outputPath = properties.getOutputPath();
+	}
+
+	public ProjectProperties getProperties() {
+		return properties;
+	}
+
+	public IPath[] getSourcePaths() {
+		return sourcePaths;
+	}
+
 	public IPath getOutputPath() {
 		return outputPath;
-	}
-
-	public void setOutputPath(IPath outputPath) {
-		this.outputPath = outputPath;
-	}
-
-	public IPath getRootPath() {
-		return rootPath;
 	}
 
 	@Override
@@ -127,11 +158,8 @@ public class Project extends Folder {
 
 		for(IResource resource : resources) {
 			Project project = Workspace.getInstance().getProject(resource);
-
-			if(project != null && project != this) {
-				project.setOutputPath(null);
+			if(project != null && project != this)
 				projects.add(project);
-			}
 		}
 
 		if(!projects.equals(referencedProjects)) {
@@ -153,6 +181,16 @@ public class Project extends Folder {
 		}
 
 		return collectedReferencedProjects;
+	}
+
+	public boolean inSourcePaths(IResource resource) {
+		IPath fullPath = resource.getFullPath();
+		for (IPath sourcePath : getSourcePaths()) {
+			sourcePath = getResource().getFullPath().append(sourcePath);
+			if (sourcePath.isPrefixOf(fullPath) || fullPath.isPrefixOf(sourcePath))
+				return true;
+		}
+		return false;
 	}
 
 	private void collectReferencedProjects(Set<Project> result) {
@@ -455,15 +493,16 @@ public class Project extends Folder {
 	}
 
 	public CompilationUnit findCompilationUnit(IPath path) {
-		CompilationUnit unit = getCompilationUnit(path);
-
-		if(unit != null)
-			return unit;
+		for (IPath sourcePath : sourcePaths) {
+			CompilationUnit unit = getCompilationUnit(sourcePath.append(path));
+			if(unit != null)
+				return unit;
+		}
 
 		Project[] referencedProjects = getReferencedProjects();
 
 		for(Project project : referencedProjects) {
-			unit = project.getCompilationUnit(path);
+			CompilationUnit unit = project.findCompilationUnit(path);
 			if(unit != null)
 				return unit;
 		}
@@ -496,4 +535,5 @@ public class Project extends Folder {
 
 		iterate(visitor);
 	}
+
 }

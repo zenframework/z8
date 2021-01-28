@@ -7,8 +7,8 @@ import java.util.Map;
 
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.IPath;
-
 import org.zenframework.z8.compiler.core.IType;
+import org.zenframework.z8.compiler.file.FileException;
 
 public class Workspace extends Folder {
 	static private Workspace instance;
@@ -21,9 +21,7 @@ public class Workspace extends Folder {
 	}
 
 	static public Workspace initialize(IResource resource) {
-		if(instance == null)
-			instance = new Workspace(resource);
-		return instance;
+		return instance = new Workspace(resource);
 	}
 
 	static public Workspace getInstance() {
@@ -40,7 +38,10 @@ public class Workspace extends Folder {
 	}
 
 	protected void addResource(Resource resource) {
-		resources.put(getResourceId(resource), resource);
+		int resourceId = getResourceId(resource);
+		Resource current = resources.get(resourceId);
+		if (current == null || !Resource.isProject(current))
+			resources.put(resourceId, resource);
 	}
 
 	protected void removeResource(Resource resource) {
@@ -67,11 +68,13 @@ public class Workspace extends Folder {
 	}
 
 	public Project createProject(IResource resource) {
-		Project project = getProject(resource);
+		return createProject(resource, loadProjectProperties(resource));
+	}
 
-		if(project == null)
-			project = new Project(this, resource);
-
+	public Project createProject(IResource resource, ProjectProperties properties) {
+		Resource projectResource = getResource(resource);
+		Project project = projectResource instanceof Project ? (Project) projectResource : new Project(this, resource);
+		project.setProperties(properties);
 		return project;
 	}
 
@@ -152,4 +155,16 @@ public class Workspace extends Folder {
 
 		return finished;
 	}
+
+	static private ProjectProperties loadProjectProperties(IResource project) {
+		ProjectProperties properties = new ProjectProperties();
+		properties.setProjectPath(project.getLocation());
+		try {
+			properties.load();
+		} catch (FileException e) {
+			System.out.println("Warning: Can't load project properties from '" + properties.getProjectPath() + "': " + e.getMessage());
+		}
+		return properties;
+	}
+
 }

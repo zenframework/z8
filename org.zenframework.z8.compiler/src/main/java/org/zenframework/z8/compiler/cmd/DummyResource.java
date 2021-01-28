@@ -3,16 +3,12 @@ package org.zenframework.z8.compiler.cmd;
 import java.net.URI;
 import java.util.Map;
 
-import org.eclipse.core.resources.FileInfoMatcherDescription;
 import org.eclipse.core.resources.IContainer;
-import org.eclipse.core.resources.IFile;
-import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IPathVariableManager;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IProjectDescription;
 import org.eclipse.core.resources.IResource;
-import org.eclipse.core.resources.IResourceFilterDescription;
 import org.eclipse.core.resources.IResourceProxy;
 import org.eclipse.core.resources.IResourceProxyVisitor;
 import org.eclipse.core.resources.IResourceVisitor;
@@ -24,69 +20,61 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.QualifiedName;
 import org.eclipse.core.runtime.jobs.ISchedulingRule;
 
-public class DummyResource implements IResource, IContainer {
-	private IResource m_parent;
-	private IPath m_path;
-	boolean m_isProject;
+public class DummyResource implements IResource {
 
-	public DummyResource() {
-	}
+	protected final DummyContainer parent;
+	protected final IPath path;
 
-	public DummyResource(IResource parent, IPath path) {
-		this(parent, path, false);
-	}
-
-	public DummyResource(IResource parent, IPath path, boolean isProject) {
-		m_parent = parent;
-		m_path = path;
-		m_isProject = isProject;
+	public DummyResource(DummyContainer parent, IPath path) {
+		this.parent = parent;
+		this.path = path;
+		if (parent != null)
+			parent.addMember(this);
 	}
 
 	public IPath getProjectPath() {
-		if(m_isProject) {
-			return m_path;
-		}
-
-		if(m_parent != null) {
-			return ((DummyResource)m_parent).getProjectPath();
-		}
-
+		if (parent != null)
+			return ((DummyResource) parent).getProjectPath();
 		throw new IllegalStateException();
-		// return null;
+	}
+
+	@Override
+	public String toString() {
+		return path != null ? path.toString() : "/";
 	}
 
 	@Override
 	public boolean equals(Object other) {
-		if(other instanceof DummyResource) {
-			DummyResource resource = (DummyResource)other;
-			return m_path.equals(resource.m_path);
+		if (other instanceof DummyResource) {
+			DummyResource resource = (DummyResource) other;
+			return path.equals(resource.getLocation());
 		}
 		return false;
 	}
 
 	@Override
 	public String getFileExtension() {
-		return m_path.getFileExtension();
+		return path.getFileExtension();
 	}
 
 	@Override
 	public IPath getFullPath() {
-		return m_path.removeFirstSegments(getProjectPath().segmentCount() - 1).setDevice(null);
+		return path.removeFirstSegments(getProjectPath().segmentCount() - 1).setDevice(null);
 	}
 
 	@Override
 	public IPath getLocation() {
-		return m_path;
+		return path;
 	}
 
 	@Override
 	public String getName() {
-		return m_path.lastSegment();
+		return path.lastSegment();
 	}
 
 	@Override
 	public IPath getProjectRelativePath() {
-		return getFullPath().removeFirstSegments(1);
+		return getFullPath().removeFirstSegments(1).setDevice(null);
 	}
 
 	@Override
@@ -96,7 +84,7 @@ public class DummyResource implements IResource, IContainer {
 
 	@Override
 	public IContainer getParent() {
-		return (IContainer)m_parent;
+		return (IContainer) parent;
 	}
 
 	@Override
@@ -356,81 +344,6 @@ public class DummyResource implements IResource, IContainer {
 	}
 
 	@Override
-	public boolean exists(IPath path) {
-		throw new UnsupportedOperationException();
-	}
-
-	@Override
-	public IResource findMember(String name) {
-		throw new UnsupportedOperationException();
-	}
-
-	@Override
-	public IResource findMember(String name, boolean includePhantoms) {
-		throw new UnsupportedOperationException();
-	}
-
-	@Override
-	public IResource findMember(IPath path) {
-		throw new UnsupportedOperationException();
-	}
-
-	@Override
-	public IResource findMember(IPath path, boolean includePhantoms) {
-		throw new UnsupportedOperationException();
-	}
-
-	@Override
-	public String getDefaultCharset() {
-		throw new UnsupportedOperationException();
-	}
-
-	@Override
-	public String getDefaultCharset(boolean checkImplicit) {
-		throw new UnsupportedOperationException();
-	}
-
-	@Override
-	public IFile getFile(IPath path) {
-		throw new UnsupportedOperationException();
-	}
-
-	@Override
-	public IFolder getFolder(IPath path) {
-		throw new UnsupportedOperationException();
-	}
-
-	@Override
-	public IResource[] members() {
-		throw new UnsupportedOperationException();
-	}
-
-	@Override
-	public IResource[] members(boolean includePhantoms) {
-		throw new UnsupportedOperationException();
-	}
-
-	@Override
-	public IResource[] members(int memberFlags) {
-		throw new UnsupportedOperationException();
-	}
-
-	@Override
-	public IFile[] findDeletedMembersWithHistory(int depth, IProgressMonitor monitor) {
-		throw new UnsupportedOperationException();
-	}
-
-	@Override
-	public void setDefaultCharset(String charset) {
-		throw new UnsupportedOperationException();
-	}
-
-	@Override
-	public void setDefaultCharset(String charset, IProgressMonitor monitor) {
-		throw new UnsupportedOperationException();
-	}
-
-	@Override
 	public IResourceProxy createProxy() {
 		throw new UnsupportedOperationException();
 	}
@@ -447,16 +360,6 @@ public class DummyResource implements IResource, IContainer {
 
 	@Override
 	public boolean isLinked(int arg0) {
-		throw new UnsupportedOperationException();
-	}
-
-	@Override
-	public IResourceFilterDescription createFilter(int arg0, FileInfoMatcherDescription arg1, int arg2, IProgressMonitor arg3) throws CoreException {
-		throw new UnsupportedOperationException();
-	}
-
-	@Override
-	public IResourceFilterDescription[] getFilters() throws CoreException {
 		throw new UnsupportedOperationException();
 	}
 
@@ -519,4 +422,5 @@ public class DummyResource implements IResource, IContainer {
 	public void accept(IResourceProxyVisitor arg0, int arg1, int arg2) throws CoreException {
 		throw new UnsupportedOperationException();
 	}
+
 }

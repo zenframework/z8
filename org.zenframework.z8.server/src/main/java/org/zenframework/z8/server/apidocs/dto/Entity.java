@@ -10,6 +10,7 @@ public class Entity {
     private String entityDescription;
     private String entityId;
     private String contentParams;
+    private String requestAttributes;
     private List<IActionRequest> actions;
     private List<FieldDescription> entityFields;
     private List<BaseInfo> actionsNames;
@@ -80,5 +81,13 @@ public class Entity {
 
     public void setContentParams(String contentParams) {
         this.contentParams = contentParams;
+    }
+
+    public String getRequestAttributes() {
+        return requestAttributes;
+    }
+
+    public void setRequestAttributes(String requestAttributes) {
+        this.requestAttributes = requestAttributes;
     }
 }

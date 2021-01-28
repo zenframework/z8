@@ -22,5 +22,9 @@ public class FileConverter {
 
 	// Parameters: Background, Reset
 	public static file convertToPdf(file source, file target, string[string] parameters);
+	public static file convertToPdf(binary source, string type, file target);
+
+	public static file convertToDocx(file source, file target);
+	public static file convertToDocx(binary source, file target);
 
 }
