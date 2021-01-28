@@ -138,11 +138,25 @@ public class ApplicationServer extends RmiServer implements IApplicationServer {
 	}
 
 	@Override
-	public IUser user(String login, String password, String scheme, boolean createIfNotExist) {
+	public IUser user(String login, String password, String scheme) {
 		setRequest(new Request(new Session(scheme)));
 
 		try {
-			return User.load(login, password, createIfNotExist);
+			return User.load(login, password);
+		} finally {
+			Scheduler.start(getDatabase());
+
+			releaseConnections();
+			setRequest(null);
+		}
+	}
+
+	@Override
+	public IUser create(String login, String scheme) {
+		setRequest(new Request(new Session(scheme)));
+
+		try {
+			return User.create(login);
 		} finally {
 			Scheduler.start(getDatabase());
 

@@ -94,10 +94,17 @@ public class ServerConfig extends Properties {
 
 	static final private String OfficeHome = "office.home";
 
+	static final private String SpnegoDomainRealm = "spnego.domainRealm";
+	static final private String SpnegoPropertiesPath = "spnego.propertiesPath";
+	
+	static final private String LdapCheckLdapLogin = "ldap.checkLdapLogin";
 	static final private String LdapUrl = "ldap.url";
-	static final private String LdapBindDn = "ldap.bind.dn";
-	static final private String LdapBindPassword = "ldap.bind.password";
-	static final private String LdapDefaultDomain = "ldap.default.domain";
+	static final private String LdapPrincipalName = "ldap.principalName";
+	static final private String LdapCredentials = "ldap.credentials";
+	static final private String LdapSearchBase = "ldap.searchBase";
+	static final private String LdapSearchUserFilter = "ldap.searchUserFilter";
+	static final private String LdapSearchGroupFilter = "ldap.searchGroupFilter";
+
 	static final private String LdapUsersIgnore = "ldap.users.ignore";
 	static final private String LdapUsersCreateOnSuccessfulLogin = "ldap.users.createOnSuccessfulLogin";
 
@@ -163,10 +170,16 @@ public class ServerConfig extends Properties {
 
 	static private String officeHome;
 
+	static private String spnegoDomainRealm;
+	static private String spnegoPropertiesPath;
+	static private boolean ldapCheckLdapLogin;
 	static private String ldapUrl;
-	static private String ldapBindDn;
-	static private String ldapBindPassword;
-	static private String ldapDefaultDomain;
+	static private String ldapPrincipalName;
+	static private String ldapCredentials;
+	static private String ldapSearchBase;
+	static private String ldapSearchUserFilter;
+	static private String ldapSearchGroupFilter;
+
 	static private Collection<String> ldapUsersIgnore;
 	static private boolean ldapUsersCreateOnSuccessfulLogin;
 
@@ -273,10 +286,15 @@ public class ServerConfig extends Properties {
 
 		officeHome = getProperty(OfficeHome, "C:/Program Files (x86)/LibreOffice 4.0");
 
+		spnegoDomainRealm = getProperty(SpnegoDomainRealm, "");
+		spnegoPropertiesPath = getProperty(SpnegoPropertiesPath, "");
+		ldapCheckLdapLogin = getProperty(LdapCheckLdapLogin, false);
 		ldapUrl = getProperty(LdapUrl, "");
-		ldapBindDn = getProperty(LdapBindDn, "");
-		ldapBindPassword = getProperty(LdapBindPassword, "");
-		ldapDefaultDomain = getProperty(LdapDefaultDomain, "");
+		ldapPrincipalName = getProperty(LdapPrincipalName, "");
+		ldapCredentials = getProperty(LdapCredentials, "");
+		ldapSearchBase = getProperty(LdapSearchBase, "");
+		ldapSearchUserFilter = getProperty(LdapSearchUserFilter, "");
+		ldapSearchGroupFilter = getProperty(LdapSearchGroupFilter, "");
 		ldapUsersIgnore = StringUtils.asList(getProperty(LdapUsersIgnore, "Admin"), "\\,");
 		ldapUsersCreateOnSuccessfulLogin = Boolean.parseBoolean(getProperty(LdapUsersCreateOnSuccessfulLogin, "false"));
 
@@ -597,20 +615,38 @@ public class ServerConfig extends Properties {
 		return webClientHashPassword;
 	}
 
+	static public String domainRealm() {
+		return spnegoDomainRealm;
+	}
+
+	static public String spnegoPropertiesPath() {
+		return spnegoPropertiesPath;
+	}
+
+	static public boolean checkLdapLogin() {
+		return ldapCheckLdapLogin;
+	}
+
 	static public String ldapUrl() {
 		return ldapUrl;
 	}
-	
-	static public String ldapBindDn() {
-		return ldapBindDn;
+
+	static public String principalName() {
+		return ldapPrincipalName;
 	}
-	
-	static public String ldapBindPassword() {
-		return ldapBindPassword;
+
+	static public String credentials() {
+		return ldapCredentials;
 	}
-	
-	static public String ldapDefaultDomain() {
-		return ldapDefaultDomain;
+
+	static public String searchBase() {
+		return ldapSearchBase;
+	}
+	static public String searchUserFilter() {
+		return ldapSearchUserFilter;
+	}
+	static public String searchGroupFilter() {
+		return ldapSearchGroupFilter;
 	}
 
 	static public Collection<String> ldapUsersIgnore() {

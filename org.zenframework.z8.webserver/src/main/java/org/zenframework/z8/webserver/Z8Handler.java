@@ -30,6 +30,8 @@ public class Z8Handler extends AbstractHandler {
 	private static final Collection<UrlPattern> urlPatterns = new LinkedList<UrlPattern>(
 			Arrays.asList(
 					new UrlPattern("/apidoc"),
+					new UrlPattern("/logout"),
+					new UrlPattern("/sso_auth"),
 					new UrlPattern("*.json"),
 					new UrlPattern("/storage/*"),
 					new UrlPattern("/files/*"),
