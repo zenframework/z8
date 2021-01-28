@@ -1,14 +1,11 @@
 package org.zenframework.z8.server.request;
 
-import java.lang.management.ManagementFactory;
-import java.lang.management.MemoryMXBean;
-import java.lang.management.MemoryUsage;
-
 import org.zenframework.z8.server.base.Executable;
 import org.zenframework.z8.server.base.job.Job;
 import org.zenframework.z8.server.base.job.JobMonitor;
 import org.zenframework.z8.server.base.query.Query;
 import org.zenframework.z8.server.base.view.Dashboard;
+import org.zenframework.z8.server.config.ServerConfig;
 import org.zenframework.z8.server.db.ConnectionManager;
 import org.zenframework.z8.server.engine.ApplicationServer;
 import org.zenframework.z8.server.engine.Runtime;
@@ -24,6 +21,10 @@ import org.zenframework.z8.server.security.IUser;
 import org.zenframework.z8.server.security.Privileges;
 import org.zenframework.z8.server.types.guid;
 import org.zenframework.z8.server.utils.ErrorUtils;
+
+import java.lang.management.ManagementFactory;
+import java.lang.management.MemoryMXBean;
+import java.lang.management.MemoryUsage;
 
 public class RequestDispatcher implements Runnable {
 
@@ -106,6 +107,15 @@ public class RequestDispatcher implements Runnable {
 		if(Json.login.get().equals(requestId)) {
 			Dashboard dashboard = new Dashboard();
 			dashboard.processRequest(response);
+		} else if(Json.logout.get().equals(requestId)) {
+			ServerConfig.authorityCenter().userChanged(
+					request.getSession().user().id(), 
+					request.getSession().user().database().schema()
+			);
+			JsonWriter writer = new JsonWriter();
+			writer.startResponse(requestId, true);
+			writer.finishResponse();
+			response.setContent(writer.toString());
 		} else if(Json.settings.get().equals(requestId)) {
 			IUser user = ApplicationServer.getUser();
 			user.setSettings(request.getParameter(Json.data));
