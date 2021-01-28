@@ -2,6 +2,7 @@ package org.zenframework.z8.web.server;
 
 import org.zenframework.z8.web.servlet.Servlet;
 
+import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -27,7 +28,8 @@ public class LogoutAdapter extends Adapter {
 		if (session != null)
 			session.invalidate();
 
-		response.sendRedirect("/");
+		RequestDispatcher requestDispatcher = request.getRequestDispatcher("/");
+		requestDispatcher.forward(request, response);
 	}
 
 }
