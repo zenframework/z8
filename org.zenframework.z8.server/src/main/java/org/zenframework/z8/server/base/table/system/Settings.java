@@ -12,6 +12,7 @@ import org.zenframework.z8.server.engine.Runtime;
 import org.zenframework.z8.server.logs.Trace;
 import org.zenframework.z8.server.resources.Resources;
 import org.zenframework.z8.server.runtime.IObject;
+import org.zenframework.z8.server.types.bool;
 import org.zenframework.z8.server.types.date;
 import org.zenframework.z8.server.types.decimal;
 import org.zenframework.z8.server.types.guid;
@@ -143,6 +144,19 @@ public class Settings extends TreeTable {
 		return value != null ? new decimal(value) : defaultValue;
 	}
 
+	static public bool get(guid property, bool defaultValue) {
+		String value = get(property);
+		return value != null ? new bool(value) : defaultValue;
+	}
+
+	static public void set(Setting setting) {
+		set(setting, -1);
+	}
+
+	static public void set(Setting setting, int lock) {
+		set(setting.getId(), setting.getParentId(), setting.getName(), setting.getDescription(), setting.getDefaultValue(), lock);
+	}
+
 	static public void set(guid property, String value) {
 		set(property, null, null, null, value);
 	}
@@ -201,6 +215,10 @@ public class Settings extends TreeTable {
 	}
 
 	static public decimal z8_get(guid property, decimal defaultValue) {
+		return get(property, defaultValue);
+	}
+
+	static public bool z8_get(guid property, bool defaultValue) {
 		return get(property, defaultValue);
 	}
 

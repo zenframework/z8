@@ -18,6 +18,7 @@ public class Settings extends Table {
 	static public date get(guid property, date defaultValue);
 	static public int get(guid property, int defaultValue);
 	static public decimal get(guid property, decimal defaultValue);
+	static public bool get(guid property, bool defaultValue);
 
 	static public void set(guid property, primary value);
 	static public void set(guid property, guid parent, string name, string description, primary value);
