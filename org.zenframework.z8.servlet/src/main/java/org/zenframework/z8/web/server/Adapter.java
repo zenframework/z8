@@ -6,7 +6,6 @@ import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.zenframework.z8.server.base.xml.GNode;
 import org.zenframework.z8.server.config.ServerConfig;
-import org.zenframework.z8.server.engine.ApplicationServer;
 import org.zenframework.z8.server.engine.IApplicationServer;
 import org.zenframework.z8.server.engine.IAuthorityCenter;
 import org.zenframework.z8.server.engine.ISession;
@@ -39,7 +38,6 @@ import java.util.*;
 
 public abstract class Adapter {
 	private static final String UseContainerSession = "useContainerSession";
-	public static final String sessionKeyName = "innerSessionId";
 
 	private static final Collection<String> IgnoredExceptions = Arrays.asList("org.apache.catalina.connector.ClientAbortException");
 

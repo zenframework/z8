@@ -1,17 +1,5 @@
 package org.zenframework.z8.web.servlet;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.servlet.ServletConfig;
-import javax.servlet.ServletContext;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.zenframework.z8.auth.AuthorityCenter;
 import org.zenframework.z8.interconnection.InterconnectionCenter;
 import org.zenframework.z8.rmi.ObjectIO;
@@ -22,6 +10,17 @@ import org.zenframework.z8.server.engine.RmiIO;
 import org.zenframework.z8.server.logs.Trace;
 import org.zenframework.z8.server.types.encoding;
 import org.zenframework.z8.web.server.*;
+
+import javax.servlet.ServletConfig;
+import javax.servlet.ServletContext;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Servlet extends HttpServlet {
 
@@ -65,8 +64,8 @@ public class Servlet extends HttpServlet {
 		}
 
 		adapters.add(new APIDocAdapter(this));
-		adapters.add(new SingleSignOnAdapter(this));
 		adapters.add(new LogoutAdapter(this));
+		adapters.add(new SingleSignOnAdapter(this));
 		adapters.add(new SystemAdapter(this));
 		// ConverterAdapter grabs all GET requests, it should be at the end of the list
 		adapters.add(new ConverterAdapter(this));
