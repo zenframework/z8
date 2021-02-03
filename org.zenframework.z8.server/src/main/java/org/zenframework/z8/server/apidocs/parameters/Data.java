@@ -5,6 +5,7 @@ import org.zenframework.z8.server.apidocs.IRequestParameter;
 import org.zenframework.z8.server.base.query.Query;
 import org.zenframework.z8.server.base.table.value.Field;
 import org.zenframework.z8.server.json.Json;
+import org.zenframework.z8.server.json.parser.JsonArray;
 import org.zenframework.z8.server.json.parser.JsonObject;
 
 public class Data implements IRequestParameter {
@@ -22,6 +23,8 @@ public class Data implements IRequestParameter {
                 jsonObject.put(field.id(), field.getDefault());
             }
         }
-        return jsonObject;
+        JsonArray jsonArray = new JsonArray();
+        jsonArray.add(jsonObject);
+        return jsonArray;
     }
 }
