@@ -7,6 +7,7 @@ Z8.define('Z8.application.viewport.Viewport', {
 
 	handlers: [],
 	forms: [],
+	loginType: 'Z8.application.viewport.Login',
 
 	initComponent: function() {
 		this.callParent();
@@ -24,7 +25,7 @@ Z8.define('Z8.application.viewport.Viewport', {
 		var body = this.body = new Z8.Container({ cls: 'body' });
 		var popupMessages = this.popupMessages = new Z8.viewport.PopupMessages();
 
-		var loginForm = this.loginForm = new Z8.application.viewport.Login({ handler: this.loginCallback, scope: this });
+		var loginForm = this.loginForm = Z8.create(this.loginType, { handler: this.loginCallback, scope: this });
 		loginForm.on('show', this.onLoginFormShow, this);
 		loginForm.on('hide', this.onLoginFormHide, this);
 

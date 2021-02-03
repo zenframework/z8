@@ -113,6 +113,21 @@ Z8.define('Z8.application.viewport.Login', {
 	}
 });
 
+Z8.define('Z8.application.viewport.SSOLogin', {
+	extend: 'Z8.application.viewport.Login',
+
+	initComponent: function() {
+		this.callParent();
+        this.loginButton.text = Z8.$('Login.btn.text');
+        var ssoLoginButton = this.ssoLoginButton = new Z8.button.Button({ text: Z8.$('Login.ssoBtn.text'),  cls: 'btn-tool', icon: 'fa-check', handler: this.ssoLogin, scope: this });
+		this.controls.add(ssoLoginButton);
+	},
+
+	ssoLogin: function(button) {
+	    window.location = window.location.origin + '/sso_auth'
+	},
+});
+
 Z8.define('Z8.application.viewport.ChangePassword', {
 	extend: 'Z8.window.Window',
 

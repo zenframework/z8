@@ -1,6 +1,19 @@
 package org.zenframework.z8.server.security;
 
-import org.zenframework.z8.server.base.table.system.*;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.util.*;
+
+import org.zenframework.z8.server.base.table.system.RoleFieldAccess;
+import org.zenframework.z8.server.base.table.system.RoleRequestAccess;
+import org.zenframework.z8.server.base.table.system.RoleTableAccess;
+import org.zenframework.z8.server.base.table.system.SystemTools;
+import org.zenframework.z8.server.base.table.system.UserEntries;
+import org.zenframework.z8.server.base.table.system.UserRoles;
+import org.zenframework.z8.server.base.table.system.Users;
 import org.zenframework.z8.server.base.table.value.Field;
 import org.zenframework.z8.server.crypto.MD5;
 import org.zenframework.z8.server.db.ConnectionManager;
@@ -16,6 +29,7 @@ import org.zenframework.z8.server.engine.IDatabase;
 import org.zenframework.z8.server.engine.RmiIO;
 import org.zenframework.z8.server.exceptions.AccessDeniedException;
 import org.zenframework.z8.server.exceptions.InvalidVersionException;
+import org.zenframework.z8.server.exceptions.UserNotFoundException;
 import org.zenframework.z8.server.logs.Trace;
 import org.zenframework.z8.server.resources.Resources;
 import org.zenframework.z8.server.runtime.RLinkedHashMap;
@@ -25,9 +39,6 @@ import org.zenframework.z8.server.types.sql.sql_bool;
 import org.zenframework.z8.server.types.string;
 import org.zenframework.z8.server.utils.IOUtils;
 import org.zenframework.z8.server.utils.NumericUtils;
-
-import java.io.*;
-import java.util.*;
 
 public class User implements IUser {
 	static private final long serialVersionUID = -4955893424674255525L;
@@ -200,29 +211,18 @@ public class User implements IUser {
 	}
 
 	static public IUser read(guid userId) {
-		return userId.isNull() ? null : readOrCreate((primary)userId, false);
+		return userId.isNull() ? null : read((primary)userId);
 	}
 
-	static private IUser load(String login, boolean createIfNotExist) {
-		return readOrCreate(new string(login), createIfNotExist);
-	}
-
-	static private IUser readOrCreate(primary loginOrId, boolean createIfNotExist) {
+	static private IUser read(primary loginOrId) {
 		IDatabase database = ApplicationServer.getDatabase();
 		User user = new User(database);
 
 		boolean isLatestVersion = database.isLatestVersion();
 
 		boolean exists = user.readInfo(loginOrId, !isLatestVersion);
-		if(!exists && createIfNotExist) {
-			user.login = ((string)loginOrId).get();
-			user.password = MD5.hex("");
-			Users users = Users.newInstance();
-			users.name.get().set(loginOrId);
-			users.password.get().set(new string(user.password));
-			user.id = users.create();
-		} else if(!exists)
-			throw new AccessDeniedException();
+		if(!exists)
+			throw new UserNotFoundException();
 
 		if(isLatestVersion) {
 			user.loadRoles();
@@ -241,13 +241,28 @@ public class User implements IUser {
 		return user;
 	}
 
-	static public IUser load(String login, String password, boolean createIfNotExist) {
+	public static IUser create(String loginOrId) {
+		IDatabase database = ApplicationServer.getDatabase();
+		User user = new User(database);
+		String plainPassword = User.generateOneTimePassword();
+		ApplicationServer.getRequest().getParameters().put(new string("plainPassword"), new string(plainPassword));
+		user.login = loginOrId;
+		user.password = MD5.hex(plainPassword);
+
+		Users users = Users.newInstance();
+		users.name.get().set(loginOrId);
+		users.password.get().set(new string(user.password));
+		user.id = users.create();
+		return read(new string(loginOrId));
+	}
+
+	static public IUser load(String login, String password) {
 		IDatabase database = ApplicationServer.getDatabase();
 
 		if(!database.isSystemInstalled())
 			return User.system(database);
 
-		IUser user = load(login, createIfNotExist);
+		IUser user = read(new string(login));
 
 		if(password != null && !password.equals(user.password()) /*&& !password.equals(MD5.hex(""))*/ || user.banned())
 			throw new AccessDeniedException();
@@ -486,6 +501,21 @@ public class User implements IUser {
 
 	private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
 		deserialize(in);
+	}
+
+	public static String generateOneTimePassword()
+	{
+		String saltChars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+
+		StringBuilder plainPassword = new StringBuilder();
+
+		Random rnd = new Random();
+		while (plainPassword.length() <= 6) {
+			int index = (int) (rnd.nextFloat() * saltChars.length());
+			plainPassword.append(saltChars.charAt(index));
+		}
+
+		return plainPassword.toString();
 	}
 
 	@Override

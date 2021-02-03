@@ -514,9 +514,10 @@ public class file extends primary implements RmiSerializable, Serializable {
 		return target.length() == size.get();
 	}
 
-	public void unzip(File directory) {
+	public file unzip(File directory) {
 		try {
 			unzip(getBinaryInputStream(), directory);
+			return this;
 		} catch(IOException e) {
 			throw new RuntimeException(e);
 		}
@@ -552,7 +553,7 @@ public class file extends primary implements RmiSerializable, Serializable {
 		}
 	}
 
-	public void zip(File fileOrDirectory) {
+	public file zip(File fileOrDirectory) {
 		OutputStream output = null;
 		ZipOutputStream zipOutput = null;
 
@@ -571,6 +572,7 @@ public class file extends primary implements RmiSerializable, Serializable {
 			IOUtils.closeQuietly(zipOutput);
 			IOUtils.closeQuietly(output);
 		}
+		return this;
 	}
 
 	private void zipFile(ZipOutputStream zipOutput, File file, String path) throws IOException {
@@ -729,12 +731,12 @@ public class file extends primary implements RmiSerializable, Serializable {
 		FileUtils.deleteQuietly(toFile());
 	}
 
-	public void z8_zip(file fileOrDirectory) {
-		zip(fileOrDirectory.getAbsolutePath());
+	public file z8_zip(file fileOrDirectory) {
+		return zip(fileOrDirectory.getAbsolutePath());
 	}
 
-	public void z8_unzip(file directory) {
-		unzip(directory.getAbsolutePath());
+	public file z8_unzip(file directory) {
+		return unzip(directory.getAbsolutePath());
 	}
 
 	static public RCollection<file> z8_parse(string json) {

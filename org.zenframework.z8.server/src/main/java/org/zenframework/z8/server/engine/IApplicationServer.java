@@ -13,7 +13,8 @@ public interface IApplicationServer extends IServer {
 
 	public file download(ISession session, GNode request, file file) throws RemoteException, IOException;
 
-	public IUser user(String login, String password, String scheme, boolean createIfNotExists) throws RemoteException;
+	public IUser user(String login, String password, String scheme) throws RemoteException;
+	public IUser create(String login, String scheme) throws RemoteException;
 
 	public String[] domains() throws RemoteException;
 
