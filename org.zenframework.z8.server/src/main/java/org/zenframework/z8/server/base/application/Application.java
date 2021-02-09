@@ -23,6 +23,10 @@ public class Application {
 		return new bool(ApplicationServer.getRequest() != null);
 	}
 
+	static public bool z8_isMultitenant() {
+		return new bool(ServerConfig.isMultitenant());
+	}
+
 	static public User.CLASS<? extends User> z8_user() {
 		User.CLASS<User> cls = new User.CLASS<User>(null);
 		User user = cls.get();

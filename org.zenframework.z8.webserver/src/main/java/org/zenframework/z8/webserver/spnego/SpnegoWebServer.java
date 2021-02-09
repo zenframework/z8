@@ -1,5 +1,12 @@
 package org.zenframework.z8.webserver.spnego;
 
+import java.io.IOException;
+import java.rmi.RemoteException;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import org.eclipse.jetty.security.ConstraintMapping;
 import org.eclipse.jetty.security.ConstraintSecurityHandler;
 import org.eclipse.jetty.security.SpnegoLoginService;
@@ -12,13 +19,6 @@ import org.eclipse.jetty.util.security.Constraint;
 import org.zenframework.z8.server.config.ServerConfig;
 import org.zenframework.z8.server.engine.IWebServer;
 import org.zenframework.z8.web.server.SingleSignOnAdapter;
-import org.zenframework.z8.webserver.Z8Handler;
-
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.rmi.RemoteException;
 
 /**
  * This server supports kerberos authentication
