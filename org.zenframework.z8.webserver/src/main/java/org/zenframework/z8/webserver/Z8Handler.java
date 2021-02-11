@@ -1,7 +1,6 @@
 package org.zenframework.z8.webserver;
 
 import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.io.IOUtils;
 import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.handler.AbstractHandler;
 import org.eclipse.jetty.server.handler.ContextHandler;
@@ -9,6 +8,7 @@ import org.eclipse.jetty.util.component.LifeCycle;
 import org.zenframework.z8.server.base.file.Folders;
 import org.zenframework.z8.server.config.ServerConfig;
 import org.zenframework.z8.server.logs.Trace;
+import org.zenframework.z8.server.utils.IOUtils;
 import org.zenframework.z8.web.servlet.Servlet;
 
 import javax.servlet.ServletConfig;
@@ -30,6 +30,8 @@ public class Z8Handler extends AbstractHandler {
 	private static final Collection<UrlPattern> urlPatterns = new LinkedList<UrlPattern>(
 			Arrays.asList(
 					new UrlPattern("/apidoc"),
+					new UrlPattern("/logout"),
+					new UrlPattern("/sso_auth"),
 					new UrlPattern("*.json"),
 					new UrlPattern("/storage/*"),
 					new UrlPattern("/files/*"),

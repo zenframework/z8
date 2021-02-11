@@ -6,6 +6,7 @@ import org.zenframework.z8.lang.Object;
 public class Application extends Object {
 	static public bool isSystemInstalled();
 	static public bool isRequest();
+	static public bool isMultitenant();
 
 	static public User user();
 

@@ -44,8 +44,8 @@ public class file extends primary {
 
 	public void delete(); 
 
-	public void zip(file fileOrDirectory); 
-	public void unzip(file directory); 
+	public file zip(file fileOrDirectory); 
+	public file unzip(file directory); 
 
 	/*
 	*    Gets the name (with no path)
