@@ -149,76 +149,74 @@ public class Settings extends TreeTable {
 		return value != null ? new bool(value) : defaultValue;
 	}
 
-	static public void set(Setting setting) {
-		set(setting, -1);
+	static public void set(guid setting, String value) {
+		set0(setting, null, null, null, new string(value), -1, true);
 	}
 
-	static public void set(Setting setting, int lock) {
-		set(setting.getId(), setting.getParentId(), setting.getName(), setting.getDescription(), setting.getDefaultValue(), lock);
+	static public void set(guid setting, primary value) {
+		set0(setting, null, null, null, value, -1, true);
 	}
 
-	static public void set(guid property, String value) {
-		set(property, null, null, null, value);
+	static public void register(Setting setting) {
+		set0(setting.getId(), setting.getParentId(), setting.getName(), setting.getDescription(), setting.getDefaultValue(), setting.getLock(), false);
 	}
 
-	static public void set(guid property, primary value) {
-		set(property, null, null, null, value);
+	static public void register(guid setting, guid parent, String name, String description, String value) {
+		register(setting, parent, name, description, new string(value));
 	}
 
-	static public void set(guid property, guid parent, String name, String description, String value) {
-		set(property, parent, name, description, new string(value));
+	static public void register(guid setting, guid parent, String name, String description, primary value) {
+		register(setting, parent, name, description, value, -1);
 	}
 
-	static public void set(guid property, guid parent, String name, String description, primary value) {
-		set(property, parent, name, description, value, -1);
+	static public void register(guid setting, guid parent, String name, String description, primary value, int lock) {
+		set0(setting, parent, name, description, value, lock, false);
 	}
 
-	static public void set(guid property, guid parent, String name, String description, primary value, int lock) {
+	static private void set0(guid setting, guid parent, String name, String description, primary value, int lock, boolean overrideValue) {
 		Settings settings = new Settings.CLASS<Settings>().get();
+		boolean exists = settings.hasRecord(setting);
 		if (parent != null)
 			settings.parentId.get().set(parent);
 		if (name != null)
 			settings.name.get().set(name);
 		if (description != null)
 			settings.description.get().set(description);
-		settings.value.get().set(new string(value.toString()));
+		if (overrideValue || !exists)
+			settings.value.get().set(new string(value.toString()));
 		if (lock >= 0)
 			settings.lock.get().set(lock);
-		if (settings.hasRecord(property))
-			settings.update(property);
+		if (exists)
+			settings.update(setting);
 		else
-			settings.create(property);
+			settings.create(setting);
 	}
 
 	static public String version() {
 		return get(Version);
 	}
 
-	static public string z8_get(guid property) {
-		return new string(get(property));
-	}
-
-	static public string z8_get(guid property, string defaultValue) {
+	static public string z8_string(Setting.CLASS<Setting> setting) {
 		return get(property, defaultValue);
 	}
 
-	static public guid z8_get(guid property, guid defaultValue) {
+	static public guid z8_guid(Setting.CLASS<Setting> setting) {
 		return get(property, defaultValue);
 	}
 
-	static public date z8_get(guid property, date defaultValue) {
+	static public date z8_date(Setting.CLASS<Setting> setting) {
 		return get(property, defaultValue);
 	}
 
-	static public integer z8_get(guid property, integer defaultValue) {
+	static public integer z8_integer(Setting.CLASS<Setting> setting) {
 		return get(property, defaultValue);
 	}
 
-	static public decimal z8_get(guid property, decimal defaultValue) {
+	static public decimal z8_decimal(Setting.CLASS<Setting> setting) {
 		return get(property, defaultValue);
 	}
 
-	static public bool z8_get(guid property, bool defaultValue) {
+	static public bool z8_bool(Setting.CLASS<Setting> setting) {
 		return get(property, defaultValue);
 	}
 
@@ -226,8 +224,8 @@ public class Settings extends TreeTable {
 		set(property, value);
 	}
 
-	static public void z8_set(guid property, guid parent, string name, string description, primary value) {
-		set(property, parent, name.get(), description.get(), value);
+	static public void z8_register(Setting.CLASS<Setting> setting) {
+		register(setting.get());
 	}
 
 }
