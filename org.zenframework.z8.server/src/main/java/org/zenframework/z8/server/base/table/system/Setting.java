@@ -1,11 +1,11 @@
 package org.zenframework.z8.server.base.table.system;
 
+import org.zenframework.z8.server.base.query.RecordLock;
 import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.runtime.OBJECT;
 import org.zenframework.z8.server.types.guid;
 import org.zenframework.z8.server.types.integer;
 import org.zenframework.z8.server.types.primary;
-import org.zenframework.z8.server.types.string;
 
 public class Setting extends OBJECT {
 
@@ -21,53 +21,68 @@ public class Setting extends OBJECT {
 		}
 	}
 
-	private guid id;
+	private static final String Lock = "lock";
+
+	private guid settingId;
 	private guid parentId;
-	private string name;
-	private string description;
 	private primary defaultValue;
-	private integer lock;
 
 	public Setting(IObject container) {
 		super(container);
 	}
 
-	public guid getId() {
-		return id;
+	public guid settingId() {
+		return settingId;
 	}
 
-	public guid getParentId() {
+	public guid parentId() {
 		return parentId;
 	}
 
-	public String getName() {
-		return name.get();
-	}
-
-	public String getDescription() {
-		return description.get();
-	}
-
-	public primary getDefaultValue() {
+	public primary defaultValue() {
 		return defaultValue;
 	}
 
-	public int getLock() {
-		return lock.getInt();
+	public int lock() {
+		return hasAttribute(Lock) ? Integer.parseInt(getAttribute(Lock)) : RecordLock.None.getInt();
 	}
 
-	static public Setting setting(guid id, guid parentId, String name, String description, primary value, int lock) {
-		return z8_setting(id, parentId, new string(name), new string(description), value, new integer(lock)).get();
+	public guid z8_settingId() {
+		return settingId();
 	}
 
-	static public Setting.CLASS<Setting> z8_setting(guid id, guid parentId, string name, string description, primary value, integer lock) {
-		Setting.CLASS<Setting> setting = new Setting.CLASS<>(null);
-		setting.get().id = id;
-		setting.get().parentId = parentId;
-		setting.get().name = name;
-		setting.get().description = description;
-		setting.get().defaultValue = value;
+	public guid z8_parentId() {
+		return parentId();
+	}
+
+	public primary z8_defaultValue() {
+		return defaultValue();
+	}
+
+	public integer z8_lock() {
+		return new integer(lock());
+	}
+
+	static public Setting setting(guid settingId, primary defaultValue) {
+		return setting(settingId, guid.Null, defaultValue);
+	}
+
+	static public Setting setting(guid settingId, guid parentId, primary defaultValue) {
+		Setting setting = new Setting.CLASS<>(null).get();
+		setting.settingId = settingId;
+		setting.parentId = parentId;
+		setting.defaultValue = defaultValue;
 		return setting;
+	}
+
+	@SuppressWarnings("unchecked")
+	static public Setting.CLASS<Setting> z8_setting(guid settingId, primary defaultValue) {
+		return (Setting.CLASS<Setting>) setting(settingId, defaultValue).getCLASS();
+	}
+
+	@SuppressWarnings("unchecked")
+	static public Setting.CLASS<Setting> z8_setting(guid settingId, guid parentId, primary defaultValue) {
+		return (Setting.CLASS<Setting>) setting(settingId, parentId, defaultValue).getCLASS();
 	}
 
 }

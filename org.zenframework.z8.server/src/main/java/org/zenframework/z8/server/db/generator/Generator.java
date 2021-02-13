@@ -6,11 +6,13 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
+import org.zenframework.z8.server.base.query.RecordLock;
 import org.zenframework.z8.server.base.table.Table;
 import org.zenframework.z8.server.base.table.system.Settings;
 import org.zenframework.z8.server.db.ConnectionManager;
 import org.zenframework.z8.server.db.DatabaseVendor;
 import org.zenframework.z8.server.engine.Runtime;
+import org.zenframework.z8.server.types.guid;
 import org.zenframework.z8.server.utils.ErrorUtils;
 
 public class Generator {
@@ -87,7 +89,7 @@ public class Generator {
 		}
 
 		String version = Runtime.version();
-		Settings.set(Settings.Version, version);
+		Settings.save(Settings.Version, guid.Null, "Version", "Schema version", version, RecordLock.Full.getInt(), true);
 
 		logger.info("Control sum: " + version);
 		logger.progress(100);

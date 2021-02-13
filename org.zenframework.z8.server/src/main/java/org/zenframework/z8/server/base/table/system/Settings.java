@@ -149,16 +149,40 @@ public class Settings extends TreeTable {
 		return value != null ? new bool(value) : defaultValue;
 	}
 
+	static public string string(Setting setting) {
+		return get(setting.settingId(), (string) setting.defaultValue());
+	}
+
+	static public guid guid(Setting setting) {
+		return get(setting.settingId(), (guid) setting.defaultValue());
+	}
+
+	static public date date(Setting setting) {
+		return get(setting.settingId(), (date) setting.defaultValue());
+	}
+
+	static public integer integer(Setting setting) {
+		return get(setting.settingId(), (integer) setting.defaultValue());
+	}
+
+	static public decimal decimal(Setting setting) {
+		return get(setting.settingId(), (decimal) setting.defaultValue());
+	}
+
+	static public bool bool(Setting setting) {
+		return get(setting.settingId(), (bool) setting.defaultValue());
+	}
+
 	static public void set(guid setting, String value) {
-		set0(setting, null, null, null, new string(value), -1, true);
+		save(setting, null, null, null, value, -1, true);
 	}
 
 	static public void set(guid setting, primary value) {
-		set0(setting, null, null, null, value, -1, true);
+		save(setting, null, null, null, value.toString(), -1, true);
 	}
 
 	static public void register(Setting setting) {
-		set0(setting.getId(), setting.getParentId(), setting.getName(), setting.getDescription(), setting.getDefaultValue(), setting.getLock(), false);
+		save(setting.settingId(), setting.parentId(), setting.name(), setting.description(), setting.defaultValue().toString(), setting.lock(), false);
 	}
 
 	static public void register(guid setting, guid parent, String name, String description, String value) {
@@ -170,10 +194,10 @@ public class Settings extends TreeTable {
 	}
 
 	static public void register(guid setting, guid parent, String name, String description, primary value, int lock) {
-		set0(setting, parent, name, description, value, lock, false);
+		save(setting, parent, name, description, value.toString(), lock, false);
 	}
 
-	static private void set0(guid setting, guid parent, String name, String description, primary value, int lock, boolean overrideValue) {
+	static public void save(guid setting, guid parent, String name, String description, String value, int lock, boolean overrideValue) {
 		Settings settings = new Settings.CLASS<Settings>().get();
 		boolean exists = settings.hasRecord(setting);
 		if (parent != null)
@@ -183,7 +207,7 @@ public class Settings extends TreeTable {
 		if (description != null)
 			settings.description.get().set(description);
 		if (overrideValue || !exists)
-			settings.value.get().set(new string(value.toString()));
+			settings.value.get().set(value);
 		if (lock >= 0)
 			settings.lock.get().set(lock);
 		if (exists)
@@ -197,31 +221,31 @@ public class Settings extends TreeTable {
 	}
 
 	static public string z8_string(Setting.CLASS<Setting> setting) {
-		return get(property, defaultValue);
+		return string(setting.get());
 	}
 
 	static public guid z8_guid(Setting.CLASS<Setting> setting) {
-		return get(property, defaultValue);
+		return guid(setting.get());
 	}
 
 	static public date z8_date(Setting.CLASS<Setting> setting) {
-		return get(property, defaultValue);
+		return date(setting.get());
 	}
 
-	static public integer z8_integer(Setting.CLASS<Setting> setting) {
-		return get(property, defaultValue);
+	static public integer z8_int(Setting.CLASS<Setting> setting) {
+		return integer(setting.get());
 	}
 
 	static public decimal z8_decimal(Setting.CLASS<Setting> setting) {
-		return get(property, defaultValue);
+		return decimal(setting.get());
 	}
 
 	static public bool z8_bool(Setting.CLASS<Setting> setting) {
-		return get(property, defaultValue);
+		return bool(setting.get());
 	}
 
-	static public void z8_set(guid property, primary value) {
-		set(property, value);
+	static public void z8_set(guid setting, primary value) {
+		set(setting, value);
 	}
 
 	static public void z8_register(Setting.CLASS<Setting> setting) {
