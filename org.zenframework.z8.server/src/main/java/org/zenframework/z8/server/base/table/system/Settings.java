@@ -216,6 +216,30 @@ public class Settings extends TreeTable {
 		return get(Version);
 	}
 
+	static public string z8_get(guid setting, string defaultValue) {
+		return get(setting, defaultValue);
+	}
+
+	static public guid z8_get(guid setting, guid defaultValue) {
+		return get(setting, defaultValue);
+	}
+
+	static public date z8_get(guid setting, date defaultValue) {
+		return get(setting, defaultValue);
+	}
+
+	static public integer z8_get(guid setting, integer defaultValue) {
+		return get(setting, defaultValue);
+	}
+
+	static public decimal z8_get(guid setting, decimal defaultValue) {
+		return get(setting, defaultValue);
+	}
+
+	static public bool z8_get(guid setting, bool defaultValue) {
+		return get(setting, defaultValue);
+	}
+
 	static public string z8_string(guid setting) {
 		return string(setting);
 	}

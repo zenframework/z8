@@ -129,23 +129,22 @@ public class AuthorityCenter extends HubServer implements IAuthorityCenter {
 	}
 
 	@Override
-	public ISession login(String login, String scheme) throws RemoteException {
+	public ISession trustedLogin(String login, String scheme, boolean createIfNotExist) throws RemoteException {
 		IServerInfo serverInfo = getServerInfo();
+		try {
+			return login0(serverInfo, login, scheme);
+		} catch (UserNotFoundException e) {
+			if (!createIfNotExist)
+				throw e;
+			serverInfo.getServer().create(login, scheme);
+			return login0(serverInfo, login, scheme);
+		}
+	}
+
+	private ISession login0(IServerInfo serverInfo, String login, String scheme) throws RemoteException {
 		IUser user = serverInfo.getServer().user(login, null, scheme);
 		ISession session = sessionManager.create(user);
 		session.setServerInfo(serverInfo);
-		return session;
-	}
-
-	@Override
-	public ISession createIfNotExistAndLogin(String login, String scheme) throws RemoteException {
-		ISession session;
-		try {
-			 session = login(login, scheme);
-		} catch (UserNotFoundException e) {
-			getServerInfo().getServer().create(login, scheme);
-			session = login(login, scheme);
-		}
 		return session;
 	}
 

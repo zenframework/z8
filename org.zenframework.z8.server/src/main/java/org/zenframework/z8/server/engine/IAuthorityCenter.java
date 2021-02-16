@@ -9,8 +9,7 @@ public interface IAuthorityCenter extends IHubServer {
 	int MaxPasswordLength = 32;
 
 	public ISession login(String login, String password, String schema) throws RemoteException;
-	public ISession login(String login, String scheme) throws RemoteException;
-	public ISession createIfNotExistAndLogin(String login, String scheme) throws RemoteException;
+	public ISession trustedLogin(String login, String scheme, boolean createIfNotExist) throws RemoteException;
 	public ISession server(String session, String server) throws RemoteException;
 
 	public void userChanged(guid user, String schema) throws RemoteException;

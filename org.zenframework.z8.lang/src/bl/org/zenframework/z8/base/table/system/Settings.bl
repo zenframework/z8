@@ -12,14 +12,21 @@ public class Settings extends Table {
 	[displayName "Значение"]
 	public TextField value;
 
+	static public void set(guid setting, primary value);
+
+	static public string get(guid setting, string defaultValue);
+	static public guid get(guid setting, guid defaultValue);
+	static public date get(guid setting, date defaultValue);
+	static public int get(guid setting, int defaultValue);
+	static public decimal get(guid setting, decimal defaultValue);
+	static public bool get(guid setting, bool defaultValue);
+
 	static public string string(guid setting);
 	static public guid guid(guid setting);
 	static public date date(guid setting);
 	static public int int(guid setting);
 	static public decimal decimal(guid setting);
 	static public bool bool(guid setting);
-
-	static public void set(guid setting, primary value);
 
 	static public void register(guid setting, string name, string description, primary defaultValue);
 	static public void register(guid setting, string name, string description, primary defaultValue, int lock);
