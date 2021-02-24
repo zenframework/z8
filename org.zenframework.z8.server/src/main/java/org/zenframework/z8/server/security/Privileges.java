@@ -10,6 +10,7 @@ import org.zenframework.z8.server.base.query.Query;
 import org.zenframework.z8.server.base.table.value.Field;
 import org.zenframework.z8.server.engine.RmiIO;
 import org.zenframework.z8.server.resources.Resources;
+import org.zenframework.z8.server.runtime.OBJECT;
 import org.zenframework.z8.server.types.guid;
 
 public class Privileges implements IPrivileges {
@@ -90,6 +91,11 @@ public class Privileges implements IPrivileges {
 		if(fieldAccess == null)
 			fieldAccess = new HashMap<guid, IAccess>();
 		fieldAccess.put(field, access);
+	}
+
+	@Override
+	public IAccess getRequestAccess(OBJECT request) {
+		return getRequestAccess(request.key());
 	}
 
 	@Override

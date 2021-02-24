@@ -35,7 +35,15 @@ public class Access implements IAccess {
 		return access;
 	}
 
-	public Access() {
+	public Access() {}
+
+	public Access(boolean read, boolean write, boolean create, boolean copy, boolean destroy, boolean execute) {
+		this.read = read;
+		this.write = write;
+		this.create = create;
+		this.copy = copy;
+		this.destroy = destroy;
+		this.execute = execute;
 	}
 
 	@Override
