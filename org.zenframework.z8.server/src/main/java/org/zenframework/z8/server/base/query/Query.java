@@ -103,7 +103,7 @@ public class Query extends OBJECT {
 	public ReadLock readLock = ReadLock.None;
 	private boolean transactive = true;
 
-	protected IAccess access;
+	private IAccess access;
 	private Connection connection;
 
 	private Field parentKey = null;

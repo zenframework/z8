@@ -5,7 +5,6 @@ import java.io.Serializable;
 import org.zenframework.z8.server.base.query.Query;
 import org.zenframework.z8.server.base.table.value.Field;
 import org.zenframework.z8.server.engine.RmiSerializable;
-import org.zenframework.z8.server.runtime.OBJECT;
 import org.zenframework.z8.server.types.guid;
 
 public interface IPrivileges extends RmiSerializable, Serializable {
@@ -13,7 +12,6 @@ public interface IPrivileges extends RmiSerializable, Serializable {
 
 	public IAccess getTableAccess(Query table);
 	public IAccess getFieldAccess(Field field);
-	public IAccess getRequestAccess(OBJECT request);
 
 	public IAccess getTableAccess(guid table);
 	public IAccess getFieldAccess(guid table, guid field);
