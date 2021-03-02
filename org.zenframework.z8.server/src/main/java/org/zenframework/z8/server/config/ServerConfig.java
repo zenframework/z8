@@ -47,6 +47,7 @@ public class ServerConfig extends Properties {
 
 	static final private String ApplicationServerHost = "application.server.host";
 	static final private String ApplicationServerPort = "application.server.port";
+	static final private String ApplicationServerRequestTimeout = "application.server.request.timeout";
 
 	static final private String AuthorityCenterHost = "authority.center.host";
 	static final private String AuthorityCenterPort = "authority.center.port";
@@ -126,6 +127,7 @@ public class ServerConfig extends Properties {
 
 	static private String applicationServerHost;
 	static private int applicationServerPort;
+	static private int applicationServerRequestTimeout;
 
 	static private String authorityCenterHost;
 	static private int authorityCenterPort;
@@ -231,6 +233,7 @@ public class ServerConfig extends Properties {
 
 		applicationServerHost = getHost(ApplicationServerHost, Rmi.localhost);
 		applicationServerPort = getProperty(ApplicationServerPort, 15000);
+		applicationServerRequestTimeout = getProperty(ApplicationServerRequestTimeout, 10);
 
 		authorityCenterHost = getHost(AuthorityCenterHost, Rmi.localhost);
 		authorityCenterPort = getProperty(AuthorityCenterPort, 10000);
@@ -461,6 +464,10 @@ public class ServerConfig extends Properties {
 
 	static public int applicationServerPort() {
 		return applicationServerPort;
+	}
+
+	static public int applicationServerRequestTimeout() {
+		return applicationServerRequestTimeout;
 	}
 
 	static public String authorityCenterHost() {

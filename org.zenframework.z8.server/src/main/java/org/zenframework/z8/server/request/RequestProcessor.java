@@ -4,6 +4,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.zenframework.z8.server.config.ServerConfig;
 import org.zenframework.z8.server.engine.ApplicationServer;
 import org.zenframework.z8.server.json.Json;
 import org.zenframework.z8.server.json.parser.JsonObject;
@@ -54,9 +55,8 @@ public class RequestProcessor {
 
 		if(isThreadAlive(info.thread)) {
 			try {
-				info.thread.join(10 * 1000);
-			} catch(InterruptedException e) {
-			}
+				info.thread.join(ServerConfig.applicationServerRequestTimeout() * 1000);
+			} catch(InterruptedException e) {}
 		}
 
 		boolean finished = !isThreadAlive(info.thread);
