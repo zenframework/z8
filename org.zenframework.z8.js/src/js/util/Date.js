@@ -7,7 +7,12 @@ Date.Month = 'mo';
 Date.Year = 'y';
 
 Date.DaysInMonth = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
-Date.MillisPerDay = 864e5;
+
+
+Date.MillisPerSecond = 1000;
+Date.MillisPerMinute = Date.MillisPerSecond * 60;
+Date.MillisPerHour = Date.MillisPerMinute * 60;
+Date.MillisPerDay = Date.MillisPerHour * 24;
 Date.MillisPerWeek = 7 * Date.MillisPerDay;
 
 Date.MonthNames = [
@@ -244,6 +249,48 @@ Date.prototype.addYear = function(years) {
 	return this.add(years, Date.Year);
 };
 
+Date.prototype.millisecondsBetween = function(date) {
+	return this.getTime() - date.getTime();
+};
+
+Date.prototype.secondsBetween = function(date) {
+	var span = (this.getTime() - date.getTime()) / Date.MillisPerSecond;
+	return span < 0 ? span.ceil() : span.floor();
+};
+
+Date.prototype.minutesBetween = function(date) {
+	var span = (this.getTime() - date.getTime()) / Date.MillisPerMinute;
+	return span < 0 ? span.ceil() : span.floor();
+};
+
+Date.prototype.hoursBetween = function(date) {
+	var span = (this.getTime() - date.getTime()) / Date.MillisPerHour;
+	return span < 0 ? span.ceil() : span.floor();
+};
+
+Date.prototype.daysBetween = function(date) {
+	var span = (this.getTime() - date.getTime()) / Date.MillisPerDay;
+	return span < 0 ? span.ceil() : span.floor();
+};
+
+Date.prototype.truncSecond = function() {
+	this.setMilliseconds(0);
+	return this;
+};
+
+Date.prototype.truncMinute = function() {
+	this.setSeconds(0);
+	this.setMilliseconds(0);
+	return this;
+};
+
+Date.prototype.truncHour = function() {
+	this.setMinutes(0);
+	this.setSeconds(0);
+	this.setMilliseconds(0);
+	return this;
+};
+
 Date.prototype.truncDay = function() {
 	this.setHours(0);
 	this.setMinutes(0);
@@ -253,6 +300,16 @@ Date.prototype.truncDay = function() {
 };
 
 Date.prototype.truncMonth = function() {
+	this.setDate(1);
+	this.setHours(0);
+	this.setMinutes(0);
+	this.setSeconds(0);
+	this.setMilliseconds(0);
+	return this;
+};
+
+Date.prototype.truncYear = function() {
+	this.setMonth(0);
 	this.setDate(1);
 	this.setHours(0);
 	this.setMinutes(0);
