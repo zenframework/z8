@@ -9,7 +9,7 @@ Type=simple
 User=z8
 Group=z8
 WorkingDirectory=/opt/${project.name}
-ExecStart=/opt/${project.name}/bin/start.sh
+ExecStart=/opt/${project.name}/bin/service.sh
 ExecStop=/opt/${project.name}/bin/stop.sh
 Restart=always
 Environment=USER=z8 HOME=/home/z8
